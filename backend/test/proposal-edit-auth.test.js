@@ -114,6 +114,18 @@ describe('POST /proposals drops claims the free route cannot prove', () => {
         expect(stored).not.toHaveProperty('ownerAcceptances');
     });
 
+    it.each(['Active', 'Cancelled', 'Expired', 'draft'])(
+        'drops a client execution timestamp from a %s upload', async lifecycleStatus => {
+            pool.setResults([insertResult(), updateResult()]);
+            const response = await request(app).post('/proposals').send(validProposalBody({
+                lifecycleStatus, executedAt: '2026-10-01T10:00:00.000Z'
+            }));
+            expect(response.status).toBe(201);
+            const params = pool.getCalls()[0].params;
+            expect(params[7]).toBe(lifecycleStatus);
+            expect(JSON.parse(params[32])).not.toHaveProperty('executedAt');
+        });
+
     it('keeps author-controlled lifecycle states on ordinary server uploads', async () => {
         pool.setResults([insertResult(), updateResult()]);
         const response = await request(app).post('/proposals').send(validProposalBody({ lifecycleStatus: 'Cancelled' }));

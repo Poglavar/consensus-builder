@@ -773,7 +773,6 @@ export function createProposalCreateHandler(pool) {
             let lifecycleStatus = precheck.value.lifecycleStatus;
             if (!req.chainMirror && lifecycleStatus === 'Executed') {
                 lifecycleStatus = 'Active';
-                delete proposal.executedAt;
                 droppedClaims.push('lifecycleStatus:Executed');
             }
             const offer = validated.offer ?? null;

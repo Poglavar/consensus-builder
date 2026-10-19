@@ -109,6 +109,18 @@ describe('explicit cadastral conformance', () => {
 });
 
 describe('publish projection', () => {
+    it('omits an unverified execution timestamp without mutating the local record or lifecycle', () => {
+        const record = { goal: 'park', cadastreParcelIds: [BASE], lifecycleStatus: 'Executed',
+            executedAt: '2026-10-01T10:00:00.000Z', createdAt: '2026-09-01T10:00:00.000Z' };
+        const before = structuredClone(record);
+        const gate = records.preparePublishRecord(record);
+        expect(gate.verdict.flat).toBe(true);
+        expect(gate.proposal).not.toHaveProperty('executedAt');
+        expect(gate.proposal).toMatchObject({ lifecycleStatus: 'Executed', createdAt: record.createdAt });
+        expect(record).toEqual(before);
+        expect(records.stripDerivedRecordData(record).executedAt).toBe(record.executedAt);
+    });
+
     it('keeps the canonical declaration and emits no compatibility copies', () => {
         const gate = records.preparePublishRecord({
             goal: 'reparcellization',

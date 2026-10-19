@@ -133,6 +133,9 @@ export function stripLocalProposalState(proposal) {
     const sanitized = JSON.parse(JSON.stringify(proposal));
     [
         'applied', 'appliedAt', 'localPurchaseSimulation', 'status', 'localEditAt', 'editSeq', 'revertSnapshot',
+        // No current producer verifies an execution-event time. Observation/receipt times stay
+        // in their qualified evidence records; this client field is not that evidence.
+        'executedAt',
         'childParcelIds', 'descendantParcelIds', 'parentFeatures',
         'parentProposals', 'childProposals', 'parentProposalIds', 'childProposalIds',
         'formation', 'demolishedBuildings', 'demolitionScanned', 'parcelSourceId',

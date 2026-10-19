@@ -20,6 +20,17 @@ function rejectionOf(row) {
 }
 
 describe('proposal API serializer', () => {
+    it.each(['Active', 'Executed', 'Cancelled', 'Expired', 'draft'])(
+        'does not serve an unqualified execution timestamp from a stored %s record', lifecycleStatus => {
+            const row = { id: 5, proposal_id: 'record-a', lifecycle_status: lifecycleStatus,
+                proposal_data: { lifecycleStatus, executedAt: '2026-10-01T10:00:00.000Z' } };
+            const before = structuredClone(row);
+            const proposal = serializeProposalRow(row);
+            expect(proposal.lifecycleStatus).toBe(lifecycleStatus);
+            expect(proposal).not.toHaveProperty('executedAt');
+            expect(row).toEqual(before);
+        });
+
     it('removes browser-local applied state from root and nested payloads', () => {
         const value = stripLocalProposalState({
             applied: true,

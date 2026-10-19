@@ -170,7 +170,9 @@ describe('POST /proposals/mirror', () => {
         expect(insert.params[22]).toBeNull(); // observing lifecycle does not invent owner consent
         expect(insert.params[23]).toBeNull();
         const served = serializeProposalRow({ id: 88, proposal_id: mirror.proposalId,
-            lifecycle_status: insert.params[7], proposal_data: stored, onchain_data: mirror.onchain,
+            lifecycle_status: insert.params[7],
+            // A historical row's client timestamp must not be served as chain evidence.
+            proposal_data: { ...stored, executedAt: '2026-10-01T10:00:00.000Z' }, onchain_data: mirror.onchain,
             cadastre_parcel_ids: mirror.record.cadastreParcelIds });
         expect(served.lifecycleStatus).toBe(lifecycleStatus);
         expect(served.chainMirror.lifecycle).toEqual(stored.chainMirror.lifecycle);

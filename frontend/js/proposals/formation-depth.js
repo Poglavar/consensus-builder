@@ -240,6 +240,8 @@
         delete out.applied;
         delete out.appliedAt;
         delete out.localPurchaseSimulation;
+        // This unqualified client timestamp has no verified execution-event source.
+        delete out.executedAt;
         return { proposal: out, verdict };
     }
 
