@@ -50,8 +50,10 @@ function attach(host,project,isCurrent,modules,{THREE,scene,group,camera,rendere
  tiles.setCamera(camera);tiles.setResolutionFromRenderer(camera,renderer);
  const status=document.createElement('p');status.className='context-google-status';status.textContent='Učitavanje Google 3D prikaza…';status.setAttribute('role','status');
  const credit=document.createElement('div');credit.className='context-google-credit';
- const logo=document.createElement('img');logo.src='https://maps.gstatic.com/mapfiles/api-3/images/google_white5_hdpi.png';logo.alt='Google';logo.width=66;logo.height=26;
- const copyrights=document.createElement('span');credit.append(logo,copyrights);host.append(status,credit);
+ const logo=document.createElement('img');logo.src='/novogradnje/google-maps-logo.svg';logo.alt='Google Maps';logo.height=19;
+ const sources=document.createElement('details');sources.className='context-google-sources';sources.hidden=true;
+ const sourceLabel=document.createElement('summary');sourceLabel.textContent='Izvori podataka';
+ const copyrights=document.createElement('span');copyrights.className='context-google-copyrights';sources.append(sourceLabel,copyrights);credit.append(logo,sources);host.append(status,credit);
  const cached=new Map();let revision=0,probed=-1,frameId=0,disposed=false,failed=false,onScreen=true,grounded=false,locked=false,lastLoad=performance.now(),lastProbe=0,lastCredit=0,lastTick=0,lastFrame=null,loadingMs=0;
  const onLoad=event=>{if(event.scene)cached.set(event.scene,event.tile?.internal?.depth||0);revision++;lastLoad=performance.now();};
  const onUnload=event=>{cached.delete(event.scene);revision++;};
@@ -81,7 +83,7 @@ function attach(host,project,isCurrent,modules,{THREE,scene,group,camera,rendere
   host.dataset.googleState='ready';
   locked=true;
  }
- function updateCredit(){copyrights.textContent=root.PhotorealAttribution.attributionText(tiles.getAttributions());}
+ function updateCredit(){const text=root.PhotorealAttribution.attributionText(tiles.getAttributions());copyrights.textContent=text;sources.hidden=!text;}
  function tick(now){
   frameId=0;if(disposed||failed||!isCurrent()||document.hidden||!onScreen)return;
   if(!grounded)loadingMs+=lastFrame===null?0:Math.min(now-lastFrame,1000);lastFrame=now;

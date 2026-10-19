@@ -7,10 +7,10 @@ const source = readFileSync(new URL('../../frontend/novogradnje/google-context.j
 const body = parse(source, { sourceType: 'script' }).program.body[0].expression.callee.body.body;
 const declaration = body.find(node => node.type === 'FunctionDeclaration' && node.id.name === 'attach');
 
-function fixture(initialElevationM = 0) {
+function fixture(initialElevationM = 0, attributionText = 'Google · imagery provider') {
     const frames = new Map(), listeners = {}, timers = [];
     let sequence = 0, intersection;
-    const element = () => ({ children: [], dataset: {}, append(...nodes) { this.children.push(...nodes); },
+    const element = (tagName = 'div') => ({ tagName: tagName.toUpperCase(), children: [], dataset: {}, append(...nodes) { this.children.push(...nodes); },
         setAttribute() {}, remove: vi.fn() });
     class Vector {
         constructor(x = 0, y = 0, z = 0) { Object.assign(this, { x, y, z }); }
@@ -52,7 +52,7 @@ function fixture(initialElevationM = 0) {
         ION_TOKEN: 'public-browser-test', ASSET_ID: 2275207, document,
         root: { __siteModelGeometry: { localFrame: () => ({ origin: [16, 45] }) },
             __photorealFrame: { TILES_FRAME_EULER: { x: Math.PI / 2, y: 0, z: Math.PI, order: 'ZYX' } },
-            PhotorealAttribution: { attributionText: () => 'Google · imagery provider' } },
+            PhotorealAttribution: { attributionText: () => attributionText } },
         performance: { now: () => 0 },
         requestAnimationFrame: callback => { frames.set(++sequence, callback); return sequence; },
         cancelAnimationFrame: id => frames.delete(id),
@@ -115,11 +115,40 @@ describe('bounded Google context streaming', () => {
     it('shows attribution and a retryable failure state instead of an indefinitely blank canvas', () => {
         const f = fixture();
         f.frame(1001);
-        expect(f.host.children[1].children[1].textContent).toBe('Google · imagery provider');
+        expect(f.host.children[1].children[1].children[1].textContent).toBe('Google · imagery provider');
         for(let time=2001;time<=46001;time+=1000)f.frame(time);
         expect(f.host.dataset.googleState).toBe('error');
         expect(f.host.children[0].textContent).toContain('Odaberi Model');
         expect(f.frames.size).toBe(0);
+        f.dispose();
+    });
+
+    it('shows one Google Maps logo and preserves the full attribution in a closed native disclosure', () => {
+        const attribution = 'Google · © 2026 Google · Airbus, Maxar Technologies';
+        const f = fixture(0, attribution);
+        f.frame(1001);
+        const credit = f.host.children[1];
+        expect(credit.className).toBe('context-google-credit');
+        expect(credit.children.map(node => node.tagName)).toEqual(['IMG', 'DETAILS']);
+        const [logo, sources] = credit.children;
+        expect(logo.src).toBe('/novogradnje/google-maps-logo.svg');
+        expect(logo.alt).toBe('Google Maps');
+        expect(sources.className).toBe('context-google-sources');
+        expect(sources.open).not.toBe(true);
+        expect(sources.hidden).toBe(false);
+        expect(sources.children.map(node => node.tagName)).toEqual(['SUMMARY', 'SPAN']);
+        expect(sources.children[0].textContent).toBe('Izvori podataka');
+        expect(sources.children[1].className).toBe('context-google-copyrights');
+        expect(sources.children[1].textContent).toBe(attribution);
+        f.dispose();
+    });
+
+    it('hides the source disclosure when no attribution text is available', () => {
+        const f = fixture(0, '');
+        f.frame(1001);
+        const sources = f.host.children[1].children[1];
+        expect(sources.hidden).toBe(true);
+        expect(sources.children[1].textContent).toBe('');
         f.dispose();
     });
 
