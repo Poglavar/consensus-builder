@@ -9,6 +9,7 @@ import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
 const require = createRequire(import.meta.url);
+const { getSerialProposalId } = require('../../frontend/js/proposals/sharing.js');
 const read = rel => readFileSync(fileURLToPath(new URL(rel, import.meta.url)), 'utf8');
 
 function sliceBetween(src, from, to) {
@@ -59,10 +60,10 @@ describe('epoch writes (epoch.js)', () => {
     function load(tokens) {
         const fetch = vi.fn(async () => ({ ok: true, json: async () => ({ missing: [], forbidden: [] }) }));
         const storage = { setProposalEpochYear: vi.fn() };
-        const api = new Function('parseEpochYear', 'getProposalEditToken', 'resolveBackendBaseUrl', 'fetch',
+        const api = new Function('parseEpochYear', 'getProposalEditToken', 'resolveBackendBaseUrl', 'fetch', 'getSerialProposalId',
             'proposalStorage', 'rememberEpoch', 'renderList',
             `${helpers}\n${writer}\nreturn { setEpoch, writeEpochsToServer };`)(
-            parseEpochYear, id => tokens[String(id)] || null, () => 'https://api.test', fetch,
+            parseEpochYear, id => tokens[String(id)] || null, () => 'https://api.test', fetch, getSerialProposalId,
             storage, () => {}, () => {});
         return { ...api, fetch, storage };
     }
@@ -76,6 +77,13 @@ describe('epoch writes (epoch.js)', () => {
         expect(fetch).not.toHaveBeenCalled();
         expect(proposal.epochYear).toBe(2045);
         expect(storage.setProposalEpochYear).toHaveBeenCalledWith('c2-theirs', 2045);
+    });
+
+    it('keeps an epoch edit local when only a numeric local key or generic id matches a stored edit token', async () => {
+        const { setEpoch, fetch, storage } = load({ 51: 'tok-51' });
+        await setEpoch({ proposalId: '51', id: 51 }, 2055);
+        expect(fetch).not.toHaveBeenCalled();
+        expect(storage.setProposalEpochYear).toHaveBeenCalledWith('51', 2055);
     });
 
     it('own upload: PATCHes with the edit token header', async () => {
@@ -123,6 +131,7 @@ describe('legacy block rename (block-batch.js)', () => {
             getProposalEditToken: id => tokens[String(id)] || null,
             proposalStorage: { setProposalName: vi.fn(() => true) }
         };
+        global.getSerialProposalId = getSerialProposalId;
         const rename = new Function('global', 'fetch', `${body}\nreturn renameProposalRecord;`)(global, fetch);
         return { rename, fetch, global };
     }
@@ -140,6 +149,13 @@ describe('legacy block rename (block-batch.js)', () => {
         await expect(rename({ proposalId: 'c2-a', serverId: '45', to: 'Block 1-AAAA' })).resolves.toEqual({ server: 'no-edit-token' });
         expect(fetch).not.toHaveBeenCalled();
         expect(global.proposalStorage.setProposalName).toHaveBeenCalledWith('c2-a', 'Block 1-AAAA');
+    });
+
+    it('does not rename a server row merely because its number equals a local key', async () => {
+        const { rename, fetch, global } = load({ 51: 'tok-51' });
+        await expect(rename({ proposalId: '51', to: 'Local block' })).resolves.toEqual({ server: 'none' });
+        expect(fetch).not.toHaveBeenCalled();
+        expect(global.proposalStorage.setProposalName).toHaveBeenCalledWith('51', 'Local block');
     });
 });
 

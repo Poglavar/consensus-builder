@@ -53,7 +53,12 @@ summaries, lifecycle reconciliation and server-list navigation use the explicit 
 equal local/authored strings do not prove that a local record is a copy of a published row. Multiple
 copies declaring the same row fail as ambiguous. A server import refreshes that row's existing local
 key; a colliding key with a different or absent publication reference is rejected without replacement.
-Numeric local keys no longer imply publication on import. Recreate conflicting experimental records
+Numeric local keys no longer imply publication on import. Publication badges, named-plan membership,
+unsaved-work/count checks and metadata writers read the explicit positive numeric `serverProposalId`
+through one shared predicate. A numeric local `proposalId` or generic `id` is insufficient, even when
+this browser holds an edit token for a row with that number. The broader `getServerProposalId` helper
+remains an existence-query candidate (including authored fingerprints), not proof of publication;
+its remaining identifier-shaped callers need separate cleanup. Recreate conflicting experimental records
 rather than retaining the former alias rules. [Storage](frontend/js/proposals/data.js),
 [server list](frontend/js/proposals/list-ui.js). General proposal API/browser field names and other
 identifier-shaped lineage/share fields remain separate audit work.

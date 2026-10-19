@@ -6,11 +6,24 @@ import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
 const displayState = require('../../frontend/js/proposals/display-state.js');
+const { getSerialProposalId } = require('../../frontend/js/proposals/sharing.js');
 
 const published = (extra = {}) => ({ proposalId: 'c2-uh980k1g32gls', serverProposalId: '781', ...extra });
 const stateOf = (proposal, inputs = {}) => displayState.of(proposal, { lifecycleKey: undefined, serial: proposal.serverProposalId || null, ...inputs });
 
 describe('proposal display state', () => {
+    it('requires the production row-reference predicate before displaying Published', () => {
+        for (const record of [{ proposalId: '42' }, { id: 42 }, { proposalId: 'p-local', serverProposalId: 'authored' }]) {
+            expect(getSerialProposalId(record)).toBeNull();
+            expect(displayState.of({ ...record, lifecycleStatus: 'Active' }, { serial: getSerialProposalId(record) }))
+                .toMatchObject({ rung: 'draft', published: false });
+        }
+        for (const serverProposalId of [42, '42']) {
+            const record = { proposalId: 'p-local', serverProposalId, lifecycleStatus: 'Active' };
+            expect(getSerialProposalId(record)).toBe('42');
+            expect(displayState.of(record, { serial: getSerialProposalId(record) })).toMatchObject({ rung: 'published', published: true });
+        }
+    });
     it('shows unavailable lifecycle without inferring it from publication or map application', () => {
         expect(stateOf(published({ applied: true }), { applied: true }))
             .toMatchObject({ lifecycle: 'Unknown', rung: 'published', modifier: 'unknown', applied: true, mapAction: 'unapply' });

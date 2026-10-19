@@ -204,9 +204,8 @@
 
     // A proposal record's published row id, or null for one held only in this browser.
     function serverIdOfRecord(record) {
-        if (!record) return null;
-        const id = typeof root.getServerProposalId === 'function' ? root.getServerProposalId(record) : record.serverProposalId;
-        return id !== undefined && id !== null && /^\d+$/.test(String(id)) ? String(id) : null;
+        const rowIdOf = root?.getSerialProposalId || (typeof require === 'function' ? require('./sharing.js').getSerialProposalId : null);
+        return rowIdOf ? rowIdOf(record) : null;
     }
 
     function appendToBody(row, html) {

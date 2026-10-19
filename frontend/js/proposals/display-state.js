@@ -6,7 +6,8 @@
 //
 // Rules (lifecycle = the record's canonical lifecycleStatus, proposals/status.js):
 //   - Minted means a mint record exists: the isMinted flag, an on-chain transaction, or an NFT/on-chain
-//     token id under a contract. A numeric id is a server serial (Published), never a mint record.
+//     token id under a contract. An explicit server row reference is Published, never a mint record;
+//     a numeric local key alone says nothing about publication.
 //     The mint is a fact about the chain, so a cancelled proposal that was minted stays Minted and
 //     carries the Cancelled modifier (the market resolves NO by reading that same NFT account).
 //   - A Cancelled proposal is withdrawn: it cannot stand on a map, so it shows no "Applied" and is

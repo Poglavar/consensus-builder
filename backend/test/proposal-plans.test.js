@@ -13,6 +13,11 @@ const harborOld = { slug: 'harbor', title: 'Harbor', proposalRowIds: ['1'], memb
 const ring = { slug: 'ring-road', title: '', proposalRowIds: ['2', '3'], memberCount: 2, superseded: false, proposalAccount: 'So1anaAccount111' };
 
 describe('which plans a proposal is part of', () => {
+    it('does not identify a named-plan member by a numeric local key or an unqualified id', () => {
+        expect(Plans.serverIdOfRecord({ proposalId: '42' })).toBeNull();
+        expect(Plans.serverIdOfRecord({ proposalId: 'p-local', id: 42 })).toBeNull();
+        expect(Plans.serverIdOfRecord({ proposalId: 'p-local', serverProposalId: 42 })).toBe('42');
+    });
     it('maps each published proposal row to the current plans naming it, leaving superseded versions out', () => {
         const byMember = Plans.plansByMember([harbor, harborOld, ring]);
         expect(byMember.get('1').map(plan => plan.slug)).toEqual(['harbor-v2']);

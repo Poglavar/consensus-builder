@@ -170,6 +170,9 @@ test.describe('proposal button controls sixth pass @features', () => {
     }, PARCEL_ID);
     await page.locator('#proposals-button').click();
     const list = page.locator('#proposals-sheet .proposal-list-modal');
+    const numericLocalRow = list.locator('.proposal-list-item[data-proposal-id="7017"]');
+    await expect(numericLocalRow).toContainText('Draft');
+    await expect(numericLocalRow.locator('.proposal-meta-number')).toHaveCount(0);
     await list.locator('.proposal-source-btn[data-source="server"]').click();
     const row = list.locator('.proposal-list-item').filter({ hasText: 'Downloadable proposal' });
     await expect(row).toBeVisible();

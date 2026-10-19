@@ -82,12 +82,10 @@ function shareLangParam() {
 }
 
 function getSerialProposalId(proposal) {
-    if (!proposal) return null;
-    for (const candidate of [proposal.serverProposalId, proposal.proposalId, proposal.id]) {
-        const id = candidate === undefined || candidate === null ? '' : String(candidate);
-        if (/^\d+$/.test(id)) return id;
-    }
-    return null;
+    // Browser records carry publication explicitly. Local keys, authored IDs and generic `id`
+    // fields cannot establish a published row; API rows acquire this reference during import.
+    const id = String(proposal?.serverProposalId ?? '');
+    return /^[1-9]\d*$/.test(id) ? id : null;
 }
 
 // A ~64-bit content hash (two djb2 variants) rendered base36 — stable across sessions, no crypto.

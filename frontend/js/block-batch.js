@@ -221,7 +221,7 @@
     // before tokens — the server copy is left alone and only the local name changes; the return
     // value says so, so the summary can count it instead of reading as a clean rename.
     async function renameProposalRecord(entry) {
-        const serverId = entry.serverId ?? (/^\d+$/.test(String(entry.proposalId || '')) ? entry.proposalId : null);
+        const serverId = global.getSerialProposalId({ serverProposalId: entry.serverId });
         let server = 'none';
         if (serverId !== null && serverId !== undefined && typeof global.resolveBackendBaseUrl === 'function') {
             const editToken = typeof global.getProposalEditToken === 'function'

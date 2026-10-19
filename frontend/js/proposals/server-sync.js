@@ -351,6 +351,8 @@ async function fetchServerProposalById(serverId, cityCode) {
     return normalized;
 }
 
+// An identifier for an existence query, including an authored fingerprint that still needs a
+// server response to establish publication. Row-only consumers use getSerialProposalId instead.
 function getServerProposalId(proposal) {
     if (!proposal) return null;
     const candidates = [proposal.serverProposalId, proposal.proposalId, proposal.id];

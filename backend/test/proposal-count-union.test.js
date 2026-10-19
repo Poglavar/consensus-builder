@@ -256,8 +256,8 @@ describe('gumb u bočnoj traci', () => {
     });
 
     it('broji "na serveru" istim testom kojim kartica crta svoju značku', () => {
-        // p.serverProposalId je uže: PREUZET prijedlog nosi serijski broj kao proposalId/id, pa bi
-        // ga uži test proglasio samo-lokalnim i zbrojio dvaput.
+        // Imported server rows carry explicit serverProposalId; a numeric local key remains local.
+        // Counting and badge presentation must use that same publication predicate.
         const fn = sliceBetween(listUi, 'function proposalUnionCountNow() {', 'function markProposalCountAreaOpened');
         expect(fn).toContain('getSerialProposalId(proposal)');
         expect(fn).toContain('counts.unionProposalCount(local, serverCount)');
