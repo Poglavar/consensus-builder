@@ -11,6 +11,7 @@
     const t = (key, params = {}) => root.i18n.t(sharedLabels[key] || `planningViews.${key}`, params);
     let store, items = [], payload = null, status = 'loading', layer, controller, request = 0, loadedKey = '';
     let panel, inspector, lastSettings = null, lastSelectedId = null, ready = false;
+    let progress = null;
     const number = value => typeof value === 'number' && Number.isFinite(value)
         ? root.CbFormat.formatNumber(value, { maxFractionDigits: 0 }) : '—';
     const area = value => typeof value === 'number' && Number.isFinite(value)
@@ -75,10 +76,10 @@
     function stateText() {
         if (isPhoto()) return t('photoNote');
         if (policy().permitted === 'off') return t('permittedOff');
+        if (status === 'loading' && progress?.total) return t('loadingProgress', progress);
         if (status !== 'ready') return t(status);
         if (!payload?.sources?.length) return t('unavailable');
         if (!items.length) return t('empty');
-        if (payload.truncated) return t('truncated', { count: items.length });
         if (payload.omitted) return t('partial', { count: items.length });
         return t('loaded', { count: items.length });
     }
@@ -230,27 +231,22 @@
         loadedKey = key;
         controller?.abort(); controller = new AbortController();
         const generation = ++request;
-        status = 'loading'; render();
+        status = 'loading'; progress = null; render();
         try {
             const url = new URL(`${root.getBackendBase()}/planning/representations`);
             url.searchParams.set('city', city); url.searchParams.set('bbox', bbox.join(','));
-            const response = await fetch(url, { signal: controller.signal, cache: 'no-store' });
+            const answer = await root.PlanningFeed.loadViewport(url, { city, signal: controller.signal,
+                onProgress(value) { if (generation === request) { progress = value; render(); } } });
             if (generation !== request) return;
-            if (response.status === 400) {
-                items = []; payload = null; status = 'zoom';
-                store.select(null); drawMap(); render(); notifyGeometry(); return;
-            }
-            if (!response.ok) throw new Error(`Planning source HTTP ${response.status}`);
-            const answer = await response.json();
-            if (generation !== request) return;
-            if (answer.schemaVersion !== 'planning-representations.v1' || answer.city !== city || !Array.isArray(answer.items)) {
-                throw new Error('Invalid planning representation response');
-            }
             payload = answer; items = answer.items; status = 'ready';
             if (!selected()) store.select(null);
             drawMap(); render(); notifyGeometry();
         } catch (error) {
             if (generation !== request || error.name === 'AbortError') return;
+            if (error.status === 400) {
+                items = []; payload = null; status = 'zoom';
+                store.select(null); drawMap(); render(); notifyGeometry(); return;
+            }
             console.error('[planning] Could not load source representations', error);
             loadedKey = ''; items = []; payload = null; status = 'error';
             store.select(null); drawMap(); render(); notifyGeometry();

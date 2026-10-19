@@ -7590,10 +7590,7 @@
       "one": "{{count}} volumen guardado en la vista",
       "other": "{{count}} volúmenes guardados en la vista"
     },
-    "truncated": {
-      "one": "Se muestra {{count}} opción · acerca el mapa para reducir el área",
-      "other": "Se muestran {{count}} opciones · acerca el mapa para reducir el área"
-    },
+    "loadingProgress": "Cargando volúmenes permitidos… {{count}} de {{total}} perfiles leídos",
     "partial": {
       "one": "{{count}} opción visible · parte de la geometría de origen no está disponible",
       "other": "{{count}} opciones visibles · parte de la geometría de origen no está disponible"

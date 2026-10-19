@@ -16,7 +16,10 @@ export function setupPlanningRoutes(app, pool, { query = planningRepresentations
             if (!Number.isInteger(limit) || limit < 1 || limit > 200) {
                 return res.status(400).json({ error: 'Limit must be between 1 and 200.', code: 'invalid-planning-query' });
             }
-            res.json(await query(pool, { city, bbox, limit }));
+            if (req.query.cursor !== undefined && (typeof req.query.cursor !== 'string' || req.query.cursor.length > 4096)) {
+                return res.status(400).json({ error: 'Invalid planning cursor.', code: 'invalid-planning-query' });
+            }
+            res.json(await query(pool, { city, bbox, limit, ...(req.query.cursor === undefined ? {} : { cursor: req.query.cursor }) }));
         } catch (error) {
             if (error.status === 400) return res.status(400).json({ error: 'Choose a smaller map area.', code: 'invalid-planning-query' });
             console.error('[planning] Source read failed', error);

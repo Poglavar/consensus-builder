@@ -7,6 +7,7 @@ import { planningRepresentations } from '../planning/sources.js';
 import { setupPlanningRoutes } from '../routes/planning.js';
 const require = createRequire(import.meta.url);
 const scene = require('../../frontend/js/planning/scene.js');
+const feed = require('../../frontend/js/planning/feed.js');
 const turf = require('../../frontend/vendor/turf-6.5.0/turf.min.js');
 const geometry = { type: 'Polygon', coordinates: [[[10, 40], [10.001, 40], [10.001, 40.001], [10, 40.001], [10, 40]]] };
 const inset = { type: 'Polygon', coordinates: [[[10.0002,40.0002],[10.0008,40.0002],[10.0008,40.0008],[10.0002,40.0008],[10.0002,40.0002]]] };
@@ -77,14 +78,15 @@ describe('planning source adapters', () => {
         const invalid = row(); invalid.floors[0].height_m = 0;
         const pool = { query: vi.fn().mockResolvedValue(response([row(), invalid, row()])) };
         const result = await queryZagrebGup(pool, { bbox: [10, 40, 10.01, 40.01], limit: 2 });
-        expect(result.items).toHaveLength(1); expect(result.omitted).toBe(1); expect(result.truncated).toBe(true);
+        expect(result.items).toHaveLength(1); expect(result.omitted).toBe(1); expect(result.nextAfter).toBe('17');
         expect(result.summary).toMatchObject({ cachedResults: 20, withGeometry: 3, withoutGeometry: 17, statuses: { no_validated_candidate: 17 } });
         expect(pool.query).toHaveBeenCalledTimes(1);
         const [sql, parameters] = pool.query.mock.calls[0];
         expect(sql).toContain('FROM public.parcel_build_envelope'); expect(sql).toContain('e.current AND e.gup_id = 2025');
         expect(sql).toContain('e.geom && ST_Transform'); expect(sql).toContain('ST_Intersects');
         expect(sql).not.toMatch(/\b(?:proposal|INSERT|UPDATE|DELETE|CREATE)\b/i);
-        expect(parameters).toEqual([10, 40, 10.01, 40.01, 3]);
+        expect(parameters).toEqual([10, 40, 10.01, 40.01, 3, null]);
+        expect(sql).toContain('cestica_id > $6'); expect(sql).toContain('ORDER BY cestica_id LIMIT $5');
     });
     it('reads changed upstream results on the next request instead of retaining another cache', async () => {
         const pool = { query: vi.fn().mockResolvedValueOnce(response([row()]))
@@ -99,6 +101,22 @@ describe('planning source adapters', () => {
         const result = await queryZagrebGup(pool, { bbox: [10,40,10.01,40.01], limit: 2 });
         expect(result.items).toEqual([]); expect(result.omitted).toBe(0);
         expect(result.summary).toMatchObject({ cachedResults: 4, withoutGeometry: 4, statuses: { evidence_missing: 4 } });
+    });
+    it('advances past an entirely invalid page and reads the final page even when the viewport count exceeds the limit', async () => {
+        const pool = { query: vi.fn().mockResolvedValueOnce(response([
+            { ...row(), cestica_id: 18, floors: [null] }, { ...row(), cestica_id: 19 }
+        ])).mockResolvedValueOnce(response([{ ...row(), cestica_id: 19 }], { profile_count: 2 })) };
+        const query = { bbox: [10,40,10.01,40.01], limit: 1 };
+        const first = await queryZagrebGup(pool, query);
+        expect(first.items).toEqual([]); expect(first.omitted).toBe(1); expect(first.nextAfter).toBe('18');
+        const last = await queryZagrebGup(pool, { ...query, after: first.nextAfter });
+        expect(last.items).toHaveLength(1); expect(last.nextAfter).toBeNull();
+        expect(pool.query.mock.calls[1][1]).toEqual([...query.bbox, 2, '18']);
+    });
+    it('rejects an invalid source position before querying the database', async () => {
+        const pool = { query: vi.fn() };
+        await expect(queryZagrebGup(pool, { bbox: [], limit: 200, after: '2147483648' })).rejects.toMatchObject({ status: 400 });
+        expect(pool.query).not.toHaveBeenCalled();
     });
     it('supports a different city through a provider without changing the shared contract', async () => {
         const query = vi.fn().mockResolvedValue({ items: [{ id: 'a' }], omitted: 0, truncated: false });
@@ -133,6 +151,8 @@ describe('bounded planning route', () => {
         { city: '../sample', bbox: '10,40,10.001,40.001' },
         { city: 'sample', bbox: '10,40,11,41' },
         { city: 'sample', bbox: 'NaN,40,10.001,40.001' },
+        { city: 'sample', bbox: '10,40,10.001,40.001', cursor: ['a', 'b'] },
+        { city: 'sample', bbox: '10,40,10.001,40.001', cursor: 'a'.repeat(4097) },
         { city: 'sample', bbox: '10,40,10.001,40.001', limit: '201' }
     ])('rejects invalid or excessive requests before reading data', async params => {
         const { res, query } = await invoke(params);
@@ -144,6 +164,83 @@ describe('bounded planning route', () => {
             const { res } = await invoke({ city: 'sample', bbox: '10,40,10.001,40.001' }, vi.fn().mockRejectedValue(new Error('offline')));
             expect(res.statusCode).toBe(503); expect(res.body.code).toBe('planning-source-unavailable');
         } finally { log.mockRestore(); }
+    });
+});
+
+describe('complete viewport loading', () => {
+    const query = { city: 'sample', bbox: [10,40,10.01,40.01], limit: 200 };
+    const url = 'https://example.test/planning/representations?city=sample&bbox=10,40,10.01,40.01';
+    const page = (items, nextCursor = null, extra = {}) => ({ schemaVersion: 'planning-representations.v1', city: 'sample',
+        items, sources: [{ id: 'source' }], summaries: [{ sourceId: 'source', withGeometry: 450, cachedResults: 900, withoutGeometry: 450 }],
+        omitted: 0, truncated: Boolean(nextCursor), nextCursor, ...extra });
+    const ok = body => ({ ok: true, json: async () => body });
+
+    it('loads more than 200 results across source pages, keeps finished providers and counts their summaries only once', async () => {
+        const providers = [450, 1].map((count, index) => ({ descriptor: { city: 'sample', id: `source-${index}` },
+            query: vi.fn(async (_pool, { after, limit }) => {
+                const start = Number(after || 0), end = Math.min(start + limit, count);
+                return { items: Array.from({ length: end - start }, (_, i) => ({ id: `${index}:${start + i}` })),
+                    omitted: 0, nextAfter: end < count ? String(end) : null,
+                    summary: { sourceId: `source-${index}`, cachedResults: count * 2, withGeometry: count, withoutGeometry: count } };
+            }) }));
+        const fetchPage = vi.fn(async (address, options) => {
+            expect(options.cache).toBe('no-store');
+            const cursor = new URL(address).searchParams.get('cursor');
+            return ok(await planningRepresentations({}, { ...query, ...(cursor ? { cursor } : {}) }, providers));
+        });
+        const onProgress = vi.fn();
+        const result = await feed.loadViewport(url, { city: 'sample', fetchPage, onProgress });
+        expect(result.items).toHaveLength(451); expect(new Set(result.items.map(i => i.id)).size).toBe(451);
+        expect(result.items).toContainEqual({ id: '0:449' }); expect(result.items).toContainEqual({ id: '1:0' });
+        expect(result.summaries).toHaveLength(2); expect(result.summaries.reduce((sum, s) => sum + s.cachedResults, 0)).toBe(902);
+        expect(result.nextCursor).toBeNull(); expect(result.truncated).toBe(false);
+        expect(fetchPage).toHaveBeenCalledTimes(3); expect(providers[1].query).toHaveBeenCalledTimes(1);
+        expect(onProgress.mock.calls.map(([p]) => p.count)).toEqual([201, 401, 451]);
+    });
+    it('binds the cursor to its city, viewport and connected sources', async () => {
+        const provider = { descriptor: { id: 'source', city: 'sample' }, query: vi.fn().mockResolvedValue({ items: [], omitted: 0, nextAfter: '17' }) };
+        const { nextCursor: cursor } = await planningRepresentations({}, query, [provider]);
+        provider.query.mockClear();
+        for (const changed of [{ ...query, city: 'elsewhere' }, { ...query, bbox: [10,40,10.02,40.01] }]) {
+            await expect(planningRepresentations({}, { ...changed, cursor }, [provider])).rejects.toMatchObject({ status: 400 });
+        }
+        await expect(planningRepresentations({}, { ...query, cursor }, [])).rejects.toMatchObject({ status: 400 });
+        await expect(planningRepresentations({}, { ...query, cursor: 'broken' }, [provider])).rejects.toMatchObject({ status: 400 });
+        expect(provider.query).not.toHaveBeenCalled();
+    });
+    it('continues after a page with no drawable items and sums omissions without duplicating overlapping identities', async () => {
+        const fetchPage = vi.fn().mockResolvedValueOnce(ok(page([{ id: 'a' }], 'second')))
+            .mockResolvedValueOnce(ok(page([], 'third', { omitted: 200 })))
+            .mockResolvedValueOnce(ok(page([{ id: 'a' }, { id: 'b' }], null)));
+        const result = await feed.loadViewport(url, { city: 'sample', fetchPage });
+        expect(result.items).toEqual([{ id: 'a' }, { id: 'b' }]); expect(result.omitted).toBe(200);
+        expect(result.summaries).toHaveLength(1);
+    });
+    it('does not return a successful partial viewport when a later page fails', async () => {
+        const fetchPage = vi.fn().mockResolvedValueOnce(ok(page([{ id: 'a' }], 'second')))
+            .mockResolvedValueOnce({ ok: false, status: 503 });
+        await expect(feed.loadViewport(url, { city: 'sample', fetchPage })).rejects.toMatchObject({ status: 503 });
+    });
+    it('stops obsolete viewport reads before requesting another page', async () => {
+        const controller = new AbortController(), fetchPage = vi.fn().mockResolvedValue(ok(page([{ id: 'a' }], 'second')));
+        await expect(feed.loadViewport(url, { city: 'sample', fetchPage, signal: controller.signal,
+            onProgress: () => controller.abort() })).rejects.toMatchObject({ name: 'AbortError' });
+        expect(fetchPage).toHaveBeenCalledTimes(1);
+    });
+    it('rejects an obsolete response even if the fetcher ignores cancellation', async () => {
+        const controller = new AbortController(), onProgress = vi.fn();
+        const fetchPage = vi.fn(async () => { controller.abort(); return ok(page([{ id: 'old' }])); });
+        await expect(feed.loadViewport(url, { city: 'sample', fetchPage, signal: controller.signal, onProgress })).rejects.toMatchObject({ name: 'AbortError' });
+        expect(onProgress).not.toHaveBeenCalled();
+    });
+    it('rejects a repeated cursor instead of looping forever', async () => {
+        const fetchPage = vi.fn().mockResolvedValue(ok(page([{ id: 'a' }], 'same')));
+        await expect(feed.loadViewport(url, { city: 'sample', fetchPage })).rejects.toThrow('Repeated planning cursor');
+        expect(fetchPage).toHaveBeenCalledTimes(2);
+    });
+    it.each([{ city: 'wrong' }, { nextCursor: undefined }, { truncated: true, nextCursor: null }])('refuses a mismatched or incomplete paging response %o', async extra => {
+        const fetchPage = vi.fn().mockResolvedValue(ok(page([], null, extra)));
+        await expect(feed.loadViewport(url, { city: 'sample', fetchPage })).rejects.toThrow('Invalid planning representation response');
     });
 });
 

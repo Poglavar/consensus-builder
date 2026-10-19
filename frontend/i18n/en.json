@@ -7539,10 +7539,7 @@
       "one": "{{count}} cached massing in view",
       "other": "{{count}} cached massings in view"
     },
-    "truncated": {
-      "one": "Showing {{count}} option · zoom in to see a smaller area",
-      "other": "Showing {{count}} options · zoom in to see a smaller area"
-    },
+    "loadingProgress": "Loading permitted massing… {{count}} of {{total}} profiles read",
     "partial": {
       "one": "{{count}} option shown · some source geometry is unavailable",
       "other": "{{count}} options shown · some source geometry is unavailable"

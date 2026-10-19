@@ -7601,11 +7601,7 @@
       "few": "{{count}} spremljene građevne mase u prikazu",
       "other": "{{count}} spremljenih građevnih masa u prikazu"
     },
-    "truncated": {
-      "one": "Prikazana je {{count}} varijanta · približite za manje područje",
-      "few": "Prikazane su {{count}} varijante · približite za manje područje",
-      "other": "Prikazano je {{count}} varijanti · približite za manje područje"
-    },
+    "loadingProgress": "Učitavanje dopuštenih volumena… {{count}} od {{total}} profila učitano",
     "partial": {
       "one": "Prikazana je {{count}} varijanta · dio izvorne geometrije nije dostupan",
       "few": "Prikazane su {{count}} varijante · dio izvorne geometrije nije dostupan",

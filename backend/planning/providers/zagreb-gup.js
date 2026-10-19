@@ -65,7 +65,8 @@ export const ZAGREB_CACHE_QUERY = `WITH visible AS MATERIALIZED (
 ), profiles AS (
     SELECT * FROM visible WHERE CASE WHEN jsonb_typeof(floors) = 'array' THEN jsonb_array_length(floors) > 0 ELSE false END
 ), selected AS (
-    SELECT * FROM profiles ORDER BY parcel_id LIMIT $5
+    SELECT * FROM profiles WHERE ($6::integer IS NULL OR cestica_id > $6)
+    ORDER BY cestica_id LIMIT $5
 )
 SELECT (SELECT count(*)::int FROM visible) AS cached_count,
     (SELECT count(*)::int FROM profiles) AS profile_count,
@@ -73,18 +74,23 @@ SELECT (SELECT count(*)::int FROM visible) AS cached_count,
         SELECT coalesce(result_status, 'unknown') AS status, count(*)::int AS count
         FROM visible GROUP BY result_status
     ) counts) AS status_counts,
-    (SELECT coalesce(jsonb_agg(record ORDER BY record->>'parcel_id'), '[]'::jsonb) FROM (
+    (SELECT coalesce(jsonb_agg(record ORDER BY (record->>'cestica_id')::integer), '[]'::jsonb) FROM (
         SELECT (to_jsonb(s) - 'geom' - 'footprint_geom') || jsonb_build_object(
             'parcel_geometry', ST_AsGeoJSON(ST_Transform(s.geom,4326),9)::jsonb) AS record
         FROM selected s
     ) records) AS profiles`;
 
-export async function queryZagrebGup(pool, { bbox, limit }) {
-    const { rows } = await pool.query(ZAGREB_CACHE_QUERY, [...bbox, limit + 1]);
+export async function queryZagrebGup(pool, { bbox, limit, after = null }) {
+    if (after !== null && (!/^\d{1,10}$/.test(after) || Number(after) > 2147483647)) {
+        throw Object.assign(new Error('Invalid source cursor'), { status: 400 });
+    }
+    const { rows } = await pool.query(ZAGREB_CACHE_QUERY, [...bbox, limit + 1, after]);
     const result = rows[0];
     const candidates = result.profiles.slice(0, limit);
     const items = candidates.map(gupRepresentation).filter(Boolean);
-    return { items, truncated: result.profile_count > limit, omitted: candidates.length - items.length,
+    // Advance past every candidate, including invalid geometry, using the unique cache key.
+    const nextAfter = result.profiles.length > limit ? String(candidates.at(-1).cestica_id) : null;
+    return { items, nextAfter, omitted: candidates.length - items.length,
         summary: { sourceId: zagrebGupSource.id, cachedResults: result.cached_count,
             withGeometry: result.profile_count, withoutGeometry: result.cached_count - result.profile_count,
             statuses: result.status_counts } };
