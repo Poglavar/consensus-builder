@@ -175,6 +175,38 @@ describe('proposalStorage authored-log persistence', () => {
         expect(() => storage.importOnChainProposal({ ...raw, contractAddress: null })).toThrow('complete chain');
     });
 
+    it.each([
+        { chainId: '84532', ethBalance: '2000000000000000000', tokenBalance: '0' },
+        { chainId: 'solana-devnet', ethBalance: '2000000000', tokenBalance: '0' },
+        { chainId: '84532', ethBalance: '0', tokenBalance: '2000000' }
+    ])('keeps chain balances separate from authored consideration: %j', balances => {
+        const { storage } = bootStore();
+        const raw = { ...balances, proposalId: '7', contractAddress: 'Program', cadastreParcelIds: ['parcel-a'] };
+        const imported = storage.importOnChainProposal(raw);
+        expect(imported).not.toHaveProperty('offer');
+        expect(imported).not.toHaveProperty('offerCurrency');
+        expect(imported.ethBalance).toBe(balances.ethBalance);
+        expect(imported.tokenBalance).toBe(balances.tokenBalance);
+        const zero = storage.importOnChainProposal({ ...raw, proposalId: '8', offer: 0, offerCurrency: 'EUR' });
+        expect(zero).toMatchObject({ offer: 0, offerCurrency: 'EUR' });
+        const refresh = storage.importOnChainProposal({ ...raw, proposalId: '8' });
+        expect(refresh).toMatchObject({ offer: 0, offerCurrency: 'EUR' });
+    });
+
+    it('imports only explicit authored offer fields, without substituting budget or numeric strings', () => {
+        const { storage } = bootStore();
+        const raw = { proposalId: '7', chainId: '84532', contractAddress: '0xA', cadastreParcelIds: ['parcel-a'] };
+        const offered = storage.importOnChainProposal({ ...raw,
+            metadata: { properties: { offer: 12, offerCurrency: 'EUR', budget: 90, budgetCurrency: 'USD' } } });
+        expect(offered).toMatchObject({ offer: 12, offerCurrency: 'EUR' });
+        const budgetOnly = storage.importOnChainProposal({ ...raw, proposalId: '8',
+            metadata: { properties: { budget: { amount: 90, currency: 'USD' } } } });
+        expect(budgetOnly).not.toHaveProperty('offer');
+        expect(budgetOnly).not.toHaveProperty('offerCurrency');
+        const stringOffer = storage.importOnChainProposal({ ...raw, proposalId: '9', offer: '12' });
+        expect(stringOffer).not.toHaveProperty('offer');
+    });
+
     it('persists flat cadastral declarations and strips all materialization output without mutating runtime state', () => {
         const { storage, persisted } = bootStore();
         const record = {

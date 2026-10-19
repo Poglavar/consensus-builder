@@ -708,19 +708,11 @@ const proposalStorage = {
         };
 
         // Map metadata-driven offer details and geometry
-        const metaOffer = metaProps.offer || metaProps.budget || null;
-        const metaOfferAmount = metaOffer && metaOffer.amount !== undefined ? metaOffer.amount
-            : (metaOffer && metaOffer.value !== undefined ? metaOffer.value
-                : (metaProps.offerAmount !== undefined ? metaProps.offerAmount : metaProps.ethAmount));
-        if (metaOfferAmount !== undefined && metaOfferAmount !== null) {
-            const numericOffer = Number(metaOfferAmount);
-            if (Number.isFinite(numericOffer) && numericOffer > 0 && (!merged.offer || merged.offer === 0)) {
-                merged.offer = numericOffer;
-            }
+        if (typeof metaProps.offer === 'number' && Number.isFinite(metaProps.offer) && metaProps.offer >= 0) {
+            merged.offer = metaProps.offer;
         }
-        const metaOfferCurrency = (metaOffer && (metaOffer.currency || metaOffer.curr)) || metaProps.offerCurrency || metaProps.currency;
-        if (metaOfferCurrency && !merged.offerCurrency) {
-            merged.offerCurrency = metaOfferCurrency;
+        if (typeof metaProps.offerCurrency === 'string' && metaProps.offerCurrency.trim()) {
+            merged.offerCurrency = metaProps.offerCurrency;
         }
 
         const geometryPayload = metaProps.geometry;
@@ -759,7 +751,7 @@ const proposalStorage = {
         // These fields are not returned by the smart contract, so we must preserve them
         if (existing) {
             // Preserve offer fields from existing proposal (only if they exist)
-            if (typeof existing.offer === 'number' && existing.offer > 0) {
+            if (typeof existing.offer === 'number' && Number.isFinite(existing.offer) && existing.offer >= 0) {
                 merged.offer = existing.offer;
             }
             if (existing.offerCurrency) {
@@ -782,7 +774,7 @@ const proposalStorage = {
             }
         } else if (raw) {
             // If no existing proposal, try to get offer fields from raw input
-            if (typeof raw.offer === 'number' && raw.offer > 0) {
+            if (typeof raw.offer === 'number' && Number.isFinite(raw.offer) && raw.offer >= 0) {
                 merged.offer = raw.offer;
             }
             if (raw.offerCurrency) {
@@ -805,42 +797,8 @@ const proposalStorage = {
             }
         }
 
-        // Derive offer from chain balances if not already set
-        // The smart contract stores balances in Wei (for ETH) or lamports (for SOL)
-        const isSolanaProposal = typeof normalizedChainId === 'string' && normalizedChainId.startsWith('solana');
-        if (!merged.offer || typeof merged.offer !== 'number' || merged.offer === 0) {
-            // Try to derive offer from ethBalance (Wei for EVM, lamports for Solana)
-            const ethBalanceStr = String(raw.ethBalance || normalized.ethBalance || '0');
-            try {
-                const nativeBalanceRaw = BigInt(ethBalanceStr);
-
-                if (nativeBalanceRaw > 0n) {
-                    // Convert Wei to ETH (10^18) or lamports to SOL (10^9)
-                    const divisor = isSolanaProposal ? 1e9 : 1e18;
-                    const ethAmount = Number(nativeBalanceRaw) / divisor;
-                    merged.offer = ethAmount;
-                    if (!merged.offerCurrency) {
-                        merged.offerCurrency = isSolanaProposal ? 'SOL' : 'ETH';
-                    }
-                } else {
-                    // Check tokenBalance as fallback
-                    const tokenBalanceStr = String(raw.tokenBalance || normalized.tokenBalance || '0');
-                    const tokenBalance = BigInt(tokenBalanceStr);
-
-                    if (tokenBalance > 0n) {
-                        // For tokens, we'd need to know the token decimals, but for now
-                        // we'll assume 18 decimals (standard) and use a generic currency
-                        const tokenAmount = Number(tokenBalance) / 1e18;
-                        merged.offer = tokenAmount;
-                        if (!merged.offerCurrency) {
-                            merged.offerCurrency = 'USDT'; // Default to USDT for tokens
-                        }
-                    }
-                }
-            } catch (e) {
-                console.warn('Failed to parse balance for proposal', proposalId, e);
-            }
-        }
+        // Escrow balances are observations in atomic units. They do not establish an authored
+        // offer, its currency, a token's decimals or consideration actually paid.
 
         if (portable) {
             // New chain metadata owns every authored field. Local drafts or a similar parcel set
