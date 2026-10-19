@@ -119,4 +119,13 @@ describe('subscription CLI floor-plan worker', () => {
         expect(db.state.tasks[0].error).toMatch(/metered spend/);
         expect(db.state.tasks[0].result.cliResponse).toBeUndefined();
     });
+
+    it('stops the chunk when a weekly subscription limit is reported', async () => {
+        const db = fakeDb([makeTask(), makeTask({ id: 'task-2' })]);
+        const reader = { complete: vi.fn(async () => { throw new Error("You've hit your weekly limit"); }) };
+        await expect(run(db, adapter(), reader, { limit: 2 })).resolves.toMatchObject({ failed: 1, status: 'needs-attention' });
+        expect(reader.complete).toHaveBeenCalledTimes(1);
+        expect(db.state.tasks[1].status).toBe('queued');
+        expect(db.state.lock).toBe(false);
+    });
 });

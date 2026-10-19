@@ -83,7 +83,7 @@ export async function runCliStage(db, adapter, {
                 await db.query(`UPDATE floor_plan.${table} SET status='error',error=$2,updated_at=now() WHERE id=$1`, [task.id, error.message]);
                 log({ task: task.id, phase: 'cli-error', error: error.message, ...result });
                 // Stop this manual chunk if the subscription cannot serve calls.
-                if (/rate.?limit|usage.?limit|quota|not logged|authentication|login|credit/i.test(error.message)) break;
+                if (/rate.?limit|usage.?limit|(?:weekly|daily|monthly)\s+limit|quota|not logged|authentication|login|credit/i.test(error.message)) break;
             }
             log({ task: task.id, phase: 'cli-checkpoint', ...result });
         }
