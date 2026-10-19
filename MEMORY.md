@@ -778,3 +778,5 @@ The user requires only per-city failed URL lists and working settings plus share
 - 2026-10-19: The user named the annotation app Autokatastar and requested publication at `zagreb.lol/autokatastar/pregled`; deploy its dedicated app subtree and keep imagery and human reviews outside code releases.
 
 - 2026-10-19: Autokatastar, the bot monitor, Veleprojekti admin, and the other key-protected zagreb.lol review tools use one owner-selected access key; keep its value only in private environment files.
+
+- 2026-10-19: The user chose the current project domain for semantic vocabulary identifiers; use the clear `/vocabulary/` path and versioned definitions so published meanings stay stable.
