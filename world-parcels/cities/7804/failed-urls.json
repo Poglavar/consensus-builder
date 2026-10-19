@@ -1,0 +1,20 @@
+[
+  {
+    "url": "https://eland.addiscadaster.gov.et/"
+  },
+  {
+    "url": "https://eland.addiscadaster.gov.et/assets/api.config.json"
+  },
+  {
+    "url": "https://mui.gov.et/land-and-cadastre-ceo/"
+  },
+  {
+    "url": "https://eland.addiscadaster.gov.et/maps"
+  },
+  {
+    "url": "https://geos.addiscadaster.gov.et/geoserver/ows?service=WFS&version=1.0.0&request=GetCapabilities"
+  },
+  {
+    "url": "https://geos.addiscadaster.gov.et/geoserver/ows"
+  }
+]

@@ -1,0 +1,9 @@
+[
+  {
+    "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer?f=pjson",
+    "reason": "499"
+  },
+  {
+    "url": "https://mcbahawalnagar.lgpunjab.org.pk/wp-content/uploads/2023/02/Base-Map_Bahawalnagar_10.02.23.pdf"
+  }
+]

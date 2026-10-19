@@ -1,0 +1,17 @@
+[
+  {
+    "url": "https://www.seduh.df.gov.br/plataforma-geoportal-da-lei-6-412-2019/"
+  },
+  {
+    "url": "https://www.geoservicos.ide.df.gov.br/arcgis/rest/services/Publico/IDEDF/MapServer"
+  },
+  {
+    "url": "https://www.geoservicos.ide.df.gov.br/arcgis/rest/services/Publico/IDEDF/MapServer/138?f=pjson"
+  },
+  {
+    "url": "https://www.geoservicos.ide.df.gov.br/arcgis/rest/services/Publico/IDEDF/MapServer/138/query?f=geojson&where=1%3D1&geometry=...WUP%20point...&spatialRel=esriSpatialRelIntersects"
+  },
+  {
+    "url": "https://www.geoservicos.ide.df.gov.br/arcgis/rest/services/Publico/IDEDF/MapServer/138/query?f=geojson&where=lu_ra_luos%3D18&outFields=objectid%2Clu_cod_par&returnGeometry=true&resultRecordCount=3&outSR=4326&orderByFields=objectid%20ASC"
+  }
+]

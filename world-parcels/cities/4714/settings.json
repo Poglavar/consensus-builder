@@ -1,0 +1,112 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "4714",
+  "name": "Las Vegas, United States",
+  "point": [
+    36.1515806137119,
+    -115.164472767125
+  ],
+  "bindings": [
+    {
+      "appCityId": "lasvegas",
+      "runtimeConfig": {
+        "id": "lasvegas",
+        "label": "Las Vegas, United States",
+        "currency": {
+          "locale": "en-US",
+          "code": "USD"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            36.1515806137119,
+            -115.164472767125
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            36.1515806137119,
+            -115.164472767125
+          ],
+          "fallbackDataset": [
+            -115.164472767125,
+            36.1515806137119
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "us-nv-clark-assessor-parcels",
+          "idPrefix": "US-NV-CLARK-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 3,
+          "attribution": "<a href=\"https://maps.clarkcountynv.gov/arcgis/rest/services/GISMO/AssessorMap/FeatureServer/1\">Clark County Assessor parcel polygons</a> · adapted"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "us-nv-clark-assessor-parcels",
+      "name": "Clark County Assessor parcel polygons",
+      "adapter": "arcgis",
+      "endpoint": "https://maps.clarkcountynv.gov/arcgis/rest/services/GISMO/AssessorMap/FeatureServer/1",
+      "idField": "APN",
+      "idType": "string",
+      "objectIdField": "OID",
+      "idPrefix": "US-NV-CLARK-",
+      "outFields": [
+        "OID",
+        "APN"
+      ],
+      "pageSize": 2000,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 1,
+      "countryCode": "US",
+      "metricSrid": 32611,
+      "cityIds": [
+        "lasvegas"
+      ],
+      "maxConcurrentQueries": 2,
+      "scope": "90 valid, distinct Clark County assessor parcel polygons verified in thirteen local cells around the Las Vegas WUP settlement locator, with no sampled overlaps above 0.01 m². Forced paging, fresh exact geometry hashes, explicit absence, footprint and complete binding passed across recorded retries. Intermittent HTTP 500 responses remain documented. County coverage near this point does not establish municipal-only, citywide or countywide completeness. Additional enabled city entries have separate bounded qualification evidence; wider coverage remains unverified.",
+      "operator": "Clark County Assessor / Geographic Information Systems Management Office (GISMO)",
+      "catalogueUrl": "https://maps.clarkcountynv.gov/arcgis/rest/services/GISMO/AssessorMap/FeatureServer/1",
+      "attribution": "Clark County Assessor / GISMO · parcel reference polygons",
+      "licenceNote": "Public county parcel service; publisher conditions are informational. Assessor map references do not establish legal title or survey accuracy.",
+      "metricSridByCity": {
+        "lasvegas": 32611
+      },
+      "cityScopes": {
+        "henderson": "182 unchanged native parcel polygons passed all eight qualification gates in bounded cells around the UN/WUP locator. Fresh independent metric audit (EPSG:32611) found zero invalid polygons, identity conflicts, duplicate geometry, material overlaps, or operation errors. Citywide completeness, legal title, survey accuracy, and currentness are not established."
+      }
+    }
+  ]
+}

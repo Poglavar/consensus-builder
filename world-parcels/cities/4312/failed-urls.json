@@ -1,0 +1,17 @@
+[
+  {
+    "url": "https://geovisor.murcia.es/"
+  },
+  {
+    "url": "https://geoportal.murcia.es/directorio-de-servicios"
+  },
+  {
+    "url": "https://sitam.murcia.es/server/rest/services/capa_parcelas_publicas_shp/MapServer/0"
+  },
+  {
+    "url": "https://www.catastro.hacienda.gob.es/es-ES/wms.html"
+  },
+  {
+    "url": "http://ovc.catastro.meh.es/Cartografia/WMS/ServidorWMS.aspx"
+  }
+]

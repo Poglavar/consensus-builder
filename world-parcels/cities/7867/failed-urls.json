@@ -1,0 +1,29 @@
+[
+  {
+    "url": "https://eland.addiscadaster.gov.et/"
+  },
+  {
+    "url": "https://eland.addiscadaster.gov.et/assets/api.config.json"
+  },
+  {
+    "url": "https://srbofed.gov.et/regional-developmental-information-population-directorate/"
+  },
+  {
+    "url": "https://srseprlab.gov.et/rural-land-admin-and-use/"
+  },
+  {
+    "url": "https://ethionsdi.gov.et/"
+  },
+  {
+    "url": "https://eland.addiscadaster.gov.et/main.d3525dff4b9098d6.js"
+  },
+  {
+    "url": "https://geos.addiscadaster.gov.et/geoserver/ows?service=WFS&version=1.0.0&request=GetCapabilities"
+  },
+  {
+    "url": "https://geos.addiscadaster.gov.et/geoserver/ows?service=WFS&version=1.0.0&request=DescribeFeatureType&typeName=ncrprs_cadaster:v_1_registered_parcel"
+  },
+  {
+    "url": "https://geos.addiscadaster.gov.et/geoserver/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=ncrprs_cadaster:v_1_registered_parcel&outputFormat=application/json&srsname=EPSG:4326&bbox=44.2760801410244,6.73689146767948,44.2761801410244,6.73699146767948,EPSG:4326&maxFeatures=3"
+  }
+]

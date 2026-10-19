@@ -1,0 +1,17 @@
+[
+  {
+    "url": "https://acager.org/portalgis/fr/"
+  },
+  {
+    "url": "https://acager.org/portalgis/en/"
+  },
+  {
+    "url": "https://acager.org/geoserver/"
+  },
+  {
+    "url": "https://acager.org/geoserver/wfs?service=WFS&request=GetCapabilities"
+  },
+  {
+    "url": "https://www.armp.cm/details?id_publication=6285&type_publication=AMI"
+  }
+]

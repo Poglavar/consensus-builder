@@ -1,0 +1,18 @@
+[
+  {
+    "url": "https://www.esa.gov.eg/main.aspx",
+    "reason": "HTTP page available to search inspection; direct curl blocked by expired certificate"
+  },
+  {
+    "url": "https://www.esa.gov.eg/files/Topographic_Maps.pdf"
+  },
+  {
+    "url": "https://www.eta.gov.eg/ar/node/1108"
+  },
+  {
+    "url": "https://gopp.gov.eg/%D9%85%D9%86%D8%B8%D9%88%D9%85%D8%A9-%D8%A7%D9%84%D8%AA%D8%AE%D8%B7%D9%8A%D8%B7-%D8%A7%D9%84%D9%85%D9%83%D8%A7%D9%86%D9%8A-%D9%84%D8%A3%D8%BA%D8%B1%D8%A7%D8%B6-%D8%A7%D9%84%D8%AA%D9%86%D9%85%D9%8A%D8%A9-%D8%A7%D9%84%D8%B9%D9%85%D8%B1%D8%A7%D9%86%D9%8A%D8%A9-%D8%A7%D9%84%D9%85%D8%B3%D8%AA%D8%AF%D8%A7%D9%85%D8%A9"
+  },
+  {
+    "url": "https://psm.gov.eg/Services/233?serviceName=-%D8%B7%D9%84%D8%A8-%D8%A8%D9%8A%D8%A7%D9%86-%D9%85%D8%B3%D8%A7%D8%AD%D9%8A-%D8%B9%D9%86-%D9%82%D8%B7%D8%B9%D8%A9-%D8%A7%D9%84%D8%A3%D8%B1%D8%B6"
+  }
+]

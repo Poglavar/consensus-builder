@@ -1,0 +1,20 @@
+[
+  {
+    "url": "https://csg.dlrrd.gov.za/data.htm"
+  },
+  {
+    "url": "https://csg.dlrrd.gov.za/"
+  },
+  {
+    "url": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer?f=pjson"
+  },
+  {
+    "url": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2?f=pjson"
+  },
+  {
+    "url": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2/query"
+  },
+  {
+    "url": "https://eservices.evaluations.co.za/nmbm/index.aspx"
+  }
+]

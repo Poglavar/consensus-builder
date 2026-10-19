@@ -1,0 +1,29 @@
+[
+  {
+    "url": "https://e-milkat.gujarat.gov.in/",
+    "reason": "timeout after 20 seconds; no HTTP response"
+  },
+  {
+    "url": "https://anyror.gujarat.gov.in/",
+    "reason": "timeout after 15 seconds; no HTTP response"
+  },
+  {
+    "url": "https://landrecords.gujarat.gov.in/",
+    "reason": "timeout after 15 seconds; no HTTP response"
+  },
+  {
+    "url": "https://valsad.nic.in/d-i-l-r/"
+  },
+  {
+    "url": "https://revenuedepartment.gujarat.gov.in/branch/h-branch"
+  },
+  {
+    "url": "https://revenuedepartment.gujarat.gov.in/downloads/valsad_district.pdf"
+  },
+  {
+    "url": "https://dilrmp.gov.in/physicalProgressReports/map/district-level/24"
+  },
+  {
+    "url": "https://naksha.dolr.gov.in/NakshaPortal/"
+  }
+]

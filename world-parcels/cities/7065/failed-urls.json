@@ -1,0 +1,17 @@
+[
+  {
+    "url": "https://intervector.leoncountyfl.gov/intervector/rest/services/MapServices/TLC_OverlayParNALPublic_D_WM/MapServer/0",
+    "reason": "request failed"
+  },
+  {
+    "url": "https://maps.topeka.gov/arcgis/rest/services/ParcelPublishing/Parcels_and_Subdivisions/FeatureServer/0",
+    "reason": "request failed"
+  },
+  {
+    "url": "https://intervector.leoncountyfl.gov/intervector/rest/services/MapServices/TLC_OverlayParNALPublic_D_WM/MapServer/0/query?where=1%3D1&geometry=-84.28135%2C30.4378125%2C-84.28005%2C30.4387875&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=TAXID&returnGeometry=true&outSR=4326&resultRecordCount=4&f=json",
+    "reason": "403"
+  },
+  {
+    "url": "https://services9.arcgis.com/Gh9awoU677aKree0/arcgis/rest/services/Florida_Statewide_Cadastral/FeatureServer/0/query?where=1%3D1&geometry=-84.28135%2C30.4378125%2C-84.28005%2C30.4387875&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=PARCEL_ID&returnGeometry=true&outSR=4326&resultRecordCount=6&f=json"
+  }
+]

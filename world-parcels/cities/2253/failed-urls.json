@@ -1,0 +1,17 @@
+[
+  {
+    "url": "https://geoportal.gov.ro/inspireview/rest/services/CP/CP_View/MapServer/1?f=pjson"
+  },
+  {
+    "url": "https://geoportal.gov.ro/inspireview/rest/services/CP/CP_View/MapServer/1/query?where=1%3D1&outFields=id_namespace&returnGeometry=true&f=geojson&resultRecordCount=3"
+  },
+  {
+    "url": "https://geoportal.ancpi.ro/hosted_services/rest/services/INIS/INIS_Viewer/MapServer"
+  },
+  {
+    "url": "https://geoportal.ancpi.ro/imobile.html"
+  },
+  {
+    "url": "https://ploiesti.ro/administratie/directia-generala-de-dezvoltare-urbana/serviciul-cadastru-si-verificare-documentatii-tehnice/"
+  }
+]

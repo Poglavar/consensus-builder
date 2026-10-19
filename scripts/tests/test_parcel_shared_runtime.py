@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import importlib.util
+import json
 import tempfile
 import unittest
 from pathlib import Path
@@ -49,19 +50,38 @@ class SharedRuntimeTests(unittest.TestCase):
         self.assertEqual(repeat["written"], [])
         self.assertTrue(repeat["fastPath"])
 
-    def test_admitted_evidence_propagates_without_active_research_packets(self):
-        admitted = "world-parcels/research/qualification-release/42/evidence.json"
-        manifest = "world-parcels/research/qualification-admission-release.json"
-        active = "world-parcels/research/discovery/city-42.json"
-        self.write(self.source, admitted, '{"verified":true}')
-        self.write(self.source, manifest, '{"cityCode":42}')
-        self.write(self.source, active, '{"status":"running"}')
+    def test_only_city_settings_propagate_not_failed_urls_or_research_archives(self):
+        setting = 'world-parcels/cities/42/settings.json'
+        self.write(self.source, setting, '{"cityCode":"42"}')
+        for name in ('world-parcels/cities/42/failed-urls.json',
+                     'world-parcels/research/qualification-release/42/evidence.json',
+                     'world-parcels/research/qualification-admission-release.json',
+                     'world-parcels/research/cohort/city-42.json'):
+            self.write(self.source, name, '{}')
         published = self.publish()
+        self.assertEqual(set(published['files']), {setting})
         runtime.sync_runtime(self.shared, self.target)
-        self.assertIn(admitted, published["files"])
-        self.assertIn(manifest, published["files"])
-        self.assertNotIn(active, published["files"])
-        self.assertTrue((self.target / admitted).is_file())
+        self.assertTrue((self.target / setting).is_file())
+        self.assertFalse((self.target / 'world-parcels/research').exists())
+
+    def test_prune_keeps_current_code_and_rollback_of_interrupted_writer(self):
+        self.write(self.source, 'scripts/a.py', 'old')
+        old = self.publish()
+        self.write(self.source, 'scripts/a.py', 'middle')
+        middle = self.publish(old['generation'])
+        self.write(self.source, 'scripts/a.py', 'current')
+        current = self.publish(middle['generation'])
+        marker = self.shared.parent / 'interrupted/tmp/parcel-shared-runtime/write-in-progress.json'
+        marker.parent.mkdir(parents=True)
+        marker.write_text(json.dumps({'generation': old['generation']}))
+        result = runtime.prune_runtime(self.shared)
+        self.assertGreater(result['files'], 0)
+        base = self.shared / 'tmp/parcel-shared-runtime'
+        self.assertTrue((base / 'manifests' / (old['generation'] + '.json')).exists())
+        self.assertTrue((base / 'manifests' / (current['generation'] + '.json')).exists())
+        self.assertFalse((base / 'manifests' / (middle['generation'] + '.json')).exists())
+        runtime.restore_runtime(self.shared, self.target, old, [])
+        self.assertEqual((self.target / 'scripts/a.py').read_text(), 'old')
 
     def test_local_change_fails_closed(self):
         self.write(self.source, "scripts/pipeline.py", "released\n")

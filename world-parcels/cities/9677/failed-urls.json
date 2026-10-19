@@ -1,0 +1,25 @@
+[
+  {
+    "url": "https://nakshagis.dolr.gov.in/utm4243/rest/services/Naksha_43/Naksha_ka_29_43/FeatureServer/0",
+    "reason": "499"
+  },
+  {
+    "url": "https://nakshagis.dolr.gov.in/utm4243/rest/services/Naksha_43/Naksha_ka_29_43/FeatureServer/0/query?f=geojson&where=1%3D1&outFields=OBJECTID&returnGeometry=true&geometryType=esriGeometryEnvelope&geometry=766100,1981650,766700,1982250&inSR=32643&spatialRel=esriSpatialRelIntersects&outSR=4326&resultRecordCount=3",
+    "reason": "499"
+  },
+  {
+    "url": "https://bidar.nic.in/en/service/land-records/"
+  },
+  {
+    "url": "https://bidar.nic.in/service/%E0%B2%AD%E0%B3%82-%E0%B2%A6%E0%B2%BE%E0%B2%96%E0%B2%B2%E0%B3%86%E0%B2%97%E0%B2%B3%E0%B3%81/"
+  },
+  {
+    "url": "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/560"
+  },
+  {
+    "url": "https://naksha.dolr.gov.in/NakshaPortal/"
+  },
+  {
+    "url": "https://landrecords.karnataka.gov.in/"
+  }
+]

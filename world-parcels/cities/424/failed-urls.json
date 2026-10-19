@@ -1,0 +1,14 @@
+[
+  {
+    "url": "https://kais.cadastre.bg/en/Map"
+  },
+  {
+    "url": "https://arcgis.cadastre.bg/arcgisnopki/rest/services/InternalKais/CmcrPublic/MapServer?f=pjson"
+  },
+  {
+    "url": "https://arcgis.cadastre.bg/arcgisnopki/rest/services/InternalKais/CmcrPublic/MapServer?f=json"
+  },
+  {
+    "url": "https://arcgis.cadastre.bg/arcgisnopki/rest/services/InternalKais/CmcrPublic/MapServer/0/query?where=1%3D1&outFields=OBJECTID&returnGeometry=false&resultRecordCount=1&f=json"
+  }
+]

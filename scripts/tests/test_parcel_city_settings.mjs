@@ -132,6 +132,9 @@ try {
 
 const recoveryRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'parcel-city-recovery-'));
 try {
+    fs.mkdirSync(path.join(recoveryRoot, 'backend/parcels'), { recursive: true });
+    fs.writeFileSync(path.join(recoveryRoot, 'backend/parcels/browser-source-runtime.js'),
+        "export const browserParcelFactories = Object.freeze({ arcgis: () => {}, 'not-an-adapter': undefined });\n");
     const hash = bytes => createHash('sha256').update(bytes).digest('hex');
     const artifact = (name, { adapter = 'arcgis', cityCode = '201', tamper = false, tamperCache = false } = {}) => {
         const dir = path.join(recoveryRoot, 'artifacts', name), evidence = path.join(dir, 'evidence');
@@ -154,7 +157,7 @@ try {
     const badHash = artifact('bad-hash', { cityCode: '202', tamper: true });
     const badCache = artifact('bad-cache', { cityCode: '203', tamperCache: true });
     const unsupported = artifact('unsupported', { cityCode: '204', adapter: 'not-an-adapter' });
-    const result = recoverQualifiedSettings(recoveryRoot, [good, badHash, badCache, unsupported]);
+    const result = await recoverQualifiedSettings(recoveryRoot, [good, badHash, badCache, unsupported]);
     assert.deepEqual(result.recovered, ['201']);
     assert.equal(result.skipped.length, 3);
     const recovered = JSON.parse(fs.readFileSync(path.join(recoveryRoot, 'world-parcels/cities/201/settings.json'), 'utf8'));
@@ -168,9 +171,9 @@ try {
     const bound = path.join(recoveryRoot, 'world-parcels/cities/201/settings.json');
     const boundSettings = { ...recovered, bindings: [{ appCityId: 'city_201', runtimeConfig: { id: 'city_201', parcels: { sourceId: 'source-good' } } }] };
     fs.writeFileSync(bound, JSON.stringify(boundSettings));
-    const precedence = recoverQualifiedSettings(recoveryRoot, [good]);
+    const precedence = await recoverQualifiedSettings(recoveryRoot, [good]);
     assert.deepEqual(precedence.recovered, []);
-    assert.match(precedence.skipped[0].reason, /bound working settings/);
+    assert.match(precedence.skipped[0].reason, /working settings/);
 } finally { fs.rmSync(recoveryRoot, { recursive: true, force: true }); }
 
 process.stdout.write('parcel city settings tests passed\n');

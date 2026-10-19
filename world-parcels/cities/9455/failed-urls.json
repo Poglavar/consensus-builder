@@ -1,0 +1,18 @@
+[
+  {
+    "url": "https://kannur.nic.in/en/survey-and-land-records/"
+  },
+  {
+    "url": "https://emaps.kerala.gov.in/bhunaksha/kl/homenew.html"
+  },
+  {
+    "url": "https://emaps.kerala.gov.in/bhunaksha/kl/home.html"
+  },
+  {
+    "url": "https://dslr.kerala.gov.in/en/sub-offices-2/"
+  },
+  {
+    "url": "https://gisportal.ncscm.res.in/server/rest/services/CZMP_STATES/CZMP_Kerala/MapServer/6",
+    "reason": "Held: completeness (129 parcels, 265 requests) {\"forcedPaging\":{\"errorType\":\"Error\",\"code\":\"parcel-source-unavailable\",\"httpStatus\":502}}"
+  }
+]

@@ -1,0 +1,17 @@
+[
+  {
+    "url": "https://ssaa.ir/",
+    "reason": "timeout"
+  },
+  {
+    "url": "https://my.ssaa.ir/portal",
+    "reason": "timeout"
+  },
+  {
+    "url": "https://shamim.ssaa.ir/",
+    "reason": "timeout"
+  },
+  {
+    "url": "https://ssaa.ir; https//my.ssaa.ir/portal; https://shamim.ssaa.ir"
+  }
+]

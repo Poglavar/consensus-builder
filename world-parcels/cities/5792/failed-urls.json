@@ -1,0 +1,20 @@
+[
+  {
+    "url": "https://espace-citoyen.dgdn.gov.dz/",
+    "reason": "DNS resolution failure"
+  },
+  {
+    "url": "https://www.anfu.dz/",
+    "reason": "HTTP 500 / blocked page"
+  },
+  {
+    "url": "https://bndg.asga.dz/bndg/CARTO200K_P/Default_BNDG.aspx",
+    "reason": "timeout"
+  },
+  {
+    "url": "https://www.dgdn.gov.dz/"
+  },
+  {
+    "url": "https://www.dgdn.gov.dz/DOCUMENTS/Decret_n_76_63_du_25_mars_1976.pdf"
+  }
+]

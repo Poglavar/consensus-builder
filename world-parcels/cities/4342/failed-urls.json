@@ -1,0 +1,6 @@
+[
+  {
+    "url": "https://bz1uwwpkuinzbk94.svcs5.arcgis.com/bz1uwWPKUInZBK94/arcgis/rest/services/CA_Statewide_Parcels_Public_view/FeatureServer/0",
+    "reason": "Held at the geometry gate: every source check passed (42 requests, 1 qualifier run(s) on this city) but the independent metric audit failed for Porterville (us-ca-calfire-statewide-parcels) with 14 material overlap pair(s) (> 0.01 m2; max 1.29 m2, 0.243% of the smaller; total 2.42 m2) among 42 cached features (06107~251-170-016 / 06107~251-170-019: 1.29 m2 = 0.243% of the smaller; 06107~251-170-0…"
+  }
+]

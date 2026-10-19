@@ -1,0 +1,17 @@
+[
+  {
+    "url": "https://d14fnjoywemmi.cloudfront.net/jklr/"
+  },
+  {
+    "url": "https://d14fnjoywemmi.cloudfront.net/jklr-api/api/v1/get-districts"
+  },
+  {
+    "url": "https://landrecords.jk.gov.in/"
+  },
+  {
+    "url": "https://gis.autodcr.com/server/rest/services/Srinagar_LandUse_Jammu_Katra_MasterPlan/MapServer/4?f=pjson"
+  },
+  {
+    "url": "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/10"
+  }
+]

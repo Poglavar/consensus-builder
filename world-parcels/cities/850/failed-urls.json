@@ -1,0 +1,15 @@
+[
+  {
+    "url": "http://www.ammancitygis.gov.jo/ArcGIS/rest/services?f=json",
+    "reason": "503"
+  },
+  {
+    "url": "https://www.ammancitygis.gov.jo/ArcGIS/rest/services?f=json"
+  },
+  {
+    "url": "https://maps.ammancitygis.gov.jo/arcgis/rest/services?f=json"
+  },
+  {
+    "url": "https://opendata.amman.jo/"
+  }
+]

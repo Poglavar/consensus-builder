@@ -1,0 +1,10 @@
+[
+  {
+    "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer?f=pjson",
+    "reason": "499"
+  },
+  {
+    "url": "https://jamabandi.punjab.gov.pk/CadastralMap.aspx",
+    "reason": "DNS failure"
+  }
+]

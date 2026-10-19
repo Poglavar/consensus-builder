@@ -1,0 +1,109 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "413",
+  "name": "Cape Town, South Africa",
+  "point": [
+    -33.9258,
+    18.4194
+  ],
+  "bindings": [
+    {
+      "appCityId": "cape_town",
+      "runtimeConfig": {
+        "id": "cape_town",
+        "label": "Cape Town, South Africa",
+        "currency": {
+          "locale": "en-ZA",
+          "code": "ZAR"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            -33.9258,
+            18.4194
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            -33.9258,
+            18.4194
+          ],
+          "fallbackDataset": [
+            18.4194,
+            -33.9258
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.0025,
+          "source": "parcel-source",
+          "sourceId": "za-cct-land-parcels",
+          "idPrefix": "ZA-CCT-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 12,
+          "attribution": "<a href=\"https://odp-cctegis.opendata.arcgis.com/datasets/cctegis::land-parcels/about\">City of Cape Town · Land Parcels · data terms</a> · adapted"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "za-cct-land-parcels",
+      "name": "City of Cape Town Land Parcels",
+      "adapter": "arcgis",
+      "endpoint": "https://services6.arcgis.com/nyYfO9SxHU2ChQd9/arcgis/rest/services/Property/FeatureServer/0",
+      "idField": "SG26_CODE",
+      "idType": "string",
+      "idPattern": "^[A-Z0-9]{26}$",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "ZA-CCT-",
+      "outFields": [
+        "OBJECTID",
+        "SG26_CODE",
+        "PRTY_NMBR",
+        "SL_LAND_PRCL_KEY"
+      ],
+      "pageSize": 2000,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "countryCode": "ZA",
+      "metricSrid": 32734,
+      "scope": "City of Cape Town municipal cadastral parcels; duplicate address rows with the same SG26 code and identical geometry collapse to one parcel. Conflicting geometry fails closed. Other South African municipalities use separate sources.",
+      "attribution": "City of Cape Town, Land Parcels. Adapted to WGS84.",
+      "licenceUrl": "https://odp-cctegis.opendata.arcgis.com/datasets/cctegis::land-parcels/about",
+      "licenceNote": "Official public open-data item; named reuse licence not established. Linked City open-data terms page returned 404 at verification.",
+      "catalogueUrl": "https://odp-cctegis.opendata.arcgis.com/datasets/cctegis::land-parcels/about",
+      "parcelNumberField": "PRTY_NMBR",
+      "cityIds": [
+        "cape_town"
+      ]
+    }
+  ]
+}

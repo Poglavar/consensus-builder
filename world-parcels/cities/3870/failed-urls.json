@@ -1,0 +1,23 @@
+[
+  {
+    "url": "https://anyror.gujarat.gov.in/",
+    "reason": "timeout after 20 seconds"
+  },
+  {
+    "url": "https://e-milkat.gujarat.gov.in/",
+    "reason": "timeout after 12 seconds"
+  },
+  {
+    "url": "https://dilrmp.gov.in/dilrmpold/PhyscialComponent/mapDigitization/village-level/3836",
+    "reason": "TLS verification failure in curl"
+  },
+  {
+    "url": "https://morbi.nic.in/service/land-records/"
+  },
+  {
+    "url": "https://morbi.nic.in/gu/service/%E0%AA%B2%E0%AB%87%E0%AA%A8%E0%AB%8D%E0%AA%A1-%E0%AA%B0%E0%AB%87%E0%ક%AC%E0%AA%B0%E0%AB%8D%E0%AA%A1/"
+  },
+  {
+    "url": "https://naksha.dolr.gov.in/NakshaPortal/"
+  }
+]

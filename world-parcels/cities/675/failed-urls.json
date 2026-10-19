@@ -1,0 +1,10 @@
+[
+  {
+    "url": "https://www.wfs.nrw.de/geobasis/wfs_nw_alkis_vereinfacht?service=WFS&version=2.0.0&request=GetFeature&typenames=adv:AX_Flurstueck&bbox=51.4880,6.9710,51.4890,6.9730,urn:ogc:def:crs:EPSG::4326&count=3",
+    "reason": "400"
+  },
+  {
+    "url": "https://www.wfs.nrw.de/geobasis/wfs_nw_alkis_vereinfacht?service=WFS&version=2.0.0&request=GetFeature&typenames=ave:Flurstueck&bbox=51.4884,6.9718,51.4890,6.9728,urn:ogc:def:crs:EPSG::4326&count=3&outputFormat=application/geo%2Bjson",
+    "reason": "400"
+  }
+]

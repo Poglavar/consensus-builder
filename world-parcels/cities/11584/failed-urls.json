@@ -1,0 +1,15 @@
+[
+  {
+    "url": "https://pnr.sz.gov.cn/d-djtcx/djtcx/index.html",
+    "reason": "curl error 52 / empty reply"
+  },
+  {
+    "url": "https://pnr.sz.gov.cn/d-rer/ycwx/wx/index/index.html"
+  },
+  {
+    "url": "https://www.szgeoinfo.com.cn/"
+  },
+  {
+    "url": "https://www.sz.gov.cn/en_szgov/services/DistrictServices/yantian/"
+  }
+]

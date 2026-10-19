@@ -1,0 +1,8 @@
+[
+  {
+    "url": "https://www.geoportaligm.gob.ec/p_afc/ows?service=WMS&request=GetCapabilities"
+  },
+  {
+    "url": "https://www.geoportaligm.gob.ec/p_afc/eval_tierra/wms?service=WMS&request=GetCapabilities"
+  }
+]

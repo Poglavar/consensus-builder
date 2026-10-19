@@ -1,0 +1,14 @@
+[
+  {
+    "url": "https://backendcatastro.tunja.gov.co/api/autenticacion/insumos/plataforma/1/15001",
+    "reason": "401"
+  },
+  {
+    "url": "https://backendcatastro.tunja.gov.co/api/ladmcol/consulta/cod_terreno/15001/1",
+    "reason": "401"
+  },
+  {
+    "url": "https://backendcatastro.tunja.gov.co/api/ladmcol/consulta/predio/15001/1",
+    "reason": "401"
+  }
+]

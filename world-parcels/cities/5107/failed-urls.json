@@ -1,0 +1,14 @@
+[
+  {
+    "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/37.864475900001/32.4878496516476",
+    "reason": "404"
+  },
+  {
+    "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/37.864475900001/32.4853496516476",
+    "reason": "404"
+  },
+  {
+    "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/999999999/999999999/999999999",
+    "reason": "400"
+  }
+]

@@ -1,0 +1,25 @@
+[
+  {
+    "url": "https://upbhulekh.gov.in/PublicBhuApi/api/districts_list",
+    "reason": "500"
+  },
+  {
+    "url": "https://upbhulekh.gov.in/PublicBhuApi/api/tehsils_list",
+    "reason": "500"
+  },
+  {
+    "url": "https://upbhulekh.gov.in/"
+  },
+  {
+    "url": "https://dolr.gov.in/en/citizen-centric-services/"
+  },
+  {
+    "url": "https://services.india.gov.in/service/detail/check-online-land-records-madhya-pradesh"
+  },
+  {
+    "url": "https://webgis2.mpbhulekh.gov.in/"
+  },
+  {
+    "url": "https://mpbhulekh.gov.in/"
+  }
+]

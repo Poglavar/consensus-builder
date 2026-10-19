@@ -1,0 +1,110 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "6620",
+  "name": "Dallas, United States",
+  "point": [
+    32.8728161029652,
+    -96.7273020350225
+  ],
+  "bindings": [
+    {
+      "appCityId": "dallas",
+      "runtimeConfig": {
+        "id": "dallas",
+        "label": "Dallas, United States",
+        "currency": {
+          "locale": "en-US",
+          "code": "USD"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            32.8728161029652,
+            -96.7273020350225
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            32.8728161029652,
+            -96.7273020350225
+          ],
+          "fallbackDataset": [
+            -96.7273020350225,
+            32.8728161029652
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "us-tx-dallas-taxparcels",
+          "idPrefix": "US-TX-DALLAS-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 3,
+          "attribution": "<a href=\"https://www.dallascounty.org/departments/pubworks/GIS.php\">City of Dallas certified tax parcels</a> · adapted"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "us-tx-dallas-taxparcels",
+      "name": "City of Dallas certified tax parcels",
+      "adapter": "arcgis",
+      "endpoint": "https://gis.dallascityhall.com/arcgis/rest/services/Basemap/DallasTaxParcels/FeatureServer/0",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "US-TX-DALLAS-",
+      "outFields": [
+        "OBJECTID",
+        "COUNTY",
+        "GIS_ACCT",
+        "APPRAISALYEAR"
+      ],
+      "pageSize": 1000,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 1,
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "countryCode": "US",
+      "metricSrid": 32614,
+      "cityIds": [
+        "dallas"
+      ],
+      "operator": "City of Dallas GIS Services; county appraisal districts",
+      "catalogueUrl": "https://www.dallascounty.org/departments/pubworks/GIS.php",
+      "licenceNote": "Public municipal parcel data; appraisal and survey disclaimers informational. Bounded audit is not legal title determination.",
+      "idField": "GIS_ACCT",
+      "idType": "string",
+      "idPattern": "^[A-Za-z0-9]{1,17}$",
+      "scope": "115 valid, distinct City of Dallas tax-parcel polygons verified in thirteen bounded cells around the ranked WUP locator. Complete object-ID manifests, forced three-row paging, all fresh GIS_ACCT reads, explicit absence, footprint and binding passed. Independent GEOS found no invalid polygons, duplicate geometry, sampled overlaps above 0.01 m² or operation errors. GIS_ACCT is the advertised display/account field; county metadata is blank on one sampled record and is not synthesized. Native account identity is verified only within this sample and these live re-reads. Citywide completeness, present legal boundaries and permanence of accounts are unverified.",
+      "attribution": "City of Dallas GIS · certified county tax parcels"
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+[
+  {
+    "url": "https://mahabhunakasha.mahabhumi.gov.in/27/rest/MapInfo/getVillageMapInfo",
+    "reason": "404"
+  },
+  {
+    "url": "https://mahabhunakasha.mahabhumi.gov.in/27/rest/VillageMapService/ListsVillages?state=27&level=1&codes=",
+    "reason": "404"
+  },
+  {
+    "url": "https://mahabhunakasha.mahabhumi.gov.in/27/index.jsp",
+    "reason": "timeout on primary and secondary network (parent check)"
+  }
+]

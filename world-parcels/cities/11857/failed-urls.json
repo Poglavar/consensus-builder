@@ -1,0 +1,21 @@
+[
+  {
+    "url": "https://ilrms.assam.gov.in/dhar/index.php/Welcome/getVillCodeJson",
+    "reason": "500"
+  },
+  {
+    "url": "https://dhubri.assam.gov.in/about-us/district-profile"
+  },
+  {
+    "url": "https://dlrs.assam.gov.in/"
+  },
+  {
+    "url": "https://ilrms.assam.gov.in/dhar/index.php/Welcome/SelectLOC"
+  },
+  {
+    "url": "https://www.dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/301"
+  },
+  {
+    "url": "https://astec.assam.gov.in/portlet-sub-innerpage/cadastral-mapping"
+  }
+]

@@ -1,0 +1,108 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "6032",
+  "name": "Denver, USA",
+  "point": [
+    39.7392,
+    -104.9903
+  ],
+  "bindings": [
+    {
+      "appCityId": "colorado",
+      "runtimeConfig": {
+        "id": "colorado",
+        "label": "Denver, USA",
+        "currency": {
+          "locale": "en-US",
+          "code": "USD"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            39.7392,
+            -104.9903
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            39.7392,
+            -104.9903
+          ],
+          "fallbackDataset": [
+            -104.9903,
+            39.7392
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.005,
+          "source": "parcel-source",
+          "sourceId": "us-co-oit-public-parcels-denver",
+          "idPrefix": "US-CO-",
+          "requiresBackend": true,
+          "ownership": false
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "us-co-oit-public-parcels-denver",
+      "name": "Colorado OIT parcels — Denver county",
+      "adapter": "arcgis",
+      "endpoint": "https://gis.colorado.gov/public/rest/services/Address_and_Parcel/Colorado_Public_Parcels/FeatureServer/0",
+      "idField": "parcel_id",
+      "idType": "string",
+      "idPattern": "^[A-Za-z0-9][A-Za-z0-9-]*$",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "US-CO-",
+      "parcelNumberField": "parcel_id",
+      "outFields": [
+        "OBJECTID",
+        "parcel_id",
+        "countyName"
+      ],
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "countryCode": "US",
+      "metricSrid": 32613,
+      "cityIds": [
+        "colorado"
+      ],
+      "defaultForCity": true,
+      "scope": "Denver county only; a fixed county filter prevents collisions across Colorado county parcel-number spaces.",
+      "licenceNote": "Source terms are informational; users choose their source and intended use.",
+      "attributeFilters": {
+        "countyName": "Denver"
+      },
+      "stateCode": "CO"
+    }
+  ]
+}

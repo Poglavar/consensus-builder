@@ -1,0 +1,15 @@
+[
+  {
+    "url": "https://belagavicitycorp.org/WebSiteBGM/ApplicationProcedures.aspx"
+  },
+  {
+    "url": "https://belagavi.nic.in/en/service/land-records/"
+  },
+  {
+    "url": "https://belagavi.nic.in/service/%E0%B2%AD%E0%B3%82%E0%B2%AE%E0%B2%BF-%E0%B2%AA%E0%B2%B9%E0%B2%A3%E0%B2%BF%E0%B2%AA%E0%B2%A4%E0%B3%8D%E0%B2%B0%E0%B2%BF%E0%B2%95%E0%B3%86/"
+  },
+  {
+    "url": "https://indianopenmaps.com/not-so-open/cadastrals/karnataka/kgismaps/{z}/{x}/{y}.pbf",
+    "reason": "Held: binding (5 parcels, 52 requests) {\"binding\":{\"errorType\":\"HttpError\",\"httpStatus\":400}}"
+  }
+]

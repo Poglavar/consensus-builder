@@ -1,0 +1,29 @@
+[
+  {
+    "url": "https://www.catamarcaciudad.gob.ar/geoportal/"
+  },
+  {
+    "url": "https://www.catamarcaciudad.gob.ar/geoservicios/"
+  },
+  {
+    "url": "https://catastro.catamarcaciudad.gob.ar/gismunicipal/"
+  },
+  {
+    "url": "https://catastro.apps.cc.gob.ar/catastro/public/"
+  },
+  {
+    "url": "https://www.catamarcaciudad.gob.ar/consulta-planos-catastrales/"
+  },
+  {
+    "url": "http://190.228.16.100/geoserver/catamarca_parcelas/wfs?service=WFS&request=GetCapabilities"
+  },
+  {
+    "url": "http://190.228.16.100/geoserver/catamarca_parcelas/wms?service=WMS&request=GetCapabilities"
+  },
+  {
+    "url": "https://190.228.16.100/geoserver/catamarca_parcelas/wfs?service=WFS&request=GetCapabilities; http://190.228.16.100:8080/geoserver/catamarca_parcelas/wfs?service=WFS&request=GetCapabilities"
+  },
+  {
+    "url": "https://dgcatastro.arcat.gob.ar/"
+  }
+]

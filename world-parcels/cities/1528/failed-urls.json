@@ -1,0 +1,10 @@
+[
+  {
+    "url": "https://xinjiang.tianditu.gov.cn/kelamayi/",
+    "reason": "timeout after 20 seconds; no response body"
+  },
+  {
+    "url": "https://xinjiang.tianditu.gov.cn/map/",
+    "reason": "timeout during bounded anonymous request"
+  }
+]

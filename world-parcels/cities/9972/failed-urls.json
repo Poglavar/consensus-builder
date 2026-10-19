@@ -1,0 +1,35 @@
+[
+  {
+    "url": "https://zrzy.jl.gov.cn/zwgk/tjxx/ch/"
+  },
+  {
+    "url": "https://zrzy.jl.gov.cn/zwgk/tjxx/"
+  },
+  {
+    "url": "https://zrzy.jl.gov.cn/jlsbdcdj/"
+  },
+  {
+    "url": "https://jilin.tianditu.gov.cn/"
+  },
+  {
+    "url": "https://jilin.tianditu.gov.cn/static/config.js"
+  },
+  {
+    "url": "https://jilin.tianditu.gov.cn/api/cityNode/queryByTree.json"
+  },
+  {
+    "url": "https://jilin.tianditu.gov.cn/api/region/queryRegionByCode.json?code=220182"
+  },
+  {
+    "url": "https://jilin.tianditu.gov.cn/api/region/getExtentByCode?code=220182"
+  },
+  {
+    "url": "https://jilin.tianditu.gov.cn/api/mapconfig/findMapQueryConfig.json?regionCode=220182&isDefault=0"
+  },
+  {
+    "url": "https://jilin.tianditu.gov.cn/api/mapconfig/findMapQueryConfig.json?regionCode=220182&isDefault=1"
+  },
+  {
+    "url": "https://jilin.tianditu.gov.cn/api/onlineQueryLayerList"
+  }
+]

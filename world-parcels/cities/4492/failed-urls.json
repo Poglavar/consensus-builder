@@ -1,0 +1,6 @@
+[
+  {
+    "url": "https://bz1uwwpkuinzbk94.svcs5.arcgis.com/bz1uwWPKUInZBK94/arcgis/rest/services/CA_Statewide_Parcels_Public_view/FeatureServer/0",
+    "reason": "Held: the production adapter fails closed in Rocklin because the CAL FIRE statewide layer repeats a right-of-way APN with different geometry (06061~017-350-ROW-000: 2 rows, 2 distinct Shape__Area values, inside the binding envelope -121.2698,38.7981,-121.2569,38.8073), so binding fails with 'conflicting geometry for one parcel ID' (502); the metric audit also failed with 31 material overlap pair(…"
+  }
+]

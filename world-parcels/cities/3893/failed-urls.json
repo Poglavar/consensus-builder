@@ -1,0 +1,11 @@
+[
+  {
+    "url": "https://data.montpellier3m.fr/dataset/cadastre-de-montpellier"
+  },
+  {
+    "url": "https://data.montpellier3m.fr/sites/default/files/ressources/MMM_Montpellier_Cadastre.zip"
+  },
+  {
+    "url": "https://inspire.cadastre.gouv.fr/scpc/34172.wms?service=WMS&request=GetCapabilities"
+  }
+]

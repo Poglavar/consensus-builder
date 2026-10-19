@@ -1,0 +1,6 @@
+[
+  {
+    "url": "https://services1.arcgis.com/7HDiw78fcUiM2BWn/arcgis/rest/services/AK_Parcels/FeatureServer/0/query?where=parcel_id+NOT+IN+%28%27%27%2C%27+%27%29+AND+local_gov+IS+NOT+NULL+AND+parcel_id+IS+NOT+NULL&geometry=-149.82865565615%2C61.1999372597905%2C-149.82815565615002%2C61.200437259790505&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+    "reason": "UND_ERR_CONNECT_TIMEOUT"
+  }
+]

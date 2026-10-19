@@ -1,0 +1,118 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "5227",
+  "name": "Durban, South Africa",
+  "point": [
+    -29.8585,
+    31.0218
+  ],
+  "bindings": [
+    {
+      "appCityId": "durban",
+      "runtimeConfig": {
+        "id": "durban",
+        "label": "Durban, South Africa",
+        "currency": {
+          "locale": "en-ZA",
+          "code": "ZAR"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            -29.8585,
+            31.0218
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            -29.8585,
+            31.0218
+          ],
+          "fallbackDataset": [
+            31.0218,
+            -29.8585
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.0025,
+          "source": "parcel-source",
+          "sourceId": "za-ethekwini-cadastral-parcels",
+          "idPrefix": "ZA-ETHEKWINI-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 6,
+          "attribution": "<a href=\"https://gis.durban.gov.za/server/rest/services/WebViewers/EXT_Cadastral/MapServer/17\">eThekwini Municipality, Corporate GIS · publisher &amp; conditions</a> · eThekwini municipal cadastral parcels; central Durban verified · adapted"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "za-ethekwini-cadastral-parcels",
+      "name": "eThekwini municipal cadastral parcels",
+      "adapter": "arcgis",
+      "cityIds": [
+        "durban"
+      ],
+      "countryCode": "ZA",
+      "endpoint": "https://gis.durban.gov.za/server/rest/services/WebViewers/EXT_Cadastral/MapServer/17",
+      "idField": "GlobalID",
+      "idType": "string",
+      "parcelNumberField": "PROPERTYID",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "ZA-ETHEKWINI-",
+      "outFields": [
+        "OBJECTID",
+        "GlobalID",
+        "PROPERTYID",
+        "PROPKEY"
+      ],
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "pageSize": 25,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "maxConcurrentQueries": 2,
+      "metricSrid": 32736,
+      "caCertificate": "./certificates/sectigo-public-server-authentication-ca-dv-r36.pem",
+      "operator": "eThekwini Municipality, Corporate GIS",
+      "catalogueUrl": "https://gis.durban.gov.za/server/rest/services/WebViewers/EXT_Cadastral/MapServer/17",
+      "scope": "Official eThekwini municipal cadastral parcel layer; central Durban viewport and exact-ID acceptance, not a claim of national coverage.",
+      "coverageNote": "eThekwini municipal cadastral parcels; central Durban verified",
+      "caveats": [
+        "The provider’s GlobalID identifies each published parcel feature; PROPERTYID is retained as the displayed cadastral number.",
+        "The server omits its certificate intermediate. A source-scoped published Sectigo intermediate completes the trusted chain; hostname and certificate validation remain enabled.",
+        "Geometry pages are limited to 25 records to stay within the existing upstream timeout."
+      ],
+      "attribution": "eThekwini Municipality, Corporate GIS. Adapted to WGS84.",
+      "licenceNote": "Source conditions are informational; users choose their source and intended use."
+    }
+  ]
+}

@@ -240,15 +240,16 @@ describe('tierAt', () => {
         expect(siberia).toMatchObject({ kind: 'country', cc: 'RU' });
     });
 
-    it('answers England and Wales as full regions inside a partial United Kingdom', () => {
+    it('shows England as mostly covered after its failed city check, with Wales fully covered inside a partial United Kingdom', () => {
         const lakeDistrict = coverage.tierAt(54.45, -3.05);
-        expect(lakeDistrict).toMatchObject({ kind: 'region', regionId: 'GB-ENG', coverage: 'full', tier: 'source', country: 'United Kingdom' });
+        expect(lakeDistrict).toMatchObject({ kind: 'region', regionId: 'GB-ENG', coverage: 'mostly', tier: 'source', country: 'United Kingdom' });
+        expect(lakeDistrict.note).toMatch(/failed in Liverpool; 18 of 19 checked cities work/);
         expect(lakeDistrict.note).toMatch(/registered freehold/);
         expect(lakeDistrict.coverageSources.length).toBeGreaterThan(0);
         expect(coverage.tierAt(52.3, -3.6)).toMatchObject({ kind: 'region', regionId: 'GB-WLS', coverage: 'full' });
         expect(coverage.tierAt(57.3, -4.9)).toMatchObject({ kind: 'region', regionId: 'GB-SCT', coverage: 'partial' });
         expect(coverage.searchPlaces('United Kingdom')[0]).toMatchObject({ kind: 'country', cc: 'GB', coverage: 'partial' });
-        expect(coverage.searchPlaces('England')[0]).toMatchObject({ kind: 'region', regionId: 'GB-ENG', coverage: 'full' });
+        expect(coverage.searchPlaces('England')[0]).toMatchObject({ kind: 'region', regionId: 'GB-ENG', coverage: 'mostly' });
     });
 
     it('prefers a live city over a registry city at the same place', () => {

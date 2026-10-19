@@ -1,0 +1,5 @@
+[
+  {
+    "url": "http://map.kgeop.go.kr:20000/bag/api/map/wfs?service=WFS&request=GetCapabilities"
+  }
+]

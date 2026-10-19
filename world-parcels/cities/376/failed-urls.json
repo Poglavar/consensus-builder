@@ -1,0 +1,14 @@
+[
+  {
+    "url": "https://sigfu.gouv.ci/public",
+    "reason": "TLS validation failure"
+  },
+  {
+    "url": "https://construction.gouv.ci/",
+    "reason": "403"
+  },
+  {
+    "url": "https://www.idufci.gouv.ci/index.html",
+    "reason": "TLS validation failure"
+  }
+]

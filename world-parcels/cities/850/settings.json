@@ -1,0 +1,130 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "850",
+  "name": "Amman, Jordan",
+  "point": [
+    31.9836227976918,
+    35.9602148481902
+  ],
+  "bindings": [
+    {
+      "appCityId": "amman",
+      "runtimeConfig": {
+        "id": "amman",
+        "label": "Amman, Jordan",
+        "currency": {
+          "locale": "ar-JO",
+          "code": "JOD"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            31.9836227976918,
+            35.9602148481902
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            31.9836227976918,
+            35.9602148481902
+          ],
+          "fallbackDataset": [
+            35.9602148481902,
+            31.9836227976918
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.0025,
+          "source": "parcel-source",
+          "sourceId": "jo-dls-cassini-mapserver",
+          "idPrefix": "jo-dls:",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 6,
+          "attribution": "<a href=\"https://maps.dls.gov.jo/dlsweb/\">Department of Lands and Survey, Jordan · publisher &amp; conditions</a> · Partial identified parcels. Central Amman verified. All source components for each native DLS parcel key are read before publication. · adapted"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "jo-dls-cassini-mapserver",
+      "countryCode": "JO",
+      "endpoint": "https://maps.dls.gov.jo/arcgis/rest/services/DLS_Cassini/MapServer/3",
+      "idField": "DLS_KEY",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "jo-dls:",
+      "idType": "string",
+      "idPattern": "^[0-9]{15}$",
+      "parcelNumberField": "PARCEL_ID",
+      "outFields": [
+        "OBJECTID",
+        "DLS_KEY",
+        "PARCEL_ID",
+        "VILL_CODE",
+        "HOD_CODE",
+        "SECTOR_CODE"
+      ],
+      "pageSize": 2000,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "attributeNotNull": [
+        "DLS_KEY"
+      ],
+      "attributeExclusions": {
+        "DLS_KEY": [
+          " "
+        ]
+      },
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "nativeGeometryMode": "parts",
+      "partsCoordinatePrecision": 9,
+      "name": "Jordan DLS identified cadastral parcel parts",
+      "operator": "Department of Lands and Survey, Jordan",
+      "catalogueUrl": "https://maps.dls.gov.jo/dlsweb/",
+      "scope": "Identified DLS cadastral parcels with non-null, nonblank DLS_KEY; unkeyed plots are outside the advertised scope.",
+      "coverageNote": "Partial identified parcels. Central Amman verified. All source components for each native DLS parcel key are read before publication.",
+      "nativeIdFields": [
+        "DLS_KEY"
+      ],
+      "sourceCrs": "EPSG:28191, Palestine 1923 / Palestine Grid (Cassini); service reprojection to WGS84",
+      "termsNote": "Informational only, not a runtime eligibility gate.",
+      "adapter": "arcgis",
+      "cityIds": [
+        "amman"
+      ],
+      "metricSrid": 32636,
+      "attribution": "Department of Lands and Survey, Jordan. Adapted to WGS84.",
+      "licenceNote": "Source conditions are informational; users choose their source and intended use.",
+      "maxConcurrentQueries": 2
+    }
+  ]
+}

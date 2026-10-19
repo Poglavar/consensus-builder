@@ -1,0 +1,111 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "5247",
+  "name": "Montoya, United States",
+  "point": [
+    31.8488538212543,
+    -106.54653350243
+  ],
+  "bindings": [
+    {
+      "appCityId": "montoya",
+      "runtimeConfig": {
+        "id": "montoya",
+        "wupCityCode": "5247",
+        "label": "Montoya, United States",
+        "currency": {
+          "locale": "en-US",
+          "code": "USD"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            31.8488538212543,
+            -106.54653350243
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            31.8488538212543,
+            -106.54653350243
+          ],
+          "fallbackDataset": [
+            -106.54653350243,
+            31.8488538212543
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "us-tx-el-paso-city-gis-parcels",
+          "idPrefix": "US-TX-ELPASO-OBJECTID-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 3,
+          "attribution": "<a href=\"https://opendata.elpasotexas.gov/\">El Paso public parcel reference map · adapted</a>"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "us-tx-el-paso-city-gis-parcels",
+      "name": "City of El Paso GIS Parcels (EPCAD source, GIS OID namespace)",
+      "adapter": "arcgis",
+      "endpoint": "https://gis.elpasotexas.gov/arcgis/rest/services/Deeds/FeatureServer/0",
+      "idField": "OBJECTID",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "US-TX-ELPASO-OBJECTID-",
+      "idType": "integer",
+      "outFields": [
+        "OBJECTID"
+      ],
+      "pageSize": 1000,
+      "maxFeatures": 3000,
+      "maxBboxKm2": 1,
+      "countryCode": "US",
+      "metricSrid": 32613,
+      "cityIds": [
+        "montoya"
+      ],
+      "maxConcurrentQueries": 2,
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "operator": "City of El Paso GIS; EPCAD county parcel source",
+      "scope": "79 valid, distinct EPCAD-source parcel reference polygons served by City of El Paso GIS, qualified in thirteen bounded cells around the unchanged WUP population-settlement locator. Complete native count and object-ID manifests, forced three-row pages, all fresh GIS-ID reads, explicit absence, footprint and binding pass. Metric EPSG32613 topology found no sampled overlaps or errors. A fresh native parcel contains the locator, which is also within the official city limits. The layer is county-source/city-publisher ground geometry, not a city-only or legal-title coverage guarantee. Additional enabled city entries have separate bounded qualification evidence; wider coverage remains unverified.",
+      "attribution": "El Paso public parcel reference map · adapted",
+      "catalogueUrl": "https://opendata.elpasotexas.gov/",
+      "licenceNote": "Anonymous bounded public reference geometry and attribution verified. Source GIS identity is not a statutory property key. Legal title, survey accuracy, currentness and whole-city completeness remain unverified; personal attributes are excluded.",
+      "metricSridByCity": {
+        "montoya": 32613
+      },
+      "cityScopes": {
+        "montoya": "151 unchanged native parcel polygons passed all eight qualification gates in bounded cells around the UN/WUP locator. Fresh independent metric audit (EPSG:32613) found zero invalid polygons, identity conflicts, duplicate geometry, material overlaps, or operation errors. Citywide completeness, legal title, survey accuracy, and currentness are not established."
+      }
+    }
+  ]
+}

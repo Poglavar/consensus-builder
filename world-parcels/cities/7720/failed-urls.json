@@ -1,0 +1,8 @@
+[
+  {
+    "url": "https://gis.dupageco.org/arcgis/rest/services/DuPage_County_IL/ParcelsWithRealEstateCC/MapServer/0"
+  },
+  {
+    "url": "https://propertylookup.dupagecounty.gov/"
+  }
+]

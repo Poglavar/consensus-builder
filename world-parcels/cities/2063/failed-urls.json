@@ -1,0 +1,23 @@
+[
+  {
+    "url": "https://ric.gob.gt/ and https://www.ric.gob.gt/ and https://www.registrocatastral.gob.gt/"
+  },
+  {
+    "url": "https://www.muniguate.com/ , https://catastro.muniguate.com/ , https://sig.muniguate.com/",
+    "reason": "403"
+  },
+  {
+    "url": "https://geoportal.muniguate.com/"
+  },
+  {
+    "url": "https://ide.segeplan.gob.gt/"
+  },
+  {
+    "url": "https://www.muniguate.com/",
+    "reason": "403"
+  },
+  {
+    "url": "https://sig.muniguate.com/",
+    "reason": "403"
+  }
+]

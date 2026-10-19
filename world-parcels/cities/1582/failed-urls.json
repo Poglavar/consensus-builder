@@ -1,0 +1,6 @@
+[
+  {
+    "url": "https://vqrcggcqgnkanngqhcga.supabase.co/rest/v1/cadastral_parcels_public?select=id,parcel_number,latitude,longitude,gps_coordinates,ville,province&ville=ilike.*Mbanza*Ngungu*&limit=3",
+    "reason": "401"
+  }
+]

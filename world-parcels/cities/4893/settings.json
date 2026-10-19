@@ -1,0 +1,117 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "4893",
+  "name": "Surprise, United States",
+  "point": [
+    33.6188868133642,
+    -112.372924484317
+  ],
+  "bindings": [
+    {
+      "appCityId": "surprise",
+      "runtimeConfig": {
+        "id": "surprise",
+        "wupCityCode": "4893",
+        "label": "Surprise, United States",
+        "currency": {
+          "locale": "en-US",
+          "code": "USD"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            33.6188868133642,
+            -112.372924484317
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            33.6188868133642,
+            -112.372924484317
+          ],
+          "fallbackDataset": [
+            -112.372924484317,
+            33.6188868133642
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "us-az-maricopa-assessor-parcels",
+          "idPrefix": "US-AZ-MARICOPA-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 3,
+          "attribution": "<a href=\"https://mcassessor.maricopa.gov/\">Maricopa County Assessor&#x27;s Office. Adapted to WGS84.</a>"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "us-az-maricopa-assessor-parcels",
+      "name": "Maricopa County Assessor's Office — Phoenix",
+      "adapter": "arcgis",
+      "endpoint": "https://gis.mcassessor.maricopa.gov/arcgis/rest/services/Parcels/MapServer/0",
+      "idField": "APN",
+      "objectIdField": "OBJECTID",
+      "idType": "string",
+      "idPattern": "^[0-9]{8}[A-Za-z]?$",
+      "idPrefix": "US-AZ-MARICOPA-",
+      "outFields": [
+        "OBJECTID",
+        "APN"
+      ],
+      "parcelNumberField": "APN",
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "metricSrid": 32612,
+      "countryCode": "US",
+      "stateCode": "AZ",
+      "cityIds": [
+        "surprise"
+      ],
+      "operator": "Maricopa County Assessor's Office",
+      "scope": "Maricopa County assessment parcels, with a conservative Phoenix entry area; no Arizona-wide coverage claim. Additional enabled city entries have separate bounded qualification evidence; wider coverage remains unverified.",
+      "caveats": [
+        "APN is a string, including letter suffixes; OBJECTID is only a transport row key."
+      ],
+      "catalogueUrl": "https://mcassessor.maricopa.gov/",
+      "attribution": "Maricopa County Assessor's Office. Adapted to WGS84.",
+      "licenceNote": "Source conditions are informational; users choose their source and intended use.",
+      "metricSridByCity": {
+        "surprise": 32612
+      },
+      "cityScopes": {
+        "surprise": "140 unchanged native parcel polygons passed all eight qualification gates in bounded cells around the UN/WUP locator. Fresh independent metric audit (EPSG:32612) found zero invalid polygons, identity conflicts, duplicate geometry, material overlaps, or operation errors. Citywide completeness, legal title, survey accuracy, and currentness are not established.",
+        "laveen": "118 unchanged native parcel polygons passed all eight qualification gates in bounded cells around the UN/WUP locator. Fresh independent metric audit (EPSG:32612) found zero invalid polygons, identity conflicts, duplicate geometry, material overlaps, or operation errors. Citywide completeness, legal title, survey accuracy, and currentness are not established.",
+        "avondale": "192 unchanged native parcel polygons passed all eight qualification gates in bounded cells around the UN/WUP locator. Fresh independent metric audit (EPSG:32612) found zero invalid polygons, identity conflicts, duplicate geometry, material overlaps, or operation errors. Citywide completeness, legal title, survey accuracy, and currentness are not established."
+      }
+    }
+  ]
+}

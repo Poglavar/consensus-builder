@@ -1,0 +1,20 @@
+[
+  {
+    "url": "https://www.colombiaenmapas.gov.co/?b=igac&servicio=12405&t=2303&u=0"
+  },
+  {
+    "url": "https://sigi.igac.gov.co/dip/rest/services/clusigidpi_observatorio_snrGeoInteresChia_2015_2024/MapServer"
+  },
+  {
+    "url": "https://sig.car.gov.co/arcgis/rest/services/visor/Predial_Integrado/MapServer"
+  },
+  {
+    "url": "https://chia-cundinamarca.gov.co/web/2025/03/nuevo-anuncio-del-igac-suspende-la-entrega-de-la-base-catastral-total-y-actualizada-de-chia/"
+  },
+  {
+    "url": "https://sigi.igac.gov.co/dip/rest/services/clusigidpi_observatorio_snrGeoInteresChia_2015_2024/MapServer/0?f=pjson"
+  },
+  {
+    "url": "https://sig.car.gov.co/arcgis/rest/services/visor/Predial_Integrado/MapServer/6?f=pjson"
+  }
+]

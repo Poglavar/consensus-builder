@@ -1,0 +1,112 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "5359",
+  "name": "Burien, United States",
+  "point": [
+    47.5111975110014,
+    -122.347924002959
+  ],
+  "bindings": [
+    {
+      "appCityId": "burien",
+      "runtimeConfig": {
+        "id": "burien",
+        "wupCityCode": "5359",
+        "label": "Burien, United States",
+        "currency": {
+          "locale": "en-US",
+          "code": "USD"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            47.5111975110014,
+            -122.347924002959
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            47.5111975110014,
+            -122.347924002959
+          ],
+          "fallbackDataset": [
+            -122.347924002959,
+            47.5111975110014
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "us-wa-king-county-parcel-boundary",
+          "idPrefix": "US-WA-KC-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 3,
+          "attribution": "<a href=\"https://gismaps.kingcounty.gov/parcelviewer2/\">City of Seattle GIS · King County parcel boundaries</a>"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "us-wa-king-county-parcel-boundary",
+      "adapter": "arcgis",
+      "endpoint": "https://services.arcgis.com/ZOyb2t4B0UYuYNYH/ArcGIS/rest/services/Parcel_Boundary/FeatureServer/0",
+      "idPrefix": "US-WA-KC-",
+      "idField": "PIN",
+      "objectIdField": "OBJECTID",
+      "idType": "string",
+      "idPattern": "^[0-9]{10}$",
+      "outFields": [
+        "PIN",
+        "OBJECTID"
+      ],
+      "pageSize": 1000,
+      "maxFeatures": 2000,
+      "maxBboxKm2": 1,
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "name": "Seattle GIS King County parcel boundaries",
+      "countryCode": "US",
+      "metricSrid": 32610,
+      "cityIds": [
+        "burien"
+      ],
+      "operator": "City of Seattle GIS; King County Assessor parcel source",
+      "catalogueUrl": "https://gismaps.kingcounty.gov/parcelviewer2/",
+      "licenceNote": "Public municipal and county GIS parcel references; approximate lot lines and legal/survey disclaimers informational.",
+      "scope": "106 valid, distinct City of Seattle-hosted King County parcel references verified in thirteen bounded cells around the ranked WUP locator. Complete object-ID manifests, forced three-row paging, all 106 fresh PIN geometry reads, explicit absence, footprint and binding passed. Independent GEOS audit in EPSG:32610 found no invalid geometries, duplicates, sampled overlaps above 0.01 m² or operation errors. The publisher describes its CGDB spatial extent, which extends north and south of Seattle; the source is not restricted to current municipal limits. Citywide completeness, legal survey accuracy and permanent PIN uniqueness beyond this sample are unverified. Additional enabled city entries have separate bounded qualification evidence; wider coverage remains unverified.",
+      "attribution": "City of Seattle GIS · King County parcel boundaries",
+      "metricSridByCity": {
+        "burien": 32610
+      },
+      "cityScopes": {
+        "burien": "134 unchanged native parcel polygons passed all eight qualification gates in bounded cells around the UN/WUP locator. Fresh independent metric audit (EPSG:32610) found zero invalid polygons, identity conflicts, duplicate geometry, material overlaps, or operation errors. Citywide completeness, legal title, survey accuracy, and currentness are not established."
+      }
+    }
+  ]
+}

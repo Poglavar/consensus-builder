@@ -1,0 +1,6 @@
+[
+  {
+    "url": "https://bz1uwwpkuinzbk94.svcs5.arcgis.com/bz1uwWPKUInZBK94/arcgis/rest/services/CA_Statewide_Parcels_Public_view/FeatureServer/0",
+    "reason": "Held at the geometry gate: every source check passed (45 requests, 1 qualifier run(s) on this city) but the independent metric audit failed for Vacaville (us-ca-calfire-statewide-parcels) with 15 material overlap pair(s) (> 0.01 m2; max 0.55 m2, 0.0734% of the smaller; total 2.29 m2) among 121 cached features (06095~0132230010 / 06095~0132271080: 0.55 m2 = 0.0734% of the smaller; 06095~0132293110…"
+  }
+]

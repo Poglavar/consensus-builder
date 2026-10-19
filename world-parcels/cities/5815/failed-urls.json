@@ -1,0 +1,18 @@
+[
+  {
+    "url": "https://cadastre.gouv.cd/",
+    "reason": "DNS resolution failed through the request environment"
+  },
+  {
+    "url": "https://www.affairesfoncieres.gouv.cd/"
+  },
+  {
+    "url": "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions"
+  },
+  {
+    "url": "https://www.affairesfoncieres.gouv.cd/services-fonciers/demandes"
+  },
+  {
+    "url": "https://servicepublic.gouv.cd/service/4671"
+  }
+]

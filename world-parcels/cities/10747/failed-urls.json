@@ -1,0 +1,30 @@
+[
+  {
+    "url": "https://tngis.tn.gov.in/",
+    "reason": "connection reset by peer (curl 35) through the agent proxy"
+  },
+  {
+    "url": "https://tngis.tn.gov.in/arcgis/rest/services?f=json",
+    "reason": "connection reset by peer (curl 35)"
+  },
+  {
+    "url": "https://tngis.tn.gov.in/geoserver/ows?service=WFS&request=GetCapabilities",
+    "reason": "connection reset by peer (curl 35)"
+  },
+  {
+    "url": "https://eservices.tn.gov.in/eservicesnew/land/chitta_ta.html",
+    "reason": "connection reset by peer (curl 35)"
+  },
+  {
+    "url": "https://tngis.tn.gov.in/ ; /arcgis/rest/services?f=json+%3B+%2Fgeoserver%2Fwfs%3Fservice%3DWFS&request=GetCapabilities"
+  },
+  {
+    "url": "https://eservices.tn.gov.in/eservicesnew/land/chitta_ta.html and /"
+  },
+  {
+    "url": "https://tnreginet.gov.in/ ; https://www.tn.gov.in/ ; https://tnhb.tn.gov.in/"
+  },
+  {
+    "url": "https://tnmaps.tn.gov.in/"
+  }
+]

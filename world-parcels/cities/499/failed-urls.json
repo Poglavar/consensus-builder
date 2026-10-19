@@ -1,0 +1,8 @@
+[
+  {
+    "url": "https://mapas.igac.gov.co/server/rest/services/Dato_Fundamental_Catastro/MapServer/4?f=pjson"
+  },
+  {
+    "url": "https://mapas.igac.gov.co/server/rest/services/Dato_Fundamental_Catastro/MapServer/4/query"
+  }
+]

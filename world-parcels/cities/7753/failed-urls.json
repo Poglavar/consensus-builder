@@ -1,0 +1,13 @@
+[
+  {
+    "url": "https://nspd.gov.ru/",
+    "reason": "timeout"
+  },
+  {
+    "url": "https://nspd.gov.ru/api/aeggis/v3/36048/wms",
+    "reason": "timeout"
+  },
+  {
+    "url": "https://nspd.gov.ru/api/geoportal/v1/layers-theme-tree?themeId=1"
+  }
+]

@@ -1,0 +1,18 @@
+[
+  {
+    "url": "https://servicios.ri.gob.do/ConsultaParcelario",
+    "reason": "503"
+  },
+  {
+    "url": "https://servicios.ri.gob.do/LocalizadorDeInmuebles",
+    "reason": "503"
+  },
+  {
+    "url": "https://iderd.gob.do/recursos/visualizador-geografico/",
+    "reason": "403"
+  },
+  {
+    "url": "https://geoportal.iderd.gob.do/geoserver/ows?request=GetCapabilities&service=wfs&version=2.0.0",
+    "reason": "403"
+  }
+]

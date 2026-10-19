@@ -1,0 +1,109 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "2067",
+  "name": "Winnipeg, Canada",
+  "point": [
+    49.8912776896545,
+    -97.1447622935792
+  ],
+  "bindings": [
+    {
+      "appCityId": "winnipeg",
+      "runtimeConfig": {
+        "id": "winnipeg",
+        "label": "Winnipeg, Canada",
+        "currency": {
+          "locale": "en-CA",
+          "code": "CAD"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            49.8912776896545,
+            -97.1447622935792
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            49.8912776896545,
+            -97.1447622935792
+          ],
+          "fallbackDataset": [
+            -97.1447622935792,
+            49.8912776896545
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "ca-winnipeg-assessment-gisid",
+          "idPrefix": "CA-WINNIPEG-GISID-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 3,
+          "attribution": "<a href=\"https://data.winnipeg.ca/Assessment-Taxation-Corporate/Assessment-Parcels/d4mq-wa44\">Winnipeg public assessment parcel footprints</a> · adapted"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "ca-winnipeg-assessment-gisid",
+      "name": "Winnipeg public assessment parcel footprints",
+      "adapter": "socrata",
+      "endpoint": "https://data.winnipeg.ca/resource/d4mq-wa44.json",
+      "idField": "gisid",
+      "idType": "string",
+      "idPrefix": "CA-WINNIPEG-GISID-",
+      "geometryField": "geometry",
+      "objectIdField": ":id",
+      "versionField": ":updated_at",
+      "outFields": [
+        "gisid",
+        ":id",
+        ":updated_at"
+      ],
+      "pageSize": 200,
+      "maxFeatures": 3000,
+      "maxBboxKm2": 1,
+      "countryCode": "CA",
+      "metricSrid": 32614,
+      "cityIds": [
+        "winnipeg"
+      ],
+      "maxConcurrentQueries": 2,
+      "operator": "City of Winnipeg Assessment and Taxation Department",
+      "scope": "32 valid distinct public parcel-reference polygons verified in thirteen bounded 0.001-degree cells around the unchanged WUP settlement locator. Complete bounded paging, all 32 fresh native-ID reads, explicit absence, footprint and source binding passed in 60 requests. Independent metric EPSG:32614 GEOS found all geometries valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. Source-native GISID identifies public assessment ground footprints, distinct from property roll/account identifiers and certified survey/title parcels. Counted Socrata paging verifies publication revision before and after each read; identical rows for one GISID are collapsed only when complete geometry is identical. Only GISID, transport row ID, row revision and geometry are requested. The exact point returned no feature; two saved nearby samples match fresh full geometry unchanged. Citywide completeness, legal title, survey accuracy, currentness and long-term identity continuity remain unverified.",
+      "attribution": "City of Winnipeg Assessment and Taxation Department · public parcel-reference geometry · adapted",
+      "catalogueUrl": "https://data.winnipeg.ca/Assessment-Taxation-Corporate/Assessment-Parcels/d4mq-wa44",
+      "licenceNote": "Anonymous bounded public geometry and publisher attribution verified. Publisher reuse/currentness/legal-coordinate conditions are informational. This reference geometry does not establish legal title or survey accuracy; personal fields are excluded."
+    }
+  ]
+}

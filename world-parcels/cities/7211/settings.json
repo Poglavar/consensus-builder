@@ -1,0 +1,145 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "7211",
+  "name": "Ventura Bay, United States",
+  "point": [
+    27.9100995716056,
+    -82.3147524355478
+  ],
+  "bindings": [
+    {
+      "appCityId": "ventura_bay",
+      "runtimeConfig": {
+        "id": "ventura_bay",
+        "wupCityCode": "7211",
+        "label": "Ventura Bay, United States",
+        "currency": {
+          "locale": "en-US",
+          "code": "USD"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            27.9100995716056,
+            -82.3147524355478
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            27.9100995716056,
+            -82.3147524355478
+          ],
+          "fallbackDataset": [
+            -82.3147524355478,
+            27.9100995716056
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "us-fl-dor-statewide-cadastral",
+          "idPrefix": "US-FL-STATEWIDE-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Florida Department of Revenue, Property Tax Oversight, and Florida county property appraisers. Adapted to WGS84."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "us-fl-dor-statewide-cadastral",
+      "name": "Florida Statewide Cadastral (Department of Revenue)",
+      "operator": "Florida Department of Revenue, Property Tax Oversight, from the 67 county property appraisers",
+      "endpoint": "https://services9.arcgis.com/Gh9awoU677aKree0/arcgis/rest/services/Florida_Statewide_Cadastral/FeatureServer/0",
+      "adapter": "arcgis",
+      "idFields": [
+        "CO_NO",
+        "PARCEL_ID"
+      ],
+      "idFieldTypes": {
+        "CO_NO": "integer",
+        "PARCEL_ID": "string"
+      },
+      "objectIdField": "OBJECTID",
+      "outFields": [
+        "OBJECTID",
+        "CO_NO",
+        "PARCEL_ID"
+      ],
+      "parcelNumberField": "PARCEL_ID",
+      "attributeExclusions": {
+        "CO_NO": [
+          0
+        ],
+        "PARCEL_ID": [
+          " "
+        ]
+      },
+      "nativeGeometryMode": "parts",
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "idPrefix": "US-FL-STATEWIDE-",
+      "metricSrid": 32617,
+      "stateCode": "FL",
+      "countryCode": "US",
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "maxConcurrentQueries": 2,
+      "scope": "Florida DOR statewide cadastral polygons joined to the county tax rolls for all 67 counties (10,950,718 rows on 2026-10-12). Canonical identity is the DOR county number plus roll PARCEL_ID; same-key rows form one native parcel group. The 97,244 polygons with no roll join (CO_NO 0, blank PARCEL_ID) are outside this source.",
+      "caveats": [
+        "PARCEL_ID is county-scoped, so identity is the reversible composite CO_NO~PARCEL_ID.",
+        "Many roll parcels are stored as several polygon rows (e.g. 86 rows for one Hillsborough condominium parcel); all components are fetched and unioned. Some components overlap slightly (largest observed 0.79 m2), so overlap is not rejected for this provider.",
+        "The layer carries owner, address and sale columns; only CO_NO, PARCEL_ID and OBJECTID are requested.",
+        "Statewide envelope queries are slow (about 11 s for a 0.01 degree box, 18 s for 46 object IDs); small cells are required."
+      ],
+      "attribution": "Florida Department of Revenue, Property Tax Oversight, and Florida county property appraisers. Adapted to WGS84.",
+      "licenceNote": "Source conditions are informational; users choose their source and intended use.",
+      "catalogueUrl": "https://services9.arcgis.com/Gh9awoU677aKree0/arcgis/rest/services/Florida_Statewide_Cadastral/FeatureServer/0",
+      "cityIds": [
+        "ventura_bay"
+      ],
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "US",
+          "admin1": [
+            "US-FL"
+          ],
+          "excludeAdmin1": [],
+          "basis": "The DOR layer is collected annually from all 67 Florida county property appraisers; all 67 county numbers are present in the live layer.",
+          "evidence": []
+        },
+        "paceMs": 1000
+      }
+    }
+  ]
+}

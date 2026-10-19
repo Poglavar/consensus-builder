@@ -1,0 +1,29 @@
+[
+  {
+    "url": "https://app.dgcsantiago.gob.ar/index.html"
+  },
+  {
+    "url": "https://app.dgcsantiago.gob.ar/page.construccion.html"
+  },
+  {
+    "url": "http://dgcsantiago.gob.ar/Ing/login.aspx"
+  },
+  {
+    "url": "https://www.idesantiago.gob.ar/argenmap/"
+  },
+  {
+    "url": "https://www.idesantiago.gob.ar/argenmap/src/config/default/data.json"
+  },
+  {
+    "url": "https://wms.ign.gob.ar/geoserver/asentamientos_humanos/wms?service=WMS&request=GetCapabilities"
+  },
+  {
+    "url": "https://wms.ign.gob.ar/geoserver/industria-servicios/wms?service=WMS&request=GetCapabilities"
+  },
+  {
+    "url": "http://dgcconsultasweb.sgis.com.ar/"
+  },
+  {
+    "url": "http://www.catastro-se.gov.ar/"
+  }
+]

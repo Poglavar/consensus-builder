@@ -1,0 +1,116 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "4021",
+  "name": "Bilbao, Spain",
+  "point": [
+    43.2826941093508,
+    -2.95997002575274
+  ],
+  "bindings": [
+    {
+      "appCityId": "bilbao",
+      "runtimeConfig": {
+        "id": "bilbao",
+        "label": "Bilbao, Spain",
+        "currency": {
+          "locale": "es-ES",
+          "code": "EUR"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            43.2826941093508,
+            -2.95997002575274
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            43.2826941093508,
+            -2.95997002575274
+          ],
+          "fallbackDataset": [
+            -2.95997002575274,
+            43.2826941093508
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "es-bizkaia-parcelas-rest",
+          "idPrefix": "ES-BIZKAIA-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 3,
+          "attribution": "<a href=\"https://opendatabizkaia.eus/es/catalogo/parcelario-catastral-de-bizkaia\">Bizkaia public cadastral Parcelas</a> · adapted"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "es-bizkaia-parcelas-rest",
+      "name": "Bizkaia public cadastral Parcelas",
+      "adapter": "arcgis",
+      "endpoint": "https://geo.bizkaia.eus/arcgisserverinspire/rest/services/LurraldeAntolamendua_PlanificacionTerritorial/Katastro_Catastro_WFS/MapServer/6",
+      "idFields": [
+        "Codigo_Municipio",
+        "Codigo_Poligono",
+        "Codigo_Parcela"
+      ],
+      "idFieldTypes": {
+        "Codigo_Municipio": "integer",
+        "Codigo_Poligono": "integer",
+        "Codigo_Parcela": "integer"
+      },
+      "objectIdField": "OBJECTID",
+      "idPrefix": "ES-BIZKAIA-",
+      "outFields": [
+        "OBJECTID",
+        "Codigo_Municipio",
+        "Codigo_Poligono",
+        "Codigo_Parcela"
+      ],
+      "pageSize": 1000,
+      "maxFeatures": 3000,
+      "maxBboxKm2": 1,
+      "countryCode": "ES",
+      "metricSrid": 32630,
+      "cityIds": [
+        "bilbao"
+      ],
+      "maxConcurrentQueries": 2,
+      "operator": "Diputación Foral de Bizkaia / GeoBizkaia",
+      "scope": "79 valid distinct cadastral-reference polygons verified in thirteen bounded 0.001-degree cells around the unchanged Bilbao WUP settlement locator. Complete bounded paging, forced three-row pages, all 79 fresh native parcel-identity reads, explicit absence, footprint and source binding passed in 27 requests. Independent metric EPSG:32630 GEOS found all geometries valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. The separate Bizkaia foral cadastre uses the native municipality/polygon/parcel integer tuple; OBJECTID is only a transport key. A fresh EPSG:25830 REST tuple query matches the prior official WFS sample to below 0.000001 metres without editing coordinates. Requested EPSG:4326 geometry is retained unchanged. Wider municipal completeness, legal title, currentness, survey accuracy and long-term key continuity remain unverified.",
+      "attribution": "Diputación Foral de Bizkaia / GeoBizkaia · public cadastral reference polygons · adapted to WGS84",
+      "catalogueUrl": "https://opendatabizkaia.eus/es/catalogo/parcelario-catastral-de-bizkaia",
+      "licenceNote": "Official OpenData resource states CC BY 4.0; Bizkaia INSPIRE portal states CC BY 3.0 ES. Public bounded access verified; publisher attribution retained. These public reference polygons do not establish legal title or survey accuracy."
+    }
+  ]
+}

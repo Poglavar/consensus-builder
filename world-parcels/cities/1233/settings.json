@@ -1,0 +1,117 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "1233",
+  "name": "San Francisco, United States",
+  "point": [
+    37.79125,
+    -122.4065
+  ],
+  "bindings": [
+    {
+      "appCityId": "san_francisco",
+      "runtimeConfig": {
+        "id": "san_francisco",
+        "label": "San Francisco, United States",
+        "currency": {
+          "locale": "en-US",
+          "code": "USD"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            37.79125,
+            -122.4065
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            37.79125,
+            -122.4065
+          ],
+          "fallbackDataset": [
+            -122.4065,
+            37.79125
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.0025,
+          "source": "parcel-source",
+          "sourceId": "us-ca-sf-datasf-active-parcels",
+          "idPrefix": "US-CA-SF-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "<a href=\"https://data.sf.gov/d/acdm-wktn\">City and County of San Francisco · DataSF</a> · <a href=\"https://opendatacommons.org/licenses/pddl/1-0/\">PDDL 1.0</a> · adapted"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "us-ca-sf-datasf-active-parcels",
+      "name": "San Francisco current recorded-map ground parcels",
+      "adapter": "socrata",
+      "endpoint": "https://data.sf.gov/resource/acdm-wktn.json",
+      "idField": "mapblklot",
+      "idType": "string",
+      "idPattern": "^[0-9A-Za-z]{7,20}$",
+      "idPrefix": "US-CA-SF-",
+      "objectIdField": "blklot",
+      "geometryField": "shape",
+      "versionField": "data_loaded_at",
+      "outFields": [
+        "mapblklot",
+        "blklot",
+        "active",
+        "pw_recorded_map",
+        "data_as_of",
+        "data_loaded_at",
+        "date_map_alt"
+      ],
+      "attributeFilters": {
+        "active": true,
+        "pw_recorded_map": true
+      },
+      "pageSize": 1000,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "countryCode": "US",
+      "metricSrid": 32610,
+      "scope": "City and County of San Francisco current recorded-map ground footprints only. Active Public Works map rows are grouped by the documented mapblklot ground key after identical-geometry checks; blklot identifies assessment rows, not separate condominium ground. Retired and assessment-only records excluded. Adjacent counties need separate sources.",
+      "attribution": "City and County of San Francisco / DataSF, Parcels – Active and Retired. PDDL 1.0. Adapted to WGS84 ground footprints.",
+      "licenceUrl": "https://opendatacommons.org/licenses/pddl/1-0/",
+      "catalogueUrl": "https://data.sf.gov/d/acdm-wktn",
+      "cityIds": [
+        "san_francisco"
+      ],
+      "stateCode": "CA"
+    }
+  ]
+}

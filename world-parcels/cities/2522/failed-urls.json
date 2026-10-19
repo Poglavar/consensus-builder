@@ -1,0 +1,29 @@
+[
+  {
+    "url": "https://catastro.jalisco.gob.mx/"
+  },
+  {
+    "url": "https://catastro.jalisco.gob.mx/cartografia.html"
+  },
+  {
+    "url": "https://catastro.jalisco.gob.mx/ecarto/catastro/map/808"
+  },
+  {
+    "url": "https://catastro.jalisco.gob.mx/ecarto/catastro/map/808/getmapviz"
+  },
+  {
+    "url": "https://ec1.jalisco.gob.mx/tiles/fzh9qhyk-bcc6913ef99b49f2e57efdfac3eb867a8090ed71:grid/{z}/{x}/{y}.json (preliminary z15-z22 tile probes at non-point tile coordinates)"
+  },
+  {
+    "url": "https://ec1.jalisco.gob.mx/tiles/fzh9qhyk-bcc6913ef99b49f2e57efdfac3eb867a8090ed71:grid/18/54455/115701.json"
+  },
+  {
+    "url": "https://transparencia.puertovallarta.gob.mx/art8.php?pag=art8-sec6b"
+  },
+  {
+    "url": "https://transparencia.puertovallarta.gob.mx/art15.php?pag=art15-sec5"
+  },
+  {
+    "url": "https://transparencia.puertovallarta.gob.mx/articulo15.php?pag=art15-secV"
+  }
+]

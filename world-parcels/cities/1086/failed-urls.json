@@ -1,0 +1,18 @@
+[
+  {
+    "url": "https://my.gov.sa/en/content/gis",
+    "reason": "403"
+  },
+  {
+    "url": "https://nationalgeoplatform.gov.sa/"
+  },
+  {
+    "url": "https://maps.balady.gov.sa/"
+  },
+  {
+    "url": "https://gis.jeddah.gov.sa/"
+  },
+  {
+    "url": "https://open.data.gov.sa/data/api/datasets?version=-1&dataset=&query=parcels"
+  }
+]

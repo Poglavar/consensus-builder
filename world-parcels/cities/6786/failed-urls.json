@@ -1,0 +1,15 @@
+[
+  {
+    "url": "https://franca.siltecnologia.com.br/loginWeb.jsp?execobj=ServicosWebSite",
+    "reason": "timeout after 20 seconds from local curl"
+  },
+  {
+    "url": "https://www.franca.sp.gov.br/prefeitura/mapas-cidade"
+  },
+  {
+    "url": "https://www3.franca.sp.gov.br/noticia/26066/cfi-cadastro-fiscal-imobilirio.html"
+  },
+  {
+    "url": "https://www3.franca.sp.gov.br/cartadeservicos/servicos/consulta-pblica-do-cadastro-imobilirio-municipal"
+  }
+]

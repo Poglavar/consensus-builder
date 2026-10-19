@@ -1,0 +1,17 @@
+[
+  {
+    "url": "https://geoserver.geoportal.gov.ph/geoserver/geoportal/wms?service=WMS&version=1.1.1&request=GetFeatureInfo&layers=geoportal:denr_parcel_data&query_layers=geoportal:denr_parcel_data&styles=ParcelData&srs=EPSG:4326&bbox=124.238,7.209,124.245,7.216&width=700&height=700&x=350&y=350&info_format=application/json&feature_count=3",
+    "reason": "timeout after 30 seconds"
+  },
+  {
+    "url": "https://geoserver.geoportal.gov.ph/geoserver/geoportal/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=geoportal:denr_parcel_data&outputFormat=application/json&maxFeatures=3&bbox=124.238,7.209,124.245,7.216,EPSG:4326",
+    "reason": "timeout after 20 seconds"
+  },
+  {
+    "url": "https://geoserver.geoportal.gov.ph/geoserver/geoportal/wfs?service=WFS&version=1.1.0&request=GetCapabilities",
+    "reason": "timeout after 30 seconds"
+  },
+  {
+    "url": "https://www.foi.gov.ph/requests/cadastral-map-denrlmb-985310019182/"
+  }
+]

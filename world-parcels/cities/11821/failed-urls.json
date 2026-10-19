@@ -1,0 +1,10 @@
+[
+  {
+    "url": "https://banglarbhumi.gov.in/BanglarBhumi/KnowYourProperty.action",
+    "reason": "Connection timed out after 20 seconds"
+  },
+  {
+    "url": "https://banglarbhumi.gov.in/",
+    "reason": "timeout (web fetch HTTP 400)"
+  }
+]

@@ -1,0 +1,23 @@
+[
+  {
+    "url": "https://nspd.gov.ru/map?thematic=PKK",
+    "reason": "connection timeout after 25 seconds"
+  },
+  {
+    "url": "https://maps.rosreestr.ru/ArcGIS/rest/services/CadastreNew/Cadastre/MapServer?f=pjson",
+    "reason": "connection timeout after 20 seconds"
+  },
+  {
+    "url": "https://maps.rosreestr.ru/ArcGIS/rest/services/CadastreNew/Cadastre/MapServer/0?f=pjson",
+    "reason": "not completed after service-root timeout"
+  },
+  {
+    "url": "https://volbti.ru/"
+  },
+  {
+    "url": "https://openvlz34.ru/%D0%B8%D0%BD%D1%82%D0%B5%D1%80%D0%B0%D0%BA%D1%82%D0%B8%D0%B2%D0%BD%D1%8B%D0%B5-%D0%BA%D0%B0%D1%80%D1%82%D1%8B"
+  },
+  {
+    "url": "https://maps.rosreestr.ru/ArcGIS/rest/services/CadastreNew/Cadastre/MapServer/0/query?where=1%3D1&geometry=44.7836212806429%2C48.7791871114685&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson"
+  }
+]

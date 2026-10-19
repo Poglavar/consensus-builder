@@ -1,0 +1,22 @@
+[
+  {
+    "url": "https://geoportal.snet.gob.sv/server/rest/services/imoran/pub_mapa_base2/MapServer?f=pjson",
+    "reason": "522"
+  },
+  {
+    "url": "https://geoportal.snet.gob.sv/server/rest/services/imoran/pub_mapa_base2/MapServer/10/query?where=1%3D1&outFields=CABECERA&returnGeometry=true&outSR=4326&f=geojson",
+    "reason": "522"
+  },
+  {
+    "url": "https://prensa.santaana.gob.sv/servicios-tramites/"
+  },
+  {
+    "url": "https://www.cnr.gob.sv/servicios/detalle-de-servicios-del-instituto-geografico-y-del-catastro-nacional/"
+  },
+  {
+    "url": "https://www.cnr.gob.sv/directorio-2/"
+  },
+  {
+    "url": "https://geoportal.snet.gob.sv/server/rest/services/imoran/pub_mapa_base2/MapServer/10"
+  }
+]

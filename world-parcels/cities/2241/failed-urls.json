@@ -1,0 +1,6 @@
+[
+  {
+    "url": "https://geoserver.andf.bj/geoserver/efb/wfs",
+    "reason": "Held: protocol, exact ID rereads, 13-cell sampling, forced paging and binding passed in a bounded Porto-Novo neighbourhood, but the 264-feature metric audit found one invalid polygon and nine material overlaps (largest 25,095 m², 98.9% of the smaller parcel). The tested point differs from the WUP centre and is recorded in diagnostics; citywide coverage is unverified."
+  }
+]

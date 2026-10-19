@@ -1,0 +1,22 @@
+[
+  {
+    "url": "https://burhanpurgis.mp.gov.in/",
+    "reason": "timeout after 20 seconds from bounded request environment"
+  },
+  {
+    "url": "https://mpbhulekh.gov.in/",
+    "reason": "timeout after 20 seconds from bounded request environment"
+  },
+  {
+    "url": "https://burhanpur.nic.in/en/burhanpur-gis/"
+  },
+  {
+    "url": "https://webgis2.mpbhulekh.gov.in/"
+  },
+  {
+    "url": "https://services.india.gov.in/service/detail/check-dissemination-of-naksha-parcel-map-of-madhya-pradesh-online-1"
+  },
+  {
+    "url": "https://www.dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/451"
+  }
+]

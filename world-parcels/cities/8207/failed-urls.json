@@ -1,0 +1,17 @@
+[
+  {
+    "url": "https://www.buffalony.gov/543/GIS-Maps"
+  },
+  {
+    "url": "https://www3.erie.gov/gis/internet-mapping"
+  },
+  {
+    "url": "https://gis.erie.gov/server/rest/services/OGIS/Parcels/MapServer/0"
+  },
+  {
+    "url": "https://gis.erie.gov/server/rest/services/OGIS/Parcels/MapServer/0?f=pjson"
+  },
+  {
+    "url": "https://gis.erie.gov/server/rest/services/OGIS/Parcels/MapServer/0/query"
+  }
+]

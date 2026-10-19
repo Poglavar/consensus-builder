@@ -1,0 +1,106 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "7979",
+  "name": "Wazirabad, Pakistan",
+  "point": [
+    32.4355546089934,
+    74.1248485345839
+  ],
+  "bindings": [
+    {
+      "appCityId": "wazirabad",
+      "runtimeConfig": {
+        "id": "wazirabad",
+        "wupCityCode": "7979",
+        "label": "Wazirabad, Pakistan",
+        "currency": {
+          "locale": "ur-PK",
+          "code": "PKR"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            32.4355546089934,
+            74.1248485345839
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            32.4355546089934,
+            74.1248485345839
+          ],
+          "fallbackDataset": [
+            74.1248485345839,
+            32.4355546089934
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "pk-pulse-wazirabad-parcels",
+          "idPrefix": "PK-PULSE-WAZIRABAD-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 3,
+          "attribution": "<a href=\"https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/35\">Punjab PULSE / Punjab Land Records Authority; indicative cadastral reference polygons</a>"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "pk-pulse-wazirabad-parcels",
+      "name": "Punjab PULSE Wazirabad cadastral reference polygons",
+      "adapter": "pulse-public",
+      "endpoint": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/35",
+      "idPrefix": "PK-PULSE-WAZIRABAD-",
+      "idField": "OBJECTID",
+      "objectIdField": "OBJECTID",
+      "idType": "integer",
+      "outFields": [
+        "OBJECTID"
+      ],
+      "queryFormat": "geojson",
+      "boundsQueryMode": "offset",
+      "idsQueryMode": "offset",
+      "pageSize": 500,
+      "idBatchSize": 80,
+      "maxFeatures": 3000,
+      "maxBboxKm2": 25,
+      "capabilities": {
+        "areaEnumeration": true
+      },
+      "cityIds": [
+        "wazirabad"
+      ],
+      "metricSrid": 32643,
+      "attribution": "Punjab PULSE / Punjab Land Records Authority; indicative cadastral reference polygons",
+      "countryCode": "PK",
+      "defaultForCity": true
+    }
+  ]
+}

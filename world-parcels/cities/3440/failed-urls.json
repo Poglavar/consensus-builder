@@ -1,0 +1,6 @@
+[
+  {
+    "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=wfs&version=2&request=GetFeature&STOREDQUERE_ID=GetParcel&srsname=EPSG::4326&bbox=40.4160,-3.7040,40.4170,-3.7028",
+    "reason": "400"
+  }
+]

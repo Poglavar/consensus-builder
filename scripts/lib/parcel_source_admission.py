@@ -21,6 +21,7 @@ from urllib.parse import urlsplit, urlunsplit
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import parcel_discovery_outcomes
 from parcel_qualification_policy import REQUIRED_CHECKS, initial_qualification_review
+from parcel_city_storage import export_settings
 
 REQUIRED = (
     "candidate.json",
@@ -425,6 +426,10 @@ def admit_candidate(runner: Any, city: dict[str, Any], receipt: dict[str, Any], 
                       and row.get("id") == manifest_city["appCityId"] and row.get("sourceId") == descriptor["id"]]
         if not configured:
             return _fail("admission did not create the expected city-config source binding", manifest_rel, changed)
+
+        # The proven working configuration is the permanent city record. Reports
+        # and release checks consume it while the qualification evidence is live.
+        export_settings(root, [code])
 
         try:
             _run_checked(["node", str(root / "scripts/build-world-coverage.mjs"), "--run"], root,

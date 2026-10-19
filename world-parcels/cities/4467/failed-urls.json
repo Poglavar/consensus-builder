@@ -1,0 +1,14 @@
+[
+  {
+    "url": "https://ims.kiel.de/geodatenextern/rest/services/Stadtplan/LHKielWmsWfs/MapServer/196/query?f=geojson&where=1%3D1&outFields=OBJECTID%2CFLSTKENNZ&returnGeometry=true&geometryType=esriGeometryPoint&inSR=102362&spatialRel=esriSpatialRelIntersects&outSR=102362",
+    "reason": "400"
+  },
+  {
+    "url": "https://ims.kiel.de/geodatenextern/rest/services/Basis_Internet/Internet_basis_suchen/MapServer/2/query?f=geojson&where=1%3D1&outFields=OBJECTID%2CFLSTKENNZ&returnGeometry=true&geometryType=esriGeometryEnvelope&inSR=102362&spatialRel=esriSpatialRelIntersects&outSR=102362",
+    "reason": "400"
+  },
+  {
+    "url": "https://ims.kiel.de/geodatenextern/rest/services/Bewertung/BRW_Grundsteuer/MapServer/11/query?f=json&where=1%3D1&outFields=OBJECTID%2CFLSTKENNZ&returnGeometry=false&resultRecordCount=3",
+    "reason": "400"
+  }
+]

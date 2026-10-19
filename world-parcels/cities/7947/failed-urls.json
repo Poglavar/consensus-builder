@@ -1,0 +1,32 @@
+[
+  {
+    "url": "https://bhumi.atrbpn.go.id/peta"
+  },
+  {
+    "url": "https://bhumi.atrbpn.go.id/bantuan/katalog_data"
+  },
+  {
+    "url": "https://bhumi.atrbpn.go.id/bhumigs/umum?service=WMS&request=GetCapabilities"
+  },
+  {
+    "url": "https://bhumi.atrbpn.go.id/bhumigs/umum/wms?service=WMS&request=GetCapabilities"
+  },
+  {
+    "url": "https://bhumi.atrbpn.go.id/bhumigs/umum/ows?service=WFS&request=GetCapabilities"
+  },
+  {
+    "url": "https://atlas.atrbpn.go.id/"
+  },
+  {
+    "url": "https://situbondokab.ina-sdi.or.id/"
+  },
+  {
+    "url": "https://lokageositubondo.com/webgis.html"
+  },
+  {
+    "url": "https://lokageositubondo.com/katalog-data.html"
+  },
+  {
+    "url": "https://data.situbondokab.go.id/petadasar"
+  }
+]

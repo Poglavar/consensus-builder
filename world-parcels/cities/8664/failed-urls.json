@@ -1,0 +1,13 @@
+[
+  {
+    "url": "https://bhunaksha.rajasthan.gov.in/",
+    "reason": "timeout after 15 seconds"
+  },
+  {
+    "url": "https://bhunaksha.rajasthan.gov.in/rest/Levels/ListsAfterLevel?state=08&level=0",
+    "reason": "timeout in bounded anonymous request"
+  },
+  {
+    "url": "https://www.bhunaksha.rajasthan.gov.in/georef_gmaps.html"
+  }
+]

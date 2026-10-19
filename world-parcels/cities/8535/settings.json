@@ -1,0 +1,132 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "8535",
+  "name": "Recife, Brazil",
+  "point": [
+    -8.04622135042311,
+    -34.9207751899257
+  ],
+  "bindings": [
+    {
+      "appCityId": "recife",
+      "runtimeConfig": {
+        "id": "recife",
+        "label": "Recife, Brazil",
+        "currency": {
+          "locale": "pt-BR",
+          "code": "BRL"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            -8.04622135042311,
+            -34.9207751899257
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            -8.04622135042311,
+            -34.9207751899257
+          ],
+          "fallbackDataset": [
+            -34.9207751899257,
+            -8.04622135042311
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.0025,
+          "source": "parcel-source",
+          "sourceId": "br-recife-prefeitura-lotes",
+          "idPrefix": "BR-RECIFE-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 6,
+          "attribution": "<a href=\"https://esigportal2.recife.pe.gov.br/arcgis/rest/services/Planejamento/BASES_BAIRRO_FACEQUADRA_LOGRADOURO_LOTE/FeatureServer/3\">Prefeitura do Recife · publisher &amp; conditions</a> · Recife identified municipal lots; complete components for each lot code · adapted"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "br-recife-prefeitura-lotes",
+      "countryCode": "BR",
+      "endpoint": "https://esigportal2.recife.pe.gov.br/arcgis/rest/services/Planejamento/BASES_BAIRRO_FACEQUADRA_LOGRADOURO_LOTE/FeatureServer/3",
+      "idField": "DSQFL",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "BR-RECIFE-",
+      "idType": "string",
+      "attributeNotNull": [
+        "DSQFL"
+      ],
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "nativeGeometryMode": "parts",
+      "partsCoordinatePrecision": 9,
+      "disjointParts": true,
+      "outFields": [
+        "OBJECTID",
+        "DSQFL",
+        "DISTRITO",
+        "SETOR",
+        "QUADRA",
+        "FACE",
+        "LOTE"
+      ],
+      "pageSize": 100,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "metricSrid": 32725,
+      "scope": "Recife municipal lot polygons identified by the published district/sector/block/face/lot DSQFL code.",
+      "name": "Recife identified lot polygons",
+      "operator": "Prefeitura do Recife",
+      "adapter": "arcgis",
+      "cityIds": [
+        "recife"
+      ],
+      "maxConcurrentQueries": 2,
+      "partMatchFields": [
+        "DISTRITO",
+        "SETOR",
+        "QUADRA",
+        "FACE",
+        "LOTE"
+      ],
+      "catalogueUrl": "https://esigportal2.recife.pe.gov.br/arcgis/rest/services/Planejamento/BASES_BAIRRO_FACEQUADRA_LOGRADOURO_LOTE/FeatureServer/3",
+      "coverageNote": "Recife identified municipal lots; complete components for each lot code",
+      "caveats": [
+        "All components of a DSQFL lot code are read before publication. Components must have consistent district/sector/block/face/lot attributes and no material overlap.",
+        "The alternative SEQIMOVEL field is not used as identity; it is absent or invalid on some lots.",
+        "City scope only; broader Brazilian coverage is not implied."
+      ],
+      "attribution": "Prefeitura do Recife. Adapted to WGS84.",
+      "licenceNote": "Source conditions are informational; users choose their source and intended use."
+    }
+  ]
+}

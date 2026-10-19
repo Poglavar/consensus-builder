@@ -1,0 +1,22 @@
+[
+  {
+    "url": "https://geomed.amana-md.gov.sa/arcgis/rest/services/GeoExplorer/GeoExplorerForPrinceSite/MapServer?f=pjson",
+    "reason": "499"
+  },
+  {
+    "url": "https://geomed.amana-md.gov.sa/arcgis/rest/services/GeoExplorer/GeoExplorerForPrinceSite/MapServer/21?f=pjson",
+    "reason": "499"
+  },
+  {
+    "url": "https://www.amana-md.gov.sa/NewsCenter/Details/2394"
+  },
+  {
+    "url": "https://geomed.amana-md.gov.sa/Portal/apps/sites/"
+  },
+  {
+    "url": "https://www.amana-md.gov.sa/MDWebsite/Service/ServiceCard/2202"
+  },
+  {
+    "url": "https://geomed.amana-md.gov.sa/arcgis/rest/services/GeoExplorer/GeoExplorerForPrinceSite/MapServer/21"
+  }
+]

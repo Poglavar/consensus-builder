@@ -161,7 +161,8 @@ class AdmissionBridgeTests(unittest.TestCase):
                     {"id": "testville", "wupCityCode": 1, "sourceId": "test-source"}]]), \
                 patch.object(admission, "_verify_published_evidence", return_value=None), \
                 patch.object(admission, "_run", side_effect=fake_run), \
-                patch.object(admission, "_run_checked", side_effect=fake_checked):
+                patch.object(admission, "_run_checked", side_effect=fake_checked), \
+                patch.object(admission, "export_settings") as settings_export:
             result = admission.admit_candidate(self.runner, self.city, self.receipt,
                                                {"status": "adapter-ready", "artifactRoot": str(self.artifacts)})
         self.assertEqual(result["status"], "integrated")
@@ -200,7 +201,8 @@ class AdmissionBridgeTests(unittest.TestCase):
                     {"id": "testville", "wupCityCode": 1, "sourceId": "test-source"}]]), \
                 patch.object(admission, "_verify_published_evidence", return_value=None), \
                 patch.object(admission, "_run", side_effect=fake_run), \
-                patch.object(admission, "_run_checked", side_effect=fake_checked):
+                patch.object(admission, "_run_checked", side_effect=fake_checked), \
+                patch.object(admission, "export_settings") as settings_export:
             result = admission.admit_candidate(self.runner, self.city, self.receipt,
                                                {"status": "adapter-ready", "artifactRoot": str(self.artifacts)})
         self.assertEqual(result["status"], "failed")

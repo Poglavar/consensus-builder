@@ -1,0 +1,6 @@
+[
+  {
+    "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel",
+    "reason": "Sampling failed because the provider’s 404 coordinate echo mismatches the adapter’s strict parser. Final fresh-ID reread also failed transport, blocking exact-ID and geometry-stability gates. Requires parser correction and retesting. Candidate/cache hashes verified; five polygons passed metric audit with zero blockers. Source repository unchanged."
+  }
+]

@@ -1,0 +1,6 @@
+[
+  {
+    "url": "https://bz1uwwpkuinzbk94.svcs5.arcgis.com/bz1uwWPKUInZBK94/arcgis/rest/services/CA_Statewide_Parcels_Public_view/FeatureServer/0",
+    "reason": "Held at the geometry gate: every source check passed (44 requests, 1 qualifier run(s) on this city) but the independent metric audit failed for Pleasanton (us-ca-calfire-statewide-parcels) with 8 material overlap pair(s) (> 0.01 m2; max 0.471 m2, 0.0519% of the smaller; total 1.69 m2) among 170 cached features (06001~946-3321-12 / 06001~946-3322-38: 0.471 m2 = 0.0519% of the smaller; 06001~946-33…"
+  }
+]

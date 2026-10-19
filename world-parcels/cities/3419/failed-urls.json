@@ -1,0 +1,11 @@
+[
+  {
+    "url": "http://125.74.216.11:6080/arcgis/rest/services?f=pjson"
+  },
+  {
+    "url": "http://125.74.216.11:6080/arcgis/rest/services/vec_c_jq/MapServer?f=pjson"
+  },
+  {
+    "url": "http://125.74.216.11:6080/arcgis/rest/services/cva_c_jq/MapServer?f=pjson"
+  }
+]

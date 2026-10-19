@@ -1,0 +1,42 @@
+[
+  {
+    "url": "https://bhumi.atrbpn.go.id/bhumigs/umum?service=WMS&request=GetCapabilities&version=1.3.0",
+    "reason": "404"
+  },
+  {
+    "url": "https://bhumi.atrbpn.go.id/bhumigs/umum?service=WFS&request=GetCapabilities&version=2.0.0",
+    "reason": "404"
+  },
+  {
+    "url": "https://bhumi.atrbpn.go.id/bhumigs/umum/wms?service=WMS&request=GetCapabilities&version=1.3.0",
+    "reason": "404"
+  },
+  {
+    "url": "https://bhumi.atrbpn.go.id/bhumigs/umum/wms?service=WFS&request=GetCapabilities&version=2.0.0",
+    "reason": "404"
+  },
+  {
+    "url": "https://kot-samarinda.atrbpn.go.id/"
+  },
+  {
+    "url": "https://geoportal.samarindakota.go.id/satu-peta"
+  },
+  {
+    "url": "https://geoserver-geoportal.samarindakota.go.id/geoserver/wfs?service=WFS&request=GetCapabilities&version=2.0.0"
+  },
+  {
+    "url": "https://geoserver-geoportal.samarindakota.go.id/geoserver/wms?service=WMS&request=GetCapabilities&version=1.3.0"
+  },
+  {
+    "url": "https://bhumi.atrbpn.go.id/peta"
+  },
+  {
+    "url": "https://bhumi.atrbpn.go.id/panel/items/layers?filter[default][_eq]=true&filter[status][_eq]=published&fields=*,fields.*"
+  },
+  {
+    "url": "https://bhumi.atrbpn.go.id/bantuan/peta"
+  },
+  {
+    "url": "https://bhumi.atrbpn.go.id/bantuan/unsur_peta"
+  }
+]

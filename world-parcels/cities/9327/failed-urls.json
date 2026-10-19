@@ -1,0 +1,22 @@
+[
+  {
+    "url": "https://bhumiabhilekh.maharashtra.gov.in/Services",
+    "reason": "timeout"
+  },
+  {
+    "url": "https://mahabhunakasha.mahabhumi.gov.in/",
+    "reason": "timeout"
+  },
+  {
+    "url": "https://bhulekh.mahabhumi.gov.in/",
+    "reason": "timeout"
+  },
+  {
+    "url": "https://beed.nic.in/",
+    "reason": "timeout"
+  },
+  {
+    "url": "https://ambajogai.nic.in/",
+    "reason": "dns_failure"
+  }
+]

@@ -1,0 +1,14 @@
+[
+  {
+    "url": "https://jharbhoomi.jharkhand.gov.in/",
+    "reason": "fetch failed"
+  },
+  {
+    "url": "https://services.india.gov.in/service/detail/jharbhunaksha-is-an-digitized-maps-of-the-plots-to-the-citizens-jharkhand-1",
+    "reason": "fetch failed"
+  },
+  {
+    "url": "https://jharbhunaksha.jharkhand.gov.in/",
+    "reason": "fetch failed"
+  }
+]

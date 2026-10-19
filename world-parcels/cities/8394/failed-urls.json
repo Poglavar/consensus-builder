@@ -1,0 +1,18 @@
+[
+  {
+    "url": "https://bhumiabhilekh.maharashtra.gov.in/Contact/ContactDS?districtId=11&source=DistrictContact"
+  },
+  {
+    "url": "https://bhumiabhilekh.maharashtra.gov.in/DistrictSCLR/DistrictInfo?districtId=11"
+  },
+  {
+    "url": "https://bhumiabhilekh.maharashtra.gov.in/"
+  },
+  {
+    "url": "https://mahabhunakasha.mahabhumi.gov.in/27/index.html"
+  },
+  {
+    "url": "https://indianopenmaps.com/not-so-open/cadastrals/maharashtra/mrsac/{z}/{x}/{y}.pbf",
+    "reason": "Held: binding (22 parcels, 65 requests) {\"binding\":{\"errorType\":\"HttpError\",\"httpStatus\":400}}"
+  }
+]

@@ -1,0 +1,22 @@
+[
+  {
+    "url": "https://upbhulekh.gov.in/PublicBhuApi/api",
+    "reason": "500"
+  },
+  {
+    "url": "https://upbhulekh.gov.in/PublicBhuApi/bhunaksha",
+    "reason": "500"
+  },
+  {
+    "url": "https://upbhunaksha.gov.in/bhunakshaserver"
+  },
+  {
+    "url": "https://upbhunaksha.gov.in/bhunakshaserver/Levels/stateCode"
+  },
+  {
+    "url": "https://upbhunaksha.gov.in/bhunakshaserver/Levels/level"
+  },
+  {
+    "url": "https://upbhunaksha.gov.in/bhunakshaserver/MapInfo/getVVVVExtentGeoref"
+  }
+]

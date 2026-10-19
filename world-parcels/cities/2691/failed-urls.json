@@ -1,0 +1,19 @@
+[
+  {
+    "url": "https://geoportal.ancpi.ro/inspireview/rest/services/CP/CP_View/MapServer/1?f=pjson",
+    "reason": "DNS resolution failure from shell; indexed metadata available via search result"
+  },
+  {
+    "url": "https://geoportal.ancpi.ro/inspireview/rest/services/CP/CP_View/MapServer/1/query?f=geojson&where=1%3D1&geometry=28.0227927514628%2C45.4366810761243&geometryType=esriGeometryPoint&inSR=4258&spatialRel=esriSpatialRelIntersects&outFields=*&returnGeometry=true",
+    "reason": "DNS resolution failure in shell; web fetch returned 502/not accessible"
+  },
+  {
+    "url": "https://geoportal.ancpi.ro/imobile.html"
+  },
+  {
+    "url": "https://geoportal.ancpi.ro/inspireview/rest/services/CP/CP_View/MapServer"
+  },
+  {
+    "url": "https://www.ancpi.ro/ocpi/gl/wp-content/pnccf/tabelsectoare30.05.2025.pdf"
+  }
+]

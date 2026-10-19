@@ -1,0 +1,111 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "7290",
+  "name": "Jundiaí",
+  "point": [
+    -23.1976446911945,
+    -46.8554383147568
+  ],
+  "bindings": [
+    {
+      "appCityId": "jundiai",
+      "runtimeConfig": {
+        "id": "jundiai",
+        "label": "Jundiaí",
+        "currency": {
+          "locale": "pt-BR",
+          "code": "BRL"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            -23.1976446911945,
+            -46.8554383147568
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            -23.1976446911945,
+            -46.8554383147568
+          ],
+          "fallbackDataset": [
+            -46.8554383147568,
+            -23.1976446911945
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "br-jundiai-geojundiai-lotes-jund-gid",
+          "idPrefix": "BR-JUNDIAI-LOTES-JUND-GID-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 3,
+          "attribution": "<a href=\"https://geo.jundiai.sp.gov.br/geojundiai/\">Município de Jundiaí / GeoJundiaí cadastral parcels</a> · adapted"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "br-jundiai-geojundiai-lotes-jund-gid",
+      "endpoint": "https://geo.jundiai.sp.gov.br/geoserver/ows",
+      "featureType": "GeoJundiai:lotes_jund",
+      "idField": "gid",
+      "idType": "integer",
+      "idPrefix": "BR-JUNDIAI-LOTES-JUND-GID-",
+      "geometryField": "geom",
+      "outFields": [
+        "gid"
+      ],
+      "requestProperties": true,
+      "pageSize": 1000,
+      "idBatchSize": 80,
+      "maxFeatures": 3000,
+      "minRequestIntervalMs": 500,
+      "adapter": "wfs",
+      "countryCode": "BR",
+      "cityIds": [
+        "jundiai"
+      ],
+      "maxBboxKm2": 1,
+      "maxConcurrentQueries": 1,
+      "metricSrid": 31983,
+      "name": "Jundiaí public cadastral parcel polygons",
+      "operator": "Município de Jundiaí / GeoJundiaí",
+      "scope": "Public cadastral parcel geometry around the unchanged Jundiaí WUP settlement locator. Thirteen aligned cells and 205 unique full parcels passed stable counts, complete paging, fresh native-ID geometry reads, correctly shaped explicit absence and full-parcel one-parcel binding. Root independent EPSG:31983 GEOS audit found no invalidity, duplicate geometry, overlaps above 0.01 m² or operation errors. The exact unchanged WUP locator has no parcel hit in its containing cell; nearby public parcel BR-JUNDIAI-LOTES-JUND-GID-46298 supports complete one-parcel binding. Native gid identifies individual GIS ground polygons; the duplicate codlote business reference is not used as runtime identity. Evidence is bounded and does not establish citywide or nationwide completeness, survey precision, legal ownership or currentness.",
+      "responseCrs": "CRS:84",
+      "parcelNumberField": "gid",
+      "catalogueUrl": "https://geo.jundiai.sp.gov.br/geojundiai/",
+      "attribution": "Município de Jundiaí / GeoJundiaí · cadastral references · adapted",
+      "licenceNote": "Publisher conditions, legal effect and update schedule are informational. Public native parcel IDs and geometry only; ownership is not imported."
+    }
+  ]
+}

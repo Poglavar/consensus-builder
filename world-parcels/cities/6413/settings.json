@@ -1,0 +1,115 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "6413",
+  "name": "Arlington, United States",
+  "point": [
+    32.7235,
+    -97.0655
+  ],
+  "bindings": [
+    {
+      "appCityId": "arlington",
+      "runtimeConfig": {
+        "id": "arlington",
+        "wupCityCode": "6413",
+        "label": "Arlington, United States",
+        "currency": {
+          "locale": "en-US",
+          "code": "USD"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            32.7235,
+            -97.0655
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            32.7235,
+            -97.0655
+          ],
+          "fallbackDataset": [
+            -97.0655,
+            32.7235
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "arlington-tax-parcels",
+          "idPrefix": "US-TX-ARLINGTON-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 0.75,
+          "attribution": "<a href=\"https://gis2.arlingtontx.gov/agsext2/rest/services/OpenData/OD_Property/MapServer/2\">City of Arlington, Texas GIS / OpenData</a>"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "arlington-tax-parcels",
+      "label": "City of Arlington Tax Parcel",
+      "adapter": "arcgis",
+      "endpoint": "https://gis2.arlingtontx.gov/agsext2/rest/services/OpenData/OD_Property/MapServer/2",
+      "cityIds": [
+        "arlington"
+      ],
+      "idField": "TaxParcelId",
+      "objectIdField": "OBJECTID",
+      "idType": "integer",
+      "idPrefix": "US-TX-ARLINGTON-",
+      "outFields": [
+        "TaxParcelId",
+        "OBJECTID"
+      ],
+      "queryFormat": "geojson",
+      "boundsQueryMode": "offset",
+      "idsQueryMode": "offset",
+      "pageSize": 200,
+      "idBatchSize": 80,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 1,
+      "metricSrid": 32614,
+      "capabilities": {
+        "areaEnumeration": true
+      },
+      "attribution": "City of Arlington, Texas GIS / OpenData",
+      "catalogueUrl": "https://gis2.arlingtontx.gov/agsext2/rest/services/OpenData/OD_Property/MapServer/2",
+      "viewerUrl": "https://gis.arlingtontx.gov/mapsonline/",
+      "countryCode": "US",
+      "defaultForCity": true,
+      "metricSridByCity": {
+        "arlington": 32614
+      },
+      "cityScopes": {
+        "lindberg": "Bounded qualification around the UN DESA WUP 2025 settlement locator for Lindberg. Passing all eight gates and independent geometry audit supports local parcel integration only; citywide completeness, legal title, survey accuracy and currentness are not established."
+      }
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+[
+  {
+    "url": "https://banglarbhumi.gov.in/",
+    "reason": "connection timeout after 10 seconds"
+  },
+  {
+    "url": "https://basundhara.wb.gov.in/",
+    "reason": "connection timeout after 10 seconds"
+  },
+  {
+    "url": "https://wb.nic.in/profile/"
+  },
+  {
+    "url": "https://howrah.gov.in/map-of-district/"
+  },
+  {
+    "url": "https://wbregistration.gov.in/index/Search_By_Property_new.aspx"
+  }
+]

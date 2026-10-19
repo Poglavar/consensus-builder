@@ -1,0 +1,11 @@
+[
+  {
+    "url": "https://www.arcgis.com/sharing/rest/search?q=orgid%3AEYzEZbDhXZjURPbP%20(parcel%20OR%20property%20OR%20boundary)&f=json"
+  },
+  {
+    "url": "https://gis-web.bellevuewa.gov/gisext/rest/services/Enterprise/Property/MapServer/2?f=pjson"
+  },
+  {
+    "url": "https://gis-web.bellevuewa.gov/gisext/rest/services/Enterprise/Property/MapServer/2/query"
+  }
+]

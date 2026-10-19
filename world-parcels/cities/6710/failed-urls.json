@@ -1,0 +1,26 @@
+[
+  {
+    "url": "https://www.cityofmoore.com/city-services/gis-parcel-viewer"
+  },
+  {
+    "url": "https://gis.cityofmoore.com/portal/apps/experiencebuilder/experience/?id=a028670273474c9587fd9d71314a81f0"
+  },
+  {
+    "url": "https://gis.cityofmoore.com/portal/sharing/rest/content/items/a028670273474c9587fd9d71314a81f0?f=pjson"
+  },
+  {
+    "url": "https://gis.cityofmoore.com/arcgis/rest/services/Hosted/Parcels/FeatureServer?f=pjson"
+  },
+  {
+    "url": "https://gis.cityofmoore.com/arcgis/rest/services/Hosted/Parcels/FeatureServer/0?f=pjson"
+  },
+  {
+    "url": "https://gis.cityofmoore.com/arcgis/rest/services/Hosted/Parcels/FeatureServer/0/query?where=1%3D1&outFields=parcelid&returnGeometry=true&outSR=4326&f=geojson&resultRecordCount=3"
+  },
+  {
+    "url": "https://gis.cityofmoore.com/arcgis/rest/services/Hosted/Parcels/FeatureServer/0/query?geometry=-97.5334069530313%2C35.3838650484031&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=objectid&returnGeometry=true&outSR=4326&f=pjson"
+  },
+  {
+    "url": "https://ok-clevelandcounty.civicplus.com/351/Geographic-Information-Systems-GIS"
+  }
+]

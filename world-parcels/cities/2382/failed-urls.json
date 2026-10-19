@@ -1,0 +1,17 @@
+[
+  {
+    "url": "https://www.arcgis.com/sharing/rest/content/items/d1d0101777b14e92930fee1d2765464a/data?f=json"
+  },
+  {
+    "url": "https://www.arcgis.com/sharing/rest/content/items/95689b3e8fc54bca99e835b083bb2e21/data?f=json"
+  },
+  {
+    "url": "https://services.arcgis.com/n4lF54Alm3639FBe/arcgis/rest/services/Base_Cartográfica_Rondonópolis/FeatureServer/16?f=pjson"
+  },
+  {
+    "url": "https://services.arcgis.com/n4lF54Alm3639FBe/arcgis/rest/services/Base_Cartográfica_Rondonópolis/FeatureServer/16/query?f=geojson&where=1%3D1&outFields=FID&returnGeometry=true&geometry=-54.6351575611747%2C-16.452679587017&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&outSR=4326"
+  },
+  {
+    "url": "https://services.arcgis.com/n4lF54Alm3639FBe/arcgis/rest/services/Base_Cartográfica_Rondonópolis/FeatureServer/16/query?f=geojson&where=1%3D1&outFields=FID%2Cid&returnGeometry=true&geometry=-54.645%2C-16.462%2C-54.625%2C-16.443&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outSR=4326&resultRecordCount=3&orderByFields=FID"
+  }
+]

@@ -1,0 +1,14 @@
+[
+  {
+    "url": "https://emaps.kerala.gov.in/bhunaksha/kl/homenew.html",
+    "reason": "TLS verification failed: certificate expired"
+  },
+  {
+    "url": "https://emaps.kerala.gov.in/bhunaksha/kl/home.html",
+    "reason": "TLS verification failed: certificate expired"
+  },
+  {
+    "url": "https://dilrmp.gov.in/dilrmpold/PhyscialComponent/mapDigitization/tehsil-level/593",
+    "reason": "TLS verification failed: unable to get local issuer certificate"
+  }
+]

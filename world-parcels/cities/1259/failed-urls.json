@@ -1,0 +1,20 @@
+[
+  {
+    "url": "https://ecadastre.dgi.bf/"
+  },
+  {
+    "url": "https://ecadastre.dgi.bf/main.d0f438b0f6cdaf6e.js"
+  },
+  {
+    "url": "https://ecadastre.dgi.bf/api/locations/geojson?minX=-2.36324564656914&minY=12.2544856141034&maxX=-2.36324564656914&maxY=12.2544856141034"
+  },
+  {
+    "url": "https://ecadastre.dgi.bf/api/locations/geojson?minX=-2.37&minY=12.24&maxX=-2.35&maxY=12.27"
+  },
+  {
+    "url": "https://ecadastre.dgi.bf/api/communes"
+  },
+  {
+    "url": "https://dgi.bf/faq-impots-et-taxes-sur-le-foncier/"
+  }
+]

@@ -1,0 +1,6 @@
+[
+  {
+    "url": "https://ewid-wms.gdansk.gda.pl/iip/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ms:dzialki&outputFormat=application/json&maxFeatures=3&propertyName=ID_DZIALKI,NUMER_DZIALKI,NAZWA_OBREBU,NUMER_OBREBU,NUMER_JEDNOSTKI,geometry&srsName=EPSG:4326&bbox=18.6095,54.3723,18.6108,54.3735,EPSG:4326",
+    "reason": "500"
+  }
+]

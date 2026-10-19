@@ -1,0 +1,18 @@
+[
+  {
+    "url": "https://tanahair.indonesia.go.id/sdi/id/dataset/peta-pertanahan-berupa-kepemilikan-tanah-skala-1-5-000-di-wilayah-kota-batam",
+    "reason": "403"
+  },
+  {
+    "url": "https://geoportal.bpbatam.go.id/"
+  },
+  {
+    "url": "https://geoportal.bpbatam.go.id/profile/"
+  },
+  {
+    "url": "https://web-gis.bpbatam.go.id/arcgis/rest/services/Pertanahan/KEPEMILIKANTANAH_AR_5K/MapServer"
+  },
+  {
+    "url": "https://web-gis.bpbatam.go.id/arcgis/rest/services/Pertanahan/KEPEMILIKANTANAH_AR_5K/MapServer/0?f=pjson"
+  }
+]

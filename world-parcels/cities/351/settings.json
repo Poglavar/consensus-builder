@@ -1,0 +1,114 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "351",
+  "name": "Pasto, Colombia",
+  "point": [
+    1.2089443727064,
+    -77.2772679864238
+  ],
+  "bindings": [
+    {
+      "appCityId": "pasto",
+      "runtimeConfig": {
+        "id": "pasto",
+        "wupCityCode": "351",
+        "label": "Pasto, Colombia",
+        "currency": {
+          "locale": "es-CO",
+          "code": "COP"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            1.2089443727064,
+            -77.2772679864238
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            1.2089443727064,
+            -77.2772679864238
+          ],
+          "fallbackDataset": [
+            -77.2772679864238,
+            1.2089443727064
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "co-pasto-urban-parcels",
+          "idPrefix": "CO-PASTO-URBAN-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 3,
+          "attribution": "<a href=\"https://geoportal.pasto.gov.co/server/rest/services/Planeacion/Mapa_base_registro_de_descargas/MapServer/29\">Instituto Geográfico Agustín Codazzi - IGAC; Alcaldía de Pasto Geoportal</a>"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "co-pasto-urban-parcels",
+      "name": "Pasto urban cadastral parcels (IGAC 2021 base)",
+      "adapter": "arcgis",
+      "endpoint": "https://geoportal.pasto.gov.co/server/rest/services/Planeacion/Mapa_base_registro_de_descargas/MapServer/29",
+      "idField": "codigo_predial_nacional",
+      "idType": "string",
+      "idPattern": "^[0-9]{30}$",
+      "objectIdField": "objectid",
+      "idPrefix": "CO-PASTO-URBAN-",
+      "outFields": [
+        "objectid",
+        "codigo_predial_nacional"
+      ],
+      "pageSize": 1000,
+      "idBatchSize": 80,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "boundsQueryMode": "offset",
+      "idsQueryMode": "offset",
+      "queryFormat": "geojson",
+      "countryCode": "CO",
+      "metricSrid": 32618,
+      "cityIds": [
+        "pasto"
+      ],
+      "scope": "Urban cadastral base for the municipality of Pasto, within the urban perimeter approved by the applicable POT. Layer description states IGAC open data obtained in 2021; rural parcels are separate layers.",
+      "attribution": "Instituto Geográfico Agustín Codazzi - IGAC; Alcaldía de Pasto Geoportal",
+      "catalogueUrl": "https://geoportal.pasto.gov.co/server/rest/services/Planeacion/Mapa_base_registro_de_descargas/MapServer/29",
+      "capabilities": {
+        "point": false,
+        "exactId": true,
+        "bbox": true,
+        "areaEnumeration": true,
+        "geometry": "full-wgs84"
+      },
+      "defaultForCity": true
+    }
+  ]
+}

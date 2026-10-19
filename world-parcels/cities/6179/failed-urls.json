@@ -1,0 +1,10 @@
+[
+  {
+    "url": "https://maps.gdla.gov.vn/tiles/vector-views-tiles/dia-chinh/14/13111/7691.mvt?v=1785411771",
+    "reason": "401"
+  },
+  {
+    "url": "https://maps.gdla.gov.vn/api/dia-chinh/feature-detail?id=1&maxa=",
+    "reason": "401"
+  }
+]

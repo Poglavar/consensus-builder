@@ -1,0 +1,124 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "385",
+  "name": "Kortrijk, Belgium",
+  "point": [
+    50.8375977978937,
+    3.28211721466875
+  ],
+  "bindings": [
+    {
+      "appCityId": "kortrijk",
+      "runtimeConfig": {
+        "id": "kortrijk",
+        "wupCityCode": "385",
+        "label": "Kortrijk, Belgium",
+        "currency": {
+          "locale": "nl-BE",
+          "code": "EUR"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            50.8375977978937,
+            3.28211721466875
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            50.8375977978937,
+            3.28211721466875
+          ],
+          "fallbackDataset": [
+            3.28211721466875,
+            50.8375977978937
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "be-vlaanderen-grb-adp",
+          "idPrefix": "BE-GRB-ADP-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Bron: Grootschalig Referentie Bestand Vlaanderen, Digitaal Vlaanderen. Adapted to WGS84."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "be-vlaanderen-grb-adp",
+      "name": "Flanders Digitaal Vlaanderen GRB administrative parcels",
+      "adapter": "ogc-api",
+      "endpoint": "https://geo.api.vlaanderen.be/GRB/ogc/features/v1/collections/ADP/items",
+      "idField": "OIDN",
+      "idType": "integer",
+      "pagination": "startIndex",
+      "idPrefix": "BE-GRB-ADP-",
+      "parcelNumberField": "CAPAKEY",
+      "outFields": [
+        "OIDN",
+        "UIDN",
+        "CAPAKEY",
+        "VERSIE",
+        "NISCODE",
+        "VERSDATUM"
+      ],
+      "pageSize": 1000,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "countryCode": "BE",
+      "metricSrid": 32631,
+      "scope": "Flanders GRB administrative cadastral-map objects; permanent OIDN identity, UIDN version metadata and CAPAKEY cadastral association. Graphic depiction corrected to terrain, not a legal survey boundary. Only bounded Antwerp globe entry is enabled; Brussels and Wallonia need separate sources.",
+      "attribution": "Bron: Grootschalig Referentie Bestand Vlaanderen, Digitaal Vlaanderen. Adapted to WGS84.",
+      "licenceUrl": "https://www.vlaanderen.be/digitaal-vlaanderen/onze-diensten-en-platformen/open-data/voorwaarden-voor-het-hergebruik-van-overheidsinformatie/modellicentie-gratis-hergebruik",
+      "catalogueUrl": "https://www.vlaanderen.be/datavindplaats/catalogus/ogc-api-features-grb",
+      "cityIds": [
+        "kortrijk"
+      ],
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "BE",
+          "admin1": [
+            "BE-VAN",
+            "BE-VBR",
+            "BE-VLI",
+            "BE-VOV",
+            "BE-VWV"
+          ],
+          "basis": "Flanders region GRB administrative cadastral parcels (five Flemish provinces).",
+          "evidence": []
+        }
+      }
+    }
+  ]
+}

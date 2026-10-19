@@ -1,0 +1,18 @@
+[
+  {
+    "url": "https://ssaa.ir/",
+    "reason": "timeout"
+  },
+  {
+    "url": "https://my.ssaa.ir/portal",
+    "reason": "timeout"
+  },
+  {
+    "url": "https://shamim.ssaa.ir/",
+    "reason": "timeout"
+  },
+  {
+    "url": "https://rasa.ncc.org.ir/",
+    "reason": "DNS failure"
+  }
+]

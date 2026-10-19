@@ -1,0 +1,13 @@
+[
+  {
+    "url": "https://las.oysglands.com/search/survey-search",
+    "reason": "403"
+  },
+  {
+    "url": "https://lands.oyostate.gov.ng/oyo-giss.html",
+    "reason": "timeout"
+  },
+  {
+    "url": "https://lands.oyostate.gov.ng/survey-search.html"
+  }
+]

@@ -1,0 +1,22 @@
+[
+  {
+    "url": "https://bauru.geopixel.com.br/geopixelcidades3_server/v2/profiles",
+    "reason": "401"
+  },
+  {
+    "url": "https://bauru.geopixel.com.br/geopixelcidades3_server/public/geoportalLogin",
+    "reason": "500"
+  },
+  {
+    "url": "https://www2.bauru.sp.gov.br/geoprocessamento/"
+  },
+  {
+    "url": "https://bauru.geopixel.com.br/geopixelcidades3/"
+  },
+  {
+    "url": "https://www2.bauru.sp.gov.br/seplan/mapas_digitais.aspx"
+  },
+  {
+    "url": "https://www2.bauru.sp.gov.br/seplan/projetos_parcelamento_solo.aspx"
+  }
+]

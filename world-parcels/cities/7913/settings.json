@@ -1,0 +1,138 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "7913",
+  "name": "Fort Wayne, United States",
+  "point": [
+    41.0690939195421,
+    -85.1300955495992
+  ],
+  "bindings": [
+    {
+      "appCityId": "fort_wayne",
+      "runtimeConfig": {
+        "id": "fort_wayne",
+        "wupCityCode": "7913",
+        "label": "Fort Wayne, United States",
+        "currency": {
+          "locale": "en-US",
+          "code": "USD"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            41.0690939195421,
+            -85.1300955495992
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            41.0690939195421,
+            -85.1300955495992
+          ],
+          "fallbackDataset": [
+            -85.1300955495992,
+            41.0690939195421
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "us-in-indianamap-statewide-parcels",
+          "idPrefix": "US-IN-STATEWIDE-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "IndianaMap / Indiana Geographic Information Office and Indiana counties. Adapted to WGS84."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "us-in-indianamap-statewide-parcels",
+      "name": "Parcel Boundaries of Indiana Current (IndianaMap) — statewide",
+      "adapter": "arcgis",
+      "countryCode": "US",
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "maxConcurrentQueries": 2,
+      "cityIds": [
+        "fort_wayne"
+      ],
+      "licenceNote": "Source conditions are informational; users choose their source and intended use.",
+      "operator": "Indiana Geographic Information Office / IndianaMap; county parcel data",
+      "endpoint": "https://gisdata.in.gov/server/rest/services/Hosted/Parcel_Boundaries_of_Indiana_Current/FeatureServer/0",
+      "idField": "state_parcel_id",
+      "objectIdField": "objectid",
+      "idType": "string",
+      "idPattern": ".+",
+      "outFields": [
+        "objectid",
+        "state_parcel_id"
+      ],
+      "parcelNumberField": "state_parcel_id",
+      "idPrefix": "US-IN-STATEWIDE-",
+      "metricSrid": 32616,
+      "stateCode": "IN",
+      "attributeNotNull": [
+        "state_parcel_id"
+      ],
+      "attributeExclusions": {
+        "state_parcel_id": [
+          "",
+          " "
+        ]
+      },
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "scope": "Indiana statewide parcel boundaries, all 92 counties. state_parcel_id is the Indiana state parcel number (county-coded, normally 18 digits).",
+      "caveats": [
+        "Rows with null or blank state_parcel_id (7,540 statewide on 2026-10-12) are excluded; 9,637 non-blank values are not 18 characters and 1,062 contain spaces, all kept verbatim.",
+        "Same endpoint as us-in-marion-indianapolis-parcels (county_id=49, key local_id under US-IN-MARION-); Marion County parcels would exist under both namespaces with different keys.",
+        "Layer also publishes property address and tax-district fields, which are not requested."
+      ],
+      "attribution": "IndianaMap / Indiana Geographic Information Office and Indiana counties. Adapted to WGS84.",
+      "catalogueUrl": "https://www.indianamap.org/",
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "US",
+          "admin1": [
+            "US-IN"
+          ],
+          "excludeAdmin1": [],
+          "basis": "IndianaMap service \"Parcel Boundaries of Indiana Current\" compiles county parcels; all 92 county_id values present on 2026-10-12.",
+          "evidence": []
+        },
+        "paceMs": 1000
+      }
+    }
+  ]
+}

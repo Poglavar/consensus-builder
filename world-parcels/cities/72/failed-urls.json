@@ -1,0 +1,29 @@
+[
+  {
+    "url": "https://portal.lsdi.ly/"
+  },
+  {
+    "url": "https://reril.ly/2023/09/04/فرع-المصلحة-بمنطقة-الزاوية-111/"
+  },
+  {
+    "url": "https://lawsociety.ly/legislation/مرسوم-ملکي-بشأن-قانون-التسجيل-العقاري/"
+  },
+  {
+    "url": "https://geoserver.lsdi.ly/geoserver/LSDI/ows"
+  },
+  {
+    "url": "https://portal.lsdi.ly/map/search/ajax?list%5B%5D=RERA&txtSearch=&page=1&pol="
+  },
+  {
+    "url": "https://portal.lsdi.ly/map/search/ajax/info?id=1297"
+  },
+  {
+    "url": "https://geoserver.lsdi.ly/geoserver/LSDI/ows?service=WFS&version=1.0.0&request=GetCapabilities"
+  },
+  {
+    "url": "https://geoserver.lsdi.ly/geoserver/LSDI/ows?service=WFS&version=1.0.0&request=DescribeFeatureType&typeName=LSDI:aoi_rera&outputFormat=application%2Fjson"
+  },
+  {
+    "url": "https://geoserver.lsdi.ly/geoserver/LSDI/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=LSDI:aoi_rera&outputFormat=application%2Fjson&srsName=EPSG:4326&bbox=12.60,32.71,12.70,32.82,EPSG:4326&maxFeatures=3"
+  }
+]

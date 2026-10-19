@@ -1,0 +1,34 @@
+[
+  {
+    "url": "https://imagery.esri-southafrica.com/server/rest/services/GISCOE/South_Africa_Cadastre/MapServer/1",
+    "reason": "Not presently accepted for runtime: exact-ID object-ID/count manifests succeeded in batches but repeated one-query/15s provider timeout at Cosmo offset 200, and native identity conflict at Mboloko offset100. Size-3 retry also timed out at Cosmo offset200 and Mboloko offset30. A single-ID adapter read succeeded but took 24.5s end-to-end, exceeding the 15s gateway budget. Keep this profile held until a reliable smaller/faster exact-native profile is proven."
+  },
+  {
+    "url": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer?f=pjson",
+    "reason": "fetch failed"
+  },
+  {
+    "url": "https://screening.environment.gov.za/server/rest/services/Corp/Planning_Cadastre/MapServer/0?f=pjson",
+    "reason": "fetch failed"
+  },
+  {
+    "url": "https://maps.geoscience.org.za/hosting/rest/services/Administrative_Boundaries_and_Cadastral_Data/MapServer/46?f=pjson",
+    "reason": "fetch failed"
+  },
+  {
+    "url": "https://csggis.drdlr.gov.za/server/rest/services/Property_Viewer/MapServer/2?f=pjson",
+    "reason": "fetch failed"
+  },
+  {
+    "url": "https://csggis.drdlr.gov.za/server/rest/services/Property_Viewer/MapServer/202?f=pjson",
+    "reason": "fetch failed"
+  },
+  {
+    "url": "https://csggis.drdlr.gov.za/server/rest/services/Property_Viewer/MapServer/505?f=pjson",
+    "reason": "fetch failed"
+  },
+  {
+    "url": "https://csggis.drdlr.gov.za/server/rest/services/Property_Viewer/MapServer/3?f=pjson",
+    "reason": "fetch failed"
+  }
+]

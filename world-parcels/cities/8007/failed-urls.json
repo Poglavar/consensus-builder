@@ -1,0 +1,20 @@
+[
+  {
+    "url": "https://lis.pulse.gop.pk/"
+  },
+  {
+    "url": "https://jamabandi.punjab.gov.in/CadastralMap.aspx"
+  },
+  {
+    "url": "https://lis.pulse.gop.pk/api/gis/token"
+  },
+  {
+    "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer?f=pjson"
+  },
+  {
+    "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/1?f=pjson"
+  },
+  {
+    "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/1/query"
+  }
+]

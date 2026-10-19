@@ -1,0 +1,26 @@
+[
+  {
+    "url": "https://www.comune.bustoarsizio.va.it/index.php/it/page/catasto-e-urbanistica"
+  },
+  {
+    "url": "https://www.comune.bustoarsizio.va.it/it/servizi/richiesta-attestazioni-urbanistiche"
+  },
+  {
+    "url": "https://wms.cartografia.agenziaentrate.gov.it/inspire/wms/ows01.php?service=WMS&request=GetCapabilities"
+  },
+  {
+    "url": "https://geoportale.cartografia.agenziaentrate.gov.it/age-inspire/srv/ita/catalog.search"
+  },
+  {
+    "url": "https://geoportale.cartografia.agenziaentrate.gov.it/age-inspire/wms/ows01.php?service=WMS&request=GetCapabilities"
+  },
+  {
+    "url": "https://wms.cartografia.agenziaentrate.gov.it/inspire/wms/ows01.php?service=WFS&request=GetCapabilities"
+  },
+  {
+    "url": "https://wms.cartografia.agenziaentrate.gov.it/inspire/wms/ows01.php?service=WMS&version=1.3.0&request=GetFeatureInfo&layers=CP.CadastralParcel&query_layers=CP.CadastralParcel&crs=EPSG:6706&bbox=45.6035,8.8985,45.6045,8.8997&width=800&height=800&i=480&j=410&info_format=text/html&feature_count=3"
+  },
+  {
+    "url": "https://www.comune.bustoarsizio.va.it/it/documenti_pubblici/carta-tecnica-comunale"
+  }
+]

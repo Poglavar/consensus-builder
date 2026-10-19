@@ -1,0 +1,11 @@
+[
+  {
+    "url": "https://asirgis.ars.gov.sa/server/rest/services/ALMostaksif/SubDivisionParcelS/FeatureServer/0?f=pjson"
+  },
+  {
+    "url": "https://asirgis.ars.gov.sa/server/rest/services/AsirLayers/SubDivisionParcelSBalady/FeatureServer/0?f=pjson"
+  },
+  {
+    "url": "https://mapservice.ars.gov.sa/Asir_GeoExplorer"
+  }
+]

@@ -1,0 +1,14 @@
+[
+  {
+    "url": "https://mahabhunakasha.mahabhumi.gov.in/",
+    "reason": "timeout"
+  },
+  {
+    "url": "https://mahabhumi.gov.in/Mahabhumilink/MainDashboard/MainDashboard",
+    "reason": "404"
+  },
+  {
+    "url": "https://bhulekh.mahabhumi.gov.in/",
+    "reason": "timeout"
+  }
+]

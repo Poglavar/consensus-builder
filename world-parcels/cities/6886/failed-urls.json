@@ -1,0 +1,23 @@
+[
+  {
+    "url": "https://map.land.gov.bd/GetCascadeGeom",
+    "reason": "419"
+  },
+  {
+    "url": "http://gis.land.gov.bd/geoserver/wms?service=WMS&request=GetCapabilities",
+    "reason": "503"
+  },
+  {
+    "url": "https://map.land.gov.bd/getGeomByCode",
+    "reason": "timeout/partial"
+  },
+  {
+    "url": "https://map.land.gov.bd/"
+  },
+  {
+    "url": "https://settlement.gov.bd/Map/MapSearch"
+  },
+  {
+    "url": "https://oldweb.lged.gov.bd/UploadedDocument/Map/CHITTAGONG/chandpur/"
+  }
+]

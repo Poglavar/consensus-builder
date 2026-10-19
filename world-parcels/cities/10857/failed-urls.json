@@ -1,0 +1,23 @@
+[
+  {
+    "url": "https://bhunaksha.bihar.gov.in/index.jsp"
+  },
+  {
+    "url": "https://bhunaksha.bihar.gov.in/assets/misc/config.js"
+  },
+  {
+    "url": "https://bhunaksha.bihar.gov.in/index.js"
+  },
+  {
+    "url": "https://bhunaksha.bihar.gov.in/rest/Levels/count"
+  },
+  {
+    "url": "https://bhunaksha.bihar.gov.in/village_selector.jsp"
+  },
+  {
+    "url": "https://bhunaksha.bihar.gov.in/ScalarDatahandler"
+  },
+  {
+    "url": "https://bhunaksha.bihar.gov.in/rest/MapInfo/getVVVVExtentGeoref"
+  }
+]

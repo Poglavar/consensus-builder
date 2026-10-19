@@ -1,0 +1,11 @@
+[
+  {
+    "url": "https://spgis.mbsp.gov.my/geoportal/rest/services/Kadaster/KADASTER/FeatureServer/3?f=pjson"
+  },
+  {
+    "url": "https://spgis.mbsp.gov.my/geoportal/rest/services/Kadaster/KADASTER/FeatureServer/3/query"
+  },
+  {
+    "url": "https://ekadaster.kdh.jupem.gov.my/Account/Login"
+  }
+]

@@ -1,0 +1,19 @@
+[
+  {
+    "url": "https://www.yanji.gov.cn/",
+    "reason": "UND_ERR_CONNECT_TIMEOUT to www.yanji.gov.cn:443"
+  },
+  {
+    "url": "https://jilin.tianditu.gov.cn/",
+    "reason": "The page returned zero readable lines; no machine-readable metadata surfaced."
+  },
+  {
+    "url": "https://zrzy.jl.gov.cn/jlsbdcdj/gzdt/bdcsngzdt/201805/t20180508_5196494.html"
+  },
+  {
+    "url": "https://zrzy.jl.gov.cn/zwgk/tjxx/ch/"
+  },
+  {
+    "url": "https://grade.scagis.org.cn/scagisweb/api/file/download/KTF202307070000000138"
+  }
+]

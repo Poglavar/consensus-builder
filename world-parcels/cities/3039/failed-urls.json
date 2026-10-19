@@ -1,0 +1,11 @@
+[
+  {
+    "url": "https://www.escondido.gov/237/Planning"
+  },
+  {
+    "url": "https://gis.escondido.gov/server/rest/services/Data/Parcels/FeatureServer/0"
+  },
+  {
+    "url": "https://gis.escondido.gov/server/rest/services/Data/Parcels/MapServer/0"
+  }
+]

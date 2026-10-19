@@ -1,0 +1,119 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "3883",
+  "name": "Bogotá, Colombia",
+  "point": [
+    4.60975,
+    -74.08175
+  ],
+  "bindings": [
+    {
+      "appCityId": "bogota",
+      "runtimeConfig": {
+        "id": "bogota",
+        "label": "Bogotá, Colombia",
+        "currency": {
+          "locale": "es-CO",
+          "code": "COP"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            4.60975,
+            -74.08175
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            4.60975,
+            -74.08175
+          ],
+          "fallbackDataset": [
+            -74.08175,
+            4.60975
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.0025,
+          "source": "parcel-source",
+          "sourceId": "co-bogota-uaecd-lote",
+          "dataVersion": "2021-12",
+          "idPrefix": "CO-BOGOTA-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 12,
+          "attribution": "<a href=\"https://sig.car.gov.co/arcgis/rest/services/VISOR/Capas_base/FeatureServer/9\">IDECA/UAECD lots · Dec 2021 · CAR mirror</a> · <a href=\"https://creativecommons.org/licenses/by/4.0/\">CC BY 4.0</a> · adapted"
+        },
+        "buildings": {
+          "source": "cadastre",
+          "sourceId": "building.eyJhZGFwdGVyIjoiYXJjZ2lzIiwiZW5kcG9pbnQiOiJodHRwczovL3NlcnZpY2VzLmFyY2dpcy5jb20vZGVRU2IwR243Z0RQZjN1Vi9hcmNnaXMvcmVzdC9zZXJ2aWNlcy9Db25zdHJ1Y2Npb25lc19Cb2dvdGFfRENfdmlzdGEvRmVhdHVyZVNlcnZlci8wIiwiY2l0eUlkcyI6WyJib2dvdGEiXSwibWV0cmljU3JpZCI6MzI2MTgsImlkRmllbGQiOiJGSUQiLCJvYmplY3RJZEZpZWxkIjoiRklEIiwiaWRUeXBlIjoiaW50ZWdlciIsIm91dEZpZWxkcyI6WyJGSUQiLCJDT05OUElTT1MiXSwia2luZCI6ImJ1aWxkaW5nIiwibGV2ZWxzRmllbGQiOiJDT05OUElTT1MiLCJpZFByZWZpeCI6IkNVU1RPTS1CLTU4YzIyNzVhOTAyMTg3N2U5NjllLSJ9",
+          "fallback": "overture-tiles",
+          "name": "IDECA/UAECD Construcción",
+          "attribution": "<a href=\"https://services.arcgis.com/deQSb0Gn7gDPf3uV/arcgis/rest/services/Construcciones_Bogota_DC_vista/FeatureServer/0\">IDECA/UAECD buildings · 2022 copy</a> · <a href=\"https://creativecommons.org/licenses/by/4.0/\">CC BY 4.0</a>"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "co-bogota-uaecd-lote",
+      "name": "Bogotá IDECA/UAECD lots — CAR mirror, December 2021",
+      "adapter": "arcgis",
+      "endpoint": "https://sig.car.gov.co/arcgis/rest/services/VISOR/Capas_base/FeatureServer/9",
+      "originEndpoint": "https://serviciosgis.catastrobogota.gov.co/arcgis/rest/services/catastro/lote/MapServer/0",
+      "publisher": "Corporación Autónoma Regional de Cundinamarca (CAR), using IDECA/UAECD data",
+      "dataVersion": "2021-12",
+      "caCertificate": "./certificates/geotrust-ev-rsa-ca-g2.pem",
+      "idField": "LotCodigo",
+      "idType": "string",
+      "idPattern": "^[0-9]{12}$",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "CO-BOGOTA-",
+      "outFields": [
+        "OBJECTID",
+        "LotCodigo",
+        "ManzCodigo",
+        "LotDispers",
+        "LotILDispe",
+        "LotUPredia",
+        "LotDistrit"
+      ],
+      "pageSize": 2000,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "countryCode": "CO",
+      "metricSrid": 32618,
+      "scope": "December 2021 copy of Bogotá Distrito Capital urban and rural lots, explicitly selected for the prototype. A lot may contain multiple properties; neighbouring municipalities are separate sources.",
+      "attribution": "IDECA/UAECD Lote — December 2021, served by CAR, CC BY 4.0. Adapted to canonical WGS84 parcel features.",
+      "licenceUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "catalogueUrl": "https://datosabiertos.bogota.gov.co/dataset/lote",
+      "cityIds": [
+        "bogota"
+      ]
+    }
+  ]
+}

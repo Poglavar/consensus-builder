@@ -1,0 +1,25 @@
+[
+  {
+    "url": "https://upbhunaksha.gov.in/bhunakshaserver/Levels/mapLevelCount",
+    "reason": "timeout on bounded retry"
+  },
+  {
+    "url": "https://upbhunaksha.gov.in/bhunakshaserver/Levels/loginLevel",
+    "reason": "timeout on bounded retry"
+  },
+  {
+    "url": "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=134"
+  },
+  {
+    "url": "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=134&tehsilCode=00713"
+  },
+  {
+    "url": "https://upbhunaksha.gov.in/login/"
+  },
+  {
+    "url": "https://bijnor.nic.in/"
+  },
+  {
+    "url": "https://upbhunaksha.gov.in/bhunakshaserver/MapInfo/getVVVVExtentGeoref"
+  }
+]

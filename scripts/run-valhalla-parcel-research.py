@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Resumable, reviewed WUP parcel-research loop for the Valhalla worker host.
 
-Nothing runs unless --run is supplied. State and raw Codex JSONL logs live under
-tmp/valhalla-parcel-research; per-city research workers only own their city packet.
+Nothing runs unless --run is supplied. Only per-city settings and failed URLs are
+permanent knowledge. Stage packets, logs and qualification workspaces are temporary.
 """
 from __future__ import annotations
 
@@ -455,6 +455,7 @@ class Runner:
                 raise
             finally:
                 marker.unlink(missing_ok=True)
+                runtime.prune_runtime(shared)
 
     def _qualification_fingerprint(self, city, saved):
         from parcel_source_stage import _artifact_hashes
@@ -469,47 +470,21 @@ class Runner:
                                          sort_keys=True).encode()).hexdigest()
 
     def _learning_prompt(self, city, stage):
-        shared = getattr(self.args, "shared_root", None)
-        if not shared:
-            return ""
-        from parcel_shared_learning import context_for_task
-        city = dict(city)
-        packet = self._packet(city, self._queue_path().parent)
-        receipt = self._reviewed_city_receipt(city, packet)
-        source = receipt.get("source", {}) if receipt else {}
-        if source.get("adapter"):
-            city["adapter"] = source["adapter"]
-        if source.get("sourceId"):
-            city["provider"] = source["sourceId"]
-        elif source.get("endpoint"):
-            from urllib.parse import urlsplit
-            city["provider"] = urlsplit(source["endpoint"]).hostname
-        context = context_for_task(shared, city, stage, max_records=12)
-        return ("\nLatest shared source and adapter findings (evidence, status and scope remain binding; "
-                "unverified or failed findings are leads, never proof). Read relevant current adapters and "
-                "improve or build them when this stage permits code changes. Preserve transferable endpoint, "
-                "protocol, schema, CRS, paging and identity lessons in durable evidence. "
-                f"Evidence paths below resolve against the shared knowledge root `{shared}`.\n" +
-                json.dumps(context, ensure_ascii=False))
+        from parcel_city_storage import knowledge_root
+        directory = knowledge_root(self) / "world-parcels/cities" / str(city["cityCode"])
+        records = {}
+        for name in ("failed-urls.json", "settings.json"):
+            path = directory / name
+            if path.is_file():
+                records[name] = json_read(path)
+        return ("\nCity knowledge: failed URLs describe unsuccessful attempts, not proof of absent cadastre. "
+                "Use working sources/settings and current shared adapter code. Avoid repeating failed routes "
+                "unless fixing their recorded cause. All other evidence is temporary.\n" +
+                json.dumps(records, ensure_ascii=False))
 
     def _record_shared_learning(self, city, lane, row):
-        shared = getattr(self.args, "shared_root", None)
-        if not shared:
-            return
-        from parcel_shared_learning import append_finding, build_city_finding
-        evidence = dict(row)
-        packet = self._packet(city, self._queue_path().parent)
-        for key in ("cityPath", "reviewPath"):
-            if packet.get(key):
-                evidence[key] = str(packet[key])
-        receipt_path = self._receipt_path(f"city:{city['cityCode']}")
-        if receipt_path.is_file():
-            evidence["receiptPath"] = str(receipt_path)
-            evidence["reviewedSource"] = json_read(receipt_path).get("source", {})
-        record = build_city_finding(self.root, city, lane, evidence, shared_root=shared)
-        if record:
-            finding = append_finding(shared, record)
-            row.setdefault("sharedFindings", {})[lane] = finding
+        from parcel_city_storage import record_attempts
+        record_attempts(self, city, self._queue_path().parent)
 
     def _model(self, role: str) -> dict[str, Any]:
         if self.models is None:
@@ -534,10 +509,11 @@ class Runner:
 
     def log(self, message: str, **fields: Any) -> None:
         event = {"at": utc_now(), "message": message, **fields}
-        append_jsonl(self.events_path, event)
         print(f"[{event['at']}] {message}", flush=True)
 
     def save_state(self) -> None:
+        from parcel_city_storage import forget_histories
+        forget_histories(self.state.get("cities", {}))
         self.state["heartbeat"] = utc_now()
         self.state["pid"] = os.getpid()
         self.state["pidStartIdentity"] = process_start_identity(os.getpid())
@@ -599,7 +575,7 @@ class Runner:
             self.state["status"] = "resuming"
             self.state["lastError"] = None
             self.state["systemicFailure"] = None
-            self.log("resumed from durable state; prior logs and artifacts are preserved", queueSha256=digest)
+            self.log("resumed operational progress; city settings and failed URLs preserve knowledge", queueSha256=digest)
         else:
             self.state = new_state(self.args.job_name, str(queue_path), digest)
             self.log("created durable run state", queueSha256=digest)
@@ -711,7 +687,7 @@ Before probing a proposed endpoint, check its source ID, endpoint and host again
                     pass
 
     def _command(self, call: dict[str, Any], schema_path: Path, answer_path: Path) -> list[str]:
-        return [self.codex, "--ask-for-approval", "never", "--search", "exec",
+        return [self.codex, "--ask-for-approval", "never", "--search", "exec", "--ephemeral",
                 "--sandbox", "workspace-write", "-c", "sandbox_workspace_write.network_access=true",
                 "-c", 'forced_login_method="chatgpt"',
                 "-m", call["model"], "-c", f'model_reasoning_effort="{call["effort"]}"',
@@ -877,11 +853,8 @@ Before probing a proposed endpoint, check its source ID, endpoint and host again
         city_file = f"city-{code}-{slug}.json"
         review_file = f"{slug}-service-review.json"
         retry_block = ""
-        learning_files = getattr(self.args, "learning_file", [])
-        learning_block = "\nRead these current integration learning files before investigating this city:\n" + "\n".join(
-            f"- `{path}`" for path in learning_files) if learning_files else ""
-        learning_block += self._learning_prompt(city, "research")
         novelty_block = self._source_novelty_prompt()
+        novelty_block += self._learning_prompt(city, "research")
         if previous_errors:
             retry_block = """
 
@@ -896,16 +869,15 @@ Your single immutable WUP queue record is:
 {json.dumps(city, ensure_ascii=False, indent=2)}
 ```
 Attempt {attempt} of {self.args.max_retries}. Cohort directory: `{cohort_dir.relative_to(self.root)}`.
-{learning_block}
 {novelty_block}
 
-Write only `{city_file}`, `{review_file}`, and at most one sample GeoJSON containing no more than three full parcel polygons in this cohort directory. Scratch/request caches and temporary qualification evidence belong under `tmp/valhalla-parcel-research/` (ignored); never clear prior logs or artifacts. Do not edit registry/catalog/runtime city config, global/generated reports, queue/identity ledgers, or another city's files. Do not commit, push, deploy, email, or contact anyone.
+Write only `{city_file}`, `{review_file}`, and at most one sample GeoJSON containing no more than three full parcel polygons in this cohort directory. Scratch/request caches belong only under `tmp/valhalla-parcel-research/{code}/` (ignored); These files are temporary and are deleted when the city finishes. Write an explicit `failedUrls` array of objects with `url` and optional `reason` into the city packet for every unsuccessful parcel-source URL tried. Do not edit registry/catalog/runtime city config, global/generated reports, queue/identity ledgers, or another city's files. Do not commit, push, deploy, email, or contact anyone.
 
 Preserve `cityCode={code}`, rank {city.get('rank')}, country `{city.get('country')}` / `{city.get('iso2')}`, exact WUP point `{city.get('point')}` in latitude/longitude order, `population2025={round(float(city.get('pop2025k')) * 1000)}` persons, `population2025k={city.get('pop2025k')}`, and `populationUnit="persons"`. Do not shift a coordinate to force a parcel hit. A zero exact-point hit, map extent miss, timeout, login wall, or unusable UI is not evidence of citywide absence.
 
 For retained GeoJSON samples, put exactly one safe stable identity in `properties`, preferably `{{"id": "<stable-identity>"}}`. Prefer native IDs or proven composite keys. If the provider exposes geometry without a safe durable key, a deterministic geometry-derived ID is acceptable: record the exact canonicalization/hash recipe, source namespace, collision/deduplication policy and stability limits. Do not label derived IDs native or reject otherwise usable geometry solely for lacking a native key. Never use response order, a random ID or an ephemeral row counter. Put source field mappings and identity provenance in metadata; retain no raw attribute sets.
 
-Use the queue's `priorEvidence` and `appBindings` as starting evidence, including past holds and qualification diagnostics. Read their referenced files before repeating work. Recheck current endpoints and investigate the specific unresolved blocker or another official route; a previous hold is a lead, not a permanent verdict. Existing app support is bounded coverage and must not be overwritten by a new failed probe.
+Use the queue's `priorEvidence` and `appBindings` as starting evidence, including past holds and qualification diagnostics. Use the retained city settings and failed URLs before repeating work; old research artifact paths are retired. Recheck current endpoints and investigate the specific unresolved blocker or another official route; a previous hold is a lead, not a permanent verdict. Existing app support is bounded coverage and must not be overwritten by a new failed probe.
 
 Apply these integration lessons explicitly:
 - Search the city's own government/cadastre sites, regional/state/provincial government, national cadastre/geodata portals, and general web results in both English and the actual local language. Record each level checked, actual URLs and outcomes, including why a regional level is inapplicable. Use official portals, viewer JavaScript/configuration, catalog searches and documented download routes rather than stopping at agency prose.
@@ -915,7 +887,6 @@ Apply these integration lessons explicitly:
 - Check the service extent against the exact WUP city and distinguish centre-point from district or partial-city coverage. Place bounded windows inside the actual city coverage, record each window, and do not claim all-city coverage from a sample.
 - Inspect CRS, coordinate order, paging limits, maximum bbox area, stable IDs, duplicate geometries and overlapping/invalid parcels. Read exact case-sensitive field names from actual responses (for example objectid may differ from OBJECTID). Check WFS version/type names and ArcGIS layer IDs, ID-list/page support, current/historic validity fields and response transfer limits. Filter historic duplicates only with evidenced field semantics; do not suppress genuine overlaps.
 - Record CRS, geometry quality, completeness, source binding and repeatable exact-ID read questions as qualification follow-ups. Repeatable exact-ID reads and stable geometry are checked at the required qualification stage before activation; unresolved details do not erase a valid initial parcel-source discovery.
-- Follow the alignment policy in `world-parcels/research/parcel-alignment-2026-10-14/index.json` during the second-pass follow-up: fix only evidenced CRS/axis/unit/datum-operation mistakes. Never fit a translation, rotation or scale to OSM or imagery, guess a CRS, alter measured boundaries, or invent an epoch. Record missing grids, ambiguous operations, custom CRS and unexplained source displacement as follow-up findings; do not claim an unverified conversion. Basemap agreement is not proof of cadastral survey accuracy.
 - Retain at most three full polygons unchanged, preserving rings, holes, multipolygons and precision. Attribute minimization must never simplify geometry. Record source authority, licence/reuse evidence or uncertainty, attribution, observation time and safe field allowlist.
 - Run one request at a time per provider host, honour Retry-After, use bounded timeouts and at most two retries for transient failures. Stop repeated 403/429/5xx or CAPTCHA failures and record them. Use official viewer configuration, WFS/ArcGIS/OGC endpoints or official downloadable polygon files as alternative routes; do not bypass access controls.
 - Record access failure, unsupported format, wrong extent, provider unavailability and geometry defects separately from unestablished registry presence. Include the next concrete qualification action where a source is promising. Discovery evidence alone never admits a source to the app.
@@ -1707,6 +1678,9 @@ Output MUST be a single JSON object satisfying the supplied schema: `reviewedIds
         validated_done = 0
         for city in cities:
             entry = self._city_entry(city)
+            if entry.get("storageComplete"):
+                validated_done += 1
+                continue
             packet = self._packet(city, cohort_dir)
             if self._reviewed_city_receipt(city, packet) is not None:
                 validated_done += 1
@@ -1883,7 +1857,7 @@ Output MUST be a single JSON object satisfying the supplied schema: `reviewedIds
                 self.stop_children()
                 self.state["status"] = "stopped-checkpointed"
                 self.save_state()
-                self.log("stopped after process-group shutdown; checkpoints and logs retained")
+                self.log("stopped after process-group shutdown; only active work is retained for resume")
             for sig, handler in previous_handlers.items():
                 signal.signal(sig, handler)
             if self.lock_stream:
@@ -1916,7 +1890,6 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--codex", help="Codex CLI executable (default: codex from PATH)")
     parser.add_argument("--research-model", help="override the shared cheap Codex research model")
     parser.add_argument("--review-model", help="override the shared Codex review model")
-    parser.add_argument("--learning-file", action="append", default=[], help="repository-relative integration evidence to read before discovery")
     parser.add_argument("--max-turn-minutes", type=int, default=90, help="per Codex turn timeout, capped at 90 minutes")
     parser.add_argument("--max-retries", type=int, default=3, help="per-city/per-review retry cap (maximum 3)")
     parser.add_argument("--range-size", type=int, default=100, help="rank range generated after the first fixed queue")

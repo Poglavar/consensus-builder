@@ -1,0 +1,26 @@
+[
+  {
+    "url": "https://jharbhoomi.jharkhand.gov.in/newhome2",
+    "reason": "timeout after 25 seconds"
+  },
+  {
+    "url": "https://jharbhoomi.jharkhand.gov.in/",
+    "reason": "timeout after 12 seconds"
+  },
+  {
+    "url": "http://jharbhoomi.nic.in/jhrlrmsmis/",
+    "reason": "timeout after 12 seconds"
+  },
+  {
+    "url": "https://ramgarh.nic.in/service/land-records/"
+  },
+  {
+    "url": "https://ramgarh.nic.in/revenue-office/"
+  },
+  {
+    "url": "https://services.india.gov.in/service/detail/jharbhunaksha-is-an-digitized-maps-of-the-plots-to-the-citizens-jharkhand-1"
+  },
+  {
+    "url": "https://jharbhunaksha.jharkhand.gov.in/"
+  }
+]

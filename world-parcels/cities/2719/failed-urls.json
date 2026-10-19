@@ -1,0 +1,29 @@
+[
+  {
+    "url": "https://atlas.atrbpn.go.id/"
+  },
+  {
+    "url": "https://bhumi.atrbpn.go.id/bantuan/peta"
+  },
+  {
+    "url": "https://bappenda.asahankab.go.id/post/bapenda-kab-asahan-lakukan-konsultasi-pendetilan-peta--znt"
+  },
+  {
+    "url": "https://bhumi.atrbpn.go.id/"
+  },
+  {
+    "url": "https://bhumi.atrbpn.go.id/peta"
+  },
+  {
+    "url": "https://bhumi.atrbpn.go.id/panel/items/layers?search=Bidang%20Tanah"
+  },
+  {
+    "url": "https://bhumi.atrbpn.go.id/bhumigs/umum?service=WMS&request=GetCapabilities"
+  },
+  {
+    "url": "https://bhumi.atrbpn.go.id/bhumigs/umum/ows?service=WFS&request=GetCapabilities"
+  },
+  {
+    "url": "https://geoportal.asahankab.go.id/"
+  }
+]

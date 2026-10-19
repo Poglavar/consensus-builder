@@ -1,0 +1,20 @@
+[
+  {
+    "url": "https://nspd.gov.ru/",
+    "reason": "connect timeout after 8 seconds"
+  },
+  {
+    "url": "https://pkk.rosreestr.ru/",
+    "reason": "connect timeout after 8 seconds"
+  },
+  {
+    "url": "https://ppk.rosreestr.ru/",
+    "reason": "connect timeout after 8 seconds"
+  },
+  {
+    "url": "https://rosreestr.gov.ru/"
+  },
+  {
+    "url": "https://portal-gisogd.pnzreg.ru/agate_nikolmr/map"
+  }
+]

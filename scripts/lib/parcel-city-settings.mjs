@@ -5,8 +5,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import vm from 'node:vm';
 import { createHash } from 'node:crypto';
-import { fileURLToPath } from 'node:url';
-import { browserParcelFactories } from '../../backend/parcels/browser-source-runtime.js';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const DEFAULT_ROOT = path.resolve(HERE, '../..');
@@ -14,8 +13,14 @@ const jsonReplacer = (_key, value) => value === Infinity ? { $number: 'Infinity'
 const jsonReviver = (_key, value) => value && value.$number === 'Infinity' ? Infinity : value && value.$number === '-Infinity' ? -Infinity : value;
 const sha256 = bytes => createHash('sha256').update(bytes).digest('hex');
 
-export function recoverQualifiedSettings(root = DEFAULT_ROOT, artifactRoots = []) {
+export async function recoverQualifiedSettings(root = DEFAULT_ROOT, artifactRoots = []) {
     const recovered = [], skipped = [];
+    let browserParcelFactories;
+    try {
+        ({ browserParcelFactories } = await import(pathToFileURL(path.join(root, 'backend/parcels/browser-source-runtime.js')).href));
+    } catch (error) {
+        return { recovered, skipped: artifactRoots.map(artifactRoot => ({ artifactRoot, reason: `cannot load adapter registry: ${error.message}` })) };
+    }
     for (const artifactRoot of artifactRoots) {
         const candidateFile = path.join(artifactRoot, 'candidate.json');
         const evidenceDir = fs.existsSync(path.join(artifactRoot, 'evidence')) ? path.join(artifactRoot, 'evidence') : artifactRoot;
@@ -29,7 +34,7 @@ export function recoverQualifiedSettings(root = DEFAULT_ROOT, artifactRoots = []
             if (qualification.status !== 'technical-qualified'
                 || qualification.candidateSha256 !== sha256(candidateBytes)
                 || qualification.cacheSha256 !== sha256(cacheBytes)
-                || qualification.cityCode !== code || qualification.sourceId !== descriptor?.id
+                || String(qualification.cityCode) !== code || qualification.sourceId !== descriptor?.id
                 || !['classification', 'exactIds', 'stableGeometry'].every(key => qualification.checks?.[key]?.passed === true)
                 || candidate.sourceClassification?.isParcel !== true
                 || !descriptor?.id || !descriptor?.adapter || !/^https?:\/\//i.test(descriptor.endpoint || '')
@@ -47,8 +52,9 @@ export function recoverQualifiedSettings(root = DEFAULT_ROOT, artifactRoots = []
             const settingsFile = path.join(root, 'world-parcels/cities', code, 'settings.json');
             let existing = null;
             try { existing = JSON.parse(fs.readFileSync(settingsFile, 'utf8')); } catch {}
-            if (existing && isBoundWorkingSettings(existing, code)) {
-                skipped.push({ artifactRoot, reason: 'city already has bound working settings' }); continue;
+            if (existing && (isBoundWorkingSettings(existing, code)
+                || existing.schemaVersion === 1 && String(existing.cityCode) === code && existing.sources?.length)) {
+                skipped.push({ artifactRoot, reason: 'city already has working settings' }); continue;
             }
             const row = { schemaVersion: 1, cityCode: code, name: candidate.city.name || descriptor.cityName || code,
                 countryCode: candidate.city.countryCode || descriptor.countryCode,
@@ -373,7 +379,7 @@ if (process.argv[1] && fs.existsSync(process.argv[1]) && fs.realpathSync(process
             codes.push(...args[i].split(',').filter(Boolean));
         }
         const options = { codes: codes.length ? codes : undefined };
-        const result = recoverList ? recoverQualifiedSettings(root, JSON.parse(fs.readFileSync(recoverList, 'utf8')))
+        const result = recoverList ? await recoverQualifiedSettings(root, JSON.parse(fs.readFileSync(recoverList, 'utf8')))
             : apply ? applyCitySettings(root, options) : { written: exportCitySettings(root, options).length };
         process.stdout.write(`${JSON.stringify(result)}\n`);
     }

@@ -1,0 +1,114 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "7962",
+  "name": "Columbus, United States",
+  "point": [
+    39.9612,
+    -82.9988
+  ],
+  "bindings": [
+    {
+      "appCityId": "columbus",
+      "runtimeConfig": {
+        "id": "columbus",
+        "label": "Columbus, United States",
+        "currency": {
+          "locale": "en-US",
+          "code": "USD"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            39.9612,
+            -82.9988
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            39.9612,
+            -82.9988
+          ],
+          "fallbackDataset": [
+            -82.9988,
+            39.9612
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.0025,
+          "source": "parcel-source",
+          "sourceId": "us-oh-franklin-columbus-parcels",
+          "idPrefix": "US-OH-FRANKLIN-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 6,
+          "attribution": "<a href=\"https://auditor.franklincountyohio.gov/Auditor/Geographic-Information-Systems-GIS\">Franklin County Auditor, GIS · publisher &amp; conditions</a> · Franklin County coverage · adapted"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "endpoint": "https://gis.franklincountyohio.gov/hosting/rest/services/ParcelFeatures/Parcel_Features_WebMercator/FeatureServer/0",
+      "adapter": "arcgis",
+      "name": "Tax Parcel",
+      "operator": "Franklin County Auditor, GIS",
+      "scope": "Franklin County Auditor tax parcels, configured for Columbus; outside-county city areas excluded.",
+      "idField": "PARCELID",
+      "objectIdField": "OBJECTID",
+      "idType": "string",
+      "outFields": [
+        "PARCELID",
+        "OBJECTID"
+      ],
+      "parcelNumberField": "PARCELID",
+      "metricSrid": 32617,
+      "idPrefix": "US-OH-FRANKLIN-",
+      "id": "us-oh-franklin-columbus-parcels",
+      "stateCode": "OH",
+      "cityIds": [
+        "columbus"
+      ],
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "caveats": [
+        "Capital-area acceptance only; county scope does not establish full municipal or statewide coverage.",
+        "Official WebMercator service uses strict count/OID manifest reads because offset pagination repeated or omitted OIDs."
+      ],
+      "countryCode": "US",
+      "catalogueUrl": "https://auditor.franklincountyohio.gov/Auditor/Geographic-Information-Systems-GIS",
+      "maxConcurrentQueries": 2,
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "attribution": "Franklin County Auditor, GIS. Adapted to WGS84.",
+      "licenceNote": "Source conditions are informational; users choose their source and intended use."
+    }
+  ]
+}

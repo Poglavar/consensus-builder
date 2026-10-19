@@ -1,0 +1,20 @@
+[
+  {
+    "url": "https://geoportal.cam/"
+  },
+  {
+    "url": "https://mindcaf.gov.cm/fr/"
+  },
+  {
+    "url": "https://mindcaf.gov.cm/fr/docs/"
+  },
+  {
+    "url": "https://bueacouncil.cm/"
+  },
+  {
+    "url": "https://www.minhdu.gov.cm/minhduetude/public/downloaddoc?pathdoc=%2Fvar%2Fwww%2Fdocuments%2F83%2FDocs%2FPOS-BUEA-FINAL.pdf"
+  },
+  {
+    "url": "https://gs.geoportal.cm/geoserver/cameroon/wfs?service=WFS&version=2.0.0&request=GetCapabilities"
+  }
+]

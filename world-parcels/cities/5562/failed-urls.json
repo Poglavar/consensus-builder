@@ -1,0 +1,26 @@
+[
+  {
+    "url": "https://settlement.gov.bd/Map/MapSearch"
+  },
+  {
+    "url": "https://settlement.gov.bd/Map/GetDivisionList"
+  },
+  {
+    "url": "https://settlement.gov.bd/Khatian/getdistrictlistdivisionwise"
+  },
+  {
+    "url": "https://settlement.gov.bd/Khatian/GetSurveyListDistrictWise"
+  },
+  {
+    "url": "https://settlement.gov.bd/Khatian/GetThanaListBySurveyMap"
+  },
+  {
+    "url": "https://settlement.gov.bd/Map/GetallBoundaryJson"
+  },
+  {
+    "url": "https://tiles.settlement.gov.bd/catalog"
+  },
+  {
+    "url": "https://map.land.gov.bd/"
+  }
+]

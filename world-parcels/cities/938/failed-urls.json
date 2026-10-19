@@ -1,0 +1,6 @@
+[
+  {
+    "url": "https://geodaten.graz.at/server/rest/services/GBG/KATASTER_und_Städtische_Grundstücke/FeatureServer/2/query",
+    "reason": "timeout_after_exact_query"
+  }
+]

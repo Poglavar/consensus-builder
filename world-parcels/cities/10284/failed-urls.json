@@ -1,0 +1,16 @@
+[
+  {
+    "url": "https://www.gaizhou.gov.cn/",
+    "reason": "TLS verification failed: certificate hostname mismatch"
+  },
+  {
+    "url": "http://zrzyj.yingkou.gov.cn/",
+    "reason": "DNS resolution timeout"
+  },
+  {
+    "url": "https://bdc.gaizhou.gov.cn/"
+  },
+  {
+    "url": "http://www.gaizhou.gov.cn/"
+  }
+]

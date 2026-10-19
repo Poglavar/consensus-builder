@@ -1,0 +1,6 @@
+[
+  {
+    "url": "https://gis.colorado.gov/public/rest/services/Address_and_Parcel/Colorado_Public_Parcels/FeatureServer/0",
+    "reason": "Held at the geometry gate: every source check passed (194 requests, 1 qualifier run(s) on this city) but the independent metric audit failed for Fort Collins (us-co-oit-statewide-parcels) with 107 material overlap pair(s) (> 0.01 m2; max 934 m2, 100% of the smaller; total 8.78e+04 m2); 107 exact-duplicate geometries under distinct IDs among 84 cached features (Larimer~9726150100 / Larimer~9726150…"
+  }
+]

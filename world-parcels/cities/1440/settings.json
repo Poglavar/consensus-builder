@@ -1,0 +1,137 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "1440",
+  "name": "Langwarrin, Australia",
+  "point": [
+    -38.1424007782017,
+    145.147328797441
+  ],
+  "bindings": [
+    {
+      "appCityId": "langwarrin",
+      "runtimeConfig": {
+        "id": "langwarrin",
+        "wupCityCode": "1440",
+        "label": "Langwarrin, Australia",
+        "currency": {
+          "locale": "en-AU",
+          "code": "AUD"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            -38.1424007782017,
+            145.147328797441
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            -38.1424007782017,
+            145.147328797441
+          ],
+          "fallbackDataset": [
+            145.147328797441,
+            -38.1424007782017
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "au-vic-vicmap-parcel",
+          "idPrefix": "AU-VIC-PARCEL-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 3,
+          "attribution": "<a href=\"https://www.arcgis.com/home/item.html?id=b62e9a7b32fc49f090c2644b2a7ed871\">State of Victoria, Department of Transport and Planning, Vicmap Parcel. CC BY 4.0. Adapted to WGS84.</a>"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "au-vic-vicmap-parcel",
+      "name": "Victoria Vicmap Parcel (PARCEL_MP)",
+      "adapter": "arcgis",
+      "endpoint": "https://services-ap1.arcgis.com/P744lA0wf4LlBZ84/arcgis/rest/services/Vicmap_Parcel/FeatureServer/0",
+      "idField": "parcel_pfi",
+      "idType": "string",
+      "idPattern": "^[0-9]{1,10}$",
+      "parcelNumberField": "parcel_spi",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "AU-VIC-PARCEL-",
+      "outFields": [
+        "OBJECTID",
+        "parcel_pfi",
+        "parcel_spi",
+        "parcel_ufi",
+        "parcel_status",
+        "parv_status",
+        "parv_z_level"
+      ],
+      "pageSize": 2000,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "countryCode": "AU",
+      "metricSrid": 32755,
+      "scope": "Victoria cadastral parcel map polygons; distinct from local-government property assessment units. Other Australian states use separate datasets. Only Approved (A) parcel and version records are ground; Proposed (P) records are excluded. Crown and government-road parcels remain included. Only G (unrestricted ground) and S (ground surface affected by strata) levels are ground; above/below strata are excluded. Additional enabled city entries have separate bounded qualification evidence; wider coverage remains unverified.",
+      "attribution": "State of Victoria, Department of Transport and Planning, Vicmap Parcel. CC BY 4.0. Adapted to WGS84.",
+      "licenceUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "catalogueUrl": "https://www.arcgis.com/home/item.html?id=b62e9a7b32fc49f090c2644b2a7ed871",
+      "attributeFilters": {
+        "parcel_status": "A",
+        "parv_status": "A",
+        "parv_z_level": [
+          "G",
+          "S"
+        ]
+      },
+      "cityIds": [
+        "langwarrin"
+      ],
+      "metricSridByCity": {
+        "langwarrin": 32755
+      },
+      "cityScopes": {
+        "point_cook": "218 unchanged native parcel polygons passed all eight qualification gates in bounded cells around the UN/WUP locator. Fresh independent metric audit (EPSG:32755) found zero invalid polygons, identity conflicts, duplicate geometry, material overlaps, or operation errors. Citywide completeness, legal title, survey accuracy, and currentness are not established.",
+        "dallas_au": "165 unchanged native parcel polygons passed all eight qualification gates in bounded cells around the UN/WUP locator. Fresh independent metric audit (EPSG:32755) found zero invalid polygons, identity conflicts, duplicate geometry, material overlaps, or operation errors. Citywide completeness, legal title, survey accuracy, and currentness are not established.",
+        "langwarrin": "210 unchanged native parcel polygons passed all eight qualification gates in bounded cells around the UN/WUP locator. Fresh independent metric audit (EPSG:32755) found zero invalid polygons, identity conflicts, duplicate geometry, material overlaps, or operation errors. Citywide completeness, legal title, survey accuracy, and currentness are not established.",
+        "melton": "127 unchanged native parcel polygons passed all eight qualification gates in bounded cells around the UN/WUP locator. Fresh independent metric audit (EPSG:32755) found zero invalid polygons, identity conflicts, duplicate geometry, material overlaps, or operation errors. Citywide completeness, legal title, survey accuracy, and currentness are not established.",
+        "pakenham": "43 unchanged native parcel polygons passed all eight qualification gates in bounded cells around the UN/WUP locator. Fresh independent metric audit (EPSG:32755) found zero invalid polygons, identity conflicts, duplicate geometry, material overlaps, or operation errors. Citywide completeness, legal title, survey accuracy, and currentness are not established."
+      },
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "AU",
+          "admin1": [
+            "AU-VIC"
+          ],
+          "basis": "Victoria statewide Vicmap cadastral parcels.",
+          "evidence": []
+        }
+      }
+    }
+  ]
+}

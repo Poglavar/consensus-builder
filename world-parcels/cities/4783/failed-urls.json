@@ -1,0 +1,15 @@
+[
+  {
+    "url": "https://kgeop.go.kr/"
+  },
+  {
+    "url": "https://www.kgeop.go.kr/info/infoMap.do?initMode=L",
+    "reason": "timeout"
+  },
+  {
+    "url": "https://www.molit.go.kr/USR/law/m_46/dtl.jsp?r_id=4978"
+  },
+  {
+    "url": "https://www.data.go.kr/data/15118500/fileData.do?recommendDataYn=Y"
+  }
+]

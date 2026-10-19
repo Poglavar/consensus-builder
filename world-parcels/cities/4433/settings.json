@@ -1,0 +1,121 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "4433",
+  "name": "Tembisa, South Africa",
+  "point": [
+    -26.0160233303594,
+    28.2050144110193
+  ],
+  "bindings": [
+    {
+      "appCityId": "tembisa",
+      "runtimeConfig": {
+        "id": "tembisa",
+        "label": "Tembisa, South Africa",
+        "currency": {
+          "locale": "en-ZA",
+          "code": "ZAR"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            -26.0160233303594,
+            28.2050144110193
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            -26.0160233303594,
+            28.2050144110193
+          ],
+          "fallbackDataset": [
+            28.2050144110193,
+            -26.0160233303594
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "za-ekurhuleni-stands",
+          "idPrefix": "ZA-EKU-STAND-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 3,
+          "attribution": "<a href=\"https://gis.ekurhuleni.gov.za/\">City of Ekurhuleni municipal stands — Tembisa sample</a> · adapted"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "za-ekurhuleni-stands",
+      "adapter": "arcgis",
+      "endpoint": "https://gis.ekurhuleni.gov.za/arcgis/rest/services/Ekurhuleni/Ekurhuleni_Propety_Data_Map/MapServer/1",
+      "idPrefix": "ZA-EKU-STAND-",
+      "idField": "GIS_KEY",
+      "objectIdField": "OBJECTID",
+      "idType": "string",
+      "outFields": [
+        "OBJECTID",
+        "GIS_KEY",
+        "TOWNSHIP_CODE",
+        "PROPNO",
+        "PTNO",
+        "SG_CODE"
+      ],
+      "pageSize": 1000,
+      "maxFeatures": 3000,
+      "maxBboxKm2": 1,
+      "boundsSrid": 4326,
+      "boundsProjection": "EPSG:4326",
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "nativeGeometryMode": "parts",
+      "disjointParts": true,
+      "partMatchFields": [
+        "TOWNSHIP_CODE",
+        "PROPNO",
+        "PTNO",
+        "SG_CODE"
+      ],
+      "name": "City of Ekurhuleni municipal stands — Tembisa sample",
+      "operator": "City of Ekurhuleni Geographic Information Systems",
+      "catalogueUrl": "https://gis.ekurhuleni.gov.za/",
+      "attribution": "City of Ekurhuleni GIS · municipal stands · adapted",
+      "countryCode": "ZA",
+      "metricSrid": 32735,
+      "cityIds": [
+        "tembisa"
+      ],
+      "scope": "231 valid, distinct Ekurhuleni municipal stand references verified in thirteen bounded 0.001-degree cells around the unchanged Tembisa WUP locator. GIS_KEY supplies native identity; every source component is retained and administrative references must agree. Complete object-ID manifests, three-row paging of the 45-row viewport and its full component refresh (fifteen geometry pages each), all 231 fresh identity reads, explicit absence, footprint and binding passed. Independent GEOS audit in EPSG:32735 found no invalid geometries, duplicates, sampled overlaps above 0.01 m² or operation errors. Stand S850000000000900000 retains eight disjoint components totalling about 1.963 km²; matching township/property/portion/SG references support its shared source identity. It is not excluded by size, flattened, clipped or repaired. Coverage, title, survey accuracy and identity beyond this bounded evidence are unverified.",
+      "licenceNote": "Public government cadastral/reference map polygons; source notices informational. Legal survey accuracy and title are unverified."
+    }
+  ]
+}

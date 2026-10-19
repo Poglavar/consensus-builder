@@ -1,0 +1,23 @@
+[
+  {
+    "url": "https://portalunico.iaip.gob.hn/30/50/"
+  },
+  {
+    "url": "https://sinit.hn/2025/02/07/0101-la-ceiba/"
+  },
+  {
+    "url": "https://www.ign.hn/cartografia"
+  },
+  {
+    "url": "https://geopub.sinap.hn/arcgis/rest/services/municipios/MapServer"
+  },
+  {
+    "url": "https://sinap.hn/"
+  },
+  {
+    "url": "https://geopub.sinap.hn/arcgis/rest/services/municipios/MapServer?f=pjson"
+  },
+  {
+    "url": "https://geopub.sinap.hn/arcgis/rest/services/nacaome/MapServer/0"
+  }
+]

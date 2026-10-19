@@ -1,0 +1,32 @@
+[
+  {
+    "url": "https://supaul.nic.in/service/land-records-7/"
+  },
+  {
+    "url": "https://supaul.nic.in/hi/service/%E0%A4%AD%E0%A5%82-%E0%A4%B0%E0%A4%BF%E0%A4%95%E0%A4%BE%E0%A4%B0%E0%A5%8D%E0%A4%A1%E0%A5%8D%E0%A4%B8/"
+  },
+  {
+    "url": "https://bhunaksha.bihar.gov.in/10/index.jsp"
+  },
+  {
+    "url": "https://bhunaksha.bihar.gov.in/10/config.js"
+  },
+  {
+    "url": "https://bhunaksha.bihar.gov.in/10/index.js"
+  },
+  {
+    "url": "https://bhunaksha.bihar.gov.in/rest/Levels/count"
+  },
+  {
+    "url": "https://bhunaksha.bihar.gov.in/rest/Levels/ListsAfterLevel"
+  },
+  {
+    "url": "https://bhunaksha.bihar.gov.in/rest/MapInfo/getVVVVExtentGeoref"
+  },
+  {
+    "url": "https://bhunaksha.bihar.gov.in/10/ScalarDatahandler"
+  },
+  {
+    "url": "https://bhunaksha.bihar.gov.in/rest/MapInfo/getPlotAtXY"
+  }
+]

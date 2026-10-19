@@ -1,0 +1,24 @@
+[
+  {
+    "url": "https://geoportal.gov.ro/inspireview/rest/services/CP/CP_View/MapServer/1?f=json",
+    "reason": "timeout after 30 seconds"
+  },
+  {
+    "url": "https://geoportal.gov.ro/inspireview/rest/services/CP/CP_View/MapServer/1/query",
+    "reason": "not executed after metadata timeout"
+  },
+  {
+    "url": "https://geoportal.ancpi.ro/imobile.html",
+    "reason": "DNS resolution failed in local curl environment"
+  },
+  {
+    "url": "https://is.ancpi.ro/informatii-utile/",
+    "reason": "DNS resolution failed in local curl environment"
+  },
+  {
+    "url": "https://geoportal.gov.ro/inspireview/rest/services/CP/CP_View/MapServer/1"
+  },
+  {
+    "url": "https://www.primaria-iasi.ro/dm_iasi/portal.nsf/pagini/gis%2Bcadastru%2B2026?Open="
+  }
+]

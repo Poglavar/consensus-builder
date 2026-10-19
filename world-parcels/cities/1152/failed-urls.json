@@ -1,0 +1,17 @@
+[
+  {
+    "url": "https://inspire.cadastre.gouv.fr/scpc/44109.wms?service=WMS&request=GetCapabilities"
+  },
+  {
+    "url": "https://eservices.nantesmetropole.fr/documents/20143/19077811/E-Service%2Burbanisme%2B-%2BCarte%2Binteractive%2Bdu%2BPLUM.pdf"
+  },
+  {
+    "url": "https://naogeow.nantesmetropole.fr/arcgis/rest/services/FondDePlan/FDC_couleur_WMS_CC47/MapServer"
+  },
+  {
+    "url": "https://www.data.gouv.fr/dataservices/api-carto-module-cadastre"
+  },
+  {
+    "url": "https://apicarto.ign.fr/api/cadastre/parcelle?code_insee=44109"
+  }
+]

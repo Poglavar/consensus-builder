@@ -1,0 +1,32 @@
+[
+  {
+    "url": "https://dados.pbh.gov.br/api/3/action/package_search?q=lote&rows=8",
+    "reason": "403"
+  },
+  {
+    "url": "https://dados.pbh.gov.br/dataset/lote",
+    "reason": "403"
+  },
+  {
+    "url": "https://bhmap.pbh.gov.br/v2/api/idebhgeo/lote?f=json",
+    "reason": "403"
+  },
+  {
+    "url": "https://bhmap.pbh.gov.br/",
+    "reason": "403"
+  },
+  {
+    "url": "https://ide.pbh.gov.br/geoserver/ows?service=WFS&request=GetCapabilities"
+  },
+  {
+    "url": "https://dados.pbh.gov.br/api/3/action/package_list"
+  },
+  {
+    "url": "https://dados.pbh.gov.br/api/3/action/package_search?q=lote&rows=3",
+    "reason": "403"
+  },
+  {
+    "url": "https://dados.pbh.gov.br/",
+    "reason": "403"
+  }
+]

@@ -1,0 +1,26 @@
+[
+  {
+    "url": "https://cadastre.mines.gov.gn/arcgis/rest/services?f=pjson"
+  },
+  {
+    "url": "https://cadastre.mines.gov.gn/arcgis/rest/services/MapPortal/GuineaPortal_ApplicationLayer/MapServer?f=jsapi"
+  },
+  {
+    "url": "https://service-public.gov.gn/ova_sev/certificat-dimmatriculation-de-titre-foncier/"
+  },
+  {
+    "url": "https://documents1.worldbank.org/curated/en/099100223105021298/pdf/P1468300fd3cb20560b4580db59e0c286fb.pdf"
+  },
+  {
+    "url": "https://cadastre.mines.gov.gn/arcgis/rest/services/MapPortal/GuineaPortal_ApplicationLayer/MapServer?f=pjson"
+  },
+  {
+    "url": "https://cadastre.mines.gov.gn/arcgis/rest/services/MapPortal/GuineaPortal_ApplicationLayer/MapServer/layers?f=pjson"
+  },
+  {
+    "url": "https://cadastre.mines.gov.gn/arcgis/rest/services/MapPortal/GuineaPortal_ApplicationLayer/MapServer/0?f=pjson"
+  },
+  {
+    "url": "https://cadastre.mines.gov.gn/arcgis/sharing/rest/content/items?f=pjson"
+  }
+]

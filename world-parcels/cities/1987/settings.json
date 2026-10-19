@@ -1,0 +1,111 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "1987",
+  "name": "Lima, Peru",
+  "point": [
+    -12.015,
+    -76.968
+  ],
+  "bindings": [
+    {
+      "appCityId": "lima",
+      "runtimeConfig": {
+        "id": "lima",
+        "label": "Lima, Peru",
+        "currency": {
+          "locale": "es-PE",
+          "code": "PEN"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            -12.015,
+            -76.968
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            -12.015,
+            -76.968
+          ],
+          "fallbackDataset": [
+            -76.968,
+            -12.015
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.0025,
+          "source": "parcel-source",
+          "sourceId": "pe-sedapal-publicaciones-lotes",
+          "idPrefix": "PE-SEDAPAL-LOT-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "<a href=\"https://gisprdsdp.sedapal.com.pe/arcgis/rest/services/Publicaciones/Proyectos_Sedapal/MapServer/21\">SEDAPAL Lima lots</a> · adapted · source conditions apply"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "pe-sedapal-publicaciones-lotes",
+      "endpoint": "https://gisprdsdp.sedapal.com.pe/arcgis/rest/services/Publicaciones/Proyectos_Sedapal/MapServer/21",
+      "idField": "GLOBALID",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "PE-SEDAPAL-LOT-",
+      "idType": "string",
+      "idPattern": "^\\{[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}\\}$",
+      "parcelNumberField": "PARCELCODE",
+      "outFields": [
+        "OBJECTID",
+        "GLOBALID",
+        "DISTRICTCODE",
+        "SQUARECODE",
+        "PARCELCODE",
+        "PROPERTYCODE",
+        "LASTUPDATE"
+      ],
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "adapter": "arcgis",
+      "name": "SEDAPAL Lima lots",
+      "countryCode": "PE",
+      "metricSrid": 32718,
+      "cityIds": [
+        "lima"
+      ],
+      "scope": "Utility mapping/lot layer; legal-cadastre status and citywide coverage are not established by this sample. Only the bounded Lima globe entry is enabled.",
+      "licenceNote": "No explicit reuse licence is published in the checked service metadata; source conditions remain informational.",
+      "catalogueUrl": "https://gisprdsdp.sedapal.com.pe/arcgis/rest/services/Publicaciones/Proyectos_Sedapal/MapServer/21",
+      "attribution": "SEDAPAL — Proyectos_Sedapal / Lotes. The third-party copy describes a SEDAPAL-commissioned Consorcio Servicios Integrales vector file; preserve that attribution when appropriate."
+    }
+  ]
+}

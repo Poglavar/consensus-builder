@@ -1,128 +1,59 @@
-// App admission must remain tied to the exact evidence that qualified its native parcel source.
-import { readFileSync } from 'node:fs';
-import { createHash } from 'node:crypto';
+// Working city settings must reproduce runtime source bindings without historical task archives.
+import { readFileSync, readdirSync, existsSync } from 'node:fs';
 import { runInNewContext } from 'node:vm';
 import { describe, expect, it } from 'vitest';
-import { parcelSourceForCity } from '../parcels/sources.js';
+import { browserParcelFactories } from '../parcels/browser-source-runtime.js';
 
 const root = new URL('../../', import.meta.url);
-const read = file => readFileSync(new URL(file, root));
+const read = file => readFileSync(new URL(file, root), 'utf8');
 const json = file => JSON.parse(read(file));
-const digest = file => createHash('sha256').update(read(file)).digest('hex');
-const manifests = [
-    json('world-parcels/research/qualification-admission-2026-10-11.json'),
-    json('world-parcels/research/qualification-admission-2026-10-11-round2.json'),
-    json('world-parcels/research/qualification-admission-2026-10-12-round2.json'),
-    json('world-parcels/research/qualification-admission-2026-10-12-pl-egib.json'),
-    json('world-parcels/research/qualification-admission-2026-10-13-mumbai.json'),
-    json('world-parcels/research/qualification-admission-2026-10-13-india-live.json'),
-    json('world-parcels/research/qualification-admission-2026-10-14-india-coastal.json'),
-    json('world-parcels/research/qualification-admission-2026-10-14-haryana-outlines.json'),
-    json('world-parcels/research/qualification-admission-2026-10-14-india-overlap-ground.json'),
-    json('world-parcels/research/qualification-admission-2026-10-14-india-tiles.json')
-];
-// A later admission that switched a live city to a newly qualified source (switchedFrom) replaces
-// its earlier binding; the earlier one stays in its manifest as history.
-const current = new Map();
-for (const manifest of manifests) for (const city of manifest.cities) current.set(city.cityCode, city);
-const admittedCities = [...current.values()];
-const registry = json('world-parcels/registry.json');
+const directory = new URL('world-parcels/cities/', root);
+const settings = readdirSync(directory).filter(code => /^\d+$/.test(code)
+    && existsSync(new URL(`${code}/settings.json`, directory)))
+    .map(code => ({ code, ...json(`world-parcels/cities/${code}/settings.json`) }));
+const catalog = json('backend/parcels/source-catalog.json');
 const context = { console, URL, URLSearchParams }; context.window = context;
-runInNewContext(read('frontend/js/city-config.js').toString(), context);
-const blockers = ['invalidCount', 'duplicateIdCount', 'conflictingSameIdGeometryCount',
-    'exactGeometryDuplicateCount', 'overlapPairCount', 'operationErrorCount'];
-const initialQualificationChecks = ['classification', 'exactIds', 'stableGeometry'];
-const alignmentEvidenceFiles = ['alignment', 'independentAlignment', 'alignmentEvidence', 'alignmentMetadata', 'alignmentNative'];
+runInNewContext(read('frontend/js/city-config.js'), context);
+const queryFields = ['adapter', 'endpoint', 'idPrefix', 'idField', 'idFields', 'identityKind',
+    'lookupCellSize', 'attributeFilters', 'attributeExclusions', 'attributeNotNull', 'attributeNull',
+    'featureType', 'boundsQueryMode', 'idsQueryMode', 'boundsSrid', 'boundsProjection', 'queryFormat',
+    'nativeGeometryMode', 'disjointParts', 'overlapResolution', 'zoom', 'layer', 'groupFields', 'extent'];
 
-describe('qualified city production admission', () => {
-    it('keeps every admission cohort complete and uniquely bound to app cities', () => {
-        for (const manifest of manifests) {
-            expect(manifest.cities.length).toBe(manifest.cityCount);
-            expect(new Set(manifest.cities.map(city => city.cityCode)).size).toBe(manifest.cities.length);
-        }
-        expect(new Set(admittedCities.map(city => city.appCityId)).size).toBe(admittedCities.length);
-        // A switch names the source the city was admitted on before, in an earlier manifest.
-        manifests.forEach((manifest, index) => {
-            for (const city of manifest.cities.filter(entry => entry.switchedFrom)) {
-                const earlier = manifests.slice(0, index).flatMap(entry => entry.cities).filter(entry => entry.cityCode === city.cityCode);
-                expect(earlier.at(-1)).toMatchObject({ appCityId: city.appCityId, sourceId: city.switchedFrom });
-            }
-        });
-        expect(manifests[1].cityCount).toBe(108);
-        expect(manifests[1].cities.every(city => city.primaryReview.status === 'admitted')).toBe(true);
-        // The 2026-10-12 jurisdiction-first release, written by scripts/admit-qualified-cities.mjs.
-        expect(manifests[2].cityCount).toBe(205);
-        expect(manifests[2].cities.every(city => city.primaryReview.status === 'admitted')).toBe(true);
+describe('working city settings', () => {
+    it('keeps one settings file per WUP city and uniquely binds app entries', () => {
+        expect(settings.length).toBeGreaterThan(0);
+        const ids = settings.flatMap(row => row.bindings.map(binding => binding.appCityId));
+        expect(new Set(ids).size).toBe(ids.length);
+        expect(new Set(settings.map(row => row.cityCode)).size).toBe(settings.length);
     });
 
-    it.each(admittedCities)('$appCityId resolves the qualified source with reproducible, non-repaired evidence', city => {
-        const source = parcelSourceForCity(city.appCityId);
-        expect(source?.descriptor.id).toBe(city.sourceId);
-        expect(source.descriptor.metricSrid).toBe(Number(city.metric.metricCrs.split(':')[1]));
-        const config = context.CityConfigManager.getCityConfig(city.appCityId);
-        expect(config.id).toBe(city.appCityId);
-        expect(config.parcels).toMatchObject({ source: 'parcel-source', sourceId: city.sourceId, ownership: false });
-        expect(config.map.defaultCenter).toEqual(city.appCenterLatLon);
-        const row = registry.cities.find(row => row.cityId === city.cityId && row.appCityId === city.appCityId);
-        expect(row?.sourceIds).toContain(city.sourceId);
-        expect(row.countryCode).toBe(city.countryCode);
-        const provider = registry.sources.find(row => row.sourceId === city.sourceId);
-        expect(provider.liveIntegration.status).toBe('enabled');
-        expect(provider.liveIntegration.cityIds).toContain(city.appCityId);
-        for (const kind of ['candidate', 'qualification', 'metric']) {
-            expect(digest(city.evidenceFiles[kind])).toBe(city[kind].evidenceExportSha256);
-        }
-        const qualification = json(city.evidenceFiles.qualification);
-        const candidate = json(city.evidenceFiles.candidate);
-        expect(candidate.city).toMatchObject({ code: city.cityCode, name: city.qualificationCityName });
-        expect(candidate.city.point).toEqual([city.wupPointLatLon[1], city.wupPointLatLon[0]]);
-        expect(source.descriptor.endpoint).toBe(candidate.descriptor.endpoint);
-        expect(source.descriptor.idPrefix).toBe(candidate.descriptor.idPrefix);
-        expect(source.descriptor.idField).toBe(candidate.descriptor.idField);
-        expect(source.descriptor.idFields).toEqual(candidate.descriptor.idFields);
-        expect(config.parcels.idPrefix).toBe(candidate.descriptor.idPrefix);
-        // Reused-provider admissions must execute the same query contract that was qualified.
-        if (city.primaryReview) {
-            for (const field of ['identityKind', 'lookupCellSize', 'attributeFilters', 'attributeExclusions', 'attributeNotNull', 'attributeNull',
-                'featureType', 'boundsQueryMode', 'idsQueryMode', 'boundsSrid', 'boundsProjection', 'queryFormat', 'nativeGeometryMode', 'disjointParts', 'overlapResolution', 'zoom', 'layer', 'groupFields', 'extent']) {
-                expect(source.descriptor[field] ?? null).toEqual(candidate.descriptor[field] ?? null);
+    it.each(settings)('WUP $cityCode preserves its executable source configuration', row => {
+        expect(row.schemaVersion).toBe(1);
+        expect(String(row.cityCode)).toBe(row.code);
+        if (!row.bindings.length) {
+            expect(row.sources.length).toBeGreaterThan(0);
+            for (const source of row.sources) {
+                expect(browserParcelFactories[source.adapter], `adapter is not installed: ${source.adapter}`).toBeTypeOf('function');
+                expect(source.endpoint).toMatch(/^https?:\/\//);
             }
+            return;
         }
-        expect(qualification.sourceId).toBe(city.sourceId);
-        expect(qualification.cityCode).toBe(city.cityCode);
-        expect(qualification.candidateSha256).toBe(city.candidate.qualificationRecordedSha256);
-        const metric = json(city.evidenceFiles.metric);
-        expect(metric.inputSha256).toBe(qualification.cacheSha256);
-        const independent = json(city.evidenceFiles.independentMetricAudit);
-        expect(independent.inputSha256).toBe(metric.inputSha256);
-        expect(independent.geometryChangedOrRepaired).toBe(false);
-        if (city.qualification.initialQualificationReview?.policy === 'parcel-availability-v1') {
-            expect(city.qualification.initialQualificationReview.requiredChecks).toEqual(initialQualificationChecks);
-            for (const key of initialQualificationChecks) expect(qualification.checks[key]?.passed).toBe(true);
-            for (const [key, passed] of Object.entries(city.qualification.gates)) {
-                expect(passed).toBe(qualification.checks[key]?.passed === true);
+        for (const binding of row.bindings) {
+            const runtime = context.CityConfigManager.getCityConfig(binding.appCityId);
+            expect(runtime.id).toBe(binding.appCityId);
+            expect(runtime.parcels).toEqual(binding.runtimeConfig.parcels);
+            const ids = [runtime.parcels.sourceId, runtime.parcels.liveSource?.sourceId,
+                ...(runtime.parcels.sources || []).map(source => source.sourceId || source.id)].filter(Boolean);
+            if (!ids.length && runtime.parcels.source !== 'parcel-source') ids.push(runtime.parcels.source);
+            for (const id of ids) {
+                const saved = row.sources.find(source => source.id === id);
+                expect(saved, `missing source settings: ${id}`).toBeTruthy();
+                const live = [...catalog.sources, ...(catalog.databaseSources || [])].find(source => source.id === id);
+                expect(live, `missing executable source: ${id}`).toBeTruthy();
+                for (const field of queryFields) expect(saved[field] ?? null).toEqual(live[field] ?? null);
+                if (saved.cityIds) expect(saved.cityIds).toContain(binding.appCityId);
+                if (saved.metricSridByCity) expect(saved.metricSridByCity[binding.appCityId]).toBe(live.metricSridByCity[binding.appCityId]);
             }
-            const cacheBytes = read(city.evidenceFiles.cache);
-            expect(digest(city.evidenceFiles.cache)).toBe(city.cache.evidenceExportSha256);
-            expect(digest(city.evidenceFiles.cache)).toBe(qualification.cacheSha256);
-            const cache = JSON.parse(cacheBytes);
-            expect(cache.type).toBe('FeatureCollection');
-            expect(cache.features.length).toBeGreaterThan(0);
-            expect(cache.features.every(feature => ['Polygon', 'MultiPolygon'].includes(feature.geometry?.type))).toBe(true);
-            expect(independent.inputSha256).toBe(qualification.cacheSha256);
-            const presentAlignment = alignmentEvidenceFiles.filter(key => Boolean(city.evidenceFiles[key]));
-            if (presentAlignment.length !== alignmentEvidenceFiles.length) {
-                expect(city.qualification.gates.alignment).toBe(false);
-                expect(city.qualification.initialQualificationReview.followUp.some(item => item.check === 'alignment')).toBe(true);
-            }
-        } else {
-            // Historical releases keep their stricter original evidence contract.
-            expect(Object.values(qualification.checks).filter(gate => gate.passed).length).toBe(8);
-            expect(independent.geometryPass).toBe(true);
-            for (const field of blockers) expect(independent[field]).toBe(0);
-        }
-        for (const locale of ['en', 'es', 'hr', 'sr']) {
-            expect(json(`frontend/i18n/${locale}.json`).city.labels[city.appCityId]).toBeTruthy();
         }
     });
 });

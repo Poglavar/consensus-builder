@@ -1,0 +1,10 @@
+[
+  {
+    "url": "https://www.shanxian.gov.cn/",
+    "reason": "timeout"
+  },
+  {
+    "url": "https://www.heze.gov.cn/",
+    "reason": "TLS handshake failure"
+  }
+]

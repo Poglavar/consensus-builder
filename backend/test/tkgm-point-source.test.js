@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { createTkgmPointSource } from '../parcels/tkgm-point-source.js';
 
-const fixture = JSON.parse(readFileSync(new URL('../../world-parcels/research/istanbul-live-2026-10-08-sample.geojson', import.meta.url), 'utf8')).features[0];
+const fixture = JSON.parse(readFileSync(new URL('./fixtures/parcel-adapter-tkgm.geojson', import.meta.url), 'utf8')).features[0];
 const descriptor = {
     adapter: 'tkgm-point',
     id: 'tr-tkgm-parselsorgu-api',

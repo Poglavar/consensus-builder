@@ -1,0 +1,16 @@
+[
+  {
+    "url": "https://bhumi.atrbpn.go.id/expapi/getPersil",
+    "reason": "401"
+  },
+  {
+    "url": "https://bhumi.atrbpn.go.id/bhumigs/umum/wms?service=WMS&request=GetCapabilities",
+    "reason": "404"
+  },
+  {
+    "url": "https://www.garutkab.go.id/berita/bupati-garut-buka-rakor-gtra-2026-dan-kenalkan-skema-baru-redistribusi-lahan"
+  },
+  {
+    "url": "https://bhumi.atrbpn.go.id/peta"
+  }
+]

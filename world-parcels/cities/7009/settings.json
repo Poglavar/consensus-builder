@@ -1,0 +1,129 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "7009",
+  "name": "Urbandale, United States",
+  "point": [
+    41.6149025063095,
+    -93.6594933902087
+  ],
+  "bindings": [
+    {
+      "appCityId": "urbandale",
+      "runtimeConfig": {
+        "id": "urbandale",
+        "wupCityCode": "7009",
+        "label": "Urbandale, United States",
+        "currency": {
+          "locale": "en-US",
+          "code": "USD"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            41.6149025063095,
+            -93.6594933902087
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            41.6149025063095,
+            -93.6594933902087
+          ],
+          "fallbackDataset": [
+            -93.6594933902087,
+            41.6149025063095
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "us-ia-des-moines-parcels",
+          "idPrefix": "US-IA-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Iowa Department of Homeland Security & Emergency Management; University of Iowa public mirror. Adapted to WGS84."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "us-ia-des-moines-parcels",
+      "name": "University of Iowa public mirror of Iowa statewide parcels, 2017",
+      "operator": "Iowa Department of Homeland Security & Emergency Management; University of Iowa public mirror",
+      "stateCode": "IA",
+      "endpoint": "https://services3.arcgis.com/kd9gaiUExYqUbnoq/arcgis/rest/services/Iowa_Parcels_2017/FeatureServer/0",
+      "idField": "STATEPARID",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "US-IA-",
+      "idType": "string",
+      "idPattern": ".+",
+      "outFields": [
+        "STATEPARID",
+        "OBJECTID"
+      ],
+      "parcelNumberField": "STATEPARID",
+      "metricSrid": 32615,
+      "pageSize": 500,
+      "maxBboxKm2": 25,
+      "maxFeatures": 10000,
+      "adapter": "arcgis",
+      "countryCode": "US",
+      "cityIds": [
+        "urbandale"
+      ],
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "scope": "Iowa statewide assessment parcel snapshot last updated at most 2 November 2017; includes Des Moines, Polk County. STATEPARID is source county-qualified parcel code; all rows in its complete source group form the native parcel geometry.",
+      "caveats": [
+        "Historical 2017 snapshot supplied as-is; not current assessment data or a legal survey. Same STATEPARID groups also share source UNPARCELID and PARCELNUMB."
+      ],
+      "catalogueUrl": "https://services3.arcgis.com/kd9gaiUExYqUbnoq/arcgis/rest/services/Iowa_Parcels_2017/FeatureServer/0",
+      "nativeGeometryMode": "parts",
+      "partsCoordinatePrecision": 9,
+      "maxConcurrentQueries": 2,
+      "attribution": "Iowa Department of Homeland Security & Emergency Management; University of Iowa public mirror. Adapted to WGS84.",
+      "licenceNote": "Source conditions are informational; users choose their source and intended use.",
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "US",
+          "admin1": [
+            "US-IA"
+          ],
+          "excludeAdmin1": [],
+          "basis": "Iowa Statewide Parcel Data 2017 snapshot (layer Parcels_20171102) carries all 99 Iowa counties on 2026-10-12; historical, not current.",
+          "evidence": []
+        },
+        "paceMs": 1000
+      }
+    }
+  ]
+}

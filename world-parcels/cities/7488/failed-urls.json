@@ -1,0 +1,17 @@
+[
+  {
+    "url": "https://anyror.gujarat.gov.in/",
+    "reason": "timeout/unusable"
+  },
+  {
+    "url": "https://e-milkat.gujarat.gov.in/",
+    "reason": "timeout/unusable"
+  },
+  {
+    "url": "https://dilrmp.gov.in/dilrmpold/State-RoR-Web",
+    "reason": "timeout/unusable"
+  },
+  {
+    "url": "https://revenuedepartment.gujarat.gov.in/branch/h-branch"
+  }
+]

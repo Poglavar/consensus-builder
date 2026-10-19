@@ -1,0 +1,32 @@
+[
+  {
+    "url": "https://mlhud.go.ug/ugnlis/"
+  },
+  {
+    "url": "https://ugnlis.mlhud.go.ug/public"
+  },
+  {
+    "url": "https://gis.mlhud.go.ug/geoserver/wfs?service=WFS&version=2.0.0&request=GetCapabilities",
+    "reason": "404"
+  },
+  {
+    "url": "https://gis.mlhud.go.ug/geoserver/ows?service=WFS&version=2.0.0&request=GetCapabilities",
+    "reason": "404"
+  },
+  {
+    "url": "https://gis.mlhud.go.ug/geoserver/wms?service=WMS&request=GetCapabilities",
+    "reason": "404"
+  },
+  {
+    "url": "https://gis.mlhud.go.ug/geoserver/portal/wfs?service=WFS&version=2.0.0&request=GetCapabilities",
+    "reason": "404"
+  },
+  {
+    "url": "https://gis.mlhud.go.ug/geoserver/portal/wms?service=WMS&request=GetCapabilities",
+    "reason": "404"
+  },
+  {
+    "url": "https://gis.mlhud.go.ug/geoserver/web/",
+    "reason": "404"
+  }
+]

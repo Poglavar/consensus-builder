@@ -1,0 +1,26 @@
+[
+  {
+    "url": "https://quevedo.gob.ec/impulsan-actualizacion-catastral-en-quevedo/"
+  },
+  {
+    "url": "https://quevedo.gob.ec/tramites-ciudadanos/"
+  },
+  {
+    "url": "https://www.geoportaligm.gob.ec/descargas_prueba/quevedo.html"
+  },
+  {
+    "url": "https://www.geoportaligm.gob.ec/pry_ca/"
+  },
+  {
+    "url": "https://www.geoportaligm.gob.ec/visualizador_ca/dist/"
+  },
+  {
+    "url": "https://www.geoportaligm.gob.ec/igm_afc/igm_ca2022/ows?service=WFS&request=GetCapabilities"
+  },
+  {
+    "url": "https://www.geoportaligm.gob.ec/igm_afc/igm_ca2022/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=igm_ca2022%3Av_area_cantones1&maxFeatures=1&outputFormat=application%2Fjson"
+  },
+  {
+    "url": "https://www.geoportaligm.gob.ec/igm_afc/igm_ca2022/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=igm_ca2022%3Av_area_cantones1&outputFormat=application%2Fjson&CQL_FILTER=dpa_canton=%272%27"
+  }
+]

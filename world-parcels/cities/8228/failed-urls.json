@@ -1,0 +1,6 @@
+[
+  {
+    "url": "https://enterprise.firstmap.delaware.gov/arcgis/rest/services/PlanningCadastre/DE_StateParcels/FeatureServer/0/query?where=COUNTY+IS+NOT+NULL+AND+PIN+IS+NOT+NULL&geometry=-75.5617580662526%2C39.7457171684999%2C-75.5612580662526%2C39.7462171684999&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+    "reason": "UND_ERR_CONNECT_TIMEOUT"
+  }
+]

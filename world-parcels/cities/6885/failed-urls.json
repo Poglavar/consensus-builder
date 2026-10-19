@@ -1,0 +1,21 @@
+[
+  {
+    "url": "https://naksha.dolr.gov.in/NakshaExternalApi/Master/GetStatelist",
+    "reason": "404"
+  },
+  {
+    "url": "https://naksha.dolr.gov.in/NakshaExternalApi/Master/GetPublicULBList",
+    "reason": "404"
+  },
+  {
+    "url": "https://naksha.dolr.gov.in/NakshaExternalApi/Map/GetPlotDataByLGDCode",
+    "reason": "404"
+  },
+  {
+    "url": "https://naksha.dolr.gov.in/NakshaExternalApi/Publication/GetPlotDataForClaim",
+    "reason": "404"
+  },
+  {
+    "url": "https://revenuedepartment.gujarat.gov.in/iora-service"
+  }
+]

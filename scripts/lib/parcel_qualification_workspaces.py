@@ -22,7 +22,9 @@ def _load_script(path: Path, name: str):
     if spec is None or spec.loader is None:
         raise ImportError(f"cannot load support script: {path}")
     module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
+    # Loading scripts from a worktree must not leave ignored __pycache__ files there;
+    # only the generated tmp state and the approved node_modules link may be discarded.
+    exec(compile(path.read_bytes(), str(path), "exec"), module.__dict__)
     return module
 
 
@@ -103,7 +105,8 @@ def _sensitive_path(rel: str) -> bool:
     lower = [part.casefold() for part in parts]
     name = lower[-1] if lower else ""
     return (any(part in {".aws", ".ssh", "credentials", "secrets"} for part in lower)
-            or name == ".env" or name.startswith(".env.")
+            or name.startswith(".env") or name.endswith(".env")
+            or any(marker in name for marker in ("credential", "secret", "password", "access_token", "api_key"))
             or name in {"id_rsa", "id_ed25519"}
             or name.endswith((".pem", ".key", ".p12", ".pfx")))
 
@@ -263,19 +266,8 @@ def _check_inputs(parent: Path, child: Path, paths: set[str], owned: dict[str, s
     return replacements
 
 
-def _copy_inputs(parent: Path, child: Path, paths: set[str], owned: dict[str, str], history: Path) -> dict[str, str]:
+def _copy_inputs(parent: Path, child: Path, paths: set[str], owned: dict[str, str]) -> dict[str, str]:
     replacements = _check_inputs(parent, child, paths, owned)
-    if replacements:
-        entries = []
-        for rel, digest in sorted(replacements.items()):
-            stored_rel = f"files/{rel}"
-            _copy_file(child / rel, history / stored_rel)
-            with (history / stored_rel).open("rb") as stream:
-                os.fsync(stream.fileno())
-            entries.append({"path": rel, "kind": "file", "storedPath": stored_rel, "sha256": digest})
-        manifest = {"entries": entries}
-        _json_write(history / "manifest.json", manifest)
-        _verify_archive(history, manifest)
     copied = dict(owned)
     for rel in sorted(paths):
         source, destination = parent / rel, child / rel
@@ -313,117 +305,6 @@ def _remap_value(value: Any, parent: Path, child: Path) -> Any:
     if isinstance(value, tuple):
         return tuple(_remap_value(item, parent, child) for item in value)
     return value
-
-
-def _archive_changes(root: Path, state_dir: Path, run_id: str) -> dict[str, Any]:
-    history = state_dir / "qualification-workspaces/history" / run_id
-    snapshot = _snapshot(root)
-    tracked_changes = set(_read_nul_paths(_git(root, "diff", "--no-renames", "--name-only", "-z", "HEAD").stdout.encode()))
-    untracked = _untracked_paths(root)
-    if history.exists():
-        # A failed preparation can leave a complete backup before any reset.
-        manifest = _read_metadata(history / "manifest.json")
-        _verify_archive(history, manifest)
-        expected = {entry["path"]: entry["sha256"] for entry in manifest["entries"]}
-        actual = {rel: _sha(os.fsencode(os.readlink(root / rel))) if (root / rel).is_symlink()
-                  else snapshot.get(rel) for rel in tracked_changes | untracked}
-        if manifest.get("runId") != run_id or manifest.get("root") != str(root) or expected != actual:
-            raise RuntimeError("workspace history differs from current changes; refusing reuse")
-        return manifest
-    immutable_files = _history_file_index(state_dir)
-    history.mkdir(parents=True)
-    entries: list[dict[str, Any]] = []
-    for rel in sorted(tracked_changes | untracked):
-        if rel not in snapshot or snapshot[rel] is None:
-            entries.append({"path": rel, "kind": "deleted", "sha256": None})
-            continue
-        path = root / rel
-        if path.is_symlink():
-            target = os.readlink(path)
-            entries.append({"path": rel, "kind": "symlink", "target": target,
-                            "sha256": _sha(os.fsencode(target))})
-        elif path.is_file():
-            content = path.read_bytes()
-            stored_rel = f"files/{rel}"
-            stored_path = history / stored_rel
-            stored_path.parent.mkdir(parents=True, exist_ok=True)
-            digest = _sha(content)
-            existing = immutable_files.get(digest)
-            if existing is not None:
-                if not existing.is_file() or existing.is_symlink() or _sha(existing.read_bytes()) != digest:
-                    raise IOError(f"workspace history deduplication source failed verification: {existing}")
-                os.link(existing, stored_path)
-            else:
-                temporary = stored_path.with_name(f".{stored_path.name}.{uuid.uuid4().hex}.tmp")
-                with temporary.open("wb") as stream:
-                    stream.write(content)
-                    stream.flush()
-                    os.fsync(stream.fileno())
-                os.replace(temporary, stored_path)
-                immutable_files[digest] = stored_path
-            entries.append({"path": rel, "kind": "file", "storedPath": stored_rel,
-                            "sha256": digest, "mode": path.stat().st_mode & 0o777})
-        else:
-            raise RuntimeError(f"cannot archive non-file workspace change: {rel}")
-    manifest = {"runId": run_id, "root": str(root), "entries": entries}
-    _json_write(history / "manifest.json", manifest)
-    _verify_archive(history, manifest)
-    return manifest
-
-
-def _history_file_index(state_dir: Path) -> dict[str, Path]:
-    """Index completed rescue files; verify selected bytes immediately before reuse."""
-    base = state_dir / "qualification-workspaces/history"
-    index: dict[str, Path] = {}
-    if not base.is_dir():
-        return index
-    for manifest_path in sorted(base.glob("*/manifest.json")):
-        archive = manifest_path.parent
-        manifest = _read_metadata(manifest_path)
-        for entry in manifest.get("entries", []):
-            if entry.get("kind") == "file":
-                path = archive / entry["storedPath"]
-                path.resolve().relative_to(archive.resolve())
-                if path.is_symlink():
-                    raise IOError(f"workspace history deduplication source is a symlink: {entry['path']}")
-                index.setdefault(entry["sha256"], path)
-    return index
-
-
-def _verify_archive(history: Path, manifest: dict[str, Any]) -> None:
-    for entry in manifest["entries"]:
-        kind = entry["kind"]
-        if kind == "file":
-            stored = (history / entry["storedPath"]).resolve()
-            stored.relative_to(history.resolve())
-            if not stored.is_file() or _sha(stored.read_bytes()) != entry["sha256"]:
-                raise IOError(f"workspace history backup failed verification: {entry['path']}")
-        elif kind == "symlink":
-            if _sha(os.fsencode(entry["target"])) != entry["sha256"]:
-                raise IOError(f"workspace symlink history backup failed verification: {entry['path']}")
-        elif kind != "deleted" or entry.get("sha256") is not None:
-            raise IOError(f"invalid deletion marker in workspace history: {entry['path']}")
-
-
-def _remove_archived_untracked(root: Path, manifest: dict[str, Any]) -> None:
-    untracked = _untracked_paths(root)
-    archived = {entry["path"] for entry in manifest["entries"]}
-    for rel in sorted(untracked):
-        if rel not in archived:
-            raise RuntimeError(f"untracked workspace file was not archived: {rel}")
-        path = root / rel
-        if path.is_symlink() or path.is_file():
-            path.unlink()
-        else:
-            raise RuntimeError(f"refusing to remove non-file untracked path: {rel}")
-    # Remove only now-empty directories; ignored data prevents rmdir and is preserved.
-    dirs = sorted({parent for rel in untracked for parent in (root / rel).parents if root in parent.parents},
-                  key=lambda p: len(p.parts), reverse=True)
-    for directory in dirs:
-        try:
-            directory.rmdir()
-        except OSError:
-            pass
 
 
 def _ensure_node_modules(parent: Path, child: Path) -> None:
@@ -504,8 +385,9 @@ def prepare_workspace(root: Path, state_dir: Path, slot: int, city: dict[str, An
         ignored_before = _ignored_snapshot(child)
         parent_paths = tracked_overlay | untracked_overlay | _tracked_paths(root, parent_head)
         _check_path_overlap(parent_paths, ignored)
-        manifest = _archive_changes(child, state_dir, metadata["runId"])
-        _remove_archived_untracked(child, manifest)
+        # Imported worker changes belong to the parent workflow. Reuse resets the
+        # finished worktree without creating a permanent rescue archive.
+        _git(child, "clean", "-fd")
         _git(child, "reset", "--hard", parent_head)
         ignored_after = _ignored_snapshot(child)
         if any(ignored_after.get(path) != digest for path, digest in ignored_before.items()):
@@ -520,8 +402,7 @@ def prepare_workspace(root: Path, state_dir: Path, slot: int, city: dict[str, An
         _git(root, "worktree", "add", "-b", branch, str(child), parent_head)
         _apply_parent_overlay(root, child, tracked_overlay, untracked_overlay)
 
-    owned_inputs = _copy_inputs(root, child, inputs, owned_inputs,
-                                state_dir / "qualification-workspaces/input-history" / run_id)
+    owned_inputs = _copy_inputs(root, child, inputs, owned_inputs)
     _ensure_node_modules(root, child)
     worker_state = child / "tmp/parcel-qualification-jobs" / run_id
     worker_state.mkdir(parents=True, exist_ok=False)
@@ -540,7 +421,7 @@ def prepare_workspace(root: Path, state_dir: Path, slot: int, city: dict[str, An
             "packet": child_packet, "baseSnapshot": snapshot_after_prepare,
             "baseBackendAdapters": _backend_adapter_hashes(child),
             "parentInputHashes": parent_hashes, "runId": run_id, "slot": slot,
-            "metadataPath": metadata_path}
+            "branch": branch, "metadataPath": metadata_path}
 
 
 def _backend_adapter_hashes(root: Path) -> dict[str, str]:
@@ -575,3 +456,75 @@ def finish_workspace(workspace: dict[str, Any]) -> None:
     metadata["finishHead"] = _head(root)
     metadata["status"] = "finished"
     _write_metadata(metadata_path, metadata)
+
+
+def discard_workspace(workspace: dict[str, Any]) -> None:
+    """Remove a collected qualification worktree after validating ownership and local data."""
+    root = Path(workspace["root"]).resolve()
+    metadata_path = Path(workspace["metadataPath"]).resolve()
+    slot = workspace.get("slot")
+    run_id = workspace.get("runId")
+    branch = workspace.get("branch")
+    if slot not in SLOT_IDS or metadata_path.name != f"slot-{slot}.json":
+        raise RuntimeError("qualification workspace discard identity mismatch")
+    metadata = _read_metadata(metadata_path)
+    metadata_branch = metadata.get("branch")
+    if branch is not None and branch != metadata_branch:
+        raise RuntimeError("qualification workspace discard identity mismatch")
+    branch = metadata_branch
+    if (metadata.get("status") != "finished" or metadata.get("slot") != slot
+            or metadata.get("runId") != run_id or not isinstance(branch, str)
+            or not re.fullmatch(r"qualification-[A-Za-z0-9_-]+", branch)
+            or Path(metadata.get("root", "")).resolve() != root
+            or not isinstance(metadata.get("finishSnapshot"), dict)):
+        raise RuntimeError("qualification workspace discard identity mismatch")
+    if not root.is_dir() or _head(root) != metadata.get("finishHead"):
+        raise RuntimeError("qualification workspace changed after finish; refusing discard")
+    if _git(root, "branch", "--show-current").stdout.strip() != branch:
+        raise RuntimeError("qualification worktree branch changed; refusing discard")
+    if _snapshot(root) != metadata["finishSnapshot"]:
+        raise RuntimeError("qualification workspace changed after finish; refusing discard")
+
+    common_raw = _git(root, "rev-parse", "--git-common-dir").stdout.strip()
+    common = Path(common_raw)
+    if not common.is_absolute():
+        common = (root / common).resolve()
+    parent_repo = common.parent.resolve()
+    if not (parent_repo / ".git").exists() or parent_repo == root:
+        raise RuntimeError("could not verify qualification worktree owner")
+    registrations = _git(parent_repo, "worktree", "list", "--porcelain").stdout.split("\n\n")
+    registered = any(
+        f"worktree {root}" in block.splitlines()
+        and f"branch refs/heads/{branch}" in block.splitlines()
+        for block in registrations
+    )
+    if not registered:
+        raise RuntimeError("qualification worktree registration does not match owned metadata")
+
+    ignored = _ignored_inventory(root)
+    for rel in sorted(ignored):
+        if rel in {"node_modules", "backend/node_modules"}:
+            link = root / rel
+            if (not link.is_symlink()
+                    or not (parent_repo / rel).exists()
+                    or link.resolve() != (parent_repo / rel).resolve()):
+                raise RuntimeError("workspace backend/node_modules is not the approved symlink")
+            continue
+        parts = Path(rel).parts
+        if "__pycache__" in parts:
+            cached = root / rel
+            if (cached.is_file() and not cached.is_symlink() and cached.suffix == ".pyc"):
+                continue
+            if cached.is_dir() and not cached.is_symlink() and cached.name == "__pycache__":
+                files = list(cached.rglob("*"))
+                if all(path.is_file() and not path.is_symlink() and path.suffix == ".pyc"
+                       for path in files):
+                    continue
+        if not rel.startswith("tmp/") or _sensitive_path(rel):
+            raise RuntimeError(f"unexpected ignored private path prevents workspace discard: {rel}")
+
+    _git(parent_repo, "worktree", "remove", "--force", str(root))
+    _git(parent_repo, "branch", "-D", branch)
+    if _git(parent_repo, "show-ref", "--verify", f"refs/heads/{branch}", check=False).returncode == 0:
+        raise RuntimeError("qualification workspace branch remains after discard")
+    metadata_path.unlink()

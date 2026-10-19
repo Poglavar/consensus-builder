@@ -1,0 +1,6 @@
+[
+  {
+    "url": "https://bz1uwwpkuinzbk94.svcs5.arcgis.com/bz1uwWPKUInZBK94/arcgis/rest/services/CA_Statewide_Parcels_Public_view/FeatureServer/0",
+    "reason": "Held at the geometry gate: every source check passed (44 requests, 1 qualifier run(s) on this city) but the independent metric audit failed for Santa Clarita (us-ca-calfire-statewide-parcels) with 54 material overlap pair(s) (> 0.01 m2; max 0.768 m2, 0.133% of the smaller; total 9.27 m2) among 178 cached features (06037~2857003014 / 06037~2857003026: 0.768 m2 = 0.133% of the smaller; 06037~285700…"
+  }
+]

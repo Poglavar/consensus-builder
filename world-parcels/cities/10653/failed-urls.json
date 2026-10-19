@@ -1,0 +1,31 @@
+[
+  {
+    "url": "https://tamilnilam.tn.gov.in/citizen",
+    "reason": "timeout after 12s"
+  },
+  {
+    "url": "https://eservices.tn.gov.in/eservicesnew/",
+    "reason": "timeout after 20s"
+  },
+  {
+    "url": "https://www.tnurbantree.tn.gov.in/kumbakonam/ward-map/",
+    "reason": "timeout after 12s"
+  },
+  {
+    "url": "https://www.tngis.tn.gov.in/apps.html",
+    "reason": "timeout after 12s"
+  },
+  {
+    "url": "https://tnurbanepay.tn.gov.in/PT_PropertySearch.aspx",
+    "reason": "timeout after 12s"
+  },
+  {
+    "url": "https://services.india.gov.in/service/detail/e-services-of-land-records-tamil-nadu"
+  },
+  {
+    "url": "https://play.google.com/store/apps/details?hl=en-US&id=org.tnega.tamil.nilam"
+  },
+  {
+    "url": "https://www.tnurbantree.tn.gov.in/kumbakonam/"
+  }
+]

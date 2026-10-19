@@ -1,0 +1,19 @@
+[
+  {
+    "url": "http://igvsb.geoportalsb.gob.ve/cgi-bin/mapserv?SERVICE=WMS&REQUEST=GetCapabilities",
+    "reason": "DNS failure"
+  },
+  {
+    "url": "https://alcaldiabarinas.gob.ve/",
+    "reason": "DNS/transport timeout"
+  },
+  {
+    "url": "https://igvsb.gob.ve/"
+  },
+  {
+    "url": "https://igvsb.gob.ve/servicios_cartograficos"
+  },
+  {
+    "url": "https://igvsb.gob.ve/servicio_api_mapoteca"
+  }
+]

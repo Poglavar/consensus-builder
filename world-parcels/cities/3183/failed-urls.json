@@ -1,0 +1,26 @@
+[
+  {
+    "url": "https://mbase.mkrada.gov.ua/register/3262621605964022967",
+    "reason": "404"
+  },
+  {
+    "url": "https://nsdi.gov.ua/api/v2/wfs/default/parcels?REQUEST=GetCapabilities",
+    "reason": "404"
+  },
+  {
+    "url": "https://nsdi.gov.ua/api/v2/geo/parcel?lat=46.9596870954058&lon=32.0172558160937",
+    "reason": "404"
+  },
+  {
+    "url": "https://mbase.mkrada.gov.ua/home"
+  },
+  {
+    "url": "https://mkrada.gov.ua/content/geoportal-mistobudivnogo-kadastru.html"
+  },
+  {
+    "url": "https://mykolaivska.land.gov.ua/kadastr-i-reiestratsiia/natsionalna-kadastrova-systema/"
+  },
+  {
+    "url": "https://nsdi.gov.ua/docs/api/v2/gis.html"
+  }
+]

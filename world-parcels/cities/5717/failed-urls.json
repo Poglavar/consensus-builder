@@ -1,0 +1,17 @@
+[
+  {
+    "url": "https://www.geoportal.gov.ph/"
+  },
+  {
+    "url": "https://www.butuan.gov.ph/comprehensive-development-plans/"
+  },
+  {
+    "url": "https://lra.gov.ph/images/Transparency_Page/XI.CC/LRA%20CITIZEN%20CHARTER%2007132022.pdf"
+  },
+  {
+    "url": "https://geoserver.geoportal.gov.ph/geoserver/geoportal/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetFeatureInfo&LAYERS=geoportal:denr_parcel_data&QUERY_LAYERS=geoportal:denr_parcel_data&STYLES=&SRS=EPSG:4326&BBOX=125.530,8.953,125.552,8.973&WIDTH=101&HEIGHT=101&X=50&Y=50&INFO_FORMAT=application/json&FEATURE_COUNT=3"
+  },
+  {
+    "url": "https://geoserver.geoportal.gov.ph/geoserver/geoportal/wms?service=WMS&request=GetCapabilities"
+  }
+]

@@ -1,0 +1,29 @@
+[
+  {
+    "url": "https://biharbhumi.bihar.gov.in/"
+  },
+  {
+    "url": "https://bhunaksha.bihar.gov.in/index.jsp"
+  },
+  {
+    "url": "https://dlrs.bihar.gov.in/services.html"
+  },
+  {
+    "url": "https://bhunaksha.bihar.gov.in/index.js"
+  },
+  {
+    "url": "https://bhunaksha.bihar.gov.in/assets/misc/config.js"
+  },
+  {
+    "url": "https://bhunaksha.bihar.gov.in/rest/Levels/count"
+  },
+  {
+    "url": "https://bhunaksha.bihar.gov.in/rest/Levels/ListsAfterLevel"
+  },
+  {
+    "url": "https://bhunaksha.bihar.gov.in/rest/MapInfo/getPlotAtXY"
+  },
+  {
+    "url": "https://bhunaksha.bihar.gov.in/WMS?SERVICE=WMS&REQUEST=GetCapabilities"
+  }
+]

@@ -1,0 +1,34 @@
+[
+  {
+    "url": "https://geoservices.bayern.de/wfs/v1/ogc_alkis_ave.cgi?service=WFS&version=2.0.0&request=GetCapabilities",
+    "reason": "401"
+  },
+  {
+    "url": "https://geoservices.bayern.de/wfs/v1/ogc_alkis_ave.cgi?service=WFS&version=2.0.0&request=GetFeature&typeNames=ave:Flurstueck&count=3&srsName=EPSG:4326&bbox=10.8905,48.3605,10.8935,48.3635,urn:ogc:def:crs:EPSG::4326&outputFormat=application/json",
+    "reason": "401"
+  },
+  {
+    "url": "https://geoservices.bayern.de/bvvapi/tb/flurstuecke?x=10.8920528462585&y=48.3618416588452&srid=4326",
+    "reason": "404"
+  },
+  {
+    "url": "https://geoservices.bayern.de/inspire-ows/v1/alkis/cp/dls/wfs?service=WFS&version=2.0.0&request=GetCapabilities",
+    "reason": "401"
+  },
+  {
+    "url": "https://geoservices.bayern.de/inspire-ows/v1/alkis/cp/vs/wms?service=WMS&version=1.3.0&request=GetCapabilities",
+    "reason": "401"
+  },
+  {
+    "url": "https://vermessungsamt-augsburg.de/vermessung/kataster/allgemein.html"
+  },
+  {
+    "url": "https://www.augsburg.de/buergerservice-rathaus/buergerservice/aemter-behoerden/staedtische-dienststellen/g/geodatenamt"
+  },
+  {
+    "url": "https://www.geodaten.bayern.de/opengeodata/OpenDataDetail.html?pn=parzellarkarte"
+  },
+  {
+    "url": "https://geoportal.bayern.de/geoportalbayern/suche/suche?57844=&f=true&q=Alkis"
+  }
+]

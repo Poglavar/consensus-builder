@@ -1,0 +1,17 @@
+[
+  {
+    "url": "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/107"
+  },
+  {
+    "url": "https://gisprod.rajasthan.gov.in/geocode/rest/services/JDA/Settlement_JDA/MapServer/0?f=pjson"
+  },
+  {
+    "url": "https://gisprod.rajasthan.gov.in/geocode/rest/services/JDA/Settlement_JDA/MapServer/0/query?where=1%3D1&outFields=*&returnGeometry=false&resultRecordCount=1&f=pjson"
+  },
+  {
+    "url": "https://edharti.rajasthan.gov.in/"
+  },
+  {
+    "url": "https://landrevenue.rajasthan.gov.in/content/dam/landrevenue/revenuedepartment/Revenue-New/Notification/Revenue_2023/KT-1%20%E0%A4%95%E0%A5%8D%E0%A4%B0%E0%A4%AE%E0%A5%8B%E0%A4%A8%E0%A5%8D%E0%A4%A8%E0%A4%A4%20%E0%A4%A4%E0%A4%B9%E0%A4%B8%E0%A5%80%E0%A4%B2%20%E0%A4%B6%E0%A5%8D%E0%A4%B0%E0%A5%80%E0%A4%AE%E0%A4%B9%E0%A4%BE%E0%A4%B5%E0%A5%80%E0%A4%B0%20%E0%A4%9C%E0%A5%80%20%28%E0%A4%95%E0%A4%B0%E0%Aौ%E0%A4%Bली%29-merged002.pdf"
+  }
+]

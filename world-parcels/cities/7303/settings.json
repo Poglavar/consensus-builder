@@ -1,0 +1,112 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "7303",
+  "name": "São Paulo, Brazil",
+  "point": [
+    -23.55052,
+    -46.6333
+  ],
+  "bindings": [
+    {
+      "appCityId": "sao_paulo",
+      "runtimeConfig": {
+        "id": "sao_paulo",
+        "label": "São Paulo, Brazil",
+        "currency": {
+          "locale": "pt-BR",
+          "code": "BRL"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            -23.55052,
+            -46.6333
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            -23.55052,
+            -46.6333
+          ],
+          "fallbackDataset": [
+            -46.6333,
+            -23.55052
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.0025,
+          "source": "parcel-source",
+          "sourceId": "br-sp-geosampa-lote-cidadao",
+          "idPrefix": "BR-SP-GEOSAMPA-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "<a href=\"https://geosampa.prefeitura.sp.gov.br/\">GeoSampa / Prefeitura do Município de São Paulo</a> · <a href=\"https://download.geosampa.prefeitura.sp.gov.br/PaginasPublicas/_SBC.aspx\">data and source conditions</a> · adapted"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "br-sp-geosampa-lote-cidadao",
+      "adapter": "wfs",
+      "endpoint": "https://wfs.geosampa.prefeitura.sp.gov.br/geoserver/geoportal/wfs",
+      "featureType": "geoportal:lote_cidadao",
+      "version": "2.0.0",
+      "idField": "cd_identificador",
+      "idType": "integer",
+      "idPrefix": "BR-SP-GEOSAMPA-",
+      "outFields": [
+        "cd_identificador",
+        "cd_identificador_original_lote",
+        "cd_setor_fiscal",
+        "cd_quadra_fiscal",
+        "cd_lote",
+        "cd_cib",
+        "cd_situacao"
+      ],
+      "parcelNumberField": "cd_lote",
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "name": "GeoSampa São Paulo fiscal lots",
+      "countryCode": "BR",
+      "metricSrid": 32723,
+      "cityIds": [
+        "sao_paulo"
+      ],
+      "scope": "São Paulo municipal fiscal cadastral lots. Fiscal identifiers and lot geometry do not establish legal title; only the bounded São Paulo globe entry is enabled.",
+      "licenceUrl": "https://geosampa.prefeitura.sp.gov.br/",
+      "catalogueUrl": "https://download.geosampa.prefeitura.sp.gov.br/PaginasPublicas/_SBC.aspx",
+      "licenceNote": "GeoSampa/PMSP publisher conditions apply; users are responsible for checking source terms for their intended use. Live viewer data is updated daily and downloadable files weekly, according to the publisher.",
+      "attribution": "GeoSampa / Prefeitura do Município de São Paulo, municipal fiscal lots; adapted to WGS84."
+    }
+  ]
+}

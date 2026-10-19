@@ -1,0 +1,23 @@
+[
+  {
+    "url": "https://www.leon.gob.mx/tesoreria/direccion-general.php?id=1"
+  },
+  {
+    "url": "https://www.leon.gob.mx/appportal/consultacartografica/"
+  },
+  {
+    "url": "https://www.plataformaleon.gob.mx/descarga.php"
+  },
+  {
+    "url": "https://www.plataformaleon.gob.mx/mapamunicipio.php"
+  },
+  {
+    "url": "https://plataformaleon.gob.mx/geoexplorer/composer/"
+  },
+  {
+    "url": "https://plataformaleon.gob.mx/geoserver/ows?service=WFS&request=GetCapabilities&version=2.0.0"
+  },
+  {
+    "url": "https://plataformaleon.gob.mx/geoserver/ows?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=implan%3Apredios_piloto"
+  }
+]

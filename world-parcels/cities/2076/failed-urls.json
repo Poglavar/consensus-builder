@@ -1,0 +1,20 @@
+[
+  {
+    "url": "https://www.ancfcc.gov.ma/",
+    "reason": "403"
+  },
+  {
+    "url": "https://www.ancfcc.gov.ma/arcgis/rest/services"
+  },
+  {
+    "url": "https://cadastre.ancfcc.gov.ma/"
+  },
+  {
+    "url": "https://www.ancfcc.gov.ma/Plancadastralpage",
+    "reason": "403"
+  },
+  {
+    "url": "https://www.ancfcc.gov.ma/cadastre/",
+    "reason": "403"
+  }
+]

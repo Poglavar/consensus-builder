@@ -1,0 +1,26 @@
+[
+  {
+    "url": "https://geo.canoas.rs.gov.br/server/rest/services?f=pjson"
+  },
+  {
+    "url": "https://geo.canoas.rs.gov.br/server/rest/services/Lotes_portal/FeatureServer/0?f=pjson"
+  },
+  {
+    "url": "https://geo.canoas.rs.gov.br/server/rest/services/Lote_GeoCanoas/FeatureServer/0?f=pjson"
+  },
+  {
+    "url": "https://geo.canoas.rs.gov.br/server/rest/services/centroide_lotes_06102025/FeatureServer/0?f=pjson"
+  },
+  {
+    "url": "https://geo.canoas.rs.gov.br/server/rest/services/lote_atualizacao_portal/FeatureServer/0?f=pjson"
+  },
+  {
+    "url": "https://geo.canoas.rs.gov.br/server/rest/services/Lotes_portal/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&resultRecordCount=1"
+  },
+  {
+    "url": "https://geo.canoas.rs.gov.br/server/rest/services/Lote_GeoCanoas/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&resultRecordCount=3"
+  },
+  {
+    "url": "https://geo.canoas.rs.gov.br/server/rest/services/Lotes_portal/FeatureServer/0/query?where=OBJECTID%3D1&outFields=OBJECTID&returnGeometry=false"
+  }
+]

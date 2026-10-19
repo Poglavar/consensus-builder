@@ -1,0 +1,10 @@
+[
+  {
+    "url": "https://www.naenara.com.kp/",
+    "reason": "TLS certificate verification failure / no verified response"
+  },
+  {
+    "url": "https://www.naenara.com.kp/main/index/en/first",
+    "reason": "TLS certificate verification failure / no verified response"
+  }
+]

@@ -1,0 +1,22 @@
+[
+  {
+    "url": "https://sig.onddl.sn/geoserver/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=geonode:parcelle&outputFormat=application%2Fjson&count=1",
+    "reason": "400"
+  },
+  {
+    "url": "https://sig.onddl.sn/geoserver/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=geonode:parcelles&outputFormat=application%2Fjson&count=1",
+    "reason": "400"
+  },
+  {
+    "url": "https://www.dgid.sn/"
+  },
+  {
+    "url": "https://sig.onddl.sn/"
+  },
+  {
+    "url": "https://www.dgid.sn/wp-content/uploads/2022/10/Magazine-ID-N%C2%B032_juillet_aou%CC%82t_septembre-2022-1_compressed.pdf"
+  },
+  {
+    "url": "https://www.geosenegal.gouv.sn/occupation-du-sol-ziguinchor-nd-28-ii.html"
+  }
+]

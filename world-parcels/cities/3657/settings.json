@@ -1,0 +1,124 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "3657",
+  "name": "Gießen, Germany",
+  "point": [
+    50.5871854112385,
+    8.67930634779687
+  ],
+  "bindings": [
+    {
+      "appCityId": "giessen",
+      "runtimeConfig": {
+        "id": "giessen",
+        "wupCityCode": "3657",
+        "label": "Gießen, Germany",
+        "currency": {
+          "locale": "de-DE",
+          "code": "EUR"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            50.5871854112385,
+            8.67930634779687
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            50.5871854112385,
+            8.67930634779687
+          ],
+          "fallbackDataset": [
+            8.67930634779687,
+            50.5871854112385
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "hessen-alkis-vereinfacht-wfs",
+          "idPrefix": "DE-HE-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Hessisches Landesamt für Bodenmanagement und Geoinformation · parcels · adapted"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "hessen-alkis-vereinfacht-wfs",
+      "adapter": "gml-wfs",
+      "name": "Hessen simplified ALKIS cadastral parcels",
+      "endpoint": "https://www.gds.hessen.de/wfs2/aaa-suite/cgi-bin/alkis/vereinf/wfs",
+      "version": "2.0.0",
+      "featureType": "ave:Flurstueck",
+      "idField": "oid",
+      "geometryField": "geometrie",
+      "responseCrs": "EPSG:25832",
+      "idPrefix": "DE-HE-",
+      "idType": "string",
+      "parcelNumberField": "oid",
+      "outFields": [
+        "oid"
+      ],
+      "countryCode": "DE",
+      "cityIds": [
+        "giessen"
+      ],
+      "metricSrid": 32632,
+      "maxBboxKm2": 1,
+      "pageSize": 50,
+      "maxFeatures": 300,
+      "maxResponseBytes": 1048576,
+      "maxTotalResponseBytes": 8388608,
+      "timeoutMs": 12000,
+      "capabilities": {
+        "areaEnumeration": true
+      },
+      "operator": "Hessisches Landesamt für Bodenmanagement und Geoinformation",
+      "scope": "State ALKIS cadastral parcels; frozen bounded Wiesbaden samples. Citywide completeness is unverified.",
+      "defaultForCity": true,
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "DE",
+          "admin1": [
+            "DE-HE"
+          ],
+          "basis": "Hessen statewide simplified ALKIS cadastral parcels (HVBG).",
+          "evidence": []
+        },
+        "keepPublishedFields": true
+      }
+    }
+  ]
+}

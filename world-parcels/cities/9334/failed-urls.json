@@ -1,0 +1,20 @@
+[
+  {
+    "url": "https://www.boai.gov.cn/",
+    "reason": "403"
+  },
+  {
+    "url": "https://henan.tianditu.gov.cn/jiaozuo/userServr.aspx",
+    "reason": "404"
+  },
+  {
+    "url": "https://henan.tianditu.gov.cn/jiaozuo/maptwo.aspx",
+    "reason": "404"
+  },
+  {
+    "url": "https://henan.tianditu.gov.cn/jiaozuo/map.htm"
+  },
+  {
+    "url": "https://henan.tianditu.gov.cn/"
+  }
+]

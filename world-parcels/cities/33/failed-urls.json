@@ -1,0 +1,17 @@
+[
+  {
+    "url": "http://www.georepertoire.gouv.sn/catalog/search/resource/details.page?uuid=%7BF8264ED8-8268-4F69-8BAB-64F0BC72E453%7D",
+    "reason": "503"
+  },
+  {
+    "url": "https://www.georepertoire.gouv.sn/"
+  },
+  {
+    "url": "http://www.georepertoire.gouv.sn/",
+    "reason": "503"
+  },
+  {
+    "url": "https://www.geosenegal.gouv.sn/georepertoire.html",
+    "reason": "403"
+  }
+]

@@ -1,0 +1,17 @@
+[
+  {
+    "url": "https://www.ipf.cu/",
+    "reason": "dns-failure"
+  },
+  {
+    "url": "https://www.inotu.gob.cu/",
+    "reason": "timeout"
+  },
+  {
+    "url": "https://www.guantanamo.gob.cu/",
+    "reason": "tls-connection-timeout"
+  },
+  {
+    "url": "https://www.onei.gob.cu/"
+  }
+]

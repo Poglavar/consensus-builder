@@ -1,0 +1,12 @@
+[
+  {
+    "url": "https://geo.piracicaba.sp.gov.br/app/geoserver/glue_piracicaba/wms?service=WMS&request=GetCapabilities",
+    "reason": "timeout after 20 seconds"
+  },
+  {
+    "url": "https://piracicaba.sp.gov.br/servicos/informacao-cadastral-imobiliaria/"
+  },
+  {
+    "url": "https://geo.piracicaba.sp.gov.br/app/glue-piracicaba/map.html"
+  }
+]

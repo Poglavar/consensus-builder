@@ -1,0 +1,22 @@
+[
+  {
+    "url": "https://map.land.gov.ua/",
+    "reason": "connect timeout after 8 seconds"
+  },
+  {
+    "url": "https://map.land.gov.ua/kadastrova-karta",
+    "reason": "connect timeout after 8 seconds"
+  },
+  {
+    "url": "https://luhanska.land.gov.ua/info/elektronni-posluhy-derzhheokadastru/"
+  },
+  {
+    "url": "https://land.gov.ua/faq/"
+  },
+  {
+    "url": "https://dzk.gov.ua/"
+  },
+  {
+    "url": "https://e.land.gov.ua/services"
+  }
+]

@@ -1,0 +1,19 @@
+[
+  {
+    "url": "https://bhubharati.telangana.gov.in/gis/",
+    "reason": "timeout after 20 seconds"
+  },
+  {
+    "url": "https://khammam.telangana.gov.in/survey-and-land-records/"
+  },
+  {
+    "url": "https://tgrac.telangana.gov.in/trac/webgis.php"
+  },
+  {
+    "url": "https://tgrac.telangana.gov.in/arcgis/rest/services/Hydra_Folder/Fourth_Window/MapServer/0?f=pjson"
+  },
+  {
+    "url": "https://tgrac.telangana.gov.in/arcgis/rest/services/Bhunaksha_Folder/Bhunaksha_query/MapServer/0",
+    "reason": "Held: exactIds, stableGeometry, sampling, completeness, binding (6 parcels, 34 requests) {\"exactIds\":{\"errorType\":\"Error\",\"code\":\"parcel-source-unavailable\",\"httpStatus\":504},\"stableGeometry\":{\"errorType\":\"Error\"},\"sampling\":{\"errorType\":\"Error\",\"code\":\"parcel-source-unavailable\",\"httpStatus\":504},\"binding\":{\"errorType\":\"Error\",\"code\":\"parcel-source-unavailable\",\"httpStatus\":504},\"fresh"
+  }
+]

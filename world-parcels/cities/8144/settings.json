@@ -1,0 +1,134 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "8144",
+  "name": "Sugarland Run, United States",
+  "point": [
+    39.0426212119399,
+    -77.3883142250015
+  ],
+  "bindings": [
+    {
+      "appCityId": "sugarland_run",
+      "runtimeConfig": {
+        "id": "sugarland_run",
+        "wupCityCode": "8144",
+        "label": "Sugarland Run, United States",
+        "currency": {
+          "locale": "en-US",
+          "code": "USD"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            39.0426212119399,
+            -77.3883142250015
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            39.0426212119399,
+            -77.3883142250015
+          ],
+          "fallbackDataset": [
+            -77.3883142250015,
+            39.0426212119399
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "us-va-richmond-parcels",
+          "idPrefix": "US-VA-RICHMOND-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 3,
+          "attribution": "<a href=\"https://www.rva.gov/index.php/assessor-real-estate/gismapping\">Virginia Geographic Information Network / Virginia Department of Emergency Management. Adapted to WGS84.</a>"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "endpoint": "https://vginmaps.vdem.virginia.gov/arcgis/rest/services/VA_Base_Layers/VA_Parcels/FeatureServer/0",
+      "adapter": "arcgis",
+      "name": "Virginia Parcels",
+      "operator": "Virginia Geographic Information Network / Virginia Department of Emergency Management",
+      "scope": "Richmond capital-area sample of the statewide VGIN compilation; wider coverage untested. Additional enabled city entries have separate bounded qualification evidence; wider coverage remains unverified.",
+      "idField": "VGIN_QPID",
+      "objectIdField": "OBJECTID",
+      "idType": "integer",
+      "idPattern": "^[0-9]+$",
+      "outFields": [
+        "VGIN_QPID",
+        "OBJECTID"
+      ],
+      "parcelNumberField": "VGIN_QPID",
+      "metricSrid": 32618,
+      "idPrefix": "US-VA-RICHMOND-",
+      "attributeFilters": null,
+      "id": "us-va-richmond-parcels",
+      "stateCode": "VA",
+      "cityIds": [
+        "sugarland_run"
+      ],
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "maxConcurrentQueries": 2,
+      "caveats": [
+        "Capital-area acceptance only; this does not establish full municipal or statewide completeness."
+      ],
+      "countryCode": "US",
+      "catalogueUrl": "https://www.rva.gov/index.php/assessor-real-estate/gismapping",
+      "attribution": "Virginia Geographic Information Network / Virginia Department of Emergency Management. Adapted to WGS84.",
+      "licenceNote": "Source conditions are informational; users choose their source and intended use.",
+      "metricSridByCity": {
+        "sugarland_run": 32618
+      },
+      "cityScopes": {
+        "arlington_va": "125 unchanged native parcel polygons passed all eight qualification gates in bounded cells around the UN/WUP locator. Fresh independent metric audit (EPSG:32618) found zero invalid polygons, identity conflicts, duplicate geometry, material overlaps, or operation errors. Citywide completeness, legal title, survey accuracy, and currentness are not established. The Washington urban-area locator is in Arlington County, Virginia; this entry does not claim Virginia parcel coverage in the District of Columbia. The existing Washington, D.C. municipal integration is unchanged.",
+        "norfolk": "53 unchanged native parcel polygons passed all eight qualification gates in bounded cells around the UN/WUP locator. Fresh independent metric audit (EPSG:32618) found zero invalid polygons, identity conflicts, duplicate geometry, material overlaps, or operation errors. Citywide completeness, legal title, survey accuracy, and currentness are not established.",
+        "dale_city": "22 unchanged native parcel polygons passed all eight qualification gates in bounded cells around the UN/WUP locator. Fresh independent metric audit (EPSG:32618) found zero invalid polygons, identity conflicts, duplicate geometry, material overlaps, or operation errors. Citywide completeness, legal title, survey accuracy, and currentness are not established.",
+        "lakeside": "91 unchanged native parcel polygons passed all eight qualification gates in bounded cells around the UN/WUP locator. Fresh independent metric audit (EPSG:32618) found zero invalid polygons, identity conflicts, duplicate geometry, material overlaps, or operation errors. Citywide completeness, legal title, survey accuracy, and currentness are not established.",
+        "manassas_park": "53 unchanged native parcel polygons passed all eight qualification gates in bounded cells around the UN/WUP locator. Fresh independent metric audit (EPSG:32618) found zero invalid polygons, identity conflicts, duplicate geometry, material overlaps, or operation errors. Citywide completeness, legal title, survey accuracy, and currentness are not established.",
+        "sugarland_run": "129 unchanged native parcel polygons passed all eight qualification gates in bounded cells around the UN/WUP locator. Fresh independent metric audit (EPSG:32618) found zero invalid polygons, identity conflicts, duplicate geometry, material overlaps, or operation errors. Citywide completeness, legal title, survey accuracy, and currentness are not established."
+      },
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "US",
+          "admin1": [
+            "US-VA"
+          ],
+          "excludeAdmin1": [],
+          "basis": "VGIN statewide layer \"Virginia Parcels\" aggregates locality parcel data; 136 locality FIPS codes present on 2026-10-12.",
+          "evidence": []
+        },
+        "paceMs": 1000
+      }
+    }
+  ]
+}

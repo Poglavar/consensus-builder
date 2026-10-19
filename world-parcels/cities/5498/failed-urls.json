@@ -1,0 +1,17 @@
+[
+  {
+    "url": "https://bndg.asga.dz/bndg/CARTO200K_P/Default_BNDG.aspx",
+    "reason": "timeout"
+  },
+  {
+    "url": "https://fadaeldjazair.mf.gov.dz/fr/geo_services/",
+    "reason": "timeout"
+  },
+  {
+    "url": "https://www.anfu.dz/",
+    "reason": "500"
+  },
+  {
+    "url": "https://www.mf.gov.dz/"
+  }
+]

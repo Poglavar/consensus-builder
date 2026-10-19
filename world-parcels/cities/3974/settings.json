@@ -1,0 +1,132 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "3974",
+  "name": "Sherbrooke, Canada",
+  "point": [
+    45.4019145613402,
+    -71.9004339251759
+  ],
+  "bindings": [
+    {
+      "appCityId": "sherbrooke",
+      "runtimeConfig": {
+        "id": "sherbrooke",
+        "wupCityCode": "3974",
+        "label": "Sherbrooke, Canada",
+        "currency": {
+          "locale": "en-CA",
+          "code": "CAD"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            45.4019145613402,
+            -71.9004339251759
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            45.4019145613402,
+            -71.9004339251759
+          ],
+          "fallbackDataset": [
+            -71.9004339251759,
+            45.4019145613402
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "ca-qc-cadastre-bd-allegee",
+          "idPrefix": "CA-QC-CADASTRE-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 3,
+          "attribution": "<a href=\"https://www.arcgis.com/home/item.html?id=07cfbd0ce7dc4d8ab53e7566b7055a55\">Gouvernement du Québec · cadastre_bd_allegee / GO01_Polygones_Lots. Indicative cadastral geometry; coordinates have no legal value. Adapted to WGS84.</a>"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "ca-qc-cadastre-bd-allegee",
+      "name": "Quebec cadastre renovated-lot polygons (GO01_Polygones_Lots)",
+      "adapter": "arcgis",
+      "endpoint": "https://services3.arcgis.com/0lL78GhXbg1Po7WO/arcgis/rest/services/cadastre_bd_allegee/FeatureServer/0",
+      "idField": "GlobalID",
+      "idType": "string",
+      "idPattern": "^\\{?[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}\\}?$",
+      "idQueryBraces": true,
+      "objectIdField": "OBJECTID",
+      "idPrefix": "CA-QC-CADASTRE-",
+      "parcelNumberField": "NO_LOT",
+      "outFields": [
+        "OBJECTID",
+        "GlobalID",
+        "NO_LOT"
+      ],
+      "boundsQueryMode": "object-ids",
+      "pageSize": 50,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "countryCode": "CA",
+      "metricSrid": 32618,
+      "scope": "Quebec-wide generalized renewed-cadastre lot polygons; Montreal is an indicative entry area only, not a Montreal-specific layer. Geometry is indicative and has no legal value; some polygons may represent complementary plans. Additional enabled city entries have separate bounded qualification evidence; wider coverage remains unverified.",
+      "licenceNote": "Reuse terms are informational; integration is enabled based on verified public endpoint behavior. Preserve attribution and the indicative-only caveat.",
+      "catalogueUrl": "https://www.arcgis.com/home/item.html?id=07cfbd0ce7dc4d8ab53e7566b7055a55",
+      "attribution": "Gouvernement du Québec · cadastre_bd_allegee / GO01_Polygones_Lots. Indicative cadastral geometry; coordinates have no legal value. Adapted to WGS84.",
+      "cityIds": [
+        "sherbrooke"
+      ],
+      "metricSridByCity": {
+        "sherbrooke": 32619
+      },
+      "cityScopes": {
+        "quebec": "77 unchanged native parcel polygons passed all eight qualification gates in bounded cells around the UN/WUP locator. Fresh independent metric audit (EPSG:32619) found zero invalid polygons, identity conflicts, duplicate geometry, material overlaps, or operation errors. Citywide completeness, legal title, survey accuracy, and currentness are not established.",
+        "gatineau": "212 unchanged native parcel polygons passed all eight qualification gates in bounded cells around the UN/WUP locator. Fresh independent metric audit (EPSG:32618) found zero invalid polygons, identity conflicts, duplicate geometry, material overlaps, or operation errors. Citywide completeness, legal title, survey accuracy, and currentness are not established.",
+        "trois_rivieres": "52 unchanged native parcel polygons passed all eight qualification gates in bounded cells around the UN/WUP locator. Fresh independent metric audit (EPSG:32618) found zero invalid polygons, identity conflicts, duplicate geometry, material overlaps, or operation errors. Citywide completeness, legal title, survey accuracy, and currentness are not established.",
+        "repentigny": "76 unchanged native parcel polygons passed all eight qualification gates in bounded cells around the UN/WUP locator. Fresh independent metric audit (EPSG:32618) found zero invalid polygons, identity conflicts, duplicate geometry, material overlaps, or operation errors. Citywide completeness, legal title, survey accuracy, and currentness are not established.",
+        "sainte_foy": "179 unchanged native parcel polygons passed all eight qualification gates in bounded cells around the UN/WUP locator. Fresh independent metric audit (EPSG:32619) found zero invalid polygons, identity conflicts, duplicate geometry, material overlaps, or operation errors. Citywide completeness, legal title, survey accuracy, and currentness are not established.",
+        "sherbrooke": "134 unchanged native parcel polygons passed all eight qualification gates in bounded cells around the UN/WUP locator. Fresh independent metric audit (EPSG:32619) found zero invalid polygons, identity conflicts, duplicate geometry, material overlaps, or operation errors. Citywide completeness, legal title, survey accuracy, and currentness are not established.",
+        "saint_jean_sur_richelieu": "79 unchanged native parcel polygons passed all eight qualification gates in bounded cells around the UN/WUP locator. Fresh independent metric audit (EPSG:32618) found zero invalid polygons, identity conflicts, duplicate geometry, material overlaps, or operation errors. Citywide completeness, legal title, survey accuracy, and currentness are not established.",
+        "saint_constant": "26 unchanged native parcel polygons passed all eight qualification gates in bounded cells around the UN/WUP locator. Fresh independent metric audit (EPSG:32618) found zero invalid polygons, identity conflicts, duplicate geometry, material overlaps, or operation errors. Citywide completeness, legal title, survey accuracy, and currentness are not established.",
+        "terrebonne": "41 unchanged native parcel polygons passed all eight qualification gates in bounded cells around the UN/WUP locator. Fresh independent metric audit (EPSG:32618) found zero invalid polygons, identity conflicts, duplicate geometry, material overlaps, or operation errors. Citywide completeness, legal title, survey accuracy, and currentness are not established.",
+        "saint_jerome": "153 unchanged native parcel polygons passed all eight qualification gates in bounded cells around the UN/WUP locator. Fresh independent metric audit (EPSG:32618) found zero invalid polygons, identity conflicts, duplicate geometry, material overlaps, or operation errors. Citywide completeness, legal title, survey accuracy, and currentness are not established."
+      },
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "CA",
+          "admin1": [
+            "CA-QC"
+          ],
+          "basis": "Quebec province-wide renewed cadastre (generalized lots).",
+          "evidence": []
+        }
+      }
+    }
+  ]
+}

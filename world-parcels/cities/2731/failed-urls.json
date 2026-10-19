@@ -1,0 +1,31 @@
+[
+  {
+    "url": "https://sig.manizales.gov.co/index.html",
+    "reason": "curl timeout after 20 seconds"
+  },
+  {
+    "url": "https://sig.manizales.gov.co/wadmzl/rest/services/2022_WEB/2022_consulta_catas_urbano_web_NEW/MapServer?f=pjson",
+    "reason": "curl timeout after 20 seconds"
+  },
+  {
+    "url": "https://sig.manizales.gov.co/wadmzl/rest/services/2022_WEB/2022_consulta_catas_urbano_web_NEW/MapServer/1/query",
+    "reason": "Underlying host request timed out before a response; no exact-point result was obtained"
+  },
+  {
+    "url": "https://sig.manizales.gov.co/wadmzl/rest/services/HACIENDA/servicio_GEOPREDIAL/MapServer/layers",
+    "reason": "curl timeout after 20 seconds"
+  },
+  {
+    "url": "https://sig.manizales.gov.co/wadmzl/rest/services/HACIENDA/servicio_GEOPREDIAL/MapServer/2/query",
+    "reason": "Not executed after the service host repeatedly timed out during discovery/metadata requests"
+  },
+  {
+    "url": "https://sig.manizales.gov.co/wadmzl/rest/services/2022_WEB/2022_consulta_catas_urbano_web_NEW/MapServer/1"
+  },
+  {
+    "url": "https://mapas.igac.gov.co/server/rest/services/catastro/Gestores_Catastrales/MapServer/1"
+  },
+  {
+    "url": "https://sig.manizales.gov.co/wadmzl/rest/services/HACIENDA/servicio_GEOPREDIAL/MapServer/2"
+  }
+]

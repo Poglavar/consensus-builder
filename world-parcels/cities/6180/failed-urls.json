@@ -1,0 +1,23 @@
+[
+  {
+    "url": "https://gis.sumedangkab.go.id/",
+    "reason": "Cloudflare 5xx error page"
+  },
+  {
+    "url": "https://geosrv-app.atrbpn.go.id/geoserver/geonode/ows?service=WFS&version=2.0.0&request=GetCapabilities",
+    "reason": "DNS resolution failure from this environment"
+  },
+  {
+    "url": "https://geosrv-app.atrbpn.go.id/geoserver/geonode/ows?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=geonode:lbs_parsial",
+    "reason": "DNS resolution failure from this environment"
+  },
+  {
+    "url": "https://atlas.atrbpn.go.id/"
+  },
+  {
+    "url": "https://bhumi.atrbpn.go.id/bantuan/landing"
+  },
+  {
+    "url": "https://atlas.atrbpn.go.id/api/v2/resources?format=json&page_size=1000"
+  }
+]

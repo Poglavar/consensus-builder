@@ -1,0 +1,14 @@
+[
+  {
+    "url": "http://222.143.63.46:8090/portal-catalog/servicemanager/special/child",
+    "reason": "401"
+  },
+  {
+    "url": "http://222.143.63.46:8090/portal-sysmanager/servicemanager/department/root/get",
+    "reason": "401"
+  },
+  {
+    "url": "http://222.143.63.46:8090/portal-servicemanager/resource/data/full",
+    "reason": "401"
+  }
+]

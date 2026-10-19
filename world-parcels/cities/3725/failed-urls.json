@@ -1,0 +1,16 @@
+[
+  {
+    "url": "https://rasht.ir/",
+    "reason": "browser_fetch_timeout"
+  },
+  {
+    "url": "https://iransdi.ncc.gov.ir/",
+    "reason": "browser_fetch_timeout"
+  },
+  {
+    "url": "https://fava.rasht.ir/"
+  },
+  {
+    "url": "https://nabzkhabar.ir/%D8%AA%D8%A8%D8%A7%D8%AF%D9%84-%D8%A7%D8%B7%D9%84%D8%A7%D8%B9%D8%A7%D8%AA-%D8%B4%D9%87%D8%B1%DB%8C/"
+  }
+]

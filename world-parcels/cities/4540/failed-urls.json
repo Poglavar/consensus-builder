@@ -1,0 +1,11 @@
+[
+  {
+    "url": "https://apicarto.ign.fr/api/cadastre"
+  },
+  {
+    "url": "https://inspire.cadastre.gouv.fr/scpc/83137.wms?service=WMS&request=GetCapabilities"
+  },
+  {
+    "url": "https://toulon.fr/les-autorisations-durbanisme"
+  }
+]

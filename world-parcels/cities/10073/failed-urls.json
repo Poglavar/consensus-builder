@@ -1,0 +1,26 @@
+[
+  {
+    "url": "https://bhubharati.telangana.gov.in/gis/",
+    "reason": "page found; current fetch returned an internal error"
+  },
+  {
+    "url": "https://tgrac.telangana.gov.in/arcgis/rest/services/Hydra_Folder/Fourth_Window/MapServer/0?f=pjson",
+    "reason": "DNS resolution timeout after 20 seconds"
+  },
+  {
+    "url": "https://karimnagar.telangana.gov.in/department/survey-and-land-records/"
+  },
+  {
+    "url": "https://tgrac.telangana.gov.in/trac/webgis.php"
+  },
+  {
+    "url": "https://tgrac.telangana.gov.in/arcgis/rest/services/Hydra_Folder/Fourth_Window/MapServer/0"
+  },
+  {
+    "url": "https://tgrac.telangana.gov.in/arcgis/rest/services/Hydra_Folder/Fourth_Window/MapServer/0/query?f=pjson&where=1%3D1&geometry=79.1268415140372%2C18.4409477121986&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID&returnGeometry=true&outSR=4326"
+  },
+  {
+    "url": "https://tgrac.telangana.gov.in/arcgis/rest/services/Bhunaksha_Folder/Bhunaksha_query/MapServer/0",
+    "reason": "Held: exactIds, stableGeometry, completeness (60 parcels, 300 requests) {\"forcedPaging\":{\"errorType\":\"Error\"},\"freshCollectedIdRead\":{\"errorType\":\"Error\",\"code\":\"parcel-source-unavailable\",\"httpStatus\":502}}"
+  }
+]

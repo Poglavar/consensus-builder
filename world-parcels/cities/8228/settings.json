@@ -1,0 +1,139 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "8228",
+  "name": "Wilmington, United States",
+  "point": [
+    39.7459671684999,
+    -75.5615080662526
+  ],
+  "bindings": [
+    {
+      "appCityId": "wilmington",
+      "runtimeConfig": {
+        "id": "wilmington",
+        "wupCityCode": "8228",
+        "label": "Wilmington, United States",
+        "currency": {
+          "locale": "en-US",
+          "code": "USD"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            39.7459671684999,
+            -75.5615080662526
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            39.7459671684999,
+            -75.5615080662526
+          ],
+          "fallbackDataset": [
+            -75.5615080662526,
+            39.7459671684999
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "us-de-firstmap-statewide-parcels",
+          "idPrefix": "US-DE-STATEWIDE-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "State of Delaware FirstMap and Delaware counties. Adapted to WGS84."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "us-de-firstmap-statewide-parcels",
+      "name": "Delaware State Parcels (FirstMap) — statewide",
+      "adapter": "arcgis",
+      "countryCode": "US",
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "maxConcurrentQueries": 2,
+      "cityIds": [
+        "wilmington"
+      ],
+      "licenceNote": "Source conditions are informational; users choose their source and intended use.",
+      "operator": "State of Delaware FirstMap; county parcel data",
+      "endpoint": "https://enterprise.firstmap.delaware.gov/arcgis/rest/services/PlanningCadastre/DE_StateParcels/FeatureServer/0",
+      "idFields": [
+        "COUNTY",
+        "PIN"
+      ],
+      "idFieldTypes": {
+        "COUNTY": "string",
+        "PIN": "string"
+      },
+      "objectIdField": "OBJECTID",
+      "outFields": [
+        "OBJECTID",
+        "COUNTY",
+        "PIN"
+      ],
+      "parcelNumberField": "PIN",
+      "idPrefix": "US-DE-STATEWIDE-",
+      "metricSrid": 32618,
+      "stateCode": "DE",
+      "attributeNotNull": [
+        "COUNTY",
+        "PIN"
+      ],
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "scope": "Delaware state parcel layer, all three counties. PIN is county-assigned with county-specific formats, so the native key is COUNTY plus PIN.",
+      "caveats": [
+        "Offset paging on this service returned the same object twice across pages (Wilmington, 2026-10-12); bounded reads use complete count/object-ID manifests.",
+        "This service evaluates any comparison with an empty-string literal as unknown (PIN <> '' and PIN NOT IN ('',' ') match zero rows), so no blank-string exclusion is configured; the 6 blank PINs statewide are NULL and are excluded by attributeNotNull. One PIN carries a leading or trailing space and is kept verbatim.",
+        "Same endpoint as us-de-kent-dover-parcels (COUNTY=Kent, key PIN under US-DE-KENT-); Kent County parcels would exist under both namespaces."
+      ],
+      "attribution": "State of Delaware FirstMap and Delaware counties. Adapted to WGS84.",
+      "catalogueUrl": "https://enterprise.firstmap.delaware.gov/arcgis/rest/services/PlanningCadastre/DE_StateParcels/FeatureServer/0",
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "US",
+          "admin1": [
+            "US-DE"
+          ],
+          "excludeAdmin1": [],
+          "basis": "FirstMap layer \"State Parcels\" covers Delaware; all three counties (Kent, New Castle, Sussex) present on 2026-10-12.",
+          "evidence": []
+        },
+        "paceMs": 1000
+      }
+    }
+  ]
+}

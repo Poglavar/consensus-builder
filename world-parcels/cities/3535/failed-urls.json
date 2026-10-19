@@ -1,0 +1,24 @@
+[
+  {
+    "url": "https://binangonan.gov.ph/mainland-map/",
+    "reason": "403"
+  },
+  {
+    "url": "https://binangonan.gov.ph/contact-us/"
+  },
+  {
+    "url": "https://binangonan.gov.ph/wp-content/uploads/2022/01/lgu-binangonan-citizens-charter-2021.pdf"
+  },
+  {
+    "url": "https://www.geoportal.gov.ph/"
+  },
+  {
+    "url": "https://geoserver.geoportal.gov.ph/geoserver/geoportal/wms"
+  },
+  {
+    "url": "https://geoserver.geoportal.gov.ph/geoserver/geoportal/ows"
+  },
+  {
+    "url": "https://geoserver.geoportal.gov.ph/geoserver/geoportal/wfs"
+  }
+]

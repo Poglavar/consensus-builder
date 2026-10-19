@@ -1,0 +1,24 @@
+[
+  {
+    "url": "https://myplace.cuyahogacounty.gov/null"
+  },
+  {
+    "url": "https://gis.cuyahogacounty.gov/server/rest/services/MyPlace/MyPLACE_Consolidated/MapServer"
+  },
+  {
+    "url": "https://gis.cuyahogacounty.gov/server/rest/services/CCFO/Parcel_Fabric_Taxparcels/FeatureServer"
+  },
+  {
+    "url": "https://www.cityofparma-oh.gov/AgendaCenter/ViewFile/Item/266?fileID=1467"
+  },
+  {
+    "url": "https://cuyahogacounty.gov/information-technology"
+  },
+  {
+    "url": "https://gis.cuyahogacounty.gov/server/rest/services/MyPlace/MyPLACE_Consolidated/MapServer/21/query?where=1%3D1%26outFields=PARCELPIN%26returnGeometry=true%26geometry=-81.7717%2C41.4366%2C-81.7517%2C41.4566%26geometryType=esriGeometryEnvelope%26inSR=4326%26spatialRel=esriSpatialRelIntersects%26outSR=4326%26f=geojson"
+  },
+  {
+    "url": "https://services2.arcgis.com/MlJ0G8iWUyC7jAmu/arcgis/rest/services/OhioStatewidePacels_full_view/FeatureServer/0",
+    "reason": "Held at the geometry gate: all source checks passed but the metric audit failed with 2 material overlap pairs among 88 cached Ohio OGRIP statewide polygons around Parma (Cuyahoga~43108001 / Cuyahoga~43109005: 27.08 m2, 0.08% of the smaller parcel; Cuyahoga~01717043 / Cuyahoga~43101002: 0.079 m2), 0 invalid and 0 duplicates. The overlaps are in the published polygons; source polygons are never rep…"
+  }
+]

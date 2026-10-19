@@ -1,0 +1,20 @@
+[
+  {
+    "url": "https://www.poway.org/784/Online-Maps"
+  },
+  {
+    "url": "https://powaygis.poway.org/powaygis/rest/services/Public/PowGIS_Main_Labels/MapServer/2"
+  },
+  {
+    "url": "https://powaygis.poway.org/powaygis/rest/services/Public/PowHUB_Landbase_Layers/MapServer/2"
+  },
+  {
+    "url": "https://powaygis.poway.org/powaygis/rest/services/Public/PowGIS_Main_Labels/MapServer/2/query?where=1%3D1&geometry=-117.105325998816%2C32.9554070237508&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID%2CAPN&returnGeometry=true&outSR=4326&f=geojson&resultRecordCount=3"
+  },
+  {
+    "url": "https://powaygis.poway.org/powaygis/rest/services/Public/PowGIS_Main_Labels/MapServer/2?f=pjson"
+  },
+  {
+    "url": "https://powaygis.poway.org/powaygis/rest/services/Public/PowGIS_Main_Labels/MapServer/2/query"
+  }
+]

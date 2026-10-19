@@ -1,0 +1,112 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "8270",
+  "name": "Philadelphia, United States",
+  "point": [
+    39.9809715945293,
+    -75.1611281567456
+  ],
+  "bindings": [
+    {
+      "appCityId": "philadelphia",
+      "runtimeConfig": {
+        "id": "philadelphia",
+        "label": "Philadelphia, United States",
+        "currency": {
+          "locale": "en-US",
+          "code": "USD"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            39.9809715945293,
+            -75.1611281567456
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            39.9809715945293,
+            -75.1611281567456
+          ],
+          "fallbackDataset": [
+            -75.1611281567456,
+            39.9809715945293
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "us-pa-philadelphia-dor-active-ground",
+          "idPrefix": "US-PA-PHILADELPHIA-DOR-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 3,
+          "attribution": "<a href=\"https://opendataphilly.org/datasets/department-of-records-property-parcels/\">Philadelphia Department of Records active ground parcels</a> · active ground parcels · adapted"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "us-pa-philadelphia-dor-active-ground",
+      "name": "Philadelphia Department of Records active ground parcels",
+      "adapter": "arcgis",
+      "endpoint": "https://services.arcgis.com/fLeGjb7u4uXqeF9q/arcgis/rest/services/DOR_Parcel/FeatureServer/0",
+      "idField": "mapreg",
+      "objectIdField": "objectid",
+      "idType": "string",
+      "idPrefix": "US-PA-PHILADELPHIA-DOR-",
+      "outFields": [
+        "objectid",
+        "mapreg",
+        "status",
+        "elev_flag"
+      ],
+      "attributeFilters": {
+        "status": 1,
+        "elev_flag": 0
+      },
+      "pageSize": 100,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 1,
+      "countryCode": "US",
+      "metricSrid": 32618,
+      "cityIds": [
+        "philadelphia"
+      ],
+      "maxConcurrentQueries": 2,
+      "scope": "500 valid, distinct active no-elevation DOR parcel polygons verified in thirteen local cells around the selected Philadelphia locator. Complete pages and all fresh exact-ID geometry hashes agree. Five narrow boundary slivers remain (maximum 0.78% of the smaller parcel); no geometry repair applied. Broader city completeness and legal boundary accuracy are unverified.",
+      "operator": "City of Philadelphia Department of Records / CityGeo",
+      "catalogueUrl": "https://opendataphilly.org/datasets/department-of-records-property-parcels/",
+      "attribution": "Philadelphia Department of Records / CityGeo · active ground parcels; reference boundaries.",
+      "licenceNote": "City of Philadelphia public-use data, provided as is; reference boundaries do not replace recorded deeds or surveys. Source notices are informational."
+    }
+  ]
+}

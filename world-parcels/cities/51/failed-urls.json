@@ -1,0 +1,13 @@
+[
+  {
+    "url": "https://bndg.asga.dz/bndg/CARTO200K_P/Default_BNDG.aspx",
+    "reason": "timeout after 20 seconds"
+  },
+  {
+    "url": "https://monographie.interieur.gov.dz/detail_wilaya.php?dossier_id=5&wil=8",
+    "reason": "official search result; direct fetch unavailable in web reader"
+  },
+  {
+    "url": "https://www.joradp.dz/FTP/Jo-Francais/2002/F2002042.pdf"
+  }
+]

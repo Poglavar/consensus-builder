@@ -1,0 +1,118 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "8229",
+  "name": "Vitória, Brazil",
+  "point": [
+    -20.3155,
+    -40.3128
+  ],
+  "bindings": [
+    {
+      "appCityId": "vitoria",
+      "runtimeConfig": {
+        "id": "vitoria",
+        "label": "Vitória, Brazil",
+        "currency": {
+          "locale": "pt-BR",
+          "code": "BRL"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            -20.3155,
+            -40.3128
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            -20.3155,
+            -40.3128
+          ],
+          "fallbackDataset": [
+            -40.3128,
+            -20.3155
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "br-vitoria-lotes",
+          "idPrefix": "BR-VIX-LOTE-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 3,
+          "attribution": "<a href=\"https://gis.vitoria.es.gov.br/arcgis/rest/services/MapaBaseImobiliario/MapServer/101\">Vitória municipal Lote — central reference</a> · adapted"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "br-vitoria-lotes",
+      "adapter": "arcgis",
+      "endpoint": "https://gis.vitoria.es.gov.br/arcgis/rest/services/MapaBaseImobiliario/MapServer/101",
+      "idPrefix": "BR-VIX-LOTE-",
+      "idFields": [
+        "codGeo",
+        "codLote"
+      ],
+      "idFieldTypes": {
+        "codGeo": "string",
+        "codLote": "integer"
+      },
+      "objectIdField": "OBJECTID",
+      "outFields": [
+        "OBJECTID",
+        "codGeo",
+        "codLote",
+        "codGeoPoligono"
+      ],
+      "pageSize": 1000,
+      "maxFeatures": 3000,
+      "maxBboxKm2": 1,
+      "boundsSrid": 31984,
+      "boundsProjection": "+proj=utm +zone=24 +south +ellps=GRS80 +units=m +no_defs",
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "name": "Vitória municipal Lote — central reference",
+      "operator": "Prefeitura Municipal de Vitória",
+      "catalogueUrl": "https://gis.vitoria.es.gov.br/arcgis/rest/services/MapaBaseImobiliario/MapServer/101",
+      "attribution": "Prefeitura Municipal de Vitória · Mapa Base Imobiliário Lote · adapted",
+      "countryCode": "BR",
+      "metricSrid": 32724,
+      "cityIds": [
+        "vitoria"
+      ],
+      "scope": "127 valid, distinct municipal Lote references verified in thirteen bounded 0.001-degree cells at the separately identified central Vitória reference [-20.3155,-40.3128]. The unchanged WUP locator has no exact-point parcel. Complete object-ID manifests, 31-row forced three-row paging over eleven geometry pages, all 127 fresh composite codGeo/codLote identities, explicit absence, footprint and binding passed in 21 checks. Native EPSG:31984 re-reads confirm four tiny source boundary-sliver pairs totaling 0.37279 m²; the largest pair is 0.17233 m², the largest fraction is 0.03197% of the smaller parcel, and overlap-part inscribed diameters are 0.00092–0.01331 m (GEOS tolerance 0.0001 m). Root accepts these documented narrow slivers for bounded reference use, consistent with the Philadelphia review. All original coordinates remain unchanged; no repair, clipping, snapping or selective deletion. Citywide completeness, source-wide identity uniqueness, survey accuracy and legal-title extent remain unverified.",
+      "licenceNote": "Public municipal property-base map; source notices informational. Original boundary slivers preserved; legal title and survey accuracy unverified.",
+      "maxConcurrentQueries": 2
+    }
+  ]
+}

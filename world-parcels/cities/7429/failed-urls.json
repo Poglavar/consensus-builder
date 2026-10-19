@@ -1,0 +1,35 @@
+[
+  {
+    "url": "https://acl.kulaura.moulvibazar.gov.bd/"
+  },
+  {
+    "url": "https://map.settlement.gov.bd/"
+  },
+  {
+    "url": "https://map.land.gov.bd/"
+  },
+  {
+    "url": "https://dlrs.gov.bd/site/page/767754cd-5340-4356-851f-210c944f5ba8/Find-Mouza-Map"
+  },
+  {
+    "url": "https://map.settlement.gov.bd/assets/index-CID5kj8t.js"
+  },
+  {
+    "url": "https://map.settlement.gov.bd/api/locations/divisions"
+  },
+  {
+    "url": "https://map.settlement.gov.bd/api/locations/districts?division=সিলেট"
+  },
+  {
+    "url": "https://map.settlement.gov.bd/api/locations/upazilas?division=সিলেট&district=মৌলভীবাজার"
+  },
+  {
+    "url": "https://map.settlement.gov.bd/api/locations/mouzas?division=সিলেট&district=মৌলভীবাজার&upazila=কুলাউড়া"
+  },
+  {
+    "url": "https://map.settlement.gov.bd/api/search?division=সিলেট&district=মৌলভীবাজার&upazila=কুলাউড়া&mouza=কুলাউড়া&page=1&limit=3"
+  },
+  {
+    "url": "https://gis.land.gov.bd/geoserver/wsDMMS/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=wsDMMS:mouza&outputFormat=application%2Fjson&srsName=EPSG%3A4326&bbox=92.0177906%2C24.4894522%2C92.0377906%2C24.5094522%2CEPSG%3A4326&maxFeatures=3"
+  }
+]

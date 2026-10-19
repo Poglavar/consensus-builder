@@ -1,0 +1,17 @@
+[
+  {
+    "url": "https://d2d.pulse.gop.pk/api/LandHierarchy/GetDivisionsList",
+    "reason": "401"
+  },
+  {
+    "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/Punjab/Pulse_Map/MapServer",
+    "reason": "404"
+  },
+  {
+    "url": "https://gismaps.pulse.gop.pk/arcgis/rest/services/Punjab/Pulse_Map/MapServer",
+    "reason": "DNS failure"
+  },
+  {
+    "url": "https://pmu-lgcdd.gop.pk/Land_Use_Plan/Gujrat/LUC/MC_Lalamusa_LUC.pdf"
+  }
+]

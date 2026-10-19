@@ -1,0 +1,26 @@
+[
+  {
+    "url": "https://iligan.gov.ph/contactus?25524="
+  },
+  {
+    "url": "https://iligan.gov.ph/CC2024-5th-Edition.pdf?1491188561="
+  },
+  {
+    "url": "https://geoportal.gov.ph/"
+  },
+  {
+    "url": "https://geoportal.gov.ph/layers/fetchlayers"
+  },
+  {
+    "url": "https://geoportal.gov.ph/js/script.js"
+  },
+  {
+    "url": "https://geoserver.geoportal.gov.ph/geoserver/geoportal/wms"
+  },
+  {
+    "url": "https://geoserver.geoportal.gov.ph/geoserver/geoportal/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetFeatureInfo&LAYERS=geoportal:denr_parcel_data&QUERY_LAYERS=geoportal:denr_parcel_data&STYLES=&SRS=EPSG:4326&BBOX=124.2358,8.2266,124.2375,8.2282&WIDTH=800&HEIGHT=800&X=401&Y=400&INFO_FORMAT=application/json&FEATURE_COUNT=3"
+  },
+  {
+    "url": "https://iligan.gov.ph/knowiligan/map?15954149="
+  }
+]

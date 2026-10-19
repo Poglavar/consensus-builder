@@ -53,6 +53,9 @@ class PipelineTests(unittest.TestCase):
         for city in self.cities:
             self.runner._city_entry(city)
         self.pool = pipeline.ContinuousPipeline(self.runner, self.cities, self.root)
+        finish = patch.object(pipeline, 'finish_city', return_value=False)
+        self.finish_city = finish.start()
+        self.addCleanup(finish.stop)
 
     def test_busy_qualification_does_not_block_research_or_review(self):
         self.pool.active['q'] = {'spec': {'cityCodes': ['1'], 'lane': 'qualification'}}
@@ -141,28 +144,30 @@ class PipelineTests(unittest.TestCase):
                                       'validatedStages': [['1', 'receipt']]})
         self.assertEqual(self.pool.validated, set())
 
-    def test_dispatch_and_accept_externalize_finished_snapshots_but_keep_live_inputs(self):
-        historical = {'status': 'failed', 'isolation': {'workspace': {'baseSnapshot': {'old.js': 'old'}}}}
-        current = {'status': 'running', 'isolation': {'workspace': {'baseSnapshot': {'live.js': 'live'}}}}
+    def test_dispatch_discards_histories_and_keeps_only_live_qualification(self):
         row = self.runner.state['cities']['1']
-        row.update(qualification=current, qualificationHistory=[historical])
+        row.update(qualification={'status': 'running', 'isolation': {'workspace': {'baseSnapshot': {'live.js': 'live'}}}},
+                   qualificationHistory=[{'isolation': {'workspace': {'baseSnapshot': {'old.js': 'old'}}}}])
         self.pool.popen = Mock(return_value=SimpleNamespace(pid=os.getpid()))
         self.pool._start('qualification', [self.cities[0]])
         job = next(iter(self.pool.active.values()))
         self.addCleanup(job['out'].close)
         dispatched = json.loads((job['directory'] / 'input.json').read_text())['state']['cities']['1']
-        history_workspace = dispatched['qualificationHistory'][0]['isolation']['workspace']
-        self.assertNotIn('baseSnapshot', history_workspace)
-        ref = history_workspace['baseSnapshotRef']
-        self.assertEqual(json.loads((self.root / ref['path']).read_text()), {'old.js': 'old'})
+        self.assertNotIn('qualificationHistory', dispatched)
         self.assertEqual(dispatched['qualification']['isolation']['workspace']['baseSnapshot'], {'live.js': 'live'})
-        self.accept('qualification', {'cities': {'1': {'qualification': {
-            'status': 'integrated', 'isolation': {'workspace': {'baseSnapshot': {'done.js': 'done'}}}
-        }}}})
-        saved_workspace = row['qualification']['isolation']['workspace']
-        self.assertNotIn('baseSnapshot', saved_workspace)
-        self.assertEqual(json.loads((self.root / saved_workspace['baseSnapshotRef']['path']).read_text()),
-                         {'done.js': 'done'})
+        self.assertFalse((self.root / 'qualification-workspaces/base-snapshots').exists())
+
+    def test_completed_task_control_and_logs_are_deleted_after_acceptance(self):
+        self.accept('review', {'cities': {'1': {'status': 'reviewed-rejected'}}})
+        self.assertFalse((self.root / 'task').exists())
+        self.assertNotIn('task', self.pool.pipeline['tasks'])
+        self.finish_city.assert_called_once()
+
+    def test_compacted_completed_city_is_never_researched_or_requalified(self):
+        self.runner.state['cities']['1'].update(status='reviewed-candidate', discoveryDecision='candidate',
+            qualification={'status': 'integrated'}, storageComplete=True)
+        self.assertEqual(self.pool._select('qualification', 1), [])
+        self.assertNotIn(self.cities[0], self.pool._select('research', 4))
 
     def test_interrupted_stage_retains_qualification_evidence(self):
         self.accept('qualification', {'cities': {'1': {'qualification': {'status': 'running', 'artifactRoot': 'saved'}}},
@@ -212,7 +217,7 @@ class PipelineTests(unittest.TestCase):
         self.pool.run()
         self.assertEqual(launched, ['review'])
 
-    def test_fresh_stage_records_findings_in_its_private_checkpoint(self):
+    def test_fresh_stage_records_failed_urls_instead_of_findings(self):
         class Child:
             def __init__(child, args):
                 child.validated_stages = set()
@@ -232,10 +237,11 @@ class PipelineTests(unittest.TestCase):
         pipeline._write(spec, {'args': {}, 'lane': 'research', 'cities': [self.cities[0]],
                               'cohortDir': str(self.root),
                               'state': {'queuePath': str(self.root / 'queue.json'), 'cities': {'1': {}}}})
-        with patch.object(pipeline.signal, 'signal'):
+        with patch.object(pipeline.signal, 'signal'), patch.object(pipeline, 'record_attempts') as recorded:
             self.assertEqual(pipeline.execute_task(Child, SimpleNamespace(pipeline_task=spec)), 0)
         result = json.loads((control / 'result.json').read_text())
-        self.assertEqual(result['cities']['1']['sharedFindings']['research'], 'finding-from-latest-stage-code')
+        self.assertNotIn('sharedFindings', result['cities']['1'])
+        recorded.assert_called_once()
         self.assertTrue((control / 'state.json').is_file())
 
 

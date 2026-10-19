@@ -1,0 +1,22 @@
+[
+  {
+    "url": "https://open.ngis.uz/",
+    "reason": "timeout"
+  },
+  {
+    "url": "https://db.ngis.uz/db/rest/info?f=pjson",
+    "reason": "timeout"
+  },
+  {
+    "url": "https://db.ngis.uz/db/rest/services?f=pjson",
+    "reason": "timeout"
+  },
+  {
+    "url": "https://api.dshk.uz/",
+    "reason": "403"
+  },
+  {
+    "url": "https://oltiariq.uz/",
+    "reason": "403"
+  }
+]

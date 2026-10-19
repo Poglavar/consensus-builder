@@ -1,0 +1,17 @@
+[
+  {
+    "url": "http://www.igvsb.gob.ve/"
+  },
+  {
+    "url": "https://www.igvsb.gob.ve/"
+  },
+  {
+    "url": "https://geoportal.igvsb.gob.ve/"
+  },
+  {
+    "url": "http://ide.igvsb.gob.ve/geoserver/ows?service=WFS&request=GetCapabilities"
+  },
+  {
+    "url": "https://www.alcaldiadecaracas.gob.ve/, https://datos.gob.ve/"
+  }
+]

@@ -1,0 +1,17 @@
+[
+  {
+    "url": "https://maps.ctmetro.org/server/rest/services/Bridgeport/Bridgeport_Parcels_NAD83/MapServer/7"
+  },
+  {
+    "url": "https://www.bridgeportct.gov/government/departments/planning-economic-development/geographic-information-system-gis"
+  },
+  {
+    "url": "https://maps.ctmetro.org/server/rest/services/Bridgeport/Bridgeport_Parcels_NAD83/MapServer/7?f=pjson"
+  },
+  {
+    "url": "https://maps.ctmetro.org/server/rest/services/Bridgeport/Bridgeport_Parcels_NAD83/MapServer/7/query?f=geojson&where=1%3D1&geometry=-73.1931304859171%2C41.1909714422495&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=*&returnGeometry=true&outSR=4326"
+  },
+  {
+    "url": "https://maps.ctmetro.org/server/rest/services/Bridgeport/Bridgeport_Parcels_NAD83/MapServer/7/query?f=geojson&where=1%3D1&geometry=-73.2031304859171%2C41.1809714422495%2C-73.1831304859171%2C41.2009714422495&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=Parcel_ID%2CGIS_ID%2COBJECTID_12&returnGeometry=true&outSR=4326&resultRecordCount=3"
+  }
+]

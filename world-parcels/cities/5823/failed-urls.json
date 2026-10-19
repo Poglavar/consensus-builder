@@ -1,0 +1,13 @@
+[
+  {
+    "url": "https://anyror.gujarat.gov.in/",
+    "reason": "timeout after 20 seconds"
+  },
+  {
+    "url": "https://palanpur.nic.in/",
+    "reason": "DNS failure"
+  },
+  {
+    "url": "https://banaskantha.nic.in/gu/%e0%aa%9c%e0%aa%ae%e0%ab%80%e0%aa%a8-%e0%aa%b6%e0%aa%be%e0%aa%96%e0%aa%be/"
+  }
+]

@@ -1,0 +1,20 @@
+[
+  {
+    "url": "https://kot-bandarlampung.atrbpn.go.id/"
+  },
+  {
+    "url": "https://bandarlampungkota.ina-sdi.or.id/"
+  },
+  {
+    "url": "https://satudata.bandarlampungkota.go.id/api/public/v1/dataset-records?per_page=100&search=persil"
+  },
+  {
+    "url": "https://satudata.bandarlampungkota.go.id/api/public/v1/dataset-records?per_page=100&search=pertanahan"
+  },
+  {
+    "url": "https://satudata.bandarlampungkota.go.id/api/public/v1/dataset-records?per_page=100&search=tanah"
+  },
+  {
+    "url": "https://sippn.menpan.go.id/api/api/v1/layanan-publik/8105875/pdf"
+  }
+]

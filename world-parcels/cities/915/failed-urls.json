@@ -1,0 +1,20 @@
+[
+  {
+    "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?SERVICE=WFS&REQUEST=GetCapabilities",
+    "reason": "400"
+  },
+  {
+    "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?SERVICE=WFS&VERSION=2.0.0&REQUEST=GetCapabilities",
+    "reason": "400"
+  },
+  {
+    "url": "https://ovc.catastro.meh.es/Cartografia/INSPIRE/spadgcwms.aspx?SERVICE=WMS&REQUEST=GetCapabilities",
+    "reason": "400"
+  },
+  {
+    "url": "http://ovc.catastro.meh.es/Cartografia/WMS/ServidorWMS.aspx?SERVICE=WMS&REQUEST=GetCapabilities"
+  },
+  {
+    "url": "https://xmu.vigo.org/"
+  }
+]

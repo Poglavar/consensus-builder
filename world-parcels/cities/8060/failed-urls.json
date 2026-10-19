@@ -1,0 +1,20 @@
+[
+  {
+    "url": "https://gis.cuyahogacounty.gov/server/rest/services/Open_Data_Parcels/MapServer?f=pjson",
+    "reason": "timeout"
+  },
+  {
+    "url": "https://gis.cuyahogacounty.gov/server/rest/services/Open_Data_Parcels/MapServer",
+    "reason": "403"
+  },
+  {
+    "url": "https://gis.cuyahogacounty.gov/server/rest/services/Open_Data_Parcels/MapServer/1/query",
+    "reason": "unavailable"
+  },
+  {
+    "url": "https://cuyahogacounty.gov/i-want-to-contact/gis-data"
+  },
+  {
+    "url": "https://myplace.cuyahogacounty.gov/"
+  }
+]

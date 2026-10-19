@@ -1,0 +1,17 @@
+[
+  {
+    "url": "https://www.cabq.gov/gis/geographic-information-systems-data"
+  },
+  {
+    "url": "https://www.cabq.gov/gis/advanced-map-viewer"
+  },
+  {
+    "url": "https://abqgis01.cabq.gov/arcgis/rest/services/agis/BaseMapLayers/MapServer"
+  },
+  {
+    "url": "https://www.cabq.gov/gis/geographic-information-systems-metadata"
+  },
+  {
+    "url": "https://www.bernco.gov/planning/gis.aspx"
+  }
+]

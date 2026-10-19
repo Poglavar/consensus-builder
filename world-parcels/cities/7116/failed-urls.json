@@ -1,0 +1,27 @@
+[
+  {
+    "url": "https://www.bhunaksha.rajasthan.gov.in/georef_gmaps.html",
+    "reason": "timeout"
+  },
+  {
+    "url": "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/821",
+    "reason": "web-open result available; shell TLS verification failed"
+  },
+  {
+    "url": "https://gisprod.rajasthan.gov.in/geocode/rest/services/JDA/Settlement_JDA/MapServer/0?f=pjson",
+    "reason": "timeout"
+  },
+  {
+    "url": "https://rajdharaa.rajasthan.gov.in/RajdharaaCommonWebAPI/api/GenerateGISToken",
+    "reason": "405"
+  },
+  {
+    "url": "https://landrevenue.rajasthan.gov.in/content/landrevenuenew/en/board-of-revenue-for-raj-dep/about-us/section/cadstralmap.html"
+  },
+  {
+    "url": "https://apnakhata.rajasthan.gov.in/Owner_wise/DistrictMap.aspx"
+  },
+  {
+    "url": "https://www.edharti.rajasthan.gov.in/LRCLogin.aspx"
+  }
+]

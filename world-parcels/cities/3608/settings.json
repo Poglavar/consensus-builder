@@ -1,0 +1,107 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "3608",
+  "name": "Kraków, Poland",
+  "point": [
+    50.0549669396486,
+    19.9647598843061
+  ],
+  "bindings": [
+    {
+      "appCityId": "krakow",
+      "runtimeConfig": {
+        "id": "krakow",
+        "label": "Kraków, Poland",
+        "currency": {
+          "locale": "pl-PL",
+          "code": "PLN"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            50.0549669396486,
+            19.9647598843061
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            50.0549669396486,
+            19.9647598843061
+          ],
+          "fallbackDataset": [
+            19.9647598843061,
+            50.0549669396486
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "pl-krakow-msip-egib-parcels",
+          "idPrefix": "PL-KRAKOW-EGIB-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 3,
+          "attribution": "<a href=\"https://msip.krakow.pl/dataset/1562\">Kraków MSIP public EGiB parcels</a> · adapted"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "pl-krakow-msip-egib-parcels",
+      "name": "Kraków MSIP public EGiB parcels",
+      "adapter": "arcgis",
+      "endpoint": "https://msip3.um.krakow.pl/server/rest/services/Pobieranie/Dzialki/MapServer/0",
+      "idField": "id_dzialki",
+      "idType": "string",
+      "objectIdField": "id",
+      "idPrefix": "PL-KRAKOW-EGIB-",
+      "outFields": [
+        "id",
+        "id_dzialki",
+        "numer_dzialki"
+      ],
+      "pageSize": 1000,
+      "maxFeatures": 3000,
+      "maxBboxKm2": 1,
+      "countryCode": "PL",
+      "metricSrid": 32634,
+      "cityIds": [
+        "krakow"
+      ],
+      "maxConcurrentQueries": 2,
+      "operator": "City of Kraków Geodesy Department / MSIP",
+      "scope": "56 valid distinct EGiB parcel polygons verified in thirteen bounded 0.001-degree cells around the unchanged Kraków WUP settlement locator. Native id_dzialki values including slash suffixes are preserved unchanged. Complete bounded paging, forced three-row pages, all 56 fresh native-ID reads, explicit absence, footprint and source binding passed in 25 requests. Independent metric EPSG:32634 GEOS found all geometries valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. The original exact-point sample matches fresh full geometry unchanged. Native source CRS is EPSG:2178; requested EPSG:4326 output is retained unchanged. Citywide completeness, survey accuracy, legal title, currentness and long-term identity continuity remain unverified.",
+      "attribution": "City of Kraków MSIP · public EGiB cadastral polygons · adapted",
+      "catalogueUrl": "https://msip.krakow.pl/dataset/1562",
+      "licenceNote": "Anonymous bounded public geometry access and publisher attribution verified. City reuse/currentness/legal-coordinate conditions are informational; this reference layer does not establish legal title or survey accuracy. Personal fields are excluded."
+    }
+  ]
+}

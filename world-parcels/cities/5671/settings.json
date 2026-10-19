@@ -1,0 +1,116 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "5671",
+  "name": "Salt Lake City, United States",
+  "point": [
+    40.7608,
+    -111.891
+  ],
+  "bindings": [
+    {
+      "appCityId": "salt_lake_city",
+      "runtimeConfig": {
+        "id": "salt_lake_city",
+        "label": "Salt Lake City, United States",
+        "currency": {
+          "locale": "en-US",
+          "code": "USD"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            40.7608,
+            -111.891
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            40.7608,
+            -111.891
+          ],
+          "fallbackDataset": [
+            -111.891,
+            40.7608
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.0025,
+          "source": "parcel-source",
+          "sourceId": "us-ut-salt-lake-city-parcels",
+          "idPrefix": "US-UT-SALTLAKE-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 6,
+          "attribution": "<a href=\"https://gis.utah.gov/products/sgid/cadastre/parcels/\">Utah Geospatial Resource Center and local government · publisher &amp; conditions</a> · Official source; bounded capital-area checks do not establish full jurisdictional coverage. · adapted"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "endpoint": "https://services1.arcgis.com/99lidPhWCzftIe9K/arcgis/rest/services/UtahStatewideParcels/FeatureServer/0",
+      "adapter": "arcgis",
+      "name": "Utah State Parcels",
+      "operator": "Utah Geospatial Resource Center and local government",
+      "scope": "Salt Lake County only, enforced by County=SaltLake; capital-area sample.",
+      "idField": "PARCEL_ID",
+      "objectIdField": "OBJECTID",
+      "idType": "string",
+      "idPattern": ".+",
+      "outFields": [
+        "PARCEL_ID",
+        "OBJECTID",
+        "County"
+      ],
+      "parcelNumberField": "PARCEL_ID",
+      "metricSrid": 32612,
+      "idPrefix": "US-UT-SALTLAKE-",
+      "attributeFilters": {
+        "County": "SaltLake"
+      },
+      "id": "us-ut-salt-lake-city-parcels",
+      "countryCode": "US",
+      "stateCode": "UT",
+      "cityIds": [
+        "salt_lake_city"
+      ],
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "maxConcurrentQueries": 2,
+      "catalogueUrl": "https://gis.utah.gov/products/sgid/cadastre/parcels/",
+      "caveats": [
+        "County-scoped capital-area acceptance only; statewide compilation completeness varies."
+      ],
+      "attribution": "Utah Geospatial Resource Center and local government. Adapted to WGS84.",
+      "licenceNote": "Source conditions are informational; users choose their source and intended use."
+    }
+  ]
+}

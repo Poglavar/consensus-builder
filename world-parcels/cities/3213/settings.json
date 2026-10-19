@@ -1,0 +1,114 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "3213",
+  "name": "Rosedale, United States",
+  "point": [
+    35.4078977941674,
+    -119.108769926261
+  ],
+  "bindings": [
+    {
+      "appCityId": "rosedale",
+      "runtimeConfig": {
+        "id": "rosedale",
+        "wupCityCode": "3213",
+        "label": "Rosedale, United States",
+        "currency": {
+          "locale": "en-US",
+          "code": "USD"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            35.4078977941674,
+            -119.108769926261
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            35.4078977941674,
+            -119.108769926261
+          ],
+          "fallbackDataset": [
+            -119.108769926261,
+            35.4078977941674
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "us-bakersfield-municipal-cadastral-parcels",
+          "idPrefix": "US-BAKERSFIELD-APN-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 3,
+          "attribution": "<a href=\"https://gis.bakersfieldcity.us/webmaps/rest/services/General/Cadastre/MapServer/1\">City of Bakersfield GIS · cadastral parcel APN references · adapted</a>"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "endpoint": "https://gis.bakersfieldcity.us/webmaps/rest/services/General/Cadastre/MapServer/1",
+      "adapter": "arcgis",
+      "idField": "APN_ID",
+      "idType": "string",
+      "idPrefix": "US-BAKERSFIELD-APN-",
+      "objectIdField": "OBJECTID",
+      "outFields": [
+        "OBJECTID",
+        "APN_ID"
+      ],
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "pageSize": 100,
+      "maxFeatures": 3000,
+      "boundsSrid": 2229,
+      "boundsProjection": "+proj=lcc +lat_0=33.5 +lon_0=-118 +lat_1=35.4666666666667 +lat_2=34.0333333333333 +x_0=2000000.0001016 +y_0=500000.0001016 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=us-ft +no_defs +type=crs",
+      "id": "us-bakersfield-municipal-cadastral-parcels",
+      "name": "Bakersfield municipal cadastral parcel polygons",
+      "operator": "City of Bakersfield GIS",
+      "countryCode": "US",
+      "cityIds": [
+        "rosedale"
+      ],
+      "metricSrid": 32611,
+      "maxBboxKm2": 1,
+      "maxConcurrentQueries": 1,
+      "scope": "119 distinct native APN references passed thirteen 0.001-degree cells around the unchanged Bakersfield WUP locator, complete native-projected bounds manifests and all fresh exact native identity reads. A separate 1 km metric-square envelope supplied 761 full source polygons; an independent root EPSG:32611 GEOS audit found all valid and distinct, with no overlaps above 0.01 m² or operation errors. APN_ID strings are preserved independently of OBJECTID transport keys; APN 14734302 maps to OBJECTID 127663 and contains the locator. Forced three-feature paging, explicit absence, full footprint and source binding passed. Native EPSG:2229 bounds projection resolves the previously inconsistent WGS84 count/manifests without changing geometry. Earlier failed probes are retained in the acceptance record. This bounded evidence does not establish citywide completeness, legal title, accuracy or currentness. Additional enabled city entries have separate bounded qualification evidence; wider coverage remains unverified.",
+      "catalogueUrl": "https://gis.bakersfieldcity.us/webmaps/rest/services/General/Cadastre/MapServer/1",
+      "attribution": "City of Bakersfield GIS · cadastral parcel APN references · adapted",
+      "licenceNote": "Source terms and age are informational; legal title, survey accuracy and currentness unverified.",
+      "metricSridByCity": {
+        "rosedale": 32611
+      },
+      "cityScopes": {
+        "rosedale": "73 unchanged native parcel polygons passed all eight qualification gates in bounded cells around the UN/WUP locator. Fresh independent metric audit (EPSG:32611) found zero invalid polygons, identity conflicts, duplicate geometry, material overlaps, or operation errors. Citywide completeness, legal title, survey accuracy, and currentness are not established."
+      }
+    }
+  ]
+}

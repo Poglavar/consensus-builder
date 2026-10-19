@@ -4,6 +4,8 @@ import { runInNewContext } from 'node:vm';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { parcelSourceCatalog, parcelSourceForCity, parcelSourceForIds, clearParcelSourceRuntimeCache, createParcelSource } from '../parcels/sources.js';
 import { computeBinding } from '../proposals/binding.js';
+import proj4 from 'proj4';
+globalThis.proj4 ||= proj4;
 
 const root = new URL('../../', import.meta.url);
 const read = path => readFileSync(new URL(path, root), 'utf8');
@@ -15,7 +17,7 @@ const cityCases = [
     { city: 'ennerdale', source: sourceId, prefix: 'ZA-JOBURG-', srid: 32735, currency: 'ZAR' },
     { city: 'accra', source: 'gh-ama-public-property-app', prefix: 'GH-AMA-', srid: 32630, currency: 'GHS' }
 ];
-const sampleFixture = JSON.parse(read('world-parcels/research/india-africa-2026-10-08/root-joburg-bbox-response.json'));
+const sampleFixture = JSON.parse(read('backend/test/fixtures/parcel-adapter-joburg.json'));
 const sampleFeature = sampleFixture.features[0];
 const nativeId = sampleFeature.properties.SG_ID;
 const parcelId = `ZA-JOBURG-${nativeId}`;
@@ -169,7 +171,7 @@ describe('configured India/Africa live parcel cities', () => {
     it('binds Accra from the exact public selector after merging the first complete two-row PID group', async () => {
         const accraSourceId = 'gh-ama-public-property-app';
         const accraDescriptor = parcelSourceCatalog.sources.find(source => source.id === accraSourceId);
-        const snapshot = JSON.parse(read('world-parcels/research/india-africa-integration-2026-10-08/accra-3336-duplicate-group-samples.json'));
+        const snapshot = JSON.parse(read('backend/test/fixtures/parcel-adapter-accra.json'));
         const firstGroup = snapshot.features.filter(feature => feature.properties.parcelid === 'AMAAW67819');
         expect(firstGroup).toHaveLength(2);
         const accraParcelId = 'GH-AMA-AMAAW67819';

@@ -1,0 +1,57 @@
+[
+  {
+    "url": "https://mahabhunakasha.mahabhumi.gov.in/",
+    "reason": "ConnectTimeout"
+  },
+  {
+    "url": "https://mahabhunakasha.mahabhumi.gov.in/27/index.jsp"
+  },
+  {
+    "url": "https://bhunaksha.maharashtra.gov.in/"
+  },
+  {
+    "url": "https://mahabhulekh.maharashtra.gov.in/"
+  },
+  {
+    "url": "https://gis.pmc.gov.in/"
+  },
+  {
+    "url": "https://pmc.gov.in/"
+  },
+  {
+    "url": "https://onlinegis.pmc.gov.in/"
+  },
+  {
+    "url": "https://opendata.pune.gov.in/"
+  },
+  {
+    "url": "https://mapservices.pune.gov.in/"
+  },
+  {
+    "url": "https://pmrda.gov.in/"
+  },
+  {
+    "url": "https://mahabhunakasha.mahabhumi.gov.in/27/index.html",
+    "reason": "ConnectTimeout"
+  },
+  {
+    "url": "https://mahabhunakasha.mahabhumi.gov.in/27/georef.js",
+    "reason": "ConnectTimeout"
+  },
+  {
+    "url": "https://mahabhunakasha.mahabhumi.gov.in/rest/MapInfo/getPlotInfo",
+    "reason": "ConnectTimeout"
+  },
+  {
+    "url": "https://bhumiabhilekh.maharashtra.gov.in/Services",
+    "reason": "ConnectTimeout"
+  },
+  {
+    "url": "http://103.224.247.79:8181/demo/geo_tag_leaflet.html",
+    "reason": "ConnectTimeout"
+  },
+  {
+    "url": "https://mahabhunakasha.mahabhumi.gov.in/rest/MapInfo/getVVVVExtentGeoref",
+    "reason": "400"
+  }
+]

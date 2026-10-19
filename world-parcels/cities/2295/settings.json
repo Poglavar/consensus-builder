@@ -1,0 +1,116 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "2295",
+  "name": "San Diego, United States",
+  "point": [
+    32.728932496022,
+    -117.086972512462
+  ],
+  "bindings": [
+    {
+      "appCityId": "sandiego",
+      "runtimeConfig": {
+        "id": "sandiego",
+        "label": "San Diego, United States",
+        "currency": {
+          "locale": "en-US",
+          "code": "USD"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            32.728932496022,
+            -117.086972512462
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            32.728932496022,
+            -117.086972512462
+          ],
+          "fallbackDataset": [
+            -117.086972512462,
+            32.728932496022
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "us-ca-sangis-parcels-reference",
+          "idPrefix": "US-CA-SANGIS-PARCEL-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 3,
+          "attribution": "<a href=\"https://www.sangis.org/\">SanGIS unstacked parcel reference polygons</a> · adapted"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "us-ca-sangis-parcels-reference",
+      "name": "SanGIS unstacked parcel reference polygons",
+      "adapter": "arcgis",
+      "endpoint": "https://gis-public.sandiegocounty.gov/arcgis/rest/services/DPW/LEAMS_Reference/MapServer/16",
+      "idField": "PARCELID",
+      "objectIdField": "OBJECTID",
+      "idType": "integer",
+      "idPrefix": "US-CA-SANGIS-PARCEL-",
+      "outFields": [
+        "OBJECTID",
+        "PARCELID",
+        "SUB_TYPE"
+      ],
+      "pageSize": 100,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 1,
+      "countryCode": "US",
+      "metricSrid": 32611,
+      "projection": "EPSG:32611",
+      "cityIds": [
+        "sandiego"
+      ],
+      "maxConcurrentQueries": 2,
+      "operator": "SanGIS (City and County of San Diego joint-powers GIS agency); public county DPW service",
+      "catalogueUrl": "https://www.sangis.org/",
+      "attribution": "SanGIS / County of San Diego · unstacked reference parcel polygons",
+      "licenceNote": "Public official GIS reference data; source conditions informational. Sample does not establish legal title, survey accuracy or municipal completeness.",
+      "scope": "129 valid, distinct official SanGIS unstacked reference polygons audited in thirteen bounded local cells near the WUP 2025 San Diego settlement locator. All required real-adapter checks passed across recorded attempts with explicit provider-timeout retries. No sampled overlaps above 0.01 m², duplicate geometry or invalid polygons were found. This is bounded San Diego-area source verification, not municipality-wide completeness or legal survey evidence. SanGIS uses one reference polygon per tax parcel; selected APNs may change, so runtime identity uses native PARCELID rather than APN.",
+      "metricSridByCity": {
+        "sandiego": 32611
+      },
+      "defaultForCity": true,
+      "cityScopes": {
+        "encinitas": "Bounded qualification around the UN DESA WUP 2025 settlement locator for Encinitas. Passing all eight gates and independent geometry audit supports local parcel integration only; citywide completeness, legal title, survey accuracy and currentness are not established."
+      },
+      "queryFormat": "esri-json"
+    }
+  ]
+}

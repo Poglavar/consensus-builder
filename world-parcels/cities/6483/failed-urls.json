@@ -1,0 +1,15 @@
+[
+  {
+    "url": "https://www.tkgm.gov.tr/e-hizmetler/sik-kullanilanlar/parsel-sorgulama"
+  },
+  {
+    "url": "https://parselsorguv2.tkgm.gov.tr/",
+    "reason": "accessible search result; direct fetch unavailable in shell environment"
+  },
+  {
+    "url": "https://www.tkgm.gov.tr/elazig-bm"
+  },
+  {
+    "url": "https://apps.apple.com/tr/app/tkgm-parsel-sorgu/id1039822649"
+  }
+]

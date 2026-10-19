@@ -1,0 +1,23 @@
+[
+  {
+    "url": "https://www.colombiaenmapas.gov.co/"
+  },
+  {
+    "url": "https://www.colombiaenmapas.gov.co/dist/main.202610091033.js"
+  },
+  {
+    "url": "https://services2.arcgis.com/RVvWzU3lgJISqdke/ArcGIS/rest/services/CATASTRO_PUBLICO_06_2021/FeatureServer/7?f=pjson"
+  },
+  {
+    "url": "https://services2.arcgis.com/RVvWzU3lgJISqdke/ArcGIS/rest/services/CATASTRO_PUBLICO_06_2021/FeatureServer/14?f=pjson"
+  },
+  {
+    "url": "https://services2.arcgis.com/RVvWzU3lgJISqdke/ArcGIS/rest/services/CATASTRO_PUBLICO_06_2021/FeatureServer/7/query"
+  },
+  {
+    "url": "https://services2.arcgis.com/RVvWzU3lgJISqdke/ArcGIS/rest/services/CATASTRO_PUBLICO_06_2021/FeatureServer/14/query"
+  },
+  {
+    "url": "https://www.sahagun-cordoba.gov.co/Ciudadanos/Paginas/Industria-y-Comercio.aspx"
+  }
+]

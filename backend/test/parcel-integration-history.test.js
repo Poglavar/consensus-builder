@@ -55,18 +55,10 @@ function smallReport({ cities, integrationOutcomeBatches, liveCities = [], catal
 }
 
 describe('parcel integration outcome history', () => {
-    it('publishes every recorded city outcome, including candidates absent from the old research ledger', () => {
+    it('does not persist transient qualification outcomes in the committed report', () => {
         const repoRoot = fileURLToPath(new URL('../../', import.meta.url));
         const report = JSON.parse(readFileSync(path.join(repoRoot, 'frontend/data/parcel-coverage-report.json'), 'utf8'));
-        const expected = readIntegrationOutcomeBatches(repoRoot).flatMap(({ evidenceFile, data }) => data.cities.map(record =>
-            JSON.stringify([record.registryCityId ? `${record.countryCode}:registry:${record.registryCityId}`
-                : `${record.countryCode}:${Number(record.cityCode)}`, evidenceFile, record.outcome, record.finishedAt || null])));
-        const actual = report.cities.flatMap(city => city.integrationAttempts.map(attempt => {
-            const evidenceFile = decodeURIComponent(new URL(attempt.evidenceUrl).pathname.split('/blob/colosseum-worlds-fair/')[1]);
-            const key = attempt.registryCityId ? `${city.countryCode}:registry:${attempt.registryCityId}` : integrationCityKey(city);
-            return JSON.stringify([key, evidenceFile, attempt.outcome, attempt.checkedAt]);
-        }));
-        expect(actual.sort()).toEqual(expected.sort());
+        expect(report.cities.flatMap(city => city.integrationAttempts || [])).toEqual([]);
     });
 
     it('reads only sorted JSON outcome batches and matches exact country plus WUP city identity', () => {

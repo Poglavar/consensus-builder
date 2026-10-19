@@ -1,0 +1,29 @@
+[
+  {
+    "url": "https://bnrp.weihai.gov.cn/art/2024/3/12/art_79189_2711410.html"
+  },
+  {
+    "url": "https://bnrp.weihai.gov.cn/art/2020/10/15/art_79199_2675849.html"
+  },
+  {
+    "url": "https://ggzyjy.weihai.cn/rushan/"
+  },
+  {
+    "url": "http://www.sdmap.gov.cn/index.html"
+  },
+  {
+    "url": "https://service.sdmap.gov.cn:8081/"
+  },
+  {
+    "url": "https://service.sdmap.gov.cn:8081/mapNumericalStatistics/getResources"
+  },
+  {
+    "url": "https://www.sdmap.gov.cn:6443/"
+  },
+  {
+    "url": "https://www.sdmap.gov.cn/tdtsdservice"
+  },
+  {
+    "url": "https://service.sdmap.gov.cn:8081/ and https://www.sdmap.gov.cn:6443/ (diagnostic retry)"
+  }
+]

@@ -1,0 +1,18 @@
+[
+  {
+    "url": "https://apsac.ap.gov.in/gisserver/rest/services/REVENUE/cadastral_ap_cache/MapServer/0/query",
+    "reason": "400"
+  },
+  {
+    "url": "https://bhunaksha.ap.gov.in/"
+  },
+  {
+    "url": "https://bhuseva.ap.gov.in/"
+  },
+  {
+    "url": "https://kadapa.ap.gov.in/villages/"
+  },
+  {
+    "url": "https://apsac.ap.gov.in/gisserver/rest/services/REVENUE/cadastral_ap_cache/MapServer/export"
+  }
+]

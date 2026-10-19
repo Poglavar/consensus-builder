@@ -1,0 +1,6 @@
+[
+  {
+    "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&typeNames=CP%3ACadastralParcel&srsName=EPSG%3A%3A25830&bbox=269318.5064181733%2C4805392.398350462%2C269360.9167944922%2C4805449.313443409",
+    "reason": "ECONNRESET"
+  }
+]

@@ -1,0 +1,17 @@
+[
+  {
+    "url": "https://www.cm-almada.pt/o-que-e-o-geoportal"
+  },
+  {
+    "url": "https://www.dgterritorio.gov.pt/atividades/cadastro"
+  },
+  {
+    "url": "https://snic.dgterritorio.gov.pt/snic_help/"
+  },
+  {
+    "url": "https://snic.dgterritorio.gov.pt/geoportal/static/viewer/config.json"
+  },
+  {
+    "url": "https://dgt.wkt.pt/geoserver/cp/wfs?service=WFS&request=GetCapabilities"
+  }
+]

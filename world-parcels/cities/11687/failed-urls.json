@@ -1,0 +1,13 @@
+[
+  {
+    "url": "https://banglarbhumi.gov.in/BanglarBhumi/KnowYourProperty.action",
+    "reason": "timeout after 20 seconds"
+  },
+  {
+    "url": "https://dilrmp.gov.in/dilrmpold/PhyscialComponent/mapDigitization/village-level/2211",
+    "reason": "TLS verification failed in local curl after 20 seconds"
+  },
+  {
+    "url": "https://jalpaiguri.gov.in/"
+  }
+]

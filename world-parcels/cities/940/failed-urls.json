@@ -1,0 +1,10 @@
+[
+  {
+    "url": "https://vqrcggcqgnkanngqhcga.supabase.co/rest/v1/parcels?select=id,geom&limit=1",
+    "reason": "404"
+  },
+  {
+    "url": "https://vqrcggcqgnkanngqhcga.supabase.co/rest/v1/administrative_units?select=*&limit=1",
+    "reason": "404"
+  }
+]

@@ -1,0 +1,24 @@
+[
+  {
+    "url": "https://www.geocuba.cu/",
+    "reason": "TLS certificate verification failure"
+  },
+  {
+    "url": "https://geotech.cu/",
+    "reason": "DNS/connection timeout"
+  },
+  {
+    "url": "https://www.ipf.cu/",
+    "reason": "DNS resolution failure"
+  },
+  {
+    "url": "https://ipf.cu/",
+    "reason": "DNS resolution failure"
+  },
+  {
+    "url": "https://www.cibercuba.com/s/gacetaoficial/decreto-ley-332-de-2015-de-consejo-de-estado"
+  },
+  {
+    "url": "https://www.catastro.hacienda.gob.es/documentos/publicaciones/ct/ct28/art6.pdf"
+  }
+]

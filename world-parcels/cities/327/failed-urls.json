@@ -1,0 +1,12 @@
+[
+  {
+    "url": "https://ebiz.jupem.gov.my/PetaInteraktif?c=pl&jenis=Pemetaan&no=7991&type=MY701T",
+    "reason": "TLS verification failed in local curl; web discovery rendered the official interactive map as a digital cadastral-lot purchase/visualization workflow with login required for purchase"
+  },
+  {
+    "url": "https://ekadaster.jupem.gov.my/Account/Login"
+  },
+  {
+    "url": "https://sim.kdh.jupem.gov.my/Account/Login"
+  }
+]

@@ -1,0 +1,30 @@
+[
+  {
+    "url": "https://chhindwaragis.mp.gov.in/",
+    "reason": "timeout"
+  },
+  {
+    "url": "https://mpbhulekh.gov.in/mpbhulekh.do",
+    "reason": "timeout"
+  },
+  {
+    "url": "https://webgis2.mpbhulekh.gov.in/",
+    "reason": "timeout"
+  },
+  {
+    "url": "https://landrecords.mp.gov.in/",
+    "reason": "timeout_or_no_response"
+  },
+  {
+    "url": "https://chhindwara.nic.in/en/service/land-records/"
+  },
+  {
+    "url": "https://chhindwara.nic.in/en/service/revenue-services/"
+  },
+  {
+    "url": "https://chhindwara.nic.in/en/chhindwara-gis/"
+  },
+  {
+    "url": "https://www.dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/465"
+  }
+]

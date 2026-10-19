@@ -1,0 +1,6 @@
+[
+  {
+    "url": "https://services.arcgis.com/jsIt88o09Q0r1j8h/arcgis/rest/services/Current_Parcels/FeatureServer/0",
+    "reason": "Held at the geometry gate: all source checks passed but the metric audit failed with 1 exact-duplicate geometry and 2 overlap pairs (max 4,894 m2, 100% of the smaller) among 150 cached WaTech polygons around Bellingham (Whatcom County 073): PARCEL_ID_NR 073-3803303751280000 and ...0001 (and 073-3803303790920000/...0001) carry identical polygons, consistent with stacked condominium-unit records (n…"
+  }
+]

@@ -1,0 +1,25 @@
+[
+  {
+    "url": "https://geoservices.bayern.de/wfs/v1/ogc_alkis_ave.cgi?service=WFS&version=2.0.0&request=GetCapabilities",
+    "reason": "401"
+  },
+  {
+    "url": "https://geoservices.bayern.de/inspire-ows/v1/alkis/cp/dls/wfs?service=WFS&version=2.0.0&request=GetCapabilities",
+    "reason": "401"
+  },
+  {
+    "url": "https://stadt.muenchen.de/infos/portrait-geodatenservice.html"
+  },
+  {
+    "url": "https://geodatenonline.bayern.de/geodatenonline/seiten/wfs_alkis"
+  },
+  {
+    "url": "https://geodatenonline.bayern.de/geodatenonline/seiten/wms_alkis_parzellarkarte"
+  },
+  {
+    "url": "https://geodatenonline.bayern.de/opengeodata/OpenDataDetail.html?pn=parzellarkarte"
+  },
+  {
+    "url": "https://geodatenonline.bayern.de/geodatenonline/seiten/dienste/rest_flurstueck.html"
+  }
+]

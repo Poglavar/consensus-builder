@@ -1,0 +1,26 @@
+[
+  {
+    "url": "https://lis.pulse.gop.pk/"
+  },
+  {
+    "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/2"
+  },
+  {
+    "url": "https://www.punjab-zameen.gov.pk/"
+  },
+  {
+    "url": "https://pmu-lgcdd.gop.pk/bahawalpur/"
+  },
+  {
+    "url": "https://lis.pulse.gop.pk/api/gis/token"
+  },
+  {
+    "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer?f=pjson"
+  },
+  {
+    "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/2?f=pjson"
+  },
+  {
+    "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/2/query"
+  }
+]

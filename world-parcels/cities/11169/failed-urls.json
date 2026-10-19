@@ -1,0 +1,17 @@
+[
+  {
+    "url": "https://sambalpur.odisha.gov.in/en/quick-links"
+  },
+  {
+    "url": "https://app2bhunakshaodisha.nic.in/bhunaksha/"
+  },
+  {
+    "url": "https://app2bhunakshaodisha.nic.in:8443/bhunaksha/WMS?service=WMS&request=GetCapabilities"
+  },
+  {
+    "url": "https://app2bhunakshaodisha.nic.in:8443/bhunaksha/WFS?service=WFS&request=GetCapabilities"
+  },
+  {
+    "url": "https://app2bhunakshaodisha.nic.in:8443/bhunaksha/ScalarDatahandler?OP=5&state=21&levels=<not-issued>&plotno=<not-issued>"
+  }
+]

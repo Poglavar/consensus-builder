@@ -1,387 +1,187 @@
-// Collect explicit, city-scoped research evidence for the global parcel coverage report.
-// This reads local registry records and their named evidence files only; it performs no network I/O.
-import { readFileSync, existsSync } from 'node:fs';
+// Collect explicit parcel-source evidence from per-city records and registry country rows.
+// This reads local JSON only; it performs no network I/O and never scans historical research.
+import { readFileSync, existsSync, readdirSync } from 'node:fs';
 import path from 'node:path';
 
-const normalizeDate = value => {
-    if (typeof value !== 'string') return null;
-    const match = /^(\d{4}-\d{2}-\d{2})(?:$|T)/.exec(value);
-    if (!match) return null;
-    const date = new Date(`${match[1]}T00:00:00Z`);
-    return Number.isNaN(date.valueOf()) || date.toISOString().slice(0, 10) !== match[1] ? null : match[1];
-};
-
-function readEvidence(repoRoot, relativePath, warnings) {
-    if (!relativePath || typeof relativePath !== 'string') return null;
-    const root = path.resolve(repoRoot);
-    const fullPath = path.resolve(root, 'world-parcels', relativePath.replace(/^world-parcels\//, ''));
-    if (!fullPath.startsWith(`${root}${path.sep}`)) {
-        warnings.push(`Evidence path escapes repository: ${relativePath}`);
-        return null;
-    }
-    if (!existsSync(fullPath)) {
-        warnings.push(`Missing referenced evidence file: world-parcels/${relativePath.replace(/^world-parcels\//, '')}`);
-        return null;
-    }
-    try {
-        return JSON.parse(readFileSync(fullPath, 'utf8'));
-    } catch (error) {
-        warnings.push(`Could not parse referenced JSON evidence file: world-parcels/${relativePath.replace(/^world-parcels\//, '')} (${error.message})`);
-        return null;
-    }
-}
-
-function actualDates(value, file, field = '$', output = [], city = null) {
-    if (Array.isArray(value)) {
-        value.forEach((item, i) => actualDates(item, file, `${field}[${i}]`, output, city));
-    } else if (value && typeof value === 'object') {
-        const explicitCityId = value.cityId || value.city_id;
-        const explicitCitySlug = value.city;
-        const evidenceName = value.name || value.cityName || value.city_name;
-        const evidenceCountry = value.countryCode || value.country_code;
-        const normalizeName = text => String(text || '').normalize('NFKC').trim().toLocaleLowerCase();
-        const aliases = city ? [city.cityId, city.appCityId, city.id, city.name, city.label, ...(city.aliases || [])].filter(Boolean).map(normalizeName) : [];
-        const explicitIdMatch = typeof explicitCityId === 'string' && aliases.includes(normalizeName(explicitCityId));
-        const evidenceCityKey = typeof explicitCitySlug === 'string' ? normalizeName(explicitCitySlug) : null;
-        const slugMatch = Boolean(evidenceCityKey && aliases.includes(evidenceCityKey));
-        const nameCountryMatch = city && typeof evidenceName === 'string' && typeof evidenceCountry === 'string'
-            && aliases.includes(normalizeName(evidenceName))
-            && evidenceCountry.toUpperCase() === String(city.countryCode || '').toUpperCase();
-        if (city && typeof explicitCityId === 'string' && !explicitIdMatch && !nameCountryMatch && !slugMatch) return output;
-        if (city && !explicitCityId && typeof explicitCitySlug === 'string' && !slugMatch && !nameCountryMatch) return output;
-        if (city && !explicitCityId && !explicitCitySlug && typeof evidenceName === 'string' && typeof evidenceCountry === 'string' && !nameCountryMatch) return output;
-        for (const [key, item] of Object.entries(value)) {
-            if (['checkedAt', 'probedAt', 'verifiedAt'].includes(key)) {
-                const date = normalizeDate(item);
-                if (date) output.push({ date, path: file, field: `${field}.${key}` });
-            }
-            if (item && typeof item === 'object') actualDates(item, file, `${field}.${key}`, output, city);
-        }
-    }
-    return output;
-}
+const POSITIVE_NATIONAL = new Set([
+    'national_online_cadastre_verified_sample', 'national_cadastre_credentialed_or_paid',
+    'national_cadastre_viewer_only', 'covered_by_parent_source'
+]);
+const CITY_ROOT = 'world-parcels/cities';
 
 function unique(values) {
     return [...new Set(values.filter(value => typeof value === 'string' && value.length))];
 }
 
+function normalizeDate(value) {
+    if (typeof value !== 'string') return null;
+    const match = /^(\d{4}-\d{2}-\d{2})(?:$|T)/.exec(value);
+    if (!match) return null;
+    const date = new Date(`${match[1]}T00:00:00Z`);
+    return Number.isNaN(date.valueOf()) || date.toISOString().slice(0, 10) !== match[1] ? null : match[1];
+}
+
 function safeUrls(values) {
-    return unique(values).filter(value => {
+    return unique(values).flatMap(value => {
         try {
             const url = new URL(value);
-            return url.protocol === 'https:' || url.protocol === 'http:';
-        } catch { return false; }
+            if (!['http:', 'https:'].includes(url.protocol) || url.username || url.password) return [];
+            if ([...url.searchParams.keys()].some(key => /(?:^|[_-])(token|api[_-]?key|key|secret|password|passwd|authorization|signature|sig)(?:$|[_-])/i.test(key))) return [];
+            url.hash = '';
+            return [url.toString()];
+        } catch { return []; }
     });
 }
 
-function recordFiles(record, keys) {
-    const found = [];
-    for (const key of keys) {
-        const value = record?.[key];
-        for (const file of Array.isArray(value) ? value : [value]) {
-            if (typeof file === 'string' && file) found.push(file);
+function relativeCityPath(code, name) {
+    return `cities/${code}/${name}`;
+}
+
+function readCityRecord(repoRoot, code, warnings) {
+    if (!/^\d+$/.test(String(code ?? ''))) return null;
+    const directory = path.join(repoRoot, CITY_ROOT, String(code));
+    const settingsPath = path.join(directory, 'settings.json');
+    const failedPath = path.join(directory, 'failed-urls.json');
+    let settings = null;
+    let failedUrls = [];
+    const evidenceFiles = [];
+
+    if (existsSync(settingsPath)) {
+        evidenceFiles.push(relativeCityPath(code, 'settings.json'));
+        try {
+            const parsed = JSON.parse(readFileSync(settingsPath, 'utf8'));
+            if (parsed?.schemaVersion === 1 && String(parsed.cityCode) === String(code)
+                && Array.isArray(parsed.bindings) && Array.isArray(parsed.sources)) {
+                settings = parsed;
+            } else {
+                warnings.push(`Invalid city settings record: ${relativeCityPath(code, 'settings.json')}`);
+            }
+        } catch {
+            warnings.push(`Could not parse city settings record: ${relativeCityPath(code, 'settings.json')}`);
         }
     }
-    return unique(found);
-}
-
-function evidenceNamesCity(value, identity) {
-    if (Array.isArray(value)) return value.some(item => evidenceNamesCity(item, identity));
-    if (!value || typeof value !== 'object') return false;
-    const normalize = text => String(text || '').normalize('NFKC').trim().toLocaleLowerCase();
-    const aliases = [identity.id, identity.appCityId, identity.name, identity.label, ...(identity.aliases || [])]
-        .filter(Boolean).map(normalize);
-    const explicit = value.cityId || value.city_id || value.appCityId || value.city;
-    if (typeof explicit === 'string' && aliases.includes(normalize(explicit))) return true;
-    const name = value.name || value.cityName || value.city_name;
-    const country = value.countryCode || value.country_code;
-    if (typeof name === 'string' && typeof country === 'string'
-        && aliases.includes(normalize(name))
-        && country.toUpperCase() === String(identity.countryCode || '').toUpperCase()) return true;
-    return Object.values(value).some(item => item && typeof item === 'object' && evidenceNamesCity(item, identity));
-}
-
-function rootConflictsWithCity(value, identity) {
-    if (!value || typeof value !== 'object' || Array.isArray(value)) return false;
-    const normalize = text => String(text || '').normalize('NFKC').trim().toLocaleLowerCase();
-    const aliases = [identity.cityId, identity.appCityId, identity.id, identity.name, identity.label, ...(identity.aliases || [])]
-        .filter(Boolean).map(normalize);
-    const explicit = value.cityId || value.city_id || value.appCityId || value.city;
-    if (typeof explicit === 'string' && !aliases.includes(normalize(explicit))) return true;
-    const name = value.name || value.cityName || value.city_name;
-    const country = value.countryCode || value.country_code;
-    if (typeof name === 'string' && typeof country === 'string') {
-        return !(aliases.includes(normalize(name)) && country.toUpperCase() === String(identity.countryCode || '').toUpperCase());
+    if (existsSync(failedPath)) {
+        evidenceFiles.push(relativeCityPath(code, 'failed-urls.json'));
+        try {
+            const parsed = JSON.parse(readFileSync(failedPath, 'utf8'));
+            if (Array.isArray(parsed)) failedUrls = safeUrls(parsed.map(item => item?.url));
+            else warnings.push(`Invalid failed URL record: ${relativeCityPath(code, 'failed-urls.json')}`);
+        } catch {
+            warnings.push(`Could not parse failed URL record: ${relativeCityPath(code, 'failed-urls.json')}`);
+        }
     }
-    return false;
+    return { settings, failedUrls, evidenceFiles, hasFailedRecord: existsSync(failedPath) };
 }
 
-function cityPaths(city) {
-    const found = recordFiles(city, CITY_FILE_FIELDS.filter(key => key !== 'availabilityAudit'));
-    for (const key of ['availabilityAudit', 'liveIntegration']) {
-        const value = city[key];
-        if (value && typeof value === 'object' && typeof value.evidenceFile === 'string') found.push(value.evidenceFile);
-    }
-    return unique(found);
+function bindingSourceIds(binding) {
+    const parcels = binding?.runtimeConfig?.parcels;
+    if (!parcels || typeof parcels !== 'object') return [];
+    const ids = [parcels.sourceId, parcels.liveSource?.sourceId,
+        ...(Array.isArray(parcels.sources) ? parcels.sources.map(source => source?.sourceId || source?.id) : [])];
+    if (parcels.source && parcels.source !== 'parcel-source') ids.push(parcels.source);
+    return unique(ids);
 }
 
-const CITY_FILE_FIELDS = [
-    'researchFile', 'previousResearchFile', 'retryFile', 'latestAttemptFile',
-    'latestAssessmentFile', 'capitalResearchFile', 'liveAcceptanceFile', 'availabilityAudit',
-    'qualificationEvidenceFile'
-];
-const SOURCE_FILE_FIELDS = ['evidenceFile', 'latestResearchFile', 'latestResearchFiles'];
-const QUALIFICATION_GATES = ['classification', 'exactIds', 'stableGeometry', 'explicitAbsence', 'sampling', 'completeness', 'binding', 'metric'];
-const POSITIVE_NATIONAL = new Set([
-    'national_online_cadastre_verified_sample', 'national_cadastre_credentialed_or_paid',
-    'national_cadastre_viewer_only', 'covered_by_parent_source'
-]);
+function sourcesForBindings(settings, bindings) {
+    if (!settings || !bindings.length) return [];
+    const appIds = new Set(bindings.map(binding => binding.appCityId));
+    const requested = new Set(bindings.flatMap(bindingSourceIds));
+    return settings.sources.filter(source => {
+        if (!source || typeof source.id !== 'string' || !source.id) return false;
+        if (Array.isArray(source.cityIds) && !source.cityIds.some(id => appIds.has(id))) return false;
+        return requested.size === 0 || requested.has(source.id);
+    });
+}
+
+function validBindings(settings, appCityId = null) {
+    if (!settings) return [];
+    return settings.bindings.filter(binding => typeof binding?.appCityId === 'string'
+        && binding.appCityId && binding.runtimeConfig?.id === binding.appCityId
+        && binding.runtimeConfig?.parcels && (!appCityId || binding.appCityId === appCityId));
+}
+
+function cityResult(city, record, sources) {
+    const configured = sources.length > 0;
+    const sourceIds = configured ? unique(sources.map(source => source.id)) : [];
+    const failureUrls = record?.failedUrls || [];
+    const sourceUrls = configured ? sources.map(source => source.endpoint) : [];
+    return {
+        cityId: city.cityId,
+        checked: configured || Boolean(record?.hasFailedRecord),
+        checkedDate: null,
+        checkedDateEvidence: null,
+        registryFound: configured ? true : null,
+        registryBasis: configured
+            ? 'A validated parcel source is configured for this city; citywide completeness remains unverified.'
+            : null,
+        verifiedSample: configured,
+        sourceIds,
+        evidenceUrls: safeUrls([...sourceUrls, ...failureUrls]),
+        failureUrls,
+        evidenceFiles: record?.evidenceFiles || [],
+        impliedParcelsTried: null
+    };
+}
 
 /**
- * Build city and country research evidence from registry rows and their explicitly referenced files.
- * Paths in returned evidenceFiles/date evidence are relative to world-parcels/.
+ * Build city and country evidence from per-city settings/failure records and registry country rows.
+ * Returned evidence file paths are relative to world-parcels/.
  */
-export function collectReportEvidence({ registry, repoRoot, appCities = [], sourceCatalog = { sources: [] } }) {
+export function collectReportEvidence({ registry, repoRoot, appCities = [], sourceCatalog: _sourceCatalog = { sources: [] } }) {
     if (!registry || !Array.isArray(registry.cities) || !Array.isArray(registry.sources)) {
         throw new TypeError('registry must include cities and sources arrays');
     }
     const warnings = [];
-    const sourcesById = new Map(registry.sources.map(source => [source.sourceId, source]));
-    const cityEvidence = registry.cities.map(city => {
-        const sourceIds = unique(city.sourceIds || []);
-        const sourceRows = sourceIds.map(id => sourcesById.get(id)).filter(Boolean);
-        const files = cityPaths(city);
-        const sourceFiles = sourceRows.flatMap(source => source.verifiedCityIds?.includes(city.cityId)
-            ? recordFiles(source, SOURCE_FILE_FIELDS) : []);
-        const evidenceFiles = unique([...files, ...sourceFiles]);
-        const evidenceDates = evidenceFiles.flatMap(file => actualDates(
-            readEvidence(repoRoot, file, warnings), file, '$', [], city
-        ));
-        for (const key of ['availabilityAudit', 'liveIntegration']) {
-            const record = city[key];
-            if (record && typeof record === 'object') {
-                const recordFile = record.evidenceFile || null;
-                evidenceDates.push(...actualDates(record, recordFile, '$', [], city));
-            }
-        }
-        for (const source of sourceRows) {
-            for (const [index, attempt] of (source.integrationAttempts || []).entries()) {
-                const targetText = `${attempt.operation || ''} ${attempt.detail || ''} ${attempt.cityId || ''}`;
-                const cityName = String(city.name || '').trim().toLocaleLowerCase();
-                const explicitTarget = attempt.cityId || attempt.city_id;
-                const targetsCity = explicitTarget
-                    ? explicitTarget === city.cityId
-                    : Boolean(source.verifiedCityIds?.includes(city.cityId)
-                        || (cityName && targetText.toLocaleLowerCase().includes(cityName)));
-                if (!targetsCity) continue;
-                const date = normalizeDate(attempt.checkedAt);
-                if (date) evidenceDates.push({ date, path: attempt.evidenceFile || null, field: `integrationAttempts[${index}].checkedAt` });
-                if (attempt.evidenceFile && !evidenceFiles.includes(attempt.evidenceFile)) {
-                    evidenceFiles.push(attempt.evidenceFile);
-                    // Integration evidence can contain the most recent operational check.
-                    evidenceDates.push(...actualDates(readEvidence(repoRoot, attempt.evidenceFile, warnings), attempt.evidenceFile, '$', [], city));
-                }
-            }
-        }
-        const status = city.parcelStatus;
-        const verifiedSample = typeof status === 'string' && status.startsWith('verified_');
-        const discovery = city.dataFindings;
-        const hasDiscovery = discovery && Object.hasOwn(discovery, 'registryFound')
-            && (discovery.registryFound === null || typeof discovery.registryFound === 'boolean');
-        const registryFound = sourceIds.length || verifiedSample ? true
-            : hasDiscovery ? discovery.registryFound
-                : status === 'no_verified_open_endpoint_after_attempts' ? false : null;
-        const qualification = city.qualificationEvidenceFile && readEvidence(repoRoot, city.qualificationEvidenceFile, warnings);
-        const qualifiedSource = sourceRows.find(source => source.sourceId === qualification?.sourceId);
-        const qualified = verifiedSample && qualification?.status === 'technical-qualified'
-            && city.wupCityCode != null && String(qualification.cityCode) === String(city.wupCityCode)
-            && qualifiedSource && Number.isInteger(qualification.featureCount) && qualification.featureCount > 0
-            && QUALIFICATION_GATES.every(gate => qualification.checks?.[gate]?.passed === true);
-        if (qualified && Array.isArray(qualification.requests)) {
-            // Request timestamps record the actual check, unlike an export or admission date.
-            qualification.requests.forEach((request, index) => {
-                const date = normalizeDate(request.startedAt);
-                if (date) evidenceDates.push({ date, path: city.qualificationEvidenceFile, field: `$.requests[${index}].startedAt` });
-            });
-        }
-        const rankedDates = evidenceDates.sort((a, b) => b.date.localeCompare(a.date));
-        const meaningfulVerifiedSource = sourceRows.some(source =>
-            typeof source.verificationStatus === 'string' && source.verificationStatus.startsWith('verified_')
-        );
-        const hasCheck = evidenceFiles.some(file => readEvidence(repoRoot, file, warnings) !== null)
-            || Boolean(files.length) || meaningfulVerifiedSource
-            || sourceRows.some(source => (source.integrationAttempts || []).some(attempt => {
-                const text = `${attempt.operation || ''} ${attempt.outcome || ''} ${attempt.detail || ''}`.trim();
-                return Boolean(text) && (!attempt.cityId || attempt.cityId === city.cityId);
-            }));
-        const knownGuessRun = city.cityId === 'geonames:3186886';
-        const resultFile = path.join(repoRoot, 'world-parcels/guess-spike/output/sam3-zagreb/results.json');
-        let hasRecordedRun = false;
-        if (knownGuessRun && existsSync(resultFile)) {
-            try {
-                const result = JSON.parse(readFileSync(resultFile, 'utf8'));
-                hasRecordedRun = Array.isArray(result) ? result.length > 0 : Object.keys(result || {}).length > 0;
-            } catch (error) {
-                warnings.push(`Could not parse guess-spike results: ${error.message}`);
-            }
-        }
-        const manifestFile = path.join(repoRoot, 'world-parcels/guess-spike/output/sam3-finetune/dataset/manifest.json');
-        if (knownGuessRun && existsSync(manifestFile)) {
-            try {
-                const manifest = JSON.parse(readFileSync(manifestFile, 'utf8'));
-                hasRecordedRun ||= Array.isArray(manifest.samples) && manifest.samples.length > 0;
-            } catch (error) {
-                warnings.push(`Could not parse guess-spike manifest: ${error.message}`);
-            }
-        }
-        const guessExists = knownGuessRun
-            && existsSync(path.join(repoRoot, 'world-parcels/guess-spike/README.md'))
-            && hasRecordedRun;
-        if (knownGuessRun && !guessExists) warnings.push('Zagreb guess-spike records were not available at report build time');
-        return {
-            cityId: city.cityId,
-            checked: Boolean(hasCheck),
-            checkedDate: rankedDates[0]?.date || null,
-            checkedDateEvidence: rankedDates[0] || null,
-            registryFound,
-            registryBasis: qualified
-                ? `Verified ${qualification.featureCount} parcel outlines at the recorded sample location using ${qualifiedSource.name || qualifiedSource.sourceId}. Coverage is bounded; citywide completeness remains unverified.`
-                : discovery?.registryBasis || null,
-            verifiedSample,
-            sourceIds,
-            evidenceUrls: safeUrls([...(discovery?.registryEvidenceUrls || []), ...sourceRows.map(source => source.endpoint)]),
-            evidenceFiles,
-            impliedParcelsTried: guessExists ? true : null
-        };
+    const recordsByCode = new Map();
+    const recordFor = code => {
+        const key = String(code ?? '');
+        if (!recordsByCode.has(key)) recordsByCode.set(key, readCityRecord(repoRoot, key, warnings));
+        return recordsByCode.get(key);
+    };
+
+    const cities = registry.cities.map(city => {
+        const code = city.wupCityCode;
+        const record = recordFor(code);
+        const bindings = validBindings(record?.settings);
+        const sources = record?.settings && !record.settings.bindings.length
+            ? record.settings.sources.filter(source => source?.id && source.endpoint)
+            : sourcesForBindings(record?.settings, bindings);
+        return cityResult(city, record, sources);
     });
 
-    const catalogSources = Array.isArray(sourceCatalog?.sources) ? sourceCatalog.sources : [];
-    const sourceForAppId = new Map(registry.sources.map(source => [source.sourceId, source]));
+    // App identities are bound only by explicit settings.bindings.appCityId values.
+    // Names, proximity, source reuse, and source catalog city lists never create bindings.
+    const settingsDirectory = path.join(repoRoot, CITY_ROOT);
+    const settingsByAppId = new Map();
+    if (existsSync(settingsDirectory)) {
+        for (const entry of readdirSync(settingsDirectory, { withFileTypes: true })) {
+            if (!entry.isDirectory() || !/^\d+$/.test(entry.name)) continue;
+            const record = recordFor(entry.name);
+            for (const binding of validBindings(record?.settings)) {
+                const rows = settingsByAppId.get(binding.appCityId) || [];
+                rows.push({ record, binding });
+                settingsByAppId.set(binding.appCityId, rows);
+            }
+        }
+    }
     const appCityEvidence = appCities.map(appCity => {
-        const appId = appCity.id;
-        const linkedCatalogSources = catalogSources.filter(source =>
-            Array.isArray(source.cityIds) && source.cityIds.includes(appId)
-            && (!appCity.sourceId || source.id === appCity.sourceId)
-        );
-        const sourceIds = unique(linkedCatalogSources.map(source => source.id));
-        const evidenceFiles = [];
-        const evidenceDates = [];
-        let hasExplicitCityCheck = false;
-        let cityBoundEvidence = false;
-        let successfulCitySample = false;
-        let officialExistenceFound = false;
-        const evidenceUrls = [];
-        const identity = {
-            cityId: `app:${appId}`, appCityId: appId, id: appId,
-            name: appCity.name || appCity.label?.split(',')[0], label: appCity.label,
-            countryCode: appCity.cc || appCity.countryCode, aliases: [appId]
-        };
-        const normalizeCityName = text => String(text || '').normalize('NFKC').trim().toLocaleLowerCase();
-        const appNameForms = [appCity.name, appCity.label, appCity.label?.replace(/,\s*[^,]+$/, '')]
-            .filter(Boolean).map(normalizeCityName);
-        const matchingRegistryCities = registry.cities.filter(city => {
-            if (city.appCityId === appId) return true;
-            return Boolean(city.countryCode === identity.countryCode
-                && sourceIds.some(id => (city.sourceIds || []).includes(id))
-                && appNameForms.includes(normalizeCityName(city.name)));
-        });
-        const exactRegistryCity = matchingRegistryCities.length === 1 ? matchingRegistryCities[0] : null;
-        if (exactRegistryCity) {
-            identity.aliases.push(exactRegistryCity.cityId, exactRegistryCity.name, exactRegistryCity.appCityId);
-            for (const file of cityPaths(exactRegistryCity)) {
-                if (!evidenceFiles.includes(file)) evidenceFiles.push(file);
-                const content = readEvidence(repoRoot, file, warnings);
-                if (content !== null && !rootConflictsWithCity(content, identity)) {
-                    hasExplicitCityCheck = true;
-                    cityBoundEvidence ||= evidenceNamesCity(content, identity);
-                }
-                evidenceDates.push(...actualDates(content, file, '$', [], identity));
-            }
-        }
-
-        for (const catalogSource of linkedCatalogSources) {
-            if (catalogSource.endpoint) evidenceUrls.push(catalogSource.endpoint);
-            const source = sourceForAppId.get(catalogSource.id);
-            const additional = source?.liveIntegration?.additionalCityEvidence?.[appId];
-            const primaryFile = source?.liveIntegration?.evidenceFile || catalogSource.evidenceFile;
-            const sourceFiles = [];
-            if (additional) sourceFiles.push(additional);
-            else if (primaryFile && (catalogSource.cityIds.length === 1 || catalogSource.cityIds[0] === appId)) sourceFiles.push(primaryFile);
-            for (const file of unique(sourceFiles)) {
-                if (!evidenceFiles.includes(file)) evidenceFiles.push(file);
-                const content = readEvidence(repoRoot, file, warnings);
-                const designatedPrimary = catalogSource.cityIds.length === 1 || catalogSource.cityIds[0] === appId;
-                const scopedFile = content !== null && !rootConflictsWithCity(content, identity)
-                    && (evidenceNamesCity(content, identity) || designatedPrimary || Boolean(additional));
-                if (scopedFile) {
-                    hasExplicitCityCheck = true;
-                    cityBoundEvidence = true;
-                }
-                evidenceDates.push(...actualDates(content, file, '$', [], identity));
-            }
-            if (!additional && catalogSource.evidenceFile && !sourceFiles.includes(catalogSource.evidenceFile)) {
-                const sharedContent = readEvidence(repoRoot, catalogSource.evidenceFile, warnings);
-                if (sharedContent !== null && evidenceNamesCity(sharedContent, identity)) {
-                    evidenceFiles.push(catalogSource.evidenceFile);
-                    hasExplicitCityCheck = true;
-                    cityBoundEvidence = true;
-                    evidenceDates.push(...actualDates(sharedContent, catalogSource.evidenceFile, '$', [], identity));
-                }
-            }
-            for (const [index, attempt] of (source?.integrationAttempts || []).entries()) {
-                const explicitTarget = attempt.cityId || attempt.city_id;
-                const attemptText = `${attempt.operation || ''} ${attempt.detail || ''}`.toLocaleLowerCase();
-                const targetsCity = explicitTarget ? explicitTarget === appId
-                    : attemptText.includes(appId.toLocaleLowerCase());
-                if (!targetsCity) continue;
-                hasExplicitCityCheck ||= Boolean(attempt.operation || attempt.outcome || attempt.detail);
-                successfulCitySample ||= attempt.outcome === 'success';
-                const date = normalizeDate(attempt.checkedAt);
-                if (date) evidenceDates.push({ date, path: attempt.evidenceFile || null, field: `integrationAttempts[${index}].checkedAt` });
-                if (attempt.evidenceFile && !evidenceFiles.includes(attempt.evidenceFile)) {
-                    evidenceFiles.push(attempt.evidenceFile);
-                    const content = readEvidence(repoRoot, attempt.evidenceFile, warnings);
-                    if (content !== null && !rootConflictsWithCity(content, identity) && evidenceNamesCity(content, identity)) cityBoundEvidence = true;
-                    evidenceDates.push(...actualDates(content, attempt.evidenceFile, '$', [], identity));
-                }
-            }
-        }
-
-        // Belgrade's official-cadastre discovery is documented outside the runtime source catalog.
-        if (appId === 'belgrade') {
-            const file = 'research/db-city-belgrade-live-2026-10-03.json';
-            evidenceFiles.push(file);
-            const content = readEvidence(repoRoot, file, warnings);
-            if (content && content.cityId === 'belgrade' && typeof content.decision === 'string' && content.authority && typeof content.authority === 'object') {
-                hasExplicitCityCheck = true;
-                officialExistenceFound = /official cadastral map\/data existence is established/i.test(content.decision);
-                const date = normalizeDate(content.assessedAt);
-                if (date) evidenceDates.push({ date, path: file, field: '$.assessedAt' });
-                for (const url of [content.authority.officialGeoSrbijaPage, content.authority.officialeCadastrePage]) {
-                    if (url) evidenceUrls.push(url);
-                }
-            }
-        }
-
-        evidenceDates.sort((a, b) => b.date.localeCompare(a.date));
-        const hasVerifiedSample = linkedCatalogSources.some(catalogSource => {
-            const source = sourceForAppId.get(catalogSource.id);
-            const explicitlyTargetsCity = source?.verifiedCityIds?.includes(appId)
-                || source?.liveIntegration?.cityIds?.includes(appId)
-                || Boolean(source?.liveIntegration?.additionalCityEvidence?.[appId]);
-            return explicitlyTargetsCity && (cityBoundEvidence || successfulCitySample)
-                && typeof source?.verificationStatus === 'string' && source.verificationStatus.startsWith('verified_');
-        });
+        const rows = settingsByAppId.get(appCity.id) || [];
+        const sources = rows.flatMap(({ record, binding }) => sourcesForBindings(record.settings, [binding]));
+        const uniqueSources = [...new Map(sources.map(source => [source.id, source])).values()];
+        const evidenceFiles = unique(rows.flatMap(({ record }) => record.evidenceFiles));
+        const failureUrls = safeUrls(rows.flatMap(({ record }) => record.failedUrls));
+        const configured = uniqueSources.length > 0;
         return {
-            cityId: `app:${appId}`,
-            checked: Boolean(hasExplicitCityCheck || evidenceDates.length),
-            checkedDate: evidenceDates[0]?.date || null,
-            checkedDateEvidence: evidenceDates[0] || null,
-            registryFound: officialExistenceFound || sourceIds.length || hasVerifiedSample ? true : null,
-            verifiedSample: hasVerifiedSample,
-            sourceIds,
-            evidenceUrls: safeUrls(evidenceUrls),
-            evidenceFiles: unique(evidenceFiles),
+            cityId: `app:${appCity.id}`,
+            checked: configured || rows.some(({ record }) => record.hasFailedRecord),
+            checkedDate: null,
+            checkedDateEvidence: null,
+            registryFound: configured ? true : null,
+            verifiedSample: configured,
+            sourceIds: configured ? unique(uniqueSources.map(source => source.id)) : [],
+            evidenceUrls: safeUrls([...uniqueSources.map(source => source.endpoint), ...failureUrls]),
+            failureUrls,
+            evidenceFiles,
             impliedParcelsTried: null
         };
     });
@@ -389,9 +189,7 @@ export function collectReportEvidence({ registry, repoRoot, appCities = [], sour
     const probes = new Map((registry.countryProbes || []).map(probe => [probe.countryCode, probe]));
     const countryCoverage = new Map((registry.countryCoverage || []).map(row => [row.countryCode, row]));
     const subnational = new Map((registry.subnationalCoverage || []).map(row => [row.countryCode, row]));
-    const countryCodes = unique([
-        ...probes.keys(), ...countryCoverage.keys(), ...subnational.keys()
-    ]).sort();
+    const countryCodes = unique([...probes.keys(), ...countryCoverage.keys(), ...subnational.keys()]).sort();
     const countries = countryCodes.map(countryCode => {
         const probe = probes.get(countryCode);
         const coverage = countryCoverage.get(countryCode);
@@ -402,15 +200,9 @@ export function collectReportEvidence({ registry, repoRoot, appCities = [], sour
         const positive = POSITIVE_NATIONAL.has(status) || coverageSampled;
         const nationalCadastreFound = positive ? true
             : ['no_online_cadastre_found', 'subnational_only'].includes(status) ? false : null;
-        const evidenceFiles = unique([
-            ...recordFiles(probe, ['evidenceFile', 'retryFile', 'latestAssessmentFile', 'europeFile']),
-            ...recordFiles(coverage, ['evidenceFile'])
-        ]);
-        const dateEvidence = [];
-        const probeDate = normalizeDate(probe?.checkedAt);
-        if (probeDate) dateEvidence.push({ date: probeDate, path: probe.evidenceFile || null, field: 'countryProbes.checkedAt' });
-        for (const file of evidenceFiles) dateEvidence.push(...actualDates(readEvidence(repoRoot, file, warnings), file));
-        dateEvidence.sort((a, b) => b.date.localeCompare(a.date));
+        const evidenceFiles = probe || coverage ? ['registry.json'] : [];
+        const checkedDate = [normalizeDate(probe?.checkedAt), normalizeDate(coverage?.checkedAt)]
+            .filter(Boolean).sort().at(-1) || null;
         const evidenceUrls = safeUrls([
             probe?.inspireRecordUrl,
             ...(probe?.sources || []).map(source => source.endpoint),
@@ -418,8 +210,8 @@ export function collectReportEvidence({ registry, repoRoot, appCities = [], sour
         ]);
         return {
             countryCode,
-            checked: Boolean(probeDate || dateEvidence.length),
-            checkedDate: dateEvidence[0]?.date || null,
+            checked: Boolean(checkedDate),
+            checkedDate,
             nationalCadastreFound,
             verifiedNationalSample: status === 'national_online_cadastre_verified_sample',
             countryCoverageSampled: coverageSampled,
@@ -430,7 +222,7 @@ export function collectReportEvidence({ registry, repoRoot, appCities = [], sour
                 ruralRegistryOnly: regional.ruralRegistryOnly ?? 0,
                 regions: (regional.regions || []).map(region => ({
                     code: region.code, name: region.name, status: region.status, bucket: region.bucket,
-                    evidenceFile: region.evidenceFile || null
+                    evidenceFile: 'registry.json'
                 }))
             } : null,
             parentSource,
@@ -440,5 +232,5 @@ export function collectReportEvidence({ registry, repoRoot, appCities = [], sour
         };
     });
 
-    return { cities: cityEvidence, appCities: appCityEvidence, countries, warnings: unique(warnings) };
+    return { cities, appCities: appCityEvidence, countries, warnings: unique(warnings) };
 }

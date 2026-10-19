@@ -1,0 +1,111 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "1381",
+  "name": "Poznań",
+  "point": [
+    52.4033374848812,
+    16.9139953760299
+  ],
+  "bindings": [
+    {
+      "appCityId": "poznan",
+      "runtimeConfig": {
+        "id": "poznan",
+        "label": "Poznań",
+        "currency": {
+          "locale": "pl-PL",
+          "code": "PLN"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            52.4033374848812,
+            16.9139953760299
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            52.4033374848812,
+            16.9139953760299
+          ],
+          "fallbackDataset": [
+            16.9139953760299,
+            52.4033374848812
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "poznan-gml-wfs",
+          "idPrefix": "PL-POZNAN-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 3,
+          "attribution": "<a href=\"https://geopoz.poznan.pl/\">Poznań municipal EGiB cadastral parcel polygons</a> · adapted"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "poznan-gml-wfs",
+      "name": "Poznań municipal EGiB parcel polygons",
+      "adapter": "gml-wfs",
+      "endpoint": "https://portal.geopoz.poznan.pl/wmsegib",
+      "featureType": "ms:dzialki",
+      "idField": "ID_DZIALKI",
+      "geometryField": "MSGEOMETRY",
+      "responseCrs": "EPSG:2177",
+      "idPrefix": "PL-POZNAN-",
+      "idType": "string",
+      "parcelNumberField": "ID_DZIALKI",
+      "outFields": [
+        "ID_DZIALKI"
+      ],
+      "maxBboxKm2": 1,
+      "pageSize": 100,
+      "maxFeatures": 3000,
+      "maxResponseBytes": 2097152,
+      "maxTotalResponseBytes": 16777216,
+      "timeoutMs": 15000,
+      "countryCode": "PL",
+      "metricSrid": 2180,
+      "cityIds": [
+        "poznan"
+      ],
+      "maxConcurrentQueries": 1,
+      "operator": "City of Poznań / GEOPOZ municipal geodesy and cadastre office",
+      "scope": "51 valid, distinct native EGiB parcel polygons across thirteen bounded cells around the unchanged Poznań WUP settlement locator. Before/after hit counts, all feature pages, forced three-row pagination, fresh exact reads of every ID, explicit absence, footprint lookup and one-parcel proposal binding pass. Independent EPSG:2180 full-polygon topology audit found no invalidity, duplicate geometry, overlaps above 0.01 m² or operation errors. This verifies bounded reference geometry, without asserting whole-city completeness.",
+      "attribution": "Poznań GEOPOZ EGiB parcel geometry · adapted",
+      "catalogueUrl": "https://geopoz.poznan.pl/",
+      "licenceNote": "Anonymous bounded parcel geometry and publisher attribution verified. ID_DZIALKI is the published cadastral identifier. Publisher conditions and source currency remain informational; personal and KW record fields are excluded."
+    }
+  ]
+}

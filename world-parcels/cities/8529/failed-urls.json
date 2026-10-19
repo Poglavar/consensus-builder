@@ -1,0 +1,6 @@
+[
+  {
+    "url": "https://services1.arcgis.com/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Property_Tax_Parcels/FeatureServer/0",
+    "reason": "Held at the geometry gate: every source check passed (78 requests, 2 qualifier run(s) on this city) but the independent metric audit failed for Peabody (us-ma-massgis-l3-tax-parcels) with 1 invalid geometry (M_249837_919226: Nested shells[-70.8927260798835 42.5223010050249]) among 92 cached features. The defects are in the published polygons themselves; source polygons are never repaired, clipped…"
+  }
+]

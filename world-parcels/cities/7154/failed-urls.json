@@ -1,0 +1,30 @@
+[
+  {
+    "url": "https://gisportalajk.maps.arcgis.com/sharing/rest/content/items/ad91ef47a1884b25b289937917a26325?f=json",
+    "reason": "400"
+  },
+  {
+    "url": "https://www.arcgis.com/sharing/rest/content/items/ad91ef47a1884b25b289937917a26325?f=json",
+    "reason": "400"
+  },
+  {
+    "url": "https://ajk.gov.pk/ajk-map/",
+    "reason": "403"
+  },
+  {
+    "url": "https://itb.ajk.gov.pk/projects/",
+    "reason": "403"
+  },
+  {
+    "url": "https://gisportalajk.maps.arcgis.com/apps/webappviewer/index.html?id=ad91ef47a1884b25b289937917a26325"
+  },
+  {
+    "url": "https://lupajk.gov.pk/"
+  },
+  {
+    "url": "https://pndajk.gov.pk/downloads.php?page=maps"
+  },
+  {
+    "url": "https://ajkppra.gov.pk/uploadfiles/tenderdocuments/1621852153VB3BM%20-%20Board%20of%20revenue.pdf"
+  }
+]

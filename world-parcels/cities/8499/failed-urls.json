@@ -1,0 +1,6 @@
+[
+  {
+    "url": "https://services1.arcgis.com/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Property_Tax_Parcels/FeatureServer/0",
+    "reason": "Held at the geometry gate: every source check passed (43 requests, 1 qualifier run(s) on this city) but the independent metric audit failed for Brockton (us-ma-massgis-l3-tax-parcels) with 1 invalid geometry (F_777348_2845480: Ring Self-intersection[-71.0022448663374 42.0645302914554]) among 84 cached features. The defects are in the published polygons themselves; source polygons are never repair…"
+  }
+]

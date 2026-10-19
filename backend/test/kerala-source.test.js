@@ -19,7 +19,7 @@ const descriptor = {
     maxFeatures: 1000,
     maxResponseBytes: 2 * 1024 * 1024
 };
-const fixture = JSON.parse(readFileSync(new URL('../../world-parcels/research/growth-top20-integration-2026-10-07/kerala-parcel-sample.geojson', import.meta.url), 'utf8'));
+const fixture = JSON.parse(readFileSync(new URL('./fixtures/parcel-adapter-kerala.geojson', import.meta.url), 'utf8'));
 const sample = fixture.features[0];
 const nativeId = sample.properties.parcel_gid;
 const sourceId = `${descriptor.idPrefix}${nativeId}`;

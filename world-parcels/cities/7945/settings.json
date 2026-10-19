@@ -1,0 +1,117 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "7945",
+  "name": "Mumbai, India",
+  "point": [
+    19.12248075999,
+    72.8833426320986
+  ],
+  "bindings": [
+    {
+      "appCityId": "mumbai",
+      "runtimeConfig": {
+        "id": "mumbai",
+        "wupCityCode": "7945",
+        "label": "Mumbai, India",
+        "currency": {
+          "locale": "en-IN",
+          "code": "INR"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            19.12248075999,
+            72.8833426320986
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            19.12248075999,
+            72.8833426320986
+          ],
+          "fallbackDataset": [
+            72.8833426320986,
+            19.12248075999
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "in-mh-ncscm-czmp-survey-plots",
+          "idPrefix": "IN-MH-CZMP-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 26,
+          "attribution": "National Centre for Sustainable Coastal Management (MoEFCC) — CZMP 2019 survey plots, Maharashtra. Plot labels shown as published; references derived from geometry. Adapted to WGS84."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "in-mh-ncscm-czmp-survey-plots",
+      "name": "NCSCM CZMP 2019 — Maharashtra survey plots",
+      "adapter": "arcgis",
+      "endpoint": "https://gisportal.ncscm.res.in/server/rest/services/CZMP_STATES_2019/CZMP_Maharashtra19/MapServer/5",
+      "identityKind": "geometry-sha256-v1",
+      "lookupCellSize": 0.001,
+      "objectIdField": "OBJECTID",
+      "idPrefix": "IN-MH-CZMP-",
+      "parcelNumberField": "lable",
+      "outFields": [
+        "OBJECTID",
+        "VILLAGE",
+        "TYPE",
+        "WARD",
+        "lable"
+      ],
+      "pageSize": 1000,
+      "maxFeatures": 2000,
+      "maxBboxKm2": 1,
+      "maxConcurrentQueries": 2,
+      "countryCode": "IN",
+      "metricSrid": 32643,
+      "cityIds": [
+        "mumbai"
+      ],
+      "scope": "Survey-plot outlines drawn on Maharashtra's Coastal Zone Management Plan 2019 maps, including city survey (CTS) and town-planning-scheme (TPS) plots in Greater Mumbai. Coverage follows mapped coastal planning areas and can omit inland neighbourhoods. Labels repeat within a village, so application references are derived from each outline and change when an outline changes.",
+      "attribution": "National Centre for Sustainable Coastal Management (MoEFCC) — CZMP 2019 survey plots, Maharashtra. Plot labels shown as published; references derived from geometry. Adapted to WGS84.",
+      "catalogueUrl": "https://czmp.ncscm.res.in/",
+      "licenceNote": "No reuse licence is stated on the CZMP portal or the ArcGIS service; the plan is published for public viewing.",
+      "caveats": [
+        "Coastal-zone planning maps, not the land-records register: plot outlines are a geometry reference, not proof of current title or ownership.",
+        "The layer mixes CTS and TPS plots. VILLAGE + TYPE + label repeats for distinct polygons, so it is shown, never used as identity; OBJECTID is a transport field.",
+        "Application identity uses the source namespace plus canonical geometry SHA-256 at 1e-7-degree precision and a spatial locator, as for Nairobi. A changed outline gets a new reference; absence means that outline version was not returned.",
+        "The service answers browsers directly (CORS allows this site); no relay is used.",
+        "The plan dates from the CRZ Notification 2019; the survey date of the underlying plot maps is not stated."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,112 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "1498",
+  "name": "Lusaka, Zambia",
+  "point": [
+    -15.40478133,
+    28.38004999
+  ],
+  "bindings": [
+    {
+      "appCityId": "lusaka",
+      "runtimeConfig": {
+        "id": "lusaka",
+        "label": "Lusaka, Zambia",
+        "currency": {
+          "locale": "en-ZM",
+          "code": "ZMW"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            -15.40478133,
+            28.38004999
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            -15.40478133,
+            28.38004999
+          ],
+          "fallbackDataset": [
+            28.38004999,
+            -15.40478133
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.0025,
+          "source": "parcel-source",
+          "sourceId": "zm-lusaka-mtendere-east-agol-unofficial",
+          "idPrefix": "ZM-LUSAKA-GID-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 12,
+          "attribution": "<a href=\"https://services8.arcgis.com/baO0mx1RSvBYn91a/arcgis/rest/services/Lusaka_parcels_creation/FeatureServer/0\">Parcels_Mtendere_East — Lusaka_parcels_creation (ArcGIS Online)</a> · unofficial 28-polygon Mtendere East sample · publisher and source terms unverified"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "zm-lusaka-mtendere-east-agol-unofficial",
+      "name": "Lusaka Mtendere East parcels (ArcGIS Online)",
+      "adapter": "arcgis",
+      "endpoint": "https://services8.arcgis.com/baO0mx1RSvBYn91a/arcgis/rest/services/Lusaka_parcels_creation/FeatureServer/0",
+      "idField": "GlobalID",
+      "objectIdField": "FID",
+      "idPrefix": "ZM-LUSAKA-GID-",
+      "idType": "string",
+      "idPattern": "^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}$",
+      "idQueryBraces": true,
+      "parcelNumberField": "PCNumber",
+      "outFields": [
+        "FID",
+        "GlobalID",
+        "Id",
+        "PCNumber",
+        "Settlement",
+        "Verified"
+      ],
+      "pageSize": 25,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "boundsQueryMode": "object-ids",
+      "countryCode": "ZM",
+      "metricSrid": 32735,
+      "scope": "Unofficial ArcGIS Online layer named Parcels_Mtendere_East; only 28 polygons in one Lusaka settlement. Not a citywide or official legal-cadastre source.",
+      "licenceNote": "Publisher authority and reuse terms are unconfirmed; retain the scope and attribution notice. Source terms are informational for this prototype.",
+      "catalogueUrl": "https://services8.arcgis.com/baO0mx1RSvBYn91a/arcgis/rest/services/Lusaka_parcels_creation/FeatureServer/0",
+      "attribution": "Parcels_Mtendere_East — Lusaka_parcels_creation (ArcGIS Online account eodoi_medeem; publisher authority unconfirmed). Adapted; limited to 28 polygons in Mtendere East.",
+      "cityIds": [
+        "lusaka"
+      ]
+    }
+  ]
+}

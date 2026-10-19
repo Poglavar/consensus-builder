@@ -1,0 +1,6 @@
+[
+  {
+    "url": "https://www.ndolacouncil.gov.zm/?page_id=770",
+    "reason": "<urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1082)>"
+  }
+]

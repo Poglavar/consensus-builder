@@ -1,0 +1,112 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "7065",
+  "name": "Tallahassee, United States",
+  "point": [
+    30.4383,
+    -84.2807
+  ],
+  "bindings": [
+    {
+      "appCityId": "tallahassee",
+      "runtimeConfig": {
+        "id": "tallahassee",
+        "label": "Tallahassee, United States",
+        "currency": {
+          "locale": "en-US",
+          "code": "USD"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            30.4383,
+            -84.2807
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            30.4383,
+            -84.2807
+          ],
+          "fallbackDataset": [
+            -84.2807,
+            30.4383
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.0025,
+          "source": "parcel-source",
+          "sourceId": "us-fl-tallahassee-parcels",
+          "idPrefix": "US-FL-TALLAHASSEE-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 6,
+          "attribution": "<a href=\"https://www.arcgis.com/home/item.html?id=0647430cc90e435093e9d064cb22481f\">Tallahassee-Leon County Planning Department / TLCGIS · publisher &amp; conditions</a> · November 2025 parcel-based mirror · adapted"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "us-fl-tallahassee-parcels",
+      "countryCode": "US",
+      "stateCode": "FL",
+      "cityIds": [
+        "tallahassee"
+      ],
+      "idPrefix": "US-FL-TALLAHASSEE-",
+      "adapter": "arcgis",
+      "endpoint": "https://services.arcgis.com/ptvDyBs1KkcwzQNJ/arcgis/rest/services/EXLU_2025_WM/FeatureServer/19",
+      "name": "TLCGIS Existing Land Use 2025",
+      "operator": "Tallahassee-Leon County Planning Department / TLCGIS",
+      "scope": "Leon County parcel-based existing land use snapshot 2025",
+      "catalogueUrl": "https://www.arcgis.com/home/item.html?id=0647430cc90e435093e9d064cb22481f",
+      "idField": "TAXID",
+      "objectIdField": "OBJECTID",
+      "idType": "string",
+      "outFields": [
+        "TAXID",
+        "OBJECTID"
+      ],
+      "parcelNumberField": "TAXID",
+      "metricSrid": 32616,
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "maxConcurrentQueries": 2,
+      "caveats": [
+        "Official parcel-based land-use snapshot reflecting November 2025; current cadastral updates after this snapshot are not represented.",
+        "Sampled capital-area acceptance does not establish all municipal parcels are present."
+      ],
+      "attribution": "Tallahassee-Leon County Planning Department / TLCGIS. Adapted to WGS84.",
+      "licenceNote": "Source conditions are informational; users choose their source and intended use."
+    }
+  ]
+}

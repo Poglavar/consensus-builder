@@ -1,8 +1,0 @@
-{
-  "url": "https://map.land.gov.bd/",
-  "checkedAt": "2026-10-11T15:35:52.990125Z",
-  "httpStatus": 200,
-  "contentType": "text/html; charset=UTF-8",
-  "responseSha256": "73ea5576f4888c335e8d2719b12ba001d30d012d27ce4e06589e0d56e91d0fd7",
-  "observation": "First-party public map viewer HTML was reachable; this observation does not establish parcel coverage or native IDs."
-}

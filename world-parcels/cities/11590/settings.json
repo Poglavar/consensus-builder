@@ -1,0 +1,107 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "11590",
+  "name": "Sha Tin, Hong Kong",
+  "point": [
+    22.3934460524814,
+    114.204022607849
+  ],
+  "bindings": [
+    {
+      "appCityId": "shatin",
+      "runtimeConfig": {
+        "id": "shatin",
+        "label": "Sha Tin, Hong Kong",
+        "currency": {
+          "locale": "en-HK",
+          "code": "HKD"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            22.3934460524814,
+            114.204022607849
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            22.3934460524814,
+            114.204022607849
+          ],
+          "fallbackDataset": [
+            114.204022607849,
+            22.3934460524814
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "hk-landsd-csdi-lot-polygons",
+          "idPrefix": "HK-CSDI-LOT-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 3,
+          "attribution": "<a href=\"https://portal.csdi.gov.hk/csdi-webpage/dataset/landsd_rcd_1637217253134_22729\">Hong Kong Lands Department CSDI lots</a> · adapted"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "hk-landsd-csdi-lot-polygons",
+      "name": "Hong Kong Lands Department CSDI lots",
+      "adapter": "arcgis",
+      "endpoint": "https://portal.csdi.gov.hk/server/rest/services/common/landsd_rcd_1637217253134_22729/FeatureServer/0",
+      "idField": "LotID",
+      "idType": "integer",
+      "idPrefix": "HK-CSDI-LOT-",
+      "objectIdField": "OBJECTID",
+      "outFields": [
+        "OBJECTID",
+        "LotID",
+        "LotCSUID"
+      ],
+      "pageSize": 1000,
+      "maxFeatures": 3000,
+      "maxBboxKm2": 1,
+      "countryCode": "HK",
+      "metricSrid": 32650,
+      "cityIds": [
+        "shatin"
+      ],
+      "maxConcurrentQueries": 2,
+      "operator": "Hong Kong Lands Department",
+      "scope": "3 valid distinct public parcel-reference polygons verified in thirteen bounded 0.001-degree cells around the unchanged WUP settlement locator. Complete bounded paging, all 3 fresh native-ID reads, explicit absence, footprint and source binding passed in 20 requests. Independent metric EPSG:32650 GEOS found all geometries valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. Source-native integer LotID is preserved unchanged; OBJECTID is used only for transport paging. The initial generic three-row pagination test could not exercise paging in these sparse cells and is retained separately; a fresh run forced one-row pages on a two-lot cell and reproduced both full geometries. Native source CRS is EPSG:2326 (ArcGIS WKID102140); requested EPSG:4326 output is unchanged. The exact point returned no lot; the original nearby full polygon matches fresh full geometry exactly. This is the CSDI Lot collection, separate from the existing private-lot index API. Citywide completeness, legal title, survey accuracy, currentness and long-term identity continuity remain unverified.",
+      "attribution": "Hong Kong Lands Department · public parcel-reference geometry · adapted",
+      "catalogueUrl": "https://portal.csdi.gov.hk/csdi-webpage/dataset/landsd_rcd_1637217253134_22729",
+      "licenceNote": "Anonymous bounded public geometry and publisher attribution verified. Publisher reuse/currentness/legal-coordinate conditions are informational. This reference geometry does not establish legal title or survey accuracy; personal fields are excluded."
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+[
+  {
+    "url": "https://www.affairesfoncieres.gouv.cd/api/circonscriptions",
+    "reason": "404"
+  },
+  {
+    "url": "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions"
+  },
+  {
+    "url": "https://www.affairesfoncieres.gouv.cd/services-fonciers/demandes"
+  },
+  {
+    "url": "https://www.affairesfoncieres.gouv.cd/ressources/documents"
+  },
+  {
+    "url": "https://servicepublic.gouv.cd/service/4671"
+  }
+]

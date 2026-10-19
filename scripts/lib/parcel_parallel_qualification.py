@@ -15,7 +15,7 @@ from types import SimpleNamespace
 
 import parcel_source_stage as stage
 from parcel_source_admission import admit_candidate
-from parcel_qualification_workspaces import prepare_workspace, finish_workspace
+from parcel_qualification_workspaces import prepare_workspace, finish_workspace, discard_workspace
 
 
 def now():
@@ -225,6 +225,7 @@ def _collect(runner, city, receipt, packet, digest, isolation, document):
         rolled_back = bool(getattr(runner, "shared_write_rolled_back", False))
         blocked = runner.state.get("adapterStageBlocked")
         if rolled_back:
+            entry.pop("admission", None)
             result["workspaceUnchangedAfterFailure"] = True
             if isinstance(blocked, dict) and blocked.get("cityCode") == str(city["cityCode"]):
                 runner.state.pop("adapterStageBlocked", None)
@@ -239,8 +240,21 @@ def _collect(runner, city, receipt, packet, digest, isolation, document):
         runner.state["adapterStageBlocked"] = {"cityCode": str(city["cityCode"]),
                                                 "reason": result["summary"], "at": now()}
     if result["status"] in {"pending", "interrupted"}:
-        entry.setdefault("qualificationHistory", []).append(result)
+        historical = dict(result)
+        historical.pop("isolation", None)
+        entry.setdefault("qualificationHistory", []).append(historical)
         result = {"status": "pending", "receiptSha256": digest, "summary": result["summary"]}
+    if (not runner.stop_requested
+            and result.get("status") not in {"running", "ready-isolated"}):
+        try:
+            discard_workspace(_restore(isolation["workspace"]))
+        except Exception as exc:
+            result = {**result, "status": "failed",
+                      "summary": f"Qualification workspace discard error: {type(exc).__name__}: {exc}",
+                      "workspaceDiscardError": f"{type(exc).__name__}: {exc}",
+                      "isolation": isolation}
+        else:
+            result.pop("isolation", None)
     entry["qualification"] = result
     runner.save_state()
     runner.log("isolated qualification checkpoint", cityCode=str(city["cityCode"]),

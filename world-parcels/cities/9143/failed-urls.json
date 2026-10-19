@@ -1,0 +1,26 @@
+[
+  {
+    "url": "https://upbhunaksha.gov.in/bhunakshaserver/Levels/levelLabels"
+  },
+  {
+    "url": "https://upbhunaksha.gov.in/bhunakshaserver/Levels/stateCode"
+  },
+  {
+    "url": "https://upbhunaksha.gov.in/bhunakshaserver/Levels/getStateName"
+  },
+  {
+    "url": "https://upbhunaksha.gov.in/bhunakshaserver/Levels/mapLevelCount"
+  },
+  {
+    "url": "https://upbhulekh.gov.in/"
+  },
+  {
+    "url": "https://upbhunaksha.gov.in/"
+  },
+  {
+    "url": "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=147&tehsilCode=00774"
+  },
+  {
+    "url": "https://upbhulekh.gov.in/GeoDashboard/unavailable_maps?distCode=147&tehsilCode=00774"
+  }
+]

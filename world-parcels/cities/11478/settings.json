@@ -1,0 +1,104 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "11478",
+  "name": "Shenzhen, China",
+  "point": [
+    22.5405,
+    114.1005
+  ],
+  "bindings": [
+    {
+      "appCityId": "shenzhen",
+      "runtimeConfig": {
+        "id": "shenzhen",
+        "label": "Shenzhen, China",
+        "currency": {
+          "locale": "zh-CN",
+          "code": "CNY"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            22.5405,
+            114.1005
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.01
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            22.5405,
+            114.1005
+          ],
+          "fallbackDataset": [
+            114.1005,
+            22.5405
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "cn-shenzhen-land-certain",
+          "idPrefix": "CN-SZ-LANDCERTAIN-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 1,
+          "attribution": "Shenzhen Municipal Planning and Natural Resources Bureau · public cadastral-map service"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": null
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "cn-shenzhen-land-certain",
+      "name": "Shenzhen public cadastral-map land-right parcels",
+      "adapter": "shenzhen-land-certain",
+      "endpoint": "https://pnr.sz.gov.cn:8001/d-suplicmap/dynamap_1/rest/services/LAND_CERTAIN/MapServer/0",
+      "idField": "PARCEL_NO",
+      "idType": "string",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "CN-SZ-LANDCERTAIN-",
+      "parcelNumberField": "PARCEL_NO",
+      "outFields": [
+        "OBJECTID",
+        "PARCEL_NO",
+        "LOT_NO"
+      ],
+      "boundsQueryMode": "object-ids",
+      "pageSize": 80,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "countryCode": "CN",
+      "metricSrid": 4547,
+      "cityIds": [
+        "shenzhen"
+      ],
+      "scope": "Official Shenzhen public cadastral-map service, publisher excludes Shenshan Cooperation Zone. Only a bounded central entry and nearby pan have been verified; not a claim of complete city or China coverage.",
+      "catalogueUrl": "https://pnr.sz.gov.cn/d-djtcx/djtcx/index.html",
+      "licenceUrl": "https://pnr.sz.gov.cn/xxgk/gggs/content/post_8124136.html",
+      "licenceNote": "Public source notices and reuse conditions are informational; users choose the source and intended use.",
+      "attribution": "Shenzhen Municipal Planning and Natural Resources Bureau · public cadastral-map query service. Adapted to WGS84."
+    }
+  ]
+}

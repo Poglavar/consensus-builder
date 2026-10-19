@@ -1,0 +1,115 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "60",
+  "name": "Geneva, Switzerland",
+  "point": [
+    46.2017520971079,
+    6.13622539632436
+  ],
+  "bindings": [
+    {
+      "appCityId": "geneva",
+      "runtimeConfig": {
+        "id": "geneva",
+        "wupCityCode": "60",
+        "label": "Geneva, Switzerland",
+        "currency": {
+          "locale": "de-CH",
+          "code": "CHF"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            46.2017520971079,
+            6.13622539632436
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            46.2017520971079,
+            6.13622539632436
+          ],
+          "fallbackDataset": [
+            6.13622539632436,
+            46.2017520971079
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "ch-ge-sitg-cadastre-rdppf",
+          "idPrefix": "CH-GE-SITG-EGRID-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 3,
+          "attribution": "<a href=\"https://sitg.ge.ch/donnees/cad-parcelle-mensu\">République et canton de Genève - Département du territoire / SITG</a>"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "ch-ge-sitg-cadastre-rdppf",
+      "name": "Geneva SITG cadastral survey parcels (EGRID)",
+      "adapter": "arcgis",
+      "endpoint": "https://thematic.sitg.ge.ch/arcgis/rest/services/CADASTRE_RDPPF/MapServer/4",
+      "idField": "EGRID",
+      "idType": "string",
+      "idPattern": "^CH[0-9]{12}$",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "CH-GE-SITG-EGRID-",
+      "outFields": [
+        "EGRID",
+        "OBJECTID"
+      ],
+      "boundsQueryMode": "offset",
+      "idsQueryMode": "offset",
+      "queryFormat": "geojson",
+      "pageSize": 200,
+      "idBatchSize": 80,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 1,
+      "capabilities": {
+        "point": false,
+        "exactId": true,
+        "bbox": true,
+        "areaEnumeration": true,
+        "geometry": "full-wgs84"
+      },
+      "countryCode": "CH",
+      "cityIds": [
+        "geneva"
+      ],
+      "metricSrid": 32632,
+      "scope": "Official cantonal cadastral and official-survey map service for Geneva; the SITG catalog identifies the parcel data as official mensuration/cadastre data.",
+      "catalogueUrl": "https://sitg.ge.ch/donnees/cad-parcelle-mensu",
+      "attribution": "République et canton de Genève - Département du territoire / SITG",
+      "licenceNote": "The frozen packet supplies no licence annotation. Public anonymous access is verified separately; technical recommendation does not decide reuse rights or admission.",
+      "defaultForCity": true
+    }
+  ]
+}

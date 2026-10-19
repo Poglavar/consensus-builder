@@ -1,0 +1,35 @@
+[
+  {
+    "url": "https://map.land.gov.ua/"
+  },
+  {
+    "url": "http://map.land.gov.ua/",
+    "reason": "503"
+  },
+  {
+    "url": "https://map.land.gov.ua/kadastrova-karta"
+  },
+  {
+    "url": "https://map.land.gov.ua/geoserver/ows?service=WFS&request=GetCapabilities"
+  },
+  {
+    "url": "https://map.land.gov.ua/map/ows?service=WMS&request=GetCapabilities"
+  },
+  {
+    "url": "https://e.land.gov.ua/back/cadmap/",
+    "reason": "404"
+  },
+  {
+    "url": "https://kadastr.live/"
+  },
+  {
+    "url": "https://cdn.kadastr.live/tiles/maps/kadastr/16/38076/22139.pbf"
+  },
+  {
+    "url": "https://gisis.kga.gov.ua/"
+  },
+  {
+    "url": "https://gis.kyivcity.gov.ua/",
+    "reason": "403"
+  }
+]

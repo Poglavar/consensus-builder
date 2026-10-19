@@ -1,0 +1,13 @@
+[
+  {
+    "url": "https://zamin.gov.ir/ito/api/forms/getPref",
+    "reason": "timeout"
+  },
+  {
+    "url": "https://shamim.ssaa.ir/",
+    "reason": "timeout/未応答"
+  },
+  {
+    "url": "https://iraneland.ir/"
+  }
+]

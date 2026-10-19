@@ -1,0 +1,19 @@
+[
+  {
+    "url": "https://www.geoportal.gov.sd/",
+    "reason": "DNS resolution timeout after 20 seconds from request environment"
+  },
+  {
+    "url": "https://aqari.nctr.sd/ar",
+    "reason": "Official page content available through public indexed page; direct shell DNS lookup failed"
+  },
+  {
+    "url": "https://www.nic.gov.sd/public/projectDetails/3"
+  },
+  {
+    "url": "https://aqari.nctr.sd/ar/about"
+  },
+  {
+    "url": "https://ayah1122.github.io/Sudan_GIS/"
+  }
+]

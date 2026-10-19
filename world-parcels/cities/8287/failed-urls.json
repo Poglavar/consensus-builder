@@ -1,0 +1,35 @@
+[
+  {
+    "url": "https://sialkot.punjab.gov.pk/Revenue_Department_Pasrur"
+  },
+  {
+    "url": "https://www.punjab-zameen.gov.pk/"
+  },
+  {
+    "url": "https://askfortaqseem.pulse.gop.pk/ParcelMap.html"
+  },
+  {
+    "url": "https://askfortaqseem.pulse.gop.pk/swagger/v1/swagger.json"
+  },
+  {
+    "url": "https://askfortaqseem.pulse.gop.pk/api/Config/mode"
+  },
+  {
+    "url": "https://askfortaqseem.pulse.gop.pk/api/LandRecord/Districts"
+  },
+  {
+    "url": "https://askfortaqseem.pulse.gop.pk/api/LandRecord/Tehsils/32"
+  },
+  {
+    "url": "https://askfortaqseem.pulse.gop.pk/api/LandRecord/Mauzas/107"
+  },
+  {
+    "url": "https://askfortaqseem.pulse.gop.pk/api/LandRecord/GetDistinctKhewatsByMauzaId/66330"
+  },
+  {
+    "url": "https://askfortaqseem.pulse.gop.pk/api/MapData/GetAdminBoundariesGeoJson"
+  },
+  {
+    "url": "https://askfortaqseem.pulse.gop.pk/api/MapData/GetParcelGeoJson?parcelId=1"
+  }
+]

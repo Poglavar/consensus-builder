@@ -1,0 +1,19 @@
+[
+  {
+    "url": "https://sigfu.gouv.ci/public",
+    "reason": "TLS verification failed: unable to get local issuer certificate"
+  },
+  {
+    "url": "http://sigfu.gouv.ci/public",
+    "reason": "request failed"
+  },
+  {
+    "url": "https://www.dgi.gouv.ci/assets/documents/transfert_propriete/services/DCAD_MISSIONS_ORGANISATIONS.pdf"
+  },
+  {
+    "url": "https://opf.gouv.ci/annuaire-services-cadastre"
+  },
+  {
+    "url": "https://web.construction.gouv.ci/index.php/services"
+  }
+]

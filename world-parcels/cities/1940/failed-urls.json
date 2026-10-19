@@ -1,0 +1,22 @@
+[
+  {
+    "url": "https://gis.zt-rada.gov.ua/api-user/rtile/3250996033106216875/ua/13/4954/2876.png",
+    "reason": "HTTP 200 but error body"
+  },
+  {
+    "url": "https://map.land.gov.ua/",
+    "reason": "timeout after 25 seconds"
+  },
+  {
+    "url": "https://gis.zt-rada.gov.ua/"
+  },
+  {
+    "url": "https://zhytomyrska.land.gov.ua/"
+  },
+  {
+    "url": "https://e.land.gov.ua/"
+  },
+  {
+    "url": "https://gis.zt-rada.gov.ua/api-user/gis-format?layer=3250996033106216875&lat=50.2668347580156&lng=28.6681093298911&auto=1&zoom=13"
+  }
+]

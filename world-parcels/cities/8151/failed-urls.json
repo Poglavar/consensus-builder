@@ -1,0 +1,12 @@
+[
+  {
+    "url": "https://gaia.gaithersburgmd.gov/arcgis/rest/services/layers/MyGaithersburg/MapServer/0?f=pjson"
+  },
+  {
+    "url": "https://gaia.gaithersburgmd.gov/arcgis/rest/services/layers/MyGaithersburg/MapServer/0/query"
+  },
+  {
+    "url": "https://mdgeodata.md.gov/imap/rest/services/PlanningCadastre/MD_ParcelBoundaries/MapServer/0",
+    "reason": "Held: the Maryland iMAP MD_ParcelBoundaries MapServer returns inconsistent manifests for the binding envelope around the sample parcel (Gaithersburg): returnCountOnly=88 but returnIdsOnly lists 87 distinct object IDs, so the production adapter refuses with 'incomplete or invalid object-ID list' (502) and the binding check fails in both attempt-01 and attempt-02; every other check passed. Source d…"
+  }
+]

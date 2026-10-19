@@ -1,0 +1,26 @@
+[
+  {
+    "url": "https://www.esa.gov.eg/services.aspx"
+  },
+  {
+    "url": "https://www.esa.gov.eg/sellingmaproomdigital.aspx"
+  },
+  {
+    "url": "https://www.esa.gov.eg/benya.aspx"
+  },
+  {
+    "url": "https://www.egis.idsc.gov.eg/server/rest/services/Map/FeatureServer?f=pjson"
+  },
+  {
+    "url": "https://www.egis.idsc.gov.eg/server/rest/services/Map/FeatureServer/1?f=pjson"
+  },
+  {
+    "url": "https://www.egis.idsc.gov.eg/server/rest/services/Map/FeatureServer/1/query?where=1%3D1%26geometry=31.3089748298407%2C27.0529870151594%26geometryType=esriGeometryPoint%26inSR=4326%26spatialRel=esriSpatialRelIntersects%26outFields=OBJECTID%26returnGeometry=false%26f=pjson"
+  },
+  {
+    "url": "https://geoportal.capmas.gov.eg/"
+  },
+  {
+    "url": "https://www.esa.gov.eg/files/Topographic_Maps.pdf"
+  }
+]

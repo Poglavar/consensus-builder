@@ -1,0 +1,110 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "2033",
+  "name": "Nairobi, Kenya",
+  "point": [
+    -1.26592113731299,
+    36.845161927435
+  ],
+  "bindings": [
+    {
+      "appCityId": "nairobi",
+      "runtimeConfig": {
+        "id": "nairobi",
+        "label": "Nairobi, Kenya",
+        "currency": {
+          "locale": "en-KE",
+          "code": "KES"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 18
+          },
+          "defaultCenter": [
+            -1.26592113731299,
+            36.845161927435
+          ],
+          "defaultZoom": 18,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            -1.26592113731299,
+            36.845161927435
+          ],
+          "fallbackDataset": [
+            36.845161927435,
+            -1.26592113731299
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.0025,
+          "source": "parcel-source",
+          "sourceId": "ke-nairobi-maps-outlines",
+          "idPrefix": "KE-NAIROBI-NM-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 3,
+          "attribution": "<a href=\"https://nairobimaps.com/\">Nairobi Maps</a> · <a href=\"https://nairobimaps.com/gis-data/nairobi-parcels-cadastre.html\">parcel outlines</a>. Public commercial outlines are for geometry references only; source registry numbers and ownership are unavailable."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "ke-nairobi-maps-outlines",
+      "name": "Nairobi Maps — public parcel outlines",
+      "adapter": "nairobi-outlines",
+      "endpoint": "https://nairobimaps.com/api/get_parcels.php",
+      "identityKind": "geometry-sha256-v1",
+      "idPrefix": "KE-NAIROBI-NM-",
+      "outFields": [],
+      "maxFeatures": 4000,
+      "maxResponseBytes": 2097152,
+      "maxBboxKm2": 1,
+      "lookupCellSize": 0.0025,
+      "maxConcurrentQueries": 2,
+      "countryCode": "KE",
+      "metricSrid": 32737,
+      "cityIds": [
+        "nairobi"
+      ],
+      "scope": "Public parcel outlines from Nairobi Maps, a commercial publisher. Sampled local coverage only; source registry numbers, ownership and official government lineage are not supplied. Application references identify geometry versions and change when boundaries change.",
+      "attribution": "Nairobi Maps — public parcel outlines; application references derived from geometry. Registry numbers and ownership unavailable.",
+      "catalogueUrl": "https://nairobimaps.com/gis-data/nairobi-parcels-cadastre.html",
+      "licenceUrl": "https://nairobimaps.com/",
+      "licenceNote": "Provider permits personal, educational and non-commercial viewing/searching with attribution. Bulk or commercial use requires written permission. Source terms are informational; the live service also applies anonymous preview-area limits.",
+      "caveats": [
+        "Commercial survey-record compilation; not an official registry. Source lineage and update dates are not independently verified.",
+        "Public geometry responses have empty properties and no source IDs; no paid attributes or WFS credentials are used.",
+        "Application identity uses source namespace plus canonical geometry SHA-256 at 1e-7-degree precision, a version marker and a spatial locator. Ring order and start vertex do not change the identity. Consecutive duplicate coordinates are removed during canonical encoding; no shapes are unioned or boundaries repaired.",
+        "Fresh exact reads locate the source outline spatially and verify its complete hash. A changed outline does not inherit the old reference. Absence means that geometry version was not returned, not that a legal parcel ceased to exist.",
+        "The anonymous viewport response must report matching count, fixed zoom 19 and truncated=false, with count below its reported limit. Errors, quotas and incomplete responses remain errors.",
+        "Observed viewport selection uses intersecting envelopes and returns whole polygons, including some that do not topologically intersect the rectangle. Footprint reads apply an exact geometry intersection filter."
+      ]
+    }
+  ]
+}

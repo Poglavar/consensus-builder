@@ -1,0 +1,10 @@
+[
+  {
+    "url": "https://bhunaksha.bihar.gov.in/WMS?SERVICE=WMS&REQUEST=GetCapabilities",
+    "reason": "500"
+  },
+  {
+    "url": "https://bhunaksha.bihar.gov.in/rest/MapInfo/getVVVVExtentGeoref",
+    "reason": "405"
+  }
+]

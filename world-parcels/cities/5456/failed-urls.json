@@ -1,0 +1,20 @@
+[
+  {
+    "url": "https://www.sindhzameen.gos.pk/maps.aspx",
+    "reason": "400"
+  },
+  {
+    "url": "https://www.sindhzameen.gos.pk/Default.aspx",
+    "reason": "502"
+  },
+  {
+    "url": "https://e-registration.gos.pk/",
+    "reason": "403"
+  },
+  {
+    "url": "https://bor.sindh.gov.pk/"
+  },
+  {
+    "url": "https://www.sindhzameen.gos.pk/"
+  }
+]

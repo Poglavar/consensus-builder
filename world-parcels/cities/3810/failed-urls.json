@@ -1,0 +1,19 @@
+[
+  {
+    "url": "https://map.land.gov.ua/",
+    "reason": "timeout after 20 seconds"
+  },
+  {
+    "url": "https://newmap.land.gov.ua/",
+    "reason": "DNS resolution failure"
+  },
+  {
+    "url": "https://e.land.gov.ua/"
+  },
+  {
+    "url": "https://sevbti.ru/"
+  },
+  {
+    "url": "https://gkosev.ru/"
+  }
+]

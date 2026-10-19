@@ -1,0 +1,15 @@
+[
+  {
+    "url": "https://maps.cookcountyil.gov/cookviewer/",
+    "reason": "timeout"
+  },
+  {
+    "url": "https://www.cookcountyil.gov/agency/geographic-information-systems-gis"
+  },
+  {
+    "url": "https://gis.cookcountyil.gov/traditional/rest/services/cookviewer3DynamicLabels/MapServer/layers"
+  },
+  {
+    "url": "https://gis.cookcountyil.gov/traditional/rest/services/CookViewer3Dynamic/MapServer/2021"
+  }
+]
