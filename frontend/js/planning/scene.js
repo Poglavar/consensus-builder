@@ -53,7 +53,7 @@
             && typeof volume.topM === 'number' && Number.isFinite(volume.topM) && volume.topM > volume.baseM)
             .map(volume => ({ type: 'Feature', geometry: volume.geometry, properties: {
                 representationId: item.id, sourceProposalId: item.proposalId, role: item.role,
-                partId: volume.id, baseM: volume.baseM, height: volume.topM - volume.baseM
+                partId: volume.id, baseM: volume.baseM, topM: volume.topM, height: volume.topM - volume.baseM
             } }));
     }
     // The joined ground projection has one boundary. Height-part boundaries are an explicit detail.

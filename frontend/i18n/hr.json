@@ -7597,9 +7597,9 @@
     "empty": "U ovom području nema prikazanih građevnih masa. To ne znači da je gradnja zabranjena.",
     "error": "Planski izvor nije moguće učitati.",
     "loaded": {
-      "one": "{{count}} uvezeni volumen u prikazu · djelomična pokrivenost",
-      "few": "{{count}} uvezena volumena u prikazu · djelomična pokrivenost",
-      "other": "{{count}} uvezenih volumena u prikazu · djelomična pokrivenost"
+      "one": "{{count}} spremljena građevna masa u prikazu",
+      "few": "{{count}} spremljene građevne mase u prikazu",
+      "other": "{{count}} spremljenih građevnih masa u prikazu"
     },
     "truncated": {
       "one": "Prikazana je {{count}} varijanta · približite za manje područje",
@@ -7623,7 +7623,7 @@
     "conditionsNote": "Primjenjivost i neovisna ograničenja nisu razriješeni. Ovaj oblik nije potvrđena dozvola za gradnju.",
     "sourceDetails": "Izvor i dokazi",
     "computed": "Izračunato {{date}}",
-    "sourceTerms": "Izvorni uvjeti, sačuvani bez dodatnog tumačenja",
+    "sourceTerms": "Spremljeni izvorni izračun i ocjena",
     "readSource": "Pročitaj izvorni plan",
     "constraint": {
       "dwellings": "Najveći broj stanova",
@@ -7639,10 +7639,28 @@
     "footprint": "Tlocrt",
     "steps": "Visinski dijelovi",
     "permittedOff": "Dopušteni volumeni su skriveni.",
-    "coverageTitle": "Zašto samo neke čestice?",
-    "coverageNote": "Prikazane su samo uvezene izračunate varijante. Nedostajući rezultati i nepodržani oblici ostavljaju praznine; kapacitet prazne čestice nije poznat. Visinski dijelovi prikazuju dijelove jednog volumena na različitim visinama.",
+    "coverageTitle": "Što obuhvaća ovaj izvor?",
+    "coverageNote": "Prikazuju se spremljeni izračuni izvora. Neki sadrže građevnu masu, a drugi navode nedostatak dokaza, neispunjene uvjete ili drugi planski postupak. Rezultat bez geometrije nije dokaz nultog kapaciteta. Visinski dijelovi prikazuju dijelove na različitim visinama.",
     "inspectHint": "Kliknite volumen za pregled izvora i ograničenja.",
     "inspectMassing": "Pregledaj dopušteni volumen na čestici {{parcel}}",
-    "heightParts": "Visinski dijelovi: {{heights}}"
+    "heightParts": "Visinski dijelovi: {{heights}}",
+    "cacheSummary": "{{count}} spremljenih rezultata u ovom području: {{shapes}} s geometrijom, {{missing}} bez geometrije.",
+    "stockBadge": "Procjena postojećih zgrada",
+    "stockEstimate": "Izvor procjenjuje postojeće zgrade za ovaj planski režim. Ova geometrija nije izračunata ovojnica nove gradnje.",
+    "solverVersion": "Verzija izračuna: {{version}}",
+    "otherResult": "Drugi ishod izvora",
+    "resultStatus": {
+      "condition_failed": "Uvjeti nisu ispunjeni",
+      "evidence_missing": "Nedostaju dokazi",
+      "existing_stock_estimate": "Procjene postojećih zgrada",
+      "geometry_failed": "Provjera geometrije nije uspjela",
+      "geometry_validated": "Geometrija je provjerena",
+      "instrument_handoff": "Primjenjuje se drugi plan",
+      "no_validated_candidate": "Nema provjerene varijante",
+      "procedure_required": "Potreban je planski postupak",
+      "route": "Drugi planski put",
+      "unresolved_context": "Kontekst nije razriješen",
+      "unsupported_calculation": "Izračun nije podržan"
+    }
   }
 }

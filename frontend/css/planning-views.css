@@ -34,6 +34,9 @@
 .planning-inspect-hint, .planning-coverage { font-size: var(--cb-text-xs); line-height: var(--cb-leading); color: var(--cb-text-muted); margin: var(--cb-space-2) 0 0; }
 .planning-coverage summary { cursor: pointer; color: var(--cb-text); }
 .planning-coverage p { margin: var(--cb-space-2) 0 0; }
+.planning-coverage[open] { max-height: 28dvh; overflow: auto; }
+.planning-result-counts { display: grid; grid-template-columns: 1fr auto; gap: var(--cb-space-1); }
+.planning-result-counts dd { margin: 0; font-variant-numeric: tabular-nums; }
 .planning-open-model { margin-top: var(--cb-space-2); }
 .planning-sources-pane { z-index: var(--cb-z-map-pane-site); }
 body[data-planning-proposed="ghost"] .leaflet-proposedBuildings-pane { opacity: 0.4; }

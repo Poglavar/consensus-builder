@@ -1,5 +1,5 @@
 // One comparison control, source selection and viewport feed for the map and model views.
-// Source proposals are read-only overlays: viewing them never applies a parcel/fabric mutation.
+// Source results are read-only overlays: viewing them never applies a parcel/fabric mutation.
 (function (root) {
     'use strict';
     const core = root.PlanningScene;
@@ -51,9 +51,10 @@
                     style: { color: color('permitted'), weight: active ? 3 : 1.5,
                         fillColor: color('permitted'), fillOpacity: policy().permitted === 'solid' ? 1 : 0.18,
                         opacity: 1 } });
-                const height = feature.properties.height;
+                const height = feature.properties.topM;
                 const label = item.source.parcel || item.title;
-                const tooltip = height ? `${label} · ${root.CbFormat.formatLength(height)}` : label;
+                const tooltip = item.assessment.meaning === 'existing-stock-estimate' ? `${label} · ${t('stockBadge')}`
+                    : height ? `${label} · ${root.CbFormat.formatLength(height)}` : label;
                 shape.bindTooltip(tooltip, { sticky: true, direction: 'top' });
                 const inspect = () => { if (!root.__mapEditLock?.isHeld()) select(item.id); };
                 shape.on('click', event => { root.L.DomEvent.stopPropagation(event); inspect(); });
@@ -95,8 +96,10 @@
         header.append(heading, close);
         inspector.append(header);
         const badges = element('div', 'planning-inspector__badges');
-        badges.append(element('span', 'cb-badge', t('obligatory')), element('span', 'cb-badge cb-badge--warning', t('approximate')));
-        inspector.append(badges, element('p', 'planning-inspector__description', t('oneOption')));
+        badges.append(element('span', 'cb-badge', t('obligatory')), element('span', 'cb-badge cb-badge--warning',
+            t(item.assessment.meaning === 'existing-stock-estimate' ? 'stockBadge' : 'approximate')));
+        inspector.append(badges, element('p', 'planning-inspector__description',
+            t(item.assessment.meaning === 'existing-stock-estimate' ? 'stockEstimate' : 'oneOption')));
         const metrics = element('dl', 'planning-metrics');
         const unitLimit = item.constraints?.find(constraint => constraint.quantity === 'dwellings')?.value;
         for (const [label, value] of [[t('floorArea'), area(item.metrics.floorAreaM2)],
@@ -123,10 +126,11 @@
         evidence.append(element('summary', '', t('sourceDetails')));
         evidence.append(element('p', '', item.source.label));
         if (item.source.computedAt) evidence.append(element('p', '', t('computed', { date: root.CbFormat.formatDate(item.source.computedAt) })));
+        if (item.source.solverVersion) evidence.append(element('p', '', t('solverVersion', { version: item.source.solverVersion })));
         if (item.source.parcel) evidence.append(element('p', '', item.source.parcel));
         // Source terms remain inspectable even when an adapter has no executable constraint mapping.
-        if (item.sourceEvidence?.variables) {
-            const terms = element('pre', 'planning-evidence__terms', JSON.stringify(item.sourceEvidence.variables, null, 2));
+        if (item.sourceEvidence) {
+            const terms = element('pre', 'planning-evidence__terms', JSON.stringify(item.sourceEvidence, null, 2));
             evidence.append(element('p', '', t('sourceTerms')), terms);
         }
         inspector.append(evidence);
@@ -161,6 +165,19 @@
         retry.hidden = status !== 'error' || policy().permitted === 'off'; retry.textContent = t('retry');
         panel.querySelector('.planning-coverage summary').textContent = t('coverageTitle');
         panel.querySelector('.planning-coverage p').textContent = t('coverageNote');
+        const summary = panel.querySelector('.planning-cache-summary');
+        const summaries = payload?.summaries || [];
+        summary.hidden = !summaries.length || policy().permitted === 'off';
+        summary.textContent = t('cacheSummary', { count: summaries.reduce((sum, entry) => sum + entry.cachedResults, 0),
+            shapes: summaries.reduce((sum, entry) => sum + entry.withGeometry, 0),
+            missing: summaries.reduce((sum, entry) => sum + entry.withoutGeometry, 0) });
+        const counts = panel.querySelector('.planning-result-counts');
+        counts.replaceChildren();
+        for (const entry of summaries) for (const [status, count] of Object.entries(entry.statuses)) {
+            const key = `planningViews.resultStatus.${status}`;
+            const label = root.i18n.t(key);
+            counts.append(element('dt', '', label === key ? t('otherResult') : label), element('dd', '', number(count)));
+        }
         panel.querySelector('.planning-inspect-hint').textContent = t('inspectHint');
         panel.querySelector('.planning-inspect-hint').hidden = policy().permitted === 'off' || !items.length || isPhoto();
         const model = panel.querySelector('.planning-open-model');

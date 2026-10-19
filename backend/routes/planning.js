@@ -1,4 +1,4 @@
-// Read-only, bounded source proposals for the shared Existing / Permitted / Proposed experience.
+// Read-only, bounded provider results for the shared Built / Permitted / Proposed experience.
 import { validateBounds } from '../parcels/source-contract.js';
 import { planningRepresentations } from '../planning/sources.js';
 

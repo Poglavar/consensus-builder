@@ -7536,8 +7536,8 @@
     "empty": "No represented massing in this area. This does not mean building is prohibited.",
     "error": "The planning source could not be loaded.",
     "loaded": {
-      "one": "{{count}} imported massing in view · partial coverage",
-      "other": "{{count}} imported massings in view · partial coverage"
+      "one": "{{count}} cached massing in view",
+      "other": "{{count}} cached massings in view"
     },
     "truncated": {
       "one": "Showing {{count}} option · zoom in to see a smaller area",
@@ -7559,7 +7559,7 @@
     "conditionsNote": "Applicability and independent limits are unresolved. This shape is not a verified building permission.",
     "sourceDetails": "Source and evidence",
     "computed": "Calculated {{date}}",
-    "sourceTerms": "Original source conditions, retained without reinterpretation",
+    "sourceTerms": "Saved source calculation and assessment",
     "readSource": "Read the source plan",
     "constraint": {
       "dwellings": "Maximum dwellings",
@@ -7575,10 +7575,28 @@
     "footprint": "Footprint",
     "steps": "Height steps",
     "permittedOff": "Permitted massing is hidden.",
-    "coverageTitle": "Why only some parcels?",
-    "coverageNote": "Only imported calculated options are shown. Missing results and unsupported forms leave gaps; a blank parcel has unknown capacity. Height steps shows the parts of one massing at different heights.",
+    "coverageTitle": "What does this source cover?",
+    "coverageNote": "Showing the provider’s saved calculations. Some results contain massing; others report missing evidence, unmet conditions or another planning procedure. A result without geometry is not proof of zero capacity. Height steps shows the parts at different elevations.",
     "inspectHint": "Click a massing to inspect its source and limits.",
     "inspectMassing": "Inspect permitted massing on {{parcel}}",
-    "heightParts": "Height parts: {{heights}}"
+    "heightParts": "Height parts: {{heights}}",
+    "cacheSummary": "{{count}} saved results in this area: {{shapes}} with geometry, {{missing}} without geometry.",
+    "stockBadge": "Existing-stock estimate",
+    "stockEstimate": "The source estimates existing building stock for this planning regime. This geometry is not a calculated new-build envelope.",
+    "solverVersion": "Solver version: {{version}}",
+    "otherResult": "Other source outcome",
+    "resultStatus": {
+      "condition_failed": "Conditions not met",
+      "evidence_missing": "Evidence missing",
+      "existing_stock_estimate": "Existing-stock estimates",
+      "geometry_failed": "Geometry validation failed",
+      "geometry_validated": "Geometry validated",
+      "instrument_handoff": "Another planning instrument applies",
+      "no_validated_candidate": "No validated candidate",
+      "procedure_required": "Planning procedure required",
+      "route": "Another planning route",
+      "unresolved_context": "Context unresolved",
+      "unsupported_calculation": "Calculation unsupported"
+    }
   }
 }

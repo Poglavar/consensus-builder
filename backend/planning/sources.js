@@ -11,7 +11,8 @@ export async function planningRepresentations(pool, query, sources = planningSou
         city: query.city,
         sources: providers.map(provider => provider.descriptor),
         items: answers.flatMap(answer => answer.items),
-        coverage: providers.length ? 'partial' : 'unavailable',
+        coverage: providers.length ? 'source-results' : 'unavailable',
+        summaries: answers.map(answer => answer.summary).filter(Boolean),
         truncated: answers.some(answer => answer.truncated),
         omitted: answers.reduce((sum, answer) => sum + answer.omitted, 0)
     };
