@@ -152,8 +152,8 @@
   },
   "verification": {
     "type": "targeted headless unit tests",
-    "uniquePassingTests": 1861,
-    "vitestFiles": 10,
+    "uniquePassingTests": 1896,
+    "vitestFiles": 13,
     "nodeTestFiles": 22,
     "initialRun": {
       "files": 5,
@@ -195,7 +195,14 @@
       "failed": 0
     },
     "stoppedRuns": 0,
-    "fullSuitesRun": 0
+    "fullSuitesRun": 0,
+    "browserWorker": {
+      "files": 3,
+      "passed": 35,
+      "failed": 0,
+      "relayOnlyRerunPassed": 18,
+      "reason": "Rebuilt catalog and shared adapters after production browser verification caught stale worker assets."
+    }
   },
   "coverageArtifactSha256": {
     "frontend/data/world-coverage.json": "aa3772c94127893a115e934eec18ad4b47308aacbdd0e5f8b4f6678faf9ebafd",
