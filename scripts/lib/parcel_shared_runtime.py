@@ -150,14 +150,18 @@ def current_runtime(shared_root: Path) -> dict[str, Any]:
 def _safe_file(path: Path, relative: Path) -> bool:
     if path.is_symlink() or any(part in _SKIP_PARTS for part in relative.parts):
         return False
-    if len(relative.parts) >= 2 and relative.parts[:2] == ("world-parcels", "research"):
+    if not _managed_allowed(relative.as_posix()):
         return False
     return not _SECRET_NAME.fullmatch(path.name)
 
 
 def _managed_allowed(relative: str) -> bool:
     parts = Path(relative).parts
-    return not (len(parts) >= 2 and parts[:2] == ("world-parcels", "research"))
+    if len(parts) >= 2 and parts[:2] == ("world-parcels", "research"):
+        # Admission manifests and their copied qualification evidence are immutable
+        # outputs. Live discovery cohorts remain owned by their original job.
+        return len(parts) >= 3 and parts[2].startswith("qualification-")
+    return True
 
 
 def _source_files(root: Path) -> Iterator[tuple[str, Path]]:

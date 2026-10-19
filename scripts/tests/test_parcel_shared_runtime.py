@@ -49,6 +49,20 @@ class SharedRuntimeTests(unittest.TestCase):
         self.assertEqual(repeat["written"], [])
         self.assertTrue(repeat["fastPath"])
 
+    def test_admitted_evidence_propagates_without_active_research_packets(self):
+        admitted = "world-parcels/research/qualification-release/42/evidence.json"
+        manifest = "world-parcels/research/qualification-admission-release.json"
+        active = "world-parcels/research/discovery/city-42.json"
+        self.write(self.source, admitted, '{"verified":true}')
+        self.write(self.source, manifest, '{"cityCode":42}')
+        self.write(self.source, active, '{"status":"running"}')
+        published = self.publish()
+        runtime.sync_runtime(self.shared, self.target)
+        self.assertIn(admitted, published["files"])
+        self.assertIn(manifest, published["files"])
+        self.assertNotIn(active, published["files"])
+        self.assertTrue((self.target / admitted).is_file())
+
     def test_local_change_fails_closed(self):
         self.write(self.source, "scripts/pipeline.py", "released\n")
         first = self.publish()
