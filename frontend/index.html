@@ -909,6 +909,7 @@
                             <option value="maptiler">MapTiler</option>
                         </select>
                     </label>
+                    <div class="layer-source-actions"><button type="button" id="imagery-source-settings-button" class="btn" onclick="openImagerySourceSettings()" data-i18n-key="imagerySources.title">Choose an imagery source</button></div>
                 </div>
             </div>
             <div id="model-layer-controls" class="map-sheet-body" data-map-modes="3d" hidden></div>
@@ -1776,6 +1777,7 @@
             'data/boot-coverage.js',
             'js/world/world-coverage.js?v=20261017-location-first',
             'js/metric-frame.js',
+            'js/imagery-source.js',
             'js/parcel-source-settings.js',
             // bundle:end environment-before-city
             'js/city-config.js?v=20261008-africa-capitals',

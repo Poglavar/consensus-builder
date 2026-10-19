@@ -7307,6 +7307,24 @@
         "retry": "Ponovo učitaj izvor parcela",
         "dismiss": "Sakrij upozorenje izvora"
     },
+    "imagerySources": {
+        "title": "Izaberi izvor snimaka",
+        "intro": "Dodaj javni HTTPS URL XYZ pločica (sa {z}, {x}, {y}) ili WMS servis za ovo područje. Snimci su vizuelna pozadina; ne menjaju parcele ni zgrade.",
+        "url": "URL izvora snimaka",
+        "matched": "Slika je potvrđena preko {{adapter}}. Pokrivenost van probnog područja zavisi od izvora.",
+        "layer": "WMS sloj",
+        "selectLayer": "Izaberi WMS sloj pa proveri ponovo.",
+        "presets": "Predloženo za ovo područje",
+        "dgu2022": "DGU ortofoto 2022.",
+        "dgu2024": "DGU ortofoto 2024.",
+        "dguCoverage": "Samo zapadna Hrvatska; pokrivenost varira unutar ovog područja.",
+        "unavailable": "Snimci nisu mogli da se učitaju. Pokušaj ponovo ili izaberi drugi izvor.",
+        "retry": "Ponovo učitaj snimke",
+        "noAdapter": "Nije pronađen podržan izvor snimaka. Koristi predložak XYZ pločica ili WMS servis.",
+        "default": "Koristi standardnu osnovnu mapu",
+        "standard": "Standardna osnovna mapa",
+        "unsupportedCrs": "Ovaj WMS zahteva podržani geografski koordinatni sistem ili Web Mercator."
+    },
     "parcelSourceHealth": {
         "offline": "Izgleda da nemaš internet vezu. Poveži se na internet i pokušaj ponovo.",
         "rateLimited": "Ovaj izvor ograničava broj zahteva. Pokušaj ponovo za {{seconds}} sekundi.",

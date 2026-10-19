@@ -456,3 +456,7 @@ spend limits. Only configured actor wallets about to transfer tokens are eligibl
 wallet funds their shortfall to 0.5 test USDC while retaining 1 test USDC; a database-session lock
 serializes balance checks, transfers and readback. Confirmed receipts are timestamped in the
 existing agent-run ledger. It grants no authority to fund unknown wallets or another network.
+
+### Imagery source
+
+An **imagery source** is a visual map background supplied by a public XYZ tile template or WMS service. It is independent of cadastral ground and source building geometry: choosing imagery never changes parcel identity, ownership, building footprints or proposal rules. Like custom parcel/building sources, its verified portable descriptor is scoped to the chosen city and backend, retained in browser storage and carried in the `imagerySource` map parameter. Source bounds describe advertised coverage, not proof that every point contains imagery. The imagery gateway validates remote images and reprojects geographic WMS tiles onto the Web Mercator map grid.

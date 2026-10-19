@@ -7298,6 +7298,24 @@
         "retry": "Reintentar la fuente de parcelas",
         "dismiss": "Ocultar aviso de la fuente"
     },
+    "imagerySources": {
+        "title": "Elegir una fuente de imágenes",
+        "intro": "Añade una URL pública HTTPS de teselas XYZ (con {z}, {x}, {y}) o un servicio WMS para esta zona. Las imágenes son un fondo visual; no modifican parcelas ni edificios.",
+        "url": "URL de la fuente de imágenes",
+        "matched": "Imagen verificada mediante {{adapter}}. La cobertura fuera del área de prueba depende de la fuente.",
+        "layer": "Capa WMS",
+        "selectLayer": "Elige una capa WMS y vuelve a comprobar.",
+        "presets": "Sugerencias para esta zona",
+        "dgu2022": "Ortofoto DGU 2022",
+        "dgu2024": "Ortofoto DGU 2024",
+        "dguCoverage": "Solo Croacia occidental; la cobertura varía dentro de esta zona.",
+        "unavailable": "No se pudieron cargar las imágenes. Vuelve a intentarlo o elige otra fuente.",
+        "retry": "Reintentar imágenes",
+        "noAdapter": "No se encontró ninguna fuente de imágenes compatible. Usa una plantilla de teselas XYZ o un servicio WMS.",
+        "default": "Usar el mapa base estándar",
+        "standard": "Mapa base estándar",
+        "unsupportedCrs": "Este WMS necesita un sistema de coordenadas geográfico o Web Mercator compatible."
+    },
     "parcelSourceHealth": {
         "offline": "Parece que no tienes conexión. Conéctate a internet y vuelve a intentarlo.",
         "rateLimited": "Esta fuente limita las solicitudes. Reintenta en {{seconds}} segundos.",

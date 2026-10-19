@@ -1,5 +1,5 @@
-// Browser-owned source choices for the layers a person may point at their own data: parcels and
-// buildings (OpenStreetMap stays the default for everything). The portable gateway ID contains only
+// Browser-owned source choices for the layers a person may point at their own data: parcels, buildings and
+// imagery (OpenStreetMap stays the default for everything). The portable gateway ID contains only
 // public adapter configuration; the backend fetches the URL, never the browser. Every function takes
 // a `kind` ('parcel' by default), which picks the storage key, the id prefix, the discover endpoint,
 // the URL parameter and the strings.
@@ -10,6 +10,7 @@
         root.ParcelSourceSettings = api;
         root.openParcelSourceSettings = () => api.open(root, 'parcel');
         root.openBuildingSourceSettings = () => api.open(root, 'building');
+        root.openImagerySourceSettings = () => api.open(root, 'imagery');
     }
 })(typeof window !== 'undefined' ? window : null, function () {
     'use strict';
@@ -18,7 +19,9 @@
         parcel: { storage: 'cb_parcel_source:', idPrefix: 'custom.', idPattern: /^CUSTOM-[0-9a-f]{20}-$/,
             discover: '/parcel-sources/discover', param: 'parcelSource', strings: 'parcelSources', countField: 'parcelCount' },
         building: { storage: 'cb_building_source:', idPrefix: 'building.', idPattern: /^CUSTOM-B-[0-9a-f]{20}-$/,
-            discover: '/building-sources/discover', param: 'buildingSource', strings: 'buildingSources', countField: 'buildingCount' }
+            discover: '/building-sources/discover', param: 'buildingSource', strings: 'buildingSources', countField: 'buildingCount' },
+        imagery: { storage: 'cb_imagery_source:', idPrefix: 'imagery.', idPattern: /^CUSTOM-I-[0-9a-f]{20}-$/,
+            discover: '/imagery-sources/discover', param: 'imagerySource', strings: 'imagerySources' }
     };
     const kindOf = kind => KINDS[kind] || KINDS.parcel;
     // Strings whose parcel wording would be wrong for buildings: never borrowed from parcelSources.
@@ -30,6 +33,10 @@
     function storageKey(city, global, kind = 'parcel') { return kindOf(kind).storage + backend(global) + ':' + city; }
     function decodeChoice(sourceId, city, kind = 'parcel') {
         const spec = kindOf(kind);
+        if (kind === 'imagery') {
+            const imagery = typeof window !== 'undefined' ? window.ImagerySource : require('./imagery-source.js');
+            return imagery?.decode(sourceId, city) || null;
+        }
         try {
             if (typeof sourceId !== 'string' || !sourceId.startsWith(spec.idPrefix)
                 || !/^[A-Za-z0-9_-]{1,3400}$/.test(sourceId.slice(spec.idPrefix.length))) return null;
@@ -99,6 +106,7 @@
     }
     // What the city uses when the person has chosen nothing.
     function defaultName(city, kind, t) {
+        if (kind === 'imagery') return t('standard', 'Standard base map');
         if (kind !== 'building') return city.parcels?.sourceId || city.parcels?.source || city.label;
         const source = city.buildings?.defaultSource || city.buildings?.source || 'gdi';
         return { osm: 'OpenStreetMap', overture: 'Overture Maps', 'overture-tiles': 'Overture Maps', nyc: 'NYC Open Data',
@@ -115,7 +123,7 @@
             for (const space of [spec.strings, 'parcelSources']) {
                 const full = space + '.' + key, translated = global.i18n?.t?.(full, params);
                 if (translated && translated !== full) return translated;
-                if (space === spec.strings && kind === 'building' && BUILDING_ONLY.has(key)) break;
+                if (space === spec.strings && (kind === 'building' && BUILDING_ONLY.has(key) || kind === 'imagery' && ['title', 'intro', 'url', 'matched', 'retry', 'default', 'noAdapter'].includes(key))) break;
             }
             return fallback.replace(/\{\{(\w+)\}\}/g, (_, key) => params[key] ?? '');
         };
@@ -130,20 +138,20 @@
         const element = (tag, text, parent = body) => {
             const node = global.document.createElement(tag); if (text) node.textContent = text; parent.append(node); return node;
         };
-        const building = kind === 'building';
-        const title = element('h2', building ? t('title', 'Choose a building source') : t('title', 'Choose a parcel source'), header);
+        const building = kind === 'building', imagery = kind === 'imagery';
+        const title = element('h2', imagery ? t('title', 'Choose an imagery source') : building ? t('title', 'Choose a building source') : t('title', 'Choose a parcel source'), header);
         title.id = 'parcel-source-settings-title'; title.className = 'cb-dialog__title';
         dialog.setAttribute('aria-labelledby', title.id);
         const close = element('button', '×', header); close.type = 'button'; close.className = 'close-circle-btn';
         close.setAttribute('aria-label', t('close', 'Close'));
         close.addEventListener('click', () => dialog.close());
-        element('p', building
+        element('p', imagery ? t('intro', 'Add a public HTTPS XYZ tile URL (with {z}, {x}, {y}) or WMS service for this area. Imagery is a visual background; it does not change parcels or buildings.') : building
             ? t('intro', 'Add a public HTTPS URL of building footprints for this city, or of an OpenStreetMap mirror (an Overpass API address ending in /interpreter). We try each supported format and read a height or storey field when it has one; other heights are estimated.')
             : t('intro', 'Add a public HTTPS parcel URL for this city. We try each supported format and check that it can return complete parcel boundaries.'));
         const active = choiceForCity(city.id, global, kind);
         element('p', t('current', 'Current source: {{source}}', { source: active?.name || defaultName(city, kind, t) }));
         const form = element('form');
-        const label = element('label', building ? t('url', 'Building source URL') : t('url', 'Parcel source URL'), form); label.htmlFor = 'parcel-source-url';
+        const label = element('label', imagery ? t('url', 'Imagery source URL') : building ? t('url', 'Building source URL') : t('url', 'Parcel source URL'), form); label.htmlFor = 'parcel-source-url';
         const input = element('input', '', form); input.id = 'parcel-source-url'; input.type = 'url'; input.required = true;
         input.maxLength = 2000;
         input.autocomplete = 'url'; input.placeholder = 'https://'; input.value = active?.endpoint || '';
@@ -159,8 +167,20 @@
         }
         let candidate = null, controller = null;
         // Building sources: the unit the person picked for the height field, sent with a re-check.
-        let chosenUnit = null;
-        input.addEventListener('input', () => { chosenUnit = null; });
+        let chosenUnit = null, chosenLayers = active?.layers || undefined;
+        if (imagery) {
+            const presets = global.ImagerySource.suggestions(city, global.map?.getCenter?.());
+            if (presets.length) {
+                const group = element('div'); group.className = 'imagery-source-presets';
+                element('p', t('presets', 'Suggested for this area'), group);
+                element('p', t('dguCoverage', 'Western Croatia only; coverage varies within this area.'), group);
+                for (const preset of presets) {
+                    const button = element('button', t(preset.key, preset.name), group); button.type = 'button'; button.className = 'btn';
+                    button.addEventListener('click', () => { input.value = preset.endpoint; chosenLayers = preset.layers; form.requestSubmit(); });
+                }
+            }
+        }
+        input.addEventListener('input', () => { chosenUnit = null; chosenLayers = undefined; candidate = null; use.hidden = true; });
         const use = element('button', t('use', 'Use this source'), footer); use.type = 'button'; use.className = 'btn btn-primary'; use.hidden = true;
         use.addEventListener('click', () => {
             try { saveChoice(city.id, candidate, global, kind); reloadWithChoice(global, candidate.id, kind); }
@@ -171,7 +191,7 @@
         const options = element('ol', '', alternatives);
         const conform = element('li', t('conform', 'Conform your source so it can be read by one of the adapters. '), options);
         const formats = element('a', t('formats', 'See the source formats we understand'), conform);
-        formats.href = 'parcel-source-formats.html'; formats.target = '_blank'; formats.rel = 'noopener noreferrer';
+        formats.href = 'parcel-source-formats.html' + (imagery ? '#imagery' : ''); formats.target = '_blank'; formats.rel = 'noopener noreferrer';
         formats.className = 'cb-link cb-link--external';
         const request = element('li', t('request', 'Ask us to add another adapter, which we sometimes do. '), options);
         const telegram = element('a', t('telegram', 'Telegram group'), request);
@@ -181,36 +201,48 @@
             event.preventDefault(); candidate = null; use.hidden = true; alternatives.hidden = true;
             check.disabled = true; input.disabled = true; result.textContent = t('checking', 'Checking supported adapters…');
             controller?.abort(); controller = new AbortController();
-            const timer = setTimeout(() => controller.abort(), 90000);
+            const requestController = controller;
+            const timer = setTimeout(() => requestController.abort(), 90000);
             try {
                 const response = await global.fetch(backend(global) + spec.discover, { method: 'POST',
-                    headers: { 'Content-Type': 'application/json' }, cache: 'no-store', signal: controller.signal,
-                    body: JSON.stringify({ url: input.value, city: city.id, bbox: smallProbeBounds(global.map), heightUnit: chosenUnit || undefined }) });
+                    headers: { 'Content-Type': 'application/json' }, cache: 'no-store', signal: requestController.signal,
+                    body: JSON.stringify({ url: input.value, city: city.id, bbox: smallProbeBounds(global.map), heightUnit: chosenUnit || undefined, layers: chosenLayers }) });
                 const data = await response.json();
+                if (requestController.signal.aborted || requestController !== controller) return;
                 recordCheck(city.id, input.value, data, global, kind);
                 if (!response.ok) {
                     const error = Object.assign(new Error(data.error || 'Source check failed.'), data, { status: response.status });
                     if (error.code === 'no-available-adapter') { result.textContent = ''; alternatives.hidden = false; }
                     else result.textContent = error.code === 'invalid-source-url'
                         ? t('invalidUrl', 'Use a public HTTPS URL without credentials or access keys.')
-                        : global.ParcelSourceHealth?.describeFailure?.(error, { offline: global.navigator?.onLine === false, translate: global.i18n?.t?.bind(global.i18n) }) || error.message;
+                        : imagery ? error.code === 'imagery-crs-unsupported' ? t('unsupportedCrs', 'This WMS needs a supported geographic or Web Mercator coordinate system.') : error.message : global.ParcelSourceHealth?.describeFailure?.(error, { offline: global.navigator?.onLine === false, translate: global.i18n?.t?.bind(global.i18n) }) || error.message;
                     if (Array.isArray(data.attempts)) element('p', t('attempts', 'Tried: {{adapters}}', { adapters: data.attempts.map(item => item.adapter).join(', ') }), result);
                     for (const attempt of data.attempts || []) {
                         if (attempt.error?.message) element('p', attempt.adapter + ': ' + attempt.error.message, result);
                     }
                     return;
                 }
+                if (imagery && data.selectionRequired) {
+                    result.textContent = t('selectLayer', 'Choose a WMS layer, then check again.');
+                    const select = element('select', '', result); select.setAttribute('aria-label', t('layer', 'WMS layer'));
+                    for (const layer of data.layers || []) { const option = element('option', layer.title || layer.name, select); option.value = layer.name; }
+                    chosenLayers = select.value ? [select.value] : undefined;
+                    select.addEventListener('change', () => { chosenLayers = [select.value]; });
+                    return;
+                }
                 candidate = data.source;
-                result.textContent = building
+                if (!decodeChoice(candidate?.id, city.id, kind)) throw new Error('Invalid source choice.');
+                result.textContent = imagery ? t('matched', 'Image verified using {{adapter}}. Coverage outside the test area depends on the source.', { adapter: candidate.adapter }) : building
                     ? t('matched', 'Adapter found: {{adapter}}. {{count}} buildings in the test area. Coverage outside this area depends on the source.', { adapter: candidate.adapter, count: data[spec.countField] })
                     : t('matched', 'Adapter found: {{adapter}}. {{count}} parcels in the test area. Coverage outside this area depends on the source.', { adapter: candidate.adapter, count: data[spec.countField] });
                 if (building) describeHeights(candidate);
                 use.hidden = false;
             } catch (error) {
+                if (requestController !== controller || !dialog.isConnected) return;
                 recordCheck(city.id, input.value, { code: 'parcel-source-unavailable' }, global, kind);
                 result.textContent = t('checkFailed', 'Could not finish checking the URL. Check your connection and try again.');
             }
-            finally { clearTimeout(timer); check.disabled = false; input.disabled = false; }
+            finally { clearTimeout(timer); if (requestController === controller) { check.disabled = false; input.disabled = false; } }
         });
         // Which fields give the heights, and in what unit: names rarely say (NYC's HEIGHT_ROOF is feet).
         function describeHeights(source) {
@@ -248,6 +280,7 @@
     // fallback dialog; building failures retain their own retry/source actions.
     const BANNERS = {
         parcel: { id: 'parcel-source-status', choose: ['groundFallback.reopen', 'Choose how to continue'] },
+        imagery: { id: 'imagery-source-status', retry: ['imagerySources.retry', 'Retry imagery'], choose: ['imagerySources.title', 'Choose an imagery source'], defaultRetry: () => {} },
         building: { id: 'building-source-status', retry: ['buildingSources.retry', 'Retry buildings'], choose: ['buildingSources.title', 'Choose a building source'],
             defaultRetry: () => {} }
     };

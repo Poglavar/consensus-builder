@@ -763,3 +763,5 @@ Expanded SAM 3 head fine-tuning used 96 training tiles and fresh 16-tile validat
 - 2026-10-19: Parcel-source failures have a bounded wait and an explicit Continue without parcels choice; linked designs can apply locally from their own geometry while their published parcel IDs and binding remain unchanged.
 
 - 2026-10-19: Keep all omitted-gems work in the existing `omitted-gems-fixes` branch and matching worktree; do not create separate branches or worktrees for its follow-up fixes.
+
+- 2026-10-20: Configurable imagery uses the same area-specific source setup as parcels/buildings, beginning with public DGU 2022/2024 orthophotos; imagery remains visual context, independent of cadastral geometry.

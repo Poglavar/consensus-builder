@@ -109,6 +109,7 @@
     const CITY_CONFIGS = {
         zagreb: {
             id: 'zagreb',
+            countryCode: 'HR',
             label: 'Zagreb, Croatia',
             currency: { locale: 'hr-HR', code: 'EUR' },
             map: {
@@ -182,6 +183,7 @@
         },
         split: {
             id: 'split',
+            countryCode: 'HR',
             label: 'Split, Croatia',
             currency: { locale: 'hr-HR', code: 'EUR' },
             map: {
@@ -237,6 +239,7 @@
         },
         sibenik: {
             id: 'sibenik',
+            countryCode: 'HR',
             label: 'Šibenik, Croatia',
             currency: { locale: 'hr-HR', code: 'EUR' },
             map: {
