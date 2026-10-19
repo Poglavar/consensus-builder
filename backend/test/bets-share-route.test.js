@@ -45,7 +45,7 @@ describe('GET /bets/:proposalAccount', () => {
         expect(pool.query.mock.calls[0][1]).toEqual([ACCOUNT]);
         expect(meta(res.text, 'og:title')).toBe('Plan-led infill in &lt;Rudeš&gt; &amp; &quot;more&quot; · Bet on cities');
         expect(meta(res.text, 'og:description')).toBe('83.3% chance it gets built · Pool 0.3 USDC · Yes pays 1.04×, no pays 1.23×.');
-        expect(meta(res.text, 'og:image')).toBe('https://urbangametheory.xyz/images/consensus-builder-logo-2.png');
+        expect(meta(res.text, 'og:image')).toBe('https://urbangametheory.xyz/images/og-globe-20261019.jpg');
         expect(meta(res.text, 'og:url')).toBe(`https://urbangametheory.xyz/bets/${ACCOUNT}?city=zg`);
         expect(meta(res.text, 'twitter:card')).toBe('summary_large_image');
         const next = `/?city=zg&bets=${ACCOUNT}&lang=hr`;

@@ -8,12 +8,12 @@
 
 // Fallback card, used when an upstream lookup fails. We strip the page's own static og tags before
 // injecting, so these values REPLACE them — they must be at least as good as the site's originals,
-// and `image` must be a real existing asset (it is: the logo the static tags already used).
+// and `image` must be the same public globe card used by the site’s static metadata.
 const DEFAULTS = {
     siteName: 'Urban Game Theory',
     title: 'Consensus Builder',
     description: 'Help communities reach consensus on future land development.',
-    image: 'https://urbangametheory.xyz/images/consensus-builder-logo-2.png'
+    image: 'https://urbangametheory.xyz/images/og-globe-20261019.jpg'
 };
 
 function escapeHtml(s) {

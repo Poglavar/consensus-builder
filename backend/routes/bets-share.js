@@ -15,7 +15,7 @@ const BetsLink = require('../../frontend/js/bets/bets-link.js');
 const BetsModel = require('../../frontend/js/bets/bets-model.js');
 
 const DEFAULT_PUBLIC_BASE_URL = 'https://urbangametheory.xyz';
-const DEFAULT_IMAGE_PATH = '/images/consensus-builder-logo-2.png';
+const DEFAULT_IMAGE_PATH = '/images/og-globe-20261019.jpg';
 const SITE_NAME = 'Consensus Builder';
 const TAGLINE = 'Bet on cities';
 const CACHE_SECONDS = 60;
