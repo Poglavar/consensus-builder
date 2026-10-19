@@ -413,7 +413,6 @@ export const proposalCreateBodyValidator = createJsonBodyValidator({
         lens: { required: false, validate: lensArrayValidator },
         bounds: { required: false, validate: boundsValidator },
         onchain: { required: false, validate: validators.optional(validators.plainObject({ label: 'onchain' })) },
-        onchainData: { required: false, validate: validators.optional(validators.plainObject({ label: 'onchainData' })) },
         screenshotUrl: { required: false, validate: validators.optional(validators.string({ maxLength: 2000, label: 'screenshotUrl', disallowControlChars: true })) },
         screenshot_url: { required: false, validate: validators.optional(validators.string({ maxLength: 2000, label: 'screenshot_url', disallowControlChars: true })) },
         // Epoch bucket for the plan timeline (presentation metadata; see proposals-ddl.sql).
@@ -499,6 +498,9 @@ export function precheckProposalCreate(req) {
         if (Object.prototype.hasOwnProperty.call(body, field)) {
             return fail(`${field} is not a creation field. Send the authored identifier as proposalId; the server assigns the database row id.`);
         }
+    }
+    if (Object.prototype.hasOwnProperty.call(body, 'onchainData')) {
+        return fail('onchainData is retired. Minted proposals must be verified through POST /proposals/mirror.');
     }
     if (!req.chainMirror && (body.onchain || body.onchainData || body.nft || body.chainMirror)) {
         return fail('Minted proposals must be mirrored from their chain location using POST /proposals/mirror.', 'chain-mirror-required');
@@ -813,7 +815,7 @@ export function createProposalCreateHandler(pool) {
             const lens = validated.lens ?? null;
             const bounds = validated.bounds ?? null;
             // Sanitized copies (dropUnprovableClaims): a foreign thumbnail is already gone from these.
-            const onchainData = proposal.onchain ?? proposal.onchainData ?? null;
+            const onchainData = proposal.onchain ?? null;
             const clientScreenshot = proposal.screenshotUrl ?? proposal.screenshot_url ?? null;
             const screenshotUrl = typeof clientScreenshot === 'string' ? clientScreenshot.trim() : null;
             const epochYear = validated.epochYear ?? null;

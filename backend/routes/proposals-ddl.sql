@@ -3,7 +3,7 @@
 
 CREATE TABLE IF NOT EXISTS proposal (
     id SERIAL PRIMARY KEY,
-    proposal_id VARCHAR(255) NOT NULL, -- Unique identifier (can be onchain ID or local ID)
+    proposal_id VARCHAR(255) NOT NULL, -- Authored/external identifier, separate from the row ID and qualified chain reference
     city VARCHAR(100) DEFAULT 'city', -- City identifier for multi-city support
     
     -- Basic proposal information
@@ -80,7 +80,7 @@ CREATE TABLE IF NOT EXISTS proposal (
     edit_token_hash VARCHAR(64),
 
     -- Full proposal data as JSONB (for complete reconstruction)
-    -- This stores the entire proposal object as it exists in the frontend
+    -- Authored fields plus server projections; browser-local materialization is removed on write/read.
     proposal_data JSONB NOT NULL,
     
     -- Indexes for common queries
@@ -117,7 +117,7 @@ CREATE UNIQUE INDEX IF NOT EXISTS idx_proposal_agent_payment_id
 
 -- Comments for documentation
 COMMENT ON TABLE proposal IS 'Stores proposal definitions and shared lifecycle state';
-COMMENT ON COLUMN proposal.proposal_id IS 'Unique identifier for the proposal (can be onchain ID or local ID)';
+COMMENT ON COLUMN proposal.proposal_id IS 'Authored/external proposal identifier; distinct from the database row ID and qualified chain reference';
 COMMENT ON COLUMN proposal.cadastre_parcel_ids IS 'Exact authored selection of immutable cadastral parcel IDs.';
 COMMENT ON COLUMN proposal.ownership_flow IS 'Per crossed base cadastral parcel: ceded area (m2) and ownership destination (public/proposer/mapping/undecided), stamped at publish. See rethink-proposals.md §9/§12.';
 COMMENT ON COLUMN proposal.site IS 'The ground the proposal occupies (MultiPolygon, EPSG:4326). See PARCEL-OPTIONAL.md.';

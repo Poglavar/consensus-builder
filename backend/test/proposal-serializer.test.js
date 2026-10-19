@@ -20,6 +20,26 @@ function rejectionOf(row) {
 }
 
 describe('proposal API serializer', () => {
+    it.each([undefined, null])('does not revive a chain location from JSON when SQL is %s', onchain_data => {
+        const row = { onchain_data, proposal_data: {
+            onchain: { proposalId: 'stale-a' }, onchainData: { proposalId: 'stale-b' }
+        } };
+        const before = structuredClone(row);
+        const proposal = serializeProposalRow(row);
+        expect(proposal.onchain).toBeNull();
+        expect(proposal).not.toHaveProperty('onchainData');
+        expect(row).toEqual(before);
+    });
+
+    it('serves one SQL chain attachment despite conflicting JSON projections', () => {
+        const onchain = { chainId: 'solana-devnet', proposalId: 'current-account' };
+        const proposal = serializeProposalRow({ onchain_data: onchain, proposal_data: {
+            onchain: { proposalId: 'stale-a' }, onchainData: { proposalId: 'stale-b' }
+        } });
+        expect(proposal.onchain).toEqual(onchain);
+        expect(proposal).not.toHaveProperty('onchainData');
+    });
+
     it.each([undefined, null, '', 'pending'])(
         'does not replace unknown stored lifecycle %s from authored JSON or expiry', lifecycle_status => {
             const proposal = serializeProposalRow({

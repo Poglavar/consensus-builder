@@ -247,8 +247,10 @@ export function serializeProposalRow(row, options = {}) {
     proposal.reparcellization = choose(row.reparcellization, proposal.reparcellization);
     proposal.lens = choose(row.lens, proposal.lens);
     proposal.bounds = choose(row.bounds, proposal.bounds);
-    proposal.onchain = choose(row.onchain_data, proposal.onchain);
-    proposal.onchainData = choose(row.onchain_data, proposal.onchainData);
+    // Chain attachment is a server-owned projection. An absent/NULL column cannot resurrect a
+    // stale location from authored JSON, and the API exposes exactly one representation.
+    proposal.onchain = row.onchain_data ?? null;
+    delete proposal.onchainData;
     proposal.screenshotUrl = row.screenshot_url
         ?? row.onchain_data?.imageUrl
         ?? proposal.screenshotUrl

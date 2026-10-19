@@ -41,6 +41,13 @@ beforeEach(() => {
 });
 
 describe('POST /proposals', () => {
+    it.each([null, {}, { proposalId: 'old-account' }])('rejects the retired onchainData input %s before storing it', async onchainData => {
+        const res = await request(app).post('/proposals').send(validProposalBody({ onchainData }));
+        expect(res.status).toBe(400);
+        expect(res.body.error).toMatch(/onchainData is retired/);
+        expect(pool.getCalls().some(call => /INSERT INTO proposal/.test(call.sql))).toBe(false);
+    });
+
     it('rejects non-object proposal payloads', async () => {
         const res = await request(app)
             .post('/proposals')
@@ -929,15 +936,15 @@ describe('GET /proposals/:id', () => {
             cadastreParcelIds: ['HR-1'],
             lens: ['planning'],
             bounds: [1, 2, 3, 4],
-            onchain: { txHash: '0x1' },
-            onchainData: { txHash: '0x1' }
+            onchain: { txHash: '0x1' }
         });
+        expect(res.body).not.toHaveProperty('onchainData');
         expect(res.body).not.toHaveProperty('childParcelIds');
         expect(res.body).not.toHaveProperty('parentProposals');
         expect(res.body).not.toHaveProperty('childProposals');
     });
 
-    it('falls back to proposal_data fields when db columns are null', async () => {
+    it('uses JSON for nullable authored fields but not cleared chain attachment or unknown lifecycle', async () => {
         pool.setResult({
             rows: [proposalDbRow({
                 name: null,
@@ -1025,9 +1032,9 @@ describe('GET /proposals/:id', () => {
             reparcellization: { merge: true },
             lens: ['mobility'],
             bounds: [1, 2, 3, 4],
-            onchain: { txHash: '0xabc' },
-            onchainData: { txHash: '0xabc' }
+            onchain: null
         });
+        expect(res.body).not.toHaveProperty('onchainData');
         expect(res.body).not.toHaveProperty('childParcelIds');
         expect(res.body).not.toHaveProperty('parentProposals');
         expect(res.body).not.toHaveProperty('childProposals');
