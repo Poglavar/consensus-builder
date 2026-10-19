@@ -1,5 +1,9 @@
 # Memory
 
+- 2026-10-19: Run two additional persistent web researchers for unsupported cities outside Africa, seeking genuinely new cadastral sources rather than extending known providers; preserve the separate two-worker Africa research queue.
+
+- 2026-10-19: Process the qualified-city backlog on Valhalla with four parallel admission workers; keep shared app-data writes serial so city bindings and reports cannot overwrite one another. Continue fresh city-by-city web discovery alongside admission.
+
 - 2026-10-19: Initial parcel qualification prioritizes availability: qualify a city when a real parcel source returns usable polygons through working, repeatable reads. Projection/native-CRS uncertainty, detailed geometry, completeness, absence and binding findings are recorded follow-ups for a second pass, rather than initial qualification blockers. Keep all real check results and source geometry; do not claim uncertain checks passed.
 
 - 2026-10-18: Resume parcel research and qualification on Valhalla toward 1,000 supported cities, continuing from the latest saved evidence; this lifts the October 12 worldwide-research pause.

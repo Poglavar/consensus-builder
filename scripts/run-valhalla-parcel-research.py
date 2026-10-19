@@ -29,6 +29,7 @@ DEFAULT_ROOT = SCRIPT_DIR.parent
 sys.path.insert(0, str(SCRIPT_DIR / "lib"))
 import parcel_discovery_coordination as discovery_coord
 import parcel_discovery_outcomes as discovery_outcomes
+import parcel_source_novelty as source_novelty
 DEFAULT_QUEUE = Path("world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json")
 DEFAULT_SOURCE = Path("tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz")
 HANDOFF = Path("world-parcels/research/valhalla-handoff-2026-10-09.md")
@@ -398,6 +399,10 @@ class Runner:
         self.receipt_errors: dict[str, list[str]] = {}
         self.validated_stages: set[tuple[str, str]] = set()
         self.qualification_runners: list[Any] = []
+        self.known_sources_doc: dict[str, Any] | None = None
+        self.known_sources_rel: str | None = None
+        self.known_sources_sha256: str | None = None
+        self._state_was_present = self.state_path.exists()
 
     def _model(self, role: str) -> dict[str, Any]:
         if self.models is None:
@@ -482,7 +487,84 @@ class Runner:
             self.log("created durable run state", queueSha256=digest)
         self.state["jobName"] = self.args.job_name
         self.state["pid"] = os.getpid()
+        desired_policy = {"newSourcesOnly": bool(getattr(self.args, "new_sources_only", False)),
+                          "knownSourcesFile": self.known_sources_rel,
+                          "knownSourcesSha256": self.known_sources_sha256}
+        previous_policy = self.state.get("researchPolicy")
+        if previous_policy is None and desired_policy["newSourcesOnly"] and self._state_was_present:
+            raise RuntimeError("cannot enable --new-sources-only in an existing job without a saved novelty policy; use a new state directory")
+        if previous_policy is not None and previous_policy != desired_policy:
+            raise RuntimeError("research novelty policy or frozen known-source snapshot changed; use the original settings or a new state directory")
+        self.state["researchPolicy"] = desired_policy
         self.save_state()
+
+    def _configure_source_novelty(self, queue_path: Path) -> None:
+        if not getattr(self.args, "new_sources_only", False):
+            return
+        document = json_read(queue_path)
+        policy = document.get("researchPolicy", {}) if isinstance(document, dict) else {}
+        queued_path = policy.get("knownSourcesFile") if isinstance(policy, dict) else None
+        explicit_path = getattr(self.args, "known_sources", None)
+        if explicit_path is not None and Path(explicit_path).is_absolute():
+            raise ValueError("--known-sources must be a repository-relative JSON path")
+        if queued_path is not None and Path(str(queued_path)).is_absolute():
+            raise ValueError("queue researchPolicy.knownSourcesFile must be repository-relative")
+        if explicit_path and queued_path and Path(explicit_path).as_posix() != Path(str(queued_path)).as_posix():
+            raise ValueError("--known-sources differs from the queue's frozen researchPolicy.knownSourcesFile")
+        rel = str(explicit_path or queued_path or "").strip()
+        if not rel:
+            raise ValueError("--new-sources-only requires --known-sources or queue researchPolicy.knownSourcesFile")
+        resolved = (self.root / rel).resolve()
+        try:
+            resolved.relative_to(self.root)
+        except ValueError as exc:
+            raise ValueError("known-source snapshot must remain inside the repository") from exc
+        if not resolved.is_file():
+            raise FileNotFoundError(f"known-source snapshot is missing: {rel}")
+        snapshot = json_read(resolved)
+        sources = snapshot.get("sources") if isinstance(snapshot, dict) else None
+        if not isinstance(sources, list) or any(not isinstance(row, dict) or not row.get("id") or not row.get("endpoint") for row in sources):
+            raise ValueError("known-source snapshot must contain sources with id and endpoint")
+        hosts = snapshot.get("knownProviderHosts", [])
+        if not isinstance(hosts, list) or any(not (isinstance(item, str) and item.strip())
+                                               and not (isinstance(item, dict) and isinstance(item.get("host"), str) and item["host"].strip())
+                                               for item in hosts):
+            raise ValueError("knownProviderHosts must be an array of host strings or host objects")
+        self.known_sources_doc = snapshot
+        self.known_sources_rel = Path(rel).as_posix()
+        self.known_sources_sha256 = sha256_file(resolved)
+
+    def _source_novelty_prompt(self) -> str:
+        if not getattr(self.args, "new_sources_only", False):
+            return ""
+        catalog_path = self.root / "backend/parcels/source-catalog.json"
+        catalog = json_read(catalog_path)
+        known = source_novelty.known_source_rows(self.known_sources_doc) + source_novelty.known_source_rows(catalog)
+        entries, seen = [], set()
+        for row in known:
+            identity = (str(row.get("id") or ""), str(row.get("endpoint") or ""))
+            if identity in seen:
+                continue
+            seen.add(identity)
+            normalized = source_novelty.normalized_endpoint(identity[1])
+            endpoint = None
+            if normalized:
+                scheme, host, pathname, port = normalized
+                endpoint = f"{scheme}://{host}{f':{port}' if port else ''}{pathname}"
+            entries.append({"id": identity[0], "endpoint": endpoint, "adapter": row.get("adapter")})
+        raw_hosts = self.known_sources_doc.get("knownProviderHosts", []) if self.known_sources_doc else []
+        hosts = []
+        for item in raw_hosts:
+            raw_host = item.get("host") if isinstance(item, dict) else item
+            if isinstance(raw_host, str):
+                from urllib.parse import urlsplit
+                parsed = urlsplit(raw_host if "://" in raw_host else f"https://{raw_host}")
+                if parsed.hostname:
+                    hosts.append(parsed.hostname.lower().rstrip("."))
+        return """
+NEW-SOURCE-ONLY POLICY (mandatory for this run): a candidate must use a source ID and service endpoint that are absent from both the frozen known-source snapshot and the current live catalog. Query-string, fragment, trailing-slash, or HTTP-to-HTTPS changes do not make an endpoint new; compare host, pathname and normalized port. Explicit known provider hosts are excluded too. Do not retry or repackage a known provider as a new source. Search this city's municipal/local registry, regional/state/provincial agencies, national cadastre or geodata alternatives, and English plus local-language web sources for a genuinely different cadastral dataset and public service. Probe for first-party parcel purpose and an observed positive polygon within this city's actual coverage. If the bounded search finds only known services, record a completed rejection; a known service with a concrete temporary access blocker may be recorded as blocked, never candidate. Use already-supported only for a verified existing city binding.
+Known IDs/endpoints from the snapshot and current catalog:
+""" + json.dumps({"sources": entries, "knownProviderHosts": hosts}, ensure_ascii=False, indent=2)
 
     def request_stop(self, _signum: int | None = None, _frame: Any = None) -> None:
         self.stop_requested = True
@@ -660,6 +742,7 @@ class Runner:
         learning_files = getattr(self.args, "learning_file", [])
         learning_block = "\nRead these current integration learning files before investigating this city:\n" + "\n".join(
             f"- `{path}`" for path in learning_files) if learning_files else ""
+        novelty_block = self._source_novelty_prompt()
         if previous_errors:
             retry_block = """
 
@@ -675,6 +758,7 @@ Your single immutable WUP queue record is:
 ```
 Attempt {attempt} of {self.args.max_retries}. Cohort directory: `{cohort_dir.relative_to(self.root)}`.
 {learning_block}
+{novelty_block}
 
 Write only `{city_file}`, `{review_file}`, and at most one sample GeoJSON containing no more than three full parcel polygons in this cohort directory. Scratch/request caches and temporary qualification evidence belong under `tmp/valhalla-parcel-research/` (ignored); never clear prior logs or artifacts. Do not edit registry/catalog/runtime city config, global/generated reports, queue/identity ledgers, or another city's files. Do not commit, push, deploy, email, or contact anyone.
 
@@ -716,10 +800,12 @@ The paired service review MUST contain `"cityRecord": "{city_file}"` at the top 
         handoff = (self.root / HANDOFF).as_posix()
         receipt_dir = self._receipt_dir().relative_to(self.root).as_posix()
         if self.discovery_workflow():
+            novelty_block = self._source_novelty_prompt()
             return f"""You are the serial evidence reviewer for a finite city cadastral discovery queue.
 Review only the city packets listed below. Write durable review receipts and supplemental request/response evidence under `{receipt_dir}`;
 do not edit registry, catalog, runtime, generated reports, queue identity or another city's packet.
 Do not perform admission, commit, push, deploy or contact anyone. Do not launch other research jobs.
+{novelty_block}
 
 {city_text or '- (none)'}
 
@@ -1193,6 +1279,17 @@ Output MUST be a single JSON object satisfying the supplied schema: `reviewedIds
             return None
         if self.discovery_workflow() and task_id.startswith("city:"):
             errors = discovery_outcomes.validate_receipt(self.root, receipt)
+            if not errors and getattr(self.args, "new_sources_only", False) and receipt.get("decision") == "candidate":
+                try:
+                    catalog = json_read(self.root / "backend/parcels/source-catalog.json")
+                    snapshot_error = source_novelty.novelty_error(receipt.get("source"), self.known_sources_doc, None)
+                    current_error = source_novelty.novelty_error(receipt.get("source"), None, catalog)
+                    if snapshot_error:
+                        errors.append(snapshot_error)
+                    elif current_error and not self._candidate_has_current_city_binding(task_id, receipt, catalog):
+                        errors.append(current_error)
+                except (OSError, ValueError, TypeError) as exc:
+                    errors.append(f"could not verify candidate source novelty: {exc}")
             if not errors and receipt["decision"] == "already-supported":
                 try:
                     from parcel_source_admission import _existing_bindings
@@ -1224,6 +1321,27 @@ Output MUST be a single JSON object satisfying the supplied schema: `reviewedIds
             except ValueError:
                 return None
         return receipt
+
+    def _candidate_has_current_city_binding(self, task_id: str, receipt: dict[str, Any], catalog: dict[str, Any]) -> bool:
+        """Preserve this run's own admitted candidate on resume, but not another city's duplicate."""
+        code = task_id.split(":", 1)[1] if task_id.startswith("city:") else ""
+        source_id = receipt.get("source", {}).get("sourceId") if isinstance(receipt.get("source"), dict) else None
+        if not code or not source_id:
+            return False
+        try:
+            from parcel_source_admission import _existing_bindings
+            bindings = _existing_bindings(self.root)
+        except (OSError, ValueError, KeyError, TypeError, RuntimeError, subprocess.SubprocessError):
+            return False
+        descriptor = next((row for row in catalog.get("sources", [])
+                           if isinstance(row, dict) and row.get("id") == source_id), None)
+        if not descriptor or not isinstance(descriptor.get("cityIds"), list):
+            return False
+        receipt_source = receipt.get("source") or {}
+        if source_novelty.endpoint_identity(receipt_source.get("endpoint")) != source_novelty.endpoint_identity(descriptor.get("endpoint")):
+            return False
+        return any(str(row.get("wupCityCode")) == code and row.get("sourceId") == source_id
+                   and row.get("id") in descriptor["cityIds"] for row in bindings)
 
     def _candidate_workspace_snapshot(self) -> dict[str, str | None] | None:
         """Independently detect code/data changes even when a worker fails to report them."""
@@ -1557,9 +1675,10 @@ Output MUST be a single JSON object satisfying the supplied schema: `reviewedIds
         if not (1 <= self.args.max_retries <= MAX_RETRIES):
             raise ValueError("--max-retries must be between 1 and 3")
         self.acquire_lock()
+        queue_path = self._queue_path()
+        self._configure_source_novelty(queue_path)
         self._subscription_environment()
         self._model("research")
-        queue_path = self._queue_path()
         self.load_state(queue_path)
         previous_handlers = {}
         for sig in (signal.SIGTERM, signal.SIGINT):
@@ -1633,6 +1752,8 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--stop-after-queue", action="store_true", help="finish this finite queue without generating global rank ranges")
     parser.add_argument("--discovery-only", action="store_true", help="review city evidence only; exclude legacy tasks and source admission")
     parser.add_argument("--with-adapters", action="store_true", help="classify discovery, build/qualify candidate adapters and integrate passing cities in this worktree; never deploy")
+    parser.add_argument("--new-sources-only", action="store_true", help="require candidate sources to be absent from a frozen known-source snapshot and the current catalog")
+    parser.add_argument("--known-sources", type=Path, help="repository-relative JSON known-source snapshot (otherwise read queue researchPolicy.knownSourcesFile)")
     parser.add_argument("--workers", type=int, default=3, help="parallel city research workers (1-3; default 3)")
     parser.add_argument("--qualification-workers", type=int, choices=(1, 2), default=1,
                         help="parallel qualification cities in isolated worktrees (default 1); admission stays serial")
@@ -1758,6 +1879,10 @@ def main(argv: list[str] | None = None) -> int:
         return 0
     if args.discovery_only and args.with_adapters:
         parser.error("choose --discovery-only or --with-adapters, not both")
+    if args.new_sources_only and not args.with_adapters:
+        parser.error("--new-sources-only requires --with-adapters")
+    if args.known_sources and not args.new_sources_only:
+        parser.error("--known-sources requires --new-sources-only")
     if not 1 <= args.max_turn_minutes <= 90:
         parser.error("--max-turn-minutes must be between 1 and 90")
     if not 1 <= args.max_retries <= MAX_RETRIES:

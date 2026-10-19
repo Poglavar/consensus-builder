@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
-import { currencyFor, sourceActivationDecision, validateCountryConfig, verifyAdmissionEvidence } from '../admit-qualified-cities.mjs';
+import { buildAdmissionPlanSummary, currencyFor, sourceActivationDecision, validateCountryConfig, verifyAdmissionEvidence } from '../admit-qualified-cities.mjs';
 
 const temporaryDirectories = [];
 const sha256 = bytes => createHash('sha256').update(bytes).digest('hex');
@@ -94,6 +94,37 @@ describe('qualified source activation policy', () => {
         expect(decision.eligible).toBe(false);
         expect(decision.descriptor).toBe(existing);
         expect(existing.defaultForCity).toBe(false);
+    });
+});
+
+describe('admission plan summary', () => {
+    it('serializes accepted, refused and skipped requested codes with explicit outcome reasons', () => {
+        const reviewPath = path.join(os.tmpdir(), 'parcel-review', 'review.json');
+        const initialQualificationReview = { policy: 'parcel-availability-v1', evidencePath: reviewPath };
+        const plan = [{ code: '101', appCityId: 'example_city', name: 'Example City', countryCode: 'EX',
+            descriptor: { id: 'example-source' }, qualification: { candidateSha256: 'candidate-hash', cacheSha256: 'cache-hash' },
+            qualificationSha256: 'qualification-hash', initialQualificationReview }];
+        const refused = [{ code: '102', name: 'Refused City', reason: 'cache evidence is invalid' }];
+        const outcomes = new Map([['101', { outcome: 'qualified' }], ['102', { outcome: 'qualified' }],
+            ['103', { outcome: 'qualified' }], ['104', { outcome: 'failed' }]]);
+        const summary = buildAdmissionPlanSummary(plan, refused, ['101', '102', '103', '104', '105'], outcomes,
+            new Set(['103']), '2026-10-19-test', '2026-10-19T12:00:00.000Z');
+
+        expect(summary).toMatchObject({ schemaVersion: 1, release: '2026-10-19-test', plannedAtUtc: '2026-10-19T12:00:00.000Z',
+            requestedCodes: ['101', '102', '103', '104', '105'], refused: [{ code: '102', name: 'Refused City', reason: 'cache evidence is invalid' }],
+            skipped: [
+                { cityCode: '103', reason: 'city is already live or previously admitted' },
+                { cityCode: '104', reason: 'latest qualification outcome is failed' },
+                { cityCode: '105', reason: 'no qualification outcome is recorded in the selected outcomes' }
+            ] });
+        expect(summary.accepted[0]).toMatchObject({ cityCode: '101', appCityId: 'example_city', cityName: 'Example City',
+            countryCode: 'EX', sourceId: 'example-source', candidateSha256: 'candidate-hash', cacheSha256: 'cache-hash',
+            qualificationSha256: 'qualification-hash', initialQualificationReview: { policy: 'parcel-availability-v1', evidencePath: 'review.json' } });
+        expect(JSON.stringify(summary)).not.toContain(reviewPath);
+    });
+
+    it('keeps the requested code field null when no code filter was supplied', () => {
+        expect(buildAdmissionPlanSummary([], [], null, new Map(), new Set(), '2026-10-19-test', 'now').requestedCodes).toBeNull();
     });
 });
 
