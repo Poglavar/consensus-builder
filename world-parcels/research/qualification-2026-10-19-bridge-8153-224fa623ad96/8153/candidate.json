@@ -1,0 +1,112 @@
+{
+  "schemaVersion": 1,
+  "city": {
+    "code": "8153",
+    "name": "Abak",
+    "country": "Nigeria",
+    "countryCode": "NG",
+    "point": [
+      7.78822366120289,
+      4.98542874500456
+    ],
+    "currency": {
+      "locale": "en-NG",
+      "code": "NGN"
+    }
+  },
+  "descriptor": {
+    "id": "ng-akwaibom-akwagis-surveymap-parcel-drafter",
+    "name": "AkwaGIS Parcel_Drafter",
+    "operator": "AkwaGIS / Akwa Ibom State Government",
+    "adapter": "arcgis",
+    "endpoint": "https://akwagis.xyz/server/rest/services/SurveyMap/mainDrafter/FeatureServer/3",
+    "publicTokenUrl": "https://akwagis.akwaibomstate.gov.ng/api/v1/gis/public-token",
+    "idField": "globalid",
+    "idType": "string",
+    "objectIdField": "objectid",
+    "idPrefix": "NG-AKWAGIS-",
+    "idPattern": "^\\{[0-9A-Fa-f]{8}(?:-[0-9A-Fa-f]{4}){3}-[0-9A-Fa-f]{12}\\}$",
+    "outFields": [
+      "objectid",
+      "globalid"
+    ],
+    "queryFormat": "geojson",
+    "boundsQueryMode": "object-ids",
+    "idsQueryMode": "object-ids",
+    "pageSize": 100,
+    "idBatchSize": 80,
+    "maxFeatures": 10000,
+    "maxBboxKm2": 25,
+    "maxConcurrentQueries": 1,
+    "countryCode": "NG",
+    "stateCode": "AK",
+    "cityIds": [
+      "abak"
+    ],
+    "metricSrid": 32632,
+    "sourceCrs": "EPSG:26332",
+    "scope": "Akwa Ibom state survey/registry parcel layer; bounded distributed partial Abak access, completeness unverified.",
+    "attribution": "AkwaGIS / Akwa Ibom State Government, Ministry of Lands and Office of the State Surveyor-General.",
+    "licence": "No explicit reuse or redistribution licence established; permission requires second-pass review.",
+    "catalogueUrl": "https://akwagis.akwaibomstate.gov.ng/api/v1/gis/public-drafter-config",
+    "evidenceFile": "evidence/source-purpose.json",
+    "capabilities": {
+      "areaEnumeration": true,
+      "exactIds": true
+    }
+  },
+  "sampleIds": [
+    "NG-AKWAGIS-{6F1BDD22-8AB2-412C-AE5E-05BE26146156}",
+    "NG-AKWAGIS-{B2A4A528-36E9-4791-A257-AB5912F2865E}",
+    "NG-AKWAGIS-{751B4105-19FC-4711-BB5D-8B36F77AA96F}"
+  ],
+  "metricEpsg": 32632,
+  "cellSizeDegrees": 0.001,
+  "sourceClassification": {
+    "isParcel": true,
+    "purpose": "cadastral-parcels",
+    "evidence": [
+      "evidence/source-purpose.json",
+      "evidence/public-drafter-config.json",
+      "evidence/source-metadata.json"
+    ]
+  },
+  "alignmentEvidence": {
+    "file": "evidence/alignment-input.json",
+    "sha256": "98e9fe276a0007b3604bd814d2fb0389cb18715df3b2971b4d46f6e9964a6634"
+  },
+  "inputEvidence": [
+    {
+      "file": "evidence/discovery-packet.json",
+      "sha256": "64611ac9caede89f6b30b2d6f0f9987e2b7f359ecbb0a3b9bc8ecf336a188573"
+    },
+    {
+      "file": "evidence/discovery-review.json",
+      "sha256": "0c0999b8f44de809a47177064cbaa4056532692351b601ff9db7db7e48fa08d2"
+    },
+    {
+      "file": "evidence/discovery-sample.geojson",
+      "sha256": "6ec8653da274752032e3257b0088640a6d09cbb14534acc2ae84224a526abb96"
+    },
+    {
+      "file": "evidence/discovery-west-receipt.json",
+      "sha256": "7c72c52faef566b13f4b8de9a16cec2072ae449f7ded21bc464a239ba253cd03"
+    },
+    {
+      "file": "evidence/discovery-east-receipt.json",
+      "sha256": "02b4e89e5d6037465c4ad853ab52222eb493eb8e7b29b020633f1ff8245e13bf"
+    },
+    {
+      "file": "evidence/discovery-north-receipt.json",
+      "sha256": "36f01a75ac0ce98ab775c9fbcd160a0cf6d06618ad2f543b3102c8016d602003"
+    }
+  ],
+  "followUps": [
+    "Initial availability only; no full-layer audit or 13-cell citywide inference. Abak record coverage and missing areas need second-pass review.",
+    "Draft/current/historic semantics and legal registration status of individual records are unverified; no status filtering applied.",
+    "Metadata extent was historically stale; retain current metadata and actual returnExtentOnly separately.",
+    "EPSG:26332 is declared; service outSR=4326 uses longitude,latitude. Provider datum operation, grids, epoch and survey accuracy remain unverified. Discovery observed EPSG operation 1168; independent checker results must remain visible, even if its default operation differs.",
+    "Public query access does not establish redistribution permission. Explicit reuse terms and attribution rights require review.",
+    "Metric/topology, complete scoped enumeration, exact absence, forced-page checks and application binding are second-pass follow-ups."
+  ]
+}

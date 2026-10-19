@@ -1,0 +1,192 @@
+{
+  "schemaVersion": 2,
+  "status": "technical-qualified",
+  "cityCode": "4359",
+  "cityName": "Centurion",
+  "sourceId": "za-csg-csggis-property-viewer-erven",
+  "candidateSha256": "a91c8053c15b1f1d082b4db68179c00a319a24ba38ea7a7f07755f66149742d7",
+  "checks": {
+    "classification": {
+      "passed": true,
+      "evidenceCount": 2
+    },
+    "exactIds": {
+      "passed": true,
+      "requestedCount": 3,
+      "returnedCount": 3
+    },
+    "stableGeometry": {
+      "passed": true,
+      "independentRead": true,
+      "comparedCount": 3
+    },
+    "explicitAbsence": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "sampling": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "completeness": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "binding": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "metric": {
+      "passed": true,
+      "reportPath": "metric-report.json",
+      "inputSha256": "9edb0a024cac81c1fa54fc8bbc09b1a0f0b0e881f920079ffdb9a4516a1f8461",
+      "featureCount": 3,
+      "sourceCrs": "EPSG:4326",
+      "metricCrs": "EPSG:32735",
+      "invalidCount": 0,
+      "duplicateIdCount": 0,
+      "conflictingSameIdGeometryCount": 0,
+      "exactGeometryDuplicateCount": 0,
+      "overlapPairCount": 0,
+      "operationErrorCount": 0,
+      "geometryChangedOrRepaired": false,
+      "geometryPass": true
+    },
+    "alignment": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    }
+  },
+  "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+      "classification",
+      "exactIds",
+      "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+      {
+        "check": "explicitAbsence",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "sampling",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "completeness",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "binding",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "alignment",
+        "reason": "Deferred to second-pass review."
+      }
+    ],
+    "usableGeographicPolygons": true
+  },
+  "geometryReport": "metric-report.json",
+  "cacheFile": "full-safe.geojson",
+  "cacheSha256": "9edb0a024cac81c1fa54fc8bbc09b1a0f0b0e881f920079ffdb9a4516a1f8461",
+  "featureCount": 3,
+  "sampleIds": [
+    "ZA-CSG-CSGGIS-ERVEN-GTSHT0JR007200001581000000-d42c6837c47796183f7323ad7e0cb5ec1e40838f13731f299206f3ac4480f568",
+    "ZA-CSG-CSGGIS-ERVEN-GTSHT0JR015400001116000000-6adafb5eebed70134444103426e3afdb884d429cb4d66eb65438521562a9d4d7",
+    "ZA-CSG-CSGGIS-ERVEN-GTSHT0JR011400002654000000-938adb35cba62a63efd55388696d394acd67d99f398c9d414c35bc2fc3622fa8"
+  ],
+  "cellSizeDegrees": 0.001,
+  "sampledCells": [],
+  "sampledPoints": [],
+  "requestCount": 6,
+  "requestLimit": 300,
+  "requests": [
+    {
+      "stage": "exact-id-first-read",
+      "host": "csggis.dlrrd.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-19T01:00:40.311Z",
+      "queryHash": "503d02679af0cef88f51c814ea62c9d3df6dd8f1a438428d11126fc0f1e4368e",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 7868
+    },
+    {
+      "stage": "exact-id-first-read",
+      "host": "csggis.dlrrd.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-19T01:00:48.186Z",
+      "queryHash": "503d02679af0cef88f51c814ea62c9d3df6dd8f1a438428d11126fc0f1e4368e",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 6736
+    },
+    {
+      "stage": "exact-id-first-read",
+      "host": "csggis.dlrrd.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-19T01:00:54.924Z",
+      "queryHash": "74b210fc521caf235898e6942ae321d94ca0b12df396ca20320da6331fd3ead8",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 3,
+      "httpStatus": 200,
+      "elapsedMs": 224
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "csggis.dlrrd.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-19T01:00:55.167Z",
+      "queryHash": "503d02679af0cef88f51c814ea62c9d3df6dd8f1a438428d11126fc0f1e4368e",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 6019
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "csggis.dlrrd.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-19T01:01:01.187Z",
+      "queryHash": "503d02679af0cef88f51c814ea62c9d3df6dd8f1a438428d11126fc0f1e4368e",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 7147
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "csggis.dlrrd.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-19T01:01:08.336Z",
+      "queryHash": "74b210fc521caf235898e6942ae321d94ca0b12df396ca20320da6331fd3ead8",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 3,
+      "httpStatus": 200,
+      "elapsedMs": 211
+    }
+  ],
+  "failures": {},
+  "limitations": [
+    "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness.",
+    "Projection, geometry, completeness and binding findings are recorded for second-pass review; initial qualification does not establish survey accuracy."
+  ]
+}

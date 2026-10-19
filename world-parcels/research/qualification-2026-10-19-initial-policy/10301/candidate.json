@@ -1,0 +1,55 @@
+{
+  "descriptor": {
+    "adapter": "vector-tiles",
+    "catalogueUrl": "https://github.com/ramSeraph/indian_cadastrals",
+    "countryCode": "IN",
+    "endpoint": "https://indianopenmaps.com/not-so-open/cadastrals/tamil-nadu/tngis/{z}/{x}/{y}.pbf",
+    "groupFields": [
+      "id"
+    ],
+    "id": "in-tn-tngis-tiles",
+    "idPrefix": "IN-TN-TNGIS-",
+    "identityKind": "geometry-sha256-v1",
+    "layer": "TNGIS_TN_Cadastrals",
+    "lookupCellSize": 0.002,
+    "maxBboxKm2": 4,
+    "maxFeatures": 10000,
+    "metricSrid": 32644,
+    "name": "Tamil Nadu cadastral maps — indianopenmaps tile snapshot (TNGIS_TN_Cadastrals)",
+    "outFields": [
+      "id"
+    ],
+    "overlapResolution": "overlap-ground-v1-area-desc-id-asc-turf6",
+    "scope": "Cadastral parcels of Tamil Nadu from the TNGIS_TN_Cadastrals snapshot that ramSeraph/indian_cadastrals collected from the government map service and serves as vector tiles at indianopenmaps.com. Parcels are rebuilt from zoom-14 tiles. Coverage follows the villages in that snapshot and can omit city cores.",
+    "stateCode": "TN",
+    "zoom": 14,
+    "maxTiles": 36,
+    "maxConcurrentQueries": 2,
+    "capabilities": {
+      "areaEnumeration": true
+    }
+  },
+  "city": {
+    "code": "10301",
+    "name": "Madurai",
+    "point": [
+      78.115593861303,
+      9.92418503600906
+    ]
+  },
+  "sampleIds": [
+    "IN-TN-TNGIS-g1~781141984~99516050~a3ed63188b73cfa96555ac21905bbc5dff9ba588fe2e59e8e12fbf5876aa08dd",
+    "IN-TN-TNGIS-g1~781150568~99509921~2bf7eafb91daf79a35165d7fe9c1fd17159681df941f93b0106b761899ce80e5",
+    "IN-TN-TNGIS-g1~781139141~99518692~35637fc5bfe3cc362a61bf377f43beb3e9367ed2e47ba8a555b7d2f079caa6e4"
+  ],
+  "absentId": "IN-TN-TNGIS-g1~781139141~99518692~0000000000000000000000000000000000000000000000000000000000000000",
+  "metricEpsg": "EPSG:32644",
+  "sourceClassification": {
+    "isParcel": true,
+    "evidence": [
+      "Frozen packet providerReuse.descriptor.scope describes cadastral parcels of Tamil Nadu collected from the government map service, with village-level snapshot coverage that can omit city cores.",
+      "Frozen packet providerReuse.scopeEvidence restricts candidate cities to IN-TN. Independent first-party cadastral purpose and Madurai scope remain unverified; see evidence/alignment-gate-review.json."
+    ]
+  },
+  "cellSizeDegrees": 0.001
+}

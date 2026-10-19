@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "passed": true,
+  "sourceId": "et-addis-eland-geoserver-parcel-publish",
+  "cityCode": "6353",
+  "contractSha256": "84cf6a53becfb902a431ff9ea6ff9ece9a5a6038745abf8f9632045060fc0f69",
+  "evidenceSha256": "24e2b3857a36cf108fc14002a29479704f0bcd02a6a0e1c0d204cfd01363fd5d",
+  "metadataSha256": "8138e9c42af9a1a205f4efb80051670ae6148225999f95bdbf4900292eef9ed6",
+  "nativeSha256": "fb4042a6cbfcc2edcc0dec8d067e770c2addef06d914d466b91b174bfa5eac43",
+  "cacheSha256": "709d5f54e2d2b38c81c30babb297361ed132c3b676fb9ee9a318b5df9cd0c312",
+  "nativeCrs": "EPSG:20137",
+  "nativeAxisOrder": "east-north",
+  "outputCrs": "EPSG:4326",
+  "coordinateOperation": "Inverse of UTM zone 37N + Adindan to WGS 84 (1) + axis order change (2D)",
+  "operationPipeline": "proj=pipeline step inv proj=utm zone=37 a=6378249.145 rf=293.465 step inv proj=longlat a=6378249.145 rf=293.465 step proj=push v_3 step proj=cart a=6378249.145 rf=293.465 step proj=helmert x=-166 y=-15 z=204 step inv proj=cart ellps=WGS84 step proj=pop v_3 step proj=unitconvert xy_in=rad xy_out=deg",
+  "operationAccuracyM": 9.0,
+  "bestOperationAvailable": true,
+  "ballparkAllowed": false,
+  "toleranceM": 0.25,
+  "maxVertexDifferenceM": 1.6019260106781362e-09,
+  "featureCount": 2,
+  "samples": [
+    {
+      "parcelId": "ET-ADDIS-ELAND-AA000041000409",
+      "nativeVertexCount": 28,
+      "adapterVertexCount": 28,
+      "maxVertexDifferenceM": 1.6019260106781362e-09,
+      "maxBoundaryDifferenceM": 2.125562294649939e-09
+    },
+    {
+      "parcelId": "ET-ADDIS-ELAND-AA000041000776",
+      "nativeVertexCount": 8,
+      "adapterVertexCount": 8,
+      "maxVertexDifferenceM": 8.572900850568892e-10,
+      "maxBoundaryDifferenceM": 1.3264159280011994e-09
+    }
+  ],
+  "maxBoundaryDifferenceM": 2.125562294649939e-09,
+  "boundaryComparison": "Bidirectional boundary Hausdorff distance in a local WGS84 azimuthal equidistant frame; no clipping, simplification, repair or fitted displacement.",
+  "operationChoiceUnresolved": false,
+  "sourceGeometryChanged": false,
+  "fittedOffsetApplied": false,
+  "sourceGeoreferencing": "unverified",
+  "limitations": [
+    "CRS handling is checked independently; source survey accuracy and basemap accuracy are not established.",
+    "WGS84 is an ensemble: no observation epoch is inferred from an EPSG code."
+  ]
+}

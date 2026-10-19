@@ -1,0 +1,120 @@
+{
+  "city": {
+    "code": "580",
+    "name": "Kigali",
+    "point": [
+      30.0945497299371,
+      -1.95092395958257
+    ],
+    "capitalId": "capital:RW:kigali",
+    "wupCityCode": 580,
+    "country": "Rwanda",
+    "countryCode": "RW",
+    "iso3": "RWA",
+    "locId": 646,
+    "capital": true,
+    "queueRank": 58,
+    "globalRank": 344,
+    "population2025": 1483711,
+    "population2025k": 1483.711,
+    "populationUnit": "persons",
+    "populationYear": 2025,
+    "currency": {
+      "locale": "en-RW",
+      "code": "RWF"
+    },
+    "currencyEvidenceFile": "evidence/country-metadata.json"
+  },
+  "descriptor": {
+    "id": "rw-nla-rsdi-kigali-parcels",
+    "adapter": "arcgis",
+    "endpoint": "https://geodata.rw/server/rest/services/LAISData/Kigali_Parcels/FeatureServer/11",
+    "idField": "upi",
+    "idType": "string",
+    "idPrefix": "RW-LAIS-KGL-",
+    "idPattern": "^[0-9]+(?:/[0-9]+){4}$",
+    "objectIdField": "objectid",
+    "outFields": [
+      "objectid",
+      "upi"
+    ],
+    "pageSize": 2000,
+    "idBatchSize": 80,
+    "maxFeatures": 10000,
+    "maxBboxKm2": 25,
+    "boundsQueryMode": "offset",
+    "idsQueryMode": "offset",
+    "scope": "Kigali LAIS cadastral parcels returned by bounded and exact-UPI queries; completeness across the City of Kigali is unverified.",
+    "licenceNote": "Public anonymous access observed. Explicit reuse and redistribution terms are unverified; public readability is not a reuse licence.",
+    "attribution": "National Land Authority (NLA), Rwanda Spatial Data Infrastructure (RSDI), Kigali Parcels (LAIS).",
+    "queryFormat": "esri-json",
+    "name": "Kigali Parcels (LAIS)",
+    "operator": "National Land Authority through Rwanda Spatial Data Infrastructure",
+    "countryCode": "RW",
+    "maxConcurrentQueries": 2,
+    "metricSrid": 32736,
+    "cityIds": [
+      "kigali"
+    ],
+    "capabilities": {
+      "bbox": true,
+      "exactId": true,
+      "areaEnumeration": true,
+      "geometry": "full-wgs84"
+    },
+    "evidenceFile": "evidence/source-purpose.json",
+    "discovery": {
+      "jurisdiction": {
+        "countryCode": "RW",
+        "basis": "NLA/RSDI publishes the Kigali-specific LAIS cadastral parcel layer. Receipt probes establish substantial-city discovery coverage, not exhaustive coverage.",
+        "evidence": [
+          "evidence/source-purpose.json",
+          "evidence/portal-item.json",
+          "evidence/layer-metadata.json"
+        ]
+      }
+    }
+  },
+  "metricEpsg": "EPSG:32736",
+  "sampleIds": [
+    "RW-LAIS-KGL-1/02/08/01/1860",
+    "RW-LAIS-KGL-1/02/07/01/2317",
+    "RW-LAIS-KGL-1/02/08/01/1169",
+    "RW-LAIS-KGL-1/02/08/01/1906",
+    "RW-LAIS-KGL-1/02/08/01/783"
+  ],
+  "absentId": "RW-LAIS-KGL-1/02/08/01/999999",
+  "cellSizeDegrees": 0.001,
+  "sourceClassification": {
+    "isParcel": true,
+    "purpose": "cadastral-parcels",
+    "evidence": [
+      "evidence/source-purpose.json",
+      "evidence/portal-item.json",
+      "evidence/layer-metadata.json",
+      "evidence/live-exact-response.json"
+    ]
+  },
+  "inputBinding": {
+    "cityIdentitySha256": "f9ce834abc730a7fbbe6bd7472a9b5fe8c4d78ec8dbc7d9ab6382534ee19dcca",
+    "receiptCanonicalSha256": "f0eb7460ec5c33ff1671e1d09d585e3f79945c1a3d46b27dcad3c514ce308261",
+    "packetSha256": "f15e45dfbfbcb47ebb9ae25f2876b27f1869886650ffb301ec950eddfb014ae6",
+    "reviewSha256": "ecfb2e069483ec33a45c22818736ff3b7034a9d38536d93516e630db3073cd0c"
+  },
+  "followUps": [
+    "Native layer CRS is ITRF_2005 Transverse Mercator WKT without an advertised EPSG/WKID. outSR=4326 is provider transformed; native datum, operation, grids and wire-axis proof are unverified. No fitted offset is used.",
+    "Prior unchanged 54-parcel WUP sample has a 6.960046758807686 m\u00b2 material overlap between UPI 1/02/08/01/1169 and 1/02/08/01/783. Both are deliberately included in this exact-read qualification. See evidence/prior-metric-report.json.",
+    "Current/historical validity semantics and temporal lineage are unverified; no temporal filtering or duplicate suppression.",
+    "Citywide completeness, district-boundary coverage, exhaustive paging and binding require second-pass review. Initial exact reads and any 13 bounded cells cannot prove citywide coverage.",
+    "Explicit reuse/redistribution terms require confirmation before any reuse decision."
+  ],
+  "evidenceFiles": [
+    "evidence/source-purpose.json",
+    "evidence/portal-item.json",
+    "evidence/layer-metadata.json",
+    "evidence/live-exact-request.json",
+    "evidence/live-exact-response.json",
+    "evidence/country-metadata.json",
+    "evidence/prior-metric-report.json"
+  ]
+}

@@ -1,0 +1,153 @@
+{
+  "schemaVersion": 2,
+  "status": "technical-qualified",
+  "cityCode": "5457",
+  "cityName": "Deesa",
+  "sourceId": "in-gj-ncog-tiles",
+  "candidateSha256": "a76288985945a615f19488702ef63e608785d6d3065b510bb80728ce84cd9373",
+  "checks": {
+    "classification": {
+      "passed": true,
+      "evidenceCount": 2
+    },
+    "exactIds": {
+      "passed": true,
+      "requestedCount": 2,
+      "returnedCount": 2
+    },
+    "stableGeometry": {
+      "passed": true,
+      "independentRead": true,
+      "comparedCount": 2
+    },
+    "explicitAbsence": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "sampling": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "completeness": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "binding": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "metric": {
+      "passed": true,
+      "reportPath": "metric-report.json",
+      "inputSha256": "574d1a600b848b7c5ae4876d58e817f5c2dc127d3667a3019dfef18c1e456cb7",
+      "featureCount": 2,
+      "sourceCrs": "EPSG:4326",
+      "metricCrs": "EPSG:32643",
+      "invalidCount": 0,
+      "duplicateIdCount": 0,
+      "conflictingSameIdGeometryCount": 0,
+      "exactGeometryDuplicateCount": 0,
+      "overlapPairCount": 0,
+      "operationErrorCount": 0,
+      "geometryChangedOrRepaired": false,
+      "geometryPass": true
+    },
+    "alignment": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    }
+  },
+  "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+      "classification",
+      "exactIds",
+      "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+      {
+        "check": "explicitAbsence",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "sampling",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "completeness",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "binding",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "alignment",
+        "reason": "Deferred to second-pass review."
+      }
+    ],
+    "usableGeographicPolygons": true
+  },
+  "geometryReport": "metric-report.json",
+  "cacheFile": "full-safe.geojson",
+  "cacheSha256": "574d1a600b848b7c5ae4876d58e817f5c2dc127d3667a3019dfef18c1e456cb7",
+  "featureCount": 2,
+  "sampleIds": [
+    "IN-GJ-NCOG-g1~721829224~242549467~a7073da9622b0d66fcd50d4f50d8927f7e113f8682cb6e71abd75efdae1a35d7",
+    "IN-GJ-NCOG-g1~721839738~242543011~23033ff436c101dc17ba8e41fb1083dd770ee6b6e51156bf83006e05af65d4a1"
+  ],
+  "cellSizeDegrees": 0.001,
+  "sampledCells": [],
+  "sampledPoints": [],
+  "requestCount": 4,
+  "requestLimit": 300,
+  "requests": [
+    {
+      "stage": "exact-id-first-read",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-19T01:20:12.565Z",
+      "queryHash": "05546dcfa8457b8cd7d739d6dcfaa1d1e9cd4b96903ec429100618b820e48c12",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 380
+    },
+    {
+      "stage": "exact-id-first-read",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-19T01:20:13.103Z",
+      "queryHash": "a41c3fb0218b8b3ea43be9d4af4ca8f541f8ec2f83653e8c4e9bba9fcc3ddece",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 78
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-19T01:20:13.290Z",
+      "queryHash": "05546dcfa8457b8cd7d739d6dcfaa1d1e9cd4b96903ec429100618b820e48c12",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 38
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-19T01:20:13.415Z",
+      "queryHash": "a41c3fb0218b8b3ea43be9d4af4ca8f541f8ec2f83653e8c4e9bba9fcc3ddece",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 51
+    }
+  ],
+  "failures": {},
+  "limitations": [
+    "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness.",
+    "Projection, geometry, completeness and binding findings are recorded for second-pass review; initial qualification does not establish survey accuracy."
+  ]
+}

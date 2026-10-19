@@ -1,0 +1,241 @@
+{
+  "schemaVersion": 2,
+  "status": "technical-qualified",
+  "cityCode": "428",
+  "cityName": "Gaborone",
+  "sourceId": "bw-bofinet-botswana-lapcas-plots",
+  "candidateSha256": "76ebc9c378baccbcb8a4dde81fb7f94f3e630ea94955f0b52e9e2865fe5e9625",
+  "checks": {
+    "classification": {
+      "passed": true,
+      "evidenceCount": 4
+    },
+    "exactIds": {
+      "passed": true,
+      "requestedCount": 3,
+      "returnedCount": 3
+    },
+    "stableGeometry": {
+      "passed": true,
+      "independentRead": true,
+      "comparedCount": 3
+    },
+    "explicitAbsence": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "sampling": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "completeness": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "binding": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "metric": {
+      "passed": true,
+      "reportPath": "metric-report.json",
+      "inputSha256": "a5e6dd0d167226e9871246519ddf50a0f192e9cb74315755931e2cc33feb908d",
+      "featureCount": 3,
+      "sourceCrs": "EPSG:4326",
+      "metricCrs": "EPSG:32735",
+      "invalidCount": 0,
+      "duplicateIdCount": 0,
+      "conflictingSameIdGeometryCount": 0,
+      "exactGeometryDuplicateCount": 0,
+      "overlapPairCount": 0,
+      "operationErrorCount": 0,
+      "geometryChangedOrRepaired": false,
+      "geometryPass": true
+    },
+    "alignment": {
+      "schemaVersion": 1,
+      "passed": true,
+      "sourceId": "bw-bofinet-botswana-lapcas-plots",
+      "cityCode": "428",
+      "contractSha256": "df17bc12f8d511daa9d31f57b965175dc0f68ac41a3676faddd47ae654d2502a",
+      "evidenceSha256": "7dc01e7cc4ee25a9a42b5168654c6c1a969ec9acd0251944f89175247598496e",
+      "metadataSha256": "7a6651ef610538e4bccbe3268c9f0c17da1ba8442b3a4b527e584f6abe376cc0",
+      "nativeSha256": "0583cef2d421fbe16c3f15b27d262b1d3126d7e74f7ece2960b71e40d3bc973e",
+      "cacheSha256": "a5e6dd0d167226e9871246519ddf50a0f192e9cb74315755931e2cc33feb908d",
+      "nativeCrs": "EPSG:4326",
+      "nativeAxisOrder": "east-north",
+      "outputCrs": "EPSG:4326",
+      "coordinateOperation": "axis order change (2D) + Null geographic offset from WGS 84 to WGS 84 + axis order change (2D)",
+      "operationPipeline": "proj=noop ellps=GRS80",
+      "operationAccuracyM": 0,
+      "bestOperationAvailable": true,
+      "ballparkAllowed": false,
+      "toleranceM": 0.25,
+      "maxVertexDifferenceM": 0,
+      "featureCount": 3,
+      "samples": [
+        {
+          "parcelId": "bofinet:Botswana_PLOTS:FID:5986",
+          "nativeVertexCount": 6,
+          "adapterVertexCount": 6,
+          "maxVertexDifferenceM": 0,
+          "maxBoundaryDifferenceM": 0
+        },
+        {
+          "parcelId": "bofinet:Botswana_PLOTS:FID:11324",
+          "nativeVertexCount": 7,
+          "adapterVertexCount": 7,
+          "maxVertexDifferenceM": 0,
+          "maxBoundaryDifferenceM": 0
+        },
+        {
+          "parcelId": "bofinet:Botswana_PLOTS:FID:41315",
+          "nativeVertexCount": 5,
+          "adapterVertexCount": 5,
+          "maxVertexDifferenceM": 0,
+          "maxBoundaryDifferenceM": 0
+        }
+      ],
+      "maxBoundaryDifferenceM": 0,
+      "boundaryComparison": "Bidirectional boundary Hausdorff distance in a local WGS84 azimuthal equidistant frame; no clipping, simplification, repair or fitted displacement.",
+      "operationChoiceUnresolved": false,
+      "sourceGeometryChanged": false,
+      "fittedOffsetApplied": false,
+      "sourceGeoreferencing": "unverified",
+      "limitations": [
+        "CRS handling is checked independently; source survey accuracy and basemap accuracy are not established.",
+        "WGS84 is an ensemble: no observation epoch is inferred from an EPSG code."
+      ],
+      "reportFile": "alignment-report.json"
+    }
+  },
+  "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+      "classification",
+      "exactIds",
+      "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+      {
+        "check": "explicitAbsence",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "sampling",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "completeness",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "binding",
+        "reason": "Deferred to second-pass review."
+      }
+    ],
+    "usableGeographicPolygons": true
+  },
+  "geometryReport": "metric-report.json",
+  "alignmentReport": "alignment-report.json",
+  "cacheFile": "full-safe.geojson",
+  "cacheSha256": "a5e6dd0d167226e9871246519ddf50a0f192e9cb74315755931e2cc33feb908d",
+  "featureCount": 3,
+  "sampleIds": [
+    "bofinet:Botswana_PLOTS:FID:11324",
+    "bofinet:Botswana_PLOTS:FID:5986",
+    "bofinet:Botswana_PLOTS:FID:41315"
+  ],
+  "cellSizeDegrees": 0.001,
+  "sampledCells": [],
+  "sampledPoints": [],
+  "requestCount": 6,
+  "requestLimit": 300,
+  "requests": [
+    {
+      "stage": "exact-id-first-read",
+      "host": "bofinetarcgisportal.bofinet.co.bw",
+      "method": "GET",
+      "startedAt": "2026-10-19T01:20:12.035Z",
+      "queryHash": "6d007cd20dfd319da688a2f41b4972b000c36774624f6c064c235c2df25a7134",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1019
+    },
+    {
+      "stage": "exact-id-first-read",
+      "host": "bofinetarcgisportal.bofinet.co.bw",
+      "method": "GET",
+      "startedAt": "2026-10-19T01:20:13.060Z",
+      "queryHash": "6d007cd20dfd319da688a2f41b4972b000c36774624f6c064c235c2df25a7134",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 255
+    },
+    {
+      "stage": "exact-id-first-read",
+      "host": "bofinetarcgisportal.bofinet.co.bw",
+      "method": "GET",
+      "startedAt": "2026-10-19T01:20:13.318Z",
+      "queryHash": "986dfeb360d3f8a46811b3a6d2a262db0d4b9f4794680e04ac0662ad4cdbd2a4",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 3,
+      "httpStatus": 200,
+      "elapsedMs": 258
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "bofinetarcgisportal.bofinet.co.bw",
+      "method": "GET",
+      "startedAt": "2026-10-19T01:20:13.581Z",
+      "queryHash": "6d007cd20dfd319da688a2f41b4972b000c36774624f6c064c235c2df25a7134",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 253
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "bofinetarcgisportal.bofinet.co.bw",
+      "method": "GET",
+      "startedAt": "2026-10-19T01:20:13.837Z",
+      "queryHash": "6d007cd20dfd319da688a2f41b4972b000c36774624f6c064c235c2df25a7134",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 256
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "bofinetarcgisportal.bofinet.co.bw",
+      "method": "GET",
+      "startedAt": "2026-10-19T01:20:14.095Z",
+      "queryHash": "986dfeb360d3f8a46811b3a6d2a262db0d4b9f4794680e04ac0662ad4cdbd2a4",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 3,
+      "httpStatus": 200,
+      "elapsedMs": 246
+    }
+  ],
+  "failures": {},
+  "limitations": [
+    "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness.",
+    "Projection, geometry, completeness and binding findings are recorded for second-pass review; initial qualification does not establish survey accuracy."
+  ]
+}

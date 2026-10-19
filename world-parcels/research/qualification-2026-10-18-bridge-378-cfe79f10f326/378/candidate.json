@@ -1,0 +1,140 @@
+{
+  "schemaVersion": 2,
+  "city": {
+    "code": "378",
+    "name": "Bobo-Dioulasso",
+    "point": [
+      -4.28974790525362,
+      11.1847197779143
+    ],
+    "country": "Burkina Faso",
+    "countryCode": "BF",
+    "iso2": "BF",
+    "iso3": "BFA",
+    "appCityId": "bobo_dioulasso",
+    "queueRank": 81,
+    "globalRank": 460,
+    "population2025": 1125023,
+    "currency": {
+      "locale": "fr-BF",
+      "code": "XOF"
+    },
+    "currencyEvidenceFile": "evidence/country-metadata.json"
+  },
+  "descriptor": {
+    "id": "bf-dgi-ecadastre-public-geojson",
+    "name": "Burkina Faso DGI eCadastre public cadastral map GeoJSON",
+    "adapter": "bf-dgi-geojson",
+    "endpoint": "https://ecadastre.dgi.bf/api/locations/geojson",
+    "countryCode": "BF",
+    "cityIds": [
+      "bobo_dioulasso"
+    ],
+    "idPrefix": "BF-ECADASTRE:",
+    "idField": "FID",
+    "idType": "string",
+    "idPattern": "^[A-Za-z0-9]{1,64}$",
+    "geometryField": "geometry",
+    "outFields": [
+      "FID"
+    ],
+    "sourceCrs": "EPSG:4326",
+    "responseSrid": 4326,
+    "metricSrid": 32630,
+    "maxBboxKm2": 2,
+    "maxResponseBytes": 8388608,
+    "maxFeatures": 1000,
+    "maxConcurrentQueries": 1,
+    "lookupBounds": [
+      [
+        -4.29474790525362,
+        11.1797197779143,
+        -4.28474790525362,
+        11.1897197779143
+      ],
+      [
+        -4.34,
+        11.175,
+        -4.334,
+        11.181
+      ],
+      [
+        -4.248,
+        11.18,
+        -4.242,
+        11.186
+      ],
+      [
+        -4.292,
+        11.137,
+        -4.286,
+        11.143
+      ]
+    ],
+    "capabilities": {
+      "areaEnumeration": true,
+      "exactIds": true,
+      "authoritativeAbsence": false,
+      "areaCompleteness": false
+    },
+    "operator": "Direction générale des Impôts du Burkina Faso (DGI)",
+    "catalogueUrl": "https://ecadastre.dgi.bf/",
+    "attribution": "Direction générale des Impôts du Burkina Faso — eCadastre",
+    "licenceNote": "Public anonymous map access observed. Explicit redistribution/reuse permission and required attribution terms remain unverified.",
+    "scope": "Native-ID parcel availability in four declared Bobo-Dioulasso diagnostic windows only. Three distributed west/east/south reads support spatial spread; they and the near-WUP window are not a municipal boundary, coverage manifest, or citywide-completeness proof.",
+    "identityPolicy": "Native feature.id must equal properties.FID; canonical BF-ECADASTRE:<native-id>. Exact reads independently scan the declared lookup windows and return only requested full polygons. No process-local cache, geometry-derived ID or false absent-ID claim.",
+    "defaultForCity": false
+  },
+  "sampleIds": [
+    "BF-ECADASTRE:aN1k1sijuxh",
+    "BF-ECADASTRE:NgGGJkfQ1af",
+    "BF-ECADASTRE:hmTuv6heRVn",
+    "BF-ECADASTRE:bENNwjbYc8f",
+    "BF-ECADASTRE:HXgwb55P1Pk"
+  ],
+  "metricEpsg": 32630,
+  "cellSizeDegrees": 0.001,
+  "sourceClassification": {
+    "isParcel": true,
+    "purpose": "cadastral-parcels",
+    "evidence": [
+      "https://ecadastre.dgi.bf/",
+      "https://dgi.bf/faq/",
+      "evidence/source-metadata.json",
+      "evidence/source-probes.json"
+    ],
+    "basis": "First-party DGI links its eCadastre service; the current cadastral viewer marks geometry as PLOT, and public responses supply native FID parcel MultiPolygons in separated Bobo urban windows. No sale listing, proposal or planning-overlay endpoint is used."
+  },
+  "alignmentEvidence": {
+    "file": "evidence/alignment-input.json",
+    "sha256": "bfaff1c456ac4b3546bf7be79f7802b63ca1450722b4f5916a4abae98facc887"
+  },
+  "evidenceFiles": [
+    "evidence/source-metadata.json",
+    "evidence/source-probes.json",
+    "evidence/native-samples.geojson",
+    "evidence/country-metadata.json"
+  ],
+  "receiptBinding": {
+    "sourceId": "bf-dgi-ecadastre-public-geojson",
+    "endpoint": "https://ecadastre.dgi.bf/api/locations/geojson",
+    "cityCode": "378",
+    "cityName": "Bobo-Dioulasso",
+    "point": [
+      -4.28974790525362,
+      11.1847197779143
+    ],
+    "cityIdentitySha256": "2dcd15fb58cf1c9d11be524248892c57cad11ac297ef7e3fcdeade4b1ee5d3d4",
+    "receiptCanonicalSha256": "8b00a3051849113d09e74f5c45e8be08c3536a06f19b4ac3df4a8b8b17bb1f9f",
+    "discoveryPacketSha256": "e97e025855406a94789ffbe5a6a280c8303745c1fa9f4bb88aa06d076a4a03e8"
+  },
+  "followUps": [
+    "Scope is limited to the declared diagnostic windows; no citywide completeness or municipal boundary is established.",
+    "Provider appears capped at 1000 features, ignores tested paging, and supplies no total/truncation metadata. Area reads stay incomplete and missing exact IDs unresolved.",
+    "DONE/OK meanings and current/historic semantics remain undocumented; these fields are not retained or used to filter parcels.",
+    "Native storage CRS, native wire axes, datum/operation/grid proof and external survey alignment require second-pass investigation. Output GeoJSON declares EPSG:4326 with observed longitude/latitude coordinates.",
+    "Metric EPSG:32630 is used only for independent bounded quality measurements; no returned source geometry is changed.",
+    "Explicit DGI reuse/redistribution permission and mandated attribution are unverified. Technical qualification does not enable runtime or imply rights.",
+    "The hypothetical app city key is a proposed future binding only; no city configuration or catalog is changed."
+  ]
+}

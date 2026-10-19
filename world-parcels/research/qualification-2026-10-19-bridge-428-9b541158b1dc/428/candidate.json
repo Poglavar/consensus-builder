@@ -1,0 +1,99 @@
+{
+  "schemaVersion": 1,
+  "city": {
+    "code": "428",
+    "name": "Gaborone",
+    "country": "Botswana",
+    "countryCode": "BW",
+    "iso2": "BW",
+    "iso3": "BWA",
+    "point": [
+      25.8754886810294,
+      -24.6105783487141
+    ],
+    "pointOrder": "longitude,latitude",
+    "rank": 406,
+    "globalRank": 2293,
+    "locId": 72,
+    "capital": true,
+    "population2025": 254517,
+    "currency": {
+      "locale": "en-BW",
+      "code": "BWP"
+    }
+  },
+  "descriptor": {
+    "id": "bw-bofinet-botswana-lapcas-plots",
+    "adapter": "arcgis",
+    "name": "BoFiNet Botswana LAPCAS plots",
+    "endpoint": "https://bofinetarcgisportal.bofinet.co.bw/server/rest/services/PUBLIC/BOTSWANA_PLOTS/MapServer/0",
+    "idPrefix": "bofinet:Botswana_PLOTS:FID:",
+    "idField": "FID",
+    "objectIdField": "FID",
+    "idType": "integer",
+    "outFields": [
+      "FID"
+    ],
+    "queryFormat": "esri-json",
+    "boundsQueryMode": "object-ids",
+    "idsQueryMode": "object-ids",
+    "pageSize": 80,
+    "idBatchSize": 80,
+    "maxFeatures": 10000,
+    "maxBboxKm2": 25,
+    "maxConcurrentQueries": 1,
+    "cityIds": [
+      "428"
+    ],
+    "countryCode": "BW",
+    "defaultForCity": false,
+    "metricSrid": 32735,
+    "nativeCrs": "EPSG:4326",
+    "responseCrs": "EPSG:4326",
+    "coordinateOrder": "longitude,latitude",
+    "capabilities": {
+      "areaEnumeration": true,
+      "exactIds": true
+    },
+    "scope": "National published Botswana LAPCAS plot layer with reviewed substantial Gaborone coverage. This initial qualification retains three exact-ID samples and does not establish citywide or national completeness, currentness, legal title or survey accuracy.",
+    "evidenceFile": "evidence/source-purpose.json",
+    "catalogueUrl": "https://bofinetarcgisportal.bofinet.co.bw/server/rest/services/PUBLIC/BOTSWANA_PLOTS/MapServer/0",
+    "attribution": "BoFiNet public ArcGIS BOTSWANA_PLOTS layer 0 (PLOTS); described by the publisher as Botswana LAPCAS plots.",
+    "licenceNote": "Anonymous public query access verified; item licenseInfo and accessInformation are empty. Explicit reuse/redistribution conditions and custodian lineage remain second-pass follow-ups."
+  },
+  "sampleIds": [
+    "bofinet:Botswana_PLOTS:FID:11324",
+    "bofinet:Botswana_PLOTS:FID:5986",
+    "bofinet:Botswana_PLOTS:FID:41315"
+  ],
+  "absentId": "bofinet:Botswana_PLOTS:FID:2147483647",
+  "metricEpsg": 32735,
+  "cellSizeDegrees": 0.001,
+  "sourceClassification": {
+    "isParcel": true,
+    "evidence": [
+      "evidence/source-purpose.json",
+      "evidence/source-service.json",
+      "evidence/source-layer.json",
+      "evidence/source-iteminfo.json"
+    ]
+  },
+  "alignmentEvidence": {
+    "file": "evidence/alignment-input.json",
+    "sha256": "f3d655c5c674374e2277a57015e15b902ed18b77d773bfc662d6fc509548590e"
+  },
+  "currencyEvidence": {
+    "file": "evidence/currency-evidence.json"
+  },
+  "inputVerification": {
+    "file": "evidence/input-verification.json"
+  },
+  "discoveryPersistence": {
+    "file": "evidence/discovery-persistence.json"
+  },
+  "followUps": {
+    "file": "evidence/follow-ups.json"
+  },
+  "receiptCanonicalSha256": "d89f197e663377a85d104c5a9ab696f8a9ef9e460cbeb0f805eeb463419ce910",
+  "cityIdentitySha256": "c969d40f36e06537c63dcf0f813096cbf5ee4e5da0bb24696c9e37608fac3131"
+}

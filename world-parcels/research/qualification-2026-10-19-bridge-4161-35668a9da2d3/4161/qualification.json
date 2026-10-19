@@ -1,0 +1,194 @@
+{
+  "schemaVersion": 2,
+  "status": "technical-qualified",
+  "cityCode": "4161",
+  "cityName": "Diepsloot",
+  "sourceId": "za-csggis-erven",
+  "candidateSha256": "09d6e1b0c4610c6b6980ccffd69b976ae9c41f685dd57036aaae54fe66ae823f",
+  "checks": {
+    "classification": {
+      "passed": true,
+      "evidenceCount": 2
+    },
+    "exactIds": {
+      "passed": true,
+      "requestedCount": 5,
+      "returnedCount": 5
+    },
+    "stableGeometry": {
+      "passed": true,
+      "independentRead": true,
+      "comparedCount": 5
+    },
+    "explicitAbsence": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "sampling": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "completeness": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "binding": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "metric": {
+      "passed": true,
+      "reportPath": "metric-report.json",
+      "inputSha256": "368f967cc021423851e1da5c76c47f208101b42ad1f922725dfe1fe4706db407",
+      "featureCount": 5,
+      "sourceCrs": "EPSG:4326",
+      "metricCrs": "EPSG:32735",
+      "invalidCount": 0,
+      "duplicateIdCount": 0,
+      "conflictingSameIdGeometryCount": 0,
+      "exactGeometryDuplicateCount": 0,
+      "overlapPairCount": 0,
+      "operationErrorCount": 0,
+      "geometryChangedOrRepaired": false,
+      "geometryPass": true
+    },
+    "alignment": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    }
+  },
+  "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+      "classification",
+      "exactIds",
+      "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+      {
+        "check": "explicitAbsence",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "sampling",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "completeness",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "binding",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "alignment",
+        "reason": "Deferred to second-pass review."
+      }
+    ],
+    "usableGeographicPolygons": true
+  },
+  "geometryReport": "metric-report.json",
+  "cacheFile": "full-safe.geojson",
+  "cacheSha256": "368f967cc021423851e1da5c76c47f208101b42ad1f922725dfe1fe4706db407",
+  "featureCount": 5,
+  "sampleIds": [
+    "ZA-CSGGIS-ERVEN-GJHBT0JR040800001797000000",
+    "ZA-CSGGIS-ERVEN-GJHBT0JR040800000217000000",
+    "ZA-CSGGIS-ERVEN-GJHBT0JR040800002760000000",
+    "ZA-CSGGIS-ERVEN-GJHBT0JR040800003292000000",
+    "ZA-CSGGIS-ERVEN-GJHBT0JR040800006598000000"
+  ],
+  "cellSizeDegrees": 0.001,
+  "sampledCells": [],
+  "sampledPoints": [],
+  "requestCount": 6,
+  "requestLimit": 300,
+  "requests": [
+    {
+      "stage": "exact-id-first-read",
+      "host": "csggis.dlrrd.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-19T02:01:52.951Z",
+      "queryHash": "b7c17ba4a487c26607e4321a72130fe626a0688b4af448a778143611e5a05515",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 5665
+    },
+    {
+      "stage": "exact-id-first-read",
+      "host": "csggis.dlrrd.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-19T02:01:58.623Z",
+      "queryHash": "b7c17ba4a487c26607e4321a72130fe626a0688b4af448a778143611e5a05515",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 4775
+    },
+    {
+      "stage": "exact-id-first-read",
+      "host": "csggis.dlrrd.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-19T02:02:03.400Z",
+      "queryHash": "43f42791784e06c40bfd7576285d5c71f770ca350b6ba31beb1b4e7eb842e8dd",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 5,
+      "httpStatus": 200,
+      "elapsedMs": 224
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "csggis.dlrrd.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-19T02:02:03.629Z",
+      "queryHash": "b7c17ba4a487c26607e4321a72130fe626a0688b4af448a778143611e5a05515",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 5981
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "csggis.dlrrd.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-19T02:02:09.613Z",
+      "queryHash": "b7c17ba4a487c26607e4321a72130fe626a0688b4af448a778143611e5a05515",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 5885
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "csggis.dlrrd.gov.za",
+      "method": "GET",
+      "startedAt": "2026-10-19T02:02:15.499Z",
+      "queryHash": "43f42791784e06c40bfd7576285d5c71f770ca350b6ba31beb1b4e7eb842e8dd",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 5,
+      "httpStatus": 200,
+      "elapsedMs": 211
+    }
+  ],
+  "failures": {},
+  "limitations": [
+    "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness.",
+    "Projection, geometry, completeness and binding findings are recorded for second-pass review; initial qualification does not establish survey accuracy."
+  ]
+}

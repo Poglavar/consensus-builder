@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 1,
+  "city": {
+    "code": "4073",
+    "name": "Dundo",
+    "country": "Angola",
+    "countryCode": "AO",
+    "point": [
+      20.8251501574014,
+      -7.38899838568561
+    ],
+    "currency": {
+      "locale": "pt-AO",
+      "code": "AOA"
+    }
+  },
+  "descriptor": {
+    "id": "ao-agt-lunda-norte-agt-layer-0",
+    "adapter": "arcgis",
+    "name": "ANGOLA_GGPEN Lunda Norte AGT property-registration parcels",
+    "endpoint": "https://services-eu1.arcgis.com/7r9gTPdSG9MPi1LZ/arcgis/rest/services/Lunda_Norte_AGT_gdb/FeatureServer/0",
+    "idField": "ID_GGPEN",
+    "objectIdField": "OBJECTID",
+    "idPrefix": "AO-LUNDA-NORTE-AGT-",
+    "idType": "string",
+    "idPattern": "^[0-9a-f]{36}$",
+    "outFields": [
+      "OBJECTID",
+      "ID_GGPEN"
+    ],
+    "queryFormat": "geojson",
+    "boundsQueryMode": "object-ids",
+    "idsQueryMode": "object-ids",
+    "pageSize": 500,
+    "idBatchSize": 80,
+    "maxFeatures": 10000,
+    "maxBboxKm2": 25,
+    "countryCode": "AO",
+    "metricSrid": 32734,
+    "cityIds": [
+      "4073"
+    ],
+    "scope": "Lunda Norte AGT property-registration parcels, with positive central, south and east Dundo samples. Substantial sampled urban availability; complete city coverage and legal-title authority are unestablished.",
+    "evidenceFile": "evidence/source-review.json",
+    "catalogueUrl": "https://www.arcgis.com/sharing/rest/content/items/38daf097350942519bb7775e5daff7cc?f=pjson",
+    "licenceNote": "Anonymous public query access verified. Item licenseInfo and accessInformation are null. Reuse, redistribution and attribution terms remain second-pass follow-ups.",
+    "attribution": "ANGOLA_GGPEN — Lunda_Norte_AGT_gdb / Lunda_Norte_AGT layer 0; AGT property-registration context. Exact IGCA/AGT/GGPEN maintenance responsibilities are unverified."
+  },
+  "sampleIds": [
+    "AO-LUNDA-NORTE-AGT-1002ec2e9eff55fb91225f8ed9bc2b82d5c7",
+    "AO-LUNDA-NORTE-AGT-10023769a8033af1c8860bb55ae16d12075c",
+    "AO-LUNDA-NORTE-AGT-10024fd360014654f62676701103343277de"
+  ],
+  "absentId": "AO-LUNDA-NORTE-AGT-000000000000000000000000000000000000",
+  "metricEpsg": "EPSG:32734",
+  "cellSizeDegrees": 0.001,
+  "sourceClassification": {
+    "isParcel": true,
+    "kind": "property-registration-parcels",
+    "evidence": [
+      "evidence/source-review.json",
+      "evidence/agt-purpose-readback.json",
+      "evidence/item-metadata.json",
+      "evidence/layer-metadata.json",
+      "evidence/agt-public-config-extract.json"
+    ]
+  },
+  "coverage": {
+    "scope": "substantial-city",
+    "citywideCompletenessEstablished": false,
+    "basis": "Accepted distributed discovery evidence copied unchanged into this attempt; exact polygon qualification does not establish citywide completeness.",
+    "evidenceFiles": [
+      "evidence/dundo-central-probe.json",
+      "evidence/dundo-south-probe.json",
+      "evidence/dundo-east-probe.json"
+    ]
+  },
+  "currencyEvidenceFile": "evidence/currency-config-extract.json",
+  "followUpEvidenceFile": "evidence/projection-and-quality-followups.json"
+}

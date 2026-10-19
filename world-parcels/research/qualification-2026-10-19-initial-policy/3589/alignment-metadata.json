@@ -1,0 +1,24 @@
+{
+  "spatialReference": {
+    "wkid": 102962,
+    "latestWkid": 6414
+  },
+  "extent": {
+    "xmin": -414784.78456906084,
+    "ymin": -608601.6705905776,
+    "xmax": 551860.730771217,
+    "ymax": 458575.3802044643,
+    "spatialReference": {
+      "wkid": 102962,
+      "latestWkid": 6414
+    }
+  },
+  "nativeWireAxisOrder": {
+    "order": "east-north",
+    "sourceUrl": "https://developers.arcgis.com/rest/services-reference/enterprise/geometry-objects/",
+    "excerpt": "the x-coordinate is at index 0 of a point\u2019s array, and the y-coordinate is at index 1.",
+    "appliesTo": "Polygon rings use the documented point-array format; EPSG:6414 is projected east/north in metres."
+  },
+  "layerMetadataFile": "../evidence/first-party-layer-metadata.json",
+  "layerMetadataSha256": "81e237f1cc5c50f71a59c31ef558bba4e5ec0b0f3c951366f0580afc180ccb28"
+}

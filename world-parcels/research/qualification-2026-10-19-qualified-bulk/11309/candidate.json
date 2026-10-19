@@ -1,0 +1,80 @@
+{
+  "descriptor": {
+    "adapter": "vector-tiles",
+    "catalogueUrl": "https://github.com/ramSeraph/indian_cadastrals",
+    "countryCode": "IN",
+    "endpoint": "https://indianopenmaps.com/not-so-open/cadastrals/odisha/odisha4kgeo/{z}/{x}/{y}.pbf",
+    "groupFields": [
+      "v_id",
+      "revenue_plot"
+    ],
+    "id": "in-od-odisha4kgeo-tiles",
+    "idPrefix": "IN-OD-4KGEO-",
+    "identityKind": "geometry-sha256-v1",
+    "layer": "Odisha4kgeo_OD_Cadastrals",
+    "lookupCellSize": 0.002,
+    "maxBboxKm2": 4,
+    "maxFeatures": 10000,
+    "metricSrid": 32645,
+    "name": "Odisha cadastral maps — indianopenmaps tile snapshot (Odisha4kgeo_OD_Cadastrals)",
+    "outFields": [
+      "v_id",
+      "revenue_plot"
+    ],
+    "overlapResolution": "overlap-ground-v1-area-desc-id-asc-turf6",
+    "scope": "Cadastral parcels of Odisha from the Odisha4kgeo_OD_Cadastrals snapshot that ramSeraph/indian_cadastrals collected from the government map service and serves as vector tiles at indianopenmaps.com. Parcels are rebuilt from zoom-14 tiles. Coverage follows the villages in that snapshot and can omit city cores.",
+    "stateCode": "OD",
+    "zoom": 14,
+    "maxTiles": 36,
+    "maxConcurrentQueries": 2,
+    "cityIds": [
+      "rourkela",
+      "brahmapur",
+      "cuttack",
+      "bhubaneshwar",
+      "choudwar",
+      "11309"
+    ],
+    "evidenceFile": "research/indian-cadastrals-sources-2026-10-13.json",
+    "attribution": "Odisha Geospatial Portal revenue plots (odisha4kgeo.in, no bounding-box access). Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.",
+    "licenceNote": "The collection is published as CC0 1.0 with a request to credit Datameet and the original government source; the original services state no reuse licence. The tile path is marked \"not-so-open\" by its maintainer.",
+    "caveats": [
+      "A third-party snapshot of a government cadastral map, not the live register: not proof of current title or ownership, and it does not change when the original does.",
+      "Geometry is rebuilt from zoom-14 vector tiles: outlines are snapped to a grid of about 0.6 m and may be lightly simplified compared with the original.",
+      "Some outlines overlap (neighbouring village maps were drawn and georeferenced separately). Each overlap is given to the larger outline (equal areas: the lower reference); the smaller parcel shows the rest as derived ground.",
+      "Plot numbers are shown as published; application references are derived from each rebuilt outline.",
+      "Found and collected by ramSeraph/indian_cadastrals (github.com/ramSeraph/indian_cadastrals). The tiles answer browsers directly (CORS allows any site); no relay is used."
+    ],
+    "metricSridByCity": {
+      "11309": 32645,
+      "rourkela": 32645,
+      "brahmapur": 32645,
+      "cuttack": 32645,
+      "bhubaneshwar": 32645,
+      "choudwar": 32645
+    }
+  },
+  "city": {
+    "code": "11309",
+    "name": "Phulbani",
+    "point": [
+      84.2324272399681,
+      20.47707116107
+    ]
+  },
+  "sampleIds": [
+    "IN-OD-4KGEO-g1~842306757~204790545~8d66dff13fa8e2ea61feb30c29cf405e650c0e4bedee2e65406c06f8f1510c27",
+    "IN-OD-4KGEO-g1~842306113~204789992~782a59df99e9181d807f0bf7307659717f1a6392bec9d2e933463ae9926ca074",
+    "IN-OD-4KGEO-g1~842305523~204789490~625a5ad1573c3bc700db61b51be3b7f4de7f4615e056b0af4bea7ce1f6ea4e91"
+  ],
+  "absentId": "IN-OD-4KGEO-g1~842305523~204789490~0000000000000000000000000000000000000000000000000000000000000000",
+  "metricEpsg": "EPSG:32645",
+  "sourceClassification": {
+    "isParcel": true,
+    "evidence": [
+      "Odisha cadastral maps — indianopenmaps tile snapshot (Odisha4kgeo_OD_Cadastrals)",
+      "Map ramSeraph/indian_cadastrals (27 state releases, 54 dataset sections) back to the government services it was scraped from; test which are live, queryable by bbox, CORS-open and geo-fenced; and measure which Indian target cities each dataset covers.; First-party state cadastral tile source for Odisha; candidate cities are limited to WUP points inside IN-OR. Tile snapshot has settlement-level limits; a candidate is a discovery test only."
+    ]
+  },
+  "cellSizeDegrees": 0.001
+}

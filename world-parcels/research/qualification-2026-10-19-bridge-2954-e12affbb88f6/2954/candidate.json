@@ -1,0 +1,140 @@
+{
+  "schemaVersion": 1,
+  "city": {
+    "code": "2954",
+    "name": "Dodoma",
+    "country": "United Republic of Tanzania",
+    "countryCode": "TZ",
+    "iso3": "TZA",
+    "queueRank": 378,
+    "globalRank": 2166,
+    "capital": true,
+    "point": [
+      35.7436551366206,
+      -6.16336934279916
+    ],
+    "pointOrder": "longitude,latitude",
+    "population2025": 269047,
+    "populationUnit": "persons",
+    "currency": {
+      "locale": "sw-TZ",
+      "code": "TZS"
+    }
+  },
+  "source": {
+    "sourceId": "tz-mlhhds-eardhi-taspro-spatial-units36",
+    "endpoint": "https://eardhi.lands.go.tz/map/geoserver/taspro/wfs",
+    "purpose": "cadastral-parcels"
+  },
+  "descriptor": {
+    "id": "tz-mlhhds-eardhi-taspro-spatial-units36",
+    "name": "Tanzania MLHHSD e-Ardhi Dodoma cadastral spatial units",
+    "adapter": "wfs",
+    "endpoint": "https://eardhi.lands.go.tz/map/geoserver/taspro/wfs",
+    "featureType": "taspro:spatial_units36",
+    "version": "1.0.0",
+    "idField": "uid",
+    "idType": "string",
+    "idPattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+    "idPrefix": "tz-mlhhds-eardhi-taspro-spatial-units36/uid/",
+    "geometryField": "geom",
+    "requestProperties": true,
+    "outFields": [
+      "uid"
+    ],
+    "pageSize": 100,
+    "idBatchSize": 40,
+    "maxFeatures": 10000,
+    "maxBboxKm2": 25,
+    "minRequestIntervalMs": 500,
+    "countryCode": "TZ",
+    "cityIds": [
+      "2954"
+    ],
+    "scope": "Substantial partial Dodoma urban coverage evidenced in three separated windows; bounded qualification does not establish municipal completeness.",
+    "operator": "Tanzania Ministry of Lands, Housing and Human Settlements Development (MLHHSD)",
+    "catalogueUrl": "https://eardhi.lands.go.tz/",
+    "attribution": "Tanzania MLHHSD e-Ardhi / TASPRO cadastral spatial units",
+    "licenceNote": "Anonymous official WFS reads observed. Explicit geometry redistribution/reuse licence not established.",
+    "defaultForCity": true,
+    "capabilities": {
+      "areaEnumeration": true,
+      "exactIds": true,
+      "queryGeometry": true
+    }
+  },
+  "sampleIds": [
+    "tz-mlhhds-eardhi-taspro-spatial-units36/uid/a07592c3-0dc4-4c34-9a46-12162f6e6b94",
+    "tz-mlhhds-eardhi-taspro-spatial-units36/uid/39473acf-0b36-480e-bb3e-53c7870238fc",
+    "tz-mlhhds-eardhi-taspro-spatial-units36/uid/788297a6-c19f-441f-957e-baf38eee928e"
+  ],
+  "absentId": "tz-mlhhds-eardhi-taspro-spatial-units36/uid/00000000-0000-0000-0000-000000000000",
+  "metricEpsg": "EPSG:32736",
+  "metricEpsgPurpose": "Independent bounded geometry diagnostics only. The app uses dynamic local-tmerc; app-frame proof is deferred.",
+  "cellSizeDegrees": 0.001,
+  "sourceClassification": {
+    "isParcel": true,
+    "evidence": [
+      "evidence/purpose-evidence.json",
+      "evidence/source-schema.xsd",
+      "evidence/application-source-route.json",
+      "evidence/source-metadata.json"
+    ],
+    "reason": "Official Ministry land administration system with surveying/allocation/registration purpose, linked anonymous TASPRO WFS, parcel reference/registration schema and usable cadastral spatial-unit MultiPolygons. Not a sale listing or a planning-only overlay."
+  },
+  "sourceMetadata": {
+    "file": "evidence/source-metadata.json",
+    "sha256": "bdc23607d48a2be845e7e83ac3d7e7a71e3c34f842da13ca4bb3e64d6555ae0a"
+  },
+  "alignmentEvidence": {
+    "file": "evidence/native-alignment-evidence.json",
+    "sha256": "fd1b28a3468994ad859361f6281294e37a5cabdc15519a1d3f8559626c10957a"
+  },
+  "currencyEvidence": [
+    "evidence/currency-metadata.json",
+    "evidence/locale-metadata.json"
+  ],
+  "discoveryBinding": {
+    "receiptCanonicalSha256": "278ebfc3a66b57ddc5390c25079b453c8b684f7ea49be774e25fb85610b0d604",
+    "cityIdentitySha256": "94f43d433998d7b4f9da77e9573111ea1091833e5741e1efd6f9320a3b0be0ac",
+    "packetSha256": "6e24e7d1e26de02000e5a04adf6546ac20eed6f09046d45978ea2c2230342dc8",
+    "reviewSha256": "04077dad02f736abfc6ff0fae84742d35939345e6608ed78c352707656defbbc",
+    "verificationFile": "evidence/input-verification.json"
+  },
+  "coverage": {
+    "scope": "substantial-city",
+    "citywideVerified": false,
+    "municipalBoundaryCompleteness": "unverified",
+    "basis": "The accepted discovery retained parcels in separated western, central and east/southeast urban windows. The initial exact-ID pass checks one real parcel from each. It does not audit a municipal inventory or establish 100% completeness.",
+    "probes": [
+      {
+        "label": "west",
+        "file": "evidence/discovery-coverage-west.json",
+        "sha256": "1b3527656a2facf8c4122135e6c3a05486dc1a5ce563b70c41eceddfc3ddd02c",
+        "provenance": "Accepted discovery probe; not a new live municipal inventory."
+      },
+      {
+        "label": "centre",
+        "file": "evidence/discovery-coverage-centre.json",
+        "sha256": "3cfa168c5326fa16694437af99ee12ffb3e0b47097c9aad57dd88b5d44d257f9",
+        "provenance": "Accepted discovery probe; not a new live municipal inventory."
+      },
+      {
+        "label": "east_southeast",
+        "file": "evidence/discovery-coverage-east_southeast.json",
+        "sha256": "cb23ef5f4249fe3501ae45dc5d684379ea943cf99eb4afa958f4e9629d87f46e",
+        "provenance": "Accepted discovery probe; not a new live municipal inventory."
+      }
+    ]
+  },
+  "qualificationPolicy": "parcel-availability-v1",
+  "limitations": [
+    "Current/historic semantics and filtered inventory",
+    "Municipal breadth and boundary comparison",
+    "Full transfer limits, sorted paging across wider coverage, and cross-layer UID continuity",
+    "Citywide duplicate/overlap and polygon-quality audit",
+    "Independent app local-tmerc conversion and binding checks",
+    "Published datum realization/epoch, survey accuracy and geometry reuse licence"
+  ],
+  "runtimeAdmission": "Candidate descriptor only; no catalog, city configuration or runtime admission was changed."
+}

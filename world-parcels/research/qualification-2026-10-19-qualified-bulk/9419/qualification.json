@@ -1,0 +1,214 @@
+{
+  "schemaVersion": 2,
+  "status": "technical-qualified",
+  "cityCode": "9419",
+  "cityName": "Jalaun",
+  "sourceId": "in-up-ncog-tiles",
+  "candidateSha256": "3bdd8c82035a6ce9fb25c734da868937a888c285ed4536f74ac20f070ef0cc55",
+  "checks": {
+    "classification": {
+      "passed": true,
+      "evidenceCount": 2
+    },
+    "exactIds": {
+      "passed": true,
+      "requestedCount": 3,
+      "returnedCount": 3
+    },
+    "stableGeometry": {
+      "passed": true,
+      "independentRead": true,
+      "comparedCount": 3
+    },
+    "explicitAbsence": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "sampling": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "completeness": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "binding": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "metric": {
+      "passed": true,
+      "reportPath": "metric-report.json",
+      "inputSha256": "a787abac5294a9171450381fd646c53c886d8406cd755d79e2155f96b75529cf",
+      "featureCount": 3,
+      "sourceCrs": "EPSG:4326",
+      "metricCrs": "EPSG:32644",
+      "invalidCount": 0,
+      "duplicateIdCount": 0,
+      "conflictingSameIdGeometryCount": 0,
+      "exactGeometryDuplicateCount": 0,
+      "overlapPairCount": 0,
+      "operationErrorCount": 0,
+      "geometryChangedOrRepaired": false,
+      "geometryPass": true
+    },
+    "alignment": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    }
+  },
+  "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+      "classification",
+      "exactIds",
+      "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+      {
+        "check": "explicitAbsence",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "sampling",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "completeness",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "binding",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "alignment",
+        "reason": "Deferred to second-pass review."
+      }
+    ],
+    "usableGeographicPolygons": true
+  },
+  "geometryReport": "metric-report.json",
+  "cacheFile": "full-safe.geojson",
+  "cacheSha256": "a787abac5294a9171450381fd646c53c886d8406cd755d79e2155f96b75529cf",
+  "featureCount": 3,
+  "sampleIds": [
+    "IN-UP-NCOG-g1~793328762~261402887~7163d95ba446e1e71f1c5b590d66481aa92ea341abb67edd6da40932e2cd5f7e",
+    "IN-UP-NCOG-g1~793305427~261433322~8b5e05f8a113c98d42cde06a879c890fa8a18d7c91839ae5f9ab268a1cbcd137",
+    "IN-UP-NCOG-g1~793332893~261451813~4cba6a4b67e1cd63fde387d2995aea5537baff2ec6ad3ddef25bc08c7990c387"
+  ],
+  "cellSizeDegrees": 0.001,
+  "sampledCells": [],
+  "sampledPoints": [],
+  "requestCount": 10,
+  "requestLimit": 300,
+  "requests": [
+    {
+      "stage": "exact-id-first-read",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-19T01:43:55.933Z",
+      "queryHash": "323d1fe4bf96d9c0cbe4dfe9378ed7636b58bed5d0125f38fe5f8c99805e2e9d",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 225
+    },
+    {
+      "stage": "exact-id-first-read",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-19T01:43:56.434Z",
+      "queryHash": "35fa0e8386ad2481f2957197126c539f2118787da6f0b3221f9638cc322817d1",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 65
+    },
+    {
+      "stage": "exact-id-first-read",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-19T01:43:56.437Z",
+      "queryHash": "7a92cf60fb94d3401dfb63fe2bea5f2f47c7897e1c9c92f7e339932e5ce48f0a",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 66
+    },
+    {
+      "stage": "exact-id-first-read",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-19T01:43:56.438Z",
+      "queryHash": "99861fabc1cf78b63a3c1fc49be8c4482cc4d152f069bc10fa7de4c92eaa5dbe",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 165
+    },
+    {
+      "stage": "exact-id-first-read",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-19T01:43:56.692Z",
+      "queryHash": "fa1a589979c6f989bda6fee1ff223df649faa47bbdac57dd66b9c317b1d79f74",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 42
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-19T01:43:57.137Z",
+      "queryHash": "323d1fe4bf96d9c0cbe4dfe9378ed7636b58bed5d0125f38fe5f8c99805e2e9d",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 38
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-19T01:43:57.360Z",
+      "queryHash": "35fa0e8386ad2481f2957197126c539f2118787da6f0b3221f9638cc322817d1",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 30
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-19T01:43:57.361Z",
+      "queryHash": "7a92cf60fb94d3401dfb63fe2bea5f2f47c7897e1c9c92f7e339932e5ce48f0a",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 195
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-19T01:43:57.361Z",
+      "queryHash": "99861fabc1cf78b63a3c1fc49be8c4482cc4d152f069bc10fa7de4c92eaa5dbe",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 103
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-19T01:43:57.595Z",
+      "queryHash": "fa1a589979c6f989bda6fee1ff223df649faa47bbdac57dd66b9c317b1d79f74",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 30
+    }
+  ],
+  "failures": {},
+  "limitations": [
+    "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness.",
+    "Projection, geometry, completeness and binding findings are recorded for second-pass review; initial qualification does not establish survey accuracy."
+  ]
+}

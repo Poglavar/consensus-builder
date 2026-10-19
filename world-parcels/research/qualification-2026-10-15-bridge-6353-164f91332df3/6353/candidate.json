@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 2,
+  "city": {
+    "code": "6353",
+    "name": "Ādīs Ᾱbeba (Addis Ababa)",
+    "point": [
+      38.7494189124444,
+      9.00578119930776
+    ]
+  },
+  "descriptor": {
+    "id": "et-addis-eland-geoserver-parcel-publish",
+    "name": "Addis Ababa e-Land published cadastral parcels",
+    "adapter": "wfs",
+    "endpoint": "https://geos.addiscadaster.gov.et/geoserver/ows",
+    "featureType": "ncrprs_cadaster:v_1_parcel_cadaster_publish",
+    "version": "1.0.0",
+    "idField": "uniqueparcelid",
+    "idType": "string",
+    "idPattern": "^AA[0-9]{12}$",
+    "idPrefix": "ET-ADDIS-ELAND-",
+    "geometryField": "geometry",
+    "requestProperties": true,
+    "outFields": [
+      "uniqueparcelid"
+    ],
+    "pageSize": 25,
+    "maxFeatures": 1000,
+    "maxBboxKm2": 2,
+    "responseSrid": 20137,
+    "projection": "+proj=utm +zone=37 +a=6378249.145 +rf=293.465 +towgs84=-166,-15,204 +units=m +no_defs",
+    "metricSrid": 32637,
+    "countryCode": "ET",
+    "cityIds": [
+      "wup2025:6353"
+    ],
+    "scope": "Official Addis city cadastral parcel publish layer; bounded qualification only, no citywide completeness claim.",
+    "operator": "Addis Ababa City Administration Landholding Registration and Information Agency",
+    "catalogueUrl": "https://eland.addiscadaster.gov.et/",
+    "attribution": "Addis Ababa City Administration Landholding Registration and Information Agency, e-Land cadastral parcels",
+    "licenceNote": "Public read access observed; explicit geometry reuse terms not established.",
+    "defaultForCity": false
+  },
+  "sampleIds": [
+    "ET-ADDIS-ELAND-AA000041000409",
+    "ET-ADDIS-ELAND-AA000041000776"
+  ],
+  "absentId": "ET-ADDIS-ELAND-AA999999999999",
+  "sourceClassification": {
+    "isParcel": true,
+    "evidence": [
+      "https://eland.addiscadaster.gov.et/",
+      "https://addiscadaster.gov.et/services",
+      "https://geos.addiscadaster.gov.et/geoserver/ows?service=WFS&version=1.0.0&request=GetCapabilities"
+    ]
+  },
+  "metricEpsg": 32637,
+  "cellSizeDegrees": 0.00025,
+  "alignmentEvidence": {
+    "file": "evidence/input/alignment-evidence.json",
+    "sha256": "24e2b3857a36cf108fc14002a29479704f0bcd02a6a0e1c0d204cfd01363fd5d"
+  }
+}

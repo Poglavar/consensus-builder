@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 2,
+  "city": {
+    "code": "4940",
+    "id": "middelburg",
+    "name": "Middelburg",
+    "country": "South Africa",
+    "countryCode": "ZA",
+    "point": [
+      29.4394487589585,
+      -25.7630669966059
+    ],
+    "currency": {
+      "locale": "en-ZA",
+      "code": "ZAR"
+    }
+  },
+  "descriptor": {
+    "id": "za-csg-dffe-erven",
+    "adapter": "arcgis",
+    "endpoint": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2",
+    "idPrefix": "ZA-CSG-DFFE-ERVEN-",
+    "idField": "PRCL_KEY",
+    "objectIdField": "OBJECTID",
+    "idType": "string",
+    "outFields": [
+      "OBJECTID",
+      "PRCL_KEY"
+    ],
+    "queryFormat": "esri-json",
+    "boundsQueryMode": "object-ids",
+    "idsQueryMode": "object-ids",
+    "pageSize": 1000,
+    "idBatchSize": 80,
+    "maxFeatures": 2000,
+    "maxBboxKm2": 2,
+    "name": "Chief Surveyor-General public Erven polygons",
+    "operator": "Chief Surveyor-General; Department of Forestry, Fisheries and the Environment service host",
+    "catalogueUrl": "https://csg.dlrrd.gov.za/data.htm",
+    "attribution": "Chief Surveyor-General / DFFE hosted Erven",
+    "countryCode": "ZA",
+    "metricSrid": 32735,
+    "cityIds": [
+      "middelburg"
+    ],
+    "evidenceFile": "evidence/source-purpose.json",
+    "scope": "Surveyed urban Erven parcel reference polygons. Four separated Middelburg discovery windows and bounded qualification reads do not establish citywide completeness, legal title, currentness or survey accuracy.",
+    "licenceNote": "Anonymous access observed. Explicit reuse terms and required attribution remain second-pass follow-ups."
+  },
+  "sampleIds": [
+    "ZA-CSG-DFFE-ERVEN-M313T0JS004500006108000000",
+    "ZA-CSG-DFFE-ERVEN-M313T0JS004500003846000000",
+    "ZA-CSG-DFFE-ERVEN-M313T0JS000100002492000000",
+    "ZA-CSG-DFFE-ERVEN-M312T0JS002300003384000000"
+  ],
+  "metricEpsg": 32735,
+  "cellSizeDegrees": 0.001,
+  "sourceClassification": {
+    "isParcel": true,
+    "evidence": [
+      "evidence/source-purpose.json",
+      "evidence/source-metadata.json",
+      "evidence/source-iteminfo.json",
+      "evidence/csg-erven-metadata.json"
+    ]
+  },
+  "evidenceFiles": [
+    "evidence/source-purpose.json",
+    "evidence/source-metadata.json",
+    "evidence/source-iteminfo.json",
+    "evidence/csg-erven-metadata.json",
+    "evidence/sample-output-4326.json",
+    "evidence/currency-evidence.json"
+  ],
+  "qualificationScope": "Initial parcel-availability-v1. Repeated exact native-key reads and usable unchanged polygons are core. The qualifier bounded cells do not establish citywide completeness.",
+  "followUps": [
+    "Native EPSG:4148 is published by DFFE metadata. Wire output requests outSR=4326 with x,y longitude,latitude; independent native-to-output datum/operation/grid proof and production metric alignment are deferred.",
+    "Full validity, overlap, duplicates and metric results must be retained without geometry repair.",
+    "Historical/currentness semantics, reuse permission, source-wide identity persistence, coverage completeness and runtime binding are deferred."
+  ]
+}

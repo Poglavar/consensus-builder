@@ -1,0 +1,203 @@
+// Reads Divo's public parcel XML, retaining only Feature/@ID and full polygon coordinates.
+import { SaxesParser } from 'saxes';
+import proj4 from 'proj4';
+import { bbox as geometryBbox, booleanIntersects, feature as geoFeature } from '@turf/turf';
+import { HttpError } from '../utils/helpers.js';
+import { canonicalParcelFeature, providerHttpError, upstreamError, validateBounds, validateGeometry } from './source-contract.js';
+import { parseKeralaWktPolygon } from './kerala-wkt.js';
+
+const ENDPOINT = 'https://divo.ecommunes.ci/MapServer/AgentLot.aspx/Query';
+const PREFIX = 'ci-divo-ecommunes/Parcellaire/feature-id/';
+const GUID = /^[A-F0-9]{32}$/;
+const UTM = '+proj=utm +zone=30 +datum=WGS84 +units=m +no_defs';
+
+export function parseDivoPolygon(wkt) {
+    // This service writes POLYGONZM without the usual separating space. Z and M
+    // are unused zero/sentinel ordinates; preserve every XY vertex and ring order.
+    if (typeof wkt !== 'string' || wkt.length > 1000000) throw upstreamError('Divo polygon text is missing or too large.');
+    try {
+        const header = /^\s*((?:MULTI)?POLYGON)\s*(ZM|Z|M)?\s*(?=\()/i.exec(wkt);
+        if (!header) throw new Error('Unsupported WKT type.');
+        const dimensions = header[2]?.toUpperCase() === 'ZM' ? 4 : header[2] ? 3 : 2;
+        const numeric = /^[+-]?(?:\d+\.?\d*|\.\d+)(?:[eE][+-]?\d+)?$/;
+        // Validate the complete tuple lexically, but parse only XY as finite numbers.
+        // The published M sentinel exceeds IEEE double's finite range; it is not XY.
+        const xy = wkt.slice(header[0].length).replace(/[^(),]+/g, tuple => {
+            if (!tuple.trim()) return tuple;
+            const ordinates = tuple.trim().split(/\s+/);
+            if (ordinates.length !== dimensions || ordinates.some(value => !numeric.test(value))) throw new Error('Malformed tuple.');
+            return ordinates.slice(0, 2).join(' ');
+        });
+        return parseKeralaWktPolygon(`${header[1]} ${xy}`);
+    }
+    catch { throw upstreamError('Divo returned malformed or unsupported polygon geometry.'); }
+}
+
+export function createDivoEcommunesSource(descriptor, { fetchImpl = globalThis.fetch } = {}) {
+    const maxFeatures = descriptor.maxFeatures ?? 10000;
+    const maxBytes = descriptor.maxResponseBytes ?? 16 * 1024 * 1024;
+    const tileSize = descriptor.nativeTileSizeM ?? 500;
+    const maxQueries = descriptor.maxNativeQueries ?? 64;
+    const timeoutMs = descriptor.timeoutMs ?? 45000;
+    const extent = descriptor.nativeExtent;
+    const validNativeBounds = box => Array.isArray(box) && box.length === 4 && box.every(Number.isFinite)
+        && box[0] >= 100000 && box[2] <= 900000 && box[1] >= 0 && box[3] <= 10000000
+        && box[0] < box[2] && box[1] < box[3];
+    const locators = new Map(Object.entries(descriptor.idLookupBoundsNative || {}));
+    if (descriptor.endpoint !== ENDPOINT || descriptor.id !== 'ci-divo-ecommunes-parcellaire'
+        || descriptor.idPrefix !== PREFIX || descriptor.layer !== 'Parcellaire'
+        || descriptor.sourceCrs !== 'EPSG:32630' || !validNativeBounds(extent)
+        || descriptor.outFields?.length !== 0 || typeof fetchImpl !== 'function'
+        || !Number.isSafeInteger(maxFeatures) || maxFeatures < 1 || maxFeatures > 10000
+        || !Number.isSafeInteger(maxBytes) || maxBytes < 1024 || maxBytes > 32 * 1024 * 1024
+        || !Number.isFinite(tileSize) || tileSize < 50 || tileSize > 1000
+        || !Number.isSafeInteger(maxQueries) || maxQueries < 1 || maxQueries > 300
+        || !Number.isSafeInteger(timeoutMs) || timeoutMs < 1000 || timeoutMs > 45000
+        || locators.size > 10000 || [...locators].some(([id, box]) => !GUID.test(id) || !validNativeBounds(box))) {
+        throw new Error('Invalid Divo municipal parcel descriptor.');
+    }
+    const safeDescriptor = { ...descriptor, outFields: [], parcelNumberField: undefined };
+    const projection = proj4(UTM, 'EPSG:4326');
+    const signalFor = options => options?.signal
+        ? AbortSignal.any([options.signal, AbortSignal.timeout(timeoutMs)]) : AbortSignal.timeout(timeoutMs);
+
+    function canonical(nativeId, wkt) {
+        const native = parseDivoPolygon(wkt);
+        const convert = values => typeof values[0] === 'number' ? projection.forward(values) : values.map(convert);
+        const geometry = { type: native.type, coordinates: convert(native.coordinates) };
+        if (!validateGeometry(geometry)) throw upstreamError('Divo returned an unusable polygon; no repair was applied.');
+        return canonicalParcelFeature(safeDescriptor, { geometry }, nativeId);
+    }
+
+    async function readNative(box, signal) {
+        if (!validNativeBounds(box) || box[2] - box[0] > 1000 || box[3] - box[1] > 1000) {
+            throw new HttpError(400, 'Divo requires bounded native windows of at most 1000 metres per side.');
+        }
+        const [w, s, e, n] = box;
+        const url = new URL(ENDPOINT);
+        url.search = new URLSearchParams({ layer: 'Parcellaire', geom: `POLYGON((${w} ${s},${e} ${s},${e} ${n},${w} ${n},${w} ${s}))` });
+        const response = await fetchImpl(url.href, { signal, redirect: 'error', cache: 'no-store', headers: { Accept: 'application/xml' } });
+        if (!response.ok || response.status !== 200) throw providerHttpError(response);
+        if (Number(response.headers.get('content-length')) > maxBytes || !response.body?.getReader) {
+            throw upstreamError('Divo response exceeds the byte limit or has no readable body.');
+        }
+        const parser = new SaxesParser();
+        const stack = [], rows = new Map();
+        let current = null, rootSeen = false, byteCount = 0;
+        parser.on('doctype', () => { throw upstreamError('Divo XML document types are unsupported.'); });
+        parser.on('error', () => { throw upstreamError('Divo returned malformed XML.'); });
+        parser.on('opentag', tag => {
+            if (!stack.length) {
+                if (rootSeen || tag.name !== 'result') throw upstreamError('Divo returned an unexpected XML root.');
+                rootSeen = true;
+            } else if (stack.length === 1) {
+                if (tag.name !== 'Feature' || !GUID.test(tag.attributes.ID || '')) throw upstreamError('Divo returned an invalid feature ID or service error.');
+                current = { id: tag.attributes.ID, wkt: '', geometries: 0 };
+            } else if (stack.length === 2 && tag.name === 'Geometry') current.geometries++;
+            stack.push(tag.name);
+        });
+        const text = value => {
+            // Never retain, log, or interpret any Values attributes or personal data.
+            if (stack.length === 3 && stack.at(-1) === 'Geometry') {
+                current.wkt += value;
+                if (current.wkt.length > 1000000) throw upstreamError('Divo polygon exceeds the geometry limit.');
+            }
+        };
+        parser.on('text', text);
+        parser.on('cdata', text);
+        parser.on('closetag', tag => {
+            if (tag.name === 'Feature' && stack.length === 2) {
+                if (current.geometries !== 1 || rows.has(current.id)) throw upstreamError('Divo repeated an ID or omitted polygon geometry.');
+                rows.set(current.id, canonical(current.id, current.wkt));
+                if (rows.size > maxFeatures) throw upstreamError('Divo response exceeds the feature limit.');
+                current = null;
+            }
+            stack.pop();
+        });
+        const reader = response.body.getReader(), decoder = new TextDecoder('utf-8', { fatal: true });
+        try {
+            for (;;) {
+                const { done, value } = await reader.read();
+                if (done) break;
+                byteCount += value.byteLength;
+                if (byteCount > maxBytes) throw upstreamError('Divo response exceeds the byte limit.');
+                parser.write(decoder.decode(value, { stream: true }));
+            }
+            parser.write(decoder.decode()).close();
+            if (!rootSeen) throw upstreamError('Divo returned no XML result.');
+        } catch (error) {
+            try { await reader.cancel(); } catch { /* The response may already be closed. */ }
+            if (error.status) throw error;
+            throw upstreamError('Divo XML response was interrupted or invalid.');
+        } finally { reader.releaseLock(); }
+        for (const id of rows.keys()) {
+            if (locators.size >= maxFeatures && !locators.has(id)) locators.delete(locators.keys().next().value);
+            locators.set(id, box);
+        }
+        return [...rows.values()];
+    }
+
+    function merge(found, features) {
+        for (const row of features) {
+            const previous = found.get(row.id);
+            if (previous && JSON.stringify(previous.geometry) !== JSON.stringify(row.geometry)) throw upstreamError('Divo changed geometry for one feature ID.');
+            found.set(row.id, row);
+        }
+        if (found.size > maxFeatures) throw upstreamError('Divo query exceeds the feature limit.');
+    }
+    function tiles(box) {
+        const [w, s, e, n] = box;
+        const result = [];
+        for (let x = w; x < e; x += tileSize) for (let y = s; y < n; y += tileSize) {
+            if (result.length >= maxQueries) throw new HttpError(400, 'Divo query exceeds the native tile budget.');
+            result.push([x, y, Math.min(e, x + tileSize), Math.min(n, y + tileSize)]);
+        }
+        return result;
+    }
+    const result = (features, extra = {}) => ({ type: 'FeatureCollection', sourceId: descriptor.id, returnsWGS84: true,
+        features, complete: false, ...extra });
+
+    async function queryBounds(bounds, options = {}) {
+        validateBounds(bounds, descriptor.maxBboxKm2 ?? 4);
+        const [w, s, e, n] = bounds;
+        const corners = [[w,s], [w,n], [e,s], [e,n]].map(point => projection.inverse(point));
+        const nativeBox = [Math.max(extent[0], Math.min(...corners.map(p => p[0]))), Math.max(extent[1], Math.min(...corners.map(p => p[1]))),
+            Math.min(extent[2], Math.max(...corners.map(p => p[0]))), Math.min(extent[3], Math.max(...corners.map(p => p[1])))];
+        const found = new Map(), signal = signalFor(options);
+        if (nativeBox[0] < nativeBox[2] && nativeBox[1] < nativeBox[3]) {
+            for (const box of tiles(nativeBox)) merge(found, await readNative(box, signal));
+        }
+        // A closed XML document has no advertised transfer/completeness contract.
+        return result([...found.values()], { reason: 'Unadvertised transfer limits; bounded observations only.' });
+    }
+
+    async function queryIds(ids, options = {}) {
+        if (!Array.isArray(ids) || !ids.length || ids.length > 80 || new Set(ids).size !== ids.length
+            || ids.some(id => typeof id !== 'string' || !id.startsWith(PREFIX) || !GUID.test(id.slice(PREFIX.length)))) {
+            throw new HttpError(400, 'Provide 1–80 unique Divo feature IDs.');
+        }
+        const found = new Map(), windows = new Map(), wanted = new Set(ids), signal = signalFor(options);
+        for (const id of ids) {
+            const box = locators.get(id.slice(PREFIX.length));
+            if (box) windows.set(box.join(','), box);
+        }
+        // Locator windows contain no cached output geometry: every exact read hits
+        // the source again and matches its current Feature/@ID, including on restart.
+        for (const box of windows.values()) {
+            merge(found, (await readNative(box, signal)).filter(row => wanted.has(row.id)));
+        }
+        const unresolvedIds = ids.filter(id => !found.has(id));
+        return result(ids.filter(id => found.has(id)).map(id => found.get(id)), {
+            complete: unresolvedIds.length === 0, absentIds: [], unresolvedIds,
+            exactReadMethod: 'fresh-native-spatial-query-and-feature-id-match',
+            ...(unresolvedIds.length ? { reason: 'No matching feature in known locator windows; absence is unproven.' } : {})
+        });
+    }
+
+    async function queryGeometry(geometry, options = {}) {
+        if (!validateGeometry(geometry)) throw new HttpError(400, 'Expected WGS84 polygon geometry.');
+        const response = await queryBounds(geometryBbox(geoFeature(geometry)), options);
+        return { ...response, features: response.features.filter(row => booleanIntersects(row, geoFeature(geometry))) };
+    }
+    return { queryBounds, queryIds, queryGeometry };
+}

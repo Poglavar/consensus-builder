@@ -1,0 +1,86 @@
+{
+  "schemaVersion": 2,
+  "city": {
+    "code": "4836",
+    "name": "eMalahleni",
+    "country": "South Africa",
+    "countryCode": "ZA",
+    "iso2": "ZA",
+    "iso3": "ZAF",
+    "point": [
+      29.2170617320474,
+      -25.8893325235088
+    ],
+    "rank": 485,
+    "globalRank": 2682,
+    "locId": 710,
+    "population2025": 220586,
+    "currency": {
+      "locale": "en-ZA",
+      "code": "ZAR"
+    }
+  },
+  "descriptor": {
+    "id": "za-csg-dffe-erven",
+    "adapter": "arcgis",
+    "endpoint": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2",
+    "idPrefix": "ZA-CSG-DFFE-ERVEN-",
+    "idField": "PRCL_KEY",
+    "objectIdField": "OBJECTID",
+    "idType": "string",
+    "outFields": [
+      "OBJECTID",
+      "PRCL_KEY"
+    ],
+    "queryFormat": "esri-json",
+    "pageSize": 1000,
+    "idBatchSize": 80,
+    "maxFeatures": 2000,
+    "maxBboxKm2": 2,
+    "boundsQueryMode": "object-ids",
+    "idsQueryMode": "object-ids",
+    "name": "Chief Surveyor-General public Erven polygons",
+    "operator": "Office of the Chief Surveyor-General; DFFE public service host",
+    "catalogueUrl": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer",
+    "countryCode": "ZA",
+    "metricSrid": 32735,
+    "attribution": "Office of the Chief Surveyor-General, National Cadastral Layer, Erven; served by DFFE.",
+    "evidenceFile": "evidence/source-purpose.json",
+    "scope": "Bounded eMalahleni/Witbank reference parcels. Four discovery samples span the WUP area, central Witbank, Del Judor and Tasbet Park. Exact qualification reads establish availability only; citywide completeness, currentness and legal title are unverified.",
+    "licenceNote": "Anonymous public government reference service. Open reuse terms are not established; retain attribution and resolve reuse in second-pass review."
+  },
+  "sampleIds": [
+    "ZA-CSG-DFFE-ERVEN-M312T0JS003500001106000000",
+    "ZA-CSG-DFFE-ERVEN-M312T0JS001000001229000000",
+    "ZA-CSG-DFFE-ERVEN-M312T0JS000700001669000000",
+    "ZA-CSG-DFFE-ERVEN-M312T0JS006300002028000000"
+  ],
+  "metricEpsg": 32735,
+  "cellSizeDegrees": 0.001,
+  "sourceClassification": {
+    "isParcel": true,
+    "purpose": "cadastral-parcels",
+    "evidence": [
+      "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer",
+      "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2",
+      "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/info/iteminfo",
+      "evidence/source-purpose.json"
+    ]
+  },
+  "inputEvidence": {
+    "file": "evidence/input-verification.json",
+    "receiptCanonicalSha256": "059f9cd8d6f13e70b9d15e1ec206442a59256e5fc958f9469de064cba5910b8d",
+    "cityIdentitySha256": "98c363d2053d594e7df0fe74bc870d72f4679c43c5d7c9618515dbbce134cafa"
+  },
+  "currencyEvidence": {
+    "file": "evidence/currency-provenance.json"
+  },
+  "followUps": [
+    "EPSG:4148 is declared; the provider internal datum operation, grids, realization and coordinate epoch remain unverified. No alignment offset or geometry correction is applied.",
+    "Metric EPSG:32735 is WGS84 / UTM zone 35S for bounded diagnostics; it is not proof of survey accuracy or datum alignment.",
+    "PRCL_KEY layer-wide uniqueness, current/historic semantics and LSTATUS/WSTATUS codebooks remain unverified. No temporal or status filter is guessed.",
+    "Distributed discovery windows support useful local availability, not completeness. KwaGuqa and separately coded Vosman do not establish coverage of city 4836.",
+    "The prior exact WUP point returned zero; the point stays unchanged. Qualifier sampling, explicit absence, paging stress and binding remain second-pass work.",
+    "Licence, currentness, full-city footprint, geometry validity and overlaps beyond the small retained sample remain second-pass questions."
+  ]
+}

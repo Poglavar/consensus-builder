@@ -1,0 +1,247 @@
+{
+  "schemaVersion": 1,
+  "verifiedAt": "2026-10-19",
+  "cityCount": 1,
+  "scope": "1 technically qualified city/source bindings admitted to the app. Qualification is bounded: it does not establish citywide completeness, legal title, survey accuracy or currentness.",
+  "refused": [],
+  "cities": [
+    {
+      "cityCode": "112",
+      "appCityId": "rubavu",
+      "cityName": "Rubavu",
+      "qualificationCityName": "Rubavu",
+      "cityId": "wup2025:112",
+      "countryCode": "RW",
+      "country": "Rwanda",
+      "sourceId": "rw-nla-lais-rubavu-parcels",
+      "appCenterLatLon": [
+        -1.6920227940991,
+        29.2892956900186
+      ],
+      "wupPointLatLon": [
+        -1.6920227940991,
+        29.2892956900186
+      ],
+      "candidate": {
+        "qualificationRecordedSha256": "be410ed360888cc8a5f7567de07adc9ccc5b2deeb83ce61d5f7ed25de8a32332",
+        "evidenceOriginalSha256": "be410ed360888cc8a5f7567de07adc9ccc5b2deeb83ce61d5f7ed25de8a32332",
+        "evidenceExportSha256": "be410ed360888cc8a5f7567de07adc9ccc5b2deeb83ce61d5f7ed25de8a32332"
+      },
+      "qualification": {
+        "status": "technical-qualified",
+        "evidenceOriginalSha256": "09afe2d7da8a49711eaec8187578f694b384ae7915a17c684395c381b0a8faca",
+        "evidenceExportSha256": "6cf41e2d989796d9c5e10c1440b6cf92c8ad7d60a633ad21e58c23898a4bab47",
+        "gates": {
+          "classification": true,
+          "exactIds": true,
+          "stableGeometry": true,
+          "explicitAbsence": false,
+          "sampling": false,
+          "completeness": false,
+          "binding": false,
+          "metric": true,
+          "alignment": false
+        },
+        "initialQualificationReview": {
+          "policy": "parcel-availability-v1",
+          "passed": true,
+          "requiredChecks": [
+            "classification",
+            "exactIds",
+            "stableGeometry"
+          ],
+          "status": "follow-up-required",
+          "followUp": [
+            {
+              "check": "explicitAbsence",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "sampling",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "completeness",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "binding",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "alignment",
+              "reason": "native CRS must be a published EPSG code"
+            }
+          ]
+        },
+        "warnings": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "alignment",
+            "reason": "native CRS must be a published EPSG code"
+          }
+        ],
+        "producerInitialReview": {
+          "policy": "parcel-availability-v1",
+          "passed": true,
+          "requiredChecks": [
+            "classification",
+            "exactIds",
+            "stableGeometry"
+          ],
+          "status": "follow-up-required",
+          "followUp": [
+            {
+              "check": "explicitAbsence",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "sampling",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "completeness",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "binding",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "alignment",
+              "reason": "independent alignment qualification check is missing or false"
+            }
+          ],
+          "candidateSha256": "be410ed360888cc8a5f7567de07adc9ccc5b2deeb83ce61d5f7ed25de8a32332",
+          "cacheSha256": "6d992233b0b29788aaf32e49f798b2ec79857fc79224860fc5e8372ff0ae2133",
+          "qualificationSha256": "09afe2d7da8a49711eaec8187578f694b384ae7915a17c684395c381b0a8faca"
+        },
+        "featureCount": 3,
+        "sampleIds": [
+          "RW-LAIS-RUBAVU-3/03/11/07/68",
+          "RW-LAIS-RUBAVU-3/03/12/03/7360",
+          "RW-LAIS-RUBAVU-3/03/04/03/359"
+        ],
+        "cellSizeDegrees": 0.001,
+        "limitations": [
+          "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness.",
+          "Projection, geometry, completeness and binding findings are recorded for second-pass review; initial qualification does not establish survey accuracy."
+        ]
+      },
+      "metric": {
+        "evidenceOriginalSha256": "50d8554ca72c7c60fc67f58d02961b69318dda11f11bb01aaa56b9b9492222ab",
+        "evidenceExportSha256": "4adc5fe69921084e4c957992ee10df58a34d51a5419c4a3316ce0f4f654d93b4",
+        "sourceCrs": "EPSG:4326",
+        "metricCrs": "EPSG:32735",
+        "inputSha256": "6d992233b0b29788aaf32e49f798b2ec79857fc79224860fc5e8372ff0ae2133",
+        "featureCount": 3,
+        "geometryChangedOrRepaired": false,
+        "geometryPass": true,
+        "invalidCount": 0,
+        "duplicateIdCount": 0,
+        "conflictingSameIdGeometryCount": 0,
+        "exactGeometryDuplicateCount": 0,
+        "overlapPairCount": 0,
+        "operationErrorCount": 0
+      },
+      "cache": {
+        "sha256": "6d992233b0b29788aaf32e49f798b2ec79857fc79224860fc5e8372ff0ae2133",
+        "evidenceOriginalSha256": "6d992233b0b29788aaf32e49f798b2ec79857fc79224860fc5e8372ff0ae2133",
+        "evidenceExportSha256": "6d992233b0b29788aaf32e49f798b2ec79857fc79224860fc5e8372ff0ae2133",
+        "featureCount": 3
+      },
+      "evidenceFiles": {
+        "candidate": "world-parcels/research/qualification-2026-10-19-bridge-112-b626a7cb0321/112/candidate.json",
+        "qualification": "world-parcels/research/qualification-2026-10-19-bridge-112-b626a7cb0321/112/qualification.json",
+        "metric": "world-parcels/research/qualification-2026-10-19-bridge-112-b626a7cb0321/112/metric-report.json",
+        "independentMetricAudit": "world-parcels/research/qualification-2026-10-19-bridge-112-b626a7cb0321/112/independent-metric-audit.json",
+        "cache": "world-parcels/research/qualification-2026-10-19-bridge-112-b626a7cb0321/112/full-safe.geojson",
+        "alignment": "world-parcels/research/qualification-2026-10-19-bridge-112-b626a7cb0321/112/alignment-report.json",
+        "alignmentEvidence": "world-parcels/research/qualification-2026-10-19-bridge-112-b626a7cb0321/112/alignment-evidence.json",
+        "alignmentMetadata": "world-parcels/research/qualification-2026-10-19-bridge-112-b626a7cb0321/112/alignment-metadata.json",
+        "alignmentNative": "world-parcels/research/qualification-2026-10-19-bridge-112-b626a7cb0321/112/alignment-native.json",
+        "initialReview": "world-parcels/research/qualification-2026-10-19-bridge-112-b626a7cb0321/112/initial-review.json"
+      },
+      "alignment": {
+        "status": "follow-up-required",
+        "evidenceExportSha256": "0499b8a78ad2384a87e79a882d2e07c0b76c1a53d34af8a983e38706797a75c9",
+        "followUp": "native CRS must be a published EPSG code"
+      },
+      "independentMetricAudit": {
+        "sha256": "4adc5fe69921084e4c957992ee10df58a34d51a5419c4a3316ce0f4f654d93b4",
+        "method": "Independent metric report bound to the unchanged full-safe cache; geometry quality findings are retained for follow-up.",
+        "inputSha256": "6d992233b0b29788aaf32e49f798b2ec79857fc79224860fc5e8372ff0ae2133",
+        "metricCrs": "EPSG:32735",
+        "featureCount": 3,
+        "geometryChangedOrRepaired": false,
+        "geometryPass": true,
+        "invalidCount": 0,
+        "duplicateIdCount": 0,
+        "conflictingSameIdGeometryCount": 0,
+        "exactGeometryDuplicateCount": 0,
+        "overlapPairCount": 0,
+        "operationErrorCount": 0
+      },
+      "sourceProfile": {
+        "id": "rw-nla-lais-rubavu-parcels",
+        "adapter": "arcgis",
+        "endpoint": "https://geodata.rw/server/rest/services/LAISData/Rubavu_Parcels/FeatureServer/24/query",
+        "idField": "upi",
+        "idFields": null,
+        "idPrefix": "RW-LAIS-RUBAVU-",
+        "metricSrid": 32735,
+        "queryContract": {
+          "identityKind": null,
+          "lookupCellSize": null,
+          "attributeFilters": null,
+          "attributeExclusions": null,
+          "attributeNotNull": null,
+          "attributeNull": null,
+          "featureType": null,
+          "boundsQueryMode": "offset",
+          "idsQueryMode": "offset",
+          "boundsSrid": null,
+          "boundsProjection": null,
+          "queryFormat": "esri-json",
+          "nativeGeometryMode": null,
+          "disjointParts": null,
+          "overlapResolution": null,
+          "zoom": null,
+          "layer": null,
+          "groupFields": null,
+          "extent": null
+        },
+        "evidence": [
+          "First-party RSDI portal names LAIS Rubavu Parcels and publishes a district extent spanning the unchanged WUP locator; district extent and bounded samples do not prove full urban coverage."
+        ],
+        "activationDecision": {
+          "policy": "newly_qualified_city_default",
+          "candidateDefaultForCity": false,
+          "defaultForCity": true,
+          "scope": "admitted_city_ids",
+          "reason": "new source descriptor promoted after initial parcel-availability qualification; catalog scope is limited to admitted cities"
+        }
+      },
+      "verifiedAt": "2026-10-19",
+      "primaryReview": {
+        "status": "admitted",
+        "method": "Initial qualification policy parcel-availability-v1: parcel classification, exact-ID reads and stable geometry passed; unresolved source-quality details are recorded for follow-up."
+      }
+    }
+  ]
+}

@@ -1,0 +1,288 @@
+{
+  "schemaVersion": 1,
+  "verifiedAt": "2026-10-19",
+  "cityCount": 1,
+  "scope": "1 technically qualified city/source bindings admitted to the app. Qualification is bounded: it does not establish citywide completeness, legal title, survey accuracy or currentness.",
+  "refused": [],
+  "cities": [
+    {
+      "cityCode": "2954",
+      "appCityId": "dodoma",
+      "cityName": "Dodoma",
+      "qualificationCityName": "Dodoma",
+      "cityId": "wup2025:2954",
+      "countryCode": "TZ",
+      "country": "Tanzania",
+      "sourceId": "tz-mlhhds-eardhi-taspro-spatial-units36",
+      "appCenterLatLon": [
+        -6.16336934279916,
+        35.7436551366206
+      ],
+      "wupPointLatLon": [
+        -6.16336934279916,
+        35.7436551366206
+      ],
+      "candidate": {
+        "qualificationRecordedSha256": "e03f14597e2d048d29b5fb51e6738db825cc6188e2094f1477298f46403ca850",
+        "evidenceOriginalSha256": "e03f14597e2d048d29b5fb51e6738db825cc6188e2094f1477298f46403ca850",
+        "evidenceExportSha256": "e03f14597e2d048d29b5fb51e6738db825cc6188e2094f1477298f46403ca850"
+      },
+      "qualification": {
+        "status": "technical-qualified",
+        "evidenceOriginalSha256": "952513bc6f16ee97c47430cf68dfcb905c289ce310d5b189c57b7de5aa88baab",
+        "evidenceExportSha256": "5c211a298acd0602a96305d2bed23624d7fc739dd0c06028e74260ca7ebb4ef8",
+        "gates": {
+          "classification": true,
+          "exactIds": true,
+          "stableGeometry": true,
+          "explicitAbsence": false,
+          "sampling": false,
+          "completeness": false,
+          "binding": false,
+          "metric": true,
+          "alignment": true
+        },
+        "initialQualificationReview": {
+          "policy": "parcel-availability-v1",
+          "passed": true,
+          "requiredChecks": [
+            "classification",
+            "exactIds",
+            "stableGeometry"
+          ],
+          "status": "follow-up-required",
+          "followUp": [
+            {
+              "check": "explicitAbsence",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "sampling",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "completeness",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "binding",
+              "reason": "Deferred to second-pass review."
+            }
+          ]
+        },
+        "warnings": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          }
+        ],
+        "producerInitialReview": {
+          "policy": "parcel-availability-v1",
+          "passed": true,
+          "requiredChecks": [
+            "classification",
+            "exactIds",
+            "stableGeometry"
+          ],
+          "status": "follow-up-required",
+          "followUp": [
+            {
+              "check": "explicitAbsence",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "sampling",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "completeness",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "binding",
+              "reason": "Deferred to second-pass review."
+            }
+          ],
+          "candidateSha256": "e03f14597e2d048d29b5fb51e6738db825cc6188e2094f1477298f46403ca850",
+          "cacheSha256": "7b108f0d65c2c57b37a2753052cea1e57052f213c27fbe84c2be0368dc785097",
+          "qualificationSha256": "952513bc6f16ee97c47430cf68dfcb905c289ce310d5b189c57b7de5aa88baab"
+        },
+        "featureCount": 3,
+        "sampleIds": [
+          "tz-mlhhds-eardhi-taspro-spatial-units36/uid/a07592c3-0dc4-4c34-9a46-12162f6e6b94",
+          "tz-mlhhds-eardhi-taspro-spatial-units36/uid/39473acf-0b36-480e-bb3e-53c7870238fc",
+          "tz-mlhhds-eardhi-taspro-spatial-units36/uid/788297a6-c19f-441f-957e-baf38eee928e"
+        ],
+        "cellSizeDegrees": 0.001,
+        "limitations": [
+          "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness.",
+          "Projection, geometry, completeness and binding findings are recorded for second-pass review; initial qualification does not establish survey accuracy."
+        ]
+      },
+      "metric": {
+        "evidenceOriginalSha256": "8e77662b86befe356beefd53c6124811723427bd8777be6b5e368ec5e411e03f",
+        "evidenceExportSha256": "db506d379b7b919d9b05115cd6620aea07d94024f0695eb2fade56fd319986e1",
+        "sourceCrs": "EPSG:4326",
+        "metricCrs": "EPSG:32736",
+        "inputSha256": "7b108f0d65c2c57b37a2753052cea1e57052f213c27fbe84c2be0368dc785097",
+        "featureCount": 3,
+        "geometryChangedOrRepaired": false,
+        "geometryPass": true,
+        "invalidCount": 0,
+        "duplicateIdCount": 0,
+        "conflictingSameIdGeometryCount": 0,
+        "exactGeometryDuplicateCount": 0,
+        "overlapPairCount": 0,
+        "operationErrorCount": 0
+      },
+      "cache": {
+        "sha256": "7b108f0d65c2c57b37a2753052cea1e57052f213c27fbe84c2be0368dc785097",
+        "evidenceOriginalSha256": "7b108f0d65c2c57b37a2753052cea1e57052f213c27fbe84c2be0368dc785097",
+        "evidenceExportSha256": "7b108f0d65c2c57b37a2753052cea1e57052f213c27fbe84c2be0368dc785097",
+        "featureCount": 3
+      },
+      "evidenceFiles": {
+        "candidate": "world-parcels/research/qualification-2026-10-19-bridge-2954-e12affbb88f6/2954/candidate.json",
+        "qualification": "world-parcels/research/qualification-2026-10-19-bridge-2954-e12affbb88f6/2954/qualification.json",
+        "metric": "world-parcels/research/qualification-2026-10-19-bridge-2954-e12affbb88f6/2954/metric-report.json",
+        "independentMetricAudit": "world-parcels/research/qualification-2026-10-19-bridge-2954-e12affbb88f6/2954/independent-metric-audit.json",
+        "cache": "world-parcels/research/qualification-2026-10-19-bridge-2954-e12affbb88f6/2954/full-safe.geojson",
+        "alignment": "world-parcels/research/qualification-2026-10-19-bridge-2954-e12affbb88f6/2954/alignment-report.json",
+        "independentAlignment": "world-parcels/research/qualification-2026-10-19-bridge-2954-e12affbb88f6/2954/independent-alignment-report.json",
+        "alignmentEvidence": "world-parcels/research/qualification-2026-10-19-bridge-2954-e12affbb88f6/2954/alignment-evidence.json",
+        "alignmentMetadata": "world-parcels/research/qualification-2026-10-19-bridge-2954-e12affbb88f6/2954/alignment-metadata.json",
+        "alignmentNative": "world-parcels/research/qualification-2026-10-19-bridge-2954-e12affbb88f6/2954/alignment-native.json",
+        "initialReview": "world-parcels/research/qualification-2026-10-19-bridge-2954-e12affbb88f6/2954/initial-review.json"
+      },
+      "alignment": {
+        "status": "verified",
+        "report": {
+          "schemaVersion": 1,
+          "passed": true,
+          "sourceId": "tz-mlhhds-eardhi-taspro-spatial-units36",
+          "cityCode": "2954",
+          "contractSha256": "ae982b5cb5b02e2d711bc1b9b639803f16d853b80396ff95f1246029c3c4cfeb",
+          "evidenceSha256": "ccd0f89471e548d8c133902bb52491e04c3adf54a715d0ace2738469ee49c630",
+          "metadataSha256": "d32752a9c5f8407dd655ee70a7d5bc9a4d4562d63676d3c74af14f9d3b006326",
+          "nativeSha256": "e308ea03e5878d92241d102d43a0a9c07cc78da1995c481c6afb62c81bfe333c",
+          "cacheSha256": "7b108f0d65c2c57b37a2753052cea1e57052f213c27fbe84c2be0368dc785097",
+          "nativeCrs": "EPSG:32736",
+          "nativeAxisOrder": "east-north",
+          "outputCrs": "EPSG:4326",
+          "coordinateOperation": "Inverse of UTM zone 36S + axis order change (2D)",
+          "operationPipeline": "proj=pipeline step inv proj=utm zone=36 south ellps=WGS84 step proj=unitconvert xy_in=rad xy_out=deg",
+          "operationAccuracyM": 0,
+          "bestOperationAvailable": true,
+          "ballparkAllowed": false,
+          "toleranceM": 0.25,
+          "maxVertexDifferenceM": 0.0006312237393160968,
+          "featureCount": 3,
+          "samples": [
+            {
+              "parcelId": "tz-mlhhds-eardhi-taspro-spatial-units36/uid/39473acf-0b36-480e-bb3e-53c7870238fc",
+              "nativeVertexCount": 9,
+              "adapterVertexCount": 9,
+              "maxVertexDifferenceM": 0.0006312237393160968,
+              "maxBoundaryDifferenceM": 0.0006312239401009229
+            },
+            {
+              "parcelId": "tz-mlhhds-eardhi-taspro-spatial-units36/uid/788297a6-c19f-441f-957e-baf38eee928e",
+              "nativeVertexCount": 6,
+              "adapterVertexCount": 6,
+              "maxVertexDifferenceM": 0.0005593373052755757,
+              "maxBoundaryDifferenceM": 0.0005315430550614842
+            },
+            {
+              "parcelId": "tz-mlhhds-eardhi-taspro-spatial-units36/uid/a07592c3-0dc4-4c34-9a46-12162f6e6b94",
+              "nativeVertexCount": 5,
+              "adapterVertexCount": 5,
+              "maxVertexDifferenceM": 0.0005647586529875022,
+              "maxBoundaryDifferenceM": 0.0005647587570367286
+            }
+          ],
+          "maxBoundaryDifferenceM": 0.0006312239401009229,
+          "boundaryComparison": "Bidirectional boundary Hausdorff distance in a local WGS84 azimuthal equidistant frame; no clipping, simplification, repair or fitted displacement.",
+          "operationChoiceUnresolved": false,
+          "sourceGeometryChanged": false,
+          "fittedOffsetApplied": false,
+          "sourceGeoreferencing": "unverified",
+          "limitations": [
+            "CRS handling is checked independently; source survey accuracy and basemap accuracy are not established.",
+            "WGS84 is an ensemble: no observation epoch is inferred from an EPSG code."
+          ]
+        },
+        "evidenceExportSha256": "db57fc71f0879628b4ad39adfc573856cabf66d591df2109f2067e56cf659cb0"
+      },
+      "independentMetricAudit": {
+        "sha256": "db506d379b7b919d9b05115cd6620aea07d94024f0695eb2fade56fd319986e1",
+        "method": "Independent metric report bound to the unchanged full-safe cache; geometry quality findings are retained for follow-up.",
+        "inputSha256": "7b108f0d65c2c57b37a2753052cea1e57052f213c27fbe84c2be0368dc785097",
+        "metricCrs": "EPSG:32736",
+        "featureCount": 3,
+        "geometryChangedOrRepaired": false,
+        "geometryPass": true,
+        "invalidCount": 0,
+        "duplicateIdCount": 0,
+        "conflictingSameIdGeometryCount": 0,
+        "exactGeometryDuplicateCount": 0,
+        "overlapPairCount": 0,
+        "operationErrorCount": 0
+      },
+      "sourceProfile": {
+        "id": "tz-mlhhds-eardhi-taspro-spatial-units36",
+        "adapter": "wfs",
+        "endpoint": "https://eardhi.lands.go.tz/map/geoserver/taspro/wfs",
+        "idField": "uid",
+        "idFields": null,
+        "idPrefix": "tz-mlhhds-eardhi-taspro-spatial-units36/uid/",
+        "metricSrid": 32736,
+        "queryContract": {
+          "identityKind": null,
+          "lookupCellSize": null,
+          "attributeFilters": null,
+          "attributeExclusions": null,
+          "attributeNotNull": null,
+          "attributeNull": null,
+          "featureType": "taspro:spatial_units36",
+          "boundsQueryMode": null,
+          "idsQueryMode": null,
+          "boundsSrid": null,
+          "boundsProjection": null,
+          "queryFormat": null,
+          "nativeGeometryMode": null,
+          "disjointParts": null,
+          "overlapResolution": null,
+          "zoom": null,
+          "layer": null,
+          "groupFields": null,
+          "extent": null
+        },
+        "evidence": [],
+        "activationDecision": {
+          "policy": "newly_qualified_city_default",
+          "candidateDefaultForCity": true,
+          "defaultForCity": true,
+          "scope": "admitted_city_ids",
+          "reason": "new source descriptor promoted after initial parcel-availability qualification; catalog scope is limited to admitted cities"
+        }
+      },
+      "verifiedAt": "2026-10-19",
+      "primaryReview": {
+        "status": "admitted",
+        "method": "Initial qualification policy parcel-availability-v1: parcel classification, exact-ID reads and stable geometry passed; unresolved source-quality details are recorded for follow-up."
+      }
+    }
+  ]
+}

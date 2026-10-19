@@ -1,5 +1,7 @@
 # Memory
 
+- 2026-10-19: Design existing buildings, permitted envelopes/massing and proposals around shared city-neutral geometry and 2D/3D presentation, using the finished Zagreb solver as the first provider adapter; keep local planning rules and source formats behind adapters.
+
 - 2026-10-19: Resume NYC envelopes with a narrow R6A interior-lot pilot in Brooklyn Community District 3, expanding by explicit rule families; parcel capacity requires cited site evidence because clean PLUTO attributes do not establish zoning-lot rights.
 - 2026-10-19: Run two additional persistent web researchers for unsupported cities outside Africa, seeking genuinely new cadastral sources rather than extending known providers; preserve the separate two-worker Africa research queue.
 

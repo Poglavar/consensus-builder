@@ -1,0 +1,238 @@
+{
+  "schemaVersion": 1,
+  "verifiedAt": "2026-10-19",
+  "cityCount": 1,
+  "scope": "1 technically qualified city/source bindings admitted to the app. Qualification is bounded: it does not establish citywide completeness, legal title, survey accuracy or currentness.",
+  "refused": [],
+  "cities": [
+    {
+      "cityCode": "4836",
+      "appCityId": "emalahleni",
+      "cityName": "eMalahleni",
+      "qualificationCityName": "eMalahleni",
+      "cityId": "wup2025:4836",
+      "countryCode": "ZA",
+      "country": "South Africa",
+      "sourceId": "za-csg-dffe-erven",
+      "appCenterLatLon": [
+        -25.8893325235088,
+        29.2170617320474
+      ],
+      "wupPointLatLon": [
+        -25.8893325235088,
+        29.2170617320474
+      ],
+      "candidate": {
+        "qualificationRecordedSha256": "b89df31afc101b3fe6af83b99ffc99ca7ab31318a8204394571ae12cee9ad4aa",
+        "evidenceOriginalSha256": "b89df31afc101b3fe6af83b99ffc99ca7ab31318a8204394571ae12cee9ad4aa",
+        "evidenceExportSha256": "b89df31afc101b3fe6af83b99ffc99ca7ab31318a8204394571ae12cee9ad4aa"
+      },
+      "qualification": {
+        "status": "technical-qualified",
+        "evidenceOriginalSha256": "e27db38a9da38b5b4c1b12a4688b6c734d7cd91c469f72ea6b456bb53940ca00",
+        "evidenceExportSha256": "f2d30daed7c58ca12a9256e0c0b2f94bac5f937ac718827ce574e5a10df946ec",
+        "gates": {
+          "classification": true,
+          "exactIds": true,
+          "stableGeometry": true,
+          "explicitAbsence": false,
+          "sampling": false,
+          "completeness": false,
+          "binding": false,
+          "metric": true,
+          "alignment": false
+        },
+        "initialQualificationReview": {
+          "policy": "parcel-availability-v1",
+          "passed": true,
+          "requiredChecks": [
+            "classification",
+            "exactIds",
+            "stableGeometry"
+          ],
+          "status": "follow-up-required",
+          "followUp": [
+            {
+              "check": "explicitAbsence",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "sampling",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "completeness",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "binding",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "alignment",
+              "reason": "Deferred to second-pass review."
+            }
+          ]
+        },
+        "warnings": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "alignment",
+            "reason": "Deferred to second-pass review."
+          }
+        ],
+        "producerInitialReview": {
+          "policy": "parcel-availability-v1",
+          "passed": true,
+          "requiredChecks": [
+            "classification",
+            "exactIds",
+            "stableGeometry"
+          ],
+          "status": "follow-up-required",
+          "followUp": [
+            {
+              "check": "explicitAbsence",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "sampling",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "completeness",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "binding",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "alignment",
+              "reason": "independent alignment qualification check is missing or false"
+            }
+          ],
+          "candidateSha256": "b89df31afc101b3fe6af83b99ffc99ca7ab31318a8204394571ae12cee9ad4aa",
+          "cacheSha256": "ae7216ebf1f6718661912f035e297085ef0e99b8d32acf811749defdd90cd01e",
+          "qualificationSha256": "e27db38a9da38b5b4c1b12a4688b6c734d7cd91c469f72ea6b456bb53940ca00"
+        },
+        "featureCount": 4,
+        "sampleIds": [
+          "ZA-CSG-DFFE-ERVEN-M312T0JS003500001106000000",
+          "ZA-CSG-DFFE-ERVEN-M312T0JS001000001229000000",
+          "ZA-CSG-DFFE-ERVEN-M312T0JS000700001669000000",
+          "ZA-CSG-DFFE-ERVEN-M312T0JS006300002028000000"
+        ],
+        "cellSizeDegrees": 0.001,
+        "limitations": [
+          "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness.",
+          "Projection, geometry, completeness and binding findings are recorded for second-pass review; initial qualification does not establish survey accuracy."
+        ]
+      },
+      "metric": {
+        "evidenceOriginalSha256": "4ac9341b0d5cf423321690fe1a3ac79703fbb9c2b897d10185a53d08a56fbfdb",
+        "evidenceExportSha256": "53983183ec4a3291c4e212ffb987a6f6c72ebb548fc28e3ed47521905d8e638d",
+        "sourceCrs": "EPSG:4326",
+        "metricCrs": "EPSG:32735",
+        "inputSha256": "ae7216ebf1f6718661912f035e297085ef0e99b8d32acf811749defdd90cd01e",
+        "featureCount": 4,
+        "geometryChangedOrRepaired": false,
+        "geometryPass": true,
+        "invalidCount": 0,
+        "duplicateIdCount": 0,
+        "conflictingSameIdGeometryCount": 0,
+        "exactGeometryDuplicateCount": 0,
+        "overlapPairCount": 0,
+        "operationErrorCount": 0
+      },
+      "cache": {
+        "sha256": "ae7216ebf1f6718661912f035e297085ef0e99b8d32acf811749defdd90cd01e",
+        "evidenceOriginalSha256": "ae7216ebf1f6718661912f035e297085ef0e99b8d32acf811749defdd90cd01e",
+        "evidenceExportSha256": "ae7216ebf1f6718661912f035e297085ef0e99b8d32acf811749defdd90cd01e",
+        "featureCount": 4
+      },
+      "evidenceFiles": {
+        "candidate": "world-parcels/research/qualification-2026-10-19-bridge-4836-353c74b9f446/4836/candidate.json",
+        "qualification": "world-parcels/research/qualification-2026-10-19-bridge-4836-353c74b9f446/4836/qualification.json",
+        "metric": "world-parcels/research/qualification-2026-10-19-bridge-4836-353c74b9f446/4836/metric-report.json",
+        "independentMetricAudit": "world-parcels/research/qualification-2026-10-19-bridge-4836-353c74b9f446/4836/independent-metric-audit.json",
+        "cache": "world-parcels/research/qualification-2026-10-19-bridge-4836-353c74b9f446/4836/full-safe.geojson",
+        "initialReview": "world-parcels/research/qualification-2026-10-19-bridge-4836-353c74b9f446/4836/initial-review.json"
+      },
+      "alignment": {
+        "status": "follow-up-required",
+        "followUp": "Deferred to second-pass review."
+      },
+      "independentMetricAudit": {
+        "sha256": "53983183ec4a3291c4e212ffb987a6f6c72ebb548fc28e3ed47521905d8e638d",
+        "method": "Independent metric report bound to the unchanged full-safe cache; geometry quality findings are retained for follow-up.",
+        "inputSha256": "ae7216ebf1f6718661912f035e297085ef0e99b8d32acf811749defdd90cd01e",
+        "metricCrs": "EPSG:32735",
+        "featureCount": 4,
+        "geometryChangedOrRepaired": false,
+        "geometryPass": true,
+        "invalidCount": 0,
+        "duplicateIdCount": 0,
+        "conflictingSameIdGeometryCount": 0,
+        "exactGeometryDuplicateCount": 0,
+        "overlapPairCount": 0,
+        "operationErrorCount": 0
+      },
+      "sourceProfile": {
+        "id": "za-csg-dffe-erven",
+        "adapter": "arcgis",
+        "endpoint": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2",
+        "idField": "PRCL_KEY",
+        "idFields": null,
+        "idPrefix": "ZA-CSG-DFFE-ERVEN-",
+        "metricSrid": 32735,
+        "queryContract": {
+          "identityKind": null,
+          "lookupCellSize": null,
+          "attributeFilters": null,
+          "attributeExclusions": null,
+          "attributeNotNull": null,
+          "attributeNull": null,
+          "featureType": null,
+          "boundsQueryMode": "object-ids",
+          "idsQueryMode": "object-ids",
+          "boundsSrid": null,
+          "boundsProjection": null,
+          "queryFormat": "esri-json",
+          "nativeGeometryMode": null,
+          "disjointParts": null,
+          "overlapResolution": null,
+          "zoom": null,
+          "layer": null,
+          "groupFields": null,
+          "extent": null
+        },
+        "evidence": [],
+        "activationDecision": {
+          "policy": "existing_catalog_default",
+          "defaultForCity": true
+        }
+      },
+      "verifiedAt": "2026-10-19",
+      "primaryReview": {
+        "status": "admitted",
+        "method": "Initial qualification policy parcel-availability-v1: parcel classification, exact-ID reads and stable geometry passed; unresolved source-quality details are recorded for follow-up."
+      }
+    }
+  ]
+}

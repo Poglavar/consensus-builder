@@ -1,0 +1,134 @@
+{
+  "schemaVersion": 2,
+  "status": "technical-qualified",
+  "cityCode": "11155",
+  "cityName": "Patori",
+  "sourceId": "in-br-ncog-tiles",
+  "candidateSha256": "fb025aec05482b6dac027527d7bfa8e3b5487a79d199c6a5516d8d9b07b6983d",
+  "checks": {
+    "classification": {
+      "passed": true,
+      "evidenceCount": 2
+    },
+    "exactIds": {
+      "passed": true,
+      "requestedCount": 3,
+      "returnedCount": 3
+    },
+    "stableGeometry": {
+      "passed": true,
+      "independentRead": true,
+      "comparedCount": 3
+    },
+    "explicitAbsence": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "sampling": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "completeness": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "binding": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "metric": {
+      "passed": true,
+      "reportPath": "metric-report.json",
+      "inputSha256": "44b08b995c3427f6c6b2523b54a080b07a9bc1ef1fc60deadd6bf1b322fc2a37",
+      "featureCount": 3,
+      "sourceCrs": "EPSG:4326",
+      "metricCrs": "EPSG:32645",
+      "invalidCount": 0,
+      "duplicateIdCount": 0,
+      "conflictingSameIdGeometryCount": 0,
+      "exactGeometryDuplicateCount": 0,
+      "overlapPairCount": 0,
+      "operationErrorCount": 0,
+      "geometryChangedOrRepaired": false,
+      "geometryPass": true
+    },
+    "alignment": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    }
+  },
+  "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+      "classification",
+      "exactIds",
+      "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+      {
+        "check": "explicitAbsence",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "sampling",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "completeness",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "binding",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "alignment",
+        "reason": "Deferred to second-pass review."
+      }
+    ],
+    "usableGeographicPolygons": true
+  },
+  "geometryReport": "metric-report.json",
+  "cacheFile": "full-safe.geojson",
+  "cacheSha256": "44b08b995c3427f6c6b2523b54a080b07a9bc1ef1fc60deadd6bf1b322fc2a37",
+  "featureCount": 3,
+  "sampleIds": [
+    "IN-BR-NCOG-g1~855982804~256262505~70eb5ce5f24dc43af3daffbebd76163ccfe99afbdca1189034193228dcb70fc8",
+    "IN-BR-NCOG-g1~855982724~256261828~44dfa5912308b3a33a378058f2cb15b479d28561316d11cd1deab8d1cf50783a",
+    "IN-BR-NCOG-g1~855982214~256261030~b739cfbd986124a167426931601da6793b02605313cd74a27c72b1b2ec1f6046"
+  ],
+  "cellSizeDegrees": 0.001,
+  "sampledCells": [],
+  "sampledPoints": [],
+  "requestCount": 2,
+  "requestLimit": 300,
+  "requests": [
+    {
+      "stage": "exact-id-first-read",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-19T01:32:07.078Z",
+      "queryHash": "4b6bac7a71e108a23d3ce61ebc0574e46f84440458dcc64ee32fd1bd5a3b7de1",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 299
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-19T01:32:07.746Z",
+      "queryHash": "4b6bac7a71e108a23d3ce61ebc0574e46f84440458dcc64ee32fd1bd5a3b7de1",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 244
+    }
+  ],
+  "failures": {},
+  "limitations": [
+    "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness.",
+    "Projection, geometry, completeness and binding findings are recorded for second-pass review; initial qualification does not establish survey accuracy."
+  ]
+}

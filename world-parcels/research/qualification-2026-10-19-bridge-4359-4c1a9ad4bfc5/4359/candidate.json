@@ -1,0 +1,92 @@
+{
+  "schemaVersion": 2,
+  "city": {
+    "code": "4359",
+    "name": "Centurion",
+    "country": "South Africa",
+    "countryCode": "ZA",
+    "iso3": "ZAF",
+    "appCityId": "centurion",
+    "point": [
+      28.1594620019195,
+      -25.8615434012902
+    ],
+    "population2025": 255900,
+    "currency": {
+      "locale": "en-ZA",
+      "code": "ZAR"
+    }
+  },
+  "descriptor": {
+    "id": "za-csg-csggis-property-viewer-erven",
+    "adapter": "arcgis",
+    "endpoint": "https://csggis.dlrrd.gov.za/server/rest/services/Property_Viewer/MapServer/2",
+    "name": "Chief Surveyor-General Property Viewer Erven",
+    "operator": "Chief Surveyor-General, South Africa",
+    "countryCode": "ZA",
+    "catalogueUrl": "https://csggis.dlrrd.gov.za/server/rest/services/Property_Viewer/MapServer/2",
+    "attribution": "Chief Surveyor-General · Property Viewer Erven · adapted",
+    "idPrefix": "ZA-CSG-CSGGIS-ERVEN-",
+    "idField": "PRCL_KEY",
+    "objectIdField": "OBJECTID",
+    "idType": "string",
+    "idPattern": "^[A-Z0-9]{26}$",
+    "identityKind": "native-key-geometry-sha256-v1",
+    "outFields": [
+      "OBJECTID",
+      "PRCL_KEY"
+    ],
+    "queryFormat": "geojson",
+    "boundsQueryMode": "object-ids",
+    "idsQueryMode": "object-ids",
+    "pageSize": 500,
+    "idBatchSize": 80,
+    "maxFeatures": 2000,
+    "maxBboxKm2": 2,
+    "metricSrid": 32735,
+    "cityIds": [
+      "centurion"
+    ],
+    "defaultForCity": true,
+    "evidenceFile": "evidence/source-purpose.json",
+    "scope": "Public surveyed and approved urban cadastral Erven. Bounded Centurion evidence only; citywide completeness, registration, legal title, survey accuracy and current-ground status are unestablished.",
+    "licenceNote": "Anonymous access is verified. Explicit geometry reuse and redistribution terms remain unestablished; attribution is Chief Surveyor-General.",
+    "nativeCrs": "EPSG:4148",
+    "responseCrs": "EPSG:4326",
+    "coordinateOrder": "longitude,latitude",
+    "capabilities": {
+      "areaEnumeration": true,
+      "exactIds": true
+    }
+  },
+  "sampleIds": [
+    "ZA-CSG-CSGGIS-ERVEN-GTSHT0JR007200001581000000-d42c6837c47796183f7323ad7e0cb5ec1e40838f13731f299206f3ac4480f568",
+    "ZA-CSG-CSGGIS-ERVEN-GTSHT0JR015400001116000000-6adafb5eebed70134444103426e3afdb884d429cb4d66eb65438521562a9d4d7",
+    "ZA-CSG-CSGGIS-ERVEN-GTSHT0JR011400002654000000-938adb35cba62a63efd55388696d394acd67d99f398c9d414c35bc2fc3622fa8"
+  ],
+  "metricEpsg": 32735,
+  "cellSizeDegrees": 0.001,
+  "sourceClassification": {
+    "isParcel": true,
+    "evidence": [
+      "evidence/source-purpose.json",
+      "evidence/source-layer.json"
+    ]
+  },
+  "identityEvidence": {
+    "file": "evidence/identity-proof.json"
+  },
+  "inputBindings": {
+    "receiptCanonicalSha256": "291aee2cb1e8f4d210a65f12437f5b1378bf6250049f72fd6803fbaf88df1f8d",
+    "packetSha256": "86f54f9f99e081a9256026543d5d047de59490486d34bbfc8a29fa66a8fc1297",
+    "reviewSha256": "efdd80a81f6df724f05f7d81734699976d13385c87c027a3a3a8d59ddd99b388",
+    "cityIdentitySha256": "d482f4363ee04a4894fa12650dbb13fa61e36a99fd5e59497b1e8b6f3309dad8"
+  },
+  "followUps": [
+    "The prior 2026-10-11 Centurion run recorded 12 persistent overlaps above 0.01 m² totaling 0.315699 m². This three-key initial check cannot clear that finding; retain it for bounded second-pass reread without changing geometry.",
+    "EPSG:4148 is declared by current layer metadata; outSR=4326 yields longitude,latitude output. Provider-selected datum operation, reference-frame realization, epoch and grids remain unverified. No offset or geometry correction is applied.",
+    "Current/historic semantics of LSTATUS, WSTATUS and dates remain unresolved. No undocumented status filter is applied and no status or personal attributes are requested.",
+    "Area completeness, forced paging equality, binding, explicit absence and runtime UI are second-pass checks. These three separated district samples do not prove citywide coverage.",
+    "Explicit reuse/redistribution permission is unresolved; public anonymous access alone does not establish a licence."
+  ]
+}

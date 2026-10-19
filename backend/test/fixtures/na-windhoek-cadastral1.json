@@ -1,0 +1,170 @@
+{
+  "descriptor": {
+    "id": "na-windhoek-cadastral1-public-arcgis",
+    "name": "Windhoek Cadastral1 public cadastral copy",
+    "adapter": "arcgis",
+    "endpoint": "https://services9.arcgis.com/gWyguONsWr81ViQt/arcgis/rest/services/Cadastral1/FeatureServer/0",
+    "idField": "PRCL_KEY",
+    "idType": "string",
+    "idPattern": "^[A-Z0-9]{26}$",
+    "objectIdField": "FID",
+    "idPrefix": "NA-WINDHOEK-CADASTRAL1-",
+    "outFields": [
+      "FID",
+      "PRCL_KEY"
+    ],
+    "queryFormat": "geojson",
+    "boundsQueryMode": "object-ids",
+    "idsQueryMode": "object-ids",
+    "pageSize": 500,
+    "idBatchSize": 80,
+    "maxFeatures": 10000,
+    "maxBboxKm2": 25,
+    "countryCode": "NA",
+    "metricSrid": 32733,
+    "cityIds": [
+      "windhoek"
+    ],
+    "operator": "Public ArcGIS publisher; provider asserts municipal data origin",
+    "scope": "Hosted cadastral copy with Windhoek urban-sector discovery evidence. Initial qualification uses three exact parcels only; no citywide completeness or currentness claim.",
+    "evidenceFile": "evidence/classification.json",
+    "catalogueUrl": "https://www.arcgis.com/home/item.html?id=5dcc166070374390858de60bc8852fb1",
+    "attribution": "Windhoek municipality (origin claimed by Cadastral1 publisher); public hosted copy attributed to 2013, with positional and attribute inaccuracies.",
+    "licenceNote": "Item licenseInfo is null. Municipal endorsement, explicit reuse rights and redistribution authority remain unverified.",
+    "discovery": {
+      "jurisdiction": {
+        "countryCode": "NA",
+        "basis": "Provider item identifies Windhoek municipal cadastral information; official City Geomatics confirms municipal survey/mapping function but does not authenticate this copy.",
+        "evidence": [
+          "evidence/source-item.json",
+          "evidence/source-layer.json",
+          "evidence/municipal-purpose.json"
+        ]
+      }
+    }
+  },
+  "response": {
+    "type": "FeatureCollection",
+    "crs": {
+      "type": "name",
+      "properties": {
+        "name": "EPSG:4326"
+      }
+    },
+    "features": [
+      {
+        "type": "Feature",
+        "id": 29022,
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [
+                17.0396017657113,
+                -22.5290882137631
+              ],
+              [
+                17.0396310054611,
+                -22.5292941071606
+              ],
+              [
+                17.0395009200274,
+                -22.5293100505798
+              ],
+              [
+                17.0394780406875,
+                -22.5291489099235
+              ],
+              [
+                17.0395198634297,
+                -22.5290982485299
+              ],
+              [
+                17.0396017657113,
+                -22.5290882137631
+              ]
+            ]
+          ]
+        },
+        "properties": {
+          "FID": 29022,
+          "PRCL_KEY": "00000003800000000330000000"
+        }
+      },
+      {
+        "type": "Feature",
+        "id": 29025,
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [
+                17.0394238193928,
+                -22.5293195152083
+              ],
+              [
+                17.0394466986982,
+                -22.529480655869
+              ],
+              [
+                17.0394067638177,
+                -22.5295391280158
+              ],
+              [
+                17.0392956282947,
+                -22.5295720436516
+              ],
+              [
+                17.0393052426329,
+                -22.5293340469186
+              ],
+              [
+                17.0394238193928,
+                -22.5293195152083
+              ]
+            ]
+          ]
+        },
+        "properties": {
+          "FID": 29025,
+          "PRCL_KEY": "00000003800000000302000000"
+        }
+      },
+      {
+        "type": "Feature",
+        "id": 29028,
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [
+                17.0392878316532,
+                -22.5290538038535
+              ],
+              [
+                17.0393542609503,
+                -22.5288452772601
+              ],
+              [
+                17.0395853093399,
+                -22.5288169737286
+              ],
+              [
+                17.0396132827883,
+                -22.5290139183888
+              ],
+              [
+                17.0392878316532,
+                -22.5290538038535
+              ]
+            ]
+          ]
+        },
+        "properties": {
+          "FID": 29028,
+          "PRCL_KEY": "00000003800000002789000000"
+        }
+      }
+    ]
+  }
+}

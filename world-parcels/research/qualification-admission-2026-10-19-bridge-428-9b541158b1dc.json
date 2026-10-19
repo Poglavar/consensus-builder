@@ -1,0 +1,288 @@
+{
+  "schemaVersion": 1,
+  "verifiedAt": "2026-10-19",
+  "cityCount": 1,
+  "scope": "1 technically qualified city/source bindings admitted to the app. Qualification is bounded: it does not establish citywide completeness, legal title, survey accuracy or currentness.",
+  "refused": [],
+  "cities": [
+    {
+      "cityCode": "428",
+      "appCityId": "gaborone_bw",
+      "cityName": "Gaborone",
+      "qualificationCityName": "Gaborone",
+      "cityId": "wup2025:428",
+      "countryCode": "BW",
+      "country": "Botswana",
+      "sourceId": "bw-bofinet-botswana-lapcas-plots",
+      "appCenterLatLon": [
+        -24.6105783487141,
+        25.8754886810294
+      ],
+      "wupPointLatLon": [
+        -24.6105783487141,
+        25.8754886810294
+      ],
+      "candidate": {
+        "qualificationRecordedSha256": "76ebc9c378baccbcb8a4dde81fb7f94f3e630ea94955f0b52e9e2865fe5e9625",
+        "evidenceOriginalSha256": "76ebc9c378baccbcb8a4dde81fb7f94f3e630ea94955f0b52e9e2865fe5e9625",
+        "evidenceExportSha256": "76ebc9c378baccbcb8a4dde81fb7f94f3e630ea94955f0b52e9e2865fe5e9625"
+      },
+      "qualification": {
+        "status": "technical-qualified",
+        "evidenceOriginalSha256": "b7ca5d7f226db7bfed376431cd0ff4fb2c5b2e2e961164bc0d7204a126e70730",
+        "evidenceExportSha256": "ed83f7bed2fb09a051c3e31574fc2ca21d9ee798008f4d07a45ba3853d1fa810",
+        "gates": {
+          "classification": true,
+          "exactIds": true,
+          "stableGeometry": true,
+          "explicitAbsence": false,
+          "sampling": false,
+          "completeness": false,
+          "binding": false,
+          "metric": true,
+          "alignment": true
+        },
+        "initialQualificationReview": {
+          "policy": "parcel-availability-v1",
+          "passed": true,
+          "requiredChecks": [
+            "classification",
+            "exactIds",
+            "stableGeometry"
+          ],
+          "status": "follow-up-required",
+          "followUp": [
+            {
+              "check": "explicitAbsence",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "sampling",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "completeness",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "binding",
+              "reason": "Deferred to second-pass review."
+            }
+          ]
+        },
+        "warnings": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          }
+        ],
+        "producerInitialReview": {
+          "policy": "parcel-availability-v1",
+          "passed": true,
+          "requiredChecks": [
+            "classification",
+            "exactIds",
+            "stableGeometry"
+          ],
+          "status": "follow-up-required",
+          "followUp": [
+            {
+              "check": "explicitAbsence",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "sampling",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "completeness",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "binding",
+              "reason": "Deferred to second-pass review."
+            }
+          ],
+          "candidateSha256": "76ebc9c378baccbcb8a4dde81fb7f94f3e630ea94955f0b52e9e2865fe5e9625",
+          "cacheSha256": "a5e6dd0d167226e9871246519ddf50a0f192e9cb74315755931e2cc33feb908d",
+          "qualificationSha256": "b7ca5d7f226db7bfed376431cd0ff4fb2c5b2e2e961164bc0d7204a126e70730"
+        },
+        "featureCount": 3,
+        "sampleIds": [
+          "bofinet:Botswana_PLOTS:FID:11324",
+          "bofinet:Botswana_PLOTS:FID:5986",
+          "bofinet:Botswana_PLOTS:FID:41315"
+        ],
+        "cellSizeDegrees": 0.001,
+        "limitations": [
+          "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness.",
+          "Projection, geometry, completeness and binding findings are recorded for second-pass review; initial qualification does not establish survey accuracy."
+        ]
+      },
+      "metric": {
+        "evidenceOriginalSha256": "689314609470142ffb259291b3a7f9c48fd991a17d667fd87afa0121f833bd8f",
+        "evidenceExportSha256": "d61fc50dbc5ee07c8d5c15d7cd53ba23ab44ff78ded8c31a79b7a026622c9b67",
+        "sourceCrs": "EPSG:4326",
+        "metricCrs": "EPSG:32735",
+        "inputSha256": "a5e6dd0d167226e9871246519ddf50a0f192e9cb74315755931e2cc33feb908d",
+        "featureCount": 3,
+        "geometryChangedOrRepaired": false,
+        "geometryPass": true,
+        "invalidCount": 0,
+        "duplicateIdCount": 0,
+        "conflictingSameIdGeometryCount": 0,
+        "exactGeometryDuplicateCount": 0,
+        "overlapPairCount": 0,
+        "operationErrorCount": 0
+      },
+      "cache": {
+        "sha256": "a5e6dd0d167226e9871246519ddf50a0f192e9cb74315755931e2cc33feb908d",
+        "evidenceOriginalSha256": "a5e6dd0d167226e9871246519ddf50a0f192e9cb74315755931e2cc33feb908d",
+        "evidenceExportSha256": "a5e6dd0d167226e9871246519ddf50a0f192e9cb74315755931e2cc33feb908d",
+        "featureCount": 3
+      },
+      "evidenceFiles": {
+        "candidate": "world-parcels/research/qualification-2026-10-19-bridge-428-9b541158b1dc/428/candidate.json",
+        "qualification": "world-parcels/research/qualification-2026-10-19-bridge-428-9b541158b1dc/428/qualification.json",
+        "metric": "world-parcels/research/qualification-2026-10-19-bridge-428-9b541158b1dc/428/metric-report.json",
+        "independentMetricAudit": "world-parcels/research/qualification-2026-10-19-bridge-428-9b541158b1dc/428/independent-metric-audit.json",
+        "cache": "world-parcels/research/qualification-2026-10-19-bridge-428-9b541158b1dc/428/full-safe.geojson",
+        "alignment": "world-parcels/research/qualification-2026-10-19-bridge-428-9b541158b1dc/428/alignment-report.json",
+        "independentAlignment": "world-parcels/research/qualification-2026-10-19-bridge-428-9b541158b1dc/428/independent-alignment-report.json",
+        "alignmentEvidence": "world-parcels/research/qualification-2026-10-19-bridge-428-9b541158b1dc/428/alignment-evidence.json",
+        "alignmentMetadata": "world-parcels/research/qualification-2026-10-19-bridge-428-9b541158b1dc/428/alignment-metadata.json",
+        "alignmentNative": "world-parcels/research/qualification-2026-10-19-bridge-428-9b541158b1dc/428/alignment-native.json",
+        "initialReview": "world-parcels/research/qualification-2026-10-19-bridge-428-9b541158b1dc/428/initial-review.json"
+      },
+      "alignment": {
+        "status": "verified",
+        "report": {
+          "schemaVersion": 1,
+          "passed": true,
+          "sourceId": "bw-bofinet-botswana-lapcas-plots",
+          "cityCode": "428",
+          "contractSha256": "df17bc12f8d511daa9d31f57b965175dc0f68ac41a3676faddd47ae654d2502a",
+          "evidenceSha256": "7dc01e7cc4ee25a9a42b5168654c6c1a969ec9acd0251944f89175247598496e",
+          "metadataSha256": "7a6651ef610538e4bccbe3268c9f0c17da1ba8442b3a4b527e584f6abe376cc0",
+          "nativeSha256": "0583cef2d421fbe16c3f15b27d262b1d3126d7e74f7ece2960b71e40d3bc973e",
+          "cacheSha256": "a5e6dd0d167226e9871246519ddf50a0f192e9cb74315755931e2cc33feb908d",
+          "nativeCrs": "EPSG:4326",
+          "nativeAxisOrder": "east-north",
+          "outputCrs": "EPSG:4326",
+          "coordinateOperation": "axis order change (2D) + Null geographic offset from WGS 84 to WGS 84 + axis order change (2D)",
+          "operationPipeline": "proj=noop ellps=GRS80",
+          "operationAccuracyM": 0,
+          "bestOperationAvailable": true,
+          "ballparkAllowed": false,
+          "toleranceM": 0.25,
+          "maxVertexDifferenceM": 0,
+          "featureCount": 3,
+          "samples": [
+            {
+              "parcelId": "bofinet:Botswana_PLOTS:FID:5986",
+              "nativeVertexCount": 6,
+              "adapterVertexCount": 6,
+              "maxVertexDifferenceM": 0,
+              "maxBoundaryDifferenceM": 0
+            },
+            {
+              "parcelId": "bofinet:Botswana_PLOTS:FID:11324",
+              "nativeVertexCount": 7,
+              "adapterVertexCount": 7,
+              "maxVertexDifferenceM": 0,
+              "maxBoundaryDifferenceM": 0
+            },
+            {
+              "parcelId": "bofinet:Botswana_PLOTS:FID:41315",
+              "nativeVertexCount": 5,
+              "adapterVertexCount": 5,
+              "maxVertexDifferenceM": 0,
+              "maxBoundaryDifferenceM": 0
+            }
+          ],
+          "maxBoundaryDifferenceM": 0,
+          "boundaryComparison": "Bidirectional boundary Hausdorff distance in a local WGS84 azimuthal equidistant frame; no clipping, simplification, repair or fitted displacement.",
+          "operationChoiceUnresolved": false,
+          "sourceGeometryChanged": false,
+          "fittedOffsetApplied": false,
+          "sourceGeoreferencing": "unverified",
+          "limitations": [
+            "CRS handling is checked independently; source survey accuracy and basemap accuracy are not established.",
+            "WGS84 is an ensemble: no observation epoch is inferred from an EPSG code."
+          ]
+        },
+        "evidenceExportSha256": "16d60796982ad93db67d0acc7656d59e88bcab20499aafe62735a63861affee2"
+      },
+      "independentMetricAudit": {
+        "sha256": "d61fc50dbc5ee07c8d5c15d7cd53ba23ab44ff78ded8c31a79b7a026622c9b67",
+        "method": "Independent metric report bound to the unchanged full-safe cache; geometry quality findings are retained for follow-up.",
+        "inputSha256": "a5e6dd0d167226e9871246519ddf50a0f192e9cb74315755931e2cc33feb908d",
+        "metricCrs": "EPSG:32735",
+        "featureCount": 3,
+        "geometryChangedOrRepaired": false,
+        "geometryPass": true,
+        "invalidCount": 0,
+        "duplicateIdCount": 0,
+        "conflictingSameIdGeometryCount": 0,
+        "exactGeometryDuplicateCount": 0,
+        "overlapPairCount": 0,
+        "operationErrorCount": 0
+      },
+      "sourceProfile": {
+        "id": "bw-bofinet-botswana-lapcas-plots",
+        "adapter": "arcgis",
+        "endpoint": "https://bofinetarcgisportal.bofinet.co.bw/server/rest/services/PUBLIC/BOTSWANA_PLOTS/MapServer/0",
+        "idField": "FID",
+        "idFields": null,
+        "idPrefix": "bofinet:Botswana_PLOTS:FID:",
+        "metricSrid": 32735,
+        "queryContract": {
+          "identityKind": null,
+          "lookupCellSize": null,
+          "attributeFilters": null,
+          "attributeExclusions": null,
+          "attributeNotNull": null,
+          "attributeNull": null,
+          "featureType": null,
+          "boundsQueryMode": "object-ids",
+          "idsQueryMode": "object-ids",
+          "boundsSrid": null,
+          "boundsProjection": null,
+          "queryFormat": "esri-json",
+          "nativeGeometryMode": null,
+          "disjointParts": null,
+          "overlapResolution": null,
+          "zoom": null,
+          "layer": null,
+          "groupFields": null,
+          "extent": null
+        },
+        "evidence": [],
+        "activationDecision": {
+          "policy": "newly_qualified_city_default",
+          "candidateDefaultForCity": false,
+          "defaultForCity": true,
+          "scope": "admitted_city_ids",
+          "reason": "new source descriptor promoted after initial parcel-availability qualification; catalog scope is limited to admitted cities"
+        }
+      },
+      "verifiedAt": "2026-10-19",
+      "primaryReview": {
+        "status": "admitted",
+        "method": "Initial qualification policy parcel-availability-v1: parcel classification, exact-ID reads and stable geometry passed; unresolved source-quality details are recorded for follow-up."
+      }
+    }
+  ]
+}

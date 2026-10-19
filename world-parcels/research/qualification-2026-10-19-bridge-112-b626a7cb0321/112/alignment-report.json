@@ -1,0 +1,8 @@
+{
+  "schemaVersion": 1,
+  "passed": false,
+  "reason": "native CRS must be a published EPSG code",
+  "sourceGeometryChanged": false,
+  "fittedOffsetApplied": false,
+  "sourceGeoreferencing": "unverified"
+}

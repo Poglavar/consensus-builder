@@ -1,0 +1,1018 @@
+{
+  "schemaVersion": 2,
+  "status": "technical-qualified",
+  "cityCode": "6353",
+  "cityName": "Ādīs Ᾱbeba (Addis Ababa)",
+  "sourceId": "et-addis-eland-geoserver-parcel-publish",
+  "candidateSha256": "6a5e108081fd6fd1b79178475a8f4c3d56e3062d1feb3bfe5826149af7139733",
+  "checks": {
+    "classification": {
+      "passed": true,
+      "evidenceCount": 3
+    },
+    "exactIds": {
+      "passed": true,
+      "requestedCount": 2,
+      "returnedCount": 2,
+      "freshCollectedIds": 3,
+      "freshBatchSize": 80
+    },
+    "stableGeometry": {
+      "passed": true,
+      "independentRead": true,
+      "comparedCount": 3,
+      "collectedUniqueCount": 3
+    },
+    "explicitAbsence": {
+      "passed": true,
+      "returnedCount": 0,
+      "absentCount": 1
+    },
+    "sampling": {
+      "passed": true,
+      "capability": "bbox-13-cell",
+      "cellCount": 13,
+      "passCount": 2,
+      "rowCount": 28
+    },
+    "completeness": {
+      "passed": true,
+      "completePasses": 2,
+      "cellCount": 13,
+      "forcedPageSize": 1,
+      "forcedKnownIdCount": 3,
+      "kind": "feature-queries",
+      "completeManifest": true,
+      "returnedIdsMatch": true,
+      "featurePageRequests": 3,
+      "distinctFeatureQueries": 3,
+      "duplicatePageRequests": 0
+    },
+    "binding": {
+      "passed": true,
+      "geometryBindingCoverage": "complete",
+      "unsurveyedM2": 0,
+      "acceptedNoiseAllowanceM2": 0.01,
+      "actParcelCount": 2
+    },
+    "metric": {
+      "passed": true,
+      "reportPath": "metric-report.json",
+      "inputSha256": "709d5f54e2d2b38c81c30babb297361ed132c3b676fb9ee9a318b5df9cd0c312",
+      "featureCount": 3,
+      "sourceCrs": "EPSG:4326",
+      "metricCrs": "EPSG:32637",
+      "invalidCount": 0,
+      "duplicateIdCount": 0,
+      "conflictingSameIdGeometryCount": 0,
+      "exactGeometryDuplicateCount": 0,
+      "overlapPairCount": 0,
+      "operationErrorCount": 0,
+      "geometryChangedOrRepaired": false,
+      "geometryPass": true
+    },
+    "alignment": {
+      "schemaVersion": 1,
+      "passed": true,
+      "sourceId": "et-addis-eland-geoserver-parcel-publish",
+      "cityCode": "6353",
+      "contractSha256": "84cf6a53becfb902a431ff9ea6ff9ece9a5a6038745abf8f9632045060fc0f69",
+      "evidenceSha256": "24e2b3857a36cf108fc14002a29479704f0bcd02a6a0e1c0d204cfd01363fd5d",
+      "metadataSha256": "8138e9c42af9a1a205f4efb80051670ae6148225999f95bdbf4900292eef9ed6",
+      "nativeSha256": "fb4042a6cbfcc2edcc0dec8d067e770c2addef06d914d466b91b174bfa5eac43",
+      "cacheSha256": "709d5f54e2d2b38c81c30babb297361ed132c3b676fb9ee9a318b5df9cd0c312",
+      "nativeCrs": "EPSG:20137",
+      "nativeAxisOrder": "east-north",
+      "outputCrs": "EPSG:4326",
+      "coordinateOperation": "Inverse of UTM zone 37N + Adindan to WGS 84 (1) + axis order change (2D)",
+      "operationPipeline": "proj=pipeline step inv proj=utm zone=37 a=6378249.145 rf=293.465 step inv proj=longlat a=6378249.145 rf=293.465 step proj=push v_3 step proj=cart a=6378249.145 rf=293.465 step proj=helmert x=-166 y=-15 z=204 step inv proj=cart ellps=WGS84 step proj=pop v_3 step proj=unitconvert xy_in=rad xy_out=deg",
+      "operationAccuracyM": 9,
+      "bestOperationAvailable": true,
+      "ballparkAllowed": false,
+      "toleranceM": 0.25,
+      "maxVertexDifferenceM": 1.6019260106781362e-9,
+      "featureCount": 2,
+      "samples": [
+        {
+          "parcelId": "ET-ADDIS-ELAND-AA000041000409",
+          "nativeVertexCount": 28,
+          "adapterVertexCount": 28,
+          "maxVertexDifferenceM": 1.6019260106781362e-9,
+          "maxBoundaryDifferenceM": 2.125562294649939e-9
+        },
+        {
+          "parcelId": "ET-ADDIS-ELAND-AA000041000776",
+          "nativeVertexCount": 8,
+          "adapterVertexCount": 8,
+          "maxVertexDifferenceM": 8.572900850568892e-10,
+          "maxBoundaryDifferenceM": 1.3264159280011994e-9
+        }
+      ],
+      "maxBoundaryDifferenceM": 2.125562294649939e-9,
+      "boundaryComparison": "Bidirectional boundary Hausdorff distance in a local WGS84 azimuthal equidistant frame; no clipping, simplification, repair or fitted displacement.",
+      "operationChoiceUnresolved": false,
+      "sourceGeometryChanged": false,
+      "fittedOffsetApplied": false,
+      "sourceGeoreferencing": "unverified",
+      "limitations": [
+        "CRS handling is checked independently; source survey accuracy and basemap accuracy are not established.",
+        "WGS84 is an ensemble: no observation epoch is inferred from an EPSG code."
+      ],
+      "reportFile": "alignment-report.json"
+    }
+  },
+  "geometryReport": "metric-report.json",
+  "alignmentReport": "alignment-report.json",
+  "cacheFile": "full-safe.geojson",
+  "cacheSha256": "709d5f54e2d2b38c81c30babb297361ed132c3b676fb9ee9a318b5df9cd0c312",
+  "featureCount": 3,
+  "sampleIds": [
+    "ET-ADDIS-ELAND-AA000041000409",
+    "ET-ADDIS-ELAND-AA000041000776"
+  ],
+  "cellSizeDegrees": 0.00025,
+  "sampledCells": [
+    {
+      "index": 0,
+      "dx": -1,
+      "dy": -1,
+      "bbox": [
+        38.749,
+        9.0055,
+        38.74925,
+        9.00575
+      ],
+      "complete": true,
+      "featureCount": 1,
+      "ids": [
+        "ET-ADDIS-ELAND-AA000041000409"
+      ]
+    },
+    {
+      "index": 1,
+      "dx": 0,
+      "dy": -1,
+      "bbox": [
+        38.74925,
+        9.0055,
+        38.7495,
+        9.00575
+      ],
+      "complete": true,
+      "featureCount": 1,
+      "ids": [
+        "ET-ADDIS-ELAND-AA000041000409"
+      ]
+    },
+    {
+      "index": 2,
+      "dx": 1,
+      "dy": -1,
+      "bbox": [
+        38.7495,
+        9.0055,
+        38.74975,
+        9.00575
+      ],
+      "complete": true,
+      "featureCount": 2,
+      "ids": [
+        "ET-ADDIS-ELAND-AA000041000409",
+        "ET-ADDIS-ELAND-AA000041000776"
+      ]
+    },
+    {
+      "index": 3,
+      "dx": -1,
+      "dy": 0,
+      "bbox": [
+        38.749,
+        9.00575,
+        38.74925,
+        9.006
+      ],
+      "complete": true,
+      "featureCount": 1,
+      "ids": [
+        "ET-ADDIS-ELAND-AA000041000409"
+      ]
+    },
+    {
+      "index": 4,
+      "dx": 0,
+      "dy": 0,
+      "bbox": [
+        38.74925,
+        9.00575,
+        38.7495,
+        9.006
+      ],
+      "complete": true,
+      "featureCount": 1,
+      "ids": [
+        "ET-ADDIS-ELAND-AA000041000409"
+      ]
+    },
+    {
+      "index": 5,
+      "dx": 1,
+      "dy": 0,
+      "bbox": [
+        38.7495,
+        9.00575,
+        38.74975,
+        9.006
+      ],
+      "complete": true,
+      "featureCount": 2,
+      "ids": [
+        "ET-ADDIS-ELAND-AA000041000409",
+        "ET-ADDIS-ELAND-AA000041000776"
+      ]
+    },
+    {
+      "index": 6,
+      "dx": -1,
+      "dy": 1,
+      "bbox": [
+        38.749,
+        9.006,
+        38.74925,
+        9.00625
+      ],
+      "complete": true,
+      "featureCount": 1,
+      "ids": [
+        "ET-ADDIS-ELAND-AA000041000409"
+      ]
+    },
+    {
+      "index": 7,
+      "dx": 0,
+      "dy": 1,
+      "bbox": [
+        38.74925,
+        9.006,
+        38.7495,
+        9.00625
+      ],
+      "complete": true,
+      "featureCount": 1,
+      "ids": [
+        "ET-ADDIS-ELAND-AA000041000409"
+      ]
+    },
+    {
+      "index": 8,
+      "dx": 1,
+      "dy": 1,
+      "bbox": [
+        38.7495,
+        9.006,
+        38.74975,
+        9.00625
+      ],
+      "complete": true,
+      "featureCount": 1,
+      "ids": [
+        "ET-ADDIS-ELAND-AA000041000409"
+      ]
+    },
+    {
+      "index": 9,
+      "dx": 0,
+      "dy": -2,
+      "bbox": [
+        38.74925,
+        9.00525,
+        38.7495,
+        9.0055
+      ],
+      "complete": true,
+      "featureCount": 0,
+      "ids": []
+    },
+    {
+      "index": 10,
+      "dx": 0,
+      "dy": 2,
+      "bbox": [
+        38.74925,
+        9.00625,
+        38.7495,
+        9.0065
+      ],
+      "complete": true,
+      "featureCount": 2,
+      "ids": [
+        "ET-ADDIS-ELAND-AA000041000409",
+        "ET-ADDIS-ELAND-AA000041000564"
+      ]
+    },
+    {
+      "index": 11,
+      "dx": -2,
+      "dy": 0,
+      "bbox": [
+        38.74875,
+        9.00575,
+        38.749,
+        9.006
+      ],
+      "complete": true,
+      "featureCount": 1,
+      "ids": [
+        "ET-ADDIS-ELAND-AA000041000409"
+      ]
+    },
+    {
+      "index": 12,
+      "dx": 2,
+      "dy": 0,
+      "bbox": [
+        38.74975,
+        9.00575,
+        38.75,
+        9.006
+      ],
+      "complete": true,
+      "featureCount": 0,
+      "ids": []
+    }
+  ],
+  "sampledPoints": [],
+  "requestCount": 35,
+  "requestLimit": 300,
+  "requests": [
+    {
+      "stage": "exact-id-first-read",
+      "host": "geos.addiscadaster.gov.et",
+      "method": "GET",
+      "startedAt": "2026-10-14T19:46:33.873Z",
+      "queryHash": "992669aa7f145905c0d47d0995e453116ae71a704807ebc1c6a9d69f519f7fa9",
+      "safeParamNames": [
+        "count",
+        "cql_filter",
+        "maxFeatures",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 25,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 976
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "geos.addiscadaster.gov.et",
+      "method": "GET",
+      "startedAt": "2026-10-14T19:46:34.860Z",
+      "queryHash": "992669aa7f145905c0d47d0995e453116ae71a704807ebc1c6a9d69f519f7fa9",
+      "safeParamNames": [
+        "count",
+        "cql_filter",
+        "maxFeatures",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 25,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 631
+    },
+    {
+      "stage": "explicit-absence",
+      "host": "geos.addiscadaster.gov.et",
+      "method": "GET",
+      "startedAt": "2026-10-14T19:46:35.496Z",
+      "queryHash": "fc070f8b1e8625b7a49d1525685be48cf54f3bd4a5a929b86d8e0976f4402c78",
+      "safeParamNames": [
+        "count",
+        "cql_filter",
+        "maxFeatures",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 25,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 637
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "geos.addiscadaster.gov.et",
+      "method": "GET",
+      "startedAt": "2026-10-14T19:46:36.136Z",
+      "queryHash": "82168f95e4f5a4b15ad53941c6fc310d6cae0455788370dead00b5d33e1b5587",
+      "safeParamNames": [
+        "bbox",
+        "count",
+        "maxFeatures",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 25,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 644
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "geos.addiscadaster.gov.et",
+      "method": "GET",
+      "startedAt": "2026-10-14T19:46:36.781Z",
+      "queryHash": "56c69ca42439fe3a9b07e4d59d18f04ffc3e2d0ca1d53b635563db9e03c463c8",
+      "safeParamNames": [
+        "bbox",
+        "count",
+        "maxFeatures",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 25,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 638
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "geos.addiscadaster.gov.et",
+      "method": "GET",
+      "startedAt": "2026-10-14T19:46:37.422Z",
+      "queryHash": "7512e1d6c3c7ca0e4308129443a1bcd4eb1be7a918ea41580c19ab61e30a9d68",
+      "safeParamNames": [
+        "bbox",
+        "count",
+        "maxFeatures",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 25,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 648
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "geos.addiscadaster.gov.et",
+      "method": "GET",
+      "startedAt": "2026-10-14T19:46:38.072Z",
+      "queryHash": "ebf61ee963d57e08f0ea569d6397a450a87dcb37188955952501636ea0f7a7f7",
+      "safeParamNames": [
+        "bbox",
+        "count",
+        "maxFeatures",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 25,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 644
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "geos.addiscadaster.gov.et",
+      "method": "GET",
+      "startedAt": "2026-10-14T19:46:38.718Z",
+      "queryHash": "5450f21c846459806b6ff1df6d269e103d64db4b2cfe019714444374269ec18d",
+      "safeParamNames": [
+        "bbox",
+        "count",
+        "maxFeatures",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 25,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 621
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "geos.addiscadaster.gov.et",
+      "method": "GET",
+      "startedAt": "2026-10-14T19:46:39.341Z",
+      "queryHash": "55a42f0e94931521bd92f20cfabdc58eb4fdb9facbc14401465281cad31cd9d1",
+      "safeParamNames": [
+        "bbox",
+        "count",
+        "maxFeatures",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 25,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 645
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "geos.addiscadaster.gov.et",
+      "method": "GET",
+      "startedAt": "2026-10-14T19:46:39.989Z",
+      "queryHash": "049b1f787a29cb56554b8f90ef4df2d7fc52be8a0132eea3a8b37b1d4223790a",
+      "safeParamNames": [
+        "bbox",
+        "count",
+        "maxFeatures",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 25,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 629
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "geos.addiscadaster.gov.et",
+      "method": "GET",
+      "startedAt": "2026-10-14T19:46:40.620Z",
+      "queryHash": "5b4ab3992312e5510de8bed7aa85d231bc4ee53746c13b0a5f41fb8c8f8e5fba",
+      "safeParamNames": [
+        "bbox",
+        "count",
+        "maxFeatures",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 25,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 642
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "geos.addiscadaster.gov.et",
+      "method": "GET",
+      "startedAt": "2026-10-14T19:46:41.264Z",
+      "queryHash": "4c59b7b79adac2e42adb4984a607c40a1f14f73eb32a12a7de9ea2144267c4e1",
+      "safeParamNames": [
+        "bbox",
+        "count",
+        "maxFeatures",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 25,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 634
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "geos.addiscadaster.gov.et",
+      "method": "GET",
+      "startedAt": "2026-10-14T19:46:41.900Z",
+      "queryHash": "2524db9f58b91bac270f8db2cb7c6c35f85e9d910461555cbab696a7b4a12496",
+      "safeParamNames": [
+        "bbox",
+        "count",
+        "maxFeatures",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 25,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 640
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "geos.addiscadaster.gov.et",
+      "method": "GET",
+      "startedAt": "2026-10-14T19:46:42.541Z",
+      "queryHash": "c9cad3f2b9c7834e2fac0b35a60d913a6c8166151468fa742c335bbe3c72503d",
+      "safeParamNames": [
+        "bbox",
+        "count",
+        "maxFeatures",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 25,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 644
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "geos.addiscadaster.gov.et",
+      "method": "GET",
+      "startedAt": "2026-10-14T19:46:43.187Z",
+      "queryHash": "155bbe3fc61e2bf22bdffc8a594346957ddf572be25df7434335d68d8daf0ab8",
+      "safeParamNames": [
+        "bbox",
+        "count",
+        "maxFeatures",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 25,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1019
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "geos.addiscadaster.gov.et",
+      "method": "GET",
+      "startedAt": "2026-10-14T19:46:44.207Z",
+      "queryHash": "2ea12f579e4802d9a15ed57fd9c085ac25f342f25bf04bafdf57238fcac279b7",
+      "safeParamNames": [
+        "bbox",
+        "count",
+        "maxFeatures",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 25,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 653
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "geos.addiscadaster.gov.et",
+      "method": "GET",
+      "startedAt": "2026-10-14T19:46:44.866Z",
+      "queryHash": "82168f95e4f5a4b15ad53941c6fc310d6cae0455788370dead00b5d33e1b5587",
+      "safeParamNames": [
+        "bbox",
+        "count",
+        "maxFeatures",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 25,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 640
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "geos.addiscadaster.gov.et",
+      "method": "GET",
+      "startedAt": "2026-10-14T19:46:45.507Z",
+      "queryHash": "56c69ca42439fe3a9b07e4d59d18f04ffc3e2d0ca1d53b635563db9e03c463c8",
+      "safeParamNames": [
+        "bbox",
+        "count",
+        "maxFeatures",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 25,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 652
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "geos.addiscadaster.gov.et",
+      "method": "GET",
+      "startedAt": "2026-10-14T19:46:46.160Z",
+      "queryHash": "7512e1d6c3c7ca0e4308129443a1bcd4eb1be7a918ea41580c19ab61e30a9d68",
+      "safeParamNames": [
+        "bbox",
+        "count",
+        "maxFeatures",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 25,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 629
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "geos.addiscadaster.gov.et",
+      "method": "GET",
+      "startedAt": "2026-10-14T19:46:46.791Z",
+      "queryHash": "ebf61ee963d57e08f0ea569d6397a450a87dcb37188955952501636ea0f7a7f7",
+      "safeParamNames": [
+        "bbox",
+        "count",
+        "maxFeatures",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 25,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1369
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "geos.addiscadaster.gov.et",
+      "method": "GET",
+      "startedAt": "2026-10-14T19:46:48.161Z",
+      "queryHash": "5450f21c846459806b6ff1df6d269e103d64db4b2cfe019714444374269ec18d",
+      "safeParamNames": [
+        "bbox",
+        "count",
+        "maxFeatures",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 25,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 627
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "geos.addiscadaster.gov.et",
+      "method": "GET",
+      "startedAt": "2026-10-14T19:46:48.789Z",
+      "queryHash": "55a42f0e94931521bd92f20cfabdc58eb4fdb9facbc14401465281cad31cd9d1",
+      "safeParamNames": [
+        "bbox",
+        "count",
+        "maxFeatures",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 25,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 651
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "geos.addiscadaster.gov.et",
+      "method": "GET",
+      "startedAt": "2026-10-14T19:46:49.441Z",
+      "queryHash": "049b1f787a29cb56554b8f90ef4df2d7fc52be8a0132eea3a8b37b1d4223790a",
+      "safeParamNames": [
+        "bbox",
+        "count",
+        "maxFeatures",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 25,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 636
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "geos.addiscadaster.gov.et",
+      "method": "GET",
+      "startedAt": "2026-10-14T19:46:50.078Z",
+      "queryHash": "5b4ab3992312e5510de8bed7aa85d231bc4ee53746c13b0a5f41fb8c8f8e5fba",
+      "safeParamNames": [
+        "bbox",
+        "count",
+        "maxFeatures",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 25,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 635
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "geos.addiscadaster.gov.et",
+      "method": "GET",
+      "startedAt": "2026-10-14T19:46:50.716Z",
+      "queryHash": "4c59b7b79adac2e42adb4984a607c40a1f14f73eb32a12a7de9ea2144267c4e1",
+      "safeParamNames": [
+        "bbox",
+        "count",
+        "maxFeatures",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 25,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 612
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "geos.addiscadaster.gov.et",
+      "method": "GET",
+      "startedAt": "2026-10-14T19:46:51.329Z",
+      "queryHash": "2524db9f58b91bac270f8db2cb7c6c35f85e9d910461555cbab696a7b4a12496",
+      "safeParamNames": [
+        "bbox",
+        "count",
+        "maxFeatures",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 25,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 631
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "geos.addiscadaster.gov.et",
+      "method": "GET",
+      "startedAt": "2026-10-14T19:46:51.961Z",
+      "queryHash": "c9cad3f2b9c7834e2fac0b35a60d913a6c8166151468fa742c335bbe3c72503d",
+      "safeParamNames": [
+        "bbox",
+        "count",
+        "maxFeatures",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 25,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 623
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "geos.addiscadaster.gov.et",
+      "method": "GET",
+      "startedAt": "2026-10-14T19:46:52.586Z",
+      "queryHash": "155bbe3fc61e2bf22bdffc8a594346957ddf572be25df7434335d68d8daf0ab8",
+      "safeParamNames": [
+        "bbox",
+        "count",
+        "maxFeatures",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 25,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 639
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "geos.addiscadaster.gov.et",
+      "method": "GET",
+      "startedAt": "2026-10-14T19:46:53.228Z",
+      "queryHash": "2ea12f579e4802d9a15ed57fd9c085ac25f342f25bf04bafdf57238fcac279b7",
+      "safeParamNames": [
+        "bbox",
+        "count",
+        "maxFeatures",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 25,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 633
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "geos.addiscadaster.gov.et",
+      "method": "GET",
+      "startedAt": "2026-10-14T19:46:53.864Z",
+      "queryHash": "949d762435304f19ad3bcd718501d4971d6232cc9a4b202e9edb9965a071f0b6",
+      "safeParamNames": [
+        "count",
+        "cql_filter",
+        "maxFeatures",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 1,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 489
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "geos.addiscadaster.gov.et",
+      "method": "GET",
+      "startedAt": "2026-10-14T19:46:54.354Z",
+      "queryHash": "0a714e33ebf2c9b71e53c31a27b56b138f1f58b697e495ab458c74d9767abc1a",
+      "safeParamNames": [
+        "count",
+        "cql_filter",
+        "maxFeatures",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 1,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 854
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "geos.addiscadaster.gov.et",
+      "method": "GET",
+      "startedAt": "2026-10-14T19:46:55.209Z",
+      "queryHash": "ad3c1b861bac5505eb192cc05e30d83e600b59a1536ccda93e82a92894e1dadc",
+      "safeParamNames": [
+        "count",
+        "cql_filter",
+        "maxFeatures",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 1,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 595
+    },
+    {
+      "stage": "parcel-act-binding",
+      "host": "geos.addiscadaster.gov.et",
+      "method": "GET",
+      "startedAt": "2026-10-14T19:46:55.807Z",
+      "queryHash": "992669aa7f145905c0d47d0995e453116ae71a704807ebc1c6a9d69f519f7fa9",
+      "safeParamNames": [
+        "count",
+        "cql_filter",
+        "maxFeatures",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 25,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 615
+    },
+    {
+      "stage": "geometry-binding",
+      "host": "geos.addiscadaster.gov.et",
+      "method": "GET",
+      "startedAt": "2026-10-14T19:46:56.434Z",
+      "queryHash": "96f9bfe0eb2e80b44aef529669bbb1f445e6aa809943612da13ac550849c3842",
+      "safeParamNames": [
+        "bbox",
+        "count",
+        "maxFeatures",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 25,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 996
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "geos.addiscadaster.gov.et",
+      "method": "GET",
+      "startedAt": "2026-10-14T19:46:57.582Z",
+      "queryHash": "dbf8fd041d6f457c35655ec5b4f1e1e96cf153f22854efbd76067313b64dcc10",
+      "safeParamNames": [
+        "count",
+        "cql_filter",
+        "maxFeatures",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 25,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 979
+    }
+  ],
+  "failures": {},
+  "limitations": [
+    "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness.",
+    "The alignment gate verifies the published coordinate transform; basemap disagreement is never corrected with a fitted offset."
+  ]
+}

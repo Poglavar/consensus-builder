@@ -1,0 +1,80 @@
+{
+  "descriptor": {
+    "adapter": "vector-tiles",
+    "catalogueUrl": "https://github.com/ramSeraph/indian_cadastrals",
+    "countryCode": "IN",
+    "endpoint": "https://indianopenmaps.com/not-so-open/cadastrals/bihar/ncog/{z}/{x}/{y}.pbf",
+    "groupFields": [
+      "gid"
+    ],
+    "id": "in-br-ncog-tiles",
+    "idPrefix": "IN-BR-NCOG-",
+    "identityKind": "geometry-sha256-v1",
+    "layer": "NCOG_Bihar_Cadastrals",
+    "lookupCellSize": 0.002,
+    "maxBboxKm2": 2,
+    "maxFeatures": 10000,
+    "metricSrid": 32645,
+    "name": "Bihar cadastral maps — indianopenmaps tile snapshot (NCOG_Bihar_Cadastrals)",
+    "outFields": [
+      "gid"
+    ],
+    "overlapResolution": "overlap-ground-v1-area-desc-id-asc-turf6",
+    "scope": "Cadastral parcels of Bihar from the NCOG_Bihar_Cadastrals snapshot that ramSeraph/indian_cadastrals collected from the government map service and serves as vector tiles at indianopenmaps.com. Parcels are rebuilt from zoom-15 tiles. Coverage follows the villages in that snapshot and can omit city cores.",
+    "stateCode": "BR",
+    "zoom": 15,
+    "maxTiles": 36,
+    "maxConcurrentQueries": 2,
+    "cityIds": [
+      "munger",
+      "bhore",
+      "dighwara",
+      "ekangar_sarai",
+      "bibhutpur",
+      "asarganj",
+      "11187"
+    ],
+    "evidenceFile": "research/indian-cadastrals-sources-2026-10-13.json",
+    "attribution": "NCOG (BISAG-N) Bihar cadastral maps (ncog.gov.in, no longer reachable). Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.",
+    "licenceNote": "The collection is published as CC0 1.0 with a request to credit Datameet and the original government source; the original services state no reuse licence. The tile path is marked \"not-so-open\" by its maintainer.",
+    "caveats": [
+      "A third-party snapshot of a government cadastral map, not the live register: not proof of current title or ownership, and it does not change when the original does.",
+      "Geometry is rebuilt from zoom-15 vector tiles: outlines are snapped to a grid of about 0.3 m and may be lightly simplified compared with the original.",
+      "Some outlines overlap (neighbouring village maps were drawn and georeferenced separately). Each overlap is given to the larger outline (equal areas: the lower reference); the smaller parcel shows the rest as derived ground.",
+      "Plot numbers are shown as published; application references are derived from each rebuilt outline.",
+      "Found and collected by ramSeraph/indian_cadastrals (github.com/ramSeraph/indian_cadastrals). The tiles answer browsers directly (CORS allows any site); no relay is used."
+    ],
+    "metricSridByCity": {
+      "11187": 32645,
+      "munger": 32645,
+      "bhore": 32645,
+      "dighwara": 32645,
+      "ekangar_sarai": 32645,
+      "bibhutpur": 32645,
+      "asarganj": 32645
+    }
+  },
+  "city": {
+    "code": "11187",
+    "name": "Ratanpur",
+    "point": [
+      85.9322915901594,
+      26.0531298810089
+    ]
+  },
+  "sampleIds": [
+    "IN-BR-NCOG-g1~859318373~260529203~2e23425eee6d241a20b01ab1db965a2505b21544d4ccfd0a7dbcd1e6f90e0b3e",
+    "IN-BR-NCOG-g1~859316173~260527829~0d422f70c7ecde97b35963dc5c7dc8068bb6f715c18026145522b3ea6f40a1fb",
+    "IN-BR-NCOG-g1~859320197~260531251~3a8336a4599113fb1f5c1a251c7f01292f3b40aad46e2b13194f9e8c50ce6527"
+  ],
+  "absentId": "IN-BR-NCOG-g1~859316173~260527829~0000000000000000000000000000000000000000000000000000000000000000",
+  "metricEpsg": "EPSG:32645",
+  "sourceClassification": {
+    "isParcel": true,
+    "evidence": [
+      "Bihar cadastral maps — indianopenmaps tile snapshot (NCOG_Bihar_Cadastrals)",
+      "Map ramSeraph/indian_cadastrals (27 state releases, 54 dataset sections) back to the government services it was scraped from; test which are live, queryable by bbox, CORS-open and geo-fenced; and measure which Indian target cities each dataset covers.; First-party state cadastral tile source for Bihar; candidate cities are limited to WUP points inside IN-BR. Tile snapshot has settlement-level limits; a candidate is a discovery test only."
+    ]
+  },
+  "cellSizeDegrees": 0.001
+}

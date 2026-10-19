@@ -1,0 +1,184 @@
+{
+  "descriptor": {
+    "id": "tz-mlhhds-eardhi-taspro-spatial-units36",
+    "name": "Tanzania MLHHSD e-Ardhi Dodoma cadastral spatial units",
+    "adapter": "wfs",
+    "endpoint": "https://eardhi.lands.go.tz/map/geoserver/taspro/wfs",
+    "featureType": "taspro:spatial_units36",
+    "version": "1.0.0",
+    "idField": "uid",
+    "idType": "string",
+    "idPattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+    "idPrefix": "tz-mlhhds-eardhi-taspro-spatial-units36/uid/",
+    "geometryField": "geom",
+    "requestProperties": true,
+    "outFields": [
+      "uid"
+    ],
+    "pageSize": 100,
+    "idBatchSize": 40,
+    "maxFeatures": 10000,
+    "maxBboxKm2": 25,
+    "minRequestIntervalMs": 500,
+    "countryCode": "TZ",
+    "cityIds": [
+      "2954"
+    ],
+    "scope": "Substantial partial Dodoma urban coverage evidenced in three separated windows; bounded qualification does not establish municipal completeness.",
+    "operator": "Tanzania Ministry of Lands, Housing and Human Settlements Development (MLHHSD)",
+    "catalogueUrl": "https://eardhi.lands.go.tz/",
+    "attribution": "Tanzania MLHHSD e-Ardhi / TASPRO cadastral spatial units",
+    "licenceNote": "Anonymous official WFS reads observed. Explicit geometry redistribution/reuse licence not established.",
+    "defaultForCity": true,
+    "capabilities": {
+      "areaEnumeration": true,
+      "exactIds": true,
+      "queryGeometry": true
+    }
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                35.69543226,
+                -6.16948778
+              ],
+              [
+                35.69538576,
+                -6.16862521
+              ],
+              [
+                35.69561495,
+                -6.16861333
+              ],
+              [
+                35.69560545,
+                -6.16842498
+              ],
+              [
+                35.69670009,
+                -6.16834236
+              ],
+              [
+                35.6967215,
+                -6.1697419
+              ],
+              [
+                35.69582384,
+                -6.16953817
+              ],
+              [
+                35.69562537,
+                -6.16949614
+              ],
+              [
+                35.69543226,
+                -6.16948778
+              ]
+            ]
+          ]
+        ]
+      },
+      "geometry_name": "geom",
+      "properties": {
+        "uid": "39473acf-0b36-480e-bb3e-53c7870238fc"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                35.79825715,
+                -6.17563405
+              ],
+              [
+                35.79825725,
+                -6.1756349
+              ],
+              [
+                35.79827999,
+                -6.17590483
+              ],
+              [
+                35.79810895,
+                -6.1759118
+              ],
+              [
+                35.79809257,
+                -6.17564071
+              ],
+              [
+                35.79825715,
+                -6.17563405
+              ]
+            ]
+          ]
+        ]
+      },
+      "geometry_name": "geom",
+      "properties": {
+        "uid": "788297a6-c19f-441f-957e-baf38eee928e"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                35.73418646,
+                -6.16422646
+              ],
+              [
+                35.73398667,
+                -6.16450359
+              ],
+              [
+                35.73385697,
+                -6.16441821
+              ],
+              [
+                35.73406001,
+                -6.16414194
+              ],
+              [
+                35.73418646,
+                -6.16422646
+              ]
+            ]
+          ]
+        ]
+      },
+      "geometry_name": "geom",
+      "properties": {
+        "uid": "a07592c3-0dc4-4c34-9a46-12162f6e6b94"
+      }
+    }
+  ],
+  "crs": {
+    "type": "name",
+    "properties": {
+      "name": "urn:ogc:def:crs:EPSG::4326"
+    }
+  },
+  "provenance": {
+    "endpoint": "https://eardhi.lands.go.tz/map/geoserver/taspro/wfs",
+    "safeFields": [
+      "uid",
+      "geom"
+    ],
+    "wireCrs": "EPSG:4326",
+    "sourceGeometryChanged": false
+  }
+}

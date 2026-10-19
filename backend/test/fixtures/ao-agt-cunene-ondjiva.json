@@ -1,0 +1,167 @@
+{
+  "description": "Fresh safe ID_GGPEN/OBJECTID polygons read from public Cunene_AGT layer; geometry retained unchanged.",
+  "descriptor": {
+    "id": "ao-agt-cunene-agt-layer-0",
+    "adapter": "arcgis",
+    "name": "ANGOLA_GGPEN Cunene AGT property-registration polygons",
+    "endpoint": "https://services-eu1.arcgis.com/7r9gTPdSG9MPi1LZ/arcgis/rest/services/Cunene_AGT_gdb/FeatureServer/0",
+    "idField": "ID_GGPEN",
+    "objectIdField": "OBJECTID",
+    "idPrefix": "AO-CUNENE-AGT-",
+    "idType": "string",
+    "idPattern": "^[0-9a-f]{36}$",
+    "outFields": [
+      "OBJECTID",
+      "ID_GGPEN"
+    ],
+    "queryFormat": "geojson",
+    "boundsQueryMode": "object-ids",
+    "idsQueryMode": "object-ids",
+    "pageSize": 500,
+    "idBatchSize": 80,
+    "maxFeatures": 10000,
+    "maxBboxKm2": 25,
+    "countryCode": "AO",
+    "metricSrid": 32733,
+    "cityIds": [
+      "3345"
+    ],
+    "scope": "Cunene AGT property-registration parcels. Reviewed positive reads span central, northwest and southeast Ondjiva; full city coverage and legal-title authority are unestablished.",
+    "evidenceFile": "evidence/source-review.json",
+    "catalogueUrl": "https://www.arcgis.com/sharing/rest/content/items/c93d6a26dd4b49b689719523f0723c0d?f=pjson",
+    "licenceNote": "Public query access is verified; publisher metadata has no explicit parcel-data reuse licence. Redistribution and attribution terms require second-pass review.",
+    "attribution": "ANGOLA_GGPEN — Cunene_AGT_gdb / Cunene_AGT layer 0; AGT property-registration workflow. IGCA/AGT/GGPEN maintenance responsibilities are unverified."
+  },
+  "response": {
+    "type": "FeatureCollection",
+    "crs": {
+      "type": "name",
+      "properties": {
+        "name": "EPSG:4326"
+      }
+    },
+    "features": [
+      {
+        "type": "Feature",
+        "id": 139,
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [
+                15.6977879277686,
+                -17.0530262667341
+              ],
+              [
+                15.6977748276368,
+                -17.0530699377127
+              ],
+              [
+                15.6977747072626,
+                -17.0530699042188
+              ],
+              [
+                15.6977394951001,
+                -17.0530601299934
+              ],
+              [
+                15.6977683364106,
+                -17.0529639833985
+              ],
+              [
+                15.6978036689473,
+                -17.0529737911229
+              ],
+              [
+                15.6977879277686,
+                -17.0530262667341
+              ]
+            ]
+          ]
+        },
+        "properties": {
+          "OBJECTID": 139,
+          "ID_GGPEN": "19024cc94eaf308b648104928a52e46b6242"
+        }
+      },
+      {
+        "type": "Feature",
+        "id": 36,
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [
+                15.7245034146866,
+                -17.0700675120763
+              ],
+              [
+                15.7244389515818,
+                -17.0700812502199
+              ],
+              [
+                15.7244236191365,
+                -17.0700147011934
+              ],
+              [
+                15.7245247433864,
+                -17.0699931476369
+              ],
+              [
+                15.7245400291192,
+                -17.0700594974431
+              ],
+              [
+                15.7245400758316,
+                -17.0700596975299
+              ],
+              [
+                15.7245034146866,
+                -17.0700675120763
+              ]
+            ]
+          ]
+        },
+        "properties": {
+          "OBJECTID": 36,
+          "ID_GGPEN": "1902d7521152e1453c52e0faf4b5663eba9b"
+        }
+      },
+      {
+        "type": "Feature",
+        "id": 557,
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [
+                15.7596854971062,
+                -17.0803169843377
+              ],
+              [
+                15.7596393039376,
+                -17.0803384645709
+              ],
+              [
+                15.7596231010249,
+                -17.0803062334864
+              ],
+              [
+                15.7596692941934,
+                -17.0802847523907
+              ],
+              [
+                15.7596854971062,
+                -17.0803169843377
+              ]
+            ]
+          ]
+        },
+        "properties": {
+          "OBJECTID": 557,
+          "ID_GGPEN": "1902da1883a53a95e7cc9d5fc302254de5b9"
+        }
+      }
+    ]
+  }
+}

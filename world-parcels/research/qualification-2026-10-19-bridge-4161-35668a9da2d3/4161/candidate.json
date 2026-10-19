@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 2,
+  "city": {
+    "code": "4161",
+    "id": "diepsloot",
+    "name": "Diepsloot",
+    "country": "South Africa",
+    "countryCode": "ZA",
+    "point": [
+      28.0108704187243,
+      -25.9317614563184
+    ],
+    "currency": {
+      "locale": "en-ZA",
+      "code": "ZAR"
+    }
+  },
+  "descriptor": {
+    "id": "za-csggis-erven",
+    "adapter": "arcgis",
+    "endpoint": "https://csggis.dlrrd.gov.za/server/rest/services/CSGSearch/MapServer/2",
+    "idPrefix": "ZA-CSGGIS-ERVEN-",
+    "idField": "PRCL_KEY",
+    "objectIdField": "OBJECTID",
+    "idType": "string",
+    "outFields": [
+      "OBJECTID",
+      "PRCL_KEY"
+    ],
+    "queryFormat": "esri-json",
+    "boundsQueryMode": "object-ids",
+    "idsQueryMode": "object-ids",
+    "pageSize": 100,
+    "idBatchSize": 40,
+    "maxFeatures": 2000,
+    "maxBboxKm2": 2,
+    "maxConcurrentQueries": 1,
+    "name": "Chief Surveyor General CSGSearch Erven",
+    "operator": "Office of the Chief Surveyor General, Department of Land Reform and Rural Development",
+    "countryCode": "ZA",
+    "cityIds": [
+      "diepsloot"
+    ],
+    "metricSrid": 32735,
+    "sourceCrs": "EPSG:4148",
+    "catalogueUrl": "https://csg.dlrrd.gov.za/data.htm",
+    "attribution": "Office of the Chief Surveyor General (CSG); Department of Land Reform and Rural Development",
+    "evidenceFile": "evidence/source-metadata.json",
+    "scope": "National surveyed urban cadastral-reference layer; initial qualification concerns five exact parcel reads in distributed Diepsloot windows only. Discovery windows and any later 13-cell sample do not establish citywide completeness. No legal title, survey accuracy or currentness claim.",
+    "licenceNote": "Anonymous public service. Saved first-party portal metadata gives attribution and a disclaimer, but no explicit reusable licence was established. Redistribution permission remains a second-pass question.",
+    "defaultForCity": false
+  },
+  "sampleIds": [
+    "ZA-CSGGIS-ERVEN-GJHBT0JR040800001797000000",
+    "ZA-CSGGIS-ERVEN-GJHBT0JR040800000217000000",
+    "ZA-CSGGIS-ERVEN-GJHBT0JR040800002760000000",
+    "ZA-CSGGIS-ERVEN-GJHBT0JR040800003292000000",
+    "ZA-CSGGIS-ERVEN-GJHBT0JR040800006598000000"
+  ],
+  "absentId": "ZA-CSGGIS-ERVEN-GJHBT0JR999999999999999999",
+  "metricEpsg": 32735,
+  "cellSizeDegrees": 0.001,
+  "sourceClassification": {
+    "isParcel": true,
+    "purpose": "cadastral-parcels",
+    "evidence": [
+      "evidence/source-metadata.json",
+      "evidence/service-metadata.json"
+    ],
+    "basis": "First-party Erven layer description defines surveyed and Surveyor-General-approved urban parcels, not necessarily registered. geometryType is esriGeometryPolygon. These are cadastral parcel records; no sale-listing, development-proposal or planning-overlay inference is used."
+  },
+  "currencyEvidence": {
+    "file": "evidence/currency-provenance.json"
+  },
+  "identityPolicy": "Exact case-sensitive PRCL_KEY namespaced with ZA-CSGGIS-ERVEN-. OBJECTID is transport-only. No geometry repair, clipping, simplification, precision reduction, offset fitting, overlap suppression or historic-row filtering.",
+  "followUps": [
+    "Native CRS is declared EPSG:4148; response requests EPSG:4326 in ArcGIS x,y order. Fresh independent datum-operation/grid/epoch alignment has not been established in this initial pass. Metric analysis uses EPSG:32735 and does not prove source alignment.",
+    "Current/historic status semantics, replacement behavior and long-term native-key uniqueness remain unverified; no unproven filter is applied.",
+    "Paging, explicit absence, material overlap, invalid geometry, area completeness and actual app binding remain second-pass checks.",
+    "Public access does not establish a reusable licence. Preserve the first-party disclaimer and attribution for review.",
+    "Discovery distributed windows establish local presence, not a legal city boundary or citywide completeness."
+  ]
+}

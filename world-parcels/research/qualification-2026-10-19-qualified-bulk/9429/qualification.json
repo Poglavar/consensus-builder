@@ -1,0 +1,134 @@
+{
+  "schemaVersion": 2,
+  "status": "technical-qualified",
+  "cityCode": "9429",
+  "cityName": "Begamganj",
+  "sourceId": "in-mp-bhulekh-survey-tiles",
+  "candidateSha256": "c81ee132c1399b086b04b6912d062b0c81cf252a66d11489640914e715c8ce48",
+  "checks": {
+    "classification": {
+      "passed": true,
+      "evidenceCount": 2
+    },
+    "exactIds": {
+      "passed": true,
+      "requestedCount": 3,
+      "returnedCount": 3
+    },
+    "stableGeometry": {
+      "passed": true,
+      "independentRead": true,
+      "comparedCount": 3
+    },
+    "explicitAbsence": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "sampling": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "completeness": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "binding": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "metric": {
+      "passed": true,
+      "reportPath": "metric-report.json",
+      "inputSha256": "1c3e033cc2ce75dd7762b627d390b74cb83a7eac364cdc1cf4ad7ad65e679e57",
+      "featureCount": 3,
+      "sourceCrs": "EPSG:4326",
+      "metricCrs": "EPSG:32644",
+      "invalidCount": 0,
+      "duplicateIdCount": 0,
+      "conflictingSameIdGeometryCount": 0,
+      "exactGeometryDuplicateCount": 0,
+      "overlapPairCount": 0,
+      "operationErrorCount": 0,
+      "geometryChangedOrRepaired": false,
+      "geometryPass": true
+    },
+    "alignment": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    }
+  },
+  "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+      "classification",
+      "exactIds",
+      "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+      {
+        "check": "explicitAbsence",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "sampling",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "completeness",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "binding",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "alignment",
+        "reason": "Deferred to second-pass review."
+      }
+    ],
+    "usableGeographicPolygons": true
+  },
+  "geometryReport": "metric-report.json",
+  "cacheFile": "full-safe.geojson",
+  "cacheSha256": "1c3e033cc2ce75dd7762b627d390b74cb83a7eac364cdc1cf4ad7ad65e679e57",
+  "featureCount": 3,
+  "sampleIds": [
+    "IN-MP-BHULEKH-g1~783395469~235973848~2c0364e2cdd25193d441b518ab945333c09a8bfc64dd54778901299e353dd949",
+    "IN-MP-BHULEKH-g1~783388335~235972176~400d14fdac856a21a30a62cd7270be124350e215d7d974c4241b7352de5bd0cb",
+    "IN-MP-BHULEKH-g1~783383936~235967260~8734e4fc51052f1caf76ee0b50924bb3a05ffe573f77446260edc5b6f0287049"
+  ],
+  "cellSizeDegrees": 0.001,
+  "sampledCells": [],
+  "sampledPoints": [],
+  "requestCount": 2,
+  "requestLimit": 300,
+  "requests": [
+    {
+      "stage": "exact-id-first-read",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-19T01:49:50.918Z",
+      "queryHash": "96261c3cc034406404191fcf6c174a6345f90a1c82ae78f845f5011a9acb09ff",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 292
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-19T01:49:51.526Z",
+      "queryHash": "96261c3cc034406404191fcf6c174a6345f90a1c82ae78f845f5011a9acb09ff",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 255
+    }
+  ],
+  "failures": {},
+  "limitations": [
+    "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness.",
+    "Projection, geometry, completeness and binding findings are recorded for second-pass review; initial qualification does not establish survey accuracy."
+  ]
+}

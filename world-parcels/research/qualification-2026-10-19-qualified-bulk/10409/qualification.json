@@ -1,0 +1,134 @@
+{
+  "schemaVersion": 2,
+  "status": "technical-qualified",
+  "cityCode": "10409",
+  "cityName": "Kachhwa",
+  "sourceId": "in-up-ncog-tiles",
+  "candidateSha256": "aa7ac350634911130e72f5777ded75703b911621f5ef1b3b0f34bb9fc230437f",
+  "checks": {
+    "classification": {
+      "passed": true,
+      "evidenceCount": 2
+    },
+    "exactIds": {
+      "passed": true,
+      "requestedCount": 3,
+      "returnedCount": 3
+    },
+    "stableGeometry": {
+      "passed": true,
+      "independentRead": true,
+      "comparedCount": 3
+    },
+    "explicitAbsence": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "sampling": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "completeness": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "binding": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    },
+    "metric": {
+      "passed": true,
+      "reportPath": "metric-report.json",
+      "inputSha256": "5e49b9191904c3e9e05aae9dcdf06f0eb05f22d2986eddd19b1623bfc6328bea",
+      "featureCount": 3,
+      "sourceCrs": "EPSG:4326",
+      "metricCrs": "EPSG:32644",
+      "invalidCount": 0,
+      "duplicateIdCount": 0,
+      "conflictingSameIdGeometryCount": 0,
+      "exactGeometryDuplicateCount": 0,
+      "overlapPairCount": 0,
+      "operationErrorCount": 0,
+      "geometryChangedOrRepaired": false,
+      "geometryPass": true
+    },
+    "alignment": {
+      "passed": false,
+      "reason": "Deferred to second-pass review."
+    }
+  },
+  "initialQualification": {
+    "policy": "parcel-availability-v1",
+    "passed": true,
+    "requiredChecks": [
+      "classification",
+      "exactIds",
+      "stableGeometry"
+    ],
+    "status": "follow-up-required",
+    "followUp": [
+      {
+        "check": "explicitAbsence",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "sampling",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "completeness",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "binding",
+        "reason": "Deferred to second-pass review."
+      },
+      {
+        "check": "alignment",
+        "reason": "Deferred to second-pass review."
+      }
+    ],
+    "usableGeographicPolygons": true
+  },
+  "geometryReport": "metric-report.json",
+  "cacheFile": "full-safe.geojson",
+  "cacheSha256": "5e49b9191904c3e9e05aae9dcdf06f0eb05f22d2986eddd19b1623bfc6328bea",
+  "featureCount": 3,
+  "sampleIds": [
+    "IN-UP-NCOG-g1~827177060~252145122~c1e0478f97674444e2032a045639abe0809bf8146d5a39ce7a486e729a624635",
+    "IN-UP-NCOG-g1~827176577~252144831~7131fedf3a331cad7693d2da490194e31a586c8705941a5ca891c96536cf7bf2",
+    "IN-UP-NCOG-g1~827177113~252145365~b7d3e1a7f7876a7a4d95a712dc21b7696713879a3ea06e09f6b4a7f080e6039e"
+  ],
+  "cellSizeDegrees": 0.001,
+  "sampledCells": [],
+  "sampledPoints": [],
+  "requestCount": 2,
+  "requestLimit": 300,
+  "requests": [
+    {
+      "stage": "exact-id-first-read",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-19T01:50:07.908Z",
+      "queryHash": "7e7680769ddea6bcad785cb086c20e1df808cccf2baf24a8eedd5fc19667827e",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 387
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-19T01:50:08.612Z",
+      "queryHash": "7e7680769ddea6bcad785cb086c20e1df808cccf2baf24a8eedd5fc19667827e",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 72
+    }
+  ],
+  "failures": {},
+  "limitations": [
+    "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness.",
+    "Projection, geometry, completeness and binding findings are recorded for second-pass review; initial qualification does not establish survey accuracy."
+  ]
+}

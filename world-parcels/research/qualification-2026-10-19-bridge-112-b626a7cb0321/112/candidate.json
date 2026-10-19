@@ -1,0 +1,108 @@
+{
+  "schemaVersion": 1,
+  "city": {
+    "code": "112",
+    "name": "Rubavu",
+    "appCityId": "rubavu",
+    "country": "Rwanda",
+    "countryCode": "RW",
+    "point": [
+      29.2892956900186,
+      -1.6920227940991
+    ],
+    "currency": {
+      "locale": "en-RW",
+      "code": "RWF"
+    },
+    "currencyEvidenceFile": "evidence/currency-evidence.json"
+  },
+  "descriptor": {
+    "id": "rw-nla-lais-rubavu-parcels",
+    "adapter": "arcgis",
+    "endpoint": "https://geodata.rw/server/rest/services/LAISData/Rubavu_Parcels/FeatureServer/24/query",
+    "name": "Rubavu Parcels (LAIS)",
+    "operator": "Rwanda National Land Authority / Rwanda Spatial Data Infrastructure / LAIS Data Service",
+    "countryCode": "RW",
+    "cityIds": [
+      "rubavu"
+    ],
+    "idPrefix": "RW-LAIS-RUBAVU-",
+    "idField": "upi",
+    "idType": "string",
+    "idPattern": "^[0-9]+(?:/[0-9]+){4}$",
+    "objectIdField": "objectid",
+    "outFields": [
+      "objectid",
+      "upi"
+    ],
+    "queryFormat": "esri-json",
+    "boundsQueryMode": "offset",
+    "idsQueryMode": "offset",
+    "pageSize": 2000,
+    "idBatchSize": 80,
+    "maxFeatures": 10000,
+    "maxBboxKm2": 25,
+    "maxConcurrentQueries": 1,
+    "metricSrid": 32735,
+    "sourceCrs": "PROJCRS[\"ITRF_2005\",BASEGEOGCRS[\"GCS_ITRF_2005\",DATUM[\"D_ITRF_2005\",ELLIPSOID[\"GRS_1980\",6378137.0,298.257222101,LENGTHUNIT[\"Meter\",1.0]]],PRIMEM[\"Greenwich\",0.0,ANGLEUNIT[\"Degree\",0.0174532925199433]],CS[ellipsoidal,2],AXIS[\"Latitude (lat)\",north,ORDER[1]],AXIS[\"Longitude (lon)\",east,ORDER[2]],ANGLEUNIT[\"Degree\",0.0174532925199433]],CONVERSION[\"Transverse_Mercator\",METHOD[\"Transverse_Mercator\"],PARAMETER[\"False_Easting\",500000.0,LENGTHUNIT[\"Meter\",1.0]],PARAMETER[\"False_Northing\",5000000.0,LENGTHUNIT[\"Meter\",1.0]],PARAMETER[\"Central_Meridian\",30.0,ANGLEUNIT[\"Degree\",0.0174532925199433]],PARAMETER[\"Scale_Factor\",0.9999,SCALEUNIT[\"Unity\",1.0]],PARAMETER[\"Latitude_Of_Origin\",0.0,ANGLEUNIT[\"Degree\",0.0174532925199433]]],CS[Cartesian,2],AXIS[\"Easting (X)\",east,ORDER[1]],AXIS[\"Northing (Y)\",north,ORDER[2]],LENGTHUNIT[\"Meter\",1.0]]",
+    "catalogueUrl": "https://geodata.rw/portal/sharing/rest/content/items/1012ccedce054d2da74df7a47994f6c9?f=pjson",
+    "attribution": "National Land Authority, Rwanda Spatial Data Infrastructure; LAIS Rubavu Parcels.",
+    "licenceNote": "Anonymous read access is verified. Portal licenseInfo is null; reuse/redistribution permission remains unverified.",
+    "scope": "Rubavu district cadastral parcel layer with distributed Rubavu/Gisenyi observations. Initial exact sample reads do not establish citywide completeness or currentness.",
+    "capabilities": {
+      "bbox": true,
+      "exactId": true,
+      "areaEnumeration": true,
+      "geometry": "full-wgs84"
+    },
+    "evidenceFile": "evidence/source-purpose.json",
+    "defaultForCity": false,
+    "discovery": {
+      "jurisdiction": {
+        "countryCode": "RW",
+        "basis": "First-party RSDI portal names LAIS Rubavu Parcels and publishes a district extent spanning the unchanged WUP locator; district extent and bounded samples do not prove full urban coverage.",
+        "evidence": [
+          "evidence/source-purpose.json",
+          "evidence/portal-item.json",
+          "evidence/layer-metadata.json",
+          "evidence/coverage-review.json"
+        ]
+      }
+    },
+    "identityNote": "UPI is retained as the native key for repeatable exact reads. Source-wide uniqueness is unproven: the observed repeated objectid/UPI is rejected by the strict adapter, without suppression, geometry union, clipping or repair."
+  },
+  "sampleIds": [
+    "RW-LAIS-RUBAVU-3/03/11/07/68",
+    "RW-LAIS-RUBAVU-3/03/12/03/7360",
+    "RW-LAIS-RUBAVU-3/03/04/03/359"
+  ],
+  "metricEpsg": 32735,
+  "cellSizeDegrees": 0.001,
+  "sourceClassification": {
+    "isParcel": true,
+    "purpose": "cadastral-parcels",
+    "evidence": [
+      "evidence/source-purpose.json",
+      "evidence/portal-item.json",
+      "evidence/portal-organization.json",
+      "evidence/layer-metadata.json",
+      "evidence/service-metadata.json"
+    ]
+  },
+  "coverage": {
+    "scope": "district source with substantial-city discovery evidence; exact sample qualification only",
+    "evidenceFile": "evidence/coverage-review.json"
+  },
+  "alignmentEvidence": {
+    "file": "evidence/alignment-input.json",
+    "sha256": "f115aa81be5ce2b36d5d86504e1f3ceeefdf2dfbcc88d3e5b08daa3624fb9ca0"
+  },
+  "limitations": [
+    "Initial parcel-availability-v1 only; no citywide completeness, survey accuracy, legal title or currentness established.",
+    "Native custom ITRF_2005/TM Rwanda WKT is retained; no published EPSG mapping, coordinate epoch or independently verified datum operation/grid is established. Alignment remains a follow-up.",
+    "UPI/objectid source-wide uniqueness is not proven. Direct objectid=40022662 returns UPI 3/03/11/07/5007 twice with different geometries. The strict adapter rejects this result; no geometry is merged, repaired, suppressed or clipped.",
+    "Prior north-window material overlaps remain unresolved; three isolated exact samples cannot qualify wider topology.",
+    "Explicit absence, paging/completeness, current/historic validity, binding and reuse terms require second-pass review.",
+    "Candidate remains unregistered; no catalog, city configuration or runtime wiring was changed."
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "policy": "parcel-availability-v1",
+  "passed": true,
+  "requiredChecks": [
+    "classification",
+    "exactIds",
+    "stableGeometry"
+  ],
+  "status": "follow-up-required",
+  "followUp": [
+    {
+      "check": "explicitAbsence",
+      "reason": "Deferred to second-pass review."
+    },
+    {
+      "check": "sampling",
+      "reason": "Deferred to second-pass review."
+    },
+    {
+      "check": "completeness",
+      "reason": "Deferred to second-pass review."
+    },
+    {
+      "check": "binding",
+      "reason": "Deferred to second-pass review."
+    },
+    {
+      "check": "alignment",
+      "reason": "independent alignment qualification check is missing or false"
+    }
+  ],
+  "candidateSha256": "49a6edf1b77a5d39b5c6a28e48310e5e10af6a0019d855a71dc999d3011e26eb",
+  "cacheSha256": "319227cf771b25fe2d51ea807dad14b7185e5df895548e37f9f58cad197f63f6",
+  "qualificationSha256": "3d99966ee2b232413d6f320c8619c61b04274a5d71eae9bf4b46341208ca75e2"
+}

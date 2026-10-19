@@ -1,0 +1,48 @@
+{
+  "descriptor": {
+    "adapter": "vector-tiles",
+    "catalogueUrl": "https://github.com/ramSeraph/indian_cadastrals",
+    "countryCode": "IN",
+    "endpoint": "https://indianopenmaps.com/not-so-open/cadastrals/andhra-pradesh/apsac/{z}/{x}/{y}.pbf",
+    "groupFields": [
+      "objectid_1"
+    ],
+    "id": "in-ap-apsac-tiles",
+    "idPrefix": "IN-AP-APSAC-",
+    "identityKind": "geometry-sha256-v1",
+    "layer": "APSAC_AP_Cadastrals",
+    "lookupCellSize": 0.002,
+    "maxBboxKm2": 9,
+    "maxFeatures": 10000,
+    "metricSrid": 32644,
+    "name": "Andhra Pradesh cadastral maps — indianopenmaps tile snapshot (APSAC_AP_Cadastrals)",
+    "outFields": [
+      "objectid_1"
+    ],
+    "overlapResolution": "overlap-ground-v1-area-desc-id-asc-turf6",
+    "scope": "Cadastral parcels of Andhra Pradesh from the APSAC_AP_Cadastrals snapshot that ramSeraph/indian_cadastrals collected from the government map service and serves as vector tiles at indianopenmaps.com. Parcels are rebuilt from zoom-13 tiles. Coverage follows the villages in that snapshot and can omit city cores.",
+    "stateCode": "AP",
+    "zoom": 13
+  },
+  "city": {
+    "code": "10677",
+    "name": "Vijayawada",
+    "point": [
+      80.6417604131186,
+      16.5158984794553
+    ]
+  },
+  "sampleIds": [
+    "IN-AP-APSAC-g1~806030846~165007394~cefd43bcae775376912ada5155c80f82f206f73d94459e8ff444c72526171fb6"
+  ],
+  "absentId": "IN-AP-APSAC-g1~806030846~165007394~0000000000000000000000000000000000000000000000000000000000000000",
+  "metricEpsg": "EPSG:32644",
+  "cellSizeDegrees": 0.001,
+  "sourceClassification": {
+    "isParcel": true,
+    "evidence": [
+      "Frozen packet providerReuse.scopeEvidence describes Andhra Pradesh cadastral coverage and limits candidates to IN-AP; packet city is Vijayawada (10677).",
+      "Snapshot publisher dataset APSAC_AP_Cadastrals identifies Andhra Pradesh APSAC Cadastrals and https://apsac.ap.gov.in/ as its origin. Original-government purpose, city scope and native CRS remain independently unverified; see evidence/source-inspection.json."
+    ]
+  }
+}

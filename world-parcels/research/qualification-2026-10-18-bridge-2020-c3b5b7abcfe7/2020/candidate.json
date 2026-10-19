@@ -1,0 +1,91 @@
+{
+  "schemaVersion": 2,
+  "city": {
+    "code": "2020",
+    "name": "Gqeberha",
+    "country": "South Africa",
+    "countryCode": "ZA",
+    "iso3": "ZAF",
+    "rank": 136,
+    "globalRank": 824,
+    "point": [
+      25.5502896875663,
+      -33.8853793668229
+    ],
+    "pointOrder": "longitude,latitude",
+    "population2025": 661220,
+    "currency": {
+      "locale": "en-ZA",
+      "code": "ZAR"
+    }
+  },
+  "descriptor": {
+    "id": "za-csg-property-viewer-erven",
+    "adapter": "arcgis",
+    "endpoint": "https://csggis.dlrrd.gov.za/server/rest/services/Property_Viewer/MapServer/2",
+    "name": "Chief Surveyor-General Property Viewer Erven",
+    "operator": "Chief Surveyor-General, South Africa",
+    "countryCode": "ZA",
+    "catalogueUrl": "https://csggis.dlrrd.gov.za/server/rest/services/Property_Viewer/MapServer/2",
+    "attribution": "Chief Surveyor-General · Property Viewer Erven · adapted",
+    "idPrefix": "ZA-CSG-PV-ERVEN-",
+    "idField": "PRCL_KEY",
+    "objectIdField": "OBJECTID",
+    "idType": "string",
+    "idPattern": "^[A-Z0-9]{26}$",
+    "identityKind": "native-key-geometry-sha256-v1",
+    "outFields": [
+      "OBJECTID",
+      "PRCL_KEY"
+    ],
+    "queryFormat": "geojson",
+    "boundsQueryMode": "object-ids",
+    "idsQueryMode": "object-ids",
+    "pageSize": 500,
+    "idBatchSize": 80,
+    "maxFeatures": 2000,
+    "maxBboxKm2": 2,
+    "metricSrid": 32735,
+    "cityIds": [
+      "2020"
+    ],
+    "defaultForCity": false,
+    "evidenceFile": "evidence/source-purpose.json",
+    "scope": "Anonymous surveyed and approved urban Erven polygons in separated bounded Gqeberha sectors. Full unchanged geometries are referenced by native key plus full-geometry hash. Citywide completeness, legal title, survey accuracy, current-ground status and cross-service synchronization remain unestablished.",
+    "licenceNote": "Public anonymous access; explicit parcel-geometry redistribution licence remains unestablished.",
+    "nativeCrs": "EPSG:4148",
+    "responseCrs": "EPSG:4326",
+    "coordinateOrder": "longitude,latitude",
+    "capabilities": {
+      "areaEnumeration": true,
+      "exactIds": true
+    }
+  },
+  "sampleIds": [
+    "ZA-CSG-PV-ERVEN-ENMAC059000300000590000001-bb7cdccf0dab6109bf0647b32e016ddae91c05579c820d0ab64d0b50f31b1ad2",
+    "ZA-CSG-PV-ERVEN-ENMAC059004100052058000001-e8ef034e8533c6594f08aab91f9eeee2f79dd09e4bf706dfe1d58396ebf9f77a",
+    "ZA-CSG-PV-ERVEN-ENMAC059004100052058000001-2ae8462c99720e873dc7343a77b6a6fe017e71e58b2fad1a992b449a9c3fa9cc",
+    "ZA-CSG-PV-ERVEN-ENMAC059003800014681000000-edc82fb6b86743a6f893c15dcc59ce262e5f5d274a0c5507bcccc070bf01692f",
+    "ZA-CSG-PV-ERVEN-ENMAC059003600000157000000-17af67dc29d9b20cebf32ab1d56fc0a3e5645d8ff5008dffa196125b61b6088a"
+  ],
+  "absentId": "ZA-CSG-PV-ERVEN-XXXXXXXXXXXXXXXXXXXXXXXXXX-0000000000000000000000000000000000000000000000000000000000000000",
+  "metricEpsg": 32735,
+  "cellSizeDegrees": 0.001,
+  "sourceClassification": {
+    "isParcel": true,
+    "purpose": "cadastral-parcels",
+    "evidence": [
+      "evidence/source-metadata.json",
+      "evidence/source-purpose.json"
+    ]
+  },
+  "identityEvidence": "evidence/identity-policy.json",
+  "currencyEvidence": "evidence/currency-evidence.json",
+  "inputBindings": "evidence/input-bindings.json",
+  "limitations": [
+    "Initial parcel-availability-v1 qualification only; no deep review requested.",
+    "Receipt substantial-city scope is a discovery claim; four separated discovery probes and exact samples are not a citywide completeness mask.",
+    "Native EPSG:4148 to WGS84 datum operation, wire axes, accuracy and grids need second-pass review.",
+    "LSTATUS/WSTATUS current/historic semantics, real overlaps, cross-host synchronization and reuse permission remain unestablished. No status filter, offset, repair, clipping, simplification or overlap suppression is applied."
+  ]
+}

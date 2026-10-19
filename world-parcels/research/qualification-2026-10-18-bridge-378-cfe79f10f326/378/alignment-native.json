@@ -1,0 +1,203 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "id": "BF-ECADASTRE:aN1k1sijuxh",
+      "properties": {
+        "parcelId": "BF-ECADASTRE:aN1k1sijuxh",
+        "sourceId": "bf-dgi-ecadastre-public-geojson",
+        "sourceParcelId": "aN1k1sijuxh"
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                -4.29135280191448,
+                11.190081758345237
+              ],
+              [
+                -4.290918408271632,
+                11.191444412980088
+              ],
+              [
+                -4.289651867236306,
+                11.191050658715815
+              ],
+              [
+                -4.290097271656816,
+                11.189653483854675
+              ],
+              [
+                -4.29135280191448,
+                11.190081758345237
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "BF-ECADASTRE:NgGGJkfQ1af",
+      "properties": {
+        "parcelId": "BF-ECADASTRE:NgGGJkfQ1af",
+        "sourceId": "bf-dgi-ecadastre-public-geojson",
+        "sourceParcelId": "NgGGJkfQ1af"
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                -4.2898186229457,
+                11.18977539866585
+              ],
+              [
+                -4.2897636196817555,
+                11.189947884690003
+              ],
+              [
+                -4.289501555843833,
+                11.189866416831384
+              ],
+              [
+                -4.289556559258508,
+                11.189693930839043
+              ],
+              [
+                -4.2898186229457,
+                11.18977539866585
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "BF-ECADASTRE:hmTuv6heRVn",
+      "properties": {
+        "parcelId": "BF-ECADASTRE:hmTuv6heRVn",
+        "sourceId": "bf-dgi-ecadastre-public-geojson",
+        "sourceParcelId": "hmTuv6heRVn"
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                -4.334725824547483,
+                11.175335473671534
+              ],
+              [
+                -4.334826020292945,
+                11.17541443571319
+              ],
+              [
+                -4.33468323904008,
+                11.175591096823748
+              ],
+              [
+                -4.334583037330325,
+                11.175512142076037
+              ],
+              [
+                -4.334725824547483,
+                11.175335473671534
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "BF-ECADASTRE:bENNwjbYc8f",
+      "properties": {
+        "parcelId": "BF-ECADASTRE:bENNwjbYc8f",
+        "sourceId": "bf-dgi-ecadastre-public-geojson",
+        "sourceParcelId": "bENNwjbYc8f"
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                -4.244199199038153,
+                11.185097556058182
+              ],
+              [
+                -4.24408093079949,
+                11.185166538439772
+              ],
+              [
+                -4.244018222904635,
+                11.185150605941685
+              ],
+              [
+                -4.243948367537013,
+                11.18503382607753
+              ],
+              [
+                -4.2441060584908525,
+                11.184941849632022
+              ],
+              [
+                -4.244199199038153,
+                11.185097556058182
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "BF-ECADASTRE:HXgwb55P1Pk",
+      "properties": {
+        "parcelId": "BF-ECADASTRE:HXgwb55P1Pk",
+        "sourceId": "bf-dgi-ecadastre-public-geojson",
+        "sourceParcelId": "HXgwb55P1Pk"
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                -4.287116885431257,
+                11.139758543921122
+              ],
+              [
+                -4.287017622080964,
+                11.13985227453872
+              ],
+              [
+                -4.28691950615184,
+                11.139750943404426
+              ],
+              [
+                -4.287051983031805,
+                11.13962609916009
+              ],
+              [
+                -4.287118334958708,
+                11.139694625390417
+              ],
+              [
+                -4.287116885431257,
+                11.139758543921122
+              ]
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+}

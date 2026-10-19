@@ -1,0 +1,301 @@
+{
+  "descriptor": {
+    "id": "bj-andf-efoncier-geoserver",
+    "adapter": "wfs",
+    "endpoint": "https://geoserver.andf.bj/geoserver/efb/wfs",
+    "version": "2.0.0",
+    "featureType": "efb:efb_parcel",
+    "idField": "nup",
+    "idType": "string",
+    "idPrefix": "BJ-ANDF-",
+    "idPattern": "^[0-9]+$",
+    "geometryField": "boundary",
+    "requestProperties": true,
+    "outFields": [
+      "nup"
+    ],
+    "pageSize": 500,
+    "maxFeatures": 10000,
+    "maxBboxKm2": 25,
+    "metricSrid": 32631,
+    "name": "ANDF e-Foncier cadastral parcels — Porto-Novo",
+    "cityIds": [
+      "porto-novo"
+    ],
+    "countryCode": "BJ",
+    "scope": "Porto-Novo initial parcel availability candidate. The publisher names the commune; discovery found polygons in separated urban windows. No authoritative municipal clipping rule or citywide completeness is established.",
+    "licenceNote": "Reuse terms uncertain. Public consultation and duplication have exclusions and conditions. GeoServer service defaults do not establish an open-data licence.",
+    "licenceUrl": "https://andf.bj/cadastre/",
+    "catalogueUrl": "https://cadastre.andf.bj/",
+    "attribution": "ANDF (Agence Nationale du Domaine et du Foncier), e-Foncier cadastral parcels; publisher WFS geographic output.",
+    "evidenceFile": "evidence/source-metadata.json"
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "id": "transport.0",
+      "properties": {
+        "nup": "101182877"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              2.6214037,
+              6.50782332
+            ],
+            [
+              2.62134737,
+              6.50760717
+            ],
+            [
+              2.62131498,
+              6.50748318
+            ],
+            [
+              2.62145317,
+              6.50746011
+            ],
+            [
+              2.62160487,
+              6.50742492
+            ],
+            [
+              2.62171202,
+              6.50740007
+            ],
+            [
+              2.62185551,
+              6.50736679
+            ],
+            [
+              2.6220064,
+              6.5073318
+            ],
+            [
+              2.62212744,
+              6.50730369
+            ],
+            [
+              2.62209573,
+              6.50723302
+            ],
+            [
+              2.62191796,
+              6.50727003
+            ],
+            [
+              2.62170265,
+              6.50731192
+            ],
+            [
+              2.6216945,
+              6.50720064
+            ],
+            [
+              2.6216816,
+              6.50700586
+            ],
+            [
+              2.62167908,
+              6.5069812
+            ],
+            [
+              2.62167177,
+              6.50688959
+            ],
+            [
+              2.62164872,
+              6.50656759
+            ],
+            [
+              2.62156065,
+              6.50657801
+            ],
+            [
+              2.62157426,
+              6.50671445
+            ],
+            [
+              2.62157929,
+              6.50683128
+            ],
+            [
+              2.62158917,
+              6.50690829
+            ],
+            [
+              2.6215928,
+              6.50701407
+            ],
+            [
+              2.62160089,
+              6.50709637
+            ],
+            [
+              2.62161386,
+              6.50732945
+            ],
+            [
+              2.62138691,
+              6.50737388
+            ],
+            [
+              2.62128054,
+              6.50739721
+            ],
+            [
+              2.62125955,
+              6.50732362
+            ],
+            [
+              2.62120536,
+              6.50713883
+            ],
+            [
+              2.6211802,
+              6.50704529
+            ],
+            [
+              2.62114979,
+              6.50693865
+            ],
+            [
+              2.62107464,
+              6.50668973
+            ],
+            [
+              2.62098533,
+              6.50670984
+            ],
+            [
+              2.62108923,
+              6.50702585
+            ],
+            [
+              2.62109832,
+              6.50712096
+            ],
+            [
+              2.62110544,
+              6.50715941
+            ],
+            [
+              2.62113702,
+              6.50726146
+            ],
+            [
+              2.62118486,
+              6.50741582
+            ],
+            [
+              2.62124054,
+              6.50759596
+            ],
+            [
+              2.6212835,
+              6.50773449
+            ],
+            [
+              2.62130915,
+              6.50781739
+            ],
+            [
+              2.62127912,
+              6.50787191
+            ],
+            [
+              2.6214037,
+              6.50782332
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "transport.1",
+      "properties": {
+        "nup": "101182889"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              2.62127771,
+              6.50867544
+            ],
+            [
+              2.62116676,
+              6.50851456
+            ],
+            [
+              2.62114736,
+              6.50858431
+            ],
+            [
+              2.6211318,
+              6.50863676
+            ],
+            [
+              2.62108662,
+              6.50866296
+            ],
+            [
+              2.62110706,
+              6.50869646
+            ],
+            [
+              2.62114348,
+              6.50875596
+            ],
+            [
+              2.62127771,
+              6.50867544
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "transport.2",
+      "properties": {
+        "nup": "101182892"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              2.6214174,
+              6.50862405
+            ],
+            [
+              2.62138907,
+              6.50848065
+            ],
+            [
+              2.62128236,
+              6.50850278
+            ],
+            [
+              2.62127198,
+              6.5085299
+            ],
+            [
+              2.62135311,
+              6.50864153
+            ],
+            [
+              2.6214174,
+              6.50862405
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+}
