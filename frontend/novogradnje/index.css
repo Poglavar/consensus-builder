@@ -34,6 +34,7 @@
 
 /* Apartment details use four matching panels; building routes keep the apartment list beside stacked previews. */
 .viewer-grid.apartment-viewer-grid{grid-template-columns:repeat(2,minmax(0,1fr));align-items:stretch;gap:16px;margin-top:0}
+.apartment-viewer-grid+.confidence-note{margin:24px 0 0;padding:14px 16px}
 .viewer-panel{display:flex;flex-direction:column;min-width:0;max-width:none;height:460px;border-radius:12px;background:var(--surface)}
 .viewer-panel h3{min-height:48px;display:flex;align-items:center;padding:12px 14px;font-size:1.03rem}
 .viewer-panel>.viewer-canvas,.viewer-panel>.viewer-host,.viewer-panel>.original-preview{height:300px;min-height:260px;flex:0 0 auto;margin-top:0}
