@@ -547,6 +547,13 @@ class Runner:
             {"pid": job["process"].pid, "lane": job["spec"]["lane"],
              "cityCodes": job["spec"]["cityCodes"], "directory": str(job["directory"])}
             for job in self.pipeline_jobs.values()]
+        for job in self.pipeline_jobs.values():
+            checkpoint = job["directory"] / "state.json"
+            if checkpoint.is_file():
+                child_state = json_read(checkpoint)
+                self.state["activeProcesses"].extend(
+                    {**item, "pipelineLane": job["spec"]["lane"]}
+                    for item in child_state.get("activeProcesses", []))
         self.state["discoveryCounts"] = discovery_outcomes.counts(self.state)
         atomic_json(self.state_path, self.state)
 
@@ -2007,6 +2014,8 @@ def main(argv: list[str] | None = None) -> int:
                           "heartbeat": state.get("heartbeat"), "heartbeatAgeSeconds": heartbeat_age,
                           "queuePath": state.get("queuePath"), "currentRankStart": state.get("currentRankStart"),
                           "currentRankEnd": state.get("currentRankEnd"), "activeProcesses": active,
+                          "pipelineActive": state.get("pipelineActive", []),
+                          "sharedRuntime": state.get("sharedRuntime"),
                           "failedSkippedCount": len(state.get("failedItems", {})),
                           "discoveryCounts": discovery_outcomes.counts(state),
                           "adapterStageBlocked": state.get("adapterStageBlocked"),

@@ -15,7 +15,7 @@ from typing import Any, Iterator
 
 
 SCHEMA_VERSION = 1
-_ROOTS = ("scripts", "backend/parcels", "backend/test", "frontend", "world-parcels")
+_ROOTS = ("scripts", "backend/parcels", "backend/scripts", "backend/test", "frontend", "world-parcels")
 _SKIP_PARTS = {".git", "node_modules", "tmp", "__pycache__", ".cache", ".parcel-shared-runtime"}
 _SECRET_NAME = re.compile(
     r"^(?:\.env(?:\..*)?|\.npmrc|\.pgpass|id_(?:rsa|dsa|ecdsa|ed25519)(?:\.pub)?|"
