@@ -423,3 +423,18 @@ Seven selected headless Playwright tests passed across `named-plans.spec.ts`,
 The first browser attempt ended during server startup before running any tests; the successful
 run used a local static server. Both completed test runs finished without being stopped. Storage
 and network API boundaries were mocked; no live database or chain was changed.
+
+
+### Bot discovery and shared test-token funding
+
+A minted named plan is a distinct bot policy input identified as `plan:<slug>`; its member row
+IDs remain provenance and never become an ordinary proposal ID. The plan's real chain account
+identifies the support/market target, and current chain state determines action eligibility.
+A plan with missing or changed members is excluded explicitly. Density evidence aggregates its
+member building records without changing those published records.
+
+Shared bot USDC funding is wallet maintenance on Solana devnet, separate from betting and donation
+spend limits. Only configured actor wallets about to transfer tokens are eligible. The main bot
+wallet funds their shortfall to 0.5 test USDC while retaining 1 test USDC; a database-session lock
+serializes balance checks, transfers and readback. Confirmed receipts are timestamped in the
+existing agent-run ledger. It grants no authority to fund unknown wallets or another network.

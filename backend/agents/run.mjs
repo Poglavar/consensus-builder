@@ -55,7 +55,7 @@ import { ensureMarketAndStake, usdcToAtomic } from './bettor.js';
 import { getRun, startRun, updateRun, recordCosts, dailySpendUsd, assertUnderCap, dailyCapUsd, listRuns } from './ledger.js';
 import { sendTelegram } from './telegram.js';
 import { createRpcConnection } from '../solana/rpc.js';
-import { ensureBotSolFunding } from './funding.js';
+import { ensureBotSolFunding, fundBotAction } from './funding.js';
 import { sendAndConfirmPolling } from './solana-send.js';
 import {
     assertExecutionPlan, decisionCompletion, executionPolicy, summarizeExecutionPlan,
@@ -700,6 +700,8 @@ async function main() {
                 // stake YES on its own proposal
                 if (!stakes[pick.candidateId]) {
                     try {
+                        await fundBotAction({ connection, pool, persona, runId: e.runId,
+                            action: { type: 'stake', amount: persona.stakeUsdc } });
                         const staked = await runAction({ type: 'stake', proposalId: pick.proposalId, amount: persona.stakeUsdc, side: 'yes' }, () => ensureMarketAndStake({
                             connection, ownerKeypair: keypair, proposalPda: mints[pick.candidateId].proposalPda,
                             stakeMint: USDC_DEVNET, side: SIDE_YES, amountAtomic: usdcToAtomic(String(persona.stakeUsdc)),
