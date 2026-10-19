@@ -11,7 +11,8 @@ const lifecyclePhaseOf = (typeof getLifecycleStatus === 'function')
 function isProposalOpenSaleOffer(proposal) {
     if (!proposal) return false;
     const otp = proposal.ownershipTransferProposal || {};
-    if (lifecyclePhaseOf(proposal) === 'Executed' || otp.status === 'sold') return false;
+    if (lifecyclePhaseOf(proposal) !== 'Active' || isProposalExpired(proposal)
+        || isNonBindingProposal(proposal) || otp.status === 'sold') return false;
     return ((proposal.facets || {}).ownership === 'third-party' && otp.recipientScope === 'any')
         || otp.direction === 'from-me';
 }
@@ -284,14 +285,15 @@ function getProposalLifecycleKey(proposal) {
     if (isNonBindingProposal(proposal)) {
         return isProposalExpired(proposal) ? 'vote-concluded' : 'vote-open';
     }
-    // Check for ownership-transfer-from-me proposals which are accepted but not funded
-    if (proposal.funded === false && proposal.ownershipTransferProposal?.direction === 'from-me') {
-        return 'accepted-not-funded';
-    }
     const lifecycleField = lifecyclePhaseOf(proposal).toLowerCase();
     if (lifecycleField === 'executed') return 'executed';
     if (lifecycleField === 'expired') return 'expired';
     if (lifecycleField === 'cancelled') return 'cancelled';
+    if (isProposalExpired(proposal)) return 'expired';
+    // Funding readiness does not establish owner consent and cannot override a terminal state.
+    if (proposal.funded === false && proposal.ownershipTransferProposal?.direction === 'from-me') {
+        return 'awaiting-funding';
+    }
     return 'active';
 }
 
@@ -308,8 +310,8 @@ function getProposalLifecycleLabel(key) {
             return t('panel.proposal.lifecycle.expired', 'Expired');
         case 'cancelled':
             return t('panel.proposal.lifecycle.cancelled', 'Withdrawn');
-        case 'accepted-not-funded':
-            return t('panel.proposal.lifecycle.acceptedNotFunded', 'Accepted (Not funded)');
+        case 'awaiting-funding':
+            return t('panel.proposal.lifecycle.awaitingFunding', 'Awaiting funding');
         default:
             return t('panel.proposal.lifecycle.active', 'Active');
     }
@@ -327,8 +329,8 @@ function getProposalLifecycleClass(key) {
             return 'expired';
         case 'cancelled':
             return 'cancelled';
-        case 'accepted-not-funded':
-            return 'accepted-not-funded';
+        case 'awaiting-funding':
+            return 'active';
         default:
             return 'active';
     }

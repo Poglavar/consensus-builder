@@ -351,6 +351,16 @@ test.describe('Proposal actions @features', () => {
     await dialog.locator('#proposalOptionsSection > .collapsible-header').click();
     await expect(dialog.locator('#proposalOffer')).toBeVisible();
     await dialog.locator('#proposalOffer').fill('1000');
+    await page.evaluate(() => {
+      const w = window as any;
+      const addProposal = w.proposalStorage.addProposal;
+      w.proposalStorage.addProposal = function (proposal: any) {
+        if (proposal.goal === 'ownership-transfer-from-me') {
+          w.__createdSellerOffer = JSON.parse(JSON.stringify(proposal));
+        }
+        return addProposal.call(this, proposal);
+      };
+    });
     await dialog.locator('#createProposalSubmitButton').click();
     await chooseLocalProposal(page);
     await expect(dialog).toBeHidden({ timeout: 10000 });
@@ -361,6 +371,14 @@ test.describe('Proposal actions @features', () => {
     expect(offer.goal).toBe('ownership-transfer-from-me');
     expect(offer.facets).toMatchObject({ landUse: 'as-is', parcels: 'as-is', ownership: 'third-party' });
     expect(offer.ownershipTransferProposal).toMatchObject({ direction: 'from-me', recipientScope: 'any' });
+    const authored = await page.evaluate(() => (window as any).__createdSellerOffer);
+    expect(authored.acceptedParcelIds).toEqual([]);
+    expect(authored.ownerAcceptances).toEqual({});
+    expect(authored.ownershipTransferProposal).not.toHaveProperty('status');
+    expect(offer.funded).toBe(false);
+    await showProposal(page, offer.proposalId);
+    await expandProposalDetails(page);
+    await expect(page.locator('#proposal-details-panel .cb-badge').filter({ hasText: 'Awaiting funding' })).toBeVisible();
   });
 
   test('claim tools keep minting unavailable until a wallet is connected', async ({ mockApi: page }) => {

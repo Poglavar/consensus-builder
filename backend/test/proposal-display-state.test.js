@@ -64,4 +64,9 @@ describe('proposal display state', () => {
         expect(seen).toEqual(['panel.proposal.lifecycle.minted']);
         expect(displayState.rungLabel('nonsense')).toBe('Draft');
     });
+
+    it('displays awaiting funding as an open modifier without asserting owner acceptance', () => {
+        expect(stateOf(published({ lifecycleStatus: 'Active', funded: false }), { lifecycleKey: 'awaiting-funding' }))
+            .toMatchObject({ rung: 'published', modifier: 'awaiting-funding', modifierTone: 'cb-badge--published' });
+    });
 });

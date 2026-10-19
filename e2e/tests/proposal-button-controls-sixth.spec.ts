@@ -6,7 +6,7 @@ import { connectWalletByConnectorId, injectMockEvmWallet, injectMockSolanaWallet
 import { installProposalEvmBoundary, PROPOSAL_EVM_ACCOUNT } from '../helpers/proposal-chain-boundary';
 import { installSolanaExternalBoundary } from '../helpers/solana-external-boundary';
 import { sampleParcels } from '../helpers/mocks/parcel-data';
-import { openAndClosePopup } from '../helpers/controls';
+import { openAndClosePopup, selectNativeOption } from '../helpers/controls';
 
 const EVM_WALLET = PROPOSAL_EVM_ACCOUNT;
 const SOLANA_WALLET = '7xKXtg2CWYcy6EH8d9xvPht4JyhV46Lxgq6vN6hS9wZT';
@@ -281,15 +281,22 @@ test.describe('proposal button controls sixth pass @features', () => {
     await establishLocalProfile(page);
     const proposalId = await page.evaluate(({ parcelId, geometry }) => (window as any).proposalStorage.addProposal({
       proposalId: 'list-buy-owner-offer', title: 'List purchase action', goal: 'parcelBased', lifecycleStatus: 'Active',
-      offer: 100, cadastreParcelIds: [parcelId], geometry, facets: { ownership: 'third-party' },
+      offer: 100, funded: false, cadastreParcelIds: [parcelId], geometry, facets: { ownership: 'third-party' },
       ownershipTransferProposal: { direction: 'from-me', recipientScope: 'any', status: 'open' },
     }), { parcelId: PARCEL_ID, geometry: PARCEL_GEOMETRY });
     await page.locator('#proposals-button').click();
     const row = page.locator(`#proposals-sheet .proposal-list-item[data-proposal-id="${proposalId}"]`);
     const buy = row.locator('.proposal-buy-btn');
+    await expect(row).toContainText('Awaiting funding');
+    await page.locator('#proposals-sheet .proposal-filters-toggle').click();
+    await selectNativeOption(page.locator('#proposal-filter-lifecycle'), 'awaiting-funding');
     await expect(buy).toBeVisible();
     await buy.click();
     await expect.poll(() => page.evaluate(id => (window as any).proposalStorage.getProposal(id)?.lifecycleStatus, proposalId)).toBe('Executed');
+    await expect(row).toHaveCount(0);
+    await page.locator('#proposals-button').click();
+    await selectNativeOption(page.locator('#proposal-filter-lifecycle'), 'all');
+    await expect(row).toContainText('Executed');
     await expect(row.locator('.proposal-buy-btn')).toHaveCount(0);
   });
 

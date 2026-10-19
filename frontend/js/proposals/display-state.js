@@ -32,7 +32,7 @@
         expired: 'cb-badge--expired',
         'vote-open': 'cb-badge--published',
         'vote-concluded': 'cb-badge--expired',
-        'accepted-not-funded': 'cb-badge--expired'
+        'awaiting-funding': 'cb-badge--published'
     });
 
     const RUNG_LABELS = Object.freeze({

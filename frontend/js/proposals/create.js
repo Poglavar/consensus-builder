@@ -1012,7 +1012,7 @@ async function createProposal() {
             cadastreParcelIds: authoredCadastreParcelIds,
             primaryType: proposalMainType,
             goal: selectedTool,
-            acceptedParcelIds: [], // Track which parcels have accepted the proposal
+            acceptedParcelIds: [], // Derived consent tally; authoring supplies no owner decisions
             ownerAcceptances: {},
             applied: false,
             bounds: bounds, // Store bounds for reliable positioning
@@ -1068,14 +1068,12 @@ async function createProposal() {
             }
         }
 
-        // "Ownership transfer from me" proposals are automatically accepted but not funded
-        // This means all parcels are marked as accepted, but the proposal cannot be executed
+        // Offering one's land expresses sale intent, not acceptance by every parcel owner.
+        // Funding and consent remain separate; an unfunded offer cannot execute by local acceptance.
         if (selectedTool === 'ownership-transfer-from-me') {
-            proposal.acceptedParcelIds = authoredCadastreParcelIds.slice();
             proposal.funded = false; // Explicitly mark as not funded - prevents execution
             proposal.ownershipTransferProposal = {
-                direction: 'from-me',
-                status: 'accepted-not-funded'
+                direction: 'from-me'
             };
         }
 
