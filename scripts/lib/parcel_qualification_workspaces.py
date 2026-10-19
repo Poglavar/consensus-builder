@@ -501,13 +501,24 @@ def discard_workspace(workspace: dict[str, Any]) -> None:
     if not registered:
         raise RuntimeError("qualification worktree registration does not match owned metadata")
 
+    # A runner may itself be a worktree; dependency links belong to that runner,
+    # rather than necessarily to the repository's main checkout.
+    state_dir = metadata_path.parent.parent
+    owner = state_dir.parent.parent
+    if state_dir.parent.name != "tmp" or not owner.is_dir():
+        raise RuntimeError("could not verify qualification dependency owner")
+    owner_common = Path(_git(owner, "rev-parse", "--git-common-dir").stdout.strip())
+    if not owner_common.is_absolute():
+        owner_common = (owner / owner_common).resolve()
+    if owner_common.resolve() != common.resolve():
+        raise RuntimeError("qualification dependency owner belongs to another repository")
     ignored = _ignored_inventory(root)
     for rel in sorted(ignored):
         if rel in {"node_modules", "backend/node_modules"}:
             link = root / rel
             if (not link.is_symlink()
-                    or not (parent_repo / rel).exists()
-                    or link.resolve() != (parent_repo / rel).resolve()):
+                    or not (owner / rel).exists()
+                    or link.resolve() != (owner / rel).resolve()):
                 raise RuntimeError("workspace backend/node_modules is not the approved symlink")
             continue
         parts = Path(rel).parts

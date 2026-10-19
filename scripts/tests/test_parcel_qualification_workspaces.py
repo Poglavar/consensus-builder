@@ -364,6 +364,23 @@ class ParcelQualificationWorkspaceTests(unittest.TestCase):
         self.assertEqual(run_git(self.parent, "show-ref", "--verify",
                                  f"refs/heads/{workspace['branch']}", check=False), "")
 
+    def test_discard_accepts_dependencies_owned_by_a_runner_worktree(self):
+        job = self.parent.parent / "job-runner"
+        run_git(self.parent, "worktree", "add", "-b", "job-runner", str(job))
+        dependencies = self.parent / "backend/node_modules"
+        dependencies.mkdir(parents=True, exist_ok=True)
+        (job / "backend/node_modules").symlink_to(dependencies, target_is_directory=True)
+        packet = {**self.packet, "cityPath": str(job / self.city_path.relative_to(self.parent)),
+                  "reviewPath": str(job / self.review_path.relative_to(self.parent))}
+        city = json.loads(json.dumps(self.city).replace(str(self.parent), str(job)))
+        packet = json.loads(json.dumps(packet).replace(str(self.parent), str(job)))
+        workspace = workspaces.prepare_workspace(job, job / "tmp/state", 1,
+                                                  city, self.receipt, packet)
+        workspaces.finish_workspace(workspace)
+        workspaces.discard_workspace(workspace)
+        self.assertFalse(workspace["root"].exists())
+        self.assertTrue((job / "backend/node_modules").is_symlink())
+
     def test_discard_refuses_unowned_ignored_env_file(self):
         workspace = self.prepare()
         workspaces.finish_workspace(workspace)
