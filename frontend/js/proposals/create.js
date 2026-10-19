@@ -641,8 +641,13 @@ function updateProposalNameAndDescription(proposalType, forceUpdate = false) {
     const descriptionInput = document.getElementById('proposalDescription');
 
     if (nameInput) {
+        if (nameInput.dataset.titleOriginBound !== 'true') {
+            nameInput.addEventListener('input', () => { nameInput.dataset.titleOrigin = 'user'; });
+            nameInput.dataset.titleOriginBound = 'true';
+        }
         if (forceUpdate || !nameInput.value.trim()) {
             nameInput.value = generateDefaultProposalName(proposalType);
+            nameInput.dataset.titleOrigin = 'generated';
         }
     }
 
@@ -731,6 +736,7 @@ async function createProposal() {
         }
     }
     const proposalName = (document.getElementById('proposalName') && document.getElementById('proposalName').value || '').trim();
+    const titleOrigin = document.getElementById('proposalName')?.dataset?.titleOrigin === 'generated' ? 'generated' : 'user';
     const description = document.getElementById('proposalDescription').value.trim();
     const kindTerms = readProposalKindTerms();
     const offer = kindTerms.nonBinding ? 0 : (proposalMainType === 'Reparcellization'
@@ -991,6 +997,7 @@ async function createProposal() {
             window.proposalDraftStore.updateDraft(publishingDraftId, {
                 fields: {
                     name: proposalName || proposalType,
+                    titleOrigin,
                     description,
                     selectedParcelIds: selectedLiveParcelIds,
                     acquisitionMode,
@@ -1005,6 +1012,7 @@ async function createProposal() {
             title: proposalName || proposalType, // Keep a stable human-readable title
             name: proposalName || proposalType,
             proposalName: proposalName || proposalType,
+            titleOrigin,
             description: description || proposalName || proposalType,
             ...termFields, // kind, money terms or voting period (proposals/publish-terms.js)
             acquisitionMode: acquisitionMode,
@@ -1313,22 +1321,7 @@ async function createProposal() {
         }
         console.debug('[createProposal] Proposal object ready, shouldMintOnchain:', shouldMintOnchain);
 
-        // Duplicate pre-check temporarily disabled (false positives were blocking creation)
-        // try {
-        //     if (proposalStorage && typeof proposalStorage._buildHashSeed === 'function' && typeof proposalStorage._findDuplicateBySeed === 'function') {
-        //         const duplicateSeed = proposalStorage._buildHashSeed(proposal);
-        //         const duplicate = proposalStorage._findDuplicateBySeed(duplicateSeed);
-        //         if (duplicate) {
-        //             hideWaitingPopupSafe();
-        //             setProposalModalInteractivity(true);
-        //             setProposalCreateButtonState(false);
-        //             showProposalAlertMessage('this_exact_proposal_already_exists', 'This exact proposal already exists');
-        //             return;
-        //         }
-        //     }
-        // } catch (dupCheckError) {
-        //     console.warn('Duplicate proposal pre-check failed', dupCheckError);
-        // }
+        // Local authored records are distinct; publication deduplication uses the content fingerprint.
 
         if (proposalMainType === 'Reparcellization') {
             // A readjustment must still be on its selection; a subdivision (poolSource 'site') is

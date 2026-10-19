@@ -166,43 +166,6 @@ describe('ProposalManager._rebuildPass — stable authored state', () => {
     });
 });
 
-describe('coordinated corridor ground', () => {
-    it('comes from authored readjustment polygons and flat cadastral anchors, not generated layers', () => {
-        const plot = turf.polygon([[[0, 0], [0.001, 0], [0.001, 0.001], [0, 0.001], [0, 0]]]);
-        const coordinated = {
-            proposalId: 'plots',
-            goal: 'reparcellization',
-            applied: true,
-            coordinatedPlanId: 'plan-a',
-            cadastreParcelIds: ['HR-A', 'HR-B'],
-            reparcellization: { polygons: [{ geometry: plot.geometry }] }
-        };
-        const unrelated = {
-            proposalId: 'other-plots',
-            goal: 'reparcellization',
-            applied: true,
-            coordinatedPlanId: 'plan-b',
-            cadastreParcelIds: ['HR-C'],
-            reparcellization: { polygons: [{ geometry: plot.geometry }] }
-        };
-
-        // Deliberately no parcelLayerById: generated output was purged before this phase.
-        installGlobal('window', { __planOrder: planOrder });
-        const occupied = ProposalManager._coordinatedReadjustmentGroundByParcel(
-            [{ id: 'road', coordinatedPlanId: 'plan-a' }],
-            [coordinated, unrelated]
-        );
-
-        expect([...occupied.keys()].sort()).toEqual(['HR-A', 'HR-B']);
-        expect(occupied.get('HR-A')).toHaveLength(1);
-        expect(occupied.get('HR-A')[0]).toEqual({
-            type: 'Feature',
-            properties: {},
-            geometry: plot.geometry
-        });
-        expect(occupied.has('HR-C')).toBe(false);
-    });
-});
 
 describe('ProposalManager.reapplyAppliedProposals — reload barrier', () => {
     it('returns the in-flight replay promise so a shared-route reload cannot inspect a half-built fabric', async () => {

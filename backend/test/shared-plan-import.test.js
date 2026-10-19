@@ -583,23 +583,23 @@ describe('shared-plan import boundary', () => {
         });
     });
 
-    it('materialises a coordinated readjustment before its reserved road bands', async () => {
+    it('uses the ordinary corridor-before-readjustment order regardless of legacy metadata', async () => {
         const events = [];
         const applyProposal = vi.fn(async id => { events.push(id); return true; });
         const materializeCorridorBatch = vi.fn(async ids => {
             events.push(`roads:${ids.join('+')}`);
             return { ok: true, appliedIds: ids, failedIds: [] };
         });
-        const coordinatedPlanId = 'plan-one';
+        const validateSharedProposalGround = vi.fn(() => ({ ok: true }));
         const records = new Map([
-            ['plots', { goal: 'reparcellization', coordinatedPlanId }],
-            ['park', { goal: 'park', coordinatedPlanId }],
-            ['building', { goal: 'single', buildingProposal: {}, coordinatedPlanId }],
-            ['road-a', { goal: 'road-track', coordinatedPlanId }],
-            ['road-b', { roadProposal: { definition: {} }, coordinatedPlanId }]
+            ['plots', { goal: 'reparcellization', coordinatedPlanId: 'legacy-plan' }],
+            ['park', { goal: 'park', coordinatedPlanId: 'legacy-plan' }],
+            ['building', { goal: 'single', buildingProposal: {}, coordinatedPlanId: 'legacy-plan' }],
+            ['road-a', { goal: 'road-track', coordinatedPlanId: 'legacy-plan' }],
+            ['road-b', { roadProposal: { definition: {} }, coordinatedPlanId: 'legacy-plan' }]
         ]);
         const { materializeQueuedSharedProposals } = loadSharedImportHelpers({
-            ProposalManager: { applyProposal, materializeCorridorBatch },
+            ProposalManager: { applyProposal, materializeCorridorBatch, validateSharedProposalGround },
             proposalStorage: { getProposal: id => records.get(id) || null },
             applyRoute: {
                 normalizeGoalKey: goal => goal,
@@ -611,14 +611,16 @@ describe('shared-plan import boundary', () => {
             'park', 'road-a', 'building', 'plots', 'road-b'
         ]);
 
-        expect(events).toEqual(['plots', 'roads:road-a+road-b', 'building', 'park']);
+        expect(events).toEqual(['roads:road-a+road-b', 'plots', 'building', 'park']);
+        expect(validateSharedProposalGround.mock.calls.map(([id]) => id))
+            .toEqual(['road-a', 'road-b', 'plots', 'building', 'park']);
         expect(applyProposal.mock.calls).toEqual([
             ['plots', { replay: true, silent: true, deferPresentation: true }],
             ['building', { replay: true, silent: true, deferPresentation: true }],
             ['park', { replay: true, silent: true, deferPresentation: true }]
         ]);
         expect(result).toEqual({
-            appliedIds: ['plots', 'road-a', 'road-b', 'building', 'park'],
+            appliedIds: ['road-a', 'road-b', 'plots', 'building', 'park'],
             failedIds: []
         });
     });
@@ -633,9 +635,6 @@ describe('shared-plan import boundary', () => {
             .not.toMatch(/resetPartiallyAppliedSharedPlan/);
         expect(source, 'the plan route unapplies members again')
             .not.toMatch(/coveredIncomingIds\.size > 0 && coveredIncomingIds\.size < totalProposals/);
-        // The remaining "Rebuilding applied plan" is the boot replay awaiting reapplyAppliedProposals,
-        // which is a different phase that happens to share the wording.
-        expect(source).toMatch(/await ProposalManager\.reapplyAppliedProposals\(\{ onProgress: reportSharedPlanProgress \}\)/);
     });
 });
 

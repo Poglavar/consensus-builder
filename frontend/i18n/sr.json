@@ -657,7 +657,11 @@
         },
         "design": {
             "corridorSummary": "{{segments}} segment(a) · širina {{width}} m",
-            "buildingSummary": "{{count}} zgrada · {{typology}}",
+            "buildingSummary": {
+                "one": "{{count}} zgrada · {{typology}}",
+                "few": "{{count}} zgrade · {{typology}}",
+                "other": "{{count}} zgrada · {{typology}}"
+            },
             "reparcelSummary": "{{count}} zamenskih parcela · {{algorithm}}",
             "parcelSummary": "{{count}} obuhvaćenih parcela",
             "manual": "ručno",
@@ -2671,7 +2675,11 @@
             "show": "Prikaži"
         },
         "corridorTunnel": {
-            "offer": "Ovaj {{kind}} preseca {{count}} zgradu/zgrada. Zadržati ga kroz njih na površini ili kroz njih projektovati tunel?",
+            "offer": {
+                "one": "Ovaj {{kind}} preseca {{count}} zgradu. Zadržati ga kroz nju na površini ili kroz nju projektovati tunel?",
+                "few": "Ovaj {{kind}} preseca {{count}} zgrade. Zadržati ga kroz njih na površini ili kroz njih projektovati tunel?",
+                "other": "Ovaj {{kind}} preseca {{count}} zgrada. Zadržati ga kroz njih na površini ili kroz njih projektovati tunel?"
+            },
             "road": "put",
             "track": "pruga",
             "proposalImpact": "Ovaj put je kasniji od ovih predloga zgrada; površinski prelaz preuzima njihovo zemljište tokom ponovne izvedbe:",
@@ -3703,12 +3711,21 @@
                 "additionalFloors": "Dodatni spratovi:",
                 "floorHeight": "Visina sprata (m):",
                 "helper": "Izaberite pravilo: predložena visina crta svaku zgradu tačno na toj visini; dodatni spratovi dodaju spratove na trenutnu visinu svake zgrade (zahteva poznate visine).",
-                "summaryExact": "Predlaže se {{count}} zgrada visine {{height}} m.",
+                "summaryExact": {
+                    "one": "Predlaže se {{count}} zgrada visine {{height}} m.",
+                    "few": "Predlažu se {{count}} zgrade visine {{height}} m.",
+                    "other": "Predlaže se {{count}} zgrada visine {{height}} m."
+                },
                 "loading": "Učitavanje postojećih zgrada…",
                 "notAvailable": "Podaci o postojećim zgradama još nisu dostupni za ovaj grad.",
                 "noneFound": "Na izabranim parcelama nisu pronađene postojeće zgrade.",
                 "loadFailed": "Učitavanje postojećih zgrada nije uspelo. Pokušajte ponovo.",
-                "summary": "Povisuje se {{count}} od {{total}} postojećih zgrada."
+                "summary": "Povisuje se {{count}} od {{existingBuildings}}.",
+                "buildingCount": {
+                    "one": "{{count}} postojeće zgrade",
+                    "few": "{{count}} postojeće zgrade",
+                    "other": "{{count}} postojećih zgrada"
+                }
             },
             "warnings": {
                 "oversizedBlock": "Ovaj blok je velik — obilazak pešice trajao bi oko {{minutes}} minuta. Preporučeni blokovi su između 50×50 m i 200×200 m, tako da se mogu obići za oko 2½ do 10 minuta. Želite li da nastavite?",
@@ -3833,7 +3850,6 @@
                 "selectedParcels": "Izabrane parcele",
                 "singleParcelLabel": "Parcela {{id}}",
                 "multiParcelLabel": "{{count}} parcela",
-                "generatedSummaryExcluded": "Generisano {{count}} zgrada · {{excluded}} parcela izuzeto pravilom",
                 "excludedBelowMinPlot": "Manja od najmanje površine parcele — treba je spojiti sa susednom pre nego što ovde išta može da se gradi.",
                 "excludedNoRoom": "Nakon odmaka na ovoj parceli ne ostaje mesta za gradnju.",
                 "excludedCannotMeet": "Premala da zadovolji minimum koji ovo pravilo obavezuje — pravilo sebi ovde protivreči."
@@ -6101,7 +6117,11 @@
             "short": "zadire"
         },
         "buildings": {
-            "count": "Zgrada: {{count}}",
+            "count": {
+                "one": "{{count}} zgrada",
+                "few": "{{count}} zgrade",
+                "other": "{{count}} zgrada"
+            },
             "footprint": "osnova {{area}}",
             "floorArea": "BRGP {{area}}",
             "height": "spratova: {{floors}} · {{height}}"

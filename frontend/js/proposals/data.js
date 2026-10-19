@@ -1146,11 +1146,6 @@ const proposalStorage = {
             options.selectedParcelIds
         );
         const normalized = this._normalizeProposal(candidate);
-        const seed = this._buildHashSeed(normalized);
-        const duplicate = this._findDuplicateBySeed(seed);
-        if (duplicate) {
-            console.debug('[proposalStorage] Duplicate seed detected; allowing insert', { seed, existingId: duplicate.proposalId });
-        }
 
         normalized.createdAt = normalized.createdAt || new Date().toISOString();
         normalized.updatedAt = new Date().toISOString();
@@ -1597,15 +1592,6 @@ const proposalStorage = {
         const seed = this._buildHashSeed(proposal);
         const digest = hashStringDeterministic(seed);
         return `p-${digest}`;
-    },
-
-    _findDuplicateBySeed(seed) {
-        for (const proposal of this.proposals.values()) {
-            if (this._buildHashSeed(proposal) === seed) {
-                return proposal;
-            }
-        }
-        return null;
     }
 };
 

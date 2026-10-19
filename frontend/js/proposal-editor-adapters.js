@@ -125,6 +125,7 @@
             : [];
         return {
             name: sourceName(proposal),
+            ...(proposal?.titleOrigin === 'generated' || proposal?.titleOrigin === 'user' ? { titleOrigin: proposal.titleOrigin } : {}),
             description: proposal?.description || '',
             selectedParcelIds: sourceParcels(proposal),
             // Keep the authored land declaration separate from the live parcel selection. An
@@ -472,6 +473,8 @@
             ].forEach(key => delete output[key]);
         } else if (fields.binding && typeof fields.binding === 'object') output.binding = clone(fields.binding);
         output.title = fields.name || output.title || output.name || '';
+        if (fields.titleOrigin === 'generated' || fields.titleOrigin === 'user') output.titleOrigin = fields.titleOrigin;
+        else delete output.titleOrigin;
         output.name = output.title;
         output.proposalName = output.title;
         output.description = fields.description || '';

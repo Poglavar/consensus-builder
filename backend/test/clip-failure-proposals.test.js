@@ -435,6 +435,7 @@ describe('apply/parcels.js _applyReparcellizationProposal', () => {
         }, features);
     };
     const data = () => ({
+        coordinatedPlanId: 'legacy-plan',
         cadastreParcelIds: ['HR-A', 'HR-B'],
         reparcellization: {
             polygons: [

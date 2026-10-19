@@ -629,7 +629,7 @@
         let message = count
             ? tunnelText(
                 'modal.corridorTunnel.offer',
-                'This {{kind}} intersects {{count}} building(s). Keep it at surface level through them, or tunnel through them?',
+                'Buildings crossed by this {{kind}}: {{count}}. Keep it at surface level, or tunnel through?',
                 { kind, count }
             )
             : '';

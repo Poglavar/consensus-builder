@@ -3,6 +3,10 @@ import { describe, expect, it, vi } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { createContext, runInContext } from 'node:vm';
 
+const ownershipTypeSource = readFileSync(
+    new URL('../../frontend/js/parcels/ownership-type.js', import.meta.url),
+    'utf8'
+);
 const source = readFileSync(
     new URL('../../frontend/js/parcels/ownership-ui.js', import.meta.url),
     'utf8'
@@ -11,7 +15,14 @@ const source = readFileSync(
 function loadOwnershipUi({ ownership = false, gameRunning = false } = {}) {
     const target = { innerHTML: '' };
     const count = { textContent: '', removeAttribute: vi.fn() };
-    const typeLabel = { style: { display: 'inline-block' } };
+    const typeClasses = new Set();
+    const typeLabel = {
+        style: { display: 'inline-block' },
+        classList: {
+            add: value => typeClasses.add(value),
+            remove: (...values) => values.forEach(value => typeClasses.delete(value))
+        }
+    };
     const document = {
         getElementById: id => id === 'parcel-owner-value' ? target : id === 'parcel-owners-count' ? count : null,
         querySelector: () => typeLabel
@@ -31,8 +42,10 @@ function loadOwnershipUi({ ownership = false, gameRunning = false } = {}) {
         CityConfigManager: { getCurrentCityConfig: () => ({ parcels: { ownership } }) }
     };
     scope.window = scope;
-    runInContext(source, createContext(scope));
-    return { ui: scope.ParcelsOwnershipUi, target, count, typeLabel, scope };
+    const context = createContext(scope);
+    runInContext(ownershipTypeSource, context);
+    runInContext(source, context);
+    return { ui: scope.ParcelsOwnershipUi, target, count, typeLabel, typeClasses, scope };
 }
 
 describe('geometry-only parcel ownership UI', () => {
@@ -64,6 +77,28 @@ describe('geometry-only parcel ownership UI', () => {
             .toContain('A. Example');
         expect(ui.buildRealOwnerRowsHtml([{ name: 'A. Example', actualShareText: '50%' }]))
             .toContain('50%');
+    });
+
+    it('keeps an adapter-provided canonical ownerType in the rendered badge', async () => {
+        const { ui, typeLabel, typeClasses, scope } = loadOwnershipUi({ ownership: true });
+        scope.getBackendBase = () => 'http://backend.test';
+        scope.__parcelOwnershipRequest = {
+            parcelSourceIdFor: () => 'parcel-nyc',
+            ownershipRequestPath: () => '/parcel-ownership/parcel-nyc/US-NY-1',
+            ownersFromOwnershipRecord: record => record.owners
+        };
+        scope.fetch.mockResolvedValue({
+            ok: true,
+            json: async () => ({
+                owners: [{ name: 'Acme Holdings LLC', ownerType: 'company', sharePercent: 100 }]
+            })
+        });
+
+        ui.fetchAndDisplayRealOwners('US-NY-1');
+
+        await vi.waitFor(() => expect(typeClasses.has('ownership-type-company')).toBe(true));
+        expect(typeLabel.textContent).toBe('Company');
+        expect(typeClasses.has('ownership-type-individual')).toBe(false);
     });
 
     it('says "No owner data" when a source with ownership answers with no owners, instead of inventing a single owner', async () => {

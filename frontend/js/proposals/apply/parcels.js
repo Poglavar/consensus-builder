@@ -37,10 +37,6 @@
         // Apply works from a private copy. Runtime contribution summaries and materialized parcel
         // ids must never be written back into the authored plan.
         const plan = JSON.parse(JSON.stringify(proposalData.reparcellization));
-        const coordinatedPlanId = proposalData.coordinatedPlanId === undefined
-            || proposalData.coordinatedPlanId === null
-            ? ''
-            : String(proposalData.coordinatedPlanId).trim();
         if (!Array.isArray(plan.polygons) || plan.polygons.length === 0) {
             if (typeof updateStatus === 'function') {
                 updateStatus('Cannot apply reparcellization proposal: missing generated slices.');
@@ -316,10 +312,9 @@
         // the fabric that hover can only resolve to the hidden ancestor (the Cibona sliver).
         try {
             const turfRemainder = (typeof turf !== 'undefined') ? turf : null;
-            // A coordinated package's missing ground is not an accidental remainder: sibling road
-            // records own those bands. Leave the gap until their immediately following phase
-            // materialises it. Ordinary standalone readjustments still conserve every scrap here.
-            if (!coordinatedPlanId && turfRemainder && typeof turfRemainder.difference === 'function' && parentFeatures.length) {
+            // Every part of a formed parcel that is not covered by its authored plots is returned
+            // to its owner. Subsequent corridor takes divide that ordinary remainder as needed.
+            if (turfRemainder && typeof turfRemainder.difference === 'function' && parentFeatures.length) {
                 let plotsUnion = null;
                 childFeatures.forEach(feature => {
                     const f = { type: 'Feature', properties: {}, geometry: feature.geometry };

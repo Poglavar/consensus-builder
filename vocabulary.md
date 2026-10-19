@@ -20,6 +20,19 @@ The durable record is the cleaned object handled by `ProposalAuthoredRecord` and
 
 Identity has several layers: `proposal.id` is a database row key; `proposalId` / `proposal_id` is the authored/external identifier; `serverProposalId` is used by browser records to refer to the published row; a chain reference also needs chain type, network, contract/program and token/account. These must not be exported as interchangeable identifiers. [Authored boundary](frontend/js/proposals/authored-record.js), [serializer](backend/proposals/serializer.js), [DDL](backend/routes/proposals-ddl.sql), [API validation and lookup](backend/routes/proposals.js), [chain references](frontend/js/proposals/chain-ref.js).
 
+A proposal's optional `titleOrigin` records whether its title was `generated` or written by the
+`user`. It is display/authoring metadata, carried through draft editing and portable chain records;
+it is not an identifier or an ownership claim. Editing a title marks it user-authored. Converting a
+rule to Freeform regenerates only an explicitly generated title; titles without provenance and
+independently authored descriptions are preserved. [Draft fields](frontend/js/proposal-drafts.js),
+[editor conversion](frontend/js/proposals/freeform-conversion.js),
+[portable fields](frontend/js/proposals/chain-record.js).
+
+The retired `coordinatedPlanId` marker has no application semantics. Every working composition uses
+the ordinary materialization order and geometry/ground checks; a marker cannot skip building
+parcel formation, owner remainders or shared-member validation. Named-plan membership and
+`reconstructionPlanId` provenance remain separate concepts.
+
 #### Proposal identifiers at API boundaries
 
 | Term | Current representation and meaning | Boundary rule |
@@ -90,6 +103,14 @@ For geometric binding, an intersection binds when it survives an inward buffer o
 Coverage values are `complete`, `partial`, `none`, `unknown`. `none` and `unknown` are distinct: confirmed lack of supported coverage does not mean the same thing as an unavailable or unrecognized source. A later cadastre can produce binding drift without rewriting the original publication. [Shared rule](frontend/js/proposals/site-binding.js), [server implementation](backend/proposals/binding.js), [drift](frontend/js/proposals/binding-drift.js).
 
 ### Owner / party / actor — `RightsParty`, `DecisionActor`
+
+Ownership display types (`private individual`, `company`, `government`, `institution`) are
+classifications, not evidence of rights or authority. An explicit canonical type from the source
+is preserved by the ownership UI; name-based classification is used for untyped labels. A source's
+`city` display category maps to `government` in the UI. [Shared classifier](frontend/js/parcels/ownership-type.js),
+[owner rows](frontend/js/parcels/ownership-ui.js).
+
+
 
 In the approval engine, the misleadingly named `ownerId` is an **opaque party identifier**. It can identify an ownership holder, leaseholder, or authority whose decision a policy requires. A holder has a right in a particular parcel and a share; a party is not intrinsically “an owner” everywhere.
 

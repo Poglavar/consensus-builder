@@ -424,7 +424,7 @@
         if (['buildings', 'row', 'parcelBased', 'single'].includes(draft.goal) || ['buildings', 'row', 'parcelBased', 'single'].includes(draft.adapterKey)) {
             const context = payload.context || {};
             const count = context.buildings?.length || (context.buildingFeature ? 1 : 0);
-            return tDraft('proposalDrafts.design.buildingSummary', '{{count}} building(s) · {{typology}}', { count, typology: payload.typology || draft.goal });
+            return tDraft('proposalDrafts.design.buildingSummary', 'Buildings: {{count}} · {{typology}}', { count, typology: payload.typology || draft.goal });
         }
         if (draft.goal === 'reparcellization') {
             return tDraft('proposalDrafts.design.reparcelSummary', '{{count}} replacement parcel(s) · {{algorithm}}', {
@@ -636,9 +636,11 @@
         if (!path || !editorState.draftId || !global.proposalDraftStore) return;
         editorState.localMutation = true;
         const value = valueFromInput(input);
+        const patch = patchForPath(path, value);
+        if (path === 'fields.name') patch.fields.titleOrigin = 'user';
         global.proposalDraftStore.updateDraft(
             editorState.draftId,
-            patchForPath(path, value),
+            patch,
             { coalesceKey: `field:${path}`, validate: false }
         );
         let draft = validate
@@ -1308,12 +1310,12 @@
                     ? store.createDraftFromProposal(source, { activate: false, forceNew: true })
                     : store.createDraft({
                         cityId: draft.cityId, goal: draft.goal, adapterKey: draft.adapterKey, proposalType: draft.proposalType,
-                        fields: { ...(draft.fields || {}), name: '', description: '' },
+                        fields: { ...(draft.fields || {}), name: '', titleOrigin: 'generated', description: '' },
                         editorPayload: draft.editorPayload, activate: false
                     });
                 siblings.push(sibling.id);
                 const patch = conversion.freeformDraftPatch(sibling, { building: merged[index + 1].building, site: house.site });
-                replaceWithFreeform(store, sibling, { ...patch, fields: { ...(patch.fields || {}), name: '', description: '' } });
+                replaceWithFreeform(store, sibling, { ...patch, fields: { ...(patch.fields || {}), name: '', titleOrigin: 'generated', description: '' } });
             });
         } catch (error) {
             siblings.forEach(id => { try { store.deleteDraft(id); } catch (_) { } });
@@ -1944,7 +1946,10 @@
         if (conditional && typeof fields.isConditional === 'boolean') conditional.checked = fields.isConditional;
         const name = global.document?.getElementById('proposalName');
         const description = global.document?.getElementById('proposalDescription');
-        if (name) name.value = fields.name || '';
+        if (name) {
+            name.value = fields.name || '';
+            name.dataset.titleOrigin = fields.titleOrigin === 'generated' ? 'generated' : fields.titleOrigin === 'user' ? 'user' : '';
+        }
         if (description) description.value = fields.description || '';
     }
 
@@ -2150,12 +2155,15 @@
     async function instantCreateProposalFromDraftInner(draftId, store, draft, profile, options = {}) {
 
         const currentName = String(draft.fields?.name || '').trim();
-        const typeLabel = draft.proposalType || proposalLabel(draft.adapterKey || draft.goal);
+        const typeLabel = draft.goal === 'single' || draft.adapterKey === 'single'
+            ? proposalLabel('single')
+            : draft.proposalType || proposalLabel(draft.adapterKey || draft.goal);
         const autoFields = {};
         if (!currentName || /^New (road|track)$/i.test(currentName)) {
             autoFields.name = typeof global.generateDefaultProposalName === 'function'
                 ? global.generateDefaultProposalName(typeLabel, { parcelIds: draft.fields?.selectedParcelIds || [] })
                 : `${typeLabel} ${new Date().toISOString().slice(5, 16).replace(/[-T:]/g, '')}`;
+            autoFields.titleOrigin = 'generated';
         }
         // Every object carries the standard description pattern from birth. Terms (kind, money,
         // voting period) are chosen only when it is published (proposal-kinds.md): no placeholder offer.
@@ -2204,9 +2212,9 @@
         // A free building can move off the parcels it started on. A generated name and description
         // were written from that starting selection, so write them again from the final binding.
         const boundIds = draft.fields?.cadastreParcelIds || [];
-        if (autoFields.name && boundIds.length && global.proposalDraftPlacement?.isFreePlacementDraft?.(draft)
+        if (draft.fields?.titleOrigin === 'generated' && boundIds.length && global.proposalDraftPlacement?.isFreePlacementDraft?.(draft)
             && typeof global.generateDefaultProposalName === 'function') {
-            const renamed = { name: global.generateDefaultProposalName(typeLabel, { parcelIds: boundIds }) };
+            const renamed = { name: global.generateDefaultProposalName(typeLabel, { parcelIds: boundIds }), titleOrigin: 'generated' };
             if (autoFields.description && typeof global.generateDefaultProposalDescription === 'function') {
                 renamed.description = global.generateDefaultProposalDescription(typeLabel, renamed.name);
             }

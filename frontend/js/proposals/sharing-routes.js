@@ -368,32 +368,11 @@ function buildSharedProposalsPayload(appliedProposals) {
     };
 }
 
-function coordinatedPlanIdOfSharedRecord(record) {
-    if (!record || record.coordinatedPlanId === undefined || record.coordinatedPlanId === null) return '';
-    return String(record.coordinatedPlanId).trim();
-}
-
 function sharedMaterializationPhase(record) {
     const rawGoal = record && record.goal;
     const goal = (typeof applyRoute !== 'undefined' && applyRoute && typeof applyRoute.normalizeGoalKey === 'function')
         ? applyRoute.normalizeGoalKey(rawGoal)
         : String(rawGoal || '');
-    // A coordinated plan explicitly publishes complementary readjustment plots and road bands.
-    // Its plots must stand first so corridor derivation can retain them and fill their intentional
-    // gaps. Ordinary packages keep the interactive authoring order: roads form blocks first, then
-    // a readjustment partitions the remainders.
-    if (coordinatedPlanIdOfSharedRecord(record)) {
-        if (goal === 'reparcellization' || goal === 'decide-later'
-            || !!(record && (record.reparcellization || record.decideLaterProposal))) return 0;
-        if (goal === 'road-track' || !!(record && record.roadProposal)) return 1;
-        const coordinatedBuilding = !!(record && record.buildingProposal)
-            || !!(typeof applyRoute !== 'undefined' && applyRoute
-                && typeof applyRoute.isBuildingGoal === 'function' && applyRoute.isBuildingGoal(goal));
-        if (coordinatedBuilding) return 2;
-        if (goal === 'park' || goal === 'square' || goal === 'lake' || goal === 'station'
-            || !!(record && record.structureProposal)) return 3;
-        return 4;
-    }
     if (goal === 'road-track' || !!(record && record.roadProposal)) return 0;
     if (goal === 'reparcellization' || goal === 'decide-later'
         || !!(record && (record.reparcellization || record.decideLaterProposal))) return 1;
@@ -648,10 +627,9 @@ function reportSharedPlanProgress(event) {
 // boundary, but avoids the explicit-click state transition and rival pass that used to run
 // before the same materializer. Package dependency order remains immutable inside each phase.
 async function materializeQueuedSharedProposals(proposalIds, options = {}) {
-    // Package dependencies outrank URL and creation order. Ordinary packages form road-bounded
-    // blocks before partitioning them; explicitly coordinated packages publish a pre-tessellated
-    // readjustment first, then fill its reserved road bands. Buildings and public spaces follow in
-    // both cases. Immutable input order still breaks ties within each phase.
+    // Package dependencies outrank URL and creation order: corridors form road-bounded blocks
+    // before readjustments partition them. Buildings and public spaces follow. Immutable input
+    // order breaks ties within each phase.
     const orderedIds = orderQueuedSharedProposalIds(proposalIds);
     const appliedIds = [];
     const failedIds = [];
@@ -763,8 +741,7 @@ async function materializeQueuedSharedProposals(proposalIds, options = {}) {
                 : String((record && record.goal) || '');
             const isRoad = goal === 'road-track' || !!(record && record.roadProposal);
 
-            // Consecutive roads in the ordered package are one network mutation. This is equally valid
-            // before an ordinary readjustment and after a coordinated one; only their phase changes.
+            // Consecutive roads in the ordered package are one network mutation.
             if (isRoad && ProposalManager && typeof ProposalManager.materializeCorridorBatch === 'function') {
                 const roadIds = [];
                 let cursor = index;
@@ -788,8 +765,7 @@ async function materializeQueuedSharedProposals(proposalIds, options = {}) {
                 for (const roadId of roadIds) {
                     let roadRecord = null;
                     try { roadRecord = proposalStorage.getProposal(roadId); } catch (_) { roadRecord = null; }
-                    if (!coordinatedPlanIdOfSharedRecord(roadRecord)
-                        && typeof ProposalManager.validateSharedProposalGround === 'function') {
+                    if (typeof ProposalManager.validateSharedProposalGround === 'function') {
                         const validation = ProposalManager.validateSharedProposalGround(
                             roadId,
                             planMemberIds,
@@ -829,11 +805,10 @@ async function materializeQueuedSharedProposals(proposalIds, options = {}) {
             await paintSharedPlanProgress(firstProposalProgress || proposalPosition === orderedIds.length);
             try {
                 // Refuse unrelated holders in memory, then use the direct one-boundary materializer for
-                // every shared member. The old non-coordinated path first marked state in one full-map
-                // transaction and then replay-applied in a second; neither extra snapshot nor the
-                // explicit-Apply rival path belongs to opening a plan link.
-                if (!coordinatedPlanIdOfSharedRecord(record)
-                    && ProposalManager && typeof ProposalManager.validateSharedProposalGround === 'function') {
+                // every shared member. The old path marked state in one full-map transaction and then
+                // replay-applied in a second; neither extra snapshot nor explicit-Apply rival path
+                // belongs to opening a plan link.
+                if (ProposalManager && typeof ProposalManager.validateSharedProposalGround === 'function') {
                     const validation = ProposalManager.validateSharedProposalGround(
                         id,
                         planMemberIds,

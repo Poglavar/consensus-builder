@@ -657,7 +657,10 @@
         },
         "design": {
             "corridorSummary": "{{segments}} segmento(s) · {{width}} m de ancho",
-            "buildingSummary": "{{count}} edificio(s) · {{typology}}",
+            "buildingSummary": {
+                "one": "{{count}} edificio · {{typology}}",
+                "other": "{{count}} edificios · {{typology}}"
+            },
             "reparcelSummary": "{{count}} parcela(s) de reemplazo · {{algorithm}}",
             "parcelSummary": "{{count}} parcela(s) afectadas",
             "manual": "manual",
@@ -2701,7 +2704,10 @@
             "show": "Mostrar"
         },
         "corridorTunnel": {
-            "offer": "Este {{kind}} cruza {{count}} edificio(s). ¿Mantenerlo en superficie a través de ellos o atravesarlos con túneles?",
+            "offer": {
+                "one": "Este {{kind}} cruza {{count}} edificio. ¿Mantenerlo en superficie a través de él o atravesarlo con un túnel?",
+                "other": "Este {{kind}} cruza {{count}} edificios. ¿Mantenerlo en superficie a través de ellos o atravesarlos con túneles?"
+            },
             "road": "camino",
             "track": "vía férrea",
             "proposalImpact": "Esta carretera es posterior a estas propuestas de edificios; un cruce en superficie ocupa su suelo durante la repetición:",
@@ -3704,12 +3710,19 @@
                 "additionalFloors": "Plantas adicionales:",
                 "floorHeight": "Altura de planta (m):",
                 "helper": "Elige una regla: la altura propuesta dibuja cada edificio exactamente a esa altura; las plantas adicionales añaden plantas sobre la altura actual de cada edificio (requiere alturas conocidas).",
-                "summaryExact": "Se proponen {{count}} edificios de {{height}} m.",
+                "summaryExact": {
+                    "one": "Se propone {{count}} edificio de {{height}} m.",
+                    "other": "Se proponen {{count}} edificios de {{height}} m."
+                },
                 "loading": "Cargando edificios existentes…",
                 "notAvailable": "Los datos de edificios existentes aún no están disponibles para esta ciudad.",
                 "noneFound": "No se encontraron edificios existentes en las parcelas seleccionadas.",
                 "loadFailed": "No se pudieron cargar los edificios existentes. Inténtalo de nuevo.",
-                "summary": "Se elevan {{count}} de {{total}} edificios existentes."
+                "summary": "Se elevan {{count}} de {{existingBuildings}}.",
+                "buildingCount": {
+                    "one": "{{count}} edificio existente",
+                    "other": "{{count}} edificios existentes"
+                }
             },
             "warnings": {
                 "oversizedBlock": "Este bloque es grande — dar la vuelta caminando tardaría unos {{minutes}} minutos. Los bloques recomendados miden entre 50×50 m y 200×200 m, de modo que se pueden rodear a pie en unos 2½ a 10 minutos. ¿Quieres continuar?",
@@ -3834,7 +3847,6 @@
                 "selectedParcels": "Parcelas seleccionadas",
                 "singleParcelLabel": "Parcela {{id}}",
                 "multiParcelLabel": "{{count}} parcelas",
-                "generatedSummaryExcluded": "Se generaron {{count}} edificio(s) · {{excluded}} parcela(s) excluidas por la norma",
                 "excludedBelowMinPlot": "Menor que la superficie mínima de parcela — hay que fusionarla con una vecina antes de poder construir aquí.",
                 "excludedNoRoom": "Tras el retiro no queda espacio para construir en esta parcela.",
                 "excludedCannotMeet": "Demasiado pequeña para cumplir el mínimo que obliga esta norma — la norma se contradice aquí."
@@ -6097,7 +6109,10 @@
             "short": "entra"
         },
         "buildings": {
-            "count": "{{count}} edificio(s)",
+            "count": {
+                "one": "{{count}} edificio",
+                "other": "{{count}} edificios"
+            },
             "footprint": "huella {{area}}",
             "floorArea": "superficie construida {{area}}",
             "height": "{{floors}} plantas · {{height}}"
