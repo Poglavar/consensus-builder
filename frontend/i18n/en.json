@@ -1644,6 +1644,7 @@
                 "applyFailedUnknown": "Could not apply this proposal. Please try again.",
                 "applyUnavailable": "This proposal cannot be applied to the map.",
                 "applyUnsupported": "This proposal type does not support map application.",
+                "proposalNotLoaded": "This proposal is not loaded in this browser. Open it from the proposals list, then try again.",
                 "missingProposal": "No proposal was selected to apply.",
                 "unapplyFailed": "Could not remove this proposal from the map: {{reason}}",
                 "unapplyFailedUnknown": "Could not remove this proposal from the map. Please try again.",

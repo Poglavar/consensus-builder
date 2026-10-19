@@ -1691,6 +1691,7 @@
                 "applyFailedUnknown": "No se pudo aplicar esta propuesta. Inténtalo de nuevo.",
                 "applyUnavailable": "Esta propuesta no se puede aplicar al mapa.",
                 "applyUnsupported": "Este tipo de propuesta no admite su aplicación al mapa.",
+                "proposalNotLoaded": "Esta propuesta no está cargada en este navegador. Ábrela desde la lista de propuestas y vuelve a intentarlo.",
                 "missingProposal": "No se seleccionó ninguna propuesta para aplicar.",
                 "unapplyFailed": "No se pudo quitar esta propuesta del mapa: {{reason}}",
                 "unapplyFailedUnknown": "No se pudo quitar esta propuesta del mapa. Inténtalo de nuevo.",

@@ -9,7 +9,7 @@ const end = source.indexOf('function openAcceptOwnershipTransferDialog(', start)
 if (start < 0 || end < 0) throw new Error('Could not locate the proposal map action functions');
 const applySource = source.slice(start, end);
 
-function loadApply({ result = false, reason = null, throws = null, supports = true, existingError = null, visibleProposalId = 'lake-1' } = {}) {
+function loadApply({ storedProposal = { proposalId: 'lake-1', goal: 'park' }, storageAvailable = true, result = false, reason = null, throws = null, supports = true, existingError = null, visibleProposalId = 'lake-1' } = {}) {
     const button = { innerHTML: 'Apply', disabled: false };
     const appended = [];
     const footer = { appendChild: node => appended.push(node) };
@@ -41,8 +41,8 @@ function loadApply({ result = false, reason = null, throws = null, supports = tr
         window: { __proposalMapActionFailures: existingError ? { 'lake-1': existingError } : Object.create(null) },
         document,
         ProposalManager,
-        proposalStorage: { getProposal: () => ({ proposalId: 'lake-1', goal: 'park' }) },
-        computeProposalCategoryFlags: () => ({ supportsMapToggle: supports, isRoadProposal: false }),
+        proposalStorage: storageAvailable ? { getProposal: vi.fn(() => storedProposal) } : undefined,
+        computeProposalCategoryFlags: vi.fn(() => ({ supportsMapToggle: supports, isRoadProposal: false })),
         resolveProposalActionTypeKey: () => 'park',
         APPLY_DISABLED_TYPE_KEYS: new Set(),
         getProposalI18nHelper: () => (key, fallback, params = {}) => String(fallback)
@@ -60,6 +60,26 @@ function loadApply({ result = false, reason = null, throws = null, supports = tr
 afterEach(() => vi.restoreAllMocks());
 
 describe('proposal map action failure feedback', () => {
+    it.each(['absent record', 'undefined record', 'storage unavailable', 'null storage'])('explains an unloaded proposal (%s) before checking its type', async scenario => {
+        const { apply, context, messages, ProposalManager, button } = loadApply({ storedProposal: null,
+            storageAvailable: scenario !== 'storage unavailable', supports: false });
+        if (scenario === 'undefined record') context.proposalStorage.getProposal.mockReturnValue(undefined);
+        if (scenario === 'null storage') context.proposalStorage = null;
+        await expect(apply('lake-1')).resolves.toBe(false);
+        const message = 'This proposal is not loaded in this browser. Open it from the proposals list, then try again.';
+        expect(messages).toHaveBeenCalledWith(message, 8000, 'error');
+        expect(context.window.__proposalMapActionFailures['lake-1']).toBe(message);
+        expect(context.computeProposalCategoryFlags).not.toHaveBeenCalled();
+        expect(ProposalManager.applyProposal).not.toHaveBeenCalled();
+        expect(button).toEqual({ innerHTML: 'Apply', disabled: false });
+    });
+
+    it.each(['en', 'es', 'hr', 'sr'])('has localized unloaded-proposal feedback in %s', locale => {
+        const dictionary = JSON.parse(readFileSync(new URL(`../../frontend/i18n/${locale}.json`, import.meta.url), 'utf8'));
+        expect(dictionary.panel.proposal.actions.proposalNotLoaded).toBeTruthy();
+        expect(dictionary.panel.proposal.actions.proposalNotLoaded).not.toBe(dictionary.panel.proposal.actions.applyUnsupported);
+    });
+
     it('shows and retains the manager reason when application returns false', async () => {
         const { apply, context, messages, appended } = loadApply({ reason: 'The proposal geometry extends beyond its site.' });
 

@@ -666,6 +666,7 @@ function reportProposalMapActionFailure(proposalId, reason = '', fallbackKey = '
         case 'unapplyUnavailable': fallback = t ? t('panel.proposal.actions.unapplyUnavailable', 'This proposal cannot be removed from the map.') : 'This proposal cannot be removed from the map.'; break;
         case 'applyUnavailable': fallback = t ? t('panel.proposal.actions.applyUnavailable', 'This proposal cannot be applied to the map.') : 'This proposal cannot be applied to the map.'; break;
         case 'applyUnsupported': fallback = t ? t('panel.proposal.actions.applyUnsupported', 'This proposal type does not support map application.') : 'This proposal type does not support map application.'; break;
+        case 'proposalNotLoaded': fallback = t ? t('panel.proposal.actions.proposalNotLoaded', 'This proposal is not loaded in this browser. Open it from the proposals list, then try again.') : 'This proposal is not loaded in this browser. Open it from the proposals list, then try again.'; break;
         case 'missingProposal': fallback = t ? t('panel.proposal.actions.missingProposal', 'No proposal was selected to apply.') : 'No proposal was selected to apply.'; break;
         case 'applyFailedUnknown': fallback = t ? t('panel.proposal.actions.applyFailedUnknown', 'Could not apply this proposal. Please try again.') : 'Could not apply this proposal. Please try again.'; break;
         default: fallback = t ? t('panel.proposal.actions.unapplyFailedUnknown', 'Could not remove this proposal from the map. Please try again.') : 'Could not remove this proposal from the map. Please try again.';
@@ -734,10 +735,16 @@ async function applyProposalToMap(proposalIdOrHash, options = {}) {
     }
 
     const step1Time = performance.now();
-    const proposal = (typeof proposalStorage !== 'undefined' && typeof proposalStorage.getProposal === 'function')
+    const proposal = (typeof proposalStorage !== 'undefined' && typeof proposalStorage?.getProposal === 'function')
         ? proposalStorage.getProposal(safeId)
         : null;
     console.debug(`[applyProposalToMap] Step 1: Retrieved proposal from storage (${(performance.now() - step1Time).toFixed(2)}ms)`);
+
+    if (!proposal) {
+        console.warn(`[applyProposalToMap] Proposal is not loaded locally: ${safeId}`);
+        reportProposalMapActionFailure(safeId, '', 'proposalNotLoaded');
+        return false;
+    }
 
     const { supportsMapToggle, isRoadProposal } = computeProposalCategoryFlags(proposal, { fallbackProposal: proposal });
     if (!supportsMapToggle) {

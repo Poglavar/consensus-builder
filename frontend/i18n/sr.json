@@ -1679,6 +1679,7 @@
                 "applyFailedUnknown": "Nije moguće primeniti ovaj predlog. Pokušajte ponovo.",
                 "applyUnavailable": "Ovaj predlog nije moguće primeniti na mapu.",
                 "applyUnsupported": "Ova vrsta predloga ne podržava primenu na mapi.",
+                "proposalNotLoaded": "Ovaj predlog nije učitan u ovom pregledaču. Otvorite ga sa liste predloga pa pokušajte ponovo.",
                 "missingProposal": "Nije izabran predlog za primenu.",
                 "unapplyFailed": "Ovaj predlog nije moguće ukloniti sa mape: {{reason}}",
                 "unapplyFailedUnknown": "Ovaj predlog nije moguće ukloniti sa mape. Pokušajte ponovo.",

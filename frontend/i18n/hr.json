@@ -1679,6 +1679,7 @@
                 "applyFailedUnknown": "Nije moguće primijeniti ovaj prijedlog. Pokušajte ponovno.",
                 "applyUnavailable": "Ovaj prijedlog nije moguće primijeniti na kartu.",
                 "applyUnsupported": "Ova vrsta prijedloga ne podržava primjenu na karti.",
+                "proposalNotLoaded": "Ovaj prijedlog nije učitan u ovom pregledniku. Otvorite ga s popisa prijedloga pa pokušajte ponovno.",
                 "missingProposal": "Nije odabran prijedlog za primjenu.",
                 "unapplyFailed": "Ovaj prijedlog nije moguće ukloniti s karte: {{reason}}",
                 "unapplyFailedUnknown": "Ovaj prijedlog nije moguće ukloniti s karte. Pokušajte ponovno.",
