@@ -192,6 +192,50 @@ function propertyEvidenceText($, sourceType) {
     return content.text().replace(/\s+/g, ' ').trim();
 }
 
+// This text is for resolving the advertised property's location only. Link and
+// asset discovery deliberately still sees the full document. Real listing
+// pages often append an agency's office address to the otherwise useful
+// description: Interklasik puts that in the final description paragraph, and
+// Nekretnine Lika appends its office tail to the property paragraph.
+const LOCATION_CHROME = 'script,style,noscript,nav,footer,form,header,aside,[role="navigation"],[role="contentinfo"],[class*="agent" i],[class*="broker" i],[class*="contact" i],[class*="office" i],[class*="footer" i],[id*="footer" i]';
+const CONTACT_SIGNATURE_START = /\bza\s+sve\s+dodatne\s+informacije\b[^.!?]*\bkontaktirajte\b/i;
+const AGENCY_OFFICE_TAIL = /\b(?:[\p{Lu}][\p{L}'’\-]*\s+){1,3}(?:nekretnine|real\s+estate)\s+(?:d\.?\s*o\.?\s*o\.?|j\.?\s*d\.?\s*o\.?\s*o\.?)\b.*$/u;
+const AGENCY_OFFICE_NAME = /^(?:[\p{Lu}][\p{L}'’\-]*\s+){1,3}(?:nekretnine|real\s+estate)\s+(?:d\.?\s*o\.?\s*o\.?|j\.?\s*d\.?\s*o\.?\s*o\.?)$/u;
+const STANDALONE_ADDRESS = /^[\p{L}][\p{L}\p{M} .’'\-]{2,80}\s+\d{1,4}[a-z]?$/iu;
+
+function locationEvidenceText($) {
+    const visible = $('body').clone();
+    visible.find(LOCATION_CHROME).remove();
+    // Interklasik's office signature begins with an invitation to contact the
+    // agency. Remove that signature only from its invitation onward: a property
+    // paragraph may itself contain an address before a later contact sentence.
+    visible.find('p,li,address').each((_, element) => {
+        const item = $(element), text = item.text().replace(/\s+/g, ' ').trim();
+        const match = text.match(CONTACT_SIGNATURE_START);
+        if (match) item.text(text.slice(0, match.index).trim());
+    });
+    // Nekretnine Lika appends "Lika nekretnine d.o.o. Palmotićeva 76" to the
+    // same property paragraph. Retain the listing description before that
+    // agency tail; only the tail is unusable as property-location evidence.
+    visible.find('p,li,address').each((_, element) => {
+        const item = $(element), text = item.text().replace(/\s+/g, ' ').trim();
+        const match = text.match(AGENCY_OFFICE_TAIL);
+        if (match && match.index > 0) item.text(text.slice(0, match.index).trim());
+    });
+    // The same Lika template may render the company and office address as two
+    // adjacent paragraphs. They are a contact signature, not a second property
+    // location; remove both only when that exact company/address structure is
+    // present.
+    visible.find('p,li,address').each((_, element) => {
+        const item = $(element), text = item.text().replace(/\s+/g, ' ').trim();
+        if (!AGENCY_OFFICE_NAME.test(text)) return;
+        const next = item.nextAll('p,li,address').first();
+        if (next.length && STANDALONE_ADDRESS.test(next.text().replace(/\s+/g, ' ').trim())) next.remove();
+        item.remove();
+    });
+    return visible.text().replace(/\s+/g, ' ').trim();
+}
+
 // A page may embed whole project tables and recommendation cards. Discovery is
 // page-wide, but a plan belongs to the main listing only when its local owner agrees.
 function assetOwnership($, el, listing, pageUrl, url, label, forcedKind = null, mainCarousel = null) {
@@ -257,8 +301,7 @@ function assetOwnership($, el, listing, pageUrl, url, label, forcedKind = null, 
 
 export function extractPageEvidence(html, pageUrl, { sourceKind = null, discovery = true, document = null } = {}) {
     const $ = document || cheerio.load(String(html || ''));
-    const visible = $('body').clone(); visible.find('script,style,noscript,nav,footer,form').remove();
-    const bodyText = visible.text().replace(/\s+/g, ' ').trim();
+    const bodyText = locationEvidenceText($);
     if (BLOCKED.test(`${$('title').text()} ${bodyText}`)) return { title: first($('title').text()), canonicalUrl: normalizeUrl($('link[rel="canonical"]').attr('href'), pageUrl) || normalizeUrl(pageUrl, pageUrl), text: bodyText, links: [], assets: [], listing: null, blocked: true, blockedReason: 'challenge-or-access-block' };
     const canonicalUrl = normalizeUrl($('link[rel="canonical"]').attr('href'), pageUrl) || normalizeUrl(pageUrl, pageUrl);
     const scripts = jsonScripts($), records = scripts.flatMap(item => item?.['@graph'] || item);
@@ -285,7 +328,12 @@ export function extractPageEvidence(html, pageUrl, { sourceKind = null, discover
     const address = first(record.address && typeof record.address === 'object' ? first(record.address.streetAddress, record.address.name) : null, operetaAddress);
     const geo = record.geo || record.location?.geo;
     const propertyMap = $('#property-map[data-lat][data-lng]').first();
-    const lat = number(first(geo?.latitude, propertyMap.attr('data-lat'))), lng = number(first(geo?.longitude, propertyMap.attr('data-lng')));
+    // Interklasik emits its agency-office pin in every addressless listing's
+    // JSON-LD. Its live page has no property address next to that GeoCoordinates
+    // object, so it is not evidence for this property. Keep explicit page-map
+    // coordinates and every other source's structured property coordinates.
+    const unboundInterklasikGeo = new URL(pageUrl).hostname.replace(/^www\./i, '') === 'interklasik.hr' && !address;
+    const lat = number(first(unboundInterklasikGeo ? null : geo?.latitude, propertyMap.attr('data-lat'))), lng = number(first(unboundInterklasikGeo ? null : geo?.longitude, propertyMap.attr('data-lng')));
     const text = `${bodyText} ${$('meta[name="description"]').attr('content') || ''}`;
     const listingTitle = first(record.name, $('meta[property="og:title"]').attr('content'), $('h1').first().text());
     const floor = first(record.floorLevel, record.floor, $('[data-floor]').first().attr('data-floor'), /^\d+(?:\/\d+)?$/.test(operetaFloor || '') ? operetaFloor : null);
