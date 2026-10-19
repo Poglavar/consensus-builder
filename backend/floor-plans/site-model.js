@@ -254,7 +254,11 @@ export async function buildSiteModels(db, { limit = 500, log = console.log, buil
     // A truncated pass cannot tell an unvisited site from a retired one.
     result.deferred = bySite.size - result.built - result.failed;
     if (urls === undefined && !result.deferred && !result.failed) {
-        const retired = await db.query(`DELETE FROM floor_plan.site_model WHERE NOT (site_key = ANY($1::text[]))`, [[...bySite.keys()]]);
+        // This builder owns listing-derived sites. Registered archival floor models have their
+        // own source registry and do not become retired when absent from the listing crawl.
+        const retired = await db.query(`DELETE FROM floor_plan.site_model
+            WHERE split_part(site_key, ':', 1) = ANY($2::text[])
+              AND NOT (site_key = ANY($1::text[]))`, [[...bySite.keys()], ['permit', 'address', 'parcels']]);
         result.retired = retired.rowCount || 0;
     }
     result.status = result.failed || result.deferred ? 'partial' : 'complete';
