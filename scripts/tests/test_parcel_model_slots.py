@@ -95,6 +95,34 @@ class ParcelModelSlotTests(unittest.TestCase):
             process.join(5)
             self.assertEqual(process.exitcode, 0)
 
+    def test_qualification_cap_skips_ineligible_head_and_leaves_capacity_for_research(self):
+        events, waits, hold = mp.Queue(), mp.Queue(), mp.Event()
+        holders = [mp.Process(target=_worker, args=(self.root, "qualification", events, hold,
+                                                    f"qualification-{index}", 4))
+                   for index in range(2)]
+        for process in holders:
+            process.start()
+        self.assertEqual({events.get(timeout=5)[1] for _ in holders},
+                         {"qualification-0", "qualification-1"})
+        queued = mp.Process(target=_worker, args=(self.root, "qualification", events, hold,
+                                                  "queued-qualification", 4, waits))
+        queued.start()
+        self.assertEqual(waits.get(timeout=5)["taskId"], "queued-qualification")
+        researcher = mp.Process(target=_worker, args=(self.root, "research", events, hold,
+                                                      "research", 4))
+        reviewer = mp.Process(target=_worker, args=(self.root, "review", events, hold,
+                                                    "review", 4))
+        researcher.start()
+        reviewer.start()
+        acquired = {events.get(timeout=5)[1], events.get(timeout=5)[1]}
+        self.assertEqual(acquired, {"research", "review"})
+        with self.assertRaises(queue.Empty):
+            events.get(timeout=.2)
+        hold.set()
+        for process in [*holders, queued, researcher, reviewer]:
+            process.join(5)
+            self.assertEqual(process.exitcode, 0)
+
     def test_dead_waiter_is_skipped(self):
         base = self.root / "tmp/parcel-model-slots/queue"
         base.mkdir(parents=True)

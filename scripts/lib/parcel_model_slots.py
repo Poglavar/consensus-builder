@@ -86,6 +86,26 @@ def _queue(base: Path) -> list[tuple[Path, dict]]:
     return sorted(rows, key=lambda row: (row[1]["priority"], row[1]["queuedAtNs"], row[1]["token"]))
 
 
+def _slot_state(base: Path, limit: int) -> tuple[list[tuple[int, object]], int]:
+    """Return currently flocked free slots and the live qualification-holder count."""
+    free = []
+    qualifications = 0
+    for candidate in range(limit):
+        handle = (base / f"slot-{candidate}.lock").open("a+")
+        try:
+            fcntl.flock(handle, fcntl.LOCK_EX | fcntl.LOCK_NB)
+            free.append((candidate, handle))
+        except BlockingIOError:
+            handle.seek(0)
+            try:
+                owner = json.loads(handle.read() or "{}")
+            except json.JSONDecodeError:
+                owner = {}
+            qualifications += owner.get("role") == "qualification"
+            handle.close()
+    return free, qualifications
+
+
 @contextmanager
 def acquire_model_slot(shared_root, *, role, limit=4, stop_requested=lambda: False,
                        poll_seconds=0.1, task_id=None, on_wait: Callable[[dict], None] | None = None):
@@ -117,23 +137,23 @@ def acquire_model_slot(shared_root, *, role, limit=4, stop_requested=lambda: Fal
                 position = next((i for i, (path, _) in enumerate(rows) if path == ticket_path), None)
                 if position is None:
                     raise RuntimeError("model-slot queue ticket was lost")
-                if position == 0:
-                    for candidate in range(limit):
-                        handle = (base / f"slot-{candidate}.lock").open("a+")
-                        try:
-                            fcntl.flock(handle, fcntl.LOCK_EX | fcntl.LOCK_NB)
-                        except BlockingIOError:
-                            handle.close()
-                            continue
-                        slot_handle, slot = handle, candidate
-                        ticket_path.unlink()
-                        owner = {**ticket, "slot": slot, "acquiredAt": time.time()}
-                        handle.seek(0)
-                        handle.truncate()
-                        handle.write(json.dumps(owner, separators=(",", ":")) + "\n")
-                        handle.flush()
-                        os.fsync(handle.fileno())
-                        break
+                free, active_qualifications = _slot_state(base, limit)
+                qualification_cap = min(2, limit)
+                eligible = next(((path, row) for path, row in rows
+                                 if row["role"] != "qualification"
+                                 or active_qualifications < qualification_cap), None)
+                if free and eligible and eligible[0] == ticket_path:
+                    slot, slot_handle = free.pop(0)
+                    ticket_path.unlink()
+                    owner = {**ticket, "slot": slot, "acquiredAt": time.time()}
+                    slot_handle.seek(0)
+                    slot_handle.truncate()
+                    slot_handle.write(json.dumps(owner, separators=(",", ":")) + "\n")
+                    slot_handle.flush()
+                    os.fsync(slot_handle.fileno())
+                for _candidate, handle in free:
+                    fcntl.flock(handle, fcntl.LOCK_UN)
+                    handle.close()
                 if slot_handle is None:
                     waiting = {"status": "waiting-model-slot", "role": role, "taskId": task_id,
                                "position": position + 1, "queued": len(rows), "limit": limit}
