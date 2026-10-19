@@ -260,20 +260,6 @@
         const areaLabel = tParcel('panel.parcel.metrics.area', {}, 'Area:');
         const marketPriceLabel = tParcel('panel.parcel.metrics.marketPrice', {}, 'Est. Mkt. Price:');
 
-        const geometryReferenceId = props.parcelIdentityKind === 'geometry-sha256-v1'
-            ? String(props.geometryDisplayId || '').trim()
-            : '';
-        const geometryReferenceNote = geometryReferenceId
-            ? tParcel(
-                'panel.parcel.geometryReferenceNote',
-                {},
-                'Application reference derived from geometry. Source registry number unavailable; boundary changes create a new reference.'
-            )
-            : '';
-        const geometryReferenceNoteHtml = geometryReferenceId
-            ? `<div class="parcel-identity-note" role="note" data-i18n-key="panel.parcel.geometryReferenceNote">${geometryReferenceNote}</div>`
-            : '';
-
         const normalizedParcelId = resolveParcelId(feature);
         const brojCestice = feature.properties.BROJ_CESTICE ?? feature.properties.broj_cestice;
         const maticniBrojKo = feature.properties.MATICNI_BROJ_KO ?? feature.properties.maticni_broj_ko ?? (feature.properties.cadastralMunicipality && feature.properties.cadastralMunicipality.id);
@@ -289,6 +275,27 @@
             }
         }
         const parcelKey = parcelId ? parcelId.toString() : '';
+        const identityFeature = global.LiveParcelFabric?.peek?.(parcelKey) || feature;
+        const identityProps = identityFeature.properties || {};
+        const identityModel = global.ParcelMenuModel;
+        const identityKind = identityModel.parcelIdentityKind(identityProps, parcelKey);
+        const identityTitle = identityModel.parcelIdentityTitle(identityKind);
+        const displayId = identityModel.displayParcelId(identityProps, parcelId);
+        let identityNoteKey = '';
+        let identityNoteFallback = '';
+        if (identityKind === 'formed') {
+            identityNoteKey = 'panel.parcel.identity.formedNote';
+            identityNoteFallback = 'Ground formed by the applied proposals. This reference identifies the current piece, not a registered parcel or an authored plot.';
+        } else if (identityKind === 'sourcePart') {
+            identityNoteKey = 'panel.parcel.identity.sourcePartNote';
+            identityNoteFallback = 'One connected part of a source parcel. This reference identifies the displayed part; the source parcel can contain other parts.';
+        } else if (identityProps.parcelIdentityKind === 'geometry-sha256-v1' && identityProps.geometryDisplayId) {
+            identityNoteKey = 'panel.parcel.geometryReferenceNote';
+            identityNoteFallback = 'Application reference derived from geometry. Source registry number unavailable; boundary changes create a new reference.';
+        }
+        const identityNoteHtml = identityNoteKey
+            ? `<div class="parcel-identity-note" role="note" data-i18n-key="${identityNoteKey}">${tParcel(identityNoteKey, {}, identityNoteFallback)}</div>`
+            : '';
 
         // Check if ownership data is already in feature properties (from backend)
         const simulatedOwnershipMode = !!global.gameState?.isRunning;
@@ -742,7 +749,7 @@
             ` : ''}
             <div class="parcel-owners-container" id="${PARCEL_OWNER_VALUE_ELEMENT_ID}">${ownershipHtml}</div>
         </div>
-        ${geometryReferenceNoteHtml}
+        ${identityNoteHtml}
         <div class="parcel-metric-row">
             <div class="metric-group">
                 <div class="metric-label" data-i18n-key="panel.parcel.metrics.owners">${ownersLabel}</div>
@@ -799,29 +806,23 @@
             titleElement.removeAttribute('data-i18n-key');
             titleElement.removeAttribute('data-i18n-params');
 
-            const resolvedId = props.parcelIdentityKind === 'geometry-sha256-v1'
-                ? (typeof getParcelDisplayNumberFromProperties === 'function'
-                    ? getParcelDisplayNumberFromProperties(props, displayParcelId)
-                    : (geometryReferenceId || displayParcelId))
-                : displayParcelId || brojValue;
+            const resolvedId = displayId || displayParcelId || brojValue;
             titleElement.textContent = '';
             // A piece on open ground (PARCEL-OPTIONAL.md phase 3) is no cadastral parcel: its id is a
             // proposal-local name, so the title says what the ground is instead of "Parcel <id>".
             let groundPiece = false;
             try {
-                const fabric = global.LiveParcelFabric;
-                const liveFeature = fabric && typeof fabric.peek === 'function' ? (fabric.peek(parcelId) || feature) : feature;
-                groundPiece = !!(global.__openGround && global.__openGround.isGroundPiece(liveFeature));
+                groundPiece = !!(global.__openGround && global.__openGround.isGroundPiece(identityFeature));
             } catch (_) { groundPiece = false; }
             if (groundPiece) {
                 titleElement.textContent = tParcel('parcelMenu.groundTitle', {}, 'Open ground');
             } else if (resolvedId) {
                 const numberMarker = '__PARCEL_NUMBER__';
                 const headerTemplate = tParcel(
-                    'panel.parcel.multi.parcelLabel',
+                    identityTitle.key,
                     { number: numberMarker },
-                    `Parcel ${numberMarker}`
-                );
+                    identityTitle.fallback
+                ).replace('{{number}}', numberMarker);
                 const markerIndex = headerTemplate.indexOf(numberMarker);
                 const prefix = markerIndex >= 0 ? headerTemplate.slice(0, markerIndex) : `${headerTemplate} `;
                 const suffix = markerIndex >= 0 ? headerTemplate.slice(markerIndex + numberMarker.length) : '';

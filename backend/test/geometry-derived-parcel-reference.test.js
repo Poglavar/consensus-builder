@@ -55,6 +55,7 @@ function renderParcelPanel(properties) {
         document,
         console,
         CbFormat: format,
+        ParcelMenuModel: parcelMenu,
         SQM_AVG_PRICE: 0,
         getParcelId: parcelIds.getParcelIdFromFeature,
         getParcelDisplayNumberFromProperties: parcelIds.getParcelDisplayNumberFromProperties,
@@ -133,6 +134,36 @@ describe('geometry-derived parcel references', () => {
             parcelId: 'native-123', parcelIdentityKind: 'registry', parcelNumber: '123'
         });
         expect(rendered.info).not.toContain('geometryReferenceNote');
+    });
+
+    it('labels unchanged source ground without asserting cadastral authority', () => {
+        const rendered = renderParcelPanel({ parcelId: 'tax-123', cadastreParcelIds: ['tax-123'] });
+        expect(rendered.title).toBe('Source parcel tax-123');
+        expect(rendered.info).not.toContain('identity.formedNote');
+    });
+
+    it('labels a source component separately from a proposed formation', () => {
+        const rendered = renderParcelPanel({
+            parcelId: 'part-A', cadastreParcelIds: ['source-A'], cadastralPart: true,
+            parcelIdentityKind: 'geometry-sha256-v1', geometryDisplayId: 'G1-source'
+        });
+        expect(rendered.title).toBe('Source parcel part part-A');
+        expect(rendered.info).toContain('identity.sourcePartNote');
+        expect(rendered.info).not.toContain('geometryReferenceNote');
+    });
+
+    it('shows and copies the formed piece identity instead of inherited source metadata', () => {
+        const rendered = renderParcelPanel({
+            parcelId: 'piece-A', cadastreParcelIds: ['source-A'], producedByProposalId: 'design-A',
+            parcelIdentityKind: 'geometry-sha256-v1', geometryDisplayId: 'G1-source',
+            BROJ_CESTICE: '7', MATICNI_BROJ_KO: '99'
+        });
+        expect(rendered.title).toBe('Formed ground piece piece-A');
+        expect(rendered.info).toContain('identity.formedNote');
+        expect(rendered.info).not.toContain('geometryReferenceNote');
+        const copyTarget = rendered.titleElement.children.find(child => child.className === 'parcel-title-id');
+        copyTarget.listeners.click();
+        expect(rendered.copied).toEqual(['piece-A']);
     });
 
     it('keeps the normalised parcel id even when the feature also carries a cadastral number and KO', () => {

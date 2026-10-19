@@ -125,13 +125,38 @@
         return { ownershipType: type, ownerCount: list ? list.length : null };
     }
 
-    // The id the parcel panel's title shows: HR-<cadastral municipality>-<parcel number> when the
-    // record carries both, the short application reference for geometry identities, else the live parcel id.
+    // Presentation follows explicit provenance, never the spelling of a source or runtime id.
+    // A producer alone cannot distinguish an authored plot from its leftover ground.
+    function parcelIdentityKind(props, parcelId) {
+        const p = props || {};
+        const id = parcelId === undefined || parcelId === null ? '' : String(parcelId);
+        if (p.producedByProposalId || p.liveParcelDerivation || p.formedByProposalIds?.length) return 'formed';
+        if (p.cadastralPart === true) return 'sourcePart';
+        const sources = Array.isArray(p.cadastreParcelIds) ? p.cadastreParcelIds.map(String) : [];
+        if (sources.length) return sources.length === 1 && sources[0] === id ? 'source' : 'formed';
+        return 'unknown';
+    }
+
+    function parcelIdentityTitle(kind) {
+        const titles = {
+            source: ['panel.parcel.identity.source', 'Source parcel {{number}}'],
+            sourcePart: ['panel.parcel.identity.sourcePart', 'Source parcel part {{number}}'],
+            formed: ['panel.parcel.identity.formed', 'Formed ground piece {{number}}']
+        };
+        const [key, fallback] = titles[kind] || ['panel.parcel.multi.parcelLabel', 'Parcel {{number}}'];
+        return { key, fallback };
+    }
+
+    // The normalized id wins over inherited cadastral-number metadata. Only an unchanged source
+    // feature can use its short geometry reference; a formed piece must show its own runtime id.
     function displayParcelId(props, parcelId) {
         const p = props || {};
-        if (p.parcelIdentityKind === 'geometry-sha256-v1' && String(p.geometryDisplayId || '').trim()) {
+        const kind = parcelIdentityKind(p, parcelId);
+        if (kind !== 'formed' && kind !== 'sourcePart'
+            && p.parcelIdentityKind === 'geometry-sha256-v1' && String(p.geometryDisplayId || '').trim()) {
             return String(p.geometryDisplayId).trim();
         }
+        if (parcelId !== undefined && parcelId !== null && String(parcelId)) return String(parcelId);
         const number = p.BROJ_CESTICE ?? p.broj_cestice;
         const municipality = p.MATICNI_BROJ_KO ?? p.maticni_broj_ko ?? (p.cadastralMunicipality && p.cadastralMunicipality.id);
         if (number !== undefined && number !== null && municipality !== undefined && municipality !== null) {
@@ -194,6 +219,8 @@
         availableActions,
         parcelArea,
         ownershipFacts,
+        parcelIdentityKind,
+        parcelIdentityTitle,
         displayParcelId,
         placeMenuAtPoint
     };

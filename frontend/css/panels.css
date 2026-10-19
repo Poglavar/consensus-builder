@@ -1065,6 +1065,13 @@ a phone it is the bottom sheet, up to half the screen (the phone block at the en
     font-weight: 500;
 }
 
+.parcel-identity-note {
+    margin: 8px 0;
+    color: var(--cb-text-muted);
+    font-size: 0.85rem;
+    line-height: 1.4;
+}
+
 /* Owner section - label above, container below */
 .parcel-owner-section {
     display: flex;
