@@ -29,9 +29,10 @@ function loadViewer(overrides = {}) {
         __siteModelGeometry: {},
         NovogradnjeCatalogue: {},
         ContextBuildings3D: {},
+        NovogradnjeGoogleContext: { mount: vi.fn(async () => vi.fn()) },
         ...overrides
     };
-    vm.runInNewContext(viewerSource, { window: root, document, fetch: root.fetch, AbortController });
+    vm.runInNewContext(viewerSource, { window: root, document, fetch: root.fetch, AbortController, URLSearchParams });
     return root;
 }
 
@@ -78,6 +79,52 @@ describe('Novogradnje viewer mounts', () => {
         expect(root.__floorPlanReviewRenderer.preview.mock.calls[0][3]).toEqual({
             enablePan: false, enableZoom: true, minPolarAngle: .15, maxPolarAngle: Math.PI * .48, focusName: 'context-project'
         });
+        expect(root.NovogradnjeGoogleContext.mount).not.toHaveBeenCalled();
+    });
+
+    it('loads Google context only when selected, disposes it on return to Model, and reuses the model response', async () => {
+        const root = loadViewer();
+        root.fetch.mockResolvedValue({ ok: true, json: async () => ({ buildings: [{ id: 'b' }], groundZ: 10 }) });
+        const host = makeElement('host');
+        const mounted = root.NovogradnjeViewer.mountContext(host, { ...locatedProject, id: 'project' });
+        await new Promise(resolve => setImmediate(resolve));
+        const [modelButton, googleButton] = host.children[0].children[1].children;
+        googleButton.click();
+        await new Promise(resolve => setImmediate(resolve));
+        expect(googleButton['aria-pressed']).toBe('true');
+        expect(root.NovogradnjeGoogleContext.mount).toHaveBeenCalledOnce();
+        const disposeGoogle = await root.NovogradnjeGoogleContext.mount.mock.results[0].value;
+        modelButton.click();
+        await new Promise(resolve => setImmediate(resolve));
+        expect(disposeGoogle).toHaveBeenCalledOnce();
+        expect(root.fetch).toHaveBeenCalledOnce();
+        expect(root.__floorPlanReviewRenderer.preview).toHaveBeenCalledTimes(2);
+        mounted.dispose();
+    });
+
+    it('disposes a Google preview that finishes after the context view is unmounted', async () => {
+        let resolveGoogle;
+        const root = loadViewer({ location: { search: '?context=google' }, NovogradnjeGoogleContext: { mount: vi.fn(() => new Promise(resolve => { resolveGoogle = resolve; })) } });
+        const host = makeElement('host');
+        const mounted = root.NovogradnjeViewer.mountContext(host, locatedProject);
+        mounted.dispose();
+        const disposeGoogle = vi.fn();resolveGoogle(disposeGoogle);
+        await new Promise(resolve => setImmediate(resolve));
+        expect(disposeGoogle).toHaveBeenCalledOnce();
+        expect(root.fetch).not.toHaveBeenCalled();
+    });
+
+    it('keeps the Model button available when Google fails and permits retry', async () => {
+        const root = loadViewer({ location: { search: '?context=google' } });
+        root.NovogradnjeGoogleContext.mount.mockRejectedValueOnce(new Error('Unavailable'));
+        const host = makeElement('host');
+        root.NovogradnjeViewer.mountContext(host, locatedProject);
+        await new Promise(resolve => setImmediate(resolve));
+        const [view, toolbar] = host.children[0].children;
+        expect(view.children[0].textContent).toContain('Google 3D trenutačno nije dostupan');
+        toolbar.children[1].click();
+        await new Promise(resolve => setImmediate(resolve));
+        expect(root.NovogradnjeGoogleContext.mount).toHaveBeenCalledTimes(2);
     });
 
     it('aborts the context request when its view is unmounted', () => {

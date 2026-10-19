@@ -23,6 +23,8 @@ async function preview(host,build,isCurrent,options={}){
  camera.position.copy(centre).addScaledVector(back,distance*1.12);
  const controls=new OrbitControls(camera,renderer.domElement);controls.target.copy(centre);controls.enableDamping=false;
  controls.enablePan=options.enablePan??true;controls.enableZoom=options.enableZoom??true;
+ if(Number.isFinite(options.minDistance))controls.minDistance=options.minDistance;
+ if(Number.isFinite(options.maxDistance))controls.maxDistance=options.maxDistance;
  if(Number.isFinite(options.minPolarAngle))controls.minPolarAngle=options.minPolarAngle;
  if(Number.isFinite(options.maxPolarAngle))controls.maxPolarAngle=options.maxPolarAngle;
  controls.autoRotate=Boolean(options.autoRotate)&&!global.matchMedia?.('(prefers-reduced-motion: reduce)').matches;if(Number.isFinite(options.autoRotateSpeed))controls.autoRotateSpeed=options.autoRotateSpeed;controls.update();
@@ -33,7 +35,11 @@ async function preview(host,build,isCurrent,options={}){
  if(controls.autoRotate){renderer.domElement.addEventListener('pointerdown',stopAutoRotate,{once:true});animationFrame=requestAnimationFrame(animate);}
  const resize=()=>{const w=host.clientWidth,h=host.clientHeight;if(!w||!h)return;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();render();};
  const observer=new ResizeObserver(resize);observer.observe(host);resize();
- return ()=>{observer.disconnect();if(animationFrame)cancelAnimationFrame(animationFrame);renderer.domElement.removeEventListener('pointerdown',stopAutoRotate);controls.removeEventListener('change',render);controls.dispose();global.__threeFloorPlans.disposeGroup(group);renderer.dispose();renderer.forceContextLoss();};
+ let disposeExtension=null;
+ const dispose=()=>{disposeExtension?.();observer.disconnect();if(animationFrame)cancelAnimationFrame(animationFrame);renderer.domElement.removeEventListener('pointerdown',stopAutoRotate);controls.removeEventListener('change',render);controls.dispose();global.__threeFloorPlans.disposeGroup(group);renderer.dispose();renderer.forceContextLoss();};
+ try{disposeExtension=await options.setup?.({THREE,scene,group,camera,renderer,controls,render});}catch(error){dispose();throw error;}
+ if(!isCurrent()){dispose();return null;}
+ return dispose;
 }
 function landmark(THREE,data,location){
  const group=new THREE.Group();group.userData.cbFloorPlan=true;
