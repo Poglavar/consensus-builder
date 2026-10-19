@@ -766,6 +766,8 @@ Expanded SAM 3 head fine-tuning used 96 training tiles and fresh 16-tile validat
 
 ## Parcel research storage (2026-10-19)
 
+- 2026-10-20: The user approved a quick illustrative plot demo using OSM, simple browser image processing and geometric growth, with explicit caveats and no LLM calls; keep it separate from trained models and human-review evaluation.
+
 The user requires only per-city failed URL lists and working settings plus shared adapter code as permanent knowledge; stage evidence and worktrees are disposable to prevent disk growth.
 
 - 2026-10-19: The user reversed the location-required plan policy: retain, reconstruct and expose source-backed plans with **Nepoznata lokacija**; keep their geographic location, building placement and surroundings absent until evidence identifies the building. The shared worldwide geodata API owns published plans and retained original-source metadata, with Novogradnje and the Consensus Builder archive as consumers.

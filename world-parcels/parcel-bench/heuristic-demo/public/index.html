@@ -1,0 +1,44 @@
+<!doctype html>
+<!-- A small, editable demonstration of imagery-supported plots; computation stays in the browser. -->
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#183d35"><title data-text="pageTitle"></title>
+  <link rel="stylesheet" href="styles.css?v=1"><script type="module" src="app.mjs?v=1"></script>
+</head>
+<body>
+  <header class="masthead"><a class="brand" href="./"><span class="brand-mark" aria-hidden="true">A</span><span data-text="brand"></span><span class="brand-detail" data-text="brandDetail"></span></a><span class="badge badge-light" data-text="browserBadge"></span></header>
+  <main class="workspace">
+    <aside class="panel controls" data-label="controls">
+      <div class="intro"><p class="eyebrow" data-text="introEyebrow"></p><h1><span data-text="introTitleFirst"></span><br><span data-text="introTitleSecond"></span></h1><p class="muted" data-text="introDescription"></p></div>
+      <div class="field"><label for="location" data-text="locationLabel"></label><select id="location" disabled><option data-text="locationLoading"></option></select><p id="extent" class="caption"></p></div>
+      <details class="disclosure" open><summary data-text="shapeSummary"></summary>
+        <div class="field"><label for="sensitivity"><span data-text="edgeLabel"></span><output id="sensitivity-value">55</output></label><input id="sensitivity" type="range" min="0" max="100" value="55" disabled><p class="caption" data-text="edgeHelp"></p></div>
+        <div class="field"><label for="rectangularity"><span data-text="streetLabel"></span><output id="rectangularity-value">65</output></label><input id="rectangularity" type="range" min="0" max="100" value="65" disabled><p class="caption" data-text="streetHelp"></p></div>
+      </details>
+      <details class="disclosure" open><summary data-text="correctionSummary"></summary>
+        <div class="actions actions-stack" role="group" data-label="editingTools">
+          <button id="inspect" class="action action-selected" aria-pressed="true" disabled><span data-text="inspect"></span></button>
+          <button id="add-seed" class="action" aria-pressed="false" disabled><span aria-hidden="true">＋</span><span data-text="addSeed"></span></button>
+          <button id="divide" class="action" aria-pressed="false" disabled><span aria-hidden="true">╱</span><span data-text="divide"></span></button>
+        </div>
+        <p id="tool-hint" class="caption" data-text="modes.inspect"></p>
+        <div class="actions"><button id="undo" class="action action-quiet" disabled data-text="undo"></button><button id="reset" class="action action-quiet" disabled data-text="reset"></button></div>
+      </details>
+      <button id="export" class="action action-primary" disabled><span data-text="export"></span><span aria-hidden="true">↗</span></button>
+      <p id="save-state" class="caption" data-text="saveInitial"></p>
+      <details class="disclosure provenance"><summary data-text="provenanceSummary"></summary><div id="sources" class="caption"></div><p class="caption" data-text="limitationExamples"></p><p class="caption" data-text="limitationMethod"></p></details>
+    </aside>
+    <section class="map-column" data-label="mapPreview">
+      <div class="map-heading"><div><p id="region" class="eyebrow" data-text="initialRegion"></p><h2 id="place" data-text="initialPlace"></h2></div><span id="run-time" class="badge" data-text="grid"></span></div>
+      <div class="map-shell panel"><div class="map-toolbar"><div class="layer-controls"><label><input id="show-plots" type="checkbox" checked><span data-text="plotsToggle"></span></label><label><input id="show-features" type="checkbox" checked><span data-text="featuresToggle"></span></label><label><input id="show-edges" type="checkbox"><span data-text="edgesToggle"></span></label></div><div class="actions zoom-controls"><button id="zoom-out" class="action action-icon" data-label="zoomOut">−</button><button id="fit" class="action action-icon" data-label="fitImage">⛶</button><button id="zoom-in" class="action action-icon" data-label="zoomIn">＋</button></div></div>
+        <svg id="viewer" role="img" data-label="aerialImage" tabindex="0" preserveAspectRatio="none"><defs><clipPath id="image-clip"><rect width="1024" height="1024"/></clipPath></defs></svg>
+        <div class="map-footer"><span id="selection" data-text="initialSelection"></span><span class="map-north" data-label="north">N ↑</span></div>
+      </div>
+      <div class="metrics" data-label="summary"><div class="metric"><strong id="plot-count">—</strong><span data-text="plotMetric"></span></div><div class="metric"><strong id="building-count">—</strong><span data-text="buildingMetric"></span></div><div class="metric"><strong id="generated-count">—</strong><span data-text="generatedMetric"></span></div><div class="metric"><strong id="coverage">—</strong><span data-text="coverageMetric"></span></div></div>
+      <div id="status" class="notice" role="status" aria-live="polite" data-text="loadingStatus"></div>
+      <p class="disclaimer" data-text="disclaimer"></p>
+    </section>
+  </main>
+</body>
+</html>
