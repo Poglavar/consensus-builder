@@ -250,6 +250,13 @@ name or description by itself does not change land use or ownership.
    createdAt }` and a `PAYMENT-RESPONSE` header with the settlement signature. The stored record carries
    `author = <your wallet>` and `agent.paid.tx = <signature>`.
 
+In that response, `id` is the server-assigned database row ID; `proposalId` is the authored
+operation/content identifier. Creation accepts only `proposalId` (a string that is not all digits),
+or generates it when omitted. Sending `id` or `proposal_id` on creation is rejected before payment.
+Digits in `/proposals/<id>` address only a database row; other identifiers address `proposalId`,
+with no fallback between the two. A minted token/account must be identified by its complete
+`chainRef` (`chainType`, `chainId`, `contract`, `tokenId`) through `/proposals/mirror`.
+
 If the response is lost, retry with the same wallet, body and payment identifier. The server returns
 the original **201** and settlement receipt without calling the facilitator or charging again. Reusing
 the identifier with a changed body or wallet is rejected before settlement.

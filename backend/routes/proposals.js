@@ -1,11 +1,12 @@
 // Proposals API endpoints
 // POST /proposals - Store a proposal and get back an id (+ a one-time edit token)
-// GET /proposals/:id - Get a proposal by row id (numeric) or proposal_id, row id first
+// GET /proposals/:id - Digits address a database row; other identifiers address an authored proposalId.
 
 import { createHash, randomBytes, timingSafeEqual } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { createJsonBodyValidator, validators } from '../utils/request-validation.js';
+import { isProposalRowId, oneProposalByIdentifierClause, partitionProposalIdentifiers, indexProposalRows } from '../proposals/identifiers.js';
 const corridorOsmForm = createRequire(import.meta.url)('../../frontend/js/corridor-osm-form.js');
 import { defaultThumbnailQueue } from '../thumbnails/thumbnail-queue.js';
 import { publicApiBaseUrl } from '../utils/public-base-url.js';
@@ -90,25 +91,6 @@ export function editTokenMatches(token, storedHash) {
 function readEditToken(req) {
     const raw = req.get(EDIT_TOKEN_HEADER);
     return typeof raw === 'string' && raw.trim() ? raw.trim() : null;
-}
-
-// ---------------------------------------------------------------------------------------------
-// Single-row addressing. The frontend's share links, list labels ("#51") and plan ids are the
-// database ROW id; proposal_id is the uploader's own identifier (a content fingerprint such as
-// "c2-…" from the browser, an operation id from agents). Legacy rows exist whose proposal_id is a
-// bare number equal to ANOTHER row's id (prod: row 45 has proposal_id "51"), so "proposal_id = $1
-// OR id::text = $1" can match two rows and the database picked one arbitrarily. The row id wins;
-// proposal_id is the fallback. New numeric proposal_ids are refused at create, so the two
-// namespaces cannot collide again.
-// ---------------------------------------------------------------------------------------------
-function oneProposalByIdClause(placeholder) {
-    return `WHERE (proposal_id = ${placeholder} OR id::text = ${placeholder})
-                ORDER BY (id::text = ${placeholder}) DESC
-                LIMIT 1`;
-}
-
-function isReservedNumericProposalId(value) {
-    return typeof value === 'string' && /^\d+$/.test(value);
 }
 
 // The frontend sends short city codes (frontend/js/city-config.js CITY_QUERY_MAP) but proposals are
@@ -373,9 +355,10 @@ export function proposalRoleValidator(value) {
 export const proposalCreateBodyValidator = createJsonBodyValidator({
     allowUnknownFields: true,
     schema: {
-        proposalId: { required: false, validate: validateIdentifierField('proposalId') },
-        id: { required: false, validate: validateIdentifierField('id') },
-        proposal_id: { required: false, validate: validateIdentifierField('proposal_id') },
+        proposalId: { required: false, validate: validators.string({
+            label: 'proposalId', minLength: 1, minLengthMessage: 'proposalId must not be empty.',
+            maxLength: MAX_PROPOSAL_ID_LENGTH, disallowControlChars: true
+        }) },
         city: { required: false, validate: validators.string({ maxLength: MAX_CITY_LENGTH, label: 'city', disallowControlChars: true }) },
         name: { required: false, validate: validators.optional(validators.string({ maxLength: MAX_TITLE_LENGTH, label: 'name', disallowControlChars: true })) },
         title: { required: false, validate: validators.optional(validators.string({ maxLength: MAX_TITLE_LENGTH, label: 'title', disallowControlChars: true })) },
@@ -512,6 +495,11 @@ export function precheckProposalCreate(req) {
     if (!body || typeof body !== 'object' || Array.isArray(body) || !req.validatedBody) {
         return fail('Proposal body must be a JSON object.');
     }
+    for (const field of ['id', 'proposal_id']) {
+        if (Object.prototype.hasOwnProperty.call(body, field)) {
+            return fail(`${field} is not a creation field. Send the authored identifier as proposalId; the server assigns the database row id.`);
+        }
+    }
     if (!req.chainMirror && (body.onchain || body.onchainData || body.nft || body.chainMirror)) {
         return fail('Minted proposals must be mirrored from their chain location using POST /proposals/mirror.', 'chain-mirror-required');
     }
@@ -539,8 +527,8 @@ export function precheckProposalCreate(req) {
         }
     }
 
-    const explicitProposalId = validated.proposalId ?? validated.id ?? validated.proposal_id ?? null;
-    if (isReservedNumericProposalId(explicitProposalId)) {
+    const explicitProposalId = validated.proposalId ?? null;
+    if (explicitProposalId !== null && isProposalRowId(explicitProposalId)) {
         return fail('proposalId must not be purely numeric: numeric ids are the server\'s row ids.');
     }
     if (!req.chainMirror && /^chain_/i.test(String(explicitProposalId || ''))) {
@@ -1063,7 +1051,7 @@ export function createProposalCreateHandler(pool) {
 
             if (err.code === '23505') {
                 const requestBody = req.validatedBody || req.body || {};
-                let conflictingProposalId = requestBody.proposalId ?? requestBody.id ?? requestBody.proposal_id;
+                let conflictingProposalId = requestBody.proposalId;
 
                 if (!conflictingProposalId && err.detail) {
                     const match = err.detail.match(/\(proposal_id\)=\(([^)]+)\)/);
@@ -1469,7 +1457,7 @@ export function setupProposalsRoute(app, pool, mirrorOptions = {}) {
             const sql = `
                 SELECT id, proposal_id, updated_at, created_at
                 FROM proposal
-                ${oneProposalByIdClause('$1')}
+                ${oneProposalByIdentifierClause(idParam)}
             `;
 
             const result = await pool.query(sql, [idParam]);
@@ -1482,8 +1470,8 @@ export function setupProposalsRoute(app, pool, mirrorOptions = {}) {
                 const weakEtag = `W/"proposal-${row.proposal_id}-${new Date(lastModified).getTime()}"`;
                 res.setHeader('ETag', weakEtag);
             }
-            res.setHeader('X-Proposal-Id', row.id);
-            res.setHeader('X-Proposal-ProposalId', row.proposal_id);
+            res.setHeader('X-Proposal-Row-Id', row.id);
+            res.setHeader('X-Proposal-Authored-Id', row.proposal_id);
 
             return res.status(200).end();
         } catch (err) {
@@ -1550,25 +1538,16 @@ export function setupProposalsRoute(app, pool, mirrorOptions = {}) {
     app.post('/proposals/batch', proposalBatchBodyValidator, async (req, res) => {
         try {
             const ids = Array.from(new Set(req.validatedBody.ids.map(String)));
+            const { proposalRowIds, authoredProposalIds } = partitionProposalIdentifiers(ids);
             const result = await pool.query(`
                 SELECT ${FULL_PROPOSAL_COLUMNS}
                 FROM proposal
-                WHERE proposal_id = ANY($1::text[]) OR id::text = ANY($1::text[])
-            `, [ids]);
+                WHERE id::text = ANY($1::text[]) OR proposal_id = ANY($2::text[])
+            `, [proposalRowIds, authoredProposalIds]);
 
-            // The row id wins if a requested numeric string also equals another row's proposal_id —
-            // plans and share links carry row ids. Same precedence as the single-row endpoints
-            // (oneProposalByIdClause), made deterministic for a set response.
-            const byProposalId = new Map();
-            const byDatabaseId = new Map();
-            for (const row of result.rows) {
-                if (row.proposal_id !== undefined && row.proposal_id !== null) {
-                    byProposalId.set(String(row.proposal_id), row);
-                }
-                if (row.id !== undefined && row.id !== null) byDatabaseId.set(String(row.id), row);
-            }
+            const byIdentifier = indexProposalRows(result.rows);
             const items = ids.map(id => {
-                const row = byDatabaseId.get(id) || byProposalId.get(id) || null;
+                const row = byIdentifier.get(id);
                 if (!row) return { id, proposal: null };
                 try {
                     return { id, proposal: serializeProposalRow(row) };
@@ -1596,7 +1575,7 @@ export function setupProposalsRoute(app, pool, mirrorOptions = {}) {
             const sql = `
                 SELECT ${FULL_PROPOSAL_COLUMNS}
                 FROM proposal
-                ${oneProposalByIdClause('$1')}
+                ${oneProposalByIdentifierClause(idParam)}
             `;
 
             const result = await pool.query(sql, [idParam]);
@@ -1621,7 +1600,7 @@ export function setupProposalsRoute(app, pool, mirrorOptions = {}) {
         store: mirrorOptions.ownerDecisionStore || createOwnerDecisionStore(pool),
         ...(mirrorOptions.pinJson ? { pinJson: mirrorOptions.pinJson } : {}),
         async loadProposal(id) {
-            const result = await pool.query(`SELECT ${FULL_PROPOSAL_COLUMNS} FROM proposal ${oneProposalByIdClause('$1')}`, [id]);
+            const result = await pool.query(`SELECT ${FULL_PROPOSAL_COLUMNS} FROM proposal ${oneProposalByIdentifierClause(id)}`, [id]);
             return result.rows.length ? serializeProposalRow(result.rows[0]) : null;
         }
     });
@@ -1642,7 +1621,7 @@ export function setupProposalsRoute(app, pool, mirrorOptions = {}) {
                        COALESCE(proposal_data->>'sourceProposalId', proposal_data->>'replacementOfProposalId', proposal_data->>'copiedFromProposalId') AS source_key,
                        proposal_data->>'copiedFromName' AS source_name
                 FROM proposal
-                ${oneProposalByIdClause('$1')}
+                ${oneProposalByIdentifierClause(req.params.id)}
             `, [req.params.id]);
             const row = target.rows[0];
             if (!row) return res.status(404).json({ error: 'Proposal not found' });
@@ -1652,7 +1631,7 @@ export function setupProposalsRoute(app, pool, mirrorOptions = {}) {
                 const found = await pool.query(`
                     SELECT id, proposal_id, title, name, ${EFFECTIVE_STATUS_SQL} AS effective_status
                     FROM proposal
-                    ${oneProposalByIdClause('$1')}
+                    ${oneProposalByIdentifierClause(row.source_key)}
                 `, [String(row.source_key)]);
                 const hit = found.rows[0];
                 source = hit
@@ -1762,7 +1741,7 @@ export function setupProposalsRoute(app, pool, mirrorOptions = {}) {
     // X-Proposal-Edit-Token issued by POST /proposals. The Origin check in front of the API is
     // not authorization — a non-browser client sets any Origin it likes.
     //
-    // Resolves the ONE row :id addresses (row id first, see oneProposalByIdClause) and checks the
+    // Resolves the ONE row in :id's namespace (see proposals/identifiers.js) and checks the
     // token against it. Returns the row, or answers 403/404 itself and returns null.
     async function authorizeProposalEdit(req, res) {
         const token = readEditToken(req);
@@ -1773,7 +1752,7 @@ export function setupProposalsRoute(app, pool, mirrorOptions = {}) {
         const result = await pool.query(`
                 SELECT id, edit_token_hash
                 FROM proposal
-                ${oneProposalByIdClause('$1')}
+                ${oneProposalByIdentifierClause(req.params.id)}
             `, [req.params.id]);
         const row = result.rows[0];
         if (!row) {
@@ -1869,8 +1848,8 @@ export function setupProposalsRoute(app, pool, mirrorOptions = {}) {
     // limiter: a distribution over 300 proposals died on 429 after the first hundred, leaving the
     // plan half-assigned with no indication of where it stopped.
     //
-    // Body: { epochs: [{ id, epochYear, editToken }] } — id is a row id or proposal_id (row id
-    // first), editToken the one POST /proposals returned for that proposal. Only entries whose token
+    // Body: { epochs: [{ id, epochYear, editToken }] } — digits address a row id; other identifiers
+    // address proposal_id. editToken is the one POST /proposals returned. Only entries whose token
     // matches are written, in one statement; the rest are named back as `forbidden` or `missing`
     // rather than failing the whole plan, because a plan routinely mixes your uploads with other
     // people's. Nothing authorized at all → 403.
@@ -1903,17 +1882,13 @@ export function setupProposalsRoute(app, pool, mirrorOptions = {}) {
             }
 
             const ids = Array.from(new Set(requests.map(request => request.id)));
+            const { proposalRowIds, authoredProposalIds } = partitionProposalIdentifiers(ids);
             const found = await pool.query(`
                 SELECT id, proposal_id, edit_token_hash
                 FROM proposal
-                WHERE proposal_id = ANY($1::text[]) OR id::text = ANY($1::text[])
-            `, [ids]);
-            const byDatabaseId = new Map();
-            const byProposalId = new Map();
-            for (const row of found.rows) {
-                byDatabaseId.set(String(row.id), row);
-                if (row.proposal_id !== null && row.proposal_id !== undefined) byProposalId.set(String(row.proposal_id), row);
-            }
+                WHERE id::text = ANY($1::text[]) OR proposal_id = ANY($2::text[])
+            `, [proposalRowIds, authoredProposalIds]);
+            const byIdentifier = indexProposalRows(found.rows);
 
             // Which ids matched nothing / were not authorized, named rather than counted: a silent
             // shortfall is how an epoch plan comes to be missing exactly the proposals nobody checked.
@@ -1921,7 +1896,7 @@ export function setupProposalsRoute(app, pool, mirrorOptions = {}) {
             const forbidden = [];
             const yearByRowId = new Map();
             for (const request of requests) {
-                const row = byDatabaseId.get(request.id) || byProposalId.get(request.id) || null;
+                const row = byIdentifier.get(request.id);
                 if (!row) { missing.push(request.id); continue; }
                 if (!editTokenMatches(request.editToken, row.edit_token_hash)) { forbidden.push(request.id); continue; }
                 yearByRowId.set(Number(row.id), { year: request.year, hash: row.edit_token_hash });

@@ -2144,6 +2144,10 @@ function buildUploadReadyProposal(proposal) {
     // below, because callers (the share dialog's Upload) project first and upload the projection.
     stampCurrentAuthor(proposal);
     const uploadProposal = { ...proposal };
+    // Publication supplies the authored proposalId. A downloaded record's database row id and
+    // SQL column spelling are not creation fields; the receiving server assigns its own row id.
+    delete uploadProposal.id;
+    delete uploadProposal.proposal_id;
     // A fork of a draft that has been published since names the published record, so the original
     // can list it as a counterproposal (proposals/lineage.js).
     Object.assign(uploadProposal, window.ProposalLineage?.publishedSourceIds(proposal, id => proposalStorage.getProposal(id)) || {});

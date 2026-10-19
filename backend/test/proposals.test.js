@@ -248,36 +248,33 @@ describe('POST /proposals', () => {
         }
     });
 
-    it('resolves proposalId from alternate field names', async () => {
-        pool.setResults([
-            insertResult({ proposal_id: 'from-id-field' }),
-            updateResult(),
-        ]);
-
-        await request(app)
+    it.each([
+        ['id', { id: 'legacy-id' }],
+        ['proposal_id', { proposal_id: 'legacy-proposal-id' }],
+        ['id alongside proposalId', { id: 'legacy-id', proposalId: 'canonical-id' }],
+        ['proposal_id alongside proposalId', { proposal_id: 'legacy-id', proposalId: 'canonical-id' }],
+    ])('rejects the top-level %s creation field before database access', async (_label, identifierFields) => {
+        const body = { ...validProposalBody(), ...identifierFields };
+        if (!identifierFields.proposalId) delete body.proposalId;
+        const res = await request(app)
             .post('/proposals')
-            .send({
-                id: 'from-id-field',
-                type: 'parcel',
-                cadastreParcelIds: ['HR-1']
-            });
+            .send(body);
 
-        const insertParams = pool.getCalls()[0].params;
-        // proposalId is the 1st param ($1)
-        expect(insertParams[0]).toBe('from-id-field');
+        expect(res.status).toBe(400);
+        expect(pool.getCalls()).toHaveLength(0);
     });
 
-    it('resolves proposalId from proposal_id and normalizes null collections', async () => {
+    it('normalizes null collections with canonical proposalId', async () => {
         pool.setResults([
-            insertResult({ proposal_id: 'from-proposal-id-field' }),
+            insertResult({ proposal_id: 'canonical-id' }),
             updateResult(),
         ]);
 
         const res = await request(app)
             .post('/proposals')
             .send({
-                proposal_id: 'from-proposal-id-field',
-                type: 'parcel',
+                ...validProposalBody(),
+                proposalId: 'canonical-id',
                 cadastreParcelIds: ['HR-1'],
                 acceptedParcelIds: null,
                 ownerAcceptances: null
@@ -285,7 +282,7 @@ describe('POST /proposals', () => {
 
         expect(res.status).toBe(201);
         const insertParams = pool.getCalls()[0].params;
-        expect(insertParams[0]).toBe('from-proposal-id-field');
+        expect(insertParams[0]).toBe('canonical-id');
         expect(insertParams[21]).toBe(JSON.stringify(['HR-1']));
         expect(insertParams[22]).toBeNull();
         expect(insertParams[23]).toBeNull();
@@ -650,10 +647,10 @@ describe('POST /proposals', () => {
 
         const nonScalarIdentifier = await request(app)
             .post('/proposals')
-            .send(validProposalBody({ id: { bad: true } }));
+            .send(validProposalBody({ proposalId: { bad: true } }));
 
         expect(nonScalarIdentifier.status).toBe(400);
-        expect(nonScalarIdentifier.body).toEqual({ error: 'id must be a string or number.' });
+        expect(nonScalarIdentifier.body).toEqual({ error: 'proposalId must be a string.' });
 
         const invalidArrayEntry = await request(app)
             .post('/proposals')
@@ -670,60 +667,57 @@ describe('POST /proposals', () => {
         expect(invalidControlChars.body).toEqual({ error: 'cadastreParcelIds contains invalid control characters.' });
     });
 
-    it('rejects overlong and control-character identifier aliases', async () => {
+    it('rejects overlong and control-character proposalId values', async () => {
         const tooLongId = await request(app)
             .post('/proposals')
-            .send(validProposalBody({ proposal_id: 'a'.repeat(256) }));
+            .send(validProposalBody({ proposalId: 'a'.repeat(256) }));
 
         expect(tooLongId.status).toBe(400);
-        expect(tooLongId.body).toEqual({ error: 'proposal_id must be at most 255 characters.' });
+        expect(tooLongId.body).toEqual({ error: 'proposalId must be at most 255 characters.' });
 
         const controlCharId = await request(app)
             .post('/proposals')
-            .send(validProposalBody({ proposal_id: 'bad\u0000id' }));
+            .send(validProposalBody({ proposalId: 'bad\u0000id' }));
 
         expect(controlCharId.status).toBe(400);
-        expect(controlCharId.body).toEqual({ error: 'proposal_id contains invalid control characters.' });
+        expect(controlCharId.body).toEqual({ error: 'proposalId contains invalid control characters.' });
     });
 
     it('rejects non-finite numeric identifier payloads', async () => {
         const res = await request(app)
             .post('/proposals')
             .set('Content-Type', 'application/json')
-            .send('{"id":1e9999,"type":"parcel"}');
+            .send('{"proposalId":1e9999,"type":"parcel"}');
 
         expect(res.status).toBe(400);
-        expect(res.body).toEqual({ error: 'id must be a string or number.' });
+        expect(res.body).toEqual({ error: 'proposalId must be a string.' });
     });
 
-    it('refuses a purely numeric proposal id: that namespace belongs to row ids', async () => {
+    it('rejects numeric-typed proposalId values', async () => {
         const res = await request(app)
             .post('/proposals')
-            .send({ id: 17, type: 'parcel', cadastreParcelIds: ['HR-1'] });
+            .send({ proposalId: 17, type: 'parcel', cadastreParcelIds: ['HR-1'] });
 
         expect(res.status).toBe(400);
-        expect(res.body.error).toMatch(/numeric/);
+        expect(res.body).toEqual({ error: 'proposalId must be a string.' });
         expect(pool.getCalls()).toHaveLength(0);
     });
 
-    it('accepts numeric-typed identifiers outside the reserved integer namespace', async () => {
-        pool.setResults([
-            insertResult({ proposal_id: '17.5' }),
-            updateResult(),
-        ]);
+    it('reserves digit-only strings for database row IDs', async () => {
+        const res = await request(app).post('/proposals').send(validProposalBody({ proposalId: '51' }));
+        expect(res.status).toBe(400);
+        expect(res.body.error).toMatch(/numeric.*row ids/);
+        expect(pool.getCalls()).toHaveLength(0);
+    });
 
+    it('rejects decimal numeric-typed proposalId values', async () => {
         const res = await request(app)
             .post('/proposals')
-            .send({
-                id: 17.5,
-                type: 'parcel',
-                cadastreParcelIds: ['HR-1']
-            });
+            .send({ proposalId: 17.5, type: 'parcel', cadastreParcelIds: ['HR-1'] });
 
-        expect(res.status).toBe(201);
-        const insertParams = pool.getCalls()[0].params;
-        expect(insertParams[0]).toBe('17.5');
-        expect(insertParams[30]).toBeNull();
+        expect(res.status).toBe(400);
+        expect(res.body).toEqual({ error: 'proposalId must be a string.' });
+        expect(pool.getCalls()).toHaveLength(0);
     });
 });
 
@@ -744,24 +738,33 @@ describe('POST /proposals/batch', () => {
         expect(res.body.items[0].proposal).toMatchObject({ id: 11, proposalId: 'proposal-a', name: 'A' });
         expect(res.body.items[1].proposal).toBeNull();
         expect(res.body.items[2].proposal).toMatchObject({ id: 22, proposalId: 'proposal-b', name: 'B' });
-        expect(pool.getCalls()[0].params).toEqual([['proposal-a', 'missing', 'proposal-b']]);
+        expect(pool.getCalls()[0].params).toEqual([[], ['proposal-a', 'missing', 'proposal-b']]);
     });
 
-    // Plans and share links carry ROW ids, so a numeric id that is also some other row's legacy
-    // proposal_id resolves to the row with that id — in either database order.
-    it.each([
-        ['row-id match first', true],
-        ['proposal-id match first', false]
-    ])('prefers the row id over an equal legacy proposal_id (%s)', async (_label, rowIdFirst) => {
-        const databaseIdMatch = proposalDbRow({ id: 1, proposal_id: 'different-public-id' });
-        const publicIdMatch = proposalDbRow({ id: 9, proposal_id: '1' });
-        const rows = rowIdFirst ? [databaseIdMatch, publicIdMatch] : [publicIdMatch, databaseIdMatch];
-        pool.setResult({ rows, rowCount: 2 });
+    it('does not resolve a numeric authored id when only the other row has that proposal_id', async () => {
+        pool.setResult({ rows: [proposalDbRow({ id: 9, proposal_id: '1' })], rowCount: 1 });
 
         const res = await request(app).post('/proposals/batch').send({ ids: [1] });
 
         expect(res.status).toBe(200);
-        expect(res.body.items[0].proposal).toMatchObject({ id: 1, proposalId: 'different-public-id' });
+        expect(res.body.items[0].proposal).toBeNull();
+        expect(pool.getCalls()[0].params).toEqual([['1'], []]);
+    });
+
+    it('partitions row IDs (numbers or digit strings) and authored IDs into separate query parameters', async () => {
+        const row = proposalDbRow({ id: 11, proposal_id: 'authored-a' });
+        const authored = proposalDbRow({ id: 22, proposal_id: '22' });
+        pool.setResult({ rows: [authored, row], rowCount: 2 });
+
+        const res = await request(app).post('/proposals/batch').send({ ids: [11, '22', 'authored-a'] });
+
+        expect(res.status).toBe(200);
+        expect(res.body.items.map(item => item.proposal)).toMatchObject([
+            { id: 11, proposalId: 'authored-a' },
+            { id: 22, proposalId: '22' },
+            { id: 11, proposalId: 'authored-a' },
+        ]);
+        expect(pool.getCalls()[0].params).toEqual([['11', '22'], ['authored-a']]);
     });
 
     it('validates a non-empty bounded identifier list', async () => {
@@ -1102,8 +1105,10 @@ describe('HEAD /proposals/:id', () => {
         const res = await request(app).head('/proposals/hdr-test');
 
         expect(res.status).toBe(200);
-        expect(res.headers['x-proposal-id']).toBe('5');
-        expect(res.headers['x-proposal-proposalid']).toBe('hdr-test');
+        expect(res.headers['x-proposal-row-id']).toBe('5');
+        expect(res.headers['x-proposal-authored-id']).toBe('hdr-test');
+        expect(res.headers['x-proposal-id']).toBeUndefined();
+        expect(res.headers['x-proposal-proposalid']).toBeUndefined();
         expect(res.headers['last-modified']).toBeDefined();
         expect(res.headers['etag']).toContain('hdr-test');
     });
@@ -1118,7 +1123,10 @@ describe('HEAD /proposals/:id', () => {
         expect(res.status).toBe(200);
         expect(res.headers['etag']).toBeUndefined();
         expect(res.headers['last-modified']).toBeUndefined();
-        expect(res.headers['x-proposal-id']).toBe('5');
+        expect(res.headers['x-proposal-row-id']).toBe('5');
+        expect(res.headers['x-proposal-authored-id']).toBe('hdr-test');
+        expect(res.headers['x-proposal-id']).toBeUndefined();
+        expect(res.headers['x-proposal-proposalid']).toBeUndefined();
     });
 
     it('uses created_at for cache headers when updated_at is absent', async () => {

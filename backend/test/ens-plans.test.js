@@ -87,6 +87,16 @@ describe('named plans CRUD', () => {
         expect((await request(app).post('/plans').send({ slug: 'ok-name', proposalIds: ['p-x'] })).status).toBe(400);
     });
 
+    it('describes plan membership as database row IDs independently of minting', async () => {
+        const invalid = await request(app).post('/plans').send({ slug: 'row-plan', proposalIds: ['authored-id'] });
+        expect(invalid.status).toBe(400);
+        expect(invalid.body.error).toContain('database row IDs');
+        expect(invalid.body.error).not.toContain('minted');
+        const valid = await request(app).post('/plans').send({ slug: 'row-plan', proposalIds: ['1'] });
+        expect(valid.status).toBe(201);
+        expect(valid.body.onchain).toBeNull();
+    });
+
     it('fetches a plan and 404s on a missing one', async () => {
         await request(app).post('/plans').send({ slug: 'my-plan', proposalIds: ['5', '6'] });
         const ok = await request(app).get('/plans/my-plan');
