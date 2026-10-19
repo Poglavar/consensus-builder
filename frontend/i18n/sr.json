@@ -1628,7 +1628,7 @@
             "closeAria": "Zatvori panel sa podacima o parceli"
         },
         "proposal": {
-            "copyId": "Kopiraj ID",
+            "copyId": "Kopiraj lokalni ID",
             "mintConfirmation": {
                 "title": "Predlog je iskovan",
                 "chain": "Lanac: {{type}} / {{network}}",
@@ -2108,7 +2108,7 @@
                 "verification": "Provera i istorija",
                 "verificationHint": "Sočivo, dokazi i aktivnosti",
                 "record": "Zapis predloga",
-                "recordHint": "Datum izrade i identifikatori za kopiranje",
+                "recordHint": "Datum kreiranja, lokalni ID i linkovi",
                 "actions": "Dodatne radnje",
                 "actionsHint": "Napravite svoju verziju i istražite zemljište"
             },

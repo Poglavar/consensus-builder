@@ -1628,7 +1628,7 @@
             "closeAria": "Zatvori panel s podacima o čestici"
         },
         "proposal": {
-            "copyId": "Kopiraj ID",
+            "copyId": "Kopiraj lokalni ID",
             "mintConfirmation": {
                 "title": "Prijedlog je iskovan",
                 "chain": "Lanac: {{type}} / {{network}}",
@@ -2108,7 +2108,7 @@
                 "verification": "Provjera i povijest",
                 "verificationHint": "Leća, dokazi i aktivnosti",
                 "record": "Zapis prijedloga",
-                "recordHint": "Datum izrade i identifikatori za kopiranje",
+                "recordHint": "Datum izrade, lokalni ID i poveznice",
                 "actions": "Dodatne radnje",
                 "actionsHint": "Stvorite vlastitu verziju i istražite zemljište"
             },

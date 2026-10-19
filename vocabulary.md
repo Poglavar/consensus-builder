@@ -68,6 +68,10 @@ Mint confirmation takes a separate `localProposalId` for opening browser details
 a bare token/account is never used as the browser navigation key. [Confirmation](frontend/js/proposals/chain.js),
 [creation](frontend/js/proposals/create.js).
 
+The proposal record panel labels its copy action “Copy local ID”: it copies the browser record's
+`proposalId`, not its server row or chain token/account. An imported authored ID can be the local
+key, but this control does not assert those namespaces are interchangeable.
+
 Browser chain imports use chain family, network, contract/program and token/account together.
 EVM network/token numbers compare in decimal or hexadecimal form, and EVM contract addresses
 compare without case; Solana and Canton program/account case is preserved. A shared parcel set,

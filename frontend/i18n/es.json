@@ -1641,7 +1641,7 @@
             "closeAria": "Cerrar el panel de información de la parcela"
         },
         "proposal": {
-            "copyId": "Copiar ID",
+            "copyId": "Copiar ID local",
             "mintConfirmation": {
                 "title": "Propuesta acuñada",
                 "chain": "Cadena: {{type}} / {{network}}",
@@ -2121,7 +2121,7 @@
                 "verification": "Verificación e historial",
                 "verificationHint": "Lente, pruebas y actividad",
                 "record": "Registro de la propuesta",
-                "recordHint": "Fecha de creación e identificadores para copiar",
+                "recordHint": "Fecha de creación, ID local y enlaces",
                 "actions": "Más acciones",
                 "actionsHint": "Crea una versión y explora el terreno"
             },

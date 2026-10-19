@@ -695,7 +695,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     const lensButtonLabel = translateLensKey('modal.lens.proposalTriggerTitle', 'View proposal lens');
     const safeLensButtonLabel = typeof escapeHtml === 'function' ? escapeHtml(lensButtonLabel) : lensButtonLabel;
     const lensProposalId = fullProposal.proposalId || proposal.proposalId || '';
-    // The proposal's lens: a square icon button beside Copy ID, disabled when the proposal names
+    // The proposal's lens: a square icon button beside Copy local ID, disabled when the proposal names
     // no lens. proposal-lens-button is the hook the lens loader finds it by.
     const lensButtonHtml = `
         <button type="button"
@@ -1256,12 +1256,12 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                 </ol>
             </section>` : ''}
             ${(isSolanaPledgeProposal || agentProvenanceHtml) ? sectionEnd : ''}
-            ${sectionStart('record', tProposal('panel.proposal.detailsSections.record', 'Proposal record'), tProposal('panel.proposal.detailsSections.recordHint', 'Created date and copyable identifiers'))}
+            ${sectionStart('record', tProposal('panel.proposal.detailsSections.record', 'Proposal record'), tProposal('panel.proposal.detailsSections.recordHint', 'Created date, local ID and links'))}
             <div class="metric-group">
                 <span class="metric-label">${tProposal('panel.proposal.metrics.created', 'Created:')}</span> <span class="metric-value">${createdAtLabel}</span>
             </div>
             ${escapedProposalDisplayId ? `<div class="proposal-id-row">
-                    <button type="button" class="btn btn-quiet btn-sm proposal-id-copy" title="${escapedProposalDisplayId}" onclick="copyProposalIdToClipboard(${inlineJsArg(String(fullProposal.proposalId || proposal.proposalId || ''))})"><i class="fas fa-copy" aria-hidden="true"></i> ${tProposal('panel.proposal.copyId', 'Copy ID')}</button>
+                    <button type="button" class="btn btn-quiet btn-sm proposal-id-copy" title="${escapedProposalDisplayId}" onclick="copyProposalIdToClipboard(${inlineJsArg(String(fullProposal.proposalId || proposal.proposalId || ''))})"><i class="fas fa-copy" aria-hidden="true"></i> ${tProposal('panel.proposal.copyId', 'Copy local ID')}</button>
                     ${lensButtonHtml}
                 </div>` : ''}
                 ${proposalEnsHtml ? `<div class="proposal-ens-row">${proposalEnsHtml}</div>` : ''}
@@ -2482,7 +2482,8 @@ function returnToParcelInfo(parcelId, event) {
     }
 }
 
-// The id is an implementation detail: it sits behind a copy button (docs/design-language.md).
+// The local record key sits behind a copy button (docs/design-language.md); it is not a server row
+// or chain token/account identifier, even when an imported authored ID supplies the local key.
 function copyProposalIdToClipboard(id) {
     const text = String(id || '');
     if (!text) return;
@@ -2491,7 +2492,7 @@ function copyProposalIdToClipboard(id) {
         if (typeof showEphemeralMessage === 'function') showEphemeralMessage(t('common.copied', 'Copied'), 2000);
     };
     // Without clipboard access the ID is shown in a prompt's field, to copy by hand.
-    const showToCopy = () => window.CbDialog.prompt(t('panel.proposal.copyId', 'Copy ID'), { defaultValue: text });
+    const showToCopy = () => window.CbDialog.prompt(t('panel.proposal.copyId', 'Copy local ID'), { defaultValue: text });
     if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(text).then(done).catch(showToCopy);
     } else {

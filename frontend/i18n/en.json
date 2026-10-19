@@ -1594,7 +1594,7 @@
             "closeAria": "Close parcel info panel"
         },
         "proposal": {
-            "copyId": "Copy ID",
+            "copyId": "Copy local ID",
             "mintConfirmation": {
                 "title": "Proposal minted",
                 "chain": "Chain: {{type}} / {{network}}",
@@ -2074,7 +2074,7 @@
                 "verification": "Verification & history",
                 "verificationHint": "Lens, evidence and activity",
                 "record": "Proposal record",
-                "recordHint": "Created date and copyable identifiers",
+                "recordHint": "Created date, local ID and links",
                 "actions": "More actions",
                 "actionsHint": "Fork this proposal and explore its land"
             },
