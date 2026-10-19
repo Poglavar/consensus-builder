@@ -1,6 +1,8 @@
 import { test, expect } from '../helpers/fixtures';
 import { openCity, openParcel, proposalState, showProposal, PARCEL_ID } from '../helpers/runtime';
-import { connectWalletByConnectorId, injectMockSolanaWallet, stubSolanaBridgeSuccess, waitForBlockchainRuntime } from '../helpers/blockchain';
+import { connectWalletByConnectorId, injectMockEvmWallet, injectMockSolanaWallet, stubSolanaBridgeSuccess, waitForBlockchainRuntime } from '../helpers/blockchain';
+
+import { installProposalEvmBoundary, PROPOSAL_EVM_CONTRACT } from '../helpers/proposal-chain-boundary';
 
 const SOLANA_WALLET = '7xKXtg2CWYcy6EH8d9xvPht4JyhV46Lxgq6vN6hS9wZT';
 const PROPOSAL_ACCOUNT = '3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg';
@@ -187,7 +189,7 @@ test.describe('Proposal actions @features', () => {
         title: 'Owner consent action',
         goal: 'parcelBased',
         lifecycleStatus: 'Active',
-        funded: true,
+        funded: false,
         cadastreParcelIds: [parcelId],
         ownerAcceptances: {
           [parcelId]: {
@@ -217,7 +219,7 @@ test.describe('Proposal actions @features', () => {
     expect((await proposalState(page, proposalId)).lifecycleStatus).toBe('Active');
   });
 
-  test('final parcel acceptance executes the proposal and records the completed lifecycle', async ({ mockApi: page }) => {
+  test('withdrawing local consent preserves the recorded execution lifecycle', async ({ mockApi: page }) => {
     await openCity(page);
     await establishLocalProfile(page);
     await loadParcelOwnershipFixture(page);
@@ -241,6 +243,53 @@ test.describe('Proposal actions @features', () => {
     const executed = await proposalState(page, proposalId);
     expect(executed.acceptedParcelIds).toContain(PARCEL_ID);
     expect(executed.executedAt).toBeTruthy();
+    await ownerRow.getByRole('button', { name: 'Undo' }).click();
+    await expect.poll(async () => (await proposalState(page, proposalId)).acceptedParcelIds).toEqual([]);
+    const withdrawn = await proposalState(page, proposalId);
+    expect(withdrawn.lifecycleStatus).toBe('Executed');
+    expect(withdrawn.executedAt).toBe(executed.executedAt);
+    expect(withdrawn.applied).toBe(executed.applied);
+  });
+
+  test('an applied Active conditional offer can withdraw acceptance on EVM', async ({ mockApi: page }) => {
+    await injectMockEvmWallet(page, { chainIdHex: '0x14a34', walletKind: 'metamask' });
+    await openCity(page);
+    await establishLocalProfile(page);
+    await loadParcelOwnershipFixture(page);
+    await connectWalletByConnectorId(page, 'metamask');
+    await installProposalEvmBoundary(page);
+    const proposalId = await page.evaluate(({ parcelId, contract }) => {
+      const w = window as any;
+      const id = w.proposalStorage.addProposal({
+        title: 'Applied conditional consent', goal: 'parcelBased', lifecycleStatus: 'Active',
+        funded: false, isConditional: true, cadastreParcelIds: [parcelId],
+        nft: { chain: '84532', contract, tokenId: '5' },
+      });
+      const p = w.proposalStorage.getProposal(id);
+      const owners = w.getOwnerSlotsForParcel(parcelId);
+      const key = owners[0].key;
+      const entry = w.ensureOwnerAcceptanceEntry(p, parcelId, owners);
+      entry.acceptedOwnerKeys = [key];
+      entry.acceptedBy[key] = { agentId: w.getCurrentUserAgent().id,
+        acceptedAt: '2026-10-01T10:00:00.000Z', effectHash: w.currentConsentBindingHash(p) };
+      w.refreshProposalAcceptanceValidity(p);
+      w.setProposalApplied(p, true);
+      w.proposalStorage.save();
+      return id;
+    }, { parcelId: PARCEL_ID, contract: PROPOSAL_EVM_CONTRACT });
+    await showProposal(page, proposalId);
+    await expandProposalDetails(page);
+    await openProposalSection(page, 'land');
+    await page.locator('.owner-acceptance-row').first().getByRole('button', { name: 'Undo' }).click();
+    await expect.poll(async () => (await proposalState(page, proposalId)).acceptedParcelIds).toEqual([]);
+    const after = await proposalState(page, proposalId);
+    expect(after.lifecycleStatus).toBe('Active');
+    expect(after.applied).toBe(true);
+    expect(await page.evaluate(() => {
+      const w = window as any;
+      return w.__proposalEvmSubmitted?.data?.slice(0, 10)
+        === w.ethers.id('withdrawAcceptance(uint256,string,bytes32,bytes32,bytes32)').slice(0, 10);
+    })).toBe(true);
   });
 
   test('minted proposal support opens the donation dialog and confirms the mocked chain transaction', async ({ mockApi: page }) => {

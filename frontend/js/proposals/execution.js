@@ -1267,9 +1267,6 @@ async function recordAbstractProposalDecision(proposal, parcelId, ownerId, actor
     if (canExecute) {
         proposal.lifecycleStatus = 'Executed';
         proposal.executedAt = new Date().toISOString();
-    } else if (withdraw && status === 'Executed') {
-        proposal.lifecycleStatus = 'Active';
-        delete proposal.executedAt;
     }
     proposalStorage._indexProposal?.(proposal);
     proposalStorage.save();
@@ -1593,8 +1590,9 @@ async function handleUserRejectProposal(proposalId, parcelId, ownerKey = null) {
 
     if (isOnChain) {
         if (!isVote) {
-            // Pre-check: on-chain withdrawal is only possible for conditional, active proposals
-            if (getLifecycleStatus(proposal) === 'Executed' || isApplied(proposal)) {
+            // Map application is a local preview, not execution. The chain enforces withdrawal
+            // eligibility; retain these lifecycle and conditional pre-checks independently of it.
+            if (getLifecycleStatus(proposal) === 'Executed') {
                 showProposalAlertMessage('cannot_withdraw_executed_proposal',
                     'This acceptance cannot be withdrawn because the proposal has been executed.');
                 return;
@@ -1738,13 +1736,8 @@ async function rejectProposal(proposalId, parcelId, ownerKey = null) {
             proposal.acceptedParcelIds = normalizeParcelIdList((proposal.acceptedParcelIds || []).filter(id => id !== normalizedParcelId));
         }
 
-        // Undoing consent reopens the immutable snapshot's lifecycle. Fabric application is a
-        // separate local axis and is re-derived independently.
-        // Pure lifecycle change — leave `applied` (the map-application axis) untouched.
-        if (getLifecycleStatus(proposal) === 'Executed') {
-            proposal.lifecycleStatus = 'Active';
-            delete proposal.executedAt;
-        }
+        // Withdrawing a local acceptance changes consent only. Neither the recorded execution
+        // lifecycle/time nor this browser's map application is reversed by that decision.
 
         if (typeof proposalStorage._indexProposal === 'function') {
             proposalStorage._indexProposal(proposal);

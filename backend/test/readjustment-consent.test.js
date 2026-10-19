@@ -253,6 +253,22 @@ describe('fixed readjustment consent', () => {
         expect(showAlert).toHaveBeenCalledWith(expect.stringContaining('Complete and correct'), expect.anything());
     });
 
+    it('a signed withdrawal preserves an existing execution and map application', async () => {
+        const { context, proposal, setActor } = fixture();
+        setActor({ id: 'owner-a', name: 'Alice Example' });
+        await context.acceptProposal(proposal.proposalId, 'base-a', 'owner-a');
+        const approvalReceipt = proposal.ownerApprovals['owner-a'];
+        Object.assign(proposal, { lifecycleStatus: 'Executed', executedAt: '2026-10-01T10:00:00.000Z', applied: true });
+        const result = await context.rejectProposal(proposal.proposalId, 'base-a', 'owner-a');
+        expect(result).toMatchObject({ ownerKey: 'owner-a', ownerAccepted: false, parcelAccepted: false });
+        expect(proposal.ownerApprovals['owner-a']).toBeUndefined();
+        expect(proposal.ownerApprovalHistory).toContainEqual(approvalReceipt);
+        expect(proposal.acceptedParcelIds).toEqual([]);
+        expect(proposal).toMatchObject({ lifecycleStatus: 'Executed', executedAt: '2026-10-01T10:00:00.000Z', applied: true });
+        expect(context.autoApplyExecutedProposalToMap).not.toHaveBeenCalled();
+        expect(context.applyProposalOwnershipTransfer).not.toHaveBeenCalled();
+    });
+
     it('records valid positive-cash approvals but does not execute while funding is unspecified', async () => {
         const { context, proposal, setActor } = fixture();
         delete proposal.funded;

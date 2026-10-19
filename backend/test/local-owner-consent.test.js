@@ -7,6 +7,7 @@ import { createContext, runInContext } from 'node:vm';
 const require = createRequire(import.meta.url);
 const bookkeeping = require('../../frontend/js/proposals/owner-acceptance.js');
 const flow = require('../../frontend/js/proposals/ownership-flow.js');
+const status = require('../../frontend/js/proposals/status.js');
 const execution = readFileSync(new URL('../../frontend/js/proposals/execution.js', import.meta.url), 'utf8');
 const core = readFileSync(new URL('../../frontend/js/proposals/core.js', import.meta.url), 'utf8');
 
@@ -15,10 +16,10 @@ function fixture() {
     const alert = vi.fn();
     const bridge = { acceptProposal: vi.fn() };
     const context = createContext({
-        ...bookkeeping, __ownershipFlow: flow, console: { debug: vi.fn(), error: vi.fn() },
+        ...bookkeeping, ...status, __ownershipFlow: flow, setTimeout: vi.fn(), console: { debug: vi.fn(), error: vi.fn() },
         getOwnerSlotsForParcel: () => [{ key: 'owner-a', displayName: 'Owner A' }],
         getCurrentUserAgent: () => ({ id: 'actor-a' }),
-        proposalConsentFingerprint: () => 'terms-a', normalizeParcelId: id => String(id),
+        proposalConsentFingerprint: () => 'terms-a', normalizeParcelId: id => String(id), normalizeParcelIdList: ids => ids.map(String),
         proposalStorage: { getProposal: () => proposal, save: vi.fn() },
         showProposalAlertMessage: alert, ProposalChainBridge: bridge,
         getProposalNftInfo: () => ({ chain: 'evm', tokenId: '1', contract: 'fixture' })
@@ -30,7 +31,53 @@ function fixture() {
     return { context, proposal, alert, bridge };
 }
 
+function seedAcceptance(proposal) {
+    proposal.ownerAcceptances = bookkeeping.normalizeOwnerAcceptances({
+        'base-a': { ownerOrder: ['owner-a'], acceptedOwnerKeys: ['owner-a'],
+            acceptedBy: { 'owner-a': { effectHash: 'terms-a', agentId: 'actor-a' } } }
+    });
+}
+
 describe('local owner consent evidence', () => {
+    it.each(['Active', 'Executed'])('withdrawing local consent preserves %s lifecycle and map state', async lifecycleStatus => {
+        const { context, proposal } = fixture();
+        Object.assign(proposal, { lifecycleStatus, executedAt: '2026-10-01T10:00:00.000Z', applied: true });
+        seedAcceptance(proposal);
+        const result = await context.rejectProposal(proposal.proposalId, 'base-a', 'owner-a');
+        expect(result).toMatchObject({ ownerKey: 'owner-a', parcelAccepted: false });
+        expect(proposal.ownerAcceptances['base-a'].acceptedOwnerKeys).toEqual([]);
+        expect(proposal.acceptedParcelIds).toEqual([]);
+        expect(proposal).toMatchObject({ lifecycleStatus, executedAt: '2026-10-01T10:00:00.000Z', applied: true });
+        expect(context.proposalStorage.save).toHaveBeenCalledOnce();
+    });
+
+    it('allows an applied Active conditional proposal to reach the chain withdrawal', async () => {
+        const { context, proposal, bridge, alert } = fixture();
+        Object.assign(proposal, { lifecycleStatus: 'Active', isConditional: true, applied: true });
+        seedAcceptance(proposal);
+        bridge.withdrawAcceptance = vi.fn(async () => ({}));
+        // Stop after the chain boundary; rendering and local removal are exercised separately.
+        context.rejectProposal = vi.fn(async () => null);
+        await context.handleUserRejectProposal(proposal.proposalId, 'base-a', 'owner-a');
+        expect(bridge.withdrawAcceptance).toHaveBeenCalledWith({ proposalId: '1', parcelId: 'base-a', chainId: 'evm', contractAddress: 'fixture' });
+        expect(context.rejectProposal).toHaveBeenCalledWith(proposal.proposalId, 'base-a', 'owner-a');
+        expect(alert).not.toHaveBeenCalled();
+    });
+
+    it.each([
+        { lifecycleStatus: 'Executed', isConditional: true, code: 'cannot_withdraw_executed_proposal' },
+        { lifecycleStatus: 'Active', isConditional: false, code: 'cannot_withdraw_non_conditional' }
+    ])('retains the chain withdrawal guard for $code', async ({ code, ...fields }) => {
+        const { context, proposal, bridge, alert } = fixture();
+        Object.assign(proposal, fields, { applied: false });
+        seedAcceptance(proposal);
+        bridge.withdrawAcceptance = vi.fn();
+        await context.handleUserRejectProposal(proposal.proposalId, 'base-a', 'owner-a');
+        expect(bridge.withdrawAcceptance).not.toHaveBeenCalled();
+        expect(alert).toHaveBeenCalledWith(code, expect.any(String));
+        expect(proposal.ownerAcceptances['base-a'].acceptedOwnerKeys).toEqual(['owner-a']);
+    });
+
     it('reading state drops unsupported aggregate flags without inventing an owner decision', () => {
         const { context, proposal } = fixture();
         const state = context.getProposalOwnerAcceptanceState(proposal, 'base-a');
