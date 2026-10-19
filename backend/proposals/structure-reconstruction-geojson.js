@@ -1,16 +1,27 @@
-// Canonical GeoJSON archive boundary for reconstructed park and square proposals.
+// Canonical GeoJSON archive boundary for reconstructed park, square, lake and station proposals.
 // The site and authored structure stay ordinary GeoJSON features; proposal-only metadata is
 // retained in a foreign member so desktop GIS tools can still consume the archive directly.
+
+import { stripLocalProposalState } from './serializer.js';
 
 export const STRUCTURE_RECONSTRUCTION_GEOJSON_SCHEMA = 'consensus-builder.structure-reconstruction.v1';
 
 const PROPOSAL_RUNTIME_KEYS = new Set([
     'applied',
     'serverProposalId',
+    'ownerAcceptances',
+    'acceptedParcelIds',
     'geometry',
     'structureProposal'
 ]);
 const STRUCTURE_GEOMETRY_KEYS = new Set(['geometry']);
+const STRUCTURE_KINDS = Object.freeze(['park', 'square', 'lake', 'station']);
+
+function assertStructureKind(structure) {
+    if (!STRUCTURE_KINDS.includes(structure?.kind)) {
+        throw new Error(`Structure reconstruction supports ${STRUCTURE_KINDS.join(', ')} proposals.`);
+    }
+}
 
 function clone(value) {
     if (value === undefined) return undefined;
@@ -55,13 +66,11 @@ function stripArchiveProperties(input) {
 
 export function structureProposalToReconstructionGeoJSON(proposal, siteFeature) {
     if (!proposal || typeof proposal !== 'object') throw new Error('Proposal is required.');
+    proposal = stripLocalProposalState(proposal);
     const structure = proposal.structureProposal;
     if (!structure || typeof structure !== 'object') throw new Error('Structure proposal is required.');
 
-    const kind = String(structure.kind || '').toLowerCase();
-    if (!['park', 'square', 'lake'].includes(kind)) {
-        throw new Error('Structure reconstruction supports park, square, or lake proposals.');
-    }
+    assertStructureKind(structure);
     const site = polygonFeature(siteFeature, 'Site');
     const footprint = polygonFeature(structure.geometry, 'Structure footprint');
     const collection = {
@@ -101,12 +110,13 @@ export function structureReconstructionGeoJSONToProposal(collection) {
         ...clone(collection.reconstruction.structureProposal || {}),
         geometry: clone(footprint.geometry)
     };
-    const proposal = {
-        ...clone(collection.reconstruction.proposal || {}),
-        applied: false,
+    assertStructureKind(structureProposal);
+    const proposal = stripLocalProposalState({
+        ...withoutKeys(collection.reconstruction.proposal, PROPOSAL_RUNTIME_KEYS),
         geometry: clone(footprint.geometry),
         structureProposal
-    };
+    });
+    proposal.applied = false;
     if (!proposal.bounds && Array.isArray(collection.bbox)) proposal.bounds = clone(collection.bbox);
     return { proposal, site };
 }
