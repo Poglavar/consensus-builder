@@ -174,8 +174,8 @@ export async function storeReading(db,task,reading,{associationCurrent=true}={})
 }
 
 // The shared batch worker owns provider submission, polling, replay and accounting.
-export async function interpretPlans(db,{render=renderTask,verifyRaster=verifyRasterEvidence,...options}={}) {
-    const result=await runBatchStage(db,{
+export function planStageAdapter({render=renderTask,verifyRaster=verifyRasterEvidence}={}) {
+    return {
         stage:'plans',processor:PROCESSOR,schema:READING_SCHEMA,
         taskFilterSql:LOCATED_PLAN_TASK_SQL,
         counters:{ready:0,needsReview:0,notPlan:0,preflightNeedsReview:0,locationReview:0,associationReview:0},
@@ -224,7 +224,11 @@ export async function interpretPlans(db,{render=renderTask,verifyRaster=verifyRa
             }
             return storeReading(db,task,reading,{associationCurrent:await currentTaskContext(db,task)});
         }
-    },options);
+    };
+}
+
+export async function interpretPlans(db,{render=renderTask,verifyRaster=verifyRasterEvidence,...options}={}) {
+    const result=await runBatchStage(db,planStageAdapter({render,verifyRaster}),options);
     result.deferredLocation=Number((await db.query(`SELECT count(*) AS n FROM floor_plan.plan_task
         WHERE status='queued' AND processor=$1 AND NOT ${LOCATED_PLAN_TASK_SQL}`,[PROCESSOR])).rows[0].n);
     if(result.deferredLocation||result.locationReview||result.associationReview)result.status='partial';
