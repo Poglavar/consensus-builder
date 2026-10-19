@@ -1,0 +1,4573 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Independent Shapely/GEOS topology audit of bounded adapter-returned features projected to EPSG:3857; no geometry repair. Counts describe the tested viewport only.",
+  "library": "Shapely 2.1.2",
+  "metricCrs": "EPSG:3857",
+  "featureCount": 517,
+  "validNonemptyCount": 517,
+  "invalidFeatures": [],
+  "exactDuplicateGeometryGroups": [],
+  "positiveAreaOverlapPairsAbove1e-6M2": [
+    {
+      "ids": [
+        "ramallah:748669",
+        "ramallah:748671"
+      ],
+      "intersectionAreaM2": 28.84820868081266,
+      "fractionOfSmaller": 0.4778671141914299,
+      "minimumRotatedRectangleWidthM": 3.970005200929949,
+      "minimumRotatedRectangleLengthM": 8.508630538742947
+    },
+    {
+      "ids": [
+        "ramallah:748671",
+        "ramallah:754613"
+      ],
+      "intersectionAreaM2": 9.283599840178942,
+      "fractionOfSmaller": 0.7826315554041177,
+      "minimumRotatedRectangleWidthM": 1.9217513370570578,
+      "minimumRotatedRectangleLengthM": 5.428731923940987
+    },
+    {
+      "ids": [
+        "ramallah:746596",
+        "ramallah:746555"
+      ],
+      "intersectionAreaM2": 4.742650127700578,
+      "fractionOfSmaller": 0.00458866218074823,
+      "minimumRotatedRectangleWidthM": 0.23166540946926428,
+      "minimumRotatedRectangleLengthM": 41.87592937982134
+    },
+    {
+      "ids": [
+        "ramallah:746964",
+        "ramallah:747015"
+      ],
+      "intersectionAreaM2": 4.556785150102414,
+      "fractionOfSmaller": 0.0032598383065444636,
+      "minimumRotatedRectangleWidthM": 0.16513241973499107,
+      "minimumRotatedRectangleLengthM": 55.240865058263964
+    },
+    {
+      "ids": [
+        "ramallah:747014",
+        "ramallah:747016"
+      ],
+      "intersectionAreaM2": 3.061476480596489,
+      "fractionOfSmaller": 0.002088118654975012,
+      "minimumRotatedRectangleWidthM": 0.8268756674725385,
+      "minimumRotatedRectangleLengthM": 4.710781162558239
+    },
+    {
+      "ids": [
+        "ramallah:746577",
+        "ramallah:746581"
+      ],
+      "intersectionAreaM2": 2.932682020625734,
+      "fractionOfSmaller": 0.0021297481318988255,
+      "minimumRotatedRectangleWidthM": 0.8601137170346329,
+      "minimumRotatedRectangleLengthM": 28.104953622906127
+    },
+    {
+      "ids": [
+        "ramallah:746544",
+        "ramallah:754647"
+      ],
+      "intersectionAreaM2": 2.051144794043436,
+      "fractionOfSmaller": 0.0021506327111144316,
+      "minimumRotatedRectangleWidthM": 0.075111917301319,
+      "minimumRotatedRectangleLengthM": 54.244135650774425
+    },
+    {
+      "ids": [
+        "ramallah:747015",
+        "ramallah:746989"
+      ],
+      "intersectionAreaM2": 1.4178751814012855,
+      "fractionOfSmaller": 0.0010143212106734306,
+      "minimumRotatedRectangleWidthM": 0.11720776566960922,
+      "minimumRotatedRectangleLengthM": 24.112805443323523
+    },
+    {
+      "ids": [
+        "ramallah:746544",
+        "ramallah:746597"
+      ],
+      "intersectionAreaM2": 1.3530469574106476,
+      "fractionOfSmaller": 0.0010997950652044544,
+      "minimumRotatedRectangleWidthM": 0.04684966477924863,
+      "minimumRotatedRectangleLengthM": 55.84306706017311
+    },
+    {
+      "ids": [
+        "ramallah:747586",
+        "ramallah:747597"
+      ],
+      "intersectionAreaM2": 1.3510537326461434,
+      "fractionOfSmaller": 0.0011889450373345448,
+      "minimumRotatedRectangleWidthM": 0.058160150535035336,
+      "minimumRotatedRectangleLengthM": 46.4398299570458
+    },
+    {
+      "ids": [
+        "ramallah:747015",
+        "ramallah:747016"
+      ],
+      "intersectionAreaM2": 0.9744274346452048,
+      "fractionOfSmaller": 0.000697087041361364,
+      "minimumRotatedRectangleWidthM": 9.447510679929495,
+      "minimumRotatedRectangleLengthM": 78.76162901280314
+    },
+    {
+      "ids": [
+        "ramallah:747018",
+        "ramallah:747014"
+      ],
+      "intersectionAreaM2": 0.5690680239244643,
+      "fractionOfSmaller": 0.0003881400246703575,
+      "minimumRotatedRectangleWidthM": 0.02875099178143269,
+      "minimumRotatedRectangleLengthM": 38.64982854235003
+    },
+    {
+      "ids": [
+        "ramallah:747125",
+        "ramallah:747138"
+      ],
+      "intersectionAreaM2": 0.4214822528508046,
+      "fractionOfSmaller": 0.0004506980000525853,
+      "minimumRotatedRectangleWidthM": 0.026668119529062746,
+      "minimumRotatedRectangleLengthM": 31.36951803884114
+    },
+    {
+      "ids": [
+        "ramallah:747621",
+        "ramallah:747622"
+      ],
+      "intersectionAreaM2": 0.4072267922268509,
+      "fractionOfSmaller": 0.00044898470673639264,
+      "minimumRotatedRectangleWidthM": 0.027038504977412496,
+      "minimumRotatedRectangleLengthM": 31.578274285283896
+    },
+    {
+      "ids": [
+        "ramallah:747590",
+        "ramallah:747614"
+      ],
+      "intersectionAreaM2": 0.0009003731418934984,
+      "fractionOfSmaller": 8.476302352180818e-07,
+      "minimumRotatedRectangleWidthM": 2.7143768583703474,
+      "minimumRotatedRectangleLengthM": 23.304222482272905
+    },
+    {
+      "ids": [
+        "ramallah:746612",
+        "ramallah:746613"
+      ],
+      "intersectionAreaM2": 0.0006229308494170027,
+      "fractionOfSmaller": 4.541590790416184e-07,
+      "minimumRotatedRectangleWidthM": 0.31781124506478,
+      "minimumRotatedRectangleLengthM": 46.45665952222102
+    },
+    {
+      "ids": [
+        "ramallah:746985",
+        "ramallah:746991"
+      ],
+      "intersectionAreaM2": 0.0006218920900968525,
+      "fractionOfSmaller": 7.333835872690592e-07,
+      "minimumRotatedRectangleWidthM": 3.973196981690105e-05,
+      "minimumRotatedRectangleLengthM": 35.93476946698905
+    },
+    {
+      "ids": [
+        "ramallah:747180",
+        "ramallah:747183"
+      ],
+      "intersectionAreaM2": 0.0005490446687650004,
+      "fractionOfSmaller": 1.7904823721034933e-06,
+      "minimumRotatedRectangleWidthM": 0.0011976458394151153,
+      "minimumRotatedRectangleLengthM": 28.6980882667583
+    },
+    {
+      "ids": [
+        "ramallah:746505",
+        "ramallah:749999"
+      ],
+      "intersectionAreaM2": 0.00034989633728426924,
+      "fractionOfSmaller": 1.239459982462681e-07,
+      "minimumRotatedRectangleWidthM": 6.585479586599898,
+      "minimumRotatedRectangleLengthM": 61.394900601390226
+    },
+    {
+      "ids": [
+        "ramallah:748672",
+        "ramallah:748671"
+      ],
+      "intersectionAreaM2": 0.00034421554651231645,
+      "fractionOfSmaller": 3.8954189483745234e-07,
+      "minimumRotatedRectangleWidthM": 16.886181560720836,
+      "minimumRotatedRectangleLengthM": 38.134750447894696
+    },
+    {
+      "ids": [
+        "ramallah:747567",
+        "ramallah:747626"
+      ],
+      "intersectionAreaM2": 0.00031320497072298624,
+      "fractionOfSmaller": 2.563986734832498e-07,
+      "minimumRotatedRectangleWidthM": 0.00012065220799632154,
+      "minimumRotatedRectangleLengthM": 14.792878712096922
+    },
+    {
+      "ids": [
+        "ramallah:747652",
+        "ramallah:747655"
+      ],
+      "intersectionAreaM2": 0.00024737214460110457,
+      "fractionOfSmaller": 1.6968990061519507e-07,
+      "minimumRotatedRectangleWidthM": 0.38761903853671653,
+      "minimumRotatedRectangleLengthM": 56.50424513947973
+    },
+    {
+      "ids": [
+        "ramallah:746973",
+        "ramallah:746991"
+      ],
+      "intersectionAreaM2": 0.00022230335919636718,
+      "fractionOfSmaller": 2.284886596948911e-07,
+      "minimumRotatedRectangleWidthM": 1.3292233850173358,
+      "minimumRotatedRectangleLengthM": 28.499685943878053
+    },
+    {
+      "ids": [
+        "ramallah:747556",
+        "ramallah:747557"
+      ],
+      "intersectionAreaM2": 0.00019129373258721977,
+      "fractionOfSmaller": 1.4569539582939972e-07,
+      "minimumRotatedRectangleWidthM": 3.4431409405063187,
+      "minimumRotatedRectangleLengthM": 48.309375655454595
+    },
+    {
+      "ids": [
+        "ramallah:747058",
+        "ramallah:747060"
+      ],
+      "intersectionAreaM2": 0.00018864659418906578,
+      "fractionOfSmaller": 2.895872639931591e-07,
+      "minimumRotatedRectangleWidthM": 1.4915814708033617,
+      "minimumRotatedRectangleLengthM": 22.15806247393786
+    },
+    {
+      "ids": [
+        "ramallah:748678",
+        "ramallah:748677"
+      ],
+      "intersectionAreaM2": 0.00018858026608548073,
+      "fractionOfSmaller": 9.364861285820844e-07,
+      "minimumRotatedRectangleWidthM": 1.014929852092883,
+      "minimumRotatedRectangleLengthM": 18.42144078899358
+    },
+    {
+      "ids": [
+        "ramallah:747784",
+        "ramallah:747785"
+      ],
+      "intersectionAreaM2": 0.00016678310630524606,
+      "fractionOfSmaller": 1.5641468313033815e-07,
+      "minimumRotatedRectangleWidthM": 0.0010119369309389303,
+      "minimumRotatedRectangleLengthM": 20.07354644299314
+    },
+    {
+      "ids": [
+        "ramallah:747004",
+        "ramallah:747006"
+      ],
+      "intersectionAreaM2": 0.00012510254490172117,
+      "fractionOfSmaller": 7.095102907309955e-08,
+      "minimumRotatedRectangleWidthM": 3.3798376035902504,
+      "minimumRotatedRectangleLengthM": 63.40263972389967
+    },
+    {
+      "ids": [
+        "ramallah:747033",
+        "ramallah:747034"
+      ],
+      "intersectionAreaM2": 0.00010462761812145283,
+      "fractionOfSmaller": 1.4265162548801564e-07,
+      "minimumRotatedRectangleWidthM": 2.0142808487330415,
+      "minimumRotatedRectangleLengthM": 51.57921873380875
+    },
+    {
+      "ids": [
+        "ramallah:747093",
+        "ramallah:747094"
+      ],
+      "intersectionAreaM2": 8.676220741543617e-05,
+      "fractionOfSmaller": 1.761387924937965e-07,
+      "minimumRotatedRectangleWidthM": 0.001238757761988678,
+      "minimumRotatedRectangleLengthM": 20.543333709962983
+    },
+    {
+      "ids": [
+        "ramallah:748921",
+        "ramallah:748922"
+      ],
+      "intersectionAreaM2": 7.950379468796287e-05,
+      "fractionOfSmaller": 3.0199239714412117e-06,
+      "minimumRotatedRectangleWidthM": 0.00047888354758122444,
+      "minimumRotatedRectangleLengthM": 5.6256746142082985
+    },
+    {
+      "ids": [
+        "ramallah:747053",
+        "ramallah:747092"
+      ],
+      "intersectionAreaM2": 7.919602884687293e-05,
+      "fractionOfSmaller": 8.677972752321638e-08,
+      "minimumRotatedRectangleWidthM": 0.0012341753771459585,
+      "minimumRotatedRectangleLengthM": 17.60793598369602
+    },
+    {
+      "ids": [
+        "ramallah:747032",
+        "ramallah:747033"
+      ],
+      "intersectionAreaM2": 6.109507807201223e-05,
+      "fractionOfSmaller": 6.964571206034852e-08,
+      "minimumRotatedRectangleWidthM": 3.396973277700309,
+      "minimumRotatedRectangleLengthM": 29.113304432262833
+    },
+    {
+      "ids": [
+        "ramallah:746519",
+        "ramallah:746409"
+      ],
+      "intersectionAreaM2": 5.2288201966010917e-05,
+      "fractionOfSmaller": 4.1322845282512825e-07,
+      "minimumRotatedRectangleWidthM": 0.0012886778238793998,
+      "minimumRotatedRectangleLengthM": 18.121954636725803
+    },
+    {
+      "ids": [
+        "ramallah:746612",
+        "ramallah:746618"
+      ],
+      "intersectionAreaM2": 3.55261084088454e-05,
+      "fractionOfSmaller": 7.508288772015914e-08,
+      "minimumRotatedRectangleWidthM": 0.001258105843886929,
+      "minimumRotatedRectangleLengthM": 29.22994894229276
+    },
+    {
+      "ids": [
+        "ramallah:748820",
+        "ramallah:748821"
+      ],
+      "intersectionAreaM2": 2.3524633368646186e-05,
+      "fractionOfSmaller": 4.256043877930707e-07,
+      "minimumRotatedRectangleWidthM": 0.8241715090005513,
+      "minimumRotatedRectangleLengthM": 5.091523461388576
+    },
+    {
+      "ids": [
+        "ramallah:746517",
+        "ramallah:746408"
+      ],
+      "intersectionAreaM2": 2.3104738305360778e-05,
+      "fractionOfSmaller": 5.2755956099792146e-08,
+      "minimumRotatedRectangleWidthM": 1.2309798196952493,
+      "minimumRotatedRectangleLengthM": 26.228038679309115
+    },
+    {
+      "ids": [
+        "ramallah:748669",
+        "ramallah:754613"
+      ],
+      "intersectionAreaM2": 5.063953475943628e-06,
+      "fractionOfSmaller": 4.269044178551602e-07,
+      "minimumRotatedRectangleWidthM": 0.0012819475095094113,
+      "minimumRotatedRectangleLengthM": 2.2884054729731447
+    }
+  ],
+  "areaM2": {
+    "min": 11.862031087393717,
+    "median": 1024.9867996421067,
+    "max": 21705.8613889755
+  },
+  "features": [
+    {
+      "id": "ramallah:747080",
+      "areaM2": 980.7916627673335,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747067",
+      "areaM2": 2385.933775319287,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747063",
+      "areaM2": 5366.661144203393,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747544",
+      "areaM2": 1647.4409074881899,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747061",
+      "areaM2": 1359.4086402014532,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747062",
+      "areaM2": 2488.3128526693345,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747106",
+      "areaM2": 3261.667447632455,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747107",
+      "areaM2": 1930.5050510006572,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747458",
+      "areaM2": 3358.289602408005,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747114",
+      "areaM2": 1272.1989918513982,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747547",
+      "areaM2": 1375.9303880961736,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747549",
+      "areaM2": 969.690281804037,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747115",
+      "areaM2": 3087.8055452863105,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747556",
+      "areaM2": 3899.3800405890447,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747466",
+      "areaM2": 1258.6343758984028,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747120",
+      "areaM2": 1491.613239184372,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747121",
+      "areaM2": 1426.762489029774,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747129",
+      "areaM2": 1326.5588028919346,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747130",
+      "areaM2": 1334.1504377060744,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747132",
+      "areaM2": 1230.9942220274288,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747477",
+      "areaM2": 2781.7508463883223,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747479",
+      "areaM2": 4273.498159458959,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747566",
+      "areaM2": 1772.7094399792084,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747577",
+      "areaM2": 1386.1181952378618,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747133",
+      "areaM2": 1339.1147919172402,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747135",
+      "areaM2": 1364.7384683601201,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747134",
+      "areaM2": 1317.21265092929,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747587",
+      "areaM2": 1387.7921442182371,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747606",
+      "areaM2": 676.8294622039527,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 2
+    },
+    {
+      "id": "ramallah:747499",
+      "areaM2": 1298.4408166342132,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747612",
+      "areaM2": 916.1946672904863,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 2
+    },
+    {
+      "id": "ramallah:747615",
+      "areaM2": 1455.7354880616044,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747616",
+      "areaM2": 1932.4580990688532,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747528",
+      "areaM2": 990.4959555199981,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747618",
+      "areaM2": 1442.760664543278,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747007",
+      "areaM2": 890.4006613138416,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747004",
+      "areaM2": 1763.2238254476945,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747006",
+      "areaM2": 2843.21501051984,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747631",
+      "areaM2": 1629.7938996636517,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747634",
+      "areaM2": 2693.2524767914906,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747633",
+      "areaM2": 1758.4432449687959,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747632",
+      "areaM2": 1972.479416571147,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747637",
+      "areaM2": 789.2186011495152,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747635",
+      "areaM2": 1403.3390677612956,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747638",
+      "areaM2": 1045.2064414366705,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747641",
+      "areaM2": 1043.7571651785095,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747639",
+      "areaM2": 956.4804427861491,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747640",
+      "areaM2": 795.995677850987,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747642",
+      "areaM2": 896.9897598116426,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747643",
+      "areaM2": 1442.6233444069492,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747644",
+      "areaM2": 1369.5173436663822,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747645",
+      "areaM2": 946.6857695163552,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747648",
+      "areaM2": 1309.9990309380898,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747647",
+      "areaM2": 1093.6496942639878,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747668",
+      "areaM2": 2303.286305761386,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747666",
+      "areaM2": 1868.8236103946595,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747649",
+      "areaM2": 1236.5257629242653,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747688",
+      "areaM2": 1431.680536464356,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747690",
+      "areaM2": 1288.6902554185644,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747689",
+      "areaM2": 1620.6619048750379,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747702",
+      "areaM2": 1527.9377374966732,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747703",
+      "areaM2": 1024.9867996421067,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747704",
+      "areaM2": 1861.8303940009055,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747705",
+      "areaM2": 3731.61856169952,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747706",
+      "areaM2": 3719.3839580695817,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747559",
+      "areaM2": 1695.6923372228853,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747560",
+      "areaM2": 1627.9146609454083,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747557",
+      "areaM2": 1312.9703344312463,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747558",
+      "areaM2": 1457.0257202723374,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747629",
+      "areaM2": 1535.4968475839382,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747630",
+      "areaM2": 1445.4317980468038,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747650",
+      "areaM2": 1476.3388309185589,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747651",
+      "areaM2": 4441.876223150194,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747652",
+      "areaM2": 1457.789436520852,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747653",
+      "areaM2": 1268.1244305489777,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747655",
+      "areaM2": 2376.269429000635,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747658",
+      "areaM2": 440.298537046564,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747657",
+      "areaM2": 1333.2561844297409,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747656",
+      "areaM2": 1846.7078682836607,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747659",
+      "areaM2": 1584.3267960413518,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747660",
+      "areaM2": 1349.3290567381746,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747661",
+      "areaM2": 3677.4860326713642,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747664",
+      "areaM2": 1509.4955235869459,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747663",
+      "areaM2": 1695.0175668543498,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747662",
+      "areaM2": 1574.4263367912115,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747670",
+      "areaM2": 830.1252476960233,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747669",
+      "areaM2": 1864.0502589227142,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747672",
+      "areaM2": 1644.3712933580591,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747671",
+      "areaM2": 817.0543695233298,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747686",
+      "areaM2": 1405.6272723270351,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747696",
+      "areaM2": 1121.117545177412,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747695",
+      "areaM2": 972.0662173957897,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747697",
+      "areaM2": 1250.939566467039,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747698",
+      "areaM2": 2811.3982073109923,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747701",
+      "areaM2": 1446.4144215840963,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747707",
+      "areaM2": 4136.520383686645,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747730",
+      "areaM2": 1759.4817082711438,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747800",
+      "areaM2": 13306.62088110615,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747792",
+      "areaM2": 1477.319172312767,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747750",
+      "areaM2": 5985.225422515672,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747755",
+      "areaM2": 5364.591650844772,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747793",
+      "areaM2": 562.3042479939375,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747009",
+      "areaM2": 1121.6091097841488,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747008",
+      "areaM2": 382.80809623853304,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747010",
+      "areaM2": 1376.0034385980641,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747012",
+      "areaM2": 1235.2392642128314,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747011",
+      "areaM2": 1408.365004850936,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747038",
+      "areaM2": 252.26760072996458,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747044",
+      "areaM2": 4410.998597232557,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747039",
+      "areaM2": 55.740277583772354,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747079",
+      "areaM2": 1239.5047648229681,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 2
+    },
+    {
+      "id": "ramallah:746964",
+      "areaM2": 1576.9713919438186,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746971",
+      "areaM2": 1474.488797923459,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747032",
+      "areaM2": 877.2266987387952,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747031",
+      "areaM2": 1736.8993521912496,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747030",
+      "areaM2": 3861.207009072738,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746980",
+      "areaM2": 2099.0977909907615,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747036",
+      "areaM2": 17435.932337738635,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 2
+    },
+    {
+      "id": "ramallah:747035",
+      "areaM2": 263.96360760595707,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747052",
+      "areaM2": 809.5221342984378,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746981",
+      "areaM2": 517.4553142970923,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747059",
+      "areaM2": 1182.115376267364,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746993",
+      "areaM2": 35.34729654614158,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747098",
+      "areaM2": 2944.9833643104957,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747091",
+      "areaM2": 856.4637232387124,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747102",
+      "areaM2": 1303.3625255689062,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747116",
+      "areaM2": 4932.786738281097,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747108",
+      "areaM2": 2737.845314189168,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747103",
+      "areaM2": 1444.2974666596847,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747122",
+      "areaM2": 986.1495896104278,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:748672",
+      "areaM2": 1264.2358017036643,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747131",
+      "areaM2": 204.25828968509842,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747124",
+      "areaM2": 26.836819838965557,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:748678",
+      "areaM2": 201.37005806055717,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:748679",
+      "areaM2": 174.42894665259305,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:748680",
+      "areaM2": 185.3518570223704,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:748682",
+      "areaM2": 266.06382449853504,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:754649",
+      "areaM2": 928.5435506728967,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747003",
+      "areaM2": 994.2487419806838,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747001",
+      "areaM2": 1102.8576362931249,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747002",
+      "areaM2": 854.5530878945567,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747000",
+      "areaM2": 1128.4739194843903,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747018",
+      "areaM2": 8489.040756031694,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747017",
+      "areaM2": 1289.122429789487,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747019",
+      "areaM2": 1204.775883962943,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747014",
+      "areaM2": 1466.1410515644882,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747015",
+      "areaM2": 1397.8561884355413,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747016",
+      "areaM2": 1790.2162980501735,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747040",
+      "areaM2": 1020.8024685527521,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747042",
+      "areaM2": 1016.086322692837,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746970",
+      "areaM2": 1355.6257575121908,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746967",
+      "areaM2": 576.3914298060631,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747047",
+      "areaM2": 258.25121926339756,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746973",
+      "areaM2": 7878.838023670074,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747029",
+      "areaM2": 640.1751410777271,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746976",
+      "areaM2": 918.9263315104942,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746977",
+      "areaM2": 908.9856911385807,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746979",
+      "areaM2": 1053.788043321585,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746989",
+      "areaM2": 1695.4046748950118,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746982",
+      "areaM2": 5876.421389780322,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746994",
+      "areaM2": 1024.594041855592,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746995",
+      "areaM2": 988.3399283117711,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746997",
+      "areaM2": 1198.4502759443285,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746999",
+      "areaM2": 965.7715500534621,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747628",
+      "areaM2": 1564.874370061999,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746985",
+      "areaM2": 847.9765580964612,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746990",
+      "areaM2": 1040.5843878958383,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746986",
+      "areaM2": 730.3840499074523,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746991",
+      "areaM2": 972.9295077191867,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746987",
+      "areaM2": 791.9561062141502,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746992",
+      "areaM2": 2332.463599186699,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746996",
+      "areaM2": 1209.2797250426706,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747646",
+      "areaM2": 1975.2673437475444,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747636",
+      "areaM2": 1764.3772284685376,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747665",
+      "areaM2": 835.5539427024163,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747654",
+      "areaM2": 779.1215843725735,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747674",
+      "areaM2": 1380.788700623172,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747699",
+      "areaM2": 1153.678014961059,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747691",
+      "areaM2": 1331.1040667420655,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747685",
+      "areaM2": 1829.2909871847255,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747700",
+      "areaM2": 968.0361196091228,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747767",
+      "areaM2": 1593.8490530898528,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747765",
+      "areaM2": 775.0511892650302,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747769",
+      "areaM2": 1191.6810185205522,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747766",
+      "areaM2": 596.3587877603424,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747805",
+      "areaM2": 1380.118038152958,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747770",
+      "areaM2": 3932.461743955643,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747796",
+      "areaM2": 805.0153512302317,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747627",
+      "areaM2": 2176.1151988463166,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747764",
+      "areaM2": 714.8839834755672,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747826",
+      "areaM2": 275.3458430963171,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747824",
+      "areaM2": 755.31467942436,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747825",
+      "areaM2": 326.34116330795683,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747827",
+      "areaM2": 1484.200468155826,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747830",
+      "areaM2": 484.40156125200036,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746509",
+      "areaM2": 2149.950429466296,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746517",
+      "areaM2": 956.5695851021446,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746436",
+      "areaM2": 1420.9631980247088,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746518",
+      "areaM2": 1350.6722257598467,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746519",
+      "areaM2": 126.53582203386769,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747033",
+      "areaM2": 1510.888383871022,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747034",
+      "areaM2": 733.448481666567,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747028",
+      "areaM2": 873.1094683315998,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746599",
+      "areaM2": 2825.101064387574,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746598",
+      "areaM2": 1806.0400373828616,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746408",
+      "areaM2": 437.95506732275504,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746506",
+      "areaM2": 3995.8333893746976,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746505",
+      "areaM2": 21705.8613889755,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746409",
+      "areaM2": 463.93073557399845,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746508",
+      "areaM2": 6784.824316045524,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:748759",
+      "areaM2": 179.2227007968856,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:748760",
+      "areaM2": 70.49298488294109,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:748761",
+      "areaM2": 63.3284533948884,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:748763",
+      "areaM2": 303.47582345802493,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:748762",
+      "areaM2": 80.72663635081584,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:748636",
+      "areaM2": 972.4616077154652,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:748764",
+      "areaM2": 142.8134694580812,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:748765",
+      "areaM2": 64.19264041540134,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:748640",
+      "areaM2": 97.74909588581991,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:748639",
+      "areaM2": 80.55014109419119,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:748641",
+      "areaM2": 62.05677953071998,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:748669",
+      "areaM2": 60.368683728372844,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:748668",
+      "areaM2": 244.415967558262,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:748642",
+      "areaM2": 106.93734836996543,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:748671",
+      "areaM2": 883.6419165028459,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:748676",
+      "areaM2": 169.12071083731416,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:748677",
+      "areaM2": 331.76381997783585,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:748683",
+      "areaM2": 138.0562150353373,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:749999",
+      "areaM2": 2822.9740551127825,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:754613",
+      "areaM2": 11.862031087393717,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:748684",
+      "areaM2": 153.75007334141668,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746602",
+      "areaM2": 6414.152884997602,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746600",
+      "areaM2": 2654.9436662292387,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746601",
+      "areaM2": 689.4840886400854,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746605",
+      "areaM2": 978.8570614378772,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746603",
+      "areaM2": 1296.0008563207732,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746604",
+      "areaM2": 451.75158782519816,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746526",
+      "areaM2": 1317.95542256037,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746529",
+      "areaM2": 881.6779187363135,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746530",
+      "areaM2": 1103.4897476702529,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746539",
+      "areaM2": 538.1764635321754,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746533",
+      "areaM2": 429.2985125920544,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746540",
+      "areaM2": 550.7436227935374,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746541",
+      "areaM2": 626.9909705704324,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746542",
+      "areaM2": 42.39954393967692,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746543",
+      "areaM2": 571.118430338105,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746545",
+      "areaM2": 775.1521788498584,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746546",
+      "areaM2": 255.6642989150455,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746548",
+      "areaM2": 1165.071737129267,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746551",
+      "areaM2": 1856.2065049004796,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746552",
+      "areaM2": 119.74718881639389,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747020",
+      "areaM2": 789.2169439098781,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747021",
+      "areaM2": 352.840232893535,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747024",
+      "areaM2": 634.2149795068942,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747022",
+      "areaM2": 431.28672558402604,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747023",
+      "areaM2": 279.767668417488,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746557",
+      "areaM2": 15328.9979712603,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747025",
+      "areaM2": 390.60027424935976,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747046",
+      "areaM2": 1182.7237410998875,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746966",
+      "areaM2": 912.0710969197157,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746974",
+      "areaM2": 496.87106712127485,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747026",
+      "areaM2": 814.889380460269,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746596",
+      "areaM2": 1426.795037885712,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746975",
+      "areaM2": 739.8423830198532,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:759924",
+      "areaM2": 753.4369434581673,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:759925",
+      "areaM2": 367.2828914954672,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746524",
+      "areaM2": 554.1353331840442,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746528",
+      "areaM2": 742.6136016586945,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746521",
+      "areaM2": 841.7488464501766,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746525",
+      "areaM2": 280.49103231025424,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746606",
+      "areaM2": 298.27703618608894,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 2
+    },
+    {
+      "id": "ramallah:746607",
+      "areaM2": 554.0084908922671,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746609",
+      "areaM2": 1345.9123059624965,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746608",
+      "areaM2": 542.952942442276,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746610",
+      "areaM2": 869.2016614027161,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746611",
+      "areaM2": 677.123611914544,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746612",
+      "areaM2": 1371.6137762379035,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746535",
+      "areaM2": 1178.7011260508439,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746534",
+      "areaM2": 770.0449373584665,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747005",
+      "areaM2": 935.8656117989613,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746537",
+      "areaM2": 377.46905725269545,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746536",
+      "areaM2": 1083.9667417458093,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746614",
+      "areaM2": 2078.288687694344,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 2
+    },
+    {
+      "id": "ramallah:746613",
+      "areaM2": 1914.3445178546385,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746615",
+      "areaM2": 555.9871388515803,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746616",
+      "areaM2": 958.0065408179078,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746618",
+      "areaM2": 473.15852503242144,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746617",
+      "areaM2": 843.3011442655456,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746621",
+      "areaM2": 795.6943123681689,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746620",
+      "areaM2": 927.9089419200103,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746619",
+      "areaM2": 697.8123335783514,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746627",
+      "areaM2": 1184.262809580526,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746626",
+      "areaM2": 628.4128674681394,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746622",
+      "areaM2": 888.335026641789,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746630",
+      "areaM2": 898.0309832963343,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746628",
+      "areaM2": 854.8127673007504,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746629",
+      "areaM2": 1436.8097208092545,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747041",
+      "areaM2": 237.43937624161356,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746633",
+      "areaM2": 1906.206017207093,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747013",
+      "areaM2": 583.0285812979696,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747045",
+      "areaM2": 33.583381517223536,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747043",
+      "areaM2": 60.8512947156069,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746963",
+      "areaM2": 719.5153927102414,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746965",
+      "areaM2": 383.30285139003644,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746968",
+      "areaM2": 410.8809736466563,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746972",
+      "areaM2": 450.55584281921415,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746969",
+      "areaM2": 355.63663999737526,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747037",
+      "areaM2": 1551.651830986634,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747027",
+      "areaM2": 1473.5388300127588,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746984",
+      "areaM2": 273.5436175992362,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746983",
+      "areaM2": 570.3757903132987,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746978",
+      "areaM2": 307.8212597577511,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746988",
+      "areaM2": 152.50506376993448,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746998",
+      "areaM2": 414.6813622038722,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747667",
+      "areaM2": 2003.803326500018,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747676",
+      "areaM2": 1766.1105999899264,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747677",
+      "areaM2": 1278.9431489029419,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747553",
+      "areaM2": 173.59847552566345,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747562",
+      "areaM2": 1064.352477567241,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747561",
+      "areaM2": 1454.7466104548985,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 2
+    },
+    {
+      "id": "ramallah:747563",
+      "areaM2": 329.35641820944807,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747564",
+      "areaM2": 291.44499490935715,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 2
+    },
+    {
+      "id": "ramallah:747565",
+      "areaM2": 3040.227047349723,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747572",
+      "areaM2": 2673.0632115291455,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747574",
+      "areaM2": 678.8598449175406,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747576",
+      "areaM2": 426.528833838449,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747575",
+      "areaM2": 756.6677321913467,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747567",
+      "areaM2": 1240.4831619366919,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747568",
+      "areaM2": 1574.5179653194402,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747579",
+      "areaM2": 1268.3840497309995,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747578",
+      "areaM2": 430.8997632848874,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747581",
+      "areaM2": 1309.0682796553597,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747580",
+      "areaM2": 1386.2398481185892,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747582",
+      "areaM2": 1286.001319830536,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747583",
+      "areaM2": 1876.2943309612829,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747584",
+      "areaM2": 1723.8205421123348,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747585",
+      "areaM2": 1890.1157754274138,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747586",
+      "areaM2": 1500.8810529555678,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747588",
+      "areaM2": 1888.814328513208,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747589",
+      "areaM2": 1567.3775104732983,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747590",
+      "areaM2": 1288.8997817169588,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747591",
+      "areaM2": 1629.2007955128317,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747594",
+      "areaM2": 3780.2066632175633,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747595",
+      "areaM2": 1237.3526432994427,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747596",
+      "areaM2": 865.556380240272,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747597",
+      "areaM2": 1136.3466688712747,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747613",
+      "areaM2": 1044.9314951138763,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747614",
+      "areaM2": 1062.223956253574,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747620",
+      "areaM2": 1489.2353654604983,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747621",
+      "areaM2": 906.9947954061192,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747619",
+      "areaM2": 1044.3606446991837,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747624",
+      "areaM2": 966.5354656372936,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747622",
+      "areaM2": 1916.6995190349696,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747623",
+      "areaM2": 1005.2489538612786,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747626",
+      "areaM2": 1221.554567611472,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:754828",
+      "areaM2": 3291.8893808498024,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746527",
+      "areaM2": 996.1442814852055,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746544",
+      "areaM2": 1647.1804225094322,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746523",
+      "areaM2": 1567.8660928873624,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746553",
+      "areaM2": 2470.6877138622212,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746550",
+      "areaM2": 816.1555311149201,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746549",
+      "areaM2": 862.4958108360115,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746555",
+      "areaM2": 1033.5583533689637,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746554",
+      "areaM2": 1105.7188168235152,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746559",
+      "areaM2": 2046.9802203582444,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746562",
+      "areaM2": 1379.5050586539794,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746560",
+      "areaM2": 1003.777164586183,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746571",
+      "areaM2": 1414.1298993458317,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746566",
+      "areaM2": 1075.8546768655726,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746567",
+      "areaM2": 1027.0155156995042,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746575",
+      "areaM2": 1649.4771319261035,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746577",
+      "areaM2": 1377.0088475255684,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746576",
+      "areaM2": 1485.6250629178055,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746584",
+      "areaM2": 1219.7022209619297,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746581",
+      "areaM2": 2001.250290283254,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746583",
+      "areaM2": 979.1060581987515,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746586",
+      "areaM2": 1373.0678668187454,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746585",
+      "areaM2": 1253.4821769128673,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746578",
+      "areaM2": 1281.6509964163158,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746587",
+      "areaM2": 1533.0203705742683,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746588",
+      "areaM2": 729.6497956287045,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746589",
+      "areaM2": 1125.0605527965529,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746590",
+      "areaM2": 1723.554535462682,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746591",
+      "areaM2": 1665.3321956616985,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746592",
+      "areaM2": 2056.35591924628,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746595",
+      "areaM2": 1661.964899267601,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746593",
+      "areaM2": 2106.9458016945473,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746454",
+      "areaM2": 1467.9489325449993,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746597",
+      "areaM2": 1230.271893572384,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:754647",
+      "areaM2": 953.7401637402595,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:749572",
+      "areaM2": 4852.467451168971,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:746457",
+      "areaM2": 1032.1583028024465,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:759889",
+      "areaM2": 2781.8562043136876,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747069",
+      "areaM2": 901.0954653882098,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747070",
+      "areaM2": 520.4836381371547,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747064",
+      "areaM2": 4813.536700648911,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747072",
+      "areaM2": 343.89559812981133,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747071",
+      "areaM2": 139.95114611790697,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747065",
+      "areaM2": 872.0921589092037,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747066",
+      "areaM2": 1420.0233964806912,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747073",
+      "areaM2": 227.95844993871447,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747074",
+      "areaM2": 273.31206545475476,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747076",
+      "areaM2": 231.08586798866924,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747048",
+      "areaM2": 923.2276558456008,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747075",
+      "areaM2": 174.75527573443432,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747077",
+      "areaM2": 414.9938306359712,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747082",
+      "areaM2": 1697.7482505743642,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747081",
+      "areaM2": 719.4341875889044,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747083",
+      "areaM2": 359.1049350067947,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747084",
+      "areaM2": 239.0560737865526,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747085",
+      "areaM2": 181.7439861777564,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747087",
+      "areaM2": 219.16334766298596,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747086",
+      "areaM2": 177.9454631756485,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747078",
+      "areaM2": 482.56218867619583,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747088",
+      "areaM2": 42.39292614830446,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747089",
+      "areaM2": 128.06038444013458,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747055",
+      "areaM2": 444.50082110290737,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747054",
+      "areaM2": 948.5922279444118,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747053",
+      "areaM2": 976.673761441616,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747056",
+      "areaM2": 1386.2533508868962,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747058",
+      "areaM2": 1091.3794356306985,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747060",
+      "areaM2": 651.4326341144691,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747093",
+      "areaM2": 1025.285685458497,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747092",
+      "areaM2": 912.6097892585044,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747090",
+      "areaM2": 485.9469058394838,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747094",
+      "areaM2": 492.57864316568356,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747095",
+      "areaM2": 757.6185099146392,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747096",
+      "areaM2": 1472.3553874322938,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747099",
+      "areaM2": 1432.9731344344923,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747097",
+      "areaM2": 1471.6053136053347,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747100",
+      "areaM2": 677.7812934261599,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747101",
+      "areaM2": 837.725939728678,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747104",
+      "areaM2": 913.8949594521903,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747123",
+      "areaM2": 1889.1318249096075,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747125",
+      "areaM2": 935.1766655313049,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747126",
+      "areaM2": 164.68756678498303,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747159",
+      "areaM2": 258.6955697439691,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747138",
+      "areaM2": 1433.5076387981935,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747139",
+      "areaM2": 1728.2837078829791,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747180",
+      "areaM2": 340.1771014019685,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747175",
+      "areaM2": 304.14576422806635,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747174",
+      "areaM2": 218.26297036231134,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747184",
+      "areaM2": 314.7631542603253,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747185",
+      "areaM2": 305.4706050783728,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747183",
+      "areaM2": 306.64622970846233,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747187",
+      "areaM2": 777.8450535595381,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747188",
+      "areaM2": 686.3789493770362,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747186",
+      "areaM2": 642.3083054192863,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747189",
+      "areaM2": 2075.4992114597344,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:748820",
+      "areaM2": 114.60353257272371,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:748821",
+      "areaM2": 55.27347471822562,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:748822",
+      "areaM2": 52.481004238399876,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:748824",
+      "areaM2": 59.53698419254463,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:748823",
+      "areaM2": 127.07584572630086,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:748917",
+      "areaM2": 482.4298804943883,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:748905",
+      "areaM2": 211.83444060849396,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:748906",
+      "areaM2": 168.18727809338807,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:748919",
+      "areaM2": 80.80564719222671,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:748918",
+      "areaM2": 128.56092775354608,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:748921",
+      "areaM2": 50.14815191141532,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:748923",
+      "areaM2": 411.7754888162106,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:748922",
+      "areaM2": 26.32642259865268,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:748924",
+      "areaM2": 72.7604559922564,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:748925",
+      "areaM2": 127.36472777892068,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:748926",
+      "areaM2": 112.89840557041201,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:748927",
+      "areaM2": 122.73836693332318,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:748929",
+      "areaM2": 903.6762118676797,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:748930",
+      "areaM2": 271.1593196583799,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:748932",
+      "areaM2": 725.1442545349277,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:748933",
+      "areaM2": 387.0703725883891,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:748934",
+      "areaM2": 162.96427313809693,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:748935",
+      "areaM2": 675.8900623049157,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:748936",
+      "areaM2": 947.6889408837405,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747768",
+      "areaM2": 1296.4016945215744,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747772",
+      "areaM2": 1328.4516763539848,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747771",
+      "areaM2": 1293.4515730543483,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747774",
+      "areaM2": 1004.2375722235145,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747711",
+      "areaM2": 931.8528728631075,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747721",
+      "areaM2": 1068.8379861474064,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747720",
+      "areaM2": 974.088485866001,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747718",
+      "areaM2": 1281.3377059288605,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747722",
+      "areaM2": 1069.9215453843228,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747725",
+      "areaM2": 546.349674376659,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747726",
+      "areaM2": 516.9580415625504,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747775",
+      "areaM2": 2485.3398192297227,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747727",
+      "areaM2": 1764.7543124289048,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747784",
+      "areaM2": 1066.2880425763358,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747785",
+      "areaM2": 1755.161211860604,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747728",
+      "areaM2": 2149.462071894881,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747733",
+      "areaM2": 279.5604389293643,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747734",
+      "areaM2": 265.2081965684736,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747735",
+      "areaM2": 595.7392318440709,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747740",
+      "areaM2": 1055.531077852614,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747788",
+      "areaM2": 475.9651824751895,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747787",
+      "areaM2": 1410.2131251040662,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747786",
+      "areaM2": 1605.6247324840565,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747791",
+      "areaM2": 599.7285734221294,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747789",
+      "areaM2": 258.94712530492643,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747790",
+      "areaM2": 226.6482150582213,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747749",
+      "areaM2": 1971.0137472550775,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747743",
+      "areaM2": 623.7069397433817,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747752",
+      "areaM2": 341.78343455179885,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747814",
+      "areaM2": 1796.3374527440142,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747751",
+      "areaM2": 837.6893820442082,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747820",
+      "areaM2": 682.2190001884439,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747819",
+      "areaM2": 1024.9580340671077,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747817",
+      "areaM2": 2758.818349564641,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747821",
+      "areaM2": 389.08365557933786,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747753",
+      "areaM2": 361.6074724579107,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747822",
+      "areaM2": 581.7459380773751,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747754",
+      "areaM2": 2018.2188277178539,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747757",
+      "areaM2": 379.96496117856685,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747758",
+      "areaM2": 882.0115405081083,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747761",
+      "areaM2": 1420.8262112860116,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747760",
+      "areaM2": 515.1773491954525,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747759",
+      "areaM2": 979.2631550761023,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "ramallah:747823",
+      "areaM2": 392.6620926714695,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    }
+  ],
+  "overlapDiagnostic": {
+    "pairIds": [
+      748669,
+      748671
+    ],
+    "nativeCrs": "EPSG:28191",
+    "nativeRequest": {
+      "url": "https://portal.ramallah-gis.ps/server/rest/services/DataUpdate/Parcels/MapServer/0/query",
+      "method": "GET",
+      "objectIds": "748669,748671",
+      "outFields": "OBJECTID",
+      "returnGeometry": true,
+      "outSR": 28191,
+      "f": "geojson",
+      "httpStatus": 200
+    },
+    "nativeMetric": {
+      "intersectionAreaM2": 20.71940084313048,
+      "fractionOfSmallerParcel": 0.47763694855934935,
+      "minimumRotatedRectangleWidthM": 3.373388345065526,
+      "minimumRotatedRectangleLengthM": 7.152068120593771,
+      "parcelAreasM2": [
+        43.378974146837734,
+        634.9396977139328
+      ]
+    },
+    "projectedEPSG3857Metric": {
+      "ids": [
+        "ramallah:748669",
+        "ramallah:748671"
+      ],
+      "intersectionAreaM2": 28.84820868081266,
+      "fractionOfSmaller": 0.4778671141914299,
+      "minimumRotatedRectangleWidthM": 3.970005200929949,
+      "minimumRotatedRectangleLengthM": 8.508630538742947
+    },
+    "interpretation": "Largest observed pair in the bounded EPSG:3857 audit was freshly reread from the provider in its native projected EPSG:28191 CRS. The overlap persists in native coordinates; the differing area reflects projection scale, not a topology change."
+  }
+}

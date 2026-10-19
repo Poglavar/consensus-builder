@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "sourceId": null,
+  "purpose": "Service review for WUP2025 rank 793 San Juan (city code 8242); local registry evidence and safe anonymous full-polygon access status.",
+  "primaryPublisher": "Puerto Rico",
+  "sourceUrl": "https://gis.pr.gov/Pages/default.aspx",
+  "registryFound": true,
+  "registryBasis": "Puerto Rico’s official GIS portal describes Catastro Digital CRIM as the islandwide parcel cadastre, and the Commonwealth statute identifies CRIM as cadastre custodian. The official CRIM ArcGIS layer metadata confirms a polygon parcel layer whose extent includes the ranked San Juan point. Its schema contains many additional cadastral/edit fields, so the attempted request explicitly allowlisted only OBJECTID and GLOBALID; transport timed out before an HTTP response or geometry was obtained.",
+  "officialSources": [
+    {
+      "url": "https://gis.pr.gov/Pages/default.aspx",
+      "observation": "Official Puerto Rico GIS portal describes Catastro Digital CRIM as an islandwide inventory of about 1.25 million parcels."
+    },
+    {
+      "url": "https://casp.pr.gov/Leyes/Ley_Num_107-2020.pdf",
+      "observation": "Puerto Rico statute identifies CRIM as custodian of the parcel cadastre."
+    },
+    {
+      "url": "https://sigejp.pr.gov/server/rest/services/crim/crim_parcelas/MapServer/0?f=pjson",
+      "observation": "Official ArcGIS metadata: Polygon Feature Layer named Parcelario, EPSG:32161, query operation available, extent includes the WUP point. The exposed schema includes additional fields beyond safe geometry/IDs; a restricted outFields request was used for the one point."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "San Juan Puerto Rico official CRIM cadastral parcel GIS public ArcGIS layer",
+      "result": "Official GIS and statutory sources establish CRIM’s islandwide cadastre. Layer metadata is a public polygon Feature Layer in EPSG:32161; its extent includes the WUP point. The schema has additional fields, so a point-only anonymous request was attempted with outFields=OBJECTID,GLOBALID; it timed out before HTTP status/body. No attributes or geometry were received.",
+      "urls": [
+        "https://gis.pr.gov/Pages/default.aspx",
+        "https://casp.pr.gov/Leyes/Ley_Num_107-2020.pdf",
+        "https://sigejp.pr.gov/server/rest/services/crim/crim_parcelas/MapServer/0?f=pjson"
+      ]
+    },
+    {
+      "language": "Spanish",
+      "query": "San Juan Puerto Rico catastro CRIM mapa parcelas GIS oficial consulta geográfica",
+      "result": "El portal SIG oficial presenta Catastro Digital CRIM como inventario parcelario insular; la capa ArcGIS pública es poligonal y su extensión incluye el punto de San Juan. El esquema contiene otros campos, por lo que la consulta anónima puntual limitó outFields a OBJECTID,GLOBALID. La conexión agotó el tiempo sin respuesta HTTP; no se recibió geometría ni atributo.",
+      "urls": [
+        "https://gis.pr.gov/Pages/default.aspx",
+        "https://sigejp.pr.gov/server/rest/services/crim/crim_parcelas/MapServer/0?f=pjson",
+        "https://sigejp.pr.gov/server/rest/services/crim/crim_parcelas/MapServer/0/query"
+      ]
+    }
+  ],
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "routeInspectionStatus": "no_safe_public_geometry_contract_verified",
+    "reason": "The only query was a point intersection against the official layer with explicit outFields=OBJECTID,GLOBALID, geometry return enabled, and output EPSG:4326. Direct HTTPS transport timed out with no HTTP status or body, so no feature was verified and no outage or parcel absence is inferred."
+  },
+  "requestEvidence": [
+    {
+      "url": "https://sigejp.pr.gov/server/rest/services/crim/crim_parcelas/MapServer/0/query",
+      "method": "GET",
+      "parametersSafeSummary": {
+        "geometry": "unchanged queued WUP point only",
+        "outFields": [
+          "OBJECTID",
+          "GLOBALID"
+        ],
+        "returnGeometry": true,
+        "outSR": 4326
+      },
+      "outcome": "Direct HTTPS request timed out before response headers/body; no HTTP status obtained. No feature attributes or geometry received."
+    }
+  ],
+  "technicalBlocker": "The only query was a point intersection against the official layer with explicit outFields=OBJECTID,GLOBALID, geometry return enabled, and output EPSG:4326. Direct HTTPS transport timed out with no HTTP status or body, so no feature was verified and no outage or parcel absence is inferred.",
+  "sampleDisposition": "No parcel polygons or parcel feature attributes retained.",
+  "remainingUncertainty": "The service metadata does not prove a parcel at the WUP point or citywide completeness. The layer is islandwide and describes maps compiled from older raster conversion plus later approved plans; freshness/positional accuracy are not established."
+}

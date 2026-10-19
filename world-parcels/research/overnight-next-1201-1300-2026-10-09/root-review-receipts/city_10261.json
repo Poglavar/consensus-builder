@@ -1,0 +1,15 @@
+{
+  "taskId": "city:10261",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-10261-dindigul.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/dindigul-service-review.json"
+  ],
+  "checkedAt": "2026-10-09T12:39:21Z",
+  "identityReview": "Immutable roster and pending queue match WUP code 10261, rank 1270, India, exact point, and population in persons.",
+  "searchReview": "Paired city packet and service review record executed English and Tamil searches and first-party result URLs.",
+  "sourceReview": "The live first-party district Survey and Land Records page names the Assistant Director in Dindigul and digitized land records, supporting local custody. State e-Services/TNGIS requests timed out in the paired evidence, leaving public parcel geometry unresolved.",
+  "admissionReview": "No full source parcel polygon or safe native ID was retained. Fresh exact native-ID reads, forced paging, 13 bounded cells, independent metric GEOS validity/duplicates/overlap checks, full-parcel source binding, and headed Details-panel verification are absent. No runtime or catalog admission; unverified geometry access is not citywide absence."
+}

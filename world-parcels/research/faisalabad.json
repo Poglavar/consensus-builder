@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:73",
+  "queueRank": 73,
+  "name": "Faisalabad",
+  "country": "Pakistan",
+  "countryCode": "PK",
+  "centerLatLon": [
+    31.4233255346028,
+    73.0869945908686
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services",
+      "observation": "Punjab Land Records Authority ArcGIS Server 11.3: anonymous directory lists a 'Faisalabad' folder (and Lahore, Multan, Rawalpindi, etc.) but all folders list zero services anonymously; token-based security enabled."
+    },
+    {
+      "url": "https://lis.pulse.gop.pk/",
+      "observation": "PULSE Punjab land information viewer (reachable, JS app); no open parcel API documented."
+    },
+    {
+      "url": "https://www.punjab-zameen.gov.pk/",
+      "observation": "PLRA site."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services?f=pjson",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/plain",
+      "assessment": "folder list incl. Faisalabad; only services are ArcGIS_Shell and SampleWorldCities"
+    },
+    {
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/Faisalabad?f=pjson",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/plain",
+      "assessment": "folders [] services []"
+    },
+    {
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/info?f=pjson",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/plain",
+      "assessment": "isTokenBasedSecurity true"
+    },
+    {
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/Faisalabad/Parcels/MapServer/0/query?where=1%3D1&f=json&resultRecordCount=3",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "error 404 service not found (guessed name)"
+    },
+    {
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/Punjab?f=pjson",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/plain",
+      "assessment": "empty; Stateland, PULSE_LMKR, DC_Valuation folders also empty"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Punjab province land records (PLRA); Faisalabad folder exists but is not anonymously exposed",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "Services are probably present behind token authentication; an anonymous route was not found. Province scope would not imply Pakistan coverage.",
+  "nextStep": "Look for a registered/API-key route from PLRA/PULSE, or a public dataset."
+}

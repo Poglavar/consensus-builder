@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:46",
+  "queueRank": 46,
+  "name": "Wuhan",
+  "country": "China",
+  "countryCode": "CN",
+  "centerLatLon": [
+    30.566050128464,
+    114.29680212821
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://data.wuhan.gov.cn/",
+      "observation": "Wuhan municipal open data platform; unreachable from this client."
+    },
+    {
+      "url": "https://zrzyhgj.wuhan.gov.cn/",
+      "observation": "Wuhan natural resources and planning bureau; unreachable."
+    },
+    {
+      "url": "https://wuhan.tianditu.gov.cn/",
+      "observation": "Tianditu Wuhan portal; unreachable."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://data.wuhan.gov.cn/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "Connection reset / proxy tunnel failure from this client; not evidence of absence"
+    },
+    {
+      "url": "https://zrzyhgj.wuhan.gov.cn/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "Proxy tunnel failure (502)"
+    },
+    {
+      "url": "https://wuhan.tianditu.gov.cn/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "Proxy tunnel failure (502)"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Municipal natural-resources / real-estate registration data; access model unknown",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "Cadastral (不动产/地籍) polygon data is held by municipal natural-resources bureaus and is generally viewer- or credential-only; no anonymous bounded polygon endpoint was found. Nothing here implies China-wide coverage. Many .gov.cn hosts were unreachable from this client (connection reset / proxy 502), so the result is not proof of absence.",
+  "nextStep": "Retry from a network able to reach .gov.cn portals; inspect the city's open-data catalog for land-parcel layers and the Tianditu city portal for a documented parcel service."
+}

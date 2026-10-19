@@ -1,0 +1,49 @@
+{
+  "cityRecord": "city-6965-omaha.json",
+  "cityCode": 6965,
+  "queueRank": 2357,
+  "checkedAt": "2026-10-11",
+  "decision": "held",
+  "registryFound": true,
+  "scope": "Omaha city research via Douglas County, Nebraska local GIS/assessor custody and the Nebraska statewide parcel REST service.",
+  "officialSources": [
+    {"url": "https://maps.dogis.org/", "observation": "Official Douglas County GIS hub says it provides GIS services to Douglas County and the City of Omaha and public map/data resources."},
+    {"url": "https://douglascountyassessor.org/gis-maps/", "observation": "Assessor GIS page describes a county cadastral mapping system with parcel boundary polygons and parcel search."},
+    {"url": "https://revenue.nebraska.gov/property-assessment-county-contact-information-parcel-search", "observation": "Nebraska Department of Revenue lists Michael Goodwillie, Douglas County Assessor, and Beacon parcel search for Douglas County."},
+    {"url": "https://giscat.ne.gov/Enterprise/rest/services/StatewideParcelsExternal/MapServer/0", "observation": "Official Nebraska REST metadata identifies StatewideParcels as esriGeometryPolygon, compiled from county CAMA and geospatial polygon features, with JSON/GeoJSON query support and fields including State_PID, Parcel_ID, and County_ID."}
+  ],
+  "requests": [
+    {
+      "url": "https://giscat.ne.gov/Enterprise/rest/services/StatewideParcelsExternal/MapServer/0?f=pjson",
+      "method": "GET",
+      "params": {"f": "pjson"},
+      "httpStatus": null,
+      "outcome": "Timed out after 30 seconds from the local curl request environment (HTTP 000). No remote outage or absence is inferred."
+    },
+    {
+      "url": "https://giscat.ne.gov/Enterprise/rest/services/StatewideParcelsExternal/MapServer/0/query",
+      "method": "GET",
+      "params": {"geometry": "-96.0013,41.2570,-95.9813,41.2770", "geometryType": "esriGeometryEnvelope", "inSR": 4326, "spatialRel": "esriSpatialRelIntersects", "where": "1=1", "outFields": "State_PID,Parcel_ID,County_ID", "returnGeometry": true, "outSR": 4326, "resultRecordCount": 3, "f": "geojson"},
+      "httpStatus": null,
+      "outcome": "Executed with a bounded envelope around the immutable WUP point; curl timed out after 30 seconds (HTTP 000). No parcel response or geometry was retained."
+    },
+    {
+      "url": "https://giscat.ne.gov/Enterprise/rest/services/StatewideParcelsExternal/MapServer/0/query?f=geojson&geometry=-106.0013%2C41.2563%2C-105.9813%2C41.2773&geometryType=esriGeometryEnvelope&inSR=4326&outFields=State_PID%2CParcel_ID%2CCounty_ID&outSR=4326&resultRecordCount=3&returnGeometry=true&spatialRel=esriSpatialRelIntersects&where=1%3D1",
+      "method": "web open",
+      "httpStatus": null,
+      "outcome": "Initial web retrieval attempt used an incorrectly west-shifted exploratory envelope and returned an internal inaccessible-URL error; it produced no data and was not used as evidence."
+    },
+    {
+      "url": "https://giscat.ne.gov/Enterprise/rest/services/StatewideParcelsExternal/MapServer/0/query?f=geojson&geometry=-96.0013%2C41.2570%2C-95.9813%2C41.2770&geometryType=esriGeometryEnvelope&inSR=4326&outFields=State_PID%2CParcel_ID%2CCounty_ID&outSR=4326&resultRecordCount=3&returnGeometry=true&spatialRel=esriSpatialRelIntersects&where=1%3D1",
+      "method": "web open",
+      "httpStatus": null,
+      "outcome": "Correctly bounded Omaha-area request was not accessible via the web retrieval tool; no data or geometry was returned."
+    }
+  ],
+  "safeFieldAllowlist": ["State_PID", "Parcel_ID", "County_ID"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "legal-description detail"],
+  "sampleGeoJSON": null,
+  "uncertainty": ["No native ID+geometry feature response was verified.", "Official pages establish custody and service schema, not citywide completeness.", "Runtime adapter readiness remains held pending independent serial qualification."],
+  "runtimeReadiness": "held",
+  "status": "complete"
+}

@@ -1,0 +1,15 @@
+{
+  "taskId": "packet:9283",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/integration-ledger.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-9283-vijayapura.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/vijayapura-service-review.json",
+    "tmp/valhalla-parcel-research/9283/vijayapura-land-records.html"
+  ],
+  "checkedAt": "2026-10-09T13:17:04Z",
+  "review": "Vijayapura/India, WUP rank 1237, point [16.8304984756639,75.7162603665653], 450192 persons match the immutable roster and queue. English and Kannada executed searches are recorded. The cached first-party Vijayapura district page describes Bhoomi and links Karnataka land records, supporting custody only. Bounded Bhoomi/map-route timeouts yielded no parcel response and do not establish citywide absence. No full sample polygon is retained; native-ID geometry reads, forced paging, 13 bounded cells, metric GEOS checks, source binding, and headed Details verification are absent."
+}

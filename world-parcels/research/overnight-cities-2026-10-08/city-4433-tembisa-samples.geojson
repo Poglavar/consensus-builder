@@ -1,0 +1,152 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "id": "ZA-EKU-STAND-S260000000019600000",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              28.20418900721152,
+              -26.01737807359845
+            ],
+            [
+              28.204260647911433,
+              -26.017458996976373
+            ],
+            [
+              28.20442403490691,
+              -26.017339283321096
+            ],
+            [
+              28.20434450412404,
+              -26.017255788498474
+            ],
+            [
+              28.20418900721152,
+              -26.01737807359845
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "ZA-EKU-STAND-S260000000019600000",
+        "id": "ZA-EKU-STAND-S260000000019600000",
+        "sourceId": "za-ekurhuleni-stands",
+        "sourceParcelId": "S260000000019600000",
+        "parcelNumber": "S260000000019600000",
+        "cadMunicipalityName": null,
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "OBJECTID": 32381,
+          "GIS_KEY": "S260000000019600000",
+          "TOWNSHIP_CODE": "S26000",
+          "PROPNO": "00000196",
+          "PTNO": "00000",
+          "SG_CODE": "T0IR0857"
+        },
+        "sourcePartCount": 1
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "ZA-EKU-STAND-S260000000020400000",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              28.20457738617178,
+              -26.017510845420134
+            ],
+            [
+              28.204653713207332,
+              -26.017593238505146
+            ],
+            [
+              28.20482969403233,
+              -26.017463482202654
+            ],
+            [
+              28.204758130531705,
+              -26.01738364350981
+            ],
+            [
+              28.20457738617178,
+              -26.017510845420134
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "ZA-EKU-STAND-S260000000020400000",
+        "id": "ZA-EKU-STAND-S260000000020400000",
+        "sourceId": "za-ekurhuleni-stands",
+        "sourceParcelId": "S260000000020400000",
+        "parcelNumber": "S260000000020400000",
+        "cadMunicipalityName": null,
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "OBJECTID": 51003,
+          "GIS_KEY": "S260000000020400000",
+          "TOWNSHIP_CODE": "S26000",
+          "PROPNO": "00000204",
+          "PTNO": "00000",
+          "SG_CODE": "T0IR0857"
+        },
+        "sourcePartCount": 1
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "ZA-EKU-STAND-S260000000017100000",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              28.204382403522715,
+              -26.01807564056145
+            ],
+            [
+              28.204463722214903,
+              -26.018163390887242
+            ],
+            [
+              28.204633575923385,
+              -26.01803820423236
+            ],
+            [
+              28.204555628903734,
+              -26.017951287573375
+            ],
+            [
+              28.204382403522715,
+              -26.01807564056145
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "ZA-EKU-STAND-S260000000017100000",
+        "id": "ZA-EKU-STAND-S260000000017100000",
+        "sourceId": "za-ekurhuleni-stands",
+        "sourceParcelId": "S260000000017100000",
+        "parcelNumber": "S260000000017100000",
+        "cadMunicipalityName": null,
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "OBJECTID": 51901,
+          "GIS_KEY": "S260000000017100000",
+          "TOWNSHIP_CODE": "S26000",
+          "PROPNO": "00000171",
+          "PTNO": "00000",
+          "SG_CODE": "T0IR0857"
+        },
+        "sourcePartCount": 1
+      }
+    }
+  ]
+}

@@ -1,0 +1,188 @@
+{
+  "name": "Gwangju",
+  "country": "Republic of Korea",
+  "countryCode": "KR",
+  "rank": 351,
+  "point": [
+    35.1642250703976,
+    126.868931753415
+  ],
+  "population2025": 1441495,
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": true,
+  "publicParcelGeometryFound": true,
+  "runtimeReadiness": "held_geometry_quality",
+  "priorEvidenceFiles": [],
+  "scopeLimits": "The UN WUP 2025 point is a settlement-population locator, not an official city boundary, property identity, or completeness statement. No owner, address, applicant, or tax data was requested or retained; no account credentials, CAPTCHA, or token was used. The anonymous WFS qualification sampled 54 unique nearby polygons in 13 bounded cells. Independent topology review found 53/54 valid and one self-intersecting ring; the three retained sample geometries were individually checked valid. This is local service evidence, not citywide completeness.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "The Gwangju Metropolitan City Living Geographic Information Portal exposes the city continuous cadastral (`연속지적도`) layer through an anonymous WFS. Its schema includes PNU and geometry; bounded queries requested only those fields and returned complete multipolygons.",
+  "resultCategory": "verified_public_geometry_held_quality",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Gwangju Metropolitan City South Korea cadastral parcel WFS GIS official map portal",
+        "scope": "Find the metropolitan city’s official parcel mapping service and public vector route.",
+        "result": "Search results contained an unrelated Gwangju City in Gyeonggi Province; that portal was excluded. Direct review of the Gwangju Metropolitan City GIS portal and its public WFS exposed the continuous cadastral layer `sde:lsmd_cont_ldreg`; the bounded WFS returned full polygons.",
+        "actualResultUrls": [
+          "https://gis.gwangju.go.kr/",
+          "https://gis.gwangju.go.kr/map/proxy/wfs.do"
+        ],
+        "executionMethod": "English-language web search followed by anonymous official portal, WFS capabilities/schema and bounded-query inspection."
+      },
+      {
+        "language": "Korean",
+        "query": "광주광역시 생활지리정보시스템 지도서비스 지적도 토지정보 공식 광주광역시청",
+        "scope": "광주광역시의 공식 지리정보 포털과 연속지적도 공개 서비스를 확인한다.",
+        "result": "광주광역시 생활지리정보 포털은 `연속지적도` 레이어를 `sde:lsmd_cont_ldreg` WFS로 공개한다. 익명 제한 조회는 PNU와 전체 MultiPolygon 경계만 반환했다. 경기도 광주시의 동명 포털은 제외했다.",
+        "actualResultUrls": [
+          "https://gis.gwangju.go.kr/",
+          "https://gis.gwangju.go.kr/map/proxy/wfs.do"
+        ],
+        "executionMethod": "별도 한국어 웹 검색 후 공식 포털, WFS Capabilities/DescribeFeatureType 및 제한 조회를 검사."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://gis.gwangju.go.kr/",
+        "operator": "Gwangju Metropolitan City",
+        "observation": "Official city GIS portal (not Gwangju-si in Gyeonggi Province). Portal lists parcel/cadastral map functions, including land ledger/map tools; legal disclaimer says map is for reference and may differ from actual/legal records."
+      },
+      {
+        "url": "https://gis.gwangju.go.kr/map/proxy/wfs.do",
+        "operator": "Gwangju Metropolitan City GIS portal WFS proxy",
+        "observation": "Anonymous WFS 1.1.0 capabilities and schema expose `sde:lsmd_cont_ldreg` (`연속지적`) in EPSG:5186; safe requested attributes were limited to `pnu` plus geometry."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://gis.gwangju.go.kr/map/getAllLayers",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "observation": "Official portal layer catalogue returned nine thematic layers/groups, including continuous cadastral layer `lsmd_cont_ldreg`."
+      },
+      {
+        "url": "https://gis.gwangju.go.kr/map/getSgg",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "observation": "Official portal lists Gwangju Metropolitan City districts (남구, 동구, 북구, 서구, 광산구)."
+      },
+      {
+        "url": "https://gis.gwangju.go.kr/map/proxy/wfs.do?service=WFS&request=GetCapabilities&version=1.1.0",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/xml",
+        "observation": "Anonymous WFS capabilities identify GeoServer layer `sde:lsmd_cont_ldreg`, titled `연속지적`, with EPSG:5186 support."
+      },
+      {
+        "url": "https://gis.gwangju.go.kr/map/proxy/wfs.do?service=WFS&version=1.1.0&request=DescribeFeatureType&typeName=sde%3Alsmd_cont_ldreg",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "text/xml",
+        "observation": "Schema has sgg_oid, jibun, bchk, pnu and geom; the qualification request allowlist included only pnu and geom."
+      },
+      {
+        "url": "https://gis.gwangju.go.kr/map/proxy/wfs.do",
+        "method": "GET, WFS 1.1.0 GetFeature",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "observation": "Unmodified repository adapter qualification queried a 13-cell grid around the exact WUP point, with response in CRS:84 and `propertyName=geom,pnu`. 54 unique MultiPolygon parcels returned; 19 adapter tests passed, including 14-page forced pagination, fresh exact-ID reads for all 54, explicit absence, footprint lookup and source binding. See acceptance report."
+      }
+    ],
+    "coverageAssessment": {
+      "claimedScope": "Bounded city cadastral sample near the WUP settlement locator; no full-city completeness claim.",
+      "verifiedOpenScope": "Anonymous WFS returned 54 unique parcels in 13 0.001-degree cells; all adapter checks passed. A separate metric topology audit found 53 valid and one ring self-intersection. Three valid samples are retained.",
+      "citywideVerified": false,
+      "countrywideVerified": false,
+      "geometryVerified": true
+    },
+    "technicalBlocker": "Not an access blocker. The official map states that it is for reference and may differ from legal records. Independent geometry QA found one self-intersecting ring among the 54 sampled parcels, so the candidate needs parent review before runtime admission.",
+    "remainingUncertainty": "Citywide coverage, cadastral update cadence, and long-term stability of PNU identifiers are not established. The single invalid sample feature may reflect source geometry defects or coordinate/topology encoding."
+  },
+  "verifiedParcelResponse": {
+    "httpStatus": 200,
+    "contentType": "application/json",
+    "endpoint": "https://gis.gwangju.go.kr/map/proxy/wfs.do",
+    "version": "1.1.0",
+    "featureType": "sde:lsmd_cont_ldreg",
+    "featureCount": 54,
+    "geometryType": "MultiPolygon",
+    "safeIdentifierField": "pnu",
+    "requestedFields": [
+      "pnu",
+      "geom"
+    ],
+    "fullPolygonReturned": true,
+    "adapterQualification": "gwangju-acceptance.json",
+    "geometryQuality": "gwangju-quality.json",
+    "retainedValidSamples": "gwangju-adapter-sample.geojson"
+  },
+  "source": {
+    "id": "kr-gwangju-city-wfs-cadastral-parcels",
+    "adapter": "wfs",
+    "endpoint": "https://gis.gwangju.go.kr/map/proxy/wfs.do",
+    "version": "1.1.0",
+    "featureType": "sde:lsmd_cont_ldreg",
+    "geometryType": "MultiPolygon",
+    "idField": "pnu",
+    "idType": "string",
+    "idPattern": "^[0-9]{19}$",
+    "outFields": [
+      "pnu"
+    ],
+    "requestProperties": true,
+    "geometryField": "geom",
+    "responseCrs": "CRS:84",
+    "sourceCrs": "EPSG:5186",
+    "scope": "54 bounded complete source geometries; Independent root GEOS audit in EPSG:32652 reproduces a ring self-intersection in native PNU 1224012100107000001 among 54 complete public source polygons. All 19 protocol checks passed, but runtime remains held without repair or excluding the failing parcel. A native EPSG:5186 follow-up returned HTML maintenance/error content rather than parcel geometry; native-coordinate validity remains unestablished."
+  },
+  "cityId": "wup2025:2656",
+  "populationPlausibility2025": "Moderate",
+  "technicalBlocker": "Independent root GEOS audit in EPSG:32652 reproduces a ring self-intersection in native PNU 1224012100107000001 among 54 complete public source polygons. All 19 protocol checks passed, but runtime remains held without repair or excluding the failing parcel. A native EPSG:5186 follow-up returned HTML maintenance/error content rather than parcel geometry; native-coordinate validity remains unestablished.",
+  "remainingUncertainty": "The service’s citywide coverage, data currency, legal authority, and long-term native-ID stability are not inferred from this bounded sample.",
+  "nextStep": "Parent review should decide whether to admit this city source with the reported geometry defect and reference-only map disclaimer; do not silently repair the returned geometry.",
+  "sourceIds": [
+    "kr-gwangju-city-wfs-cadastral-parcels"
+  ],
+  "rootNativeFollowthrough": {
+    "requestedCrs": "EPSG:5186",
+    "requestedNativeId": "1224012100107000001",
+    "requestedFields": [
+      "geom",
+      "pnu"
+    ],
+    "initialFesAttempt": "HTTP 400, no geometry.",
+    "knownCqlRouteResult": "HTML/EUC-KR maintenance/error document, no JSON parcel geometry; HTTP status was not separately captured.",
+    "geometryReturned": false
+  },
+  "adapterReady": false,
+  "coverageAssessment": {
+    "claimedScope": "Publisher city cadastral-map dataset; no whole-city completeness is asserted.",
+    "verifiedOpenScope": "54 bounded complete source geometries; Independent root GEOS audit in EPSG:32652 reproduces a ring self-intersection in native PNU 1224012100107000001 among 54 complete public source polygons. All 19 protocol checks passed, but runtime remains held without repair or excluding the failing parcel. A native EPSG:5186 follow-up returned HTML maintenance/error content rather than parcel geometry; native-coordinate validity remains unestablished.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "registryEvidenceUrls": [
+    "https://gis.gwangju.go.kr/map/proxy/wfs.do"
+  ],
+  "runtimeAssessment": {
+    "status": "held_geometry_quality",
+    "reason": "Independent root GEOS audit in EPSG:32652 reproduces a ring self-intersection in native PNU 1224012100107000001 among 54 complete public source polygons. All 19 protocol checks passed, but runtime remains held without repair or excluding the failing parcel. A native EPSG:5186 follow-up returned HTML maintenance/error content rather than parcel geometry; native-coordinate validity remains unestablished.",
+    "acceptanceFile": "research/overnight-cities-2026-10-08/gwangju-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/gwangju-root-quality.json"
+  },
+  "wupCityCode": 2656,
+  "queueRank": 351,
+  "centerLatLon": [
+    35.1642250703976,
+    126.868931753415
+  ],
+  "rootReviewedAt": "2026-10-08T23:01:54.520804+00:00"
+}

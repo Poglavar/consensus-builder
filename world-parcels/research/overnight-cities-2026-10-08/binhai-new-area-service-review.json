@@ -1,0 +1,42 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-9582-binhai-new-area.json",
+  "purpose": "Read-only source discovery and bounded service validation; no runtime or global changes.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInThisCityReport": 0,
+    "maxFullPolygonsRetainedAcrossCityReview": 0,
+    "ownerOrAddressDataRetained": false,
+    "accountCredentialsOrPublicTokenValuesRetained": false
+  },
+  "assessment": "Official Tianjin registration rule assigns the Binhai New Area branch real-estate registration cases in Binhai, with specified exceptions. Local official material identifies registry-center operations. This does not establish a public parcel geometry service. City-local registration sources are confirmed, but the reviewed public base-map services do not expose a verified cadastral parcel feature layer. The public Tianjin registration service requires identity registration; no account was used.",
+  "officialEvidence": [
+    {
+      "url": "https://ghzy.tj.gov.cn/",
+      "observation": "Official Tianjin Natural Resources and Planning Bureau portal; reviewed for public mapping and parcel service entry points, no public parcel feature schema confirmed."
+    },
+    {
+      "url": "https://gis.tj.gov.cn/",
+      "observation": "Official Tianjin Tianditu mapping portal; public base maps reviewed, but no exposed cadastral parcel feature layer verified."
+    },
+    {
+      "url": "https://www.teda.gov.cn/",
+      "observation": "Official TEDA site documents Binhai New Area registry-center presence and local service activity."
+    },
+    {
+      "url": "https://zwfw.tj.gov.cn/",
+      "observation": "Public Tianjin registration service requires identity registration; no login or credentials used."
+    }
+  ],
+  "serviceTrace": {
+    "viewerUrl": "https://gis.tj.gov.cn/",
+    "observedRoutes": [],
+    "notes": "Reviewed official Tianjin public mapping and real-estate registration entry points. No anonymous parcel geometry route or safe public parcel schema was verified; no account workflow was entered."
+  },
+  "geometryValidation": {
+    "schemaConfirmed": false,
+    "featureQueryMade": false,
+    "retainedFullPolygonCount": 0,
+    "reason": "No schema-safe city parcel feature response was established."
+  }
+}

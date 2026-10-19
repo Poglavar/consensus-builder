@@ -1,0 +1,111 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-08",
+  "country": "India",
+  "countryCode": "IN",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "scopeLimits": "The WUP point is a population-cluster locator, not an official city boundary or parcel identity. Absence of a public polygon in this pass does not establish that no cadastral records exist. No personal owner, address, tax, or account fields were requested or copied; no login, CAPTCHA, credential, or token was used.",
+  "wupCityCode": 7476,
+  "queueRank": 203,
+  "name": "Chandigarh",
+  "centerLatLon": [
+    30.7040736390158,
+    76.7666888231414
+  ],
+  "population2025": 2437733,
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "The Chandigarh Administration Revenue Department publishes an official Online ROR/land-record route and the national NAKSHA map service publishes a Chandigarh-specific layer. These are city-specific land records/mapping evidence; neither yielded anonymous parcel geometry in this pass.",
+  "resultCategory": "official_city_land_record_and_naksha_candidate_but_feature_service_requires_token",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Chandigarh cadastral parcel GIS official भू नक्शा चंडीगढ़ GIS plot",
+        "method": "web search",
+        "checkedAt": "2026-10-08"
+      },
+      {
+        "language": "Hindi",
+        "query": "चंडीगढ़ जमीन का नक्शा खसरा भूमि अभिलेख आधिकारिक",
+        "method": "web search",
+        "checkedAt": "2026-10-08"
+      },
+      {
+        "language": "Punjabi",
+        "query": "site:chandigarh.gov.in ਪੰਜਾਬ ਚੰਡੀਗੜ੍ਹ ਜ਼ਮੀਨ ਰਿਕਾਰਡ ਨਕਸ਼ਾ GIS ਖਸਰਾ",
+        "method": "web search",
+        "checkedAt": "2026-10-08"
+      },
+      {
+        "language": "English",
+        "query": "site:chandigarh.gov.in cadastral map GIS plot Chandigarh Administration land parcel",
+        "method": "web search",
+        "checkedAt": "2026-10-08"
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://chandigarhdistrict.nic.in/revenue-department/",
+        "observation": "Official district Revenue Department page describes land-record/ROR lookup by owner, khewat and khasra identifiers; this is a record service, not evidence of open geometry."
+      },
+      {
+        "url": "http://164.100.147.11/onlinenakal/",
+        "observation": "Officially linked online nakal/record route; opening the landing page did not expose a usable anonymous parcel-geometry API."
+      },
+      {
+        "url": "https://nakshagis.dolr.gov.in/utm4243/rest/services/Naksha_43/Naksha_ch_04_43/FeatureServer/0",
+        "observation": "Central Department of Land Resources NAKSHA Chandigarh-specific feature-layer candidate discovered in the public viewer client configuration. Direct metadata returned ArcGIS error 499 Token Required; no token was obtained or used."
+      },
+      {
+        "url": "https://chandigarh.gov.in/zoning-plans",
+        "observation": "Official Chandigarh Administration zoning plans are downloadable static PDFs, including sector/plot plans. These are planning documents, not verified georeferenced cadastral parcel vectors."
+      },
+      {
+        "url": "https://chandigarhdistrict.nic.in/hi/राजस्व-विभाग/",
+        "observation": "Official Hindi version of the Chandigarh Revenue Department page confirms that citizens can view sanctioned mutation and Jamabandi details by owner name, khewat number or khasra number; it does not itself expose parcel geometry."
+      }
+    ],
+    "requestsAndEndpointChecks": [
+      {
+        "method": "GET",
+        "url": "https://nakshagis.dolr.gov.in/utm4243/rest/services/Naksha_43/Naksha_ch_04_43/FeatureServer/0?f=json",
+        "checkedAt": "2026-10-08",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "responseBytes": 62,
+        "observation": "ArcGIS JSON is an error payload 499 Token Required, not layer metadata or geometry. No access controls were bypassed."
+      },
+      {
+        "method": "GET",
+        "url": "http://164.100.147.11/onlinenakal/",
+        "checkedAt": "2026-10-08",
+        "httpStatus": "request timed out",
+        "contentType": "unavailable",
+        "observation": "Official revenue-department linked page did not return a usable page within the bounded request window; did not retry through auth/captcha."
+      }
+    ],
+    "coverageAssessment": {
+      "verifiedOpenScope": null,
+      "citywideVerified": false,
+      "countrywideVerified": false,
+      "geometryVerified": false
+    },
+    "blocker": "The Chandigarh-specific NAKSHA FeatureServer requires a token at the layer endpoint, and the official Online Nakal route was unavailable during inspection. No anonymous parcel feature response was obtained.",
+    "remainingUncertainty": "Whether the NAKSHA viewer has a public token-bootstrap workflow and whether its Chandigarh layer contains current parcel polygons; official ROR route’s geometry exposure; parcel identifiers, scope and update vintage."
+  },
+  "cityId": "wup2025:7476",
+  "populationPlausibility2025": "High",
+  "rootReviewedAt": "2026-10-08T20:54:18.632578+00:00",
+  "sourceIds": [],
+  "point": [
+    30.7040736390158,
+    76.7666888231414
+  ]
+}

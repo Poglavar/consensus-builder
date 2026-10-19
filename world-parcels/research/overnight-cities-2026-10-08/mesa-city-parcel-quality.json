@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "city": "Mesa",
+  "source": "https://services2.arcgis.com/1gVyYKfYgW5Nxb1V/arcgis/rest/services/Parcels/FeatureServer/0",
+  "sampleScope": "13-cell public bounded test grid centered approximately 1.1 km north of the WUP center; the WUP-center query separately returned zero features.",
+  "uniqueFeaturesChecked": 23,
+  "metricCrs": "EPSG:26912",
+  "valid": 23,
+  "invalid": [],
+  "exactDuplicates": [],
+  "positiveAreaOverlapPairsGt0_01m2": [],
+  "wupCenterContainsFeatures": [],
+  "methods": "Shapely 2.2.0 / GEOS validity, equality, pairwise intersection; WGS84 transformed with pyproj."
+}

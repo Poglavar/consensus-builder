@@ -1,0 +1,21 @@
+{
+  "cityRecord": "city-2592-mission-viejo.json",
+  "cityCode": 2592,
+  "queueRank": 1569,
+  "reviewStatus": "complete",
+  "registryFound": true,
+  "packetDecision": "no_verified_parcel_sample",
+  "sourceRoutes": [
+    {"name": "Mission Viejo Community GIS / Digital Map Products GeoViewer", "url": "https://www.missionviejo.gov/departments/public-works/community-gis", "role": "local city map lead", "outcome": "viewer loaded; configuration empty; parcel routes failed"},
+    {"name": "OC Land Insights", "url": "https://pwds.oc.gov/service-areas/oc-development-services/oc-survey-map-checks-right-way/land-records", "role": "county survey/GIS custodian", "outcome": "official landing page found; no bounded parcel API response verified"},
+    {"name": "Orange County Assessor parcel maps", "url": "https://www.ocassessor.gov/faqs/assessor-parcel-maps", "role": "county assessor mapping custodian/procedure", "outcome": "parcel-map procedure evidenced; no safe public polygon endpoint tested"}
+  ],
+  "requestOutcomes": "See the city record requests array for every executed GET/POST, status, content type, and assessment. Browser-like User-Agent, Accept, Accept-Language, Origin, Referer, and a cookie jar were used for viewer requests. No login, CAPTCHA bypass, private credential, owner/address/contact/titleholder/tax field, or unsafe attribute was requested.",
+  "viewerInspection": {"viewerUrl": "https://missionviejo.geoviewer.io/", "mainScript": "https://missionviejo.geoviewer.io/static/js/main.b5d8dd78.chunk.js", "observed": ["public auth/key route", "amsprod config routes", "gisprod query/intersect routes", "service name missionviejopublic"], "configurationResult": "HTTP 200 with empty data array despite totalResults 141"},
+  "safeFieldAllowlist": ["stable native parcel identifier only", "geometry", "source CRS", "source layer/table name", "HTTP metadata"],
+  "nativeIdentity": {"status": "not verified", "candidateFields": [], "compositeKeyProvenance": null},
+  "geometry": {"sampleRetained": false, "reason": "No nonempty safe ID-plus-polygon response was returned; no GeoJSON was created."},
+  "scopeLimits": ["City property-line viewer does not prove a reusable parcel API.", "County or city references do not imply US-wide coverage.", "Exact-point failure and API 500 are operational/route evidence only, not absence evidence.", "City boundary polygon is not a parcel sample."],
+  "runtimeReadiness": "held",
+  "uncertainty": "A real county or vendor parcel service may exist behind the viewer, but this attempt did not recover a working public route and did not qualify any parcel record. Serial review is required before adapter consideration."
+}

@@ -1,0 +1,50 @@
+{
+  "cityRecord": "city-10515-arani.json",
+  "cityCode": 10515,
+  "queueRank": 3089,
+  "city": "Arani",
+  "country": "India",
+  "countryCode": "IN",
+  "reviewedAt": "2026-10-12",
+  "attempt": 1,
+  "outcome": "complete_research_packet_runtime_held",
+  "summary": "English and Tamil first-party discovery identified the Tiruvannamalai District Survey Department / Arani revenue-taluk route and Tamil Nadu land-record services. Official pages document Patta/FMB/Chitta/TSLR and related services, but bounded anonymous requests to the linked parcel-service and GIS hosts timed out. No parcel geometry or native parcel identity was retained; runtime remains held.",
+  "queryAndRequestOutcomes": "All executed discovery queries, official URLs, direct GET routes, HTTP 200 results, timeout outcomes, scope limits, safe-field allowlist, and uncertainty are recorded in city-10515-arani.json. No browser login, CAPTCHA/Cloudflare bypass, credential use, TLS exception, or unsafe-field request occurred.",
+  "custodians": [
+    {
+      "name": "Government of Tamil Nadu, Department of Survey and Land Records / Tiruvannamalai District Survey Department",
+      "scope": "Local district and Arani revenue-taluk survey, FMB, and land-record service custodian",
+      "evidence": "https://tiruvannamalai.nic.in/service/e-servises-anytime-anywhere-land/"
+    },
+    {
+      "name": "Tamil Nadu e-Services / TamilNilam / TNGIS",
+      "scope": "State-level public land-record and GIS presentation routes; no usable anonymous parcel response obtained",
+      "evidence": "https://tn.nic.in/news/additional-land-records-services-launch-by-honourable-minister-for-revenue-and-disaster-management-tamil-nadu/"
+    }
+  ],
+  "schemaAndCrs": {
+    "parcelSchema": null,
+    "nativeIdFields": [],
+    "geometryCrs": null,
+    "fieldMapping": null,
+    "compositeKeyProvenance": null
+  },
+  "geometrySamples": [],
+  "safeFieldAllowlist": ["canonical native parcel identifier if later evidenced", "parcel geometry", "source CRS", "public service metadata", "retrieval date"],
+  "scopeLimits": [
+    "The exact WUP point [12.6717008252653, 79.2840446641724] was preserved in latitude/longitude order and was not shifted.",
+    "Portal timeouts and an unusable anonymous route are not evidence of citywide parcel absence.",
+    "Official statements about land-record services do not prove that open parcel geometry can be fetched anonymously.",
+    "No native parcel ID, geometry, schema, CRS, or sample GeoJSON is available from this attempt.",
+    "No unsafe owner, address/contact, titleholder, personal, tax/account, or certificate fields were requested or retained.",
+    "Packet completion is not source integration/admission."
+  ],
+  "uncertainty": [
+    "The current e-Services, TamilNilam, and TNGIS JavaScript/API configuration could not be inspected because direct anonymous requests timed out.",
+    "No independent runtime adapter qualification was performed.",
+    "The official local service evidence is stronger than general national land-modernization prose, but public parcel API availability remains unverified from this host."
+  ],
+  "admissionDecision": "held",
+  "runtimeReadiness": "held",
+  "registryFound": true
+}

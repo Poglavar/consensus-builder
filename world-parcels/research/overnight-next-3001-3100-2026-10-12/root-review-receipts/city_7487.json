@@ -1,0 +1,30 @@
+{
+  "taskId": "city:7487",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/city-7487-bhalwal.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/bhalwal-service-review.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/pending-queue.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/provenance.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/root-review-receipts/source-evidence/city_7487-root-review.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/city-7487-bhalwal-sample.geojson"
+  ],
+  "checkedAt": "2026-10-12T01:38:34.215497Z",
+  "city": "Bhalwal",
+  "queueRank": 3043,
+  "registryFound": true,
+  "identityCheck": "Matches pending queue, ranked roster, and verified original WUP 2025 bulk CSV row; population converted from thousands to persons.",
+  "searchCheck": "English and local-language executed queries with actual result URLs recorded in the paired packet.",
+  "polygonCheck": "1 retained full polygon(s), no more than three, with only safe canonical native ID property; Bhalwal sample geometry equals original first-party response.",
+  "runtimeQualification": {
+    "freshNativeIdReads": "not_evidenced",
+    "forcedPaging": "not_evidenced",
+    "boundedCells13": "not_evidenced",
+    "metricGeosValidityAndOverlap": "not_evidenced",
+    "sourceBinding": "not_evidenced",
+    "headedDetailsPanel": "not_evidenced"
+  },
+  "reason": "One first-party Sargodha parcel polygon with native OBJECTID was verified at the WUP point. No independent adapter paging, 13-cell, metric GEOS overlap/operation, source-binding, or headed Details-panel qualification is evidenced.",
+  "scopeLimit": "Research completion is not runtime admission; no citywide coverage or absence inferred."
+}

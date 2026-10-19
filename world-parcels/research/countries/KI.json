@@ -1,0 +1,32 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "KI",
+ "country": "Kiribati",
+ "checkedAt": "2026-09-29",
+ "status": "no_online_cadastre_found",
+ "cadastreAuthority": "Ministry of Environment, Lands and Agricultural Development (Land Management Division) - not confirmed",
+ "portalsFound": [
+  {
+   "url": "https://www.mlgrd.gov.ki/",
+   "observation": "No response (guessed host)."
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://www.mlgrd.gov.ki/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "unreachable"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "coverageAssessment": {
+  "claimedScope": "none found",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "unknown",
+ "remainingUncertainty": "Only one guessed host tried; very little web presence for lands ministry; effectively negative but with minimal effort. Land is largely customary/leasehold via Land Management Division.",
+ "nextStep": "Search for Kiribati Lands ministry web presence or Pacific Community (SPC) GIS hosting."
+}

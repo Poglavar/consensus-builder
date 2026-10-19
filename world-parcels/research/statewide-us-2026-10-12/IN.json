@@ -1,0 +1,922 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "US",
+ "regionCode": "IN",
+ "checkedAt": "2026-10-12",
+ "status": "ready",
+ "category": "newOnEndpointWithScopedEntry",
+ "descriptorId": "us-in-indianamap-statewide-parcels",
+ "idPrefix": "US-IN-STATEWIDE-",
+ "sharesEndpointWithScopedEntry": "us-in-marion-indianapolis-parcels",
+ "endpoint": "https://gisdata.in.gov/server/rest/services/Hosted/Parcel_Boundaries_of_Indiana_Current/FeatureServer/0",
+ "politeAccess": "HTTPS only, no credentials; at most one request start per 1.1 s per host (serial per-host queue), bounded envelopes and counts; outFields limited to native-ID, object-ID and ID-part fields.",
+ "uncoveredUnCities": [
+  {
+   "cityCode": "7765",
+   "name": "Indianapolis",
+   "lat": 39.7828279762393,
+   "lon": -86.1232822162888,
+   "pop2025k": 228.577,
+   "rank": 2572
+  },
+  {
+   "cityCode": "7913",
+   "name": "Fort Wayne",
+   "lat": 41.0690939195421,
+   "lon": -85.1300955495992,
+   "pop2025k": 88.094,
+   "rank": 7046
+  },
+  {
+   "cityCode": "7889",
+   "name": "South Bend",
+   "lat": 41.6729596149942,
+   "lon": -86.2207704674956,
+   "pop2025k": 80.405,
+   "rank": 7760
+  },
+  {
+   "cityCode": "7664",
+   "name": "Lafayette",
+   "lat": 40.4136422406136,
+   "lon": -86.893516234892,
+   "pop2025k": 68.251,
+   "rank": 9084
+  }
+ ],
+ "endpointMetadata": [
+  {
+   "url": "https://gisdata.in.gov/server/rest/services/Hosted/Parcel_Boundaries_of_Indiana_Current/FeatureServer/0",
+   "layerName": "Parcel Boundaries of Indiana Current",
+   "layerType": "Feature Layer",
+   "recordCount": 3682675,
+   "maxRecordCount": 2000,
+   "currentVersion": 11.5,
+   "supportsPagination": true,
+   "supportedQueryFormats": "JSON, geoJSON, PBF",
+   "spatialReference": 4326,
+   "descriptionExcerpt": null,
+   "copyrightText": null,
+   "publishedFields": [
+    "objectid",
+    "state_parcel_id",
+    "parcel_id",
+    "nguid",
+    "prop_add",
+    "prop_city",
+    "prop_state",
+    "prop_zip",
+    "local_id",
+    "dlgf_prop_address",
+    "dlgf_prop_address_city",
+    "dlgf_prop_address_state",
+    "dlgf_prop_address_zip",
+    "dlgf_prop_class_code",
+    "county_fips",
+    "county_id",
+    "esri_zip",
+    "esri_poname",
+    "latitude",
+    "longitude",
+    "valid_tax_code",
+    "cnty_tax_dist_cd",
+    "tax_county",
+    "tax_township",
+    "tax_city",
+    "tax_school",
+    "tax_library",
+    "tax_special",
+    "source_featureid",
+    "source_originator",
+    "loaddate",
+    "SHAPE__Length",
+    "SHAPE__Area"
+   ]
+  }
+ ],
+ "identity": {
+  "choice": "state_parcel_id is the Indiana state parcel number (county-coded); unique in Fort Wayne and Indianapolis. local_id (used by the Marion-only entry) is county-scoped (Marion 7-digit local numbers vs 18-digit elsewhere).",
+  "fields": [
+   "state_parcel_id"
+  ]
+ },
+ "statewideChecks": [
+  {
+   "state": "IN",
+   "endpoint": "https://gisdata.in.gov/server/rest/services/Hosted/Parcel_Boundaries_of_Indiana_Current/FeatureServer/0",
+   "checkedAt": "2026-10-12T10:57:11.249Z",
+   "results": {
+    "nullId": {
+     "url": "https://gisdata.in.gov/server/rest/services/Hosted/Parcel_Boundaries_of_Indiana_Current/FeatureServer/0/query?where=state_parcel_id+IS+NULL+OR+state_parcel_id+IN+%28%27%27%2C%27+%27%29&returnCountOnly=true&f=json",
+     "count": 7540
+    },
+    "counties": {
+     "url": "https://gisdata.in.gov/server/rest/services/Hosted/Parcel_Boundaries_of_Indiana_Current/FeatureServer/0/query?where=1%3D1&outFields=county_id&returnDistinctValues=true&returnGeometry=false&orderByFields=county_id&f=json",
+     "values": [
+      "1",
+      "10",
+      "11",
+      "12",
+      "13",
+      "14",
+      "15",
+      "16",
+      "17",
+      "18",
+      "19",
+      "2",
+      "20",
+      "21",
+      "22",
+      "23",
+      "24",
+      "25",
+      "26",
+      "27",
+      "28",
+      "29",
+      "3",
+      "30",
+      "31",
+      "32",
+      "33",
+      "34",
+      "35",
+      "36",
+      "37",
+      "38",
+      "39",
+      "4",
+      "40",
+      "41",
+      "42",
+      "43",
+      "44",
+      "45",
+      "46",
+      "47",
+      "48",
+      "49",
+      "5",
+      "50",
+      "51",
+      "52",
+      "53",
+      "54",
+      "55",
+      "56",
+      "57",
+      "58",
+      "59",
+      "6",
+      "60",
+      "61",
+      "62",
+      "63",
+      "64",
+      "65",
+      "66",
+      "67",
+      "68",
+      "69",
+      "7",
+      "70",
+      "71",
+      "72",
+      "73",
+      "74",
+      "75",
+      "76",
+      "77",
+      "78",
+      "79",
+      "8",
+      "80",
+      "81",
+      "82",
+      "83",
+      "84",
+      "85",
+      "86",
+      "87",
+      "88",
+      "89",
+      "9",
+      "90",
+      "91",
+      "92"
+     ],
+     "exceededTransferLimit": false
+    }
+   }
+  }
+ ],
+ "patternChecks": {
+  "IN": [
+   {
+    "where": "state_parcel_id IS NOT NULL AND state_parcel_id NOT IN ('',' ') AND CHAR_LENGTH(state_parcel_id) <> 18",
+    "url": "https://gisdata.in.gov/server/rest/services/Hosted/Parcel_Boundaries_of_Indiana_Current/FeatureServer/0/query?where=state_parcel_id+IS+NOT+NULL+AND+state_parcel_id+NOT+IN+%28%27%27%2C%27+%27%29+AND+CHAR_LENGTH%28state_parcel_id%29+%3C%3E+18&returnCountOnly=true&f=json",
+    "count": 9637
+   },
+   {
+    "where": "state_parcel_id LIKE '% %'",
+    "url": "https://gisdata.in.gov/server/rest/services/Hosted/Parcel_Boundaries_of_Indiana_Current/FeatureServer/0/query?where=state_parcel_id+LIKE+%27%25+%25%27&returnCountOnly=true&f=json",
+    "count": 1062
+   }
+  ]
+ },
+ "uniqueness": [
+  {
+   "boxDegrees": 0.01,
+   "checkedAt": "2026-10-12T10:53:38.317Z",
+   "fieldsRequested": [
+    "objectid",
+    "state_parcel_id",
+    "parcel_id",
+    "local_id",
+    "county_id",
+    "county_fips"
+   ],
+   "cities": [
+    {
+     "city": "Fort Wayne",
+     "cityCode": "7913",
+     "bbox": [
+      -85.135096,
+      41.064094,
+      -85.125096,
+      41.074094
+     ],
+     "count": 650,
+     "rowsRead": 650,
+     "keys": {
+      "state_parcel_id": {
+       "blanks": 0,
+       "distinct": 650,
+       "repeatedValues": 0
+      },
+      "parcel_id": {
+       "blanks": 0,
+       "distinct": 650,
+       "repeatedValues": 0
+      },
+      "local_id": {
+       "blanks": 0,
+       "distinct": 650,
+       "repeatedValues": 0
+      },
+      "county_id+local_id": {
+       "blanks": 0,
+       "distinct": 650,
+       "repeatedValues": 0
+      }
+     }
+    },
+    {
+     "city": "Indianapolis",
+     "cityCode": "7765",
+     "bbox": [
+      -86.128282,
+      39.777828,
+      -86.118282,
+      39.787828
+     ],
+     "count": 1107,
+     "rowsRead": 1107,
+     "keys": {
+      "state_parcel_id": {
+       "blanks": 0,
+       "distinct": 1107,
+       "repeatedValues": 0
+      },
+      "parcel_id": {
+       "blanks": 0,
+       "distinct": 1107,
+       "repeatedValues": 0
+      },
+      "local_id": {
+       "blanks": 0,
+       "distinct": 1107,
+       "repeatedValues": 0
+      },
+      "county_id+local_id": {
+       "blanks": 0,
+       "distinct": 1107,
+       "repeatedValues": 0
+      }
+     }
+    }
+   ],
+   "requests": [
+    {
+     "ts": "2026-10-12T10:53:39.307Z",
+     "method": "GET",
+     "url": "https://gisdata.in.gov/server/rest/services/Hosted/Parcel_Boundaries_of_Indiana_Current/FeatureServer/0/query?where=1%3D1&geometry=-85.135096%2C41.064094%2C-85.125096%2C41.074094&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&returnCountOnly=true&f=json",
+     "status": 200
+    },
+    {
+     "ts": "2026-10-12T10:53:39.688Z",
+     "method": "GET",
+     "url": "https://gisdata.in.gov/server/rest/services/Hosted/Parcel_Boundaries_of_Indiana_Current/FeatureServer/0/query?where=1%3D1&geometry=-85.135096%2C41.064094%2C-85.125096%2C41.074094&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=objectid%2Cstate_parcel_id%2Cparcel_id%2Clocal_id%2Ccounty_id%2Ccounty_fips&returnGeometry=false&orderByFields=objectid&resultOffset=0&resultRecordCount=1000&f=json",
+     "status": 200
+    },
+    {
+     "ts": "2026-10-12T10:53:40.748Z",
+     "method": "GET",
+     "url": "https://gisdata.in.gov/server/rest/services/Hosted/Parcel_Boundaries_of_Indiana_Current/FeatureServer/0/query?where=1%3D1&geometry=-86.128282%2C39.777828%2C-86.118282%2C39.787828&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&returnCountOnly=true&f=json",
+     "status": 200
+    },
+    {
+     "ts": "2026-10-12T10:53:41.882Z",
+     "method": "GET",
+     "url": "https://gisdata.in.gov/server/rest/services/Hosted/Parcel_Boundaries_of_Indiana_Current/FeatureServer/0/query?where=1%3D1&geometry=-86.128282%2C39.777828%2C-86.118282%2C39.787828&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=objectid%2Cstate_parcel_id%2Cparcel_id%2Clocal_id%2Ccounty_id%2Ccounty_fips&returnGeometry=false&orderByFields=objectid&resultOffset=0&resultRecordCount=1000&f=json",
+     "status": 200
+    },
+    {
+     "ts": "2026-10-12T10:53:42.979Z",
+     "method": "GET",
+     "url": "https://gisdata.in.gov/server/rest/services/Hosted/Parcel_Boundaries_of_Indiana_Current/FeatureServer/0/query?where=1%3D1&geometry=-86.128282%2C39.777828%2C-86.118282%2C39.787828&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=objectid%2Cstate_parcel_id%2Cparcel_id%2Clocal_id%2Ccounty_id%2Ccounty_fips&returnGeometry=false&orderByFields=objectid&resultOffset=1000&resultRecordCount=1000&f=json",
+     "status": 200
+    }
+   ]
+  }
+ ],
+ "repeatInspection": [],
+ "liveVerification": {
+  "descriptorId": "us-in-indianamap-statewide-parcels",
+  "verifiedAt": "2026-10-12T11:07:02.914Z",
+  "ok": true,
+  "cities": [
+   {
+    "city": "Fort Wayne",
+    "cityCode": "7913",
+    "unPoint": [
+     41.0690939195421,
+     -85.1300955495992
+    ],
+    "attempts": [
+     {
+      "bbox": [
+       -85.130596,
+       41.068594,
+       -85.129596,
+       41.069594
+      ],
+      "features": 19
+     }
+    ],
+    "bbox": [
+     -85.130596,
+     41.068594,
+     -85.129596,
+     41.069594
+    ],
+    "ok": true,
+    "boundsSummary": {
+     "complete": true,
+     "returnsWGS84": true,
+     "featureCount": 19
+    },
+    "boundsFeatures": [
+     {
+      "id": "US-IN-STATEWIDE-021212155006000074",
+      "nativeId": "021212155006000074",
+      "type": "Polygon",
+      "geometrySha256": "7d4850e9bd6ab0763ac00620b022db2aa8df63750ddb7434dc0cbc4ded0a957e",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-IN-STATEWIDE-021212158001000074",
+      "nativeId": "021212158001000074",
+      "type": "Polygon",
+      "geometrySha256": "8cda27bd3f1dbad18ca652a249de413f857fcb288984c1ee3c9cebb6465cdd4d",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-IN-STATEWIDE-021212155007000074",
+      "nativeId": "021212155007000074",
+      "type": "Polygon",
+      "geometrySha256": "c5d2cd7c101ec9c79ce4f63db1bcf4535bf9a622cb55232c542d31c9c9643a9f",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-IN-STATEWIDE-021212154016000074",
+      "nativeId": "021212154016000074",
+      "type": "Polygon",
+      "geometrySha256": "511e048b38577f0ed6027d1d84afbafca5fa11e627d6ad6cef4aa05ca3dde8e8",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-IN-STATEWIDE-021212154007000074",
+      "nativeId": "021212154007000074",
+      "type": "Polygon",
+      "geometrySha256": "12c306d25552296537751aba0aaa86b23112b4a7965e7f0084dc4fd2d1e6bdbe",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-IN-STATEWIDE-021212155002000074",
+      "nativeId": "021212155002000074",
+      "type": "Polygon",
+      "geometrySha256": "9757a931db98e0c1097e440a1aa82fde93393d7a3ad504947a2c11c75745401b",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-IN-STATEWIDE-021212154017000074",
+      "nativeId": "021212154017000074",
+      "type": "Polygon",
+      "geometrySha256": "761f2d125e5ee7d8ac7524733ec67d402fe114e665e2959388eb1c62a57c91fa",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-IN-STATEWIDE-021212154008000074",
+      "nativeId": "021212154008000074",
+      "type": "Polygon",
+      "geometrySha256": "2da16e256a09d124a878dcb99b2201ae0889876576778acb23622e26ac1c7ad2",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-IN-STATEWIDE-021212154018000074",
+      "nativeId": "021212154018000074",
+      "type": "Polygon",
+      "geometrySha256": "485a238733114a84502dc88808f4af29b91896066b5af6cad7e42da4aa245d1e",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-IN-STATEWIDE-021212155004000074",
+      "nativeId": "021212155004000074",
+      "type": "Polygon",
+      "geometrySha256": "a3f338c18e2c4328f6d53728aa71350a1af5786b68c9d33cc76692ef7fb41728",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-IN-STATEWIDE-021212155001000074",
+      "nativeId": "021212155001000074",
+      "type": "Polygon",
+      "geometrySha256": "4520680aa88df1dd2a2aa95a0ba05454ffb0a9039fbba7537dcfedc84129bcaf",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-IN-STATEWIDE-021212155008000074",
+      "nativeId": "021212155008000074",
+      "type": "Polygon",
+      "geometrySha256": "3ec28de028a17455774ab2372137320fa3c5e7dc5c1d5f5c12dcde4e7e1fcefb",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-IN-STATEWIDE-021212154019000074",
+      "nativeId": "021212154019000074",
+      "type": "Polygon",
+      "geometrySha256": "fe9c20235d6fadf9589f2b8ca252c65e581eddee261505fd27104e7f0ab753bf",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-IN-STATEWIDE-021212154015000074",
+      "nativeId": "021212154015000074",
+      "type": "Polygon",
+      "geometrySha256": "7272fc8068d2db0b8bc5b820645a65aca83bc8621aa2af9c080692cef9335205",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-IN-STATEWIDE-021212155003000074",
+      "nativeId": "021212155003000074",
+      "type": "Polygon",
+      "geometrySha256": "6511065a28ab4ec7e26bdb3f4346a7644d47e34fef1f13f2c8cd1875df9216ad",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-IN-STATEWIDE-021212154020000074",
+      "nativeId": "021212154020000074",
+      "type": "Polygon",
+      "geometrySha256": "7191b7a9d6cd316e1ad04e62a09ff983325e2346ee824962b7f80562eea27051",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-IN-STATEWIDE-021212154014000074",
+      "nativeId": "021212154014000074",
+      "type": "Polygon",
+      "geometrySha256": "94482e70f332f7c7202c8607bff3ffc08816b0ce8e20a01d6008d3a6894c10c4",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-IN-STATEWIDE-021212155005000074",
+      "nativeId": "021212155005000074",
+      "type": "Polygon",
+      "geometrySha256": "aa9b21d92fc644148e68ad00597e390987dbc7f923526e0bf33a06c03c42a19c",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-IN-STATEWIDE-021212154006000074",
+      "nativeId": "021212154006000074",
+      "type": "Polygon",
+      "geometrySha256": "d96c0623ec34a6b338bb8cf9af510c35831804ecb72ee72d50bdd8a07f7f5e44",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     }
+    ],
+    "idsQuery": {
+     "ids": [
+      "US-IN-STATEWIDE-021212155006000074",
+      "US-IN-STATEWIDE-021212158001000074",
+      "US-IN-STATEWIDE-021212155007000074"
+     ],
+     "absentIds": [],
+     "returned": 3,
+     "features": [
+      {
+       "id": "US-IN-STATEWIDE-021212155006000074",
+       "geometrySha256": "7d4850e9bd6ab0763ac00620b022db2aa8df63750ddb7434dc0cbc4ded0a957e"
+      },
+      {
+       "id": "US-IN-STATEWIDE-021212158001000074",
+       "geometrySha256": "8cda27bd3f1dbad18ca652a249de413f857fcb288984c1ee3c9cebb6465cdd4d"
+      },
+      {
+       "id": "US-IN-STATEWIDE-021212155007000074",
+       "geometrySha256": "c5d2cd7c101ec9c79ce4f63db1bcf4535bf9a622cb55232c542d31c9c9643a9f"
+      }
+     ],
+     "sameIds": true,
+     "byteIdentical": true
+    },
+    "requests": [
+     {
+      "ts": "2026-10-12T11:07:03.956Z",
+      "method": "GET",
+      "url": "https://gisdata.in.gov/server/rest/services/Hosted/Parcel_Boundaries_of_Indiana_Current/FeatureServer/0/query?where=state_parcel_id+NOT+IN+%28%27%27%2C%27+%27%29+AND+state_parcel_id+IS+NOT+NULL&geometry=-85.130596%2C41.068594%2C-85.129596%2C41.069594&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "status": 200
+     },
+     {
+      "ts": "2026-10-12T11:07:04.275Z",
+      "method": "GET",
+      "url": "https://gisdata.in.gov/server/rest/services/Hosted/Parcel_Boundaries_of_Indiana_Current/FeatureServer/0/query?where=state_parcel_id+NOT+IN+%28%27%27%2C%27+%27%29+AND+state_parcel_id+IS+NOT+NULL&geometry=-85.130596%2C41.068594%2C-85.129596%2C41.069594&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "status": 200
+     },
+     {
+      "ts": "2026-10-12T11:07:05.389Z",
+      "method": "GET",
+      "url": "https://gisdata.in.gov/server/rest/services/Hosted/Parcel_Boundaries_of_Indiana_Current/FeatureServer/0/query?where=state_parcel_id+NOT+IN+%28%27%27%2C%27+%27%29+AND+state_parcel_id+IS+NOT+NULL&outFields=objectid%2Cstate_parcel_id&returnGeometry=true&outSR=4326&f=geojson&objectIds=1499558%2C1629192%2C1851641%2C1906361%2C947848%2C2079049%2C1068670%2C210193%2C2253210%2C1746527%2C1353697%2C1178572%2C1492244%2C1523331%2C1696768%2C1724197%2C643573%2C724921%2C2322368",
+      "status": 200
+     },
+     {
+      "ts": "2026-10-12T11:07:07.046Z",
+      "method": "GET",
+      "url": "https://gisdata.in.gov/server/rest/services/Hosted/Parcel_Boundaries_of_Indiana_Current/FeatureServer/0/query?where=%28state_parcel_id+NOT+IN+%28%27%27%2C%27+%27%29+AND+state_parcel_id+IS+NOT+NULL%29+AND+%28state_parcel_id+IN+%28%27021212155006000074%27%2C%27021212158001000074%27%2C%27021212155007000074%27%29%29&f=json&returnCountOnly=true",
+      "status": 200
+     },
+     {
+      "ts": "2026-10-12T11:07:07.655Z",
+      "method": "GET",
+      "url": "https://gisdata.in.gov/server/rest/services/Hosted/Parcel_Boundaries_of_Indiana_Current/FeatureServer/0/query?where=%28state_parcel_id+NOT+IN+%28%27%27%2C%27+%27%29+AND+state_parcel_id+IS+NOT+NULL%29+AND+%28state_parcel_id+IN+%28%27021212155006000074%27%2C%27021212158001000074%27%2C%27021212155007000074%27%29%29&f=json&returnIdsOnly=true",
+      "status": 200
+     },
+     {
+      "ts": "2026-10-12T11:07:08.699Z",
+      "method": "GET",
+      "url": "https://gisdata.in.gov/server/rest/services/Hosted/Parcel_Boundaries_of_Indiana_Current/FeatureServer/0/query?where=state_parcel_id+NOT+IN+%28%27%27%2C%27+%27%29+AND+state_parcel_id+IS+NOT+NULL&outFields=objectid%2Cstate_parcel_id&returnGeometry=true&outSR=4326&f=geojson&objectIds=210193%2C724921%2C643573",
+      "status": 200
+     }
+    ]
+   },
+   {
+    "city": "Indianapolis",
+    "cityCode": "7765",
+    "unPoint": [
+     39.7828279762393,
+     -86.1232822162888
+    ],
+    "attempts": [
+     {
+      "bbox": [
+       -86.123782,
+       39.782328,
+       -86.122782,
+       39.783328
+      ],
+      "features": 15
+     }
+    ],
+    "bbox": [
+     -86.123782,
+     39.782328,
+     -86.122782,
+     39.783328
+    ],
+    "ok": true,
+    "boundsSummary": {
+     "complete": true,
+     "returnsWGS84": true,
+     "featureCount": 15
+    },
+    "boundsFeatures": [
+     {
+      "id": "US-IN-STATEWIDE-490731220065000101",
+      "nativeId": "490731220065000101",
+      "type": "Polygon",
+      "geometrySha256": "a4beef2e2ff930a40debb1e85b02169a8bd0f5150ae4ff49e2c039dc5141e6ab",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-IN-STATEWIDE-490731220066000101",
+      "nativeId": "490731220066000101",
+      "type": "Polygon",
+      "geometrySha256": "30cf739ae7120ec6483fbcfe7a444ad03fe81fa37f9dac0a8a6e9da3611580aa",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-IN-STATEWIDE-490731220009000101",
+      "nativeId": "490731220009000101",
+      "type": "Polygon",
+      "geometrySha256": "f41a46ad9e3504e819da2ad0a1568450d6ddaf27ccbbbae85a6abffbe91cb5b1",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-IN-STATEWIDE-490731220010000101",
+      "nativeId": "490731220010000101",
+      "type": "Polygon",
+      "geometrySha256": "e393257dc94d39345a56b69a71ec9a57c54b3df1419f536b6661caa5eecc1ecd",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-IN-STATEWIDE-490731220014000101",
+      "nativeId": "490731220014000101",
+      "type": "Polygon",
+      "geometrySha256": "8cc0129ffb9484a851b2c5ff58141b1b3a34bffe61140bae1a631d5daadb7b21",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-IN-STATEWIDE-490731220057000101",
+      "nativeId": "490731220057000101",
+      "type": "Polygon",
+      "geometrySha256": "27e9aa7fe74e4e34650c0841623f8c9d050db8888eb3199308b6311d3aa9f459",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-IN-STATEWIDE-490731220028000101",
+      "nativeId": "490731220028000101",
+      "type": "Polygon",
+      "geometrySha256": "0f8699507a3e5390f2ff72d317f4425aa32e8f5ccd84736543b8b5f6d75b82d2",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-IN-STATEWIDE-490731220025000101",
+      "nativeId": "490731220025000101",
+      "type": "Polygon",
+      "geometrySha256": "e813bdda0a45813eac7bb953ad570088b847f9b476ecf635e87f355dbf80a7db",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-IN-STATEWIDE-490731220047000101",
+      "nativeId": "490731220047000101",
+      "type": "Polygon",
+      "geometrySha256": "3859ee206059dd032050e02136834d2bd3531876c78c377d6d87ba5a52d84268",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-IN-STATEWIDE-490731220011000101",
+      "nativeId": "490731220011000101",
+      "type": "Polygon",
+      "geometrySha256": "5ec3fd1b0d3ef699ec2a906607847828224166babcf4b01ddb0760fc57bee555",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-IN-STATEWIDE-490731220059000101",
+      "nativeId": "490731220059000101",
+      "type": "Polygon",
+      "geometrySha256": "47b4b89271bd829a27db174e82e9ab6b5631b24ae8200a9b7f1c037511a6a176",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-IN-STATEWIDE-490731220064000101",
+      "nativeId": "490731220064000101",
+      "type": "Polygon",
+      "geometrySha256": "f485b9255f3ab572a4c74a172a713cdbe73ab82d6005579c7a2e7a0d57d17491",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-IN-STATEWIDE-490731220048000101",
+      "nativeId": "490731220048000101",
+      "type": "Polygon",
+      "geometrySha256": "55cd3274265f712dc4bebdd245f1196f60026e391355e73da92c945a1f81868a",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-IN-STATEWIDE-490731220058000101",
+      "nativeId": "490731220058000101",
+      "type": "Polygon",
+      "geometrySha256": "201f6ee387c4ea9847098f05454d2eb8492348fd7b8e7cd13224c8addf78aac2",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-IN-STATEWIDE-490731220035000101",
+      "nativeId": "490731220035000101",
+      "type": "Polygon",
+      "geometrySha256": "d0a3816d95ff27a9dc472b902a6182dc615d9275a9b4668019d33816a96beaf4",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     }
+    ],
+    "idsQuery": {
+     "ids": [
+      "US-IN-STATEWIDE-490731220065000101",
+      "US-IN-STATEWIDE-490731220066000101",
+      "US-IN-STATEWIDE-490731220009000101"
+     ],
+     "absentIds": [],
+     "returned": 3,
+     "features": [
+      {
+       "id": "US-IN-STATEWIDE-490731220065000101",
+       "geometrySha256": "a4beef2e2ff930a40debb1e85b02169a8bd0f5150ae4ff49e2c039dc5141e6ab"
+      },
+      {
+       "id": "US-IN-STATEWIDE-490731220066000101",
+       "geometrySha256": "30cf739ae7120ec6483fbcfe7a444ad03fe81fa37f9dac0a8a6e9da3611580aa"
+      },
+      {
+       "id": "US-IN-STATEWIDE-490731220009000101",
+       "geometrySha256": "f41a46ad9e3504e819da2ad0a1568450d6ddaf27ccbbbae85a6abffbe91cb5b1"
+      }
+     ],
+     "sameIds": true,
+     "byteIdentical": true
+    },
+    "requests": [
+     {
+      "ts": "2026-10-12T11:07:09.783Z",
+      "method": "GET",
+      "url": "https://gisdata.in.gov/server/rest/services/Hosted/Parcel_Boundaries_of_Indiana_Current/FeatureServer/0/query?where=state_parcel_id+NOT+IN+%28%27%27%2C%27+%27%29+AND+state_parcel_id+IS+NOT+NULL&geometry=-86.123782%2C39.782328%2C-86.122782%2C39.783328&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "status": 200
+     },
+     {
+      "ts": "2026-10-12T11:07:10.896Z",
+      "method": "GET",
+      "url": "https://gisdata.in.gov/server/rest/services/Hosted/Parcel_Boundaries_of_Indiana_Current/FeatureServer/0/query?where=state_parcel_id+NOT+IN+%28%27%27%2C%27+%27%29+AND+state_parcel_id+IS+NOT+NULL&geometry=-86.123782%2C39.782328%2C-86.122782%2C39.783328&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "status": 200
+     },
+     {
+      "ts": "2026-10-12T11:07:12.316Z",
+      "method": "GET",
+      "url": "https://gisdata.in.gov/server/rest/services/Hosted/Parcel_Boundaries_of_Indiana_Current/FeatureServer/0/query?where=state_parcel_id+NOT+IN+%28%27%27%2C%27+%27%29+AND+state_parcel_id+IS+NOT+NULL&outFields=objectid%2Cstate_parcel_id&returnGeometry=true&outSR=4326&f=geojson&objectIds=983499%2C1437096%2C1494248%2C2014622%2C1907653%2C2037933%2C247607%2C548534%2C1614513%2C1596820%2C1272918%2C228100%2C1514484%2C98972%2C2269259",
+      "status": 200
+     },
+     {
+      "ts": "2026-10-12T11:07:13.469Z",
+      "method": "GET",
+      "url": "https://gisdata.in.gov/server/rest/services/Hosted/Parcel_Boundaries_of_Indiana_Current/FeatureServer/0/query?where=%28state_parcel_id+NOT+IN+%28%27%27%2C%27+%27%29+AND+state_parcel_id+IS+NOT+NULL%29+AND+%28state_parcel_id+IN+%28%27490731220065000101%27%2C%27490731220066000101%27%2C%27490731220009000101%27%29%29&f=json&returnCountOnly=true",
+      "status": 200
+     },
+     {
+      "ts": "2026-10-12T11:07:14.196Z",
+      "method": "GET",
+      "url": "https://gisdata.in.gov/server/rest/services/Hosted/Parcel_Boundaries_of_Indiana_Current/FeatureServer/0/query?where=%28state_parcel_id+NOT+IN+%28%27%27%2C%27+%27%29+AND+state_parcel_id+IS+NOT+NULL%29+AND+%28state_parcel_id+IN+%28%27490731220065000101%27%2C%27490731220066000101%27%2C%27490731220009000101%27%29%29&f=json&returnIdsOnly=true",
+      "status": 200
+     },
+     {
+      "ts": "2026-10-12T11:07:15.311Z",
+      "method": "GET",
+      "url": "https://gisdata.in.gov/server/rest/services/Hosted/Parcel_Boundaries_of_Indiana_Current/FeatureServer/0/query?where=state_parcel_id+NOT+IN+%28%27%27%2C%27+%27%29+AND+state_parcel_id+IS+NOT+NULL&outFields=objectid%2Cstate_parcel_id&returnGeometry=true&outSR=4326&f=geojson&objectIds=247607%2C98972%2C228100",
+      "status": 200
+     }
+    ]
+   }
+  ]
+ },
+ "targetedMultiRow": [],
+ "idBatchCheck": {
+  "file": "batch-ids.json",
+  "id": "us-in-indianamap-statewide-parcels",
+  "city": "Indianapolis",
+  "result": {
+   "bbox": [
+    -86.124782,
+    39.781328,
+    -86.121782,
+    39.784328
+   ],
+   "boundsFeatures": 122,
+   "idsRequested": 80,
+   "returned": 80,
+   "absent": 0,
+   "allIdentical": true,
+   "ms": 3442
+  },
+  "ok": true,
+  "requests": [
+   {
+    "ts": "2026-10-12T11:14:31.304Z",
+    "method": "GET",
+    "url": "https://gisdata.in.gov/server/rest/services/Hosted/Parcel_Boundaries_of_Indiana_Current/FeatureServer/0/query?where=state_parcel_id+NOT+IN+%28%27%27%2C%27+%27%29+AND+state_parcel_id+IS+NOT+NULL&geometry=-86.124782%2C39.781328%2C-86.121782%2C39.784328&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+    "status": 200,
+    "ms": 1149
+   },
+   {
+    "ts": "2026-10-12T11:14:31.537Z",
+    "method": "GET",
+    "url": "https://gisdata.in.gov/server/rest/services/Hosted/Parcel_Boundaries_of_Indiana_Current/FeatureServer/0/query?where=state_parcel_id+NOT+IN+%28%27%27%2C%27+%27%29+AND+state_parcel_id+IS+NOT+NULL&geometry=-86.124782%2C39.781328%2C-86.121782%2C39.784328&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+    "status": 200,
+    "ms": 221
+   },
+   {
+    "ts": "2026-10-12T11:14:32.714Z",
+    "method": "GET",
+    "url": "https://gisdata.in.gov/server/rest/services/Hosted/Parcel_Boundaries_of_Indiana_Current/FeatureServer/0/query?where=state_parcel_id+NOT+IN+%28%27%27%2C%27+%27%29+AND+state_parcel_id+IS+NOT+NULL&outFields=objectid%2Cstate_parcel_id&returnGeometry=true&outSR=4326&f=geojson&objectIds=98972%2C115099%2C138952%2C139314%2C159235%2C165565%2C182294%2C209871%2C228100%2C242896%2C242909%2C247607%2C267971%2C28…",
+    "status": 200,
+    "ms": 297
+   },
+   {
+    "ts": "2026-10-12T11:14:33.969Z",
+    "method": "POST",
+    "url": "https://gisdata.in.gov/server/rest/services/Hosted/Parcel_Boundaries_of_Indiana_Current/FeatureServer/0/query",
+    "bodyBytes": 2310,
+    "status": 200,
+    "ms": 443
+   },
+   {
+    "ts": "2026-10-12T11:14:34.947Z",
+    "method": "POST",
+    "url": "https://gisdata.in.gov/server/rest/services/Hosted/Parcel_Boundaries_of_Indiana_Current/FeatureServer/0/query",
+    "bodyBytes": 2308,
+    "status": 200,
+    "ms": 319
+   },
+   {
+    "ts": "2026-10-12T11:14:36.163Z",
+    "method": "GET",
+    "url": "https://gisdata.in.gov/server/rest/services/Hosted/Parcel_Boundaries_of_Indiana_Current/FeatureServer/0/query?where=state_parcel_id+NOT+IN+%28%27%27%2C%27+%27%29+AND+state_parcel_id+IS+NOT+NULL&outFields=objectid%2Cstate_parcel_id&returnGeometry=true&outSR=4326&f=geojson&objectIds=182294%2C313866%2C769138%2C784203%2C209871%2C934790%2C454313%2C841174%2C845273%2C1430452%2C115099%2C1254762%2C242909%2…",
+    "status": 200,
+    "ms": 434
+   }
+  ]
+ },
+ "coverageCaveats": [
+  "Rows with null or blank state_parcel_id (7,540 statewide on 2026-10-12) are excluded; 9,637 non-blank values are not 18 characters and 1,062 contain spaces, all kept verbatim.",
+  "Same endpoint as us-in-marion-indianapolis-parcels (county_id=49, key local_id under US-IN-MARION-); Marion County parcels would exist under both namespaces with different keys.",
+  "Layer also publishes property address and tax-district fields, which are not requested."
+ ]
+}

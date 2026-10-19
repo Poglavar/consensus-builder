@@ -1,0 +1,512 @@
+{
+  "schemaVersion": 1,
+  "cityId": "wup2025:6427",
+  "checkedAt": "2026-10-09",
+  "purpose": "Bounded qualification of the repository WFS adapter against the public Kantor Pertanahan Kota Cirebon Kejaksan layer. This is source/adapter evidence, not citywide completeness.",
+  "source": {
+    "url": "https://geoserver.cirebonkota.go.id/geoserver/bpn/ows",
+    "featureType": "bpn:Persil_Kec_Kejaksan",
+    "version": "WFS 2.0.0",
+    "officialCatalog": "https://satupeta.cirebonkota.go.id/api/mapset?limit=100",
+    "schemaUrl": "https://geoserver.cirebonkota.go.id/geoserver/bpn/ows?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=bpn%3APersil_Kec_Kejaksan"
+  },
+  "schema": {
+    "geometry": "geom, optional MultiSurface",
+    "candidateNativeId": "nib, xsd:string, minOccurs=0, nillable=true",
+    "otherFieldsOmitted": [
+      "kodewilaya",
+      "kecamatan",
+      "kelurahan",
+      "tipehak",
+      "luas_m2"
+    ],
+    "ownerOrAddressRequested": false,
+    "requestProperties": [
+      "geom",
+      "nib"
+    ]
+  },
+  "existingAdapter": {
+    "adapter": "wfs",
+    "sourceId": "ID-CIREBON-BPN-WFS-PERSIL-KEJAKSAN-NIB",
+    "idField": "nib",
+    "idType": "string",
+    "pageSize": 3,
+    "responseCrs": "CRS:84"
+  },
+  "qualificationWindow": {
+    "centerLatLon": [
+      -6.70955,
+      108.5592
+    ],
+    "cellSizeDegrees": 0.001,
+    "gridCellCount": 13,
+    "cells": [
+      {
+        "name": "viewport-0",
+        "bbox": [
+          108.558,
+          -6.711,
+          108.559,
+          -6.71
+        ],
+        "count": null,
+        "passed": false,
+        "error": "Parcel provider returned a missing or invalid native parcel ID."
+      },
+      {
+        "name": "viewport-1",
+        "bbox": [
+          108.559,
+          -6.711,
+          108.56,
+          -6.71
+        ],
+        "count": 9,
+        "passed": true,
+        "error": null
+      },
+      {
+        "name": "viewport-2",
+        "bbox": [
+          108.56,
+          -6.711,
+          108.561,
+          -6.71
+        ],
+        "count": null,
+        "passed": false,
+        "error": "Parcel provider returned a missing or invalid native parcel ID."
+      },
+      {
+        "name": "viewport-3",
+        "bbox": [
+          108.558,
+          -6.71,
+          108.559,
+          -6.709
+        ],
+        "count": 22,
+        "passed": true,
+        "error": null
+      },
+      {
+        "name": "viewport-4",
+        "bbox": [
+          108.559,
+          -6.71,
+          108.56,
+          -6.709
+        ],
+        "count": 13,
+        "passed": true,
+        "error": null
+      },
+      {
+        "name": "viewport-5",
+        "bbox": [
+          108.56,
+          -6.71,
+          108.561,
+          -6.709
+        ],
+        "count": 51,
+        "passed": true,
+        "error": null
+      },
+      {
+        "name": "viewport-6",
+        "bbox": [
+          108.558,
+          -6.709,
+          108.559,
+          -6.708
+        ],
+        "count": null,
+        "passed": false,
+        "error": "Parcel provider returned a missing or invalid native parcel ID."
+      },
+      {
+        "name": "viewport-7",
+        "bbox": [
+          108.559,
+          -6.709,
+          108.56,
+          -6.708
+        ],
+        "count": 20,
+        "passed": true,
+        "error": null
+      },
+      {
+        "name": "viewport-8",
+        "bbox": [
+          108.56,
+          -6.709,
+          108.561,
+          -6.708
+        ],
+        "count": null,
+        "passed": false,
+        "error": "Geometry changed between adjacent viewports: ID-CIREBON-BPN-KEJAKSAN-NIB-02589"
+      },
+      {
+        "name": "viewport-9",
+        "bbox": [
+          108.559,
+          -6.712,
+          108.56,
+          -6.711
+        ],
+        "count": null,
+        "passed": false,
+        "error": "Parcel provider returned a missing or invalid native parcel ID."
+      },
+      {
+        "name": "viewport-10",
+        "bbox": [
+          108.559,
+          -6.708,
+          108.56,
+          -6.707
+        ],
+        "count": null,
+        "passed": false,
+        "error": "Parcel provider returned a missing or invalid native parcel ID."
+      },
+      {
+        "name": "viewport-11",
+        "bbox": [
+          108.557,
+          -6.71,
+          108.558,
+          -6.709
+        ],
+        "count": 23,
+        "passed": true,
+        "error": null
+      },
+      {
+        "name": "viewport-12",
+        "bbox": [
+          108.561,
+          -6.71,
+          108.562,
+          -6.709
+        ],
+        "count": null,
+        "passed": false,
+        "error": "Parcel provider returned a missing or invalid native parcel ID."
+      }
+    ]
+  },
+  "tests": [
+    {
+      "name": "viewport-0",
+      "passed": false,
+      "elapsedMs": 2659,
+      "error": "Parcel provider returned a missing or invalid native parcel ID.",
+      "code": "parcel-source-unavailable",
+      "requestIndexes": [
+        0,
+        6
+      ]
+    },
+    {
+      "name": "viewport-1",
+      "passed": true,
+      "elapsedMs": 782,
+      "count": 9,
+      "complete": true,
+      "requestIndexes": [
+        7,
+        9
+      ],
+      "bbox": [
+        108.559,
+        -6.711,
+        108.56,
+        -6.71
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-2",
+      "passed": false,
+      "elapsedMs": 2118,
+      "error": "Parcel provider returned a missing or invalid native parcel ID.",
+      "code": "parcel-source-unavailable",
+      "requestIndexes": [
+        10,
+        17
+      ]
+    },
+    {
+      "name": "viewport-3",
+      "passed": true,
+      "elapsedMs": 2103,
+      "count": 22,
+      "complete": true,
+      "requestIndexes": [
+        18,
+        25
+      ],
+      "bbox": [
+        108.558,
+        -6.71,
+        108.559,
+        -6.709
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-4",
+      "passed": true,
+      "elapsedMs": 1347,
+      "count": 13,
+      "complete": true,
+      "requestIndexes": [
+        26,
+        30
+      ],
+      "bbox": [
+        108.559,
+        -6.71,
+        108.56,
+        -6.709
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-5",
+      "passed": true,
+      "elapsedMs": 4449,
+      "count": 51,
+      "complete": true,
+      "requestIndexes": [
+        31,
+        47
+      ],
+      "bbox": [
+        108.56,
+        -6.71,
+        108.561,
+        -6.709
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-6",
+      "passed": false,
+      "elapsedMs": 2271,
+      "error": "Parcel provider returned a missing or invalid native parcel ID.",
+      "code": "parcel-source-unavailable",
+      "requestIndexes": [
+        48,
+        54
+      ]
+    },
+    {
+      "name": "viewport-7",
+      "passed": true,
+      "elapsedMs": 1879,
+      "count": 20,
+      "complete": true,
+      "requestIndexes": [
+        55,
+        61
+      ],
+      "bbox": [
+        108.559,
+        -6.709,
+        108.56,
+        -6.708
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-8",
+      "passed": false,
+      "elapsedMs": 5893,
+      "error": "Geometry changed between adjacent viewports: ID-CIREBON-BPN-KEJAKSAN-NIB-02589",
+      "requestIndexes": [
+        62,
+        82
+      ]
+    },
+    {
+      "name": "viewport-9",
+      "passed": false,
+      "elapsedMs": 2901,
+      "error": "Parcel provider returned a missing or invalid native parcel ID.",
+      "code": "parcel-source-unavailable",
+      "requestIndexes": [
+        83,
+        93
+      ]
+    },
+    {
+      "name": "viewport-10",
+      "passed": false,
+      "elapsedMs": 3823,
+      "error": "Parcel provider returned a missing or invalid native parcel ID.",
+      "code": "parcel-source-unavailable",
+      "requestIndexes": [
+        94,
+        105
+      ]
+    },
+    {
+      "name": "viewport-11",
+      "passed": true,
+      "elapsedMs": 2108,
+      "count": 23,
+      "complete": true,
+      "requestIndexes": [
+        106,
+        113
+      ],
+      "bbox": [
+        108.557,
+        -6.71,
+        108.558,
+        -6.709
+      ],
+      "kind": "adjacent-pan"
+    },
+    {
+      "name": "viewport-12",
+      "passed": false,
+      "elapsedMs": 3405,
+      "error": "Parcel provider returned a missing or invalid native parcel ID.",
+      "code": "parcel-source-unavailable",
+      "requestIndexes": [
+        114,
+        126
+      ]
+    },
+    {
+      "name": "forced-three-row-pages",
+      "passed": true,
+      "elapsedMs": 4402,
+      "count": 51,
+      "geometryPages": 17,
+      "pageSize": 3,
+      "allGeometryHashesMatch": true,
+      "requestIndexes": [
+        127,
+        143
+      ]
+    },
+    {
+      "name": "fresh-ids-0",
+      "passed": false,
+      "elapsedMs": 269,
+      "error": "Parcel provider returned conflicting geometry for one parcel ID.",
+      "code": "parcel-source-unavailable",
+      "requestIndexes": [
+        144,
+        144
+      ],
+      "reason": "The adapter rejected conflicting geometry for repeated native nib keys."
+    },
+    {
+      "name": "fresh-ids-40",
+      "passed": false,
+      "elapsedMs": 261,
+      "error": "Parcel provider returned conflicting geometry for one parcel ID.",
+      "code": "parcel-source-unavailable",
+      "requestIndexes": [
+        145,
+        145
+      ],
+      "reason": "The adapter rejected conflicting geometry for repeated native nib keys."
+    },
+    {
+      "name": "fresh-ids-80",
+      "passed": false,
+      "elapsedMs": 264,
+      "error": "Parcel provider returned conflicting geometry for one parcel ID.",
+      "code": "parcel-source-unavailable",
+      "requestIndexes": [
+        146,
+        146
+      ],
+      "reason": "The adapter rejected conflicting geometry for repeated native nib keys."
+    },
+    {
+      "name": "fresh-ids-120",
+      "passed": false,
+      "elapsedMs": 257,
+      "error": "Parcel provider returned conflicting geometry for one parcel ID.",
+      "code": "parcel-source-unavailable",
+      "requestIndexes": [
+        147,
+        147
+      ],
+      "reason": "The adapter rejected conflicting geometry for repeated native nib keys."
+    },
+    {
+      "name": "explicit-absence",
+      "passed": true,
+      "elapsedMs": 251,
+      "complete": true,
+      "requestIndexes": [
+        148,
+        148
+      ]
+    },
+    {
+      "name": "footprint",
+      "passed": true,
+      "elapsedMs": 790,
+      "count": 7,
+      "allGeometryHashesMatch": true,
+      "requestIndexes": [
+        149,
+        151
+      ],
+      "selectedNativeIdOmitted": true
+    },
+    {
+      "name": "source-binding",
+      "passed": true,
+      "elapsedMs": 800,
+      "requestIndexes": [
+        152,
+        154
+      ],
+      "coverage": "complete",
+      "siteM2": 184.61,
+      "boundParcels": 1
+    }
+  ],
+  "conclusion": {
+    "qualified": false,
+    "reason": "nib is optional and not a reliable unique key for the existing adapter. Some cell queries were rejected for missing IDs; another returned distinct geometries under the same nib, causing adapter repeat-geometry errors and failed fresh exact-ID reads. The adapter uses the attribute idField for queryIds and does not treat GeoServer transport feature IDs as durable native IDs.",
+    "notGates": [
+      "WUP centroid lies outside the city extent / sample is 4.88 km from centroid"
+    ],
+    "boundedPositiveEvidence": [
+      "dense-cell complete WFS paging succeeded using page size 3",
+      "synthetic absent-ID query returned complete absence",
+      "one parcel-footprint query and source-binding operation completed",
+      "three already-retained city-core samples passed independent GEOS validity and pairwise overlap checks"
+    ],
+    "coverageClaim": "Only the named small Kejaksan grid and earlier three sample geometries were checked; no citywide completeness claim."
+  },
+  "httpRequestCount": 155,
+  "cellTestsPassed": 6,
+  "cellTestsFailed": 7,
+  "freshIdBatchTestsPassed": 0,
+  "freshIdBatchTestsFailed": 4,
+  "geometryQa": {
+    "engine": "GEOS 3.14.1",
+    "scope": "Three already-retained full geometries in cirebon-bpn-wfs-samples.geojson, not all 13 cells",
+    "validAll": true,
+    "positiveAreaOverlapPairs": 0,
+    "sharedBoundaryPairs": 2,
+    "disjointPairs": 1,
+    "exactDuplicateGeometryPairs": 0
+  }
+}

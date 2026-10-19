@@ -1,0 +1,98 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-10",
+  "cityRecord": "city-11924-shengzhou.json",
+  "purpose": "Document first-party Shengzhou registry context, official viewer inspection, and bounded anonymous geometry-access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "A local Shengzhou registry custodian is evidenced by first-party material, but no anonymous public cadastral parcel ID-plus-geometry response was verified from the official map services inspected.",
+  "registryAssessment": "Local registry/procedure evidenced: Shengzhou Real Estate Registration Service Center and Shengzhou Natural Resources and Planning Bureau. This is source-custodian evidence only, not source admission or runtime integration.",
+  "safeFieldAllowlist": ["safe public parcel/source ID if available", "geometry", "CRS", "non-sensitive layer/schema metadata"],
+  "officialPrimarySources": [
+    {
+      "url": "https://zjjcmspublic.oss-cn-hangzhou-zwynet-d01-a.internet.cloud.zj.gov.cn/jcms_files/jcms1/web3063/site/attach/0/5a375c82ea91451fb6c6d9d092838e7a.pdf",
+      "observation": "Official Shengzhou-hosted budget material names the Shengzhou Real Estate Registration Service Center and describes its responsibility for natural-resource/real-estate registration information and cadastral investigation work; no parcel geometry payload is exposed."
+    },
+    {
+      "url": "https://www.szzj.gov.cn/art/2022/7/21/art_1229763067_59060563.html",
+      "observation": "Official Shengzhou government page is published by the local Natural Resources and Planning Bureau; it establishes the local bureau but contains no public parcel-vector response."
+    },
+    {
+      "url": "https://www.szzj.gov.cn/attach/0/7bc22d179ff74992ab31ca31db50cf8f.pdf",
+      "observation": "Official Shengzhou basic-surveying plan discusses local geographic-information and surveying work; it does not expose a safe anonymous parcel API."
+    },
+    {
+      "url": "https://data.sx.gov.cn/kf/map",
+      "observation": "Official Shaoxing public-data map page loaded; its current JavaScript bundle uses Tianditu general map/search/route functions and did not expose a cadastral parcel layer."
+    },
+    {
+      "url": "https://ditu.zjzwfw.gov.cn/platform-main/index.html",
+      "observation": "Official Zhejiang geographic-information platform describes public vector-tile and geographic-information services; inspected page/configuration did not expose a Shengzhou parcel layer or bounded parcel response."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Shengzhou China official cadastral parcel map land registration natural resources bureau",
+      "result": "Found local first-party registration-center and natural-resources material; no verified anonymous parcel geometry route.",
+      "resultUrls": [
+        "https://zjjcmspublic.oss-cn-hangzhou-zwynet-d01-a.internet.cloud.zj.gov.cn/jcms_files/jcms1/web3063/site/attach/0/5a375c82ea91451fb6c6d9d092838e7a.pdf",
+        "https://www.szzj.gov.cn/attach/0/7bc22d179ff74992ab31ca31db50cf8f.pdf",
+        "https://data.sx.gov.cn/kf/map",
+        "https://ditu.zjzwfw.gov.cn/platform-main/index.html"
+      ]
+    },
+    {
+      "language": "Chinese",
+      "query": "嵊州市 官方 不动产登记 地籍图 宗地 自然资源和规划局",
+      "result": "Found first-party local registry/procedure evidence and general official map services; no verified anonymous parcel geometry route.",
+      "resultUrls": [
+        "https://zjjcmspublic.oss-cn-hangzhou-zwynet-d01-a.internet.cloud.zj.gov.cn/jcms_files/jcms1/web3063/site/attach/0/5a375c82ea91451fb6c6d9d092838e7a.pdf",
+        "https://www.szzj.gov.cn/art/2022/7/21/art_1229763067_59060563.html",
+        "https://data.sx.gov.cn/kf/map"
+      ]
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "exactWupPointTest": "Not performed against a verified cadastral parcel endpoint; exact point [29.590075250083, 120.83779911649] remains unchanged and no absence inference is made.",
+    "requestEvidence": []
+  },
+  "attempts": [
+    {
+      "url": "https://data.sx.gov.cn/kf/map",
+      "method": "GET; JavaScript/configuration inspection",
+      "httpStatus": "200",
+      "result": "General Shaoxing map application loaded. Bundle references Tianditu search and route services; no cadastral parcel layer, schema, CRS, safe ID, or polygon response found."
+    },
+    {
+      "url": "https://ditu.zjzwfw.gov.cn/platform-main/index.html",
+      "method": "GET; JavaScript/configuration inspection",
+      "httpStatus": "200",
+      "result": "General Zhejiang geographic-information platform loaded. Public description/configuration exposes vector-tile/general geographic-information capabilities, not a bounded Shengzhou parcel response."
+    },
+    {
+      "url": "https://zjjcmspublic.oss-cn-hangzhou-zwynet-d01-a.internet.cloud.zj.gov.cn/jcms_files/jcms1/web3063/site/attach/0/5a375c82ea91451fb6c6d9d092838e7a.pdf",
+      "method": "GET via first-party search/open",
+      "httpStatus": "web result available",
+      "result": "Local registration-center responsibility evidence read; no parcel geometry payload."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Official local Shengzhou registry/procedure evidence plus official Zhejiang/Shaoxing map-service inspection.",
+    "verifiedOpenScope": "Local registry/procedure and general map services only; parcel geometry access unverified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "remainingUncertainty": "A separate authenticated or non-indexed cadastral service may exist. Exact-point hit testing, CRS/schema, safe native ID, and citywide parcel completeness remain unknown."
+}

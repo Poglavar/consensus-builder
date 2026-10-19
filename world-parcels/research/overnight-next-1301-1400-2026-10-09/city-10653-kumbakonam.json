@@ -1,0 +1,169 @@
+{
+  "schemaVersion": "1.0",
+  "cohort": "overnight-next-1301-1400-2026-10-09",
+  "cityCode": 10653,
+  "queueRank": 1393,
+  "rank": 1393,
+  "cityId": "wup2025:10653",
+  "name": "Kumbakonam",
+  "country": "India",
+  "countryCode": "IN",
+  "iso2": "IN",
+  "iso3": "IND",
+  "point": [10.964569185515, 79.3852902968803],
+  "centerLatLon": [10.964569185515, 79.3852902968803],
+  "pointBasis": "Exact immutable WUP 2025 queue point in latitude/longitude order; not shifted to force a parcel hit.",
+  "population2025": 405885,
+  "population2025k": 405.885,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "capital": false,
+  "plausibility": "High",
+  "aliases": ["kumbakonam"],
+  "status": "complete",
+  "registryFound": true,
+  "registryAssessment": "Tamil Nadu's official land-records procedure explicitly supports urban records by district, taluk, town, block, ward, survey number and subdivision number, and the official TamilNilam Geo-Info description identifies the Department of Survey and Settlement as the land-record map service operator. Kumbakonam's official municipal site also provides the local corporation/property-search context. These establish an official cadastral/land-record procedure and local municipal custodian context, but not an anonymously retrievable parcel-vector service.",
+  "resultCategory": "official_tamil_nadu_land_records_procedure_geometry_unverified",
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "held_pending_serial_review",
+  "blocker": "No current anonymous safe native parcel identifier plus polygon was verified. Viewer timeouts and a non-cadastral TN-GIS landing page do not establish parcel absence or citywide coverage.",
+  "freshResearch": {
+    "checkedAt": "2026-10-09",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Kumbakonam official cadastral parcel map GIS Tamil Nadu land records public map",
+        "result": "Found the official Kumbakonam City Municipal Corporation site, Government of India service entry for Tamil Nadu land-record e-services, TamilNilam Geo-Info information, TNGIS, and the Tamil Nadu urban property-search portal. The official land-record workflow covers urban town/block/ward/survey/subdivision lookups, but no anonymous parcel feature response was obtained.",
+        "actualResultUrls": [
+          "https://www.tnurbantree.tn.gov.in/kumbakonam/",
+          "https://services.india.gov.in/service/detail/e-services-of-land-records-tamil-nadu",
+          "https://play.google.com/store/apps/details?hl=en-US&id=org.tnega.tamil.nilam",
+          "https://www.tngis.tn.gov.in/apps.html",
+          "https://tnurbanepay.tn.gov.in/PT_PropertySearch.aspx"
+        ]
+      },
+      {
+        "language": "Tamil",
+        "query": "கும்பகோணம் அதிகாரப்பூர்வ நில அளவை வரைபடம் பட்டா நிலப்பதிவு GIS",
+        "result": "Official Tamil Nadu/Kumbakonam results identified the TamilNilam land-record map service, Tamil Nadu urban property search, and Kumbakonam corporation pages. The search did not yield a directly accessible anonymous parcel-vector endpoint or safe ID-plus-geometry response.",
+        "actualResultUrls": [
+          "https://www.tnurbantree.tn.gov.in/kumbakonam/",
+          "https://tamilnilam.tn.gov.in/citizen",
+          "https://tnurbanepay.tn.gov.in/PT_PropertySearch.aspx",
+          "https://www.tnurbantree.tn.gov.in/kumbakonam/ward-map/"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://services.india.gov.in/service/detail/e-services-of-land-records-tamil-nadu",
+      "operator": "Government of Tamil Nadu land-record e-services, indexed by the National Government Services Portal",
+      "scope": "Official procedure description for Patta, FMB, Chitta and TSLR extracts; urban lookup fields include district, taluk, town, block, ward, survey number and subdivision number."
+    },
+    {
+      "url": "https://play.google.com/store/apps/details?hl=en-US&id=org.tnega.tamil.nilam",
+      "operator": "Tamil Nadu e-Governance Agency / Department of Survey and Settlement",
+      "scope": "Official TamilNilam Geo-Info description says land-record ownership/extent, FMB sketches and patta records can be visualized on a map or by survey/subdivision navigation; it does not publish a public parcel API schema."
+    },
+    {
+      "url": "https://www.tnurbantree.tn.gov.in/kumbakonam/",
+      "operator": "Kumbakonam City Municipal Corporation",
+      "scope": "Official local corporation page; establishes Kumbakonam local municipal custodian and links to municipal services/property-tax context."
+    },
+    {
+      "url": "https://tnurbanepay.tn.gov.in/PT_PropertySearch.aspx",
+      "operator": "Commissionerate of Municipal Administration, Tamil Nadu",
+      "scope": "Official municipal property-search procedure with municipality/corporation, assessment, ward, street and door-number fields; not a parcel geometry endpoint."
+    },
+    {
+      "url": "https://www.tngis.tn.gov.in/apps.html",
+      "operator": "Tamil Nadu Geographical Information System / TNeGA",
+      "scope": "Official public GIS application directory and disclaimer; no Kumbakonam parcel layer or safe parcel response was exposed in the fetched page."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://services.india.gov.in/service/detail/e-services-of-land-records-tamil-nadu",
+      "method": "GET/search review",
+      "httpStatus": 200,
+      "result": "Official service description loaded; urban TSLR/FMB/Chitta lookup procedure and required cadastral keys were recorded. No geometry request was made against a record-specific lookup and no unsafe fields were sought."
+    },
+    {
+      "url": "https://play.google.com/store/apps/details?hl=en-US&id=org.tnega.tamil.nilam",
+      "method": "GET/search review",
+      "httpStatus": 200,
+      "result": "Official TamilNilam Geo-Info app description reviewed; map/FMB/patta visualization capability was evidenced, but no public web API, schema, CRS or native parcel ID was exposed."
+    },
+    {
+      "url": "https://www.tnurbantree.tn.gov.in/kumbakonam/",
+      "method": "GET/search review",
+      "httpStatus": 200,
+      "result": "Official Kumbakonam corporation page reviewed; local municipal identity and property-service context confirmed. No parcel vector endpoint exposed in the page."
+    },
+    {
+      "url": "https://www.tnurbantree.tn.gov.in/kumbakonam/ward-map/",
+      "method": "GET; anonymous curl",
+      "httpStatus": "timeout after 12s",
+      "result": "Could not fetch the ward-map page from the available client. Timeout is not evidence of parcel absence; no viewer configuration or endpoint was inferred."
+    },
+    {
+      "url": "https://tamilnilam.tn.gov.in/citizen",
+      "method": "GET; anonymous curl",
+      "httpStatus": "timeout after 12s",
+      "result": "TamilNilam citizen viewer did not return within the bounded request. No login, retry bypass, token, or certificate exception was used; no schema or geometry was inferred."
+    },
+    {
+      "url": "https://eservices.tn.gov.in/eservicesnew/",
+      "method": "GET; anonymous curl",
+      "httpStatus": "timeout after 20s",
+      "result": "Tamil Nadu e-services viewer did not return within the bounded request. No record-specific query or unsafe field request was attempted."
+    },
+    {
+      "url": "https://gisnic.tn.nic.in/",
+      "method": "GET; anonymous curl",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "result": "TN-GIS-NIC landing page returned only a generic welcome page; no parcel service, schema, CRS or geometry endpoint was exposed."
+    },
+    {
+      "url": "https://www.tngis.tn.gov.in/apps.html",
+      "method": "GET/search review",
+      "httpStatus": "timeout after 12s",
+      "result": "Official TNGIS application directory was found in search results, but direct curl timed out; no parcel endpoint was inferred."
+    },
+    {
+      "url": "https://tnurbanepay.tn.gov.in/PT_PropertySearch.aspx",
+      "method": "GET/search review",
+      "httpStatus": "timeout after 12s",
+      "result": "Official municipal property-search form was found in search results; direct bounded curl timed out. Search fields are procedural property identifiers, not safe parcel geometry."
+    }
+  ],
+  "verifiedSample": false,
+  "sampleFile": null,
+  "source": null,
+  "geometryEvidence": null,
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "nativeIdField": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "exactWupPointTest": "No exact-point parcel containment test was completed. The exact WUP point [10.964569185515, 79.3852902968803] was preserved and not shifted; viewer timeouts and generic map pages are not evidence of citywide absence."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Tamil Nadu official urban land-record and municipal property-search procedures applicable to Kumbakonam, plus official Tamil Nadu GIS portals.",
+    "verifiedOpenScope": "Official procedure and local custodian references only; no anonymous parcel-vector response, native parcel schema, CRS, exact-point containment, or citywide open coverage was verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "safeFieldAllowlist": ["stable native parcel identifier if publicly returned", "geometry", "source CRS", "non-personal service/schema metadata", "HTTP status/content type"],
+  "remainingUncertainty": "The current TamilNilam/e-services JavaScript and backend routes, native parcel identity, CRS, bounded parcel geometry, exact-point containment, and citywide coverage remain unverified. No owner, address, contact, titleholder, personal, tax/account or other unsafe fields were requested or retained.",
+  "adapterReady": false,
+  "integrationState": "not_integrated",
+  "researchAttempt": 1,
+  "checkedAt": "2026-10-09",
+  "nextStep": "Serial reviewer may independently inspect the current official TamilNilam/e-services viewer without authentication and qualify only a bounded safe native-ID-plus-geometry response if publicly returned."
+}

@@ -1,0 +1,136 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-4507-masetjhaba-view.json",
+  "purpose": "Document first-party local registry context and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 1,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The exact WUP-point query returned an empty feature collection. A bounded 0.002° by 0.002° envelope request requested only OBJECTID, PRCL_KEY and geometry, returning three complete polygons in source-native EPSG:4148. One complete polygon (nearest) is retained; its single ring is closed and it is about 44.974 m from the unchanged WUP point. The server reported exceededTransferLimit, so the capped response and one retained neighbor do not prove point containment or represent all intersecting parcels.",
+  "registryAssessment": "The exact WUP-point query returned an empty feature collection. A bounded 0.002° by 0.002° envelope request requested only OBJECTID, PRCL_KEY and geometry, returning three complete polygons in source-native EPSG:4148. One complete polygon (nearest) is retained; its single ring is closed and it is about 44.974 m from the unchanged WUP point. The server reported exceededTransferLimit, so the capped response and one retained neighbor do not prove point containment or represent all intersecting parcels.",
+  "officialPrimarySources": [
+    {
+      "url": "https://csg.dlrrd.gov.za/data.htm",
+      "observation": "Chief Surveyor General describes a computerized national cadastral spatial map of land parcels and administrative boundaries and identifies a Gauteng office."
+    },
+    {
+      "url": "https://csg.dlrrd.gov.za/",
+      "observation": "Primary official source used for local registry or service context; no additional parcel attributes retained."
+    },
+    {
+      "url": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2?f=pjson",
+      "observation": "Primary official source used for local registry or service context; no additional parcel attributes retained."
+    },
+    {
+      "url": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2/query",
+      "observation": "Primary official source used for local registry or service context; no additional parcel attributes retained."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Masetjhaba View South Africa Gauteng land parcel cadastre municipal official",
+      "resultUrls": [
+        "https://csg.dlrrd.gov.za/data.htm",
+        "https://csg.dlrrd.gov.za/",
+        "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2?f=pjson",
+        "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2/query"
+      ]
+    },
+    {
+      "language": "Afrikaans",
+      "query": "Masetjhaba View Gauteng cadastre erwe kaarte land parcels Suid-Afrika",
+      "resultUrls": [
+        "https://csg.dlrrd.gov.za/data.htm",
+        "https://csg.dlrrd.gov.za/",
+        "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2?f=pjson",
+        "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2/query"
+      ]
+    }
+  ],
+  "geometryDecision": {
+    "verified": true,
+    "sourceId": "za-csg-erven",
+    "sampleCount": 1,
+    "sampleFile": "samples/masetjhaba-view-csg-wup4507.geojson",
+    "nativeId": "OBJECTID and PRCL_KEY",
+    "nativeIdField": "OBJECTID, PRCL_KEY",
+    "nativeGeometryCrs": "EPSG:4148",
+    "exactWupPointTest": "The exact WUP-point query returned an empty feature collection. A bounded 0.002° by 0.002° envelope request requested only OBJECTID, PRCL_KEY and geometry, returning three complete polygons in source-native EPSG:4148. One complete polygon (nearest) is retained; its single ring is closed and it is about 44.974 m from the unchanged WUP point. The server reported exceededTransferLimit, so the capped response and one retained neighbor do not prove point containment or represent all intersecting parcels.",
+    "requestEvidence": {
+      "url": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2/query",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "queryGeometry4326": [
+        28.38815249737,
+        -26.3459086557,
+        28.39015249737,
+        -26.3439086557
+      ],
+      "queryFields": [
+        "OBJECTID",
+        "PRCL_KEY",
+        "geometry"
+      ],
+      "requestedMaxRecords": 3,
+      "responseFeatureCount": 3,
+      "exceededTransferLimit": true,
+      "assessment": "The exact WUP-point query returned an empty feature collection. A bounded 0.002° by 0.002° envelope request requested only OBJECTID, PRCL_KEY and geometry, returning three complete polygons in source-native EPSG:4148. One complete polygon (nearest) is retained; its single ring is closed and it is about 44.974 m from the unchanged WUP point. The server reported exceededTransferLimit, so the capped response and one retained neighbor do not prove point containment or represent all intersecting parcels.",
+      "responseSpatialReferenceWKID": 4148,
+      "geometryOutputCrs": "source-native EPSG:4148",
+      "retainedFeatureCount": 1
+    }
+  },
+  "coverageAssessment": {
+    "claimedScope": "The exact WUP-point query returned an empty feature collection. A bounded 0.002° by 0.002° envelope request requested only OBJECTID, PRCL_KEY and geometry, returning three complete polygons in source-native EPSG:4148. One complete polygon (nearest) is retained; its single ring is closed and it is about 44.974 m from the unchanged WUP point. The server reported exceededTransferLimit, so the capped response and one retained neighbor do not prove point containment or represent all intersecting parcels.",
+    "verifiedOpenScope": "The exact WUP-point query returned an empty feature collection. A bounded 0.002° by 0.002° envelope request requested only OBJECTID, PRCL_KEY and geometry, returning three complete polygons in source-native EPSG:4148. One complete polygon (nearest) is retained; its single ring is closed and it is about 44.974 m from the unchanged WUP point. The server reported exceededTransferLimit, so the capped response and one retained neighbor do not prove point containment or represent all intersecting parcels.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "attempts": [
+    {
+      "url": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2?f=pjson",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "Layer 2 Erven; polygon geometry, public query capability, national extent; schema read only. Query fields allowlist used later was OBJECTID,PRCL_KEY plus geometry."
+    },
+    {
+      "url": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2/query",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/geo+json",
+      "assessment": "Exact point geometry intersects query at [lon=28.3891524973703,lat=-26.3449086556998], requesting only OBJECTID,PRCL_KEY and geometry; empty FeatureCollection."
+    },
+    {
+      "url": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2/query",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "queryGeometry4326": [
+        28.38815249737,
+        -26.3459086557,
+        28.39015249737,
+        -26.3439086557
+      ],
+      "queryFields": [
+        "OBJECTID",
+        "PRCL_KEY",
+        "geometry"
+      ],
+      "requestedMaxRecords": 3,
+      "responseFeatureCount": 3,
+      "exceededTransferLimit": true,
+      "assessment": "The exact WUP-point query returned an empty feature collection. A bounded 0.002° by 0.002° envelope request requested only OBJECTID, PRCL_KEY and geometry, returning three complete polygons in the source spatial reference EPSG:4148. All single rings are closed; nearest is about 44.974 m from the unchanged WUP point. The server reported exceededTransferLimit, so this capped sample does not represent all intersecting parcels or prove point containment.",
+      "responseSpatialReferenceWKID": 4148,
+      "geometryOutputCrs": "source-native EPSG:4148"
+    }
+  ],
+  "remainingUncertainty": "The exact WUP-point query returned an empty feature collection. A bounded 0.002° by 0.002° envelope request requested only OBJECTID, PRCL_KEY and geometry, returning three complete polygons in source-native EPSG:4148. One complete polygon (nearest) is retained; its single ring is closed and it is about 44.974 m from the unchanged WUP point. The server reported exceededTransferLimit, so the capped response and one retained neighbor do not prove point containment or represent all intersecting parcels."
+}

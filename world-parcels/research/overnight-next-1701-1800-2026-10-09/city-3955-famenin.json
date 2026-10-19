@@ -1,0 +1,99 @@
+{
+  "cityCode": 3955,
+  "queueRank": 1793,
+  "city": "Famenin",
+  "country": "Iran (Islamic Republic of)",
+  "countryCode": "IR",
+  "iso3": "IRN",
+  "point": [35.1198911619496, 48.9735870145821],
+  "population2025": 320591,
+  "population2025k": 320.591,
+  "populationUnit": "persons",
+  "status": "complete",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Famenin Iran cadastral map parcel official; Famenin municipality land registry map; Iran State Organization for Registration of Deeds and Properties cadastral portal",
+        "result": "Searches found general map pages and references to Iran's national land-management and registration systems, but no official Famenin parcel viewer or downloadable parcel layer.",
+        "actualResultUrls": [
+          "https://topomap.ir/?l=osm&r=6555129",
+          "https://mapcarta.com/12615490",
+          "https://www.loc.gov/item/lcwaN0016037/",
+          "https://zamin.gov.ir/"
+        ]
+      },
+      {
+        "language": "native/local",
+        "query": "فامنین نقشه کاداستر سامانه املاک و کاداستر; فامنین اداره ثبت اسناد و املاک کاداستر",
+        "result": "Searches found general Famenin map pages and national land-management guidance, but no official local Famenin parcel viewer, schema, or public geometry endpoint.",
+        "actualResultUrls": [
+          "https://topomap.ir/?l=osm&r=6555129",
+          "https://zamin.gov.ir/",
+          "https://nezamat.ir/post-44174/",
+          "https://www.samisoft.ir/jam_location_finder/"
+        ]
+      }
+    ]
+  },
+  "registryFound": null,
+  "requestOutcomes": [
+    {
+      "url": "https://zamin.gov.ir/",
+      "method": "GET/HEAD",
+      "result": "HTTP 200; public Persian land-management portal loaded. HTML referenced /assets/index-iQP9ylQv.js; no parcel geometry was present in the HTML.",
+      "safeFieldsRequested": []
+    },
+    {
+      "url": "https://zamin.gov.ir/assets/index-iQP9ylQv.js",
+      "method": "GET",
+      "result": "HTTP 200; current JavaScript/configuration inspected. API base is same-origin /api/ and the visible routes are application/content/authentication routes; no anonymous parcel layer, feature schema, CRS, or ID+geometry route was identified.",
+      "safeFieldsRequested": []
+    },
+    {
+      "url": "https://ssaa.ir/",
+      "method": "HEAD",
+      "result": "Connection timed out after 8 seconds; no inference about coverage or absence was made.",
+      "safeFieldsRequested": []
+    },
+    {
+      "url": "https://sabtemelk.ir/",
+      "method": "HEAD",
+      "result": "DNS resolution failed in the research environment; no inference about coverage or absence was made.",
+      "safeFieldsRequested": []
+    },
+    {
+      "url": "https://iraneland.ir/",
+      "method": "HEAD",
+      "result": "Connection reset during TLS request; no inference about coverage or absence was made.",
+      "safeFieldsRequested": []
+    }
+  ],
+  "sourceAssessment": {
+    "nationalCustodianEvidence": "Iran's national registration organization and the national land-management portal are evidenced by the public portal and official-domain references, but this is general national custody evidence rather than a Famenin-local open cadastral service.",
+    "localCustodianEvidence": null,
+    "openParcelEndpointVerified": false,
+    "schemaVerified": false,
+    "crsVerified": false,
+    "boundedAnonymousIdGeometryResponse": false
+  },
+  "safeFieldAllowlist": ["native parcel identifier", "full parcel polygon geometry", "source layer metadata", "CRS"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "geometryRetention": {
+    "sampleGeoJSON": null,
+    "featureCount": 0,
+    "reason": "No safe native parcel identity and full polygon response was verified from a public endpoint."
+  },
+  "scopeLimits": [
+    "The exact WUP point was preserved and was not used to force a parcel hit.",
+    "No exact-point hit, map extent miss, timeout, login wall, or unusable UI was treated as citywide absence.",
+    "National agency or portal evidence does not establish citywide Famenin parcel coverage.",
+    "No owner, address, contact, titleholder, personal, tax/account, or other unsafe fields were requested or retained.",
+    "Packet completion is not source integration/admission; runtime readiness remains held pending independent serial qualification."
+  ],
+  "uncertainty": "A Famenin-local custodian, public parcel coverage, stable native identity, feature schema, CRS, geometry API behavior, and completeness remain unverified.",
+  "runtimeReadiness": "held"
+}

@@ -1,0 +1,1008 @@
+{
+  "type": "FeatureCollection",
+  "name": "Zagrebačka avenija–Rudeš – sedam volumena iz lokacijske izmjene 2025.",
+  "bbox": [
+    15.92023674,
+    45.80295396,
+    15.92245919,
+    45.80469689
+  ],
+  "reconstruction": {
+    "schema": "consensus-builder.reconstruction.v1",
+    "proposal": {
+      "proposalId": "paron-zagrebacka-avenija-rudes-location-permit-2025",
+      "city": "zagreb",
+      "name": "Zagrebačka avenija–Rudeš – sedam volumena iz lokacijske izmjene 2025.",
+      "title": "Zagrebačka avenija–Rudeš – sedam volumena iz lokacijske izmjene 2025.",
+      "description": "Datirana rekonstrukcija sedam nadzemnih volumena na k.č. 799/1 iz izmjene lokacijske dozvole koja je postala pravomoćna 19. prosinca 2025. Objavljeni izvor nema oznake ni katnost volumena, pa su V1–V7 neutralne lokalne oznake, a 27 m služi samo za 3D prikaz. Naknadni zahtjev za izmjenu građevinske dozvole od 24. prosinca 2025. presijeca više ovih volumena i nije uključen u prijedlog.",
+      "author": "zagreb.lol – lokalna analiza",
+      "type": "building",
+      "goal": "single",
+      "primaryType": "Urban Rule",
+      "typologyType": "single",
+      "lifecycleStatus": "Active",
+      "createdAt": "2026-08-13T00:00:00.000Z",
+      "updatedAt": "2026-08-13T00:00:00.000Z",
+      "tags": [
+        "buildings",
+        "research",
+        "reconstruction",
+        "location-permit",
+        "historical-permit-state"
+      ],
+      "parentParcelIds": [
+        "HR-335614-799/1"
+      ],
+      "cadastreParcelIds": [
+        "HR-335614-799/1"
+      ],
+      "parcelIds": [
+        "HR-335614-799/1"
+      ],
+      "acceptedParcelIds": [],
+      "bounds": [
+        15.92023674,
+        45.80295396,
+        15.92245919,
+        45.80469689
+      ],
+      "source": {
+        "article": "https://baustela.hr/nekretnine/vijesti/76275/nove-zgrade-na-zagrebackoj-zili-kucavici-jos-jedno-pionirovo-naselje-ovog-puta-na-zapadu-grada/vijest",
+        "locationPermitCaseId": "P20250513-1768397-Z06",
+        "locationPermitClass": "UP/I-350-05/25-01/000390",
+        "locationPermitDecisionAt": "2025-11-11",
+        "locationPermitFinalAt": "2025-12-19",
+        "pendingBuildingPermitAmendmentCaseId": "P20251224-1934214-Z11",
+        "publicWfs": "https://oss.uredjenazemlja.hr/OssWebServices/external/eDozvole",
+        "parcel": "k.č. 799/1, MB 335614, k.o. Rudeš; DGU parcel id 21362030",
+        "sourceStatistics": {
+          "accepted2025Scheme": {
+            "parcelAreaM2": 17980.049314771568,
+            "aboveGroundFootprintAreaM2": 6043.101268375216,
+            "siteCoveragePercent": 33.61003722837671,
+            "aboveGroundVolumes": 7,
+            "sharedUndergroundFootprintAreaM2": 11051.053343782247
+          },
+          "displayOnlyHeightEstimate": {
+            "heightEquivalentAboveGroundGbpM2": 54387.911414422364,
+            "heightEquivalentKin": 3.024903350500813,
+            "method": "footprint × nine 3 m display levels; not permit GBP"
+          },
+          "pendingAlternative": {
+            "caseId": "P20251224-1934214-Z11",
+            "footprintAreaM2": 4030.6514899573194,
+            "affectedAcceptedVolumes": [
+              {
+                "name": "V2",
+                "overlapRatio": 0.07651883619610185
+              },
+              {
+                "name": "V3",
+                "overlapRatio": 0.8489399648956399
+              },
+              {
+                "name": "V5",
+                "overlapRatio": 0.9360967866777412
+              }
+            ],
+            "statusAtArchive": "Obrada predmeta"
+          },
+          "caveat": "The pending building-permit amendment is not part of this proposal and must not be added to the accepted seven-volume state."
+        }
+      }
+    },
+    "buildingProposal": {
+      "parentParcelIds": [
+        "HR-335614-799/1"
+      ],
+      "parentParcelNumbers": [
+        {
+          "id": "HR-335614-799/1",
+          "number": "799/1",
+          "cadastre": "Rudeš"
+        }
+      ],
+      "createdFrom": "single-building",
+      "typologyType": "single",
+      "blockName": "Zagrebačka avenija–Rudeš – prihvaćena shema iz 2025.",
+      "parameters": {
+        "typology": "single",
+        "floorHeightM": 3,
+        "geometryBasis": "permit-planned-footprint",
+        "sourceStatistics": {
+          "accepted2025Scheme": {
+            "parcelAreaM2": 17980.049314771568,
+            "aboveGroundFootprintAreaM2": 6043.101268375216,
+            "siteCoveragePercent": 33.61003722837671,
+            "aboveGroundVolumes": 7,
+            "sharedUndergroundFootprintAreaM2": 11051.053343782247
+          },
+          "displayOnlyHeightEstimate": {
+            "heightEquivalentAboveGroundGbpM2": 54387.911414422364,
+            "heightEquivalentKin": 3.024903350500813,
+            "method": "footprint × nine 3 m display levels; not permit GBP"
+          },
+          "pendingAlternative": {
+            "caseId": "P20251224-1934214-Z11",
+            "footprintAreaM2": 4030.6514899573194,
+            "affectedAcceptedVolumes": [
+              {
+                "name": "V2",
+                "overlapRatio": 0.07651883619610185
+              },
+              {
+                "name": "V3",
+                "overlapRatio": 0.8489399648956399
+              },
+              {
+                "name": "V5",
+                "overlapRatio": 0.9360967866777412
+              }
+            ],
+            "statusAtArchive": "Obrada predmeta"
+          },
+          "caveat": "The pending building-permit amendment is not part of this proposal and must not be added to the accepted seven-volume state."
+        }
+      },
+      "ancestorKey": "HR-335614-799/1",
+      "takeWholeParcels": true,
+      "metadata": {
+        "sourceStatistics": {
+          "accepted2025Scheme": {
+            "parcelAreaM2": 17980.049314771568,
+            "aboveGroundFootprintAreaM2": 6043.101268375216,
+            "siteCoveragePercent": 33.61003722837671,
+            "aboveGroundVolumes": 7,
+            "sharedUndergroundFootprintAreaM2": 11051.053343782247
+          },
+          "displayOnlyHeightEstimate": {
+            "heightEquivalentAboveGroundGbpM2": 54387.911414422364,
+            "heightEquivalentKin": 3.024903350500813,
+            "method": "footprint × nine 3 m display levels; not permit GBP"
+          },
+          "pendingAlternative": {
+            "caseId": "P20251224-1934214-Z11",
+            "footprintAreaM2": 4030.6514899573194,
+            "affectedAcceptedVolumes": [
+              {
+                "name": "V2",
+                "overlapRatio": 0.07651883619610185
+              },
+              {
+                "name": "V3",
+                "overlapRatio": 0.8489399648956399
+              },
+              {
+                "name": "V5",
+                "overlapRatio": 0.9360967866777412
+              }
+            ],
+            "statusAtArchive": "Obrada predmeta"
+          },
+          "caveat": "The pending building-permit amendment is not part of this proposal and must not be added to the accepted seven-volume state."
+        }
+      }
+    }
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "HR-335614-799/1",
+        "cestica_id": 21362030,
+        "maticni_broj_ko": 335614,
+        "broj_cestice": "799/1",
+        "areaM2": 17980.049314771568,
+        "source": "accepted 2025 location-permit area polygon",
+        "sourceCaseId": "P20250513-1768397-Z06",
+        "sourceFeatureId": "eDozvola_area_polygon.154507",
+        "consensus:role": "site"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              15.92125605,
+              45.80458062
+            ],
+            [
+              15.92127698,
+              45.8046097
+            ],
+            [
+              15.92152554,
+              45.80469689
+            ],
+            [
+              15.92215763,
+              45.80412323
+            ],
+            [
+              15.92243464,
+              45.80387197
+            ],
+            [
+              15.92245919,
+              45.80384969
+            ],
+            [
+              15.92229572,
+              45.80373279
+            ],
+            [
+              15.92224032,
+              45.80369103
+            ],
+            [
+              15.92222373,
+              45.8036779
+            ],
+            [
+              15.92218009,
+              45.80364285
+            ],
+            [
+              15.92211441,
+              45.80358718
+            ],
+            [
+              15.92205093,
+              45.80353036
+            ],
+            [
+              15.92200684,
+              45.80348928
+            ],
+            [
+              15.92195693,
+              45.80343963
+            ],
+            [
+              15.92189814,
+              45.80337662
+            ],
+            [
+              15.9218464,
+              45.80331661
+            ],
+            [
+              15.92180498,
+              45.80326682
+            ],
+            [
+              15.92174986,
+              45.80319681
+            ],
+            [
+              15.92169579,
+              45.80312608
+            ],
+            [
+              15.92143143,
+              45.80301299
+            ],
+            [
+              15.92135183,
+              45.80298487
+            ],
+            [
+              15.92127135,
+              45.80295396
+            ],
+            [
+              15.92114165,
+              45.80306812
+            ],
+            [
+              15.92095392,
+              45.80323228
+            ],
+            [
+              15.92045978,
+              45.80366599
+            ],
+            [
+              15.92023674,
+              45.80385985
+            ],
+            [
+              15.92031266,
+              45.80390756
+            ],
+            [
+              15.92026156,
+              45.80395976
+            ],
+            [
+              15.92024804,
+              45.80397364
+            ],
+            [
+              15.9203723,
+              45.80404967
+            ],
+            [
+              15.920402,
+              45.80406359
+            ],
+            [
+              15.92045193,
+              45.80408769
+            ],
+            [
+              15.92053359,
+              45.80412787
+            ],
+            [
+              15.92057259,
+              45.80415075
+            ],
+            [
+              15.92059817,
+              45.80416536
+            ],
+            [
+              15.92062016,
+              45.80417924
+            ],
+            [
+              15.92066875,
+              45.80420792
+            ],
+            [
+              15.92071604,
+              45.80423821
+            ],
+            [
+              15.92074029,
+              45.80425624
+            ],
+            [
+              15.92079157,
+              45.80429888
+            ],
+            [
+              15.92081643,
+              45.80432123
+            ],
+            [
+              15.92096498,
+              45.8044126
+            ],
+            [
+              15.92117307,
+              45.80454349
+            ],
+            [
+              15.92125605,
+              45.80458062
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "V1",
+        "block": "Zagrebačka avenija–Rudeš – prihvaćena shema iz 2025.",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 27,
+        "heightM": 27,
+        "floors": null,
+        "storeys": null,
+        "floorCountBasis": "nije objavljen u geometrijskom WFS izvoru; 27 m je samo privremena visina za 3D prikaz",
+        "heightBasis": "27 m display proxy",
+        "color": "#2f6fed",
+        "source": "final 2025 national eDozvola WFS location-permit amendment geometry",
+        "sourceCaseId": "P20250513-1768397-Z06",
+        "sourceFeatureId": "eDozvola_building_polygon.357663",
+        "footprintAreaM2": 1175.812728873588,
+        "officialVolumeLabel": null,
+        "localVolumeLabel": "V1",
+        "labelBasis": "neutral local west-to-east ordering; official phase label unresolved",
+        "geometryBasis": "permit-planned-footprint",
+        "pendingAmendmentOverlapRatio": 0,
+        "consensus:role": "building",
+        "consensus:index": 0
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              15.9210291,
+              45.80430828
+            ],
+            [
+              15.92117391,
+              45.80417683
+            ],
+            [
+              15.92059473,
+              45.80386463
+            ],
+            [
+              15.92042862,
+              45.80401532
+            ],
+            [
+              15.92090967,
+              45.80427456
+            ],
+            [
+              15.92093084,
+              45.80425532
+            ],
+            [
+              15.9210291,
+              45.80430828
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "V2",
+        "block": "Zagrebačka avenija–Rudeš – prihvaćena shema iz 2025.",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 27,
+        "heightM": 27,
+        "floors": null,
+        "storeys": null,
+        "floorCountBasis": "nije objavljen u geometrijskom WFS izvoru; 27 m je samo privremena visina za 3D prikaz",
+        "heightBasis": "27 m display proxy",
+        "color": "#d63384",
+        "source": "final 2025 national eDozvola WFS location-permit amendment geometry",
+        "sourceCaseId": "P20250513-1768397-Z06",
+        "sourceFeatureId": "eDozvola_building_polygon.357662",
+        "footprintAreaM2": 1448.5897752163717,
+        "officialVolumeLabel": null,
+        "localVolumeLabel": "V2",
+        "labelBasis": "neutral local west-to-east ordering; official phase label unresolved",
+        "geometryBasis": "permit-planned-footprint",
+        "pendingAmendmentOverlapRatio": 0.07651883619610185,
+        "consensus:role": "building",
+        "consensus:index": 1
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              15.92068495,
+              45.80365013
+            ],
+            [
+              15.92069276,
+              45.8036544
+            ],
+            [
+              15.92067691,
+              45.80366871
+            ],
+            [
+              15.92132633,
+              45.8040187
+            ],
+            [
+              15.92134217,
+              45.80400438
+            ],
+            [
+              15.92135586,
+              45.80401174
+            ],
+            [
+              15.92150067,
+              45.80388029
+            ],
+            [
+              15.92149274,
+              45.80387611
+            ],
+            [
+              15.92150858,
+              45.8038618
+            ],
+            [
+              15.92141634,
+              45.80381211
+            ],
+            [
+              15.92140049,
+              45.80382643
+            ],
+            [
+              15.92133409,
+              45.80379055
+            ],
+            [
+              15.92134994,
+              45.80377623
+            ],
+            [
+              15.92101205,
+              45.80359411
+            ],
+            [
+              15.92099621,
+              45.80360843
+            ],
+            [
+              15.92093889,
+              45.80357763
+            ],
+            [
+              15.92095474,
+              45.80356323
+            ],
+            [
+              15.92084637,
+              45.80350491
+            ],
+            [
+              15.92083066,
+              45.80351923
+            ],
+            [
+              15.92082976,
+              45.80351868
+            ],
+            [
+              15.92068495,
+              45.80365013
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "V3",
+        "block": "Zagrebačka avenija–Rudeš – prihvaćena shema iz 2025.",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 27,
+        "heightM": 27,
+        "floors": null,
+        "storeys": null,
+        "floorCountBasis": "nije objavljen u geometrijskom WFS izvoru; 27 m je samo privremena visina za 3D prikaz",
+        "heightBasis": "27 m display proxy",
+        "color": "#198754",
+        "source": "final 2025 national eDozvola WFS location-permit amendment geometry",
+        "sourceCaseId": "P20250513-1768397-Z06",
+        "sourceFeatureId": "eDozvola_building_polygon.357664",
+        "footprintAreaM2": 862.9157831221664,
+        "officialVolumeLabel": null,
+        "localVolumeLabel": "V3",
+        "labelBasis": "neutral local west-to-east ordering; official phase label unresolved",
+        "geometryBasis": "permit-planned-footprint",
+        "pendingAmendmentOverlapRatio": 0.8489399648956399,
+        "consensus:role": "building",
+        "consensus:index": 2
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              15.92122705,
+              45.80348003
+            ],
+            [
+              15.92130277,
+              45.8034113
+            ],
+            [
+              15.92132324,
+              45.80342239
+            ],
+            [
+              15.92154675,
+              45.80321953
+            ],
+            [
+              15.92152628,
+              45.80320845
+            ],
+            [
+              15.9215368,
+              45.80319897
+            ],
+            [
+              15.92145888,
+              45.803157
+            ],
+            [
+              15.92147473,
+              45.80314269
+            ],
+            [
+              15.92138082,
+              45.80309209
+            ],
+            [
+              15.9213651,
+              45.80310641
+            ],
+            [
+              15.92134886,
+              45.80309769
+            ],
+            [
+              15.92122054,
+              45.8032141
+            ],
+            [
+              15.92120007,
+              45.80320311
+            ],
+            [
+              15.92102916,
+              45.80335818
+            ],
+            [
+              15.92104963,
+              45.80336917
+            ],
+            [
+              15.92103911,
+              45.80337875
+            ],
+            [
+              15.92111703,
+              45.80342071
+            ],
+            [
+              15.92110313,
+              45.80343324
+            ],
+            [
+              15.92119704,
+              45.80348383
+            ],
+            [
+              15.9212108,
+              45.80347131
+            ],
+            [
+              15.92122705,
+              45.80348003
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "V4",
+        "block": "Zagrebačka avenija–Rudeš – prihvaćena shema iz 2025.",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 27,
+        "heightM": 27,
+        "floors": null,
+        "storeys": null,
+        "floorCountBasis": "nije objavljen u geometrijskom WFS izvoru; 27 m je samo privremena visina za 3D prikaz",
+        "heightBasis": "27 m display proxy",
+        "color": "#fd7e14",
+        "source": "final 2025 national eDozvola WFS location-permit amendment geometry",
+        "sourceCaseId": "P20250513-1768397-Z06",
+        "sourceFeatureId": "eDozvola_building_polygon.357658",
+        "footprintAreaM2": 577.784661835938,
+        "officialVolumeLabel": null,
+        "localVolumeLabel": "V4",
+        "labelBasis": "neutral local west-to-east ordering; official phase label unresolved",
+        "geometryBasis": "permit-planned-footprint",
+        "pendingAmendmentOverlapRatio": 0,
+        "consensus:role": "building",
+        "consensus:index": 3
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              15.92135163,
+              45.8042965
+            ],
+            [
+              15.92116292,
+              45.80446777
+            ],
+            [
+              15.92140779,
+              45.80459984
+            ],
+            [
+              15.92159663,
+              45.80442848
+            ],
+            [
+              15.92135163,
+              45.8042965
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "V5",
+        "block": "Zagrebačka avenija–Rudeš – prihvaćena shema iz 2025.",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 27,
+        "heightM": 27,
+        "floors": null,
+        "storeys": null,
+        "floorCountBasis": "nije objavljen u geometrijskom WFS izvoru; 27 m je samo privremena visina za 3D prikaz",
+        "heightBasis": "27 m display proxy",
+        "color": "#6f42c1",
+        "source": "final 2025 national eDozvola WFS location-permit amendment geometry",
+        "sourceCaseId": "P20250513-1768397-Z06",
+        "sourceFeatureId": "eDozvola_building_polygon.357661",
+        "footprintAreaM2": 667.6221520364087,
+        "officialVolumeLabel": null,
+        "localVolumeLabel": "V5",
+        "labelBasis": "neutral local west-to-east ordering; official phase label unresolved",
+        "geometryBasis": "permit-planned-footprint",
+        "pendingAmendmentOverlapRatio": 0.9360967866777412,
+        "consensus:role": "building",
+        "consensus:index": 4
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              15.92167548,
+              45.80372164
+            ],
+            [
+              15.92193405,
+              45.80348693
+            ],
+            [
+              15.92174624,
+              45.80338566
+            ],
+            [
+              15.92167052,
+              45.80345438
+            ],
+            [
+              15.92165005,
+              45.8034433
+            ],
+            [
+              15.92147758,
+              45.8035998
+            ],
+            [
+              15.92149805,
+              45.80361088
+            ],
+            [
+              15.92148754,
+              45.80362036
+            ],
+            [
+              15.9215666,
+              45.80366305
+            ],
+            [
+              15.92155283,
+              45.80367558
+            ],
+            [
+              15.92164661,
+              45.80372618
+            ],
+            [
+              15.92166051,
+              45.80371365
+            ],
+            [
+              15.92167548,
+              45.80372164
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "V6",
+        "block": "Zagrebačka avenija–Rudeš – prihvaćena shema iz 2025.",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 27,
+        "heightM": 27,
+        "floors": null,
+        "storeys": null,
+        "floorCountBasis": "nije objavljen u geometrijskom WFS izvoru; 27 m je samo privremena visina za 3D prikaz",
+        "heightBasis": "27 m display proxy",
+        "color": "#20c997",
+        "source": "final 2025 national eDozvola WFS location-permit amendment geometry",
+        "sourceCaseId": "P20250513-1768397-Z06",
+        "sourceFeatureId": "eDozvola_building_polygon.357660",
+        "footprintAreaM2": 644.2102404296612,
+        "officialVolumeLabel": null,
+        "localVolumeLabel": "V6",
+        "labelBasis": "neutral local west-to-east ordering; official phase label unresolved",
+        "geometryBasis": "permit-planned-footprint",
+        "pendingAmendmentOverlapRatio": 0.0005056631382192603,
+        "consensus:role": "building",
+        "consensus:index": 5
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              15.92173176,
+              45.80395156
+            ],
+            [
+              15.92154293,
+              45.80412282
+            ],
+            [
+              15.92161215,
+              45.80416015
+            ],
+            [
+              15.92160396,
+              45.80416758
+            ],
+            [
+              15.92161547,
+              45.80418707
+            ],
+            [
+              15.92164681,
+              45.80420388
+            ],
+            [
+              15.92164279,
+              45.80420746
+            ],
+            [
+              15.92176574,
+              45.80427367
+            ],
+            [
+              15.92178704,
+              45.80425444
+            ],
+            [
+              15.92178793,
+              45.80425489
+            ],
+            [
+              15.92197677,
+              45.80408354
+            ],
+            [
+              15.92182094,
+              45.80399961
+            ],
+            [
+              15.92184224,
+              45.80398028
+            ],
+            [
+              15.92175396,
+              45.80393268
+            ],
+            [
+              15.92173266,
+              45.80395201
+            ],
+            [
+              15.92173176,
+              45.80395156
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "V7",
+        "block": "Zagrebačka avenija–Rudeš – prihvaćena shema iz 2025.",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 27,
+        "heightM": 27,
+        "floors": null,
+        "storeys": null,
+        "floorCountBasis": "nije objavljen u geometrijskom WFS izvoru; 27 m je samo privremena visina za 3D prikaz",
+        "heightBasis": "27 m display proxy",
+        "color": "#dc3545",
+        "source": "final 2025 national eDozvola WFS location-permit amendment geometry",
+        "sourceCaseId": "P20250513-1768397-Z06",
+        "sourceFeatureId": "eDozvola_building_polygon.357659",
+        "footprintAreaM2": 666.1659267550177,
+        "officialVolumeLabel": null,
+        "localVolumeLabel": "V7",
+        "labelBasis": "neutral local west-to-east ordering; official phase label unresolved",
+        "geometryBasis": "permit-planned-footprint",
+        "pendingAmendmentOverlapRatio": 0.0025446535156095065,
+        "consensus:role": "building",
+        "consensus:index": 6
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              15.92207021,
+              45.80364437
+            ],
+            [
+              15.92188138,
+              45.80381563
+            ],
+            [
+              15.9218824,
+              45.80381618
+            ],
+            [
+              15.9218611,
+              45.80383551
+            ],
+            [
+              15.92210419,
+              45.80396658
+            ],
+            [
+              15.92212549,
+              45.80394725
+            ],
+            [
+              15.92212638,
+              45.8039477
+            ],
+            [
+              15.92231521,
+              45.80377635
+            ],
+            [
+              15.92215938,
+              45.80369242
+            ],
+            [
+              15.92218068,
+              45.80367309
+            ],
+            [
+              15.9220924,
+              45.80362549
+            ],
+            [
+              15.92207111,
+              45.80364482
+            ],
+            [
+              15.92207021,
+              45.80364437
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+}

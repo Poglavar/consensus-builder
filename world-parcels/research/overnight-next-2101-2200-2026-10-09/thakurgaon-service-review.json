@@ -1,0 +1,54 @@
+{
+  "cityRecord": "city-319-thakurgaon.json",
+  "cityCode": 319,
+  "queueRank": 2143,
+  "city": "Thakurgaon",
+  "country": "Bangladesh",
+  "countryCode": "BD",
+  "attempt": 1,
+  "reviewStatus": "complete",
+  "registryFound": true,
+  "custodianAssessment": {
+    "localOrScopedEvidence": "The official DLRS viewer returned Thakurgaon district (unit code 080800000), Thakurgaon Sadar Upazila (080801000), and two Sadar mouza entries (080801021 Uttar Boalia and 080801067 Uttar Arazi Gopalpur) through live public endpoints.",
+    "generalAgencyEvidence": "The DLRS and Thakurgaon district pages describe land-record and mouza-map services, but those prose pages alone were not treated as parcel integration evidence."
+  },
+  "discovery": {
+    "englishQuery": "Thakurgaon Bangladesh cadastral parcel map official land records GIS",
+    "nativeQuery": "ঠাকুরগাঁও বাংলাদেশ খতিয়ান মৌজা মানচিত্র ভূমি সেবা সরকারি",
+    "urls": [
+      "https://settlement.gov.bd/Map/MapSearch",
+      "https://map.settlement.gov.bd/",
+      "https://thakurgaon.gov.bd/pages/static-pages/69774bf5c4774958d7c17b12",
+      "https://dlrs.gov.bd/site/page/767754cd-5340-4356-851f-210c944f5ba8/Find-Mouza-Map"
+    ]
+  },
+  "requests": [
+    {"method":"GET","url":"https://settlement.gov.bd/Map/MapSearch","outcome":"200 HTML; current JavaScript identified the public endpoints below."},
+    {"method":"GET","url":"https://settlement.gov.bd/js/MapSearch.js?v=yIrkacclePMWogM6Pmn4B9h1nLF0RbM3YSk70pezUfQ","outcome":"200 JavaScript; endpoint and request-parameter inspection completed."},
+    {"method":"POST","url":"https://settlement.gov.bd/Map/GetDivisionList","request":"empty POST body","outcome":"200 JSON; identified Rangpur division unitcod 080000000."},
+    {"method":"POST","url":"https://settlement.gov.bd/Khatian/getdistrictlistdivisionwise","request":"divid=080000000","outcome":"200 JSON; identified Thakurgaon district unitcod 080800000 and comcod 4151."},
+    {"method":"POST","url":"https://settlement.gov.bd/Khatian/GetSurveyListDistrictWise","request":"districtid=080800000; comcod=4151","outcome":"200 JSON; RS (BRS), rsnum 201901, status ongoing."},
+    {"method":"POST","url":"https://settlement.gov.bd/Khatian/GetThanaListBySurveyMap","request":"comcod=4151; rsno1=201901; districtid=080800000","outcome":"200 JSON; Thakurgaon Sadar Upazila unit 080801000 available."},
+    {"method":"POST","url":"https://settlement.gov.bd/Khatian/GetMouzaListBySurveyMapForshet","request":"comcod=4151; rsnum=201901; unitcod=080801021 and 080801067","outcome":"200 JSON; both Sadar mouzas returned sheet marker 999."},
+    {"method":"POST","url":"https://settlement.gov.bd/Khatian/GetSheetJsonBySurvey","request":"rsnum=201901; comcod=4151; unitcod=080801021; sheetno=999, and unitcod=080801067; sheetno=999","outcome":"200 GeoJSON for both requests; first response 1621062 bytes, second 327528 bytes."}
+  ],
+  "responseEvidence": {
+    "geometry": "Live GeoJSON FeatureCollections contained Polygon features and declared CRS EPSG:4326. Coordinates were longitude/latitude, consistent with GeoJSON.",
+    "nativeFieldsObserved": ["FID", "Dag_No", "Id"],
+    "safeFieldAllowlist": ["stable native parcel identity derived from Dag_No with mouza/survey context", "geometry", "source URL", "survey/mouza/sheet provenance"],
+    "unsafeFieldsExcluded": ["owner names", "addresses", "contact details", "titleholder information", "tax/account data", "khatian contents"]
+  },
+  "sample": {
+    "retained": false,
+    "reason": "No sample GeoJSON retained: the successful responses are sheet/mouza-scoped and the response extent was not demonstrated to include the exact WUP point or represent the whole Thakurgaon urban area. This avoids treating a local extent as citywide coverage.",
+    "exactPointHit": "not tested against returned polygons; no coordinate shift performed"
+  },
+  "scopeLimits": [
+    "The official viewer is an ongoing RS/BRS survey workflow, not proof that every cadastral vintage or every parcel in the city is available.",
+    "The endpoint returned selected mouza sheets, not a citywide parcel dataset.",
+    "A zero or untested exact-point hit would not establish citywide absence.",
+    "No authentication, credentials, private token, CAPTCHA bypass, unsafe owner field, or certificate exception was used."
+  ],
+  "runtimeReadiness": "held-pending-independent-serial-reviewer",
+  "uncertainty": "The source is a real public parcel-map service with bounded geometry responses, but adapter admission and citywide coverage remain unqualified."
+}

@@ -1,0 +1,45 @@
+{
+  "taskId": "city:617",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/city-617-sittwe.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/sittwe-service-review.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/provenance.json"
+  ],
+  "checkedAt": "2026-10-11T16:49:34Z",
+  "reason": "National SLRD custody is documented, but no Sittwe-local registry or public parcel layer was verified. Direct SLRD fetch returned 403; this is not evidence of citywide absence.",
+  "identity": {
+    "cityCode": 617,
+    "rank": 2642,
+    "name": "Sittwe",
+    "country": "Myanmar",
+    "point": [
+      20.1459064670695,
+      92.8910327974049
+    ],
+    "populationPersons": 223552,
+    "matchesImmutableQueue": true
+  },
+  "bilingualSearchesReviewed": [
+    "English",
+    "Burmese (မြန်မာ)"
+  ],
+  "registryFound": null,
+  "firstPartyUrls": [
+    "https://slrd.gov.mm/en/about-us"
+  ],
+  "qualification": {
+    "fullPolygonsRetained": 0,
+    "safeNativeParcelIdVerified": false,
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "boundedCells13": false,
+    "metricGeosChecks": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  },
+  "runtimeAdmitted": false,
+  "absenceConclusion": "unresolved; no citywide absence inferred"
+}

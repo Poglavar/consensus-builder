@@ -1,0 +1,115 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:364",
+  "wupCityCode": 364,
+  "name": "Thiès",
+  "country": "Senegal",
+  "countryCode": "SN",
+  "rank": 1059,
+  "queueRank": 1059,
+  "point": [
+    14.7844262827339,
+    -16.9269720228945
+  ],
+  "centerLatLon": [
+    14.7844262827339,
+    -16.9269720228945
+  ],
+  "pointBasis": "UN WUP2025 population-weighted settlement locator; not a municipal boundary or parcel-coverage claim.",
+  "population2025": 521678,
+  "population2025k": 521.678,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "High",
+  "cohort": "overnight-followon-1001-1100",
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "DGID is Senegal’s official land/cadastre authority and its current service-centre directory names CSF Thiès. DGID contact data says local cadastral identifiers are provided by local Cadastre offices; official DGID materials establish local cadastral administration, but no anonymous full-polygon source was verified.",
+  "registryEvidenceUrls": [
+    "https://www.dgid.sn/",
+    "https://www.dgid.sn/contact",
+    "https://www.dgid.sn/projets/presid",
+    "https://www.dgid.sn/fiches/nicad",
+    "https://www.dgid.sn/wp-content/uploads/2022/11/arrete_n_10012_du_14_juin_2017_portant_organisation_de_la_dgid_zip_0.pdf"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "technicalBlocker": "Primary DGID material confirms the Thiès local cadastral/service office. No anonymous safe full polygon response or schema was found in this bounded search.",
+  "scopeLimits": "Primary DGID material confirms the Thiès local cadastral/service office. No anonymous safe full polygon response or schema was found in this bounded search. No citywide completeness is asserted.",
+  "resultCategory": "no_verified_public_geometry",
+  "coverageAssessment": {
+    "claimedScope": "DGID is Senegal’s official land/cadastre authority and its current service-centre directory names CSF Thiès. DGID contact data says local cadastral identifiers are provided by local Cadastre offices; official DGID materials establish local cadastral administration, but no anonymous full-polygon source was verified.",
+    "verifiedOpenScope": "No anonymous full parcel geometry response verified in this investigation.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "Primary DGID material confirms the Thiès local cadastral/service office. No anonymous safe full polygon response or schema was found in this bounded search."
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Thies Senegal official cadastral land registry property cadastral map",
+        "scope": "Independent fresh city-specific registry and anonymous parcel-geometry search.",
+        "result": "Primary DGID material confirms the Thiès local cadastral/service office. No anonymous safe full polygon response or schema was found in this bounded search.",
+        "actualResultUrls": [
+          "https://www.dgid.sn/",
+          "https://www.dgid.sn/contact",
+          "https://www.dgid.sn/projets/presid",
+          "https://www.dgid.sn/fiches/nicad",
+          "https://www.dgid.sn/wp-content/uploads/2022/11/arrete_n_10012_du_14_juin_2017_portant_organisation_de_la_dgid_zip_0.pdf"
+        ],
+        "executionMethod": "Executed web search; first-party source pages or official service metadata inspected."
+      },
+      {
+        "language": "French",
+        "query": "Thiès Sénégal cadastre foncier service des impôts domaines Thiès",
+        "scope": "Independent fresh city-specific registry and anonymous parcel-geometry search.",
+        "result": "Primary DGID material confirms the Thiès local cadastral/service office. No anonymous safe full polygon response or schema was found in this bounded search.",
+        "actualResultUrls": [
+          "https://www.dgid.sn/",
+          "https://www.dgid.sn/contact",
+          "https://www.dgid.sn/projets/presid",
+          "https://www.dgid.sn/fiches/nicad",
+          "https://www.dgid.sn/wp-content/uploads/2022/11/arrete_n_10012_du_14_juin_2017_portant_organisation_de_la_dgid_zip_0.pdf"
+        ],
+        "executionMethod": "Executed web search; first-party source pages or official service metadata inspected."
+      }
+    ],
+    "requests": [],
+    "portals": [
+      {
+        "url": "https://www.dgid.sn/contact",
+        "observation": "Official DGID lists CSF Thiès, Place de France, and states a NICAD is obtained through the local Cadastre office."
+      },
+      {
+        "url": "https://www.dgid.sn/projets/presid",
+        "observation": "Official DGID states it is responsible for national land/domain/cadastre policy and reports renovation of Thiès service centre."
+      },
+      {
+        "url": "https://www.dgid.sn/wp-content/uploads/2022/11/arrete_n_10012_du_14_juin_2017_portant_organisation_de_la_dgid_zip_0.pdf",
+        "observation": "DGID organization decree assigns the Thiès CSF the Thiès region and defines a Cadastre office for cadastral matters; no map-vector resource was linked."
+      }
+    ],
+    "historicalContext": []
+  },
+  "remainingUncertainty": "Primary DGID material confirms the Thiès local cadastral/service office. No anonymous safe full polygon response or schema was found in this bounded search.",
+  "nextStep": "Root may perform independent source/adapter qualification; no runtime enablement is implied.",
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": []
+  },
+  "rootReviewedAt": "2026-10-09T06:45:08.823796+00:00",
+  "rootReview": {
+    "checkedAt": "2026-10-09T06:45:08.823796+00:00",
+    "basis": "Reviewed city-specific English/local-language attempts, local-custody basis, source routes and documented responses. Public geometry remains unverified; access failures and unknown custody do not establish absence.",
+    "primarySourceAuditFile": "research/overnight-followon-2026-10-09/unreviewed-primary-source-audit.json"
+  }
+}

@@ -1,0 +1,138 @@
+{
+  "schema": "consensus-builder.floor-plan-sources.v1",
+  "retrievedAt": "2026-10-07",
+  "buildings": [
+    {
+      "id": "C1",
+      "northInDrawing": "up",
+      "strokeGray": 0.54902,
+      "reviewedRegistration": {
+        "corners": [
+          [
+            16.017334108139796,
+            45.80005961093728
+          ],
+          [
+            16.018186992882573,
+            45.80009880407497
+          ],
+          [
+            16.01824321579562,
+            45.799504205212884
+          ],
+          [
+            16.017390327629645,
+            45.79946500865198
+          ]
+        ],
+        "basis": "Uniform scale from the published C1 basement strip to the oriented C1 footprint; the connected CG/C2 garage extends east within the same drawing.",
+        "accuracy": "approximate",
+        "northInDrawing": "up",
+        "sourceBuildingId": "103241",
+        "metresPerPdfPoint": 0.254156,
+        "maxEdgeResidualM": 0.189,
+        "note": "This residual measures outline fit, not surveyed positional accuracy. Balconies and later design changes can differ from the permit footprint.",
+        "sharedBasementBuildingIds": [
+          "source-layer:103241",
+          "source-layer:94321"
+        ]
+      },
+      "floors": [
+        {
+          "id": "C1-floor--1",
+          "level": -1,
+          "elevationM": -3,
+          "elevationBasis": "estimated",
+          "layoutId": "C1-CG-C2-basement",
+          "source": {
+            "url": "https://pionir.hr/wp-content/katalozi/lovinciceva/garaze/objekt_c2/C2-03.pdf",
+            "sha256": "27b6a84663d78c1aad684bf6c5b9d3a84b72e30f57e5ab41cfe584923eb2c5b9",
+            "page": 1,
+            "crop": [
+              212,
+              494,
+              473,
+              755
+            ],
+            "wallExtraction": "orthogonal-network",
+            "standaloneSwingArcs": true,
+            "reviewedFloorOutline": [
+              [
+                0.001916,
+                0.024904
+              ],
+              [
+                0.30728,
+                0.024904
+              ],
+              [
+                0.30728,
+                0.003831
+              ],
+              [
+                0.601533,
+                0.003831
+              ],
+              [
+                0.601533,
+                0.51341
+              ],
+              [
+                0.637931,
+                0.51341
+              ],
+              [
+                0.637931,
+                0.585057
+              ],
+              [
+                0.601533,
+                0.585057
+              ],
+              [
+                0.601533,
+                0.648276
+              ],
+              [
+                0.996169,
+                0.648276
+              ],
+              [
+                0.996169,
+                0.996169
+              ],
+              [
+                0.005747,
+                0.996169
+              ],
+              [
+                0.005747,
+                0.890805
+              ],
+              [
+                0.01341,
+                0.890805
+              ],
+              [
+                0.01341,
+                0.130268
+              ],
+              [
+                0.001916,
+                0.130268
+              ]
+            ],
+            "openingClassification": "doors-only"
+          },
+          "apartments": []
+        }
+      ],
+      "notes": [
+        "Published shared C1/CG/C2 basement, owned once by C1.",
+        "Catalogue clear parking height is about 2.80 m; the 3 m storey and 0.20 m slab are estimates.",
+        "Walls and doors come from vector outlines. Stair enclosures are drawn but treads are not provided; no stair run is invented.",
+        "Above-ground floors have no recovered whole-floor source and retain the original display volume."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,67 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-7152-yekaterinburg.json",
+  "purpose": "Document city-local registry evidence and bounded anonymous parcel-vector access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Local municipal MГИС and land-relations functions are confirmed, including city land policy, municipal property, surveying, and auction workflows. The official public zoning-map route returned 502; no public parcel-vector schema or geometry was available.",
+  "registryAssessment": "This is city-local municipal land administration, not evidence of public parcel-vector access or WUP-point coverage.",
+  "officialPrimarySources": [
+    {
+      "url": "https://xn--80afgznagjs.xn--80acgfbsl1azdqr.xn--p1ai/landuse",
+      "observation": "Official Yekaterinburg geospatial portal link to the interactive PZZ/land-use map; page returned 502 during inspection."
+    },
+    {
+      "url": "https://ugi.ru/kartograficheskie_uslugi/gis/municipal_gis/geoinformation_system_mgis/",
+      "observation": "Local GIS provider describes Yekaterinburg MГИС, developed for the city architecture department and permit-preparation center; subsystems support land auctions, land surveying, municipal property management, and ISOGD information. This is institutional evidence, not an open parcel-data endpoint."
+    },
+    {
+      "url": "https://egd.ru/about/commission/kompetentsii/16870/",
+      "observation": "Official Yekaterinburg City Duma page describes the municipal commission’s jurisdiction over city land relations."
+    },
+    {
+      "url": "https://admgor.nnov.ru/",
+      "observation": "Not used for Yekaterinburg; no national-only source used as city registry proof."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "Russian",
+      "query": "Екатеринбург муниципальная ГИС земельные участки геопортал кадастровая карта официальный",
+      "result": "Official city planning pages link to an interactive urban land-use and zoning map. The municipal MГИС description identifies land policy and municipal-property management as city functions, but it documents an internal management system rather than public parcel vectors.",
+      "method": "Separate Russian-language search, official city portal review, and local MГИС service description."
+    },
+    {
+      "language": "English",
+      "query": "Yekaterinburg official city GIS land parcels municipal registry public map",
+      "result": "The official city geospatial portal exposes planning/zoning information. Its linked land-use page returned 502 in the web reader; no public parcel layer or schema was verified.",
+      "method": "Separate English-language search and official city portal check."
+    }
+  ],
+  "serviceChecks": [
+    {
+      "url": "https://xn--80afgznagjs.xn--80acgfbsl1azdqr.xn--p1ai/landuse",
+      "method": "GET official geospatial portal link",
+      "httpStatus": 502,
+      "observation": "Gateway error while opening the public land-use/PZZ map."
+    },
+    {
+      "url": "https://ugi.ru/kartograficheskie_uslugi/gis/municipal_gis/geoinformation_system_mgis/",
+      "method": "GET official local GIS provider service description",
+      "httpStatus": null,
+      "observation": "Description confirms city MГИС administrative functions; no open feature endpoint linked."
+    }
+  ],
+  "geometryEvidence": null,
+  "qualification": null,
+  "privacy": "Requests used only declared safe identifiers and geometry. No owner, address, tax, account, or other property record values were requested.",
+  "rootDecision": "pending_root_review",
+  "runtimeAssessment": "not_enabled_no_verified_public_geometry"
+}

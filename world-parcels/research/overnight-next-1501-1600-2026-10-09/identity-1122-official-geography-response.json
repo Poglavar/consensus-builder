@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "kind": "root_identity_first_party_response_extract",
+  "cityCode": 1122,
+  "checkedAt": "2026-10-10T08:14:40.059782Z",
+  "responses": [
+    {
+      "source": "municipal-tourism",
+      "url": "https://turismo.lapaz.gob.mx/delegacion/la-paz",
+      "httpStatus": 200,
+      "responseSha256": "425e4168906a83fd032933644652ccd85d3e713052fca97a45ceb00021896a00",
+      "responseBytes": 69368,
+      "observedText": "\"descripcion\":\"La Paz, capital de Baja California Sur, es una ciudad encantadora con hermosas playas bañadas por las tranquilas y cristalinas aguas del Mar de Cortés, ideales para el descanso y la recreación, así como para la práctica de de"
+    }
+  ],
+  "scope": "Identity geography only; no parcel coverage or runtime conclusion."
+}

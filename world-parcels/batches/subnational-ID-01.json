@@ -1,0 +1,72 @@
+[
+ {
+  "iso2": "ID",
+  "country": "Indonesia",
+  "regionCode": "AC",
+  "regionName": "Aceh",
+  "hints": "BIG Satu Peta MapServer layer 10 'Hak Milik 1:5000' (ATR/BPN land-ownership parcels) has per-province sublayers; Jawa Barat (layer 21), Jawa Timur (12), DI Yogyakarta (13), Jawa Tengah (25) are verified; the earlier note said 15 provinces have sublayers and DKI Jakarta is not among them. First list the MapServer's sublayers and test the one for your province with a bounded query (coverage is patchy: use a few boxes in the capital). Then check the provincial geoportal / Simpul Jaringan (e.g. geoportal.<prov>.go.id, jakartasatu.jakarta.go.id for DKI) and BPN Bhumi (token-gated). Record 'no sublayer' vs 'sublayer but empty' vs verified."
+ },
+ {
+  "iso2": "ID",
+  "country": "Indonesia",
+  "regionCode": "SU",
+  "regionName": "Sumatera Utara",
+  "hints": "BIG Satu Peta MapServer layer 10 'Hak Milik 1:5000' (ATR/BPN land-ownership parcels) has per-province sublayers; Jawa Barat (layer 21), Jawa Timur (12), DI Yogyakarta (13), Jawa Tengah (25) are verified; the earlier note said 15 provinces have sublayers and DKI Jakarta is not among them. First list the MapServer's sublayers and test the one for your province with a bounded query (coverage is patchy: use a few boxes in the capital). Then check the provincial geoportal / Simpul Jaringan (e.g. geoportal.<prov>.go.id, jakartasatu.jakarta.go.id for DKI) and BPN Bhumi (token-gated). Record 'no sublayer' vs 'sublayer but empty' vs verified."
+ },
+ {
+  "iso2": "ID",
+  "country": "Indonesia",
+  "regionCode": "SB",
+  "regionName": "Sumatera Barat",
+  "hints": "BIG Satu Peta MapServer layer 10 'Hak Milik 1:5000' (ATR/BPN land-ownership parcels) has per-province sublayers; Jawa Barat (layer 21), Jawa Timur (12), DI Yogyakarta (13), Jawa Tengah (25) are verified; the earlier note said 15 provinces have sublayers and DKI Jakarta is not among them. First list the MapServer's sublayers and test the one for your province with a bounded query (coverage is patchy: use a few boxes in the capital). Then check the provincial geoportal / Simpul Jaringan (e.g. geoportal.<prov>.go.id, jakartasatu.jakarta.go.id for DKI) and BPN Bhumi (token-gated). Record 'no sublayer' vs 'sublayer but empty' vs verified."
+ },
+ {
+  "iso2": "ID",
+  "country": "Indonesia",
+  "regionCode": "RI",
+  "regionName": "Riau",
+  "hints": "BIG Satu Peta MapServer layer 10 'Hak Milik 1:5000' (ATR/BPN land-ownership parcels) has per-province sublayers; Jawa Barat (layer 21), Jawa Timur (12), DI Yogyakarta (13), Jawa Tengah (25) are verified; the earlier note said 15 provinces have sublayers and DKI Jakarta is not among them. First list the MapServer's sublayers and test the one for your province with a bounded query (coverage is patchy: use a few boxes in the capital). Then check the provincial geoportal / Simpul Jaringan (e.g. geoportal.<prov>.go.id, jakartasatu.jakarta.go.id for DKI) and BPN Bhumi (token-gated). Record 'no sublayer' vs 'sublayer but empty' vs verified."
+ },
+ {
+  "iso2": "ID",
+  "country": "Indonesia",
+  "regionCode": "JA",
+  "regionName": "Jambi",
+  "hints": "BIG Satu Peta MapServer layer 10 'Hak Milik 1:5000' (ATR/BPN land-ownership parcels) has per-province sublayers; Jawa Barat (layer 21), Jawa Timur (12), DI Yogyakarta (13), Jawa Tengah (25) are verified; the earlier note said 15 provinces have sublayers and DKI Jakarta is not among them. First list the MapServer's sublayers and test the one for your province with a bounded query (coverage is patchy: use a few boxes in the capital). Then check the provincial geoportal / Simpul Jaringan (e.g. geoportal.<prov>.go.id, jakartasatu.jakarta.go.id for DKI) and BPN Bhumi (token-gated). Record 'no sublayer' vs 'sublayer but empty' vs verified."
+ },
+ {
+  "iso2": "ID",
+  "country": "Indonesia",
+  "regionCode": "SS",
+  "regionName": "Sumatera Selatan",
+  "hints": "BIG Satu Peta MapServer layer 10 'Hak Milik 1:5000' (ATR/BPN land-ownership parcels) has per-province sublayers; Jawa Barat (layer 21), Jawa Timur (12), DI Yogyakarta (13), Jawa Tengah (25) are verified; the earlier note said 15 provinces have sublayers and DKI Jakarta is not among them. First list the MapServer's sublayers and test the one for your province with a bounded query (coverage is patchy: use a few boxes in the capital). Then check the provincial geoportal / Simpul Jaringan (e.g. geoportal.<prov>.go.id, jakartasatu.jakarta.go.id for DKI) and BPN Bhumi (token-gated). Record 'no sublayer' vs 'sublayer but empty' vs verified."
+ },
+ {
+  "iso2": "ID",
+  "country": "Indonesia",
+  "regionCode": "BE",
+  "regionName": "Bengkulu",
+  "hints": "BIG Satu Peta MapServer layer 10 'Hak Milik 1:5000' (ATR/BPN land-ownership parcels) has per-province sublayers; Jawa Barat (layer 21), Jawa Timur (12), DI Yogyakarta (13), Jawa Tengah (25) are verified; the earlier note said 15 provinces have sublayers and DKI Jakarta is not among them. First list the MapServer's sublayers and test the one for your province with a bounded query (coverage is patchy: use a few boxes in the capital). Then check the provincial geoportal / Simpul Jaringan (e.g. geoportal.<prov>.go.id, jakartasatu.jakarta.go.id for DKI) and BPN Bhumi (token-gated). Record 'no sublayer' vs 'sublayer but empty' vs verified."
+ },
+ {
+  "iso2": "ID",
+  "country": "Indonesia",
+  "regionCode": "LA",
+  "regionName": "Lampung",
+  "hints": "BIG Satu Peta MapServer layer 10 'Hak Milik 1:5000' (ATR/BPN land-ownership parcels) has per-province sublayers; Jawa Barat (layer 21), Jawa Timur (12), DI Yogyakarta (13), Jawa Tengah (25) are verified; the earlier note said 15 provinces have sublayers and DKI Jakarta is not among them. First list the MapServer's sublayers and test the one for your province with a bounded query (coverage is patchy: use a few boxes in the capital). Then check the provincial geoportal / Simpul Jaringan (e.g. geoportal.<prov>.go.id, jakartasatu.jakarta.go.id for DKI) and BPN Bhumi (token-gated). Record 'no sublayer' vs 'sublayer but empty' vs verified."
+ },
+ {
+  "iso2": "ID",
+  "country": "Indonesia",
+  "regionCode": "BB",
+  "regionName": "Kepulauan Bangka Belitung",
+  "hints": "BIG Satu Peta MapServer layer 10 'Hak Milik 1:5000' (ATR/BPN land-ownership parcels) has per-province sublayers; Jawa Barat (layer 21), Jawa Timur (12), DI Yogyakarta (13), Jawa Tengah (25) are verified; the earlier note said 15 provinces have sublayers and DKI Jakarta is not among them. First list the MapServer's sublayers and test the one for your province with a bounded query (coverage is patchy: use a few boxes in the capital). Then check the provincial geoportal / Simpul Jaringan (e.g. geoportal.<prov>.go.id, jakartasatu.jakarta.go.id for DKI) and BPN Bhumi (token-gated). Record 'no sublayer' vs 'sublayer but empty' vs verified."
+ },
+ {
+  "iso2": "ID",
+  "country": "Indonesia",
+  "regionCode": "KR",
+  "regionName": "Kepulauan Riau",
+  "hints": "BIG Satu Peta MapServer layer 10 'Hak Milik 1:5000' (ATR/BPN land-ownership parcels) has per-province sublayers; Jawa Barat (layer 21), Jawa Timur (12), DI Yogyakarta (13), Jawa Tengah (25) are verified; the earlier note said 15 provinces have sublayers and DKI Jakarta is not among them. First list the MapServer's sublayers and test the one for your province with a bounded query (coverage is patchy: use a few boxes in the capital). Then check the provincial geoportal / Simpul Jaringan (e.g. geoportal.<prov>.go.id, jakartasatu.jakarta.go.id for DKI) and BPN Bhumi (token-gated). Record 'no sublayer' vs 'sublayer but empty' vs verified."
+ }
+]

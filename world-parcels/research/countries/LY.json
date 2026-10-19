@@ -1,0 +1,34 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "LY",
+ "country": "Libya",
+ "checkedAt": "2026-09-29",
+ "status": "temporarily_unavailable",
+ "cadastreAuthority": "Land Registry and Survey Department / Real Estate Registration Authority",
+ "portalsFound": [],
+ "requests": [
+  {
+   "url": "https://www.lands.gov.ly/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "unreachable from this environment (connection failed/reset via proxy)"
+  },
+  {
+   "url": "https://www.lrsd.gov.ly/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "unreachable from this environment (connection failed/reset via proxy)"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "coverageAssessment": {
+  "claimedScope": "Unknown",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "unknown",
+ "remainingUncertainty": "No reachable host; likely no online cadastre but unverified.",
+ "nextStep": "Retry later; check Libyan e-gov portals."
+}

@@ -1,0 +1,36 @@
+{
+  "schema": "consensus-builder.reconstruction-plan.v1",
+  "project": "spansko-stenjevecki-odvojak",
+  "title": "Špansko – Stenjevečki odvojak – rekonstrukcija izvedenog stanja",
+  "status": "ready",
+  "reason": null,
+  "generatedAt": "2026-08-13T00:00:00.000Z",
+  "planSlug": "pionir-spansko-stenjevecki-odvojak",
+  "planTitle": "Špansko – Stenjevečki odvojak – rekonstrukcija izvedenog stanja – zgrade i prometnice",
+  "localPath": "/proposals/pionir-spansko-stenjevecki-odvojak?city=zagreb",
+  "building": {
+    "proposalId": "pionir-spansko-stenjevecki-odvojak-observed",
+    "file": "proposal.geojson"
+  },
+  "circulation": [
+    {
+      "proposalId": "pionir-spansko-stenjevecki-odvojak-observed-access-387376686",
+      "kind": "access-road",
+      "file": "circulation-access-387376686.geojson",
+      "segmentCount": 7,
+      "osmWayIds": [
+        387376686,
+        513937898,
+        529943541,
+        529943542,
+        554225652,
+        554225653,
+        678122480
+      ],
+      "parkingOsmId": null,
+      "capacity": null,
+      "lengthM": 427.80550245200897,
+      "footprintAreaM2": 1153.684643518776
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "taskId": "city:4409",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/provenance.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/city-4409-balotra.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/balotra-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T14:19:05Z",
+  "reason": "Official DILRMP Balotra district status supports cadastral custody context, but the Bhu-Naksha viewer timed out and no native-ID polygon response was obtained. The exact WUP 2025 city/rank/country/point/population and paired English/native-language searches were checked; absence was not inferred.",
+  "firstPartySourceUrl": "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/820",
+  "geometryReview": {
+    "fullPolygonsRetained": 0,
+    "safeNativeIdVerified": false
+  },
+  "qualification": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "boundedCells13": false,
+    "metricGeosAndOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  }
+}

@@ -1,0 +1,91 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-7170-baoji.json",
+  "purpose": "Review city-local registry basis and anonymous geometry-only routes without querying personal/property attributes.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "An official city cadastral-map visualization query service exists, but the public documentation points to registered-user and certificate-specific flows. No anonymous geometry-only request was made, no schema/allowlist was verified, and no polygon was retained.",
+  "registryAssessment": "The Baoji Natural Resources and Planning Bureau identifies the Baoji Real Estate Registration Center and documents city-level real-estate registration, information inquiry, and a cadastral-map visualization query service. The service is described as convenient and security-focused and is linked to a WeChat service account; its documented certificate QR/registered-user workflows are not an anonymous geometry-only contract. This confirms a local registry, not open parcel geometry.",
+  "officialPrimarySources": [
+    {
+      "url": "https://zrzy.baoji.gov.cn/zzzb/bmwj/202111/t20211101_870217.html",
+      "observation": "Baoji bureau performance self-evaluation says an online real-estate registration-information and cadastral-map visualization query service went live on September 9, 2025; it reports visit counts, but does not document a public vector API/schema."
+    },
+    {
+      "url": "https://zrzy.baoji.gov.cn/zzzb/czzj/202509/P020250928317948719400.pdf",
+      "observation": "Baoji bureau 2026 page describes the city registration center and security-focused real-property information query service; companion information says service-account registration uses identity-document recognition. No registration was attempted."
+    },
+    {
+      "url": "https://zrzy.baoji.gov.cn/col1374/col1375/",
+      "observation": "Baoji bureau registration notice describes using the “Baoji Real Estate” WeChat service account and scanning a property certificate QR code to retrieve its parcel map/floor plan; this is a certificate-specific route and was not used."
+    },
+    {
+      "url": "https://zrzy.baoji.gov.cn/col1368/col1369/202606/t20260610_1276650.html",
+      "observation": "The bureau’s forms and 2025 handling guide confirm local registration services, but do not expose a geometry-only service contract."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Baoji China official real estate registry cadastral map public parcel GIS service",
+      "result": "Found the Baoji Real Estate Registration Center and a city bureau report that the cadastral-map visualization query service launched in 2025. The documented route is tied to the registration service account and registered-user/property-certificate workflows. No anonymous full-polygon endpoint or safe feature-field schema was verified.",
+      "method": "Separate language-specific discovery followed by first-party page/document review; no identity, ownership or property-specific query submitted."
+    },
+    {
+      "language": "Chinese",
+      "query": "宝鸡 不动产登记中心 地籍图 可视化查询 地图 宗地 官方",
+      "result": "宝鸡市自然资源和规划局确认市不动产登记中心提供不动产登记信息及地籍图可视化查询；相关服务说明涉及微信服务号、注册/证件二维码等用户或证书场景。未确认匿名完整宗地边界接口或安全字段模式。",
+      "method": "Separate language-specific discovery followed by first-party page/document review; no identity, ownership or property-specific query submitted."
+    }
+  ],
+  "geometryDecision": "No full parcel geometry retained because no anonymous safe-field geometry response or schema was verified.",
+  "coverageAssessment": {
+    "claimedScope": "The Baoji Natural Resources and Planning Bureau identifies the Baoji Real Estate Registration Center and documents city-level real-estate registration, information inquiry, and a cadastral-map visualization query service. The service is described as convenient and security-focused and is linked to a WeChat service account; its documented certificate QR/registered-user workflows are not an anonymous geometry-only contract. This confirms a local registry, not open parcel geometry.",
+    "verifiedOpenScope": "An official city cadastral-map visualization query service exists, but the public documentation points to registered-user and certificate-specific flows. No anonymous geometry-only request was made, no schema/allowlist was verified, and no polygon was retained.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [
+    {
+      "url": "https://zrzy.baoji.gov.cn/zzzb/bmwj/202111/t20211101_870217.html",
+      "method": "Official public page/document review only; no login or property query.",
+      "result": "Baoji bureau performance self-evaluation says an online real-estate registration-information and cadastral-map visualization query service went live on September 9, 2025; it reports visit counts, but does not document a public vector API/schema."
+    },
+    {
+      "url": "https://zrzy.baoji.gov.cn/zzzb/czzj/202509/P020250928317948719400.pdf",
+      "method": "Official public page/document review only; no login or property query.",
+      "result": "Baoji bureau 2026 page describes the city registration center and security-focused real-property information query service; companion information says service-account registration uses identity-document recognition. No registration was attempted."
+    },
+    {
+      "url": "https://zrzy.baoji.gov.cn/col1374/col1375/",
+      "method": "Official public page/document review only; no login or property query.",
+      "result": "Baoji bureau registration notice describes using the “Baoji Real Estate” WeChat service account and scanning a property certificate QR code to retrieve its parcel map/floor plan; this is a certificate-specific route and was not used."
+    },
+    {
+      "url": "https://zrzy.baoji.gov.cn/col1368/col1369/202606/t20260610_1276650.html",
+      "method": "Official public page/document review only; no login or property query.",
+      "result": "The bureau’s forms and 2025 handling guide confirm local registration services, but do not expose a geometry-only service contract."
+    }
+  ],
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "routeInspectionStatus": "city_local_registry_verified_no_public_geometry_contract",
+    "reason": "An official city cadastral-map visualization query service exists, but the public documentation points to registered-user and certificate-specific flows. No anonymous geometry-only request was made, no schema/allowlist was verified, and no polygon was retained.",
+    "nativeIdsUsed": "No safe parcel identifier retrieved; no feature attributes requested."
+  },
+  "sampleDisposition": "No parcel geometry or feature attributes retained.",
+  "remainingUncertainty": "An official city cadastral-map visualization query service exists, but the public documentation points to registered-user and certificate-specific flows. No anonymous geometry-only request was made, no schema/allowlist was verified, and no polygon was retained."
+}

@@ -1,0 +1,78 @@
+{
+  "cityId": "queue:42",
+  "queueRank": 42,
+  "name": "Dar es Salaam",
+  "country": "United Republic of Tanzania",
+  "countryCode": "TZ",
+  "centerLatLon": [
+    -6.8335,
+    39.2241
+  ],
+  "status": "temporarily_unavailable",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://ilmis.lands.go.tz/en/ilmis-project",
+      "observation": "Ministry of Lands ILMIS (Integrated Land Management Information System, IGN FI), operational since 2018 in Dar es Salaam (Kinondoni, Ubungo first), with vectorised cadastral parcels; connection failed from this environment."
+    },
+    {
+      "url": "https://www.lands.go.tz/",
+      "observation": "Ministry of Lands site reachable (HTML); no open parcel service found."
+    },
+    {
+      "url": "https://ardhi.go.tz/",
+      "observation": "Ministry site alias; TLS verification failed (self-signed certificate in chain), so not accessed; verification was not disabled."
+    },
+    {
+      "url": "https://ramanihuria.org/",
+      "observation": "Ramani Huria community mapping project (Dar es Salaam); reachable, focuses on flood-risk/OSM mapping, not a cadastre."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://ilmis.lands.go.tz/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "connection failure"
+    },
+    {
+      "url": "https://ardhi.go.tz/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "curl (60) TLS certificate chain not trusted"
+    },
+    {
+      "url": "https://opendata.go.tz/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "connection failure"
+    },
+    {
+      "url": "https://www.lands.go.tz/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=UTF-8",
+      "assessment": "portal page only"
+    },
+    {
+      "url": "https://ilmis.lands.go.tz/arcgis/rest/services",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "guessed path; connection failure"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "ILMIS cadastral parcels for Dar es Salaam (per project descriptions)",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "Most Tanzanian government hosts failed TLS or connection from this environment, so this is an access failure and not evidence of absence. ILMIS is a land-administration system; public anonymous parcel polygon access is unconfirmed.",
+  "nextStep": "Retry ILMIS/Ministry of Lands hosts later; look for a public map viewer or documented feature service and test a bounded Dar es Salaam query.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-09-29"
+}

@@ -1,0 +1,48 @@
+{
+  "cityRecord": "city-6141-myeik.json",
+  "cityCode": 6141,
+  "queueRank": 1993,
+  "city": "Myeik",
+  "country": "Myanmar",
+  "countryCode": "MM",
+  "reviewStatus": "complete",
+  "registryFound": null,
+  "provider": "Myanmar Settlement and Land Records Department (SLRD) identified as the national official land-records custodian; no Myeik-local parcel service verified",
+  "serviceUrl": "https://slrd.gov.mm/en",
+  "scope": "National official land-records department reference and Myeik township context only. No city-level cadastral parcel service or open geometry endpoint was verified.",
+  "attemptedRoutes": [
+    {
+      "route": "https://slrd.gov.mm/en/",
+      "method": "GET",
+      "outcome": "HTTP 403 from verified-TLS curl request; page content and current JavaScript/configuration unavailable"
+    },
+    {
+      "route": "https://www.moi.gov.mm/moi:eng/content/websites-ministries",
+      "method": "GET/search-open",
+      "outcome": "Succeeded in official web search/open; lists SLRD as an official Ministry of Agriculture, Livestock and Irrigation department, but exposes no Myeik parcel service"
+    },
+    {
+      "route": "https://mdn.gov.mm/my/mnmaaniungngn-tteaangbhkcnsiu",
+      "method": "GET/search-open",
+      "outcome": "Succeeded in official Burmese web search/open; describes Myeik township extent and administration, but exposes no cadastral parcel API or geometry"
+    }
+  ],
+  "schemaAndCrs": "Unavailable: no anonymous parcel feature response or public service configuration was obtained; CRS, geometry encoding, schema, and native identity are unknown.",
+  "nativeIdentity": "Unavailable; no parcel feature response was obtained. No synthetic identity was created.",
+  "fieldMapping": {},
+  "compositeKeyProvenance": null,
+  "requestOutcome": "Separate English and Burmese first-party discovery was performed. The only direct SLRD request returned HTTP 403. No login, CAPTCHA or Cloudflare bypass, credentials, private tokens, unsafe records, owner/address/contact/titleholder/tax/account fields, or TLS-disabling exception was used. No raw source-specific attribute set was retained.",
+  "retainedSample": null,
+  "retainedProperties": null,
+  "safeFieldAllowlist": ["id", "geometry"],
+  "unsafeDataPolicy": "Do not request or retain owner, address, contact, titleholder, tax/account, legal-description, application, personal, or other unsafe property-record fields.",
+  "officialCustodyEvidence": "The official Ministry of Information ministry directory links SLRD as a Ministry of Agriculture, Livestock and Irrigation department; the official SLRD site identifies the Settlement and Land Records Department. This does not establish a Myeik-local registry or open parcel integration.",
+  "limits": [
+    "No local Myeik registry custodian or cadastral map procedure was evidenced.",
+    "No parcel geometry, native ID, schema, CRS, or bounded anonymous feature response was obtained.",
+    "No exact-point hit, map extent test, or citywide completeness conclusion is possible; unchanged WUP coordinates are not an absence finding.",
+    "No sample GeoJSON was retained because no safe native parcel response was verified.",
+    "RuntimeReadiness remains held pending independent serial qualification."
+  ],
+  "uncertainty": "A public viewer, downloadable map, Myeik-local office route, or staff-mediated service may exist but was not safely discoverable as an anonymous public endpoint during this attempt."
+}

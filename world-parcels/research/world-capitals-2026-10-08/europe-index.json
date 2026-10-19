@@ -1,0 +1,164 @@
+{
+  "purpose": "Completed regional slice of the remaining world-capital research batch.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08",
+  "status": "complete",
+  "group": "europe",
+  "cityCount": 12,
+  "cities": [
+    {
+      "cityId": "capital:AD:andorra-la-vella",
+      "name": "Andorra la Vella",
+      "countryCode": "AD",
+      "group": "europe",
+      "researchFile": "research/world-capitals-2026-10-08/city-andorra-la-vella.json",
+      "registryFound": true,
+      "verifiedSample": true,
+      "runtimeReadiness": "held_quality_review",
+      "sourceIds": [
+        "ad-andorra-la-vella-cadastre"
+      ]
+    },
+    {
+      "cityId": "capital:AT:vienna",
+      "name": "Vienna",
+      "countryCode": "AT",
+      "group": "europe",
+      "researchFile": "research/world-capitals-2026-10-08/city-vienna.json",
+      "registryFound": true,
+      "verifiedSample": true,
+      "runtimeReadiness": "enabled",
+      "sourceIds": [
+        "at-bev-kataster-vector-tiles"
+      ],
+      "appCityId": "vienna"
+    },
+    {
+      "cityId": "capital:MK:skopje",
+      "name": "Skopje",
+      "countryCode": "MK",
+      "group": "europe",
+      "researchFile": "research/world-capitals-2026-10-08/city-skopje.json",
+      "registryFound": true,
+      "verifiedSample": true,
+      "runtimeReadiness": "held_quality_review",
+      "sourceIds": [
+        "mk-skopje-old-bazaar-parcels"
+      ]
+    },
+    {
+      "cityId": "capital:MD:chisinau",
+      "name": "Chisinau",
+      "countryCode": "MD",
+      "group": "europe",
+      "researchFile": "research/world-capitals-2026-10-08/city-chisinau.json",
+      "registryFound": true,
+      "verifiedSample": true,
+      "runtimeReadiness": "held_quality_review",
+      "sourceIds": [
+        "md-geodata-cadastral-parcels"
+      ]
+    },
+    {
+      "cityId": "capital:MD:tiraspol",
+      "name": "Tiraspol",
+      "countryCode": "MD",
+      "group": "europe",
+      "researchFile": "research/world-capitals-2026-10-08/city-tiraspol.json",
+      "registryFound": null,
+      "verifiedSample": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
+    },
+    {
+      "cityId": "capital:ME:cetinje",
+      "name": "Cetinje",
+      "countryCode": "ME",
+      "group": "europe",
+      "researchFile": "research/world-capitals-2026-10-08/city-cetinje.json",
+      "registryFound": true,
+      "verifiedSample": true,
+      "runtimeReadiness": "enabled",
+      "sourceIds": [
+        "me-water-cadastral-parcels"
+      ],
+      "appCityId": "cetinje"
+    },
+    {
+      "cityId": "capital:ME:podgorica",
+      "name": "Podgorica",
+      "countryCode": "ME",
+      "group": "europe",
+      "researchFile": "research/world-capitals-2026-10-08/city-podgorica.json",
+      "registryFound": true,
+      "verifiedSample": true,
+      "runtimeReadiness": "held_quality_review",
+      "sourceIds": [
+        "me-water-cadastral-parcels"
+      ]
+    },
+    {
+      "cityId": "capital:NL:the-hague",
+      "name": "The Hague",
+      "countryCode": "NL",
+      "group": "europe",
+      "researchFile": "research/world-capitals-2026-10-08/city-the-hague.json",
+      "registryFound": true,
+      "verifiedSample": true,
+      "runtimeReadiness": "enabled",
+      "sourceIds": [
+        "nl-pdok-brk-kadastrale-kaart"
+      ],
+      "appCityId": "thehague"
+    },
+    {
+      "cityId": "capital:PT:lisbon",
+      "name": "Lisbon",
+      "countryCode": "PT",
+      "group": "europe",
+      "researchFile": "research/world-capitals-2026-10-08/city-lisbon.json",
+      "registryFound": true,
+      "verifiedSample": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
+    },
+    {
+      "cityId": "capital:RO:bucharest",
+      "name": "Bucharest",
+      "countryCode": "RO",
+      "group": "europe",
+      "researchFile": "research/world-capitals-2026-10-08/city-bucharest.json",
+      "registryFound": true,
+      "verifiedSample": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
+    },
+    {
+      "cityId": "capital:SM:san-marino",
+      "name": "San Marino",
+      "countryCode": "SM",
+      "group": "europe",
+      "researchFile": "research/world-capitals-2026-10-08/city-san-marino.json",
+      "registryFound": true,
+      "verifiedSample": true,
+      "runtimeReadiness": "enabled",
+      "sourceIds": [
+        "sm-public-cadastral-ground"
+      ],
+      "appCityId": "sanmarino"
+    },
+    {
+      "cityId": "capital:SK:bratislava",
+      "name": "Bratislava",
+      "countryCode": "SK",
+      "group": "europe",
+      "researchFile": "research/world-capitals-2026-10-08/city-bratislava.json",
+      "registryFound": true,
+      "verifiedSample": true,
+      "runtimeReadiness": "held_quality_review",
+      "sourceIds": [
+        "sk-bratislava-register-c"
+      ]
+    }
+  ]
+}

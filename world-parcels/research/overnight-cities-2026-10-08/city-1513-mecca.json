@@ -1,0 +1,128 @@
+{
+  "name": "Mecca",
+  "country": "Saudi Arabia",
+  "countryCode": "SA",
+  "rank": 289,
+  "point": [
+    21.4142734047428,
+    39.8243338685429
+  ],
+  "population2025": 1692152,
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "scopeLimits": "The WUP locator is a settlement centroid. The ministry’s citywide service description and Makkah-specific registration announcements establish local parcel mapping/registration activity but not queryable geometry at this exact point. The local explorer presented a login prompt; no login was attempted. Official public ArcGIS directories inspected for the municipality contained basemap/street/neighborhood layers, not parcel polygons. No full parcel geometry or owner/address data retained.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "Saudi Arabia’s Ministry of Municipalities and Housing describes its public U Maps urban-map service as covering Saudi cities and displaying roads, land plots and services. Makkah Municipality also operates a city geospatial explorer, and official Real Estate Registry announcements document initial parcel registration in portions of Makkah neighborhoods. None of the sources establishes that the exact WUP point is within a registered block, and no public parcel layer endpoint was exposed.",
+  "resultCategory": "official_city_parcel_services_exist_point_coverage_unverified_no_public_endpoint",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Mecca official cadastral parcel map registry GIS geospatial portal Makkah",
+        "scope": "Find actual city-specific cadastral/land-record sources and public parcel geometry.",
+        "result": "Official ministry U Maps service describes citywide urban mapping with land-plot layers. Makkah Municipality publishes a local geospatial explorer; official Real Estate Registry announcements identify initial registration in portions of Makkah. Exact point coverage and public feature endpoint remain unverified.",
+        "actualResultUrls": [
+          "https://momah.gov.sa/en/node/15098",
+          "https://momah.gov.sa/ar/e-services/alkhrayt-alhdryt",
+          "https://maps.holymakkah.gov.sa/",
+          "https://sdi.holymakkah.gov.sa/arcgis/rest/services/Basemaps/BasemapV2/MapServer",
+          "https://sdi.holymakkah.gov.sa/arcgis/rest/services/SDI/BaseMap/MapServer",
+          "https://www.spa.gov.sa/N2581845",
+          "https://www.spa.gov.sa/N2641629"
+        ],
+        "executionMethod": "Separate web search in the stated language followed by official-source and public viewer/service inspection."
+      },
+      {
+        "language": "Arabic",
+        "query": "مكة المكرمة خريطة قطع الأراضي المساحية البوابة الجيومكانية أمانة العاصمة المقدسة",
+        "scope": "Find actual city-specific cadastral/land-record sources and public parcel geometry.",
+        "result": "Official Ministry and Makkah Municipality sources describe urban-map/geospatial services. Official announcements document registered parcels in some neighborhoods, but no result binds the ranked point to a registered block or exposes public parcel geometry.",
+        "actualResultUrls": [
+          "https://momah.gov.sa/en/node/15098",
+          "https://momah.gov.sa/ar/e-services/alkhrayt-alhdryt",
+          "https://maps.holymakkah.gov.sa/",
+          "https://sdi.holymakkah.gov.sa/arcgis/rest/services/Basemaps/BasemapV2/MapServer",
+          "https://sdi.holymakkah.gov.sa/arcgis/rest/services/SDI/BaseMap/MapServer",
+          "https://www.spa.gov.sa/N2581845",
+          "https://www.spa.gov.sa/N2641629"
+        ],
+        "executionMethod": "Separate web search in the stated language followed by official-source and public viewer/service inspection."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://momah.gov.sa/en/node/15098",
+        "observation": "Official Ministry of Municipalities and Housing U Maps service page describes a free public urban-map service for Saudi cities showing roads, land plots and services; service page did not expose a queryable layer endpoint."
+      },
+      {
+        "url": "https://momah.gov.sa/ar/e-services/alkhrayt-alhdryt",
+        "observation": "Official Arabic service description for the same urban-map product."
+      },
+      {
+        "url": "https://maps.holymakkah.gov.sa/",
+        "observation": "Makkah Municipality geospatial explorer; the public app showed a login modal, and no login was submitted or service query made."
+      },
+      {
+        "url": "https://sdi.holymakkah.gov.sa/arcgis/rest/services/Basemaps/BasemapV2/MapServer",
+        "observation": "Official local map service lists roads, neighborhoods, holy mosque and municipal boundaries; no parcel layer was present in the inspected service."
+      },
+      {
+        "url": "https://sdi.holymakkah.gov.sa/arcgis/rest/services/SDI/BaseMap/MapServer",
+        "observation": "Official municipal basemap service lists landmarks, blocks, neighborhoods and road centerlines; no cadastral parcel layer was present."
+      },
+      {
+        "url": "https://www.spa.gov.sa/N2581845",
+        "observation": "Saudi Press Agency official release documents initial real-property registration in ten Makkah neighborhoods; it does not establish coverage of the ranked point."
+      },
+      {
+        "url": "https://www.spa.gov.sa/N2641629",
+        "observation": "Saudi Press Agency official release identifies registration in portions of several Makkah neighborhoods; the notice does not spatially bind the WUP point."
+      }
+    ],
+    "viewerAndServiceTrace": {
+      "viewerUrl": "https://momah.gov.sa/en/node/15098",
+      "apiBase": null,
+      "observedClientRoutes": [],
+      "notes": "The ministry landing page describes the U Maps product and links into Balady; the linked product did not yield an inspectable public service config in this run. The local Makkah explorer required login. Public municipal ArcGIS service listings inspected were basemaps and transportation/administrative layers only, not cadastral plots."
+    }
+  },
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "SA-MAKKAH-URBAN-MAPS-AND-REAL-ESTATE-REGISTRY",
+    "name": "Saudi U Maps and Makkah local geospatial / real-property registration services",
+    "url": "https://momah.gov.sa/en/node/15098",
+    "operator": "Ministry of Municipalities and Housing; Makkah Municipality and Real Estate Registry",
+    "serviceType": "Official public urban-map service describes land-plot layers across Saudi cities; local parcel registration is documented for portions of Makkah, but exact point coverage and a public parcel service endpoint were not verified.",
+    "layer": "Land plots (service description only; no layer endpoint exposed)",
+    "geometryType": "Polygon expected from land-plot layer; none observed",
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": "No parcel query or feature response was available."
+  },
+  "wupCityCode": 1513,
+  "cityId": "wup2025:1513",
+  "queueRank": 289,
+  "populationPlausibility2025": "Moderate",
+  "centerLatLon": [
+    21.4142734047428,
+    39.8243338685429
+  ],
+  "sourceIds": [],
+  "adapterReady": false,
+  "technicalBlocker": "The WUP locator is a settlement centroid. The ministry’s citywide service description and Makkah-specific registration announcements establish local parcel mapping/registration activity but not queryable geometry at this exact point. The local explorer presented a login prompt; no login was attempted. Official public ArcGIS directories inspected for the municipality contained basemap/street/neighborhood layers, not parcel polygons. No full parcel geometry or owner/address data retained.",
+  "remainingUncertainty": "Whether a different current anonymous full-polygon service exists in this city; none was verified in the inspected sources.",
+  "coverageAssessment": {
+    "verifiedOpenScope": "The WUP locator is a settlement centroid. The ministry’s citywide service description and Makkah-specific registration announcements establish local parcel mapping/registration activity but not queryable geometry at this exact point. The local explorer presented a login prompt; no login was attempted. Official public ArcGIS directories inspected for the municipality contained basemap/street/neighborhood layers, not parcel polygons. No full parcel geometry or owner/address data retained.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "rootReviewedAt": "2026-10-08T21:54:55.714575+00:00"
+}

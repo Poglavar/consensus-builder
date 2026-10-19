@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 98,
+  "city": "Kumasi",
+  "countryCode": "GH",
+  "historicalStatus": "no_verified_open_endpoint_after_attempts",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/kumasi.json",
+  "query": {
+    "language": "English",
+    "script": "Latin",
+    "text": "Kumasi Ghana cadastral parcel GIS data open land administration project official"
+  },
+  "results": [
+    {
+      "title": "Ghana Land Administration Project II geospatial component",
+      "url": "https://documents1.worldbank.org/curated/en/935281468029687254/pdf/Project0Inform1n0sent0to0infoshop1.pdf",
+      "kind": "development-project-document",
+      "note": "Describes parcel mapping/plan digitization and GIS expansion including Kumasi; historical project evidence, not current public data endpoint."
+    },
+    {
+      "title": "Ghana Lands Commission Survey and Mapping Division",
+      "url": "https://www.lc.gov.gh/about-us/organizational-structure/survey-mapping-division-smd/",
+      "kind": "official"
+    }
+  ],
+  "assessment": "Search found historical evidence of Kumasi parcel mapping under Ghana’s land-administration projects and the responsible national survey agency, but no current public vector service.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; does not change the historical registry or assert that no source exists."
+}

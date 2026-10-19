@@ -2,39 +2,33 @@ import { test, expect } from '../helpers/fixtures';
 import { waitForMapReady, getMapCenter } from '../helpers/app';
 
 test.describe('City switching @core', () => {
-  test('default city is Zagreb', async ({ mockApi: page }) => {
-    await page.goto('/');
-    await waitForMapReady(page);
+  // The fixture stores a city pointer before boot (helpers/fixtures.ts seedCity), which would make
+  // this assertion tautological; opt out so the app has to fall back to its own default. With no
+  // stored city and no ?city= that is also a first visit, so the world view owns the boot and covers
+  // the map (frontend/js/ui/world-entry.js) — the default city loads underneath it.
+  test.describe('first visit', () => {
+    test.use({ seedCity: null });
 
-    const cityId = await page.evaluate(() => {
-      const w = window as any;
-      return w.CityConfigManager?.getCurrentCityId?.() ?? '';
+    test('default city is New York, under the first-visit world view', async ({ mockApi: page }) => {
+      await page.goto('/');
+      await page.waitForFunction(() => !!(window as any).WorldEntry && !!(window as any).CityConfigManager);
+
+      const result = await page.evaluate(() => {
+        const w = window as any;
+        return {
+          cityId: w.CityConfigManager.getCurrentCityId(),
+          chosen: w.CityConfigManager.wasCityChosenAtBoot(),
+          globeOwnsBoot: w.WorldEntry.ownsBoot(),
+        };
+      });
+      expect(result.cityId).toBe('new_york');
+      expect(result.chosen).toBe(false);
+      expect(result.globeOwnsBoot).toBe(true);
     });
-    expect(cityId).toBe('zagreb');
   });
 
-  test('CityConfigManager exposes city switching API', async ({ mockApi: page }) => {
-    await page.goto('/');
-    await waitForMapReady(page);
-
-    const api = await page.evaluate(() => {
-      const w = window as any;
-      const mgr = w.CityConfigManager;
-      return {
-        hasGetCurrentCityId: typeof mgr?.getCurrentCityId === 'function',
-        hasSetCurrentCityId: typeof mgr?.setCurrentCityId === 'function',
-        hasSwitchCity: typeof mgr?.switchCity === 'function',
-        hasGetCurrentCityConfig: typeof mgr?.getCurrentCityConfig === 'function',
-        hasGetAvailableCities: typeof mgr?.getAvailableCities === 'function',
-      };
-    });
-
-    expect(api.hasGetCurrentCityId).toBe(true);
-    expect(api.hasSetCurrentCityId).toBe(true);
-    expect(api.hasSwitchCity).toBe(true);
-    expect(api.hasGetCurrentCityConfig).toBe(true);
-    expect(api.hasGetAvailableCities).toBe(true);
-  });
+  // A five-way `typeof mgr.x === 'function'` roll-call used to sit here. Every method it named is
+  // called for real by the tests below, so its only unique contribution was a browser boot.
 
   test('setCurrentCityId updates internal city and dispatches event', async ({ mockApi: page }) => {
     await page.goto('/');
@@ -49,7 +43,7 @@ test.describe('City switching @core', () => {
         eventCityId = e.detail?.cityId ?? '';
       }, { once: true });
 
-      w.CityConfigManager.setCurrentCityId('buenos_aires');
+      w.CityConfigManager.setCurrentCityId('colorado');
       return {
         newCityId: w.CityConfigManager.getCurrentCityId(),
         eventFired,
@@ -57,9 +51,9 @@ test.describe('City switching @core', () => {
       };
     });
 
-    expect(result.newCityId).toBe('buenos_aires');
+    expect(result.newCityId).toBe('colorado');
     expect(result.eventFired).toBe(true);
-    expect(result.eventCityId).toBe('buenos_aires');
+    expect(result.eventCityId).toBe('colorado');
   });
 
   test('city config contains expected properties', async ({ mockApi: page }) => {

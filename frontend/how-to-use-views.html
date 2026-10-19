@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<!-- Views and comparisons: current map workflows, video walkthroughs and proposal review.
+     Static English/Croatian guide pair: kako-koristiti-prikazi.html. -->
+<html lang="en">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>
+   Views and comparisons · Consensus Builder
+  </title>
+  <meta content="Use 2D for precise land work, 3D for volume and context, and comparisons to inspect what changes for a parcel or an owner." name="description"/>
+  <link href="images/consensus-builder-logo-2.png" rel="icon" type="image/png"/>
+  <link href="css/tokens.css?v=2" rel="stylesheet"/>
+  <link href="css/primitives.css?v=2" rel="stylesheet"/>
+  <link href="css/page-chrome.css?v=1" rel="stylesheet"/>
+  <link href="vendor/fontawesome-6.4.0/css/all.min.css" rel="stylesheet"/>
+  <link href="css/howto.css?v=20261014" rel="stylesheet"/>
+  <link rel="canonical" href="https://urbangametheory.xyz/how-to-use-views.html" />
+  <link rel="alternate" hreflang="en" href="https://urbangametheory.xyz/how-to-use-views.html" />
+  <link rel="alternate" hreflang="hr" href="https://urbangametheory.xyz/kako-koristiti-prikazi.html" />
+  <link rel="alternate" hreflang="x-default" href="https://urbangametheory.xyz/how-to-use-views.html" />
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="Consensus Builder" />
+  <meta property="og:locale" content="en_US" />
+  <meta property="og:title" content="Views and comparisons · Consensus Builder" />
+  <meta property="og:description" content="Use 2D for precise land work, 3D for volume and context, and comparisons to inspect what changes for a parcel or an owner." />
+  <meta property="og:url" content="https://urbangametheory.xyz/how-to-use-views.html" />
+  <meta property="og:image" content="https://urbangametheory.xyz/images/og-globe-20261019.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="The Consensus Builder globe showing parcel-data coverage across countries and cities." />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@UrbanGameTheory" />
+  <meta name="twitter:title" content="Views and comparisons · Consensus Builder" />
+  <meta name="twitter:description" content="Use 2D for precise land work, 3D for volume and context, and comparisons to inspect what changes for a parcel or an owner." />
+  <meta name="twitter:image" content="https://urbangametheory.xyz/images/og-globe-20261019.jpg" />
+    <meta name="twitter:image:alt" content="The Consensus Builder globe showing parcel-data coverage across countries and cities.">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"Views and comparisons","description":"Use 2D for precise land work, 3D for volume and context, and comparisons to inspect what changes for a parcel or an owner.","inLanguage":"en","url":"https://urbangametheory.xyz/how-to-use-views.html","image":"https://urbangametheory.xyz/images/og-globe-20261019.jpg","isPartOf":{"@type":"WebSite","name":"Consensus Builder","url":"https://urbangametheory.xyz/"},"publisher":{"@type":"Organization","name":"Urban Game Theory","url":"https://urbangametheory.xyz/"}}</script>
+ </head>
+ <body class="cb-page">
+  <header class="cb-page-header">
+   <span class="cb-page-header__brand">
+    <img alt="" class="cb-page-header__logo" height="28" src="images/consensus-builder-logo.png" width="28"/>
+    <span>
+     Consensus Builder
+    </span>
+   </span>
+   <div class="cb-page-header__title">
+    <h1>
+     Views and comparisons
+    </h1>
+   </div>
+   <a class="cb-link cb-back-link" href="/?lang=en">
+    <i aria-hidden="true" class="fa-solid fa-arrow-left">
+    </i>
+    Back to the map
+   </a>
+   <nav aria-label="Language" class="cb-page-header__lang cb-segmented">
+    <a class="cb-segmented__option" href="kako-koristiti-prikazi.html" hreflang="hr" lang="hr">
+     HR
+    </a>
+    <a aria-current="page" class="cb-segmented__option" href="how-to-use-views.html" hreflang="en" lang="en">
+     EN
+    </a>
+   </nav>
+  </header>
+  <nav aria-label="Guide navigation" class="sidebar">
+   <div class="sidebar-links">
+    <a class="btn btn-quiet" href="how-to-use.html">
+     <i aria-hidden="true" class="fa-solid fa-book-open">
+     </i>
+     How to use
+    </a>
+    <a class="btn btn-quiet" href="how-to-use-buildings.html">
+     <i aria-hidden="true" class="fa-solid fa-building">
+     </i>
+     Buildings
+    </a>
+    <a class="btn btn-quiet" href="how-to-use-park-square.html">
+     <i aria-hidden="true" class="fa-solid fa-tree">
+     </i>
+     Parks, squares and lakes
+    </a>
+    <a class="btn btn-quiet" href="how-to-use-reparcellization.html">
+     <i aria-hidden="true" class="fa-solid fa-vector-square">
+     </i>
+     Land readjustment
+    </a>
+    <a class="btn btn-quiet" href="how-to-use-road.html">
+     <i aria-hidden="true" class="fa-solid fa-road">
+     </i>
+     Roads and tracks
+    </a>
+    <a aria-current="page" class="btn btn-quiet" href="how-to-use-views.html">
+     <i aria-hidden="true" class="fa-solid fa-cube">
+     </i>
+     Views and comparisons
+    </a>
+   </div>
+   <div class="sidebar-section">
+    <span class="eyebrow">
+     On this page
+    </span>
+    <div class="sidebar-links">
+     <a class="btn btn-quiet" href="#three-d">
+      View modes
+     </a>
+     <a class="btn btn-quiet" href="#display">
+      Visibility and facades
+     </a>
+     <a class="btn btn-quiet" href="#xray">
+      X-ray
+     </a>
+     <a class="btn btn-quiet" href="#before-after">
+      Before / after
+     </a>
+     <a class="btn btn-quiet" href="#alternatives">
+      Two proposals
+     </a>
+     <a class="btn btn-quiet" href="#gain">
+      Value estimates
+     </a>
+     <a class="btn btn-quiet" href="#realistic">
+      Realistic and walk
+     </a>
+    </div>
+   </div>
+  </nav>
+  <main class="main-content">
+   <div class="container">
+    <div class="intro">
+     <span class="eyebrow">
+      Learn by doing
+     </span>
+     <h2>
+      See the change from every angle
+     </h2>
+     <p>
+      Use 2D for precise land work, 3D for volume and context, and comparisons to inspect what changes for a parcel or an owner.
+     </p>
+    </div>
+    <section class="guide-section" id="three-d">
+     <h2>
+      Switch views
+     </h2>
+     <div class="table-scroll">
+      <table class="tool-table">
+       <thead>
+        <tr>
+         <th scope="col">
+          View
+         </th>
+         <th scope="col">
+          Use it for
+         </th>
+        </tr>
+       </thead>
+       <tbody>
+        <tr>
+         <td>
+          2D
+         </td>
+         <td>
+          Selection, drawing, boundaries and land ownership.
+         </td>
+        </tr>
+        <tr>
+         <td>
+          3D
+         </td>
+         <td>
+          Building volumes, road profiles and public-space furniture.
+         </td>
+        </tr>
+        <tr>
+         <td>
+          Realistic 3D
+         </td>
+         <td>
+          The proposal inside photorealistic city context where coverage is available.
+         </td>
+        </tr>
+        <tr>
+         <td>
+          Walk
+         </td>
+         <td>
+          Eye-level inspection in cities that support walk mode.
+         </td>
+        </tr>
+       </tbody>
+      </table>
+     </div>
+     <p>
+      Use the mode strip at the left of the map. The 3D demonstration at the end of the house video shows the same footprint and surroundings as the 2D map. Right-drag, drag with Ctrl / Cmd, or use two fingers to rotate the abstract 3D view; the wheel zooms.
+     </p>
+     <figure class="howto-video" id="watch-house">
+      <div class="video-heading">
+       <span class="eyebrow">
+        Watch the workflow
+       </span>
+       <span class="video-duration">
+        0:34
+       </span>
+      </div>
+      <video aria-describedby="caption-house" aria-label="Design a house" controls="" height="960" playsinline="" poster="videos/howto/consensus-builder-01-house-review.jpg" preload="none" width="1440">
+       <source src="videos/howto/consensus-builder-01-house-review.mp4" type="video/mp4"/>
+       <a href="videos/howto/consensus-builder-01-house-review.mp4">
+        Open the video
+       </a>
+       .
+      </video>
+      <figcaption id="caption-house">
+       <strong>
+        Design a house.
+       </strong>
+       Reshape the footprint, set its height and choose the surroundings.
+       <a class="cb-link" href="videos/howto/consensus-builder-01-house-review.mp4">
+        Open the video
+       </a>
+      </figcaption>
+     </figure>
+    </section>
+    <section class="guide-section" id="display">
+     <h2>
+      Control what is visible
+     </h2>
+     <p>
+      <span class="ui-label">
+       Built
+      </span>
+      controls existing buildings;
+      <span class="ui-label">
+       Planned
+      </span>
+      controls proposed buildings, grounds and decorations. Solid and Transparent change opacity; Off hides a group. For Built,
+      <span class="ui-label">
+       Surviving
+      </span>
+      shows what remains after the plan, while
+      <span class="ui-label">
+       Removed
+      </span>
+      shows only demolished buildings or building portions.
+     </p>
+     <p>
+      <span class="ui-label">
+       Hide real buildings under proposals
+      </span>
+      clears overlapping context.
+      <span class="ui-label">
+       Radius
+      </span>
+      controls the surrounding area loaded,
+      <span class="ui-label">
+       Show all parcels
+      </span>
+      adds boundaries, and
+      <span class="ui-label">
+       Trees
+      </span>
+      and
+      <span class="ui-label">
+       Water
+      </span>
+      control those elements.
+      <span class="ui-label">
+       Facades
+      </span>
+      and facade style add illustrative windows and materials to proposed buildings.
+     </p>
+    </section>
+    <section class="guide-section" id="xray">
+     <h2>
+      X-ray floor plans
+     </h2>
+     <p>
+      <span class="ui-label">
+       X-ray
+      </span>
+      displays available modelled floors, walls, doors and windows.
+      <span class="ui-label">
+       Cut above
+      </span>
+      selects the highest floor left visible. Floor-plan availability varies by building; the controls report when no plans are available. Heights, opening types and alignment may be inferred or approximate.
+     </p>
+    </section>
+    <section class="guide-section" id="before-after">
+     <h2>
+      Before / after
+     </h2>
+     <p>
+      Choose
+      <span class="ui-label">
+       Before / after
+      </span>
+      in proposal details, the geometry editor or owner review. Drag the divider to expose the original and proposed state on the same map. It compares a change with its starting point; it does not choose between two separate proposals.
+     </p>
+     <p>
+      <a class="cb-link" href="how-to-use-reparcellization.html#watch-manual">
+       Watch a before / after boundary review →
+      </a>
+     </p>
+    </section>
+    <section class="guide-section" id="alternatives">
+     <h2>
+      Compare two proposals
+     </h2>
+     <p>
+      On a parcel touched by at least two proposals, choose
+      <span class="ui-label">
+       Compare proposals here
+      </span>
+      from its menu, or tick two entries in the parcel’s
+      <span class="ui-label">
+       Proposals
+      </span>
+      tab and click
+      <span class="ui-label">
+       Compare
+      </span>
+      . Choose the proposal on each side to inspect its land take, buildings, resulting plots, ownership, offer and consent. Support rows also show donations, pledges and markets when present.
+     </p>
+    </section>
+    <section class="guide-section" id="gain">
+     <h2>
+      Read the value estimates
+     </h2>
+     <p>
+      The parcel panel compares built and proposed volume and floor area. Adjust Price per m² to inspect Current value and Proposal gain under your chosen assumption. Proposal info also shows totals and an average per parcel. These are scenario estimates, so inspect each parcel rather than treating the average as a distribution among owners.
+     </p>
+    </section>
+    <section class="guide-section" id="realistic">
+     <h2>
+      Realistic context
+     </h2>
+     <p>
+      Photorealistic coverage depends on the location and whether the tiles load successfully. The app reports unavailable coverage or a load failure. Walk mode is available only where configured; choose a ground position when prompted. Return to 2D for precise parcel selection and editing.
+     </p>
+    </section>
+    <section class="guide-section" id="walk">
+     <p>
+      Walk mode is available only in cities where it is configured. Choose a starting position on the ground when prompted. Inspect the proposal at eye level, then return to 2D for precise parcel selection and editing.
+     </p>
+     <h2>
+      Walk mode
+     </h2>
+     <p>
+      <a class="cb-link" href="how-to-use.html">
+       Return to the workflow and sharing instructions →
+      </a>
+     </p>
+    </section>
+    <footer class="guide-footer">
+     <a class="cb-link" href="how-to-use.html">
+      All instructions
+     </a>
+     ·
+     <a class="cb-link" href="index.html?lang=en">
+      Try it on the map
+     </a>
+     ·
+     <a class="cb-link" href="roadmap.html">
+      Roadmap
+     </a>
+    </footer>
+   </div>
+  </main>
+ </body>
+</html>

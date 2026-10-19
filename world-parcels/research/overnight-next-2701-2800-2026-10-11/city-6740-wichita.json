@@ -1,0 +1,60 @@
+{
+  "purpose": "City-specific discovery of official cadastral parcel sources for Wichita, United States of America; claims are limited to observed first-party evidence.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-11",
+  "cityCode": 6740,
+  "queueRank": 2760,
+  "name": "Wichita",
+  "country": "United States of America",
+  "countryCode": "US",
+  "iso3": "USA",
+  "point": [37.6798820217102, -97.3183527057913],
+  "population2025": 214445,
+  "population2025k": 214.445,
+  "populationUnit": "persons",
+  "aliases": ["wichita"],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Wichita Kansas official parcel map GIS Sedgwick County parcel viewer",
+        "result": "First-party Sedgwick County GIS and City of Wichita pages identify the public Mobile Land Records/property parcel map, Open Data GIS materials, and the Wichita ArcGIS REST Property_and_Location service. The service advertises a Parcels layer.",
+        "actualResultUrls": ["https://www.sedgwickcounty.org/gis/", "https://www.sedgwickcounty.org/gis/data-layers/", "https://www.wichita.gov/553/Map-Search---GIS", "https://gismaps.wichita.gov/ageweb/rest/services/COWGIS/Property_and_Location/MapServer"]
+      },
+      {
+        "language": "English (US local-language attempt)",
+        "query": "Wichita Kansas official GIS parcel data ArcGIS REST Sedgwick County",
+        "result": "The same first-party local custodians and ArcGIS REST service were located. The layer metadata was accessible through the official REST endpoint; the bounded anonymous query from this host timed out before a feature response.",
+        "actualResultUrls": ["https://www.sedgwickcounty.org/gis/about/", "https://gismaps.wichita.gov/ageweb/rest/services/COWGIS/Property_and_Location/MapServer/4?f=pjson", "https://gismaps.sedgwickcounty.org/arcgis/rest/services/Map/Op_Parcel_Dynamic_SP/MapServer"]
+      }
+    ]
+  },
+  "officialSources": [
+    {"url": "https://www.sedgwickcounty.org/gis/", "observation": "Sedgwick County GIS states it is the primary GIS provider for the Wichita/Sedgwick County region and links public mapping/data services."},
+    {"url": "https://www.sedgwickcounty.org/gis/data-layers/", "observation": "Official local GIS data-layer page lists Property Data including Property Parcels and Lots."},
+    {"url": "https://www.wichita.gov/553/Map-Search---GIS", "observation": "Official City of Wichita page directs users to City and Sedgwick County public GIS viewers for property-related map layers."},
+    {"url": "https://gismaps.wichita.gov/ageweb/rest/services/COWGIS/Property_and_Location/MapServer/4?f=pjson", "observation": "Official City GIS ArcGIS REST layer metadata identifies Parcels, polygon geometry, EPSG/Web Mercator 3857 output reference, and anonymous query support."}
+  ],
+  "requests": [
+    {"url": "https://gismaps.wichita.gov/ageweb/rest/services/COWGIS/Property_and_Location/MapServer/4?f=pjson", "method": "GET", "outcome": "Succeeded via public REST metadata response. Layer name Parcels; geometryType esriGeometryPolygon; source WKID 102678/latest 3420; service/output spatial reference WKID 102100/latest 3857; maxRecordCount 2000; supported query formats JSON, geoJSON, PBF. Inspected fields included OBJECTID, PIN, GEOCODE, AIN, GlobalID and many additional fields; unsafe fields were not requested in the feature query."},
+    {"url": "https://gismaps.wichita.gov/ageweb/rest/services/COWGIS/Property_and_Location/MapServer/4/query", "method": "GET with where=1=1, point geometry=-97.3183527057913,37.6798820217102, geometryType=esriGeometryPoint, inSR=4326, spatialRel=esriSpatialRelIntersects, outFields=OBJECTID,PIN,GEOCODE,AIN,GlobalID, returnGeometry=true, outSR=4326, f=geojson", "outcome": "Timed out at 10 seconds from this host with no HTTP response. No exact-point hit or miss was inferred, and no geometry was retained."},
+    {"url": "https://gismaps.sedgwickcounty.org/arcgis/rest/services/Map/Op_Parcel_Dynamic_SP/MapServer", "method": "GET REST endpoint discovery", "outcome": "Attempted as an alternate official county GIS route; this environment did not return an accessible response. No absence inference was made."}
+  ],
+  "registryFound": true,
+  "registryBasis": "A local municipal/county public GIS parcel service is evidenced: City of Wichita GIS publishes the viewer route and Sedgwick County GIS identifies itself as the regional GIS provider. This is local GIS/cadastre-map evidence, not merely national agency prose.",
+  "verifiedSample": false,
+  "sampleFile": null,
+  "sampleFiles": [],
+  "publicParcelGeometryFound": false,
+  "source": {"serviceUrl": "https://gismaps.wichita.gov/ageweb/rest/services/COWGIS/Property_and_Location/MapServer/4", "layer": "Parcels", "geometry": "esriGeometryPolygon", "crs": "EPSG:3857 service/output; source WKID 102678/latest 3420"},
+  "sourceIds": [],
+  "nativeSchema": {"nativeIdentityCandidates": ["PIN", "GEOCODE", "AIN", "GlobalID", "OBJECTID"], "stableIdentityStatus": "Not qualified because no feature response was obtained", "inspectedFields": ["OBJECTID", "PIN", "GEOCODE", "AIN", "GlobalID", "Shape"], "safeAllowlist": ["stable native parcel ID when independently verified", "geometry", "geometry CRS", "source layer name", "bounded query metadata"], "retainedPropertiesPolicy": "No GeoJSON retained; if a future bounded response is retained, use exactly one independently verified canonical native identity as properties.id and omit raw source attributes."},
+  "resultCategory": "local_public_parcel_service_schema_verified_geometry_response_unavailable",
+  "coverageAssessment": {"claimedScope": "Sedgwick County GIS public parcel service covering the Wichita/Sedgwick County region.", "verifiedOpenScope": "Official parcel layer metadata and polygon schema verified; no bounded feature geometry was returned in this attempt.", "countrywideVerified": false, "citywideCompleteness": false},
+  "runtimeReadiness": "held_pending_serial_reviewer_qualification",
+  "status": "complete",
+  "researchGroup": "united-states",
+  "remainingUncertainty": "The official local parcel layer is evidenced and likely usable, but the exact-point request timed out and no safe ID-plus-geometry response was independently inspected. A timeout is not evidence of citywide absence. No credentials, private tokens, unsafe fields, CAPTCHA/Cloudflare bypass, or TLS verification disablement was used; the WUP point was preserved exactly.",
+  "unsafeFieldsNotRequested": ["owner", "owner mailing address", "property address", "contact", "titleholder", "personal identity", "tax/account values"]
+}

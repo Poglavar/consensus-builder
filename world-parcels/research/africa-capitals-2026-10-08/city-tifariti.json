@@ -1,0 +1,102 @@
+{
+  "purpose": "Audit city-scoped land/cadastre evidence separately from accessible public parcel geometry; record only executed searches and actual page/request outcomes.",
+  "schemaVersion": 1,
+  "kind": "africa_capital_city_parcel_research",
+  "checkedAt": "2026-10-08T15:16:12Z",
+  "date": "2026-10-08",
+  "slug": "tifariti",
+  "cityId": "capital:EH:tifariti",
+  "name": "Tifariti",
+  "country": "Western Sahara",
+  "code": "EH",
+  "centerLatLon": [
+    26.1594,
+    -10.5674
+  ],
+  "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary.",
+  "jurisdiction": "Queue labels Tifariti a reported provisional SADR seat in Western Sahara. Territorial/jurisdictional mapping is contested; no city cadastre authority or local registry was confirmed in this bounded search.",
+  "registryFound": null,
+  "registryEvidenceUrls": [],
+  "registryBasis": "No registry evidence specific to Tifariti was confirmed. The roster's political-seat description is scope metadata, not cadastral evidence. Search results contained general location records and historical maps only; they do not establish a land registry.",
+  "publicParcelGeometryFound": false,
+  "resultCategory": "no_city_parcel_source_identified_limited_search",
+  "findings": "No city-targeted public parcel registry or geometry source was identified in bounded English, Arabic, French and Spanish searches. This is a narrow negative about the sources searched, not a claim that no local land administration or records exist. No registry address, national cadastre, or nearby country's office is being substituted for city-level cadastre evidence.",
+  "englishQueries": [
+    "Tifariti Western Sahara registry cadastre municipal parcels GIS"
+  ],
+  "localLanguageQueries": [
+    "Tifariti Sahrawi cadastral map parcels registry دائرة الأراضي تيفاريتي مخطط عقاري",
+    "Tifariti cartografía parcelas registro de tierras Sahara Occidental SADR",
+    "Tifariti Sahara Occidental cadastro parcelas mapa cartografia registro de tierras"
+  ],
+  "searches": [
+    {
+      "query": "Tifariti Western Sahara registry cadastre municipal parcels GIS",
+      "language": "English",
+      "method": "web.run search_query",
+      "retrieval": "search-result discovery only; no HTTP status implied"
+    },
+    {
+      "query": "Tifariti Sahrawi cadastral map parcels registry دائرة الأراضي تيفاريتي مخطط عقاري",
+      "language": "Arabic and Spanish",
+      "method": "web.run search_query",
+      "retrieval": "search-result discovery only; no HTTP status implied"
+    },
+    {
+      "query": "Tifariti cartografía parcelas registro de tierras Sahara Occidental SADR",
+      "language": "Arabic and Spanish",
+      "method": "web.run search_query",
+      "retrieval": "search-result discovery only; no HTTP status implied"
+    },
+    {
+      "query": "Tifariti Sahara Occidental cadastro parcelas mapa cartografia registro de tierras",
+      "language": "Arabic and Spanish",
+      "method": "web.run search_query",
+      "retrieval": "search-result discovery only; no HTTP status implied"
+    }
+  ],
+  "requests": [],
+  "verifiedSample": false,
+  "technicalBlocker": "No plausible official local parcel endpoint surfaced in the bounded search; jurisdictional registry authority remains unconfirmed.",
+  "nextStep": "Ask SADR/de facto municipal or land authorities for city-level cadastre evidence if this supplementary seat is retained; do not infer absence from search failure.",
+  "coverageAssessment": {
+    "claimedScope": "Tifariti as a separately tracked reported provisional SADR seat",
+    "verifiedOpenScope": "No registry jurisdiction or parcel geometry verified",
+    "wholeCityCoverageVerified": false
+  },
+  "localLanguage": "Arabic and Spanish",
+  "localLanguageQueryNote": null,
+  "queryExecutionNote": "Every string in englishQueries/localLanguageQueries is an exact web.run search_query that was executed. Search outputs are discovery snippets, not direct server/API responses.",
+  "portalInspections": [],
+  "sourceEvidenceProvenance": "Search outputs are discovery-only snippets. Direct page content, redirects, and tool errors are recorded in portalInspections with HTTP status null unless a genuine request status is explicitly shown in requests. Evidence URLs not otherwise listed remain discovery references; no server status is inferred.",
+  "countryCode": "EH",
+  "status": "complete",
+  "researchStatus": "complete",
+  "capitalRole": "supplement: reported provisional SADR seat",
+  "scopeTier": "supplementary_disputed_or_de_facto",
+  "executedQueries": [
+    {
+      "query": "Tifariti Western Sahara registry cadastre municipal parcels GIS",
+      "language": "English",
+      "method": "web.run search_query"
+    },
+    {
+      "query": "Tifariti Sahrawi cadastral map parcels registry دائرة الأراضي تيفاريتي مخطط عقاري",
+      "language": "Arabic and Spanish",
+      "method": "web.run search_query"
+    },
+    {
+      "query": "Tifariti cartografía parcelas registro de tierras Sahara Occidental SADR",
+      "language": "Arabic and Spanish",
+      "method": "web.run search_query"
+    },
+    {
+      "query": "Tifariti Sahara Occidental cadastro parcelas mapa cartografia registro de tierras",
+      "language": "Arabic and Spanish",
+      "method": "web.run search_query"
+    }
+  ],
+  "sourceIds": [],
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "parcelStatus": "no_verified_open_endpoint_after_attempts"
+}

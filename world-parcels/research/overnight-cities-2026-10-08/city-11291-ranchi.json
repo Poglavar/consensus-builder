@@ -1,0 +1,125 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "name": "Ranchi",
+  "country": "India",
+  "countryCode": "IN",
+  "rank": 274,
+  "point": [
+    23.3684663759766,
+    85.3229434254194
+  ],
+  "population2025k": 1819.944,
+  "queueRank": 274,
+  "population2025": 1819944,
+  "populationPlausibility2025": "High",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "wupCityCode": 11291,
+  "cityId": "wup2025:11291",
+  "centerLatLon": [
+    23.3684663759766,
+    85.3229434254194
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Hindi",
+        "query": "रांची भू नक्शा खतियान कैडस्ट्रल प्लॉट नक्शा आधिकारिक झारखंड",
+        "scope": "Find official Ranchi plot-map and land-record services.",
+        "result": "Ranchi District Administration links the Jharkhand Jharbhoomi land-record portal. The Government of India service directory describes JharBhuNaksha as a Jharkhand government service for viewing land details and downloading digitized plot maps. Jharkhand State GIS also lists a Ranchi Smart Map, but its listing is general urban GIS, not evidence of cadastral property layers. The BhuNaksha portal open timed out in the fetcher; no parcel identifiers or geometry were retrieved.",
+        "actualResultUrls": [
+          "https://ranchi.nic.in/service/land-records/",
+          "https://jharbhunaksha.jharkhand.gov.in/",
+          "https://services.india.gov.in/service/detail/jharbhunaksha-is-an-digitized-maps-of-the-plots-to-the-citizens-jharkhand-1",
+          "https://gis.jharkhand.gov.in/"
+        ],
+        "executionMethod": "Hindi-language search and review of Ranchi district and government service pages; attempted BhuNaksha page open."
+      },
+      {
+        "language": "English",
+        "query": "Ranchi official cadastral map land records Jharkhand BhuNaksha GIS parcel map",
+        "scope": "Verify city/district linkage and distinguish urban planning layers from cadastral maps.",
+        "result": "The Ranchi district page directly links land records to Jharbhoomi. The official government service catalog says the Jharkhand JharBhuNaksha provides digitized plot maps and details, while the state GIS directory separately lists Ranchi Smart Map. The official BhuNaksha endpoint returned a web-fetch timeout before an HTTP response; the Ranchi point’s exact town/ward/sheet and any complete polygon remain unresolved.",
+        "actualResultUrls": [
+          "https://ranchi.nic.in/service/land-records/",
+          "https://services.india.gov.in/service/detail/jharbhunaksha-is-an-digitized-maps-of-the-plots-to-the-citizens-jharkhand-1",
+          "https://gis.jharkhand.gov.in/"
+        ],
+        "executionMethod": "English-language search plus official Ranchi district and Government of India/Jharkhand service links; direct map page fetch timed out."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Jharkhand JharBhuNaksha plot-map service",
+        "operator": "Government of Jharkhand; DILRMP-Jharkhand",
+        "homeUrl": "https://jharbhunaksha.jharkhand.gov.in/",
+        "observation": "Government of India service listing describes digitized plot maps and land details, and Ranchi district land-records page links the state land-record system. No geometry response was obtained in this review."
+      },
+      {
+        "name": "Jharkhand State GIS / Ranchi Smart Map listing",
+        "operator": "Jharkhand Space Applications Center, Government of Jharkhand",
+        "homeUrl": "https://gis.jharkhand.gov.in/",
+        "observation": "Official GIS directory lists an interactive Ranchi Smart Map, but no cadastral layer was confirmed; do not count it as parcel geometry."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://ranchi.nic.in/service/land-records/",
+        "method": "GET",
+        "observation": "Official Ranchi district page content returned in search results, links to Jharbhoomi and locates the revenue office in Ranchi."
+      },
+      {
+        "url": "https://jharbhunaksha.jharkhand.gov.in/",
+        "method": "GET",
+        "observation": "Direct web page-open returned a fetch timeout before HTTP response; no provider outage is inferred and no plot was submitted."
+      },
+      {
+        "url": "https://gis.jharkhand.gov.in/",
+        "method": "GET",
+        "observation": "Official Jharkhand GIS portal returned directory content in search results; Ranchi Smart Map is listed, but parcel/cadastre layers were not verified."
+      },
+      {
+        "name": "ranchi",
+        "url": "https://jharbhunaksha.jharkhand.gov.in/",
+        "checkedAt": "2026-10-08T21:46:49.020Z",
+        "method": "GET",
+        "error": "fetch failed",
+        "cause": "UND_ERR_CONNECT_TIMEOUT",
+        "observation": "Fresh ordinary direct Node HTTPS attempt independently confirms this local access path failure; it does not establish publisher downtime. No credentials, alternate TLS settings or gated query were attempted."
+      }
+    ],
+    "historicalContext": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "IN-JH-JHAR-BHUNAKSHA",
+    "name": "JharBhuNaksha Jharkhand plot map service",
+    "url": "https://jharbhunaksha.jharkhand.gov.in/",
+    "operator": "Government of Jharkhand, under DILRMP; linked by Ranchi District Administration",
+    "serviceType": "Digitized plot-map and land-detail service; live geometry route not exercised.",
+    "layer": null,
+    "geometryType": "Cadastral plot map service is described by government service catalog; no full vector geometry response observed.",
+    "outputCrs": null,
+    "nativeIdField": "Plot / survey identifiers are expected by the plot-map service; exact selector not inspected.",
+    "nativeIdEvidence": "Government of India public service listing describes plot maps and land details; no live plot query was made."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Jharkhand citizen plot-map service; Ranchi District Administration links land-record services, but exact municipal coverage is not documented in the inspected responses.",
+    "verifiedOpenScope": "City/district service path is verified from official pages; no point-level Ranchi map sheet, parcel, or full geometry is verified.",
+    "countrywideVerified": false
+  },
+  "registryFound": true,
+  "registryBasis": "Ranchi District Administration links land records and the Government of India service directory identifies Jharkhand JharBhuNaksha as a citizen service for digitized plot maps. This confirms the government plot-map service, not the exact WUP-point coverage or open vector output.",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "resultCategory": "official_registry_geometry_not_verified",
+  "technicalBlocker": "The inspected official source has no verified public full-polygon response; direct anonymous access from this environment failed with UND_ERR_CONNECT_TIMEOUT.",
+  "remainingUncertainty": "Whether urban Ranchi town-survey plots at the WUP point appear in Jharkhand BhuNaksha; required district/circle/halka/mouza/sheet selectors; whether outputs are raster map documents or full vectors.",
+  "nextStep": "Open JharBhuNaksha from Ranchi District Administration’s live land-records link, resolve the administrative map sheet covering the WUP centroid, and inspect any returned geometry format.",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "rootReviewedAt": "2026-10-08T21:48:56.829799+00:00"
+}
