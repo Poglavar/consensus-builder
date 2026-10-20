@@ -9,6 +9,29 @@ import { setupParcelSourcesRoute } from '../routes/parcel-sources.js';
 import { computeBinding } from '../proposals/binding.js';
 
 afterEach(() => { clearParcelSourceRuntimeCache(); vi.unstubAllGlobals(); });
+
+it('returns numeric declared/received counts through the gateway when Spanish GML is incomplete', async () => {
+    const sample = cases.find(item => item.city === 'madrid');
+    const { descriptor } = parcelSourceForCity(sample.city, sample.source);
+    const f = await fixture(sample, descriptor);
+    const incomplete = new TextDecoder().decode(f.bytes).replace('numberReturned="1"', 'numberReturned="2"');
+    const fetchImpl = vi.fn(async () => new Response(incomplete));
+    const app = express();
+    app.use(express.json());
+    setupParcelSourcesRoute(app, { sources: [descriptor], fetchImpl });
+    const logged = vi.spyOn(console, 'error').mockImplementation(() => {});
+    try {
+        const result = await request(app).get('/parcel-sources/' + sample.source).query({ bbox: f.bounds.join(',') });
+        expect(result.status).toBe(502);
+        expect(result.body).toMatchObject({
+            sourceId: sample.source, code: 'parcel-source-unavailable',
+            parcelCounts: { matched: 1, returned: 2, received: 1 }
+        });
+        expect(result.body.error).toMatch(/matched=1.*returned=2.*received=1/);
+        expect(JSON.stringify(result.body)).not.toContain('CadastralParcel');
+        expect(logged.mock.calls.flat().join(' ')).toMatch(/es-dgc-inspire-cp-wfs.*matched=1.*returned=2.*received=1/);
+    } finally { logged.mockRestore(); }
+});
 const cases = [
     { city: 'london', source: 'gb-hmlr-city-of-london', metric: 32630, crs: 27700, origin: [531000, 180500], native: '123', prefix: 'GB-HMLR-LONDON-' },
     { city: 'manchester', source: 'gb-hmlr-manchester', metric: 32630, crs: 27700, origin: [384000, 398000], native: '456', prefix: 'GB-HMLR-MANCHESTER-' },

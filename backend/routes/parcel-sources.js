@@ -17,7 +17,8 @@ export function setupParcelSourcesRoute(app, { sources = catalog.sources, fetchI
         res.set('Cache-Control', 'no-store');
         if (error.retryAfterSeconds !== undefined) res.set('Retry-After', String(Math.ceil(error.retryAfterSeconds)));
         return res.status(status).json({ error: error.message, code: error.code,
-            sourceId, upstreamStatus: error.upstreamStatus, retryAfterSeconds: error.retryAfterSeconds, attempts: error.attempts });
+            sourceId, upstreamStatus: error.upstreamStatus, retryAfterSeconds: error.retryAfterSeconds, attempts: error.attempts,
+            parcelCounts: error.parcelCounts });
     };
     app.post('/parcel-sources/discover', rateLimit({ windowMs: 60000, limit: 6, standardHeaders: true, legacyHeaders: false,
         message: { error: 'Please wait before checking another source.', code: 'parcel-source-rate-limited', retryAfterSeconds: 60 } }), async (req, res) => {

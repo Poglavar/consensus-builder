@@ -76,7 +76,7 @@ describe('candidate binding preflight', () => {
 
     it('propagates binding transport errors and stops scanning instead of accepting candidates', async () => {
         const ranked = [candidate('a'), candidate('b')];
-        const checker = vi.fn(async () => { throw new Error('database connection reset'); });
+        const checker = vi.fn(async () => { throw Object.assign(new Error('database connection reset'), { code: 'ECONNRESET' }); });
         await expect(preflightCandidates({
             ...context, rankedCandidates: ranked, limit: 1, scanLimit: 2, checkBinding: checker
         })).rejects.toThrow('database connection reset');
@@ -162,5 +162,44 @@ describe('candidate binding preflight', () => {
             checkBinding: async () => failure
         });
         expect(result).toBe(failure);
+    });
+
+    it('retries only the identical local binding read after a provider timeout', async () => {
+        const selected = candidate('GB-HMLR-LONDON-123', { parcelSourceId: 'gb-hmlr-city-of-london' });
+        const checker = vi.fn()
+            .mockRejectedValueOnce(Object.assign(new Error('Parcel provider timed out.'), { status: 504, code: 'parcel-source-unavailable' }))
+            .mockResolvedValueOnce({ ok: true, binding: { coverage: 'complete' } });
+        const logged = [];
+        const result = await checkCandidateBinding({
+            ...context, candidate: selected, checkBinding: checker,
+            retryOptions: { retryDelaysMs: [0, 0] }, log: value => logged.push(value)
+        });
+        expect(result.ok).toBe(true);
+        expect(checker).toHaveBeenCalledTimes(2);
+        expect(checker.mock.calls[0]).toEqual(checker.mock.calls[1]);
+        expect(checker.mock.calls[0][1]).toBe(checker.mock.calls[1][1]);
+        expect(checker.mock.calls[1][2]).toEqual([selected.parcelId]);
+        expect(logged.join('\n')).toMatch(/gb-hmlr-city-of-london.*attempt 1\/3/);
+    });
+
+    it('stops candidate scanning after a persistently incomplete provider read', async () => {
+        const counts = { matched: 190, returned: 190, received: 189 };
+        const checker = vi.fn(async () => { throw Object.assign(new Error('matched=190 returned=190 received=189'), {
+            status: 502, code: 'parcel-source-unavailable', parcelCounts: counts
+        }); });
+        await expect(preflightCandidates({
+            ...context, rankedCandidates: [candidate('a'), candidate('b')], limit: 1, checkBinding: checker,
+            retryOptions: { retryDelaysMs: [0, 0] }
+        })).rejects.toMatchObject({ attempts: 3, parcelCounts: counts, message: expect.stringMatching(/received=189/) });
+        expect(checker).toHaveBeenCalledTimes(3);
+        expect(checker.mock.calls.every(call => call[2][0] === 'a')).toBe(true);
+    });
+
+    it.each(['parcel-source-blocked', 'parcel-source-rate-limited'])('does not retry local %s errors', async code => {
+        const checker = vi.fn(async () => { throw Object.assign(new Error('provider refused'), { status: 502, code }); });
+        await expect(checkCandidateBinding({
+            ...context, candidate: candidate('a'), checkBinding: checker, retryOptions: { retryDelaysMs: [0, 0] }
+        })).rejects.toMatchObject({ code, attempts: 1 });
+        expect(checker).toHaveBeenCalledOnce();
     });
 });

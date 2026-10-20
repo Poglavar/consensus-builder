@@ -10,13 +10,13 @@ const backendRoot = path.join(repoRoot, 'backend');
 const solanaConfig = path.join(os.homedir(), '.config', 'solana');
 const backendLogs = path.join(backendRoot, 'logs');
 const apps = require('../agents/ecosystem.config.cjs').apps;
-const app = apps[0];
+const app = apps.find(item => item.name === 'consensus-builder-agents');
 
 describe('algorithmic agent schedule', () => {
     it('provides every proposer the same public thumbnail basemap configuration as the API', () => {
         const apiEnv = require('../ecosystem.config.cjs').apps.find(item => item.name === 'consensus-builder-api').env;
         const proposers = apps.filter(item => item.script === 'agents/run.mjs');
-        expect(proposers).toHaveLength(3);
+        expect(proposers).toHaveLength(4);
         expect(apiEnv.MAPTILER_API_KEY).toBeTruthy();
         expect(apiEnv.IPFS_READ_GATEWAY).toBe('https://gateway.pinata.cloud/ipfs');
         for (const proposer of proposers) {
@@ -26,7 +26,7 @@ describe('algorithmic agent schedule', () => {
     });
     it('enables bounded devnet fee funding for all configured actor and lens jobs', () => {
         const actors = apps.filter(item => /^agents\/(run|support-run|society-run|lens-member-run)\.mjs$/.test(item.script));
-        expect(actors).toHaveLength(10);
+        expect(actors).toHaveLength(11);
         for (const actor of actors) {
             expect(actor.env.AGENT_SOL_FUNDING_ENABLED).toBe('1');
             expect(actor.env.AGENT_USDC_FUNDING_ENABLED).toBe('1');
@@ -42,7 +42,7 @@ describe('algorithmic agent schedule', () => {
         const supporter = fs.readFileSync(new URL('../agents/support-run.mjs', import.meta.url), 'utf8');
         const society = fs.readFileSync(new URL('../agents/society-run.mjs', import.meta.url), 'utf8');
         expect(supporter.indexOf('await startRun')).toBeLessThan(supporter.indexOf('await discoverProposals'));
-        expect(supporter.indexOf('await startRun')).toBeLessThan(supporter.indexOf('await alreadySupportedProposalIds'));
+        expect(supporter.indexOf('await startRun')).toBeLessThan(supporter.indexOf('await readSupportEligibility'));
         expect(supporter).toContain('markAgentRunFailed(pool, runId, error');
         expect(society.indexOf('await startRun')).toBeLessThan(society.indexOf('await gatherInputs'));
         expect(society).toContain('markAgentRunFailed(pool, turn.runId, error');

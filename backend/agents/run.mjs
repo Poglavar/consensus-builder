@@ -14,6 +14,8 @@
 //   node agents/run.mjs --dry-run [--controller algorithm|llm] [--persona NAME] [--day YYYY-MM-DD]
 //   node agents/run.mjs --live    [--controller algorithm|llm] [--persona NAME] [--until STAGE] [--lens KEY,KEY] [--slot auto|LABEL]
 //   --slot lets a persona run several times a day: run ids and proposal ids become <day>-<slot>-…
+//   Parcel reads get at most three attempts within 180 seconds, with 5s/15s backoff or the
+//   provider's longer cooldown. Persistent incomplete replies fail; signed actions are not retried by this policy.
 //   ("auto" = h + the UTC hour). Each run visits one of the persona's areas (a stable rotation) and a
 //   ~350 m window inside it, and never re-plans a parcel the persona already minted on. An area is
 //   { city, bbox } (Croatian cadastre in the database), { city, label, sourceId, bbox } (a live parcel
@@ -44,6 +46,7 @@ import { chooseArea, contestParcels, parcelsFromSource, pickedParcelIds, runKeyF
 import { planCandidates } from './planner.js';
 import { chooseHousingArea, planHousingCandidates, housingOutreach } from './housing-policy.js';
 import { fetchHousingScreen } from './housing-screen.js';
+import { refreshProposalStatuses } from './discovery.js';
 import { prepareAgentPublication, verifyPublicationReadable, mirrorAgentPublication } from './chain-publication.js';
 import { markAgentRunFailed, safeFailureDiagnostic } from './run-failure.js';
 import { fetchSourceParcels } from './source-fetch.js';
@@ -277,6 +280,12 @@ async function retireStage({ pool, connection, entries, day, dryRun, controller,
                     checkpoint: async (record) => {
                         retirements[item.proposalPda] = record;
                         e.run = await updateRun(pool, e.runId, { summaryPatch: { retirements, retirePlan, activities } });
+                        // A later resolve/claim failure must not leave an already-terminal proposal
+                        // advertised as Active. Checkpoint first so recovery never repeats a signature.
+                        await refreshProposalStatuses([{
+                            proposalId: item.proposalId,
+                            onchain: { chainId: 'solana-devnet', proposalId: item.proposalPda }
+                        }], connection, { pool, log });
                     }
                 });
                 retirements[item.proposalPda] = { ...retirements[item.proposalPda], completedAt: new Date().toISOString() };
@@ -384,7 +393,7 @@ async function main() {
                         db: pool, rankedCandidates: candidates, limit: args.candidates,
                         scanLimit: args.candidates * 2, persona, runId,
                         city: existing.summary.city ?? 'zagreb', turf,
-                        checkBinding: checkProposalBinding
+                        checkBinding: checkProposalBinding, log
                     });
                     candidates = preflight.candidates;
                     logCandidatePreflight(persona.name, preflight);
@@ -405,7 +414,7 @@ async function main() {
             const preflight = await preflightCandidates({
                 db: pool, rankedCandidates: prioritizedPlannedCandidates(planned),
                 limit: args.candidates, scanLimit: args.candidates * 2,
-                persona, runId, city, turf, checkBinding: checkProposalBinding
+                persona, runId, city, turf, checkBinding: checkProposalBinding, log
             });
             const candidates = preflight.candidates;
             logCandidatePreflight(persona.name, preflight);
@@ -654,7 +663,7 @@ async function main() {
                 if (!posts[pick.candidateId]) {
                     const binding = await checkCandidateBinding({
                         db: pool, candidate, pick, persona: { ...persona, controller: runController },
-                        runId: e.runId, city, turf, checkBinding: checkProposalBinding
+                        runId: e.runId, city, turf, checkBinding: checkProposalBinding, log
                     });
                     if (!binding?.ok) {
                         const refusal = {
@@ -680,7 +689,7 @@ async function main() {
                             publications[pick.candidateId] = await prepareAgentPublication({
                                 pool, candidate, pick, persona: { ...persona, controller: runController },
                                 runId: e.runId, city, lens: lensChoice.lens
-                            });
+                            }, { log });
                             await updateRun(pool, e.runId, { status: 'running', summaryPatch: { publications } });
                         }
                         const publication = await verifyPublicationReadable(publications[pick.candidateId]);

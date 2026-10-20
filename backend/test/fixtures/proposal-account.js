@@ -17,6 +17,7 @@ export const PROPOSAL_DISCRIMINATOR = createHash('sha256').update('account:Propo
 
 export function proposalAccountBytes({
     status = 0,
+    imageUri = 'https://example.test/proposal',
     owner = '11111111111111111111111111111111',
     parcelIds = ['HR-1'],
     acceptedParcels = [],
@@ -34,7 +35,7 @@ export function proposalAccountBytes({
         new PublicKey(owner).toBuffer(),
         vec(parcelIds, str),
         Buffer.from([1]),
-        str('https://example.test/proposal'),
+        str(imageUri),
         Buffer.from([status === 0 ? 1 : 0]),
         Buffer.from([status]),
         u64(0), u64(0), u64(acceptedParcels.length),

@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
-import { applyPlanStatuses, discoverProposalInputs, loadPlanRecord } from '../agents/discovery.js';
+import { applyProposalStatuses, discoverProposalInputs, loadPlanRecord } from '../agents/discovery.js';
+import { proposalAccountBytes } from './fixtures/proposal-account.js';
 import { PublicKey } from '@solana/web3.js';
 import { PROPOSAL_PROGRAM_ID } from '../agents/lifecycle-actions.js';
 import { eligibleSupportProposals, selectSupportAction } from '../agents/supporter-picker.js';
@@ -93,14 +94,14 @@ describe('agent named-plan discovery', () => {
         ];
         proposals.forEach(plan => { plan.planHash = 'committed-hash'; });
         const infos = [0, 1, 3].map((status, index) => ({ owner: new PublicKey(PROPOSAL_PROGRAM_ID),
-            data: { status, imageUri: `ugt-plan:${proposals[index].planSlug}@committed-hash` } }));
-        expect(applyPlanStatuses(proposals, infos, { decodeState: data => data }).map(plan => plan.lifecycleStatus))
+            data: proposalAccountBytes({ status, imageUri: `ugt-plan:${proposals[index].planSlug}@committed-hash` }) }));
+        expect(applyProposalStatuses(proposals, infos).map(plan => plan.lifecycleStatus))
             .toEqual(['Active', 'Executed', 'Expired']);
-        expect(() => applyPlanStatuses([proposals[0]], [{ owner: new PublicKey(PROPOSAL_PROGRAM_ID),
-            data: { status: 0, imageUri: 'ugt-plan:different@hash' } }], { decodeState: data => data }))
+        expect(() => applyProposalStatuses([proposals[0]], [{ owner: new PublicKey(PROPOSAL_PROGRAM_ID),
+            data: proposalAccountBytes({ imageUri: 'ugt-plan:different@hash' }) }]))
             .toThrow(/does not commit to its current content/);
-        expect(() => applyPlanStatuses([proposals[0]], [null], { decodeState: data => data })).toThrow(/account-a is missing/);
-        expect(() => applyPlanStatuses([proposals[0]], [{ owner: PublicKey.default, data: { status: 0 } }], { decodeState: data => data }))
+        expect(() => applyProposalStatuses([proposals[0]], [null])).toThrow(/account-a is missing/);
+        expect(() => applyProposalStatuses([proposals[0]], [{ owner: PublicKey.default, data: proposalAccountBytes() }]))
             .toThrow(/not owned by the proposal program/);
     });
 

@@ -4,7 +4,7 @@ import proj4 from 'proj4';
 import { SaxesParser } from 'saxes';
 import { bbox as geometryBbox, booleanIntersects, feature as geoFeature } from '@turf/turf';
 import { HttpError } from '../utils/helpers.js';
-import { canonicalParcelFeature, providerHttpError, upstreamError, validateBounds, validateGeometry } from './source-contract.js';
+import { canonicalParcelFeature, parcelCountError, providerHttpError, upstreamError, validateBounds, validateGeometry } from './source-contract.js';
 import { parseGmlParcels } from './gml-parcel-reader.js';
 import { concatBytes } from './byte-utils.js';
 
@@ -98,7 +98,7 @@ export function createCatastroWfsParcelSource(descriptor, { fetchImpl = globalTh
                 maxBytes, maxFeatures, signal });
             if (!Number.isSafeInteger(parsed.numberMatched) || parsed.numberMatched !== parsed.featureCount
                 || parsed.duplicateNativeCount || parsed.features.some(f => !KEY.test(f.properties[ID_FIELD]))) {
-                throw upstreamError('Cadastral WFS did not return a complete unique parcel set; use a smaller area.');
+                throw parcelCountError(parsed, 'Cadastral WFS did not return a complete unique parcel set; use a smaller area.');
             }
             return parsed.features.map(feature => canonicalParcelFeature(descriptor, feature, feature.properties[ID_FIELD]));
         } catch (error) {

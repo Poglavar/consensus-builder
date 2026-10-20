@@ -34,7 +34,7 @@ import { createRetryingFetch } from '../utils/retrying-fetch.js';
 import { sendAndConfirmPolling } from './solana-send.js';
 import { sendTelegram } from './telegram.js';
 import { isEntrypoint } from './entrypoint.js';
-import { discoverProposalInputs, loadPlanRecord, refreshNamedPlanStatuses } from './discovery.js';
+import { discoverProposalInputs, loadPlanRecord, refreshProposalStatuses } from './discovery.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const require = createRequire(import.meta.url);
@@ -160,9 +160,9 @@ export function readAccounts(connection, addresses, env = process.env) {
 
 // Everything a policy and the collect step read, gathered fresh for every turn so turn k sees what
 // turn k−1 signed. Markets and both of the persona's positions are read for every minted proposal
-// (any lifecycle); the on-chain status only where an open market holds an unclaimed own position.
-async function gatherInputs({ apiBase, persona, needs, connection, wallet }) {
-    const proposals = await refreshNamedPlanStatuses(await discoverProposals(apiBase, persona), connection);
+// (any lifecycle); every policy input uses its freshly read on-chain lifecycle.
+async function gatherInputs({ apiBase, persona, needs, connection, wallet, pool }) {
+    const proposals = await refreshProposalStatuses(await discoverProposals(apiBase, persona), connection, { pool, log });
     let minted = proposals.filter(isSolanaMinted);
     if (minted.length > MAX_MINTED) {
         log(`${persona.name}: ${minted.length} minted proposals; reading markets for the newest ${MAX_MINTED}`);
@@ -377,7 +377,7 @@ async function main() {
                 let decisionResult = existing?.summary?.decisionResult || null;
                 let decision = null;
                 if (!action) {
-                    const inputs = await gatherInputs({ apiBase, persona, needs: policy.NEEDS, connection, wallet });
+                    const inputs = await gatherInputs({ apiBase, persona, needs: policy.NEEDS, connection, wallet, pool: live ? pool : null });
                     const runs = live ? await listPersonaRuns(pool, persona.name) : [];
                     const history = societyHistory({ runs, chain: inputs.chain, simulated });
                     // A claim the persona is owed comes first; otherwise the role's own policy decides.

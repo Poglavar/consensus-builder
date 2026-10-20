@@ -9,7 +9,8 @@ function stableNumber(value) {
 }
 
 function proposalAccount(proposal = {}) {
-    return proposal.onchain?.proposalId || proposal.onchainData?.proposalId || null;
+    return proposal.onchain?.proposalId || proposal.onchain?.proposalAccount
+        || proposal.proposalAccount || proposal.onchainData?.proposalId || null;
 }
 
 function proposalKey(proposal = {}) {
