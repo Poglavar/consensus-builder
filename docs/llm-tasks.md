@@ -1,6 +1,18 @@
 <!-- Inventory of model stages and their source, review, and billing contracts. -->
 # LLM tasks in this repo
 
+The separate private Stanovanje.plus archive uses subscription CLI passes through
+`agents/lib/llm-cost/cli.mjs`. Its **reading** stage selects measured SVG wall layers,
+reads a printed metric scale and proposes a local outline; its **refinement** stage
+audits source-polygonized floor geometry, measured door/window anchors and possible
+voids/stairs. Each pass handles at most 30 drawing identities. Responses and attempts
+are checkpointed before geometry is applied, and saved responses never trigger another
+call. Model selection follows the shared defaults; reading uses medium effort and
+refinement high effort. Subscription tokens and API-equivalent usage are retained
+per drawing separately from metered spend. No API fallback is allowed. Invalid geometry,
+missing source drawings and unresolved review remain explicit. Private catalogue
+preparation does not publish. See the [archive workflow](../backend/scripts/stanovanje-plus-review/README.md).
+
 The agency floor-plan archive has three LLM stages. All use the shared
 `agents/lib/llm-cost/llm.mjs` batch layer and `backend/floor-plans/batch-worker.js`.
 The shared `defaults.json` selects the model and reasoning effort; image classification

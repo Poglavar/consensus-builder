@@ -11,12 +11,19 @@ import {buildingOutline} from './stanovanje-plus-review/building-model.mjs';
 import {boundRegistration} from './stanovanje-plus-review/registration.mjs';
 const {validateArchitecture}=createRequire(import.meta.url)('../../frontend/js/building-floor-plans.js');
 const repo=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'../..');
-const root=path.join(repo,'backend/logs/stanovanje-plus-ten-20261019');
+const root=path.resolve(process.argv.find(v=>v.startsWith('--root='))?.slice(7)||path.join(repo,'backend/logs/stanovanje-plus-ten-20261019'));
 const assets=path.join(repo,'backend/scripts/stanovanje-plus-review');
 const read=(name)=>JSON.parse(fs.readFileSync(name,'utf8'));
 const optional=name=>fs.existsSync(name)?read(name):null;
-const selection=read(path.join(root,'selection.json'));
+function generate(){
+const selection=read(path.join(root,'selection.json')).filter(source=>fs.existsSync(path.join(root,source.code,'source.png')));
 const originalManifest=optional(path.join(root,'manifest.json'));
+const receipts=selection.flatMap(source=>['response.json','refinement-response.json'].flatMap(file=>{
+ const receipt=optional(path.join(root,source.code,file));
+ if(!receipt)return [];
+ const attempt=optional(path.join(root,source.code,file==='response.json'?'attempt.json':'refinement-attempt.json'));
+ return [{code:source.code,stage:file==='response.json'?'reading':'refinement',attemptId:attempt?.attemptId,model:receipt.model,usage:receipt.usage,meteredUsd:receipt.costUsd??null,equivalentUsd:receipt.equivalentUsd??null}];
+}));
 const items=selection.map(source=>{
  const dir=path.join(root,source.code),revision=fs.existsSync(path.join(dir,'model.refined.json'))?'refined':'original';
  const file=revision==='refined'?'model.refined.json':'model.json',model=optional(path.join(dir,file));
@@ -43,17 +50,29 @@ const manifest={schema:'stanovanje-plus.private-review.v2',createdAt:new Date().
  originalRunManifest:originalManifest,
  models:items.map(i=>({code:i.source.code,revision:i.revision,model:i.download,buildingOutline:i.building?{aboveGroundCount:i.building.aboveGroundCount,belowGroundCount:i.building.belowGroundCount,heightBasis:i.building.heightBasis,outlineBasis:i.building.outlineBasis}:null,formatValid:!i.validation.length,manualReview:i.manualReview,validation:i.validation,geometryReviewIssues:i.geometryReviewIssues,
   originalReceipt:i.originalReceipt,refinementReceipt:i.refinementReceipt})),
- accounting:'Original run totals are preserved above. Refinement receipts are separate; no aggregate or 200-building projection is recomputed here.'};
+ billing:{mode:'subscription',includesReusedTrialReceipts:true,meteredUsd:receipts.reduce((n,r)=>n+(r.meteredUsd||0),0),
+  equivalentUsd:receipts.reduce((n,r)=>n+(r.equivalentUsd||0),0),unpriced:receipts.filter(r=>r.equivalentUsd===null).length,receipts},
+ accounting:'Per-drawing subscription consumption includes reused trial receipts; API-equivalent usage is separate from metered spend.'};
 fs.writeFileSync(path.join(root,'review-manifest.json'),JSON.stringify(manifest,null,2));
 fs.writeFileSync(path.join(root,'review-data.json'),JSON.stringify({manifest,items}));
 for(const [from,to] of [['index.html','review.html'],['review.css','review.css'],['review.js','review.js']])fs.copyFileSync(path.join(assets,from),path.join(root,to));
+return {items,manifest};
+}
+const {items}=generate();
 if(process.argv.includes('--serve')){
  const port=Number(process.argv.find(v=>v.startsWith('--port='))?.split('=')[1]||8603);
- const routes=reviewRoutes(root,repo,items);
+ const routes=reviewRoutes(root,repo,read(path.join(root,'selection.json')).map(source=>({source})));
+ let stamp=0;
  const mime={'.html':'text/html','.js':'text/javascript','.mjs':'text/javascript','.css':'text/css','.json':'application/json','.png':'image/png'};
  const server=http.createServer((req,res)=>{
   if(!['GET','HEAD'].includes(req.method)){res.writeHead(405,{Allow:'GET, HEAD'}).end();return;}
-  const file=routes.get(new URL(req.url,'http://localhost').pathname);
+  const pathname=new URL(req.url,'http://localhost').pathname;
+  if(['/review-data.json','/review-manifest.json'].includes(pathname)){
+   const marker=path.join(root,'processing-summary.json');
+   const current=fs.existsSync(marker)?fs.statSync(marker).mtimeMs:fs.statSync(path.join(root,'selection.json')).mtimeMs;
+   if(current!==stamp){generate();stamp=current;}
+  }
+  const file=routes.get(pathname);
   if(!file||!fs.existsSync(file)){res.writeHead(404).end('Not found');return;}
   res.writeHead(200,{'Content-Type':mime[path.extname(file)]||'application/octet-stream','Cache-Control':'no-store','X-Content-Type-Options':'nosniff','Referrer-Policy':'no-referrer'});
   if(req.method==='HEAD')res.end();else fs.createReadStream(file).pipe(res);

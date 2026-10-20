@@ -823,3 +823,5 @@ Postpone refresh/server-to-local synchronization. For empty parcels, display onl
 - 2026-10-20: World navigation offers cities and exact map points only. Administrative regions are coverage context, never clickable destinations. A background globe click or geolocation opens the exact point at street level, where proposals live.
 - 2026-10-20: Buildings and massing starts collapsed behind a cubes icon beside the city/search control at the upper left. Its display settings keep their values when the panel closes.
 - 2026-10-20: Merge Colosseum work into omitted-gems-fixes with Colosseum semantic contracts authoritative; adapt retained features to qualified publication/source identity rather than restoring retired aliases.
+
+- 2026-10-20: The user authorized full Stanovanje.plus archive processing locally. Inventory all building entries and distinct floor drawings, reuse the ten trial checkpoints, and prepare the shared catalogue privately while the recorded source-permission outreach remains unresolved.

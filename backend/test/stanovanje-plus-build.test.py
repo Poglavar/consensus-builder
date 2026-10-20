@@ -16,6 +16,9 @@ class BuildTests(unittest.TestCase):
  def test_missing_scale_is_rejected(self):
   s,e,r=fixture();r['scale']=None
   with self.assertRaisesRegex(ValueError,'metric scale'):m.compile_model(s,e,r)
+ def test_drawing_variant_is_not_renamed_to_first_characteristic_floor(self):
+  s,e,r=fixture();s['unitId']='example-tl-pr'
+  self.assertEqual(m.compile_model(s,e,r)['unitId'],'example-tl-pr')
  def test_self_intersecting_outline_is_rejected(self):
   s,e,r=fixture();r['footprint'][0]['outer']=[[0,0],[10,10],[10,0],[0,10]]
   with self.assertRaisesRegex(ValueError,'self-intersecting'):m.compile_model(s,e,r)
