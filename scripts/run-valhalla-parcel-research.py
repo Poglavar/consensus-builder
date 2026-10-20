@@ -1509,7 +1509,8 @@ Output MUST be a single JSON object satisfying the supplied schema: `reviewedIds
                 self.save_state()
                 self.log("candidate entered adapter and live qualification stage", cityCode=str(city["cityCode"]), sourceId=receipt["source"]["sourceId"])
                 try:
-                    stage = run_candidate(self, city, receipt, packet)
+                    from parcel_city_integration import run_city_task
+                    stage = run_city_task(self, {"city": city, "receipt": receipt, "packet": packet})
                 except Exception as exc:
                     stage = {"status": "failed", "summary": f"Workflow error: {type(exc).__name__}: {exc}"}
                 stage.update(receiptSha256=digest, finishedAt=utc_now())

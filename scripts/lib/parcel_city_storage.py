@@ -70,6 +70,9 @@ def compact_row(row):
     """Operational progress has no evidence, snapshots, manifests, or copied settings."""
     result = {key: row[key] for key in ("wupIdentity", "status", "attempts", "discoveryDecision", "lastError")
               if key in row}
+    reason = failure_reason(row)
+    if reason and row.get("qualification", {}).get("status") != "integrated":
+        result["lastError"] = reason[:2000]
     for key in ("qualification", "admission"):
         if key == "admission" and row.get("qualification", {}).get("status") in {"failed", "integration-blocked"}:
             continue
@@ -173,7 +176,8 @@ def finish_city(runner, city, cohort):
         if negative:
             failed.extend({"url": url, **({"reason": reason} if reason else {})}
                           for url in urls_from_document(document))
-    if row.get("discoveryDecision") == "candidate" and row.get("qualification", {}).get("status") != "integrated":
+    if (row.get("discoveryDecision") == "candidate"
+            and row.get("qualification", {}).get("status") in {"blocked-source", "rejected-source"}):
         for _, document in documents:
             source = document.get("source") if isinstance(document, dict) else None
             endpoint = source.get("endpoint") if isinstance(source, dict) else None

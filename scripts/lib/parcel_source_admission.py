@@ -36,7 +36,7 @@ OPTIONAL = ("evidence/initial-review.json", "evidence/alignment-report.json", "e
 ADMISSION_FILES = (
     "backend/parcels/source-catalog.json", "frontend/js/city-config.js", "world-parcels/registry.json",
     "world-parcels/report/city-demographics.json", "frontend/data/parcel-coverage-report.json",
-    "frontend/data/world-coverage.json", "frontend/i18n/en.json", "frontend/i18n/es.json",
+    "frontend/data/world-coverage.json", "frontend/data/boot-coverage.js", "frontend/i18n/en.json", "frontend/i18n/es.json",
     "frontend/i18n/hr.json", "frontend/i18n/sr.json",
 )
 RELEASE_TESTS = (

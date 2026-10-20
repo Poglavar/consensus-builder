@@ -828,3 +828,4 @@ Postpone refresh/server-to-local synchronization. For empty parcels, display onl
 - 2026-10-20: The user authorized full Stanovanje.plus archive processing locally. Inventory all building entries and distinct floor drawings, reuse the ten trial checkpoints, and prepare the shared catalogue privately while the recorded source-permission outreach remains unresolved.
 
 - 2026-10-21: Permitted must display supported parcel massing directly across the viewport; raw zoning areas have a separate optional overlay, because a study-only envelope did not meet the comparison workflow.
+- 2026-10-21: Qualification owns each city through source verification, configuration, adapter implementation, integration and testing in the real app; genuine blockers are acceptable after a real attempt, while fixable failures must return to the worker for repair.

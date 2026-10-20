@@ -123,10 +123,22 @@ describe('buildCoverage', () => {
 
     it('keeps coverage separate from operational tier for reviewed countries', () => {
         const byCode = Object.fromEntries(built.countries.map(country => [country.cc, country]));
-        // The Netherlands' national review stands; Waalwijk's failed parcel check makes it `mostly`.
-        expect(byCode.NL).toMatchObject({ coverage: 'mostly', tier: 'source', note: expect.stringMatching(/failed in Waalwijk; \d+ of \d+ checked cities work\.$/),
+        const expectedCountryCoverage = cc => {
+            const liveWupCodes = new Set(parseCityConfigs(inputs.cityConfigSource).map(city => city.wupCityCode).filter(Number.isSafeInteger));
+            const checks = cityChecks(built.liveCities.filter(city => city.cc === cc), inputs.outcomes.filter(city => city.countryCode === cc), liveWupCodes);
+            const review = inputs.countryReviews.find(row => row.countryCode === cc);
+            expect(review.coverage).toBe('full');
+            const expected = !checks.failed.length ? 'full' : checks.works.length > checks.failed.length ? 'mostly' : 'partial';
+            return { expected, checks };
+        };
+        for (const cc of ['NL', 'SI']) {
+            const { expected, checks } = expectedCountryCoverage(cc);
+            expect(byCode[cc].coverage).toBe(expected);
+            if (checks.failed.length) expect(byCode[cc].note).toMatch(new RegExp(`failed in .+; ${checks.works.length} of ${checks.works.length + checks.failed.length} checked cities work\\.$`));
+        }
+        expect(byCode.NL).toMatchObject({ tier: 'source',
             coverageSources: [{ title: expect.any(String), url: expect.stringMatching(/^https:\/\//) }] });
-        expect(byCode.SI).toMatchObject({ coverage: 'full', tier: 'source' });
+        expect(byCode.SI.tier).toBe('source');
         expect(byCode.ES.coverage).toBe('partial');
         expect(byCode.HR).toMatchObject({
             coverage: 'full', tier: 'live',
@@ -375,12 +387,16 @@ describe('buildCoverage', () => {
         it('keeps the United States partial while reviewed states are full and gapped states stay partial', () => {
             expect(countries.US.coverage).toBe('partial');
             expect(regions['US-ND'].coverage).toBe('full');
-            // Reviewed statewide sources where the parcel check failed in a minority of checked cities.
+            // Reviewed statewide sources derive their tempering from the current city records.
             for (const id of ['US-MD', 'US-NC', 'US-NJ', 'US-UT', 'US-WI']) {
-                expect(regions[id], id).toMatchObject({ coverage: 'mostly', tier: 'source', note: expect.stringMatching(/Parcel checks failed in .+; \d+ of \d+ checked cities work\.$/) });
+                expect(regions[id], id).toMatchObject({ tier: 'source', note: expect.stringMatching(/Parcel checks failed in .+; \d+ of \d+ checked cities work\.$/) });
+                const counts = /; (\d+) of (\d+) checked cities work\.$/.exec(regions[id].note);
+                expect(counts, id).not.toBeNull();
+                const works = Number(counts[1]), total = Number(counts[2]);
+                expect(regions[id].coverage).toBe(works > total - works ? 'mostly' : 'partial');
                 expect(regions[id].coverageSources.length, id).toBeGreaterThan(0);
             }
-            expect(regions['US-WI'].note).toMatch(/failed in Green Bay and Westhaven Trails; 4 of 6/);
+            expect(regions['US-WI'].note).toMatch(/failed in Green Bay and Westhaven Trails/);
             // Asotin County is missing from the Washington compilation; Esmeralda has no digital parcels.
             expect(regions['US-WA']).toMatchObject({ coverage: 'partial', note: expect.stringMatching(/Asotin absent/) });
             expect(regions['US-NV'].coverage).toBe('partial');

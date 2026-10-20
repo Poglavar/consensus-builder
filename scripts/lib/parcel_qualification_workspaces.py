@@ -137,7 +137,10 @@ def _parent_overlay_paths(root: Path, base_revision: str = "HEAD") -> tuple[set[
         root, "diff", "--no-renames", "--name-only", "-z", base_revision).stdout.encode()))
     tracked = {rel for rel in tracked if not _matches_revision(root, rel, base_revision)}
     base_tracked = _tracked_paths(root, base_revision)
-    untracked = {rel for rel in _untracked_paths(root) - base_tracked if _is_allowed_untracked(rel)}
+    applied = root / "tmp/parcel-shared-runtime/applied.json"
+    published = set(json.loads(applied.read_text()).get("files", {})) if applied.is_file() else set()
+    untracked = {rel for rel in _untracked_paths(root) - base_tracked
+                 if _is_allowed_untracked(rel) or rel in published}
     return tracked, untracked
 
 
@@ -237,6 +240,7 @@ def _input_paths(hashes: dict[str, Any]) -> set[str]:
     paths.update(hashes.get("sampleFiles", {}).keys())
     paths.update(hashes.get("receiptEvidenceFiles", {}).keys())
     paths.update(hashes.get("coverageProbeEvidenceFiles", {}).keys())
+    paths.update(hashes.get("integrationInputs", {}).keys())
     return paths
 
 
@@ -308,18 +312,18 @@ def _remap_value(value: Any, parent: Path, child: Path) -> Any:
 
 
 def _ensure_node_modules(parent: Path, child: Path) -> None:
-    source = parent / "backend/node_modules"
-    target = child / "backend/node_modules"
-    if not source.exists():
-        return
-    target.parent.mkdir(parents=True, exist_ok=True)
-    if target.is_symlink():
-        if target.resolve() != source.resolve():
-            raise RuntimeError("workspace backend/node_modules symlink points somewhere unexpected")
-        return
-    if target.exists():
-        raise RuntimeError("workspace backend/node_modules exists and is not the approved symlink")
-    target.symlink_to(source.resolve(), target_is_directory=True)
+    for relative in ("backend/node_modules", "e2e/node_modules"):
+        source, target = parent / relative, child / relative
+        if not source.exists():
+            continue
+        target.parent.mkdir(parents=True, exist_ok=True)
+        if target.is_symlink():
+            if target.resolve() != source.resolve():
+                raise RuntimeError(f"workspace {relative} symlink points somewhere unexpected")
+            continue
+        if target.exists():
+            raise RuntimeError(f"workspace {relative} exists and is not the approved symlink")
+        target.symlink_to(source.resolve(), target_is_directory=True)
 
 
 def _write_metadata(path: Path, metadata: dict[str, Any]) -> None:
@@ -404,6 +408,8 @@ def prepare_workspace(root: Path, state_dir: Path, slot: int, city: dict[str, An
 
     owned_inputs = _copy_inputs(root, child, inputs, owned_inputs)
     _ensure_node_modules(root, child)
+    from parcel_city_knowledge import sync_failed_urls
+    sync_failed_urls(root, child)
     worker_state = child / "tmp/parcel-qualification-jobs" / run_id
     worker_state.mkdir(parents=True, exist_ok=False)
     child_city = _remap_value(city, root, child)
@@ -456,6 +462,15 @@ def finish_workspace(workspace: dict[str, Any]) -> None:
     metadata["finishHead"] = _head(root)
     metadata["status"] = "finished"
     _write_metadata(metadata_path, metadata)
+
+
+def reopen_workspace(workspace: dict[str, Any]) -> None:
+    """Continue the same verified owned city task after an integration failure."""
+    finish_workspace(workspace)
+    path = Path(workspace["metadataPath"])
+    metadata = _read_metadata(path)
+    metadata["status"] = "prepared"
+    _write_metadata(path, metadata)
 
 
 def discard_workspace(workspace: dict[str, Any]) -> None:
@@ -514,7 +529,7 @@ def discard_workspace(workspace: dict[str, Any]) -> None:
         raise RuntimeError("qualification dependency owner belongs to another repository")
     ignored = _ignored_inventory(root)
     for rel in sorted(ignored):
-        if rel in {"node_modules", "backend/node_modules"}:
+        if rel in {"node_modules", "backend/node_modules", "e2e/node_modules"}:
             link = root / rel
             if (not link.is_symlink()
                     or not (owner / rel).exists()

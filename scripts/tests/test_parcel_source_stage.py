@@ -423,6 +423,14 @@ class ParcelSourceStageTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "coverage probe 0 evidence SHA-256 mismatch"):
             stage._input_hashes(self.root, self.city, receipt, self.packet)
 
+    def test_reviewed_adapter_code_can_be_implemented_without_mutating_source_evidence(self):
+        receipt = json.loads(json.dumps(self.receipt))
+        receipt["evidenceFiles"].append("backend/parcels/arcgis-source.js")
+        before = stage._input_hashes(self.root, self.city, receipt, self.packet)
+        (self.root / "backend/parcels/arcgis-source.js").write_text("export const improved = true;\n")
+        self.assertEqual(stage._input_hashes(self.root, self.city, receipt, self.packet), before)
+        self.assertNotIn("backend/parcels/arcgis-source.js", before["receiptEvidenceFiles"])
+
     def test_revalidation_detects_changed_backend_adapter_source(self):
         harness = Harness(self.root, self.attempt_dir)
         adapter = self.root / "backend/parcels/arcgis-source.js"

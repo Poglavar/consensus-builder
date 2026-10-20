@@ -12,6 +12,8 @@ from pathlib import Path
 from typing import Any
 from urllib.parse import urlsplit
 
+ADMISSION_INPUTS = ("tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",)
+
 
 def _load_script(path: Path, name: str):
     spec = importlib.util.spec_from_file_location(name, path)
@@ -143,7 +145,8 @@ def _input_hashes(root: Path, city: dict[str, Any], receipt: dict[str, Any], pac
     app_context_files = _app_context_files()
     for ref in receipt_evidence:
         path, rel = _receipt_evidence_path(root, ref, "receipt evidence file")
-        if rel not in app_context_files:
+        mutable_adapter = rel.startswith("backend/parcels/") and Path(rel).suffix in {".js", ".mjs", ".cjs"}
+        if rel not in app_context_files and not mutable_adapter:
             receipt_hashes[rel] = _sha(path.read_bytes())
     coverage = receipt.get("coverage")
     probes = coverage.get("probes") if isinstance(coverage, dict) else None
@@ -168,6 +171,7 @@ def _input_hashes(root: Path, city: dict[str, Any], receipt: dict[str, Any], pac
         "sampleFiles": sample_hashes,
         "receiptEvidenceFiles": receipt_hashes,
         "coverageProbeEvidenceFiles": probe_hashes,
+        "integrationInputs": {rel: _sha((root / rel).read_bytes()) for rel in ADMISSION_INPUTS if (root / rel).is_file()},
         "cityIdentitySha256": _sha(_canonical({k: city.get(k) for k in ("cityCode", "name", "rank", "iso2", "point")})),
     }
 
@@ -228,7 +232,7 @@ def _worker_prompt(root: Path, city: dict[str, Any], receipt: dict[str, Any], pa
     qualification = root / "scripts/qualify-parcel-source.mjs"
     metric = root / "scripts/parcel-qualification-metric.py"
     point = [float(city["point"][1]), float(city["point"][0])]
-    return f"""Implement and qualify this reviewed parcel-source candidate. This worker may add or adapt production adapter code and focused node:test files, then must run the saved source qualification. Missing adapter code is implementation work, never a source hold.
+    return f"""This city seems to have a good source of parcel data. Check whether that is true. If it is, do all necessary work to integrate it into our system and test it in the real app. Write the candidate configuration, adapt an existing adapter or implement a new one, wire both backend and browser support, and complete the integration check below. Missing implementation is work to do, never a source limitation. A technical qualification alone does not finish this city task.
 
 Immutable city identity (queue point is latitude,longitude; candidate point is longitude,latitude):
 ```json
@@ -254,11 +258,16 @@ Use attempt-relative local paths in the candidate, including `alignmentEvidence.
 
 Use only safe native IDs or documented deterministic geometry-derived references and necessary geometry fields. Never request/save owner, address, tax/account, or other personal fields. Preserve returned source geometry. Initial qualification requires parcel classification and working repeatable exact reads with usable polygons. Missing native CRS, wire axes, datum/operation/grid proof, imperfect geometry, area completeness or binding details are second-pass follow-ups rather than qualification blockers. Record the precise uncertainties and retain real check results. Do not pursue deep review during this initial pass. Do not fabricate successful checks, fit offsets, modify source geometry, use credentials or bypass access controls. If first-party evidence proves a genuine external limitation, save `{attempt_dir / 'evidence/source-block.json'}` with exact receipt `sourceId` and `endpoint`, a specific `reason`, and `evidenceFiles` as strings relative to this attempt directory (for example `evidence/metric-report.json`). Reference the saved source metadata, `qualification.json`, `metric-report.json`, and/or `alignment-report.json` that demonstrate the limitation. A missing adapter, unsupported local implementation, or incomplete local code is not a source limitation. For positive non-parcel evidence use the qualification runner's `evidence/exclusion.json` contract.
 
-Allowed writes: this attempt directory, `backend/parcels/`, `backend/test/` focused node:test files and fixtures. Do not edit catalogs, city configs, runtime wiring outside adapter code, research inputs, or any unrelated path. Preserve unrelated dirty files.
+Allowed implementation writes: this attempt directory, `backend/parcels/` (including backend and browser factory registration), and focused `backend/test/` tests and fixtures. Put complete source and city configuration, including verified currency, in candidate.json. Use the integration command below to generate and test the actual catalog, city settings, bindings, reports and browser bundle; the command restores those generated files afterward so the coordinator can apply them serially without overwriting other cities. Do not manually edit shared catalogs, city configs, frozen research inputs, or unrelated files. Do not weaken checks or change parcel geometry to obtain a pass. Preserve unrelated dirty files.
+Do not commit, push, deploy or create other worktrees. Keep this worktree's HEAD unchanged; the coordinator owns publication after independent verification.
 
 Run exactly the existing qualifier against the candidate, with output under `{attempt_dir / 'evidence'}`:
 `node {qualification} --candidate {attempt_dir / 'candidate.json'} --output {attempt_dir / 'evidence'} --metric-script {metric}`
 Save command/exit/result. Return exactly the qualification OUTPUT_SCHEMA: `cityCode`, `status` (`technical-qualified`, `held`, or `excluded`), `summary`, `evidenceFiles`. Evidence paths are relative to `{city_root}`. A technical-qualified claim requires parcel-availability-v1 core checks (classification, exactIds, stableGeometry), hash-bound candidate/cache evidence and actual usable parcel polygons. Keep detailed quality checks and projection uncertainty as recorded follow-ups; the verifier adds its own initial-review report. A held result becomes blocked-source only when `source-block.json` and actual first-party evidence establish the limitation; otherwise explain the failed implementation/qualification gate. Include candidate and complete evidence artifacts in `evidenceFiles`.
+
+After source qualification, run the complete integration and real-app check:
+`python3 scripts/check-parcel-city-integration.py --context {attempt_dir / 'integration-context.json'}`
+Read `evidence/integration-review.json` and `evidence/app-check.json`. Fix configuration, adapters and browser registration when checks fail, rerun the qualifier after changes, and rerun the integration command. The app check must load the real city, fetch live polygons, repeat exact-ID reads, render parcels and select a parcel. A saved sample or successful backend read alone is insufficient. The coordinator independently repeats these checks and sends failures back for repair. If integration genuinely cannot be completed, explain the specific evidenced blocker; do not report an unavailable implementation as an unusable parcel source.
 """
 
 
@@ -574,18 +583,22 @@ def run_candidate(runner: Any, city: dict[str, Any], receipt: dict[str, Any], pa
         if not re.fullmatch(r"attempt-\d+", reserved_name):
             raise ValueError("invalid reserved qualification attempt name")
         attempt_dir = city_root / reserved_name
-        attempt_dir.mkdir(parents=True, exist_ok=False)
+        attempt_dir.mkdir(parents=True, exist_ok=bool(getattr(runner, "integration_feedback", None)))
     hashes_before = None
     try:
         code, name, source_id, point_latlon = _validate_inputs(city, receipt, packet)
         endpoint = receipt["source"]["endpoint"]
         hashes_before = _input_hashes(root, city, receipt, packet)
         _json_write(attempt_dir / "inputs.json", hashes_before)
+        _json_write(attempt_dir / "integration-context.json", {"city": city, "receipt": receipt,
+                    "sharedRoot": str(runner.args.shared_root) if getattr(getattr(runner, "args", None), "shared_root", None) else None})
         city_for_verifier = {"cityCode": code, "cityName": name, "point": point_latlon}
         qualification, build = _support(root)
         before = build.worktree_snapshot(root)
         model = runner._model("review")
         prompt = _worker_prompt(root, city, receipt, packet, city_root, attempt_dir, hashes_before)
+        if getattr(runner, "integration_feedback", None):
+            prompt += "\n\nYour city integration is not complete. Repair the following independently observed failure, then repeat qualification and the in-app integration check:\n" + str(runner.integration_feedback)
         learning_prompt = getattr(runner, "_learning_prompt", None)
         if callable(learning_prompt):
             learning = learning_prompt(city, "qualification")
