@@ -309,6 +309,7 @@ async function parcelsForArea({ pool, apiBase, area, persona, runKey, day, runs,
     const window = windowIn(area.bbox, runKey, persona.name, area.windowM ?? 350);
     if (area.sourceId) {
         const collection = await fetchSourceParcels(apiBase, area.sourceId, window, { log });
+        if (persona.housingResearch && collection?.complete!==true) throw new Error('Affordabot requires a complete parcel source response');
         let parcels = fresh(parcelsFromSource(collection, { turf, place: area.label ?? null, ...(persona.housingResearch ? {minAreaM2:1200,maxAreaM2:20000} : {}) }))
             .map(parcel => (area.floorCap ? { ...parcel, floorCap: area.floorCap } : parcel));
         if (persona.housingResearch) parcels = (await fetchHousingScreen(parcels, turf.bbox(turf.buffer(turf.bboxPolygon(window),0.85,{units:'kilometers'})), { turf, area })).filter(p=>!p.housingScreen.excluded);

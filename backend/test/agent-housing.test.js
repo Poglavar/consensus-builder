@@ -40,6 +40,11 @@ describe('Affordabot housing research',()=>{
  it('rejects building and sensitive/public-use overlap',()=>{
    for(const screen of ['building','protected']) expect(screenHousingParcels([parcel],{features:[{...ground,properties:{screen}}]},{turf,area})[0].housingScreen.excluded).toBe(true);
  });
+ it('skips distant obstacles before buffering without hiding nearby corridors',()=>{
+   const far=turf.lineString([[10,10],[10.001,10.001]],{screen:'corridor'});
+   const screened=screenHousingParcels([parcel],{features:[far]},{turf,area});
+   expect(screened[0].housingScreen.excluded).toBe(false);
+ });
  it('converts mapped stops and roads with unique identities',()=>{
    const data=housingFeatures([{type:'node',id:1,lat:0,lon:0,tags:{highway:'bus_stop'}},{type:'way',id:2,tags:{highway:'residential'},geometry:[{lat:0,lon:0},{lat:0,lon:.001}]}]);
    expect(new Set(data.features.map(f=>f.id)).size).toBe(data.features.length);
