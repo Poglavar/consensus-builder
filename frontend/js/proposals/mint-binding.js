@@ -94,7 +94,8 @@
         const config = options.cityConfig || global.CityConfigManager?.getCityConfig?.(city);
         if (!city || !config?.parcels?.source) fail('The proposal must name its city and cadastral source before minting.');
         const repository = options.repository || global.CadastralParcelRepository;
-        const hasCadastre = config.parcels.source !== 'none';
+        const localSource = global.ParcelGroundFallback?.activeSource?.(city);
+        const hasCadastre = !!localSource || config.parcels.source !== 'none';
         const record = buildLand({ ...proposal, city });
         const siteApi = dependency('__siteBinding', './site-binding.js');
         let parcels = [];
@@ -114,7 +115,7 @@
             }
         }
         return buildRecord(record, { parcels, regionHasCadastre: hasCadastre,
-            source: config.parcels.sourceId || config.parcels.source, turf: options.turf || global.turf,
+            source: localSource?.id || config.parcels.sourceId || config.parcels.source, turf: options.turf || global.turf,
             ...(options.now ? { now: options.now } : {}) });
     }
 

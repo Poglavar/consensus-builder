@@ -1,7 +1,8 @@
 // The site tool (window.SiteTool): draw a proposal's SITE on the map — click corners, snap to parcel
 // and existing-building outlines, edit vertices — and see its binding as you go: bound parcels outlined, parcels reached into
 // by under half a metre flagged with the width, open ground hatched, a coverage label; a preview over
-// the loaded parcels first (labelled), then the server's answer (POST /proposals/binding). From the
+// the loaded parcels first (labelled), then the server's answer (POST /proposals/binding), except
+// browser-local estimates whose binding stays local. From the
 // site panel, "Propose here" opens the site's proposal panel: the parcel panel's twin, with Info and
 // Proposals tabs and the same palette. Structures use the site directly, a block uses it as
 // its superparcel, detached and row houses cut synthetic plots along a frontage edge
@@ -88,6 +89,10 @@
     function cityHasCadastre() {
         const manager = win.CityConfigManager;
         return !(manager && typeof manager.hasParcelData === 'function' && !manager.hasParcelData());
+    }
+
+    function hasLocalEstimatedSource() {
+        return win.ParcelGroundFallback?.activeSource?.(cityId())?.kind === 'estimated-local';
     }
 
     function backendBase() {
@@ -355,7 +360,7 @@
             return;
         }
         const parcels = cadastralParcelsNear(win.turf.bbox(state.site));
-        if (parcels.length > PREVIEW_PARCEL_CAP) {
+        if (parcels.length > PREVIEW_PARCEL_CAP && !hasLocalEstimatedSource()) {
             state.previewSkipped = true;
             log(`preview skipped: ${parcels.length} parcels near the site (cap ${PREVIEW_PARCEL_CAP})`);
             return;
@@ -377,7 +382,10 @@
         const seq = ++state.serverSeq;
         state.server = null;
         state.serverError = null;
-        if (!state.site || !win.__publishBinding) return;
+        state.serverPending = false;
+        // The server cannot read this browser's saved source. Its official-source response would
+        // overwrite a complete local binding with "no cadastre" and discard the selected estimates.
+        if (!state.site || !win.__publishBinding || hasLocalEstimatedSource()) return;
         state.serverPending = true;
         const fetchBinding = win.__publishBinding.createFetchBinding(win.fetch.bind(win), backendBase());
         fetchBinding({ site: state.site, toleranceM: state.toleranceM, city: cityId() })
@@ -663,6 +671,15 @@
     }
 
     function coverageText(sum) {
+        if (hasLocalEstimatedSource()) {
+            const labels = {
+                complete: t('siteTool.coverage.estimatedComplete', 'Local estimates cover the whole site.'),
+                partial: t('siteTool.coverage.estimatedPartial', 'Local estimates cover part of the site.'),
+                none: t('siteTool.coverage.estimatedNone', 'No saved estimated parcels cover this site.'),
+                unknown: t('siteTool.coverage.estimatedUnknown', 'Coverage by local estimates is unknown.')
+            };
+            return labels[sum.coverage] || labels.unknown;
+        }
         const prefix = sum.isPreview ? t('siteTool.binding.previewPrefix', 'Preview') : t('siteTool.binding.serverPrefix', 'Cadastre');
         const labels = {
             complete: t('siteTool.coverage.complete', 'complete — the whole site lies on cadastral parcels'),
@@ -749,7 +766,9 @@
                 parts.push(`<p class="site-panel__note">${escapeHtml(t('siteTool.binding.openGround', 'Hatched: ground outside the supplied parcels; ownership is unknown. On-chain execution requires an authority verdict.'))}</p>`);
             }
         }
-        const status = state.serverPending
+        const status = hasLocalEstimatedSource()
+            ? t('siteTool.binding.localEstimates', 'Bound to estimates saved in this browser. Boundaries and ownership are unverified.')
+            : state.serverPending
             ? t('siteTool.binding.checking', 'Checking with the cadastre…')
             : (state.serverError
                 ? t('siteTool.binding.serverFailed', 'Could not check with the server: {{reason}}', { reason: state.serverError })

@@ -47,6 +47,12 @@ function isInCity(parcelId, cityId) {
     const upper = id.toUpperCase();
     const city = (cityId || '').toString().toLowerCase();
 
+    // Local estimates carry their city hash. Proposal replay and city-scoped tools must recognize
+    // that source space even when the city has no official parcel register.
+    if (upper.startsWith('EST:')) {
+        return typeof EstimatedParcelSource !== 'undefined' && EstimatedParcelSource.belongsToCity(id, city);
+    }
+
     if (city === 'buenos_aires') {
         // Buenos Aires ids predate the prefixed form and still occur bare.
         const baPattern = /^\d{3}-\d{3}-[0-9A-Z]+$/;

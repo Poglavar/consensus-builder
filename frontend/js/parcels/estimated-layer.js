@@ -1,4 +1,4 @@
-// Satellite/OSM illustrative rectangles: an independent, temporary map overlay and its controls.
+// Generate and persist an estimated parcel source; normal parcel presentation owns its boundaries.
 (function (global) {
     'use strict';
     let active = null, opening = null;
@@ -13,6 +13,27 @@
         if (text) value.textContent = text;
         return value;
     };
+    const cityId = () => String(global.CityConfigManager.getCurrentCityId());
+    const store = () => global.EstimatedParcelSource.createStore(global.localStorage);
+    function persist(collection, imageUrl, bounds) {
+        const proposals = global.proposalStorage.getAllProposals();
+        const referencedIds = proposals.flatMap(proposal => proposal.cadastreParcelIds || []);
+        const record = store().save(cityId(), { collection, imageUrl, bounds }, { referencedIds });
+        global.ParcelGroundFallback.installSource(record.city, global.EstimatedParcelSource.createSource(record));
+        // Source changes use the existing reload boundary so old in-flight source reads cannot mix
+        // into the new fabric. The saved source and controls restore before/after map boot.
+        global.ParcelGroundFallback.reloadWithSource();
+    }
+    function consumeRemovalClick(id) {
+        if (!active?.erase || !active.collection?.features.some(feature => feature.id === id)) return false;
+        try {
+            const collection = structuredClone(active.collection);
+            collection.features = collection.features.filter(feature => feature.id !== id);
+            collection.demo.removed_plot_ids.push(id);
+            persist(collection, active.saved.imageUrl, active.saved.bounds);
+        } catch (error) { active.showError(error); }
+        return true;
+    }
     function close() {
         opening = null;
         document.body.classList.remove('parcel-estimate-open');
@@ -32,6 +53,8 @@
         if (opening !== token || active) return;
         const map = global.map, L = global.L;
         if (!map || !L) throw new Error(tr('errors.map'));
+        const saved = global.ParcelGroundFallback.activeSource(cityId())?.kind === 'estimated-local'
+            ? store().read(cityId()) : null;
         const root = node('section', 'parcel-estimate-panel cb-card');
         root.setAttribute('aria-label', tr('title'));
         const header = node('div', 'parcel-estimate-heading');
@@ -58,7 +81,7 @@
         const settings = {};
         for (const [key, initial] of [['sensitivity', 55], ['rectangularity', 65]]) {
             const label = node('label', 'parcel-estimate-field', tr(key)), input = node('input');
-            input.type = 'range'; input.min = '0'; input.max = '100'; input.value = initial;
+            input.type = 'range'; input.min = '0'; input.max = '100'; input.value = saved?.collection.demo.settings[key] ?? initial;
             input.id = `parcel-estimate-${key}`; label.appendChild(input); root.appendChild(label); settings[key] = input;
         }
         const status = node('p', 'parcel-estimate-status', tr('ready'));
@@ -81,8 +104,8 @@
         const group = L.layerGroup().addTo(map);
         if (!map.getPane('parcelEstimateImagery')) map.createPane('parcelEstimateImagery');
         const frame = L.rectangle([[0, 0], [0, 0]], { className: 'parcel-estimate-frame', interactive: false }).addTo(group);
-        const state = { map, control, group, controller: null, area: null, collection: null, image: null, plots: null,
-            erase: false, removed: [], attribution: ATTRIBUTION, updateArea };
+        const state = { map, control, group, controller: null, area: null, collection: saved?.collection || null, saved,
+            erase: false, attribution: ATTRIBUTION, updateArea, showError };
         active = state;
         document.body.classList.add('parcel-estimate-open');
         map.attributionControl?.addAttribution(ATTRIBUTION);
@@ -107,10 +130,22 @@
             const stats = state.collection.demo.stats;
             status.textContent = tr('result', { count: state.collection.features.length,
                 coverage: Math.round(stats.groundCoverage * 100), unassigned: stats.unassignedBuildings,
-                removed: state.removed.length });
+                removed: state.collection.demo.removed_plot_ids?.length || 0 });
+        }
+        function showError(error) {
+            const key = error.code === 'estimate-in-use' ? 'inUse' : error.code === 'estimate-storage' ? 'storage'
+                : ['area', 'context', 'imagery', 'busy', 'processing'].includes(error.message) ? error.message : 'network';
+            status.textContent = tr(`errors.${key}`);
         }
         size.addEventListener('change', updateArea);
         map.on('moveend', updateArea); updateArea();
+        if (saved) {
+            const [w, s, e, n] = saved.bounds;
+            if (saved.imageUrl) L.imageOverlay(saved.imageUrl, [[s, w], [n, e]],
+                { opacity: 1, pane: 'parcelEstimateImagery' }).addTo(group);
+            download.disabled = erase.disabled = false;
+            if (state.area) showSummary();
+        }
         cancel.addEventListener('click', () => state.controller?.abort());
         erase.addEventListener('click', () => {
             state.erase = !state.erase; erase.setAttribute('aria-pressed', String(state.erase));
@@ -132,29 +167,13 @@
                     base: typeof getBackendBase === 'function' ? getBackendBase() : '',
                     tileUrl: global.BasemapManager.satelliteTileUrl, onProgress: showProgress });
                 if (active !== state || controller.signal.aborted) return;
-                state.image?.remove(); state.plots?.remove();
-                const [w, s, e, n] = area.bounds;
-                state.image = L.imageOverlay(result.imageUrl, [[s, w], [n, e]], { opacity: 1, pane: 'parcelEstimateImagery' }).addTo(group);
-                state.collection = result.collection; state.removed = [];
-                state.collection.demo.removed_plot_ids = state.removed;
-                state.plots = L.geoJSON(result.collection, {
-                    style: { className: 'parcel-estimate-plot' },
-                    onEachFeature: (feature, layer) => {
-                        layer.bindTooltip(tr('plot', { area: Math.round(feature.properties.area_m2) }));
-                        layer.on('click', event => {
-                            if (!state.erase) return;
-                            L.DomEvent.stopPropagation(event);
-                            state.plots.removeLayer(layer);
-                            state.collection.features = state.collection.features.filter(item => item.id !== feature.id);
-                            state.removed.push(feature.id); showSummary();
-                        });
-                    }
-                }).addTo(group);
-                download.disabled = erase.disabled = false;
-                showSummary();
+                result.collection.demo.removed_plot_ids = [];
+                persist(result.collection, result.imageUrl, area.bounds);
             } catch (error) {
-                if (active === state) status.textContent = tr(controller.signal.aborted ? 'cancelled' :
-                    `errors.${['area', 'context', 'imagery', 'busy', 'processing'].includes(error.message) ? error.message : 'network'}`);
+                if (active === state) {
+                    if (controller.signal.aborted) status.textContent = tr('cancelled');
+                    else showError(error);
+                }
             } finally {
                 if (active === state) {
                     state.controller = null; start.disabled = size.disabled = false; cancel.hidden = true; updateArea();
@@ -162,8 +181,16 @@
             }
         });
         // Opening the imagery option starts one estimate; subsequent changes remain explicit.
-        if (state.area) start.click();
+        if (!saved && state.area) start.click();
     }
-    global.ParcelEstimates = { open, close, isOpen: () => Boolean(active) };
+    global.ParcelEstimates = { open, close, consumeRemovalClick, isOpen: () => Boolean(active) };
     global.addEventListener('cityChanged', close);
+    document.addEventListener('DOMContentLoaded', () => {
+        global.whenMapCoreReady().then(() => {
+            if (global.ParcelGroundFallback.activeSource(cityId())?.kind === 'estimated-local') return open();
+        }).catch(error => {
+            console.error('[ParcelEstimates] saved estimates could not be opened', error);
+            global.updateStatus?.(tr('errors.storage'));
+        });
+    }, { once: true });
 })(window);

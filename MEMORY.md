@@ -789,3 +789,5 @@ The user requires only per-city failed URL lists and working settings plus share
 - 2026-10-20: Apartment daylight reuses the stop viewer's SunCalc astronomy, compresses a Zagreb civil day into 20 seconds, and casts window-aware shadows with an assumed closed ceiling; unconfirmed north remains explicit and adjustable.
 
 - 2026-10-20: The user asked for four-sided, roughly rectangular illustrative plots and dropped equidistance requirements; the browser demo now uses rectangle-first subdivision, with incompatible fits explicitly unassigned.
+
+- 2026-10-20: The user wants imagery-generated parcels saved in browser localStorage and usable through normal parcel selection and local proposal tools; retain estimated provenance rather than keeping a transient display-only overlay.

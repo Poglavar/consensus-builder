@@ -65,7 +65,7 @@
     }
 
     // A session-level ground source the visitor chose when the register could not be loaded (a
-    // register link of their own). It stands in for the network for that city
+    // register link of their own, or saved imagery estimates). It stands in for the network for that city
     // and nothing else: see parcels/ground-fallback.js.
     function groundOverride(city) {
         try {
@@ -597,6 +597,14 @@
         const geom = geometry && geometry.type === 'Feature' ? geometry.geometry : geometry;
         if (!geom || !geom.type) throw new Error('Cadastral footprint geometry is missing.');
         const parcelsOnly = options.parcelsOnly === true;
+        const override = groundOverride(options.city || currentCity());
+        if (override?.fetchUnderGeometry) {
+            if (options.srid !== undefined && options.srid !== 4326) throw new Error('Local parcel geometry must use WGS84.');
+            const answer = await override.fetchUnderGeometry(geom);
+            noteSourceInView(options.city || currentCity(), override);
+            return { status: 'ready', features: answer.features, absentIds: [], returnsWGS84: true,
+                sourceSrid: 'EPSG:4326', coverage: null, count: answer.features.length, queryMs: null };
+        }
         const provider = cityConfig(options.city || currentCity())?.parcels;
         if (provider?.source === 'parcel-source') {
             if (options.srid !== undefined && options.srid !== 4326) throw new Error('Browser parcel geometry must use WGS84.');
@@ -638,6 +646,7 @@
 
     function supportsRoadIds(options = {}) {
         const city = String(options.city || currentCity());
+        if (groundOverride(city)) return false;
         return Boolean(roadConfig(city)?.url);
     }
 

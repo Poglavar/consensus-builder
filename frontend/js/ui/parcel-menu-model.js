@@ -133,6 +133,7 @@
         if (p.producedByProposalId && p.readjustmentPiece?.role === 'plot') return 'plotPiece';
         if (p.producedByProposalId && p.readjustmentPiece?.role === 'remainder') return 'remainder';
         if (p.producedByProposalId || p.liveParcelDerivation || p.formedByProposalIds?.length) return 'formed';
+        if (p.estimated === true) return 'estimated';
         if (p.cadastralPart === true) return 'sourcePart';
         const sources = Array.isArray(p.cadastreParcelIds) ? p.cadastreParcelIds.map(String) : [];
         if (sources.length) return sources.length === 1 && sources[0] === id ? 'source' : 'formed';
@@ -141,6 +142,7 @@
 
     function parcelIdentityTitle(kind) {
         const titles = {
+            estimated: ['panel.parcel.identity.estimated', 'Estimated parcel {{number}}'],
             source: ['panel.parcel.identity.source', 'Source parcel {{number}}'],
             sourcePart: ['panel.parcel.identity.sourcePart', 'Source parcel part {{number}}'],
             plotPiece: ['panel.parcel.identity.plotPiece', 'Plot piece {{number}}'],
@@ -156,7 +158,7 @@
     function displayParcelId(props, parcelId) {
         const p = props || {};
         const kind = parcelIdentityKind(p, parcelId);
-        if ((kind === 'source' || kind === 'unknown')
+        if ((kind === 'source' || kind === 'unknown' || kind === 'estimated')
             && p.parcelIdentityKind === 'geometry-sha256-v1' && String(p.geometryDisplayId || '').trim()) {
             return String(p.geometryDisplayId).trim();
         }

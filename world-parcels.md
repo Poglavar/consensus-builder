@@ -61,13 +61,14 @@ Known evidence caveats: Berlin's sample was relayed through a summarising tool r
 
 Show: **“We could not find an open data source for your city's parcels.”** Offer explicit paths. Continue to offer these when research is incomplete or a source is temporarily unavailable, with wording that states the actual status.
 
-**Built (October 2026):** the screen exists as `frontend/js/parcels/ground-fallback.js`. A visitor first sees the official register attempted; when that viewport fetch fails, or the city's config says `parcels.strategy: 'none'`, the screen names which of the two happened (a failed request is never reported as "no register", and the reverse) and offers four ways on: **retry** (only when the failure reads as temporary), **enter your own link to a register** (path 1 below, with the sample validation it describes), **estimate parcel boundaries from satellite imagery** (best-effort recognition that may be incomplete or wrong and does not establish legal boundaries; the rectangular browser estimator described below is available through `window.ParcelEstimates`), and **apply a Schelling point algorithm** (see [`schelling-parcels.md`](schelling-parcels.md)). Only a supplied register URL becomes a parcel source for that city for the browser session. The imagery estimate and Schelling plan are separate temporary overlays; neither enters the cadastral repository or registry.
+**Built (October 2026):** the screen exists as `frontend/js/parcels/ground-fallback.js`. A visitor first sees the official register attempted; when that viewport fetch fails, or the city's config says `parcels.strategy: 'none'`, the screen names which of the two happened (a failed request is never reported as "no register", and the reverse) and offers four ways on: **retry** (only when the failure reads as temporary), **enter your own link to a register** (path 1 below, with the sample validation it describes), **estimate parcel boundaries from satellite imagery** (best-effort recognition that may be incomplete or wrong and does not establish legal boundaries; the rectangular browser estimator described below is available through `window.ParcelEstimates`), and **apply a Schelling point algorithm** (see [`schelling-parcels.md`](schelling-parcels.md)). A supplied register URL becomes a parcel source for that browser session; imagery estimates become a persistent browser-local source with explicit estimated provenance. Both use the normal parcel repository and presentation path, and neither is added to the public source registry. The Schelling plan remains a separate temporary overlay.
 
 1. **Enter a parcel-data URL.** Initially accept documented GeoJSON FeatureCollection, OGC API Features, or ArcGIS FeatureServer query URLs through constrained adapters; add WFS/GML or archive formats only with parsers. Fetch a bounded sample, report CORS/auth/size errors, and check that features are closed Polygon/MultiPolygon rings, have plausible coordinates/CRS, and overlap the selected city's vicinity. Reject malformed or remote geometry and duplicate unstable IDs. If valid, show a preview and load viewport chunks into the same repository/cache path. A user-supplied URL is not automatically added to the public registry; review its rights, stability, and coverage first.
 2. **Guess parcels.** This is an explicitly estimated layer, never labelled cadastre. Use available satellite imagery rights, OSM buildings/roads, and local geometry heuristics: avoid splitting individual homes where evidence supports it, but allow for OSM footprints that aggregate buildings across several parcels; road edges constrain fronts; rectilinear/orthogonal candidates should be preferred where appropriate. Voronoi is only a seed. Evaluate a self-hosted segmentation model such as SAM 3 for boundary hints, then vectorize, close, and validate polygons. Use no paid LLM calls or LLM tokens in this pipeline. Store confidence/provenance, expose manual corrections, and do not treat inferred boundaries as ownership evidence.
 
    **Available main-map option (2026-10-20):** choose **Estimate parcel boundaries from satellite imagery**,
-   and the first estimate starts automatically for the current viewport when it is within the size limit.
+   and the first estimate starts automatically for the current viewport when it is within the size limit
+   and no saved estimate source is active. Results are saved in this browser and restored on refresh.
    To regenerate, pan/zoom or select a 128, 256 or 512 m square, then press **Generate estimates**.
    Viewports are limited to 2 km per side and sampled without stretching on a grid whose longest
    edge is 512 cells; the shorter extent expands by less than one cell. Borders use light green. A bounded MapTiler
@@ -75,8 +76,12 @@ Show: **“We could not find an open data source for your city's parcels.”** O
    recipe in a cancellable Web Worker. At most nine imagery tiles are requested. Source failure or
    partial OSM context is an error, not an empty map. Sliders change image-edge support and street
    alignment; the remove-plot control allows review, and GeoJSON exports the displayed estimates with
-   source hashes and attribution. Closing or changing city removes this in-memory layer. It does not
-   create cadastral IDs, ownership claims or proposals. MapTiler is used for this project's stated
+   source hashes and attribution. Saved estimates load through the regular parcel repository and presenter:
+   click an **Estimated parcel** to select it and use local planning/proposal tools. Closing the controls
+   or changing city keeps the saved source. A source switch reloads the map to keep source reads isolated.
+   Regeneration replaces the saved set, but cannot remove parcels referenced by local proposals.
+   Generated IDs identify estimated local geometry; generation establishes no ownership or legal boundaries
+   and does not publish a proposal. MapTiler is used for this project's stated
    non-commercial academic/public-good purpose; preserve attribution. See
    [source API](https://docs.maptiler.com/sdk-js/api/sources/) and
    [terms](https://www.maptiler.com/terms/). [Runtime](frontend/js/parcels/estimate/runtime.mjs),

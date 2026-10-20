@@ -123,7 +123,7 @@ describe('one parcel recovery dialog after the introduction', () => {
         expect(window.ParcelGroundFallback.activeSource('sample')).toBeNull();
     });
 
-    it('opens satellite estimates as a map overlay without installing a parcel source', async () => {
+    it('opens the satellite estimator and leaves source installation to successful generation', async () => {
         const { window, document } = boot();
         window.closeSiteIntro();
         const opened = [];

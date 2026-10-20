@@ -435,8 +435,8 @@ one from the word “envelope”. No mapping equates these records with one anot
 
 Observed in ParcelBench only (2026-10-19): an **inferred plot candidate** is a generated polygon
 feature supported by imagery/model and reconstruction inputs. It asserts no registered parcel
-identity or ownership. The runtime fallback proposed for locations without cadastre is not yet
-integrated; this experiment does not resolve the cadastral/authored/runtime distinctions in V05.
+identity or ownership. This offline experiment does not resolve the cadastral/authored/runtime
+distinctions in V05. The subsequently integrated main-map estimate source is described below.
 
 A **visible-division probe** binds two image-pixel anchors to hashed imagery and its metric extent.
 Relation `separate` records an agent-reviewed physical/use division; `same_surface` is a secondary
@@ -508,8 +508,8 @@ undo history is session-local. This intentionally replaces v2 distance growth, s
 straightening and draft identity without a compatibility reader. The three-example playground and the main map share this one recipe; frozen evaluation records
 remain separate. The main-map **imagery estimate layer** defaults to the current viewport, with
 128, 256 or 512 m squares available as explicit choices. The viewport follows pan/zoom until generation
-starts; opening the layer does not reposition the map and starts one estimate automatically when the
-viewport is valid. Subsequent pan/zoom and control changes require explicit regeneration; reopening
+starts; opening the tool does not reposition the map and starts one estimate automatically when the
+viewport is valid and no saved source is active. Existing saved estimates restore without regeneration. Subsequent pan/zoom and control changes require explicit regeneration; reopening
 an already open layer does not start another request. Areas are limited to 2 km per side, with
 a 512-cell longest edge and the shorter extent rounded outward by less than one cell to preserve
 square metric cells. The export retains the requested geographic bounds and actual raster frame.
@@ -518,13 +518,28 @@ Web Mercator scaled by cosine of the centre latitude; metric areas are local app
 not survey measurements. The export records that scale, centre, source hashes and generated
 coverage. Removed plot IDs are recorded separately; coverage refers to generation before removals.
 
-The layer is temporary browser-session presentation, created only by the satellite-imagery option.
-It never seeds `CadastralParcelRepository` or `LiveParcelFabric`, changes a parcel source, creates
-consent/ownership IDs, or publishes a proposal. Regeneration replaces only this layer after successful
-completion; cancellation, source failures and incomplete/truncated OSM replies retain the previous
-result. Closing the panel or changing city removes it. GeoJSON downloads retain estimated and
-unvalidated labels. This replaces the unimplemented `ParcelOcrJobs` hook with `ParcelEstimates`;
-there is no background server job or compatibility reader.
+The main-map result is a **local estimated parcel source**, saved per city in browser localStorage
+as `estimated-parcel-source/1`. It enters `CadastralParcelRepository`, `LiveParcelFabric` and
+`ParcelPresenter` through the existing source adapter, so normal selection, site binding and local
+proposal authoring use its geometry. These legacy repository/API names describe the runtime route;
+they do not make an estimate surveyed cadastre or establish ownership. Every feature retains
+`estimated: true`, `accuracy: unvalidated`, imagery/OSM provenance and an explicit
+`estimated-local:sha256:<city-hash>` source descriptor. Its `EST:<city-hash>:<geometry-hash>` ID
+commits to exact geometry encoding; it is a local source reference, not a legal parcel number.
+City membership recognizes the city hash, including proposal-derived child IDs, so normal boot
+replay and city-scoped tools retain proposals made on these estimates.
+Menu and panel titles say **Estimated parcel**, and their short display reference is not the full ID.
+
+Generation saves and verifies the complete source before switching it. The established source-change
+reload prevents old in-flight reads mixing into the new fabric. Saved estimates restore on fresh
+visits; closing the controls or changing city does not erase them. Regeneration replaces this city's
+saved set. Replacing/removing an ID referenced by a local proposal is refused; cancellation, source
+failure and storage failure retain the previous saved set. No proposal is published or ownership
+assigned by generation. Remote catalog validation is not bypassed for this local-only source.
+The site tool binds against these saved parcels locally and labels that result; it does not request
+an official server binding for a source held only in this browser.
+This intentionally replaces the transient overlay-only contract; no old overlay records are migrated.
+[Local source](frontend/js/parcels/estimated-source.js),
 [Recipe](frontend/js/parcels/estimate/core.mjs),
 [rectangular subdivision](frontend/js/parcels/estimate/rectangles.mjs),
 [export](frontend/js/parcels/estimate/geometry.mjs),

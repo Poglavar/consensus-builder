@@ -6,17 +6,16 @@
 //   1. Retry        — only for a failure that reads as temporary (network, 5xx, timeout).
 //   2. Own link     — a GeoJSON / OGC API Features / ArcGIS FeatureServer URL the visitor knows,
 //                     validated on a bounded sample before it is trusted for the viewport.
-//   3. Imagery      — best-effort inference of parcel boundaries from satellite imagery. The
-//                     pipeline is being built elsewhere; this entry point reports availability.
-//                     OCR is only the working name retained in the integration contract.
+//   3. Imagery      — best-effort inference of parcel boundaries from satellite imagery, saved as
+//                     a local estimated parcel source. OCR is only the recovery option's name.
 //   4. Schelling    — shows the Schelling plan layer (js/schelling/): streets, blocks and plots
 //                     everyone can derive independently, drawn over whatever ground is here. It is
 //                     not a parcel source; what is proposed from it stands on open ground.
 //
 // Option 2 becomes a parcel SOURCE for the city for this browser session: fetch.js asks
 // `activeSource(city)` before it talks to the network, so the repository, fabric and presenter see
-// these parcels the way they see cadastral ones. Nothing here is persisted beyond sessionStorage,
-// and nothing here is ever labelled a cadastre: every feature carries its provenance.
+// these parcels the way they see cadastral ones. Imagery estimates use the same source boundary,
+// with their polygons retained in localStorage. Every feature keeps its source provenance.
 //
 // A failed fetch and "no register" are kept apart on purpose (see unsurveyed-ground.md): the dialog
 // states which one happened, and only a temporary failure gets a Retry button.
@@ -157,6 +156,9 @@
     function installSource(cityId, source) {
         const city = String(cityId || currentCityId());
         if (!source || typeof source.fetchCell !== 'function') throw new TypeError('A ground source needs fetchCell().');
+        if (source.kind !== 'estimated-local' && global.EstimatedParcelSource) {
+            global.EstimatedParcelSource.createStore(global.localStorage).setActive(city, false);
+        }
         sources.set(city, source);
         const descriptor = typeof source.describe === 'function' ? source.describe() : null;
         writeSession(SESSION_KEY_PREFIX + city, descriptor ? JSON.stringify(descriptor) : null);
@@ -166,6 +168,7 @@
 
     function clearSource(cityId) {
         const city = String(cityId || currentCityId());
+        if (global.EstimatedParcelSource) global.EstimatedParcelSource.createStore(global.localStorage).setActive(city, false);
         sources.delete(city);
         writeSession(SESSION_KEY_PREFIX + city, null);
     }
@@ -363,15 +366,14 @@
 
     // ---- restoring a session's choice ----------------------------------------------------------
 
-    // A reload within the same tab keeps the visitor's own register link. A NEW visit attempts the
-    // official register.
+    // A reload within the same tab keeps the visitor's own register link. Saved estimates also
+    // survive a new tab/visit and are restored before any parcel request.
     function restoreFromSession(cityId) {
         const city = String(cityId || currentCityId());
         if (!city || sources.has(city)) return activeSource(city);
         const raw = readSession(SESSION_KEY_PREFIX + city);
-        if (!raw) return null;
         try {
-            const descriptor = JSON.parse(raw);
+            const descriptor = raw ? JSON.parse(raw) : null;
             if (descriptor && descriptor.kind === 'custom-url' && descriptor.url) {
                 // The URL was validated when it was entered; trusting it again for the same session
                 // is the same trust. A viewport fetch re-validates every reply anyway.
@@ -380,7 +382,11 @@
                 sources.set(city, source);
                 return source;
             }
-        } catch (_) { }
+            if ((!descriptor || descriptor.kind === 'estimated-local') && global.EstimatedParcelSource) {
+                const source = global.EstimatedParcelSource.createStore(global.localStorage).readSource(city);
+                if (source) { sources.set(city, source); return source; }
+            }
+        } catch (error) { console.error('[GroundFallback] saved parcel source could not be restored', error); }
         writeSession(SESSION_KEY_PREFIX + city, null);
         return null;
     }
@@ -700,6 +706,7 @@
         activeSource,
         installSource,
         clearSource,
+        reloadWithSource,
         probeCustomUrl,
         restoreFromSession,
         onGroundUnavailable,

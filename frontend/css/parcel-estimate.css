@@ -38,8 +38,6 @@ body.parcel-estimate-open #explore-banner { display: none; }
 .parcel-estimate-actions [aria-pressed="true"] { background: var(--cb-warning-soft); border-color: var(--cb-warning); }
 .parcel-estimate-attribution { display: flex; flex-wrap: wrap; gap: 6px; font-size: 10px; }
 .parcel-estimate-frame { fill: none; stroke: var(--cb-primary); stroke-width: 2; stroke-dasharray: 7 5; }
-.parcel-estimate-plot { fill: var(--cb-parcel-estimate-boundary); fill-opacity: 0.12; stroke: var(--cb-parcel-estimate-boundary); stroke-opacity: 1; stroke-width: 2; }
-.parcel-estimate-plot:hover { fill-opacity: 0.35; }
 .leaflet-parcelEstimateImagery-pane { z-index: var(--cb-z-map-pane-estimate-imagery); pointer-events: none; }
 @media (max-width: 400px) {
     .parcel-estimate-panel { padding: 9px; }

@@ -134,6 +134,7 @@ describe('parcel menu facts', () => {
 describe('parcel identity presentation', () => {
     it.each([
         [{ cadastreParcelIds: ['opaque#source'] }, 'opaque#source', 'source'],
+        [{ estimated: true, cadastreParcelIds: ['EST-1'] }, 'EST-1', 'estimated'],
         [{ cadastralPart: true, cadastreParcelIds: ['source'] }, 'component', 'sourcePart'],
         [{ producedByProposalId: 'design', cadastralPart: true }, 'piece', 'formed'],
         [{ producedByProposalId: 'design', readjustmentPiece: { role: 'plot', plotFingerprint: 'plot-a' } }, 'piece', 'plotPiece'],
@@ -154,6 +155,10 @@ describe('parcel identity presentation', () => {
             producedByProposalId: 'design', readjustmentPiece: { role: 'plot', plotFingerprint: 'plot-a' },
             parcelIdentityKind: 'geometry-sha256-v1', geometryDisplayId: 'G1-source'
         }, 'plot-piece')).toBe('plot-piece');
+        expect(Model.displayParcelId({
+            estimated:true, parcelIdentityKind:'geometry-sha256-v1', geometryDisplayId:'EST-short'
+        }, 'EST-long-hash')).toBe('EST-short');
+        expect(Model.parcelIdentityTitle('estimated').fallback).toBe('Estimated parcel {{number}}');
     });
 });
 
