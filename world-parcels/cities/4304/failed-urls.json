@@ -1,0 +1,6 @@
+[
+  {
+    "url": "https://bz1uwwpkuinzbk94.svcs5.arcgis.com/bz1uwWPKUInZBK94/arcgis/rest/services/CA_Statewide_Parcels_Public_view/FeatureServer/0",
+    "reason": "Held: the production adapter fails closed in Hemet because the CAL FIRE statewide layer uses APN 'RW' (FIPS 06065) as a right-of-way placeholder on thousands of distinct polygons (a direct non-geometry reread of the single cached key returns the 2,000-row transfer limit with 1,995 distinct Shape__Area values), so sampling and the fresh collected-ID reread fail with 'conflicting geometry for one p…"
+  }
+]

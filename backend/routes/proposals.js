@@ -10,12 +10,14 @@ import { isProposalRowId, oneProposalByIdentifierClause, partitionProposalIdenti
 const corridorOsmForm = createRequire(import.meta.url)('../../frontend/js/corridor-osm-form.js');
 import { defaultThumbnailQueue } from '../thumbnails/thumbnail-queue.js';
 import { publicApiBaseUrl } from '../utils/public-base-url.js';
+import { proposalDocument, SEMANTIC_BASE_ERROR, SEMANTIC_RECORD_ERROR } from '../semantics/published-records.js';
 import { imageFileExists } from '../utils/image-store.js';
 import { canonicalizeLifecycleStatus, resolveIncomingLifecycleStatus } from '../proposals/lifecycle.js';
 import {
     findLegacyCadastreDeclaration,
     findNonCadastralParentDeclaration,
     isDerivedParcelDeclaration,
+    projectProposalLifecycleEvidence,
     serializeProposalRow,
     stripLocalProposalState
 } from '../proposals/serializer.js';
@@ -40,7 +42,9 @@ import { createOwnerDecisionHandlers, createOwnerDecisionStore } from '../propos
 import { createUploadRateLimiter } from '../utils/nft-asset-upload.js';
 
 const require = createRequire(import.meta.url);
+const proposalDesignGoals = require('../../frontend/js/proposals/design-goals.js');
 const proposalKind = require('../../frontend/js/proposals/proposal-kind.js');
+const proposalOrigin = require('../../frontend/js/proposals/origin.js');
 
 const MAX_PROPOSAL_ID_LENGTH = 255;
 const MAX_CITY_LENGTH = 100;
@@ -402,7 +406,7 @@ export const proposalCreateBodyValidator = createJsonBodyValidator({
         // Which cadastre frame the stamps were measured against ({ capturedAt }) — D5/§11.
         cadastreFrame: { required: false, validate: validators.optional(validators.plainObject({ label: 'cadastreFrame' })) },
         // Hash of the published EFFECT (footprint + per-parcel cession); acceptances bind to it.
-        // Room for a scheme prefix: a readjustment's is `lr2-sha256:` + 64 hex (75 characters).
+        // Room for a scheme prefix: a readjustment's is `lr3-sha256:` + 64 hex.
         effectHash: { required: false, validate: validators.optional(validators.string({ maxLength: 128, label: 'effectHash', disallowControlChars: true })) },
         acceptedParcelIds: { required: false, validate: validators.optional(stringArrayValidator('acceptedParcelIds'), { nullValue: [] }) },
         ownerAcceptances: { required: false, validate: validators.optional(validators.plainObject({ label: 'ownerAcceptances' }), { nullValue: {} }) },
@@ -413,7 +417,6 @@ export const proposalCreateBodyValidator = createJsonBodyValidator({
         lens: { required: false, validate: lensArrayValidator },
         bounds: { required: false, validate: boundsValidator },
         onchain: { required: false, validate: validators.optional(validators.plainObject({ label: 'onchain' })) },
-        onchainData: { required: false, validate: validators.optional(validators.plainObject({ label: 'onchainData' })) },
         screenshotUrl: { required: false, validate: validators.optional(validators.string({ maxLength: 2000, label: 'screenshotUrl', disallowControlChars: true })) },
         screenshot_url: { required: false, validate: validators.optional(validators.string({ maxLength: 2000, label: 'screenshot_url', disallowControlChars: true })) },
         // Epoch bucket for the plan timeline (presentation metadata; see proposals-ddl.sql).
@@ -499,6 +502,16 @@ export function precheckProposalCreate(req) {
         if (Object.prototype.hasOwnProperty.call(body, field)) {
             return fail(`${field} is not a creation field. Send the authored identifier as proposalId; the server assigns the database row id.`);
         }
+    }
+    for (const key of ['sourceProposalId', 'replacementOfProposalId', 'copiedFromProposalId', 'copiedFromName']) {
+        if (Object.prototype.hasOwnProperty.call(body, key)) return fail(`${key} is retired. Send one typed proposalOrigin.`);
+    }
+    try {
+        const origin = proposalOrigin.normalize(body.proposalOrigin);
+        if (origin?.source?.kind === 'local') return fail('A published proposalOrigin cannot contain a browser-local key.');
+    } catch (error) { return fail(error.message); }
+    if (Object.prototype.hasOwnProperty.call(body, 'onchainData')) {
+        return fail('onchainData is retired. Minted proposals must be verified through POST /proposals/mirror.');
     }
     if (!req.chainMirror && (body.onchain || body.onchainData || body.nft || body.chainMirror)) {
         return fail('Minted proposals must be mirrored from their chain location using POST /proposals/mirror.', 'chain-mirror-required');
@@ -684,9 +697,10 @@ export function createProposalParcelPrecheck(pool) {
 
 // Claims a free upload cannot prove, removed before storage (the record is otherwise stored as
 // sent). `agent` is the paid-agent stamp — only the x402 route may write it. Owner acceptances and
-// an Executed lifecycle assert that OTHER people consented / land changed hands; the browser's
-// values are a local simulation, and on-chain proposals get their real lifecycle from the oracle
-// (oracle/proposal-lifecycle.js), which keys on onchain.proposalId. Returns what was dropped.
+// an Executed lifecycle need independent evidence; browser values cannot establish these claims.
+// A verified mirror initializes lifecycle from its chain read. The separate lifecycle oracle
+// can subsequently update that projection. Neither establishes legal title or physical realization.
+// Returns what was dropped.
 //
 // Also dropped on the free route: an author that is a wallet address or agent persona (see
 // isReservedAuthorIdentity) and any client thumbnail that is not an image in our own store (see
@@ -770,9 +784,8 @@ export function createProposalCreateHandler(pool) {
             // Read from the sanitized copy: dropUnprovableClaims has removed a reserved author.
             const author = typeof proposal.author === 'string' ? proposal.author : null;
             let lifecycleStatus = precheck.value.lifecycleStatus;
-            if (lifecycleStatus === 'Executed') {
+            if (!req.chainMirror && lifecycleStatus === 'Executed') {
                 lifecycleStatus = 'Active';
-                delete proposal.executedAt;
                 droppedClaims.push('lifecycleStatus:Executed');
             }
             const offer = validated.offer ?? null;
@@ -813,7 +826,7 @@ export function createProposalCreateHandler(pool) {
             const lens = validated.lens ?? null;
             const bounds = validated.bounds ?? null;
             // Sanitized copies (dropUnprovableClaims): a foreign thumbnail is already gone from these.
-            const onchainData = proposal.onchain ?? proposal.onchainData ?? null;
+            const onchainData = proposal.onchain ?? null;
             const clientScreenshot = proposal.screenshotUrl ?? proposal.screenshot_url ?? null;
             const screenshotUrl = typeof clientScreenshot === 'string' ? clientScreenshot.trim() : null;
             const epochYear = validated.epochYear ?? null;
@@ -1092,20 +1105,44 @@ export function createProposalCreateHandler(pool) {
 }
 
 // The marketplace/on-chain LIFECYCLE status, past-expiry-aware (shared with GET /markets). A proposal past expires_at reads
-// as 'Expired' even if the stored value is stale. This one expression is used both for the
+// as 'Expired' only when its stored lifecycle is Active. This one expression is used both for the
 // returned lifecycleStatus and for the ?lifecycle= FILTER, so filtering and display agree
 // (case-insensitive — the DB may carry both 'Executed' and 'executed').
 export const EFFECTIVE_STATUS_SQL = `
     CASE
-        WHEN LOWER(COALESCE(lifecycle_status, '')) NOT IN ('executed', 'cancelled', 'expired')
+        WHEN LOWER(BTRIM(COALESCE(lifecycle_status, ''))) = 'active'
             AND expires_at IS NOT NULL AND expires_at <= now()
         THEN 'Expired'
-        WHEN LOWER(COALESCE(lifecycle_status, '')) = 'executed' THEN 'Executed'
-        WHEN LOWER(COALESCE(lifecycle_status, '')) = 'cancelled' THEN 'Cancelled'
-        WHEN LOWER(COALESCE(lifecycle_status, '')) = 'expired' THEN 'Expired'
-        WHEN LOWER(COALESCE(lifecycle_status, '')) = 'draft' THEN 'draft'
-        ELSE 'Active'
+        WHEN LOWER(BTRIM(COALESCE(lifecycle_status, ''))) = 'executed' THEN 'Executed'
+        WHEN LOWER(BTRIM(COALESCE(lifecycle_status, ''))) = 'cancelled' THEN 'Cancelled'
+        WHEN LOWER(BTRIM(COALESCE(lifecycle_status, ''))) = 'expired' THEN 'Expired'
+        WHEN LOWER(BTRIM(COALESCE(lifecycle_status, ''))) = 'draft' THEN 'draft'
+        WHEN LOWER(BTRIM(COALESCE(lifecycle_status, ''))) = 'active' THEN 'Active'
+        ELSE 'Unknown'
     END`;
+
+const PROPOSAL_LIFECYCLE_EVENT_SQL = `(
+    SELECT jsonb_build_object(
+        'id', event_id,
+        'eventType', event_type,
+        'subject', jsonb_build_object('type', subject_type, 'id', subject_id),
+        'outcome', outcome,
+        'observedAt', source_observed_at,
+        'attester', jsonb_build_object('kind', 'solana_program', 'address', attester),
+        'source', jsonb_build_object(
+            'chain', evidence->'source'->>'chain',
+            'transaction', transaction_signature,
+            'hash', source_hash
+        ),
+        'evidence', evidence
+    )
+    FROM consensus.land_event
+    WHERE event_type = 'proposal_lifecycle'
+      AND subject_type = 'proposal'
+      AND subject_id = proposal_data->'chainMirror'->'ref'->>'tokenId'
+    ORDER BY source_observed_at DESC, created_at DESC
+    LIMIT 1
+)`;
 
 export function setupProposalsRoute(app, pool, mirrorOptions = {}) {
 
@@ -1123,7 +1160,8 @@ export function setupProposalsRoute(app, pool, mirrorOptions = {}) {
         cadastre_parcel_ids, ownership_flow, cadastre_frame,
         accepted_parcel_ids, owner_acceptances,
         road_proposal, building_proposal, structure_proposal, reparcellization,
-        lens, bounds, onchain_data, screenshot_url, epoch_year, agent_payment_id, proposal_data`;
+        lens, bounds, onchain_data, screenshot_url, epoch_year, agent_payment_id, proposal_data,
+        ${PROPOSAL_LIFECYCLE_EVENT_SQL} AS lifecycle_event`;
 
     // ORDER BY only over columns the summary actually carries. Computed sorts the client offers
     // (area, parcel count, acceptance ratio) need per-row geometry/JSONB work the list endpoint
@@ -1139,11 +1177,12 @@ export function setupProposalsRoute(app, pool, mirrorOptions = {}) {
 
     const parseFilters = (req) => {
         const city = normalizeCityCode(req.query.city);
-        // The lifecycle-phase filter (Active/Executed/Cancelled/Expired). Named `?lifecycle=`.
+        // The lifecycle-phase filter also exposes Unknown read results. Named `?lifecycle=`.
         const lifecycleRaw = typeof req.query.lifecycle === 'string' && req.query.lifecycle.trim()
             ? req.query.lifecycle.trim()
             : null;
-        const lifecycle = lifecycleRaw ? canonicalizeLifecycleStatus(lifecycleRaw) : null;
+        const lifecycle = lifecycleRaw?.toLowerCase() === 'unknown' ? 'Unknown'
+            : lifecycleRaw ? canonicalizeLifecycleStatus(lifecycleRaw) : null;
         const type = req.query.type;
         const author = req.query.author;
         const goal = typeof req.query.goal === 'string' && req.query.goal.trim() ? req.query.goal.trim() : null;
@@ -1162,7 +1201,7 @@ export function setupProposalsRoute(app, pool, mirrorOptions = {}) {
             parcelIds,
             lifecycle,
             lifecycleError: lifecycleRaw && !lifecycle
-                ? 'lifecycle must be one of: Active, Executed, Cancelled, Expired, draft.'
+                ? 'lifecycle must be one of: Active, Executed, Cancelled, Expired, draft, Unknown.'
                 : null,
             type,
             author,
@@ -1241,7 +1280,7 @@ export function setupProposalsRoute(app, pool, mirrorOptions = {}) {
         }
 
         if (goal) {
-            clauses.push(`COALESCE(proposal_data->>'goal', type) = $${params.length + 1}`);
+            clauses.push(`proposal_data->>'goal' = $${params.length + 1}`);
             params.push(goal);
         }
 
@@ -1369,12 +1408,13 @@ export function setupProposalsRoute(app, pool, mirrorOptions = {}) {
                 COALESCE(title, name, proposal_data->>'title', proposal_data->>'name') AS display_title,
                 COALESCE(author, proposal_data->>'author') AS author,
                 COALESCE(type, proposal_data->>'type') AS type,
-                -- The goal is the specific proposal kind (building / structure / reparcellization /
-                -- road / ...); type is the lossy backend column. Serving goal here stops the client
-                -- re-deriving it from type and mis-badging building/structure/parcel rows.
-                COALESCE(proposal_data->>'goal', type) AS goal,
+                -- Goal is an authored DesignGoals key; backend type is too broad to reconstruct it.
+                proposal_data->>'goal' AS goal,
                 ${EFFECTIVE_STATUS_SQL} AS effective_status,
                 created_at,
+                expires_at,
+                proposal_data->'chainMirror' AS chain_mirror,
+                ${PROPOSAL_LIFECYCLE_EVENT_SQL} AS lifecycle_event,
                 -- Base ancestry rides along so the claims/dossier surfaces can answer "does this
                 -- server proposal touch my parcel" without fetching every proposal in full.
                 cadastre_parcel_ids,
@@ -1413,8 +1453,14 @@ export function setupProposalsRoute(app, pool, mirrorOptions = {}) {
                     title: proposal.title || null,
                     author: proposal.author || null,
                     type: proposal.type || null,
-                    goal: row.goal || null,
+                    goal: proposalDesignGoals.keyOf({ goal: row.goal }),
                     lifecycleStatus: proposal.lifecycleStatus,
+                    lifecycleEvidence: projectProposalLifecycleEvidence({
+                        lifecycleStatus: proposal.lifecycleStatus,
+                        chainMirror: row.chain_mirror,
+                        lifecycleEvent: row.lifecycle_event,
+                        expiresAt: row.expires_at
+                    }).lifecycleEvidence,
                     createdAt: proposal.createdAt || null,
                     cadastreParcelIds: Array.isArray(row.cadastre_parcel_ids) ? row.cadastre_parcel_ids : null,
                     parcelSet: proposal.parcelSet,
@@ -1497,7 +1543,7 @@ export function setupProposalsRoute(app, pool, mirrorOptions = {}) {
                 SELECT id, proposal_id, city,
                        COALESCE(name, title, proposal_data->>'name', proposal_data->>'title') AS display_name,
                        COALESCE(type, proposal_data->>'type') AS type,
-                       COALESCE(proposal_data->>'goal', type) AS goal,
+                       proposal_data->>'goal' AS goal,
                        epoch_year, bounds, created_at,
                        COALESCE(screenshot_url, onchain_data->>'imageUrl') AS screenshot_url
                 FROM proposal
@@ -1520,7 +1566,7 @@ export function setupProposalsRoute(app, pool, mirrorOptions = {}) {
                     city: row.city,
                     name: row.display_name,
                     type: row.type,
-                    goal: row.goal,
+                    goal: proposalDesignGoals.keyOf({ goal: row.goal }),
                     epochYear: year,
                     bounds: row.bounds,
                     createdAt: row.created_at,
@@ -1583,9 +1629,15 @@ export function setupProposalsRoute(app, pool, mirrorOptions = {}) {
                 return res.status(404).json({ error: 'Proposal not found' });
             }
 
-            const [proposal] = await attachProposalFloorModels(pool, [serializeProposalRow(result.rows[0])]);
+            const serialized = serializeProposalRow(result.rows[0]);
+            if (req.query.format === 'jsonld') {
+                const document = proposalDocument(serialized, { baseUrl: publicApiBaseUrl() });
+                return res.type('application/ld+json').json(document);
+            }
+            const [proposal] = await attachProposalFloorModels(pool, [serialized]);
             res.json(proposal);
         } catch (err) {
+            if ([SEMANTIC_BASE_ERROR, SEMANTIC_RECORD_ERROR].includes(err.code)) return res.status(err.status).json({ error: err.message, code: err.code });
             if (isInvalidRecordError(err)) {
                 console.warn(`GET /proposals/${req.params.id}: ${err.detail || err.message}`);
                 return res.status(422).json({ error: err.message, code: err.code, detail: err.detail });
@@ -1609,60 +1661,55 @@ export function setupProposalsRoute(app, pool, mirrorOptions = {}) {
     // Pinning spends the IPFS quota, so it shares the upload routes' per-client limit.
     app.post('/proposals/:id/owner-decisions/bundle', createUploadRateLimiter(), ownerDecisions.bundle);
 
-    // Where a proposal came from and what was made from it. A fork or counterproposal records its
-    // source's id in proposal_data (sourceProposalId / replacementOfProposalId / copiedFromProposalId,
-    // written by the browser, frontend/js/proposals/create.js); this resolves the source when it was
-    // published and lists every published record that names this one as its source, so the original
-    // can show its counterproposals. A source that was only ever a local draft is reported as such.
+    // Publication references are scoped by canonical API base and database row. Browser keys
+    // and equal-looking authored identifiers never participate in publication lineage.
     app.get('/proposals/:id/lineage', async (req, res) => {
         try {
             const target = await pool.query(`
-                SELECT id, proposal_id,
-                       COALESCE(proposal_data->>'sourceProposalId', proposal_data->>'replacementOfProposalId', proposal_data->>'copiedFromProposalId') AS source_key,
-                       proposal_data->>'copiedFromName' AS source_name
-                FROM proposal
-                ${oneProposalByIdentifierClause(req.params.id)}
+                SELECT id, proposal_id, proposal_data->'proposalOrigin' AS proposal_origin
+                FROM proposal ${oneProposalByIdentifierClause(req.params.id)}
             `, [req.params.id]);
             const row = target.rows[0];
             if (!row) return res.status(404).json({ error: 'Proposal not found' });
-
+            const apiBase = proposalOrigin.apiBase(publicApiBaseUrl());
+            const origin = proposalOrigin.normalize(row.proposal_origin);
             let source = null;
-            if (row.source_key) {
-                const found = await pool.query(`
-                    SELECT id, proposal_id, title, name, ${EFFECTIVE_STATUS_SQL} AS effective_status
-                    FROM proposal
-                    ${oneProposalByIdentifierClause(row.source_key)}
-                `, [String(row.source_key)]);
-                const hit = found.rows[0];
-                source = hit
-                    ? { published: true, id: hit.id, proposalId: hit.proposal_id, title: hit.title || hit.name || null, status: hit.effective_status }
-                    : { published: false, proposalId: String(row.source_key), title: row.source_name || null };
+            if (origin) {
+                const reference = origin.source;
+                source = { resolution: 'unresolved', reference, title: origin.title };
+                if (reference?.kind === 'publication') {
+                    if (reference.apiBase !== apiBase) source.resolution = 'external';
+                    else {
+                        const found = await pool.query(`
+                            SELECT id, proposal_id, title, name, ${EFFECTIVE_STATUS_SQL} AS effective_status
+                            FROM proposal WHERE id = $1::bigint
+                        `, [reference.proposalRowId]);
+                        const hit = found.rows[0];
+                        source = hit
+                            ? { ...source, resolution: 'resolved', proposalRowId: hit.id,
+                                publicationApiBase: apiBase, authoredProposalId: hit.proposal_id,
+                                title: hit.title || hit.name || origin.title, status: hit.effective_status }
+                            : { ...source, resolution: 'not-found' };
+                    }
+                }
             }
-
-            const keys = [String(row.proposal_id), String(row.id)];
-            const derived = await pool.query(`
+            const derived = apiBase ? await pool.query(`
                 SELECT id, proposal_id, title, name, author, created_at, ${EFFECTIVE_STATUS_SQL} AS effective_status,
                        (proposal_data ? 'landFork') AS land_fork
                 FROM proposal
                 WHERE id <> $2
-                  AND (proposal_data->>'sourceProposalId' = ANY($1::text[])
-                    OR proposal_data->>'replacementOfProposalId' = ANY($1::text[])
-                    OR proposal_data->>'copiedFromProposalId' = ANY($1::text[]))
-                ORDER BY created_at DESC
-                LIMIT 50
-            `, [keys, row.id]);
+                  AND proposal_data->'proposalOrigin'->'source'->>'kind' = 'publication'
+                  AND proposal_data->'proposalOrigin'->'source'->>'apiBase' = $1
+                  AND proposal_data->'proposalOrigin'->'source'->>'proposalRowId' = $3
+                ORDER BY created_at DESC LIMIT 50
+            `, [apiBase, row.id, String(row.id)]) : { rows: [] };
             res.json({
-                id: row.id,
-                proposalId: row.proposal_id,
-                source,
+                proposalRowId: row.id, authoredProposalId: row.proposal_id, publicationApiBase: apiBase, source,
                 derived: derived.rows.map(entry => ({
-                    id: entry.id,
-                    proposalId: entry.proposal_id,
-                    title: entry.title || entry.name || null,
-                    author: entry.author || null,
-                    createdAt: entry.created_at,
-                    status: entry.effective_status,
-                    landFork: entry.land_fork === true
+                    proposalRowId: entry.id, publicationApiBase: apiBase,
+                    authoredProposalId: entry.proposal_id, title: entry.title || entry.name || null,
+                    author: entry.author || null, createdAt: entry.created_at,
+                    status: entry.effective_status, landFork: entry.land_fork === true
                 }))
             });
         } catch (err) {

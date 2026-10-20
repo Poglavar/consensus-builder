@@ -1,0 +1,22 @@
+[
+  {
+    "url": "https://lis.survey.gov.lk/rgd/",
+    "reason": "406"
+  },
+  {
+    "url": "https://app.survey.gov.lk/mapportal/"
+  },
+  {
+    "url": "https://it.survey.gov.lk/nsdi/lis/kml_service_tmp.php",
+    "reason": "406"
+  },
+  {
+    "url": "https://gisapps.nsdi.gov.lk/server/rest/services/SLNSDI/Planning_Cadastre/MapServer?f=pjson"
+  },
+  {
+    "url": "https://gisapps.nsdi.gov.lk/server/rest/services/SLNSDI/Planning_Cadastre/MapServer/2?f=pjson"
+  },
+  {
+    "url": "https://gisapps.nsdi.gov.lk/server/rest/services/SLNSDI/Planning_Cadastre/MapServer/2/query"
+  }
+]

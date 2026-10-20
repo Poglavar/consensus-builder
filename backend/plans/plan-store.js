@@ -1,5 +1,6 @@
 // Postgres access for named plans (ens_plan, plans.md). The route and the scripts share these queries;
 // everything about what a plan MEANS lives in plan-hash.js.
+import { assertPlanCommitment, assertPlanCurrent } from './plan-commitment.js';
 
 // What a member builds, in the shape plan-hash.js memberContent() reads.
 const MEMBER_COLUMNS = `p.id, p.proposal_id, COALESCE(p.title, p.name) AS title, p.city, p.type,
@@ -84,6 +85,8 @@ export function createPlanStore(pool) {
         // Inserts once; a taken slug surfaces as Postgres 23505. The site is the union of the
         // members' sites, or NULL when any member has none (such a plan cannot be minted).
         async insert(plan) {
+            assertPlanCommitment({ slug: plan.slug, proposal_ids: plan.proposalRowIds,
+                member_hashes: plan.memberHashes, plan_hash: plan.planHash });
             const { rows } = await pool.query(`
                 INSERT INTO ens_plan (slug, proposal_ids, title, description, author, place, city,
                     member_hashes, plan_hash, supersedes, site, creator_ip, creator_fingerprint)
@@ -100,9 +103,11 @@ export function createPlanStore(pool) {
         // For the mint script: the plan's identity and its site as GeoJSON.
         async mintInput(slug) {
             const { rows } = await pool.query(`
-                SELECT slug, title, city, plan_hash, onchain_data, ST_AsGeoJSON(site, 9)::json AS site
+                SELECT slug, title, city, proposal_ids, member_hashes, plan_hash, onchain_data, ST_AsGeoJSON(site, 9)::json AS site
                 FROM ens_plan WHERE slug = $1`, [slug]);
-            return rows[0] || null;
+            if (!rows[0]) return null;
+            const row = assertPlanCommitment(rows[0]);
+            return assertPlanCurrent(row, await this.members(row.proposal_ids));
         },
 
         async recordMint(slug, onchain) {

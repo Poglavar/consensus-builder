@@ -23,6 +23,10 @@ describe('hackathon canonical case', () => {
         const replay = parcelSetIdentity({ ...proposal, cadastreParcelIds: [...proposal.cadastreParcelIds].reverse() });
         expect(first).toMatchObject({ parcelCount: 3, parcelIds: ['HR-1-1', 'HR-1-2', 'HR-1-3'] });
         expect(first.setHash).toBe(replay.setHash);
+        expect(first.authority).toBeNull();
+        expect(first).not.toHaveProperty('referenceAt');
+        expect(first).not.toHaveProperty('geometryHash');
+        expect(parcelSetIdentity({ ...proposal, createdAt: '2027-01-01T00:00:00Z' })).toEqual(first);
     });
 
     it('models support, forecast and owner decision as parallel branches without inventing completion', () => {

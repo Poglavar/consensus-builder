@@ -1,0 +1,26 @@
+[
+  {
+    "url": "https://eland.addiscadaster.gov.et/"
+  },
+  {
+    "url": "https://eland.addiscadaster.gov.et/maps"
+  },
+  {
+    "url": "https://eland.addiscadaster.gov.et/assets/api.config.json"
+  },
+  {
+    "url": "https://eland.addiscadaster.gov.et/main.d3525dff4b9098d6.js"
+  },
+  {
+    "url": "https://geos.addiscadaster.gov.et/geoserver/ows?service=WFS&version=1.0.0&request=GetCapabilities"
+  },
+  {
+    "url": "https://geos.addiscadaster.gov.et/geoserver/ows?service=WFS&version=1.0.0&request=DescribeFeatureType&typeName=ncrprs_cadaster:v_1_registered_parcel"
+  },
+  {
+    "url": "https://geos.addiscadaster.gov.et/geoserver/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=ncrprs_cadaster:v_1_registered_parcel&outputFormat=application/json&srsname=EPSG:4326&bbox=38.8283,6.5248,38.8289,6.5254,EPSG:4326&maxFeatures=3"
+  },
+  {
+    "url": "https://ethionsdi.gov.et/"
+  }
+]

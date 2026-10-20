@@ -1,0 +1,14 @@
+[
+  {
+    "url": "https://ninacad.sprdf.ml/"
+  },
+  {
+    "url": "https://geodata.sprdf.ml/geoserver/sifMali/ows?service=WFS&version=2.0.0&request=GetCapabilities"
+  },
+  {
+    "url": "https://dndc.gouv.ml/cadastre/"
+  },
+  {
+    "url": "https://dnat.gouv.ml/wp-content/uploads/2026/01/SDU-KONOBOUGOU.pdf"
+  }
+]

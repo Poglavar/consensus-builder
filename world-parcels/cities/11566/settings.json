@@ -1,0 +1,116 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "11566",
+  "name": "Hong Kong, Hong Kong SAR",
+  "point": [
+    22.315,
+    114.1838
+  ],
+  "bindings": [
+    {
+      "appCityId": "hong_kong",
+      "runtimeConfig": {
+        "id": "hong_kong",
+        "label": "Hong Kong, Hong Kong SAR",
+        "currency": {
+          "locale": "en-HK",
+          "code": "HKD"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            22.315,
+            114.1838
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 19,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            22.315,
+            114.1838
+          ],
+          "fallbackDataset": [
+            114.1838,
+            22.315
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.0025,
+          "source": "parcel-source",
+          "sourceId": "hk-landsd-lot-index-api",
+          "idPrefix": "HK-LANDSD-LOT-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 6,
+          "attribution": "<a href=\"https://www.landsd.gov.hk/en/index.html\"><img src=\"/assets/parcel-sources/landsd-logo.svg\" alt=\"Lands Department\" style=\"height:24px;width:auto;vertical-align:middle\"></a> · Map from Lands Department · © Government of the Hong Kong SAR / <a href=\"https://portal.csdi.gov.hk/csdi-webpage/doc/TNC\">CSDI</a> · adapted"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "hk-landsd-lot-index-api",
+      "name": "Hong Kong Lands Department private-lot index",
+      "adapter": "wfs",
+      "version": "1.1.0",
+      "endpoint": "https://mapapi.geodata.gov.hk/gs/api/v1.0.0/iC1000/wfs",
+      "originEndpoint": "https://mapapi.geodata.gov.hk/gs/api/v1.0.0/iC1000/lot",
+      "featureType": "landsd:lot_lotindexapi",
+      "idField": "lotid",
+      "idType": "integer",
+      "idPrefix": "HK-LANDSD-LOT-",
+      "parcelNumberField": "cislotdisplayname",
+      "outFields": [
+        "lotid",
+        "cislotdisplayname",
+        "lastupdatedate",
+        "lotcode",
+        "lotnumber",
+        "lotnumberalpha",
+        "sectioncode",
+        "lottype"
+      ],
+      "pageSize": 1000,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 0.45,
+      "maxBboxWidthM": 750,
+      "maxBboxHeightM": 600,
+      "minRequestIntervalMs": 1000,
+      "countryCode": "HK",
+      "metricSrid": 32650,
+      "scope": "Lands Department iC1000 private-lot index only. Government Land Allocations and Short-Term Tenancies are separate collections and are not enabled here. Native lotid is distinct from transport WFS FID and the displayed lot name. Only bounded Hong Kong entry enabled; boundaries are indicative, not legal survey proof.",
+      "attribution": "Map from Lands Department. © Government of the Hong Kong SAR / CSDI. Adapted to WGS84. Official Lands Department logo displayed on map face.",
+      "licenceUrl": "https://portal.csdi.gov.hk/csdi-webpage/doc/TNC",
+      "catalogueUrl": "https://hosting.csdi.gov.hk/csdi-webpage/apidoc/LotIndexAPI",
+      "cityIds": [
+        "hong_kong"
+      ]
+    }
+  ]
+}

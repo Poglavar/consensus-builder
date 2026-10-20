@@ -50,6 +50,20 @@ describe('proposalContentFingerprint (v2, upload identity)', () => {
         wider.roadProposal.definition.width = 7.5;
         expect(sharing.proposalContentFingerprint(wider)).not.toBe(sharing.proposalContentFingerprint(base()));
     });
+
+    it('distinguishes publication origins without committing a browser key or source display title', () => {
+        const origin = { relation: 'copy', source: { kind: 'publication', apiBase: 'https://api.example.test', proposalRowId: '7' }, title: 'Source' };
+        const record = { ...base(), proposalOrigin: origin };
+        const hash = sharing.proposalContentFingerprint(record);
+        expect(hash).not.toBe(sharing.proposalContentFingerprint(base()));
+        expect(sharing.proposalContentFingerprint({ ...record, proposalOrigin: { ...origin, title: 'Renamed' } })).toBe(hash);
+        expect(sharing.proposalContentFingerprint({ ...record, proposalOrigin: {
+            ...origin, source: { ...origin.source, apiBase: 'https://other.example.test' }
+        } })).not.toBe(hash);
+        const local = { ...origin, source: { kind: 'local', localProposalId: 'browser-only' } };
+        expect(sharing.proposalContentFingerprint({ ...base(), proposalOrigin: local }))
+            .toBe(sharing.proposalContentFingerprint({ ...base(), proposalOrigin: { ...local, source: null } }));
+    });
 });
 
 describe('proposalConsentFingerprint', () => {

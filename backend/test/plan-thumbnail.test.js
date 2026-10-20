@@ -12,11 +12,11 @@ describe('whole-plan thumbnail geometry', () => {
         first.push([[1.0002, 1.0002], [1.0002, 1.0004], [1.0004, 1.0004], [1.0004, 1.0002], [1.0002, 1.0002]]);
         const second = square(2, 2);
         const members = [
-            { proposal_data: { geometry: { buildings: [
+            { proposal_data: {}, geometry: { buildings: [
                 { type: 'Feature', geometry: { type: 'Polygon', coordinates: first } },
                 { type: 'Feature', geometry: { type: 'MultiPolygon', coordinates: [second, square(3, 3)] } }
-            ] } } },
-            { proposal_data: { site: { type: 'MultiPolygon', coordinates: [square(4, 4), square(5, 5)] } } }
+            ] } },
+            { proposal_data: { site: { type: 'MultiPolygon', coordinates: [square(4, 4), square(5, 5)] } }, geometry: null }
         ];
         const parts = collectPlanMemberParts(members);
         expect(parts).toHaveLength(5);
@@ -45,10 +45,22 @@ describe('plan thumbnail canonical member loading', () => {
             if (sql.includes('FROM ens_plan')) return { rows: [{ slug: 'changed', proposal_ids: ['7'], member_hashes: { 7: 'stale' }, plan_hash: 'stale' }] };
             return { rows: [{ id: 7, proposal_id: 'building-7', proposal_data: {} }] };
         } };
-        expect(await generateAndStorePlanThumbnail(pool, 'changed')).toBeNull();
-        expect(queries).toHaveLength(2);
+        expect(await generateAndStorePlanThumbnail(pool, 'changed', { dryRun: true })).toBeNull();
+        expect(queries).toHaveLength(3);
         expect(queries[1]).toContain('p.proposal_data');
         expect(queries[1]).toContain('p.offer');
+        expect(queries[2]).toContain("SELECT id, COALESCE(binding, proposal_data->'binding') AS binding FROM proposal");
         expect(queries.some(query => query.includes('UPDATE'))).toBe(false);
+    });
+
+    it('does not use an unqualified parcel ID as thumbnail context', async () => {
+        const { declaredHrParcelIds } = await import('../thumbnails/plan-thumbnail.js');
+        expect(declaredHrParcelIds({ cadastre_parcel_ids: ['parcel-1'], binding: null })).toEqual([]);
+        expect(declaredHrParcelIds({ cadastre_parcel_ids: ['parcel-1'], binding: {
+            parcelSource: { sourceId: 'another-provider', snapshotId: null }
+        } })).toEqual([]);
+        expect(declaredHrParcelIds({ cadastre_parcel_ids: ['parcel-1'], binding: {
+            parcelSource: { sourceId: 'hr-cadastre', snapshotId: null }
+        } })).toEqual(['parcel-1']);
     });
 });

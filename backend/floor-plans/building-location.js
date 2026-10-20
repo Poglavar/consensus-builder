@@ -1,7 +1,7 @@
-// Require a located site before interpreting its plans: heuristic site location (located/probable),
-// a verified binding, or a cited recognition candidate. Proximity alone is not identity.
+// Keep location evidence separate from source-plan processing eligibility.
+// A heuristic site, verified binding or cited recognition candidate never follows from plan ownership.
 import { BUILDING_PROCESSOR } from './building-reading.js';
-import { eligibleListingSql,LOCATION_POLICY } from './source-policy.js';
+import { eligibleListingSql,sourcePlanAssetSql,LOCATION_POLICY } from './source-policy.js';
 
 // Internal SQL aliases only. A cited candidate permits source-plan work, never publication.
 export function locatedListingSql(alias='l') {
@@ -29,9 +29,12 @@ export function locatedListingSql(alias='l') {
                 AND location_task.candidate_map @> jsonb_build_array(location_task.result->'candidate'))))`;
 }
 
-export const LOCATED_ASSET_SQL=`EXISTS (SELECT 1 FROM floor_plan.target location_asset
+export const PROCESSABLE_ASSET_SQL=`EXISTS (SELECT 1 FROM floor_plan.target location_asset
     JOIN floor_plan.listing l ON l.asset_urls @> jsonb_build_array(jsonb_build_object('url',location_asset.url,'listingOwned',true))
-    WHERE location_asset.kind='asset' AND location_asset.current_sha256=e.sha256 AND ${locatedListingSql()})`;
+    WHERE location_asset.kind='asset' AND location_asset.current_sha256=e.sha256
+      AND location_asset.exclusion_reason IS NULL AND ${sourcePlanAssetSql('l','location_asset')})`;
 
-export const LOCATED_PLAN_TASK_SQL=`EXISTS (SELECT 1 FROM floor_plan.listing l
-    WHERE l.url=plan_task.listing_url AND ${locatedListingSql()})`;
+export const PROCESSABLE_PLAN_TASK_SQL=`EXISTS (SELECT 1 FROM floor_plan.listing l
+    JOIN floor_plan.target t ON t.url=plan_task.source_url AND t.kind='asset'
+      AND t.current_sha256=plan_task.source_sha256 AND t.exclusion_reason IS NULL
+    WHERE l.url=plan_task.listing_url AND ${sourcePlanAssetSql()})`;

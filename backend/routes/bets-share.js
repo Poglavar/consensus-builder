@@ -6,7 +6,7 @@
 // fallback serves index.html and the app reads the same path itself, only without a preview.
 
 import { createRequire } from 'node:module';
-import { buildContests } from '../markets/contests.js';
+import { buildContests, DEVNET_PROPOSAL_LOCATION_SQL } from '../markets/contests.js';
 import { PROPOSAL_COLUMNS_SQL, defaultMarketReader, defaultProposalStatusReader, rowToPlan, rowToProposal } from './markets.js';
 
 const require = createRequire(import.meta.url);
@@ -20,13 +20,13 @@ const SITE_NAME = 'Consensus Builder';
 const TAGLINE = 'Bet on cities';
 const CACHE_SECONDS = 60;
 
-// One minted proposal by its Solana account, whichever onchain_data field holds it (the same three
-// markets/contests.js proposalAccountOf reads), newest first when a re-mint left two rows.
+// One proposal declared in the exact devnet program served by these markets. The canonical
+// onchain_data location matches markets/contests.js proposalAccountOf; aliases are not searched.
 const PROPOSAL_BY_ACCOUNT_SQL = `
     SELECT ${PROPOSAL_COLUMNS_SQL}
     FROM proposal
-    WHERE LOWER(COALESCE(onchain_data->>'chainId', onchain_data->>'chain', '')) LIKE 'solana%'
-      AND $1 IN (onchain_data->>'proposalId', onchain_data->>'proposalAccount', onchain_data->>'tokenId')
+    WHERE ${DEVNET_PROPOSAL_LOCATION_SQL}
+      AND onchain_data->>'proposalId' = $1
     ORDER BY created_at DESC
     LIMIT 1`;
 
@@ -35,7 +35,7 @@ const PLAN_BY_ACCOUNT_SQL = `
     SELECT slug, title, place, author, created_at, proposal_ids, onchain_data, city,
         thumbnail_url, thumbnail_before_url, thumbnail_pair_url
     FROM ens_plan
-    WHERE LOWER(COALESCE(onchain_data->>'chainId', '')) LIKE 'solana%' AND onchain_data->>'proposalId' = $1
+    WHERE ${DEVNET_PROPOSAL_LOCATION_SQL} AND onchain_data->>'proposalId' = $1
     LIMIT 1`;
 const PLAN_MEMBERS_SQL = `SELECT ${PROPOSAL_COLUMNS_SQL} FROM proposal WHERE id = ANY($1::int[])`;
 
@@ -45,12 +45,14 @@ async function betSubject(pool, proposalAccount) {
     const { rows } = await pool.query(PROPOSAL_BY_ACCOUNT_SQL, [proposalAccount]);
     if (rows.length) {
         const proposal = rowToProposal(rows[0]);
+        if (proposal.proposalAccount !== proposalAccount) return null;
         // The preview shows before and after side by side when the pair has been rendered.
         return { city: proposal.city, title: proposal.title, screenshotUrl: proposal.screenshotPairUrl || proposal.screenshotUrl, proposals: [proposal], plans: [] };
     }
     const { rows: planRows } = await pool.query(PLAN_BY_ACCOUNT_SQL, [proposalAccount]);
     if (!planRows.length) return null;
     const plan = rowToPlan(planRows[0]);
+    if (plan.proposalAccount !== proposalAccount) return null;
     const { rows: memberRows } = await pool.query(PLAN_MEMBERS_SQL, [plan.memberIds.map(Number)]);
     const members = memberRows.map(rowToProposal);
     // A plan preview has to represent the whole named plan; an individual member's image is not a substitute.
@@ -69,21 +71,21 @@ export function escapeHtml(value) {
 
 // The one line a preview card shows under the title, from the row the sheet would render.
 export function describeRow(row) {
-    if (!row) return `${TAGLINE}: bet yes or no on whether this proposal gets built.`;
+    if (!row) return `${TAGLINE}: bet on a proposal's on-chain execution status.`;
     const pool = row.pool === null || row.pool === undefined ? null : `Pool ${row.pool} USDC`;
     switch (row.state) {
         case 'open': {
             const pays = `Yes pays ${row.paysYes.toFixed(2)}×, no pays ${row.paysNo.toFixed(2)}×.`;
-            if (row.chanceYes === null) return `No bets yet · ${pool} · Bet yes or no on whether it gets built.`;
+            if (row.chanceYes === null) return `No bets yet · ${pool} · Bet on on-chain execution status.`;
             // One side alone is not a chance worth printing: "100%" on a single 0.25 USDC bet misleads.
             if (row.oneSided) return `Only ${row.oneSided} bets so far · ${pool} · ${pays}`;
-            return `${row.chanceYes}% chance it gets built · ${pool} · ${pays}`;
+            return `Yes: ${row.chanceYes}% of pool · ${pool} · ${pays}`;
         }
-        case 'resolved-yes': return `Settled yes: it gets built · ${pool}.`;
-        case 'resolved-no': return `Settled no: it was dropped · ${pool}.`;
-        case 'needs-market': return 'No pool yet · Open the pool and bet yes or no on whether it gets built.';
+        case 'resolved-yes': return `Settled yes: Executed on-chain · ${pool}.`;
+        case 'resolved-no': return `Settled no: Cancelled or Expired on-chain · ${pool}.`;
+        case 'needs-market': return 'No pool yet · Open the pool and bet on on-chain execution status.';
         case 'settling': return `Decided on-chain · ${pool} · Anyone can settle the pool.`;
-        default: return `Decided on-chain before a pool was opened.`;
+        default: return 'Not open for bets.';
     }
 }
 

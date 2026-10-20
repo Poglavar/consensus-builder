@@ -1,0 +1,19 @@
+[
+  {
+    "url": "https://bhumi.atrbpn.go.id/proxy/http://10.20.20.142:80/geoserver/umum/wms?service=WMS&request=GetCapabilities&version=1.1.1",
+    "reason": "404"
+  },
+  {
+    "url": "https://bhumi.atrbpn.go.id/proxy/?_addr=https%3A%2F%2Fbhumi.atrbpn.go.id%2Fproxy%2Fhttp%3A%2F%2F10.20.20.142%3A80%2Fgeoserver%2Fumum%2Fwms%3Fservice%3DWMS%26request%3DGetCapabilities%26version%3D1.1.1",
+    "reason": "404"
+  },
+  {
+    "url": "https://bhumi.atrbpn.go.id/"
+  },
+  {
+    "url": "https://www.atrbpn.go.id/berita/tepat-di-momen-hantaru-2026-implementasi-perintis-10-hari-diperluas-hingga-ke-95-kantah"
+  },
+  {
+    "url": "https://pematangsiantar.go.id/artikel/wesly-diwakili-herlina-terima-audiensi-kepala-kantor-pertanahan-pematangsiantar"
+  }
+]

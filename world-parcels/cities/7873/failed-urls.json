@@ -1,0 +1,6 @@
+[
+  {
+    "url": "https://services2.arcgis.com/MlJ0G8iWUyC7jAmu/arcgis/rest/services/OhioStatewidePacels_full_view/FeatureServer/0",
+    "reason": "Held at the geometry gate for North College Hill (Ohio OGRIP statewide): the metric audit also failed with 2 material overlap pair(s) (> 0.01 m2; max 0.0125 m2) among 260 cached features (Hamilton~5950008060800 / Hamilton~5950008092600: 0.0125 m2 = 0.0192% of the smaller; Hamilton~5950008060700 / Hamilton~5950008092600: 0.0118 m2 = 0.0181% of the smaller); the same run also hit 504 timeouts (fres…"
+  }
+]

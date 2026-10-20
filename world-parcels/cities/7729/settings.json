@@ -1,0 +1,116 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "7729",
+  "name": "Hammond, United States",
+  "point": [
+    41.5835,
+    -87.4985
+  ],
+  "bindings": [
+    {
+      "appCityId": "hammond",
+      "runtimeConfig": {
+        "id": "hammond",
+        "wupCityCode": "7729",
+        "label": "Hammond, United States",
+        "currency": {
+          "locale": "en-US",
+          "code": "USD"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            41.5835,
+            -87.4985
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            41.5835,
+            -87.4985
+          ],
+          "fallbackDataset": [
+            -87.4985,
+            41.5835
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "us-in-lake-hammond-parcels",
+          "idPrefix": "US-IN-LAKE-HAMMOND-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 0.75,
+          "attribution": "<a href=\"https://www.arcgis.com/home/item.html?id=18b6b08c8c7e403cbd9451360c8f5a61\">Lake County Surveyor's Office; parcel fabric maintained by Lake County Auditor's Office.</a>"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "us-in-lake-hammond-parcels",
+      "name": "Lake County Indiana parcel fabric, Hammond municipality",
+      "adapter": "arcgis",
+      "endpoint": "https://services5.arcgis.com/8CXRnvSfSpwdf0R6/arcgis/rest/services/Lake_County_Parcels/FeatureServer/0",
+      "idField": "PARCELID",
+      "idType": "string",
+      "idPattern": "^45-\\d{2}-\\d{2}-\\d{3}-\\d{3}\\.\\d{3}-\\d{3}$",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "US-IN-LAKE-HAMMOND-",
+      "outFields": [
+        "OBJECTID",
+        "PARCELID",
+        "IncMuni"
+      ],
+      "attributeFilters": {
+        "IncMuni": "Hammond"
+      },
+      "queryFormat": "geojson",
+      "boundsQueryMode": "offset",
+      "idsQueryMode": "offset",
+      "pageSize": 200,
+      "idBatchSize": 80,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "capabilities": {
+        "areaEnumeration": true
+      },
+      "countryCode": "US",
+      "metricSrid": 32616,
+      "cityIds": [
+        "hammond"
+      ],
+      "scope": "Lake County, Indiana cadastral parcel boundaries, restricted by the publisher Incorporated Municipality field IncMuni=Hammond. The unchanged WUP point is west of the published service extent; bounded sampling includes the native sample centroid cell.",
+      "catalogueUrl": "https://www.arcgis.com/home/item.html?id=18b6b08c8c7e403cbd9451360c8f5a61",
+      "attribution": "Lake County Surveyor's Office; parcel fabric maintained by Lake County Auditor's Office.",
+      "licenceUrl": "https://www.arcgis.com/sharing/rest/content/items/18b6b08c8c7e403cbd9451360c8f5a61?f=json",
+      "licenceNote": "Publisher metadata requires attribution and prohibits commercial use. Technical qualification does not grant reuse permission or app admission. Data change frequently and do not represent a survey.",
+      "defaultForCity": true
+    }
+  ]
+}

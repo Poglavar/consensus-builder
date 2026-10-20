@@ -45,6 +45,9 @@
     const siteBindingApi = () => dep('__siteBinding', './site-binding.js');
     const planYieldApi = () => dep('__planYield', './plan-yield.js');
     const ownershipFlowApi = () => dep('__ownershipFlow', './ownership-flow.js');
+    const publishTermsApi = () => dep('ProposalPublishTerms', './publish-terms.js');
+    const displayStateApi = () => dep('__proposalDisplayState', './display-state.js');
+    const publicationApi = () => dep('SharedLinkCopies', './shared-link-copies.js');
 
     const finite = value => typeof value === 'number' && Number.isFinite(value);
     function num(value) {
@@ -82,6 +85,38 @@
         return Array.isArray(record && record.cadastreParcelIds) ? record.cadastreParcelIds.map(String) : [];
     }
 
+    function parcelSourceOfRecord(record) {
+        const setSource = record?.parcelSet?.parcelSource ?? null;
+        const bindingSource = record?.binding?.parcelSource ?? null;
+        const normalize = source => source && typeof source === 'object' && !Array.isArray(source)
+            && !Object.keys(source).some(key => !['sourceId', 'snapshotId'].includes(key))
+            && typeof source.sourceId === 'string' && source.sourceId.trim()
+            && (source.snapshotId == null || (typeof source.snapshotId === 'string' && source.snapshotId.trim()))
+            ? { sourceId: source.sourceId.trim(), snapshotId: source.snapshotId?.trim() || null } : null;
+        const a = normalize(setSource), b = normalize(bindingSource);
+        if ((setSource && !a) || (bindingSource && !b)) return null;
+        if (a && b && (a.sourceId !== b.sourceId || a.snapshotId !== b.snapshotId)) return null;
+        return a || b;
+    }
+
+    function parcelSourceOfParcel(parcel) {
+        const direct = parcel?.parcelSource ?? null;
+        const feature = parcel?.feature?.properties?.parcelSource ?? null;
+        const normalize = source => source && typeof source === 'object' && !Array.isArray(source)
+            && !Object.keys(source).some(key => !['sourceId', 'snapshotId'].includes(key))
+            && typeof source.sourceId === 'string' && source.sourceId.trim()
+            && (source.snapshotId == null || (typeof source.snapshotId === 'string' && source.snapshotId.trim()))
+            ? { sourceId: source.sourceId.trim(), snapshotId: source.snapshotId?.trim() || null } : null;
+        const a = normalize(direct), b = normalize(feature);
+        if ((direct && !a) || (feature && !b)) return null;
+        if (a && b && (a.sourceId !== b.sourceId || a.snapshotId !== b.snapshotId)) return null;
+        return a || b;
+    }
+
+    function sameParcelSource(left, right) {
+        return !!left && !!right && left.sourceId === right.sourceId && left.snapshotId === right.snapshotId;
+    }
+
     // The parcel as the comparison sees it: { id, cadastreIds: [...], feature }.
     function parcelKeys(parcel) {
         const ids = Array.isArray(parcel && parcel.cadastreIds) && parcel.cadastreIds.length
@@ -94,8 +129,19 @@
         return !!a && !!b && a[0] <= b[2] && b[0] <= a[2] && a[1] <= b[3] && b[1] <= a[3];
     }
 
-    function safeIntersect(t, a, b) {
-        try { return t.intersect(a, b) || null; } catch (_) { return null; }
+    // What safeIntersect answers when the clipper threw: the overlap is UNKNOWN. It used to be null,
+    // i.e. "no overlap", which the figures below then showed as 0 m². Every caller turns this into
+    // a null figure ("—"); the failure is reported and counted in clipHealth() (parcel-arrangement.js).
+    const UNMEASURED = Object.freeze({ unmeasured: true });
+
+    function safeIntersect(t, a, b, site) {
+        try { return t.intersect(a, b) || null; } catch (error) {
+            const clips = (global && global.__parcelArrangement)
+                || (typeof require === 'function' ? require('./parcel-arrangement.js') : null);
+            if (!clips || typeof clips.reportClipFailure !== 'function') throw error;
+            clips.reportClipFailure('intersect', error, { site: `parcel-compare.${site}` }, [a, b]);
+            return UNMEASURED;
+        }
     }
 
     function areaOf(t, feature) {
@@ -147,26 +193,32 @@
         const t = T(opts);
         if (!record || !parcel) return null;
         const keys = parcelKeys(parcel);
-        const declared = declaredIds(record).some(id => keys.has(id));
+        // Bare cadastral IDs are source-scoped. A matching string only names this parcel when the
+        // proposal's binding and the selected parcel share the same explicit provider descriptor.
+        const declared = sameParcelSource(parcelSourceOfRecord(record), parcelSourceOfParcel(parcel))
+            && declaredIds(record).some(id => keys.has(id));
         const parcelFeature = featureOf(parcel.feature);
         let clip = null;
+        let unmeasured = false;
         if (t && parcelFeature) {
             const site = siteFeatureOf(record, parcel, opts);
             if (site) {
                 let overlaps = true;
                 try { overlaps = bboxesIntersect(t.bbox(site), t.bbox(parcelFeature)); } catch (_) { overlaps = true; }
-                if (overlaps) clip = safeIntersect(t, site, parcelFeature);
+                if (overlaps) clip = safeIntersect(t, site, parcelFeature, 'relationOf');
+                if (clip === UNMEASURED) { clip = null; unmeasured = true; }
                 if (clip && areaOf(t, clip) <= 0) clip = null;
             }
         }
         const stored = storedBindingEntry(record, keys);
-        if (!declared && !clip) return null;
+        // A site whose overlap could not be computed may reach into the parcel: listed, unmeasured.
+        if (!declared && !clip && !unmeasured) return null;
         const overlapM2 = clip ? round(areaOf(t, clip), 2) : (stored ? num(stored.overlapM2) : null);
         let intrusionM = null;
         if (opts.measure !== false) {
             intrusionM = clip ? intrusionOf(t, clip) : (stored ? num(stored.intrusionM) : null);
         }
-        return { relation: declared ? 'bound' : 'intrudes', overlapM2, intrusionM, clip };
+        return { relation: declared ? 'bound' : 'intrudes', overlapM2, intrusionM, clip, unmeasured };
     }
 
     /**
@@ -245,7 +297,8 @@
         const heights = [];
         const floors = [];
         for (const feature of features) {
-            const clip = parcelFeature ? safeIntersect(t, feature, parcelFeature) : null;
+            const clip = parcelFeature ? safeIntersect(t, feature, parcelFeature, 'buildingsOn') : null;
+            if (clip === UNMEASURED) return { count: null, footprintM2: null, floorAreaM2: null, heightM: null, floors: null };
             const clipM2 = areaOf(t, clip);
             if (clipM2 < MIN_OVERLAP_M2) continue;
             count += 1;
@@ -276,8 +329,8 @@
         if (!kindRaw) return null;
         const kind = String(kindRaw).toLowerCase();
         const geometry = sp && asPolygonGeometry(sp.geometry);
-        const clip = geometry && parcelFeature ? safeIntersect(t, featureOf(geometry), parcelFeature) : null;
-        return { kind, areaM2: geometry ? round(areaOf(t, clip), 1) : null };
+        const clip = geometry && parcelFeature ? safeIntersect(t, featureOf(geometry), parcelFeature, 'structureOn') : null;
+        return { kind, areaM2: geometry && clip !== UNMEASURED ? round(areaOf(t, clip), 1) : null };
     }
 
     function defaultIsTrack(record) {
@@ -309,17 +362,18 @@
         plan.polygons.forEach((plot, index) => {
             const feature = plot && featureOf(plot.geometry);
             if (!feature) return;
-            const clip = safeIntersect(t, feature, parcelFeature);
-            const overlapM2 = areaOf(t, clip);
-            if (overlapM2 < MIN_OVERLAP_M2) return;
+            const clip = safeIntersect(t, feature, parcelFeature, 'plotsOn');
+            const overlapM2 = clip === UNMEASURED ? null : areaOf(t, clip);
+            if (overlapM2 !== null && overlapM2 < MIN_OVERLAP_M2) return;
             plots.push({
                 number: index + 1,
                 areaM2: round(num(plot.area) !== null ? num(plot.area) : areaOf(t, feature), 1),
-                overlapM2: round(overlapM2, 1),
+                overlapM2: overlapM2 === null ? null : round(overlapM2, 1),
                 owner: typeof plot.displayName === 'string' && plot.displayName.trim() ? plot.displayName.trim() : null
             });
         });
-        plots.sort((a, b) => b.overlapM2 - a.overlapM2);
+        // Unmeasured plots last.
+        plots.sort((a, b) => (b.overlapM2 === null ? -1 : b.overlapM2) - (a.overlapM2 === null ? -1 : a.overlapM2));
         return plots;
     }
 
@@ -349,53 +403,34 @@
         return { cededM2: round(ceded, 1), destination };
     }
 
-    function offerOf(record, options) {
-        const amount = num(record && record.offer) !== null ? num(record.offer) : num(record && record.budget);
-        if (amount === null) return null;
-        const share = num(options.areaShare);
-        return {
-            amount,
-            currency: (record.offerCurrency || record.budgetCurrency || record.currency || null),
-            parcelShare: share !== null && share >= 0 && share <= 1 ? amount * share : null
-        };
+    function offerOf(record) {
+        return publishTermsApi().authoredOffer(record);
     }
 
     function consentOf(record, parcel, relation, options) {
-        const keys = parcelKeys(parcel);
-        const declared = declaredIds(record);
-        const accepted = new Set((Array.isArray(record.acceptedParcelIds) ? record.acceptedParcelIds : []).map(String));
         const channel = typeof options.channel === 'string' ? options.channel : null;
-        let owners = null;
-        const acceptances = record.ownerAcceptances && typeof record.ownerAcceptances === 'object' ? record.ownerAcceptances : null;
-        if (acceptances) {
-            for (const key of keys) {
-                const entry = acceptances[key];
-                const order = entry && Array.isArray(entry.ownerOrder) ? entry.ownerOrder : [];
-                if (!order.length) continue;
-                const yes = new Set(Array.isArray(entry.acceptedOwnerKeys) ? entry.acceptedOwnerKeys : []);
-                owners = { accepted: order.filter(owner => yes.has(owner)).length, total: order.length };
-                break;
-            }
-        }
+        const consent = options.consent || {};
         return {
             channel,
+            basis: consent.basis || null,
             // Only a binding asks the owner; a site that merely reaches in has no consent channel.
             needed: relation === 'intrudes' ? false : (channel ? channel === 'acceptance' : null),
-            parcelAccepted: relation === 'bound' ? declared.some(id => keys.has(id) && accepted.has(id)) : null,
-            owners,
-            parcels: declared.length ? { accepted: declared.filter(id => accepted.has(id)).length, total: declared.length } : null
+            parcelAccepted: relation === 'bound' ? consent.parcelAccepted ?? null : null,
+            owners: relation === 'bound' ? consent.owners || null : null,
+            parcels: consent.parcels || null
         };
     }
 
     function statusOf(record, options) {
-        const lifecycle = typeof options.lifecycleKey === 'string' ? options.lifecycleKey : null;
-        const executed = lifecycle === 'executed'
-            || String(record.lifecycleStatus || record.status || '').toLowerCase() === 'executed';
-        const minted = typeof options.isMinted === 'boolean' ? options.isMinted : record.isMinted === true;
-        const published = !!(record.serverProposalId || record.server_proposal_id);
+        const state = displayStateApi().of(record, {
+            lifecycleKey: options.lifecycleKey,
+            applied: options.applied,
+            serial: publicationApi().rowId(record.serverProposalId)
+        });
         return {
-            key: executed ? 'executed' : (minted ? 'minted' : (published ? 'published' : 'local')),
-            lifecycle
+            key: state.rung === 'draft' ? 'local' : state.rung,
+            lifecycle: state.modifier || state.lifecycle.toLowerCase(),
+            applied: state.applied
         };
     }
 
@@ -403,9 +438,9 @@
      * What one record does to the parcel.
      * @param {object} record
      * @param {{ id, cadastreIds?: string[], feature, areaM2?: number }} parcel
-     * @param {{ turf?, channel?: string, areaShare?: number, lifecycleKey?: string, isMinted?: boolean,
-     *   isTrack?: Function }} options  (channel = the dossier's consent channel for this parcel;
-     *   areaShare = this parcel's share of the proposal's declared area, for the offer payout)
+     * @param {{ turf?, channel?: string, lifecycleKey?: string, applied?: boolean,
+     *   isTrack?: Function, consent?: object }} options (consent = a current validated summary;
+     *   channel = the dossier's consent channel for this parcel)
      */
     function parcelEffect(record, parcel, options) {
         const opts = options || {};
@@ -424,7 +459,7 @@
         let takenM2 = null;
         if (clip) takenM2 = round(areaOf(t, clip), 1);
         else if (hit && hit.overlapM2 !== null) takenM2 = round(hit.overlapM2, 1);
-        else if (hasGround) takenM2 = 0;
+        else if (hasGround && !(hit && hit.unmeasured)) takenM2 = 0;
         return {
             proposalId: idOf(record),
             relation,
@@ -439,7 +474,7 @@
             corridor: corridorOn(record, clip, takenM2, opts),
             plots: plotsOn(t, record, parcelFeature),
             ownership: ownershipOn(record, parcel, hasGround),
-            offer: offerOf(record, opts),
+            offer: offerOf(record),
             consent: consentOf(record, parcel, relation, opts),
             status: statusOf(record, opts),
             clip: clip ? clip.geometry : null

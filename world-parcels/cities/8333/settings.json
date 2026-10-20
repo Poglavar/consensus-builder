@@ -1,0 +1,130 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "8333",
+  "name": "Trenton, United States",
+  "point": [
+    40.2171,
+    -74.7429
+  ],
+  "bindings": [
+    {
+      "appCityId": "trenton",
+      "runtimeConfig": {
+        "id": "trenton",
+        "label": "Trenton, United States",
+        "currency": {
+          "locale": "en-US",
+          "code": "USD"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            40.2171,
+            -74.7429
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            40.2171,
+            -74.7429
+          ],
+          "fallbackDataset": [
+            -74.7429,
+            40.2171
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.0025,
+          "source": "parcel-source",
+          "sourceId": "us-nj-trenton-parcels",
+          "idPrefix": "US-NJ-TRENTON-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 6,
+          "attribution": "<a href=\"https://nj.gov/njgin/edata/parcels/\">New Jersey Office of Information Technology, Office of GIS (NJOGIS) · publisher &amp; conditions</a> · adapted"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "endpoint": "https://services2.arcgis.com/XVOqAjTOJ5P6ngMu/arcgis/rest/services/Parcels_Composite_NJ_WM/FeatureServer/0",
+      "adapter": "arcgis",
+      "name": "Cad_parcel_mod4 (Parcels_Composite_NJ_WM)",
+      "operator": "New Jersey Office of Information Technology, Office of GIS (NJOGIS)",
+      "idField": "PAMS_PIN",
+      "objectIdField": "OBJECTID",
+      "idType": "string",
+      "idPattern": ".+",
+      "outFields": [
+        "OBJECTID",
+        "PAMS_PIN"
+      ],
+      "metricSrid": 32618,
+      "id": "us-nj-trenton-parcels",
+      "idPrefix": "US-NJ-TRENTON-",
+      "pageSize": 1000,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "maxConcurrentQueries": 2,
+      "stateCode": "NJ",
+      "countryCode": "US",
+      "catalogueUrl": "https://nj.gov/njgin/edata/parcels/",
+      "scope": "New Jersey composite parcel service, configured for Trenton; no statewide completeness claim. Additional enabled city entries have separate bounded qualification evidence; wider coverage remains unverified.",
+      "caveats": [
+        "County-contributed assessment geometry; accuracy and dates vary."
+      ],
+      "parcelNumberField": "PAMS_PIN",
+      "cityIds": [
+        "trenton"
+      ],
+      "attribution": "New Jersey Office of Information Technology, Office of GIS (NJOGIS). Adapted to WGS84.",
+      "licenceNote": "Source conditions are informational; users choose their source and intended use.",
+      "metricSridByCity": {
+        "trenton": 32618
+      },
+      "cityScopes": {
+        "asbury_park": "173 unchanged native parcel polygons passed all eight qualification gates in bounded cells around the UN/WUP locator. Fresh independent metric audit (EPSG:32618) found zero invalid polygons, identity conflicts, duplicate geometry, material overlaps, or operation errors. Citywide completeness, legal title, survey accuracy, and currentness are not established."
+      },
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "US",
+          "admin1": [
+            "US-NJ"
+          ],
+          "excludeAdmin1": [],
+          "basis": "NJOGIS service description: latest statewide parcels integrating MOD-IV attributes; all 21 New Jersey counties present on 2026-10-12.",
+          "evidence": []
+        },
+        "paceMs": 1000
+      }
+    }
+  ]
+}

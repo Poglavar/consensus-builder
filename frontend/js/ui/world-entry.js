@@ -320,6 +320,10 @@
     }
 
     function renderBanner() {
+        if (global.ParcelGroundFallback?.activeSource?.(global.CityConfigManager?.getCurrentCityId?.())) {
+            if (state.banner) { state.banner.remove(); state.banner = null; }
+            return;
+        }
         const m = manager();
         if (!m || !m.isExplore()) return;
         if (bannerDismissed()) {

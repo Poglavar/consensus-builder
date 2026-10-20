@@ -423,22 +423,41 @@
             }
             if (!context || !Array.isArray(context.parcels) || context.parcels.length === 0) return null;
             const parcelFeatures = context.parcels.map(p => p.feature);
-            // Use robust union and reduce to largest polygon if available from building-blocks.js
-            let unioned = null;
-            try { unioned = robustUnion(parcelFeatures); } catch (_) { unioned = null; }
+            // Use robust union and reduce to largest polygon if available from building-blocks.js.
+            // A union the clipper cannot do is a ClipFailure (footprint-geometry.js) and refuses
+            // the site; it used to fall back to a sequential union that skipped the parcel that
+            // threw, i.e. a site with a parcel silently missing.
+            let unioned = robustUnion(parcelFeatures);
             if (!unioned) {
                 // Fallback to manual union via turf.union sequentially
-                try {
-                    let acc = parcelFeatures[0];
-                    for (let i = 1; i < parcelFeatures.length; i++) {
-                        try { acc = turf.union(acc, parcelFeatures[i]) || acc; } catch (_) { }
+                let acc = parcelFeatures[0];
+                for (let i = 1; i < parcelFeatures.length; i++) {
+                    let merged = null;
+                    try { merged = turf.union(acc, parcelFeatures[i]); } catch (error) {
+                        throw singleBuildingClipFailure('union', error, 'single-building.selectedBlock', [acc, parcelFeatures[i]]);
                     }
-                    unioned = acc;
-                } catch (_) { unioned = parcelFeatures[0]; }
+                    if (!merged) throw singleBuildingClipFailure('union', new Error('union came back empty'), 'single-building.selectedBlock', [acc, parcelFeatures[i]]);
+                    acc = merged;
+                }
+                unioned = acc;
             }
             try { unioned = toSingleLargestPolygon(unioned) || unioned; } catch (_) { }
             return unioned;
-        } catch (_) { return null; }
+        } catch (error) {
+            if (error && error.code === 'clip-failed') {
+                console.error(`[${new Date().toISOString()}] [single-building] the selected parcels could not be merged into one site`, error);
+                setSingleBuildingStatus('parcels_could_not_be_merged', 'Could not merge the selected parcels into one site: {{reason}}', { reason: error.message });
+                throw error;
+            }
+            return null;
+        }
+    }
+
+    // A polygon clip that cannot be done, typed and counted (parcel-arrangement.js ClipFailure).
+    function singleBuildingClipFailure(operation, error, site, operands) {
+        const api = (typeof window !== 'undefined' && window.__parcelArrangement)
+            || (typeof require === 'function' ? require('./proposals/parcel-arrangement.js') : null);
+        return api ? api.clipFailure(operation, error, { site }, operands) : error;
     }
 
     function ensureClosed(ring) {
@@ -797,7 +816,14 @@
             try { singleMap.removeLayer(singleGroundPreviewLayer); } catch (_) { }
             singleGroundPreviewLayer = null;
         }
-        const surface = currentGroundSurface();
+        // The preview only degrades (no paint) when the surround cannot be cut; saving the proposal
+        // computes the same surface and refuses on the same failure.
+        let surface = null;
+        try { surface = currentGroundSurface(); } catch (error) {
+            if (!error || error.code !== 'clip-failed') throw error;
+            (window.__parcelArrangement || null)?.reportClipFailure('difference', error, { site: 'single-building.groundPreview' }, []);
+            return;
+        }
         const style = surface ? buildingGroundApi()?.SURFACE_STYLE_2D[surface.treatment] : null;
         if (!surface || !style) return;
         try {

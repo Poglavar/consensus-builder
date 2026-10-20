@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
-import { buildAdmissionPlanSummary, currencyFor, sourceActivationDecision, validateCountryConfig, verifyAdmissionEvidence } from '../admit-qualified-cities.mjs';
+import { buildAdmissionPlanSummary, collectLiveCityCodes, currencyFor, sourceActivationDecision, validateCountryConfig, verifyAdmissionEvidence } from '../admit-qualified-cities.mjs';
 
 const temporaryDirectories = [];
 const sha256 = bytes => createHash('sha256').update(bytes).digest('hex');
@@ -125,6 +125,18 @@ describe('admission plan summary', () => {
 
     it('keeps the requested code field null when no code filter was supplied', () => {
         expect(buildAdmissionPlanSummary([], [], null, new Map(), new Set(), '2026-10-19-test', 'now').requestedCodes).toBeNull();
+    });
+});
+
+describe('live city detection', () => {
+    it('uses configured WUP codes and bound coverage rows, ignoring stale app IDs', () => {
+        const live = collectLiveCityCodes([{ wupCityCode: '101' }, { wupCityCode: undefined }], new Set(['configured_city']), {
+            cities: [
+                { wupCityCode: 102, appCityIds: ['configured_city'] },
+                { wupCityCode: 103, appCityIds: ['stale_city'] },
+            ]
+        });
+        expect(live).toEqual(new Set(['101', '102']));
     });
 });
 

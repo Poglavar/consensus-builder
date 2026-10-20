@@ -8,6 +8,16 @@
     const clone = value => JSON.parse(JSON.stringify(value));
     const feature = geometry => ({ type: 'Feature', properties: {}, geometry });
 
+    function isUnrepresentedGround(entry) {
+        if (Object.prototype.hasOwnProperty.call(entry || {}, 'noOwner')) {
+            throw new Error('The noOwner marker is retired; use unrepresentedGround.');
+        }
+        if (entry?.unrepresentedGround === true && entry.ownerKey !== 'open-ground') {
+            throw new Error('Unrepresented ground cannot also name a represented owner.');
+        }
+        return entry?.unrepresentedGround === true || entry?.ownerKey === 'open-ground';
+    }
+
     function miniLedger(plan, part, offerCents) {
         const unit = plan.poolUnitValue > 0 ? plan.poolUnitValue : 1;
         const owners = new Map();
@@ -45,7 +55,7 @@
         if (entries != null && !Array.isArray(entries)) throw new Error('Owner cash-offer ledger must be an array.');
         const offers = new Map();
         for (const owner of entries || []) {
-            if (!owner || owner.noOwner === true) continue;
+            if (!owner || isUnrepresentedGround(owner)) continue;
             if (owner.ownerKey == null || String(owner.ownerKey).trim() === '') {
                 throw new Error('Each cash-offer ledger entry needs an owner key.');
             }
@@ -68,7 +78,7 @@
     // Largest remainder makes every owner's per-parcel cents sum back to the declared amount.
     function offersByPart(plan, parts, proposalOffer) {
         // A payment by one owner funds others across the whole pool; split agreements cannot carry it.
-        const payer = (plan?.ownerShares || []).find(owner => owner && owner.noOwner !== true && Number(owner.cashPayment) > 0);
+        const payer = (plan?.ownerShares || []).find(owner => owner && owner.unrepresentedGround !== true && owner.ownerKey !== 'open-ground' && Number(owner.cashPayment) > 0);
         if (payer) throw new Error(`Owner ${payer.ownerKey} pays cash; owner payments need one joint readjustment agreement.`);
         const declared = cashOffersInCents(plan);
         const declaredTotal = moneyCents(cashOfferTotal(plan), 'Owner cash-offer ledger total');
@@ -86,7 +96,7 @@
             const inputOwnerKeys = new Set();
             let shareTotal = 0;
             for (const owner of part.input.owners || []) {
-                if (!owner || owner.noOwner === true) continue;
+                if (!owner || isUnrepresentedGround(owner)) continue;
                 if (owner.ownerKey == null || String(owner.ownerKey).trim() === '') {
                     throw new Error(`Input parcel ${index + 1} has an owner without an owner key.`);
                 }

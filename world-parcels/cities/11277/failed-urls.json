@@ -1,0 +1,22 @@
+[
+  {
+    "url": "https://bhunaksha.bihar.gov.in/WMS?SERVICE=WMS&REQUEST=GetCapabilities",
+    "reason": "500"
+  },
+  {
+    "url": "https://bhunaksha.bihar.gov.in/ScalarDatahandler?OP=5&state=10&levels=20%2C01%2C03%2C0246%2CCS%2C00%2C00%2C&plotno=1",
+    "reason": "401"
+  },
+  {
+    "url": "https://bhunaksha.bihar.gov.in/index.jsp"
+  },
+  {
+    "url": "https://land.bihar.gov.in/landbihar/Default.aspx"
+  },
+  {
+    "url": "https://www.bhulagan.bihar.gov.in/reports/MaujaWiseReport.aspx"
+  },
+  {
+    "url": "https://biharbhumi.bihar.gov.in/Biharbhumi/default/UserRegister"
+  }
+]

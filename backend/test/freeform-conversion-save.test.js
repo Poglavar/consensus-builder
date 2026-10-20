@@ -39,14 +39,14 @@ function loadShell(source) {
     const draftId = () => (nextDraft++ === 0 ? 'conversion-draft' : `draft-${nextDraft}`);
     const store = {
         createDraft: vi.fn(input => {
-            const draft = { ...JSON.parse(JSON.stringify(input)), id: draftId(), sourceProposalId: input.sourceProposalId || null, validation: { valid: true, errors: [] } };
+            const draft = { ...JSON.parse(JSON.stringify(input)), id: draftId(), sourceLocalProposalId: input.sourceLocalProposalId || null, validation: { valid: true, errors: [] } };
             delete draft.activate;
             drafts.set(draft.id, draft);
             return JSON.parse(JSON.stringify(draft));
         }),
         createDraftFromProposal: vi.fn(proposal => {
             const draft = {
-                id: draftId(), sourceProposalId: proposal.proposalId, sourceSnapshot: proposal,
+                id: draftId(), sourceLocalProposalId: proposal.proposalId, sourceSnapshot: proposal,
                 adapterKey: 'buildings', goal: 'buildings', fields: { name: proposal.title, description: proposal.description || '', ...(proposal.titleOrigin ? { titleOrigin: proposal.titleOrigin } : {}) },
                 editorPayload: { typology: 'block', context: { blockName: 'Block 7', parameters: { mode: 'parametric', setback: 2, typology: 'block' } } },
                 validation: { valid: true, errors: [] }
@@ -167,7 +167,7 @@ describe('convertProposalToFreeform', () => {
     });
 
     it('makes a Freeform counterproposal of a published Block, which stays as it is', async () => {
-        const source = block({ serverProposalId: '901' });
+        const source = block({ serverProposalId: '901', publicationApiBase: 'https://api.example.test' });
         const before = JSON.parse(JSON.stringify(source));
         const { ProposalManager } = loadShell(source);
 
@@ -238,8 +238,8 @@ describe('convertActiveDesignToFreeformBuildings: a dropped Detached becomes one
         // The further house is a fresh draft, not a second copy of the source.
         expect(store.createDraft).toHaveBeenCalledOnce();
         const [first, second] = [...drafts.values()];
-        expect(first.sourceProposalId).toBe('own-detached');
-        expect(second.sourceProposalId).toBeNull();
+        expect(first.sourceLocalProposalId).toBe('own-detached');
+        expect(second.sourceLocalProposalId).toBeNull();
         expect(second.fields.name).toBe('');
         // Named, when saved, as the Freeform building it now is.
         expect(second.proposalType).toBe(first.proposalType);
@@ -269,7 +269,7 @@ describe('convertActiveDesignToFreeformBuildings: a dropped Detached becomes one
     });
 
     it('a published Detached: every house becomes a counterproposal and the source stays as it is', async () => {
-        const source = detached({ serverProposalId: '902' });
+        const source = detached({ serverProposalId: '902', publicationApiBase: 'https://api.example.test' });
         const before = JSON.parse(JSON.stringify(source));
         const { store, ProposalManager } = loadShell(source);
         await globalThis.editProposalGeometry('own-detached');

@@ -1,0 +1,29 @@
+[
+  {
+    "url": "https://www.cenxi.gov.cn/",
+    "reason": "TLS certificate validation failed"
+  },
+  {
+    "url": "https://www.wuzhou.gov.cn/",
+    "reason": "TLS certificate validation failed"
+  },
+  {
+    "url": "https://dnr.gxzf.gov.cn/",
+    "reason": "timeout after 15 seconds"
+  },
+  {
+    "url": "https://dnr.gxzf.gov.cn/zfxxgk/fdzdgknr/ygzd/jsydpfwj/t27280542.shtml"
+  },
+  {
+    "url": "https://dnr.gxzf.gov.cn/zxgz/yhyshj/bsrk/"
+  },
+  {
+    "url": "https://dnr.gxzf.gov.cn/zfxxgk/fdzdgknr/dzgl/bdcdjgl/index.shtml"
+  },
+  {
+    "url": "https://map.tianditu.gov.cn/"
+  },
+  {
+    "url": "https://lbs.tianditu.gov.cn/server/search2.html"
+  }
+]

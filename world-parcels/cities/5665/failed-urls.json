@@ -1,0 +1,20 @@
+[
+  {
+    "url": "https://atlas.atrbpn.go.id/"
+  },
+  {
+    "url": "https://bhumi.atrbpn.go.id/"
+  },
+  {
+    "url": "https://bhumi.atrbpn.go.id/bantuan/peta"
+  },
+  {
+    "url": "https://atlas.atrbpn.go.id/api/bhumi/settings"
+  },
+  {
+    "url": "https://atlas.atrbpn.go.id/api/v2/resources?format=json&page_size=1000"
+  },
+  {
+    "url": "https://kab-pandeglang.atrbpn.go.id/"
+  }
+]

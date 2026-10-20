@@ -8,6 +8,7 @@
         'function mintAndFund(address to, string[] parcelIds, bool isConditional, string imageURI, uint256 ethAmount, uint256 tokenAmount, address[] lens) payable returns (uint256)',
         'function contributeFunds(uint256 proposalId, address tokenAddress, uint256 amount) payable',
         'function acceptProposal(uint256 proposalId, string parcelId, bytes32 ownerListUid, bytes32 claimUid, bytes32 endorsementUid)',
+        'function getProposal(uint256 proposalId) view returns (string[] parcelIds, bool isConditional, string imageURI, bool acceptancePossible, uint8 status, uint256 ethBalance, uint256 tokenBalance, uint256 acceptanceCount, uint256 expiryTimestamp, uint256 expiringPercentage)',
         'function withdrawAcceptance(uint256 proposalId, string parcelId, bytes32 ownerListUid, bytes32 claimUid, bytes32 endorsementUid)',
         // Non-binding vote proposals (no funds, never executes)
         'function mintVote(address to, string[] parcelIds, string imageURI, uint256 expiryTimestamp, address[] lens) returns (uint256)',
@@ -814,10 +815,32 @@
         const receipt = await tx.wait();
         const finalHash = receipt && receipt.hash ? receipt.hash : (tx && tx.hash ? tx.hash : null);
 
+        // The transaction is already confirmed. A failed status read must never turn this into a
+        // reported transaction failure or invite a duplicate acceptance. Read its exact block on
+        // the same provider/contract, without importing metadata or applying any map effects.
+        let lifecycle = null;
+        try {
+            if (!Number.isSafeInteger(receipt?.blockNumber) || receipt.blockNumber < 0) {
+                throw new Error('The acceptance receipt has no block number.');
+            }
+            if (normalizeChainIdValue((await browserProvider.getNetwork()).chainId) !== targetChainId) {
+                throw new Error('The wallet network changed before the status read.');
+            }
+            const state = await contract.getProposal(proposalIdArg, { blockTag: receipt.blockNumber });
+            if (globalScope.ProposalChainStatus?.decodeProposalStatus(state.status) === 'Unknown'
+                || !globalScope.ProposalChainStatus) throw new Error('The contract returned an unknown proposal status.');
+            lifecycle = { statusCode: Number(state.status), blockNumber: receipt.blockNumber };
+        } catch (error) {
+            console.warn(`[${new Date().toISOString()}] Acceptance confirmed; proposal status refresh failed`, error);
+        }
+
         return {
             transactionHash: finalHash,
             chainId: targetChainId,
             contractAddress,
+            proposalId: String(proposalIdArg),
+            blockNumber: receipt?.blockNumber,
+            lifecycle,
             explorerUrl: buildExplorerTxUrl(targetChainId, finalHash)
         };
     }

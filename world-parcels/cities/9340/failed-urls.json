@@ -1,0 +1,16 @@
+[
+  {
+    "url": "https://tianjin.tianditu.gov.cn/static/help/note.html",
+    "reason": "timeout / failed fetch"
+  },
+  {
+    "url": "https://tianjin.tianditu.gov.cn/",
+    "reason": "not completed; certificate verification failed because the presented certificate was expired"
+  },
+  {
+    "url": "https://www.tjbd.gov.cn/zwgk/zcwj/qjwj/QZFBGS/202312/W020231227732100822863.pdf"
+  },
+  {
+    "url": "https://tianjin.tianditu.gov.cn/static/html/bzmap.html"
+  }
+]

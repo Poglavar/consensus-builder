@@ -1,0 +1,24 @@
+[
+  {
+    "url": "https://bhind.nic.in/en/service/land-records/"
+  },
+  {
+    "url": "https://mpbhulekh.gov.in/",
+    "reason": "timeout"
+  },
+  {
+    "url": "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/420",
+    "reason": "timeout"
+  },
+  {
+    "url": "https://bhind.nic.in/en/bhind-gis/"
+  },
+  {
+    "url": "https://landrecords.mp.gov.in/",
+    "reason": "timeout"
+  },
+  {
+    "url": "http://bhindgis.mp.gov.in/",
+    "reason": "timeout"
+  }
+]

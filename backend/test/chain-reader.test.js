@@ -17,7 +17,7 @@ const borshVec = values => {
     return Buffer.concat([length, ...values.map(borshString)]);
 };
 
-function proposalAccount({ parcels = ['HR-1'], uri = 'ipfs://metadata-cid', lens = [SOL_ADDRESS], conditional = true, openGroundByte = 1 } = {}) {
+function proposalAccount({ parcels = ['HR-1'], uri = 'ipfs://metadata-cid', lens = [SOL_ADDRESS], conditional = true, openGroundByte = 1, statusCode = 0 } = {}) {
     const sequence = Buffer.alloc(8);
     const owner = new PublicKey('Vote111111111111111111111111111111111111111').toBuffer();
     const conditionalByte = Buffer.from([conditional ? 1 : 0]);
@@ -30,7 +30,7 @@ function proposalAccount({ parcels = ['HR-1'], uri = 'ipfs://metadata-cid', lens
     ]);
     const body = Buffer.concat([
         accountDiscriminator, sequence, owner, borshVec(parcels), conditionalByte,
-        borshString(uri), Buffer.from([1, 0]), Buffer.alloc(24), accepted,
+        borshString(uri), Buffer.from([1, statusCode]), Buffer.alloc(24), accepted,
         lensLength, ...lens.map(value => new PublicKey(value).toBuffer()), tail
     ]);
     const padded = Buffer.alloc(4096);
@@ -63,11 +63,12 @@ describe('normalizeChainRef', () => {
 describe('readChainProposal (EVM)', () => {
     const ref = { chainType: 'evm', chainId: '84532', contract: '0xFf162bC8De48AA39582c9389D60a7487b6330342', tokenId: '5' };
 
-    it('reads parcel consent, metadata URI, lens, conditional flag, and owner from the configured contract', async () => {
+    it.each([['Active', 0], ['Executed', 1], ['Cancelled', 2], ['Expired', 3]])(
+        'reads %s alongside the committed fields from the configured EVM contract', async (lifecycleStatus, statusCode) => {
         const result = await readChainProposal(ref, {
             evmProviderFactory: async () => ({ getNetwork: async () => ({ chainId: 84532n }) }),
             evmContractFactory: async () => ({
-                getProposal: async () => [['HR-1', 'HR-2'], true, 'ipfs://cid', true, 0, 0n, 0n, 0n, 0n, 0n],
+                getProposal: async () => [['HR-1', 'HR-2'], true, 'ipfs://cid', true, statusCode, 0n, 0n, 0n, 0n, 0n],
                 getLens: async () => ['0x000000000000000000000000000000000000000a'],
                 ownerOf: async () => '0x000000000000000000000000000000000000000b'
             })
@@ -75,10 +76,21 @@ describe('readChainProposal (EVM)', () => {
         expect(result).toMatchObject({
             ref: { chainType: 'evm', chainId: '84532', tokenId: '5' },
             cadastreParcelIds: ['HR-1', 'HR-2'], metadataUri: 'ipfs://cid', isConditional: true,
-            owner: '0x000000000000000000000000000000000000000b'
+            owner: '0x000000000000000000000000000000000000000b', lifecycleStatus
         });
         expect(result.lens).toEqual(['0x000000000000000000000000000000000000000a']);
         expect(result).not.toHaveProperty('siteHash');
+        expect(result).not.toHaveProperty('executedAt');
+    });
+
+    it.each([null, undefined, 9, true])('rejects a missing or unknown EVM lifecycle: %s', async statusCode => {
+        await expect(readChainProposal(ref, {
+            evmProviderFactory: async () => ({ getNetwork: async () => ({ chainId: 84532n }) }),
+            evmContractFactory: async () => ({
+                getProposal: async () => ({ parcelIds: ['HR-1'], isConditional: true, imageURI: 'ipfs://cid', status: statusCode }),
+                getLens: async () => [], ownerOf: async () => '0x000000000000000000000000000000000000000b'
+            })
+        })).rejects.toMatchObject({ status: 422, code: 'chain-proof-invalid', message: expect.stringContaining('lifecycle') });
     });
 
     it('rejects a provider connected to a different chain and hides RPC failures', async () => {
@@ -93,7 +105,7 @@ describe('readChainProposal (EVM)', () => {
         await readChainProposal(ref, {
             evmProviderFactory: async () => ({ getNetwork: async () => ({ chainId: 84532n }), destroy: () => { destroyed = true; } }),
             evmContractFactory: async () => ({
-                getProposal: async () => [['HR-1'], false, 'ipfs://cid'],
+                getProposal: async () => [['HR-1'], false, 'ipfs://cid', true, 0],
                 getLens: async () => [], ownerOf: async () => '0x000000000000000000000000000000000000000b'
             })
         });
@@ -109,12 +121,21 @@ describe('readChainProposal (Solana)', () => {
         getAccountInfo: async () => ({ owner: new PublicKey(owner), data })
     });
 
-    it('verifies devnet, program ownership, account layout, and decodes proposal fields', async () => {
-        const result = await readChainProposal(ref, { solanaConnectionFactory: async () => connectionFor() });
+    it.each([['Active', 0], ['Executed', 1], ['Cancelled', 2], ['Expired', 3]])(
+        'verifies the Solana account and reads %s from its status byte', async (lifecycleStatus, statusCode) => {
+        const account = proposalAccount({ statusCode });
+        const result = await readChainProposal(ref, { solanaConnectionFactory: async () => connectionFor(SOL_PROGRAM, account.data) });
         expect(result).toMatchObject({
             cadastreParcelIds: ['HR-1'], metadataUri: 'ipfs://metadata-cid', lens: [SOL_ADDRESS],
-            isConditional: true, owner: valid.proposalOwner, siteHash: 'ab'.repeat(32), openGround: true, layoutVersion: 3
+            isConditional: true, owner: valid.proposalOwner, siteHash: 'ab'.repeat(32), openGround: true, layoutVersion: 3, lifecycleStatus
         });
+        expect(result).not.toHaveProperty('executedAt');
+    });
+
+    it('rejects an unknown Solana lifecycle byte', async () => {
+        const account = proposalAccount({ statusCode: 9 });
+        await expect(readChainProposal(ref, { solanaConnectionFactory: async () => connectionFor(SOL_PROGRAM, account.data) }))
+            .rejects.toMatchObject({ status: 422, code: 'chain-proof-invalid', message: expect.stringContaining('lifecycle') });
     });
 
     it('rejects wrong program owner, wrong cluster endpoint, wrong discriminator, and truncated fields', async () => {

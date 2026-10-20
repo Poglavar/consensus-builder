@@ -1,0 +1,25 @@
+[
+  {
+    "url": "https://www.jcj.gov.cn/",
+    "reason": "TLS certificate validation failed: certificate expired"
+  },
+  {
+    "url": "https://rerc.com.cn/",
+    "reason": "DNS resolution failed in the research environment"
+  },
+  {
+    "url": "http://www.jcj.gov.cn/"
+  },
+  {
+    "url": "http://www.jcj.gov.cn/syzwdt/"
+  },
+  {
+    "url": "https://dnr.gxzf.gov.cn/xwzx/zrzx/t17758177.shtml"
+  },
+  {
+    "url": "http://hcjcj.zwfw.gxzf.gov.cn/gxzwfw/itemNew/bsfw_index.do?type=1&webId=111"
+  },
+  {
+    "url": "https://www.webmap.cn/main.do?method=index1"
+  }
+]

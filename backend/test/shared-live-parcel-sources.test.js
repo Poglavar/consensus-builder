@@ -3,9 +3,11 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { parcelSourceCatalog, parcelSourceForCity } from '../parcels/sources.js';
 import { computeBinding } from '../proposals/binding.js';
+import proj4 from 'proj4';
+globalThis.proj4 ||= proj4;
 
 const samples = ['lyon', 'rotterdam', 'cologne'].map(city => JSON.parse(readFileSync(
-    new URL(`../../world-parcels/research/${city}-live-response.json`, import.meta.url), 'utf8')));
+    new URL(`./fixtures/parcel-adapter-${city}.json`, import.meta.url), 'utf8')));
 afterEach(() => vi.unstubAllGlobals());
 describe.each(samples)('$city shared-provider city', sample => {
     it('selects the original provider with its original canonical namespace', () => {

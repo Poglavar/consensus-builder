@@ -1,0 +1,23 @@
+[
+  {
+    "url": "https://map.land.gov.bd/"
+  },
+  {
+    "url": "https://settlement.gov.bd/Home/"
+  },
+  {
+    "url": "https://dlrs.portal.gov.bd/"
+  },
+  {
+    "url": "https://gis.land.gov.bd/geoserver/wsDMMS/wms?service=WMS&request=GetCapabilities",
+    "reason": "503"
+  },
+  {
+    "url": "https://map.land.gov.bd/getGeomByCode",
+    "reason": "405"
+  },
+  {
+    "url": "https://map.land.gov.bd/GetPlotInfo",
+    "reason": "405"
+  }
+]

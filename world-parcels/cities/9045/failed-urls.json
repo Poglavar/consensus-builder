@@ -1,0 +1,9 @@
+[
+  {
+    "url": "https://upbhunaksha.gov.in/bhunakshaserver/v1/khasramap/plot?bhucode=20500722220477&id=BAxh6KpETF6Gzb1Ay3y_lQ",
+    "reason": "401"
+  },
+  {
+    "url": "https://upbhunaksha.gov.in/bhunakshaserver/mapModificationController/getGeoJSONLayerData"
+  }
+]

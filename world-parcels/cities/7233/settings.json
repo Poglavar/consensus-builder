@@ -1,0 +1,130 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "7233",
+  "name": "Surat, India",
+  "point": [
+    21.174179236185818,
+    72.78092615417103
+  ],
+  "bindings": [
+    {
+      "appCityId": "surat",
+      "runtimeConfig": {
+        "id": "surat",
+        "label": "Surat, India",
+        "currency": {
+          "locale": "en-IN",
+          "code": "INR"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 18
+          },
+          "defaultCenter": [
+            21.174179236185818,
+            72.78092615417103
+          ],
+          "defaultZoom": 18,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            21.174179236185818,
+            72.78092615417103
+          ],
+          "fallbackDataset": [
+            72.78092615417103,
+            21.174179236185818
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.005,
+          "source": "parcel-source",
+          "sourceId": "in-gj-tpvd-surat-final-plots",
+          "idPrefix": "IN-GJ-SURAT-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 3,
+          "attribution": "<a href=\"https://tpvd.openprp.in/ctpvd/index.html\">Gujarat TPVD final planning plots · publisher &amp; conditions</a> · Surat Municipal Corporation Final plots only · partial coverage; not ownership or current-title evidence · registration/currentness unverified"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "in-gj-tpvd-surat-final-plots",
+      "name": "Gujarat TPVD — Surat final town-planning plots",
+      "adapter": "wfs",
+      "version": "1.1.0",
+      "endpoint": "https://tpvd.openprp.in/geoserver/ows",
+      "featureType": "ctp:final_plot_boundary",
+      "geometryField": "the_geom",
+      "idField": "search",
+      "idType": "string",
+      "idPrefix": "IN-GJ-SURAT-",
+      "parcelNumberField": "fp_no",
+      "outFields": [
+        "search",
+        "fp_no",
+        "tps_id",
+        "tps_no",
+        "tps_name",
+        "village",
+        "city",
+        "authority",
+        "district",
+        "status"
+      ],
+      "attributeFilters": {
+        "status": "Final",
+        "city": "Surat",
+        "authority": "SMC"
+      },
+      "pageSize": 1000,
+      "maxFeatures": 1000,
+      "maxBboxKm2": 2,
+      "maxConcurrentQueries": 6,
+      "caCertificate": "./certificates/sectigo-public-server-authentication-ca-dv-r36.pem",
+      "countryCode": "IN",
+      "metricSrid": 32643,
+      "cityIds": [
+        "surat"
+      ],
+      "scope": "Final Surat Municipal Corporation (SMC) town-planning plot boundaries from Gujarat TPVD. Partial planning-scheme coverage; not a current title/ownership registry or citywide completeness claim. Native search reference combines village, scheme and final-plot labels. Single counted responses up to 1,000 records; larger scopes reject because this provider misreports terminal offset-page counts.",
+      "attribution": "Government of Gujarat, Town Planning and Valuation Department (TPVD) — final SMC planning plots. Partial coverage; registration and currentness unverified. Adapted to WGS84.",
+      "catalogueUrl": "https://townplanning.gujarat.gov.in/Home",
+      "licenceNote": "Source conditions are informational. No named reuse licence was identified on the inspected public map.",
+      "caveats": [
+        "The official TPVD website links to the public TPWebGIS host; no account is used.",
+        "Final planning plots are not proof of current land title or ownership. Draft, preliminary and non-SMC schemes are excluded by fixed upstream and response-validated filters.",
+        "The server omits its certificate intermediate. A source-scoped published Sectigo intermediate completes the trusted chain; hostname and certificate validation remain enabled.",
+        "WFS FIDs and gid are transport data, not parcel identities.",
+        "The legacy WFS misreports the total on a final partial offset page. Queries request up to 1000 records and reject match counts above 1000; no offset-counter relaxation is applied.",
+        "Sampled adjacent Piplod 6 92 and Umra_North 5 177 boundaries have a 0.239 m² overlap with about 9 mm minimum oriented width. Source geometry is retained unchanged."
+      ]
+    }
+  ]
+}

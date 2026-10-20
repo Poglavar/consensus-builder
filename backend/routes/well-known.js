@@ -323,7 +323,7 @@ export function buildOpenApi(base, env) {
                     operationId: 'getParcelHistory',
                     parameters: [{ name: 'parcelUid', in: 'path', required: true, schema: { type: 'string', maxLength: 128 }, description: 'Cadastral parcel id, URL-encoded (e.g. HR-335347-1208%2F3).' }],
                     responses: {
-                        200: { description: '{ parcelUid, anchor: { account, exists, mintedAt?, source }, events: [{ type (proposal_created | proposal_published | parcel_ownership | proposal_acceptance | proposal_verdict | proposal_lifecycle), at (source time or null), proposalId?, proposalAccount?, member?, owner?, transaction?, hash?, link }] }. Unknown parcel: empty events, anchor.exists false.' },
+                        200: { description: '{ parcelUid, anchor: { account, exists (true | false | null), source (chain | unavailable | unseedable) }, events: [{ type (proposal_created | proposal_chain_observed | parcel_ownership | proposal_acceptance | proposal_verdict | proposal_lifecycle), at (source time or null), proposalId?, proposalAccount?, chainRef?, member?, owner?, transaction?, hash?, link }] }. proposal_chain_observed describes a verified Solana devnet mirror at its verification time, not a mint event. Anchor existence is a separate validated account read; unavailable evidence stays null. No anchor mint time is inferred.' },
                         400: { description: 'Invalid parcelUid.' }
                     }
                 }

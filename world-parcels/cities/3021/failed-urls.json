@@ -1,0 +1,10 @@
+[
+  {
+    "url": "https://mapservice.alriyadh.gov.sa/geoportal/geomap",
+    "reason": "timeout"
+  },
+  {
+    "url": "https://eservices.alriyadh.gov.sa/Pages/MapViewer.aspx",
+    "reason": "timeout"
+  }
+]

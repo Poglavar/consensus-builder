@@ -1,0 +1,13 @@
+[
+  {
+    "url": "https://ondostate.gov.ng/wp-content/uploads/2022/11/ONDO-STATE-LAND-REGISTRATION-1.pdf"
+  },
+  {
+    "url": "https://www.ondolandportal.org/api/v1/public/search/?q=__parcel_research_probe__",
+    "reason": "404"
+  },
+  {
+    "url": "https://www.ondolandportal.org/api/v1/public/properties/search/?type=property_id&q=__parcel_research_probe__",
+    "reason": "404"
+  }
+]

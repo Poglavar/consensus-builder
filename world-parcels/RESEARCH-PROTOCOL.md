@@ -1,135 +1,34 @@
-# Research protocol for parcel-source discovery
+# Parcel-source research
 
-Shared instructions for city and country probes. See `../world-parcels.md` (Flow B) for the rules; this file is the operational summary.
+The durable storage contract changed on 2026-10-19. Research packets, qualification
+histories, shared findings and admission archives are retired.
 
-## Rules
+For each WUP city code, keep only these knowledge records:
 
-- **Search in the place's own language before closing an unsuccessful search.** Use local cadastral terminology and local script (including regional languages in multilingual countries), and search official national, regional and municipal portals. Keep the exact executed query, language, script, date and result URLs in the evidence file. An English gloss is useful but does not replace a native-language query.
-- An unsuccessful search means **no source verified by this search**, never that the place has no parcel data. A viewer, catalog, authenticated system or scanned map is a lead until actual parcel polygons, stable native IDs, completeness and exact reads are proven.
-- Preserve earlier failed attempts. Native-language retries go in a new dated evidence directory, with prior city/status/file references and a manifest of the cohort actually searched. Do not infer the language of a historical search from the language of its result page.
-- **Verified** means a real request returned HTTP 200 **and** a nonempty list of parcel-like polygon records for a small area. A landing page, map tile, service description, empty result, auth wall, or error is not verification.
-- Query only a tiny area (`resultRecordCount`/`limit`/`count` of 3, a bbox a few hundred metres across). Never download a whole country.
-- **Always send browser-like headers** on every request (a current desktop Chrome `User-Agent`, `Accept`, and an `Accept-Language` for the target country); many services return 403/406 or a challenge page to bare curl. Record in the evidence file whether headers changed the result. Also keep a cookie jar (`curl -c/-b`) because some portals redirect on a session cookie, and send the viewer's own origin as `Referer` when a service returns 403 to direct calls.
-- **Look inside the official viewer before calling a service credentialed.** Public viewers often embed a public access token and the real layer name in their JavaScript or network calls (Croatia's `oss:DKP_CESTICE` WFS answered 401 to a bare request, then returned parcels with the viewer's public token). Record such a token as a placeholder, never its value, and note who issues it and what its terms are.
-- Use the pre-configured proxy; never disable TLS verification. Time out at ~40 s. A timeout or 5xx is `temporarily_unavailable`, never a permanent negative.
-- Do not overclaim scope: a city, county, or state source never implies country coverage. Do not assert licence terms you did not read.
-- Redact credentials and personal data (owner names, tax IDs) from saved replies. Keep saved replies small (a few features).
-- Do **not** edit `registry.json`, `world-parcels.md`, or another agent's files. Write only your assigned output files. The coordinator merges them.
-- Use `python3 -m json.tool <file>` to check every JSON file you write.
+- `cities/<code>/failed-urls.json`: a deduplicated array of `{ "url": "https://...", "reason": "optional" }` entries describing unsuccessful parcel-source attempts.
+- `cities/<code>/settings.json`: explicit app-city bindings, working source URLs and the configuration required by shared adapters.
 
-## City output: `research/<slug>.json`
+Settings describe working configuration. A failed URL describes an unsuccessful
+attempt; it never establishes that a city has no cadastre. Timeouts, access walls
+and empty exact-point reads must not be presented as citywide absence.
 
-Slug: lowercase ASCII city name, hyphens (e.g. `hyderabad`). Schema (see `research/los-angeles.json` verified, `research/lagos.json` negative):
+Search official municipal, regional and national sources, including the place's
+own language and script. Inspect public viewers and their service requests. Use
+bounded requests and stable parcel identities, preserve full polygon coordinates,
+and omit owner attributes, credentials and private tokens.
 
-```
-{ "schemaVersion": 1, "cityId": "queue:<rank>" (use "geonames:<id>" if you found the GeoNames id), "queueRank": <rank>, "name": "...", "country": "...", "countryCode": "XX",
-  "centerLatLon": [lat, lon], "checkedAt": "YYYY-MM-DD", "status": <one of below>,
-  "verifiedParcelResponse": null | { sourceId, requestUrl, method, httpStatus, contentType, spatialTestAreaLonLat, parcelRecordCount, recordListPath, geometryType, closedRings, idField, responseFile, pagination },
-  "source": null | { sourceId, name, operator, scope, endpoint, method, responseFormat, crs, reuseStatus },
-  "portalsFound": [{url, observation}], "requests": [{url, method, httpStatus, contentType, assessment}],
-  "coverageAssessment": {claimedScope, verifiedOpenScope, countrywideVerified}, "remainingUncertainty": "...", "nextStep": "..." }
-```
+Research, independent review, adapter implementation and qualification may use
+small temporary packets and request samples. The existing parcel qualification
+policy still determines whether a source works. A worker's success label alone
+never promotes a source. Only verified working configuration enters settings;
+implementation knowledge lives in shared adapter code and focused tests.
 
-Status vocabulary: `verified_sample_city_scope`, `verified_sample_county_scope`, `verified_sample_partial_coverage`, `no_verified_sample_candidate_citywide`, `no_verified_sample_candidate_countrywide`, `no_verified_open_endpoint_after_attempts`, `temporarily_unavailable`.
+After a result is accepted, merge its failed URLs, preserve any successful
+settings, and delete the task inputs, outputs, samples, logs, evidence and private
+worktree. Native CLI calls run without permanent session transcripts. Active work
+may keep temporary recovery files, and a job may keep small queue/progress state.
+Do not copy prior histories into task inputs or archive completed workspaces.
 
-When verified, also save the small raw reply as `research/<slug>-parcel-response.json`.
-
-## Country output: `research/countries/<ISO2>.json`
-
-```
-{ "schemaVersion": 1, "countryCode": "XX", "country": "...", "checkedAt": "YYYY-MM-DD",
-  "status": "national_online_cadastre_verified_sample" | "national_cadastre_viewer_only" | "national_cadastre_credentialed_or_paid" | "subnational_only" | "no_online_cadastre_found" | "temporarily_unavailable",
-  "cadastreAuthority": "...", "portalsFound": [{url, observation}], "requests": [...], "verifiedParcelResponse": null | {...as above, plus "regionSampled"},
-  "coverageAssessment": {"claimedScope": "...", "regionsVerified": [...], "nationwideVerified": false},
-  "accessModel": "open | registration | paid | viewer-only | unknown", "remainingUncertainty": "...", "nextStep": "..." }
-```
-
-`national_online_cadastre_verified_sample` requires an actual nonempty polygon response; note `nationwideVerified: true` only if two geographically distinct regions were sampled from the same source/schema. "State-level" here means the national/central government or a country-wide statutory service (also list any subnational services found, e.g. provinces or cantons).
-
-## Retry pass (2026-09-30)
-
-Second pass over every non-verified country and every unavailable or candidate city, using the rules above. Input: `batches/retry-countries-NN.json` / `batches/retry-cities-NN.json` (each entry names the previous status and its evidence file; read that file first). Output: **do not edit the original evidence file**. Write `research/retry/countries/<ISO2>.json` or `research/retry/cities/<key>.json`:
-
-```
-{ "kind": "country|city", "key": "...", "checkedAt": "2026-09-30", "previousStatus": "...", "newStatus": <vocabulary above>,
-  "headersUsed": "the exact User-Agent/Accept/Accept-Language sent",
-  "changedByHeaders": true|false, "foundViaViewerInspection": true|false,
-  "verifiedParcelResponse": null | {...same fields as above, token/keys redacted...},
-  "source": null | {...}, "requests": [{url, method, httpStatus, contentType, assessment}],
-  "geoBlockSuspected": true|false (say why: region page, 403 only from this network, etc.),
-  "notes": "what is new versus the previous record", "nextStep": "..." }
-```
-
-For each entry: (1) re-request the previously failing URLs with full browser headers; (2) fetch the official viewer/portal page and inspect its HTML/JS (`<script src>`, inline config, `fetch(`/`XMLHttpRequest`/`wfs`/`FeatureServer`/`MapServer`/`token` strings) for the real service URL, layer name and any public token, then test a bounded query; (3) try 2-3 further candidate hosts for that country (national mapping agency, INSPIRE, data.gov portal, ArcGIS Online orgs). Never save a token value; use `<PUBLIC_TOKEN>`. Save small raw replies (JSON, wrap XML in a JSON string) as `research/retry/<countries|cities>/<key>-parcel-response.json`. Do not attempt to bypass logins, CAPTCHAs or TLS errors, and do not guess credentials. If a service is truly behind registration, say so. Reply with one line per entry: key, previous -> new status, source if any.
-
-## Europe focus pass (2026-09-30)
-
-Every European country not yet in `countryCoverage` gets a deeper pass. EU and EFTA members are obliged by the INSPIRE Directive to publish a Cadastral Parcels (CP) view and download service, so a missing endpoint is usually our search failing, not the data.
-
-Method, in order, for each country:
-1. **INSPIRE geoportal first.** Search https://inspire-geoportal.ec.europa.eu/ (and its API, e.g. `https://inspire-geoportal.ec.europa.eu/srv/api/search/records/_search` with `"Cadastral parcels"` + country) for the country's CP download service, then the national INSPIRE catalogue (CSW/GeoNetwork). Take the real WFS/ATOM/OGC-API URL from the metadata record, never a guessed path. Also check EuroGeographics / the national mapping-and-cadastre agency's own geoportal.
-2. **Read the official viewer's code** (config JSON, main.js, network calls) for the parcel layer, service host, and any public token or required `Referer`.
-3. **Test** a WFS 2.0 `GetFeature` (`typeNames=cp:CadastralParcel` or the national name, `count=3`, `bbox=` in the service's default CRS, `outputFormat` json if offered; try the INSPIRE stored query `GetFeatureById` too), or an ATOM/OGC-API download read by HTTP Range, in **two distinct regions**. Some INSPIRE WFS answer empty for EPSG:4326 boxes but work in the national CRS.
-4. Browser headers, cookie jar, viewer-origin `Referer`, retries on WAF flaps. Never bypass TLS, logins or challenges.
-
-Output: `research/europe/<ISO2>.json` in the country schema plus `newStatus`, `previousStatus`, `regionsSampled`, `inspireRecordUrl` (if found), and the raw reply as `research/europe/<ISO2>-parcel-response.json` (JSON, XML wrapped as a string, tokens as `<PUBLIC_TOKEN>`, no owner data). Do not edit any other file. For a federal country (Germany, Bosnia, Belgium, Switzerland) list each state/canton/entity service found and which were verified; two verified sub-national services from different regions count as passing the two-region test for the *country* only if you say so explicitly and name both.
-
-## Subnational pass for federal countries (2026-09-30)
-
-In federations the cadastre is usually a state, province or canton function, so a country-level "no national service" answer hides real coverage (Colorado and New York City both publish parcels; the United States has no national layer). For these countries the unit of coverage is the **region**.
-
-Input: `batches/subnational-<ISO2>-NN.json`, one entry per region (`iso2`, `regionCode`, `regionName`, `hints`). For each region, in order: (1) look for the **statewide/provincial parcel layer** on the region's GIS office, open-data portal or ArcGIS Hub (many US states publish one; some, like Texas, only have county layers); (2) if none, take the largest county/municipality's parcel service as a *partial* result and say so; (3) test one small bounded query (`resultRecordCount=3` / `count=3`), browser headers, cookie jar, no token values, **request only ID and geometry fields** (parcel layers in the US often carry owner names and mailing addresses; never save those). Record licence/terms text when visible.
-
-Output: `research/subnational/<ISO2>/<regionCode>.json`:
-```
-{ "schemaVersion": 1, "countryCode": "US", "regionCode": "CO", "regionName": "Colorado", "checkedAt": "2026-09-30",
-  "status": "verified_region_wide" | "verified_partial_region" (county/municipal only) | "credentialed_or_paid" | "viewer_only" | "no_open_service_found" | "temporarily_unavailable",
-  "source": {...as country schema...}, "verifiedParcelResponse": null | {...}, "regionWideClaimed": true|false, "regionWideBasis": "what the publisher says",
-  "subregionsVerified": ["Denver County"], "portalsFound": [...], "requests": [...], "reuseStatus": "...", "remainingUncertainty": "...", "nextStep": "..." }
-```
-Raw replies as `research/subnational/<ISO2>/<regionCode>-parcel-response.json` (ID + geometry only). Do not edit any other file.
-
-## Jurisdiction-first provider expansion (2026-10-12)
-
-Once a national or state provider has an executable adapter, its cities are found by
-jurisdiction, not by web search: every UN WUP 2025 city inside the provider's documented
-jurisdiction is probed. A 2026-10-12 pilot found parcels for 139 of 148 such cities, where
-reusing municipal providers by metadata extent had found 2 of 393 (280 of those probes went to one
-Californian city service, New York included).
-
-- **Each provider keeps its own rules** in its `source-catalog.json` entry under `discovery`:
-  `jurisdiction` (`countryCode`, optional ISO 3166-2 `admin1` / `excludeAdmin1`, a one-sentence
-  `basis`, and `evidence` files relative to `world-parcels/`), and optionally `paceMs`,
-  `searchRingsM` and `keepPublishedFields` (only when the adapter validates its full published
-  field list and every field is a parcel-ID part). A quirk found in one provider is fixed in that
-  provider's adapter or profile, never as a rule for all providers.
-- A metadata bounding box is never jurisdiction evidence. Admin-1 membership is a point-in-polygon
-  test on Natural Earth 10m admin-1 (`ne_10m_admin_1_states_provinces.geojson`, v5.1.2).
-- Search pattern: the 3x3 core grid around the UN point (~170 m), then rings at 400/1200/3000 m,
-  8 bearings, ~110 m boxes. The rings are part of the pair checkpoint, so changing them re-probes
-  earlier no-hits.
-- An HTTP 403/429 blocks the provider, not the city: the probe reports `blocked`, the controller
-  stops that provider for the run and records no pair result, so those cities are probed again later.
-
-```sh
-python3 scripts/build-provider-expansion-queue.py --source <WUP2025.csv.gz> \
-  --admin1 <ne_10m_admin_1_states_provinces.geojson> --registry world-parcels/registry.json \
-  --live-report frontend/data/parcel-coverage-report.json --output tmp/<run>/queue.json
-python3 scripts/run-parcel-provider-expansion.py --run --queue-json tmp/<run>/queue.json \
-  --source <WUP2025.csv.gz> --repo-root . --shared-root .
-```
-
-Qualification of the receipts: `scripts/build-qualification-queue.py` freezes a queue from
-`provider-expansion/completions`; `run-parcel-qualification.py --run --direct-only` runs the
-deterministic qualifier and leaves cities that need troubleshooting at `needs-llm`. An external
-worker fixes a city in a new `attempt-NN` directory and submits it with `--record-answer`; the
-runner re-verifies it (including the independent metric recomputation) before recording it.
-Qualification needs `scripts/requirements-parcel-qualification.txt` (pyproj, shapely) on `python3`.
-The preparer tests the descriptor production runs: catalog fields win over the packet's
-discovery-time snapshot, so a catalog fix applies to the next qualification without rediscovery.
-
-Outcomes reach the globe through `scripts/export-qualification-outcomes.py --state <dir> ...`, which
-writes one record per city to `world-parcels/research/qualification-outcomes/`. A hold whose summary
-says "not a source verdict" (throttling, a blocked host) is exported as `unchecked` and never counts.
-`scripts/build-world-coverage.mjs` paints a reviewed full country or region `mostly` (lighter green)
-when its live and qualified cities outnumber its held ones, and `partial` when they do not.
+`node scripts/lib/parcel-city-settings.mjs --root <repo>` extracts settings from
+verified current app configuration. `--apply` rebuilds parcel bindings and source
+configuration from settings, preserving unrelated app configuration and labels.

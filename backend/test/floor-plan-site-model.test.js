@@ -1,6 +1,6 @@
 // Site-model helpers: one identity per site across postings, plan outlines in metres, north as rotation.
 import { describe, expect, it } from 'vitest';
-import { buildSiteModels, northRotationDeg, planOutline, siteKey } from '../floor-plans/site-model.js';
+import { buildSiteModels, northRotationDeg, planOutline, siteKey, siteModel, sourceOnlySiteKey, sourceOnlySiteModel } from '../floor-plans/site-model.js';
 
 const ring = { type: 'Polygon', coordinates: [[[15.9, 45.8], [15.9001, 45.8], [15.9001, 45.8001], [15.9, 45.8001], [15.9, 45.8]]] };
 
@@ -16,6 +16,15 @@ describe('site model helpers', () => {
         const model = { architecture: { dimensionsM: [10, 8], slabs: [[[[0, 0], [1, 0], [1, 1], [0, 1]]]] } };
         expect(planOutline(model)).toEqual([[0, -0], [10, -0], [10, -8], [0, -8]]);
         expect(planOutline({ architecture: { dimensionsM: [0, 8], slabs: [] } })).toBeNull();
+    });
+
+    it('keeps source-only plan geometry while withholding geographic footprint and placement', () => {
+        const url='https://agency.test/apartment/1',p={id:'p1',kind:'reviewed',listing_url:url,sha256:'a'.repeat(64),
+            model:{scope:'unit',unitId:'S1',architecture:{schema:'consensus-builder.floor-architecture.v1'},source:{url:'https://agency.test/s1.png'}}};
+        const value=sourceOnlySiteModel({url,facts:{title:'Stan S1',propertyDetails:{propertyType:'apartment'}}},[p]);
+        expect(value).toMatchObject({siteKey:sourceOnlySiteKey(url),location:{status:'unknown'},envelope:null,footprint:null,placements:[]});
+        expect(value.inventory.apartments[0]).toMatchObject({hasPlan:true,architecture:p.model.architecture});
+        expect(sourceOnlySiteKey(url)).not.toBe(sourceOnlySiteKey('https://other.test/apartment/1'));
     });
 
     it('reads a printed north arrow as the rotation that points it up', () => {
@@ -41,16 +50,47 @@ function fakeDb(listings) {
         },
     };
 }
-const located = (url, caseId) => ({ url, location: { candidates: [{ permits: [{ caseId }] }] } });
+const located = (url, caseId) => ({ url, location_status:'located', location: { candidates: [{ permits: [{ caseId }] }] } });
 const build = async (_db, url) => ({ schema: 'site-model.v1', listingUrl: url, siblings: [url] });
 
 describe('buildSiteModels', () => {
+    it('retains parcel context without turning it into a building volume or a plan-fit target', async () => {
+        const candidate = { parcels: [{ ko: 'district', kc: '17' }] };
+        const listing = { url: 'https://plans.example/project', facts: { propertyDetails: { propertyType: 'apartment' } }, location_status: 'probable',
+            location: { candidates: [candidate], signals: { floors: 'P+2' } } };
+        const plan = { sha256: 'd'.repeat(64), listing_url: listing.url,
+            model: { scope: 'unit', unitId: 'Example-1', floor: 1, architecture: { dimensionsM: [10, 8],
+                slabs: [[[[0, 0], [1, 0], [1, 1], [0, 1]]]], walls: [], openings: [] }, source: {} } };
+        const db = { async query(sql) {
+            if (/SELECT url, facts, location/.test(sql)) return { rows: [listing] };
+            if (/FROM floor_plan\.extraction e/.test(sql)) return { rows: [plan] };
+            return { rows: [] };
+        } };
+        const referenceReads = [];
+        const referencesDb = { async query(sql) {
+            referenceReads.push(sql);
+            return { rows: [{ g: ring, area: 1000 }] };
+        } };
+        const model = await siteModel(db, listing.url, { referencesDb });
+        expect(referenceReads).toHaveLength(1);
+        expect(referenceReads[0]).toContain('FROM public.parcel');
+        expect(model.parcelContext).toEqual({ geometry: ring, areaM2: 1000, source: 'cadastre-parcels' });
+        expect(model.footprint).toBeNull();
+        expect(model.envelope).toMatchObject({ footprint: null, footprintSource: null });
+        expect(model.envelope.storeys).toHaveLength(3);
+        expect(model.placements).toEqual([]);
+        expect(model.inventory.apartments.some(unit => unit.hasPlan && unit.architecture)).toBe(true);
+    });
+
     it('stores one model per site and retires models of sites no longer located', async () => {
         const db = fakeDb([located('https://a/1', 'P1'), located('https://a/2', 'P1'), located('https://a/3', 'P2')]);
         const result = await buildSiteModels(db, { build, log: () => {} });
         expect(result).toMatchObject({ sites: 2, built: 2, failed: 0, retired: 2 });
         const retire = db.statements.find(s => /^DELETE/.test(s.sql.trim()));
         expect(retire.params[0].sort()).toEqual(['permit:P1', 'permit:P2']);
+        expect(retire.sql).toContain("split_part(site_key, ':', 1) = ANY($2::text[])");
+        expect(retire.params[1]).toEqual(['permit', 'address', 'parcels', 'listing']);
+        expect(retire.params[1]).not.toContain('registered');
     });
 
     it('keeps every stored model when the pass is truncated by the limit', async () => {
@@ -99,6 +139,8 @@ describe('buildSiteModels', () => {
         const model = await (await import('../floor-plans/site-model.js')).siteModel(localDb, current.url, { referencesDb });
         expect(model.siblings).toEqual(['https://a/1', 'https://a/2']);
         expect(model.footprint).toMatchObject({ source: 'permit-footprint', caseId: 'P1' });
+        expect(model.envelope.footprint).toEqual(ring);
+        expect(model.parcelContext).toBeNull();
         expect(referenceQueries).toHaveLength(1);
         expect(referenceQueries[0]).toContain('public.edozvola_feature');
         expect(localQueries.every(sql => !/public\.(?:edozvola_feature|gdi_building_3d|parcel|street)\b/.test(sql))).toBe(true);

@@ -1,0 +1,19 @@
+[
+  {
+    "url": "https://portal.environment.gov.za/server/rest/services/ScreeningMaps/ScreeningSearch/MapServer/0?f=json",
+    "reason": "timeout"
+  },
+  {
+    "url": "https://portal.environment.gov.za/server/rest/services/ScreeningMaps/ScreeningSearch/MapServer/0/query",
+    "reason": "not accessible / timeout"
+  },
+  {
+    "url": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer"
+  },
+  {
+    "url": "https://www.mbombela.gov.za/"
+  },
+  {
+    "url": "https://www.mbombela.gov.za/organisational-structure/"
+  }
+]

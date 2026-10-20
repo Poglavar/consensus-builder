@@ -1,0 +1,16 @@
+[
+  {
+    "url": "https://www.govmap.gov.il/map.html?lang=en",
+    "reason": "403"
+  },
+  {
+    "url": "https://modiin.muni.il/ModiinWebSite/ArticlePage.aspx?PageID=148_370",
+    "reason": "403"
+  },
+  {
+    "url": "https://services8.arcgis.com/JcXY3lLZni6BK4El/arcgis/rest/services/%D7%97%D7%9C%D7%A7%D7%95%D7%AA/FeatureServer/0"
+  },
+  {
+    "url": "https://www.modiin.muni.il/modiinwebsite/ChannelArticle.aspx?PageID=7_351"
+  }
+]

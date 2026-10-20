@@ -1,0 +1,108 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "11460",
+  "name": "Macau, China, Macao SAR",
+  "point": [
+    22.1940052,
+    113.5442146
+  ],
+  "bindings": [
+    {
+      "appCityId": "macau",
+      "runtimeConfig": {
+        "id": "macau",
+        "label": "Macau, China, Macao SAR",
+        "currency": {
+          "locale": "pt-MO",
+          "code": "MOP"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            22.1940052,
+            113.5442146
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            22.1940052,
+            113.5442146
+          ],
+          "fallbackDataset": [
+            113.5442146,
+            22.1940052
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "mo-dscc-cad-lote",
+          "idPrefix": "MO-DSCC-CAD-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 3,
+          "attribution": "<a href=\"https://cadastre.gis.gov.mo/MGSP_Cad/port/main.html?type=1\">Macao DSCC Cad_lote cadastral reference polygons</a> · adapted"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "adapter": "arcgis",
+      "id": "mo-dscc-cad-lote",
+      "endpoint": "https://cadastre.gis.gov.mo/arcgis/rest/services/Cadastre_Project/Cad_lote/MapServer/0",
+      "idField": "OBJECTID",
+      "objectIdField": "OBJECTID",
+      "idType": "integer",
+      "idPrefix": "MO-DSCC-CAD-",
+      "outFields": [
+        "OBJECTID"
+      ],
+      "pageSize": 500,
+      "maxFeatures": 5000,
+      "maxBboxKm2": 1,
+      "maxResponseBytes": 4194304,
+      "maxTotalResponseBytes": 25165824,
+      "projection": "EPSG:32649",
+      "name": "Macao DSCC Cad_lote cadastral reference polygons",
+      "countryCode": "MO",
+      "metricSrid": 32649,
+      "cityIds": [
+        "macau"
+      ],
+      "maxConcurrentQueries": 2,
+      "scope": "28 valid, distinct official Cad_lote parcel polygons verified in thirteen local cells around the explicit in-Macao center [22.1940052, 113.5442146]. Complete pages, fresh exact-ID hashes, absence, footprint and source binding pass, with no sampled overlaps above 0.01 m². This covers the Macao side of the Macau–Zhuhai settlement only. The ranked WUP point is outside Macao SAR; Zhuhai and wider municipal coverage remain unverified.",
+      "operator": "Direcção dos Serviços de Cartografia e Cadastro (DSCC), Macao SAR",
+      "catalogueUrl": "https://cadastre.gis.gov.mo/MGSP_Cad/port/main.html?type=1",
+      "attribution": "Macao DSCC · cadastral reference polygons · sampled Macao-side coverage",
+      "licenceNote": "Public official cadastral information network; source conditions informational. Bounded sample does not establish legal title, survey accuracy or completeness."
+    }
+  ]
+}

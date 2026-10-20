@@ -1,0 +1,108 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "8026",
+  "name": "São Gonçalo, Brazil",
+  "point": [
+    -22.8357484330541,
+    -43.0260274875774
+  ],
+  "bindings": [
+    {
+      "appCityId": "saogoncalo",
+      "runtimeConfig": {
+        "id": "saogoncalo",
+        "label": "São Gonçalo, Brazil",
+        "currency": {
+          "locale": "pt-BR",
+          "code": "BRL"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            -22.8357484330541,
+            -43.0260274875774
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            -22.8357484330541,
+            -43.0260274875774
+          ],
+          "fallbackDataset": [
+            -43.0260274875774,
+            -22.8357484330541
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "br-sg-prefeitura-geoserver-lote-cadastro",
+          "idPrefix": "BR-SG-CAD-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 3,
+          "attribution": "<a href=\"https://topovision.pmsg.rj.gov.br/\">São Gonçalo municipal cadastral lots (GeoServer WFS)</a> · adapted"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "br-sg-prefeitura-geoserver-lote-cadastro",
+      "name": "São Gonçalo municipal cadastral lots (GeoServer WFS)",
+      "adapter": "wfs",
+      "endpoint": "https://geoserver.pmsg.rj.gov.br/ows",
+      "featureType": "SaoGoncalo:lote_a_cadastro_sg",
+      "idField": "id",
+      "idType": "integer",
+      "idPrefix": "BR-SG-CAD-",
+      "geometryField": "geom",
+      "requestProperties": true,
+      "outFields": [
+        "id"
+      ],
+      "pageSize": 1000,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "countryCode": "BR",
+      "metricSrid": 31983,
+      "scope": "90 valid, distinct municipal cadastral polygons verified in thirteen bounded local cells around the WUP 2025 São Gonçalo settlement locator. Complete paging, fresh native-ID reads, explicit absence, footprint and binding checks passed. Independent GEOS audits found no sampled overlaps above 0.01 m², duplicate geometry, invalid polygons or operation errors. The exact WUP point returned no parcel; verification covers nearby mapped parcels, not exact-point or municipality-wide completeness. Native numeric id was stable during live re-reads; long-term ID permanence is undocumented.",
+      "cityIds": [
+        "saogoncalo"
+      ],
+      "maxConcurrentQueries": 2,
+      "projection": "EPSG:31983",
+      "operator": "Prefeitura Municipal de São Gonçalo",
+      "catalogueUrl": "https://topovision.pmsg.rj.gov.br/",
+      "attribution": "Prefeitura Municipal de São Gonçalo · municipal cadastral lots",
+      "licenceNote": "Public municipal GIS; publisher conditions informational. Bounded geometry verification is not legal title or municipality-wide completeness."
+    }
+  ]
+}

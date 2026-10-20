@@ -1,0 +1,10 @@
+[
+  {
+    "url": "https://bapperida.banjarbarukota.go.id/277/",
+    "reason": "200 via indexed first-party page; direct curl connection failed during this attempt"
+  },
+  {
+    "url": "https://geobjb.banjarbarukota.go.id/geoserver/rest/services?f=pjson",
+    "reason": "401"
+  }
+]

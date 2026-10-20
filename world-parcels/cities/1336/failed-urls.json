@@ -1,0 +1,18 @@
+[
+  {
+    "url": "https://www.land.vic.gov.au/maps-and-spatial/spatial-data/vicmap-catalogue/vicmap-property"
+  },
+  {
+    "url": "https://vicmap.land.vic.gov.au/agsgis/rest/services/vicmap/Vicmap_Parcel/MapServer/0"
+  },
+  {
+    "url": "https://www.land.vic.gov.au/surveying/services/about-lassi"
+  },
+  {
+    "url": "https://discover.data.vic.gov.au/en_AU/dataset/vicmap-property-parcel-table"
+  },
+  {
+    "url": "https://vicmap.land.vic.gov.au/agsgis/rest/services/vicmap/Vicmap_Parcel/MapServer/0/query",
+    "reason": "400"
+  }
+]

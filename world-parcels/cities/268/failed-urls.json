@@ -1,0 +1,6 @@
+[
+  {
+    "url": "https://services-eu1.arcgis.com/40tFGWzosjaLJpmn/arcgis/rest/services/GEOTEMAXIA_LEITOURGOUN_ON_gdb/FeatureServer/0",
+    "reason": "Source data defect, not repaired: failed checks: metric; failures: {\"metric\": {\"errorType\": \"Error\", \"code\": \"metric-report-failed\"}}; metric blockers {'invalidCount': 3} of 643 source polygons (source geometry never repaired); invalid polygons: [{\"id\": \"06167\\u0395\\u039a01924\", \"reasons\": [\"Ring Self-intersection[21.7385272808508 38.2416498154479]\"]}, {\"id\": \"06167\\u0395\\u039a02308\", \"reasons\":…"
+  }
+]

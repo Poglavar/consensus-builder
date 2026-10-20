@@ -1,0 +1,9 @@
+[
+  {
+    "url": "https://revenue.cg.nic.in/bhunaksha/"
+  },
+  {
+    "url": "https://revenue.cg.nic.in/bhunaksha/WMS?SERVICE=WMS&REQUEST=GetCapabilities",
+    "reason": "500"
+  }
+]

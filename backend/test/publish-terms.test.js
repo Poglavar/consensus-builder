@@ -7,7 +7,46 @@ const require = createRequire(import.meta.url);
 const { publishFields, voteDays } = require('../../frontend/js/proposals/publish-terms.js');
 const NOW = Date.UTC(2026, 9, 17);
 
+describe('authoredOffer', () => {
+    const { authoredOffer } = require('../../frontend/js/proposals/publish-terms.js');
+
+    it('requires explicit numeric consideration and currency, preserving zero', () => {
+        expect(authoredOffer({ offer: 0, offerCurrency: ' eur ' })).toEqual({ amount: 0, currency: 'EUR' });
+        expect(authoredOffer({ kind: 'owner-deal', offer: 1500.25, offerCurrency: 'USDC', decayEnabled: true, decayPercent: 50 }))
+            .toEqual({ amount: 1500.25, currency: 'USDC' });
+        for (const offer of [null, undefined, '', '100', true, -1, Infinity, NaN]) {
+            expect(authoredOffer({ offer, offerCurrency: 'EUR' })).toBeNull();
+        }
+        for (const offerCurrency of [null, undefined, '', ' ', 123]) {
+            expect(authoredOffer({ offer: 100, offerCurrency })).toBeNull();
+        }
+    });
+
+    it('never substitutes budgets, atomic balances, generic currencies or vote money', () => {
+        for (const record of [null, {}, { budget: 100, budgetCurrency: 'EUR' },
+            { ethBalance: 1e18, tokenBalance: 1e6, currency: 'USDC' },
+            { offer: 100, currency: 'EUR' }, { offer: 100, budgetCurrency: 'EUR' },
+            ...['owner-vote', 'community-vote', 'unknown'].map(kind => ({ kind, offer: 100, offerCurrency: 'EUR' }))]) {
+            expect(authoredOffer(record)).toBeNull();
+        }
+    });
+});
+
 describe('publishFields', () => {
+    it('displays only explicit, consistent payout terms for a positive binding offer', () => {
+        const { payoutMode } = require('../../frontend/js/proposals/publish-terms.js');
+        for (const record of [{}, { offer: null, isConditional: false }, { offer: true, isConditional: true },
+            { kind: 'other', offer: 100, isConditional: true }, { offer: 0, disbursementMode: 'partial' },
+            { offer: 100 }, { offer: 100, isConditional: 'true' }, { offer: 100, disbursementMode: 'other' },
+            { offer: 100, disbursementMode: 'partial', isConditional: true },
+            { kind: 'owner-vote', offer: 100, isConditional: true },
+            { kind: 'community-vote', offer: 100, isConditional: false }]) expect(payoutMode(record)).toBeNull();
+        expect(payoutMode({ offer: 100, isConditional: true })).toBe('conditional');
+        expect(payoutMode({ offer: '100', disbursementMode: 'partial' })).toBe('partial');
+        expect(payoutMode({ offer: 100, isConditional: false })).toBe('partial');
+        expect(payoutMode({ offer: 100, isConditional: true, disbursementMode: 'conditional' })).toBe('conditional');
+    });
+
     it('gives a vote no money and a deadline in whole days', () => {
         for (const kind of ['owner-vote', 'community-vote']) {
             const fields = publishFields({ kind, offer: 5000, depositEnabled: true, decayEnabled: true, isConditional: true, voteExpiryDays: 30 }, { now: NOW });

@@ -1,0 +1,17 @@
+[
+  {
+    "url": "https://ldgis.tainan.gov.tw/TNLDWS/"
+  },
+  {
+    "url": "https://ldgis.tainan.gov.tw/TNLDWS/TNGIS_WS.asmx?op=SV3"
+  },
+  {
+    "url": "https://ldgis.tainan.gov.tw/TNLDWS/demo/service/SV3.aspx"
+  },
+  {
+    "url": "https://landmap.tainan.gov.tw/gis/"
+  },
+  {
+    "url": "https://data.gov.tw/en/datasets/167135"
+  }
+]

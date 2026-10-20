@@ -1,0 +1,14 @@
+[
+  {
+    "url": "https://cadastre.mines.gov.gn/arcgis"
+  },
+  {
+    "url": "https://cadastre.mines.gov.gn/arcgis/rest/services"
+  },
+  {
+    "url": "https://prefecture-kindia.com/"
+  },
+  {
+    "url": "https://cadastre.mines.gov.gn/arcgis/rest/services/MapPortal/GuineaPortal_ApplicationLayer/MapServer"
+  }
+]

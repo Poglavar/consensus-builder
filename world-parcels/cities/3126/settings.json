@@ -1,0 +1,133 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "3126",
+  "name": "Khuma, South Africa",
+  "point": [
+    -26.8507332371509,
+    26.8472605527769
+  ],
+  "bindings": [
+    {
+      "appCityId": "khuma",
+      "runtimeConfig": {
+        "id": "khuma",
+        "wupCityCode": "3126",
+        "label": "Khuma, South Africa",
+        "currency": {
+          "locale": "en-ZA",
+          "code": "ZAR"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            -26.8507332371509,
+            26.8472605527769
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            -26.8507332371509,
+            26.8472605527769
+          ],
+          "fallbackDataset": [
+            26.8472605527769,
+            -26.8507332371509
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "za-csg-dffe-erven",
+          "idPrefix": "ZA-CSG-DFFE-ERVEN-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 3,
+          "attribution": "<a href=\"https://csg.dlrrd.gov.za/data.htm\">Chief Surveyor-General · DFFE hosted Erven · adapted</a>"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "za-csg-dffe-erven",
+      "adapter": "arcgis",
+      "endpoint": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2",
+      "idPrefix": "ZA-CSG-DFFE-ERVEN-",
+      "idField": "PRCL_KEY",
+      "objectIdField": "OBJECTID",
+      "idType": "string",
+      "outFields": [
+        "OBJECTID",
+        "PRCL_KEY",
+        "PRCL_TYPE",
+        "LSTATUS",
+        "WSTATUS"
+      ],
+      "queryFormat": "esri-json",
+      "pageSize": 1000,
+      "maxFeatures": 2000,
+      "maxBboxKm2": 2,
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "name": "Chief Surveyor-General public Erven polygons",
+      "operator": "Chief Surveyor-General; Department of Forestry, Fisheries and the Environment service host",
+      "catalogueUrl": "https://csg.dlrrd.gov.za/data.htm",
+      "attribution": "Chief Surveyor-General · DFFE hosted Erven · adapted",
+      "countryCode": "ZA",
+      "metricSrid": 32735,
+      "cityIds": [
+        "khuma"
+      ],
+      "scope": "Public Chief Surveyor-General Erven reference polygons hosted by DFFE; separately qualified bounded Klipgat and Evaton settlement views. Complete native PRCL_KEY identity and Esri straight-ring geometry are preserved. Each city retains its own extent and geometry-quality evidence; wider coverage, current legal title and survey accuracy remain unverified. Additional enabled city entries have separate bounded qualification evidence; wider coverage remains unverified.",
+      "licenceNote": "Public government cadastral/reference map polygons; source notices informational. Legal survey accuracy and title are unverified.",
+      "cityScopes": {
+        "evaton": "46 valid distinct Chief Surveyor-General Erven references verified in thirteen bounded 0.001-degree cells around the unchanged Evaton WUP settlement locator. Complete object-ID manifests, forced three-row geometry pages, all 46 fresh native PRCL_KEY reads, explicit absence, footprint and binding passed in 59 requests through the existing strict Esri JSON reader. Independent EPSG:32735 GEOS found no invalid geometries, exact duplicates or operation errors, and one 0.0130704 m² boundary overlap. A fresh original native EPSG:4148 response reproduces that overlap as a strip under one millimetre wide over about 54 metres; both full polygons retain it without repair or exclusion and are accepted for bounded reference use. The publisher states its web dataset is beta/not current and coordinates are not legal values; currentness, legal title, survey accuracy and wider citywide completeness remain unverified.",
+        "madadeni": "176 unchanged native parcel polygons passed all eight qualification gates in bounded cells around the UN/WUP locator. Fresh independent metric audit (EPSG:32736) found zero invalid polygons, identity conflicts, duplicate geometry, material overlaps, or operation errors. Citywide completeness, legal title, survey accuracy, and currentness are not established.",
+        "rustenburg": "27 unchanged native parcel polygons passed all eight qualification gates in bounded cells around the UN/WUP locator. Fresh independent metric audit (EPSG:32735) found zero invalid polygons, identity conflicts, duplicate geometry, material overlaps, or operation errors. Citywide completeness, legal title, survey accuracy, and currentness are not established.",
+        "sakhrol": "340 unchanged native parcel polygons passed all eight qualification gates in bounded cells around the UN/WUP locator. Fresh independent metric audit (EPSG:32735) found zero invalid polygons, identity conflicts, duplicate geometry, material overlaps, or operation errors. Citywide completeness, legal title, survey accuracy, and currentness are not established.",
+        "kwanobuhle": "79 unchanged native parcel polygons passed all eight qualification gates in bounded cells around the UN/WUP locator. Fresh independent metric audit (EPSG:32735) found zero invalid polygons, identity conflicts, duplicate geometry, material overlaps, or operation errors. Citywide completeness, legal title, survey accuracy, and currentness are not established.",
+        "coalbrook": "139 unchanged native parcel polygons passed all eight qualification gates in bounded cells around the UN/WUP locator. Fresh independent metric audit (EPSG:32735) found zero invalid polygons, identity conflicts, duplicate geometry, material overlaps, or operation errors. Citywide completeness, legal title, survey accuracy, and currentness are not established.",
+        "mpumalanga": "78 unchanged native parcel polygons passed all eight qualification gates in bounded cells around the UN/WUP locator. Fresh independent metric audit (EPSG:32736) found zero invalid polygons, identity conflicts, duplicate geometry, material overlaps, or operation errors. Citywide completeness, legal title, survey accuracy, and currentness are not established.",
+        "stellenbosch": "67 unchanged native parcel polygons passed all eight qualification gates in bounded cells around the UN/WUP locator. Fresh independent metric audit (EPSG:32734) found zero invalid polygons, identity conflicts, duplicate geometry, material overlaps, or operation errors. Citywide completeness, legal title, survey accuracy, and currentness are not established.",
+        "jerusalem_za": "94 unchanged native parcel polygons passed all eight qualification gates in bounded cells around the UN/WUP locator. Fresh independent metric audit (EPSG:32736) found zero invalid polygons, identity conflicts, duplicate geometry, material overlaps, or operation errors. Citywide completeness, legal title, survey accuracy, and currentness are not established.",
+        "mankweng": "63 unchanged native parcel polygons passed all eight qualification gates in bounded cells around the UN/WUP locator. Fresh independent metric audit (EPSG:32735) found zero invalid polygons, identity conflicts, duplicate geometry, material overlaps, or operation errors. Citywide completeness, legal title, survey accuracy, and currentness are not established.",
+        "ekangala": "100 unchanged native parcel polygons passed all eight qualification gates in bounded cells around the UN/WUP locator. Fresh independent metric audit (EPSG:32735) found zero invalid polygons, identity conflicts, duplicate geometry, material overlaps, or operation errors. Citywide completeness, legal title, survey accuracy, and currentness are not established.",
+        "bohlokong": "60 unchanged native parcel polygons passed all eight qualification gates in bounded cells around the UN/WUP locator. Fresh independent metric audit (EPSG:32735) found zero invalid polygons, identity conflicts, duplicate geometry, material overlaps, or operation errors. Citywide completeness, legal title, survey accuracy, and currentness are not established.",
+        "brits": "268 unchanged native parcel polygons passed all eight qualification gates in bounded cells around the UN/WUP locator. Fresh independent metric audit (EPSG:32735) found zero invalid polygons, identity conflicts, duplicate geometry, material overlaps, or operation errors. Citywide completeness, legal title, survey accuracy, and currentness are not established.",
+        "ezakheni": "137 unchanged native parcel polygons passed all eight qualification gates in bounded cells around the UN/WUP locator. Fresh independent metric audit (EPSG:32735) found zero invalid polygons, identity conflicts, duplicate geometry, material overlaps, or operation errors. Citywide completeness, legal title, survey accuracy, and currentness are not established.",
+        "matsulu": "199 unchanged native parcel polygons passed all eight qualification gates in bounded cells around the UN/WUP locator. Fresh independent metric audit (EPSG:32736) found zero invalid polygons, identity conflicts, duplicate geometry, material overlaps, or operation errors. Citywide completeness, legal title, survey accuracy, and currentness are not established.",
+        "khuma": "57 unchanged native parcel polygons passed all eight qualification gates in bounded cells around the UN/WUP locator. Fresh independent metric audit (EPSG:32735) found zero invalid polygons, identity conflicts, duplicate geometry, material overlaps, or operation errors. Citywide completeness, legal title, survey accuracy, and currentness are not established.",
+        "lenasia": "Bounded qualification around the UN DESA WUP 2025 settlement locator for Lenasia. Passing all eight gates and independent geometry audit supports local parcel integration only; citywide completeness, legal title, survey accuracy and currentness are not established.",
+        "vosman": "Bounded qualification around the UN DESA WUP 2025 settlement locator for Vosman. Passing all eight gates and independent geometry audit supports local parcel integration only; citywide completeness, legal title, survey accuracy and currentness are not established."
+      },
+      "metricSridByCity": {
+        "khuma": 32735
+      },
+      "defaultForCity": true
+    }
+  ]
+}

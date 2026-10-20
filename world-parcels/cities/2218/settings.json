@@ -1,0 +1,141 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "2218",
+  "name": "Livermore, United States",
+  "point": [
+    37.678488891042,
+    -121.767840355486
+  ],
+  "bindings": [
+    {
+      "appCityId": "livermore",
+      "runtimeConfig": {
+        "id": "livermore",
+        "wupCityCode": "2218",
+        "label": "Livermore, United States",
+        "currency": {
+          "locale": "en-US",
+          "code": "USD"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            37.678488891042,
+            -121.767840355486
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            37.678488891042,
+            -121.767840355486
+          ],
+          "fallbackDataset": [
+            -121.767840355486,
+            37.678488891042
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "us-ca-calfire-statewide-parcels",
+          "idPrefix": "US-CA-STATEWIDE-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "CAL FIRE, California Statewide Parcels Public View (county assessor parcel data). Adapted to WGS84."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "us-ca-calfire-statewide-parcels",
+      "name": "California Statewide Parcels Public View (CAL FIRE)",
+      "operator": "California Department of Forestry and Fire Protection (CAL FIRE), ArcGIS Online public view of a statewide county-parcel compilation",
+      "endpoint": "https://bz1uwWPKUInZBK94.svcs5.arcgis.com/bz1uwWPKUInZBK94/arcgis/rest/services/CA_Statewide_Parcels_Public_view/FeatureServer/0",
+      "adapter": "arcgis",
+      "idFields": [
+        "FIPS_CODE",
+        "PARCEL_APN"
+      ],
+      "idFieldTypes": {
+        "FIPS_CODE": "string",
+        "PARCEL_APN": "string"
+      },
+      "objectIdField": "OBJECTID",
+      "outFields": [
+        "OBJECTID",
+        "FIPS_CODE",
+        "PARCEL_APN"
+      ],
+      "parcelNumberField": "PARCEL_APN",
+      "attributeNotNull": [
+        "PARCEL_APN"
+      ],
+      "idPrefix": "US-CA-STATEWIDE-",
+      "metricSrid": 32611,
+      "stateCode": "CA",
+      "countryCode": "US",
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "maxConcurrentQueries": 2,
+      "scope": "Statewide California county-parcel compilation (58 county FIPS codes present, 13,138,000 rows on 2026-10-12). Canonical identity is the county FIPS code plus the county assessor parcel number; the 23,032 rows without an APN are outside this source.",
+      "caveats": [
+        "APNs are county-scoped number spaces, so identity is the reversible composite FIPS_CODE~PARCEL_APN; PARCEL_DMP_ID (an aggregator key with several batch prefixes) is not used.",
+        "Condominium-style rows repeat one APN with byte-identical lot geometry (e.g. 582 rows for one Los Angeles APN); the adapter keeps one polygon per APN. No APN with differing Shape__Area was found in Los Angeles, Sacramento, Orange or Contra Costa counties; a differing repeat elsewhere fails closed.",
+        "Distinct APNs can share one identical lot polygon (observed in Orange and Contra Costa bbox samples).",
+        "metricSrid 32611 suits southern California; cities west of 120 W need a per-city metric projection (e.g. 32610) when qualified.",
+        "Layer derives from a statewide compilation of county data (data last edited 2026-05-28); per-county currency was not established and no licence text is published in the service metadata."
+      ],
+      "attribution": "CAL FIRE, California Statewide Parcels Public View (county assessor parcel data). Adapted to WGS84.",
+      "licenceNote": "Source conditions are informational; users choose their source and intended use.",
+      "catalogueUrl": "https://bz1uwWPKUInZBK94.svcs5.arcgis.com/bz1uwWPKUInZBK94/arcgis/rest/services/CA_Statewide_Parcels_Public_view/FeatureServer/0",
+      "cityIds": [
+        "livermore"
+      ],
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "US",
+          "admin1": [
+            "US-CA"
+          ],
+          "excludeAdmin1": [],
+          "basis": "CAL FIRE publishes this layer as California statewide parcels; all 58 county FIPS codes are present in the live layer.",
+          "evidence": []
+        },
+        "paceMs": 1000
+      },
+      "metricSridByCity": {
+        "livermore": 32610
+      }
+    }
+  ]
+}

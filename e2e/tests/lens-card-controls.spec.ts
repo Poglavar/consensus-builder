@@ -136,16 +136,18 @@ test('owner offer Say yes to execute focuses and scrolls to the lens Say yes con
   await page.route(`${service}/lens/attestations**`, route => route.fulfill({ json: { attestations: [] } }));
   await injectMockSolanaWallet(page, { publicKey: WALLET });
   await openCity(page);
-  await waitForBlockchainRuntime(page, ['OwnerOffer', 'ProposalLensCard', 'SolanaAcceptanceBridge', 'SolanaChainDataLoader', 'LensCore', 'solanaWeb3']);
+  await waitForBlockchainRuntime(page, ['OwnerOffer', 'ProposalLensCard', 'SolanaAcceptanceClient', 'SolanaAcceptanceBridge', 'SolanaChainDataLoader', 'LensCore', 'solanaWeb3']);
+  const proposalProgram = await page.evaluate(() => (window as any).SolanaAcceptanceClient.constants.PROPOSAL_NFT_PROGRAM_ID);
   const proposalData = await encodeProposalAccount(page);
   await routeSolanaReads(page, async route => {
     const input = route.request().postDataJSON();
     const account = {
       data: [proposalData, 'base64'], executable: false, lamports: 1_000_000_000,
-      owner: MEMBER, rentEpoch: 0,
+      owner: proposalProgram, rentEpoch: 0,
     };
     const resultFor = (item: any) => {
       const context = { context: { slot: 1 } };
+      if (item.method === 'getGenesisHash') return 'EtWTRABZaYq6iMfeYKouRu166VU2xqa1wcaWoxPkrZBG';
       if (item.method === 'getBalance') return { ...context, value: 1_000_000_000 };
       if (item.method === 'getTokenAccountBalance') return { ...context, value: { amount: '0', decimals: 6 } };
       if (item.method === 'getProgramAccounts' || item.method === 'getSignaturesForAddress') return [];
@@ -159,11 +161,11 @@ test('owner offer Say yes to execute focuses and scrolls to the lens Say yes con
     return route.fulfill({ json: Array.isArray(input) ? input.map(envelope) : envelope(input) });
   });
   await connectWalletByConnectorId(page, 'solana-phantom');
-  const proposalId = await page.evaluate(({ parcelId, proposalAccount, lensMember }) => (window as any).proposalStorage.addProposal({
+  const proposalId = await page.evaluate(({ parcelId, proposalAccount, proposalProgram, lensMember }) => (window as any).proposalStorage.addProposal({
     title: 'Owner offer Say yes navigation', goal: 'ownership-transfer-from-me', lifecycleStatus: 'Active',
     proposalRole: 'owner-offer', cadastreParcelIds: [parcelId], isMinted: true,
-    nft: { chain: 'solana-devnet', contract: proposalAccount, tokenId: proposalAccount }, lens: [lensMember],
-  }), { parcelId: PARCEL_ID, proposalAccount: PROPOSAL_ACCOUNT, lensMember: MEMBER });
+    nft: { chain: 'solana-devnet', contract: proposalProgram, tokenId: proposalAccount }, lens: [lensMember],
+  }), { parcelId: PARCEL_ID, proposalAccount: PROPOSAL_ACCOUNT, proposalProgram, lensMember: MEMBER });
   await page.locator('#proposals-button').click();
   await page.locator(`#proposals-sheet [data-proposal-id="${proposalId}"] .proposal-list-details-btn`).click();
   const panel = page.locator('#proposal-details-panel');

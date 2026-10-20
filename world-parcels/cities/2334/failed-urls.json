@@ -1,0 +1,14 @@
+[
+  {
+    "url": "https://nspd.gov.ru/map?thematic=PKK",
+    "reason": "timeout"
+  },
+  {
+    "url": "https://rosreestr.gov.ru/",
+    "reason": "timeout"
+  },
+  {
+    "url": "https://pkk.rosreestr.ru/",
+    "reason": "timeout"
+  }
+]

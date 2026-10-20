@@ -1,0 +1,10 @@
+[
+  {
+    "url": "https://www.anambrastate.gov.ng/",
+    "reason": "526"
+  },
+  {
+    "url": "https://overpass-api.de/api/interpreter",
+    "reason": "504 timeout; no empty-result inference"
+  }
+]

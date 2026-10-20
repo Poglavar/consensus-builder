@@ -400,7 +400,7 @@ def _llm_worker_main(request_path: Path, output_path: Path) -> int:
     last_message = request_path.parent / "last-message.json"
     cli_log = request_path.parent / "codex.jsonl"
     atomic_json(schema_path, OUTPUT_SCHEMA)
-    command = ["codex", "--ask-for-approval", "never", "--search", "exec",
+    command = ["codex", "--ask-for-approval", "never", "--search", "exec", "--ephemeral",
                "--sandbox", "workspace-write", "-c", "sandbox_workspace_write.network_access=true",
                "-m", llm.model]
     if llm.effort:

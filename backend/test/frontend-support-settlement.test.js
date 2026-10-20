@@ -1,17 +1,31 @@
 import { it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
+import { createRequire } from 'node:module';
 import vm from 'node:vm';
+
+const require = createRequire(import.meta.url);
 
 const source = readFileSync(new URL('../../frontend/js/proposals/details-panel.js', import.meta.url), 'utf8');
 const start = source.indexOf('async function settleProposalSupport(');
 const end = source.indexOf('\nfunction openProposalLens(', start);
+const chainRef = require('../../frontend/js/proposals/chain-ref.js');
+const acceptanceClient = require('../../frontend/js/solana/acceptance-client.js');
 
 for (const action of ['revokePledge', 'fulfillPledge', 'voidPledge', 'refundMyDonations', 'releaseDonations']) {
     it(`${action} reports its settlement rather than the donation amount template`, async () => {
         const alerts = [];
-        const proposal = { proposalId: 'fixture-proposal' };
+        const proposal = {
+            proposalId: 'fixture-proposal',
+            onchain: {
+                chainId: 'solana-devnet',
+                contractAddress: acceptanceClient.constants.PROPOSAL_NFT_PROGRAM_ID,
+                proposalId: 'Token1111111111111111111111111111111111'
+            }
+        };
         const context = vm.createContext({
             window: {
+                ChainProposalRef: chainRef,
+                SolanaAcceptanceClient: acceptanceClient,
                 SolanaPledgeBridge: { [action]: async () => ({ explorerUrl: 'https://example.test/transaction' }) },
                 solanaWalletManager: { getState: () => ({ accounts: ['fixture-wallet'] }) },
             },

@@ -1,0 +1,17 @@
+[
+  {
+    "url": "https://www.gov.kz/memleket/entities/bko-zher/press/news/details/102216"
+  },
+  {
+    "url": "https://map.gov.kz/"
+  },
+  {
+    "url": "https://aisgzk.kz/aisgzk/ru/content/maps/"
+  },
+  {
+    "url": "https://aisgzk.kz/aisgzk/Proxy/aisgzkZem2/MapServer?f=pjson"
+  },
+  {
+    "url": "https://map.gov.kz/geoserver/wms?service=WMS&request=GetCapabilities"
+  }
+]

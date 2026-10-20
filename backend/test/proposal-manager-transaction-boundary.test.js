@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { createRequire } from 'node:module';
+import * as turf from '@turf/turf';
 
 const require = createRequire(import.meta.url);
 const { ProposalManager } = require('../../frontend/js/proposal-manager.js');
@@ -7,6 +8,7 @@ const { setProposalApplied } = require('../../frontend/js/proposals/status.js');
 
 describe('ProposalManager mutation boundary', () => {
     let previousStorage;
+    let previousTurf;
     let originalApplyBody;
     let originalUnapplyBody;
     let originalRefresh;
@@ -22,6 +24,8 @@ describe('ProposalManager mutation boundary', () => {
     beforeEach(() => {
         ProposalManager._lastApplyFailureByProposalId.clear();
         previousStorage = globalThis.proposalStorage;
+        previousTurf = globalThis.turf;
+        globalThis.turf = turf;
         originalApplyBody = ProposalManager._applyProposalTransactionBody;
         originalUnapplyBody = ProposalManager._unapplyProposalTransactionBody;
         originalRefresh = ProposalManager._refreshUIAfterProposalChange;
@@ -80,6 +84,7 @@ describe('ProposalManager mutation boundary', () => {
     });
 
     afterEach(() => {
+        if (previousTurf === undefined) delete globalThis.turf; else globalThis.turf = previousTurf;
         ProposalManager._applyProposalTransactionBody = originalApplyBody;
         ProposalManager._unapplyProposalTransactionBody = originalUnapplyBody;
         ProposalManager._refreshUIAfterProposalChange = originalRefresh;
@@ -335,7 +340,7 @@ describe('ProposalManager mutation boundary', () => {
         });
         const edited = () => ({
             goal: 'park', value: 'after', structureProposal: { kind: 'park' }, cadastreParcelIds: ['HR-1', 'HR-2'],
-            sourceProposalId: 'target', replacementOfProposalId: 'target', proposalDraftId: 'draft-1'
+            proposalOrigin: { relation: 'revision', source: { localProposalId: 'target' } }, proposalDraftId: 'draft-1'
         });
 
         it('keeps the id and the record count, and re-derives the old and new ground', async () => {
@@ -351,7 +356,8 @@ describe('ProposalManager mutation boundary', () => {
             const target = store.getProposal('target');
             expect(target).toMatchObject({ proposalId: 'target', value: 'after', applied: true, createdAt: '2026-10-01T10:00:00.000Z' });
             expect(target.cadastreParcelIds).toEqual(['HR-1', 'HR-2']);
-            // An edit is not its own source.
+            // An in-place edit keeps its prior origin, never a revision pointing at itself.
+            expect(target.proposalOrigin).toBeUndefined();
             expect(target.sourceProposalId).toBeUndefined();
             expect(target.replacementOfProposalId).toBeUndefined();
             expect(seeds).toEqual([{ id: 'target', parcels: ['HR-1'] }, { id: 'target', parcels: ['HR-1', 'HR-2'] }]);

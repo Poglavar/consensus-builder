@@ -1,0 +1,110 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "3039",
+  "name": "Escondido, United States",
+  "point": [
+    33.1785,
+    -117.16550000000001
+  ],
+  "bindings": [
+    {
+      "appCityId": "escondido",
+      "runtimeConfig": {
+        "id": "escondido",
+        "wupCityCode": "3039",
+        "label": "Escondido, United States",
+        "currency": {
+          "locale": "en-US",
+          "code": "USD"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            33.1785,
+            -117.16550000000001
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            33.1785,
+            -117.16550000000001
+          ],
+          "fallbackDataset": [
+            -117.16550000000001,
+            33.1785
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "us-ca-escondido-parcels",
+          "idPrefix": "US-CA-ESCONDIDO-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 0.75,
+          "attribution": "<a href=\"https://gis.escondido.gov/server/rest/services/Data/Parcels/FeatureServer/0\">City of Escondido</a>"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "us-ca-escondido-parcels",
+      "name": "City of Escondido assessor-derived parcel layer",
+      "adapter": "arcgis",
+      "endpoint": "https://gis.escondido.gov/server/rest/services/Data/Parcels/FeatureServer/0",
+      "idField": "APN",
+      "idType": "string",
+      "idPattern": "^[A-Za-z0-9 -]{1,10}$",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "US-CA-ESCONDIDO-",
+      "outFields": [
+        "APN",
+        "OBJECTID"
+      ],
+      "pageSize": 2000,
+      "idBatchSize": 80,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "countryCode": "US",
+      "cityIds": [
+        "escondido"
+      ],
+      "metricSrid": 32611,
+      "capabilities": {
+        "exactId": true,
+        "bbox": true,
+        "areaEnumeration": true
+      },
+      "scope": "Official City of Escondido assessor-derived parcel layer, including proposed and retired parcels and stacked taxable parcels; no status or geometric exclusions.",
+      "catalogueUrl": "https://gis.escondido.gov/server/rest/services/Data/Parcels/FeatureServer/0",
+      "attribution": "City of Escondido",
+      "licenceNote": "Public anonymous query verified; reuse permission is not established by access alone.",
+      "defaultForCity": true
+    }
+  ]
+}

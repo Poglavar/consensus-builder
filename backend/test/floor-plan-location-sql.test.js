@@ -3,7 +3,7 @@ import {afterAll,beforeAll,beforeEach,describe,expect,it,vi} from 'vitest';
 import dotenv from 'dotenv';
 import { createClient } from '../db/connection.cjs';
 import {fileURLToPath} from 'node:url';
-import {locatedListingSql,LOCATED_ASSET_SQL,LOCATED_PLAN_TASK_SQL} from '../floor-plans/building-location.js';
+import {locatedListingSql,PROCESSABLE_ASSET_SQL,PROCESSABLE_PLAN_TASK_SQL} from '../floor-plans/building-location.js';
 import {BUILDING_PROCESSOR} from '../floor-plans/building-reading.js';
 import {PROCESSOR} from '../floor-plans/plan-reading.js';
 import {enqueuePlanTasks,currentTaskContext} from '../floor-plans/interpret-plans.js';
@@ -63,7 +63,7 @@ describe.runIf(process.env.FLOOR_PLAN_LOCATION_DB_TEST==='1')('floor-plan locati
         fixtureBlobBytes.set(assetHash,Buffer.from('test document'));
         await client.query('TRUNCATE pg_temp.listing,pg_temp.target,pg_temp.exclusion,pg_temp.building_task,pg_temp.extraction,pg_temp.blob,pg_temp.plan_task,pg_temp.model_revision');
         await db.query(`INSERT INTO floor_plan.listing VALUES($1,$2,$3,'unresolved',NULL,NULL,NULL,NULL,NULL)`,
-            [listingUrl,JSON.stringify(eligibleFacts),JSON.stringify([{url:assetUrl,listingOwned:true}])]);
+            [listingUrl,JSON.stringify(eligibleFacts),JSON.stringify([{url:assetUrl,listingOwned:true,kind:'document'}])]);
         await db.query(`INSERT INTO floor_plan.target(url,kind,current_sha256,source_identity) VALUES($1,'page',$2,'listing:42'),($3,'asset',$4,NULL)`,
             [listingUrl,listingHash,assetUrl,assetHash]);
         await db.query(`INSERT INTO floor_plan.building_task VALUES($1,$2,$3,'candidate',$4,$5)`,
@@ -152,28 +152,39 @@ describe.runIf(process.env.FLOOR_PLAN_LOCATION_DB_TEST==='1')('floor-plan locati
         await db.query("UPDATE floor_plan.listing SET building_evidence='{\"locationPolicy\":\"explicit-address-v1\"}'");
         expect(await eligible()).toBe(true);
     });
-    it('gates shared source extraction but queues only the listing with location evidence',async()=>{
-        const other='https://agency.test/listing/2';
-        await db.query("INSERT INTO floor_plan.listing SELECT $1,facts,asset_urls,'candidate',NULL,NULL,NULL,NULL FROM floor_plan.listing WHERE url=$2",[other,listingUrl]);
-        expect((await db.query(`SELECT ${LOCATED_ASSET_SQL} AS eligible FROM floor_plan.extraction e`)).rows[0].eligible).toBe(true);
+    it('processes a source-backed unknown-location plan while retaining the publication location gate',async()=>{
+        await db.query('DELETE FROM floor_plan.building_task');
+        await db.query("UPDATE floor_plan.listing SET facts='{\"hasPlanAsset\":true}'");
+        expect((await db.query(`SELECT ${PROCESSABLE_ASSET_SQL} AS eligible FROM floor_plan.extraction e`)).rows[0].eligible).toBe(true);
         expect(await enqueuePlanTasks(db,{sourceHash:assetHash})).toMatchObject({enqueued:1});
-        expect((await db.query('SELECT listing_url FROM floor_plan.plan_task')).rows).toEqual([{listing_url:listingUrl}]);
-        await db.query('DELETE FROM floor_plan.building_task');
-        expect(await enqueuePlanTasks(db,{sourceHash:assetHash})).toMatchObject({enqueued:0});
-        expect((await db.query(`SELECT id FROM floor_plan.plan_task WHERE ${LOCATED_PLAN_TASK_SQL}`)).rows).toEqual([]);
         const task=(await db.query('SELECT * FROM floor_plan.plan_task')).rows[0];
-        expect(await currentTaskContext(db,task,{requireLocation:true})).toBe(false);
         expect(await currentTaskContext(db,task)).toBe(true);
+        expect(await currentTaskContext(db,task,{requireLocation:true})).toBe(false);
+        expect((await db.query(`SELECT id FROM floor_plan.plan_task WHERE ${PROCESSABLE_PLAN_TASK_SQL}`)).rows).toHaveLength(1);
+        await db.query("UPDATE floor_plan.target SET current_sha256=$1 WHERE kind='asset'",['c'.repeat(64)]);
+        expect(await currentTaskContext(db,task)).toBe(false);
+        expect((await db.query(`SELECT id FROM floor_plan.plan_task WHERE ${PROCESSABLE_PLAN_TASK_SQL}`)).rows).toEqual([]);
     });
-    it('leaves unlocated documents pending, then extracts them after location is established',async()=>{
+    it('extracts an owned unknown-location document but blocks its unrelated photo gallery',async()=>{
         await db.query('DELETE FROM floor_plan.building_task');
+        await db.query("UPDATE floor_plan.listing SET facts='{\"hasPlanAsset\":true}'");
         await db.query("UPDATE floor_plan.extraction SET status='pending'");
         const extractor=vi.fn(async()=>({stdout:JSON.stringify({schema:'consensus-builder.floor-plan-draft.v1',status:'needs_review',pages:[],totalPages:1})}));
-        expect(await processAssets(db,{extractor,log:()=>{}})).toMatchObject({status:'partial',selected:0,deferredUnmatched:1});
-        expect(extractor).not.toHaveBeenCalled();
-        expect((await db.query('SELECT status FROM floor_plan.extraction')).rows[0].status).toBe('pending');
-        await db.query("UPDATE floor_plan.listing SET match_status='verified',building_city='test-city',building_source='survey',building_id='42',building_evidence='{\"locationPolicy\":\"explicit-address-v1\"}'");
         expect(await processAssets(db,{extractor,log:()=>{}})).toMatchObject({status:'complete',processed:1,needsReview:1,deferredUnmatched:0});
         expect(extractor).toHaveBeenCalledOnce();
+        await db.query("UPDATE floor_plan.listing SET asset_urls=$1",[JSON.stringify([{url:assetUrl,listingOwned:true,kind:'photo'}])]);
+        expect((await db.query(`SELECT ${PROCESSABLE_ASSET_SQL} AS eligible FROM floor_plan.extraction e`)).rows[0].eligible).toBe(false);
+        await db.query("UPDATE floor_plan.listing SET match_status='verified',building_id='42'");
+        expect((await db.query(`SELECT ${PROCESSABLE_ASSET_SQL} AS eligible FROM floor_plan.extraction e`)).rows[0].eligible).toBe(false);
+        await db.query("UPDATE floor_plan.target SET image_classified_sha256=current_sha256,image_kind='uncertain' WHERE kind='asset'");
+        expect((await db.query(`SELECT ${PROCESSABLE_ASSET_SQL} AS eligible FROM floor_plan.extraction e`)).rows[0].eligible).toBe(true);
+        await db.query("UPDATE floor_plan.target SET image_kind='photo' WHERE kind='asset'");
+        expect((await db.query(`SELECT ${PROCESSABLE_ASSET_SQL} AS eligible FROM floor_plan.extraction e`)).rows[0].eligible).toBe(false);
+        await db.query("UPDATE floor_plan.target SET image_kind='uncertain' WHERE kind='asset'");
+        await db.query("UPDATE floor_plan.target SET image_classified_sha256=$1 WHERE kind='asset'",['c'.repeat(64)]);
+        expect((await db.query(`SELECT ${PROCESSABLE_ASSET_SQL} AS eligible FROM floor_plan.extraction e`)).rows[0].eligible).toBe(false);
+        await db.query("UPDATE floor_plan.listing SET asset_urls=$1",[JSON.stringify([{url:assetUrl,listingOwned:true,kind:'document'}])]);
+        await db.query("INSERT INTO floor_plan.exclusion VALUES('listing:42',$1)",[listingUrl]);
+        expect((await db.query(`SELECT ${PROCESSABLE_ASSET_SQL} AS eligible FROM floor_plan.extraction e`)).rows[0].eligible).toBe(false);
     });
 });

@@ -53,13 +53,54 @@ test('floor plan archive Sites tab loads and exposes its empty result', async ({
     reads += 1;
     return route.fulfill({ json: { sites: [] } });
   });
-  await page.goto('/floor-plan-archive.html?lang=en');
+  await page.route('**/api/floor-plans?*', route => route.fulfill({ json: { plans: [], limit: 100, offset: 0, hasMore: false } }));
+  await page.goto('/floor-plans.html?lang=en');
   await expect(page.locator('#building option')).toHaveCount(1);
   await page.locator('#tab-sites').click();
   await expect(page.locator('#tab-sites')).toHaveAttribute('aria-selected', 'true');
   await expect(page.locator('#panel-sites')).toBeVisible();
   await expect(page.locator('#panel-buildings')).toBeHidden();
-  await expect(page.locator('#site-name')).toHaveText('No site models yet.');
+  await expect(page.locator('#site-name')).toHaveText('No project site models yet.');
   expect(reads).toBe(1);
   await expect(page).toHaveURL(/[?&]tab=sites(?:&|$)/);
+});
+
+test('project site parcel context stays on the map without becoming a building volume', async ({ mockApi: page }) => {
+  const geometry = { type: 'MultiPolygon', coordinates: [
+    [[[-.12, 51.5], [-.119, 51.5], [-.119, 51.501], [-.12, 51.501], [-.12, 51.5]]],
+    [[[-.118, 51.5], [-.1175, 51.5], [-.1175, 51.5005], [-.118, 51.5005], [-.118, 51.5]]],
+  ] };
+  const models = {
+    'parcels:example': { siteKey: 'parcels:example', label: 'Parcel context example', location: { status: 'probable' },
+      parcelContext: { geometry, areaM2: 1000, source: 'cadastre-parcels' }, footprint: null,
+      envelope: { footprint: null, storeys: [{ level: 0, elevationM: 0, heightM: 3 }], heightM: 3 }, placements: [] },
+    'listing:example': { siteKey: 'listing:example', label: 'Location unknown', location: { status: 'unknown' },
+      parcelContext: null, footprint: null, envelope: null, placements: [] },
+  };
+  await page.route('**/api/floor-plans?*', route => route.fulfill({ json: { plans: [], limit: 100, offset: 0, hasMore: false } }));
+  await page.route('**/floor-plan-archive/catalogue', route => route.fulfill({ json: { sources: [] } }));
+  await page.route('**/floor-plan-archive/status', route => route.fulfill({ json: { coverage: { agencies: { total: 0, websites: 0 } } } }));
+  await page.route('**/floor-plan-archive/agencies?*', route => route.fulfill({ json: { agencies: [] } }));
+  await page.route('**/floor-plan-archive/sites', route => route.fulfill({ json: { sites: Object.values(models).map(model => ({
+    siteKey: model.siteKey, label: model.label, postings: 1, placed: 0, plans: 1,
+  })) } }));
+  await page.route('**/floor-plan-archive/site?*', route => {
+    const key = new URL(route.request().url()).searchParams.get('key') as keyof typeof models;
+    return route.fulfill({ json: models[key] });
+  });
+  await page.goto('/floor-plans.html?lang=en&tab=sites');
+  await expect(page.getByRole('tab', { name: 'Project sites' })).toHaveAttribute('aria-selected', 'true');
+  await expect(page.locator('#site-3d')).toContainText('Parcel boundaries alone do not define a building footprint.');
+  await expect(page.locator('#site-3d canvas')).toHaveCount(0);
+  const parcelPath = page.locator('#site-map path[stroke-dasharray="6 4"]');
+  await expect(parcelPath).toHaveCount(1);
+  await expect.poll(async () => (await parcelPath.getAttribute('d'))?.match(/M/g)?.length).toBe(2);
+  await expect(page.locator('#site-summary')).toContainText('Parcel context area');
+  await expect(page.locator('#site-summary')).toContainText('1000 m²');
+  await page.locator('#site').selectOption('listing:example');
+  await expect(page.locator('#site-name')).toHaveText('Location unknown');
+  await expect(page.locator('#site-map path')).toHaveCount(0);
+  await page.locator('#site').selectOption('parcels:example');
+  await expect.poll(async () => (await parcelPath.getAttribute('d'))?.match(/M/g)?.length).toBe(2);
+  await expect(page.locator('#site-3d canvas')).toHaveCount(0);
 });

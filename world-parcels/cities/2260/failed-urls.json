@@ -1,0 +1,6 @@
+[
+  {
+    "url": "https://www.map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer/0",
+    "reason": "Current production profile held on four provider timeouts, followed by one failed 40-second metadata probe. No fresh geometry or native CRS proof was received; the historical four-feature qualification is retained as historical evidence."
+  }
+]

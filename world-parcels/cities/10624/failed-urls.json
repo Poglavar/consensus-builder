@@ -1,0 +1,25 @@
+[
+  {
+    "url": "https://hunan.tianditu.gov.cn/XIANGTAN/YUHU/",
+    "reason": "UND_ERR_CONNECT_TIMEOUT during HTTPS connection to hunan.tianditu.gov.cn:443"
+  },
+  {
+    "url": "https://gxpt.zrzyt.hunan.gov.cn/tdcsgzbgb",
+    "reason": "Web retrieval timed out before response"
+  },
+  {
+    "url": "https://zrzyt.hunan.gov.cn/xxgk/gzdt/sxxx/202310/t20231008_31619536.html"
+  },
+  {
+    "url": "https://zwfw-new.hunan.gov.cn/onething/service/serviceguideck.jsp?approve_id=D1AADA869D497666E053671515AC6CD5&areacode=430321999000"
+  },
+  {
+    "url": "https://hunan.tianditu.gov.cn/TDTHN/public/topWeb.html"
+  },
+  {
+    "url": "https://hunan.tianditu.gov.cn/subApp/resources/index.html"
+  },
+  {
+    "url": "https://zrzyt.hunan.gov.cn/xxgk/gzdt/sxxx/202402/t20240208_32848464.html"
+  }
+]

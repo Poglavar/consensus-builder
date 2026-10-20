@@ -21037,8 +21037,9 @@
         return map?.parcelZoomRange || { min: 17, max: 19 };
     }
 
-    // False for the explore city: no cadastre, so nothing may fetch or draw parcels.
+    // Explore has no register, but a visitor's local source supplies usable parcel geometry.
     function hasParcelData() {
+        if (globalThis.ParcelGroundFallback?.activeSource?.(getCurrentCityId())) return true;
         const source = getParcelSettings().source;
         return !!source && source !== 'none';
     }

@@ -166,7 +166,8 @@ describe('computeBinding', () => {
         expect(db.calls[1].params[2]).toBe(INTRUSION_NOISE_M); // max(0, noise)
         expect(binding.parcels.map(p => p.parcelId)).toEqual(['HR-335649-100', 'HR-335649-101']);
         expect(binding.touched.map(p => p.parcelId)).toEqual(['HR-335649-102']);
-        expect(binding).toMatchObject({ coverage: 'complete', toleranceM: 0, source: 'server:hr-cadastre' });
+        expect(binding).toMatchObject({ coverage: 'complete', toleranceM: 0, source: 'server:hr-cadastre',
+            parcelSource: { sourceId: 'hr-cadastre', snapshotId: null } });
         expect(site.type).toBe('MultiPolygon');
 
         const atTol = cadastre({ parcels: SPILL });
@@ -186,10 +187,12 @@ describe('computeBinding', () => {
 
     it('says unknown outside the cadastre it holds, and none only for a city with no cadastre', async () => {
         const unknown = (await computeBinding(cadastre({ inRegion: false }), { site: SITE, city: 'unconfigured_city' })).binding;
-        expect(unknown).toMatchObject({ coverage: 'unknown', parcels: [], unknownM2: 9000, unsurveyedM2: 0 });
+        expect(unknown).toMatchObject({ coverage: 'unknown', parcels: [], unknownM2: 9000, unsurveyedM2: 0,
+            source: 'server:unbound', parcelSource: null });
         expect(unknown.reason).toMatch(/cannot be bound/);
         const none = (await computeBinding(cadastre({ inRegion: false }), { site: SITE, city: 'explore' })).binding;
-        expect(none).toMatchObject({ coverage: 'none', parcels: [], unsurveyedM2: 9000 });
+        expect(none).toMatchObject({ coverage: 'none', parcels: [], unsurveyedM2: 9000,
+            source: 'server:unbound', parcelSource: null });
     });
 
     it('refuses a site over the parcel cap before the expensive statement', async () => {
@@ -251,7 +254,8 @@ describe('checkProposalBinding (declared == binding)', () => {
     it('keeps the declaration unverified where the server holds no cadastre', async () => {
         const result = await checkProposalBinding(cadastre({ inRegion: false }), park, ['BG-77-1']);
         expect(result.ok).toBe(true);
-        expect(result.binding).toMatchObject({ coverage: 'unknown', subject: 'declared-unverified', parcels: [{ parcelId: 'BG-77-1' }] });
+        expect(result.binding).toMatchObject({ coverage: 'unknown', subject: 'declared-unverified',
+            source: 'server:unbound', parcelSource: null, parcels: [{ parcelId: 'BG-77-1' }] });
     });
 
     it('still needs parcels for acts on parcels', async () => {

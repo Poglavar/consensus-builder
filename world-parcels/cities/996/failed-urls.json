@@ -1,0 +1,23 @@
+[
+  {
+    "url": "https://webpdt.kedah.gov.my/pejabat-daerah-dan-tanah-kulim/"
+  },
+  {
+    "url": "https://kids.mpkk.gov.my/server/rest/services/Kulim"
+  },
+  {
+    "url": "https://services6.arcgis.com/VHz5SrGRW5Oy3KMv/ArcGIS/rest/services/MP_Kulim_Lot_Parcel_Finder_WFL1/FeatureServer/0"
+  },
+  {
+    "url": "https://ekadaster.jupem.gov.my/Account/Login"
+  },
+  {
+    "url": "https://kids.mpkk.gov.my/server/rest/services/Kulim/Kadastral_Kedah/FeatureServer?f=pjson"
+  },
+  {
+    "url": "https://services6.arcgis.com/VHz5SrGRW5Oy3KMv/ArcGIS/rest/services/MP_Kulim_Lot_Parcel_Finder_WFL1/FeatureServer/0?f=pjson"
+  },
+  {
+    "url": "https://services6.arcgis.com/VHz5SrGRW5Oy3KMv/ArcGIS/rest/services/MP_Kulim_Lot_Parcel_Finder_WFL1/FeatureServer/0/query"
+  }
+]

@@ -1,0 +1,182 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "4490",
+  "name": "Osaka, Japan",
+  "point": [
+    34.677750586,
+    135.532507321
+  ],
+  "bindings": [
+    {
+      "appCityId": "osaka",
+      "runtimeConfig": {
+        "id": "osaka",
+        "label": "Osaka, Japan",
+        "currency": {
+          "locale": "ja-JP",
+          "code": "JPY"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            34.677750586,
+            135.532507321
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            34.677750586,
+            135.532507321
+          ],
+          "fallbackDataset": [
+            135.532507321,
+            34.677750586
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.0025,
+          "source": "parcel-source",
+          "sourceId": "jp-moj-geospatial-2026",
+          "idPrefix": "JP-MOJ-2026-",
+          "dataVersion": "2026",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "<a href=\"https://www.geospatial.jp/ckan/dataset/aigid-moj-27128\">MOJ / Geospatial Information Center · 2026</a> · Osaka Chuo ward public-coordinate sheets only · adapted"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "jp-moj-geospatial-2026",
+      "adapter": "geojson-snapshot",
+      "endpoint": "https://gsic-opendata.s3.ap-northeast-1.amazonaws.com/aigid/aigid-moj/2026/27/aigid-moj-27128/27128_%E5%A4%A7%E9%98%AA%E5%B8%82%E4%B8%AD%E5%A4%AE%E5%8C%BA_%E5%85%AC%E5%85%B1%E5%BA%A7%E6%A8%996%E7%B3%BB_%E7%AD%86R_2026.geojson",
+      "idPrefix": "JP-MOJ-2026-",
+      "idFields": [
+        "市区町村C",
+        "地図名",
+        "ID"
+      ],
+      "outFields": [
+        "ID",
+        "市区町村C",
+        "大字コード",
+        "丁目コード",
+        "小字コード",
+        "予備コード",
+        "市区町村名",
+        "大字名",
+        "丁目名",
+        "地番",
+        "精度区分",
+        "座標値種別",
+        "地図名",
+        "座標系",
+        "測地系判別"
+      ],
+      "parcelNumberField": "地番",
+      "maxSnapshotBytes": 3145728,
+      "maxSnapshotFeatures": 3000,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "expectedSnapshotFeatures": 2487,
+      "expectedEtag": "\"ee9a4504aece339b35a3d4d9cea39aaf\"",
+      "name": "MOJ public-coordinate map sheets — Osaka, Tokyo and Nagoya, 2026",
+      "countryCode": "JP",
+      "cityIds": [
+        "osaka"
+      ],
+      "metricSrid": 32653,
+      "dataVersion": "2026",
+      "scope": "Partial 2026 converted MOJ public-coordinate registry-map packages: Osaka Chuo ward (2487 polygons), Tokyo Chiyoda ward (236) and Nagoya Chikusa ward (284). Only these three verified packages are enabled; sheets without public coordinates are omitted. No citywide or Japan-wide completeness is claimed. Pinned snapshots use five-minute transient-memory caching, without parcel writes to disk or a database.",
+      "licenceNote": "Geospatial Information Center catalogue lists CC BY; underlying Ministry of Justice data and conversion-publisher conditions also apply. Publisher warns that public-coordinate sheets only are converted and some geometries may be misplaced. Conditions are informational.",
+      "licenceUrl": "https://front.geospatial.jp/moj-chizu-xml-readme/moj-chizu-shp-download/",
+      "catalogueUrl": "https://www.geospatial.jp/ckan/api/3/action/package_show?id=aigid-moj-27128",
+      "attribution": "Japan Ministry of Justice registry-map data; Geospatial Information Center / AIGID conversion, 2026. Osaka Chuo ward public-coordinate sheets only; adapted to WGS84.",
+      "snapshots": [
+        {
+          "endpoint": "https://gsic-opendata.s3.ap-northeast-1.amazonaws.com/aigid/aigid-moj/2026/27/aigid-moj-27128/27128_%E5%A4%A7%E9%98%AA%E5%B8%82%E4%B8%AD%E5%A4%AE%E5%8C%BA_%E5%85%AC%E5%85%B1%E5%BA%A7%E6%A8%996%E7%B3%BB_%E7%AD%86R_2026.geojson",
+          "bbox": [
+            135.520892868,
+            34.673960373,
+            135.535326678,
+            34.695122165
+          ],
+          "idNamespace": {
+            "field": "市区町村C",
+            "value": "27128"
+          },
+          "expectedEtag": "\"ee9a4504aece339b35a3d4d9cea39aaf\"",
+          "expectedSnapshotFeatures": 2487,
+          "maxSnapshotBytes": 3145728,
+          "maxSnapshotFeatures": 3000
+        },
+        {
+          "endpoint": "https://gsic-opendata.s3.ap-northeast-1.amazonaws.com/aigid/aigid-moj/2026/13/aigid-moj-13101/13101_%E5%8D%83%E4%BB%A3%E7%94%B0%E5%8C%BA_%E5%85%AC%E5%85%B1%E5%BA%A7%E6%A8%999%E7%B3%BB_%E7%AD%86R_2026.geojson",
+          "bbox": [
+            139.743406757,
+            35.673049887,
+            139.775413613,
+            35.702415611
+          ],
+          "idNamespace": {
+            "field": "市区町村C",
+            "value": "13101"
+          },
+          "expectedEtag": "\"f6ca82248a5cc33967dfd22022ea8723\"",
+          "expectedSnapshotFeatures": 236,
+          "maxSnapshotBytes": 3145728,
+          "maxSnapshotFeatures": 3000
+        },
+        {
+          "endpoint": "https://gsic-opendata.s3.ap-northeast-1.amazonaws.com/aigid/aigid-moj/2026/23/aigid-moj-23101/23101_%E5%90%8D%E5%8F%A4%E5%B1%8B%E5%B8%82%E5%8D%83%E7%A8%AE%E5%8C%BA_%E5%85%AC%E5%85%B1%E5%BA%A7%E6%A8%997%E7%B3%BB_%E7%AD%86R_2026.geojson",
+          "bbox": [
+            136.976276393,
+            35.160693342,
+            136.986396858,
+            35.165507393
+          ],
+          "idNamespace": {
+            "field": "市区町村C",
+            "value": "23101"
+          },
+          "expectedEtag": "\"48f56c86e848d68d7a509bef0e9bd8d2\"",
+          "expectedSnapshotFeatures": 284,
+          "maxSnapshotBytes": 3145728,
+          "maxSnapshotFeatures": 3000
+        }
+      ],
+      "metricSridByCity": {
+        "osaka": 32653
+      }
+    }
+  ]
+}

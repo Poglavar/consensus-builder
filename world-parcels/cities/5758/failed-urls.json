@@ -1,0 +1,19 @@
+[
+  {
+    "url": "https://gis.land.gov.bd/geoserver/wms?service=WMS&request=GetCapabilities",
+    "reason": "503"
+  },
+  {
+    "url": "https://gis.land.gov.bd/geoserver/wsDMMS/ows?service=WFS&version=1.0.0&request=GetCapabilities",
+    "reason": "503"
+  },
+  {
+    "url": "https://map.land.gov.bd/"
+  },
+  {
+    "url": "https://settlement.gov.bd/Map/MapSearch"
+  },
+  {
+    "url": "https://zso.tangail.gov.bd/pages/static-pages/6995e30835ce18e1c07b27e2"
+  }
+]

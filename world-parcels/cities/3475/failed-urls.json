@@ -1,0 +1,20 @@
+[
+  {
+    "url": "https://www.dol.go.th/landmap/home/"
+  },
+  {
+    "url": "https://www.dol.go.th/nakhonratchasima/home/"
+  },
+  {
+    "url": "https://landsmaps.dol.go.th/"
+  },
+  {
+    "url": "https://eis.ldd.go.th/ArcGIS/rest/services/LDD_PLM_WM/FeatureServer?f=pjson"
+  },
+  {
+    "url": "https://eis.ldd.go.th/ArcGIS/rest/services/LDD_PLM_WM/FeatureServer/0?f=pjson"
+  },
+  {
+    "url": "https://eis.ldd.go.th/ArcGIS/rest/services/LDD_PLM_WM/FeatureServer/0/query"
+  }
+]

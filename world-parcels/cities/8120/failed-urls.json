@@ -1,0 +1,14 @@
+[
+  {
+    "url": "https://mahabhunakasha.mahabhumi.gov.in/rest/VillageMapService/ListsAfterLevel",
+    "reason": "404"
+  },
+  {
+    "url": "https://www.data.gov.in/search?title=cadastral",
+    "reason": "503"
+  },
+  {
+    "url": "https://maps.kdmc.gov.in/agserver/rest/services/KDMC_GIS_ENT/FeatureServer/13/query",
+    "reason": "HTTP 200 HTML Web Adaptor error: Could not access any server machines"
+  }
+]

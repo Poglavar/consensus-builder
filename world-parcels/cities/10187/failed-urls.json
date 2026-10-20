@@ -1,0 +1,19 @@
+[
+  {
+    "url": "https://upbhunaksha.gov.in/bhunakshaserver/MapInfo/getVVVVExtentGeoref",
+    "reason": "500"
+  },
+  {
+    "url": "https://upbhunaksha.gov.in/bhunakshaserver/v1/khasramap/plot",
+    "reason": "401"
+  },
+  {
+    "url": "https://upbhunaksha.gov.in/home/"
+  },
+  {
+    "url": "https://prayagraj.nic.in/hi/service/%E0%A4%AD%E0%A5%82%E0%A4%B2%E0%A5%87%E0%A4%96-%E0%A4%96%E0%A4%A4%E0%A5%8C%E0%A4%A8%E0%A5%80/"
+  },
+  {
+    "url": "https://upbhulekh.gov.in/"
+  }
+]

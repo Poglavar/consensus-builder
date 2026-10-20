@@ -1665,6 +1665,10 @@ body.site-intro-open { overflow: hidden; }
     border: 1px solid var(--cb-line);
 }
 
+.agent-stats-grid > .stat-item:last-child {
+    grid-column: 1 / -1;
+}
+
 .stat-item {
     display: flex;
     flex-direction: column;

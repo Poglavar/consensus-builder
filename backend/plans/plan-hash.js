@@ -123,7 +123,7 @@ function readjustmentProposal(row) {
     const numericOffer = choose(row.offer, data.offer);
     return {
         ...data,
-        goal: choose(row.goal, choose(data.goal, row.type)),
+        goal: choose(row.goal, data.goal),
         reparcellization: choose(row.reparcellization, data.reparcellization),
         cadastreParcelIds: choose(row.cadastre_parcel_ids, data.cadastreParcelIds),
         offer: numericOffer === undefined || numericOffer === null ? numericOffer : Number(numericOffer),
@@ -158,7 +158,7 @@ export function nextVersionSlug(slug, taken) {
 // Members whose current content no longer matches what the plan was named with.
 export function changedMembers(memberHashes, currentRows) {
     const byId = new Map(currentRows.map(row => [String(row.id), row]));
-    return Object.entries(memberHashes || {})
+    return Object.entries(memberHashes)
         .filter(([id, hash]) => {
             const row = byId.get(String(id));
             if (!row) return true;

@@ -196,8 +196,10 @@
 
     async function readSummary(proposal, programId) {
         const client = await dependencies();
-        const cluster = root.solanaWalletManager?.getCluster?.() || 'devnet';
-        const connection = root.SolanaChainDataLoader.getConnection(cluster);
+        const connection = await root.SolanaChainDataLoader.getVerifiedConnection('devnet');
+        if (!await root.SolanaAcceptanceClient.fetchProposal(connection, proposal)) {
+            throw new Error('Proposal account is unavailable.');
+        }
         const wallet = root.solanaWalletManager?.getProvider?.()?.publicKey || null;
         const [donations, pledges, myPledge, myDonations] = await Promise.all([
             client.readDonationEscrow(connection, proposal, programId),

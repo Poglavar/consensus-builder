@@ -121,14 +121,17 @@ describe('Croatian uses "čestica" for a parcel', () => {
         expect(summary.other).toContain('{{count}} čestica');
     });
 
-    it('has no inflected "parcela" left in user-facing Croatian strings', () => {
+    it('reserves "parcela" for an explicitly designed plot, with "čestica" for source parcels', () => {
         const strings = [];
         const walk = node => {
             if (typeof node === 'string') strings.push(node);
             else if (node && typeof node === 'object') Object.values(node).forEach(walk);
         };
         walk(dictOf('hr'));
-        const offenders = strings.filter(value => /(?<![\w{])[Pp]arcel(a|e|u|i|om|ama)(?![\w}])/.test(value));
+        // Authored plots are deliberately distinct from registered/source čestice.
+        const offenders = strings.filter(value => /(?<![\w{])[Pp]arcel(a|e|u|i|om|ama)(?![\w}])/.test(
+            value.replace(/\bprojektiran(?:a|e|u|i|om|ih|im) parcel(?:a|e|u|i|om|ama)\b/gi, '')
+        ));
         expect(offenders).toEqual([]);
     });
 });

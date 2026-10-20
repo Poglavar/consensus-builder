@@ -1,0 +1,32 @@
+[
+  {
+    "url": "https://www.arcgis.com/home/item.html?id=c2c7c6fc5eb74f96a3ceb9f4a1a85bed"
+  },
+  {
+    "url": "https://services9.arcgis.com/tfeLX7LFVABzD11G/arcgis/rest/services/%D7%A0%D7%AA%D7%95%D7%A0%D7%99_%D7%91%D7%A1%D7%99%D7%A1/FeatureServer/10"
+  },
+  {
+    "url": "https://www.gov.il/he/departments/units/kadaster-deprtment"
+  },
+  {
+    "url": "https://data.gov.il/api/3/action/package_show?id=dff8a168-af6c-4e0f-bbe3-c4bd3646084c"
+  },
+  {
+    "url": "https://www.arcgis.com/sharing/rest/content/items/c2c7c6fc5eb74f96a3ceb9f4a1a85bed?f=json"
+  },
+  {
+    "url": "https://www.arcgis.com/sharing/rest/content/items/c2c7c6fc5eb74f96a3ceb9f4a1a85bed/data?f=json"
+  },
+  {
+    "url": "https://services9.arcgis.com/tfeLX7LFVABzD11G/arcgis/rest/services/%D7%A0%D7%AA%D7%95%D7%A0%D7%99_%D7%91%D7%A1%D7%99%D7%A1/FeatureServer/10?f=pjson"
+  },
+  {
+    "url": "https://services9.arcgis.com/tfeLX7LFVABzD11G/arcgis/rest/services/%D7%A0%D7%AA%D7%95%D7%A0%D7%99_%D7%91%D7%A1%D7%99%D7%A1/FeatureServer/10/query"
+  },
+  {
+    "url": "https://aws-e.data.gov.il/dataset/dff8a168-af6c-4e0f-bbe3-c4bd3646084c/resource/c68b4df6-c809-4bb5-a546-61fa1528fed5/download/parcel_all.zip"
+  },
+  {
+    "url": "https://govmap.gov.il/"
+  }
+]

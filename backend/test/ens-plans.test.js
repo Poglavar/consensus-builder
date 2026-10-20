@@ -23,6 +23,7 @@ function makeStore({ absent = [] } = {}) {
         async members(ids) { return ids.filter(id => !absent.includes(String(id)) && !removed.has(String(id))).map(memberRow); },
         removeProposal(id) { removed.add(String(id)); },
         async plan(slug) { return plans.get(slug) || null; },
+        corruptPlan(slug, patch) { plans.set(slug, { ...plans.get(slug), ...patch }); },
         async supersededBy(slug) { return [...plans.values()].filter(plan => plan.supersedes === slug).map(plan => plan.slug); },
         async versionsOf(base) { return new Set([...plans.keys()].filter(slug => slug === base || slug.startsWith(`${base}-v`))); },
         listCalls: [],
@@ -120,6 +121,28 @@ describe('named plans CRUD', () => {
         expect(ok.body.members[0]).not.toHaveProperty('id');
         expect(ok.body.members[0]).not.toHaveProperty('proposalId');
         expect((await request(app).get('/plans/nope')).status).toBe(404);
+    });
+
+    it('returns 422 when a stored plan commitment is invalid on detail or list', async () => {
+        await request(app).post('/plans').send({ slug: 'damaged-plan', proposalRowIds: ['5'] });
+        store.corruptPlan('damaged-plan', { member_hashes: {} });
+
+        const detail = await request(app).get('/plans/damaged-plan');
+        expect(detail.status).toBe(422);
+        expect(detail.body).toMatchObject({ code: 'plan-commitment-invalid' });
+        expect(detail.body.error).toContain('damaged-plan');
+        expect(detail.body.error).toMatch(/recreate/i);
+
+        const list = await request(app).get('/plans');
+        expect(list.status).toBe(422);
+        expect(list.body).toMatchObject({ code: 'plan-commitment-invalid' });
+    });
+
+    it('marks a missing member as changed', async () => {
+        await request(app).post('/plans').send({ slug: 'missing-member-plan', proposalRowIds: ['5'] });
+        store.removeProposal('5');
+        const res = await request(app).get('/plans/missing-member-plan');
+        expect(res.body.members[0]).toMatchObject({ proposalRowId: '5', missing: true, changed: true });
     });
 
     it('returns a renamed missing-member reference when a member is removed after naming', async () => {

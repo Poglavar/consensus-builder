@@ -103,7 +103,7 @@
             // is the compact form used by some saved plans; all assigned shapes go through the
             // shared validator so its duplicate-key and sum tolerance remain authoritative.
             const isUnassigned = Array.isArray(plot.owners) && !plot.owners.length
-                && !String(plot.ownerKey || '').trim() && plot.noOwner !== true;
+                && !String(plot.ownerKey || '').trim() && plot.unrepresentedGround !== true;
             if (isUnassigned) return;
             const shaped = ownershipApi().shapeSliceOwnership(plot);
             const share = shaped.owners.find(allocation => allocation.ownerKey === ownerKey)?.percentageShare / 100 || 0;

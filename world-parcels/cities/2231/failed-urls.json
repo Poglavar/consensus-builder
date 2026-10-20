@@ -1,0 +1,26 @@
+[
+  {
+    "url": "https://www.dgid.sn/"
+  },
+  {
+    "url": "https://www.dgid.sn/fiches/nicad"
+  },
+  {
+    "url": "https://www.geosenegal.gouv.sn/Kolda-ND-28-IV-245.html"
+  },
+  {
+    "url": "https://sig.onddl.sn/"
+  },
+  {
+    "url": "https://sig.onddl.sn/api/base/?q=Kolda"
+  },
+  {
+    "url": "https://sig.onddl.sn/geoserver/wfs?service=WFS&version=1.0.0&request=GetCapabilities"
+  },
+  {
+    "url": "https://sig.onddl.sn/geoserver/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName=geonode:departement&outputFormat=application/json&propertyName=id,name,geom&bbox=-14.94,12.89,-14.93,12.90,EPSG:4326"
+  },
+  {
+    "url": "https://landfolio.cadastreminiersenegal.sn/arcgis/rest/services/Applications/MapServer"
+  }
+]

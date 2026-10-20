@@ -1,0 +1,26 @@
+[
+  {
+    "url": "https://www.data.gov.uk/dataset/811bcf4c-fbbf-4597-aa9c-3d5bd3bfd455/inspire-index-polygons-spatial-data"
+  },
+  {
+    "url": "https://use-land-property-data.service.gov.uk/datasets/nps"
+  },
+  {
+    "url": "https://inspire.landregistry.gov.uk/inspire/ows?service=WMS&request=GetCapabilities&version=1.3.0"
+  },
+  {
+    "url": "https://inspire.landregistry.gov.uk/inspire/ows?service=WFS&request=GetCapabilities&version=2.0.0"
+  },
+  {
+    "url": "https://inspire.landregistry.gov.uk/inspire/ows?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=inspire%3ACP.CadastralParcel&STYLES=&CRS=CRS%3A84&BBOX=-0.7570%2C51.2769%2C-0.7542%2C51.2790&WIDTH=512&HEIGHT=512&FORMAT=image%2Fpng&TRANSPARENT=true"
+  },
+  {
+    "url": "https://inspire.landregistry.gov.uk/inspire/ows?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetFeatureInfo&LAYERS=inspire%3ACP.CadastralParcel&QUERY_LAYERS=inspire%3ACP.CadastralParcel&STYLES=&CRS=CRS%3A84&BBOX=-0.7570%2C51.2769%2C-0.7542%2C51.2790&WIDTH=512&HEIGHT=512&INFO_FORMAT=text%2Fplain&I=256&J=256"
+  },
+  {
+    "url": "https://sccmaps.surreycc.gov.uk/webmaps/rest/services/Surrey_Interactive_Map?f=pjson"
+  },
+  {
+    "url": "https://www.gov.uk/get-information-about-property-and-land/search-the-index-map"
+  }
+]

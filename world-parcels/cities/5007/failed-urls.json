@@ -1,0 +1,14 @@
+[
+  {
+    "url": "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions"
+  },
+  {
+    "url": "https://bic.cd/"
+  },
+  {
+    "url": "https://bic.cd/assets/CadastralMap-CVNYyCaG.js"
+  },
+  {
+    "url": "https://vqrcggcqgnkanngqhcga.supabase.co/rest/v1/cadastral_parcels_public?select=id,parcel_number,gps_coordinates,parcel_sides,area_sqm,province,ville,commune,quartier,latitude,longitude,is_subdivided&latitude=gte.-10.39&latitude=lte.-10.37&longitude=gte.23.44&longitude=lte.46"
+  }
+]

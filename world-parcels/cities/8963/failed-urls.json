@@ -1,0 +1,30 @@
+[
+  {
+    "url": "https://hathras.nic.in/service/land-records/"
+  },
+  {
+    "url": "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=144"
+  },
+  {
+    "url": "https://upbhunaksha.gov.in/bhunaksha/"
+  },
+  {
+    "url": "https://upbhulekh.gov.in/"
+  },
+  {
+    "url": "https://upbhunaksha.gov.in/bhunakshaserver/Levels/districtList",
+    "reason": "500"
+  },
+  {
+    "url": "https://upbhunaksha.gov.in/bhunakshaserver/Levels/getDistricts",
+    "reason": "500"
+  },
+  {
+    "url": "https://upbhunaksha.gov.in/bhunakshaserver/MapInfo/getPlotInfo",
+    "reason": "405"
+  },
+  {
+    "url": "https://upbhunaksha.gov.in/bhunakshaserver/Map/getMap",
+    "reason": "401"
+  }
+]

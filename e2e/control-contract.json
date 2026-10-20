@@ -10105,16 +10105,6 @@
           "occurrences": 1
         }
       ]
-    },
-    {
-      "name": "Satellite boundary recognition job",
-      "reason": "The OCR option explains its unavailability; no ParcelOcrJobs implementation is installed.",
-      "guards": [
-        {
-          "pattern": "\\bParcelOcrJobs\\b",
-          "occurrences": 1
-        }
-      ]
     }
   ],
   "checkRuntimeControls": true,

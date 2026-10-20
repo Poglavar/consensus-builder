@@ -41,6 +41,13 @@ beforeEach(() => {
 });
 
 describe('POST /proposals', () => {
+    it.each([null, {}, { proposalId: 'old-account' }])('rejects the retired onchainData input %s before storing it', async onchainData => {
+        const res = await request(app).post('/proposals').send(validProposalBody({ onchainData }));
+        expect(res.status).toBe(400);
+        expect(res.body.error).toMatch(/onchainData is retired/);
+        expect(pool.getCalls().some(call => /INSERT INTO proposal/.test(call.sql))).toBe(false);
+    });
+
     it('rejects non-object proposal payloads', async () => {
         const res = await request(app)
             .post('/proposals')
@@ -929,15 +936,15 @@ describe('GET /proposals/:id', () => {
             cadastreParcelIds: ['HR-1'],
             lens: ['planning'],
             bounds: [1, 2, 3, 4],
-            onchain: { txHash: '0x1' },
-            onchainData: { txHash: '0x1' }
+            onchain: { txHash: '0x1' }
         });
+        expect(res.body).not.toHaveProperty('onchainData');
         expect(res.body).not.toHaveProperty('childParcelIds');
         expect(res.body).not.toHaveProperty('parentProposals');
         expect(res.body).not.toHaveProperty('childProposals');
     });
 
-    it('falls back to proposal_data fields when db columns are null', async () => {
+    it('uses JSON for nullable authored fields but not cleared chain attachment or unknown lifecycle', async () => {
         pool.setResult({
             rows: [proposalDbRow({
                 name: null,
@@ -1008,7 +1015,7 @@ describe('GET /proposals/:id', () => {
             description: 'JSON description',
             author: 'json-author',
             type: 'road',
-            lifecycleStatus: 'draft',
+            lifecycleStatus: 'Unknown',
             offer: 12,
             offerCurrency: 'USD',
             budget: 34,
@@ -1017,17 +1024,17 @@ describe('GET /proposals/:id', () => {
             expiresAt: '2026-02-01T00:00:00.000Z',
             updatedAt: '2026-01-15T00:00:00.000Z',
             cadastreParcelIds: ['PARENT'],
-            acceptedParcelIds: ['PARENT'],
-            ownerAcceptances: { PARENT: true },
             roadProposal: { width: 4 },
             buildingProposal: { height: 8 },
             structureProposal: { floors: 2 },
             reparcellization: { merge: true },
             lens: ['mobility'],
             bounds: [1, 2, 3, 4],
-            onchain: { txHash: '0xabc' },
-            onchainData: { txHash: '0xabc' }
+            onchain: null
         });
+        expect(res.body).not.toHaveProperty('acceptedParcelIds');
+        expect(res.body).not.toHaveProperty('ownerAcceptances');
+        expect(res.body).not.toHaveProperty('onchainData');
         expect(res.body).not.toHaveProperty('childParcelIds');
         expect(res.body).not.toHaveProperty('parentProposals');
         expect(res.body).not.toHaveProperty('childProposals');
@@ -1369,17 +1376,31 @@ describe('GET /proposals/summary', () => {
     it('serves the goal so the client does not re-derive it from the lossy type', async () => {
         pool.setResult({
             rows: [
-                summaryDbRow({ id: 1, proposal_id: 'p-1', type: 'building', goal: 'building-blockify' }),
-                summaryDbRow({ id: 2, proposal_id: 'p-2', type: 'structure', goal: 'park-square' }),
+                summaryDbRow({ id: 1, proposal_id: 'p-1', type: 'building', goal: 'buildings' }),
+                summaryDbRow({ id: 2, proposal_id: 'p-2', type: 'structure', goal: 'park' }),
             ],
         });
 
         const res = await request(app).get('/proposals/summary');
 
         expect(res.status).toBe(200);
-        expect(res.body.proposals.map(p => p.goal)).toEqual(['building-blockify', 'park-square']);
+        expect(res.body.proposals.map(p => p.goal)).toEqual(['buildings', 'park']);
         // The SELECT must expose goal for the client mapper.
         expect(pool.getCalls()[0].sql).toMatch(/AS goal/);
+    });
+
+    it('does not infer an authored goal from the broad type or expose unknown goal keys', async () => {
+        pool.setResult({ rows: [
+            summaryDbRow({ id: 1, type: 'building', goal: 'invented-goal' }),
+            summaryDbRow({ id: 2, type: 'road', goal: null })
+        ] });
+
+        const res = await request(app).get('/proposals/summary');
+
+        expect(res.status).toBe(200);
+        expect(res.body.proposals.map(proposal => proposal.goal)).toEqual([null, null]);
+        expect(pool.getCalls()[0].sql).toMatch(/proposal_data->>'goal' AS goal/);
+        expect(pool.getCalls()[0].sql).not.toMatch(/COALESCE\(proposal_data->>'goal', type\)/);
     });
 
     it('reports the server-derived effective status (expired reads Expired, not the stale value)', async () => {
@@ -1397,6 +1418,43 @@ describe('GET /proposals/summary', () => {
         // The SELECT must derive it server-side.
         expect(pool.getCalls()[0].sql).toMatch(/AS effective_status/);
         expect(pool.getCalls()[0].sql).toMatch(/expires_at <= now\(\)/);
+    });
+
+    it('projects qualified server lifecycle evidence into summaries', async () => {
+        const chainMirror = {
+            protocol: 'proposal-chain/1',
+            ref: {
+                chainType: 'solana', chainId: 'solana-devnet',
+                contract: '3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg', tokenId: 'proposal-account'
+            },
+            verifiedAt: '2026-10-20T10:02:00.000Z',
+            lifecycle: { status: 'Active', observedAt: '2026-10-20T09:59:00.000Z' }
+        };
+        const lifecycleEvent = {
+            id: 'event-1', eventType: 'proposal_lifecycle',
+            subject: { type: 'proposal', id: 'proposal-account' }, outcome: 'executed',
+            observedAt: '2026-10-20T10:01:00.000Z',
+            attester: { kind: 'solana_program', address: chainMirror.ref.contract },
+            source: { chain: 'solana:devnet', transaction: 'signature-1', hash: `sha256:${'a'.repeat(64)}` },
+            evidence: { proposalStatusByte: 1 }
+        };
+        pool.setResult({ rows: [summaryDbRow({
+            effective_status: 'Executed', chain_mirror: chainMirror,
+            lifecycle_event: lifecycleEvent, expires_at: null
+        })] });
+
+        const res = await request(app).get('/proposals/summary');
+
+        expect(res.status).toBe(200);
+        expect(res.body.proposals[0].lifecycleEvidence).toMatchObject({
+            protocol: 'proposal-lifecycle-evidence/1', state: 'observed', status: 'Executed',
+            source: 'land-event', observedAt: '2026-10-20T10:01:00.000Z'
+        });
+        expect(res.body.proposals[0].lifecycleEvidence.observations.at(-1)).toMatchObject({
+            source: 'land-event', transaction: 'signature-1'
+        });
+        expect(pool.getCalls()[0].sql).toMatch(/proposal_data->'chainMirror' AS chain_mirror/);
+        expect(pool.getCalls()[0].sql).toMatch(/event_type = 'proposal_lifecycle'/);
     });
 
     it('prefers display_title when display_name is absent', async () => {
@@ -1479,17 +1537,41 @@ describe('GET /proposals/summary', () => {
         await request(app).get('/proposals/summary?lifecycle=Active');
         const call = pool.getCalls()[0];
         // The WHERE clause derives the lifecycle, not a raw column compare.
-        expect(call.sql).toMatch(/WHEN LOWER\(COALESCE\(lifecycle_status, ''\)\)[\s\S]*expires_at <= now\(\)[\s\S]*LOWER\(\$1\)/);
+        expect(call.sql).toMatch(/WHEN LOWER\(BTRIM\(COALESCE\(lifecycle_status, ''\)\)\) = 'active'[\s\S]*expires_at <= now\(\)[\s\S]*LOWER\(\$1\)/);
         expect(call.params).toContain('Active');
     });
 
-    it('filters by goal (against the stored goal, falling back to type)', async () => {
+    it('allows Unknown reads to be filtered without treating them as Active', async () => {
+        pool.setResult({ rows: [] });
+        const response = await request(app).get('/proposals/summary?lifecycle=Unknown');
+        expect(response.status).toBe(200);
+        expect(pool.getCalls()[0].params).toContain('Unknown');
+        expect(pool.getCalls()[0].sql).toContain("ELSE 'Unknown'");
+    });
+
+    it('filters by the explicitly authored goal only', async () => {
         pool.setResult({ rows: [] });
         const res = await request(app).get('/proposals/summary?goal=park-square');
         expect(res.status).toBe(200);
         const call = pool.getCalls()[0];
-        expect(call.sql).toMatch(/COALESCE\(proposal_data->>'goal', type\) = \$1/);
+        expect(call.sql).toMatch(/proposal_data->>'goal' = \$1/);
+        expect(call.sql).not.toMatch(/COALESCE\(proposal_data->>'goal', type\)/);
         expect(call.params).toContain('park-square');
+    });
+
+    it('returns only canonical authored goals in the epoch plan', async () => {
+        pool.setResult({ rows: [
+            { id: 1, proposal_id: 'p-1', city: 'zagreb', display_name: 'Park', type: 'structure', goal: 'park', epoch_year: 2027, bounds: null, created_at: new Date('2026-10-01T10:00:00Z'), screenshot_url: null },
+            { id: 2, proposal_id: 'p-2', city: 'zagreb', display_name: 'Unknown', type: 'building', goal: 'invented-goal', epoch_year: 2027, bounds: null, created_at: new Date('2026-10-02T10:00:00Z'), screenshot_url: null },
+            { id: 3, proposal_id: 'p-3', city: 'zagreb', display_name: 'Legacy', type: 'road', goal: null, epoch_year: 2027, bounds: null, created_at: new Date('2026-10-03T10:00:00Z'), screenshot_url: null }
+        ] });
+
+        const res = await request(app).get('/proposals/epoch-plan?city=zagreb');
+
+        expect(res.status).toBe(200);
+        expect(res.body.epochs[0].proposals.map(proposal => proposal.goal)).toEqual(['park', null, null]);
+        expect(pool.getCalls()[0].sql).toMatch(/proposal_data->>'goal' AS goal/);
+        expect(pool.getCalls()[0].sql).not.toMatch(/COALESCE\(proposal_data->>'goal', type\)/);
     });
 
     it('free-text search matches name/title and author across all rows', async () => {
@@ -1560,7 +1642,7 @@ describe('GET /proposals/summary', () => {
             title: null,
             author: null,
             type: null,
-            lifecycleStatus: 'Active',
+            lifecycleStatus: 'Unknown',
             createdAt: null
         });
     });

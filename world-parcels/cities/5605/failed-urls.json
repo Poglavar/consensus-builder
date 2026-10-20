@@ -1,0 +1,20 @@
+[
+  {
+    "url": "https://nspd.gov.ru/map?thematic=PKK",
+    "reason": "timeout after 20 seconds"
+  },
+  {
+    "url": "https://pkk.rosreestr.ru/",
+    "reason": "timeout after 12 seconds"
+  },
+  {
+    "url": "https://pkk5.rosreestr.ru/",
+    "reason": "timeout after 12 seconds"
+  },
+  {
+    "url": "https://i-ola.ru/city/kumi/reestr-munitsipalnogo-imushchestva.php"
+  },
+  {
+    "url": "https://i-ola.ru/regulatory/57/?SHOWALL_1=1"
+  }
+]

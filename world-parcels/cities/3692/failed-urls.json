@@ -1,0 +1,6 @@
+[
+  {
+    "url": "https://bz1uwwpkuinzbk94.svcs5.arcgis.com/bz1uwWPKUInZBK94/arcgis/rest/services/CA_Statewide_Parcels_Public_view/FeatureServer/0",
+    "reason": "Held: the production adapter fails closed in Murrieta because the CAL FIRE statewide layer repeats APN 'RW' (a right-of-way placeholder, FIPS 06065) on distinct polygons: a direct non-geometry read of qualifier cell 3 (bbox -117.151,33.536,-117.15,33.537) shows objectids 7201604 and 7202346 sharing 06065~RW with Shape__Area 42,700.5 vs 55,148.0, so cells 3, 6, 9 and 11 raise 'conflicting geometry…"
+  }
+]

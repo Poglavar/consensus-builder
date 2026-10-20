@@ -1,0 +1,15 @@
+[
+  {
+    "url": "https://gisshare.norfolk.gov/pubserver/rest/services/OpenData/Parcels/MapServer/1?f=pjson",
+    "reason": "fetch failed"
+  },
+  {
+    "url": "https://www.norfolk.gov/assessor"
+  },
+  {
+    "url": "https://www.norfolk.gov/1596/Geographic-Information-Systems"
+  },
+  {
+    "url": "https://gisshare.norfolk.gov/pubserver/rest/services/OpenData/Parcels/MapServer/1"
+  }
+]

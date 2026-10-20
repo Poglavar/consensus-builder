@@ -56,8 +56,9 @@
 //
 // Usage: node scripts/build-world-coverage.mjs --run [--tolerance 0.06] [--region-tolerance 0.1] [--out path]
 
-import { readFileSync, writeFileSync, mkdirSync, readdirSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { writeBootCoverage } from './build-boot-coverage.mjs';
+import { readCityChecks } from './lib/parcel-city-coverage.mjs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -68,7 +69,6 @@ const DEFAULTS = {
     countries: path.join(REPO, 'world-parcels/countries.geojson'),
     regions: path.join(REPO, 'world-parcels/regions.geojson'),
     regionReviews: path.join(REPO, 'world-parcels/region-coverage-reviews.json'),
-    qualificationOutcomes: path.join(REPO, 'world-parcels/research/qualification-outcomes'),
     catalog: path.join(REPO, 'backend/parcels/source-catalog.json'),
     demographics: path.join(REPO, 'world-parcels/report/city-demographics.json'),
     cityConfig: path.join(REPO, 'frontend/js/city-config.js'),
@@ -164,7 +164,7 @@ export function cityChecks(liveCities, outcomes, liveWupCodes = new Set()) {
     const works = liveCities.map(city => city.name);
     const failed = [];
     for (const city of outcomes) {
-        if (liveWupCodes.has(city.cityCode)) continue;
+        if (liveWupCodes.has(city.cityCode) || city.appCityIds?.some(id => liveCities.some(live => live.id === id))) continue;
         if (city.outcome === 'qualified') works.push(city.cityName);
         else if (city.outcome === 'held') failed.push(city.cityName);
     }
@@ -658,12 +658,6 @@ Options:
   --help              show this help`);
 }
 
-export function readOutcomes(dir) {
-    const files = readdirSync(dir).filter(name => name.endsWith('.json')).sort()
-        .map(name => JSON.parse(readFileSync(path.join(dir, name), 'utf8')));
-    return latestOutcomes(files);
-}
-
 function main(argv) {
     if (!argv.includes('--run') || argv.includes('--help')) { usage(); return; }
     const opt = name => { const i = argv.indexOf(name); return i >= 0 ? argv[i + 1] : undefined; };
@@ -683,7 +677,12 @@ function main(argv) {
         catalog: JSON.parse(readFileSync(DEFAULTS.catalog, 'utf8')).sources,
         cityConfigSource: readFileSync(DEFAULTS.cityConfig, 'utf8'),
         demographics: JSON.parse(readFileSync(demographicsPath, 'utf8')),
-        outcomes: readOutcomes(DEFAULTS.qualificationOutcomes),
+        // Completed qualification evidence is disposable; current configured sources
+        // and city settings describe working coverage, without historical ledgers.
+        outcomes: readCityChecks(REPO, {
+            registry: JSON.parse(readFileSync(DEFAULTS.registry, 'utf8')),
+            demographics: JSON.parse(readFileSync(demographicsPath, 'utf8'))
+        }),
         tolerance, regionTolerance
     });
     const json = JSON.stringify(result);

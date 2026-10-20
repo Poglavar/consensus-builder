@@ -1,0 +1,20 @@
+[
+  {
+    "url": "https://gisportal.magnitogorsk.ru/button_html/about/"
+  },
+  {
+    "url": "https://www.verstov.info/news/society/70020-vidno-absolyutno-vse-v-magnitogorske-zapuschen-gis-portala-s-ortofotoplanami"
+  },
+  {
+    "url": "https://www.magnitogorsk.ru/"
+  },
+  {
+    "url": "https://gisportal.magnitogorsk.ru/scripts/loader.min.js"
+  },
+  {
+    "url": "https://maps.nso.ru/arcgis2/rest/services/Common/Boundary/MapServer/18/query"
+  },
+  {
+    "url": "https://maps.rosreestr.ru/ArcGIS/rest/services/CadastreNew/Cadastre/MapServer?f=pjson"
+  }
+]

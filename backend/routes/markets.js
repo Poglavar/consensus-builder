@@ -4,15 +4,18 @@
 // read; the payload is cached briefly per city because every sheet open would otherwise be an RPC.
 
 import { createRequire } from 'node:module';
+import { createHash } from 'node:crypto';
 import { Connection } from '@solana/web3.js';
-import { buildContests, proposalAccountOf } from '../markets/contests.js';
+import { buildContests, normalizeKnownParcelSource, proposalAccountOf } from '../markets/contests.js';
 import { PLAN_IN_CITY_SQL } from '../plans/plan-store.js';
 import { decodeProposalState } from '../agents/lifecycle-actions.js';
 import { EFFECTIVE_STATUS_SQL, normalizeCityCode } from './proposals.js';
 import { accountsPerRequest, getMultipleAccountsBatched } from '../solana/account-batching.js';
+import { DEVNET_GENESIS_HASH, PROPOSAL_PROGRAM_ID } from '../oracle/proposal-lifecycle.js';
 
 const require = createRequire(import.meta.url);
 const web3 = require('@solana/web3.js');
+const proposalDesignGoals = require('../../frontend/js/proposals/design-goals.js');
 // The same codec the browser and the agent bettor use (frontend/js/solana/market-client.js).
 const marketClient = require('../../frontend/js/solana/market-client.js');
 marketClient.configure({ web3 });
@@ -21,12 +24,19 @@ export const DEVNET_USDC_MINT = '4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU';
 const PROPOSAL_STATUS_NAMES = Object.freeze(['Active', 'Executed', 'Cancelled', 'Expired']);
 const CACHE_TTL_MS = 20_000;
 const MAX_PROPOSALS = 2000;
+const PROPOSAL_DISCRIMINATOR = createHash('sha256').update('account:Proposal').digest().subarray(0, 8);
+
+async function assertMarketNetwork(connection) {
+    if (await connection.getGenesisHash() !== DEVNET_GENESIS_HASH) {
+        throw new Error('Proposal markets require Solana devnet.');
+    }
+}
 
 // The columns rowToProposal reads; the bet link route (bets-share.js) selects one row by account.
 export const PROPOSAL_COLUMNS_SQL = `
         id, proposal_id, city,
         COALESCE(title, name, proposal_data->>'title', proposal_data->>'name') AS title,
-        COALESCE(proposal_data->>'goal', type) AS goal,
+        proposal_data->>'goal' AS goal,
         ${EFFECTIVE_STATUS_SQL} AS lifecycle_status,
         created_at, expires_at, cadastre_parcel_ids, onchain_data,
         COALESCE(author, proposal_data->>'author') AS author,
@@ -34,6 +44,7 @@ export const PROPOSAL_COLUMNS_SQL = `
         proposal_data->>'proposalRole' AS proposal_role,
         COALESCE(screenshot_url, onchain_data->>'imageUrl') AS screenshot_url,
         screenshot_before_url, screenshot_pair_url,
+        COALESCE(binding, proposal_data->'binding') AS binding,
         COALESCE(building_proposal->>'blockName', structure_proposal->>'blockName', proposal_data->'buildingProposal'->>'blockName') AS site_name`;
 
 const PROPOSALS_SQL = `
@@ -70,12 +81,17 @@ export function rowToPlan(row) {
 }
 
 export function rowToProposal(row) {
+    let binding = row.binding;
+    if (typeof binding === 'string') {
+        try { binding = JSON.parse(binding); } catch { binding = null; }
+    }
+    const qualifiedParcelSource = normalizeKnownParcelSource(binding?.parcelSource);
     return {
         id: row.id,
         city: row.city || null,
         proposalId: row.proposal_id,
         title: row.title,
-        goal: row.goal,
+        goal: proposalDesignGoals.keyOf({ goal: row.goal }),
         lifecycleStatus: row.lifecycle_status,
         createdAt: row.created_at instanceof Date ? row.created_at.toISOString() : row.created_at,
         expiresAt: row.expires_at instanceof Date ? row.expires_at.toISOString() : row.expires_at,
@@ -86,6 +102,7 @@ export function rowToProposal(row) {
         screenshotBeforeUrl: row.screenshot_before_url || null,
         screenshotPairUrl: row.screenshot_pair_url || null,
         parcelIds: Array.isArray(row.cadastre_parcel_ids) ? row.cadastre_parcel_ids : [],
+        parcelSource: qualifiedParcelSource,
         siteName: typeof row.site_name === 'string' && row.site_name.trim() ? row.site_name.trim() : null,
         proposalAccount: proposalAccountOf(row.onchain_data)
     };
@@ -98,14 +115,23 @@ export function defaultMarketReader(env = process.env) {
     let connection = null;
     return async (proposalAccounts) => {
         connection ??= new Connection(env.SOLANA_RPC_URL || 'https://api.devnet.solana.com', 'confirmed');
+        await assertMarketNetwork(connection);
         const pdas = proposalAccounts.map(account => ({ account, pda: marketClient.getMarketPda(account)[0] }));
         const result = new Map();
         const infos = await getMultipleAccountsBatched(connection, pdas.map(entry => entry.pda), { batchSize });
         pdas.forEach((entry, index) => {
             const info = infos[index];
+            let market = null;
+            if (info) {
+                if (info.owner?.toBase58() !== marketClient.constants.PROGRAM_ID) throw new Error('Unexpected market account program.');
+                market = marketClient.decodeMarket(info.data);
+                if (market.proposal !== entry.account || market.stakeMint !== DEVNET_USDC_MINT) {
+                    throw new Error('Market account has a different proposal or stake mint.');
+                }
+            }
             result.set(entry.account, {
                 address: entry.pda.toBase58(),
-                market: info && info.data ? marketClient.decodeMarket(info.data) : null
+                market
             });
         });
         return result;
@@ -113,25 +139,25 @@ export function defaultMarketReader(env = process.env) {
 }
 
 // On-chain status of each proposal account (the status the market program resolves from).
-// Returns Map(proposalAccount → 'Active' | 'Executed' | 'Cancelled' | 'Expired'); unreadable
-// accounts are left out, so the database word stands in for them.
+// Returns Map(proposalAccount → 'Active' | 'Executed' | 'Cancelled' | 'Expired'). Missing or
+// unverified accounts fail the read; a database word cannot stand in for a chain observation.
 export function defaultProposalStatusReader(env = process.env) {
     const batchSize = accountsPerRequest(env);
     let connection = null;
     return async (proposalAccounts) => {
         connection ??= new Connection(env.SOLANA_RPC_URL || 'https://api.devnet.solana.com', 'confirmed');
+        await assertMarketNetwork(connection);
         const result = new Map();
         const addresses = proposalAccounts.map(account => new web3.PublicKey(account));
         const infos = await getMultipleAccountsBatched(connection, addresses, { batchSize });
         proposalAccounts.forEach((account, index) => {
             const info = infos[index];
-            if (!info || !info.data) return;
-            try {
-                const name = PROPOSAL_STATUS_NAMES[decodeProposalState(info.data).status];
-                if (name) result.set(account, name);
-            } catch (error) {
-                console.warn(`[${new Date().toISOString()}] GET /markets: proposal ${account} did not decode: ${error.message}`);
-            }
+            if (!info || info.owner?.toBase58() !== PROPOSAL_PROGRAM_ID) throw new Error('Proposal account is missing or belongs to a different program.');
+            const bytes = Buffer.from(info.data || []);
+            if (!bytes.subarray(0, 8).equals(PROPOSAL_DISCRIMINATOR)) throw new Error('Account is not a Proposal account.');
+            const name = PROPOSAL_STATUS_NAMES[decodeProposalState(bytes).status];
+            if (!name) throw new Error('Proposal account has an unknown lifecycle status.');
+            result.set(account, name);
         });
         return result;
     };

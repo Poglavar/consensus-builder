@@ -206,8 +206,8 @@ describe('createPlanStore named-plan identifier plumbing', () => {
         await store.list('zagreb', { proposalRowIds: ['11', '22'], parcelIds: null });
         await store.insert({
             slug: 'row-plan', proposalRowIds: ['11', '22'], title: 'Row plan', description: null,
-            author: null, place: null, city: 'zagreb', memberHashes: { 11: 'a', 22: 'b' },
-            planHash: 'hash', supersedes: null, creatorIp: null, creatorFingerprint: null
+            author: null, place: null, city: 'zagreb', memberHashes: { 11: 'a'.repeat(64), 22: 'b'.repeat(64) },
+            planHash: 'c'.repeat(64), supersedes: null, creatorIp: null, creatorFingerprint: null
         });
 
         expect(calls[0].sql).toContain('e.proposal_ids ?| $2::text[]');

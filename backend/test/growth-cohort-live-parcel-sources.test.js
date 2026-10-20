@@ -5,6 +5,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import proj4 from 'proj4';
 import { parcelSourceForCity, parcelSourceForIds, clearParcelSourceRuntimeCache } from '../parcels/sources.js';
 import { computeBinding } from '../proposals/binding.js';
+globalThis.proj4 ||= proj4;
 
 const root = new URL('../../', import.meta.url);
 const read = path => readFileSync(new URL(path, root), 'utf8');
@@ -41,7 +42,7 @@ describe('growth-cohort live parcel source contracts', () => {
     });
 
     it('binds Venjaramoodu through the Ente Bhoomi adapter without imported-parcel SQL', async () => {
-        const fixture = JSON.parse(read('world-parcels/research/growth-top20-integration-2026-10-07/kerala-parcel-sample.geojson'));
+        const fixture = JSON.parse(read('backend/test/fixtures/parcel-adapter-kerala.geojson'));
         const feature = fixture.features[0];
         const descriptor = parcelSourceForCity('venjaramoodu').descriptor;
         const nativeId = feature.properties.parcel_gid;

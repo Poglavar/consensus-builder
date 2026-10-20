@@ -599,6 +599,28 @@ describe('readMarket / readPosition', () => {
     it('throws without a connection rather than silently returning null', async () => {
         await expect(market.readMarket(null, PROPOSAL)).rejects.toThrow(/connection/);
     });
+
+    it('rejects market accounts owned by another program or naming another proposal', async () => {
+        const data = encodeMarketAccount({ proposal: PROPOSAL, stakeMint: STAKE_MINT, vault: WALLET,
+            yesPool: 10n, noPool: 20n, resolved: false, outcome: 0, bump: 250 });
+        const connection = { getAccountInfo: async () => ({ data, owner: new PublicKey(WALLET) }) };
+        await expect(market.readMarket(connection, PROPOSAL)).rejects.toThrow('another program');
+        new PublicKey(WALLET).toBuffer().copy(data, 8);
+        connection.getAccountInfo = async () => ({ data, owner: new PublicKey(market.constants.PROGRAM_ID) });
+        await expect(market.readMarket(connection, PROPOSAL)).rejects.toThrow('another proposal');
+    });
+
+    it('validates position program, market, owner and side in single and batched reads', async () => {
+        const data = encodePositionAccount({ marketPda: marketPda.toBase58(), owner: WALLET,
+            side: 1, amount: 7n, claimed: false, bump: 249 });
+        const info = { data, owner: new PublicKey(market.constants.PROGRAM_ID) };
+        expect(market.readPositionAccount(info, marketPda, WALLET, SIDE_YES)).toMatchObject({ amount: 7n });
+        for (const [expectedMarket, expectedOwner, expectedSide] of [
+            [WALLET, WALLET, SIDE_YES], [marketPda, PROPOSAL, SIDE_YES], [marketPda, WALLET, SIDE_NO]
+        ]) expect(() => market.readPositionAccount(info, expectedMarket, expectedOwner, expectedSide)).toThrow('does not match');
+        await expect(market.readPosition({ getAccountInfo: async () => ({ ...info, owner: new PublicKey(WALLET) }) },
+            PROPOSAL, WALLET, SIDE_YES)).rejects.toThrow('another program');
+    });
 });
 
 // Mirrors the #[cfg(test)] cases in programs/proposal_market/src/lib.rs one for one.

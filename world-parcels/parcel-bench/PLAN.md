@@ -4,7 +4,7 @@
 counts as success, how we check, ETA and spend. Updated as steps finish and as results change the plan;
 README.md stays the design of record and results.jsonl the ledger. -->
 
-Last updated 2026-10-19 (product clarified as plausible imagery-derived plots; historical cadastral trials remain frozen). Status values: todo · running · done · dropped (with the reason).
+Last updated 2026-10-19 (marker/surface comparison complete; five target-region crops prepared for human review). Status values: todo · running · done · dropped (with the reason).
 
 ## Current product target: plausible plots where cadastre is unavailable
 
@@ -15,12 +15,21 @@ product requirement. Cadastre was intended to supply examples of boundaries, not
 visible enclosure to reproduce a registered parcel. This clarification supersedes cadastral parcel
 F1 as the sole product objective; it does not relabel or invalidate frozen historical experiments.
 
-Proposed next work, before further model tuning or rental:
+Further user clarification: **joining two distinct plots across a missed boundary is much worse
+than subdividing one plot into several plausible regions**. Separate vegetable beds, a courtyard
+and a house can remain separate selectable plots even when they share an owner or cadastral parcel.
+The segmentation need not infer their common ownership or consolidate them into one compound.
+Preserving discernible physical/use divisions is the priority; extra subdivisions are a secondary
+editing burden. Disjoint subdivision is distinct from overlapping masks that assign the same ground
+to several plots, which still require resolution.
 
-1. Define the annotation unit on imagery: residential compounds, visible land-use plots and their
-   outer divisions, with rules for internal garden/farm subdivisions, multi-building compounds,
-   empty plots and unresolved open land. Record multiple plausible interpretations where necessary.
-   The precise granularity is to be frozen before an experiment, not inferred from model outputs.
+The first bounded image-only diagnostic below is complete. The broader work remains, before
+further model tuning or rental:
+
+1. Annotate discernible physical/use divisions and areas that must remain separated in the imagery.
+   Accept finer garden, courtyard, house and field subdivisions within a larger enclosure; an exact
+   compound count is not required. Record ambiguous/occluded boundaries and multiple plausible
+   subdivisions separately. Freeze annotation rules and matching tolerances before an experiment.
 2. Create a small human-reviewed imagery benchmark across independent target settlements,
    prioritizing African/Asian villages and growth edges and retaining Croatian diagnostic controls.
    Label visible divisions, plausible plot groupings and ambiguous/occluded portions separately.
@@ -40,29 +49,90 @@ Proposed next work, before further model tuning or rental:
    cadastral spike does not settle performance on this reframed target. Reuse existing saved maps
    only where the image/crop/recipe are compatible; do not silently apply old cadastral gates to
    choose the new winner. Freeze the actual model/checkpoint, prompts and output handling per trial.
-5. Reconstruct plots with shared edges and larger surrounding context. Permit multiple buildings
-   in one compound and plots with no building; use roads, tracks, entrances and plausible access as
-   soft contextual evidence, not a requirement that every polygon touches a mapped road. Resolve
-   overlapping proposals, joins across crop edges and small-region cleanup against visible evidence.
-   Leave unresolved ground unassigned or explicitly uncertain rather than inventing a supported
-   boundary. Test whether building-per-seed and the fixed 120 m² merge cause inappropriate splits
-   or joins before retaining them in a new recipe.
-6. Evaluate image-supported boundary precision/recall, unnecessary divisions and merges,
-   building cuts/grouping, valid shared-edge geometry, confident coverage and human editing effort
-   against the new annotations. Report ambiguous cases and uncovered area; geometric validity or a
-   visually tidy tiling alone does not establish plausible plots. Cadastral overlap remains a
-   secondary diagnostic where available. Keep held-out settlements for generalization evidence.
+5. Reconstruct a fine-grained, non-overlapping partition with shared edges and larger surrounding
+   context. Preserve supported candidate divisions; require evidence before removing a divider to
+   join regions. Use roads, tracks, entrances and plausible access as soft contextual evidence, not
+   a requirement that every polygon touches a mapped road. Resolve overlaps and crop joins without
+   silently erasing a real separation. Explicitly compare removal of the automatic 120 m² merge:
+   small regions alone are not an error under this product objective. Building count does not fix
+   plot count, and common ownership must not be inferred from a proposed grouping. Leave unresolved
+   ground unassigned or explicitly uncertain rather than force a confident join or division.
+6. Make false merges across annotated real divisions the primary error, measured on the final
+   polygons, alongside recall of visible boundaries. Report how often annotated neighbouring areas
+   are joined and the area affected. Boundary-length recall alone is insufficient: a short gap can
+   connect two otherwise well-outlined plots. Track excess subdivisions, unsupported edge length,
+   building cuts, overlaps, geometric validity, covered area and editing effort as secondary checks.
+   Select an operating point that emphasizes preventing false merges while bounding fragmentation;
+   freeze any numeric cost weights/thresholds before scoring instead of inventing an error ratio.
+   An arbitrary pixel grid must not win through perfect separation. Report abstentions/uncertainty
+   and whole-settlement variation. Cadastral overlap remains secondary; retain held-out settlements.
 
 Candidate application output is an inferred, editable plot layer with imagery/model provenance and
 boundary support/uncertainty, separate from sourced cadastral records and ownership. This is a
-proposed implementation direction; no runtime fallback, new benchmark, model change or training
-run has been implemented or evaluated under this product contract yet.
+proposed runtime direction. An offline agent-draft annotation/scoring diagnostic and exact-cell
+geometry candidate are now implemented and evaluated below; no runtime fallback, human-reviewed
+target-settlement benchmark, model change or new training run has been delivered under this contract.
 
 Research supports separating visibility from registration: [CadastreVision](https://doi.org/10.1016/j.isprsjprs.2024.08.005)
 explicitly distinguishes visible and non-visible cadastral boundaries. [SAM 3](https://github.com/facebookresearch/sam3)
 supports concept and visual prompting and returns instance masks; using those masks as plot proposals
 still requires a grouping and reconstruction policy. Neither source establishes performance in our
 target villages or makes arbitrary segmentation equivalent to plausible physical plots.
+
+The [CadastreVision repository](https://github.com/jeroengrift/cadastrevision), inspected 2026-10-19,
+provides benchmark-preparation and cadastral/topographic overlap-analysis workflows in FME, plus
+sample extents and dataset links. Its overlap analysis is directly relevant to identifying which
+cadastral lines have physical support. It is a research/data preparation resource, not an already
+integrated village plot segmenter. Its README flags unpublished 8 cm imagery and classified-reference
+outputs; actual availability must be checked at the linked data release before depending on them.
+
+## Completed image-only diagnostic (2026-10-19)
+
+**Done; no merge-policy or model promotion.** Frozen 27 separation probes plus nine same-surface
+checks on the nine existing diagnostic images, before viewing compared polygons. All labels are
+agent-draft, Croatian development evidence; no African/Asian or population-level validation claim.
+All 27 saved control polygon collections exactly reproduced. The original contour geometry was
+invalid in 18/27 controls and 23/27 no-small-region-merge outputs, leaving only four valid matched
+pairs. Invalid outputs were retained unscored.
+
+A separately frozen exact-cell construction then rebuilt the unchanged region rasters: all 54
+outputs valid, area preserved, no positive-area overlap beyond numerical tolerance, and every cell
+centre recovered its original label. Comparing the two merge settings with this common geometry
+contract produced **the same six joins / 81 separation evaluations**, zero uncovered/ambiguous pairs,
+and zero splits / 27 same-surface evaluations. Removing the merge added 84 features (774 → 858)
+but fixed none of the sampled misses. The six failures occur at three distinct field/garden
+divisions; two observations already share one learned interior seed before watershed.
+
+Keep the exact-cell constructor as the offline geometry candidate for the next boundary/seed
+comparison. Investigate upstream separation with all nine images retained, and add independent
+human-reviewed target settlements before tuning for the product. Do not infer that all small-region
+merging is harmless, or that these sparse probes measure full boundary recall. Historical
+reconstruction/training/scoring sources remain unchanged. No training/inference/rental was needed.
+
+Evidence, 27 targeted headless unit tests, and review sheets: [diagnostic report](studies/visible-divisions-v1.md),
+[frozen annotations/protocol](annotations/README.md), [tracked receipt](studies/visible-divisions-v1.json).
+
+## Completed marker/surface diagnostic (2026-10-19)
+
+The frozen 2×2 comparison retained all nine images and three saved model seeds: native or eroded-core
+markers, each with distance or boundary flooding. All 108 exact-cell outputs passed geometry checks;
+all 27 controls exactly reproduced. Core markers reduced false joins from six to four, both gains in
+seed 1. Core/distance lost unique assignment on one separation pair; core/boundary retained all
+separation pairs but made one same-surface pair ambiguous. Native/boundary fixed one join and created
+another. Ambiguities are shared-edge contacts, retained under the frozen scorer, not area overlaps.
+
+No candidate is promoted. Marker admission remains the more useful lead: a shared starting marker
+still bridges one crop divider, and both tree-row field anchors remain unseeded under every recipe.
+Core admission also adds 148 features and substantially more edges with low predicted-boundary
+support; physical support must be reviewed independently of those model scores. Complete per-seed
+changes, secondary checks, visual diagnosis and reproduction: [evidence](studies/visible-boundary-v1.md).
+
+A [pending human-review packet](annotations/target-review-v1.json) now contains five image-only crops
+from three official OpenAerialMap records in Mozambique and Nepal, with source/crop hashes, dates,
+resolution and licence attribution. The crops show housing, enclosures and open/cultivated ground.
+They are purposive, geographically limited and unlabelled; they are not five independent villages
+or an evaluation holdout. Human annotation, settlement suitability review and geographic role
+assignment remain necessary before prediction comparison. No new training, inference or rental.
 
 ## Product priority: suburban and village communities
 

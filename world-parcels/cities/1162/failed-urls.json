@@ -1,0 +1,13 @@
+[
+  {
+    "url": "https://www.comune.genova.it/tutti-gli-argomenti/cartografia/geoservizi"
+  },
+  {
+    "url": "https://wfs.cartografia.agenziaentrate.gov.it/inspire/wfs/owfs01.php?SERVICE=WFS&REQUEST=GetCapabilities&VERSION=2.0.0",
+    "reason": "403"
+  },
+  {
+    "url": "https://wfs.cartografia.agenziaentrate.gov.it/inspire/wfs/owfs01.php?language=ita&SERVICE=WFS&VERSION=2.0.0&TYPENAMES=CP%3ACadastralParcel&SRSNAME=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A6706&BBOX=44.4174972269902%2C8.92080513587392%2C44.4176972269902%2C8.92100513587392%2Curn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A6706&REQUEST=GetFeature&COUNT=3&PROPERTYNAME=CP%3AinspireId%2CCP%3Ageometry",
+    "reason": "403"
+  }
+]

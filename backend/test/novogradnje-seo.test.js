@@ -1,10 +1,21 @@
 // The Novogradnje catalogue page must render complete search and social-preview metadata, with JSON-LD that places it under zagreb.lol.
 import { describe, it, expect } from 'vitest';
 import { renderPublicPage, structuredData } from '../routes/novogradnje.js';
+import * as cheerio from 'cheerio';
 
 const meta = (html, key) => html.match(new RegExp(`<meta[^>]*(?:name|property)="${key}"[^>]*content="([^"]*)"`))?.[1];
 
 describe('novogradnje search metadata', () => {
+    it('renders Novogradnje branding without the retired notes or parcel explanation', async () => {
+        const html = await renderPublicPage({ catalogue: { projects: [] } });
+        expect(html).toContain('<a class="brand" href="/novogradnje/" aria-label="Novogradnje — početna"><img class="brand-icon" src="/novogradnje/favicon.svg" alt=""><span>Novogradnje</span></a>');
+        expect(html).toContain('<a class="brand" href="https://zagreb.lol/"><span>zagreb.lol</span></a>');
+        expect(html).not.toContain('brand-dot');
+        expect(html).not.toContain('Prikazujemo samo podatke koji su poznati.');
+        expect(html).not.toContain('izgradivost parcele');
+        expect(html).not.toContain('Detalji novogradnji u Zagrebu');
+    });
+
     it('renders the catalogue head with robots, share image details and a zagreb.lol breadcrumb', async () => {
         const html = (await renderPublicPage({ catalogue: { projects: [] } })).split('</head>')[0];
         const title = html.match(/<title>([^<]+)<\/title>/)[1];
@@ -21,9 +32,23 @@ describe('novogradnje search metadata', () => {
         expect(page.breadcrumb.itemListElement.map(c => c.item)).toEqual(['https://zagreb.lol/', 'https://zagreb.lol/novogradnje/']);
     });
 
+    it('serves the same top back navigation and compact apartment heading before scripts run', async () => {
+        const project={name:'Projekt A',url:'/novogradnje/zgrade/projekt-a/',address:'Ulica 1',apartments:[],sources:[]};
+        const apartment={id:'a1',label:'Stan A1',url:`${project.url}stanovi/a1/`};
+        for(const selected of [null,apartment]){
+            const $=cheerio.load(await renderPublicPage({catalogue:{projects:[]},project,apartment:selected}));
+            const card=$('#detail > article');
+            expect(card.children().first().is('nav.detail-breadcrumb')).toBe(true);
+            expect(card.find('nav a').map((_i,a)=>$(a).attr('href')).get()).toEqual(selected?['/novogradnje/',project.url]:['/novogradnje/']);
+            expect(card.hasClass('plan-detail')).toBe(Boolean(selected));
+            expect(card.find('.detail-head h1.detail-title')).toHaveLength(1);
+            expect($('body').hasClass('detail-page')).toBe(true);
+        }
+    });
+
     it('extends the breadcrumb through the project to the apartment on deep pages', () => {
-        const project = { name: 'Primjer 12', url: '/novogradnje/zgrada/primjer-12-abc/', address: 'Primjer 12', apartments: [] };
-        const apartment = { label: 'Stan A1', url: '/novogradnje/zgrada/primjer-12-abc/stan/a1/' };
+        const project = { name: 'Primjer 12', url: '/novogradnje/zgrade/primjer-12-abc/', address: 'Primjer 12', apartments: [] };
+        const apartment = { label: 'Stan A1', url: '/novogradnje/zgrade/primjer-12-abc/stanovi/a1/' };
         const ld = structuredData({ projects: [] }, project, apartment, { name: 'Stan A1 · Primjer 12', description: 'Opis.' });
         const page = ld['@graph'].find(node => node['@type'] === 'WebPage');
         expect(page.url).toBe(`https://zagreb.lol${apartment.url}`);

@@ -1,0 +1,9 @@
+[
+  {
+    "url": "https://dhule.gov.in/en/service/land-records/"
+  },
+  {
+    "url": "https://indianopenmaps.com/not-so-open/cadastrals/maharashtra/mrsac/{z}/{x}/{y}.pbf",
+    "reason": "Held before qualification: Parcel tile fragments do not close across a tile edge."
+  }
+]

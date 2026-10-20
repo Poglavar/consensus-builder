@@ -1,0 +1,23 @@
+[
+  {
+    "url": "https://rbgeo.riobranco.ac.gov.br/server/rest/services/Hosted/Lotes_Cadastro_Imobili%C3%A1rio/FeatureServer/0"
+  },
+  {
+    "url": "https://rbgeo.riobranco.ac.gov.br/server/rest/services/Hosted/Lotes_Cadastro_Imobili%C3%A1rio/FeatureServer/0?f=pjson"
+  },
+  {
+    "url": "https://rbgeo.riobranco.ac.gov.br/server/rest/services/Hosted/Lotes_Cadastro_Imobili%C3%A1rio/FeatureServer/0/query?where=1%3D1&outFields=fid&returnGeometry=true&geometry=-67.8225774693582%2C-9.96802304321607&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&outSR=4326&f=geojson&resultRecordCount=3"
+  },
+  {
+    "url": "https://rbgeo.riobranco.ac.gov.br/server/rest/services/Hosted/Lotes_Cadastro_Imobili%C3%A1rio/FeatureServer/0/query"
+  },
+  {
+    "url": "https://rbgeo.riobranco.ac.gov.br/server/rest/services/Im%C3%B3veis_com_geo/MapServer?f=pjson"
+  },
+  {
+    "url": "https://www.ac.gov.br/servico/cadastramento-de-imovel"
+  },
+  {
+    "url": "https://receita.riobranco.ac.gov.br/"
+  }
+]

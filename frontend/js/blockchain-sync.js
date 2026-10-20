@@ -132,45 +132,6 @@
     }
 
     /**
-     * Find local proposal by parent parcel IDs
-     */
-    function findLocalProposalByParcels(parcelIds) {
-        if (!parcelIds || !Array.isArray(parcelIds) || parcelIds.length === 0) {
-            return null;
-        }
-
-        if (typeof global.proposalStorage === 'undefined' ||
-            typeof global.proposalStorage.getAllProposals !== 'function') {
-            return null;
-        }
-
-        const allProposals = global.proposalStorage.getAllProposals();
-        const normalizedSearchIds = canonicalCadastreParcelIds(parcelIds).map(id =>
-            typeof global.normalizeParcelId === 'function'
-                ? global.normalizeParcelId(id)
-                : id.toString()
-        );
-
-        return allProposals.find(proposal => {
-            const proposalParcelIds = Array.isArray(proposal.cadastreParcelIds)
-                ? proposal.cadastreParcelIds
-                : [];
-
-            if (proposalParcelIds.length !== normalizedSearchIds.length) {
-                return false;
-            }
-
-            const normalizedProposalIds = proposalParcelIds.map(id =>
-                typeof global.normalizeParcelId === 'function'
-                    ? global.normalizeParcelId(id)
-                    : id.toString()
-            );
-
-            return normalizedSearchIds.every(id => normalizedProposalIds.includes(id));
-        });
-    }
-
-    /**
      * Parse contract status to string
      */
     function parseContractStatus(statusCode) {
@@ -183,7 +144,7 @@
     /**
      * Create proposal from chain data
      */
-    function createProposalFromChainData({ chainId, contractAddress, tokenId, onchainData, owner }) {
+    function createProposalFromChainData({ chainId, contractAddress, tokenId, onchainData, owner, observedAt = new Date().toISOString() }) {
         const [parcelIds, isConditional, imageURI, acceptancePossible, status,
                ethBalance, tokenBalance, acceptanceCount, expiryTimestamp, expiringPercentage] = onchainData;
 
@@ -191,6 +152,11 @@
         const statusStr = parseContractStatus(status);
         const cadastreParcelIds = canonicalCadastreParcelIds(parcelIds);
 
+        const chainRef = { chainType: 'evm', chainId: normalizeChainId(chainId), contract: contractAddress.toLowerCase(), tokenId: tokenId.toString() };
+        const lifecycleEvidence = global.ProposalLifecycleEvidence?.projectLifecycleEvidence({
+            lifecycleStatus: statusStr,
+            chainRead: { status: statusStr, observedAt, chainRef }
+        }).lifecycleEvidence;
         return {
             proposalId,
             cadastreParcelIds,
@@ -200,6 +166,7 @@
             type: 'Purchase',
             proposalMainType: 'Purchase',
             lifecycleStatus: statusStr,
+            ...(lifecycleEvidence ? { lifecycleEvidence } : {}),
             acquisitionStrategy: isConditional ? 'conditional' : 'partial',
             isMinted: true,
             nft: {
@@ -226,7 +193,7 @@
     /**
      * Update existing proposal with chain data
      */
-    function updateProposalWithChainData(proposal, { chainId, contractAddress, tokenId, onchainData, owner }) {
+    function updateProposalWithChainData(proposal, { chainId, contractAddress, tokenId, onchainData, owner, observedAt = new Date().toISOString() }) {
         const [parcelIds, isConditional, imageURI, acceptancePossible, status,
                ethBalance, tokenBalance, acceptanceCount, expiryTimestamp, expiringPercentage] = onchainData;
 
@@ -266,11 +233,14 @@
         // Update the LIFECYCLE status only. statusStr is the on-chain ProposalStatus enum
         // (Active/Executed/Cancelled/Expired) — a marketplace phase, NOT a map-application state.
         // It must NEVER touch `applied`, or every chain poll would silently un-apply a road (the
-        // exact bug the status split fixes). The legacy `status` is kept mirrored for un-repointed
-        // readers during the transition.
-        if (statusStr !== 'Unknown' && proposal.lifecycleStatus !== statusStr) {
-            proposal.lifecycleStatus = statusStr;
-        }
+        // exact bug the status split fixes). No application status alias is written.
+        proposal.lifecycleStatus = statusStr;
+        const chainRef = { chainType: 'evm', chainId: normalizeChainId(chainId), contract: contractAddress.toLowerCase(), tokenId: tokenId.toString() };
+        const lifecycleEvidence = global.ProposalLifecycleEvidence?.projectLifecycleEvidence({
+            lifecycleStatus: statusStr,
+            chainRead: { status: statusStr, observedAt, chainRef }
+        }).lifecycleEvidence;
+        if (lifecycleEvidence) proposal.lifecycleEvidence = lifecycleEvidence;
 
         // Update acquisition strategy
         if (proposal.acquisitionStrategy !== (isConditional ? 'conditional' : 'partial')) {
@@ -363,6 +333,10 @@
                 throw new Error(`No provider available`);
             }
 
+            if (BigInt((await provider.getNetwork()).chainId) !== BigInt(chainId)) {
+                throw new Error('Wallet network does not match the proposal reference.');
+            }
+
             // Create contract instance
             const contract = new global.ethers.Contract(
                 contractAddress,
@@ -372,6 +346,7 @@
 
             // Fetch proposal data
             const onchainData = await contract.getProposal(tokenId);
+            const observedAt = new Date().toISOString();
             let owner = null;
 
             try {
@@ -382,16 +357,10 @@
 
             const chainProposalId = buildChainProposalId(chainId, contractAddress, tokenId);
 
-            // Check if we have this proposal locally
-            let localProposal = null;
-            if (global.proposalStorage && typeof global.proposalStorage.getProposal === 'function') {
-                localProposal = global.proposalStorage.getProposal(chainProposalId);
-            }
-
-            // If not found by chain ID, try to find by parent parcel IDs
-            if (!localProposal && onchainData && onchainData[0]) {
-                localProposal = findLocalProposalByParcels(onchainData[0]);
-            }
+            // Shared land is a grouping relation, never chain proposal identity.
+            const localProposal = global.ChainProposalRef.findByReference(
+                global.proposalStorage?.getAllProposals?.() || [],
+                { chainType: 'evm', chainId: String(chainId), contract: contractAddress, tokenId: String(tokenId) });
 
             if (localProposal) {
                 // Update existing proposal
@@ -400,7 +369,8 @@
                     contractAddress,
                     tokenId,
                     onchainData,
-                    owner
+                    owner,
+                    observedAt
                 });
 
                 // Save updated proposal
@@ -419,7 +389,8 @@
                     contractAddress,
                     tokenId,
                     onchainData,
-                    owner
+                    owner,
+                    observedAt
                 });
 
                 // Add to storage

@@ -1,0 +1,10 @@
+[
+  {
+    "url": "https://www.edogis.org/",
+    "reason": "official indexed result; direct curl TLS internal error"
+  },
+  {
+    "url": "https://edostate.gov.ng/ease-of-doing-business-processes-in-edo-state/",
+    "reason": "403"
+  }
+]

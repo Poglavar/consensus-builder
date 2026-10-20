@@ -1,0 +1,107 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "1542",
+  "name": "Oakland, United States",
+  "point": [
+    37.7460795032621,
+    -122.171539055455
+  ],
+  "bindings": [
+    {
+      "appCityId": "oakland",
+      "runtimeConfig": {
+        "id": "oakland",
+        "label": "Oakland, United States",
+        "currency": {
+          "locale": "en-US",
+          "code": "USD"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            37.7460795032621,
+            -122.171539055455
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            37.7460795032621,
+            -122.171539055455
+          ],
+          "fallbackDataset": [
+            -122.171539055455,
+            37.7460795032621
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "us-ca-oakland-parcels",
+          "idPrefix": "US-CA-OAK-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 3,
+          "attribution": "<a href=\"https://gismaps.oaklandca.gov/oaklandgis/rest/services/Parcel/MapServer/0\">City of Oakland GIS parcels</a> · adapted"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "us-ca-oakland-parcels",
+      "adapter": "arcgis",
+      "endpoint": "https://gismaps.oaklandca.gov/oaklandgis/rest/services/Parcel/MapServer/0",
+      "idField": "APN_1",
+      "idType": "string",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "US-CA-OAK-",
+      "outFields": [
+        "OBJECTID",
+        "APN_1"
+      ],
+      "pageSize": 1000,
+      "maxFeatures": 5000,
+      "maxBboxKm2": 25,
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "name": "City of Oakland GIS parcels",
+      "countryCode": "US",
+      "metricSrid": 32610,
+      "cityIds": [
+        "oakland"
+      ],
+      "operator": "City of Oakland GIS; county parcel boundaries",
+      "catalogueUrl": "https://gismaps.oaklandca.gov/oaklandgis/rest/services/Parcel/MapServer/0",
+      "licenceNote": "Public municipal GIS layer; publisher survey and legal-boundary limitations informational.",
+      "scope": "203 distinct City of Oakland GIS parcel references verified through complete object-ID manifests across thirteen bounded cells around the ranked WUP locator, forced three-row paging, all 203 fresh APN_1 geometry reads, explicit absence, footprint and binding. Independent GEOS audit in EPSG:32610 found all 203 geometries valid and nonempty, with no duplicate geometry, sampled overlap above 0.01 m² or operation errors. Source describes county parcels clipped to Oakland limits; citywide completeness, current legal boundaries and permanent native-key uniqueness are not inferred.",
+      "attribution": "City of Oakland GIS · county parcels clipped to city"
+    }
+  ]
+}

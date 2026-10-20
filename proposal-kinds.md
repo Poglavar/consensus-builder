@@ -1,9 +1,9 @@
 # Proposal kinds: owner deal, owner vote, community vote
 
-Plan for making the app usable by NGOs and neighbourhood organisers: who decides a proposal and
-whether it binds becomes a choice made at publish time, and a community vote whose result an NGO
-reports, signed with a wallet its own website lists. Written 2026-10-17 after the live organiser
-UX audit; living document, update it as milestones finish.
+Current contract and remaining plan for proposals by owners, NGOs and neighbourhood organisers.
+Decision kind is chosen at publication. The three kinds, publish controls and money validation
+are implemented; community-result reporting, its DID verification and sponsorship remain planned.
+Started 2026-10-17 after the organiser UX audit; current-contract review: 2026-10-19.
 
 ## Vocabulary
 
@@ -12,18 +12,25 @@ UX audit; living document, update it as milestones finish.
 - **Kind**: who decides and whether it binds. Chosen only when a record is published (uploaded or
   minted), stored as metadata. Any design can have any kind.
 
-| Kind | Who decides | Binding | Money | Today |
+| Kind | Who decides | Binding in the app | Money | Current record behavior |
 |---|---|---|---|---|
-| **Owner deal** | parcel owners accept | yes | offer/escrow | the default path |
-| **Owner vote** | parcel owners vote | no | none | inferred from the design, EVM only |
-| **Community vote** | residents, counted by an NGO that reports the result | no | none | does not exist |
+| **Owner deal** | parties under the proposal's owner/approval rules | yes | may carry offer/escrow terms | explicit `owner-deal`; also the read default when kind is missing |
+| **Owner vote** | owners under the proposal's voting rules | no | none | explicit `owner-vote`, independent of the design |
+| **Community vote** | participants through an organiser | no | none | explicit `community-vote`, preselected at publication; reporting integration remains planned |
 
 Owner deal has two directions:
 
 - **Offer to owners**: the proposer offers, the owners accept, the proposer funds.
-- **Owner's sale offer**: the owner offers their own parcels; the owner's acceptance is recorded at
-  creation, a buyer funds it (today's `ownership-transfer-from-me`, `create.js:1073`,
-  `isProposalOpenSaleOffer` in `lifecycle.js:10`). Keeps its reduced terms (expiry only).
+- **Owner's sale offer**: the proposer declares a sale offer concerning their land. Creating it
+  supplies no owner acceptance records or proof of title. New offers start unfunded and show
+  “Awaiting funding”; any later consent or execution needs its own evidence. The current predicate
+  recognizes goal `ownership-transfer-from-me`, role `owner-offer`, or nested transfer direction
+  `from-me` (`ProposalKind.isOwnerSaleOffer`). It keeps its reduced terms (expiry only).
+
+The decision kind and a structure's nested `structureProposal.kind` are separate classifications.
+For example, a station can be a `community-vote` while its structure category is `station`.
+The archive preserves both. See [vocabulary.md](vocabulary.md) for lifecycle, consent and execution
+evidence; none of these record types establishes physical completion or registered ownership.
 
 ## Decisions (user, 2026-10-17)
 
@@ -52,29 +59,32 @@ Owner deal has two directions:
     move its consent hash, which owners' signed decisions bind to. A record without a kind reads as
     an owner deal instead (`ProposalKind.kindOf`).
 
-## What changes in the model
+## Current model
 
-**Today** the vote kind is inferred, not chosen: `isVoteProposal` (`frontend/js/proposals/lifecycle.js:262`)
-and the create path (`create.js:937`) treat a proposal as a vote only when it changes no ownership and
-no parcels (`facets.ownership === 'no-change' && facets.parcels === 'as-is'`). So a park drawn over a
-car park's parcel can never be a vote; it is forced into the binding path and gets a random offer
-(`dialog-create.js:1498`, 1 to 1,000,000).
+Before the 2026-10-17 implementation, vote status was inferred from unchanged ownership and parcel
+facets, and the create dialog supplied a random offer. That path has been removed. Facets describe
+the intended design effects; they do not select who decides.
 
-**New**: `proposal.kind` ∈ `owner-deal` | `owner-vote` | `community-vote`, plus `owner-deal`'s
-`direction` (`to-owners` | `owner-sale`). Rules:
+`proposal.kind` is `owner-deal`, `owner-vote`, or `community-vote`. The sale direction uses the
+existing goal/role/nested-direction predicate above; there is no new root `direction` enum.
+[Executable definition](frontend/js/proposals/proposal-kind.js). Rules:
 
 - `isVoteProposal` reads `kind` only; the facet inference is removed (no fallback path).
 - The kind is part of the published commitment (consent/effect hash): an owner who accepted a
   binding deal can never see it turn into a vote. Changing the kind of a published record is a new
   proposal (fork), like any other edit of a published record.
-- Validation per kind: owner and community votes carry no offer, deposit, budget or escrow; owner
-  deal needs terms; owner's sale offer needs the proposer to be the owner of every parcel.
+- Validation per kind rejects positive offer or budget values and enabled deposits on either vote
+  kind. A sale offer must be an owner deal. Ownership/representation evidence is checked by the
+  applicable approval path, separately from kind validation.
 - Local drafts have no kind. A draft is published through the kind step, which preselects
   Community vote (decision 7).
 - A community vote without a result reporter is valid: it is a shared design that asks for
   nothing binding and shows no result.
 
-## The publish step (UI)
+## The publish step (UI, implemented controls and planned additions)
+
+Kind selection and kind-specific terms are implemented. The schematic below includes the planned
+reporter and participation-link fields; it is not a claim that the DID/result integration exists.
 
 One page: the existing create/edit proposal dialog, with the kind chosen first. Not a multi-step
 wizard, because there is one decision and everything after it is a short form. The same dialog
@@ -109,7 +119,7 @@ slow and hides validation errors on screens already left.
 - Badges: a kind badge on proposal list rows, details and the share page; "Owner deal" also shows
   its direction.
 
-## Community vote result
+## Planned community vote result
 
 ### Who may report: `did:web`
 
@@ -182,7 +192,7 @@ attributed: *"greenzagreb.org ✓ says: …"*. `url` is optional.
 - The NGO can post again as the count grows; the newest valid result per attester is shown, older
   ones stay visible as history.
 
-## Shareable proposal page
+## Shareable proposal page — existing route and planned additions
 
 The link an NGO sends through its own channels (newsletter, WhatsApp, Facebook):
 
@@ -194,7 +204,7 @@ The link an NGO sends through its own channels (newsletter, WhatsApp, Facebook):
   pictures (the existing dividers work, `dividers.md`), the kind badge, and for a community vote
   the latest reported statement and one button, "Take part", linking to the NGO's own URL.
 
-## Paying for publishing
+## Paying for publishing — planned sponsorship
 
 The proposer's wallet signs and pays, as every Solana write does today (`feePayer: wallet` across
 `frontend/js/solana/*`). There is no sponsorship yet. For devnet/testnet demos, the simplest
@@ -205,6 +215,9 @@ would hide the cost entirely but is more machinery; only if the drip proves too 
 mainnet.
 
 ## Milestones
+
+The dated status rows record implementation at that time. The undated milestone rows retain the
+original scope and acceptance criteria; they are not a description of current runtime behavior.
 
 | # | Milestone | Main files | Tests |
 |---|---|---|---|

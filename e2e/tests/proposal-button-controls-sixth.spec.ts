@@ -5,8 +5,9 @@ import { attachSharedProposalServer, createSharedProposalServer } from '../helpe
 import { connectWalletByConnectorId, injectMockEvmWallet, injectMockSolanaWallet, waitForBlockchainRuntime } from '../helpers/blockchain';
 import { installProposalEvmBoundary, PROPOSAL_EVM_ACCOUNT } from '../helpers/proposal-chain-boundary';
 import { installSolanaExternalBoundary } from '../helpers/solana-external-boundary';
+import { installSolanaProposalAccount } from '../helpers/solana-proposal-account';
 import { sampleParcels } from '../helpers/mocks/parcel-data';
-import { openAndClosePopup } from '../helpers/controls';
+import { openAndClosePopup, selectNativeOption } from '../helpers/controls';
 
 const EVM_WALLET = PROPOSAL_EVM_ACCOUNT;
 const SOLANA_WALLET = '7xKXtg2CWYcy6EH8d9xvPht4JyhV46Lxgq6vN6hS9wZT';
@@ -53,7 +54,7 @@ async function establishLocalProfile(page: import('@playwright/test').Page): Pro
   await expect(page.locator('#welcome-modal')).toBeHidden();
 }
 
-async function installMarketRpcFixture(page: import('@playwright/test').Page, marketExists = true, connectWallet = true): Promise<void> {
+async function installMarketRpcFixture(page: import('@playwright/test').Page, marketExists = true, connectWallet = true, proposalStatus = 0): Promise<void> {
   await page.route('**/markets?*', route => route.fulfill({ json: { contests: [] } }));
   await page.evaluate(({ proposal, wallet, marketExists, connectWallet }) => {
     const w = window as any;
@@ -102,6 +103,11 @@ async function installMarketRpcFixture(page: import('@playwright/test').Page, ma
     w.__proposalMarketRpcEvents = events;
     w.SolanaChainDataLoader.getConnection = () => connection;
   }, { proposal: PROPOSAL_ACCOUNT, wallet: SOLANA_WALLET, marketExists, connectWallet });
+  await installSolanaProposalAccount(page, {
+    proposal: PROPOSAL_ACCOUNT,
+    owner: SOLANA_WALLET,
+    status: proposalStatus,
+  });
 }
 
 test.describe('proposal button controls sixth pass @features', () => {
@@ -156,20 +162,36 @@ test.describe('proposal button controls sixth pass @features', () => {
     const server = createSharedProposalServer();
     server.records.set('7017', {
       id: 7017, proposalId: 'published-server-record-7017', title: 'Downloadable proposal',
-      goal: 'park', lifecycleStatus: 'Active', cadastreParcelIds: [PARCEL_ID], geometry: PARCEL_GEOMETRY,
+      goal: 'park', lifecycleStatus: 'Executed', cadastreParcelIds: [PARCEL_ID], geometry: PARCEL_GEOMETRY,
     });
     await attachSharedProposalServer(page, server);
     await openCity(page);
     await page.evaluate(() => (window as any).i18n.setLanguage('en'));
+    const localIds = await page.evaluate(parcelId => {
+      const store = (window as any).proposalStorage;
+      return [
+        store.addProposal({ proposalId: '7017', title: 'Unrelated numeric local key', goal: 'as-is', lifecycleStatus: 'Active', cadastreParcelIds: [parcelId] }),
+        store.addProposal({ proposalId: 'p-chain-copy', title: 'Unrelated chain token', tokenId: '7017', goal: 'as-is', lifecycleStatus: 'Active', cadastreParcelIds: [parcelId] })
+      ];
+    }, PARCEL_ID);
     await page.locator('#proposals-button').click();
     const list = page.locator('#proposals-sheet .proposal-list-modal');
+    const numericLocalRow = list.locator('.proposal-list-item[data-proposal-id="7017"]');
+    await expect(numericLocalRow).toContainText('Draft');
+    await expect(numericLocalRow.locator('.proposal-meta-number')).toHaveCount(0);
     await list.locator('.proposal-source-btn[data-source="server"]').click();
     const row = list.locator('.proposal-list-item').filter({ hasText: 'Downloadable proposal' });
     await expect(row).toBeVisible();
+    await expect(row.locator('.proposal-download-btn')).toBeEnabled();
+    expect(await page.evaluate(keys => keys.map(key => (window as any).proposalStorage.getProposal(key).lifecycleStatus), localIds))
+      .toEqual(['Active', 'Active']);
     await row.locator('.proposal-download-btn').click();
     await expect(row.locator('.proposal-download-btn')).toBeDisabled();
     await expect.poll(() => page.evaluate(() => (window as any).proposalStorage.getAllProposals()
       .some((proposal: any) => proposal.serverProposalId === '7017' && proposal.title === 'Downloadable proposal'))).toBe(true);
+    await row.getByRole('button', { name: 'Details', exact: true }).click();
+    await expect(page.locator('#proposal-details-panel')).toContainText('Downloadable proposal');
+    expect(await page.evaluate(() => (window as any).proposalStorage.getProposal('7017').title)).toBe('Unrelated numeric local key');
   });
 
   test('create-dialog geometry Edit launches the selected urban-rule geometry tool', async ({ mockApi: page }) => {
@@ -240,7 +262,9 @@ test.describe('proposal button controls sixth pass @features', () => {
     await expect(anchorModal).toBeHidden();
     await create.locator('#createProposalSubmitButton').click();
     const success = page.locator('#proposal-mint-success-modal');
-    await expect(success).toContainText('has been minted!', { timeout: 30000 });
+    await expect(success).toContainText('Proposal minted', { timeout: 30000 });
+    await expect(success).toContainText('Chain: solana / devnet');
+    await expect(success).toContainText('Token/account:');
 
     await page.context().route('https://explorer.solana.com/**', route => route.fulfill({
       status: 200, contentType: 'text/html', body: '<title>Solana explorer boundary</title>',
@@ -251,7 +275,7 @@ test.describe('proposal button controls sixth pass @features', () => {
       await popup.close();
     });
     await Promise.all([
-      success.getByRole('button', { name: 'View on Solana Explorer', exact: true }).click({ noWaitAfter: true }),
+      success.getByRole('button', { name: 'View transaction', exact: true }).click({ noWaitAfter: true }),
       popupHandling,
     ]);
     await success.getByRole('button', { name: 'OK', exact: true }).click();
@@ -276,21 +300,33 @@ test.describe('proposal button controls sixth pass @features', () => {
     await expect.poll(() => page.evaluate(() => (window as any).__proposalEvmBoundary.filter((method: string) => method === 'eth_call').length)).toBeGreaterThan(ethCallsBefore);
   });
 
-  test('proposal list Buy executes an open ownership offer from its row action', async ({ mockApi: page }) => {
+  test('proposal list simulates a purchase without changing its funding or lifecycle filter', async ({ mockApi: page }) => {
     await openCity(page);
     await establishLocalProfile(page);
     const proposalId = await page.evaluate(({ parcelId, geometry }) => (window as any).proposalStorage.addProposal({
       proposalId: 'list-buy-owner-offer', title: 'List purchase action', goal: 'parcelBased', lifecycleStatus: 'Active',
-      offer: 100, cadastreParcelIds: [parcelId], geometry, facets: { ownership: 'third-party' },
+      offer: 100, funded: false, cadastreParcelIds: [parcelId], geometry, facets: { ownership: 'third-party' },
       ownershipTransferProposal: { direction: 'from-me', recipientScope: 'any', status: 'open' },
     }), { parcelId: PARCEL_ID, geometry: PARCEL_GEOMETRY });
     await page.locator('#proposals-button').click();
     const row = page.locator(`#proposals-sheet .proposal-list-item[data-proposal-id="${proposalId}"]`);
     const buy = row.locator('.proposal-buy-btn');
-    await expect(buy).toBeVisible();
+    await expect(row).toContainText('Awaiting funding');
+    await page.locator('#proposals-sheet .proposal-filters-toggle').click();
+    await selectNativeOption(page.locator('#proposal-filter-lifecycle'), 'awaiting-funding');
+    await expect(buy).toHaveText('Simulate purchase');
+    await expect(buy).toHaveAttribute('title', /No payment is made/);
     await buy.click();
-    await expect.poll(() => page.evaluate(id => (window as any).proposalStorage.getProposal(id)?.lifecycleStatus, proposalId)).toBe('Executed');
+    await expect.poll(() => page.evaluate(id => !!(window as any).proposalStorage.getProposal(id)?.localPurchaseSimulation, proposalId)).toBe(true);
+    await page.locator('#proposals-button').click();
+    await expect(page.locator('#proposal-filter-lifecycle')).toHaveValue('awaiting-funding');
+    await expect(row).toContainText('Awaiting funding');
+    await expect(row.locator('.proposal-purchase-simulation')).toHaveText('Purchase simulated in this browser');
     await expect(row.locator('.proposal-buy-btn')).toHaveCount(0);
+    expect(await page.evaluate(id => {
+      const p = (window as any).proposalStorage.getProposal(id);
+      return { lifecycle: p.lifecycleStatus, funded: p.funded, direction: p.ownershipTransferProposal.direction };
+    }, proposalId)).toEqual({ lifecycle: 'Active', funded: false, direction: 'from-me' });
   });
 
   test('the owner-row Vote yes and Rescind controls update the vote record', async ({ mockApi: page }) => {
@@ -337,11 +373,11 @@ test.describe('proposal button controls sixth pass @features', () => {
     await expect.poll(() => page.evaluate(({ id, parcelId }) => (window as any).proposalStorage.getProposal(id)?.ownerAcceptances[parcelId]?.acceptedOwnerKeys?.length, { id: proposalId, parcelId: PARCEL_ID })).toBe(0);
   });
 
-  test('Accept ownership transfer Fund submits and dismisses its confirmation dialog', async ({ mockApi: page }) => {
+  test('a seller funding flag does not create a payment amount or action', async ({ mockApi: page }) => {
     await openCity(page);
     const proposalId = await page.evaluate(({ parcelId, geometry }) => (window as any).proposalStorage.addProposal({
       proposalId: 'accept-transfer-submit-control', title: 'Accept transfer submission', goal: 'ownership-transfer-from-me',
-      lifecycleStatus: 'Active', offer: 100, cadastreParcelIds: [parcelId], geometry,
+      lifecycleStatus: 'Active', offer: 100, offerCurrency: 'EUR', funded: true, cadastreParcelIds: [parcelId], geometry,
       ownershipTransferProposal: { direction: 'from-me', recipientScope: 'any', status: 'open' },
     }), { parcelId: PARCEL_ID, geometry: PARCEL_GEOMETRY });
     await showProposal(page, proposalId);
@@ -350,11 +386,14 @@ test.describe('proposal button controls sixth pass @features', () => {
     if (await expand.isVisible()) await expand.click();
     const funding = page.locator('#proposal-details-content details[data-proposal-section="funding"]');
     if (!(await funding.evaluate(element => (element as HTMLDetailsElement).open))) await funding.locator(':scope > summary').click();
-    await funding.locator('.offer-boost-button[aria-label="Accept ownership transfer"]').click();
-    const dialog = page.locator('#acceptOwnershipTransferOverlay');
-    await expect(dialog).toBeVisible();
-    await dialog.getByRole('button', { name: 'Fund', exact: true }).click();
-    await expect(dialog).toBeHidden();
+    await expect(funding.locator('.proposal-offer-funding-note')).toHaveText('Funding this offer is not available here.');
+    await expect(funding.locator('.offer-amount')).toHaveText('€100');
+    await expect(funding.getByRole('button', { name: /^(Fund|Accept ownership transfer)$/ })).toHaveCount(0);
+    await expect(funding).not.toContainText('Amount still needed');
+    expect(await page.evaluate(id => {
+      const p = (window as any).proposalStorage.getProposal(id);
+      return { offer: p.offer, funded: p.funded, lifecycle: p.lifecycleStatus };
+    }, proposalId)).toEqual({ offer: 100, funded: true, lifecycle: 'Active' });
   });
 
   test('Open bet from the proposal market opens the transaction-backed bet dialog', async ({ mockApi: page }) => {
@@ -459,7 +498,7 @@ test.describe('proposal button controls sixth pass @features', () => {
     await page.evaluate(() => (window as any).i18n.setLanguage('en'));
     await connectWalletByConnectorId(page, 'solana-phantom');
     await waitForBlockchainRuntime(page, ['SolanaMarketClient', 'SolanaChainDataLoader']);
-    await installMarketRpcFixture(page);
+    await installMarketRpcFixture(page, true, true, 1);
     const proposalId = await page.evaluate(({ parcelId, proposalAccount }) => (window as any).proposalStorage.addProposal({
       title: 'Settle pool action', goal: 'park', lifecycleStatus: 'Executed', cadastreParcelIds: [parcelId], isMinted: true,
       nft: { chain: 'solana-devnet', contract: proposalAccount, tokenId: proposalAccount },

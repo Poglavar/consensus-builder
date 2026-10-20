@@ -1,0 +1,10 @@
+[
+  {
+    "url": "https://bhunaksha.bihar.gov.in/rest/GetMapInstanceMap/getMapInstance",
+    "reason": "405"
+  },
+  {
+    "url": "https://bhunaksha.bihar.gov.in/rest/VillageMapInfo/getVillageList",
+    "reason": "404"
+  }
+]

@@ -45,7 +45,7 @@ function marketAccount({ proposal, stakeMint, vault, yesPool = 0n, noPool = 0n, 
     data.writeUInt8(resolved ? 1 : 0, 120);
     data.writeUInt8(outcome, 121);
     data.writeUInt8(bump, 122);
-    return { data };
+    return { data, owner: new PublicKey(marketClient.constants.PROGRAM_ID) };
 }
 
 function positionAccount({ market, owner, side, amount, claimed = false, bump = 254 }) {
@@ -57,7 +57,7 @@ function positionAccount({ market, owner, side, amount, claimed = false, bump = 
     data.writeBigUInt64LE(amount, 73);
     data.writeUInt8(claimed ? 1 : 0, 81);
     data.writeUInt8(bump, 82);
-    return { data };
+    return { data, owner: new PublicKey(marketClient.constants.PROGRAM_ID) };
 }
 
 function stubbedChain(accountFor) {

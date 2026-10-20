@@ -1,0 +1,5448 @@
+{
+  "annotation_sha256": "0b396045716cca0098ed8275899fdc1e1d6d2261417ee3284ae9d8c6ba191215",
+  "artifacts": {
+    "output/visible-divisions-v1/cell-partition/report.json": {
+      "bytes": 153374,
+      "sha256": "186adb31ce92cdfbf3ff40108a22114c5b84cb7c88d4b985c881beb8b807704c"
+    },
+    "output/visible-divisions-v1/comparison/report.json": {
+      "bytes": 99242,
+      "sha256": "6d366342907621f8cbb4f88ffa1d30aafb40d3f98db3f6224737382d2166d335"
+    },
+    "output/visible-divisions-v1/seed-diagnostic.json": {
+      "bytes": 2191,
+      "sha256": "0d97da6551321286bd2f31e7d888a2b96fea8d03162997c282f8ce88c1469e32"
+    }
+  },
+  "cell_partition": {
+    "rows": [
+      {
+        "cell_verification": {
+          "area_error_m2": 1.4406396076083183e-09,
+          "area_tolerance_m2": 1e-06,
+          "expected_area_m2": 23114.520000080585,
+          "outside_area_m2": 0.0,
+          "overlap_area_m2": 5.820766091346741e-11,
+          "passed": true,
+          "positive_cells": 64207,
+          "round_trip_mismatched_cells": 0
+        },
+        "geometry": {
+          "coverage_fraction": 0.9797210693359986,
+          "covered_area_m2": 23114.520000082026,
+          "false_merge_feature_area_m2": 10578.600000034427,
+          "feature_count": 12,
+          "outside_area_m2": 4.501998773775995e-11,
+          "overlap_excess_area_m2": 1.4551915228366852e-11,
+          "valid": true
+        },
+        "labels_sha256": "e1c59ad7eb061b36592cd32438f36ab069ee28b85fdf3191df9b12f3f1bc3f94",
+        "polygon_sha256": "690848fd8bc11c30e87e49a62c0839fa5c7c189957512c17649752a01ee07775",
+        "probes": [
+          {
+            "a_features": [
+              5
+            ],
+            "b_features": [
+              7
+            ],
+            "id": "S1",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              8
+            ],
+            "b_features": [
+              10
+            ],
+            "id": "S2",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              3
+            ],
+            "b_features": [
+              3
+            ],
+            "id": "S3",
+            "outcome": "joined",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              3
+            ],
+            "b_features": [
+              3
+            ],
+            "id": "C1",
+            "outcome": "joined",
+            "relation": "same_surface"
+          }
+        ],
+        "sample_id": "tile_3022_33074",
+        "seed": 1,
+        "variant": "cell-120m2"
+      },
+      {
+        "cell_verification": {
+          "area_error_m2": 1.4406396076083183e-09,
+          "area_tolerance_m2": 1e-06,
+          "expected_area_m2": 23114.520000080585,
+          "outside_area_m2": 0.0,
+          "overlap_area_m2": 5.820766091346741e-11,
+          "passed": true,
+          "positive_cells": 64207,
+          "round_trip_mismatched_cells": 0
+        },
+        "geometry": {
+          "coverage_fraction": 0.9797210693359986,
+          "covered_area_m2": 23114.520000082026,
+          "false_merge_feature_area_m2": 10578.600000034427,
+          "feature_count": 12,
+          "outside_area_m2": 4.501998773775995e-11,
+          "overlap_excess_area_m2": 1.4551915228366852e-11,
+          "valid": true
+        },
+        "labels_sha256": "e1c59ad7eb061b36592cd32438f36ab069ee28b85fdf3191df9b12f3f1bc3f94",
+        "polygon_sha256": "690848fd8bc11c30e87e49a62c0839fa5c7c189957512c17649752a01ee07775",
+        "probes": [
+          {
+            "a_features": [
+              5
+            ],
+            "b_features": [
+              7
+            ],
+            "id": "S1",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              8
+            ],
+            "b_features": [
+              10
+            ],
+            "id": "S2",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              3
+            ],
+            "b_features": [
+              3
+            ],
+            "id": "S3",
+            "outcome": "joined",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              3
+            ],
+            "b_features": [
+              3
+            ],
+            "id": "C1",
+            "outcome": "joined",
+            "relation": "same_surface"
+          }
+        ],
+        "sample_id": "tile_3022_33074",
+        "seed": 1,
+        "variant": "cell-no-small-region-merge"
+      },
+      {
+        "cell_verification": {
+          "area_error_m2": 5.0240487325936556e-09,
+          "area_tolerance_m2": 1e-06,
+          "expected_area_m2": 20113.559999955793,
+          "outside_area_m2": 0.0,
+          "overlap_area_m2": 1.4551915228366852e-11,
+          "passed": true,
+          "positive_cells": 55871,
+          "round_trip_mismatched_cells": 0
+        },
+        "geometry": {
+          "coverage_fraction": 0.8525238037111508,
+          "covered_area_m2": 20113.559999960824,
+          "false_merge_feature_area_m2": 0.0,
+          "feature_count": 30,
+          "outside_area_m2": 2.091837814077735e-11,
+          "overlap_excess_area_m2": 0.0,
+          "valid": true
+        },
+        "labels_sha256": "30fd1b08dab204e4c9879482701a5be436af592d1997137a4a660af2be2618d7",
+        "polygon_sha256": "8a92d6766cfd7a68427cc4c6fd45eb8c9cc4d99722e1f1150bd06d7a09d3dfa3",
+        "probes": [
+          {
+            "a_features": [
+              24
+            ],
+            "b_features": [
+              6
+            ],
+            "id": "S1",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              1
+            ],
+            "b_features": [
+              0
+            ],
+            "id": "S2",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              0
+            ],
+            "b_features": [
+              13
+            ],
+            "id": "S3",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              0
+            ],
+            "b_features": [
+              0
+            ],
+            "id": "C1",
+            "outcome": "joined",
+            "relation": "same_surface"
+          }
+        ],
+        "sample_id": "tile_2971_33052",
+        "seed": 1,
+        "variant": "cell-120m2"
+      },
+      {
+        "cell_verification": {
+          "area_error_m2": 2.317392500117421e-09,
+          "area_tolerance_m2": 1e-06,
+          "expected_area_m2": 20340.359999955293,
+          "outside_area_m2": 0.0,
+          "overlap_area_m2": 7.275957614183426e-12,
+          "passed": true,
+          "positive_cells": 56501,
+          "round_trip_mismatched_cells": 0
+        },
+        "geometry": {
+          "coverage_fraction": 0.8621368408204108,
+          "covered_area_m2": 20340.35999995761,
+          "false_merge_feature_area_m2": 0.0,
+          "feature_count": 33,
+          "outside_area_m2": 2.1039170405856567e-11,
+          "overlap_excess_area_m2": 0.0,
+          "valid": true
+        },
+        "labels_sha256": "65e49de37881db4a916ceb61fe71793f6c73d31a7a5d3c603d75e0f3b045b3b0",
+        "polygon_sha256": "669ce0d50ee194df1f0e236e4e9dc80653062f8dd7c423ff7a914063f9131330",
+        "probes": [
+          {
+            "a_features": [
+              24
+            ],
+            "b_features": [
+              6
+            ],
+            "id": "S1",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              1
+            ],
+            "b_features": [
+              0
+            ],
+            "id": "S2",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              0
+            ],
+            "b_features": [
+              13
+            ],
+            "id": "S3",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              0
+            ],
+            "b_features": [
+              0
+            ],
+            "id": "C1",
+            "outcome": "joined",
+            "relation": "same_surface"
+          }
+        ],
+        "sample_id": "tile_2971_33052",
+        "seed": 1,
+        "variant": "cell-no-small-region-merge"
+      },
+      {
+        "cell_verification": {
+          "area_error_m2": 5.165929906070232e-09,
+          "area_tolerance_m2": 1e-06,
+          "expected_area_m2": 19390.319999950036,
+          "outside_area_m2": 0.0,
+          "overlap_area_m2": 0.0,
+          "passed": true,
+          "positive_cells": 53862,
+          "round_trip_mismatched_cells": 0
+        },
+        "geometry": {
+          "coverage_fraction": 0.8218688964845937,
+          "covered_area_m2": 19390.319999955194,
+          "false_merge_feature_area_m2": 0.0,
+          "feature_count": 50,
+          "outside_area_m2": -5.6843418860808015e-12,
+          "overlap_excess_area_m2": 1.4551915228366852e-11,
+          "valid": true
+        },
+        "labels_sha256": "e84d1949c882c0d8e525e471ded4ad610f996ee9eba723f5b3bbc4fbdb06c7a5",
+        "polygon_sha256": "c2db7d1b5990d6e9dc5d65a30c9a32910e7779967cf6f69c98dccc8d5dcce821",
+        "probes": [
+          {
+            "a_features": [
+              24
+            ],
+            "b_features": [
+              34
+            ],
+            "id": "S1",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              20
+            ],
+            "b_features": [
+              29
+            ],
+            "id": "S2",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              19
+            ],
+            "b_features": [
+              13
+            ],
+            "id": "S3",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              13
+            ],
+            "b_features": [
+              13
+            ],
+            "id": "C1",
+            "outcome": "joined",
+            "relation": "same_surface"
+          }
+        ],
+        "sample_id": "tile_3005_33040",
+        "seed": 1,
+        "variant": "cell-120m2"
+      },
+      {
+        "cell_verification": {
+          "area_error_m2": 5.0749804358929396e-09,
+          "area_tolerance_m2": 1e-06,
+          "expected_area_m2": 19530.719999949673,
+          "outside_area_m2": 0.0,
+          "overlap_area_m2": 0.0,
+          "passed": true,
+          "positive_cells": 54252,
+          "round_trip_mismatched_cells": 0
+        },
+        "geometry": {
+          "coverage_fraction": 0.8278198242189647,
+          "covered_area_m2": 19530.719999954737,
+          "false_merge_feature_area_m2": 0.0,
+          "feature_count": 61,
+          "outside_area_m2": -6.270539643082884e-12,
+          "overlap_excess_area_m2": 1.8189894035458565e-11,
+          "valid": true
+        },
+        "labels_sha256": "8ffabbe4d3ad6e6a367aef277c6f42aef307bf1d42827cdc2c6f190cab752a69",
+        "polygon_sha256": "6c437d36a3d234138eef2d5887f36362336c0f1d2d5fbad7a592ef67c62873cb",
+        "probes": [
+          {
+            "a_features": [
+              31
+            ],
+            "b_features": [
+              43
+            ],
+            "id": "S1",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              26
+            ],
+            "b_features": [
+              37
+            ],
+            "id": "S2",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              25
+            ],
+            "b_features": [
+              16
+            ],
+            "id": "S3",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              16
+            ],
+            "b_features": [
+              16
+            ],
+            "id": "C1",
+            "outcome": "joined",
+            "relation": "same_surface"
+          }
+        ],
+        "sample_id": "tile_3005_33040",
+        "seed": 1,
+        "variant": "cell-no-small-region-merge"
+      },
+      {
+        "cell_verification": {
+          "area_error_m2": 1.4915713109076023e-10,
+          "area_tolerance_m2": 1e-06,
+          "expected_area_m2": 22525.91999995049,
+          "outside_area_m2": 0.0,
+          "overlap_area_m2": 0.0,
+          "passed": true,
+          "positive_cells": 62572,
+          "round_trip_mismatched_cells": 0
+        },
+        "geometry": {
+          "coverage_fraction": 0.9547729492187437,
+          "covered_area_m2": 22525.91999995034,
+          "false_merge_feature_area_m2": 0.0,
+          "feature_count": 18,
+          "outside_area_m2": 2.5835333872237243e-11,
+          "overlap_excess_area_m2": 0.0,
+          "valid": true
+        },
+        "labels_sha256": "506a6f6cf37e64750ab1e8cb3d915c74c384c41f21c72f7807aa220a15da4e85",
+        "polygon_sha256": "767a1a1ec09798ef60c57a9add378ae9ffa6da21e1e53886668f17270e5dd386",
+        "probes": [
+          {
+            "a_features": [
+              5
+            ],
+            "b_features": [
+              3
+            ],
+            "id": "S1",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              6
+            ],
+            "b_features": [
+              13
+            ],
+            "id": "S2",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              13
+            ],
+            "b_features": [
+              15
+            ],
+            "id": "S3",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              13
+            ],
+            "b_features": [
+              13
+            ],
+            "id": "C1",
+            "outcome": "joined",
+            "relation": "same_surface"
+          }
+        ],
+        "sample_id": "tile_3262_31398",
+        "seed": 1,
+        "variant": "cell-120m2"
+      },
+      {
+        "cell_verification": {
+          "area_error_m2": 1.4915713109076023e-10,
+          "area_tolerance_m2": 1e-06,
+          "expected_area_m2": 22525.91999995049,
+          "outside_area_m2": 0.0,
+          "overlap_area_m2": 0.0,
+          "passed": true,
+          "positive_cells": 62572,
+          "round_trip_mismatched_cells": 0
+        },
+        "geometry": {
+          "coverage_fraction": 0.9547729492187437,
+          "covered_area_m2": 22525.91999995034,
+          "false_merge_feature_area_m2": 0.0,
+          "feature_count": 19,
+          "outside_area_m2": 2.5899282718455652e-11,
+          "overlap_excess_area_m2": 0.0,
+          "valid": true
+        },
+        "labels_sha256": "78a617f9f629bcef54cd626c7a07b3d71516959b6ec1f0466140d2ae1bb1e5e2",
+        "polygon_sha256": "f0dca6d76858121028463896b84da00b084c3d400a0272e9d84f364c8cb2b10e",
+        "probes": [
+          {
+            "a_features": [
+              5
+            ],
+            "b_features": [
+              3
+            ],
+            "id": "S1",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              6
+            ],
+            "b_features": [
+              14
+            ],
+            "id": "S2",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              14
+            ],
+            "b_features": [
+              16
+            ],
+            "id": "S3",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              14
+            ],
+            "b_features": [
+              14
+            ],
+            "id": "C1",
+            "outcome": "joined",
+            "relation": "same_surface"
+          }
+        ],
+        "sample_id": "tile_3262_31398",
+        "seed": 1,
+        "variant": "cell-no-small-region-merge"
+      },
+      {
+        "cell_verification": {
+          "area_error_m2": 2.6266206987202168e-09,
+          "area_tolerance_m2": 1e-06,
+          "expected_area_m2": 20894.39999994616,
+          "outside_area_m2": 0.0,
+          "overlap_area_m2": 4.001776687800884e-11,
+          "passed": true,
+          "positive_cells": 58040,
+          "round_trip_mismatched_cells": 0
+        },
+        "geometry": {
+          "coverage_fraction": 0.8856201171876129,
+          "covered_area_m2": 20894.399999948822,
+          "false_merge_feature_area_m2": 994.6799999974377,
+          "feature_count": 28,
+          "outside_area_m2": -2.5494273359072395e-11,
+          "overlap_excess_area_m2": 2.9103830456733704e-11,
+          "valid": true
+        },
+        "labels_sha256": "df336306be52ab6cc184cf7cde4a611b03ae56e9a8f418d0da4c36e098e81651",
+        "polygon_sha256": "e2677197db7cff8a982a79c1e861383eb92cf31cc6ca56a618e24808beeb4096",
+        "probes": [
+          {
+            "a_features": [
+              20
+            ],
+            "b_features": [
+              20
+            ],
+            "id": "S1",
+            "outcome": "joined",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              20
+            ],
+            "b_features": [
+              21
+            ],
+            "id": "S2",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              12
+            ],
+            "b_features": [
+              2
+            ],
+            "id": "S3",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              20
+            ],
+            "b_features": [
+              20
+            ],
+            "id": "C1",
+            "outcome": "joined",
+            "relation": "same_surface"
+          }
+        ],
+        "sample_id": "tile_3238_31368",
+        "seed": 1,
+        "variant": "cell-120m2"
+      },
+      {
+        "cell_verification": {
+          "area_error_m2": 4.576577339321375e-09,
+          "area_tolerance_m2": 1e-06,
+          "expected_area_m2": 21215.519999945333,
+          "outside_area_m2": 0.0,
+          "overlap_area_m2": 5.093170329928398e-11,
+          "passed": true,
+          "positive_cells": 58932,
+          "round_trip_mismatched_cells": 0
+        },
+        "geometry": {
+          "coverage_fraction": 0.8992309570314433,
+          "covered_area_m2": 21215.51999994989,
+          "false_merge_feature_area_m2": 994.6799999974377,
+          "feature_count": 33,
+          "outside_area_m2": -3.014122285094345e-11,
+          "overlap_excess_area_m2": 9.822542779147625e-11,
+          "valid": true
+        },
+        "labels_sha256": "0e8f472e52b45e54ae0537c6729b6384dfca2f40206dad6332b4db96c632854e",
+        "polygon_sha256": "6eb57965a31299560722b667c0e6c1b02b60d6da475a7c6899079c5bb9db89eb",
+        "probes": [
+          {
+            "a_features": [
+              23
+            ],
+            "b_features": [
+              23
+            ],
+            "id": "S1",
+            "outcome": "joined",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              23
+            ],
+            "b_features": [
+              24
+            ],
+            "id": "S2",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              14
+            ],
+            "b_features": [
+              2
+            ],
+            "id": "S3",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              23
+            ],
+            "b_features": [
+              23
+            ],
+            "id": "C1",
+            "outcome": "joined",
+            "relation": "same_surface"
+          }
+        ],
+        "sample_id": "tile_3238_31368",
+        "seed": 1,
+        "variant": "cell-no-small-region-merge"
+      },
+      {
+        "cell_verification": {
+          "area_error_m2": 1.784064806997776e-08,
+          "area_tolerance_m2": 1e-06,
+          "expected_area_m2": 20496.95999995495,
+          "outside_area_m2": 0.0,
+          "overlap_area_m2": 0.0,
+          "passed": true,
+          "positive_cells": 56936,
+          "round_trip_mismatched_cells": 0
+        },
+        "geometry": {
+          "coverage_fraction": 0.8687744140617442,
+          "covered_area_m2": 20496.959999937117,
+          "false_merge_feature_area_m2": 0.0,
+          "feature_count": 32,
+          "outside_area_m2": -1.0771827874123119e-11,
+          "overlap_excess_area_m2": 0.0,
+          "valid": true
+        },
+        "labels_sha256": "58e3d24776ee7635dbb4489d049f00f77e131110eaf74566abe46d5d66191f72",
+        "polygon_sha256": "aed76ed4c8249927eb7f25f72556e5ee0dc3595b962041e664f3e2ee9002e55d",
+        "probes": [
+          {
+            "a_features": [
+              4
+            ],
+            "b_features": [
+              13
+            ],
+            "id": "S1",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              7
+            ],
+            "b_features": [
+              8
+            ],
+            "id": "S2",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              13
+            ],
+            "b_features": [
+              7
+            ],
+            "id": "S3",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              13
+            ],
+            "b_features": [
+              13
+            ],
+            "id": "C1",
+            "outcome": "joined",
+            "relation": "same_surface"
+          }
+        ],
+        "sample_id": "tile_3227_31368",
+        "seed": 1,
+        "variant": "cell-120m2"
+      },
+      {
+        "cell_verification": {
+          "area_error_m2": 1.9088474800810218e-08,
+          "area_tolerance_m2": 1e-06,
+          "expected_area_m2": 20613.59999995469,
+          "outside_area_m2": 0.0,
+          "overlap_area_m2": 0.0,
+          "passed": true,
+          "positive_cells": 57260,
+          "round_trip_mismatched_cells": 0
+        },
+        "geometry": {
+          "coverage_fraction": 0.8737182617179411,
+          "covered_area_m2": 20613.599999935606,
+          "false_merge_feature_area_m2": 0.0,
+          "feature_count": 34,
+          "outside_area_m2": -1.0260237104375847e-11,
+          "overlap_excess_area_m2": 0.0,
+          "valid": true
+        },
+        "labels_sha256": "e6b33c4b3680361fd6929da0e82f46f5a79fa07780820e5c5ff093fd4ad238a8",
+        "polygon_sha256": "6c573368e97a1ba5d173a8c313cf9e87c2fcffb4663c9d637dea179223de34c2",
+        "probes": [
+          {
+            "a_features": [
+              5
+            ],
+            "b_features": [
+              14
+            ],
+            "id": "S1",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              8
+            ],
+            "b_features": [
+              9
+            ],
+            "id": "S2",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              14
+            ],
+            "b_features": [
+              8
+            ],
+            "id": "S3",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              14
+            ],
+            "b_features": [
+              14
+            ],
+            "id": "C1",
+            "outcome": "joined",
+            "relation": "same_surface"
+          }
+        ],
+        "sample_id": "tile_3227_31368",
+        "seed": 1,
+        "variant": "cell-no-small-region-merge"
+      },
+      {
+        "cell_verification": {
+          "area_error_m2": 3.2887328416109085e-09,
+          "area_tolerance_m2": 1e-06,
+          "expected_area_m2": 22906.439999940972,
+          "outside_area_m2": 0.0,
+          "overlap_area_m2": 0.0,
+          "passed": true,
+          "positive_cells": 63629,
+          "round_trip_mismatched_cells": 0
+        },
+        "geometry": {
+          "coverage_fraction": 0.9709014892579518,
+          "covered_area_m2": 22906.43999994426,
+          "false_merge_feature_area_m2": 0.0,
+          "feature_count": 17,
+          "outside_area_m2": -3.078071131312754e-11,
+          "overlap_excess_area_m2": 1.8189894035458565e-11,
+          "valid": true
+        },
+        "labels_sha256": "27d6a101a4688a46a68dafd50678e0d01f3d734778475c90bc5d6d0d87aef1c4",
+        "polygon_sha256": "81b1bbf55558166822b1c27a81f885afe9bf62c6a7e08e510e90aa7cc67c40f8",
+        "probes": [
+          {
+            "a_features": [
+              3
+            ],
+            "b_features": [
+              6
+            ],
+            "id": "S1",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              6
+            ],
+            "b_features": [
+              9
+            ],
+            "id": "S2",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              2
+            ],
+            "b_features": [
+              1
+            ],
+            "id": "S3",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              6
+            ],
+            "b_features": [
+              6
+            ],
+            "id": "C1",
+            "outcome": "joined",
+            "relation": "same_surface"
+          }
+        ],
+        "sample_id": "tile_2620_31790",
+        "seed": 1,
+        "variant": "cell-120m2"
+      },
+      {
+        "cell_verification": {
+          "area_error_m2": 3.2887328416109085e-09,
+          "area_tolerance_m2": 1e-06,
+          "expected_area_m2": 22906.439999940972,
+          "outside_area_m2": 0.0,
+          "overlap_area_m2": 0.0,
+          "passed": true,
+          "positive_cells": 63629,
+          "round_trip_mismatched_cells": 0
+        },
+        "geometry": {
+          "coverage_fraction": 0.9709014892579518,
+          "covered_area_m2": 22906.43999994426,
+          "false_merge_feature_area_m2": 0.0,
+          "feature_count": 17,
+          "outside_area_m2": -3.078071131312754e-11,
+          "overlap_excess_area_m2": 1.8189894035458565e-11,
+          "valid": true
+        },
+        "labels_sha256": "27d6a101a4688a46a68dafd50678e0d01f3d734778475c90bc5d6d0d87aef1c4",
+        "polygon_sha256": "81b1bbf55558166822b1c27a81f885afe9bf62c6a7e08e510e90aa7cc67c40f8",
+        "probes": [
+          {
+            "a_features": [
+              3
+            ],
+            "b_features": [
+              6
+            ],
+            "id": "S1",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              6
+            ],
+            "b_features": [
+              9
+            ],
+            "id": "S2",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              2
+            ],
+            "b_features": [
+              1
+            ],
+            "id": "S3",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              6
+            ],
+            "b_features": [
+              6
+            ],
+            "id": "C1",
+            "outcome": "joined",
+            "relation": "same_surface"
+          }
+        ],
+        "sample_id": "tile_2620_31790",
+        "seed": 1,
+        "variant": "cell-no-small-region-merge"
+      },
+      {
+        "cell_verification": {
+          "area_error_m2": 1.3456883607432246e-08,
+          "area_tolerance_m2": 1e-06,
+          "expected_area_m2": 21625.200000075394,
+          "outside_area_m2": 0.0,
+          "overlap_area_m2": 0.0,
+          "passed": true,
+          "positive_cells": 60070,
+          "round_trip_mismatched_cells": 0
+        },
+        "geometry": {
+          "coverage_fraction": 0.9165954589838065,
+          "covered_area_m2": 21625.20000006198,
+          "false_merge_feature_area_m2": 2120.0400000067993,
+          "feature_count": 46,
+          "outside_area_m2": 2.2737367544323206e-12,
+          "overlap_excess_area_m2": 0.0,
+          "valid": true
+        },
+        "labels_sha256": "4a9982fded67e692833fcfeed3b9a87c03c44c5732e4daab6427d2adab466bd2",
+        "polygon_sha256": "3e5a459fc258063b1c83e3a0e76540ab25ce7a0790990ab32d588ab5ef275616",
+        "probes": [
+          {
+            "a_features": [
+              14
+            ],
+            "b_features": [
+              18
+            ],
+            "id": "S1",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              24
+            ],
+            "b_features": [
+              23
+            ],
+            "id": "S2",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              43
+            ],
+            "b_features": [
+              43
+            ],
+            "id": "S3",
+            "outcome": "joined",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              0
+            ],
+            "b_features": [
+              0
+            ],
+            "id": "C1",
+            "outcome": "joined",
+            "relation": "same_surface"
+          }
+        ],
+        "sample_id": "tile_2620_31791",
+        "seed": 1,
+        "variant": "cell-120m2"
+      },
+      {
+        "cell_verification": {
+          "area_error_m2": 1.3471435522660613e-08,
+          "area_tolerance_m2": 1e-06,
+          "expected_area_m2": 21625.200000075394,
+          "outside_area_m2": 0.0,
+          "overlap_area_m2": 0.0,
+          "passed": true,
+          "positive_cells": 60070,
+          "round_trip_mismatched_cells": 0
+        },
+        "geometry": {
+          "coverage_fraction": 0.9165954589838057,
+          "covered_area_m2": 21625.200000061963,
+          "false_merge_feature_area_m2": 2120.0400000067993,
+          "feature_count": 47,
+          "outside_area_m2": 2.1600499167107046e-12,
+          "overlap_excess_area_m2": 0.0,
+          "valid": true
+        },
+        "labels_sha256": "f557a0dbd6e363ba1bce3a9f3b7ff20d6531b1b2c08d5b3244afe678a5ee83fe",
+        "polygon_sha256": "a1e260fa9af95ac199cc8195ba74ee7055ed4234340573093bb552e1a4628b31",
+        "probes": [
+          {
+            "a_features": [
+              15
+            ],
+            "b_features": [
+              19
+            ],
+            "id": "S1",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              25
+            ],
+            "b_features": [
+              24
+            ],
+            "id": "S2",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              44
+            ],
+            "b_features": [
+              44
+            ],
+            "id": "S3",
+            "outcome": "joined",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              0
+            ],
+            "b_features": [
+              0
+            ],
+            "id": "C1",
+            "outcome": "joined",
+            "relation": "same_surface"
+          }
+        ],
+        "sample_id": "tile_2620_31791",
+        "seed": 1,
+        "variant": "cell-no-small-region-merge"
+      },
+      {
+        "cell_verification": {
+          "area_error_m2": 2.1573214326053858e-09,
+          "area_tolerance_m2": 1e-06,
+          "expected_area_m2": 20677.67999995455,
+          "outside_area_m2": 0.0,
+          "overlap_area_m2": 7.275957614183426e-11,
+          "passed": true,
+          "positive_cells": 57438,
+          "round_trip_mismatched_cells": 0
+        },
+        "geometry": {
+          "coverage_fraction": 0.8764343261717855,
+          "covered_area_m2": 20677.67999995244,
+          "false_merge_feature_area_m2": 0.0,
+          "feature_count": 28,
+          "outside_area_m2": -2.2026824808563106e-11,
+          "overlap_excess_area_m2": 4.729372449219227e-11,
+          "valid": true
+        },
+        "labels_sha256": "0513b48ab1b8921b1356e3efc6ed8e13adb352ca973306af64388ffbf27abd94",
+        "polygon_sha256": "3c63ab929a3bc5d66bf859f53a50d8cd0f548e25bfc143757dc7d3f7b224fd46",
+        "probes": [
+          {
+            "a_features": [
+              14
+            ],
+            "b_features": [
+              11
+            ],
+            "id": "S1",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              1
+            ],
+            "b_features": [
+              6
+            ],
+            "id": "S2",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              8
+            ],
+            "b_features": [
+              12
+            ],
+            "id": "S3",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              8
+            ],
+            "b_features": [
+              8
+            ],
+            "id": "C1",
+            "outcome": "joined",
+            "relation": "same_surface"
+          }
+        ],
+        "sample_id": "tile_2606_31812",
+        "seed": 1,
+        "variant": "cell-120m2"
+      },
+      {
+        "cell_verification": {
+          "area_error_m2": 1.306034391745925e-09,
+          "area_tolerance_m2": 1e-06,
+          "expected_area_m2": 20847.959999954175,
+          "outside_area_m2": 0.0,
+          "overlap_area_m2": 7.275957614183426e-11,
+          "passed": true,
+          "positive_cells": 57911,
+          "round_trip_mismatched_cells": 0
+        },
+        "geometry": {
+          "coverage_fraction": 0.8836517333983844,
+          "covered_area_m2": 20847.959999952924,
+          "false_merge_feature_area_m2": 0.0,
+          "feature_count": 36,
+          "outside_area_m2": -2.0182966409265646e-11,
+          "overlap_excess_area_m2": 3.637978807091713e-11,
+          "valid": true
+        },
+        "labels_sha256": "b44510269868622b0b94d5c885258cd99bc43309fb5daefc579263b5206396d0",
+        "polygon_sha256": "893173a0ba6b7ee7579b693fe10ec7c69fab1abb8d7f30ed02b99b555722fae5",
+        "probes": [
+          {
+            "a_features": [
+              17
+            ],
+            "b_features": [
+              14
+            ],
+            "id": "S1",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              2
+            ],
+            "b_features": [
+              8
+            ],
+            "id": "S2",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              10
+            ],
+            "b_features": [
+              15
+            ],
+            "id": "S3",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              10
+            ],
+            "b_features": [
+              10
+            ],
+            "id": "C1",
+            "outcome": "joined",
+            "relation": "same_surface"
+          }
+        ],
+        "sample_id": "tile_2606_31812",
+        "seed": 1,
+        "variant": "cell-no-small-region-merge"
+      },
+      {
+        "cell_verification": {
+          "area_error_m2": 1.3897079043090343e-09,
+          "area_tolerance_m2": 1e-06,
+          "expected_area_m2": 23114.520000080585,
+          "outside_area_m2": 0.0,
+          "overlap_area_m2": 7.639755494892597e-11,
+          "passed": true,
+          "positive_cells": 64207,
+          "round_trip_mismatched_cells": 0
+        },
+        "geometry": {
+          "coverage_fraction": 0.9797210693359959,
+          "covered_area_m2": 23114.520000081964,
+          "false_merge_feature_area_m2": 0.0,
+          "feature_count": 16,
+          "outside_area_m2": 9.094947017729282e-13,
+          "overlap_excess_area_m2": 8.36735125631094e-11,
+          "valid": true
+        },
+        "labels_sha256": "9a9fee216532c27e68d7401a192aa5184012177c2ec54be0b4f19d25d4bf60e3",
+        "polygon_sha256": "aa9fdfcd2a3a9d2ce2df80db4107b6a0be82d15d7935a9be8fe36758479ba5db",
+        "probes": [
+          {
+            "a_features": [
+              9
+            ],
+            "b_features": [
+              11
+            ],
+            "id": "S1",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              12
+            ],
+            "b_features": [
+              13
+            ],
+            "id": "S2",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              5
+            ],
+            "b_features": [
+              6
+            ],
+            "id": "S3",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              5
+            ],
+            "b_features": [
+              5
+            ],
+            "id": "C1",
+            "outcome": "joined",
+            "relation": "same_surface"
+          }
+        ],
+        "sample_id": "tile_3022_33074",
+        "seed": 2,
+        "variant": "cell-120m2"
+      },
+      {
+        "cell_verification": {
+          "area_error_m2": 1.3897079043090343e-09,
+          "area_tolerance_m2": 1e-06,
+          "expected_area_m2": 23114.520000080585,
+          "outside_area_m2": 0.0,
+          "overlap_area_m2": 7.639755494892597e-11,
+          "passed": true,
+          "positive_cells": 64207,
+          "round_trip_mismatched_cells": 0
+        },
+        "geometry": {
+          "coverage_fraction": 0.9797210693359959,
+          "covered_area_m2": 23114.520000081964,
+          "false_merge_feature_area_m2": 0.0,
+          "feature_count": 16,
+          "outside_area_m2": 9.094947017729282e-13,
+          "overlap_excess_area_m2": 8.36735125631094e-11,
+          "valid": true
+        },
+        "labels_sha256": "9a9fee216532c27e68d7401a192aa5184012177c2ec54be0b4f19d25d4bf60e3",
+        "polygon_sha256": "aa9fdfcd2a3a9d2ce2df80db4107b6a0be82d15d7935a9be8fe36758479ba5db",
+        "probes": [
+          {
+            "a_features": [
+              9
+            ],
+            "b_features": [
+              11
+            ],
+            "id": "S1",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              12
+            ],
+            "b_features": [
+              13
+            ],
+            "id": "S2",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              5
+            ],
+            "b_features": [
+              6
+            ],
+            "id": "S3",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              5
+            ],
+            "b_features": [
+              5
+            ],
+            "id": "C1",
+            "outcome": "joined",
+            "relation": "same_surface"
+          }
+        ],
+        "sample_id": "tile_3022_33074",
+        "seed": 2,
+        "variant": "cell-no-small-region-merge"
+      },
+      {
+        "cell_verification": {
+          "area_error_m2": 5.555193638429046e-09,
+          "area_tolerance_m2": 1e-06,
+          "expected_area_m2": 19682.27999995674,
+          "outside_area_m2": 0.0,
+          "overlap_area_m2": 0.0,
+          "passed": true,
+          "positive_cells": 54673,
+          "round_trip_mismatched_cells": 0
+        },
+        "geometry": {
+          "coverage_fraction": 0.8342437744142972,
+          "covered_area_m2": 19682.279999962277,
+          "false_merge_feature_area_m2": 0.0,
+          "feature_count": 31,
+          "outside_area_m2": 9.86233317235019e-12,
+          "overlap_excess_area_m2": 0.0,
+          "valid": true
+        },
+        "labels_sha256": "6950d2b3a92b9de482fbcd9dc801a7b0b7be36b4c3913445aaef01115818f653",
+        "polygon_sha256": "5e25eba10a8c13c121de0285113394f75177a19291ebaef6fb77c80c1bca2286",
+        "probes": [
+          {
+            "a_features": [
+              24
+            ],
+            "b_features": [
+              6
+            ],
+            "id": "S1",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              1
+            ],
+            "b_features": [
+              0
+            ],
+            "id": "S2",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              0
+            ],
+            "b_features": [
+              13
+            ],
+            "id": "S3",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              0
+            ],
+            "b_features": [
+              0
+            ],
+            "id": "C1",
+            "outcome": "joined",
+            "relation": "same_surface"
+          }
+        ],
+        "sample_id": "tile_2971_33052",
+        "seed": 2,
+        "variant": "cell-120m2"
+      },
+      {
+        "cell_verification": {
+          "area_error_m2": 2.1464074961841106e-09,
+          "area_tolerance_m2": 1e-06,
+          "expected_area_m2": 19806.119999956467,
+          "outside_area_m2": 0.0,
+          "overlap_area_m2": 0.0,
+          "passed": true,
+          "positive_cells": 55017,
+          "round_trip_mismatched_cells": 0
+        },
+        "geometry": {
+          "coverage_fraction": 0.8394927978516528,
+          "covered_area_m2": 19806.119999958595,
+          "false_merge_feature_area_m2": 0.0,
+          "feature_count": 33,
+          "outside_area_m2": 9.912071163853398e-12,
+          "overlap_excess_area_m2": 0.0,
+          "valid": true
+        },
+        "labels_sha256": "4e9bac32a9a33d8c732a5d87957ca4aa5f3db22fac04609a530a3114b605e13e",
+        "polygon_sha256": "5e0949390d10d68a2bdd5aa9500b091616377dad595e4c03b248dbd002b2e394",
+        "probes": [
+          {
+            "a_features": [
+              24
+            ],
+            "b_features": [
+              6
+            ],
+            "id": "S1",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              1
+            ],
+            "b_features": [
+              0
+            ],
+            "id": "S2",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              0
+            ],
+            "b_features": [
+              13
+            ],
+            "id": "S3",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              0
+            ],
+            "b_features": [
+              0
+            ],
+            "id": "C1",
+            "outcome": "joined",
+            "relation": "same_surface"
+          }
+        ],
+        "sample_id": "tile_2971_33052",
+        "seed": 2,
+        "variant": "cell-no-small-region-merge"
+      },
+      {
+        "cell_verification": {
+          "area_error_m2": 5.155015969648957e-09,
+          "area_tolerance_m2": 1e-06,
+          "expected_area_m2": 19390.319999950036,
+          "outside_area_m2": 0.0,
+          "overlap_area_m2": 1.0913936421275139e-11,
+          "passed": true,
+          "positive_cells": 53862,
+          "round_trip_mismatched_cells": 0
+        },
+        "geometry": {
+          "coverage_fraction": 0.821868896484594,
+          "covered_area_m2": 19390.3199999552,
+          "false_merge_feature_area_m2": 0.0,
+          "feature_count": 49,
+          "outside_area_m2": -2.3163693185779266e-12,
+          "overlap_excess_area_m2": 3.637978807091713e-12,
+          "valid": true
+        },
+        "labels_sha256": "09b0d7316e025b0a17f028473af9e2369d0abe6e95d95f8478fc07175f052e5a",
+        "polygon_sha256": "7c23f7cfc6f074ae104b30167b664d79d994ffadaafe138b7923b21d3dbe0718",
+        "probes": [
+          {
+            "a_features": [
+              25
+            ],
+            "b_features": [
+              35
+            ],
+            "id": "S1",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              21
+            ],
+            "b_features": [
+              30
+            ],
+            "id": "S2",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              20
+            ],
+            "b_features": [
+              13
+            ],
+            "id": "S3",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              13
+            ],
+            "b_features": [
+              13
+            ],
+            "id": "C1",
+            "outcome": "joined",
+            "relation": "same_surface"
+          }
+        ],
+        "sample_id": "tile_3005_33040",
+        "seed": 2,
+        "variant": "cell-120m2"
+      },
+      {
+        "cell_verification": {
+          "area_error_m2": 5.078618414700031e-09,
+          "area_tolerance_m2": 1e-06,
+          "expected_area_m2": 19530.719999949673,
+          "outside_area_m2": 0.0,
+          "overlap_area_m2": 0.0,
+          "passed": true,
+          "positive_cells": 54252,
+          "round_trip_mismatched_cells": 0
+        },
+        "geometry": {
+          "coverage_fraction": 0.8278198242189652,
+          "covered_area_m2": 19530.71999995475,
+          "false_merge_feature_area_m2": 0.0,
+          "feature_count": 58,
+          "outside_area_m2": -3.5846881019097054e-12,
+          "overlap_excess_area_m2": 3.637978807091713e-12,
+          "valid": true
+        },
+        "labels_sha256": "d0b7b72ba04d7b284ffc7157bf00c7fd1a9638aaa54ae4d07dabbd759ec35f93",
+        "polygon_sha256": "d44f678741b65c897acb095e28fb2d19e82955ca857501a412e6307fbbbfbc22",
+        "probes": [
+          {
+            "a_features": [
+              31
+            ],
+            "b_features": [
+              43
+            ],
+            "id": "S1",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              26
+            ],
+            "b_features": [
+              37
+            ],
+            "id": "S2",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              25
+            ],
+            "b_features": [
+              16
+            ],
+            "id": "S3",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              16
+            ],
+            "b_features": [
+              16
+            ],
+            "id": "C1",
+            "outcome": "joined",
+            "relation": "same_surface"
+          }
+        ],
+        "sample_id": "tile_3005_33040",
+        "seed": 2,
+        "variant": "cell-no-small-region-merge"
+      },
+      {
+        "cell_verification": {
+          "area_error_m2": 1.3096723705530167e-10,
+          "area_tolerance_m2": 1e-06,
+          "expected_area_m2": 22525.91999995049,
+          "outside_area_m2": 0.0,
+          "overlap_area_m2": 0.0,
+          "passed": true,
+          "positive_cells": 62572,
+          "round_trip_mismatched_cells": 0
+        },
+        "geometry": {
+          "coverage_fraction": 0.9547729492187436,
+          "covered_area_m2": 22525.919999950336,
+          "false_merge_feature_area_m2": 0.0,
+          "feature_count": 19,
+          "outside_area_m2": -4.9112713895738125e-11,
+          "overlap_excess_area_m2": 3.637978807091713e-12,
+          "valid": true
+        },
+        "labels_sha256": "bf4be44b8f94d4b8ec3ab725f9ac45bf52d2164bc58d9fb1ec53f18e1831453b",
+        "polygon_sha256": "41e2b744fba686aad2201989ed7ed66aadba247f37c1283f217d74417ecbc598",
+        "probes": [
+          {
+            "a_features": [
+              12
+            ],
+            "b_features": [
+              2
+            ],
+            "id": "S1",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              17
+            ],
+            "b_features": [
+              16
+            ],
+            "id": "S2",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              16
+            ],
+            "b_features": [
+              7
+            ],
+            "id": "S3",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              16
+            ],
+            "b_features": [
+              16
+            ],
+            "id": "C1",
+            "outcome": "joined",
+            "relation": "same_surface"
+          }
+        ],
+        "sample_id": "tile_3262_31398",
+        "seed": 2,
+        "variant": "cell-120m2"
+      },
+      {
+        "cell_verification": {
+          "area_error_m2": 1.3096723705530167e-10,
+          "area_tolerance_m2": 1e-06,
+          "expected_area_m2": 22525.91999995049,
+          "outside_area_m2": 0.0,
+          "overlap_area_m2": 0.0,
+          "passed": true,
+          "positive_cells": 62572,
+          "round_trip_mismatched_cells": 0
+        },
+        "geometry": {
+          "coverage_fraction": 0.9547729492187436,
+          "covered_area_m2": 22525.919999950336,
+          "false_merge_feature_area_m2": 0.0,
+          "feature_count": 21,
+          "outside_area_m2": -4.6128434405545704e-11,
+          "overlap_excess_area_m2": 7.275957614183426e-12,
+          "valid": true
+        },
+        "labels_sha256": "c1eb1903c63f499cf4a8e73e76ddab07ea26cce25a344e627b8f238b9d3d7479",
+        "polygon_sha256": "f8902df78ff17289e47f36815501201012d29c8926dd5375aea2d6b1490e7e42",
+        "probes": [
+          {
+            "a_features": [
+              14
+            ],
+            "b_features": [
+              3
+            ],
+            "id": "S1",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              19
+            ],
+            "b_features": [
+              18
+            ],
+            "id": "S2",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              18
+            ],
+            "b_features": [
+              9
+            ],
+            "id": "S3",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              18
+            ],
+            "b_features": [
+              18
+            ],
+            "id": "C1",
+            "outcome": "joined",
+            "relation": "same_surface"
+          }
+        ],
+        "sample_id": "tile_3262_31398",
+        "seed": 2,
+        "variant": "cell-no-small-region-merge"
+      },
+      {
+        "cell_verification": {
+          "area_error_m2": 4.05634636990726e-09,
+          "area_tolerance_m2": 1e-06,
+          "expected_area_m2": 20705.759999946644,
+          "outside_area_m2": 0.0,
+          "overlap_area_m2": 2.1827872842550278e-11,
+          "passed": true,
+          "positive_cells": 57516,
+          "round_trip_mismatched_cells": 0
+        },
+        "geometry": {
+          "coverage_fraction": 0.8776245117189211,
+          "covered_area_m2": 20705.759999950682,
+          "false_merge_feature_area_m2": 0.0,
+          "feature_count": 29,
+          "outside_area_m2": 9.563905223330949e-12,
+          "overlap_excess_area_m2": 3.2741809263825417e-11,
+          "valid": true
+        },
+        "labels_sha256": "3893961b3386944b937c9b6e96390aa4b721a75d7e41e9d13552d97b749b236e",
+        "polygon_sha256": "442930bf81d5c3c40727d96a73c6c7135521d6dd69712283dc5f909a55be0c97",
+        "probes": [
+          {
+            "a_features": [
+              20
+            ],
+            "b_features": [
+              22
+            ],
+            "id": "S1",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              22
+            ],
+            "b_features": [
+              21
+            ],
+            "id": "S2",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              11
+            ],
+            "b_features": [
+              2
+            ],
+            "id": "S3",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              22
+            ],
+            "b_features": [
+              22
+            ],
+            "id": "C1",
+            "outcome": "joined",
+            "relation": "same_surface"
+          }
+        ],
+        "sample_id": "tile_3238_31368",
+        "seed": 2,
+        "variant": "cell-120m2"
+      },
+      {
+        "cell_verification": {
+          "area_error_m2": 2.3028405848890543e-09,
+          "area_tolerance_m2": 1e-06,
+          "expected_area_m2": 20913.839999946107,
+          "outside_area_m2": 0.0,
+          "overlap_area_m2": 3.2741809263825417e-11,
+          "passed": true,
+          "positive_cells": 58094,
+          "round_trip_mismatched_cells": 0
+        },
+        "geometry": {
+          "coverage_fraction": 0.8864440917969719,
+          "covered_area_m2": 20913.839999948395,
+          "false_merge_feature_area_m2": 0.0,
+          "feature_count": 34,
+          "outside_area_m2": 1.0622613899613498e-11,
+          "overlap_excess_area_m2": 3.637978807091713e-11,
+          "valid": true
+        },
+        "labels_sha256": "cd585b12224f2d2f249f546ba5ff6fe9e889aaf62dc5a7ec13b7b1ed457452a7",
+        "polygon_sha256": "5713844d781ef742089d4b28201ca7b7547684ebba80ef9941417fe6392ee5b5",
+        "probes": [
+          {
+            "a_features": [
+              23
+            ],
+            "b_features": [
+              25
+            ],
+            "id": "S1",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              25
+            ],
+            "b_features": [
+              24
+            ],
+            "id": "S2",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              14
+            ],
+            "b_features": [
+              2
+            ],
+            "id": "S3",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              25
+            ],
+            "b_features": [
+              25
+            ],
+            "id": "C1",
+            "outcome": "joined",
+            "relation": "same_surface"
+          }
+        ],
+        "sample_id": "tile_3238_31368",
+        "seed": 2,
+        "variant": "cell-no-small-region-merge"
+      },
+      {
+        "cell_verification": {
+          "area_error_m2": 1.8982973415404558e-08,
+          "area_tolerance_m2": 1e-06,
+          "expected_area_m2": 20300.39999995538,
+          "outside_area_m2": 0.0,
+          "overlap_area_m2": 0.0,
+          "passed": true,
+          "positive_cells": 56390,
+          "round_trip_mismatched_cells": 0
+        },
+        "geometry": {
+          "coverage_fraction": 0.8604431152335709,
+          "covered_area_m2": 20300.39999993641,
+          "false_merge_feature_area_m2": 0.0,
+          "feature_count": 31,
+          "outside_area_m2": -6.30961949354969e-12,
+          "overlap_excess_area_m2": 0.0,
+          "valid": true
+        },
+        "labels_sha256": "6455b0b82c8a48fea57d38bd78cd01f9c80d21684ea08c4d58828d55b9bb2c4e",
+        "polygon_sha256": "72ffb7ddfb43ca4a7010b1521ed2feec89faaf5c2a668a79f4dae7a3348eb613",
+        "probes": [
+          {
+            "a_features": [
+              4
+            ],
+            "b_features": [
+              13
+            ],
+            "id": "S1",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              7
+            ],
+            "b_features": [
+              8
+            ],
+            "id": "S2",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              13
+            ],
+            "b_features": [
+              7
+            ],
+            "id": "S3",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              13
+            ],
+            "b_features": [
+              13
+            ],
+            "id": "C1",
+            "outcome": "joined",
+            "relation": "same_surface"
+          }
+        ],
+        "sample_id": "tile_3227_31368",
+        "seed": 2,
+        "variant": "cell-120m2"
+      },
+      {
+        "cell_verification": {
+          "area_error_m2": 1.899024937301874e-08,
+          "area_tolerance_m2": 1e-06,
+          "expected_area_m2": 20300.39999995538,
+          "outside_area_m2": 0.0,
+          "overlap_area_m2": 7.275957614183426e-12,
+          "passed": true,
+          "positive_cells": 56390,
+          "round_trip_mismatched_cells": 0
+        },
+        "geometry": {
+          "coverage_fraction": 0.8604431152335709,
+          "covered_area_m2": 20300.39999993641,
+          "false_merge_feature_area_m2": 0.0,
+          "feature_count": 32,
+          "outside_area_m2": -6.849631972727366e-12,
+          "overlap_excess_area_m2": 0.0,
+          "valid": true
+        },
+        "labels_sha256": "aeb774603073697134ac986cbe9c89244ef6edc0a864c9665a6fa589436f47c4",
+        "polygon_sha256": "80165b91d40f8951abf47de8714d8592b9f19e259b27f6df1b4a264a98f47098",
+        "probes": [
+          {
+            "a_features": [
+              5
+            ],
+            "b_features": [
+              14
+            ],
+            "id": "S1",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              8
+            ],
+            "b_features": [
+              9
+            ],
+            "id": "S2",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              14
+            ],
+            "b_features": [
+              8
+            ],
+            "id": "S3",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              14
+            ],
+            "b_features": [
+              14
+            ],
+            "id": "C1",
+            "outcome": "joined",
+            "relation": "same_surface"
+          }
+        ],
+        "sample_id": "tile_3227_31368",
+        "seed": 2,
+        "variant": "cell-no-small-region-merge"
+      },
+      {
+        "cell_verification": {
+          "area_error_m2": 3.3505784813314676e-09,
+          "area_tolerance_m2": 1e-06,
+          "expected_area_m2": 22906.439999940972,
+          "outside_area_m2": 0.0,
+          "overlap_area_m2": 0.0,
+          "passed": true,
+          "positive_cells": 63629,
+          "round_trip_mismatched_cells": 0
+        },
+        "geometry": {
+          "coverage_fraction": 0.9709014892579545,
+          "covered_area_m2": 22906.439999944323,
+          "false_merge_feature_area_m2": 0.0,
+          "feature_count": 18,
+          "outside_area_m2": 2.7625901566352695e-11,
+          "overlap_excess_area_m2": 0.0,
+          "valid": true
+        },
+        "labels_sha256": "701b5b6bfce2ecabec9c9f844f7cbbd08be178d14c1fd6d20da5dc663efbc9a2",
+        "polygon_sha256": "95e860d4fc831b155f1ceb9484f59a120cd3ca35a7f429b440526c3a96c9fe15",
+        "probes": [
+          {
+            "a_features": [
+              3
+            ],
+            "b_features": [
+              6
+            ],
+            "id": "S1",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              8
+            ],
+            "b_features": [
+              9
+            ],
+            "id": "S2",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              2
+            ],
+            "b_features": [
+              1
+            ],
+            "id": "S3",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              6
+            ],
+            "b_features": [
+              6
+            ],
+            "id": "C1",
+            "outcome": "joined",
+            "relation": "same_surface"
+          }
+        ],
+        "sample_id": "tile_2620_31790",
+        "seed": 2,
+        "variant": "cell-120m2"
+      },
+      {
+        "cell_verification": {
+          "area_error_m2": 3.3505784813314676e-09,
+          "area_tolerance_m2": 1e-06,
+          "expected_area_m2": 22906.439999940972,
+          "outside_area_m2": 0.0,
+          "overlap_area_m2": 0.0,
+          "passed": true,
+          "positive_cells": 63629,
+          "round_trip_mismatched_cells": 0
+        },
+        "geometry": {
+          "coverage_fraction": 0.9709014892579545,
+          "covered_area_m2": 22906.439999944323,
+          "false_merge_feature_area_m2": 0.0,
+          "feature_count": 18,
+          "outside_area_m2": 2.7625901566352695e-11,
+          "overlap_excess_area_m2": 0.0,
+          "valid": true
+        },
+        "labels_sha256": "701b5b6bfce2ecabec9c9f844f7cbbd08be178d14c1fd6d20da5dc663efbc9a2",
+        "polygon_sha256": "95e860d4fc831b155f1ceb9484f59a120cd3ca35a7f429b440526c3a96c9fe15",
+        "probes": [
+          {
+            "a_features": [
+              3
+            ],
+            "b_features": [
+              6
+            ],
+            "id": "S1",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              8
+            ],
+            "b_features": [
+              9
+            ],
+            "id": "S2",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              2
+            ],
+            "b_features": [
+              1
+            ],
+            "id": "S3",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              6
+            ],
+            "b_features": [
+              6
+            ],
+            "id": "C1",
+            "outcome": "joined",
+            "relation": "same_surface"
+          }
+        ],
+        "sample_id": "tile_2620_31790",
+        "seed": 2,
+        "variant": "cell-no-small-region-merge"
+      },
+      {
+        "cell_verification": {
+          "area_error_m2": 1.3536919141188264e-08,
+          "area_tolerance_m2": 1e-06,
+          "expected_area_m2": 21625.200000075394,
+          "outside_area_m2": 0.0,
+          "overlap_area_m2": 6.548361852765083e-11,
+          "passed": true,
+          "positive_cells": 60070,
+          "round_trip_mismatched_cells": 0
+        },
+        "geometry": {
+          "coverage_fraction": 0.9165954589838012,
+          "covered_area_m2": 21625.200000061857,
+          "false_merge_feature_area_m2": 6286.68000001146,
+          "feature_count": 37,
+          "outside_area_m2": -1.695354967523599e-11,
+          "overlap_excess_area_m2": 8.36735125631094e-11,
+          "valid": true
+        },
+        "labels_sha256": "792727aab66ab7ca8541565abe62e4096dc80a8c0605c40789d3e048fd7d446c",
+        "polygon_sha256": "ea6efc56a6d055c7a572b92c3a8fb7418eebbbe950608dfde4ab41bfbe2b4cb4",
+        "probes": [
+          {
+            "a_features": [
+              15
+            ],
+            "b_features": [
+              19
+            ],
+            "id": "S1",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              25
+            ],
+            "b_features": [
+              24
+            ],
+            "id": "S2",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              25
+            ],
+            "b_features": [
+              25
+            ],
+            "id": "S3",
+            "outcome": "joined",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              25
+            ],
+            "b_features": [
+              25
+            ],
+            "id": "C1",
+            "outcome": "joined",
+            "relation": "same_surface"
+          }
+        ],
+        "sample_id": "tile_2620_31791",
+        "seed": 2,
+        "variant": "cell-120m2"
+      },
+      {
+        "cell_verification": {
+          "area_error_m2": 1.3536919141188264e-08,
+          "area_tolerance_m2": 1e-06,
+          "expected_area_m2": 21625.200000075394,
+          "outside_area_m2": 0.0,
+          "overlap_area_m2": 6.548361852765083e-11,
+          "passed": true,
+          "positive_cells": 60070,
+          "round_trip_mismatched_cells": 0
+        },
+        "geometry": {
+          "coverage_fraction": 0.9165954589838012,
+          "covered_area_m2": 21625.200000061857,
+          "false_merge_feature_area_m2": 6286.68000001146,
+          "feature_count": 37,
+          "outside_area_m2": -1.695354967523599e-11,
+          "overlap_excess_area_m2": 8.36735125631094e-11,
+          "valid": true
+        },
+        "labels_sha256": "792727aab66ab7ca8541565abe62e4096dc80a8c0605c40789d3e048fd7d446c",
+        "polygon_sha256": "ea6efc56a6d055c7a572b92c3a8fb7418eebbbe950608dfde4ab41bfbe2b4cb4",
+        "probes": [
+          {
+            "a_features": [
+              15
+            ],
+            "b_features": [
+              19
+            ],
+            "id": "S1",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              25
+            ],
+            "b_features": [
+              24
+            ],
+            "id": "S2",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              25
+            ],
+            "b_features": [
+              25
+            ],
+            "id": "S3",
+            "outcome": "joined",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              25
+            ],
+            "b_features": [
+              25
+            ],
+            "id": "C1",
+            "outcome": "joined",
+            "relation": "same_surface"
+          }
+        ],
+        "sample_id": "tile_2620_31791",
+        "seed": 2,
+        "variant": "cell-no-small-region-merge"
+      },
+      {
+        "cell_verification": {
+          "area_error_m2": 2.077285898849368e-09,
+          "area_tolerance_m2": 1e-06,
+          "expected_area_m2": 20677.67999995455,
+          "outside_area_m2": 0.0,
+          "overlap_area_m2": 0.0,
+          "passed": true,
+          "positive_cells": 57438,
+          "round_trip_mismatched_cells": 0
+        },
+        "geometry": {
+          "coverage_fraction": 0.876434326171787,
+          "covered_area_m2": 20677.679999952474,
+          "false_merge_feature_area_m2": 0.0,
+          "feature_count": 31,
+          "outside_area_m2": -6.536993168992922e-12,
+          "overlap_excess_area_m2": 0.0,
+          "valid": true
+        },
+        "labels_sha256": "32aa7d54c2e2983bcd9c526eb604cdcb9e659e72f9896c3f84fbfcc83ded7e2e",
+        "polygon_sha256": "d4643db4e233220ecdc68c8e74dd2fc66b75057598c62ef8634d3dbd7a225059",
+        "probes": [
+          {
+            "a_features": [
+              14
+            ],
+            "b_features": [
+              11
+            ],
+            "id": "S1",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              1
+            ],
+            "b_features": [
+              6
+            ],
+            "id": "S2",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              8
+            ],
+            "b_features": [
+              12
+            ],
+            "id": "S3",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              8
+            ],
+            "b_features": [
+              8
+            ],
+            "id": "C1",
+            "outcome": "joined",
+            "relation": "same_surface"
+          }
+        ],
+        "sample_id": "tile_2606_31812",
+        "seed": 2,
+        "variant": "cell-120m2"
+      },
+      {
+        "cell_verification": {
+          "area_error_m2": 1.2259988579899073e-09,
+          "area_tolerance_m2": 1e-06,
+          "expected_area_m2": 20847.959999954175,
+          "outside_area_m2": 0.0,
+          "overlap_area_m2": 0.0,
+          "passed": true,
+          "positive_cells": 57911,
+          "round_trip_mismatched_cells": 0
+        },
+        "geometry": {
+          "coverage_fraction": 0.8836517333983858,
+          "covered_area_m2": 20847.959999952956,
+          "false_merge_feature_area_m2": 0.0,
+          "feature_count": 39,
+          "outside_area_m2": -1.9092283309873892e-11,
+          "overlap_excess_area_m2": 0.0,
+          "valid": true
+        },
+        "labels_sha256": "027cd1961e82c4f6683310534e7a43d39e2025d25e52d256e7e0313b07003b5f",
+        "polygon_sha256": "cc924dc4de4ad89bfde99248f417f9833a6dd6862685573525d48f3bb204c8f6",
+        "probes": [
+          {
+            "a_features": [
+              17
+            ],
+            "b_features": [
+              14
+            ],
+            "id": "S1",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              2
+            ],
+            "b_features": [
+              8
+            ],
+            "id": "S2",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              10
+            ],
+            "b_features": [
+              15
+            ],
+            "id": "S3",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              10
+            ],
+            "b_features": [
+              10
+            ],
+            "id": "C1",
+            "outcome": "joined",
+            "relation": "same_surface"
+          }
+        ],
+        "sample_id": "tile_2606_31812",
+        "seed": 2,
+        "variant": "cell-no-small-region-merge"
+      },
+      {
+        "cell_verification": {
+          "area_error_m2": 1.4588295016437769e-09,
+          "area_tolerance_m2": 1e-06,
+          "expected_area_m2": 23114.520000080585,
+          "outside_area_m2": 0.0,
+          "overlap_area_m2": 1.0913936421275139e-11,
+          "passed": true,
+          "positive_cells": 64207,
+          "round_trip_mismatched_cells": 0
+        },
+        "geometry": {
+          "coverage_fraction": 0.9797210693359987,
+          "covered_area_m2": 23114.52000008203,
+          "false_merge_feature_area_m2": 0.0,
+          "feature_count": 15,
+          "outside_area_m2": 5.6843418860808015e-12,
+          "overlap_excess_area_m2": 1.8189894035458565e-11,
+          "valid": true
+        },
+        "labels_sha256": "20aef383033d6b153f02d3390c5d6688c36585d8b0f4a081bad43fa6044d6b17",
+        "polygon_sha256": "37a5d0ff20fcf7cb78fd02d28f56143ef7e21e9affa5cd152919fcca5f1e596f",
+        "probes": [
+          {
+            "a_features": [
+              8
+            ],
+            "b_features": [
+              9
+            ],
+            "id": "S1",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              10
+            ],
+            "b_features": [
+              12
+            ],
+            "id": "S2",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              4
+            ],
+            "b_features": [
+              5
+            ],
+            "id": "S3",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              4
+            ],
+            "b_features": [
+              4
+            ],
+            "id": "C1",
+            "outcome": "joined",
+            "relation": "same_surface"
+          }
+        ],
+        "sample_id": "tile_3022_33074",
+        "seed": 3,
+        "variant": "cell-120m2"
+      },
+      {
+        "cell_verification": {
+          "area_error_m2": 1.4588295016437769e-09,
+          "area_tolerance_m2": 1e-06,
+          "expected_area_m2": 23114.520000080585,
+          "outside_area_m2": 0.0,
+          "overlap_area_m2": 1.0913936421275139e-11,
+          "passed": true,
+          "positive_cells": 64207,
+          "round_trip_mismatched_cells": 0
+        },
+        "geometry": {
+          "coverage_fraction": 0.9797210693359987,
+          "covered_area_m2": 23114.52000008203,
+          "false_merge_feature_area_m2": 0.0,
+          "feature_count": 15,
+          "outside_area_m2": 5.6843418860808015e-12,
+          "overlap_excess_area_m2": 1.8189894035458565e-11,
+          "valid": true
+        },
+        "labels_sha256": "20aef383033d6b153f02d3390c5d6688c36585d8b0f4a081bad43fa6044d6b17",
+        "polygon_sha256": "37a5d0ff20fcf7cb78fd02d28f56143ef7e21e9affa5cd152919fcca5f1e596f",
+        "probes": [
+          {
+            "a_features": [
+              8
+            ],
+            "b_features": [
+              9
+            ],
+            "id": "S1",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              10
+            ],
+            "b_features": [
+              12
+            ],
+            "id": "S2",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              4
+            ],
+            "b_features": [
+              5
+            ],
+            "id": "S3",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              4
+            ],
+            "b_features": [
+              4
+            ],
+            "id": "C1",
+            "outcome": "joined",
+            "relation": "same_surface"
+          }
+        ],
+        "sample_id": "tile_3022_33074",
+        "seed": 3,
+        "variant": "cell-no-small-region-merge"
+      },
+      {
+        "cell_verification": {
+          "area_error_m2": 5.547917680814862e-09,
+          "area_tolerance_m2": 1e-06,
+          "expected_area_m2": 19682.27999995674,
+          "outside_area_m2": 0.0,
+          "overlap_area_m2": 0.0,
+          "passed": true,
+          "positive_cells": 54673,
+          "round_trip_mismatched_cells": 0
+        },
+        "geometry": {
+          "coverage_fraction": 0.8342437744142975,
+          "covered_area_m2": 19682.279999962284,
+          "false_merge_feature_area_m2": 0.0,
+          "feature_count": 28,
+          "outside_area_m2": 2.3788970793248154e-11,
+          "overlap_excess_area_m2": 0.0,
+          "valid": true
+        },
+        "labels_sha256": "ca0ca395d2d644f526b3682ba409fb186be6fe013bd3584863586e793fa26fd3",
+        "polygon_sha256": "4a89c8e9af82d81179b880111b88a63db5a07a0543d380a9d135caaf0e50ef47",
+        "probes": [
+          {
+            "a_features": [
+              24
+            ],
+            "b_features": [
+              6
+            ],
+            "id": "S1",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              1
+            ],
+            "b_features": [
+              0
+            ],
+            "id": "S2",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              0
+            ],
+            "b_features": [
+              13
+            ],
+            "id": "S3",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              0
+            ],
+            "b_features": [
+              0
+            ],
+            "id": "C1",
+            "outcome": "joined",
+            "relation": "same_surface"
+          }
+        ],
+        "sample_id": "tile_2971_33052",
+        "seed": 3,
+        "variant": "cell-120m2"
+      },
+      {
+        "cell_verification": {
+          "area_error_m2": 3.92901711165905e-09,
+          "area_tolerance_m2": 1e-06,
+          "expected_area_m2": 19741.67999995661,
+          "outside_area_m2": 0.0,
+          "overlap_area_m2": 0.0,
+          "passed": true,
+          "positive_cells": 54838,
+          "round_trip_mismatched_cells": 0
+        },
+        "geometry": {
+          "coverage_fraction": 0.8367614746095411,
+          "covered_area_m2": 19741.67999996053,
+          "false_merge_feature_area_m2": 0.0,
+          "feature_count": 29,
+          "outside_area_m2": 2.382449793003616e-11,
+          "overlap_excess_area_m2": 0.0,
+          "valid": true
+        },
+        "labels_sha256": "c007b4225643c59428d8fc9ca6455a307a7a3fb6c41d4d0eaa7357c3b91b35d2",
+        "polygon_sha256": "d91f28426ed4029e6b417cf6dd69e0aac668b641e58f2f22dfec214bac0fceb4",
+        "probes": [
+          {
+            "a_features": [
+              24
+            ],
+            "b_features": [
+              6
+            ],
+            "id": "S1",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              1
+            ],
+            "b_features": [
+              0
+            ],
+            "id": "S2",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              0
+            ],
+            "b_features": [
+              13
+            ],
+            "id": "S3",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              0
+            ],
+            "b_features": [
+              0
+            ],
+            "id": "C1",
+            "outcome": "joined",
+            "relation": "same_surface"
+          }
+        ],
+        "sample_id": "tile_2971_33052",
+        "seed": 3,
+        "variant": "cell-no-small-region-merge"
+      },
+      {
+        "cell_verification": {
+          "area_error_m2": 5.162291927263141e-09,
+          "area_tolerance_m2": 1e-06,
+          "expected_area_m2": 19390.319999950036,
+          "outside_area_m2": 0.0,
+          "overlap_area_m2": 7.275957614183426e-12,
+          "passed": true,
+          "positive_cells": 53862,
+          "round_trip_mismatched_cells": 0
+        },
+        "geometry": {
+          "coverage_fraction": 0.8218688964845944,
+          "covered_area_m2": 19390.31999995521,
+          "false_merge_feature_area_m2": 0.0,
+          "feature_count": 49,
+          "outside_area_m2": -5.087485988042317e-12,
+          "overlap_excess_area_m2": 0.0,
+          "valid": true
+        },
+        "labels_sha256": "2cd1b3c30194d73e2816048dfa4ef0999c696ca3936bff1c3867efd96c15fa7d",
+        "polygon_sha256": "1cc98e091a71ddcca17523ab16fa3009f21939174b5741afe96f05d722d89b87",
+        "probes": [
+          {
+            "a_features": [
+              26
+            ],
+            "b_features": [
+              36
+            ],
+            "id": "S1",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              22
+            ],
+            "b_features": [
+              31
+            ],
+            "id": "S2",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              21
+            ],
+            "b_features": [
+              14
+            ],
+            "id": "S3",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              14
+            ],
+            "b_features": [
+              14
+            ],
+            "id": "C1",
+            "outcome": "joined",
+            "relation": "same_surface"
+          }
+        ],
+        "sample_id": "tile_3005_33040",
+        "seed": 3,
+        "variant": "cell-120m2"
+      },
+      {
+        "cell_verification": {
+          "area_error_m2": 5.078618414700031e-09,
+          "area_tolerance_m2": 1e-06,
+          "expected_area_m2": 19530.719999949673,
+          "outside_area_m2": 0.0,
+          "overlap_area_m2": 0.0,
+          "passed": true,
+          "positive_cells": 54252,
+          "round_trip_mismatched_cells": 0
+        },
+        "geometry": {
+          "coverage_fraction": 0.8278198242189652,
+          "covered_area_m2": 19530.71999995475,
+          "false_merge_feature_area_m2": 0.0,
+          "feature_count": 57,
+          "outside_area_m2": -2.064126647383091e-12,
+          "overlap_excess_area_m2": 3.637978807091713e-12,
+          "valid": true
+        },
+        "labels_sha256": "eb1e84d947d7a56995b1e43f3fb2ed4e42fc5d4d0364e31efe80ca44f73e3755",
+        "polygon_sha256": "eb5983cc1b65769e940818589bd4354b50ec3aa96a6a5cc97ee99618e61b879c",
+        "probes": [
+          {
+            "a_features": [
+              31
+            ],
+            "b_features": [
+              43
+            ],
+            "id": "S1",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              26
+            ],
+            "b_features": [
+              37
+            ],
+            "id": "S2",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              25
+            ],
+            "b_features": [
+              16
+            ],
+            "id": "S3",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              16
+            ],
+            "b_features": [
+              16
+            ],
+            "id": "C1",
+            "outcome": "joined",
+            "relation": "same_surface"
+          }
+        ],
+        "sample_id": "tile_3005_33040",
+        "seed": 3,
+        "variant": "cell-no-small-region-merge"
+      },
+      {
+        "cell_verification": {
+          "area_error_m2": 1.5279510989785194e-10,
+          "area_tolerance_m2": 1e-06,
+          "expected_area_m2": 22525.91999995049,
+          "outside_area_m2": 0.0,
+          "overlap_area_m2": 0.0,
+          "passed": true,
+          "positive_cells": 62572,
+          "round_trip_mismatched_cells": 0
+        },
+        "geometry": {
+          "coverage_fraction": 0.9547729492187433,
+          "covered_area_m2": 22525.919999950333,
+          "false_merge_feature_area_m2": 0.0,
+          "feature_count": 19,
+          "outside_area_m2": -1.0487610779819079e-11,
+          "overlap_excess_area_m2": 0.0,
+          "valid": true
+        },
+        "labels_sha256": "de942310499c94d23d2b66d5c791d811685ab4ff10628c05ea5e40d1f3a91f00",
+        "polygon_sha256": "5e81ef4739104763977b543a12d53c68afd3965ac504babdae2e60b15dbb6bd1",
+        "probes": [
+          {
+            "a_features": [
+              4
+            ],
+            "b_features": [
+              2
+            ],
+            "id": "S1",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              16
+            ],
+            "b_features": [
+              18
+            ],
+            "id": "S2",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              18
+            ],
+            "b_features": [
+              14
+            ],
+            "id": "S3",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              18
+            ],
+            "b_features": [
+              18
+            ],
+            "id": "C1",
+            "outcome": "joined",
+            "relation": "same_surface"
+          }
+        ],
+        "sample_id": "tile_3262_31398",
+        "seed": 3,
+        "variant": "cell-120m2"
+      },
+      {
+        "cell_verification": {
+          "area_error_m2": 1.5279510989785194e-10,
+          "area_tolerance_m2": 1e-06,
+          "expected_area_m2": 22525.91999995049,
+          "outside_area_m2": 0.0,
+          "overlap_area_m2": 0.0,
+          "passed": true,
+          "positive_cells": 62572,
+          "round_trip_mismatched_cells": 0
+        },
+        "geometry": {
+          "coverage_fraction": 0.9547729492187433,
+          "covered_area_m2": 22525.919999950333,
+          "false_merge_feature_area_m2": 0.0,
+          "feature_count": 20,
+          "outside_area_m2": -1.0231815394945443e-11,
+          "overlap_excess_area_m2": 0.0,
+          "valid": true
+        },
+        "labels_sha256": "a0301876de213d72c11d348e47cee4432023f2fc3e97fde23fd22508e777989f",
+        "polygon_sha256": "8215a5de7ba94b918fe9bd80cf2ef2018dea31f2693c3ddd77e0166ea37c1263",
+        "probes": [
+          {
+            "a_features": [
+              5
+            ],
+            "b_features": [
+              3
+            ],
+            "id": "S1",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              17
+            ],
+            "b_features": [
+              19
+            ],
+            "id": "S2",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              19
+            ],
+            "b_features": [
+              15
+            ],
+            "id": "S3",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              19
+            ],
+            "b_features": [
+              19
+            ],
+            "id": "C1",
+            "outcome": "joined",
+            "relation": "same_surface"
+          }
+        ],
+        "sample_id": "tile_3262_31398",
+        "seed": 3,
+        "variant": "cell-no-small-region-merge"
+      },
+      {
+        "cell_verification": {
+          "area_error_m2": 1.3897079043090343e-09,
+          "area_tolerance_m2": 1e-06,
+          "expected_area_m2": 20348.999999947566,
+          "outside_area_m2": 0.0,
+          "overlap_area_m2": 7.275957614183426e-12,
+          "passed": true,
+          "positive_cells": 56525,
+          "round_trip_mismatched_cells": 0
+        },
+        "geometry": {
+          "coverage_fraction": 0.8625030517577529,
+          "covered_area_m2": 20348.999999946158,
+          "false_merge_feature_area_m2": 980.2799999980654,
+          "feature_count": 27,
+          "outside_area_m2": 3.865352482534945e-12,
+          "overlap_excess_area_m2": 2.1827872842550278e-11,
+          "valid": true
+        },
+        "labels_sha256": "717fafb4c1500c7e758c0073fb9290656d2bc3c80cc53ed7bb22d0588993f886",
+        "polygon_sha256": "d4e8d7c33ff49eab03c28efa65edb70ddac89a267b33875f2ef300695c92bd7c",
+        "probes": [
+          {
+            "a_features": [
+              20
+            ],
+            "b_features": [
+              20
+            ],
+            "id": "S1",
+            "outcome": "joined",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              20
+            ],
+            "b_features": [
+              23
+            ],
+            "id": "S2",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              22
+            ],
+            "b_features": [
+              2
+            ],
+            "id": "S3",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              20
+            ],
+            "b_features": [
+              20
+            ],
+            "id": "C1",
+            "outcome": "joined",
+            "relation": "same_surface"
+          }
+        ],
+        "sample_id": "tile_3238_31368",
+        "seed": 3,
+        "variant": "cell-120m2"
+      },
+      {
+        "cell_verification": {
+          "area_error_m2": 1.2187229003757238e-09,
+          "area_tolerance_m2": 1e-06,
+          "expected_area_m2": 20423.519999947373,
+          "outside_area_m2": 0.0,
+          "overlap_area_m2": 1.4551915228366852e-11,
+          "passed": true,
+          "positive_cells": 56732,
+          "round_trip_mismatched_cells": 0
+        },
+        "geometry": {
+          "coverage_fraction": 0.865661621093801,
+          "covered_area_m2": 20423.519999948574,
+          "false_merge_feature_area_m2": 980.2799999980654,
+          "feature_count": 31,
+          "outside_area_m2": 2.5224267119483557e-12,
+          "overlap_excess_area_m2": 3.2741809263825417e-11,
+          "valid": true
+        },
+        "labels_sha256": "3300cacf5ce69d8333215b328ae2baeca4dd9321162f489186ae9f8dcffca5af",
+        "polygon_sha256": "130996870b52c942aa154bd4e7775a1d8a742b3176b35ac172d64c9b6cb32199",
+        "probes": [
+          {
+            "a_features": [
+              24
+            ],
+            "b_features": [
+              24
+            ],
+            "id": "S1",
+            "outcome": "joined",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              24
+            ],
+            "b_features": [
+              27
+            ],
+            "id": "S2",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              26
+            ],
+            "b_features": [
+              2
+            ],
+            "id": "S3",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              24
+            ],
+            "b_features": [
+              24
+            ],
+            "id": "C1",
+            "outcome": "joined",
+            "relation": "same_surface"
+          }
+        ],
+        "sample_id": "tile_3238_31368",
+        "seed": 3,
+        "variant": "cell-no-small-region-merge"
+      },
+      {
+        "cell_verification": {
+          "area_error_m2": 1.5894329408183694e-08,
+          "area_tolerance_m2": 1e-06,
+          "expected_area_m2": 19869.11999995633,
+          "outside_area_m2": 0.0,
+          "overlap_area_m2": 0.0,
+          "passed": true,
+          "positive_cells": 55192,
+          "round_trip_mismatched_cells": 0
+        },
+        "geometry": {
+          "coverage_fraction": 0.8421630859368266,
+          "covered_area_m2": 19869.11999994044,
+          "false_merge_feature_area_m2": 0.0,
+          "feature_count": 28,
+          "outside_area_m2": -2.8705926524708048e-12,
+          "overlap_excess_area_m2": 0.0,
+          "valid": true
+        },
+        "labels_sha256": "eb9ab885d8a4eccfb51b8ccb4611b88d7c66b1f38a7242243aa36643392d9712",
+        "polygon_sha256": "dbc4c9f3c5992dd69b269f0cdfc73bdb1dbe7705e8888162309d9c396522f8c5",
+        "probes": [
+          {
+            "a_features": [
+              4
+            ],
+            "b_features": [
+              13
+            ],
+            "id": "S1",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              7
+            ],
+            "b_features": [
+              8
+            ],
+            "id": "S2",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              13
+            ],
+            "b_features": [
+              7
+            ],
+            "id": "S3",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              13
+            ],
+            "b_features": [
+              13
+            ],
+            "id": "C1",
+            "outcome": "joined",
+            "relation": "same_surface"
+          }
+        ],
+        "sample_id": "tile_3227_31368",
+        "seed": 3,
+        "variant": "cell-120m2"
+      },
+      {
+        "cell_verification": {
+          "area_error_m2": 1.5901605365797877e-08,
+          "area_tolerance_m2": 1e-06,
+          "expected_area_m2": 19869.11999995633,
+          "outside_area_m2": 0.0,
+          "overlap_area_m2": 3.637978807091713e-12,
+          "passed": true,
+          "positive_cells": 55192,
+          "round_trip_mismatched_cells": 0
+        },
+        "geometry": {
+          "coverage_fraction": 0.842163085936826,
+          "covered_area_m2": 19869.119999940427,
+          "false_merge_feature_area_m2": 0.0,
+          "feature_count": 29,
+          "outside_area_m2": -2.8919089345436078e-12,
+          "overlap_excess_area_m2": 7.275957614183426e-12,
+          "valid": true
+        },
+        "labels_sha256": "e75f3905fca98491c71ff9adc539e4ea9ac541a5777eaf019160027b5edb817c",
+        "polygon_sha256": "ba27a10786cab5b8159130fc2e826c30df3d0ac88868dc59ecb47450c403e6ee",
+        "probes": [
+          {
+            "a_features": [
+              5
+            ],
+            "b_features": [
+              14
+            ],
+            "id": "S1",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              8
+            ],
+            "b_features": [
+              9
+            ],
+            "id": "S2",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              14
+            ],
+            "b_features": [
+              8
+            ],
+            "id": "S3",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              14
+            ],
+            "b_features": [
+              14
+            ],
+            "id": "C1",
+            "outcome": "joined",
+            "relation": "same_surface"
+          }
+        ],
+        "sample_id": "tile_3227_31368",
+        "seed": 3,
+        "variant": "cell-no-small-region-merge"
+      },
+      {
+        "cell_verification": {
+          "area_error_m2": 3.3178366720676422e-09,
+          "area_tolerance_m2": 1e-06,
+          "expected_area_m2": 22906.439999940972,
+          "outside_area_m2": 0.0,
+          "overlap_area_m2": 7.275957614183426e-12,
+          "passed": true,
+          "positive_cells": 63629,
+          "round_trip_mismatched_cells": 0
+        },
+        "geometry": {
+          "coverage_fraction": 0.970901489257953,
+          "covered_area_m2": 22906.43999994429,
+          "false_merge_feature_area_m2": 0.0,
+          "feature_count": 24,
+          "outside_area_m2": 6.747313818777911e-11,
+          "overlap_excess_area_m2": 0.0,
+          "valid": true
+        },
+        "labels_sha256": "717ef852047f187437b85d261bc18dab7da9f9d30b9aa48cf96f6a9723c4c184",
+        "polygon_sha256": "42dd200293c4ac80ffc5cb1b25fcc4ef0ab1c1b918ed87d03d37b73b4204ccac",
+        "probes": [
+          {
+            "a_features": [
+              10
+            ],
+            "b_features": [
+              5
+            ],
+            "id": "S1",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              5
+            ],
+            "b_features": [
+              8
+            ],
+            "id": "S2",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              1
+            ],
+            "b_features": [
+              0
+            ],
+            "id": "S3",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              5
+            ],
+            "b_features": [
+              5
+            ],
+            "id": "C1",
+            "outcome": "joined",
+            "relation": "same_surface"
+          }
+        ],
+        "sample_id": "tile_2620_31790",
+        "seed": 3,
+        "variant": "cell-120m2"
+      },
+      {
+        "cell_verification": {
+          "area_error_m2": 3.3178366720676422e-09,
+          "area_tolerance_m2": 1e-06,
+          "expected_area_m2": 22906.439999940972,
+          "outside_area_m2": 0.0,
+          "overlap_area_m2": 7.275957614183426e-12,
+          "passed": true,
+          "positive_cells": 63629,
+          "round_trip_mismatched_cells": 0
+        },
+        "geometry": {
+          "coverage_fraction": 0.970901489257953,
+          "covered_area_m2": 22906.43999994429,
+          "false_merge_feature_area_m2": 0.0,
+          "feature_count": 25,
+          "outside_area_m2": 6.743050562363351e-11,
+          "overlap_excess_area_m2": 0.0,
+          "valid": true
+        },
+        "labels_sha256": "e86a56b7b050ccfce6bdafc1a033836f1a1634fb688d25df080dc2f0a34559e6",
+        "polygon_sha256": "8369ae268011182cf26e9a4e54165614ca82a56af21ff58a96a349f44abf3df1",
+        "probes": [
+          {
+            "a_features": [
+              11
+            ],
+            "b_features": [
+              6
+            ],
+            "id": "S1",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              6
+            ],
+            "b_features": [
+              9
+            ],
+            "id": "S2",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              2
+            ],
+            "b_features": [
+              1
+            ],
+            "id": "S3",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              6
+            ],
+            "b_features": [
+              6
+            ],
+            "id": "C1",
+            "outcome": "joined",
+            "relation": "same_surface"
+          }
+        ],
+        "sample_id": "tile_2620_31790",
+        "seed": 3,
+        "variant": "cell-no-small-region-merge"
+      },
+      {
+        "cell_verification": {
+          "area_error_m2": 1.3533281162381172e-08,
+          "area_tolerance_m2": 1e-06,
+          "expected_area_m2": 21625.200000075394,
+          "outside_area_m2": 0.0,
+          "overlap_area_m2": 5.820766091346741e-11,
+          "passed": true,
+          "positive_cells": 60070,
+          "round_trip_mismatched_cells": 0
+        },
+        "geometry": {
+          "coverage_fraction": 0.9165954589838036,
+          "covered_area_m2": 21625.200000061912,
+          "false_merge_feature_area_m2": 5281.920000020868,
+          "feature_count": 34,
+          "outside_area_m2": -6.849631972727366e-12,
+          "overlap_excess_area_m2": 1.4551915228366852e-11,
+          "valid": true
+        },
+        "labels_sha256": "ab24b99d38d6595a1d356c2a3cc73c6d71d39a4a6061d53aa5828a469524bb1a",
+        "polygon_sha256": "bcbc9d6ef0fecced2cabf77b7d938afe347b0da2f057db6881ac4875dfc7b725",
+        "probes": [
+          {
+            "a_features": [
+              12
+            ],
+            "b_features": [
+              16
+            ],
+            "id": "S1",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              22
+            ],
+            "b_features": [
+              21
+            ],
+            "id": "S2",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              22
+            ],
+            "b_features": [
+              22
+            ],
+            "id": "S3",
+            "outcome": "joined",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              22
+            ],
+            "b_features": [
+              22
+            ],
+            "id": "C1",
+            "outcome": "joined",
+            "relation": "same_surface"
+          }
+        ],
+        "sample_id": "tile_2620_31791",
+        "seed": 3,
+        "variant": "cell-120m2"
+      },
+      {
+        "cell_verification": {
+          "area_error_m2": 1.3536919141188264e-08,
+          "area_tolerance_m2": 1e-06,
+          "expected_area_m2": 21625.200000075394,
+          "outside_area_m2": 0.0,
+          "overlap_area_m2": 6.184563972055912e-11,
+          "passed": true,
+          "positive_cells": 60070,
+          "round_trip_mismatched_cells": 0
+        },
+        "geometry": {
+          "coverage_fraction": 0.9165954589838035,
+          "covered_area_m2": 21625.20000006191,
+          "false_merge_feature_area_m2": 5281.920000020868,
+          "feature_count": 37,
+          "outside_area_m2": -6.490807891168515e-12,
+          "overlap_excess_area_m2": 1.8189894035458565e-11,
+          "valid": true
+        },
+        "labels_sha256": "30ad3dab365a3a02323268d4f8178e3e159f6ac8bddf8b05237aff1542329db5",
+        "polygon_sha256": "29dc88e886825f6a37d4402c5a93cef263f629478e28ba888b33a1848be79e0a",
+        "probes": [
+          {
+            "a_features": [
+              15
+            ],
+            "b_features": [
+              19
+            ],
+            "id": "S1",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              25
+            ],
+            "b_features": [
+              24
+            ],
+            "id": "S2",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              25
+            ],
+            "b_features": [
+              25
+            ],
+            "id": "S3",
+            "outcome": "joined",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              25
+            ],
+            "b_features": [
+              25
+            ],
+            "id": "C1",
+            "outcome": "joined",
+            "relation": "same_surface"
+          }
+        ],
+        "sample_id": "tile_2620_31791",
+        "seed": 3,
+        "variant": "cell-no-small-region-merge"
+      },
+      {
+        "cell_verification": {
+          "area_error_m2": 2.128217602148652e-09,
+          "area_tolerance_m2": 1e-06,
+          "expected_area_m2": 20677.67999995455,
+          "outside_area_m2": 0.0,
+          "overlap_area_m2": 4.001776687800884e-11,
+          "passed": true,
+          "positive_cells": 57438,
+          "round_trip_mismatched_cells": 0
+        },
+        "geometry": {
+          "coverage_fraction": 0.8764343261717868,
+          "covered_area_m2": 20677.67999995247,
+          "false_merge_feature_area_m2": 0.0,
+          "feature_count": 28,
+          "outside_area_m2": 2.5863755581667647e-12,
+          "overlap_excess_area_m2": 0.0,
+          "valid": true
+        },
+        "labels_sha256": "e72a6eb16894568363fca4f17e386b8d6d450839132d3cf5c8dcbff26d48defe",
+        "polygon_sha256": "51dd75ac4cded60081270c71190789ecad03d91a14e2c04e77b95614516d5da8",
+        "probes": [
+          {
+            "a_features": [
+              14
+            ],
+            "b_features": [
+              11
+            ],
+            "id": "S1",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              1
+            ],
+            "b_features": [
+              6
+            ],
+            "id": "S2",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              8
+            ],
+            "b_features": [
+              12
+            ],
+            "id": "S3",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              8
+            ],
+            "b_features": [
+              8
+            ],
+            "id": "C1",
+            "outcome": "joined",
+            "relation": "same_surface"
+          }
+        ],
+        "sample_id": "tile_2606_31812",
+        "seed": 3,
+        "variant": "cell-120m2"
+      },
+      {
+        "cell_verification": {
+          "area_error_m2": 1.255102688446641e-09,
+          "area_tolerance_m2": 1e-06,
+          "expected_area_m2": 20847.959999954175,
+          "outside_area_m2": 0.0,
+          "overlap_area_m2": 1.8189894035458565e-11,
+          "passed": true,
+          "positive_cells": 57911,
+          "round_trip_mismatched_cells": 0
+        },
+        "geometry": {
+          "coverage_fraction": 0.8836517333983861,
+          "covered_area_m2": 20847.959999952964,
+          "false_merge_feature_area_m2": 0.0,
+          "feature_count": 35,
+          "outside_area_m2": 4.845901457883883e-12,
+          "overlap_excess_area_m2": 0.0,
+          "valid": true
+        },
+        "labels_sha256": "b4452b6c553719a4eaae69d715635dc575c5c6a493efd3238f30001af105486d",
+        "polygon_sha256": "90f7993872f9dc4749107876257123d80dd110c26250bc3ba1b31f4cc42e6345",
+        "probes": [
+          {
+            "a_features": [
+              17
+            ],
+            "b_features": [
+              14
+            ],
+            "id": "S1",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              2
+            ],
+            "b_features": [
+              8
+            ],
+            "id": "S2",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              10
+            ],
+            "b_features": [
+              15
+            ],
+            "id": "S3",
+            "outcome": "separated",
+            "relation": "separate"
+          },
+          {
+            "a_features": [
+              10
+            ],
+            "b_features": [
+              10
+            ],
+            "id": "C1",
+            "outcome": "joined",
+            "relation": "same_surface"
+          }
+        ],
+        "sample_id": "tile_2606_31812",
+        "seed": 3,
+        "variant": "cell-no-small-region-merge"
+      }
+    ],
+    "source_sha256": {
+      "cell_partition.py": "374a8a69ef2bd3cc5d13f477b13fb8a5c1e85b36fcab3e76c33c63a93c093238",
+      "visible_division_study.py": "1e13a2e9122970a534aded04816ecbe69b087b98d98e81ec38ab98fee2c99757",
+      "visible_divisions.py": "67fe00102ecee58469dd45c711cdf4356c701412f7df6e8c398312ad7f70aec6",
+      "visible_partition_study.py": "4a2871aab572ce9b92c7336e616d67d187611de332efb07fa9e2d0b332194c89"
+    },
+    "summaries": [
+      {
+        "excluded_separation_probes": 0,
+        "geometry_sums": {
+          "covered_area_m2": 191744.999999793,
+          "false_merge_feature_area_m2": 13693.320000038664,
+          "feature_count": 261,
+          "outside_area_m2": -7.105427357601002e-13,
+          "overlap_excess_area_m2": 1.2369127944111824e-10
+        },
+        "invalid_tile_outputs": 0,
+        "matched_valid_separation_probes": 27,
+        "matched_valid_tile_outputs": 9,
+        "probes": {
+          "same_surface": {
+            "ambiguous": 0,
+            "conditional_fragmentation_rate": 0.0,
+            "joined": 9,
+            "pair_coverage": 1.0,
+            "separated": 0,
+            "total": 9,
+            "uncovered": 0,
+            "uniquely_covered": 9
+          },
+          "separate": {
+            "ambiguous": 0,
+            "conditional_false_merge_rate": 0.1111111111111111,
+            "joined": 3,
+            "pair_coverage": 1.0,
+            "separated": 24,
+            "total": 27,
+            "uncovered": 0,
+            "uniquely_covered": 27
+          }
+        },
+        "seed": 1,
+        "total_tile_outputs": 9,
+        "variant": "cell-120m2"
+      },
+      {
+        "excluded_separation_probes": 0,
+        "geometry_sums": {
+          "covered_area_m2": 192720.23999978937,
+          "false_merge_feature_area_m2": 13693.320000038664,
+          "feature_count": 292,
+          "outside_area_m2": -3.517186542012496e-12,
+          "overlap_excess_area_m2": 1.8553691916167736e-10
+        },
+        "invalid_tile_outputs": 0,
+        "matched_valid_separation_probes": 27,
+        "matched_valid_tile_outputs": 9,
+        "probes": {
+          "same_surface": {
+            "ambiguous": 0,
+            "conditional_fragmentation_rate": 0.0,
+            "joined": 9,
+            "pair_coverage": 1.0,
+            "separated": 0,
+            "total": 9,
+            "uncovered": 0,
+            "uniquely_covered": 9
+          },
+          "separate": {
+            "ambiguous": 0,
+            "conditional_false_merge_rate": 0.1111111111111111,
+            "joined": 3,
+            "pair_coverage": 1.0,
+            "separated": 24,
+            "total": 27,
+            "uncovered": 0,
+            "uniquely_covered": 27
+          }
+        },
+        "seed": 1,
+        "total_tile_outputs": 9,
+        "variant": "cell-no-small-region-merge"
+      },
+      {
+        "excluded_separation_probes": 0,
+        "geometry_sums": {
+          "covered_area_m2": 190928.51999979554,
+          "false_merge_feature_area_m2": 6286.68000001146,
+          "feature_count": 261,
+          "outside_area_m2": -3.326761088828789e-11,
+          "overlap_excess_area_m2": 2.0736479200422764e-10
+        },
+        "invalid_tile_outputs": 0,
+        "matched_valid_separation_probes": 27,
+        "matched_valid_tile_outputs": 9,
+        "probes": {
+          "same_surface": {
+            "ambiguous": 0,
+            "conditional_fragmentation_rate": 0.0,
+            "joined": 9,
+            "pair_coverage": 1.0,
+            "separated": 0,
+            "total": 9,
+            "uncovered": 0,
+            "uniquely_covered": 9
+          },
+          "separate": {
+            "ambiguous": 0,
+            "conditional_false_merge_rate": 0.037037037037037035,
+            "joined": 1,
+            "pair_coverage": 1.0,
+            "separated": 26,
+            "total": 27,
+            "uncovered": 0,
+            "uniquely_covered": 27
+          }
+        },
+        "seed": 2,
+        "total_tile_outputs": 9,
+        "variant": "cell-120m2"
+      },
+      {
+        "excluded_separation_probes": 0,
+        "geometry_sums": {
+          "covered_area_m2": 191571.11999978957,
+          "false_merge_feature_area_m2": 6286.68000001146,
+          "feature_count": 288,
+          "outside_area_m2": -4.353850613370014e-11,
+          "overlap_excess_area_m2": 2.1464074961841106e-10
+        },
+        "invalid_tile_outputs": 0,
+        "matched_valid_separation_probes": 27,
+        "matched_valid_tile_outputs": 9,
+        "probes": {
+          "same_surface": {
+            "ambiguous": 0,
+            "conditional_fragmentation_rate": 0.0,
+            "joined": 9,
+            "pair_coverage": 1.0,
+            "separated": 0,
+            "total": 9,
+            "uncovered": 0,
+            "uniquely_covered": 9
+          },
+          "separate": {
+            "ambiguous": 0,
+            "conditional_false_merge_rate": 0.037037037037037035,
+            "joined": 1,
+            "pair_coverage": 1.0,
+            "separated": 26,
+            "total": 27,
+            "uncovered": 0,
+            "uniquely_covered": 27
+          }
+        },
+        "seed": 2,
+        "total_tile_outputs": 9,
+        "variant": "cell-no-small-region-merge"
+      },
+      {
+        "excluded_separation_probes": 0,
+        "geometry_sums": {
+          "covered_area_m2": 190140.47999979512,
+          "false_merge_feature_area_m2": 6262.200000018934,
+          "feature_count": 252,
+          "outside_area_m2": 7.810285751475021e-11,
+          "overlap_excess_area_m2": 5.4569682106375694e-11
+        },
+        "invalid_tile_outputs": 0,
+        "matched_valid_separation_probes": 27,
+        "matched_valid_tile_outputs": 9,
+        "probes": {
+          "same_surface": {
+            "ambiguous": 0,
+            "conditional_fragmentation_rate": 0.0,
+            "joined": 9,
+            "pair_coverage": 1.0,
+            "separated": 0,
+            "total": 9,
+            "uncovered": 0,
+            "uniquely_covered": 9
+          },
+          "separate": {
+            "ambiguous": 0,
+            "conditional_false_merge_rate": 0.07407407407407407,
+            "joined": 2,
+            "pair_coverage": 1.0,
+            "separated": 25,
+            "total": 27,
+            "uncovered": 0,
+            "uniquely_covered": 27
+          }
+        },
+        "seed": 3,
+        "total_tile_outputs": 9,
+        "variant": "cell-120m2"
+      },
+      {
+        "excluded_separation_probes": 0,
+        "geometry_sums": {
+          "covered_area_m2": 190585.0799997958,
+          "false_merge_feature_area_m2": 6262.200000018934,
+          "feature_count": 278,
+          "outside_area_m2": 8.262901474154205e-11,
+          "overlap_excess_area_m2": 8.003553375601768e-11
+        },
+        "invalid_tile_outputs": 0,
+        "matched_valid_separation_probes": 27,
+        "matched_valid_tile_outputs": 9,
+        "probes": {
+          "same_surface": {
+            "ambiguous": 0,
+            "conditional_fragmentation_rate": 0.0,
+            "joined": 9,
+            "pair_coverage": 1.0,
+            "separated": 0,
+            "total": 9,
+            "uncovered": 0,
+            "uniquely_covered": 9
+          },
+          "separate": {
+            "ambiguous": 0,
+            "conditional_false_merge_rate": 0.07407407407407407,
+            "joined": 2,
+            "pair_coverage": 1.0,
+            "separated": 25,
+            "total": 27,
+            "uncovered": 0,
+            "uniquely_covered": 27
+          }
+        },
+        "seed": 3,
+        "total_tile_outputs": 9,
+        "variant": "cell-no-small-region-merge"
+      },
+      {
+        "excluded_separation_probes": 0,
+        "geometry_sums": {
+          "covered_area_m2": 572813.9999993837,
+          "false_merge_feature_area_m2": 26242.200000069057,
+          "feature_count": 774,
+          "outside_area_m2": 4.412470389070222e-11,
+          "overlap_excess_area_m2": 3.8562575355172157e-10
+        },
+        "invalid_tile_outputs": 0,
+        "matched_valid_separation_probes": 81,
+        "matched_valid_tile_outputs": 27,
+        "probes": {
+          "same_surface": {
+            "ambiguous": 0,
+            "conditional_fragmentation_rate": 0.0,
+            "joined": 27,
+            "pair_coverage": 1.0,
+            "separated": 0,
+            "total": 27,
+            "uncovered": 0,
+            "uniquely_covered": 27
+          },
+          "separate": {
+            "ambiguous": 0,
+            "conditional_false_merge_rate": 0.07407407407407407,
+            "joined": 6,
+            "pair_coverage": 1.0,
+            "separated": 75,
+            "total": 81,
+            "uncovered": 0,
+            "uniquely_covered": 81
+          }
+        },
+        "seed": null,
+        "total_tile_outputs": 27,
+        "variant": "cell-120m2"
+      },
+      {
+        "excluded_separation_probes": 0,
+        "geometry_sums": {
+          "covered_area_m2": 574876.4399993748,
+          "false_merge_feature_area_m2": 26242.200000069057,
+          "feature_count": 858,
+          "outside_area_m2": 3.5573322065829416e-11,
+          "overlap_excess_area_m2": 4.802132025361061e-10
+        },
+        "invalid_tile_outputs": 0,
+        "matched_valid_separation_probes": 81,
+        "matched_valid_tile_outputs": 27,
+        "probes": {
+          "same_surface": {
+            "ambiguous": 0,
+            "conditional_fragmentation_rate": 0.0,
+            "joined": 27,
+            "pair_coverage": 1.0,
+            "separated": 0,
+            "total": 27,
+            "uncovered": 0,
+            "uniquely_covered": 27
+          },
+          "separate": {
+            "ambiguous": 0,
+            "conditional_false_merge_rate": 0.07407407407407407,
+            "joined": 6,
+            "pair_coverage": 1.0,
+            "separated": 75,
+            "total": 81,
+            "uncovered": 0,
+            "uniquely_covered": 81
+          }
+        },
+        "seed": null,
+        "total_tile_outputs": 27,
+        "variant": "cell-no-small-region-merge"
+      }
+    ]
+  },
+  "cell_protocol_sha256": "c77269f1b6cbc1ce1d52642c01ddde6b1df22f4a6cfbd6a3112574029cb0e937",
+  "created_at": "2026-10-19T16:16:16.291941+00:00",
+  "decision": "No small-region-merge improvement on these frozen probes; retain exact-cell geometry as the offline candidate for further boundary/seed work. No model or runtime promotion.",
+  "dependencies": {
+    "Pillow": "12.3.0",
+    "numpy": "2.3.5",
+    "opencv-python": "5.0.0.93",
+    "scikit-image": "0.26.0",
+    "scipy": "1.18.0",
+    "shapely": "2.1.2"
+  },
+  "inference_runs": 0,
+  "limitations": [
+    "Not human-verified; no legal ownership or registered parcel assertion.",
+    "Nine purposively selected Croatian development images; not independent target-settlement validation.",
+    "No predicted polygons or cadastral overlays used to place these anchors in this comparison.",
+    "Unmarked and occluded edges remain unassessed; same-surface probes are sparse fragmentation checks.",
+    "Exact raster cell edges have 0.6 m staircase detail; no smoothing or runtime integration."
+  ],
+  "original": {
+    "control_reproduction": {
+      "comparison": "exact parsed JSON",
+      "passed": true,
+      "tile_outputs": 27
+    },
+    "invalid_outputs": [
+      {
+        "failures": [
+          {
+            "empty": false,
+            "feature_index": 0,
+            "positive_area": true,
+            "reason": "Ring Self-intersection[464315.4 5080167]"
+          }
+        ],
+        "sample_id": "tile_3022_33074",
+        "seed": 1,
+        "variant": "control-120m2"
+      },
+      {
+        "failures": [
+          {
+            "empty": false,
+            "feature_index": 0,
+            "positive_area": true,
+            "reason": "Ring Self-intersection[464315.4 5080167]"
+          }
+        ],
+        "sample_id": "tile_3022_33074",
+        "seed": 1,
+        "variant": "no-small-region-merge"
+      },
+      {
+        "failures": [
+          {
+            "empty": false,
+            "feature_index": 6,
+            "positive_area": true,
+            "reason": "Self-intersection[456395.290909091 5076892.69090909]"
+          },
+          {
+            "empty": false,
+            "feature_index": 13,
+            "positive_area": true,
+            "reason": "Ring Self-intersection[456442.2 5076837.6]"
+          },
+          {
+            "empty": false,
+            "feature_index": 22,
+            "positive_area": true,
+            "reason": "Ring Self-intersection[456439.8 5076873]"
+          }
+        ],
+        "sample_id": "tile_2971_33052",
+        "seed": 1,
+        "variant": "control-120m2"
+      },
+      {
+        "failures": [
+          {
+            "empty": false,
+            "feature_index": 6,
+            "positive_area": true,
+            "reason": "Self-intersection[456395.290909091 5076892.69090909]"
+          },
+          {
+            "empty": false,
+            "feature_index": 13,
+            "positive_area": true,
+            "reason": "Ring Self-intersection[456442.2 5076837.6]"
+          },
+          {
+            "empty": false,
+            "feature_index": 22,
+            "positive_area": true,
+            "reason": "Ring Self-intersection[456439.8 5076873]"
+          },
+          {
+            "empty": false,
+            "feature_index": 30,
+            "positive_area": true,
+            "reason": "Self-intersection[456388.854545454 5076843.05454545]"
+          }
+        ],
+        "sample_id": "tile_2971_33052",
+        "seed": 1,
+        "variant": "no-small-region-merge"
+      },
+      {
+        "failures": [
+          {
+            "empty": false,
+            "feature_index": 12,
+            "positive_area": true,
+            "reason": "Ring Self-intersection[461604 5075040.6]"
+          },
+          {
+            "empty": false,
+            "feature_index": 44,
+            "positive_area": true,
+            "reason": "Self-intersection[461694.6 5075007.6]"
+          }
+        ],
+        "sample_id": "tile_3005_33040",
+        "seed": 1,
+        "variant": "control-120m2"
+      },
+      {
+        "failures": [
+          {
+            "empty": false,
+            "feature_index": 15,
+            "positive_area": true,
+            "reason": "Ring Self-intersection[461604 5075040.6]"
+          },
+          {
+            "empty": false,
+            "feature_index": 33,
+            "positive_area": true,
+            "reason": "Ring Self-intersection[461581.2 5075097.6]"
+          },
+          {
+            "empty": false,
+            "feature_index": 54,
+            "positive_area": true,
+            "reason": "Self-intersection[461694.6 5075007.6]"
+          }
+        ],
+        "sample_id": "tile_3005_33040",
+        "seed": 1,
+        "variant": "no-small-region-merge"
+      },
+      {
+        "failures": [
+          {
+            "empty": false,
+            "feature_index": 17,
+            "positive_area": true,
+            "reason": "Self-intersection[501111.4 4822755.8]"
+          }
+        ],
+        "sample_id": "tile_3262_31398",
+        "seed": 1,
+        "variant": "control-120m2"
+      },
+      {
+        "failures": [
+          {
+            "empty": false,
+            "feature_index": 18,
+            "positive_area": true,
+            "reason": "Self-intersection[501111.4 4822755.8]"
+          }
+        ],
+        "sample_id": "tile_3262_31398",
+        "seed": 1,
+        "variant": "no-small-region-merge"
+      },
+      {
+        "failures": [
+          {
+            "empty": false,
+            "feature_index": 14,
+            "positive_area": true,
+            "reason": "Ring Self-intersection[497427.6 4818170.4]"
+          }
+        ],
+        "sample_id": "tile_3238_31368",
+        "seed": 1,
+        "variant": "control-120m2"
+      },
+      {
+        "failures": [
+          {
+            "empty": false,
+            "feature_index": 16,
+            "positive_area": true,
+            "reason": "Ring Self-intersection[497427.6 4818170.4]"
+          }
+        ],
+        "sample_id": "tile_3238_31368",
+        "seed": 1,
+        "variant": "no-small-region-merge"
+      },
+      {
+        "failures": [
+          {
+            "empty": false,
+            "feature_index": 17,
+            "positive_area": true,
+            "reason": "Self-intersection[495800.216326531 4818249.41632653]"
+          },
+          {
+            "empty": false,
+            "feature_index": 18,
+            "positive_area": true,
+            "reason": "Ring Self-intersection[495796.8 4818193.8]"
+          },
+          {
+            "empty": false,
+            "feature_index": 21,
+            "positive_area": true,
+            "reason": "Self-intersection[495720.062068965 4818201.76551724]"
+          }
+        ],
+        "sample_id": "tile_3227_31368",
+        "seed": 1,
+        "variant": "control-120m2"
+      },
+      {
+        "failures": [
+          {
+            "empty": false,
+            "feature_index": 18,
+            "positive_area": true,
+            "reason": "Self-intersection[495800.216326531 4818249.41632653]"
+          },
+          {
+            "empty": false,
+            "feature_index": 19,
+            "positive_area": true,
+            "reason": "Ring Self-intersection[495796.8 4818193.8]"
+          },
+          {
+            "empty": false,
+            "feature_index": 22,
+            "positive_area": true,
+            "reason": "Self-intersection[495720.062068965 4818201.76551724]"
+          },
+          {
+            "empty": false,
+            "feature_index": 32,
+            "positive_area": true,
+            "reason": "Ring Self-intersection[495750.6 4818169.8]"
+          }
+        ],
+        "sample_id": "tile_3227_31368",
+        "seed": 1,
+        "variant": "no-small-region-merge"
+      },
+      {
+        "failures": [
+          {
+            "empty": false,
+            "feature_index": 7,
+            "positive_area": true,
+            "reason": "Self-intersection[402512.4 4882990.8]"
+          }
+        ],
+        "sample_id": "tile_2620_31790",
+        "seed": 1,
+        "variant": "control-120m2"
+      },
+      {
+        "failures": [
+          {
+            "empty": false,
+            "feature_index": 7,
+            "positive_area": true,
+            "reason": "Self-intersection[402512.4 4882990.8]"
+          }
+        ],
+        "sample_id": "tile_2620_31790",
+        "seed": 1,
+        "variant": "no-small-region-merge"
+      },
+      {
+        "failures": [
+          {
+            "empty": false,
+            "feature_index": 1,
+            "positive_area": true,
+            "reason": "Ring Self-intersection[402432 4883250]"
+          }
+        ],
+        "sample_id": "tile_2620_31791",
+        "seed": 1,
+        "variant": "control-120m2"
+      },
+      {
+        "failures": [
+          {
+            "empty": false,
+            "feature_index": 1,
+            "positive_area": true,
+            "reason": "Ring Self-intersection[402432 4883250]"
+          }
+        ],
+        "sample_id": "tile_2620_31791",
+        "seed": 1,
+        "variant": "no-small-region-merge"
+      },
+      {
+        "failures": [
+          {
+            "empty": false,
+            "feature_index": 29,
+            "positive_area": true,
+            "reason": "Self-intersection[400434.6 4886352.6]"
+          }
+        ],
+        "sample_id": "tile_2606_31812",
+        "seed": 1,
+        "variant": "no-small-region-merge"
+      },
+      {
+        "failures": [
+          {
+            "empty": false,
+            "feature_index": 0,
+            "positive_area": true,
+            "reason": "Ring Self-intersection[464315.4 5080167]"
+          }
+        ],
+        "sample_id": "tile_3022_33074",
+        "seed": 2,
+        "variant": "control-120m2"
+      },
+      {
+        "failures": [
+          {
+            "empty": false,
+            "feature_index": 0,
+            "positive_area": true,
+            "reason": "Ring Self-intersection[464315.4 5080167]"
+          }
+        ],
+        "sample_id": "tile_3022_33074",
+        "seed": 2,
+        "variant": "no-small-region-merge"
+      },
+      {
+        "failures": [
+          {
+            "empty": false,
+            "feature_index": 31,
+            "positive_area": true,
+            "reason": "Self-intersection[456388.854545454 5076843.05454545]"
+          }
+        ],
+        "sample_id": "tile_2971_33052",
+        "seed": 2,
+        "variant": "no-small-region-merge"
+      },
+      {
+        "failures": [
+          {
+            "empty": false,
+            "feature_index": 33,
+            "positive_area": true,
+            "reason": "Self-intersection[461581.2 5075097.6]"
+          }
+        ],
+        "sample_id": "tile_3005_33040",
+        "seed": 2,
+        "variant": "no-small-region-merge"
+      },
+      {
+        "failures": [
+          {
+            "empty": false,
+            "feature_index": 1,
+            "positive_area": true,
+            "reason": "Self-intersection[497419.8 4818137.4]"
+          }
+        ],
+        "sample_id": "tile_3238_31368",
+        "seed": 2,
+        "variant": "control-120m2"
+      },
+      {
+        "failures": [
+          {
+            "empty": false,
+            "feature_index": 1,
+            "positive_area": true,
+            "reason": "Self-intersection[497419.8 4818137.4]"
+          }
+        ],
+        "sample_id": "tile_3238_31368",
+        "seed": 2,
+        "variant": "no-small-region-merge"
+      },
+      {
+        "failures": [
+          {
+            "empty": false,
+            "feature_index": 10,
+            "positive_area": true,
+            "reason": "Self-intersection[495808.8 4818259.2]"
+          },
+          {
+            "empty": false,
+            "feature_index": 24,
+            "positive_area": true,
+            "reason": "Self-intersection[495720.062068965 4818201.76551724]"
+          },
+          {
+            "empty": false,
+            "feature_index": 28,
+            "positive_area": true,
+            "reason": "Self-intersection[495713.4 4818164.4]"
+          }
+        ],
+        "sample_id": "tile_3227_31368",
+        "seed": 2,
+        "variant": "control-120m2"
+      },
+      {
+        "failures": [
+          {
+            "empty": false,
+            "feature_index": 11,
+            "positive_area": true,
+            "reason": "Self-intersection[495808.8 4818259.2]"
+          },
+          {
+            "empty": false,
+            "feature_index": 25,
+            "positive_area": true,
+            "reason": "Self-intersection[495720.062068965 4818201.76551724]"
+          },
+          {
+            "empty": false,
+            "feature_index": 29,
+            "positive_area": true,
+            "reason": "Self-intersection[495713.4 4818164.4]"
+          }
+        ],
+        "sample_id": "tile_3227_31368",
+        "seed": 2,
+        "variant": "no-small-region-merge"
+      },
+      {
+        "failures": [
+          {
+            "empty": false,
+            "feature_index": 1,
+            "positive_area": true,
+            "reason": "Ring Self-intersection[402432 4883250]"
+          }
+        ],
+        "sample_id": "tile_2620_31791",
+        "seed": 2,
+        "variant": "control-120m2"
+      },
+      {
+        "failures": [
+          {
+            "empty": false,
+            "feature_index": 1,
+            "positive_area": true,
+            "reason": "Ring Self-intersection[402432 4883250]"
+          }
+        ],
+        "sample_id": "tile_2620_31791",
+        "seed": 2,
+        "variant": "no-small-region-merge"
+      },
+      {
+        "failures": [
+          {
+            "empty": false,
+            "feature_index": 29,
+            "positive_area": true,
+            "reason": "Ring Self-intersection[400434.6 4886345.4]"
+          }
+        ],
+        "sample_id": "tile_2606_31812",
+        "seed": 2,
+        "variant": "no-small-region-merge"
+      },
+      {
+        "failures": [
+          {
+            "empty": false,
+            "feature_index": 1,
+            "positive_area": true,
+            "reason": "Ring Self-intersection[456444.6 5076859.2]"
+          },
+          {
+            "empty": false,
+            "feature_index": 2,
+            "positive_area": true,
+            "reason": "Self-intersection[456424.8 5076892.8]"
+          }
+        ],
+        "sample_id": "tile_2971_33052",
+        "seed": 3,
+        "variant": "control-120m2"
+      },
+      {
+        "failures": [
+          {
+            "empty": false,
+            "feature_index": 1,
+            "positive_area": true,
+            "reason": "Ring Self-intersection[456444.6 5076859.2]"
+          },
+          {
+            "empty": false,
+            "feature_index": 2,
+            "positive_area": true,
+            "reason": "Self-intersection[456424.8 5076892.8]"
+          },
+          {
+            "empty": false,
+            "feature_index": 28,
+            "positive_area": true,
+            "reason": "Self-intersection[456388.854545454 5076843.05454545]"
+          }
+        ],
+        "sample_id": "tile_2971_33052",
+        "seed": 3,
+        "variant": "no-small-region-merge"
+      },
+      {
+        "failures": [
+          {
+            "empty": false,
+            "feature_index": 28,
+            "positive_area": true,
+            "reason": "Ring Self-intersection[461641.2 5075097.6]"
+          }
+        ],
+        "sample_id": "tile_3005_33040",
+        "seed": 3,
+        "variant": "control-120m2"
+      },
+      {
+        "failures": [
+          {
+            "empty": false,
+            "feature_index": 33,
+            "positive_area": true,
+            "reason": "Ring Self-intersection[461581.2 5075097.6]"
+          },
+          {
+            "empty": false,
+            "feature_index": 34,
+            "positive_area": true,
+            "reason": "Ring Self-intersection[461641.2 5075097.6]"
+          }
+        ],
+        "sample_id": "tile_3005_33040",
+        "seed": 3,
+        "variant": "no-small-region-merge"
+      },
+      {
+        "failures": [
+          {
+            "empty": false,
+            "feature_index": 0,
+            "positive_area": true,
+            "reason": "Self-intersection[501062.4 4822786.2]"
+          },
+          {
+            "empty": false,
+            "feature_index": 9,
+            "positive_area": true,
+            "reason": "Ring Self-intersection[501102.6 4822848.6]"
+          }
+        ],
+        "sample_id": "tile_3262_31398",
+        "seed": 3,
+        "variant": "control-120m2"
+      },
+      {
+        "failures": [
+          {
+            "empty": false,
+            "feature_index": 0,
+            "positive_area": true,
+            "reason": "Self-intersection[501062.4 4822786.2]"
+          },
+          {
+            "empty": false,
+            "feature_index": 10,
+            "positive_area": true,
+            "reason": "Ring Self-intersection[501102.6 4822848.6]"
+          }
+        ],
+        "sample_id": "tile_3262_31398",
+        "seed": 3,
+        "variant": "no-small-region-merge"
+      },
+      {
+        "failures": [
+          {
+            "empty": false,
+            "feature_index": 7,
+            "positive_area": true,
+            "reason": "Self-intersection[495790.2 4818202.2]"
+          },
+          {
+            "empty": false,
+            "feature_index": 18,
+            "positive_area": true,
+            "reason": "Ring Self-intersection[495796.8 4818187.8]"
+          }
+        ],
+        "sample_id": "tile_3227_31368",
+        "seed": 3,
+        "variant": "control-120m2"
+      },
+      {
+        "failures": [
+          {
+            "empty": false,
+            "feature_index": 8,
+            "positive_area": true,
+            "reason": "Self-intersection[495790.2 4818202.2]"
+          },
+          {
+            "empty": false,
+            "feature_index": 19,
+            "positive_area": true,
+            "reason": "Ring Self-intersection[495796.8 4818187.8]"
+          }
+        ],
+        "sample_id": "tile_3227_31368",
+        "seed": 3,
+        "variant": "no-small-region-merge"
+      },
+      {
+        "failures": [
+          {
+            "empty": false,
+            "feature_index": 2,
+            "positive_area": true,
+            "reason": "Ring Self-intersection[402585 4883026.8]"
+          }
+        ],
+        "sample_id": "tile_2620_31790",
+        "seed": 3,
+        "variant": "control-120m2"
+      },
+      {
+        "failures": [
+          {
+            "empty": false,
+            "feature_index": 3,
+            "positive_area": true,
+            "reason": "Ring Self-intersection[402585 4883026.8]"
+          }
+        ],
+        "sample_id": "tile_2620_31790",
+        "seed": 3,
+        "variant": "no-small-region-merge"
+      },
+      {
+        "failures": [
+          {
+            "empty": false,
+            "feature_index": 31,
+            "positive_area": true,
+            "reason": "Ring Self-intersection[402432 4883250]"
+          }
+        ],
+        "sample_id": "tile_2620_31791",
+        "seed": 3,
+        "variant": "control-120m2"
+      },
+      {
+        "failures": [
+          {
+            "empty": false,
+            "feature_index": 1,
+            "positive_area": true,
+            "reason": "Ring Self-intersection[402432 4883250]"
+          }
+        ],
+        "sample_id": "tile_2620_31791",
+        "seed": 3,
+        "variant": "no-small-region-merge"
+      },
+      {
+        "failures": [
+          {
+            "empty": false,
+            "feature_index": 29,
+            "positive_area": true,
+            "reason": "Self-intersection[400434.6 4886352.6]"
+          }
+        ],
+        "sample_id": "tile_2606_31812",
+        "seed": 3,
+        "variant": "no-small-region-merge"
+      }
+    ],
+    "receipts": [
+      {
+        "config": "t0.5-seeds1-hard0",
+        "epoch_zero_based": 21,
+        "recipe_hash": "8d1993998759908e",
+        "results_sha256": "9a71793192f08c4c1662551725408511f4c51dedd7238057ba93fe56c6b8904f",
+        "seed": 1
+      },
+      {
+        "config": "t0.3-seeds1-hard0",
+        "epoch_zero_based": 25,
+        "recipe_hash": "8d1993998759908e",
+        "results_sha256": "c0e5573b19602d2ff67aafd71e2d554e8d9a8e3f516682c778e262123a0173a5",
+        "seed": 2
+      },
+      {
+        "config": "t0.3-seeds1-hard0",
+        "epoch_zero_based": 13,
+        "recipe_hash": "8d1993998759908e",
+        "results_sha256": "0402d4d1db099eec9d34a8f41336418c8fb8994c7b43f0da18175c27e2182b02",
+        "seed": 3
+      }
+    ],
+    "scoring_complete": false,
+    "source_sha256": {
+      "guess-spike/guess.py": "58aecc9723ff2a8df5f58d18852c46f5ca9967405856829e24e6d8d18375b156",
+      "parcel-bench/layered/reconstruct.py": "a3917ef87bcaa5bd7c209b69729f47973ae039aa789878dfce0151b4fbc7a23f",
+      "parcel-bench/visible_division_study.py": "1e13a2e9122970a534aded04816ecbe69b087b98d98e81ec38ab98fee2c99757",
+      "parcel-bench/visible_divisions.py": "67fe00102ecee58469dd45c711cdf4356c701412f7df6e8c398312ad7f70aec6"
+    },
+    "summaries": [
+      {
+        "excluded_separation_probes": 27,
+        "geometry_sums": {
+          "covered_area_m2": 0,
+          "false_merge_feature_area_m2": 0,
+          "feature_count": 0,
+          "outside_area_m2": 0,
+          "overlap_excess_area_m2": 0
+        },
+        "invalid_tile_outputs": 8,
+        "matched_valid_separation_probes": 0,
+        "matched_valid_tile_outputs": 0,
+        "probes": {
+          "same_surface": {
+            "ambiguous": 0,
+            "conditional_fragmentation_rate": null,
+            "joined": 0,
+            "pair_coverage": null,
+            "separated": 0,
+            "total": 0,
+            "uncovered": 0,
+            "uniquely_covered": 0
+          },
+          "separate": {
+            "ambiguous": 0,
+            "conditional_false_merge_rate": null,
+            "joined": 0,
+            "pair_coverage": null,
+            "separated": 0,
+            "total": 0,
+            "uncovered": 0,
+            "uniquely_covered": 0
+          }
+        },
+        "seed": 1,
+        "total_tile_outputs": 9,
+        "variant": "control-120m2"
+      },
+      {
+        "excluded_separation_probes": 27,
+        "geometry_sums": {
+          "covered_area_m2": 0,
+          "false_merge_feature_area_m2": 0,
+          "feature_count": 0,
+          "outside_area_m2": 0,
+          "overlap_excess_area_m2": 0
+        },
+        "invalid_tile_outputs": 9,
+        "matched_valid_separation_probes": 0,
+        "matched_valid_tile_outputs": 0,
+        "probes": {
+          "same_surface": {
+            "ambiguous": 0,
+            "conditional_fragmentation_rate": null,
+            "joined": 0,
+            "pair_coverage": null,
+            "separated": 0,
+            "total": 0,
+            "uncovered": 0,
+            "uniquely_covered": 0
+          },
+          "separate": {
+            "ambiguous": 0,
+            "conditional_false_merge_rate": null,
+            "joined": 0,
+            "pair_coverage": null,
+            "separated": 0,
+            "total": 0,
+            "uncovered": 0,
+            "uniquely_covered": 0
+          }
+        },
+        "seed": 1,
+        "total_tile_outputs": 9,
+        "variant": "no-small-region-merge"
+      },
+      {
+        "excluded_separation_probes": 21,
+        "geometry_sums": {
+          "covered_area_m2": 43547.219999857225,
+          "false_merge_feature_area_m2": 0.0,
+          "feature_count": 37,
+          "outside_area_m2": 1.39619885430875e-07,
+          "overlap_excess_area_m2": 3.637978807091713e-12
+        },
+        "invalid_tile_outputs": 4,
+        "matched_valid_separation_probes": 6,
+        "matched_valid_tile_outputs": 2,
+        "probes": {
+          "same_surface": {
+            "ambiguous": 0,
+            "conditional_fragmentation_rate": 0.0,
+            "joined": 2,
+            "pair_coverage": 1.0,
+            "separated": 0,
+            "total": 2,
+            "uncovered": 0,
+            "uniquely_covered": 2
+          },
+          "separate": {
+            "ambiguous": 0,
+            "conditional_false_merge_rate": 0.0,
+            "joined": 0,
+            "pair_coverage": 1.0,
+            "separated": 6,
+            "total": 6,
+            "uncovered": 0,
+            "uniquely_covered": 6
+          }
+        },
+        "seed": 2,
+        "total_tile_outputs": 9,
+        "variant": "control-120m2"
+      },
+      {
+        "excluded_separation_probes": 21,
+        "geometry_sums": {
+          "covered_area_m2": 43527.77999985829,
+          "false_merge_feature_area_m2": 0.0,
+          "feature_count": 39,
+          "outside_area_m2": 1.3962065281702962e-07,
+          "overlap_excess_area_m2": 3.637978807091713e-12
+        },
+        "invalid_tile_outputs": 7,
+        "matched_valid_separation_probes": 6,
+        "matched_valid_tile_outputs": 2,
+        "probes": {
+          "same_surface": {
+            "ambiguous": 0,
+            "conditional_fragmentation_rate": 0.0,
+            "joined": 2,
+            "pair_coverage": 1.0,
+            "separated": 0,
+            "total": 2,
+            "uncovered": 0,
+            "uniquely_covered": 2
+          },
+          "separate": {
+            "ambiguous": 0,
+            "conditional_false_merge_rate": 0.0,
+            "joined": 0,
+            "pair_coverage": 1.0,
+            "separated": 6,
+            "total": 6,
+            "uncovered": 0,
+            "uniquely_covered": 6
+          }
+        },
+        "seed": 2,
+        "total_tile_outputs": 9,
+        "variant": "no-small-region-merge"
+      },
+      {
+        "excluded_separation_probes": 21,
+        "geometry_sums": {
+          "covered_area_m2": 41663.699999916615,
+          "false_merge_feature_area_m2": 947.6999999959487,
+          "feature_count": 42,
+          "outside_area_m2": 1.2625173440028448e-07,
+          "overlap_excess_area_m2": 3.637978807091713e-12
+        },
+        "invalid_tile_outputs": 6,
+        "matched_valid_separation_probes": 6,
+        "matched_valid_tile_outputs": 2,
+        "probes": {
+          "same_surface": {
+            "ambiguous": 0,
+            "conditional_fragmentation_rate": 0.0,
+            "joined": 2,
+            "pair_coverage": 1.0,
+            "separated": 0,
+            "total": 2,
+            "uncovered": 0,
+            "uniquely_covered": 2
+          },
+          "separate": {
+            "ambiguous": 0,
+            "conditional_false_merge_rate": 0.16666666666666666,
+            "joined": 1,
+            "pair_coverage": 1.0,
+            "separated": 5,
+            "total": 6,
+            "uncovered": 0,
+            "uniquely_covered": 6
+          }
+        },
+        "seed": 3,
+        "total_tile_outputs": 9,
+        "variant": "control-120m2"
+      },
+      {
+        "excluded_separation_probes": 21,
+        "geometry_sums": {
+          "covered_area_m2": 41702.75999990992,
+          "false_merge_feature_area_m2": 947.6999999959487,
+          "feature_count": 46,
+          "outside_area_m2": 1.2625202572280614e-07,
+          "overlap_excess_area_m2": 7.275957614183426e-12
+        },
+        "invalid_tile_outputs": 7,
+        "matched_valid_separation_probes": 6,
+        "matched_valid_tile_outputs": 2,
+        "probes": {
+          "same_surface": {
+            "ambiguous": 0,
+            "conditional_fragmentation_rate": 0.0,
+            "joined": 2,
+            "pair_coverage": 1.0,
+            "separated": 0,
+            "total": 2,
+            "uncovered": 0,
+            "uniquely_covered": 2
+          },
+          "separate": {
+            "ambiguous": 0,
+            "conditional_false_merge_rate": 0.16666666666666666,
+            "joined": 1,
+            "pair_coverage": 1.0,
+            "separated": 5,
+            "total": 6,
+            "uncovered": 0,
+            "uniquely_covered": 6
+          }
+        },
+        "seed": 3,
+        "total_tile_outputs": 9,
+        "variant": "no-small-region-merge"
+      },
+      {
+        "excluded_separation_probes": 69,
+        "geometry_sums": {
+          "covered_area_m2": 85210.91999977385,
+          "false_merge_feature_area_m2": 947.6999999959487,
+          "feature_count": 79,
+          "outside_area_m2": 2.658716198311595e-07,
+          "overlap_excess_area_m2": 7.275957614183426e-12
+        },
+        "invalid_tile_outputs": 18,
+        "matched_valid_separation_probes": 12,
+        "matched_valid_tile_outputs": 4,
+        "probes": {
+          "same_surface": {
+            "ambiguous": 0,
+            "conditional_fragmentation_rate": 0.0,
+            "joined": 4,
+            "pair_coverage": 1.0,
+            "separated": 0,
+            "total": 4,
+            "uncovered": 0,
+            "uniquely_covered": 4
+          },
+          "separate": {
+            "ambiguous": 0,
+            "conditional_false_merge_rate": 0.08333333333333333,
+            "joined": 1,
+            "pair_coverage": 1.0,
+            "separated": 11,
+            "total": 12,
+            "uncovered": 0,
+            "uniquely_covered": 12
+          }
+        },
+        "seed": null,
+        "total_tile_outputs": 27,
+        "variant": "control-120m2"
+      },
+      {
+        "excluded_separation_probes": 69,
+        "geometry_sums": {
+          "covered_area_m2": 85230.53999976821,
+          "false_merge_feature_area_m2": 947.6999999959487,
+          "feature_count": 85,
+          "outside_area_m2": 2.6587267853983576e-07,
+          "overlap_excess_area_m2": 1.0913936421275139e-11
+        },
+        "invalid_tile_outputs": 23,
+        "matched_valid_separation_probes": 12,
+        "matched_valid_tile_outputs": 4,
+        "probes": {
+          "same_surface": {
+            "ambiguous": 0,
+            "conditional_fragmentation_rate": 0.0,
+            "joined": 4,
+            "pair_coverage": 1.0,
+            "separated": 0,
+            "total": 4,
+            "uncovered": 0,
+            "uniquely_covered": 4
+          },
+          "separate": {
+            "ambiguous": 0,
+            "conditional_false_merge_rate": 0.08333333333333333,
+            "joined": 1,
+            "pair_coverage": 1.0,
+            "separated": 11,
+            "total": 12,
+            "uncovered": 0,
+            "uniquely_covered": 12
+          }
+        },
+        "seed": null,
+        "total_tile_outputs": 27,
+        "variant": "no-small-region-merge"
+      }
+    ]
+  },
+  "original_protocol_sha256": "4d4b3771cb2bf6ef77b53d299b0cba32f947eff9c14061057ae68347912f0746",
+  "posthoc_seed_diagnostic": {
+    "purpose": "Post-comparison mechanism inspection; no new label or selection change.",
+    "rows": [
+      {
+        "anchor_seed_labels": [
+          0,
+          4
+        ],
+        "final_label": 4,
+        "osm_building_seed_count": 3,
+        "probability_sha256": "6255b6835abc55e00cd272d412fd9f55b2089e3a437af588a7c8efa2de1dc859",
+        "probe_id": "S3",
+        "same_connected_polygon": true,
+        "sample_id": "tile_3022_33074",
+        "seed": 1
+      },
+      {
+        "anchor_seed_labels": [
+          24,
+          24
+        ],
+        "final_label": 24,
+        "osm_building_seed_count": 18,
+        "probability_sha256": "22aedc41362742c560f0b0225a275c090aa94e487579adf39440835c250bcf01",
+        "probe_id": "S1",
+        "same_connected_polygon": true,
+        "sample_id": "tile_3238_31368",
+        "seed": 1
+      },
+      {
+        "anchor_seed_labels": [
+          0,
+          0
+        ],
+        "final_label": 45,
+        "osm_building_seed_count": 34,
+        "probability_sha256": "6fe1c178912d9950da9779045bd66bc672e11656295ec1ae75b23a377a7eac25",
+        "probe_id": "S3",
+        "same_connected_polygon": true,
+        "sample_id": "tile_2620_31791",
+        "seed": 1
+      },
+      {
+        "anchor_seed_labels": [
+          0,
+          0
+        ],
+        "final_label": 26,
+        "osm_building_seed_count": 34,
+        "probability_sha256": "6f4b7082df75b3248c548e3b6402cad59b5970c8374befaed5e13b537181601a",
+        "probe_id": "S3",
+        "same_connected_polygon": true,
+        "sample_id": "tile_2620_31791",
+        "seed": 2
+      },
+      {
+        "anchor_seed_labels": [
+          25,
+          25
+        ],
+        "final_label": 25,
+        "osm_building_seed_count": 18,
+        "probability_sha256": "28820e96ef9668917265edf9fac2b3e6c95223421e1352e89857a8922baf4d1a",
+        "probe_id": "S1",
+        "same_connected_polygon": true,
+        "sample_id": "tile_3238_31368",
+        "seed": 3
+      },
+      {
+        "anchor_seed_labels": [
+          0,
+          0
+        ],
+        "final_label": 26,
+        "osm_building_seed_count": 34,
+        "probability_sha256": "3de3bf3610868d412e6256101d8aed4c90c32017a5365539852f77d429245b83",
+        "probe_id": "S3",
+        "same_connected_polygon": true,
+        "sample_id": "tile_2620_31791",
+        "seed": 3
+      }
+    ]
+  },
+  "purpose": "Tracked evidence receipt for the 2026-10-19 agent-draft visible-division and exact-cell diagnostics.",
+  "rental_cost_usd": 0,
+  "samples": [
+    {
+      "bbox": [
+        464179.2,
+        5080166.399999999,
+        464332.8,
+        5080320.0
+      ],
+      "id": "tile_3022_33074",
+      "image_sha256": "cb039785e8520da49319f2d45e2cff9063c8182d44cd479e34824ea1d7ba9fcd"
+    },
+    {
+      "bbox": [
+        456345.6,
+        5076787.2,
+        456499.2,
+        5076940.8
+      ],
+      "id": "tile_2971_33052",
+      "image_sha256": "c9fc864af0e616704da2d80549b700a8c109d95d5e9d9900b1e8d8805e44c9cf"
+    },
+    {
+      "bbox": [
+        461568.0,
+        5074944.0,
+        461721.6,
+        5075097.6
+      ],
+      "id": "tile_3005_33040",
+      "image_sha256": "ffd756192caf10d9832fef532a757c8b87b0def0a27952452ca3e8c9708bc525"
+    },
+    {
+      "bbox": [
+        501043.19999999995,
+        4822732.8,
+        501196.8,
+        4822886.399999999
+      ],
+      "id": "tile_3262_31398",
+      "image_sha256": "e989b0dbcf3f33c828ce8808614fe5e1d905bcfb03860e8ce8def19498efbdb9"
+    },
+    {
+      "bbox": [
+        497356.8,
+        4818124.8,
+        497510.39999999997,
+        4818278.399999999
+      ],
+      "id": "tile_3238_31368",
+      "image_sha256": "706eab0b20732ee847bebb869afc031c1a61418cfa8cc9fb7296c54510745a21"
+    },
+    {
+      "bbox": [
+        495667.19999999995,
+        4818124.8,
+        495820.8,
+        4818278.399999999
+      ],
+      "id": "tile_3227_31368",
+      "image_sha256": "6c3e42a70e4e9e1d9ed58f2226259bcc368efc2be37ba2b7f4705eca05cb59b5"
+    },
+    {
+      "bbox": [
+        402432.0,
+        4882944.0,
+        402585.6,
+        4883097.6
+      ],
+      "id": "tile_2620_31790",
+      "image_sha256": "ec903fc83277465be48f11ed4b65aa54e92ce729b32a2412956fb78af37ede38"
+    },
+    {
+      "bbox": [
+        402432.0,
+        4883097.6,
+        402585.6,
+        4883251.2
+      ],
+      "id": "tile_2620_31791",
+      "image_sha256": "42c3e3585c800856609f724a6223b054df8770966bf9d0f6d0c2d004420a21e7"
+    },
+    {
+      "bbox": [
+        400281.6,
+        4886323.2,
+        400435.2,
+        4886476.8
+      ],
+      "id": "tile_2606_31812",
+      "image_sha256": "879bb6ff95fd5776b87bf0cf9bfa6542a82dfb3b79062521629eb060b3f7931b"
+    }
+  ],
+  "schema": "visible-divisions-evidence-v1",
+  "training_runs": 0
+}

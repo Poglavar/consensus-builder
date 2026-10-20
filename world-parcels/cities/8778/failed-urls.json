@@ -1,0 +1,22 @@
+[
+  {
+    "url": "https://upbhunaksha.gov.in/bhunakshaserver/Levels/levelLabels",
+    "reason": "timeout/no response"
+  },
+  {
+    "url": "https://upbhunaksha.gov.in/bhunakshaserver/Levels/stateCode",
+    "reason": "not completed after preceding timeout"
+  },
+  {
+    "url": "https://upbhulekh.gov.in/"
+  },
+  {
+    "url": "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=134&tehsilCode=00712"
+  },
+  {
+    "url": "https://upbhunaksha.gov.in/"
+  },
+  {
+    "url": "https://upbhulekh.gov.in/documents/landrecords-bijnor.pdf"
+  }
+]

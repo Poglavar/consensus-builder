@@ -1,4 +1,4 @@
-// Contests: a city's proposals and named plans grouped by the land they claim, with each one's
+// Contests: a city's proposals and named plans grouped by their qualified land references, with each one's
 // prediction market beside it. This is the shape behind GET /markets and the Bets sheet. A named plan
 // (plans.md) is an entry of its own over its members' land; proposals that belong to a plan in the
 // contest fold under it instead of standing as separate rows, and so do the plan's older versions
@@ -6,22 +6,31 @@
 // nothing here touches the database or an RPC.
 import { createHash } from 'node:crypto';
 import { createRequire } from 'node:module';
+import { PublicKey } from '@solana/web3.js';
+import { PROPOSAL_PROGRAM_ID } from '../oracle/proposal-lifecycle.js';
+import { canonicalizeLifecycleStatus } from '../proposals/lifecycle.js';
+import { normalizeParcelSource } from '../proposals/parcel-set.js';
+import { resolveParcelSourceDescriptor } from '../parcels/sources.js';
 
 const require = createRequire(import.meta.url);
 // The sheet's own model (frontend/js/bets/bets-model.js): the same state words and the same order,
 // so the API and the Bets sheet cannot disagree about which row leads.
 const { compareContests, compareRows, rowState } = require('../../frontend/js/bets/bets-model.js');
 
-const BASE58 = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/;
+export const DEVNET_PROPOSAL_LOCATION_SQL = `
+    onchain_data->>'chainId' = 'solana-devnet'
+    AND onchain_data->>'contractAddress' = '${PROPOSAL_PROGRAM_ID}'`;
 
-/** The Solana proposal account a published proposal was minted as, or null. */
+/** A declared account in the deployment this market serves; the RPC reader verifies the account. */
 export function proposalAccountOf(onchainData) {
     const data = onchainData && typeof onchainData === 'object' ? onchainData : null;
     if (!data) return null;
-    const chain = String(data.chainId || data.chain || '').toLowerCase();
-    if (!chain.startsWith('solana')) return null;
-    const account = String(data.proposalId || data.proposalAccount || data.tokenId || '').trim();
-    return BASE58.test(account) ? account : null;
+    if (data.chainId !== 'solana-devnet' || data.contractAddress !== PROPOSAL_PROGRAM_ID) return null;
+    if (typeof data.proposalId !== 'string') return null;
+    try {
+        const account = new PublicKey(data.proposalId).toBase58();
+        return account === data.proposalId ? account : null;
+    } catch { return null; }
 }
 
 export function normalizeParcelIds(value) {
@@ -29,24 +38,67 @@ export function normalizeParcelIds(value) {
     return Array.from(new Set(list.map(item => String(item ?? '').trim()).filter(Boolean))).sort();
 }
 
+export function normalizeKnownParcelSource(value) {
+    let normalized;
+    try { normalized = normalizeParcelSource(value); } catch { return null; }
+    if (!normalized) return null;
+    if (normalized.sourceId !== 'hr-cadastre') {
+        try { if (!resolveParcelSourceDescriptor(normalized.sourceId)) return null; } catch { return null; }
+    }
+    return normalized;
+}
+
+export function parcelRefsOf(proposal) {
+    const parcelSource = normalizeKnownParcelSource(proposal?.parcelSource);
+    if (!parcelSource) return [];
+    return normalizeParcelIds(proposal?.parcelIds).map(parcelId => ({ ...parcelSource, parcelId }));
+}
+
+export function normalizeParcelRefs(value) {
+    const refs = Array.isArray(value) ? value : [];
+    const byKey = new Map();
+    for (const ref of refs) {
+        const source = normalizeKnownParcelSource({ sourceId: ref?.sourceId, snapshotId: ref?.snapshotId });
+        const parcelId = typeof ref?.parcelId === 'string' ? ref.parcelId.trim() : '';
+        if (!source || !parcelId) continue;
+        const normalized = { ...source, parcelId };
+        byKey.set(JSON.stringify([normalized.sourceId, normalized.snapshotId, normalized.parcelId]), normalized);
+    }
+    return [...byKey.entries()].sort(([a], [b]) => a < b ? -1 : a > b ? 1 : 0).map(([, ref]) => ref);
+}
+
 /** Stable contest id: the land, not the proposals, so a new proposal joins an existing contest. */
-export function contestId(parcelIds, fallback = '') {
-    const ids = normalizeParcelIds(parcelIds);
-    const seed = ids.length ? `land:${ids.join('\n')}` : `proposal:${fallback}`;
+export function contestId(parcelRefs, fallback = '') {
+    const refs = normalizeParcelRefs(parcelRefs);
+    const seed = refs.length ? `land:${JSON.stringify(refs)}` : `unqualified-proposal:${fallback}`;
     return `c-${createHash('sha256').update(seed).digest('hex').slice(0, 12)}`;
 }
 
-/** Union-find over shared parcel ids: proposals that touch any common parcel share a contest. */
+/** Union-find over shared qualified parcel references plus explicit named-plan membership. */
 export function groupByLand(proposals) {
     const list = Array.isArray(proposals) ? proposals : [];
     const parent = list.map((_, index) => index);
     const find = index => (parent[index] === index ? index : (parent[index] = find(parent[index])));
     const union = (a, b) => { parent[find(a)] = find(b); };
     const firstByParcel = new Map();
+    const firstById = new Map();
     list.forEach((proposal, index) => {
-        for (const id of normalizeParcelIds(proposal.parcelIds)) {
-            if (firstByParcel.has(id)) union(index, firstByParcel.get(id));
-            else firstByParcel.set(id, index);
+        if (!proposal.isPlan) {
+            const proposalId = String(proposal.id ?? '');
+            if (proposalId && !firstById.has(proposalId)) firstById.set(proposalId, index);
+        }
+    });
+    list.forEach((proposal, index) => {
+        if (proposal.isPlan) {
+            for (const memberId of proposal.memberIds || []) {
+                const memberIndex = firstById.get(String(memberId));
+                if (memberIndex !== undefined) union(index, memberIndex);
+            }
+        }
+        for (const ref of parcelRefsOf(proposal)) {
+            const key = JSON.stringify([ref.sourceId, ref.snapshotId, ref.parcelId]);
+            if (firstByParcel.has(key)) union(index, firstByParcel.get(key));
+            else firstByParcel.set(key, index);
         }
     });
     const groups = new Map();
@@ -99,12 +151,12 @@ function proposalEntry(proposal, markets, statuses) {
     const proposalAccount = proposal.proposalAccount || null;
     const decoded = proposalAccount ? markets.get(proposalAccount) : null;
     const market = marketEntry(decoded);
-    const lifecycleStatus = String(proposal.lifecycleStatus || 'Active');
+    const lifecycleStatus = canonicalizeLifecycleStatus(proposal.lifecycleStatus) || 'Unknown';
     // What the market program will see: the proposal account's own status when it was readable.
     // The database's expiry-aware status is the display word; it can run ahead of the chain (an
     // app deadline passed, no verdict settled yet), and the program only honours the chain.
     const chainStatus = proposalAccount && statuses && statuses.get(proposalAccount) ? statuses.get(proposalAccount) : null;
-    const active = (chainStatus || lifecycleStatus) === 'Active';
+    const active = chainStatus === 'Active';
     return {
         id: proposal.id,
         kind: 'proposal',
@@ -122,6 +174,7 @@ function proposalEntry(proposal, markets, statuses) {
         screenshotBeforeUrl: proposal.screenshotBeforeUrl || null,
         screenshotPairUrl: proposal.screenshotPairUrl || null,
         parcelIds: normalizeParcelIds(proposal.parcelIds),
+        parcelRefs: parcelRefsOf(proposal),
         siteName: proposal.siteName || null,
         proposalAccount,
         market,
@@ -141,7 +194,7 @@ function planEntry(plan, markets, statuses, proposalsById) {
         proposalId: plan.slug,
         title: plan.title || plan.slug,
         goal: 'plan',
-        lifecycleStatus: 'Active',
+        lifecycleStatus: 'Unknown',
         createdAt: plan.createdAt,
         expiresAt: null,
         author: plan.author,
@@ -149,6 +202,7 @@ function planEntry(plan, markets, statuses, proposalsById) {
         screenshotBeforeUrl: plan.screenshotBeforeUrl,
         screenshotPairUrl: plan.screenshotPairUrl,
         parcelIds: plan.parcelIds,
+        parcelRefs: plan.parcelRefs,
         siteName: plan.place,
         proposalAccount: plan.proposalAccount
     }, markets, statuses);
@@ -156,7 +210,8 @@ function planEntry(plan, markets, statuses, proposalsById) {
         const member = proposalsById.get(id);
         return { id: member.id, proposalId: member.proposalId, title: member.title || null, goal: member.goal || null };
     });
-    return { ...base, kind: 'plan', planSlug: plan.slug, supersedes: plan.supersedes || null, memberCount: members.length, members };
+    return { ...base, parcelRefs: normalizeParcelRefs(plan.parcelRefs), kind: 'plan', planSlug: plan.slug,
+        supersedes: plan.supersedes || null, memberCount: members.length, members };
 }
 
 // A version a newer one in the same contest replaced. It stays reachable for the bets already in its
@@ -244,7 +299,7 @@ export function siteNameOf(entries) {
  * @param {{ city: string, proposals: Array<object>, markets: Map<string, { address: string, market: object|null }>, statuses?: Map<string, string>, now?: Date }} input
  *   statuses: proposal account → on-chain status name ('Active' | 'Executed' | 'Cancelled' | 'Expired').
  *   proposals: { id, proposalId, title, goal, lifecycleStatus, createdAt, expiresAt, author, agent,
- *   proposalRole, screenshotUrl, parcelIds, proposalAccount }. Only contests with at least one
+ *   proposalRole, screenshotUrl, parcelIds, parcelSource, proposalAccount }. Only contests with at least one
  *   minted proposal are returned: a contest nobody can bet on is a proposals list, not a market.
  *   Entries and contests come in the Bets sheet's order (bets-model.js compareRows, compareContests).
  */
@@ -253,8 +308,12 @@ export function buildContests({ city, proposals, plans = [], markets = new Map()
     const planItems = plans.map(plan => ({
         ...plan,
         isPlan: true,
-        parcelIds: normalizeParcelIds((plan.memberIds || []).flatMap(id => proposalsById.get(String(id))?.parcelIds || []))
-    })).filter(plan => plan.parcelIds.length);
+        parcelIds: normalizeParcelIds((plan.memberIds || []).flatMap(id => proposalsById.get(String(id))?.parcelIds || [])),
+        parcelRefs: normalizeParcelRefs((plan.memberIds || []).flatMap(id => {
+            const member = proposalsById.get(String(id));
+            return member ? parcelRefsOf(member) : [];
+        }))
+    })).filter(plan => plan.memberIds?.length);
     const contests = groupByLand([...proposals, ...planItems]).map(group => {
         const groupPlans = group.filter(item => item.isPlan);
         // Members of every version fold away, so a piece an older version used does not resurface as a row.
@@ -270,11 +329,13 @@ export function buildContests({ city, proposals, plans = [], markets = new Map()
         ].sort(compareRows);
         const olderCount = groupPlans.length - versions.current.length;
         const parcelIds = normalizeParcelIds(group.flatMap(item => normalizeParcelIds(item.parcelIds)));
+        const parcelRefs = normalizeParcelRefs(group.flatMap(item => item.isPlan ? item.parcelRefs : parcelRefsOf(item)));
         const withMarket = entries.filter(entry => entry.market);
         const pool = withMarket.reduce((sum, entry) => sum + atomic(entry.market.poolAtomic), 0n);
         return {
-            id: contestId(parcelIds, entries[0]?.proposalId || ''),
+            id: contestId(parcelRefs, entries.map(entry => entry.proposalId).sort()[0] || ''),
             parcelIds,
+            parcelRefs,
             siteName: siteNameOf(entries),
             proposalCount: entries.length,
             planCount: versions.current.length,

@@ -1,0 +1,6 @@
+[
+  {
+    "url": "https://mapy.geoportal.gov.pl/wss/service/PZGIK/EGIB/WFS/UslugaZbiorcza",
+    "reason": "Failed gates on GUGiK's collective EGiB WFS: metric; failures {\"metric\": {\"errorType\": \"Error\", \"code\": \"metric-report-failed\"}}. Source parcels 143412_4.0027.142/3 and 143412_4.0027.145 overlap by 0.70 m2 (the gate allows none above 0.01 m2)."
+  }
+]

@@ -1,0 +1,19 @@
+[
+  {
+    "url": "https://gis.pai.gov.kw/arcgis/rest/services/Basemap/Public_PAI_Kuwait/MapServer?f=pjson"
+  },
+  {
+    "url": "https://gis.pai.gov.kw/arcgis/rest/services/Basemap/Public_PAI_Kuwait/MapServer/1/query?where=1%3D1&geometry=47.9994,29.2828,48.0004,29.2838&geometryType=esriGeometryEnvelope&inSR=4326&outFields=*&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json"
+  },
+  {
+    "url": "https://kuwaitportal.paci.gov.kw/arcgisportal/rest/services/?f=json"
+  },
+  {
+    "url": "https://gis.pai.gov.kw/arcgis/rest/services/Basemap/Public_PAI_Kuwait/MapServer/1?f=json",
+    "reason": "403"
+  },
+  {
+    "url": "https://gis.pai.gov.kw/arcgis/rest/services?f=json",
+    "reason": "403"
+  }
+]

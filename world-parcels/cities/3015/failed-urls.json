@@ -1,0 +1,10 @@
+[
+  {
+    "url": "https://www.mozgis.gov.mz/serverfederated/rest/services/Hosted/Mocuba/FeatureServer/2/query?where=1%3D1&outFields=fid&returnGeometry=true&resultRecordCount=1&f=geojson",
+    "reason": "not completed/timeout in shell attempt"
+  },
+  {
+    "url": "https://gis.fnds.gov.mz/server/rest/services?f=pjson",
+    "reason": "TLS verification failure"
+  }
+]

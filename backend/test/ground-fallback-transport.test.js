@@ -2,8 +2,11 @@
 import { describe, expect, it, vi } from 'vitest';
 import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
+import { createRequire } from 'node:module';
+const require = createRequire(import.meta.url);
+const EstimatedParcelSource = require('../../frontend/js/parcels/estimated-source.js');
 
-function boot(city = 'explore') {
+function boot(city = 'explore', globals = {}) {
     const configs = [
         { id: 'explore', parcels: { source: 'none', gridSize: 0.005 } },
         { id: 'live', parcels: { source: 'parcel-source', sourceId: 'test-source', gridSize: 0.005 } }
@@ -20,7 +23,8 @@ function boot(city = 'explore') {
         fetchWithRetry: fetch,
         map: { getBounds: () => 'view-bounds' },
         updateStatus: vi.fn(),
-        ParcelSourceSettings: { clearFailure: vi.fn() }
+        ParcelSourceSettings: { clearFailure: vi.fn() },
+        ...globals
     };
     const context = vm.createContext({ window, console, URL, URLSearchParams, setTimeout, AbortController });
     for (const path of ['ground-fallback.js', 'fetch.js']) {
@@ -30,6 +34,26 @@ function boot(city = 'explore') {
 }
 
 describe('session ground on the World’s Fair branch', () => {
+    it('restores saved estimates in a fresh tab and serves IDs, cells and proposal footprints locally', async () => {
+        const entries = new Map();
+        const localStorage = { getItem: key => entries.get(key) ?? null, setItem: (key, value) => entries.set(key, value) };
+        const geometry = { type: 'Polygon', coordinates: [[[15.97,44],[15.971,44],[15.971,44.001],[15.97,44.001],[15.97,44]]] };
+        const record = EstimatedParcelSource.createStore(localStorage).save('explore', {
+            collection: { type:'FeatureCollection', features:[{ type:'Feature', id:'plot', properties:{ estimated:true }, geometry }] },
+            bounds:[15.96,43.99,15.98,44.01]
+        });
+        const { window, transport, fetch } = boot('explore', { localStorage, EstimatedParcelSource });
+        const id = record.collection.features[0].id;
+        expect(window.ParcelGroundFallback.activeSource('explore').kind).toBe('estimated-local');
+        expect((await transport.fetchBounds(null, { keys:['3194,8800'] })).features.map(f => f.properties.parcelId)).toEqual([id]);
+        expect((await transport.fetchByIds([id])).features[0].properties.estimated).toBe(true);
+        expect((await transport.fetchUnderGeometry(geometry)).features[0].properties.parcelId).toBe(id);
+        expect(transport.supportsRoadIds()).toBe(false);
+        expect(fetch).not.toHaveBeenCalled();
+        window.ParcelGroundFallback.clearSource('explore');
+        expect(boot('explore', { localStorage, EstimatedParcelSource }).window.ParcelGroundFallback.activeSource('explore')).toBeNull();
+        expect(EstimatedParcelSource.createStore(localStorage).read('explore').collection.features).toHaveLength(1);
+    });
     it('offers the no-register choices without fetching a backend or changing empty ground', async () => {
         const { window, transport, fetch } = boot();
         const offer = vi.fn();

@@ -73,12 +73,41 @@ function browserDeal() {
 }
 
 describe('ReparcellizationDeal shared fingerprint', () => {
+    it('derives plot references from the committed plot content, identically in browser and node', () => {
+        const record = proposal();
+        const before = structuredClone(record);
+        const slice = record.reparcellization.polygons[0];
+        const committed = deal.content(record).plots.find(plot => plot.owners.length === 2);
+        const expected = createHash('sha256').update(deal.stableStringify({
+            schema: 'land-readjustment-plot/v1', plot: committed
+        }), 'utf8').digest('hex');
+        expect(deal.plotFingerprint(slice)).toBe(`lr-plot1-sha256:${expected}`);
+        expect(browserDeal().plotFingerprint(slice)).toBe(deal.plotFingerprint(slice));
+        const reordered = structuredClone(slice);
+        reordered.owners.reverse();
+        reordered.displayName = 'Cosmetic label';
+        reordered.area = 999;
+        expect(deal.plotFingerprint(reordered)).toBe(deal.plotFingerprint(slice));
+        record.reparcellization.polygons.reverse();
+        expect(record.reparcellization.polygons.map(deal.plotFingerprint).sort())
+            .toEqual(before.reparcellization.polygons.map(deal.plotFingerprint).sort());
+        expect(deal.fingerprint(record)).toBe(deal.fingerprint(before));
+    });
+
+    it.each(['geometry', 'allocation'])('changes the plot reference when its %s changes', field => {
+        const slice = proposal().reparcellization.polygons[0];
+        const edited = structuredClone(slice);
+        if (field === 'geometry') edited.geometry.coordinates[0][1][0] += 1e-12;
+        else edited.owners[0].ownerKey = 'another-party';
+        expect(deal.plotFingerprint(edited)).not.toBe(deal.plotFingerprint(slice));
+    });
+
     it('uses the versioned SHA-256 digest of its canonical payload, including Unicode in UTF-8', () => {
         const record = proposal();
         const content = deal.content(record);
         const expected = createHash('sha256').update(deal.stableStringify(content), 'utf8').digest('hex');
-        expect(deal.fingerprint(record)).toBe(`lr2-sha256:${expected}`);
-        expect(deal.fingerprint(record)).toMatch(/^lr2-sha256:[0-9a-f]{64}$/);
+        expect(deal.fingerprint(record)).toBe(`lr3-sha256:${expected}`);
+        expect(deal.fingerprint(record)).toMatch(/^lr3-sha256:[0-9a-f]{64}$/);
         expect(browserDeal().fingerprint(record)).toBe(deal.fingerprint(record));
     });
 
@@ -101,7 +130,7 @@ describe('ReparcellizationDeal shared fingerprint', () => {
             record.reparcellization.ownerShares[1].cashOffer = 30;
         }],
         ['valuation', record => { record.reparcellization.totalValue += 1; }],
-        ['contribution basis', record => { record.reparcellization.contributionBasis = 'value'; }],
+        ['contribution basis', record => { record.reparcellization.contributionBasis = 'value'; record.reparcellization.valuationCurrency = 'EUR'; }],
         ['policy', record => { record.reparcellization.policy.threshold = 0.8; }],
         ['regime', record => { record.reparcellization.regime.id = 'lr-regime-v2'; }],
         ['electorate', record => { record.reparcellization.electorate.push('owner:Борис'); }],
@@ -201,46 +230,81 @@ describe('ReparcellizationDeal shared fingerprint', () => {
         expect(() => deal.fingerprint(nullCash), 'explicit null cash must not silently become zero').toThrow();
     });
 
-    it('allows a complete ownerless open-ground plot without assigning it to an owner', () => {
+    it('allows a complete unrepresented open-ground plot without assigning it to an owner', () => {
         const openGround = proposal();
         openGround.offer = 0;
         openGround.reparcellization.polygons = [{
-            geometry: rectangle(0, 0, 2, 1), noOwner: true,
-            owners: [{ ownerKey: 'open-ground', share: 1, noOwner: true }]
+            geometry: rectangle(0, 0, 2, 1), unrepresentedGround: true,
+            owners: [{ ownerKey: 'open-ground', share: 1, unrepresentedGround: true }]
         }];
-        openGround.reparcellization.ownerShares = [{ ownerKey: 'open-ground', noOwner: true, cashOffer: 0 }];
+        openGround.reparcellization.ownerShares = [{ ownerKey: 'open-ground', unrepresentedGround: true, cashOffer: 0 }];
         const payload = deal.content(openGround);
         expect(payload.plots[0].owners).toEqual([]);
-        expect(payload.ledger[0]).toMatchObject({ ownerKey: 'open-ground', noOwner: true, cashCents: 0 });
-        expect(deal.fingerprint(openGround)).toMatch(/^lr2-sha256:[0-9a-f]{64}$/);
+        expect(payload.ledger[0]).toMatchObject({ ownerKey: 'open-ground', unrepresentedGround: true, cashCents: 0 });
+        expect(deal.fingerprint(openGround)).toMatch(/^lr3-sha256:[0-9a-f]{64}$/);
     });
 
-    it('treats the reserved open-ground ledger key as ownerless even without the explicit flag', () => {
-        for (const noOwner of [undefined, false]) {
+    it('treats the reserved open-ground ledger key as unrepresented ground even without the explicit flag', () => {
+        for (const unrepresentedGround of [undefined, false]) {
             const openGround = proposal();
             openGround.offer = 0;
             openGround.reparcellization.polygons = [{
-                geometry: rectangle(0, 0, 2, 1), noOwner: true,
-                owners: [{ ownerKey: 'open-ground', share: 1, noOwner: true }]
+                geometry: rectangle(0, 0, 2, 1), unrepresentedGround: true,
+                owners: [{ ownerKey: 'open-ground', share: 1, unrepresentedGround: true }]
             }];
             openGround.reparcellization.ownerShares = [{
-                ownerKey: 'open-ground', ...(noOwner === undefined ? {} : { noOwner }), cashOffer: 0
+                ownerKey: 'open-ground', ...(unrepresentedGround === undefined ? {} : { unrepresentedGround }), cashOffer: 0
             }];
-            expect(deal.content(openGround).ledger[0]).toMatchObject({ ownerKey: 'open-ground', noOwner: true, cashCents: 0 });
+            expect(deal.content(openGround).ledger[0]).toMatchObject({ ownerKey: 'open-ground', unrepresentedGround: true, cashCents: 0 });
         }
     });
 
-    it.each([undefined, false])('rejects positive cash for the open-ground key (noOwner flag: %s)', noOwner => {
+    it.each([undefined, false])('rejects positive cash for the open-ground key (unrepresentedGround flag: %s)', unrepresentedGround => {
         const openGround = proposal();
         openGround.offer = 1;
         openGround.reparcellization.polygons = [{
-            geometry: rectangle(0, 0, 2, 1), noOwner: true,
-            owners: [{ ownerKey: 'open-ground', share: 1, noOwner: true }]
+            geometry: rectangle(0, 0, 2, 1), unrepresentedGround: true,
+            owners: [{ ownerKey: 'open-ground', share: 1, unrepresentedGround: true }]
         }];
         openGround.reparcellization.ownerShares = [{
-            ownerKey: 'open-ground', ...(noOwner === undefined ? {} : { noOwner }), cashOffer: 1
+            ownerKey: 'open-ground', ...(unrepresentedGround === undefined ? {} : { unrepresentedGround }), cashOffer: 1
         }];
-        expect(() => deal.fingerprint(openGround)).toThrow('Ownerless ground cannot receive or pay cash.');
+        expect(() => deal.fingerprint(openGround)).toThrow('Unrepresented ground cannot receive or pay cash.');
+    });
+
+    it('rejects the retired marker and any unrepresented flag attached to a named owner', () => {
+        const retired = proposal();
+        retired.reparcellization.ownerShares[0].noOwner = true;
+        expect(() => deal.content(retired)).toThrow(/noOwner marker is retired/);
+
+        const wrongLedgerOwner = proposal();
+        wrongLedgerOwner.reparcellization.ownerShares[0].unrepresentedGround = true;
+        expect(() => deal.content(wrongLedgerOwner)).toThrow(/cannot also name a represented owner/);
+
+        const wrongPlotOwner = proposal();
+        wrongPlotOwner.reparcellization.polygons[0].unrepresentedGround = true;
+        wrongPlotOwner.reparcellization.polygons[0].ownerKey = 'owner:a';
+        expect(() => deal.content(wrongPlotOwner)).toThrow(/cannot also name a represented owner/);
+    });
+
+    it('commits the valuation currency and requires explicit EUR when value is the contribution basis', () => {
+        const record = proposal();
+        record.offer = 0;
+        record.offerCurrency = undefined;
+        record.reparcellization.ownerShares.forEach(owner => { owner.cashOffer = 0; });
+        record.reparcellization.contributionBasis = 'value';
+        record.reparcellization.valuationCurrency = 'EUR';
+        expect(deal.content(record).valuation).toMatchObject({ contributionBasis: 'value', currency: 'EUR' });
+
+        record.reparcellization.valuationCurrency = null;
+        expect(() => deal.content(record)).toThrow(/require EUR valuationCurrency/);
+    });
+
+    it('requires an explicit offerCurrency for nonzero cash and never borrows a currency alias', () => {
+        const record = proposal();
+        record.offerCurrency = undefined;
+        record.currency = 'EUR';
+        expect(() => deal.content(record)).toThrow(/explicit EUR offerCurrency/);
     });
 });
 

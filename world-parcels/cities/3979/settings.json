@@ -1,0 +1,150 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "3979",
+  "name": "Birmingham, United Kingdom",
+  "point": [
+    52.5053948519651,
+    -1.95888767064615
+  ],
+  "bindings": [
+    {
+      "appCityId": "birmingham",
+      "runtimeConfig": {
+        "id": "birmingham",
+        "wupCityCode": "3979",
+        "label": "Birmingham, United Kingdom",
+        "currency": {
+          "locale": "en-GB",
+          "code": "GBP"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            52.5053948519651,
+            -1.95888767064615
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            52.5053948519651,
+            -1.95888767064615
+          ],
+          "fallbackDataset": [
+            -1.95888767064615,
+            52.5053948519651
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.0025,
+          "source": "parcel-source",
+          "sourceId": "gb-hmlr-browser-v1",
+          "idPrefix": "GB-HMLR-BROWSER-v1-",
+          "historicalSources": [
+            {
+              "sourceId": "gb-arcgis-geodom-land-registry-inspire-2021",
+              "idPrefix": "GB-HMLR-"
+            }
+          ],
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "<a href=\"https://use-land-property-data.service.gov.uk/datasets/inspire\">HM Land Registry INSPIRE Index Polygons</a>, Crown copyright and database right. Application ground derived by deterministic overlap resolution."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "gb-hmlr-browser-v1",
+      "name": "HM Land Registry — England and Wales browser ground",
+      "adapter": "hmlr-browser",
+      "endpoint": "https://use-land-property-data.service.gov.uk/datasets/inspire/download",
+      "idPrefix": "GB-HMLR-BROWSER-v1-",
+      "idField": "INSPIREID",
+      "outFields": [
+        "INSPIREID"
+      ],
+      "parcelNumberField": "INSPIREID",
+      "idType": "string",
+      "countryCode": "GB",
+      "metricSrid": 27700,
+      "cityIds": [
+        "birmingham"
+      ],
+      "defaultForCity": true,
+      "maxFeatures": 5000,
+      "maxBboxKm2": 25,
+      "geometryKind": "derived-ground",
+      "normalizationPolicy": "hmlr-browser-v1-area-desc-id-asc-grid1mm-project-before-overlay-geos3.13.0",
+      "scope": "England and Wales HM Land Registry INSPIRE freehold title-index coverage. Application ground is a deterministic derived surface, not a legal title boundary; qualification evidence is bounded at each listed WUP city locator.",
+      "attribution": "HM Land Registry INSPIRE Index Polygons, Crown copyright and database right. Application ground derived by deterministic overlap resolution.",
+      "maxConcurrentQueries": 2,
+      "capabilities": {
+        "areaEnumeration": true
+      },
+      "licenceNote": "Official INSPIRE freehold index downloads are published under the Open Government Licence. Derived ground retains publisher attribution and source provenance.",
+      "caveats": [
+        "Requires a complete, SHA-verified static routing manifest before city bindings are enabled.",
+        "Council ZIPs are downloaded and processed in the browser; a transport relay handles the publisher cookie/redirect flow.",
+        "Application footprints use deterministic overlap resolution and remain indicative freehold title-index derivatives."
+      ],
+      "metricSridByCity": {
+        "birmingham": 32630
+      },
+      "cityScopes": {
+        "manchester": "Bounded qualification around the UN DESA WUP 2025 settlement locator for Manchester. Passing all eight gates and independent geometry audit supports local parcel integration only; citywide completeness, legal title, survey accuracy and currentness are not established.",
+        "birmingham": "Bounded qualification around the UN DESA WUP 2025 settlement locator for Birmingham. Passing all eight gates and independent geometry audit supports local parcel integration only; citywide completeness, legal title, survey accuracy and currentness are not established.",
+        "newcastle": "Bounded qualification around the UN DESA WUP 2025 settlement locator for Newcastle upon Tyne. Passing all eight gates and independent geometry audit supports local parcel integration only; citywide completeness, legal title, survey accuracy and currentness are not established.",
+        "oxford": "Bounded qualification around the UN DESA WUP 2025 settlement locator for Oxford. Passing all eight gates and independent geometry audit supports local parcel integration only; citywide completeness, legal title, survey accuracy and currentness are not established.",
+        "london": "Bounded qualification around the UN DESA WUP 2025 settlement locator for London. Passing all eight gates and independent geometry audit supports local parcel integration only; citywide completeness, legal title, survey accuracy and currentness are not established.",
+        "cardiff": "Bounded qualification around the UN DESA WUP 2025 settlement locator for Cardiff. Passing all eight gates and independent geometry audit supports local parcel integration only; citywide completeness, legal title, survey accuracy and currentness are not established.",
+        "bristol": "Bounded qualification around the UN DESA WUP 2025 settlement locator for Bristol. Passing all eight gates and independent geometry audit supports local parcel integration only; citywide completeness, legal title, survey accuracy and currentness are not established.",
+        "stoke_on_trent": "Bounded qualification around the UN DESA WUP 2025 settlement locator for Stoke-on-Trent. Passing all eight gates and independent geometry audit supports local parcel integration only; citywide completeness, legal title, survey accuracy and currentness are not established.",
+        "bournemouth": "Bounded qualification around the UN DESA WUP 2025 settlement locator for Bournemouth. Passing all eight gates and independent geometry audit supports local parcel integration only; citywide completeness, legal title, survey accuracy and currentness are not established.",
+        "leeds": "Bounded qualification around the UN DESA WUP 2025 settlement locator for Leeds. Passing all eight gates and independent geometry audit supports local parcel integration only; citywide completeness, legal title, survey accuracy and currentness are not established.",
+        "coventry": "Bounded qualification around the UN DESA WUP 2025 settlement locator for Coventry. Passing all eight gates and independent geometry audit supports local parcel integration only; citywide completeness, legal title, survey accuracy and currentness are not established.",
+        "southampton": "Bounded qualification around the UN DESA WUP 2025 settlement locator for Southampton. Passing all eight gates and independent geometry audit supports local parcel integration only; citywide completeness, legal title, survey accuracy and currentness are not established.",
+        "sheffield": "Bounded qualification around the UN DESA WUP 2025 settlement locator for Sheffield. Passing all eight gates and independent geometry audit supports local parcel integration only; citywide completeness, legal title, survey accuracy and currentness are not established.",
+        "nottingham": "Bounded qualification around the UN DESA WUP 2025 settlement locator for Nottingham. Passing all eight gates and independent geometry audit supports local parcel integration only; citywide completeness, legal title, survey accuracy and currentness are not established.",
+        "middlesbrough": "Bounded qualification around the UN DESA WUP 2025 settlement locator for Middlesbrough. Passing all eight gates and independent geometry audit supports local parcel integration only; citywide completeness, legal title, survey accuracy and currentness are not established.",
+        "portsmouth": "Bounded qualification around the UN DESA WUP 2025 settlement locator for Portsmouth. Passing all eight gates and independent geometry audit supports local parcel integration only; citywide completeness, legal title, survey accuracy and currentness are not established.",
+        "leicester": "Bounded qualification around the UN DESA WUP 2025 settlement locator for Leicester. Passing all eight gates and independent geometry audit supports local parcel integration only; citywide completeness, legal title, survey accuracy and currentness are not established.",
+        "brighton": "Bounded qualification around the UN DESA WUP 2025 settlement locator for Brighton. Passing all eight gates and independent geometry audit supports local parcel integration only; citywide completeness, legal title, survey accuracy and currentness are not established.",
+        "hull": "Bounded qualification around the UN DESA WUP 2025 settlement locator for Hull. Passing all eight gates and independent geometry audit supports local parcel integration only; citywide completeness, legal title, survey accuracy and currentness are not established.",
+        "southend_on_sea": "Bounded qualification around the UN DESA WUP 2025 settlement locator for Southend-on-Sea. Passing all eight gates and independent geometry audit supports local parcel integration only; citywide completeness, legal title, survey accuracy and currentness are not established."
+      },
+      "manifestUrl": "https://urbangametheory.xyz/data/hmlr/af29bc44f39eefffff610c64df4d14dfe40f64ef94ec9ca4e7e7b0c353af2263/manifest.json",
+      "snapshotId": "af29bc44f39eefffff610c64df4d14dfe40f64ef94ec9ca4e7e7b0c353af2263",
+      "discovery": {
+        "searchRingsM": []
+      }
+    }
+  ]
+}

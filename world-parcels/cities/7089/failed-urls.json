@@ -1,0 +1,19 @@
+[
+  {
+    "url": "https://map.land.gov.bd/getAdminByCode",
+    "reason": "419"
+  },
+  {
+    "url": "https://gis.land.gov.bd/geoserver/wms?service=WMS&request=GetCapabilities",
+    "reason": "503"
+  },
+  {
+    "url": "https://map.land.gov.bd/"
+  },
+  {
+    "url": "https://settlement.gov.bd/Map/MapSearch"
+  },
+  {
+    "url": "https://habiganj.gov.bd/pages/dcoffice-section"
+  }
+]

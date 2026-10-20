@@ -1,0 +1,137 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "3440",
+  "name": "Madrid, Spain",
+  "point": [
+    40.4168,
+    -3.7038
+  ],
+  "bindings": [
+    {
+      "appCityId": "madrid",
+      "runtimeConfig": {
+        "id": "madrid",
+        "label": "Madrid, Spain",
+        "currency": {
+          "locale": "es-ES",
+          "code": "EUR"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            40.4168,
+            -3.7038
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            40.4168,
+            -3.7038
+          ],
+          "fallbackDataset": [
+            -3.7038,
+            40.4168
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "es-dgc-inspire-cp-wfs",
+          "idPrefix": "ES-DGC-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 25,
+          "attribution": "<a href=\"https://www.catastro.hacienda.gob.es/webinspire/\">Dirección General del Catastro · INSPIRE Cadastral Parcels</a> · adapted"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "idType": "string",
+      "maxFeatures": 5000,
+      "maxBboxKm2": 1,
+      "licenceNote": "Source conditions are informational; users choose their source and intended use.",
+      "id": "es-dgc-inspire-cp-wfs",
+      "name": "Dirección General del Catastro — Madrid, Barcelona and Valencia",
+      "adapter": "catastro-wfs",
+      "endpoint": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx",
+      "idField": "nationalCadastralReference",
+      "idPattern": "^[A-Z0-9]{14}$",
+      "idPrefix": "ES-DGC-",
+      "outFields": [
+        "nationalCadastralReference"
+      ],
+      "parcelNumberField": "nationalCadastralReference",
+      "cityIds": [
+        "madrid"
+      ],
+      "countryCode": "ES",
+      "metricSrid": 25830,
+      "metricSridByCity": {
+        "madrid": 25830
+      },
+      "maxResponseBytes": 8388608,
+      "bbox": [
+        -10,
+        35,
+        5,
+        44
+      ],
+      "catalogueUrl": "https://www.catastro.hacienda.gob.es/webinspire/",
+      "attribution": "Dirección General del Catastro, INSPIRE Cadastral Parcels. Adapted to WGS84.",
+      "scope": "Bounded samples in Madrid, Barcelona and Valencia; national or municipality-wide completeness is not claimed.",
+      "caveats": [
+        "Official WFS does not implement offset paging. Requests omit count/startIndex and require actual members to equal numberMatched.",
+        "Truncated, malformed, general or mismatched exception responses remain unavailable. Exact GetParcel absence is recognized only from a complete OWS1.1 missing-parcel message matching the requested reference and zone.",
+        "All runtime query methods share one request slot because simultaneous public WFS reads reproduce connection resets."
+      ],
+      "knownLimit": {
+        "kind": "hourly-requests",
+        "evidence": "2026-10-12: after about 320 requests in an hour from one network, every request, GetCapabilities included, got HTTP 403 with the body \"Peticion denegada. Ha superado el limite de peticiones por hora.\" for more than two hours."
+      },
+      "maxConcurrentQueries": 1,
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "ES",
+          "excludeAdmin1": [
+            "ES-BI",
+            "ES-SS",
+            "ES-VI",
+            "ES-NA"
+          ],
+          "basis": "Dirección General del Catastro covers Spain except the foral cadastres of the Basque Country and Navarre, which keep their own registers.",
+          "evidence": []
+        },
+        "paceMs": 2500
+      }
+    }
+  ]
+}

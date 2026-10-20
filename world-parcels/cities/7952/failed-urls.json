@@ -1,0 +1,26 @@
+[
+  {
+    "url": "https://gis.ulbharyana.gov.in/api/getRevenue",
+    "reason": "405"
+  },
+  {
+    "url": "https://gis.ulbharyana.gov.in/geoserver/DULBGIS/wms?service=WMS&request=GetCapabilities",
+    "reason": "403"
+  },
+  {
+    "url": "https://stategisportal.nic.in/stategisportal/Home/Map/6",
+    "reason": "TLS verification failure"
+  },
+  {
+    "url": "https://kurukshetra.gov.in/hi/%E0%A4%9C%E0%A4%BF%E0%A4%B2%E0%A4%BE-%E0%A4%B8%E0%A5%82%E0%A4%9A%E0%A4%A8%E0%A4%BE-%E0%A4%AA%E0%A5%8D%E0%A4%B0%E0%A4%A3%E0%A4%BE%E0%A4%B2%E0%A5%80/"
+  },
+  {
+    "url": "https://kurukshetra.gov.in/directory/"
+  },
+  {
+    "url": "https://haryanait.gov.in/web-halris/"
+  },
+  {
+    "url": "https://gis.ulbharyana.gov.in/"
+  }
+]

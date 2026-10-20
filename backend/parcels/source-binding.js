@@ -66,7 +66,7 @@ function nowIso(now) {
 }
 
 export async function computeSourceBinding(adapter, {
-    site, toleranceM = 0, sourceId, now = () => new Date()
+    site, toleranceM = 0, sourceId, snapshotId = null, now = () => new Date()
 } = {}) {
     if (!adapter || typeof adapter.queryGeometry !== 'function') throw new TypeError('A parcel source adapter is required.');
     if (typeof sourceId !== 'string' || !sourceId) throw new TypeError('sourceId is required.');
@@ -80,6 +80,7 @@ export async function computeSourceBinding(adapter, {
     }
 
     const geometryErrors = [];
+    const parcelSource = { sourceId, snapshotId: snapshotId || null };
     const binding = bindingFromParcels(normalizedSite, parcels, {
         turf: strictTurf(geometryErrors),
         toleranceM: tolerance,
@@ -88,12 +89,12 @@ export async function computeSourceBinding(adapter, {
     if (geometryErrors.length) throw new Error(`Parcel binding geometry operation failed: ${geometryErrors[0].message}`);
     return {
         site: normalizedSite,
-        binding: { ...binding, unknownM2: 0, computedAt: nowIso(now) }
+        binding: { ...binding, parcelSource, unknownM2: 0, computedAt: nowIso(now) }
     };
 }
 
 export async function computeSourceParcelActBinding(adapter, declaredIds, {
-    toleranceM = 0, sourceId, now = () => new Date()
+    toleranceM = 0, sourceId, snapshotId = null, now = () => new Date()
 } = {}) {
     if (!adapter || typeof adapter.queryIds !== 'function') throw new TypeError('A parcel source adapter is required.');
     if (typeof sourceId !== 'string' || !sourceId) throw new TypeError('sourceId is required.');
@@ -156,6 +157,7 @@ export async function computeSourceParcelActBinding(adapter, declaredIds, {
             unknownM2: 0,
             siteM2: Number(siteM2.toFixed(2)),
             source: `server:${sourceId}`,
+            parcelSource: { sourceId, snapshotId: snapshotId || null },
             computedAt: nowIso(now),
             subject: 'declared-parcels'
         }

@@ -1,0 +1,30 @@
+[
+  {
+    "url": "https://bharuch.nic.in/service/land-records/"
+  },
+  {
+    "url": "https://bharuch.nic.in/slr/"
+  },
+  {
+    "url": "https://bharuch.nic.in/gu/"
+  },
+  {
+    "url": "https://revenuedepartment.gujarat.gov.in/iora-service"
+  },
+  {
+    "url": "https://anyror.gujarat.gov.in/",
+    "reason": "timeout"
+  },
+  {
+    "url": "https://e-milkat.gujarat.gov.in/",
+    "reason": "timeout"
+  },
+  {
+    "url": "https://landrecords.gujarat.gov.in/",
+    "reason": "timeout"
+  },
+  {
+    "url": "https://stategisportal.nic.in/stategisportal/",
+    "reason": "TLS verification failure"
+  }
+]

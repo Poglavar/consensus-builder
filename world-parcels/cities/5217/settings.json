@@ -1,0 +1,141 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "5217",
+  "name": "Hazel Dell, United States",
+  "point": [
+    45.6532383734832,
+    -122.569426017328
+  ],
+  "bindings": [
+    {
+      "appCityId": "hazel_dell",
+      "runtimeConfig": {
+        "id": "hazel_dell",
+        "wupCityCode": "5217",
+        "label": "Hazel Dell, United States",
+        "currency": {
+          "locale": "en-US",
+          "code": "USD"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            45.6532383734832,
+            -122.569426017328
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            45.6532383734832,
+            -122.569426017328
+          ],
+          "fallbackDataset": [
+            -122.569426017328,
+            45.6532383734832
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "us-wa-watech-statewide-parcels",
+          "idPrefix": "US-WA-STATEWIDE-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Washington Technology Solutions (WaTech) and Washington State counties. Adapted to WGS84."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "us-wa-watech-statewide-parcels",
+      "name": "Washington State Parcels (WaTech Parcels_2026) — statewide",
+      "adapter": "arcgis",
+      "countryCode": "US",
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "maxConcurrentQueries": 2,
+      "cityIds": [
+        "hazel_dell"
+      ],
+      "licenceNote": "Source conditions are informational; users choose their source and intended use.",
+      "operator": "Washington Technology Solutions (WaTech) Washington State Parcels Project; data from Washington counties",
+      "endpoint": "https://services.arcgis.com/jsIt88o09Q0r1j8h/arcgis/rest/services/Current_Parcels/FeatureServer/0",
+      "idField": "PARCEL_ID_NR",
+      "objectIdField": "OBJECTID",
+      "idType": "string",
+      "idPattern": ".+",
+      "outFields": [
+        "OBJECTID",
+        "PARCEL_ID_NR"
+      ],
+      "parcelNumberField": "PARCEL_ID_NR",
+      "idPrefix": "US-WA-STATEWIDE-",
+      "metricSrid": 32610,
+      "stateCode": "WA",
+      "attributeNotNull": [
+        "PARCEL_ID_NR"
+      ],
+      "attributeExclusions": {
+        "PARCEL_ID_NR": [
+          "",
+          " "
+        ]
+      },
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "nativeGeometryMode": "parts",
+      "partsCoordinatePrecision": 9,
+      "scope": "Washington statewide compilation of participating counties' assessment parcels (layer Parcels_2026). PARCEL_ID_NR is the WaTech statewide key: three-digit county FIPS, a dash, and the county parcel number; all source rows sharing it form one native parcel.",
+      "caveats": [
+        "Coverage is by participating counties, not a guaranteed statewide set: 38 county FIPS codes observed 2026-10-12; Asotin County (FIPS 003) absent.",
+        "Rows with null or blank PARCEL_ID_NR (29,340 statewide on 2026-10-12) have no native identity and are excluded.",
+        "Some county parcels are published as several disjoint rows sharing one PARCEL_ID_NR (observed in Yakima County); all components are fetched and dissolved (polygon union) into one canonical parcel.",
+        "Assessment mapping, not a boundary survey; layer also publishes owner, address and value fields, which are not requested."
+      ],
+      "attribution": "Washington Technology Solutions (WaTech) and Washington State counties. Adapted to WGS84.",
+      "catalogueUrl": "https://geo.wa.gov/",
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "US",
+          "admin1": [
+            "US-WA"
+          ],
+          "excludeAdmin1": [],
+          "basis": "WaTech publishes Parcels_2026 as the Washington State Parcels Project compilation of all counties that supply digital tax parcels (38 of 39 county FIPS codes present on 2026-10-12; Asotin absent).",
+          "evidence": []
+        },
+        "paceMs": 1000
+      }
+    }
+  ]
+}

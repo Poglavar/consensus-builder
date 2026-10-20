@@ -1,0 +1,11 @@
+[
+  {
+    "url": "https://www.zaragoza.es/web/espacio-de-datos/servicio/catalogo/3062"
+  },
+  {
+    "url": "https://www.zaragoza.es/sede/portal/urbanismo/info-geografica/datos"
+  },
+  {
+    "url": "https://idezar-sig.zaragoza.es/servicios/geoserver/urbanismo/wfs?service=WFS&version=2.0.0&request=GetCapabilities"
+  }
+]

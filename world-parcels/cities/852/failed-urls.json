@@ -1,0 +1,29 @@
+[
+  {
+    "url": "https://kisii.go.ke/departments/lands-physical-planning-housing-and-urban-development/"
+  },
+  {
+    "url": "https://www.lands.go.ke/land-registries"
+  },
+  {
+    "url": "https://ardhisasa.lands.go.ke/"
+  },
+  {
+    "url": "https://ardhisasa.lands.go.ke/home/faqs"
+  },
+  {
+    "url": "https://ardhisasa.lands.go.ke/home/terms-and-conditions"
+  },
+  {
+    "url": "https://lands.go.ke/sites/default/files/2025-04/Lands%20Swahili%20Service%20Charter.pdf"
+  },
+  {
+    "url": "https://ardhisasa-api.lands.go.ke/"
+  },
+  {
+    "url": "https://wwfke-giscoe.wwfkenya.org/arcgis/rest/services/General/ParcelAreas/MapServer"
+  },
+  {
+    "url": "https://wwfke-giscoe.wwfkenya.org/arcgis/rest/services/General/ParcelAreas/MapServer/1/query?f=geojson&where=1%3D1&geometry=-0.670990402707098%2C34.7615978139198&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=FID%2COID_%2CName%2CArea_Ha%2CArea_Acre&returnGeometry=true"
+  }
+]

@@ -1,0 +1,8 @@
+[
+  {
+    "url": "https://www.map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer/0?f=pjson"
+  },
+  {
+    "url": "https://www.map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer/0/query"
+  }
+]

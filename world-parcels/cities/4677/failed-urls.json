@@ -1,0 +1,29 @@
+[
+  {
+    "url": "https://gisweb.washoecounty.gov/arcgis/rest/services/OpenData/WashoeDataShare/MapServer/0?f=pjson",
+    "reason": "connection timeout after 30 seconds"
+  },
+  {
+    "url": "https://wcgisweb.washoecounty.us/arcgis/rest/services/OpenData/OpenData/FeatureServer/0?f=pjson",
+    "reason": "connection timeout after 15 seconds"
+  },
+  {
+    "url": "https://www.washoecounty.gov/gis/"
+  },
+  {
+    "url": "https://gisenterprise.washoecounty.gov/server/rest/services/WashoeGIS/Parcels/FeatureServer"
+  },
+  {
+    "url": "https://citymaps.reno.gov/server/rest/services/Parcels/MapServer"
+  },
+  {
+    "url": "https://washoecounty.gov/assessor/online_data/index.php"
+  },
+  {
+    "url": "https://gisenterprise.washoecounty.gov/server/rest/services/WashoeGIS/Parcels/FeatureServer/0?f=pjson"
+  },
+  {
+    "url": "https://arcgis.water.nv.gov/arcgis/rest/services/BaseLayers/County_Parcels_in_Nevada/MapServer/0",
+    "reason": "Held: the Nevada NDWR County_Parcels MapServer returns inconsistent manifests: for qualifier cell 5 (bbox -119.795,39.53,-119.794,39.531) returnCountOnly gives 2 but returnIdsOnly lists 3 object IDs, so the production adapter correctly refuses with 'incomplete or invalid object-ID list' (502) and sampling/completeness fail in both attempt-01 and attempt-02 (the other 12 cells read cleanly). A cou…"
+  }
+]

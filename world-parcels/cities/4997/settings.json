@@ -1,0 +1,107 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "4997",
+  "name": "Mesa, United States",
+  "point": [
+    33.3793,
+    -111.8075
+  ],
+  "bindings": [
+    {
+      "appCityId": "mesa",
+      "runtimeConfig": {
+        "id": "mesa",
+        "label": "Mesa, United States",
+        "currency": {
+          "locale": "en-US",
+          "code": "USD"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            33.3793,
+            -111.8075
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            33.3793,
+            -111.8075
+          ],
+          "fallbackDataset": [
+            -111.8075,
+            33.3793
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "us-az-mesa-city-parcels",
+          "idPrefix": "US-MESA-CITY-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 3,
+          "attribution": "<a href=\"https://opengis.mesaaz.gov/\">City of Mesa GIS parcel boundaries</a> · adapted"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "us-az-mesa-city-parcels",
+      "adapter": "arcgis",
+      "endpoint": "https://services2.arcgis.com/1gVyYKfYgW5Nxb1V/arcgis/rest/services/Parcels/FeatureServer/0",
+      "idPrefix": "US-MESA-CITY-",
+      "idField": "APN",
+      "objectIdField": "OBJECTID",
+      "idType": "string",
+      "outFields": [
+        "OBJECTID",
+        "APN"
+      ],
+      "pageSize": 1000,
+      "maxFeatures": 2000,
+      "maxBboxKm2": 1,
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "name": "City of Mesa GIS parcel boundaries",
+      "operator": "City of Mesa GIS",
+      "catalogueUrl": "https://opengis.mesaaz.gov/",
+      "attribution": "City of Mesa GIS parcel boundaries · adapted",
+      "countryCode": "US",
+      "metricSrid": 32612,
+      "cityIds": [
+        "mesa"
+      ],
+      "scope": "23 valid, distinct City of Mesa-hosted parcel polygons verified in thirteen bounded cells around [33.3793,-111.8075], approximately 1.1 km north of the unchanged ranked WUP locator. The WUP point returned an explicit empty collection. Complete object-ID manifests, forced three-row paging, all 23 fresh APN geometry reads, explicit absence, footprint and binding passed. Independent GEOS audit in EPSG:32612 found no invalid geometries, duplicates, sampled overlaps above 0.01 m² or operation errors. The app starts at the tested nearby parcel-covered reference; citywide completeness, legal title, survey accuracy and APN uniqueness outside this sample are unverified.",
+      "licenceNote": "Public city GIS reference polygons; source conditions and legal/survey disclaimers informational."
+    }
+  ]
+}

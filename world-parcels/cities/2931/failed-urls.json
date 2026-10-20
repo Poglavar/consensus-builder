@@ -1,0 +1,14 @@
+[
+  {
+    "url": "http://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx"
+  },
+  {
+    "url": "https://www.sedecatastro.gob.es/"
+  },
+  {
+    "url": "https://www.catastro.hacienda.gob.es/webinspire/index.html"
+  },
+  {
+    "url": "https://www.catastro.hacienda.gob.es/INSPIRE/CadastralParcels/ES.SDGC.CP.atom.xml"
+  }
+]

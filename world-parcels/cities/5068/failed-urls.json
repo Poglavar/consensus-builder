@@ -1,0 +1,14 @@
+[
+  {
+    "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=wfs&version=2&request=getfeature&STOREDQUERIE_ID=GetParcel&srsname=EPSG::4326&bbox=41.4249,2.1549,41.4253,2.1553",
+    "reason": "400"
+  },
+  {
+    "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=wfs&version=2&request=GetCapabilities",
+    "reason": "400"
+  },
+  {
+    "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=wfs&version=2&request=getfeature&STOREDQUERIE_ID=GetParcel&refcat=9872023VH5797S&srsname=EPSG::25830",
+    "reason": "400"
+  }
+]

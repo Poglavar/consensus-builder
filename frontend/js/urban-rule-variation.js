@@ -1,5 +1,5 @@
 // The permitted-massing ↔ example-build-out split for urban rules: a deterministic PRNG, the
-// canonical rule shape, the per-parcel maximum envelope, and one legal build-out sampled inside it.
+// canonical rule shape, the per-parcel maximum envelope, and one model build-out sampled inside it.
 //
 // Pure — turf and the app's polygon sanitizers are injected — so the editor preview, the 3D view
 // and the tests all derive the same geometry from the same (rule, seed). That determinism is the
@@ -241,7 +241,10 @@
                 properties: {
                     floors: normalized.maxFloors,
                     height: normalized.maxFloors * normalized.floorHeightM,
-                    massing: true
+                    massing: true,
+                    geometryRole: 'authored-rule-envelope',
+                    ruleProvenance: { source: 'authored-proposal', generator: 'parcel-envelope', version: 1, definition: normalized },
+                    planningCompliance: 'not-evaluated'
                 },
                 geometry: envelope.geometry
             }
@@ -313,7 +316,7 @@
         }
     }
 
-    // One legal build-out inside the envelope.
+    // One illustrative build-out satisfying this model's authored rule checks.
     //
     // Draw order is part of the contract: the floor count is drawn FIRST so it depends on the seed
     // alone and not on how many slide attempts the parcel's shape happened to need. Appending new
@@ -338,7 +341,9 @@
                 ...(envelopeFeature.properties || {}),
                 floors,
                 height: floors * normalized.floorHeightM,
-                massing: false
+                massing: false,
+                geometryRole: 'illustrative-buildout',
+                planningCompliance: 'not-evaluated'
             },
             geometry: footprint.geometry
         };
@@ -366,6 +371,13 @@
     //
     // When the massing is nowhere thicker than minDepthM the erosion vanishes and the minimum IS
     // the maximum — "build all of it", which is the correct reading, not a failure.
+    // A polygon clip that cannot be done, typed and counted (parcel-arrangement.js ClipFailure).
+    function variationClipFailure(operation, error, site, operands, parcelId) {
+        const api = (global && global.__parcelArrangement)
+            || (typeof require === 'function' ? require('./proposals/parcel-arrangement.js') : null);
+        return api ? api.clipFailure(operation, error, { site, parcelId }, operands) : error;
+    }
+
     function buildToMinimum(massingFeature, minDepthM, deps) {
         const turf = deps && deps.turf;
         if (!massingFeature || !massingFeature.geometry || !turf || !(minDepthM > 0)) return null;
@@ -377,11 +389,22 @@
 
         let band = filled;
         if (core && core.geometry) {
-            try { band = turf.difference(filled, core) || filled; } catch (_) { band = filled; }
+            // The whole massing as the "minimum" (or no minimum at all) would be a rule the
+            // proposal never stated: a clip that fails here refuses the envelope.
+            let cut = null;
+            try { cut = turf.difference(filled, core); } catch (error) {
+                throw variationClipFailure('difference', error, 'urban-rule-variation.buildToMinimum', [filled, core]);
+            }
+            // The core is an inward buffer of `filled`, so the band cannot be empty: a null here
+            // is the clipper losing it, not a band of nothing.
+            if (!cut) throw variationClipFailure('difference', new Error('difference came back empty'), 'urban-rule-variation.buildToMinimum', [filled, core]);
+            band = cut;
         }
 
         let clipped = null;
-        try { clipped = turf.intersect(band, massingFeature); } catch (_) { clipped = null; }
+        try { clipped = turf.intersect(band, massingFeature); } catch (error) {
+            throw variationClipFailure('intersect', error, 'urban-rule-variation.buildToMinimum', [band, massingFeature]);
+        }
         return (clipped && clipped.geometry) ? clipped : null;
     }
 
@@ -417,8 +440,11 @@
             // would carry — so the shape is reported alongside the exclusion rather than discarded.
             // Without it, a left-out plot reads as a hole in the block instead of a plot that cannot
             // take a building as it stands.
+            // A failed intersect is not "the massing does not reach this parcel": refuse.
             let piece = null;
-            try { piece = turf.intersect(massingFeature, parcelFeature); } catch (_) { piece = null; }
+            try { piece = turf.intersect(massingFeature, parcelFeature); } catch (error) {
+                throw variationClipFailure('intersect', error, 'urban-rule-variation.splitMassingByParcels', [massingFeature, parcelFeature], parcelId);
+            }
             const wouldBe = (piece && piece.geometry) ? piece.geometry : null;
 
             if (normalized.minPlotAreaM2 > 0 && areaOf(parcelFeature, turf) < normalized.minPlotAreaM2) {
@@ -446,7 +472,10 @@
                 try {
                     const clip = turf.intersect(compelled, piece);
                     if (clip && clip.geometry && areaOf(clip, turf) >= 1) compelledHere = clip.geometry;
-                } catch (_) { compelledHere = null; }
+                } catch (error) {
+                    // Not "the rule compels nothing here": refuse.
+                    throw variationClipFailure('intersect', error, 'urban-rule-variation.compelledPerParcel', [compelled, piece], parcelId);
+                }
             }
 
             pieces.push({
@@ -456,6 +485,9 @@
                     parcelId,
                     height,
                     massing: true,
+                    geometryRole: 'authored-rule-envelope',
+                    ruleProvenance: { source: 'authored-proposal', generator: 'split-massing', version: 1, definition: normalized },
+                    planningCompliance: 'not-evaluated',
                     urbanRule: normalized,
                     variationSeed: hashSeed(designSeed, parcelId),
                     color: shadeForKey(parcelId),
@@ -497,7 +529,9 @@
                 // Never above the envelope: a partial storey rounds down, it does not round up.
                 height: Math.min(normalized.maxHeightM, storeys * normalized.floorHeightM),
                 builtToMinimumDepth: shallow,
-                massing: false
+                massing: false,
+                geometryRole: 'illustrative-buildout',
+                planningCompliance: 'not-evaluated'
             },
             geometry: shallow ? compelled : pieceFeature.geometry
         };
@@ -545,6 +579,9 @@
             ...(result.properties || {}),
             height: normalized.maxHeightM,
             massing: true,
+            geometryRole: 'authored-rule-envelope',
+            ruleProvenance: { source: 'authored-proposal', generator: 'block-massing', version: 1, definition: normalized },
+            planningCompliance: 'not-evaluated',
             urbanRule: normalized,
             variationSeed: num(seed, 0) >>> 0
         };

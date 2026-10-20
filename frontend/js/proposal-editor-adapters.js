@@ -4,21 +4,10 @@
 
     const turfRef = global.turf || null;
 
-    const CREATABLE_PROPOSAL_GOALS = [
-        'as-is',
-        'square',
-        'park',
-        'lake',
-        'station',
-        'single',
-        'buildings',
-        'row',
-        'parcelBased',
-        'urban-rule',
-        'road-track',
-        'reparcellization',
-        'ownership-transfer'
-    ];
+    const designGoals = global.ProposalDesignGoals || (typeof require === 'function'
+        ? require('./proposals/design-goals.js') : null);
+    if (!designGoals) throw new Error('Proposal design goals are unavailable.');
+    const CREATABLE_PROPOSAL_GOALS = designGoals.keys;
 
     // Physical, material drafts may be explicitly moved to a new site. Parcel acts and
     // readjustments remain tied to their authored scope/deal, and the building rules (Block, Row,
@@ -87,19 +76,7 @@
     }
 
     function sourceGoal(proposal) {
-        try {
-            if (typeof global.resolveProposalGoalKey === 'function') {
-                const value = global.resolveProposalGoalKey(proposal, null);
-                if (value) return normalizeGoal(value);
-            }
-        } catch (_) { }
-        if (proposal?.roadProposal) return 'road-track';
-        if (proposal?.reparcellization) return 'reparcellization';
-        if (proposal?.buildingProposal || proposal?.geometry?.buildings || proposal?.buildingGeometry) {
-            return normalizeGoal(proposal.typologyType || proposal.buildingProposal?.typologyType || proposal.goal || 'buildings');
-        }
-        if (proposal?.structureProposal?.kind) return normalizeGoal(proposal.structureProposal.kind);
-        return normalizeGoal(proposal?.goal || proposal?.primaryType || proposal?.proposalType || proposal?.type || '');
+        return designGoals.keyOf(proposal) || (proposal?.goal === 'decide-later' ? 'decide-later' : '');
     }
 
     function sourceId(proposal) {
@@ -431,7 +408,7 @@
             'onchainData', 'serverProposalId', 'isMinted', 'chainId', 'contractAddress', 'metadataUri',
             'imageURI', 'chainRef', 'lifecycleStatus', 'effectiveStatus', 'effective_status', 'mintedAt', 'publishedAt',
             'createdAt', 'updatedAt', 'acceptedParcelIds', 'ownerAcceptances', 'ownerApprovals',
-            'ownerApprovalHistory', 'ownershipApprovals', 'executedAt', 'appliedAt'
+            'ownerApprovalHistory', 'ownershipApprovals', 'executedAt', 'appliedAt', 'localPurchaseSimulation'
         ].forEach(key => delete output[key]);
         return output;
     }
@@ -563,7 +540,7 @@
         const beforeParcels = new Set(before.selectedParcelIds || []);
         const afterParcels = new Set(after.selectedParcelIds || []);
         return {
-            sourceProposalId: draft.sourceProposalId || sourceId(source),
+            sourceLocalProposalId: draft.sourceLocalProposalId || sourceId(source),
             draftId: draft.id,
             sourceName: sourceName(source),
             replacementName: after.name || '',
@@ -790,7 +767,7 @@
             return { ids: [], layers: [], substituted: false, complete: true, unresolvedIds: [], site: clone(draft.editorPayload.placement.site) };
         }
         const originalIds = (draft.fields?.selectedParcelIds || []).map(String);
-        const authoredBuildingSite = draft.sourceProposalId
+        const authoredBuildingSite = draft.sourceLocalProposalId
             && ['buildings', 'row', 'parcelBased', 'single'].includes(draft.adapterKey || draft.goal)
             ? draft.fields?.site : null;
         const footprint = authoredBuildingSite || draft.editorPayload?.structureProposal?.geometry
@@ -834,7 +811,7 @@
             },
             validate(draft) {
                 const { errors, warnings } = commonValidation(draft);
-                if (key === 'as-is' && !draft.sourceProposalId
+                if (key === 'as-is' && !draft.sourceLocalProposalId
                     && (!draft.fields?.ownership || draft.fields.ownership === 'no-change')) {
                     errors.push(issue('missing-goal', 'Choose a proposal type or an ownership change.', 'goal'));
                 }
@@ -1073,7 +1050,7 @@
             const kind = draft.editorPayload?.kind || (global.corridorIsTrack(definition) ? 'track' : 'road');
             const seed = corridorSeed(definition, kind);
             return global.startSeededCorridorDrawing(kind, seed, {
-                proposalId: draft.sourceProposalId,
+                proposalId: draft.sourceLocalProposalId,
                 name: draft.fields?.name || sourceName(draft.sourceSnapshot),
                 draftId: draft.id,
                 prefill: clone(draft.fields || {})
@@ -1196,7 +1173,7 @@
                     context.parcelIds = [];
                     context.ineligibleParcels = [];
                 }
-                const savedBuildingEdit = Boolean(draft.sourceProposalId);
+                const savedBuildingEdit = Boolean(draft.sourceLocalProposalId);
                 const authoredSite = draft.fields?.site || null;
                 if (savedBuildingEdit && !siteDraftApi().isPolygonal(authoredSite)) {
                     throw new Error(global.i18n?.t?.('onMapEditor.missingSite') || 'This saved building has no valid authored site boundary, so its geometry cannot be edited safely.');

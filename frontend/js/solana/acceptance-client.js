@@ -589,8 +589,15 @@
     }
 
     async function fetchProposal(connection, proposal) {
-        const data = await fetchAccountData(connection, proposal);
-        return data ? readProposal(data, toKey(proposal, 'proposal').toBase58()) : null;
+        const address = toKey(proposal, 'proposal');
+        const info = await connection.getAccountInfo(address, 'confirmed');
+        if (!info?.data) return null;
+        if (info.owner?.toBase58?.() !== constants.PROPOSAL_NFT_PROGRAM_ID) {
+            throw new Error('Proposal account belongs to another program.');
+        }
+        const value = readProposal(new Uint8Array(info.data), address.toBase58());
+        if (!value) throw new Error('Account does not have the Proposal discriminator.');
+        return value;
     }
 
     async function fetchConsentTally(connection, { proposal, parcelId, programId } = {}) {

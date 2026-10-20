@@ -1,0 +1,108 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "2668",
+  "name": "Hamilton, Canada",
+  "point": [
+    43.2335378918963,
+    -79.8541587136975
+  ],
+  "bindings": [
+    {
+      "appCityId": "hamilton",
+      "runtimeConfig": {
+        "id": "hamilton",
+        "wupCityCode": "2668",
+        "label": "Hamilton, Canada",
+        "currency": {
+          "locale": "en-CA",
+          "code": "CAD"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            43.2335378918963,
+            -79.8541587136975
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            43.2335378918963,
+            -79.8541587136975
+          ],
+          "fallbackDataset": [
+            -79.8541587136975,
+            43.2335378918963
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "ca-on-hamilton-assessment-parcel",
+          "idPrefix": "CA-ON-HAMILTON-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 3,
+          "attribution": "<a href=\"https://www.arcgis.com/sharing/rest/content/items/b18cec4690d241029935df1b02bb19db?f=json\">City of Hamilton; Teranet data received February 9, 2024.</a>"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "ca-on-hamilton-assessment-parcel",
+      "name": "City of Hamilton Assessment Parcel",
+      "adapter": "arcgis",
+      "endpoint": "https://services.arcgis.com/rYz782eMbySr2srL/arcgis/rest/services/Hamilton_Assessment_Parcel/FeatureServer/0",
+      "idField": "OBJECTID",
+      "idType": "integer",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "CA-ON-HAMILTON-",
+      "outFields": [
+        "OBJECTID"
+      ],
+      "queryFormat": "geojson",
+      "boundsQueryMode": "offset",
+      "idsQueryMode": "offset",
+      "pageSize": 2000,
+      "idBatchSize": 80,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "countryCode": "CA",
+      "metricSrid": 32617,
+      "cityIds": [
+        "hamilton"
+      ],
+      "scope": "City of Hamilton assessment parcel mapping from Teranet; bounded technical review only.",
+      "catalogueUrl": "https://www.arcgis.com/sharing/rest/content/items/b18cec4690d241029935df1b02bb19db?f=json",
+      "attribution": "City of Hamilton; Teranet data received February 9, 2024.",
+      "capabilities": {
+        "areaEnumeration": true
+      },
+      "defaultForCity": true
+    }
+  ]
+}

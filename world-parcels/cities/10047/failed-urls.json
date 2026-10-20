@@ -1,0 +1,14 @@
+[
+  {
+    "url": "https://landrecords.karnataka.gov.in/",
+    "reason": "timeout after 20 seconds"
+  },
+  {
+    "url": "https://landrecords.karnataka.gov.in/service3/",
+    "reason": "timeout after 12 seconds"
+  },
+  {
+    "url": "https://landrecords.karnataka.gov.in/Dishaank/",
+    "reason": "timeout after 12 seconds"
+  }
+]

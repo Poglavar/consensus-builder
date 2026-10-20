@@ -1,0 +1,114 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "2093",
+  "name": "Gdańsk, Poland",
+  "point": [
+    54.3729195961829,
+    18.6101651609193
+  ],
+  "bindings": [
+    {
+      "appCityId": "gdansk",
+      "runtimeConfig": {
+        "id": "gdansk",
+        "wupCityCode": "2093",
+        "label": "Gdańsk, Poland",
+        "currency": {
+          "locale": "pl-PL",
+          "code": "PLN"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            54.3729195961829,
+            18.6101651609193
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            54.3729195961829,
+            18.6101651609193
+          ],
+          "fallbackDataset": [
+            18.6101651609193,
+            54.3729195961829
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "gdansk-gml-wfs",
+          "idPrefix": "PL-GDANSK-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 3,
+          "attribution": "<a href=\"https://ewid-wms.gdansk.gda.pl/iip/ows?service=WFS&amp;request=GetCapabilities&amp;version=2.0.0\">Urząd Miejski w Gdańsku — EGiB</a>"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "gdansk-gml-wfs",
+      "name": "Gdańsk municipal EGiB cadastral parcel polygons",
+      "adapter": "gml-wfs",
+      "endpoint": "https://ewid-wms.gdansk.gda.pl/iip/ows",
+      "featureType": "ms:dzialki",
+      "version": "2.0.0",
+      "idField": "ID_DZIALKI",
+      "geometryField": "geometry",
+      "responseCrs": "EPSG:2177",
+      "idPrefix": "PL-GDANSK-",
+      "idType": "string",
+      "parcelNumberField": "ID_DZIALKI",
+      "outFields": [
+        "ID_DZIALKI"
+      ],
+      "maxBboxKm2": 1,
+      "pageSize": 50,
+      "maxFeatures": 300,
+      "maxResponseBytes": 1048576,
+      "maxTotalResponseBytes": 8388608,
+      "timeoutMs": 12000,
+      "countryCode": "PL",
+      "metricSrid": 32634,
+      "cityIds": [
+        "gdansk"
+      ],
+      "maxConcurrentQueries": 1,
+      "capabilities": {
+        "areaEnumeration": true
+      },
+      "operator": "Urząd Miejski w Gdańsku",
+      "catalogueUrl": "https://ewid-wms.gdansk.gda.pl/iip/ows?service=WFS&request=GetCapabilities&version=2.0.0",
+      "attribution": "Urząd Miejski w Gdańsku — EGiB",
+      "scope": "Municipal parcel layer; frozen three-parcel local sample near the unchanged WUP point. No citywide completeness claim.",
+      "licenceNote": "Anonymous metadata and prior bounded safe parcel access documented; reuse licence and currentness not independently established.",
+      "defaultForCity": true
+    }
+  ]
+}

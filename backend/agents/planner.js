@@ -1,5 +1,5 @@
 // The agent runner's planning step: turns candidate parcels into candidate proposals — permitted
-// envelope, one legal build-out, the floor area it adds and the € gain — and scores them against a
+// envelope, one build-out satisfying the checked limits, its floor area and modeled € gain — and scores them against a
 // persona's weights. Pure: turf is injected, nothing here touches the database or the network, and
 // the same (parcels, persona, seed) always produces the same ordered list.
 //
@@ -48,7 +48,7 @@ function ruleSourceOf(rule) {
  * Candidate proposals for one persona, best first.
  *
  * Skips a parcel when the rule excludes it (evaluateParcel status ≠ 'ok'), when no build-out can be
- * sampled inside the envelope, when the build-out cannot be measured, or when it would not add
+ * sampled inside the envelope, when it exceeds a stated coverage/GFA limit, when the build-out cannot be measured, or when it would not add
  * floor area over what is already built — an agent that proposes less than exists is noise.
  *
  * Scoring (all parts in 0..1 before weighting):
@@ -113,27 +113,21 @@ export function planCandidates(parcels, persona, {
         if (!massing || !massing.geometry) return;
 
         const measured = measureBuilding(massing, {}, { floorHeightM });
-        let proposedGfaM2 = num(measured && measured.gfaM2);
+        const proposedGfaM2 = num(measured && measured.gfaM2);
         if (proposedGfaM2 === null || proposedGfaM2 <= 0) return;
 
-        // A rule's ceilings are ceilings. Where one applies, the proposal is capped to it and says
-        // so — an agent must never quietly claim floor area the plan does not permit.
-        let capped = false;
+        // A quantity describes the building we publish. Reject a sample that exceeds a ceiling;
+        // lowering its reported area would leave an oversized building in the published record.
+        // This sampler does not search for the maximum feasible capacity or retry smaller designs.
         const maxCoveragePct = num(sourceRule && sourceRule.maxCoveragePct);
-        if (maxCoveragePct !== null && areaM2 !== null && areaM2 > 0) {
+        if (maxCoveragePct !== null) {
+            if (areaM2 === null || areaM2 <= 0) return;
             const footprintM2 = num(measured.footprintM2);
             const allowedFootprintM2 = areaM2 * (maxCoveragePct / 100);
-            const floors = num(measured.floors) ?? 1;
-            if (footprintM2 !== null && footprintM2 > allowedFootprintM2) {
-                proposedGfaM2 = Math.min(proposedGfaM2, allowedFootprintM2 * floors);
-                capped = true;
-            }
+            if (footprintM2 === null || footprintM2 > allowedFootprintM2) return;
         }
         const maxGfaM2 = num(sourceRule && sourceRule.maxGfaM2);
-        if (maxGfaM2 !== null && proposedGfaM2 > maxGfaM2) {
-            proposedGfaM2 = maxGfaM2;
-            capped = true;
-        }
+        if (maxGfaM2 !== null && proposedGfaM2 > maxGfaM2) return;
 
         // No uplift, no proposal.
         if (!(proposedGfaM2 > builtGfaM2)) return;
@@ -174,7 +168,7 @@ export function planCandidates(parcels, persona, {
             gainEur,
             offerEur: Math.round(gainEur * offerShareOfGain),
             score: 0,
-            scoreParts: { density, valueUplift: 0, openSpace, heritage: 0, ...(capped ? { capped: true } : {}) },
+            scoreParts: { density, valueUplift: 0, openSpace, heritage: 0 },
             // The exact rule the envelope and the build-out were derived from. record-builder.js
             // stamps this onto buildingProposal.parameters.rule so the stored proposal can be
             // re-derived: the same rule and the same seed reproduce this massing.

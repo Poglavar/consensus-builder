@@ -1,0 +1,6 @@
+[
+  {
+    "url": "https://mdgeodata.md.gov/imap/rest/services/PlanningCadastre/MD_ParcelBoundaries/MapServer/0",
+    "reason": "Held: the Maryland iMAP MD_ParcelBoundaries MapServer returns inconsistent manifests for the binding envelope around the sample parcel (Glen Burnie): returnCountOnly=205 but returnIdsOnly lists 204 distinct object IDs, so the production adapter refuses with 'incomplete or invalid object-ID list' (502) and the binding check fails in both attempt-01 and attempt-02; every other check passed. Source…"
+  }
+]

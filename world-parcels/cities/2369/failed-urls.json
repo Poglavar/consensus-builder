@@ -1,0 +1,6 @@
+[
+  {
+    "url": "https://geoserver.geoportal.gov.ph/geoserver/ows?service=WFS&request=GetCapabilities",
+    "reason": "401"
+  }
+]

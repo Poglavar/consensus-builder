@@ -1,10 +1,59 @@
 <!-- Design of record for named plans: immutable named sets of proposals, and betting on them. -->
 
-# Plans
+# Named plans
 
 A **proposal** is an authored change, rule or transaction concerning land; it may contain several
-buildings, streets or plots. A **plan** is a named, ordered set of proposals: what people actually argue and bet
+buildings, streets or plots. A **named plan** is a named, ordered set of proposals: what people actually argue and bet
 about ("the official UPU Borovje", "Borovje – urban blocks"). Decisions of 2026-10-10.
+
+## Named membership and local application
+
+An **applied composition** is the proposals currently applied in one browser and their materialized
+effects. It can include proposals from several named plans, plus local drafts. It has no named-plan
+identity of its own. Applying or removing a proposal changes this composition, not any named plan.
+
+**Share applied proposals** lets the user choose a subset and upload its proposals. Copying the
+resulting `/proposals/<row IDs>` link shares that selection without creating a named plan. The
+separate **Create named plan** action creates the fixed membership record through `POST /plans`.
+The browser's later application state does not update that record.
+
+| Relationship | Meaning |
+| --- | --- |
+| Proposal is a member of a named plan | Durable, ordered membership recorded by the plan. |
+| Proposal is applied in a browser | Local state that contributes to the current composition and derived fabric. |
+| Proposal is selected for sharing | Temporary selection in the sharing panel; it can be a subset of the composition. |
+| Proposal forms before another proposal | Replay chronology determined by authored/creation time and tie-breakers. |
+| Proposal depends on another proposal | Prerequisite required by its authored inputs; membership or list position alone does not establish it. |
+
+Member order contributes to the named-plan hash. It does not determine replay chronology or
+declare dependencies. A statutory plan or a floor-plan drawing is a different kind of object;
+this document uses “plan” as shorthand for **named plan** only.
+
+**Applied proposal stats** reports the current browser composition. **Urban grain score** identifies
+whether it is using that local composition or a named-plan scope. A named-plan card displays the
+plan's title, or its slug when it has no title. Both named-score entry points fetch current plan
+detail and require every member to be verified unchanged and applied with its exact published row
+ID (`serverProposalId` locally). The author’s local key can differ from the published authored ID.
+A local fork or replacement cannot stand in for that member; a fork counts only when its own
+published row belongs to the plan. Missing, changed, unverified or unapplied members
+prevent a named score, without falling back to the local composition.
+
+The named members must be the whole applied composition: any outside applied proposal prevents
+scoring, including proposals on distant parcels or open ground. This is an intentional conservative
+boundary while there is no isolated replay evaluator. The user can unapply outsiders and reopen the
+score; scoring does not change their applied state automatically.
+
+A grain score is an assessment of one current-session fabric snapshot. Ground loading completes
+before composition is rechecked and features are captured. Parcel counts and dimensions use those
+same captured features. A named score requires complete measurable result geometry; original
+cadastral geometry cannot fill a missing materialized result. Start and Repeat recheck eligibility
+and require the captured fabric revision still to be current.
+
+The inputs include the member rows, current cadastral facts, runtime materialization rules and
+fabric revision. Ground and engine versions are not committed by the named-plan hash, and scores
+are not persisted as historical evidence. Immutable membership therefore does not imply a score
+reproducible across sessions or releases. V19 records this bounded resolution in
+[the audit register](vocabulary.md#audit-register--findings-and-resolutions).
 
 ## A named plan never changes
 
@@ -42,8 +91,8 @@ the members' **authored IDs** instead, so it is independent of database row numb
 
 ## A plan is only as fixed as its members
 
-Proposal rows can still be repaired in place by operator scripts (as the 2026-10-10 Borovje
-sync did). So a plan stores, at creation:
+Published design changes create new proposals linked to their source. A plan retains the original
+member rows; it does not need to duplicate their contents. At creation a plan stores:
 
 - `member_hashes` — per member, SHA-256 of **decision kind, authored site and design/deal content**
   (`backend/plans/plan-hash.js`). Every member includes `proposal_data.kind` and
@@ -57,10 +106,22 @@ sync did). So a plan stores, at creation:
   (the hash helper calls that authored-ID input `proposalId`).
 - `site` — the union of the members' sites, for the on-chain mint.
 
-`GET /plans/:slug` recomputes each member's hash and reports `changed: true` for any member
-that no longer matches. A repaired member therefore shows up instead of silently changing a
-plan people bet on. Rule for repairs: once a proposal belongs to a minted plan, a repair makes
-new rows and a new plan version; it does not edit the rows in place.
+`GET /plans/:slug` requires one valid SHA-256 hash for every member and a valid plan hash before
+comparing content. Missing, partial or malformed saved commitments return 422
+(`plan-commitment-invalid`), including through the list route. There is no “unverified but unchanged”
+case. For a valid saved commitment, a missing member or a content mismatch reports `changed: true`.
+
+The database guards in [publication-immutability.sql](backend/db/publication-immutability.sql)
+reject updates to published proposal content, including direct operator SQL and UPSERT overwrites.
+The proposal's design, identity, terms, source references, site and binding remain fixed. Names,
+descriptions, thumbnails, timeline labels, lifecycle/approval outcomes and chain attachment may
+change; these are separate from authored design. The response ID mirrors in `proposal_data` may
+be populated after insertion; the actual identifier columns remain fixed.
+
+Named-plan fields are fixed too, including membership, hashes, title and supersession. Chain data
+may be attached once. A repair must publish new proposal rows and name a new plan; the former
+in-place repair/import scripts cannot overwrite existing content. The guards are applied by the
+backend deployment's DDL step; no stored content is backfilled or restamped.
 
 ## Betting on a plan
 
@@ -68,7 +129,9 @@ One plan → one on-chain proposal account → one `proposal_market` pool. No pr
 
 - `scripts/mint-plan.mjs` mints a site-only proposal account for the plan (site = the plan's
   site, `image_uri` = `ugt-plan:<slug>@<plan_hash>`, so the account commits to the exact
-  content) and records it on the plan row (`onchain_data`).
+  content) and records it on the plan row (`onchain_data`). Before minting, the store verifies
+  complete commitments, current member hashes and the aggregate plan hash; missing, changed or
+  inconsistent content refuses the mint. ENS does not resolve plans with incomplete commitments.
 - The pool is opened on that account like any other (Bets sheet "Open the pool", or the agents'
   `ensureMarketAndStake`). It settles like any proposal market: Executed → YES, Cancelled or
   Expired (lifecycle lens verdict) → NO.
@@ -110,8 +173,13 @@ compatibility with prior plan mints. Stored commitments are never rewritten to a
 The same day's API field rename makes row and authored identifiers explicit. All consumers must
 use the names above; no alias reader is maintained. It changes no stored values or hash inputs.
 
+V03 enforcement requires complete plan commitments on reads and new writes, and makes the
+published-content/fork boundary a database invariant once its DDL is applied. Incomplete plans
+must be discarded and recreated. This adds neither an older-contract reader nor stored snapshots.
+
 ## Links
 
-- `/proposals/<slug>` opens a plan (applies its members); named-plan URLs, including ENS `url`
-  records, use this route rather than expanding row IDs into the path.
+- `/proposals/<slug>` opens the named-plan preview, including ENS `url` records. **Apply plan**
+  applies its members locally; named-plan URLs use the slug rather than expanding row IDs into the path.
+- `/proposals/<row IDs>` shares selected published proposals without a named-plan record.
 - `/bets/<plan account>` opens the plan's bet, as for proposals.

@@ -56,9 +56,13 @@
             }
         }
         const used = parcelAct ? facts.filter(fact => declared.includes(fact.id)) : facts;
+        const knownSources = used.map(fact => siteApi.normalizeParcelSource(fact.properties?.parcelSource));
+        const parcelSource = knownSources.length && knownSources.every(value => value
+            && value.sourceId === knownSources[0].sourceId && value.snapshotId === knownSources[0].snapshotId)
+            ? knownSources[0] : null;
         const binding = siteApi.bindingFromParcels(site, used, {
             toleranceM: record.toleranceM ?? proposal.binding?.toleranceM,
-            regionHasCadastre, source: 'client-cadastre', turf
+            regionHasCadastre, source: 'client-cadastre', parcelSource, turf
         });
         if (binding.unresolved?.length) fail('The site reaches a parcel by almost exactly its tolerance. Adjust the design before minting.');
         if (parcelAct) {
@@ -90,7 +94,8 @@
         const config = options.cityConfig || global.CityConfigManager?.getCityConfig?.(city);
         if (!city || !config?.parcels?.source) fail('The proposal must name its city and cadastral source before minting.');
         const repository = options.repository || global.CadastralParcelRepository;
-        const hasCadastre = config.parcels.source !== 'none';
+        const localSource = global.ParcelGroundFallback?.activeSource?.(city);
+        const hasCadastre = !!localSource || config.parcels.source !== 'none';
         const record = buildLand({ ...proposal, city });
         const siteApi = dependency('__siteBinding', './site-binding.js');
         let parcels = [];
@@ -110,7 +115,7 @@
             }
         }
         return buildRecord(record, { parcels, regionHasCadastre: hasCadastre,
-            source: config.parcels.sourceId || config.parcels.source, turf: options.turf || global.turf,
+            source: localSource?.id || config.parcels.sourceId || config.parcels.source, turf: options.turf || global.turf,
             ...(options.now ? { now: options.now } : {}) });
     }
 

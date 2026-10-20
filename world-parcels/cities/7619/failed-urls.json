@@ -1,0 +1,26 @@
+[
+  {
+    "url": "https://www.punjab-zameen.gov.pk/"
+  },
+  {
+    "url": "https://lis.pulse.gop.pk/"
+  },
+  {
+    "url": "https://askfortaqseem.pulse.gop.pk/ParcelMap.html"
+  },
+  {
+    "url": "https://lgcd.punjab.gov.pk/Faisalabad_Division"
+  },
+  {
+    "url": "https://www.punjab-zameen.gov.pk/serviceCenters"
+  },
+  {
+    "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/GPC/GPC_Parcels/MapServer?f=pjson"
+  },
+  {
+    "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/Punjab/Pulse_Map/MapServer?f=pjson"
+  },
+  {
+    "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/Punjab/Admin__Boundaries/MapServer?f=pjson"
+  }
+]

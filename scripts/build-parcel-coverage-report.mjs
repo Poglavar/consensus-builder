@@ -4,7 +4,7 @@ import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { collectReportEvidence } from './parcel-report-evidence.mjs';
-import { readIntegrationOutcomeBatches, indexIntegrationHistory, integrationCityKeys, integrationOutcomeKeys, integrationHistoryForCity } from './parcel-integration-history.mjs';
+import { indexIntegrationHistory, integrationCityKeys, integrationOutcomeKeys, integrationHistoryForCity } from './parcel-integration-history.mjs';
 import { countryCategory, mapLinks, summarizeJurisdictions } from '../frontend/js/parcel-coverage-report-model.mjs';
 
 const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -199,7 +199,8 @@ export function runBuild(repoRoot = REPO) {
     const sourceCatalog = readJson(path.join(repoRoot, 'backend/parcels/source-catalog.json'));
     const report = buildParcelReport({
         registry, evidence: collectReportEvidence({ registry, repoRoot, appCities: coverage.liveCities, sourceCatalog }),
-        integrationOutcomeBatches: readIntegrationOutcomeBatches(repoRoot),
+        // City settings and failed URLs replace permanent qualification histories.
+        integrationOutcomeBatches: [],
         enrichment: readJson(path.join(repoRoot, 'world-parcels/report/city-demographics.json')),
         growthQueue: readJson(path.join(repoRoot, 'world-parcels/queue-growth-top200.json')),
         focusQueue: readJson(path.join(repoRoot, 'world-parcels/queue-india-africa.json')).cities,

@@ -1,0 +1,29 @@
+[
+  {
+    "url": "https://hsac.in/eodb_backend/land-query/districts",
+    "reason": "401"
+  },
+  {
+    "url": "https://hsac.in/eodb_backend/land-query/search?term=Sirsa&limit=10",
+    "reason": "401"
+  },
+  {
+    "url": "https://hsac.in/eodb_backend/land-query/boundary-extent-at-point",
+    "reason": "401"
+  },
+  {
+    "url": "https://revenueharyana.gov.in/computerisation-of-land-records/"
+  },
+  {
+    "url": "https://hsac.in/eodb/"
+  },
+  {
+    "url": "https://haryanait.gov.in/web-halris/"
+  },
+  {
+    "url": "https://revenueharyana.gov.in/field-offices/"
+  },
+  {
+    "url": "https://jamabandi.nic.in/"
+  }
+]

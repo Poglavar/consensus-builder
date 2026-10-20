@@ -2,12 +2,13 @@
 // lens holds the lifecycle member; every other row is skipped with a reason, never silently.
 import { describe, expect, it } from 'vitest';
 import { selectExpiryCandidates } from '../scripts/expire-proposals.mjs';
+import { PROPOSAL_PROGRAM_ID } from '../oracle/proposal-lifecycle.js';
 
 const ACCOUNT = 'Ekpt4qMsJWyyraDfPfq2zkT1JwMsJCKrSmkoNGgHreFR';
 const OTHER = 'Fh3K8apDKKKjPUPLVV5Y327Hd5s2HY9Y7bqAvjidFcC5';
 const LIFECYCLE = 'm8gLfyPspP6ABSNA4ZMFYCzzRGjNLBmrKKwKrGqbUfR';
 const now = new Date('2026-10-09T12:00:00Z');
-const row = (overrides) => ({ proposal_id: 'p', city: 'san_francisco', title: 'T', expires_at: '2026-10-01T00:00:00Z', onchain_data: { chainId: 'solana-devnet', proposalId: ACCOUNT }, ...overrides });
+const row = (overrides) => ({ proposal_id: 'p', city: 'san_francisco', title: 'T', expires_at: '2026-10-01T00:00:00Z', onchain_data: { chainId: 'solana-devnet', contractAddress: PROPOSAL_PROGRAM_ID, proposalId: ACCOUNT }, ...overrides });
 
 describe('selectExpiryCandidates', () => {
     it('selects an expired, minted, Active proposal whose lens holds the lifecycle member', () => {
@@ -25,11 +26,11 @@ describe('selectExpiryCandidates', () => {
         ]);
         const out = selectExpiryCandidates([
             row({ proposal_id: 'unminted', onchain_data: null }),
-            row({ proposal_id: 'future', expires_at: '2027-01-01T00:00:00Z', onchain_data: { chainId: 'solana-devnet', proposalId: OTHER } }),
+            row({ proposal_id: 'future', expires_at: '2027-01-01T00:00:00Z', onchain_data: { chainId: 'solana-devnet', contractAddress: PROPOSAL_PROGRAM_ID, proposalId: OTHER } }),
             row({ proposal_id: 'no-expiry', expires_at: null }),
-            row({ proposal_id: 'already', onchain_data: { chainId: 'solana-devnet', proposalId: OTHER } }),
+            row({ proposal_id: 'already', onchain_data: { chainId: 'solana-devnet', contractAddress: PROPOSAL_PROGRAM_ID, proposalId: OTHER } }),
             row({ proposal_id: 'wrong-lens' }),
-            row({ proposal_id: 'unreadable', onchain_data: { chainId: 'solana-devnet', proposalId: '5A9kzK2SzjP5nU2Dnz958wQcy96KkMnavoMNGxt7p1h3' } })
+            row({ proposal_id: 'unreadable', onchain_data: { chainId: 'solana-devnet', contractAddress: PROPOSAL_PROGRAM_ID, proposalId: '5A9kzK2SzjP5nU2Dnz958wQcy96KkMnavoMNGxt7p1h3' } })
         ], { statuses, now, lifecycleKey: LIFECYCLE });
         expect(out.selected).toEqual([]);
         expect(out.skipped.map(item => `${item.proposalId}: ${item.reason}`)).toEqual([

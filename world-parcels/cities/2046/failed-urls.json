@@ -1,0 +1,20 @@
+[
+  {
+    "url": "https://anyror.gujarat.gov.in/",
+    "reason": "timeout"
+  },
+  {
+    "url": "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/478",
+    "reason": "TLS verification failure"
+  },
+  {
+    "url": "https://revenuedepartment.gujarat.gov.in/iora-service",
+    "reason": "timeout"
+  },
+  {
+    "url": "https://porbandar.nic.in/service/land-records/"
+  },
+  {
+    "url": "https://bhunaksha.nic.in/bhunaksha/index.jsp"
+  }
+]

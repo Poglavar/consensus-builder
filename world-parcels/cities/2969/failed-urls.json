@@ -1,0 +1,47 @@
+[
+  {
+    "url": "https://settlement.gov.bd/Map/MapSearch"
+  },
+  {
+    "url": "https://settlement.gov.bd/js/MapSearch.js?v=yIrkacclePMWogM6Pmn4B9h1nLF0RbM3YSk70pezUfQ"
+  },
+  {
+    "url": "https://settlement.gov.bd/Map/GetDivisionList"
+  },
+  {
+    "url": "https://settlement.gov.bd/Khatian/getdistrictlistdivisionwise"
+  },
+  {
+    "url": "https://settlement.gov.bd/Khatian/GetSurveyListDistrictWise"
+  },
+  {
+    "url": "https://settlement.gov.bd/Khatian/GetThanaListBySurveyMap"
+  },
+  {
+    "url": "https://settlement.gov.bd/Map/GetallBoundaryJson"
+  },
+  {
+    "url": "https://map.settlement.gov.bd/"
+  },
+  {
+    "url": "https://map.settlement.gov.bd/api/locations/divisions"
+  },
+  {
+    "url": "https://map.settlement.gov.bd/api/locations/districts?division=রংপুর"
+  },
+  {
+    "url": "https://map.settlement.gov.bd/api/locations/upazilas?division=রংপুর&district=লালমনিরহাট"
+  },
+  {
+    "url": "https://map.settlement.gov.bd/api/locations/mouzas?division=রংপুর&district=লালমনিরহাট&upazila=লালমনিরহাট"
+  },
+  {
+    "url": "https://map.settlement.gov.bd/api/locations/survey-types?division=রংপুর&district=লালমনিরহাট&upazila=লালমনিরহাট"
+  },
+  {
+    "url": "https://map.settlement.gov.bd/api/search-mouzas?division=রংপুর&district=লালমনিরহাট&upazila=লালমনিরহাট&query=লালমনিরহাট"
+  },
+  {
+    "url": "https://map.settlement.gov.bd/api/search?division=রংপুর&district=লালমনিরহাট&upazila=লালমনিরহাট&query=লালমনিরহাট"
+  }
+]

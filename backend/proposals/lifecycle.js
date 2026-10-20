@@ -29,10 +29,10 @@ export function resolveIncomingLifecycleStatus(payload = {}) {
 }
 
 export function effectiveLifecycleStatus(value, expiresAt, now = new Date()) {
-    const canonical = canonicalizeLifecycleStatus(value, { fallback: 'Active' }) || 'Active';
-    if (canonical === 'Executed' || canonical === 'Cancelled' || canonical === 'Expired' || canonical === 'draft') {
-        return canonical;
-    }
+    const canonical = canonicalizeLifecycleStatus(value);
+    // Unknown is a read result, not a lifecycle that clients may assign to a new proposal.
+    if (!canonical) return 'Unknown';
+    if (canonical !== 'Active') return canonical;
     const expiry = expiresAt ? new Date(expiresAt) : null;
     if (expiry && Number.isFinite(expiry.getTime()) && expiry.getTime() <= new Date(now).getTime()) {
         return 'Expired';

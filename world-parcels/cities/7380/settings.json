@@ -1,0 +1,112 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "7380",
+  "name": "Fort Lauderdale, United States",
+  "point": [
+    26.2136403895659,
+    -80.2006810091933
+  ],
+  "bindings": [
+    {
+      "appCityId": "fortlauderdale",
+      "runtimeConfig": {
+        "id": "fortlauderdale",
+        "label": "Fort Lauderdale, United States",
+        "currency": {
+          "locale": "en-US",
+          "code": "USD"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            26.2136403895659,
+            -80.2006810091933
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            26.2136403895659,
+            -80.2006810091933
+          ],
+          "fallbackDataset": [
+            -80.2006810091933,
+            26.2136403895659
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "us-fl-fort-lauderdale-taxparcels-ground",
+          "idPrefix": "US-FL-FORT-LAUDERDALE-ROW-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 3,
+          "attribution": "<a href=\"https://gis.fortlauderdale.gov/server/rest/services/TaxParcel/MapServer\">Fort Lauderdale ground tax-parcel boundaries</a> · adapted"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "us-fl-fort-lauderdale-taxparcels-ground",
+      "name": "Fort Lauderdale ground tax-parcel boundaries",
+      "adapter": "arcgis",
+      "endpoint": "https://gis.fortlauderdale.gov/server/rest/services/TaxParcel/MapServer/0",
+      "idField": "OBJECTID",
+      "objectIdField": "OBJECTID",
+      "idType": "integer",
+      "idPrefix": "US-FL-FORT-LAUDERDALE-ROW-",
+      "parcelNumberField": "PARCELID",
+      "outFields": [
+        "OBJECTID",
+        "PARCELID",
+        "RECORDTYPE"
+      ],
+      "pageSize": 500,
+      "maxFeatures": 20000,
+      "maxBboxKm2": 1,
+      "countryCode": "US",
+      "metricSrid": 32617,
+      "cityIds": [
+        "fortlauderdale"
+      ],
+      "operator": "City of Fort Lauderdale GIS",
+      "catalogueUrl": "https://gis.fortlauderdale.gov/server/rest/services/TaxParcel/MapServer",
+      "attribution": "City of Fort Lauderdale GIS · ground tax-parcel boundaries · adapted",
+      "attributeFilters": {
+        "RECORDTYPE": "Parcel"
+      },
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "scope": "46 valid, distinct Fort Lauderdale ground Parcel records verified in thirteen bounded cells around the unchanged ranked WUP locator. The publisher-defined RECORDTYPE=Parcel filter excludes redundant Condo Unit rows and is enforced on every query. OBJECTID is the unique service row identity; PARCELID is a non-unique display label. Complete object-ID manifests, forced three-row paging (26 rows over nine pages), all 46 fresh identity reads, explicit absence, footprint and binding passed. Independent GEOS audit in EPSG:32617 found no invalid geometries, duplicates, sampled overlaps above 0.01 m² or operation errors. This is municipal tax-parcel geometry; citywide completeness, legal title, survey accuracy and permanent service-row identity are unverified.",
+      "licenceNote": "Public city GIS reference polygons; source conditions and legal/survey disclaimers informational."
+    }
+  ]
+}

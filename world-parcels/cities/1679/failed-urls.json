@@ -1,0 +1,14 @@
+[
+  {
+    "url": "https://map.city.cv.ua/api-user/gis-format?layer=&lat=48.2838600298589&lng=25.9409671955555&auto=1&zoom=15",
+    "reason": "401"
+  },
+  {
+    "url": "https://map.city.cv.ua/api-user/gis-format?layer=3564912032077580041&lat=48.2838600298589&lng=25.9409671955555&auto=1&zoom=15",
+    "reason": "400"
+  },
+  {
+    "url": "https://map.city.cv.ua/api-user/gis-format?table=cadastr_portal.orenda_docs&lat=48.2838600298589&lng=25.9409671955555&auto=1&zoom=15",
+    "reason": "400"
+  }
+]

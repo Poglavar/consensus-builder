@@ -6,18 +6,35 @@ const makeTask = (overrides = {}) => ({
     result: {}, ...overrides,
 });
 
-function fakeDb(tasks = []) {
-    const state = { tasks: structuredClone(tasks), lock: false, calls: [] };
+function fakeDb(tasks = [], shared = null) {
+    const session = Symbol('connection');
+    const locks = shared || { tasks: structuredClone(tasks), readers: new Set(), tasksHeld: new Map(), exclusive: false };
+    const state = { tasks: locks.tasks, lock: false, calls: [], locks };
     const db = { state, async query(sql, params = []) {
         state.calls.push([sql, params]);
-        if (sql.includes('pg_try_advisory_lock')) {
-            if (state.lock) return { rows: [{ locked: false }] };
-            state.lock = true;
+        if (sql.includes('pg_try_advisory_lock_shared')) {
+            if (locks.exclusive) return { rows: [{ locked: false }] };
+            locks.readers.add(session); state.lock = true;
             return { rows: [{ locked: true }] };
         }
-        if (sql.includes('pg_advisory_unlock')) { state.lock = false; return { rows: [] }; }
+        if (sql.includes('pg_advisory_unlock_shared')) {
+            locks.readers.delete(session); state.lock = false; return { rows: [] };
+        }
+        if (sql.includes("hashtext('floor-plan-cli-task')")) {
+            if (sql.includes('pg_try_advisory_lock')) {
+                const owner = locks.tasksHeld.get(params[0]);
+                if (owner && owner !== session) return { rows: [{ locked: false }] };
+                locks.tasksHeld.set(params[0], session); return { rows: [{ locked: true }] };
+            }
+            if (locks.tasksHeld.get(params[0]) === session) locks.tasksHeld.delete(params[0]);
+            return { rows: [] };
+        }
+        if (sql.includes('pg_try_advisory_lock')) {
+            if (locks.exclusive || locks.readers.size) return { rows: [{ locked: false }] };
+            locks.exclusive = true; return { rows: [{ locked: true }] };
+        }
         if (sql.startsWith('SELECT q.*')) return { rows: state.tasks.filter(task => task.status === 'queued'
-            && (!params[2] || params[2].includes(task.id))).slice(0, params[1]) };
+            && (!params[2] || params[2].includes(task.id))).slice(0, params[1]).map(task => structuredClone(task)) };
         const match = sql.match(/UPDATE floor_plan\.(building_task|image_task|plan_task)/);
         if (match) {
             const task = state.tasks.find(item => item.id === params[0]);
@@ -88,15 +105,19 @@ describe('subscription CLI floor-plan worker', () => {
         await expect(run(db, stage, reader)).resolves.toMatchObject({ selected: 0 });
     });
 
-    it('uses the advisory lock to reject concurrent work and releases it after failure', async () => {
+    it('skips a task held by another reader, and releases locks after failure', async () => {
         const db = fakeDb([makeTask()]);
-        let finish;
+        const otherDb = fakeDb([], db.state.locks);
+        let finish, started;
+        const ready = new Promise(resolve => { started = resolve; });
         const blocked = new Promise(resolve => { finish = resolve; });
-        const reader = { complete: vi.fn(async () => { await blocked; return { data: {}, costUsd: 0 }; }) };
+        const reader = { complete: vi.fn(async () => { started(); await blocked; return { data: {}, usage: {}, costUsd: 0 }; }) };
         const stage = adapter();
         const first = run(db, stage, reader);
-        while (!db.state.lock) await new Promise(resolve => setTimeout(resolve, 0));
-        await expect(run(db, adapter(), { complete: vi.fn() })).rejects.toThrow(/Another floor-plan recognition worker/);
+        await ready;
+        const otherReader = { complete: vi.fn() };
+        await expect(run(otherDb, adapter(), otherReader)).resolves.toMatchObject({ selected: 0, busy: 1 });
+        expect(otherReader.complete).not.toHaveBeenCalled();
         finish();
         await first;
         expect(db.state.lock).toBe(false);
@@ -106,7 +127,52 @@ describe('subscription CLI floor-plan worker', () => {
         await expect(run(failingDb, broken, { complete: vi.fn(async () => ({ data: {}, costUsd: 0 })) }))
             .resolves.toMatchObject({ failed: 1, status: 'needs-attention' });
         expect(failingDb.state.lock).toBe(false);
+        expect(failingDb.state.locks.tasksHeld.size).toBe(0);
         expect(failingDb.state.tasks[0].status).toBe('error');
+    });
+
+    it('runs four distinct tasks concurrently and excludes the API batch writer', async () => {
+        const ids = ['a', 'b', 'c', 'd'].map(c => c.repeat(64));
+        const db = fakeDb(ids.map(id => makeTask({ id })));
+        const clients = [db, ...ids.slice(1).map(() => fakeDb([], db.state.locks))];
+        let finish, allStarted, active = 0, peak = 0;
+        const ready = new Promise(resolve => { allStarted = resolve; });
+        const blocked = new Promise(resolve => { finish = resolve; });
+        const reader = { complete: vi.fn(async () => {
+            active++; peak = Math.max(peak, active); if (active === 4) allStarted();
+            await blocked; active--; return { data: {}, usage: {}, costUsd: 0 };
+        }) };
+        const runs = clients.map((client, i) => run(client, adapter(), reader, { taskIds: [ids[i]] }));
+        await ready;
+        expect(peak).toBe(4);
+        expect(db.state.locks.tasksHeld.size).toBe(4);
+        const api = fakeDb([], db.state.locks);
+        const sql = "SELECT pg_try_advisory_lock(hashtext('floor-plan-ai')) AS locked";
+        expect((await api.query(sql)).rows[0].locked).toBe(false);
+        finish();
+        expect((await Promise.all(runs)).every(r => r.completed === 1)).toBe(true);
+        expect(reader.complete).toHaveBeenCalledTimes(4);
+        expect(db.state.locks.tasksHeld.size).toBe(0);
+        expect(db.state.locks.readers.size).toBe(0);
+        expect((await api.query(sql)).rows[0].locked).toBe(true);
+    });
+
+    it('rejects CLI work while an exclusive batch owns the pipeline', async () => {
+        const db = fakeDb([makeTask()]); db.state.locks.exclusive = true;
+        await expect(run(db, adapter(), { complete: vi.fn() })).rejects.toThrow(/Another floor-plan recognition worker/);
+    });
+
+    it('rechecks status after claiming so a finished task is not processed again', async () => {
+        const db = fakeDb([makeTask()]); const query = db.query.bind(db);
+        db.query = async (sql, params) => {
+            const result = await query(sql, params);
+            if (sql.includes("pg_try_advisory_lock(hashtext('floor-plan-cli-task')")) db.state.tasks[0].status = 'complete';
+            return result;
+        };
+        const reader = { complete: vi.fn() };
+        await expect(run(db, adapter(), reader)).resolves.toMatchObject({ selected: 0, completed: 0 });
+        expect(reader.complete).not.toHaveBeenCalled();
+        expect(db.state.locks.tasksHeld.size).toBe(0);
     });
 
     it('validates limits before database access and rejects a metered response', async () => {

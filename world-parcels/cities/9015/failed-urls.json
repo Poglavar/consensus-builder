@@ -1,0 +1,19 @@
+[
+  {
+    "url": "https://www.bhunaksha.rajasthan.gov.in/georef_gmaps.html",
+    "reason": "502"
+  },
+  {
+    "url": "https://dilrmp.gov.in/dilrmpold/",
+    "reason": "502"
+  },
+  {
+    "url": "https://edharti.rajasthan.gov.in/"
+  },
+  {
+    "url": "https://rajdharaa.rajasthan.gov.in/citizenudh/"
+  },
+  {
+    "url": "https://gisprod.rajasthan.gov.in/geocode/rest/services/JDA/Settlement_JDA/MapServer/0?f=pjson"
+  }
+]

@@ -1,0 +1,17 @@
+[
+  {
+    "url": "https://cadastre.ssaa.ir/",
+    "reason": "timeout / HTTP 000"
+  },
+  {
+    "url": "https://ssaa.ir/",
+    "reason": "timeout / HTTP 000"
+  },
+  {
+    "url": "https://my.ssaa.ir/portal",
+    "reason": "timeout / HTTP 000"
+  },
+  {
+    "url": "https://nezamat.ir/post-41513/"
+  }
+]

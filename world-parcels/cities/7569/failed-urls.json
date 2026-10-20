@@ -1,0 +1,23 @@
+[
+  {
+    "url": "https://riicogis.rajasthan.gov.in/RiicoGis/index.html"
+  },
+  {
+    "url": "https://riicogis.rajasthan.gov.in/RiicoGis/config.json"
+  },
+  {
+    "url": "https://gis.rajasthan.gov.in/citizen/Default.aspx"
+  },
+  {
+    "url": "https://riico.rajasthan.gov.in/geohome"
+  },
+  {
+    "url": "https://gisprod.rajasthan.gov.in/gpserver/rest/services/RIICO/RIICOProdLyr/MapServer?f=pjson"
+  },
+  {
+    "url": "https://gisprod.rajasthan.gov.in/gpserver/rest/services/RIICO/RIICOERP/MapServer/1?f=pjson"
+  },
+  {
+    "url": "https://gisprod.rajasthan.gov.in/gpserver/rest/services/RIICO/RIICOProdLyr/MapServer/53/query?where=1%3D1&geometry=74.84%2C26.56%2C74.88%2C26.61&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=*&returnGeometry=true&outSR=4326&resultRecordCount=3&f=geojson"
+  }
+]

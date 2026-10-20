@@ -49,6 +49,14 @@ describe('source reading to vector architecture',()=>{
         expect(plan.verticalDimensionsBasis).toMatch(/Estimated/);
         expect(plan.building).toBeNull();
     });
+    it('closes slab corners using x/y intersections of selected measured wall corners',()=>{
+        const raw=drawing();
+        raw.plans[0].slabs[0].outer=['W1:0/W3:2','W2:2/W4:3','W2:2/W6:0','W1:0/W5:1'];
+        const plan=parse(raw).plans[0];
+        expect(plan.architecture.slabs[0][0]).toEqual([[0,0],[1,0],[1,1],[0,1]]);
+        raw.plans[0].wallIds=raw.plans[0].wallIds.filter(id=>id!=='W3');
+        expect(()=>parse(raw)).toThrow(/not a measured source anchor/);
+    });
     it.each(['scale','floor','unknown-wall','unknown-scale','invented-slab','unknown-opening','conflicting-opening','duplicate-opening'])('rejects invalid %s evidence',kind=>{
         const raw=drawing(),p=raw.plans[0];
         if(kind==='scale')p.scale.lengthM=null;
@@ -224,7 +232,7 @@ describe('durable tasks and spend accounting',()=>{
         expect(db.query).toHaveBeenCalledWith('ROLLBACK');
         expect(db.query.mock.calls.some(([sql])=>sql==='COMMIT')).toBe(false);
     });
-    it('enqueues an owned screened source with a located building candidate, even without a verified link',async()=>{
+    it('enqueues an owned screened source independently of building resolution',async()=>{
         const source={sha256:task.source_sha256,model:{totalPages:1},source_url:task.source_url,
             listing_url:context.listingUrl,listing_owns_asset:true,
             facts:{floor:'1',unitId:null,areaM2:null,title:'Unrelated title'},match_status:'candidate',building_located:true};
@@ -238,9 +246,8 @@ describe('durable tasks and spend accounting',()=>{
         const inserted=calls.find(call=>call.sql.includes('INSERT INTO floor_plan.plan_task'));
         expect(JSON.parse(inserted.args[5])).toEqual(context);
         expect(inserted.args[6]).toBe(PROCESSOR);
-        expect(calls[0].sql).toContain("location_task.status='candidate'");
-        expect(calls[0].sql).toContain('AS building_located');
-        expect(calls[0].sql).toContain('OR EXISTS');
+        expect(calls[0].sql).toContain("'kind','floor-plan'");
+        expect(calls[0].sql).toContain("t.exclusion_reason IS NULL");
     });
     it('creates separate source-only contexts for two listing owners and deduplicates source URL aliases',async()=>{
         const rows=[
@@ -323,13 +330,13 @@ describe('durable tasks and spend accounting',()=>{
         expect(new Set(inserts.map(args=>args[0])).size).toBe(11);
         expect(inserts.map(args=>args[3])).toEqual([4,4,4,5,5,5,6,6,6,7,7]);
     });
-    it('does not let an explicit source hash enqueue an unlocated listing',async()=>{
+    it('lets a current owned source enqueue while its location remains unknown',async()=>{
         const source={sha256:task.source_sha256,model:{totalPages:1},source_url:task.source_url,
             listing_url:context.listingUrl,listing_owns_asset:true,building_located:false,facts:context.facts};
         const db={query:vi.fn(async sql=>sql.includes('FROM floor_plan.extraction e')?{rows:[source]}:{rows:[],rowCount:1})};
-        expect(await enqueuePlanTasks(db,{sourceHash:task.source_sha256})).toMatchObject({enqueued:0,deferredLocation:1});
-        expect(db.query.mock.calls.some(([sql])=>sql.includes('INSERT INTO floor_plan.plan_task'))).toBe(false);
-        expect(db.query.mock.calls[0][0]).toContain("location_task.status='candidate'");
+        expect(await enqueuePlanTasks(db,{sourceHash:task.source_sha256})).toMatchObject({enqueued:1});
+        expect(db.query.mock.calls.some(([sql])=>sql.includes('INSERT INTO floor_plan.plan_task'))).toBe(true);
+        expect(db.query.mock.calls[0][0]).toContain("'listingOwned',true");
     });
     it('checks current source and consumed facts without requiring a building match',async()=>{
         const row={url:context.listingUrl,facts:{floor:'1',unitId:null,areaM2:null},match_status:'candidate',building_located:true};

@@ -1,0 +1,18 @@
+[
+  {
+    "url": "https://maps.coventry.gov.uk/connect/analyst/mobile/",
+    "reason": "TLS verification failure"
+  },
+  {
+    "url": "https://www.coventry.gov.uk/planning-2/online-planning-map"
+  },
+  {
+    "url": "https://www.coventry.gov.uk/propertysearches"
+  },
+  {
+    "url": "https://www.gov.uk/guidance/hm-land-registry-electronic-extent-data-polygons"
+  },
+  {
+    "url": "https://www.gov.uk/get-information-about-property-and-land/search-the-index-map"
+  }
+]

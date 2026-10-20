@@ -169,7 +169,7 @@
         // An explicit schema (even with every list empty) is a deliberate saved design. Only fall
         // back to the rendered feature for legacy proposals that never stored decorations at all.
         if (hasExplicitDecorationDesign(state.kind, direct)) return direct;
-        const proposalId = draft?.sourceProposalId || draft?.sourceSnapshot?.proposalId || draft?.sourceSnapshot?.id;
+        const proposalId = draft?.sourceLocalProposalId || draft?.sourceSnapshot?.proposalId || draft?.sourceSnapshot?.id;
         if (!proposalId) return direct || null;
         const collection = state.kind === 'park' ? global.parks : global.squares;
         const feature = (Array.isArray(collection) ? collection : []).find(entry => String(entry?.properties?.proposalId || '') === String(proposalId));
@@ -1017,7 +1017,7 @@
         state.layer = global.L.layerGroup().addTo(global.map);
         // Hide the applied structure's own decoration rendering for the duration — the editor
         // shows the live editable copy, and static duplicates read as "objects I cannot drag".
-        global.structureGeometryEditorEditingProposalId = draft?.sourceProposalId
+        global.structureGeometryEditorEditingProposalId = draft?.sourceLocalProposalId
             || draft?.sourceSnapshot?.proposalId || draft?.sourceSnapshot?.id || null;
         try { global.updateParksLayer?.(); } catch (_) { }
         try { global.updateSquaresLayer?.(); } catch (_) { }

@@ -1,0 +1,23 @@
+[
+  {
+    "url": "https://www.dol.go.th/landmap/home/"
+  },
+  {
+    "url": "https://portal.dol.go.th/landspublic/"
+  },
+  {
+    "url": "https://portal.dol.go.th/api/nsldata/search-by-point?lat=16.812077346364&lng=100.254071434807"
+  },
+  {
+    "url": "https://portal.dol.go.th/geoserver/ows?service=WFS&version=2.0.0&request=GetCapabilities"
+  },
+  {
+    "url": "https://portal.dol.go.th/geoserver/ows?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=LPCPUBLIC:DOLNSL"
+  },
+  {
+    "url": "https://portal.dol.go.th/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=LPCPUBLIC:DOLNSL&outputFormat=application/json&count=3&bbox=100.20,16.76,100.30,16.86,urn:ogc:def:crs:EPSG::4326"
+  },
+  {
+    "url": "https://www.dol.go.th/phitsanulok/pl/home/"
+  }
+]

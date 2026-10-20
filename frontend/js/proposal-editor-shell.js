@@ -117,11 +117,10 @@
             if (goalOrProposal.decideLaterProposal) rawGoal = 'decide-later';
             else {
                 try {
-                    rawGoal = typeof global.resolveProposalGoalKey === 'function'
-                        ? global.resolveProposalGoalKey(goalOrProposal, null)
-                        : (goalOrProposal.goal || goalOrProposal.primaryType || goalOrProposal.proposalType || '');
+                    rawGoal = global.ProposalDesignGoals?.keyOf(goalOrProposal)
+                        || (goalOrProposal.goal === 'decide-later' ? 'decide-later' : '');
                 } catch (_) {
-                    rawGoal = goalOrProposal.goal || goalOrProposal.primaryType || goalOrProposal.proposalType || '';
+                    rawGoal = global.ProposalDesignGoals?.keyOf(goalOrProposal) || (goalOrProposal.goal === 'decide-later' ? 'decide-later' : '');
                 }
             }
         }
@@ -198,8 +197,8 @@
     // own local record, saved in place) or 'counterproposal' (a published or minted source, which stays
     // as it is). The same rule as the save itself (proposals/lineage.js editsInPlace).
     function draftSaveKind(draft) {
-        if (!draft?.sourceProposalId) return 'new';
-        const source = proposalById(draft.sourceProposalId) || draft.sourceSnapshot || null;
+        if (!draft?.sourceLocalProposalId) return 'new';
+        const source = proposalById(draft.sourceLocalProposalId) || draft.sourceSnapshot || null;
         return global.ProposalLineage?.editsInPlace?.(source) === true ? 'edit' : 'counterproposal';
     }
 
@@ -214,7 +213,7 @@
     };
 
     function renderDetails(draft) {
-        const typeSelector = !draft.sourceProposalId
+        const typeSelector = !draft.sourceLocalProposalId
             ? `<label class="proposal-editor-field">
                     <span>${escapeHtml(tDraft('proposalDrafts.fields.type', 'Proposal type'))}</span>
                     <select data-draft-goal>${(global.proposalEditorAdapterRegistry?.list?.() || [])
@@ -455,7 +454,7 @@
 
     function renderDesign(draft, adapter) {
         const canOpen = adapter && typeof adapter.openDesignEditor === 'function' && adapter.hasDesign !== false;
-        const corridorKind = !draft.sourceProposalId && draft.goal === 'road-track'
+        const corridorKind = !draft.sourceLocalProposalId && draft.goal === 'road-track'
             ? `<label class="proposal-editor-field"><span>${escapeHtml(tDraft('proposalDrafts.fields.corridorKind', 'Corridor type'))}</span><select data-draft-corridor-kind>${option('road', tDraft('proposalDrafts.design.road', 'Road'), draft.editorPayload?.kind || 'road')}${option('track', tDraft('proposalDrafts.design.track', 'Track'), draft.editorPayload?.kind || 'road')}</select></label>`
             : '';
         return `
@@ -505,8 +504,8 @@
                 <h3>${escapeHtml(tDraft('proposalDrafts.review.title', 'Review changes'))}</h3>
                 ${REVIEW_NOTICE[draftSaveKind(draft)] ? `<div class="proposal-editor-review-notice">${escapeHtml(tDraft(...REVIEW_NOTICE[draftSaveKind(draft)]))}</div>` : ''}
                 <div class="proposal-editor-card">
-                    <strong>${escapeHtml(summary?.sourceName || draft.sourceProposalId || tDraft('proposalDrafts.review.newProposal', 'New proposal'))}</strong>
-                    <p>${escapeHtml(draft.sourceProposalId || tDraft('proposalDrafts.review.noSource', 'No source proposal'))} → ${escapeHtml(draft.fields?.name || '')}</p>
+                    <strong>${escapeHtml(summary?.sourceName || draft.sourceLocalProposalId || tDraft('proposalDrafts.review.newProposal', 'New proposal'))}</strong>
+                    <p>${escapeHtml(draft.sourceLocalProposalId || tDraft('proposalDrafts.review.noSource', 'No source proposal'))} → ${escapeHtml(draft.fields?.name || '')}</p>
                 </div>
                 <dl class="proposal-editor-diff-list">
                     ${rows || `<div class="proposal-editor-diff-row"><dt>${escapeHtml(tDraft('proposalDrafts.review.details', 'Details'))}</dt><dd>${escapeHtml(tDraft('proposalDrafts.review.noFacetChanges', 'No metadata changes'))}</dd></div>`}
@@ -557,8 +556,8 @@
         else if (editorState.tab === 'terms') body = renderTerms(draft);
         else body = renderDetails(draft);
 
-        const sourceText = draft.sourceProposalId
-            ? tDraft('proposalDrafts.source', 'Source: {{id}}', { id: draft.sourceProposalId })
+        const sourceText = draft.sourceLocalProposalId
+            ? tDraft('proposalDrafts.source', 'Source: {{id}}', { id: draft.sourceLocalProposalId })
             : tDraft('proposalDrafts.newDraft', 'New proposal draft');
         // The shell is built from the shared vocabulary (css/primitives.css): a close-circle-btn,
         // icon buttons for undo/redo, a .cb-segmented comparison, .cb-tabs for the facets and the
@@ -589,7 +588,7 @@
             <footer class="proposal-editor-footer">
                 <button type="button" class="btn btn-danger" data-editor-action="discard">${escapeHtml(tDraft('proposalDrafts.actions.discard', 'Discard draft'))}</button>
                 ${reviewing
-                    ? `<div class="proposal-editor-grid"><button type="button" class="btn" data-editor-action="back-to-edit">${escapeHtml(tDraft('proposalDrafts.actions.back', 'Back'))}</button><button type="button" class="btn btn-primary" data-editor-action="publish"${draft.validation?.valid ? '' : ' disabled'}>${escapeHtml(draft.sourceProposalId ? global.ProposalLineage.forkSubmitLabel(draft.sourceProposalId) : tDraft('proposalDrafts.actions.createProposal', 'Create proposal'))}</button></div>`
+                    ? `<div class="proposal-editor-grid"><button type="button" class="btn" data-editor-action="back-to-edit">${escapeHtml(tDraft('proposalDrafts.actions.back', 'Back'))}</button><button type="button" class="btn btn-primary" data-editor-action="publish"${draft.validation?.valid ? '' : ' disabled'}>${escapeHtml(draft.sourceLocalProposalId ? global.ProposalLineage.forkSubmitLabel(draft.sourceLocalProposalId) : tDraft('proposalDrafts.actions.createProposal', 'Create proposal'))}</button></div>`
                     : `<button type="button" class="btn btn-primary" data-editor-action="review">${escapeHtml(tDraft('proposalDrafts.actions.review', 'Review changes'))}</button>`}
             </footer>`;
         shell.classList.add('is-open');
@@ -1028,7 +1027,7 @@
 
     // "Fork proposal" on an existing map object: skip the editor entirely and go straight to the
     // create dialog, prefilled from the object. A fork is always a new record that links back
-    // through sourceProposalId; the object it was made from stays as it is.
+    // through sourceLocalProposalId; the object it was made from stays as it is.
     async function proposeExistingProposal(proposalIdOrHash, options = {}) {
         // No guest gate: creating stays on this device (GuestPolicy 'create' is 'none').
         const proposal = proposalById(proposalIdOrHash);
@@ -1110,7 +1109,7 @@
         if (!canEditProposalGeometry(proposal)) {
             return reportGeometryEditFailure(
                 tDraft('proposalDrafts.errors.notReshapeable', 'This proposal type cannot be reshaped.'),
-                proposal.goal || proposal.type
+                global.ProposalDesignGoals?.keyOf(proposal) || 'unknown'
             );
         }
         let draft = null;
@@ -1264,7 +1263,7 @@
         }
         const merged = mergeRuleBuildings(features);
         if (!merged.ok) return merged;
-        const source = draft.sourceProposalId ? proposalById(draft.sourceProposalId) : null;
+        const source = draft.sourceLocalProposalId ? proposalById(draft.sourceLocalProposalId) : null;
         if (confirm && !(await confirmFreeformConversion(source || { title: draft.fields?.name }, typology))) {
             return { ok: false, cancelled: true };
         }
@@ -1301,7 +1300,7 @@
         if (!conversion || !store || !draft) {
             return { ok: false, reason: tDraft('proposalDrafts.design.unavailable', 'This design editor is unavailable.') };
         }
-        const source = draft.sourceProposalId ? proposalById(draft.sourceProposalId) : null;
+        const source = draft.sourceLocalProposalId ? proposalById(draft.sourceLocalProposalId) : null;
         const published = !!source && global.ProposalLineage?.editsInPlace?.(source) !== true;
         const previousSiblings = freeformSiblingDrafts.get(String(draft.id)) || [];
         const siblings = [];
@@ -1344,8 +1343,8 @@
         const merged = list.map(house => mergeRuleBuildings([house.feature]));
         const refused = merged.find(result => !result.ok);
         if (refused) return refused;
-        const source = getActiveProposalDesignDraft()?.sourceProposalId
-            ? proposalById(getActiveProposalDesignDraft().sourceProposalId) : null;
+        const source = getActiveProposalDesignDraft()?.sourceLocalProposalId
+            ? proposalById(getActiveProposalDesignDraft().sourceLocalProposalId) : null;
         if (confirm && !(await confirmFreeformConversion(source || { title: getActiveProposalDesignDraft()?.fields?.name }, typology, list.length))) {
             return { ok: false, cancelled: true };
         }
@@ -2069,7 +2068,7 @@
         };
         global.pendingProposalDraftId = draft.id;
         global.pendingProposalReplacementSource = {
-            proposalId: draft.sourceProposalId || null,
+            proposalId: draft.sourceLocalProposalId || null,
             name: draft.sourceSnapshot?.title || draft.sourceSnapshot?.name || null,
             draftId: draft.id,
             revision: draft.revision,
@@ -2081,7 +2080,7 @@
             acquisitionMode: fields.acquisitionMode || null,
             siteContext,
             prefill,
-            copySource: draft.sourceProposalId ? { proposalId: draft.sourceProposalId, name: global.pendingProposalReplacementSource.name } : null,
+            copySource: draft.sourceLocalProposalId ? { proposalId: draft.sourceLocalProposalId, name: global.pendingProposalReplacementSource.name } : null,
             geometryPreset: seeded ? {
                 statusText: tDraft('proposalDrafts.publish.geometryReady', 'Geometry attached from the draft'),
                 submitted: true,
@@ -2111,7 +2110,7 @@
         }
         const submit = global.document?.getElementById('createProposalSubmitButton');
         if (submit) {
-            const source = draft.sourceProposalId ? proposalById(draft.sourceProposalId) : null;
+            const source = draft.sourceLocalProposalId ? proposalById(draft.sourceLocalProposalId) : null;
             // A vote (either kind chosen in the dialog, proposal-kinds.md) wins over the
             // create/save/counterproposal label, matching updateCreateProposalSubmitState().
             const isVote = typeof global.getSelectedProposalKind === 'function'
@@ -2119,7 +2118,7 @@
             submit.textContent = isVote
                 ? tDraft('panel.proposal.voting.submit', 'Submit for voting')
                 : (source
-                    ? global.ProposalLineage.forkSubmitLabel(draft.sourceProposalId, { fork: options.fork === true })
+                    ? global.ProposalLineage.forkSubmitLabel(draft.sourceLocalProposalId, { fork: options.fork === true })
                     : tDraft('proposalDrafts.actions.createProposal', 'Create proposal'));
             submit.dataset.proposalDraftId = draft.id;
         }
@@ -2269,7 +2268,7 @@
         // source is immutable and gets a counterproposal (proposals/lineage.js editsInPlace).
         // Corridors are edited in place by their own editors (road-drawing.js
         // updateLocalCorridorGeometry), so a corridor draft here is always a new road.
-        const editSource = draft.sourceProposalId ? (global.proposalStorage?.getProposal?.(draft.sourceProposalId) || null) : null;
+        const editSource = draft.sourceLocalProposalId ? (global.proposalStorage?.getProposal?.(draft.sourceLocalProposalId) || null) : null;
         const inPlaceSource = !proposal.roadProposal?.definition
             && global.ProposalLineage?.editsInPlace?.(editSource) === true ? editSource : null;
         const keepEditing = message => {
@@ -2405,7 +2404,7 @@
                     : tDraft('proposalDrafts.builtButParked', 'The object was created but could not be placed on the map (a conflict blocked it). It is parked in your proposals list — select it there to see and apply it.'));
             }
         } catch (_) { }
-        if (landed && (inPlaceSource || proposal.sourceProposalId || proposal.replacementOfProposalId)
+        if (landed && (inPlaceSource || proposal.proposalOrigin)
             && typeof global.showEphemeralMessage === 'function') {
             global.showEphemeralMessage(tDraft('proposalDrafts.geometryUpdated', 'Geometry updated.'), 4000, 'success');
         }
@@ -2460,7 +2459,7 @@
                 editorPayload: { typology, context: buildingContext },
                 previewGeometry: JSON.parse(JSON.stringify(payload.buildings?.length ? payload.buildings : [payload.buildingFeature].filter(Boolean)))
             };
-            const savedBuildingGeometryEdit = Boolean(draft.sourceProposalId);
+            const savedBuildingGeometryEdit = Boolean(draft.sourceLocalProposalId);
             if (!savedBuildingGeometryEdit && Array.isArray(payload.parcelIds)) fields.selectedParcelIds = payload.parcelIds.map(String);
         } else if (kind === 'reparcellization') {
             if (draft.goal !== 'reparcellization') return null;

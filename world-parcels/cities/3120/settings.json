@@ -1,0 +1,111 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "3120",
+  "name": "Łódź",
+  "point": [
+    51.7666527325011,
+    19.4560942606722
+  ],
+  "bindings": [
+    {
+      "appCityId": "lodz",
+      "runtimeConfig": {
+        "id": "lodz",
+        "label": "Łódź",
+        "currency": {
+          "locale": "pl-PL",
+          "code": "PLN"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            51.7666527325011,
+            19.4560942606722
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            51.7666527325011,
+            19.4560942606722
+          ],
+          "fallbackDataset": [
+            19.4560942606722,
+            51.7666527325011
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "lodz-gml-wfs",
+          "idPrefix": "PL-LODZ-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 3,
+          "attribution": "<a href=\"https://nowa.mapa.lodz.pl/dla-profesjonalistow/\">Łódź municipal EGiB cadastral parcel polygons</a> · adapted"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "adapter": "gml-wfs",
+      "id": "lodz-gml-wfs",
+      "endpoint": "https://igeodeta.log.lodz.pl/cgi-bin/lodz-egib",
+      "featureType": "ms:dzialki",
+      "idField": "ID_DZIALKI",
+      "geometryField": "msGeometry",
+      "responseCrs": "EPSG:3857",
+      "idPrefix": "PL-LODZ-",
+      "idType": "string",
+      "parcelNumberField": "ID_DZIALKI",
+      "outFields": [
+        "ID_DZIALKI"
+      ],
+      "maxBboxKm2": 1,
+      "pageSize": 50,
+      "maxFeatures": 300,
+      "maxResponseBytes": 1048576,
+      "maxTotalResponseBytes": 8388608,
+      "timeoutMs": 12000,
+      "countryCode": "PL",
+      "metricSrid": 32634,
+      "cityIds": [
+        "lodz"
+      ],
+      "maxConcurrentQueries": 2,
+      "name": "Łódź municipal EGiB cadastral parcel polygons",
+      "operator": "City of Łódź / InterSIT EGiB",
+      "scope": "89 valid distinct native EGiB cadastral polygons across thirteen bounded cells around the unchanged Łódź WUP population-settlement locator. Exact FES polygon intersection is identical for before/after hit counts and all pages. Forced three-row paging, fresh reads of every native ID in batches of eight, explicit absence, full footprint lookup and source binding pass. Metric EPSG32634 topology found no sampled invalidity, duplicate geometry, positive-area overlaps or operation errors. The original point-containing sample remains unchanged and independently matches the fresh full polygon. This is bounded reference geometry, without a citywide completeness, legal-title or survey-accuracy guarantee.",
+      "attribution": "Łódź InterSIT EGiB parcel geometry · adapted",
+      "catalogueUrl": "https://nowa.mapa.lodz.pl/dla-profesjonalistow/",
+      "licenceNote": "Anonymous bounded parcel geometry and publisher attribution verified. ID_DZIALKI is the published cadastral parcel identifier. Source legal title, positional accuracy, currentness, reuse conditions and whole-city completeness remain informational and unverified; personal attributes are excluded."
+    }
+  ]
+}

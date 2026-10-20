@@ -6,7 +6,7 @@ module.exports = { apps: [{
     cwd: path.resolve(__dirname, '..'),
     script: 'scripts/novogradnje-server.mjs',
     interpreter: process.execPath,
-    env: { NODE_ENV: 'production', NOVOGRADNJE_PORT: '8490',
+    env: { NODE_ENV: 'production', NOVOGRADNJE_PORT: '8490', FLOOR_PLAN_API_BASE:'https://zagreb.lol/api',
         FLOOR_PLAN_ARCHIVE_DIR: path.join(os.homedir(), 'code/consensus-builder/data/floor-plan-downloads') },
     autorestart: true, watch: false, time: true, max_memory_restart: '400M',
 }] };

@@ -21,14 +21,15 @@ describe('getLifecycleStatus', () => {
     });
 
     it('does not infer lifecycle from the legacy status field', () => {
-        expect(getLifecycleStatus({ status: 'Applied' })).toBe('Active');
-        expect(getLifecycleStatus({ status: 'executed' })).toBe('Active');
+        expect(getLifecycleStatus({ status: 'Applied' })).toBe('Unknown');
+        expect(getLifecycleStatus({ status: 'executed' })).toBe('Unknown');
     });
 
-    it('defaults to Active for empty/unknown/missing', () => {
-        expect(getLifecycleStatus({})).toBe('Active');
-        expect(getLifecycleStatus(null)).toBe('Active');
-        expect(canonicalLifecycle('whatever')).toBe('Active');
+    it('preserves empty/unknown/missing lifecycle as Unknown', () => {
+        expect(getLifecycleStatus({})).toBe('Unknown');
+        expect(getLifecycleStatus(null)).toBe('Unknown');
+        expect(canonicalLifecycle('whatever')).toBe('Unknown');
+        expect(canonicalLifecycle(' Active ')).toBe('Active');
     });
 });
 
@@ -63,7 +64,7 @@ describe('proposal status-axis normalisation', () => {
             roadProposal: { status: 'applied', applied: true, appliedAt: 'old' }
         };
         normalizeProposalStatusAxes(proposal);
-        expect(proposal).toMatchObject({ lifecycleStatus: 'Active', applied: false });
+        expect(proposal).toMatchObject({ lifecycleStatus: 'Unknown', applied: false });
         expect(proposal.status).toBeUndefined();
         expect(proposal.roadProposal).not.toHaveProperty('status');
         expect(proposal.roadProposal).not.toHaveProperty('applied');
@@ -81,8 +82,9 @@ describe('proposal status-axis normalisation', () => {
     });
 
     it('strips every local visibility field from an outbound clone', () => {
-        const proposal = { applied: true, appliedAt: 'now', structureProposal: { applied: true, appliedAt: 'now' } };
+        const proposal = { localPurchaseSimulation: { buyerAgentId: 'buyer' }, applied: true, appliedAt: 'now', structureProposal: { applied: true, appliedAt: 'now' } };
         stripProposalAppliedState(proposal);
+        expect(proposal).not.toHaveProperty('localPurchaseSimulation');
         expect(proposal).not.toHaveProperty('applied');
         expect(proposal).not.toHaveProperty('appliedAt');
         expect(proposal.structureProposal).not.toHaveProperty('applied');
@@ -90,10 +92,17 @@ describe('proposal status-axis normalisation', () => {
     });
 
     it('parks imports even when their shared lifecycle is Executed', () => {
-        const proposal = { lifecycleStatus: 'Executed', applied: true, roadProposal: { applied: true } };
+        const proposal = { localPurchaseSimulation: { buyerAgentId: 'buyer' }, lifecycleStatus: 'Executed', applied: true, roadProposal: { applied: true } };
         parkProposalForImport(proposal);
+        expect(proposal).not.toHaveProperty('localPurchaseSimulation');
         expect(proposal.lifecycleStatus).toBe('Executed');
         expect(proposal.applied).toBe(false);
         expect(proposal.roadProposal).not.toHaveProperty('applied');
+    });
+
+    it('parks an import with unavailable lifecycle as Unknown', () => {
+        const proposal = { applied: true };
+        parkProposalForImport(proposal);
+        expect(proposal).toEqual({ lifecycleStatus: 'Unknown', applied: false, acceptedParcelIds: [], ownerAcceptances: {} });
     });
 });

@@ -5,6 +5,7 @@
 import { createHash } from 'node:crypto';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { createRequire } from 'node:module';
 import { PublicKey } from '@solana/web3.js';
 import { decodeParsedTransaction, loadIdls } from '../solana/tx-decoder.js';
 
@@ -18,6 +19,23 @@ export const STATUS_CANCELLED = 2;
 // v2 (blockchain/solana/README.md "Lens model v2", pending devnet deployment): set by a lens
 // member's `expired` verdict through settle_with_verdict. The market resolves it NO.
 export const STATUS_EXPIRED = 3;
+
+const { PROTOCOL } = createRequire(import.meta.url)('../../frontend/js/proposals/chain-record.js');
+export const DEVNET_GENESIS_HASH = 'EtWTRABZaYq6iMfeYKouRu166VU2xqa1wcaWoxPkrZBG';
+
+export async function assertLifecycleNetwork(connection) {
+    if (await connection.getGenesisHash() !== DEVNET_GENESIS_HASH) {
+        throw new Error('Proposal lifecycle oracle requires Solana devnet.');
+    }
+}
+
+// The verified mirror ref owns this relationship. Bare token IDs and client-authored onchain
+// projections cannot establish that a proposal is the record observed on this network/program.
+export const VERIFIED_DEVNET_MIRROR_SQL = `
+    proposal_data #>> '{chainMirror,protocol}' = '${PROTOCOL}'
+    AND proposal_data #>> '{chainMirror,ref,chainType}' = 'solana'
+    AND proposal_data #>> '{chainMirror,ref,chainId}' = 'solana-devnet'
+    AND proposal_data #>> '{chainMirror,ref,contract}' = '${PROPOSAL_PROGRAM_ID}'`;
 
 const TERMINAL_OUTCOMES = Object.freeze({
     [STATUS_EXECUTED]: 'executed',
@@ -303,11 +321,8 @@ async function writeEventAndReconcileProposal(pool, event) {
                     ELSE proposal_data
                 END,
                 updated_at = NOW()
-            WHERE COALESCE(
-                onchain_data->>'proposalId',
-                proposal_data #>> '{onchain,proposalId}',
-                proposal_data #>> '{onchainData,proposalId}'
-            ) = $4
+            WHERE ${VERIFIED_DEVNET_MIRROR_SQL}
+              AND proposal_data #>> '{chainMirror,ref,tokenId}' = $4
               AND lifecycle_status IS DISTINCT FROM $12
             RETURNING 1
         )
@@ -323,18 +338,12 @@ async function writeEventAndReconcileProposal(pool, event) {
 
 export async function syncProposalLifecycleEvents({ pool, connection, dryRun = false, onProgress = () => {} } = {}) {
     if (!pool || !connection) throw new Error('pool and connection are required');
+    await assertLifecycleNetwork(connection);
     const proposals = await pool.query(`
-        SELECT DISTINCT COALESCE(
-            onchain_data->>'proposalId',
-            proposal_data #>> '{onchain,proposalId}',
-            proposal_data #>> '{onchainData,proposalId}'
-        ) AS proposal_account
+        SELECT DISTINCT proposal_data #>> '{chainMirror,ref,tokenId}' AS proposal_account
         FROM proposal
-        WHERE COALESCE(
-            onchain_data->>'proposalId',
-            proposal_data #>> '{onchain,proposalId}',
-            proposal_data #>> '{onchainData,proposalId}'
-        ) IS NOT NULL
+        WHERE ${VERIFIED_DEVNET_MIRROR_SQL}
+          AND proposal_data #>> '{chainMirror,ref,tokenId}' IS NOT NULL
     `);
     const invalidAccounts = [];
     const accounts = proposals.rows.map(row => row.proposal_account).filter(Boolean).flatMap(value => {
@@ -360,7 +369,7 @@ export async function syncProposalLifecycleEvents({ pool, connection, dryRun = f
     const transactions = terminal.length ? await pool.query(`
         SELECT signature, slot, block_time, raw
         FROM consensus.solana_transaction
-        WHERE touched_addresses && $1::text[]
+        WHERE cluster = 'devnet' AND touched_addresses && $1::text[]
         ORDER BY block_time DESC NULLS LAST, slot DESC
     `, [terminal.map(item => item.proposalAccount)]) : { rows: [] };
     const idls = loadIdls(IDL_DIR);

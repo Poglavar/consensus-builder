@@ -1,0 +1,20 @@
+[
+  {
+    "url": "https://webgis2.mpbhulekh.gov.in/",
+    "reason": "transport timeout"
+  },
+  {
+    "url": "https://mpbhulekh.gov.in/",
+    "reason": "TCP connection timeout"
+  },
+  {
+    "url": "http://webgis2.mpbhulekh.gov.in/",
+    "reason": "TCP connection timeout"
+  },
+  {
+    "url": "https://vidisha.nic.in/en/service/land-records/"
+  },
+  {
+    "url": "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/453"
+  }
+]

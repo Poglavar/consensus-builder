@@ -392,15 +392,25 @@
         }
         if (!Array.isArray(features) || features.length === 0) return null;
         if (features.length === 1) return features[0];
-        try {
-            let acc = features[0];
-            for (let i = 1; i < features.length; i++) {
-                try { acc = turf.union(acc, features[i]) || acc; } catch (_) { }
+        // A union the clipper cannot do refuses the site instead of skipping the parcel that threw
+        // (a superparcel with a parcel silently missing from it).
+        let acc = features[0];
+        for (let i = 1; i < features.length; i++) {
+            let merged = null;
+            try { merged = turf.union(acc, features[i]); } catch (error) {
+                throw rowHouseClipFailure('union', error, 'row-house.robustUnionLocal', [acc, features[i]]);
             }
-            return acc;
-        } catch (_) {
-            return features[0];
+            if (!merged) throw rowHouseClipFailure('union', new Error('union came back empty'), 'row-house.robustUnionLocal', [acc, features[i]]);
+            acc = merged;
         }
+        return acc;
+    }
+
+    // A polygon clip that cannot be done, typed and counted (parcel-arrangement.js ClipFailure).
+    function rowHouseClipFailure(operation, error, site, operands) {
+        const api = (typeof window !== 'undefined' && window.__parcelArrangement)
+            || (typeof require === 'function' ? require('./proposals/parcel-arrangement.js') : null);
+        return api ? api.clipFailure(operation, error, { site }, operands) : error;
     }
 
     // Robust negative buffer

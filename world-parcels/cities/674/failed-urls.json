@@ -1,0 +1,14 @@
+[
+  {
+    "url": "https://service.pdok.nl/kadaster/kadastralekaart/wfs/v5_0?service=WFS&request=GetCapabilities"
+  },
+  {
+    "url": "https://service.pdok.nl/kadaster/kadastralekaart/wfs/v5_0"
+  },
+  {
+    "url": "https://service.pdok.nl/kadaster/kadastralekaart/wfs/v5_0?service=WFS&version=2.0.0&request=GetFeature&typeNames=kadastralekaart%3APerceel&outputFormat=application%2Fjson&srsName=EPSG%3A4326&bbox=92380%2C464700%2C92490%2C464800%2Curn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A28992&count=3"
+  },
+  {
+    "url": "https://kaart.leiden.nl/"
+  }
+]

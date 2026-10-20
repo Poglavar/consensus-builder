@@ -1,5 +1,5 @@
 // Named plans in the app (frontend/js/proposals/plans.js): which plans a proposal is part of, the plan
-// line on its row ("Plan: <name>" / "In N plans"), and the rows of a Plans list. Superseded versions
+// line on its row ("Plan: <name>" / "In N named plans"), and the rows of a Plans list. Superseded versions
 // are left out everywhere: a revision replaces its predecessor.
 import { describe, expect, it } from 'vitest';
 import { createRequire } from 'node:module';
@@ -12,10 +12,10 @@ const Plans = require('../../frontend/js/proposals/plans.js');
 const MenuModel = require('../../frontend/js/ui/parcel-menu-model.js');
 const plansSource = readFileSync(fileURLToPath(new URL('../../frontend/js/proposals/plans.js', import.meta.url)), 'utf8');
 
-function loadBrowserPlans({ yieldToBrowser, now = () => 0 } = {}) {
+function loadBrowserPlans({ yieldToBrowser, now = () => 0, getSerialProposalId } = {}) {
     const root = {
         normalizeCityCodeForApi: () => '', resolveCurrentCityCode: () => '',
-        resolveBackendBaseUrl: () => '', yieldToBrowser, performance: { now }
+        resolveBackendBaseUrl: () => '', getSerialProposalId, yieldToBrowser, performance: { now }
     };
     const module = { exports: {} };
     vm.runInNewContext(plansSource, {
@@ -31,6 +31,16 @@ const harborOld = { slug: 'harbor', title: 'Harbor', proposalRowIds: ['1'], memb
 const ring = { slug: 'ring-road', title: '', proposalRowIds: ['2', '3'], memberCount: 2, superseded: false, proposalAccount: 'So1anaAccount111' };
 
 describe('which plans a proposal is part of', () => {
+    it('does not identify a named-plan member by a numeric local key or an unqualified id', () => {
+        const apiBase = 'https://api.example.test';
+        const plans = loadBrowserPlans({ getSerialProposalId: record => (
+            record?.publicationApiBase === apiBase && /^[1-9]\d*$/.test(String(record.serverProposalId ?? ''))
+                ? String(record.serverProposalId) : null
+        ) });
+        expect(plans.serverIdOfRecord({ proposalId: '42' })).toBeNull();
+        expect(plans.serverIdOfRecord({ proposalId: 'p-local', id: 42 })).toBeNull();
+        expect(plans.serverIdOfRecord({ proposalId: 'p-local', serverProposalId: 42, publicationApiBase: apiBase })).toBe('42');
+    });
     it('maps each published proposal row to the current plans naming it, leaving superseded versions out', () => {
         const byMember = Plans.plansByMember([harbor, harborOld, ring]);
         expect(byMember.get('1').map(plan => plan.slug)).toEqual(['harbor-v2']);
@@ -49,13 +59,13 @@ describe('the plan line on a proposal row', () => {
     it('links the one plan by name, escaped', () => {
         const html = Plans.planLineHtml([harbor]);
         expect(html).toContain('data-plan-slug="harbor-v2"');
-        expect(html).toContain('Part of plan Harbor &lt;b&gt;');
+        expect(html).toContain('Part of named plan Harbor &lt;b&gt;');
         expect(html).not.toContain('proposal-plan-toggle');
     });
 
-    it('folds several plans under "In N plans" with a link to each', () => {
+    it('folds several plans under "In N named plans" with a link to each', () => {
         const html = Plans.planLineHtml([harbor, ring]);
-        expect(html).toContain('In 2 plans');
+        expect(html).toContain('In 2 named plans');
         expect(html).toContain('class="cb-link proposal-plan-toggle" aria-expanded="false"');
         expect(html).toContain('<ul class="proposal-plan-options" hidden>');
         expect((html.match(/class="cb-link proposal-plan-link"/g) || []).length).toBe(2);

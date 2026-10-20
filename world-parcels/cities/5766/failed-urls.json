@@ -1,0 +1,6 @@
+[
+  {
+    "url": "https://services1.arcgis.com/99lidPhWCzftIe9K/arcgis/rest/services/UtahStatewideParcels/FeatureServer/0",
+    "reason": "Held at the geometry gate: all source checks passed but the metric audit failed with 31 exact-duplicate geometries and 34 overlap pairs (max 116 m2, 100% of the smaller) among 123 cached UGRC statewide polygons around Bountiful (Davis County): distinct native IDs (e.g. Davis~031143106 and Davis~031143206) carry the identical polygon, consistent with stacked condominium-unit records (attributes be…"
+  }
+]

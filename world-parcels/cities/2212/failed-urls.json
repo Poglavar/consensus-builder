@@ -1,0 +1,20 @@
+[
+  {
+    "url": "https://ptjkb.kelantan.gov.my/",
+    "reason": "HTTP 403"
+  },
+  {
+    "url": "https://spgis.mbsp.gov.my/geoportal/rest/services/Kadaster/KADASTER/MapServer/3/query?geometry=102.262854032837,6.11825961704686&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID,LOT,MUKIM,DAERAH,DAERAH_ID,MUKIM_ID,SEKSYEN_ID,upi&returnGeometry=true&outSR=4326&f=pjson",
+    "reason": "curl timeout after 20 seconds"
+  },
+  {
+    "url": "https://www.jupem.gov.my/orang-awam/kadaster",
+    "reason": "TLS certificate verification failed in this environment"
+  },
+  {
+    "url": "https://ptg.kelantan.gov.my/index.php/ms/"
+  },
+  {
+    "url": "https://spgis.mbsp.gov.my/geoportal/rest/services/Kadaster/KADASTER/MapServer"
+  }
+]

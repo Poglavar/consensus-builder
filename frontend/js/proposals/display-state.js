@@ -1,12 +1,13 @@
 // proposals/display-state.js — the ONE derivation of what a proposal's badges and map action show:
-// its rung on the lifecycle ladder (docs/design-language.md: Draft → Published → Minted → Executed),
+// its display rung (docs/design-language.md: Draft, Published, Minted or Execution recorded),
 // the lifecycle modifier, whether "Applied" is shown, and whether Apply or Unapply is offered. The
 // details panel, the proposals list (and every list that reuses its ladder) and the agent dialog all
 // read it, so one proposal never reads one way in the panel and another in a list.
 //
 // Rules (lifecycle = the record's canonical lifecycleStatus, proposals/status.js):
 //   - Minted means a mint record exists: the isMinted flag, an on-chain transaction, or an NFT/on-chain
-//     token id under a contract. A numeric id is a server serial (Published), never a mint record.
+//     token id under a contract. An explicit server row reference is Published, never a mint record;
+//     a numeric local key alone says nothing about publication.
 //     The mint is a fact about the chain, so a cancelled proposal that was minted stays Minted and
 //     carries the Cancelled modifier (the market resolves NO by reading that same NFT account).
 //   - A Cancelled proposal is withdrawn: it cannot stand on a map, so it shows no "Applied" and is
@@ -24,19 +25,23 @@
     const lifecycleOf = (root && typeof root.getLifecycleStatus === 'function')
         ? root.getLifecycleStatus
         : require('./status.js').getLifecycleStatus;
+    const lifecycleEvidence = (root && root.ProposalLifecycleEvidence)
+        || require('./lifecycle-evidence.js');
 
     // Lifecycle keys (proposals/lifecycle.js getProposalLifecycleKey) that add a modifier badge to the
     // rung, with the badge tone each uses.
     const MODIFIER_TONES = Object.freeze({
+        unknown: 'cb-badge--expired',
         cancelled: 'cb-badge--expired',
         expired: 'cb-badge--expired',
         'vote-open': 'cb-badge--published',
         'vote-concluded': 'cb-badge--expired',
-        'accepted-not-funded': 'cb-badge--expired'
+        'awaiting-funding': 'cb-badge--published'
     });
 
     const RUNG_LABELS = Object.freeze({
-        executed: ['panel.proposal.lifecycle.executed', 'Executed'],
+        executed: ['panel.proposal.lifecycle.executed', 'Execution recorded'],
+        'execution-unverified': ['panel.proposal.lifecycle.executionUnverified', 'Execution reported; verification unavailable'],
         minted: ['panel.proposal.lifecycle.minted', 'Minted'],
         published: ['common.lifecycle.published', 'Published'],
         draft: ['common.lifecycle.draft', 'Draft']
@@ -85,7 +90,8 @@
 
         const minted = hasMintRecord(proposal);
         const applicable = lifecycle !== 'Cancelled';
-        const rung = lifecycle === 'Executed' ? 'executed'
+        const executionObserved = lifecycleEvidence.hasObservedStatus(proposal, 'Executed');
+        const rung = lifecycle === 'Executed' ? (executionObserved ? 'executed' : 'execution-unverified')
             : minted ? 'minted'
                 : serial ? 'published' : 'draft';
         const modifier = Object.prototype.hasOwnProperty.call(MODIFIER_TONES, lifecycleKey) ? lifecycleKey : null;
@@ -106,5 +112,14 @@
         return typeof translate === 'function' ? translate(key, fallback) : fallback;
     }
 
-    return Object.freeze({ of, hasMintRecord, isApplicable, rungLabel, MODIFIER_TONES });
+    // The lifecycle field has no uniform durable proof of execution. Even a mint reference does
+    // not upgrade it to verified payment, title registration or physical realization.
+    function rungHint(rung, translate) {
+        const label = rung === 'executed' || rung === 'execution-unverified'
+            ? ['panel.proposal.lifecycle.executedHint', 'This record reports execution. The status alone does not verify payment, legal registration or physical construction.']
+            : rung === 'minted' ? ['panel.proposal.lifecycle.mintedHint', 'Minted on-chain'] : null;
+        return label ? (typeof translate === 'function' ? translate(...label) : label[1]) : '';
+    }
+
+    return Object.freeze({ of, hasMintRecord, isApplicable, rungLabel, rungHint, MODIFIER_TONES });
 });

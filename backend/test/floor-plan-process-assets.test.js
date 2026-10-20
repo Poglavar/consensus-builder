@@ -1,4 +1,4 @@
-// Verify located-building extraction and honest pending/unprocessed accounting.
+// Verify source-owned extraction and honest pending/unprocessed accounting.
 import {describe,expect,it,vi} from 'vitest';
 import {processAssets} from '../floor-plans/process-assets.js';
 import {readBlobRow} from '../floor-plans/blob-store.js';
@@ -21,8 +21,8 @@ function mockDb(rows,{pending=0,deferred=0,awaiting=0}={}) {
 }
 const extractor=vi.fn(async()=>({stdout:JSON.stringify(extracted)}));
 
-describe('building-located floor-plan extraction',()=>{
- it('limits selection to sources with a located owner before invoking the extractor',async()=>{
+describe('source-owned floor-plan extraction',()=>{
+ it('limits selection to sources with a current eligible owner before invoking the extractor',async()=>{
   const db=mockDb([{sha256:hash(1),media_type:'application/pdf',storage_path:'blob.pdf',byte_count:3,bytes_available:true}]);
   const result=await processAssets(db,{maxAssets:1,maxMinutes:2,extractor,log:()=>{}});
   expect(result).toMatchObject({status:'complete',selected:1,processed:1,needsReview:1,failed:0,pending:0});
@@ -34,7 +34,7 @@ describe('building-located floor-plan extraction',()=>{
   expect(extractor).toHaveBeenCalledOnce();
  });
 
- it('applies the listing cohort alongside ownership and location gates to selection and all pending counts',async()=>{
+ it('applies the listing cohort alongside source ownership gates to selection and all pending counts',async()=>{
   const urls=['https://agency.test/new/1','https://agency.test/new/2'];
   const db=mockDb([],{pending:2,deferred:3,awaiting:4}),runExtractor=vi.fn();
   const result=await processAssets(db,{listingUrls:urls,extractor:runExtractor,log:()=>{}});
@@ -61,7 +61,7 @@ describe('building-located floor-plan extraction',()=>{
   }
  });
 
- it('records remaining located work and defers unlocated sources when time runs out',async()=>{
+ it('records remaining eligible work and defers ineligible sources when time runs out',async()=>{
   let clock=1000;const db=mockDb([1,2].map(n=>({sha256:hash(n),media_type:'image/png',storage_path:`${n}.png`,byte_count:5,bytes_available:true})),{pending:1,deferred:3});
   const runExtractor=vi.fn(async()=>{clock=62000;return {stdout:JSON.stringify(extracted)};});
   const result=await processAssets(db,{maxAssets:2,maxMinutes:1,now:()=>clock,extractor:runExtractor,log:()=>{}});
@@ -69,7 +69,7 @@ describe('building-located floor-plan extraction',()=>{
   expect(runExtractor).toHaveBeenCalledOnce();
  });
 
- it('does not extract unlocated sources and reports their backlog as partial',async()=>{
+ it('does not extract ineligible sources and reports their backlog as partial',async()=>{
   const db=mockDb([],{deferred:2});
   const runExtractor=vi.fn();
   const result=await processAssets(db,{extractor:runExtractor,log:()=>{}});

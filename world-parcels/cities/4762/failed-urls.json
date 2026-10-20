@@ -1,0 +1,14 @@
+[
+  {
+    "url": "https://sit.comune.caserta.it/"
+  },
+  {
+    "url": "https://sit.comune.caserta.it/sistema-informativo-territoriale/"
+  },
+  {
+    "url": "https://geoportale.urba.cloud/maps/Cartografia%20Catastale%20Citt%C3%A0%20di%20Caserta/wms/?REQUEST=GetCapabilities&SERVICE=WMS&VERSION=1.3.0"
+  },
+  {
+    "url": "https://archiviocartografico.regione.campania.it/ud/fascrc-ctc630"
+  }
+]

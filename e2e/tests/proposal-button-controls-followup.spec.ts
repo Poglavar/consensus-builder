@@ -106,14 +106,14 @@ test.describe('proposal button controls follow-up @features', () => {
     await expect(stack).toBeHidden();
   });
 
-  test('open ownership transfer offer exposes its accept dialog and closes cleanly', async ({ mockApi: page }) => {
+  test('seller offer explains unavailable funding without a fake transfer action', async ({ mockApi: page }) => {
     await openCity(page);
     await establishLocalProfile(page);
     const proposalId = await page.evaluate(({ parcelId, geometry }) => (window as any).proposalStorage.addProposal({
       title: 'Ownership transfer request',
       goal: 'ownership-transfer-from-me',
       lifecycleStatus: 'Active',
-      offer: 100,
+      offer: 100, offerCurrency: 'EUR', funded: false,
       cadastreParcelIds: [parcelId],
       geometry,
       ownershipTransferProposal: { direction: 'from-me', recipientScope: 'any', status: 'open' },
@@ -128,13 +128,11 @@ test.describe('proposal button controls follow-up @features', () => {
       await funding.locator(':scope > summary').click();
     }
     await expect(funding).toHaveJSProperty('open', true);
-    const accept = page.locator('#proposal-details-content .offer-boost-button[aria-label="Accept ownership transfer"]');
-    await expect(accept).toBeVisible();
-    await accept.click();
-    const dialog = page.locator('#acceptOwnershipTransferOverlay');
-    await expect(dialog).toBeVisible();
-    await expect(dialog).toContainText('Fund the amount missing');
-    await dialog.getByRole('button', { name: 'Close dialog' }).click();
-    await expect(dialog).toBeHidden();
+    await expect(funding.locator('.proposal-offer-funding-note')).toHaveText('Funding this offer is not available here.');
+    await expect(funding.locator('.offer-amount')).toHaveText('€100');
+    await expect(funding.locator('.proposal-no-deposit-warning')).toHaveText('⚠️ No deposit specified');
+    await expect(funding.getByRole('button', { name: 'Accept ownership transfer', exact: true })).toHaveCount(0);
+    await expect(page.locator('#acceptOwnershipTransferOverlay')).toHaveCount(0);
+    await expect(panel.locator('.proposal-buy-btn')).toHaveText('Simulate purchase');
   });
 });

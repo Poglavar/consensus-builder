@@ -1,0 +1,20 @@
+[
+  {
+    "url": "https://www.kadaster.nl/zakelijk/producten/eigendom/kadastrale-kaart"
+  },
+  {
+    "url": "https://www.pdok.nl/ogc-webservices/-/article/kadastrale-kaart"
+  },
+  {
+    "url": "https://api.pdok.nl/kadaster/brk-kadastrale-kaart/ogc/v1?f=json"
+  },
+  {
+    "url": "https://api.pdok.nl/kadaster/brk-kadastrale-kaart/ogc/v1/collections/perceel?f=json"
+  },
+  {
+    "url": "https://api.pdok.nl/kadaster/brk-kadastrale-kaart/ogc/v1/collections/perceel/schema?f=json"
+  },
+  {
+    "url": "https://api.pdok.nl/kadaster/brk-kadastrale-kaart/ogc/v1/collections/perceel/items?f=json&limit=3&bbox=5.0585,51.5638,5.0592,51.5646"
+  }
+]

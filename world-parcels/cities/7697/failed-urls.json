@@ -1,0 +1,29 @@
+[
+  {
+    "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer?f=pjson",
+    "reason": "499"
+  },
+  {
+    "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/0/query",
+    "reason": "499"
+  },
+  {
+    "url": "https://d2d.pulse.gop.pk/api/LandHierarchy/GetDivisionsList",
+    "reason": "401"
+  },
+  {
+    "url": "https://lis.pulse.gop.pk/"
+  },
+  {
+    "url": "https://d2d.pulse.gop.pk/map-qc.html"
+  },
+  {
+    "url": "https://mandibahauddin.punjab.gov.pk/administration"
+  },
+  {
+    "url": "https://www.punjab-zameen.gov.pk/"
+  },
+  {
+    "url": "https://mcmandibahauddin.lgpunjab.org.pk/map/"
+  }
+]

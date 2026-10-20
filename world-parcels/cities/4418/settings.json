@@ -1,0 +1,117 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "4418",
+  "name": "Prairie Oaks, United States",
+  "point": [
+    38.6720225936686,
+    -121.148601042322
+  ],
+  "bindings": [
+    {
+      "appCityId": "prairie_oaks",
+      "runtimeConfig": {
+        "id": "prairie_oaks",
+        "wupCityCode": "4418",
+        "label": "Prairie Oaks, United States",
+        "currency": {
+          "locale": "en-US",
+          "code": "USD"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            38.6720225936686,
+            -121.148601042322
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            38.6720225936686,
+            -121.148601042322
+          ],
+          "fallbackDataset": [
+            -121.148601042322,
+            38.6720225936686
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "us-ca-sacramento-active-parcels",
+          "idPrefix": "US-CA-SACRAMENTO-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 3,
+          "attribution": "<a href=\"https://data.saccounty.gov/\">Sacramento County GIS. Adapted to WGS84.</a>"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "us-ca-sacramento-active-parcels",
+      "name": "Sacramento County GIS — Sacramento",
+      "adapter": "arcgis",
+      "endpoint": "https://mapservices.gis.saccounty.gov/arcgis/rest/services/PARCELS/MapServer/8",
+      "idField": "PARCEL_NUMBER",
+      "objectIdField": "OBJECTID",
+      "idType": "string",
+      "idPattern": "^[0-9]{14}$",
+      "idPrefix": "US-CA-SACRAMENTO-",
+      "outFields": [
+        "OBJECTID",
+        "PARCEL_NUMBER",
+        "APN_DASH"
+      ],
+      "parcelNumberField": "APN_DASH",
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "metricSrid": 32610,
+      "countryCode": "US",
+      "stateCode": "CA",
+      "cityIds": [
+        "prairie_oaks"
+      ],
+      "operator": "Sacramento County GIS",
+      "scope": "Sacramento County active GIS parcel base; Sacramento entry only, no California-wide coverage claim. Additional enabled city entries have separate bounded qualification evidence; wider coverage remains unverified.",
+      "caveats": [
+        "The full 14-character PARCEL_NUMBER is identity; shortened APN10 can collide across subparcels.",
+        "Assessment parcel geometry can include separately numbered subparcels; it is not ownership or a certified legal survey."
+      ],
+      "catalogueUrl": "https://data.saccounty.gov/",
+      "attribution": "Sacramento County GIS. Adapted to WGS84.",
+      "licenceNote": "Source conditions are informational; users choose their source and intended use.",
+      "metricSridByCity": {
+        "prairie_oaks": 32610
+      },
+      "cityScopes": {
+        "prairie_oaks": "41 unchanged native parcel polygons passed all eight qualification gates in bounded cells around the UN/WUP locator. Fresh independent metric audit (EPSG:32610) found zero invalid polygons, identity conflicts, duplicate geometry, material overlaps, or operation errors. Citywide completeness, legal title, survey accuracy, and currentness are not established."
+      }
+    }
+  ]
+}

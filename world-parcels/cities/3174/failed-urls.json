@@ -1,0 +1,14 @@
+[
+  {
+    "url": "https://www.bielefeld01.de/md/WFS/alkis_light/04"
+  },
+  {
+    "url": "https://www.bielefeld.de/geoportal"
+  },
+  {
+    "url": "https://open-data.bielefeld.de/dataset/alkis-flurst%C3%BCcke-fl%C3%A4chen"
+  },
+  {
+    "url": "https://www.bielefeld01.de/md/WFS/alkis_light/04?REQUEST=GetCapabilities&SERVICE=wfs&VERSION=1.1.0"
+  }
+]

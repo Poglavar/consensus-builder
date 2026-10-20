@@ -1,0 +1,27 @@
+[
+  {
+    "url": "https://nspd.gov.ru/",
+    "reason": "timeout"
+  },
+  {
+    "url": "https://nspd.gov.ru/maps",
+    "reason": "timeout"
+  },
+  {
+    "url": "https://nspd.gov.ru/portal",
+    "reason": "timeout"
+  },
+  {
+    "url": "https://old.admnkz.info/web/guest/karta-goroda",
+    "reason": "403"
+  },
+  {
+    "url": "https://nspd.gov.ru/map"
+  },
+  {
+    "url": "https://www.mik.admnkz.info/news/31121/"
+  },
+  {
+    "url": "https://www.admnkz.info/for-business/munitsipalnoe-imushchestvo/"
+  }
+]

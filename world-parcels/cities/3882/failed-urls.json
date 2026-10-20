@@ -1,0 +1,33 @@
+[
+  {
+    "url": "https://situ.sedatu.gob.mx/api/v2/datasets/?limit=3",
+    "reason": "404"
+  },
+  {
+    "url": "https://uruapan.gob.mx/"
+  },
+  {
+    "url": "https://implanuruapan.gob.mx/directorio-sig/"
+  },
+  {
+    "url": "https://implanuruapan.gob.mx/cartografia-municipal/"
+  },
+  {
+    "url": "http://md.implanuruapan.gob.mx/"
+  },
+  {
+    "url": "http://ovie.implanuruapan.gob.mx/"
+  },
+  {
+    "url": "https://situ.sedatu.gob.mx/veide/"
+  },
+  {
+    "url": "https://irycem.michoacan.gob.mx/ubicaciones-ircemo/"
+  },
+  {
+    "url": "https://ide.sedatu.gob.mx/geoserver/wfs?service=WFS&request=GetCapabilities"
+  },
+  {
+    "url": "https://sig.ran.gob.mx/cgi-bin/mapserv?map=/wms/ran_wfs.map&service=WFS&request=GetCapabilities"
+  }
+]

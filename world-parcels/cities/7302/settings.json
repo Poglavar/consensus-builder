@@ -1,0 +1,111 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "7302",
+  "name": "Minneapolis, United States",
+  "point": [
+    44.9726015122978,
+    -93.2378207757913
+  ],
+  "bindings": [
+    {
+      "appCityId": "minneapolis",
+      "runtimeConfig": {
+        "id": "minneapolis",
+        "label": "Minneapolis, United States",
+        "currency": {
+          "locale": "en-US",
+          "code": "USD"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            44.9726015122978,
+            -93.2378207757913
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            44.9726015122978,
+            -93.2378207757913
+          ],
+          "fallbackDataset": [
+            -93.2378207757913,
+            44.9726015122978
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "us-mn-hennepin-county-parcels-metroc",
+          "idPrefix": "us-mn-hennepin:",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 3,
+          "attribution": "<a href=\"https://gis.data.mn.gov/maps/hennepin%3A%3Acounty-parcels/about\">Hennepin County Parcels (Metropolitan Council public layer)</a> · adapted"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "us-mn-hennepin-county-parcels-metroc",
+      "name": "Hennepin County Parcels (Metropolitan Council public layer)",
+      "adapter": "arcgis",
+      "endpoint": "https://arcgis.metc.state.mn.us/data1/rest/services/parcels/Parcels_2025/FeatureServer/3",
+      "idField": "COUNTY_PIN",
+      "idType": "string",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "us-mn-hennepin:",
+      "outFields": [
+        "OBJECTID",
+        "COUNTY_PIN"
+      ],
+      "pageSize": 1000,
+      "idBatchSize": 80,
+      "maxFeatures": 3000,
+      "maxBboxKm2": 1,
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "boundsSrid": 26915,
+      "boundsProjection": "+proj=utm +zone=15 +ellps=GRS80 +units=m +no_defs",
+      "countryCode": "US",
+      "metricSrid": 26915,
+      "cityIds": [
+        "minneapolis"
+      ],
+      "operator": "Hennepin County GIS and Survey Division; public query service hosted by Metropolitan Council",
+      "catalogueUrl": "https://gis.data.mn.gov/maps/hennepin%3A%3Acounty-parcels/about",
+      "attribution": "Hennepin County GIS / Metropolitan Council · assessment parcels · adapted",
+      "scope": "Hennepin County assessment parcels on the Minneapolis side of the combined Minneapolis–Saint Paul settlement. Thirteen aligned cells plus four adjacent pans and an expanded 35-view check around the unchanged WUP locator yielded 10 distinct full county parcel geometries. Native EPSG:26915 count and object-ID manifests agreed, forced three-row paging completed, all 10 fresh COUNTY_PIN reads reproduced geometry, and explicit absence, full footprint lookup and complete proposal binding passed. GEOS in EPSG:26915 found no invalid polygons, duplicate geometry, sampled overlaps above 0.01 m² or operation errors. Only OBJECTID transport keys and native COUNTY_PIN identifiers accompany geometry. The exact WUP point returned no parcel; nearby verified polygons remain usable. Hennepin metadata describes taxed, tax-exempt and stacked multi-PID assessment parcels; the small sampled area contains no stacked duplicates, while broader county completeness and topology remain unverified. The endpoint is named Parcels_2025; its current revision and identity continuity after replacement were not established. Saint Paul/Ramsey coverage remains a separate source. Published survey and legal-use notices are retained as scope information.",
+      "licenceNote": "Public county assessment dataset; retain Hennepin County and Metropolitan Council attribution and published non-survey/legal-use notices.",
+      "maxConcurrentQueries": 1
+    }
+  ]
+}

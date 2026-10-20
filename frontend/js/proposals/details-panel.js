@@ -135,14 +135,16 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         })();
 
         const isReplaced = (typeof isParcelReplacedByChildren === 'function') ? isParcelReplacedByChildren(canonicalId) : false;
-        const isRemoved = isReplaced || !displayFeature.geometry;
+        const referenceState = window.ProposalPanelPresentation.parcelReferenceState({
+            hasGeometry: !!geometry, replacedInModel: isReplaced
+        });
 
         return {
             parcelId: getParcelIdFromFeature(displayFeature) || canonicalId,
             parcel: null,
             feature: displayFeature,
             geometry,
-            isRemoved
+            referenceState
         };
     };
 
@@ -154,19 +156,29 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     const parentParcels = cadastreParcelIds.slice(0, MAX_LIST_INITIAL).map(buildAncestorRow).filter(Boolean);
     const perfEndParcelFeatures = performance.now();
 
-    // Total area: sum across whatever we have resolved so far. As parcelDataLoaded fires and
-    // more rows hydrate via the lazy list, this number is best-effort — accuracy improves as
-    // the user scrolls / panes parcels into view.
-    // A proposal on open ground has no (or not only) cadastral parents: with none, its area is
-    // its site's (computeProposalArea prefers the site).
-    // An applied proposal's parents are replaced on the map and may not carry a measured area any
-    // more; then the site's area stands in, rather than a sum of nothing reading "0 m²".
-    // Cadastre records carry the measured area as calculated_area; live parcels as calculatedArea.
-    const parentAreas = parentParcels.map(ap => ap?.feature?.properties?.calculatedArea ?? ap?.feature?.properties?.calculated_area);
-    const siteArea = () => (typeof computeProposalArea === 'function' ? (Number(computeProposalArea(proposal)) || 0) : 0);
-    const totalArea = parentParcels.length && parentAreas.every(Number.isFinite)
-        ? parentAreas.reduce((sum, area) => sum + area, 0)
-        : (siteArea() || parentAreas.filter(Number.isFinite).reduce((sum, area) => sum + area, 0));
+    // Site and source-parcel area are different extents. Inspect all retained source records,
+    // independently of the first 20 rendered rows; peekMany neither fetches nor clones geometry.
+    // Missing areas remain unknown, and a partial source sum states its measurement coverage.
+    // Source records may carry calculated_area or its normalized calculatedArea spelling;
+    // otherwise measure their retained geometry without fetching another source.
+    const sourceFeatures = window.CadastralParcelRepository?.peekMany?.(cadastreParcelIds) || [];
+    let siteAreaM2 = null;
+    if (fullProposal.site && window.__siteDraft?.siteAreaM2) {
+        try { siteAreaM2 = window.__siteDraft.siteAreaM2(fullProposal.site); }
+        catch (error) { console.warn('[showProposalInfo] Could not measure the proposal site:', error); }
+    }
+    const areaSummary = window.ProposalArea.areaSummary({
+        hasSite: !!fullProposal.site, siteAreaM2,
+        declaredCount: new Set(cadastreParcelIds).size,
+        sourceAreas: sourceFeatures.map(feature => {
+            try { return window.ProposalArea.sourceAreaM2(feature, window.__siteDraft?.siteAreaM2); }
+            catch (error) {
+                console.warn('[showProposalInfo] Could not measure a source parcel:', feature.properties?.parcelId, error);
+                return null;
+            }
+        })
+    });
+    const areaText = area => area === null ? '—' : `${Math.round(area).toLocaleString()} m²`;
 
     const renderAncestorParcelItem = (parentParcelOrId) => {
         const parentParcel = (typeof parentParcelOrId === 'string')
@@ -175,17 +187,19 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         if (!parentParcel) return '';
         const parcelId = parentParcel.parcelId;
         const feature = parentParcel.feature;
-        const isRemoved = parentParcel.isRemoved;
+        const isReplaced = parentParcel.referenceState === 'replaced';
+        const isUnloaded = parentParcel.referenceState === 'unloaded';
         const hasAccepted = proposal.acceptedParcelIds && proposal.acceptedParcelIds.includes(parcelId.toString());
 
-        // Get parcel owner information
+        // This avatar comes from a browser-local model assignment, not a rights register.
         const ownerId = PersistentStorage.getItem(`parcel_${parcelId}_owner`);
         let ownerAvatarHtml = '';
 
         if (ownerId && typeof agentStorage !== 'undefined') {
             const owner = agentStorage.getAgent(ownerId);
             if (owner && typeof getAvatarImagePath === 'function') {
-                ownerAvatarHtml = `<img src="${getAvatarImagePath(owner.avatarIndex)}" class="parcel-owner-avatar" title="Owner: ${owner.name}">`;
+                const label = getProposalI18nHelper()('panel.proposal.parcels.localModelOwner', 'Local model owner: {{name}}', { name: owner.name });
+                ownerAvatarHtml = `<img src="${getAvatarImagePath(owner.avatarIndex)}" class="parcel-owner-avatar" title="${safeAgentText(label)}">`;
             }
         }
 
@@ -199,45 +213,44 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         // plots that came out of it after. Same session as the panel's own "Before / after".
         const parcelCompare = (typeof window !== 'undefined') ? window.ProposalBeforeAfter : null;
         const proposalKeyForCompare = (typeof getProposalKey === 'function' ? getProposalKey(fullProposal || proposal) : null) || (fullProposal || proposal).proposalId;
-        // (An applied readjustment lists its input parcels as "Removed": that is the case to compare.)
+        // An applied readjustment can replace its inputs in the map model: that is the case to compare.
         const parcelCompareHtml = ((fullProposal || proposal).reparcellization && parcelCompare && proposalKeyForCompare
             && isProposalApplied(fullProposal || proposal) && parcelCompare.canCompare(fullProposal || proposal))
             ? `<button type="button" class="btn btn-quiet btn-sm btn-compare-parcel" data-focus-parcel="${safeAgentText(String(parcelId))}" aria-pressed="${parcelCompare.isActive(proposalKeyForCompare) && parcelCompare.activeFocus() === String(parcelId) ? 'true' : 'false'}"
                     title="${tProposal('mapCompare.sliderLabel', 'Before and after comparison')}"
                     onclick="event.stopPropagation(); event.preventDefault(); BusyControl.track(this, () => toggleProposalBeforeAfter(${inlineJsArg(proposalKeyForCompare)}, { focusParcelId: ${inlineJsArg(String(parcelId))} }));"><i class="fas fa-left-right" aria-hidden="true"></i> ${tProposal('mapCompare.toggle', 'Before / after')}</button>`
             : '';
-        const parcelTooltip = isRemoved
-            ? tProposal('panel.proposal.parcels.tooltipRemoved', 'Click to focus on where this parcel was')
+        const parcelTooltip = isReplaced
+            ? tProposal('panel.proposal.parcels.tooltipReplaced', 'Click to focus on the source parcel location')
             : tProposal('panel.proposal.parcels.tooltip', 'Click to view parcel details');
         const acceptedLabel = tProposal('panel.proposal.acceptance.accepted', 'Accepted');
         const pendingLabel = tProposal('panel.proposal.acceptance.pending', 'Pending');
-        // A readjustment does not remove its parcels: it pools them into the new plots.
-        const removedLabel = (fullProposal || proposal).reparcellization
-            ? tProposal('panel.proposal.parcels.pooled', 'Pooled into the new plots')
-            : tProposal('panel.proposal.parcels.removed', 'Removed');
+        // Any applied formation may replace this source; the viewed proposal need not be its producer.
+        const replacedLabel = tProposal('panel.proposal.parcels.replacedInModel', 'Replaced in map model');
+        const unloadedLabel = tProposal('panel.proposal.parcels.sourceUnloaded', 'Source geometry not loaded');
 
-        // Store geometry data for removed parcels so we can focus on location
-        const removedGeometry = isRemoved
+        // Store source geometry for replaced parcels so we can focus on location.
+        const sourceGeometry = isReplaced
             ? (parentParcel.geometry || (feature && feature.geometry) || null)
             : null;
-        const geometryDataAttr = removedGeometry
-            ? `data-parcel-geometry='${JSON.stringify(removedGeometry)}'`
+        const geometryDataAttr = sourceGeometry
+            ? `data-parcel-geometry='${JSON.stringify(sourceGeometry)}'`
             : '';
-        const removedDataAttr = isRemoved ? 'data-parcel-removed="true"' : '';
+        const replacedDataAttr = isReplaced ? 'data-parcel-replaced="true"' : '';
 
         // The row and its status take their look from classes (css/proposal-details.css):
         // execution.js toggles is-accepted and parcel-status-* when an owner accepts.
         return `
-            <div class="proposal-parcel-item proposal-parcel-row${hasAccepted ? ' is-accepted' : ''}${isRemoved ? ' is-removed' : ''}" data-parcel-id="${parcelId}" ${removedDataAttr} ${geometryDataAttr} onclick="handleProposalParcelClick(${inlineJsArg(parcelId)}, event)" title="${parcelTooltip}">
+            <div class="proposal-parcel-item proposal-parcel-row${hasAccepted ? ' is-accepted' : ''}${isReplaced ? ' is-replaced' : ''}" data-parcel-id="${parcelId}" data-reference-state="${parentParcel.referenceState}" ${replacedDataAttr} ${geometryDataAttr} onclick="handleProposalParcelClick(${inlineJsArg(parcelId)}, event)" title="${parcelTooltip}">
                 <div class="parcel-info proposal-parcel-row__info">
                     <div class="proposal-parcel-row__main">
                         ${ownerAvatarHtml}
                         <div class="proposal-parcel-row__text">
                             <span class="parcel-number parcel-id-text" title="${safeAgentText(parcelId)}">${safeAgentText(parcelLabelText)}</span>
                             ${parcelCompareHtml}
-                            ${isRemoved
-                ? `<span class="parcel-status parcel-status-removed">${removedLabel}</span>`
-                : (hasAccepted ?
+                            ${isReplaced
+                ? `<span class="parcel-status parcel-status-replaced">${replacedLabel}</span>`
+                : (isUnloaded ? `<span class="parcel-status parcel-status-unloaded">${unloadedLabel}</span>` : hasAccepted ?
                     `<span class="parcel-status parcel-status-accepted">${acceptedLabel}</span>` :
                     `<span class="parcel-status parcel-status-pending">${pendingLabel}</span>`)
             }
@@ -309,7 +322,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
 
     // Determine current parcel - try passed parameter first, then global selectedParcelId
     const tProposalUI = getProposalI18nHelper();
-    const ownerAcceptanceSummaryFast = buildProposalOwnerAcceptanceSummaryFast(proposal);
+    const ownerAcceptanceSummaryFast = buildProposalOwnerAcceptanceSummaryFast(fullProposal || proposal);
 
     const displayText = value => window.ProposalDisplayText.text(value, fullProposal);
     const proposalDisplayTitle = displayText(getProposalDisplayTitle(fullProposal, proposal));
@@ -381,20 +394,21 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     const mapStatusBadgeLabel = appliedState
         ? tProposal('panel.proposal.mapStatus.applied', 'Applied')
         : tProposal('panel.proposal.mapStatus.notApplied', 'Not Applied');
-    const disbursementModeRaw = (fullProposal.disbursementMode || proposal.disbursementMode || '').toLowerCase();
-    const isConditional = fullProposal.isConditional === true || proposal.isConditional === true || disbursementModeRaw === 'conditional';
-    const conditionalBadgeClass = isConditional ? 'conditional' : 'partial';
-    const conditionalBadgeLabel = isConditional
-        ? tProposal('panel.proposal.disbursement.conditional', 'Conditional')
-        : tProposal('panel.proposal.disbursement.partial', 'Partial payouts');
-    const conditionalBadgeTitle = isConditional
-        ? tProposal('panel.proposal.disbursement.conditionalHint', 'All owners must accept before payout')
-        : tProposal('panel.proposal.disbursement.partialHint', 'Payout released as each owner accepts');
+    const payoutMode = window.ProposalPublishTerms.payoutMode(fullProposal);
+    const payoutLabel = payoutMode === 'conditional'
+        ? tProposal('panel.proposal.disbursement.conditional', 'Payout terms: all owners')
+        : tProposal('panel.proposal.disbursement.partial', 'Payout terms: partial');
+    const payoutHint = payoutMode === 'conditional'
+        ? tProposal('panel.proposal.disbursement.conditionalHint', 'Authored terms require every owner to accept before payout. This does not confirm funding or payment.')
+        : tProposal('panel.proposal.disbursement.partialHint', 'Authored terms allow partial payouts. Acceptance alone does not confirm payment.');
 
     const nftInfo = getProposalNftInfo(fullProposal);
     const mintedExplorerUrl = nftInfo ? buildProposalNftExplorerUrl(fullProposal) : null;
-    const nftChain = nftInfo && String(nftInfo.chain || nftInfo.chainId || '');
-    const isSolanaPledgeProposal = Boolean(isMinted && nftInfo?.tokenId && nftChain.startsWith('solana'));
+    const proposalAccount = window.ChainProposalRef?.solanaAccountForDeployment(
+        fullProposal,
+        window.SolanaAcceptanceClient?.constants?.PROPOSAL_NFT_PROGRAM_ID
+    ) || null;
+    const isSolanaPledgeProposal = Boolean(isMinted && proposalAccount);
     // Donations, pledges and the prediction market settle on the contract's own execution. A minted
     // approval setup is decided by anchored owner decisions the contract never counts, so it would
     // never execute: those cards are left out (land-readjustmend.md §20).
@@ -545,9 +559,12 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         : '';
 
     const buyOfferProposal = fullProposal || proposal;
-    const buyButtonHtml = (typeof isProposalOpenSaleOffer === 'function' && isProposalOpenSaleOffer(buyOfferProposal))
-        ? `<button type="button" class="btn btn-success proposal-buy-btn" onclick="claimSaleOffer(${inlineJsArg(buyOfferProposal.proposalId || '')})"><i class="fas fa-handshake" aria-hidden="true"></i> ${tProposal('panel.proposal.buy.button', 'Buy')}</button>`
-        : '';
+    const simulationHint = tProposal('panel.proposal.purchaseSimulation.hint', 'Updates modeled parcel ownership in this browser. No payment is made.');
+    const buyButtonHtml = buyOfferProposal.localPurchaseSimulation
+        ? `<span class="proposal-purchase-simulation">${safeAgentText(tProposal('panel.proposal.purchaseSimulation.result', 'Purchase simulated in this browser'))}</span>`
+        : (typeof isProposalOpenSaleOffer === 'function' && isProposalOpenSaleOffer(buyOfferProposal))
+            ? `<button type="button" class="btn btn-success proposal-buy-btn" onclick="simulateSaleOfferPurchase(${inlineJsArg(buyOfferProposal.proposalId || '')})"><i class="fas fa-handshake" aria-hidden="true"></i> ${tProposal('panel.proposal.purchaseSimulation.button', 'Simulate purchase')}</button><p class="proposal-purchase-hint">${safeAgentText(simulationHint)}</p>`
+            : '';
 
     // "Drive this track" — opens the external 3D tram sim in a new tab with the
     // cab riding on this proposal's drawn centerline. Shown for uploaded (serial
@@ -594,7 +611,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     };
     let proposalSupportButtonsHtml = '';
     if (chainSettlesProposal && proposalKey) {
-        proposalSupportButtonsHtml = `<span class="proposal-support-actions" data-proposal-support-actions="${nftInfo.tokenId}">${renderSupportButtons()}</span>`;
+        proposalSupportButtonsHtml = `<span class="proposal-support-actions" data-proposal-support-actions="${proposalAccount}">${renderSupportButtons()}</span>`;
     }
 
     // Map actions remain available in the compact card and the reader. Details is an explicit
@@ -630,28 +647,22 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         ? escapeHtml(proposalDisplayDescription)
         : proposalDisplayDescription;
 
-    // "Based on <name>" — set when this proposal was forked via "Copy into new proposal". The
-    // link jumps to the source; fall back to the stored name if the source is no longer local.
-    const copiedFromId = (fullProposal && (fullProposal.sourceProposalId || fullProposal.replacementOfProposalId || fullProposal.copiedFromProposalId))
-        || proposal.sourceProposalId || proposal.replacementOfProposalId || proposal.copiedFromProposalId || null;
+    // A local source is navigable only through its typed reference. An unresolved publication
+    // keeps the authored relationship and title; the lineage response can supply a verified link.
+    const origin = window.ProposalOrigin.normalize((fullProposal || proposal).proposalOrigin);
     let copiedFromHtml = '';
-    if (copiedFromId) {
-        const storedName = (fullProposal && fullProposal.copiedFromName) || proposal.copiedFromName || null;
-        let sourceLabel = storedName || copiedFromId;
-        let sourceExists = false;
+    if (origin) {
+        let sourceProposal = null;
         try {
-            const sourceProposal = (typeof getProposalByIdOrHash === 'function') ? getProposalByIdOrHash(copiedFromId) : null;
-            if (sourceProposal) {
-                sourceExists = true;
-                sourceLabel = sourceProposal.title || sourceProposal.name || sourceLabel;
-            }
+            sourceProposal = window.ProposalOrigin.resolveLocal(origin,
+                proposalStorage.getAllProposals(), getBackendBase());
         } catch (_) { }
+        const sourceLabel = sourceProposal?.title || sourceProposal?.name || origin.title
+            || tProposal('panel.proposal.lineage.untitled', 'Untitled proposal');
         const safeLabel = typeof escapeHtml === 'function' ? escapeHtml(String(sourceLabel)) : String(sourceLabel);
-        const safeId = typeof escapeHtml === 'function' ? escapeHtml(String(copiedFromId)) : String(copiedFromId);
         const basedOnLabel = tProposal('panel.proposal.basedOn', 'Based on');
-        // The source opens in this panel: a script link (button.cb-link), never an external mark.
-        const inner = sourceExists
-            ? `<button type="button" class="cb-link proposal-based-on-link" onclick="focusProposalDetails(${inlineJsArg(copiedFromId)})">${safeLabel}</button>`
+        const inner = sourceProposal
+            ? `<button type="button" class="cb-link proposal-based-on-link" data-lineage-local-id="${safeAgentText(sourceProposal.proposalId)}">${safeLabel}</button>`
             : `<span class="proposal-based-on-name">${safeLabel}</span>`;
         copiedFromHtml = `<div class="proposal-based-on-row">${basedOnLabel}: ${inner}</div>`;
         // A land fork names how its parcels relate to the origin's, instead of a bare "Based on".
@@ -681,7 +692,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     const lensButtonLabel = translateLensKey('modal.lens.proposalTriggerTitle', 'View proposal lens');
     const safeLensButtonLabel = typeof escapeHtml === 'function' ? escapeHtml(lensButtonLabel) : lensButtonLabel;
     const lensProposalId = fullProposal.proposalId || proposal.proposalId || '';
-    // The proposal's lens: a square icon button beside Copy ID, disabled when the proposal names
+    // The proposal's lens: a square icon button beside Copy local ID, disabled when the proposal names
     // no lens. proposal-lens-button is the hook the lens loader finds it by.
     const lensButtonHtml = `
         <button type="button"
@@ -698,8 +709,8 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         if (!relationApi || typeof relationApi.findParcelSetRelations !== 'function') return '';
 
         const activeProposal = fullProposal || proposal;
-        const canonicalIds = relationApi.normalizeParcelIds(activeProposal);
-        if (!canonicalIds.length) return '';
+        const declaredIds = relationApi.normalizeParcelIds(activeProposal);
+        if (!declaredIds.length) return '';
 
         let allProposals = [];
         try {
@@ -708,9 +719,10 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                 ? proposalStorage.getAllProposals()
                 : [];
         } catch (error) {
-            console.warn('[showProposalInfo] Could not enumerate parcel-set alternatives:', error);
+            console.warn('[showProposalInfo] Could not enumerate declared-reference matches:', error);
         }
-        const relations = relationApi.findParcelSetRelations(activeProposal, allProposals, { limit: 12 });
+        const relations = relationApi.findParcelSetRelations(activeProposal, allProposals);
+        const shownRelations = relations.slice(0, 12);
         const exactCount = relations.filter(relation => relation.kind === 'same').length;
         const overlapCount = relations.length - exactCount;
         const setHash = typeof activeProposal?.parcelSet?.setHash === 'string'
@@ -720,28 +732,28 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         const summary = relations.length
             ? tProposal(
                 'panel.proposal.parcelSet.summary',
-                '{{count}} real parcels anchor this proposal. {{exact}} alternatives use the same set and {{overlap}} overlap it.',
-                { count: canonicalIds.length, exact: exactCount, overlap: overlapCount }
+                '{{count}} declared cadastral references. Of {{total}} loaded matches, {{exact}} use the same references and {{overlap}} share some. Showing {{shown}}.',
+                { count: declaredIds.length, total: relations.length, exact: exactCount, overlap: overlapCount, shown: shownRelations.length }
             )
             : tProposal(
                 'panel.proposal.parcelSet.noRelated',
-                '{{count}} real parcels anchor this proposal. No other proposal currently references this land.',
-                { count: canonicalIds.length }
+                '{{count}} declared cadastral references. No other loaded proposal shares these references.',
+                { count: declaredIds.length }
             );
         const relationLabels = {
-            same: tProposal('panel.proposal.parcelSet.relationSame', 'Same parcel set'),
-            'contains-target': tProposal('panel.proposal.parcelSet.relationContains', 'Includes this whole set'),
-            'inside-target': tProposal('panel.proposal.parcelSet.relationInside', 'Inside this parcel set'),
-            overlap: tProposal('panel.proposal.parcelSet.relationOverlap', 'Overlapping land')
+            same: tProposal('panel.proposal.parcelSet.relationSame', 'Same references'),
+            'contains-target': tProposal('panel.proposal.parcelSet.relationContains', 'Includes all these references'),
+            'inside-target': tProposal('panel.proposal.parcelSet.relationInside', 'Subset of these references'),
+            overlap: tProposal('panel.proposal.parcelSet.relationOverlap', 'Some shared references')
         };
-        const rows = relations.map(relation => {
+        const rows = shownRelations.map(relation => {
             const candidate = relation.proposal || {};
             const candidateId = safeAgentText(relation.proposalId);
             const title = safeAgentText(window.ProposalDisplayText.text(candidate.title || candidate.name || relation.proposalId, candidate));
             const author = candidate.author ? safeAgentText(candidate.author) : '';
             const shared = safeAgentText(tProposal(
                 'panel.proposal.parcelSet.sharedCount',
-                '{{shared}} of {{count}} parcels shared',
+                '{{shared}} of {{count}} references shared',
                 { shared: relation.sharedCount, count: relation.targetCount }
             ));
             const lifecycle = typeof getProposalLifecycleLabel === 'function'
@@ -759,30 +771,28 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         }).join('');
 
         return `
-            <section class="proposal-parcel-set-card" aria-label="${safeAgentText(tProposal('panel.proposal.parcelSet.title', 'Proposals on this land'))}">
+            <section class="proposal-parcel-set-card" aria-label="${safeAgentText(tProposal('panel.proposal.parcelSet.title', 'Proposals sharing references'))}">
                 <div class="proposal-parcel-set-head">
                     <div>
-                        <div class="proposal-funding-eyebrow">${safeAgentText(tProposal('panel.proposal.parcelSet.eyebrow', 'Canonical parcel set'))}</div>
-                        <h3>${safeAgentText(tProposal('panel.proposal.parcelSet.title', 'Proposals on this land'))}</h3>
+                        <div class="proposal-funding-eyebrow">${safeAgentText(tProposal('panel.proposal.parcelSet.eyebrow', 'Declared cadastral references'))}</div>
+                        <h3>${safeAgentText(tProposal('panel.proposal.parcelSet.title', 'Proposals sharing references'))}</h3>
                     </div>
-                    <span class="cb-badge cb-badge--applied proposal-parcel-set-count">${canonicalIds.length}</span>
+                    <span class="cb-badge cb-badge--applied proposal-parcel-set-count">${declaredIds.length}</span>
                 </div>
                 <p>${safeAgentText(summary)}</p>
-                ${shortHash ? `<div class="proposal-parcel-set-hash" title="${safeAgentText(setHash)}"><span>${safeAgentText(tProposal('panel.proposal.parcelSet.hash', 'Set identity'))}</span><code>${safeAgentText(shortHash)}</code></div>` : ''}
+                ${shortHash ? `<div class="proposal-parcel-set-hash" title="${safeAgentText(setHash)}"><span>${safeAgentText(tProposal('panel.proposal.parcelSet.hash', 'Recorded set hash'))}</span><code>${safeAgentText(shortHash)}</code></div>` : ''}
                 ${rows ? `<div class="proposal-parcel-set-relations">${rows}</div>` : ''}
                 <div class="cb-link-row proposal-parcel-set-activity">
                     <button type="button" class="cb-link activity-scope-link" data-activity-scope="proposalId" data-activity-value="${safeAgentText(relationApi.proposalKey(activeProposal))}">${safeAgentText(tProposal('panel.proposal.parcelSet.activityProposal', 'Activity on this proposal'))}</button>
-                    ${setHash ? `<button type="button" class="cb-link activity-scope-link" data-activity-scope="parcelSet" data-activity-value="${safeAgentText(setHash)}">${safeAgentText(tProposal('panel.proposal.parcelSet.activityLand', 'Activity on this land'))}</button>` : ''}
+                    ${setHash ? `<button type="button" class="cb-link activity-scope-link" data-activity-scope="parcelSet" data-activity-value="${safeAgentText(setHash)}">${safeAgentText(tProposal('panel.proposal.parcelSet.activityLand', 'Activity for this reference set'))}</button>` : ''}
                 </div>
             </section>`;
     })();
 
-    // Build expiry countdown HTML if proposal has an expiry set and is not executed
+    // Only Active/Expired proposals can make a deadline-based expiry claim.
     let expiryCountdownHtml = '';
-    if (proposal.expiresAt && getLifecycleStatus(proposal) !== 'Executed') {
-        const expiresAt = new Date(proposal.expiresAt).getTime();
-        const now = Date.now();
-        const isExpired = expiresAt <= now;
+    if (proposal.expiresAt && ['Active', 'Expired'].includes(getLifecycleStatus(proposal))) {
+        const isExpired = isProposalExpired(proposal);
 
         // The look is the state's (css/proposal-details.css): warning while it runs, danger in the
         // last minute (is-urgent, lifecycle.js) and once expired.
@@ -805,8 +815,10 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     }
 
     const acceptanceLoadingLabel = tProposal('panel.proposal.rendering', 'Loading...');
-    const parcelAcceptanceLabel = tProposalUI('panel.proposal.acceptance.parcelTitle', 'Parcel Acceptance Status:');
-    const ownerAcceptanceLabel = tProposalUI('panel.proposal.acceptance.ownerTitle', 'Owner Acceptance Status:');
+    const consentLabels = window.ProposalApprovalText.consentLabels(
+        hasApprovalSetup ? 'signed-receipts' : 'local-records', tProposalUI);
+    const parcelAcceptanceLabel = consentLabels.parcelTitle;
+    const ownerAcceptanceLabel = consentLabels.ownerTitle;
     const acceptanceSpinnerHtml = `
         <div class="acceptance-loading">
             <div class="spinner-circle" aria-hidden="true"></div>
@@ -899,14 +911,12 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                 }
             }
 
-            // Warning text only shown when no deposit
+            // This describes authored deposit terms, not an observed escrow balance.
             const noDepositWarningHtml = !hasDeposit ? `
-            <div class="proposal-no-deposit-warning">⚠️ ${tProposal('panel.proposal.offer.noDepositWarning', 'No deposit - proposal not backed by funds')}</div>` : '';
-            // Check if this is an ownership-transfer-from-me proposal
-            const isFromMeProposal = resolveProposalGoalKey(proposal, null) === 'ownership-transfer-from-me';
-            const acceptTransferLabel = tProposal('panel.proposal.acceptTransfer.buttonLabel', 'Accept ownership transfer');
-            const acceptTransferButtonHtml = isFromMeProposal
-                ? `<button type="button" class="btn btn-sm btn-icon offer-boost-button" title="${acceptTransferLabel}" aria-label="${acceptTransferLabel}" onclick="openAcceptOwnershipTransferDialog(${inlineJsArg(proposal.proposalId || '')})"><i class="fas fa-handshake" aria-hidden="true"></i></button>`
+            <div class="proposal-no-deposit-warning">⚠️ ${tProposal('panel.proposal.offer.noDepositWarning', 'No deposit specified')}</div>` : '';
+            // Seller intent has no funding transaction here; its boolean readiness flag is no amount.
+            const fundingAvailabilityHtml = window.ProposalKind?.isOwnerSaleOffer(proposal)
+                ? `<p class="proposal-offer-funding-note">${safeAgentText(tProposal('panel.proposal.offer.sellerFundingUnavailable', 'Funding this offer is not available here.'))}</p>`
                 : '';
 
             if (hasDecay) {
@@ -923,10 +933,9 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                         <span class="offer-amount decaying">${currencySymbol}${Math.round(currentOffer).toLocaleString('hr-HR')}${currencySuffix}</span>
                         <span class="offer-original">${originalAmountText}</span>
                     </div>
-                    ${acceptTransferButtonHtml}
                 </div>
                 ${hasDeposit ? `<div class="offer-bar-deposit-container">${depositBarsHtml}</div>` : ''}
-            </div>${noDepositWarningHtml}`;
+            </div>${noDepositWarningHtml}${fundingAvailabilityHtml}`;
             } else {
                 return `
             <div class="proposal-offer-bar${hasDeposit ? ' with-deposit' : ''}">
@@ -935,10 +944,9 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                         <span class="offer-label">${tProposal('panel.proposal.metrics.offer', 'Offer:')}</span>
                         <span class="offer-amount">${currencySymbol}${proposal.offer.toLocaleString('hr-HR')}${currencySuffix}</span>
                     </div>
-                    ${acceptTransferButtonHtml}
                 </div>
                 ${hasDeposit ? `<div class="offer-bar-deposit-container">${depositBarsHtml}</div>` : ''}
-            </div>${noDepositWarningHtml}`;
+            </div>${noDepositWarningHtml}${fundingAvailabilityHtml}`;
             }
         })() : ''}`;
 
@@ -948,14 +956,14 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
             <div class="proposal-badges-row">
                 ${(() => {
             // One lifecycle badge from the ladder (docs/design-language.md), the same as the list
-            // rows: Draft → Published → Minted → Executed; "Applied" when it is on this map; a
-            // modifier for cancelled / expired / concluded / unfunded; the payout mode as a neutral
-            // badge. All of it is displayState (proposals/display-state.js).
+            // rows: Draft, Published, Minted or Execution recorded; "Applied" when it is on this map; a
+            // modifier for cancelled / expired / concluded / unfunded, from displayState
+            // (proposals/display-state.js). Authored payout terms are a separate neutral badge.
             const ladder = displayState.rung;
             const ladderLabel = window.__proposalDisplayState.rungLabel(ladder, tProposal);
-            const ladderTitle = isMinted ? tProposal('panel.proposal.lifecycle.mintedHint', 'Minted on-chain') : '';
+            const ladderTitle = escapeHtml(window.__proposalDisplayState.rungHint(ladder, tProposal));
             const ladderBadge = (isMinted && mintedExplorerUrl)
-                ? `<a class="cb-badge cb-badge--minted cb-link--external" href="${mintedExplorerUrl}" target="_blank" rel="noopener noreferrer" title="${ladderTitle}">${ladderLabel}</a>`
+                ? `<a class="cb-badge cb-badge--${ladder} cb-link--external" href="${mintedExplorerUrl}" target="_blank" rel="noopener noreferrer" title="${ladderTitle}">${ladderLabel}</a>`
                 : `<span class="cb-badge cb-badge--${ladder}" title="${ladderTitle}">${ladderLabel}</span>`;
             const modifier = displayState.modifier
                 ? `<span class="cb-badge ${displayState.modifierTone}">${statusBadgeLabel}</span>`
@@ -963,9 +971,9 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
             const applied = appliedState
                 ? `<span class="cb-badge cb-badge--applied"><i class="fas fa-check" aria-hidden="true"></i> ${mapStatusBadgeLabel}</span>`
                 : '';
-            // A vote pays nothing, so it has no payout mode to show.
-            const payout = isNonBindingProposal(fullProposal) ? ''
-                : `<span class="cb-badge" title="${conditionalBadgeTitle}">${conditionalBadgeLabel}</span>`;
+            // Votes, cash-free records and records without a declared mode have no payout badge.
+            const payout = payoutMode
+                ? `<span class="cb-badge" data-proposal-payout-terms="${payoutMode}" title="${payoutHint}">${payoutLabel}</span>` : '';
             return ladderBadge + proposalKindBadgeHtml(fullProposal, ladder !== 'draft') + applied + modifier + payout;
         })()}
                 ${agentBadgeHtml}
@@ -998,7 +1006,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                 </div>
             </div>
             ${(chainSettlesProposal || proposalOfferHtml.trim()) ? sectionStart('funding', tProposal('panel.proposal.pledge.summary', 'Funding & commitments'), tProposal('panel.proposal.detailsSections.fundingHint', 'Donations, pledges and owner offer')) + proposalOfferHtml : ''}
-            ${chainSettlesProposal ? `<section class="proposal-funding-card proposal-pledge-summary" data-proposal-account="${nftInfo.tokenId}" aria-label="${tProposal('panel.proposal.pledge.summary', 'Proposal funding')}">
+            ${chainSettlesProposal ? `<section class="proposal-funding-card proposal-pledge-summary" data-proposal-account="${proposalAccount}" aria-label="${tProposal('panel.proposal.pledge.summary', 'Proposal funding')}">
                 <div class="proposal-funding-head">
                     <div>
                         <div class="proposal-funding-eyebrow">${tProposal('panel.proposal.pledge.onchain', 'On-chain support')}</div>
@@ -1016,23 +1024,23 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                 </div>
                 <div class="proposal-funding-you" data-funding="you">${tProposal('panel.proposal.pledge.connect', 'Connect a Solana wallet to see your support.')}</div>
                 <div class="cb-link-row proposal-funding-links">
-                    <a class="cb-link cb-link--external" href="https://explorer.solana.com/address/${nftInfo.tokenId}?cluster=devnet" target="_blank" rel="noopener noreferrer">${tProposal('panel.proposal.pledge.proposalExplorer', 'Proposal account')}</a>
+                    <a class="cb-link cb-link--external" href="https://explorer.solana.com/address/${proposalAccount}?cluster=devnet" target="_blank" rel="noopener noreferrer">${tProposal('panel.proposal.pledge.proposalExplorer', 'Proposal account')}</a>
                     <a class="cb-link cb-link--external" href="https://explorer.solana.com/address/${window.SolanaPledgeClient?.constants?.PROGRAM_ID || '1jESRS3mJiPUJTtmQ5ncyBhGNmGeXTpUqPyJcTYrp6g'}?cluster=devnet" target="_blank" rel="noopener noreferrer">${tProposal('panel.proposal.pledge.programExplorer', 'Funding program')}</a>
                 </div>
             </section>` : ''}
             ${(chainSettlesProposal || proposalOfferHtml.trim()) ? sectionEnd : ''}
             ${chainSettlesProposal ? sectionStart('market', tProposal('panel.proposal.detailsSections.market', 'Prediction market'), tProposal('panel.proposal.detailsSections.marketHint', 'Yes / No bets and settlement rules')) : ''}
-            ${chainSettlesProposal ? `<section class="proposal-market-card proposal-market-summary" data-proposal-account="${nftInfo.tokenId}" data-proposal-id="${safeAgentText(fullProposal?.proposalId || '')}" data-proposal-lifecycle="${safeAgentText(supportLifecycle)}" aria-label="Prediction market">
+            ${chainSettlesProposal ? `<section class="proposal-market-card proposal-market-summary" data-proposal-account="${proposalAccount}" data-proposal-id="${safeAgentText(fullProposal?.proposalId || '')}" data-proposal-lifecycle="${safeAgentText(supportLifecycle)}" aria-label="Prediction market">
                 <div class="proposal-funding-head">
                     <div>
                         <div class="proposal-funding-eyebrow">${tProposal('bets.tagline', 'Bet on cities')}</div>
-                        <h3>${tProposal('bets.contest.titleSingle', 'Does this proposal get built?')}</h3>
+                        <h3>${tProposal('bets.contest.titleSingle', 'Will this proposal execute on-chain?')}</h3>
                     </div>
                     <span class="proposal-funding-state" data-market="state">Loading…</span>
                 </div>
                 <div class="proposal-market-grid" aria-live="polite">
-                    <div><span>${tProposal('panel.proposal.market.yesSide', 'Yes · gets built')}</span><strong data-market="yes">${tProposal('panel.proposal.pledge.loading', 'Loading…')}</strong><small data-market="yes-odds"></small></div>
-                    <div><span>${tProposal('panel.proposal.market.noSide', 'No · dropped')}</span><strong data-market="no">${tProposal('panel.proposal.pledge.loading', 'Loading…')}</strong><small data-market="no-odds"></small></div>
+                    <div><span>${tProposal('panel.proposal.market.yesSide', 'Yes · executed on-chain')}</span><strong data-market="yes">${tProposal('panel.proposal.pledge.loading', 'Loading…')}</strong><small data-market="yes-odds"></small></div>
+                    <div><span>${tProposal('panel.proposal.market.noSide', 'No · cancelled or expired')}</span><strong data-market="no">${tProposal('panel.proposal.pledge.loading', 'Loading…')}</strong><small data-market="no-odds"></small></div>
                 </div>
                 <div class="proposal-market-lifecycle">
                     <div><strong>${tProposal('panel.proposal.market.ruleTitle', 'How it settles')}</strong><span data-market="rule">${tProposal('panel.proposal.market.ruleLoading', 'Reading the pool rule…')}</span></div>
@@ -1051,43 +1059,47 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                 <div class="proposal-market-status" data-market="status" aria-live="polite"></div>
                 <div class="proposal-market-history" data-market="history"><strong>${tProposal('panel.proposal.market.history', 'Recent bets')}</strong><span>${tProposal('world.activity.loading', 'Loading activity…')}</span></div>
                 <div class="cb-link-row proposal-funding-links">
-                    <a class="cb-link cb-link--external" href="https://explorer.solana.com/address/${nftInfo.tokenId}?cluster=devnet" target="_blank" rel="noopener noreferrer">${tProposal('panel.proposal.pledge.proposalExplorer', 'Proposal account')}</a>
+                    <a class="cb-link cb-link--external" href="https://explorer.solana.com/address/${proposalAccount}?cluster=devnet" target="_blank" rel="noopener noreferrer">${tProposal('panel.proposal.pledge.proposalExplorer', 'Proposal account')}</a>
                     <a class="cb-link cb-link--external" data-market="account-link" target="_blank" rel="noopener noreferrer" hidden>${tProposal('panel.proposal.market.poolAccount', 'Pool account')}</a>
                     <a class="cb-link cb-link--external" href="https://explorer.solana.com/address/${window.SolanaMarketClient?.constants?.PROGRAM_ID || 'GDYnzduynKhKgxDhvvKVarn2s23DtzA26s6hycuUYDRB'}?cluster=devnet" target="_blank" rel="noopener noreferrer">${tProposal('panel.proposal.market.poolProgram', 'Pool program')}</a>
                 </div>
             </section>` : ''}
             ${chainSettlesProposal ? sectionEnd : ''}
-            ${sectionStart('land', tProposal('panel.proposal.detailsSections.land', 'Land & ownership'), tProposal('panel.proposal.detailsSections.landHint', 'Parcels: {{count}} · alternatives and acceptance', { count: cadastreParcelIds.length }))}
+            ${sectionStart('land', tProposal('panel.proposal.detailsSections.land', 'Land & ownership'), tProposal('panel.proposal.detailsSections.landHint', 'Declared references: {{count}} · matching proposals and consent', { count: cadastreParcelIds.length }))}
             ${parcelSetRelationsHtml}
             ${window.ProposalApprovalRuntime?.uses(fullProposal || proposal) === true ? '<div class="approval-card-slot" data-approval-card-slot></div>' : ''}
             ${editApprovalButtonHtml}
             ${typeof proposalRequiresDealConsent === 'function' && proposalRequiresDealConsent(fullProposal || proposal)
                 ? buildReadjustmentCashReviewHtml(fullProposal || proposal) : ''}
-            ${hasApprovalSetup ? '' : parcelAcceptancePlaceholder}
-            ${hasApprovalSetup ? '' : ownerAcceptancePlaceholder}
+            ${hasApprovalSetup || isNonBindingProposal(fullProposal) ? '' : parcelAcceptancePlaceholder}
+            ${hasApprovalSetup || isNonBindingProposal(fullProposal) ? '' : ownerAcceptancePlaceholder}
 
             <hr class="proposal-details-divider">
             <div class="metric-group">
                 <span class="metric-label">${tProposal('panel.proposal.metrics.parcels', 'Parcels in Proposal:')}</span> <span class="metric-value">${parcelIds.length}</span>
             </div>
-            <div class="metric-group">
-                <span class="metric-label">${tProposal('panel.proposal.metrics.owners', 'Owners in Proposal:')}</span> <span class="metric-value">${(() => {
-            // For road/track proposals, use individualOwners from ownershipAndAcquisitionStats if available
-            // This is more accurate than counting ownerAcceptance entries which may not be populated
-            const roadProposal = fullProposal.roadProposal || proposal.roadProposal;
-            const stats = roadProposal?.definition?.metadata?.ownershipAndAcquisitionStats ||
-                fullProposal.ownershipAndAcquisitionStats ||
-                proposal.ownershipAndAcquisitionStats;
-            if (stats && stats.individualOwners !== null && stats.individualOwners !== undefined) {
-                return stats.individualOwners;
-            }
-            // Fallback to owner acceptance count if stats not available
-            return ownerAcceptanceSummaryFast.totalOwners;
-        })()}</span>
+            <div class="metric-group" data-ownership-count="${hasApprovalSetup ? 'declared-parties' : 'local-parcel-entries'}">
+                <span class="metric-label">${hasApprovalSetup
+                    ? tProposal('panel.proposal.metrics.declaredOwnerParties', 'Declared owner parties:')
+                    : tProposal('panel.proposal.metrics.localOwnerEntries', 'Local parcel-owner entries:')}</span>
+                <span class="metric-value">${hasApprovalSetup && ownerAcceptanceSummaryFast.ownershipResolved !== true
+                    ? '—' : ownerAcceptanceSummaryFast.totalOwners}</span>
             </div>
-            <div class="metric-group">
-                <span class="metric-label">${tProposal('panel.proposal.metrics.area', 'Total Area:')}</span> <span class="metric-value">${Math.round(totalArea).toLocaleString('hr-HR')} m²</span>
-            </div>
+            ${areaSummary.hasSite ? `<div class="metric-group" data-proposal-area-basis="site">
+                <span class="metric-label">${tProposal('panel.proposal.metrics.siteArea', 'Site area:')}</span>
+                <span class="metric-value">${areaText(areaSummary.siteAreaM2)}</span>
+            </div>` : ''}
+            ${areaSummary.declaredCount ? `<div class="metric-group" data-proposal-area-basis="source-parcels" data-area-complete="${areaSummary.sourceComplete}">
+                <span class="metric-label">${areaSummary.sourceComplete
+                    ? tProposal('panel.proposal.metrics.sourceArea', 'Source parcel area sum:')
+                    : tProposal('panel.proposal.metrics.availableSourceArea', 'Available source parcel area:')}</span>
+                <span class="metric-value">${areaText(areaSummary.sourceAreaM2)}</span>
+            </div><p class="proposal-area-coverage"><small>${tProposal('panel.proposal.metrics.areaCoverage', 'Areas available for {{known}} of {{total}} declared references.', {
+                known: areaSummary.sourceCount, total: areaSummary.declaredCount
+            })}</small></p>` : ''}
+            ${!areaSummary.hasSite && !areaSummary.declaredCount ? `<div class="metric-group" data-proposal-area-basis="unknown">
+                <span class="metric-label">${tProposal('panel.proposal.metrics.area', 'Area:')}</span><span class="metric-value">—</span>
+            </div>` : ''}
             <hr class="proposal-details-divider proposal-details-divider--tight">
             ${cadastreParcelIds.length > 0 ? `
             <div class="metric-group">
@@ -1144,11 +1156,11 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
 
             const statsItems = [];
 
-            if (stats.individualOwners !== null && stats.individualOwners !== undefined) {
+            if (stats.ownerEntryCount !== null && stats.ownerEntryCount !== undefined) {
                 statsItems.push(`
                     <div class="metric-group">
-                        <span class="metric-label">${tProposal('panel.proposal.stats.individualOwners', 'Individual Owners:')}</span>
-                        <span class="metric-value">${stats.individualOwners}</span>
+                        <span class="metric-label">${tProposal('panel.proposal.stats.ownerEntryCount', 'Listed owner entries:')}</span>
+                        <span class="metric-value">${stats.ownerEntryCount}</span>
                     </div>
                 `);
             }
@@ -1156,7 +1168,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                 if (stats.ownershipCounts.individual !== null && stats.ownershipCounts.individual !== undefined) {
                     statsItems.push(`
                         <div class="metric-group">
-                            <span class="metric-label">${tProposal('panel.proposal.stats.ownedByIndividuals', 'Owned by Individuals:')}</span>
+                            <span class="metric-label">${tProposal('panel.proposal.stats.ownedByIndividuals', 'Parcels classed as individually owned:')}</span>
                             <span class="metric-value">${stats.ownershipCounts.individual}</span>
                         </div>
                     `);
@@ -1164,7 +1176,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                 if (stats.ownershipCounts.company !== null && stats.ownershipCounts.company !== undefined) {
                     statsItems.push(`
                         <div class="metric-group">
-                            <span class="metric-label">${tProposal('panel.proposal.stats.ownedByCompanies', 'Owned by Companies:')}</span>
+                            <span class="metric-label">${tProposal('panel.proposal.stats.ownedByCompanies', 'Parcels classed as company owned:')}</span>
                             <span class="metric-value">${stats.ownershipCounts.company}</span>
                         </div>
                     `);
@@ -1172,7 +1184,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                 if (stats.ownershipCounts.government !== null && stats.ownershipCounts.government !== undefined) {
                     statsItems.push(`
                         <div class="metric-group">
-                            <span class="metric-label">${tProposal('panel.proposal.stats.ownedByGovernment', 'Owned by Government:')}</span>
+                            <span class="metric-label">${tProposal('panel.proposal.stats.ownedByGovernment', 'Parcels classed as publicly owned:')}</span>
                             <span class="metric-value">${stats.ownershipCounts.government}</span>
                         </div>
                     `);
@@ -1180,7 +1192,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                 if (stats.ownershipCounts.institution !== null && stats.ownershipCounts.institution !== undefined) {
                     statsItems.push(`
                         <div class="metric-group">
-                            <span class="metric-label">${tProposal('panel.proposal.stats.ownedByInstitution', 'Owned by Institution:')}</span>
+                            <span class="metric-label">${tProposal('panel.proposal.stats.ownedByInstitution', 'Parcels classed as institution owned:')}</span>
                             <span class="metric-value">${stats.ownershipCounts.institution}</span>
                         </div>
                     `);
@@ -1188,24 +1200,24 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                 if (stats.ownershipCounts.mixed !== null && stats.ownershipCounts.mixed !== undefined) {
                     statsItems.push(`
                         <div class="metric-group">
-                            <span class="metric-label">${tProposal('panel.proposal.stats.ownershipMixed', 'Ownership Mixed:')}</span>
+                            <span class="metric-label">${tProposal('panel.proposal.stats.ownershipMixed', 'Parcels classed as mixed ownership:')}</span>
                             <span class="metric-value">${stats.ownershipCounts.mixed}</span>
                         </div>
                     `);
                 }
             }
-            if (stats.totalMarketPrice !== null && stats.totalMarketPrice !== undefined) {
+            if (Number.isFinite(stats.totalMarketPrice) && stats.currency) {
                 statsItems.push(`
                     <div class="metric-group">
-                        <span class="metric-label">${tProposal('panel.proposal.stats.totalMarketPrice', 'Total Market Price:')}</span>
-                        <span class="metric-value">${Math.round(stats.totalMarketPrice).toLocaleString('hr-HR')} EUR</span>
+                        <span class="metric-label">${tProposal('panel.proposal.stats.totalMarketPrice', 'Modeled total parcel value:')}</span>
+                        <span class="metric-value">${CbFormat.formatMoney(stats.totalMarketPrice, stats.currency, { maxFractionDigits: 0 })}</span>
                     </div>
                 `);
             }
             if (stats.totalAcquiringDifficulty !== null && stats.totalAcquiringDifficulty !== undefined) {
                 statsItems.push(`
                     <div class="metric-group">
-                        <span class="metric-label">${tProposal('panel.proposal.stats.totalAcquiringDifficulty', 'Total Acquiring Difficulty:')}</span>
+                        <span class="metric-label">${tProposal('panel.proposal.stats.totalAcquiringDifficulty', 'Modeled acquisition difficulty:')}</span>
                         <span class="metric-value">${Math.round(stats.totalAcquiringDifficulty).toLocaleString('hr-HR')}</span>
                     </div>
                 `);
@@ -1218,16 +1230,17 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
             return `
             <hr class="proposal-details-divider">
             <div class="metric-group">
-                <div class="metric-label" style="font-weight: 600; margin-bottom: 10px;">${tProposal('panel.proposal.sections.ownershipStats', 'Ownership & Acquisition Stats')}</div>
+                <div class="metric-label" style="font-weight: 600; margin-bottom: 10px;">${tProposal('panel.proposal.sections.ownershipStats', 'Modeled ownership and acquisition')}</div>
             </div>
+            <p><small data-ownership-estimates>${tProposal('panel.proposal.stats.summaryScope', 'Estimates from proposal metadata; owner entries may repeat across parcels and include assumed owners.')}</small></p>
             ${statsItems.join('')}
             `;
         })()}
             ${sectionEnd}
             ${(isSolanaPledgeProposal || agentProvenanceHtml) ? sectionStart('verification', tProposal('panel.proposal.detailsSections.verification', 'Verification & history'), tProposal('panel.proposal.detailsSections.verificationHint', 'Lens, evidence and activity')) : ''}
             ${agentProvenanceHtml}
-            ${isSolanaPledgeProposal ? `<section class="proposal-funding-card proposal-lens-card" data-proposal-lens-card="${nftInfo.tokenId}" aria-live="polite"></section>` : ''}
-            ${isSolanaPledgeProposal ? `<section class="proposal-possibility-card" data-proposal-timeline="${nftInfo.tokenId}" aria-label="Proposal timeline">
+            ${isSolanaPledgeProposal ? `<section class="proposal-funding-card proposal-lens-card" data-proposal-lens-card="${proposalAccount}" aria-live="polite"></section>` : ''}
+            ${isSolanaPledgeProposal ? `<section class="proposal-possibility-card" data-proposal-timeline="${proposalAccount}" aria-label="Proposal timeline">
                 <div class="proposal-funding-head">
                     <div>
                         <div class="proposal-funding-eyebrow">Verifiable hyperstition</div>
@@ -1240,12 +1253,12 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                 </ol>
             </section>` : ''}
             ${(isSolanaPledgeProposal || agentProvenanceHtml) ? sectionEnd : ''}
-            ${sectionStart('record', tProposal('panel.proposal.detailsSections.record', 'Proposal record'), tProposal('panel.proposal.detailsSections.recordHint', 'Created date and copyable identifiers'))}
+            ${sectionStart('record', tProposal('panel.proposal.detailsSections.record', 'Proposal record'), tProposal('panel.proposal.detailsSections.recordHint', 'Created date, local ID and links'))}
             <div class="metric-group">
                 <span class="metric-label">${tProposal('panel.proposal.metrics.created', 'Created:')}</span> <span class="metric-value">${createdAtLabel}</span>
             </div>
             ${escapedProposalDisplayId ? `<div class="proposal-id-row">
-                    <button type="button" class="btn btn-quiet btn-sm proposal-id-copy" title="${escapedProposalDisplayId}" onclick="copyProposalIdToClipboard(${inlineJsArg(String(fullProposal.proposalId || proposal.proposalId || ''))})"><i class="fas fa-copy" aria-hidden="true"></i> ${tProposal('panel.proposal.copyId', 'Copy ID')}</button>
+                    <button type="button" class="btn btn-quiet btn-sm proposal-id-copy" title="${escapedProposalDisplayId}" onclick="copyProposalIdToClipboard(${inlineJsArg(String(fullProposal.proposalId || proposal.proposalId || ''))})"><i class="fas fa-copy" aria-hidden="true"></i> ${tProposal('panel.proposal.copyId', 'Copy local ID')}</button>
                     ${lensButtonHtml}
                 </div>` : ''}
                 ${proposalEnsHtml ? `<div class="proposal-ens-row">${proposalEnsHtml}</div>` : ''}
@@ -1421,9 +1434,9 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     // Pledge totals are chain state, not proposal metadata. Hydrate after rendering so a slow RPC
     // never delays opening Details, and guard the DOM node in case the user selected another plan.
     if (chainSettlesProposal && window.SolanaPledgeBridge?.readSummary) {
-        Promise.resolve(window.SolanaPledgeBridge.readSummary(nftInfo.tokenId))
+        Promise.resolve(window.SolanaPledgeBridge.readSummary(proposalAccount))
             .then(summary => {
-                const card = document.querySelector(`.proposal-pledge-summary[data-proposal-account="${nftInfo.tokenId}"]`);
+                const card = document.querySelector(`.proposal-pledge-summary[data-proposal-account="${proposalAccount}"]`);
                 if (!card) return;
                 const donated = summary?.donations?.totalDonated || 0n;
                 const pledged = summary?.pledges?.activePledged || 0n;
@@ -1465,39 +1478,39 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                         : 'no pledge';
                     mySupport.textContent = `Your support: ${donationCopy}; ${pledgeCopy}.`;
                 }
-                const actions = document.querySelector(`[data-proposal-support-actions="${nftInfo.tokenId}"]`);
+                const actions = document.querySelector(`[data-proposal-support-actions="${proposalAccount}"]`);
                 if (actions) actions.innerHTML = renderSupportButtons(summary, true);
             })
             .catch(error => {
                 console.warn('Could not load proposal pledge totals', error);
-                const card = document.querySelector(`.proposal-pledge-summary[data-proposal-account="${nftInfo.tokenId}"]`);
+                const card = document.querySelector(`.proposal-pledge-summary[data-proposal-account="${proposalAccount}"]`);
                 if (card) card.querySelectorAll('[data-funding="donated"], [data-funding="pledged"]').forEach(node => {
                     node.textContent = tProposal('panel.proposal.pledge.unavailable', 'Unavailable');
                 });
             });
     }
 
-    if (chainSettlesProposal && window.OwnerOffer?.mount) window.OwnerOffer.mount(document.querySelector(`.proposal-pledge-summary[data-proposal-account="${nftInfo.tokenId}"]`), { proposal: fullProposal, proposalAccount: nftInfo.tokenId });
+    if (chainSettlesProposal && window.OwnerOffer?.mount) window.OwnerOffer.mount(document.querySelector(`.proposal-pledge-summary[data-proposal-account="${proposalAccount}"]`), { proposal: fullProposal, proposalAccount });
 
     // Lens card: decoded chain lens + directory names + per-parcel ownership attestation, consent
     // tally and Say yes, plus the permissionless verdict settlement. Hydrated
     // after render like the pledge card so a slow directory or RPC never delays Details.
     if (isSolanaPledgeProposal && window.ProposalLensCard?.mount) {
         window.ProposalLensCard.mount(
-            document.querySelector(`.proposal-lens-card[data-proposal-lens-card="${nftInfo.tokenId}"]`),
+            document.querySelector(`.proposal-lens-card[data-proposal-lens-card="${proposalAccount}"]`),
             {
                 resolveLens: () => (proposalLensEntries.length ? proposalLensEntries : fetchLensFromChain(fullProposal)),
                 parcelIds: Array.isArray(fullProposal?.cadastreParcelIds) ? fullProposal.cadastreParcelIds : [],
-                proposalAccount: nftInfo.tokenId,
+                proposalAccount,
                 approvalUnsupported: window.ProposalApprovalRuntime?.uses(fullProposal) === true
             }
         );
     }
-    if (isSolanaPledgeProposal) window.ProposalParcelHistoryCard?.mountAfter(document.querySelector(`.proposal-lens-card[data-proposal-lens-card="${nftInfo.tokenId}"]`), { parcelIds: Array.isArray(fullProposal?.cadastreParcelIds) ? fullProposal.cadastreParcelIds : [] });
+    if (isSolanaPledgeProposal) window.ProposalParcelHistoryCard?.mountAfter(document.querySelector(`.proposal-lens-card[data-proposal-lens-card="${proposalAccount}"]`), { parcelIds: Array.isArray(fullProposal?.cadastreParcelIds) ? fullProposal.cadastreParcelIds : [] });
 
     if (isSolanaPledgeProposal && window.ProposalPossibilityTimeline?.build) {
         hydrateProposalPossibilityTimeline(
-            nftInfo.tokenId,
+            proposalAccount,
             fullProposal?.proposalId || '',
             fullProposal?.createdAt || fullProposal?.created_at || proposal?.createdAt || proposal?.created_at || null
         );
@@ -1506,7 +1519,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     // Market reads use the same proposal account and wallet context as pledge hydration, but the
     // market itself is optional: agent runs may open it later. Never make Details wait on RPC.
     if (chainSettlesProposal && window.SolanaMarketBridge?.readSummary) {
-        hydrateProposalMarketCard(nftInfo.tokenId, supportLifecycle);
+        hydrateProposalMarketCard(proposalAccount);
     }
 
     // If lens missing but on-chain, attempt a lazy fetch to hydrate and enable the button
@@ -1887,12 +1900,12 @@ function setProposalMarketStatus(card, text = '', explorerUrl = '') {
     }
 }
 
-function hydrateProposalMarketCard(proposalAccount, lifecycle) {
+function hydrateProposalMarketCard(proposalAccount) {
     const card = marketCardForProposal(proposalAccount);
     if (!card || !window.SolanaMarketBridge?.readSummary || !window.ProposalMarketView) return;
     Promise.resolve(window.SolanaMarketBridge.readSummary(proposalAccount))
         .then(summary => {
-            renderProposalMarketCard(card, proposalAccount, lifecycle, summary);
+            renderProposalMarketCard(card, proposalAccount, summary);
             hydrateProposalMarketOracle(card, proposalAccount, summary?.marketAddress || '');
             hydrateProposalMarketHistory(card, proposalAccount, card.dataset.proposalId || '');
         })
@@ -2021,13 +2034,13 @@ async function hydrateProposalMarketHistory(card, proposalAccount, proposalId) {
     });
 }
 
-function renderProposalMarketCard(card, proposalAccount, lifecycle, summary) {
+function renderProposalMarketCard(card, proposalAccount, summary) {
     const view = window.ProposalMarketView;
     const t = getProposalI18nHelper();
     const model = view.model(summary?.market, { yes: summary?.yes, no: summary?.no });
-    // The proposal account's status is what the program resolves from; the app's own lifecycle word
-    // (expiry-aware, possibly ahead of the chain) only stands in when the account could not be read.
-    const lifecycleModel = view.lifecycle(summary?.chainStatus || lifecycle, model);
+    // The proposal account's status is what the program resolves from. An app deadline or stored
+    // lifecycle cannot supply the missing chain observation needed to enable a market action.
+    const lifecycleModel = view.lifecycle(summary?.chainStatus || 'Unknown', model);
     const state = card.querySelector('[data-market="state"]');
     const yes = card.querySelector('[data-market="yes"]');
     const no = card.querySelector('[data-market="no"]');
@@ -2043,7 +2056,7 @@ function renderProposalMarketCard(card, proposalAccount, lifecycle, summary) {
     const money = amount => (typeof CbFormat !== 'undefined' && CbFormat.formatMoney
         ? CbFormat.formatMoney(Number(view.formatAtomic(amount)), 'USDC') : `${view.formatAtomic(amount)} USDC`);
     const chance = value => (value === null ? t('bets.row.noBets', 'No bets yet')
-        : t('bets.row.chance', '{{percent}} chance', { percent: (typeof CbFormat !== 'undefined' && CbFormat.formatPercent
+        : t('bets.row.poolShare', '{{percent}} of pool', { percent: (typeof CbFormat !== 'undefined' && CbFormat.formatPercent
             ? CbFormat.formatPercent(value, { ofHundred: true, maxFractionDigits: 1 }) : `${value}%`) }));
     const connectButton = `<button type="button" class="btn" onclick="handleWalletButtonClick()">${safeAgentText(t('panel.proposal.support.connect', 'Connect Solana wallet'))}</button>`;
     const muted = text => `<span class="proposal-market-muted">${safeAgentText(text)}</span>`;
@@ -2137,7 +2150,7 @@ async function settleProposalMarket(proposalAccount, action, side = null) {
         setProposalMarketStatus(card, view.confirmedText(), result.explorerUrl);
         notifyProposalMarketChanged(proposalAccount);
         await recordHumanProposalSupport({ wallet, action, proposalId: proposalAccount, result, message: `${proposalSupportActor(wallet).name}: ${message}` });
-        hydrateProposalMarketCard(proposalAccount, currentProposalDetailsContext ? getLifecycleStatus(currentProposalDetailsContext) : '');
+        hydrateProposalMarketCard(proposalAccount);
     } catch (error) {
         setProposalMarketStatus(card, view?.errorText?.(error) || error?.message || 'Market transaction failed.', error?.explorerUrl);
     } finally {
@@ -2274,8 +2287,11 @@ async function submitProposalBoost(idOrHash = null) {
         return;
     }
 
-    const nftInfo = getProposalNftInfo(proposal);
-    if (!nftInfo || !nftInfo.tokenId) {
+    const proposalAccount = window.ChainProposalRef?.solanaAccountForDeployment(
+        proposal,
+        window.SolanaAcceptanceClient?.constants?.PROPOSAL_NFT_PROGRAM_ID
+    );
+    if (!proposalAccount) {
         showProposalAlertMessage('proposal_boost_not_minted', 'This proposal is not on-chain yet. Mint it before boosting.');
         return;
     }
@@ -2290,16 +2306,11 @@ async function submitProposalBoost(idOrHash = null) {
         }
         return;
     }
-    const targetChainId = normalizeChainIdForBoost(nftInfo.chain || null);
-    if (typeof targetChainId !== 'string' || !targetChainId.startsWith('solana')) {
-        showProposalAlertMessage('proposal_boost_failed', `${supportKind === 'donate' ? 'Donations' : 'Pledges'} currently require a Solana proposal.`);
-        return;
-    }
     if (!window.SolanaPledgeBridge || typeof window.SolanaPledgeBridge[supportKind] !== 'function') {
         showProposalAlertMessage('proposal_boost_failed', `${supportKind === 'donate' ? 'Donation' : 'Pledge'} transaction failed: blockchain bridge unavailable.`);
         return;
     }
-    const pendingKey = `proposalSupportPending:${supportKind}:${nftInfo.tokenId}:${solState.accounts[0]}`;
+    const pendingKey = `proposalSupportPending:${supportKind}:${proposalAccount}:${solState.accounts[0]}`;
     if (proposalSupportInFlight.has(pendingKey)) return;
     let operationId = overlay?.dataset?.pledgeOperationId;
     try {
@@ -2313,7 +2324,7 @@ async function submitProposalBoost(idOrHash = null) {
     let txResult;
     try {
         txResult = await window.SolanaPledgeBridge[supportKind]({
-            proposal: nftInfo.tokenId,
+            proposal: proposalAccount,
             amount: rawAmount,
             operationId,
             onStatus: status => setBoostStatus(window.ProposalSupportView?.statusText?.(status, supportKind) || status.state)
@@ -2346,29 +2357,32 @@ async function submitProposalBoost(idOrHash = null) {
     );
     await recordHumanProposalSupport({
         wallet: solState.accounts[0], action: supportKind,
-        proposalId: proposal.proposalId || proposal.tokenId || nftInfo.tokenId,
+        proposalId: proposal.proposalId || proposal.tokenId || proposalAccount,
         amount: rawAmount, result: txResult,
         message: supportKind === 'donate'
-            ? `${proposalSupportActor(solState.accounts[0]).name} donated ${rawAmount} USDC to proposal ${proposal.proposalId || proposal.tokenId || nftInfo.tokenId}.`
-            : `${proposalSupportActor(solState.accounts[0]).name} pledged ${rawAmount} USDC to proposal ${proposal.proposalId || proposal.tokenId || nftInfo.tokenId}.`
+            ? `${proposalSupportActor(solState.accounts[0]).name} donated ${rawAmount} USDC to proposal ${proposal.proposalId || proposal.tokenId || proposalAccount}.`
+            : `${proposalSupportActor(solState.accounts[0]).name} pledged ${rawAmount} USDC to proposal ${proposal.proposalId || proposal.tokenId || proposalAccount}.`
     });
     showProposalInfo(proposal);
 }
 
 async function settleProposalSupport(idOrHash, action) {
     const proposal = resolveProposalForBoost(idOrHash);
-    const nftInfo = proposal ? getProposalNftInfo(proposal) : null;
-    if (!nftInfo?.tokenId || !window.SolanaPledgeBridge?.[action]) {
+    const proposalAccount = proposal && window.ChainProposalRef?.solanaAccountForDeployment(
+        proposal,
+        window.SolanaAcceptanceClient?.constants?.PROPOSAL_NFT_PROGRAM_ID
+    );
+    if (!proposalAccount || !window.SolanaPledgeBridge?.[action]) {
         showProposalAlertMessage('proposal_boost_failed', 'Proposal support action is unavailable.');
         return;
     }
     const solState = window.solanaWalletManager?.getState?.();
     const wallet = solState?.accounts?.[0] || null;
-    const key = `${action}:${nftInfo.tokenId}:${wallet || 'wallet'}`;
+    const key = `${action}:${proposalAccount}:${wallet || 'wallet'}`;
     if (proposalSupportInFlight.has(key)) return;
     proposalSupportInFlight.add(key);
     try {
-        const result = await window.SolanaPledgeBridge[action]({ proposal: nftInfo.tokenId });
+        const result = await window.SolanaPledgeBridge[action]({ proposal: proposalAccount });
         const linkOptions = result?.explorerUrl ? { linkUrl: result.explorerUrl, linkText: 'See transaction on Solana Explorer' } : {};
         const messages = {
             revokePledge: 'Your pledge was revoked; no USDC moved.',
@@ -2380,7 +2394,7 @@ async function settleProposalSupport(idOrHash, action) {
         const message = messages[action] || 'Proposal support updated successfully.';
         showProposalAlertMessage(`proposal_support_${action}_success`, message, {}, linkOptions);
         await recordHumanProposalSupport({
-            wallet, action, proposalId: proposal.proposalId || proposal.tokenId || nftInfo.tokenId,
+            wallet, action, proposalId: proposal.proposalId || proposal.tokenId || proposalAccount,
             result, message: `${proposalSupportActor(wallet).name}: ${message}`
         });
         showProposalInfo(proposal);
@@ -2466,7 +2480,8 @@ function returnToParcelInfo(parcelId, event) {
     }
 }
 
-// The id is an implementation detail: it sits behind a copy button (docs/design-language.md).
+// The local record key sits behind a copy button (docs/design-language.md); it is not a server row
+// or chain token/account identifier, even when an imported authored ID supplies the local key.
 function copyProposalIdToClipboard(id) {
     const text = String(id || '');
     if (!text) return;
@@ -2475,7 +2490,7 @@ function copyProposalIdToClipboard(id) {
         if (typeof showEphemeralMessage === 'function') showEphemeralMessage(t('common.copied', 'Copied'), 2000);
     };
     // Without clipboard access the ID is shown in a prompt's field, to copy by hand.
-    const showToCopy = () => window.CbDialog.prompt(t('panel.proposal.copyId', 'Copy ID'), { defaultValue: text });
+    const showToCopy = () => window.CbDialog.prompt(t('panel.proposal.copyId', 'Copy local ID'), { defaultValue: text });
     if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(text).then(done).catch(showToCopy);
     } else {

@@ -2414,7 +2414,11 @@ function corridorEditorParcelTake(footprintGeometry) {
             // turf's clipper can fail outright on real cadastre (see parcel-arrangement.js): counted,
             // and the dialog says the lists may be incomplete.
             unmeasured += 1;
-            console.warn(`[${new Date().toISOString()}] [corridorEditor] could not measure the land taken from a parcel face`, error);
+            // Recorded in clipHealth() with the face it was for (parcel-arrangement.js).
+            const clips = window.__parcelArrangement;
+            if (!clips || typeof clips.reportClipFailure !== 'function') throw error;
+            const props = face && face.properties || {};
+            clips.reportClipFailure('intersect', error, { site: 'corridor-editor.parcelTake', parcelId: props.parcelId || props.PARCEL_ID || null }, [footprint, face]);
             return;
         }
         const areaM2 = overlap ? turfApi.area(overlap) : 0;
@@ -2987,6 +2991,7 @@ if (typeof module !== 'undefined' && module.exports) {
         corridorEditorOwnProfileCount,
         corridorEditorStretchesOptionHtml,
         corridorEditorParcelTakeDiff,
+        corridorEditorParcelTake,
         corridorEditorTakeMessage
     };
 }

@@ -239,6 +239,13 @@
         // so boot can replay the standing set, but it has no meaning in a portable proposal.
         delete out.applied;
         delete out.appliedAt;
+        delete out.localPurchaseSimulation;
+        // Unsigned consent bookkeeping belongs to this browser. Verified decisions travel through
+        // the signed receipt relay, separately from this authored definition.
+        delete out.acceptedParcelIds;
+        delete out.ownerAcceptances;
+        // This unqualified client timestamp has no verified execution-event source.
+        delete out.executedAt;
         return { proposal: out, verdict };
     }
 

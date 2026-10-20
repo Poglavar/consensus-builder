@@ -1,0 +1,20 @@
+[
+  {
+    "url": "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions"
+  },
+  {
+    "url": "https://affairesfoncieres.gouv.cd/"
+  },
+  {
+    "url": "https://bic.cd/"
+  },
+  {
+    "url": "https://vqrcggcqgnkanngqhcga.supabase.co/rest/v1/cadastral_parcels_public?select=id,parcel_number,parcel_type,province,ville,commune,quartier,territoire,latitude,longitude&province=ilike.*Maniema*&limit=3"
+  },
+  {
+    "url": "https://vqrcggcqgnkanngqhcga.supabase.co/rest/v1/cadastral_parcels_public?select=id,parcel_number,parcel_type,province,ville,commune,quartier,territoire,latitude,longitude&ville=ilike.*Kasongo*&limit=3"
+  },
+  {
+    "url": "https://servicepublic.gouv.cd/service/4642"
+  }
+]

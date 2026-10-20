@@ -1,0 +1,9 @@
+[
+  {
+    "url": "https://gisprod.rajasthan.gov.in/geocode/rest/services/JDA/Settlement_JDA/MapServer/0?f=pjson",
+    "reason": "timeout after 20 seconds"
+  },
+  {
+    "url": "https://gisprod.rajasthan.gov.in/geocode/rest/services/JDA/Settlement_JDA/MapServer/10?f=pjson"
+  }
+]

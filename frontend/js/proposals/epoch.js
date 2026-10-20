@@ -208,9 +208,7 @@
     }
 
     function serverIdOf(proposal) {
-        return proposal.serverProposalId
-            ?? (typeof proposal.id === 'number' ? proposal.id : null)
-            ?? (/^\d+$/.test(String(proposal.id || '')) ? proposal.id : null);
+        return getSerialProposalId(proposal);
     }
 
     // The edit token POST /proposals gave THIS browser for that upload (server-sync.js). A server

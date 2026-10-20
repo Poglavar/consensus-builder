@@ -1,0 +1,137 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "241",
+  "name": "Stargard, Poland",
+  "point": [
+    53.3382279105169,
+    15.030564201468
+  ],
+  "bindings": [
+    {
+      "appCityId": "stargard",
+      "runtimeConfig": {
+        "id": "stargard",
+        "wupCityCode": "241",
+        "label": "Stargard, Poland",
+        "currency": {
+          "locale": "pl-PL",
+          "code": "PLN"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            53.3382279105169,
+            15.030564201468
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            53.3382279105169,
+            15.030564201468
+          ],
+          "fallbackDataset": [
+            15.030564201468,
+            53.3382279105169
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "pl-gugik-egib-wfs",
+          "idPrefix": "PL-EGIB-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "GUGiK collective EGiB WFS · county cadastral parcels · adapted"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "pl-gugik-egib-wfs",
+      "name": "GUGiK collective EGiB WFS (Zbiorcza usługa WFS EGiB) — county cadastral parcels",
+      "adapter": "gml-wfs",
+      "endpoint": "https://mapy.geoportal.gov.pl/wss/service/PZGIK/EGIB/WFS/UslugaZbiorcza",
+      "featureType": "ms:dzialki",
+      "version": "2.0.0",
+      "idField": "ID_DZIALKI",
+      "geometryField": "geom",
+      "responseCrs": "EPSG:2180",
+      "idType": "string",
+      "idPrefix": "PL-EGIB-",
+      "idPattern": "^[0-9]{6}_[0-9]\\.[0-9]{4}\\.(?:AR_[0-9]{1,4}\\.)?[0-9]{1,6}(?:/[0-9]{1,6})?$",
+      "parcelNumberField": "ID_DZIALKI",
+      "outFields": [
+        "ID_DZIALKI"
+      ],
+      "pageSize": 500,
+      "maxFeatures": 1500,
+      "maxBboxKm2": 1,
+      "maxResponseBytes": 2097152,
+      "maxTotalResponseBytes": 8388608,
+      "timeoutMs": 15000,
+      "maxConcurrentQueries": 4,
+      "capabilities": {
+        "areaEnumeration": true
+      },
+      "countryCode": "PL",
+      "metricSrid": 32634,
+      "operator": "Główny Urząd Geodezji i Kartografii (GUGiK); EGiB data maintained by county starosties",
+      "catalogueUrl": "https://mapy.geoportal.gov.pl/wss/service/PZGIK/EGIB/WFS/UslugaZbiorcza?SERVICE=WFS&REQUEST=GetCapabilities",
+      "scope": "Poland: GUGiK's collective WFS of county EGiB cadastral parcels (launched 2026-07-16). It holds the counties whose own WFS is listed in EZiUDP; a county missing there is missing here, so each city is qualified separately. Requested fields are the TERYT parcel ID and geometry only.",
+      "caveats": [
+        "A collective of county services: a county's data is as current as its own service, and a county absent from the collective returns no parcels.",
+        "One page states the whole set's numberMatched when the set fits (pages of up to 500, about 3 s each), so a cell or a 3x3 block of cells is usually one request; larger or empty sets use hits, pages and hits.",
+        "Geometry is the provider's EPSG:2180 output (northing, easting) reprojected to WGS84 unrepaired; parcel IDs equal ULDK's TERYT IDs.",
+        "No CORS headers: browsers read it through the production provider relay."
+      ],
+      "browserTransport": "relay",
+      "attribution": "GUGiK collective EGiB WFS · county cadastral parcels · adapted",
+      "licenceNote": "GetCapabilities declares Fees none and AccessConstraints none. Public EGiB WFS services carry only data provided free of charge (art. 40a(2) of the Polish Geodetic and Cartographic Law, as summarised by GUGiK). Cadastral geometry does not establish legal title or survey accuracy.",
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "PL",
+          "basis": "GUGiK's collective WFS gathers the county EGiB cadastral parcel services listed in EZiUDP into one national layer.",
+          "evidence": []
+        },
+        "paceMs": 1000,
+        "keepPublishedFields": true
+      },
+      "defaultForCity": true,
+      "cityIds": [
+        "stargard"
+      ],
+      "metricSridByCity": {
+        "stargard": 32633
+      }
+    }
+  ]
+}

@@ -1,0 +1,122 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "3342",
+  "name": "Bologna, Italy",
+  "point": [
+    44.4942527646909,
+    11.3383469340327
+  ],
+  "bindings": [
+    {
+      "appCityId": "bologna",
+      "runtimeConfig": {
+        "id": "bologna",
+        "wupCityCode": "3342",
+        "label": "Bologna, Italy",
+        "currency": {
+          "locale": "it-IT",
+          "code": "EUR"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            44.4942527646909,
+            11.3383469340327
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            44.4942527646909,
+            11.3383469340327
+          ],
+          "fallbackDataset": [
+            11.3383469340327,
+            44.4942527646909
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "it-bologna-sit-parcels",
+          "idPrefix": "IT-BOLOGNA-SIT-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 3,
+          "attribution": "<a href=\"https://sitmappe.comune.bologna.it/arcgis/rest/services/CATASTO/CATASTO/MapServer\">Comune di Bologna — Sistema Informativo Territoriale</a>"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "it-bologna-sit-parcels",
+      "name": "Comune di Bologna SIT — cadastral parcels",
+      "adapter": "arcgis",
+      "endpoint": "https://sitmappe.comune.bologna.it/arcgis/rest/services/CATASTO/CATASTO/MapServer/0",
+      "idField": "PARTKEY",
+      "objectIdField": "FID",
+      "idType": "string",
+      "idPrefix": "IT-BOLOGNA-SIT-",
+      "outFields": [
+        "FID",
+        "PARTKEY",
+        "COMUNE"
+      ],
+      "parcelNumberField": "PARTKEY",
+      "attributeFilters": {
+        "COMUNE": "A944"
+      },
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "queryFormat": "geojson",
+      "pageSize": 500,
+      "idBatchSize": 80,
+      "maxFeatures": 1000,
+      "maxBboxKm2": 1,
+      "metricSrid": 32632,
+      "countryCode": "IT",
+      "cityIds": [
+        "bologna"
+      ],
+      "defaultForCity": true,
+      "capabilities": {
+        "areaEnumeration": true
+      },
+      "maxConcurrentQueries": 1,
+      "operator": "Comune di Bologna - Sistema Informativo Territoriale (SIT)",
+      "catalogueUrl": "https://sitmappe.comune.bologna.it/arcgis/rest/services/CATASTO/CATASTO/MapServer",
+      "scope": "Comune di Bologna cadastral parcel reference geometry, restricted to source municipality COMUNE=A944; qualification covers bounded local samples only.",
+      "attribution": "Comune di Bologna — Sistema Informativo Territoriale",
+      "licenceNote": "No named reuse licence in the frozen packet or inspected service/layer metadata; technical review does not establish reuse permission.",
+      "caveats": [
+        "Legacy ArcGIS service explicitly does not support offset pagination or ordering; use verified count/OID manifests and bounded OID batches.",
+        "Native PARTKEY is preserved literally, including spaces; FID is only a transport object ID.",
+        "Local bounded review does not establish citywide completeness, survey accuracy, legal title or currentness."
+      ]
+    }
+  ]
+}

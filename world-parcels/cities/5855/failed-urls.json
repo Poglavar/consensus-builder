@@ -1,0 +1,26 @@
+[
+  {
+    "url": "https://www.seduh.df.gov.br/plataforma-geoportal-da-lei-6-412-2019/"
+  },
+  {
+    "url": "https://parcelamentosdosolo.seduh.df.gov.br/consulta"
+  },
+  {
+    "url": "https://www.geoservicos.ide.df.gov.br/arcgis/rest/services/Publico/CADASTRO_TERRITORIAL/MapServer?f=pjson"
+  },
+  {
+    "url": "https://www.geoservicos.ide.df.gov.br/arcgis/rest/services/Publico/CADASTRO_TERRITORIAL/MapServer/10?f=pjson"
+  },
+  {
+    "url": "https://www.geoservicos.ide.df.gov.br/arcgis/rest/services/Publico/CADASTRO_TERRITORIAL/MapServer/10/query exact point"
+  },
+  {
+    "url": "https://www.geoservicos.ide.df.gov.br/arcgis/rest/services/Publico/CADASTRO_TERRITORIAL/MapServer/11/query exact point"
+  },
+  {
+    "url": "https://www.geoservicos.ide.df.gov.br/arcgis/rest/services/Publico/IDEDF/MapServer/123/query exact point"
+  },
+  {
+    "url": "https://www.geoservicos.ide.df.gov.br/arcgis/rest/services/Publico/CADASTRO_TERRITORIAL/MapServer/10/query where pu_ra=15"
+  }
+]

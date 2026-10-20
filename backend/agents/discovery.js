@@ -4,6 +4,7 @@
 import { PublicKey } from '@solana/web3.js';
 import { accountsPerRequest, getMultipleAccountsBatched } from '../solana/account-batching.js';
 import { decodeProposalState, PROPOSAL_PROGRAM_ID } from './lifecycle-actions.js';
+import { proposalAccountOf } from '../markets/contests.js';
 
 export const SUMMARY_PAGE = 1000;
 export const MAX_DISCOVERED = 3000;
@@ -11,12 +12,36 @@ export const BATCH_SIZE = 1000;
 const CHAIN_STATUS = ['Active', 'Executed', 'Cancelled', 'Expired'];
 
 function key(proposal) {
-    return String(proposal.proposalId || proposal.id);
+    const id = typeof proposal?.proposalId === 'string' ? proposal.proposalId.trim() : '';
+    if (!id || /^[0-9]+$/.test(id)) throw new Error('proposal summary is missing its non-numeric authored proposalId');
+    return id;
 }
 
-function proposalAccount(proposal) {
-    return proposal.onchain?.proposalId || proposal.onchain?.proposalAccount
-        || proposal.proposalAccount || proposal.onchainData?.proposalId || null;
+const proposalAccount = proposal => proposalAccountOf(proposal?.onchain);
+const ROW_ID = /^[0-9]+$/;
+const SHA256 = /^[0-9a-f]{64}$/;
+
+export function verifiedPlanMembership(listed, detail) {
+    const listedIds = listed?.proposalRowIds;
+    const detailIds = detail?.proposalRowIds;
+    const members = detail?.members;
+    if (!Array.isArray(listedIds) || !Array.isArray(detailIds) || !Array.isArray(members)
+        || !listedIds.length || !listedIds.every(id => typeof id === 'string' && ROW_ID.test(id))
+        || new Set(listedIds).size !== listedIds.length) return 'membership unavailable';
+    if (!detailIds.every(id => typeof id === 'string' && ROW_ID.test(id))
+        || members.some(member => !member || member.missing || member.changed)) {
+        return members.some(member => member?.missing) ? 'member missing'
+            : members.some(member => member?.changed) ? 'member changed' : 'membership malformed';
+    }
+    const memberIds = members.map(member => member.proposalRowId);
+    if (listedIds.length !== detailIds.length || detailIds.length !== memberIds.length
+        || listedIds.some((id, index) => id !== detailIds[index] || id !== memberIds[index])) return 'membership changed';
+    if (typeof listed.planHash !== 'string' || !SHA256.test(listed.planHash)
+        || detail.planHash !== listed.planHash) return 'commitment unavailable';
+    const listedAccount = proposalAccount(listed);
+    const detailAccount = proposalAccount(detail);
+    if (!listedAccount || listedAccount !== detailAccount) return 'chain account changed';
+    return null;
 }
 
 async function summaries(apiBase, city, fetchJson, log) {
@@ -50,21 +75,11 @@ export async function discoverProposalInputs({ apiBase, cities, fetchJson, log =
     });
     const plans = Array.from(plansBySlug.values());
     const details = await Promise.all(plans.filter(plan => {
-        const chainId = plan.onchain?.chainId;
-        return proposalAccount(plan) && (chainId === undefined || chainId === null || /^solana/i.test(String(chainId)));
+        return Boolean(proposalAccount(plan));
     }).map(async plan => {
         try {
             const detail = await fetchJson(`${apiBase}/plans/${encodeURIComponent(plan.slug)}`);
-            const members = detail.members || [];
-            const listedIds = (plan.proposalRowIds || []).map(String);
-            const detailIds = (detail.proposalRowIds || []).map(String);
-            const memberIds = members.map(member => String(member.proposalRowId ?? ''));
-            const reason = members.some(member => member.missing) ? 'member missing'
-                : members.some(member => member.changed) ? 'member changed'
-                    : !listedIds.length || !detailIds.length ? 'membership unavailable'
-                    : members.length !== detailIds.length || listedIds.length !== detailIds.length
-                        || listedIds.some((id, index) => id !== detailIds[index])
-                        || detailIds.some((id, index) => id !== memberIds[index]) ? 'membership changed' : null;
+            const reason = detail.slug !== plan.slug ? 'plan identity changed' : verifiedPlanMembership(plan, detail);
             if (reason) {
                 log(`named plan ${plan.slug}: excluded (${reason})`);
                 return null;
@@ -81,12 +96,12 @@ export async function discoverProposalInputs({ apiBase, cities, fetchJson, log =
         planSlug: plan.slug,
         planHash: plan.planHash,
         goal: 'plan',
-        lifecycleStatus: 'Active',
+        lifecycleStatus: 'Unknown',
         author: plan.author || null,
         title: plan.title || plan.slug,
         name: plan.title || plan.slug,
         createdAt: plan.createdAt || null,
-        onchain: { ...(plan.onchain || {}), proposalId: proposalAccount(plan) },
+        onchain: plan.onchain,
         proposalRowIds: (plan.proposalRowIds || []).map(String),
         planMembers: plan.members || []
     }));
@@ -96,9 +111,9 @@ export async function discoverProposalInputs({ apiBase, cities, fetchJson, log =
     for (const plan of acceptedPlans) {
         if (byId.has(plan.proposalId)) throw new Error(`proposal identifier collision with named plan ${plan.planSlug}: ${plan.proposalId}`);
     }
-    const usedAccounts = new Set(Array.from(byId.values()).map(proposalAccount).filter(Boolean).map(String));
+    const usedAccounts = new Set(Array.from(byId.values()).map(proposalAccount).filter(Boolean));
     for (const plan of acceptedPlans) {
-        const account = String(proposalAccount(plan));
+        const account = proposalAccount(plan);
         if (usedAccounts.has(account)) {
             log(`named plan ${plan.planSlug}: excluded (Solana account already represented)`);
             continue;
@@ -143,6 +158,9 @@ export async function refreshNamedPlanStatuses(proposals, connection, env = proc
 // their canonical GET route. Geometry is aggregated as source evidence for density policies.
 export async function loadPlanRecord({ apiBase, plan, fetchJson }) {
     const ids = (plan.proposalRowIds || []).map(String);
+    if (!ids.length || ids.some(id => !ROW_ID.test(id)) || new Set(ids).size !== ids.length) {
+        throw new Error(`named plan ${plan.planSlug || plan.slug || '(unknown)'} has invalid database row membership`);
+    }
     const items = [];
     for (let offset = 0; offset < ids.length; offset += BATCH_SIZE) {
         const response = await fetchJson(`${apiBase}/proposals/batch`, {
@@ -151,7 +169,15 @@ export async function loadPlanRecord({ apiBase, plan, fetchJson }) {
         });
         items.push(...(response.items || []));
     }
-    const records = new Map(items.filter(item => item.proposal).map(item => [String(item.id), item.proposal]));
+    const records = new Map();
+    for (const item of items) {
+        const id = String(item?.id ?? '');
+        if (!ids.includes(id)) throw new Error(`named-plan batch returned an unrequested row ID ${id || '(empty)'}`);
+        if (item.proposal) {
+            if (String(item.proposal.id) !== id) throw new Error(`named-plan batch row identity mismatch for ${id}`);
+            records.set(id, item.proposal);
+        }
+    }
     const missing = ids.filter(id => !records.has(id));
     if (missing.length) throw new Error(`${missing.length} named-plan member record(s) unavailable`);
     const buildings = [];

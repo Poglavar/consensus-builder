@@ -357,7 +357,7 @@
 
     // What a drawn corridor crosses, for the road tool's stats: cadastral parcels (counted, with
     // their owners) apart from pieces formed on open ground (subdivision plots, parks, building
-    // plots with no cadastral parcel), which have no owner and nothing to acquire. Returns
+    // plots with no cadastral parcel). Their ownership and acquisition needs are not established. Returns
     // { parcels, ground: { pieces: [{ id, areaM2 }], count, areaM2 } }; a ground piece's area is its stored
     // calculatedArea, else measured. Pieces are deduplicated by id.
     function splitCrossedPieces(features, options = {}) {

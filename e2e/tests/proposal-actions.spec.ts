@@ -1,9 +1,13 @@
 import { test, expect } from '../helpers/fixtures';
 import { openCity, openParcel, proposalState, showProposal, PARCEL_ID } from '../helpers/runtime';
-import { connectWalletByConnectorId, injectMockSolanaWallet, stubSolanaBridgeSuccess, waitForBlockchainRuntime } from '../helpers/blockchain';
+import { connectWalletByConnectorId, injectMockEvmWallet, injectMockSolanaWallet, stubSolanaBridgeSuccess, waitForBlockchainRuntime } from '../helpers/blockchain';
+
+import { installProposalEvmBoundary, PROPOSAL_EVM_CONTRACT } from '../helpers/proposal-chain-boundary';
+import { installSolanaProposalAccount } from '../helpers/solana-proposal-account';
 
 const SOLANA_WALLET = '7xKXtg2CWYcy6EH8d9xvPht4JyhV46Lxgq6vN6hS9wZT';
 const PROPOSAL_ACCOUNT = '3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg';
+const PROPOSAL_PROGRAM = '3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg';
 const PARCEL_PROGRAM = '4zadC1FgWPQLv6qv66mjEBthBqTvrmxL5oDcHQzNtkV1';
 
 async function establishLocalProfile(page: import('@playwright/test').Page): Promise<void> {
@@ -108,6 +112,11 @@ async function installMarketRpcFixture(page: import('@playwright/test').Page, re
     w.__proposalMarketRpcEvents = events;
     w.SolanaChainDataLoader.getConnection = () => connection;
   }, { proposal: PROPOSAL_ACCOUNT, wallet: SOLANA_WALLET, resolved });
+  await installSolanaProposalAccount(page, {
+    proposal: PROPOSAL_ACCOUNT,
+    owner: SOLANA_WALLET,
+    status: resolved ? 1 : 0,
+  });
 }
 
 async function expandProposalDetails(page: import('@playwright/test').Page): Promise<void> {
@@ -122,6 +131,320 @@ async function openProposalSection(page: import('@playwright/test').Page, sectio
 }
 
 test.describe('Proposal actions @features', () => {
+  test('consent summaries identify local records, discard stale tallies and verify signed receipts separately', async ({ mockApi: page }) => {
+    await openCity(page);
+    await establishLocalProfile(page);
+    await loadParcelOwnershipFixture(page);
+    const ids = await page.evaluate(parcelId => {
+      const w = window as any;
+      const base = { goal: 'as-is', lifecycleStatus: 'Active', cadastreParcelIds: [parcelId] };
+      const local = w.proposalStorage.addProposal({ ...base, title: 'Local consent summary' });
+      const p = w.proposalStorage.getProposal(local);
+      const slots = w.getOwnerSlotsForParcel(parcelId);
+      const entry = w.ensureOwnerAcceptanceEntry(p, parcelId, slots);
+      entry.acceptedOwnerKeys = slots.map((slot: any) => slot.key);
+      entry.acceptedBy = Object.fromEntries(slots.map((slot: any) => [slot.key, { effectHash: w.currentConsentBindingHash(p) }]));
+      const signed = w.proposalStorage.addProposal({ ...base, title: 'Receipt-based consent summary', approvalConfig: {
+        schema: 'proposal-approval/v1', policy: { type: 'unanimous' }, rights: {
+          schema: 'parcel-rights/v1', source: { provider: 'upload', reference: 'consent-summary-fixture' },
+          parcels: [{ parcelId, complete: true, areaM2: 100, owners: [{ ownerId: 'owner-a', share: '1/1' }] }]
+        }
+      } });
+      w.proposalStorage.getProposal(signed).acceptedParcelIds = [parcelId, parcelId];
+      const vote = w.proposalStorage.addProposal({ ...base, title: 'Non-binding owner vote', kind: 'owner-vote' });
+      w.proposalStorage.getProposal(vote).acceptedParcelIds = [parcelId];
+      return { local, signed, vote };
+    }, PARCEL_ID);
+    await page.locator('#proposals-button').click();
+    const localRow = page.locator(`#proposals-sheet .proposal-list-item[data-proposal-id="${ids.local}"]`);
+    const signedRow = page.locator(`#proposals-sheet .proposal-list-item[data-proposal-id="${ids.signed}"]`);
+    await expect(localRow.locator('[data-consent-basis="local-records"]')).toHaveText('1/1 parcels with local consent');
+    await expect(signedRow.locator('[data-consent-basis="signed-receipts"]')).toHaveText('0/1 parcels with verified receipts');
+    await expect(page.locator(`#proposals-sheet .proposal-list-item[data-proposal-id="${ids.vote}"] [data-consent-basis]`)).toHaveCount(0);
+    await localRow.locator('.proposal-list-details-btn').click();
+    await expandProposalDetails(page);
+    await openProposalSection(page, 'land');
+    await expect(page.locator('#proposal-parcel-acceptance-section .acceptance-label')).toHaveText('Locally recorded parcel consent: (1/1)');
+    await expect(page.locator('#proposal-owner-acceptance-section .acceptance-label')).toHaveText('Local owner-entry consent: (1/1)');
+    await page.evaluate(id => {
+      const w = window as any;
+      const proposal = w.proposalStorage.getProposal(id);
+      proposal.offer = 100;
+      w.updateProposalList();
+    }, ids.local);
+    // Opening details closes the list sheet; reopening performs the visible list refresh.
+    await page.locator('#proposals-button').click();
+    await expect(localRow.locator('[data-consent-basis="local-records"]')).toHaveText('0/1 parcels with local consent');
+    await localRow.locator('.proposal-list-details-btn').click();
+    await expandProposalDetails(page);
+    const land = page.locator('#proposal-details-panel details[data-proposal-section="land"]');
+    if (!await land.evaluate(node => (node as HTMLDetailsElement).open)) await openProposalSection(page, 'land');
+    await expect(page.locator('#proposal-parcel-acceptance-section .acceptance-label')).toHaveText('Locally recorded parcel consent: (0/1)');
+    await showProposal(page, ids.vote);
+    await expect(page.locator('#proposal-parcel-acceptance-section')).toHaveCount(0);
+    await expect(page.locator('#proposal-owner-acceptance-section')).toHaveCount(0);
+  });
+
+  test('payout terms describe the record without asserting funding or payment', async ({ mockApi: page }) => {
+    await openCity(page);
+    await page.evaluate(() => (window as any).i18n.setLanguage('en'));
+    const ids = await page.evaluate(parcelId => {
+      const w = window as any;
+      const base = { goal: 'as-is', lifecycleStatus: 'Active', cadastreParcelIds: [parcelId] };
+      const approvalConfig = { schema: 'proposal-approval/v1', policy: { type: 'unanimous' }, rights: {
+        schema: 'parcel-rights/v1', source: { provider: 'upload', reference: 'payment-terms-fixture' },
+        parcels: [{ parcelId, complete: true, areaM2: 100, owners: [{ ownerId: 'owner-a', share: '1/1' }] }]
+      } };
+      return {
+        draft: w.proposalStorage.addProposal({ ...base, title: 'Drawing without money terms' }),
+        partial: w.proposalStorage.addProposal({ ...base, title: 'Partial payout terms', kind: 'owner-deal',
+          offer: 100, isConditional: false, disbursementMode: 'partial' }),
+        conditional: w.proposalStorage.addProposal({ ...base, title: 'All-owner payout terms', kind: 'owner-deal',
+          offer: 100, offerCurrency: 'EUR', isConditional: true, disbursementMode: 'conditional', funded: true, approvalConfig,
+          reparcellization: {
+            polygons: [{ geometry: w.CadastralParcelRepository.get(parcelId).geometry, owners: [{ ownerKey: 'owner-a', share: 1 }] }],
+            ownerShares: [{ ownerKey: 'owner-a', cashOffer: 100, contributedArea: 100 }]
+          } })
+      };
+    }, PARCEL_ID);
+    const badge = page.locator('[data-proposal-payout-terms]');
+    await showProposal(page, ids.draft);
+    await expect(badge).toHaveCount(0);
+    await showProposal(page, ids.partial);
+    await expect(badge).toHaveText('Payout terms: partial');
+    await expect(badge).toHaveAttribute('title', 'Authored terms allow partial payouts. Acceptance alone does not confirm payment.');
+    await showProposal(page, ids.conditional);
+    await expect(badge).toHaveText('Payout terms: all owners');
+    await page.evaluate(id => (window as any).ProposalApprovalPanel.openReview(id, 'owner-a', null, { inspect: true }), ids.conditional);
+    const conditions = page.locator('.approval-review__conditions');
+    await expect(conditions).toContainText('Authored terms require every owner to accept before payout. This does not confirm funding or payment.');
+    await expect(conditions).toContainText('Funding is marked ready in this record; payment is not verified.');
+    await expect(conditions).not.toContainText('The cash is funded.');
+    await expect(conditions).toContainText('Declared rights source: upload · payment-terms-fixture');
+    await expect(conditions).toContainText('No verification lens is selected.');
+    await expect(conditions).not.toContainText('attested by');
+  });
+
+  test('area metrics distinguish site area, partial source sums and unknown measurements', async ({ mockApi: page }) => {
+    await openCity(page);
+    await page.evaluate(() => (window as any).i18n.setLanguage('en'));
+    const ids = await page.evaluate(parcelId => {
+      const w = window as any;
+      const base = { goal: 'as-is', lifecycleStatus: 'Active' };
+      const site = { type: 'Polygon', coordinates: [[[0,0],[0.001,0],[0.001,0.001],[0,0.001],[0,0]]] };
+      return {
+        partial: w.proposalStorage.addProposal({ ...base, title: 'Site and source areas', site, cadastreParcelIds: [parcelId, 'area-unloaded'] }),
+        unknown: w.proposalStorage.addProposal({ ...base, title: 'Unknown source area', cadastreParcelIds: ['area-unloaded'] })
+      };
+    }, PARCEL_ID);
+    const areas = await page.evaluate(({ partial, unknown }) => {
+      const w = window as any;
+      const partialProposal = w.proposalStorage.getProposal(partial);
+      const sources = w.getProposalAreaMap(partialProposal);
+      return { sourceTotal: sources.totalArea, sourceCount: sources.sourceCount, declaredCount: sources.declaredCount,
+        primary: w.computeProposalMetrics(partialProposal).area,
+        unknown: w.computeProposalMetrics(w.proposalStorage.getProposal(unknown)).area,
+        withoutSite: w.computeProposalMetrics({ ...partialProposal, site: null }).area };
+    }, ids);
+    expect(areas).toMatchObject({ sourceTotal: null, sourceCount: 1, declaredCount: 2, unknown: null, withoutSite: null });
+    expect(areas.primary).toBeGreaterThan(12000);
+    await showProposal(page, ids.partial);
+    await expandProposalDetails(page);
+    await openProposalSection(page, 'land');
+    const site = page.locator('[data-proposal-area-basis="site"]');
+    const sources = page.locator('[data-proposal-area-basis="source-parcels"]');
+    await expect(site.locator('.metric-label')).toHaveText('Site area:');
+    await expect(site.locator('.metric-value')).toContainText('m²');
+    const siteArea = Number((await site.locator('.metric-value').innerText()).replace(/[^\d]/g, ''));
+    expect(siteArea).toBeGreaterThan(12000);
+    expect(siteArea).toBeLessThan(12500);
+    await expect(sources).toHaveAttribute('data-area-complete', 'false');
+    await expect(sources.locator('.metric-label')).toHaveText('Available source parcel area:');
+    await expect(sources.locator('.metric-value')).not.toHaveText('—');
+    await expect(page.locator('.proposal-area-coverage')).toHaveText('Areas available for 1 of 2 declared references.');
+    await showProposal(page, ids.unknown);
+    await expandProposalDetails(page);
+    await openProposalSection(page, 'land');
+    await expect(site).toHaveCount(0);
+    await expect(sources.locator('.metric-value')).toHaveText('—');
+    await expect(page.locator('.proposal-area-coverage')).toHaveText('Areas available for 0 of 1 declared references.');
+  });
+
+  test('reference comparison counts all loaded matches before showing twelve rows', async ({ mockApi: page }) => {
+    await openCity(page);
+    await page.evaluate(() => (window as any).i18n.setLanguage('en'));
+    const id = await page.evaluate(() => {
+      const storage = (window as any).proposalStorage;
+      const base = { goal: 'as-is', lifecycleStatus: 'Active', cadastreParcelIds: ['reference-card-1', 'reference-card-2'] };
+      const id = storage.addProposal({ ...base, title: 'Reference comparison target' });
+      for (let i = 0; i < 15; i++) storage.addProposal({ ...base, title: `Reference comparison ${i}`,
+        cadastreParcelIds: i < 13 ? base.cadastreParcelIds : ['reference-card-2'] });
+      return id;
+    });
+    await showProposal(page, id);
+    await expandProposalDetails(page);
+    await openProposalSection(page, 'land');
+    const card = page.locator('.proposal-parcel-set-card');
+    await expect(card.getByRole('heading')).toHaveText('Proposals sharing references');
+    await expect(card.locator('p')).toHaveText('2 declared cadastral references. Of 15 loaded matches, 13 use the same references and 2 share some. Showing 12.');
+    await expect(card.locator('[data-related-proposal-id]')).toHaveCount(12);
+    await card.locator('[data-related-proposal-id]').first().click();
+    await expect(page.locator('#proposal-details-title')).toContainText('Reference comparison');
+    await expect(page.locator('#proposal-details-title')).not.toHaveText('Reference comparison target');
+  });
+
+  test('unloaded source references are not presented as removed parcels', async ({ mockApi: page }) => {
+    await openCity(page);
+    await page.evaluate(() => (window as any).i18n.setLanguage('en'));
+    const id = await page.evaluate(parcelId => {
+      const w = window as any;
+      return w.proposalStorage.addProposal({ title: 'Source reference states', goal: 'as-is', lifecycleStatus: 'Active',
+        cadastreParcelIds: [parcelId, 'source-not-loaded'] });
+    }, PARCEL_ID);
+    await showProposal(page, id);
+    await expandProposalDetails(page);
+    await openProposalSection(page, 'land');
+    const rows = page.locator('#proposal-details-panel .proposal-parcel-row');
+    const source = page.locator('#proposal-details-panel .proposal-parcel-row[data-parcel-id="source-not-loaded"]');
+    await expect(source).toHaveAttribute('data-reference-state', 'unloaded');
+    await expect(source.locator('.parcel-status')).toHaveText('Source geometry not loaded');
+    await expect(source).not.toHaveAttribute('data-parcel-replaced', 'true');
+    await expect(source.locator('.proposal-owner-roster-unavailable')).toHaveText('No owner roster is available for this parcel.');
+    await expect(source.getByRole('button', { name: 'Accept', exact: true })).toHaveCount(0);
+    await expect(source).not.toContainText('Single owner');
+    await expect(rows.filter({ hasText: 'Removed' })).toHaveCount(0);
+    await expect(page.locator(`#proposal-details-panel .proposal-parcel-row[data-parcel-id="${PARCEL_ID}"]`))
+      .toHaveAttribute('data-reference-state', 'available');
+  });
+
+  test('ownership counts distinguish declared parties, local entries and modeled road estimates', async ({ mockApi: page }) => {
+    await openCity(page);
+    await page.evaluate(() => (window as any).i18n.setLanguage('en'));
+    const ids = await page.evaluate(parcelId => {
+      const w = window as any;
+      const common = { title: 'Ownership count fixture', goal: 'as-is', lifecycleStatus: 'Active', cadastreParcelIds: [parcelId],
+        ownershipAndAcquisitionStats: { individualOwners: 99, ownershipCounts: { individual: 4 } } };
+      const source = { provider: 'upload', reference: 'declared-rights-fixture' };
+      const declared = w.proposalStorage.addProposal({ ...common, approvalConfig: { schema: 'proposal-approval/v1',
+        rights: { schema: 'parcel-rights/v1', source, parcels: [{ parcelId, complete: true, areaM2: 100,
+          owners: [{ ownerId: 'party-a', share: '1/2' }, { ownerId: 'party-b', share: '1/2' }] }] }, policy: { type: 'unanimous' }
+      } });
+      const unresolved = w.proposalStorage.addProposal({ ...common, approvalConfig: { schema: 'proposal-approval/v1',
+        rights: { schema: 'parcel-rights/v1', source, parcels: [] }, policy: { type: 'unanimous' }
+      } });
+      const local = w.proposalStorage.addProposal({ ...common });
+      return { declared, unresolved, local };
+    }, PARCEL_ID);
+
+    await showProposal(page, ids.declared);
+    await expandProposalDetails(page);
+    await openProposalSection(page, 'land');
+    let metric = page.locator('[data-ownership-count]');
+    await expect(metric).toHaveAttribute('data-ownership-count', 'declared-parties');
+    await expect(metric).toContainText('Declared owner parties:');
+    await expect(metric.locator('.metric-value')).toHaveText('2');
+    await expect(page.locator('[data-ownership-estimates]')).toContainText('may repeat across parcels');
+    const estimates = page.locator('.metric-group').filter({ hasText: 'Estimated individual-owner entries:' });
+    await expect(estimates.locator('.metric-value')).toHaveText('99');
+
+    await showProposal(page, ids.unresolved);
+    await expandProposalDetails(page);
+    await openProposalSection(page, 'land');
+    metric = page.locator('[data-ownership-count]');
+    await expect(metric).toContainText('Declared owner parties:');
+    await expect(metric.locator('.metric-value')).toHaveText('—');
+
+    await showProposal(page, ids.local);
+    await expandProposalDetails(page);
+    await openProposalSection(page, 'land');
+    metric = page.locator('[data-ownership-count]');
+    await expect(metric).toHaveAttribute('data-ownership-count', 'local-parcel-entries');
+    await expect(metric).toContainText('Local parcel-owner entries:');
+    await expect(metric.locator('.metric-value')).not.toHaveText('99');
+  });
+
+  test('unknown lifecycle stays visible after import and cannot grant owner consent', async ({ mockApi: page }) => {
+    await openCity(page);
+    await establishLocalProfile(page);
+    await loadParcelOwnershipFixture(page);
+    const proposalId = await page.evaluate(parcelId => {
+      const w = window as any;
+      const imported = w.proposalStorage.importProposal({
+        proposalId: 'unknown-lifecycle', title: 'Unreported lifecycle', goal: 'parcelBased',
+        cadastreParcelIds: [parcelId], expiresAt: '2020-01-01T00:00:00Z',
+        acceptedParcelIds: [parcelId], ownerAcceptances: { [parcelId]: { ownerOrder: ['remote-party'], acceptedOwnerKeys: ['remote-party'] } },
+      });
+      if (imported.acceptedParcelIds.length || Object.keys(imported.ownerAcceptances).length) throw new Error('Imported unsigned consent survived');
+      return imported.proposalId;
+    }, PARCEL_ID);
+    await showProposal(page, proposalId);
+    await expandProposalDetails(page);
+    await expect(page.locator('#proposal-details-panel .cb-badge').filter({ hasText: 'Status unknown' })).toBeVisible();
+    await expect(page.locator('#proposal-details-panel .proposal-expiry-countdown')).toHaveCount(0);
+    await openProposalSection(page, 'land');
+    const ownerRow = page.locator('#proposal-details-panel .owner-acceptance-row').first();
+    await expect(ownerRow).toBeVisible();
+    await expect(ownerRow.getByRole('button', { name: 'Accept', exact: true })).toHaveCount(0);
+    const proposal = await proposalState(page, proposalId);
+    expect(proposal.lifecycleStatus).toBe('Unknown');
+    expect(proposal.acceptedParcelIds).toEqual([]);
+    expect(proposal.applied).toBe(false);
+    await page.evaluate(({ id, parcelId }) => (window as any).handleUserAcceptProposal(id, parcelId), { id: proposalId, parcelId: PARCEL_ID });
+    await expect(page.getByText('The proposal status is unknown. Reload it before accepting.', { exact: true })).toBeVisible();
+    expect((await proposalState(page, proposalId)).acceptedParcelIds).toEqual([]);
+  });
+
+  test('parcel flags and hashless owner records cannot manufacture acceptance', async ({ mockApi: page }) => {
+    await openCity(page);
+    await establishLocalProfile(page);
+    await loadParcelOwnershipFixture(page);
+    const proposalId = await page.evaluate((parcelId) => {
+      const w = window as any;
+      const id = w.proposalStorage.addProposal({
+        title: 'Unsubstantiated parcel acceptance', goal: 'parcelBased', lifecycleStatus: 'Active',
+        funded: false, cadastreParcelIds: [parcelId],
+      });
+      const proposal = w.proposalStorage.getProposal(id);
+      proposal.acceptedParcelIds = [parcelId];
+      proposal.updatedAt = '2026-01-01T00:00:00.000Z';
+      w.proposalStorage.save();
+      return id;
+    }, PARCEL_ID);
+    await showProposal(page, proposalId);
+    await expandProposalDetails(page);
+    await openProposalSection(page, 'land');
+    const ownerRow = page.locator('#proposal-details-panel .owner-acceptance-row').first();
+    await expect(ownerRow.getByRole('button', { name: 'Accept', exact: true })).toBeVisible();
+    expect((await proposalState(page, proposalId)).acceptedParcelIds).toEqual([]);
+    expect((await proposalState(page, proposalId)).ownerAcceptances[PARCEL_ID].acceptedBy).toEqual({});
+
+    // Old synthesized records have no commitment; opening the UI must not revive them.
+    await page.evaluate(({ id, parcelId }) => {
+      const w = window as any;
+      const proposal = w.proposalStorage.getProposal(id);
+      const entry = proposal.ownerAcceptances[parcelId];
+      const key = entry.ownerOrder[0];
+      entry.acceptedOwnerKeys = [key];
+      entry.acceptedBy[key] = { acceptedAt: '2026-01-01T00:00:00.000Z' };
+      proposal.acceptedParcelIds = [parcelId];
+      w.proposalStorage.save();
+    }, { id: proposalId, parcelId: PARCEL_ID });
+    await showProposal(page, proposalId);
+    await expandProposalDetails(page);
+    const land = page.locator('#proposal-details-panel details[data-proposal-section="land"]');
+    if (!(await land.evaluate(node => (node as HTMLDetailsElement).open))) await openProposalSection(page, 'land');
+    await expect(ownerRow.getByRole('button', { name: 'Accept', exact: true })).toBeVisible();
+    await expect(ownerRow.locator('.owner-acceptance-changed')).toHaveCount(0);
+    expect((await proposalState(page, proposalId)).acceptedParcelIds).toEqual([]);
+    await ownerRow.getByRole('button', { name: 'Accept', exact: true }).click();
+    await expect(ownerRow.getByRole('button', { name: 'Undo', exact: true })).toBeVisible();
+    const accepted = await proposalState(page, proposalId);
+    const entry = accepted.ownerAcceptances[PARCEL_ID];
+    expect(entry.acceptedBy[entry.ownerOrder[0]].effectHash).toBeTruthy();
+    expect(entry.acceptanceHistory[0].acceptedAt).toBe('2026-01-01T00:00:00.000Z');
+    expect(accepted.acceptedParcelIds).toEqual([PARCEL_ID]);
+  });
+
   test('parcel owner can accept and then withdraw an unexecuted proposal from its details panel', async ({ mockApi: page }) => {
     await openCity(page);
     await establishLocalProfile(page);
@@ -136,7 +459,7 @@ test.describe('Proposal actions @features', () => {
         title: 'Owner consent action',
         goal: 'parcelBased',
         lifecycleStatus: 'Active',
-        funded: true,
+        funded: false,
         cadastreParcelIds: [parcelId],
         ownerAcceptances: {
           [parcelId]: {
@@ -166,18 +489,19 @@ test.describe('Proposal actions @features', () => {
     expect((await proposalState(page, proposalId)).lifecycleStatus).toBe('Active');
   });
 
-  test('final parcel acceptance executes the proposal and records the completed lifecycle', async ({ mockApi: page }) => {
+  test('final local acceptance records consent without execution or ownership changes', async ({ mockApi: page }) => {
     await openCity(page);
     await establishLocalProfile(page);
     await loadParcelOwnershipFixture(page);
     const proposalId = await page.evaluate((parcelId) => (window as any).proposalStorage.addProposal({
-      title: 'Single owner execution',
+      title: 'Single owner consent',
       goal: 'parcelBased',
       lifecycleStatus: 'Active',
       funded: true,
       offer: 0,
       cadastreParcelIds: [parcelId],
     }), PARCEL_ID);
+    const ownerBefore = await page.evaluate(parcelId => (window as any).PersistentStorage.getItem(`parcel_${parcelId}_owner`), PARCEL_ID);
     await showProposal(page, proposalId);
     await expandProposalDetails(page);
     await openProposalSection(page, 'land');
@@ -186,11 +510,142 @@ test.describe('Proposal actions @features', () => {
     await expect(ownerRow.getByRole('button', { name: 'Accept' })).toBeVisible();
     await ownerRow.getByRole('button', { name: 'Accept' }).click();
 
-    await expect.poll(async () => (await proposalState(page, proposalId)).lifecycleStatus).toBe('Executed');
+    await expect.poll(async () => (await proposalState(page, proposalId)).acceptedParcelIds).toEqual([PARCEL_ID]);
+    const accepted = await proposalState(page, proposalId);
+    expect(accepted.lifecycleStatus).toBe('Active');
+    expect(accepted.executedAt).toBeFalsy();
+    expect(accepted.applied).toBe(false);
+    expect(await page.evaluate(parcelId => (window as any).PersistentStorage.getItem(`parcel_${parcelId}_owner`), PARCEL_ID)).toBe(ownerBefore);
+    const profile = await page.evaluate(() => (window as any).getCurrentUserAgent());
+    expect(profile.proposalsAccepted).toContain(proposalId);
+    expect(profile.proposalsExecuted).not.toContain(proposalId);
+    await expect(ownerRow.getByRole('button', { name: 'Undo' })).toBeVisible();
+    await expect(page.locator('#proposal-details-panel').getByRole('button', { name: /Apply to map/ })).toBeVisible();
+  });
+
+  test('withdrawing local consent preserves the recorded execution lifecycle', async ({ mockApi: page }) => {
+    await openCity(page);
+    await establishLocalProfile(page);
+    await loadParcelOwnershipFixture(page);
+    const proposalId = await page.evaluate(parcelId => {
+      const w = window as any;
+      const id = w.proposalStorage.addProposal({ title: 'Previously executed record', goal: 'parcelBased',
+        lifecycleStatus: 'Executed', executedAt: '2026-10-01T10:00:00.000Z', cadastreParcelIds: [parcelId] });
+      const p = w.proposalStorage.getProposal(id);
+      const owners = w.getOwnerSlotsForParcel(parcelId);
+      const key = owners[0].key;
+      const entry = w.ensureOwnerAcceptanceEntry(p, parcelId, owners);
+      entry.acceptedOwnerKeys = [key];
+      entry.acceptedBy[key] = { agentId: w.getCurrentUserAgent().id,
+        acceptedAt: '2026-10-01T10:00:00.000Z', effectHash: w.currentConsentBindingHash(p) };
+      w.refreshProposalAcceptanceValidity(p);
+      w.setProposalApplied(p, true);
+      w.proposalStorage.save();
+      return id;
+    }, PARCEL_ID);
+    await showProposal(page, proposalId);
+    await expandProposalDetails(page);
+    await openProposalSection(page, 'land');
+    const ownerRow = page.locator('.owner-acceptance-row').first();
     const executed = await proposalState(page, proposalId);
+    await expect(page.locator('#proposal-details-panel .cb-badge--executed')).toHaveText('Execution recorded');
+    await expect(page.locator('#proposal-details-panel .cb-badge--executed')).toHaveAttribute('title', /does not verify payment/);
     expect(executed.acceptedParcelIds).toContain(PARCEL_ID);
     expect(executed.executedAt).toBeTruthy();
+    await ownerRow.getByRole('button', { name: 'Undo' }).click();
+    await expect.poll(async () => (await proposalState(page, proposalId)).acceptedParcelIds).toEqual([]);
+    const withdrawn = await proposalState(page, proposalId);
+    expect(withdrawn.lifecycleStatus).toBe('Executed');
+    expect(withdrawn.executedAt).toBe(executed.executedAt);
+    expect(withdrawn.applied).toBe(executed.applied);
   });
+
+  test('EVM acceptance records consent and an applied Active conditional offer can withdraw it', async ({ mockApi: page }) => {
+    await injectMockEvmWallet(page, { chainIdHex: '0x14a34', walletKind: 'metamask' });
+    await openCity(page);
+    await establishLocalProfile(page);
+    await loadParcelOwnershipFixture(page);
+    await connectWalletByConnectorId(page, 'metamask');
+    await installProposalEvmBoundary(page);
+    const proposalId = await page.evaluate(({ parcelId, contract }) => {
+      const w = window as any;
+      const id = w.proposalStorage.addProposal({
+        title: 'Applied conditional consent', goal: 'parcelBased', lifecycleStatus: 'Active',
+        funded: true, isConditional: true, cadastreParcelIds: [parcelId],
+        nft: { chain: '84532', contract, tokenId: '5' },
+      });
+      const p = w.proposalStorage.getProposal(id);
+      w.setProposalApplied(p, true);
+      w.proposalStorage.save();
+      return id;
+    }, { parcelId: PARCEL_ID, contract: PROPOSAL_EVM_CONTRACT });
+    await showProposal(page, proposalId);
+    await expandProposalDetails(page);
+    await openProposalSection(page, 'land');
+    await page.locator('.owner-acceptance-row').first().getByRole('button', { name: 'Accept', exact: true }).click();
+    await expect.poll(async () => (await proposalState(page, proposalId)).acceptedParcelIds).toEqual([PARCEL_ID]);
+    const accepted = await proposalState(page, proposalId);
+    expect(accepted.lifecycleStatus).toBe('Active');
+    expect(accepted.executedAt).toBeFalsy();
+    expect(accepted.applied).toBe(true);
+    expect(await page.evaluate(() => (window as any).__proposalEvmStatusRead)).toEqual({ proposalId: '5', blockTag: '0x1' });
+    expect(await page.evaluate(() => {
+      const w = window as any;
+      return w.__proposalEvmSubmitted?.data?.slice(0, 10)
+        === w.ethers.id('acceptProposal(uint256,string,bytes32,bytes32,bytes32)').slice(0, 10);
+    })).toBe(true);
+    await page.locator('.owner-acceptance-row').first().getByRole('button', { name: 'Undo' }).click();
+    await expect.poll(async () => (await proposalState(page, proposalId)).acceptedParcelIds).toEqual([]);
+    const after = await proposalState(page, proposalId);
+    expect(after.lifecycleStatus).toBe('Active');
+    expect(after.applied).toBe(true);
+    expect(await page.evaluate(() => {
+      const w = window as any;
+      return w.__proposalEvmSubmitted?.data?.slice(0, 10)
+        === w.ethers.id('withdrawAcceptance(uint256,string,bytes32,bytes32,bytes32)').slice(0, 10);
+    })).toBe(true);
+  });
+
+  for (const statusRead of ['Executed', 'unavailable'] as const) {
+    test(`EVM acceptance refreshes lifecycle from its receipt block: ${statusRead}`, async ({ mockApi: page }) => {
+      await injectMockEvmWallet(page, { chainIdHex: '0x14a34', walletKind: 'metamask' });
+      await openCity(page);
+      await establishLocalProfile(page);
+      await loadParcelOwnershipFixture(page);
+      await connectWalletByConnectorId(page, 'metamask');
+      await installProposalEvmBoundary(page, { acceptanceStatusCode: 1, failAcceptanceStatusRead: statusRead === 'unavailable' });
+      const proposalId = await page.evaluate(({ parcelId, contract }) => (window as any).proposalStorage.addProposal({
+        title: 'Receipt-block lifecycle', goal: 'parcelBased', kind: 'owner-deal', lifecycleStatus: 'Active',
+        funded: true, isConditional: true, cadastreParcelIds: [parcelId],
+        nft: { chain: '84532', contract, tokenId: '5' },
+      }), { parcelId: PARCEL_ID, contract: PROPOSAL_EVM_CONTRACT });
+      await showProposal(page, proposalId);
+      await expandProposalDetails(page);
+      await openProposalSection(page, 'land');
+      const ownerBefore = await page.evaluate(parcelId => (window as any).PersistentStorage.getItem(`parcel_${parcelId}_owner`), PARCEL_ID);
+      await page.locator('.owner-acceptance-row').first().getByRole('button', { name: 'Accept', exact: true }).click();
+      await expect.poll(async () => (await proposalState(page, proposalId)).acceptedParcelIds).toEqual([PARCEL_ID]);
+      await expect.poll(async () => (await proposalState(page, proposalId)).lifecycleStatus)
+        .toBe(statusRead === 'Executed' ? 'Executed' : 'Active');
+      const accepted = await proposalState(page, proposalId);
+      expect(accepted.executedAt).toBeFalsy();
+      expect(accepted.applied).toBe(false);
+      expect(await page.evaluate(parcelId => (window as any).PersistentStorage.getItem(`parcel_${parcelId}_owner`), PARCEL_ID)).toBe(ownerBefore);
+      expect(await page.evaluate(() => (window as any).__proposalEvmStatusRead)).toEqual({ proposalId: '5', blockTag: '0x1' });
+      const profile = await page.evaluate(() => (window as any).getCurrentUserAgent());
+      expect(profile.proposalsAccepted).toContain(proposalId);
+      expect(profile.proposalsExecuted).not.toContain(proposalId);
+      if (statusRead === 'unavailable') {
+        await expect(page.getByText('Acceptance was confirmed on-chain, but the proposal status could not be refreshed.', { exact: false })).toBeVisible();
+      } else {
+        const executionBadge = page.locator('#proposal-details-panel').getByRole('link', { name: /^Execution recorded/ });
+        await expect(executionBadge).toBeVisible();
+        await expect(executionBadge).toHaveAttribute('title', /does not verify payment/);
+        await expect(executionBadge).toHaveAttribute('href', /\/token\//);
+        await expect(page.locator('#proposal-details-panel details[data-proposal-section="land"]')).toHaveAttribute('open', '');
+      }
+    });
+  }
 
   test('minted proposal support opens the donation dialog and confirms the mocked chain transaction', async ({ mockApi: page }) => {
     await injectMockSolanaWallet(page, { publicKey: SOLANA_WALLET, providerName: 'phantom' });
@@ -227,6 +682,7 @@ test.describe('Proposal actions @features', () => {
       };
       w.SolanaChainDataLoader.getConnection = () => connection;
     });
+    await installSolanaProposalAccount(page, { proposal: SOLANA_WALLET, owner: SOLANA_WALLET });
 
     const proposalId = await page.evaluate((data) => (window as any).proposalStorage.addProposal({
       title: 'Fundable proposal',
@@ -234,9 +690,9 @@ test.describe('Proposal actions @features', () => {
       lifecycleStatus: 'Active',
       cadastreParcelIds: [data.parcelId],
       isMinted: true,
-      nft: { chain: 'solana-devnet', contract: data.programId, tokenId: data.account },
+      nft: { chain: 'solana-devnet', contract: data.program, tokenId: data.account },
       lens: [data.member],
-    }), { parcelId: PARCEL_ID, programId: PROPOSAL_ACCOUNT, account: SOLANA_WALLET, member: PROPOSAL_ACCOUNT });
+    }), { parcelId: PARCEL_ID, program: PROPOSAL_PROGRAM, account: SOLANA_WALLET, member: PROPOSAL_ACCOUNT });
     await showProposal(page, proposalId);
 
     await page.locator('.btn-donate-proposal').click();
@@ -300,6 +756,16 @@ test.describe('Proposal actions @features', () => {
     await dialog.locator('#proposalOptionsSection > .collapsible-header').click();
     await expect(dialog.locator('#proposalOffer')).toBeVisible();
     await dialog.locator('#proposalOffer').fill('1000');
+    await page.evaluate(() => {
+      const w = window as any;
+      const addProposal = w.proposalStorage.addProposal;
+      w.proposalStorage.addProposal = function (proposal: any) {
+        if (proposal.goal === 'ownership-transfer-from-me') {
+          w.__createdSellerOffer = JSON.parse(JSON.stringify(proposal));
+        }
+        return addProposal.call(this, proposal);
+      };
+    });
     await dialog.locator('#createProposalSubmitButton').click();
     await chooseLocalProposal(page);
     await expect(dialog).toBeHidden({ timeout: 10000 });
@@ -310,6 +776,16 @@ test.describe('Proposal actions @features', () => {
     expect(offer.goal).toBe('ownership-transfer-from-me');
     expect(offer.facets).toMatchObject({ landUse: 'as-is', parcels: 'as-is', ownership: 'third-party' });
     expect(offer.ownershipTransferProposal).toMatchObject({ direction: 'from-me', recipientScope: 'any' });
+    const authored = await page.evaluate(() => (window as any).__createdSellerOffer);
+    expect(authored.lifecycleStatus).toBe('Active');
+    expect(offer.lifecycleStatus).toBe('Active');
+    expect(authored.acceptedParcelIds).toEqual([]);
+    expect(authored.ownerAcceptances).toEqual({});
+    expect(authored.ownershipTransferProposal).not.toHaveProperty('status');
+    expect(offer.funded).toBe(false);
+    await showProposal(page, offer.proposalId);
+    await expandProposalDetails(page);
+    await expect(page.locator('#proposal-details-panel .cb-badge').filter({ hasText: 'Awaiting funding' })).toBeVisible();
   });
 
   test('claim tools keep minting unavailable until a wallet is connected', async ({ mockApi: page }) => {
@@ -365,7 +841,7 @@ test.describe('Proposal actions @features', () => {
     const proposalId = await page.evaluate((data) => (window as any).proposalStorage.addProposal({
       title: 'Market stake UI proposal', goal: 'park', lifecycleStatus: 'Active', cadastreParcelIds: [data.parcelId],
       isMinted: true, nft: { chain: 'solana-devnet', contract: data.program, tokenId: data.account },
-    }), { parcelId: PARCEL_ID, program: PARCEL_PROGRAM, account: PROPOSAL_ACCOUNT });
+    }), { parcelId: PARCEL_ID, program: PROPOSAL_PROGRAM, account: PROPOSAL_ACCOUNT });
     await showProposal(page, proposalId);
     await expandProposalDetails(page);
     await openProposalSection(page, 'market');
@@ -400,7 +876,7 @@ test.describe('Proposal actions @features', () => {
     const proposalId = await page.evaluate((data) => (window as any).proposalStorage.addProposal({
       title: 'Market claim UI proposal', goal: 'park', lifecycleStatus: 'Executed', cadastreParcelIds: [data.parcelId],
       isMinted: true, nft: { chain: 'solana-devnet', contract: data.program, tokenId: data.account },
-    }), { parcelId: PARCEL_ID, program: PARCEL_PROGRAM, account: PROPOSAL_ACCOUNT });
+    }), { parcelId: PARCEL_ID, program: PROPOSAL_PROGRAM, account: PROPOSAL_ACCOUNT });
     await showProposal(page, proposalId);
     await expandProposalDetails(page);
     await openProposalSection(page, 'market');

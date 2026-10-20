@@ -65,8 +65,8 @@ describe('balanced money schedule', () => {
     it('refuses an owner who both receives and pays, payments for open ground and negative amounts', () => {
         expect(() => deal.content(proposal([{ ownerKey: 'owner-a', cashOffer: 5, cashPayment: 5 }, { ownerKey: 'owner-b' }])))
             .toThrow('An owner either receives or pays cash, not both.');
-        expect(() => deal.content(proposal([{ ownerKey: 'open-ground', noOwner: true, cashPayment: 1 }, { ownerKey: 'owner-b' }])))
-            .toThrow('Ownerless ground cannot receive or pay cash.');
+        expect(() => deal.content(proposal([{ ownerKey: 'open-ground', unrepresentedGround: true, cashPayment: 1 }, { ownerKey: 'owner-b' }])))
+            .toThrow('Unrepresented ground cannot receive or pay cash.');
         expect(() => deal.content(proposal([{ ownerKey: 'owner-a', cashPayment: -1 }, { ownerKey: 'owner-b' }]))).toThrow(/non-negative/);
     });
 

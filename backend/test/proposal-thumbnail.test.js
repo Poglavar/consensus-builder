@@ -16,6 +16,7 @@ import {
 import { createCanvas, loadImage } from 'canvas';
 import {
     resolveProposalPolygon,
+    resolveProposalGoalKey,
     shouldSkipProposalThumbnail,
     normalizeGoalKey,
     getProposalCadastreParcelIds
@@ -243,6 +244,11 @@ describe('goal handling', () => {
         expect(normalizeGoalKey('buildings')).toBe('single');
         expect(normalizeGoalKey('road track')).toBe('road-track');
         expect(normalizeGoalKey('Ownership Transfer To Me')).toBe('ownership-transfer-to-me');
+    });
+
+    it('does not infer a design goal from broad type or proposalType fields', () => {
+        expect(resolveProposalGoalKey({ type: 'road', proposalType: 'park' })).toBe('');
+        expect(shouldSkipProposalThumbnail({ type: 'parcel', proposalType: 'ownership-transfer' })).toBe(false);
     });
 
     it('skips goals that have no map geometry to draw', () => {

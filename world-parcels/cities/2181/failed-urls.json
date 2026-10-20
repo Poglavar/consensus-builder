@@ -1,0 +1,19 @@
+[
+  {
+    "url": "https://nspd.gov.ru/",
+    "reason": "connection timeout after 12 seconds"
+  },
+  {
+    "url": "https://nspd.gov.ru/map",
+    "reason": "bounded request produced no response"
+  },
+  {
+    "url": "https://www.kaluga-gov.ru/news/53666/"
+  },
+  {
+    "url": "https://www.kaluga-gov.ru/upload/iblock/ccb/078c1cbelnde8k6q1cqvh4tq63n6t3v2.pdf"
+  },
+  {
+    "url": "https://kaluga-gov.ru/news/15318/"
+  }
+]

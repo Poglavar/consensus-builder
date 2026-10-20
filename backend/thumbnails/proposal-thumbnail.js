@@ -55,7 +55,7 @@ export function normalizeGoalKey(goal) {
 }
 
 export function resolveProposalGoalKey(proposal) {
-    return normalizeGoalKey(proposal?.goal || proposal?.proposalType || proposal?.type || '');
+    return normalizeGoalKey(proposal?.goal || '');
 }
 
 export function shouldSkipProposalThumbnail(proposal) {
@@ -69,16 +69,11 @@ function goalBadge(goalKey) {
 }
 
 /**
- * A proposal is a road proposal if it says so OR if it simply has a roadProposal on it.
- *
- * The goal key alone is not enough: older proposals store type `road`/`Track` with no `goal` at all,
- * and the browser's version of this only ever matched the exact key 'road-track'. That is why 33 road
- * proposals whose corridor could be drawn from their stored centerline had no thumbnail — the code
- * that would have drawn them was behind a check they could never pass.
+ * A proposal is a road proposal if its authored goal says so or it carries road-specific geometry.
  */
 function isRoadProposal(proposal) {
     const goalKey = resolveProposalGoalKey(proposal);
-    if (goalKey === 'road-track' || goalKey === 'road' || goalKey === 'track') return true;
+    if (goalKey === 'road-track') return true;
     return !!proposal.roadProposal;
 }
 

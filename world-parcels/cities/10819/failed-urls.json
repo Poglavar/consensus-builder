@@ -1,0 +1,18 @@
+[
+  {
+    "url": "https://bhunaksha.ap.gov.in/",
+    "reason": "timeout after 20 seconds"
+  },
+  {
+    "url": "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/805"
+  },
+  {
+    "url": "https://eluru.ap.gov.in/service/land-records/"
+  },
+  {
+    "url": "https://eluru.cdma.ap.gov.in/ulbprofile/eluru/gis-map/"
+  },
+  {
+    "url": "https://apcmms.ap.gov.in/apiv1/external/ulb/89/fetch/sachivalayam/data"
+  }
+]

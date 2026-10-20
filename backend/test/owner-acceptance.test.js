@@ -5,14 +5,14 @@ import { describe, it, expect } from 'vitest';
 import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
-const { normalizeOwnerAcceptances, ensureOwnerAcceptanceEntry } = require('../../frontend/js/proposals/owner-acceptance.js');
+const { normalizeOwnerAcceptances, currentOwnerSlots, ensureOwnerAcceptanceEntry } = require('../../frontend/js/proposals/owner-acceptance.js');
 
 describe('normalizeOwnerAcceptances', () => {
-    it('canonicalizes a sparse entry and folds accepted keys into ownerOrder', () => {
+    it('canonicalizes a sparse entry without making decision keys into owners', () => {
         const out = normalizeOwnerAcceptances({
             '123': { owners: { a: {}, b: {} }, acceptedOwnerKeys: ['b', 'c'] }
         });
-        expect(out['123'].ownerOrder).toEqual(expect.arrayContaining(['a', 'b', 'c']));
+        expect(out['123'].ownerOrder).toEqual(['a', 'b']);
         expect(out['123'].acceptedOwnerKeys).toEqual(['b', 'c']);
         expect(out['123'].acceptedBy).toEqual({});
     });
@@ -36,7 +36,7 @@ describe('ensureOwnerAcceptanceEntry', () => {
         expect(proposal.ownerAcceptances['42']).toBe(entry);
     });
 
-    it('purges a legacy placeholder owner once a real slot arrives', () => {
+    it('replaces a previous roster with the current slots while retaining decision history', () => {
         const proposal = {
             ownerAcceptances: {
                 '42': {
@@ -52,10 +52,10 @@ describe('ensureOwnerAcceptanceEntry', () => {
         ]);
         expect(entry.owners.legacy).toBeUndefined();
         expect(entry.ownerOrder).toEqual(['real']);
-        expect(entry.acceptedBy.legacy).toBeUndefined();
+        expect(entry.acceptedBy.legacy).toEqual({ username: 'x' });
     });
 
-    it('does NOT purge a real named 100% owner (the display-name guard)', () => {
+    it('keeps a named owner when explicitly present in the current roster', () => {
         const proposal = {
             ownerAcceptances: {
                 '42': {
@@ -67,29 +67,48 @@ describe('ensureOwnerAcceptanceEntry', () => {
             }
         };
         const entry = ensureOwnerAcceptanceEntry(proposal, '42', [
+            { key: 'real', displayName: 'Ivan Horvat', shareText: '100%', type: 'unknown' },
             { key: 'other', displayName: 'Marko Marić', shareText: '1/2', type: 'private individual' }
         ]);
-        // The named owner survives because the placeholder heuristic requires an empty or
-        // placeholder-looking display name.
+        // Names and percentages are not placeholder heuristics; explicit current slots decide.
         expect(entry.owners.real).toBeDefined();
         expect(entry.owners.real.displayName).toBe('Ivan Horvat');
     });
 
-    it('back-fills owner acceptances from acceptedParcelIds when syncing', () => {
-        const proposal = { acceptedParcelIds: ['42'], executedAt: '2026-01-01T00:00:00.000Z' };
-        const entry = ensureOwnerAcceptanceEntry(proposal, '42', [
-            { key: 'a', displayName: 'Ana', type: 'private individual' }
-        ]);
-        expect(entry.acceptedOwnerKeys).toContain('a');
-        expect(entry.acceptedBy.a.acceptedAt).toBe('2026-01-01T00:00:00.000Z');
+    it('never uses placeholders, duplicate slots or historical decisions to repopulate an empty roster', () => {
+        expect(currentOwnerSlots([{ key: 'fake', placeholder: true }, null, { key: '' },
+            { key: 'real' }, { key: 'real' }])).toEqual([{ key: 'real' }]);
+        const proposal = { ownerAcceptances: normalizeOwnerAcceptances({ '42': {
+            owners: { fake: { placeholder: true } }, ownerOrder: ['fake'], acceptedOwnerKeys: ['fake'],
+            acceptedBy: { fake: { effectHash: 'terms' } }
+        } }) };
+        expect(proposal.ownerAcceptances['42'].ownerOrder).toEqual([]);
+        const entry = ensureOwnerAcceptanceEntry(proposal, '42', [{ key: 'fake', placeholder: true }]);
+        expect(entry.ownerOrder).toEqual([]);
+        expect(entry.owners).toEqual({});
+        expect(entry.acceptedBy.fake).toEqual({ effectHash: 'terms' });
+        expect(normalizeOwnerAcceptances(proposal.ownerAcceptances)['42'].ownerOrder).toEqual([]);
     });
 
-    it('does not back-fill when syncWithParcelAcceptance is false', () => {
-        const proposal = { acceptedParcelIds: ['42'] };
-        const entry = ensureOwnerAcceptanceEntry(proposal, '42',
-            [{ key: 'a', displayName: 'Ana' }],
-            { syncWithParcelAcceptance: false });
+    it('does not infer owner decisions or event times from a parcel acceptance', () => {
+        const proposal = { acceptedParcelIds: ['42'], executedAt: '2026-01-01T00:00:00.000Z', updatedAt: '2026-02-01T00:00:00.000Z' };
+        const entry = ensureOwnerAcceptanceEntry(proposal, '42', [
+            { key: 'a', displayName: 'Owner A', type: 'private individual' },
+            { key: 'b', displayName: 'Owner B', type: 'private individual' }
+        ]);
+        expect(entry.ownerOrder).toEqual(['a', 'b']);
         expect(entry.acceptedOwnerKeys).toEqual([]);
+        expect(entry.acceptedBy).toEqual({});
+    });
+
+    it('preserves explicit metadata without inventing a missing acceptance timestamp', () => {
+        const proposal = { acceptedParcelIds: ['42'], ownerAcceptances: normalizeOwnerAcceptances({
+            '42': { owners: {}, ownerOrder: ['a'], acceptedOwnerKeys: ['a'], acceptedBy: { a: { effectHash: 'e-terms' } } }
+        }) };
+        const entry = ensureOwnerAcceptanceEntry(proposal, '42',
+            [{ key: 'a', displayName: 'Owner A' }, { key: 'b', displayName: 'Owner B' }]);
+        expect(entry.acceptedOwnerKeys).toEqual(['a']);
+        expect(entry.acceptedBy).toEqual({ a: { effectHash: 'e-terms' } });
     });
 
     it('returns null for a missing proposal or parcel id', () => {

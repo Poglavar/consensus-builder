@@ -1,0 +1,107 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "8032",
+  "name": "Detroit, USA",
+  "point": [
+    42.418131146732,
+    -83.1544751389422
+  ],
+  "bindings": [
+    {
+      "appCityId": "detroit",
+      "runtimeConfig": {
+        "id": "detroit",
+        "label": "Detroit, USA",
+        "currency": {
+          "locale": "en-US",
+          "code": "USD"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            42.418131146732,
+            -83.1544751389422
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            42.418131146732,
+            -83.1544751389422
+          ],
+          "fallbackDataset": [
+            -83.1544751389422,
+            42.418131146732
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "us-mi-detroit-parcels",
+          "idPrefix": "US-MI-DETROIT-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 3,
+          "attribution": "<a href=\"https://data.detroitmi.gov/maps/detroitmi::parcels-2\">Detroit Office of the Assessor current parcels</a> · adapted"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "us-mi-detroit-parcels",
+      "name": "Detroit Office of the Assessor current parcels",
+      "adapter": "arcgis",
+      "endpoint": "https://services2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/Parcels_Current/FeatureServer/0",
+      "idField": "parcel_number",
+      "objectIdField": "object_id",
+      "idType": "string",
+      "idPrefix": "US-MI-DETROIT-",
+      "outFields": [
+        "object_id",
+        "parcel_number"
+      ],
+      "pageSize": 100,
+      "maxFeatures": 3000,
+      "maxBboxKm2": 1,
+      "countryCode": "US",
+      "metricSrid": 32617,
+      "cityIds": [
+        "detroit"
+      ],
+      "maxConcurrentQueries": 2,
+      "operator": "City of Detroit Office of the Assessor",
+      "scope": "200 valid distinct Detroit Office of the Assessor current parcel polygons verified in thirteen local 0.001-degree cells around the unchanged WUP locator. Complete viewports, ten forced three-row pages, all 200 fresh native parcel_number reads, valid synthetic absence, footprint and source binding passed in 32 public requests. Native parcel numbers retain their dots, hyphens and combined-lot suffixes exactly; object_id is transport paging identity only. Only these two schema-verified safe identifiers and full geometry are queried or retained. Independent metric EPSG:32617 GEOS found no invalid polygons, duplicate geometry, overlaps above 0.01 m² or operation errors. The exact WUP point lies in source geometry. Wider municipal completeness, title, survey accuracy and long-term key continuity remain unverified.",
+      "catalogueUrl": "https://data.detroitmi.gov/maps/detroitmi::parcels-2",
+      "licenceNote": "Official public parcel reference geometry; publisher conditions are informational. No legal title or citywide completeness is asserted.",
+      "attribution": "Detroit Office of the Assessor current parcels · adapted",
+      "parcelNumberField": "parcel_number"
+    }
+  ]
+}

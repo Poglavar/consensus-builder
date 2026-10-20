@@ -108,10 +108,85 @@ function areaToEth(areaSqM, options = {}) {
     return (areaSqM * PORTFOLIO_PRICE_PER_SQM_USD) / usdPerEth;
 }
 
+function getPortfolioValuationBasis(options = {}) {
+    return {
+        pricePerSqmUsd: PORTFOLIO_PRICE_PER_SQM_USD,
+        usdPerEth: resolveUsdPerEth(options),
+        areaUnit: 'm²',
+        inputCurrency: 'USD',
+        outputCurrency: 'ETH',
+        method: 'parcel-area × fixed USD/m² model, converted by estimated USD/ETH rate'
+    };
+}
+
+function normalizeEstimateCurrency(currency) {
+    if (typeof currency !== 'string') return null;
+    const normalized = currency.trim().toUpperCase();
+    return /^[A-Z][A-Z0-9]{1,7}$/.test(normalized) ? normalized : null;
+}
+
+// A source estimate is usable only with its own currency field. The optional fallback is a
+// separately identified model (area × rate) and carries its currency and rate in the result.
+function buildParcelPriceEstimate(properties, areaM2, options = {}) {
+    const props = properties && typeof properties === 'object' ? properties : {};
+    const raw = props.estimatedMarketPrice;
+    const hasRaw = raw !== undefined && raw !== null && !(typeof raw === 'string' && raw.trim() === '');
+    if (hasRaw) {
+        const amount = typeof raw === 'number' || typeof raw === 'string' ? Number(raw) : NaN;
+        const currency = normalizeEstimateCurrency(props.estimatedMarketPriceCurrency);
+        if (!Number.isFinite(amount) || amount < 0 || !currency) {
+            return { amount: null, currency: null, basis: 'unusable-source-estimate', rate: null };
+        }
+        return { amount, currency, basis: 'source-estimate', rate: null };
+    }
+
+    const area = Number(areaM2);
+    const rate = Number(options.areaPricePerSqm);
+    const currency = normalizeEstimateCurrency(options.currency);
+    if (!Number.isFinite(area) || area <= 0 || !Number.isFinite(rate) || rate < 0 || !currency) {
+        return { amount: null, currency: null, basis: 'unavailable', rate: null };
+    }
+    return { amount: area * rate, currency, basis: 'area-model', rate };
+}
+
+function aggregateParcelPriceEstimates(estimates, expectedCount = null) {
+    const rows = Array.isArray(estimates) ? estimates : [];
+    if (!rows.length || (Number.isInteger(expectedCount) && expectedCount !== rows.length)) {
+        return { amount: null, currency: null, basis: 'incomplete', count: rows.length };
+    }
+    if (rows.some(row => !row || !Number.isFinite(row.amount) || row.amount < 0 || !normalizeEstimateCurrency(row.currency))) {
+        return { amount: null, currency: null, basis: 'unknown-component', count: rows.length };
+    }
+    const currencies = [...new Set(rows.map(row => normalizeEstimateCurrency(row.currency)))];
+    if (currencies.length !== 1) {
+        return { amount: null, currency: null, basis: 'mixed-currency', count: rows.length };
+    }
+    const amount = rows.reduce((sum, row) => sum + row.amount, 0);
+    if (!Number.isFinite(amount)) {
+        return { amount: null, currency: null, basis: 'invalid-total', count: rows.length };
+    }
+    const bases = [...new Set(rows.map(row => row.basis || 'unspecified'))];
+    return {
+        amount,
+        currency: currencies[0],
+        basis: bases.length === 1 ? bases[0] : 'combined-estimates',
+        componentBases: bases,
+        count: rows.length
+    };
+}
+
+// Both inputs are ETH quantities. A missing land estimate or balance is not a zero holding.
+function calculateModeledTotalEth(balanceEth, portfolioEth) {
+    if (!Number.isFinite(balanceEth) || balanceEth < 0
+        || !Number.isFinite(portfolioEth) || portfolioEth < 0) return null;
+    const total = balanceEth + portfolioEth;
+    return Number.isFinite(total) ? total : null;
+}
+
 /**
- * Estimate the market value of a parcel in ETH using area from map data.
+ * Calculate the modeled parcel estimate in ETH using area from map data and the fixed portfolio basis.
  * @param {string} parcelId - The ID of the parcel
- * @returns {Promise<number>} - Market value in ETH
+ * @returns {Promise<number>} - Modeled estimate in ETH
  */
 async function estimateParcelMarketValue(parcelId, options = {}) {
     const value = await calculatePortfolioValue([parcelId], options);
@@ -230,9 +305,15 @@ if (typeof window !== 'undefined') {
     window.getLastTransactedPrice = getLastTransactedPrice;
     window.calculatePortfolioValue = calculatePortfolioValue;
     window.calculatePayoutPerParcel = calculatePayoutPerParcel;
+    window.getPortfolioValuationBasis = getPortfolioValuationBasis;
+    window.calculateModeledTotalEth = calculateModeledTotalEth;
+    window.ParcelPriceModel = { buildEstimate: buildParcelPriceEstimate, aggregate: aggregateParcelPriceEstimates };
 }
 
 // Node tests load this classic script with require (the browser ignores this branch).
 if (typeof module !== 'undefined' && module.exports) {
-    module.exports = { calculatePayoutPerParcel, areaToEth };
+    module.exports = {
+        calculatePayoutPerParcel, areaToEth, getPortfolioValuationBasis, calculateModeledTotalEth,
+        buildParcelPriceEstimate, aggregateParcelPriceEstimates
+    };
 }

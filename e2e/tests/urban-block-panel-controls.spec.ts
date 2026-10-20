@@ -224,7 +224,10 @@ test('OSM block browse, details, fit, copy, collapse, refresh, back, and close b
 
   // Drag the map away from the selected block, then confirm Fit restores its framing.
   const targetCenter = await page.evaluate(() => {
-    const center = (window as any).map.getCenter();
+    const map = (window as any).map;
+    // A settled drag exposes an accidental click-to-refit; inertia could move it away again.
+    map.options.inertia = false;
+    const center = map.getCenter();
     return { lat: center.lat, lng: center.lng };
   });
   const mapBox = await page.locator('#map').boundingBox();

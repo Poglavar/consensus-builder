@@ -1,0 +1,17 @@
+[
+  {
+    "url": "https://nspd.gov.ru/map?thematic=PKK",
+    "reason": "timeout after 20 seconds"
+  },
+  {
+    "url": "https://pkk.rosreestr.ru/",
+    "reason": "timeout after 15 seconds"
+  },
+  {
+    "url": "https://rosreestr.gov.ru/",
+    "reason": "timeout after 15 seconds"
+  },
+  {
+    "url": "https://amursk.ru/index.php?Itemid=425&id=273&option=com_content&task=blogcategory"
+  }
+]

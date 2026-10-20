@@ -339,8 +339,8 @@
             ? ' ' + t('bets.row.paysTitle', '1 USDC on this side pays {{multiple}} USDC if it wins.', { multiple: multiple.toFixed(2) })
             : '';
         button.title = (yes
-            ? t('bets.row.yesTitle', 'Bet that this proposal gets built.')
-            : t('bets.row.noTitle', 'Bet that this proposal does not get built.')) + paysTitle;
+            ? t('bets.row.yesTitle', 'Bet that the proposal reaches Executed on-chain.')
+            : t('bets.row.noTitle', 'Bet that the proposal reaches Cancelled or Expired on-chain.')) + paysTitle;
         button.addEventListener('click', () => placeBet(row, side));
         return button;
     }
@@ -352,7 +352,7 @@
         if (row.oneSided === 'yes') return t('bets.row.onlyYes', 'Only yes bets so far');
         if (row.oneSided === 'no') return t('bets.row.onlyNo', 'Only no bets so far');
         if (row.chanceYes === null || row.chanceYes === undefined) return t('bets.row.noBets', 'No bets yet');
-        return t('bets.row.chance', '{{percent}} chance', { percent: percentText(row.chanceYes) });
+        return t('bets.row.yesPoolShare', 'Yes: {{percent}} of pool', { percent: percentText(row.chanceYes) });
     }
 
     function renderRow(row) {
@@ -384,9 +384,9 @@
         const meta = el('div', 'bets-row__meta');
         if (row.kind === 'plan') meta.append(el('span', 'cb-badge bets-row__plan', t('bets.row.plan', 'Plan of {{count}} proposals', { count: row.memberCount })));
         if (row.pool !== null && row.pool !== undefined) meta.append(el('span', null, t('bets.row.pool', 'Pool {{amount}}', { amount: moneyText(row.pool) })));
-        // The market's deadline; a legacy pool has none, and then the proposal's own expiry is the date.
-        const closes = row.closesAt || row.expiresAt;
-        if (closes) meta.append(el('span', null, t('bets.row.closes', 'Closes {{date}}', { date: dateText(closes) })));
+        // An application deadline does not establish when the on-chain pool closes.
+        if (row.closesAt) meta.append(el('span', null, t('bets.row.closes', 'Closes {{date}}', { date: dateText(row.closesAt) })));
+        else if (row.expiresAt) meta.append(el('span', null, `${t('bets.dialog.proposalDeadline', 'Proposal deadline')}: ${dateText(row.expiresAt)}`));
         if (row.agent) meta.append(el('span', null, t('panel.proposal.agent.badge', 'Agent proposal')));
         if (row.proposalAccount) {
             // Every bet has a link worth passing on, whatever state its pool is in: a quiet script
@@ -416,7 +416,7 @@
         } else if (row.state === 'not-minted') {
             li.append(el('p', 'bets-row__note', t('bets.row.notMinted', 'Not minted yet, so no pool')));
         } else if (row.state === 'closed') {
-            li.append(el('p', 'bets-row__note', t('bets.row.closed', 'Decided on-chain before a pool was opened')));
+            li.append(el('p', 'bets-row__note', t('bets.row.closed', 'Not open for bets')));
         }
         if (actions.childElementCount) li.append(actions);
         if (row.olderVersions && row.olderVersions.length) li.append(renderVersions(row.olderVersions));
@@ -495,8 +495,8 @@
         // Plans are what a contest is about when it has them; the loose proposals are the also-rans.
         const plans = contest.planCount > 0;
         head.append(el('h3', 'bets-contest__title', contest.proposalCount > 1
-            ? (plans ? t('bets.contest.titlePlans', 'Which plan gets built?') : t('bets.contest.title', 'Which proposal gets built?'))
-            : (plans ? t('bets.contest.titleSinglePlan', 'Does this plan get built?') : t('bets.contest.titleSingle', 'Does this proposal get built?'))));
+            ? (plans ? t('bets.contest.titlePlans', 'Which plans will execute on-chain?') : t('bets.contest.title', 'Which proposals will execute on-chain?'))
+            : (plans ? t('bets.contest.titleSinglePlan', 'Will this plan execute on-chain?') : t('bets.contest.titleSingle', 'Will this proposal execute on-chain?'))));
         const land = el('p', 'bets-contest__land');
         land.title = contest.parcelIds.join(', ');
         land.textContent = [

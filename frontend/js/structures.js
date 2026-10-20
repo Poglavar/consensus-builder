@@ -209,6 +209,16 @@
         return cutters;
     }
 
+    // A clip failure in the 2D structure graphics degrades the drawing only; it is logged and
+    // counted in clipHealth() (parcel-arrangement.js) rather than swallowed.
+    function structuresReportClip(operation, error, site, operands) {
+        const api = (typeof window !== 'undefined' && window.__parcelArrangement)
+            || (typeof require === 'function' ? require('./proposals/parcel-arrangement.js') : null);
+        if (api) return api.reportClipFailure(operation, error, { site }, operands);
+        console.error(`[${new Date().toISOString()}] [clip] Polygon ${operation} failed at ${site} — degraded`, error);
+        return error;
+    }
+
     // Geometry minus the given corridor cutters; null when nothing visible remains.
     function subtractCorridorsFromGeometry(geometry, cutters) {
         if (!geometry || !Array.isArray(cutters) || !cutters.length || typeof turf === 'undefined') return geometry;
@@ -220,7 +230,8 @@
                 if (!diff || !diff.geometry) return null;
                 current = diff;
             } catch (error) {
-                console.error('[structures] failed to cut structure geometry', error);
+                // Display only: the structure is not drawn rather than drawn over the corridor.
+                structuresReportClip('difference', error, 'structures.subtractCorridors', [current, cutter]);
                 return null;
             }
         }
@@ -1011,7 +1022,11 @@
                 continue;
             }
             let shore = null;
-            try { shore = turf.difference(baseFeature, water); } catch (_) { shore = null; }
+            // Lake decoration only: no shore means no lake graphics, reported.
+            try { shore = turf.difference(baseFeature, water); } catch (error) {
+                structuresReportClip('difference', error, 'structures.lakeShore', [baseFeature, water]);
+                shore = null;
+            }
             if (!shore || !shore.geometry) return null;
             const ratio = Math.max(0, Math.min(1, (baseArea - waterArea) / baseArea));
             const delta = Math.abs(ratio - targetRatio);
@@ -1033,7 +1048,10 @@
             const outerWidth = Math.max(minWidth, chosen.width * 0.55);
             const outer = turf.buffer(baseFeature, -outerWidth, { units: 'meters', steps: 32 });
             if (outer && outer.geometry && chosen.water && chosen.water.geometry) {
-                try { transition = turf.difference(outer, chosen.water); } catch (_) { transition = null; }
+                try { transition = turf.difference(outer, chosen.water); } catch (error) {
+                    structuresReportClip('difference', error, 'structures.lakeTransition', [outer, chosen.water]);
+                    transition = null;
+                }
             }
         } catch (_) { transition = null; }
 
@@ -1068,7 +1086,9 @@
                     const u = turf.union(merged, polygons[i]);
                     if (!u || !u.geometry) return false;
                     merged = u;
-                } catch (_) {
+                } catch (error) {
+                    // Lake decoration only: the lake is drawn without its graphics, reported.
+                    structuresReportClip('union', error, 'structures.lakeGraphicsUnion', [merged, polygons[i]]);
                     return false;
                 }
             }
@@ -1371,70 +1391,6 @@
         } else if (!shouldShow && onMap) {
             try { map.removeLayer(parksLayer); } catch (_) { }
         }
-    }
-
-    function unionPolygonForSelectedBlock() {
-        try {
-            const name = (typeof window.selectedBlockName !== 'undefined') ? window.selectedBlockName : null;
-            if (!name || !window.blockStorage || !window.blockStorage.blocks || !window.blockStorage.blocks.has(name)) return null;
-            const block = window.blockStorage.blocks.get(name);
-            if (!block || !Array.isArray(block.parcels) || block.parcels.length === 0) return null;
-
-            // 1) Try the app's cached/standard union if available
-            if (typeof getUnionedPolygonForBlock === 'function') {
-                const cached = getUnionedPolygonForBlock(name, block);
-                if (cached && cached.geometry) return cached;
-            }
-
-            const features = typeof liveBlockFeatures === 'function'
-                ? liveBlockFeatures(block)
-                : [];
-
-            // 2) Simple sequential union (no shape change intent)
-            try {
-                let seq = features[0] || null;
-                let seqFailed = false;
-                for (let i = 1; i < features.length; i++) {
-                    try {
-                        const merged = turf.union(seq, features[i]);
-                        if (!merged || !merged.geometry) {
-                            seqFailed = true;
-                            break;
-                        }
-                        seq = merged;
-                    } catch (_) {
-                        seqFailed = true;
-                        break;
-                    }
-                }
-                if (!seqFailed && seq && seq.geometry) return seq;
-            } catch (_) { /* try the strict robust union below */ }
-
-            // 3) Robust union: clean + tiny-buffer dissolve to heal topology, then unbuffer
-            const robust = (() => {
-                try {
-                    // sanitize and buffer-dissolve
-                    const epsilon = 0.1; // meters
-                    let acc = null;
-                    for (const raw of features) {
-                        let f = raw;
-                        try { f = turf.rewind(f, { reverse: false }); } catch (_) { }
-                        try { f = turf.cleanCoords(f, { mutate: false }); } catch (_) { }
-                        try {
-                            const fb = turf.buffer(f, epsilon, { units: 'meters', steps: 16 });
-                            acc = acc ? (turf.union(acc, fb) || acc) : fb;
-                        } catch (_) { return null; }
-                    }
-                    if (!acc || !acc.geometry) return null;
-                    try {
-                        const unbuf = turf.buffer(acc, -epsilon, { units: 'meters', steps: 16 });
-                        return unbuf && unbuf.geometry ? unbuf : null;
-                    } catch (_) { return null; }
-                } catch (_) { return null; }
-            })();
-            if (robust && robust.geometry) return robust;
-            return null;
-        } catch (e) { console.warn('Failed to compute block union', e); return null; }
     }
 
     function collectBlockParcelIdsAndGeometry(blockName) {

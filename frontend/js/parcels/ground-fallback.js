@@ -7,17 +7,16 @@
 //   2. No parcels   — keeps the linked plan and derives designs from their saved geometry.
 //   3. Own link     — a GeoJSON / OGC API Features / ArcGIS FeatureServer URL the visitor knows,
 //                     validated on a bounded sample before it is trusted for the viewport.
-//   4. Imagery      — best-effort inference of parcel boundaries from satellite imagery. The
-//                     pipeline is being built elsewhere; this entry point reports availability.
-//                     OCR is only the working name retained in the integration contract.
+//   4. Imagery      — best-effort inference of parcel boundaries from satellite imagery, saved as
+//                     a local estimated parcel source. OCR is only the recovery option's name.
 //   5. Schelling    — shows the Schelling plan layer (js/schelling/): streets, blocks and plots
 //                     everyone can derive independently, drawn over whatever ground is here. It is
 //                     not a parcel source; what is proposed from it stands on open ground.
 //
 // Option 3 becomes a parcel SOURCE for the city for this browser session: fetch.js asks
 // `activeSource(city)` before it talks to the network, so the repository, fabric and presenter see
-// these parcels the way they see cadastral ones. Nothing here is persisted beyond sessionStorage,
-// and nothing here is ever labelled a cadastre: every feature carries its provenance.
+// these parcels the way they see cadastral ones. Imagery estimates use the same source boundary,
+// with their polygons retained in localStorage. Every feature keeps its source provenance.
 //
 // A failed fetch and "no register" are kept apart on purpose (see unsurveyed-ground.md): the dialog
 // states which one happened, and only a temporary failure gets a Retry button.
@@ -181,6 +180,9 @@
         const city = String(cityId || currentCityId());
         if (!source || typeof source.fetchCell !== 'function') throw new TypeError('A ground source needs fetchCell().');
         clearWithoutParcels(city);
+        if (source.kind !== 'estimated-local' && global.EstimatedParcelSource) {
+            global.EstimatedParcelSource.createStore(global.localStorage).setActive(city, false);
+        }
         sources.set(city, source);
         const descriptor = typeof source.describe === 'function' ? source.describe() : null;
         writeSession(SESSION_KEY_PREFIX + city, descriptor ? JSON.stringify(descriptor) : null);
@@ -190,6 +192,7 @@
 
     function clearSource(cityId) {
         const city = String(cityId || currentCityId());
+        if (global.EstimatedParcelSource) global.EstimatedParcelSource.createStore(global.localStorage).setActive(city, false);
         sources.delete(city);
         writeSession(SESSION_KEY_PREFIX + city, null);
     }
@@ -273,28 +276,14 @@
         return !(a.east < b.west || a.west > b.east || a.north < b.south || a.south > b.north);
     }
 
-    function hashString(text) {
-        let hash = 2166136261;
-        for (let i = 0; i < text.length; i += 1) {
-            hash ^= text.charCodeAt(i);
-            hash = Math.imul(hash, 16777619);
-        }
-        return (hash >>> 0).toString(16).padStart(8, '0');
-    }
-
-    // The register's own id when it has one; otherwise a digest of the geometry, which is stable
-    // for as long as the geometry is — the only kind of stability an anonymous feature can offer.
-    function externalFeatureId(feature) {
-        const props = feature.properties || {};
-        const candidates = [props.parcelId, props.parcel_id, props.PARCEL_ID, props.id, props.ID, props.OBJECTID, props.FID, props.gml_id, feature.id];
-        const found = candidates.find(value => value !== undefined && value !== null && String(value).trim() !== '');
-        if (found !== undefined) return `URL:${String(found).trim()}`;
-        return `URL:g${hashString(JSON.stringify(feature.geometry.coordinates))}`;
+    function customIdentity() {
+        return global.CustomUrlParcelIdentity
+            || (typeof require === 'function' ? require('./custom-url-identity.js') : null);
     }
 
     // Reads a reply and keeps only what the repository could accept. Rejects rather than repairs:
     // a register that returns points, open rings or coordinates in metres is reported, not guessed at.
-    function validateFeatureCollection(payload, viewBox) {
+    function validateFeatureCollection(payload, viewBox, sourceId) {
         const features = payload && Array.isArray(payload.features) ? payload.features : null;
         if (!features) throw new Error(t('groundFallback.url.notCollection', 'The reply is not a GeoJSON FeatureCollection.'));
         const seen = new Map();
@@ -302,7 +291,8 @@
         let rejected = 0;
         features.forEach(raw => {
             if (!raw || raw.type !== 'Feature' || !geometryIsPlausible(raw.geometry)) { rejected += 1; return; }
-            const id = externalFeatureId(raw);
+            const identity = customIdentity().featureIdentity(raw, sourceId);
+            const id = identity.parcelId;
             const previous = seen.get(id);
             if (previous) {
                 if (JSON.stringify(previous.geometry) !== JSON.stringify(raw.geometry)) {
@@ -310,7 +300,7 @@
                 }
                 return;
             }
-            const props = Object.assign({}, raw.properties || {}, { parcelId: id, id, parcel_id: id, provenance: 'user-url', estimated: false });
+            const props = Object.assign({}, raw.properties || {}, identity, { id, parcel_id: id, provenance: 'user-url', estimated: false });
             const feature = { type: 'Feature', properties: props, geometry: raw.geometry };
             if (viewBox && boxesTouch(geometryBbox(raw.geometry), viewBox)) overlapping += 1;
             seen.set(id, feature);
@@ -346,7 +336,7 @@
         if (parsed.protocol !== 'https:' && parsed.protocol !== 'http:') throw new Error(t('groundFallback.url.invalid', 'That is not a complete URL.'));
         const kind = detectUrlKind(url);
         const payload = await fetchJson(urlForBox(url, kind, viewBox));
-        const sample = validateFeatureCollection(payload, viewBox);
+        const sample = validateFeatureCollection(payload, viewBox, customIdentity().sourceId(url));
         if (!sample.features.length) {
             throw new Error(sample.rejected
                 ? t('groundFallback.url.noPolygons', 'The reply holds {count} feature(s) but none is a closed polygon in longitude/latitude.', { count: sample.rejected })
@@ -359,11 +349,12 @@
     }
 
     function customUrlSource(url, kind, wholeCollection, sample) {
+        const sourceId = customIdentity().sourceId(url);
         const known = new Map();
         const remember = features => features.forEach(feature => known.set(feature.properties.parcelId, feature));
         if (wholeCollection) remember(wholeCollection);
         return {
-            id: `custom-url:${hashString(url)}`,
+            id: sourceId,
             kind: 'custom-url',
             url,
             urlKind: kind,
@@ -377,7 +368,7 @@
                     features = wholeCollection.filter(feature => boxesTouch(geometryBbox(feature.geometry), box));
                 } else {
                     const payload = await fetchJson(urlForBox(url, kind, box));
-                    features = validateFeatureCollection(payload, null).features;
+                    features = validateFeatureCollection(payload, null, sourceId).features;
                     remember(features);
                 }
                 return { features, returnsWGS84: true };
@@ -399,15 +390,14 @@
 
     // ---- restoring a session's choice ----------------------------------------------------------
 
-    // A reload within the same tab keeps the visitor's own register link. A NEW visit attempts the
-    // official register.
+    // A reload within the same tab keeps the visitor's own register link. Saved estimates also
+    // survive a new tab/visit and are restored before any parcel request.
     function restoreFromSession(cityId) {
         const city = String(cityId || currentCityId());
         if (!city || sources.has(city)) return activeSource(city);
         const raw = readSession(SESSION_KEY_PREFIX + city);
-        if (!raw) return null;
         try {
-            const descriptor = JSON.parse(raw);
+            const descriptor = raw ? JSON.parse(raw) : null;
             if (descriptor && descriptor.kind === 'custom-url' && descriptor.url) {
                 // The URL was validated when it was entered; trusting it again for the same session
                 // is the same trust. A viewport fetch re-validates every reply anyway.
@@ -416,7 +406,11 @@
                 sources.set(city, source);
                 return source;
             }
-        } catch (_) { }
+            if ((!descriptor || descriptor.kind === 'estimated-local') && global.EstimatedParcelSource) {
+                const source = global.EstimatedParcelSource.createStore(global.localStorage).readSource(city);
+                if (source) { sources.set(city, source); return source; }
+            }
+        } catch (error) { console.error('[GroundFallback] saved parcel source could not be restored', error); }
         writeSession(SESSION_KEY_PREFIX + city, null);
         return null;
     }
@@ -708,37 +702,16 @@
             requestAnimationFrame(() => input.focus({ preventScroll: true }));
         }
 
-        // -- option 3: satellite boundary recognition (OCR working name) --
-        function renderOcr() {
-            body.replaceChildren();
-            const section = el('div', 'ground-fallback-section');
-            section.appendChild(el('h4', null, t('groundFallback.options.ocr.title', 'Estimate parcel boundaries from satellite imagery')));
-            const jobs = global.ParcelOcrJobs;
-            if (jobs && typeof jobs.start === 'function') {
-                section.appendChild(el('p', 'ground-fallback-help', t('groundFallback.ocr.help', 'Estimate likely parcel boundaries from satellite imagery of this area. The job runs in the background. Results may be incomplete or wrong and need review; imagery does not establish legal boundaries.')));
-                const actions = el('div', 'ground-fallback-actions');
-                const start = el('button', 'btn btn-primary btn-block', t('groundFallback.ocr.start', 'Start boundary recognition'));
-                start.type = 'button';
-                start.addEventListener('click', async () => {
-                    start.disabled = true;
-                    try {
-                        await jobs.start({ city, bounds: viewBox(), onReady: () => refetchViewport() });
-                        close();
-                    } catch (error) {
-                        start.disabled = false;
-                        section.appendChild(el('p', 'ground-fallback-result is-error', String(error && error.message || error)));
-                    }
-                });
-                actions.appendChild(backButton());
-                actions.appendChild(start);
-                section.appendChild(actions);
-            } else {
-                section.appendChild(el('p', 'ground-fallback-help', t('groundFallback.ocr.unavailable', 'Parcel-boundary recognition from satellite imagery is not available from this screen yet. Any estimates will be best effort and need review; imagery does not establish legal boundaries.')));
-                const actions = el('div', 'ground-fallback-actions');
-                actions.appendChild(backButton());
-                section.appendChild(actions);
+        // -- option 3: temporary illustrative rectangles, separate from cadastral ground --
+        async function renderOcr() {
+            try {
+                await global.ParcelEstimates.open({ city });
+                close();
+            } catch (error) {
+                body.replaceChildren();
+                body.appendChild(el('p', 'ground-fallback-result is-error', String(error.message || error)));
+                body.appendChild(backButton());
             }
-            body.appendChild(section);
         }
 
         renderOptions();
@@ -766,13 +739,13 @@
         detectUrlKind,
         urlForBox,
         validateFeatureCollection,
-        externalFeatureId,
         activeSource,
         isWithoutParcels,
         clearWithoutParcels,
         continueWithoutParcels,
         installSource,
         clearSource,
+        reloadWithSource,
         probeCustomUrl,
         restoreFromSession,
         onGroundUnavailable,

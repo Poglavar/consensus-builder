@@ -1,0 +1,146 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "5571",
+  "name": "Anchorage, United States",
+  "point": [
+    61.2001872597905,
+    -149.82840565615
+  ],
+  "bindings": [
+    {
+      "appCityId": "anchorage",
+      "runtimeConfig": {
+        "id": "anchorage",
+        "wupCityCode": "5571",
+        "label": "Anchorage, United States",
+        "currency": {
+          "locale": "en-US",
+          "code": "USD"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            61.2001872597905,
+            -149.82840565615
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            61.2001872597905,
+            -149.82840565615
+          ],
+          "fallbackDataset": [
+            -149.82840565615,
+            61.2001872597905
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "us-ak-statewide-parcels-agol",
+          "idPrefix": "US-AK-STATEWIDE-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Alaska local governments; compiled ArcGIS Online layer AK_Parcels. Adapted to WGS84."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "us-ak-statewide-parcels-agol",
+      "name": "Alaska combined local-government parcels (AK_Parcels) — statewide",
+      "adapter": "arcgis",
+      "countryCode": "US",
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "maxConcurrentQueries": 2,
+      "cityIds": [
+        "anchorage"
+      ],
+      "licenceNote": "Source conditions are informational; users choose their source and intended use.",
+      "operator": "Unattributed ArcGIS Online compilation of Alaska local-government parcel data",
+      "endpoint": "https://services1.arcgis.com/7HDiw78fcUiM2BWn/arcgis/rest/services/AK_Parcels/FeatureServer/0",
+      "idFields": [
+        "local_gov",
+        "parcel_id"
+      ],
+      "idFieldTypes": {
+        "local_gov": "string",
+        "parcel_id": "string"
+      },
+      "objectIdField": "OBJECTID",
+      "outFields": [
+        "OBJECTID",
+        "local_gov",
+        "parcel_id"
+      ],
+      "parcelNumberField": "parcel_id",
+      "idPrefix": "US-AK-STATEWIDE-",
+      "metricSrid": 32606,
+      "stateCode": "AK",
+      "attributeNotNull": [
+        "local_gov",
+        "parcel_id"
+      ],
+      "attributeExclusions": {
+        "parcel_id": [
+          "",
+          " "
+        ]
+      },
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "scope": "Combined parcel data from 20 Alaska local governments (boroughs, municipalities and one regional fund). parcel_id is the local government's own number, so the native key is local_gov plus parcel_id.",
+      "caveats": [
+        "Publisher not identified in service metadata; local governments not among the 20 local_gov values observed on 2026-10-12 are absent.",
+        "The local_gov label is part of the identity; a relabelled local government would change canonical IDs.",
+        "Rows with null or blank parcel_id (2,613 statewide on 2026-10-12) are excluded; 218 parcel_id values carry leading or trailing spaces and are kept verbatim.",
+        "Layer also publishes owner and value fields, which are not requested."
+      ],
+      "attribution": "Alaska local governments; compiled ArcGIS Online layer AK_Parcels. Adapted to WGS84.",
+      "catalogueUrl": "https://services1.arcgis.com/7HDiw78fcUiM2BWn/arcgis/rest/services/AK_Parcels/FeatureServer",
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "US",
+          "admin1": [
+            "US-AK"
+          ],
+          "excludeAdmin1": [],
+          "basis": "Service description \"Combined land parcel data from various local government bodies in Alaska\"; 20 local governments present on 2026-10-12, so coverage is partial by construction.",
+          "evidence": []
+        },
+        "paceMs": 1000
+      }
+    }
+  ]
+}

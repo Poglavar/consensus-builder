@@ -1,0 +1,127 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "3893",
+  "name": "Montpellier, France",
+  "point": [
+    43.6153701485296,
+    3.86647003777739
+  ],
+  "bindings": [
+    {
+      "appCityId": "montpellier",
+      "runtimeConfig": {
+        "id": "montpellier",
+        "wupCityCode": "3893",
+        "label": "Montpellier, France",
+        "currency": {
+          "locale": "fr-FR",
+          "code": "EUR"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            43.6153701485296,
+            3.86647003777739
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            43.6153701485296,
+            3.86647003777739
+          ],
+          "fallbackDataset": [
+            3.86647003777739,
+            43.6153701485296
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "fr-mmm-montpellier-cadastre",
+          "idPrefix": "FR-MMM-MONTPELLIER-CODEIDENT-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 3,
+          "attribution": "<a href=\"https://data.montpellier3m.fr/dataset/cadastre-de-montpellier\">Montpellier municipal PCI cadastral parcels</a>"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "fr-mmm-montpellier-cadastre",
+      "name": "Montpellier municipal PCI cadastral parcels",
+      "adapter": "geojson-snapshot",
+      "endpoint": "https://data.montpellier3m.fr/sites/default/files/ressources/MMM_Montpellier_Cadastre.zip",
+      "sourceLayer": "parcelle_Layer",
+      "sourceFormat": "shapefile-zip",
+      "sourceCrs": "EPSG:2154",
+      "idField": "Codeident",
+      "idFields": [
+        "Codeident"
+      ],
+      "idPrefix": "FR-MMM-MONTPELLIER-CODEIDENT-",
+      "outFields": [
+        "Codeident"
+      ],
+      "countryCode": "FR",
+      "cityIds": [
+        "montpellier"
+      ],
+      "metricSrid": 32631,
+      "maxSnapshotBytes": 33554432,
+      "maxSnapshotFeatures": 50000,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "capabilities": {
+        "areaEnumeration": true,
+        "snapshotDownload": true,
+        "runtimeAdapterSupported": true
+      },
+      "catalogueUrl": "https://data.montpellier3m.fr/dataset/cadastre-de-montpellier",
+      "licenceUrl": "https://www.etalab.gouv.fr/licence-ouverte-open-licence/",
+      "scope": "Official Montpellier municipal compilation of DGFiP PCI vector cadastral geographic data; parcel layer in the authority Shapefile ZIP.",
+      "descriptorState": "verified-snapshot-profile",
+      "idCodec": "encodeSnapshotNativeId([Codeident]) from production geojson-snapshot-source.js; preserve interior spaces",
+      "returnsWGS84": true,
+      "snapshotFormat": "shapefile-zip",
+      "shapefileMembers": {
+        "shp": "MMM_Montpellier_Cadastre/parcelle_Layer.shp",
+        "shx": "MMM_Montpellier_Cadastre/parcelle_Layer.shx",
+        "dbf": "MMM_Montpellier_Cadastre/parcelle_Layer.dbf",
+        "prj": "MMM_Montpellier_Cadastre/parcelle_Layer.prj",
+        "cpg": "MMM_Montpellier_Cadastre/parcelle_Layer.cpg"
+      },
+      "zipEncoding": "utf-8",
+      "dbfEncoding": "utf-8",
+      "snapshotScope": "archive",
+      "expectedSnapshotSha256": "88c55dc0b4f6807a8c6dd914306e403defb2473e37744622c5226b3fd9e6d910",
+      "expectedSnapshotFeatures": 39518,
+      "defaultForCity": true
+    }
+  ]
+}

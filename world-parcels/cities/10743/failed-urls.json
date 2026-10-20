@@ -1,0 +1,30 @@
+[
+  {
+    "url": "https://eservices.tn.gov.in/eservicesnew/index.html",
+    "reason": "timeout"
+  },
+  {
+    "url": "https://www.tngis.tn.gov.in/apps.html",
+    "reason": "timeout"
+  },
+  {
+    "url": "https://tngis.tn.gov.in/apps/gi_viewer/",
+    "reason": "timeout"
+  },
+  {
+    "url": "https://dilrmp.gov.in/dilrmpold/PhyscialComponent/mapDigitization/village-level/5849",
+    "reason": "timeout"
+  },
+  {
+    "url": "https://cuddalore.nic.in/survey/"
+  },
+  {
+    "url": "https://cuddalore.nic.in/service/e-services-anytime-anywhere-land/"
+  },
+  {
+    "url": "https://tn.nic.in/news/additional-land-records-services-launch-by-honourable-minister-for-revenue-and-disaster-management-tamil-nadu/"
+  },
+  {
+    "url": "https://cdnbbsr.s3waas.gov.in/s3b5f1e8fb36cd7fbeb7988e8639ac79e9/uploads/2025/01/2025010931.pdf"
+  }
+]

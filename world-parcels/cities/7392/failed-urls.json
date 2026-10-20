@@ -1,0 +1,15 @@
+[
+  {
+    "url": "https://geoportal.ponorogo.go.id/main/"
+  },
+  {
+    "url": "https://geoportal.ponorogo.go.id/api/site-settings/public"
+  },
+  {
+    "url": "https://atlas.atrbpn.go.id/"
+  },
+  {
+    "url": "https://geoportal.ponorogo.go.id/geoserver/wms?service=WMS&request=GetCapabilities",
+    "reason": "403"
+  }
+]

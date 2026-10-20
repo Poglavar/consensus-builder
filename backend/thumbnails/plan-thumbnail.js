@@ -1,8 +1,9 @@
 // A named plan's one whole-plan picture pair. Every member geometry is kept as its own polygon
 // part in a common frame; no union is used, so overlapping footprints and their holes survive.
-import { changedMembers, planHash } from '../plans/plan-hash.js';
+import { assertPlanCurrent } from '../plans/plan-commitment.js';
 import { createLimiter } from './tile-source.js';
 import { createPlanStore } from '../plans/plan-store.js';
+import { normalizeKnownParcelSource } from '../markets/contests.js';
 
 const PADDING = 0.12;
 const ZOOM = 19;
@@ -24,15 +25,17 @@ function memberProposal(row) {
     const data = row.proposal_data && typeof row.proposal_data === 'object' ? row.proposal_data : {};
     return {
         ...data,
-        type: row.type || data.type,
-        goal: row.goal || data.goal,
-        cadastreParcelIds: row.cadastre_parcel_ids || data.cadastreParcelIds,
-        roadProposal: row.road_proposal || data.roadProposal,
-        buildingProposal: row.building_proposal || data.buildingProposal,
-        structureProposal: row.structure_proposal || data.structureProposal,
-        reparcellization: row.reparcellization || data.reparcellization,
-        geometry: row.geometry || data.geometry,
-        site: data.site || row.site || null
+        type: row.type ?? null,
+        goal: row.goal ?? null,
+        cadastreParcelIds: row.cadastre_parcel_ids ?? [],
+        roadProposal: row.road_proposal ?? null,
+        buildingProposal: row.building_proposal ?? null,
+        structureProposal: row.structure_proposal ?? null,
+        reparcellization: row.reparcellization ?? null,
+        geometry: row.geometry ?? null,
+        // Plan hashes and the published serializer use authored site geometry. The PostGIS union
+        // in row.site is only a spatial projection and must not stand in for that declaration.
+        site: data.site ?? null
     };
 }
 
@@ -44,7 +47,7 @@ export function resolvePlanMemberParts(row) {
         const parts = polygonCoordinates(roadGeometry);
         if (parts.length) return parts;
     }
-    for (const geometry of [proposal.buildingGeometry, proposal.structureProposal?.geometry]) {
+    for (const geometry of [proposal.structureProposal?.geometry]) {
         const parts = polygonCoordinates(geometry);
         if (parts.length) return parts;
     }
@@ -68,29 +71,54 @@ export function collectPlanMemberParts(members) {
 }
 
 export function planMembersMatchSnapshot(plan, members) {
-    if (!plan || !plan.plan_hash || !plan.member_hashes || !Array.isArray(members)) return false;
+    if (!plan || !Array.isArray(members)) return false;
     const ids = Array.isArray(plan.proposal_ids) ? plan.proposal_ids.map(String) : [];
-    if (!ids.length || members.length !== ids.length) return false;
-    const memberIds = new Set(members.map(member => String(member.id)));
-    if (ids.some(id => !memberIds.has(id))) return false;
-    const hashes = plan.member_hashes;
-    if (typeof hashes !== 'object' || Array.isArray(hashes)) return false;
-    if (Object.keys(hashes).length !== ids.length || changedMembers(hashes, members).length !== 0) return false;
-    const byId = new Map(members.map(member => [String(member.id), member]));
-    const actualHash = planHash(ids.map(id => ({ proposalId: byId.get(id).proposal_id, hash: hashes[id] })));
-    return actualHash === plan.plan_hash;
+    const memberIds = members.map(member => String(member.id));
+    if (new Set(memberIds).size !== memberIds.length
+        || memberIds.length !== ids.length
+        || ids.some(id => !memberIds.includes(id))) return false;
+    try {
+        assertPlanCurrent(plan, members);
+        return true;
+    } catch (error) {
+        if (error?.code === 'plan-commitment-invalid' || error?.code === 'plan-members-changed') return false;
+        throw error;
+    }
+}
+
+export function declaredHrParcelIds(member) {
+    let binding = member.binding;
+    if (typeof binding === 'string') {
+        try { binding = JSON.parse(binding); } catch { return []; }
+    }
+    const source = normalizeKnownParcelSource(binding?.parcelSource);
+    if (source?.sourceId !== 'hr-cadastre' || source.snapshotId !== null) return [];
+    return Array.isArray(member.cadastre_parcel_ids)
+        ? [...new Set(member.cadastre_parcel_ids.filter(id => typeof id === 'string' && id.trim()).map(id => id.trim()))]
+        : [];
+}
+
+async function parcelContextByCity(pool, members) {
+    const { fetchParcelPolygonsByIds } = await import('./parcel-geometry.js');
+    const groups = new Map();
+    for (const member of members) {
+        const city = typeof member.city === 'string' ? member.city.trim() : '';
+        const ids = declaredHrParcelIds(member);
+        if (!city || !ids.length) continue;
+        const group = groups.get(city) || new Set();
+        ids.forEach(id => group.add(id));
+        groups.set(city, group);
+    }
+    const geometries = await Promise.all([...groups].map(([city, ids]) => fetchParcelPolygonsByIds(pool, city, [...ids])));
+    return geometries.flat();
 }
 
 async function renderPlan(pool, plan, members) {
     if (!planMembersMatchSnapshot(plan, members)) return null;
     const parts = collectPlanMemberParts(members);
     if (!parts.length) return null;
-    const [{ fetchParcelPolygonsByIds }, { renderProposalThumbnailSet }] = await Promise.all([
-        import('./parcel-geometry.js'), import('./tile-stitch.js')
-    ]);
-    const parcelIds = [...new Set(members.flatMap(member => Array.isArray(member.cadastre_parcel_ids)
-        ? member.cadastre_parcel_ids.map(String) : []))];
-    const parcelPolygons = parcelIds.length ? await fetchParcelPolygonsByIds(pool, plan.city, parcelIds) : [];
+    const { renderProposalThumbnailSet } = await import('./tile-stitch.js');
+    const parcelPolygons = await parcelContextByCity(pool, members);
     // The shared renderer keeps each member polygon path separate in one common frame, so holes
     // remain local to their own footprint and overlapping members do not cancel one another.
     return renderProposalThumbnailSet({
@@ -104,14 +132,16 @@ async function renderPlan(pool, plan, members) {
 }
 
 async function loadPlan(pool, slug) {
-    const { rows } = await pool.query('SELECT slug, proposal_ids, member_hashes, plan_hash, city FROM ens_plan WHERE slug = $1 LIMIT 1', [slug]);
+    const { rows } = await pool.query('SELECT slug, proposal_ids, member_hashes, plan_hash, city, thumbnail_before_url, thumbnail_pair_url FROM ens_plan WHERE slug = $1 LIMIT 1', [slug]);
     const plan = rows[0];
     if (!plan) return null;
     const ids = Array.isArray(plan.proposal_ids) ? plan.proposal_ids : [];
     if (!ids.length) return { plan, members: [] };
     // Keep the thumbnail's hash input aligned with the canonical plan-store member projection.
     const members = await createPlanStore(pool).members(ids);
-    return { plan, members };
+    const bindings = await pool.query(`SELECT id, COALESCE(binding, proposal_data->'binding') AS binding FROM proposal WHERE id = ANY($1::int[])`, [ids.map(Number)]);
+    const bindingById = new Map(bindings.rows.map(row => [String(row.id), row.binding]));
+    return { plan, members: members.map(member => ({ ...member, binding: bindingById.get(String(member.id)) ?? null })) };
 }
 
 /** Render and optionally persist the after/before/pair set for one immutable named plan. */
@@ -119,6 +149,8 @@ export async function generateAndStorePlanThumbnail(pool, slug, { baseUrl = '', 
     const loaded = await loadPlan(pool, slug);
     if (!loaded) return null;
     const { plan, members } = loaded;
+    if (!dryRun && !parseOrigin(baseUrl)) throw new Error('Persisting plan thumbnails requires an explicit public base URL origin.');
+    if (plan.thumbnail_before_url && plan.thumbnail_pair_url) return null;
     const set = await renderPlan(pool, plan, members);
     if (!set) return null;
     if (set.tiles.total > 0 && set.tiles.loaded === 0) throw new Error(`All ${set.tiles.total} basemap tiles failed to load`);
@@ -128,7 +160,7 @@ export async function generateAndStorePlanThumbnail(pool, slug, { baseUrl = '', 
     const latest = await loadPlan(pool, slug);
     if (!latest || latest.plan.plan_hash !== plan.plan_hash || !planMembersMatchSnapshot(latest.plan, latest.members)) return null;
     const { saveImageBuffer } = await import('../utils/image-store.js');
-    const origin = String(baseUrl || '').replace(/\/+$/, '');
+    const origin = parseOrigin(baseUrl);
     const stamp = Date.now();
     const after = saveImageBuffer(set.after.buffer, `plan-thumb-${slug}-${stamp}`);
     const before = saveImageBuffer(set.before.buffer, `plan-before-${slug}-${stamp}`);
@@ -140,9 +172,17 @@ export async function generateAndStorePlanThumbnail(pool, slug, { baseUrl = '', 
     };
     const update = await pool.query(`
         UPDATE ens_plan SET thumbnail_url = $1, thumbnail_before_url = $2, thumbnail_pair_url = $3, updated_at = NOW()
-        WHERE slug = $4 AND plan_hash = $5 AND thumbnail_before_url IS NULL`,
+        WHERE slug = $4 AND plan_hash = $5 AND thumbnail_before_url IS NULL AND thumbnail_pair_url IS NULL`,
     [urls.after, urls.before, urls.pair, slug, plan.plan_hash]);
     return { ...set, urls, updated: update.rowCount > 0 };
+}
+
+function parseOrigin(value) {
+    try {
+        const parsed = new URL(String(value || ''));
+        if (!['http:', 'https:'].includes(parsed.protocol) || parsed.pathname !== '/' || parsed.search || parsed.hash) return null;
+        return parsed.origin;
+    } catch { return null; }
 }
 
 /** In-memory fast path after plan creation; the restartable CLI retries failed or interrupted jobs. */

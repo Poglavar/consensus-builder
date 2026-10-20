@@ -1,0 +1,15 @@
+[
+  {
+    "url": "https://bhumi.atrbpn.go.id/bhumigs/umum/ows?service=WFS&version=1.0.0&request=GetCapabilities",
+    "reason": "404"
+  },
+  {
+    "url": "https://bhumi.atrbpn.go.id/peta"
+  },
+  {
+    "url": "https://atlas.atrbpn.go.id/"
+  },
+  {
+    "url": "https://bhumi.atrbpn.go.id/bantuan/peta"
+  }
+]

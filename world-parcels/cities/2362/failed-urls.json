@@ -1,0 +1,16 @@
+[
+  {
+    "url": "https://landsmaps.dol.go.th/",
+    "reason": "timeout"
+  },
+  {
+    "url": "http://landsmaps.dol.go.th/",
+    "reason": "timeout"
+  },
+  {
+    "url": "https://www.dol.go.th/lopburi/home"
+  },
+  {
+    "url": "https://www.dol.go.th/landmap/home/"
+  }
+]

@@ -1,0 +1,29 @@
+[
+  {
+    "url": "https://bhumi.atrbpn.go.id/peta"
+  },
+  {
+    "url": "https://atlas.atrbpn.go.id/"
+  },
+  {
+    "url": "https://kab-cirebon.atrbpn.go.id/assets/b60bf7e4-b0b9-4a30-b3d7-a465b167a232"
+  },
+  {
+    "url": "https://jdih.cirebonkab.go.id/storage/app/uploads/public/202/2pb/320/2022pb3209326.pdf"
+  },
+  {
+    "url": "https://bhumi.atrbpn.go.id/_next/static/chunks/app/peta/page-8a839f09e317b44a.js"
+  },
+  {
+    "url": "https://bhumi.atrbpn.go.id/bhumigs/umum?service=WMS&request=GetCapabilities"
+  },
+  {
+    "url": "https://bhumi.atrbpn.go.id/bhumigs/umum?service=WFS&request=GetCapabilities"
+  },
+  {
+    "url": "https://bhumi.atrbpn.go.id/expapi/loginApi"
+  },
+  {
+    "url": "https://bhumi.atrbpn.go.id/expapi/getPersil"
+  }
+]

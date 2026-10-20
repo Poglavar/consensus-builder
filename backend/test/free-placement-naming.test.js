@@ -21,7 +21,7 @@ const load = (context, file) => vm.runInContext(fs.readFileSync(path.join(FRONTE
 
 async function saveFreeformBuilding({ boundParcels }) {
     const c = browser({ CbFormat: { formatDateTime: () => 'today' } });
-    for (const file of ['proposals/site-draft.js', 'proposal-editor-adapters.js', 'proposal-drafts.js', 'proposals/create.js', 'proposal-editor-shell.js']) load(c, file);
+    for (const file of ['proposals/site-draft.js', 'proposals/design-goals.js', 'proposal-editor-adapters.js', 'proposal-drafts.js', 'proposals/create.js', 'proposal-editor-shell.js']) load(c, file);
     const store = c.createProposalDraftStore({
         idFactory: () => 'single-draft',
         adapterRegistry: { get: () => ({ validate: () => ({ valid: true, errors: [], warnings: [] }) }) }

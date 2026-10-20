@@ -1,0 +1,10 @@
+[
+  {
+    "url": "https://www2.voltaredonda.rj.gov.br/geo/index.php",
+    "reason": "403"
+  },
+  {
+    "url": "http://geo.epdvr.com.br/voltaredonda/",
+    "reason": "503"
+  }
+]

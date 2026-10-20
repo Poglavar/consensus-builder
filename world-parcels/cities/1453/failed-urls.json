@@ -1,0 +1,23 @@
+[
+  {
+    "url": "https://contribuyentes.sigat.net/api/v1/portal/alcaldias/241",
+    "reason": "404"
+  },
+  {
+    "url": "https://contribuyentes.sigat.net/api/v1/contribuyente/alcaldias/241/catastro?cod=0",
+    "reason": "403"
+  },
+  {
+    "url": "https://contribuyentes.sigat.net/api/v1/contribuyente/alcaldias/241/catastro?cod=000000",
+    "reason": "403"
+  },
+  {
+    "url": "https://cabimas.sigat.net/"
+  },
+  {
+    "url": "https://cabimas.sigat.net/documentos/ordenanzas/ordenanza_de_inmuebles_urbanos_del_municipio_cabimas.pdf"
+  },
+  {
+    "url": "https://contribuyentes.sigat.net/?alcaldia=241"
+  }
+]

@@ -1,0 +1,10 @@
+[
+  {
+    "url": "https://www.naenara.com.kp/",
+    "reason": "TLS verification failure"
+  },
+  {
+    "url": "https://www.koreanarchitecture.gov.kp/",
+    "reason": "TLS verification failure"
+  }
+]

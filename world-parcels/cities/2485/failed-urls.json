@@ -1,0 +1,14 @@
+[
+  {
+    "url": "https://nspd.gov.ru/",
+    "reason": "Connection timed out after 20 seconds"
+  },
+  {
+    "url": "https://data.mos.ru/",
+    "reason": "Connection timed out after 20 seconds"
+  },
+  {
+    "url": "https://apidata.mos.ru/",
+    "reason": "401"
+  }
+]

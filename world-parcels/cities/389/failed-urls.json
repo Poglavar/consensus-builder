@@ -1,0 +1,16 @@
+[
+  {
+    "url": "https://geoservices.krzn.de/security-proxy/services/wfs_skre_alkis_adv_vereinfacht?service=WFS&version=2.0.0&request=GetFeature&typeNames=gis%3Askre_alkis_adv_flurstueck&bbox=6.5780%2C51.3328%2C6.5792%2C51.3337%2CEPSG%3A4326&count=3&outputFormat=application%2Fgeo%2Bjson",
+    "reason": "500"
+  },
+  {
+    "url": "https://gisdata.krzn.de/files/opendatagis/Stadt_Krefeld/ALKIS_ADV_SHAPE_Krefeld.zip",
+    "reason": "503"
+  },
+  {
+    "url": "https://www.krefeld.de/de/vermessung/liegenschaftskataster-und-geodaten/"
+  },
+  {
+    "url": "https://data.gov.de/suche/daten/alkis-liegenschaftskataster-krefeld27388"
+  }
+]

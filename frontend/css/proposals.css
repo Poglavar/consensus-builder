@@ -1350,9 +1350,12 @@ textarea.proposal-description-input {
     min-width: 0;
 }
 
-/* "Accept ownership transfer" on the offer bar: a square icon button (btn btn-sm btn-icon). */
-.offer-boost-button {
-    flex-shrink: 0;
+/* Seller offers expose funding availability without implying a payment or acceptance action. */
+.proposal-offer-funding-note {
+    margin: var(--cb-space-2) 0 0;
+    color: var(--cb-text-muted);
+    font-size: var(--cb-text-sm);
+    line-height: 1.45;
 }
 
 /* Deposit bars inside offer bar */
@@ -2227,9 +2230,9 @@ textarea.proposal-description-input {
     border-color: var(--cb-primary);
 }
 
-/* ---- The boost and accept-transfer dialogs ----
-   CbDialogs with the identity class .proposal-boost-modal (the boost in proposals/details-panel.js,
-   Accept ownership transfer in proposals/execution.js); the chrome is the primitive's. */
+/* ---- The boost dialog ----
+   CbDialog with the identity class .proposal-boost-modal in proposals/details-panel.js;
+   the chrome is the primitive's. */
 .proposal-boost-modal .cb-dialog__body {
     display: flex;
     flex-direction: column;
@@ -2287,31 +2290,10 @@ textarea.proposal-description-input {
 }
 
 /* Under the amount: the status of the last attempt, on a line kept free so nothing jumps. */
-.proposal-boost-status,
-.accept-transfer-status {
+.proposal-boost-status {
     min-height: 18px;
     font-size: var(--cb-text-sm);
     text-align: center;
-}
-
-/* Accept ownership transfer: the amount still needed, centred under the explanation. */
-.accept-transfer-amount-row {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: var(--cb-space-2);
-    margin: var(--cb-space-2) 0;
-}
-
-.accept-transfer-amount-label {
-    font-size: var(--cb-text-md);
-    color: var(--cb-text-muted);
-}
-
-.accept-transfer-amount-value {
-    font-size: var(--cb-text-2xl);
-    font-weight: var(--cb-weight-semibold);
-    color: var(--cb-success);
 }
 
 /* ---- Owner acceptance rows (proposals/execution.js buildOwnerAcceptanceSectionHtml) ----
@@ -2452,8 +2434,19 @@ textarea.proposal-description-input {
     }
 }
 
-/* Buy on an open sale offer (Ownership: Third party · Anyone), in proposal list rows and the
-   details card, is btn btn-success; claimSaleOffer() binds the buyer and transfers the parcels. */
+/* A local purchase simulation is separate from the proposal's shared lifecycle. */
+.proposal-purchase-simulation {
+    display: inline-block;
+    max-width: 100%;
+    white-space: normal;
+    font-size: 0.85em;
+}
+
+.proposal-purchase-hint {
+    flex-basis: 100%;
+    margin: 4px 0;
+    font-size: 0.85em;
+}
 
 /* The create dialog opens immediately; its map preview is built a tick later and lands here. The
    placeholder holds the dialog's height steady so the form does not jump when the preview arrives. */

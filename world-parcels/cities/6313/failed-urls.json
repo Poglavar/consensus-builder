@@ -1,0 +1,26 @@
+[
+  {
+    "url": "https://www.cadastre.gouv.cd/",
+    "reason": "DNS failure"
+  },
+  {
+    "url": "https://www.rdc-cadastre.cd/",
+    "reason": "connection failure"
+  },
+  {
+    "url": "https://geoportail-rdc.cd/",
+    "reason": "DNS failure"
+  },
+  {
+    "url": "https://www.affairesfoncieres.gouv.cd/services-fonciers/demandes"
+  },
+  {
+    "url": "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions"
+  },
+  {
+    "url": "https://www.affairesfoncieres.gouv.cd/"
+  },
+  {
+    "url": "https://bic.cd/"
+  }
+]

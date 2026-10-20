@@ -1,0 +1,28 @@
+[
+  {
+    "url": "https://mapademanaus.manaus.am.gov.br/",
+    "reason": "connect_timeout"
+  },
+  {
+    "url": "https://pmm.manaus.am.gov.br/arcgis/rest/services/PORTAL_TRANSPARENCIA/SEMINF_OBRAS_PORTAL_CIDADAO_SRGS/MapServer/2?f=json",
+    "reason": "connect_timeout"
+  },
+  {
+    "url": "https://www.manaus.am.gov.br/noticia/cadastro/projeto-mapa-de-manaus-da-prefeitura-atualiza-cadastro-de-345-mil-imoveis-na-capital/"
+  },
+  {
+    "url": "https://www.manaus.am.gov.br/noticia/levantamento/projeto-de-mapeamento-da-cidade-chega-em-sua-fase-final/"
+  },
+  {
+    "url": "https://www.manaus.am.gov.br/noticia/gestao/atividades-mapa-manaus-avancam/"
+  },
+  {
+    "url": "https://pmm.manaus.am.gov.br/arcgis/rest/services/PORTAL_TRANSPARENCIA/SEMINF_OBRAS_PORTAL_CIDADAO_SRGS/MapServer/2"
+  },
+  {
+    "url": "https://tiles-manaus.geo360.com.br/cadastro.lote.html"
+  },
+  {
+    "url": "https://tiles-manaus.geo360.com.br/cadastro.lote.json"
+  }
+]

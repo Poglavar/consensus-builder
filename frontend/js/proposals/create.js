@@ -126,7 +126,7 @@ async function finishReparcellizationAgreementBatch(batch, draftId) {
     // one's own local record (proposals/lineage.js editsInPlace), the split is its edit: the layout
     // comes off the map once, before the first agreement applies. A published layout stays
     // standing, as any counterproposal's source does.
-    const layoutId = draftId ? window.proposalDraftStore?.getDraft(draftId)?.sourceProposalId : null;
+    const layoutId = draftId ? window.proposalDraftStore?.getDraft(draftId)?.sourceLocalProposalId : null;
     let layoutReleased = !layoutId;
     const releaseLocalLayout = async () => {
         if (layoutReleased) return true;
@@ -1009,6 +1009,7 @@ async function createProposal() {
 
         const proposal = {
             author,
+            lifecycleStatus: 'Active',
             title: proposalName || proposalType, // Keep a stable human-readable title
             name: proposalName || proposalType,
             proposalName: proposalName || proposalType,
@@ -1020,7 +1021,7 @@ async function createProposal() {
             cadastreParcelIds: authoredCadastreParcelIds,
             primaryType: proposalMainType,
             goal: selectedTool,
-            acceptedParcelIds: [], // Track which parcels have accepted the proposal
+            acceptedParcelIds: [], // Derived consent tally; authoring supplies no owner decisions
             ownerAcceptances: {},
             applied: false,
             bounds: bounds, // Store bounds for reliable positioning
@@ -1043,19 +1044,22 @@ async function createProposal() {
         // and re-cleared on every dialog open, so a plain create leaves this undefined.
         const proposalCopySource = (typeof window !== 'undefined') ? window.pendingProposalCopySource : null;
         if (proposalCopySource && proposalCopySource.proposalId) {
-            proposal.copiedFromProposalId = String(proposalCopySource.proposalId);
-            proposal.copiedFromName = proposalCopySource.name || null;
+            const copySource = proposalStorage.getProposal(String(proposalCopySource.proposalId)) || proposalCopySource;
+            proposal.proposalOrigin = window.ProposalOrigin.fromRecord(copySource, {
+                relation: 'copy', backendBase: window.getBackendBase()
+            });
         }
         if (publishingDraftId) {
             const source = window.pendingProposalReplacementSource || {};
             const draft = window.proposalDraftStore?.getDraft?.(publishingDraftId);
-            const immutableSourceId = draft?.sourceProposalId || source.proposalId || proposal.copiedFromProposalId || null;
+            const immutableSourceId = draft?.sourceLocalProposalId || source.proposalId || proposalCopySource?.proposalId || null;
             if (immutableSourceId) {
-                proposal.sourceProposalId = String(immutableSourceId);
-                proposal.replacementOfProposalId = String(immutableSourceId);
                 // One's own local record is saved in place; a published one, or an explicit Fork,
                 // makes a new record that links back (proposals/lineage.js editsInPlace).
                 const editSource = proposalStorage.getProposal(String(immutableSourceId));
+                proposal.proposalOrigin = window.ProposalOrigin.fromRecord(editSource || draft?.sourceSnapshot || {}, {
+                    relation: 'revision', localProposalId: String(immutableSourceId), backendBase: window.getBackendBase()
+                });
                 if (window.ProposalLineage.editsInPlace(editSource, { fork: source.fork === true })) {
                     inPlaceSourceId = String(editSource.proposalId);
                 }
@@ -1070,20 +1074,18 @@ async function createProposal() {
             if (immutableSourceId && originSnapshot && relationApi && typeof relationApi.buildLandForkLineage === 'function') {
                 const landFork = relationApi.buildLandForkLineage(
                     { ...originSnapshot, proposalId: String(immutableSourceId) },
-                    authoredCadastreParcelIds
+                    authoredCadastreParcelIds, proposal.binding?.parcelSource || null
                 );
                 if (landFork) proposal.landFork = landFork;
             }
         }
 
-        // "Ownership transfer from me" proposals are automatically accepted but not funded
-        // This means all parcels are marked as accepted, but the proposal cannot be executed
+        // Offering one's land expresses sale intent, not acceptance by every parcel owner.
+        // Funding and consent remain separate; an unfunded offer cannot execute by local acceptance.
         if (selectedTool === 'ownership-transfer-from-me') {
-            proposal.acceptedParcelIds = authoredCadastreParcelIds.slice();
             proposal.funded = false; // Explicitly mark as not funded - prevents execution
             proposal.ownershipTransferProposal = {
-                direction: 'from-me',
-                status: 'accepted-not-funded'
+                direction: 'from-me'
             };
         }
 
@@ -1465,8 +1467,6 @@ async function createProposal() {
             }, turf);
             return await finishReparcellizationAgreementBatch(batch, publishingDraftId);
         }
-
-        let hash = null;
 
         // Try to mint on-chain if blockchain is available and parcels have NFTs
         const recoveredPublish = publishingDraftId
@@ -2102,8 +2102,8 @@ async function createProposal() {
         console.debug('[createProposal] All proposal creation steps complete, opening details. Total elapsed:', (performance.now() - startTime).toFixed(2), 'ms');
         if (onchainResult) {
             showProposalMintSuccessModal({
-                proposalId: onchainResult.proposalId,
-                proposalId: hash,
+                localProposalId: proposalId,
+                chainRef: window.ChainProposalRef.chainRefFromProposal(proposal),
                 txHash: onchainResult.transactionHash,
                 chainId: onchainResult.chainId,
                 onClose: openProposalDetails
@@ -2143,7 +2143,12 @@ function buildUploadReadyProposal(proposal) {
     delete uploadProposal.proposal_id;
     // A fork of a draft that has been published since names the published record, so the original
     // can list it as a counterproposal (proposals/lineage.js).
-    Object.assign(uploadProposal, window.ProposalLineage?.publishedSourceIds(proposal, id => proposalStorage.getProposal(id)) || {});
+    const origin = window.ProposalOrigin.portable(proposal.proposalOrigin, {
+        findLocal: id => proposalStorage.proposals.get(id), backendBase: window.getBackendBase()
+    });
+    if (origin) uploadProposal.proposalOrigin = origin;
+    else delete uploadProposal.proposalOrigin;
+    delete uploadProposal.publicationApiBase;
 
     // The complete selected cadastral scope was stamped at creation. Publishing never shrinks it to
     // the output geometry (a block may intentionally include parcels on which no building could be
@@ -2217,6 +2222,7 @@ function buildUploadReadyProposal(proposal) {
     // proposal on their own map.
     delete uploadProposal.applied;
     delete uploadProposal.appliedAt;
+    delete uploadProposal.localPurchaseSimulation;
     // The author's local agent id only says which profile on THIS device owns the draft
     // (GuestPolicy.claimAuthorAgentId); the published record carries the author name.
     delete uploadProposal.authorAgentId;
@@ -2250,7 +2256,7 @@ function buildUploadReadyProposal(proposal) {
     // and we adopt it); any real edit produces a new fingerprint → a new record + new share url,
     // leaving the previously-shared version untouched at its old url. The local proposalId is
     // unchanged (uploadProposal is a shallow copy), so nothing on this browser's map is disturbed.
-    const fingerprint = (typeof proposalContentFingerprint === 'function') ? proposalContentFingerprint(proposal) : null;
+    const fingerprint = (typeof proposalContentFingerprint === 'function') ? proposalContentFingerprint(uploadProposal) : null;
     if (fingerprint) {
         uploadProposal.proposalId = fingerprint;
         uploadProposal.hash = fingerprint;

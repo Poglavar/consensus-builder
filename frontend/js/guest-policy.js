@@ -76,7 +76,7 @@
     //     before authorAgentId existed (it has no proof whose it is).
     // Lineage: a fork or an edit is a new record created by whoever forks it, so it is claimed by the
     // current profile and carries its name; the source keeps its own author, reached through
-    // sourceProposalId. Author names are never inherited along a fork.
+    // proposalOrigin. Author names are never inherited along a fork.
 
     function identityOf(agent) {
         if (!agent || agent.id === undefined || agent.id === null || agent.id === '') return null;

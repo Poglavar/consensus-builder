@@ -25,8 +25,8 @@ def components(mask, min_area=40):
     return found
 
 
-def axis_candidates(gray):
-    dark = gray < 150
+def axis_candidates(gray, threshold=150):
+    dark = gray < threshold
     candidates = []
     min_run = 19
     min_band = 3
@@ -163,8 +163,26 @@ def hatched_candidates(gray):
 
 
 def measured_candidates(gray):
-    # Keep the solid detector and its candidate order unchanged.
-    return axis_candidates(gray) + hatched_candidates(gray)
+    # Grey-filled partitions are real source evidence too. Append them after existing
+    # candidates so dark strokes keep their labels; semantic selection still excludes furniture.
+    found = axis_candidates(gray) + hatched_candidates(gray)
+    for candidate in axis_candidates(gray, threshold=190):
+        horizontal = candidate['orientation'] == 'H'
+        axis, normal = (0, 1) if horizontal else (1, 0)
+        lo, hi = sorted((candidate['a'][axis], candidate['b'][axis]))
+        duplicate = False
+        for existing in found:
+            if existing['orientation'] != candidate['orientation']:
+                continue
+            start, end = sorted((existing['a'][axis], existing['b'][axis]))
+            overlap = max(0, min(hi, end)-max(lo, start))
+            if (abs(existing['a'][normal]-candidate['a'][normal]) <= max(existing['widthPx'], candidate['widthPx'])/2
+                    and overlap >= .8*min(hi-lo, end-start)):
+                duplicate = True
+                break
+        if not duplicate:
+            found.append(candidate)
+    return found
 
 
 def scale_candidates(gray):
@@ -256,7 +274,7 @@ def extract_evidence(image_path, evidence_path, annotation_path, scale_annotatio
         issues.append(f'Wall candidates truncated to {MAX_CANDIDATES}.')
     if not walls:
         issues.append('No confident orthogonal wall candidates were found; evidence is inconclusive.')
-    evidence = {'version': 'floor-plan-evidence-v3', 'widthPx': width, 'heightPx': height,
+    evidence = {'version': 'floor-plan-evidence-v4', 'widthPx': width, 'heightPx': height,
                 'wallCandidates': walls, 'scaleCandidates': scales, 'issues': issues,
                 'candidateFramePx': candidate_frame(walls, width, height)}
     Path(evidence_path).write_text(json.dumps(evidence, separators=(',', ':')) + '\n', encoding='utf8')

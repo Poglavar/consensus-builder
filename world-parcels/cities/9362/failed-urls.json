@@ -1,0 +1,22 @@
+[
+  {
+    "url": "https://tianjin.tianditu.gov.cn/static/html/bzmap.html",
+    "reason": "official page found; local curl blocked by certificate expiry"
+  },
+  {
+    "url": "https://www.maptj.cn/static/down/index.html",
+    "reason": "not reached after preceding TLS failure"
+  },
+  {
+    "url": "https://tianjin.tianditu.gov.cn/static/html/bzmap.html?eqid=fbe81f1400007ed7000000036437b92f"
+  },
+  {
+    "url": "https://ghhzrzy.tj.gov.cn/"
+  },
+  {
+    "url": "https://open.data.tj.gov.cn/cms/web/search/index.jsp?order=1&page=1124&query=&searchScope=0&sortField=relate"
+  },
+  {
+    "url": "https://www.tjwq.gov.cn/zwgk/zfxxgk/wbj2/qzwfwb1/fdzdgknr32/qtfdgkxx32/202109/W020210907587699119869.pdf"
+  }
+]

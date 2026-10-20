@@ -1,0 +1,113 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "7328",
+  "name": "Atlanta, United States",
+  "point": [
+    33.749,
+    -84.388
+  ],
+  "bindings": [
+    {
+      "appCityId": "atlanta",
+      "runtimeConfig": {
+        "id": "atlanta",
+        "label": "Atlanta, United States",
+        "currency": {
+          "locale": "en-US",
+          "code": "USD"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            33.749,
+            -84.388
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            33.749,
+            -84.388
+          ],
+          "fallbackDataset": [
+            -84.388,
+            33.749
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.0025,
+          "source": "parcel-source",
+          "sourceId": "us-ga-fulton-atlanta-parcels",
+          "idPrefix": "US-GA-FULTON-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "<a href=\"https://gismaps.fultoncountyga.gov/arcgispub2/rest/services/PropertyMapViewer/PropertyMapViewer/MapServer/11\">Fulton County GIS · publisher &amp; conditions</a> · Fulton County coverage · adapted"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "us-ga-fulton-atlanta-parcels",
+      "name": "Fulton County GIS — Atlanta",
+      "adapter": "arcgis",
+      "endpoint": "https://gismaps.fultoncountyga.gov/arcgispub2/rest/services/PropertyMapViewer/PropertyMapViewer/MapServer/11",
+      "idField": "ParcelID",
+      "objectIdField": "OBJECTID",
+      "idType": "string",
+      "idPattern": "^[A-Za-z0-9]+(?: +[A-Za-z0-9]+)*$",
+      "idPrefix": "US-GA-FULTON-",
+      "outFields": [
+        "OBJECTID",
+        "ParcelID"
+      ],
+      "parcelNumberField": "ParcelID",
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "metricSrid": 32616,
+      "countryCode": "US",
+      "stateCode": "GA",
+      "cityIds": [
+        "atlanta"
+      ],
+      "operator": "Fulton County GIS",
+      "scope": "Fulton County Tax Parcel layer; only native ParcelID and transport OBJECTID requested.",
+      "attribution": "Fulton County GIS. Adapted to WGS84.",
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "catalogueUrl": "https://gismaps.fultoncountyga.gov/arcgispub2/rest/services/PropertyMapViewer/PropertyMapViewer/MapServer/11",
+      "caveats": [
+        "Only Fulton County portions of Atlanta are covered. Native ParcelID internal spaces are retained verbatim."
+      ],
+      "licenceNote": "Source conditions are informational; users choose their source and intended use."
+    }
+  ]
+}

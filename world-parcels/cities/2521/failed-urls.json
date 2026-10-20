@@ -1,0 +1,9 @@
+[
+  {
+    "url": "https://www.contracosta.ca.gov/552/Maps-Property-Information"
+  },
+  {
+    "url": "https://bz1uwwpkuinzbk94.svcs5.arcgis.com/bz1uwWPKUInZBK94/arcgis/rest/services/CA_Statewide_Parcels_Public_view/FeatureServer/0",
+    "reason": "Held at the geometry gate: every source check passed (43 requests, 1 qualifier run(s) on this city) but the independent metric audit failed for Antioch (us-ca-calfire-statewide-parcels) with 19 material overlap pair(s) (> 0.01 m2; max 2.78 m2, 0.132% of the smaller; total 6.58 m2) among 132 cached features (06013~074080006 / 06013~074261040: 2.78 m2 = 0.132% of the smaller; 06013~074080006 / 0601…"
+  }
+]

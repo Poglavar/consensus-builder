@@ -1,0 +1,117 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "951",
+  "name": "Chania, Greece",
+  "point": [
+    35.508865587634,
+    24.0224198967439
+  ],
+  "bindings": [
+    {
+      "appCityId": "chania",
+      "runtimeConfig": {
+        "id": "chania",
+        "wupCityCode": "951",
+        "label": "Chania, Greece",
+        "currency": {
+          "locale": "el-GR",
+          "code": "EUR"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            35.508865587634,
+            24.0224198967439
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            35.508865587634,
+            24.0224198967439
+          ],
+          "fallbackDataset": [
+            24.0224198967439,
+            35.508865587634
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "gr-ktimatologio-active-parcels-arcgis",
+          "idPrefix": "GR-ATHENS-KAEK-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Hellenic Cadastre (Ktimatologio) active cadastral layer, adapted to WGS84. Athens-center sample only; broader coverage and currentness unverified."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "gr-ktimatologio-active-parcels-arcgis",
+      "name": "Hellenic Cadastre active cadastral parcels — Athens entry",
+      "adapter": "arcgis",
+      "endpoint": "https://services-eu1.arcgis.com/40tFGWzosjaLJpmn/arcgis/rest/services/GEOTEMAXIA_LEITOURGOUN_ON_gdb/FeatureServer/0",
+      "idField": "KAEK",
+      "idType": "string",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "GR-ATHENS-KAEK-",
+      "parcelNumberField": "KAEK",
+      "outFields": [
+        "OBJECTID",
+        "KAEK"
+      ],
+      "pageSize": 250,
+      "maxFeatures": 2500,
+      "maxBboxKm2": 0.25,
+      "maxConcurrentQueries": 2,
+      "countryCode": "GR",
+      "metricSrid": 32634,
+      "cityIds": [
+        "chania"
+      ],
+      "scope": "Athens entry centered on the verified city-center sample. The active cadastral layer returned 27 distinct KAEKs in a roughly 0.01 km² neighborhood; wider Athens, Greece-wide coverage and currentness have not been established.",
+      "attribution": "Hellenic Cadastre (Ktimatologio) active cadastral layer, adapted to WGS84. Athens-center sample only; broader coverage and currentness unverified.",
+      "catalogueUrl": "https://maps.ktimatologio.gr/",
+      "licenceNote": "The public map exposes a queryable ArcGIS layer; no named reuse licence was identified in the inspected viewer or layer metadata. Publisher terms remain informational.",
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "GR",
+          "basis": "Hellenic Cadastre (Ktimatologio) active national cadastral parcel layer.",
+          "evidence": []
+        }
+      },
+      "metricSridByCity": {
+        "chania": 32635
+      }
+    }
+  ]
+}

@@ -1,4 +1,4 @@
-// Source-plan geometry waits for building location; the shared worker owns provider state and spend.
+// Source-plan geometry requires a current source and owner; the shared worker owns provider state and spend.
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import { mkdtemp,writeFile,readFile,rm } from 'node:fs/promises';
@@ -12,7 +12,8 @@ import { READING_SCHEMA } from './reading-schema.js';
 import { verifyRasterEvidence } from './raster-evidence.js';
 import { sourceGeometry } from './source-geometry.js';
 import {runBatchStage,reservationUsd,budgetUsed} from './batch-worker.js';
-import {locatedListingSql,LOCATED_PLAN_TASK_SQL} from './building-location.js';
+import {locatedListingSql,PROCESSABLE_PLAN_TASK_SQL} from './building-location.js';
+import { sourcePlanAssetSql } from './source-policy.js';
 import { readBlob } from './blob-store.js';
 import { listingUnitId, selectListingUnitReading, sourceUnitMatches } from './original-plan-sources.js';
 
@@ -60,22 +61,20 @@ export async function enqueuePlanTasks(db,{limit=100,sourceHash=null,urls=null,p
     if(pages!==null&&(!Array.isArray(pages)||!pages.length||new Set(pages).size!==pages.length
         ||pages.some(page=>!Number.isInteger(page)||page<1||page>1000)))throw new Error('Pages must be a nonempty unique array of integers from 1 to 1000.');
     const rows=(await db.query(`SELECT e.sha256,e.model,t.url AS source_url,l.url AS listing_url,l.facts,
-        ${locatedListingSql()} AS building_located,
         (l.asset_urls @> jsonb_build_array(jsonb_build_object('url',t.url,'listingOwned',true))) AS listing_owns_asset
         FROM floor_plan.extraction e JOIN floor_plan.target t ON t.current_sha256=e.sha256 AND t.kind='asset'
         JOIN floor_plan.listing l ON l.asset_urls @> jsonb_build_array(jsonb_build_object('url',t.url,'listingOwned',true))
         WHERE (($1::text IS NULL AND e.status='needs_review' AND e.model->>'schema'='consensus-builder.floor-plan-draft.v1') OR e.sha256=$1)
         AND l.facts->>'sourceEvidenceStatus' IS DISTINCT FROM 'not-a-listing'
-        AND ${locatedListingSql()}
+        AND t.exclusion_reason IS NULL AND ${sourcePlanAssetSql()}
         AND ($3::text[] IS NULL OR t.url=ANY($3::text[]) OR l.url=ANY($3::text[]))
         ORDER BY e.vision_checked_at NULLS FIRST,e.created_at,t.url,l.url LIMIT $2`,[sourceHash,limit,urls])).rows;
-    let enqueued=0,ambiguous=0,deferred=0,sharedSources=0,deferredLocation=0;
+    let enqueued=0,ambiguous=0,deferred=0,sharedSources=0;
     const sources=new Set(),seenContexts=new Set();
     for(const row of rows) {
         if(Date.now()>=deadline) {deferred++;break;}
         if(row.listing_owns_asset!==true||!row.listing_url||!row.source_url) {ambiguous++;continue;}
         if(!sourceUnitMatches(row.facts,row.listing_url,row.source_url)) {ambiguous++;continue;}
-        if(row.building_located!==true) {deferredLocation++;continue;}
         const context=taskContext(row),totalPages=row.model?.totalPages??1;
         if(!Number.isInteger(totalPages)||totalPages<1||totalPages>1000) throw new Error('Invalid or oversized source page count.');
         if(pages?.some(page=>page>totalPages))throw new Error(`Requested page exceeds source page count (${totalPages}).`);
@@ -96,7 +95,7 @@ export async function enqueuePlanTasks(db,{limit=100,sourceHash=null,urls=null,p
             enqueued+=saved.rowCount;
         }
     }
-    return {sources:sources.size,enqueued,ambiguous,sharedSources,deferred,deferredLocation};
+    return {sources:sources.size,enqueued,ambiguous,sharedSources,deferred};
 }
 
 export async function renderTask(db,task,{python=process.env.FLOOR_PLAN_PYTHON||'python3',deadline=Infinity,includeEvidence=true}={}) {
@@ -131,7 +130,7 @@ function historicalIdentity(context) {
 export async function currentTaskListing(db,task,{lock=false,requireLocation=false}={}) {
     const row=(await db.query(`SELECT l.*,${locatedListingSql()} AS building_located FROM floor_plan.listing l JOIN floor_plan.target t ON t.url=$2
         WHERE l.url=$1 AND t.kind='asset' AND t.current_sha256=$3
-        AND l.facts->>'sourceEvidenceStatus' IS DISTINCT FROM 'not-a-listing'
+        AND t.exclusion_reason IS NULL AND ${sourcePlanAssetSql()}
         AND l.asset_urls @> jsonb_build_array(jsonb_build_object('url',t.url,'listingOwned',true)) ${lock?'FOR SHARE OF l,t':''}`,
     [task.listing_url,task.source_url,task.source_sha256])).rows[0];
     if(!row||row.facts?.sourceEvidenceStatus==='not-a-listing')return null;
@@ -177,12 +176,11 @@ export async function storeReading(db,task,reading,{associationCurrent=true}={})
 export function planStageAdapter({render=renderTask,verifyRaster=verifyRasterEvidence}={}) {
     return {
         stage:'plans',processor:PROCESSOR,schema:READING_SCHEMA,
-        taskFilterSql:LOCATED_PLAN_TASK_SQL,
-        counters:{ready:0,needsReview:0,notPlan:0,preflightNeedsReview:0,locationReview:0,associationReview:0},
+        taskFilterSql:PROCESSABLE_PLAN_TASK_SQL,
+        counters:{ready:0,needsReview:0,notPlan:0,preflightNeedsReview:0,associationReview:0},
         async prepare(db,task,llm,{deadline,maxOutputTokens}) {
             if(task.processor!==PROCESSOR)throw new Error('Historical plan task needs its original reader.');
             if(!await currentTaskContext(db,task))throw new Error('Source or listing association changed before processing.');
-            if(!await currentTaskContext(db,task,{requireLocation:true}))return {localResult:{deferredLocation:1}};
             const image=await render(db,task,{deadline});
             // A model cannot select geometry or a scale reference that the detector did not supply.
             // Keep the source for review without paying for a request forced to return no model.
@@ -198,12 +196,11 @@ export function planStageAdapter({render=renderTask,verifyRaster=verifyRasterEvi
         },
         async apply(db,task,item,{deadline}) {
             if(task.processor!==PROCESSOR)throw new Error('Historical plan task needs its original reader.');
-            if(!await currentTaskContext(db,task,{requireLocation:true})) {
-                // The worker already saved and accounted for this response; retain it without generating geometry.
-                const associationCurrent=await currentTaskContext(db,task);
-                await storeReading(db,task,{method:associationCurrent?'location-gate':'association-gate',notPlan:false,plans:[],
-                    issues:[associationCurrent?'A current building location is required before processing this floor plan.':'The source drawing does not match this listing unit, or its association changed after submission.']});
-                return {needsReview:1,...(associationCurrent?{locationReview:1}:{associationReview:1})};
+            if(!await currentTaskContext(db,task)) {
+                // Retain an accounted response without generating geometry for a stale source/owner.
+                await storeReading(db,task,{method:'association-gate',notPlan:false,plans:[],
+                    issues:['The source drawing does not match this listing unit, or its association changed after submission.']});
+                return {needsReview:1,associationReview:1};
             }
             let reading;
             try {
@@ -229,8 +226,8 @@ export function planStageAdapter({render=renderTask,verifyRaster=verifyRasterEvi
 
 export async function interpretPlans(db,{render=renderTask,verifyRaster=verifyRasterEvidence,...options}={}) {
     const result=await runBatchStage(db,planStageAdapter({render,verifyRaster}),options);
-    result.deferredLocation=Number((await db.query(`SELECT count(*) AS n FROM floor_plan.plan_task
-        WHERE status='queued' AND processor=$1 AND NOT ${LOCATED_PLAN_TASK_SQL}`,[PROCESSOR])).rows[0].n);
-    if(result.deferredLocation||result.locationReview||result.associationReview)result.status='partial';
+    result.deferredSource=Number((await db.query(`SELECT count(*) AS n FROM floor_plan.plan_task
+        WHERE status='queued' AND processor=$1 AND NOT ${PROCESSABLE_PLAN_TASK_SQL}`,[PROCESSOR])).rows[0].n);
+    if(result.deferredSource||result.associationReview)result.status='partial';
     return result;
 }

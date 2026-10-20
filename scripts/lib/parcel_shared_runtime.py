@@ -147,6 +147,38 @@ def current_runtime(shared_root: Path) -> dict[str, Any]:
     return manifest
 
 
+def prune_runtime(shared_root: Path) -> dict[str, int]:
+    """Keep the current code snapshot and any interrupted write's rollback snapshot."""
+    shared_root = Path(shared_root).resolve()
+    with runtime_lock(shared_root):
+        base = _base(shared_root)
+        current = current_runtime(shared_root)
+        if current["generation"] is None:
+            return {"files": 0, "bytes": 0}
+        generations = {current["generation"]}
+        for marker in shared_root.parent.glob("*/tmp/parcel-shared-runtime/write-in-progress.json"):
+            saved = _read_json(marker)
+            if saved.get("generation"):
+                generations.add(saved["generation"])
+        digests = set()
+        for generation in generations:
+            manifest = _read_json(base / "manifests" / f"{generation}.json")
+            _validate_manifest(manifest)
+            digests.update(item["sha256"] for item in manifest["files"].values())
+        removed, size = 0, 0
+        for folder, keep in ((base / "manifests", {g + ".json" for g in generations}),
+                             (base / "blobs", digests)):
+            for file in folder.iterdir():
+                if file.name in keep:
+                    continue
+                if not file.is_file() or file.is_symlink():
+                    raise RuntimeConflict("unexpected file in temporary runtime snapshot store")
+                size += file.stat().st_size
+                file.unlink()
+                removed += 1
+        return {"files": removed, "bytes": size}
+
+
 def _safe_file(path: Path, relative: Path) -> bool:
     if path.is_symlink() or any(part in _SKIP_PARTS for part in relative.parts):
         return False
@@ -158,9 +190,11 @@ def _safe_file(path: Path, relative: Path) -> bool:
 def _managed_allowed(relative: str) -> bool:
     parts = Path(relative).parts
     if len(parts) >= 2 and parts[:2] == ("world-parcels", "research"):
-        # Admission manifests and their copied qualification evidence are immutable
-        # outputs. Live discovery cohorts remain owned by their original job.
-        return len(parts) >= 3 and parts[2].startswith("qualification-")
+        # Research and admission evidence is disposable, never a code generation.
+        return False
+    if len(parts) >= 2 and parts[:2] == ("world-parcels", "cities"):
+        # Failed URLs have a lock-protected shared writer, independent of code sync.
+        return parts[-1] == "settings.json"
     return True
 
 

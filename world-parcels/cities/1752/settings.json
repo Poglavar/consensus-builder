@@ -1,0 +1,108 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "1752",
+  "name": "Cotonou, Benin",
+  "point": [
+    6.38646680667236,
+    2.3895186609943
+  ],
+  "bindings": [
+    {
+      "appCityId": "cotonou",
+      "runtimeConfig": {
+        "id": "cotonou",
+        "label": "Cotonou, Benin",
+        "currency": {
+          "locale": "fr-BJ",
+          "code": "XOF"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            6.38646680667236,
+            2.3895186609943
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            6.38646680667236,
+            2.3895186609943
+          ],
+          "fallbackDataset": [
+            2.3895186609943,
+            6.38646680667236
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.0025,
+          "source": "parcel-source",
+          "sourceId": "bj-andf-efoncier-geoserver",
+          "idPrefix": "BJ-ANDF-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "<a href=\"https://cadastre.andf.bj/\">ANDF e-Foncier cadastral parcels</a> · <a href=\"https://andf.bj/cadastre/\">publisher conditions</a> · verified Cotonou samples · adapted"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "bj-andf-efoncier-geoserver",
+      "adapter": "wfs",
+      "endpoint": "https://geoserver.andf.bj/geoserver/efb/wfs",
+      "featureType": "efb:efb_parcel",
+      "idField": "nup",
+      "idType": "string",
+      "idPrefix": "BJ-ANDF-",
+      "outFields": [
+        "nup",
+        "local_parcel_identification",
+        "commune_name"
+      ],
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "metricSrid": 32631,
+      "name": "ANDF e-Foncier cadastral parcels — Cotonou",
+      "cityIds": [
+        "cotonou"
+      ],
+      "countryCode": "BJ",
+      "idPattern": "^[0-9]+$",
+      "parcelNumberField": "local_parcel_identification",
+      "scope": "Verified bounded Cotonou cadastral parcel samples from the ANDF e-Foncier service. Only the configured Cotonou entry is enabled; coverage beyond the tested cells and national completeness are unverified.",
+      "licenceNote": "ANDF describes public consultation and duplication except personal or confidential information, with online/private access subject to conditions and fees. GeoServer Fees NONE / AccessConstraints NONE are service defaults, not a reuse licence. Publisher conditions remain informational.",
+      "licenceUrl": "https://andf.bj/cadastre/",
+      "catalogueUrl": "https://cadastre.andf.bj/",
+      "attribution": "ANDF (Agence Nationale du Domaine et du Foncier), e-Foncier cadastral parcels; adapted to WGS84. Verified Cotonou samples only."
+    }
+  ]
+}

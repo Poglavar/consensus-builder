@@ -64,22 +64,17 @@ test.describe('Supporting page form controls @core', () => {
       { legal_name: 'Northern Registry Office', registered_address: 'North District', website: 'https://north.example' },
       { legal_name: 'Southern Survey Agency', registered_address: 'South District', website: 'https://south.example' },
     ];
-    await page.route('**/floor-plan-archive/catalogue', route => json(route, { buildings: [
-      { id: 'building-north', name: 'North Building', kind: 'registered', planCount: 2 },
-      { id: 'building-south', name: 'South Building', kind: 'registered', planCount: 1 },
-    ], sources }));
+    await page.route('**/api/floor-plans?*', route => json(route, {
+      plans: [
+        { id: 'north-floor-1', scope: 'floor', floor: 0, label: 'North floor 1', source: { sha256: 'a'.repeat(64), url: 'https://plans.example/north-1.pdf' }, buildingId: 'building-north', building: { name: 'North Building', label: 'North Building' } },
+        { id: 'north-floor-2', scope: 'floor', floor: 1, label: 'North floor 2', source: { sha256: 'b'.repeat(64), url: 'https://plans.example/north-2.pdf' }, buildingId: 'building-north', building: { name: 'North Building', label: 'North Building' } },
+        { id: 'south-floor-1', scope: 'floor', floor: 0, label: 'South floor 1', source: { sha256: 'c'.repeat(64), url: 'https://plans.example/south-1.pdf' }, buildingId: 'building-south', building: { name: 'South Building', label: 'South Building' } },
+      ],
+      limit: 100, offset: 0, hasMore: false,
+    }));
+    await page.route('**/floor-plan-archive/catalogue', route => json(route, { buildings: [], sources }));
     await page.route('**/floor-plan-archive/status', route => json(route, { coverage: { agencies: { total: 2, websites: 2 } } }));
     await page.route('**/floor-plan-archive/agencies?*', route => json(route, { agencies }));
-    await page.route('**/floor-plan-archive/building/**', route => {
-      const id = new URL(route.request().url()).pathname.split('/').pop();
-      const north = id === 'building-north';
-      return json(route, {
-        id, name: north ? 'North Building' : 'South Building', kind: 'registered', plans: north ? [
-          { id: 'north-floor-1', label: 'North floor 1', source: { url: 'https://plans.example/north-1.pdf' } },
-          { id: 'north-floor-2', label: 'North floor 2', source: { url: 'https://plans.example/north-2.pdf' } },
-        ] : [{ id: 'south-floor-1', label: 'South floor 1', source: { url: 'https://plans.example/south-1.pdf' } }],
-      });
-    });
     await page.route('**/floor-plan-archive/sites', route => json(route, { sites: [
       { siteKey: 'site-north', label: 'North Site', postings: 2, placed: 1, plans: 2 },
       { siteKey: 'site-south', label: 'South Site', postings: 1, placed: 0, plans: 1 },
@@ -93,13 +88,13 @@ test.describe('Supporting page form controls @core', () => {
       return source ? json(route, source) : route.fulfill({ status: 404, json: { error: 'Source not found' } });
     });
 
-    await page.goto('/floor-plan-archive.html?building=archive');
+    await page.goto('/floor-plans.html?building=archive');
     const building = page.locator('#building');
-    await selectNativeOption(building, 'building-north');
+    await selectNativeOption(building, 'published:building-north');
     await expect(page.locator('#selection-name')).toHaveText('North Building');
     await selectNativeOption(page.locator('#unit'), '1');
     await expect(page.locator('#source-link a')).toHaveAttribute('href', 'https://plans.example/north-2.pdf');
-    await selectNativeOption(building, 'building-south');
+    await selectNativeOption(building, 'published:building-south');
     await expect(page.locator('#selection-name')).toHaveText('South Building');
     await expect(page.locator('#source-link a')).toHaveAttribute('href', 'https://plans.example/south-1.pdf');
     await page.locator('#tab-sites').click();

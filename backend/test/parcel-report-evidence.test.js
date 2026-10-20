@@ -8,241 +8,113 @@ const temporaryRoots = [];
 function fixtureRoot() {
     const root = mkdtempSync(path.join(os.tmpdir(), 'parcel-evidence-'));
     temporaryRoots.push(root);
-    mkdirSync(path.join(root, 'world-parcels/research'), { recursive: true });
     return root;
 }
-function put(root, relative, value) {
-    const file = path.join(root, 'world-parcels', relative);
+function put(root, code, name, value) {
+    const file = path.join(root, 'world-parcels/cities', String(code), name);
     mkdirSync(path.dirname(file), { recursive: true });
     writeFileSync(file, typeof value === 'string' ? value : JSON.stringify(value));
+}
+function settings(code, appCityId, sourceId = 'source-a', endpoint = 'https://source.example/api') {
+    return {
+        schemaVersion: 1,
+        cityCode: String(code),
+        name: 'Fixture city',
+        checkedAt: '2099-12-31',
+        bindings: [{ appCityId, runtimeConfig: {
+            id: appCityId, wupCityCode: String(code),
+            parcels: { source: 'parcel-source', sourceId }
+        } }],
+        sources: [{ id: sourceId, cityIds: [appCityId], endpoint }]
+    };
 }
 afterEach(() => temporaryRoots.splice(0).forEach(root => rmSync(root, { recursive: true, force: true })));
 
 describe('collectReportEvidence', () => {
-    it('distinguishes a documented local registry from geometry access and unresolved regional leads', () => {
+    it('uses validated city settings as a working source without claiming completeness or inventing dates', () => {
         const repoRoot = fixtureRoot();
-        const registry = { sources: [], cities: [true, null, false].map((registryFound, index) => {
-            const cityId = `city-${index}`;
-            put(repoRoot, `research/${cityId}.json`, { cityId, checkedAt: '2026-10-07' });
-            return { cityId, parcelStatus: 'no_verified_open_endpoint_after_attempts',
-                researchFile: `research/${cityId}.json`, dataFindings: { registryFound,
-                    registryBasis: index === 0 ? 'Official local registry office; geometry API not verified.' : 'Target coverage unresolved.',
-                    registryEvidenceUrls: ['https://authority.example/registry', 'javascript:invalid'] } };
-        }) };
-        const { cities } = collectReportEvidence({ registry, repoRoot });
-        expect(cities.map(row => [row.registryFound, row.verifiedSample, row.checked])).toEqual([
-            [true, false, true], [null, false, true], [false, false, true]
+        put(repoRoot, 10, 'settings.json', settings(10, 'alpha'));
+        put(repoRoot, 10, 'failed-urls.json', [
+            { url: 'https://offline.example/query?where=city#attempt', reason: 'timeout' },
+            { url: 'https://unsafe.example/query?api_key=should-not-escape' }
         ]);
-        expect(cities[0].registryBasis).toContain('geometry API not verified');
-        expect(cities[0].evidenceUrls).toEqual(['https://authority.example/registry']);
-    });
-
-    it('keeps unavailable leads distinct from checked negatives and verified viewer samples', () => {
-        const repoRoot = fixtureRoot();
-        put(repoRoot, 'research/unavailable.json', { checkedAt: '2026-10-01', status: 'temporarily_unavailable' });
-        put(repoRoot, 'research/negative.json', { checkedAt: '2026-10-02', status: 'no_verified_open_endpoint_after_attempts' });
-        put(repoRoot, 'research/viewer.json', { checkedAt: '2026-10-03', status: 'verified_sample_city_scope' });
         const registry = {
-            sources: [{ sourceId: 'viewer-layer', endpoint: 'https://public.example/layer', verificationStatus: 'verified_nonempty_sample', verifiedCityIds: ['viewer-city'] }],
-            cities: [
-                { cityId: 'unavailable-city', parcelStatus: 'temporarily_unavailable', researchFile: 'research/unavailable.json' },
-                { cityId: 'negative-city', parcelStatus: 'no_verified_open_endpoint_after_attempts', researchFile: 'research/negative.json' },
-                { cityId: 'viewer-city', parcelStatus: 'verified_sample_city_scope', sourceIds: ['viewer-layer'], researchFile: 'research/viewer.json' }
-            ]
+            sources: [],
+            cities: [{ cityId: 'wup2025:10', wupCityCode: 10, appCityId: 'alpha',
+                dataFindings: { registryFound: false, registryBasis: 'stale registry note' } }]
         };
-        const result = collectReportEvidence({ registry, repoRoot });
-        expect(result.cities.map(row => [row.registryFound, row.verifiedSample])).toEqual([
-            [null, false], [false, false], [true, true]
-        ]);
-        expect(result.cities[0].checked).toBe(true);
-        expect(result.cities[2].evidenceUrls).toEqual(['https://public.example/layer']);
-    });
-
-    it('uses matching passed qualification evidence over stale discovery text and dates', () => {
-        const repoRoot = fixtureRoot();
-        put(repoRoot, 'research/old-city.json', { cityId: 'city-a', checkedAt: '2026-10-01' });
-        const qualification = {
-            status: 'technical-qualified', cityCode: '123', sourceId: 'city-source', featureCount: 18,
-            checks: Object.fromEntries(['classification', 'exactIds', 'stableGeometry', 'explicitAbsence', 'sampling', 'completeness', 'binding', 'metric'].map(gate => [gate, { passed: true }])),
-            generatedAt: '2099-01-01', requests: [{ startedAt: '2026-10-13T21:20:00Z' }]
-        };
-        const city = { cityId: 'city-a', wupCityCode: 123, parcelStatus: 'verified_sample_partial_coverage',
-            sourceIds: ['city-source'], researchFile: 'research/old-city.json',
-            qualificationEvidenceFile: 'research/qualification.json',
-            dataFindings: { registryFound: null, registryBasis: 'No parcel polygon was obtained.' } };
-        const registry = { cities: [city], sources: [{ sourceId: 'city-source', name: 'Public survey plots' }] };
-        put(repoRoot, 'research/qualification.json', qualification);
         const [row] = collectReportEvidence({ registry, repoRoot }).cities;
-        expect(row).toMatchObject({ checkedDate: '2026-10-13', verifiedSample: true,
-            checkedDateEvidence: { path: 'research/qualification.json', field: '$.requests[0].startedAt' } });
-        expect(row.registryBasis).toContain('Verified 18 parcel outlines');
-        expect(row.registryBasis).toContain('citywide completeness remains unverified');
-        expect(row.evidenceFiles).toContain('research/old-city.json');
-        expect(city.dataFindings.registryBasis).toBe('No parcel polygon was obtained.');
-        for (const invalid of [
-            { status: 'technical-hold' }, { cityCode: '456' }, { sourceId: 'other-source' },
-            { checks: { ...qualification.checks, metric: { passed: false } } }
-        ]) {
-            put(repoRoot, 'research/qualification.json', { ...qualification, ...invalid });
-            const [unchanged] = collectReportEvidence({ registry, repoRoot }).cities;
-            expect(unchanged.registryBasis).toBe('No parcel polygon was obtained.');
-            expect(unchanged.checkedDate).toBe('2026-10-01');
-        }
+        expect(row).toMatchObject({
+            cityId: 'wup2025:10', checked: true, checkedDate: null, checkedDateEvidence: null,
+            registryFound: true, verifiedSample: true, sourceIds: ['source-a'],
+            registryBasis: expect.stringContaining('citywide completeness remains unverified'),
+            evidenceFiles: ['cities/10/settings.json', 'cities/10/failed-urls.json'],
+            failureUrls: ['https://offline.example/query?where=city'], impliedParcelsTried: null
+        });
+        expect(row.evidenceUrls).toEqual([
+            'https://source.example/api', 'https://offline.example/query?where=city'
+        ]);
     });
 
-    it('does not turn a two-region sample, a missing date, or a generated timestamp into national completeness', () => {
+    it('treats failed URL records as checked research but never reports absence or a working sample', () => {
         const repoRoot = fixtureRoot();
-        put(repoRoot, 'research/two-regions.json', { verifiedAt: '2026-09-30T10:00:00Z' });
+        put(repoRoot, 20, 'failed-urls.json', [{ url: 'http://portal.example/parcels', reason: 'connection refused' }]);
+        const registry = { sources: [], cities: [{ cityId: 'wup2025:20', wupCityCode: '20' }] };
+        const [row] = collectReportEvidence({ registry, repoRoot }).cities;
+        expect(row).toMatchObject({
+            checked: true, checkedDate: null, checkedDateEvidence: null,
+            registryFound: null, verifiedSample: false,
+            failureUrls: ['http://portal.example/parcels'],
+            evidenceFiles: ['cities/20/failed-urls.json']
+        });
+    });
+
+    it('binds app evidence only through exact settings appCityId values', () => {
+        const repoRoot = fixtureRoot();
+        put(repoRoot, 30, 'settings.json', settings(30, 'exact-app', 'source-exact', 'https://exact.example/data'));
+        put(repoRoot, 30, 'failed-urls.json', [{ url: 'https://failed.example/data' }]);
         const registry = {
-            updatedAt: '2099-01-01',
+            sources: [],
+            cities: [{ cityId: 'registry:unrelated', wupCityCode: 999, name: 'Exact App City', countryCode: 'AA' }]
+        };
+        const { appCities } = collectReportEvidence({ registry, repoRoot, appCities: [
+            { id: 'exact-app', name: 'Different visible name', cc: 'ZZ' },
+            { id: 'name-only', name: 'Exact App City', cc: 'AA' }
+        ] });
+        expect(appCities[0]).toMatchObject({
+            cityId: 'app:exact-app', checked: true, checkedDate: null,
+            registryFound: true, verifiedSample: true, sourceIds: ['source-exact'],
+            evidenceFiles: ['cities/30/settings.json', 'cities/30/failed-urls.json'],
+            failureUrls: ['https://failed.example/data']
+        });
+        expect(appCities[1]).toMatchObject({
+            cityId: 'app:name-only', checked: false, checkedDate: null,
+            registryFound: null, verifiedSample: false, sourceIds: [], evidenceFiles: []
+        });
+    });
+
+    it('retains country registry evidence metadata without opening referenced research files', () => {
+        const repoRoot = fixtureRoot();
+        const registry = {
             sources: [], cities: [],
-            countryProbes: [
-                { countryCode: 'AA', status: 'national_online_cadastre_verified_sample', checkedAt: '2026-09-29', evidenceFile: 'research/two-regions.json' },
-                { countryCode: 'BB', status: 'temporarily_unavailable', evidenceFile: 'research/no-date.json' },
-                { countryCode: 'CC', status: 'partial_or_unofficial_sample', checkedAt: '2026-09-29' }
-            ],
-            countryCoverage: [{ countryCode: 'AA', status: 'verified_countrywide', basis: 'two_region_test', reviewed: false, evidenceFile: 'research/two-regions.json' }],
-            subnationalCoverage: []
+            countryProbes: [{ countryCode: 'AA', status: 'national_online_cadastre_verified_sample',
+                checkedAt: '2026-10-12', evidenceFile: 'research/never-read.json',
+                inspireRecordUrl: 'https://country.example/record' }],
+            countryCoverage: [{ countryCode: 'AA', status: 'verified_countrywide',
+                evidenceFile: 'research/also-not-read.json' }],
+            subnationalCoverage: [{ countryCode: 'AA', regionsTotal: 2, regionWide: 1, partial: 1,
+                ruralRegistryOnly: 0, regions: [{ code: 'A1', name: 'Region A', status: 'reviewed', bucket: 'regionWide',
+                    evidenceFile: 'research/region.json' }] }]
         };
-        const rows = Object.fromEntries(collectReportEvidence({ registry, repoRoot }).countries.map(row => [row.countryCode, row]));
-        expect(rows.AA).toMatchObject({ nationalCadastreFound: true, verifiedNationalSample: true, countryCoverageSampled: true, checkedDate: '2026-09-30' });
-        expect(rows.BB).toMatchObject({ nationalCadastreFound: null, checked: false, checkedDate: null });
-        expect(rows.CC).toMatchObject({ nationalCadastreFound: null, checked: true, checkedDate: '2026-09-29' });
-    });
-
-    it('uses city-scoped research dates and leaves implied parcel attempts unknown outside Zagreb', () => {
-        const repoRoot = fixtureRoot();
-        put(repoRoot, 'research/old-city.json', { checkedAt: '2026-09-01' });
-        put(repoRoot, 'research/latest-city.json', { checkedAt: '2026-10-04', verifiedAt: '2026-10-05T12:00:00Z' });
-        put(repoRoot, 'research/other-city.json', { checkedAt: '2026-10-07' });
-        const registry = {
-            updatedAt: '2099-01-01',
-            sources: [{ sourceId: 'city-source', verificationStatus: 'verified_nonempty_sample', evidenceFile: 'research/other-city.json',
-                integrationAttempts: [{ checkedAt: '2026-10-06', operation: 'Separate check for city-b', outcome: 'technical-hold', evidenceFile: 'research/other-city.json' }] }],
-            cities: [
-                { cityId: 'city-a', parcelStatus: 'verified_sample_city_scope', sourceIds: ['city-source'], researchFile: 'research/old-city.json', latestAssessmentFile: 'research/latest-city.json' },
-                { cityId: 'geonames:3186886', parcelStatus: 'verified_sample_city_scope' },
-                { cityId: 'city-b', parcelStatus: 'temporarily_unavailable', researchFile: 'research/other-city.json' }
-            ], countryProbes: [], countryCoverage: [], subnationalCoverage: []
-        };
-        const rows = Object.fromEntries(collectReportEvidence({ registry, repoRoot }).cities.map(row => [row.cityId, row]));
-        expect(rows['city-a'].checkedDate).toBe('2026-10-05');
-        expect(rows['city-a'].checkedDateEvidence.path).toBe('research/latest-city.json');
-        expect(rows['city-b'].checkedDate).toBe('2026-10-07');
-        expect(rows['city-b'].impliedParcelsTried).toBeNull();
-        expect(rows['geonames:3186886'].impliedParcelsTried).toBeNull();
-    });
-
-    it('marks a documented investigation checked even when its evidence has no date', () => {
-        const repoRoot = fixtureRoot();
-        put(repoRoot, 'research/undated-review.json', { status: 'temporarily_unavailable', attempts: [{ outcome: 'timeout' }] });
-        const registry = {
-            sources: [],
-            cities: [{ cityId: 'undated-city', parcelStatus: 'temporarily_unavailable', researchFile: 'research/undated-review.json' }]
-        };
-        const [row] = collectReportEvidence({ registry, repoRoot }).cities;
-        expect(row).toMatchObject({ checked: true, checkedDate: null, checkedDateEvidence: null, registryFound: null });
-    });
-
-    it('accepts an old queue identifier when the research record confirms exact city and country', () => {
-        const repoRoot = fixtureRoot();
-        put(repoRoot, 'research/aliased-city.json', {
-            cityId: 'queue:34', name: 'Hajipur', countryCode: 'IN', checkedAt: '2026-09-29'
+        const { countries, warnings } = collectReportEvidence({ registry, repoRoot });
+        expect(countries[0]).toMatchObject({
+            countryCode: 'AA', checked: true, checkedDate: '2026-10-12',
+            nationalCadastreFound: true, verifiedNationalSample: true,
+            countryCoverageSampled: true, parentSource: false,
+            evidenceUrls: ['https://country.example/record'],
+            evidenceFiles: ['registry.json']
         });
-        const registry = {
-            sources: [],
-            cities: [{ cityId: 'wup2025:11027', wupCityCode: 11027, name: 'Hajipur', countryCode: 'IN',
-                parcelStatus: 'no_verified_open_endpoint_after_attempts', researchFile: 'research/aliased-city.json' }]
-        };
-        const [row] = collectReportEvidence({ registry, repoRoot }).cities;
-        expect(row).toMatchObject({ checked: true, checkedDate: '2026-09-29', checkedDateEvidence: { path: 'research/aliased-city.json' } });
-    });
-
-    it('does not let a shared source’s other-city attempt or nested evidence date update this city', () => {
-        const repoRoot = fixtureRoot();
-        put(repoRoot, 'research/shared-batch.json', {
-            checkedAt: '2026-10-01',
-            results: [{ cityId: 'city-b', checkedAt: '2026-10-10' }]
-        });
-        const registry = {
-            sources: [{ sourceId: 'shared', verificationStatus: 'verified_nonempty_sample', verifiedCityIds: ['city-a', 'city-b'],
-                integrationAttempts: [{ cityId: 'city-b', checkedAt: '2026-10-12', outcome: 'technical-hold', evidenceFile: 'research/shared-batch.json' }] }],
-            cities: [
-                { cityId: 'city-a', parcelStatus: 'verified_sample_city_scope', sourceIds: ['shared'], researchFile: 'research/shared-batch.json' },
-                { cityId: 'city-b', parcelStatus: 'verified_sample_city_scope', sourceIds: ['shared'], researchFile: 'research/shared-batch.json' }
-            ]
-        };
-        const rows = Object.fromEntries(collectReportEvidence({ registry, repoRoot }).cities.map(row => [row.cityId, row]));
-        expect(rows['city-a'].checkedDate).toBe('2026-10-01');
-        expect(rows['city-b'].checkedDate).toBe('2026-10-12');
-    });
-
-    it('requires a recorded experiment result before marking the known city as tried', () => {
-        const repoRoot = fixtureRoot();
-        put(repoRoot, 'guess-spike/README.md', '# Zagreb parcel estimation');
-        const registry = { sources: [], countries: [], countryProbes: [], countryCoverage: [], subnationalCoverage: [], cities: [
-            { cityId: 'geonames:3186886', parcelStatus: 'verified_sample_city_scope' },
-            { cityId: 'geonames:5128581', parcelStatus: 'verified_sample_city_scope' }
-        ] };
-        const [cityBeforeRun] = collectReportEvidence({ registry, repoRoot }).cities;
-        expect(cityBeforeRun.impliedParcelsTried).toBeNull();
-        put(repoRoot, 'guess-spike/output/sam3-zagreb/results.json', { tile: '2971_33018' });
-        const rows = Object.fromEntries(collectReportEvidence({ registry, repoRoot }).cities.map(row => [row.cityId, row]));
-        expect(rows['geonames:3186886'].impliedParcelsTried).toBe(true);
-        expect(rows['geonames:5128581'].impliedParcelsTried).toBeNull();
-    });
-
-    it('adds app-only evidence from city-scoped catalog records and Belgrade assessment', () => {
-        const repoRoot = fixtureRoot();
-        put(repoRoot, 'research/a-live.json', { cityId: 'a', checkedAt: '2026-10-01' });
-        put(repoRoot, 'research/b-live.json', { cityId: 'b', checkedAt: '2026-10-02' });
-        put(repoRoot, 'research/db-city-belgrade-live-2026-10-03.json', {
-            cityId: 'belgrade', countryCode: 'RS', assessedAt: '2026-10-03',
-            decision: 'Official cadastral map/data existence is established, but no anonymous endpoint was verified.',
-            authority: {
-                officialGeoSrbijaPage: 'https://authority.example/geosrbija',
-                officialeCadastrePage: 'https://authority.example/ecadastre'
-            }
-        });
-        const registry = {
-            sources: [{ sourceId: 'shared-source', verificationStatus: 'verified_live_city_adapter',
-                liveIntegration: { status: 'enabled', cityIds: ['a', 'b'], evidenceFile: 'research/a-live.json',
-                    additionalCityEvidence: { b: 'research/b-live.json' } },
-                integrationAttempts: [{ checkedAt: '2026-10-09', cityId: 'b', outcome: 'success' }] }],
-            cities: [], countryProbes: [], countryCoverage: [], subnationalCoverage: []
-        };
-        const sourceCatalog = { sources: [{ id: 'shared-source', cityIds: ['a', 'b'],
-            endpoint: 'https://data.example/parcels', evidenceFile: 'research/a-live.json' }] };
-        const result = collectReportEvidence({ registry, repoRoot, sourceCatalog, appCities: [
-            { id: 'a', name: 'Alpha', cc: 'AA', sourceId: 'shared-source' },
-            { id: 'b', name: 'Beta', cc: 'BB', sourceId: 'shared-source' },
-            { id: 'belgrade', name: 'Belgrade', cc: 'RS' }
-        ] });
-        const rows = Object.fromEntries(result.appCities.map(row => [row.cityId, row]));
-        expect(rows['app:a']).toMatchObject({ checked: true, checkedDate: '2026-10-01', registryFound: true, verifiedSample: true });
-        expect(rows['app:b']).toMatchObject({ checked: true, checkedDate: '2026-10-09', registryFound: true, verifiedSample: true });
-        expect(rows['app:a'].checkedDate).not.toBe('2026-10-09');
-        expect(rows['app:belgrade']).toMatchObject({ checked: true, checkedDate: '2026-10-03', registryFound: true, verifiedSample: false });
-        expect(rows['app:belgrade'].checkedDateEvidence.field).toBe('$.assessedAt');
-        expect(rows['app:belgrade'].evidenceUrls).toContain('https://authority.example/geosrbija');
-    });
-
-    it('does not copy a verified shared source status onto an untested catalog city', () => {
-        const repoRoot = fixtureRoot();
-        put(repoRoot, 'research/only-tested-city.json', { cityId: 'tested', checkedAt: '2026-10-02' });
-        const registry = {
-            sources: [{ sourceId: 'one-city-verified', verificationStatus: 'verified_live_city_adapter',
-                verifiedCityIds: ['tested'], liveIntegration: { cityIds: ['tested'], evidenceFile: 'research/only-tested-city.json' } }],
-            cities: [], countryProbes: [], countryCoverage: [], subnationalCoverage: []
-        };
-        const sourceCatalog = { sources: [{ id: 'one-city-verified', cityIds: ['tested', 'untested'],
-            endpoint: 'https://data.example/one-city', evidenceFile: 'research/only-tested-city.json' }] };
-        const result = collectReportEvidence({ registry, repoRoot, sourceCatalog, appCities: [
-            { id: 'tested', name: 'Tested City', cc: 'AA', sourceId: 'one-city-verified' },
-            { id: 'untested', name: 'Untested City', cc: 'BB', sourceId: 'one-city-verified' }
-        ] });
-        const rows = Object.fromEntries(result.appCities.map(row => [row.cityId, row]));
-        expect(rows['app:tested']).toMatchObject({ checked: true, checkedDate: '2026-10-02', verifiedSample: true });
-        expect(rows['app:untested']).toMatchObject({ checked: false, checkedDate: null, registryFound: true, verifiedSample: false });
+        expect(countries[0].subnationalEvidence.regions[0].evidenceFile).toBe('registry.json');
+        expect(warnings).toEqual([]);
     });
 });

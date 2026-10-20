@@ -1,0 +1,19 @@
+[
+  {
+    "url": "https://bhumi.atrbpn.go.id/bhumigs/umum/ows?service=WFS&version=1.0.0&request=GetCapabilities",
+    "reason": "404"
+  },
+  {
+    "url": "https://bhumi.atrbpn.go.id/bhumigs/umum/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=umum%3APersil&outputFormat=application%2Fjson&bbox=131.284%2C-0.887%2C131.295%2C-0.877%2CEPSG%3A4326&propertyName=nib",
+    "reason": "404"
+  },
+  {
+    "url": "https://bhumi.atrbpn.go.id/peta"
+  },
+  {
+    "url": "https://atlas.atrbpn.go.id/"
+  },
+  {
+    "url": "https://web.sorongkota.go.id/news/wali-kota-dan-wakil-wali-kota-sorong-terima-audiensi-bpn-bahas-pisah-sambut-kepala-bpn-dan-capaian-kinerja"
+  }
+]

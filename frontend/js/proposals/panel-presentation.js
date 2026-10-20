@@ -1,4 +1,4 @@
-// Explicit map-card/detail intent, with refreshes preserving the user's current view.
+// Proposal-panel presentation: view intent and source availability remain separate from map state.
 (function (root, factory) {
     const api = factory();
     if (typeof module === 'object' && module.exports) module.exports = api;
@@ -9,5 +9,9 @@
         if (requested === 'compact' || requested === 'details') return requested;
         return sameProposal && visible && minimized ? 'compact' : 'details';
     }
-    return Object.freeze({ resolve });
+    function parcelReferenceState({ hasGeometry = false, replacedInModel = false } = {}) {
+        if (replacedInModel) return 'replaced';
+        return hasGeometry ? 'available' : 'unloaded';
+    }
+    return Object.freeze({ resolve, parcelReferenceState });
 });

@@ -1,0 +1,18 @@
+[
+  {
+    "url": "https://nalanda.nic.in/en/service/land-records/"
+  },
+  {
+    "url": "https://nalanda.nic.in/en/map-of-district/"
+  },
+  {
+    "url": "https://dlrs.bihar.gov.in/services.html"
+  },
+  {
+    "url": "https://biharbhumi.bihar.gov.in/Biharbhumi/"
+  },
+  {
+    "url": "https://indianopenmaps.com/not-so-open/cadastrals/bihar/ncog/{z}/{x}/{y}.pbf",
+    "reason": "Held: sampling, completeness, binding (6 parcels, 53 requests) {\"densityProbe\":{\"errorType\":\"Error\",\"code\":\"parcel-source-unavailable\",\"httpStatus\":502},\"sampling\":{\"errorType\":\"Error\",\"code\":\"parcel-source-unavailable\",\"httpStatus\":502},\"binding\":{\"errorType\":\"Error\",\"code\":\"parcel-source-unavailable\",\"httpStatus\":502}}"
+  }
+]

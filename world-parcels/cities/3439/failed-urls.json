@@ -1,0 +1,19 @@
+[
+  {
+    "url": "https://cadastrenational.dgi.gouv.ci/"
+  },
+  {
+    "url": "https://geoportail.anstat.ci/",
+    "reason": "403"
+  },
+  {
+    "url": "https://www.ccia.ci/"
+  },
+  {
+    "url": "https://www.anafor.ci/"
+  },
+  {
+    "url": "https://sigfu.gouv.ci/api-sigfu-portail-data/query-parcelle/query-parcelle/localites",
+    "reason": "502"
+  }
+]

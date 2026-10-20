@@ -1,0 +1,22 @@
+[
+  {
+    "url": "https://www.catastro.gov.py/visor/"
+  },
+  {
+    "url": "https://www.catastro.gov.py/geoserver/ows?service=WFS&version=1.1.0&request=GetCapabilities"
+  },
+  {
+    "url": "https://www.catastro.gov.py/municipios"
+  },
+  {
+    "url": "https://informacionpublica.paraguay.gov.py/public/870528-ID66946MAPACIUDADDELESTEpdf-ID66946MAPACIUDADDELESTE.pdf"
+  },
+  {
+    "url": "https://www.catastro.gov.py/api/v1/public/departamentos",
+    "reason": "500"
+  },
+  {
+    "url": "https://www.catastro.gov.py/api/v1/public/distritos",
+    "reason": "500"
+  }
+]

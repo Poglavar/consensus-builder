@@ -1,0 +1,26 @@
+[
+  {
+    "url": "https://d14fnjoywemmi.cloudfront.net/jklr-api/api/v1/get-districts",
+    "reason": "401"
+  },
+  {
+    "url": "https://d14fnjoywemmi.cloudfront.net/jklr-api/api/v1/get-tehsil-by-district",
+    "reason": "401"
+  },
+  {
+    "url": "https://d14fnjoywemmi.cloudfront.net/jklr-api/api/v1/get-village-by-tehsil",
+    "reason": "401"
+  },
+  {
+    "url": "https://anantnag.nic.in/service/land-records-info/"
+  },
+  {
+    "url": "https://d14fnjoywemmi.cloudfront.net/jklr/"
+  },
+  {
+    "url": "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/14"
+  },
+  {
+    "url": "https://naksha.dolr.gov.in/NakshaPortal/"
+  }
+]

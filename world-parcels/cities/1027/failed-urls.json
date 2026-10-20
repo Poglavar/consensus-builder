@@ -1,0 +1,19 @@
+[
+  {
+    "url": "https://nlc.gov.sl/api",
+    "reason": "404"
+  },
+  {
+    "url": "https://oarg.gov.sl/land-register/",
+    "reason": "500"
+  },
+  {
+    "url": "https://app.molhcp.gov.sl/"
+  },
+  {
+    "url": "https://molhcp.gov.sl/directorate-of-gis-and-remote-sensing/"
+  },
+  {
+    "url": "https://nlc.gov.sl/digital-portal"
+  }
+]

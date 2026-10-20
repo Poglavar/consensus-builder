@@ -446,7 +446,7 @@ for (const size of [{ name: 'desktop', width: 1280, height: 900 }, { name: 'mobi
     await expect(review.locator('[data-impact="cash"]')).toContainText('1.00');
     await expect(review).toContainText('Cash the owner pays');
     // Owners with surplus land pay for it by default, so the total includes more than this 1.00.
-    await expect(modal.locator('[data-reparcel-cashtotal]')).toContainText(/and pay [\d,.]+\sEUR in total\. The sponsor (pays|receives) [\d,.]+\sEUR\./);
+    await expect(modal.locator('[data-reparcel-cashtotal]')).toContainText(/and [\d,.]+\sEUR to pay\. The sponsor would (pay|receive) [\d,.]+\sEUR\./);
     await expect(modal.locator('[data-reparcel-commit]')).toBeEnabled();
     await cash.fill('12.345');
     await expect(modal.locator('[data-reparcel-commit]')).toBeDisabled();

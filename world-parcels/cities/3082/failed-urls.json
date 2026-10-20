@@ -1,0 +1,19 @@
+[
+  {
+    "url": "https://kadastr.uz/en"
+  },
+  {
+    "url": "https://geoportal.kadastr.uz/"
+  },
+  {
+    "url": "https://cadastre.uz/en"
+  },
+  {
+    "url": "https://open.ngis.uz/",
+    "reason": "connect timeout (18 seconds)"
+  },
+  {
+    "url": "http://open.ngis.uz/",
+    "reason": "connect timeout (15 seconds)"
+  }
+]

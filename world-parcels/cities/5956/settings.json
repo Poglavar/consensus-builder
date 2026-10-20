@@ -1,0 +1,108 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "5956",
+  "name": "San Antonio, United States",
+  "point": [
+    29.464389001765,
+    -98.5436537993289
+  ],
+  "bindings": [
+    {
+      "appCityId": "sanantonio",
+      "runtimeConfig": {
+        "id": "sanantonio",
+        "label": "San Antonio, United States",
+        "currency": {
+          "locale": "en-US",
+          "code": "USD"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            29.464389001765,
+            -98.5436537993289
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            29.464389001765,
+            -98.5436537993289
+          ],
+          "fallbackDataset": [
+            -98.5436537993289,
+            29.464389001765
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "us-tx-bexar-bcad-public-archive-2022-propid",
+          "idPrefix": "US-TX-BEXAR-BCAD-2022-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 3,
+          "attribution": "<a href=\"https://gbra.maps.arcgis.com/home/item.html?id=ddc97094771f45be81fc6cd4842a1901\">San Antonio Bexar CAD parcels · public 2022 archive</a> · adapted"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "us-tx-bexar-bcad-public-archive-2022-propid",
+      "adapter": "arcgis",
+      "endpoint": "https://services7.arcgis.com/Q6vsXnxTnYcWB7qg/ArcGIS/rest/services/BEXAR_PARCELS/FeatureServer/0",
+      "idField": "Prop_ID",
+      "idType": "string",
+      "idPattern": "^[0-9]{1,10}$",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "US-TX-BEXAR-BCAD-2022-",
+      "outFields": [
+        "OBJECTID",
+        "Prop_ID"
+      ],
+      "pageSize": 500,
+      "maxFeatures": 5000,
+      "maxBboxKm2": 25,
+      "name": "San Antonio Bexar CAD parcels · public 2022 archive",
+      "cityIds": [
+        "sanantonio"
+      ],
+      "countryCode": "US",
+      "metricSrid": 26914,
+      "projection": "EPSG:26914",
+      "maxConcurrentQueries": 2,
+      "operator": "Guadalupe-Blanco River Authority ArcGIS organization (public publisher); underlying parcel attribution is Bexar CAD via TNRIS",
+      "catalogueUrl": "https://gbra.maps.arcgis.com/home/item.html?id=ddc97094771f45be81fc6cd4842a1901",
+      "attribution": "Bexar CAD via TNRIS · public GBRA archive (2022)",
+      "licenceNote": "Public GBRA-hosted archival mirror credited to Bexar CAD via TNRIS; January 2022 acquisition. Source age and legal/survey disclaimers informational; local sample does not establish current assessor state or citywide completeness.",
+      "scope": "115 unique full parcel polygons returned through 13 bounded 0.001-degree cells around the WUP locator. All 13 viewport reads, forced 3-row paging (18 features across six pages), 115 fresh exact-ID reads, explicit absent-ID semantics, a footprint query, and source binding passed through the existing ArcGIS adapter. All fresh geometries matched viewport hashes. The exact WUP locator is outside all retained polygons. This verifies a local sample only; city-boundary coverage and citywide completeness remain unverified. The GBRA-hosted item is a 2022 TNRIS-acquired snapshot attributed to Bexar CAD, not a live BCAD/SARA feed. The sample does not establish current assessor state, city boundary coverage, or legal survey accuracy."
+    }
+  ]
+}

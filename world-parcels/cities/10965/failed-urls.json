@@ -1,0 +1,29 @@
+[
+  {
+    "url": "https://biharbhumi.bihar.gov.in/"
+  },
+  {
+    "url": "https://bhunaksha.bihar.gov.in/10/index.jsp"
+  },
+  {
+    "url": "https://bhunaksha.bihar.gov.in/10/indexmain.jsp"
+  },
+  {
+    "url": "https://dlrs.bihar.gov.in/services.html"
+  },
+  {
+    "url": "https://bhunaksha.bihar.gov.in/ScalarDatahandler"
+  },
+  {
+    "url": "https://bhunaksha.bihar.gov.in/rest/MapInfo/getVVVVExtentGeoref"
+  },
+  {
+    "url": "https://bhunaksha.bihar.gov.in/rest/MapInfo/getPlotAtXY"
+  },
+  {
+    "url": "https://bhunaksha.bihar.gov.in/WMS?SERVICE=WMS&REQUEST=GetCapabilities"
+  },
+  {
+    "url": "https://bhunaksha.bihar.gov.in/rest/MapInfo/getPlotAtXY?state=10&giscode=RS29010201651320701&x=277000&y=2832200"
+  }
+]

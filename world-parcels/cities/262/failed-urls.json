@@ -1,0 +1,26 @@
+[
+  {
+    "url": "https://geoportal.ancpi.ro/inspireview/rest/services/CP/CP_View/MapServer/1"
+  },
+  {
+    "url": "https://www.primariatm.ro/valorificare-drept-proprietate/evidenta-patrimoniu-cadastru"
+  },
+  {
+    "url": "https://cadgen.ocpitm.ro/gismaps/"
+  },
+  {
+    "url": "https://geoportal.ancpi.ro/inspireview/rest/services/CP/CP_View/MapServer/1?f=json"
+  },
+  {
+    "url": "https://geoportal.ancpi.ro/inspireview/rest/services/CP/CP_View/MapServer/1/query"
+  },
+  {
+    "url": "https://geoportal.gov.ro/inspireview/rest/services/CP/CP_View/MapServer/1"
+  },
+  {
+    "url": "https://harta.primariatm.ro/"
+  },
+  {
+    "url": "https://www.primariatm.ro/2026/02/26/platforma-gis"
+  }
+]

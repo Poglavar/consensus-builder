@@ -1,0 +1,17 @@
+[
+  {
+    "url": "https://geoportal.gov.ro/inspireview/rest/services/CP/CP_View/MapServer?f=pjson"
+  },
+  {
+    "url": "https://geoportal.gov.ro/inspireview/rest/services/CP/CP_View/MapServer/1?f=pjson"
+  },
+  {
+    "url": "https://bv.ancpi.ro/"
+  },
+  {
+    "url": "https://bv.ancpi.ro/cadastru/"
+  },
+  {
+    "url": "https://geoportal.gov.ro/inspireview/rest/services/CP/CP_View/MapServer/1"
+  }
+]

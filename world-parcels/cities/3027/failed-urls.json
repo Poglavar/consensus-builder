@@ -1,0 +1,22 @@
+[
+  {
+    "url": "https://d14fnjoywemmi.cloudfront.net/jklr-api/api/v1/get-districts",
+    "reason": "401"
+  },
+  {
+    "url": "https://d14fnjoywemmi.cloudfront.net/jklr-api/api/v1/get-tehsil-by-district",
+    "reason": "401"
+  },
+  {
+    "url": "https://d14fnjoywemmi.cloudfront.net/jklr-api/api/v1/get-village-by-tehsil",
+    "reason": "401"
+  },
+  {
+    "url": "https://d14fnjoywemmi.cloudfront.net/jklr-api/api/v1/get-khasra-by-khata",
+    "reason": "401"
+  },
+  {
+    "url": "https://d14fnjoywemmi.cloudfront.net/jklr-api/api/v1/get-jamabandi-by-khasra",
+    "reason": "401"
+  }
+]

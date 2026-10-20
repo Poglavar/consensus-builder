@@ -1,0 +1,23 @@
+[
+  {
+    "url": "https://gansu.tianditu.gov.cn/qingyang/"
+  },
+  {
+    "url": "https://gansu.tianditu.gov.cn/qingyang/map/index.html"
+  },
+  {
+    "url": "https://gansu.tianditu.gov.cn/qingyang/speciallayer/map.html"
+  },
+  {
+    "url": "https://gansu.tianditu.gov.cn/qingyang/speciallayer/static/city.geojson"
+  },
+  {
+    "url": "https://gansu.tianditu.gov.cn:8888/fmserver-v0.1/layercataloggroup/selectbyfilter"
+  },
+  {
+    "url": "https://gansu.tianditu.gov.cn:8888/fmserver-v0.1/dataset/getfeaturesdata"
+  },
+  {
+    "url": "https://gansu.tianditu.gov.cn/subjectlayer-baiyin/layercataloggroup/selectbyfilter"
+  }
+]

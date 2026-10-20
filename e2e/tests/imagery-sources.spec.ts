@@ -29,7 +29,7 @@ test.describe('Imagery area sources', () => {
     await expect.poll(() => page.locator('.leaflet-tile-pane img[src*="imagery-sources"]').count()).toBeGreaterThan(0);
     await expect.poll(() => page.evaluate(() => [...document.querySelectorAll<HTMLImageElement>('.leaflet-tile-pane img')].filter(i => i.complete && i.naturalWidth > 0).length)).toBeGreaterThan(0);
     await expect(page.locator('.map-credits-control')).toContainText('Test orthophoto');
-    await page.evaluate(() => (window as any).baseTileLayer.fire('tileerror', { tile: document.querySelector('.leaflet-tile-pane img') }));
+    await page.evaluate(() => { (window as any).baseTileLayer.fire('tileerror', { tile: document.querySelector('.leaflet-tile-pane img') }); });
     await expect(page.locator('#imagery-source-status')).toBeVisible();
     await page.getByRole('button', { name: 'Retry imagery', exact: true }).click();
     await expect(page.locator('#imagery-source-status')).toHaveCount(0);

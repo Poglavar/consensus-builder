@@ -1,0 +1,26 @@
+[
+  {
+    "url": "http://gis.land.gov.bd/geoserver/wsDMMS/wms?service=WMS&request=GetCapabilities",
+    "reason": "503"
+  },
+  {
+    "url": "http://gis.land.gov.bd/geoserver/wsDMMS/ows?service=WFS&request=GetCapabilities&version=1.0.0",
+    "reason": "503"
+  },
+  {
+    "url": "http://gis.land.gov.bd/geoserver/wsDMMS/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetFeatureInfo&LAYERS=wsDMMS:mouza&QUERY_LAYERS=wsDMMS:mouza&INFO_FORMAT=application/json&SRS=EPSG:4326&BBOX=91.3923696544438,23.0124664645176,91.3939696544438,23.0140664645176&WIDTH=101&HEIGHT=101&X=50&Y=50&FEATURE_COUNT=3",
+    "reason": "503"
+  },
+  {
+    "url": "https://dlrs.gov.bd/site/page/767754cd-5340-4356-851f-210c944f5ba8/Find-Mouza-Map"
+  },
+  {
+    "url": "https://dlrs.portal.gov.bd/"
+  },
+  {
+    "url": "https://map.land.gov.bd/"
+  },
+  {
+    "url": "https://settlement.gov.bd/Map/MapSearch"
+  }
+]

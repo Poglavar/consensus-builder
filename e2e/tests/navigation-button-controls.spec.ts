@@ -171,17 +171,15 @@ test.describe('Navigation button controls @features', () => {
     });
     await page.route('https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js', route => route.fulfill({ path: path.resolve(__dirname, '../../frontend/vendor/leaflet-1.9.4/leaflet.js'), contentType: 'application/javascript' }));
     await page.route('https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css', route => route.fulfill({ path: path.resolve(__dirname, '../../frontend/vendor/leaflet-1.9.4/leaflet.css'), contentType: 'text/css' }));
-    await page.route('**/floor-plan-archive/catalogue', route => route.fulfill({ json: {
-      buildings: [{ id: 'registered-1', name: 'Navigation Fixture', kind: 'registered', planCount: 1, locationAvailable: true, wholeBuildingAvailable: false }],
-      sources: [], counts: { buildings: 1, sources: 0 },
+    await page.route('**/api/floor-plans?*', route => route.fulfill({ json: {
+      plans: [{
+        id: 'navigation-ground', scope: 'floor', floor: 0, label: 'Ground floor',
+        source: { sha256: 'a'.repeat(64), url: 'https://plans.example/ground.pdf' },
+        buildingId: 'registered-1', building: { name: 'Navigation Fixture', label: 'Navigation Fixture', location: { lng: 15.98, lat: 45.8 } },
+      }],
+      limit: 100, offset: 0, hasMore: false,
     } }));
-    await page.route('**/floor-plan-archive/status', route => route.fulfill({ json: { coverage: { agencies: { total: 0, websites: 0 } }, lastRun: null } }));
-    await page.route('**/floor-plan-archive/agencies?*', route => route.fulfill({ json: { agencies: [] } }));
-    await page.route('**/floor-plan-archive/building/registered-1', route => route.fulfill({ json: {
-      id: 'registered-1', name: 'Navigation Fixture', kind: 'registered', plans: [{ id: 'ground', label: 'Ground floor' }],
-      location: { latitude: 45.8, longitude: 15.98, basis: 'landmark' }, footprint: null, wholeBuilding: null,
-    } }));
-    await page.goto('/floor-plan-archive.html?lang=en');
+    await page.goto('/floor-plans.html?lang=en');
     const map = page.locator('#map');
     await expect(map.locator('.leaflet-control-zoom')).toBeVisible();
     await expect(map.locator('.leaflet-marker-icon, .leaflet-interactive')).toHaveCount(1);

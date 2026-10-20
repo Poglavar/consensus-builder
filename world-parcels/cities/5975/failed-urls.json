@@ -1,0 +1,20 @@
+[
+  {
+    "url": "https://addressing.cctexas.com/"
+  },
+  {
+    "url": "https://nuecescad.net/"
+  },
+  {
+    "url": "https://maps.pape-dawson.com/server2/rest/services/PD_GIS_Webmap/PD_GIS_WebMap__CorpusChristi_External/MapServer/610"
+  },
+  {
+    "url": "https://maps.pape-dawson.com/server2/rest/services/PD_GIS_Webmap/PD_GIS_WebMap__CorpusChristi_External/MapServer/1090"
+  },
+  {
+    "url": "https://maps.pape-dawson.com/server2/rest/services/PD_GIS_Webmap/PD_GIS_WebMap__CorpusChristi_External/MapServer/1090?f=pjson"
+  },
+  {
+    "url": "https://maps.pape-dawson.com/server2/rest/services/PD_GIS_Webmap/PD_GIS_WebMap__CorpusChristi_External/MapServer/1090/query"
+  }
+]

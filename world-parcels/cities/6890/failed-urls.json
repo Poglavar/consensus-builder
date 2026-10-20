@@ -1,0 +1,8 @@
+[
+  {
+    "url": "https://gismaps.outdoornebraska.gov/server/rest/services/NGPC_GIS_HQ_StateParcels/MapServer/0?f=pjson"
+  },
+  {
+    "url": "https://gis.lincoln.ne.gov/public/rest/services/Assessor/TaxParcels/MapServer/0?f=pjson"
+  }
+]

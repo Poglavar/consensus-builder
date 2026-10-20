@@ -1,0 +1,6 @@
+[
+  {
+    "url": "https://uldk.gugik.gov.pl/",
+    "reason": "Held: the Belchatow county ULDK backend gives no clean explicit absence. GetParcelById for the absent ID 100101_1.0013.999999 answers -1 brak wynikow followed by a backend failure fragment (bledny format odpowiedzi XML) after the aggregate-database line, which the adapter treats as unavailable (502). Every other check passed; reproduced 2026-10-12."
+  }
+]

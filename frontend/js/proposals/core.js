@@ -111,33 +111,17 @@ function isParcelReplacedByChildren(parcelId) {
 }
 
 function getProposalAreaMap(proposal) {
-    if (!proposal) return { areaMap: new Map(), totalArea: 0 };
-
-    const areaMap = new Map();
-    let totalArea = 0;
-    const parcelIds = Array.isArray(proposal?.cadastreParcelIds) ? proposal.cadastreParcelIds : [];
+    const parcelIds = normalizeParcelIdList(proposal?.cadastreParcelIds);
     const repository = window.CadastralParcelRepository;
-
-    parcelIds.forEach(id => {
-        const key = id?.toString ? id.toString() : String(id || '');
-        if (!key) return;
-
-        let area = 0;
-
-        const feature = repository?.get?.(key) || null;
-        const props = feature?.properties;
-        if (props) {
-            area = Number(props.calculatedArea || props.area || props.parcelArea || 0) || 0;
+    const measureGeometry = geometry => {
+        try { return window.__siteDraft?.siteAreaM2(geometry) ?? null; }
+        catch (error) {
+            console.warn('[getProposalAreaMap] Could not measure a source parcel:', error);
+            return null;
         }
-        if (!area && feature && typeof turf !== 'undefined' && typeof turf.area === 'function') {
-            try { area = Number(turf.area(feature)) || 0; } catch (_) { }
-        }
-
-        areaMap.set(key, area);
-        totalArea += area;
-    });
-
-    return { areaMap, totalArea };
+    };
+    // A partial sum cannot be a denominator for owner payout estimates.
+    return window.ProposalArea.sourceAreaMap(parcelIds, repository?.peekMany?.(parcelIds) || [], measureGeometry);
 }
 
 function resolveProposalIdKey(idOrHash) {
@@ -1239,11 +1223,19 @@ async function handleUserAcceptProposal(proposalId, parcelId, ownerKey = null) {
         showProposalAlertMessage('community_vote_has_no_owner_action', 'A community vote is decided by residents through its organiser; owners have nothing to accept.');
         return;
     }
+    if (getLifecycleStatus(proposal) === 'Unknown') {
+        showProposalAlertMessage('proposal_lifecycle_unknown', 'The proposal status is unknown. Reload it before accepting.');
+        return;
+    }
 
-    // Validate the full LR deal before opening a wallet flow. The local receipt must bind to
+    // Validate the current terms before opening a wallet flow. The local receipt must bind to
     // exactly the reviewed terms; a malformed allocation must not reach a chain call first.
-    if (proposalRequiresDealConsent(proposal) && !currentConsentBindingHash(proposal)) {
-        showProposalAlertMessage('readjustment_terms_invalid', 'Complete and correct the readjustment allocations and cash terms before accepting.');
+    if (!currentConsentBindingHash(proposal)) {
+        if (proposalRequiresDealConsent(proposal)) {
+            showProposalAlertMessage('readjustment_terms_invalid', 'Complete and correct the readjustment allocations and cash terms before accepting.');
+        } else {
+            showProposalAlertMessage('proposal_terms_unavailable', 'The current proposal terms could not be verified. Reload the proposal before accepting.');
+        }
         return;
     }
 
@@ -1262,48 +1254,16 @@ async function handleUserAcceptProposal(proposalId, parcelId, ownerKey = null) {
 
     // Ensure owner acceptance entry exists and get owner slots
     const ownerSlots = getOwnerSlotsForParcel(parcelId);
-    const entry = ensureOwnerAcceptanceEntry(proposal, normalizedParcelId, ownerSlots, { syncWithParcelAcceptance: false });
-    if (!entry) {
+    const entry = ensureOwnerAcceptanceEntry(proposal, normalizedParcelId, ownerSlots);
+    if (!entry?.ownerOrder.length) {
         showProposalAlertMessage('unable_to_determine_owner_shares_for_this_parcel', 'Unable to determine owner shares for this parcel.');
         return;
     }
 
-    // Determine the effective owner key
-    let effectiveOwnerKey = ownerKey;
-    let targetSlot = null;
-
-    if (effectiveOwnerKey) {
-        // If ownerKey is provided, check if it exists in the proposal's stored owner data
-        if (entry.owners[effectiveOwnerKey]) {
-            // Found in stored data, try to find in current slots for display, but use stored data if not found
-            targetSlot = ownerSlots.find(slot => slot.key === effectiveOwnerKey) || entry.owners[effectiveOwnerKey];
-        } else if (entry.ownerOrder.includes(effectiveOwnerKey)) {
-            // Key exists in ownerOrder but not in owners, use it anyway
-            targetSlot = ownerSlots.find(slot => slot.key === effectiveOwnerKey) || { key: effectiveOwnerKey };
-        } else {
-            // Key not found in stored data, try to find in current slots
-            targetSlot = ownerSlots.find(slot => slot.key === effectiveOwnerKey);
-            if (targetSlot) {
-                // Found in current slots, add to stored data
-                entry.owners[effectiveOwnerKey] = {
-                    key: targetSlot.key,
-                    displayName: targetSlot.displayName || `Owner`,
-                    shareText: targetSlot.shareText || '',
-                    shareDetail: targetSlot.shareDetail || '',
-                    type: targetSlot.type || 'unknown',
-                    agentId: targetSlot.agentId || null
-                };
-            }
-        }
-    } else if (ownerSlots.length === 1) {
-        // No ownerKey provided, but only one slot available
-        targetSlot = ownerSlots[0];
-        effectiveOwnerKey = targetSlot.key;
-    } else if (entry.ownerOrder.length === 1) {
-        // No ownerKey provided, but only one owner in stored data
-        effectiveOwnerKey = entry.ownerOrder[0];
-        targetSlot = entry.owners[effectiveOwnerKey] || ownerSlots.find(slot => slot.key === effectiveOwnerKey) || { key: effectiveOwnerKey };
-    }
+    // Determine the effective owner key from the current roster only. A stored decision or an
+    // old ownerOrder entry is not a fallback owner; a single current slot can select itself.
+    const effectiveOwnerKey = ownerKey || (ownerSlots.length === 1 ? ownerSlots[0].key : null);
+    const targetSlot = ownerSlots.find(slot => slot.key === effectiveOwnerKey);
 
     if (!targetSlot || !effectiveOwnerKey) {
         showProposalAlertMessage('please_choose_which_owner_share_you_are_accepting_for', 'Please choose which owner share you are accepting for.');
@@ -1333,17 +1293,21 @@ async function handleUserAcceptProposal(proposalId, parcelId, ownerKey = null) {
         return;
     }
 
+    let chainResult = null;
     if (isOnChain) {
         try {
             if (typeof updateStatus === 'function') {
                 updateStatus(isVote ? 'Submitting vote on chain...' : 'Submitting acceptance on chain...');
             }
-            await bridge[bridgeMethod]({
+            chainResult = await bridge[bridgeMethod]({
                 proposalId: nftInfo.tokenId,
                 parcelId: normalizedParcelId,
                 chainId: nftInfo.chain,
                 contractAddress: nftInfo.contract
             });
+            if (typeof updateStatus === 'function') {
+                updateStatus(isVote ? 'Vote recorded on chain.' : 'Acceptance recorded on chain.');
+            }
         } catch (onchainErr) {
             console.warn(isVote ? 'On-chain vote failed:' : 'On-chain acceptance failed:', onchainErr);
             const friendlyMessage = parseOnChainErrorMessage(onchainErr);
@@ -1358,13 +1322,27 @@ async function handleUserAcceptProposal(proposalId, parcelId, ownerKey = null) {
         acceptedByName: userAgent.name
     });
 
-    if (!result) {
-        return;
+    // Local consent cannot establish execution. The EVM bridge separately reads the exact
+    // confirmed block; update only lifecycle, and only while the record still names that NFT.
+    if (isOnChain && !isVote) {
+        const current = proposalStorage.getProposal(proposalId);
+        const lifecycle = window.ProposalChainStatus?.confirmedAcceptanceLifecycle(
+            chainResult, nftInfo, getProposalNftInfo(current));
+        if (current && lifecycle) {
+            current.lifecycleStatus = lifecycle;
+            proposalStorage._indexProposal?.(current);
+            proposalStorage.save();
+            const detailsContent = document.getElementById('proposal-details-content');
+            if (detailsContent?.dataset.proposalId === String(current.proposalId)) {
+                showProposalInfo(current, parcelId, true);
+            }
+        } else {
+            showProposalAlertMessage('acceptance_confirmed_status_unavailable',
+                'Acceptance was confirmed on-chain, but the proposal status could not be refreshed. The previous status is still shown. Reload the proposal to check it.');
+        }
     }
 
-    if (isOnChain && typeof updateStatus === 'function') {
-        updateStatus(isVote ? 'Vote recorded on chain.' : 'Acceptance recorded on chain.');
-    }
+    if (!result) return;
 
     const ownerLabel = targetSlot.shareText
         ? `${targetSlot.displayName} (${targetSlot.shareText})`
@@ -1383,31 +1361,18 @@ async function handleUserAcceptProposal(proposalId, parcelId, ownerKey = null) {
     const proposalLinkHtml = `<button type="button" data-proposal-id="${proposalIdAttr}" class="cb-link proposal-link-clickable">${proposalIdForLog}</button>`;
     const agentLinkHtml = `<button type="button" data-agent-id="${userAgent.id}" class="cb-link agent-link-clickable">${userAgent.name}</button>`;
 
-    if (result.proposalExecuted) {
-        if (typeof addUserActionToGameLog === 'function') {
-            addUserActionToGameLog(`${agentLinkHtml} executed proposal ${proposalLinkHtml} after confirming acceptance for ${ownerLabel}.`);
-        }
-        if (!userAgent.proposalsExecuted) {
-            userAgent.proposalsExecuted = [];
-        }
-        if (!userAgent.proposalsExecuted.includes(proposalId)) {
-            userAgent.proposalsExecuted.push(proposalId);
-            agentStorage.updateAgent(userAgent.id, { proposalsExecuted: userAgent.proposalsExecuted });
-        }
-    } else {
-        if (typeof addUserActionToGameLog === 'function') {
-            const logMsg = isVote
-                ? `${agentLinkHtml} voted yes as ${ownerLabel} on proposal ${proposalLinkHtml}.`
-                : `${agentLinkHtml} recorded acceptance from ${ownerLabel} for parcel ${result.parcelNumber || parcelId} (${proposalLinkHtml}).`;
-            addUserActionToGameLog(logMsg);
-        }
-        if (!userAgent.proposalsAccepted) {
-            userAgent.proposalsAccepted = [];
-        }
-        if (!userAgent.proposalsAccepted.includes(proposalId)) {
-            userAgent.proposalsAccepted.push(proposalId);
-            agentStorage.updateAgent(userAgent.id, { proposalsAccepted: userAgent.proposalsAccepted });
-        }
+    if (typeof addUserActionToGameLog === 'function') {
+        const logMsg = isVote
+            ? `${agentLinkHtml} voted yes as ${ownerLabel} on proposal ${proposalLinkHtml}.`
+            : `${agentLinkHtml} recorded acceptance from ${ownerLabel} for parcel ${result.parcelNumber || parcelId} (${proposalLinkHtml}).`;
+        addUserActionToGameLog(logMsg);
+    }
+    if (!userAgent.proposalsAccepted) {
+        userAgent.proposalsAccepted = [];
+    }
+    if (!userAgent.proposalsAccepted.includes(proposalId)) {
+        userAgent.proposalsAccepted.push(proposalId);
+        agentStorage.updateAgent(userAgent.id, { proposalsAccepted: userAgent.proposalsAccepted });
     }
 
     // Preserve exact scroll/anchor position BEFORE any updates

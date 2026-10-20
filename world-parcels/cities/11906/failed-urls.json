@@ -1,0 +1,22 @@
+[
+  {
+    "url": "https://www.lishui.gov.cn/",
+    "reason": "403"
+  },
+  {
+    "url": "https://www.lishui.gov.cn/art/2024/7/11/art_1229830585_5328568.html"
+  },
+  {
+    "url": "https://data.lishui.gov.cn/"
+  },
+  {
+    "url": "https://data.lishui.gov.cn/api-gateway/jpaas-lssjkf-web-server/interface/index/queryBaseData"
+  },
+  {
+    "url": "https://data.lishui.gov.cn/api-gateway/jpaas-lssjkf-web-server/interface/opendata/queryOpenBaseData"
+  },
+  {
+    "url": "https://data.lishui.gov.cn/api-gateway/jpaas-lssjkf-web-server/interface/opendata/getVisualData",
+    "reason": "500"
+  }
+]

@@ -24,7 +24,8 @@
         "lens:member": "node lens/run.mjs",
         "smoke:prod:parcels": "node scripts/smoke-production-bbox.mjs",
         "plan-yield": "node scripts/plan-yield.js",
-        "build:parcels:browser": "node scripts/build-browser-parcels.mjs"
+        "build:parcels:browser": "node scripts/build-browser-parcels.mjs",
+        "build:vocabulary": "node scripts/build-vocabulary.mjs"
     },
     "dependencies": {
         "@anthropic-ai/sdk": "^0.126.0",
@@ -66,6 +67,7 @@
         "@modelcontextprotocol/client": "^2.0.0",
         "@vitest/coverage-v8": "^4.1.11",
         "esbuild": "0.28.2",
+        "jsonld": "9.0.0",
         "nodemon": "^3.1.14",
         "supertest": "^7.0.0",
         "vitest": "^4.1.11"

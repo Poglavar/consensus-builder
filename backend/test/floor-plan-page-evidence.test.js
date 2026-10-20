@@ -169,6 +169,18 @@ describe('floor-plan page evidence', () => {
         expect(result.assets[0]).toMatchObject({ kind: 'floor-plan' }); expect(result.links.map(link => link.kind)).toContain('project'); expect(result.links.map(link => link.kind)).toContain('contact');
     });
     it('does not mistake a footer office address for property location', () => { const result = extractPageEvidence('<h1>Stan bez adrese</h1><footer>Agencija, Ilica 1, Zagreb</footer>', 'https://agency.test/stan'); expect(result.listing).toBeNull(); });
+    it('keeps agency-office text and an unbound office pin out of location evidence', () => {
+        const interklasik = `<script type="application/ld+json">{"@type":"RealEstateListing","url":"https://interklasik.hr/nekretnine/stan-perjavica","name":"Stan Perjavica","geo":{"latitude":45.81444,"longitude":15.97798}}</script>
+          <main><h1>Stan Perjavica</h1><p>Adresa nekretnine: Male putine 12, Perjavica. Za sve dodatne informacije kontaktirajte INTERKLASIK NEKRETNINE. Froudeova 7, Zagreb. Kontakt: 01 789 02 96. E-mail: info@example.test</p></main>`;
+        const lika = `<main><h1>Zagreb Dubrava, Mirka Deanovića</h1><p>Prodaje se dvosobni stan u Dubravi. Lika nekretnine d.o.o. Palmotićeva 76</p></main>`;
+        const interklasikEvidence = extractPageEvidence(interklasik, 'https://interklasik.hr/nekretnine/stan-perjavica');
+        const likaEvidence = extractPageEvidence(lika, 'https://www.nekretnine-lika.hr/nekretnine/stan-dubrava');
+        expect(interklasikEvidence.text).toContain('Male putine 12');
+        expect(interklasikEvidence.text).not.toContain('Froudeova 7');
+        expect(interklasikEvidence.listing.coordinates).toBeNull();
+        expect(likaEvidence.text).toContain('Prodaje se dvosobni stan u Dubravi.');
+        expect(likaEvidence.text).not.toContain('Palmotićeva 76');
+    });
     it('blocks challenge pages and returns no listing', () => { const result = extractPageEvidence('<title>Access denied</title><body>Verify you are human</body>', 'https://agency.test/stan'); expect(result.blocked).toBe(true); expect(result.listing).toBeNull(); });
     it('keeps missing numbers null and distinguishes generic PDFs', () => { const result = extractPageEvidence('<h1>Projekt</h1><a href="/brochure.pdf">Brochure</a>', 'https://agency.test/project'); expect(result.listing).toBeNull(); expect(result.assets[0].kind).toBe('document'); });
     it('extracts the supplied Eurovilla Avenue V evidence without treating challenge scripts as a block', () => {

@@ -1,0 +1,10 @@
+[
+  {
+    "url": "https://gisbhunaksha.punjab.gov.in/WMS?SERVICE=WMS&REQUEST=GetCapabilities",
+    "reason": "500"
+  },
+  {
+    "url": "https://gisbhunaksha.punjab.gov.in/rest/MapInfo/getMapInfo",
+    "reason": "404"
+  }
+]

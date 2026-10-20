@@ -1,0 +1,127 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "3595",
+  "name": "Rosario, Argentina",
+  "point": [
+    -32.9481688811101,
+    -60.6765246060875
+  ],
+  "bindings": [
+    {
+      "appCityId": "rosario",
+      "runtimeConfig": {
+        "id": "rosario",
+        "label": "Rosario, Argentina",
+        "currency": {
+          "locale": "es-AR",
+          "code": "ARS"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            -32.9481688811101,
+            -60.6765246060875
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            -32.9481688811101,
+            -60.6765246060875
+          ],
+          "fallbackDataset": [
+            -60.6765246060875,
+            -32.9481688811101
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "ar-rosario-section9-parcel",
+          "idPrefix": "AR-ROS-S9-MSLINK-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 3,
+          "attribution": "<a href=\"https://datosabiertos.rosario.gob.ar/api/1/metastore/schemas/dataset/items/0b4f7e3e-ac2e-4f32-b523-a974c6209e3f\">Rosario municipal parcel Section 9</a> · adapted"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "ar-rosario-section9-parcel",
+      "adapter": "geojson-snapshot",
+      "endpoint": "https://datosabiertos.rosario.gob.ar/sites/default/files/resources/parcelas_seccion9_json.csv",
+      "idPrefix": "AR-ROS-S9-MSLINK-",
+      "idFields": [
+        "MSLINK"
+      ],
+      "parcelNumberField": "MSLINK",
+      "outFields": [
+        "MSLINK",
+        "SECCION",
+        "MANZANA",
+        "GRAFICO",
+        "SD",
+        "SP"
+      ],
+      "snapshotFormat": "csv-geojson",
+      "csvGeometryField": "GEOJSON",
+      "csvFields": [
+        "MSLINK",
+        "SECCION",
+        "MANZANA",
+        "GRAFICO",
+        "SD",
+        "SP",
+        "PASILLO",
+        "CARPETA",
+        "GEOJSON"
+      ],
+      "maxSnapshotBytes": 12582912,
+      "maxSnapshotFeatures": 20000,
+      "expectedSnapshotFeatures": 15854,
+      "expectedEtag": "\"4e90aa-65d416a9ab2ee\"",
+      "maxFeatures": 3000,
+      "maxBboxKm2": 1,
+      "name": "Rosario municipal parcel Section 9",
+      "operator": "Municipalidad de Rosario",
+      "catalogueUrl": "https://datosabiertos.rosario.gob.ar/api/1/metastore/schemas/dataset/items/0b4f7e3e-ac2e-4f32-b523-a974c6209e3f",
+      "attribution": "Municipalidad de Rosario · Section 9 parcels · ODC Attribution 1.0 · adapted",
+      "countryCode": "AR",
+      "metricSrid": 32720,
+      "cityIds": [
+        "rosario"
+      ],
+      "scope": "Rosario municipal cadastral Section 9 only. The 7 October 2026 public CSV snapshot contains 15,854 distinct MSLINK strings and full embedded WGS84 polygons. Its exact strong ETag and feature count are pinned; unexpected revisions fail closed pending review. Thirteen aligned cells plus four pans around the unchanged WUP locator verified 826 distinct full geometries; all 826 fresh exact-ID reads reproduce geometry after a separate complete 5,148,842-byte HTTP 200 download. The WUP-containing parcel passes full footprint lookup and complete proposal binding. GEOS in EPSG:32720 found no invalid polygons, duplicate geometry, sampled overlaps above 0.01 m² or operation errors. Only geometry and six cadastral/code identifiers are retained; the CSV parser preserves string identity and rejects schema drift, invalid embedded geometry and malformed rows. No equality with differently formatted GML identifiers is claimed. Other sections, citywide completeness, legal title, survey accuracy and identity continuity after replacement remain unverified.",
+      "licenceNote": "ODC Attribution 1.0 per official catalogue; Section 9 only, 7 October 2026 CSV revision. Legal title and survey accuracy unverified.",
+      "maxConcurrentQueries": 1
+    }
+  ]
+}

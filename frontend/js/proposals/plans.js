@@ -49,17 +49,17 @@
         return byMember;
     }
 
-    // The plan line under a proposal row: "Plan: <name>" when it is in one plan, "In N plans" when
-    // in several (the line then opens a list of them), nothing when in none.
+    // The plan line under a proposal row: "Part of named plan <name>" when it is in one plan,
+    // "In N named plans" when in several (the line then opens a list of them), nothing when in none.
     function planLineHtml(plans, { t = plainT } = {}) {
         const list = current(plans);
         if (!list.length) return '';
         const icon = '<i class="fas fa-diagram-project" aria-hidden="true"></i>';
         if (list.length === 1) {
-            const label = t('plans.line.single', 'Part of plan {{name}}', { name: planLabel(list[0]) });
+            const label = t('plans.line.single', 'Part of named plan {{name}}', { name: planLabel(list[0]) });
             return `<div class="proposal-plan-line"><button type="button" class="cb-link proposal-plan-link" data-plan-slug="${escapeText(list[0].slug)}">${icon} ${escapeText(label)}</button></div>`;
         }
-        const label = t('plans.line.many', 'In {{count}} plans', { count: list.length });
+        const label = t('plans.line.many', 'In {{count}} named plans', { count: list.length });
         const options = list.map(plan => `<li><button type="button" class="cb-link proposal-plan-link" data-plan-slug="${escapeText(plan.slug)}">${escapeText(planLabel(plan))}</button></li>`).join('');
         return `<div class="proposal-plan-line"><button type="button" class="cb-link proposal-plan-toggle" aria-expanded="false">${icon} ${escapeText(label)}</button><ul class="proposal-plan-options" hidden>${options}</ul></div>`;
     }
@@ -76,7 +76,7 @@
     function planRowsHtml(plans, { t = plainT, emptyText } = {}) {
         const list = current(plans);
         if (!list.length) {
-            return `<p class="plan-list-empty">${escapeText(emptyText || t('plans.list.empty', 'No plans here yet.'))}</p>`;
+            return `<p class="plan-list-empty">${escapeText(emptyText || t('plans.list.empty', 'No named plans here yet.'))}</p>`;
         }
         const rows = list.map(plan => {
             const count = Number.isFinite(plan.memberCount) ? plan.memberCount : (plan.proposalRowIds || []).length;
@@ -232,9 +232,8 @@
 
     // A proposal record's published row id, or null for one held only in this browser.
     function serverIdOfRecord(record) {
-        if (!record) return null;
-        const id = typeof root.getServerProposalId === 'function' ? root.getServerProposalId(record) : record.serverProposalId;
-        return id !== undefined && id !== null && /^\d+$/.test(String(id)) ? String(id) : null;
+        const rowIdOf = root?.getSerialProposalId || (typeof require === 'function' ? require('./sharing.js').getSerialProposalId : null);
+        return rowIdOf ? rowIdOf(record) : null;
     }
 
     function appendToBody(row, html) {

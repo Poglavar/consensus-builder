@@ -1,0 +1,6 @@
+[
+  {
+    "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?SERVICE=WFS&REQUEST=GetCapabilities",
+    "reason": "403"
+  }
+]

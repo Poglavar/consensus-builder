@@ -1,0 +1,127 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "1864",
+  "name": "Beersheba, Israel",
+  "point": [
+    31.2545180899882,
+    34.7869140000578
+  ],
+  "bindings": [
+    {
+      "appCityId": "beersheba",
+      "runtimeConfig": {
+        "id": "beersheba",
+        "wupCityCode": "1864",
+        "label": "Beersheba, Israel",
+        "currency": {
+          "locale": "he-IL",
+          "code": "ILS"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            31.2545180899882,
+            34.7869140000578
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            31.2545180899882,
+            34.7869140000578
+          ],
+          "fallbackDataset": [
+            34.7869140000578,
+            31.2545180899882
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "il-govmap-cadastral-parcel-rows",
+          "idPrefix": "govmap:row:",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Govmap public cadastral parcel rows; public geometry, publisher conditions informational. 123 complete source parcel rows in 13 separate city cells; fresh shared-identity and footprint/binding checks pass. Provider OBJECTID references are not statutory parcel numbers. Wider completeness and legal currentness unverified. Geographic city scope does not express a political boundary or recognition claim. Large exact-ID batches can be slow (40 rows took 85 seconds); original transient timeouts are retained in evidence."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "adapter": "wfs",
+      "id": "il-govmap-cadastral-parcel-rows",
+      "endpoint": "https://open.govmap.gov.il/geoserver/opendata/wfs",
+      "featureType": "opendata:PARCEL_ALL",
+      "geometryField": "the_geom",
+      "requestProperties": true,
+      "version": "2.0.0",
+      "idField": "OBJECTID",
+      "idType": "integer",
+      "idPrefix": "govmap:row:",
+      "outFields": [
+        "OBJECTID",
+        "PARCEL_ID",
+        "GUSH_NUM",
+        "GUSH_SUFFI",
+        "PARCEL"
+      ],
+      "pageSize": 100,
+      "idBatchSize": 3,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 1,
+      "responseSrid": 3857,
+      "minRequestIntervalMs": 100,
+      "name": "Govmap public cadastral parcel rows",
+      "parcelNumberField": "PARCEL",
+      "countryCode": "IL",
+      "metricSrid": 32636,
+      "cityIds": [
+        "beersheba"
+      ],
+      "maxConcurrentQueries": 2,
+      "scope": "123 complete source parcel rows in 13 separate city cells; fresh shared-identity and footprint/binding checks pass. Provider OBJECTID references are not statutory parcel numbers. Wider completeness and legal currentness unverified. Geographic city scope does not express a political boundary or recognition claim. Large exact-ID batches can be slow (40 rows took 85 seconds); original transient timeouts are retained in evidence.",
+      "catalogueUrl": "https://www.govmap.gov.il/",
+      "attribution": "Govmap public cadastral parcel rows; public geometry, publisher conditions informational. 123 complete source parcel rows in 13 separate city cells; fresh shared-identity and footprint/binding checks pass. Provider OBJECTID references are not statutory parcel numbers. Wider completeness and legal currentness unverified. Geographic city scope does not express a political boundary or recognition claim. Large exact-ID batches can be slow (40 rows took 85 seconds); original transient timeouts are retained in evidence.",
+      "licenceNote": "Govmap public cadastral parcel rows; public geometry, publisher conditions informational. 123 complete source parcel rows in 13 separate city cells; fresh shared-identity and footprint/binding checks pass. Provider OBJECTID references are not statutory parcel numbers. Wider completeness and legal currentness unverified. Geographic city scope does not express a political boundary or recognition claim. Large exact-ID batches can be slow (40 rows took 85 seconds); original transient timeouts are retained in evidence.",
+      "cityScopes": {
+        "eastjerusalem": "6 complete source parcel rows in 13 separate city cells; fresh shared-identity and footprint/binding checks pass. Provider OBJECTID references are not statutory parcel numbers. Wider completeness and legal currentness unverified. Geographic city scope does not express a political boundary or recognition claim. Large exact-ID batches can be slow (40 rows took 85 seconds); original transient timeouts are retained in evidence.",
+        "jerusalem": "123 complete source parcel rows in 13 separate city cells; fresh shared-identity and footprint/binding checks pass. Provider OBJECTID references are not statutory parcel numbers. Wider completeness and legal currentness unverified. Geographic city scope does not express a political boundary or recognition claim. Large exact-ID batches can be slow (40 rows took 85 seconds); original transient timeouts are retained in evidence."
+      },
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "IL",
+          "basis": "Survey of Israel national cadastral parcel layer published through GovMap.",
+          "evidence": []
+        }
+      }
+    }
+  ]
+}

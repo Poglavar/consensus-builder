@@ -1,0 +1,15 @@
+[
+  {
+    "url": "http://data.qingdao.gov.cn/"
+  },
+  {
+    "url": "http://zrzygh.qingdao.gov.cn/"
+  },
+  {
+    "url": "https://shandong.tianditu.gov.cn/shixian/qingdao/index.html"
+  },
+  {
+    "url": "http://data.qingdao.gov.cn/ ; https://data.qingdao.gov.cn/",
+    "reason": "503"
+  }
+]

@@ -1,0 +1,112 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "5188",
+  "name": "Ciudad Juárez, Mexico",
+  "point": [
+    31.6633818209033,
+    -106.421992448914
+  ],
+  "bindings": [
+    {
+      "appCityId": "ciudadjuarez",
+      "runtimeConfig": {
+        "id": "ciudadjuarez",
+        "label": "Ciudad Juárez, Mexico",
+        "currency": {
+          "locale": "es-MX",
+          "code": "MXN"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            31.6633818209033,
+            -106.421992448914
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            31.6633818209033,
+            -106.421992448914
+          ],
+          "fallbackDataset": [
+            -106.421992448914,
+            31.6633818209033
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "mx-juarez-predios",
+          "idPrefix": "MX-JUA-PREDIO-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 3,
+          "attribution": "<a href=\"https://www.imip.org.mx/sigem/\">IMIP Ciudad Juárez municipal Predios</a> · adapted"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "mx-juarez-predios",
+      "adapter": "arcgis",
+      "endpoint": "https://sigimip.org.mx/server/rest/services/CartografiaBase/FeatureServer/3",
+      "idPrefix": "MX-JUA-PREDIO-",
+      "idField": "GlobalID",
+      "objectIdField": "OBJECTID",
+      "idType": "string",
+      "parcelNumberField": "clavetxt",
+      "outFields": [
+        "OBJECTID",
+        "GlobalID",
+        "clavetxt"
+      ],
+      "pageSize": 1000,
+      "maxFeatures": 3000,
+      "maxBboxKm2": 1,
+      "boundsSrid": 32613,
+      "boundsProjection": "+proj=utm +zone=13 +datum=WGS84 +units=m +no_defs",
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "maxConcurrentQueries": 2,
+      "name": "IMIP Ciudad Juárez municipal Predios",
+      "operator": "Instituto Municipal de Investigación y Planeación (IMIP), Municipio de Juárez",
+      "catalogueUrl": "https://www.imip.org.mx/sigem/",
+      "attribution": "IMIP Ciudad Juárez · CartografiaBase Predios · adapted",
+      "countryCode": "MX",
+      "metricSrid": 32613,
+      "cityIds": [
+        "ciudadjuarez"
+      ],
+      "scope": "203 valid, distinct IMIP municipal Predios geometries verified in thirteen bounded 0.001-degree cells around the unchanged Ciudad Juárez WUP locator, which lies in a returned full polygon. GlobalID is the publisher-declared per-feature identity; OBJECTID is transport identity, and clavetxt remains only a label. The earlier clavetxt-based full-grid exact read matched 23,424 source rows because the label 0 is repeated, so that descriptor is rejected without filtering out such rows. Complete object-ID manifests, forced three-row paging of 31 source features over eleven geometry pages, all 203 fresh GlobalID reads, valid synthetic UUID absence, footprint and binding passed. Independent GEOS in EPSG:32613 found all 203 valid, nonduplicate and no sampled positive-area overlaps above 0.01 m² or operation errors. A malformed non-UUID absence probe correctly returned HTTP 400 and is preserved separately. All source shapes and labels remain unchanged. Citywide completeness, GlobalID continuity after publisher replacement, survey accuracy and legal-title semantics remain unverified.",
+      "licenceNote": "Public municipal parcel-reference cartography; notices informational. Legal title, survey accuracy and GlobalID continuity after publisher replacement unverified."
+    }
+  ]
+}

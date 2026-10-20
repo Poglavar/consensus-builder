@@ -100,6 +100,7 @@ DDL_FILES=(
     db/building-floor-model.sql
     db/floor-plan-archive.sql
     ens/ens-plan-ddl.sql
+    db/publication-immutability.sql
     ens/parcel-ens-ddl.sql
 )
 echo "Applying DDL (${#DDL_FILES[@]} files, one transaction, as geo_user)..."

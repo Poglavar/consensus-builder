@@ -1,0 +1,9 @@
+[
+  {
+    "url": "https://d2d.pulse.gop.pk/api/LandHierarchy/GetDivisionsList",
+    "reason": "401"
+  },
+  {
+    "url": "https://d2d.pulse.gop.pk/api/parcel/DownloadShapefile?mauzaId=<not-requested>"
+  }
+]

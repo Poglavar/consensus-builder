@@ -1,0 +1,14 @@
+[
+  {
+    "url": "https://anyror.gujarat.gov.in/",
+    "reason": "timeout"
+  },
+  {
+    "url": "https://landrecords.gujarat.gov.in/",
+    "reason": "timeout"
+  },
+  {
+    "url": "https://e-milkat.gujarat.gov.in/GeneralReport.aspx",
+    "reason": "timeout"
+  }
+]

@@ -1,0 +1,26 @@
+[
+  {
+    "url": "https://www.munitacna.gob.pe/archivo/download/35488/show/2025-04-30-informe-de-evaluacion-institucional-correspondiente-al-ano-2024"
+  },
+  {
+    "url": "https://www.munitacna.gob.pe/archivo/download/22437/show/visacion-de-planos"
+  },
+  {
+    "url": "https://www.idep.gob.pe/geoportal/rest/services/DATOS_GEOESPACIALES/PROYECCIONES_25K/MapServer/8"
+  },
+  {
+    "url": "https://www.gob.pe/63173-acceder-al-visor-de-la-base-grafica-registral"
+  },
+  {
+    "url": "https://www.idep.gob.pe/geoportal/rest/services/DATOS_GEOESPACIALES/PROYECCIONES_25K/MapServer/8?f=pjson"
+  },
+  {
+    "url": "https://www.idep.gob.pe/geoportal/rest/services/DATOS_GEOESPACIALES/PROYECCIONES_25K/MapServer/8/query?where=1%3D1&outFields=OBJECTID,COD_IGN,SISTEMA,ZONA,NOM_HOJA,COD_HOJA&returnGeometry=false&f=json&resultRecordCount=3"
+  },
+  {
+    "url": "https://visor-bgr.sunarp.gob.pe/"
+  },
+  {
+    "url": "https://geotakana.regiontacna.gob.pe/visor_pot/"
+  }
+]

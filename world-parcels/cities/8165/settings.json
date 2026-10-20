@@ -1,0 +1,139 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "8165",
+  "name": "Columbia (MD), United States",
+  "point": [
+    39.2048448908618,
+    -76.8403726722015
+  ],
+  "bindings": [
+    {
+      "appCityId": "columbia_md",
+      "runtimeConfig": {
+        "id": "columbia_md",
+        "wupCityCode": "8165",
+        "label": "Columbia (MD), United States",
+        "currency": {
+          "locale": "en-US",
+          "code": "USD"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            39.2048448908618,
+            -76.8403726722015
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            39.2048448908618,
+            -76.8403726722015
+          ],
+          "fallbackDataset": [
+            -76.8403726722015,
+            39.2048448908618
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "us-md-imap-statewide-parcel-boundaries",
+          "idPrefix": "US-MD-STATEWIDE-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "MD iMAP, Maryland Department of Planning, SDAT. Adapted to WGS84."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "us-md-imap-statewide-parcel-boundaries",
+      "name": "Maryland Parcel Boundaries (MD iMAP) — statewide",
+      "adapter": "arcgis",
+      "countryCode": "US",
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "maxConcurrentQueries": 2,
+      "cityIds": [
+        "columbia_md"
+      ],
+      "licenceNote": "Source conditions are informational; users choose their source and intended use.",
+      "operator": "Maryland Department of Planning and State Department of Assessments and Taxation, via MD iMAP",
+      "endpoint": "https://mdgeodata.md.gov/imap/rest/services/PlanningCadastre/MD_ParcelBoundaries/MapServer/0",
+      "idField": "POLYID",
+      "objectIdField": "OBJECTID",
+      "idType": "string",
+      "idPattern": ".+",
+      "outFields": [
+        "OBJECTID",
+        "POLYID"
+      ],
+      "parcelNumberField": "POLYID",
+      "idPrefix": "US-MD-STATEWIDE-",
+      "metricSrid": 32618,
+      "stateCode": "MD",
+      "attributeNotNull": [
+        "POLYID"
+      ],
+      "attributeExclusions": {
+        "POLYID": [
+          "",
+          " "
+        ]
+      },
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "scope": "Maryland statewide parcel polygons (all 24 jurisdictions) published by MDP. POLYID is the MDP polygon identifier, prefixed by the two-digit jurisdiction number; it was populated and unique for every polygon sampled.",
+      "caveats": [
+        "POLYID identifies the MDP parcel polygon, not the SDAT assessment account; the account field is deliberately not used (it is blank or ROW on some polygons and repeated across distinct polygons in Gaithersburg).",
+        "POLYID stability across MDP releases is not documented; the polygon date is in the source polydate field (not requested).",
+        "The publisher dissolves polygons with matching account IDs; right-of-way polygons (account value ROW) carry their own POLYID and are included.",
+        "Layer also publishes owner, address and assessment fields, which are not requested."
+      ],
+      "attribution": "MD iMAP, Maryland Department of Planning, SDAT. Adapted to WGS84.",
+      "catalogueUrl": "https://planning.maryland.gov/Pages/OurProducts/DownloadFiles.aspx",
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "US",
+          "admin1": [
+            "US-MD"
+          ],
+          "excludeAdmin1": [],
+          "basis": "MD iMAP layer description: \"parcel polygons of the entire state\" attributed with SDAT and MDP data; all 24 Maryland jurisdiction codes present on 2026-10-12.",
+          "evidence": []
+        },
+        "paceMs": 1000
+      }
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+[
+  {
+    "url": "https://hubei.greatmap.com.cn/",
+    "reason": "Bounded anonymous GET timed out after 15 seconds; no retry with credentials, CAPTCHA bypass, or TLS weakening was attempted."
+  },
+  {
+    "url": "http://122.189.154.5:8089/docViewer/",
+    "reason": "The legacy URL was identified in an official 2020 notice but was not used for parcel retrieval; no safe public geometry response was retained."
+  },
+  {
+    "url": "https://zrzyhghj.ezhou.gov.cn/"
+  }
+]

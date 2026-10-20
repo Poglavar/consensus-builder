@@ -1,0 +1,106 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "4099",
+  "name": "Fresno, United States",
+  "point": [
+    36.7922501389848,
+    -119.77157818531
+  ],
+  "bindings": [
+    {
+      "appCityId": "fresno",
+      "runtimeConfig": {
+        "id": "fresno",
+        "label": "Fresno, United States",
+        "currency": {
+          "locale": "en-US",
+          "code": "USD"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            36.7922501389848,
+            -119.77157818531
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            36.7922501389848,
+            -119.77157818531
+          ],
+          "fallbackDataset": [
+            -119.77157818531,
+            36.7922501389848
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "us-ca-fresno-county-parcels",
+          "idPrefix": "US-CA-FRESNO-APN-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 3,
+          "attribution": "<a href=\"https://www.fresnocountyca.gov/Departments/Assessor/Mapping\">Fresno County public parcel polygons</a> · adapted"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "us-ca-fresno-county-parcels",
+      "name": "Fresno County public parcel polygons",
+      "adapter": "arcgis",
+      "endpoint": "https://gisprod10.co.fresno.ca.us/server/rest/services/Hosted/Parcels/FeatureServer/0",
+      "idField": "apn",
+      "idType": "string",
+      "objectIdField": "fid",
+      "idPrefix": "US-CA-FRESNO-APN-",
+      "outFields": [
+        "fid",
+        "apn"
+      ],
+      "pageSize": 1000,
+      "maxFeatures": 3000,
+      "maxBboxKm2": 1,
+      "countryCode": "US",
+      "metricSrid": 32611,
+      "cityIds": [
+        "fresno"
+      ],
+      "maxConcurrentQueries": 2,
+      "operator": "Fresno County Assessor / GIS",
+      "scope": "106 valid distinct county parcel polygons verified in thirteen bounded 0.001-degree cells around the unchanged Fresno WUP settlement locator. Source-native string apn values are preserved unchanged; fid is used only for transport paging. Complete bounded paging, forced three-row pages, all 106 fresh native-ID reads, explicit absence, footprint and source binding passed in 25 requests. Independent metric EPSG:32611 GEOS found all geometries valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. The original exact-point sample matches fresh full geometry unchanged. Native source CRS is EPSG:3857 (ArcGIS WKID102100); requested EPSG:4326 output is retained unchanged. County parcel reference identity is established; citywide completeness, survey accuracy, legal title, currentness and long-term identity continuity remain unverified.",
+      "attribution": "Fresno County Assessor / GIS · public parcel reference polygons · adapted",
+      "catalogueUrl": "https://www.fresnocountyca.gov/Departments/Assessor/Mapping",
+      "licenceNote": "Anonymous bounded public geometry access and county attribution verified. Publisher reuse/currentness/legal-coordinate conditions are informational; this reference layer does not establish legal title or survey accuracy. Personal fields are excluded."
+    }
+  ]
+}

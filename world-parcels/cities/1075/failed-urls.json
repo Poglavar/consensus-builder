@@ -1,0 +1,8 @@
+[
+  {
+    "url": "https://ags20.intertown.co.il/arcgis/rest/services/srk_layers/srk_general/MapServer/363"
+  },
+  {
+    "url": "https://ags20.intertown.co.il/arcgis/rest/services/srk_layers/srk_general/MapServer/363/query"
+  }
+]

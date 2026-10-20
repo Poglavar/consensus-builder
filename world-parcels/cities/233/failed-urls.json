@@ -1,0 +1,19 @@
+[
+  {
+    "url": "https://api.dataforsyningen.dk/jordstykker?x=10.1849131498758&y=56.1561141942173&srid=4326",
+    "reason": "410"
+  },
+  {
+    "url": "https://wfs.datafordeler.dk/MATRIKLEN2/MatGaeldendeOgForeloebigWFS/1.0.0/WFS?service=WFS&version=2.0.0&request=GetCapabilities",
+    "reason": "401"
+  },
+  {
+    "url": "https://webgis.aarhus.dk/minimaps/ejendomsinformation.html"
+  },
+  {
+    "url": "https://aarhus.dk/om-kommunen/kort-og-luftfotos/gisportalen"
+  },
+  {
+    "url": "https://wfs.datafordeler.dk/MATRIKLEN2/MatGaeldendeOgForeloebigWFS/1.0.0/WFS"
+  }
+]

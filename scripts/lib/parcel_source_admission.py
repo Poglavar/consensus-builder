@@ -21,6 +21,7 @@ from urllib.parse import urlsplit, urlunsplit
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import parcel_discovery_outcomes
 from parcel_qualification_policy import REQUIRED_CHECKS, initial_qualification_review
+from parcel_city_storage import export_settings
 
 REQUIRED = (
     "candidate.json",
@@ -152,9 +153,10 @@ def _existing_integration(root: Path, code: str, name: str, source_id: str,
                           bindings: list[dict[str, Any]]) -> dict[str, Any] | None:
     if not bindings:
         return None
-    binding = bindings[0]
-    if binding.get("sourceId") != source_id:
-        return _block(f"{name} is already configured with a different parcel source ({binding.get('sourceId')}); source switching needs separate review")
+    binding = next((row for row in bindings if row.get("sourceId") == source_id), None)
+    if binding is None:
+        first_source = bindings[0].get("sourceId")
+        return _block(f"{name} is already configured with a different parcel source ({first_source}); source switching needs separate review")
     app_city_id = binding.get("id")
     catalog_doc = _json(root / "backend/parcels/source-catalog.json")
     catalog_source = next((row for row in catalog_doc.get("sources", []) if row.get("id") == source_id), None)
@@ -425,6 +427,10 @@ def admit_candidate(runner: Any, city: dict[str, Any], receipt: dict[str, Any], 
                       and row.get("id") == manifest_city["appCityId"] and row.get("sourceId") == descriptor["id"]]
         if not configured:
             return _fail("admission did not create the expected city-config source binding", manifest_rel, changed)
+
+        # The proven working configuration is the permanent city record. Reports
+        # and release checks consume it while the qualification evidence is live.
+        export_settings(root, [code])
 
         try:
             _run_checked(["node", str(root / "scripts/build-world-coverage.mjs"), "--run"], root,

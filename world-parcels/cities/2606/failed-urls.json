@@ -1,0 +1,35 @@
+[
+  {
+    "url": "https://sigfu.gouv.ci/parcelles"
+  },
+  {
+    "url": "https://geoportail.afor.ci/"
+  },
+  {
+    "url": "https://www.opf.gouv.ci/annuaire-services-cadastre-pdf"
+  },
+  {
+    "url": "https://www.idufci.gouv.ci/index.html"
+  },
+  {
+    "url": "https://api.geoportail.afor.ci/filters"
+  },
+  {
+    "url": "https://api.geoportail.afor.ci/parcels/map?bbox=-5.37,5.82,-5.35,5.84&limit=3&detail=full"
+  },
+  {
+    "url": "https://api.geoportail.afor.ci/parcels/map?bbox=-5.3608,5.8310,-5.3598,5.8320&limit=3&detail=full"
+  },
+  {
+    "url": "https://api.geoportail.afor.ci/parcels/extent"
+  },
+  {
+    "url": "https://api.geoportail.afor.ci/parcels/extent?department=DIVO"
+  },
+  {
+    "url": "https://api.geoportail.afor.ci/parcels?department=DIVO&page=1&pageSize=3"
+  },
+  {
+    "url": "https://api.geoportail.afor.ci/parcels/map?department=DIVO&limit=1&detail=full"
+  }
+]

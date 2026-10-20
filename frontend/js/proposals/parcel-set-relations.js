@@ -1,5 +1,5 @@
-// Canonical parcel-set relations between proposals (same / contains / inside / overlap) and the
-// land-fork lineage a counterproposal records when its parcel set differs from its origin's.
+// Declared-reference set relations (same / contains / inside / overlap), not geometry or conflicts.
+// Land-fork lineage records how a counterproposal's declaration differs from its origin's.
 (function (global) {
     'use strict';
 
@@ -9,9 +9,7 @@
     }
 
     function normalizeParcelIds(proposal) {
-        const source = Array.isArray(proposal?.parcelSet?.parcelIds)
-            ? proposal.parcelSet.parcelIds
-            : proposal?.cadastreParcelIds;
+        const source = proposal?.cadastreParcelIds;
         return Array.from(new Set(
             (Array.isArray(source) ? source : [])
                 .map(value => String(value ?? '').trim())
@@ -19,15 +17,32 @@
         )).sort();
     }
 
-    function jurisdictionOf(proposal) {
-        const value = proposal?.parcelSet?.jurisdiction ?? proposal?.city ?? '';
-        return String(value || '').trim().toLowerCase();
+    function parcelSourceOf(proposal) {
+        const parcelSetValue = proposal?.parcelSet?.parcelSource;
+        const bindingValue = proposal?.binding?.parcelSource;
+        const normalize = source => {
+            if (!source || typeof source !== 'object' || Array.isArray(source)) return null;
+            if (Object.keys(source).some(key => !['sourceId', 'snapshotId'].includes(key))) return null;
+            if (typeof source.sourceId !== 'string' || !source.sourceId.trim()) return null;
+            if (source.snapshotId !== null && source.snapshotId !== undefined
+                && (typeof source.snapshotId !== 'string' || !source.snapshotId.trim())) return null;
+            return { sourceId: source.sourceId.trim(), snapshotId: source.snapshotId?.trim() || null };
+        };
+        const setSource = normalize(parcelSetValue);
+        const bindingSource = normalize(bindingValue);
+        if ((parcelSetValue != null && !setSource) || (bindingValue != null && !bindingSource)) return null;
+        if (setSource && bindingSource && (setSource.sourceId !== bindingSource.sourceId
+            || setSource.snapshotId !== bindingSource.snapshotId)) return null;
+        return setSource || bindingSource;
     }
 
-    function sameCanonicalSet(target, candidate, targetIds, candidateIds) {
-        const targetHash = typeof target?.parcelSet?.setHash === 'string' ? target.parcelSet.setHash : '';
-        const candidateHash = typeof candidate?.parcelSet?.setHash === 'string' ? candidate.parcelSet.setHash : '';
-        if (targetHash && candidateHash) return targetHash === candidateHash;
+    function sameParcelSource(left, right) {
+        return !!left && !!right && left.sourceId === right.sourceId
+            && left.snapshotId === right.snapshotId;
+    }
+
+    function sameDeclaredReferences(targetIds, candidateIds) {
+        // The set hash is derived publication metadata; it cannot override the actual declaration.
         return targetIds.length === candidateIds.length
             && targetIds.every((id, index) => id === candidateIds[index]);
     }
@@ -41,15 +56,19 @@
         const targetIds = normalizeParcelIds(target);
         const candidateIds = normalizeParcelIds(candidate);
         if (!targetIds.length || !candidateIds.length) return null;
-        const targetJurisdiction = jurisdictionOf(target);
-        const candidateJurisdiction = jurisdictionOf(candidate);
+        if (!sameParcelSource(parcelSourceOf(target), parcelSourceOf(candidate))) return null;
+        const targetJurisdiction = String(target?.parcelSet?.jurisdiction || '').trim().toLowerCase();
+        const candidateJurisdiction = String(candidate?.parcelSet?.jurisdiction || '').trim().toLowerCase();
         if (targetJurisdiction && candidateJurisdiction && targetJurisdiction !== candidateJurisdiction) return null;
+        const targetAuthority = String(target?.parcelSet?.authority || '').trim();
+        const candidateAuthority = String(candidate?.parcelSet?.authority || '').trim();
+        if (targetAuthority && candidateAuthority && targetAuthority !== candidateAuthority) return null;
 
         const candidateSet = new Set(candidateIds);
         const sharedParcelIds = targetIds.filter(id => candidateSet.has(id));
         if (!sharedParcelIds.length) return null;
 
-        const sameSet = sameCanonicalSet(target, candidate, targetIds, candidateIds);
+        const sameSet = sameDeclaredReferences(targetIds, candidateIds);
         let kind = 'overlap';
         if (sameSet) kind = 'same';
         else if (sharedParcelIds.length === targetIds.length) kind = 'contains-target';
@@ -70,7 +89,7 @@
     }
 
     function findParcelSetRelations(target, candidates, options = {}) {
-        const limit = Number.isInteger(options.limit) && options.limit > 0 ? options.limit : 12;
+        const limit = Number.isInteger(options.limit) && options.limit > 0 ? options.limit : Infinity;
         const rank = { same: 0, 'contains-target': 1, 'inside-target': 2, overlap: 3 };
         return (Array.isArray(candidates) ? candidates : [])
             .map(candidate => classifyParcelSetRelation(target, candidate))
@@ -89,7 +108,7 @@
     function proposalIdsForParcelSet(proposals, setHash) {
         if (typeof setHash !== 'string' || !setHash) return [];
         return (Array.isArray(proposals) ? proposals : [])
-            .filter(proposal => proposal?.parcelSet?.setHash === setHash)
+            .filter(proposal => parcelSourceOf(proposal) && proposal?.parcelSet?.setHash === setHash)
             .map(proposalKey)
             .filter(Boolean);
     }
@@ -104,11 +123,14 @@
         overlap: 'overlap'
     };
 
-    function describeLandFork(origin, forkParcelIds) {
+    function describeLandFork(origin, forkParcelIds, forkParcelSource = null) {
         const originIds = normalizeParcelIds(origin);
         const forkIds = normalizeParcelIds({ cadastreParcelIds: forkParcelIds });
-        if (!originIds.length || !forkIds.length) return null;
-        const relation = classifyParcelSetRelation(origin, { cadastreParcelIds: forkIds });
+        if (!originIds.length || !forkIds.length || !sameParcelSource(parcelSourceOf(origin), forkParcelSource)) return null;
+        const relation = classifyParcelSetRelation(origin, {
+            cadastreParcelIds: forkIds,
+            parcelSet: { parcelSource: forkParcelSource }
+        });
         const sharedCount = relation ? relation.sharedCount : 0;
         const kind = relation ? FORK_RELATION_BY_KIND[relation.kind] : 'disjoint';
         return {
@@ -124,15 +146,13 @@
 
     // The lineage a published counterproposal records when it sits on different land than its
     // origin. An identical set returns null: that is a plain counterproposal, nothing to record.
-    function buildLandForkLineage(origin, forkParcelIds) {
-        const description = describeLandFork(origin, forkParcelIds);
-        const originProposalId = proposalKey(origin);
-        if (!description || description.sameSet || !originProposalId) return null;
+    function buildLandForkLineage(origin, forkParcelIds, forkParcelSource = null) {
+        const description = describeLandFork(origin, forkParcelIds, forkParcelSource);
+        if (!description || description.sameSet || !proposalKey(origin)) return null;
         const originSetHash = typeof origin?.parcelSet?.setHash === 'string' && origin.parcelSet.setHash
             ? origin.parcelSet.setHash
             : null;
         return {
-            originProposalId,
             originSetHash,
             relation: description.relation,
             originParcelCount: description.originCount,
@@ -165,7 +185,7 @@
     }
 
     const api = {
-        proposalKey, normalizeParcelIds, jurisdictionOf, classifyParcelSetRelation, findParcelSetRelations,
+        proposalKey, normalizeParcelIds, parcelSourceOf, classifyParcelSetRelation, findParcelSetRelations,
         proposalIdsForParcelSet, describeLandFork, buildLandForkLineage, landForkSummaryMessage
     };
     global.ParcelSetRelations = api;

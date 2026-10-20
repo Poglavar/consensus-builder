@@ -21,6 +21,22 @@
         return polygons.map(rings => rings[0]).sort((a, b) => ringArea(b) - ringArea(a))[0] || null;
     }
 
+    // Context locates the project; only the envelope footprint may support a building volume.
+    function contextGeometry(model) {
+        return model?.envelope?.footprint || model?.parcelContext?.geometry || null;
+    }
+
+    function locationPoint(model) {
+        if (!['located', 'probable'].includes(model?.location?.status)) return null;
+        const ring = largestRing(contextGeometry(model));
+        if (!ring || ring.length < 4 || ring.some(p => !Array.isArray(p) || p.length < 2
+            || !p.slice(0, 2).every(Number.isFinite) || Math.abs(p[0]) > 180 || Math.abs(p[1]) > 90)) return null;
+        const points = open(ring);
+        return { lng: points.reduce((sum, p) => sum + p[0], 0) / points.length,
+            lat: points.reduce((sum, p) => sum + p[1], 0) / points.length, status: model.location.status,
+            basis: model.envelope?.footprint ? 'building-footprint' : 'parcel-context' };
+    }
+
     // Local tangent-plane metres (x east, y north) around the footprint's first vertex.
     function localFrame(model) {
         const ring = largestRing(model?.envelope?.footprint);
@@ -54,5 +70,5 @@
         });
     }
 
-    return { ringArea, largestRing, localFrame, storeyPrisms, placedSlabs, statusColour };
+    return { ringArea, largestRing, contextGeometry, locationPoint, localFrame, storeyPrisms, placedSlabs, statusColour };
 });

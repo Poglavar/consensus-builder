@@ -56,7 +56,16 @@
         if (base.length === cadastreIds.length && base.length) {
             feature = base[0];
             for (let i = 1; i < base.length; i++) {
-                try { feature = global.turf.union(feature, base[i]) || feature; } catch (_) { /* keep what we have */ }
+                try { feature = global.turf.union(feature, base[i]) || feature; } catch (error) {
+                    // Was: compare against the union so far, part of the parcel missing. Use the
+                    // live piece instead (as when the cadastral parcels are not all known), and
+                    // report the failure (clipHealth(), parcel-arrangement.js).
+                    const clips = global.__parcelArrangement;
+                    if (!clips || typeof clips.reportClipFailure !== 'function') throw error;
+                    clips.reportClipFailure('union', error, { site: 'parcel-compare-ui.parcelContext', parcelId: id }, [feature, base[i]]);
+                    feature = live;
+                    break;
+                }
             }
         } else {
             feature = live;
@@ -134,28 +143,29 @@
         }
     }
 
-    // This parcel's share of the proposal's declared area, for the offer payout (execution.js uses
-    // the same split). Null when the areas are unknown.
-    function areaShareOf(proposal, parcel) {
-        if (typeof global.getProposalAreaMap !== 'function') return null;
-        const { areaMap, totalArea } = global.getProposalAreaMap(proposal);
-        if (!(totalArea > 0)) return null;
-        let mine = 0;
-        for (const id of parcel.cadastreIds) {
-            const area = areaMap.get(id);
-            if (!(area > 0)) return null;
-            mine += area;
-        }
-        return mine > 0 ? mine / totalArea : null;
-    }
-
     function effectFor(entry, parcel, channels) {
         const proposal = entry.proposal;
+        let consent = global.ProposalConsentSummary.unknown(null);
+        try {
+            const currentHash = global.currentConsentBindingHash(proposal);
+            if (global.ProposalApprovalRuntime.uses(proposal)) {
+                consent = global.ProposalConsentSummary.signed(proposal, parcel.cadastreIds, {
+                    currentHash,
+                    verifyReceipt: (record, receipt) => global.ProposalApprovalAuthorities.verifyReceipt(record, receipt) === true
+                });
+            } else {
+                const ownerSlotsByParcel = Object.fromEntries((proposal.cadastreParcelIds || [])
+                    .map(id => [String(id), global.getOwnerSlotsForParcel(id)]));
+                consent = global.ProposalConsentSummary.local(proposal, parcel.cadastreIds, { currentHash, ownerSlotsByParcel });
+            }
+        } catch (error) {
+            console.warn(`[${new Date().toISOString()}] [ParcelCompare] current consent unavailable`, error);
+        }
         return api().parcelEffect(proposal, parcel, {
+            consent,
             channel: channels.get(String(proposal.proposalId)) || undefined,
-            areaShare: areaShareOf(proposal, parcel),
             lifecycleKey: typeof global.getProposalLifecycleKey === 'function' ? global.getProposalLifecycleKey(proposal) : undefined,
-            isMinted: typeof global.isProposalMinted === 'function' ? !!global.isProposalMinted(proposal) : undefined,
+            applied: typeof global.isProposalApplied === 'function' ? !!global.isProposalApplied(proposal) : undefined,
             isTrack: typeof global.isTrackProposal === 'function' ? global.isTrackProposal : undefined
         });
     }
@@ -240,17 +250,9 @@
         return [t('parcelCompare.ownership.ceded', '{{area}} → {{destination}}', { area: m2(o.cededM2), destination: destinationText(o.destination) })];
     }
 
-    function money(amount, currency) {
-        if (!finite(amount)) return DASH;
-        const parts = typeof global.formatOffer === 'function' ? global.formatOffer(amount, currency || 'ETH') : null;
-        return parts ? parts.display : DASH;
-    }
-
     function offerText(o) {
         if (!o) return [DASH];
-        const lines = [money(o.amount, o.currency)];
-        if (finite(o.parcelShare)) lines.push(t('parcelCompare.offer.share', 'this parcel’s share ≈ {{amount}}', { amount: money(o.parcelShare, o.currency) }));
-        return lines;
+        return [CbFormat.formatMoney(o.amount, o.currency)];
     }
 
     function consentText(c) {
@@ -268,17 +270,15 @@
     const tally = value => (value ? `${value.accepted} / ${value.total}` : DASH);
 
     function statusText(e, proposal) {
-        const keys = {
-            local: t('parcelCompare.status.local', 'Local (this browser)'),
-            published: t('parcelCompare.status.published', 'Published'),
-            minted: t('parcelCompare.status.minted', 'Minted'),
-            executed: t('parcelCompare.status.executed', 'Executed')
-        };
-        const lines = [keys[e.status.key]];
+        const display = global.__proposalDisplayState;
+        const lines = [e.status.key === 'local'
+            ? t('parcelCompare.status.local', 'Local (this browser)')
+            : display.rungLabel(e.status.key, t)];
+        if (e.status.key === 'executed') lines.push(display.rungHint('executed', t));
         if (e.status.lifecycle && e.status.key !== 'executed' && typeof global.getProposalLifecycleLabel === 'function') {
             lines.push(global.getProposalLifecycleLabel(e.status.lifecycle));
         }
-        if (typeof global.isProposalApplied === 'function' && global.isProposalApplied(proposal)) {
+        if (e.status.applied) {
             lines.push(t('panel.parcel.proposalsSection.badges.applied', 'Applied'));
         }
         return lines;
@@ -441,17 +441,25 @@
         row(grid, t('parcelCompare.rows.plots', 'Plots it becomes'), both(e => plotsText(e.plots)));
         section(grid, t('parcelCompare.sections.ownership', 'Ownership'));
         row(grid, t('parcelCompare.rows.ceded', 'Ceded ground → to'), both(e => ownershipText(e.ownership)));
-        row(grid, t('parcelCompare.rows.offer', 'Offer'), both(e => offerText(e.offer)));
+        row(grid, t('parcelCompare.rows.offer', 'Original full-proposal offer'), both(e => offerText(e.offer)), { dataKey: 'offer' });
         section(grid, t('parcelCompare.sections.consent', 'What you are asked'));
         row(grid, t('parcelCompare.rows.consentNeeded', 'Your consent needed'), both(e => consentText(e.consent)));
-        row(grid, t('parcelCompare.rows.parcelAccepted', 'This parcel accepted'), both(e => [yesNo(e.consent.parcelAccepted)]));
-        row(grid, t('parcelCompare.rows.owners', 'Owners accepted'), both(e => [tally(e.consent.owners)]));
-        row(grid, t('parcelCompare.rows.parcels', 'Parcels accepted (whole proposal)'), both(e => [tally(e.consent.parcels)]));
+        row(grid, t('parcelCompare.rows.consentBasis', 'Consent evidence'), both(e => [e.consent.basis === 'signed-receipts'
+            ? t('parcelCompare.signedConsentBasis', 'Signed decisions verified for current terms and the declared approval context.')
+            : e.consent.basis === 'local-records'
+                ? t('parcelCompare.localConsentBasis', 'Unsigned browser records matched to current terms and owner entries.')
+                : t('parcelCompare.consentUnavailable', 'Current consent evidence unavailable.')]), { dataKey: 'consent-basis' });
+        row(grid, t('parcelCompare.rows.parcelAccepted', 'Consent covers selected references'), both(e => [yesNo(e.consent.parcelAccepted)]), { dataKey: 'parcel-consent' });
+        row(grid, t('parcelCompare.rows.owners', 'Owner consent for selected references'), both(e => [!e.consent.owners ? DASH
+            : e.consent.basis === 'signed-receipts'
+                ? t('parcelCompare.ownerParties', '{{accepted}}/{{total}} declared owner parties', e.consent.owners)
+                : t('parcelCompare.ownerEntries', '{{accepted}}/{{total}} local owner entries', e.consent.owners)]), { dataKey: 'owner-consent' });
+        row(grid, t('parcelCompare.rows.parcels', 'Source references with consent (whole proposal)'), both(e => [tally(e.consent.parcels)]), { dataKey: 'proposal-consent' });
         section(grid, t('parcelCompare.sections.support', 'Support'));
-        row(grid, t('parcelCompare.rows.donations', 'Donations'), both(() => [DASH]), { dataKey: 'donations' });
-        row(grid, t('parcelCompare.rows.pledges', 'Pledges'), both(() => [DASH]), { dataKey: 'pledges' });
-        row(grid, t('parcelCompare.rows.market', 'Market: executes (YES)'), both(() => [DASH]), { dataKey: 'market' });
-        row(grid, t('parcelCompare.rows.status', 'Status'), both(statusText));
+        row(grid, t('parcelCompare.rows.donations', 'Total donated (devnet USDC)'), both(() => [DASH]), { dataKey: 'donations' });
+        row(grid, t('parcelCompare.rows.pledges', 'Active pledges (devnet USDC)'), both(() => [DASH]), { dataKey: 'pledges' });
+        row(grid, t('parcelCompare.rows.market', 'YES pool share (devnet USDC)'), both(() => [DASH]), { dataKey: 'market' });
+        row(grid, t('parcelCompare.rows.status', 'Status'), both(statusText), { dataKey: 'status' });
         content.appendChild(grid);
 
         hydrateSupport(dialog, picked.map(p => p.proposal));
@@ -462,15 +470,19 @@
         if (cell) cell.textContent = text;
     }
 
-    // Pledges, donations and market odds are chain state of minted Solana proposals (the same
+    // Pledges, donations and market pool shares are chain state of minted Solana proposals (the same
     // reads the details panel's funding and market cards make). Anything else shows "—".
     function hydrateSupport(dialog, proposals) {
         const token = ++state.hydration;
         proposals.forEach((proposal, i) => {
             const side = SIDES[i];
-            const nft = typeof global.getProposalNftInfo === 'function' ? global.getProposalNftInfo(proposal) : null;
             const minted = typeof global.isProposalMinted === 'function' && global.isProposalMinted(proposal);
-            const account = minted && nft && nft.tokenId && String(nft.chain || nft.chainId || '').startsWith('solana') ? nft.tokenId : null;
+            const account = minted && global.ProposalApprovalRuntime?.uses(proposal) !== true
+                ? global.ChainProposalRef?.solanaAccountForDeployment(
+                    proposal,
+                    global.SolanaAcceptanceClient?.constants?.PROPOSAL_NFT_PROGRAM_ID
+                ) || null
+                : null;
             if (!account) return;
             const loading = t('panel.proposal.pledge.loading', 'Loading…');
             const unavailable = t('panel.proposal.pledge.unavailable', 'Unavailable');
@@ -501,7 +513,7 @@
                     const m = view.model(summary && summary.market, { yes: summary && summary.yes, no: summary && summary.no });
                     const text = !m.exists
                         ? t('parcelCompare.market.none', 'No market')
-                        : (finite(m.yesOdds) ? `${CbFormat.formatPercent(m.yesOdds, { ofHundred: true, maxFractionDigits: 1 })} · ${CbFormat.formatMoney(Number(view.formatAtomic(m.total)), 'USDC')}` : t('parcelCompare.market.noStakes', 'No stakes yet'));
+                        : (finite(m.yesOdds) ? `${t('bets.row.poolShare', '{{percent}} of pool', { percent: CbFormat.formatPercent(m.yesOdds, { ofHundred: true, maxFractionDigits: 1 }) })} · ${t('parcelCompare.market.totalStake', '{{amount}} total stake', { amount: CbFormat.formatMoney(Number(view.formatAtomic(m.total)), 'USDC') })}` : t('parcelCompare.market.noStakes', 'No stakes yet'));
                     setCell(dialog, 'market', side, text);
                 }).catch(error => {
                     console.warn(`[${new Date().toISOString()}] [ParcelCompare] market summary unavailable`, error);

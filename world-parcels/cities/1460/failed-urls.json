@@ -1,0 +1,20 @@
+[
+  {
+    "url": "https://www.dgid.sn/"
+  },
+  {
+    "url": "https://www.finances.gouv.sn/app/uploads/Revue-Echos-Finances-20.pdf"
+  },
+  {
+    "url": "https://sig.onddl.sn/"
+  },
+  {
+    "url": "https://sig.onddl.sn/api/v2/resources?filter{resource_type.in}=dataset&page_size=100"
+  },
+  {
+    "url": "https://sig.onddl.sn/geoserver/ows?service=WFS&version=1.0.0&request=GetFeature&typename=geonode%3Agadm41_sen_3&outputFormat=json&srs=EPSG%3A4326&srsName=EPSG%3A4326"
+  },
+  {
+    "url": "https://sig.onddl.sn/api/v2/resources?filter{resource_type.in}=dataset&search=Diourbel"
+  }
+]

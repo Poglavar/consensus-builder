@@ -1,0 +1,31 @@
+[
+  {
+    "url": "https://nagis.na.gov.ng/sitemap.xml",
+    "reason": "404"
+  },
+  {
+    "url": "https://nagis.na.gov.ng/api",
+    "reason": "404"
+  },
+  {
+    "url": "https://nagis.na.gov.ng/map",
+    "reason": "404"
+  },
+  {
+    "url": "https://nagis.na.gov.ng/viewer",
+    "reason": "404"
+  },
+  {
+    "url": "https://nagis.na.gov.ng/gis",
+    "reason": "404"
+  },
+  {
+    "url": "https://www.nagis.na.gov.ng/about-us"
+  },
+  {
+    "url": "https://nagis.na.gov.ng/"
+  },
+  {
+    "url": "https://nagis.na.gov.ng/how-to-register-land"
+  }
+]

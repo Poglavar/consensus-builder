@@ -1,0 +1,20 @@
+[
+  {
+    "url": "https://bhumi.atrbpn.go.id/"
+  },
+  {
+    "url": "https://atlas.atrbpn.go.id/"
+  },
+  {
+    "url": "https://peraturan.bpk.go.id/Download/94403/Lampiran%20Permen%20No.%209%20Tahun%202018_tata%20Naskah%20ATR-BPN.pdf"
+  },
+  {
+    "url": "https://ppid.puncakjayakab.go.id/statistik"
+  },
+  {
+    "url": "https://geosrv-app.atrbpn.go.id/geoserver/geonode/wms?service=WMS&request=GetCapabilities"
+  },
+  {
+    "url": "https://geosrv-app.atrbpn.go.id/geoserver/wfs?service=WFS&request=GetCapabilities"
+  }
+]

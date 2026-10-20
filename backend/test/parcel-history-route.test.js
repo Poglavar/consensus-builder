@@ -7,7 +7,8 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { PublicKey } from '@solana/web3.js';
 import { setupParcelHistoryRoute } from '../routes/parcel-history.js';
 import { setupLandEventsRoute } from '../routes/land-events.js';
-import { deriveParcelAnchor, loadParcelHistory, PARCEL_PROGRAM_ID, sortHistory } from '../oracle/parcel-history.js';
+import { deriveParcelAnchor, loadParcelHistory, PARCEL_PROGRAM_ID, proposalEvents, sortHistory } from '../oracle/parcel-history.js';
+import { PROPOSAL_PROGRAM_ID, VERIFIED_DEVNET_MIRROR_SQL } from '../oracle/proposal-lifecycle.js';
 
 const PARCEL = 'HR-335347-1208/3';
 const PROPOSAL_ACCOUNT = 'Gsvt6nMhsvfrEDgvcqZDzPKZhhqACFEi3mueMxQNQ6UT';
@@ -15,6 +16,8 @@ const NOTARY = 'AMbsiP9F8YY2y8n9uFdqtw7yNZZHvTWFEWSQGHKtmkoQ';
 const OWNER = 'GDYnzduynKhKgxDhvvKVarn2s23DtzA26s6hycuUYDRB';
 const MINT_TX = 'mintSig111';
 const ATTESTATION = '12VxrWBkHfabA1jdV9HfniPNSj95Tp16uhXprpXzPgWk';
+const CHAIN_REF = { chainType: 'solana', chainId: 'solana-devnet', contract: PROPOSAL_PROGRAM_ID, tokenId: PROPOSAL_ACCOUNT };
+const MIRROR = { protocol: 'proposal-chain/1', ref: CHAIN_REF, verifiedAt: '2026-09-16T10:06:00Z' };
 
 function proposalRow(overrides = {}) {
     return {
@@ -23,7 +26,10 @@ function proposalRow(overrides = {}) {
         name: null,
         created_at: new Date('2026-09-16T10:00:00Z'),
         onchain_data: { proposalId: PROPOSAL_ACCOUNT, transactionHash: MINT_TX, lens: [NOTARY] },
-        proposal_account: PROPOSAL_ACCOUNT,
+        chain_mirror: MIRROR,
+        observed_lens: [NOTARY],
+        // These previous projection values must not be used as current evidence.
+        proposal_account: 'unqualified-account',
         mint_block_time: String(Date.parse('2026-09-16T10:05:00Z') / 1000),
         ...overrides
     };
@@ -40,7 +46,7 @@ const acceptanceRow = {
     outcome: 'accepted', source_url: 'https://explorer.solana.com/address/rec1?cluster=devnet', source_hash: 'sha256:' + 'cd'.repeat(32),
     source_observed_at: new Date('2026-09-21T09:00:00Z'), transaction_signature: 'acceptSig',
     evidence: {
-        source: { transactionUrl: 'https://explorer.solana.com/tx/acceptSig?cluster=devnet' },
+        source: { chain: 'solana:devnet', transactionUrl: 'https://explorer.solana.com/tx/acceptSig?cluster=devnet' },
         acceptanceRecord: 'rec1', parcelUid: PARCEL, owner: OWNER, member: NOTARY, ownershipAttestation: ATTESTATION
     }
 };
@@ -50,7 +56,7 @@ const lifecycleRow = {
     outcome: 'executed', source_url: `https://explorer.solana.com/address/${PROPOSAL_ACCOUNT}?cluster=devnet`, source_hash: 'sha256:' + 'ef'.repeat(32),
     // Same chain time as the acceptance that executed it: the acceptance must sort first.
     source_observed_at: new Date('2026-09-21T09:00:00Z'), transaction_signature: 'acceptSig',
-    evidence: { source: { transactionUrl: 'https://explorer.solana.com/tx/acceptSig?cluster=devnet' }, proposalStatusByte: 1 }
+    evidence: { source: { chain: 'solana:devnet', transactionUrl: 'https://explorer.solana.com/tx/acceptSig?cluster=devnet' }, proposalStatusByte: 1 }
 };
 
 // Answers each query by what it reads; records every call.
@@ -91,10 +97,11 @@ describe('GET /parcels/:parcelUid/history', () => {
         expect(res.headers['cache-control']).toBe('no-store');
         expect(res.body.parcelUid).toBe(PARCEL);
         expect(res.body.anchor).toEqual({
-            account: deriveParcelAnchor(PARCEL), exists: true, mintedAt: '2026-09-16T10:04:00.000Z', source: 'chain'
+            account: deriveParcelAnchor(PARCEL), exists: true, source: 'chain'
         });
+        expect(pool.calls.some(call => /consensus\.solana_transaction/.test(call.sql))).toBe(false);
         expect(res.body.events.map(e => e.type)).toEqual([
-            'proposal_created', 'proposal_published', 'parcel_ownership', 'proposal_acceptance', 'proposal_lifecycle'
+            'proposal_created', 'proposal_chain_observed', 'parcel_ownership', 'proposal_acceptance', 'proposal_lifecycle'
         ]);
         const [created, published, ownership, acceptance, lifecycle] = res.body.events;
         expect(created).toEqual({
@@ -102,9 +109,9 @@ describe('GET /parcels/:parcelUid/history', () => {
             proposalAccount: PROPOSAL_ACCOUNT, title: 'Densify the corner', link: '/proposals/agent-01-2026-09-16-1'
         });
         expect(published).toEqual({
-            type: 'proposal_published', at: '2026-09-16T10:05:00.000Z', proposalId: 'agent-01-2026-09-16-1',
-            proposalAccount: PROPOSAL_ACCOUNT, lens: [NOTARY], transaction: MINT_TX,
-            link: `https://explorer.solana.com/tx/${MINT_TX}?cluster=devnet`
+            type: 'proposal_chain_observed', at: '2026-09-16T10:06:00.000Z', proposalId: 'agent-01-2026-09-16-1',
+            proposalAccount: PROPOSAL_ACCOUNT, chainRef: CHAIN_REF, lens: [NOTARY],
+            link: `https://explorer.solana.com/address/${PROPOSAL_ACCOUNT}?cluster=devnet`
         });
         expect(ownership).toEqual({
             type: 'parcel_ownership', at: '2026-09-20T08:00:00.000Z', attestation: ATTESTATION, member: NOTARY,
@@ -132,7 +139,16 @@ describe('GET /parcels/:parcelUid/history', () => {
         const landSql = pool.calls.find(c => /FROM consensus\.land_event/.test(c.sql));
         expect(landSql.sql).toMatch(/evidence->>'parcelUid' = \$1/);
         expect(landSql.sql).toMatch(/cadastre_parcel_ids @> jsonb_build_array\(\$1::text\)/);
+        expect(landSql.sql).toContain(VERIFIED_DEVNET_MIRROR_SQL);
+        expect(landSql.sql).toContain("proposal_data #>> '{chainMirror,ref,tokenId}'");
+        expect(landSql.sql).toContain("evidence #>> '{source,chain}' = 'solana:devnet'");
+        expect(landSql.sql).toContain(`attester = '${PROPOSAL_PROGRAM_ID}'`);
+        expect(landSql.sql).not.toMatch(/onchain_data|onchainData|COALESCE/);
         expect(landSql.params).toEqual([PARCEL, ['proposal_acceptance', 'proposal_lifecycle', 'proposal_verdict']]);
+        const proposalSql = pool.calls.find(c => /FROM proposal p/.test(c.sql)).sql;
+        expect(proposalSql).toContain("(p.proposal_data->'chainMirror') - 'record'");
+        expect(proposalSql).toContain("'{chainMirror,record,lens}'");
+        expect(proposalSql).not.toMatch(/onchain_data|solana_transaction|mint_block_time/);
     });
 
     it('returns an empty history and a non-existent anchor for an unknown parcel', async () => {
@@ -144,14 +160,32 @@ describe('GET /parcels/:parcelUid/history', () => {
             anchor: { account: deriveParcelAnchor('HR-000000-1'), exists: false, source: 'chain' },
             events: []
         });
-        expect(reader).toHaveBeenCalledWith(deriveParcelAnchor('HR-000000-1'));
+        expect(reader).toHaveBeenCalledWith(deriveParcelAnchor('HR-000000-1'), 'HR-000000-1');
     });
 
-    it('falls back to the transaction store when the chain read fails', async () => {
-        const pool = stubPool({ anchorTx: { transactions: 0, first_block_time: null } });
+    it('keeps anchor existence unknown when the chain read fails, regardless of stored transactions', async () => {
+        const pool = stubPool({ anchorTx: { transactions: 2, first_block_time: 123456789 } });
         const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
         const history = await loadParcelHistory(pool, 'HR-1-2', { readAnchorAccount: async () => { throw new Error('rpc down'); } });
-        expect(history.anchor).toEqual({ account: deriveParcelAnchor('HR-1-2'), exists: false, source: 'transaction-store' });
+        expect(history.anchor).toEqual({ account: deriveParcelAnchor('HR-1-2'), exists: null, source: 'unavailable' });
+        expect(pool.calls.some(call => /consensus\.solana_transaction/.test(call.sql))).toBe(false);
+        warn.mockRestore();
+    });
+
+    it('preserves unknown when no account reader exists and skips unseedable IDs', async () => {
+        const pool = stubPool();
+        expect((await loadParcelHistory(pool, PARCEL)).anchor)
+            .toEqual({ account: deriveParcelAnchor(PARCEL), exists: null, source: 'unavailable' });
+        const reader = vi.fn();
+        expect((await loadParcelHistory(pool, 'x'.repeat(33), { readAnchorAccount: reader })).anchor)
+            .toEqual({ account: null, exists: false, source: 'unseedable' });
+        expect(reader).not.toHaveBeenCalled();
+    });
+
+    it.each([null, undefined, 'true', 1])('does not coerce an invalid account observation into existence: %j', async value => {
+        const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+        const history = await loadParcelHistory(stubPool(), PARCEL, { readAnchorAccount: async () => value });
+        expect(history.anchor).toMatchObject({ exists: null, source: 'unavailable' });
         warn.mockRestore();
     });
 
@@ -159,16 +193,44 @@ describe('GET /parcels/:parcelUid/history', () => {
         vi.useFakeTimers();
         vi.setSystemTime(new Date('2030-01-01T00:00:00Z'));
         const pool = stubPool({
-            proposals: [proposalRow({ mint_block_time: null })],
+            proposals: [proposalRow({ chain_mirror: { ...MIRROR, verifiedAt: null } })],
             attestations: [{ ...attestationRow, issued_at: null }]
         });
         const history = await loadParcelHistory(pool, PARCEL);
         expect(history.events.map(e => [e.type, e.at])).toEqual([
             ['proposal_created', '2026-09-16T10:00:00.000Z'],
-            ['proposal_published', null],
+            ['proposal_chain_observed', null],
             ['parcel_ownership', null]
         ]);
         expect(JSON.stringify(history)).not.toContain('2030');
+    });
+
+    it.each([
+        null,
+        { ...MIRROR, protocol: 'unverified' },
+        { ...MIRROR, ref: { ...CHAIN_REF, chainType: 'evm' } },
+        { ...MIRROR, ref: { ...CHAIN_REF, chainId: 'solana-mainnet' } },
+        { ...MIRROR, ref: { ...CHAIN_REF, contract: PARCEL_PROGRAM_ID } },
+        { ...MIRROR, ref: { ...CHAIN_REF, tokenId: '5' } }
+    ])('keeps a proposal creation without chain claims for an unqualified mirror: %j', chain_mirror => {
+        const events = proposalEvents(proposalRow({ chain_mirror }));
+        expect(events).toEqual([{
+            type: 'proposal_created', at: '2026-09-16T10:00:00.000Z',
+            proposalId: 'agent-01-2026-09-16-1', title: 'Densify the corner', link: '/proposals/agent-01-2026-09-16-1'
+        }]);
+    });
+
+    it('does not map acceptance subjects to unqualified proposal account aliases', async () => {
+        const pool = stubPool({ proposals: [proposalRow({ chain_mirror: null, proposal_account: PROPOSAL_ACCOUNT })], landEvents: [acceptanceRow] });
+        const history = await loadParcelHistory(pool, PARCEL);
+        expect(history.events.find(event => event.type === 'proposal_acceptance')).not.toHaveProperty('proposalId');
+    });
+
+    it('takes the lens only from the verified record and links to the observed account', () => {
+        const events = proposalEvents(proposalRow({ observed_lens: undefined }));
+        expect(events[1]).not.toHaveProperty('lens');
+        expect(events[1]).not.toHaveProperty('transaction');
+        expect(events[1].at).not.toBe('2026-09-16T10:05:00.000Z');
     });
 
     it('derives the anchor exactly like parcel_nft, and none for ids longer than a seed', () => {
@@ -202,6 +264,7 @@ describe('GET /oracle/events?parcelUid=', () => {
         expect(call.params).toEqual(['proposal_acceptance', PARCEL, 25]);
         expect(call.sql).toMatch(/evidence->>'parcelUid' = \$2::text/);
         expect(call.sql).toMatch(/cadastre_parcel_ids @> jsonb_build_array\(\$2::text\)/);
+        expect(call.sql).toContain(VERIFIED_DEVNET_MIRROR_SQL);
     });
 
     it('rejects an empty parcelUid and leaves unfiltered reads unchanged', async () => {

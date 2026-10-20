@@ -10,6 +10,17 @@
     const GEOM_BUFFER_STEPS = 16;
     const GEOM_EPSILON_M = 0.1; // small clean-up buffer in meters
 
+    // A clip that cannot be done is a typed ClipFailure (parcel-arrangement.js), never a footprint
+    // with a piece silently left out: these unions become the site a design is traced from.
+    function clipFailureOf(operation, error, site, operands) {
+        const api = (global && global.__parcelArrangement)
+            || (typeof require === 'function' ? require('./proposals/parcel-arrangement.js') : null);
+        return api ? api.clipFailure(operation, error, { site }, operands) : error;
+    }
+    function isClipFailure(error) {
+        return !!error && error.code === 'clip-failed';
+    }
+
     function ringsOf(feature) {
         const g = feature && (feature.geometry || feature);
         if (!g || !Array.isArray(g.coordinates)) return [];
@@ -44,7 +55,15 @@
                     let dissolved = null;
                     for (const f of unkinked.features) {
                         const fbuf = turf.buffer(f, GEOM_EPSILON_M, { units: 'meters', steps: GEOM_BUFFER_STEPS });
-                        dissolved = dissolved ? (turf.union(dissolved, fbuf) || dissolved) : fbuf;
+                        if (!dissolved) { dissolved = fbuf; continue; }
+                        // A failed (or empty) union would return the polygon still kinked, or with a
+                        // piece missing: refuse instead.
+                        let merged = null;
+                        try { merged = turf.union(dissolved, fbuf); } catch (error) {
+                            throw clipFailureOf('union', error, 'footprint-geometry.sanitizePolygonFeature', [dissolved, fbuf]);
+                        }
+                        if (!merged) throw clipFailureOf('union', new Error('union came back empty'), 'footprint-geometry.sanitizePolygonFeature', [dissolved, fbuf]);
+                        dissolved = merged;
                     }
                     if (dissolved) {
                         // Remove the cleaning buffer
@@ -52,9 +71,12 @@
                         if (unbuf) feature = unbuf;
                     }
                 }
-            } catch (_) { }
+            } catch (error) {
+                if (isClipFailure(error)) throw error;
+            }
             return feature;
         } catch (e) {
+            if (isClipFailure(e)) throw e;
             console.warn('sanitizePolygonFeature failed:', e);
             return inputFeature;
         }
@@ -111,13 +133,16 @@
         }
         let acc = null;
         for (const f of sanitized) {
-            try {
-                const fb = turf.buffer(f, GEOM_EPSILON_M, { units: 'meters', steps: GEOM_BUFFER_STEPS });
-                acc = acc ? (turf.union(acc, fb) || acc) : fb;
-            } catch (e) {
-                // As a fallback, skip this piece
-                console.warn('robustUnion: skipping one piece due to error', e);
+            const fb = turf.buffer(f, GEOM_EPSILON_M, { units: 'meters', steps: GEOM_BUFFER_STEPS });
+            if (!acc) { acc = fb; continue; }
+            // Skipping a piece the clipper could not union returned a superparcel with a parcel
+            // missing from it, with nothing but a console warning to say so. Refuse instead.
+            let merged = null;
+            try { merged = turf.union(acc, fb); } catch (error) {
+                throw clipFailureOf('union', error, 'footprint-geometry.robustUnion', [acc, fb]);
             }
+            if (!merged) throw clipFailureOf('union', new Error('union came back empty'), 'footprint-geometry.robustUnion', [acc, fb]);
+            acc = merged;
         }
         if (!acc) return null;
         // Remove the dissolve buffer

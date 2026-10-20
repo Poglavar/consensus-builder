@@ -58,10 +58,12 @@ function memoryStorage({ failAdds = new Set(), failAfterInsert = new Set() } = {
 }
 
 describe('reparcellization agreements', () => {
-    it('returns zero for an empty owner ledger and skips ownerless entries', () => {
+    it('returns zero for an empty owner ledger and skips unrepresented entries', () => {
         expect(agreements.cashOfferTotal({})).toBe(0);
         expect(agreements.cashOfferTotal({ ownerShares: [] })).toBe(0);
-        expect(agreements.cashOfferTotal({ ownerShares: [{ noOwner: true, cashOffer: NaN }] })).toBe(0);
+        expect(agreements.cashOfferTotal({ ownerShares: [{ ownerKey: 'open-ground', unrepresentedGround: true, cashOffer: NaN }] })).toBe(0);
+        expect(() => agreements.cashOfferTotal({ ownerShares: [{ ownerKey: 'a', noOwner: true, cashOffer: 0 }] }))
+            .toThrow(/noOwner marker is retired/);
     });
 
     it('validates owner amounts and rounds each amount to cents before summing', () => {

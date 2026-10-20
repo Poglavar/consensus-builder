@@ -1,0 +1,26 @@
+[
+  {
+    "url": "https://redeplanejamento.pmf.sc.gov.br/pt-BR/gestao-territorial/geofloripa"
+  },
+  {
+    "url": "https://redeplanejamento.pmf.sc.gov.br/pt-BR/gestao-territorial/geoportal"
+  },
+  {
+    "url": "https://geoportal.pmf.sc.gov.br/"
+  },
+  {
+    "url": "https://geoportal.pmf.sc.gov.br/downloads/camadas-em-sig-do-mapa"
+  },
+  {
+    "url": "https://geoportal.pmf.sc.gov.br/map"
+  },
+  {
+    "url": "https://servicos.floripa.sc.gov.br/atendimento/servico-info/26"
+  },
+  {
+    "url": "https://redeplanejamento.pmf.sc.gov.br/pt-BR/documentos/tutorial-geoservicos-geoportal"
+  },
+  {
+    "url": "https://geofloripa.pmf.sc.gov.br/geoserver/Geoportal/ows?service=WMS&version=1.3.0&request=GetCapabilities"
+  }
+]

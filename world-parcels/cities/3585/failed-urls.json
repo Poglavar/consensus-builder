@@ -1,0 +1,15 @@
+[
+  {
+    "url": "https://gimhae.go.kr/main.web",
+    "reason": "400"
+  },
+  {
+    "url": "https://www.data.go.kr/data/15123884/openapi.do"
+  },
+  {
+    "url": "https://www.data.go.kr/en/data/15140369/openapi.do"
+  },
+  {
+    "url": "https://api.vworld.kr/req/wfs?service=WFS&request=GetCapabilities&version=1.1.0"
+  }
+]

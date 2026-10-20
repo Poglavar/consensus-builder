@@ -1,0 +1,17 @@
+[
+  {
+    "url": "https://bhumi.atrbpn.go.id/peta"
+  },
+  {
+    "url": "https://bhumi.atrbpn.go.id/bantuan/katalog_data"
+  },
+  {
+    "url": "https://bhumi.atrbpn.go.id/bantuan/peta"
+  },
+  {
+    "url": "https://bhumi.atrbpn.go.id/bhumigs/umum/ows?service=WFS&version=1.0.0&request=GetCapabilities"
+  },
+  {
+    "url": "https://bhumi.atrbpn.go.id/bhumigs/umum/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=umum:Persil&outputFormat=application%2Fjson&bbox=115.09,-8.12,115.11,-8.10,EPSG:4326&propertyName=OBJECTID"
+  }
+]

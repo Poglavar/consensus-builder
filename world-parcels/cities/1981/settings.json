@@ -1,0 +1,126 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "1981",
+  "name": "Campbelltown, Australia",
+  "point": [
+    -34.063620251064,
+    150.818086470537
+  ],
+  "bindings": [
+    {
+      "appCityId": "campbelltown",
+      "runtimeConfig": {
+        "id": "campbelltown",
+        "wupCityCode": "1981",
+        "label": "Campbelltown, Australia",
+        "currency": {
+          "locale": "en-AU",
+          "code": "AUD"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            -34.063620251064,
+            150.818086470537
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            -34.063620251064,
+            150.818086470537
+          ],
+          "fallbackDataset": [
+            150.818086470537,
+            -34.063620251064
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "au-nsw-six-cadastre-lot",
+          "idPrefix": "AU-NSW-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 3,
+          "attribution": "<a href=\"https://maps.six.nsw.gov.au/arcgis/rest/services/public/NSW_Cadastre/MapServer/9\">NSW Spatial Services / Department of Customer Service, cadastral lots; adapted to WGS84. See publisher conditions.</a>"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "au-nsw-six-cadastre-lot",
+      "endpoint": "https://maps.six.nsw.gov.au/arcgis/rest/services/public/NSW_Cadastre/MapServer/9",
+      "idField": "cadid",
+      "objectIdField": "objectid",
+      "idPrefix": "AU-NSW-",
+      "idType": "integer",
+      "outFields": [
+        "objectid",
+        "cadid",
+        "shapeuuid",
+        "lotidstring",
+        "enddate",
+        "processstate",
+        "changetype"
+      ],
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "metricSrid": 32756,
+      "parcelNumberField": "lotidstring",
+      "adapter": "arcgis",
+      "name": "NSW Spatial Services cadastral lots",
+      "countryCode": "AU",
+      "cityIds": [
+        "campbelltown"
+      ],
+      "scope": "New South Wales cadastral lots; a bounded western Sydney metropolitan entry is enabled around the verified sample. This does not establish complete Sydney coverage or legal title. Additional enabled city entries have separate bounded qualification evidence; wider coverage remains unverified.",
+      "licenceUrl": "https://www.spatial.nsw.gov.au/products_and_services/web_services/terms_and_conditions",
+      "catalogueUrl": "https://maps.six.nsw.gov.au/arcgis/rest/services/public/NSW_Cadastre/MapServer/9",
+      "licenceNote": "NSW Spatial Services publishes attribution conditions and restrictions on automated retrieval; users are responsible for checking the publisher conditions for their intended use.",
+      "attribution": "NSW Spatial Services / Department of Customer Service, cadastral lots; adapted to WGS84. See publisher conditions.",
+      "metricSridByCity": {
+        "campbelltown": 32756
+      },
+      "cityScopes": {
+        "campbelltown": "125 unchanged native parcel polygons passed all eight qualification gates in bounded cells around the UN/WUP locator. Fresh independent metric audit (EPSG:32756) found zero invalid polygons, identity conflicts, duplicate geometry, material overlaps, or operation errors. Citywide completeness, legal title, survey accuracy, and currentness are not established.",
+        "cambridge_park": "142 unchanged native parcel polygons passed all eight qualification gates in bounded cells around the UN/WUP locator. Fresh independent metric audit (EPSG:32756) found zero invalid polygons, identity conflicts, duplicate geometry, material overlaps, or operation errors. Citywide completeness, legal title, survey accuracy, and currentness are not established."
+      },
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "AU",
+          "admin1": [
+            "AU-NSW"
+          ],
+          "basis": "New South Wales statewide cadastral lots (Spatial Services).",
+          "evidence": []
+        }
+      }
+    }
+  ]
+}

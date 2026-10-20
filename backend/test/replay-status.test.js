@@ -38,8 +38,8 @@ function fakeTarget() {
 describe('replay status line', () => {
     it('counts members while they replay and says "rebuilding" for the other phases', () => {
         expect(ReplayStatus.replayStatusText({ phase: 'proposal-apply', done: 132, total: 163 }, tShare))
-            .toBe('Rebuilding the applied plan 132/163…');
-        expect(ReplayStatus.replayStatusText({ phase: 'ground-check' }, tShare)).toBe('Rebuilding the applied plan…');
+            .toBe('Rebuilding the applied composition 132/163…');
+        expect(ReplayStatus.replayStatusText({ phase: 'ground-check' }, tShare)).toBe('Rebuilding the applied composition…');
         expect(ReplayStatus.replayStatusText(null, tShare)).toBeNull();
     });
 
@@ -52,9 +52,9 @@ describe('replay status line', () => {
         onProgress({ phase: 'proposal-apply', done: 1, total: 2 });
         onProgress({ phase: 'proposal-apply', done: 2, total: 2 });
         expect(report.mock.calls.map(call => call[0])).toEqual([
-            'Rebuilding the applied plan…',
-            'Rebuilding the applied plan 1/2…',
-            'Rebuilding the applied plan 2/2…'
+            'Rebuilding the applied composition…',
+            'Rebuilding the applied composition 1/2…',
+            'Rebuilding the applied composition 2/2…'
         ]);
     });
 
@@ -88,7 +88,7 @@ describe('user takeover while the link waits', () => {
 });
 
 describe('a user mutation queued behind the boot replay', () => {
-    it('says it is waiting for the plan, and system mutations stay silent', async () => {
+    it('says it is waiting for the applied composition, and system mutations stay silent', async () => {
         const updateStatus = vi.fn();
         installGlobal('updateStatus', updateStatus);
         const manager = { ...ProposalManager, _reapplyInFlight: true, _lastApplyFailureByProposalId: new Map() };
@@ -98,7 +98,7 @@ describe('a user mutation queued behind the boot replay', () => {
         expect(updateStatus).not.toHaveBeenCalled();
 
         await manager.runParcelMutation('apply', 'p1', async () => true, noStorage);
-        expect(updateStatus).toHaveBeenCalledWith('Waiting for the applied plan to finish rebuilding…');
+        expect(updateStatus).toHaveBeenCalledWith('Waiting for the applied composition to finish rebuilding…');
 
         updateStatus.mockClear();
         manager._reapplyInFlight = false;

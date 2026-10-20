@@ -12,7 +12,7 @@
     const folded = value => String(value ?? '').normalize('NFKD').replace(/\p{M}/gu, '').toLocaleLowerCase();
     function normalizeFilters(input = {}) {
         return {
-            q: String(input.q || '').trim(), kind: KINDS.has(input.kind) ? input.kind : 'new_build',
+            q: String(input.q || '').trim(), kind: KINDS.has(input.kind) ? input.kind : 'all',
             minArea: numeric(input.minArea), maxArea: numeric(input.maxArea), rooms: numeric(input.rooms),
             orientation: ORIENTATIONS.has(input.orientation) ? input.orientation : ''
         };
@@ -39,19 +39,26 @@
     function filterProjects(projects, input = {}) {
         const filters = normalizeFilters(input), query = folded(filters.q);
         return (projects || []).filter(project => {
-            if (!(project.apartments || []).length) return false;
+            if (!(project.apartments || []).length && !(project.floorPlans || []).length) return false;
             if (filters.kind !== 'all' && project.kind !== filters.kind) return false;
             const apartmentTitles=(project.apartments||[]).map(apartment=>apartment.sourceTitle||'');
             const searchText=[project.name,project.label,project.address,project.slug,...(project.titles||[]),...apartmentTitles].join(' ');
             if (query && !folded(searchText).includes(query)) return false;
             const apartments = (project.apartments || []).filter(apartment => matchesApartment(apartment, filters));
-            return apartments.length > 0;
-        }).map(project => ({ ...project, apartments: (project.apartments || []).filter(apartment => matchesApartment(apartment, filters)) }));
+            const floorPlansMatch=filters.minArea===null&&filters.maxArea===null&&filters.rooms===null&&!filters.orientation&&(project.floorPlans||[]).length>0;
+            return apartments.length > 0 || floorPlansMatch;
+        }).map(project => ({ ...project, apartments: (project.apartments || []).filter(apartment => matchesApartment(apartment, filters)),
+            floorPlans:filters.minArea===null&&filters.maxArea===null&&filters.rooms===null&&!filters.orientation?(project.floorPlans||[]):[] })).sort(compareCompletion);
+    }
+    function compareCompletion(a, b) {
+        const year = p => finite(p.constructionYear) ? p.constructionYear : finite(p.completionYear) ? p.completionYear : -Infinity;
+        const ay=year(a),by=year(b);
+        return (ay===by?0:ay>by?-1:1) || String(a.name||a.label||a.id||'').localeCompare(String(b.name||b.label||b.id||''),'hr') || String(a.id||'').localeCompare(String(b.id||''));
     }
     function encodeFilters(input) {
         const f = normalizeFilters(input), params = new URLSearchParams();
         if (f.q) params.set('q', f.q);
-        if (f.kind !== 'new_build') params.set('kind', f.kind);
+        if (f.kind !== 'all') params.set('kind', f.kind);
         if (f.minArea !== null && Number.isFinite(f.minArea)) params.set('min', String(f.minArea));
         if (f.maxArea !== null && Number.isFinite(f.maxArea)) params.set('max', String(f.maxArea));
         if (f.rooms !== null && Number.isFinite(f.rooms)) params.set('rooms', String(f.rooms));
@@ -62,5 +69,5 @@
         const p = new URLSearchParams(search || '');
         return normalizeFilters({ q: p.get('q'), kind: p.get('kind'), minArea: p.get('min'), maxArea: p.get('max'), rooms: p.get('rooms'), orientation: p.get('orientation') });
     }
-    return { normalizeFilters, matchesApartment, placementTransform, hasEnvelope, filterProjects, encodeFilters, decodeFilters };
+    return { normalizeFilters, matchesApartment, placementTransform, hasEnvelope, filterProjects, compareCompletion, encodeFilters, decodeFilters };
 });

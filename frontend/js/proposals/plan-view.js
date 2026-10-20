@@ -62,12 +62,17 @@
     // the map), else the published record, normalised as an import would but not stored.
     async function loadRecords(ids) {
         const standing = record => typeof win.isProposalCurrentlyApplied === 'function' && win.isProposalCurrentlyApplied(record);
-        // Several local records can answer to one published row (a draft and the copy a plan link
-        // imported): the one standing on the map is the member's state here.
         const held = new Map();
-        (win.proposalStorage.getAllProposals() || []).forEach(record => {
-            const id = win.ProposalPlans.serverIdOfRecord(record);
-            if (id && (!held.has(id) || (!standing(held.get(id)) && standing(record)))) held.set(id, record);
+        const publicationApiBase = win.resolveBackendBaseUrl();
+        const getPublishedCopy = win.proposalStorage && win.proposalStorage.getProposalByServerRowId;
+        if (typeof getPublishedCopy !== 'function') {
+            throw new Error('Plan preview requires API-qualified local publication lookup.');
+        }
+        // Storage rejects duplicate copies for this exact API + row. Never choose by applied state:
+        // that would make a fork or stale copy impersonate an immutable named-plan member.
+        ids.forEach(id => {
+            const record = getPublishedCopy.call(win.proposalStorage, id, publicationApiBase);
+            if (record) held.set(id, record);
         });
         const missing = ids.filter(id => !held.has(id));
         const batch = missing.length
@@ -90,6 +95,42 @@
 
     // What each member draws: its own geometry (road, buildings, structure, plots, site), else the
     // cadastral parcels it declares, fetched when they are not loaded yet.
+    function parcelSourceOf(record) {
+        const normalize = value => {
+            if (!value || typeof value !== 'object' || Array.isArray(value)) return null;
+            if (Object.keys(value).some(key => !['sourceId', 'snapshotId'].includes(key))) return null;
+            const sourceId = typeof value.sourceId === 'string' ? value.sourceId.trim() : '';
+            if (!sourceId) return null;
+            let snapshotId = null;
+            if (value.snapshotId !== undefined && value.snapshotId !== null) {
+                if (typeof value.snapshotId !== 'string' || !value.snapshotId.trim()) return null;
+                snapshotId = value.snapshotId.trim();
+            }
+            return { sourceId, snapshotId };
+        };
+        const set = record && record.parcelSet;
+        if (set && Object.prototype.hasOwnProperty.call(set, 'parcelSource')) {
+            return normalize(set.parcelSource);
+        }
+        return normalize(record && record.binding && record.binding.parcelSource);
+    }
+
+    function parcelHasSource(feature, expected) {
+        const actual = parcelSourceOf({ parcelSet: { parcelSource: feature?.properties?.parcelSource } });
+        return !!actual && actual.sourceId === expected.sourceId && actual.snapshotId === expected.snapshotId;
+    }
+
+    function apiCity(value) {
+        const raw = typeof value === 'string' ? value.trim() : '';
+        if (!raw) return null;
+        try {
+            const normalized = typeof win.normalizeCityCodeForApi === 'function' ? win.normalizeCityCodeForApi(raw) : raw.toLowerCase();
+            return typeof normalized === 'string' && normalized.trim() ? normalized.trim().toLowerCase() : null;
+        } catch (_) {
+            return null;
+        }
+    }
+
     async function memberFeatures(records) {
         const features = new Map();
         const parcelOnly = [];
@@ -98,13 +139,29 @@
             if (own.length) features.set(id, own);
             else parcelOnly.push(id);
         });
-        const parcelIds = Array.from(new Set(parcelOnly.flatMap(id => (records.get(id).cadastreParcelIds || []).map(String))));
+        const currentCity = apiCity(typeof win.resolveCurrentCityCode === 'function'
+            ? win.resolveCurrentCityCode() : win.CityConfigManager?.getCurrentCityId?.());
+        const eligible = parcelOnly.filter(id => {
+            const record = records.get(id);
+            return currentCity && apiCity(record?.city) === currentCity && parcelSourceOf(record);
+        });
+        const parcelIds = Array.from(new Set(eligible.flatMap(id => (records.get(id).cadastreParcelIds || []).map(String))));
         if (parcelIds.length && !win.ParcelGroundFallback?.isWithoutParcels?.()) {
             const repository = win.CadastralParcelRepository;
-            await repository.ensureIds(parcelIds);
-            parcelOnly.forEach(id => {
-                const list = repository.getMany((records.get(id).cadastreParcelIds || []).map(String));
-                if (list.length) features.set(id, list);
+            if (!repository || typeof repository.ensureIds !== 'function' || typeof repository.getMany !== 'function') {
+                throw new Error('Plan preview parcel repository is unavailable.');
+            }
+            await repository.ensureIds(parcelIds, { city: currentCity });
+            eligible.forEach(id => {
+                const record = records.get(id);
+                const source = parcelSourceOf(record);
+                const ids = Array.from(new Set((record.cadastreParcelIds || []).map(String)));
+                const list = repository.getMany(ids, { city: currentCity });
+                // A same-looking parcel ID from another provider or release is not this member's
+                // geometry. Unknown or mismatched source provenance stays undrawn.
+                if (ids.length && list.length === ids.length && list.every(feature => parcelHasSource(feature, source))) {
+                    features.set(id, list);
+                }
             });
         }
         return features;
@@ -235,7 +292,7 @@
         const counts = new Map();
         members.forEach(member => {
             if (member.missing) return;
-            const key = member.goal || member.type || 'other';
+            const key = win.ProposalDesignGoals?.keyOf(member) || 'other';
             counts.set(key, (counts.get(key) || 0) + 1);
         });
         const label = key => (typeof win.formatProposalTypeLabel === 'function' ? win.formatProposalTypeLabel(key) : key);
@@ -271,7 +328,7 @@
             const id = String(member.proposalRowId);
             const record = state.records.get(id);
             const title = member.title || (record && (record.title || record.name)) || t('modal.roadWidth.proposalList.untitled', 'Untitled proposal');
-            const type = member.goal || member.type;
+            const type = win.ProposalDesignGoals?.keyOf(member);
             const typeLabel = type && typeof win.formatProposalTypeLabel === 'function' ? win.formatProposalTypeLabel(type) : '';
             const badges = [
                 state.applied.has(id) ? `<span class="cb-badge cb-badge--applied">${escapeText(t('plans.view.onMap', 'On the map'))}</span>` : '',
@@ -307,7 +364,7 @@
     function renderPanel() {
         const panel = ensurePanel();
         const plan = state.plan || { slug: state.slug };
-        panel.querySelector('#plan-view-title').textContent = win.ProposalPlans.planLabel(plan) || t('plans.view.title', 'Plan');
+        panel.querySelector('#plan-view-title').textContent = win.ProposalPlans.planLabel(plan) || t('plans.view.title', 'Named plan');
         const close = panel.querySelector('[data-plan-action="close"]');
         const closeLabel = t('modal.common.close', 'Close');
         close.setAttribute('aria-label', closeLabel);

@@ -1,0 +1,15 @@
+[
+  {
+    "url": "https://fadaeldjazair.mf.gov.dz/fr/geo_services/"
+  },
+  {
+    "url": "https://fadaeldjazair.mf.gov.dz/geoserver/ows?service=WFS&request=GetCapabilities"
+  },
+  {
+    "url": "https://www.asal.dz/",
+    "reason": "500"
+  },
+  {
+    "url": "https://data.gov.dz/"
+  }
+]

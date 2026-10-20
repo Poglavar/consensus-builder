@@ -1,0 +1,14 @@
+[
+  {
+    "url": "https://www.sindhzameen.gos.pk/Default.aspx",
+    "reason": "timeout"
+  },
+  {
+    "url": "https://bor.sindh.gov.pk/",
+    "reason": "timeout"
+  },
+  {
+    "url": "https://map.sindhzameen.gos.pk/",
+    "reason": "502"
+  }
+]

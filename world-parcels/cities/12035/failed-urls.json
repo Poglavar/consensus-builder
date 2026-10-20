@@ -1,0 +1,24 @@
+[
+  {
+    "url": "https://bhunaksha.assam.gov.in/api/proxy/districts",
+    "reason": "401"
+  },
+  {
+    "url": "https://bhunaksha.assam.gov.in/api/proxy/circles?dist_code=12",
+    "reason": "401"
+  },
+  {
+    "url": "https://bhunaksha.assam.gov.in/api/proxy/villages?circle_code=1201",
+    "reason": "401"
+  },
+  {
+    "url": "https://gistcp.assam.gov.in/geoportal/index.aspx",
+    "reason": "timeout"
+  },
+  {
+    "url": "https://dlrs.assam.gov.in/"
+  },
+  {
+    "url": "https://astec.assam.gov.in/portlet-sub-innerpage/cadastral-mapping"
+  }
+]

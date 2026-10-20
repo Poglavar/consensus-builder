@@ -1,0 +1,14 @@
+[
+  {
+    "url": "https://geo.pontagrossa.pr.gov.br/sistema/mapa"
+  },
+  {
+    "url": "https://paranainterativo.pr.gov.br/interativo2/rest/services/Base_Cartografica/Base_Cartografica_Municipal/MapServer/277?f=pjson"
+  },
+  {
+    "url": "https://paranainterativo.pr.gov.br/interativo2/rest/services/Base_Cartografica/Base_Cartografica_Municipal/MapServer/1736?f=pjson"
+  },
+  {
+    "url": "https://paranainterativo.pr.gov.br/interativo2/rest/services/Base_Cartografica/Base_Cartografica_Municipal/MapServer/1756/query"
+  }
+]

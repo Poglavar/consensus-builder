@@ -1,0 +1,18 @@
+[
+  {
+    "url": "https://www.egis.idsc.gov.eg/server/rest/services/MOC_DELayer/MapServer?f=html",
+    "reason": "403"
+  },
+  {
+    "url": "https://www.esa.gov.eg/"
+  },
+  {
+    "url": "https://www.esa.gov.eg/segel.aspx"
+  },
+  {
+    "url": "https://www.egis.idsc.gov.eg/server/rest/services/MOC_DELayer/MapServer/1?f=pjson"
+  },
+  {
+    "url": "https://www.egis.idsc.gov.eg/server/rest/services/MOC_DELayer/MapServer/1"
+  }
+]

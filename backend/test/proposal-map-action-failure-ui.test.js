@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url';
 
 const source = readFileSync(fileURLToPath(new URL('../../frontend/js/proposals/execution.js', import.meta.url)), 'utf8');
 const start = source.indexOf('function proposalApplyFailureReason(');
-const end = source.indexOf('function openAcceptOwnershipTransferDialog(', start);
+const end = source.indexOf('function computeOwnershipStatsFromSelection(', start);
 if (start < 0 || end < 0) throw new Error('Could not locate the proposal map action functions');
 const applySource = source.slice(start, end);
 

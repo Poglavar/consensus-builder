@@ -58,10 +58,27 @@ describe('ProposalDraftStore', () => {
             schemaVersion: PROPOSAL_DRAFT_SCHEMA_VERSION,
             cityId: 'zagreb',
             goal: 'park',
-            sourceProposalId: 'proposal-7',
+            sourceLocalProposalId: 'proposal-7',
             fields: { name: 'Pocket park', selectedParcelIds: ['a', 'b'] },
             sourceSnapshot: { title: 'Pocket park' }
         });
+    });
+
+    it('rejects source records without an explicit canonical goal', () => {
+        const { store } = harness();
+        expect(() => store.createDraftFromProposal({
+            proposalId: 'unclassified-source', city: 'zagreb', type: 'park', proposalType: 'park',
+            structureProposal: { kind: 'park' }, cadastreParcelIds: ['a']
+        })).toThrow(/explicit canonical goal/);
+        expect(store.listDrafts()).toEqual([]);
+    });
+
+    it('requires exact canonical goals on new drafts and never derives them from type labels', () => {
+        const { store } = harness();
+        expect(() => store.createDraft({ type: 'park' })).toThrow(/explicit canonical goal/);
+        expect(() => store.createDraft({ proposalType: 'Park' })).toThrow(/explicit canonical goal/);
+        expect(() => store.createDraft({ goal: 'Park' })).toThrow(/explicit canonical goal/);
+        expect(store.createDraft({ goal: 'park', type: 'road' })).toMatchObject({ goal: 'park', proposalType: 'park' });
     });
 
     it('carries who decides from the source, and leaves it unchosen for a local drawing', () => {
@@ -123,6 +140,18 @@ describe('ProposalDraftStore', () => {
         expect(storage.getItem(retiredKey)).not.toBeNull();
     });
 
+    it('does not read the retired v2 draft key', () => {
+        const retiredKey = 'consensus-builder.proposal-drafts.v2';
+        const storage = memoryStorage({
+            [retiredKey]: JSON.stringify({ schemaVersion: 2, drafts: [{ id: 'draft-v2', goal: 'park' }] })
+        });
+        const { store } = harness({ storage });
+
+        expect(store.listDrafts()).toEqual([]);
+        expect(storage.getItem(retiredKey)).not.toBeNull();
+        expect(storage.getItem(PROPOSAL_DRAFT_STORAGE_KEY)).toBeNull();
+    });
+
     it('discards invalid storage and starts with an empty usable store', () => {
         const storage = memoryStorage({ [PROPOSAL_DRAFT_STORAGE_KEY]: '{not-json' });
         const { store } = harness({ storage });
@@ -148,6 +177,24 @@ describe('ProposalDraftStore', () => {
         expect(store.listDrafts()).toEqual([]);
         expect(storage.getItem(PROPOSAL_DRAFT_STORAGE_KEY)).toBeNull();
         warning.mockRestore();
+    });
+
+    it('discards current-schema records that do not carry an exact canonical goal', () => {
+        const storage = memoryStorage({
+            [PROPOSAL_DRAFT_STORAGE_KEY]: JSON.stringify({
+                schemaVersion: PROPOSAL_DRAFT_SCHEMA_VERSION,
+                drafts: [
+                    { id: 'valid', goal: 'park' },
+                    { id: 'type-only', type: 'park' },
+                    { id: 'label-goal', goal: 'Park' }
+                ],
+                activeDraftId: 'type-only'
+            })
+        });
+        const { store } = harness({ storage });
+
+        expect(store.listDrafts().map(draft => draft.id)).toEqual(['valid']);
+        expect(store.getActiveDraft()).toBeNull();
     });
 
     it('coalesces rapid editor changes into one undo step and supports redo', () => {
@@ -220,9 +267,12 @@ describe('ProposalDraftStore', () => {
         const proposal = store.buildProposalFromDraft(draft.id);
         expect(proposal).toMatchObject({
             title: 'Park',
-            sourceProposalId: 'source-park',
-            replacementOfProposalId: 'source-park',
             proposalDraftId: draft.id
+        });
+        expect(proposal.proposalOrigin).toEqual({
+            relation: 'revision',
+            source: { kind: 'local', localProposalId: 'source-park' },
+            title: 'Park'
         });
         expect(proposal.proposalId).toBeUndefined();
     });
@@ -233,12 +283,15 @@ describe('ProposalDraftStore', () => {
         // /proposals/:id and Share would reuse it instead of offering a fresh upload.
         const { store } = harness({ adapterRegistry: { get: () => null } });
         const draft = store.createDraftFromProposal({
+            localPurchaseSimulation: { buyerAgentId: 'buyer' },
             proposalId: 'source-x', serverProposalId: 95, city: 'zagreb', goal: 'park',
             title: 'Park', cadastreParcelIds: ['1'], geometry: { type: 'Polygon' }
         });
         const proposal = store.buildProposalFromDraft(draft.id, { allowInvalid: true });
         expect(proposal).toBeTruthy();
         expect(proposal.serverProposalId).toBeUndefined();
+        expect(draft.sourceSnapshot).not.toHaveProperty('localPurchaseSimulation');
+        expect(proposal).not.toHaveProperty('localPurchaseSimulation');
         expect(proposal.proposalId).toBeUndefined();
     });
 
@@ -295,7 +348,7 @@ describe('ProposalDraftStore', () => {
     it('does not throw when the storage write fails (e.g. quota exceeded)', () => {
         const quotaStorage = memoryStorage();
         quotaStorage.setItem = () => {
-            const err = new Error("Setting the value of 'consensus-builder.proposal-drafts.v2' exceeded the quota.");
+            const err = new Error(`Setting the value of '${PROPOSAL_DRAFT_STORAGE_KEY}' exceeded the quota.`);
             err.name = 'QuotaExceededError';
             throw err;
         };

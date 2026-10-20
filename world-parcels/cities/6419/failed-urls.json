@@ -1,0 +1,38 @@
+[
+  {
+    "url": "https://www.tkgm.gov.tr/e-hizmetler/sik-kullanilanlar/parsel-sorgulama"
+  },
+  {
+    "url": "https://tkgm.gov.tr/trabzon-bm/iletisim"
+  },
+  {
+    "url": "https://www.turkiye.gov.tr/trabzon-ortahisar-belediyesi-imar-durum-sorgulama"
+  },
+  {
+    "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/"
+  },
+  {
+    "url": "https://parselsorgu.tkgm.gov.tr/"
+  },
+  {
+    "url": "https://parselsorgu.tkgm.gov.tr/main.js?v=76.3"
+  },
+  {
+    "url": "https://parselsorgu.tkgm.gov.tr/app/util/constants.min.js"
+  },
+  {
+    "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/idariYapi/ilListe"
+  },
+  {
+    "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/idariYapi/ilceListe/83"
+  },
+  {
+    "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/idariYapi/mahalleListe/6158"
+  },
+  {
+    "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/40.9928288453735/39.732671671214/"
+  },
+  {
+    "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/{lat}/{lon}/"
+  }
+]

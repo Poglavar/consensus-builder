@@ -1,0 +1,10 @@
+[
+  {
+    "url": "https://merokitta.dos.gov.np/application/main",
+    "reason": "TLS verification failed"
+  },
+  {
+    "url": "https://www.dolma.gov.np/office/Pokhariya",
+    "reason": "TLS verification failed"
+  }
+]

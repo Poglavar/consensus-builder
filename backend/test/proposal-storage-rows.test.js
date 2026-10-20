@@ -10,6 +10,7 @@ const require = createRequire(import.meta.url);
 const { ParcelMutation } = require('../../frontend/js/proposals/apply/transaction.js');
 const formationDepth = require('../../frontend/js/proposals/formation-depth.js');
 const planOrder = require('../../frontend/js/proposals/plan-order.js');
+const proposalOrigin = require('../../frontend/js/proposals/origin.js');
 const dataSource = readFileSync(new URL('../../frontend/js/proposals/data.js', import.meta.url), 'utf8');
 const storageSource = readFileSync(new URL('../../frontend/js/proposals/storage.js', import.meta.url), 'utf8');
 const deterministicHash = new Function(`${storageSource}\nreturn hashStringDeterministic;`)();
@@ -48,6 +49,7 @@ function bootStore(storage, options = {}) {
     install('__cbSecondaryTab', options.secondaryTab === true);
     install('__formationDepth', formationDepth);
     install('__planOrder', planOrder);
+    install('ProposalOrigin', proposalOrigin);
     install('normalizeParcelIdList', values => Array.from(new Set((values || []).map(String))));
     install('normalizeOwnerAcceptances', value => value || {});
     install('normalizeLensEntries', value => value || []);
@@ -203,6 +205,29 @@ describe('proposal rows: deterministic ID collisions', () => {
         } finally {
             vi.useRealTimers();
         }
+    });
+});
+
+describe('proposal rows: publication identity', () => {
+    it('matches a server row only when the publication API base is explicit', () => {
+        const storage = fakeStorage();
+        const store = bootStore(storage);
+        const apiA = 'https://api-a.example';
+        const apiB = 'https://api-b.example';
+        install('getBackendBase', () => apiA);
+        const currentCopy = record('current-copy', { serverProposalId: '17', publicationApiBase: apiA });
+        const foreignCopy = record('foreign-copy', { serverProposalId: '17', publicationApiBase: apiB });
+        const bareCopy = record('bare-copy', { serverProposalId: '17' });
+        store.proposals.set(currentCopy.proposalId, currentCopy);
+        store.proposals.set(foreignCopy.proposalId, foreignCopy);
+        store.proposals.set(bareCopy.proposalId, bareCopy);
+
+        expect(store.getProposalByServerRowId('17', apiA)).toBe(currentCopy);
+        expect(store.getProposalByServerRowId('17', apiB)).toBe(foreignCopy);
+        expect(store.getProposalByServerRowId('17', undefined)).toBeNull();
+        expect(store.getProposalByServerRowId('17', apiA)).not.toBe(foreignCopy);
+        expect(store.getProposalByServerRowId('17', apiB)).not.toBe(bareCopy);
+        expect(store._resolveProposalId('17')).toBeNull();
     });
 });
 

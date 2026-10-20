@@ -1,0 +1,18 @@
+[
+  {
+    "url": "https://jamnagar.nic.in/service/land-records/"
+  },
+  {
+    "url": "https://gil.gujarat.gov.in/tendercms/TenderDocs/2015219155312878.pdf"
+  },
+  {
+    "url": "https://mcjamnagar.com/faq.aspx"
+  },
+  {
+    "url": "https://www.mcjamnagar.com/faqguj.aspx"
+  },
+  {
+    "url": "https://gisportal.ncscm.res.in/server/rest/services/CZMP_STATES/CZMP_Gujarat/MapServer/6",
+    "reason": "Held at binding: the selected whole plot has a 45.562 km² bounding box, exceeding the configured 25 km² query limit. Other qualification gates passed; geometry was not clipped."
+  }
+]

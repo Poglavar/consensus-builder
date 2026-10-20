@@ -1,4 +1,4 @@
-// New admissions require intact independent native-CRS evidence matching the production adapter.
+// Admission records unresolved native-CRS alignment as follow-up while preserving core parcel qualification.
 import { mkdtempSync, writeFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -17,9 +17,13 @@ function fixture() {
         return digest(bytes);
     };
     const descriptor = { id: 'public-source', adapter: 'arcgis', endpoint: 'https://example.gov/MapServer/0', idPrefix: 'SRC-', idField: 'OBJECTID' };
-    const candidate = { city: { code: '123' }, descriptor };
+    const candidate = { city: { code: '123' }, descriptor,
+        sourceClassification: { isParcel: true, evidence: ['Official parcel-layer description.'] } };
     const candidateSha256 = save('candidate', candidate);
-    const cacheSha256 = save('cache', { type: 'FeatureCollection', features: [] });
+    const cacheSha256 = save('cache', { type: 'FeatureCollection', features: [{
+        type: 'Feature', id: 'SRC-1', properties: { sourceId: descriptor.id, sourceParcelId: '1' },
+        geometry: { type: 'Polygon', coordinates: [[[0, 0], [0.001, 0], [0.001, 0.001], [0, 0.001], [0, 0]]] }
+    }] });
     const blockers = Object.fromEntries(['invalidCount', 'duplicateIdCount', 'conflictingSameIdGeometryCount',
         'exactGeometryDuplicateCount', 'overlapPairCount', 'operationErrorCount'].map(key => [key, 0]));
     save('metric', { inputSha256: cacheSha256 });
@@ -35,18 +39,21 @@ function fixture() {
     save('alignment', alignment); save('independentAlignment', alignment);
     const checks = Object.fromEntries(['classification', 'exactIds', 'stableGeometry', 'explicitAbsence', 'sampling', 'completeness',
         'binding', 'metric', 'alignment'].map(key => [key, { passed: true }]));
-    const qualification = { status: 'technical-qualified', candidateSha256, cacheSha256, checks };
+    const qualification = { status: 'technical-qualified', sourceId: descriptor.id, cityCode: '123',
+        candidateSha256, cacheSha256, featureCount: 1, checks };
     save('qualification', qualification);
     return { dir, evidence, descriptor, qualification, alignment, save };
 }
 
-describe('parcel admission alignment gate', () => {
-    it('rejects old eight-gate evidence for a new admission', () => {
+describe('parcel admission alignment follow-up', () => {
+    it('records missing alignment as follow-up after core parcel qualification', () => {
         const f = fixture();
         try {
             delete f.qualification.checks.alignment;
             f.save('qualification', f.qualification);
-            expect(verifyAdmissionEvidence(f.evidence, f.descriptor)).toBe('not every gate passed');
+            const result = verifyAdmissionEvidence(f.evidence, f.descriptor);
+            expect(result.checks.alignment.passed).toBe(false);
+            expect(result.initialQualificationReview.followUp.map(item => item.check)).toContain('alignment');
         } finally { rmSync(f.dir, { recursive: true, force: true }); }
     });
     it('rejects a production projection changed after qualification', () => {
@@ -56,14 +63,18 @@ describe('parcel admission alignment gate', () => {
             expect(verifyAdmissionEvidence(f.evidence, { ...f.descriptor, responseSrid: 3857 })).toContain('coordinate contract differs');
         } finally { rmSync(f.dir, { recursive: true, force: true }); }
     });
-    it('rejects altered native proof bytes or an independent discrepancy', () => {
+    it('records altered native proof bytes or an independent discrepancy as unresolved alignment', () => {
         const f = fixture();
         try {
             f.save('independentAlignment', { ...f.alignment, maxBoundaryDifferenceM: 1 });
-            expect(verifyAdmissionEvidence(f.evidence, f.descriptor)).toContain('alignment audit does not pass');
+            let result = verifyAdmissionEvidence(f.evidence, f.descriptor);
+            expect(result.checks.alignment.passed).toBe(false);
+            expect(result.initialQualificationReview.followUp.map(item => item.check)).toContain('alignment');
             f.save('independentAlignment', f.alignment);
             f.save('alignmentNative', { changed: true });
-            expect(verifyAdmissionEvidence(f.evidence, f.descriptor)).toContain('alignment audit does not pass');
+            result = verifyAdmissionEvidence(f.evidence, f.descriptor);
+            expect(result.checks.alignment.passed).toBe(false);
+            expect(result.initialQualificationReview.followUp.map(item => item.check)).toContain('alignment');
         } finally { rmSync(f.dir, { recursive: true, force: true }); }
     });
 });

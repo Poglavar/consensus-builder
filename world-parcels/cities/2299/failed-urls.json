@@ -1,0 +1,20 @@
+[
+  {
+    "url": "https://www.igac.gov.co/node/504"
+  },
+  {
+    "url": "https://www.datacaqueta.gov.co/informacion-catastro-caqueta"
+  },
+  {
+    "url": "https://florenciacaqueta.micolombiadigital.gov.co/"
+  },
+  {
+    "url": "https://florenciacaqueta.micolombiadigital.gov.co/api/v1/config"
+  },
+  {
+    "url": "https://mapas.igac.gov.co/server/rest/services/carto/carto10000florencia18001/MapServer?f=pjson"
+  },
+  {
+    "url": "https://mapas.igac.gov.co/server/rest/services/carto/carto10000florencia18001/MapServer/0?f=pjson"
+  }
+]

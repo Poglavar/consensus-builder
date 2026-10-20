@@ -1,0 +1,23 @@
+[
+  {
+    "url": "https://mapas.igac.gov.co/server/rest/services/Dato_Fundamental_Catastro/MapServer/4/query",
+    "reason": "400"
+  },
+  {
+    "url": "https://www.monteria.gov.co/publicaciones/4362/monteria-asume-nuevas-funciones-en-su-rol-como-gestor-catastral/",
+    "reason": "403"
+  },
+  {
+    "url": "https://www.monteria.gov.co/documentos/1021/resoluciones-2026/",
+    "reason": "403"
+  },
+  {
+    "url": "https://mapas.igac.gov.co/server/rest/services/Dato_Fundamental_Catastro/MapServer"
+  },
+  {
+    "url": "https://mapas.igac.gov.co/server/rest/services/Dato_Fundamental_Catastro/MapServer/4"
+  },
+  {
+    "url": "https://sigi.igac.gov.co/colombia-mapas/como-hacer-una-consulta-catastral/index.html"
+  }
+]

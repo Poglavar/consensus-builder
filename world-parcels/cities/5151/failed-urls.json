@@ -1,0 +1,14 @@
+[
+  {
+    "url": "https://slrd.gov.mm/en",
+    "reason": "403"
+  },
+  {
+    "url": "https://slrd.gov.mm/my/node/160",
+    "reason": "403"
+  },
+  {
+    "url": "https://dop.gov.mm/sites/dop.gov.mm/files/publication_docs/maubin_0.pdf",
+    "reason": "TLS verification failure"
+  }
+]

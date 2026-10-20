@@ -1,65 +1,87 @@
-// GET /proposals/:id/lineage — where a proposal came from and which published records were made from
-// it, so the original can list its counterproposals and a fork can link back to its source.
-import { describe, it, expect, vi } from 'vitest';
-import request from 'supertest';
+// GET /proposals/:id/lineage resolves only a publication reference in this API store.
+import { afterEach, describe, it, expect, vi } from 'vitest';
 import { createMockPool } from './helpers/mock-pool.js';
 import { createTestApp } from './helpers/create-app.js';
 
 vi.mock('../thumbnails/proposal-thumbnail.js', () => ({ generateAndStoreProposalThumbnail: vi.fn(async () => null) }));
 
+const API_A = 'https://api-a.example.test';
+const API_B = 'https://api-b.example.test';
 function app(results) {
     const pool = createMockPool();
     pool.setResults(results);
     return { pool, app: createTestApp(pool) };
 }
 
+async function getLineage(server, id) {
+    const layer = server._router.stack.find(item => item.route?.path === '/proposals/:id/lineage');
+    const handler = layer.route.stack.find(item => item.method === 'get').handle;
+    let status = 200;
+    let body;
+    const response = { status(code) { status = code; return this; }, json(value) { body = value; return this; } };
+    await handler({ params: { id } }, response);
+    return { status, body };
+}
+
+afterEach(() => vi.unstubAllEnvs());
+
 describe('GET /proposals/:id/lineage', () => {
-    it('resolves a published source and lists the records that name this one as theirs', async () => {
+    it('resolves a same-store published source and lists typed derived references', async () => {
+        vi.stubEnv('PUBLIC_API_BASE_URL', API_A);
         const { pool, app: server } = app([
-            { rows: [{ id: 879, proposal_id: 'c2-orig', source_key: 'c2-older', source_name: 'Older plan' }] },
+            { rows: [{ id: 879, proposal_id: 'c2-orig', proposal_origin: { relation: 'revision', source: { kind: 'publication', apiBase: API_A, proposalRowId: '700' }, title: 'Older plan' } }] },
             { rows: [{ id: 700, proposal_id: 'c2-older', title: 'Older plan', name: null, effective_status: 'Active' }] },
             { rows: [
                 { id: 901, proposal_id: 'c2-fork-b', title: 'Counter B', name: null, author: 'Owner C', created_at: '2026-10-16T10:00:00Z', effective_status: 'Active', land_fork: false },
                 { id: 900, proposal_id: 'c2-fork-a', title: null, name: 'Counter A', author: null, created_at: '2026-10-15T10:00:00Z', effective_status: 'Active', land_fork: true }
             ] }
         ]);
-        const res = await request(server).get('/proposals/879/lineage');
+        const res = await getLineage(server, '879');
         expect(res.status).toBe(200);
-        expect(res.body.source).toEqual({ published: true, id: 700, proposalId: 'c2-older', title: 'Older plan', status: 'Active' });
-        expect(res.body.derived.map(d => [d.proposalId, d.title, d.landFork])).toEqual([
-            ['c2-fork-b', 'Counter B', false], ['c2-fork-a', 'Counter A', true]
+        expect(res.body).toMatchObject({ proposalRowId: 879, authoredProposalId: 'c2-orig', publicationApiBase: API_A });
+        expect(res.body.source).toEqual({ resolution: 'resolved', reference: { kind: 'publication', apiBase: API_A, proposalRowId: '700' }, proposalRowId: 700, publicationApiBase: API_A, authoredProposalId: 'c2-older', title: 'Older plan', status: 'Active' });
+        expect(res.body.derived.map(d => [d.proposalRowId, d.publicationApiBase, d.authoredProposalId, d.title, d.landFork])).toEqual([
+            [901, API_A, 'c2-fork-b', 'Counter B', false], [900, API_A, 'c2-fork-a', 'Counter A', true]
         ]);
-        const calls = pool.getCalls();
-        expect(calls[0].params).toEqual(['879']);
-        expect(calls[1].params).toEqual(['c2-older']);
-        // Forks may name the original by its proposal id or by its row id; never itself.
-        expect(calls[2].params).toEqual([['c2-orig', '879'], 879]);
-        expect(calls[2].sql).toMatch(/sourceProposalId/);
-        expect(calls[2].sql).toMatch(/replacementOfProposalId/);
-        expect(calls[2].sql).toMatch(/id <> \$2/);
+        expect(pool.getCalls().map(call => call.params)).toEqual([['879'], ['700'], [API_A, 879, '879']]);
+        expect(pool.getCalls()[2].sql).toMatch(/proposalOrigin/);
+        expect(pool.getCalls()[2].sql).toMatch(/'apiBase' = \$1/);
+        expect(pool.getCalls()[2].sql).toMatch(/'proposalRowId' = \$3/);
     });
 
-    it('reports a source that was never published as an unpublished draft, by its stored name', async () => {
-        const { app: server } = app([
-            { rows: [{ id: 879, proposal_id: 'c2-orig', source_key: 'p-local', source_name: 'Subdivide · 3 parcels' }] },
-            { rows: [] },
+    it('marks another publication store external and does not query its row', async () => {
+        vi.stubEnv('PUBLIC_API_BASE_URL', API_A);
+        const { pool, app: server } = app([
+            { rows: [{ id: 879, proposal_id: 'c2-orig', proposal_origin: { relation: 'copy', source: { kind: 'publication', apiBase: API_B, proposalRowId: '700' }, title: 'Remote plan' } }] },
             { rows: [] }
         ]);
-        const res = await request(server).get('/proposals/c2-orig/lineage');
-        expect(res.status).toBe(200);
-        expect(res.body.source).toEqual({ published: false, proposalId: 'p-local', title: 'Subdivide · 3 parcels' });
+        const res = await getLineage(server, '879');
+        expect(res.body.source).toEqual({ resolution: 'external', reference: { kind: 'publication', apiBase: API_B, proposalRowId: '700' }, title: 'Remote plan' });
+        expect(pool.getCalls()).toHaveLength(2);
+        expect(pool.getCalls()[1].params).toEqual([API_A, 879, '879']);
+    });
+
+    it('cannot resolve publication lineage when this API has no configured public base', async () => {
+        vi.stubEnv('PUBLIC_API_BASE_URL', '');
+        const { pool, app: server } = app([
+            { rows: [{ id: 879, proposal_id: 'c2-orig', proposal_origin: { relation: 'revision', source: { kind: 'publication', apiBase: API_A, proposalRowId: '700' }, title: 'Older plan' } }] }
+        ]);
+        const res = await getLineage(server, '879');
+        expect(res.body.source.resolution).toBe('external');
         expect(res.body.derived).toEqual([]);
+        expect(pool.getCalls()).toHaveLength(1);
     });
 
     it('has no source for an original, and 404s for an unknown proposal', async () => {
+        vi.stubEnv('PUBLIC_API_BASE_URL', API_A);
         const { pool, app: server } = app([
-            { rows: [{ id: 5, proposal_id: 'c2-root', source_key: null, source_name: null }] },
+            { rows: [{ id: 5, proposal_id: 'c2-root', proposal_origin: null }] },
             { rows: [] }
         ]);
-        const res = await request(server).get('/proposals/5/lineage');
+        const res = await getLineage(server, '5');
         expect(res.body.source).toBeNull();
         expect(pool.getCalls()).toHaveLength(2);
         const missing = app([{ rows: [] }]);
-        expect((await request(missing.app).get('/proposals/nope/lineage')).status).toBe(404);
+        expect((await getLineage(missing.app, 'nope')).status).toBe(404);
     });
 });

@@ -1,0 +1,6 @@
+[
+  {
+    "url": "https://www.gds.hessen.de/wfs2/aaa-suite/cgi-bin/alkis/nas/wfs?SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&TYPENAMES=adv:AX_Flurstueck&BBOX=533879,5684884,534079,5685084,urn:ogc:def:crs:EPSG::25832&COUNT=3&OUTPUTFORMAT=application/json&PROPERTYNAME=flurstueckskennzeichen,position",
+    "reason": "400"
+  }
+]

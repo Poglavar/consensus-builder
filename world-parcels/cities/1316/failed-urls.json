@@ -1,0 +1,14 @@
+[
+  {
+    "url": "https://mohup.gov.om/"
+  },
+  {
+    "url": "https://geoportal.mm.gov.om/server/rest/services/SeebContract_MIL1/MapServer?f=pjson"
+  },
+  {
+    "url": "https://geoportal.mm.gov.om/server/rest/services/SeebContract_MIL1/MapServer/11?f=pjson"
+  },
+  {
+    "url": "https://gov.om/w/get-cadastral-drawing"
+  }
+]

@@ -1,0 +1,20 @@
+[
+  {
+    "url": "https://open.ngis.uz/",
+    "reason": "timeout from local request runtime after 25 seconds"
+  },
+  {
+    "url": "https://db.ngis.uz/db/rest/services?f=pjson",
+    "reason": "connection timeout after 8 seconds"
+  },
+  {
+    "url": "https://gis.agro.uz/server/rest/services?f=pjson",
+    "reason": "TLS certificate verification failure"
+  },
+  {
+    "url": "https://dgov.uz/en/solution/detail/52/"
+  },
+  {
+    "url": "https://dgov.uz/uz/solution/detail/52/"
+  }
+]

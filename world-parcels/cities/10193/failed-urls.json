@@ -1,0 +1,23 @@
+[
+  {
+    "url": "https://kanniyakumari.nic.in/service/land-records-a-register/"
+  },
+  {
+    "url": "https://eservices.tn.gov.in/eservicesnew/home.html"
+  },
+  {
+    "url": "https://www.tngis.tn.gov.in/assets/api_files/district_spatial_extent_api.pdf"
+  },
+  {
+    "url": "https://tn.nic.in/news/additional-land-records-services-launch-by-honourable-minister-for-revenue-and-disaster-management-tamil-nadu/"
+  },
+  {
+    "url": "https://tngis.tnega.org/generic_api/v1/get_extent?initLevel=1&filter_code=lgd_code&district=589"
+  },
+  {
+    "url": "https://tngis.tnega.org/generic_api/v1/get_extent?initLevel=1&filter_code=lgd_code&district=all"
+  },
+  {
+    "url": "https://tamilnilam.tn.gov.in/citizen"
+  }
+]

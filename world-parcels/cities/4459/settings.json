@@ -1,0 +1,120 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "4459",
+  "name": "Buenos Aires, Argentina",
+  "point": [
+    -34.6089,
+    -58.3724
+  ],
+  "bindings": [
+    {
+      "appCityId": "buenos_aires",
+      "runtimeConfig": {
+        "id": "buenos_aires",
+        "label": "Buenos Aires, Argentina",
+        "currency": {
+          "locale": "es-AR",
+          "code": "ARS"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            -34.6089,
+            -58.3724
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.04
+        },
+        "projection": {
+          "datasetCrs": "BA_CADASTRE",
+          "definition": "+proj=tmerc +lat_0=-34.6297166 +lon_0=-58.4627 +k=0.999998 +x_0=100000 +y_0=100000 +ellps=intl +towgs84=-148,136,90,0,0,0,0 +units=m +no_defs",
+          "fallbackLatLng": [
+            -34.6089,
+            -58.3724
+          ],
+          "fallbackDataset": [
+            100000,
+            100000
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 500,
+          "source": "parcel-ba",
+          "liveSource": {
+            "sourceId": "ar-caba-idecaba-wfs-parcelas",
+            "idPrefix": "AR-CABA-WFS-NAM-"
+          },
+          "requiresBackend": true
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://ciudad3d.buenosaires.gob.ar/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "ar-caba-idecaba-wfs-parcelas",
+      "name": "IDECABA cadastral parcels — Buenos Aires",
+      "adapter": "wfs",
+      "endpoint": "https://geoserver.buenosaires.gob.ar/geoserver/catalogo_og_130/wfs",
+      "featureType": "catalogo_og_130:parcelas",
+      "idField": "nam",
+      "idType": "string",
+      "idPattern": "^[0-9]{2,3}-[0-9]{3}[A-Za-z]*-[0-9A-Za-z]{3,5}$",
+      "idPrefix": "AR-CABA-WFS-NAM-",
+      "parcelNumberField": "nam",
+      "outFields": [
+        "nam",
+        "gid"
+      ],
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "metricSrid": 32721,
+      "countryCode": "AR",
+      "cityIds": [
+        "buenos_aires"
+      ],
+      "scope": "Ciudad Autónoma de Buenos Aires cadastral parcel layer; bounded samples verified, not Greater Buenos Aires or Argentina.",
+      "catalogueUrl": "https://data.buenosaires.gob.ar/dataset/parcelas",
+      "attribution": "Gobierno de la Ciudad de Buenos Aires, IDECABA cadastral parcel layer. Adapted to WGS84.",
+      "licenceNote": "The previously checked catalogue stated CC-BY-2.5-AR; it is historical evidence, not a fresh terms verification. Source conditions remain informational.",
+      "defaultForCity": false
+    },
+    {
+      "id": "parcel-ba",
+      "name": "Buenos Aires cadastral parcels in the app database",
+      "cityIds": [
+        "buenos_aires"
+      ],
+      "idPrefix": "AR-",
+      "ownership": {
+        "adapter": "ar-caba",
+        "attribution": "Gobierno de la Ciudad de Buenos Aires, cadastre API (epok.buenosaires.gob.ar), horizontal-property units.",
+        "licence": null
+      },
+      "sourceKind": "database"
+    }
+  ]
+}

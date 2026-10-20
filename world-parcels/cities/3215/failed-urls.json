@@ -1,0 +1,19 @@
+[
+  {
+    "url": "http://152.200.137.106:7050/geoportal-cartagena/api/capas/terrenos?bbox=invalid",
+    "reason": "400"
+  },
+  {
+    "url": "https://seguimientopot.cartagena.gov.co/geodata-midas",
+    "reason": "403"
+  },
+  {
+    "url": "https://www.cartagena.gov.co/noticias/amb-catastro-cartagena-habilita-su-pagina-web-facilita-tramites-acceso-informacion"
+  },
+  {
+    "url": "https://planeacion.cartagena.gov.co/midas"
+  },
+  {
+    "url": "https://catastro.cartagena.gov.co/"
+  }
+]

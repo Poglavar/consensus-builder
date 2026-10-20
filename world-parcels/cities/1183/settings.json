@@ -1,0 +1,118 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "1183",
+  "name": "Chingola, Zambia",
+  "point": [
+    -12.5459298146707,
+    27.8723779018079
+  ],
+  "bindings": [
+    {
+      "appCityId": "chingola",
+      "runtimeConfig": {
+        "id": "chingola",
+        "wupCityCode": "1183",
+        "label": "Chingola, Zambia",
+        "currency": {
+          "locale": "en-ZM",
+          "code": "ZMW"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            -12.5459298146707,
+            27.8723779018079
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            -12.5459298146707,
+            27.8723779018079
+          ],
+          "fallbackDataset": [
+            27.8723779018079,
+            -12.5459298146707
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "zm-nsdi-lots",
+          "idPrefix": "ZM-NSDI-LOTS-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 3,
+          "attribution": "<a href=\"https://www.map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer\">Government of Zambia National Spatial Data Infrastructure / ZILMIS · cadastral-reference polygons · adapted</a>"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "zm-nsdi-lots",
+      "adapter": "arcgis",
+      "endpoint": "https://www.map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer/0",
+      "idPrefix": "ZM-NSDI-LOTS-",
+      "idField": "SDE.Lots.OBJECTID",
+      "objectIdField": "SDE.Lots.OBJECTID",
+      "idType": "integer",
+      "outFields": [
+        "SDE.Lots.OBJECTID"
+      ],
+      "queryFormat": "geojson",
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "boundsSrid": 32735,
+      "boundsProjection": "+proj=utm +zone=35 +south +datum=WGS84 +units=m +no_defs",
+      "metricSrid": 32735,
+      "pageSize": 100,
+      "idBatchSize": 80,
+      "maxFeatures": 2000,
+      "maxBboxKm2": 25,
+      "maxConcurrentQueries": 1,
+      "cityIds": [
+        "chingola"
+      ],
+      "capabilities": {
+        "areaEnumeration": true
+      },
+      "name": "Zambia NSDI ZILMIS lot polygons — Chingola native-ID profile",
+      "operator": "Government of Zambia National Spatial Data Infrastructure / ZILMIS",
+      "attribution": "Government of Zambia National Spatial Data Infrastructure / ZILMIS · cadastral-reference polygons · adapted",
+      "licenceNote": "Anonymous bounded public geometry and publisher attribution verified. Publisher reuse/currentness/legal-coordinate conditions are informational. This reference geometry does not establish legal title or survey accuracy. Personal fields and reader token values are excluded.",
+      "catalogueUrl": "https://www.map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer",
+      "countryCode": "ZM",
+      "scope": "Bounded Chingola-area native parcel queries; complete object-ID manifests replace unsupported offset pagination. Citywide completeness and legal accuracy are unverified. Additional enabled city entries have separate bounded qualification evidence; wider coverage remains unverified.",
+      "metricSridByCity": {
+        "chingola": 32735
+      },
+      "cityScopes": {
+        "chingola": "50 unchanged native parcel polygons passed all eight qualification gates in bounded cells around the UN/WUP locator. Fresh independent metric audit (EPSG:32735) found zero invalid polygons, identity conflicts, duplicate geometry, material overlaps, or operation errors. Citywide completeness, legal title, survey accuracy, and currentness are not established."
+      }
+    }
+  ]
+}

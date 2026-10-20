@@ -1,0 +1,17 @@
+[
+  {
+    "url": "https://gis.daejeon.go.kr/"
+  },
+  {
+    "url": "https://gis.daejeon.go.kr/introMapService.do"
+  },
+  {
+    "url": "https://gis.daejeon.go.kr/ispmap.do?menu_cde=menu008"
+  },
+  {
+    "url": "https://gis.daejeon.go.kr/js/web/isp/layout/realMapService.js"
+  },
+  {
+    "url": "https://gis.daejeon.go.kr/lib/o2map/config/o2Config.js"
+  }
+]

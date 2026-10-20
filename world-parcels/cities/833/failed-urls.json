@@ -1,0 +1,10 @@
+[
+  {
+    "url": "https://gis.ktimanet.gr/wfs/wfsopen/wfsserver.aspx?SERVICE=WFS&REQUEST=GetCapabilities",
+    "reason": "404"
+  },
+  {
+    "url": "https://gis.ktimanet.gr/inspire/download/cadastralparcels.aspx?SERVICE=WFS&REQUEST=GetCapabilities",
+    "reason": "404"
+  }
+]

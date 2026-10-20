@@ -1,0 +1,26 @@
+[
+  {
+    "url": "https://www.haimen.gov.cn/hmsrmzf/dwzsk/content/58b1527b-2766-4159-95a1-fd83ec962511.html",
+    "reason": "403"
+  },
+  {
+    "url": "https://www.haimen.gov.cn/hmsgtj/jgzn/jgzn.html",
+    "reason": "403"
+  },
+  {
+    "url": "https://www.haimen.gov.cn/hmsgtj/zcwj/zcwj.html",
+    "reason": "403"
+  },
+  {
+    "url": "https://www.haimen.gov.cn/hmsgtj/jhzj/content/62ae5074-5455-47ea-9542-891af7b0b86c.html",
+    "reason": "403"
+  },
+  {
+    "url": "https://map.tianditu.gov.cn/",
+    "reason": "418"
+  },
+  {
+    "url": "https://www.webmap.cn/commres.do?method=tianMap&typeId=21",
+    "reason": "502"
+  }
+]

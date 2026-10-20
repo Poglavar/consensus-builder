@@ -20,6 +20,115 @@ function rejectionOf(row) {
 }
 
 describe('proposal API serializer', () => {
+    it('keeps measurement capture metadata in its frame without inventing parcel-source dates or authority', () => {
+        const frame = { capturedAt: '2026-09-20T09:00:00Z', geometryHash: 'source-frame-hash' };
+        const row = { city: 'city-a', created_at: '2026-09-22T08:00:00Z', cadastre_parcel_ids: ['HR-1-1'],
+            cadastre_frame: frame, proposal_data: { parcelSet: { authority: 'stale-guess', referenceAt: 'stale-date' } } };
+        const serialized = serializeProposalRow(row);
+        expect(serialized.cadastreFrame).toEqual(frame);
+        expect(serialized.parcelSet).toMatchObject({ authority: null, jurisdiction: null, parcelSource: null, parcelIds: ['HR-1-1'] });
+        expect(serialized.parcelSet).not.toHaveProperty('referenceAt');
+        expect(serialized.parcelSet).not.toHaveProperty('geometryHash');
+        const withoutFrame = serializeProposalRow({ ...row, cadastre_frame: null });
+        expect(withoutFrame.cadastreFrame).toBeNull();
+        expect(withoutFrame.parcelSet).toEqual(serialized.parcelSet);
+    });
+
+    it('qualifies the serialized parcel set from binding source and never from city or stale labels', () => {
+        const row = {
+            city: 'zagreb', cadastre_parcel_ids: ['123/4'],
+            binding: { source: 'server:catalog-a', parcelSource: { sourceId: 'catalog-a', snapshotId: null } },
+            proposal_data: { parcelSet: { jurisdiction: 'croatia', authority: 'operator-guess' } }
+        };
+        const serialized = serializeProposalRow(row);
+        expect(serialized.parcelSet).toMatchObject({
+            parcelSource: { sourceId: 'catalog-a', snapshotId: null },
+            jurisdiction: null, authority: null
+        });
+        const otherSource = serializeProposalRow({
+            ...row, binding: { ...row.binding, parcelSource: { sourceId: 'catalog-b', snapshotId: null } }
+        });
+        expect(otherSource.parcelSet.setHash).not.toBe(serialized.parcelSet.setHash);
+    });
+
+    it('omits unsigned consent from both SQL and JSON while preserving authored approval configuration', () => {
+        const claims = { acceptedParcelIds: ['parcel-a'], ownerAcceptances: { 'parcel-a': { acceptedOwnerKeys: ['party-a'] } } };
+        const row = { accepted_parcel_ids: claims.acceptedParcelIds, owner_acceptances: claims.ownerAcceptances,
+            proposal_data: { ...claims, approvalConfig: { schema: 'proposal-approval/v1' } } };
+        const before = structuredClone(row);
+        for (const projected of [serializeProposalRow(row), stripLocalProposalState(row.proposal_data)]) {
+            expect(projected).not.toHaveProperty('acceptedParcelIds');
+            expect(projected).not.toHaveProperty('ownerAcceptances');
+            expect(projected.approvalConfig).toEqual(row.proposal_data.approvalConfig);
+        }
+        expect(row).toEqual(before);
+    });
+
+    it.each([undefined, null])('does not revive a chain location from JSON when SQL is %s', onchain_data => {
+        const row = { onchain_data, proposal_data: {
+            onchain: { proposalId: 'stale-a' }, onchainData: { proposalId: 'stale-b' }
+        } };
+        const before = structuredClone(row);
+        const proposal = serializeProposalRow(row);
+        expect(proposal.onchain).toBeNull();
+        expect(proposal).not.toHaveProperty('onchainData');
+        expect(row).toEqual(before);
+    });
+
+    it('serves one SQL chain attachment despite conflicting JSON projections', () => {
+        const onchain = { chainId: 'solana-devnet', proposalId: 'current-account' };
+        const proposal = serializeProposalRow({ onchain_data: onchain, proposal_data: {
+            onchain: { proposalId: 'stale-a' }, onchainData: { proposalId: 'stale-b' }
+        } });
+        expect(proposal.onchain).toEqual(onchain);
+        expect(proposal).not.toHaveProperty('onchainData');
+    });
+
+    it.each([undefined, null, '', 'pending'])(
+        'does not replace unknown stored lifecycle %s from authored JSON or expiry', lifecycle_status => {
+            const proposal = serializeProposalRow({
+                lifecycle_status, expires_at: '2020-01-01T00:00:00Z',
+                proposal_data: { lifecycleStatus: 'Executed' }
+            });
+            expect(proposal.lifecycleStatus).toBe('Unknown');
+        });
+
+    it('preserves an Unknown SQL result despite an apparently Active stored projection', () => {
+        expect(serializeProposalRow({ effective_status: 'Unknown', lifecycle_status: 'Active' })
+            .lifecycleStatus).toBe('Unknown');
+    });
+
+    it('keeps an operational terminal status and exposes its unsupported evidence separately', () => {
+        const proposal = serializeProposalRow({ lifecycle_status: 'Cancelled', proposal_data: {
+            lifecycleEvidence: { protocol: 'proposal-lifecycle-evidence/1', state: 'observed', status: 'Cancelled',
+                observedAt: '2026-10-19T00:00:00.000Z', observations: [{ source: 'chain-state-read' }] }
+        } });
+        expect(proposal.lifecycleStatus).toBe('Cancelled');
+        expect(proposal.lifecycleEvidence).toMatchObject({
+            protocol: 'proposal-lifecycle-evidence/1', state: 'unknown', claimedStatus: 'Cancelled'
+        });
+    });
+
+    it('strips browser lifecycle evidence before an upload or mint payload is stored', () => {
+        const local = { proposalId: 'record-a', lifecycleEvidence: {
+            protocol: 'proposal-lifecycle-evidence/1', state: 'observed', status: 'Executed',
+            observedAt: '2026-10-19T00:00:00.000Z'
+        } };
+        expect(stripLocalProposalState(local)).not.toHaveProperty('lifecycleEvidence');
+        expect(local).toHaveProperty('lifecycleEvidence');
+    });
+
+    it.each(['Active', 'Executed', 'Cancelled', 'Expired', 'draft'])(
+        'does not serve an unqualified execution timestamp from a stored %s record', lifecycleStatus => {
+            const row = { id: 5, proposal_id: 'record-a', lifecycle_status: lifecycleStatus,
+                proposal_data: { lifecycleStatus, executedAt: '2026-10-01T10:00:00.000Z' } };
+            const before = structuredClone(row);
+            const proposal = serializeProposalRow(row);
+            expect(proposal.lifecycleStatus).toBe(lifecycleStatus);
+            expect(proposal).not.toHaveProperty('executedAt');
+            expect(row).toEqual(before);
+        });
+
     it('removes browser-local applied state from root and nested payloads', () => {
         const value = stripLocalProposalState({
             applied: true,

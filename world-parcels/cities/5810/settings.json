@@ -1,0 +1,148 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "5810",
+  "name": "Ogden, United States",
+  "point": [
+    41.2172850013019,
+    -111.961087851707
+  ],
+  "bindings": [
+    {
+      "appCityId": "ogden",
+      "runtimeConfig": {
+        "id": "ogden",
+        "wupCityCode": "5810",
+        "label": "Ogden, United States",
+        "currency": {
+          "locale": "en-US",
+          "code": "USD"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            41.2172850013019,
+            -111.961087851707
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            41.2172850013019,
+            -111.961087851707
+          ],
+          "fallbackDataset": [
+            -111.961087851707,
+            41.2172850013019
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "us-ut-ugrc-statewide-parcels",
+          "idPrefix": "US-UT-STATEWIDE-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Utah Geospatial Resource Center and Utah counties. Adapted to WGS84."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "us-ut-ugrc-statewide-parcels",
+      "name": "Utah statewide parcels (UGRC) — statewide",
+      "adapter": "arcgis",
+      "countryCode": "US",
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "maxConcurrentQueries": 2,
+      "cityIds": [
+        "ogden"
+      ],
+      "licenceNote": "Source conditions are informational; users choose their source and intended use.",
+      "operator": "Utah Geospatial Resource Center and Utah county recorders/assessors",
+      "endpoint": "https://services1.arcgis.com/99lidPhWCzftIe9K/arcgis/rest/services/UtahStatewideParcels/FeatureServer/0",
+      "idFields": [
+        "County",
+        "PARCEL_ID"
+      ],
+      "idFieldTypes": {
+        "County": "string",
+        "PARCEL_ID": "string"
+      },
+      "objectIdField": "OBJECTID",
+      "outFields": [
+        "OBJECTID",
+        "County",
+        "PARCEL_ID"
+      ],
+      "parcelNumberField": "PARCEL_ID",
+      "idPrefix": "US-UT-STATEWIDE-",
+      "metricSrid": 32612,
+      "stateCode": "UT",
+      "attributeNotNull": [
+        "County",
+        "PARCEL_ID"
+      ],
+      "attributeExclusions": {
+        "PARCEL_ID": [
+          "",
+          " "
+        ]
+      },
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "nativeGeometryMode": "parts",
+      "partsCoordinatePrecision": 9,
+      "scope": "Utah statewide parcel compilation, all 29 counties. PARCEL_ID is county-scoped, so the native key is County plus PARCEL_ID; all source rows sharing that key form one native parcel.",
+      "caveats": [
+        "Some counties publish one parcel as several touching or disjoint rows (observed in Utah County, Provo); all components are fetched and dissolved by polygon union. Rows sharing one key can overlap (Provo samples: 0.003, 0.91, 3.87 and 41.4 m², the last being most of a 71 m² row of Utah~180100174), so disjointParts is not set and the union absorbs the overlap; this is assembly of the publisher rows for one key, not a boundary repair.",
+        "Rows with null or blank PARCEL_ID (24,063 statewide on 2026-10-12) are excluded.",
+        "Same endpoint as us-ut-salt-lake-city-parcels (County=SaltLake, key PARCEL_ID under US-UT-SALTLAKE-); Salt Lake County parcels would exist under both namespaces.",
+        "Layer also publishes address, owner type and account fields, which are not requested."
+      ],
+      "attribution": "Utah Geospatial Resource Center and Utah counties. Adapted to WGS84.",
+      "catalogueUrl": "https://gis.utah.gov/products/sgid/cadastre/parcels/",
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "US",
+          "admin1": [
+            "US-UT"
+          ],
+          "excludeAdmin1": [],
+          "basis": "UGRC StateWideParcels layer compiles county parcels with a County attribute; all 29 Utah counties present on 2026-10-12.",
+          "evidence": []
+        },
+        "paceMs": 1000
+      }
+    }
+  ]
+}

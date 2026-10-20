@@ -1,0 +1,20 @@
+[
+  {
+    "url": "https://wfs.cartografia.agenziaentrate.gov.it/inspire/wfs/owfs01.php"
+  },
+  {
+    "url": "https://www.comune.padova.it/mappa-online-della-citta"
+  },
+  {
+    "url": "https://www.comune.padova.it/piano-di-assetto-del-territorio-pat"
+  },
+  {
+    "url": "https://wfs.cartografia.agenziaentrate.gov.it/inspire/wfs/owfs01.php?SERVICE=WFS&REQUEST=GetCapabilities&VERSION=2.0.0"
+  },
+  {
+    "url": "https://wfs.cartografia.agenziaentrate.gov.it/inspire/wfs/owfs01.php?language=ita&SERVICE=WFS&VERSION=2.0.0&TYPENAMES=CP%3ACadastralParcel&SRSNAME=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A6706&BBOX=45.41070%2C11.88250%2C45.41086%2C11.88267&REQUEST=GetFeature&COUNT=3&OUTPUTFORMAT=application%2Fgeo%2Bjson"
+  },
+  {
+    "url": "https://wfs.cartografia.agenziaentrate.gov.it/inspire/wfs/owfs01.php?language=ita&SERVICE=WFS&VERSION=2.0.0&TYPENAMES=CP%3ACadastralParcel&SRSNAME=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A6706&BBOX=45.41070%2C11.88250%2C45.41086%2C11.88267&REQUEST=GetFeature&COUNT=3&OUTPUTFORMAT=text%2Fxml%3B%20subtype%3Dgml%2F3.2.1"
+  }
+]

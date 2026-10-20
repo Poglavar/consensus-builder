@@ -1,0 +1,10 @@
+[
+  {
+    "url": "https://nspd.gov.ru/map",
+    "reason": "timeout"
+  },
+  {
+    "url": "https://nspd.gov.ru/api/geoportal/v2/search/geoportal?query=28:01:110031:157&thematicSearchId=2",
+    "reason": "timeout/unavailable"
+  }
+]

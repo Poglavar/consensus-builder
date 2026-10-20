@@ -1,0 +1,15 @@
+[
+  {
+    "url": "https://www.affairesfoncieres.gouv.cd/api/demandes-foncieres",
+    "reason": "405"
+  },
+  {
+    "url": "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions"
+  },
+  {
+    "url": "https://www.affairesfoncieres.gouv.cd/services-fonciers/demandes"
+  },
+  {
+    "url": "https://servicepublic.gouv.cd/service/4671"
+  }
+]

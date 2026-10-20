@@ -1,0 +1,10 @@
+[
+  {
+    "url": "https://nspd.gov.ru/map?thematic=PKK",
+    "reason": "timeout after 20 seconds"
+  },
+  {
+    "url": "https://pkk.rosreestr.ru/",
+    "reason": "timeout during bounded attempt"
+  }
+]

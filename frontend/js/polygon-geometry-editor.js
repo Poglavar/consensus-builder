@@ -206,7 +206,16 @@
                 polygonBoundary,
                 turfApi
             )) return points;
-            const clipped = largestPolygon(turfApi.intersect(footprint, polygonBoundary), turfApi);
+            let hit = null;
+            try { hit = turfApi.intersect(footprint, polygonBoundary); } catch (error) {
+                // The ring cannot be constrained, so the gesture is refused (null) — and reported.
+                const api = (typeof window !== 'undefined' ? window : globalThis).__parcelArrangement
+                    || (typeof require === 'function' ? require('./proposals/parcel-arrangement.js') : null);
+                if (api) api.reportClipFailure('intersect', error, { site: 'polygon-geometry-editor.constrainRingToBoundary' }, [footprint, polygonBoundary]);
+                else console.error(`[${new Date().toISOString()}] [clip] intersect failed at polygon-geometry-editor.constrainRingToBoundary`, error);
+                return null;
+            }
+            const clipped = largestPolygon(hit, turfApi);
             const clippedRing = clipped && clipped.geometry && clipped.geometry.coordinates[0];
             const constrained = openRing(clippedRing);
             return constrained.length >= 3 ? constrained : null;

@@ -1,0 +1,90 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "556",
+  "name": "Belgrade, Serbia",
+  "point": [
+    44.810918,
+    20.438859
+  ],
+  "bindings": [
+    {
+      "appCityId": "belgrade",
+      "runtimeConfig": {
+        "id": "belgrade",
+        "label": "Belgrade, Serbia",
+        "currency": {
+          "locale": "sr-RS",
+          "code": "RSD"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            44.810918,
+            20.438859
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            44.810918,
+            20.438859
+          ],
+          "fallbackDataset": [
+            20.438859,
+            44.810918
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.005,
+          "source": "parcel-bg",
+          "requiresBackend": true
+        },
+        "buildings": {
+          "source": "overture"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        },
+        "language": {
+          "default": "sr"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "parcel-bg",
+      "name": "Belgrade cadastral parcels in the app database (RGZ)",
+      "cityIds": [
+        "belgrade"
+      ],
+      "idPrefix": "SR-",
+      "ownership": {
+        "adapter": "rs-bg",
+        "attribution": "Republički geodetski zavod (RGZ), digital cadastral plan parcels. The layer publishes no owners.",
+        "licence": null
+      },
+      "sourceKind": "database"
+    }
+  ]
+}

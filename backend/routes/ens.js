@@ -8,6 +8,7 @@ import { createRequire } from 'node:module';
 import { resolveQuery, buildTextValue } from '../ens/gateway.js';
 import { parcelIdToCity } from '../ens/slug.js';
 import { cityNameAt } from '../jurisdiction.js';
+import { planCommitmentError } from '../plans/plan-commitment.js';
 
 const require = createRequire(import.meta.url);
 const { buildChainProposalPath } = require('../../frontend/js/proposals/chain-ref.js');
@@ -160,10 +161,9 @@ export function setupEnsRoute(app, pool) {
         }
         // Named plan
         try {
-            const { rows } = await pool.query('SELECT proposal_ids, title FROM ens_plan WHERE slug = $1 LIMIT 1', [label]);
-            if (rows.length) {
-                const ids = Array.isArray(rows[0].proposal_ids) ? rows[0].proposal_ids.map(String) : [];
-                if (ids.length) return { slug: label, title: rows[0].title, isPlan: true };
+            const { rows } = await pool.query('SELECT slug, proposal_ids, title, member_hashes, plan_hash FROM ens_plan WHERE slug = $1 LIMIT 1', [label]);
+            if (rows.length && !planCommitmentError(rows[0])) {
+                return { slug: label, title: rows[0].title, isPlan: true };
             }
         } catch (_) { /* ens_plan absent */ }
         return null;

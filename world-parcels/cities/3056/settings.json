@@ -1,0 +1,134 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "3056",
+  "name": "Helmond, Netherlands",
+  "point": [
+    51.4711841170888,
+    5.66069182320304
+  ],
+  "bindings": [
+    {
+      "appCityId": "helmond",
+      "runtimeConfig": {
+        "id": "helmond",
+        "wupCityCode": "3056",
+        "label": "Helmond, Netherlands",
+        "currency": {
+          "locale": "nl-NL",
+          "code": "EUR"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            51.4711841170888,
+            5.66069182320304
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            51.4711841170888,
+            5.66069182320304
+          ],
+          "fallbackDataset": [
+            5.66069182320304,
+            51.4711841170888
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "nl-pdok-brk-kadastrale-kaart",
+          "idPrefix": "NL-BRK-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Kadaster / PDOK, Kadastrale Kaart, CC BY 4.0. Adapted to WGS84."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "nl-pdok-brk-kadastrale-kaart",
+      "name": "Netherlands Kadaster / PDOK cadastral map",
+      "adapter": "ogc-api",
+      "endpoint": "https://api.pdok.nl/kadaster/brk-kadastrale-kaart/ogc/v1/collections/perceel/items",
+      "idField": "identificatie_lokaal_id",
+      "idType": "string",
+      "idPattern": "^[0-9]{14}$",
+      "idPrefix": "NL-BRK-",
+      "idNamespace": {
+        "field": "identificatie_namespace",
+        "value": "NL.IMKAD.KadastraalObject"
+      },
+      "parcelNumberField": "perceelnummer",
+      "outFields": [
+        "identificatie_lokaal_id",
+        "identificatie_namespace",
+        "perceelnummer",
+        "sectie",
+        "kadastrale_gemeente_waarde",
+        "status_historie_code",
+        "status_historie_waarde"
+      ],
+      "attributeFilters": {
+        "status_historie_code": "G"
+      },
+      "pageSize": 1000,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "countryCode": "NL",
+      "metricSrid": 32631,
+      "scope": "Shared public cadastral-reference provider with separately qualified bounded city entries: Amsterdam, Rotterdam, The Hague and Utrecht. Each city scope and evidence file records its own geometry, identity and runtime checks. No citywide or countrywide completeness, legal title, survey accuracy or currentness is asserted.",
+      "attribution": "Kadaster / PDOK, Kadastrale Kaart, CC BY 4.0. Adapted to WGS84.",
+      "licenceUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "catalogueUrl": "https://www.pdok.nl/ogc-apis/-/article/kadastrale-kaart",
+      "cityIds": [
+        "helmond"
+      ],
+      "cityScopes": {
+        "thehague": "139 complete current (G) native cadastral references in 13 The Hague cells. Bounded city entry on the existing Dutch provider; indicative boundaries and no legal-title or survey guarantee.",
+        "utrecht": "212 distinct full native cadastral-reference polygons around the unchanged WUP settlement locator across thirteen bounded cells. Independent EPSG:32631 GEOS audit of all212 grid and footprint polygons found no invalidity, duplicate geometry, positive-area overlaps above0.01m² or operation errors. Forced three-row paging, all212 fresh exact native-ID reads, explicit absence, footprint lookup and source binding passed. Published native identities and full geometry preserved without repair. This bounded evidence does not establish citywide completeness, legal title, positional accuracy or currentness. Only publisher current(G) native cadastral references are selected. Original exact locator lies outside the three retained nearby parcels; bounded coverage is local reference geometry.",
+        "amsterdam": "Bounded original city evidence; Indicative cadastral boundaries; whole-city completeness unverified.",
+        "rotterdam": "Bounded original city evidence; Indicative cadastral boundaries; whole-city completeness unverified."
+      },
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "NL",
+          "basis": "Kadaster BRK cadastral map via PDOK covers the Netherlands.",
+          "evidence": []
+        }
+      },
+      "metricSridByCity": {
+        "helmond": 32631
+      }
+    }
+  ]
+}

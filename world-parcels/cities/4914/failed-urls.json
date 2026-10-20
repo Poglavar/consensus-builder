@@ -1,0 +1,14 @@
+[
+  {
+    "url": "https://galsup.gov.ye/"
+  },
+  {
+    "url": "https://services1.arcgis.com/0MSEUqKaxRlEPj5g/ArcGIS/rest/services/Yemen_IDR_Map_WFL1/FeatureServer/7?f=pjson"
+  },
+  {
+    "url": "https://services1.arcgis.com/0MSEUqKaxRlEPj5g/ArcGIS/rest/services/Yemen_IDR_Map_WFL1/FeatureServer/7/query?where=1%3D1&outFields=*&returnGeometry=true&outSR=4326&f=geojson"
+  },
+  {
+    "url": "https://althawrah.ye/wp-content/uploads/2021/04/30-4-2021.pdf"
+  }
+]

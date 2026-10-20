@@ -12,9 +12,10 @@
 // which is monotone in r), started from [0, sqrt(area/π)] (no inscribed circle can have more area
 // than the polygon). It stops when the bracket is within max(0.5 mm, 0.05 % of r), so the reported
 // width is within ±1 mm below 2 m and ±0.1 % above. turf.buffer runs in an azimuthal-equidistant
-// metric frame centred on the geometry, so all distances here are ground metres. The server runs
-// the same bisection with ST_Buffer in EPSG:3765 (ST_MaximumInscribedCircle's fixed 1/1000-of-extent
-// tolerance is too coarse for a long thin sliver).
+// metric frame centred on the geometry, so all distances here are ground metres. The server uses
+// ST_Buffer in the site's canonical local transverse-Mercator operation frame; the source
+// dataset CRS is only for candidate lookup (backend/proposals/binding.js, projections.md).
+// ST_MaximumInscribedCircle's fixed 1/1000-of-extent tolerance is too coarse for a long thin sliver.
 //
 // Pure: no DOM, no fetch. `turf` is the browser global, globalThis.turf in node tests, or an
 // explicit `options.turf`.
@@ -241,6 +242,19 @@
         return value;
     }
 
+    // A provider identity is claimable only when the caller supplies its descriptor. The preview
+    // label (`source`) is explanatory text and never identifies the cadastral source.
+    function parcelSourceOf(value) {
+        if (!value || typeof value !== 'object' || Array.isArray(value)) return null;
+        if (Object.keys(value).some(key => !['sourceId', 'snapshotId'].includes(key))) return null;
+        const sourceId = typeof value.sourceId === 'string' ? value.sourceId.trim() : '';
+        if (!sourceId) return null;
+        const snapshotId = value.snapshotId == null ? null
+            : (typeof value.snapshotId === 'string' ? value.snapshotId.trim() : '');
+        if (snapshotId === '') return null;
+        return { sourceId, snapshotId };
+    }
+
     /**
      * The binding of `site` over the given parcels.
      * @param {object} site GeoJSON Polygon/MultiPolygon (or Feature), EPSG:4326.
@@ -272,9 +286,10 @@
         const siteFeature = t.feature(siteGeometry);
         const siteM2 = t.area(siteFeature);
         const source = opts.source || 'client-preview';
+        const parcelSource = opts.regionHasCadastre === false ? null : parcelSourceOf(opts.parcelSource);
 
         if (opts.regionHasCadastre === false) {
-            return { parcels: [], touched: [], toleranceM, coverage: COVERAGE.none, unsurveyedM2: round(siteM2, 2), siteM2: round(siteM2, 2), source };
+            return { parcels: [], touched: [], toleranceM, coverage: COVERAGE.none, unsurveyedM2: round(siteM2, 2), siteM2: round(siteM2, 2), source, parcelSource };
         }
 
         const bound = [];
@@ -328,7 +343,8 @@
             coverage: unsurveyedM2 > 0 ? COVERAGE.partial : COVERAGE.complete,
             unsurveyedM2: round(unsurveyedM2, 2),
             siteM2: round(siteM2, 2),
-            source
+            source,
+            parcelSource
         };
     }
 
@@ -363,6 +379,7 @@
         survivesInwardBuffer: (feature, radiusM, options) => survivesInwardBuffer(T(options), feature, radiusM),
         intrusionWidth,
         bindingFromParcels,
+        normalizeParcelSource: parcelSourceOf,
         boundParcelIds,
         compareDeclaration
     };

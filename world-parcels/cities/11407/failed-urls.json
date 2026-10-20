@@ -1,0 +1,23 @@
+[
+  {
+    "url": "https://giridih.nic.in/service/land-records/"
+  },
+  {
+    "url": "https://bhunaksha.nic.in/bhunaksha/implementationstatus.jsp"
+  },
+  {
+    "url": "https://dilrmp.gov.in/physicalProgressReports/clr/district-level/20"
+  },
+  {
+    "url": "https://gis.jharkhand.gov.in/",
+    "reason": "search/open evidence; direct curl connection timeout after 8 seconds"
+  },
+  {
+    "url": "https://jharbhoomi.jharkhand.gov.in/",
+    "reason": "TLS connection timeout after 20 seconds"
+  },
+  {
+    "url": "https://jharbhunaksha.jharkhand.gov.in/",
+    "reason": "TLS connection timeout after 20 seconds"
+  }
+]

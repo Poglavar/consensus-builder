@@ -13,6 +13,7 @@ const FRONTEND = '../../../frontend/js/';
 const EDITOR_PATH = process.env.REPARCELLIZATION_SOURCE || require.resolve(`${FRONTEND}reparcellization.js`);
 
 const turf = require('@turf/turf');
+const priceModel = require(`${FRONTEND}financials.js`);
 const MODULES = {
     __reparcellizationUiState: 'reparcellization-ui-state.js',
     ReparcellizationShares: 'reparcellization-shares.js',
@@ -229,6 +230,7 @@ export function makeEditor(options = {}) {
 
     const installs = {
         window: g,
+        ParcelPriceModel: { buildEstimate: priceModel.buildParcelPriceEstimate, aggregate: priceModel.aggregateParcelPriceEstimates },
         document,
         map,
         L: leafletRef,
@@ -246,6 +248,10 @@ export function makeEditor(options = {}) {
         addEventListener: (type, fn) => { if (!windowListeners.has(type)) windowListeners.set(type, new Set()); windowListeners.get(type).add(fn); },
         removeEventListener: (type, fn) => { windowListeners.get(type)?.delete(fn); },
         SQM_AVG_PRICE: 133,
+        ParcelPriceModel: (() => {
+            const model = require(`${FRONTEND}financials.js`);
+            return { buildEstimate: model.buildParcelPriceEstimate, aggregate: model.aggregateParcelPriceEstimates };
+        })(),
         LiveParcelFabric: {
             get: id => features.get(String(id)) || null,
             cadastreIdsForParcelIds: ids => ids.map(String),

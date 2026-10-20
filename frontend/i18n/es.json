@@ -201,9 +201,9 @@
             "all": "la totalidad",
             "and": " y ",
             "authorityGeneric": "la aprobación de una autoridad",
-            "authorityOnly": "Solo necesita {{authority}}. Los propietarios son oídos; sus respuestas no deciden.",
-            "passesWith": "Se aprueba con {{tests}}.",
-            "passesWithAuthority": "Se aprueba con {{tests}}, y necesita {{authority}}.",
+            "authorityOnly": "Las reglas de aprobación configuradas solo exigen {{authority}}. Las respuestas de los propietarios no determinan este recuento.",
+            "passesWith": "Las reglas de aprobación configuradas exigen {{tests}}.",
+            "passesWithAuthority": "Las reglas de aprobación configuradas exigen {{tests}} y {{authority}}.",
             "vacuous": "No hay nadie a quien contar aquí, así que esta prueba no bloquea.",
             "heard": "Oídos, no se cuentan",
             "ownersHeard": "Los propietarios son oídos; decide la autoridad.",
@@ -342,19 +342,18 @@
             }
         },
         "deals": {
-            "title": "Lo que cada propietario aporta y recibe",
+            "title": "Aportaciones y asignaciones propuestas a los propietarios",
             "dealOf": "Acuerdo de {{owner}}",
-            "contributes": "Lo que aporta {{owner}}",
-            "receives": "Lo que recibe {{owner}}",
+            "contributes": "Aportación propuesta de {{owner}}",
+            "receives": "Asignación propuesta a {{owner}}",
             "share": "Cuota {{share}}",
-            "landBefore": "Terreno aportado",
-            "landAfter": "Terreno recibido",
-            "cashReceived": "Dinero recibido",
-            "cashPaid": "Dinero pagado",
-            "attestedBy": "La propiedad la certifica: {{members}}",
+            "landBefore": "Superficie de terreno aportado",
+            "landAfter": "Superficie de terreno asignado",
+            "cashReceived": "Efectivo ofrecido",
+            "cashPaid": "Pago en efectivo propuesto",
             "withOwner": "Con la aceptación de {{owner}}: {{progress}}",
-            "passesWithOwner": "La aceptación de {{owner}} bastaría para que la propuesta se apruebe.",
-            "needsMoreThanOwner": "Además de {{owner}}, deben aceptar más propietarios para que se apruebe.",
+            "passesWithOwner": "La aceptación de {{owner}} satisfaría las reglas de aprobación configuradas.",
+            "needsMoreThanOwner": "Seguirían haciendo falta más decisiones, además de la aceptación de {{owner}}, según las reglas de aprobación configuradas.",
             "showOnMap": "Mostrar en el mapa",
             "showOnMapHint": "Antes: las parcelas que aporta este propietario. Después: las parcelas que recibe.",
             "acceptAsOwner": "Soy {{owner}}: revisar y aceptar"
@@ -365,12 +364,12 @@
         "approvalUnavailable": "El lente seleccionado no ha establecido estos derechos ni tu autoridad para actuar por este propietario.",
         "invalidTerms": "Corrige las condiciones de la propuesta antes de aceptar.",
         "status": {
-            "passed": "Suficiente para aprobarse",
-            "pending": "Aún no es suficiente",
-            "authorityPending": "Pendiente de la autoridad",
+            "passed": "Se cumplen las reglas de aprobación configuradas",
+            "pending": "No se cumplen las reglas de aprobación configuradas",
+            "authorityPending": "Pendiente la decisión de la autoridad requerida",
             "unresolved": "Propiedad sin resolver"
         },
-        "ruleUnanimous": "Todos los propietarios deben aceptar.",
+        "ruleUnanimous": "Las reglas de aprobación configuradas exigen que acepte cada propietario.",
         "ruleThreshold": "Se aprueba con {{owners}} de los propietarios y {{area}} de la superficie.",
         "atLeast": "al menos {{fraction}}",
         "moreThan": "más de {{fraction}}",
@@ -406,9 +405,13 @@
             "failed": "La verificación falló: {{message}}"
         },
         "review": {
+            "selectedLens": "Lente de verificación seleccionada: {{members}}",
+            "noLens": "No se ha seleccionado ninguna lente de verificación.",
+            "rightsSource": "Fuente declarada de los derechos: {{source}}",
+            "rightsSourceUnknown": "Este registro no especifica una fuente de los derechos.",
             "acceptAs": "Aceptar como {{owner}}",
-            "contributes": "Lo que aportas",
-            "receives": "Lo que recibes a cambio",
+            "contributes": "Su aportación propuesta",
+            "receives": "Su asignación propuesta",
             "conditions": "Condiciones",
             "progress": "Progreso",
             "yourShare": "Tu cuota {{share}}",
@@ -417,26 +420,25 @@
             "plot": "Parcela {{number}}",
             "plotShare": "{{share}} de {{area}} = {{yours}}",
             "sharedWith": "compartida con {{owners}}",
-            "landBefore": "Terreno que aportas",
-            "landAfter": "Terreno que recibes",
+            "landBefore": "Terreno que aportaría",
+            "landAfter": "Terreno asignado a usted",
             "landChange": "Cambio de terreno",
             "cash": "Dinero que se te ofrece",
             "openUntil": "Abierta hasta el {{date}}",
             "noDeadline": "Sin plazo",
-            "funded": "El dinero está financiado.",
-            "unfunded": "El dinero aún no está financiado; la propuesta no puede ejecutarse hasta que lo esté.",
-            "attestedBy": "La propiedad y tu autoridad las certifica: {{members}}",
+            "funded": "La financiación figura como lista en este registro; el pago no está verificado.",
+            "unfunded": "La financiación no figura como lista en este registro.",
             "signNote": "Tu billetera firma exactamente estas condiciones. Si cambian, tu aceptación deja de contar.",
             "progressOwners": "{{accepted}} de {{total}} propietarios",
             "progressBoth": "{{accepted}} de {{total}} propietarios, {{area}} de {{totalArea}}",
             "alreadyAccepted": "Este propietario ya aceptó estas condiciones.",
             "now": "Ahora: {{progress}}",
             "withYou": "Con tu aceptación: {{progress}}",
-            "passesWithYou": "Tu aceptación basta para que la propuesta se apruebe.",
-            "needsMore": "Después de ti deben aceptar más propietarios para que se apruebe.",
+            "passesWithYou": "Tu aceptación satisfaría las reglas de aprobación configuradas.",
+            "needsMore": "Seguirían haciendo falta más decisiones para cumplir las reglas de aprobación configuradas.",
             "verifyFirst": "Para aceptar, primero confirma con un miembro de la lente que tu billetera puede actuar por este propietario.",
             "notSigned": "La billetera no firmó, así que no se aceptó nada.",
-            "cashYouPay": "Dinero que pagas",
+            "cashYouPay": "Efectivo que pagaría",
             "approveAs": "Aprobar como {{owner}}",
             "lease": "Arriendo {{lease}} sobre {{parcel}}",
             "heldWith": "compartido con {{owners}}",
@@ -445,8 +447,8 @@
         },
         "receipt": {
             "signed": "Firmado por {{signer}} el {{date}}.",
-            "passed": "La propuesta ya tiene suficientes aceptaciones para aprobarse.",
-            "pending": "La propuesta aún necesita más aceptaciones."
+            "passed": "Las decisiones verificadas satisfacen las reglas de aprobación configuradas para esta propuesta.",
+            "pending": "Se necesitan más decisiones para satisfacer las reglas de aprobación configuradas para esta propuesta."
         },
         "amountOf": "{{amount}} de {{total}}",
         "outsideSnapshot": "Destinatario fuera de la declaración de propiedad",
@@ -468,10 +470,10 @@
             "anchorFailed": "No se ancló nada: {{reason}}"
         },
         "money": {
-            "summary": "Los propietarios reciben {{out}} y pagan {{in}} en total.",
-            "sponsorPays": "El patrocinador paga {{amount}}.",
-            "sponsorReceives": "El patrocinador recibe {{amount}}.",
-            "sponsorNothing": "Los pagos de los propietarios cubren todos los cobros; el patrocinador no paga nada."
+            "summary": "Efectivo propuesto para los propietarios: {{out}} a recibir y {{in}} a pagar.",
+            "sponsorPays": "El patrocinador pagaría {{amount}}.",
+            "sponsorReceives": "El patrocinador recibiría {{amount}}.",
+            "sponsorNothing": "Los pagos propuestos de los propietarios cubren todos los desembolsos; no se prevé un pago del patrocinador."
         }
     },
     "proposalGroundRebase": {
@@ -482,7 +484,7 @@
         "rederived": "El catastro cambió bajo este borrador: sus parcelas ahora siguen su geometría ({{count}})."
     },
     "proposalApplyStatus": {
-        "waitingForReplay": "Esperando a que termine de reconstruirse el plan aplicado…"
+        "waitingForReplay": "Esperando a que termine la reconstrucción de la composición aplicada…"
     },
     "proposalApplyFailures": {
         "outsideCadastre": "La geometría de la propuesta se extiende más allá de las parcelas catastrales seleccionadas. Mantenla dentro del terreno seleccionado o crea una propuesta que incluya las parcelas adicionales.",
@@ -1180,19 +1182,19 @@
             "title": "Propuestas",
             "listButton": "Lista de propuestas ({{count}})",
             "mintedButton": "Propuestas acuñadas",
-            "shareButton": "Compartir plan completo (todas las propuestas)",
-            "shareButtonEmpty": "No hay planes aplicados. Aplica alguno primero",
-            "shareButtonPreparing": "Preparando el plan…",
+            "shareButton": "Compartir propuestas aplicadas",
+            "shareButtonEmpty": "No hay propuestas aplicadas. Aplica algunas primero",
+            "shareButtonPreparing": "Preparando propuestas…",
             "clearButton": "Restablecer propuestas (este navegador)",
             "planStats": {
-                "buttonLabel": "Estadísticas del plan",
+                "buttonLabel": "Estadísticas de propuestas aplicadas",
                 "calculating": "Calculando…",
-                "modalTitle": "Estadísticas del plan",
+                "modalTitle": "Estadísticas de propuestas aplicadas",
                 "resultingParcels": "Parcelas resultantes (media m²)",
                 "floorArea": "Superficie construida bruta (m²)",
                 "salesSuffix": "EUR por m²",
                 "housingShareSuffix": "% de vivienda",
-                "closeAria": "Cerrar estadísticas del plan",
+                "closeAria": "Cerrar estadísticas de propuestas aplicadas",
                 "currency": "EUR",
                 "buildings": "Edificios (huella m²)",
                 "openSpace": "Espacio libre — parques, plazas, agua (m²)",
@@ -1217,7 +1219,7 @@
                 "scope": "{{counted}} propuestas aplicadas contadas de {{total}} en este mapa.",
                 "noteUnmeasured": "{{n}} de {{total}} edificios no indican altura — su superficie no se contabiliza.",
                 "noteParcelArea": "El tamaño medio de parcela se calcula sobre las {{measured}} parcelas cuya forma está cargada; {{missing}} se cuentan pero no se miden.",
-                "unavailable": "El cálculo del plan no está disponible — plan-yield.js no se cargó."
+                "unavailable": "Las estadísticas no están disponibles. Recarga la página e inténtalo de nuevo."
             },
             "grainScore": {
                 "buttonLabel": "Invocar al gallo urbanista",
@@ -1225,24 +1227,27 @@
                 "buttonEmpty": "Aplica primero al menos una propuesta",
                 "institute": "Institut za zrnatost",
                 "title": "Puntuación de grano urbano",
-                "currentPlan": "Plan aplicado actualmente",
-                "unnamedRoute": "Plan sin nombre · la puntuación queda en este navegador",
+                "appliedComposition": "Composición aplicada",
+                "localScope": "Composición local · la puntuación queda en este navegador",
+                "namedScope": "Plan con nombre · {{path}}",
                 "closeAria": "Cerrar puntuación de grano",
-                "loading": "Preparando el plan para la revisión…",
+                "loading": "Preparando propuestas para la revisión…",
                 "loadingNamed": "Cargando el plan con nombre…",
-                "applyingPlan": "Reconstruyendo el plan en el mapa…",
+                "applyingNamedPlan": "Aplicando las propuestas del plan con nombre al mapa…",
                 "ready": {
                     "one": "El gallo encontró {{count}} parcela resultante medible. La probará ahora.",
                     "other": "El gallo encontró {{count}} parcelas resultantes medibles. Las probará una a una."
                 },
                 "start": "Iniciar la revisión",
-                "unavailable": "La puntuación de grano no está disponible para este plan.",
+                "unavailable": "La puntuación de grano no está disponible para estas propuestas.",
                 "noApplied": "Aplica al menos una propuesta antes de invocar al gallo.",
                 "noGeometry": "No se pudieron medir las formas de las parcelas resultantes.",
                 "planNotFound": "No se encontró este plan con nombre.",
                 "planLoadFailed": "No se pudo cargar el plan con nombre.",
-                "emptyPlan": "Este plan con nombre no contiene propuestas.",
-                "incompletePlan": "El plan no se puede puntuar porque no se pudieron aplicar todas sus propuestas.",
+                "incompletePlan": "El plan con nombre no se puede puntuar porque no se pudieron aplicar todas sus propuestas.",
+                "exactMembersRequired": "Este plan con nombre requiere que cada propuesta publicada original esté verificada y aplicada. Una edición local o una bifurcación no puede sustituir a un miembro.",
+                "otherApplied": "Hay otras propuestas aplicadas en este mapa. Deja de aplicarlas antes de evaluar este plan con nombre.",
+                "fabricChanged": "El mapa cambió después de preparar esta inspección. Vuelve a abrir la puntuación del grano urbano para medirlo de nuevo.",
                 "verdictFine": "Grano fino",
                 "verdictGood": "Buena dirección",
                 "verdictMixed": "Grano mixto",
@@ -1290,8 +1295,8 @@
         "areaMonitor": {
             "title": "Monitor de zona",
             "drawButton": "Dibujar libremente",
-            "fromPlanButton": "Dibujar desde el plan",
-            "fromPlanActive": "Dibujando desde el plan municipal…",
+            "fromPlanButton": "Dibujar desde el plan viario oficial",
+            "fromPlanActive": "Dibujando desde el plan viario oficial…",
             "fromPlanLoading": "Cargando plan municipal…",
             "uploadButton": "Subir forma (GeoJSON)",
             "listButton": "Lista de zonas monitoreadas",
@@ -1364,19 +1369,27 @@
         "agentNotFound": "Agente no encontrado.",
         "userLabel": "Tú",
         "ethBalance": "Saldo en ETH",
-        "portfolioValue": "Valor del portafolio",
-        "totalWealth": "Riqueza total",
-        "pendingAmount": "Monto pendiente",
+        "portfolioValue": "Valor modelado del terreno",
+        "totalWealth": "Total modelado",
+        "portfolioBasis": "Modelo del terreno: USD {{pricePerSqmUsd}}/m², convertido al tipo de cambio de USD {{usdPerEth}} por ETH.",
         "parcelsOwned": "Parcelas en propiedad",
         "walletAddresses": "Direcciones de billetera",
         "proposalsPending": "Propuestas pendientes ({{count}})",
         "noPendingProposals": "Sin propuestas pendientes",
-        "ownedParcels": "Parcelas en propiedad ({{count}})",
-        "noParcels": "Sin parcelas en propiedad",
+        "ownedParcels": "Parcelas vinculadas ({{count}})",
+        "noParcels": "No hay parcelas vinculadas",
         "proposalsCreated": "Propuestas creadas ({{count}})",
         "noProposalsCreated": "No hay propuestas creadas",
-        "proposalsAccepted": "Propuestas aceptadas ({{count}})",
-        "noProposalsAccepted": "No hay propuestas aceptadas",
+        "proposalsAccepted": "Aceptaciones registradas ({{count}})",
+        "proposalOffer": "Oferta original total de la propuesta",
+        "proposalOfferUnknown": "No consta la oferta original",
+        "noProposalsAccepted": "No hay aceptaciones registradas",
+        "localProposalUnavailable": "Registro de propuesta local no disponible",
+        "chainProposalUnloaded": "Propuesta de la cadena no cargada",
+        "localProposalKey": "ID local {{id}}",
+        "localParcelsBasis": "Parcelas asignadas a este agente en el modelo local.",
+        "walletParcelsBasis": "Asignaciones del modelo local y NFT de parcelas observados en la cartera conectada; no acreditan la titularidad registral del terreno.",
+        "acceptanceBasis": "Consentimientos locales registrados y aceptaciones observadas en la cadena; por sí solos no acreditan la ejecución ni el pago.",
         "agentLog": "Registro del agente",
         "noLogEntries": "Aún no hay registros. Inicia el juego para ver las actividades de este agente.",
         "noAgentActivities": "Todavía no hay actividades registradas para este agente.",
@@ -1453,6 +1466,18 @@
             },
             "idLabel": "ID:",
             "geometryReferenceNote": "Referencia de la aplicación derivada de la geometría. No hay número registral de origen; un cambio en el límite genera una nueva referencia.",
+            "identity": {
+                "estimated": "Parcela estimada {{number}}",
+                "plotPiece": "Porción de parcela diseñada {{number}}",
+                "remainder": "Terreno remanente {{number}}",
+                "plotNote": "Terreno derivado de una parcela diseñada en una propuesta de reajuste de tierras. Varias porciones actuales pueden proceder de la misma parcela diseñada.",
+                "remainderNote": "Terreno que este reajuste dejó fuera de las parcelas diseñadas. Se mantiene separado de las porciones de esas parcelas.",
+                "source": "Parcela de origen {{number}}",
+                "sourcePart": "Parte de la parcela de origen {{number}}",
+                "formed": "Porción de terreno resultante {{number}}",
+                "formedNote": "Terreno formado por las propuestas aplicadas. Esta referencia identifica la porción actual, no una parcela registrada ni una parcela diseñada.",
+                "sourcePartNote": "Una parte conexa de una parcela de origen. Esta referencia identifica la parte mostrada; la parcela de origen puede contener otras partes."
+            },
             "tabInfo": "Info",
             "tabPropose": "Proponer",
             "tabProposals": "Propuestas",
@@ -1629,7 +1654,15 @@
             "closeAria": "Cerrar el panel de información de la parcela"
         },
         "proposal": {
-            "copyId": "Copiar ID",
+            "copyId": "Copiar ID local",
+            "mintConfirmation": {
+                "title": "Propuesta acuñada",
+                "chain": "Cadena: {{type}} / {{network}}",
+                "contract": "Contrato/programa: {{id}}",
+                "token": "Token/cuenta: {{id}}",
+                "viewTransaction": "Ver transacción",
+                "ok": "Aceptar"
+            },
             "title": "Detalles de la propuesta",
             "roadSuffix": " (Carretera)",
             "mapStatus": {
@@ -1638,24 +1671,24 @@
                 "includedIn": "Incluida en {{name}}"
             },
             "disbursement": {
-                "conditional": "Condicional",
-                "partial": "Pagos parciales",
-                "conditionalHint": "Todos los propietarios deben aceptar antes del pago",
-                "partialHint": "El pago se libera conforme cada propietario acepta"
+                "conditional": "Condiciones de pago: todos los propietarios",
+                "partial": "Condiciones de pago: parcial",
+                "conditionalHint": "Las condiciones establecidas exigen la aceptación de todos los propietarios antes del pago. Esto no confirma la financiación ni el pago.",
+                "partialHint": "Las condiciones establecidas permiten pagos parciales. La aceptación por sí sola no confirma el pago."
             },
             "parcelSet": {
-                "eyebrow": "Conjunto catastral canónico",
-                "title": "Propuestas sobre este terreno",
-                "summary": "{{count}} parcelas reales anclan esta propuesta. {{exact}} alternativas usan el mismo conjunto y {{overlap}} se solapan con él.",
-                "noRelated": "{{count}} parcelas reales anclan esta propuesta. Ninguna otra propuesta hace referencia actualmente a este terreno.",
-                "hash": "Identidad del conjunto",
-                "relationSame": "Mismo conjunto de parcelas",
-                "relationContains": "Incluye todo este conjunto",
-                "relationInside": "Dentro de este conjunto",
-                "relationOverlap": "Terreno solapado",
-                "sharedCount": "{{shared}} de {{count}} parcelas compartidas",
+                "eyebrow": "Referencias catastrales declaradas",
+                "title": "Propuestas con referencias compartidas",
+                "summary": "{{count}} referencias catastrales declaradas. De {{total}} coincidencias cargadas, {{exact}} usan las mismas referencias y {{overlap}} comparten algunas. Se muestran {{shown}}.",
+                "noRelated": "{{count}} referencias catastrales declaradas. Ninguna otra propuesta cargada comparte estas referencias.",
+                "hash": "Hash registrado del conjunto",
+                "relationSame": "Mismas referencias",
+                "relationContains": "Incluye todas estas referencias",
+                "relationInside": "Subconjunto de estas referencias",
+                "relationOverlap": "Algunas referencias compartidas",
+                "sharedCount": "{{shared}} de {{count}} referencias compartidas",
                 "activityProposal": "Actividad de esta propuesta",
-                "activityLand": "Actividad en este terreno"
+                "activityLand": "Actividad de este conjunto de referencias"
             },
             "actions": {
                 "apply": "Aplicar al mapa",
@@ -1707,6 +1740,7 @@
             "acceptance": {
                 "title": "Estado de aceptación de las parcelas:",
                 "parcelTitle": "Estado de aceptación de parcelas:",
+                "noRoster": "No hay una lista de propietarios disponible para esta parcela.",
                 "ownerTitle": "Estado de aceptación de propietarios:",
                 "cashOffers": "Ofertas monetarias de reparcelación",
                 "cashOffersScope": "Compensación propuesta para cada propietario por el acuerdo completo.",
@@ -1717,6 +1751,22 @@
                 "undo": "Deshacer",
                 "accepted": "Aceptada",
                 "pending": "Pendiente",
+                "local": {
+                    "parcelTitle": "Consentimiento de parcelas registrado localmente:",
+                    "ownerTitle": "Consentimiento para los registros locales de propietarios:",
+                    "accepted": "Consentimiento registrado en este navegador",
+                    "pending": "No hay un registro local vigente de consentimiento",
+                    "hint": "Registros sin firma en este navegador, vinculados a las condiciones actuales y al registro de propietarios. No verifican la autoridad para firmar ni la titularidad legal.",
+                    "parcelSummary": "{{accepted}}/{{total}} parcelas con consentimiento local"
+                },
+                "signed": {
+                    "parcelTitle": "Consentimiento de parcelas según recibos verificados:",
+                    "ownerTitle": "Aprobaciones de propietarios según recibos verificados:",
+                    "accepted": "Aprobación verificada para las condiciones actuales",
+                    "pending": "No hay una aprobación verificada vigente",
+                    "hint": "Recibos firmados verificados frente a las condiciones actuales y al contexto de aprobación declarado. No acreditan la titularidad legal ni el pago.",
+                    "parcelSummary": "{{accepted}}/{{total}} parcelas con recibos verificados"
+                },
                 "recipient": "destinatario",
                 "solanaLensHint": "Di sí en la tarjeta Lente",
                 "moneySchedule": "Calendario de pagos",
@@ -1743,19 +1793,25 @@
                 "expiredTooltip": "La propuesta ha caducado"
             },
             "metrics": {
+                "declaredOwnerParties": "Partes propietarias declaradas:",
+                "localOwnerEntries": "Entradas locales de propietarios por parcela:",
                 "id": "ID:",
                 "author": "Autor:",
                 "description": "Descripción:",
                 "offer": "Oferta:",
                 "offerOriginal": "(era {{amount}})",
                 "parcels": "Parcelas en la propuesta:",
-                "owners": "Propietarios en la propuesta:",
-                "area": "Área total:",
+                "area": "Superficie:",
+                "siteArea": "Superficie del ámbito:",
+                "sourceArea": "Suma de superficies de parcelas de origen:",
+                "availableSourceArea": "Superficie disponible de parcelas de origen:",
+                "areaCoverage": "Superficies disponibles para {{known}} de {{total}} referencias declaradas.",
                 "areaUnit": "m²",
                 "created": "Creada:"
             },
             "offer": {
-                "noDepositWarning": "Sin depósito: la propuesta no está respaldada por fondos"
+                "noDepositWarning": "No se ha especificado ningún depósito",
+                "sellerFundingUnavailable": "La financiación de esta oferta no está disponible aquí."
             },
             "boost": {
                 "buttonLabel": "Aportar USDC a esta propuesta",
@@ -1788,8 +1844,8 @@
                 "hashCopied": "Copiado",
                 "eventLink": "Evento fuente",
                 "finalVerifier": "El programa de Solana sigue siendo el verificador final.",
-                "yesSide": "Sí · se construye",
-                "noSide": "No · descartada",
+                "yesSide": "Sí · ejecutada en la cadena",
+                "noSide": "No · cancelada o vencida",
                 "ruleTitle": "Cómo se liquida",
                 "nextTitle": "Qué sigue",
                 "ruleLoading": "Leyendo la regla del fondo…",
@@ -1813,7 +1869,7 @@
                 "betYes": "Apostar sí",
                 "betNo": "Apostar no",
                 "dialogTitle": "Apostar {{side}}",
-                "dialogCopy": "Apuesta USDC de devnet a si esta propuesta se construye (sí) o se descarta (no). Las apuestas se quedan en el fondo hasta que se liquide.",
+                "dialogCopy": "Apuesta USDC de devnet sobre el estado de la propuesta en la cadena: Ejecutada liquida sí; Cancelada o Vencida liquida no. Las apuestas permanecen en el fondo hasta la liquidación.",
                 "preparingCollect": "Preparando el cobro…",
                 "preparingPool": "Preparando el fondo…",
                 "preparingSettle": "Preparando la liquidación…",
@@ -1831,7 +1887,7 @@
                     "open": "Las apuestas se quedan en el fondo mientras la propuesta está activa; no hay salida anticipada.",
                     "needsPool": "Cualquier billetera puede abrir el único fondo de esta propuesta activa y luego apostar sí o no.",
                     "settleYes": "Cualquiera puede liquidarlo; el programa lee Ejecutada directamente de la cuenta de la propuesta.",
-                    "settleNo": "Cualquiera puede liquidarlo; el programa lee el estado de descarte directamente de la cuenta de la propuesta.",
+                    "settleNo": "Cualquiera puede liquidarlo; el programa lee Cancelada o Vencida en la cuenta de la propuesta.",
                     "settledSplit": "El lado ganador se reparte todo el fondo en proporción a sus apuestas. El lado perdedor no recibe nada.",
                     "settledRefund": "Nadie apostó al lado ganador, así que cada apuesta puede cobrarse íntegra.",
                     "closed": "La propuesta debe estar activa en cadena antes de que pueda abrirse un fondo."
@@ -1844,22 +1900,17 @@
                 "explorerTx": "Ver en el explorador de bloques",
                 "done": "Listo"
             },
-            "acceptTransfer": {
-                "buttonLabel": "Aceptar transferencia de propiedad",
-                "title": "Aceptar transferencia de propiedad",
-                "closeLabel": "Cerrar diálogo",
-                "copy": "Financia el monto que falta en la propuesta para aceptar el reclamo de propiedad.",
-                "amountNeeded": "Monto aún necesario",
-                "fund": "Financiar"
-            },
             "lifecycle": {
                 "active": "Activa",
+                "unknown": "Estado desconocido",
                 "cancelled": "Retirada",
                 "expired": "Expirada",
-                "executed": "Ejecutada",
+                "executed": "Ejecución registrada",
+                "executionUnverified": "Ejecución declarada; verificación no disponible",
+                "executedHint": "Este registro indica que se ejecutó. El estado por sí solo no verifica el pago, la inscripción legal ni la construcción física.",
                 "minted": "Acuñada",
                 "inMemory": "En memoria",
-                "acceptedNotFunded": "Aceptada (Sin fondos)",
+                "awaitingFunding": "A la espera de financiación",
                 "viewOnExplorer": "Ver en el explorador",
                 "mintedHint": "Acuñada en la cadena"
             },
@@ -1869,17 +1920,18 @@
                 "cadastralParcels": "Parcelas catastrales:",
                 "generatedParcels": "Parcelas generadas:",
                 "proposalTypeFallback": "propuesta",
-                "ownershipStats": "Estadísticas de propiedad y adquisición"
+                "ownershipStats": "Propiedad y adquisición modeladas"
             },
             "parcels": {
+                "localModelOwner": "Propietario en el modelo local: {{name}}",
                 "label": "Parcela {{id}}",
                 "tooltip": "Haz clic para ver los detalles de la parcela",
-                "tooltipRemoved": "Haz clic para enfocar donde estaba esta parcela",
+                "tooltipReplaced": "Haz clic para enfocar la ubicación de la parcela de origen",
                 "acceptedBadge": "Aceptada",
                 "pendingBadge": "Pendiente",
-                "removed": "Eliminada",
+                "replacedInModel": "Sustituida en el modelo del mapa",
                 "newPlot": "Nueva parcela {{n}}",
-                "pooled": "Agrupada en las nuevas parcelas",
+                "sourceUnloaded": "Geometría de origen sin cargar",
                 "ownerTooltip": "Propietario: {{name}}"
             },
             "descendantRoadSuffix": " • Carretera",
@@ -1887,11 +1939,12 @@
             "basedOn": "Basado en",
             "lineage": {
                 "title": "Contrapropuestas y copias ({{count}})",
-                "none": "Aún no hay contrapropuestas. «Duplicar propuesta» crea una que enlaza de vuelta aquí.",
+                "none": "No se encontraron propuestas relacionadas en este registro de publicaciones ni en este navegador.",
+                "unavailable": "No se pudieron cargar las relaciones publicadas entre propuestas.",
                 "untitled": "Propuesta sin título",
                 "differentLand": "en otro terreno",
                 "localOnly": "solo en este navegador",
-                "unpublishedSource": "{{name}} (un borrador que nunca se publicó)",
+                "sourceNotFound": "{{name}} (fuente no encontrada en este registro de publicaciones)",
                 "openFailed": "No se pudo abrir esa propuesta."
             },
             "agent": {
@@ -1914,18 +1967,23 @@
                 "relationOverlap": "{{shared}} parcelas en común con la original, {{added}} añadidas, {{removed}} quitadas",
                 "relationDisjoint": "Ninguna parcela en común con la original"
             },
-            "buy": {
-                "button": "Comprar"
+            "purchaseSimulation": {
+                "button": "Simular compra",
+                "hint": "Actualiza la propiedad modelada de las parcelas en este navegador. No se realiza ningún pago.",
+                "result": "Compra simulada en este navegador",
+                "done": "Compra simulada en este navegador. No se ha realizado ningún pago."
             },
             "stats": {
-                "individualOwners": "Propietarios individuales:",
-                "ownedByIndividuals": "Propiedad de particulares:",
-                "ownedByCompanies": "Propiedad de empresas:",
-                "ownedByGovernment": "Propiedad del Estado:",
-                "ownedByInstitution": "Propiedad de instituciones:",
-                "ownershipMixed": "Propiedad mixta:",
-                "totalMarketPrice": "Precio de mercado total:",
-                "totalAcquiringDifficulty": "Dificultad total de adquisición:"
+                "summaryScope": "Estimaciones de los datos de la propuesta; las entradas de propietarios pueden repetirse entre parcelas e incluir propietarios supuestos.",
+                "individualOwners": "Entradas de titulares registradas:",
+                "ownerEntryCount": "Entradas de titulares registradas:",
+                "ownedByIndividuals": "Parcelas clasificadas como propiedad particular:",
+                "ownedByCompanies": "Parcelas clasificadas como propiedad de empresas:",
+                "ownedByGovernment": "Parcelas clasificadas como propiedad pública:",
+                "ownedByInstitution": "Parcelas clasificadas como propiedad de instituciones:",
+                "ownershipMixed": "Parcelas clasificadas como propiedad mixta:",
+                "totalMarketPrice": "Valor total estimado:",
+                "totalAcquiringDifficulty": "Dificultad de adquisición modelada:"
             },
             "support": {
                 "connect": "Conectar billetera de Solana",
@@ -2010,19 +2068,20 @@
                 "owner": "Propietario {{key}}",
                 "ownerCount": "Propietarios atestados: {{count}}",
                 "lens": "Lente: {{keys}}",
-                "noAnchor": "Este identificador de parcela no puede tener un ancla en cadena.",
-                "anchorMinted": "Anclada en cadena desde {{at}}",
-                "anchorExists": "Anclada en cadena",
-                "anchorMissing": "Aún no anclada en cadena",
+                "noAnchor": "El ID de esta parcela es demasiado largo para esta ancla de Solana.",
+                "anchorExists": "Ancla de parcela observada en Solana devnet",
+                "anchorMissing": "No se encontró el ancla de parcela en Solana devnet",
+                "anchorUnknown": "El estado del ancla de parcela no está disponible",
                 "event": {
                     "created": "Propuesta creada",
-                    "published": "Propuesta acuñada en cadena",
+                    "chainObserved": "Propuesta observada en Solana devnet",
                     "ownership": "Propiedad atestada",
                     "acceptance": "El propietario dijo sí",
                     "verdict": "Veredicto liquidado",
                     "lifecycle": "La propuesta llegó a un estado final",
                     "other": "Evento"
                 },
+                "chainObservationHint": "Observación verificada en el registro espejo; esta no es la hora de acuñación.",
                 "outcome": {
                     "executed": "ejecutada",
                     "cancelled": "cancelada",
@@ -2075,11 +2134,11 @@
                 "market": "Mercado de predicción",
                 "marketHint": "Apuestas Sí / No y reglas de liquidación",
                 "land": "Terreno y propiedad",
-                "landHint": "Parcelas: {{count}} · alternativas y aceptación",
+                "landHint": "Referencias declaradas: {{count}} · propuestas coincidentes y consentimiento",
                 "verification": "Verificación e historial",
                 "verificationHint": "Lente, pruebas y actividad",
                 "record": "Registro de la propuesta",
-                "recordHint": "Fecha de creación e identificadores para copiar",
+                "recordHint": "Fecha de creación, ID local y enlaces",
                 "actions": "Más acciones",
                 "actionsHint": "Crea una versión y explora el terreno"
             },
@@ -2174,20 +2233,21 @@
             "lengthLabel": "Longitud de la carretera:",
             "areaLabel": "Área de la carretera:",
             "intersectedLabel": "Parcelas intersectadas:",
-            "individualOwnersLabel": "Propietarios individuales:",
-            "ownershipMixedLabel": "Propiedad mixta:",
-            "acquiringDifficultyLabel": "TEAD:",
-            "acquiringDifficultyTitle": "Dificultad estimada total de adquisición",
-            "acquiringDifficultyTooltip": "Menor es mejor. La dificultad de adquisición se calcula según el tipo de propiedad de las parcelas involucradas, con estos coeficientes:\nGobierno: 0\nInstitución: 0\nEmpresa: 1\nIndividual: 2\nEl valor de mercado de cada parcela se multiplica por su tipo de propiedad y todos estos se suman.",
+            "individualOwnersLabel": "Entradas de titulares registradas:",
+            "unknownOwnershipLabel": "Categoría de propiedad desconocida:",
+            "ownershipMixedLabel": "Parcelas con categoría de propiedad mixta:",
+            "acquiringDifficultyLabel": "Índice modelado de adquisición:",
+            "acquiringDifficultyTitle": "Índice modelado de adquisición",
+            "acquiringDifficultyTooltip": "Índice ilustrativo: valor de la parcela × peso de la categoría. No determina el coste de adquisición, la disponibilidad legal ni el consentimiento.\nPropiedad pública: 0\nInstitución: 0\nEmpresa: 1\nIndividual o mixta: 2\nSin categorías o precios utilizables, o con monedas distintas, el índice es desconocido. El modelo por superficie usa 100 EUR/m².",
             "acquiringDifficultyDialogOk": "OK",
             "finishButtonShort": "Terminar",
             "undoButton": "Deshacer (U)",
             "parcelsAffected": "{{count}} parcelas afectadas",
             "parcelsNone": "Ninguna",
             "closeAriaLabel": "Cerrar información de la vía",
-            "ownedByCompaniesLabel": "Propiedad de empresas:",
-            "ownedByGovernmentLabel": "Propiedad del gobierno:",
-            "ownedByIndividualsLabel": "Propiedad de particulares:",
+            "ownedByCompaniesLabel": "Parcelas clasificadas como propiedad empresarial:",
+            "ownedByGovernmentLabel": "Parcelas clasificadas como propiedad pública:",
+            "ownedByIndividualsLabel": "Parcelas clasificadas como propiedad individual:",
             "parcelAreaLabel": "Área de parcela:",
             "openGroundLabel": "Terreno abierto:",
             "openGroundValue": "{{count}} · {{area}}",
@@ -2220,8 +2280,8 @@
             "removeThisNode": "Quitar este nodo",
             "lengthLabelTrack": "Longitud de la vía:",
             "areaLabelTrack": "Área de la vía:",
-            "ownedByInstitutionLabel": "Propiedad de instituciones:",
-            "costLabel": "Coste:",
+            "ownedByInstitutionLabel": "Parcelas clasificadas como propiedad institucional:",
+            "costLabel": "Valor estimado de parcelas:",
             "continueHint": "Continuando este tramo: haz clic para añadir puntos. Doble clic o Intro construye la calle, Esc levanta el lápiz.",
             "continueHintTrack": "Continuando este tramo: haz clic para añadir puntos. Doble clic o Intro construye la vía, Esc levanta el lápiz.",
             "addPointsHint": "Haz clic para añadir puntos de la calle. Doble clic o Intro la construye, Esc levanta el lápiz, Alt coloca el punto sin unirlo.",
@@ -2948,7 +3008,7 @@
                     "active": "Activa",
                     "minted": "Acuñada",
                     "inMemory": "En memoria",
-                    "acceptedNotFunded": "Aceptada (Sin fondos)"
+                    "awaitingFunding": "A la espera de financiación"
                 },
                 "syncBlockchainLabel": "Sincronizar",
                 "downloadConfirm": "La propuesta no está en el almacenamiento local. ¿Descargar?",
@@ -3084,23 +3144,23 @@
                 "shareModalTitle": "Compartir una propuesta",
                 "shareUrlLabel": "URL para compartir:",
                 "copyUrlButton": "Copiar URL",
-                "sharePlanButton": "Compartir el plan completo (todas las propuestas aplicadas)…",
+                "sharePlanButton": "Compartir propuestas aplicadas…",
                 "plan": {
-                    "kindHint": "Se aplica a las propuestas de este plan cuyos términos nunca se eligieron; las demás conservan los suyos.",
+                    "kindHint": "Se aplica a las propuestas seleccionadas cuyos términos aún no se eligieron; las demás conservan los suyos.",
                     "uploadAncestorsMissing": "Incluye estas propuestas antecesoras en el plan: {{list}}",
-                    "title": "Compartir plan",
+                    "title": "Compartir propuestas aplicadas",
                     "fetching": "Obteniendo propuesta #{{id}}…",
                     "fetchingParcels": "Obteniendo parcelas ancestras para propuesta #{{id}}…",
                     "applying": "Aplicando propuesta #{{id}}…",
                     "applyingNamed": "Aplicando {{label}} ({{done}}/{{total}})…",
                     "preparingNamed": "Preparando {{label}} ({{done}}/{{total}})…",
                     "materializing": "Iniciando la materialización de las propuestas…",
-                    "applyingAllTitle": "Aplicando el plan compartido",
-                    "fetchingPlan": "Obteniendo plan…",
+                    "applyingAllTitle": "Aplicando propuestas compartidas",
+                    "fetchingPlan": "Obteniendo propuestas compartidas…",
                     "loadFailed": "No se pudo cargar el plan o la propuesta del enlace. Inténtalo de nuevo.",
-                    "fetchingPlanTitle": "Obteniendo propuesta",
-                    "rebuildingStatus": "Reconstruyendo el plan aplicado…",
-                    "rebuildingStatusCount": "Reconstruyendo el plan aplicado {{done}}/{{total}}…",
+                    "fetchingPlanTitle": "Obteniendo propuestas compartidas",
+                    "rebuildingStatus": "Reconstruyendo la composición aplicada…",
+                    "rebuildingStatusCount": "Reconstruyendo la composición aplicada {{done}}/{{total}}…",
                     "progress": {
                         "roadCount": {
                             "one": "{{count}} carretera",
@@ -3143,13 +3203,14 @@
                         "corridorStrips": "Actualizando las superficies de carreteras y vías…"
                     },
                     "countHeading": {
-                        "one": "Hay {{count}} propuesta en el plan actual (es decir, aplicada en el mapa)",
-                        "few": "Hay {{count}} propuestas en el plan actual (es decir, aplicadas en el mapa)",
-                        "other": "Hay {{count}} propuestas en el plan actual (es decir, aplicadas en el mapa)"
+                        "one": "{{count}} propuesta aplicada en este mapa",
+                        "few": "{{count}} propuestas aplicadas en este mapa",
+                        "other": "{{count}} propuestas aplicadas en este mapa"
                     },
-                    "nameHeading": "O dale a este plan un nombre memorable (ENS):",
+                    "nameHeading": "Crea un plan con nombre a partir de las propuestas seleccionadas (ENS):",
+                    "compositionHint": "El enlace comparte tu selección. Un plan con nombre conserva esa selección fija; los cambios posteriores requieren un nuevo plan con nombre.",
                     "namePlaceholder": "p. ej. puerto-remodelacion",
-                    "nameButton": "Guardar nombre",
+                    "nameButton": "Crear plan con nombre",
                     "namePrepFirst": "Primero prepara el enlace para compartir de arriba (sube todas las propuestas seleccionadas).",
                     "nameInvalid": "Usa al menos 3 caracteres: a–z, 0–9, guiones.",
                     "nameSaving": "Guardando…",
@@ -3164,7 +3225,7 @@
                     "uploadHint": "Sube todas las propuestas seleccionadas para habilitar el enlace, o deselecciona algunas.",
                     "noUploadedHint": "Sube al menos una propuesta para habilitar el enlace.",
                     "alreadyAppliedTitle": "Plan ya aplicado",
-                    "alreadyAppliedMessage": "Este plan compartido ya está aplicado en el mapa.",
+                    "alreadyAppliedMessage": "Estas propuestas compartidas ya están aplicadas en el mapa.",
                     "goneFromServer": "La propuesta {{ids}} ya no está en el servidor. Solo queda tu copia local, así que este enlace no se abrirá para nadie más.",
                     "alreadyAppliedWithOthersTitle": "Plan ya aplicado",
                     "alreadyAppliedWithOthersMessage": {
@@ -3214,7 +3275,7 @@
                         "other": "No se pudieron aplicar {{count}} propuestas:"
                     },
                     "applyBlockedByDependencies": "Bloqueado: dependencias no satisfechas tras los reintentos.",
-                    "summary": "Resultado del plan compartido",
+                    "summary": "Resultado de las propuestas compartidas",
                     "cancelledToast": "No aplicada, retirada: {{titles}}.",
                     "appliedToast": {
                         "one": "Se aplicó {{count}} propuesta.",
@@ -3243,7 +3304,7 @@
                 "checkingProposals": "Verificando {{done}}/{{total}} propuestas en el servidor…",
                 "listingProposals": "Listando {{done}}/{{total}} propuestas…",
                 "drawingProposals": "Dibujando {{done}}/{{total}} propuestas en el mapa…",
-                "preparingPlan": "Preparando el plan…",
+                "preparingPlan": "Preparando propuestas…",
                 "uploadExplainer": "Para compartir una propuesta con otros, primero debes subirla al servidor"
             },
             "sharedInspector": {
@@ -3558,7 +3619,7 @@
             },
             "site": {
                 "bound": "Sitio de {{area}} m², parcelas vinculadas: {{count}}. Al publicar se comprueba el vínculo con el catastro completo.",
-                "unbound": "Sitio de {{area}} m² en terreno sin parcelas: ningún propietario puede consentir, así que solo puede ejecutarse con el veredicto de una autoridad.",
+                "unbound": "Sitio de {{area}} m² sin registros de parcelas vinculados. La propiedad es desconocida. La ejecución en la cadena requiere el veredicto de una autoridad.",
                 "binding": "Comprobando en qué parcelas entra el sitio…"
             },
             "tolerance": {
@@ -3820,11 +3881,11 @@
             "regenerate": "Regenerar",
             "parametersTitle": "Parámetros",
             "labels": {
-                "maxFloors": "Pisos máximos:",
+                "maxFloors": "Máximo de plantas según la regla:",
                 "minDistance": "Distancia mín. de los bordes (m):",
-                "buildingCount": "Edificios:",
-                "totalArea": "Huella permitida (m²):",
-                "totalVolume": "Volumen permitido (m³):",
+                "buildingCount": "Envolventes según la regla:",
+                "totalArea": "Huella según la regla (m²):",
+                "totalVolume": "Volumen según la regla (m³):",
                 "avgFloors": "Pisos del ejemplo (prom.):",
                 "ruleType": "Qué obliga la norma:",
                 "ruleTypeMax": "Como máximo esto",
@@ -3835,11 +3896,11 @@
                 "minPlotArea": "Superficie mínima de parcela (m²):"
             },
             "helper": {
-                "maxFloors": "Pisos máximos: el techo permitido. El ejemplo de edificación varía desde 1 piso hasta ese valor.",
+                "maxFloors": "Número máximo de plantas definido en esta propuesta. El ejemplo varía dentro de esos límites.",
                 "minDistance": "Distancia mínima: los edificios mantienen al menos esta distancia de los bordes de la parcela.",
-                "regenerate": "Haz clic en Regenerar para otro ejemplo de edificación — pisos, tamaño y posición de la planta dentro de los retiros. Las cifras permitidas de arriba nunca cambian.",
-                "ruleType": "Qué obliga la norma: como máximo esto (nadie está obligado a construir), entre un mínimo y esto, o exactamente esto (todos construyen el volumen completo).",
-                "minPlotArea": "Superficie mínima de parcela: en parcelas menores que esta no se puede construir bajo esta norma, y se muestran rayadas. Primero hay que fusionarlas."
+                "regenerate": "Regenerar muestra otro ejemplo dentro de la regla propuesta. La huella y el volumen que establece la regla no cambian.",
+                "ruleType": "Estas son reglas de edificación propuestas; no se ha verificado su cumplimiento con la normativa urbanística vigente. Elige un máximo, un rango o una forma exacta.",
+                "minPlotArea": "Las parcelas menores que el mínimo propuesto se muestran rayadas. Fusiónalas o cambia la regla."
             },
             "messages": {
                 "creationFailed": "No se pudieron generar los edificios. Intenta ajustar los parámetros.",
@@ -3850,9 +3911,10 @@
                 "selectedParcels": "Parcelas seleccionadas",
                 "singleParcelLabel": "Parcela {{id}}",
                 "multiParcelLabel": "{{count}} parcelas",
-                "excludedBelowMinPlot": "Menor que la superficie mínima de parcela — hay que fusionarla con una vecina antes de poder construir aquí.",
-                "excludedNoRoom": "Tras el retiro no queda espacio para construir en esta parcela.",
-                "excludedCannotMeet": "Demasiado pequeña para cumplir el mínimo que obliga esta norma — la norma se contradice aquí."
+                "generatedSummaryExcluded": "Se generaron {{count}} edificio(s) · {{excluded}} parcela(s) excluidas por la norma",
+                "excludedBelowMinPlot": "Menor que la superficie mínima de esta regla propuesta; fusiónala con una parcela vecina o cambia la regla.",
+                "excludedNoRoom": "Este retiro propuesto no deja espacio para un edificio.",
+                "excludedCannotMeet": "La parcela no puede cumplir el mínimo de esta regla propuesta."
             },
             "generatedSummaryExcluded": "Generado: {{buildings}} · {{excluded}}"
         }
@@ -4069,11 +4131,12 @@
             "nodeRemoveMerges": "Al quitarlo, {{joining}} se une a {{keeper}} — {{moved}} m² cambian de manos.",
             "nodeRemoveStraightens": "Al quitarlo, el lindero se endereza — unos {{moved}} m² cruzan al otro lado.",
             "plotLabel": "parcela {{n}} ({{area}} m²)",
-            "noOwnerBalance": "El terreno abierto no tiene propietario: no se debe ni se paga nada.",
-            "openGroundOwner": "Terreno abierto (sin propietario)",
+            "noOwnerBalance": "La propiedad es desconocida. Este borrador no calcula un saldo ni una asignación de dinero para este terreno.",
+            "openGroundOwner": "Terreno abierto (propiedad desconocida)",
             "subdivisionTitle": "Parcelación",
             "siteParcelsMissing": "No se pudieron cargar las parcelas bajo este sitio: {{ids}}.",
             "siteUnavailable": "Este sitio no se puede parcelar aquí.",
+            "poolClipFailed": "No se pudo calcular el terreno de este plan: {{reason}}",
             "siteGroundTaken": "Este sitio cubre terreno que otra propuesta ya formó: {{names}}. Dibuje el sitio fuera de él o retire primero esa propuesta.",
             "cashTermsHint": "Compensación total del balance de propietarios. Edite las ofertas individuales en el editor de reajuste de tierras.",
             "jointShareHint": "Las participaciones del patio parten del terreno privado restante de cada propietario. Usa Editar participaciones para fijar porcentajes.",
@@ -4329,6 +4392,7 @@
             },
             "selected_parcel_with_number": "Parcela seleccionada {{number}}",
             "select_a_block_first": "Selecciona primero un bloque",
+            "parcels_could_not_be_merged": "No se pudieron unir las parcelas seleccionadas en un solo emplazamiento: {{reason}}",
             "select_a_parcel_before_attempting_to_claim_it": "Selecciona una parcela antes de intentar reclamarla.",
             "select_a_parcel_block_before_creating_a_proposal": "Selecciona un bloque de parcelas antes de crear una propuesta.",
             "select_at_least_one_parcel_before_running_reparcellization": "Selecciona al menos una parcela antes de ejecutar la reparcelación.",
@@ -4347,6 +4411,9 @@
             "highlighted_neighboring_parcels_count": "Se resaltaron {{count}} parcelas vecinas",
             "showing_all_parcels": "Mostrando todas las parcelas",
             "showing_vertices_for_parcel": "Mostrando {{count}} vértices de la parcela {{parcel}}",
+            "solana_sync_incomplete": "Sincronización de Solana incompleta; se sincronizaron {{count}} propuestas. {{reason}}",
+            "solana_sync_complete": "Se sincronizaron {{count}} propuestas de Solana",
+            "solana_sync_no_new": "No hay propuestas nuevas de Solana",
             "single_building_design_saved_complete_the_proposal_form_to_submit": "Diseño de edificio único guardado. Completa el formulario de propuesta para enviarlo.",
             "single_building_proposal_created_use_apply_when_ready": "Propuesta \"{{title}}\" creada. Usa Aplicar al mapa desde los detalles de la propuesta cuando esté lista.",
             "single_building_tool_is_unavailable": "La herramienta de edificio único no está disponible.",
@@ -6173,6 +6240,9 @@
             "building_proposal_workflow_is_unavailable": "El flujo de propuestas de edificio no está disponible.",
             "cannot_undo_acceptance_from_an_executed_proposal_that_has_descendant_parcels": "No se puede deshacer la aceptación de una propuesta ejecutada que tiene parcelas descendientes.",
             "could_not_prepare_building_data_for_the_proposal_please_try_again": "No se pudieron preparar los datos del edificio para la propuesta. Inténtalo de nuevo.",
+            "proposal_lifecycle_unknown": "Se desconoce el estado de la propuesta. Vuelve a cargarla antes de aceptarla.",
+            "proposal_terms_unavailable": "No se pudieron verificar las condiciones actuales de la propuesta. Vuelva a cargarla antes de aceptarla.",
+            "acceptance_confirmed_status_unavailable": "La aceptación se confirmó en la cadena, pero no se pudo actualizar el estado de la propuesta. Se sigue mostrando el estado anterior. Vuelve a cargar la propuesta para comprobarlo.",
             "readjustment_terms_invalid": "Complete y corrija las asignaciones de parcelas y las condiciones monetarias de la reparcelación antes de aceptar.",
             "error_accepting_proposal_please_try_again": "Error al aceptar la propuesta. Inténtalo de nuevo.",
             "error_rejecting_proposal_please_try_again": "Error al rechazar la propuesta. Inténtalo de nuevo.",
@@ -6537,10 +6607,10 @@
             "volume": "Volumen",
             "floorArea": "Superficie construida",
             "floorNote": "@ {{h}} m/planta",
-            "valueTitle": "Valor @ €{{p}}/m²",
+            "valueTitle": "Modelo de superficie construida a €{{p}}/m²",
             "priceLabel": "Precio por m²",
-            "gain": "Ganancia de la propuesta",
-            "currentValue": "Valor actual",
+            "gain": "Cambio modelado del valor de superficie",
+            "currentValue": "Valor modelado de la superficie existente",
             "proposalLabel": "Propuesta",
             "show": "ver",
             "suggestedLayout": "Distribución sugerida",
@@ -6951,7 +7021,7 @@
             "watchedAreas": "Áreas vigiladas",
             "originalCadastre": "Catastro original",
             "aerialLayer": "Ciudad existente (imágenes de Google)",
-            "planActions": "Acciones del plan",
+            "proposalTools": "Herramientas de propuestas",
             "statusLog": "Estado técnico",
             "display": "Visualización"
         }
@@ -7111,7 +7181,7 @@
             "bound": "Parcelas vinculadas ({{count}})",
             "drawingEmpty": "Cierra el contorno para ver las parcelas que vincula.",
             "noParcels": "No vincula ninguna parcela: solo puede ejecutarse con el veredicto de una autoridad.",
-            "openGround": "Rayado: terreno abierto sin propietario registrado; ejecutarlo requiere el veredicto de una autoridad.",
+            "openGround": "Rayado: terreno fuera de las parcelas proporcionadas; la propiedad es desconocida. La ejecución en la cadena requiere el veredicto de una autoridad.",
             "touched": "Entra {{width}} en {{parcel}}: por debajo de la tolerancia, no queda vinculada.",
             "smallIntrusion": "Entra {{width}} en {{parcel}}: inclúyela o cambia el diseño.",
             "include": "Incluirla",
@@ -7122,10 +7192,15 @@
             "serverChecked": "Comprobado con el catastro completo.",
             "serverNoRecords": "El servidor no tiene catastro de este lugar, así que las parcelas y la propiedad no están establecidas. Las parcelas del mapa son solo una vista previa.",
             "previewOnly": "Vista previa a partir de las parcelas cargadas en el mapa.",
-            "serverNoCadastre": "Confirmado por el servidor: ningún catastro cubre este lugar."
+            "serverNoCadastre": "Confirmado por el servidor: ningún catastro cubre este lugar.",
+            "localEstimates": "Vinculado a las parcelas estimadas guardadas en este navegador. Los límites y la propiedad no están verificados."
         },
         "coverage": {
             "complete": "completa: todo el sitio está sobre parcelas catastrales",
+            "estimatedComplete": "Las parcelas estimadas locales cubren todo el sitio.",
+            "estimatedPartial": "Las parcelas estimadas locales cubren parte del sitio.",
+            "estimatedNone": "Ninguna parcela estimada guardada cubre este sitio.",
+            "estimatedUnknown": "Se desconoce la cobertura de las parcelas estimadas locales.",
             "partial": "parcial: parte del sitio es terreno abierto (sin parcela)",
             "none": "ninguna: aquí no hay parcelas; todo el sitio es terreno abierto",
             "unknown": "desconocida: no hay catastro registrado aquí",
@@ -7149,6 +7224,7 @@
             "selfIntersecting": "El contorno se cruza consigo mismo; mueve un vértice para evitarlo.",
             "tooSmall": "El sitio es demasiado pequeño.",
             "reshapeSplit": "Eso dividiría el sitio en dos; edita sus vértices en su lugar.",
+            "reshapeFailed": "No se pudo modificar el sitio: {{reason}}",
             "mapBusy": "Termina primero la herramienta abierta.",
             "parcelsUnavailable": "Esas parcelas no están en el mapa.",
             "plotsUnavailable": "El corte de lotes no está disponible."
@@ -7230,18 +7306,13 @@
         "ownership": {
             "ceded": "{{area}} → {{destination}}"
         },
-        "offer": {
-            "share": "parte de esta parcela ≈ {{amount}}"
-        },
         "status": {
-            "local": "Local (este navegador)",
-            "published": "Publicada",
-            "minted": "Acuñada",
-            "executed": "Ejecutada"
+            "local": "Local (este navegador)"
         },
         "market": {
             "none": "Sin mercado",
-            "noStakes": "Aún sin apuestas"
+            "noStakes": "Aún sin apuestas",
+            "totalStake": "Total apostado: {{amount}}"
         },
         "sections": {
             "ground": "Su terreno",
@@ -7250,6 +7321,11 @@
             "consent": "Lo que se le pide",
             "support": "Apoyo"
         },
+        "localConsentBasis": "Registros sin firma del navegador cotejados con los términos actuales y las entradas de propietarios.",
+        "signedConsentBasis": "Decisiones firmadas verificadas para los términos actuales y el contexto de aprobación declarado.",
+        "consentUnavailable": "La evidencia de consentimiento actual no está disponible.",
+        "ownerEntries": "{{accepted}}/{{total}} entradas locales de propietarios",
+        "ownerParties": "{{accepted}}/{{total}} partes titulares declaradas",
         "rows": {
             "take": "Toma de esta parcela",
             "buildings": "Edificios",
@@ -7257,14 +7333,15 @@
             "corridor": "Calle / vía",
             "plots": "Lotes en que se convierte",
             "ceded": "Terreno cedido → a",
-            "offer": "Oferta",
+            "offer": "Oferta total original de la propuesta",
             "consentNeeded": "Requiere su consentimiento",
-            "parcelAccepted": "Esta parcela aceptó",
-            "owners": "Propietarios que aceptaron",
-            "parcels": "Parcelas que aceptaron (toda la propuesta)",
-            "donations": "Donaciones",
-            "pledges": "Compromisos",
-            "market": "Mercado: se ejecuta (SÍ)",
+            "consentBasis": "Evidencia del consentimiento",
+            "parcelAccepted": "El consentimiento abarca las referencias seleccionadas",
+            "owners": "Consentimiento de los propietarios para las referencias seleccionadas",
+            "parcels": "Referencias de origen con consentimiento (propuesta completa)",
+            "donations": "Total donado (USDC de devnet)",
+            "pledges": "Compromisos activos (USDC de devnet)",
+            "market": "Cuota de SÍ en el fondo (USDC de devnet)",
             "status": "Estado"
         },
         "bar": {
@@ -7409,6 +7486,39 @@
             }
         }
     },
+    "parcelEstimate": {
+        "collapse": "Contraer controles",
+        "expand": "Mostrar controles",
+        "title": "Estimaciones ilustrativas de parcelas",
+        "disclaimer": "Los límites estimados pueden estar incompletos o ser erróneos y no establecen límites legales.",
+        "help": "Las estimaciones nuevas comienzan automáticamente y se guardan en este navegador. Selecciona una parcela para usar las herramientas de planificación habituales. Volver a generar sustituye esta fuente local.",
+        "viewport": "Vista actual del mapa",
+        "size": "Tamaño del área",
+        "sensitivity": "Seguir los bordes de la imagen",
+        "rectangularity": "Alineación con las calles",
+        "ready": "Las estimaciones guardadas siguen disponibles al cerrar este panel o recargar.",
+        "generate": "Generar estimaciones",
+        "cancel": "Cancelar",
+        "export": "Exportar GeoJSON",
+        "remove": "Quitar una parcela",
+        "close": "Cerrar estimaciones",
+        "loading": "Cargando imágenes satelitales y elementos cartografiados…",
+        "processing": "Buscando parcelas rectangulares…",
+        "cancelled": "Cancelado. Las estimaciones existentes no han cambiado.",
+        "result": "{count} parcelas ilustrativas · {coverage}% de la superficie apta cubierta · {unassigned} edificios sin asignar · {removed} eliminadas. La cobertura describe la generación antes de las eliminaciones.",
+        "errors": {
+            "storage": "No se pudieron guardar las parcelas en este navegador. Libera espacio de almacenamiento e inténtalo de nuevo.",
+            "inUse": "Una propuesta local utiliza una parcela que este cambio eliminaría. Conserva esa parcela o elimina la propuesta antes de sustituir las estimaciones.",
+            "map": "El mapa no está listo. Inténtalo de nuevo.",
+            "extent": "Amplía el mapa hasta un área de como máximo 2 km de ancho y de alto, o elige un tamaño de área fijo.",
+            "area": "Elige un área válida entre 80°S y 80°N, lejos de la línea internacional de cambio de fecha.",
+            "context": "No se pudieron obtener edificios, carreteras o agua. Inténtalo de nuevo.",
+            "imagery": "No se pudieron cargar imágenes satelitales para esta zona.",
+            "busy": "El proveedor está limitando las solicitudes. Inténtalo más tarde.",
+            "processing": "No se pudieron generar las estimaciones. Inténtalo de nuevo.",
+            "network": "El servicio de estimaciones no está disponible. Comprueba tu conexión e inténtalo de nuevo."
+        }
+    },
     "groundFallback": {
         "reopen": "Elegir cómo continuar",
         "title": "No se pudo cargar ningún registro de parcelas aquí",
@@ -7464,16 +7574,11 @@
             "noPolygons": "La respuesta contiene {count} elemento(s), pero ninguno es un polígono cerrado en longitud/latitud.",
             "empty": "La respuesta no contiene elementos para esta zona.",
             "farAway": "La respuesta tiene {count} polígono(s), pero ninguno está cerca de esta vista del mapa."
-        },
-        "ocr": {
-            "help": "Estimar los límites probables de las parcelas a partir de imágenes satelitales de esta zona. El trabajo se ejecuta en segundo plano. Los resultados pueden ser incompletos o erróneos y deben revisarse; las imágenes no establecen límites legales.",
-            "start": "Iniciar el reconocimiento de límites",
-            "unavailable": "El reconocimiento de límites de parcelas a partir de imágenes satelitales aún no está disponible en esta pantalla. Las estimaciones tendrán una precisión limitada y deberán revisarse; las imágenes no establecen límites legales."
         }
     },
     "bets": {
         "tagline": "Apuesta por las ciudades",
-        "intro": "Apuesta sí por las propuestas que crees que se construirán, o no por las que dudas. Los fondos viven en Solana devnet y se liquidan cuando una propuesta se ejecuta o se descarta.",
+        "intro": "Estos fondos se liquidan según el estado de la propuesta en Solana devnet: Ejecutada significa sí; Cancelada o Vencida significa no.",
         "loading": "Cargando apuestas…",
         "empty": "Todavía no hay fondos en esta ciudad. Acuña una propuesta para abrir el primero.",
         "retry": "Intentar de nuevo",
@@ -7491,14 +7596,15 @@
             "yesPays": "Sí {{multiple}}×",
             "noPays": "No {{multiple}}×",
             "settlesLabel": "Liquidación",
-            "settlesBy": "Como muy tarde el {{date}}",
-            "noDeadline": "Sin fecha límite; cuando la propuesta se ejecute o se descarte",
+            "marketDeadline": "Cierre del fondo",
+            "proposalDeadline": "Plazo de la propuesta",
+            "noDeadline": "Sin plazo fijado; la liquidación sigue a un estado final en la cadena",
             "authorLabel": "Propuesta por",
             "amount": "Importe",
             "max": "Máx.",
             "toWin": "Ganancia de unos {{amount}} si gana {{side}}",
             "toWinNote": "El pago final depende del fondo al liquidar.",
-            "members": "Qué construye el plan: {{count}} propuestas",
+            "members": "Miembros del plan: {{count}} propuestas",
             "openPlan": "Abrir el plan",
             "onThisLandCount": "{{entries}} en este terreno",
             "superseded": "Versión anterior: las apuestas nuevas van a la versión actual"
@@ -7510,33 +7616,34 @@
             "openPlan": "No se pudo abrir el plan."
         },
         "contest": {
-            "title": "¿Qué propuesta se construirá?",
-            "titleSingle": "¿Se construirá esta propuesta?",
+            "title": "¿Qué propuestas se ejecutarán en la cadena?",
+            "titleSingle": "¿Se ejecutará esta propuesta en la cadena?",
             "land": "Parcela {{parcel}}",
             "landMore": "Parcela {{parcel}} y {{count}} más",
             "site": "Sitio dibujado",
             "withoutPool": "Sin fondo: {{count}}",
             "olderVersions": "Versiones anteriores: {{count}}",
-            "titlePlans": "¿Qué plan se construirá?",
-            "titleSinglePlan": "¿Se construirá este plan?",
+            "titlePlans": "¿Qué planes se ejecutarán en la cadena?",
+            "titleSinglePlan": "¿Se ejecutará este plan en la cadena?",
             "planCount": "{{count}} planes"
         },
         "row": {
-            "chance": "{{percent}} de probabilidad",
+            "yesPoolShare": "Sí: {{percent}} del fondo",
+            "poolShare": "{{percent}} del fondo",
             "noBets": "Aún sin apuestas",
             "pool": "Fondo {{amount}}",
             "pays": "Paga {{multiple}}×",
             "yes": "Sí",
             "no": "No",
-            "yesTitle": "Apuesta a que esta propuesta se construye.",
-            "noTitle": "Apuesta a que esta propuesta no se construye.",
+            "yesTitle": "Apuesta a que la propuesta alcance el estado Ejecutada en la cadena.",
+            "noTitle": "Apuesta a que la propuesta alcance el estado Cancelada o Vencida en la cadena.",
             "openMarket": "Abrir el fondo",
             "opened": "Fondo abierto",
             "settle": "Liquidar el fondo",
             "settled": "Fondo liquidado",
             "settling": "Decidido en cadena; cualquiera puede liquidar el fondo",
             "notMinted": "Aún sin acuñar, así que no hay fondo",
-            "closed": "Decidido en cadena antes de abrir un fondo",
+            "closed": "No admite apuestas",
             "resolvedYes": "Liquidado: sí",
             "resolvedNo": "Liquidado: no",
             "closes": "Cierra el {{date}}",
@@ -7548,7 +7655,7 @@
         },
         "how": {
             "title": "Cómo funcionan las apuestas",
-            "pools": "Cada propuesta tiene un fondo sí/no. Tu apuesta entra en el lado que elijas y se queda ahí hasta que la propuesta se decida.",
+            "pools": "Cada propuesta tiene su propio fondo sí/no. Los grupos se forman por referencias de parcelas compartidas; varias propuestas de un grupo pueden ejecutarse.",
             "settle": "La ejecución en cadena liquida sí; la cancelación o la expiración liquidan no. El lado ganador se reparte todo el fondo en proporción a sus apuestas.",
             "devnet": "Las apuestas usan USDC de devnet, que no tiene valor. Consigue SOL y USDC de devnet en los grifos.",
             "faucetSol": "Grifo de Solana",
@@ -7572,27 +7679,27 @@
         "copyName": "Copiar nombre ENS"
     },
     "plans": {
-        "title": "Planes",
+        "title": "Planes con nombre",
         "unavailable": "No se pudieron cargar los planes: {{reason}}",
         "line": {
-            "single": "Parte del plan {{name}}",
+            "single": "Parte del plan con nombre {{name}}",
             "many": {
-                "one": "En {{count}} plan",
-                "other": "En {{count}} planes"
+                "one": "En {{count}} plan con nombre",
+                "other": "En {{count}} planes con nombre"
             }
         },
         "list": {
-            "empty": "Todavía no hay planes aquí.",
+            "empty": "Todavía no hay planes con nombre aquí.",
             "pool": "Fondo de apuestas",
             "loading": "Cargando planes…",
-            "emptyCity": "Todavía no hay planes en esta ciudad. Aplica propuestas y compártelas como plan para crear uno."
+            "emptyCity": "Todavía no hay planes con nombre en esta ciudad. Comparte propuestas aplicadas y luego elige Crear plan con nombre."
         },
         "parcel": {
             "loading": "Buscando planes…",
             "empty": "Ningún plan incluye todavía una propuesta en esta parcela."
         },
         "view": {
-            "title": "Plan",
+            "title": "Plan con nombre",
             "notFound": "No existe ningún plan llamado {{name}}.",
             "loading": "Cargando el plan…",
             "error": "No se pudo cargar el plan: {{reason}}",

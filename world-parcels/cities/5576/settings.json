@@ -1,0 +1,115 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "5576",
+  "name": "Berlin, Germany",
+  "point": [
+    52.52,
+    13.405
+  ],
+  "bindings": [
+    {
+      "appCityId": "berlin",
+      "runtimeConfig": {
+        "id": "berlin",
+        "label": "Berlin, Germany",
+        "currency": {
+          "locale": "de-DE",
+          "code": "EUR"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            52.52,
+            13.405
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            52.52,
+            13.405
+          ],
+          "fallbackDataset": [
+            13.405,
+            52.52
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.0025,
+          "source": "parcel-source",
+          "sourceId": "de-be-alkis-flurstuecke-wfs",
+          "idPrefix": "DE-BE-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "<a href=\"https://daten.berlin.de/datensaetze/alkis-berlin-flurstucke-wfs-1bc014d7\">Land Berlin · ALKIS</a> · <a href=\"https://www.govdata.de/dl-de/zero-2-0\">DL-DE Zero 2.0</a> · adapted"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "de-be-alkis-flurstuecke-wfs",
+      "name": "Berlin ALKIS cadastral parcels",
+      "adapter": "wfs",
+      "endpoint": "https://gdi.berlin.de/services/wfs/alkis_flurstuecke",
+      "featureType": "alkis_flurstuecke:flurstuecke",
+      "idField": "fsko",
+      "idType": "string",
+      "idPattern": "^[0-9_]{18}$",
+      "idPrefix": "DE-BE-",
+      "outFields": [
+        "fsko",
+        "uuid",
+        "afl",
+        "zae",
+        "nen",
+        "gmk",
+        "namgmk",
+        "fln",
+        "gdz",
+        "namgem",
+        "zde",
+        "beg"
+      ],
+      "pageSize": 1000,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "countryCode": "DE",
+      "metricSrid": 32633,
+      "scope": "Land Berlin ALKIS cadastral parcels; Brandenburg and the wider metropolitan area need separate sources. The native fsko cadastral key identifies ground, uuid is the separate object ID and beg records object version start.",
+      "attribution": "Land Berlin / Geoportal Berlin, ALKIS Flurstücke. Datenlizenz Deutschland – Zero 2.0. Adapted to WGS84.",
+      "licenceUrl": "https://www.govdata.de/dl-de/zero-2-0",
+      "catalogueUrl": "https://daten.berlin.de/datensaetze/alkis-berlin-flurstucke-wfs-1bc014d7",
+      "cityIds": [
+        "berlin"
+      ]
+    }
+  ]
+}

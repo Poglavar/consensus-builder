@@ -36,7 +36,8 @@ async function verifiedMirror(record, chainOverrides = {}) {
     record ||= await recordFor();
     const metadataUri = `ipfs://${CID}`;
     const chain = { ref: { chainType: 'evm', chainId: '84532', contract: '0xFf162bC8De48AA39582c9389D60a7487b6330342', tokenId: '5' },
-        metadataUri, cadastreParcelIds: record.cadastreParcelIds, lens: record.lens, isConditional: record.isConditional, ...chainOverrides };
+        metadataUri, cadastreParcelIds: record.cadastreParcelIds, lens: record.lens, isConditional: record.isConditional,
+        lifecycleStatus: 'Active', ...chainOverrides };
     return loadChainMirror(chain.ref, { readChain: async () => chain,
         readMetadata: async () => ({ properties: chainRecord.metadataProperties(record) }), now: () => new Date('2026-10-11T00:00:00Z') });
 }
@@ -84,6 +85,9 @@ describe('chain mirror proof verification', () => {
         const mirror = await verifiedMirror(record);
         expect(mirror.record.roadProposal.definition.polygon).toEqual(SITE);
         expect(mirror.evidence.ref).toEqual(validRef);
+        expect(mirror.evidence.lifecycle).toEqual({ status: 'Active', observedAt: '2026-10-11T00:00:00.000Z' });
+        expect(mirror.record).not.toHaveProperty('lifecycleStatus');
+        expect(mirror.record).not.toHaveProperty('executedAt');
         expect(mirror.proposalId).toBe((await verifiedMirror(record)).proposalId);
     });
 
@@ -148,6 +152,43 @@ describe('chain metadata gateway reads', () => {
 });
 
 describe('POST /proposals/mirror', () => {
+    it.each(['Active', 'Executed', 'Cancelled', 'Expired'])('stores and serves the observed %s lifecycle independently of authored metadata', async lifecycleStatus => {
+        const mirror = await verifiedMirror(await recordFor(), { lifecycleStatus });
+        const observed = express();
+        observed.use(express.json());
+        setupProposalsRoute(observed, pool, { loadMirror: async () => mirror });
+        pool.setResults([insertResult({ proposal_id: mirror.proposalId }), updateResult()]);
+        const response = await request(observed).post('/proposals/mirror').send({ chainRef: validRef });
+        expect(response.status).toBe(201);
+        const insert = pool.getCalls().find(call => call.sql.includes('INSERT INTO proposal'));
+        const stored = JSON.parse(insert.params[32]);
+        expect(insert.params[7]).toBe(lifecycleStatus);
+        expect(stored.lifecycleStatus).toBe(lifecycleStatus);
+        expect(stored.chainMirror.lifecycle).toEqual({ status: lifecycleStatus, observedAt: '2026-10-11T00:00:00.000Z' });
+        expect(stored).not.toHaveProperty('executedAt');
+        expect(stored.chainMirror.record).not.toHaveProperty('lifecycleStatus');
+        expect(insert.params[22]).toBeNull(); // observing lifecycle does not invent owner consent
+        expect(insert.params[23]).toBeNull();
+        const served = serializeProposalRow({ id: 88, proposal_id: mirror.proposalId,
+            lifecycle_status: insert.params[7],
+            // A historical row's client timestamp must not be served as chain evidence.
+            proposal_data: { ...stored, executedAt: '2026-10-01T10:00:00.000Z' }, onchain_data: mirror.onchain,
+            cadastre_parcel_ids: mirror.record.cadastreParcelIds });
+        expect(served.lifecycleStatus).toBe(lifecycleStatus);
+        expect(served.chainMirror.lifecycle).toEqual(stored.chainMirror.lifecycle);
+        expect(served).not.toHaveProperty('executedAt');
+    });
+
+    it.each([null, undefined, 'Unknown'])('refuses a mirror with no recognized chain lifecycle: %s', async lifecycleStatus => {
+        const observed = express();
+        observed.use(express.json());
+        setupProposalsRoute(observed, pool, { loadMirror: async () => verifiedMirror(await recordFor(), { lifecycleStatus }) });
+        const response = await request(observed).post('/proposals/mirror').send({ chainRef: validRef });
+        expect(response.status).toBe(422);
+        expect(response.body.code).toBe('chain-proof-invalid');
+        expect(pool.getCalls()).toHaveLength(0);
+    });
+
     it('reserves chain IDs for verified mirrors, so ordinary uploads cannot squat on them', async () => {
         const record = await recordFor();
         const mirror = await verifiedMirror(record);

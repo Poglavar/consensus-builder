@@ -7,27 +7,49 @@ const {
     classifyParcelSetRelation,
     findParcelSetRelations,
     normalizeParcelIds,
+    parcelSourceOf,
     proposalIdsForParcelSet
 } = require('../../frontend/js/proposals/parcel-set-relations.js');
 
 const proposal = (proposalId, parcelIds, setHash = null) => ({
     proposalId,
     cadastreParcelIds: parcelIds,
-    ...(setHash ? { parcelSet: { parcelIds, setHash } } : {})
+    parcelSet: { parcelIds, parcelSource: { sourceId: 'register-a', snapshotId: null }, ...(setHash ? { setHash } : {}) }
 });
 
 describe('proposal parcel-set relations', () => {
     it('lists every proposal over one canonical set hash and nothing for a missing hash', () => {
         const proposals = [proposal('a', ['1', '2'], 'sha256:x'), proposal('b', ['2', '1'], 'sha256:x'), proposal('c', ['1'], 'sha256:y'), proposal('d', ['1', '2'])];
+        proposals.push({ proposalId: 'unknown', cadastreParcelIds: ['1', '2'], parcelSet: { setHash: 'sha256:x', parcelSource: null } });
         expect(proposalIdsForParcelSet(proposals, 'sha256:x')).toEqual(['a', 'b']);
         expect(proposalIdsForParcelSet(proposals, '')).toEqual([]);
         expect(proposalIdsForParcelSet(null, 'sha256:x')).toEqual([]);
     });
 
-    it('normalizes legacy cadastral ids without mutating the proposal', () => {
+    it('normalizes the current cadastral declaration without mutating the proposal', () => {
         const source = proposal('a', ['HR-3', 'HR-1', 'HR-3']);
         expect(normalizeParcelIds(source)).toEqual(['HR-1', 'HR-3']);
         expect(source.cadastreParcelIds).toEqual(['HR-3', 'HR-1', 'HR-3']);
+    });
+
+    it('does not let stale parcel-set metadata replace the authored declaration', () => {
+        const source = { ...proposal('a', ['current-1']), parcelSet: { parcelIds: ['stale-1'] } };
+        expect(normalizeParcelIds(source)).toEqual(['current-1']);
+        expect(normalizeParcelIds({ parcelSet: source.parcelSet })).toEqual([]);
+        expect(classifyParcelSetRelation(source, proposal('b', ['stale-1']))).toBeNull();
+    });
+
+    it('classifies by declared references even when supplied hashes disagree with them', () => {
+        expect(classifyParcelSetRelation(proposal('a', ['1', '2'], 'sha256:x'), proposal('b', ['1'], 'sha256:x')))
+            .toMatchObject({ kind: 'inside-target', sharedCount: 1, targetCount: 2 });
+        expect(classifyParcelSetRelation(proposal('a', ['1', '2'], 'sha256:x'), proposal('b', ['2', '1'], 'sha256:y')))
+            .toMatchObject({ kind: 'same', sharedCount: 2, targetCount: 2 });
+    });
+
+    it('rejects an explicitly different authority even for equal declared IDs and hashes', () => {
+        const a = proposal('a', ['1'], 'sha256:x'), b = proposal('b', ['1'], 'sha256:x');
+        a.parcelSet.authority = 'register-a'; b.parcelSet.authority = 'register-b';
+        expect(classifyParcelSetRelation(a, b)).toBeNull();
     });
 
     it('recognizes exact canonical sets independent of parcel order', () => {
@@ -38,10 +60,30 @@ describe('proposal parcel-set relations', () => {
         expect(relation).toMatchObject({ kind: 'same', sharedCount: 2, unionCount: 2, overlapRatio: 1 });
     });
 
-    it('does not relate identical local ids across different jurisdictions', () => {
+    it('does not infer jurisdiction from city or relate references across providers or snapshots', () => {
         const zagreb = { ...proposal('a', ['123/4']), city: 'zagreb' };
         const split = { ...proposal('b', ['123/4']), city: 'split' };
+        expect(classifyParcelSetRelation(zagreb, split)).toMatchObject({ kind: 'same' });
+        split.parcelSet.parcelSource = { sourceId: 'register-b', snapshotId: null };
         expect(classifyParcelSetRelation(zagreb, split)).toBeNull();
+        split.parcelSet.parcelSource = { sourceId: 'register-a', snapshotId: 'snapshot-2' };
+        expect(classifyParcelSetRelation(zagreb, split)).toBeNull();
+    });
+
+    it('does not claim relations when either source is unknown', () => {
+        const known = proposal('known', ['1']);
+        const unknown = { proposalId: 'unknown', cadastreParcelIds: ['1'], parcelSet: { parcelSource: null } };
+        expect(classifyParcelSetRelation(known, unknown)).toBeNull();
+        expect(classifyParcelSetRelation(unknown, unknown)).toBeNull();
+    });
+
+    it('rejects conflicting parcel-set and binding source evidence', () => {
+        const conflicted = proposal('conflicted', ['1']);
+        conflicted.parcelSet.setHash = 'sha256:x';
+        conflicted.binding = { parcelSource: { sourceId: 'register-b', snapshotId: null } };
+        expect(parcelSourceOf(conflicted)).toBeNull();
+        expect(classifyParcelSetRelation(conflicted, proposal('same-id', ['1']))).toBeNull();
+        expect(proposalIdsForParcelSet([conflicted], 'sha256:x')).toEqual([]);
     });
 
     it('distinguishes containing, contained and partial overlaps', () => {
@@ -55,7 +97,7 @@ describe('proposal parcel-set relations', () => {
         expect(classifyParcelSetRelation(target, proposal('elsewhere', ['9']))).toBeNull();
     });
 
-    it('groups exact competitors first, then ranks overlaps by shared land', () => {
+    it('groups equal declarations first, then ranks by shared reference count', () => {
         const target = proposal('target', ['1', '2', '3']);
         const result = findParcelSetRelations(target, [
             proposal('partial-one', ['3', '8']),
@@ -63,6 +105,13 @@ describe('proposal parcel-set relations', () => {
             proposal('partial-two', ['2', '3', '9'])
         ]);
         expect(result.map(item => item.proposalId)).toEqual(['exact', 'partial-two', 'partial-one']);
+    });
+
+    it('returns all loaded matches unless a display limit is explicitly requested', () => {
+        const target = proposal('target', ['1']);
+        const candidates = Array.from({ length: 15 }, (_, i) => proposal(`related-${i}`, ['1']));
+        expect(findParcelSetRelations(target, candidates)).toHaveLength(15);
+        expect(findParcelSetRelations(target, candidates, { limit: 12 })).toHaveLength(12);
     });
 
     it.each(['en', 'hr', 'sr', 'es'])('ships the parcel-set comparison vocabulary in %s', locale => {

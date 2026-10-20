@@ -1,0 +1,14 @@
+[
+  {
+    "url": "https://fadaeldjazair.mf.gov.dz/",
+    "reason": "timeout"
+  },
+  {
+    "url": "https://dzds.dz/",
+    "reason": "403"
+  },
+  {
+    "url": "https://www.dgdn.gov.dz/",
+    "reason": "503"
+  }
+]

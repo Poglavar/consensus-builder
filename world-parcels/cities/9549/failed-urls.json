@@ -1,0 +1,25 @@
+[
+  {
+    "url": "https://www.landrecords.karnataka.gov.in/service2/RTC.aspx",
+    "reason": "timeout after 15 seconds"
+  },
+  {
+    "url": "https://landrecords.karnataka.gov.in/service3/",
+    "reason": "timeout after 15 seconds"
+  },
+  {
+    "url": "https://landrecords.karnataka.gov.in/",
+    "reason": "timeout after 20 seconds"
+  },
+  {
+    "url": "https://stategisportal.nic.in/stategisportal/Home/Map/29",
+    "reason": "web discovery result; direct curl TLS certificate verification failed"
+  },
+  {
+    "url": "https://dolr.gov.in/en/citizen-centric-services/",
+    "reason": "web discovery result; direct curl failed TLS hostname verification"
+  },
+  {
+    "url": "https://vijayanagara.nic.in/en/service/land-records-bhoomi-en/"
+  }
+]

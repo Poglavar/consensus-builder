@@ -1,8 +1,36 @@
 // proposals/server-sync.js — extracted from proposals.js (behavior-preserving relocation).
 
+const serverSyncOrigin = (typeof window !== 'undefined' && window.ProposalOrigin)
+    || (typeof require === 'function' ? require('./origin.js') : null);
+const serverSyncGoals = (typeof window !== 'undefined' && window.ProposalDesignGoals)
+    || (typeof require === 'function' ? require('./design-goals.js') : null);
+
 const serverSyncLifecycleOf = (typeof getLifecycleStatus === 'function')
     ? getLifecycleStatus
     : (typeof require === 'function' ? require('./status.js').getLifecycleStatus : null);
+const serverSyncLifecycleEvidence = (typeof window !== 'undefined' && window.ProposalLifecycleEvidence)
+    || (typeof require === 'function' ? require('./lifecycle-evidence.js') : null);
+
+function serverLifecycleEvidenceFor(raw, lifecycleStatus) {
+    const evidence = raw?.lifecycleEvidence;
+    if (!evidence || evidence.protocol !== 'proposal-lifecycle-evidence/1'
+        || !['observed', 'derived', 'unknown'].includes(evidence.state)) return null;
+    const status = serverSyncLifecycleOf({ lifecycleStatus });
+    if (evidence.state === 'observed'
+        && (!serverSyncLifecycleEvidence?.canonicalStatus
+            || serverSyncLifecycleEvidence.canonicalStatus(evidence.status) !== status
+            || !Number.isFinite(Date.parse(evidence.observedAt)))) return null;
+    if (evidence.state === 'derived'
+        && (!serverSyncLifecycleEvidence?.canonicalStatus
+            || serverSyncLifecycleEvidence.canonicalStatus(evidence.status) !== status
+            || evidence.source !== 'expiry-deadline'
+            || !serverSyncLifecycleEvidence.hasDerivedDeadlineStatus({ lifecycleStatus: status, lifecycleEvidence: evidence }))) return null;
+    if (evidence.state === 'unknown'
+        && (evidence.claimedStatus == null
+            ? status !== 'Unknown'
+            : serverSyncLifecycleEvidence?.canonicalStatus?.(evidence.claimedStatus) !== status)) return null;
+    return typeof structuredClone === 'function' ? structuredClone(evidence) : JSON.parse(JSON.stringify(evidence));
+}
 
 function getServerSyncGroundService() {
     if (typeof CadastralParcelRepository !== 'undefined' && CadastralParcelRepository) return CadastralParcelRepository;
@@ -35,24 +63,24 @@ function resolveCurrentCityCode() {
 function normalizeServerProposalSummary(raw, cityCode) {
     if (!raw || typeof raw !== 'object') return null;
     const city = raw.city || cityCode || resolveCurrentCityCode();
-    const serverId = raw.id !== undefined && raw.id !== null ? String(raw.id) : null;
-    const proposalId = raw.proposalId !== undefined && raw.proposalId !== null
-        ? String(raw.proposalId)
-        : (serverId || null);
+    const serverId = serverSyncOrigin.rowId(raw.id);
+    const proposalId = typeof raw.proposalId === 'string' ? raw.proposalId : null;
     const titleCandidate = raw.title || raw.name || `Proposal ${proposalId || serverId || ''}`;
-    const goalKey = normalizeProposalGoalKey(raw.goal || raw.type || '');
+    const goalKey = serverSyncGoals.keyOf(raw);
 
     return {
-        id: serverId || proposalId,
-        proposalId: proposalId || serverId,
-        serverProposalId: serverId || proposalId,
+        id: serverId,
+        proposalId,
+        serverProposalId: serverId,
+        publicationApiBase: serverId ? serverSyncOrigin.apiBase(typeof resolveBackendBaseUrl === 'function' ? resolveBackendBaseUrl() : null) : null,
         city,
         name: raw.name || raw.title || null,
         title: titleCandidate || '',
         author: raw.author || '',
-        type: raw.type || raw.goal || 'parcel',
-        goal: goalKey || 'parcel',
+        type: raw.type || null,
+        goal: goalKey,
         lifecycleStatus: serverSyncLifecycleOf(raw),
+        lifecycleEvidence: serverLifecycleEvidenceFor(raw, serverSyncLifecycleOf(raw)),
         createdAt: raw.createdAt || raw.created_at || null,
         updatedAt: raw.updatedAt || raw.updated_at || null,
         // The summary endpoint serves the server-rendered thumbnail (COALESCE(screenshot_url,
@@ -73,15 +101,10 @@ function normalizeServerProposalSummary(raw, cityCode) {
 // The local copy of a server proposal, if this browser holds one (downloaded, or the original the
 // server row was uploaded from). State that is about THIS map — applied or not — lives on it.
 function findLocalCopyOfServerProposal(summary) {
-    if (!summary || typeof proposalStorage === 'undefined' || typeof proposalStorage.getProposal !== 'function') {
+    if (!summary || typeof proposalStorage === 'undefined') {
         return null;
     }
-    const candidates = [summary.serverProposalId, summary.proposalId, summary.id];
-    for (const key of candidates) {
-        const local = key ? proposalStorage.getProposal(key) : null;
-        if (local) return local;
-    }
-    return null;
+    return proposalStorage.getProposalByServerRowId(summary.serverProposalId, summary.publicationApiBase);
 }
 
 // A local copy of a published proposal follows the lifecycle the server reports for it: the server
@@ -92,17 +115,24 @@ function findLocalCopyOfServerProposal(summary) {
 // applied one is unapplied — otherwise the map would keep geometry no badge or button admits to.
 const SERVER_TERMINAL_LIFECYCLES = new Set(['Executed', 'Cancelled', 'Expired']);
 
-async function followServerLifecycle(local, serverLifecycle) {
+async function followServerLifecycle(local, serverLifecycle, serverEvidence) {
     if (!local || !local.proposalId || typeof proposalStorage === 'undefined') return false;
     const next = serverSyncLifecycleOf({ lifecycleStatus: serverLifecycle });
     const key = String(local.proposalId);
     let changed = false;
+    const projectedEvidence = serverLifecycleEvidenceFor({ lifecycleEvidence: serverEvidence }, next);
+    const currentEvidence = local.lifecycleEvidence ?? null;
+    if (JSON.stringify(currentEvidence) !== JSON.stringify(projectedEvidence)) {
+        if (projectedEvidence) local.lifecycleEvidence = projectedEvidence;
+        else delete local.lifecycleEvidence;
+        changed = true;
+    }
     if (SERVER_TERMINAL_LIFECYCLES.has(next) && serverSyncLifecycleOf(local) !== next) {
         console.info(`[${new Date().toISOString()}] [followServerLifecycle] ${key}: ${serverSyncLifecycleOf(local)} → ${next} (server)`);
         proposalStorage.setProposalLifecycleStatus(key, next);
-        proposalStorage.save();
         changed = true;
     }
+    if (changed) proposalStorage.save();
     if (isApplied(local) && !window.__proposalDisplayState.isApplicable(local)) {
         console.info(`[${new Date().toISOString()}] [followServerLifecycle] ${key}: unapplying, the server reports it ${next}`);
         const unapplied = await ProposalManager.unapplyProposal(key);
@@ -117,7 +147,7 @@ async function followServerLifecycles(summaries) {
     let changed = 0;
     for (const summary of summaries) {
         const local = findLocalCopyOfServerProposal(summary);
-        if (local && await followServerLifecycle(local, summary.lifecycleStatus)) changed += 1;
+        if (local && await followServerLifecycle(local, summary.lifecycleStatus, summary.lifecycleEvidence)) changed += 1;
     }
     if (changed && typeof updateProposalList === 'function') updateProposalList();
     return changed;
@@ -344,30 +374,31 @@ async function fetchServerProposalById(serverId, cityCode) {
         throw new Error(text || `Failed to download proposal ${serverId}`);
     }
     const payload = await resp.json();
-    const normalized = { ...payload };
-    // `serverProposalId` must be the server's serial id — the numeric `id` column. The payload's
-    // `proposalId` is the uploader's *local* id (e.g. "p-1lo0n6ope6h"), and using it here left the
-    // downloaded proposal without a shareable id: share links require /^\d+$/, so the share dialog
-    // decided the proposal had never been uploaded and offered to upload it again.
-    const serialId = (payload && payload.id !== undefined && payload.id !== null) ? String(payload.id) : null;
-    const numericFallback = /^\d+$/.test(String(serverId || '')) ? String(serverId) : null;
-    normalized.serverProposalId = serialId || numericFallback || normalized.serverProposalId || serverId;
-    normalized.proposalId = payload.proposalId || payload.proposal_id || serverId;
-    return normalized;
+    return normalizePublicationResponse(payload, backendBase);
 }
 
-function getServerProposalId(proposal) {
-    if (!proposal) return null;
-    const candidates = [proposal.serverProposalId, proposal.proposalId, proposal.id];
-    for (const candidate of candidates) {
-        if (!candidate) continue;
-        const id = String(candidate);
-        // Local proposals are not shareable via server links.
-        // Example: local-0, local-1
-        if (/^local-\d+$/i.test(id)) return null;
-        return id;
+// Only an HTTP read from a known API can attach its publication namespace to a server row.
+function normalizePublicationResponse(payload, backendBase) {
+    const serialId = serverSyncOrigin.rowId(payload?.id);
+    const publicationApiBase = serverSyncOrigin.apiBase(backendBase);
+    if (!serialId || !publicationApiBase || typeof payload?.proposalId !== 'string' || !payload.proposalId.trim()) {
+        throw new Error('The publication response lacks its row or authored proposal identity.');
     }
-    return null;
+    return { ...payload, serverProposalId: serialId, publicationApiBase };
+}
+
+// An identifier for an existence query, including an authored fingerprint that still needs a
+// server response to establish publication. Row-only consumers use getSerialProposalId instead.
+function getProposalPublicationLookup(proposal) {
+    if (!proposal) return null;
+    const publishedBase = serverSyncOrigin.apiBase(proposal.publicationApiBase);
+    const currentBase = serverSyncOrigin.apiBase(resolveBackendBaseUrl());
+    if (publishedBase && publishedBase !== currentBase) return null;
+    const row = serverSyncOrigin.rowId(proposal.serverProposalId);
+    if (row && publishedBase && publishedBase === currentBase) return row;
+    // This is the same authored-content lookup the upload would use. A local key, especially a
+    // numeric one, must never select an unrelated publication row.
+    return typeof proposalContentFingerprint === 'function' ? proposalContentFingerprint(proposal) : null;
 }
 
 // `?city=` for a share link: the proposal's own city when given (the server files a record under
@@ -390,13 +421,13 @@ function mapGoalToBackendType(goalKey) {
         case 'single':
         case 'row':
             return 'building';
-        case 'parcelbased':
-        case 'parcel-based':
-        case 'parcel':
+        case 'parcelBased':
+        case 'as-is':
             return 'parcel';
         case 'park':
         case 'square':
         case 'lake':
+        case 'station':
             return 'structure';
         default:
             return null;
@@ -405,30 +436,36 @@ function mapGoalToBackendType(goalKey) {
 
 // Edit tokens: POST /proposals returns one per upload (only its hash is stored server-side), and
 // every PATCH of that proposal (name, epoch, thumbnail) must present it in X-Proposal-Edit-Token.
-// Kept in localStorage keyed by the server ROW id — beside the record's serverProposalId, but never
+// Kept in localStorage keyed by publication API and server row — beside serverProposalId, but never
 // inside the record, so a token cannot leak through a JSON download, a share payload, a re-upload
 // or mint metadata. Same pattern as the named-plan tokens (cb_plan_token_<slug>). A proposal this
 // browser did not upload has no token here, and callers must treat it as read-only on the server.
 const PROPOSAL_EDIT_TOKEN_PREFIX = 'cb_proposal_edit_token_';
 const PROPOSAL_EDIT_TOKEN_HEADER = 'X-Proposal-Edit-Token';
 
+function proposalEditTokenKey(serverProposalId) {
+    const id = serverSyncOrigin.rowId(serverProposalId);
+    const base = serverSyncOrigin.apiBase(typeof resolveBackendBaseUrl === 'function' ? resolveBackendBaseUrl() : null);
+    return id && base ? PROPOSAL_EDIT_TOKEN_PREFIX + encodeURIComponent(base) + ':' + id : null;
+}
+
 function rememberProposalEditToken(serverProposalId, token) {
-    const id = serverProposalId === undefined || serverProposalId === null ? '' : String(serverProposalId);
-    if (!/^\d+$/.test(id) || typeof token !== 'string' || !token) return false;
+    const key = proposalEditTokenKey(serverProposalId);
+    if (!key || typeof token !== 'string' || !token) return false;
     try {
-        localStorage.setItem(PROPOSAL_EDIT_TOKEN_PREFIX + id, token);
+        localStorage.setItem(key, token);
         return true;
     } catch (error) {
-        console.warn(`[proposal ${id}] could not store the edit token; this proposal will not be editable on the server`, error);
+        console.warn(`[proposal ${serverProposalId}] could not store the edit token; this proposal will not be editable on the server`, error);
         return false;
     }
 }
 
 function getProposalEditToken(serverProposalId) {
-    const id = serverProposalId === undefined || serverProposalId === null ? '' : String(serverProposalId);
-    if (!/^\d+$/.test(id)) return null;
+    const key = proposalEditTokenKey(serverProposalId);
+    if (!key) return null;
     try {
-        return localStorage.getItem(PROPOSAL_EDIT_TOKEN_PREFIX + id) || null;
+        return localStorage.getItem(key) || null;
     } catch (_) {
         return null;
     }
@@ -443,31 +480,23 @@ if (typeof window !== 'undefined') {
 }
 
 function syncProposalWithServerId(proposal, serverProposalId) {
-    if (!serverProposalId || typeof proposalStorage === 'undefined') return null;
-    const oldProposalId = proposal.proposalId;
-    const proposalId = proposal.proposalId;
-    let storedProposal = oldProposalId ? proposalStorage.getProposal(oldProposalId) : null;
-    if (!storedProposal && proposalId) {
-        storedProposal = proposalStorage.getProposal(proposalId);
+    if (!/^[1-9]\d*$/.test(String(serverProposalId ?? ''))) {
+        throw new Error('Publication sync requires a database proposal row ID.');
     }
+    if (!proposal?.proposalId || typeof proposalStorage === 'undefined') return null;
+    const localProposalId = String(proposal.proposalId);
+    const storedProposal = proposalStorage.proposals?.get(localProposalId);
     if (!storedProposal) return null;
 
-    // Preserve local proposalId; store server reference separately
+    // Preserve the exact local key; both server fields identify the returned database row.
+    const publicationApiBase = serverSyncOrigin.apiBase(resolveBackendBaseUrl());
+    if (!publicationApiBase) throw new Error('Publication sync requires its API base.');
+    storedProposal.publicationApiBase = publicationApiBase;
     storedProposal.serverProposalId = String(serverProposalId);
-    storedProposal.id = storedProposal.id || storedProposal.proposalId;
+    storedProposal.id = String(serverProposalId);
 
-    // Older versions indexed the same proposal under the server id key, which caused duplicates in getAllProposals().
-    // We resolve server ids via proposalStorage._resolveProposalId now, so ensure any legacy alias entry is removed.
-    if (proposalStorage.proposals) {
-        const serverKey = String(serverProposalId);
-        const canonicalKey = storedProposal.proposalId ? String(storedProposal.proposalId) : null;
-        if (serverKey && canonicalKey && serverKey !== canonicalKey) {
-            const aliased = proposalStorage.proposals.get(serverKey);
-            if (aliased === storedProposal) {
-                proposalStorage.proposals.delete(serverKey);
-            }
-        }
-    }
+    // Index only the local key. A server row or chain token must not select a different local
+    // record, and publication must not introduce another entry for this record.
 
     if (typeof proposalStorage._indexProposal === 'function') {
         proposalStorage._indexProposal(storedProposal);
@@ -711,11 +740,10 @@ async function uploadProposalToServer(proposal) {
             try { errorBody = await response.json(); } catch (_) { }
 
             if (response.status === 409 && errorBody && errorBody.id) {
-                const serverProposalId = errorBody.id ? String(errorBody.id) : (errorBody.proposalId ? String(errorBody.proposalId) : null);
-                if (serverProposalId) {
-                    syncProposalWithServerId(proposal, serverProposalId);
-                }
-                return { ok: true, id: errorBody.id, proposalId: serverProposalId || errorBody.id };
+                const serverProposalId = serverSyncOrigin.rowId(errorBody.id);
+                if (!serverProposalId) throw new Error('The publication response has no database row ID.');
+                syncProposalWithServerId(proposal, serverProposalId);
+                return { ok: true, id: serverProposalId, proposalId: serverProposalId };
             }
 
             // A refused-for-now is not a refused-for-good, and the server says exactly when. Without
@@ -764,7 +792,8 @@ async function uploadProposalToServer(proposal) {
         }
 
         const result = await response.json();
-        const serverProposalId = result && result.id ? String(result.id) : String(result.proposalId);
+        const serverProposalId = serverSyncOrigin.rowId(result?.id);
+        if (!serverProposalId) throw new Error('The publication response has no database row ID.');
         // Returned once; without it this browser cannot rename or re-bucket its own upload later.
         if (result && result.editToken) rememberProposalEditToken(serverProposalId, result.editToken);
         // The local record becomes what was published: the artifact's declaration, binding,
@@ -835,25 +864,7 @@ async function preloadProposalParcelOwners(parcelIds, options = {}) {
 
 function prepareProposalForImport(sharedProposal) {
     if (!sharedProposal || typeof sharedProposal !== 'object') return null;
-    const inferredGoal = (() => {
-        try {
-            const explicit = normalizeProposalGoalKey(sharedProposal.goal);
-            if (explicit) return explicit;
-            if (sharedProposal.decideLaterProposal) return 'decide-later';
-            if (sharedProposal.roadProposal) return 'road-track';
-            if (sharedProposal.reparcellization) return 'reparcellization';
-            if (sharedProposal.structureProposal && sharedProposal.structureProposal.kind) {
-                const kind = normalizeProposalGoalKey(sharedProposal.structureProposal.kind);
-                if (kind === 'park' || kind === 'square' || kind === 'lake' || kind === 'station') return kind;
-            }
-            if (sharedProposal.buildingProposal || (sharedProposal.geometry && Array.isArray(sharedProposal.geometry.buildings) && sharedProposal.geometry.buildings.length)) {
-                return 'buildings';
-            }
-            return 'parcel';
-        } catch (_) {
-            return 'parcel';
-        }
-    })();
+    const goal = serverSyncGoals.keyOf(sharedProposal);
     const depthApi = (typeof window !== 'undefined' && window.__formationDepth)
         ? window.__formationDepth
         : (typeof require === 'function' ? require('./formation-depth.js') : null);
@@ -865,12 +876,17 @@ function prepareProposalForImport(sharedProposal) {
     // Reconstructing legacy parent/block/child fields here would make transport depend on one
     // browser's materialized parcel ids again. Old rows are handled once by the DB migration.
     const candidate = deepClone(sharedProposal);
-    const serverId = sharedProposal.id || sharedProposal.proposalId || sharedProposal.proposal_id;
-    candidate.proposalId = sharedProposal.proposalId || sharedProposal.proposal_id || sharedProposal.id || null;
-    candidate.serverProposalId = (serverId && /^\d+$/.test(String(serverId)))
-        ? String(serverId)
-        : (sharedProposal.serverProposalId || null);
-    candidate.goal = inferredGoal;
+    const serverId = sharedProposal.serverProposalId ?? sharedProposal.id;
+    const publicationApiBase = serverSyncOrigin.apiBase(sharedProposal.publicationApiBase);
+    candidate.proposalId = typeof sharedProposal.proposalId === 'string' ? sharedProposal.proposalId : null;
+    candidate.serverProposalId = publicationApiBase ? serverSyncOrigin.rowId(serverId) : null;
+    candidate.publicationApiBase = candidate.serverProposalId ? publicationApiBase : null;
+    if (!candidate.serverProposalId) delete candidate.id;
+    if (candidate.proposalOrigin?.source?.kind === 'local') {
+        throw new Error('Cannot import a browser-local proposal origin.');
+    }
+    if (candidate.proposalOrigin) candidate.proposalOrigin = serverSyncOrigin.normalize(candidate.proposalOrigin);
+    candidate.goal = goal;
     candidate.lifecycleStatus = getLifecycleStatus(sharedProposal);
     candidate.acceptedParcelIds = ensureArrayOfStrings(sharedProposal.acceptedParcelIds);
     candidate.createdAt = sharedProposal.createdAt || new Date().toISOString();
@@ -896,7 +912,7 @@ function prepareProposalForImport(sharedProposal) {
         const detail = verdict.violations
             .map(item => item.code + (item.field ? ` (${item.field})` : '') + (item.id ? `: ${item.id}` : ''))
             .join('; ');
-        throw new Error(`Cannot import non-conforming proposal; run migrate-tessellation.js first: ${detail}`);
+        throw new Error(`Cannot import non-conforming proposal; recreate this experimental record: ${detail}`);
     }
     const stripped = depthApi.stripDerivedRecordData(candidate);
     return parkProposalForImport(stripped);
@@ -906,6 +922,7 @@ if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
         buildCityQueryParam,
         normalizeServerProposalSummary,
+        normalizePublicationResponse,
         prepareProposalForImport,
         rememberProposalEditToken,
         getProposalEditToken,

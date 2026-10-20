@@ -1,0 +1,13 @@
+[
+  {
+    "url": "https://mpbhulekh.gov.in/mpbhulekh.do",
+    "reason": "timeout (curl exit 28 after 25 seconds)"
+  },
+  {
+    "url": "https://services.india.gov.in/service/detail/check-dissemination-of-naksha-parcel-map-of-madhya-pradesh-online-1",
+    "reason": "search-index result; direct web fetch timeout"
+  },
+  {
+    "url": "https://www.dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/437"
+  }
+]

@@ -1,0 +1,32 @@
+[
+  {
+    "url": "https://portal.ric.gob.gt/geoportal"
+  },
+  {
+    "url": "https://portal.ric.gob.gt/geoportal_/Geoportal.html"
+  },
+  {
+    "url": "https://portal.ric.gob.gt/geoportal_/Scripts/Visor.js"
+  },
+  {
+    "url": "https://portal.ric.gob.gt/geoserver/wms?service=WMS&request=GetCapabilities"
+  },
+  {
+    "url": "https://portal.ric.gob.gt/geoserver/GEO_RIC/wfs?service=WFS&request=GetCapabilities"
+  },
+  {
+    "url": "https://portal.ric.gob.gt/geoserver/GEO_RIC/wfs?service=WFS&version=1.0.0&request=DescribeFeatureType&typename=GEO_RIC:PREDIO"
+  },
+  {
+    "url": "https://portal.ric.gob.gt/geoserver/GEO_RIC/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=GEO_RIC:PREDIO&outputFormat=application/json&maxFeatures=3&srsname=EPSG:4326&bbox=-91.6,14.8,-91.4,15.0,EPSG:4326"
+  },
+  {
+    "url": "https://portal.ric.gob.gt/geoserver/GEO_RIC/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=GEO_RIC:PREDIO&outputFormat=application/json&maxFeatures=3&srsname=EPSG:90180&bbox=387000,1642000,388500,1645000,EPSG:90180"
+  },
+  {
+    "url": "https://portal.ric.gob.gt/geoserver/GEO_RIC/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=GEO_RIC:PREDIO&outputFormat=application/json&maxFeatures=1&srsname=EPSG:4326"
+  },
+  {
+    "url": "https://www.munixela.laip.gt/index.php/direccion-de-catastro-avaluos-e-iusi"
+  }
+]

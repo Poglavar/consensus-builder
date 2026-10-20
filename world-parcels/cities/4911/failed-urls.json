@@ -1,0 +1,22 @@
+[
+  {
+    "url": "https://www.geoportal.gov.sd/",
+    "reason": "DNS resolution timeout after 20 seconds via direct curl; web fetch reported URL inaccessible"
+  },
+  {
+    "url": "https://aqari.nctr.sd/ar",
+    "reason": "DNS resolution failure via direct curl; public page content observed through web search/open"
+  },
+  {
+    "url": "https://www.nic.gov.sd/public/projectDetails/3"
+  },
+  {
+    "url": "https://sj.gov.sd/ar/content/page/%D8%A5%D8%AF%D8%A7%D8%B1%D8%A9-%D8%AA%D8%B3%D8%AC%D9%8A%D9%84%D8%A7%D8%AA-%D8%A7%D9%84%D8%A7%D8%B1%D8%A7%D8%B6%D9%8A"
+  },
+  {
+    "url": "https://aqari.nctr.sd/ar/about"
+  },
+  {
+    "url": "https://aqaraksd.com/ar/news/atbara-nile-river"
+  }
+]

@@ -1,0 +1,23 @@
+[
+  {
+    "url": "https://gis.tmrada.gov.ua/portal/home/"
+  },
+  {
+    "url": "http://gis.tmrada.gov.ua/portal/home/"
+  },
+  {
+    "url": "https://kadastr.gov.ua/"
+  },
+  {
+    "url": "https://nsdi.gov.ua/"
+  },
+  {
+    "url": "https://e.land.gov.ua/"
+  },
+  {
+    "url": "https://opendata.ternopilcity.gov.ua/dataset/956e39d1-a677-40d5-a215-5e40f199a387/resource/22745a70-95ce-4337-871d-d40738ae1620"
+  },
+  {
+    "url": "https://ternopilcity.maps.arcgis.com/sharing/rest/search?f=json&num=100&q=orgid:d5neoyf1ulR8JFph%20AND%20(type:%22Feature%20Service%22%20OR%20type:%22Map%20Service%22%20OR%20type:%22Web%20Map%22)"
+  }
+]

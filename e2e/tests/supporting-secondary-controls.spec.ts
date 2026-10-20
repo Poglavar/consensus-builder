@@ -358,7 +358,7 @@ test.describe('Supporting secondary controls @core', () => {
     await expect(page.locator('#tx-tbody .tx-row')).toHaveCount(2);
   });
 
-  test('floor-plan View in 3D toggles the plan mode and Reset view rebuilds its whole-building canvas', async ({ mockApi: page }) => {
+  test('published floor-plan View in 3D renders the plan without inventing a whole-building model', async ({ mockApi: page }) => {
     const rectangle = (x: number, y: number, width: number, depth: number) => [[
       [x, y], [x + width, y], [x + width, y + depth], [x, y + depth],
     ]];
@@ -367,43 +367,36 @@ test.describe('Supporting secondary controls @core', () => {
       walls: [rectangle(0, 0, 1, 0.025)], slabs: [rectangle(0, 0, 1, 1)],
       landings: [], platforms: [], openings: [], stairs: [], railings: [],
     };
-    const footprintCorners = [[16, 45.8], [16.0001, 45.8], [16.0001, 45.8001], [16, 45.8001]];
-    const buildingFloorPlans = {
-      schema: 'consensus-builder.building-floor-plans.v2',
-      registration: { corners: footprintCorners, basis: 'UI test footprint', accuracy: 'test' },
-      layouts: [{ id: 'layout-one', source: { url: 'https://example.org/plan.png', sha256: 'test-plan' }, architecture }],
-      floors: [{ id: 'floor-one', level: 0, elevationM: 0, elevationBasis: 'documented', layoutId: 'layout-one' }],
-    };
+    await page.route('**/api/floor-plans?*', route => json(route, {
+      plans: [{
+        id: 'plan-one', scope: 'floor', floor: 0, label: 'Plan One', architecture,
+        source: { url: 'https://plans.example/plan.png', sha256: 'f'.repeat(64) },
+        buildingId: 'ui-building', building: { label: 'UI Building' },
+      }],
+      limit: 100, offset: 0, hasMore: false,
+    }));
     await page.route('**/floor-plan-archive/catalogue', route => json(route, {
-      buildings: [{ id: 'ui-building', name: 'UI Building', kind: 'units', planCount: 1 }], sources: [],
+      buildings: [], sources: [],
     }));
     await page.route('**/floor-plan-archive/status', route => json(route, { coverage: { agencies: { total: 1, websites: 1 } } }));
     await page.route('**/floor-plan-archive/agencies?*', route => json(route, { agencies: [] }));
-    await page.route('**/floor-plan-archive/building/ui-building', route => json(route, {
-      name: 'UI Building', kind: 'units', wholeBuilding: { type: 'floor-stack' },
-      location: { latitude: 45.8, longitude: 16.0, basis: 'test footprint' },
-      footprint: { type: 'Polygon', coordinates: [[[16, 45.8], [16.0001, 45.8], [16.0001, 45.8001], [16, 45.8001], [16, 45.8]]] },
-      floorPlans: buildingFloorPlans,
-      plans: [{ id: 'plan-one', label: 'Plan One', architecture, rooms: [] }],
-    }));
-
-    await page.goto('/floor-plan-archive.html?building=ui-building');
+    await page.goto('/floor-plans.html?building=ui-building');
+    await expect(page.locator('#selection-name')).toHaveText('UI Building');
     const mode = page.locator('#view3d');
     await expect(mode).toBeEnabled();
     await expect(mode).toHaveText('3D view');
+    await expect(page.locator('#plan svg')).toBeVisible();
     await mode.click();
     await expect(mode).toHaveText('2D view');
+    await expect(page.locator('#plan canvas')).toBeVisible();
+    await expect(page.locator('#plan svg')).toHaveCount(0);
     await mode.click();
     await expect(mode).toHaveText('3D view');
-
-    const reset = page.locator('#show-building');
-    await expect(reset).toBeEnabled();
-    const canvas = page.locator('#building-3d canvas');
-    await expect(canvas).toBeVisible();
-    await canvas.evaluate(element => element.setAttribute('data-before-reset', 'true'));
-    await reset.click();
-    await expect(canvas).toBeVisible();
-    await expect(canvas).not.toHaveAttribute('data-before-reset', 'true');
+    await expect(page.locator('#plan svg')).toBeVisible();
+    await expect(page.locator('#plan canvas')).toHaveCount(0);
+    await expect(page.locator('#show-building')).toBeDisabled();
+    await expect(page.locator('#building-3d')).toHaveText('No whole-building model is linked to this source.');
+    await expect(page.locator('#building-3d canvas')).toHaveCount(0);
   });
 
   test.describe('Controls with slow map bootstrap @core', () => {

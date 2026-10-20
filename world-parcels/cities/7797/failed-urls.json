@@ -1,0 +1,26 @@
+[
+  {
+    "url": "https://hsac.in/eodb_backend/land-query/districts",
+    "reason": "401"
+  },
+  {
+    "url": "https://hsac.in/eodb_backend/land-query/search?term=Jind&limit=10",
+    "reason": "401"
+  },
+  {
+    "url": "https://hsac.in/eodb_backend/land-query/boundary-extent-at-point?x=76.3185369205235&y=29.3176729893746&wkid=4326",
+    "reason": "401"
+  },
+  {
+    "url": "https://www.dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/77"
+  },
+  {
+    "url": "https://hsac.in/eodb/"
+  },
+  {
+    "url": "https://jind.gov.in/"
+  },
+  {
+    "url": "https://naksha.dolr.gov.in/NakshaPortal/"
+  }
+]

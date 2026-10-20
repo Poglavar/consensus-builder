@@ -19,6 +19,7 @@ function renderSummary(model) {
         ['siteLocation', `${tr(`loc_${loc.status}`) || loc.status} · ${fmt(loc.score, 2)} · ${(loc.reasons || []).map(r => r.code).join(', ')}`],
         ['sitePostings', String(model.siblings?.length ?? 0)],
         ['siteFootprint', fp.source ? `${tr(`src_${fp.source}`) || fp.source} · ${fp.areaM2 ?? '—'} m²${fp.caseKind ? ` · ${fp.caseKind}` : ''}` : '—'],
+        ['siteParcelContext', model.parcelContext ? `${model.parcelContext.areaM2 ?? '—'} m²` : '—'],
         ['siteStoreys', `${(env.storeys || []).length} · ${fmt(env.heightM)} m${env.storeySource ? ` · ${env.storeySource}` : ''}`],
         ['siteHeights', env.heightBasis || '—'],
     ];
@@ -29,16 +30,22 @@ function renderSummary(model) {
 }
 
 function renderMap(model) {
-    const ring = geometry().largestRing(model.envelope?.footprint);
-    if (!ring) { el('site-map').replaceChildren(textNode('p', tr('noGeometry'), 'empty')); return; }
+    const context = geometry().contextGeometry(model);
+    if (!geometry().largestRing(context)) {
+        map?.remove(); map = null; layers = null;
+        el('site-map').replaceChildren(textNode('p', tr('noGeometry'), 'empty')); return;
+    }
     const L = global.L;
     if (!map) {
+        el('site-map').replaceChildren();
         map = L.map(el('site-map'), { zoomAnimation: false, fadeAnimation: false, markerZoomAnimation: false });
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>' }).addTo(map);
     }
     layers?.remove();
     layers = L.layerGroup().addTo(map);
-    const footprint = L.polygon(ring.map(([lng, lat]) => [lat, lng]), { color: '#44505a', weight: 2, fillOpacity: 0.12 }).addTo(layers);
+    const footprint = L.geoJSON(context, {
+        style: { color: '#44505a', weight: 2, fillOpacity: 0.12, dashArray: model.envelope?.footprint ? null : '6 4' }
+    }).addTo(layers);
     for (const placement of model.placements || []) {
         if (!placement.best?.outline) continue;
         L.polygon(placement.best.outline.map(([lng, lat]) => [lat, lng]), { color: geometry().statusColour(placement.status), weight: 2, fillOpacity: 0.35 })
@@ -67,6 +74,10 @@ function buildGroup(THREE, model) {
 }
 
 function render3d(model, token) {
+    if (!geometry().storeyPrisms(model).length && !geometry().placedSlabs(model).length) {
+        el('site-3d').replaceChildren(textNode('p', tr('noBuildingEnvelope'), 'empty'));
+        return;
+    }
     el('site-3d').replaceChildren(textNode('p', tr('loading'), 'empty'));
     ctx.renderer.preview(el('site-3d'), THREE => buildGroup(THREE, model), () => token === generation)
         .then(dispose => { if (token === generation) dispose3d = dispose; else dispose?.(); })

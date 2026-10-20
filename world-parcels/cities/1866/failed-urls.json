@@ -1,0 +1,14 @@
+[
+  {
+    "url": "https://gis.kcca.go.ug/arcgis/rest/services?f=json",
+    "reason": "404"
+  },
+  {
+    "url": "https://camcamv.kcca.go.ug/GisWebApp/rest/layer/KCCA",
+    "reason": "500"
+  },
+  {
+    "url": "https://camcamv.kcca.go.ug/GisWebApp/rest/layer/json/layers/KCCA/",
+    "reason": "404"
+  }
+]

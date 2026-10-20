@@ -1,0 +1,126 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "5546",
+  "name": "Boise, United States",
+  "point": [
+    43.615,
+    -116.2023
+  ],
+  "bindings": [
+    {
+      "appCityId": "boise",
+      "runtimeConfig": {
+        "id": "boise",
+        "label": "Boise, United States",
+        "currency": {
+          "locale": "en-US",
+          "code": "USD"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            43.615,
+            -116.2023
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            43.615,
+            -116.2023
+          ],
+          "fallbackDataset": [
+            -116.2023,
+            43.615
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.0025,
+          "source": "parcel-source",
+          "sourceId": "us-id-ada-boise-parcels",
+          "idPrefix": "US-ID-ADA-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "<a href=\"https://services1.arcgis.com/CNPdEkvnGl65jCX8/arcgis/rest/services/Public_Idaho_Parcels_/FeatureServer/7\">Idaho Geospatial Office / The Idaho Map; parcel submissions stewarded by Ada County · publisher &amp; conditions</a> · Ada County assessment parcel groups · adapted"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "us-id-ada-boise-parcels",
+      "name": "Idaho Geospatial Office — Boise",
+      "adapter": "arcgis",
+      "endpoint": "https://services1.arcgis.com/CNPdEkvnGl65jCX8/arcgis/rest/services/Public_Idaho_Parcels_/FeatureServer/7",
+      "idField": "PARCEL_ID",
+      "objectIdField": "OBJECTID",
+      "idType": "string",
+      "idPattern": "^[A-Za-z0-9-]+$",
+      "idPrefix": "US-ID-ADA-",
+      "outFields": [
+        "OBJECTID",
+        "PARCEL_ID",
+        "County"
+      ],
+      "parcelNumberField": "PARCEL_ID",
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "metricSrid": 32611,
+      "countryCode": "US",
+      "stateCode": "ID",
+      "cityIds": [
+        "boise"
+      ],
+      "operator": "Idaho Geospatial Office / The Idaho Map; parcel submissions stewarded by Ada County",
+      "scope": "County-submitted Idaho parcels, limited to Ada County at Boise; partial snapshot, no statewide completeness claim. Each canonical identity is the complete native parcel-code geometry group within the fixed town/county scope. Additional enabled city entries have separate bounded qualification evidence; wider coverage remains unverified.",
+      "attribution": "Idaho Geospatial Office / The Idaho Map; parcel submissions stewarded by Ada County. Adapted to WGS84.",
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "attributeFilters": {
+        "County": "Ada"
+      },
+      "catalogueUrl": "https://services1.arcgis.com/CNPdEkvnGl65jCX8/arcgis/rest/services/Public_Idaho_Parcels_/FeatureServer/7",
+      "nativeGeometryMode": "parts",
+      "partsCoordinatePrecision": 9,
+      "maxConcurrentQueries": 2,
+      "caveats": [
+        "The publisher can map one native parcel code to multiple same-vintage polygons. All components are fetched and dissolved; this group is not a claim that each component is a separate legal lot."
+      ],
+      "licenceNote": "Source conditions are informational; users choose their source and intended use.",
+      "metricSridByCity": {
+        "boise": 32611
+      },
+      "cityScopes": {
+        "meridian": "147 unchanged native parcel polygons passed all eight qualification gates in bounded cells around the UN/WUP locator. Fresh independent metric audit (EPSG:32611) found zero invalid polygons, identity conflicts, duplicate geometry, material overlaps, or operation errors. Citywide completeness, legal title, survey accuracy, and currentness are not established."
+      }
+    }
+  ]
+}

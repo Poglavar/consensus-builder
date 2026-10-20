@@ -80,15 +80,15 @@
     // The whole rule as one sentence.
     function rulesText(policy, t, regime = null) {
         const rules = approval().policyRules(policy);
-        if (policy?.type === 'unanimous' || !policy) return t('proposalApproval.ruleUnanimous', 'Every owner must accept.');
+        if (policy?.type === 'unanimous' || !policy) return t('proposalApproval.ruleUnanimous', 'Configured approval rules require every owner to accept.');
         const tests = orderTests(rules.tests).map(test => testText(test, t));
         const authority = rules.authorities.length ? authorityText(regime, t) : null;
-        if (!tests.length) return t('proposalApproval.rules.authorityOnly', 'Needs only {{authority}}. Owners are heard; their responses do not decide.', { authority });
+        if (!tests.length) return t('proposalApproval.rules.authorityOnly', 'Configured approval rules require only {{authority}}. Owner responses do not decide this tally.', { authority });
         const joined = tests.length === 1 ? tests[0]
             : tests.slice(0, -1).join(', ') + t('proposalApproval.rules.and', ' and ') + tests[tests.length - 1];
         return authority
-            ? t('proposalApproval.rules.passesWithAuthority', 'Passes with {{tests}}, and needs {{authority}}.', { tests: joined, authority })
-            : t('proposalApproval.rules.passesWith', 'Passes with {{tests}}.', { tests: joined });
+            ? t('proposalApproval.rules.passesWithAuthority', 'Configured approval rules require {{tests}} and {{authority}}.', { tests: joined, authority })
+            : t('proposalApproval.rules.passesWith', 'Configured approval rules require {{tests}}.', { tests: joined });
     }
 
     function regimeName(regime, t) {
@@ -148,5 +148,39 @@
         });
     }
 
-    return { orderTests, meterName, meterLabel, thresholdText, testText, rulesText, authorityText, regimeName, regimeOf, stageText, familyText, allocationLines, checkLines };
+    // The declared snapshot source and selected lens are configuration, not verified attestations.
+    function reviewBasisLines({ rightsSource = null, lens = [] } = {}, t, memberLabel = String) {
+        const source = [rightsSource?.provider, rightsSource?.reference]
+            .filter(value => typeof value === 'string' && value.trim()).map(value => value.trim()).join(' · ');
+        return [
+            source ? t('proposalApproval.review.rightsSource', 'Declared rights source: {{source}}', { source })
+                : t('proposalApproval.review.rightsSourceUnknown', 'No rights source is specified in this record.'),
+            lens.length ? t('proposalApproval.review.selectedLens', 'Selected verification lens: {{members}}', { members: lens.map(memberLabel).join(', ') })
+                : t('proposalApproval.review.noLens', 'No verification lens is selected.')
+        ];
+    }
+
+    // A consent tally names its evidence source; a local record is not a verified signature.
+    function consentLabels(basis, t, counts = {}) {
+        const signed = basis === 'signed-receipts';
+        const labels = signed ? {
+            parcelTitle: 'Parcel consent from verified receipts:',
+            ownerTitle: 'Owner approvals from verified receipts:',
+            accepted: 'Verified approval for current terms',
+            pending: 'No current verified approval',
+            hint: 'Signed receipts verified against the current terms and declared approval context. They do not establish legal title or payment.',
+            parcelSummary: '{{accepted}}/{{total}} parcels with verified receipts'
+        } : {
+            parcelTitle: 'Locally recorded parcel consent:',
+            ownerTitle: 'Local owner-entry consent:',
+            accepted: 'Consent recorded in this browser',
+            pending: 'No current local consent record',
+            hint: 'Unsigned records in this browser, matched to the current terms and owner roster. They do not verify signing authority or legal ownership.',
+            parcelSummary: '{{accepted}}/{{total}} parcels with local consent'
+        };
+        return Object.fromEntries(Object.entries(labels).map(([key, fallback]) => [key,
+            t(`panel.proposal.acceptance.${signed ? 'signed' : 'local'}.${key}`, fallback, counts)]));
+    }
+
+    return { orderTests, meterName, meterLabel, thresholdText, testText, rulesText, authorityText, regimeName, regimeOf, stageText, familyText, allocationLines, checkLines, reviewBasisLines, consentLabels };
 });

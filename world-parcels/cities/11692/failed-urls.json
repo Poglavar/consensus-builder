@@ -1,0 +1,19 @@
+[
+  {
+    "url": "https://www.wuhua.gov.cn/xxgk/zfjg/xzrzyj/",
+    "reason": "timeout after 20 seconds in research environment"
+  },
+  {
+    "url": "https://www.wuhua.gov.cn/mzwhzrj/gkmlpt/guide",
+    "reason": "timeout in direct/open inspection"
+  },
+  {
+    "url": "https://guangdong.tianditu.gov.cn/"
+  },
+  {
+    "url": "https://guangdong.tianditu.gov.cn/djzt/index-pro.html"
+  },
+  {
+    "url": "https://guangdong.tianditu.gov.cn/djzt/wfsConfig/queryEntityByType.do?wfsconfig.serviceType=1"
+  }
+]

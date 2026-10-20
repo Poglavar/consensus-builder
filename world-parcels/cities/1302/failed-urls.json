@@ -1,0 +1,17 @@
+[
+  {
+    "url": "https://www.lands.go.ke/land-registries"
+  },
+  {
+    "url": "https://eldoretcity.go.ke/"
+  },
+  {
+    "url": "https://ardhisasa.lands.go.ke/"
+  },
+  {
+    "url": "https://services1.arcgis.com/PGZ6rHy9gfyUWIVY/ArcGIS/rest/services/Eldoret_City_Land_Use_Land_Cover_Map_WFL1/FeatureServer"
+  },
+  {
+    "url": "https://services1.arcgis.com/PGZ6rHy9gfyUWIVY/ArcGIS/rest/services/Eldoret_City_Boundary_WFL1/FeatureServer"
+  }
+]

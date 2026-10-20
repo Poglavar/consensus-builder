@@ -1,0 +1,16 @@
+[
+  {
+    "url": "https://geoportal.irapuato.gob.mx/",
+    "reason": "curl connection timeout after 12 seconds in the shell network path"
+  },
+  {
+    "url": "https://geoportal.irapuato.gob.mx/sius/",
+    "reason": "curl connection timeout after 12 seconds in the shell network path"
+  },
+  {
+    "url": "https://vccc.irapuato.gob.mx/"
+  },
+  {
+    "url": "https://www.irapuato.gob.mx/minegocio/"
+  }
+]

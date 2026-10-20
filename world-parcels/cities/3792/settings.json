@@ -1,0 +1,121 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "3792",
+  "name": "Longueuil, Canada",
+  "point": [
+    45.4995092536395,
+    -73.4660080560164
+  ],
+  "bindings": [
+    {
+      "appCityId": "longueuil",
+      "runtimeConfig": {
+        "id": "longueuil",
+        "wupCityCode": "3792",
+        "label": "Longueuil, Canada",
+        "currency": {
+          "locale": "fr-CA",
+          "code": "CAD"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            45.4995092536395,
+            -73.4660080560164
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            45.4995092536395,
+            -73.4660080560164
+          ],
+          "fallbackDataset": [
+            -73.4660080560164,
+            45.4995092536395
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "ca-qc-longueuil-cadastre",
+          "idPrefix": "CA-QC-LONGUEUIL-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 3,
+          "attribution": "<a href=\"https://geohub.longueuil.quebec/\">Ville de Longueuil · municipal Cadastre</a>"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "ca-qc-longueuil-cadastre",
+      "name": "Ville de Longueuil municipal cadastral lots",
+      "adapter": "arcgis",
+      "endpoint": "https://geomatique.longueuil.quebec/public/rest/services/DonneesPubliques/CadastreEtEvaluation/FeatureServer/0",
+      "idField": "NUMERO",
+      "idType": "string",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "CA-QC-LONGUEUIL-",
+      "outFields": [
+        "OBJECTID",
+        "NUMERO",
+        "STATUT"
+      ],
+      "attributeFilters": {
+        "STATUT": [
+          -1,
+          0
+        ]
+      },
+      "queryFormat": "esri-json",
+      "boundsQueryMode": "offset",
+      "idsQueryMode": "offset",
+      "pageSize": 100,
+      "idBatchSize": 80,
+      "maxFeatures": 1000,
+      "maxBboxKm2": 25,
+      "capabilities": {
+        "point": false,
+        "exactId": true,
+        "bbox": true,
+        "areaEnumeration": true
+      },
+      "countryCode": "CA",
+      "metricSrid": 32618,
+      "cityIds": [
+        "longueuil"
+      ],
+      "operator": "Ville de Longueuil",
+      "catalogueUrl": "https://geohub.longueuil.quebec/",
+      "attribution": "Ville de Longueuil · municipal Cadastre",
+      "scope": "Municipal cadastral lot polygons in publisher-coded official states -1 and 0; bounded Longueuil neighborhood qualification only. Service extent may span the municipal agglomeration; citywide completeness and authoritative maintenance scope remain unverified.",
+      "licenceNote": "No reuse licence is established in the frozen packet or inspected service schema; legal and licence review remain for primary review.",
+      "defaultForCity": true
+    }
+  ]
+}

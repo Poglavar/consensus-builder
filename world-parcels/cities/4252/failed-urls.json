@@ -1,0 +1,16 @@
+[
+  {
+    "url": "https://ssaa.ir/",
+    "reason": "timeout after 20 seconds"
+  },
+  {
+    "url": "https://shamim.ssaa.ir/",
+    "reason": "timeout during bounded request"
+  },
+  {
+    "url": "https://www.dezful.ir/"
+  },
+  {
+    "url": "https://nezamat.ir/%D8%A7%D9%8A%D9%8A%D9%86-%D9%86%D8%A7%D9%85%D9%87-%D8%A7%D8%AC%D8%B1%D8%A7%D9%8A%D9%8A-%D8%AA%D8%A8%D8%B5%D8%B1%D9%87-3-%D9%85%D8%A7%D8%AF%D9%87-10-%D9%82%D8%A7%D9%86%D9%88%D9%86-%D8%A7%D9%84/"
+  }
+]

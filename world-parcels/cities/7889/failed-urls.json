@@ -1,0 +1,6 @@
+[
+  {
+    "url": "https://gisdata.in.gov/server/rest/services/Hosted/Parcel_Boundaries_of_Indiana_Current/FeatureServer/0",
+    "reason": "Held: the production adapter refuses the Indiana statewide layer around South Bend because state_parcel_id is not unique: a direct exact-ID reread of the 71 cached IDs returns 73 rows (710907402011000026 -> objectids 3773812/3782324, 710907476002000026 -> 3778152/3799155, each with distinct geometries), so freshCollectedIdRead/exactIds/stableGeometry fail with 'conflicting geometry for one parcel…"
+  }
+]

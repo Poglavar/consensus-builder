@@ -1,0 +1,17 @@
+[
+  {
+    "url": "https://pms.moj.gov.af/"
+  },
+  {
+    "url": "https://pms.moj.gov.af/main.733b75d24438b70d.js"
+  },
+  {
+    "url": "https://mudh.gov.af/en/over-178000-jeribs-land-registered-khost"
+  },
+  {
+    "url": "https://services7.arcgis.com/EatAamwsHn8Z2rBE/ArcGIS/rest/services/Khost_Boundary/FeatureServer/0/query?where=1%3D1&outFields=*&returnGeometry=true&f=geojson"
+  },
+  {
+    "url": "https://afg.gov.af/provinces/khost"
+  }
+]

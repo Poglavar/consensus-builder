@@ -6,6 +6,16 @@
 (function (global) {
     'use strict';
 
+    // A clip that throws degrades only this suggestion (an X-ray aid, never part of the proposal),
+    // but it is logged and counted in clipHealth() (parcel-arrangement.js), never silently skipped.
+    function reportClip(operation, error, site, operands) {
+        const api = (global && global.__parcelArrangement)
+            || (typeof require === 'function' ? require('./proposals/parcel-arrangement.js') : null);
+        if (api) return api.reportClipFailure(operation, error, { site }, operands);
+        console.error(`[${new Date().toISOString()}] [clip] Polygon ${operation} failed at ${site}: ${error && error.message} — degraded`);
+        return error;
+    }
+
     const PARTITION_M = 0.12;      // light partition between rooms
     const HALL_WIDTH_M = 1.25;     // the entrance hall along the core wall
     const BACK_HALL_M = 1.30;      // the hall's turn across the rooms behind the core
@@ -55,11 +65,11 @@
         for (const rings of polygonsOf(feature)) rings.forEach((ring, index) => { total += (index === 0 ? 1 : -1) * Math.abs(ringArea(ring)); });
         return total;
     }
-    function intersect(t, a, b) { if (!a || !b) return null; try { const r = t.intersect(a, b); return r && r.geometry ? r : null; } catch (_) { return null; } }
-    function difference(t, a, b) { if (!a) return null; if (!b) return a; try { const r = t.difference(a, b); return r && r.geometry ? r : null; } catch (_) { return null; } }
+    function intersect(t, a, b) { if (!a || !b) return null; try { const r = t.intersect(a, b); return r && r.geometry ? r : null; } catch (error) { reportClip('intersect', error, 'default-floor-plan-rooms.intersect', [a, b]); return null; } }
+    function difference(t, a, b) { if (!a) return null; if (!b) return a; try { const r = t.difference(a, b); return r && r.geometry ? r : null; } catch (error) { reportClip('difference', error, 'default-floor-plan-rooms.difference', [a, b]); return null; } }
     function unionAll(t, features) {
         let acc = null;
-        for (const f of features) { if (!f) continue; if (!acc) { acc = f; continue; } try { const m = t.union(acc, f); if (m && m.geometry) acc = m; } catch (_) { } }
+        for (const f of features) { if (!f) continue; if (!acc) { acc = f; continue; } try { const m = t.union(acc, f); if (m && m.geometry) acc = m; } catch (error) { reportClip('union', error, 'default-floor-plan-rooms.unionAll', [acc, f]); } }
         return acc;
     }
     function bbox(feature) {
@@ -317,7 +327,9 @@
         return out;
     }
 
-    const api = { furnishApartment, furnishShop, garageLayout, facadeRun, WINDOW_SPECS, PARTITION_M };
+    const api = { furnishApartment, furnishShop, garageLayout, facadeRun, WINDOW_SPECS, PARTITION_M,
+        // The clip helpers, exported so their failure reporting is tested directly.
+        _clip: { intersect, difference, unionAll } };
     global.__defaultFloorPlanRooms = api;
     if (typeof module !== 'undefined' && module.exports) module.exports = api;
 })(typeof window !== 'undefined' ? window : globalThis);

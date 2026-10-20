@@ -1,0 +1,23 @@
+[
+  {
+    "url": "https://alcaldiadematurin.gob.ve/",
+    "reason": "curl connection timeout after 10 seconds"
+  },
+  {
+    "url": "https://maturin.gob.ve/",
+    "reason": "DNS resolution failure"
+  },
+  {
+    "url": "https://alcaldiamaturin.gob.ve/",
+    "reason": "DNS resolution failure"
+  },
+  {
+    "url": "https://www.scribd.com/document/956314131/12-Ordinance-on-Property-Tax-of-the-Municipality-of-Maturin-in-the-State-of-Monagas"
+  },
+  {
+    "url": "https://elorientaldemonagas.com/alcaldia-de-maturin-avanza-en-la-modernizacion-de-los-servicios-catastrales/"
+  },
+  {
+    "url": "https://laprensademonagas.com/alcaldia-proceso-mas-de-600-cedulas-catastrales-en-el-inicio-de-2026/"
+  }
+]

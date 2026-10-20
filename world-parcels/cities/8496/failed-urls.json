@@ -1,0 +1,26 @@
+[
+  {
+    "url": "https://www.bhunaksha.rajasthan.gov.in/georef_gmaps.html",
+    "reason": "official indexed result; direct GET timeout"
+  },
+  {
+    "url": "https://bhunaksha.rajasthan.gov.in/",
+    "reason": "timeout"
+  },
+  {
+    "url": "http://bhunaksha.rajasthan.gov.in/",
+    "reason": "timeout"
+  },
+  {
+    "url": "https://landrevenue.rajasthan.gov.in/content/landrevenuenew/en/rajasthan-revenue-department/Circular/OnlineTehsils.html"
+  },
+  {
+    "url": "https://dausa.rajasthan.gov.in/pages/dptHome"
+  },
+  {
+    "url": "https://landrevenue.rajasthan.gov.in/content/landrevenuenew/hi/board-of-revenue-for-raj-dep/about-us/section/cadstralmap.html"
+  },
+  {
+    "url": "https://rajdharaa.rajasthan.gov.in/citizenudh/index"
+  }
+]

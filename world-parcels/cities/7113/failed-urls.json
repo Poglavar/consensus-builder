@@ -1,0 +1,19 @@
+[
+  {
+    "url": "https://nspd.gov.ru/map?thematic=PKK",
+    "reason": "timeout"
+  },
+  {
+    "url": "https://rosreestr.gov.ru/",
+    "reason": "timeout"
+  },
+  {
+    "url": "https://orenmfc.orb.ru/services/departments/upravlenie-federalnoj-sluzhby-gosudarstvennoy-registracii-kadastra-i-kartografii-po-orenburgskoy-oblasti-rosreestr-i-filial-fgbu-fkp-rosreestra-po-orenburgskoy-oblasti-kadastrovaya-palata/gosudarstvennaya-usluga-po-gosudarstvennomu-kadastrovomu-uchetu-nedvizhimogo-imushchestva-i-ili-gosudarstvennoy-registratsii-prav-na-nedvizhimoe-imushchestvo-i-sdelok-s-nim/"
+  },
+  {
+    "url": "https://www.rkc56.ru/attach/orenburg/docs/Pisma_Rosreestra/2025/Pismo-Rosreestra-ot-13.12.2024-N06-02428_24_.pdf"
+  },
+  {
+    "url": "https://56.rosreestr.gov.ru/"
+  }
+]

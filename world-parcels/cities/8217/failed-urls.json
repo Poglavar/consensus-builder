@@ -1,0 +1,15 @@
+[
+  {
+    "url": "https://production-api.pulse.gop.pk/api/auth",
+    "reason": "405"
+  },
+  {
+    "url": "https://www.punjab-zameen.gov.pk/"
+  },
+  {
+    "url": "https://www.pulse.gop.pk/"
+  },
+  {
+    "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services?f=pjson"
+  }
+]

@@ -1,0 +1,10 @@
+[
+  {
+    "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3/api/parsel/1/1/1",
+    "reason": "404"
+  },
+  {
+    "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3/api/parsel/39.9208/32.8541/",
+    "reason": "404"
+  }
+]

@@ -5,7 +5,7 @@
 // first. Then the part that turns a choice into ground — a session source that fetch.js consults
 // instead of the network (a register link; the Schelling plan is a layer, never ground) — is exercised for real, and the wiring into fetch.js, index.html and the
 // four locales is pinned against the source, because nothing about it is observable from a return value.
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { createRequire } from 'node:module';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
@@ -35,6 +35,9 @@ globalThis.CityConfigManager = {
 };
 const Grid = require('../../frontend/js/parcels/schelling-grid.js');
 const Fallback = require('../../frontend/js/parcels/ground-fallback.js');
+const Identity = require('../../frontend/js/parcels/custom-url-identity.js');
+const sourceUrl = 'https://data.example.org/parcels.geojson';
+const sourceId = Identity.sourceId(sourceUrl);
 
 const fetchSource = read('../../frontend/js/parcels/fetch.js');
 const fallbackSource = read('../../frontend/js/parcels/ground-fallback.js');
@@ -49,6 +52,7 @@ beforeEach(() => {
     Fallback.clearSource('nowhere');
     delete globalThis.addRoadParcel;
 });
+afterEach(() => vi.unstubAllGlobals());
 
 describe('what went wrong is named, not guessed', () => {
     it('keeps "no register" apart from a failed request', () => {
@@ -132,13 +136,15 @@ describe('a register link the visitor knows of', () => {
                 { type: 'Feature', properties: { id: 'metres' }, geometry: square(458900, 5074000) },
                 { type: 'Feature', properties: { OBJECTID: 7 }, geometry: square(15.975, 45.805) }
             ]
-        }, view);
+        }, view, sourceId);
         expect(sample.total).toBe(5);
         expect(sample.rejected).toBe(2);
         expect(sample.features.length).toBe(2);
         expect(sample.overlapping).toBe(1);
-        expect(sample.features[0].properties).toMatchObject({ parcelId: 'URL:7', id: 'URL:7', provenance: 'user-url', estimated: false });
-        expect(sample.features[1].properties.parcelId).toMatch(/^URL:g[0-9a-f]{8}$/);
+        expect(sample.features[0].properties).toMatchObject({ sourceId, sourceParcelId: '7',
+            sourceIdentityKind: 'native-id', provenance: 'user-url', estimated: false });
+        expect(sample.features[0].properties.id).toBe(sample.features[0].properties.parcelId);
+        expect(sample.features[1].properties).toMatchObject({ sourceId, sourceParcelId: null, sourceIdentityKind: 'geometry-content' });
     });
 
     it('refuses ids that name two different parcels', () => {
@@ -148,14 +154,28 @@ describe('a register link the visitor knows of', () => {
                 { type: 'Feature', properties: { id: 'A' }, geometry: square(15.975, 45.805) },
                 { type: 'Feature', properties: { id: 'A' }, geometry: square(15.976, 45.805) }
             ]
-        }, null)).toThrow(/share the id URL:A/);
-        expect(() => Fallback.validateFeatureCollection({ type: 'Feature' }, null)).toThrow(/FeatureCollection/);
+        }, null, sourceId)).toThrow(/share the id URL:.*:native:A/);
+        expect(() => Fallback.validateFeatureCollection({ type: 'Feature' }, null, sourceId)).toThrow(/FeatureCollection/);
     });
 
-    it('derives the same id for the same anonymous geometry every time', () => {
-        const feature = { type: 'Feature', properties: {}, geometry: square(15.975, 45.805) };
-        expect(Fallback.externalFeatureId(feature)).toBe(Fallback.externalFeatureId(JSON.parse(JSON.stringify(feature))));
-        expect(Fallback.externalFeatureId({ type: 'Feature', id: 'gml.42', properties: {}, geometry: square(1, 1) })).toBe('URL:gml.42');
+    it('keeps source identity through probe, viewport fetch, exact lookup and session restore', async () => {
+        const feature = { type: 'Feature', properties: { id: 'gml.42', sourceId: 'untrusted', sourceParcelId: 'wrong' }, geometry: square(1, 1) };
+        vi.stubGlobal('fetch', vi.fn(async () => ({ ok: true, json: async () => ({ type: 'FeatureCollection', features: [feature] }) })));
+        const view = { west: 0.9, south: 0.9, east: 1.1, north: 1.1 };
+        // Exercise the complete collection and the viewport-query branch.
+        for (const url of [sourceUrl, 'https://data.example.org/collections/parcels/items']) {
+            const source = await Fallback.probeCustomUrl(url, view);
+            const first = (await source.fetchCell({ latLonBbox: '0.9,0.9,1.1,1.1' })).features[0];
+            expect(first.properties).toMatchObject({ sourceId: source.id, sourceParcelId: 'gml.42', sourceIdentityKind: 'native-id' });
+            expect(source.fetchByIds([first.properties.parcelId]).features).toEqual([first]);
+            Fallback.installSource('nowhere', source);
+            const descriptor = globalThis.sessionStorage.getItem('cb_ground_source:nowhere');
+            Fallback.clearSource('nowhere');
+            globalThis.sessionStorage.setItem('cb_ground_source:nowhere', descriptor);
+            const restored = Fallback.restoreFromSession('nowhere');
+            expect(restored.id).toBe(source.id);
+            expect((await restored.fetchCell({ latLonBbox: '0.9,0.9,1.1,1.1' })).features).toEqual([first]);
+        }
     });
 });
 
@@ -168,6 +188,8 @@ describe('the wiring', () => {
         const fallback = scriptIndex('js/parcels/ground-fallback.js');
         const fetch = scriptIndex('js/parcels/fetch.js');
         expect(fallback).toBeGreaterThan(-1);
+        expect(scriptIndex('js/parcels/custom-url-identity.js')).toBeLessThan(fallback);
+        expect(scriptIndex('js/parcels/custom-url-identity.js')).toBeGreaterThan(scriptIndex('js/bets/sha256.js'));
         expect(fetch).toBeGreaterThan(fallback);
         expect(scriptIndex('js/schelling/schelling-layer.js')).toBeGreaterThan(-1);
         expect(html).toContain("'css/ground-fallback.css'");
@@ -209,7 +231,7 @@ describe('the wiring', () => {
         });
         // Every key the dialog asks for exists; a typo here would silently show the English fallback.
         const used = Array.from(fallbackSource.matchAll(/t\('(groundFallback\.[a-zA-Z.]+)'/g), m => m[1]);
-        expect(used.length).toBeGreaterThan(40);
+        expect(used).toContain('groundFallback.options.ocr.title');
         const available = new Set(reference.map(key => `groundFallback.${key}`));
         used.forEach(key => expect(available.has(key), key).toBe(true));
     });

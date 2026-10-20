@@ -1,0 +1,20 @@
+[
+  {
+    "url": "https://upbhunaksha.gov.in/"
+  },
+  {
+    "url": "https://upbhunaksha.gov.in/bhunakshaserver/masterdata/levelvalue"
+  },
+  {
+    "url": "https://upbhunaksha.gov.in/bhunakshaserver/MapInfo/getVVVVExtentGeoref"
+  },
+  {
+    "url": "https://upbhunaksha.gov.in/bhunakshaserver/MapInfo/getPlotByPlotNo"
+  },
+  {
+    "url": "https://upbhunaksha.gov.in/bhunakshaserver/MapInfo/getPlotInfo"
+  },
+  {
+    "url": "https://upbhunaksha.gov.in/bhunakshaserver/MapInfo/getPlotAtXY"
+  }
+]

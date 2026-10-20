@@ -516,7 +516,10 @@
         const [market] = getMarketPda(proposal, programId);
         const info = await connection.getAccountInfo(market);
         if (!info || !info.data) return null;
-        return decodeMarket(info.data);
+        assertAccountOwner(info, programId);
+        const value = decodeMarket(info.data);
+        if (value.proposal !== toPublicKey(proposal, 'proposal').toBase58()) throw new Error('Market account names another proposal.');
+        return value;
     }
 
     async function readExternalMarket(connection, recipeHash, programId) {
@@ -532,8 +535,23 @@
         const [market] = getMarketPda(proposal, programId);
         const [position] = getPositionPda(market, owner, side, programId);
         const info = await connection.getAccountInfo(position);
-        if (!info || !info.data) return null;
-        return decodePosition(info.data);
+        return readPositionAccount(info, market, owner, side, programId);
+    }
+
+    function assertAccountOwner(info, programId) {
+        if (info.owner?.toBase58?.() !== programKey(programId).toBase58()) throw new Error('Market account belongs to another program.');
+    }
+
+    // Shared by single-account and batched portfolio reads; the PDA alone does not validate
+    // the returned account's program, market, signing owner or side.
+    function readPositionAccount(info, market, owner, side, programId) {
+        if (!info?.data) return null;
+        assertAccountOwner(info, programId);
+        const value = decodePosition(info.data);
+        if (value.market !== toPublicKey(market, 'market').toBase58()
+            || value.owner !== toPublicKey(owner, 'owner').toBase58()
+            || value.side !== normalizeSide(side)) throw new Error('Market position does not match the requested market, owner and side.');
+        return value;
     }
 
     // BigInt mirror of proposal_market::payout_amount. Empty winning pool refunds every position,
@@ -601,6 +619,7 @@
         readMarket,
         readExternalMarket,
         readPosition,
+        readPositionAccount,
         payoutAmount,
         impliedProbability,
         formatAtomic

@@ -1,0 +1,14 @@
+[
+  {
+    "url": "https://pdd.eugene-or.gov/maps/propertymap"
+  },
+  {
+    "url": "https://mapping.eugene-or.gov/"
+  },
+  {
+    "url": "https://gis.eugene-or.gov/arcgis/rest/services/PWE/Default/MapServer/4?f=pjson"
+  },
+  {
+    "url": "https://gis.eugene-or.gov/arcgis/rest/services/PWE/Default/MapServer/4/query"
+  }
+]

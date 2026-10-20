@@ -1,0 +1,6 @@
+[
+  {
+    "url": "https://services.arcgis.com/1D6fPUXAJ2SFlTrP/arcgis/rest/services/Buildings/FeatureServer?f=json",
+    "reason": "200 JSON error 499 Token Required; no features queried"
+  }
+]

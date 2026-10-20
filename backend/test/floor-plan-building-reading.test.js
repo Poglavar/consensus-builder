@@ -60,6 +60,15 @@ describe('source-only building reader',()=>{
         expect(packet.text).not.toMatch(/Office Street|Other Street|Unrelated Project/);
         expect(packet.links).toEqual([]);
     });
+    it('excludes office signatures from the durable packet used by the location resolver',()=>{
+        const packet=prepareBuildingEvidence({...input(),facts:{},html:`<main>
+            <p>Adresa nekretnine: Male putine 12. Za sve dodatne informacije kontaktirajte Interklasik nekretnine. Froudeova 7.</p>
+            <p>Stan u Dubravi. Lika nekretnine d.o.o. Palmotićeva 76</p>
+            </main>`});
+        expect(packet.text).toContain('Male putine 12');
+        expect(packet.text).toContain('Stan u Dubravi');
+        expect(packet.text).not.toMatch(/Froudeova|Palmotićeva/);
+    });
     it('keeps durable developer reading packets within the project content boundary',()=>{
         const packet=prepareBuildingEvidence({url:'https://www.bhb.hr/objekti/comfor-h/',sha256:hash,
             facts:{sourceType:'developer-project'},html:`<head><title>Company office, Office Street 99</title></head>

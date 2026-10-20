@@ -1,0 +1,117 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "8200",
+  "name": "Harrisburg, United States",
+  "point": [
+    40.2732,
+    -76.8867
+  ],
+  "bindings": [
+    {
+      "appCityId": "harrisburg",
+      "runtimeConfig": {
+        "id": "harrisburg",
+        "label": "Harrisburg, United States",
+        "currency": {
+          "locale": "en-US",
+          "code": "USD"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            40.2732,
+            -76.8867
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            40.2732,
+            -76.8867
+          ],
+          "fallbackDataset": [
+            -76.8867,
+            40.2732
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.0025,
+          "source": "parcel-source",
+          "sourceId": "us-pa-harrisburg-parcels",
+          "idPrefix": "US-PA-HARRISBURG-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 6,
+          "attribution": "<a href=\"https://services5.arcgis.com/9n3LUAMi3B692MBL/ArcGIS/rest/services/Property_Tax_Parcels_September_2026/FeatureServer/0\">City of Harrisburg GIS / Dauphin County Tax Assessment · publisher &amp; conditions</a> · September 2026 · complete native PID parcel groups · adapted"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "endpoint": "https://services5.arcgis.com/9n3LUAMi3B692MBL/ArcGIS/rest/services/Property_Tax_Parcels_September_2026/FeatureServer/0",
+      "adapter": "arcgis",
+      "name": "Harrisburg Property Tax Parcels September 2026 snapshot",
+      "operator": "City of Harrisburg GIS / Dauphin County Tax Assessment",
+      "scope": "City of Harrisburg property tax parcel snapshot September 18 2026",
+      "idField": "PID",
+      "objectIdField": "OBJECTID",
+      "idType": "string",
+      "outFields": [
+        "OBJECTID",
+        "PID"
+      ],
+      "parcelNumberField": "PID",
+      "metricSrid": 32618,
+      "idPrefix": "US-PA-HARRISBURG-",
+      "attributeFilters": {},
+      "id": "us-pa-harrisburg-parcels",
+      "stateCode": "PA",
+      "cityIds": [
+        "harrisburg"
+      ],
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "catalogueUrl": "https://services5.arcgis.com/9n3LUAMi3B692MBL/ArcGIS/rest/services/Property_Tax_Parcels_September_2026/FeatureServer/0",
+      "countryCode": "US",
+      "maxBboxKm2": 25,
+      "caveats": [
+        "Official municipal snapshot September 18 2026.",
+        "Geometry represents the publisher-defined unique native PID parcel group, retaining every component; subdivision cause is not inferred."
+      ],
+      "maxConcurrentQueries": 2,
+      "nativeGeometryMode": "parts",
+      "partsCoordinatePrecision": 9,
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "attribution": "City of Harrisburg GIS / Dauphin County Tax Assessment. Adapted to WGS84.",
+      "licenceNote": "Source conditions are informational; users choose their source and intended use."
+    }
+  ]
+}

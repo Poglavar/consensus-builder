@@ -1,0 +1,23 @@
+[
+  {
+    "url": "https://pms.moj.gov.af/"
+  },
+  {
+    "url": "https://pulekhumri-m.gov.af/index.php/"
+  },
+  {
+    "url": "https://www.mail.gov.af/dr/%D9%85%D8%AF%DB%8C%D8%B1%DB%8C%D8%AA-%D8%AA%D8%AE%D9%86%DB%8C%DA%A9%DB%8C-%D8%B3%D9%88%DB%8C-%DA%A9%D8%AF%D8%B3%D8%AA%D8%B1"
+  },
+  {
+    "url": "https://www.mudh.gov.af/sites/default/files/2019-10/%D8%B3%D8%AA%D8%B1%D8%A7%D8%AA%DB%8C%DA%98%DB%8C%20%D8%AA%D8%B7%D8%A8%DB%8C%D9%82%DB%8C%20%D8%A7%D8%B1%D8%AA%D9%82%D8%A7%DB%8C%20%D8%A7%D8%AF%D8%A7%D8%B1%DB%80%20%D9%85%D8%B3%D8%AA%D9%82%D9%84%20%D8%A7%D8%B1%D8%A7%D8%B6%DB%8C%20%D8%A7%D9%81%D8%BA%D8%A7%D9%86%D8%B3%D8%AA%D8%A7%D9%86%20%D8%A8%D9%87%20%DB%8C%DA%A9%20%D9%86%D9%87%D8%A7%D8%AF%20%D9%85%D8%B9%D8%A7%D8%B5%D8%B1.pdf"
+  },
+  {
+    "url": "https://pms.moj.gov.af/api/Setup/GetProvinces"
+  },
+  {
+    "url": "https://pms.moj.gov.af/api/UserProfile/getProfile"
+  },
+  {
+    "url": "https://pms.moj.gov.af/api/property"
+  }
+]

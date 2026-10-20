@@ -177,15 +177,15 @@ describe('shared reparcellization validation', () => {
         expect(check(proposal).fundingReady).toBe(true);
     });
 
-    it('treats explicit ownerless open-ground null cash as zero, but rejects null cash for a named owner', () => {
+    it('treats explicit unrepresented open-ground null cash as zero, but rejects null cash for a named owner', () => {
         const geometry = rect(16, 46, 16.001, 46.001);
         const openGround = base([{
             geometry,
             ownerKey: 'open-ground',
-            noOwner: true,
+            unrepresentedGround: true,
             owners: [{ ownerKey: 'open-ground', share: 1 }]
         }]);
-        openGround.reparcellization.ownerShares = [{ ownerKey: 'open-ground', noOwner: true, cashOffer: null }];
+        openGround.reparcellization.ownerShares = [{ ownerKey: 'open-ground', unrepresentedGround: true, cashOffer: null }];
 
         expect(check(openGround)).toMatchObject({ valid: true, totalCashCents: 0, fundingReady: true });
 

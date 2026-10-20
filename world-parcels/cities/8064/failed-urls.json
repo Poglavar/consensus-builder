@@ -1,0 +1,30 @@
+[
+  {
+    "url": "https://bhunaksha.rajasthan.gov.in/bhunaksha/08/index.html",
+    "reason": "404"
+  },
+  {
+    "url": "https://bhunaksha.rajasthan.gov.in/bhunaksha/08/ScalarDatahandler?OP=5&state=08",
+    "reason": "404"
+  },
+  {
+    "url": "https://rajdharaa.rajasthan.gov.in/citizenudh/",
+    "reason": "curl: (28) Failed to connect to rajdharaa.rajasthan.gov.in port 443 after 8006 ms: Timeout was reached"
+  },
+  {
+    "url": "https://gisprod.rajasthan.gov.in/geocode/rest/services/JDA/JDA_Plots/MapServer/0?f=pjson",
+    "reason": "curl: (28) Failed to connect to gisprod.rajasthan.gov.in port 443 after 8006 ms: Timeout was reached"
+  },
+  {
+    "url": "https://gisprod.rajasthan.gov.in/geocode/rest/services/JDA/Settlement_JDA/MapServer/10?f=pjson",
+    "reason": "curl: (28) Failed to connect to gisprod.rajasthan.gov.in port 443 after 8006 ms: Timeout was reached"
+  },
+  {
+    "url": "https://gisprod.rajasthan.gov.in/geocode/rest/services/JDA/Settlement_JDA/MapServer/0?f=pjson",
+    "reason": "curl: (28) Failed to connect to gisprod.rajasthan.gov.in port 443 after 8006 ms: Timeout was reached"
+  },
+  {
+    "url": "https://bhunaksha.rajasthan.gov.in/plotreport.jsp?giscode=0929513180524819632001&plotno=196%2F192&state=08",
+    "reason": "portal error response"
+  }
+]

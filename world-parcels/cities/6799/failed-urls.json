@@ -1,0 +1,10 @@
+[
+  {
+    "url": "https://pagoenlinea.coatzacoalcos.gob.mx/assets/js/main.js",
+    "reason": "404"
+  },
+  {
+    "url": "https://gisviewer.semarnat.gob.mx/ArcGIS/rest/services/APLICACIONES/ORDENAMIENTOS_UGAS/MapServer/36?f=pjson",
+    "reason": "timeout after 25s"
+  }
+]

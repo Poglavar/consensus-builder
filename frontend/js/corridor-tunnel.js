@@ -6,6 +6,19 @@
     // Resolver alias for the canonical applied accessor: the browser global wins; node tests require it.
     const appliedOf = (typeof isApplied === 'function') ? isApplied : require('./proposals/status.js').isApplied;
 
+    // Demolition and cut records are written into the road proposal at draw/apply time, so a clip
+    // that fails here refuses (a typed ClipFailure, parcel-arrangement.js) instead of recording the
+    // building as untouched, demolished whole or cut by the new part only.
+    function clipApi() {
+        return global.__parcelArrangement
+            || (typeof require === 'function' ? require('./proposals/parcel-arrangement.js') : null);
+    }
+    function tunnelClipFailure(operation, error, context, operands) {
+        const clips = clipApi();
+        if (!clips || typeof clips.clipFailure !== 'function') return error;
+        return clips.clipFailure(operation, error, context, operands);
+    }
+
     function pointOf(value) {
         if (!value) return null;
         const lat = Number(value.lat !== undefined ? value.lat : value[1]);
@@ -201,7 +214,10 @@
                 if (!target) return;
             }
             let intersection = null;
-            try { intersection = api.intersect(target, feature); } catch (_) { return; }
+            try { intersection = api.intersect(target, feature); } catch (error) {
+                // "Not crossed" would build the road through this building without a prompt or a record.
+                throw tunnelClipFailure('intersect', error, { site: 'corridor-tunnel.findBuildingTunnelIntersections', parcelId: buildingIdentifier(feature, `building:${index}`) }, [target, feature]);
+            }
             if (!intersection) return;
             let area = minimumArea;
             try {
@@ -725,15 +741,16 @@
         if (!api || !footprintFeature?.geometry || !regionFeature?.geometry) return null;
         let clip = null;
         try { clip = api.intersect(footprintFeature, regionFeature); } catch (error) {
-            console.error('[corridor-tunnel] demolition clip failed', error);
-            return null;
+            // null means "building untouched": refuse instead.
+            throw tunnelClipFailure('intersect', error, { site: 'corridor-tunnel.splitDemolitionFootprint' }, [footprintFeature, regionFeature]);
         }
         if (!clip) return null;
         const clipArea = Number(api.area(clip)) || 0;
         if (clipArea < 2) return null; // barely touched: nothing to demolish
         let remainder = null;
         try { remainder = api.difference(footprintFeature, regionFeature); } catch (error) {
-            console.error('[corridor-tunnel] demolition remainder failed — demolishing whole', error);
+            // Was: demolish the whole building. Refuse instead.
+            throw tunnelClipFailure('difference', error, { site: 'corridor-tunnel.splitDemolitionFootprint' }, [footprintFeature, regionFeature]);
         }
         const footprintArea = Number(api.area(footprintFeature)) || 0;
         const remainderArea = remainder ? (Number(api.area(remainder)) || 0) : 0;
@@ -761,8 +778,8 @@
             : footprintFeature;
         let part = null;
         try { part = api.intersect(footprint, regionFeature); } catch (error) {
-            console.error('[corridor-tunnel] cut intersection failed', id, error);
-            return records;
+            // Was: leave the building uncut. Refuse instead.
+            throw tunnelClipFailure('intersect', error, { site: 'corridor-tunnel.upsertCutRecord', parcelId: id }, [footprint, regionFeature]);
         }
         if (!part || (Number(api.area(part)) || 0) < 2) return records;
 
@@ -771,12 +788,14 @@
             try {
                 accumulated = api.union(part, { type: 'Feature', properties: {}, geometry: existing.demolishedPart }) || part;
             } catch (error) {
-                console.error('[corridor-tunnel] cut accumulation failed — using the new part only', id, error);
+                // Was: keep only the new part, which resurrects the earlier cut. Refuse instead.
+                throw tunnelClipFailure('union', error, { site: 'corridor-tunnel.upsertCutRecord', parcelId: id }, [part, existing.demolishedPart]);
             }
         }
         let remainder = null;
         try { remainder = api.difference(footprint, accumulated); } catch (error) {
-            console.error('[corridor-tunnel] cut remainder failed — demolishing whole', id, error);
+            // Was: demolish the whole building. Refuse instead.
+            throw tunnelClipFailure('difference', error, { site: 'corridor-tunnel.upsertCutRecord', parcelId: id }, [footprint, accumulated]);
         }
         const footprintArea = Number(api.area(footprint)) || 0;
         const remainderArea = remainder ? (Number(api.area(remainder)) || 0) : 0;
@@ -820,10 +839,19 @@
             }
             const geometry = buildingRecords[0]?.geometry;
             if (!geometry) return;
-            upsertCutRecord(consolidated, {
-                id,
-                feature: { type: 'Feature', properties: {}, geometry }
-            }, regionFeature, api);
+            try {
+                upsertCutRecord(consolidated, {
+                    id,
+                    feature: { type: 'Feature', properties: {}, geometry }
+                }, regionFeature, api);
+            } catch (error) {
+                // Recombining two stored cuts is presentation of records already written: this
+                // building shows its first stored cut, and the failure is reported and counted.
+                const clips = clipApi();
+                if (!clips || !(error instanceof clips.ClipFailure)) throw error;
+                clips.reportClipFailure(error.operation, error, { site: error.site }, []);
+                consolidated.push(JSON.parse(JSON.stringify(buildingRecords[0])));
+            }
         });
         return consolidated;
     }

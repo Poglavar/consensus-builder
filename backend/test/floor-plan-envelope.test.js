@@ -57,7 +57,7 @@ describe('storey stack and envelope', () => {
 
     it('falls back to the surveyed height for an existing building with no stated storeys', () => {
         const envelope = buildEnvelope({ footprint: { type: 'Polygon', coordinates: [] }, footprintSource: 'survey', surveyHeightM: 13.5 });
-        expect(envelope).toMatchObject({ storeySource: 'survey-height', storeys: expect.arrayContaining([expect.objectContaining({ level: 3 })]) });
+        expect(envelope).toMatchObject({ role: 'reconstructed-building-envelope', planningCompliance: 'not-evaluated', storeySource: 'survey-height', storeys: expect.arrayContaining([expect.objectContaining({ level: 3 })]) });
         expect(buildEnvelope({ footprint: null, footprintSource: null }).storeys).toEqual([]);
     });
 });

@@ -82,9 +82,12 @@ class ParallelTests(unittest.TestCase):
         self.inputs.start()
         self.browser = patch.object(parallel, "_rebuild_and_validate_browser_adapters")
         self.browser.start()
+        self.discard = patch.object(parallel, "discard_workspace")
+        self.discard_mock = self.discard.start()
         self.addCleanup(self.support.stop)
         self.addCleanup(self.inputs.stop)
         self.addCleanup(self.browser.stop)
+        self.addCleanup(self.discard.stop)
         self.addCleanup(self.temp.cleanup)
 
     def write(self, root, rel, content):
@@ -254,6 +257,57 @@ class ParallelTests(unittest.TestCase):
             parallel._collect(self.runner, self.city, {}, {}, self.digest, isolation, document)
         self.assertEqual(events, ["enter", "exit"])
         self.assertEqual(self.runner._city_entry(self.city)["qualification"]["status"], "integrated")
+
+    def test_collect_discards_only_after_import_and_admission_and_drops_isolation(self):
+        _ws, isolation, document = self.isolated()
+        events = []
+        original_import = parallel._import_result
+        original_admit = parallel._admit
+
+        def checked_import(*args):
+            result = original_import(*args)
+            events.append("import")
+            return result
+
+        def checked_admit(*args):
+            original_admit(*args)
+            events.append("admit")
+
+        def checked_discard(workspace):
+            events.append("discard")
+            self.assertEqual(workspace["runId"], isolation["runId"])
+
+        with patch.object(parallel, "_import_result", side_effect=checked_import), \
+                patch.object(parallel, "_admit", side_effect=checked_admit), \
+                patch.object(parallel, "admit_candidate",
+                             return_value={"status": "integrated", "summary": "ok"}), \
+                patch.object(parallel, "discard_workspace", side_effect=checked_discard):
+            parallel._collect(self.runner, self.city, {}, {}, self.digest, isolation, document)
+        self.assertEqual(events, ["import", "admit", "discard"])
+        qualification = self.runner._city_entry(self.city)["qualification"]
+        self.assertEqual(qualification["status"], "integrated")
+        self.assertNotIn("isolation", qualification)
+
+    def test_discard_failure_is_saved_as_failed_and_keeps_recovery_reference(self):
+        _ws, isolation, document = self.isolated()
+        with patch.object(parallel, "admit_candidate",
+                          return_value={"status": "integrated", "summary": "admitted"}), \
+                patch.object(parallel, "discard_workspace",
+                             side_effect=RuntimeError("unexpected ignored credential file")):
+            parallel._collect(self.runner, self.city, {}, {}, self.digest, isolation, document)
+        qualification = self.runner._city_entry(self.city)["qualification"]
+        self.assertEqual(qualification["status"], "failed")
+        self.assertIn("unexpected ignored credential file", qualification["summary"])
+        self.assertEqual(qualification["isolation"]["runId"], isolation["runId"])
+
+    def test_stop_requested_keeps_finished_worker_for_recovery(self):
+        _ws, isolation, document = self.isolated()
+        self.runner.stop_requested = True
+        parallel._collect(self.runner, self.city, {}, {}, self.digest, isolation, document)
+        self.discard_mock.assert_not_called()
+        qualification = self.runner._city_entry(self.city)["qualification"]
+        self.assertEqual(qualification["status"], "adapter-ready")
+        self.assertEqual(qualification["isolation"]["runId"], isolation["runId"])
 
     def test_post_admission_failure_uses_shared_rollback_without_permanent_block(self):
         _ws, isolation, document = self.isolated()

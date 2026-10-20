@@ -47,6 +47,12 @@ function isInCity(parcelId, cityId) {
     const upper = id.toUpperCase();
     const city = (cityId || '').toString().toLowerCase();
 
+    // Local estimates carry their city hash. Proposal replay and city-scoped tools must recognize
+    // that source space even when the city has no official parcel register.
+    if (upper.startsWith('EST:')) {
+        return typeof EstimatedParcelSource !== 'undefined' && EstimatedParcelSource.belongsToCity(id, city);
+    }
+
     if (city === 'buenos_aires') {
         // Buenos Aires ids predate the prefixed form and still occur bare.
         const baPattern = /^\d{3}-\d{3}-[0-9A-Z]+$/;
@@ -123,27 +129,14 @@ function getProposalLensEntries(proposal, options = {}) {
 }
 
 function getOwnerSlotsForParcel(parcelId) {
-    const tProposalUI = getProposalI18nHelper();
     if (typeof getParcelOwnerSlots === 'function') {
         try {
-            const slots = getParcelOwnerSlots(parcelId);
-            if (Array.isArray(slots) && slots.length > 0) {
-                return slots;
-            }
+            return window.ProposalOwnerAcceptance.currentOwnerSlots(getParcelOwnerSlots(parcelId));
         } catch (error) {
             console.warn('getOwnerSlotsForParcel: failed to read slots from parcels module', error);
         }
     }
-    const normalizedParcelId = parcelId ? parcelId.toString() : 'parcel';
-    return [{
-        key: `parcel:${normalizedParcelId}:owner`,
-        displayName: tProposalUI('panel.parcel.owner.single', 'Single owner'),
-        shareText: '1',
-        shareDetail: '',
-        type: 'unknown',
-        agentId: null,
-        placeholder: true
-    }];
+    return [];
 }
 
 function getProposalI18nHelper() {
@@ -209,7 +202,11 @@ function stampCurrentAuthor(proposal) {
     if (!policy) throw new Error('guest-policy.js is not loaded');
     if (!proposal || typeof proposal !== 'object') return proposal;
     const agent = (typeof getCurrentUserAgent === 'function') ? getCurrentUserAgent() : null;
-    const immutable = typeof isProposalImmutable === 'function' ? isProposalImmutable(proposal) : !!proposal.serverProposalId;
+    const origin = (typeof window !== 'undefined' && window.ProposalOrigin)
+        || (typeof ProposalOrigin !== 'undefined' ? ProposalOrigin : null);
+    const immutable = typeof isProposalImmutable === 'function'
+        ? isProposalImmutable(proposal)
+        : !!origin && !!origin.rowId(proposal.serverProposalId) && !!origin.apiBase(proposal.publicationApiBase);
     const verdict = policy.outgoingAuthor(proposal, agent, { immutable });
     if (!verdict.restamped) return proposal;
     console.info(`[${new Date().toISOString()}] [GuestPolicy] record ${proposal.proposalId || '?'} leaves the device as "${verdict.author}" (was "${proposal.author || ''}")`);

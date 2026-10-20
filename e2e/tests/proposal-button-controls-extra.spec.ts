@@ -197,14 +197,17 @@ test.describe('proposal button controls: modal and alternate states @features', 
     await create.locator('#createProposalSubmitButton').click();
     await expectProposalMintRpc(page);
     const success = page.locator('#proposal-mint-success-modal');
-    await expect(success).toContainText('has been minted!', { timeout: 30000 });
+    await expect(success).toContainText('Proposal minted', { timeout: 30000 });
+    await expect(success).toContainText('Token/account: 77');
+    await expect(success).toContainText(`Contract/program: ${PROPOSAL_EVM_CONTRACT}`);
+    await expect(success).toContainText(/Chain: evm \/ (84532|0x14a34)/);
 
     await page.context().route('https://sepolia.basescan.org/**', route => route.fulfill({
       contentType: 'text/html', body: '<title>Explorer boundary</title>'
     }));
     const popupPromise = page.waitForEvent('popup');
     await Promise.all([
-      success.getByRole('button', { name: 'View on Etherscan', exact: true }).click(),
+      success.getByRole('button', { name: 'View transaction', exact: true }).click(),
       popupPromise.then(async popup => {
         await expect.poll(() => popup.url()).toContain(`sepolia.basescan.org/tx/${PROPOSAL_MINT_TX}`);
         await popup.close();
@@ -213,6 +216,7 @@ test.describe('proposal button controls: modal and alternate states @features', 
 
     await success.getByRole('button', { name: 'OK', exact: true }).click();
     await expect(success).toBeHidden();
+    await expect(page.locator('#proposal-details-panel')).toContainText('Mint confirmation test');
     await expect.poll(() => page.evaluate(() => (window as any).proposalStorage.getAllProposals().some((p: any) => p.title === 'Mint confirmation test' && p.nft?.tokenId === '77'))).toBe(true);
   });
 
@@ -292,7 +296,7 @@ test.describe('proposal button controls: modal and alternate states @features', 
     await expect(share).toContainText('Mint the prerequisite parcel NFTs, then mint the proposal.');
   });
 
-  test('whole-plan selection, row upload, copy and named-plan validation/save all change the visible state', async ({ mockApi: page }) => {
+  test('applied-proposal selection, row upload, copy and named-plan creation all change the visible state', async ({ mockApi: page }) => {
     const server = createSharedProposalServer();
     await attachSharedProposalServer(page, server);
     let submittedPlanBody: Record<string, unknown> | null = null;
@@ -313,10 +317,13 @@ test.describe('proposal button controls: modal and alternate states @features', 
     await showProposal(page, id);
     await page.locator('#proposal-details-footer .btn-share-proposal').click();
     await chooseTermsForShare(page);
-    await page.locator('.share-modal-plan-btn').click();
+    await page.getByRole('button', { name: 'Share applied proposals', exact: true }).click();
 
     const plan = page.locator('.share-plan-panel');
     await expect(plan).toBeVisible({ timeout: 30000 });
+    await expect(plan.getByRole('heading', { name: 'Share applied proposals', exact: true })).toBeVisible();
+    await expect(plan).toContainText('A named plan keeps that selection fixed');
+    await test.info().attach('applied-proposal-sharing', { body: await plan.screenshot(), contentType: 'image/png' });
     const highlightAll = plan.getByRole('button', { name: 'All', exact: true });
     await plan.getByRole('button', { name: 'Not uploaded yet', exact: true }).click();
     await highlightAll.click();
@@ -330,17 +337,29 @@ test.describe('proposal button controls: modal and alternate states @features', 
     await expect(row).toContainText('Uploaded', { timeout: 30000 });
     const selectedUploadedRowIds = [...server.records.keys()].map(String);
     expect(selectedUploadedRowIds.length).toBeGreaterThan(0);
+    const publishedLocal = await page.evaluate(key => {
+      const store = (window as any).proposalStorage;
+      const record = store.getProposal(key);
+      return { proposalId: record.proposalId, id: record.id, serverProposalId: record.serverProposalId,
+        indexedKeys: [...store.proposals.entries()].filter(([, value]) => value === record).map(([key]) => key) };
+    }, id);
+    expect(publishedLocal.proposalId).toBe(id);
+    expect(publishedLocal.id).toBe(publishedLocal.serverProposalId);
+    expect(selectedUploadedRowIds).toContain(publishedLocal.id);
+    expect(publishedLocal.indexedKeys).toEqual([id]);
     const link = plan.locator('.share-modal-link');
     await expect(link).toHaveValue(/\/proposals\/\d+/);
     const url = await link.inputValue();
     await plan.getByRole('button', { name: 'Copy URL', exact: true }).click();
     await expect.poll(() => page.evaluate(() => navigator.clipboard.readText())).toBe(url);
+    expect(submittedPlanBody).toBeNull(); // Sharing a selection does not create a named plan.
 
     const nameInput = plan.locator('input').last();
     // The blank-name action validates without a network request; a valid name then exercises the save path.
-    const saveName = plan.getByRole('button', { name: 'Save name', exact: true });
+    const saveName = plan.getByRole('button', { name: 'Create named plan', exact: true });
     await saveName.click();
     await expect(plan).toContainText('Use at least 3 characters');
+    expect(submittedPlanBody).toBeNull();
     await nameInput.fill('greenway');
     await saveName.click();
     await expect(plan).toContainText('greenway.proposals.urbangametheory.eth');

@@ -1,0 +1,117 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "1",
+  "name": "Honolulu, United States",
+  "point": [
+    21.3099,
+    -157.8581
+  ],
+  "bindings": [
+    {
+      "appCityId": "honolulu",
+      "runtimeConfig": {
+        "id": "honolulu",
+        "label": "Honolulu, United States",
+        "currency": {
+          "locale": "en-US",
+          "code": "USD"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            21.3099,
+            -157.8581
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            21.3099,
+            -157.8581
+          ],
+          "fallbackDataset": [
+            -157.8581,
+            21.3099
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.0025,
+          "source": "parcel-source",
+          "sourceId": "us-hi-honolulu-parcels",
+          "idPrefix": "US-HI-HONOLULU-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "<a href=\"https://geodata.hawaii.gov/arcgis/rest/services/ParcelsZoning/MapServer/25\">Hawaii Statewide GIS Program · publisher &amp; conditions</a> · adapted"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "us-hi-honolulu-parcels",
+      "name": "Hawaii Statewide GIS — Honolulu (May 2026)",
+      "adapter": "arcgis",
+      "endpoint": "https://geodata.hawaii.gov/arcgis/rest/services/ParcelsZoning/MapServer/25",
+      "idField": "tmk",
+      "objectIdField": "objectid",
+      "idType": "integer",
+      "idPattern": "^(0|[1-9][0-9]*)$",
+      "idPrefix": "US-HI-HONOLULU-",
+      "outFields": [
+        "objectid",
+        "tmk",
+        "county"
+      ],
+      "parcelNumberField": "tmk",
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "metricSrid": 32604,
+      "countryCode": "US",
+      "stateCode": "HI",
+      "cityIds": [
+        "honolulu"
+      ],
+      "operator": "Hawaii Statewide GIS Program",
+      "scope": "Statewide TMK layer scoped by verified county=Honolulu; provider describes boundaries as visual reference, not survey-level accuracy.",
+      "attribution": "Hawaii Statewide GIS Program. Adapted to WGS84.",
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "attributeFilters": {
+        "county": "Honolulu"
+      },
+      "catalogueUrl": "https://geodata.hawaii.gov/arcgis/rest/services/ParcelsZoning/MapServer/25",
+      "caveats": [
+        "May 2026 county compilation; Honolulu contributor dated April 30, 2026. Boundaries are a visual reference, not a certified survey."
+      ],
+      "licenceNote": "Source conditions are informational; users choose their source and intended use."
+    }
+  ]
+}

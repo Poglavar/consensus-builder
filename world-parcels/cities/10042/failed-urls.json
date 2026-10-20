@@ -1,0 +1,16 @@
+[
+  {
+    "url": "https://hunan.tianditu.gov.cn/",
+    "reason": "timeout after 20 seconds"
+  },
+  {
+    "url": "https://portal.hunanbdc.cn/home",
+    "reason": "timeout after 8 seconds"
+  },
+  {
+    "url": "https://www.li-xian.gov.cn/lxxzf/jgzn/zfbm/lxzrzyj/content_84835"
+  },
+  {
+    "url": "https://www.li-xian.gov.cn/"
+  }
+]

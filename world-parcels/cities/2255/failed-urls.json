@@ -1,0 +1,26 @@
+[
+  {
+    "url": "https://map.land.gov.ua/"
+  },
+  {
+    "url": "https://m1.land.gov.ua/geowebcache/service/wms?SERVICE=WMS&REQUEST=GetCapabilities"
+  },
+  {
+    "url": "https://map.land.gov.ua/geoserver/kadastr/ows?service=WFS&version=1.0.0&request=GetCapabilities"
+  },
+  {
+    "url": "https://nsdi.gov.ua/docs/api/v2/gis.html"
+  },
+  {
+    "url": "https://nsdi.gov.ua/api/v2/wfs/default/parcels?REQUEST=GetCapabilities"
+  },
+  {
+    "url": "https://nsdi.gov.ua/api/v2/wfs/default/parcels?REQUEST=GetFeature&bbox=30.109,49.791,30.129,49.811&count=3&version=2.0.0&srsName=EPSG:4326"
+  },
+  {
+    "url": "https://nsdi.gov.ua/api/v2/wms/default?REQUEST=GetCapabilities"
+  },
+  {
+    "url": "https://map.land.gov.ua/geowebcache/service/wms?SERVICE=WMS&REQUEST=GetCapabilities (TLS-exception probe)"
+  }
+]

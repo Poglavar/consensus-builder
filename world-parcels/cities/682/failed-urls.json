@@ -1,0 +1,20 @@
+[
+  {
+    "url": "https://www.mindcaf.gov.cm/en/docs/"
+  },
+  {
+    "url": "https://mindcaf.gov.cm/fr/docs/"
+  },
+  {
+    "url": "https://www.minhdu.gov.cm/sigwebminhdu/public/index.php/home"
+  },
+  {
+    "url": "https://services1.arcgis.com/31jFBv7Ds3VnVoYf/ArcGIS/rest/services/Cameroon_Admin_Layers/FeatureServer/1"
+  },
+  {
+    "url": "https://services1.arcgis.com/31jFBv7Ds3VnVoYf/ArcGIS/rest/services/Cameroon_Admin_Layers/FeatureServer/1/query?where=adm3_name%3D%27Kumba%27&outFields=OBJECTID%2Cadm3_name%2Cadm2_name%2Cadm1_name&returnGeometry=true&outSR=4326&f=pjson"
+  },
+  {
+    "url": "https://mindcaf.gov.cm/fr/publications/359/"
+  }
+]

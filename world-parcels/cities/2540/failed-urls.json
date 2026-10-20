@@ -1,0 +1,17 @@
+[
+  {
+    "url": "https://geoportail.asal.dz/portal/sharing/rest/portals/info?f=json"
+  },
+  {
+    "url": "https://geoportail.asal.dz/portal/sharing/rest/search?f=json&num=100&q=owner%3A*%20AND%20%28cadastre%20OR%20cadastral%20OR%20%D9%85%D8%B3%D8%AD%29"
+  },
+  {
+    "url": "https://bndg.asga.dz/bndg/CARTO200K_P/Default_BNDG.aspx"
+  },
+  {
+    "url": "https://a.dgdn.dz/DOCUMENTS/loi_91-11.pdf"
+  },
+  {
+    "url": "https://mapcarta.com/N4663404298"
+  }
+]

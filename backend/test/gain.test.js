@@ -74,6 +74,10 @@ describe('computeGain', () => {
         const g = computeGain({ builtFloorArea: 100, proposedFloorArea: 300, priceEurPerM2: 4000 });
         expect(g.gain).toBe((300 - 100) * 4000);
         expect(g.hasProposed).toBe(true);
+        expect(g.model).toEqual({
+            kind: 'modeled-floor-area-value', quantity: 'gross-floor-area', areaUnit: 'm²',
+            currency: 'EUR', amountUnit: 'EUR', rateEurPerM2GrossFloorArea: 4000
+        });
     });
 
     it('reports current value (not a negative delta) when there is no proposed massing', () => {

@@ -1,16 +1,52 @@
 // One derivation of a proposal's displayed state (frontend/js/proposals/display-state.js): the ladder
 // rung, Minted from a mint record only, and no "Applied" or map action for a cancelled proposal. A
 // cancelled proposal (781 on the local stack) used to read Published + Applied with an Unapply button.
-import { describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
 const displayState = require('../../frontend/js/proposals/display-state.js');
+const { getSerialProposalId } = require('../../frontend/js/proposals/sharing.js');
+const lifecycleEvidence = require('../../frontend/js/proposals/lifecycle-evidence.js');
+const API = 'https://api.example';
 
-const published = (extra = {}) => ({ proposalId: 'c2-uh980k1g32gls', serverProposalId: '781', ...extra });
-const stateOf = (proposal, inputs = {}) => displayState.of(proposal, { lifecycleKey: undefined, serial: proposal.serverProposalId || null, ...inputs });
+const published = (extra = {}) => ({ proposalId: 'c2-uh980k1g32gls', serverProposalId: '781', publicationApiBase: API, ...extra });
+const stateOf = (proposal, inputs = {}) => displayState.of(proposal, { lifecycleKey: undefined, serial: getSerialProposalId(proposal), ...inputs });
+const observedExecuted = () => lifecycleEvidence.projectLifecycleEvidence({
+    lifecycleStatus: 'Executed',
+    chainRead: {
+        status: 'Executed', observedAt: '2026-10-19T12:00:00.000Z',
+        chainRef: { chainType: 'solana', chainId: 'solana-devnet', contract: 'program', tokenId: '7' }
+    }
+});
+
+beforeEach(() => vi.stubGlobal('getBackendBase', () => API));
+afterEach(() => vi.unstubAllGlobals());
 
 describe('proposal display state', () => {
+    it('requires the production row-reference predicate before displaying Published', () => {
+        for (const record of [{ proposalId: '42' }, { id: 42 }, { proposalId: 'p-local', serverProposalId: 'authored' }]) {
+            expect(getSerialProposalId(record)).toBeNull();
+            expect(displayState.of({ ...record, lifecycleStatus: 'Active' }, { serial: getSerialProposalId(record) }))
+                .toMatchObject({ rung: 'draft', published: false });
+        }
+        for (const serverProposalId of [42, '42']) {
+            const record = { proposalId: 'p-local', serverProposalId, publicationApiBase: API, lifecycleStatus: 'Active' };
+            expect(getSerialProposalId(record)).toBe('42');
+            expect(displayState.of(record, { serial: getSerialProposalId(record) })).toMatchObject({ rung: 'published', published: true });
+        }
+        for (const record of [
+            { proposalId: 'p-local', serverProposalId: '42' },
+            { proposalId: 'p-local', serverProposalId: '42', publicationApiBase: 'https://elsewhere.example' }
+        ]) {
+            expect(getSerialProposalId(record)).toBeNull();
+            expect(displayState.of(record, { serial: getSerialProposalId(record) })).toMatchObject({ rung: 'draft', published: false });
+        }
+    });
+    it('shows unavailable lifecycle without inferring it from publication or map application', () => {
+        expect(stateOf(published({ applied: true }), { applied: true }))
+            .toMatchObject({ lifecycle: 'Unknown', rung: 'published', modifier: 'unknown', applied: true, mapAction: 'unapply' });
+    });
     it('shows a cancelled proposal applied in this browser as neither Applied nor unappliable', () => {
         const state = stateOf(published({ lifecycleStatus: 'Cancelled', applied: true }), { applied: true, lifecycleKey: 'cancelled' });
         expect(state).toMatchObject({
@@ -36,11 +72,11 @@ describe('proposal display state', () => {
         expect(stateOf(published({ lifecycleStatus: 'Expired' }), { applied: true, lifecycleKey: 'expired' }))
             .toMatchObject({ applied: true, mapAction: 'unapply', modifier: 'expired' });
         expect(stateOf(published({ lifecycleStatus: 'Executed' }), { applied: true, lifecycleKey: 'executed' }))
-            .toMatchObject({ rung: 'executed', applied: true, modifier: null });
+            .toMatchObject({ rung: 'execution-unverified', applied: true, modifier: null });
     });
 
     it('calls a numeric server serial Published, never Minted', () => {
-        const serialOnly = { proposalId: '780', serverProposalId: '780', lifecycleStatus: 'Active' };
+        const serialOnly = { proposalId: '780', serverProposalId: '780', publicationApiBase: API, lifecycleStatus: 'Active' };
         expect(displayState.hasMintRecord(serialOnly)).toBe(false);
         expect(stateOf(serialOnly, { applied: false, lifecycleKey: 'active' })).toMatchObject({ rung: 'published', minted: false });
     });
@@ -62,6 +98,34 @@ describe('proposal display state', () => {
         const label = displayState.rungLabel('minted', (key, fallback) => { seen.push(key); return `${fallback}!`; });
         expect(label).toBe('Minted!');
         expect(seen).toEqual(['panel.proposal.lifecycle.minted']);
+        expect(displayState.rungLabel('execution-unverified', (key, fallback) => `${key}: ${fallback}`))
+            .toBe('panel.proposal.lifecycle.executionUnverified: Execution reported; verification unavailable');
         expect(displayState.rungLabel('nonsense')).toBe('Draft');
+    });
+
+    it('qualifies recorded execution without upgrading a mint reference to proof of realization', () => {
+        const claimed = { lifecycleStatus: 'Executed' };
+        const invalidEvidence = published({
+            lifecycleStatus: 'Executed',
+            lifecycleEvidence: { protocol: 'proposal-lifecycle-evidence/1', state: 'observed', status: 'Cancelled', observedAt: '2026-10-19T12:00:00.000Z' }
+        });
+        for (const proposal of [claimed, invalidEvidence, published({ lifecycleStatus: 'Executed', isMinted: true })]) {
+            const { rung } = stateOf(proposal);
+            expect(rung).toBe('execution-unverified');
+            expect(displayState.rungLabel(rung)).toBe('Execution reported; verification unavailable');
+            expect(displayState.rungHint(rung)).toContain('does not verify payment, legal registration or physical construction');
+        }
+        const observed = observedExecuted();
+        expect(observed.lifecycleEvidence.state).toBe('observed');
+        expect(stateOf(published({ ...observed })).rung).toBe('executed');
+        expect(stateOf(published({ ...observed }), { lifecycleKey: 'execution-unverified' }).rung).toBe('executed');
+        expect(displayState.rungHint('published')).toBe('');
+        expect(displayState.rungHint('executed', (key, fallback) => `${key}: ${fallback}`))
+            .toContain('panel.proposal.lifecycle.executedHint: This record reports execution.');
+    });
+
+    it('displays awaiting funding as an open modifier without asserting owner acceptance', () => {
+        expect(stateOf(published({ lifecycleStatus: 'Active', funded: false }), { lifecycleKey: 'awaiting-funding' }))
+            .toMatchObject({ rung: 'published', modifier: 'awaiting-funding', modifierTone: 'cb-badge--published' });
     });
 });

@@ -1,0 +1,15 @@
+[
+  {
+    "url": "https://geojb.gov.my/gisserver/rest/services/GEOJB/LotJUPEM/FeatureServer/0/query",
+    "reason": "499"
+  },
+  {
+    "url": "https://geojb.gov.my/"
+  },
+  {
+    "url": "https://geoportal.johor.gov.my/petaawam/pkpj/jbahru"
+  },
+  {
+    "url": "https://geojb.gov.my/gisportal/sharing/rest/content/items/21cceffcc9e54cb8998f064c7dcf5efa?f=json"
+  }
+]

@@ -1,0 +1,19 @@
+[
+  {
+    "url": "https://upbhunaksha.gov.in/bhunakshaserver/Levels/stateCode",
+    "reason": "timeout"
+  },
+  {
+    "url": "https://upbhunaksha.gov.in/bhunakshaserver/masterdata/levelvalue",
+    "reason": "timeout_or_no_response"
+  },
+  {
+    "url": "https://amroha.nic.in/service/land-records/"
+  },
+  {
+    "url": "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=137"
+  },
+  {
+    "url": "https://upbhunaksha.gov.in/"
+  }
+]

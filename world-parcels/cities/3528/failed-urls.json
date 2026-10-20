@@ -1,0 +1,21 @@
+[
+  {
+    "url": "https://portal.dol.go.th/api/nsldata/search-by-point?lat=7.00808972990678&lng=100.473261275137",
+    "reason": "404"
+  },
+  {
+    "url": "https://portal.dol.go.th/landspublic/"
+  },
+  {
+    "url": "https://portal.dol.go.th/geoserver/wfs?service=WFS&version=2.0.0&request=GetCapabilities"
+  },
+  {
+    "url": "https://www.dol.go.th/songkhla/contact/"
+  },
+  {
+    "url": "https://www.dol.go.th/songkhla/home/"
+  },
+  {
+    "url": "https://www.dol.go.th/media/716929789247754240/migration/2025/10/uzcU4HVeNxt86n3ykWoKd09s.PDF"
+  }
+]

@@ -68,35 +68,40 @@ describe('reparcellization joint ownership shaping', () => {
             .toThrow(/unassigned placeholder/);
     });
 
-    it('preserves ownerless open-ground plots and rejects contradictory owner rows', () => {
+    it('preserves unrepresented open-ground plots and rejects contradictory owner rows', () => {
         expect(ownership.shapeSliceOwnership({ ownerKey: 'open-ground', owners: [] }))
             .toEqual({ owners: [], jointPool: false });
         expect(ownership.shapeSliceOwnership({ ownerKey: 'open-ground', owners: [
             { ownerKey: 'open-ground', displayName: 'Open ground', share: 1 }
         ] })).toEqual({ owners: [], jointPool: false });
-        expect(ownership.shapeSliceOwnership({ noOwner: true })).toEqual({ owners: [], jointPool: false });
-        expect(ownership.shapeSliceOwnership({ noOwner: true, owners: [
-            { ownerKey: 'open-ground', displayName: 'Open ground', share: 1, noOwner: true }
+        expect(ownership.shapeSliceOwnership({ unrepresentedGround: true })).toEqual({ owners: [], jointPool: false });
+        expect(ownership.shapeSliceOwnership({ unrepresentedGround: true, owners: [
+            { ownerKey: 'open-ground', displayName: 'Open ground', share: 1, unrepresentedGround: true }
         ] })).toEqual({ owners: [], jointPool: false });
         expect(() => ownership.shapeSliceOwnership({ ownerKey: 'open-ground', owners: [
             { ownerKey: 'a', displayName: 'Ana', share: 1 }
-        ] })).toThrow(/complete open-ground marker/);
+        ] })).toThrow(/complete sentinel allocation/);
         expect(() => ownership.shapeSliceOwnership({ ownerKey: 'open-ground', owners: [
             { ownerKey: 'open-ground', displayName: 'Open ground', share: 0.5 }
-        ] })).toThrow(/complete open-ground marker/);
+        ] })).toThrow(/complete sentinel allocation/);
         expect(() => ownership.shapeSliceOwnership({ ownerKey: 'open-ground', owners: [
             { ownerKey: 'open-ground', displayName: 'Open ground', share: 0.5 },
             { ownerKey: 'a', displayName: 'Ana', share: 0.5 }
-        ] })).toThrow(/complete open-ground marker/);
+        ] })).toThrow(/complete sentinel allocation/);
         expect(() => ownership.shapeSliceOwnership({ owners: [
             { ownerKey: 'open-ground', displayName: 'Open ground', share: 1 }
-        ] })).toThrow(/no owner/);
+        ] })).toThrow(/open-ground accounting sentinel/);
         expect(() => ownership.shapeSliceOwnership({ owners: [
             { ownerKey: 'a', displayName: 'Ana', share: 0.5 },
-            { ownerKey: 'b', displayName: 'Boris', share: 0.5, noOwner: true }
-        ] })).toThrow(/no owner/);
-        expect(() => ownership.shapeSliceOwnership({ ownerKey: 'owner-a', noOwner: true }))
-            .toThrow(/cannot also name an owner/);
+            { ownerKey: 'b', displayName: 'Boris', share: 0.5, unrepresentedGround: true }
+        ] })).toThrow(/unrepresented ground/);
+        expect(() => ownership.shapeSliceOwnership({ ownerKey: 'owner-a', unrepresentedGround: true }))
+            .toThrow(/cannot also name a represented owner/);
+        expect(() => ownership.shapeSliceOwnership({ noOwner: true }))
+            .toThrow(/noOwner marker is retired/);
+        expect(() => ownership.shapeSliceOwnership({ owners: [
+            { ownerKey: 'open-ground', share: 1, noOwner: true }
+        ] })).toThrow(/noOwner marker is retired/);
     });
 
     it('rejects malformed ownership in the real apply method before map or transfer calls', async () => {

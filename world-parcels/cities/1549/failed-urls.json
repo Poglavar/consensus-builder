@@ -1,0 +1,12 @@
+[
+  {
+    "url": "https://mapas.igac.gov.co/server/rest/services/Dato_Fundamental_Catastro/MapServer/4/query",
+    "reason": "HTTP 400 then timeout"
+  },
+  {
+    "url": "https://idep.palmira.gov.co/portal/apps/webappviewer/index.html?id=e0e42455dcb14780a62a3a1aafdde9c8"
+  },
+  {
+    "url": "https://idep.palmira.gov.co/portal/sharing/rest/content/items/e0e42455dcb14780a62a3a1aafdde9c8/data?f=pjson"
+  }
+]

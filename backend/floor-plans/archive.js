@@ -3,7 +3,7 @@ import { contentHash,writeBlob } from './blob-store.js';
 import { normalizeUrl,extractPageEvidence } from './page-evidence.js';
 import { isHtmlPageResponse } from './html-response.js';
 import { listingIdentity } from './explicit-location.js';
-import { eligibleListingSql,isExcluded,excludeSource,qualifyPageEvidence,canFetchTarget,listingQualifies } from './source-policy.js';
+import { eligibleListingSql,ownedPlanAssetSql,resolvedListingSql,isExcluded,excludeSource,qualifyPageEvidence,canFetchTarget,listingQualifies } from './source-policy.js';
 import { prepareSourceEvidence } from './compact-sources.js';
 export const sha256 = contentHash;
 export const putBlob = writeBlob;
@@ -14,7 +14,8 @@ export async function enqueue(db,rawUrl,{agencyId=null,kind='page',priority=0,fr
  const r=await db.query(`INSERT INTO floor_plan.target(url,agency_id,kind,priority,discovered_from,source_identity,source_kind)
   SELECT $1,$2,$3,$4,$5,$6,$7 WHERE NOT EXISTS(SELECT 1 FROM floor_plan.exclusion WHERE identity=$6 OR url=$1)
   AND ($3<>'asset' OR EXISTS(SELECT 1 FROM floor_plan.listing l WHERE ${eligibleListingSql()}
-   AND l.asset_urls @> jsonb_build_array(jsonb_build_object('url',$1::text,'listingOwned',true))))
+   AND l.asset_urls @> jsonb_build_array(jsonb_build_object('url',$1::text,'listingOwned',true))
+   AND (${ownedPlanAssetSql('l','$1::text')} OR ${resolvedListingSql()})))
   ON CONFLICT(url) DO UPDATE SET priority=EXCLUDED.priority,updated_at=now()
    WHERE floor_plan.target.kind=EXCLUDED.kind AND floor_plan.target.exclusion_reason IS NULL
     AND floor_plan.target.priority<EXCLUDED.priority

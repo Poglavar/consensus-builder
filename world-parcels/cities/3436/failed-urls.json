@@ -1,0 +1,10 @@
+[
+  {
+    "url": "http://gis.ciudaddecorrientes.gov.ar/idemcc/",
+    "reason": "403"
+  },
+  {
+    "url": "http://gis.ciudaddecorrientes.gov.ar/geoservicios.php",
+    "reason": "403"
+  }
+]

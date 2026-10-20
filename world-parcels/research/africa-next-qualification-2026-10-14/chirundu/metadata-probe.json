@@ -1,9 +1,0 @@
-{
-  "requestedAt": "2026-10-14T13:20:44.295874+00:00",
-  "url": "https://www.map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer/0?f=pjson",
-  "timeoutSeconds": 40,
-  "maxBytes": 2000000,
-  "status": "request-error",
-  "errorType": "TimeoutError",
-  "reason": "The read operation timed out"
-}

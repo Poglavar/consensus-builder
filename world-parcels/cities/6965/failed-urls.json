@@ -1,0 +1,26 @@
+[
+  {
+    "url": "https://maps.dogis.org/"
+  },
+  {
+    "url": "https://douglascountyassessor.org/gis-maps/"
+  },
+  {
+    "url": "https://revenue.nebraska.gov/property-assessment-county-contact-information-parcel-search"
+  },
+  {
+    "url": "https://giscat.ne.gov/Enterprise/rest/services/StatewideParcelsExternal/MapServer/0"
+  },
+  {
+    "url": "https://giscat.ne.gov/Enterprise/rest/services/StatewideParcelsExternal/MapServer/0?f=pjson"
+  },
+  {
+    "url": "https://giscat.ne.gov/Enterprise/rest/services/StatewideParcelsExternal/MapServer/0/query"
+  },
+  {
+    "url": "https://giscat.ne.gov/Enterprise/rest/services/StatewideParcelsExternal/MapServer/0/query?f=geojson&geometry=-106.0013%2C41.2563%2C-105.9813%2C41.2773&geometryType=esriGeometryEnvelope&inSR=4326&outFields=State_PID%2CParcel_ID%2CCounty_ID&outSR=4326&resultRecordCount=3&returnGeometry=true&spatialRel=esriSpatialRelIntersects&where=1%3D1"
+  },
+  {
+    "url": "https://giscat.ne.gov/Enterprise/rest/services/StatewideParcelsExternal/MapServer/0/query?f=geojson&geometry=-96.0013%2C41.2570%2C-95.9813%2C41.2770&geometryType=esriGeometryEnvelope&inSR=4326&outFields=State_PID%2CParcel_ID%2CCounty_ID&outSR=4326&resultRecordCount=3&returnGeometry=true&spatialRel=esriSpatialRelIntersects&where=1%3D1"
+  }
+]

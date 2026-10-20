@@ -5,20 +5,21 @@
 import { createRequire } from 'node:module';
 import { describe, expect, it, vi } from 'vitest';
 import express from 'express';
-import request from 'supertest';
 import { BINDING_COUNT_SQL, BINDING_SQL, PARCEL_ACT_SITE_SQL, INTRUSION_NOISE_M } from '../proposals/binding.js';
-import { BINDING_DRIFT_ROW_SQL, computeBindingDrift } from '../proposals/binding-drift.js';
+import { BINDING_DRIFT_ROW_SQL, bindingParcelSourceId, computeBindingDrift } from '../proposals/binding-drift.js';
 import { setupProposalBindingRoute, BINDING_DRIFT_PATH } from '../routes/proposal-binding.js';
 
 const require = createRequire(import.meta.url);
 const drift = require('../../frontend/js/proposals/binding-drift.js');
+const API_BASE = 'https://api.example.test';
 
 const box = (w, s, e, n) => ({ type: 'Polygon', coordinates: [[[w, s], [e, s], [e, n], [w, n], [w, s]]] });
 const SITE = { type: 'MultiPolygon', coordinates: [box(15.969, 45.799, 15.972, 45.802).coordinates] };
 const entry = (parcelId, overlapM2 = 100, intrusionM = 5) => ({ parcelId, overlapM2, intrusionM });
 const binding = (parcels, extra = {}) => ({
     parcels, touched: [], toleranceM: 0, coverage: 'complete', unsurveyedM2: 0, unknownM2: 0,
-    siteM2: 9000, source: 'server:hr-cadastre', computedAt: '2026-09-01T00:00:00.000Z', ...extra
+    siteM2: 9000, source: 'server:hr-cadastre', parcelSource: { sourceId: 'hr-cadastre', snapshotId: null },
+    computedAt: '2026-09-01T00:00:00.000Z', ...extra
 });
 const STORED = binding([entry('HR-1-10'), entry('HR-1-11/1')]);
 
@@ -81,13 +82,14 @@ describe('deriveReboundRecord (pure)', () => {
         cadastreParcelIds: ['HR-1-10', 'HR-1-11/1'], acceptedParcelIds: ['HR-1-10'], ownerAcceptances: { 'HR-1-10': {} },
         onchainData: { mint: 'abc' }, tokenId: 'abc', isMinted: true, effectHash: 'e', ownershipFlow: [{}],
         site: SITE, binding: STORED, offer: 1000,
+        publicationApiBase: API_BASE,
         structureProposal: { geometry: box(15.97, 45.80, 15.971, 45.801), applied: true, childParcelIds: ['x-1'] },
-        childParcelIds: ['x-1'], sourceProposalId: 'older'
+        childParcelIds: ['x-1']
     };
     const current = binding([entry('HR-1-10'), entry('HR-1-11/2'), entry('HR-1-11/3')], { computedAt: '2026-10-01T00:00:00.000Z' });
     const response = { checkable: true, stored: STORED, current, drift: drift.bindingDrift(STORED, current) };
 
-    it('carries the site and design with the current binding and a link to its source', () => {
+    it('carries the site and design with typed publication lineage to its source', () => {
         const before = JSON.stringify(source);
         const derived = drift.deriveReboundRecord(source, response);
         expect(JSON.stringify(source)).toBe(before); // the source is never edited
@@ -96,11 +98,14 @@ describe('deriveReboundRecord (pure)', () => {
         expect(derived.offer).toBe(1000);
         expect(derived.binding).toEqual(current);
         expect(derived.cadastreParcelIds).toEqual(['HR-1-10', 'HR-1-11/2', 'HR-1-11/3']);
-        expect(derived).toMatchObject({ sourceProposalId: 'p-park', replacementOfProposalId: 'p-park', copiedFromName: 'Park' });
+        expect(derived.proposalOrigin).toEqual({
+            relation: 'rebind', source: { kind: 'publication', apiBase: API_BASE, proposalRowId: '41' }, title: 'Park'
+        });
         expect(derived.rebind).toMatchObject({
-            sourceProposalId: 'p-park', sourceServerId: '41', storedComputedAt: '2026-09-01T00:00:00.000Z',
+            storedComputedAt: '2026-09-01T00:00:00.000Z',
             currentComputedAt: '2026-10-01T00:00:00.000Z', added: ['HR-1-11/2', 'HR-1-11/3'], removed: ['HR-1-11/1']
         });
+        ['sourceProposalId', 'replacementOfProposalId', 'copiedFromName'].forEach(key => expect(derived).not.toHaveProperty(key));
     });
 
     it('drops the source record\'s identity, consent, chain and local state', () => {
@@ -118,14 +123,14 @@ describe('deriveReboundRecord (pure)', () => {
         const other = drift.deriveReboundRecord(source, { ...response, current: binding([entry('HR-1-10')]) });
         expect(other.rebind.bindingKey).not.toBe(again.rebind.bindingKey);
         expect(() => drift.deriveReboundRecord(source, { checkable: true, stored: STORED })).toThrow(/current binding/);
-        expect(() => drift.deriveReboundRecord({ title: 'x' }, response)).toThrow(/no id/);
+        expect(() => drift.deriveReboundRecord({ title: 'x' }, response)).toThrow(/qualified identity/);
     });
 
     it('finds a local record re-bound from a published one', () => {
         const derived = { proposalId: 'p-new', ...drift.deriveReboundRecord(source, response) };
-        expect(drift.findRebound([{ proposalId: 'x' }, derived], { serverId: '41' })).toBe(derived);
-        expect(drift.findRebound([derived], { proposalId: 'p-park' })).toBe(derived);
-        expect(drift.findRebound([derived], { serverId: '42' })).toBeNull();
+        expect(drift.findRebound([{ proposalId: 'x' }, derived], source, API_BASE)).toBe(derived);
+        expect(drift.findRebound([derived], source, API_BASE)).toBe(derived);
+        expect(drift.findRebound([derived], { ...source, serverProposalId: '42' }, API_BASE)).toBeNull();
     });
 });
 
@@ -181,6 +186,27 @@ describe('computeBindingDrift (server)', () => {
         expect(result.drift.added).toEqual([]);
     });
 
+    it('selects the provider from the typed parcelSource descriptor, not the source label', async () => {
+        const stored = { ...STORED, source: 'server:some-other-label' };
+        const db = scriptedDb({ row: { ...ROW, binding: stored }, parcels: [bound('HR-1-10'), bound('HR-1-11/1')] });
+        const result = await computeBindingDrift(db, '41');
+        expect(result.checkable).toBe(true);
+        expect(db.calls.some(call => call.sql === BINDING_SQL)).toBe(true);
+        expect(bindingParcelSourceId({ parcelSource: { sourceId: 'hr-dgu-oss-dkp-cestice', snapshotId: null } }))
+            .toEqual({ known: true, parcelSourceId: 'hr-dgu-oss-dkp-cestice' });
+    });
+
+    it('keeps source identity unknown when the typed descriptor is absent or unrecognized', async () => {
+        const missing = scriptedDb({ row: { ...ROW, binding: { ...STORED, parcelSource: null } } });
+        expect(await computeBindingDrift(missing, '41')).toMatchObject({ checkable: false, reason: 'unknown-source' });
+        expect(missing.calls).toHaveLength(1);
+
+        const unknown = scriptedDb({ row: { ...ROW, binding: { ...STORED,
+            source: 'server:hr-cadastre', parcelSource: { sourceId: 'not-in-catalog', snapshotId: null } } } });
+        expect(await computeBindingDrift(unknown, '41')).toMatchObject({ checkable: false, reason: 'unknown-source' });
+        expect(unknown.calls).toHaveLength(1);
+    });
+
     it('cannot check a record without a binding, without a site, or outside the held cadastre', async () => {
         expect(await computeBindingDrift(scriptedDb({ row: { ...ROW, binding: null } }), '41'))
             .toMatchObject({ checkable: false, reason: 'no-binding' });
@@ -200,9 +226,19 @@ describe('GET /proposals/:id/binding-drift', () => {
         return server;
     };
 
+    async function getDrift(server, id) {
+        const layer = server._router.stack.find(item => item.route?.path === '/proposals/:id/binding-drift');
+        const handler = layer.route.stack.find(item => item.method === 'get').handle;
+        let status = 200;
+        let body;
+        const response = { status(code) { status = code; return this; }, json(value) { body = value; return this; } };
+        await handler({ params: { id } }, response);
+        return { status, body };
+    }
+
     it('answers stored, current and drift, and writes nothing', async () => {
         const db = scriptedDb({ row: ROW, parcels: [bound('HR-1-10')] });
-        const res = await request(app(db)).get('/proposals/41/binding-drift');
+        const res = await getDrift(app(db), '41');
         expect(res.status).toBe(200);
         expect(res.body.drift.removed.map(hit => hit.parcelId)).toEqual(['HR-1-11/1']);
         expect(res.body.stored.computedAt).toBe('2026-09-01T00:00:00.000Z');
@@ -211,10 +247,10 @@ describe('GET /proposals/:id/binding-drift', () => {
     });
 
     it('answers 404 for an unknown record and 500 when the cadastre query fails', async () => {
-        expect((await request(app(scriptedDb({ row: ROW }))).get('/proposals/999/binding-drift')).status).toBe(404);
+        expect((await getDrift(app(scriptedDb({ row: ROW })), '999')).status).toBe(404);
         const broken = { query: async () => { throw new Error('db down'); } };
         const error = vi.spyOn(console, 'error').mockImplementation(() => {});
-        const res = await request(app(broken)).get('/proposals/41/binding-drift');
+        const res = await getDrift(app(broken), '41');
         error.mockRestore();
         expect(res.status).toBe(500);
         expect(res.body.drift).toBeUndefined();

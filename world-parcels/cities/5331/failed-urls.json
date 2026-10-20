@@ -1,0 +1,18 @@
+[
+  {
+    "url": "https://www.federalwaywa.gov/gis-division"
+  },
+  {
+    "url": "https://gismaps.kingcounty.gov/parcelviewer2/"
+  },
+  {
+    "url": "https://gismaps.kingcounty.gov/ArcGIS/rest/services/Property/KingCo_Parcels/MapServer/0?f=pjson"
+  },
+  {
+    "url": "https://gismaps.kingcounty.gov/ArcGIS/rest/services/Property/KingCo_Parcels/MapServer/0/query"
+  },
+  {
+    "url": "https://services.arcgis.com/jsIt88o09Q0r1j8h/arcgis/rest/services/Current_Parcels/FeatureServer/0",
+    "reason": "Held at the geometry gate: all source checks passed but the metric audit failed with 21 exact-duplicate geometries / 21 overlap pairs (max 1,628 m2, 100% of the smaller) among 73 cached WaTech polygons around Federal Way (King County 033): distinct PARCEL_ID_NR values (033-3222049126, -127, -128) share one identical polygon, consistent with stacked condominium units (not confirmed; only ID fields…"
+  }
+]

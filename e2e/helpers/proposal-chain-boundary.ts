@@ -13,6 +13,9 @@ export type ProposalEvmBoundaryOptions = {
   failProposalMint?: boolean;
   /** Return one real-shaped minted proposal from contract reads for the minted-proposals modal. */
   includeMintedProposal?: boolean;
+  /** Status returned by the receipt-block read after acceptance (separate from list fixtures). */
+  acceptanceStatusCode?: number;
+  failAcceptanceStatusRead?: boolean;
 };
 
 /**
@@ -45,6 +48,7 @@ export async function installProposalEvmBoundary(page: Page, options: ProposalEv
       'function tokenByIndex(uint256 index) view returns (uint256)',
       'function getTokensByOwner(address owner) view returns (uint256[])',
       'function getProposalsBatch(uint256[] tokenIds) view returns (string[][] parcelIdsArray, bool[] isConditionalArray, string[] imageURIArray, bool[] acceptancePossibleArray, uint8[] statusArray, uint256[] ethBalanceArray, uint256[] tokenBalanceArray, uint256[] acceptanceCountArray, uint256[] expiryTimestampArray, uint256[] expiringPercentageArray)',
+      'function getProposal(uint256 proposalId) view returns (string[] parcelIds, bool isConditional, string imageURI, bool acceptancePossible, uint8 status, uint256 ethBalance, uint256 tokenBalance, uint256 acceptanceCount, uint256 expiryTimestamp, uint256 expiringPercentage)',
       'function getLens(uint256 tokenId) view returns (address[])',
       'function ownerOf(uint256 tokenId) view returns (address)',
       'function mintAndFund(address recipient, string[] parcelIds, bool isConditional, string imageURI, uint256 ethAmount, uint256 tokenAmount, address[] lens) payable returns (uint256)',
@@ -105,12 +109,20 @@ export async function installProposalEvmBoundary(page: Page, options: ProposalEv
             ]);
           }
           if (parsed?.name === 'getLens') return proposalInterface.encodeFunctionResult('getLens', [[account]]);
+          if (parsed?.name === 'getProposal') {
+            w.__proposalEvmStatusRead = { proposalId: String(parsed.args[0]), blockTag: args.params?.[1] };
+            if (settings.failAcceptanceStatusRead) throw new Error('Fixture status read unavailable');
+            return proposalInterface.encodeFunctionResult('getProposal', [
+              ['HR-335754-1234'], true, '', true, settings.acceptanceStatusCode ?? 0, 0n, 0n, 1n, 0n, 0n,
+            ]);
+          }
           if (parsed?.name === 'ownerOf') return proposalInterface.encodeFunctionResult('ownerOf', [account]);
           if (parsed?.name === 'mintAndFund') return proposalInterface.encodeFunctionResult('mintAndFund', [77n]);
         }
         return '0x';
       }
       if (args.method === 'eth_getCode') return '0x60006000';
+      if (args.method === 'eth_getLogs') return [];
       if (args.method === 'eth_estimateGas') return '0x5208';
       if (args.method === 'eth_gasPrice' || args.method === 'eth_maxPriorityFeePerGas') return '0x1';
       if (args.method === 'eth_blockNumber') return '0x2';

@@ -1,5 +1,5 @@
 import { test, expect } from '../helpers/fixtures';
-import { openCity, openParcel, clickMapPoint, PARCEL_ID } from '../helpers/runtime';
+import { openCity, openParcel, clickMapPoint, createSpace, PARCEL_ID } from '../helpers/runtime';
 
 test.describe('Parcel inspector @core', () => {
   test('a map click exposes cadastral identity, area and private ownership', async ({ mockApi: page }) => {
@@ -8,6 +8,7 @@ test.describe('Parcel inspector @core', () => {
     await expect(page.locator('#parcel-info-panel')).toBeHidden();
     await openParcel(page);
     await expect(page.locator('#parcel-info-title')).toContainText(PARCEL_ID);
+    await expect(page.locator('#parcel-info-title')).toContainText('Source parcel');
     await expect(page.locator('#info-content')).toContainText('m²');
     await expect(page.locator('#info-content')).toContainText('Private owner');
     await expect(page.locator('#info-content')).not.toContainText('Privatni vlasnik');
@@ -58,6 +59,24 @@ test.describe('Parcel inspector @core', () => {
     const separatedFromBottomRowVertically = credit!.y + credit!.height <= bottomRow!.y
       || bottomRow!.y + bottomRow!.height <= credit!.y;
     expect(separatedFromBottomRowHorizontally || separatedFromBottomRowVertically).toBe(true);
+  });
+  test('formed ground keeps its own identity in the menu and inspector', async ({ mockApi: page }) => {
+    await openCity(page);
+    await page.evaluate(() => (window as any).i18n.setLanguage('en'));
+    const proposalId = await createSpace(page, 'park');
+    const pieceId = await page.evaluate(proposalId => {
+      const w = window as any;
+      const feature = w.LiveParcelFabric.producedBy(proposalId)[0];
+      if (!feature) throw new Error('Applied park produced no ground piece');
+      w.hideProposalDetailsPanel();
+      w.ParcelMenu.open({ parcelId: feature.properties.parcelId, feature });
+      return feature.properties.parcelId;
+    }, proposalId);
+    await expect(page.locator('#parcel-menu .parcel-menu__title')).toHaveText(`Formed ground piece ${pieceId}`);
+    await page.locator('#parcel-menu').getByRole('menuitem', { name: 'Details', exact: true }).click();
+    await expect(page.locator('#parcel-info-title')).toHaveText(`Formed ground piece ${pieceId}`);
+    await expect(page.locator('#info-content [role="note"]')).toContainText('Ground formed by the applied proposals');
+    await expect(page.locator('#parcel-info-title .parcel-title-id')).toHaveAttribute('aria-label', `Copy to clipboard: ${pieceId}`);
   });
   test('government ownership follows the clicked parcel', async ({ mockApi: page }) => {
     await openCity(page);

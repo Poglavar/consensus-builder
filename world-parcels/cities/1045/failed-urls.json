@@ -1,0 +1,6 @@
+[
+  {
+    "url": "https://ogc-api.nrw.de/lika/v1/collections/flurstueck/items",
+    "reason": "Source data defect, not repaired (deterministic wave-6 run reproduces the wave-1 result): failed checks: metric; failures: {\"metric\": {\"errorType\": \"Error\", \"code\": \"metric-report-failed\"}}; metric blockers {'overlapPairCount': 1} of 45 source polygons (source geometry never repaired); overlap pairs (threshold 0.01 m2): [{\"ids\": [\"05334704800277______\", \"05496503300098______\"], \"areaM2\": 0.012}]"
+  }
+]

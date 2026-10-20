@@ -604,6 +604,14 @@
         }
     }
 
+    // Photo mode is display only: a clip that fails degrades the carve or the curtain, and is
+    // reported and counted in clipHealth() (parcel-arrangement.js).
+    function reportPhotorealClip(operation, error, site, operands) {
+        const clips = window.__parcelArrangement;
+        if (!clips || typeof clips.reportClipFailure !== 'function') throw error;
+        clips.reportClipFailure(operation, error, { site: site }, operands);
+    }
+
     function roadFoundationPaddingTrueM() {
         return MASK_EDGE_OWNERSHIP_SCENE_M / Math.max(1e-6, mercatorK || 1);
     }
@@ -619,7 +627,11 @@
                 feat = turf.difference(feat,
                     { type: 'Feature', properties: {}, geometry: structures[i].structureProposal.geometry });
             }
-        } catch (_) { return geometry; }
+        } catch (error) {
+            // The whole footprint carves, inside the structure too: redundant, never missing.
+            reportPhotorealClip('difference', error, 'photoreal-mode.razedFootprintOutsideStructures', [feat]);
+            return geometry;
+        }
         return feat ? feat.geometry : null;
     }
 
@@ -1103,7 +1115,11 @@
             try {
                 const direct = turf.union(a, b);
                 if (direct) return direct;
-            } catch (_) { }
+            } catch (error) {
+                // What follows is a union of cleaned or truncated rings (or no curtain at all):
+                // degraded either way, so the exact failure is reported once here.
+                reportPhotorealClip('union', error, 'photoreal-mode.unionRoadFoundationGeometry', [a, b]);
+            }
             try {
                 if (typeof turf.cleanCoords === 'function') {
                     const cleanedA = turf.cleanCoords(a, { mutate: false }) || a;

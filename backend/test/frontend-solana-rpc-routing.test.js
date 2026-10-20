@@ -12,6 +12,30 @@ const reply = payload => new Response(JSON.stringify(payload), {
 const request = (id, method) => ({ jsonrpc: '2.0', id, method, params: [] });
 
 describe('browser Solana RPC routing', () => {
+    it('verifies the configured devnet endpoint before account reads, rejecting missing or different identity', async () => {
+        const oldWindow = globalThis.window;
+        let genesis = 'EtWTRABZaYq6iMfeYKouRu166VU2xqa1wcaWoxPkrZBG';
+        const created = [];
+        globalThis.window = { solanaWeb3: { Connection: class {
+            constructor(endpoint) { this.endpoint = endpoint; created.push(this); }
+            async getGenesisHash() { return genesis; }
+        } } };
+        try {
+            await import('../../frontend/js/solana/chain-data-loader.js?verified-account-network-test');
+            const loader = globalThis.window.SolanaChainDataLoader;
+            await expect(loader.getVerifiedConnection('mainnet-beta')).rejects.toThrow('devnet only');
+            expect(created).toHaveLength(0);
+            expect(await loader.getVerifiedConnection('devnet')).toBe(created[0]);
+            genesis = 'another-network';
+            await expect(loader.getVerifiedConnection('devnet')).rejects.toThrow('does not match devnet');
+            genesis = null;
+            await expect(loader.getVerifiedConnection('devnet')).rejects.toThrow('does not match devnet');
+            expect(created).toHaveLength(1);
+        } finally {
+            if (oldWindow === undefined) delete globalThis.window;
+            else globalThis.window = oldWindow;
+        }
+    });
     it('resolves runtime per-cluster primary and program-account endpoints', () => {
         const oldRpc = globalThis.SOLANA_RPC_URLS;
         const oldProgramRpc = globalThis.SOLANA_PROGRAM_ACCOUNTS_RPC_URLS;

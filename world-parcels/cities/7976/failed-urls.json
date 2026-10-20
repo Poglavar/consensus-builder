@@ -1,0 +1,10 @@
+[
+  {
+    "url": "https://services9.arcgis.com/1bWTvtvBCBaErVYC/arcgis/rest/services/Lansing_Parcels_08182026/FeatureServer/0",
+    "reason": "wrong-city-source-rejected"
+  },
+  {
+    "url": "https://app.fetchgis.com/geoservices/fgis/ingParcels/FeatureServer/0",
+    "reason": "temporarily_unavailable"
+  }
+]

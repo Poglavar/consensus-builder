@@ -30,6 +30,17 @@ async function publishPark(page: any, routes: (page: any, serverId: string) => P
   await expect(share.locator('.share-modal-link').first()).toHaveValue(/\/proposals\/\d+\?/);
   await share.locator('.share-modal .close-circle-btn').click();
   const serverId = [...server.records.keys()][0];
+  const publicationApiBase = await page.evaluate(() => (window as any).getBackendBase());
+  // This helper creates a published local-copy fixture for the named-plan consumers below. The
+  // API row is meaningful only together with the publication endpoint that issued it.
+  await page.evaluate(({ localId, serverId, publicationApiBase }: any) => {
+    const proposal = (window as any).proposalStorage.getProposal(localId);
+    if (!proposal) throw new Error(`Published fixture ${localId} is missing from local storage`);
+    proposal.id = String(serverId);
+    proposal.serverProposalId = String(serverId);
+    proposal.publicationApiBase = publicationApiBase;
+    (window as any).proposalStorage.save();
+  }, { localId, serverId, publicationApiBase });
   await page.evaluate(() => (window as any).hideProposalDetailsPanel(true));
   return { localId, serverId, title: String(title) };
 }
@@ -100,7 +111,7 @@ test.describe('Named plans @features', () => {
     await openParcelMenu(page);
     await page.locator('#parcel-menu [data-command="parcel.proposals"]').click();
     const line = page.locator('#proposals-content .proposal-plan-link');
-    await expect(line).toHaveText(/Part of plan E2E harbor plan/);
+    await expect(line).toHaveText(/Part of named plan E2E harbor plan/);
 
     await page.locator('#parcel-info-panel [data-parcel-proposals-view="plans"]').click();
     await expect(page.locator('#parcel-plans-content .plan-item')).toHaveCount(1);
@@ -123,7 +134,7 @@ test.describe('Named plans @features', () => {
     // Applying a plan goes through its published records: the member stands as the record of its row id.
     await expect.poll(() => page.evaluate((id: string) => {
       const w = window as any;
-      return w.proposalStorage.getAllProposals().some((p: any) => String(w.getServerProposalId(p)) === id && w.isProposalCurrentlyApplied(p));
+      return w.proposalStorage.getAllProposals().some((p: any) => String(w.getProposalPublicationLookup(p)) === id && w.isProposalCurrentlyApplied(p));
     }, serverId), { timeout: 30_000 }).toBe(true);
     // Apply returns to the entire plan, rather than a single member's parcel panel.
     await expect(panel).toBeVisible({ timeout: 30_000 });
@@ -142,7 +153,7 @@ test.describe('Named plans @features', () => {
     await expect.poll(() => page.evaluate(() => location.pathname)).toBe('/');
   });
 
-  test('a proposal in two plans lists both behind In 2 plans, and an earlier plan links to its newer version', async ({ mockApi: page }) => {
+  test('a proposal in two plans lists both behind In 2 named plans, and an earlier plan links to its newer version', async ({ mockApi: page }) => {
     const { localId } = await publishPark(page, routeTwoPlans);
     // Off the map, so the parcel it stands on can be clicked again.
     await page.evaluate((id: string) => (window as any).ProposalManager.unapplyProposal(id), localId);
@@ -151,7 +162,7 @@ test.describe('Named plans @features', () => {
     await page.locator('#parcel-menu [data-command="parcel.proposals"]').click();
     // The superseded plan is not counted; the two current ones fold behind one line.
     const toggle = page.locator('#proposals-content .proposal-plan-toggle');
-    await expect(toggle).toHaveText(/In 2 plans/);
+    await expect(toggle).toHaveText(/In 2 named plans/);
     await expect(toggle).toHaveAttribute('aria-expanded', 'false');
     const options = page.locator('#proposals-content .proposal-plan-options');
     await expect(options).toBeHidden();
@@ -174,12 +185,12 @@ test.describe('Named plans @features', () => {
     await expect.poll(() => page.evaluate(() => location.pathname)).toBe(`/proposals/${SECOND}`);
   });
 
-  test('the proposals list has a Plans source whose rows open their plan', async ({ mockApi: page }) => {
+  test('the proposals list has a Named plans source whose rows open their plan', async ({ mockApi: page }) => {
     await publishPark(page);
     await page.evaluate(() => (window as any).showAllProposalsModal());
     const source = page.locator('.proposal-source-btn[data-source="plans"]');
-    await expect(source).toHaveText(/Plans \(1\)/);
-    await expect(page.locator('.proposal-list-item .proposal-plan-link')).toHaveText(/Part of plan E2E harbor plan/);
+    await expect(source).toHaveText(/Named plans \(1\)/);
+    await expect(page.locator('.proposal-list-item .proposal-plan-link')).toHaveText(/Part of named plan E2E harbor plan/);
     await source.click();
     await expect(page.locator('.proposal-list-modal .proposal-filters-toggle')).toHaveCount(0);
     await page.locator('.proposal-list-modal .plan-item').click();

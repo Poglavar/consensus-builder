@@ -1,0 +1,24 @@
+[
+  {
+    "url": "https://mpbhulekh.gov.in/"
+  },
+  {
+    "url": "https://bhunaksha.mp.gov.in/ and https://mpbhunaksha.mp.gov.in/"
+  },
+  {
+    "url": "https://landrecords.mp.gov.in/ and https://geoportal.mp.gov.in/..."
+  },
+  {
+    "url": "https://gis.imcindore.gov.in/"
+  },
+  {
+    "url": "https://indoregis.mp.gov.in/",
+    "reason": "curl: (28) Failed to connect to indoregis.mp.gov.in port 443 after 8001 ms: Timeout was reached"
+  },
+  {
+    "url": "https://mpbhulekh.gov.in/ ; https://landrecords.mp.gov.in/ ; https://geoportal.mp.gov.in/ ; https://mapit.gov.in/ ; https://www.mpsedc.mp.gov.in/ ; https://mpgis.mp.gov.in/"
+  },
+  {
+    "url": "https://bhunaksha.mp.gov.in/ ; https://mpbhunaksha.mp.gov.in/ ; https://mapit.mp.gov.in/ ; https://sarthi.mp.gov.in/"
+  }
+]

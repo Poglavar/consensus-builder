@@ -1,0 +1,29 @@
+[
+  {
+    "url": "https://bhumi.atrbpn.go.id/"
+  },
+  {
+    "url": "https://bhumi.atrbpn.go.id/peta"
+  },
+  {
+    "url": "https://bhumi.atrbpn.go.id/panel/items/layers?filter%5Bdefault%5D%5B_eq%5D=true&filter%5Bstatus%5D%5B_eq%5D=published&fields=*,fields.*"
+  },
+  {
+    "url": "https://bhumi.atrbpn.go.id/expapi/getPersil"
+  },
+  {
+    "url": "https://bhumi.atrbpn.go.id/api/proksi"
+  },
+  {
+    "url": "https://bhumi.atrbpn.go.id/bhumigs/umum/wms?service=WMS&request=GetCapabilities"
+  },
+  {
+    "url": "https://bhumi.atrbpn.go.id/bhumigs/umum/wfs?service=WFS&request=GetCapabilities"
+  },
+  {
+    "url": "https://atlas.atrbpn.go.id/"
+  },
+  {
+    "url": "https://tubankab.go.id/entry/bpn-dan-pemkab-tuban-gelar-gerakan-pemasangan-patok-batas-bidang-tanah-serentak"
+  }
+]

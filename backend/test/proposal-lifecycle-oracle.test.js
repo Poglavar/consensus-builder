@@ -5,7 +5,7 @@ import { createHash } from 'node:crypto';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { PublicKey } from '@solana/web3.js';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { encodeBase58, loadIdls } from '../solana/tx-decoder.js';
 import { proposalAccountBytes } from './fixtures/proposal-account.js';
 import {
@@ -18,6 +18,8 @@ import {
     STATUS_CANCELLED,
     STATUS_EXECUTED,
     STATUS_EXPIRED,
+    DEVNET_GENESIS_HASH,
+    VERIFIED_DEVNET_MIRROR_SQL,
     readProposalSite,
     sourceForProposal,
     syncProposalLifecycleEvents
@@ -61,6 +63,13 @@ function cancellationTransaction() {
 }
 
 describe('proposal lifecycle oracle', () => {
+    it('refuses another RPC network before scanning records or writing events', async () => {
+        const pool = { query: vi.fn() };
+        const connection = { getGenesisHash: async () => 'another-network', getMultipleAccountsInfo: vi.fn() };
+        await expect(syncProposalLifecycleEvents({ pool, connection })).rejects.toThrow(/requires Solana devnet/);
+        expect(pool.query).not.toHaveBeenCalled();
+        expect(connection.getMultipleAccountsInfo).not.toHaveBeenCalled();
+    });
     it('decodes source status without converting missing data into a plausible status', () => {
         expect(readProposalStatus(proposalAccount(STATUS_EXECUTED))).toBe(STATUS_EXECUTED);
         expect(readProposalStatus(proposalAccount(STATUS_CANCELLED))).toBe(STATUS_CANCELLED);
@@ -173,7 +182,7 @@ describe('proposal lifecycle oracle', () => {
                 ? { rows: [{ proposal_account: '42' }] }
                 : { rows: [] }
         };
-        const connection = { getMultipleAccountsInfo: async () => { throw new Error('no RPC call expected'); } };
+        const connection = { getGenesisHash: async () => DEVNET_GENESIS_HASH, getMultipleAccountsInfo: async () => { throw new Error('no RPC call expected'); } };
         const result = await syncProposalLifecycleEvents({ pool, connection, dryRun: true });
         expect(result).toMatchObject({ scanned: 0, terminal: 0, invalidAccounts: ['42'] });
     });
@@ -203,6 +212,7 @@ describe('proposal lifecycle oracle', () => {
             }
         };
         const connection = {
+            getGenesisHash: async () => DEVNET_GENESIS_HASH,
             getMultipleAccountsInfo: async () => [{
                 owner: new PublicKey(PROGRAM),
                 data: proposalAccount(STATUS_CANCELLED)
@@ -217,6 +227,15 @@ describe('proposal lifecycle oracle', () => {
         expect(persistence.sql).toMatch(/proposal_data = CASE[\s\S]*jsonb_set/);
         expect(persistence.params.at(-1)).toBe('Cancelled');
         expect(persistence.params[3]).toBe(PROPOSAL);
+        for (const query of [calls.find(call => call.sql.includes('SELECT DISTINCT')), persistence]) {
+            expect(query.sql).toContain(VERIFIED_DEVNET_MIRROR_SQL);
+            expect(query.sql).toContain("proposal_data #>> '{chainMirror,ref,tokenId}'");
+            expect(query.sql).not.toContain("onchain_data->>'proposalId'");
+            expect(query.sql).not.toContain("{onchain,proposalId}");
+        }
+        expect(persistence.sql).toContain("proposal_data #>> '{chainMirror,ref,tokenId}' = $4");
+        expect(calls.find(call => call.sql.includes('consensus.solana_transaction')).sql)
+            .toContain("cluster = 'devnet'");
     });
 
     it('does not reconcile the proposal read model during a dry run', async () => {
@@ -232,6 +251,7 @@ describe('proposal lifecycle oracle', () => {
             }
         };
         const connection = {
+            getGenesisHash: async () => DEVNET_GENESIS_HASH,
             getMultipleAccountsInfo: async () => [{
                 owner: new PublicKey(PROGRAM),
                 data: proposalAccount(STATUS_CANCELLED)

@@ -1,0 +1,24 @@
+[
+  {
+    "url": "https://tgrac.telangana.gov.in/arcgis/rest/services/LIS_Folder/LandInformationSystem/MapServer"
+  },
+  {
+    "url": "https://tgrac.telangana.gov.in/arcgis/rest/services/LIS_Folder/LandInformationSystem/MapServer?f=pjson"
+  },
+  {
+    "url": "https://tgrac.telangana.gov.in/arcgis/rest/services/LIS_Folder/LandInformationSystem/MapServer/30?f=pjson"
+  },
+  {
+    "url": "https://tgrac.telangana.gov.in/arcgis/rest/services/LIS_Folder/LandInformationSystem/MapServer/30/query?f=json&where=1%3D1&geometry=78.000%2C16.744%2C78.006%2C16.750&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=FID%2CRemarks%2CDistrict%2CMandal%2CVillage&returnGeometry=true&outSR=4326&resultRecordCount=3"
+  },
+  {
+    "url": "https://tgrac.telangana.gov.in/arcgis/rest/services/LIS_Folder/LandInformationSystem/MapServer/30/query?f=json&where=1%3D1&geometry=77.95%2C16.70%2C78.05%2C16.80&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=FID%2CRemarks%2CDistrict%2CMandal%2CVillage&returnGeometry=false&resultRecordCount=3"
+  },
+  {
+    "url": "https://bhubharati.telangana.gov.in/gis/"
+  },
+  {
+    "url": "https://tgrac.telangana.gov.in/arcgis/rest/services/Bhunaksha_Folder/Bhunaksha_query/MapServer/0",
+    "reason": "Held before qualification: Parcel provider timed out."
+  }
+]

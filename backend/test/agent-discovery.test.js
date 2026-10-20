@@ -1,9 +1,15 @@
 import { describe, expect, it, vi } from 'vitest';
-import { applyPlanStatuses, discoverProposalInputs, loadPlanRecord } from '../agents/discovery.js';
+import { applyPlanStatuses, discoverProposalInputs, loadPlanRecord, verifiedPlanMembership } from '../agents/discovery.js';
 import { PublicKey } from '@solana/web3.js';
 import { PROPOSAL_PROGRAM_ID } from '../agents/lifecycle-actions.js';
 import { eligibleSupportProposals, selectSupportAction } from '../agents/supporter-picker.js';
 import { decide as decideContrarian } from '../agents/policies/contrarian.js';
+
+const accountFor = value => new PublicKey(Buffer.alloc(32, value)).toBase58();
+const planRecord = ({ slug, account, proposalRowIds, ...rest }) => ({
+    slug, proposalRowIds, planHash: 'a'.repeat(64),
+    onchain: { chainId: 'solana-devnet', contractAddress: PROPOSAL_PROGRAM_ID, proposalId: account }, ...rest
+});
 
 function apiFetch({ proposals = [], plans = [], details = {} } = {}) {
     return vi.fn(async (url, options = {}) => {
@@ -21,22 +27,34 @@ function apiFetch({ proposals = [], plans = [], details = {} } = {}) {
         }
         if (parsed.pathname === '/proposals/batch') {
             const ids = JSON.parse(options.body).ids;
-            return { items: ids.map(id => ({ id, proposal: { geometry: { buildings: [{ id: `building-${id}` }] } } })) };
+            return { items: ids.map(id => ({ id, proposal: { id, geometry: { buildings: [{ id: `building-${id}` }] } } })) };
         }
         throw new Error(`unexpected request ${url}`);
     });
 }
 
 describe('agent named-plan discovery', () => {
+    it('accepts only a complete current membership and matching chain account commitment', () => {
+        const listed = planRecord({ slug: 'plan', account: accountFor(8), proposalRowIds: ['31'] });
+        const detail = { ...listed, members: [{ proposalRowId: '31', changed: false }] };
+        expect(verifiedPlanMembership(listed, detail)).toBeNull();
+        expect(verifiedPlanMembership(listed, { ...detail, planHash: 'bad' })).toBe('commitment unavailable');
+        expect(verifiedPlanMembership(listed, { ...detail, proposalRowIds: ['31', '32'] })).toBe('membership changed');
+        expect(verifiedPlanMembership(listed, { ...detail, onchain: { ...listed.onchain, proposalId: accountFor(9) } }))
+            .toBe('chain account changed');
+    });
+
     it('paginates ordinary proposals independently, includes minted plans for all cities, and namespaces plan ids', async () => {
         const ordinary = Array.from({ length: 1001 }, (_, index) => ({ id: String(index + 1), proposalId: `authored-${index + 1}` }));
         const fetchJson = apiFetch({
             proposals: ordinary,
             plans: [
-                { slug: 'minted-plan', proposalAccount: 'plan-account', onchain: { chainId: 'solana-devnet' }, proposalRowIds: ['11'], createdAt: '2026-01-01' },
+                planRecord({ slug: 'minted-plan', account: accountFor(1), proposalRowIds: ['11'], createdAt: '2026-01-01' }),
                 { slug: 'unminted-plan', proposalAccount: null, proposalRowIds: ['12'] }
             ],
-            details: { 'minted-plan': { slug: 'minted-plan', proposalAccount: 'plan-account', proposalRowIds: ['11'], members: [{ proposalRowId: '11', changed: false }] } }
+            details: { 'minted-plan': { slug: 'minted-plan', proposalRowIds: ['11'], planHash: 'a'.repeat(64),
+                onchain: { chainId: 'solana-devnet', contractAddress: PROPOSAL_PROGRAM_ID, proposalId: accountFor(1) },
+                members: [{ proposalRowId: '11', changed: false }] } }
         });
         const result = await discoverProposalInputs({ apiBase: 'http://api', cities: [null], fetchJson });
         expect(fetchJson.mock.calls.filter(([url]) => url.includes('/proposals/summary')).map(([url]) => new URL(url).searchParams.get('offset'))).toEqual(['0', '1000']);
@@ -46,19 +64,19 @@ describe('agent named-plan discovery', () => {
         expect(result).toHaveLength(1002);
         expect(result.find(item => item.planSlug)).toMatchObject({
             id: 'plan:minted-plan', proposalId: 'plan:minted-plan', planSlug: 'minted-plan', goal: 'plan',
-            lifecycleStatus: 'Active', onchain: { proposalId: 'plan-account' }
+            lifecycleStatus: 'Unknown', onchain: { proposalId: accountFor(1) }
         });
     });
 
     it('excludes missing, changed, and account-colliding plans with a reason', async () => {
         const logs = [];
         const fetchJson = apiFetch({
-            proposals: [{ id: '7', proposalId: 'ordinary', onchain: { proposalId: 'same-account' } }],
-            plans: ['missing', 'changed', 'duplicate'].map(slug => ({ slug, proposalAccount: slug === 'duplicate' ? 'same-account' : `account-${slug}`, proposalRowIds: ['7'] })),
+            proposals: [{ id: '7', proposalId: 'ordinary', onchain: { chainId: 'solana-devnet', contractAddress: PROPOSAL_PROGRAM_ID, proposalId: accountFor(2) } }],
+            plans: ['missing', 'changed', 'duplicate'].map((slug, index) => planRecord({ slug, account: slug === 'duplicate' ? accountFor(2) : accountFor(3 + index), proposalRowIds: ['7'] })),
             details: {
-                missing: { proposalRowIds: ['7'], members: [{ proposalRowId: '7', missing: true }] },
-                changed: { proposalRowIds: ['7'], members: [{ proposalRowId: '7', changed: true }] },
-                duplicate: { proposalRowIds: ['7'], members: [{ proposalRowId: '7', changed: false }] }
+                missing: { slug: 'missing', proposalRowIds: ['7'], planHash: 'a'.repeat(64), onchain: { chainId: 'solana-devnet', contractAddress: PROPOSAL_PROGRAM_ID, proposalId: accountFor(3) }, members: [{ proposalRowId: '7', missing: true }] },
+                changed: { slug: 'changed', proposalRowIds: ['7'], planHash: 'a'.repeat(64), onchain: { chainId: 'solana-devnet', contractAddress: PROPOSAL_PROGRAM_ID, proposalId: accountFor(4) }, members: [{ proposalRowId: '7', changed: true }] },
+                duplicate: { slug: 'duplicate', proposalRowIds: ['7'], planHash: 'a'.repeat(64), onchain: { chainId: 'solana-devnet', contractAddress: PROPOSAL_PROGRAM_ID, proposalId: accountFor(2) }, members: [{ proposalRowId: '7', changed: false }] }
             }
         });
         const result = await discoverProposalInputs({ apiBase: 'http://api', cities: ['zagreb'], fetchJson, log: message => logs.push(message) });
@@ -72,14 +90,16 @@ describe('agent named-plan discovery', () => {
     });
 
     it('propagates plan-detail read errors and refuses an authored-id collision', async () => {
-        const failingFetch = apiFetch({ plans: [{ slug: 'unavailable', proposalAccount: 'account', proposalRowIds: ['1'] }] });
+        const failingFetch = apiFetch({ plans: [planRecord({ slug: 'unavailable', account: accountFor(5), proposalRowIds: ['1'] })] });
         await expect(discoverProposalInputs({ apiBase: 'http://api', cities: [null], fetchJson: failingFetch }))
             .rejects.toThrow(/named plan unavailable detail request failed/);
 
         const collisionFetch = apiFetch({
             proposals: [{ id: '2', proposalId: 'plan:conflict' }],
-            plans: [{ slug: 'conflict', proposalAccount: 'plan-account', proposalRowIds: ['1'] }],
-            details: { conflict: { proposalRowIds: ['1'], members: [{ proposalRowId: '1', changed: false }] } }
+            plans: [planRecord({ slug: 'conflict', account: accountFor(6), proposalRowIds: ['1'] })],
+            details: { conflict: { slug: 'conflict', proposalRowIds: ['1'], planHash: 'a'.repeat(64),
+                onchain: { chainId: 'solana-devnet', contractAddress: PROPOSAL_PROGRAM_ID, proposalId: accountFor(6) },
+                members: [{ proposalRowId: '1', changed: false }] } }
         });
         await expect(discoverProposalInputs({ apiBase: 'http://api', cities: [null], fetchJson: collisionFetch }))
             .rejects.toThrow(/proposal identifier collision with named plan conflict/);
@@ -87,9 +107,9 @@ describe('agent named-plan discovery', () => {
 
     it('applies decoded terminal chain states and refuses missing or wrongly owned accounts', () => {
         const proposals = [
-            { planSlug: 'active', onchain: { proposalId: 'account-a' }, lifecycleStatus: 'Active' },
-            { planSlug: 'executed', onchain: { proposalId: 'account-b' }, lifecycleStatus: 'Active' },
-            { planSlug: 'expired', onchain: { proposalId: 'account-c' }, lifecycleStatus: 'Active' }
+            { planSlug: 'active', onchain: { chainId: 'solana-devnet', contractAddress: PROPOSAL_PROGRAM_ID, proposalId: accountFor(10) }, lifecycleStatus: 'Active' },
+            { planSlug: 'executed', onchain: { chainId: 'solana-devnet', contractAddress: PROPOSAL_PROGRAM_ID, proposalId: accountFor(11) }, lifecycleStatus: 'Active' },
+            { planSlug: 'expired', onchain: { chainId: 'solana-devnet', contractAddress: PROPOSAL_PROGRAM_ID, proposalId: accountFor(12) }, lifecycleStatus: 'Active' }
         ];
         proposals.forEach(plan => { plan.planHash = 'committed-hash'; });
         const infos = [0, 1, 3].map((status, index) => ({ owner: new PublicKey(PROPOSAL_PROGRAM_ID),
@@ -99,16 +119,17 @@ describe('agent named-plan discovery', () => {
         expect(() => applyPlanStatuses([proposals[0]], [{ owner: new PublicKey(PROPOSAL_PROGRAM_ID),
             data: { status: 0, imageUri: 'ugt-plan:different@hash' } }], { decodeState: data => data }))
             .toThrow(/does not commit to its current content/);
-        expect(() => applyPlanStatuses([proposals[0]], [null], { decodeState: data => data })).toThrow(/account-a is missing/);
+        expect(() => applyPlanStatuses([proposals[0]], [null], { decodeState: data => data })).toThrow(/chain account .* is missing/);
         expect(() => applyPlanStatuses([proposals[0]], [{ owner: PublicKey.default, data: { status: 0 } }], { decodeState: data => data }))
             .toThrow(/not owned by the proposal program/);
     });
 
     it('loads the same named plan once when it appears in more than one city result', async () => {
-        const plan = { slug: 'same-plan', proposalAccount: 'same-account', proposalRowIds: ['8'] };
+        const plan = planRecord({ slug: 'same-plan', account: accountFor(7), proposalRowIds: ['8'] });
         const fetchJson = apiFetch({
             plans: [plan],
-            details: { 'same-plan': { proposalRowIds: ['8'], members: [{ proposalRowId: '8', changed: false }] } }
+            details: { 'same-plan': { slug: 'same-plan', proposalRowIds: ['8'], planHash: 'a'.repeat(64), onchain: plan.onchain,
+                members: [{ proposalRowId: '8', changed: false }] } }
         });
         const result = await discoverProposalInputs({ apiBase: 'http://api', cities: ['zagreb', 'sibenik'], fetchJson });
         expect(result.filter(proposal => proposal.planSlug)).toHaveLength(1);

@@ -124,10 +124,41 @@ describe('parcel menu facts', () => {
     });
 
     it('shows the id the parcel panel title shows', () => {
-        expect(Model.displayParcelId({ BROJ_CESTICE: 1234, MATICNI_BROJ_KO: '335550' }, 'live-7')).toBe('HR-335550-1234');
-        expect(Model.displayParcelId({ broj_cestice: '12/3', cadastralMunicipality: { id: 335550 } }, 'x')).toBe('HR-335550-12/3');
+        expect(Model.displayParcelId({ BROJ_CESTICE: 1234, MATICNI_BROJ_KO: '335550' }, 'live-7')).toBe('live-7');
+        expect(Model.displayParcelId({ broj_cestice: '12/3', cadastralMunicipality: { id: 335550 } }, null)).toBe('HR-335550-12/3');
         expect(Model.displayParcelId({ BROJ_CESTICE: 1234 }, 'live-7')).toBe('live-7');
         expect(Model.displayParcelId(null, null)).toBe('');
+    });
+});
+
+describe('parcel identity presentation', () => {
+    it.each([
+        [{ cadastreParcelIds: ['opaque#source'] }, 'opaque#source', 'source'],
+        [{ estimated: true, cadastreParcelIds: ['EST-1'] }, 'EST-1', 'estimated'],
+        [{ cadastralPart: true, cadastreParcelIds: ['source'] }, 'component', 'sourcePart'],
+        [{ producedByProposalId: 'design', cadastralPart: true }, 'piece', 'formed'],
+        [{ producedByProposalId: 'design', readjustmentPiece: { role: 'plot', plotFingerprint: 'plot-a' } }, 'piece', 'plotPiece'],
+        [{ producedByProposalId: 'design', readjustmentPiece: { role: 'remainder' } }, 'piece', 'remainder'],
+        [{ liveParcelDerivation: 'corridor-arrangement' }, 'remainder', 'formed'],
+        [{ cadastreParcelIds: ['source'] }, 'slice', 'formed'],
+        [{ formedByProposalIds: ['design'] }, 'piece', 'formed'],
+        [{ isProposed: true }, 'opaque#not-evidence', 'unknown']
+    ])('classifies provenance %j with id %s as %s', (props, id, expected) => {
+        expect(Model.parcelIdentityKind(props, id)).toBe(expected);
+    });
+
+    it('does not display a formed piece using its source geometry reference', () => {
+        expect(Model.displayParcelId({
+            producedByProposalId: 'design', parcelIdentityKind: 'geometry-sha256-v1', geometryDisplayId: 'G1-source'
+        }, 'piece')).toBe('piece');
+        expect(Model.displayParcelId({
+            producedByProposalId: 'design', readjustmentPiece: { role: 'plot', plotFingerprint: 'plot-a' },
+            parcelIdentityKind: 'geometry-sha256-v1', geometryDisplayId: 'G1-source'
+        }, 'plot-piece')).toBe('plot-piece');
+        expect(Model.displayParcelId({
+            estimated:true, parcelIdentityKind:'geometry-sha256-v1', geometryDisplayId:'EST-short'
+        }, 'EST-long-hash')).toBe('EST-short');
+        expect(Model.parcelIdentityTitle('estimated').fallback).toBe('Estimated parcel {{number}}');
     });
 });
 

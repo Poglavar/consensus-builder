@@ -1,0 +1,17 @@
+[
+  {
+    "url": "https://mahabhunakasha.mahabhumi.gov.in/27/index.html",
+    "reason": "timeout"
+  },
+  {
+    "url": "https://bhumiabhilekh.maharashtra.gov.in/DistrictSCLR?districtId=10",
+    "reason": "timeout"
+  },
+  {
+    "url": "https://mahabhumi.gov.in/Mahabhumilink/MainDashboard/MainDashboard",
+    "reason": "404"
+  },
+  {
+    "url": "https://nandurbar.gov.in/en/talukawise-maps/"
+  }
+]

@@ -14,6 +14,7 @@ from pathlib import Path
 
 import parcel_discovery_coordination as coordination
 import parcel_discovery_outcomes as outcomes
+from parcel_city_storage import clear_qualification_scratch, forget_histories, finish_city, record_attempts, task_finished
 
 
 def _write(path, value):
@@ -48,7 +49,7 @@ def execute_task(runner_class, args):
     task_args.pipeline_lane = spec["lane"]
     child = runner_class(task_args)
     control = spec_path.parent
-    # Qualification artifacts and persistent workspace slots keep their original identities.
+    # Qualification evidence is temporary until its verified result is accepted.
     # Only this task's process/usage checkpoint is private to the subprocess.
     child.state_path, child.events_path = control / "state.json", control / "events.jsonl"
     child.run_dir = control / "runs"
@@ -76,7 +77,7 @@ def execute_task(runner_class, args):
             raise ValueError(f"Unknown pipeline lane: {lane}")
         if not systemic and not child.stop_requested:
             for city in cities:
-                child._record_shared_learning(city, lane, child._city_entry(city))
+                record_attempts(child, city, cohort)
     except Exception as exc:
         error = f"{type(exc).__name__}: {exc}"
     finally:
@@ -120,6 +121,8 @@ class ContinuousPipeline:
             if code in busy:
                 continue
             row = self.runner._city_entry(city)
+            if row.get("storageComplete"):
+                continue
             status = row.get("status", "pending")
             if lane == "research":
                 if status not in {"pending", "running"}:
@@ -149,7 +152,8 @@ class ContinuousPipeline:
                 if saved.get("status") in {"failed", "blocked-source", "rejected-source", "integration-blocked"}:
                     continue
                 fingerprint = self.runner._qualification_fingerprint(city, saved)
-                if saved.get("status") in {"integrated", "adapter-ready"} and (code, fingerprint) in self.validated:
+                if (fingerprint is not None and saved.get("status") in {"integrated", "adapter-ready"}
+                        and (code, fingerprint) in self.validated):
                     continue
                 packet = self.runner._packet(city, self.cohort)
                 if not self.runner._reviewed_city_receipt(city, packet):
@@ -161,6 +165,7 @@ class ContinuousPipeline:
         return selected
 
     def _start(self, lane, cities):
+        forget_histories(self.runner.state["cities"])
         runtime = self.runner._refresh_shared_runtime()
         task_id = f"{lane}-{uuid.uuid4().hex[:16]}"
         directory = self.runner.state_dir / "pipeline-tasks" / task_id
@@ -226,21 +231,23 @@ class ContinuousPipeline:
                         self.runner._skip_item(f"city:{code}", current, lane, result["error"])
                         child["status"] = current["status"]
             if lane == "qualification":
-                for key in ("qualification", "qualificationHistory", "admission"):
+                for key in ("qualification", "admission"):
                     if key in child:
                         current[key] = child[key]
-                current.setdefault("sharedFindings", {}).update(child.get("sharedFindings", {}))
                 if current.get("qualification", {}).get("status") in {"running", "ready-isolated"} and result.get("interrupted"):
                     current["qualification"]["status"] = "ready-isolated"
                 digest = current.get("qualification", {}).get("receiptSha256")
                 if (current.get("qualification", {}).get("status") in {"integrated", "adapter-ready"}
                         and [code, digest] in result.get("validatedStages", [])):
-                    self.validated.add((code, self.runner._qualification_fingerprint(self.by_code[code], current["qualification"])))
+                    fingerprint = self.runner._qualification_fingerprint(self.by_code[code], current["qualification"])
+                    if fingerprint is not None:
+                        self.validated.add((code, fingerprint))
             else:
                 current.update({k: v for k, v in child.items() if k not in
                                 {"qualification", "qualificationHistory", "admission", "wupIdentity", "pipelineFailures"}})
                 if current.get("status") == "running" or result.get("interrupted") and not child:
                     current["status"] = "pending" if lane == "research" else "research-complete"
+        forget_histories(self.runner.state["cities"])
         self.runner.state.setdefault("usage", {}).update(result.get("usage", {}))
         self.runner.state.setdefault("failedItems", {}).update(result.get("failedItems", {}))
         if result.get("adapterStageBlocked"):
@@ -256,6 +263,12 @@ class ContinuousPipeline:
         self.runner.log("pipeline task checkpoint", taskId=task_id, lane=lane,
                         cityCodes=spec["cityCodes"], error=bool(result.get("error")))
         self.runner.save_state()
+        if not result.get("interrupted"):
+            for code in spec["cityCodes"]:
+                finish_city(self.runner, self.by_code[code], self.cohort)
+            if lane == "qualification":
+                clear_qualification_scratch(self.runner)
+        task_finished(self.runner, directory, task_id)
 
     def recover(self):
         for task_id, saved in list(self.pipeline["tasks"].items()):

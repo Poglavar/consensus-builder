@@ -1,0 +1,29 @@
+[
+  {
+    "url": "https://d14fnjoywemmi.cloudfront.net/jklr/"
+  },
+  {
+    "url": "https://d14fnjoywemmi.cloudfront.net/jklr/assets/index-CKGBOSSj.js"
+  },
+  {
+    "url": "https://d14fnjoywemmi.cloudfront.net/jklr-api/api/v1/get-districts"
+  },
+  {
+    "url": "https://d14fnjoywemmi.cloudfront.net/jklr-api/api/v1/get-tehsil-by-district"
+  },
+  {
+    "url": "https://d14fnjoywemmi.cloudfront.net/jklr-api/api/v1/get-village-by-tehsil"
+  },
+  {
+    "url": "https://d14fnjoywemmi.cloudfront.net/jklr-api/api/v1/get-khewat-by-village"
+  },
+  {
+    "url": "https://d14fnjoywemmi.cloudfront.net/jklr-api/api/v1/get-khata-by-khewat"
+  },
+  {
+    "url": "https://d14fnjoywemmi.cloudfront.net/jklr-api/api/v1/get-jamabandi"
+  },
+  {
+    "url": "https://stategisportal.nic.in/stategisportal/home/map/1"
+  }
+]
