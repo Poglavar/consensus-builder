@@ -38,7 +38,7 @@ describe('database defaults and explicit upstream alternatives',()=>{
  });
  it('rechecks the published provider while the city defaults to DB',async()=>{
   parcelSourceCatalog.sources.push(descriptor);upstream();
-  const stored={parcels:[{parcelId:'HR-123456-1',overlapM2:1}],touched:[],coverage:'complete',source:'server:'+descriptor.id,subject:'declared-parcels'};
+  const stored={parcels:[{parcelId:'HR-123456-1',overlapM2:1}],touched:[],coverage:'complete',source:'server:'+descriptor.id,parcelSource:{sourceId:descriptor.id,snapshotId:'test-snapshot'},subject:'declared-parcels'};
   const db={query:vi.fn(async()=>({rows:[{id:1,city:'zagreb',binding:stored}]}))};
   expect((await computeBindingDrift(db,'1')).current.source).toBe(stored.source);expect(db.query).toHaveBeenCalledOnce();
  });
@@ -58,10 +58,10 @@ describe('database defaults and explicit upstream alternatives',()=>{
   expect(live.window.CityConfigManager.getCityConfig('split').parcels.sourceId).toBe('hr-dgu-oss-dkp-cestice');expect(live.scopes).toEqual(normal.scopes);
   expect(boot('?city=zagreb&parcelSource=unconfigured').window.CityConfigManager.getCurrentCityConfig().parcels.source).toBe('oss-wfs');
  });
- it('keeps every imported city on DB by default and validates all configured alternatives',()=>{
+ it('keeps other imported cities on DB by default and validates their configured alternatives',()=>{
   const normal=boot('?city=new_york').window.CityConfigManager;
   const live=boot('?city=new_york&parcelSource=live').window.CityConfigManager;
-  for(const city of ['zagreb','split','sibenik','belgrade','ljubljana','buenos_aires','new_york']){
+  for(const city of ['zagreb','split','sibenik','belgrade','buenos_aires','new_york']){
    expect(normal.getCityConfig(city).parcels.source).not.toBe('parcel-source');
    const alternative=normal.getCityConfig(city).parcels.liveSource;
    if(city==='belgrade'){expect(alternative).toBeUndefined();continue;}
@@ -71,6 +71,13 @@ describe('database defaults and explicit upstream alternatives',()=>{
    expect(configured.idPrefix).toBe(alternative.idPrefix);
    expect(parcelSourceForCity(city)).toBeNull();
   }
+ });
+ it('reads Ljubljana from GURS by default without an opt-in or an empty database query',()=>{
+  const parcels=boot('?city=ljubljana').window.CityConfigManager.getCurrentCityConfig().parcels;
+  expect(parcels).toMatchObject({source:'parcel-source',sourceId:'si-gurs-kn-parcele-wfs',idPrefix:'SI-',ownership:false});
+  expect(parcels.liveSource).toBeUndefined();
+  expect(parcelSourceForCity('ljubljana').descriptor.id).toBe('si-gurs-kn-parcele-wfs');
+  expect(parcelSourceForIds(['SI-100100000277259054']).descriptor.id).toBe('si-gurs-kn-parcele-wfs');
  });
  it('reads Denver live from Colorado OIT by default: its imported tables are gone',()=>{
   const parcels=boot('?city=colorado').window.CityConfigManager.getCurrentCityConfig().parcels;
