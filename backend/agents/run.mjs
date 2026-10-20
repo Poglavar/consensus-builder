@@ -314,7 +314,7 @@ async function parcelsForArea({ pool, apiBase, area, persona, runKey, day, runs,
             const parcels=fresh(parcelsFromSource(collection,{turf,place:area.label,minAreaM2:1200,maxAreaM2:20000}));
             const screened=await fetchHousingScreen(parcels,turf.bbox(turf.buffer(turf.bboxPolygon(window),0.85,{units:'kilometers'})),{turf,area});
             const eligible=screened.filter(p=>!p.housingScreen.excluded && p.housingScreen.transitDistanceM!==null && p.housingScreen.transitDistanceM<=800);
-            log(`affordabot ${area.city} window ${attempt+1}/3: ${collection.features.length} source parcels, ${parcels.length} sized, ${eligible.length} screened leads`);
+            log(`affordabot ${area.city} window ${attempt+1}/3: ${collection.features.length} source parcels, ${parcels.length} sized, ${eligible.length} screened leads; exclusions ${JSON.stringify(screened.reduce((counts,p)=>{const key=p.housingScreen.excludedBy || 'clear';counts[key]=(counts[key]||0)+1;return counts;},{}))}`);
             if(eligible.length) return {parcels:eligible.slice(0,limit),city:area.city,where:`${area.city} ${window.join(',')}`};
         }
         return {parcels:[],city:area.city,where:`${area.city} (3 bounded windows screened)`};

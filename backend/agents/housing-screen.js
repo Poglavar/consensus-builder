@@ -39,7 +39,8 @@ export function screenHousingParcels(parcels,evidence,{turf,area,now=new Date()}
         if(feature.properties.screen==='transit') continue;
         if(feature.properties.screen==='corridor' && !feature.properties.railway_type && ['parking_aisle','driveway'].includes(feature.properties.tags?.service)) continue;
         // Geographic expansion overestimates the metric buffer, then exact geometry decides.
-        const width=feature.properties.screen==='corridor' ? Math.max(8,(feature.properties.width_meters||0)/2+3) : feature.geometry.type==='Point' ? 20 : 0;
+        const path=['footway','path','steps','cycleway'].includes(feature.properties.highway_type);
+        const width=feature.properties.screen==='corridor' ? Math.max(path?1.5:8,(feature.properties.width_meters||0)/2+(path?0.5:3)) : feature.geometry.type==='Point' ? 20 : 0;
         const box=turf.bbox(feature), lat=Math.max(Math.abs(box[1]),Math.abs(box[3]));
         const dy=width/110000, dx=dy/Math.max(0.01,Math.cos(lat*Math.PI/180));
         const expanded=[box[0]-dx,box[1]-dy,box[2]+dx,box[3]+dy];
@@ -52,14 +53,15 @@ export function screenHousingParcels(parcels,evidence,{turf,area,now=new Date()}
     return parcels.map((p,index)=>{
         const ground=grounds[index].feature, center=turf.pointOnFeature(ground);
         const interior=turf.buffer(ground,-3,{units:'meters'});
-        const excluded=obstacles.some(f=>{
+        const obstruction=obstacles.find(f=>{
             const target=f.feature.properties.screen==='corridor' ? interior : ground;
             if(!target || !overlaps(grounds[index].box,f.box) || !turf.booleanIntersects(target,f.feature)) return false;
             const intersection=turf.intersect(target,f.feature);
             return intersection && turf.area(intersection)>1;
         });
+        const excluded=Boolean(obstruction);
         const distances=stops.map(f=>turf.distance(center,f,{units:'meters'}));
-        return {...p,housingArea:area,housingScreen:{complete:true,excluded,
+        return {...p,housingArea:area,housingScreen:{complete:true,excluded,excludedBy:obstruction?.feature.properties.screen || null,
             transitDistanceM:distances.length?Math.min(...distances):null,source:'OpenStreetMap via Overpass (ODbL)',
             observedAt:now.toISOString(),featuresReturned:evidence.features.length,vacancyVerified:false,roadInventoryComplete:false,buildingInventoryComplete:false}};
     });

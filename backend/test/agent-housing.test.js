@@ -28,7 +28,7 @@ describe('Affordabot housing research',()=>{
    expect(screened[0].housingScreen.excluded).toBe(true);expect(planHousingCandidates(screened,persona,{turf})).toEqual([]);
  });
  it('keeps off-street lots when a sidewalk merely touches the boundary',()=>{
-   const sidewalk=turf.lineString([[-.001,-.00007],[.002,-.00007]],{screen:'corridor',width_meters:1});
+   const sidewalk=turf.lineString([[-.001,0],[.002,0]],{screen:'corridor',highway_type:'footway',width_meters:1});
    expect(screenHousingParcels([parcel],{features:[sidewalk]},{turf,area})[0].housingScreen.excluded).toBe(false);
  });
  it('does not mistake a parking aisle for a public street parcel',()=>{
