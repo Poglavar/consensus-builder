@@ -1,7 +1,7 @@
 # Autokatastar plot playground
 
 A small browser demonstration of plausible plot divisions from prepared aerial imagery and
-mapped buildings, roads and water. It offers three locations, image-edge sensitivity and
+mapped buildings, roads and water. Every output plot is a four-sided rectangle. It offers three locations, image-edge sensitivity and
 street-alignment controls, manual seeds and dividing lines, local saved edits, and GeoJSON export.
 It is separate from the human annotation app and the frozen ParcelBench evaluations.
 
@@ -15,7 +15,7 @@ node world-parcels/parcel-bench/heuristic-demo/server.mjs
 ```
 
 Preparation needs Python `pyproj` and `shapely`. It verifies existing image hashes, copies local
-`proj4`, `polygon-clipping` and TopoJSON distributions and their licenses, and caches two bounded Overpass
+`proj4` and its license, and caches two bounded Overpass
 requests. It reuses the existing Croatian context sidecar. Failed network requests remain explicit;
 `--retry-overpass` retries a saved failure. Successful caches are reused without network access.
 The source crops must already exist: `output/target-review-v1/` for Mozambique and Nepal and
@@ -37,41 +37,47 @@ of the kind available in OpenCV; OpenCV itself is not a dependency.
 2. Rasterize mapped water and buffered road centrelines as barriers. Use mapped positive widths
    where present, otherwise explicit road-class defaults. Bridges and tunnels are not ground road
    barriers. Building footprints remain seed regions; conflicting water takes precedence and warns.
-3. Add seeds in sufficiently large unoccupied areas. These are geometric suggestions, not detected
-   buildings. Small seedless fragments below 10 m² may stay unassigned.
-4. Grow labels with deterministic multi-source shortest paths. RGB gradients raise crossing costs;
-   a street-oriented Manhattan-distance contribution biases growth towards nearby street directions.
-5. Give every four-connected output region its own plot identity. Construct exact cell unions and
-   extract their shared arcs with the installed `topojson-server` / `topojson-client` libraries.
-6. Straighten each internal shared arc once, retaining its junction endpoints. A constrained
-   Douglas–Peucker pass permits at most 2 m displacement from the original boundary, rejects
-   crossings of the boundary network, and protects building cells and each plot's seed/representative
-   cell. Outer road/water borders use a tighter one-cell (0.3 m) tolerance to remove raster steps;
-   excluded cell centres remain outside plots. Short segments remain where needed to protect geometry.
-   Rebuild neighbouring polygons from the same simplified arcs.
-7. Display these polygons as vector paths and export those same polygons in WGS84 longitude/latitude.
-   Plot inspection and areas use the final polygons, not the preliminary raster labels. Ground-cell
-   coverage is recalculated from the final polygons because tightened frontage can exclude edge cells.
+3. Choose an orthogonal frame per connected ground block, blending nearby building and street
+   directions. Conservatively resample ground into that frame: a rotated cell is usable only when
+   every source cell touched by its bounds belongs to the same block. Building-cell envelopes and
+   manual points become anchors. Infeasible envelopes remain reserved and unassigned.
+4. Recursively split the frame with straight, axis-aligned cuts that do not cross an anchor.
+   Whole-line image-edge support, child proportions and the balance of anchor counts choose cuts;
+   there is no nearest-seed distance or equidistance objective. Large open spaces use a 650 m²
+   target to stop subdivision, not a required output area.
+5. Fit a maximal interior rectangle inside each leaf, containing its anchors. Overlapping envelopes
+   can share a plot. Non-slicing arrangements fit groups one at a time while reserving other groups.
+   Every emitted plot has four corners, right angles and an aspect ratio at most 4:1. Open-ground
+   plots require at least 40 m² and 3 m width. Road/water edges, crop corners and incompatible
+   building arrangements can leave gaps; an infeasible fit stays unassigned instead of cutting a roof.
+6. Display and export the same vector rectangle. Raster labels are derived from these polygons for
+   coverage reporting; vectors own boundaries, hit testing and metric area. Plots never acquire
+   extra corners by clipping to an irregular block boundary.
 
-The **Location selector** changes examples. **Follow image edges** increases the cost of crossing
-colour changes. **Street alignment** changes the directional growth cost; it does not guarantee
-rectangles. **Add a building seed** adds a point where a mapped building or another desired plot is
-missing. **Draw a dividing line** takes two points, extends their line through the current ground
-block, and rejects lines crossing mapped buildings. It is a straight divider, not a freehand trace.
-**Explore plots** inspects estimated area. **Undo**, **Reset edits**, layer switches, pan and zoom
-support comparison. **Export plots** downloads the current completed result with provenance and
-the exact controls and edits that generated it.
+The **Location selector** changes examples. **Follow image edges** favours straight cuts along
+visible colour changes. **Street alignment** blends building and road directions; it changes
+orientation, while the rectangle constraint stays mandatory. **Add a building seed** supplies a
+point anchor where another plot is desired. **Draw a dividing line** takes two points, extends the
+line through the current ground block and rejects lines crossing mapped buildings. It is a straight
+divider, not a freehand trace. **Explore plots**, **Undo**, **Reset edits**, layer switches, pan and
+zoom support comparison. **Export plots** downloads the completed result with provenance, controls
+and edits. The UI reports covered buildings, open-ground plots and assigned ground; warnings count
+unassigned building anchors and rectangles containing multiple buildings.
 
 Local corrections are keyed by recipe, sample, imagery hash and feature-cache hash. Undo history
 is session-local. A changed source or recipe starts a fresh draft rather than migrating old edits.
-`illustrative-plots-v2` exports use `estimated: true` and `accuracy: unvalidated`; numbered IDs are
-local to a recomputation, not permanent parcel identities. Areas measure the straightened polygons
-in the source metric coordinate system. The export records the straightening tolerance and vertex
-counts. Geometry validity is not evidence of cadastral accuracy or ownership.
+`illustrative-plots-v3` exports contain one `Polygon` with one closed five-position ring per feature,
+`shape: rectangle`, `source_feature_ids` for every grouped building, `anchor_kind`, `anchor_count`,
+`estimated: true` and `accuracy: unvalidated`. Numbered plot IDs are local to a recomputation.
+Areas measure the displayed rectangle in the source metric coordinate system. The export records
+shape constraints and assigned/unassigned coverage. Rectangularity is defined in the source metric
+CRS; longitude/latitude angles are not the same as metric right angles.
 
-Intentional contract change, 2026-10-20: `browser-heuristic-v2` replaces the cell-by-cell display
-with shared straight borders. The old exact-cell export is not a second selectable output path;
-saved drafts start fresh under the new recipe identity.
+Intentional contract change, 2026-10-20: `browser-heuristic-v3` replaces distance growth and shared-arc
+simplification with rectangular subdivision. The earlier output path, TopoJSON runtime dependency
+and v2 draft identity are removed; v2 drafts are not migrated. This implements the user's request to
+require four-sided, roughly rectangular plots and drop equidistance requirements. Strict rectangles
+trade away complete coverage, particularly around curved roads, cropped roofs and shifted mapping.
 
 ## Sources and limits
 
@@ -83,7 +89,7 @@ saved drafts start fresh under the new recipe identity.
 - Source imagery and OSM can differ in date and registration. Missing, overlapping or shifted
   footprints affect results. One footprint seed does not establish a separate property; sheds can
   create excessive divisions. Image edges also describe roofs, trees, shadows and surface texture.
-  Fields receive invented geometric seeds. Roads use approximate widths. Unmapped roads and water
+  Open-ground rectangles are geometric suggestions. Roads use approximate widths. Unmapped roads and water
   are not semantically detected by the RGB gradients.
 
 These are three prepared examples, not arbitrary-location coverage or a measured accuracy result.
@@ -95,19 +101,19 @@ surveyed boundaries. No training, human-review labels, or cadastral records ente
 Run only the targeted files:
 
 ```sh
-node --test world-parcels/parcel-bench/heuristic-demo/test/core.test.mjs world-parcels/parcel-bench/heuristic-demo/test/geometry.test.mjs world-parcels/parcel-bench/heuristic-demo/test/regularize.test.mjs
+node --test world-parcels/parcel-bench/heuristic-demo/test/core.test.mjs world-parcels/parcel-bench/heuristic-demo/test/geometry.test.mjs
 python3 world-parcels/parcel-bench/heuristic-demo/test/test_prepare.py
 node --test world-parcels/parcel-bench/heuristic-demo/test/browser.test.mjs
 ```
 
-The first two commands are headless unit checks: fourteen JavaScript cases and two Python cases.
+The first two commands are headless unit checks: thirteen JavaScript cases and two Python cases.
 The last is one headless Playwright integration case, using the repository's `e2e` dependency and
 an ephemeral loopback server. It requires the prepared bundle and installed Chromium.
 It exercises three real examples, worker exports, control changes, saved seeds, undo and narrow
 layouts, and fails on uncaught browser errors. Downloads are also copied to
 `/tmp/heuristic-demo-exports/` for inspection.
 
-On 2026-10-20 the targeted checks passed. Independent Shapely checks of the three default v2 downloads
+Historical v2 result (superseded by the rectangle contract): on 2026-10-20 the targeted checks passed. Independent Shapely checks of the three default v2 downloads
 and one changed-control download found all geometries valid, with overlap and source-grid area
 errors below 0.001 m². Default examples produced 96, 45 and 43 plots respectively. Headed Chrome
 inspection is separate visual evidence; this does not establish measured plot accuracy.
@@ -132,6 +138,25 @@ cell, all seven geometry/straightening headless unit cases passed, and the singl
 integration case plus independent Shapely artifact checks passed again. Default border vertices
 fell from 6,706 to 1,887 (Mozambique), 5,746 to 1,702 (Nepal), and 7,689 to 1,980 (Croatia).
 No full suite was run and no completed run was stopped.
+
+Rectangle run record (2026-10-20): the three geographic-export headless unit cases first failed
+because a test read coverage outside `demo.stats`; correcting that path gave three passes.
+The new nine-case core headless unit run had one overly narrow edge-location assertion; checking
+that the cut favours the visible edge over the equidistant midpoint gave nine passes.
+After adding street-orientation and metric-cell checks, the targeted two-file JavaScript
+headless unit run passed all 13 cases; the Python preparation file passed both cases.
+The single headless Playwright integration case first rejected negligible projection-roundtrip
+slivers as overlaps. Independent Shapely measured a maximum of about 0.00000002 m²; an area-based
+1e-6 m² tolerance fixed the assertion. The case then passed, and passed again after final export
+statistic names and the vendor bundle were updated. No full suite was run and no run was stopped.
+
+The three default v3 examples produce 52, 42 and 31 rectangles, assigning 75.4%, 65.3% and 63.3%
+of ground cells respectively. They cover 62/94, 6/32 and 19/35 visible mapped building anchors.
+The remaining anchors are explicitly unassigned; these counts are heuristic coverage, not accuracy.
+Independent Shapely checks of actual browser downloads found valid four-corner polygons, maximum
+pair overlap below 1e-6 m² and reported-area error below 1e-5 m². No mapped building over 1 m²
+was split or partially covered by more than 5% in the three default exports and the sensitivity
+variant. Headed Chrome inspection covered all three examples and a 390 px phone layout.
 
 The UI uses shared semantic panels, fields, actions, disclosures, notices and metrics.
 `public/styles.css` owns presentation and palette roles, including the colours read by the raster

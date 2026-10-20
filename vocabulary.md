@@ -463,34 +463,36 @@ human review. [Mobile review contract](world-parcels/parcel-bench/annotation-app
 [validation and state](world-parcels/parcel-bench/annotation-app/public/model.mjs),
 [exporter](world-parcels/parcel-bench/annotation-app/export_reviews.mjs).
 
-A browser **illustrative plot** (`browser-heuristic-v2`, 2026-10-20) starts as one four-connected
-region generated from prepared imagery, mapped feature seeds/barriers and local manual corrections,
-then uses straightened shared vector borders as its displayed and exported geometry.
-It is a demonstration hypothesis with a recomputation-local identity, not a cadastral record,
-human visible-division observation, or registered ownership claim. RGB gradients are crossing
-costs; they do not classify roads, buildings or water. Mapped road/water barriers, whole-footprint
-building seeds, manual point seeds and generated open-ground seeds have distinct roles. A manual
-divider is an extended straight line clipped to a connected ground block, rejected if it crosses
-a mapped building. Water conflicts take precedence and warn. Tiny seedless fragments can remain
-unassigned. Street alignment biases the distance cost and does not guarantee rectangular plots.
+A browser **illustrative plot** (`browser-heuristic-v3`, 2026-10-20) is an oriented rectangle
+inferred from prepared imagery, mapped features and local manual corrections. It has four straight
+sides, metric right angles and an aspect ratio no greater than 4:1. It is a demonstration hypothesis
+with a recomputation-local identity, not a cadastral record, human visible-division observation or
+registered ownership claim. RGB gradients support candidate straight cuts; they do not classify
+roads, buildings or water. Mapped road/water barriers, building-cell anchors, manual point anchors
+and generated open-ground rectangles have distinct roles. A manual divider is an extended straight
+line clipped to a connected ground block, rejected if it crosses a mapped building. Water conflicts
+take precedence and warn.
 
-Shared internal arcs are simplified once for both neighbours, within 2 m of the initial boundary.
-Junction endpoints stay fixed. Outer road/water borders remove raster steps with a tighter one-cell
-(0.3 m in these examples) tolerance while excluded cell centres stay outside plots. Network crossings,
-building-cell clipping and changes to protected seed/representative-cell ownership are rejected.
-Required short segments remain. Initial raster labels locate the candidate divisions; the final
-vector polygons own displayed boundaries, hit testing and area measurements. Ground-cell coverage
-is recalculated from the final polygons; adjusted frontage can exclude previously covered edge cells.
+Each block has an orthogonal frame blending nearby building and road directions. Conservative
+resampling excludes rotated cells whose source-cell bounds touch another block or a barrier.
+Building-safe recursive cuts use image support, child proportions and anchor-count balance, with
+no seed-distance or equidistance objective. Whole anchor envelopes must fit a rectangle; overlapping
+envelopes can share one plot, and non-slicing layouts reserve other envelopes while fitting each
+group. Incompatible building fits and irregular road/crop edges remain unassigned and are counted.
+Open-ground rectangles require 40 m² and 3 m width; a 650 m² subdivision target is a heuristic, not
+a required parcel size. The displayed vector rectangles own hit testing and source-metric area;
+derived raster labels measure assigned ground cells. This is not an exhaustive land partition.
 
-The `illustrative-plots-v2` GeoJSON export retains these same polygons with holes, WGS84
-longitude/latitude, final source-metric polygon area in m², image and feature hashes, source attribution,
-controls and image-pixel edits. All features are explicitly estimated and unvalidated. Local drafts
-are bound to recipe and source hashes, while undo history is session-local; no compatibility reader
-or migration preserves a draft across changed source identity. The three-example playground does
-not change frozen evaluation records or integrate a runtime cadastre fallback. This intentionally
-replaces the v1 exact-cell output and draft recipe identity without a compatibility reader.
+The `illustrative-plots-v3` GeoJSON export preserves each rectangle as one `Polygon` with one closed
+five-position ring, WGS84 longitude/latitude, source-metric area in m², all grouped building source
+IDs, anchor kind/count, image and feature hashes, source attribution, controls and image-pixel edits.
+All features are explicitly estimated and unvalidated. Rectangularity is measured in the source
+metric CRS, not longitude/latitude angles. Local drafts are bound to recipe and source hashes;
+undo history is session-local. This intentionally replaces v2 distance growth, shared-arc
+straightening and draft identity without a compatibility reader. The three-example playground does
+not change frozen evaluation records or integrate a runtime cadastre fallback.
 [Recipe](world-parcels/parcel-bench/heuristic-demo/public/core.mjs),
-[straightening](world-parcels/parcel-bench/heuristic-demo/public/regularize.mjs),
+[rectangular subdivision](world-parcels/parcel-bench/heuristic-demo/public/rectangles.mjs),
 [export](world-parcels/parcel-bench/heuristic-demo/public/geometry.mjs),
 [usage and limits](world-parcels/parcel-bench/heuristic-demo/README.md).
 

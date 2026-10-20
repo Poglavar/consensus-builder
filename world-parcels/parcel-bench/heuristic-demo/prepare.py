@@ -44,14 +44,8 @@ TARGETS = (
     {"id": "zadar-tile-2582-31827", "region": "Croatia", "title": "Zadar"},
 )
 VENDOR_FILES = (
-    (ROOT.parent.parent / "backend/node_modules/topojson-server/dist/topojson-server.min.js", "vendor/topojson-server.js"),
-    (ROOT.parent.parent / "backend/node_modules/topojson-server/LICENSE", "vendor/topojson-server-LICENSE.md"),
-    (ROOT.parent.parent / "backend/node_modules/topojson-client/dist/topojson-client.min.js", "vendor/topojson-client.js"),
-    (ROOT.parent.parent / "backend/node_modules/topojson-client/LICENSE", "vendor/topojson-client-LICENSE.md"),
     (ROOT.parent.parent / "frontend/vendor/proj4-2.22.0/proj4.js", "vendor/proj4.js"),
     (ROOT.parent.parent / "backend/node_modules/proj4/LICENSE.md", "vendor/proj4-LICENSE.md"),
-    (ROOT.parent.parent / "backend/node_modules/polygon-clipping/dist/polygon-clipping.umd.min.js", "vendor/polygon-clipping.js"),
-    (ROOT.parent.parent / "backend/node_modules/polygon-clipping/LICENSE.md", "vendor/polygon-clipping-LICENSE.md"),
 )
 
 

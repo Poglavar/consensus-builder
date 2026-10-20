@@ -1,5 +1,6 @@
-// Deterministic raster plot hypotheses: mapped barriers, intact building seeds and image-cost growth.
-export const RECIPE = 'browser-heuristic-v2';
+// Prepare mapped barriers and whole-building anchors, then fit strict oriented rectangular plots.
+import { rectangularPartition } from './rectangles.mjs';
+export const RECIPE = 'browser-heuristic-v3';
 export const DEFAULTS = Object.freeze({ sensitivity: 55, rectangularity: 65 });
 const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
 const around = [[1, 0], [0, 1], [-1, 0], [0, -1]];
@@ -90,101 +91,24 @@ export function connectedGround(barrier, width, height) {
   return { ids, blocks };
 }
 
-class Heap {
-  constructor() { this.items = []; this.costs = []; }
-  push(item, cost) {
-    let p = this.items.length; this.items.push(item); this.costs.push(cost);
-    while (p) { const parent = (p - 1) >> 1; if (this.costs[parent] <= cost) break;
-      this.items[p] = this.items[parent]; this.costs[p] = this.costs[parent]; p = parent; }
-    this.items[p] = item; this.costs[p] = cost;
-  }
-  pop() {
-    const result = [this.items[0], this.costs[0]], item = this.items.pop(), cost = this.costs.pop(), n = this.items.length;
-    if (n) {
-      let p = 0;
-      while (p * 2 + 1 < n) { let child = p * 2 + 1;
-        if (child + 1 < n && this.costs[child + 1] < this.costs[child]) child++;
-        if (this.costs[child] >= cost) break;
-        this.items[p] = this.items[child]; this.costs[p] = this.costs[child]; p = child;
+function blockAngle(block, features, sx, sy, alignment) {
+  const direction = (lines, isRoad) => {
+    let cosine = 0, sine = 0, sum = 0;
+    for (const line of lines) {
+      if (line.bridge || line.tunnel) continue;
+      for (const points of isRoad ? [line.points] : line.rings) for (let j = 1; j < points.length; j++) {
+        const a = [points[j - 1][0] * sx, points[j - 1][1] * sy], b = [points[j][0] * sx, points[j][1] * sy];
+        const dx = b[0] - a[0], dy = b[1] - a[1], length = Math.hypot(dx, dy);
+        const distance = Math.hypot((a[0] + b[0]) / 2 - block.center[0], (a[1] + b[1]) / 2 - block.center[1]);
+        const weight = length / (16 + distance) ** 2, angle = Math.atan2(dy, dx);
+        cosine += Math.cos(4 * angle) * weight; sine += Math.sin(4 * angle) * weight; sum += weight;
       }
-      this.items[p] = item; this.costs[p] = cost;
     }
-    return result;
-  }
-  get size() { return this.items.length; }
-}
-
-function blockAngle(block, roads, sx, sy) {
-  let cosine = 0, sine = 0, sum = 0;
-  for (const road of roads) {
-    if (road.bridge || road.tunnel) continue;
-    for (let j = 1; j < road.points.length; j++) {
-      const a = [road.points[j - 1][0] * sx, road.points[j - 1][1] * sy], b = [road.points[j][0] * sx, road.points[j][1] * sy];
-      const dx = b[0] - a[0], dy = b[1] - a[1], length = Math.hypot(dx, dy);
-      const distance = Math.hypot((a[0] + b[0]) / 2 - block.center[0], (a[1] + b[1]) / 2 - block.center[1]);
-      const weight = length / (16 + distance), angle = Math.atan2(dy, dx);
-      cosine += Math.cos(4 * angle) * weight; sine += Math.sin(4 * angle) * weight; sum += weight;
-    }
-  }
-  return { angle: Math.atan2(sine, cosine) / 4, coherence: sum ? Math.hypot(sine, cosine) / sum : 0 };
-}
-
-export function grow(seeds, barrier, edge, width, height, blocks, settings) {
-  const labels = seeds.slice(), costs = new Float64Array(seeds.length).fill(Infinity), queue = new Heap();
-  const moves = [[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [1, -1], [-1, 1], [-1, -1]];
-  const steps = blocks.blocks.map(block => {
-    if (!block) return null;
-    const r = settings.rectangularity / 100 * block.coherence, c = Math.cos(block.angle), s = Math.sin(block.angle);
-    // A street-oriented L1 cost favours long, aligned plot sides. It does not promise rectangles.
-    return moves.map(([dx, dy]) => Math.hypot(dx, dy) * (1 - r) + r * (Math.abs(dx * c + dy * s) + Math.abs(-dx * s + dy * c)));
-  });
-  for (let i = 0; i < seeds.length; i++) if (seeds[i]) { costs[i] = 0; queue.push(i, 0); }
-  while (queue.size) {
-    const [p, cost] = queue.pop(); if (cost > costs[p]) continue;
-    const x = p % width, y = (p / width) | 0, localSteps = steps[blocks.ids[p]];
-    for (let k = 0; k < moves.length; k++) {
-      const [dx, dy] = moves[k], xx = x + dx, yy = y + dy, q = yy * width + xx;
-      if (xx < 0 || xx >= width || yy < 0 || yy >= height || barrier[q] || seeds[q]) continue;
-      // Never cut diagonally through a one-cell road, manual divider or water boundary.
-      if (dx && dy && (barrier[y * width + xx] || barrier[yy * width + x])) continue;
-      const candidate = cost + localSteps[k] * (1 + settings.sensitivity / 100 * 12 * Math.max(edge[p], edge[q]) ** 2);
-      if (candidate < costs[q] - 1e-9) { costs[q] = candidate; labels[q] = labels[p]; queue.push(q, candidate); }
-    }
-  }
-  return labels;
-}
-
-function addOpenSeeds(seeds, barrier, blocks, width, height, cellM, metadata) {
-  // Distance from existing seeds and hard boundaries identifies sizeable unoccupied interiors.
-  const distances = new Int32Array(seeds.length).fill(-1), queue = new Int32Array(seeds.length);
-  let head = 0, tail = 0;
-  for (let i = 0; i < seeds.length; i++) {
-    const x = i % width, y = (i / width) | 0;
-    if (seeds[i] || barrier[i] || !x || !y || x === width - 1 || y === height - 1) { distances[i] = 0; queue[tail++] = i; }
-  }
-  while (head < tail) {
-    const p = queue[head++], x = p % width, y = (p / width) | 0;
-    for (const [dx, dy] of around) {
-      const xx = x + dx, yy = y + dy, q = yy * width + xx;
-      if (xx >= 0 && xx < width && yy >= 0 && yy < height && distances[q] < 0) { distances[q] = distances[p] + 1; queue[tail++] = q; }
-    }
-  }
-  const usedBlocks = new Set(), blocked = new Uint8Array(seeds.length), candidates = [];
-  for (let i = 0; i < seeds.length; i++) {
-    if (seeds[i]) usedBlocks.add(blocks.ids[i]);
-    if (!barrier[i] && !seeds[i]) candidates.push(i);
-  }
-  candidates.sort((a, b) => distances[b] - distances[a] || a - b);
-  const minimum = 13 / cellM, spacing = 23 / cellM;
-  for (const i of candidates) {
-    const block = blocks.blocks[blocks.ids[i]];
-    if (blocked[i] || (usedBlocks.has(block.id) && distances[i] < minimum) || block.cells * cellM ** 2 < 10) continue;
-    const id = metadata.length, point = [i % width, (i / width) | 0];
-    metadata.push({ id, kind: 'generated', source_id: null, point });
-    seeds[i] = id; usedBlocks.add(block.id);
-    disk(blocked, width, height, ...point, spacing, 1);
-    if (metadata.length > 250) break;
-  }
+    return { x: sum ? cosine / sum : 0, y: sum ? sine / sum : 0, sum };
+  };
+  const roads = direction(features.roads, true), buildings = direction(features.buildings, false);
+  const mix = !roads.sum ? 0 : !buildings.sum ? 1 : alignment / 100;
+  return { angle: Math.atan2(roads.y * mix + buildings.y * (1 - mix), roads.x * mix + buildings.x * (1 - mix)) / 4 };
 }
 
 export function compute({ sample, rgba, width = 512, height = 512, settings = DEFAULTS, edits = { seeds: [], dividers: [] } }) {
@@ -192,6 +116,8 @@ export function compute({ sample, rgba, width = 512, height = 512, settings = DE
   for (const key of ['sensitivity', 'rectangularity']) if (!Number.isFinite(settings[key]) || settings[key] < 0 || settings[key] > 100) throw new Error('Invalid controls.');
   const sx = width / sample.width, sy = height / sample.height, n = width * height;
   const cellM = (sample.bbox[2] - sample.bbox[0]) / width;
+  const cellY = (sample.bbox[3] - sample.bbox[1]) / height;
+  if (!Number.isFinite(cellM) || cellM <= 0 || Math.abs(cellM - cellY) > 1e-8) throw new Error('Rectangular plots require square metric processing cells.');
   const barrier = new Uint8Array(n), seeds = new Int32Array(n), buildings = new Uint8Array(n), metadata = [null], warnings = [];
   const features = sample.features, scalePoints = points => points.map(([x, y]) => [x * sx - 0.5, y * sy - 0.5]);
   for (const building of features.buildings) {
@@ -227,26 +153,25 @@ export function compute({ sample, rgba, width = 512, height = 512, settings = DE
     if (!Number.isFinite(x + y) || x < 0 || y < 0 || x >= width || y >= height || barrier[i] || buildings[i]) throw new Error('Place the new seed on open ground, outside mapped buildings and roads.');
     const id = metadata.length; seeds[i] = id; metadata.push({ id, kind: 'manual', source_id: null, point: [x, y] });
   }
-  addOpenSeeds(seeds, barrier, blocks, width, height, cellM, metadata);
-  for (const block of blocks.blocks.slice(1)) Object.assign(block, blockAngle(block, features.roads, sx, sy));
-  const edge = imageEdges(rgba, width, height), labels = grow(seeds, barrier, edge, width, height, blocks, settings);
-  // Raster connectivity is plot identity: a single seed cannot silently join pieces across a barrier.
-  const seen = new Uint8Array(n), connected = new Int32Array(n), queue = new Int32Array(n), regions = [null];
-  for (let i = 0; i < n; i++) if (labels[i] && !seen[i]) {
-    const id = regions.length, seed = labels[i]; let head = 0, tail = 1, xsum = 0, ysum = 0;
-    seen[i] = 1; queue[0] = i;
-    while (head < tail) {
-      const p = queue[head++], x = p % width, y = (p / width) | 0; connected[p] = id; xsum += x; ysum += y;
-      for (const [dx, dy] of around) { const xx = x + dx, yy = y + dy, q = yy * width + xx;
-        if (xx >= 0 && xx < width && yy >= 0 && yy < height && !seen[q] && labels[q] === seed) { seen[q] = 1; queue[tail++] = q; }
-      }
-    }
-    regions.push({ id, ...metadata[seed], id, seed_id: seed, cells: tail, area_m2: tail * cellM ** 2, center: [xsum / tail, ysum / tail] });
-  }
+  for (const block of blocks.blocks.slice(1)) Object.assign(block, blockAngle(block, features, sx, sy, settings.rectangularity));
+  const edge = imageEdges(rgba, width, height);
+  const partition = rectangularPartition({ width, height, blocks, seedLabels: seeds, metadata, edge, cellM, settings });
+  const labels = new Int32Array(n);
+  for (const plot of partition.plots) paintPolygon(labels, width, height, plot.polygons[0], plot.id);
   let ground = 0, covered = 0;
-  for (let i = 0; i < n; i++) { if (!barrier[i]) ground++; if (connected[i]) covered++; }
-  return { recipe: RECIPE, width, height, labels: connected, barrier, buildings, edge, seeds: metadata.slice(1), regions: regions.slice(1), warnings,
-    stats: { plots: regions.length - 1, buildingSeeds: new Set(regions.slice(1).filter(r => r.kind === 'building').map(r => r.source_id)).size,
-      manualSeeds: edits.seeds.length, generatedSeeds: metadata.filter(m => m?.kind === 'generated').length,
+  for (let i = 0; i < n; i++) { if (!barrier[i]) ground++; if (labels[i]) covered++; }
+  const visibleSeeds = new Set(seeds.filter(Boolean));
+  const missedBuildings = [...visibleSeeds].filter(id => metadata[id].kind === 'building' && !partition.coveredSeeds.has(id));
+  const missedManual = [...visibleSeeds].filter(id => metadata[id].kind === 'manual' && !partition.coveredSeeds.has(id));
+  if (missedBuildings.length) warnings.push(`${missedBuildings.length} mapped buildings cannot fit a rectangle here and remain unassigned.`);
+  if (missedManual.length) warnings.push(`${missedManual.length} added seeds cannot fit a rectangle here and remain unassigned.`);
+  const grouped = partition.regions.filter(r => r.source_ids.length > 1).length;
+  if (grouped) warnings.push(`${grouped} rectangles contain multiple mapped buildings because no building-safe straight cut separates them.`);
+  return { recipe: RECIPE, width, height, labels, barrier, buildings, edge, seeds: metadata.slice(1),
+    plots: partition.plots, regions: partition.regions, boundaries: partition.boundaries, rectangle_constraints: partition.rectangle_constraints, warnings,
+    stats: { plots: partition.plots.length, coveredBuildings: new Set(partition.regions.flatMap(r => r.source_ids)).size,
+      mappedBuildings: [...visibleSeeds].filter(id => metadata[id].kind === 'building').length, unassignedBuildings: missedBuildings.length,
+      groupedBuildingPlots: grouped, manualSeeds: edits.seeds.length, unassignedManualSeeds: missedManual.length,
+      generatedPlots: partition.regions.filter(r => r.kind === 'generated').length,
       groundCoverage: ground ? covered / ground : 0, unassigned_m2: (ground - covered) * cellM ** 2, blocks: blocks.blocks.length - 1 } };
 }

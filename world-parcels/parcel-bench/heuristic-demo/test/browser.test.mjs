@@ -7,6 +7,13 @@ import { createDemoServer } from '../server.mjs';
 
 const require = createRequire(new URL('../../../../e2e/package.json', import.meta.url));
 const { chromium } = require('playwright');
+const geoRequire = createRequire(new URL('../../../../backend/package.json', import.meta.url));
+const project = geoRequire('proj4'), { intersection } = geoRequire('polygon-clipping');
+const { PROJECTIONS } = await import('../public/geometry.mjs');
+const ringArea = ring => Math.abs(ring.slice(1).reduce((sum, point, i) =>
+  sum + ring[i][0] * point[1] - point[0] * ring[i][1], 0) / 2);
+const multiPolygonArea = polygons => polygons.reduce((sum, polygon) => sum + ringArea(polygon[0])
+  - polygon.slice(1).reduce((holes, ring) => holes + ringArea(ring), 0), 0);
 
 const EXAMPLES = [
   { id: 'magoanine-c-west-houses', title: 'Magoanine C west houses', lon: [32.4, 32.8], lat: [-26.1, -25.6] },
@@ -56,17 +63,46 @@ async function exportCollection(page, sampleId) {
   return collection;
 }
 
-function assertGeoJson(collection, example) {
+function assertGeoJson(collection, example, sample) {
   assert.equal(collection.type, 'FeatureCollection');
   assert(collection.features.length > 0, 'export contains plot polygons');
-  assert.equal(collection.demo.schema, 'illustrative-plots-v2');
-  assert(collection.demo.straightening.output_vertices < collection.demo.straightening.input_vertices, 'shared borders were straightened');
-  const positions = collection.features.flatMap(feature => feature.geometry.coordinates.flat(2));
+  assert.equal(collection.demo.schema, 'illustrative-plots-v3');
+  assert.equal(collection.demo.recipe, 'browser-heuristic-v3');
+  assert.equal(collection.demo.rectangle_constraints.sides, 4);
+  assert(Number.isFinite(collection.demo.stats.unassigned_m2) && collection.demo.stats.unassigned_m2 >= 0,
+    'unassigned ground area is explicit');
+  const positions = collection.features.flatMap(feature => feature.geometry.coordinates.flat(1));
   assert(positions.length > 0, 'export contains polygon coordinates');
   for (const [lon, lat] of positions) {
     assert(Number.isFinite(lon) && Number.isFinite(lat), 'projected export coordinate is finite');
     assert(lon >= example.lon[0] && lon <= example.lon[1], `longitude ${lon} is within ${example.title}`);
     assert(lat >= example.lat[0] && lat <= example.lat[1], `latitude ${lat} is within ${example.title}`);
+  }
+  const metric = collection.features.map(feature => {
+    assert.equal(feature.geometry.type, 'Polygon');
+    assert.equal(feature.geometry.coordinates.length, 1, 'a rectangle has no holes');
+    const ring = feature.geometry.coordinates[0];
+    assert.equal(ring.length, 5, 'exported footprint has four corners plus closure');
+    assert.deepEqual(ring[0], ring.at(-1));
+    const [x0, y0] = sample.bbox;
+    const local = ring.map(point => project('EPSG:4326', PROJECTIONS[sample.crs], point)
+      .map((coordinate, axis) => coordinate - [x0, y0][axis]));
+    const edges = local.slice(1).map((point, i) => [point[0] - local[i][0], point[1] - local[i][1]]);
+    const lengths = edges.map(([dx, dy]) => Math.hypot(dx, dy));
+    for (let i = 0; i < 4; i++) {
+      const [ax, ay] = edges[i], [bx, by] = edges[(i + 1) % 4];
+      assert(Math.abs(ax * bx + ay * by) < 0.05, 'adjacent sides are perpendicular in source metric');
+      assert(Math.abs(lengths[i] - lengths[(i + 2) % 4]) < 0.05, 'opposite sides have equal lengths');
+    }
+    assert.equal(feature.properties.shape, 'rectangle');
+    assert(Array.isArray(feature.properties.source_feature_ids), 'source_feature_ids is always an array');
+    assert(Number.isInteger(feature.properties.anchor_count));
+    return [[local]];
+  });
+  for (let i = 0; i < metric.length; i++) for (let j = i + 1; j < metric.length; j++) {
+    // Back-projection introduces tiny floating-point slivers; measure overlap area in translated metres.
+    const overlapM2 = multiPolygonArea(intersection(metric[i], metric[j]));
+    assert(overlapM2 < 1e-6, `features ${i} and ${j} overlap by only ${overlapM2} m²`);
   }
 }
 
@@ -128,6 +164,7 @@ test('prepared locations load, export projected polygons, and remain editable on
       if (new URL(url).origin !== allowedOrigin) externalRequests.push(url);
     });
     await page.goto(baseUrl, { waitUntil: 'domcontentloaded' });
+    const bundle = JSON.parse(await readFile(new URL('../../output/heuristic-demo-v1/bundle.json', import.meta.url), 'utf8'));
 
     for (const example of EXAMPLES) {
       await page.locator('#location').selectOption(example.id);
@@ -136,11 +173,13 @@ test('prepared locations load, export projected polygons, and remain editable on
       assert.equal(await page.locator('#add-seed').isEnabled(), true);
       assert.equal(await page.locator('#export').isEnabled(), true);
       const collection = await exportCollection(page, example.id);
-      assertGeoJson(collection, example);
+      const sourceSample = bundle.samples.find(sample => sample.id === example.id);
+      assert(sourceSample, `bundle includes ${example.id}`);
+      assertGeoJson(collection, example, sourceSample);
       assert.equal(await page.locator('#viewer .plot-face').count(), collection.features.length, 'the displayed vector plots match the export count');
       assert((await page.locator('#viewer .plot-boundaries').getAttribute('d')).length > 0, 'shared straight borders are drawn as vector paths');
-      exportedStats.push({ id: example.id, plots: collection.demo.stats.plots, buildings: collection.demo.stats.buildingSeeds,
-        generatedSeeds: collection.demo.stats.generatedSeeds, features: collection.features.length });
+      exportedStats.push({ id: example.id, plots: collection.demo.stats.plots, buildings: collection.demo.stats.coveredBuildings,
+        generatedPlots: collection.demo.stats.generatedPlots, features: collection.features.length });
     }
 
     // Change a real worker control, then persist a manual seed across a reload and undo a later edit.
@@ -153,16 +192,24 @@ test('prepared locations load, export projected polygons, and remain editable on
     await waitReady(page, 'Zadar');
     const changedSettings = await exportCollection(page, 'zadar-slider-88');
     assert.equal(changedSettings.demo.settings.sensitivity, 88, 'the slider value reaches worker output');
+    const rectangularity = page.locator('#rectangularity');
+    await rectangularity.evaluate(element => {
+      element.value = '76';
+      element.dispatchEvent(new Event('input', { bubbles: true }));
+      element.dispatchEvent(new Event('change', { bubbles: true }));
+    });
+    await waitReady(page, 'Zadar');
+    const changedRectangularity = await exportCollection(page, 'zadar-rectangularity-76');
+    assert.equal(changedRectangularity.demo.settings.rectangularity, 76, 'the rectangularity slider reaches worker output');
 
     await page.locator('#location').selectOption('magoanine-c-west-houses');
     await waitReady(page, 'Magoanine C west houses');
-    const bundle = JSON.parse(await readFile(new URL('../../output/heuristic-demo-v1/bundle.json', import.meta.url), 'utf8'));
     const mozambique = bundle.samples.find(sample => sample.id === 'magoanine-c-west-houses');
     await page.locator('#add-seed').click();
     await tapImagePoint(page, 300, 300);
     await waitReady(page, 'Magoanine C west houses');
     const saved = await page.evaluate(() => Object.entries(localStorage)
-      .filter(([key]) => key.startsWith('browser-heuristic-v2:'))
+      .filter(([key]) => key.startsWith('browser-heuristic-v3:'))
       .map(([key, value]) => ({ key, value: JSON.parse(value) })));
     const savedEntry = saved.find(entry => entry.value.edits.seeds.length === 1);
     assert(savedEntry, 'one manual seed is stored in this browser');
@@ -184,7 +231,7 @@ test('prepared locations load, export projected polygons, and remain editable on
       await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
       const dimensions = await page.evaluate(() => ({ viewport: window.innerWidth, document: document.documentElement.scrollWidth }));
       assert(dimensions.document <= dimensions.viewport, `${width}px viewport has no horizontal page overflow (${dimensions.document}px)`);
-      for (const selector of ['#add-seed', '#divide', '#undo', '#export']) {
+      for (const selector of ['#add-seed', '#divide', '#undo', '#export', '#rectangularity']) {
         const control = page.locator(selector);
         assert(await control.isVisible(), `${selector} remains visible at ${width}px`);
         if (selector !== '#undo' || await control.isEnabled()) assert(await control.isEnabled(), `${selector} remains actionable at ${width}px`);

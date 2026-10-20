@@ -785,3 +785,5 @@ The user requires only per-city failed URL lists and working settings plus share
 - 2026-10-19: The user chose the current project domain for semantic vocabulary identifiers; use the clear `/vocabulary/` path and versioned definitions so published meanings stay stable.
 
 - 2026-10-20: Apartment daylight reuses the stop viewer's SunCalc astronomy, compresses a Zagreb civil day into 20 seconds, and casts window-aware shadows with an assumed closed ceiling; unconfirmed north remains explicit and adjustable.
+
+- 2026-10-20: The user asked for four-sided, roughly rectangular illustrative plots and dropped equidistance requirements; the browser demo now uses rectangle-first subdivision, with incompatible fits explicitly unassigned.

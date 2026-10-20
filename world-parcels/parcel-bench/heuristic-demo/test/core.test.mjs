@@ -1,7 +1,11 @@
 // Small synthetic scenes verify the browser-independent segmentation contract and its controls.
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { compute, DEFAULTS, grow, imageEdges, paintPolygon } from '../public/core.mjs';
+import { compute, DEFAULTS, imageEdges, paintPolygon } from '../public/core.mjs';
+import { pointInPolygons } from '../public/geometry.mjs';
+import { createRequire } from 'node:module';
+const require = createRequire(new URL('../../../../backend/package.json', import.meta.url));
+const { intersection } = require('polygon-clipping');
 
 function flatRgba(width, height, rgb = [128, 128, 128]) {
   const rgba = new Uint8ClampedArray(width * height * 4);
@@ -16,11 +20,6 @@ function sample(width = 32, height = 32, features = {}) {
     width, height, bbox: [0, 0, width, height],
     features: { buildings: [], roads: [], water: [], waterways: [], ...features },
   };
-}
-
-function block(width, height, angle = 0, coherence = 0) {
-  const n = width * height;
-  return { ids: new Int32Array(n).fill(1), blocks: [null, { id: 1, cells: n, center: [width / 2, height / 2], angle, coherence }] };
 }
 
 function regionAt(result, width, x, y) {
@@ -73,7 +72,7 @@ test('a manual divider separates one open block and a divider crossing a buildin
     settings: DEFAULTS, edits: { seeds: [], dividers: [[[4, 16], [7, 16]]] } }), /crosses a mapped building/);
 });
 
-test('manual seed survives automatic open-ground seeding and has a distinct manual region', () => {
+test('manual seed anchors a distinct manual rectangle', () => {
   const width = 32, height = 32;
   const result = compute({ sample: sample(width, height), rgba: flatRgba(width, height), width, height,
     settings: DEFAULTS, edits: { seeds: [[6, 6]], dividers: [] } });
@@ -96,34 +95,111 @@ test('same image, features, and controls produce the same raster labels', () => 
   assert.deepEqual(first.stats, second.stats);
 });
 
-test('a strong RGB boundary changes which seed reaches pixels on the far side', () => {
-  const width = 40, height = 24, n = width * height;
-  const seeds = new Int32Array(n), barrier = new Uint8Array(n);
-  seeds[12 * width + 6] = 1;
-  seeds[12 * width + 33] = 2;
-  const blocks = block(width, height);
-  const flat = flatRgba(width, height), divided = flat.slice();
-  for (let y = 0; y < height; y++) for (let x = 13; x < width; x++) {
-    const i = (y * width + x) * 4;
-    divided[i] = divided[i + 1] = divided[i + 2] = 0;
+function assertRectangles(result) {
+  const geometries = result.plots.map(plot => plot.polygons);
+  for (const [index, plot] of result.plots.entries()) {
+    const ring = plot.polygons[0][0];
+    assert.equal(ring.length, 5, `plot ${plot.id} has four corners and closure`);
+    assert.deepEqual(ring[0], ring.at(-1));
+    const edges = ring.slice(1).map((point, i) => [point[0] - ring[i][0], point[1] - ring[i][1]]);
+    const lengths = edges.map(([x, y]) => Math.hypot(x, y));
+    for (let i = 0; i < 4; i++) {
+      const [ax, ay] = edges[i], [bx, by] = edges[(i + 1) % 4];
+      assert(Math.abs(ax * bx + ay * by) < 1e-6, `plot ${plot.id} has right-angle corners`);
+      assert(Math.abs(lengths[i] - lengths[(i + 2) % 4]) < 1e-6, `plot ${plot.id} has equal opposite sides`);
+    }
+    assert(Math.max(...lengths) / Math.min(...lengths) <= 4 + 1e-6, `plot ${plot.id} respects max aspect ratio`);
+    assert.equal(result.regions[index].id, plot.id);
   }
-  const noEdge = imageEdges(flat, width, height), rgbEdge = imageEdges(divided, width, height);
-  assert(Math.max(...rgbEdge) > Math.max(...noEdge), 'the RGB transition contributes a detectable edge cost');
-  const settings = { sensitivity: 100, rectangularity: 0 };
-  const plain = grow(seeds, barrier, noEdge, width, height, blocks, settings);
-  const edgeAware = grow(seeds, barrier, rgbEdge, width, height, blocks, settings);
-  assert.notDeepEqual(Array.from(edgeAware), Array.from(plain), 'the color boundary shifts the plot frontier');
-  assert.notEqual(edgeAware[10 * width + 15], plain[10 * width + 15]);
+  for (let i = 0; i < geometries.length; i++) for (let j = i + 1; j < geometries.length; j++) {
+    assert.equal(intersection(geometries[i], geometries[j]).length, 0, `plots ${i + 1} and ${j + 1} do not overlap`);
+  }
+}
+
+test('computed output is non-overlapping rectangles, protects whole buildings, and excludes barriers', () => {
+  const width = 48, height = 32;
+  const building = { id: 'whole-building', rings: [[[3, 3], [11, 3], [11, 11], [3, 11], [3, 3]]] };
+  const road = { id: 'road-a', points: [[22, 0], [22, height]], width_m: 1, highway: 'service' };
+  const water = { id: 'water-a', rings: [[[35, 4], [41, 4], [41, 12], [35, 12], [35, 4]]] };
+  const result = compute({ sample: sample(width, height, { buildings: [building], roads: [road], water: [water] }),
+    rgba: flatRgba(width, height), width, height, settings: DEFAULTS });
+  assertRectangles(result);
+  for (let i = 0; i < result.labels.length; i++) if (result.barrier[i]) assert.equal(result.labels[i], 0, 'barrier cells stay unassigned');
+  const cells = [];
+  for (let y = 3; y < 11; y++) for (let x = 3; x < 11; x++) cells.push(result.labels[y * width + x]);
+  assert(cells.every(Boolean), 'every cell of the mapped building belongs to a rectangle');
+  assert.equal(new Set(cells).size, 1, 'the building remains in one plot');
+  const id = cells[0], plot = result.plots.find(item => item.id === id);
+  assert(result.regions.find(region => region.id === id).source_ids.includes('whole-building'));
+  for (let y = 3; y < 11; y++) for (let x = 3; x < 11; x++) {
+    for (const point of [[x + 0.01, y + 0.01], [x + 0.99, y + 0.01], [x + 0.99, y + 0.99], [x + 0.01, y + 0.99]]) {
+      assert(pointInPolygons(point, plot.polygons), 'the rectangle covers the whole building pixel');
+    }
+  }
 });
 
-test('rectangularity changes the partition in a street-aligned angled block', () => {
-  const width = 28, height = 20, n = width * height;
-  const seeds = new Int32Array(n), barrier = new Uint8Array(n), edge = new Float32Array(n);
-  seeds[10 * width + 4] = 1;
-  seeds[15 * width + 20] = 2;
-  const blocks = block(width, height, Math.PI / 4, 1);
-  const compact = grow(seeds, barrier, edge, width, height, blocks, { sensitivity: 0, rectangularity: 0 });
-  const streetAligned = grow(seeds, barrier, edge, width, height, blocks, { sensitivity: 0, rectangularity: 100 });
-  assert.notDeepEqual(Array.from(streetAligned), Array.from(compact));
-  assert.notEqual(streetAligned[0 * width + 17], compact[0 * width + 17]);
+test('a strong non-equidistant image edge attracts a straight cut between two anchors', () => {
+  const width = 48, height = 32, rgba = flatRgba(width, height);
+  for (let y = 0; y < height; y++) for (let x = 14; x < width; x++) {
+    const i = (y * width + x) * 4; rgba[i] = rgba[i + 1] = rgba[i + 2] = 0;
+  }
+  const buildings = [
+    { id: 'left-anchor', rings: [[[5, 10], [10, 10], [10, 15], [5, 15], [5, 10]]] },
+    { id: 'right-anchor', rings: [[[34, 10], [39, 10], [39, 15], [34, 15], [34, 10]]] },
+  ];
+  const result = compute({ sample: sample(width, height, { buildings }), rgba, width, height,
+    settings: { sensitivity: 100, rectangularity: 0 } });
+  assertRectangles(result);
+  const verticalCuts = result.boundaries.flatMap(ring => ring.slice(1).flatMap((point, i) =>
+    Math.abs(ring[i][0] - point[0]) < 1e-6 ? [point[0]] : []));
+  const interiorCuts = verticalCuts.filter(x => x > 0 && x < width);
+  assert(Math.min(...interiorCuts.map(x => Math.abs(x - 14))) < Math.min(...interiorCuts.map(x => Math.abs(x - 22))),
+    'the cut is closer to the non-equidistant image edge than the equidistant midpoint');
+});
+
+test('inseparable building anchors share one rectangle with all source IDs', () => {
+  const width = 32, height = 32;
+  const buildings = [
+    { id: 'northwest', rings: [[[4, 4], [20, 4], [4, 20], [4, 4]]] },
+    { id: 'southeast', rings: [[[20, 20], [20, 5], [5, 20], [20, 20]]] },
+  ];
+  const result = compute({ sample: sample(width, height, { buildings }), rgba: flatRgba(width, height), width, height, settings: DEFAULTS });
+  assertRectangles(result);
+  const grouped = result.regions.find(region => region.source_ids.length === 2);
+  assert(grouped, 'both inseparable mapped buildings are kept together');
+  assert.deepEqual([...grouped.source_ids].sort(), ['northwest', 'southeast']);
+  assert.equal(grouped.anchor_count, 2);
+});
+
+test('an unfit mapped building stays explicit as unassigned', () => {
+  const width = 20, height = 32;
+  const building = { id: 'long-building', rings: [[[7, 2], [10, 2], [10, 30], [7, 30], [7, 2]]] };
+  const roads = [
+    { id: 'west-road', points: [[4, 0], [4, height]], width_m: 5, highway: 'secondary' },
+    { id: 'east-road', points: [[13, 0], [13, height]], width_m: 5, highway: 'secondary' },
+  ];
+  const result = compute({ sample: sample(width, height, { buildings: [building], roads }), rgba: flatRgba(width, height), width, height, settings: DEFAULTS });
+  assert(result.stats.unassignedBuildings > 0, 'the impossible building fit is counted as unassigned');
+  assert(result.warnings.some(warning => /cannot fit a rectangle/.test(warning)), 'the unassigned building has a visible reason');
+  assert(!result.regions.some(region => region.source_ids.includes('long-building')));
+});
+
+test('street alignment rotates the rectangular frame between building and road directions', () => {
+  const width = 40, height = 40;
+  const features = {
+    buildings: [{ id: 'square', rings: [[[15, 15], [23, 15], [23, 23], [15, 23], [15, 15]]] }],
+    roads: [{ id: 'nearby-diagonal', points: [[-30, 0], [0, -30]], highway: 'service' }],
+  };
+  const input = { sample: sample(width, height, features), rgba: flatRgba(width, height), width, height };
+  const alignedToBuildings = compute({ ...input, settings: { sensitivity: 0, rectangularity: 0 } });
+  const alignedToRoads = compute({ ...input, settings: { sensitivity: 0, rectangularity: 100 } });
+  assertRectangles(alignedToBuildings);
+  assertRectangles(alignedToRoads);
+  const firstEdge = result => {
+    const ring = result.plots[0].polygons[0][0]; return [ring[1][0] - ring[0][0], ring[1][1] - ring[0][1]];
+  };
+  assert(Math.abs(firstEdge(alignedToBuildings)[1]) < 1e-8, 'building direction is horizontal');
+  const [dx, dy] = firstEdge(alignedToRoads);
+  assert(Math.abs(Math.abs(dx) - Math.abs(dy)) < 1e-8, 'road direction is diagonal');
+  assert.throws(() => compute({ ...input, sample: { ...input.sample, bbox: [0, 0, 40, 20] } }), /square metric/);
 });

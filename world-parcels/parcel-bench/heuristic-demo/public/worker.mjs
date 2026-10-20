@@ -1,7 +1,6 @@
-// Keep segmentation and shared-border straightening off the UI thread; export the displayed geometry.
+// Keep rectangular subdivision off the UI thread; export the displayed geometry.
 import { compute } from './core.mjs';
 import { vectorize } from './geometry.mjs';
-import { buildPlotGeometry } from './regularize.mjs';
 let prepared, completed;
 self.onmessage = async ({ data }) => {
   const { id, type } = data;
@@ -9,9 +8,7 @@ self.onmessage = async ({ data }) => {
     if (type === 'prepare') { prepared = data; completed = null; }
     if (type === 'compute') {
       const start = performance.now();
-      await Promise.all([import('/data/vendor/polygon-clipping.js'), import('/data/vendor/topojson-server.js'), import('/data/vendor/topojson-client.js')]);
-      const result = buildPlotGeometry(compute({ ...prepared, ...data }), prepared.sample,
-        { union: globalThis.polygonClipping.union, topology: globalThis.topojson.topology, feature: globalThis.topojson.feature });
+      const result = compute({ ...prepared, ...data });
       completed = { result, settings: data.settings, edits: data.edits };
       self.postMessage({ id, type: 'result', result, elapsedMs: performance.now() - start });
     }

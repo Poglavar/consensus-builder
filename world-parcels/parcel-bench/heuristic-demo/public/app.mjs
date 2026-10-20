@@ -1,7 +1,7 @@
 // Browser orchestration: prepared inputs, worker jobs, editable overlays, local drafts and GeoJSON downloads.
 import { ImageViewer } from '/shared/viewer.mjs';
 import { DEFAULTS, RECIPE } from './core.mjs';
-import { pointInPolygons } from './regularize.mjs';
+import { pointInPolygons } from './geometry.mjs';
 import { text } from './strings.mjs';
 const $ = id => document.getElementById(id), NS = 'http://www.w3.org/2000/svg';
 const clone = value => structuredClone(value);
@@ -65,8 +65,8 @@ function workerMessage({ data }) {
     setTimeout(() => URL.revokeObjectURL(url), 1000); notice(text.ui.exportPrepared); controls(); return;
   }
   result = data.result; goodEdits = clone(edits); persist(); buildRasters(); viewer.draw(); controls();
-  $('plot-count').textContent = result.stats.plots; $('building-count').textContent = result.stats.buildingSeeds;
-  $('generated-count').textContent = result.stats.generatedSeeds; $('coverage').textContent = `${Math.round(result.stats.groundCoverage * 100)}%`;
+  $('plot-count').textContent = result.stats.plots; $('building-count').textContent = result.stats.coveredBuildings;
+  $('generated-count').textContent = result.stats.generatedPlots; $('coverage').textContent = `${Math.round(result.stats.groundCoverage * 100)}%`;
   $('run-time').textContent = text.ui.elapsed((data.elapsedMs / 1000).toFixed(2), result.width);
   $('selection').textContent = text.ui.initialSelection;
   const warnings = result.warnings.length ? ` ${result.warnings.join(' ')}` : '';
