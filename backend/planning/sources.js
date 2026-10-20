@@ -2,25 +2,30 @@
 import { queryZagrebGup, readZagrebParcel, zagrebGupSource, zagrebGup2016Source } from './providers/zagreb-gup.js';
 import { queryNycPilot, readNycPilotParcel, nycPilotSource } from './providers/nyc-pilot.js';
 import { createHash } from 'node:crypto';
-import { readFileSync } from 'node:fs';
-import { createAtlasProvider } from './providers/atlas.js';
+import { parseAtlasSources, createAtlasUrlProvider } from './atlas-url-sources.js';
 
-export const planningSources = [zagrebGupSource, zagrebGup2016Source].map(descriptor => ({
+const builtInSources = [zagrebGupSource, zagrebGup2016Source].map(descriptor => ({
     descriptor,
     query: (pool, query) => queryZagrebGup(pool, { ...query, edition: descriptor.edition }),
     parcel: (pool, query) => readZagrebParcel(pool, { ...query, edition: descriptor.edition }),
     record: (pool, query) => readZagrebParcel(pool, { ...query, parcel: query.recordId, edition: descriptor.edition })
 }));
-planningSources.push({ descriptor: nycPilotSource, query: queryNycPilot, parcel: readNycPilotParcel,
+builtInSources.push({ descriptor: nycPilotSource, query: queryNycPilot, parcel: readNycPilotParcel,
     record: (pool, query) => readNycPilotParcel(pool, { ...query, parcel: `US-NY-${query.recordId}` }) });
-// Explicit local/operator configuration only. Source data is not bundled or republished by default.
-if (process.env.PLANNING_ATLAS_SAMPLE) planningSources.push(createAtlasProvider(
-    JSON.parse(readFileSync(process.env.PLANNING_ATLAS_SAMPLE, 'utf8')), {
-        id: 'atlas-lafayette-sample', city: 'colorado', label: 'Atlas · Lafayette sample', edition: 'public-sample',
-        url: 'https://www.landuselabs.com/s/lafayette_co_slices_sample.geojson'
-    }));
+// Explicit operator configuration only. Read after dotenv initialization, not at import time.
+export function createPlanningSources(config, options) {
+    const configured = parseAtlasSources(config);
+    if (configured.some(entry => builtInSources.some(source => source.descriptor.id === entry.id))) {
+        throw new Error('Atlas source ID conflicts with a built-in planning source.');
+    }
+    return [...builtInSources, ...configured.map(metadata => createAtlasUrlProvider(metadata, options))];
+}
+let planningSources;
+export function getPlanningSources() {
+    return planningSources ??= createPlanningSources(process.env.PLANNING_ATLAS_SOURCES);
+}
 
-export function sourcesFor(query, sources = planningSources) {
+export function sourcesFor(query, sources = getPlanningSources()) {
     const providers = sources.filter(source => source.descriptor.city === query.city);
     if (query.source) {
         const source = providers.find(provider => provider.descriptor.id === query.source);
@@ -37,20 +42,20 @@ export function sourcesFor(query, sources = planningSources) {
     return defaults;
 }
 
-export async function planningParcel(pool, query, sources = planningSources) {
+export async function planningParcel(pool, query, sources = getPlanningSources()) {
     const providers = sourcesFor(query, sources);
     const answers = await Promise.all(providers.map(provider => provider.parcel ? provider.parcel(pool, query) : []));
     return { schemaVersion: 'planning-representations.v1', city: query.city, parcel: query.parcel,
         sources: providers.map(provider => provider.descriptor), items: answers.flat() };
 }
 
-export async function planningRecord(pool, query, sources = planningSources) {
+export async function planningRecord(pool, query, sources = getPlanningSources()) {
     const providers = sourcesFor(query, sources);
     const answers = await Promise.all(providers.map(provider => provider.record ? provider.record(pool, query) : []));
     return { schemaVersion: 'planning-representations.v1', city: query.city, recordId: query.recordId, items: answers.flat() };
 }
 
-export async function planningRepresentations(pool, query, sources = planningSources) {
+export async function planningRepresentations(pool, query, sources = getPlanningSources()) {
     const providers = sourcesFor(query, sources);
     const scope = createHash('sha256').update(JSON.stringify([query.city, query.bbox, query.scenario, providers.map(p => p.descriptor.id)])).digest('hex');
     let positions = null;

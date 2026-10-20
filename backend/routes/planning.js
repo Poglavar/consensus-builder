@@ -1,24 +1,26 @@
 // Read-only, bounded provider results for the shared Built / Permitted / Proposed experience.
 import { validateBounds } from '../parcels/source-contract.js';
-import { planningRepresentations, planningParcel, planningRecord, planningSources } from '../planning/sources.js';
+import { planningRepresentations, planningParcel, planningRecord, getPlanningSources } from '../planning/sources.js';
 
 function validCity(city) { return typeof city === 'string' && /^[a-z][a-z0-9_-]{0,79}$/.test(city); }
 function validSource(source) { return source === undefined || (typeof source === 'string' && /^[a-z0-9_-]{1,100}$/.test(source)); }
 
-export function setupPlanningRoutes(app, pool, { query = planningRepresentations, parcelQuery = planningParcel } = {}) {
+export function setupPlanningRoutes(app, pool, { sources = getPlanningSources(),
+    query = (pool, query) => planningRepresentations(pool, query, sources),
+    parcelQuery = (pool, query) => planningParcel(pool, query, sources) } = {}) {
     app.get('/planning/record', async (req, res) => {
         res.set('Cache-Control', 'no-store');
         if (!validCity(req.query.city) || !req.query.source || !validSource(req.query.source)
             || !validSource(req.query.scenario) || typeof req.query.recordId !== 'string' || req.query.recordId.length > 250) {
             return res.status(400).json({ error: 'Invalid planning record query.' });
         }
-        try { res.json(await planningRecord(pool, { city: req.query.city, source: req.query.source, recordId: req.query.recordId, scenario: req.query.scenario })); }
+        try { res.json(await planningRecord(pool, { city: req.query.city, source: req.query.source, recordId: req.query.recordId, scenario: req.query.scenario }, sources)); }
         catch (error) { console.error('[planning] Source record read failed', error); res.status(error.status === 400 ? 400 : 503).json({ error: 'Planning source is unavailable.' }); }
     });
     app.get('/planning/sources', (req, res) => {
         res.set('Cache-Control', 'no-store');
         if (!validCity(req.query.city)) return res.status(400).json({ error: 'Invalid city.' });
-        res.json({ city: req.query.city, sources: planningSources.filter(p => p.descriptor.city === req.query.city).map(p => p.descriptor) });
+        res.json({ city: req.query.city, sources: sources.filter(p => p.descriptor.city === req.query.city).map(p => p.descriptor) });
     });
     app.get('/planning/parcel', async (req, res) => {
         res.set('Cache-Control', 'no-store');

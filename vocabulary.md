@@ -53,6 +53,8 @@ Existing buildings and authored proposals retain their source stores and detaile
 
 The provider registry declares editions, supported scenarios, geographic scope and capabilities separately. NYC exposes its saved pilot screen, with no accepted envelope geometry. The optional Atlas adapter exposes supplied slice polygons as **zoning areas**, clipped only for viewport display, and distinguishes source numeric values from estimates and indeterminate/missing values. A zoning area is not a cadastral parcel or building envelope; its 3D display is a ground surface. Housing-type selection changes the inspected source constraints, not a solved building. Full dictionary fields remain in source evidence. Executable constraint assessment, surveyed terrain/datum placement and unavailable historical source versions remain outside this infrastructure change. See [implementation record](docs/planning-rule-audit.md#infra-and-inspection-follow-up).
 
+An **Atlas URL source** is an operator-configured provider with an explicit city, source ID and edition, pointing to a public HTTPS Slices GeoJSON dataset (`PLANNING_ATLAS_SOURCES`). Its durable source is the remote dataset; the backend retains one validated in-memory snapshot for its process lifetime, loaded on demand. It adds no database records or refresh schedule. A restart can load changed source content, whose canonical record revision then changes without rewriting a design's pinned reference. Failed loading means unavailable, while a successfully loaded source with no intersecting slices means an empty viewport. Source bounds are known after loading; the configured city is a routing scope, not a claim that the dataset covers the whole city.
+
 ## Central terms as implemented
 
 ### Proposal — `Proposal`

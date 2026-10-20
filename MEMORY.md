@@ -760,3 +760,5 @@ Expanded SAM 3 head fine-tuning used 96 training tiles and fresh 16-tile validat
 # Planning infrastructure priorities (2026-10-19)
 
 Postpone refresh/server-to-local synchronization. For empty parcels, display only an explanation already present in the existing source cache; do not introduce another cache, solver, diagnostic pipeline or inferred reason. Continue shared selection/inspection, obligatory source proposal semantics and provider/edition support separately from solver work.
+
+- 2026-10-20: Atlas should plug into Permitted through URLs, retaining source identity, edition and evidence in the shared inspector.

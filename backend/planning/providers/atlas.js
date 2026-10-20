@@ -3,6 +3,7 @@
 import * as turf from '@turf/turf';
 import { atlasInventory, inspectNumericConstraint } from '../atlas-audit.js';
 import { withSourceProposal, sourceRevision } from '../source-proposal.js';
+import { validateGeometry } from '../../parcels/source-contract.js';
 
 const scenarios = ['family1', 'family2', 'family3', 'family4', 'accessory', 'plannedresidential'];
 const dimensions = [
@@ -12,17 +13,27 @@ const dimensions = [
     ['maxheightft', 'height', 'ft', 'maximum'],
     ['minlotacres', 'lotArea', 'acres', 'minimum']
 ];
-export function createAtlasProvider(collection, { id, city, label, edition, url }) {
-    if (collection?.type !== 'FeatureCollection' || !Array.isArray(collection.features)) throw new Error('Invalid Atlas collection');
+export function atlasSourceDescriptor({ id, city, label, edition, url, default: isDefault = true }, bbox = null) {
+    return { id, city, label, edition, url, default: isDefault, kind: 'regulation',
+        coverage: 'zoning-areas', bbox, storage: 'supplied-atlas-dataset',
+        capabilities: { volumes: false, areas: true, parcelEvidence: false, constraintEvaluation: false },
+        scenarios, scenario: scenarios[0] };
+}
+export function createAtlasProvider(collection, metadata) {
+    const { id } = metadata;
+    if (collection?.type !== 'FeatureCollection' || !Array.isArray(collection.features)
+        || !collection.features.length || collection.features.length > 50000
+        || collection.crs && !(collection.crs.type === 'name'
+            && collection.crs.properties?.name === 'urn:ogc:def:crs:OGC:1.3:CRS84')) throw new Error('Invalid Atlas collection');
     const entries = collection.features.map(feature => {
-        if (!['Polygon', 'MultiPolygon'].includes(feature.geometry?.type) || feature.properties?.slice_id == null) throw new Error('Invalid Atlas slice');
+        const sliceId = feature?.properties?.slice_id;
+        if (feature?.type !== 'Feature' || !validateGeometry(feature.geometry)
+            || !(typeof sliceId === 'string' && sliceId.trim().length > 0 && sliceId.length <= 200
+                || Number.isSafeInteger(sliceId) && sliceId >= 0)) throw new Error('Invalid Atlas slice');
         return { id: String(feature.properties.slice_id), feature, bbox: turf.bbox(feature), revision: sourceRevision(feature) };
     }).sort((a, b) => a.id.localeCompare(b.id, 'en'));
     if (new Set(entries.map(entry => entry.id)).size !== entries.length) throw new Error('Duplicate Atlas slice identity');
-    const descriptor = { id, city, label, edition, url, default: true, kind: 'regulation',
-        coverage: 'zoning-areas', bbox: turf.bbox(collection), storage: 'supplied-atlas-dataset',
-        capabilities: { volumes: false, areas: true, parcelEvidence: false, constraintEvaluation: false },
-        scenarios, scenario: scenarios[0] };
+    const descriptor = atlasSourceDescriptor(metadata, turf.bbox(collection));
     function record(entry, scenario = descriptor.scenario, displayGeometry = entry.feature.geometry) {
         const p = entry.feature.properties;
         const constraints = dimensions.flatMap(([suffix, quantity, unit, bound]) => {

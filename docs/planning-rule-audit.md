@@ -161,7 +161,19 @@ Read-only automation uses `/planning/sources?city=…`, `/planning/representatio
 
 The NYC adapter exposes the existing dated pilot audit as evidence with no accepted volumes. The Atlas adapter reads a supplied slices dataset, preserves all source fields and numeric evidence methods, and renders zoning areas in 2D and on the 3D ground plane. Its housing-type selector chooses among one/two/three/four-or-more-family, accessory and planned residential fields. A source area is never extruded into a building from a height scalar. Conditional applicability and unsupported expressions remain unevaluated.
 
-For a local sample demonstration, download the public sample linked above outside the repository and launch the backend with `PLANNING_ATLAS_SAMPLE=/tmp/planning-atlas-sample.geojson`. The source then appears in the Colorado view around Lafayette through the same controls and inspector. Its descriptor bounds identify the actual sample coverage. The sample data is not bundled, enabled by default, or published by this change. The adapter is reusable through `createAtlasProvider(collection, metadata)`; authenticated API ingestion and a production data agreement are separate work.
+Atlas is an optional URL-configured Permitted provider. Set `PLANNING_ATLAS_SOURCES` to a JSON array in the backend environment before starting it. For example:
+
+```sh
+export PLANNING_ATLAS_SOURCES='[{"id":"atlas-lafayette-sample","city":"colorado","label":"Atlas · Lafayette sample","edition":"public-sample","url":"https://www.landuselabs.com/s/lafayette_co_slices_sample.geojson"}]'
+```
+
+Each entry requires a unique stable `id`, an existing app `city` key, a display `label`, an explicit `edition` and a public HTTPS `url` returning an Atlas Slices GeoJSON FeatureCollection. Multiple entries can cover different cities or editions; `default: false` keeps a source available for explicit selection without including it in a default multi-provider query. IDs must not collide with built-in providers. Changing a URL must preserve the source's meaning; use a distinct ID/edition for a different source edition. No Atlas source is enabled by default.
+
+The backend advertises configured sources through `/planning/sources` and loads a dataset on its first representation or record request. It shares concurrent downloads and retains a successful dataset for the process lifetime; restart the backend to read a changed URL or upstream dataset. There is no scheduled refresh or additional database cache. A failed download returns unavailable and a later request may retry. Geographic bounds become available in the descriptor after a successful load. An empty viewport is different from a failed load.
+
+The existing guarded public-source transport validates HTTPS, DNS addresses and every redirect, allows no credentials or API-key parameters, and bounds each download to 64 MiB and 45 seconds. Configuration accepts at most 20 sources; each dataset must contain 1–50,000 features with unique `slice_id` values and valid longitude/latitude Polygon or MultiPolygon coordinates. An explicit legacy CRS declaration is accepted only for `urn:ogc:def:crs:OGC:1.3:CRS84`; standard GeoJSON without a CRS declaration is accepted. The complete file is loaded, so very large coverage should be divided into supplied regional datasets.
+
+This replaces the local-file sample switch. The Lafayette example appears in the Colorado view through the same **Source / edition**, **Housing type** and source inspector controls. A source URL is a backend configuration entry, not a pasted browser URL or a URL to an Atlas web-map page. The sample data is not bundled or published by this change. Authenticated APIs, district/overlay composition and a production data agreement are separate work.
 
 ## Demonstration and outreach readiness
 
