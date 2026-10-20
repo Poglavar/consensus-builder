@@ -2,7 +2,7 @@
 //
 // Proposals are immutable by design (they get minted on-chain), so this never mutates the
 // source. Instead it re-seeds the create flow from the source's stored state and lets the user
-// tweak before saving a brand-new proposal that records a `copiedFromProposalId` pointer back.
+// tweak before saving a brand-new proposal that records a typed `proposalOrigin` relationship back.
 //
 // createProposal() reads geometry out of a handful of "pending" globals that the interactive
 // geometry tools write into, then clears them. Forking is therefore the inverse of that read:

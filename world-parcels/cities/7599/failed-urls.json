@@ -1,0 +1,29 @@
+[
+  {
+    "url": "https://d2d.pulse.gop.pk/map-qc.html"
+  },
+  {
+    "url": "https://www.punjab-zameen.gov.pk/"
+  },
+  {
+    "url": "https://tobateksingh.punjab.gov.pk/district_profile"
+  },
+  {
+    "url": "https://d2d.pulse.gop.pk/api/LandHierarchy/GetDistrictsList/1"
+  },
+  {
+    "url": "https://d2d.pulse.gop.pk/api/LandHierarchy/GetMauzasListPDMA/29D"
+  },
+  {
+    "url": "https://d2d.pulse.gop.pk/api/Parcel/GetParcelsByMauzaIdNewNew/1"
+  },
+  {
+    "url": "https://d2d.pulse.gop.pk/api/reporting/GetLHStatisticsDetailed"
+  },
+  {
+    "url": "https://arcsrv.pulse.gop.pk:6443/arcgis/rest/services/UrbanSurvey/urbanSurvay_TobaTekSingh_3Mouza_04_10_2024/MapServer?f=pjson"
+  },
+  {
+    "url": "https://gismaps.pulse.gop.pk/arcgis/rest/services/Door_To_Door_Survey/DoorToDoor_V_25_07_2025/MapServer?f=pjson"
+  }
+]

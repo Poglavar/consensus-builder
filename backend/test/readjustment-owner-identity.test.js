@@ -220,13 +220,13 @@ describe('pooling the same owner across parcels', () => {
         expect(shares.find(entry => entry.ownerKey === 'recipient:b')).toMatchObject({ area: 0, unresolvedContribution: true });
     });
 
-    it('derives missing saved ledger metadata consistently from stored contribution rows', async () => {
+    it('derives totals only for an explicit saved EUR valuation basis', async () => {
         const editor = loadEditorOwnerIdentity();
         editor.state.savedOwnerShares = [
             { ownerKey: 'source:a', contributedArea: 40, contributedValue: 80 },
             { ownerKey: 'source:b', contributedArea: 60, contributedValue: 120 }
         ];
-        editor.state.savedLedgerMetadata = {};
+        editor.state.savedLedgerMetadata = { contributionBasis: 'value', valuationCurrency: 'EUR' };
 
         await editor.buildOwnerShares(null);
 
@@ -265,5 +265,21 @@ describe('pooling the same owner across parcels', () => {
             { ownerKey: 'current:a', share: 0.75 }, { ownerKey: 'current:minority', share: 0.25 }
         ] });
         expect(editor.state.amendInputs[1]).toMatchObject({ owners: [{ ownerKey: 'saved:composite', share: 1 }] });
+    });
+});
+
+
+describe('readjustment valuation basis', () => {
+    it('uses area for the entire pool when a contribution price has an unknown or different currency', async () => {
+        for (const currency of [undefined, 'USD']) {
+            const editor = loadEditorOwnerIdentity();
+            setParcels(editor, parcel('A', 100, { estimatedMarketPrice: 1000, estimatedMarketPriceCurrency: 'EUR' }),
+                parcel('B', 300, { estimatedMarketPrice: 1000, estimatedMarketPriceCurrency: currency }));
+            const shares = await editor.buildOwnerShares({ ids: ['A', 'B'] });
+            expect(editor.state.contributionBasis).toBe('area');
+            expect(editor.state.valuationCurrency).toBeNull();
+            expect(editor.state.totalValue).toBeNull();
+            expect(shares.map(entry => entry.percent).sort()).toEqual([0.25, 0.75]);
+        }
     });
 });

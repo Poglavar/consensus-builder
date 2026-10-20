@@ -110,7 +110,8 @@ export function buildEnvelope({ footprint, footprintSource, storeySources = [], 
         choice.source = 'survey-height';
     }
     const heightM = stack.filter(s => s.level >= 0).reduce((sum, s) => sum + s.heightM, 0);
-    return { schema: 'building-envelope.v1', footprint, footprintSource, storeys: stack, storeySource: choice.source,
+    return { schema: 'building-envelope.v1', role: 'reconstructed-building-envelope',
+        method: { id: 'storey-stack-reconstruction', version: 1 }, planningCompliance: 'not-evaluated', footprint, footprintSource, storeys: stack, storeySource: choice.source,
         heightBasis, conflicts, heightM: Math.round(heightM * 100) / 100,
         surveyHeightM: typeof surveyHeightM === 'number' ? surveyHeightM : null };
 }

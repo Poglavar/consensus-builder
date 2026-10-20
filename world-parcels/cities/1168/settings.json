@@ -1,0 +1,114 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "1168",
+  "name": "Brno, Czechia",
+  "point": [
+    49.203210413959,
+    16.6097275929996
+  ],
+  "bindings": [
+    {
+      "appCityId": "brno",
+      "runtimeConfig": {
+        "id": "brno",
+        "wupCityCode": "1168",
+        "label": "Brno, Czechia",
+        "currency": {
+          "locale": "cs-CZ",
+          "code": "CZK"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            49.203210413959,
+            16.6097275929996
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            49.203210413959,
+            16.6097275929996
+          ],
+          "fallbackDataset": [
+            16.6097275929996,
+            49.203210413959
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "brno-city-gis-katastr-g-parcely",
+          "idPrefix": "CZ-BRNO-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 3,
+          "attribution": "<a href=\"https://gis.brno.cz/ags3/rest/services/PUBLIC/katastr_g/MapServer\">GIS města Brna PUBLIC/katastr_g ArcGIS Feature Layer 5 Parcely</a>"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "brno-city-gis-katastr-g-parcely",
+      "name": "GIS města Brna PUBLIC/katastr_g ArcGIS Feature Layer 5 Parcely",
+      "adapter": "arcgis",
+      "endpoint": "https://gis.brno.cz/ags3/rest/services/PUBLIC/katastr_g/MapServer/5",
+      "idField": "par_id",
+      "idType": "integer",
+      "objectIdField": "ogc_fid",
+      "idPrefix": "CZ-BRNO-",
+      "outFields": [
+        "par_id",
+        "ogc_fid"
+      ],
+      "queryFormat": "geojson",
+      "boundsQueryMode": "offset",
+      "idsQueryMode": "offset",
+      "pageSize": 1000,
+      "idBatchSize": 80,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "countryCode": "CZ",
+      "metricSrid": 32633,
+      "cityIds": [
+        "brno"
+      ],
+      "operator": "Statutory City of Brno GIS / Magistrát města Brna",
+      "capabilities": {
+        "point": false,
+        "exactId": true,
+        "bbox": true,
+        "areaEnumeration": true,
+        "geometry": "full-wgs84"
+      },
+      "scope": "Brno and surrounding cadastral data per official service Subject; bounded local qualification only.",
+      "catalogueUrl": "https://gis.brno.cz/ags3/rest/services/PUBLIC/katastr_g/MapServer",
+      "licenceNote": "No reuse licence established in frozen packet or inspected service metadata.",
+      "defaultForCity": true
+    }
+  ]
+}

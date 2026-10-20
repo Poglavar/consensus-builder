@@ -1,0 +1,14 @@
+[
+  {
+    "url": "https://a.dgdn.dz/Document_cad.html",
+    "reason": "timeout"
+  },
+  {
+    "url": "https://a.dgdn.dz/<php echo $adresse ; ?>/WathikaCad.php=",
+    "reason": "timeout"
+  },
+  {
+    "url": "https://bndg.asga.dz/bndg/CARTO200K_P/Default_BNDG.aspx",
+    "reason": "timeout"
+  }
+]

@@ -1,0 +1,19 @@
+[
+  {
+    "url": "https://nspd.gov.ru/map",
+    "reason": "timeout"
+  },
+  {
+    "url": "https://nspd.gov.ru/api/geoportal/v2/search/geoportal?query=13%3A23%3A0901190%3A27&thematicSearchId=2",
+    "reason": "timeout"
+  },
+  {
+    "url": "https://www.e-mordovia.ru/for-smi/all-news/v-edinyy-gosudarstvennyy-reестр-nedvizhimosti-vneseny-svedeniya-o-bolee-chem-44-tysyachakh-obektakh-/"
+  },
+  {
+    "url": "https://xn--80aa4alnee.xn--p1ai/mun-order/Kadastr.php"
+  },
+  {
+    "url": "https://nspd.gov.ru/api/aeggis/v4/36048/wms"
+  }
+]

@@ -122,4 +122,17 @@ describe('one parcel recovery dialog after the introduction', () => {
         expect(window.ParcelGroundFallback.isOpen()).toBe(false);
         expect(window.ParcelGroundFallback.activeSource('sample')).toBeNull();
     });
+
+    it('opens the satellite estimator and leaves source installation to successful generation', async () => {
+        const { window, document } = boot();
+        window.closeSiteIntro();
+        const opened = [];
+        window.ParcelEstimates = { open: async detail => opened.push(detail) };
+        window.ParcelGroundFallback.openOptions({ city: 'sample' });
+        const option = document.body.querySelectorAll('button').find(node => node.dataset.option === 'ocr');
+        await option.listeners.click();
+        expect(opened).toEqual([{ city: 'sample' }]);
+        expect(window.ParcelGroundFallback.isOpen()).toBe(false);
+        expect(window.ParcelGroundFallback.activeSource('sample')).toBeNull();
+    });
 });

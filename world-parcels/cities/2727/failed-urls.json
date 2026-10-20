@@ -1,0 +1,6 @@
+[
+  {
+    "url": "https://bz1uwwpkuinzbk94.svcs5.arcgis.com/bz1uwWPKUInZBK94/arcgis/rest/services/CA_Statewide_Parcels_Public_view/FeatureServer/0",
+    "reason": "Held at the geometry gate: every source check passed (43 requests, 1 qualifier run(s) on this city) but the independent metric audit failed for Verdugo City (us-ca-calfire-statewide-parcels) with 21 material overlap pair(s) (> 0.01 m2; max 0.34 m2, 0.028% of the smaller; total 1.22 m2) among 109 cached features (06037~2572002031 / 06037~2572002039: 0.34 m2 = 0.028% of the smaller; 06037~257100602…"
+  }
+]

@@ -1,0 +1,112 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "939",
+  "name": "Luanda, Angola",
+  "point": [
+    -8.83675,
+    13.234
+  ],
+  "bindings": [
+    {
+      "appCityId": "luanda",
+      "runtimeConfig": {
+        "id": "luanda",
+        "label": "Luanda, Angola",
+        "currency": {
+          "locale": "pt-AO",
+          "code": "AOA"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            -8.83675,
+            13.234
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            -8.83675,
+            13.234
+          ],
+          "fallbackDataset": [
+            13.234,
+            -8.83675
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.0025,
+          "source": "parcel-source",
+          "sourceId": "ao-arcgis-luanda-agt-property-polygons",
+          "idPrefix": "AO-LUANDA-AGT-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "<a href=\"https://services-eu1.arcgis.com/7r9gTPdSG9MPi1LZ/arcgis/rest/services/Luanda_AGT_Oficial_2_gdb/FeatureServer/0\">GGPEN Luanda property polygons</a> · adapted · source conditions apply"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "ao-arcgis-luanda-agt-property-polygons",
+      "endpoint": "https://services-eu1.arcgis.com/7r9gTPdSG9MPi1LZ/arcgis/rest/services/Luanda_AGT_Oficial_2_gdb/FeatureServer/0",
+      "idField": "GlobalID_1",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "AO-LUANDA-AGT-",
+      "idType": "string",
+      "idPattern": "^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}$",
+      "idQueryBraces": true,
+      "parcelNumberField": "ID_GGPEN",
+      "outFields": [
+        "OBJECTID",
+        "GlobalID_1",
+        "ID_GGPEN",
+        "ID_AGT",
+        "Municipio",
+        "Comuna"
+      ],
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "adapter": "arcgis",
+      "name": "GGPEN Luanda property polygons",
+      "countryCode": "AO",
+      "metricSrid": 32733,
+      "cityIds": [
+        "luanda"
+      ],
+      "scope": "Property polygons in a Maianga sample; not verified as the authoritative legal parcel register. Only the bounded Luanda globe entry is enabled.",
+      "licenceNote": "No explicit reuse licence is published in the checked service metadata; source conditions remain informational.",
+      "catalogueUrl": "https://services-eu1.arcgis.com/7r9gTPdSG9MPi1LZ/arcgis/rest/services/Luanda_AGT_Oficial_2_gdb/FeatureServer/0",
+      "attribution": "GGPEN / Luanda_AGT_Oficial_2_gdb layer 0. Preserve the publisher and layer name in source metadata.",
+      "boundsQueryMode": "object-ids"
+    }
+  ]
+}

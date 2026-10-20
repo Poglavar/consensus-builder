@@ -1,0 +1,23 @@
+[
+  {
+    "url": "https://www.wfs.nrw.de/geobasis/wfs_nw_inspire-flurstuecke_alkis"
+  },
+  {
+    "url": "https://www.aachen.de/in-aachen-leben/planen-bauen/karten-kataster-und-vermessungen/"
+  },
+  {
+    "url": "https://www.staedteregion-aachen.de/de/navigation/aemter/kataster-und-vermessungsamt-a-62/liegenschaftskataster"
+  },
+  {
+    "url": "https://geoportal.aachen.de/extern/inline?basemap=web61482881ca3e4ky73o&blop=1&lang=de&lat=50.7798266066411&lng=6.10963543428455&zl=18"
+  },
+  {
+    "url": "https://geoportal.aachen.de/geoas-lib/api/inline/config/aachen-extern"
+  },
+  {
+    "url": "https://www.wfs.nrw.de/geobasis/wfs_nw_inspire-flurstuecke_alkis?service=WFS&request=GetCapabilities"
+  },
+  {
+    "url": "https://www.wfs.nrw.de/geobasis/wfs_nw_inspire-flurstuecke_alkis?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp:CadastralParcel&bbox=296240,5629320,296246,5629328,urn:ogc:def:crs:EPSG::25832&count=3&outputFormat=GML3"
+  }
+]

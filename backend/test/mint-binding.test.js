@@ -25,6 +25,7 @@ const proposal = (overrides = {}) => ({
 
 afterEach(() => {
     delete globalThis.CityConfigManager;
+    delete globalThis.ParcelGroundFallback;
 });
 afterAll(() => { delete globalThis.turf; });
 
@@ -45,6 +46,22 @@ describe('mint binding from cadastral source geometry', () => {
         expect(result.binding.parcels.map(hit => hit.parcelId)).toEqual(['HR-1']);
         expect(result.binding.subject).toBe('declared-parcels');
         expect(result.cadastreSnapshot.parcels.map(parcel => parcel.id)).toEqual(['HR-1']);
+    });
+
+    it('carries only shared, explicit source provenance into a locally computed binding', async () => {
+        const descriptor = { sourceId: 'ca-on-toronto', snapshotId: 'snapshot-7' };
+        const sourced = await mintBinding.buildRecord(proposal(), {
+            parcels: features({ left: { parcelSource: descriptor }, right: { parcelSource: descriptor } }),
+            source: 'capture-label-only', turf
+        });
+        expect(sourced.binding.parcelSource).toEqual(descriptor);
+
+        const unknown = await mintBinding.buildRecord(proposal(), { parcels: features(), source: 'ca-on-toronto', turf });
+        expect(unknown.binding.parcelSource).toBeNull();
+        const mixed = await mintBinding.buildRecord(proposal(), {
+            parcels: features({ left: { parcelSource: descriptor }, right: { parcelSource: { sourceId: 'other-source', snapshotId: null } } }), turf
+        });
+        expect(mixed.binding.parcelSource).toBeNull();
     });
 
     it('keeps unavailable source revision/hash null and saves source geometry plus its computed hash', async () => {
@@ -76,6 +93,21 @@ describe('mint binding from cadastral source geometry', () => {
         expect(result.cadastreParcelIds).toEqual([]);
         expect(result.binding).toMatchObject({ coverage: 'none', parcels: [] });
         expect(result.cadastreSnapshot).toMatchObject({ regionHasCadastre: false, source: 'none', parcels: [] });
+    });
+    it('binds local proposals to saved estimates even when the city has no register', async () => {
+        const sourceId = 'estimated-local:sha256:example';
+        globalThis.ParcelGroundFallback = { activeSource: () => ({ id:sourceId, kind:'estimated-local' }) };
+        const estimated = features().map((f, index) => ({ ...f, id:`EST-${index}`, properties:{
+            parcelId:`EST-${index}`, estimated:true, sourceId, parcelSource:{ sourceId, snapshotId:null }
+        } }));
+        const ensureFootprint = vi.fn(async () => ({ result:{ features:estimated } }));
+        const result = await mintBinding.prepareForMint(proposal({ city:'explore' }), {
+            cityConfig:{ parcels:{ source:'none' } }, repository:{ ensureFootprint }, turf
+        });
+        expect(result.cadastreParcelIds).toEqual(['EST-0','EST-1']);
+        expect(result.binding).toMatchObject({ coverage:'complete', parcelSource:{ sourceId, snapshotId:null } });
+        expect(result.cadastreSnapshot).toMatchObject({ source:sourceId, regionHasCadastre:true });
+        expect(ensureFootprint).toHaveBeenCalledOnce();
     });
 
     it('builds corridor geometry in its local frame regardless of the active city configuration', () => {

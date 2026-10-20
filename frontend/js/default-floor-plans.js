@@ -12,6 +12,16 @@
 (function (global) {
     'use strict';
 
+    // A clip that throws degrades only this suggestion (an X-ray aid, never part of the proposal),
+    // but it is logged and counted in clipHealth() (parcel-arrangement.js), never silently skipped.
+    function reportClip(operation, error, site, operands) {
+        const api = (global && global.__parcelArrangement)
+            || (typeof require === 'function' ? require('./proposals/parcel-arrangement.js') : null);
+        if (api) return api.reportClipFailure(operation, error, { site }, operands);
+        console.error(`[${new Date().toISOString()}] [clip] Polygon ${operation} failed at ${site}: ${error && error.message} — degraded`);
+        return error;
+    }
+
     const GENERATOR_ID = 'consensus-builder.default-floor-plan.v1';
     const PLANS_SCHEMA = 'consensus-builder.building-floor-plans.v2';
     const ARCHITECTURE_SCHEMA = 'consensus-builder.floor-architecture.v1';
@@ -153,18 +163,18 @@
         for (const feature of features) {
             if (!feature || !feature.geometry) continue;
             if (!acc) { acc = feature; continue; }
-            try { const merged = t.union(acc, feature); if (merged && merged.geometry) acc = merged; } catch (_) { }
+            try { const merged = t.union(acc, feature); if (merged && merged.geometry) acc = merged; } catch (error) { reportClip('union', error, 'default-floor-plans.unionAll', [acc, feature]); }
         }
         return acc;
     }
     function differenceOrNull(t, a, b) {
         if (!a || !a.geometry) return null;
         if (!b || !b.geometry) return a;
-        try { return t.difference(a, b); } catch (_) { return null; }
+        try { return t.difference(a, b); } catch (error) { reportClip('difference', error, 'default-floor-plans.difference', [a, b]); return null; }
     }
     function intersectOrNull(t, a, b) {
         if (!a || !a.geometry || !b || !b.geometry) return null;
-        try { return t.intersect(a, b); } catch (_) { return null; }
+        try { return t.intersect(a, b); } catch (error) { reportClip('intersect', error, 'default-floor-plans.intersect', [a, b]); return null; }
     }
     function uExtent(feature) {
         let lo = Infinity, hi = -Infinity;
@@ -683,7 +693,9 @@
         return { floorPlans, warnings, summary };
     }
 
-    const api = { GENERATOR_ID, DEFAULT_RULES, COMMON_RULES, REGULATION_PRESETS, rulesFor, planDefaultFloorPlans, stairRun, coreDimensions, wantsLift, describe };
+    const api = { GENERATOR_ID, DEFAULT_RULES, COMMON_RULES, REGULATION_PRESETS, rulesFor, planDefaultFloorPlans, stairRun, coreDimensions, wantsLift, describe,
+        // The clip helpers, exported so their failure reporting is tested directly.
+        _clip: { unionAll, differenceOrNull, intersectOrNull } };
     global.__defaultFloorPlans = api;
     if (typeof module !== 'undefined' && module.exports) module.exports = api;
 })(typeof window !== 'undefined' ? window : globalThis);

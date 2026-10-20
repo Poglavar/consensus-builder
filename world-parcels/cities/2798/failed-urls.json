@@ -1,0 +1,22 @@
+[
+  {
+    "url": "https://geocatmin.ingemmet.gob.pe/arcgis/rest/services/catastro?f=pjson",
+    "reason": "TLS verification failure in local curl"
+  },
+  {
+    "url": "https://geocatminapp.ingemmet.gob.pe/arcgis/rest/services/catastro",
+    "reason": "web fetch timeout"
+  },
+  {
+    "url": "https://www.gob.pe/11721-municipalidad-provincial-de-coronel-portillo-organizacion-de-municipalidad-provincial-de-coronel-portillo"
+  },
+  {
+    "url": "https://www.gob.pe/institucion/municoronelportillo/normas-legales/3593602-021-2022-mpcp"
+  },
+  {
+    "url": "https://www.geoidep.gob.pe/catalogo-nacional-de-servicios-web/servicio-de-descarga-wfs"
+  },
+  {
+    "url": "https://geocatmin.ingemmet.gob.pe/arcgis/rest/services/WGS84/SERV_ZONAS_GEOWGS84/MapServer/2"
+  }
+]

@@ -1,0 +1,6 @@
+[
+  {
+    "url": "https://bz1uwwpkuinzbk94.svcs5.arcgis.com/bz1uwWPKUInZBK94/arcgis/rest/services/CA_Statewide_Parcels_Public_view/FeatureServer/0",
+    "reason": "Held at the geometry gate: every source check passed (43 requests, 1 qualifier run(s) on this city) but the independent metric audit failed for Watsonville (us-ca-calfire-statewide-parcels) with 1 material overlap pair(s) (> 0.01 m2; max 0.728 m2, 0.0173% of the smaller; total 0.728 m2) among 97 cached features (06087~016-131-02 / 06087~016-491-06: 0.728 m2 = 0.0173% of the smaller). The overlaps…"
+  }
+]

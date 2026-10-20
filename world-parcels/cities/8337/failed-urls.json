@@ -1,0 +1,32 @@
+[
+  {
+    "url": "https://hsac.in/eodb_backend/land-query/districts",
+    "reason": "401"
+  },
+  {
+    "url": "https://hsac.in/eodb_backend/land-query/search?term=Sonipat&limit=3",
+    "reason": "401"
+  },
+  {
+    "url": "https://hsac.in/eodb_backend/land-query/boundary-at-point",
+    "reason": "401"
+  },
+  {
+    "url": "https://sonipat.gov.in/service/online-jamabandhis/"
+  },
+  {
+    "url": "https://sonipat.gov.in/revenue/"
+  },
+  {
+    "url": "https://haryanait.gov.in/web-halris/"
+  },
+  {
+    "url": "https://hsac.org.in/?sub=762"
+  },
+  {
+    "url": "https://onemapdepts.gmda.gov.in/server/rest/services/onemap/Boundary_GMDA/MapServer/55"
+  },
+  {
+    "url": "https://hsac.org.in/eodb/"
+  }
+]

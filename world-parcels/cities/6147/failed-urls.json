@@ -1,0 +1,26 @@
+[
+  {
+    "url": "https://geo.gravatai.rs.gov.br/id/login?idMunicipio=166"
+  },
+  {
+    "url": "https://geo.gravatai.rs.gov.br/api/v3/public/municipio/imagem-fundo"
+  },
+  {
+    "url": "https://geo.gravatai.rs.gov.br/api/v3/public/municipio?idMunicipio=166"
+  },
+  {
+    "url": "https://geo.gravatai.rs.gov.br/api/v3/public/municipio/166"
+  },
+  {
+    "url": "https://geo.gravatai.rs.gov.br/?idMunicipio=166"
+  },
+  {
+    "url": "https://geo.gravatai.rs.gov.br/mapa?idMunicipio=166"
+  },
+  {
+    "url": "https://nfse-gravatai.atende.net/cidadao/pagina/contatos-smdur"
+  },
+  {
+    "url": "https://gravatai.atende.net/subportal/smdur-secretaria-municipal-de-desenvolvimento-urbano"
+  }
+]

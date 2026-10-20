@@ -14,23 +14,33 @@
 
     function shapeSliceOwnership(slice, proposalData) {
         if (!slice || typeof slice !== 'object') return null;
-        // Site-backed plans can include an ownerless open-ground plot. It remains open ground
+        if (Object.prototype.hasOwnProperty.call(slice, 'noOwner')) {
+            throw new Error('The noOwner marker is retired; use unrepresentedGround');
+        }
+        if (Array.isArray(slice.owners) && slice.owners.some(entry =>
+            Object.prototype.hasOwnProperty.call(entry || {}, 'noOwner'))) {
+            throw new Error('The noOwner marker is retired; use unrepresentedGround');
+        }
+        // Site-backed plans can include unrepresented open-ground plots. They remain open ground
         // through application and must not be assigned to a synthetic owner agent.
         const listedOwners = Array.isArray(slice.owners) ? slice.owners : null;
-        const ownerless = slice.ownerKey === OPEN_GROUND_OWNER_KEY || slice.noOwner === true;
-        if (ownerless) {
+        const unrepresentedGround = slice.ownerKey === OPEN_GROUND_OWNER_KEY || slice.unrepresentedGround === true;
+        if (slice.unrepresentedGround === true && slice.ownerKey && slice.ownerKey !== OPEN_GROUND_OWNER_KEY) {
+            throw new Error('Unrepresented ground cannot also name a represented owner');
+        }
+        if (unrepresentedGround) {
             if (slice.ownerKey && slice.ownerKey !== OPEN_GROUND_OWNER_KEY) {
-                throw new Error('An ownerless slice cannot also name an owner');
+                throw new Error('Unrepresented ground cannot also name a represented owner');
             }
             if (listedOwners?.length) {
-                // The current site subdivision editor encodes its ownerless pool share in
+                // The current site subdivision editor encodes its unrepresented pool share in
                 // owners[] as a single sentinel row. It is not an owner: recognize only the
                 // complete sentinel allocation, never a mixed or fractional share.
                 const sentinelOnly = listedOwners.length === 1
                     && listedOwners[0]?.ownerKey === OPEN_GROUND_OWNER_KEY
                     && listedOwners[0]?.share === 1;
                 if (!sentinelOnly) {
-                    throw new Error('An ownerless open-ground slice can only carry its complete open-ground marker');
+                    throw new Error('Unrepresented open-ground slices require one complete sentinel allocation');
                 }
             }
             return { owners: [], jointPool: false };
@@ -38,8 +48,14 @@
         if (Array.isArray(slice.owners)) {
             if (!slice.owners.length) throw new Error('Reparcellization ownership requires at least one owner');
             const owners = slice.owners.map((entry, index) => {
-                if (entry?.noOwner === true || entry?.ownerKey === OPEN_GROUND_OWNER_KEY) {
-                    throw new Error(`Reparcellization owner ${index + 1} is marked as having no owner`);
+                if (Object.prototype.hasOwnProperty.call(entry || {}, 'noOwner')) {
+                    throw new Error(`Reparcellization owner ${index + 1} uses the retired noOwner marker`);
+                }
+                if (entry?.unrepresentedGround === true && entry?.ownerKey !== OPEN_GROUND_OWNER_KEY) {
+                    throw new Error(`Reparcellization allocation ${index + 1} cannot mark a represented owner as unrepresented ground`);
+                }
+                if (entry?.ownerKey === OPEN_GROUND_OWNER_KEY) {
+                    throw new Error(`Reparcellization owner ${index + 1} uses the open-ground accounting sentinel`);
                 }
                 if (!entry || !String(entry.ownerKey || '').trim()) throw new Error(`Reparcellization owner ${index + 1} is missing ownerKey`);
                 const share = entry.share;

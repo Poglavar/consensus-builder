@@ -1,0 +1,11 @@
+[
+  {
+    "url": "https://www.msm.gov.ar/guia-tramites/catastro/"
+  },
+  {
+    "url": "https://mapas.catastrotucuman.gov.ar/geoserver/dgct/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=dgct%3APARCELASRUBE&count=3&outputFormat=application%2Fjson&srsName=urn%3Aogc%3Adef%3Acrs%3AOGC%3A1.3%3ACRS84&propertyName=GEOMETRY&bbox=-65.21642%2C-26.82536%2C-65.21617%2C-26.82508%2Curn%3Aogc%3Adef%3Acrs%3AOGC%3A1.3%3ACRS84"
+  },
+  {
+    "url": "https://mapas.catastrotucuman.gov.ar/geoserver/dgct/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=dgct%3APARCELASRUBE&count=3&outputFormat=application%2Fjson&srsName=urn%3Aogc%3Adef%3Acrs%3AOGC%3A1.3%3ACRS84&propertyName=GEOMETRY&bbox=7033437%2C3577883%2C7033487%2C3577933%2Curn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A5345"
+  }
+]

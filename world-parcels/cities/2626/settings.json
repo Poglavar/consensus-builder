@@ -1,0 +1,121 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "2626",
+  "name": "Istanbul, Turkey",
+  "point": [
+    41.0139,
+    28.9497
+  ],
+  "bindings": [
+    {
+      "appCityId": "istanbul",
+      "runtimeConfig": {
+        "id": "istanbul",
+        "label": "Istanbul, Turkey",
+        "currency": {
+          "locale": "tr-TR",
+          "code": "TRY"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            41.0139,
+            28.9497
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            41.0139,
+            28.9497
+          ],
+          "fallbackDataset": [
+            28.9497,
+            41.0139
+          ]
+        },
+        "parcels": {
+          "strategy": "point",
+          "gridSize": 0.0025,
+          "source": "parcel-source",
+          "sourceId": "tr-tkgm-parselsorgu-api",
+          "idPrefix": "TR-TKGM-",
+          "parcelNumberField": "parselNo",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 0.1,
+          "attribution": "TKGM · parcel lookup on click"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": null
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "tr-tkgm-parselsorgu-api",
+      "name": "TKGM Parsel Sorgu (MEGSIS) backing API",
+      "adapter": "tkgm-point",
+      "endpoint": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel",
+      "idField": "nativeId",
+      "parcelNumberField": "parselNo",
+      "idPrefix": "TR-TKGM-",
+      "outFields": [
+        "mahalleId",
+        "adaNo",
+        "parselNo"
+      ],
+      "queryMode": "point",
+      "capabilities": {
+        "point": true,
+        "exactId": true,
+        "bbox": false,
+        "areaEnumeration": false
+      },
+      "countryCode": "TR",
+      "metricSrid": 32635,
+      "maxConcurrentQueries": 2,
+      "scope": "Point lookup verified for one parcel in Fatih, Istanbul; broader Istanbul and Turkey coverage are unverified. Bbox queries and area enumeration are unavailable.",
+      "cityIds": [
+        "istanbul"
+      ],
+      "operator": "General Directorate of Land Registry and Cadastre (TKGM)",
+      "attribution": "TKGM · parcel lookup on click",
+      "licenceNote": "Public viewer-backed point lookup; terms for programmatic reuse are undocumented.",
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "TR",
+          "basis": "TKGM MEGSİS is the national land registry and cadastre point lookup for Turkey.",
+          "evidence": []
+        },
+        "paceMs": 1500,
+        "keepPublishedFields": true
+      },
+      "knownLimit": {
+        "kind": "daily-requests",
+        "evidence": "2026-10-12: the parcel endpoint answered HTTP 403 with the JSON string \"Günlük sorgu limitini aştınız.\" (daily query limit exceeded) while the host root still answered 200. The limit and its reset time are unpublished."
+      }
+    }
+  ]
+}

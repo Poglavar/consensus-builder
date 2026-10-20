@@ -1,0 +1,20 @@
+[
+  {
+    "url": "https://miciudad.barranquilla.gov.co/server/rest/services/catastro/Predios_2026/MapServer/0?f=pjson",
+    "reason": "403"
+  },
+  {
+    "url": "https://miciudad.barranquilla.gov.co/server/rest/services/catastro/Predios_2026/MapServer/0/query?f=json&where=1%3D1&geometry=-74.79636%2C10.94360%2C-74.79616%2C10.94380&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID&returnGeometry=true&outSR=4326&resultRecordCount=3",
+    "reason": "403"
+  },
+  {
+    "url": "https://miciudad.barranquilla.gov.co/server/rest/services/catastro/Predios_2026/MapServer/0/query",
+    "reason": "403"
+  },
+  {
+    "url": "https://catastro.barranquilla.gov.co/servicios/"
+  },
+  {
+    "url": "https://miciudad.barranquilla.gov.co/"
+  }
+]

@@ -1,0 +1,6 @@
+[
+  {
+    "url": "https://gis.colorado.gov/public/rest/services/Address_and_Parcel/Colorado_Public_Parcels/FeatureServer/0",
+    "reason": "Held at the geometry gate: every source check passed (194 requests, 1 qualifier run(s) on this city) but the independent metric audit failed for Longmont (us-co-oit-statewide-parcels) with 55 material overlap pair(s) (> 0.01 m2; max 7.08e+03 m2, 100% of the smaller; total 3.9e+05 m2); 55 exact-duplicate geometries under distinct IDs among 86 cached features (Boulder~120534263001 / Boulder~1205342…"
+  }
+]

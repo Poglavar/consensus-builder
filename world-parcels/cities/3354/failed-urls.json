@@ -1,0 +1,17 @@
+[
+  {
+    "url": "https://eardhi.lands.go.tz/"
+  },
+  {
+    "url": "https://eardhi.lands.go.tz/map/geoserver/taspro/ows?service=WFS&version=1.0.0&request=GetCapabilities"
+  },
+  {
+    "url": "https://eardhi.lands.go.tz/map/geoserver/taspro/ows?service=WFS&version=1.0.0&request=DescribeFeatureType&typeName=taspro:spatial_units&outputFormat=application/json"
+  },
+  {
+    "url": "https://eardhi.lands.go.tz/map/geoserver/taspro/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=taspro:spatial_units&outputFormat=application/json&propertyName=id,uid,geom&bbox=37.6479635980033,-6.81674697191197,37.6679635980033,-6.79674697191197,EPSG:4326&maxFeatures=3"
+  },
+  {
+    "url": "https://eardhi.lands.go.tz/map/geoserver/taspro/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName=taspro:spatial_units&outputFormat=application/json&propertyName=id,uid,geom&bbox=37.6578,-6.8069,37.6581,-6.8066,EPSG:4326&maxFeatures=1"
+  }
+]

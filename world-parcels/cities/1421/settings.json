@@ -1,0 +1,139 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "1421",
+  "name": "Muscat, Oman",
+  "point": [
+    23.597065274496654,
+    58.55548313911143
+  ],
+  "bindings": [
+    {
+      "appCityId": "muscat",
+      "runtimeConfig": {
+        "id": "muscat",
+        "label": "Muscat, Oman",
+        "currency": {
+          "locale": "ar-OM",
+          "code": "OMR"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            23.597065274496654,
+            58.55548313911143
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            23.597065274496654,
+            58.55548313911143
+          ],
+          "fallbackDataset": [
+            58.55548313911143,
+            23.597065274496654
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.0025,
+          "source": "parcel-source",
+          "sourceId": "om-muscat-mutrah-plots",
+          "idPrefix": "OM-MM-MUTRAH-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 6,
+          "attribution": "<a href=\"https://geoportal.mm.gov.om/server/rest/services/Mutrah_Directorate_Map_Service_MIL1/MapServer/4\">Muscat Municipality · publisher &amp; conditions</a> · Mutrah identified new-number plots only; partial Muscat coverage · adapted"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "om-muscat-mutrah-plots",
+      "adapter": "arcgis",
+      "countryCode": "OM",
+      "cityIds": [
+        "muscat"
+      ],
+      "endpoint": "https://geoportal.mm.gov.om/server/rest/services/Mutrah_Directorate_Map_Service_MIL1/MapServer/4",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "OM-MM-MUTRAH-",
+      "parcelNumberField": "NEWPLOTNO",
+      "outFields": [
+        "OBJECTID",
+        "PLOTUID",
+        "PLOTNO",
+        "NEWPLOTNO",
+        "NEWHOUSINGAREACD",
+        "NEWPHASECD"
+      ],
+      "metricSrid": 32640,
+      "pageSize": 1000,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "boundsSrid": 32640,
+      "boundsProjection": "+proj=utm +zone=40 +datum=WGS84 +units=m +no_defs",
+      "idFields": [
+        "PLOTUID",
+        "NEWPLOTNO"
+      ],
+      "idFieldTypes": {
+        "PLOTUID": "integer",
+        "NEWPLOTNO": "string"
+      },
+      "attributeNotNull": [
+        "PLOTUID",
+        "NEWPLOTNO"
+      ],
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "nativeGeometryMode": "parts",
+      "partsCoordinatePrecision": 9,
+      "disjointParts": true,
+      "partMatchFields": [
+        "NEWHOUSINGAREACD",
+        "NEWPHASECD"
+      ],
+      "attributeExclusions": {
+        "NEWPLOTNO": [
+          " "
+        ]
+      },
+      "name": "Muscat Municipality Mutrah identified cadastral plots",
+      "operator": "Muscat Municipality",
+      "catalogueUrl": "https://geoportal.mm.gov.om/server/rest/services/Mutrah_Directorate_Map_Service_MIL1/MapServer/4",
+      "scope": "Mutrah Directorate in Muscat: plots with published PLOTUID and new plot number. Unnumbered plots are outside this partial source; Oman nationwide coverage is not provided.",
+      "coverageNote": "12,185 native plot groups across 12,212 rows verified. Complete disjoint parts use the old plot UID plus new plot number; new area and phase must agree. 6,534 rows without a new plot number remain outside this subset.",
+      "sourceCrs": "EPSG:32640, WGS 84 / UTM zone 40N; viewport corners projected locally and parcel geometry returned in WGS84.",
+      "attribution": "Muscat Municipality. Adapted to WGS84.",
+      "licenceNote": "Source conditions are informational; users choose their source and intended use.",
+      "maxConcurrentQueries": 2
+    }
+  ]
+}

@@ -412,12 +412,9 @@ const proposalStorage = {
         }
     },
 
-    _normalizeProposalIdentity(proposal, context = {}) {
+    _normalizeProposalIdentity(proposal) {
         if (!proposal || typeof proposal !== 'object') return proposal;
-        const { existingHash = null } = context;
-        const candidate = proposal.proposalId
-            || proposal.tokenId
-            || existingHash;
+        const candidate = proposal.proposalId;
         if (candidate !== undefined && candidate !== null) {
             proposal.proposalId = String(candidate);
         }
@@ -440,10 +437,7 @@ const proposalStorage = {
         const canonical = this._normalizeProposal({ ...proposal });
         Object.keys(proposal).forEach(key => { delete proposal[key]; });
         Object.assign(proposal, canonical);
-        const id = this._coerceProposalId(
-            proposal.proposalId
-            || proposal.tokenId
-        );
+        const id = this._coerceProposalId(proposal.proposalId);
         if (!id) return null;
         // Any re-index is a content change: its cached persistence fragment is no longer valid.
         this._persistFragments?.delete(id);
@@ -458,23 +452,28 @@ const proposalStorage = {
         if (this.proposals.has(key)) {
             return key;
         }
-        for (const [id, proposal] of this.proposals.entries()) {
-            if (!proposal) continue;
-            const candidates = [
-                proposal.proposalId,
-                proposal.tokenId,
-                proposal.chainProposalId,
-                proposal.onchain && proposal.onchain.chainProposalId,
-                proposal.serverProposalId,
-                proposal.id
-            ]
-                .filter(value => value !== undefined && value !== null && String(value).trim() !== '')
-                .map(String);
-            if (candidates.includes(key)) {
-                return id;
-            }
-        }
+        // This method is exclusively a browser-local key lookup. Publication rows require an API
+        // scope at getProposalByServerRowId; chain locations require ChainProposalRef.
         return null;
+    },
+
+    getProposalByServerRowId(rowId, publicationApiBase) {
+        this._ensureIndexes();
+        if (!/^[1-9]\d*$/.test(String(rowId ?? ''))) return null;
+        const key = String(rowId);
+        const originApi = (typeof window !== 'undefined' && window.ProposalOrigin)
+            || (typeof require === 'function' ? require('./origin.js') : null);
+        const requestedBase = originApi?.apiBase(publicationApiBase);
+        let found = null;
+        for (const proposal of this.proposals.values()) {
+            if (!proposal || String(proposal.serverProposalId ?? '') !== key) continue;
+            if (!requestedBase || originApi?.apiBase(proposal.publicationApiBase) !== requestedBase) continue;
+            if (found && found !== proposal) {
+                throw new Error(`Multiple local proposals refer to server row ${key}.`);
+            }
+            found = proposal;
+        }
+        return found;
     },
 
     findProposalByIdOrHash(idOrHash) {
@@ -528,7 +527,6 @@ const proposalStorage = {
         }
         const chainTokenId = raw.proposalId ?? raw.tokenId ?? (raw.onchain && raw.onchain.proposalId) ?? metaProps.tokenId ?? null;
         const rawProposalId = chainTokenId !== undefined && chainTokenId !== null ? String(chainTokenId) : null;
-        const metaProposalId = metaProps.proposalId || metaProps.id || null;
         const cadastreParcelIds = normalizeParcelIdList(
             declaredCadastreIds
         );
@@ -553,13 +551,16 @@ const proposalStorage = {
         const contractAddress = raw.contractAddress || (raw.onchain && raw.onchain.contractAddress) || metaProps.contractAddress || null;
         const chainProposalId = buildChainProposalId(normalizedChainId, contractAddress, rawProposalId);
 
-        // Try to reuse any already-known record (by id OR hash) to avoid losing richer metadata/titles
-        const existing =
-            (rawProposalId && typeof this.findProposalByIdOrHash === 'function' ? this.findProposalByIdOrHash(rawProposalId) : null)
-            || (metaProposalId && typeof this.findProposalByIdOrHash === 'function' ? this.findProposalByIdOrHash(metaProposalId) : null)
-            || (rawProposalId ? this.proposals.get(rawProposalId) : null)
-            || (metaProposalId ? this.proposals.get(metaProposalId) : null)
-            || null;
+        // A token/account is identified only within its full chain location. Neither a bare token
+        // number, an authored metadata ID nor the same parcel set identifies that chain record.
+        const references = (typeof window !== 'undefined' ? window : globalThis).ChainProposalRef;
+        if (!references) throw new Error('Chain proposal identity is unavailable.');
+        const incomingRef = references.chainRefFromProposal({ onchain: {
+            chainType: raw.onchain?.chainType || raw.chainType,
+            chainId: normalizedChainId, contractAddress, proposalId: rawProposalId
+        } });
+        const existing = references.findByReference(Array.from(this.proposals.values()), incomingRef);
+        if (!chainProposalId) throw new Error('A complete chain proposal reference is required.');
 
         // Prefer any already known human-friendly title/name before falling back to raw chain data
         const pickPreferredString = (...candidates) => {
@@ -592,28 +593,9 @@ const proposalStorage = {
             return best;
         };
 
-        // Try to match an existing local proposal by similarity (parcel set) to borrow its richer title/name
-        const similarityHash = this._computeSimilarityHash(cadastreParcelIds);
-        let similar = null;
-        try {
-            for (const p of this.proposals.values()) {
-                if (!p) continue;
-                const hash = this._computeSimilarityHash(p.cadastreParcelIds || []);
-                if (hash === similarityHash) {
-                    similar = p;
-                    break;
-                }
-            }
-        } catch (_) { /* ignore */ }
-
-        let proposalId = metaProposalId || (existing && existing.proposalId) || rawProposalId || (similar && similar.proposalId) || null;
-        if ((!proposalId || isLocalProposalId(proposalId)) && typeof this._buildDeterministicId === 'function') {
-            try {
-                proposalId = this._buildDeterministicId({ ...(existing || {}), ...raw, cadastreParcelIds });
-            } catch (_) { /* best-effort */ }
-        }
-        if (!proposalId && rawProposalId) {
-            proposalId = rawProposalId;
+        const proposalId = existing?.proposalId || chainProposalId;
+        if (!existing && this.proposals.has(proposalId)) {
+            throw new Error('The chain proposal key is already occupied by a different local record.');
         }
 
         const rawGoal = raw.goal
@@ -627,7 +609,7 @@ const proposalStorage = {
             ? getProposalGoalLabel(normalizedGoal)
             : `Proposal ${proposalId}`;
 
-        const title = pickPreferredString(
+        const titleCandidates = [
             existing && existing.title,
             existing && existing.name,
             existing && existing.proposalName,
@@ -637,11 +619,6 @@ const proposalStorage = {
             existing && existing.metadata && existing.metadata.title,
             existing && existing.onchain && existing.onchain.metadata && existing.onchain.metadata.name,
             existing && existing.onchain && existing.onchain.metadata && existing.onchain.metadata.title,
-            similar && similar.title,
-            similar && similar.name,
-            similar && similar.proposalName,
-            similar && similar.blockName,
-            similar && similar.structureProposal && similar.structureProposal.blockName,
             raw.title,
             raw.name,
             raw.proposalName,
@@ -650,10 +627,14 @@ const proposalStorage = {
             raw.metadata && raw.metadata.name,
             raw.metadata && raw.metadata.title,
             raw.onchain && raw.onchain.metadata && raw.onchain.metadata.name,
-            raw.onchain && raw.onchain.metadata && raw.onchain.metadata.title,
-            raw.description,
-            fallbackTitle
-        );
+            raw.onchain && raw.onchain.metadata && raw.onchain.metadata.title
+        ];
+        // Generated labels are fallbacks, even when a prior chain scan saved one before metadata
+        // arrived. Their longer qualified ID must not outrank the author's actual title.
+        const generatedTitles = new Set([fallbackTitle, `Proposal ${proposalId}`]);
+        const title = pickPreferredString(...titleCandidates.filter(value =>
+            !generatedTitles.has(typeof value === 'string' ? value.trim() : value)
+        )) || fallbackTitle;
 
         const description = pickPreferredString(
             raw.description,
@@ -686,7 +667,20 @@ const proposalStorage = {
             isConditional: !!raw.isConditional,
             imageURI: raw.imageURI || '',
             acceptancePossible: raw.acceptancePossible !== false,
-            lifecycleStatus: raw.lifecycleStatus || raw.status || 'Active',
+            lifecycleStatus: getLifecycleStatus({ lifecycleStatus: raw.lifecycleStatus ?? raw.status }),
+            ...(raw.lifecycleEvidence?.protocol === 'proposal-lifecycle-evidence/1'
+                && raw.lifecycleEvidence.state === 'observed'
+                && String(raw.lifecycleEvidence.status || '').toLowerCase()
+                    === String(raw.lifecycleStatus ?? raw.status ?? '').toLowerCase()
+                && Number.isFinite(Date.parse(raw.lifecycleEvidence.observedAt))
+                && raw.lifecycleEvidence.observations?.some(observation => observation.source === 'chain-state-read'
+                    && observation.status === raw.lifecycleEvidence.status
+                    && observation.chainRef?.chainType === incomingRef.chainType
+                    && observation.chainRef?.chainId === incomingRef.chainId
+                    && observation.chainRef?.contract === incomingRef.contract
+                    && observation.chainRef?.tokenId === incomingRef.tokenId)
+                ? { lifecycleEvidence: raw.lifecycleEvidence }
+                : existing?.lifecycleEvidence ? { lifecycleEvidence: existing.lifecycleEvidence } : {}),
             ethBalance: raw.ethBalance || '0',
             tokenBalance: raw.tokenBalance || '0',
             acceptanceCount: raw.acceptanceCount || '0',
@@ -710,11 +704,11 @@ const proposalStorage = {
         const mergedOnchain = {
             ...existingOnchain,
             ...incomingOnchain,
-            chainId: normalizedChainId || existingOnchain.chainId || raw.chainId || incomingOnchain.chainId || null,
+            chainId: normalizedChainId,
             proposalId: rawProposalId || proposalId,
             chainProposalId: chainProposalId || existingOnchain.chainProposalId || incomingOnchain.chainProposalId || null,
             transactionHash: incomingOnchain.transactionHash || existingOnchain.transactionHash || raw.transactionHash || null,
-            contractAddress: incomingOnchain.contractAddress || existingOnchain.contractAddress || raw.contractAddress || null,
+            contractAddress,
             metadataUri: incomingOnchain.metadataUri || existingOnchain.metadataUri || raw.metadataUri || raw.metadataUrl || raw.imageURI || null
         };
         if (mergedOnchain.chainId || mergedOnchain.transactionHash || mergedOnchain.contractAddress) {
@@ -730,19 +724,11 @@ const proposalStorage = {
         };
 
         // Map metadata-driven offer details and geometry
-        const metaOffer = metaProps.offer || metaProps.budget || null;
-        const metaOfferAmount = metaOffer && metaOffer.amount !== undefined ? metaOffer.amount
-            : (metaOffer && metaOffer.value !== undefined ? metaOffer.value
-                : (metaProps.offerAmount !== undefined ? metaProps.offerAmount : metaProps.ethAmount));
-        if (metaOfferAmount !== undefined && metaOfferAmount !== null) {
-            const numericOffer = Number(metaOfferAmount);
-            if (Number.isFinite(numericOffer) && numericOffer > 0 && (!merged.offer || merged.offer === 0)) {
-                merged.offer = numericOffer;
-            }
+        if (typeof metaProps.offer === 'number' && Number.isFinite(metaProps.offer) && metaProps.offer >= 0) {
+            merged.offer = metaProps.offer;
         }
-        const metaOfferCurrency = (metaOffer && (metaOffer.currency || metaOffer.curr)) || metaProps.offerCurrency || metaProps.currency;
-        if (metaOfferCurrency && !merged.offerCurrency) {
-            merged.offerCurrency = metaOfferCurrency;
+        if (typeof metaProps.offerCurrency === 'string' && metaProps.offerCurrency.trim()) {
+            merged.offerCurrency = metaProps.offerCurrency;
         }
 
         const geometryPayload = metaProps.geometry;
@@ -781,7 +767,7 @@ const proposalStorage = {
         // These fields are not returned by the smart contract, so we must preserve them
         if (existing) {
             // Preserve offer fields from existing proposal (only if they exist)
-            if (typeof existing.offer === 'number' && existing.offer > 0) {
+            if (typeof existing.offer === 'number' && Number.isFinite(existing.offer) && existing.offer >= 0) {
                 merged.offer = existing.offer;
             }
             if (existing.offerCurrency) {
@@ -804,7 +790,7 @@ const proposalStorage = {
             }
         } else if (raw) {
             // If no existing proposal, try to get offer fields from raw input
-            if (typeof raw.offer === 'number' && raw.offer > 0) {
+            if (typeof raw.offer === 'number' && Number.isFinite(raw.offer) && raw.offer >= 0) {
                 merged.offer = raw.offer;
             }
             if (raw.offerCurrency) {
@@ -827,42 +813,8 @@ const proposalStorage = {
             }
         }
 
-        // Derive offer from chain balances if not already set
-        // The smart contract stores balances in Wei (for ETH) or lamports (for SOL)
-        const isSolanaProposal = typeof normalizedChainId === 'string' && normalizedChainId.startsWith('solana');
-        if (!merged.offer || typeof merged.offer !== 'number' || merged.offer === 0) {
-            // Try to derive offer from ethBalance (Wei for EVM, lamports for Solana)
-            const ethBalanceStr = String(raw.ethBalance || normalized.ethBalance || '0');
-            try {
-                const nativeBalanceRaw = BigInt(ethBalanceStr);
-
-                if (nativeBalanceRaw > 0n) {
-                    // Convert Wei to ETH (10^18) or lamports to SOL (10^9)
-                    const divisor = isSolanaProposal ? 1e9 : 1e18;
-                    const ethAmount = Number(nativeBalanceRaw) / divisor;
-                    merged.offer = ethAmount;
-                    if (!merged.offerCurrency) {
-                        merged.offerCurrency = isSolanaProposal ? 'SOL' : 'ETH';
-                    }
-                } else {
-                    // Check tokenBalance as fallback
-                    const tokenBalanceStr = String(raw.tokenBalance || normalized.tokenBalance || '0');
-                    const tokenBalance = BigInt(tokenBalanceStr);
-
-                    if (tokenBalance > 0n) {
-                        // For tokens, we'd need to know the token decimals, but for now
-                        // we'll assume 18 decimals (standard) and use a generic currency
-                        const tokenAmount = Number(tokenBalance) / 1e18;
-                        merged.offer = tokenAmount;
-                        if (!merged.offerCurrency) {
-                            merged.offerCurrency = 'USDT'; // Default to USDT for tokens
-                        }
-                    }
-                }
-            } catch (e) {
-                console.warn('Failed to parse balance for proposal', proposalId, e);
-            }
-        }
+        // Escrow balances are observations in atomic units. They do not establish an authored
+        // offer, its currency, a token's decimals or consideration actually paid.
 
         if (portable) {
             // New chain metadata owns every authored field. Local drafts or a similar parcel set
@@ -1039,7 +991,7 @@ const proposalStorage = {
         const parked = this.readRecovery();
         if (!parked) return 0;
         parked.proposals.forEach(entry => {
-            try { this.addProposal({ ...entry }); } catch (error) {
+            try { this.addProposal({ ...entry, lifecycleStatus: getLifecycleStatus(entry) }); } catch (error) {
                 console.error('[proposalStorage] could not restore a parked proposal', error);
             }
         });
@@ -1142,7 +1094,9 @@ const proposalStorage = {
         // A live selection is authoring input, not proposal data. Project it exactly once here and
         // keep generated parcel ids out of the record passed to normalization/persistence.
         const candidate = proposalWithAuthoredSelection(
-            { ...proposal },
+            // This is the authoring entrypoint: a newly created record starts Active. Imports and
+            // recovery supply their observed lifecycle (including Unknown) before reaching here.
+            { lifecycleStatus: 'Active', ...proposal },
             options.selectedParcelIds
         );
         const normalized = this._normalizeProposal(candidate);
@@ -1235,14 +1189,13 @@ const proposalStorage = {
         normalized.createdAt = normalized.createdAt || new Date().toISOString();
         normalized.updatedAt = new Date().toISOString();
 
-        // Preserve the original server ID before potentially replacing with hash-based ID.
+        // The incoming proposalId is a local key. Publication is declared separately by
+        // serverProposalId; a numeric local key alone cannot establish that relationship.
         const incomingId = this._coerceProposalId(normalized.proposalId);
-        const isNumericServerId = incomingId && /^\d+$/.test(incomingId);
-        if (isNumericServerId && !normalized.serverProposalId) {
-            normalized.serverProposalId = incomingId;
-        }
 
-        let idKey = incomingId;
+        const publishedCopy = normalized.serverProposalId
+            ? this.getProposalByServerRowId(normalized.serverProposalId, normalized.publicationApiBase) : null;
+        let idKey = publishedCopy?.proposalId || incomingId;
         if (!idKey || isLocalProposalId(idKey)) {
             idKey = this._buildDeterministicId(normalized);
         }
@@ -1250,6 +1203,21 @@ const proposalStorage = {
 
         if (!overwrite && idKey && this.proposals.has(idKey)) {
             return null;
+        }
+
+        // Refreshing the same local record must not replace this browser's consent history with
+        // another browser's claims (or erase it when the portable record correctly omits them).
+        // The tally starts empty and is recomputed against the incoming terms, never copied.
+        const existing = this.proposals.get(idKey);
+        if (existing && (String(existing.serverProposalId || '') !== String(normalized.serverProposalId || '')
+            || (existing.publicationApiBase || null) !== (normalized.publicationApiBase || null))) {
+            throw new Error('Cannot import proposal: its local key belongs to a different publication identity.');
+        }
+        if (existing?.ownerAcceptances && typeof existing.ownerAcceptances === 'object') {
+            normalized.ownerAcceptances = JSON.parse(JSON.stringify(existing.ownerAcceptances));
+            if (typeof refreshProposalAcceptanceValidity === 'function') {
+                refreshProposalAcceptanceValidity(normalized);
+            }
         }
 
         this._indexProposal(normalized);
@@ -1367,8 +1335,7 @@ const proposalStorage = {
         return true;
     },
 
-    _normalizeProposal(proposal, context = {}) {
-        const { existingHash = null } = context || {};
+    _normalizeProposal(proposal) {
         const root = typeof window !== 'undefined' ? window : globalThis;
         const depthApi = root && root.__formationDepth;
         if (!depthApi || typeof depthApi.stripDerivedRecordData !== 'function' || typeof depthApi.decodeRoadView !== 'function') {
@@ -1431,7 +1398,7 @@ const proposalStorage = {
         );
 
         // Normalize identity to proposalId and drop legacy hash fields
-        this._normalizeProposalIdentity(proposal, { existingHash });
+        this._normalizeProposalIdentity(proposal);
 
         // Minted flag default (keep local-only proposals as not minted)
         if (proposal.isMinted === undefined || proposal.isMinted === null) {
@@ -1440,14 +1407,9 @@ const proposalStorage = {
             proposal.isMinted = !!proposal.isMinted;
         }
 
-        // Ensure proposalId is preserved (it is the canonical key used across the UI and persistence).
-        // IMPORTANT: Do NOT delete proposal.proposalId here, otherwise uploaded proposals lose their server id on save,
-        // and reload will re-wrap them as local-*.
-        const derivedId = proposal.proposalId
-            ?? proposal.serverProposalId
-            ?? proposal.id
-            ?? proposal.tokenId
-            ?? existingHash;
+        // Preserve the explicit browser key. Publication rows and chain tokens are separate
+        // namespaces; an absent browser key is allocated from authored content below.
+        const derivedId = proposal.proposalId;
         if (derivedId !== undefined && derivedId !== null && String(derivedId).trim().length > 0) {
             proposal.proposalId = String(derivedId);
         }
@@ -2013,6 +1975,7 @@ const multiParcelSelection = {
     showMultiParcelInfo() {
         const parcels = this.getSelectedParcels();
         const avgSqmPrice = (typeof SQM_AVG_PRICE !== 'undefined' ? SQM_AVG_PRICE : 133);
+        const priceModel = window.ParcelPriceModel;
 
         const parcelSummaries = parcels.map(parcel => {
             const parcelId = window.ParcelPresenter?.getIdForLayer?.(parcel) || null;
@@ -2023,16 +1986,27 @@ const multiParcelSelection = {
                 || props.parcelArea
                 || props.informationTechnical?.superficie_total;
             const area = Number.isFinite(Number(areaSource)) ? Number(areaSource) : 0;
-            const explicitPrice = Number(props.estimatedMarketPrice);
-            const price = Number.isFinite(explicitPrice) ? explicitPrice : (area ? area * avgSqmPrice : 0);
-            const currency = props.estimatedMarketPriceCurrency || props.currency || 'EUR';
-            return { parcel, parcelId, feature, area, price, currency };
+            const estimate = priceModel
+                ? priceModel.buildEstimate(props, area, { areaPricePerSqm: avgSqmPrice, currency: 'EUR' })
+                : { amount: null, currency: null, basis: 'unavailable' };
+            return { parcel, parcelId, feature, area, estimate };
         }).filter(summary => summary.feature);
 
         const totalArea = parcelSummaries.reduce((sum, p) => sum + (p.area || 0), 0);
-        const totalEstimatedPrice = parcelSummaries.reduce((sum, p) => sum + (p.price || 0), 0);
-        // One city's parcels share one price currency; the computed fallback (SQM_AVG_PRICE) is EUR.
-        const totalCurrency = (parcelSummaries[0] && parcelSummaries[0].currency) || 'EUR';
+        const totalEstimate = priceModel
+            ? priceModel.aggregate(parcelSummaries.map(p => p.estimate), parcels.length)
+            : { amount: null, currency: null, basis: 'unavailable' };
+        const baseEstimateLabel = tParcelMulti('panel.parcel.multi.estValue', {}, 'Est. Val.');
+        const totalEstimateLabel = totalEstimate.basis === 'area-model'
+            ? `${baseEstimateLabel} (modeled area value)`
+            : totalEstimate.basis === 'source-estimate'
+                ? `${baseEstimateLabel} (source estimates)`
+                : totalEstimate.basis === 'combined-estimates'
+                    ? `${baseEstimateLabel} (combined estimate bases)`
+                    : baseEstimateLabel;
+        const totalEstimateDisplay = totalEstimate.amount === null
+            ? 'N/A'
+            : CbFormat.formatMoney(totalEstimate.amount, totalEstimate.currency, { maxFractionDigits: 0 });
 
         // Calculate total owners across all parcels
         let totalOwners = 0;
@@ -2109,8 +2083,8 @@ const multiParcelSelection = {
             </div>
             <div style="display: flex; gap: 8px;">
                 <div class="metric-group" style="flex: 1;">
-                    <div class="metric-label" data-i18n-key="panel.parcel.multi.estValue">${tParcelMulti('panel.parcel.multi.estValue', {}, 'Est. Val.:')}</div>
-                    <div class="metric-value">${CbFormat.formatMoney(totalEstimatedPrice, totalCurrency, { maxFractionDigits: 0 })}</div>
+                    <div class="metric-label">${totalEstimateLabel}:</div>
+                    <div class="metric-value">${totalEstimateDisplay}</div>
                 </div>
                 <div class="metric-group" style="flex: 1;">
                     <div class="metric-label" data-i18n-key="panel.parcel.multi.totalOwners">${tParcelMulti('panel.parcel.multi.totalOwners', {}, 'Total owners:')}</div>
@@ -2121,17 +2095,21 @@ const multiParcelSelection = {
             <div class="selected-parcels-section">
                 <div class="metric-label" data-i18n-key="panel.parcel.multi.selectedParcelsHeading">${tParcelMulti('panel.parcel.multi.selectedParcelsHeading', {}, 'Selected Parcels:')}</div>
                 <div class="selected-parcels-list">
-                        ${parcelSummaries.map(({ parcelId, feature, area, price, currency }) => {
+                        ${parcelSummaries.map(({ parcelId, feature, area, estimate }) => {
             const isRoad = parcelId && typeof window.isRoadParcel === 'function' ? window.isRoadParcel(parcelId) : false;
             const parcelNumberDisplay = getParcelDisplayNumberFromProperties(feature.properties, parcelId);
             const parcelLabel = tParcelMulti('panel.parcel.multi.parcelLabel', { number: parcelNumberDisplay || parcelId }, `Parcel ${parcelNumberDisplay || parcelId}`);
             const roadLabel = tParcelMulti('panel.parcel.multi.roadTag', {}, 'Road');
+            const priceDisplay = estimate.amount === null
+                ? 'N/A'
+                : CbFormat.formatMoney(estimate.amount, estimate.currency, { maxFractionDigits: 0 });
+            const priceBasis = estimate.basis === 'area-model' ? 'Modeled' : (estimate.basis === 'source-estimate' ? 'Source estimate' : '');
             return `
                             <div class="selected-parcel-item">
                                 <div class="parcel-number"><span class="parcel-id-text" title="${escapeHtml(String(parcelId))}">${escapeHtml(parcelLabel)}</span></div>
                                 <div class="parcel-details">
                                             ${CbFormat.formatArea(area)} •
-                                            ${CbFormat.formatMoney(price, currency, { maxFractionDigits: 0 })}
+                                            ${priceBasis ? `${priceBasis}: ` : ''}${priceDisplay}
                                     ${isRoad ? ` • <span style="color: #28a745;">${roadLabel}</span>` : ''}
                                 </div>
                             </div>

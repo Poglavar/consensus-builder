@@ -1,0 +1,108 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "3536",
+  "name": "Stockton, United States",
+  "point": [
+    37.9838255374783,
+    -121.30363247299
+  ],
+  "bindings": [
+    {
+      "appCityId": "stockton",
+      "runtimeConfig": {
+        "id": "stockton",
+        "wupCityCode": "3536",
+        "label": "Stockton, United States",
+        "currency": {
+          "locale": "en-US",
+          "code": "USD"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            37.9838255374783,
+            -121.30363247299
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            37.9838255374783,
+            -121.30363247299
+          ],
+          "fallbackDataset": [
+            -121.30363247299,
+            37.9838255374783
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "san-joaquin-county-diesel-wfl1-parcels",
+          "idPrefix": "US-CA-SAN-JOAQUIN-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 3,
+          "attribution": "<a href=\"https://services3.arcgis.com/nUD9ady1mS8uVvoJ/ArcGIS/rest/services/Diesel_WFL1/FeatureServer/1\">San Jouquin County CD/GIS & City of Stockton IT/GIS; Data Steward: San Joaquin County Assessor's Office</a>"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "san-joaquin-county-diesel-wfl1-parcels",
+      "name": "San Joaquin County / Stockton Assessor parcels",
+      "adapter": "arcgis",
+      "cityIds": [
+        "stockton"
+      ],
+      "idPrefix": "US-CA-SAN-JOAQUIN-",
+      "endpoint": "https://services3.arcgis.com/nUD9ady1mS8uVvoJ/ArcGIS/rest/services/Diesel_WFL1/FeatureServer/1",
+      "idField": "APN_CHR",
+      "idType": "string",
+      "idPattern": "^[0-9]{8}$",
+      "objectIdField": "FID",
+      "outFields": [
+        "APN_CHR",
+        "FID"
+      ],
+      "queryFormat": "geojson",
+      "boundsQueryMode": "offset",
+      "idsQueryMode": "offset",
+      "pageSize": 100,
+      "idBatchSize": 80,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "metricSrid": 32610,
+      "capabilities": {
+        "areaEnumeration": true
+      },
+      "attribution": "San Jouquin County CD/GIS & City of Stockton IT/GIS; Data Steward: San Joaquin County Assessor's Office",
+      "countryCode": "US",
+      "defaultForCity": true
+    }
+  ]
+}

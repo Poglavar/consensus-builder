@@ -31,8 +31,8 @@ function updateProposalScreenshotGoalIcon(toolKey) {
 
 function shouldSkipProposalScreenshot(proposal) {
     if (!proposal) return true;
-    const goalKey = normalizeGoalKey(proposal.goal || proposal.proposalType || proposal.type || '');
-    return PROPOSAL_SCREENSHOT_SKIP_GOALS.has(goalKey);
+    const goalKey = ProposalDesignGoals.keyOf(proposal);
+    return !!goalKey && PROPOSAL_SCREENSHOT_SKIP_GOALS.has(goalKey);
 }
 
 // Proposal thumbnails are rendered SERVER-SIDE at upload (backend/thumbnails/), not in the browser.
@@ -473,7 +473,7 @@ function showUploadProposalModal(proposal) {
     const sharePlanButton = document.createElement('button');
     sharePlanButton.type = 'button';
     sharePlanButton.className = 'btn btn-block share-modal-plan-btn';
-    sharePlanButton.textContent = tShare('sharePlanButton', 'Share the whole plan instead (all applied proposals)…');
+    sharePlanButton.textContent = tShare('sharePlanButton', 'Share applied proposals');
     sharePlanButton.addEventListener('click', () => {
         // The dialog STAYS UP until the plan panel behind it is built and the map framed. Closing
         // first is what made this feel broken: the modal vanished instantly and left the user on a
@@ -485,7 +485,7 @@ function showUploadProposalModal(proposal) {
         spinner.className = 'fas fa-spinner fa-spin';
         spinner.setAttribute('aria-hidden', 'true');
         const label = document.createElement('span');
-        label.textContent = tShare('preparingPlan', 'Preparing plan...');
+        label.textContent = tShare('preparingPlan', 'Preparing proposals…');
         sharePlanButton.appendChild(spinner);
         sharePlanButton.appendChild(label);
 
@@ -608,13 +608,7 @@ function showUploadProposalModal(proposal) {
 
     const computeShareUrlFromProposal = () => {
         try {
-            // Prefer the serial (numeric) id: getServerProposalId returns the first non-local
-            // candidate, which for a downloaded proposal can be the uploader's local id. Falling
-            // back to it would hide the share link and offer to re-upload something already there.
-            const serialId = typeof getSerialProposalId === 'function' ? getSerialProposalId(proposal) : null;
-            const serverId = serialId || (typeof getServerProposalId === 'function'
-                ? getServerProposalId(proposal)
-                : (proposal && (proposal.serverProposalId || proposal.id)));
+            const serverId = getSerialProposalId(proposal);
             if (serverId && /^\d+$/.test(String(serverId))) {
                 const joiner = cityQueryParam ? '&' : '?';
                 return `${resolveFrontendBaseUrl()}/proposals/${serverId}${cityQueryParam}${joiner}3d${shareLangParam()}`;

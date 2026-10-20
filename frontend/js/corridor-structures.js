@@ -56,8 +56,13 @@
                 if (!intersection) return false;
                 const area = typeof api.area === 'function' ? Number(api.area(intersection)) : minimumArea;
                 return Number.isFinite(area) && area >= minimumArea;
-            } catch (_) {
-                return false;
+            } catch (error) {
+                // This decides whether the road must ask before building through a park or square.
+                // "Does not cross" would build through it without asking, so the check refuses.
+                const clips = global.__parcelArrangement
+                    || (typeof require === 'function' ? require('./proposals/parcel-arrangement.js') : null);
+                if (!clips || typeof clips.clipFailure !== 'function') throw error;
+                throw clips.clipFailure('intersect', error, { site: 'corridor-structures.detectStructureCrossings', proposalId: entry.proposalId || null }, [corridorFeature, entry.feature]);
             }
         });
     }

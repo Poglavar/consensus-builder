@@ -6,7 +6,7 @@ import { createMockPool } from './helpers/mock-pool.js';
 import { createTestApp } from './helpers/create-app.js';
 import { validProposalBody, insertResult, updateResult } from './helpers/fixtures.js';
 import { serializeProposalRow } from '../proposals/serializer.js';
-import { memberHash } from '../plans/plan-hash.js';
+import { memberContent } from '../plans/plan-hash.js';
 
 vi.mock('../thumbnails/proposal-thumbnail.js', () => ({ generateAndStoreProposalThumbnail: vi.fn(async () => null) }));
 const require = createRequire(import.meta.url);
@@ -49,7 +49,9 @@ describe('LR publication commitment', () => {
             decay_duration_ms: '86400000'
         };
         expect(deal.fingerprint(serializeProposalRow(row))).toBe(expected);
-        expect(memberHash(row)).toBe(expected);
+        expect(memberContent(row)).toEqual({
+            kind: stored.kind ?? null, site: stored.site ?? null, readjustmentDeal: expected
+        });
     });
 
     it('accepts the browser upload, which carries the full-length prefixed fingerprint', async () => {

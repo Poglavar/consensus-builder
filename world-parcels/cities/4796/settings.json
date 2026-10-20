@@ -1,0 +1,114 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "4796",
+  "name": "Nice, France",
+  "point": [
+    43.6987107905202,
+    7.23303214314509
+  ],
+  "bindings": [
+    {
+      "appCityId": "nice",
+      "runtimeConfig": {
+        "id": "nice",
+        "wupCityCode": "4796",
+        "label": "Nice, France",
+        "currency": {
+          "locale": "fr-FR",
+          "code": "EUR"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            43.6987107905202,
+            7.23303214314509
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            43.6987107905202,
+            7.23303214314509
+          ],
+          "fallbackDataset": [
+            7.23303214314509,
+            43.6987107905202
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "nice-cotedazur-cadastre-arcgis",
+          "idPrefix": "FR-NCA-CADASTRE-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 3,
+          "attribution": "<a href=\"https://opendata.nicecotedazur.org/data/dataset/parcelles-cadastrales-de-la-metropole-nice-cote-d-azur\">Métropole Nice Côte d’Azur / Direction de l’Information Géographique; service attribution DGFIP 2025; layer attribution DGFIP 2020.</a>"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "nice-cotedazur-cadastre-arcgis",
+      "name": "Métropole Nice Côte d’Azur Cadastre ArcGIS MapServer",
+      "adapter": "arcgis",
+      "endpoint": "https://cartes.nicecotedazur.org/heberge2/rest/services/Cadastre/Cadastre/MapServer/8",
+      "idField": "CODEIDENT",
+      "idType": "string",
+      "idPattern": "^[0-9]{6}[ 0-9]{3}[A-Z0-9]{2}[0-9]{4}$",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "FR-NCA-CADASTRE-",
+      "outFields": [
+        "CODEIDENT",
+        "OBJECTID"
+      ],
+      "boundsQueryMode": "offset",
+      "idsQueryMode": "offset",
+      "queryFormat": "geojson",
+      "pageSize": 200,
+      "idBatchSize": 80,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "countryCode": "FR",
+      "metricSrid": 32632,
+      "scope": "Cadastre of the Métropole Nice Côte d’Azur; official layer extent covers the metropolitan service area.",
+      "attribution": "Métropole Nice Côte d’Azur / Direction de l’Information Géographique; service attribution DGFIP 2025; layer attribution DGFIP 2020.",
+      "catalogueUrl": "https://opendata.nicecotedazur.org/data/dataset/parcelles-cadastrales-de-la-metropole-nice-cote-d-azur",
+      "capabilities": {
+        "point": false,
+        "exactId": true,
+        "bbox": true,
+        "areaEnumeration": true,
+        "geometry": "full-wgs84"
+      },
+      "cityIds": [
+        "nice"
+      ],
+      "defaultForCity": true
+    }
+  ]
+}

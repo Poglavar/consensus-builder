@@ -1,0 +1,14 @@
+[
+  {
+    "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer?f=pjson",
+    "reason": "499"
+  },
+  {
+    "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/0?f=pjson",
+    "reason": "499"
+  },
+  {
+    "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/0/query?where=1%3D1&geometry=73.6133236648661%2C33.0447352768778&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=*&returnGeometry=true&outSR=4326&resultRecordCount=3&f=geojson",
+    "reason": "499"
+  }
+]

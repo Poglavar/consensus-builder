@@ -1,0 +1,29 @@
+[
+  {
+    "url": "https://www.alcaldianeiva.gov.co/Paginas/Index.aspx"
+  },
+  {
+    "url": "https://alcaldianeiva.gov.co/NuestraAlcaldia/Dependencias/Paginas/Direccion-de-Gestion-Catastral.aspx"
+  },
+  {
+    "url": "https://alcaldianeiva.gov.co/Paginas/CatastroMultiproposito.aspx"
+  },
+  {
+    "url": "https://mapas.igac.gov.co/server/rest/services/Dato_Fundamental_Catastro/MapServer?f=pjson"
+  },
+  {
+    "url": "https://mapas.igac.gov.co/server/rest/services/Dato_Fundamental_Catastro/MapServer/layers?f=pjson"
+  },
+  {
+    "url": "https://mapas.igac.gov.co/server/rest/services/Dato_Fundamental_Catastro/MapServer/4/query?f=pjson&where=1%3D0&outFields=FID%2CCODIGO&returnGeometry=false"
+  },
+  {
+    "url": "https://mapas.igac.gov.co/server/rest/services/Dato_Fundamental_Catastro/MapServer/4/query"
+  },
+  {
+    "url": "https://mapas.igac.gov.co/server/rest/services/Dato_Fundamental_Catastro/MapServer/4/query?where=CODIGO%20LIKE%20%2741001%25%27"
+  },
+  {
+    "url": "https://sigi.igac.gov.co/colombia-mapas/"
+  }
+]

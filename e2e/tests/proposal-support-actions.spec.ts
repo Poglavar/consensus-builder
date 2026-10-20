@@ -1,6 +1,7 @@
 import { test, expect } from '../helpers/fixtures';
 import { openCity, proposalState, showProposal, PARCEL_ID } from '../helpers/runtime';
 import { connectWalletByConnectorId, injectMockSolanaWallet, waitForBlockchainRuntime } from '../helpers/blockchain';
+import { installSolanaProposalAccount } from '../helpers/solana-proposal-account';
 
 const WALLET = '7xKXtg2CWYcy6EH8d9xvPht4JyhV46Lxgq6vN6hS9wZT';
 const PROPOSAL = '3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg';
@@ -20,6 +21,7 @@ async function installSupportRpcFixture(page: import('@playwright/test').Page, a
     const w = window as any;
     const client = w.SolanaPledgeClient;
     const web3 = w.solanaWeb3;
+    const pledgeProgramKey = new web3.PublicKey(client.constants.PROGRAM_ID);
     const proposalKey = new web3.PublicKey(proposal);
     const walletKey = new web3.PublicKey(wallet);
     const beneficiaryKey = new web3.PublicKey(beneficiary);
@@ -70,10 +72,10 @@ async function installSupportRpcFixture(page: import('@playwright/test').Page, a
     const connection = {
       getAccountInfo: async (key: any) => {
         const data = accounts.get(key.toBase58());
-        return data ? { data } : null;
+        return data ? { data, owner: pledgeProgramKey } : null;
       },
       getProgramAccounts: async () => action === 'refundMyDonations'
-        ? [{ pubkey: donationPosition, account: { data: donationData } }]
+        ? [{ pubkey: donationPosition, account: { data: donationData, owner: pledgeProgramKey } }]
         : [],
       getBalance: async () => 2_000_000_000,
       getTokenAccountBalance: async () => ({ value: { amount: '50000000', decimals: 6 } }),
@@ -96,6 +98,9 @@ async function installSupportRpcFixture(page: import('@playwright/test').Page, a
     w.__proposalSupportRpcEvents = events;
     w.SolanaChainDataLoader.getConnection = () => connection;
   }, { proposal: PROPOSAL, wallet: WALLET, beneficiary: BENEFICIARY, action });
+  const status = action === 'releaseDonations' || action === 'fulfillPledge' ? 1
+    : action === 'refundMyDonations' || action === 'voidPledge' ? 2 : 0;
+  await installSolanaProposalAccount(page, { proposal: PROPOSAL, owner: BENEFICIARY, status });
 }
 
 const cases: ActionCase[] = [

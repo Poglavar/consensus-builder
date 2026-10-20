@@ -1,0 +1,136 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "8463",
+  "name": "Springfield (MA), United States",
+  "point": [
+    42.1113118931937,
+    -72.5784998231599
+  ],
+  "bindings": [
+    {
+      "appCityId": "springfield_ma",
+      "runtimeConfig": {
+        "id": "springfield_ma",
+        "wupCityCode": "8463",
+        "label": "Springfield (MA), United States",
+        "currency": {
+          "locale": "en-US",
+          "code": "USD"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            42.1113118931937,
+            -72.5784998231599
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            42.1113118931937,
+            -72.5784998231599
+          ],
+          "fallbackDataset": [
+            -72.5784998231599,
+            42.1113118931937
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "us-ma-massgis-l3-tax-parcels",
+          "idPrefix": "US-MA-STATEWIDE-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "MassGIS (Bureau of Geographic Information), Commonwealth of Massachusetts. Adapted to WGS84."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "us-ma-massgis-l3-tax-parcels",
+      "name": "Massachusetts Property Tax Parcels (MassGIS Level 3)",
+      "operator": "MassGIS (Bureau of Geographic Information), Commonwealth of Massachusetts",
+      "endpoint": "https://services1.arcgis.com/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Property_Tax_Parcels/FeatureServer/0",
+      "adapter": "arcgis",
+      "idField": "LOC_ID",
+      "idType": "string",
+      "idPattern": "^[MF]_[0-9]+_[0-9]+$",
+      "objectIdField": "OBJECTID",
+      "outFields": [
+        "OBJECTID",
+        "LOC_ID",
+        "MAP_PAR_ID"
+      ],
+      "parcelNumberField": "MAP_PAR_ID",
+      "attributeNotNull": [
+        "LOC_ID"
+      ],
+      "idPrefix": "US-MA-STATEWIDE-",
+      "metricSrid": 32619,
+      "stateCode": "MA",
+      "countryCode": "US",
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "maxConcurrentQueries": 2,
+      "scope": "MassGIS Level 3 standardized assessor parcel polygons for all 351 Massachusetts cities and towns (2,559,636 rows on 2026-10-12), identified by the MassGIS LOC_ID locational parcel identifier. All published POLY_TYPE values are included; the one row without a LOC_ID is excluded.",
+      "caveats": [
+        "The layer joins polygons to assessing records, so one LOC_ID repeats once per assessing record with byte-identical geometry (up to 865 rows in Boston); the adapter keeps one polygon per LOC_ID. No LOC_ID with differing Shape__Area was found in Boston, Worcester or Springfield.",
+        "MAP_PAR_ID is a town-scoped assessor map-parcel label used only for display; it is blank on some polygons.",
+        "Non-FEE polygon types (TAX 63,180, PRIV_ROW 832, RAIL_ROW 530, ROW 232, WATER 73 rows) are included; sampled TAX, PRIV_ROW and WATER polygons did not overlap FEE polygons.",
+        "Publisher text: standardization is complete for 350 of 351 communities and Boston is processed separately; Boston (TOWN_ID 35) rows are present in this layer.",
+        "metricSrid 32619 suits eastern Massachusetts; cities west of 72 W (e.g. Springfield) need 32618 when qualified."
+      ],
+      "attribution": "MassGIS (Bureau of Geographic Information), Commonwealth of Massachusetts. Adapted to WGS84.",
+      "licenceNote": "Source conditions are informational; users choose their source and intended use.",
+      "catalogueUrl": "https://www.mass.gov/info-details/massgis-data-property-tax-parcels",
+      "cityIds": [
+        "springfield_ma"
+      ],
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "US",
+          "admin1": [
+            "US-MA"
+          ],
+          "excludeAdmin1": [],
+          "basis": "MassGIS documents Level 3 assessor parcels for every Massachusetts community; all 351 TOWN_ID values are present in the live layer.",
+          "evidence": []
+        },
+        "paceMs": 1000
+      },
+      "metricSridByCity": {
+        "springfield_ma": 32618
+      }
+    }
+  ]
+}

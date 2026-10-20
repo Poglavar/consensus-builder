@@ -1,0 +1,107 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "7504",
+  "name": "West Palm Beach",
+  "point": [
+    26.6223516519297,
+    -80.1012894536897
+  ],
+  "bindings": [
+    {
+      "appCityId": "westpalmbeach",
+      "runtimeConfig": {
+        "id": "westpalmbeach",
+        "label": "West Palm Beach",
+        "currency": {
+          "locale": "en-US",
+          "code": "USD"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            26.6223516519297,
+            -80.1012894536897
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            26.6223516519297,
+            -80.1012894536897
+          ],
+          "fallbackDataset": [
+            -80.1012894536897,
+            26.6223516519297
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "us-palm-beach-county-pao-parcels-ground-oid",
+          "idPrefix": "US-PBC-OID-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 3,
+          "attribution": "<a href=\"https://pbcpao.gov/departments/gis.htm\">Palm Beach County Property Appraiser parcel polygons using service OID</a> · adapted"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "us-palm-beach-county-pao-parcels-ground-oid",
+      "name": "Palm Beach County Property Appraiser parcel polygons using service OID",
+      "adapter": "arcgis",
+      "endpoint": "https://gis.pbcgov.org/arcgis/rest/services/Parcels/PARCEL_PROPERTY_USE_PAPA/MapServer/14",
+      "idField": "OBJECTID",
+      "idType": "integer",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "US-PBC-OID-",
+      "outFields": [
+        "OBJECTID"
+      ],
+      "pageSize": 2000,
+      "maxFeatures": 3000,
+      "maxBboxKm2": 1,
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "countryCode": "US",
+      "metricSrid": 32617,
+      "cityIds": [
+        "westpalmbeach"
+      ],
+      "maxConcurrentQueries": 2,
+      "operator": "Palm Beach County Property Appraiser / County GIS",
+      "scope": "114 valid distinct Palm Beach County Property Appraiser GIS reference polygons in thirteen bounded cells around the unchanged UN WUP West Palm Beach settlement locator. Native count/OID manifests, forced three-row pages, fresh GIS-ID geometry reads, explicit absence, footprint and binding pass. Metric EPSG32617 topology found no sampled overlap or errors. The county sample contains the locator; the separate municipal parcel layer extent excludes it. This serves the WUP settlement location using county ground and makes no West Palm Beach municipal-only coverage claim. Documented PCN/PARID is nonunique across geometry features, so it is not the runtime key.",
+      "attribution": "West Palm Beach public parcel reference map · adapted",
+      "catalogueUrl": "https://pbcpao.gov/departments/gis.htm",
+      "licenceNote": "Anonymous bounded public reference geometry and attribution verified. Source GIS identity is not a statutory property key. Legal title, survey accuracy, currentness and whole-city completeness remain unverified; personal attributes are excluded."
+    }
+  ]
+}

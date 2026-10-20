@@ -1,0 +1,6 @@
+[
+  {
+    "url": "https://www.inspire-geoportal.lt/geoserver/cp/ows",
+    "reason": "Corrected candidate did not qualify: failed checks: metric; failures: {\"metric\": {\"errorType\": \"Error\", \"code\": \"metric-report-failed\"}}; metric blockers {'overlapPairCount': 2} of 99 source polygons (source geometry never repaired); overlap pairs (threshold 0.01 m2): [{\"ids\": [\"290100010182\", \"290100010184\"], \"areaM2\": 5.7592}, {\"ids\": [\"290100010206\", \"290100010212\"], \"areaM2\": 4.2425}]"
+  }
+]

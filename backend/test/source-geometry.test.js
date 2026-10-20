@@ -1,10 +1,22 @@
 import {describe,it,expect} from 'vitest';
-import {sourceGeometry} from '../floor-plans/source-geometry.js';
+import {sourceAnchor,sourceGeometry} from '../floor-plans/source-geometry.js';
 import {attachRasterEvidence} from '../floor-plans/raster-evidence.js';
 import {geometryIssues} from '../floor-plans/geometry-quality.js';
 
 const source=(wallCandidates,issues=[])=>({version:'source-geometry-v1',widthPx:120,heightPx:100,issues,wallCandidates,scaleCandidates:[]});
 const wall=(id,a,b,widthPx=6)=>({id,a,b,widthPx});
+
+describe('source geometry anchors',()=>{
+    const anchors=new Map([
+        ['F0',[1,2]],['W14:2',[30,40]],['W8:0',[10,20]],['W3:1',[7,8]]
+    ]);
+    it('resolves direct and mixed measured corners',()=>{
+        expect(sourceAnchor('F0',anchors)).toEqual([1,2]);
+        expect(sourceAnchor('W14:2/W8:0',anchors)).toEqual([30,20]);
+    });
+    it.each(['W14:2/W99:0','W14:2/W8:4','W14/W8:0','W14:2/W8:0/extra',null,3])(
+        'rejects unknown or malformed anchor %s',id=>expect(sourceAnchor(id,anchors)).toBeNull());
+});
 
 describe('measured source geometry',()=>{
     it('keeps an actual opening gap between two aligned source walls',()=>{

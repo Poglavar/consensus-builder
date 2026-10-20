@@ -1,0 +1,110 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "3500",
+  "name": "Frankfurt, Germany",
+  "point": [
+    50.1196449235525,
+    8.67155930482746
+  ],
+  "bindings": [
+    {
+      "appCityId": "frankfurt",
+      "runtimeConfig": {
+        "id": "frankfurt",
+        "label": "Frankfurt, Germany",
+        "currency": {
+          "locale": "de-DE",
+          "code": "EUR"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            50.1196449235525,
+            8.67155930482746
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            50.1196449235525,
+            8.67155930482746
+          ],
+          "fallbackDataset": [
+            8.67155930482746,
+            50.1196449235525
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "de-frankfurt-alkis-flurstueck",
+          "idPrefix": "DE-FFM-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 3,
+          "attribution": "<a href=\"https://frankfurt.de/themen/planen-bauen-und-wohnen/planen/geoinformationen\">Frankfurt municipal ALKIS cadastral parcels</a> · adapted"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "de-frankfurt-alkis-flurstueck",
+      "name": "Frankfurt municipal ALKIS cadastral parcels",
+      "adapter": "frankfurt-wfs",
+      "endpoint": "https://geowebdienste.frankfurt.de/SGK_Flurstuecke",
+      "featureType": "Amt62_Flurstuecke:Flurstueck",
+      "idField": "FSK",
+      "idType": "string",
+      "idPrefix": "DE-FFM-",
+      "parcelNumberField": "FSK",
+      "outFields": [
+        "FSK",
+        "OBJECTID"
+      ],
+      "maxBboxKm2": 1,
+      "maxFeatures": 3000,
+      "pageSize": 100,
+      "idBatchSize": 40,
+      "maxResponseBytes": 8388608,
+      "maxTotalResponseBytes": 33554432,
+      "countryCode": "DE",
+      "metricSrid": 32632,
+      "cityIds": [
+        "frankfurt"
+      ],
+      "operator": "Stadt Frankfurt am Main — Stadtvermessungsamt",
+      "catalogueUrl": "https://frankfurt.de/themen/planen-bauen-und-wohnen/planen/geoinformationen",
+      "attribution": "Stadt Frankfurt am Main · ALKIS Flurstücke · adapted",
+      "licenceNote": "Datenlizenz Deutschland Namensnennung 2.0; publisher conditions informational. Bounded parcel cartography does not establish title, citywide completeness or survey accuracy.",
+      "maxConcurrentQueries": 2,
+      "scope": "191 valid, distinct Frankfurt municipal cadastral polygons verified in thirteen local 0.001-degree cells around the unchanged WUP settlement locator. The service-advertised GEOJSON response preserves native EPSG:25832 boundaries, transformed with an explicit ETRS89 projection. FSK is native cadastral identity; OBJECTID/GmlID remain transport identity. Stable hit counts before and after all pages, strict default OBJECTID order, forced three-row pagination, all 191 fresh native FSK reads through FES equality, valid synthetic absence, footprint and source binding passed. Independent GEOS in EPSG:32632 found no invalid polygons, duplicate geometry, overlaps above 0.01 m² or operation errors. Unsupported application/json and sorting requests, and the different POST serializer, remain documented; the executable profile uses only supported GET operations. Wider municipal completeness, legal boundary accuracy and long-term identifier continuity remain unverified."
+    }
+  ]
+}

@@ -1,0 +1,117 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "5785",
+  "name": "Takasaki, Japan",
+  "point": [
+    36.3622938663979,
+    139.038838162225
+  ],
+  "bindings": [
+    {
+      "appCityId": "takasaki",
+      "runtimeConfig": {
+        "id": "takasaki",
+        "wupCityCode": "5785",
+        "label": "Takasaki, Japan",
+        "currency": {
+          "locale": "ja-JP",
+          "code": "JPY"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            36.3622938663979,
+            139.038838162225
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            36.3622938663979,
+            139.038838162225
+          ],
+          "fallbackDataset": [
+            139.038838162225,
+            36.3622938663979
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "jp-takasaki-parcel-map",
+          "idPrefix": "JP-TAKASAKI-FUDEID-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 3,
+          "attribution": "<a href=\"https://www.city.takasaki.gunma.jp/uploaded/attachment/42714.zip\">Takasaki City parcel-number map polygons</a>"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "jp-takasaki-parcel-map",
+      "name": "Takasaki City parcel-number map polygons",
+      "adapter": "geojson-snapshot",
+      "endpoint": "https://www.city.takasaki.gunma.jp/uploaded/attachment/42714.zip",
+      "countryCode": "JP",
+      "cityIds": [
+        "takasaki"
+      ],
+      "idPrefix": "JP-TAKASAKI-FUDEID-",
+      "idField": "FUDEID",
+      "idFields": [
+        "FUDEID"
+      ],
+      "idType": "integer",
+      "outFields": [
+        "FUDEID"
+      ],
+      "sourceCrs": "EPSG:6677",
+      "metricSrid": 32654,
+      "returnsWGS84": true,
+      "capabilities": {
+        "areaEnumeration": true
+      },
+      "maxFeatures": 10000,
+      "maxSnapshotBytes": 83886080,
+      "maxSnapshotFeatures": 600000,
+      "defaultForCity": true,
+      "snapshotFormat": "shapefile-zip",
+      "shapefileMembers": {
+        "shp": "筆ポリゴン_地番図.shp",
+        "shx": "筆ポリゴン_地番図.shx",
+        "dbf": "筆ポリゴン_地番図.dbf",
+        "prj": "筆ポリゴン_地番図.prj"
+      },
+      "zipEncoding": "utf-8",
+      "dbfEncoding": "shift_jis",
+      "snapshotScope": "archive",
+      "expectedSnapshotSha256": "fec7c8c079146cb47dca4412db212f1a22538c18276daf6513caceca48934b3c",
+      "expectedSnapshotFeatures": 577988
+    }
+  ]
+}

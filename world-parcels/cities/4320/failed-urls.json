@@ -1,0 +1,17 @@
+[
+  {
+    "url": "https://harita.duzce.bel.tr/Map"
+  },
+  {
+    "url": "https://haritaserver.duzce.bel.tr/geoserver/wfs?service=WFS&request=GetCapabilities"
+  },
+  {
+    "url": "http://haritaserver.duzce.bel.tr/geoserver/wfs?service=WFS&request=GetCapabilities"
+  },
+  {
+    "url": "http://haritaserver.duzce.bel.tr/geoserver/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName=duzce%3Atkgm_parsel&outputFormat=application%2Fjson&srsName=EPSG%3A4326&bbox=31.157%2C40.842%2C31.160%2C40.845%2CEPSG%3A4326&maxFeatures=3"
+  },
+  {
+    "url": "https://www.tkgm.gov.tr/ankara-bm/bagli-mudurlukler/duzce-kadastro-mudurlugu"
+  }
+]

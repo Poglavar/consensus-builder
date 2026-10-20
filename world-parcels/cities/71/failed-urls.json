@@ -1,0 +1,16 @@
+[
+  {
+    "url": "https://geoportal.szczecin.eu/",
+    "reason": "failed"
+  },
+  {
+    "url": "https://geoportal.szczecin.eu/geonetwork/srv/search",
+    "reason": "502"
+  },
+  {
+    "url": "https://geoportal.szczecin.eu/index.php/dane-przestrzenne"
+  },
+  {
+    "url": "https://geoportal.szczecin.eu/index.php"
+  }
+]

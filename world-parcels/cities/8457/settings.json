@@ -1,0 +1,127 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "8457",
+  "name": "Hartford, United States",
+  "point": [
+    41.7658,
+    -72.6734
+  ],
+  "bindings": [
+    {
+      "appCityId": "hartford",
+      "runtimeConfig": {
+        "id": "hartford",
+        "label": "Hartford, United States",
+        "currency": {
+          "locale": "en-US",
+          "code": "USD"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            41.7658,
+            -72.6734
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            41.7658,
+            -72.6734
+          ],
+          "fallbackDataset": [
+            -72.6734,
+            41.7658
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.0025,
+          "source": "parcel-source",
+          "sourceId": "us-ct-hartford-parcels",
+          "idPrefix": "US-CT-HARTFORD-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 4,
+          "attribution": "<a href=\"https://services3.arcgis.com/3FL1kr7L4LvwA2Kb/arcgis/rest/services/Connecticut_CAMA_and_Parcel_Layer_2025/FeatureServer/0\">Connecticut GIS Office · publisher &amp; conditions</a> · identified assessment parcel groups · adapted"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "us-ct-hartford-parcels",
+      "name": "Connecticut GIS Office — Hartford (2025)",
+      "adapter": "arcgis",
+      "endpoint": "https://services3.arcgis.com/3FL1kr7L4LvwA2Kb/arcgis/rest/services/Connecticut_CAMA_and_Parcel_Layer_2025/FeatureServer/0",
+      "idField": "Parcel_ID",
+      "objectIdField": "OBJECTID",
+      "idType": "string",
+      "idPattern": "^[0-9]+$",
+      "idPrefix": "US-CT-HARTFORD-",
+      "outFields": [
+        "OBJECTID",
+        "Parcel_ID",
+        "Town_Name"
+      ],
+      "parcelNumberField": "Parcel_ID",
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "metricSrid": 32618,
+      "countryCode": "US",
+      "stateCode": "CT",
+      "cityIds": [
+        "hartford"
+      ],
+      "operator": "Connecticut GIS Office",
+      "scope": "2025 municipal parcel compilation restricted to Town_Name Hartford; no Connecticut-wide completeness claim. Each canonical identity is the complete native parcel-code geometry group within the fixed town/county scope. Blank or unassigned parcel-code rows are excluded.",
+      "attribution": "Connecticut GIS Office. Adapted to WGS84.",
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "attributeFilters": {
+        "Town_Name": "Hartford"
+      },
+      "catalogueUrl": "https://services3.arcgis.com/3FL1kr7L4LvwA2Kb/arcgis/rest/services/Connecticut_CAMA_and_Parcel_Layer_2025/FeatureServer/0",
+      "caveats": [
+        "Native Parcel_ID is scoped by a fixed Hartford municipal filter. Municipal submissions retain their publication vintage.",
+        "The publisher can map one native parcel code to multiple same-vintage polygons. All components are fetched and dissolved; this group is not a claim that each component is a separate legal lot.",
+        "The observed single-space placeholder has no stable parcel identity and is excluded; failed cells remain retryable."
+      ],
+      "nativeGeometryMode": "parts",
+      "partsCoordinatePrecision": 9,
+      "maxConcurrentQueries": 2,
+      "attributeExclusions": {
+        "Parcel_ID": [
+          " "
+        ]
+      },
+      "licenceNote": "Source conditions are informational; users choose their source and intended use."
+    }
+  ]
+}

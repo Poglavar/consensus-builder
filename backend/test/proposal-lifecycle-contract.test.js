@@ -27,4 +27,15 @@ describe('proposal lifecycle contract', () => {
         expect(effectiveLifecycleStatus('Executed', past, now)).toBe('Executed');
         expect(effectiveLifecycleStatus('draft', past, now)).toBe('draft');
     });
+
+    it.each([undefined, null, '', 'pending', 'Applied', 'Unknown'])(
+        'does not infer an active or expired lifecycle from %s', value => {
+            expect(effectiveLifecycleStatus(value, null)).toBe('Unknown');
+            expect(effectiveLifecycleStatus(value, '2020-01-01T00:00:00Z')).toBe('Unknown');
+        });
+
+    it('keeps the read-only Unknown result out of authored creation', () => {
+        expect(resolveIncomingLifecycleStatus({ lifecycleStatus: 'Unknown' })).toMatchObject({ ok: false });
+        expect(effectiveLifecycleStatus(' Active ', '2099-01-01T00:00:00Z')).toBe('Active');
+    });
 });

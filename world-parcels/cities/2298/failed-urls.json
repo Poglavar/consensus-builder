@@ -1,0 +1,20 @@
+[
+  {
+    "url": "https://www.gadmriobamba.gob.ec/index.php/servicios/avaluos"
+  },
+  {
+    "url": "https://www.gadmriobamba.gob.ec/index.php/direccion-de-gestion-de-ordenamiento-territorial"
+  },
+  {
+    "url": "https://services9.arcgis.com/WR0heBS35BiLFAuA/ArcGIS/rest/services/Predios_Riobamba_Urbano/FeatureServer/0?f=pjson"
+  },
+  {
+    "url": "https://services9.arcgis.com/WR0heBS35BiLFAuA/ArcGIS/rest/services/Predios_Riobamba_Urbano/FeatureServer/0/query"
+  },
+  {
+    "url": "https://services9.arcgis.com/WR0heBS35BiLFAuA/ArcGIS/rest/services/Predios_Riobamba/FeatureServer/25"
+  },
+  {
+    "url": "https://www.gadmriobamba.gob.ec/index.php/registro-de-la-propiedad"
+  }
+]

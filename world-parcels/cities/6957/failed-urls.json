@@ -1,0 +1,14 @@
+[
+  {
+    "url": "https://nspd.gov.ru/map",
+    "reason": "timeout"
+  },
+  {
+    "url": "https://nspd.gov.ru/api/geoportal/v2/search/geoportal?query=05:48:000037&thematicSearchId=2",
+    "reason": "timeout/unavailable"
+  },
+  {
+    "url": "https://nspd.gov.ru/api/geoportal/v1/intersects?typeIntersect=fullObject",
+    "reason": "timeout"
+  }
+]

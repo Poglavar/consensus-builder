@@ -1,0 +1,6 @@
+[
+  {
+    "url": "https://api.pdok.nl/kadaster/brk-kadastrale-kaart/ogc/v1/collections/perceel/items",
+    "reason": "Held on the source data: in the first sampled cell PDOK returns a record that the production adapter refuses as an invalid native ID or excluded ground record (reproduced twice on 2026-10-12 after the cursor fix); the adapter is not loosened for one city."
+  }
+]

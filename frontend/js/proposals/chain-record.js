@@ -18,8 +18,7 @@
         'structureProposal', 'reparcellization', 'decideLaterProposal', 'ownershipTransfer',
         'ownershipTransferDirection', 'ownershipTransferRecipient', 'ownershipTransferProposal',
         'acquisitionMode', 'boundaryAdjustment', 'primaryType', 'typologyType', 'tags', 'facets',
-        'isCorridor', 'copiedFromProposalId', 'copiedFromName', 'sourceProposalId',
-        'replacementOfProposalId', 'landFork', 'freePlacement', 'agent',
+        'isCorridor', 'proposalOrigin', 'landFork', 'freePlacement', 'agent',
         // The approval setup (rights snapshot and policy): with the parcels and lens it is the
         // approval context every owner decision signs, so chain + IPFS alone can verify decisions.
         'approvalConfig', 'sourceReferences'
@@ -50,6 +49,10 @@
         if (!gate.verdict.flat) fail('The minted proposal must contain only authored geometry and original cadastral parcel IDs.');
         const record = {};
         for (const key of FIELDS) if (gate.proposal[key] !== undefined) record[key] = clone(gate.proposal[key]);
+        if (record.proposalOrigin) record.proposalOrigin = dependency('ProposalOrigin', './origin.js').portable(record.proposalOrigin, {
+            findLocal: id => global.proposalStorage?.proposals?.get(id),
+            backendBase: typeof global.getBackendBase === 'function' ? global.getBackendBase() : null
+        });
         record.cadastreParcelIds = parcelIds(record.cadastreParcelIds);
         record.isConditional = proposal.isConditional === true || proposal.conditional === true;
         if (record.lens) record.lens = record.lens.map(entry => typeof entry === 'string' ? entry : entry.address);
@@ -79,6 +82,10 @@
         }
         const record = properties.proposal;
         if (Object.keys(record).some(key => !FIELDS.includes(key))) fail('NFT proposal contains non-authored fields.');
+        if (record.proposalOrigin) {
+            const origin = dependency('ProposalOrigin', './origin.js').normalize(record.proposalOrigin);
+            if (origin.source?.kind === 'local') fail('NFT proposal origin cannot contain a browser-local key.');
+        }
         parcelIds(record.cadastreParcelIds);
         checkKind(record);
         if (!record.site || !record.binding || !record.cadastreSnapshot) fail('NFT proposal is missing its site, binding, or cadastral snapshot.');

@@ -1,0 +1,11 @@
+[
+  {
+    "url": "https://maps.pickering.ca/arcgisinter/rest/services/public/General_Map_Public/MapServer?f=json"
+  },
+  {
+    "url": "https://maps.pickering.ca/arcgisinter/rest/services?f=json"
+  },
+  {
+    "url": "https://opendata.pickering.ca/"
+  }
+]

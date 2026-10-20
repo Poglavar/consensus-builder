@@ -1,0 +1,32 @@
+[
+  {
+    "url": "https://bhumi.atrbpn.go.id/"
+  },
+  {
+    "url": "https://atlas.atrbpn.go.id/"
+  },
+  {
+    "url": "https://www.lapor.go.id/instansi/kantor-pertanahan-kabupaten-labuhanbatu"
+  },
+  {
+    "url": "https://tanahair.indonesia.go.id/portal-web/"
+  },
+  {
+    "url": "https://tanahair.indonesia.go.id/api-inageo/"
+  },
+  {
+    "url": "https://tanahair.indonesia.go.id/v3/"
+  },
+  {
+    "url": "https://atlas.atrbpn.go.id/geonode/api/v2/resources?format=json&page_size=1000"
+  },
+  {
+    "url": "https://atlas.atrbpn.go.id/geonode/api/bhumi/groups_with_resources"
+  },
+  {
+    "url": "https://bhumi.atrbpn.go.id/geoserver/umum/wms?service=WMS&request=GetCapabilities"
+  },
+  {
+    "url": "https://bhumi.atrbpn.go.id/geoserver/umum/ows?service=WFS&request=GetCapabilities"
+  }
+]

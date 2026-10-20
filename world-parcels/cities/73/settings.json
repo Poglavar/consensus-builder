@@ -1,0 +1,133 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "73",
+  "name": "Ljubljana, Slovenia",
+  "point": [
+    46.051,
+    14.506
+  ],
+  "bindings": [
+    {
+      "appCityId": "ljubljana",
+      "runtimeConfig": {
+        "id": "ljubljana",
+        "label": "Ljubljana, Slovenia",
+        "currency": {
+          "locale": "sl-SI",
+          "code": "EUR"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            46.051,
+            14.506
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.1
+        },
+        "projection": {
+          "datasetCrs": "EPSG:3794",
+          "definition": "+proj=tmerc +lat_0=0 +lon_0=15 +k=0.9999 +x_0=500000 +y_0=-5000000 +ellps=GRS80 +units=m +no_defs",
+          "fallbackLatLng": [
+            46.051,
+            14.506
+          ],
+          "fallbackDataset": [
+            461969.2,
+            101119.53
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 500,
+          "source": "parcel-lj",
+          "liveSource": {
+            "sourceId": "si-gurs-kn-parcele-wfs",
+            "idPrefix": "SI-"
+          },
+          "requiresBackend": true
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        },
+        "language": {
+          "default": "sl"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "si-gurs-kn-parcele-wfs",
+      "name": "GURS cadastral parcels — Ljubljana",
+      "adapter": "wfs",
+      "endpoint": "https://ipi.eprostor.gov.si/wfs-si-gurs-kn/wfs",
+      "featureType": "SI.GURS.KN:PARCELE",
+      "idField": "EID_PARCELA",
+      "idType": "string",
+      "idPattern": "^[0-9]{18}$",
+      "idPrefix": "SI-",
+      "parcelNumberField": "ST_PARCELE",
+      "outFields": [
+        "EID_PARCELA",
+        "PARCELA_ID",
+        "KO_ID",
+        "ST_PARCELE"
+      ],
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "metricSrid": 3794,
+      "countryCode": "SI",
+      "cityIds": [
+        "ljubljana"
+      ],
+      "scope": "Official GURS cadastral parcel service; acceptance evidence covers bounded Ljubljana cells only, not national completeness.",
+      "catalogueUrl": "https://ipi.eprostor.gov.si/wfs-si-gurs-kn/wfs",
+      "attribution": "Geodetska uprava Republike Slovenije (GURS), cadastral parcels. Adapted to WGS84.",
+      "licenceNote": "GURS source conditions remain informational. No ownership or personal fields are retained by this descriptor.",
+      "defaultForCity": false,
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "SI",
+          "basis": "GURS land cadastre (KN) national parcel service for Slovenia.",
+          "evidence": []
+        },
+        "keepPublishedFields": true
+      },
+      "geometryField": "GEOM"
+    },
+    {
+      "id": "parcel-lj",
+      "name": "Ljubljana cadastral parcels in the app database (GURS)",
+      "cityIds": [
+        "ljubljana"
+      ],
+      "idPrefix": "SI-",
+      "ownership": {
+        "adapter": "si-gurs",
+        "attribution": "Geodetska uprava Republike Slovenije (GURS), land cadastre ownership rights (anonymised holders).",
+        "licence": null
+      },
+      "sourceKind": "database"
+    }
+  ]
+}

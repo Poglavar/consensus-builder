@@ -1,0 +1,19 @@
+[
+  {
+    "url": "https://gis.lublin.eu/opendata/wfs?service=WFS&request=DescribeFeatureType&version=2.0.0&typeNames=ms:dzialki",
+    "reason": "error"
+  },
+  {
+    "url": "https://gis.lublin.eu/opendata/wfs",
+    "reason": "error"
+  },
+  {
+    "url": "https://geoportal.lublin.eu/link/?mapa=1"
+  },
+  {
+    "url": "https://gis.lublin.eu/opendata/wfs?service=WFS&request=GetCapabilities"
+  },
+  {
+    "url": "https://uldk.gugik.gov.pl/"
+  }
+]

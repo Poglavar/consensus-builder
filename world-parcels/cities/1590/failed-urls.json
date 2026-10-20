@@ -1,0 +1,17 @@
+[
+  {
+    "url": "https://map.nca.by/api/layers/list",
+    "reason": "404"
+  },
+  {
+    "url": "https://map.nca.by/geoserver/pcm/ows?service=WFS&version=1.0.0&request=GetCapabilities",
+    "reason": "403"
+  },
+  {
+    "url": "https://map.nca.by/geoserver/pcm/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=pcm%3A294b19b9-3259-44e5-b8e8-5314b0adf928&outputFormat=application%2Fjson&maxFeatures=3&cql_filter=DWITHIN(geom,Point(3373182%202965907),2,meters)",
+    "reason": "403"
+  },
+  {
+    "url": "https://map.nca.by/"
+  }
+]

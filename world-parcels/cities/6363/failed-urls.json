@@ -1,0 +1,12 @@
+[
+  {
+    "url": "https://www.nrhtx.com/265/Maps",
+    "reason": "403"
+  },
+  {
+    "url": "https://nrhmaps.nrhtx.com/arcgis/rest/services/Tyler/EnerGov/MapServer"
+  },
+  {
+    "url": "https://nrhmaps.nrhtx.com/arcgis/rest/services/Tyler/EnerGov/MapServer/15"
+  }
+]

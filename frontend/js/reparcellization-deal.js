@@ -6,8 +6,8 @@
     if (root) root.ReparcellizationDeal = api;
 })(typeof window !== 'undefined' ? window : globalThis, function (root) {
     'use strict';
-    const SCHEMA = 'land-readjustment-deal/v2';
-    const HASH_PREFIX = 'lr2-sha256:';
+    const SCHEMA = 'land-readjustment-deal/v3';
+    const HASH_PREFIX = 'lr3-sha256:';
     const OPEN_GROUND_OWNER_KEY = 'open-ground';
     const ownership = () => root.ReparcellizationOwnership
         || (typeof require === 'function' ? require('./reparcellization-ownership.js') : null);
@@ -78,6 +78,13 @@
         };
     }
 
+    // Content identity within a proposal, derived from the same plot payload the deal commits.
+    // It is independent of array position and runtime cuts, not a continuing identity after edits.
+    function plotFingerprint(slice) {
+        const payload = { schema: 'land-readjustment-plot/v1', plot: plot(slice) };
+        return 'lr-plot1-sha256:' + crypto().sha256Hex(stableStringify(payload));
+    }
+
     function isReadjustment(proposal) {
         return !!proposal && (proposal.goal === 'reparcellization' || !!proposal.reparcellization);
     }
@@ -92,15 +99,21 @@
             const key = String(owner?.ownerKey || '').trim();
             if (!key || keys.has(key)) throw new Error('Owner ledger needs unique, non-empty owner keys.');
             keys.add(key);
-            const noOwner = owner.noOwner === true || key === OPEN_GROUND_OWNER_KEY;
-            const cashCents = moneyCents(owner.cashOffer === undefined || (noOwner && owner.cashOffer === null) ? 0 : owner.cashOffer);
+            if (Object.prototype.hasOwnProperty.call(owner, 'noOwner')) {
+                throw new Error('The noOwner marker is retired; use unrepresentedGround.');
+            }
+            const unrepresentedGround = owner.unrepresentedGround === true || key === OPEN_GROUND_OWNER_KEY;
+            if (owner.unrepresentedGround === true && key !== OPEN_GROUND_OWNER_KEY) {
+                throw new Error('Unrepresented ground cannot also name a represented owner.');
+            }
+            const cashCents = moneyCents(owner.cashOffer === undefined || (unrepresentedGround && owner.cashOffer === null) ? 0 : owner.cashOffer);
             // What the owner pays into the deal (e.g. for land beyond their entitlement). Present only
             // when non-zero, so deals without owner payments keep their committed fingerprint.
             const payCents = owner.cashPayment == null ? 0 : moneyCents(owner.cashPayment);
-            if (noOwner && (cashCents || payCents)) throw new Error('Ownerless ground cannot receive or pay cash.');
+            if (unrepresentedGround && (cashCents || payCents)) throw new Error('Unrepresented ground cannot receive or pay cash.');
             if (cashCents && payCents) throw new Error('An owner either receives or pays cash, not both.');
             return {
-                ownerKey: key, noOwner, cashCents, ...(payCents ? { payCents } : {}),
+                ownerKey: key, unrepresentedGround, cashCents, ...(payCents ? { payCents } : {}),
                 contributedArea: optionalNumber(owner.contributedArea),
                 contributedValue: optionalNumber(owner.contributedValue),
                 entitledValue: optionalNumber(owner.entitledValue),
@@ -115,8 +128,15 @@
         if (moneyCents(proposal.offer ?? 0) !== totalCashCents) throw new Error('Proposal offer must equal the owner cash ledger.');
         // A deal without cash has no currency: the stored record may still carry one (a database
         // column default stamped USD on the Borovje readjustments), and it must not void the deal.
-        const currency = totalCashCents || ownerPaymentsCents ? String(proposal.offerCurrency || proposal.currency || 'EUR').toUpperCase() : null;
-        if (currency !== null && currency !== 'EUR') throw new Error('Readjustment cash offers currently use EUR.');
+        const hasCash = totalCashCents > 0 || ownerPaymentsCents > 0;
+        const currency = hasCash ? String(proposal.offerCurrency || '').toUpperCase() : null;
+        if (hasCash && currency !== 'EUR') throw new Error('Readjustment cash offers require an explicit EUR offerCurrency.');
+        const contributionBasis = plan.contributionBasis ?? null;
+        const valuationCurrency = plan.valuationCurrency ?? null;
+        if ((contributionBasis === 'value' && valuationCurrency !== 'EUR')
+            || (contributionBasis !== 'value' && valuationCurrency !== null)) {
+            throw new Error('Readjustment value allocations require EUR valuationCurrency; other allocation bases must not declare one.');
+        }
         return {
             schema: SCHEMA,
             approval: approval().contextContent(proposal),
@@ -126,7 +146,8 @@
             plots: ordered(plan.polygons.map(plot)),
             inputs: ordered((plan.inputParcels || []).map(plot)),
             valuation: {
-                contributionBasis: plan.contributionBasis ?? null,
+                contributionBasis,
+                currency: valuationCurrency,
                 poolUnitValue: optionalNumber(plan.poolUnitValue),
                 totalValue: optionalNumber(plan.totalValue),
                 contributionRatio: optionalNumber(plan.contributionRatio)
@@ -157,7 +178,7 @@
     // payments do not cover, or receives what they exceed. Derived from the committed ledger, so
     // the deal fingerprint already commits it.
     function schedule(payload) {
-        const owners = (payload?.ledger || []).filter(owner => !owner.noOwner)
+        const owners = (payload?.ledger || []).filter(owner => !owner.unrepresentedGround)
             .map(owner => ({ party: 'owner', ownerKey: owner.ownerKey, amountCents: owner.cashCents - (owner.payCents || 0) }))
             .filter(line => line.amountCents !== 0);
         const payOutCents = owners.filter(line => line.amountCents > 0).reduce((sum, line) => sum + line.amountCents, 0);
@@ -197,8 +218,8 @@
         const payload = content(proposal);
         if (!payload) return null;
         const { approval: _approval, ...design } = payload;
-        return 'lr-design2-sha256:' + crypto().sha256Hex(stableStringify(design));
+        return 'lr-design3-sha256:' + crypto().sha256Hex(stableStringify(design));
     }
 
-    return { SCHEMA, HASH_PREFIX, isReadjustment, content, schedule, netCash, cashFields, fingerprint, designFingerprint, stableStringify, moneyCents };
+    return { SCHEMA, HASH_PREFIX, isReadjustment, content, plotFingerprint, schedule, netCash, cashFields, fingerprint, designFingerprint, stableStringify, moneyCents };
 });

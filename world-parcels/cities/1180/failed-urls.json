@@ -1,0 +1,17 @@
+[
+  {
+    "url": "https://kais.cadastre.bg/bg/Map"
+  },
+  {
+    "url": "https://arcgis.cadastre.bg/arcgisnopki/rest/services/InternalKais/CmcrPublic/MapServer?f=pjson"
+  },
+  {
+    "url": "https://arcgis.cadastre.bg/arcgisnopki/rest/services/InternalKais/CmcrPublic/MapServer/1?f=pjson"
+  },
+  {
+    "url": "https://arcgis.cadastre.bg/arcgisnopki/rest/services/ExternalKais/ParcelsCache/MapServer?f=pjson"
+  },
+  {
+    "url": "https://arcgis.cadastre.bg/arcgisnopki/rest/services/InternalKais/CmcrPublic/MapServer/1/query"
+  }
+]

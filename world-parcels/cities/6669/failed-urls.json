@@ -1,0 +1,17 @@
+[
+  {
+    "url": "https://www.esa.gov.eg/main.aspx"
+  },
+  {
+    "url": "https://www.esa.gov.eg/sellingmaproomdigital.aspx"
+  },
+  {
+    "url": "https://www.egis.idsc.gov.eg/server/rest/services?f=pjson"
+  },
+  {
+    "url": "https://www.egis.idsc.gov.eg/server/rest/services/testmoc/MapServer/1?f=pjson"
+  },
+  {
+    "url": "https://www.egis.idsc.gov.eg/server/rest/services/testmoc/MapServer/1/query?f=pjson&geometry=31.5984131782602,30.647762716809&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID,NAME,E_NAME,CODE,code_new,loc_id&returnGeometry=false"
+  }
+]

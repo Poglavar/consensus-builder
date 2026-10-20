@@ -1,0 +1,10 @@
+[
+  {
+    "url": "https://sit.egov.ba.it/it/",
+    "reason": "TLS verification failure in curl; official indexed page available"
+  },
+  {
+    "url": "https://sit.egov.ba.it/it/wms/",
+    "reason": "TLS verification failure in curl; official indexed page available"
+  }
+]

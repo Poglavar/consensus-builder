@@ -1,0 +1,17 @@
+[
+  {
+    "url": "https://www.esa.gov.eg/main.aspx"
+  },
+  {
+    "url": "https://www.esa.gov.eg/sellingmaproomdigital.aspx"
+  },
+  {
+    "url": "https://www.egis.idsc.gov.eg/server/rest/services/Map/FeatureServer?f=pjson"
+  },
+  {
+    "url": "https://www.egis.idsc.gov.eg/server/rest/services/Map/FeatureServer/1?f=pjson"
+  },
+  {
+    "url": "https://www.egis.idsc.gov.eg/server/rest/services/Map/FeatureServer/1/query"
+  }
+]

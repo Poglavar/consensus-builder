@@ -1,0 +1,32 @@
+[
+  {
+    "url": "https://bhunaksha.bihar.gov.in/10/index.jsp"
+  },
+  {
+    "url": "https://bhunaksha.bihar.gov.in/10/indexmain.jsp"
+  },
+  {
+    "url": "https://bhunaksha.bihar.gov.in/10/config.js"
+  },
+  {
+    "url": "https://bhunaksha.bihar.gov.in/10/index.js"
+  },
+  {
+    "url": "https://bhunaksha.bihar.gov.in/rest/Levels/count"
+  },
+  {
+    "url": "https://bhunaksha.bihar.gov.in/rest/Levels/ListsAfterLevel"
+  },
+  {
+    "url": "https://bhunaksha.bihar.gov.in/WMS?service=WMS&request=GetCapabilities"
+  },
+  {
+    "url": "https://bhunaksha.bihar.gov.in/rest/MapInfo/getPlotAtXY"
+  },
+  {
+    "url": "https://biharbhumi.bihar.gov.in/"
+  },
+  {
+    "url": "https://state.bihar.gov.in/lrc/CitizenHome.html"
+  }
+]

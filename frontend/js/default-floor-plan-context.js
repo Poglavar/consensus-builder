@@ -8,6 +8,16 @@
 (function (global) {
     'use strict';
 
+    // A clip that throws degrades only this suggestion (an X-ray aid, never part of the proposal),
+    // but it is logged and counted in clipHealth() (parcel-arrangement.js), never silently skipped.
+    function reportClip(operation, error, site, operands) {
+        const api = (global && global.__parcelArrangement)
+            || (typeof require === 'function' ? require('./proposals/parcel-arrangement.js') : null);
+        if (api) return api.reportClipFailure(operation, error, { site }, operands);
+        console.error(`[${new Date().toISOString()}] [clip] Polygon ${operation} failed at ${site}: ${error && error.message} — degraded`);
+        return error;
+    }
+
     const STREET_CELL_DEG = 0.005;        // about 550 × 390 m at Zagreb: one /streets/near call per cell
     const STREET_CELL_MARGIN_DEG = 0.001; // about 100 m past the cell, so a street beside its edge answers too
     const COVERAGE_MIN = 0.95;            // slices covering less than this do not describe the building (createBuildingSlices rule)
@@ -90,7 +100,7 @@
             const parcelBbox = bboxOf(parcel, turf);
             if (!parcelBbox || !bboxesOverlap(bbox, parcelBbox)) continue;
             let piece = null;
-            try { piece = turf.intersect(building, parcel); } catch (_) { piece = null; }
+            try { piece = turf.intersect(building, parcel); } catch (error) { reportClip('intersect', error, 'default-floor-plan-context.sliceBuildingByParcels', [building, parcel]); piece = null; }
             if (!piece || !piece.geometry) continue;
             const area = areaOf(piece, turf);
             if (area < 1) continue;
@@ -186,7 +196,7 @@
         }
         if (!cuts.length) return { wings: [asFeature(footprint.geometry)], dropped: 0 };
         let remainder = metricPolygon;
-        for (const cut of cuts) { try { const next = turf.difference(remainder, cut); if (next && next.geometry) remainder = next; } catch (_) { } }
+        for (const cut of cuts) { try { const next = turf.difference(remainder, cut); if (next && next.geometry) remainder = next; } catch (error) { reportClip('difference', error, 'default-floor-plan-context.decomposeIntoWings', [remainder, cut]); } }
         const pieces = polygonsOf(remainder).map(rings => turf.polygon(rings));
         const wings = [], sizes = pieces.map(piece => Math.abs(ringArea(piece.geometry.coordinates[0])));
         let dropped = 0;
@@ -351,7 +361,7 @@
             const b = bboxOf(feature, turf);
             if (!b || !bboxesOverlap(bbox, b, NEIGHBOUR_PAD_DEG)) continue;
             let overlap = null;
-            try { overlap = turf.intersect(owner, feature); } catch (_) { overlap = null; }
+            try { overlap = turf.intersect(owner, feature); } catch (error) { reportClip('intersect', error, 'default-floor-plan-context.neighbourPool', [owner, feature]); overlap = null; }
             if (overlap && areaOf(overlap, turf) > 1) continue;
             out.push(feature);
         }

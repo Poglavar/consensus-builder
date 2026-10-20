@@ -1,0 +1,9 @@
+[
+  {
+    "url": "https://bhumi.atrbpn.go.id/expapi/bhumigeos/umum/ows?service=WFS&version=2.0.0&request=GetFeature&typeName=umum%3APersil&count=2&outputFormat=application%2Fjson&bbox=119.455%2C-5.164%2C119.456%2C-5.162%2CEPSG%3A4326",
+    "reason": "403"
+  },
+  {
+    "url": "https://kot-makassar.atrbpn.go.id/"
+  }
+]

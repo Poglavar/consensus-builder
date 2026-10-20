@@ -81,6 +81,7 @@ export const BINDING_CODES = Object.freeze({
 });
 
 export const SERVER_CADASTRE_SOURCE = 'server:hr-cadastre';
+const HR_PARCEL_SOURCE = Object.freeze({ sourceId: 'hr-cadastre', snapshotId: null });
 
 // Returns an error message, or null when `geometry` is a usable WGS84 site.
 export function validateSiteGeometry(geometry) {
@@ -366,7 +367,8 @@ function unboundBinding({ coverage, toleranceM, siteM2, reason, parcels = [], co
         unsurveyedM2: coverage === COVERAGE.none ? round(siteM2 || 0, 2) : 0,
         unknownM2: coverage === COVERAGE.unknown ? round(siteM2 || 0, 2) : 0,
         siteM2: round(siteM2 || 0, 2),
-        source: SERVER_CADASTRE_SOURCE,
+        source: 'server:unbound',
+        parcelSource: null,
         computedAt,
         reason
     };
@@ -389,7 +391,10 @@ export async function computeBinding(db, { site = null, parts = null, toleranceM
     if (provider) {
         const footprint = site || JSON.parse((await db.query(FOOTPRINT_SITE_SQL, [...params, frame.proj])).rows[0]?.geometry || 'null');
         if (!footprint) throw bindingError(BINDING_CODES.invalidSite, 'The site has no area after validation.');
-        return computeSourceBinding(provider.adapter, { site: footprint, toleranceM, sourceId: provider.descriptor.id, now });
+        return computeSourceBinding(provider.adapter, {
+            site: footprint, toleranceM, sourceId: provider.descriptor.id,
+            snapshotId: provider.descriptor.snapshotId || null, now
+        });
     }
     const floorM = Math.max(toleranceM, INTRUSION_NOISE_M);
     const counted = Number((await db.query(BINDING_COUNT_SQL, [...params, frame.proj])).rows[0]?.parcels || 0);
@@ -440,6 +445,7 @@ export async function computeBinding(db, { site = null, parts = null, toleranceM
             unknownM2,
             siteM2: round(siteM2, 2),
             source: SERVER_CADASTRE_SOURCE,
+            parcelSource: HR_PARCEL_SOURCE,
             computedAt
         }
     };
@@ -453,7 +459,9 @@ export async function computeBinding(db, { site = null, parts = null, toleranceM
  */
 export async function parcelActBinding(db, declaredIds, { toleranceM = DEFAULT_INTRUSION_TOLERANCE_M, city = null, parcelSourceId = null, now = () => new Date() } = {}) {
     const provider = parcelSourceForCity(city, parcelSourceId) || parcelSourceForIds(declaredIds);
-    if (provider) return computeSourceParcelActBinding(provider.adapter, declaredIds, { toleranceM, sourceId: provider.descriptor.id, now });
+    if (provider) return computeSourceParcelActBinding(provider.adapter, declaredIds, {
+        toleranceM, sourceId: provider.descriptor.id, snapshotId: provider.descriptor.snapshotId || null, now
+    });
     const computedAt = now().toISOString();
     const parsed = declaredIds.map(parseHrParcelId);
     if (parsed.some(value => !value)) {
@@ -489,6 +497,7 @@ export async function parcelActBinding(db, declaredIds, { toleranceM = DEFAULT_I
             unknownM2: 0,
             siteM2: round(row.site_m2 || 0, 2),
             source: SERVER_CADASTRE_SOURCE,
+            parcelSource: HR_PARCEL_SOURCE,
             computedAt,
             subject: 'declared-parcels'
         }

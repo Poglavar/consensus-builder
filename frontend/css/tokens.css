@@ -49,6 +49,7 @@
     --cb-success-ink: #ffffff;
     --cb-success-soft: #ecfdf5;
     --cb-success-soft-ink: #166534;
+    --cb-parcel-estimate-boundary: #b5f7b2;
 
     --cb-warning: #b45309;
     --cb-warning-soft: #fffbeb;
@@ -177,6 +178,7 @@
     --cb-z-world-top: 4;           /* the globe's top bar and popups, over the overview panels */
     --cb-z-world-scrim: -1;        /* a panel's own backdrop, behind its content */
     /* The page ladder. */
+    --cb-z-map-pane-estimate-imagery: 350; /* estimate satellite crop: above tiles, below parcel vectors */
     --cb-z-map-pane-plan: 620;      /* the Schelling plan layer: over parcels and blocks, under the site tool (640) */
     --cb-z-map-pane-plan-view: 630; /* a named plan hatched on the map (css/plans.css): over the Schelling plan, under the site tool */
     --cb-z-map-pane-site: 640;      /* the site tool's Leaflet pane: over the markers (600), under tooltips (650) */

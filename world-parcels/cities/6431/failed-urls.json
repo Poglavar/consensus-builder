@@ -1,0 +1,13 @@
+[
+  {
+    "url": "https://services3.arcgis.com/GHL0TW95ivGM736Z/arcgis/rest/services/EPAM200218/FeatureServer/0?f=pjson",
+    "reason": "400"
+  },
+  {
+    "url": "https://services3.arcgis.com/GHL0TW95ivGM736Z/arcgis/rest/services/EPAM200218/FeatureServer/0/query?f=geojson&where=1%3D1&geometry=-0.332,51.554,-0.320,51.560&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID&returnGeometry=true&outSR=4326&resultRecordCount=3",
+    "reason": "400"
+  },
+  {
+    "url": "https://use-land-property-data.service.gov.uk/datasets/inspire/download"
+  }
+]

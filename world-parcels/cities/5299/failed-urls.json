@@ -1,0 +1,18 @@
+[
+  {
+    "url": "https://geoportal-stnmt.tphcm.gov.vn/geonetwork/srv/search?topicCat=hienTrangSuDungDat",
+    "reason": "timeout"
+  },
+  {
+    "url": "https://maps.gdla.gov.vn/api/no-auth/config-data",
+    "reason": "404"
+  },
+  {
+    "url": "https://maps.gdla.gov.vn/api/config-data",
+    "reason": "401"
+  },
+  {
+    "url": "https://maps.gdla.gov.vn/api/kiem-ke/search",
+    "reason": "401"
+  }
+]

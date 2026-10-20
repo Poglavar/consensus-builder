@@ -1,0 +1,6 @@
+[
+  {
+    "url": "https://bz1uwwpkuinzbk94.svcs5.arcgis.com/bz1uwWPKUInZBK94/arcgis/rest/services/CA_Statewide_Parcels_Public_view/FeatureServer/0",
+    "reason": "Held at the geometry gate: every source check passed (43 requests, 1 qualifier run(s) on this city) but the independent metric audit failed for Redlands (us-ca-calfire-statewide-parcels) with 8 material overlap pair(s) (> 0.01 m2; max 0.977 m2, 0.139% of the smaller; total 2.85 m2) among 81 cached features (06071~017007129 / 06071~017007135: 0.977 m2 = 0.139% of the smaller; 06071~017007210 / 060…"
+  }
+]

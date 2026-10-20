@@ -1,0 +1,15 @@
+[
+  {
+    "url": "https://dndc.gouv.ml/wp-json/dgdc/v1/cadastre/layers/aci2000/parcels?bbox=-5.68,11.30,-5.66,11.33&limit=3",
+    "reason": "400"
+  },
+  {
+    "url": "https://dndc.gouv.ml/services-regionaux-et-subregionaux/"
+  },
+  {
+    "url": "https://dndc.gouv.ml/cadastre/"
+  },
+  {
+    "url": "https://dgi.gouv.ml/du-ninacad-adresse-bientot-disponible-au-mali/"
+  }
+]

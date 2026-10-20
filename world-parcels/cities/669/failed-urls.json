@@ -1,0 +1,19 @@
+[
+  {
+    "url": "https://geoserver.geoportail.gouv.tg/geoserver/prise/ows?service=WFS&version=1.0.0&request=GetCapabilities",
+    "reason": "404"
+  },
+  {
+    "url": "https://geoserver.geoportail.gouv.tg/geoserver/prise/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=prise:cadastre_domaines_etat&outputFormat=application/json&maxFeatures=3&propertyName=objectid&bbox=8.330,0.992,8.335,0.996,EPSG:4326",
+    "reason": "404"
+  },
+  {
+    "url": "https://geodata.gouv.tg/cartes"
+  },
+  {
+    "url": "https://dadc.gouv.tg/"
+  },
+  {
+    "url": "https://otr.tg/index.php/fr/blog/avis-communiques/1342-communique-n-021-2024-otr-cg-ci-dccf-relatif-au-numero-unique-parcellaire-nup.html"
+  }
+]

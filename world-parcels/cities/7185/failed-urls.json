@@ -1,0 +1,10 @@
+[
+  {
+    "url": "https://services9.arcgis.com/Gh9awoU677aKree0/arcgis/rest/services/Florida_Statewide_Cadastral/FeatureServer/0",
+    "reason": "Held at the geometry gate: every source check passed (183 requests, 1 qualifier run(s) on this city) but the independent metric audit failed for Golden Gate (us-fl-dor-statewide-cadastral) with 3 material overlap pair(s) (> 0.01 m2; max 9.37e+03 m2, 100% of the smaller; total 2.81e+04 m2); 3 exact-duplicate geometries under distinct IDs among 80 cached features (21~66030001026 / 21~66030001042: 9…"
+  },
+  {
+    "url": "https://services9.arcgis.com/Gh9awoU677aKree0/arcgis/rest/services/Florida_Statewide_Cadastral/FeatureServer/0/query?where=CO_NO+%3C%3E+0+AND+PARCEL_ID+%3C%3E+%27+%27&geometry=-81.71095764289869%2C26.1734380540033%2C-81.7104576428987%2C26.1739380540033&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+    "reason": "TimeoutError"
+  }
+]

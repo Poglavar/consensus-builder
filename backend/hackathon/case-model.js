@@ -26,9 +26,7 @@ function accountLink(address) {
 export function parcelSetIdentity(proposal = {}) {
     return buildParcelSet({
         parcelIds: proposal.cadastreParcelIds || [],
-        jurisdiction: proposal.city || 'unknown',
-        referenceAt: proposal.createdAt || null,
-        geometryHash: proposal.cadastreFrame?.geometryHash || null
+        jurisdiction: proposal.city || null
     });
 }
 

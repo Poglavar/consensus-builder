@@ -197,8 +197,9 @@ def _validate_inputs(city: dict[str, Any], receipt: dict[str, Any], packet: dict
     parsed_endpoint = urlsplit(endpoint) if isinstance(endpoint, str) else None
     if not parsed_endpoint or parsed_endpoint.scheme not in {"http", "https"} or not parsed_endpoint.netloc:
         raise ValueError("candidate receipt requires an HTTP(S) source.endpoint")
-    if not isinstance(coverage, dict) or coverage.get("scope") not in {"citywide", "substantial-city"}:
-        raise ValueError("candidate receipt requires citywide or substantial-city coverage scope")
+    if not isinstance(coverage, dict) or coverage.get("scope") not in {
+            "citywide", "substantial-city", "partial-city", "bounded-sample"}:
+        raise ValueError("candidate receipt requires a policy-valid coverage scope")
     if packet.get("valid") is False:
         raise ValueError("research packet validation failed")
     packet_city = packet.get("city")
@@ -412,15 +413,103 @@ def _artifact_hashes(root: Path, attempt_dir: Path) -> dict[str, dict[str, str]]
             raise ValueError(f"stage artifact cannot be a symlink: {path}")
         if path.is_file() and path.name != "result.json":
             artifacts[path.relative_to(attempt_dir).as_posix()] = _sha(path.read_bytes())
-    adapters: dict[str, str] = {}
-    adapter_root = root / "backend/parcels"
-    if adapter_root.is_dir():
+    descriptor: dict[str, Any] = {}
+    candidate_path = attempt_dir / "candidate.json"
+    if candidate_path.is_file():
+        candidate = json.loads(candidate_path.read_text(encoding="utf-8"))
+        if isinstance(candidate.get("descriptor"), dict):
+            descriptor = candidate["descriptor"]
+    adapters = _adapter_dependency_hashes(root, descriptor)
+    return {"artifacts": artifacts, "sourceDescriptor": {"sha256": _sha(_canonical(descriptor))},
+            "backendAdapters": adapters}
+
+
+_ADAPTER_MODULES = {
+    "arcgis": "arcgis-source.js", "wfs": "wfs-source.js", "ogc-api": "ogc-api-source.js",
+    "socrata": "socrata-source.js", "geojson-snapshot": "geojson-snapshot-source.js",
+    "shapefile-snapshot": "shapefile-snapshot-source.js", "shapefile-zip": "shapefile-snapshot-source.js",
+    "gml-snapshot": "gml-snapshot-source.js", "gml-wfs": "gml-wfs-source.js",
+    "catastro-wfs": "catastro-wfs-source.js", "dlrs-sheet": "dlrs-sheet-source.js",
+    "kerala-entebhoomi": "kerala-source.js", "nairobi-outlines": "nairobi-outline-source.js",
+    "kazakhstan-pkk": "kazakhstan-pkk-source.js", "msda-point": "msda-point-source.js",
+    "tkgm-point": "tkgm-point-source.js", "pl-uldk-point": "pl-uldk-point-source.js",
+    "bev-tiles": "bev-tile-source.js", "vector-tiles": "vector-tile-source.js",
+    "hamburg-alkis-wfs": "hamburg-alkis-source.js", "frankfurt-wfs": "frankfurt-wfs-source.js",
+    "pulse-public": "pulse-public-source.js", "dda-public-plots": "dda-source.js",
+    "dgu-wfs": "dgu-source.js", "shenzhen-land-certain": "shenzhen-source.js",
+    "hmlr-browser": "hmlr-browser-source.js",
+}
+_LOCAL_FILE_REF = re.compile(
+    r"(?:from\s*|import\s*\(|require\s*\(|new\s+URL\s*\()\s*['\"](\.{1,2}/[^'\"]+)['\"]")
+
+
+def _adapter_dependency_hashes(root: Path, descriptor: dict[str, Any]) -> dict[str, str]:
+    """Hash only the selected adapter implementation and its repository-local JS dependencies."""
+    root = Path(root).resolve()
+    adapter = descriptor.get("adapter")
+    if not descriptor:
+        adapter_root = root / "backend/parcels"
+        hashes = {}
         for path in sorted(adapter_root.rglob("*")):
             if path.is_symlink():
                 raise ValueError(f"backend adapter source cannot be a symlink: {path}")
             if path.is_file() and path.name != "source-catalog.json":
-                adapters[path.relative_to(root).as_posix()] = _sha(path.read_bytes())
-    return {"artifacts": artifacts, "backendAdapters": adapters}
+                hashes[path.relative_to(root).as_posix()] = _sha(path.read_bytes())
+        return hashes
+    module = _resolve_adapter_module(root, descriptor)
+    if not module:
+        raise ValueError(f"candidate descriptor has unsupported adapter dependency identity: {adapter}")
+    pending = [(root / "backend/parcels" / module).resolve()]
+    visited: set[Path] = set()
+    hashes: dict[str, str] = {}
+    while pending:
+        path = pending.pop()
+        path.relative_to(root)
+        if path in visited:
+            continue
+        visited.add(path)
+        if path.is_symlink() or not path.is_file():
+            raise ValueError(f"backend adapter dependency is missing or a symlink: {path}")
+        raw = path.read_bytes()
+        hashes[path.relative_to(root).as_posix()] = _sha(raw)
+        if path.suffix not in {".js", ".cjs", ".mjs"}:
+            continue
+        text = raw.decode("utf-8")
+        for ref in _LOCAL_FILE_REF.findall(text):
+            dependency = (path.parent / ref).resolve()
+            if dependency.suffix == "":
+                dependency = dependency.with_suffix(".js")
+            dependency.relative_to(root)
+            pending.append(dependency)
+    return dict(sorted(hashes.items()))
+
+
+def _resolve_adapter_module(root: Path, descriptor: dict[str, Any]) -> str | None:
+    adapter = descriptor.get("adapter")
+    if adapter in _ADAPTER_MODULES:
+        return _ADAPTER_MODULES[adapter]
+    declared = descriptor.get("adapterModule")
+    if isinstance(declared, str):
+        raw = Path(declared)
+        if (not raw.is_absolute() and ".." not in raw.parts and raw.suffix in {".js", ".mjs", ".cjs"}
+                and len(raw.parts) == 1):
+            return declared
+    registry = root / "backend/parcels/sources.js"
+    if not isinstance(adapter, str) or not registry.is_file():
+        return None
+    text = registry.read_text(encoding="utf-8")
+    imports = {}
+    for names, path in re.findall(r"import\s*\{([^}]*)\}\s*from\s*['\"](\./[^'\"]+)['\"]", text):
+        for item in names.split(","):
+            name = item.strip().split(" as ")[-1]
+            if re.fullmatch(r"[A-Za-z_$][\w$]*", name):
+                imports[name] = path.removeprefix("./")
+    key = re.search(rf"(?:['\"]{re.escape(adapter)}['\"]|\b{re.escape(adapter)})\s*:\s*([^,}}]+)", text)
+    if key:
+        for name, module in imports.items():
+            if re.search(rf"\b{re.escape(name)}\b", key.group(1)):
+                return module
+    return None
 
 
 def _stage_city_root(state_dir: Path, code: str) -> Path:
@@ -450,8 +539,19 @@ def revalidate_stage(runner: Any, city: dict[str, Any], receipt: dict[str, Any],
         if not isinstance(expected_artifacts, dict):
             return False, "stage result is missing artifact hashes"
         actual_artifacts = _artifact_hashes(root, attempt_dir)
-        if actual_artifacts != expected_artifacts:
+        if expected_artifacts.get("sourceDescriptor") is None:
+            old_adapters = expected_artifacts.get("backendAdapters")
+            current_adapters = actual_artifacts["backendAdapters"]
+            compatible = (expected_artifacts.get("artifacts") == actual_artifacts["artifacts"]
+                          and isinstance(old_adapters, dict)
+                          and all(old_adapters.get(path) == digest
+                                  for path, digest in current_adapters.items()))
+        else:
+            compatible = actual_artifacts == expected_artifacts
+        if not compatible:
             return False, "stage qualification artifacts or backend adapter code changed"
+        if expected_artifacts != actual_artifacts:
+            stage_result["artifactHashes"] = actual_artifacts
         return True, "stage inputs, qualification artifacts, and backend adapter code remain hash-identical"
     except (OSError, ValueError, TypeError, KeyError) as exc:
         return False, f"stage revalidation failed: {exc}"
@@ -465,8 +565,7 @@ def run_candidate(runner: Any, city: dict[str, Any], receipt: dict[str, Any], pa
         state_dir = (root / state_dir).resolve()
     else:
         state_dir = state_dir.resolve()
-    code, name, source_id, point_latlon = _validate_inputs(city, receipt, packet)
-    endpoint = receipt["source"]["endpoint"]
+    code = str(city.get("cityCode", "unknown"))
     city_root = (state_dir / "qualification" / "cities" / code).resolve()
     reserved_name = getattr(runner, "qualification_attempt_name", None)
     if reserved_name is None:
@@ -476,14 +575,24 @@ def run_candidate(runner: Any, city: dict[str, Any], receipt: dict[str, Any], pa
             raise ValueError("invalid reserved qualification attempt name")
         attempt_dir = city_root / reserved_name
         attempt_dir.mkdir(parents=True, exist_ok=False)
-    hashes_before = _input_hashes(root, city, receipt, packet)
-    _json_write(attempt_dir / "inputs.json", hashes_before)
-    city_for_verifier = {"cityCode": code, "cityName": name, "point": point_latlon}
+    hashes_before = None
     try:
+        code, name, source_id, point_latlon = _validate_inputs(city, receipt, packet)
+        endpoint = receipt["source"]["endpoint"]
+        hashes_before = _input_hashes(root, city, receipt, packet)
+        _json_write(attempt_dir / "inputs.json", hashes_before)
+        city_for_verifier = {"cityCode": code, "cityName": name, "point": point_latlon}
         qualification, build = _support(root)
         before = build.worktree_snapshot(root)
         model = runner._model("review")
         prompt = _worker_prompt(root, city, receipt, packet, city_root, attempt_dir, hashes_before)
+        learning_prompt = getattr(runner, "_learning_prompt", None)
+        if callable(learning_prompt):
+            learning = learning_prompt(city, "qualification")
+            if learning:
+                prompt += ("\n\nShared qualification learning:\n" + str(learning)
+                           + "\nActively build or improve the production adapter when needed. "
+                             "Record transferable source and adapter findings for subsequent cities.\n")
         call = runner._call("review", f"source-qualification:{code}", prompt,
                             model["model"], model.get("effort") or "medium")
         call["schema"] = copy.deepcopy(qualification.OUTPUT_SCHEMA)
@@ -626,6 +735,7 @@ def run_candidate(runner: Any, city: dict[str, Any], receipt: dict[str, Any], pa
             changed = build.snapshot_delta(before, build.worktree_snapshot(root))
         except Exception:
             pass
-        return _persist_result(attempt_dir, city_root, "failed", f"{type(exc).__name__}: {exc}",
-                               [_attempt_city_path(city_root, attempt_dir, "inputs.json")], changed,
+        evidence = ([_attempt_city_path(city_root, attempt_dir, "inputs.json")]
+                    if (attempt_dir / "inputs.json").is_file() else [])
+        return _persist_result(attempt_dir, city_root, "failed", f"{type(exc).__name__}: {exc}", evidence, changed,
                                {"inputHashes": hashes_before, "inputHashesAfter": hashes_after})

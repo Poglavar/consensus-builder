@@ -1,0 +1,9 @@
+[
+  {
+    "url": "http://www.ycbdc.org.cn/webgisapi/tswebgisservice/gis/initializate",
+    "reason": "400"
+  },
+  {
+    "url": "http://www.ycbdc.org.cn/tswebgispublish/"
+  }
+]

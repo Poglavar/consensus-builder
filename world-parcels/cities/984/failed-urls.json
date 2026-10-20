@@ -1,0 +1,17 @@
+[
+  {
+    "url": "https://pms.moj.gov.af/"
+  },
+  {
+    "url": "https://pms.moj.gov.af/main.733b75d24438b70d.js"
+  },
+  {
+    "url": "https://pms.moj.gov.af/api/Geolocation/check-afghanistan"
+  },
+  {
+    "url": "https://pms.moj.gov.af/api/Geolocation/info"
+  },
+  {
+    "url": "https://pms.moj.gov.af/api/Setup/GetProvinces"
+  }
+]

@@ -1,0 +1,20 @@
+[
+  {
+    "url": "https://map.wonju.go.kr/lifemap/map/theme-map.lm"
+  },
+  {
+    "url": "https://map.wonju.go.kr/lifemap/resources/map/js/app.js"
+  },
+  {
+    "url": "https://map.wonju.go.kr/gs-gate/wms?service=WMS&request=GetCapabilities&version=1.1.1"
+  },
+  {
+    "url": "https://map.wonju.go.kr/gs-gate/wfs?service=WFS&request=GetCapabilities&version=1.0.0"
+  },
+  {
+    "url": "https://map.wonju.go.kr/gs-gate/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName=wonju%3ALP_PA_CBND&outputFormat=application%2Fjson&srsName=EPSG%3A5186&maxFeatures=3&bbox=284084.821748401%2C527354.1737090645%2C284184.821748401%2C527454.1737090645%2CEPSG%3A5186"
+  },
+  {
+    "url": "https://map.wonju.go.kr/lifemap/map/get-pnu-by-coordinate.lm"
+  }
+]

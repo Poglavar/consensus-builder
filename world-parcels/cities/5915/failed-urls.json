@@ -1,0 +1,11 @@
+[
+  {
+    "url": "https://sicammpt.pueblacapital.gob.mx/server/rest/services/C_H_PUE/MapServer/103?f=pjson"
+  },
+  {
+    "url": "https://sicammpt.pueblacapital.gob.mx/server/rest/services/C_H_PUE/MapServer/103/query?where=1%3D1&geometry=-98.2032596830628%2C19.0430350801074&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json"
+  },
+  {
+    "url": "https://memorias.pueblacapital.gob.mx/xv-tramites-y-servicios/387-tesoreria-municipal/3194-direccion-de-catastro"
+  }
+]

@@ -177,6 +177,14 @@ export function currencyFor(countryCode, explicit) {
     return known ? { locale: known[0], code: known[1] } : null;
 }
 
+export function collectLiveCityCodes(configs, configIds, report) {
+    const live = new Set(configs.map(c => String(c.wupCityCode)).filter(c => c !== 'undefined'));
+    for (const city of report?.cities || []) {
+        if (city.wupCityCode && (city.appCityIds || []).some(id => configIds.has(id))) live.add(String(city.wupCityCode));
+    }
+    return live;
+}
+
 // Final evidence of every technical-qualified city in the given runner state dirs (latest run wins).
 function evidenceIndex(stateDirs) {
     const index = new Map();
@@ -417,14 +425,8 @@ async function main() {
     const configs = parseCityConfigs(configText);
     const configIds = new Set([...configText.matchAll(/^ {8}([a-z0-9_]+): \{$/gm)].map(m => m[1]));
 
-    // Live already: configured WUP codes, earlier admissions and the coverage report's app bindings.
-    const live = new Set(configs.map(c => String(c.wupCityCode)).filter(c => c !== 'undefined'));
-    for (const name of fs.readdirSync(path.join(REPO, 'world-parcels/research')).filter(n => /^qualification-admission-.*\.json$/.test(n))) {
-        for (const city of readJson(`world-parcels/research/${name}`).cities) live.add(String(city.cityCode));
-    }
-    for (const c of readJson('frontend/data/parcel-coverage-report.json').cities || []) {
-        if (c.wupCityCode && (c.appCityIds || []).some(id => configIds.has(id))) live.add(String(c.wupCityCode));
-    }
+    // Current live truth is the configured city set plus coverage rows bound to configured app IDs.
+    const live = collectLiveCityCodes(configs, configIds, readJson('frontend/data/parcel-coverage-report.json'));
 
     // Country names per locale from existing labels of admitted cities.
     const countryNames = Object.fromEntries(LOCALES.map(l => [l, {}]));
@@ -568,6 +570,7 @@ async function main() {
     if (!plan.length) { log('no eligible cities; nothing written'); return; }
 
     const evidenceRoot = `world-parcels/research/qualification-${args.release}`;
+    fs.mkdirSync(path.join(REPO, evidenceRoot), { recursive: true });
     const manifestCities = [];
     for (const item of plan) {
         const dir = `${evidenceRoot}/${item.code}`;

@@ -1,0 +1,10 @@
+[
+  {
+    "url": "https://dosm.vnsdi.gov.vn/portal",
+    "reason": "500"
+  },
+  {
+    "url": "https://dosm.vnsdi.gov.vn/apiportal/api/Values?urlportal=https%3A%2F%2Fdosm.vnsdi.gov.vn%2Fportal",
+    "reason": "500"
+  }
+]

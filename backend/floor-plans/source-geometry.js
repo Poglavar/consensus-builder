@@ -1,5 +1,15 @@
 // Derive immutable wall corners and possible openings from measured source-image strokes.
 const distance=(a,b)=>Math.hypot(a[0]-b[0],a[1]-b[1]);
+
+// A rectilinear slab corner can combine the measured x and y of two selected wall corners.
+// This spans apertures without inventing coordinates or requiring a stroke at the junction.
+export function sourceAnchor(id, anchors) {
+    if (anchors.has(id)) return anchors.get(id);
+    const parts = typeof id === 'string' && id.match(/^(W\d+:[0-3])\/(W\d+:[0-3])$/);
+    if (!parts) return null;
+    const x = anchors.get(parts[1]), y = anchors.get(parts[2]);
+    return x && y ? [x[0], y[1]] : null;
+}
 export function wallCorners(wall) {
     const length=distance(wall.a,wall.b),half=wall.widthPx/2;
     if(!(length>0&&half>0))throw new Error('Invalid source wall candidate.');

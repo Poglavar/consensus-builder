@@ -1,0 +1,124 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "1774",
+  "name": "Kitwe, Zambia",
+  "point": [
+    -12.8099306286313,
+    28.222405935667
+  ],
+  "bindings": [
+    {
+      "appCityId": "kitwe",
+      "runtimeConfig": {
+        "id": "kitwe",
+        "label": "Kitwe, Zambia",
+        "currency": {
+          "locale": "en-ZM",
+          "code": "ZMW"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            -12.8099306286313,
+            28.222405935667
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            -12.8099306286313,
+            28.222405935667
+          ],
+          "fallbackDataset": [
+            28.222405935667,
+            -12.8099306286313
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "zm-nsdi-zilmis-lots",
+          "idPrefix": "ZM-NSDI-LOT-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 3,
+          "attribution": "<a href=\"https://www.map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer\">Zambia NSDI ZILMIS lot polygons</a> · adapted"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "zm-nsdi-zilmis-lots",
+      "name": "Zambia NSDI ZILMIS lot polygons",
+      "adapter": "arcgis",
+      "endpoint": "https://www.map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer/0",
+      "idField": "SDE.Lots.OBJECTID",
+      "idType": "integer",
+      "idPrefix": "ZM-NSDI-LOT-",
+      "objectIdField": "SDE.Lots.OBJECTID",
+      "outFields": [
+        "SDE.Lots.OBJECTID",
+        "SDE.Lots.UPID"
+      ],
+      "pageSize": 1000,
+      "maxFeatures": 3000,
+      "maxBboxKm2": 1,
+      "countryCode": "ZM",
+      "metricSrid": 32735,
+      "cityIds": [
+        "kitwe"
+      ],
+      "maxConcurrentQueries": 6,
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "boundsSrid": 32735,
+      "boundsProjection": "+proj=utm +zone=35 +south +datum=WGS84 +units=m +no_defs",
+      "parcelNumberField": "SDE.Lots.UPID",
+      "operator": "Government of Zambia National Spatial Data Infrastructure / ZILMIS",
+      "scope": "31 valid distinct public cadastral-reference polygons verified in thirteen bounded 0.001-degree cells around the unchanged WUP settlement locator. Complete bounded manifest paging, forced three-row pages, all 31 fresh source-ID reads, explicit absence, footprint and source binding passed in 54 requests. Independent metric EPSG:32735 GEOS found all geometries valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. Source-native SDE.Lots.OBJECTID is the unique GIS reference identity; the original UPID label is retained unchanged. The first UPID identity qualification is preserved as failed: one blank UPID matched 38,736 records and cannot serve as a unique native parcel key. A fresh run using source OIDs preserves all sampled geometry and passes every query check. Provider offset pagination is unsupported; complete count-checked object-ID manifests and bounded object-ID batches are used instead. Native source CRS is EPSG:32735. The exact WUP point returned no lot; all three original nearby UPID-labelled samples match fresh full source geometry exactly. Citywide completeness, legal title, survey accuracy, currentness and long-term GIS key continuity remain unverified. Additional enabled city entries have separate bounded qualification evidence; wider coverage remains unverified.",
+      "attribution": "Government of Zambia National Spatial Data Infrastructure / ZILMIS · cadastral-reference polygons · adapted",
+      "catalogueUrl": "https://www.map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer",
+      "licenceNote": "Anonymous bounded public geometry and publisher attribution verified. Publisher reuse/currentness/legal-coordinate conditions are informational. This reference geometry does not establish legal title or survey accuracy. Personal fields and reader token values are excluded.",
+      "metricSridByCity": {
+        "kitwe": 32735
+      },
+      "cityScopes": {
+        "mansa": "10 unchanged native parcel polygons passed all eight qualification gates in bounded cells around the UN/WUP locator. Fresh independent metric audit (EPSG:32735) found zero invalid polygons, identity conflicts, duplicate geometry, material overlaps, or operation errors. Citywide completeness, legal title, survey accuracy, and currentness are not established.",
+        "kabwe": "16 unchanged native parcel polygons passed all eight qualification gates in bounded cells around the UN/WUP locator. Fresh independent metric audit (EPSG:32735) found zero invalid polygons, identity conflicts, duplicate geometry, material overlaps, or operation errors. Citywide completeness, legal title, survey accuracy, and currentness are not established.",
+        "livingstone": "109 unchanged native parcel polygons passed all eight qualification gates in bounded cells around the UN/WUP locator. Fresh independent metric audit (EPSG:32735) found zero invalid polygons, identity conflicts, duplicate geometry, material overlaps, or operation errors. Citywide completeness, legal title, survey accuracy, and currentness are not established.",
+        "kafue": "4 unchanged native parcel polygons passed all eight qualification gates in bounded cells around the UN/WUP locator. Fresh independent metric audit (EPSG:32735) found zero invalid polygons, identity conflicts, duplicate geometry, material overlaps, or operation errors. Citywide completeness, legal title, survey accuracy, and currentness are not established.",
+        "mumbwa": "62 unchanged native parcel polygons passed all eight qualification gates in bounded cells around the UN/WUP locator. Fresh independent metric audit (EPSG:32735) found zero invalid polygons, identity conflicts, duplicate geometry, material overlaps, or operation errors. Citywide completeness, legal title, survey accuracy, and currentness are not established.",
+        "mongu": "Bounded qualification around the UN DESA WUP 2025 settlement locator for Mongu. Passing all eight gates and independent geometry audit supports local parcel integration only; citywide completeness, legal title, survey accuracy and currentness are not established.",
+        "luanshya": "Bounded qualification around the UN DESA WUP 2025 settlement locator for Luanshya. Passing all eight gates and independent geometry audit supports local parcel integration only; citywide completeness, legal title, survey accuracy and currentness are not established."
+      },
+      "defaultForCity": true
+    }
+  ]
+}

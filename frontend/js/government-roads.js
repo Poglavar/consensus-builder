@@ -19,6 +19,19 @@
     const GOVERNMENT_PLAN_PANE = 'governmentRoadPlanPane';
     let planCanvasRenderer = null;
 
+    // The plan pieces computed here are what "Apply government plan" turns into a road proposal, so a
+    // polygon clip that fails is thrown as a typed ClipFailure (parcel-arrangement.js) instead of
+    // substituting the unclipped, unsubtracted or partial geometry it used to.
+    function governmentClipApi() {
+        return (typeof window !== 'undefined' && window.__parcelArrangement)
+            || (typeof require === 'function' ? require('./proposals/parcel-arrangement.js') : null);
+    }
+    function governmentClipFailure(operation, error, context, operands) {
+        const clips = governmentClipApi();
+        if (!clips || typeof clips.clipFailure !== 'function') return error;
+        return clips.clipFailure(operation, error, context, operands);
+    }
+
     function isLocalFileOrigin() {
         try {
             return typeof window !== 'undefined' && window.location && window.location.protocol === 'file:';
@@ -218,9 +231,9 @@
                 remainingPlanGeometry = diff;
             }
         } catch (err) {
-            if (console && typeof console.debug === 'function') {
-                console.debug('Failed to subtract applied roads from remaining plan:', err);
-            }
+            // Swallowed, the applied roads stayed in the remaining plan and the next auto-apply
+            // took them again.
+            throw governmentClipFailure('difference', err, { site: 'government-roads.subtractFromRemainingPlan' }, [remainingPlanGeometry]);
         }
     }
 
@@ -255,8 +268,8 @@
                     diffPieces.forEach(piece => trimmedFeatures.push(piece));
                 }
             } catch (err) {
-                console.warn('Failed to subtract applied segments from government plan feature', err);
-                trimmedFeatures.push(feature);
+                // Was: keep the feature untrimmed, applied segments and all.
+                throw governmentClipFailure('difference', err, { site: 'government-roads.removeAppliedSegmentsFromCachedPlan' }, [feature, appliedUnion]);
             }
         });
 
@@ -308,8 +321,8 @@
             }
             return normalizeFeatureLike(intersection, remainingPlanGeometry.properties);
         } catch (err) {
-            console.warn('Failed to clip remaining plan to view bounds:', err);
-            return [];
+            // Was: "nothing of the plan is in view".
+            throw governmentClipFailure('intersect', err, { site: 'government-roads.getRemainingPlanForView' }, [remainingPlanGeometry, mapPolygon]);
         }
     }
 
@@ -1143,7 +1156,8 @@
                     return;
                 }
             } catch (err) {
-                console.warn('Failed to subtract applied road union from plan piece.', err);
+                // Was: keep the piece whole, so it was applied again over the applied roads.
+                throw governmentClipFailure('difference', err, { site: 'government-roads.subtractAppliedSegmentsFromPieces' }, [piece, appliedUnion]);
             }
             trimmed.push(piece);
         });
@@ -1432,10 +1446,11 @@
                     intersection = null;
                 }
             } catch (err) {
-                intersection = null;
-                if (console && typeof console.debug === 'function') {
-                    console.debug('Failed to intersect government plan piece with parcel', err);
-                }
+                // Was: "the plan misses this parcel", which left it out of the road proposal.
+                throw governmentClipFailure('intersect', err, {
+                    site: 'government-roads.buildGovernmentPlanProposalData',
+                    parcelId: originalProps.parcelId || originalProps.PARCEL_ID || null
+                }, [parcelGeometry, planPolygon]);
             }
 
             if (!intersection) {
@@ -1504,8 +1519,12 @@
                 remainder = turf.difference(parcelGeometry, intersection);
                 if (statsTarget) statsTarget.differenceAttempts = (statsTarget.differenceAttempts || 0) + 1;
             } catch (err) {
-                console.warn('Failed to compute remainder geometry', err);
                 if (statsTarget) statsTarget.differenceFailed = (statsTarget.differenceFailed || 0) + 1;
+                // Was: no remainder, i.e. the owner's leftover land was dropped from the proposal.
+                throw governmentClipFailure('difference', err, {
+                    site: 'government-roads.buildGovernmentPlanProposalData',
+                    parcelId: originalProps.parcelId || originalProps.PARCEL_ID || null
+                }, [parcelGeometry, intersection]);
             }
 
             let remainderStatus = 'difference-success';
@@ -2444,6 +2463,11 @@
                 const intersection = turf.intersect(planFeature, mapPolygon);
                 overlapArea = intersection ? turf.area(intersection) : 1;
             } catch (err) {
+                // Only ranks catalogue plans whose boxes meet the view; any of them is a valid
+                // choice, so this stays a ranking of 1 m² — reported and counted, not thrown.
+                const clips = governmentClipApi();
+                if (!clips || typeof clips.reportClipFailure !== 'function') throw err;
+                clips.reportClipFailure('intersect', err, { site: 'government-roads.selectPlanForBounds' }, [planFeature, mapPolygon]);
                 overlapArea = 1;
             }
 
@@ -2667,22 +2691,14 @@
         return features;
     }
 
-    const unionErrorCache = new Set();
     function safeUnion(base, addition) {
         if (typeof turf === 'undefined') return base;
         try {
             const result = turf.union(base, addition);
             return result || base;
         } catch (err) {
-            const errMsg = err?.message || String(err);
-            const errKey = errMsg.substring(0, 100);
-            if (!unionErrorCache.has(errKey)) {
-                unionErrorCache.add(errKey);
-                if (console && typeof console.debug === 'function') {
-                    console.debug('turf.union failed (suppressing duplicates):', errMsg);
-                }
-            }
-            return base;
+            // Was: return `base`, silently dropping `addition` from the plan polygon that is applied.
+            throw governmentClipFailure('union', err, { site: 'government-roads.safeUnion' }, [base, addition]);
         }
     }
 
@@ -2729,7 +2745,8 @@
                     }
                     workingFeature = intersection;
                 } catch (err) {
-                    console.warn('turf.intersect failed for plan feature; using original geometry.', err);
+                    // Was: carry on with the whole, unclipped plan feature — far beyond the view.
+                    throw governmentClipFailure('intersect', err, { site: 'government-roads.computePlanPiecesForView' }, [planFeature, mapPolygon]);
                 }
             }
             const clippedPieces = normalizeFeatureLike(workingFeature, planFeature.properties);
@@ -2751,8 +2768,8 @@
                         pieces.push(...diffPieces);
                     }
                 } catch (err) {
-                    console.warn('Failed to subtract road parcels from plan piece.', err);
-                    pieces.push(piece);
+                    // Was: keep the piece whole, over the road parcels it should leave out.
+                    throw governmentClipFailure('difference', err, { site: 'government-roads.computePlanPiecesForView' }, [piece, roadUnion]);
                 }
             }
         }
@@ -2801,7 +2818,8 @@
                     return;
                 }
             } catch (err) {
-                console.warn('Failed to subtract road parcels from remaining plan piece.', err);
+                // Was: keep the piece whole, over the road parcels it should leave out.
+                throw governmentClipFailure('difference', err, { site: 'government-roads.computeRemainingPlanPiecesForView' }, [piece, roadUnion]);
             }
             trimmed.push(piece);
         });
@@ -3105,6 +3123,28 @@
             });
         }
     });
+
+    // Node (vitest) reaches the clip helpers through this; the browser never has `module`.
+    if (typeof module !== 'undefined' && module.exports) {
+        module.exports = {
+            safeUnion,
+            unionFeatures,
+            subtractAppliedSegmentsFromPieces,
+            subtractFromRemainingPlan,
+            removeAppliedSegmentsFromCachedPlan,
+            getRemainingPlanForView,
+            computePlanPiecesForView,
+            computeRemainingPlanPiecesForView,
+            buildGovernmentPlanProposalDataSync,
+            selectPlanForBounds,
+            // The module state those read, set directly instead of through a fetch and a map.
+            _setPlanState(state = {}) {
+                if ('cachedPlanCollection' in state) cachedPlanCollection = state.cachedPlanCollection;
+                if ('remainingPlanGeometry' in state) remainingPlanGeometry = state.remainingPlanGeometry;
+                if ('planCatalog' in state) planCatalogState.promise = Promise.resolve(state.planCatalog);
+            }
+        };
+    }
 
     window.drawGovernmentRoadPlan = drawGovernmentRoadPlan;
     window.applyGovernmentRoadPlan = applyGovernmentRoadPlan;

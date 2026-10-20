@@ -1,0 +1,26 @@
+[
+  {
+    "url": "https://bhumi.atrbpn.go.id/bantuan/peta"
+  },
+  {
+    "url": "https://atlas.atrbpn.go.id/"
+  },
+  {
+    "url": "https://kersana.brebeskab.go.id/peta-dan-batas/"
+  },
+  {
+    "url": "https://brebeskab.go.id/index.php/content/1/ratusan-bidang-tanah-partikelir-di-kersana-sah-milik-warga"
+  },
+  {
+    "url": "https://bhumi.atrbpn.go.id/peta"
+  },
+  {
+    "url": "https://bhumi.atrbpn.go.id/bhumigs/umum?service=WMS&request=GetCapabilities"
+  },
+  {
+    "url": "https://bhumi.atrbpn.go.id/bhumigs/umum/wms?service=WMS&request=GetCapabilities"
+  },
+  {
+    "url": "https://bhumi.atrbpn.go.id/bhumigs/umum/ows?service=WFS&request=GetCapabilities"
+  }
+]

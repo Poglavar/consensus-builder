@@ -1,0 +1,14 @@
+[
+  {
+    "url": "https://bhunaksha.bihar.gov.in/rest/MapInfo/getVVVVExtentGeoref"
+  },
+  {
+    "url": "https://bhunaksha.bihar.gov.in/rest/MapInfo/getPlotAtXY"
+  },
+  {
+    "url": "https://www.bhulagan.bihar.gov.in/reports/CircleWiseReport.aspx/1000"
+  },
+  {
+    "url": "https://www.bhulagan.bihar.gov.in/reports/MaujaWiseReport.aspx"
+  }
+]

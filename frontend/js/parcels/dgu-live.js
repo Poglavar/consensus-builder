@@ -146,7 +146,16 @@
             const features = [];
             candidates.forEach(parcel => {
                 let piece = null;
-                try { piece = turf.intersect(parcel, footprint); } catch (_) { piece = null; }
+                try { piece = turf.intersect(parcel, footprint); } catch (error) {
+                    // These takes stand in for the server's binding (which parcels a proposal
+                    // stands on, and its coverage); "takes nothing" would bind it wrongly. Refuse
+                    // with a typed ClipFailure (parcel-arrangement.js).
+                    const clips = (typeof window !== 'undefined' && window.__parcelArrangement)
+                        || (typeof require === 'function' ? require('../proposals/parcel-arrangement.js') : null);
+                    if (!clips || typeof clips.clipFailure !== 'function') throw error;
+                    const props = parcel && parcel.properties || {};
+                    throw clips.clipFailure('intersect', error, { site: 'dgu-live.fetchUnder', parcelId: props.parcelId || null }, [parcel, footprint]);
+                }
                 const taken = piece ? turf.area(piece) : 0;
                 if (taken <= TAKEN_FLOOR_M2) return;
                 takenTotal += taken;

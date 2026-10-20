@@ -1,0 +1,29 @@
+[
+  {
+    "url": "https://maps.swindon.gov.uk/SBCatMyCouncil.aspx?MapSource=mapsources%2FAllMaps"
+  },
+  {
+    "url": "https://www.swindon.gov.uk/localplan"
+  },
+  {
+    "url": "https://www.gov.uk/guidance/inspire-index-polygons-spatial-data"
+  },
+  {
+    "url": "https://inspire.landregistry.gov.uk/inspire/ows?Request=Getcapabilities&Service=WMS"
+  },
+  {
+    "url": "https://use-land-property-data.service.gov.uk/datasets/inspire/download?back=true"
+  },
+  {
+    "url": "https://inspire.landregistry.gov.uk/inspire/ows?service=WMS&request=GetMap&layers=inspire:CP.CadastralParcel&crs=EPSG:27700&bbox=410500,183500,411500,184500&width=256&height=256&format=image/png"
+  },
+  {
+    "url": "https://inspire.landregistry.gov.uk/inspire/ows?service=WMS&request=GetFeatureInfo&query_layers=inspire:CP.CadastralParcel&info_format=application/json&crs=EPSG:27700&bbox=410500,183500,411500,184500&width=256&height=256&i=128&j=128"
+  },
+  {
+    "url": "https://inspire.landregistry.gov.uk/inspire/ows?service=WFS&request=GetCapabilities"
+  },
+  {
+    "url": "https://use-land-property-data.service.gov.uk/datasets/inspire/download/Swindon_Borough_Council.zip"
+  }
+]

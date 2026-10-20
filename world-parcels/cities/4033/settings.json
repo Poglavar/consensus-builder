@@ -1,0 +1,125 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "4033",
+  "name": "Mboloko, South Africa",
+  "point": [
+    -25.4662366387406,
+    27.8447650141456
+  ],
+  "bindings": [
+    {
+      "appCityId": "mboloko",
+      "runtimeConfig": {
+        "id": "mboloko",
+        "label": "Mboloko, South Africa",
+        "currency": {
+          "locale": "en-ZA",
+          "code": "ZAR"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            -25.4662366387406,
+            27.8447650141456
+          ],
+          "defaultZoom": 18,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            -25.4662366387406,
+            27.8447650141456
+          ],
+          "fallbackDataset": [
+            27.8447650141456,
+            -25.4662366387406
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.0025,
+          "source": "parcel-source",
+          "sourceId": "za-cgs-northwest-erven",
+          "idPrefix": "ZA-CGS-NW-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 2,
+          "attribution": "<a href=\"https://maps.geoscience.org.za/hosting/rest/services/Administrative_Boundaries_and_Cadastral_Data/MapServer/46\">CGS North West Erven · publisher &amp; conditions</a> · Surveyed approved parcels; Mboloko entry area verified; sampled records 2017-10-13; currentness and registration unestablished"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "za-cgs-northwest-erven",
+      "adapter": "arcgis",
+      "endpoint": "https://maps.geoscience.org.za/hosting/rest/services/Administrative_Boundaries_and_Cadastral_Data/MapServer/46",
+      "idField": "PRCL_KEY",
+      "objectIdField": "OBJECTID",
+      "idType": "string",
+      "idPrefix": "ZA-CGS-NW-",
+      "outFields": [
+        "OBJECTID",
+        "PRCL_KEY",
+        "ID",
+        "LSTATUS",
+        "WSTATUS",
+        "PRCL_TYPE",
+        "DATE_STAMP",
+        "PARCEL_NO"
+      ],
+      "parcelNumberField": "PARCEL_NO",
+      "attributeFilters": {
+        "LSTATUS": [
+          "R",
+          "S"
+        ],
+        "WSTATUS": [
+          " ",
+          "C"
+        ]
+      },
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "pageSize": 100,
+      "idBatchSize": 50,
+      "maxFeatures": 2000,
+      "maxBboxKm2": 2,
+      "metricSrid": 32735,
+      "maxConcurrentQueries": 6,
+      "name": "Council for Geoscience — North West cadastral erven",
+      "countryCode": "ZA",
+      "cityIds": [
+        "mboloko"
+      ],
+      "scope": "North West provincial erven mirror. Includes published LSTATUS S or R with WSTATUS blank or C; proposed and historic status codes are excluded. Mboloko entry area verified; every sampled record has DATE_STAMP 2017-10-13. Dataset update year and current legal registration are not established. Farm portions and holdings are separate layers and are outside this source.",
+      "catalogueUrl": "https://maps.geoscience.org.za/hosting/rest/services/Administrative_Boundaries_and_Cadastral_Data/MapServer/46",
+      "attribution": "Council for Geoscience · North West cadastral erven mirror. Sampled records dated 2017-10-13; currentness and registration unestablished. Adapted to WGS84.",
+      "licenceNote": "Source conditions are informational. The inspected service does not state a named reuse licence."
+    }
+  ]
+}

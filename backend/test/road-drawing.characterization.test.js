@@ -19,7 +19,7 @@ afterEach(() => {
 const near = (a, b, eps = 1e-9) => Math.abs(a.lat - b.lat) < eps && Math.abs(a.lng - b.lng) < eps;
 
 // One parcel straddling the x axis from 20 m to 60 m east, so an eastward road along y = 0 crosses it.
-const PARCEL_ON_ROUTE = { id: 'HR-1', ring: boxRing(20, -15, 60, 15), properties: { BROJ_CESTICE: '1', calculatedArea: 1200, ownershipType: 'company', estimatedMarketPrice: 5000 } };
+const PARCEL_ON_ROUTE = { id: 'HR-1', ring: boxRing(20, -15, 60, 15), properties: { BROJ_CESTICE: '1', calculatedArea: 1200, ownershipType: 'company', estimatedMarketPrice: 5000, estimatedMarketPriceCurrency: 'EUR' } };
 const PARCEL_OFF_ROUTE = { id: 'HR-2', ring: boxRing(20, 200, 60, 240), properties: { calculatedArea: 1600 } };
 
 async function openTool(world) {
@@ -641,7 +641,7 @@ describe('editing a saved road (updateLocalCorridorGeometry)', () => {
 
     it('a published road keeps its land; the edit becomes a counterproposal that is selected', async () => {
         const world = open({ parcels: [PARCEL_ON_ROUTE, PARCEL_AT_NEW_END] });
-        const record = withProfile(localRoad({ published: true }));
+        const record = withProfile(localRoad({ published: true, serverProposalId: '71', publicationApiBase: 'https://api.example.test' }));
         world.store.addProposal(record);
         globalThis.ProposalSelection.is = key => key === 'road-1';
         const result = await globalThis.updateLocalCorridorGeometry('road-1', definition => {
@@ -651,7 +651,7 @@ describe('editing a saved road (updateLocalCorridorGeometry)', () => {
         expect(near(record.roadProposal.definition.points[0][1], at(100, 0))).toBe(true);
         const [fork] = globalThis.ProposalManager.createCorridorProposalAtomically.calls[0];
         expect(fork.proposalId).toBeUndefined();
-        expect(fork.sourceProposalId).toBe('road-1');
+        expect(fork.proposalOrigin).toMatchObject({ relation: 'revision', source: { kind: 'publication', apiBase: 'https://api.example.test' } });
         expect(fork.applied).toBe(false);
         expect(fork.createdAt).toBe(record.createdAt);
         expect(fork.cadastreParcelIds).toEqual(['HR-1', 'HR-3']);

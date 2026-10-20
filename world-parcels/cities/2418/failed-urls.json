@@ -1,0 +1,14 @@
+[
+  {
+    "url": "https://www.mozgis.gov.mz/portal/home/webmap/viewer.html?isAdmin=true&layers=9e597eab9ff243cc868d5c769fad3515"
+  },
+  {
+    "url": "https://www.mozgis.gov.mz/serverfederated/rest/services/Municipio_de_Lichinga/MapServer"
+  },
+  {
+    "url": "https://www.cmcl.co.mz/servicos.php"
+  },
+  {
+    "url": "https://www.pdul.gov.mz/content/download/211/1138/file/DIISB4_LICHINGA_Final%2012%2011%202020.pdf"
+  }
+]

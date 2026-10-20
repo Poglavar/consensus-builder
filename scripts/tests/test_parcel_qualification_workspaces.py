@@ -18,8 +18,8 @@ assert spec.loader
 spec.loader.exec_module(workspaces)
 
 
-def run_git(root: Path, *args: str) -> str:
-    result = subprocess.run(["git", *args], cwd=root, capture_output=True, text=True, check=True)
+def run_git(root: Path, *args: str, check: bool = True) -> str:
+    result = subprocess.run(["git", *args], cwd=root, capture_output=True, text=True, check=check)
     return result.stdout.strip()
 
 
@@ -31,13 +31,15 @@ class ParcelQualificationWorkspaceTests(unittest.TestCase):
         run_git(self.parent, "init", "-b", "main")
         run_git(self.parent, "config", "user.email", "workspace-tests@example.test")
         run_git(self.parent, "config", "user.name", "Workspace Test")
-        (self.parent / ".gitignore").write_text(".env\n**/.env\nbackend/node_modules/\ntmp/\n")
+        (self.parent / ".gitignore").write_text(".env\n**/.env\nbackend/node_modules/\nnode_modules/\n__pycache__/\ntmp/\n")
         (self.parent / "scripts/lib").mkdir(parents=True)
         for rel in ("scripts/run-parcel-adapter-build.py", "scripts/lib/parcel_source_stage.py",
-                    "scripts/lib/parcel_discovery_outcomes.py"):
+                    "scripts/lib/parcel_discovery_outcomes.py", "scripts/lib/parcel_qualification_policy.py"):
             dst = self.parent / rel
             dst.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(REPO / rel, dst)
+        shutil.copy2(REPO / "scripts/lib/parcel-qualification-policy.json",
+                     self.parent / "scripts/lib/parcel-qualification-policy.json")
         (self.parent / "backend/parcels").mkdir(parents=True)
         (self.parent / "backend/parcels/adapter.js").write_text("export const baseline = true;\n")
         (self.parent / "backend/parcels/source-catalog.json").write_text('{"sources":[]}\n')
@@ -79,9 +81,10 @@ class ParcelQualificationWorkspaceTests(unittest.TestCase):
     def tearDown(self):
         self.temp.cleanup()
 
-    def prepare(self, slot=1):
+    def prepare(self, slot=1, base_revision=None):
         return workspaces.prepare_workspace(self.parent, self.state_dir, slot,
-                                            self.city, self.receipt, self.packet)
+                                            self.city, self.receipt, self.packet,
+                                            base_revision=base_revision)
 
     def test_two_slots_are_distinct_and_inputs_are_copied_and_remapped(self):
         city_mtime = self.city_path.stat().st_mtime_ns
@@ -124,7 +127,7 @@ class ParcelQualificationWorkspaceTests(unittest.TestCase):
         self.assertTrue(link.is_symlink())
         self.assertEqual(link.resolve(), (self.parent / "backend/node_modules").resolve())
 
-    def test_reuse_archives_owned_changes_and_preserves_ignored_state(self):
+    def test_reuse_resets_collected_changes_without_permanent_archive(self):
         workspace = self.prepare()
         child = workspace["root"]
         (child / "backend/parcels/adapter.js").write_text("export const worker = true;\n")
@@ -144,13 +147,60 @@ class ParcelQualificationWorkspaceTests(unittest.TestCase):
         self.assertEqual((child / "tmp/parcel-qualification-jobs" / workspace["runId"] / "worker.log").read_text(),
                          "private log\n")
         self.assertEqual((child / ".env").read_text(), "PRIVATE=keep\n")
-        history = self.state_dir / "qualification-workspaces/history" / workspace["runId"]
-        manifest = json.loads((history / "manifest.json").read_text())
-        rows = {row["path"]: row for row in manifest["entries"]}
-        self.assertEqual(rows["backend/parcels/adapter.js"]["kind"], "file")
-        self.assertEqual(rows["backend/test/base.test.cjs"]["kind"], "deleted")
-        self.assertEqual(rows["backend/test/generated.test.cjs"]["kind"], "file")
+        self.assertFalse((self.state_dir / "qualification-workspaces/history").exists())
+        self.assertFalse((self.state_dir / "qualification-workspaces/input-history").exists())
         self.assertTrue(next_workspace["stateDir"].is_dir())
+
+    def test_reuse_refreshes_latest_canonical_snapshot_without_archiving_failed_edits(self):
+        workspace = self.prepare()
+        child = workspace["root"]
+        worker_change = child / "backend/parcels/adapter.js"
+        worker_change.write_text("export const failedAttempt = true;\n")
+        workspaces.finish_workspace(workspace)
+
+        canonical = self.parent / "backend/parcels/adapter.js"
+        canonical.write_text("export const latestShared = true;\n")
+        run_git(self.parent, "add", "backend/parcels/adapter.js")
+        run_git(self.parent, "commit", "-m", "new canonical adapter")
+
+        next_workspace = self.prepare()
+        self.assertEqual(worker_change.read_text(), "export const latestShared = true;\n")
+        self.assertEqual(run_git(child, "rev-parse", "HEAD"), run_git(self.parent, "rev-parse", "HEAD"))
+        self.assertFalse((self.state_dir / "qualification-workspaces/history").exists())
+        self.assertTrue(next_workspace["stateDir"].is_dir())
+
+    def test_divergent_selected_base_preserves_parent_head_and_is_not_rearchived(self):
+        old_head = run_git(self.parent, "rev-parse", "HEAD")
+        big = self.parent / "frontend/runtime-bundle.js"
+        big.parent.mkdir()
+        payload = "export const runtime = 'canonical';\n" * 2000
+        big.write_text(payload)
+        run_git(self.parent, "add", "frontend/runtime-bundle.js")
+        run_git(self.parent, "commit", "-m", "canonical runtime ahead")
+        canonical = run_git(self.parent, "rev-parse", "HEAD")
+        run_git(self.parent, "tag", "canonical-runtime", canonical)
+        run_git(self.parent, "reset", "--hard", old_head)
+        (self.parent / "parent-only.txt").write_text("parent branch\n")
+        run_git(self.parent, "add", "parent-only.txt")
+        run_git(self.parent, "commit", "-m", "divergent parent commit")
+        parent_head = run_git(self.parent, "rev-parse", "HEAD")
+        self.assertNotEqual(run_git(self.parent, "merge-base", canonical, parent_head), parent_head)
+        big.parent.mkdir(exist_ok=True)
+        big.write_text(payload)
+
+        tracked, untracked = workspaces._parent_overlay_paths(self.parent, canonical)
+        self.assertNotIn("frontend/runtime-bundle.js", tracked)
+        self.assertNotIn("frontend/runtime-bundle.js", untracked)
+        workspace = self.prepare(base_revision=canonical)
+        child = workspace["root"]
+        self.assertEqual(run_git(self.parent, "rev-parse", "HEAD"), parent_head)
+        self.assertEqual(run_git(child, "rev-parse", "HEAD"), canonical)
+        self.assertEqual((child / "frontend/runtime-bundle.js").read_text(), payload)
+        workspaces.finish_workspace(workspace)
+
+        self.prepare(base_revision=canonical)
+        self.assertFalse((self.state_dir / "qualification-workspaces/history").exists())
+        self.assertEqual(run_git(self.parent, "rev-parse", "HEAD"), parent_head)
 
     def test_unexpected_post_finish_drift_refuses_reuse_without_overwriting_it(self):
         workspace = self.prepare()
@@ -198,7 +248,7 @@ class ParcelQualificationWorkspaceTests(unittest.TestCase):
         packet["review"] = {"sampleFiles": []}
         return packet, city_path, review_path
 
-    def test_reuse_tracks_ignored_input_ownership_across_different_packet_and_archives_old_bytes(self):
+    def test_reuse_tracks_ignored_input_ownership_without_archiving_old_bytes(self):
         first_packet, first_city_path, _ = self._ignored_packet("first")
         first = workspaces.prepare_workspace(self.parent, self.state_dir, 1,
                                              self.city, self.receipt, first_packet)
@@ -225,15 +275,9 @@ class ParcelQualificationWorkspaceTests(unittest.TestCase):
         self.assertNotEqual(restored.read_bytes(), first_city_bytes)
         self.assertNotEqual(restored.stat().st_mtime_ns, first_city_mtime)
 
-        history = self.state_dir / "qualification-workspaces/input-history" / third["runId"]
-        manifest = json.loads((history / "manifest.json").read_text())
-        rows = {row["path"]: row for row in manifest["entries"]}
-        row = rows[str(first_city_path.relative_to(self.parent))]
-        self.assertEqual(row["kind"], "file")
-        self.assertEqual((history / row["storedPath"]).read_bytes(), first_city_bytes)
-        self.assertEqual(row["sha256"], hashlib.sha256(first_city_bytes).hexdigest())
+        self.assertFalse((self.state_dir / "qualification-workspaces/input-history").exists())
 
-    def test_unknown_ignored_input_collision_refuses_before_reset_archive_or_metadata_change(self):
+    def test_unknown_ignored_input_collision_refuses_before_reset_or_metadata_change(self):
         first_packet, _, _ = self._ignored_packet("first")
         first = workspaces.prepare_workspace(self.parent, self.state_dir, 1,
                                              self.city, self.receipt, first_packet)
@@ -255,7 +299,7 @@ class ParcelQualificationWorkspaceTests(unittest.TestCase):
                                          {**self.city, "cityCode": "7777"}, self.receipt, packet)
         self.assertEqual(tracked.read_text(), "worker edits survive collision\n")
         self.assertEqual(metadata_path.read_bytes(), metadata_before)
-        self.assertFalse((self.state_dir / "qualification-workspaces/history" / first["runId"]).exists())
+        self.assertFalse((self.state_dir / "qualification-workspaces/history").exists())
         foreign_path.rename(child / "tmp/retained-foreign.json")
         resumed = workspaces.prepare_workspace(self.parent, self.state_dir, 1,
                                                self.city, self.receipt, packet)
@@ -296,33 +340,72 @@ class ParcelQualificationWorkspaceTests(unittest.TestCase):
         self.assertTrue(symlink.is_symlink())
         self.assertEqual(first["metadataPath"].read_bytes(), metadata_before)
 
-    def test_existing_verified_reuse_archive_is_idempotent(self):
+    def test_discard_removes_collected_worktree_branch_and_metadata(self):
         workspace = self.prepare()
         child = workspace["root"]
+        (self.parent / "node_modules").mkdir()
+        (self.parent / "node_modules/package.json").write_text('{"name":"root-deps"}\n')
+        (child / "node_modules").symlink_to(self.parent / "node_modules", target_is_directory=True)
+        cache = child / "scripts/__pycache__/generated.cpython-314.pyc"
+        cache.parent.mkdir(parents=True)
+        cache.write_bytes(b"generated bytecode")
         changed = child / "backend/parcels/adapter.js"
-        changed.write_text("archive once\n")
+        changed.write_text("imported qualification result\n")
+        # Model the parent's result import before discarding the isolated checkout.
+        (self.parent / "backend/parcels/adapter.js").write_text(changed.read_text())
         workspaces.finish_workspace(workspace)
-        manifest = workspaces._archive_changes(child, self.state_dir, workspace["runId"])
-        history = self.state_dir / "qualification-workspaces/history" / workspace["runId"]
-        self.assertEqual(json.loads((history / "manifest.json").read_text()), manifest)
-        next_workspace = self.prepare()
-        self.assertEqual((next_workspace["root"] / "backend/parcels/adapter.js").read_text(),
-                         "export const baseline = true;\n")
-        row = next(row for row in manifest["entries"] if row["path"] == "backend/parcels/adapter.js")
-        self.assertEqual((history / row["storedPath"]).read_text(), "archive once\n")
+        persisted = dict(workspace)
+        persisted.pop("branch")  # The authoritative branch identity is also in finish metadata.
+        workspaces.discard_workspace(persisted)
+        self.assertFalse(child.exists())
+        self.assertFalse(workspace["metadataPath"].exists())
+        self.assertEqual((self.parent / "backend/parcels/adapter.js").read_text(),
+                         "imported qualification result\n")
+        self.assertEqual(run_git(self.parent, "show-ref", "--verify",
+                                 f"refs/heads/{workspace['branch']}", check=False), "")
 
-    def test_corrupt_existing_reuse_archive_refuses(self):
-        workspace = self.prepare()
-        child = workspace["root"]
-        changed = child / "backend/parcels/adapter.js"
-        changed.write_text("archive corruption\n")
+    def test_discard_accepts_dependencies_owned_by_a_runner_worktree(self):
+        job = self.parent.parent / "job-runner"
+        run_git(self.parent, "worktree", "add", "-b", "job-runner", str(job))
+        dependencies = self.parent / "backend/node_modules"
+        dependencies.mkdir(parents=True, exist_ok=True)
+        (job / "backend/node_modules").symlink_to(dependencies, target_is_directory=True)
+        packet = {**self.packet, "cityPath": str(job / self.city_path.relative_to(self.parent)),
+                  "reviewPath": str(job / self.review_path.relative_to(self.parent))}
+        city = json.loads(json.dumps(self.city).replace(str(self.parent), str(job)))
+        packet = json.loads(json.dumps(packet).replace(str(self.parent), str(job)))
+        workspace = workspaces.prepare_workspace(job, job / "tmp/state", 1,
+                                                  city, self.receipt, packet)
+        cache = workspace["root"] / "node_modules/.vite/vitest" / ("a" * 40) / "results.json"
+        cache.parent.mkdir(parents=True)
+        cache.write_text('{}')
         workspaces.finish_workspace(workspace)
-        history = workspaces._archive_changes(child, self.state_dir, workspace["runId"])
-        file_entry = next(entry for entry in history["entries"] if entry["kind"] == "file")
-        (self.state_dir / "qualification-workspaces/history" / workspace["runId"] /
-         file_entry["storedPath"]).write_bytes(b"tampered\n")
-        with self.assertRaisesRegex((IOError, RuntimeError), "archive|backup|history"):
-            self.prepare()
+        workspaces.discard_workspace(workspace)
+        self.assertFalse(workspace["root"].exists())
+        self.assertTrue((job / "backend/node_modules").is_symlink())
+
+    def test_discard_refuses_unowned_ignored_env_file(self):
+        workspace = self.prepare()
+        workspaces.finish_workspace(workspace)
+        ignored = workspace["root"] / ".env"
+        ignored.write_text("SECRET=keep\n")
+        with self.assertRaisesRegex(RuntimeError, "unexpected ignored private path"):
+            workspaces.discard_workspace(workspace)
+        self.assertTrue(workspace["root"].is_dir())
+        self.assertEqual(ignored.read_text(), "SECRET=keep\n")
+        self.assertTrue(workspace["metadataPath"].is_file())
+
+    def test_discard_refuses_identity_or_snapshot_drift(self):
+        workspace = self.prepare()
+        workspaces.finish_workspace(workspace)
+        wrong_identity = dict(workspace, runId="different-run")
+        with self.assertRaisesRegex(RuntimeError, "discard identity mismatch"):
+            workspaces.discard_workspace(wrong_identity)
+        self.assertTrue(workspace["root"].is_dir())
+        workspace["root"].joinpath("backend/parcels/adapter.js").write_text("drift\n")
+        with self.assertRaisesRegex(RuntimeError, "changed after finish"):
+            workspaces.discard_workspace(workspace)
+        self.assertTrue(workspace["metadataPath"].is_file())
 
 
 if __name__ == "__main__":

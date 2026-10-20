@@ -1,0 +1,107 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "4278",
+  "name": "Hamburg, Germany",
+  "point": [
+    53.5745088975748,
+    9.99288544960732
+  ],
+  "bindings": [
+    {
+      "appCityId": "hamburg",
+      "runtimeConfig": {
+        "id": "hamburg",
+        "label": "Hamburg, Germany",
+        "currency": {
+          "locale": "de-DE",
+          "code": "EUR"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            53.5745088975748,
+            9.99288544960732
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            53.5745088975748,
+            9.99288544960732
+          ],
+          "fallbackDataset": [
+            9.99288544960732,
+            53.5745088975748
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "de-hh-alkis-flurstueck",
+          "idPrefix": "DE-HH-ALKIS-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 3,
+          "attribution": "<a href=\"https://api.hamburg.de/datasets/v1/alkis_vereinfacht\">Hamburg simplified ALKIS cadastral parcels</a> · adapted"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "de-hh-alkis-flurstueck",
+      "name": "Hamburg simplified ALKIS cadastral parcels",
+      "adapter": "hamburg-alkis-wfs",
+      "endpoint": "https://geodienste.hamburg.de/WFS_HH_ALKIS_vereinfacht",
+      "featureType": "ave:Flurstueck",
+      "idField": "flstkennz",
+      "idType": "string",
+      "idPrefix": "DE-HH-ALKIS-",
+      "idPattern": "^02[0-9_]{18}$",
+      "outFields": [
+        "flstkennz",
+        "oid"
+      ],
+      "pageSize": 100,
+      "maxFeatures": 5000,
+      "maxBboxKm2": 1,
+      "countryCode": "DE",
+      "metricSrid": 25832,
+      "operator": "Landesbetrieb Geoinformation und Vermessung Hamburg",
+      "cityIds": [
+        "hamburg"
+      ],
+      "maxConcurrentQueries": 2,
+      "catalogueUrl": "https://api.hamburg.de/datasets/v1/alkis_vereinfacht",
+      "attribution": "LGV Hamburg · ALKIS cadastral parcels",
+      "licenceNote": "Datenlizenz Deutschland Namensnennung 2.0; publisher terms informational. Geometry verification is local and not a legal title determination.",
+      "scope": "67 valid, distinct ALKIS cadastral polygons verified in thirteen local cells around the WUP Hamburg settlement locator. Provider-generated GeoJSON preserves the original curved boundaries; exact geographic Intersects filters avoid native projected-envelope false positives. Stable counts before and after pages, fresh native cadastral-reference reads, explicit absence, footprint and binding passed. Independent GEOS found no invalid polygons, duplicate geometry or overlaps above 0.01 m² in the sample. Citywide completeness, legal boundary accuracy and long-term ID permanence remain unverified."
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+[
+  {
+    "url": "https://nhgeodata.unh.edu/nhgeodata/rest/services/CAD/ParcelMosaic/MapServer/1",
+    "reason": "Held at the geometry gate: all source checks passed but the metric audit failed with 2 material overlap pairs among 156 cached NH GRANIT parcel-mosaic polygons around Manchester (064134-54-22A/23: 6.02 m2 = 5.2% of the smaller; 064134-54-22C/23: 2.32 m2), 0 invalid and 0 duplicates. The overlap is in the published mosaic itself; source polygons are never repaired or clipped. Evidence: attempt-01/…"
+  }
+]

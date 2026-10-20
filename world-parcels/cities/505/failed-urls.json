@@ -1,0 +1,29 @@
+[
+  {
+    "url": "https://gamo.gob.bo/wp-content/uploads/2020/07/decreto_218_2.pdf"
+  },
+  {
+    "url": "https://geobolivia.planificacion.gob.bo/"
+  },
+  {
+    "url": "https://geoelectoral.oep.org.bo/oep/rest/services/GeografiaElectoral/ORURO/MapServer"
+  },
+  {
+    "url": "https://www.gob.bo/tramites/emision-de-plano-catastral"
+  },
+  {
+    "url": "https://gamo.gob.bo/"
+  },
+  {
+    "url": "https://geonode.planificacion.gob.bo/"
+  },
+  {
+    "url": "https://geonode.planificacion.gob.bo/api/v2/layers/?search=catastro%20Oruro&page_size=100"
+  },
+  {
+    "url": "https://geonode.planificacion.gob.bo/api/v2/layers/?search=predio&page_size=100"
+  },
+  {
+    "url": "https://geoelectoral.oep.org.bo/oep/rest/services/GeografiaElectoral/ORURO/MapServer/21/query?where=1%3D1&outFields=OBJECTID&returnGeometry=false&f=geojson&resultRecordCount=3"
+  }
+]

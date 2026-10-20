@@ -1,4 +1,4 @@
-// Institut za zrnatost — plan-level parcel inspection on the live Leaflet map.
+// Institut za zrnatost — parcel inspection for an applied composition or named-plan scope.
 //
 // The map already contains the authoritative derived parcel fabric. This module reads that fabric,
 // measures each resulting parcel, lets the rooster visit it, and only then reveals the scorecard.
@@ -69,53 +69,11 @@
         });
     }
 
-    // A named-plan link may be opened in a browser that already has unrelated proposals applied.
-    // Keep those proposals visible on the map, but exclude them from this plan's parcel fabric and
-    // score. Replacement snapshots still answer to the server id of the proposal they replaced, so
-    // walk the stored replacement chain when matching the plan's ids.
-    function appliedProposalsInScope(scopeIds) {
-        const applied = appliedProposals();
-        const wanted = new Set((Array.isArray(scopeIds) ? scopeIds : [])
-            .map(value => value == null ? '' : String(value))
-            .filter(Boolean));
-        if (!wanted.size) return applied;
-
-        let all = applied;
-        try {
-            if (typeof proposalStorage !== 'undefined' && proposalStorage
-                && typeof proposalStorage.getAllProposals === 'function') {
-                all = proposalStorage.getAllProposals() || applied;
-            }
-        } catch (_) { /* the applied records are still enough for ordinary proposals */ }
-        const byKey = new Map();
-        all.forEach(proposal => {
-            if (proposal && proposal.proposalId != null) {
-                byKey.set(String(proposal.proposalId), proposal);
-            }
-        });
-
-        return applied.filter(proposal => {
-            const seen = new Set();
-            let current = proposal;
-            let hops = 0;
-            while (current && hops < 10) {
-                const candidates = [current.serverProposalId, current.proposalId, current.id];
-                try {
-                    if (typeof getSerialProposalId === 'function') {
-                        candidates.push(getSerialProposalId(current));
-                    }
-                } catch (_) { }
-                if (candidates.some(value => value != null && wanted.has(String(value)))) return true;
-
-                const previous = current.replacementOfProposalId || current.sourceProposalId || null;
-                if (previous == null || seen.has(String(previous))) break;
-                if (wanted.has(String(previous))) return true;
-                seen.add(String(previous));
-                current = byKey.get(String(previous)) || null;
-                hops += 1;
-            }
-            return false;
-        });
+    function renderExactMembersRequired() {
+        renderError(t(
+            'sidebar.proposals.grainScore.exactMembersRequired',
+            'This named plan requires every original published proposal to be verified and applied. A local edit or fork cannot replace a member.'
+        ));
     }
 
     function updateButtonState() {
@@ -368,10 +326,10 @@
         const slug = plan && plan.slug ? plan.slug : null;
         setNodeText(panel, 'eyebrow', t('sidebar.proposals.grainScore.institute', 'Institut za zrnatost'));
         setNodeText(panel, 'title', t('sidebar.proposals.grainScore.title', 'Urban grain score'));
-        setNodeText(panel, 'planName', (plan && plan.title) || t('sidebar.proposals.grainScore.currentPlan', 'Current applied plan'));
+        setNodeText(panel, 'planName', (plan && plan.title) || slug || t('sidebar.proposals.grainScore.appliedComposition', 'Applied composition'));
         setNodeText(panel, 'route', slug
-            ? rules.buildPlanScorePath(slug)
-            : t('sidebar.proposals.grainScore.unnamedRoute', 'Unnamed plan · score stays in this browser'));
+            ? t('sidebar.proposals.grainScore.namedScope', 'Named plan · {{path}}', { path: rules.buildPlanScorePath(slug) })
+            : t('sidebar.proposals.grainScore.localScope', 'Local composition · score stays in this browser'));
         const close = panel.querySelector('[data-grain-action="close"]');
         if (close) close.setAttribute('aria-label', t('sidebar.proposals.grainScore.closeAria', 'Close grain score'));
         renderSoundControl();
@@ -381,7 +339,7 @@
         renderPanelChrome(plan);
         const { panel } = ensureUi();
         showOnly('loading');
-        setNodeText(panel, 'loadingText', message || t('sidebar.proposals.grainScore.loading', 'Preparing the plan for inspection…'));
+        setNodeText(panel, 'loadingText', message || t('sidebar.proposals.grainScore.loading', 'Preparing proposals for inspection…'));
     }
 
     function renderReady() {
@@ -400,7 +358,7 @@
     function renderError(message) {
         const { panel } = ensureUi();
         showOnly('error');
-        setNodeText(panel, 'error', message || t('sidebar.proposals.grainScore.unavailable', 'The grain score is unavailable for this plan.'));
+        setNodeText(panel, 'error', message || t('sidebar.proposals.grainScore.unavailable', 'The grain score is unavailable for these proposals.'));
     }
 
     function verdictLabel(key) {
@@ -501,41 +459,42 @@
         button.setAttribute('aria-pressed', String(sound.enabled));
     }
 
-    function featureForParcel(parcelId) {
-        const id = String(parcelId);
-        return global.LiveParcelFabric?.get?.(id)
-            || global.CadastralParcelRepository?.get?.(id)
-            || null;
-    }
-
-    async function resolvePlanItems(proposals, fabric) {
-        const resultingIds = (fabric.resulting || []).map(String);
-        let rows = resultingIds.map(id => ({ id, feature: featureForParcel(id) }));
-        const produced = new Set((fabric.produced || []).map(String));
-        // The yield model explicitly reports which ids were produced by proposals. Everything
-        // else is cadastral input; id spelling is not a provenance signal.
-        const cadastralIds = resultingIds.filter(id => !produced.has(id));
-        if (cadastralIds.length && global.CadastralParcelRepository
-            && typeof global.CadastralParcelRepository.ensureIds === 'function') {
-            try { await global.CadastralParcelRepository.ensureIds(cadastralIds); }
-            catch (error) { console.warn('[grain-score] could not load cadastral ground', error); }
-            rows = resultingIds.map(id => ({ id, feature: featureForParcel(id) }));
+    function proposalsForScore(plan) {
+        const applied = appliedProposals();
+        const scope = plan?.slug ? rules.namedPlanScoreScope(plan, applied) : { proposals: applied };
+        if (scope.error === 'members') {
+            renderExactMembersRequired();
+            return null;
         }
-        return rows.map(row => {
-            const dimensions = row.feature ? rules.parcelDimensionsMeters(row.feature) : null;
-            return dimensions ? { ...row, ...dimensions } : { ...row, widthMeters: null, depthMeters: null };
-        });
-    }
-
-    async function prepareExperience(plan, scopeIds = null) {
-        const proposals = appliedProposalsInScope(scopeIds);
-        if (!proposals.length) {
+        if (scope.error === 'composition') {
+            renderError(t(
+                'sidebar.proposals.grainScore.otherApplied',
+                'Other proposals are applied on this map. Unapply them before scoring this named plan.'
+            ));
+            return null;
+        }
+        if (!scope.proposals.length) {
             renderError(t('sidebar.proposals.grainScore.noApplied', 'Apply at least one proposal before summoning the rooster.'));
             return null;
         }
-        const cadastreIds = Array.from(new Set(proposals.flatMap(proposal => (
-            Array.isArray(proposal?.cadastreParcelIds) ? proposal.cadastreParcelIds.map(String) : []
-        ))));
+        return scope.proposals;
+    }
+
+    async function prepareExperience(plan) {
+        state.prepared = null;
+        const initialProposals = proposalsForScore(plan);
+        if (!initialProposals) return null;
+        const initialCadastreIds = Array.from(new Set(initialProposals.flatMap(yieldApi.cadastreIdsOf)));
+        if (initialCadastreIds.length && global.CadastralParcelRepository?.ensureIds) {
+            try { await global.CadastralParcelRepository.ensureIds(initialCadastreIds); }
+            catch (error) { console.warn('[grain-score] could not load cadastral ground', error); }
+        }
+        // Loading ground can publish a new fabric revision or let another application complete.
+        // Recheck membership/composition after that await, then capture and measure synchronously.
+        const proposals = proposalsForScore(plan);
+        if (!proposals) return null;
+        const fabricRevision = global.LiveParcelFabric?.snapshot?.().revision;
+        const cadastreIds = Array.from(new Set(proposals.flatMap(yieldApi.cadastreIdsOf)));
         const materializedFeatures = global.LiveParcelFabric?.entriesForCadastre
             ? global.LiveParcelFabric.entriesForCadastre(cadastreIds, { includeCorridors: false })
             : [];
@@ -549,9 +508,10 @@
             renderError(t('groundStats.grainNoParcels', 'No parcels here: these proposals stand on open ground, so there are no resulting parcels to score.'));
             return null;
         }
-        const rows = await resolvePlanItems(proposals, fabric);
+        const cadastralFeatures = plan?.slug ? [] : cadastreIds.map(id => global.CadastralParcelRepository?.get?.(id)).filter(Boolean);
+        const rows = rules.measureParcelRows(fabric.resulting, materializedFeatures, cadastralFeatures);
         const items = rows.filter(row => row.feature && Number.isFinite(row.widthMeters) && Number.isFinite(row.depthMeters));
-        if (!items.length) {
+        if (!items.length || (plan?.slug && items.length !== rows.length)) {
             renderError(t('sidebar.proposals.grainScore.noGeometry', 'The resulting parcel shapes could not be measured.'));
             return null;
         }
@@ -562,6 +522,7 @@
             plan: plan || { slug: null, title: null },
             proposals,
             fabric,
+            fabricRevision,
             rows,
             items,
             beforeCount,
@@ -791,6 +752,20 @@
 
     async function runInspection({ soundPreparation } = {}) {
         if (state.running || !state.prepared) return;
+        if (state.prepared.plan.slug) {
+            if (!proposalsForScore(state.prepared.plan)) {
+                state.prepared = null;
+                return;
+            }
+            if (state.prepared.fabricRevision !== global.LiveParcelFabric?.snapshot?.().revision) {
+                state.prepared = null;
+                renderError(t(
+                    'sidebar.proposals.grainScore.fabricChanged',
+                    'The map changed after this inspection was prepared. Reopen the grain score to measure it again.'
+                ));
+                return;
+            }
+        }
         const token = ++state.runToken;
         state.running = true;
         updateButtonState();
@@ -880,16 +855,21 @@
         const plan = currentNamedPlan() || { slug: null, title: null };
         state.namedPlan = plan.slug ? plan : null;
         const soundPreparation = sound.prepare();
+        if (plan.slug) {
+            updateRouteForScore(plan);
+            const prepared = await openPlanGrainScoreRoute(plan.slug);
+            if (prepared) await runInspection({ soundPreparation });
+            return;
+        }
         saveAndSimplifyChrome();
         renderLoading(plan);
-        if (plan.slug) updateRouteForScore(plan);
-        const scopeIds = plan.slug && Array.isArray(plan.proposalIds) ? plan.proposalIds : null;
-        const prepared = await prepareExperience(plan, scopeIds);
+        const prepared = await prepareExperience(plan);
         if (!prepared) return;
         await runInspection({ soundPreparation });
     }
 
     async function openPlanGrainScoreRoute(slug) {
+        state.prepared = null;
         const normalized = rules.normalizePlanSlug(slug);
         if (!normalized) {
             renderError(t('sidebar.proposals.grainScore.planNotFound', 'This named plan could not be found.'));
@@ -909,30 +889,31 @@
                 return;
             }
             const plan = await response.json();
-            const ids = Array.isArray(plan.proposalIds) ? plan.proposalIds.map(String).filter(Boolean) : [];
-            if (!ids.length) {
-                renderError(t('sidebar.proposals.grainScore.emptyPlan', 'This named plan contains no proposals.'));
+            if (!rules.verifiedNamedPlanMembers(plan)) {
+                renderExactMembersRequired();
                 return;
             }
+            const ids = plan.proposalRowIds.map(String);
             // In the plan's city first, as /proposals/<slug> does (proposals/core.js ensurePlanCity):
             // parcel lookups go to the current city's cadastre.
             if (typeof global.ensurePlanCity === 'function' && await global.ensurePlanCity(plan.city)) return;
             state.namedPlan = { ...plan, slug: normalized };
             global.__currentNamedPlan = state.namedPlan;
-            renderLoading(state.namedPlan, t('sidebar.proposals.grainScore.applyingPlan', 'Rebuilding the plan on the map…'));
+            renderLoading(state.namedPlan, t('sidebar.proposals.grainScore.applyingNamedPlan', 'Applying named-plan proposals to the map…'));
             if (typeof handleSharedPlanRoute !== 'function') throw new Error('Shared-plan loader unavailable');
             const loadResult = await handleSharedPlanRoute(ids, 0, { suppressSummary: true, suppressDetails: true });
             if (loadResult && (loadResult.blocked || (Array.isArray(loadResult.failed) && loadResult.failed.length))) {
                 renderError(t(
                     'sidebar.proposals.grainScore.incompletePlan',
-                    'The plan cannot be scored because not all of its proposals could be applied.'
+                    'The named plan cannot be scored because not all of its proposals could be applied.'
                 ));
                 updateButtonState();
                 return;
             }
-            const prepared = await prepareExperience(state.namedPlan, ids);
+            const prepared = await prepareExperience(state.namedPlan);
             if (prepared) renderReady();
             updateButtonState();
+            return prepared;
         } catch (error) {
             console.error('[grain-score] named score route failed', error);
             renderError(t('sidebar.proposals.grainScore.planLoadFailed', 'The named plan could not be loaded.'));

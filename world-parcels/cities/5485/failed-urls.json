@@ -1,0 +1,22 @@
+[
+  {
+    "url": "http://gis.land.gov.bd/geoserver/wsDMMS/wms?service=WMS&request=GetCapabilities&version=1.3.0",
+    "reason": "503"
+  },
+  {
+    "url": "http://gis.land.gov.bd/geoserver/wsIwmBase/wms?service=WMS&request=GetCapabilities&version=1.3.0",
+    "reason": "503"
+  },
+  {
+    "url": "https://settlement.gov.bd/Map/MapSearch"
+  },
+  {
+    "url": "https://map.land.gov.bd/"
+  },
+  {
+    "url": "https://www.sherpur.gov.bd/en"
+  },
+  {
+    "url": "https://map.settlement.gov.bd/"
+  }
+]

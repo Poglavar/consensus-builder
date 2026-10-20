@@ -15,9 +15,9 @@
         const done = Number(event.done);
         const total = Number(event.total);
         if (event.phase === 'proposal-apply' && Number.isFinite(done) && Number.isFinite(total) && total > 0) {
-            return tShare('plan.rebuildingStatusCount', 'Rebuilding the applied plan {{done}}/{{total}}…', { done, total });
+            return tShare('plan.rebuildingStatusCount', 'Rebuilding the applied composition {{done}}/{{total}}…', { done, total });
         }
-        return tShare('plan.rebuildingStatus', 'Rebuilding the applied plan…');
+        return tShare('plan.rebuildingStatus', 'Rebuilding the applied composition…');
     }
 
     // An onProgress listener that reports each distinct line once.

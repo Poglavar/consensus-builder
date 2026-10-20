@@ -24,6 +24,14 @@
         green: { color: '#0d3b1f', fillColor: '#1b5e20', fillOpacity: 0.65 }
     };
 
+    // A polygon clip that cannot be done, typed and counted (parcel-arrangement.js ClipFailure).
+    function clipFailureOf(operation, error, site, operands) {
+        const root = typeof window !== 'undefined' ? window : globalThis;
+        const api = root.__parcelArrangement
+            || (typeof require === 'function' ? require('./proposals/parcel-arrangement.js') : null);
+        return api ? api.clipFailure(operation, error, { site }, operands) : error;
+    }
+
     function normalizeTreatment(value) {
         const key = String(value == null ? '' : value).trim().toLowerCase();
         return TREATMENTS.indexOf(key) > 0 ? key : 'none';
@@ -53,7 +61,11 @@
         for (let i = 0; i < buildings.length && surface; i++) {
             const cutter = asFeature(buildings[i]);
             if (!cutter) continue;
-            try { surface = turf.difference(surface, cutter); } catch (_) { /* keep what we have */ }
+            // Keeping the surface uncut by a building that threw would pave or green under that
+            // building, and the surface is persisted with the proposal: refuse instead.
+            try { surface = turf.difference(surface, cutter); } catch (error) {
+                throw clipFailureOf('difference', error, 'building-ground.computeSurfacePolygon', [surface, cutter]);
+            }
         }
         if (!surface || !surface.geometry) return null;
         if (geometryArea(surface.geometry) < MIN_SURFACE_AREA_M2) return null;

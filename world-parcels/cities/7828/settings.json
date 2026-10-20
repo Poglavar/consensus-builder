@@ -1,0 +1,139 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "7828",
+  "name": "Kenosha, United States",
+  "point": [
+    42.5784858065008,
+    -87.8410657652837
+  ],
+  "bindings": [
+    {
+      "appCityId": "kenosha",
+      "runtimeConfig": {
+        "id": "kenosha",
+        "wupCityCode": "7828",
+        "label": "Kenosha, United States",
+        "currency": {
+          "locale": "en-US",
+          "code": "USD"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            42.5784858065008,
+            -87.8410657652837
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            42.5784858065008,
+            -87.8410657652837
+          ],
+          "fallbackDataset": [
+            -87.8410657652837,
+            42.5784858065008
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "us-wi-v12-statewide-parcels",
+          "idPrefix": "US-WI-STATEWIDE-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Wisconsin State Cartographer's Office, Wisconsin Land Information Program and Wisconsin counties. Adapted to WGS84."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "us-wi-v12-statewide-parcels",
+      "name": "Wisconsin Statewide Parcel Map Database V12 — statewide",
+      "adapter": "arcgis",
+      "countryCode": "US",
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "maxConcurrentQueries": 2,
+      "cityIds": [
+        "kenosha"
+      ],
+      "licenceNote": "Source conditions are informational; users choose their source and intended use.",
+      "operator": "Wisconsin State Cartographer's Office / Wisconsin Land Information Program (Department of Administration); county parcel data",
+      "endpoint": "https://services3.arcgis.com/n6uYoouQZW75n5WI/ArcGIS/rest/services/Wisconsin_Statewide_Parcels_DB/FeatureServer/0",
+      "idField": "STATEID",
+      "objectIdField": "OBJECTID",
+      "idType": "string",
+      "idPattern": ".+",
+      "outFields": [
+        "OBJECTID",
+        "STATEID"
+      ],
+      "parcelNumberField": "STATEID",
+      "idPrefix": "US-WI-STATEWIDE-",
+      "metricSrid": 32616,
+      "stateCode": "WI",
+      "attributeNotNull": [
+        "STATEID"
+      ],
+      "attributeExclusions": {
+        "STATEID": [
+          "",
+          " "
+        ]
+      },
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "idBatchSize": 5,
+      "scope": "Wisconsin V12 statewide parcel database, all 72 counties. STATEID is the statewide key: the county PARCELFIPS followed by the county PARCELID.",
+      "caveats": [
+        "STATEID is derived from the county PARCELID and changes if a county renumbers.",
+        "Same endpoint as us-wi-madison-parcels (CONAME=DANE, key PARCELID under US-WI-MADISON-DANE-); Dane County parcels would exist under both namespaces.",
+        "Layer also publishes owner, address and assessment fields, which are not requested."
+      ],
+      "attribution": "Wisconsin State Cartographer's Office, Wisconsin Land Information Program and Wisconsin counties. Adapted to WGS84.",
+      "catalogueUrl": "https://www.sco.wisc.edu/parcels/data/",
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "US",
+          "admin1": [
+            "US-WI"
+          ],
+          "excludeAdmin1": [],
+          "basis": "Layer description: final deliverable of the Version 12 Statewide Parcel Map Database Project aggregating county parcel data; all 72 county names present on 2026-10-12 (73 CONAME values; the extra one is the label MENOMONIE).",
+          "evidence": []
+        },
+        "paceMs": 1000
+      }
+    }
+  ]
+}

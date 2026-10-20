@@ -1,0 +1,23 @@
+[
+  {
+    "url": "https://gisprod.rajasthan.gov.in/geocode/rest/services/JDA/Settlement_JDA/MapServer/0?f=pjson",
+    "reason": "timeout after 20 seconds"
+  },
+  {
+    "url": "https://gisprod.rajasthan.gov.in/geocode/rest/services/JDA/Settlement_JDA/MapServer/10?f=pjson",
+    "reason": "timeout after 20 seconds"
+  },
+  {
+    "url": "https://gisprod.rajasthan.gov.in/basemap/rest/services/Common/AdminHollow/MapServer/2?f=pjson",
+    "reason": "timeout after 20 seconds"
+  },
+  {
+    "url": "https://www.bhunaksha.rajasthan.gov.in/georef_gmaps.html"
+  },
+  {
+    "url": "https://apnakhata.rajasthan.gov.in/LrcLogin.aspx"
+  },
+  {
+    "url": "https://uit.rajasthan.gov.in/uitpali/"
+  }
+]

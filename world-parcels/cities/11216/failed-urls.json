@@ -1,0 +1,17 @@
+[
+  {
+    "url": "https://www.sgrh.gov.cn/sgrhzrzyj/gkmlpt/content/2/2635/post_2635356.html"
+  },
+  {
+    "url": "https://www.sg.gov.cn/",
+    "reason": "403"
+  },
+  {
+    "url": "https://www.gdzwfw.gov.cn/hlwbdcdj/gdzwfwwbdczt/index.html",
+    "reason": "timeout"
+  },
+  {
+    "url": "http://www.gdzwfw.gov.cn/hlwbdcdj_gkcx/proxyWebService/nature",
+    "reason": "no response/timeout"
+  }
+]

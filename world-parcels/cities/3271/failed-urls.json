@@ -1,0 +1,19 @@
+[
+  {
+    "url": "https://oicsincelejo.com/",
+    "reason": "502"
+  },
+  {
+    "url": "https://mapas2.igac.gov.co/server4/rest/services/carto/carto10000sincelejo70001/MapServer?f=json and /MapServer/0/query?where=1%3D1&outFields=*&returnGeometry=true&f=geojson&resultRecordCount=3",
+    "reason": "timeout"
+  },
+  {
+    "url": "https://www.alcaldiadesincelejo.gov.co/Transparencia/Paginas/Gestor-Catastral-.aspx"
+  },
+  {
+    "url": "https://www.igac.gov.co/node/234"
+  },
+  {
+    "url": "https://mapas2.igac.gov.co/server4/rest/services/carto/carto10000sincelejo70001/MapServer?f=pjson"
+  }
+]

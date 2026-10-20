@@ -10,6 +10,7 @@ const PROPOSAL_ACCOUNT = 'Ekpt4qMsJWyyraDfPfq2zkT1JwMsJCKrSmkoNGgHreFR';
 const SOLANA_WALLET = 'Cp886ML2Ja4FF3SMmyUeW16rRGsLrBcRW8kfWS1VfN7W';
 
 function marketsPayload(market: Record<string, unknown> = { address: 'HQqbGtviQr5KRs4x8CWSCVhnkrLKDiYqXmVSBY8GZdfw', yesPool: '250000', noPool: '50000', poolAtomic: '300000', resolved: false, outcome: null }) {
+  const chainStatus = market.resolved ? (market.outcome === 'yes' ? 'Executed' : 'Cancelled') : 'Active';
   return {
     city: 'zagreb', generatedAt: '2026-10-09T07:00:00.000Z', cluster: 'devnet', stakeDecimals: 6,
     marketProgram: 'GDYnzduynKhKgxDhvvKVarn2s23DtzA26s6hycuUYDRB', stakeMint: '4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU',
@@ -18,7 +19,7 @@ function marketsPayload(market: Record<string, unknown> = { address: 'HQqbGtviQr
       id: 'c-test', parcelIds: ['HR-335614-2311'], proposalCount: 2, mintedCount: 1, marketCount: 1, openMarketCount: 1,
       poolAtomic: '300000', latestCreatedAt: '2026-10-02T00:00:00Z',
       proposals: [
-        { id: 789, proposalId: 'minted-one', title: 'Plan-led infill', goal: 'single', lifecycleStatus: 'Active', createdAt: '2026-10-01T09:30:00Z',
+        { id: 789, proposalId: 'minted-one', title: 'Plan-led infill', goal: 'single', lifecycleStatus: 'Active', chainStatus, createdAt: '2026-10-01T09:30:00Z',
           expiresAt: null, author: 'densifier-01', agent: true, proposalRole: null, screenshotUrl: null, parcelIds: ['HR-335614-2311'],
           proposalAccount: PROPOSAL_ACCOUNT, bettable: !market.resolved, canOpenMarket: false, market },
         { id: 790, proposalId: 'rival', title: 'Rival park', goal: 'park', lifecycleStatus: 'Active', createdAt: '2026-10-02T00:00:00Z',
@@ -54,6 +55,49 @@ const addressWithoutView = (page: import('@playwright/test').Page) => page.evalu
 const expectedLink = (page: import('@playwright/test').Page) => page.evaluate((account) => `${location.origin}/bets/${account}?city=${(window as any).CityConfigManager.getCurrentCityId()}`, PROPOSAL_ACCOUNT);
 
 test.describe('Bets sheet @features', () => {
+  test('unknown chain status shows no bet or settle action even when the app deadline expired', async ({ mockApi: page }) => {
+    const payload = marketsPayload();
+    Object.assign(payload.contests[0].proposals[0], {
+      lifecycleStatus: 'Expired', expiresAt: '2026-10-01T00:00:00Z', chainStatus: null, bettable: false, canOpenMarket: false
+    });
+    await mockMarkets(page, payload);
+    await openCity(page);
+    await page.locator('#bets-button').click();
+    const sheet = page.locator('#bets-sheet');
+    await expect(sheet).toBeVisible();
+    await expect(sheet).toContainText('Not open for bets');
+    const row = sheet.locator('.bets-row').filter({ hasText: 'Plan-led infill' });
+    await expect(row).toBeVisible();
+    await expect(row.locator('.bets-row__actions')).toHaveCount(0);
+    await expect(row).not.toContainText('Decided on-chain');
+    await expect(row.locator('.bets-row__meta')).toContainText('Proposal deadline');
+    await expect(row.locator('.bets-row__meta')).not.toContainText('Closes');
+    await expect(sheet.locator('.bets-tagline')).toContainText('Executed means yes');
+    await row.locator('.bets-row__title').click();
+    const dialog = page.locator('#proposalMarketOverlay');
+    await expect(dialog).toBeVisible();
+    await expect(dialog.locator('.bets-dialog__facts')).toContainText('Proposal deadline');
+    await expect(dialog.locator('.bets-dialog__facts')).not.toContainText('at the latest');
+  });
+
+  test('a bet dialog cannot use local expiry as evidence for chain settlement', async ({ mockApi: page }) => {
+    await mockMarkets(page, { ...marketsPayload(), contests: [] });
+    await openCity(page);
+    await waitForBlockchainRuntime(page, ['SolanaMarketBridge', 'solanaWeb3']);
+    await page.evaluate(async (account) => {
+      (window as any).SolanaMarketBridge.readSummary = async () => ({
+        market: { yesPool: 1000000n, noPool: 1000000n, resolved: false },
+        marketAddress: 'test-market', chainStatus: null
+      });
+      await (window as any).openBetDialog({ proposalAccount: account, title: 'Status unavailable', lifecycleStatus: 'Expired' });
+    }, PROPOSAL_ACCOUNT);
+    const dialog = page.locator('#proposalMarketOverlay');
+    await expect(dialog).toBeVisible();
+    await expect(dialog.getByRole('button', { name: 'Settle the pool', exact: true })).toHaveCount(0);
+    await expect(dialog.locator('.btn-market-yes, .btn-market-no')).toHaveCount(0);
+    await expect(dialog).not.toContainText('Ready to settle');
+  });
+
   test('the Bets button wears "New" until the sheet is opened, which lists the contest with pool-less rows folded away', async ({ mockApi: page }) => {
     await mockMarkets(page);
     await openCity(page);
@@ -69,12 +113,12 @@ test.describe('Bets sheet @features', () => {
     await expect(sheet.locator('.bets-filter__btn[data-filter="all"]')).toHaveAttribute('aria-pressed', 'true');
     const contest = sheet.locator('.bets-contest');
     await expect(contest).toHaveCount(1);
-    await expect(contest.locator('.bets-contest__title')).toHaveText('Which proposal gets built?');
+    await expect(contest.locator('.bets-contest__title')).toHaveText('Which proposals will execute on-chain?');
     await expect(contest.locator('.bets-contest__land')).toContainText('Parcel 2311');
     // The minted row is in the open; the unminted rival is folded under a count.
     const rows = contest.locator('.bets-rows').first().locator('.bets-row');
     await expect(rows).toHaveCount(1);
-    await expect(rows.nth(0).locator('.bets-row__chance')).toHaveText('83.3% chance');
+    await expect(rows.nth(0).locator('.bets-row__chance')).toHaveText('Yes: 83.3% of pool');
     await expect(rows.nth(0).locator('.bets-row__who')).toContainText('densifier-01');
     await expect(rows.nth(0).locator('.btn-market-yes')).toContainText('Pays 1.04×');
     await expect(rows.nth(0).locator('.btn-market-no')).toContainText('Pays 1.23×');
@@ -110,8 +154,8 @@ test.describe('Bets sheet @features', () => {
     await expect(page.locator('#bets-button')).toHaveAttribute('aria-expanded', 'true');
     await expect(page.locator('#bets-button-new')).toBeHidden();
     await expect(sheet.locator('.bets-contest')).toHaveCount(1);
-    await expect(sheet.locator('.bets-contest__title')).toHaveText('Which proposal gets built?');
-    await expect(sheet.locator('.bets-row').first().locator('.bets-row__chance')).toHaveText('83.3% chance');
+    await expect(sheet.locator('.bets-contest__title')).toHaveText('Which proposals will execute on-chain?');
+    await expect(sheet.locator('.bets-row').first().locator('.bets-row__chance')).toHaveText('Yes: 83.3% of pool');
   });
 
   test('a bet asks for a wallet first, then opens the stake form over the sheet with a live "to win"', async ({ mockApi: page }) => {
@@ -183,7 +227,7 @@ test.describe('Bets sheet @features', () => {
     await dialog.locator('[data-market-submit]').click();
     await expect(dialog.locator('.cb-dialog__title')).toHaveText('Bet placed');
     await expect(dialog.locator('.proposal-boost-copy')).toHaveText('0.05 USDC on no is in the pool.');
-    await expect(dialog.locator('.proposal-market-placed__pool')).toContainText('71.4% chance');
+    await expect(dialog.locator('.proposal-market-placed__pool')).toContainText('71.4% of pool');
     await expect(dialog.locator('.proposal-market-placed__mine')).toHaveText('Your bets: no 0.05 USDC');
     await expect(page.locator('#bets-sheet')).toBeVisible();
     await expect(row).toHaveClass(/is-updated/);
@@ -249,7 +293,7 @@ test.describe('Bets sheet @features', () => {
     await expect(page.locator('#site-intro-modal')).toBeHidden();
     await expect(dialog.locator('.cb-dialog__title')).toHaveText('Plan-led infill');
     await expect(dialog.locator('.bets-dialog__eyebrow')).toContainText('Parcel 2311');
-    await expect(dialog.locator('.bets-dialog__chance-word')).toHaveText('83.3% chance');
+    await expect(dialog.locator('.bets-dialog__chance-word')).toHaveText('Yes: 83.3% of pool');
     const facts = dialog.locator('.bets-dialog__facts');
     await expect(facts).toContainText('0.30 USDC');
     await expect(facts).toContainText('Yes 1.04× · No 1.23×');

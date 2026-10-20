@@ -1,0 +1,15 @@
+[
+  {
+    "url": "https://elandapi.addiscadaster.gov.et/api/e-services/app-location?cityCode=OR-BIS",
+    "reason": "401"
+  },
+  {
+    "url": "https://www.bishoftu.gov.et/landmark_type/environment"
+  },
+  {
+    "url": "https://eland.addiscadaster.gov.et/maps"
+  },
+  {
+    "url": "https://www.ethionsdi.gov.et/uploaded/documents/Bishoftu_AddressBook.pdf"
+  }
+]

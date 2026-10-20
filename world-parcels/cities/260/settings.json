@@ -1,0 +1,122 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "260",
+  "name": "Riga",
+  "point": [
+    56.9551247864813,
+    24.1200225203638
+  ],
+  "bindings": [
+    {
+      "appCityId": "riga",
+      "runtimeConfig": {
+        "id": "riga",
+        "label": "Riga",
+        "currency": {
+          "locale": "lv-LV",
+          "code": "EUR"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            56.9551247864813,
+            24.1200225203638
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            56.9551247864813,
+            24.1200225203638
+          ],
+          "fallbackDataset": [
+            24.1200225203638,
+            56.9551247864813
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "lv-vzd-geolatvija-vraa-wfs",
+          "idPrefix": "LV-VZD-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 3,
+          "attribution": "<a href=\"https://geolatvija.lv/\">State Land Service of Latvia / Geolatvija cadastral parcels</a> · adapted"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "lv-vzd-geolatvija-vraa-wfs",
+      "endpoint": "https://geolatvija.lv/geoserver/vraa/wfs",
+      "featureType": "vraa:parcel",
+      "idField": "code",
+      "geometryField": "geom",
+      "outFields": [
+        "code"
+      ],
+      "requestProperties": true,
+      "pageSize": 1000,
+      "maxFeatures": 3000,
+      "maxBboxKm2": 1,
+      "minRequestIntervalMs": 250,
+      "adapter": "wfs",
+      "idType": "string",
+      "idPrefix": "LV-VZD-",
+      "idPattern": "^[0-9A-Z]{1,64}$",
+      "version": "2.0.0",
+      "metricSrid": 3059,
+      "countryCode": "LV",
+      "cityIds": [
+        "riga"
+      ],
+      "maxConcurrentQueries": 1,
+      "name": "Riga public cadastral parcel polygons",
+      "operator": "State Land Service of Latvia / Geolatvija",
+      "scope": "Public cadastral parcel geometry around the unchanged Riga WUP settlement locator. Thirteen aligned cells and 113 unique full parcels passed stable counts, complete paging, fresh native-ID geometry reads, correctly shaped explicit absence and full-parcel one-parcel binding. Root independent EPSG:3059 GEOS audit found no invalidity, duplicate geometry, overlaps above 0.01 m² or operation errors. The WUP locator is covered by LV-VZD-01000210029. Evidence is bounded and does not establish citywide or nationwide completeness, survey precision, legal ownership or currentness.",
+      "responseCrs": "CRS:84",
+      "parcelNumberField": "code",
+      "catalogueUrl": "https://geolatvija.lv/",
+      "attribution": "State Land Service of Latvia / Geolatvija · cadastral references · adapted",
+      "licenceNote": "Publisher conditions, legal effect and update schedule are informational. Public native parcel IDs and geometry only; ownership is not imported.",
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "LV",
+          "basis": "State Land Service of Latvia national cadastral parcel service.",
+          "evidence": []
+        }
+      },
+      "metricSridByCity": {
+        "riga": 3059
+      }
+    }
+  ]
+}

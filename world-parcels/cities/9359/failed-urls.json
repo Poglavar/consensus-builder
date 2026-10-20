@@ -1,0 +1,10 @@
+[
+  {
+    "url": "https://landrecords.karnataka.gov.in/Service2/",
+    "reason": "timeout after 25 seconds"
+  },
+  {
+    "url": "https://bhoomi.karnataka.gov.in/",
+    "reason": "timeout"
+  }
+]

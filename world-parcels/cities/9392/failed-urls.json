@@ -1,0 +1,23 @@
+[
+  {
+    "url": "https://www.yanshi.gov.cn/",
+    "reason": "timeout"
+  },
+  {
+    "url": "https://www.ly.gov.cn/",
+    "reason": "timeout"
+  },
+  {
+    "url": "https://rerc.com.cn/",
+    "reason": "DNS failure"
+  },
+  {
+    "url": "https://www.hnzwfw.gov.cn/410381000000/?enterprise_zt=15&region=410381000000&webId=55"
+  },
+  {
+    "url": "https://oss.ly.gov.cn/upload-file/files/20260423/dc34e6b861a74b6ea0799bc00d23ca11.pdf"
+  },
+  {
+    "url": "https://yanshi.gov.cn/upload/content/file/20251103/1762163276292493.pdf"
+  }
+]

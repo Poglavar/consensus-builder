@@ -1,0 +1,14 @@
+[
+  {
+    "url": "https://www.mozgis.gov.mz/server/rest/services?f=pjson"
+  },
+  {
+    "url": "https://www.mozgis.gov.mz/server/rest/services/Data/UnidadesAdministrativasCenso2017/MapServer/0?f=pjson"
+  },
+  {
+    "url": "https://www.mozgis.gov.mz/server/rest/services/Data/UnidadesAdministrativasCenso2017/MapServer/0/query?f=json&where=1%3D1&geometry=33.479275523939%2C-19.1171927912217&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID%2CId&returnGeometry=false"
+  },
+  {
+    "url": "https://www.mozgis.gov.mz/server/rest/services/Data/CMCMPlanCadastroLayersVisualizacao/MapServer?f=pjson"
+  }
+]

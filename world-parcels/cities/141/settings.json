@@ -1,0 +1,115 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "141",
+  "name": "Doha, Qatar",
+  "point": [
+    25.2854,
+    51.531
+  ],
+  "bindings": [
+    {
+      "appCityId": "doha",
+      "runtimeConfig": {
+        "id": "doha",
+        "label": "Doha, Qatar",
+        "currency": {
+          "locale": "ar-QA",
+          "code": "QAR"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            25.2854,
+            51.531
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            25.2854,
+            51.531
+          ],
+          "fallbackDataset": [
+            51.531,
+            25.2854
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.0025,
+          "source": "parcel-source",
+          "sourceId": "qa-cgis-approved-cadastre",
+          "idPrefix": "qa-cgis:",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 6,
+          "attribution": "<a href=\"https://geoportal.gisqatar.org.qa/printpin/\">Centre for GIS, Qatar · publisher &amp; conditions</a> · Current approved plots only; 73 ended records excluded. Doha viewports verified; broader national viewport coverage not asserted. · adapted"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "qa-cgis-approved-cadastre",
+      "countryCode": "QA",
+      "endpoint": "https://services.gisqatar.org.qa/server/rest/services/Vector/CadastrePlots/MapServer/0",
+      "idField": "PIN",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "qa-cgis:",
+      "idType": "integer",
+      "outFields": [
+        "OBJECTID",
+        "PIN",
+        "CDST_KEY",
+        "ENDDATE",
+        "GFCODE"
+      ],
+      "pageSize": 2000,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "attributeNull": [
+        "ENDDATE"
+      ],
+      "adapter": "arcgis",
+      "cityIds": [
+        "doha"
+      ],
+      "metricSrid": 32639,
+      "name": "Qatar CGIS approved surveyed cadastral plots (current records)",
+      "operator": "Centre for GIS, Qatar",
+      "catalogueUrl": "https://geoportal.gisqatar.org.qa/printpin/",
+      "scope": "Qatar official approved cadastral plots with ENDDATE IS NULL; national current native PIN count verified.",
+      "coverageNote": "Current approved plots only; 73 ended records excluded. Doha viewports verified; broader national viewport coverage not asserted.",
+      "attribution": "Centre for GIS, Qatar. Adapted to WGS84.",
+      "licenceNote": "Source conditions are informational; users choose their source and intended use.",
+      "maxConcurrentQueries": 2,
+      "idPattern": "^[1-9][0-9]*$",
+      "sourceCrs": "EPSG:2932, Qatar National Grid; service output EPSG:4326"
+    }
+  ]
+}

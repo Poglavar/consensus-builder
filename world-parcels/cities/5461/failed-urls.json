@@ -1,0 +1,17 @@
+[
+  {
+    "url": "https://bhumi.atrbpn.go.id/panel/items/layers?filter%5Bdefault%5D%5B_eq%5D=true&filter%5Bstatus%5D%5B_eq%5D=published&fields=*,fields.*"
+  },
+  {
+    "url": "https://bhumi.atrbpn.go.id/bhumigs/umum?service=WFS&request=GetCapabilities"
+  },
+  {
+    "url": "https://bhumi.atrbpn.go.id/bhumigs/umum?service=WMS&request=GetCapabilities"
+  },
+  {
+    "url": "https://tanahharapan.metrokota.go.id/peta"
+  },
+  {
+    "url": "https://bhumi.atrbpn.go.id/peta"
+  }
+]

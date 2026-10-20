@@ -1,0 +1,20 @@
+[
+  {
+    "url": "https://gis.kentcountymi.gov/public/publicviewerjs/index.html"
+  },
+  {
+    "url": "https://gis.kentcountymi.gov/public/publicviewerjs/config/app.js?v=2.0"
+  },
+  {
+    "url": "https://gis.kentcountymi.gov/agisprod/rest/services/DrainViewerUS/MapServer?f=pjson"
+  },
+  {
+    "url": "https://gis.kentcountymi.gov/agisprod/rest/services/DrainViewerUS/MapServer/14?f=pjson"
+  },
+  {
+    "url": "https://gis.kentcountymi.gov/agisprod/rest/services/DrainViewerUS/MapServer/14/query?f=json&where=1%3D1&geometry=-85.6641740361637%2C42.9444372511416&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID%2CPPN%2CPNUM&returnGeometry=false&outSR=4326"
+  },
+  {
+    "url": "https://gis.kentcountymi.gov/agisprod/rest/services/DrainViewerUS/MapServer/14/query?f=json&where=1%3D1&geometry=-85.6741740361637%2C42.9344372511416%2C-85.6541740361637%2C42.9544372511416&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID%2CPPN%2CPNUM&returnGeometry=true&outSR=4326&resultRecordCount=3&orderByFields=OBJECTID"
+  }
+]

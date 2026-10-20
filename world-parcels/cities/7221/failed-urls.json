@@ -1,0 +1,12 @@
+[
+  {
+    "url": "https://gis.land.gov.bd/geoserver/ows?service=WFS&request=GetCapabilities",
+    "reason": "503"
+  },
+  {
+    "url": "https://settlement.gov.bd/Map/MapSearch"
+  },
+  {
+    "url": "https://sylhet.gov.bd/pages/static-pages/696cb437c4774958d7ba3e26"
+  }
+]

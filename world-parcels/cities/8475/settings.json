@@ -1,0 +1,124 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "8475",
+  "name": "Providence, United States",
+  "point": [
+    41.824,
+    -71.4128
+  ],
+  "bindings": [
+    {
+      "appCityId": "providence",
+      "runtimeConfig": {
+        "id": "providence",
+        "label": "Providence, United States",
+        "currency": {
+          "locale": "en-US",
+          "code": "USD"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            41.824,
+            -71.4128
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            41.824,
+            -71.4128
+          ],
+          "fallbackDataset": [
+            -71.4128,
+            41.824
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.0025,
+          "source": "parcel-source",
+          "sourceId": "us-ri-providence-parcels",
+          "idPrefix": "US-RI-PROVIDENCE-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 6,
+          "attribution": "<a href=\"https://www.arcgis.com/home/item.html?id=bab934a85fe94f1d885dcaa6b3f16229\">City of Providence GIS · publisher &amp; conditions</a> · 2011–2018 canopy-study mirror · identified CAMA-link groups · adapted"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "endpoint": "https://services6.arcgis.com/wv9mHoqblhTsnqdG/arcgis/rest/services/Providence_Parcels_Tree_Canopy_Change_2011_2018_v1/FeatureServer/0",
+      "adapter": "arcgis",
+      "name": "Providence city parcel tree canopy mirror published 2025",
+      "operator": "City of Providence GIS",
+      "scope": "Identified municipal native CAMA-link parcel groups in official dated 2011–2018 canopy-analysis mirror modified February 2025; excludes null/blank CAMA_LINK rows",
+      "idField": "CAMA_LINK",
+      "objectIdField": "FID",
+      "idType": "string",
+      "outFields": [
+        "FID",
+        "CAMA_LINK"
+      ],
+      "parcelNumberField": "CAMA_LINK",
+      "metricSrid": 32619,
+      "idPrefix": "US-RI-PROVIDENCE-",
+      "attributeFilters": {},
+      "id": "us-ri-providence-parcels",
+      "stateCode": "RI",
+      "cityIds": [
+        "providence"
+      ],
+      "pageSize": 100,
+      "maxFeatures": 10000,
+      "catalogueUrl": "https://www.arcgis.com/home/item.html?id=bab934a85fe94f1d885dcaa6b3f16229",
+      "countryCode": "US",
+      "maxBboxKm2": 25,
+      "caveats": [
+        "Dated official parcel mirror; canopy analysis years do not establish parcel currency.",
+        "Native CAMA_LINK follows the RIGIS unique parcel-to-CAMA linkage semantics; geometry retains all components of each identified native link group.",
+        "Null/blank CAMA_LINK rows excluded explicitly; municipal numeric PropertyID catalogue identity is not asserted."
+      ],
+      "maxConcurrentQueries": 1,
+      "nativeGeometryMode": "parts",
+      "partsCoordinatePrecision": 9,
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "attributeNotNull": [
+        "CAMA_LINK"
+      ],
+      "attributeExclusions": {
+        "CAMA_LINK": " "
+      },
+      "attribution": "City of Providence GIS. Adapted to WGS84.",
+      "licenceNote": "Source conditions are informational; users choose their source and intended use."
+    }
+  ]
+}

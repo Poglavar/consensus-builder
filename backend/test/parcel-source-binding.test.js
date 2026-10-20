@@ -37,12 +37,13 @@ describe('computeSourceBinding', () => {
         ]);
         const now = () => new Date('2026-10-02T10:30:00.000Z');
 
-        const result = await computeSourceBinding(adapter, { site, sourceId: SOURCE, now });
+        const result = await computeSourceBinding(adapter, { site, sourceId: SOURCE, snapshotId: 'snapshot-1', now });
 
         expect(adapter.queryGeometry).toHaveBeenCalledWith({ type: 'MultiPolygon', coordinates: [site.coordinates] });
         expect(result.site.type).toBe('MultiPolygon');
         expect(result.binding).toMatchObject({
             source: 'server:ca-on-toronto', coverage: 'complete', unknownM2: 0,
+            parcelSource: { sourceId: SOURCE, snapshotId: 'snapshot-1' },
             computedAt: '2026-10-02T10:30:00.000Z', toleranceM: 0
         });
         expect(result.binding.parcels.map(item => item.parcelId)).toEqual([
@@ -120,6 +121,7 @@ describe('computeSourceParcelActBinding', () => {
         expect(result.extra).toEqual([absent]);
         expect(result.binding).toMatchObject({
             coverage: 'complete', subject: 'declared-parcels', source: `server:${SOURCE}`,
+            parcelSource: { sourceId: SOURCE, snapshotId: null },
             toleranceM: 0.25, unsurveyedM2: 0, unknownM2: 0, computedAt: '2026-10-02T12:00:00.000Z'
         });
         expect(result.binding.parcels).toEqual([

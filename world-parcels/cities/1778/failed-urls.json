@@ -1,0 +1,32 @@
+[
+  {
+    "url": "https://mlhud.go.ug/ugnlis/"
+  },
+  {
+    "url": "https://ugnlis.mlhud.go.ug/"
+  },
+  {
+    "url": "https://mlhud.go.ug/lands-managment/department-of-surveys-and-mapping/"
+  },
+  {
+    "url": "https://mlhud.go.ug/posters/"
+  },
+  {
+    "url": "https://ugnlis.mlhud.go.ug/main.8123d6213976b174.js"
+  },
+  {
+    "url": "https://api.mlhud.go.ug/ugnlis-data-api/v1/query-parcelle/query-boudaries"
+  },
+  {
+    "url": "https://api.mlhud.go.ug/ugnlis-data-api/v1/query-parcelle/query-commune"
+  },
+  {
+    "url": "https://api.mlhud.go.ug/ugnlis-data-api/v1/query-parcelle/query-parcelle/localites"
+  },
+  {
+    "url": "https://api.mlhud.go.ug/ugnlis-data-api/v1/query-parcelle/getDictionary?category=LOCALITE"
+  },
+  {
+    "url": "https://api.mlhud.go.ug/ugnlis-data-api/v1/"
+  }
+]

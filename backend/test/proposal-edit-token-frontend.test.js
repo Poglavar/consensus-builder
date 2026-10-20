@@ -9,6 +9,9 @@ import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
 const require = createRequire(import.meta.url);
+const { getSerialProposalId } = require('../../frontend/js/proposals/sharing.js');
+beforeEach(() => { globalThis.getBackendBase = () => 'https://api.test'; });
+afterEach(() => { delete globalThis.getBackendBase; });
 const read = rel => readFileSync(fileURLToPath(new URL(rel, import.meta.url)), 'utf8');
 
 function sliceBetween(src, from, to) {
@@ -29,8 +32,11 @@ function fakeLocalStorage() {
 }
 
 describe('edit token storage (server-sync.js)', () => {
-    beforeEach(() => { globalThis.localStorage = fakeLocalStorage(); });
-    afterEach(() => { delete globalThis.localStorage; });
+    beforeEach(() => {
+        globalThis.localStorage = fakeLocalStorage();
+        globalThis.resolveBackendBaseUrl = () => 'https://api.example.test';
+    });
+    afterEach(() => { delete globalThis.localStorage; delete globalThis.resolveBackendBaseUrl; });
 
     it('keeps the token per server row id, outside the proposal record', () => {
         const { rememberProposalEditToken, getProposalEditToken } = require('../../frontend/js/proposals/server-sync.js');
@@ -41,6 +47,11 @@ describe('edit token storage (server-sync.js)', () => {
         // Only server row ids key a token; a local or fingerprint id never does.
         expect(rememberProposalEditToken('c2-abc', 'x')).toBe(false);
         expect(getProposalEditToken('c2-abc')).toBeNull();
+        globalThis.resolveBackendBaseUrl = () => 'https://other.example.test';
+        expect(getProposalEditToken('51')).toBeNull();
+        expect(rememberProposalEditToken('51', 'other-token')).toBe(true);
+        globalThis.resolveBackendBaseUrl = () => 'https://api.example.test/';
+        expect(getProposalEditToken('51')).toBe('tok-51');
     });
 
     it('the upload stores the token the server returned', () => {
@@ -59,17 +70,17 @@ describe('epoch writes (epoch.js)', () => {
     function load(tokens) {
         const fetch = vi.fn(async () => ({ ok: true, json: async () => ({ missing: [], forbidden: [] }) }));
         const storage = { setProposalEpochYear: vi.fn() };
-        const api = new Function('parseEpochYear', 'getProposalEditToken', 'resolveBackendBaseUrl', 'fetch',
+        const api = new Function('parseEpochYear', 'getProposalEditToken', 'resolveBackendBaseUrl', 'fetch', 'getSerialProposalId',
             'proposalStorage', 'rememberEpoch', 'renderList',
             `${helpers}\n${writer}\nreturn { setEpoch, writeEpochsToServer };`)(
-            parseEpochYear, id => tokens[String(id)] || null, () => 'https://api.test', fetch,
+            parseEpochYear, id => tokens[String(id)] || null, () => 'https://api.test', fetch, getSerialProposalId,
             storage, () => {}, () => {});
         return { ...api, fetch, storage };
     }
 
     it('someone else\'s server proposal: the epoch is set locally, no request is made', async () => {
         const { setEpoch, fetch, storage } = load({});
-        const proposal = { proposalId: 'c2-theirs', serverProposalId: '45' };
+        const proposal = { proposalId: 'c2-theirs', publicationApiBase: 'https://api.test', serverProposalId: '45' };
 
         await expect(setEpoch(proposal, 2045)).resolves.toBe(2045);
 
@@ -78,10 +89,17 @@ describe('epoch writes (epoch.js)', () => {
         expect(storage.setProposalEpochYear).toHaveBeenCalledWith('c2-theirs', 2045);
     });
 
+    it('keeps an epoch edit local when only a numeric local key or generic id matches a stored edit token', async () => {
+        const { setEpoch, fetch, storage } = load({ 51: 'tok-51' });
+        await setEpoch({ proposalId: '51', id: 51 }, 2055);
+        expect(fetch).not.toHaveBeenCalled();
+        expect(storage.setProposalEpochYear).toHaveBeenCalledWith('51', 2055);
+    });
+
     it('own upload: PATCHes with the edit token header', async () => {
         const { setEpoch, fetch } = load({ 51: 'tok-51' });
 
-        await setEpoch({ proposalId: 'c2-mine', serverProposalId: '51' }, 2055);
+        await setEpoch({ proposalId: 'c2-mine', publicationApiBase: 'https://api.test', serverProposalId: '51' }, 2055);
 
         expect(fetch).toHaveBeenCalledTimes(1);
         const [url, init] = fetch.mock.calls[0];
@@ -94,8 +112,8 @@ describe('epoch writes (epoch.js)', () => {
         const failed = [];
 
         await writeEpochsToServer([
-            { proposal: { serverProposalId: '51' }, year: 2035 },
-            { proposal: { serverProposalId: '45' }, year: 2045 },
+            { proposal: { publicationApiBase: 'https://api.test', serverProposalId: '51' }, year: 2035 },
+            { proposal: { publicationApiBase: 'https://api.test', serverProposalId: '45' }, year: 2045 },
             { proposal: { proposalId: 'local-only' }, year: 2055 }
         ], failed);
 
@@ -107,7 +125,7 @@ describe('epoch writes (epoch.js)', () => {
     it('the bulk write makes no request when it holds no tokens at all', async () => {
         const { writeEpochsToServer, fetch } = load({});
 
-        expect(await writeEpochsToServer([{ proposal: { serverProposalId: '45' }, year: 2045 }], [])).toBeNull();
+        expect(await writeEpochsToServer([{ proposal: { publicationApiBase: 'https://api.test', serverProposalId: '45' }, year: 2045 }], [])).toBeNull();
         expect(fetch).not.toHaveBeenCalled();
     });
 });
@@ -123,6 +141,7 @@ describe('legacy block rename (block-batch.js)', () => {
             getProposalEditToken: id => tokens[String(id)] || null,
             proposalStorage: { setProposalName: vi.fn(() => true) }
         };
+        global.getSerialProposalId = getSerialProposalId;
         const rename = new Function('global', 'fetch', `${body}\nreturn renameProposalRecord;`)(global, fetch);
         return { rename, fetch, global };
     }
@@ -130,16 +149,23 @@ describe('legacy block rename (block-batch.js)', () => {
     it('renames an own upload on the server with the token', async () => {
         const { rename, fetch } = load({ 51: 'tok-51' });
 
-        await expect(rename({ proposalId: 'c2-a', serverId: '51', to: 'Block 1-AAAA' })).resolves.toEqual({ server: 'renamed' });
+        await expect(rename({ proposalId: 'c2-a', serverId: '51', publicationApiBase: 'https://api.test', to: 'Block 1-AAAA' })).resolves.toEqual({ server: 'renamed' });
         expect(fetch.mock.calls[0][1].headers['X-Proposal-Edit-Token']).toBe('tok-51');
     });
 
     it('renames only locally when no token is held, and says so', async () => {
         const { rename, fetch, global } = load({});
 
-        await expect(rename({ proposalId: 'c2-a', serverId: '45', to: 'Block 1-AAAA' })).resolves.toEqual({ server: 'no-edit-token' });
+        await expect(rename({ proposalId: 'c2-a', serverId: '45', publicationApiBase: 'https://api.test', to: 'Block 1-AAAA' })).resolves.toEqual({ server: 'no-edit-token' });
         expect(fetch).not.toHaveBeenCalled();
         expect(global.proposalStorage.setProposalName).toHaveBeenCalledWith('c2-a', 'Block 1-AAAA');
+    });
+
+    it('does not rename a server row merely because its number equals a local key', async () => {
+        const { rename, fetch, global } = load({ 51: 'tok-51' });
+        await expect(rename({ proposalId: '51', to: 'Local block' })).resolves.toEqual({ server: 'none' });
+        expect(fetch).not.toHaveBeenCalled();
+        expect(global.proposalStorage.setProposalName).toHaveBeenCalledWith('51', 'Local block');
     });
 });
 
@@ -147,15 +173,15 @@ describe('plan replay order uses the authored time of server records', () => {
     const { compareFormationOrder, orderFormations } = require('../../frontend/js/proposals/plan-order.js');
 
     it('a record uploaded late still replays in authoring order', () => {
-        const road = { proposalId: 'road', serverProposalId: '90', authoredAt: '2026-09-01T10:00:00Z', createdAt: '2026-09-20T10:00:00Z' };
-        const building = { proposalId: 'building', serverProposalId: '80', authoredAt: '2026-09-02T10:00:00Z', createdAt: '2026-09-10T10:00:00Z' };
+        const road = { proposalId: 'road', publicationApiBase: 'https://api.test', serverProposalId: '90', authoredAt: '2026-09-01T10:00:00Z', createdAt: '2026-09-20T10:00:00Z' };
+        const building = { proposalId: 'building', publicationApiBase: 'https://api.test', serverProposalId: '80', authoredAt: '2026-09-02T10:00:00Z', createdAt: '2026-09-10T10:00:00Z' };
 
         expect(orderFormations([building, road]).map(r => r.proposalId)).toEqual(['road', 'building']);
     });
 
     it('a local record (createdAt only) and its server copy order the same way', () => {
         const local = { proposalId: 'a', createdAt: '2026-09-01T10:00:00Z' };
-        const serverCopy = { proposalId: 'a', serverProposalId: '5', authoredAt: '2026-09-01T10:00:00Z', createdAt: '2026-09-22T10:00:00Z' };
+        const serverCopy = { proposalId: 'a', publicationApiBase: 'https://api.test', serverProposalId: '5', authoredAt: '2026-09-01T10:00:00Z', createdAt: '2026-09-22T10:00:00Z' };
         const other = { proposalId: 'b', createdAt: '2026-09-05T10:00:00Z' };
 
         expect(compareFormationOrder(local, other)).toBeLessThan(0);

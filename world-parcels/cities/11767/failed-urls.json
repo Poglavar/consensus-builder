@@ -1,0 +1,20 @@
+[
+  {
+    "url": "https://alipurduar.gov.in/service/land-records/"
+  },
+  {
+    "url": "https://alipurduar.gov.in/bn/service/%E0%A6%9C%E0%A6%AE%E0%A6%BF-%E0%A6%B0%E0%A7%87%E0%A6%95%E0%A6%B0%E0%A7%8D%Eড/"
+  },
+  {
+    "url": "https://nhpgw.wb.gov.in/gisserver/rest/services/WUA/mouza_realted_tables_vdp_report_new/MapServer/3"
+  },
+  {
+    "url": "https://banglarbhumi.gov.in/BanglarBhumi/"
+  },
+  {
+    "url": "https://nhpgw.wb.gov.in/gisserver/rest/services/WUA/mouza_realted_tables_vdp_report_new/MapServer/3?f=pjson"
+  },
+  {
+    "url": "https://nhpgw.wb.gov.in/gisserver/rest/services/WUA/mouza_realted_tables_vdp_report_new/MapServer/3/query?where=district%3D%27Alipurduar%27&outFields=objectid%2Cmouza%2Cblock%2Cid&returnGeometry=false&resultRecordCount=3&f=pjson"
+  }
+]

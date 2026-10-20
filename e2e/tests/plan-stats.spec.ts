@@ -11,7 +11,9 @@ test.describe('Plan arithmetic @features', () => {
     await page.locator('#planStatsButton').click();
     const modal = page.locator('#plan-stats-modal');
     await expect(modal).toBeVisible();
+    await expect(modal.getByRole('heading', { name: 'Applied proposal stats', exact: true })).toBeVisible();
     await expect(modal.locator('[data-plan-stat="scope"]')).toContainText('1 applied');
+    await test.info().attach('applied-proposal-stats', { body: await modal.screenshot(), contentType: 'image/png' });
     const value = (key: string) => modal.locator(`[data-plan-stat="${key}"]`).innerText();
     const floorArea = await value('floor-area');
     expect(Number(floorArea.replace(/[^\d]/g, ''))).toBeGreaterThan(0);
@@ -32,7 +34,7 @@ test.describe('Plan arithmetic @features', () => {
     await modal.locator('#plan-stats-persons').fill('4');
     await modal.locator('#plan-stats-persons').press('Tab');
     await expect.poll(async () => Number((await value('people')).replace(/[^\d]/g, ''))).toBeGreaterThan(0);
-    await modal.getByRole('button', { name: 'Close plan stats' }).click();
+    await modal.getByRole('button', { name: 'Close applied proposal stats' }).click();
     await expect(modal).toBeHidden();
   });
 });

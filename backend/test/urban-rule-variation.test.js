@@ -505,3 +505,13 @@ describe('plannedDrawPlan', () => {
         expect(envelope.properties.variationSeed).toBe(7);
     });
 });
+
+
+it('marks rule envelopes and sampled build-outs with their different geometry roles', () => {
+    const envelope = V.parcelEnvelope(parcel(), RULE, deps);
+    expect(envelope.properties).toMatchObject({ geometryRole: 'authored-rule-envelope',
+        planningCompliance: 'not-evaluated', ruleProvenance: { source: 'authored-proposal', generator: 'parcel-envelope', version: 1 } });
+    const example = V.realizeFromEnvelope(envelope, RULE, 10, deps);
+    expect(example.properties).toMatchObject({ geometryRole: 'illustrative-buildout', planningCompliance: 'not-evaluated' });
+    expect(example.properties.ruleProvenance).toEqual(envelope.properties.ruleProvenance);
+});

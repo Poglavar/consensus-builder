@@ -1,0 +1,18 @@
+[
+  {
+    "url": "https://services.arcgis.com/JyZag7oO4NteHGiq/ArcGIS/rest/services/Open_Data_Feature_Collection/FeatureServer/0"
+  },
+  {
+    "url": "https://services.arcgis.com/JyZag7oO4NteHGiq/ArcGIS/rest/services/Open_Data_Feature_Collection/FeatureServer/0?f=pjson"
+  },
+  {
+    "url": "https://services.arcgis.com/JyZag7oO4NteHGiq/ArcGIS/rest/services/Open_Data_Feature_Collection/FeatureServer/0/query?f=geojson&where=1%3D1&geometry=-84.4875559123333%2C39.1199188166246&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID&returnGeometry=true&outSR=4326"
+  },
+  {
+    "url": "https://services.arcgis.com/JyZag7oO4NteHGiq/ArcGIS/rest/services/Open_Data_Feature_Collection/FeatureServer/0/query?f=geojson&where=1%3D1&geometry=-84.5076%2C39.1099%2C-84.4676%2C39.1299&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID&returnGeometry=true&outSR=4326&resultRecordCount=3"
+  },
+  {
+    "url": "https://services2.arcgis.com/MlJ0G8iWUyC7jAmu/arcgis/rest/services/OhioStatewidePacels_full_view/FeatureServer/0",
+    "reason": "Held at the geometry gate for Cincinnati (Ohio OGRIP statewide): the metric audit also failed with 14054 material overlap pair(s) (> 0.01 m2; max 7.97e+03 m2), 14054 exact-duplicate geometries among 380 cached features (Hamilton~0690003023400 / Hamilton~0690003023500: 7.97e+03 m2 = 100% of the smaller; Hamilton~0690003023400 / Hamilton~0690003023600: 7.97e+03 m2 = 100% of the smaller); the same r…"
+  }
+]

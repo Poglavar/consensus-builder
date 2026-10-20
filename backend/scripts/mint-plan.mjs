@@ -67,7 +67,6 @@ async function main() {
         if (!plan) throw new Error(`no plan ${values.slug}`);
         const existing = proposalAccountOf(plan.onchain_data);
         if (existing) { log(`${plan.slug} is already minted as ${existing}; nothing to do`); return; }
-        if (!plan.plan_hash) throw new Error(`${plan.slug} was named before plans carried a content hash; name a new version to bet on it`);
         if (!plan.site) throw new Error(`${plan.slug} has no site (a member had none when it was named)`);
         const uri = planUri(plan.slug, plan.plan_hash);
         log(`${plan.slug} (${plan.city}): "${plan.title}" · ${uri}`);

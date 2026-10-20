@@ -1,0 +1,21 @@
+[
+  {
+    "url": "https://ethionsdi.gov.et/",
+    "reason": "connection failure"
+  },
+  {
+    "url": "https://eland.addiscadaster.gov.et/"
+  },
+  {
+    "url": "https://eland.addiscadaster.gov.et/assets/api.config.json"
+  },
+  {
+    "url": "https://geos.addiscadaster.gov.et/geoserver/ows?service=WFS&version=1.0.0&request=GetCapabilities"
+  },
+  {
+    "url": "https://geos.addiscadaster.gov.et/geoserver/ows?service=WFS&version=1.0.0&request=DescribeFeatureType&typeName=ncrprs_cadaster:v_1_registered_parcel"
+  },
+  {
+    "url": "https://www.oromiacommunication.gov.et/pages/Kallacha%20Oromiyaa%20Bara%2030%20Lakk.%2029.pdf"
+  }
+]

@@ -1,0 +1,13 @@
+[
+  {
+    "url": "https://tgrac.telangana.gov.in/arcgis/rest/services/LIS_Folder/LandInformationSystem_Query/MapServer"
+  },
+  {
+    "url": "https://tgrac.telangana.gov.in/arcgis/rest/services/LIS_Folder/LandInformationSystem_Query/MapServer/0/query",
+    "reason": "400 then timeout"
+  },
+  {
+    "url": "https://tgrac.telangana.gov.in/arcgis/rest/services/Bhunaksha_Folder/Bhunaksha_query/MapServer/0",
+    "reason": "Held before qualification: Parcel provider is unavailable."
+  }
+]

@@ -250,6 +250,13 @@ name or description by itself does not change land use or ownership.
    createdAt }` and a `PAYMENT-RESPONSE` header with the settlement signature. The stored record carries
    `author = <your wallet>` and `agent.paid.tx = <signature>`.
 
+In that response, `id` is the server-assigned database row ID; `proposalId` is the authored
+operation/content identifier. Creation accepts only `proposalId` (a string that is not all digits),
+or generates it when omitted. Sending `id` or `proposal_id` on creation is rejected before payment.
+Digits in `/proposals/<id>` address only a database row; other identifiers address `proposalId`,
+with no fallback between the two. A minted token/account must be identified by its complete
+`chainRef` (`chainType`, `chainId`, `contract`, `tokenId`) through `/proposals/mirror`.
+
 If the response is lost, retry with the same wallet, body and payment identifier. The server returns
 the original **201** and settlement receipt without calling the facilitator or charging again. Reusing
 the identifier with a changed body or wallet is rejected before settlement.
@@ -313,16 +320,24 @@ the supplied arguments, so rerunning the live command demonstrates the same no-d
 lists everything your wallet filed in that city.
 
 **Parcel history.** `GET $(base)/parcels/<parcelUid>/history` (URL-encode the id, e.g. `HR-335347-1208%2F3`)
-is the permanent per-parcel log: `{ parcelUid, anchor: { account, exists, mintedAt?, source }, events }`.
-`anchor.account` is the parcel_nft PDA `["parcel", parcelUid]`; it carries no ownership. `events` merge,
-oldest first, `proposal_created` and `proposal_published` for every proposal listing the parcel (with its
-lens when recorded), `parcel_ownership` for every lens member's ownership attestation (member, owner,
+is the permanent per-parcel log: `{ parcelUid, anchor: { account, exists, source }, events }`.
+`anchor.account` is the parcel_nft PDA `["parcel", parcelUid]`; it carries no ownership. With
+`source: "chain"`, `exists` is the current validated devnet account observation (`true` or `false`).
+RPC failure or invalid network/account evidence gives `exists: null, source: "unavailable"`.
+An ID exceeding the PDA seed limit gives `account: null, exists: false, source: "unseedable"`.
+No anchor creation time is inferred from stored transactions. `events` merge,
+oldest first, `proposal_created` for each proposal listing the parcel and `proposal_chain_observed`
+only for a server-verified mirror of the configured Solana devnet proposal program. The observation
+uses `chainMirror.verifiedAt` and its full `chainRef`; it is not a mint event or mint time. Its lens
+comes from the verified proposal record. Bare `onchain` account/transaction fields cannot supply
+this event or associate a lifecycle/verdict event with a proposal. The log also includes
+`parcel_ownership` for each lens member's ownership attestation (member, owner,
 ownerCount, account hash; never the evidence reference), and the `proposal_acceptance`,
 `proposal_verdict` and `proposal_lifecycle` land events of those proposals. Each event is
-`{ type, at, proposalId?, proposalAccount?, member?, owner?, transaction?, hash?, link }`; `at` is the
-source's own time (chain block or attestation time, the record's creation for `proposal_created`) and is
-`null`, sorted last, when the source has none. An unknown parcel returns empty `events` and
-`anchor.exists: false`. Never cached.
+`{ type, at, proposalId?, proposalAccount?, chainRef?, member?, owner?, transaction?, hash?, link }`; `at` is the
+source's own time (chain block, attestation or mirror-verification time, the record's creation for `proposal_created`) and is
+`null`, sorted last, when the source has none. A parcel with no recorded events returns empty
+`events`; anchor existence remains a separate chain observation. Never cached.
 
 ## 7. Answers you can get
 

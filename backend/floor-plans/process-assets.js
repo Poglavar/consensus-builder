@@ -1,4 +1,4 @@
-// Checkpoint OCR and source linework only after locating a listing's building.
+// Checkpoint OCR and source linework for current listing-owned drawings.
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import { mkdtemp,writeFile,rm } from 'node:fs/promises';
@@ -6,11 +6,11 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { fingerprint } from '../buildings/floor-models.js';
-import { LOCATED_ASSET_SQL } from './building-location.js';
+import { PROCESSABLE_ASSET_SQL } from './building-location.js';
 import { readBlobRow } from './blob-store.js';
 
 const exec=promisify(execFile);
-// Located documents can enter extraction; raster images also need triage or an explicit source plan label.
+// Source-owned documents can enter extraction; raster images also need triage or an explicit source plan label.
 export const IMAGE_EXTRACTION_READY_SQL=`(lower(b.media_type) NOT LIKE 'image/%' OR EXISTS (
  SELECT 1 FROM floor_plan.target image_target WHERE image_target.kind='asset' AND image_target.current_sha256=e.sha256
  AND ((image_target.image_classified_sha256=e.sha256 AND image_target.image_kind IN ('floor_plan','uncertain'))
@@ -46,7 +46,7 @@ export async function processAssets(db,{maxAssets=100,maxMinutes=45,
  try {
   const rows=(await db.query(`SELECT e.sha256,b.media_type,b.storage_path,b.byte_count,b.bytes_available FROM floor_plan.extraction e JOIN floor_plan.blob b USING(sha256)
    WHERE e.status='pending' AND b.bytes_available AND ${IMAGE_EXTRACTION_READY_SQL}
-   AND ${LOCATED_ASSET_SQL} AND ${listingCohortAssetSql('$2')} ORDER BY e.created_at,e.sha256 LIMIT $1`,[maxAssets,listingUrls])).rows;
+   AND ${PROCESSABLE_ASSET_SQL} AND ${listingCohortAssetSql('$2')} ORDER BY e.created_at,e.sha256 LIMIT $1`,[maxAssets,listingUrls])).rows;
   result.selected=rows.length;
   for(const row of rows) {
    if(now()>=deadline) {result.unprocessed=rows.length-result.processed;break;}
@@ -76,17 +76,17 @@ export async function processAssets(db,{maxAssets=100,maxMinutes=45,
   if(!result.unprocessed) result.unprocessed=rows.length-result.processed;
   result.pending=Number((await db.query(`SELECT count(*) AS n FROM floor_plan.extraction e JOIN floor_plan.blob b USING(sha256)
    WHERE e.status='pending' AND b.bytes_available AND ${IMAGE_EXTRACTION_READY_SQL}
-   AND ${LOCATED_ASSET_SQL} AND ${listingCohortAssetSql('$1')}`,[listingUrls])).rows[0].n);
+   AND ${PROCESSABLE_ASSET_SQL} AND ${listingCohortAssetSql('$1')}`,[listingUrls])).rows[0].n);
   result.awaitingImageClassification=Number((await db.query(`SELECT count(*) AS n FROM floor_plan.extraction e
    JOIN floor_plan.blob b USING(sha256) WHERE e.status='pending' AND b.bytes_available
    AND NOT ${IMAGE_EXTRACTION_READY_SQL}
    AND NOT EXISTS(SELECT 1 FROM floor_plan.target classified_image WHERE classified_image.kind='asset'
     AND classified_image.current_sha256=e.sha256 AND classified_image.image_classified_sha256=e.sha256
     AND classified_image.image_kind IS NOT NULL)
-   AND ${LOCATED_ASSET_SQL} AND ${listingCohortAssetSql('$1')}`,[listingUrls])).rows[0].n);
+   AND ${PROCESSABLE_ASSET_SQL} AND ${listingCohortAssetSql('$1')}`,[listingUrls])).rows[0].n);
   result.deferredUnmatched=Number((await db.query(`SELECT count(*) AS n FROM floor_plan.extraction e
    JOIN floor_plan.blob b USING(sha256) WHERE e.status='pending' AND b.bytes_available
-   AND NOT ${LOCATED_ASSET_SQL} AND ${listingCohortAssetSql('$1')}`,[listingUrls])).rows[0].n);
+   AND NOT ${PROCESSABLE_ASSET_SQL} AND ${listingCohortAssetSql('$1')}`,[listingUrls])).rows[0].n);
   result.elapsedMs=now()-started;
   result.status=result.failed||result.pending||result.unprocessed||result.awaitingImageClassification||result.deferredUnmatched?'partial':'complete';return result;
  } finally {await db.query(`SELECT pg_advisory_unlock(hashtext('floor-plan-extraction'))`);}

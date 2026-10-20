@@ -1,0 +1,17 @@
+[
+  {
+    "url": "https://app1bhunakshaodisha.nic.in/bhunaksha/"
+  },
+  {
+    "url": "https://app1bhunakshaodisha.nic.in/bhunaksha/rest/Levels/count"
+  },
+  {
+    "url": "https://app1bhunakshaodisha.nic.in/bhunaksha/rest/Levels/ListsAfterLevel"
+  },
+  {
+    "url": "https://app1bhunakshaodisha.nic.in/bhunaksha/rest/MapInfo/getVVVVExtentGeoref"
+  },
+  {
+    "url": "https://app1bhunakshaodisha.nic.in/bhunaksha/rest/MapInfo/getPointsfromPNIU"
+  }
+]

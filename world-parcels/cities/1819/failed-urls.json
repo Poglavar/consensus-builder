@@ -1,0 +1,17 @@
+[
+  {
+    "url": "https://opengis.regina.ca/arcgis/rest/services/CGISViewer/Taxweb/MapServer"
+  },
+  {
+    "url": "https://opengis.regina.ca/arcgis/rest/services/OpenData/Parcels/MapServer"
+  },
+  {
+    "url": "https://opengis.regina.ca/arcgis/rest/services/CGISViewer/Taxweb/MapServer/0?f=json"
+  },
+  {
+    "url": "https://opengis.regina.ca/arcgis/rest/services/OpenData/Parcels/MapServer/0?f=json"
+  },
+  {
+    "url": "https://opengis.regina.ca/arcgis/rest/services/CGISViewer/Taxweb/MapServer/0/query?f=geojson&where=1%3D1&outFields=OBJECTID&geometry=527483.0809%2C5589179.8814&geometryType=esriGeometryPoint&inSR=26913&spatialRel=esriSpatialRelIntersects&returnGeometry=true&outSR=4326&resultRecordCount=3"
+  }
+]

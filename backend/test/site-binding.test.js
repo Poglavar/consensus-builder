@@ -144,13 +144,25 @@ describe('coverage', () => {
     });
 
     it('is none when the caller says the region has no cadastre', () => {
-        const binding = bindingFromParcels(rect(0, 0, 20, 10), [A], opts({ regionHasCadastre: false }));
+        const binding = bindingFromParcels(rect(0, 0, 20, 10), [A], opts({ regionHasCadastre: false,
+            parcelSource: { sourceId: 'hr-dgu-oss-dkp-cestice', snapshotId: null } }));
         expect(binding).toMatchObject({ coverage: 'none', parcels: [] });
+        expect(binding.parcelSource).toBeNull();
         expect(binding.unsurveyedM2).toBeCloseTo(binding.siteM2, 0);
     });
 
     it('labels a browser answer as a preview unless told otherwise', () => {
         expect(bindingFromParcels(rect(0, 0, 1, 1), [A], opts()).source).toBe('client-preview');
+    });
+
+    it('carries only an explicit parcel-source descriptor; preview labels are not provenance', () => {
+        expect(bindingFromParcels(rect(0, 0, 1, 1), [A], opts({ source: 'server:hr-cadastre' })).parcelSource).toBeNull();
+        expect(bindingFromParcels(rect(0, 0, 1, 1), [A], opts({ parcelSource: {
+            sourceId: 'hr-dgu-oss-dkp-cestice', snapshotId: null
+        } })).parcelSource).toEqual({ sourceId: 'hr-dgu-oss-dkp-cestice', snapshotId: null });
+        expect(bindingFromParcels(rect(0, 0, 1, 1), [A], opts({ parcelSource: {
+            sourceId: '   ', snapshotId: null
+        } })).parcelSource).toBeNull();
     });
 });
 

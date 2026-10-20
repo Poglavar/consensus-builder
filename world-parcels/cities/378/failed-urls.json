@@ -1,0 +1,25 @@
+[
+  {
+    "url": "https://mairie-bobo.bf/plan-de-la-ville/"
+  },
+  {
+    "url": "https://dgi.bf/contacts/"
+  },
+  {
+    "url": "https://dgi.bf/faq/"
+  },
+  {
+    "url": "https://gouvernement.gov.bf/actualites/foncier-lancement-de-la-plateforme-https-sif-bf-pour-une-gestion-transparente-des-procedures/"
+  },
+  {
+    "url": "https://dgi.impots.gov.bf/"
+  },
+  {
+    "url": "https://ecadastre.dgi.bf/api/locations/geojson/aN1k1sijuxh?minX=-4.29474790525362&minY=11.1797197779143&maxX=-4.28474790525362&maxY=11.1897197779143&type=PLOT",
+    "reason": "HTTP Error 500:"
+  },
+  {
+    "url": "https://ecadastre.dgi.bf/api/locations/geojson/ZZZZZZZZZZZ?minX=-4.29474790525362&minY=11.1797197779143&maxX=-4.28474790525362&maxY=11.1897197779143&type=PLOT",
+    "reason": "HTTP Error 500:"
+  }
+]

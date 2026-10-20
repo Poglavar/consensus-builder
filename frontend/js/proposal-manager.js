@@ -280,7 +280,7 @@ function _announceWaitingForReplay(manager, kind) {
     const key = 'proposalApplyStatus.waitingForReplay';
     let message = '';
     try { message = root.i18n?.t?.(key) || ''; } catch (_) { }
-    if (!message || message === key) message = 'Waiting for the applied plan to finish rebuilding…';
+    if (!message || message === key) message = 'Waiting for the applied composition to finish rebuilding…';
     if (typeof root.updateStatus === 'function') {
         try { root.updateStatus(message); } catch (_) { }
     }
@@ -1009,14 +1009,11 @@ const ProposalManager = {
         const browserRoot = (typeof window !== 'undefined') ? window : globalThis;
         const store = _proposalStore(options);
         const authoring = browserRoot.CorridorAuthoring;
-        const excludedIds = Array.from(new Set(
-            [proposal.sourceProposalId, proposal.replacementOfProposalId]
-                .filter(value => value !== undefined && value !== null && String(value))
-                .map(String)
-        ));
-        const allRecords = store
-            ? _peekProposals(store)
-            : Array.from(store.proposals?.values?.() || []);
+        const allRecords = store ? _peekProposals(store) : [];
+        const originApi = browserRoot.ProposalOrigin || require('./proposals/origin.js');
+        const source = originApi.resolveLocal(proposal.proposalOrigin, allRecords,
+            typeof browserRoot.getBackendBase === 'function' ? browserRoot.getBackendBase() : null);
+        const excludedIds = source ? [String(source.proposalId)] : [];
 
         _announceApply('Planning the new corridor junctions…');
         const topologyStarted = _now();

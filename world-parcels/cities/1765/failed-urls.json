@@ -1,0 +1,11 @@
+[
+  {
+    "url": "https://www.affairesfoncieres.gouv.cd/api"
+  },
+  {
+    "url": "https://www.affairesfoncieres.gouv.cd/api/circonscriptions"
+  },
+  {
+    "url": "https://www.affairesfoncieres.gouv.cd/api/parcelles"
+  }
+]

@@ -7,6 +7,7 @@ import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
+const proposalOrigin = require('../../frontend/js/proposals/origin.js');
 const policy = require('../../frontend/js/guest-policy.js');
 const formationDepth = require('../../frontend/js/proposals/formation-depth.js');
 const planOrder = require('../../frontend/js/proposals/plan-order.js');
@@ -78,7 +79,7 @@ function fakeStorage() {
     };
 }
 
-function boot(profile) {
+function boot(profile, { omitImmutabilityHelper = false } = {}) {
     const state = { agent: profile };
     install('window', globalThis);
     install('__cbSecondaryTab', false);
@@ -95,7 +96,12 @@ function boot(profile) {
     install('PersistentStorage', fakeStorage());
     const store = (0, eval)(dataSource + '\n;proposalStorage');
     install('proposalStorage', store);
-    install('isProposalImmutable', proposal => !!(proposal && (proposal.serverProposalId || proposal.isMinted === true)));
+    install('ProposalOrigin', proposalOrigin);
+    if (omitImmutabilityHelper) install('isProposalImmutable', undefined);
+    else install('isProposalImmutable', proposal => !!(proposal && (
+        proposal.isMinted === true
+        || (proposalOrigin.rowId(proposal.serverProposalId) && proposalOrigin.apiBase(proposal.publicationApiBase))
+    )));
     const stampCurrentAuthor = (0, eval)(storageSource + '\n;stampCurrentAuthor');
     return { store, state, stampCurrentAuthor };
 }
@@ -118,10 +124,18 @@ describe('publishing a record made as a guest (the store and stampCurrentAuthor)
 
     it('a published record keeps its guest author', () => {
         const { store, state, stampCurrentAuthor } = boot({ ...GUEST });
-        const id = store.addProposal(park('Guest 4232', { serverProposalId: '1355' }));
+        const id = store.addProposal(park('Guest 4232', { serverProposalId: '1355', publicationApiBase: 'https://api.example.test' }));
         state.agent = { ...NAMED };
         expect(stampCurrentAuthor(store.getProposal(id)).author).toBe('Guest 4232');
         expect(store.getProposal(id).author).toBe('Guest 4232');
+    });
+
+    it('does not treat an unqualified row number as immutable in the storage fallback', () => {
+        const { store, state, stampCurrentAuthor } = boot({ ...GUEST }, { omitImmutabilityHelper: true });
+        const id = store.addProposal(park('Guest 4232', { serverProposalId: '1355' }));
+        state.agent = { ...NAMED };
+
+        expect(stampCurrentAuthor(store.getProposal(id)).author).toBe('Mara');
     });
 
     it('an AI agent\'s record keeps its own author', () => {

@@ -1,0 +1,15 @@
+[
+  {
+    "url": "https://bhunaksha.bihar.gov.in/WMS?service=WMS&request=GetCapabilities",
+    "reason": "500"
+  },
+  {
+    "url": "https://bhunaksha.bihar.gov.in/index.jsp"
+  },
+  {
+    "url": "https://dlrs.bihar.gov.in/services.html"
+  },
+  {
+    "url": "https://darbhanga.nic.in/hi/"
+  }
+]

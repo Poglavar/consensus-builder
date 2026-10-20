@@ -2,17 +2,20 @@
 from __future__ import annotations
 
 import copy
+import hashlib
 import json
 import os
 import shutil
+import subprocess
 from concurrent.futures import ThreadPoolExecutor, wait
+from contextlib import nullcontext
 from datetime import datetime, timezone
 from pathlib import Path
 from types import SimpleNamespace
 
 import parcel_source_stage as stage
 from parcel_source_admission import admit_candidate
-from parcel_qualification_workspaces import prepare_workspace, finish_workspace
+from parcel_qualification_workspaces import prepare_workspace, finish_workspace, discard_workspace
 
 
 def now():
@@ -34,6 +37,35 @@ def _restore(value):
     return value
 
 
+def _shared_write(runner):
+    shared_root = getattr(getattr(runner, "args", None), "shared_root", None)
+    if not shared_root:
+        return nullcontext({})
+    writer = getattr(runner, "_shared_write", None)
+    return writer() if callable(writer) else nullcontext({})
+
+
+def _path_hashes(root, paths):
+    return {rel: hashlib.sha256((Path(root) / rel).read_bytes()).hexdigest()
+            if (Path(root) / rel).is_file() and not (Path(root) / rel).is_symlink() else None
+            for rel in paths}
+
+
+def _rebuild_and_validate_browser_adapters(root):
+    build = subprocess.run(["node", "backend/scripts/build-browser-parcels.mjs"], cwd=root,
+                           text=True, capture_output=True, timeout=300)
+    if build.returncode:
+        raise RuntimeError(f"browser parcel bundle build failed: {(build.stderr or build.stdout)[-1200:]}")
+    script = """import catalog from './backend/parcels/source-catalog.json' with {type:'json'};
+import {browserParcelFactories as factories} from './backend/parcels/browser-source-runtime.js';
+const missing=[...new Set(catalog.sources.map(row=>row.adapter))].filter(adapter=>!factories[adapter]);
+if(missing.length){console.error(missing.join(','));process.exit(1)}"""
+    checked = subprocess.run(["node", "--input-type=module", "-e", script], cwd=root,
+                             text=True, capture_output=True, timeout=60)
+    if checked.returncode:
+        raise RuntimeError(f"browser parcel adapter families are incomplete: {checked.stderr[-1200:]}")
+
+
 def _admit(runner, city, receipt, result, digest):
     entry = runner._city_entry(city)
     before = runner._candidate_workspace_snapshot()
@@ -47,6 +79,7 @@ def _admit(runner, city, receipt, result, digest):
     entry["qualification"] = {**result, "status": admission["status"], "admission": admission,
                               "receiptSha256": digest, "finishedAt": now()}
     if admission["status"] == "integrated":
+        _rebuild_and_validate_browser_adapters(runner.root)
         runner.validated_stages.add((str(city["cityCode"]), digest))
     elif admission["status"] == "failed" and (before is None or runner._candidate_workspace_snapshot() != before):
         runner.state["adapterStageBlocked"] = {"cityCode": str(city["cityCode"]),
@@ -117,15 +150,14 @@ def _import_result(runner, city, receipt, packet, isolation, document):
     if unexpected:
         return {**result, "status": "failed", "summary": "isolated worker changed files outside adapter/test scope",
                 "unexpectedChangedFiles": unexpected}
-    parent_backend = stage._artifact_hashes(runner.root, destination)["backendAdapters"]
-    if parent_backend not in (isolation["baseBackendAdapters"], worker_hashes["backendAdapters"]):
+    relevant = set(worker_hashes["backendAdapters"])
+    parent_backend = _path_hashes(runner.root, relevant)
+    base_backend = isolation["baseBackendAdapters"]
+    incompatible = [path for path in relevant
+                    if parent_backend.get(path) not in (base_backend.get(path), worker_hashes["backendAdapters"].get(path))]
+    if incompatible:
         if runner._city_entry(city).get("qualification", {}).get("importStartedAt"):
-            # A crashed import may have copied only some files. Replay only when
-            # every other adapter still matches the worker's original baseline.
-            base = isolation["baseBackendAdapters"]
-            untouched = (base.keys() | parent_backend.keys()) - set(changed)
-            if any(base.get(path) != parent_backend.get(path) for path in untouched):
-                raise RuntimeError("adapter code changed outside the interrupted import; inspection required")
+            raise RuntimeError("adapter code changed outside the interrupted import; inspection required")
         else:
             return {**result, "status": "pending", "summary": "another candidate changed adapter code; retry against updated adapters"}
     parent_snapshot = build.worktree_snapshot(runner.root)
@@ -171,27 +203,60 @@ def _import_result(runner, city, receipt, packet, isolation, document):
 def _collect(runner, city, receipt, packet, digest, isolation, document):
     entry = runner._city_entry(city)
     runner.state.setdefault("usage", {}).update(document.get("usage", {}))
-    before = runner._candidate_workspace_snapshot()
+    before = None
     try:
-        result = _import_result(runner, city, receipt, packet, isolation, document)
+        write_context = (_shared_write(runner) if document.get("result", {}).get("status") == "adapter-ready"
+                         else nullcontext({}))
+        with write_context:
+            before = runner._candidate_workspace_snapshot()
+            result = _import_result(runner, city, receipt, packet, isolation, document)
+            result.update(receiptSha256=digest, finishedAt=now())
+            entry["qualification"] = result
+            if (result["status"] == "adapter-ready" and not runner.stop_requested
+                    and not runner.state.get("adapterStageBlocked")):
+                _admit(runner, city, receipt, result, digest)
+                result = entry["qualification"]
+                blocked = runner.state.get("adapterStageBlocked")
+                if blocked and blocked.get("cityCode") == str(city["cityCode"]):
+                    raise RuntimeError(blocked.get("reason") or "admission changed files before failing")
     except Exception as exc:
         result = {"status": "failed", "summary": f"Isolated import error: {type(exc).__name__}: {exc}",
                   "isolation": isolation}
-        if entry.get("qualification", {}).get("importStartedAt") or before is None or runner._candidate_workspace_snapshot() != before:
+        rolled_back = bool(getattr(runner, "shared_write_rolled_back", False))
+        blocked = runner.state.get("adapterStageBlocked")
+        if rolled_back:
+            entry.pop("admission", None)
+            result["workspaceUnchangedAfterFailure"] = True
+            if isinstance(blocked, dict) and blocked.get("cityCode") == str(city["cityCode"]):
+                runner.state.pop("adapterStageBlocked", None)
+        elif entry.get("qualification", {}).get("importStartedAt") or before is None or runner._candidate_workspace_snapshot() != before:
             runner.state["adapterStageBlocked"] = {"cityCode": str(city["cityCode"]),
                                                     "reason": result["summary"], "at": now()}
     result.update(receiptSha256=digest, finishedAt=now())
-    if result["status"] in {"pending", "failed", "interrupted"} and entry.get("qualification", {}).get("importStartedAt"):
+    if (result["status"] in {"pending", "failed", "interrupted"}
+            and entry.get("qualification", {}).get("importStartedAt")
+            and not result.get("workspaceUnchangedAfterFailure")):
         result["status"] = "failed"
         runner.state["adapterStageBlocked"] = {"cityCode": str(city["cityCode"]),
                                                 "reason": result["summary"], "at": now()}
     if result["status"] in {"pending", "interrupted"}:
-        entry.setdefault("qualificationHistory", []).append(result)
+        historical = dict(result)
+        historical.pop("isolation", None)
+        entry.setdefault("qualificationHistory", []).append(historical)
         result = {"status": "pending", "receiptSha256": digest, "summary": result["summary"]}
+    if (not runner.stop_requested
+            and result.get("status") not in {"running", "ready-isolated"}):
+        try:
+            discard_workspace(_restore(isolation["workspace"]))
+        except Exception as exc:
+            result = {**result, "status": "failed",
+                      "summary": f"Qualification workspace discard error: {type(exc).__name__}: {exc}",
+                      "workspaceDiscardError": f"{type(exc).__name__}: {exc}",
+                      "isolation": isolation}
+        else:
+            result.pop("isolation", None)
     entry["qualification"] = result
     runner.save_state()
-    if result["status"] == "adapter-ready" and not runner.stop_requested and not runner.state.get("adapterStageBlocked"):
-        _admit(runner, city, receipt, result, digest)
     runner.log("isolated qualification checkpoint", cityCode=str(city["cityCode"]),
                status=entry["qualification"]["status"], summary=entry["qualification"].get("summary"))
 
@@ -247,7 +312,19 @@ def advance_candidates(runner, cities, cohort_dir):
                 continue
             valid, reason = stage.revalidate_stage(runner, city, receipt, packet, current)
             if valid:
-                _admit(runner, city, receipt, current, digest)
+                with _shared_write(runner):
+                    still_valid, locked_reason = stage.revalidate_stage(runner, city, receipt, packet, current)
+                    if still_valid:
+                        _admit(runner, city, receipt, current, digest)
+                        blocked = runner.state.get("adapterStageBlocked")
+                        if blocked and blocked.get("cityCode") == str(city["cityCode"]):
+                            raise RuntimeError(blocked.get("reason") or "admission changed files before failing")
+                    else:
+                        entry.setdefault("qualificationHistory", []).append(
+                            {**current, "invalidationReason": locked_reason})
+                        entry["qualification"] = {"status": "pending", "receiptSha256": digest,
+                                                  "summary": "shared runtime changed qualification dependencies; retry against current adapters"}
+                        runner.save_state()
                 progressed = True
                 continue
             entry.setdefault("qualificationHistory", []).append({**current, "invalidationReason": reason})
@@ -261,9 +338,14 @@ def advance_candidates(runner, cities, cohort_dir):
         return progressed
     runner._model("review")
     runner._subscription_environment()
+    workspace_options = {}
+    shared_root = getattr(runner.args, "shared_root", None)
+    if shared_root:
+        workspace_options["base_revision"] = subprocess.check_output(
+            ["git", "-C", str(shared_root), "rev-parse", "HEAD"], text=True).strip()
     jobs = []
     for slot, (city, receipt, packet, digest) in enumerate(selected, 1):
-        workspace = prepare_workspace(runner.root, runner.state_dir, slot, city, receipt, packet)
+        workspace = prepare_workspace(runner.root, runner.state_dir, slot, city, receipt, packet, **workspace_options)
         _, parent_attempt = stage._next_attempt(stage._stage_city_root(runner.state_dir, str(city["cityCode"])))
         args = copy.copy(runner.args)
         args.repo_root, args.state_dir = workspace["root"], workspace["stateDir"]

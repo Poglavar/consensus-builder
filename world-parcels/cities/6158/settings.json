@@ -1,0 +1,117 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "6158",
+  "name": "Savar, Bangladesh",
+  "point": [
+    23.9673,
+    90.2252
+  ],
+  "bindings": [
+    {
+      "appCityId": "savar",
+      "runtimeConfig": {
+        "id": "savar",
+        "label": "Savar, Bangladesh",
+        "currency": {
+          "locale": "en-BD",
+          "code": "BDT"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            23.9673,
+            90.2252
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            23.9673,
+            90.2252
+          ],
+          "fallbackDataset": [
+            90.2252,
+            23.9673
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "bd-dlrs-dhamsona-bds-sheet-001",
+          "idPrefix": "BD-DLRS-201901-4105-010510026-001-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 0.35,
+          "attribution": "<a href=\"https://settlement.gov.bd/\">Bangladesh Directorate of Land Records and Surveys</a> · Dhamsona BDS Sheet 001 draft survey only · adapted"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "idType": "string",
+      "maxFeatures": 5000,
+      "maxBboxKm2": 1,
+      "licenceNote": "Source conditions are informational; users choose their source and intended use.",
+      "id": "bd-dlrs-dhamsona-bds-sheet-001",
+      "name": "DLRS — Savar, Dhamsona BDS sheet 001 (draft)",
+      "adapter": "dlrs-sheet",
+      "endpoint": "https://settlement.gov.bd/Khatian/GetSheetJsonBySurvey",
+      "sheetForm": {
+        "rsnum": "201901",
+        "comcod": "4105",
+        "unitcod": "010510026",
+        "sheetno": "001"
+      },
+      "idField": "Dag_No",
+      "idPattern": "^[1-9][0-9]*(?:/[1-9][0-9]*)?$",
+      "idPrefix": "BD-DLRS-201901-4105-010510026-001-",
+      "outFields": [
+        "Dag_No"
+      ],
+      "parcelNumberField": "Dag_No",
+      "cityIds": [
+        "savar"
+      ],
+      "countryCode": "BD",
+      "metricSrid": 32646,
+      "maxSnapshotFeatures": 5000,
+      "maxSnapshotBytes": 2097152,
+      "expectedSnapshotFeatures": 108,
+      "catalogueUrl": "https://settlement.gov.bd/",
+      "attribution": "Department of Land Records and Surveys, Bangladesh. Dhamsona BDS sheet 001, ongoing draft survey.",
+      "scope": "Only the verified 108-plot Dhamsona BDS sheet 001; does not cover all Savar or Bangladesh.",
+      "caveats": [
+        "Ongoing draft survey; not a certified final land record.",
+        "Native plot number is scoped by survey, district office, mouza and sheet. No owner fields are retained.",
+        "Whole small sheet is cached in memory for five minutes. A changed feature count requires a coverage recheck and is reported unavailable."
+      ]
+    }
+  ]
+}

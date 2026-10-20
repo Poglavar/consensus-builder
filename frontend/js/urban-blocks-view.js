@@ -453,6 +453,8 @@
 
     function captureClick(event) {
         if (!ownsClicks()) return;
+        // This native capture handler runs before Leaflet can suppress the click after a drag.
+        if (win.map.dragging?.moved?.() || win.map.boxZoom?.moved?.()) return;
         if (event.target.closest?.('.leaflet-control, .leaflet-popup, .leaflet-tooltip')) return;
         if (!event.target.closest?.('.leaflet-pane') && event.target !== win.map.getContainer()) return;
         event.stopImmediatePropagation();

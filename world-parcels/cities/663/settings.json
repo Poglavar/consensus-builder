@@ -1,0 +1,122 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "663",
+  "name": "Swords, Ireland",
+  "point": [
+    53.4523651121946,
+    -6.20262009552807
+  ],
+  "bindings": [
+    {
+      "appCityId": "swords",
+      "runtimeConfig": {
+        "id": "swords",
+        "wupCityCode": "663",
+        "label": "Swords, Ireland",
+        "currency": {
+          "locale": "en-IE",
+          "code": "EUR"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            53.4523651121946,
+            -6.20262009552807
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            53.4523651121946,
+            -6.20262009552807
+          ],
+          "fallbackDataset": [
+            -6.20262009552807,
+            53.4523651121946
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "ie-tailte-hvd-freehold",
+          "idPrefix": "IE-SP-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 3,
+          "attribution": "<a href=\"https://data.gov.ie/dataset/high-value-dataset-cadastral-parcels-freehold1\">© Tailte Éireann · freehold title boundaries only · adapted</a>"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "ie-tailte-hvd-freehold",
+      "adapter": "arcgis",
+      "endpoint": "https://services-eu1.arcgis.com/FH5XCsx8rYXqnjF5/arcgis/rest/services/Cadastral_Parcels_Freehold/FeatureServer/12",
+      "idField": "SP_ID",
+      "objectIdField": "OBJECTID",
+      "idType": "integer",
+      "idPrefix": "IE-SP-",
+      "outFields": [
+        "OBJECTID",
+        "SP_ID"
+      ],
+      "boundsQueryMode": "object-ids",
+      "pageSize": 100,
+      "maxFeatures": 3000,
+      "maxBboxKm2": 1,
+      "maxConcurrentQueries": 1,
+      "countryCode": "IE",
+      "cityIds": [
+        "swords"
+      ],
+      "metricSrid": 2157,
+      "name": "Dublin Tailte Éireann freehold cadastral parcels",
+      "operator": "Tailte Éireann",
+      "scope": "Public Tailte Éireann freehold title parcel boundaries only; leasehold and unregistered land are outside this layer. Thirteen aligned cells around the unchanged Dublin WUP locator returned 113 unique full polygons with stable count/OID manifests, forced one-feature paging and 113 matching fresh native SP_ID reads. Root independently confirmed native lookup, explicit absence, center-cell completeness, full-parcel footprint binding and zero invalidity, duplicate geometry, overlaps above 0.01 m² or operation errors in EPSG:2157. The WUP point is outside freehold polygons; the nearest verified parcel is 31.027 m away. Bounded evidence does not establish citywide completeness, survey precision, exclusive legal ownership or currency. Additional enabled city entries have separate bounded qualification evidence; wider coverage remains unverified.",
+      "responseCrs": "EPSG:4326",
+      "parcelNumberField": "SP_ID",
+      "catalogueUrl": "https://data.gov.ie/dataset/high-value-dataset-cadastral-parcels-freehold1",
+      "attribution": "© Tailte Éireann · freehold title boundaries only · adapted",
+      "licenceNote": "Published national High Value Dataset. Source terms, title certainty and currentness are informational; only public OBJECTID/SP_ID and geometry requested.",
+      "metricSridByCity": {
+        "swords": 32629
+      },
+      "cityScopes": {
+        "cork": "124 unchanged native parcel polygons passed all eight qualification gates in bounded cells around the UN/WUP locator. Fresh independent metric audit (EPSG:32629) found zero invalid polygons, identity conflicts, duplicate geometry, material overlaps, or operation errors. Citywide completeness, legal title, survey accuracy, and currentness are not established.",
+        "galway": "149 unchanged native parcel polygons passed all eight qualification gates in bounded cells around the UN/WUP locator. Fresh independent metric audit (EPSG:32629) found zero invalid polygons, identity conflicts, duplicate geometry, material overlaps, or operation errors. Citywide completeness, legal title, survey accuracy, and currentness are not established.",
+        "swords": "41 unchanged native parcel polygons passed all eight qualification gates in bounded cells around the UN/WUP locator. Fresh independent metric audit (EPSG:32629) found zero invalid polygons, identity conflicts, duplicate geometry, material overlaps, or operation errors. Citywide completeness, legal title, survey accuracy, and currentness are not established."
+      },
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "IE",
+          "basis": "Tailte Éireann national registered freehold title boundaries (leasehold and unregistered land are outside it).",
+          "evidence": []
+        }
+      }
+    }
+  ]
+}

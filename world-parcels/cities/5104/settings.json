@@ -1,0 +1,156 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "5104",
+  "name": "Acireale, Italy",
+  "point": [
+    37.6049746892746,
+    15.1470464254041
+  ],
+  "bindings": [
+    {
+      "appCityId": "acireale",
+      "runtimeConfig": {
+        "id": "acireale",
+        "wupCityCode": "5104",
+        "label": "Acireale, Italy",
+        "currency": {
+          "locale": "it-IT",
+          "code": "EUR"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            37.6049746892746,
+            15.1470464254041
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            37.6049746892746,
+            15.1470464254041
+          ],
+          "fallbackDataset": [
+            15.1470464254041,
+            37.6049746892746
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "it-sicilia-sitr-cadastral-parcels",
+          "idPrefix": "IT-SICILIA-PARCEL-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Regione Siciliana SITR · cadastral-reference polygons · adapted"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "it-sicilia-sitr-cadastral-parcels",
+      "name": "Sicilia SITR public cadastral parcels",
+      "adapter": "arcgis",
+      "endpoint": "https://map.sitr.regione.sicilia.it/gis/rest/services/catasto/cartografia_catastale/MapServer/4",
+      "idFields": [
+        "COMUNE",
+        "SEZIONE",
+        "FOGLIO",
+        "ALLEGATO",
+        "SVILUPPO",
+        "NUMERO"
+      ],
+      "idFieldTypes": {
+        "COMUNE": "string",
+        "SEZIONE": "string",
+        "FOGLIO": "string",
+        "ALLEGATO": "string",
+        "SVILUPPO": "string",
+        "NUMERO": "string"
+      },
+      "objectIdField": "OBJECTID",
+      "idPrefix": "IT-SICILIA-PARCEL-",
+      "parcelNumberField": "NUMERO",
+      "outFields": [
+        "OBJECTID",
+        "COMUNE",
+        "SEZIONE",
+        "FOGLIO",
+        "ALLEGATO",
+        "SVILUPPO",
+        "NUMERO",
+        "LIVELLO",
+        "ORIGINE"
+      ],
+      "pageSize": 1000,
+      "maxFeatures": 3000,
+      "maxBboxKm2": 1,
+      "countryCode": "IT",
+      "metricSrid": 32633,
+      "cityIds": [
+        "acireale"
+      ],
+      "maxConcurrentQueries": 2,
+      "idBatchSize": 1,
+      "scope": "390 valid distinct cadastral-reference polygons verified in thirteen bounded 0.001-degree cells around the unchanged WUP settlement locator. Complete counted paging, forced three-row geometry pages, all 390 fresh exact native identities, explicit absence, footprint and source binding passed in 424 requests. Independent metric EPSG:32633 GEOS found all polygons valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. The regional SITR layer publishes native cadastral COMUNE, SEZIONE, FOGLIO, ALLEGATO, SVILUPPO and NUMERO fields. Their six-component reference preserves every literal fixed-width blank, independently of source OBJECTID. A regression test first failed and then passed for that native fixed-width composite identity. Source EPSG:25833 output is faithfully served in EPSG:4326. The original exact-point OBJECTID5685467 sample maps to G273 / blank / 125 / blank / blank / 298 and matches fresh complete geometry exactly. Large composite ID requests timed out and are preserved as failed; a fresh run with configured idBatchSize=1 verifies every short native-identity GET without hidden retries. Published revision/update dates remain informational; their consistency and legal currentness are unverified. Legal title, survey accuracy, currentness, long-term key continuity and wider municipal completeness remain unverified.",
+      "operator": "Regione Siciliana / Sistema Informativo Territoriale Regionale",
+      "catalogueUrl": "https://www.sitr.regione.sicilia.it/",
+      "licenceNote": "Public publisher geometry and attribution verified; provider conditions remain informational. Geometry does not establish legal title, survey accuracy or currentness. Personal fields excluded.",
+      "cityScopes": {
+        "palermo": "390 valid distinct cadastral-reference polygons verified in thirteen bounded 0.001-degree cells around the unchanged WUP settlement locator. Complete counted paging, forced three-row geometry pages, all 390 fresh exact native identities, explicit absence, footprint and source binding passed in 424 requests. Independent metric EPSG:32633 GEOS found all polygons valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. The regional SITR layer publishes native cadastral COMUNE, SEZIONE, FOGLIO, ALLEGATO, SVILUPPO and NUMERO fields. Their six-component reference preserves every literal fixed-width blank, independently of source OBJECTID. A regression test first failed and then passed for that native fixed-width composite identity. Source EPSG:25833 output is faithfully served in EPSG:4326. The original exact-point OBJECTID5685467 sample maps to G273 / blank / 125 / blank / blank / 298 and matches fresh complete geometry exactly. Large composite ID requests timed out and are preserved as failed; a fresh run with configured idBatchSize=1 verifies every short native-identity GET without hidden retries. Published revision/update dates remain informational; their consistency and legal currentness are unverified. Legal title, survey accuracy, currentness, long-term key continuity and wider municipal completeness remain unverified.",
+        "acireale": "Bounded qualification around the UN DESA WUP 2025 settlement locator for Acireale. Passing all eight gates and independent geometry audit supports local parcel integration only; citywide completeness, legal title, survey accuracy and currentness are not established."
+      },
+      "attribution": "Regione Siciliana SITR · cadastral-reference polygons · adapted",
+      "metricSridByCity": {
+        "acireale": 32633
+      },
+      "defaultForCity": true,
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "IT",
+          "admin1": [
+            "IT-AG",
+            "IT-CL",
+            "IT-CT",
+            "IT-EN",
+            "IT-ME",
+            "IT-PA",
+            "IT-RG",
+            "IT-SR",
+            "IT-TP"
+          ],
+          "basis": "Sicily region SITR cadastral parcels (nine Sicilian provinces).",
+          "evidence": []
+        }
+      }
+    }
+  ]
+}

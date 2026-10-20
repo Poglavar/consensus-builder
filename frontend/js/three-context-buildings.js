@@ -60,7 +60,7 @@
     // POST /buildings/near. Mirrors three-mode.js's buildMeshFromBuilding3D, but
     // uses the caller-supplied projector so the mesh lands in that scene's
     // local coordinate frame. The mesh sits at local z=0..(z_max-z_min).
-    function buildMeshFromBuilding(bld, material, latLngToLocalXY) {
+    function buildMeshFromBuilding(bld, material, latLngToLocalXY, THREE = window.THREE) {
         if (!bld || !Array.isArray(bld.faces) || bld.faces.length === 0) return null;
         const groundZ = Number.isFinite(bld.z_min) ? bld.z_min : 0;
         const positions = [];
@@ -207,5 +207,5 @@
         contextGroup.userData.__contextCount = 0;
     }
 
-    window.ContextBuildings3D = { loadInto, clear, makeGhostMaterial };
+    window.ContextBuildings3D = { loadInto, clear, makeGhostMaterial, buildMeshFromBuilding };
 })();

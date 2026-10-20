@@ -1,0 +1,21 @@
+[
+  {
+    "url": "https://bhubharati.telangana.gov.in/",
+    "reason": "timeout"
+  },
+  {
+    "url": "https://bhubharati.telangana.gov.in/pilot/getFarmerModulesBL",
+    "reason": "timeout"
+  },
+  {
+    "url": "https://ccla.telangana.gov.in/",
+    "reason": "timeout"
+  },
+  {
+    "url": "https://dilrmp.gov.in/dilrmpold/PhyscialComponent/mapDigitization/village-level/4391",
+    "reason": "TLS verification failure"
+  },
+  {
+    "url": "https://mancherial.telangana.gov.in/te/service/%E0%B0%AD%E0%B1%82%E0%B0%AE%E0%B0%BF-%E0%B0%B0%E0%B0%BF%E0%B0%95%E0%B0%BE%E0%B0%B0%E0%B1%8D%E0%B0%A1%E0%B1%81%E0%B0%B2%E0%B1%81/"
+  }
+]

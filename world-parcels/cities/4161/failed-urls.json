@@ -1,0 +1,9 @@
+[
+  {
+    "url": "https://screening.environment.gov.za/server/rest/services/Corp/Planning_Cadastre/MapServer/0/query",
+    "reason": "timeout after 20 seconds"
+  },
+  {
+    "url": "https://ags.joburg.org.za/cgismobi"
+  }
+]

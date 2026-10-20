@@ -1,0 +1,22 @@
+[
+  {
+    "url": "http://jamabandi.nic.in/",
+    "reason": "connection timeout after 20 seconds"
+  },
+  {
+    "url": "https://jamabandi.nic.in/",
+    "reason": "connection timeout after 20 seconds"
+  },
+  {
+    "url": "https://rewari.gov.in/service/land-record/"
+  },
+  {
+    "url": "https://hsac.in/eodb/"
+  },
+  {
+    "url": "https://haryanait.gov.in/web-halris/"
+  },
+  {
+    "url": "https://bhunaksha.nic.in/bhunaksha/customization.jsp"
+  }
+]

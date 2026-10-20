@@ -240,9 +240,10 @@ describe('tierAt', () => {
         expect(siberia).toMatchObject({ kind: 'country', cc: 'RU' });
     });
 
-    it('answers England and Wales as full regions inside a partial United Kingdom', () => {
+    it('shows England as mostly covered after its failed city check, with Wales fully covered inside a partial United Kingdom', () => {
         const lakeDistrict = coverage.tierAt(54.45, -3.05);
-        expect(lakeDistrict).toMatchObject({ kind: 'region', regionId: 'GB-ENG', coverage: 'full', tier: 'source', country: 'United Kingdom' });
+        expect(lakeDistrict).toMatchObject({ kind: 'region', regionId: 'GB-ENG', coverage: 'mostly', tier: 'source', country: 'United Kingdom' });
+        expect(lakeDistrict.note).toMatch(/failed in .*Liverpool.*; \d+ of \d+ checked cities work/);
         expect(lakeDistrict.note).toMatch(/registered freehold/);
         expect(lakeDistrict.coverageSources.length).toBeGreaterThan(0);
         expect(coverage.tierAt(52.3, -3.6)).toMatchObject({ kind: 'region', regionId: 'GB-WLS', coverage: 'full' });
@@ -354,8 +355,14 @@ describe('city and exact-point destinations', () => {
 describe('searchPlaces', () => {
     it('is diacritic-insensitive both ways', () => {
         expect(coverage.searchPlaces('sibenik')[0]).toMatchObject({ kind: 'live-city', cityId: 'sibenik', name: 'Šibenik' });
-        expect(coverage.searchPlaces('São')).toEqual(expect.arrayContaining([expect.objectContaining({ name: 'São Paulo' })]));
-        expect(coverage.searchPlaces('sao paulo')[0].name).toBe('São Paulo');
+        const fixture = WorldCoverage.create({ countries: [], cities: [], liveCities: [
+            { id: 'accented-city', name: 'São Paulo', cc: 'BR', lat: -23.5, lon: -46.6 },
+            { id: 'plain-city', name: 'Sao Tome', cc: 'ST', lat: 0.3, lon: 6.7 },
+            { id: 'shorter-prefix', name: 'Saoner', cc: 'IN', lat: 21.4, lon: 78.9 }
+        ] });
+        expect(fixture.searchPlaces('São').map(place => place.name)).toContain('São Paulo');
+        expect(fixture.searchPlaces('sao paulo')[0].name).toBe('São Paulo');
+        expect(fixture.searchPlaces('São Tome')[0].name).toBe('Sao Tome');
     });
 
     it('ranks prefix matches above substrings and configured cities above others', () => {

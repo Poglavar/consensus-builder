@@ -4,7 +4,7 @@ import { describe, it, expect } from 'vitest';
 import '../../frontend/js/building-floor-plans.js';
 
 const require = createRequire(import.meta.url);
-const { filterProjects, matchesApartment, placementTransform, hasEnvelope, encodeFilters, decodeFilters } = require('../../frontend/novogradnje/catalogue.js');
+const { filterProjects, matchesApartment, placementTransform, hasEnvelope, encodeFilters, decodeFilters, compareCompletion } = require('../../frontend/novogradnje/catalogue.js');
 
 const projects = [
     { id:'a',slug:'aurora',name:'Aurora',address:'Ilica 12',kind:'new_build',apartments:[
@@ -31,8 +31,9 @@ const planArchitecture = {
 };
 
 describe('novogradnje public filters', () => {
-    it('defaults to new builds and matches searchable Croatian project text without diacritics', () => {
-        expect(filterProjects(projects,{}).map(p=>p.id)).toEqual(['a']);
+    it('includes older floor plans by default and matches searchable Croatian project text without diacritics', () => {
+        expect(filterProjects(projects,{}).map(p=>p.id)).toEqual(['a','c','b']);
+        expect(filterProjects(projects,{kind:'new_build'}).map(p=>p.id)).toEqual(['a']);
         expect(filterProjects(projects,{q:'tresnjevka',kind:'all'}).map(p=>p.id)).toEqual(['c']);
         expect(filterProjects([{...projects[0],titles:['Kvart Trešnjevka']}],{q:'tresnjevka'}).map(p=>p.id)).toEqual(['a']);
         expect(filterProjects([{...projects[0],apartments:[{...projects[0].apartments[0],sourceTitle:'Vrtni stan'}]}],{q:'vrtni'}).map(p=>p.id)).toEqual(['a']);
@@ -47,7 +48,7 @@ describe('novogradnje public filters', () => {
     it('never treats unknown area or room counts as zero or as a numeric match', () => {
         expect(matchesApartment(projects[0].apartments[1],{minArea:0,maxArea:null,rooms:null,orientation:''})).toBe(false);
         expect(matchesApartment(projects[0].apartments[1],{minArea:null,maxArea:null,rooms:0,orientation:''})).toBe(false);
-        expect(filterProjects(projects,{kind:'all',minArea:0}).flatMap(p=>p.apartments.map(a=>a.id))).toEqual(['a1','b1','c1']);
+        expect(filterProjects(projects,{kind:'all',minArea:0}).flatMap(p=>p.apartments.map(a=>a.id))).toEqual(['a1','c1','b1']);
         expect(filterProjects([projects[3]],{minArea:0})).toEqual([]);
     });
     it('applies area bounds, room count including the 5+ option, and orientation together', () => {
@@ -57,9 +58,16 @@ describe('novogradnje public filters', () => {
     it('round-trips shareable filters and drops unsupported values', () => {
         const state={q:'Ilica 12',kind:'all',minArea:45,maxArea:90,rooms:3,orientation:'SE'};
         expect(decodeFilters(`?${encodeFilters(state)}`)).toEqual(state);
-        expect(decodeFilters('?kind=wrong&orientation=sideways').kind).toBe('new_build');
+        expect(decodeFilters('?kind=wrong&orientation=sideways').kind).toBe('all');
         expect(decodeFilters('?kind=wrong&orientation=sideways').orientation).toBe('');
         expect(decodeFilters('?min=invalid').minArea).toBeNull();
+    });
+    it('sorts by actual or planned completion descending, with unknown dates last', () => {
+        const rows=[{id:'unknown',constructionYear:null,completionYear:null},{id:'old',kind:'existing',constructionYear:2005},{id:'future',completionYear:2028},
+            {id:'built',constructionYear:2025,completionYear:2030},{id:'zero',constructionYear:null},{id:'invalid',constructionYear:'2040'}];
+        expect([...rows].sort(compareCompletion).map(p=>p.id)).toEqual(['future','built','old','invalid','unknown','zero']);
+        expect(encodeFilters({kind:'new_build'})).toBe('kind=new_build');
+        expect(decodeFilters('').kind).toBe('all');
     });
     it('aligns shared viewer geometry vertices with the site-fit origin', () => {
         const geometry=globalThis.__buildingFloorPlans.buildLocalUnitParts(planArchitecture);

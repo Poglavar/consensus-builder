@@ -1,0 +1,20 @@
+[
+  {
+    "url": "https://gujrat.punjab.gov.pk/land_record_center"
+  },
+  {
+    "url": "https://www.punjab-zameen.gov.pk/"
+  },
+  {
+    "url": "https://lis.pulse.gop.pk/"
+  },
+  {
+    "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/Punjab/Pulse_Map/MapServer"
+  },
+  {
+    "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer?f=pjson"
+  },
+  {
+    "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/GPC/GPC_Parcels/MapServer?f=pjson"
+  }
+]

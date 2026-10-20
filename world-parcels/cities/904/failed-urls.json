@@ -1,0 +1,25 @@
+[
+  {
+    "url": "https://potosi.bo/direccion-de-catastro-y-desarrollo-urbano/",
+    "reason": "TLS verification failure"
+  },
+  {
+    "url": "https://potosi.bo/service/catastro/",
+    "reason": "TLS verification failure"
+  },
+  {
+    "url": "https://potosi.bo/secretaria-de-ordenamiento-territorial-urbano/"
+  },
+  {
+    "url": "https://geobolivia.planificacion.gob.bo/"
+  },
+  {
+    "url": "https://www10.igmbolivia.gob.bo/?page_id=5047"
+  },
+  {
+    "url": "https://www.oopp.gob.bo/guias-tecnicas/"
+  },
+  {
+    "url": "https://portalgis.ypfb.gob.bo/arcgisserver/rest/services/publico/padministrativo/MapServer/3?f=pjson"
+  }
+]

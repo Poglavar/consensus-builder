@@ -14,6 +14,11 @@ import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { createContext, runInContext } from 'node:vm';
+import { createRequire } from 'node:module';
+
+const require = createRequire(import.meta.url);
+const estimatedSource = require('../../frontend/js/parcels/estimated-source.js');
+const sha = require('../../frontend/js/bets/sha256.js');
 
 const read = relative => readFileSync(fileURLToPath(new URL(relative, import.meta.url)), 'utf8');
 const storageSource = read('../../frontend/js/proposals/storage.js');
@@ -46,7 +51,7 @@ function loadIsInCity(manager = cityManager) {
     expect(end).toBeGreaterThan(-1);
     const snippet = storageSource.slice(start, end + 2);
     // eslint-disable-next-line no-new-func
-    return new Function('CityConfigManager', `${snippet}; return { isInCity, CITY_PARCEL_ID_PREFIXES };`)(manager);
+    return new Function('CityConfigManager', 'EstimatedParcelSource', `${snippet}; return { isInCity, CITY_PARCEL_ID_PREFIXES };`)(manager, estimatedSource);
 }
 
 const { isInCity, CITY_PARCEL_ID_PREFIXES } = loadIsInCity();
@@ -210,6 +215,14 @@ describe('isInCity covers every configured city', () => {
 });
 
 describe('isInCity still separates the id spaces', () => {
+    it('recognizes estimates and their formed pieces only in their declared city', () => {
+        const id = `EST:${sha.hex('explore')}:${sha.hex('estimated geometry')}`;
+        expect(isInCity(id, 'explore')).toBe(true);
+        expect(isInCity(`${id}#p-park-1`, 'explore')).toBe(true);
+        expect(isInCity(id, 'new_york')).toBe(false);
+        expect(isInCity('EST:invalid', 'explore')).toBe(false);
+    });
+
     it('keeps a Croatian parcel out of a foreign city', () => {
         expect(isInCity('HR-330264-628', 'belgrade')).toBe(false);
         expect(isInCity('HR-330264-628', 'new_york')).toBe(false);

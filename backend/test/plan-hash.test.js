@@ -1,4 +1,4 @@
-// A named plan commits to what its members build (plans.md). The hash must move when the built
+// A named plan commits to its members' decision kind, site and design (plans.md). The hash must move when that
 // content moves, and must NOT move for prose, thumbnails or lifecycle state.
 
 import { describe, it, expect } from 'vitest';
@@ -18,6 +18,7 @@ const building = {
     geometry: { buildings: [{ type: 'Feature', properties: { height: 17.5 }, geometry: { type: 'Polygon', coordinates: [] } }] },
     screenshot_url: 'https://example.invalid/a.png', lifecycle_status: 'Active'
 };
+building.proposal_data = { kind: 'owner-deal', site: building.site };
 
 const plot = x => ({
     type: 'Polygon',
@@ -26,7 +27,7 @@ const plot = x => ({
 
 function readjustment() {
     return {
-        proposalId: 'lr-member', type: 'parcel', goal: 'reparcellization',
+        proposalId: 'lr-member', type: 'parcel', goal: 'reparcellization', kind: 'owner-deal', site: plot(-1),
         cadastreParcelIds: ['HR-A', 'HR-B'], offer: 100, offerCurrency: 'EUR',
         isConditional: true, expiresAt: '2030-01-01T00:00:00.000Z',
         depositEnabled: true, depositPercent: 10, decayEnabled: true,
@@ -65,6 +66,7 @@ function asDatabaseRow(proposal) {
         decay_duration_ms: String(proposal.decayDurationMs), disbursement_mode: proposal.disbursementMode,
         reparcellization: proposal.reparcellization,
         proposal_data: {
+            kind: proposal.kind, site: proposal.site,
             reparcellizationAgreement: proposal.reparcellizationAgreement,
             currency: proposal.currency
         }
@@ -111,8 +113,25 @@ describe('memberHash', () => {
         expect(stableStringify({ b: 1, a: [2, { d: 3, c: 4 }] })).toBe('{"a":[2,{"c":4,"d":3}],"b":1}');
     });
 
-    it('preserves the historical non-readjustment digest', () => {
-        const oldProjection = {
+    it.each([
+        ['building', () => structuredClone(building)],
+        ['readjustment', () => asDatabaseRow(readjustment())]
+    ])('commits to authored kind and site for a %s member', (_label, makeRow) => {
+        const original = makeRow();
+        const changedKind = makeRow();
+        changedKind.proposal_data.kind = 'community-vote';
+        const changedSite = makeRow();
+        changedSite.proposal_data.site = plot(5);
+        expect(memberHash(changedKind)).not.toBe(memberHash(original));
+        expect(memberHash(changedSite)).not.toBe(memberHash(original));
+        expect(memberHash({ ...original, site: plot(10) })).toBe(memberHash(original));
+        expect(memberHash({ ...original, id: 999 })).toBe(memberHash(original));
+    });
+
+    it('hashes the current non-readjustment content contract', () => {
+        const projection = {
+            kind: building.proposal_data.kind,
+            site: building.proposal_data.site,
             type: building.type ?? null,
             goal: building.goal ?? null,
             parcels: [...building.cadastre_parcel_ids].map(String).sort(),
@@ -122,15 +141,36 @@ describe('memberHash', () => {
             layout: null,
             geometry: building.geometry
         };
-        const expected = createHash('sha256').update(stableStringify(oldProjection)).digest('hex');
+        const expected = createHash('sha256').update(stableStringify(projection)).digest('hex');
         expect(memberHash(building)).toBe(expected);
     });
 
-    it('uses the shared versioned LR deal fingerprint for database-shaped rows', () => {
+    it.each([
+        ['building', () => structuredClone(building)],
+        ['readjustment', () => asDatabaseRow(readjustment())]
+    ])('commits to pinned planning-source references for a %s member', (_label, makeRow) => {
+        const original = makeRow();
+        const referenced = makeRow();
+        referenced.proposal_data.sourceReferences = [{
+            proposalId: 'source:example:record', providerId: 'example', recordId: 'record',
+            edition: '2025', revision: 'first', city: 'example', scenario: 'default', parcelId: null
+        }];
+        const changed = structuredClone(referenced);
+        changed.proposal_data.sourceReferences[0].revision = 'second';
+        expect(memberHash(referenced)).not.toBe(memberHash(original));
+        expect(memberHash(changed)).not.toBe(memberHash(referenced));
+        expect(changedMembers({ 7: memberHash(referenced) }, [{ ...changed, id: 7 }])).toEqual(['7']);
+        const empty = makeRow();
+        empty.proposal_data.sourceReferences = [];
+        expect(memberHash(empty)).toBe(memberHash(original));
+    });
+
+    it('includes the shared LR deal fingerprint within the plan member commitment', () => {
         const proposal = readjustment();
         const row = asDatabaseRow(proposal);
-        expect(memberContent(row)).toBe(deal.fingerprint(proposal));
-        expect(memberHash(row)).toBe(deal.fingerprint(proposal));
+        const projection = { kind: proposal.kind, site: proposal.site, readjustmentDeal: deal.fingerprint(proposal) };
+        expect(memberContent(row)).toEqual(projection);
+        expect(memberHash(row)).toBe(createHash('sha256').update(stableStringify(projection)).digest('hex'));
     });
 
     it.each([
@@ -170,6 +210,31 @@ describe('createPlanStore member query', () => {
             'p.decay_duration_ms', 'p.disbursement_mode', 'p.proposal_data']) {
             expect(sql).toContain(column);
         }
+    });
+});
+
+describe('createPlanStore named-plan identifier plumbing', () => {
+    it('passes proposalRowIds through list and insert while persisting the SQL proposal_ids column', async () => {
+        const calls = [];
+        const store = createPlanStore({
+            query: async (sql, params) => {
+                calls.push({ sql, params });
+                return { rows: [] };
+            }
+        });
+
+        await store.list('zagreb', { proposalRowIds: ['11', '22'], parcelIds: null });
+        await store.insert({
+            slug: 'row-plan', proposalRowIds: ['11', '22'], title: 'Row plan', description: null,
+            author: null, place: null, city: 'zagreb', memberHashes: { 11: 'a'.repeat(64), 22: 'b'.repeat(64) },
+            planHash: 'c'.repeat(64), supersedes: null, creatorIp: null, creatorFingerprint: null
+        });
+
+        expect(calls[0].sql).toContain('e.proposal_ids ?| $2::text[]');
+        expect(calls[0].params).toEqual(['zagreb', ['11', '22'], null]);
+        expect(calls[1].sql).toContain('INSERT INTO ens_plan (slug, proposal_ids,');
+        expect(calls[1].params[1]).toBe(JSON.stringify(['11', '22']));
+        expect(calls[1].params[12]).toEqual([11, 22]);
     });
 });
 

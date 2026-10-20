@@ -4,6 +4,7 @@ import express from 'express';
 import { createPool } from '../db/connection.cjs';
 import dotenv from 'dotenv';
 import { fileURLToPath } from 'node:url';
+import { createSharedCatalogue } from '../floor-plan-archive/shared-catalogue.js';
 import { setupNovogradnjeRoute } from '../routes/novogradnje.js';
 dotenv.config({ path: fileURLToPath(new URL('../.env', import.meta.url)), quiet: true });
 const port = Number(process.env.NOVOGRADNJE_PORT || 8490);
@@ -12,7 +13,8 @@ const pool = createPool({ max: 5,
     application_name: 'novogradnje-web', statement_timeout: 20000 });
 const app = express();
 app.disable('x-powered-by');
-setupNovogradnjeRoute(app, pool);
+if(!process.env.FLOOR_PLAN_API_BASE)throw Error('FLOOR_PLAN_API_BASE must identify the shared publication API.');
+setupNovogradnjeRoute(app, pool, {catalogue:createSharedCatalogue({baseUrl:process.env.FLOOR_PLAN_API_BASE})});
 app.use((error, _req, res, _next) => { console.error(new Date().toISOString(), error.message); res.status(503).json({ error: 'Katalog trenutačno nije dostupan.' }); });
 const server = app.listen(port, '127.0.0.1', () => console.log(new Date().toISOString(), `Novogradnje listening on port ${port}`));
 for (const signal of ['SIGTERM', 'SIGINT']) process.once(signal, () => server.close(async () => { await pool.end(); process.exit(0); }));

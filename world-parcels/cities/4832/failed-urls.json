@@ -1,0 +1,11 @@
+[
+  {
+    "url": "https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/"
+  },
+  {
+    "url": "https://data.strasbourg.eu/api/explore/v2.1/catalog/datasets/parcelles_cadastrales"
+  },
+  {
+    "url": "https://www.data.gouv.fr/dataservices/api-carto-module-cadastre"
+  }
+]

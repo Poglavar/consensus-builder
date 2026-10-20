@@ -1,0 +1,109 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "3430",
+  "name": "Riverside, United States",
+  "point": [
+    33.9351928344791,
+    -117.443821994716
+  ],
+  "bindings": [
+    {
+      "appCityId": "riverside",
+      "runtimeConfig": {
+        "id": "riverside",
+        "wupCityCode": "3430",
+        "label": "Riverside, United States",
+        "currency": {
+          "locale": "en-US",
+          "code": "USD"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            33.9351928344791,
+            -117.443821994716
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            33.9351928344791,
+            -117.443821994716
+          ],
+          "fallbackDataset": [
+            -117.443821994716,
+            33.9351928344791
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "us.ca.riverside-city-parcels",
+          "idPrefix": "us-ca-riverside-city:",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 3,
+          "attribution": "<a href=\"https://mapriverside.riversideca.gov/server/rest/services/Cadastral/Cadastral_Public/MapServer/86\">City of Riverside cadastral parcels</a>"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "us.ca.riverside-city-parcels",
+      "name": "City of Riverside cadastral parcels",
+      "adapter": "arcgis",
+      "endpoint": "https://mapriverside.riversideca.gov/server/rest/services/Cadastral/Cadastral_Public/MapServer/86",
+      "idPrefix": "us-ca-riverside-city:",
+      "idField": "ParcelFabric_Parcels.OBJECTID",
+      "objectIdField": "ParcelFabric_Parcels.OBJECTID",
+      "idType": "integer",
+      "outFields": [
+        "ParcelFabric_Parcels.OBJECTID"
+      ],
+      "cityIds": [
+        "riverside"
+      ],
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "queryFormat": "geojson",
+      "pageSize": 80,
+      "idBatchSize": 80,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 1,
+      "capabilities": {
+        "areaEnumeration": true,
+        "supportsPagination": false
+      },
+      "metricSridByCity": {
+        "riverside": 32611
+      },
+      "countryCode": "US",
+      "metricSrid": 32611,
+      "defaultForCity": true
+    }
+  ]
+}

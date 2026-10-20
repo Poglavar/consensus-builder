@@ -1,0 +1,120 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "7770",
+  "name": "Vapi, India",
+  "point": [
+    20.40655,
+    72.90785
+  ],
+  "bindings": [
+    {
+      "appCityId": "vapi",
+      "runtimeConfig": {
+        "id": "vapi",
+        "wupCityCode": "7770",
+        "label": "Vapi, India",
+        "currency": {
+          "locale": "en-IN",
+          "code": "INR"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            20.40655,
+            72.90785
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            20.40655,
+            72.90785
+          ],
+          "fallbackDataset": [
+            72.90785,
+            20.40655
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "in-gj-ncscm-czmp-survey-plots",
+          "idPrefix": "IN-GJ-CZMP-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "National Centre for Sustainable Coastal Management (MoEFCC) — CZMP survey plots, Gujarat. Plot labels shown as published; references derived from geometry. Adapted to WGS84."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "adapter": "arcgis",
+      "identityKind": "geometry-sha256-v1",
+      "lookupCellSize": 0.001,
+      "objectIdField": "OBJECTID",
+      "maxFeatures": 2000,
+      "maxConcurrentQueries": 2,
+      "countryCode": "IN",
+      "catalogueUrl": "https://czmp.ncscm.res.in/",
+      "licenceNote": "No reuse licence is stated on the CZMP portal or the ArcGIS service; the plan is published for public viewing.",
+      "id": "in-gj-ncscm-czmp-survey-plots",
+      "name": "NCSCM CZMP — Gujarat survey plots",
+      "endpoint": "https://gisportal.ncscm.res.in/server/rest/services/CZMP_STATES/CZMP_Gujarat/MapServer/6",
+      "idPrefix": "IN-GJ-CZMP-",
+      "parcelNumberField": "Sno",
+      "outFields": [
+        "OBJECTID",
+        "Sno",
+        "District",
+        "Taluka",
+        "Village"
+      ],
+      "pageSize": 1000,
+      "maxBboxKm2": 25,
+      "metricSrid": 32642,
+      "cityIds": [
+        "vapi"
+      ],
+      "scope": "Survey-plot outlines on the Gujarat Coastal Zone Management Plan. Coverage follows mapped coastal planning areas and can omit city centres and inland neighbourhoods. Labels are descriptive; application references are derived from each outline and change when the outline changes.",
+      "attribution": "National Centre for Sustainable Coastal Management (MoEFCC) — CZMP survey plots, Gujarat. Plot labels shown as published; references derived from geometry. Adapted to WGS84.",
+      "caveats": [
+        "Coastal-zone planning maps, not the land-records register: plot outlines are a geometry reference, not proof of current title or ownership.",
+        "Survey labels can be repeated, blank or zero. They are shown as published, never used as identity; OBJECTID is a transport field.",
+        "Application identity uses the source namespace plus canonical geometry SHA-256 at 1e-7-degree precision and a spatial locator. A changed outline gets a new reference; absence means that outline version was not returned.",
+        "The service answers browsers directly (CORS allows this site); no relay is used.",
+        "The service does not state the plan version or the survey date of the underlying plot maps."
+      ],
+      "metricSridByCity": {
+        "vapi": 32643
+      }
+    }
+  ]
+}

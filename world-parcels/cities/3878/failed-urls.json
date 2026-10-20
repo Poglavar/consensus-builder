@@ -1,0 +1,19 @@
+[
+  {
+    "url": "https://api.vworld.kr/req/data?service=data&request=GetFeature&data=LP_PA_CBND_BUBUN&geomFilter=BOX(129.0585,35.1595,129.0595,35.1605)&size=3&format=json"
+  },
+  {
+    "url": "https://www.vworld.kr/dtmk/dtmk_ntads_s002.do?svcCde=NA&dsId=23"
+  },
+  {
+    "url": "https://apis.data.go.kr/1611000/nsdi/IndvdLandPriceService/wms/getIndvdLandPriceWMS",
+    "reason": "400"
+  },
+  {
+    "url": "https://www.busan.go.kr/",
+    "reason": "401"
+  },
+  {
+    "url": "https://data.busan.go.kr/"
+  }
+]

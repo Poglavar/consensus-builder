@@ -1,0 +1,110 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "3224",
+  "name": "Málaga",
+  "point": [
+    36.719979707331,
+    -4.43788341316648
+  ],
+  "bindings": [
+    {
+      "appCityId": "malaga",
+      "runtimeConfig": {
+        "id": "malaga",
+        "label": "Málaga",
+        "currency": {
+          "locale": "es-ES",
+          "code": "EUR"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            36.719979707331,
+            -4.43788341316648
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            36.719979707331,
+            -4.43788341316648
+          ],
+          "fallbackDataset": [
+            -4.43788341316648,
+            36.719979707331
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "es-malaga-municipal-parcel-snapshot",
+          "idPrefix": "ES-MALAGA-PARCELA-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 3,
+          "attribution": "<a href=\"https://datosabiertos.malaga.eu/tr/dataset/sistema-de-informacion-cartografica-parcela\">Ayuntamiento de Málaga municipal parcel polygons</a> · CC BY 4.0 · adapted"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "es-malaga-municipal-parcel-snapshot",
+      "name": "Málaga municipal cartographic parcel polygons",
+      "adapter": "geojson-snapshot",
+      "endpoint": "https://datosabiertos.malaga.eu/recursos/urbanismoEInfraestructura/planimetria/callejero/da_cartografiaParcela-4326.geojson",
+      "idFields": [
+        "ID_PARCELA"
+      ],
+      "outFields": [
+        "ID_PARCELA"
+      ],
+      "parcelNumberField": "ID_PARCELA",
+      "idPrefix": "ES-MALAGA-PARCELA-",
+      "maxSnapshotBytes": 67108864,
+      "maxSnapshotFeatures": 60000,
+      "expectedSnapshotFeatures": 58631,
+      "expectedEtag": "\"314864d-65d53018af75b-gzip\"",
+      "maxFeatures": 3000,
+      "maxBboxKm2": 1,
+      "countryCode": "ES",
+      "metricSrid": 32630,
+      "cityIds": [
+        "malaga"
+      ],
+      "maxConcurrentQueries": 1,
+      "operator": "Ayuntamiento de Málaga",
+      "scope": "145 distinct unmodified full municipal cartographic parcel polygons around the unchanged WUP locator passed thirteen bounded grid cells, complete footprint lookup and source binding. Two independent anonymous downloads returned the complete 58,631-feature EPSG:4326 snapshot with identical decoded body hashes and the runtime gzip representation ETag. All 145 fresh exact native ID_PARCELA reads and explicit absence passed. Independent EPSG:32630 GEOS audit found no invalid polygons, duplicate geometry, overlaps above 0.01 m² or operation errors in this bounded union. The exact locator lies inside ID_PARCELA 4196772. Snapshot revisions fail closed pending review; this does not establish citywide completeness, legal title, survey accuracy or currentness.",
+      "catalogueUrl": "https://datosabiertos.malaga.eu/tr/dataset/sistema-de-informacion-cartografica-parcela",
+      "attribution": "Ayuntamiento de Málaga · municipal cartographic parcel polygons · CC BY 4.0 · adapted",
+      "licenceNote": "CC BY 4.0 per municipal catalogue. Published cartographic polygons do not establish legal title or survey accuracy.",
+      "licenceUrl": "https://datosabiertos.malaga.eu/tr/dataset/sistema-de-informacion-cartografica-parcela"
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+[
+  {
+    "url": "https://info.cpfh-gabon.com/",
+    "reason": "406"
+  },
+  {
+    "url": "https://interieur.gouv.ga/decoupage-administratif/"
+  },
+  {
+    "url": "https://info.cpfh-gabon.com/terrain/{id}"
+  }
+]

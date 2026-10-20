@@ -1,0 +1,19 @@
+[
+  {
+    "url": "https://www.hangzhoumap.gov.cn/",
+    "reason": "timeout after 12 seconds"
+  },
+  {
+    "url": "https://ditu.zjzwfw.gov.cn/platform-main/index.html",
+    "reason": "DNS resolution timeout after 12 seconds"
+  },
+  {
+    "url": "https://www.linan.gov.cn/attach/0/c74d525117ee477da2c1fbd3272983bb.pdf"
+  },
+  {
+    "url": "https://www.linan.gov.cn/art/2025/5/22/art_1229262640_4356917.html"
+  },
+  {
+    "url": "https://www.linan.gov.cn/"
+  }
+]

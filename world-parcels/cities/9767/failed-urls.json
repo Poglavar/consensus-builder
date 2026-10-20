@@ -1,0 +1,22 @@
+[
+  {
+    "url": "https://tgrac.telangana.gov.in/arcgis/rest/services/LIS_Folder/LandInformationSystem_Query/MapServer/0/query",
+    "reason": "400"
+  },
+  {
+    "url": "https://tgrac.telangana.gov.in/arcgis/rest/services/LIS_Folder/LandInformationSystem_Query/MapServer/0"
+  },
+  {
+    "url": "https://tgrac.telangana.gov.in/trac/surveyoflands-project.php"
+  },
+  {
+    "url": "https://bhulandrecords.in/"
+  },
+  {
+    "url": "https://dilrmp.gov.in/dilrmpold/PhyscialComponent/mapDigitization/tehsil-level/533"
+  },
+  {
+    "url": "https://tgrac.telangana.gov.in/arcgis/rest/services/Bhunaksha_Folder/Bhunaksha_query/MapServer/0",
+    "reason": "Held before qualification: Parcel provider is unavailable."
+  }
+]

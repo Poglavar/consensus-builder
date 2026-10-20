@@ -1,0 +1,6 @@
+[
+  {
+    "url": "https://uldk.gugik.gov.pl/",
+    "reason": "Source data defect, not repaired: every source check passed, but the metric audit found parcel 246401_1.0181.11/8 (901 m2) lying entirely inside 246401_1.0181.11/9 (100% of the smaller parcel)."
+  }
+]

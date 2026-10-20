@@ -193,7 +193,7 @@ function collectProposalFeatureSets(proposal, options = {}) {
     // populate parcelFeatures for parents or road descendants here to avoid the
     // O(N) toGeoJSON clones that dominated collectProposalFeatureSets runtime.
 
-    if (resolveProposalGoalKey(proposal, null) === 'road-track' && proposal.roadProposal?.definition) {
+    if (window.ProposalDesignGoals?.keyOf(proposal) === 'road-track' && proposal.roadProposal?.definition) {
         const definition = proposal.roadProposal.definition;
         let geometry = definition.polygon;
         if (!geometry && typeof corridorSurfaceFootprintForDefinition === 'function') {
@@ -1172,52 +1172,31 @@ function calculateProposalBounds(parcelIds, options = {}) {
 }
 
 function computeProposalArea(proposal) {
-    if (!proposal) return 0;
-
     // A proposal's area is its site's when it has one (drawn sites need not follow parcels).
-    if (proposal.site && window.__siteDraft && typeof window.__siteDraft.siteAreaM2 === 'function') {
-        const siteArea = window.__siteDraft.siteAreaM2(proposal.site);
-        if (siteArea > 0) return siteArea;
+    // Measurement failure leaves an unknown extent; no building footprint substitutes for it.
+    let siteAreaM2 = null;
+    if (proposal?.site) {
+        try { siteAreaM2 = window.__siteDraft?.siteAreaM2(proposal.site) ?? null; }
+        catch (error) { console.warn('[computeProposalArea] Could not measure the proposal site:', error); }
     }
-
-    if (Array.isArray(proposal.cadastreParcelIds) && proposal.cadastreParcelIds.length > 0) {
-        return proposal.cadastreParcelIds.reduce((sum, id) => sum + getParcelAreaById(id), 0);
-    }
-
-    try {
-        if (proposal.structureProposal?.geometry && typeof turf !== 'undefined' && typeof turf.area === 'function') {
-            return turf.area(proposal.structureProposal.geometry);
-        }
-        if (proposal.buildingProposal?.buildingFeature && typeof turf !== 'undefined' && typeof turf.area === 'function') {
-            return turf.area(proposal.buildingProposal.buildingFeature);
-        }
-    } catch (_) {
-        // fall back silently when turf measurement fails
-    }
-
-    return 0;
+    const sources = proposal?.site ? {} : getProposalAreaMap(proposal);
+    return window.ProposalArea.primaryArea({ ...sources, hasSite: !!proposal?.site,
+        siteAreaM2: Number.isFinite(siteAreaM2) && siteAreaM2 > 0 ? siteAreaM2 : null });
 }
 
 function computeProposalMetrics(proposal) {
     const createdAt = Date.parse(proposal.createdAt) || 0;
-    const executedAt = proposal.executedAt ? (Date.parse(proposal.executedAt) || 0) : 0;
-    const parcelCount = Array.isArray(proposal.cadastreParcelIds) ? proposal.cadastreParcelIds.length : 0;
-    const acceptedCount = Array.isArray(proposal.acceptedParcelIds) ? proposal.acceptedParcelIds.length : 0;
-    const acceptanceRatio = parcelCount > 0 ? acceptedCount / parcelCount : 0;
+    const consent = getProposalConsentMetrics(proposal);
     const offerValue = Number.isFinite(Number(proposal.offer)) ? Number(proposal.offer) : (Number.isFinite(Number(proposal.budget)) ? Number(proposal.budget) : 0);
     const area = computeProposalArea(proposal);
-    const goalKey = resolveProposalGoalKey(proposal, null) || 'other';
+    const goalKey = window.ProposalDesignGoals?.keyOf(proposal) || 'other';
     const typeKey = goalKey;
     const author = (proposal.author || '').trim();
     const title = (proposal.title || '').trim();
 
     return {
         createdAt,
-        executedAt,
-        parcelCount,
-        acceptedCount,
-        acceptanceRatio,
-        acceptancePercent: acceptanceRatio * 100,
+        ...consent,
         offerValue,
         area,
         goalKey,
@@ -1278,9 +1257,7 @@ function buildProposalThumbHtml(proposal) {
     // No image: show the goal badge and nothing else. Thumbnails are rendered server-side when a
     // proposal is uploaded, so there is no "generate" action left for the user to take here — a
     // proposal without one is either purely local or one the backfill has yet to reach.
-    const goalKey = (typeof normalizeGoalKey === 'function')
-        ? normalizeGoalKey(proposal.goal || proposal.proposalType || '')
-        : '';
+    const goalKey = window.ProposalDesignGoals?.keyOf(proposal) || '';
     const badge = (typeof getProposalGoalBadge === 'function') ? getProposalGoalBadge(goalKey) : null;
     const icon = badge ? badge.text : '🖼';
     return `

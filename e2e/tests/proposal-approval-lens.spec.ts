@@ -364,8 +364,8 @@ test('four owners across three parcels accept only for themselves through a lens
   }, proposalId), 'the seeded readjustment must be valid').toBe(true);
 
   await openLand(page, proposalId);
-  await expect(card(page)).toContainText('Not enough yet');
-  await expect(card(page)).toContainText('Every owner must accept.');
+  await expect(card(page)).toContainText('Configured approval rules not met');
+  await expect(card(page)).toContainText('Configured approval rules require every owner to accept.');
   await expect(card(page).locator('[data-approval-local-only]')).toHaveText('Acceptances stay in this browser until the proposal is published.');
   await expect(card(page).locator('[data-approval-meter="owners"]')).toContainText('0 of 4 accepted');
   await expect(card(page).locator('[data-approval-outstanding]')).toHaveText('Still to accept: Owner A, Owner B, Owner C, Owner D');
@@ -387,10 +387,10 @@ test('four owners across three parcels accept only for themselves through a lens
   await expect(dialog(page)).toHaveAttribute('data-approval-review', 'owner-a');
   await expect(dialog(page).locator(`[data-approval-contribution="${PARCELS.a}"]`)).toContainText('Your share 1/1');
   await expect(dialog(page).locator('[data-approval-plot="1"]')).toContainText('100%');
-  await expect(dialog(page).locator('[data-approval-cash="pays"]')).toContainText('Cash you pay');
+  await expect(dialog(page).locator('[data-approval-cash="pays"]')).toContainText('Cash you would pay');
   await expect(dialog(page).locator('[data-approval-cash="pays"]')).toContainText('5.00');
-  await expect(dialog(page)).toContainText(/Owners receive 25\.00\sEUR and pay 5\.00\sEUR in total\./);
-  await expect(dialog(page)).toContainText(/The sponsor pays 20\.00\sEUR\./);
+  await expect(dialog(page)).toContainText(/Proposed owner cash: 25\.00\sEUR to receive and 5\.00\sEUR to pay\./);
+  await expect(dialog(page)).toContainText(/The sponsor would pay 20\.00\sEUR\./);
   await screenshot(page, testInfo, 'review-owner-a');
   expect(await page.evaluate(() => (window as any).__e2eWallet.signed.filter((entry: any) =>
     entry.text.startsWith('Urban Game Theory owner decision')).length), 'nothing is signed before the review').toBe(0);
@@ -435,7 +435,7 @@ test('four owners across three parcels accept only for themselves through a lens
 
   await useWallet(page, wallets.b.address);
   await verifyAndAccept(page, 'b');
-  await expect(card(page)).toContainText('Enough to pass');
+  await expect(card(page)).toContainText('Configured approval rules met');
   await expect(card(page).locator('[data-approval-meter="owners"]')).toContainText('4 of 4 accepted');
   await expect(card(page).locator('[data-approval-outstanding]')).toHaveText('Every owner has accepted.');
   await card(page).scrollIntoViewIfNeeded();
@@ -447,14 +447,14 @@ test('four owners across three parcels accept only for themselves through a lens
   await expect(withdraw).toBeVisible();
   await withdraw.click();
   await expect(card(page).locator('[data-approval-meter="owners"]')).toContainText('3 of 4 accepted');
-  await expect(card(page)).toContainText('Not enough yet');
+  await expect(card(page)).toContainText('Configured approval rules not met');
   await expect(card(page).locator('[data-approval-outstanding]')).toHaveText('Still to accept: Owner B');
   await card(page).locator('[data-approval-action="review"][data-owner-id="owner-b"]').click();
   await dialog(page).locator('[data-approval-accept="owner-b"]').click();
   await expect(dialog(page)).toHaveAttribute('data-approval-receipt', 'owner-b');
-  await expect(dialog(page)).toContainText('The proposal now has enough acceptances to pass.');
+  await expect(dialog(page)).toContainText('The verified decisions meet this proposal’s configured approval rules.');
   await dialog(page).locator('.cb-dialog__footer').getByRole('button', { name: 'Done', exact: true }).click();
-  await expect(card(page)).toContainText('Enough to pass');
+  await expect(card(page)).toContainText('Configured approval rules met');
 
   const stored = await proposalState(page, proposalId);
   for (const id of ['a', 'b', 'c', 'd'] as const) {
@@ -464,7 +464,7 @@ test('four owners across three parcels accept only for themselves through a lens
       evidence: { rights: { member: memberKey }, authority: { member: memberKey, ownerId: `owner-${id}`, actorId: wallets[id].address } }
     });
   }
-  expect(stored.lifecycleStatus).toBe('Active'); // Passed, but the unfunded cash keeps it from executing.
+  expect(stored.lifecycleStatus).toBe('Active'); // Recording verified consent does not execute the proposal.
   expect(stored.ownerApprovalHistory.map((receipt: any) => [receipt.ownerId, receipt.decision]))
     .toEqual([['owner-b', 'approve'], ['owner-b', 'withdraw']]);
   const signed = await page.evaluate(() => (window as any).__e2eWallet.signed);
@@ -479,7 +479,7 @@ test('four owners across three parcels accept only for themselves through a lens
   await page.waitForFunction(() => !!(window as any).proposalStorage && !!(window as any).ProposalApprovalPanel);
   await page.evaluate(() => (window as any).i18n.setLanguage('en'));
   await openLand(page, proposalId);
-  await expect(card(page)).toContainText('Enough to pass');
+  await expect(card(page)).toContainText('Configured approval rules met');
   await expect(card(page).locator('[data-approval-meter="owners"]')).toContainText('4 of 4 accepted');
   expect(await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth),
     '390px viewport must not scroll horizontally').toBe(false);
@@ -512,11 +512,12 @@ test('the review shows what an owner contributes, gets back and signs, on a phon
   await expect(review.locator('[data-approval-plot="3"]')).toContainText('50%');
   await expect(review.locator('[data-approval-plot="3"]')).toContainText('shared with Owner D');
   await expect(review.locator('[data-approval-cash="receives"]')).toContainText('7.50');
-  await expect(review).toContainText('All owners must accept before payout');
-  await expect(review).toContainText('The cash is not funded yet');
-  await expect(review).toContainText('attested by: Test notary');
+  await expect(review).toContainText('Authored terms require every owner to accept before payout. This does not confirm funding or payment.');
+  await expect(review).toContainText('Funding is not marked ready in this record.');
+  await expect(review).toContainText('Declared rights source: upload · register-2026-10');
+  await expect(review).toContainText('Selected verification lens: Test notary');
   await expect(review.locator('[data-approval-progress-with]')).toContainText('1 of 4 owners');
-  await expect(review).toContainText('More owners must accept after you before it passes.');
+  await expect(review).toContainText('Further decisions would still be needed under the configured approval rules.');
   const bounds = await review.boundingBox();
   expect(bounds).not.toBeNull();
   expect(bounds!.x).toBeGreaterThanOrEqual(0);
@@ -528,6 +529,17 @@ test('the review shows what an owner contributes, gets back and signs, on a phon
   await review.locator('.cb-dialog__footer').getByRole('button', { name: 'Cancel', exact: true }).click();
   expect((await proposalState(page, proposalId)).ownerApprovals || {}).toEqual({});
   expect(await page.evaluate(() => (window as any).__e2eWallet.signed.filter((entry: any) => entry.text.startsWith('Urban Game Theory owner decision')).length)).toBe(0);
+
+  await page.setViewportSize({ width: 320, height: 740 });
+  await page.evaluate(async () => {
+    const w = window as any;
+    await w.i18n.setLanguage('es');
+    w.ProposalApprovalPanel.renderCards();
+  });
+  await card(page).scrollIntoViewIfNeeded();
+  expect(await card(page).evaluate(element => element.scrollWidth <= element.clientWidth + 1),
+    'localized approval status must fit a 320px viewport').toBe(true);
+  await screenshot(page, testInfo, 'approval-status-es-320');
 });
 
 // Anyone can read each owner's deal from the card: no wallet, no lens member, nothing signed. The
@@ -569,19 +581,19 @@ test('a scheme with an authority: owner support by area, then the municipality a
   await openLand(page, proposalId);
   await expect(card(page).locator('[data-approval-regime="es-ct-basic"]')).toContainText('Catalonia — basic compensation');
   await expect(card(page).locator('[data-approval-regime="es-ct-basic"]')).toContainText('Research template');
-  await expect(card(page).locator('.approval-card__rule')).toHaveText('Passes with more than 1/2 of the area, and needs the municipality’s approval of the compensation project.');
+  await expect(card(page).locator('.approval-card__rule')).toHaveText('Configured approval rules require more than 1/2 of the area and the municipality’s approval of the compensation project.');
   await expect(card(page).locator('[data-approval-meter="area"]')).toContainText('Needs more than 87.5');
   // Heads are not a test here: owners are shown, not counted.
   await expect(card(page).locator('[data-approval-meter="owners"]')).toContainText('Heard, not counted');
   await expect(card(page).locator('[data-approval-authority="ajuntament"]')).toHaveAttribute('data-approval-authority-state', 'pending');
-  await expect(card(page)).toContainText('Not enough yet');
+  await expect(card(page)).toContainText('Configured approval rules not met');
   await screenshot(page, testInfo, 'scheme-card-before');
 
   // Owner A alone holds 100 of 175 m²: the area test is met and only the authority is missing.
   await useWallet(page, wallets.a.address);
   await verifyAndAccept(page, 'a');
   await expect(card(page).locator('[data-approval-meter="area"]')).toContainText('100');
-  await expect(card(page).locator('[data-approval-awaiting-authority]')).toHaveText('Awaiting the authority');
+  await expect(card(page).locator('[data-approval-awaiting-authority]')).toHaveText('Required authority decision pending');
   await expect(card(page).locator('[data-approval-outstanding]')).toHaveText('Still to accept: Owner B, Owner C, Owner D');
 
   // The municipality's wallet is confirmed by the same lens member and approves the whole plan.
@@ -601,7 +613,7 @@ test('a scheme with an authority: owner support by area, then the municipality a
   await expect(dialog(page).locator('.cb-dialog__title')).toHaveText('Accepted as Authority');
   await expect(dialog(page).locator('[data-approval-receipt-progress]')).toContainText('authority approved');
   await dialog(page).locator('.cb-dialog__footer').getByRole('button', { name: 'Done', exact: true }).click();
-  await expect(card(page)).toContainText('Enough to pass');
+  await expect(card(page)).toContainText('Configured approval rules met');
   await expect(card(page).locator('[data-approval-authority="ajuntament"]')).toHaveAttribute('data-approval-authority-state', 'approved');
   await screenshot(page, testInfo, 'scheme-card-passed');
 
@@ -629,14 +641,17 @@ test('each owner\'s deal is readable by anyone from the Owner acceptance card', 
 
   const deal = dialog(page);
   await expect(deal.locator('.cb-dialog__title')).toHaveText('Owner D’s deal');
-  await expect(deal).toContainText('What Owner D puts in');
+  await expect(deal).toContainText('Proposed contribution from Owner D');
   await expect(deal.locator(`[data-approval-contribution="${PARCELS.c}"]`)).toContainText('Share 1/2');
   await expect(deal.locator(`[data-approval-contribution="${PARCELS.c}"]`)).toContainText('co-owned with Owner C');
-  await expect(deal).toContainText('What Owner D gets');
+  await expect(deal).toContainText('Proposed allocation to Owner D');
   await expect(deal.locator('[data-approval-plot="3"]')).toContainText('shared with Owner C');
-  await expect(deal.locator('[data-approval-cash="receives"]')).toContainText('Cash received');
+  await expect(deal.locator('[data-approval-cash="receives"]')).toContainText('Cash offered');
   await expect(deal.locator('[data-approval-cash="receives"]')).toContainText('7.50');
   await expect(deal.locator('[data-approval-progress-with]')).toContainText('With Owner D’s acceptance: 1 of 4 owners');
+  await expect(deal).toContainText('Selected verification lens: Test notary');
+  await expect(deal).toContainText('Declared rights source:');
+  await expect(deal).not.toContainText('is attested by');
   // Read-only: nothing here signs.
   await expect(deal).not.toContainText('Your wallet signs these exact terms');
   await screenshot(page, testInfo, 'deal-owner-d');
@@ -645,6 +660,9 @@ test('each owner\'s deal is readable by anyone from the Owner acceptance card', 
   const review = dialog(page);
   await expect(review.locator('.cb-dialog__title')).toHaveText('Accept as Owner D');
   await expect(review).toContainText('Your share 1/2');
+  await expect(review).toContainText('Your proposed allocation');
+  await expect(review).toContainText('Selected verification lens: Test notary');
+  await expect(review).not.toContainText('are attested by');
   await expect(review.locator('[data-approval-review-status]')).toContainText('first confirm with a lens member');
   expect((await proposalState(page, proposalId)).ownerApprovals || {}).toEqual({});
 });
@@ -743,7 +761,7 @@ test('two browsers share owner decisions through the relay, and each verifies th
     await verifyAndAccept(other, 'd', undefined, 'yes');
     await useWallet(other, wallets.b.address);
     await verifyAndAccept(other, 'b', undefined, 'yes');
-    await expect(card(other)).toContainText('Enough to pass');
+    await expect(card(other)).toContainText('Configured approval rules met');
     await expect(card(other).locator('[data-approval-meter="owners"]')).toContainText('4 of 4 accepted');
     expect(second.errors).toEqual([]);
   } finally {
@@ -759,7 +777,7 @@ test('two browsers share owner decisions through the relay, and each verifies th
   await page.waitForFunction(() => !!(window as any).proposalStorage && !!(window as any).ProposalApprovalPanel);
   await page.evaluate(() => (window as any).i18n.setLanguage('en'));
   await openLand(page, published.proposalId);
-  await expect(card(page)).toContainText('Enough to pass');
+  await expect(card(page)).toContainText('Configured approval rules met');
   await expect(card(page).locator('[data-approval-meter="owners"]')).toContainText('4 of 4 accepted');
   await card(page).scrollIntoViewIfNeeded();
   await screenshot(page, testInfo, 'first-browser-caught-up');

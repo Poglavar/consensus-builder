@@ -1,0 +1,107 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "1725",
+  "name": "Los Angeles, USA",
+  "point": [
+    34.0522,
+    -118.2437
+  ],
+  "bindings": [
+    {
+      "appCityId": "los_angeles",
+      "runtimeConfig": {
+        "id": "los_angeles",
+        "label": "Los Angeles, USA",
+        "currency": {
+          "locale": "en-US",
+          "code": "USD"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            34.0522,
+            -118.2437
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            34.0522,
+            -118.2437
+          ],
+          "fallbackDataset": [
+            -118.2437,
+            34.0522
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.0025,
+          "source": "parcel-source",
+          "sourceId": "us-ca-lacounty-assessor-parcels",
+          "idPrefix": "US-CA-LA-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 15,
+          "attribution": "<a href=\"https://egis-lacounty.hub.arcgis.com/documents/4d67b154ae614d219c58535659128e71/about\">County of Los Angeles · Assessor parcels · accessed Oct 2, 2026</a> · <a href=\"https://egis-lacounty.hub.arcgis.com/pages/terms-of-use\">Terms of use</a> · adapted"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "us-ca-lacounty-assessor-parcels",
+      "name": "Los Angeles County Assessor parcels",
+      "adapter": "arcgis",
+      "endpoint": "https://public.gis.lacounty.gov/public/rest/services/LACounty_Cache/LACounty_Parcel/MapServer/0",
+      "idField": "AIN",
+      "idType": "string",
+      "idPattern": "^[0-9]{10}$",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "US-CA-LA-",
+      "outFields": [
+        "OBJECTID",
+        "AIN",
+        "APN"
+      ],
+      "pageSize": 1000,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "countryCode": "US",
+      "metricSrid": 32611,
+      "scope": "Los Angeles County only; county assessor polygons do not establish coverage of adjacent counties or separate condominium title boundaries.",
+      "attribution": "County of Los Angeles, Assessor parcels. Enterprise GIS Repository. Accessed October 2, 2026. Adapted to WGS84.",
+      "licenceUrl": "https://egis-lacounty.hub.arcgis.com/pages/terms-of-use",
+      "catalogueUrl": "https://egis-lacounty.hub.arcgis.com/documents/4d67b154ae614d219c58535659128e71/about",
+      "cityIds": [
+        "los_angeles"
+      ],
+      "stateCode": "CA"
+    }
+  ]
+}

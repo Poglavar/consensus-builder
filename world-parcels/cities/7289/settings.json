@@ -1,0 +1,116 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "7289",
+  "name": "Miami, USA",
+  "point": [
+    25.7749,
+    -80.1936
+  ],
+  "bindings": [
+    {
+      "appCityId": "miami",
+      "runtimeConfig": {
+        "id": "miami",
+        "label": "Miami, USA",
+        "currency": {
+          "locale": "en-US",
+          "code": "USD"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            25.7749,
+            -80.1936
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            25.7749,
+            -80.1936
+          ],
+          "fallbackDataset": [
+            -80.1936,
+            25.7749
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.0025,
+          "source": "parcel-source",
+          "sourceId": "us-fl-miamidade-pa-parcels",
+          "idPrefix": "US-FL-MIAMI-DADE-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 12,
+          "attribution": "<a href=\"https://gis-mdc.opendata.arcgis.com/datasets/MDC::parcel/about\">Miami-Dade County GIS · Property Appraiser parcels · data terms</a> · adapted"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "us-fl-miamidade-pa-parcels",
+      "name": "Miami-Dade County Property Appraiser parcels",
+      "adapter": "arcgis",
+      "endpoint": "https://gisfs.miamidade.gov/mdarcgis/rest/services/MD_PA_PropertySearch/MapServer/1",
+      "idField": "GLOBALID",
+      "idType": "string",
+      "idPattern": "^\\{[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}\\}$",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "US-FL-MIAMI-DADE-",
+      "outFields": [
+        "OBJECTID",
+        "GLOBALID",
+        "FOLIO",
+        "PARCEL"
+      ],
+      "pageSize": 1000,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "countryCode": "US",
+      "metricSrid": 32617,
+      "scope": "Miami-Dade County only; does not cover Broward or Palm Beach counties. Property assessment polygons are approximate. Additional enabled city entries have separate bounded qualification evidence; wider coverage remains unverified.",
+      "attribution": "Miami-Dade County GIS, Property Appraiser parcels. Adapted to WGS84.",
+      "licenceUrl": "https://gis-mdc.opendata.arcgis.com/datasets/MDC::parcel/about",
+      "licenceNote": "Official public dataset supplies data for use subject to an accuracy/reliance disclaimer; no named open-data licence is stated.",
+      "catalogueUrl": "https://gis-mdc.opendata.arcgis.com/datasets/MDC::parcel/about",
+      "parcelNumberField": "FOLIO",
+      "cityIds": [
+        "miami"
+      ],
+      "stateCode": "FL",
+      "metricSridByCity": {
+        "miami": 32617
+      },
+      "cityScopes": {
+        "homestead": "125 unchanged native parcel polygons passed all eight qualification gates in bounded cells around the UN/WUP locator. Fresh independent metric audit (EPSG:32617) found zero invalid polygons, identity conflicts, duplicate geometry, material overlaps, or operation errors. Citywide completeness, legal title, survey accuracy, and currentness are not established."
+      }
+    }
+  ]
+}

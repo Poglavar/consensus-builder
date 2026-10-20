@@ -1,0 +1,6 @@
+[
+  {
+    "url": "https://owsproxy.lgl-bw.de/owsproxy/wfs/WFS_LGL-BW_ALKIS",
+    "reason": "Source data defect, not repaired: failed checks: metric; failures: {\"metric\": {\"errorType\": \"Error\", \"code\": \"metric-report-failed\"}}; metric blockers {'overlapPairCount': 2} of 68 source polygons (source geometry never repaired); overlap pairs (threshold 0.01 m2): [{\"ids\": [\"08205000000170000102\", \"08205000000187000006\"], \"areaM2\": 0.0296}, {\"ids\": [\"08205000000175000001\", \"08205000002736000200\"…"
+  }
+]

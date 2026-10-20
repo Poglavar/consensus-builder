@@ -1,0 +1,131 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "10917",
+  "name": "Chhapra, India",
+  "point": [
+    25.7832172997632,
+    84.7523408466032
+  ],
+  "bindings": [
+    {
+      "appCityId": "chhapra",
+      "runtimeConfig": {
+        "id": "chhapra",
+        "wupCityCode": "10917",
+        "label": "Chhapra, India",
+        "currency": {
+          "locale": "en-IN",
+          "code": "INR"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            25.7832172997632,
+            84.7523408466032
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            25.7832172997632,
+            84.7523408466032
+          ],
+          "fallbackDataset": [
+            84.7523408466032,
+            25.7832172997632
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "in-br-matribhoomi-chapra-ground",
+          "idPrefix": "IN-BR-MB-CHAPRA-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Matribhoomi cadastral map service (Government of India, mapservice.gov.in) — Bihar village maps. Adapted to WGS84."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "in-br-matribhoomi-chapra-ground",
+      "name": "Matribhoomi (Survey of India) — Chapra tehsil cadastral map, Bihar (overlaps resolved)",
+      "adapter": "arcgis",
+      "endpoint": "https://mapservice.gov.in/mapserviceserv176/rest/services/Matribhoomi/Matribhoomi/MapServer/72",
+      "idFields": [
+        "BHUCODE",
+        "KID",
+        "KPARTH"
+      ],
+      "idFieldTypes": {
+        "BHUCODE": "string",
+        "KID": "string",
+        "KPARTH": "string"
+      },
+      "objectIdField": "OBJECTID",
+      "idPrefix": "IN-BR-MB-CHAPRA-",
+      "parcelNumberField": "KID",
+      "outFields": [
+        "OBJECTID",
+        "BHUCODE",
+        "KID",
+        "KPARTH",
+        "PAR_TYPE",
+        "VIL_LGD",
+        "dtname",
+        "sdtname"
+      ],
+      "pageSize": 1000,
+      "maxFeatures": 5000,
+      "maxBboxKm2": 4,
+      "maxConcurrentQueries": 2,
+      "countryCode": "IN",
+      "stateCode": "BR",
+      "metricSrid": 32645,
+      "cityIds": [
+        "chhapra"
+      ],
+      "scope": "Khesra parcels of Chapra tehsil (Bihar) on the national Matribhoomi cadastral map service, keyed by the village map code (BHUCODE), khesra number and part. Parcel types include agricultural plots, settlement (abadi), roads and water.",
+      "attribution": "Matribhoomi cadastral map service (Government of India, mapservice.gov.in) — Bihar village maps. Adapted to WGS84.",
+      "catalogueUrl": "https://mapservice.gov.in/",
+      "licenceNote": "No reuse licence is stated on the public Matribhoomi map service.",
+      "caveats": [
+        "Village cadastral maps: not proof of current title or ownership.",
+        "OBJECTID is a transport field; identity is BHUCODE + KID + KPARTH (a blank part is kept as published).",
+        "Some outlines overlap (neighbouring village maps were drawn and georeferenced separately). Each overlap is given to the larger outline (equal areas: the lower reference); the smaller parcel shows the rest as derived ground. References still come from the published outline or key.",
+        "Found through ramSeraph/indian_cadastrals (github.com/ramSeraph/indian_cadastrals); the map is read live from mapservice.gov.in.",
+        "The service answers browsers directly (CORS allows this site); no relay is used.",
+        "The server's certificate chains to Let's Encrypt's ISRG Root YR, which current Chrome trusts but older systems and Node's bundled store may not."
+      ],
+      "overlapResolution": "overlap-ground-v1-area-desc-id-asc-turf6"
+    }
+  ]
+}

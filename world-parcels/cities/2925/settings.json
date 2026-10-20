@@ -1,0 +1,107 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "2925",
+  "name": "Toronto, Canada",
+  "point": [
+    43.6535,
+    -79.3825
+  ],
+  "bindings": [
+    {
+      "appCityId": "toronto",
+      "runtimeConfig": {
+        "id": "toronto",
+        "label": "Toronto, Canada",
+        "currency": {
+          "locale": "en-CA",
+          "code": "CAD"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            43.6535,
+            -79.3825
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            43.6535,
+            -79.3825
+          ],
+          "fallbackDataset": [
+            -79.3825,
+            43.6535
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.005,
+          "source": "parcel-source",
+          "sourceId": "ca-on-toronto-property-boundary",
+          "idPrefix": "CA-ON-TORONTO-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 15,
+          "attribution": "<a href=\"https://open.toronto.ca/dataset/property-boundaries/\">City of Toronto Property Boundary</a> · <a href=\"https://open.toronto.ca/open-data-license/\">Open Government Licence – Toronto</a>"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "ca-on-toronto-property-boundary",
+      "name": "City of Toronto Property Boundary",
+      "adapter": "arcgis",
+      "endpoint": "https://gis.toronto.ca/arcgis/rest/services/cot_geospatial27/FeatureServer/36",
+      "idField": "PARCELID",
+      "idType": "integer",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "CA-ON-TORONTO-",
+      "outFields": [
+        "OBJECTID",
+        "PARCELID",
+        "FEATURE_TYPE",
+        "DATE_EFFECTIVE",
+        "DATE_EXPIRY"
+      ],
+      "pageSize": 2000,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "countryCode": "CA",
+      "metricSrid": 32617,
+      "scope": "City of Toronto municipal parcel fabric; surrounding municipalities are separate sources",
+      "attribution": "Contains information licensed under the Open Government Licence – Toronto.",
+      "licenceUrl": "https://open.toronto.ca/open-data-license/",
+      "catalogueUrl": "https://open.toronto.ca/dataset/property-boundaries/",
+      "cityIds": [
+        "toronto"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+[
+  {
+    "url": "https://bz1uwwpkuinzbk94.svcs5.arcgis.com/bz1uwWPKUInZBK94/arcgis/rest/services/CA_Statewide_Parcels_Public_view/FeatureServer/0",
+    "reason": "Held at the geometry gate: every source check passed (44 requests, 1 qualifier run(s) on this city) but the independent metric audit failed for La Rambla (us-ca-calfire-statewide-parcels) with 150 material overlap pair(s) (> 0.01 m2; max 1.13e+03 m2, 100% of the smaller; total 1.06e+05 m2); 133 exact-duplicate geometries under distinct IDs among 234 cached features (06037~7458012045 / 06037~74580…"
+  }
+]

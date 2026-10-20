@@ -1,0 +1,23 @@
+[
+  {
+    "url": "https://www.djy.gov.cn/",
+    "reason": "412"
+  },
+  {
+    "url": "https://cdsdjys.sczwfw.gov.cn/",
+    "reason": "timeout"
+  },
+  {
+    "url": "https://www.chengdu.gov.cn/data/oportal/index",
+    "reason": "not completed after bounded timeout"
+  },
+  {
+    "url": "https://cdsdjys.sczwfw.gov.cn/module/download/downfile.jsp?classid=0&filename=ee11c23c9bd44d789b57db3c827d1aaf.pdf"
+  },
+  {
+    "url": "https://www.rerc.com.cn/"
+  },
+  {
+    "url": "https://www.cgs.gov.cn/ywdt/ddyw/202504/t20250423_820380.html"
+  }
+]

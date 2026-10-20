@@ -1,8 +1,8 @@
 // Security contract of the proposal API (audit 2026-09): edit tokens on every PATCH, unprovable
-// client claims dropped on the free upload, deterministic single-row addressing (row id first), and
+// client claims dropped on the free upload, disjoint row/authored identifier namespaces, and
 // capped list limits. Route-level, against a mock pool; the id-collision tests use a tiny
-// table-backed fake that applies the WHERE/ORDER BY/LIMIT the route sends, so a query without an
-// explicit precedence returns whatever row the "heap" holds first — exactly the prod bug.
+// table-backed fake that applies the route's WHERE/LIMIT, including the ambiguous query this
+// contract replaces, so crossing identifier namespaces fails the regression checks.
 import { describe, it, expect, beforeEach, afterAll, vi } from 'vitest';
 import fs from 'node:fs';
 import request from 'supertest';
@@ -114,6 +114,18 @@ describe('POST /proposals drops claims the free route cannot prove', () => {
         expect(stored).not.toHaveProperty('ownerAcceptances');
     });
 
+    it.each(['Active', 'Cancelled', 'Expired', 'draft'])(
+        'drops a client execution timestamp from a %s upload', async lifecycleStatus => {
+            pool.setResults([insertResult(), updateResult()]);
+            const response = await request(app).post('/proposals').send(validProposalBody({
+                lifecycleStatus, executedAt: '2026-10-01T10:00:00.000Z'
+            }));
+            expect(response.status).toBe(201);
+            const params = pool.getCalls()[0].params;
+            expect(params[7]).toBe(lifecycleStatus);
+            expect(JSON.parse(params[32])).not.toHaveProperty('executedAt');
+        });
+
     it('keeps author-controlled lifecycle states on ordinary server uploads', async () => {
         pool.setResults([insertResult(), updateResult()]);
         const response = await request(app).post('/proposals').send(validProposalBody({ lifecycleStatus: 'Cancelled' }));
@@ -209,6 +221,7 @@ describe('PATCH /proposals/epochs writes only entries with a matching token', ()
 
         expect(res.status).toBe(200);
         expect(res.body).toMatchObject({ requested: 4, updated: 1, missing: ['nope'], forbidden: ['c2-theirs', '3'] });
+        expect(pool.getCalls()[0].params).toEqual([['1', '3'], ['c2-theirs', 'nope']]);
         const write = updates()[0];
         expect(write.params).toEqual([[1], [2045], [HASH]]);
         expect(write.sql).toContain('WHERE p.id = v.id AND p.edit_token_hash = v.token_hash');
@@ -221,6 +234,17 @@ describe('PATCH /proposals/epochs writes only entries with a matching token', ()
 
         expect(res.status).toBe(403);
         expect(res.body.forbidden).toEqual(['2']);
+        expect(updates()).toHaveLength(0);
+    });
+
+    it('does not edit an authored numeric alias when its addressed row is missing', async () => {
+        pool.setResult({ rows: [{ id: 45, proposal_id: '51', edit_token_hash: HASH }], rowCount: 1 });
+        const res = await request(app).patch('/proposals/epochs').send({
+            epochs: [{ id: '51', epochYear: 2045, editToken: TOKEN }]
+        });
+        expect(res.status).toBe(200);
+        expect(res.body).toMatchObject({ updated: 0, missing: ['51'], forbidden: [] });
+        expect(pool.getCalls()[0].params).toEqual([['51'], []]);
         expect(updates()).toHaveLength(0);
     });
 });
@@ -243,7 +267,14 @@ describe('an id that is both a row id and another row\'s proposal_id', () => {
                     const target = table.find(row => row.id === params[1] && row.edit_token_hash === params[2]);
                     return { rows: target ? [{ ...target, name: params[0], title: params[0] }] : [], rowCount: target ? 1 : 0 };
                 }
-                let rows = table.filter(row => row.proposal_id === key || String(row.id) === key);
+                let rows;
+                if (/WHERE id::text = \$1 LIMIT 1/.test(sql)) {
+                    rows = table.filter(row => String(row.id) === key);
+                } else if (/WHERE proposal_id = \$1 LIMIT 1/.test(sql)) {
+                    rows = table.filter(row => row.proposal_id === key);
+                } else {
+                    rows = table.filter(row => row.proposal_id === key || String(row.id) === key);
+                }
                 if (/ORDER BY \(id::text = \$1\) DESC/.test(sql)) {
                     rows = rows.slice().sort((a, b) => Number(String(b.id) === key) - Number(String(a.id) === key));
                 }
@@ -269,14 +300,26 @@ describe('an id that is both a row id and another row\'s proposal_id', () => {
         const res = await request(tableApp).head('/proposals/51');
 
         expect(res.status).toBe(200);
-        expect(res.headers['x-proposal-id']).toBe('51');
+        expect(res.headers['x-proposal-row-id']).toBe('51');
+        expect(res.headers['x-proposal-authored-id']).toBe('c2-row51');
     });
 
-    it('the legacy row stays reachable by its own row id and by a non-colliding proposal_id', async () => {
+    it('addresses rows by row ID and nonnumeric authored ID', async () => {
         const tableApp = createTestApp(tablePool([row51, row45]));
 
         expect((await request(tableApp).get('/proposals/45')).body).toMatchObject({ id: 45 });
         expect((await request(tableApp).get('/proposals/c2-row51')).body).toMatchObject({ id: 51 });
+    });
+
+    it('returns missing for numeric reads and edits instead of finding an authored numeric alias', async () => {
+        const backing = tablePool([row45]);
+        const tableApp = createTestApp(backing);
+        expect((await request(tableApp).get('/proposals/51')).status).toBe(404);
+        expect((await request(tableApp).head('/proposals/51')).status).toBe(404);
+        const edited = await request(tableApp).patch('/proposals/51/name')
+            .set(HEADER, 'token-45').send({ name: 'Wrong row' });
+        expect(edited.status).toBe(404);
+        expect(backing.calls.some(call => /^\s*UPDATE proposal/.test(call.sql))).toBe(false);
     });
 
     it('PATCH /proposals/51/name authorizes against row 51 and can only ever write that row', async () => {

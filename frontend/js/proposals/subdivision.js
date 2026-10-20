@@ -1,6 +1,6 @@
 // Subdivision of a site (PARCEL-OPTIONAL.md phase 4): land readjustment generalised to ground that
 // is partly or wholly open. The pool is the site; the bound parcels' part of it is contributed by
-// their owners, the rest is open ground, which contributes area and has no owner. A subdivision
+// their modeled owners; the rest is open ground, whose ownership is unknown. A subdivision
 // takes land and outputs only plots; a public strip is a plot assigned to public land.
 //
 // Pure: no DOM. turf is options.turf, the browser global, globalThis.turf or require('@turf/turf').
@@ -11,8 +11,8 @@
 })(typeof window !== 'undefined' ? window : globalThis, function (global) {
     'use strict';
 
-    // The pseudo-owner of open ground in a readjustment plan: a plot assigned to it stays ground
-    // nobody can consent for. It is never an agent, never paid, and never given ownership on apply.
+    // The accounting placeholder for open ground, with no represented ownership party. It is
+    // never an agent, cash recipient or ownership transfer; it makes no title finding.
     const OPEN_GROUND_OWNER_KEY = 'open-ground';
     // Below this a piece is clipping noise, not ground.
     const MIN_PIECE_M2 = 0.5;
@@ -108,8 +108,8 @@
 
     /**
      * Owner shares of a pool with open ground. `contributions` are the bound parcels' owners
-     * ({ownerKey, displayName, area, value|null, parcelIds}); open ground contributes area and has
-     * no owner and no known value, so a pool with open ground is measured by AREA (a value basis
+     * ({ownerKey, displayName, area, value|null, parcelIds}); open ground contributes area with
+     * unknown ownership and value, so a pool with open ground is measured by AREA (a value basis
      * would rate unknown ground at zero). Percent = contributed area / pool area, open ground
      * included as its own entry. Zero owners and zero open ground → no shares (never NaN).
      * @returns {{shares: object[], basis: 'value'|'area', totalArea: number, totalValue: number|null,
@@ -136,16 +136,16 @@
         if (openGroundM2 > 0) {
             shares.push({
                 ownerKey: OPEN_GROUND_OWNER_KEY,
-                displayName: opts.openGroundLabel || 'Open ground (no owner)',
+                displayName: opts.openGroundLabel || 'Open ground (unrepresented allocation)',
                 parcelIds: [],
                 area: openGroundM2,
                 value: null,
                 percent: openGroundM2 / totalArea,
-                noOwner: true
+                unrepresentedGround: true // Accounting exclusion, not a title finding.
             });
         }
         return {
-            shares: shares.filter(entry => entry.percent > 0).sort((a, b) => (a.noOwner === b.noOwner ? b.percent - a.percent : (a.noOwner ? 1 : -1))),
+            shares: shares.filter(entry => entry.percent > 0).sort((a, b) => (a.unrepresentedGround === b.unrepresentedGround ? b.percent - a.percent : (a.unrepresentedGround ? 1 : -1))),
             basis: useValue ? 'value' : 'area',
             totalArea,
             totalValue,
@@ -154,12 +154,18 @@
     }
 
     /**
-     * Readjustment ledger of one share entry. Open ground has no owner: nothing is owed or paid,
-     * so its balance and cash offer are null (not 0 — "no one to pay" is not "even").
-     * @param {object} entry a share ({area, value, noOwner})
+     * Readjustment ledger of one share entry. The open-ground placeholder has no represented
+     * party, so this model leaves its balance and cash offer null. Null is not a settled debt of 0.
+     * @param {object} entry a share ({area, value, unrepresentedGround})
      * @param {{basis: string, poolUnitValue: number|null, contributionRatio?: number, assignedArea: number}} context
      */
     function ledgerOf(entry, context) {
+        if (Object.prototype.hasOwnProperty.call(entry || {}, 'noOwner')) {
+            throw new Error('The noOwner marker is retired; use unrepresentedGround');
+        }
+        if (entry?.unrepresentedGround === true && entry.ownerKey !== OPEN_GROUND_OWNER_KEY) {
+            throw new Error('Unrepresented ground cannot also name a represented owner');
+        }
         const ctx = context || {};
         const useMoney = ctx.basis === 'value' && finite(ctx.poolUnitValue) && ctx.poolUnitValue > 0;
         const unit = useMoney ? ctx.poolUnitValue : 1;
@@ -169,14 +175,14 @@
         const entitled = contributed * ratio;
         const assignedArea = finite(ctx.assignedArea) && ctx.assignedArea > 0 ? ctx.assignedArea : 0;
         const assigned = assignedArea * unit;
-        const noOwner = !!(entry && (entry.noOwner || isOpenGroundOwnerKey(entry.ownerKey)));
+        const unrepresentedGround = !!(entry && (entry.unrepresentedGround === true || isOpenGroundOwnerKey(entry.ownerKey)));
         return {
             contributed,
             entitled,
             assigned,
             assignedArea,
-            cashBalance: noOwner ? null : assigned - entitled,
-            noOwner
+            cashBalance: unrepresentedGround ? null : assigned - entitled,
+            unrepresentedGround
         };
     }
 
@@ -201,7 +207,7 @@
         let best = null;
         let bestArea = MIN_PIECE_M2;
         for (const share of shares || []) {
-            const area = share.noOwner || isOpenGroundOwnerKey(share.ownerKey)
+            const area = share.unrepresentedGround || isOpenGroundOwnerKey(share.ownerKey)
                 ? overlap(pool.openGround)
                 : (share.parcelIds || []).reduce((sum, id) => sum + (byParcel.get(String(id)) || 0), 0);
             if (area > bestArea) { best = share.ownerKey; bestArea = area; }

@@ -1,0 +1,45 @@
+{
+  "purpose": "Prospective 2x2 marker/surface diagnostic on frozen image-only division probes and existing saved predictions.",
+  "schema": "visible-boundary-plan-v1",
+  "annotations": "annotations/visible-divisions-v1.json",
+  "annotation_sha256": "0b396045716cca0098ed8275899fdc1e1d6d2261417ee3284ae9d8c6ba191215",
+  "dataset": "output/pool/nearby-donor-v1/dataset",
+  "runs": "output/runs/selection-v5-settlement",
+  "previous_comparison": "output/visible-divisions-v1/comparison",
+  "previous_cell_report": "output/visible-divisions-v1/cell-partition/report.json",
+  "seeds": [1, 2, 3],
+  "expected_images": 9,
+  "expected_separation_probes": 27,
+  "expected_same_surface_probes": 9,
+  "reconstruction_size": 256,
+  "map_resize": "INTER_AREA from 512 to 256",
+  "configs": {"1": "t0.5-seeds1-hard0", "2": "t0.3-seeds1-hard0", "3": "t0.3-seeds1-hard0"},
+  "fixed": {"min_area_m2": 40.0, "keep_out_px": 2, "min_region_m2": 0, "hard_barrier": false, "seed_rim_px": 0},
+  "core_marker_recipe": {
+    "free_mask": "interior > 0.5 AND boundary < source-selected threshold AND no building seed AND outside fixed OSM barrier",
+    "erosion_iterations": 2,
+    "erosion_structure": "4-neighbour cross; outside image false",
+    "components": "4-connected components after erosion",
+    "admission": "same minimum 40 m2 on the remaining core and same 2 px building exclusion as native markers",
+    "identity": "one new label per admitted core; preserve all original building marker pixels and labels",
+    "no_fallback": "a rejected or erased component does not get a substitute marker"
+  },
+  "variants": [
+    {"id": "native-distance", "markers": "native", "surface": "distance"},
+    {"id": "core-distance", "markers": "core", "surface": "distance"},
+    {"id": "native-boundary", "markers": "native", "surface": "boundary"},
+    {"id": "core-boundary", "markers": "core", "surface": "boundary"}
+  ],
+  "geometry": "unchanged exact-cell constructor; no smoothing, contour filtering, cleanup or repair",
+  "control": "native-distance label raster must exactly equal each saved no-small-region-merge raster; probe outcomes and geometry counts must reproduce the previous exact-cell report",
+  "invariants": ["same OSM barriers in all variants", "all building seeds preserved", "each marker map identical across surface variants", "all output cells/areas verified", "all 108 tile outputs retained"],
+  "diagnostics": [
+    "Before flooding: per-probe same positive marker, different positive markers, one unseeded or both unseeded; zero is absence, never a marker identity.",
+    "Boundary probability sampled along the straight anchor connector: quantiles/maximum are descriptive only, not visibility evidence or boundary recall.",
+    "Image/boundary/marker overlays for all nine images and three seeds; distinguish visual assessment from measured probe outcomes."
+  ],
+  "secondary": ["same-surface fragmentation", "feature and component counts", "covered area", "OSM building area retained by one output feature", "predicted-boundary support on final internal shared edges"],
+  "support_metric": "Internal shared edges between different positive raster labels only; score their average adjacent-cell boundary probability and length below 0.3. This measures model support, not verified physical support; exclude exterior and zero-label edges.",
+  "decision": "Descriptive comparison only. Seek fewer final-polygon false joins without lost pair coverage; report every paired change, seed, new join, fragment and building-cut outcome. A candidate cannot advance on an aggregate gain that hides losses. No weights, significance claim, model promotion or runtime change.",
+  "limits": "Same previously inspected Croatian development geography and agent-draft probes. Learned boundary support cannot validate itself; unsupported physical cuts and building reality still require human image review. No held-out final/confirmation imagery or cadastral labels are read."
+}

@@ -1,0 +1,22 @@
+[
+  {
+    "url": "https://egovamc.com/",
+    "reason": "525"
+  },
+  {
+    "url": "https://gis.ahmedabadcity.gov.in/arcgis/rest/services?f=json",
+    "reason": "<urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: certificate has expired (_ssl.c:1082)>"
+  },
+  {
+    "url": "https://gis.ahmedabadcity.gov.in/portal/sharing/rest/portals/self?f=json",
+    "reason": "<urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: certificate has expired (_ssl.c:1082)>"
+  },
+  {
+    "url": "https://anyror.gujarat.gov.in/",
+    "reason": "<urlopen error timed out>"
+  },
+  {
+    "url": "https://townplanning.gujarat.gov.in/",
+    "reason": "<urlopen error timed out>"
+  }
+]

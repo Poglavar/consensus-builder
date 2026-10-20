@@ -1,0 +1,20 @@
+[
+  {
+    "url": "https://gg.dnr.gxzf.gov.cn/bdcdj/djyjcxjyj/t10005077.shtml",
+    "reason": "timeout"
+  },
+  {
+    "url": "https://gg.dnr.gxzf.gov.cn/",
+    "reason": "not_attempted_after_timeout"
+  },
+  {
+    "url": "https://www.guiping.gov.cn/",
+    "reason": "not_attempted_after_timeout"
+  },
+  {
+    "url": "https://dnr.gxzf.gov.cn/zxgz/yhyshj/twjd/t18070099.shtml"
+  },
+  {
+    "url": "https://www.gxchxh.com/upload/editor/file/20221207/20221207103708_76336.pdf"
+  }
+]

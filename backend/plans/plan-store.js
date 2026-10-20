@@ -1,5 +1,6 @@
 // Postgres access for named plans (ens_plan, plans.md). The route and the scripts share these queries;
 // everything about what a plan MEANS lives in plan-hash.js.
+import { assertPlanCommitment, assertPlanCurrent } from './plan-commitment.js';
 
 // What a member builds, in the shape plan-hash.js memberContent() reads.
 const MEMBER_COLUMNS = `p.id, p.proposal_id, COALESCE(p.title, p.name) AS title, p.city, p.type,
@@ -10,6 +11,7 @@ const MEMBER_COLUMNS = `p.id, p.proposal_id, COALESCE(p.title, p.name) AS title,
     p.road_proposal, p.building_proposal, p.structure_proposal, p.reparcellization,
     p.proposal_data->'geometry' AS geometry, p.onchain_data`;
 
+// The stored proposal_ids column contains row IDs; the route exposes it as proposalRowIds.
 const PLAN_COLUMNS = `slug, proposal_ids, title, description, author, place, city, member_hashes, plan_hash,
     supersedes, onchain_data, created_at, (site IS NOT NULL) AS has_site`;
 
@@ -59,11 +61,11 @@ export function createPlanStore(pool) {
         },
 
         // Plans of a city, newest first: those with a member filed in it, i.e. a member whose site
-        // lies there (location-first.md phase 4), not the city the plan was named from. proposalIds
+        // lies there (location-first.md phase 4), not the city the plan was named from. proposalRowIds
         // keeps the plans naming any of those proposal rows; parcelIds the plans with a member
         // declaring any of those cadastral parcels. Each row carries its member count and whether a
         // later version supersedes it.
-        async list(city, { proposalIds = null, parcelIds = null } = {}) {
+        async list(city, { proposalRowIds = null, parcelIds = null } = {}) {
             const { rows } = await pool.query(`SELECT ${PLAN_COLUMNS},
                     jsonb_array_length(e.proposal_ids) AS member_count,
                     EXISTS (SELECT 1 FROM ens_plan n WHERE n.supersedes = e.slug) AS superseded
@@ -75,13 +77,15 @@ export function createPlanStore(pool) {
                       WHERE p.id IN (SELECT jsonb_array_elements_text(e.proposal_ids)::int)
                         AND p.cadastre_parcel_ids ?| $3::text[]))
                 ORDER BY e.created_at DESC LIMIT 500`,
-            [city || null, proposalIds && proposalIds.length ? proposalIds : null, parcelIds && parcelIds.length ? parcelIds : null]);
+            [city || null, proposalRowIds && proposalRowIds.length ? proposalRowIds : null, parcelIds && parcelIds.length ? parcelIds : null]);
             return rows;
         },
 
         // Inserts once; a taken slug surfaces as Postgres 23505. The site is the union of the
         // members' sites, or NULL when any member has none (such a plan cannot be minted).
         async insert(plan) {
+            assertPlanCommitment({ slug: plan.slug, proposal_ids: plan.proposalRowIds,
+                member_hashes: plan.memberHashes, plan_hash: plan.planHash });
             const { rows } = await pool.query(`
                 INSERT INTO ens_plan (slug, proposal_ids, title, description, author, place, city,
                     member_hashes, plan_hash, supersedes, site, creator_ip, creator_fingerprint)
@@ -89,18 +93,20 @@ export function createPlanStore(pool) {
                     CASE WHEN bool_and(p.site IS NOT NULL) THEN ST_Multi(ST_Union(p.site)) END, $11, $12
                 FROM proposal p WHERE p.id = ANY($13::int[])
                 RETURNING ${PLAN_COLUMNS}`,
-            [plan.slug, JSON.stringify(plan.proposalIds), plan.title, plan.description, plan.author, plan.place,
+            [plan.slug, JSON.stringify(plan.proposalRowIds), plan.title, plan.description, plan.author, plan.place,
                 plan.city, JSON.stringify(plan.memberHashes), plan.planHash, plan.supersedes, plan.creatorIp,
-                plan.creatorFingerprint, plan.proposalIds.map(Number)]);
+                plan.creatorFingerprint, plan.proposalRowIds.map(Number)]);
             return rows[0];
         },
 
         // For the mint script: the plan's identity and its site as GeoJSON.
         async mintInput(slug) {
             const { rows } = await pool.query(`
-                SELECT slug, title, city, plan_hash, onchain_data, ST_AsGeoJSON(site, 9)::json AS site
+                SELECT slug, title, city, proposal_ids, member_hashes, plan_hash, onchain_data, ST_AsGeoJSON(site, 9)::json AS site
                 FROM ens_plan WHERE slug = $1`, [slug]);
-            return rows[0] || null;
+            if (!rows[0]) return null;
+            const row = assertPlanCommitment(rows[0]);
+            return assertPlanCurrent(row, await this.members(row.proposal_ids));
         },
 
         async recordMint(slug, onchain) {

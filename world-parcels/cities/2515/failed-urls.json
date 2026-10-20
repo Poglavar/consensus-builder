@@ -1,0 +1,14 @@
+[
+  {
+    "url": "https://geoformatik.forestry.gov.my/arcgis/rest/services/TERENGGANU_2/MapServer/59?f=pjson",
+    "reason": "TLS verification failed"
+  },
+  {
+    "url": "https://spgis.mbsp.gov.my/geoportal/rest/services/Kadaster/KADASTER/FeatureServer/3?f=pjson",
+    "reason": "timeout after 20 seconds"
+  },
+  {
+    "url": "https://ekadaster.trg.jupem.gov.my/Account/Login",
+    "reason": "login wall / fetch unavailable"
+  }
+]

@@ -1,0 +1,15 @@
+[
+  {
+    "url": "https://bhumiabhilekh.maharashtra.gov.in/DistrictSCLR/DistrictInfo?districtId=16"
+  },
+  {
+    "url": "https://jcmc.gov.in/"
+  },
+  {
+    "url": "https://mahabhunakasha.mahabhumi.gov.in/"
+  },
+  {
+    "url": "https://indianopenmaps.com/not-so-open/cadastrals/maharashtra/mrsac/{z}/{x}/{y}.pbf",
+    "reason": "Held: binding (12 parcels, 52 requests) {\"binding\":{\"errorType\":\"HttpError\",\"httpStatus\":400}}"
+  }
+]

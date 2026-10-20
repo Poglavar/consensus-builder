@@ -1,9 +1,0 @@
-{
-  "schemaVersion": 1,
-  "normalization": "Removed machine-specific home prefixes from two metric report paths. Provider queries, identities, source geometry and qualification results are unchanged. Hash-named proofs, packet references and completion hashes were regenerated for the public export. Original compute artifacts remain preserved on Valhalla.",
-  "proofHashChanges": {
-    "c2beb5c2fc4a80769088ee2c7ec596996d10ede0e6c568951329a15e1de6776b": "646ebabf4274d99c0ca88e58ff3af6fa2600bfdc4f2750118637fe39bf11baf4",
-    "8e3c0af47d32e16e07a46cc63ea42f0cb7d7f0d9d7d898b034a881a165f15c6f": "e871bf10a618206f50337d418f805534ba6a603d0b7a8dfa188d96377d63a976"
-  },
-  "changedPacketCount": 4
-}

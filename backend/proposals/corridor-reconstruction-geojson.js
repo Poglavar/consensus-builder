@@ -9,6 +9,7 @@
 // collection's foreign `reconstruction` member, which GeoJSON explicitly permits.
 
 import { createRequire } from 'node:module';
+import { stripProposalArchiveState } from './serializer.js';
 
 const corridorOsmForm = createRequire(import.meta.url)('../../frontend/js/corridor-osm-form.js');
 
@@ -114,8 +115,8 @@ export function corridorProposalToReconstructionGeoJSON(proposal, siteFeature) {
         bbox: clone(proposal.bounds),
         reconstruction: {
             schema: CORRIDOR_RECONSTRUCTION_GEOJSON_SCHEMA,
-            proposal: withoutKeys(proposal, PROPOSAL_RUNTIME_KEYS),
-            roadProposal: withoutKeys(proposal.roadProposal, ROAD_RUNTIME_KEYS),
+            proposal: withoutKeys(stripProposalArchiveState(proposal), PROPOSAL_RUNTIME_KEYS),
+            roadProposal: withoutKeys(stripProposalArchiveState(proposal.roadProposal), ROAD_RUNTIME_KEYS),
             definition: withoutKeys(record, DEFINITION_GEOMETRY_KEYS)
         },
         features: [
@@ -172,7 +173,7 @@ export function corridorReconstructionGeoJSONToProposal(collection) {
     const definition = decoded
         ? { ...decoded, polygon: clone(footprint.geometry) }
         : { ...archived, points, segments: clone(points), segmentIds, polygon: clone(footprint.geometry) };
-    const proposal = {
+    const proposal = stripProposalArchiveState({
         ...clone(collection.reconstruction.proposal || {}),
         applied: false,
         geometry: clone(footprint.geometry),
@@ -180,7 +181,8 @@ export function corridorReconstructionGeoJSONToProposal(collection) {
             ...clone(collection.reconstruction.roadProposal || {}),
             definition
         }
-    };
+    });
+    proposal.applied = false;
     if (!proposal.bounds && Array.isArray(collection.bbox)) proposal.bounds = clone(collection.bbox);
     return { proposal, site };
 }

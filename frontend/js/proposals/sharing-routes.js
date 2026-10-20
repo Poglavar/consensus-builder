@@ -10,9 +10,13 @@
 function refreshSharedFloorPlanModels(localProposals, loadedById) {
     let refreshedFloors = 0;
     for (const local of localProposals) {
-        if (local.replacementOfProposalId || local.sourceProposalId) continue;
-        const remote = loadedById.get(String(local.serverProposalId))
-            || loadedById.get(String(local.proposalId));
+        if (local.proposalOrigin) continue;
+        const rowId = window.SharedLinkCopies.rowId(local.serverProposalId);
+        const apiBase = window.ProposalOrigin.apiBase(local.publicationApiBase);
+        const remote = rowId && [...loadedById.values()].find(record =>
+            apiBase
+            && window.ProposalOrigin.apiBase(record?.publicationApiBase) === apiBase
+            && window.SharedLinkCopies.rowId(record?.serverProposalId) === rowId);
         if (!remote?.geometry?.buildings?.some(building => building.properties?.floorPlans)) continue;
         const current = (window.proposedBuildings || []).filter(building =>
             String(building.properties?.proposalId) === String(local.proposalId));
@@ -135,7 +139,7 @@ function focusMapOnSharedProposal(proposal, payload) {
     return false;
 }
 
-/** Spinner on the sidebar's "Share entire plan" button. The label/subtext give way to it so the
+/** Spinner on the sidebar's "Share applied proposals" button. The label/subtext give way to it so the
     button keeps its size, and the busy flag survives updateShowProposalsButton re-enabling it. */
 function setSharePlanButtonBusy(busy) {
     const button = document.getElementById('shareAppliedProposalsButton');
@@ -213,24 +217,23 @@ function shareSingleProposal(proposalIdOrProposal) {
 
         // Next, prefer the proposal currently rendered in the details panel
         if (!proposal && currentProposalDetailsContext) {
-            const currentId = getProposalKey(currentProposalDetailsContext)
-                || currentProposalDetailsContext.serverProposalId
-                || currentProposalDetailsContext.id;
+            const currentId = getProposalKey(currentProposalDetailsContext);
             if (!requestedId || String(currentId) === String(requestedId)) {
                 proposal = currentProposalDetailsContext;
             }
         }
 
-        // Finally, fall back to storage lookups when needed
+        // A share route accepts a local key or an explicit row in the current publication API.
+        // Generic record aliases (`id`, authored IDs and hashes) do not identify a published row.
         if (!proposal && requestedId && hasStorage) {
-            proposal = proposalStorage.getProposal(requestedId);
-        }
-        if (!proposal && requestedId && hasStorage) {
-            const all = typeof proposalStorage.getAllProposals === 'function' ? proposalStorage.getAllProposals() : [];
-            proposal = all.find(p => String(p.serverProposalId || p.id || p.proposalId) === String(requestedId));
-        }
-        if (!proposal && requestedId && typeof getProposalByIdOrHash === 'function') {
-            proposal = getProposalByIdOrHash(requestedId);
+            const requested = String(requestedId);
+            const currentApi = typeof resolveBackendBaseUrl === 'function' ? resolveBackendBaseUrl() : null;
+            proposal = currentApi
+                ? proposalStorage.getProposalByServerRowId?.(requested, currentApi) || null
+                : null;
+            if (!proposal && !/^[1-9]\d*$/.test(requested)) {
+                proposal = proposalStorage.getProposal(requested);
+            }
         }
         if (!proposal) {
             if (typeof showEphemeralMessage === 'function') {
@@ -474,7 +477,7 @@ function sharedCorridorCountPhrase(roads, tracks, tShare) {
 // describes them.
 function sharedPlanProgressView(event, tShare) {
     if (!event || typeof tShare !== 'function') return null;
-    const title = tShare('plan.applyingAllTitle', 'Applying the shared plan');
+    const title = tShare('plan.applyingAllTitle', 'Applying shared proposals');
     const count = () => sharedCorridorCountPhrase(event.roads, event.tracks, tShare);
     switch (event.phase) {
         case 'ground-check':
@@ -702,12 +705,7 @@ async function materializeQueuedSharedProposals(proposalIds, options = {}) {
             preexistingAppliedRecords = proposalStorage.getAllProposals()
                 .filter(record => {
                     if (!record || !isProposalCurrentlyApplied(record)) return false;
-                    const identities = [record.proposalId, record.serverProposalId];
-                    try {
-                        if (typeof getServerProposalId === 'function') identities.push(getServerProposalId(record));
-                    } catch (_) { }
-                    return !identities.some(id => id !== undefined && id !== null
-                        && planMemberIds.has(String(id)));
+                    return !planMemberIds.has(String(record.proposalId));
                 });
         }
     } catch (_) { preexistingAppliedRecords = null; }
@@ -926,7 +924,7 @@ function urlFocusNeedsBuildings(ids) {
         const focused = all.filter(p => {
             const key = String((typeof getProposalKey === 'function' ? getProposalKey(p) : null)
                 || p.proposalId || p.serverProposalId || '');
-            return ids.includes(key) || ids.includes(String(p.serverProposalId || ''));
+            return ids.includes(key);
         });
         // Unknown to storage yet: keep the old behaviour and wait.
         if (!focused.length) return true;
@@ -1074,7 +1072,8 @@ async function loadSharedProposalFromLink(sharedProposal, payload) {
         normalized.proposalId = targetHash;
 
         let stored = proposalStorage.getProposal(targetHash);
-        if (stored) await followServerLifecycle(stored, normalized.lifecycleStatus);
+        if (stored) await followServerLifecycle(stored, normalized.lifecycleStatus,
+            ...(normalized.lifecycleEvidence ? [normalized.lifecycleEvidence] : []));
         if (!stored) {
             const imported = proposalStorage.importProposal(normalized, { overwrite: false });
             stored = imported || proposalStorage.getProposal(targetHash);
@@ -1339,12 +1338,7 @@ async function applySharedProposalsFromPayload(payload, selectedIds) {
         }
 
         if (actuallyApplied.length > 0) {
-            const payloadPlanMemberIds = new Set();
-            sorted.forEach(record => {
-                [getProposalKey(record), record && record.proposalId, record && record.serverProposalId]
-                    .filter(Boolean)
-                    .forEach(id => payloadPlanMemberIds.add(String(id)));
-            });
+            const payloadPlanMemberIds = new Set([...actuallyApplied, ...skipped].filter(Boolean).map(String));
             const scoped = await materializeQueuedSharedProposals(actuallyApplied, {
                 planMemberIds: payloadPlanMemberIds
             });
@@ -1532,10 +1526,13 @@ async function importAndApplySharedProposal(sharedProposal, options = {}) {
     const proposalId = normalized?.proposalId || fallbackHash;
     if (!normalized) return { applied: false, skipped: false, proposalId, reason: 'Unable to normalize shared proposal' };
 
-    let existing = proposalStorage.getProposal(normalized.proposalId);
-    if (existing) await followServerLifecycle(existing, normalized.lifecycleStatus);
+    let existing = window.SharedLinkCopies.rowId(normalized.serverProposalId) && normalized.publicationApiBase
+        ? proposalStorage.getProposalByServerRowId(normalized.serverProposalId, normalized.publicationApiBase)
+        : proposalStorage.getProposal(normalized.proposalId);
+    if (existing) await followServerLifecycle(existing, normalized.lifecycleStatus,
+        ...(normalized.lifecycleEvidence ? [normalized.lifecycleEvidence] : []));
     if (existing && isProposalCurrentlyApplied(existing)) {
-        return { applied: false, skipped: true, proposalId, reason: 'Already applied' };
+        return { applied: false, skipped: true, proposalId: existing.proposalId, reason: 'Already applied' };
     }
     // A member of another city's plan is refused before its ground is fetched from this city's
     // cadastre (storage would refuse the import anyway): it belongs to that city's store.
@@ -1639,7 +1636,7 @@ async function fetchSharedProposalBatch(ids, backendBase) {
             const id = item && item.id !== undefined && item.id !== null ? String(item.id) : '';
             if (!id) return;
             seen.add(id);
-            if (item.proposal) records.set(id, item.proposal);
+            if (item.proposal) records.set(id, normalizePublicationResponse(item.proposal, backendBase));
             else {
                 missing.add(id);
                 const reason = describeSharedProposalFetchFailure(id, item);
@@ -1677,7 +1674,7 @@ async function sharedProposalCityBlocksLoad(firstProposalId, prefetchedPayload =
             requestMade = true;
             const response = await fetch(`${backendBase}/proposals/${encodeURIComponent(firstProposalId)}`);
             if (!response.ok) return { blocked: false, payload: null, requestMade };
-            payload = await response.json();
+            payload = normalizePublicationResponse(await response.json(), backendBase);
         }
         if (typeof promptCityMismatchForProposal !== 'function') return { blocked: false, payload, requestMade };
         const proposalCityId = sharedRecordCityOf(payload);
@@ -1759,9 +1756,9 @@ async function handleSharedPlanRoute(idParts, attempt = 0, options = {}) {
         // Show the overlay BEFORE the city check: that check fetches the first proposal (the slowest
         // single step on a shared-link open), and it used to run with a frozen, feedback-less screen.
         console.log('[handleSharedPlanRoute] Showing load overlay and fetching proposals...', { totalProposals });
-        showProposalLoadOverlay(tShare('plan.fetchingPlan', 'Fetching plan…'), {
+        showProposalLoadOverlay(tShare('plan.fetchingPlan', 'Fetching shared proposals…'), {
             total: totalProposals,
-            title: tShare('plan.fetchingPlanTitle', 'Fetching proposal')
+            title: tShare('plan.fetchingPlanTitle', 'Shared proposal import')
         });
 
         const backendBase = resolveBackendBaseUrl();
@@ -1873,9 +1870,10 @@ async function handleSharedPlanRoute(idParts, attempt = 0, options = {}) {
         // Local copies of the linked records follow the lifecycle the server just sent for them
         // (followServerLifecycle, server-sync.js), BEFORE the applied-state analysis below: a copy
         // the server reports Cancelled is unapplied, so the link does not count it as standing.
-        for (const [id, record] of batchRecords.records) {
-            const local = findLocalCopyOfServerProposal({ serverProposalId: id, proposalId: record?.proposalId, id });
-            if (local) await followServerLifecycle(local, record?.lifecycleStatus);
+        for (const record of batchRecords.records.values()) {
+            const local = findLocalCopyOfServerProposal(record);
+            if (local) await followServerLifecycle(local, record?.lifecycleStatus,
+                ...(record?.lifecycleEvidence ? [record.lifecycleEvidence] : []));
         }
 
         const urlRequests3D = is3DModeRequestedFromUrl();
@@ -1886,102 +1884,31 @@ async function handleSharedPlanRoute(idParts, attempt = 0, options = {}) {
 
         console.log('[handleSharedPlanRoute] Incoming IDs from URL:', Array.from(incomingIds));
 
-        // proposalIds identifying THIS link's proposals, so 3D entry frames only them (not a big
-        // cached proposal elsewhere). Read lazily — loadedById fills in during apply. Include the
-        // server id and the payload's proposalId/serverProposalId to match whatever the proposed
-        // building features carry; if none match, computeProposalQueryGeometry falls back to all.
-        const getFocusProposalIds = () => {
-            const ids = [];
-            for (const serverId of incomingIds) {
-                if (serverId) ids.push(String(serverId));
-                const payload = loadedById.get(serverId);
-                if (payload) {
-                    if (payload.proposalId) ids.push(String(payload.proposalId));
-                    if (payload.serverProposalId) ids.push(String(payload.serverProposalId));
-                }
+        // URL references name publication rows (or authored IDs resolved by a fetched row).
+        // Keep all downstream map membership and focus keys in the browser's local namespace.
+        const resolveLinkCopies = () => window.SharedLinkCopies.match(
+            proposalStorage.getAllProposals() || [], incomingIds, loadedById, backendBase);
+        let linkCopies;
+        let orderByLocalKey;
+        const refreshLinkCopies = () => {
+            linkCopies = resolveLinkCopies();
+            orderByLocalKey = new Map();
+            for (const [reference, local] of linkCopies) {
+                const key = String(local.proposalId);
+                orderByLocalKey.set(key, Math.max(orderByLocalKey.get(key) ?? -1, linkOrder.get(reference) ?? -1));
             }
-            // A linked proposal that was ALREADY applied locally never enters loadedById — its
-            // features carry the LOCAL proposalId, so resolve the incoming server ids against
-            // the store too. Without this the focus set matches nothing and 3D entry silently
-            // falls back to framing EVERY applied proposal, not just the link's.
-            try {
-                if (typeof proposalStorage !== 'undefined' && proposalStorage) {
-                    (proposalStorage.getAllProposals() || []).forEach(p => {
-                        if (!p || !p.proposalId) return;
-                        const candidates = [
-                            p.serverProposalId != null ? String(p.serverProposalId) : null,
-                            String(p.proposalId),
-                            (typeof getServerProposalId === 'function' && getServerProposalId(p) != null)
-                                ? String(getServerProposalId(p)) : null
-                        ];
-                        if (candidates.some(id => id && incomingIds.has(id))) {
-                            ids.push(String(p.proposalId));
-                        }
-                    });
-                }
-            } catch (_) { }
-            return ids;
         };
-
-        // Ids each proposal answers to — its own, PLUS, for a replacement snapshot, every id
-        // along its replacement chain. An edited road keeps its share-link identity: the URL
-        // names the SOURCE while the fabric holds the replacement, and without the chain a
-        // reload re-applied the source next to its own replacement (two "Road 2043" standing).
+        refreshLinkCopies();
+        const getFocusProposalIds = () => [...new Set([...resolveLinkCopies().values()]
+            .map(proposal => String(proposal.proposalId)))];
         const coveredIncomingIds = new Set();
-        if (typeof proposalStorage !== 'undefined' && proposalStorage) {
-            const allProposals = proposalStorage.getAllProposals() || [];
-            const byKey = new Map();
-            allProposals.forEach(p => { if (p && p.proposalId) byKey.set(String(p.proposalId), p); });
-
-            const idsAnsweredBy = (proposal) => {
-                const out = [];
-                const push = value => {
-                    if (value === undefined || value === null) return;
-                    const key = String(value);
-                    if (key) out.push(key);
-                };
-                const seen = new Set();
-                let current = proposal;
-                let hops = 0;
-                while (current && hops < 10) {
-                    push(current.serverProposalId);
-                    push(current.proposalId);
-                    try { push(typeof getServerProposalId === 'function' ? getServerProposalId(current) : null); } catch (_) { }
-                    const prevKey = current.replacementOfProposalId || current.sourceProposalId || null;
-                    if (!prevKey || seen.has(String(prevKey))) break;
-                    seen.add(String(prevKey));
-                    push(prevKey);
-                    current = byKey.get(String(prevKey)) || null;
-                    hops += 1;
-                }
-                return out;
-            };
-
-            allProposals.forEach(p => {
-                if (!isProposalCurrentlyApplied(p)) return;
-                const matched = idsAnsweredBy(p).filter(id => incomingIds.has(id));
-                if (matched.length) {
-                    incomingAlreadyApplied.push(p);
-                    matched.forEach(id => coveredIncomingIds.add(id));
-                }
-            });
+        for (const [reference, proposal] of linkCopies) {
+            if (!isProposalCurrentlyApplied(proposal)) continue;
+            coveredIncomingIds.add(reference);
+            if (!incomingAlreadyApplied.includes(proposal)) incomingAlreadyApplied.push(proposal);
         }
 
-        const linkOrderForProposal = (p) => {
-            if (!p) return -1;
-            const candidates = [];
-            if (p.serverProposalId) candidates.push(String(p.serverProposalId));
-            if (p.proposalId) candidates.push(String(p.proposalId));
-            try {
-                const extracted = typeof getServerProposalId === 'function' ? getServerProposalId(p) : null;
-                if (extracted) candidates.push(String(extracted));
-            } catch (_) { }
-            let best = -1;
-            candidates.forEach(c => {
-                if (linkOrder.has(c) && linkOrder.get(c) > best) best = linkOrder.get(c);
-            });
-            return best;
-        };
+        const linkOrderForProposal = proposal => orderByLocalKey.get(String(proposal?.proposalId)) ?? -1;
 
         const mostRecentIncomingApplied = () => {
             let best = null;
@@ -2009,8 +1936,7 @@ async function handleSharedPlanRoute(idParts, attempt = 0, options = {}) {
 
         refreshSharedFloorPlanModels(incomingAlreadyApplied, loadedById);
 
-        // Counted over COVERED incoming ids, not list length — with a source and its
-        // replacement both standing, the list double-counts one member.
+        // Count references rather than local records: two URL identifiers can resolve to one row.
         const allIncomingApplied = coveredIncomingIds.size === totalProposals;
 
         console.log('[handleSharedPlanRoute] Applied-state analysis:',
@@ -2094,7 +2020,7 @@ async function handleSharedPlanRoute(idParts, attempt = 0, options = {}) {
                     'Proposal {{ids}} is no longer on the server. Only your local copy is left, so this link will not open for anyone else.',
                     { ids: goneFromServer.map(id => `#${id}`).join(', ') }), 10000, 'warning');
             } else if (typeof showEphemeralMessage === 'function') {
-                showEphemeralMessage(tShare('plan.alreadyAppliedMessage', 'This shared plan is already applied to the map.'), 4000, 'info');
+                showEphemeralMessage(tShare('plan.alreadyAppliedMessage', 'These shared proposals are already applied to the map.'), 4000, 'info');
             }
             if (urlRequests3D) {
                 try { url3DModeHandled = true; enterUrlDrivenViewWhenReady(getFocusProposalIds()); } catch (_) { }
@@ -2102,14 +2028,9 @@ async function handleSharedPlanRoute(idParts, attempt = 0, options = {}) {
             return { applied: [], skipped: incomingAlreadyApplied, failed: [] };
         }
 
-        // Build set of already-applied server IDs to exclude from queue — including members
-        // covered through a replacement chain (the replacement itself has no server id).
-        const alreadyAppliedServerIds = new Set(coveredIncomingIds);
-        incomingAlreadyApplied.forEach(p => {
-            if (p.serverProposalId) alreadyAppliedServerIds.add(String(p.serverProposalId));
-            const extracted = typeof getServerProposalId === 'function' ? getServerProposalId(p) : null;
-            if (extracted) alreadyAppliedServerIds.add(String(extracted));
-        });
+        // Only exact published copies cover incoming references. A fork is a separate record;
+        // the ordinary ground-holder check preserves it when the linked source would conflict.
+        const alreadyAppliedServerIds = coveredIncomingIds;
 
         // Queue only proposals that are NOT already applied (deduplicated). The excluded ones
         // still count as skipped-duplicates in the summary — otherwise a reload that skips the
@@ -2118,9 +2039,7 @@ async function handleSharedPlanRoute(idParts, attempt = 0, options = {}) {
             if (!id) return false;
             if (alreadyAppliedServerIds.has(id)) {
                 console.log('[handleSharedPlanRoute] Skipping already-applied proposal:', id);
-                const local = incomingAlreadyApplied.find(p => p && (
-                    (p.serverProposalId && String(p.serverProposalId) === id)
-                    || (typeof getServerProposalId === 'function' && String(getServerProposalId(p) || '') === id)));
+                const local = linkCopies.get(id);
                 skipped.push({ id, label: formatSharedProposalLabel(local, (local && local.proposalId) || id) });
                 return false;
             }
@@ -2141,9 +2060,9 @@ async function handleSharedPlanRoute(idParts, attempt = 0, options = {}) {
 
         // What remains is the link's own import: modal again, as for the fetch.
         if (replayHidModal) {
-            showProposalLoadOverlay(tShare('plan.fetchingPlan', 'Fetching plan…'), {
+            showProposalLoadOverlay(tShare('plan.fetchingPlan', 'Fetching shared proposals…'), {
                 total: totalProposals,
-                title: tShare('plan.fetchingPlanTitle', 'Fetching proposal')
+                title: tShare('plan.fetchingPlanTitle', 'Shared proposal import')
             });
             updateProposalLoadOverlay({ progress: { done: fetchProgressIds.size, total: totalProposals } });
         }
@@ -2157,7 +2076,7 @@ async function handleSharedPlanRoute(idParts, attempt = 0, options = {}) {
                     try {
                         recordFetchProfile.individualRequests += 1;
                         const resp = await fetch(`${backendBase}/proposals/${encodeURIComponent(qid)}`);
-                        if (resp.ok) loadedById.set(qid, await resp.json());
+                        if (resp.ok) loadedById.set(qid, normalizePublicationResponse(await resp.json(), backendBase));
                     } catch (_) { /* the apply loop retries and reports this id itself */ }
                 }));
                 const items = queue.map(qid => {
@@ -2283,7 +2202,7 @@ async function handleSharedPlanRoute(idParts, attempt = 0, options = {}) {
                         markFetchProgress(id);
                         continue;
                     }
-                    proposal = await response.json();
+                    proposal = normalizePublicationResponse(await response.json(), backendBase);
                     loadedById.set(id, proposal);
                     try {
                         const inferredType = formatSharedProposalTypeLabel(proposal);
@@ -2405,19 +2324,10 @@ async function handleSharedPlanRoute(idParts, attempt = 0, options = {}) {
         // direct replay materializer; startup already restored everything else on the map.
         if (applied.length > 0) {
             updateProposalLoadOverlay({ status: tShare('plan.materializing', 'Starting proposal materialization…') });
-            const sharedPlanMemberIds = new Set(uniqueIncomingIds);
-            [...incomingAlreadyApplied, ...applied].forEach(entry => {
-                const record = entry && entry.id ? proposalStorage.getProposal(entry.id) : entry;
-                [entry && entry.id, record && record.proposalId, record && record.serverProposalId]
-                    .filter(Boolean)
-                    .forEach(id => sharedPlanMemberIds.add(String(id)));
-                try {
-                    const serverId = record && typeof getServerProposalId === 'function'
-                        ? getServerProposalId(record)
-                        : null;
-                    if (serverId) sharedPlanMemberIds.add(String(serverId));
-                } catch (_) { }
-            });
+            const sharedPlanMemberIds = new Set([
+                ...incomingAlreadyApplied.map(record => record.proposalId),
+                ...applied.map(entry => entry.id)
+            ].filter(Boolean).map(String));
             const scoped = await materializeQueuedSharedProposals(applied.map(entry => entry.id), {
                 recordFetchProfile,
                 planMemberIds: sharedPlanMemberIds
@@ -2497,6 +2407,7 @@ async function handleSharedPlanRoute(idParts, attempt = 0, options = {}) {
         // latest in link order among everything now on the map (applied, skipped as duplicate,
         // or filtered out earlier because it was already applied) — as if it were loaded alone.
         // Link order is a presentation choice; fabric precedence remains immutable record order.
+        refreshLinkCopies();
         const lastProposalId = selectSharedPlanFocusId(
             applied,
             [...skipped, ...cancelled],
@@ -2551,7 +2462,7 @@ async function handleSharedPlanRoute(idParts, attempt = 0, options = {}) {
         let planSummaryModal = null;
         if (showSummaryModal) {
             planSummaryModal = showSimpleShareModal({
-                title: tShare('plan.summary', 'Shared Plan Result'),
+                title: tShare('plan.summary', 'Shared proposals result'),
                 body: bodyLines.join(''),
                 actions: [
                     {
@@ -2559,7 +2470,7 @@ async function handleSharedPlanRoute(idParts, attempt = 0, options = {}) {
                         keepOpen: true,
                         onClick: (api) => {
                             try {
-                                const text = `${tShare('plan.summary', 'Shared Plan Result')}\n\n`
+                                const text = `${tShare('plan.summary', 'Shared proposals result')}\n\n`
                                     + String(api && api.body ? api.body.innerText : '').trim();
                                 const copied = () => {
                                     if (typeof showEphemeralMessage === 'function') {

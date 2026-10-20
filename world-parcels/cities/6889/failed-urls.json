@@ -1,0 +1,16 @@
+[
+  {
+    "url": "https://tesoreria.tapachula.gob.mx/Home/Index",
+    "reason": "timeout after 20 seconds"
+  },
+  {
+    "url": "https://tesoreria.tapachula.gob.mx/Impuestos/BuscaCuenta/1",
+    "reason": "timeout after 20 seconds"
+  },
+  {
+    "url": "https://geoweb.chiapas.gob.mx/geoweb/"
+  },
+  {
+    "url": "https://mapas.siese.chiapas.gob.mx/geoserver/POSTGISSER/wms?service=WMS&request=GetCapabilities"
+  }
+]

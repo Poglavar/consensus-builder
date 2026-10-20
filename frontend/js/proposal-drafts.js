@@ -2,12 +2,14 @@
 (function attachProposalDraftStore(global) {
     'use strict';
 
-    const PROPOSAL_DRAFT_SCHEMA_VERSION = 2;
-    const PROPOSAL_DRAFT_STORAGE_KEY = 'consensus-builder.proposal-drafts.v2';
+    const PROPOSAL_DRAFT_SCHEMA_VERSION = 3;
+    const PROPOSAL_DRAFT_STORAGE_KEY = 'consensus-builder.proposal-drafts.v3';
     const DEFAULT_HISTORY_LIMIT = 100;
     const DEFAULT_PERSISTED_HISTORY_LIMIT = 12;
     const DEFAULT_COALESCE_MS = 800;
     const VALID_DRAFT_STATES = new Set(['editing', 'review', 'publishing', 'error']);
+    const designGoals = global.ProposalDesignGoals || (typeof require === 'function'
+        ? require('./proposals/design-goals.js') : null);
 
     const publishTerms = () => global.ProposalPublishTerms || require('./proposals/publish-terms.js');
 
@@ -134,22 +136,20 @@
         return compact;
     }
 
+    function canonicalGoalKey(value) {
+        if (typeof value !== 'string') return '';
+        return (designGoals?.get(value) || value === 'decide-later') ? value : '';
+    }
+
+    function requireCanonicalGoal(value) {
+        const goal = canonicalGoalKey(value);
+        if (!goal) throw new TypeError('Proposal drafts require an explicit canonical goal.');
+        return goal;
+    }
+
     function proposalGoal(proposal) {
         if (!proposal || typeof proposal !== 'object') return '';
-        try {
-            if (typeof global.resolveProposalGoalKey === 'function') {
-                const resolved = global.resolveProposalGoalKey(proposal, null);
-                if (resolved) return resolved;
-            }
-        } catch (_) { }
-        if (proposal.roadProposal) return 'road-track';
-        if (proposal.reparcellization) return 'reparcellization';
-        if (proposal.buildingProposal || proposal.buildingGeometry) {
-            const typology = proposal.typologyType || proposal.buildingProposal?.typologyType;
-            return normalizeGoalKey(typology || proposal.goal || 'buildings');
-        }
-        if (proposal.structureProposal?.kind) return normalizeGoalKey(proposal.structureProposal.kind);
-        return normalizeGoalKey(proposal.goal || proposal.proposalType || proposal.primaryType || proposal.type || '');
+        return designGoals?.keyOf(proposal) || (proposal.goal === 'decide-later' ? 'decide-later' : '');
     }
 
     function proposalIdentity(proposal) {
@@ -304,7 +304,7 @@
     }
 
     function restoreEditableSnapshot(draft, snapshot) {
-        draft.goal = normalizeGoalKey(snapshot?.goal || draft.goal || '');
+        draft.goal = requireCanonicalGoal(snapshot?.goal || draft.goal || '');
         draft.proposalType = snapshot?.proposalType || draft.proposalType || draft.goal || null;
         draft.adapterKey = snapshot?.adapterKey || draft.adapterKey || draft.goal || null;
         draft.fields = cloneDraftValue(snapshot?.fields || {});
@@ -325,17 +325,18 @@
         if (!id) return null;
         const createdAt = raw.createdAt || isoNow(now);
         const updatedAt = raw.updatedAt || createdAt;
-        const goal = normalizeGoalKey(raw.goal || raw.proposalGoal || raw.type || '');
+        const goal = canonicalGoalKey(raw.goal);
+        if (!goal) return null;
         return {
             schemaVersion: PROPOSAL_DRAFT_SCHEMA_VERSION,
             id: String(id),
             cityId: normalizeDraftCityId(raw.cityId),
             goal,
-            proposalType: raw.proposalType || raw.type || goal || null,
+            proposalType: raw.proposalType || goal,
             adapterKey: raw.adapterKey || goal || null,
             createdAt,
             updatedAt,
-            sourceProposalId: raw.sourceProposalId === undefined || raw.sourceProposalId === null ? null : String(raw.sourceProposalId),
+            sourceLocalProposalId: raw.sourceLocalProposalId === undefined || raw.sourceLocalProposalId === null ? null : String(raw.sourceLocalProposalId),
             sourceSnapshot: cloneDraftValue(raw.sourceSnapshot || null),
             fields: cloneDraftValue(raw.fields || {}),
             editorPayload: cloneDraftValue(raw.editorPayload || raw.payload || {}),
@@ -520,8 +521,8 @@
                 const cityId = normalizeDraftCityId(filters.cityId);
                 drafts = drafts.filter(draft => String(draft.cityId || '') === String(cityId || ''));
             }
-            if (filters.sourceProposalId !== undefined && filters.sourceProposalId !== null) {
-                drafts = drafts.filter(draft => String(draft.sourceProposalId || '') === String(filters.sourceProposalId));
+            if (filters.sourceLocalProposalId !== undefined && filters.sourceLocalProposalId !== null) {
+                drafts = drafts.filter(draft => String(draft.sourceLocalProposalId || '') === String(filters.sourceLocalProposalId));
             }
             if (filters.goal) drafts = drafts.filter(draft => draft.goal === normalizeGoalKey(filters.goal));
             if (filters.state) drafts = drafts.filter(draft => draft.state === filters.state);
@@ -536,11 +537,11 @@
             return cloneDraftValue(activeInternalDraft());
         }
 
-        function findDraftForSource(sourceProposalId, cityId) {
-            if (sourceProposalId === undefined || sourceProposalId === null) return null;
-            const sourceKey = String(sourceProposalId);
+        function findDraftForSource(sourceLocalProposalId, cityId) {
+            if (sourceLocalProposalId === undefined || sourceLocalProposalId === null) return null;
+            const sourceKey = String(sourceLocalProposalId);
             const normalizedCityId = normalizeDraftCityId(cityId);
-            const matches = envelope.drafts.filter(draft => draft.sourceProposalId === sourceKey
+            const matches = envelope.drafts.filter(draft => draft.sourceLocalProposalId === sourceKey
                 && (cityId === undefined || cityId === null || String(draft.cityId || '') === String(normalizedCityId || '')));
             matches.sort((a, b) => timestampMs(b.updatedAt) - timestampMs(a.updatedAt));
             return cloneDraftValue(matches[0] || null);
@@ -548,18 +549,18 @@
 
         function createDraft(input = {}) {
             const createdAt = isoNow(now);
-            const goal = normalizeGoalKey(input.goal || input.proposalGoal || input.proposalType || input.type || '');
+            const goal = requireCanonicalGoal(input.goal);
             let id = String(input.id || input.draftId || idFactory());
             while (internalDraft(id)) id = String(idFactory());
             const draft = normalizeDraftRecord({
                 id,
                 cityId: input.cityId !== undefined ? input.cityId : currentDraftCityId(),
                 goal,
-                proposalType: input.proposalType || input.type || goal,
+                proposalType: input.proposalType || goal,
                 adapterKey: input.adapterKey || goal,
                 createdAt,
                 updatedAt: createdAt,
-                sourceProposalId: input.sourceProposalId || null,
+                sourceLocalProposalId: input.sourceLocalProposalId || null,
                 sourceSnapshot: cloneDraftValue(input.sourceSnapshot || null),
                 fields: cloneDraftValue(input.fields || {}),
                 editorPayload: cloneDraftValue(input.editorPayload || input.payload || {}),
@@ -581,16 +582,18 @@
 
         function createDraftFromProposal(proposal, createOptions = {}) {
             if (!proposal || typeof proposal !== 'object') throw new TypeError('A source proposal is required.');
-            const sourceProposalId = createOptions.sourceProposalId || proposalIdentity(proposal);
-            if (!sourceProposalId) throw new Error('The source proposal has no stable ID.');
+            proposal = cloneDraftValue(proposal);
+            delete proposal.localPurchaseSimulation;
+            const sourceLocalProposalId = createOptions.sourceLocalProposalId || proposalIdentity(proposal);
+            if (!sourceLocalProposalId) throw new Error('The source proposal has no stable ID.');
             const cityId = normalizeDraftCityId(createOptions.cityId !== undefined ? createOptions.cityId : (proposal.city || currentDraftCityId()));
-            const existing = findDraftForSource(sourceProposalId, cityId);
+            const existing = findDraftForSource(sourceLocalProposalId, cityId);
             if (existing && createOptions.forceNew !== true) {
                 resumeDraft(existing.id);
                 return getDraft(existing.id);
             }
 
-            const goal = normalizeGoalKey(createOptions.goal || proposalGoal(proposal));
+            const goal = requireCanonicalGoal(createOptions.goal || proposalGoal(proposal));
             const adapter = resolveAdapter(goal);
             let adapterDraft = null;
             if (adapter && typeof adapter.draftFromProposal === 'function') {
@@ -612,9 +615,9 @@
             const draft = createDraft({
                 cityId,
                 goal,
-                proposalType: adapterDraft?.proposalType || proposal.primaryType || proposal.type || goal,
+                proposalType: adapterDraft?.proposalType || proposal.primaryType || goal,
                 adapterKey: adapterDraft?.adapterKey || adapter?.key || goal,
-                sourceProposalId,
+                sourceLocalProposalId,
                 sourceSnapshot: cloneDraftValue(proposal),
                 fields,
                 editorPayload,
@@ -631,7 +634,7 @@
             if (!draft) return null;
             const before = editableSnapshot(draft);
             const sourceSnapshot = cloneDraftValue(draft.sourceSnapshot);
-            const sourceProposalId = draft.sourceProposalId;
+            const sourceLocalProposalId = draft.sourceLocalProposalId;
             const draftId = draft.id;
             let next = cloneDraftValue(draft);
             if (typeof patchOrUpdater === 'function') {
@@ -643,7 +646,7 @@
                     : mergeDraftValues(next, patchOrUpdater);
             }
             next.id = draftId;
-            next.sourceProposalId = sourceProposalId;
+            next.sourceLocalProposalId = sourceLocalProposalId;
             next.sourceSnapshot = sourceSnapshot;
             const after = editableSnapshot(next);
             const meaningfulChange = !valuesEqual(before, after);
@@ -666,6 +669,7 @@
             if (updateOptions.dirty !== false && meaningfulChange) next.dirty = true;
             if (updateOptions.state && VALID_DRAFT_STATES.has(updateOptions.state)) next.state = updateOptions.state;
             const normalized = normalizeDraftRecord(next, now);
+            if (!normalized) throw new TypeError('Proposal draft updates must preserve an explicit canonical goal.');
             const index = envelope.drafts.findIndex(item => item.id === draftId);
             envelope.drafts[index] = normalized;
             persist();
@@ -806,15 +810,21 @@
             delete output.chainProposalId;
             delete output.onchain;
             delete output.nft;
-            ['acceptedParcelIds', 'ownerAcceptances', 'ownerApprovals', 'ownerApprovalHistory', 'ownershipApprovals']
+            ['acceptedParcelIds', 'ownerAcceptances', 'ownerApprovals', 'ownerApprovalHistory', 'ownershipApprovals', 'localPurchaseSimulation']
                 .forEach(key => delete output[key]);
             // The share/upload link is the numeric serverProposalId. A proposal built from a draft is
             // a NEW proposal (buildings, structures, reparcellization, station, road design-finalize
             // all commit through here); it must not inherit the source's server-upload identity, or an
             // edit would silently reuse the original's /proposals/:id instead of a fresh upload.
             delete output.serverProposalId;
-            output.sourceProposalId = draft.sourceProposalId || null;
-            output.replacementOfProposalId = draft.sourceProposalId || null;
+            delete output.proposalOrigin;
+            if (draft.sourceLocalProposalId) {
+                const origin = global.ProposalOrigin || require('./proposals/origin.js');
+                output.proposalOrigin = origin.fromRecord(draft.sourceSnapshot || {}, {
+                    relation: 'revision', localProposalId: draft.sourceLocalProposalId,
+                    backendBase: global.getBackendBase?.()
+                });
+            }
             output.proposalDraftId = draft.id;
             // A draft may temporarily refer to the currently selected live parcel pieces. The
             // serializer above must project that selection to cadastreParcelIds; this final
@@ -879,7 +889,7 @@
                 draftId: draft.id,
                 operationId: draft.publish?.operationId || null,
                 persistedProposalId: persistedProposalId === undefined || persistedProposalId === null ? null : String(persistedProposalId),
-                sourceProposalId: draft.sourceProposalId || null,
+                sourceLocalProposalId: draft.sourceLocalProposalId || null,
                 consumedAt: isoNow(now)
             };
             envelope.publishReceipts = envelope.publishReceipts.filter(item => item.draftId !== draft.id);

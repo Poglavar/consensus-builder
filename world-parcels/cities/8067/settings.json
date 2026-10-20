@@ -1,0 +1,113 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "8067",
+  "name": "Pittsburgh, United States",
+  "point": [
+    40.4196878479719,
+    -79.9703261647027
+  ],
+  "bindings": [
+    {
+      "appCityId": "pittsburgh",
+      "runtimeConfig": {
+        "id": "pittsburgh",
+        "wupCityCode": "8067",
+        "label": "Pittsburgh, United States",
+        "currency": {
+          "locale": "en-US",
+          "code": "USD"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            40.4196878479719,
+            -79.9703261647027
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            40.4196878479719,
+            -79.9703261647027
+          ],
+          "fallbackDataset": [
+            -79.9703261647027,
+            40.4196878479719
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "us-pa-allegheny-parcels",
+          "idPrefix": "US-PA-ALLEGHENY-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 3,
+          "attribution": "<a href=\"https://data.wprdc.org/dataset/allegheny-county-parcel-boundaries1\">Allegheny County DCS-GIS parcel boundaries</a>"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "us-pa-allegheny-parcels",
+      "name": "Allegheny County parcel boundaries",
+      "adapter": "arcgis",
+      "endpoint": "https://gisdata.alleghenycounty.us/arcgis/rest/services/OPENDATA/Parcels/MapServer/0",
+      "idPrefix": "US-PA-ALLEGHENY-",
+      "idField": "PIN",
+      "idType": "string",
+      "idPattern": "^[0-9A-Z]{16}$",
+      "objectIdField": "OBJECTID",
+      "outFields": [
+        "PIN",
+        "OBJECTID"
+      ],
+      "boundsQueryMode": "offset",
+      "idsQueryMode": "offset",
+      "queryFormat": "geojson",
+      "pageSize": 200,
+      "idBatchSize": 80,
+      "maxFeatures": 1000,
+      "maxBboxKm2": 1,
+      "capabilities": {
+        "areaEnumeration": true
+      },
+      "countryCode": "US",
+      "stateCode": "PA",
+      "metricSrid": 32617,
+      "cityIds": [
+        "pittsburgh"
+      ],
+      "operator": "Allegheny County DCS-GIS",
+      "attribution": "Allegheny County DCS-GIS parcel boundaries",
+      "catalogueUrl": "https://data.wprdc.org/dataset/allegheny-county-parcel-boundaries1",
+      "licenceNote": "County-published regional catalogue specifies no licence; reuse rights require separate primary review.",
+      "scope": "Allegheny County parcel-boundary layer including Pittsburgh. Qualification is bounded around the frozen WUP point and does not establish citywide completeness, legal title, survey accuracy or currentness. Native CRS EPSG:2272 / WKID 102729; queries request WGS84 GeoJSON outSR=4326.",
+      "defaultForCity": true
+    }
+  ]
+}

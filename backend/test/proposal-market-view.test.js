@@ -52,6 +52,16 @@ describe('proposal market presentation', () => {
         expect(view.lifecycle('Executed', refunded).next).toMatch(/collected back in full/);
     });
 
+    it('allows no new market action without a known chain status', () => {
+        for (const status of [undefined, null, 'Unknown', 'unsupported']) {
+            for (const market of [null, { yesPool: 2n, noPool: 1n, resolved: false }]) {
+                expect(view.lifecycle(status, view.model(market))).toMatchObject({
+                    stateKey: 'closed', canOpen: false, canStake: false, canResolve: false
+                });
+            }
+        }
+    });
+
     it('builds a deduplicated newest-first transaction history for this market only', () => {
         const matching = { action: { type: 'stake', proposalId: 'p1' }, transaction: 'tx1', recordedAt: '2026-09-20T02:00:00Z' };
         const history = view.marketHistory([

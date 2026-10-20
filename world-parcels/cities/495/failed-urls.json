@@ -1,0 +1,20 @@
+[
+  {
+    "url": "https://www.gob.pe/institucion/satpiura/institucional"
+  },
+  {
+    "url": "https://www.idep.gob.pe/geoportal/rest/services/DATOS_GEOESPACIALES/PROYECCIONES_25K/MapServer/7"
+  },
+  {
+    "url": "https://www.gob.pe/institucion/munipiura/noticias/946801-regidora-teresa-calva-participo-en-lanzamiento-del-proyecto-de-levantamiento-de-catastro-urbano-de-piura"
+  },
+  {
+    "url": "https://geoportal.cofopri.gob.pe/cofopri/rest/services/Cofopri/Catastro_PCDPI/MapServer?f=pjson"
+  },
+  {
+    "url": "https://geoportal.cofopri.gob.pe/cofopri/rest/services?f=pjson"
+  },
+  {
+    "url": "http://geoportal.cofopri.gob.pe/cofopri/rest/services?f=pjson"
+  }
+]

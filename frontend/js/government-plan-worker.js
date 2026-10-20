@@ -88,7 +88,10 @@ function processPlanRequest(data) {
             intersection = turf.intersect(feature, planFeature);
         } catch (err) {
             stats.intersectionErrors += 1;
-            intersection = null;
+            // Was: "the plan misses this parcel". The worker has no parcel-arrangement.js, so the
+            // failure goes back as a structured clip error; the main thread then redoes the plan
+            // and refuses with its ClipFailure (government-roads.js).
+            throw workerClipError('intersect', err, parcelId);
         }
 
         const roadPieces = [];
@@ -127,8 +130,8 @@ function processPlanRequest(data) {
         } catch (err) {
             stats.differenceFailed += 1;
             stats.differenceErrors += 1;
-            remainderStatus = 'difference-error';
-            remainder = null;
+            // Was: no remainder, so the owner's leftover land was dropped.
+            throw workerClipError('difference', err, parcelId);
         }
 
         const remainderPieces = [];
@@ -289,12 +292,29 @@ function safeArea(feature) {
     }
 }
 
+// A clip that failed in the worker, with what it was for (the main thread's ClipFailure fields).
+function workerClipError(operation, err, parcelId) {
+    const original = String(err && err.message || err || 'unknown error');
+    const error = new Error(`Polygon ${operation} failed at government-plan-worker.processPlanRequest${parcelId ? ` (parcel ${parcelId})` : ''}: ${original}`);
+    error.code = 'clip-failed';
+    error.operation = operation;
+    error.site = 'government-plan-worker.processPlanRequest';
+    error.parcelId = parcelId || null;
+    error.originalMessage = original;
+    console.error(`[${new Date().toISOString()}] [clip] ${error.message}`);
+    return error;
+}
+
 function serializeError(err) {
     if (!err) {
         return { message: 'Unknown worker error.' };
     }
     if (err instanceof Error) {
-        return { message: err.message, stack: err.stack };
+        const out = { message: err.message, stack: err.stack };
+        ['code', 'operation', 'site', 'parcelId', 'originalMessage'].forEach(key => {
+            if (err[key] !== undefined) out[key] = err[key];
+        });
+        return out;
     }
     if (typeof err === 'object') {
         const clone = {};

@@ -1,0 +1,29 @@
+[
+  {
+    "url": "https://observatorioinmobiliario.santamarta.gov.co/maps.html",
+    "reason": "403"
+  },
+  {
+    "url": "https://mapas.igac.gov.co/server/rest/services/Dato_Fundamental_Catastro/MapServer/4/query",
+    "reason": "curl timeout after 25 seconds"
+  },
+  {
+    "url": "https://www.arcgis.com/sharing/rest/content/items/d7f4b87a9b20482db3d3b912ff835343/data?f=json",
+    "reason": "transfer timed out after 25 seconds while downloading a multi-gigabyte public GDB; incomplete scratch cache only"
+  },
+  {
+    "url": "https://catastrosantamarta.gov.co/"
+  },
+  {
+    "url": "https://catastrosantamarta.gov.co/mapa-del-sitio"
+  },
+  {
+    "url": "https://mapas.igac.gov.co/server/rest/services/catastro/Gestores_Catastrales/MapServer/1"
+  },
+  {
+    "url": "https://mapas.igac.gov.co/server/rest/services/Dato_Fundamental_Catastro/MapServer/4"
+  },
+  {
+    "url": "https://www.igac.gov.co/datos-abiertos/datos-abiertos-geoespaciales"
+  }
+]

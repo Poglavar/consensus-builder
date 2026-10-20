@@ -1,0 +1,125 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "8207",
+  "name": "Buffalo, United States",
+  "point": [
+    42.9359928509233,
+    -78.8390421008214
+  ],
+  "bindings": [
+    {
+      "appCityId": "buffalo",
+      "runtimeConfig": {
+        "id": "buffalo",
+        "wupCityCode": "8207",
+        "label": "Buffalo, United States",
+        "currency": {
+          "locale": "en-US",
+          "code": "USD"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            42.9359928509233,
+            -78.8390421008214
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            42.9359928509233,
+            -78.8390421008214
+          ],
+          "fallbackDataset": [
+            -78.8390421008214,
+            42.9359928509233
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "us-ny-erie-parcels",
+          "idPrefix": "US-NY-ERIE-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 3,
+          "attribution": "<a href=\"https://www3.erie.gov/gis/internet-mapping\">Erie County Office of GIS</a>"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "us-ny-erie-parcels",
+      "name": "Erie County Office of GIS tax parcels",
+      "adapter": "arcgis",
+      "endpoint": "https://gis.erie.gov/server/rest/services/OGIS/Parcels/MapServer/0",
+      "idField": "OBJECTID",
+      "objectIdField": "OBJECTID",
+      "idType": "integer",
+      "idPrefix": "US-NY-ERIE-",
+      "outFields": [
+        "OBJECTID"
+      ],
+      "pageSize": 1000,
+      "idBatchSize": 80,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "boundsQueryMode": "offset",
+      "idsQueryMode": "offset",
+      "queryFormat": "geojson",
+      "capabilities": {
+        "point": false,
+        "exactId": true,
+        "bbox": true,
+        "areaEnumeration": true,
+        "geometry": "full-wgs84"
+      },
+      "metricSrid": 32617,
+      "countryCode": "US",
+      "stateCode": "NY",
+      "cityIds": [
+        "buffalo"
+      ],
+      "operator": "Erie County Office of GIS",
+      "scope": "Erie County tax-parcel polygon service linked by the City of Buffalo; bounded local qualification only. Buffalo municipal completeness is unverified.",
+      "catalogueUrl": "https://www3.erie.gov/gis/internet-mapping",
+      "attribution": "Erie County Office of GIS",
+      "licenceNote": "County publishes tax parcel GIS data for free; redistribution terms and legal survey accuracy remain unverified.",
+      "caveats": [
+        "OBJECTID is the service-native identity; continuity across future service republishes is unverified.",
+        "The county website identifies the parcel layer as current to 2025; individual parcel currency and citywide completeness are unverified."
+      ],
+      "defaultForCity": true,
+      "metricSridByCity": {
+        "buffalo": 32617
+      },
+      "cityScopes": {
+        "lackawanna": "Bounded qualification around the UN DESA WUP 2025 settlement locator for Lackawanna. Passing all eight gates and independent geometry audit supports local parcel integration only; citywide completeness, legal title, survey accuracy and currentness are not established."
+      }
+    }
+  ]
+}

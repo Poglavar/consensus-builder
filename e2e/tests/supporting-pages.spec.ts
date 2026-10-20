@@ -286,17 +286,19 @@ test.describe('Supporting pages @core', () => {
   });
 
   test('floor plan archive tabs and plan navigation update the selected view', async ({ mockApi: page }) => {
+    await page.route('**/api/floor-plans?*', route => json(route, {
+      plans: [
+        { id: 'plan-one', scope: 'unit', label: 'Plan One', source: { sha256: 'd'.repeat(64), url: 'https://plans.example/one.pdf' }, buildingId: 'sample-building', building: { name: 'Sample Building', label: 'Sample Building' } },
+        { id: 'plan-two', scope: 'unit', label: 'Plan Two', source: { sha256: 'e'.repeat(64), url: 'https://plans.example/two.pdf' }, buildingId: 'sample-building', building: { name: 'Sample Building', label: 'Sample Building' } },
+      ],
+      limit: 100, offset: 0, hasMore: false,
+    }));
     await page.route('**/floor-plan-archive/catalogue', route => json(route, {
-      buildings: [{ id: 'sample-building', name: 'Sample Building', kind: 'units', planCount: 2 }], sources: [],
+      buildings: [], sources: [],
     }));
     await page.route('**/floor-plan-archive/status', route => json(route, { coverage: { agencies: { total: 1, websites: 1 } } }));
     await page.route('**/floor-plan-archive/agencies?*', route => json(route, { agencies: [{ legal_name: 'Sample Agency', registered_address: 'Zagreb', website: 'https://agency.example' }] }));
-    await page.route('**/floor-plan-archive/building/sample-building', route => json(route, {
-      name: 'Sample Building', kind: 'units', location: null,
-      plans: [{ id: 'plan-one', label: 'Plan One' }, { id: 'plan-two', label: 'Plan Two' }],
-    }));
-
-    await page.goto('/floor-plan-archive.html?building=sample-building');
+    await page.goto('/floor-plans.html?building=sample-building');
     await expect(page.locator('#selection-name')).toHaveText('Sample Building');
     await expect(page.locator('#unit')).toHaveValue('0');
     await page.locator('#next').click();

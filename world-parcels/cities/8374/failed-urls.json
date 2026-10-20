@@ -1,0 +1,10 @@
+[
+  {
+    "url": "https://dados.salvador.ba.gov.br/api/3/action/package_search?q=lote&rows=5",
+    "reason": "404"
+  },
+  {
+    "url": "https://mapeamento.salvador.ba.gov.br/geoserver/ows?service=WFS&request=GetCapabilities",
+    "reason": "404"
+  }
+]

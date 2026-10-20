@@ -1,0 +1,11 @@
+[
+  {
+    "url": "https://mapservices.crd.bc.ca/arcgis/rest/services/Properties/MapServer"
+  },
+  {
+    "url": "https://mapservices.crd.bc.ca/arcgis/rest/services/Properties/MapServer/2/query?f=geojson&where=1%3D1&geometry=-123.360034699349%2C48.445978670856&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=GISLink%2CPID%2CLTSALot%2CLTSAPlan%2CBCAJurisdiction%2CLocation&returnGeometry=true&outSR=4326"
+  },
+  {
+    "url": "https://www2.gov.bc.ca/gov/content/data/geographic-data-services/land-use/crown-land-registry"
+  }
+]

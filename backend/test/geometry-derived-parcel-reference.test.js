@@ -7,7 +7,13 @@ import { createContext, runInContext } from 'node:vm';
 const require = createRequire(import.meta.url);
 const parcelIds = require('../../frontend/js/proposals/parcel-id.js');
 const parcelMenu = require('../../frontend/js/ui/parcel-menu-model.js');
+const openGround = require('../../frontend/js/proposals/open-ground.js');
 const format = require('../../frontend/js/format.js');
+const financials = require('../../frontend/js/financials.js');
+const ParcelPriceModel = {
+    buildEstimate: financials.buildParcelPriceEstimate,
+    aggregate: financials.aggregateParcelPriceEstimates
+};
 const panelSource = readFileSync(new URL('../../frontend/js/parcels/ui/parcel-panel.js', import.meta.url), 'utf8');
 const parcelCss = readFileSync(new URL('../../frontend/css/parcel-menu.css', import.meta.url), 'utf8');
 
@@ -37,7 +43,7 @@ class Element {
     querySelectorAll() { return []; }
 }
 
-function renderParcelPanel(properties) {
+function renderParcelPanel(properties, { sqmAvgPrice = 0 } = {}) {
     const ids = [
         'parcel-info-panel', 'parcel-info-title', 'info-content', 'propose-content', 'proposals-content',
         'parcel-owners-count', 'tools-tab', 'measureAsRoadButton', 'roadMeasurements', 'parcel-plans-content'
@@ -55,7 +61,10 @@ function renderParcelPanel(properties) {
         document,
         console,
         CbFormat: format,
-        SQM_AVG_PRICE: 0,
+        ParcelMenuModel: parcelMenu,
+        __openGround: openGround,
+        SQM_AVG_PRICE: sqmAvgPrice,
+        ParcelPriceModel,
         getParcelId: parcelIds.getParcelIdFromFeature,
         getParcelDisplayNumberFromProperties: parcelIds.getParcelDisplayNumberFromProperties,
         getParcelDisplayNumberFromFeature: parcelIds.getParcelDisplayNumberFromFeature,
@@ -135,6 +144,57 @@ describe('geometry-derived parcel references', () => {
         expect(rendered.info).not.toContain('geometryReferenceNote');
     });
 
+    it('labels unchanged source ground without asserting cadastral authority', () => {
+        const rendered = renderParcelPanel({ parcelId: 'tax-123', cadastreParcelIds: ['tax-123'] });
+        expect(rendered.title).toBe('Source parcel tax-123');
+        expect(rendered.info).not.toContain('identity.formedNote');
+    });
+
+    it('labels a source component separately from a proposed formation', () => {
+        const rendered = renderParcelPanel({
+            parcelId: 'part-A', cadastreParcelIds: ['source-A'], cadastralPart: true,
+            parcelIdentityKind: 'geometry-sha256-v1', geometryDisplayId: 'G1-source'
+        });
+        expect(rendered.title).toBe('Source parcel part part-A');
+        expect(rendered.info).toContain('identity.sourcePartNote');
+        expect(rendered.info).not.toContain('geometryReferenceNote');
+    });
+
+    it.each([false, true])('identifies a plot piece, including on open ground (%s)', onOpenGround => {
+        const rendered = renderParcelPanel({
+            parcelId: 'plot-piece', producedByProposalId: 'design',
+            cadastreParcelIds: onOpenGround ? [] : ['source'],
+            ...(onOpenGround ? { groundIds: ['ground:' + 'a'.repeat(64)] } : {}),
+            readjustmentPiece: { role: 'plot', plotFingerprint: 'plot-a' }
+        });
+        expect(rendered.title).toBe('Plot piece plot-piece');
+        expect(rendered.info).toContain('identity.plotNote');
+        expect(rendered.info).not.toContain('identity.formedNote');
+    });
+
+    it('labels readjustment leftover ground separately from authored plot pieces', () => {
+        const rendered = renderParcelPanel({
+            parcelId: 'rest', producedByProposalId: 'design', cadastreParcelIds: ['source'],
+            readjustmentPiece: { role: 'remainder' }
+        });
+        expect(rendered.title).toBe('Ground remainder rest');
+        expect(rendered.info).toContain('identity.remainderNote');
+    });
+
+    it('shows and copies the formed piece identity instead of inherited source metadata', () => {
+        const rendered = renderParcelPanel({
+            parcelId: 'piece-A', cadastreParcelIds: ['source-A'], producedByProposalId: 'design-A',
+            parcelIdentityKind: 'geometry-sha256-v1', geometryDisplayId: 'G1-source',
+            BROJ_CESTICE: '7', MATICNI_BROJ_KO: '99'
+        });
+        expect(rendered.title).toBe('Formed ground piece piece-A');
+        expect(rendered.info).toContain('identity.formedNote');
+        expect(rendered.info).not.toContain('geometryReferenceNote');
+        const copyTarget = rendered.titleElement.children.find(child => child.className === 'parcel-title-id');
+        copyTarget.listeners.click();
+        expect(rendered.copied).toEqual(['piece-A']);
+    });
+
     it('keeps the normalised parcel id even when the feature also carries a cadastral number and KO', () => {
         const rendered = renderParcelPanel({
             parcelId: 'native-123', parcelIdentityKind: 'registry', BROJ_CESTICE: '7', MATICNI_BROJ_KO: '99'
@@ -160,5 +220,21 @@ describe('geometry-derived parcel references', () => {
         expect(rendered.copied).toEqual([canonicalId]);
         expect(parcelCss).toMatch(/\.parcel-menu__title,[\s\S]*?#parcel-info-panel \.parcel-title-id-value\s*\{[^}]*-webkit-line-clamp:\s*2;/s);
         expect(parcelCss).toMatch(/\.parcel-id-text[\s\S]*?word-break:\s*break-all;[\s\S]*?line-clamp:\s*2;/s);
+    });
+
+    it('does not assign a currency to a raw price without its own currency field', () => {
+        const rendered = renderParcelPanel({
+            parcelId: 'p-1', calculatedArea: 100, estimatedMarketPrice: 500, currency: 'USD'
+        });
+        expect(rendered.info).toContain('Est. Mkt. Price:');
+        expect(rendered.info).toContain('N/A');
+        expect(rendered.info).not.toContain('500 USD');
+    });
+
+    it('labels the known area-price fallback as a EUR model', () => {
+        const rendered = renderParcelPanel({ parcelId: 'p-1', calculatedArea: 100 }, { sqmAvgPrice: 133 });
+        const normalized = rendered.info.replace(/[\u00a0\u202f]/g, ' ');
+        expect(normalized).toContain('Modeled area estimate (133 EUR/m²):');
+        expect(normalized).toContain('13,300 EUR');
     });
 });

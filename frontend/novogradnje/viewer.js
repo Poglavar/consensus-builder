@@ -47,23 +47,125 @@
             const p=el('p','viewer-copy');p.textContent='Prikaz zgrade nije dostupan za ovu lokaciju.';host.append(p);return {dispose(){}};
         }
         let dispose=null, cancelled=false;
-        root.__floorPlanReviewRenderer.preview(host,THREE=>envelopeGroup(THREE,model,apartment),()=>!cancelled).then(fn=>{if(cancelled)fn?.();else dispose=fn;}).catch(()=>{if(!cancelled){const p=el('p','viewer-copy');p.textContent='3D prikaz zgrade nije dostupan u ovom pregledniku.';host.replaceChildren(p);}});
-        return {dispose(){cancelled=true;dispose?.();host.replaceChildren();}};
+        const stopLoading=root.NovogradnjeLoading.start(host,'Učitavanje 3D prikaza zgrade…');
+        root.__floorPlanReviewRenderer.preview(host,THREE=>envelopeGroup(THREE,model,apartment),()=>!cancelled).then(fn=>{if(cancelled)fn?.();else dispose=fn;}).catch(()=>{if(!cancelled){const p=el('p','viewer-copy');p.textContent='3D prikaz zgrade nije dostupan u ovom pregledniku.';host.replaceChildren(p);}}).finally(stopLoading);
+        return {dispose(){cancelled=true;stopLoading();dispose?.();host.replaceChildren();}};
     }
-    function mountApartment(host, apartment) {
+    function contextGroup(THREE, model, context) {
+        const frame = root.__siteModelGeometry.localFrame(model);
+        if (!frame || !Number.isFinite(context.groundZ)) return null;
+        const group = new THREE.Group(); group.userData.cbFloorPlan = true;
+        const material = new THREE.MeshPhongMaterial({color:0xb8c2bf,side:THREE.DoubleSide,shininess:8});
+        let count = 0;
+        for (const building of context.buildings || []) {
+            const mesh = root.ContextBuildings3D.buildMeshFromBuilding(building, material, (lng,lat)=>frame.toLocal([lng,lat]), THREE);
+            if (!mesh) continue;
+            mesh.position.z = building.z_min - context.groundZ;
+            group.add(mesh); count++;
+        }
+        if (!count) material.dispose();
+        const target = new THREE.Group(); target.name='context-project';
+        const footprint=model.envelope.footprint;
+        const polygons=footprint.type==='MultiPolygon'?footprint.coordinates:[footprint.coordinates];
+        for(const coordinates of polygons){
+            const part=envelopeGroup(THREE,{...model,envelope:{...model.envelope,footprint:{type:'Polygon',coordinates}}},null);
+            if(!part)continue;
+            // Each envelope uses its first vertex as origin; place every part in the shared site frame.
+            const offset=frame.toLocal(coordinates[0][0]);part.position.set(offset[0],offset[1],0);target.add(part);
+        }
+        if (target.children.length) {
+            target.traverse(child=>{if(child.isMesh){child.material.color.set(0xe2a434);child.material.opacity=.92;child.material.depthWrite=true;}});
+            group.add(target);
+        }
+        const box = new THREE.Box3().setFromObject(group), size = box.getSize(new THREE.Vector3());
+        const ground = new THREE.Mesh(new THREE.PlaneGeometry(Math.max(size.x+20,50),Math.max(size.y+20,50)),new THREE.MeshPhongMaterial({color:0xe5e9e3,side:THREE.DoubleSide}));
+        const centre = box.getCenter(new THREE.Vector3()); ground.position.set(centre.x,centre.y,Math.min(box.min.z,0)-.15);group.add(ground);
+        return group;
+    }
+    function mountContext(host, project) {
+        if (!Number.isFinite(project?.location?.lng) || !Number.isFinite(project?.location?.lat) ||
+            !['Polygon', 'MultiPolygon'].includes(project?.model?.envelope?.footprint?.type)) {
+            host.replaceChildren(Object.assign(el('p','viewer-copy'),{textContent:'Nepoznata lokacija — okolica se ne može prikazati.'}));
+            return {dispose(){host.replaceChildren();}};
+        }
+        const stage=el('div','context-stage'),view=el('div','context-canvas'),toolbar=el('div','context-controls');
+        toolbar.setAttribute('role','group');toolbar.setAttribute('aria-label','Prikaz okolice');
+        const modelButton=el('button','context-mode'),googleButton=el('button','context-mode');
+        modelButton.type=googleButton.type='button';modelButton.textContent='Model';googleButton.textContent='Google 3D';
+        toolbar.append(modelButton,googleButton);stage.append(view,toolbar);host.replaceChildren(stage);
+        let cancelled=false,dispose=null,controller=null,generation=0,mode=null,context=null,stopLoading=null;
+        async function show(next){
+            if(cancelled||mode===next)return;
+            mode=next;const token=++generation;controller?.abort();stopLoading?.();dispose?.();dispose=null;
+            const current=()=>!cancelled&&token===generation;
+            modelButton.setAttribute('aria-pressed',String(next==='model'));googleButton.setAttribute('aria-pressed',String(next==='google'));
+            view.replaceChildren();
+            const stop=root.NovogradnjeLoading.start(view,next==='google'?'Učitavanje Google 3D prikaza…':'Učitavanje neposredne okolice…');
+            stopLoading=stop;
+            controller=new AbortController();
+            try {
+                if(next==='google'){
+                    const result=await root.NovogradnjeGoogleContext.mount(view,project,current,{groundZ:context?.groundZ,signal:controller.signal});
+                    if(!current())result?.();else dispose=result;
+                    return;
+                }
+                if(!context){
+                const response=await fetch(`/novogradnje/api/projects/${encodeURIComponent(project.id)}/context`,{signal:controller.signal});
+                if(!response.ok)throw new Error('Context unavailable');
+                context=await response.json();
+                }
+                if(!current())return;
+                if(!context.buildings?.length || !Number.isFinite(context.groundZ))throw new Error('No surveyed neighbours');
+                const fn=await root.__floorPlanReviewRenderer.preview(view,THREE=>contextGroup(THREE,project.model,context),current,
+                    {enablePan:false,enableZoom:true,minPolarAngle:.15,maxPolarAngle:Math.PI*.48,focusName:'context-project'});
+                if(!current())fn?.();else dispose=fn;
+            } catch(error) {
+                if(current()){
+                    mode=null;
+                    view.replaceChildren(Object.assign(el('p','viewer-copy'),{textContent:next==='google'?'Google 3D trenutačno nije dostupan. Pokušaj ponovno ili odaberi Model.':'3D prikaz okolice trenutačno nije dostupan.'}));
+                }
+            } finally {
+                stop();if(current())stopLoading=null;
+            }
+        }
+        modelButton.addEventListener('click',()=>show('model'));googleButton.addEventListener('click',()=>show('google'));
+        show(new URLSearchParams(root.location?.search||'').get('context')==='google'?'google':'model');
+        return {dispose(){cancelled=true;generation++;controller?.abort();stopLoading?.();dispose?.();host.replaceChildren();}};
+    }
+    function mountApartment(host, apartment, options={}) {
+        host.className+=' apartment-lit-host';
         host.replaceChildren(); const view = el('div','viewer-canvas'); host.append(view);
         const actions = el('div','viewer-actions'), button=el('button','view-toggle');button.type='button';button.textContent='Prikaži u 3D';actions.append(button);host.append(actions);
-        let current=mountPlan(view,apartment), is3d=false, generation=0;
-        button.addEventListener('click',async()=>{
-            current.dispose(); const token=++generation;
-            view.replaceChildren();is3d=!is3d;button.textContent=is3d?'Prikaži 2D':'Prikaži u 3D';
-            if(!is3d){current=mountPlan(view,apartment);return;}
+        let current=null, is3d=Boolean(apartment?.architecture), generation=0, interacted=false, stopLoading=null;
+        async function show3d(){
+            const token=++generation;
+            view.replaceChildren();
             if(!apartment?.architecture){const p=el('p','viewer-copy');p.textContent='3D rekonstrukcija nije dostupna za ovaj stan.';view.append(p);return;}
             const renderer=root.__floorPlanReviewRenderer, three=root.__threeFloorPlans, plans=root.__buildingFloorPlans;
-            try { const dispose=await renderer.preview(view,THREE=>three.createLocalUnitGroup(THREE,apartment.architecture,plans),()=>token===generation);if(token!==generation){dispose?.();return;}current={dispose(){generation++;dispose?.();}}; }
+            const stop=root.NovogradnjeLoading.start(view,'Učitavanje 3D prikaza stana…');
+            stopLoading=stop;
+            try { const dispose=await renderer.preview(view,THREE=>three.createLocalUnitGroup(THREE,apartment.architecture,plans),()=>token===generation,{
+                autoRotate:!interacted,autoRotateSpeed:.35,onInteraction(){interacted=true;},
+                setup(context){
+                    const disposePeople=root.__apartmentPeople.mount({...context,host:view,architecture:apartment.architecture});
+                    let disposeSun;
+                    try{disposeSun=root.__apartmentSun.mount({...context,host:view,controlsHost:host,architecture:apartment.architecture,placement:apartment.placement,location:options.location});}
+                    catch(error){disposePeople();throw error;}
+                    return ()=>{disposeSun();disposePeople();};
+                }
+            });if(token!==generation){dispose?.();return;}current={dispose(){generation++;dispose?.();}}; }
             catch { if(token!==generation)return;const p=el('p','viewer-copy');p.textContent='3D prikaz nije dostupan u ovom pregledniku.';view.replaceChildren(p);current={dispose(){}}; }
+            finally {stop();if(token===generation)stopLoading=null;}
+        }
+        function show2d(){stopLoading?.();stopLoading=null;current=mountPlan(view,apartment);}
+        button.textContent=is3d?'Prikaži 2D':'Prikaži u 3D';
+        if(is3d)show3d();else show2d();
+        button.addEventListener('click',async()=>{
+            stopLoading?.();stopLoading=null;current?.dispose(); generation++;
+            is3d=!is3d;button.textContent=is3d?'Prikaži 2D':'Prikaži u 3D';
+            if(is3d)await show3d();else show2d();
         });
-        return {dispose(){generation++;current.dispose();host.replaceChildren();}};
+        return {dispose(){generation++;stopLoading?.();current?.dispose();host.replaceChildren();}};
     }
-    root.NovogradnjeViewer={mountPlan,mountApartment,mountEnvelope};
+    root.NovogradnjeViewer={mountPlan,mountApartment,mountEnvelope,mountContext};
 })(window);

@@ -1,0 +1,125 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "3809",
+  "name": "Ennerdale, South Africa",
+  "point": [
+    -26.4062859886009,
+    27.8459423386999
+  ],
+  "bindings": [
+    {
+      "appCityId": "ennerdale",
+      "runtimeConfig": {
+        "id": "ennerdale",
+        "label": "Ennerdale, South Africa",
+        "currency": {
+          "locale": "en-ZA",
+          "code": "ZAR"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            -26.4062859886009,
+            27.8459423386999
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            -26.4062859886009,
+            27.8459423386999
+          ],
+          "fallbackDataset": [
+            27.8459423386999,
+            -26.4062859886009
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.0025,
+          "source": "parcel-source",
+          "sourceId": "za-joburg-registered-stands",
+          "idPrefix": "ZA-JOBURG-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 2,
+          "attribution": "<a href=\"https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6\">City of Johannesburg · publisher &amp; conditions</a> · Registered stand groups; Ennerdale entry area verified · update year unestablished"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "za-joburg-registered-stands",
+      "name": "City of Johannesburg registered stand groups",
+      "adapter": "arcgis",
+      "cityIds": [
+        "ennerdale"
+      ],
+      "countryCode": "ZA",
+      "endpoint": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6",
+      "idField": "SG_ID",
+      "idType": "string",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "ZA-JOBURG-",
+      "outFields": [
+        "OBJECTID",
+        "SG_ID",
+        "PROPERTY_ID",
+        "STAND_NO",
+        "STATUS_DESC",
+        "LAND_TYPE_NAME"
+      ],
+      "attributeNotNull": [
+        "SG_ID"
+      ],
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "nativeGeometryMode": "parts",
+      "disjointParts": true,
+      "partsCoordinatePrecision": 9,
+      "partMatchFields": [
+        "PROPERTY_ID",
+        "STAND_NO",
+        "STATUS_DESC"
+      ],
+      "pageSize": 25,
+      "maxFeatures": 1500,
+      "maxBboxKm2": 2,
+      "maxConcurrentQueries": 6,
+      "metricSrid": 32735,
+      "idBatchSize": 80,
+      "parcelNumberField": "STAND_NO",
+      "scope": "Municipal registered stands; complete disjoint components of each native SG_ID. Western Johannesburg, Cosmo City and Ennerdale entry areas verified. Source update year and citywide completeness unestablished.",
+      "attribution": "City of Johannesburg · registered stand groups. Entry areas verified in western Johannesburg, Cosmo City and Ennerdale; source update year unestablished.",
+      "catalogueUrl": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6",
+      "licenceUrl": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6",
+      "licenceNote": "Source terms are informational. Public municipal GIS; no reuse terms inferred from public access."
+    }
+  ]
+}

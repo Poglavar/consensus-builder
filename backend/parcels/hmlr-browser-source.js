@@ -452,6 +452,11 @@ export function createHmlrBrowserParcelSource(descriptor, { fetchImpl = globalTh
                 failure.cause = error;
                 throw failure;
             }
+            // A relay refusal or provider error has no archive ETag; preserve its HTTP cause.
+            if (!response.ok || response.status !== 200) {
+                await response.body?.cancel().catch(() => {});
+                throw providerHttpError(response);
+            }
             const finalUrl = response.url ? new URL(response.url) : null;
             if (finalUrl && (finalUrl.protocol !== 'https:' || ![ARCHIVE_HOST, ALLOWED_ARCHIVE_REDIRECT_HOST].includes(finalUrl.hostname)
                 || finalUrl.username || finalUrl.password)) { await response.body?.cancel(); throw upstreamError('HMLR archive redirected outside the verified publisher.'); }

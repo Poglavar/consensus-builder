@@ -1,9 +1,9 @@
-// proposals/plan-stats.js — the Plan Stats dialog: what the plan on this map amounts to.
+// proposals/plan-stats.js — statistics for the proposals currently applied in this browser.
 //
 // The arithmetic is NOT here. It is in proposals/plan-yield.js, which is pure and unit-tested, and
 // which backend/scripts/plan-yield.js runs over the database — so a figure read off this dialog and
 // a figure quoted from the command line come from the same code. This file is the thin part: pick
-// the proposals that make up the plan, resolve the geometry of parcels the plan leaves standing,
+// the applied proposals, resolve the geometry of parcels the composition leaves standing,
 // and draw the result.
 //
 // The old resulting-parcel count read Leaflet's current viewport, so a large plan could report four
@@ -248,7 +248,7 @@
         dialog.tabIndex = -1;
 
         const header = el('div', 'cb-dialog__header');
-        const title = el('h2', 'cb-dialog__title', tPlanStats('sidebar.proposals.planStats.modalTitle', 'Plan Stats'));
+        const title = el('h2', 'cb-dialog__title', tPlanStats('sidebar.proposals.planStats.modalTitle', 'Applied proposal stats'));
         title.id = 'plan-stats-title';
         title.setAttribute('data-i18n-key', 'sidebar.proposals.planStats.modalTitle');
         header.appendChild(title);
@@ -256,7 +256,7 @@
         const closeBtn = el('button', 'close-circle-btn', '×');
         closeBtn.type = 'button';
         closeBtn.setAttribute('data-plan-stats-close', '');
-        closeBtn.setAttribute('aria-label', tPlanStats('sidebar.proposals.planStats.closeAria', 'Close plan stats'));
+        closeBtn.setAttribute('aria-label', tPlanStats('sidebar.proposals.planStats.closeAria', 'Close applied proposal stats'));
         closeBtn.addEventListener('click', () => hidePlanStatsModal());
         header.appendChild(closeBtn);
 
@@ -422,7 +422,7 @@
         };
 
         if (stats.unavailable) {
-            set('scope', tPlanStats('sidebar.proposals.planStats.unavailable', 'Plan arithmetic is unavailable — plan-yield.js did not load.'));
+            set('scope', tPlanStats('sidebar.proposals.planStats.unavailable', 'Statistics are unavailable. Reload and try again.'));
             modal.hidden = false;
             return;
         }

@@ -38,6 +38,16 @@
         ? turf
         : (typeof require === 'function' ? require('@turf/turf') : null);
 
+    // A clip that fails here makes a number UNKNOWN, never a smaller or zero one: it is reported
+    // and counted in clipHealth() (parcel-arrangement.js), and the caller gets null — which the
+    // channel logic already reads as "ask the owner".
+    const reportClip = (operation, error, site, operands) => {
+        const clips = (global && global.__parcelArrangement)
+            || (typeof require === 'function' ? require('./parcel-arrangement.js') : null);
+        if (!clips || typeof clips.reportClipFailure !== 'function') throw error;
+        clips.reportClipFailure(operation, error, { site }, operands);
+    };
+
     const CHANNELS = Object.freeze(['acceptance', 'offer', 'vote', 'disclosure']);
     const CHANNEL_RANK = Object.freeze({ acceptance: 4, offer: 3, vote: 2, disclosure: 1 });
 
@@ -65,21 +75,30 @@
         const t = T();
         if (!t || !footprint || !parcelFeature) return null;
         let take = null;
-        try { take = t.intersect(footprint, parcelFeature); } catch (_) { return null; }
+        try { take = t.intersect(footprint, parcelFeature); } catch (error) {
+            reportClip('intersect', error, 'dossier.deferredTake', [footprint, parcelFeature]);
+            return null;
+        }
         if (!take) return { takeM2: 0, deferredM2: 0 };
         const takeM2 = t.area(take);
 
         let earlierGround = null;
+        let unknown = false;
         (Array.isArray(cedingFlows) ? cedingFlows : []).forEach(ceding => {
-            if (!ceding || !ceding.footprint) return;
+            if (unknown || !ceding || !ceding.footprint) return;
             if (self && String(ceding.id) === String(self.id)) return;
             if (self && compareCreation(ceding, self) >= 0) return; // only EARLIER steps consume first
             try {
                 earlierGround = earlierGround
                     ? (t.union(earlierGround, ceding.footprint) || earlierGround)
                     : ceding.footprint;
-            } catch (_) { /* keep what we have */ }
+            } catch (error) {
+                // Was: keep the union so far, which under-counted the deferred share.
+                reportClip('union', error, 'dossier.deferredTake', [earlierGround, ceding.footprint]);
+                unknown = true;
+            }
         });
+        if (unknown) return null;
         if (!earlierGround) return { takeM2, deferredM2: 0 };
         const deferredM2 = api.intersectionArea(take, earlierGround);
         return { takeM2, deferredM2 };
@@ -138,7 +157,11 @@
                         ? api.intersectionArea(overlap, context.parcelFeature)
                         : (t ? t.area(overlap) : 0);
                     if (within >= api.MIN_INTERSECTION_M2) return 'disclosure';
-                } catch (_) { /* a degenerate footprint cannot reclassify the entry */ }
+                } catch (error) {
+                    // Unknown overlap stays an offer addressed to the owner (the over-asking
+                    // direction), but it is reported rather than swallowed.
+                    reportClip('intersect', error, 'dossier.channelFor', [footprint, ceding.footprint]);
+                }
             }
         }
         return 'offer';
@@ -153,14 +176,26 @@
         if (!t || !parcelFeature || !footprints.length) return null;
         try {
             let taken = null;
-            footprints.forEach(fp => {
-                try { taken = taken ? (t.union(taken, fp) || taken) : fp; } catch (_) { /* keep what we have */ }
-            });
+            for (const fp of footprints) {
+                try { taken = taken ? (t.union(taken, fp) || taken) : fp; } catch (error) {
+                    // Was: keep the union so far, which reported a remainder too large.
+                    reportClip('union', error, 'dossier.remainderReport', [taken, fp]);
+                    return null;
+                }
+            }
             if (!taken) return null;
-            const takenPart = t.intersect(parcelFeature, taken);
+            let takenPart = null;
+            let leftover = null;
+            try { takenPart = t.intersect(parcelFeature, taken); } catch (error) {
+                reportClip('intersect', error, 'dossier.remainderReport', [parcelFeature, taken]);
+                return null;
+            }
+            try { leftover = t.difference(parcelFeature, taken); } catch (error) {
+                reportClip('difference', error, 'dossier.remainderReport', [parcelFeature, taken]);
+                return null;
+            }
             const takenM2 = takenPart ? Math.round(t.area(takenPart)) : 0;
             if (takenM2 < 1) return null;
-            const leftover = t.difference(parcelFeature, taken);
             const geometry = leftover && leftover.geometry;
             const polys = !geometry ? []
                 : geometry.type === 'Polygon' ? [t.feature(geometry)]

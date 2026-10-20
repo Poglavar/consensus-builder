@@ -126,8 +126,10 @@
         return { builtVolume, proposedVolume, builtFloorArea, proposedFloorArea };
     }
 
-    // The € figures for the panel. When there is no proposed massing (proposed <= 0) there is no
-    // "gain" to show — the panel shows the current built value instead of a negative delta. avg is
+    // The modeled EUR figures for the panel apply a user-selected EUR/m² gross-floor-area rate to
+    // measured built and proposed GFA. They are not parcel appraisals or cash consideration. When
+    // there is no proposed massing (proposed <= 0) there is no "gain" to show — the panel shows the
+    // current modeled built value instead of a negative delta. avg is
     // the per-parcel gain for the whole-proposal panel (null unless there is proposed massing, and
     // null with no parcels: a proposal on open ground has no per-parcel figure). When the totals
     // cover open ground beside the parcels, `parcelFloorAreas` ({ built, proposed } over the bound
@@ -140,7 +142,15 @@
             ? ((Number(parcelFloorAreas.proposed) || 0) - (Number(parcelFloorAreas.built) || 0)) * priceEurPerM2
             : gain;
         const avg = (typeof parcelCount === 'number' && parcelCount > 0 && hasProposed) ? parcelGain / parcelCount : null;
-        return { gain, currentValue, hasProposed, avg };
+        const model = {
+            kind: 'modeled-floor-area-value',
+            quantity: 'gross-floor-area',
+            areaUnit: 'm²',
+            currency: 'EUR',
+            amountUnit: 'EUR',
+            rateEurPerM2GrossFloorArea: priceEurPerM2
+        };
+        return { gain, currentValue, hasProposed, avg, model };
     }
 
     const METRIC_KEYS = ['builtVolume', 'proposedVolume', 'builtFloorArea', 'proposedFloorArea'];

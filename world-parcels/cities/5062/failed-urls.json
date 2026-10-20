@@ -1,0 +1,10 @@
+[
+  {
+    "url": "https://www.geoportal.gov.ph/arcgis/rest/services?f=json",
+    "reason": "404"
+  },
+  {
+    "url": "https://denr.gov.ph/",
+    "reason": "403"
+  }
+]

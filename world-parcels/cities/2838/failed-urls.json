@@ -1,0 +1,25 @@
+[
+  {
+    "url": "https://umaps.momah.gov.sa/api/Config.Api/",
+    "reason": "404"
+  },
+  {
+    "url": "https://umaps.momah.gov.sa/api/Config.Api/swagger/v1/swagger.json",
+    "reason": "404"
+  },
+  {
+    "url": "https://my.gov.sa/en/services/21869"
+  },
+  {
+    "url": "https://momah.gov.sa/en/node/15098"
+  },
+  {
+    "url": "https://rega.gov.sa/rega-services/platforms/geospatial-real-estate-portal/"
+  },
+  {
+    "url": "https://umaps.momah.gov.sa/"
+  },
+  {
+    "url": "https://geoportal.sa/"
+  }
+]

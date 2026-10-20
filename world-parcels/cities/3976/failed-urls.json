@@ -1,0 +1,22 @@
+[
+  {
+    "url": "https://geoproc.maringa.pr.gov.br/arcgis/rest/services/SIGMARINGA/CONSULTAS/MapServer/13?f=pjson",
+    "reason": "ConnectTimeout"
+  },
+  {
+    "url": "https://geoproc.maringa.pr.gov.br/arcgis/rest/services/SIGMARINGA/CONSULTAS/MapServer/13/query",
+    "reason": "ConnectTimeout"
+  },
+  {
+    "url": "https://transparencia.maringa.pr.gov.br/portaltransparencia/1/publicacoes"
+  },
+  {
+    "url": "https://paranainterativo.pr.gov.br/portal/apps/webappviewer/index.html"
+  },
+  {
+    "url": "https://maringa.oxy.elotech.com.br/portaltransparencia-api/api/files/arquivo/145041"
+  },
+  {
+    "url": "https://geoproc.maringa.pr.gov.br/arcgis/rest/services/SIGMARINGA/CONSULTAS/MapServer/13"
+  }
+]

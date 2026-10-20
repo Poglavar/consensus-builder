@@ -1,0 +1,17 @@
+[
+  {
+    "url": "https://halle.de/serviceportal/dienstleistungen/leistung/liegenschaftskarte-auskunft/407135317"
+  },
+  {
+    "url": "https://www.geodatenportal.sachsen-anhalt.de/gfds/de/gdp-alkis-geowebdienste.html"
+  },
+  {
+    "url": "https://www.geodatenportal.sachsen-anhalt.de/wss/service/ST_LVermGeo_ALKIS_WFS_OpenData/guest?service=WFS&request=GetCapabilities"
+  },
+  {
+    "url": "https://www.geodatenportal.sachsen-anhalt.de/wss/service/ST_LVermGeo_ALKIS_WFS_OpenData/guest?service=WFS&version=2.0.0&request=GetFeature&typeNames=ave:Flurstueck&count=3&srsName=EPSG:4326&bbox=11.9670,51.4754,11.9678,51.4761,EPSG:4326"
+  },
+  {
+    "url": "https://www.geodatenportal.sachsen-anhalt.de/wss/service/ST_LVermGeo_ALKIS_WFS_OpenData/guest?service=WFS&version=2.0.0&request=GetFeature&typeNames=ave:Flurstueck&count=3&srsName=EPSG:25832&bbox=708000,5709400,708500,5710000,EPSG:25832"
+  }
+]

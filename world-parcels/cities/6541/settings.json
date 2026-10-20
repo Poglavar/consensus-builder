@@ -1,0 +1,132 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "6541",
+  "name": "Pittsville, United States",
+  "point": [
+    30.0640585361082,
+    -95.1971592355123
+  ],
+  "bindings": [
+    {
+      "appCityId": "pittsville",
+      "runtimeConfig": {
+        "id": "pittsville",
+        "wupCityCode": "6541",
+        "label": "Pittsville, United States",
+        "currency": {
+          "locale": "en-US",
+          "code": "USD"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            30.0640585361082,
+            -95.1971592355123
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            30.0640585361082,
+            -95.1971592355123
+          ],
+          "fallbackDataset": [
+            -95.1971592355123,
+            30.0640585361082
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "us-tx-harris-hcad-parcels",
+          "idPrefix": "US-TX-HCAD-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 3,
+          "attribution": "<a href=\"https://www.gis.hctx.net/arcgis/rest/services/HCAD/Parcels/MapServer/0\">Harris County Appraisal District / Harris County GIS. Adapted to WGS84.</a>"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "us-tx-harris-hcad-parcels",
+      "endpoint": "https://www.gis.hctx.net/arcgis/rest/services/HCAD/Parcels/MapServer/0",
+      "idField": "HCAD_NUM",
+      "idType": "string",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "US-TX-HCAD-",
+      "outFields": [
+        "OBJECTID",
+        "HCAD_NUM",
+        "acct_num"
+      ],
+      "nativeGeometryMode": "parts",
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "disjointParts": true,
+      "partMatchFields": [
+        "acct_num"
+      ],
+      "attributeNotNull": [
+        "HCAD_NUM"
+      ],
+      "scope": "Identified HCAD account parcels in Harris County, Texas; Houston portions outside Harris County are not covered. Additional enabled city entries have separate bounded qualification evidence; wider coverage remains unverified.",
+      "adapter": "arcgis",
+      "name": "Harris County HCAD account parcels",
+      "cityIds": [
+        "pittsville"
+      ],
+      "countryCode": "US",
+      "metricSrid": 32615,
+      "pageSize": 100,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "maxConcurrentQueries": 2,
+      "partsCoordinatePrecision": 9,
+      "operator": "Harris County Appraisal District / Harris County GIS",
+      "catalogueUrl": "https://www.gis.hctx.net/arcgis/rest/services/HCAD/Parcels/MapServer/0",
+      "coverageNote": "Harris County identified account parcels; other Houston counties excluded",
+      "caveats": [
+        "Two source rows without an HCAD account number are excluded.",
+        "All rows for an account are read; exact duplicate polygons are collapsed and separate components are combined. Non-identical overlapping components or inconsistent acct_num references fail visibly."
+      ],
+      "attribution": "Harris County Appraisal District / Harris County GIS. Adapted to WGS84.",
+      "licenceNote": "Source conditions are informational; users choose their source and intended use.",
+      "stateCode": "TX",
+      "metricSridByCity": {
+        "pittsville": 32615
+      },
+      "cityScopes": {
+        "cinco_ranch": "149 unchanged native parcel polygons passed all eight qualification gates in bounded cells around the UN/WUP locator. Fresh independent metric audit (EPSG:32615) found zero invalid polygons, identity conflicts, duplicate geometry, material overlaps, or operation errors. Citywide completeness, legal title, survey accuracy, and currentness are not established.",
+        "nassau_bay": "134 unchanged native parcel polygons passed all eight qualification gates in bounded cells around the UN/WUP locator. Fresh independent metric audit (EPSG:32615) found zero invalid polygons, identity conflicts, duplicate geometry, material overlaps, or operation errors. Citywide completeness, legal title, survey accuracy, and currentness are not established.",
+        "atascocita": "115 unchanged native parcel polygons passed all eight qualification gates in bounded cells around the UN/WUP locator. Fresh independent metric audit (EPSG:32615) found zero invalid polygons, identity conflicts, duplicate geometry, material overlaps, or operation errors. Citywide completeness, legal title, survey accuracy, and currentness are not established.",
+        "pittsville": "154 unchanged native parcel polygons passed all eight qualification gates in bounded cells around the UN/WUP locator. Fresh independent metric audit (EPSG:32615) found zero invalid polygons, identity conflicts, duplicate geometry, material overlaps, or operation errors. Citywide completeness, legal title, survey accuracy, and currentness are not established.",
+        "greenspoint": "42 unchanged native parcel polygons passed all eight qualification gates in bounded cells around the UN/WUP locator. Fresh independent metric audit (EPSG:32615) found zero invalid polygons, identity conflicts, duplicate geometry, material overlaps, or operation errors. Citywide completeness, legal title, survey accuracy, and currentness are not established."
+      }
+    }
+  ]
+}

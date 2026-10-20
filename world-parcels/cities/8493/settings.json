@@ -1,0 +1,124 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "8493",
+  "name": "Boston, United States",
+  "point": [
+    42.3601,
+    -71.0589
+  ],
+  "bindings": [
+    {
+      "appCityId": "boston",
+      "runtimeConfig": {
+        "id": "boston",
+        "label": "Boston, United States",
+        "currency": {
+          "locale": "en-US",
+          "code": "USD"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            42.3601,
+            -71.0589
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            42.3601,
+            -71.0589
+          ],
+          "fallbackDataset": [
+            -71.0589,
+            42.3601
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.0025,
+          "source": "parcel-source",
+          "sourceId": "us-ma-boston-current-parcels",
+          "idPrefix": "US-MA-BOSTON-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "<a href=\"https://gis.boston.gov/arcgis/rest/services/Parcels/Parcels_current/FeatureServer/0?f=pjson\">City of Boston GIS / Assessing · publisher &amp; conditions</a> · fee parcel polygons only · adapted"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "us-ma-boston-current-parcels",
+      "name": "City of Boston GIS — current fee parcels",
+      "adapter": "arcgis",
+      "endpoint": "https://gis.boston.gov/arcgis/rest/services/Parcels/Parcels_current/FeatureServer/0",
+      "idField": "LOC_ID",
+      "objectIdField": "OBJECTID",
+      "idType": "string",
+      "idPattern": "^[MF]_[0-9]+_[0-9]+$",
+      "idPrefix": "US-MA-BOSTON-",
+      "outFields": [
+        "OBJECTID",
+        "LOC_ID",
+        "MAP_PAR_ID",
+        "POLY_TYPE"
+      ],
+      "parcelNumberField": "MAP_PAR_ID",
+      "attributeFilters": {
+        "POLY_TYPE": "FEE"
+      },
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "metricSrid": 32619,
+      "countryCode": "US",
+      "stateCode": "MA",
+      "cityIds": [
+        "boston"
+      ],
+      "operator": "City of Boston GIS / Assessing",
+      "scope": "Current Boston fee parcel polygons only (POLY_TYPE FEE). Water, rights of way and TAX-only polygons are outside this ground source. Multiple same-LOC_ID fee polygon rows form one complete native locational parcel group.",
+      "catalogueUrl": "https://gis.boston.gov/arcgis/rest/services/Parcels/Parcels_current/FeatureServer/0?f=pjson",
+      "caveats": [
+        "LOC_ID is the publisher-documented unique locational identifier of the parcel polygon; assessor MAP_PAR_ID is a display label, not canonical identity.",
+        "Uses the current city service instead of the historical Parcels09 layer. Multiple assessment records can relate to one geographic parcel; no ownership records are requested.",
+        "Fee parcel polygons only; other published polygon types remain outside this source.",
+        "Observed repeated LOC_ID rows also have the same assessor map reference. All fee polygon components of the native group are resolved before publishing geometry."
+      ],
+      "nativeGeometryMode": "parts",
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "partsCoordinatePrecision": 9,
+      "maxConcurrentQueries": 2,
+      "attribution": "City of Boston GIS / Assessing. Adapted to WGS84.",
+      "licenceNote": "Source conditions are informational; users choose their source and intended use."
+    }
+  ]
+}

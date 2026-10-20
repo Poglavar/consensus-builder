@@ -1,0 +1,18 @@
+[
+  {
+    "url": "https://bhunaksha.bihar.gov.in/WMS?SERVICE=WMS&REQUEST=GetCapabilities",
+    "reason": "500"
+  },
+  {
+    "url": "https://bhunaksha.bihar.gov.in/index.jsp"
+  },
+  {
+    "url": "https://madhubani.nic.in/service/land-record-computerization/"
+  },
+  {
+    "url": "https://land.bihar.gov.in/landbihar/Default.aspx"
+  },
+  {
+    "url": "https://dlrs.bihar.gov.in/services.html"
+  }
+]

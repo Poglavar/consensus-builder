@@ -27,8 +27,10 @@
             const shared = (typeof ops.intersectionArea === 'function') ? (ops.intersectionArea(footprint, parcel) || 0) : 0;
             if (shared <= 0) return;                 // not under the footprint at all
             coveredM2 += shared;
-            // Subtract as we go: what survives every parcel is ground no parcel covers.
-            try { remainder = ops.difference(remainder, parcel); } catch (_) { /* keep what we have */ }
+            // Subtract as we go: what survives every parcel is ground no parcel covers. A difference
+            // that throws is not caught: keeping the remainder would paint this parcel's ground as
+            // a gap, which is the one wrong answer this tool exists to rule out.
+            remainder = ops.difference(remainder, parcel);
         });
 
         const gaps = [];
@@ -49,7 +51,8 @@
         };
     }
 
-    const api = { computeCoverageGap };
+    // turfOps is a hoisted declaration below, so node tests reach it too.
+    const api = { computeCoverageGap, turfOps };
     if (typeof module === 'object' && module.exports) module.exports = api;
     if (typeof window === 'undefined') return;       // node test: only the pure part
     global.__publishGap = api;
@@ -61,12 +64,25 @@
         gapLayer = null;
     }
 
+    function publishGapClipFailure(operation, error, operands) {
+        const clips = (typeof window !== 'undefined' && window.__parcelArrangement)
+            || (typeof require === 'function' ? require('./proposals/parcel-arrangement.js') : null);
+        if (!clips || typeof clips.clipFailure !== 'function') return error;
+        return clips.clipFailure(operation, error, { site: 'publish-gap-debug.turfOps' }, operands);
+    }
+
     function turfOps(t) {
         return {
             area: shape => { try { return t.area(shape) || 0; } catch (_) { return 0; } },
-            difference: (a, b) => { try { return t.difference(a, b); } catch (_) { return a; } },
+            // A clip that throws refuses with a typed ClipFailure (parcel-arrangement.js): `return a`
+            // and `return 0` reported ground as missing that is not.
+            difference: (a, b) => {
+                try { return t.difference(a, b); } catch (error) { throw publishGapClipFailure('difference', error, [a, b]); }
+            },
             intersectionArea: (a, b) => {
-                try { const hit = t.intersect(a, b); return hit ? (t.area(hit) || 0) : 0; } catch (_) { return 0; }
+                let hit = null;
+                try { hit = t.intersect(a, b); } catch (error) { throw publishGapClipFailure('intersect', error, [a, b]); }
+                return hit ? (t.area(hit) || 0) : 0;
             },
             // A MultiPolygon remainder is several separate holes; report them one by one.
             explode: shape => {

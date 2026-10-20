@@ -132,6 +132,7 @@ test.describe('compact proposal card actions @features', () => {
     await record.locator('summary').click();
     const copy = record.locator('.proposal-id-copy');
     await expect(copy).toBeVisible();
+    await expect(copy).toHaveAccessibleName('Copy local ID');
     await copy.click();
     await expect.poll(() => page.evaluate(() => navigator.clipboard.readText())).toBe(proposalId);
   });

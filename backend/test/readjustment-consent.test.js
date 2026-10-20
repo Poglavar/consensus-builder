@@ -9,6 +9,7 @@ import { createContext, runInContext } from 'node:vm';
 const require = createRequire(import.meta.url);
 const deal = require('../../frontend/js/reparcellization-deal.js');
 const approval = require('../../frontend/js/proposals/approval.js');
+const { normalizeOwnerAcceptances } = require('../../frontend/js/proposals/owner-acceptance.js');
 const ownership = require('../../frontend/js/reparcellization-ownership.js');
 const turf = require('@turf/turf');
 const source = readFileSync(new URL('../../frontend/js/proposals/execution.js', import.meta.url), 'utf8');
@@ -61,6 +62,8 @@ function fixture() {
     const bridge = { acceptProposal: vi.fn(async () => ({ accepted: true })) };
     const context = createContext({
         ...approval,
+        normalizeOwnerAcceptances,
+        ProposalApprovalText: require('../../frontend/js/proposals/approval-text.js'),
         TextEncoder,
         // Like storage.js getProposalI18nHelper without a loaded language: the fallback, interpolated.
         getProposalI18nHelper: () => (_key, fallback, params = {}) => String(fallback).replace(/\{\{\s*(\w+)\s*\}\}/g, (match, key) => (key in params ? params[key] : match)),
@@ -73,14 +76,13 @@ function fixture() {
             getProposal: id => id === proposal.proposalId ? proposal : null,
             _indexProposal: vi.fn(), save: () => saves.push(JSON.parse(JSON.stringify(proposal)))
         },
-        proposalRecipientConsentSatisfied: () => true,
         isVoteProposal: () => false,
         isNonBindingProposal: () => false,
         showProposalAlertMessage: showAlert,
         showStyledAlert: showAlert,
         alert: showAlert,
         updateShowProposalsButton: vi.fn(),
-        autoApplyExecutedProposalToMap: vi.fn(), applyProposalOwnershipTransfer: vi.fn(),
+        ProposalManager: { applyProposal: vi.fn() }, transferParcelOwnership: vi.fn(),
         CbFormat: require('../../frontend/js/format.js'),
         escapeHtml: require('../../frontend/js/shared-utils.js').escapeHtml,
         normalizeParcelId: id => String(id), normalizeParcelIdList: ids => ids.map(String),
@@ -102,8 +104,6 @@ function fixture() {
     runInContext(coreSource, context);
     runInContext(source, context);
     runInContext(panelSource, context);
-    context.autoApplyExecutedProposalToMap = vi.fn();
-    context.applyProposalOwnershipTransfer = vi.fn();
 
     const sign = statement => createHmac('sha256', signingSecret)
         .update(approval.stableStringify(statement), 'utf8').digest('hex');
@@ -145,11 +145,14 @@ describe('fixed readjustment consent', () => {
 
         setActor({ id: 'owner-a', name: 'Alice Example' });
         const first = await context.acceptProposal(proposal.proposalId, 'base-a', 'owner-a', { acceptedByAgentId: 'owner-b' });
-        expect(first).toMatchObject({ ownerKey: 'owner-a', ownerAccepted: true, parcelAccepted: true, proposalExecuted: false });
+        expect(first).toMatchObject({ ownerKey: 'owner-a', ownerAccepted: true, parcelAccepted: true });
         const firstReceipt = structuredClone(proposal.ownerApprovals['owner-a']);
         expect(firstReceipt).toMatchObject({ actorId: 'owner-a', decision: 'approve', effectHash: deal.fingerprint(proposal), providerId: 'test-lens-signer' });
         expect(firstReceipt).not.toHaveProperty('acceptedByAgentId');
         expect(context.ProposalApprovalAuthorities.verifyReceipt(proposal, firstReceipt)).toBe(true);
+        expect(context.getProposalConsentMetrics(proposal)).toMatchObject({ parcelCount: 2, acceptedCount: 1, consentBasis: 'signed-receipts' });
+        expect(context.buildParcelAcceptanceStatusHtml(proposal)).toContain('Parcel consent from verified receipts: (1/2)');
+        expect(context.buildOwnerAcceptanceStatusHtml(proposal)).toContain('Owner approvals from verified receipts: (1/2)');
         expect(context.buildProposalOwnerAcceptanceSummary(proposal)).toMatchObject({ acceptedOwners: 1, totalOwners: 2 });
         const reloaded = JSON.parse(JSON.stringify(proposal));
         expect(context.ProposalApprovalAuthorities.verifyReceipt(reloaded, reloaded.ownerApprovals['owner-a'])).toBe(true);
@@ -158,14 +161,17 @@ describe('fixed readjustment consent', () => {
         // Rebalance the per-owner cash while retaining the whole-agreement total.
         proposal.reparcellization.ownerShares[0].cashOffer = 20;
         proposal.reparcellization.ownerShares[1].cashOffer = 10;
+        const beforeMetrics = structuredClone(proposal);
+        expect(context.getProposalConsentMetrics(proposal).acceptedCount).toBe(0);
+        expect(proposal).toEqual(beforeMetrics);
         setActor({ id: 'owner-b', name: 'Bob Example' });
         const afterEdit = await context.acceptProposal(proposal.proposalId, 'base-b', 'owner-b');
-        expect(afterEdit).toMatchObject({ ownerKey: 'owner-b', parcelAccepted: true, proposalExecuted: false });
+        expect(afterEdit).toMatchObject({ ownerKey: 'owner-b', parcelAccepted: true });
         expect(proposal.ownerApprovals['owner-a']).toMatchObject({ effectHash: firstReceipt.effectHash });
         expect(context.ProposalApprovalRuntime.summary(proposal, deal.fingerprint(proposal)))
             .toMatchObject({ acceptedOwners: 1, passed: false });
         expect(proposal.acceptedParcelIds).toEqual(['base-b']);
-        expect(context.autoApplyExecutedProposalToMap).not.toHaveBeenCalled();
+        expect(context.ProposalManager.applyProposal).not.toHaveBeenCalled();
         setActor({ id: 'owner-a', name: 'Alice Example' });
         expect(context.getProposalOwnerAcceptanceState(proposal, 'base-a').entries[0])
             .toMatchObject({ accepted: false, termsChanged: true, canAccept: true });
@@ -173,13 +179,18 @@ describe('fixed readjustment consent', () => {
         // Same owner accepts the new cash split: the old signed receipt is preserved as history,
         // while the new signed receipt is the only one counted for the current deal.
         const final = await context.acceptProposal(proposal.proposalId, 'base-a', 'owner-a');
-        expect(final).toMatchObject({ proposalExecuted: true });
+        expect(final).toMatchObject({ ownerAccepted: true, parcelAccepted: true });
+        expect(final).not.toHaveProperty('proposalExecuted');
+        expect(proposal.lifecycleStatus).toBe('Active');
+        expect(proposal.executedAt).toBeUndefined();
+        expect(proposal.applied).toBeUndefined();
         expect(proposal.ownerApprovals['owner-a'].effectHash).toBe(deal.fingerprint(proposal));
         expect(proposal.ownerApprovals['owner-a'].effectHash).not.toBe(firstReceipt.effectHash);
         expect(proposal.ownerApprovalHistory).toEqual([firstReceipt]);
         expect(context.ProposalApprovalRuntime.summary(proposal, deal.fingerprint(proposal)))
             .toMatchObject({ acceptedOwners: 2, passed: true });
-        expect(context.autoApplyExecutedProposalToMap).toHaveBeenCalledTimes(1);
+        expect(context.ProposalManager.applyProposal).not.toHaveBeenCalled();
+        expect(context.transferParcelOwnership).not.toHaveBeenCalled();
         expect(saves.length).toBe(3);
     });
 
@@ -253,20 +264,41 @@ describe('fixed readjustment consent', () => {
         expect(showAlert).toHaveBeenCalledWith(expect.stringContaining('Complete and correct'), expect.anything());
     });
 
-    it('records valid positive-cash approvals but does not execute while funding is unspecified', async () => {
+    it('a signed withdrawal preserves an existing execution and map application', async () => {
         const { context, proposal, setActor } = fixture();
-        delete proposal.funded;
+        setActor({ id: 'owner-a', name: 'Alice Example' });
+        await context.acceptProposal(proposal.proposalId, 'base-a', 'owner-a');
+        const approvalReceipt = proposal.ownerApprovals['owner-a'];
+        Object.assign(proposal, { lifecycleStatus: 'Executed', executedAt: '2026-10-01T10:00:00.000Z', applied: true });
+        const result = await context.rejectProposal(proposal.proposalId, 'base-a', 'owner-a');
+        expect(result).toMatchObject({ ownerKey: 'owner-a', ownerAccepted: false, parcelAccepted: false });
+        expect(proposal.ownerApprovals['owner-a']).toBeUndefined();
+        expect(proposal.ownerApprovalHistory).toContainEqual(approvalReceipt);
+        expect(proposal.acceptedParcelIds).toEqual([]);
+        expect(proposal).toMatchObject({ lifecycleStatus: 'Executed', executedAt: '2026-10-01T10:00:00.000Z', applied: true });
+        expect(context.ProposalManager.applyProposal).not.toHaveBeenCalled();
+        expect(context.transferParcelOwnership).not.toHaveBeenCalled();
+    });
+
+    it.each([true, false, undefined])('records complete positive-cash consent without execution when funded=%s', async funded => {
+        const { context, proposal, setActor } = fixture();
+        if (funded === undefined) delete proposal.funded;
+        else proposal.funded = funded;
 
         setActor({ id: 'owner-a', name: 'Alice Example' });
         const first = await context.acceptProposal(proposal.proposalId, 'base-a', 'owner-a');
-        expect(first).toMatchObject({ ownerAccepted: true, proposalExecuted: false });
+        expect(first).toMatchObject({ ownerAccepted: true });
 
         setActor({ id: 'owner-b', name: 'Bob Example' });
         const final = await context.acceptProposal(proposal.proposalId, 'base-b', 'owner-b');
 
-        expect(final).toMatchObject({ ownerAccepted: true, proposalExecuted: false });
+        expect(final).toMatchObject({ ownerAccepted: true });
+        expect(final).not.toHaveProperty('proposalExecuted');
+        expect(context.ProposalApprovalRuntime.summary(proposal, deal.fingerprint(proposal))).toMatchObject({ passed: true, acceptedOwners: 2 });
+        expect(proposal.funded).toBe(funded);
+        expect(context.transferParcelOwnership).not.toHaveBeenCalled();
         expect(proposal.lifecycleStatus).toBe('Active');
         expect(proposal.executedAt).toBeUndefined();
-        expect(context.autoApplyExecutedProposalToMap).not.toHaveBeenCalled();
+        expect(context.ProposalManager.applyProposal).not.toHaveBeenCalled();
     });
 });

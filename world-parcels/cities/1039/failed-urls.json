@@ -1,0 +1,12 @@
+[
+  {
+    "url": "https://dccfe.otr.tg/",
+    "reason": "timeout/blocked HTML"
+  },
+  {
+    "url": "https://geoserver.geoportail.gouv.tg/geoserver/ows?service=WFS&request=GetCapabilities"
+  },
+  {
+    "url": "https://api.geoportail.gouv.tg/"
+  }
+]

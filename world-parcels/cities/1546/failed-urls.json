@@ -1,0 +1,28 @@
+[
+  {
+    "url": "https://gis.edmonton.ca/site1/rest/services/VertiGIS/ZoningMap/FeatureServer/1/query",
+    "reason": "403"
+  },
+  {
+    "url": "https://gis.edmonton.ca/site1/rest/services/VertiGIS/ZoningMap/FeatureServer/2?f=pjson",
+    "reason": "403"
+  },
+  {
+    "url": "https://www.edmonton.ca/sites/default/files/public-files/assets/ParcelMappingNotice.pdf?cb=1635810792"
+  },
+  {
+    "url": "https://data.edmonton.ca/stories/s/City-of-Edmonton-Parcel-Mapping-Change/9zth-y5hq/"
+  },
+  {
+    "url": "https://gis.edmonton.ca/site1/rest/services/VertiGIS/ZoningMap/FeatureServer/1?f=pjson"
+  },
+  {
+    "url": "https://maps.edmonton.ca/map.aspx"
+  },
+  {
+    "url": "https://www.edmonton.ca/business_economy/maps-and-aerial-products"
+  },
+  {
+    "url": "https://gis.edmonton.ca/site1/rest/services/VertiGIS/ZoningMap/FeatureServer/1"
+  }
+]

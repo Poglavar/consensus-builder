@@ -1,0 +1,10 @@
+[
+  {
+    "url": "https://provo.gov/891/GIS",
+    "reason": "403"
+  },
+  {
+    "url": "https://services1.arcgis.com/99lidPhWCzftIe9K/arcgis/rest/services/UtahStatewideParcels/FeatureServer/0",
+    "reason": "Held at the geometry gate: all source checks (classification, exact IDs, absence, sampling, completeness, binding) passed but the independent metric audit failed with 182 material overlap pairs (total 787 m2, max 108.4 m2 = 17% of the smaller parcel; 87 pairs involve IDs ending 500, the rest are between ordinary IDs; 0 invalid, 0 duplicate IDs) among 157 cached UGRC statewide polygons around Prov…"
+  }
+]

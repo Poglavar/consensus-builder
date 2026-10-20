@@ -1,0 +1,6 @@
+[
+  {
+    "url": "https://services.nconemap.gov/secure/rest/services/NC1Map_Parcels/FeatureServer/1",
+    "reason": "Held at the geometry gate: the metric audit failed with 64,620 exact-duplicate geometries / 64,621 overlap pairs (max 169,958 m2, 100% of the smaller) among 379 cached NC OneMap polygons around Carmel Commons (Mecklenburg 37119): hundreds of distinct parcel IDs (37119_17332101, _17332102, _17332371 ...) carry one identical footprint, consistent with stacked condominium-unit records (not confirmed…"
+  }
+]

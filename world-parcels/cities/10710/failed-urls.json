@@ -1,0 +1,18 @@
+[
+  {
+    "url": "https://service.sdmap.gov.cn:8081/token/publicKeyGenerate",
+    "reason": "401"
+  },
+  {
+    "url": "https://www.sdmap.gov.cn/"
+  },
+  {
+    "url": "https://www.sdmap.gov.cn/mapAPI.html"
+  },
+  {
+    "url": "https://www.qingdao.gov.cn/ywdt/qsdt/202103/t20210304_2995124.shtml"
+  },
+  {
+    "url": "https://www.qingdao.gov.cn/zwgk/xxgk/zygh/gkml/czcw/202602/t20260228_10337021.shtml"
+  }
+]

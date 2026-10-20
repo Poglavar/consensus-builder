@@ -1,0 +1,11 @@
+[
+  {
+    "url": "https://www.gov.uk/guidance/inspire-index-polygons-spatial-data"
+  },
+  {
+    "url": "https://use-land-property-data.service.gov.uk/datasets/inspire"
+  },
+  {
+    "url": "https://inspire.landregistry.gov.uk/inspire/ows?service=WMS&request=GetCapabilities"
+  }
+]

@@ -8,11 +8,12 @@
 // endpoint simply finds no parcels), and POST /proposals leaves their client value alone.
 
 import { createRequire } from 'node:module';
-import { buildOwnershipType } from './parcels.js';
+import { buildOwnershipType, buildOwnershipSummary } from './parcels.js';
 
 const require = createRequire(import.meta.url);
 // The road tool's acquisition-difficulty coefficients (frontend/js/road-drawing.js): government and
-// institutions are free to acquire, companies 1×, individuals/mixed 2× (hardest).
+// institutions have weight 0 in this illustrative model, companies 1×, individuals/mixed 2×.
+// These coefficients establish neither acquisition cost nor legal availability.
 const OWNERSHIP_COEFFICIENTS = { government: 0, institution: 0, company: 1, individual: 2, mixed: 2 };
 const DEFAULT_PRICE_PER_M2 = 100; // matches the client's area × 100 market-price fallback
 
@@ -24,7 +25,7 @@ export function normalizeCorridorOwnershipType(type) {
     if (t.includes('institution')) return 'institution';
     if (t.includes('company')) return 'company';
     if (t.includes('mixed')) return 'mixed';
-    return 'individual'; // 'private individual' and the default
+    return t === 'private individual' || t === 'individual' ? 'individual' : null;
 }
 
 // Aggregate per-parcel rows into the acquisition stats. Pure — inject the classifier so it is
@@ -35,6 +36,9 @@ export function computeCorridorAcquisitionStats(rows, opts = {}) {
 
     const ownershipCounts = { individual: 0, company: 0, government: 0, institution: 0, mixed: 0 };
     let totalMarketPrice = 0;
+    let unknownOwnershipParcelCount = 0;
+    let knownOwnerEntryCount = 0;
+    let missingOwnerEvidenceParcelCount = 0;
     let totalAcquiringDifficulty = 0;
     let areaTakenM2 = 0;
     const parcelIds = [];
@@ -43,11 +47,15 @@ export function computeCorridorAcquisitionStats(rows, opts = {}) {
         const fullArea = Number(row.fullAreaM2) || 0;
         if (!(fullArea > 0)) continue;
         areaTakenM2 += Number(row.takenAreaM2) || 0;
-        const type = normalizeCorridorOwnershipType(classify(row.ownershipDetails));
-        ownershipCounts[type] += 1;
+        const type = row.ownershipDetails ? normalizeCorridorOwnershipType(classify(row.ownershipDetails)) : null;
+        if (type) ownershipCounts[type] += 1;
+        else unknownOwnershipParcelCount += 1;
+        const summary = buildOwnershipSummary(row.ownershipDetails);
+        if (summary) knownOwnerEntryCount += summary.ownershipList.length;
+        else missingOwnerEvidenceParcelCount += 1;
         const marketPrice = fullArea * pricePerM2;
         totalMarketPrice += marketPrice;
-        totalAcquiringDifficulty += marketPrice * OWNERSHIP_COEFFICIENTS[type];
+        if (type) totalAcquiringDifficulty += marketPrice * OWNERSHIP_COEFFICIENTS[type];
         if (row.parcelId) parcelIds.push(row.parcelId);
     }
 
@@ -55,9 +63,13 @@ export function computeCorridorAcquisitionStats(rows, opts = {}) {
         parcelIds,
         areaTakenM2: Math.round(areaTakenM2),
         ownershipCounts,
-        individualOwners: ownershipCounts.individual,
+        ownerEntryCount: missingOwnerEvidenceParcelCount ? null : knownOwnerEntryCount,
+        knownOwnerEntryCount, missingOwnerEvidenceParcelCount, unknownOwnershipParcelCount,
+        currency: 'EUR',
+        priceBasis: { kind: 'area-model', ratePerM2: pricePerM2, currency: 'EUR' },
+        difficultyBasis: 'category-weighted value model',
         totalMarketPrice: Math.round(totalMarketPrice),
-        totalAcquiringDifficulty: Math.round(totalAcquiringDifficulty),
+        totalAcquiringDifficulty: unknownOwnershipParcelCount ? null : Math.round(totalAcquiringDifficulty),
         source: 'server' // marks the stats as recomputed, not client-scraped
     };
 }

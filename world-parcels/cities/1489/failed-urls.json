@@ -1,0 +1,20 @@
+[
+  {
+    "url": "https://gis.ni.rs/smartPortal/gunisPublic"
+  },
+  {
+    "url": "https://gis.ni.rs/server/rest/services/Hosted/Nis_NEP/MapServer?f=pjson"
+  },
+  {
+    "url": "https://gis.ni.rs/server/rest/services/Hosted/Nis_NEP/MapServer/0?f=pjson"
+  },
+  {
+    "url": "https://gis.ni.rs/server/rest/services/Hosted/Nis_NEP/MapServer/0/query?where=nepokretnost%3D%27parcela%27&outFields=objectid&returnGeometry=true&outSR=4326&f=geojson&resultRecordCount=3"
+  },
+  {
+    "url": "https://gis.ni.rs/server/rest/services/Hosted/Nis_NEP/MapServer/0/query?geometry=21.9103223663759%2C43.3188198916352&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&where=nepokretnost%3D%27parcela%27&outFields=objectid&returnGeometry=true&outSR=4326&f=pjson"
+  },
+  {
+    "url": "https://www.rgz.gov.rs/javni-pristup"
+  }
+]

@@ -1,0 +1,32 @@
+[
+  {
+    "url": "https://ssaa.ir/",
+    "reason": "connection timeout after 3 seconds"
+  },
+  {
+    "url": "https://shamim.ssaa.ir/",
+    "reason": "connection timeout after 3 seconds"
+  },
+  {
+    "url": "https://iraneland.ir/",
+    "reason": "DNS resolution timeout after 3 seconds"
+  },
+  {
+    "url": "https://cadastre.mimt.gov.ir/Map/Map.aspx?PNid=0",
+    "reason": "connection timeout after 3 seconds"
+  },
+  {
+    "url": "http://map.mimt.gov.ir:8006/maptile.ashx?x=41&y=25&z=6&r=19d775e599cb90aa33108d674cf56701",
+    "reason": "connection timeout after 3 seconds"
+  },
+  {
+    "url": "https://lorestan.mrud.ir/",
+    "reason": "DNS resolution failure"
+  },
+  {
+    "url": "https://zamin.gov.ir/"
+  },
+  {
+    "url": "https://khabarfarsi.com/u/143160174"
+  }
+]

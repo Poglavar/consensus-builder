@@ -35,6 +35,7 @@ const DYNAMIC_KEY_PREFIXES = [
     'modal.singleBuilding.',
     'panel.proposal.market.next.',  // market-view.js lifecycle() nextKey (proposal-market-view.test.js pins the keys)
     'panel.proposal.market.state.', // and stateKey
+    'panel.proposal.acceptance.', // approval-text.js: signed/local consent labels
     'panel.parcel.ownershipType.',
     'panel.road.',                  // corridor-import.js: the import chooser's format labels and hints (corridor-import.test.js pins the six formats)
     'panel.proposal.bindingDrift.coverageKinds.', // plot-crossings.test.js checks all four kinds, all locales
@@ -162,6 +163,14 @@ describe('i18n locale coverage', () => {
     it('every allowlisted dynamic prefix names a real subtree of en.json', () => {
         const dead = DYNAMIC_KEY_PREFIXES.filter(prefix => !Object.keys(locales.en).some(key => key.startsWith(prefix)));
         expect(dead).toEqual([]);
+    });
+
+    it('defines every dynamically selected signed and local consent label', () => {
+        const labels = ['parcelTitle', 'ownerTitle', 'accepted', 'pending', 'hint', 'parcelSummary'];
+        for (const lang of LANGS) for (const basis of ['signed', 'local']) for (const label of labels) {
+            const key = `panel.proposal.acceptance.${basis}.${label}`;
+            expect(hasKey(locales[lang], key), `${lang}: ${key}`).toBe(true);
+        }
     });
 
     it('defines all proposal apply failure messages in every locale', () => {

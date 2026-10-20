@@ -1,0 +1,19 @@
+[
+  {
+    "url": "https://pmdfc.punjab.gov.pk/gis-map-16_cities-pcp",
+    "reason": "timeout"
+  },
+  {
+    "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/GPC/GPC_Parcels/MapServer?f=pjson",
+    "reason": "499"
+  },
+  {
+    "url": "https://mcburewala.lgpunjab.org.pk/wp-content/uploads/2024/05/Base-Map_MC-Burewala_2023-24.pdf"
+  },
+  {
+    "url": "https://lis.pulse.gop.pk/"
+  },
+  {
+    "url": "https://www.punjab-zameen.gov.pk/"
+  }
+]

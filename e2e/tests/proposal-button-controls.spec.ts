@@ -4,6 +4,7 @@ import { openCity, createSpace, showProposal, chooseTermsForShare, PARCEL_GEOMET
 import { attachSharedProposalServer, createSharedProposalServer } from '../helpers/mocks/shared-server';
 import { connectWalletByConnectorId, injectMockEvmWallet, injectMockSolanaWallet, routeSolanaReads, waitForBlockchainRuntime } from '../helpers/blockchain';
 import { installProposalEvmBoundary, PROPOSAL_EVM_ACCOUNT } from '../helpers/proposal-chain-boundary';
+import { installSolanaProposalAccount } from '../helpers/solana-proposal-account';
 
 async function addProposal(page: import('@playwright/test').Page, proposal: Record<string, unknown>): Promise<string> {
   return page.evaluate(record => (window as any).proposalStorage.addProposal(record), proposal);
@@ -101,6 +102,7 @@ test.describe('proposal detail button controls @features', () => {
 
   test('Copy hash copies the declared proposal oracle recipe digest', async ({ mockApi: page }) => {
     const proposalAccount = '3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg';
+    const owner = '7xKXtg2CWYcy6EH8d9xvPht4JyhV46Lxgq6vN6hS9wZT';
     await mockEmptySolanaRpc(page);
     const digest = `sha256:${'a'.repeat(64)}`;
     await page.route('**/oracle/recipes/proposal-lifecycle-v1?*', route => route.fulfill({ json: {
@@ -108,6 +110,8 @@ test.describe('proposal detail button controls @features', () => {
     } }));
     await page.route('**/oracle/events?*', route => route.fulfill({ json: { events: [] } }));
     await openCity(page);
+    await waitForBlockchainRuntime(page, ['SolanaChainDataLoader', 'SolanaMarketBridge', 'SolanaAcceptanceClient', 'solanaWeb3', 'ProposalMarketView']);
+    await installSolanaProposalAccount(page, { proposal: proposalAccount, owner });
     await page.evaluate(() => (window as any).i18n.setLanguage('en'));
     await page.context().grantPermissions(['clipboard-read', 'clipboard-write'], { origin: new URL(page.url()).origin });
     const proposalId = await addProposal(page, {
@@ -191,14 +195,14 @@ test.describe('proposal detail button controls @features', () => {
     await expect(activity.locator('[data-activity-scope-chip]')).toContainText(/Land:/);
   });
 
-  test('buying an open ownership offer executes it and removes the purchase action', async ({ mockApi: page }) => {
+  test('simulating an open ownership purchase preserves its shared offer and survives reload', async ({ mockApi: page }) => {
     await openCity(page);
     await establishLocalProfile(page);
     const proposalId = await addProposal(page, {
       title: 'Open ownership offer',
       goal: 'parcelBased',
       lifecycleStatus: 'Active',
-      offer: 100,
+      offer: 100, funded: false,
       cadastreParcelIds: [PARCEL_ID],
       facets: { ownership: 'third-party' },
       ownershipTransferProposal: { direction: 'from-me', recipientScope: 'any', status: 'open' },
@@ -206,11 +210,33 @@ test.describe('proposal detail button controls @features', () => {
     await showExpandedProposal(page, proposalId);
 
     const buy = page.locator('#proposal-details-panel .proposal-buy-btn');
-    await expect(buy).toBeVisible();
+    await expect(buy).toHaveText('Simulate purchase');
+    await expect(page.locator('#proposal-details-panel .proposal-purchase-hint')).toContainText('No payment is made');
+    const before = await page.evaluate(id => {
+      const w = window as any; const p = w.proposalStorage.getProposal(id);
+      return { otp: p.ownershipTransferProposal, hash: w.proposalConsentFingerprint(p) };
+    }, proposalId);
     await buy.click();
-    await expect.poll(() => page.evaluate(id => (window as any).proposalStorage.getProposal(id)?.lifecycleStatus, proposalId))
-      .toBe('Executed');
-    await expect(page.locator('#proposal-details-content .proposal-buy-btn')).toHaveCount(0);
+    await expect(page.locator('#proposal-details-panel .proposal-purchase-simulation')).toHaveText('Purchase simulated in this browser');
+    await expect(page.locator('#proposal-details-panel .proposal-buy-btn')).toHaveCount(0);
+    await page.reload();
+    await expect.poll(() => page.evaluate(id => !!(window as any).proposalStorage?.getProposal(id)?.localPurchaseSimulation, proposalId)).toBe(true);
+    await showExpandedProposal(page, proposalId);
+    await expect(page.locator('#proposal-details-panel .proposal-purchase-simulation')).toHaveText('Purchase simulated in this browser');
+    await expect(page.locator('#proposal-details-panel .proposal-buy-btn')).toHaveCount(0);
+    const after = await page.evaluate(id => {
+      const w = window as any; const p = w.proposalStorage.getProposal(id);
+      const shared = w.__formationDepth.preparePublishRecord(p).proposal;
+      return { lifecycle: p.lifecycleStatus, funded: p.funded, executedAt: p.executedAt || null,
+        otp: p.ownershipTransferProposal, hash: w.proposalConsentFingerprint(p),
+        buyer: p.localPurchaseSimulation.buyerAgentId,
+        modeledOwner: w.PersistentStorage.getItem(`parcel_${p.cadastreParcelIds[0]}_owner`),
+        sharedHasSimulation: Object.hasOwn(shared, 'localPurchaseSimulation'),
+        sharedOfferOpen: w.isProposalOpenSaleOffer(shared) };
+    }, proposalId);
+    expect(after).toMatchObject({ lifecycle: 'Active', funded: false, executedAt: null,
+      otp: before.otp, hash: before.hash, sharedHasSimulation: false, sharedOfferOpen: true });
+    expect(after.modeledOwner).toBe(after.buyer);
   });
 
   test('the grain-score Repeat control runs another inspection and returns to its result', async ({ mockApi: page }) => {

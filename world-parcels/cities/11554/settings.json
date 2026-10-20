@@ -1,0 +1,117 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "11554",
+  "name": "Tung Chung, Hong Kong",
+  "point": [
+    22.2862518536,
+    113.942260841835
+  ],
+  "bindings": [
+    {
+      "appCityId": "tung_chung",
+      "runtimeConfig": {
+        "id": "tung_chung",
+        "wupCityCode": "11554",
+        "label": "Tung Chung, Hong Kong",
+        "currency": {
+          "locale": "zh-HK",
+          "code": "HKD"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            22.2862518536,
+            113.942260841835
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            22.2862518536,
+            113.942260841835
+          ],
+          "fallbackDataset": [
+            113.942260841835,
+            22.2862518536
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "hk-landsd-csdi-lot",
+          "idPrefix": "HK-LANDSD-CSDI-LOT-CSUID-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Hong Kong Lands Department · CSDI Lots · adapted"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "hk-landsd-csdi-lot",
+      "endpoint": "https://portal.csdi.gov.hk/server/rest/services/common/landsd_rcd_1637217253134_22729/FeatureServer/0",
+      "idField": "LotCSUID",
+      "idType": "string",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "HK-LANDSD-CSDI-LOT-CSUID-",
+      "outFields": [
+        "LotCSUID",
+        "OBJECTID",
+        "LotID"
+      ],
+      "pageSize": 5,
+      "maxFeatures": 2000,
+      "maxBboxKm2": 1,
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "idBatchSize": 1,
+      "name": "Lands Department CSDI Lot polygons",
+      "adapter": "arcgis",
+      "cityIds": [
+        "tung_chung"
+      ],
+      "operator": "Hong Kong Lands Department / Common Spatial Data Infrastructure Portal",
+      "catalogueUrl": "https://data.gov.hk/en-data/dataset/hk-landsd-openmap-landsd-lot/resource/92d24214-a295-4b8e-8d3f-27e9226e1287",
+      "attribution": "Hong Kong Lands Department · CSDI Lots · adapted",
+      "parcelNumberField": "LotID",
+      "licenceNote": "Retain Hong Kong Lands Department attribution and published approximate-boundary and survey notices.",
+      "scope": "Public Lands Department CSDI Lot polygons in the Tuen Mun neighborhood. The dataset represents land sold or granted for specified uses and does not form a complete parcel fabric. Thirteen aligned 0.001° cells and four adjacent pans passed the real adapter with source count and object-ID manifests; a 29-window source check plus footprint neighbors yielded 127 distinct full polygons. All 127 fresh LotCSUID equality reads reproduced IDs and geometry, a valid absent ID returned empty, forced three-row object-ID batches completed, and the exact-WUP parcel passed full footprint retrieval and actual runtime proposal binding. GEOS in EPSG:32650 found no invalid polygons, duplicate geometry or positive-area overlaps above 0.01 m² in the bounded union. One conservative source bbox candidate lies about 0.04 m outside a cell; full geometry is preserved, with no snapping or clipping. Offset paging omitted that candidate, and multi-ID IN reads returned HTTP 403; the enabled descriptor uses object-ID manifests and one native LotCSUID equality per ID. Only LotCSUID, OBJECTID transport keys and LotID labels accompany geometry. Citywide completeness and identity continuity across quarterly replacements remain unverified. Published legal and survey notices are retained as scope information. The 2026-10-12 admission updates exact-ID transport to object-ID resolution followed by one-feature batches; retained Tuen Mun samples matched the same full XY footprints under the updated profile.",
+      "maxConcurrentQueries": 1,
+      "metricSridByCity": {
+        "tung_chung": 32649
+      },
+      "defaultForCity": true,
+      "cityScopes": {
+        "tung_chung": "Bounded qualification around the UN DESA WUP 2025 settlement locator for Tung Chung. Passing all eight gates and independent geometry audit supports local parcel integration only; citywide completeness, legal title, survey accuracy and currentness are not established."
+      }
+    }
+  ]
+}

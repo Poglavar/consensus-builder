@@ -1,0 +1,113 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "7765",
+  "name": "Indianapolis, United States",
+  "point": [
+    39.7684,
+    -86.1581
+  ],
+  "bindings": [
+    {
+      "appCityId": "indianapolis",
+      "runtimeConfig": {
+        "id": "indianapolis",
+        "label": "Indianapolis, United States",
+        "currency": {
+          "locale": "en-US",
+          "code": "USD"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            39.7684,
+            -86.1581
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            39.7684,
+            -86.1581
+          ],
+          "fallbackDataset": [
+            -86.1581,
+            39.7684
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.0025,
+          "source": "parcel-source",
+          "sourceId": "us-in-marion-indianapolis-parcels",
+          "idPrefix": "US-IN-MARION-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "<a href=\"https://www.in.gov/gis/geoinsights/posts/data-harvest/\">Indiana Geographic Information Office (IGIO), State of Indiana / IndianaMap · publisher &amp; conditions</a> · Marion County coverage · adapted"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "us-in-marion-indianapolis-parcels",
+      "name": "IndianaMap Parcel Boundaries of Indiana Current — Marion County",
+      "adapter": "arcgis",
+      "endpoint": "https://gisdata.in.gov/server/rest/services/Hosted/Parcel_Boundaries_of_Indiana_Current/FeatureServer/0",
+      "idField": "local_id",
+      "idType": "string",
+      "idPattern": "^[0-9]+$",
+      "objectIdField": "objectid",
+      "idPrefix": "US-IN-MARION-",
+      "outFields": [
+        "objectid",
+        "local_id",
+        "county_id",
+        "state_parcel_id"
+      ],
+      "parcelNumberField": "state_parcel_id",
+      "attributeFilters": {
+        "county_id": "49"
+      },
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "countryCode": "US",
+      "stateCode": "IN",
+      "metricSrid": 32616,
+      "cityIds": [
+        "indianapolis"
+      ],
+      "operator": "Indiana Geographic Information Office (IGIO), State of Indiana / IndianaMap",
+      "scope": "Marion County parcels from the IndianaMap statewide compilation, fixed to county_id 49; configured for Indianapolis only, no statewide completeness claim.",
+      "catalogueUrl": "https://www.in.gov/gis/geoinsights/posts/data-harvest/",
+      "attribution": "Indiana Geographic Information Office, IndianaMap Parcel Boundaries of Indiana Current. Adapted to WGS84.",
+      "licenceNote": "Official service publishes parcel geometry and county fields; no named open-data licence was stated in the reviewed service metadata."
+    }
+  ]
+}

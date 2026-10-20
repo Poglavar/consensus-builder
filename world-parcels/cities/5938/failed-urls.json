@@ -1,0 +1,10 @@
+[
+  {
+    "url": "https://api.os.uk/features/ngd/ofa/v1/collections",
+    "reason": "401"
+  },
+  {
+    "url": "https://services3.arcgis.com/mZLeUnrj76OCQON5/arcgis/rest/services/Land_Registry_Freehold_Polygons/FeatureServer/0/query (same box)",
+    "reason": "timed out after 40 s"
+  }
+]

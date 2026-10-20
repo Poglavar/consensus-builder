@@ -13,6 +13,13 @@
 (function (global) {
     'use strict';
 
+    // A polygon clip that cannot be done, typed and counted (parcel-arrangement.js ClipFailure).
+    function sliceClipFailure(operation, error, site, operands) {
+        const api = (global && global.__parcelArrangement)
+            || (typeof require === 'function' ? require('./proposals/parcel-arrangement.js') : null);
+        return api ? api.clipFailure(operation, error, { site }, operands) : error;
+    }
+
     function resolveTurf(deps) {
         return (deps && deps.turf) || global.turf;
     }
@@ -123,7 +130,8 @@
                     sliceSlots[s] = { feature: sliced, leftX, rightX, index: s };
                 }
             } catch (err) {
-                console.warn('slicePolygonByXCoordinates: intersect failed', err);
+                // An empty slot here hands that owner no plot at all: refuse the slicing instead.
+                throw sliceClipFailure('intersect', err, 'reparcellization-slice.slicePolygonByXCoordinates', [feature, band]);
             }
         }
 
@@ -295,9 +303,12 @@
                 if (!sliceRect) break;
 
                 let sliceFeature = null;
+                // Read as zero area, a failed clip steered the search to a wrong cut line: refuse.
                 try {
                     sliceFeature = turf.intersect(baseFeature, sliceRect);
-                } catch (_) { /* ignore */ }
+                } catch (error) {
+                    throw sliceClipFailure('intersect', error, 'reparcellization-slice.cutSearch', [baseFeature, sliceRect]);
+                }
 
                 const area = sliceFeature ? computeFeatureArea(sliceFeature) : 0;
                 const diff = Math.abs(area - targetCumulativeArea);

@@ -1,0 +1,35 @@
+[
+  {
+    "url": "https://www.jixi.gov.cn/jixi/c100076/202409/c06_306577.shtml"
+  },
+  {
+    "url": "https://www.jixi.gov.cn/jixi/c100004/202404/c06_295129.shtml"
+  },
+  {
+    "url": "https://www.jixi.gov.cn/jixi/c100004/202411/c06_315153.shtml"
+  },
+  {
+    "url": "https://www.jixi.gov.cn/",
+    "reason": "DNS resolution timeout"
+  },
+  {
+    "url": "https://jixi.gov.cn/",
+    "reason": "DNS resolution timeout"
+  },
+  {
+    "url": "https://zrzyj.jixi.gov.cn/",
+    "reason": "DNS failure"
+  },
+  {
+    "url": "https://map.tianditu.gov.cn/",
+    "reason": "418"
+  },
+  {
+    "url": "https://www.tianditu.gov.cn/",
+    "reason": "418"
+  },
+  {
+    "url": "https://www.webmap.cn/main.do?method=index1",
+    "reason": "502"
+  }
+]

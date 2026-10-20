@@ -1,0 +1,12 @@
+[
+  {
+    "url": "https://dlrs.gov.bd/",
+    "reason": "TLS certificate verification failure"
+  },
+  {
+    "url": "https://settlement.gov.bd/tiles/parcels/201901/4186/{unitcod}/{z}/{x}/{y}.pbf"
+  },
+  {
+    "url": "https://settlement.gov.bd/Khatian/GetSheetJsonBySurvey"
+  }
+]

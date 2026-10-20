@@ -1,0 +1,21 @@
+[
+  {
+    "url": "https://maps.hull.gov.uk/getdata.aspx?RequestType=MapSource&MapSource=MyHouse",
+    "reason": "application error"
+  },
+  {
+    "url": "https://use-land-property-data.service.gov.uk/datasets/inspire/download"
+  },
+  {
+    "url": "https://maps.hull.gov.uk/"
+  },
+  {
+    "url": "https://www.hull.gov.uk/open-data/local-authority-land-assets"
+  },
+  {
+    "url": "https://www.hull.gov.uk/building-standards-regulations/land-charges"
+  },
+  {
+    "url": "https://use-land-property-data.service.gov.uk/api/v1/"
+  }
+]

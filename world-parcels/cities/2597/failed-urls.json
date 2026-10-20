@@ -1,0 +1,26 @@
+[
+  {
+    "url": "https://catastroica.icl.gob.pe/"
+  },
+  {
+    "url": "https://www.idemil.gob.pe/geoportal/rest/services/Hosted/ICA/MapServer?f=pjson"
+  },
+  {
+    "url": "https://www.idemil.gob.pe/geoportal/rest/services/Hosted/ICA/MapServer/0?f=pjson"
+  },
+  {
+    "url": "https://geoservidorperu.minam.gob.pe/arcgis/rest/services/ZEE_VISOR/04_CARTOGRAF%C3%8DA_BASE_ICA/MapServer?f=pjson"
+  },
+  {
+    "url": "https://visor-bgr.sunarp.gob.pe/visor-bgr/inicio"
+  },
+  {
+    "url": "https://www.gob.pe/institucion/muniica/noticias/751884-municipalidad-provincial-de-ica-avanza-en-la-implementacion-de-un-sistema-catastral-de-primer-nivel"
+  },
+  {
+    "url": "https://muniica.gob.pe/portal/index.php/2026/02/13/actualizaciones-del-castrato-urbano-en-ica/"
+  },
+  {
+    "url": "https://www.muniica.gob.pe/transparencia/GESTION2018/docus/tupa-uit-2018.pdf"
+  }
+]

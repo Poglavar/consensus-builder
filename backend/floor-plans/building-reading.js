@@ -5,6 +5,7 @@ import {DEFAULT_MAX_TOKENS} from '../../../agents/lib/llm-cost/llm.mjs';
 import {addressKey} from './building-resolution.js';
 import {BUILDING_SCHEMA} from './building-reading-schema.js';
 import {extractDeveloperProject} from './developer-projects.js';
+import {locationEvidenceBody} from './page-evidence.js';
 
 export const BUILDING_PROCESSOR='ad-building-recognition-v3-explicit-address';
 const MAX_TEXT=18000, MAX_LINKS=80, MAX_CANDIDATES=40;
@@ -77,7 +78,7 @@ export function prepareBuildingEvidence({url,sha256,html,document=null,facts={},
     });
     const title=clean($('title').first().text());
     const description=clean($('meta[name="description"],meta[property="og:description"]').first().attr('content'));
-    const body=$('body').length?$('body').clone():$.root().clone();
+    const body=locationEvidenceBody($);
     body.find('script,style,noscript,nav,footer,header,form,aside,[role="navigation"],[role="contentinfo"],.agent,.agent-card,.agent-profile,.contact,.contact-info,.cookie-banner,[class*="related" i],[class*="recommend" i],[class*="similar" i],[id*="related" i],[id*="similar" i],#properties-near').remove();
     // Some agencies embed their office address inside the property description.
     body.find('p').each((_,node)=>{

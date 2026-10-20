@@ -139,7 +139,7 @@ describe('unapply failure feedback', () => {
             showEphemeralMessage: messages
         };
         const helpersStart = executionSource.indexOf('function proposalApplyFailureReason(');
-        const helpersEnd = executionSource.indexOf('function openAcceptOwnershipTransferDialog(', helpersStart);
+        const helpersEnd = executionSource.indexOf('function computeOwnershipStatsFromSelection(', helpersStart);
         const removeStart = source.indexOf('async function removeProposalFromMap(');
         const removeEnd = source.indexOf('\nfunction focusOnRemovedParcelLocation(', removeStart);
         runInNewContext(`${executionSource.slice(helpersStart, helpersEnd)}\n${source.slice(removeStart, removeEnd)}\nthis.remove = removeProposalFromMap;`, globals);

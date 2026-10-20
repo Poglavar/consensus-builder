@@ -1,0 +1,14 @@
+[
+  {
+    "url": "https://www.hcpafl.org/"
+  },
+  {
+    "url": "https://data.hillspafl.gov/map"
+  },
+  {
+    "url": "https://arcgis.tampagov.net/arcgis/rest/services/Parcels/TaxParcel/FeatureServer/0"
+  },
+  {
+    "url": "https://maps.hillsboroughcounty.org/arcgis1a/rest/services/SDEMapServices/ParcelPublishing/FeatureServer/12"
+  }
+]

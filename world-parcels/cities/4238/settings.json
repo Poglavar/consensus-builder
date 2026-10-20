@@ -1,0 +1,125 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "4238",
+  "name": "Heilbronn, Germany",
+  "point": [
+    49.1519115615472,
+    9.21652129447529
+  ],
+  "bindings": [
+    {
+      "appCityId": "heilbronn",
+      "runtimeConfig": {
+        "id": "heilbronn",
+        "wupCityCode": "4238",
+        "label": "Heilbronn, Germany",
+        "currency": {
+          "locale": "de-DE",
+          "code": "EUR"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            49.1519115615472,
+            9.21652129447529
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            49.1519115615472,
+            9.21652129447529
+          ],
+          "fallbackDataset": [
+            9.21652129447529,
+            49.1519115615472
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "de-bw-lgl-alkis-flurstueck",
+          "idPrefix": "DE-BW-ALKIS-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "LGL Baden-Württemberg · ALKIS Flurstücke · adapted"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "de-bw-lgl-alkis-flurstueck",
+      "name": "Baden-Württemberg LGL ALKIS cadastral parcels",
+      "adapter": "wfs",
+      "endpoint": "https://owsproxy.lgl-bw.de/owsproxy/wfs/WFS_LGL-BW_ALKIS",
+      "featureType": "nora:v_al_flurstueck",
+      "idField": "flurstueckskennzeichen",
+      "idType": "string",
+      "idPattern": "^08[0-9]{18}$",
+      "idPrefix": "DE-BW-ALKIS-",
+      "outFields": [
+        "flurstueckskennzeichen",
+        "gml_id",
+        "gemeinde_id",
+        "gemeinde_name"
+      ],
+      "requestProperties": true,
+      "geometryField": "geom",
+      "pageSize": 100,
+      "maxFeatures": 3000,
+      "maxBboxKm2": 1,
+      "countryCode": "DE",
+      "metricSrid": 32632,
+      "cityIds": [
+        "heilbronn"
+      ],
+      "scope": "78 valid, distinct official cadastral polygons verified in thirteen local 0.001-degree cells around the unchanged WUP settlement locator. Complete pages, forced three-row pagination, all 78 fresh native cadastral-reference reads, valid synthetic absence, footprint and source binding passed. Independent GEOS in EPSG:32632 found no invalid polygons, duplicate geometry, overlaps above 0.01 m² or operation errors. Stuttgart parcels returned through the Baden-Württemberg LGL ALKIS service; nearby valid ground is verified, without requiring the settlement centroid itself to fall inside a parcel. Wider municipal completeness, legal boundary accuracy and long-term identifier continuity remain unverified.",
+      "operator": "Landesamt für Geoinformation und Landentwicklung Baden-Württemberg (LGL)",
+      "catalogueUrl": "https://www.lgl-bw.de/Produkte/Geodatendienste/ALKIS-Daten/index.html",
+      "licenceNote": "Official LGL owner-free ALKIS parcel geometry; publisher conditions informational. Legal title, boundary survey accuracy and citywide completeness are unverified.",
+      "attribution": "LGL Baden-Württemberg · ALKIS Flurstücke · adapted",
+      "maxConcurrentQueries": 2,
+      "cityScopes": {
+        "stuttgart": "78 valid, distinct official cadastral polygons verified in thirteen local 0.001-degree cells around the unchanged WUP settlement locator. Complete pages, forced three-row pagination, all 78 fresh native cadastral-reference reads, valid synthetic absence, footprint and source binding passed. Independent GEOS in EPSG:32632 found no invalid polygons, duplicate geometry, overlaps above 0.01 m² or operation errors. Stuttgart parcels returned through the Baden-Württemberg LGL ALKIS service; nearby valid ground is verified, without requiring the settlement centroid itself to fall inside a parcel. Wider municipal completeness, legal boundary accuracy and long-term identifier continuity remain unverified."
+      },
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "DE",
+          "admin1": [
+            "DE-BW"
+          ],
+          "basis": "Baden-Württemberg statewide ALKIS cadastral parcels (LGL).",
+          "evidence": []
+        }
+      }
+    }
+  ]
+}

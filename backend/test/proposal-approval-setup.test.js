@@ -117,12 +117,12 @@ describe('summary line', () => {
         expect(Setup.summaryText(null, [])).toBe('Not set up yet — owners cannot accept until it is.');
         const threshold = { type: 'threshold', owners: { numerator: 1, denominator: 2, strict: false }, area: { numerator: 7, denominator: 10, strict: false } };
         expect(Setup.summaryText({ rights, policy: threshold }, ['key-a']))
-            .toBe('Rights for 2 parcel(s), 3 owner(s) · Passes with at least 1/2 of the owners and at least 7/10 of the area. · 1 lens member(s).');
+            .toBe('Rights for 2 parcel(s), 3 owner(s) · Configured approval rules require at least 1/2 of the owners and at least 7/10 of the area. · 1 lens member(s).');
         expect(Setup.summaryText({ rights, policy: { type: 'unanimous' } }, []))
-            .toBe('Rights for 2 parcel(s), 3 owner(s) · Every owner must accept. · No lens member yet.');
+            .toBe('Rights for 2 parcel(s), 3 owner(s) · Configured approval rules require every owner to accept. · No lens member yet.');
         const scheme = { schema: 'proposal-approval/v1', rights, policy: { type: 'rules', tests: [{ measure: 'area', of: 'owners', scope: 'all', numerator: 1, denominator: 2, strict: true }],
             authorities: [{ authorityId: 'ajuntament' }] }, regime: { id: 'es-ct-basic', version: '2026-10-11' } };
-        expect(Setup.summaryText(scheme, ['key-a'])).toBe('Rights for 2 parcel(s), 3 owner(s) · Catalonia — basic compensation: Passes with more than 1/2 of the area, and needs the municipality’s approval of the compensation project. · 1 lens member(s).');
+        expect(Setup.summaryText(scheme, ['key-a'])).toBe('Rights for 2 parcel(s), 3 owner(s) · Catalonia — basic compensation: Configured approval rules require more than 1/2 of the area and the municipality’s approval of the compensation project. · 1 lens member(s).');
     });
 });
 

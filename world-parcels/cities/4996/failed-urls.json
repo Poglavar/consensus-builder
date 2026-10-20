@@ -1,0 +1,14 @@
+[
+  {
+    "url": "https://geoserver.geoportal.gov.ph/geoserver/geoportal/ows?service=WFS&version=1.0.0&request=GetCapabilities"
+  },
+  {
+    "url": "https://geoserver.geoportal.gov.ph/geoserver/geoportal/ows?service=WFS&version=1.0.0&request=DescribeFeatureType&typeName=geoportal:denr_parcel_data&outputFormat=application/json"
+  },
+  {
+    "url": "https://geoserver.geoportal.gov.ph/geoserver/geoportal/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=geoportal:denr_parcel_data&outputFormat=application/json&srsName=EPSG:4326&bbox=123.27,9.29,123.31,9.33,EPSG:4326&maxFeatures=3"
+  },
+  {
+    "url": "https://geoserver.geoportal.gov.ph/geoserver/geoportal/wms?service=WMS&request=GetCapabilities"
+  }
+]

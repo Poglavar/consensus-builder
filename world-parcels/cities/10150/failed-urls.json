@@ -1,0 +1,17 @@
+[
+  {
+    "url": "https://www.jining.gov.cn/jcms/jcms_files/jcms1/web86/site/module/download/downfile.jsp?classid=0&filename=3f06abceecdb4cf186ebc9cd142d69fc.pdf&showname=%E6%9B%B2%E9%98%9C%E5%B8%82%E4%BA%BA%E6%B0%91%E6%94%BF%E5%BA%9C%E5%8A%9E%E5%85%AC%E5%AE%A4%E5%85%AC%E5%B8%83%E8%BF%9B%E9%A9%BB%E4%B8%BA%E6%B0%91%E6%9C%8D%E5%8A%A1%E4%BA%8B%E9%A1%B9%E7%9A%84%E9%80%9A%E7%9F%A5.pdf"
+  },
+  {
+    "url": "https://www.sdmap.gov.cn/mapAPI.html"
+  },
+  {
+    "url": "https://service.sdmap.gov.cn:8081/"
+  },
+  {
+    "url": "https://www.sdmap.gov.cn/api/layer/noLogin/getInfo"
+  },
+  {
+    "url": "https://www.sdmap.gov.cn/api/tablet/noLogin/getTbListPage"
+  }
+]

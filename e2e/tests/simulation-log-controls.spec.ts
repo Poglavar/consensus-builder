@@ -16,6 +16,23 @@ async function openActivityExplorer(page: import('@playwright/test').Page): Prom
 
 test.describe('simulation log links @features', () => {
   test('agent, proposal, and parcel links from real simulation actions open their targets', async ({ mockApi: page }) => {
+    const owners = [
+      { name: 'Fixture simulation owner A', ownership: '1/2', percentageShare: 50 },
+      { name: 'Fixture simulation owner B', ownership: '1/2', percentageShare: 50 },
+    ];
+    const parcels = structuredClone(sampleParcels);
+    for (const parcelId of [PARCEL_ID, SECOND_PARCEL_ID]) {
+      const parcel = parcels.features.find(feature => feature.properties.parcelId === parcelId);
+      if (!parcel) throw new Error(`Missing parcel fixture ${parcelId}`);
+      Object.assign(parcel.properties, {
+        owners,
+        ownershipList: owners.map(owner => ({ ...owner, percentage: owner.percentageShare })),
+        ownershipDetails: { owners },
+      });
+    }
+    await page.route(url => /\/parcels(?:\/parcelIds)?$/.test(url.pathname), route => route.fulfill({
+      contentType: 'application/json', body: JSON.stringify(parcels),
+    }));
     await openCity(page);
 
     const fixture = await page.evaluate(async ({ parcelIds }) => {

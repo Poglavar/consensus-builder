@@ -103,8 +103,16 @@
             const outsideArea = Number(turfApi.area(outside));
             const epsilon = Number.isFinite(Number(epsilonM2)) ? Math.max(0, Number(epsilonM2)) : GROUND_AREA_EPSILON_M2;
             return Number.isFinite(outsideArea) && outsideArea <= epsilon;
-        } catch (_) {
-            try { return turfApi.booleanWithin(footprint, boundary); } catch (_) { return false; }
+        } catch (error) {
+            // The difference could not be computed, so whether the footprint stays inside is
+            // unknown: answer "not inside" (the placement is refused) and report it. The old
+            // booleanWithin fallback answered a different, unchecked question and could accept a
+            // footprint the apply path then refused.
+            const api = (global && global.__parcelArrangement)
+                || (typeof require === 'function' ? require('./proposals/parcel-arrangement.js') : null);
+            if (api) api.reportClipFailure('difference', error, { site: 'single-building-geometry.footprintWithinBoundary' }, [footprint, boundary]);
+            else console.error(`[${new Date().toISOString()}] [clip] difference failed at single-building-geometry.footprintWithinBoundary`, error);
+            return false;
         }
     }
 

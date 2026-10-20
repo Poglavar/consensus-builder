@@ -1,0 +1,15 @@
+[
+  {
+    "url": "https://lands.go.tz/news/e-ardhi-yafanya-kazi-viwanja-4-851-vyapandishwa-na-kuhidihinishwa-tabora-na-kigoma",
+    "reason": "TLS hostname verification failure"
+  },
+  {
+    "url": "https://eardhi.lands.go.tz/"
+  },
+  {
+    "url": "https://www.kigoma.go.tz/kigoma"
+  },
+  {
+    "url": "https://eardhi.lands.go.tz/map/geoserver/taspro/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=taspro:spatial_units&outputFormat=application/json&srsName=EPSG:4326&bbox=29.6423006847059,-4.89342756153032,29.6623006847059,-4.87342756153032,EPSG:4326&propertyName=id,uid&count=3"
+  }
+]

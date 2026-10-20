@@ -1,0 +1,18 @@
+[
+  {
+    "url": "https://dharani.telangana.gov.in/"
+  },
+  {
+    "url": "https://data.telangana.gov.in/"
+  },
+  {
+    "url": "https://tsgis.telangana.gov.in/"
+  },
+  {
+    "url": "https://www.ghmc.gov.in/",
+    "reason": "403"
+  },
+  {
+    "url": "https://data.telangana.gov.in/ ; https://tsgis.telangana.gov.in/ ; https://bhunaksha.telangana.gov.in/ ; https://gis.ghmc.gov.in/ ; https://hmda.gov.in/ ; https://landrecords.gov.in/ ; https://bhoomi.telangana.gov.in/"
+  }
+]

@@ -1,0 +1,21 @@
+[
+  {
+    "url": "https://bhumi.atrbpn.go.id/geoserver/smartvillage",
+    "reason": "403"
+  },
+  {
+    "url": "https://bhumi.atrbpn.go.id/"
+  },
+  {
+    "url": "https://atlas.atrbpn.go.id/"
+  },
+  {
+    "url": "https://yalimokab.go.id/"
+  },
+  {
+    "url": "https://bhumi.atrbpn.go.id/bantuan/unsur_peta"
+  },
+  {
+    "url": "https://gistaru.atrbpn.go.id/arcgis/rest/services/009_RTR_PROVINSI_PULAU_PAPUA/_9000_PROVINSI_PAPUA_PR_PERDA/MapServer?f=pjson"
+  }
+]

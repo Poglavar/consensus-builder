@@ -1,0 +1,23 @@
+[
+  {
+    "url": "https://emaps.kerala.gov.in/bhunaksha/kl/homenew.html"
+  },
+  {
+    "url": "https://www.revenue.kerala.gov.in/pages/home.php"
+  },
+  {
+    "url": "https://survey.entebhoomi.kerala.gov.in/portal/survey/search"
+  },
+  {
+    "url": "https://muvattupuzhamunicipality.lsgkerala.gov.in/node/137"
+  },
+  {
+    "url": "https://maptile.ksmart.lsgkerala.gov.in/"
+  },
+  {
+    "url": "https://kmap.lsgkerala.gov.in/server/rest/services/Organization/Plot_Licensee/FeatureServer/0"
+  },
+  {
+    "url": "https://kmap.lsgkerala.gov.in/server/rest/services/Organization/Plot_Licensee/FeatureServer/0/query?where=1%3D0&outFields=OBJECTID&returnGeometry=false&f=json"
+  }
+]

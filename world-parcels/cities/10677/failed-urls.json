@@ -1,0 +1,26 @@
+[
+  {
+    "url": "https://ntr.ap.gov.in/"
+  },
+  {
+    "url": "https://ntr.ap.gov.in/service/land-records-11/"
+  },
+  {
+    "url": "https://bhunaksha.ap.gov.in/"
+  },
+  {
+    "url": "https://apsac.ap.gov.in/"
+  },
+  {
+    "url": "https://apsac.ap.gov.in/dashboard-staging/ap-cadastral-maps/"
+  },
+  {
+    "url": "https://apsac.ap.gov.in/gisportal/sharing/rest/content/items/7e3b53a1a265421483fbcbb26c275834/data?f=json"
+  },
+  {
+    "url": "https://apsac.ap.gov.in/gisportal/sharing/rest/content/items/b54a4a9a00b441a2bdd8f993d140edd5/data?f=json"
+  },
+  {
+    "url": "https://apsac.ap.gov.in/gisserver/rest/services/REVENUE/cadastral_ap_cache/MapServer?f=pjson"
+  }
+]

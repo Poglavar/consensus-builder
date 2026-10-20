@@ -1,0 +1,19 @@
+[
+  {
+    "url": "https://geoportal.karlsruhe.de/stadtplan_iframe/?webmap=0172268193924a2c8516139e7e497f84",
+    "reason": "success_html_then_timeout"
+  },
+  {
+    "url": "https://www.arcgis.com/sharing/rest/content/items/0172268193924a2c8516139e7e497f84?f=json",
+    "reason": "error_inaccessible"
+  },
+  {
+    "url": "https://www.karlsruhe.de/mobilitaet-stadtbild/bauen-und-immobilien/geoportal-karlsruhe/basis-daten-und-hintergrundkarten"
+  },
+  {
+    "url": "https://www.karlsruhe.de/mobilitaet-stadtbild/bauen-und-immobilien/geoportal-karlsruhe/e-service-und-open-data"
+  },
+  {
+    "url": "https://www.karlsruhe.de/mobilitaet-stadtbild/bauen-und-immobilien/lageplaene-und-bebauungsplaene"
+  }
+]

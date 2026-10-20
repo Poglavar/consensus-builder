@@ -1,0 +1,116 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "7079",
+  "name": "Saint Petersburg, Florida, USA",
+  "point": [
+    27.8713699437531,
+    -82.7305763266337
+  ],
+  "bindings": [
+    {
+      "appCityId": "saintpetersburgfl",
+      "runtimeConfig": {
+        "id": "saintpetersburgfl",
+        "label": "Saint Petersburg, Florida, USA",
+        "currency": {
+          "locale": "en-US",
+          "code": "USD"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            27.8713699437531,
+            -82.7305763266337
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            27.8713699437531,
+            -82.7305763266337
+          ],
+          "fallbackDataset": [
+            -82.7305763266337,
+            27.8713699437531
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "us-fl-pinellas-parcels",
+          "idPrefix": "US-FL-PINELLAS-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 3,
+          "attribution": "<a href=\"https://www.pcpao.gov/learn-about/FAQs\">Pinellas County public Land Polygon parcels</a> · adapted"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "us-fl-pinellas-parcels",
+      "name": "Pinellas County public Land Polygon parcels",
+      "adapter": "arcgis",
+      "endpoint": "https://maps.pinellas.gov/gis/rest/services/AGO/Parcels/MapServer/0",
+      "idField": "PGIS.PGIS.ParcelsPublic.PARCELID",
+      "objectIdField": "PGIS.PGIS.ParcelsPublic.OBJECTID",
+      "idType": "string",
+      "idPattern": "^[0-9]{18}$",
+      "idPrefix": "US-FL-PINELLAS-",
+      "outFields": [
+        "PGIS.PGIS.ParcelsPublic.OBJECTID",
+        "PGIS.PGIS.ParcelsPublic.PARCELID",
+        "PGIS.PGIS.ParcelsPublic.PARCELSUBTYPE"
+      ],
+      "pageSize": 100,
+      "maxFeatures": 3000,
+      "maxBboxKm2": 1,
+      "countryCode": "US",
+      "metricSrid": 32617,
+      "cityIds": [
+        "saintpetersburgfl"
+      ],
+      "maxConcurrentQueries": 2,
+      "responseSrid": 3857,
+      "attributeFilters": {
+        "PGIS.PGIS.ParcelsPublic.PARCELSUBTYPE": 0
+      },
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "geometryPrecision": 6,
+      "operator": "Pinellas County GIS / Property Appraiser",
+      "scope": "38 valid distinct Pinellas County land polygons verified in thirteen local 0.001-degree cells around the unchanged Saint Petersburg metropolitan WUP locator in Florida. Complete object-ID manifests, forced three-row batches, all 38 fresh native PARCELID reads, valid absence, footprint and binding passed. Publisher-coded PARCELSUBTYPE=0 is Land Polygon; unit/subsurface/discrepancy classes are outside this explicit ground scope, which is enforced on every returned feature. Qualified joined column names are retained exactly. Native EPSG:3857 GeoJSON is requested with the documented geometryPrecision=6 parameter (one micrometre in response metres), retained without local rounding, and transformed explicitly only after CRS/precision verification. Earlier unfiltered/float-serialization failures remain preserved. Independent EPSG:32617 GEOS found no invalid/duplicate geometries and two narrow overlaps totalling 0.27016 m². Original unrounded native responses reproduce both as boundary slivers about 3.5 millimetres wide; they remain unchanged and are accepted for bounded reference use. The county feed covers nearby metropolitan ground, including the exact WUP point, without establishing Saint Petersburg municipal-only or citywide coverage, legal title, survey accuracy or long-term key continuity.",
+      "catalogueUrl": "https://www.pcpao.gov/learn-about/FAQs",
+      "licenceNote": "Official public parcel reference geometry; publisher conditions are informational. No legal title or citywide completeness is asserted.",
+      "attribution": "Pinellas County public Land Polygon parcels · adapted",
+      "parcelNumberField": "PGIS.PGIS.ParcelsPublic.PARCELID"
+    }
+  ]
+}

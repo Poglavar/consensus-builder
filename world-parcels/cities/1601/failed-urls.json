@@ -1,0 +1,14 @@
+[
+  {
+    "url": "https://ecsc.gov.sy/",
+    "reason": "ConnectTimeout"
+  },
+  {
+    "url": "https://www.syrianrealestate.gov.sy/",
+    "reason": "ConnectionError"
+  },
+  {
+    "url": "https://www.cadastre.gov.sy/",
+    "reason": "ConnectionError"
+  }
+]

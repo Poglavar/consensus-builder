@@ -1,0 +1,6 @@
+[
+  {
+    "url": "https://geo.api.vlaanderen.be/GRB/ogc/features/v1/collections/ADP/items",
+    "reason": "Source data defect, not repaired (independent re-run of the same candidate): failed checks: metric; failures: {\"metric\": {\"errorType\": \"Error\", \"code\": \"metric-report-failed\"}}; metric blockers {'invalidCount': 1} of 122 source polygons (source geometry never repaired); invalid polygons: [{\"id\": \"5271159\", \"reasons\": [\"Ring Self-intersection[2.9381421 51.22116694]\"]}]"
+  }
+]

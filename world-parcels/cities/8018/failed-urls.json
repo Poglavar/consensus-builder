@@ -1,0 +1,6 @@
+[
+  {
+    "url": "https://services.gis.nc.gov/secure/rest/services/NC1Map_Parcels/MapServer/1/query?where=stcntyfips%3D%2737183%27&geometry=-78.6426325645578%2C35.8599596134079%2C-78.6406325645578%2C35.8619596134079&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=parno%2Cobjectid%2Cstcntyfips&returnGeometry=true&outSR=4326&resultRecordCount=3&orderByFields=objectid+ASC&f=json",
+    "reason": "The read operation timed out"
+  }
+]

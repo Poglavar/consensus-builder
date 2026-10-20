@@ -1,0 +1,22 @@
+[
+  {
+    "url": "https://geo.bc.sc.gov.br/api/v2/municipio",
+    "reason": "401"
+  },
+  {
+    "url": "https://geo.bc.sc.gov.br/api/v2/usuario/publico",
+    "reason": "401"
+  },
+  {
+    "url": "https://geo.bc.sc.gov.br/api/v1/configuracao",
+    "reason": "401"
+  },
+  {
+    "url": "https://geo.bc.sc.gov.br/apimapa/v2/source/0/1/1/1.mvt",
+    "reason": "404"
+  },
+  {
+    "url": "https://geo.bc.sc.gov.br/apimapa/v2/source/0/5/1/1/1.mvt",
+    "reason": "500"
+  }
+]

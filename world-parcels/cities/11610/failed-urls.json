@@ -1,0 +1,17 @@
+[
+  {
+    "url": "https://guangdong.tianditu.gov.cn/map/sysconf/findAll.do",
+    "reason": "404"
+  },
+  {
+    "url": "https://guangdong.tianditu.gov.cn/map/wfsConfig/queryEntityByType.do?wfsconfig.serviceType=1",
+    "reason": "404"
+  },
+  {
+    "url": "https://guangdong.tianditu.gov.cn/map/layerClassify/findAllLayers.do",
+    "reason": "404"
+  },
+  {
+    "url": "https://guangdong.tianditu.gov.cn/map/index.html"
+  }
+]

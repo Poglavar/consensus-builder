@@ -65,6 +65,10 @@ class AdmissionBridgeTests(unittest.TestCase):
 
         def fake_run(command, **_kwargs):
             calls.append(command)
+            if "vitest.mjs" in " ".join(command) and "list" in command:
+                return SimpleNamespace(returncode=0, stdout=json.dumps([
+                    {"file": str((self.root / relative).resolve())} for relative in admission.RELEASE_TESTS
+                ]), stderr="")
             if "admit-qualified-cities.mjs" not in " ".join(command):
                 self.fail(f"unexpected subprocess: {command}")
             if "--apply" not in command:
@@ -157,7 +161,8 @@ class AdmissionBridgeTests(unittest.TestCase):
                     {"id": "testville", "wupCityCode": 1, "sourceId": "test-source"}]]), \
                 patch.object(admission, "_verify_published_evidence", return_value=None), \
                 patch.object(admission, "_run", side_effect=fake_run), \
-                patch.object(admission, "_run_checked", side_effect=fake_checked):
+                patch.object(admission, "_run_checked", side_effect=fake_checked), \
+                patch.object(admission, "export_settings") as settings_export:
             result = admission.admit_candidate(self.runner, self.city, self.receipt,
                                                {"status": "adapter-ready", "artifactRoot": str(self.artifacts)})
         self.assertEqual(result["status"], "integrated")
@@ -170,7 +175,24 @@ class AdmissionBridgeTests(unittest.TestCase):
                             for path in result["changedFiles"]))
         self.assertTrue(any("vitest.mjs" in " ".join(command) and "backend/test/qualified-city-release.test.js" in command
                             for command in calls))
+        release_commands = [command for command in calls if "vitest.mjs" in " ".join(command)]
+        self.assertEqual(len(release_commands), 2)
+        for command in release_commands:
+            self.assertIn("**/tmp/**", command)
+            self.assertIn("**/node_modules/**", command)
+            self.assertEqual([path for path in admission.RELEASE_TESTS if path in command],
+                             list(admission.RELEASE_TESTS))
         self.assertEqual(sum("--apply" in command for command in calls), 1)
+
+    def test_release_scope_rejects_archived_or_missing_test_files(self):
+        expected = [{"file": str((self.root / relative).resolve())} for relative in admission.RELEASE_TESTS]
+        archived = self.root / "tmp/qualification-workspaces/history/files/backend/test/qualified-city-release.test.js"
+        for rows in (expected + [{"file": str(archived)}], expected[:-1]):
+            with self.subTest(count=len(rows)), patch.object(
+                    admission, "_run", return_value=SimpleNamespace(
+                        returncode=0, stdout=json.dumps(rows), stderr="")):
+                with self.assertRaisesRegex(RuntimeError, "exact seven files"):
+                    admission._verify_release_test_scope(self.root)
 
     def test_applied_admission_with_city_omitted_from_reports_is_failed(self):
         calls, fake_run, fake_checked = self._run_admission_flow(omit_city_from_reports=True)
@@ -179,7 +201,8 @@ class AdmissionBridgeTests(unittest.TestCase):
                     {"id": "testville", "wupCityCode": 1, "sourceId": "test-source"}]]), \
                 patch.object(admission, "_verify_published_evidence", return_value=None), \
                 patch.object(admission, "_run", side_effect=fake_run), \
-                patch.object(admission, "_run_checked", side_effect=fake_checked):
+                patch.object(admission, "_run_checked", side_effect=fake_checked), \
+                patch.object(admission, "export_settings") as settings_export:
             result = admission.admit_candidate(self.runner, self.city, self.receipt,
                                                {"status": "adapter-ready", "artifactRoot": str(self.artifacts)})
         self.assertEqual(result["status"], "failed")
@@ -205,6 +228,32 @@ class AdmissionBridgeTests(unittest.TestCase):
         self.assertEqual(result["status"], "integration-blocked")
         self.assertIn("cache bytes differ", result["summary"])
         run.assert_called_once()
+
+    def test_existing_integration_prefers_matching_source_binding(self):
+        (self.root / "backend/parcels").mkdir(parents=True)
+        (self.root / "backend/parcels/source-catalog.json").write_text(
+            json.dumps({"sources": [{"id": "test-source", "cityIds": ["testville"]}]})
+        )
+        (self.root / "world-parcels").mkdir(exist_ok=True)
+        (self.root / "world-parcels/registry.json").write_text(json.dumps({
+            "cities": [{"wupCityCode": 1, "appCityId": "testville", "sourceIds": ["test-source"]}],
+            "sources": [{"sourceId": "test-source", "liveIntegration": {"status": "enabled", "cityIds": ["testville"]}}],
+        }))
+        (self.root / "frontend/data").mkdir(parents=True)
+        (self.root / "frontend/data/parcel-coverage-report.json").write_text(json.dumps({
+            "cities": [{"wupCityCode": 1, "appCityIds": ["testville"], "sourceIds": ["test-source"]}]
+        }))
+        (self.root / "frontend/data/world-coverage.json").write_text(json.dumps({
+            "liveCities": [{"id": "testville", "sourceId": "test-source"}]
+        }))
+        with patch.object(admission, "_verify_published_evidence", return_value=None) as verify:
+            result = admission._existing_integration(
+                self.root, "1", "Testville", "test-source", self.artifacts, {}, [
+                    {"id": "legacy_testville", "wupCityCode": 1, "sourceId": "other-source"},
+                    {"id": "testville", "wupCityCode": 1, "sourceId": "test-source"},
+                ])
+        self.assertEqual(result["status"], "integrated")
+        verify.assert_called_once_with(self.root, self.artifacts, "test-source")
 
 
 if __name__ == "__main__":

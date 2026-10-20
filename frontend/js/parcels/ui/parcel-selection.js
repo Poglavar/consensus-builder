@@ -23,6 +23,10 @@
         const targetLayer = e && e.target ? e.target : null;
         const parcelId = global.ParcelPresenter?.getIdForLayer?.(targetLayer) || null;
         if (!parcelId) return;
+        if (global.ParcelEstimates?.consumeRemovalClick?.(parcelId)) {
+            if (e) L.DomEvent.stopPropagation(e);
+            return;
+        }
         const feature = global.LiveParcelFabric?.get?.(parcelId) || null;
         const presentedLayer = global.ParcelPresenter?.getLayer?.(parcelId) || null;
         // A click from an old Leaflet layer can arrive while an atomic fabric commit replaces the

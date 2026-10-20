@@ -1,0 +1,129 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "6408",
+  "name": "Ahmedabad, India",
+  "point": [
+    23.02004,
+    72.59975
+  ],
+  "bindings": [
+    {
+      "appCityId": "ahmedabad",
+      "runtimeConfig": {
+        "id": "ahmedabad",
+        "label": "Ahmedabad, India",
+        "currency": {
+          "locale": "en-IN",
+          "code": "INR"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 18
+          },
+          "defaultCenter": [
+            23.02004,
+            72.59975
+          ],
+          "defaultZoom": 18,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            23.02004,
+            72.59975
+          ],
+          "fallbackDataset": [
+            72.59975,
+            23.02004
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.005,
+          "source": "parcel-source",
+          "sourceId": "in-gj-tpvd-final-plots",
+          "idPrefix": "IN-GJ-TPVD-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 3,
+          "attribution": "<a href=\"https://tpvd.openprp.in/ctpvd/index.html\">Gujarat TPVD final planning plots · publisher &amp; conditions</a> · Ahmedabad Municipal Corporation (AMC) Final town-planning plots only · partial coverage; not ownership or current-title evidence · registration/currentness unverified"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "in-gj-tpvd-final-plots",
+      "name": "Gujarat TPVD — Ahmedabad final planning plots",
+      "adapter": "wfs",
+      "version": "1.1.0",
+      "endpoint": "https://tpvd.openprp.in/geoserver/ows",
+      "featureType": "ctp:final_plot_boundary",
+      "geometryField": "the_geom",
+      "idField": "search",
+      "idType": "string",
+      "idPrefix": "IN-GJ-TPVD-",
+      "parcelNumberField": "fp_no",
+      "outFields": [
+        "search",
+        "fp_no",
+        "tps_id",
+        "tps_no",
+        "tps_name",
+        "village",
+        "city",
+        "authority",
+        "district",
+        "status"
+      ],
+      "attributeFilters": {
+        "status": "Final",
+        "city": "Ahmedabad",
+        "authority": "AMC"
+      },
+      "pageSize": 1000,
+      "maxFeatures": 1000,
+      "maxBboxKm2": 2,
+      "maxConcurrentQueries": 6,
+      "caCertificate": "./certificates/sectigo-public-server-authentication-ca-dv-r36.pem",
+      "countryCode": "IN",
+      "metricSrid": 32643,
+      "cityIds": [
+        "ahmedabad"
+      ],
+      "scope": "Published final town-planning plots in Ahmedabad Municipal Corporation schemes only. The native search reference combines the provider's village, town-planning scheme and final-plot labels; fp_no is the display number. Bounded central Ahmedabad samples are verified; citywide completeness, current legal registration and ownership are not established.",
+      "attribution": "Government of Gujarat, Town Planning and Valuation Department (TPVD) — final AMC planning plots. Partial coverage; registration and currentness unverified. Adapted to WGS84.",
+      "catalogueUrl": "https://townplanning.gujarat.gov.in/Home",
+      "licenceNote": "Source conditions are informational. No named reuse licence was identified on the inspected public map.",
+      "caveats": [
+        "The official TPVD website links to the public TPWebGIS host; no account is used.",
+        "Final planning plots are not proof of current land title or ownership. Draft, preliminary and non-AMC schemes are excluded by fixed upstream and response-validated filters.",
+        "The server omits its certificate intermediate. A source-scoped published Sectigo intermediate completes the trusted chain; hostname and certificate validation remain enabled.",
+        "WFS FIDs and gid are transport data, not parcel identities.",
+        "The legacy WFS misreports the total on a final partial offset page. Queries request up to 1000 records and reject match counts above 1000; no offset-counter relaxation is applied."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,121 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "7997",
+  "name": "Cary, United States",
+  "point": [
+    35.784901551333,
+    -78.7870570250863
+  ],
+  "bindings": [
+    {
+      "appCityId": "cary",
+      "runtimeConfig": {
+        "id": "cary",
+        "wupCityCode": "7997",
+        "label": "Cary, United States",
+        "currency": {
+          "locale": "en-US",
+          "code": "USD"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            35.784901551333,
+            -78.7870570250863
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            35.784901551333,
+            -78.7870570250863
+          ],
+          "fallbackDataset": [
+            -78.7870570250863,
+            35.784901551333
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "us-nc-wake-raleigh-parcels",
+          "idPrefix": "US-NC-WAKE-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 3,
+          "attribution": "<a href=\"https://www.nconemap.gov/pages/parcels\">North Carolina Geographic Information Coordinating Council / NC OneMap, county data contributors. Adapted to WGS84.</a>"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "endpoint": "https://services.gis.nc.gov/secure/rest/services/NC1Map_Parcels/MapServer/1",
+      "adapter": "arcgis",
+      "name": "NC OneMap Parcels (polys)",
+      "operator": "North Carolina Geographic Information Coordinating Council / NC OneMap, county data contributors",
+      "scope": "Wake County only, fixed stcntyfips 37183 in the NC OneMap compilation; configured for Raleigh and the WUP New Hope urban-centre point. Additional enabled city entries have separate bounded qualification evidence; wider coverage remains unverified.",
+      "idField": "parno",
+      "objectIdField": "objectid",
+      "idType": "string",
+      "outFields": [
+        "parno",
+        "objectid",
+        "stcntyfips"
+      ],
+      "parcelNumberField": "parno",
+      "id": "us-nc-wake-raleigh-parcels",
+      "stateCode": "NC",
+      "cityIds": [
+        "cary"
+      ],
+      "idPrefix": "US-NC-WAKE-",
+      "metricSrid": 32617,
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "caveats": [
+        "Bounded viewport acceptance at Raleigh and New Hope does not establish full municipal or statewide coverage.",
+        "New Hope denotes the WUP urban-centre point in Wake County, not a separate municipal boundary."
+      ],
+      "attributeFilters": {
+        "stcntyfips": "37183"
+      },
+      "countryCode": "US",
+      "catalogueUrl": "https://www.nconemap.gov/pages/parcels",
+      "maxConcurrentQueries": 2,
+      "attribution": "North Carolina Geographic Information Coordinating Council / NC OneMap, county data contributors. Adapted to WGS84.",
+      "licenceNote": "Source conditions are informational; users choose their source and intended use.",
+      "idBatchSize": 5,
+      "metricSridByCity": {
+        "cary": 32617
+      },
+      "cityScopes": {
+        "cary": "102 unchanged native parcel polygons passed all eight qualification gates in bounded cells around the UN/WUP locator. Fresh independent metric audit (EPSG:32617) found zero invalid polygons, identity conflicts, duplicate geometry, material overlaps, or operation errors. Citywide completeness, legal title, survey accuracy, and currentness are not established."
+      }
+    }
+  ]
+}

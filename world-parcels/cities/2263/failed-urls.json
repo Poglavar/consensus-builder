@@ -1,0 +1,16 @@
+[
+  {
+    "url": "https://api.mlhud.go.ug/ugnlis-data-api/v1/nalisep-api-data/query-parcelle/query-boudaries",
+    "reason": "500"
+  },
+  {
+    "url": "https://gis.mlhud.go.ug/geoserver/wms?service=WMS&request=GetCapabilities",
+    "reason": "404"
+  },
+  {
+    "url": "https://mlhud.go.ug/mzos/jinja/"
+  },
+  {
+    "url": "https://mlhud.go.ug/ugnlis/"
+  }
+]

@@ -1,0 +1,109 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "7942",
+  "name": "Juiz de Fora",
+  "point": [
+    -21.7520452174457,
+    -43.3632723968038
+  ],
+  "bindings": [
+    {
+      "appCityId": "juiz_de_fora",
+      "runtimeConfig": {
+        "id": "juiz_de_fora",
+        "label": "Juiz de Fora",
+        "currency": {
+          "locale": "pt-BR",
+          "code": "BRL"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            -21.7520452174457,
+            -43.3632723968038
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            -21.7520452174457,
+            -43.3632723968038
+          ],
+          "fallbackDataset": [
+            -43.3632723968038,
+            -21.7520452174457
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "br-juiz-de-fora-sisurb-lotes",
+          "idPrefix": "BR-JF-SISURB-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 3,
+          "attribution": "<a href=\"https://sisurb.pjf.mg.gov.br/server/rest/services/uso_cad_lotes/MapServer\">Juiz de Fora SISURB municipal cadastral lots</a> · adapted"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "br-juiz-de-fora-sisurb-lotes",
+      "name": "Juiz de Fora SISURB municipal cadastral lots",
+      "adapter": "arcgis",
+      "endpoint": "https://sisurb.pjf.mg.gov.br/server/rest/services/uso_cad_lotes/MapServer/158",
+      "idField": "geocodigo",
+      "objectIdField": "OBJECTID",
+      "parcelNumberField": "geocodigo",
+      "idType": "string",
+      "idPrefix": "BR-JF-SISURB-",
+      "outFields": [
+        "OBJECTID",
+        "geocodigo"
+      ],
+      "pageSize": 100,
+      "maxFeatures": 3000,
+      "maxBboxKm2": 1,
+      "countryCode": "BR",
+      "metricSrid": 32723,
+      "cityIds": [
+        "juiz_de_fora"
+      ],
+      "maxConcurrentQueries": 2,
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "operator": "Prefeitura Municipal de Juiz de Fora",
+      "scope": "170 distinct full native cadastral-reference polygons around the unchanged WUP settlement locator across thirteen bounded cells. Independent EPSG:32723 GEOS audit of all170 grid and footprint polygons found no invalidity, duplicate geometry, positive-area overlaps above0.01m² or operation errors. Forced three-row paging, all170 fresh exact native-ID reads, explicit absence, footprint lookup and source binding passed. Published native identities and full geometry preserved without repair. This bounded evidence does not establish citywide completeness, legal title, positional accuracy or currentness. Published geocodigo keys are used independently of source OBJECTID; exact locator parcel OBJECTID70049 has native keyLT104196.",
+      "attribution": "Prefeitura Municipal de Juiz de Fora · cadastral-reference geometry · adapted",
+      "catalogueUrl": "https://sisurb.pjf.mg.gov.br/server/rest/services/uso_cad_lotes/MapServer",
+      "licenceNote": "Anonymous bounded safe parcel identities and unmodified full geometry verified. Dataset dates, source terms, legal title, positional accuracy, currentness and whole-city completeness remain informational and unverified. Personal attributes excluded."
+    }
+  ]
+}

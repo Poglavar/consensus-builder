@@ -1,16 +1,18 @@
 // Unit tests for backend/agents/planner.js — the step that turns candidate parcels into candidate
 // proposals. Four properties matter, and each of them is a way the runner could publish a lie:
 //   1. a parcel the rule excludes must be skipped, not silently built on;
-//   2. a rule's ceiling must cap the proposal, never be quietly exceeded;
+//   2. a sample over a rule's ceiling must be rejected, never hidden by a smaller statistic;
 //   3. a missing rule value must take a documented default, never Number(null) = 0;
 //   4. the sampled massing must lie inside the parcel it claims — a building over the neighbour's
 //      land is not a proposal, it is a trespass.
 import { describe, it, expect } from 'vitest';
 import { createRequire } from 'node:module';
 import { planCandidates, DEFAULT_MAX_FLOORS, DEFAULT_MIN_DISTANCE_M } from '../agents/planner.js';
+import { buildProposalRecord } from '../agents/record-builder.js';
 
 const require = createRequire(import.meta.url);
 const turf = require('@turf/turf');
+const { measureBuilding } = require('../../frontend/js/proposals/plan-yield.js');
 
 const LAT = 45.79;
 const LNG = 15.93;
@@ -154,21 +156,35 @@ describe('a missing rule value never becomes a real one', () => {
     });
 });
 
-describe('rule ceilings cap the proposal', () => {
-    it('caps to max_gbp and says so', () => {
+describe('rule ceilings apply to the published geometry', () => {
+    it('rejects a sample above max_gbp instead of lowering only its reported area', () => {
         const [uncapped] = planCandidates([parcel()], PERSONA, OPTS);
         const capAt = Math.floor(uncapped.proposedGfaM2 / 2);
-        const [capped] = planCandidates([parcel({ rule: { maxFloors: 4, minSetbackM: 3, maxGfaM2: capAt } })], PERSONA, OPTS);
-        expect(capped.proposedGfaM2).toBe(capAt);
-        expect(capped.scoreParts.capped).toBe(true);
-        expect(capped.gainEur).toBeCloseTo(capAt * 4000, 3);
+        expect(planCandidates([parcel({ rule: { maxFloors: 4, minSetbackM: 3, maxGfaM2: capAt } })], PERSONA, OPTS)).toEqual([]);
     });
 
-    it('caps to max_izgradenost (coverage) and says so', () => {
-        const [uncapped] = planCandidates([parcel()], PERSONA, OPTS);
-        const [capped] = planCandidates([parcel({ rule: { maxFloors: 4, minSetbackM: 3, maxCoveragePct: 5 } })], PERSONA, OPTS);
-        expect(capped.proposedGfaM2).toBeLessThan(uncapped.proposedGfaM2);
-        expect(capped.scoreParts.capped).toBe(true);
+    it('rejects a sample above max_izgradenost (coverage)', () => {
+        expect(planCandidates([parcel({ rule: { maxFloors: 4, minSetbackM: 3, maxCoveragePct: 5 } })], PERSONA, OPTS)).toEqual([]);
+    });
+
+    it('cannot claim to meet a coverage limit without a positive parcel area', () => {
+        for (const areaM2 of [null, undefined, 0, -1]) {
+            expect(planCandidates([parcel({ areaM2, rule: { maxCoveragePct: 50 } })], PERSONA, OPTS)).toEqual([]);
+        }
+    });
+
+    it('publishes the measured design area and derives the offer from that same area', () => {
+        const [reference] = planCandidates([parcel()], PERSONA, OPTS);
+        const [candidate] = planCandidates([parcel({ rule: {
+            maxFloors: 4, minSetbackM: 3, maxCoveragePct: 100, maxGfaM2: reference.proposedGfaM2
+        } })], PERSONA, OPTS);
+        const record = buildProposalRecord({ candidate, pick: { proposalId: 'measured-design', name: 'Sample' }, persona: PERSONA, city: 'test-city', runId: 'test-run', turf });
+        const measured = measureBuilding(record.geometry.buildings[0], {}, { floorHeightM: 3 });
+        expect(candidate.proposedGfaM2).toBe(measured.gfaM2);
+        expect(measured.gfaM2).toBe(reference.proposedGfaM2);
+        expect(measured.footprintM2).toBeLessThanOrEqual(candidate.areaM2);
+        expect(candidate.gainEur).toBeCloseTo(measured.gfaM2 * 4000, 3);
+        expect(record.offer).toBe(Math.round(measured.gfaM2 * 4000 * 0.3));
     });
 
     it('leaves an uncapped proposal unmarked', () => {

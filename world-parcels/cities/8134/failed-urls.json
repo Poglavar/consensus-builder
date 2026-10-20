@@ -1,0 +1,15 @@
+[
+  {
+    "url": "https://anyror.gujarat.gov.in/",
+    "reason": "timeout after 20 seconds"
+  },
+  {
+    "url": "https://dahod.nic.in/service/land-records/"
+  },
+  {
+    "url": "https://revenuedepartment.gujarat.gov.in/iora-service"
+  },
+  {
+    "url": "https://dahod.nic.in/gu/"
+  }
+]

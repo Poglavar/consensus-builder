@@ -1,0 +1,21 @@
+[
+  {
+    "url": "https://visor.alcaldiademaracaibo.org/",
+    "reason": "fetch failed"
+  },
+  {
+    "url": "https://mapas.alcaldiademaracaibo.org/",
+    "reason": "fetch failed"
+  },
+  {
+    "url": "https://cpu.alcaldiabolivarianademaracaibo.org/quienes-somos/",
+    "reason": "fetch failed"
+  },
+  {
+    "url": "https://cpu.alcaldiabolivarianademaracaibo.org/tramites-omcat/",
+    "reason": "fetch failed"
+  },
+  {
+    "url": "https://cpu.alcaldiademaracaibo.org/quienes-somos/"
+  }
+]

@@ -1,0 +1,109 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "6711",
+  "name": "Joinville",
+  "point": [
+    -26.3054119242896,
+    -48.8298392070888
+  ],
+  "bindings": [
+    {
+      "appCityId": "joinville",
+      "runtimeConfig": {
+        "id": "joinville",
+        "label": "Joinville",
+        "currency": {
+          "locale": "pt-BR",
+          "code": "BRL"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            -26.3054119242896,
+            -48.8298392070888
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            -26.3054119242896,
+            -48.8298392070888
+          ],
+          "fallbackDataset": [
+            -48.8298392070888,
+            -26.3054119242896
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "br-joinville-simgeo-lotes",
+          "idPrefix": "BR-JOINVILLE-IQ-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 3,
+          "attribution": "<a href=\"https://www.joinville.sc.gov.br/servicos/acessar-sistema-de-informacoes-municipais-georreferenciadas-simgeo/\">Joinville SIMGeo municipal cadastral lot polygons</a> · adapted"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "br-joinville-simgeo-lotes",
+      "name": "Joinville SIMGeo municipal cadastral lot polygons",
+      "adapter": "arcgis",
+      "endpoint": "https://geo.joinville.sc.gov.br/server/rest/services/simgeo/lotes/MapServer/3",
+      "idField": "iq",
+      "objectIdField": "objectid",
+      "parcelNumberField": "iq",
+      "idType": "string",
+      "idPrefix": "BR-JOINVILLE-IQ-",
+      "outFields": [
+        "objectid",
+        "iq"
+      ],
+      "pageSize": 100,
+      "maxFeatures": 3000,
+      "maxBboxKm2": 1,
+      "countryCode": "BR",
+      "metricSrid": 32722,
+      "cityIds": [
+        "joinville"
+      ],
+      "maxConcurrentQueries": 2,
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "operator": "Prefeitura Municipal de Joinville",
+      "scope": "201 distinct full native municipal lot polygons around the unchanged Joinville WUP locator across thirteen bounded cells; all grid and footprint geometries independently audited in EPSG32722. No invalidity, duplicate geometry or operation errors. One 0.01436m² shared-edge overlap was independently reproduced in native EPSG31982, with a maximum rectangle width below0.6mm; preserved without repair as a bounded reference-data caveat. Forced three-row paging, all201 fresh exact native-key reads, explicit absence, footprint lookup and source binding passed. This evidence does not establish citywide completeness, positional accuracy, legal title or currentness.",
+      "attribution": "Prefeitura Municipal de Joinville SIMGeo lot polygons · adapted",
+      "catalogueUrl": "https://www.joinville.sc.gov.br/servicos/acessar-sistema-de-informacoes-municipais-georreferenciadas-simgeo/",
+      "licenceNote": "Anonymous geometry-only bounded queries verified; published iq cadastral keys and full source geometry retained. Legal title, positional accuracy, source currentness and reuse conditions remain informational and unverified. No owner or address attributes requested."
+    }
+  ]
+}

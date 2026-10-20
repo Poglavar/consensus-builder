@@ -41,6 +41,13 @@ beforeEach(() => {
 });
 
 describe('POST /proposals', () => {
+    it.each([null, {}, { proposalId: 'old-account' }])('rejects the retired onchainData input %s before storing it', async onchainData => {
+        const res = await request(app).post('/proposals').send(validProposalBody({ onchainData }));
+        expect(res.status).toBe(400);
+        expect(res.body.error).toMatch(/onchainData is retired/);
+        expect(pool.getCalls().some(call => /INSERT INTO proposal/.test(call.sql))).toBe(false);
+    });
+
     it('rejects non-object proposal payloads', async () => {
         const res = await request(app)
             .post('/proposals')
@@ -248,36 +255,33 @@ describe('POST /proposals', () => {
         }
     });
 
-    it('resolves proposalId from alternate field names', async () => {
-        pool.setResults([
-            insertResult({ proposal_id: 'from-id-field' }),
-            updateResult(),
-        ]);
-
-        await request(app)
+    it.each([
+        ['id', { id: 'legacy-id' }],
+        ['proposal_id', { proposal_id: 'legacy-proposal-id' }],
+        ['id alongside proposalId', { id: 'legacy-id', proposalId: 'canonical-id' }],
+        ['proposal_id alongside proposalId', { proposal_id: 'legacy-id', proposalId: 'canonical-id' }],
+    ])('rejects the top-level %s creation field before database access', async (_label, identifierFields) => {
+        const body = { ...validProposalBody(), ...identifierFields };
+        if (!identifierFields.proposalId) delete body.proposalId;
+        const res = await request(app)
             .post('/proposals')
-            .send({
-                id: 'from-id-field',
-                type: 'parcel',
-                cadastreParcelIds: ['HR-1']
-            });
+            .send(body);
 
-        const insertParams = pool.getCalls()[0].params;
-        // proposalId is the 1st param ($1)
-        expect(insertParams[0]).toBe('from-id-field');
+        expect(res.status).toBe(400);
+        expect(pool.getCalls()).toHaveLength(0);
     });
 
-    it('resolves proposalId from proposal_id and normalizes null collections', async () => {
+    it('normalizes null collections with canonical proposalId', async () => {
         pool.setResults([
-            insertResult({ proposal_id: 'from-proposal-id-field' }),
+            insertResult({ proposal_id: 'canonical-id' }),
             updateResult(),
         ]);
 
         const res = await request(app)
             .post('/proposals')
             .send({
-                proposal_id: 'from-proposal-id-field',
-                type: 'parcel',
+                ...validProposalBody(),
+                proposalId: 'canonical-id',
                 cadastreParcelIds: ['HR-1'],
                 acceptedParcelIds: null,
                 ownerAcceptances: null
@@ -285,7 +289,7 @@ describe('POST /proposals', () => {
 
         expect(res.status).toBe(201);
         const insertParams = pool.getCalls()[0].params;
-        expect(insertParams[0]).toBe('from-proposal-id-field');
+        expect(insertParams[0]).toBe('canonical-id');
         expect(insertParams[21]).toBe(JSON.stringify(['HR-1']));
         expect(insertParams[22]).toBeNull();
         expect(insertParams[23]).toBeNull();
@@ -650,10 +654,10 @@ describe('POST /proposals', () => {
 
         const nonScalarIdentifier = await request(app)
             .post('/proposals')
-            .send(validProposalBody({ id: { bad: true } }));
+            .send(validProposalBody({ proposalId: { bad: true } }));
 
         expect(nonScalarIdentifier.status).toBe(400);
-        expect(nonScalarIdentifier.body).toEqual({ error: 'id must be a string or number.' });
+        expect(nonScalarIdentifier.body).toEqual({ error: 'proposalId must be a string.' });
 
         const invalidArrayEntry = await request(app)
             .post('/proposals')
@@ -670,60 +674,57 @@ describe('POST /proposals', () => {
         expect(invalidControlChars.body).toEqual({ error: 'cadastreParcelIds contains invalid control characters.' });
     });
 
-    it('rejects overlong and control-character identifier aliases', async () => {
+    it('rejects overlong and control-character proposalId values', async () => {
         const tooLongId = await request(app)
             .post('/proposals')
-            .send(validProposalBody({ proposal_id: 'a'.repeat(256) }));
+            .send(validProposalBody({ proposalId: 'a'.repeat(256) }));
 
         expect(tooLongId.status).toBe(400);
-        expect(tooLongId.body).toEqual({ error: 'proposal_id must be at most 255 characters.' });
+        expect(tooLongId.body).toEqual({ error: 'proposalId must be at most 255 characters.' });
 
         const controlCharId = await request(app)
             .post('/proposals')
-            .send(validProposalBody({ proposal_id: 'bad\u0000id' }));
+            .send(validProposalBody({ proposalId: 'bad\u0000id' }));
 
         expect(controlCharId.status).toBe(400);
-        expect(controlCharId.body).toEqual({ error: 'proposal_id contains invalid control characters.' });
+        expect(controlCharId.body).toEqual({ error: 'proposalId contains invalid control characters.' });
     });
 
     it('rejects non-finite numeric identifier payloads', async () => {
         const res = await request(app)
             .post('/proposals')
             .set('Content-Type', 'application/json')
-            .send('{"id":1e9999,"type":"parcel"}');
+            .send('{"proposalId":1e9999,"type":"parcel"}');
 
         expect(res.status).toBe(400);
-        expect(res.body).toEqual({ error: 'id must be a string or number.' });
+        expect(res.body).toEqual({ error: 'proposalId must be a string.' });
     });
 
-    it('refuses a purely numeric proposal id: that namespace belongs to row ids', async () => {
+    it('rejects numeric-typed proposalId values', async () => {
         const res = await request(app)
             .post('/proposals')
-            .send({ id: 17, type: 'parcel', cadastreParcelIds: ['HR-1'] });
+            .send({ proposalId: 17, type: 'parcel', cadastreParcelIds: ['HR-1'] });
 
         expect(res.status).toBe(400);
-        expect(res.body.error).toMatch(/numeric/);
+        expect(res.body).toEqual({ error: 'proposalId must be a string.' });
         expect(pool.getCalls()).toHaveLength(0);
     });
 
-    it('accepts numeric-typed identifiers outside the reserved integer namespace', async () => {
-        pool.setResults([
-            insertResult({ proposal_id: '17.5' }),
-            updateResult(),
-        ]);
+    it('reserves digit-only strings for database row IDs', async () => {
+        const res = await request(app).post('/proposals').send(validProposalBody({ proposalId: '51' }));
+        expect(res.status).toBe(400);
+        expect(res.body.error).toMatch(/numeric.*row ids/);
+        expect(pool.getCalls()).toHaveLength(0);
+    });
 
+    it('rejects decimal numeric-typed proposalId values', async () => {
         const res = await request(app)
             .post('/proposals')
-            .send({
-                id: 17.5,
-                type: 'parcel',
-                cadastreParcelIds: ['HR-1']
-            });
+            .send({ proposalId: 17.5, type: 'parcel', cadastreParcelIds: ['HR-1'] });
 
-        expect(res.status).toBe(201);
-        const insertParams = pool.getCalls()[0].params;
-        expect(insertParams[0]).toBe('17.5');
-        expect(insertParams[30]).toBeNull();
+        expect(res.status).toBe(400);
+        expect(res.body).toEqual({ error: 'proposalId must be a string.' });
+        expect(pool.getCalls()).toHaveLength(0);
     });
 });
 
@@ -744,24 +745,33 @@ describe('POST /proposals/batch', () => {
         expect(res.body.items[0].proposal).toMatchObject({ id: 11, proposalId: 'proposal-a', name: 'A' });
         expect(res.body.items[1].proposal).toBeNull();
         expect(res.body.items[2].proposal).toMatchObject({ id: 22, proposalId: 'proposal-b', name: 'B' });
-        expect(pool.getCalls()[0].params).toEqual([['proposal-a', 'missing', 'proposal-b']]);
+        expect(pool.getCalls()[0].params).toEqual([[], ['proposal-a', 'missing', 'proposal-b']]);
     });
 
-    // Plans and share links carry ROW ids, so a numeric id that is also some other row's legacy
-    // proposal_id resolves to the row with that id — in either database order.
-    it.each([
-        ['row-id match first', true],
-        ['proposal-id match first', false]
-    ])('prefers the row id over an equal legacy proposal_id (%s)', async (_label, rowIdFirst) => {
-        const databaseIdMatch = proposalDbRow({ id: 1, proposal_id: 'different-public-id' });
-        const publicIdMatch = proposalDbRow({ id: 9, proposal_id: '1' });
-        const rows = rowIdFirst ? [databaseIdMatch, publicIdMatch] : [publicIdMatch, databaseIdMatch];
-        pool.setResult({ rows, rowCount: 2 });
+    it('does not resolve a numeric authored id when only the other row has that proposal_id', async () => {
+        pool.setResult({ rows: [proposalDbRow({ id: 9, proposal_id: '1' })], rowCount: 1 });
 
         const res = await request(app).post('/proposals/batch').send({ ids: [1] });
 
         expect(res.status).toBe(200);
-        expect(res.body.items[0].proposal).toMatchObject({ id: 1, proposalId: 'different-public-id' });
+        expect(res.body.items[0].proposal).toBeNull();
+        expect(pool.getCalls()[0].params).toEqual([['1'], []]);
+    });
+
+    it('partitions row IDs (numbers or digit strings) and authored IDs into separate query parameters', async () => {
+        const row = proposalDbRow({ id: 11, proposal_id: 'authored-a' });
+        const authored = proposalDbRow({ id: 22, proposal_id: '22' });
+        pool.setResult({ rows: [authored, row], rowCount: 2 });
+
+        const res = await request(app).post('/proposals/batch').send({ ids: [11, '22', 'authored-a'] });
+
+        expect(res.status).toBe(200);
+        expect(res.body.items.map(item => item.proposal)).toMatchObject([
+            { id: 11, proposalId: 'authored-a' },
+            { id: 22, proposalId: '22' },
+            { id: 11, proposalId: 'authored-a' },
+        ]);
+        expect(pool.getCalls()[0].params).toEqual([['11', '22'], ['authored-a']]);
     });
 
     it('validates a non-empty bounded identifier list', async () => {
@@ -926,15 +936,15 @@ describe('GET /proposals/:id', () => {
             cadastreParcelIds: ['HR-1'],
             lens: ['planning'],
             bounds: [1, 2, 3, 4],
-            onchain: { txHash: '0x1' },
-            onchainData: { txHash: '0x1' }
+            onchain: { txHash: '0x1' }
         });
+        expect(res.body).not.toHaveProperty('onchainData');
         expect(res.body).not.toHaveProperty('childParcelIds');
         expect(res.body).not.toHaveProperty('parentProposals');
         expect(res.body).not.toHaveProperty('childProposals');
     });
 
-    it('falls back to proposal_data fields when db columns are null', async () => {
+    it('uses JSON for nullable authored fields but not cleared chain attachment or unknown lifecycle', async () => {
         pool.setResult({
             rows: [proposalDbRow({
                 name: null,
@@ -1005,7 +1015,7 @@ describe('GET /proposals/:id', () => {
             description: 'JSON description',
             author: 'json-author',
             type: 'road',
-            lifecycleStatus: 'draft',
+            lifecycleStatus: 'Unknown',
             offer: 12,
             offerCurrency: 'USD',
             budget: 34,
@@ -1014,17 +1024,17 @@ describe('GET /proposals/:id', () => {
             expiresAt: '2026-02-01T00:00:00.000Z',
             updatedAt: '2026-01-15T00:00:00.000Z',
             cadastreParcelIds: ['PARENT'],
-            acceptedParcelIds: ['PARENT'],
-            ownerAcceptances: { PARENT: true },
             roadProposal: { width: 4 },
             buildingProposal: { height: 8 },
             structureProposal: { floors: 2 },
             reparcellization: { merge: true },
             lens: ['mobility'],
             bounds: [1, 2, 3, 4],
-            onchain: { txHash: '0xabc' },
-            onchainData: { txHash: '0xabc' }
+            onchain: null
         });
+        expect(res.body).not.toHaveProperty('acceptedParcelIds');
+        expect(res.body).not.toHaveProperty('ownerAcceptances');
+        expect(res.body).not.toHaveProperty('onchainData');
         expect(res.body).not.toHaveProperty('childParcelIds');
         expect(res.body).not.toHaveProperty('parentProposals');
         expect(res.body).not.toHaveProperty('childProposals');
@@ -1102,8 +1112,10 @@ describe('HEAD /proposals/:id', () => {
         const res = await request(app).head('/proposals/hdr-test');
 
         expect(res.status).toBe(200);
-        expect(res.headers['x-proposal-id']).toBe('5');
-        expect(res.headers['x-proposal-proposalid']).toBe('hdr-test');
+        expect(res.headers['x-proposal-row-id']).toBe('5');
+        expect(res.headers['x-proposal-authored-id']).toBe('hdr-test');
+        expect(res.headers['x-proposal-id']).toBeUndefined();
+        expect(res.headers['x-proposal-proposalid']).toBeUndefined();
         expect(res.headers['last-modified']).toBeDefined();
         expect(res.headers['etag']).toContain('hdr-test');
     });
@@ -1118,7 +1130,10 @@ describe('HEAD /proposals/:id', () => {
         expect(res.status).toBe(200);
         expect(res.headers['etag']).toBeUndefined();
         expect(res.headers['last-modified']).toBeUndefined();
-        expect(res.headers['x-proposal-id']).toBe('5');
+        expect(res.headers['x-proposal-row-id']).toBe('5');
+        expect(res.headers['x-proposal-authored-id']).toBe('hdr-test');
+        expect(res.headers['x-proposal-id']).toBeUndefined();
+        expect(res.headers['x-proposal-proposalid']).toBeUndefined();
     });
 
     it('uses created_at for cache headers when updated_at is absent', async () => {
@@ -1361,17 +1376,31 @@ describe('GET /proposals/summary', () => {
     it('serves the goal so the client does not re-derive it from the lossy type', async () => {
         pool.setResult({
             rows: [
-                summaryDbRow({ id: 1, proposal_id: 'p-1', type: 'building', goal: 'building-blockify' }),
-                summaryDbRow({ id: 2, proposal_id: 'p-2', type: 'structure', goal: 'park-square' }),
+                summaryDbRow({ id: 1, proposal_id: 'p-1', type: 'building', goal: 'buildings' }),
+                summaryDbRow({ id: 2, proposal_id: 'p-2', type: 'structure', goal: 'park' }),
             ],
         });
 
         const res = await request(app).get('/proposals/summary');
 
         expect(res.status).toBe(200);
-        expect(res.body.proposals.map(p => p.goal)).toEqual(['building-blockify', 'park-square']);
+        expect(res.body.proposals.map(p => p.goal)).toEqual(['buildings', 'park']);
         // The SELECT must expose goal for the client mapper.
         expect(pool.getCalls()[0].sql).toMatch(/AS goal/);
+    });
+
+    it('does not infer an authored goal from the broad type or expose unknown goal keys', async () => {
+        pool.setResult({ rows: [
+            summaryDbRow({ id: 1, type: 'building', goal: 'invented-goal' }),
+            summaryDbRow({ id: 2, type: 'road', goal: null })
+        ] });
+
+        const res = await request(app).get('/proposals/summary');
+
+        expect(res.status).toBe(200);
+        expect(res.body.proposals.map(proposal => proposal.goal)).toEqual([null, null]);
+        expect(pool.getCalls()[0].sql).toMatch(/proposal_data->>'goal' AS goal/);
+        expect(pool.getCalls()[0].sql).not.toMatch(/COALESCE\(proposal_data->>'goal', type\)/);
     });
 
     it('reports the server-derived effective status (expired reads Expired, not the stale value)', async () => {
@@ -1389,6 +1418,43 @@ describe('GET /proposals/summary', () => {
         // The SELECT must derive it server-side.
         expect(pool.getCalls()[0].sql).toMatch(/AS effective_status/);
         expect(pool.getCalls()[0].sql).toMatch(/expires_at <= now\(\)/);
+    });
+
+    it('projects qualified server lifecycle evidence into summaries', async () => {
+        const chainMirror = {
+            protocol: 'proposal-chain/1',
+            ref: {
+                chainType: 'solana', chainId: 'solana-devnet',
+                contract: '3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg', tokenId: 'proposal-account'
+            },
+            verifiedAt: '2026-10-20T10:02:00.000Z',
+            lifecycle: { status: 'Active', observedAt: '2026-10-20T09:59:00.000Z' }
+        };
+        const lifecycleEvent = {
+            id: 'event-1', eventType: 'proposal_lifecycle',
+            subject: { type: 'proposal', id: 'proposal-account' }, outcome: 'executed',
+            observedAt: '2026-10-20T10:01:00.000Z',
+            attester: { kind: 'solana_program', address: chainMirror.ref.contract },
+            source: { chain: 'solana:devnet', transaction: 'signature-1', hash: `sha256:${'a'.repeat(64)}` },
+            evidence: { proposalStatusByte: 1 }
+        };
+        pool.setResult({ rows: [summaryDbRow({
+            effective_status: 'Executed', chain_mirror: chainMirror,
+            lifecycle_event: lifecycleEvent, expires_at: null
+        })] });
+
+        const res = await request(app).get('/proposals/summary');
+
+        expect(res.status).toBe(200);
+        expect(res.body.proposals[0].lifecycleEvidence).toMatchObject({
+            protocol: 'proposal-lifecycle-evidence/1', state: 'observed', status: 'Executed',
+            source: 'land-event', observedAt: '2026-10-20T10:01:00.000Z'
+        });
+        expect(res.body.proposals[0].lifecycleEvidence.observations.at(-1)).toMatchObject({
+            source: 'land-event', transaction: 'signature-1'
+        });
+        expect(pool.getCalls()[0].sql).toMatch(/proposal_data->'chainMirror' AS chain_mirror/);
+        expect(pool.getCalls()[0].sql).toMatch(/event_type = 'proposal_lifecycle'/);
     });
 
     it('prefers display_title when display_name is absent', async () => {
@@ -1471,17 +1537,41 @@ describe('GET /proposals/summary', () => {
         await request(app).get('/proposals/summary?lifecycle=Active');
         const call = pool.getCalls()[0];
         // The WHERE clause derives the lifecycle, not a raw column compare.
-        expect(call.sql).toMatch(/WHEN LOWER\(COALESCE\(lifecycle_status, ''\)\)[\s\S]*expires_at <= now\(\)[\s\S]*LOWER\(\$1\)/);
+        expect(call.sql).toMatch(/WHEN LOWER\(BTRIM\(COALESCE\(lifecycle_status, ''\)\)\) = 'active'[\s\S]*expires_at <= now\(\)[\s\S]*LOWER\(\$1\)/);
         expect(call.params).toContain('Active');
     });
 
-    it('filters by goal (against the stored goal, falling back to type)', async () => {
+    it('allows Unknown reads to be filtered without treating them as Active', async () => {
+        pool.setResult({ rows: [] });
+        const response = await request(app).get('/proposals/summary?lifecycle=Unknown');
+        expect(response.status).toBe(200);
+        expect(pool.getCalls()[0].params).toContain('Unknown');
+        expect(pool.getCalls()[0].sql).toContain("ELSE 'Unknown'");
+    });
+
+    it('filters by the explicitly authored goal only', async () => {
         pool.setResult({ rows: [] });
         const res = await request(app).get('/proposals/summary?goal=park-square');
         expect(res.status).toBe(200);
         const call = pool.getCalls()[0];
-        expect(call.sql).toMatch(/COALESCE\(proposal_data->>'goal', type\) = \$1/);
+        expect(call.sql).toMatch(/proposal_data->>'goal' = \$1/);
+        expect(call.sql).not.toMatch(/COALESCE\(proposal_data->>'goal', type\)/);
         expect(call.params).toContain('park-square');
+    });
+
+    it('returns only canonical authored goals in the epoch plan', async () => {
+        pool.setResult({ rows: [
+            { id: 1, proposal_id: 'p-1', city: 'zagreb', display_name: 'Park', type: 'structure', goal: 'park', epoch_year: 2027, bounds: null, created_at: new Date('2026-10-01T10:00:00Z'), screenshot_url: null },
+            { id: 2, proposal_id: 'p-2', city: 'zagreb', display_name: 'Unknown', type: 'building', goal: 'invented-goal', epoch_year: 2027, bounds: null, created_at: new Date('2026-10-02T10:00:00Z'), screenshot_url: null },
+            { id: 3, proposal_id: 'p-3', city: 'zagreb', display_name: 'Legacy', type: 'road', goal: null, epoch_year: 2027, bounds: null, created_at: new Date('2026-10-03T10:00:00Z'), screenshot_url: null }
+        ] });
+
+        const res = await request(app).get('/proposals/epoch-plan?city=zagreb');
+
+        expect(res.status).toBe(200);
+        expect(res.body.epochs[0].proposals.map(proposal => proposal.goal)).toEqual(['park', null, null]);
+        expect(pool.getCalls()[0].sql).toMatch(/proposal_data->>'goal' AS goal/);
+        expect(pool.getCalls()[0].sql).not.toMatch(/COALESCE\(proposal_data->>'goal', type\)/);
     });
 
     it('free-text search matches name/title and author across all rows', async () => {
@@ -1552,7 +1642,7 @@ describe('GET /proposals/summary', () => {
             title: null,
             author: null,
             type: null,
-            lifecycleStatus: 'Active',
+            lifecycleStatus: 'Unknown',
             createdAt: null
         });
     });

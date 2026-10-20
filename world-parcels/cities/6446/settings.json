@@ -1,0 +1,125 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "6446",
+  "name": "Curitiba, Brazil",
+  "point": [
+    -25.429,
+    -49.273
+  ],
+  "bindings": [
+    {
+      "appCityId": "curitiba",
+      "runtimeConfig": {
+        "id": "curitiba",
+        "label": "Curitiba, Brazil",
+        "currency": {
+          "locale": "pt-BR",
+          "code": "BRL"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            -25.429,
+            -49.273
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            -25.429,
+            -49.273
+          ],
+          "fallbackDataset": [
+            -49.273,
+            -25.429
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.0025,
+          "source": "parcel-source",
+          "sourceId": "br-curitiba-ippuc-lote-cadastral",
+          "idPrefix": "BR-CURITIBA-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 6,
+          "attribution": "<a href=\"https://geocuritiba.ippuc.org.br/server/rest/services/GeoCuritiba/Publico_GeoCuritiba_MapaCadastral/MapServer/15\">IPPUC / Prefeitura de Curitiba · publisher &amp; conditions</a> · Curitiba municipal cadastral lots with fiscal identifiers · adapted"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "br-curitiba-ippuc-lote-cadastral",
+      "name": "Curitiba cadastral lots — IPPUC",
+      "adapter": "arcgis",
+      "cityIds": [
+        "curitiba"
+      ],
+      "countryCode": "BR",
+      "endpoint": "https://geocuritiba.ippuc.org.br/server/rest/services/GeoCuritiba/Publico_GeoCuritiba_MapaCadastral/MapServer/15",
+      "idField": "gtm_ind_fiscal",
+      "idType": "string",
+      "objectIdField": "objectid",
+      "idPrefix": "BR-CURITIBA-",
+      "outFields": [
+        "objectid",
+        "gtm_ind_fiscal",
+        "gtm_cod_lote",
+        "gtm_cod_quadra"
+      ],
+      "attributeNotNull": [
+        "gtm_ind_fiscal"
+      ],
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "pageSize": 100,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "maxConcurrentQueries": 2,
+      "metricSrid": 32722,
+      "attributeExclusions": {
+        "gtm_ind_fiscal": [
+          "",
+          " "
+        ]
+      },
+      "operator": "IPPUC / Prefeitura de Curitiba",
+      "catalogueUrl": "https://geocuritiba.ippuc.org.br/server/rest/services/GeoCuritiba/Publico_GeoCuritiba_MapaCadastral/MapServer/15",
+      "scope": "Curitiba municipal cadastral lots with a nonblank native fiscal indication; unassigned records are excluded.",
+      "coverageNote": "Curitiba municipal cadastral lots with fiscal identifiers",
+      "caveats": [
+        "Null, empty and single-space fiscal identifiers are excluded; these records cannot identify individual parcels.",
+        "The source describes legal lots and approved subdivision plans. Municipal technical cadastre is not proof of legal title.",
+        "Explicit record-ID manifests replace the provider’s unreliable offset paging; object IDs are only transport tokens."
+      ],
+      "attribution": "IPPUC / Prefeitura de Curitiba. Adapted to WGS84.",
+      "licenceNote": "Source conditions are informational; users choose their source and intended use."
+    }
+  ]
+}

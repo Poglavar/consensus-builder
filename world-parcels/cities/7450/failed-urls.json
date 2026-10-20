@@ -1,0 +1,14 @@
+[
+  {
+    "url": "https://geoportal.n-vartovsk.ru/User_2/ows?service=WFS&version=1.0.0&request=GetCapabilities",
+    "reason": "404"
+  },
+  {
+    "url": "https://geoportal.n-vartovsk.ru/User_2/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=User_2:loc2634607873808485038&outputFormat=application%2Fjson&maxFeatures=3&bbox=76.5665,60.9384,76.5694,60.9394,EPSG:4326&propertyName=_1_%D0%9A%D0%9D,the_geom",
+    "reason": "404"
+  },
+  {
+    "url": "https://data.n-vartovsk.ru/api/v1/8603032896-landplotsreestr/structure",
+    "reason": "403"
+  }
+]

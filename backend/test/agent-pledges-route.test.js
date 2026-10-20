@@ -11,6 +11,7 @@ const client = require('../../frontend/js/solana/pledge-client.js');
 client.configure({ web3 });
 
 function accountData(size, discriminator) { const data = Buffer.alloc(size); Buffer.from(discriminator).copy(data); return data; }
+function accountInfo(data) { return { data, owner: new web3.PublicKey(client.constants.PROGRAM_ID) }; }
 function appFor(connection) { const app = express(); setupAgentPledgesRoute(app, { connection }); return app; }
 
 describe('GET /agent/pledges/:proposal', () => {
@@ -36,7 +37,7 @@ describe('GET /agent/pledges/:proposal', () => {
         new web3.PublicKey(client.constants.USDC_DEVNET_MINT).toBuffer().copy(pledge, 72);
         pledge.writeBigUInt64LE(10000000n, 104); pledge.writeBigUInt64LE(2000000n, 112); pledge.writeBigUInt64LE(500000n, 120);
         pledge.writeBigUInt64LE(5n, 128); pledge.writeBigUInt64LE(2n, 136); pledge.writeBigUInt64LE(1n, 144);
-        const app = appFor({ getAccountInfo: async address => address.equals(escrow) ? { data: donation } : address.equals(book) ? { data: pledge } : null });
+        const app = appFor({ getAccountInfo: async address => address.equals(escrow) ? accountInfo(donation) : address.equals(book) ? accountInfo(pledge) : null });
         const response = await request(app).get(`/agent/pledges/${proposal}`);
         expect(response.body).toMatchObject({
             exists: true,

@@ -1,7 +1,7 @@
 // Fair, bounded selection from the durable target queue.
 import { DEFERRED_GENERATED_SEARCH_SQL } from './discovery-policy.js';
 import { NEGATIVE_IMAGE_CACHE_SQL } from './image-retention.js';
-import { ALLOWED_TARGET_SQL } from './source-policy.js';
+import { ALLOWED_TARGET_SQL, sourcePlanAssetSql } from './source-policy.js';
 const hostSql = url => `regexp_replace(lower(split_part(${url},'/',3)),'^www\\.','')`;
 const HOST_SQL = hostSql('t.url');
 const TARGET_CACHE_COLUMNS = `t.*,COALESCE(b.bytes_available,false) AS cached_bytes_available,
@@ -57,12 +57,7 @@ export const PLAN_ASSET_SQL = `EXISTS (
   WHERE l.facts->>'sourceEvidenceStatus' IS DISTINCT FROM 'not-a-listing'
     AND ${planAssetSql('l')}
 )`;
-export const LOCATED_ASSET_SQL = `EXISTS (
-  SELECT 1 FROM floor_plan.listing l
-  WHERE l.asset_urls @> jsonb_build_array(jsonb_build_object('url',t.url,'listingOwned',true))
-    AND (l.location_status IN ('located','probable')
-      OR (l.match_status='verified' AND l.building_id IS NOT NULL))
-)`;
+export const PROCESSABLE_ASSET_SQL = `EXISTS(SELECT 1 FROM floor_plan.listing l WHERE ${sourcePlanAssetSql()})`;
 
 function stageFilter(stage) {
   if (stage === 'homes') return `t.kind='home'`;
@@ -87,7 +82,7 @@ export function createTargetSelector({ agencyId = null, site = null, discoveryOn
   let stage = assetOnly ? 'assets' : 'homes';
   let nestedSweepHadWork = false;
   let pageSweepRequired = false;
-  const assetFilters = [LOCATED_ASSET_SQL, `NOT ${NEGATIVE_IMAGE_CACHE_SQL}`,matchedAssetsOnly ? MATCHED_ASSET_SQL : null,
+  const assetFilters = [PROCESSABLE_ASSET_SQL, `NOT ${NEGATIVE_IMAGE_CACHE_SQL}`,matchedAssetsOnly ? MATCHED_ASSET_SQL : null,
     ownedAssetsOnly && !site ? OWNED_ASSET_SQL : null,
     planAssetsOnly && !site ? PLAN_ASSET_SQL : null]
     .filter(Boolean).map(filter => `AND ${filter}`).join('\n        ');
@@ -207,7 +202,7 @@ export async function countPendingTargets(db, { agencyId = null, site = null, di
       AND ${ALLOWED_TARGET_SQL}
       ${siteScopeSql(site,'$2',planAssetsOnly)}
       AND ${kindFilter} ${matchFilter} ${ownedFilter} ${planFilter}
-      AND (t.kind<>'asset' OR ${LOCATED_ASSET_SQL})
+      AND (t.kind<>'asset' OR ${PROCESSABLE_ASSET_SQL})
       AND NOT ${NEGATIVE_IMAGE_CACHE_SQL}
       AND NOT ${DEFERRED_GENERATED_SEARCH_SQL}`, parameters)).rows[0].n);
   const deferredUnlocatedAssets = Number((await db.query(`SELECT count(*) AS n FROM floor_plan.target t
@@ -217,7 +212,7 @@ export async function countPendingTargets(db, { agencyId = null, site = null, di
       AND ($1::bigint IS NULL OR t.agency_id=$1)
       ${siteScopeSql(site,'$2',planAssetsOnly)}
       AND ${OWNED_ASSET_SQL}
-      AND NOT ${LOCATED_ASSET_SQL}`, parameters)).rows[0].n);
+      AND NOT ${PROCESSABLE_ASSET_SQL}`, parameters)).rows[0].n);
   let deferredUnmatchedAssets = 0;
   if (discoveryOnly || matchedAssetsOnly) {
     deferredUnmatchedAssets = Number((await db.query(`SELECT count(*) AS n FROM floor_plan.target t

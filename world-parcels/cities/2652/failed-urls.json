@@ -1,0 +1,14 @@
+[
+  {
+    "url": "https://bhumi.atrbpn.go.id/bhumigs/umum/wms?service=WMS&request=GetCapabilities",
+    "reason": "404"
+  },
+  {
+    "url": "https://bhumi.atrbpn.go.id/bhumigs/umum/ows?service=WFS&version=2.0.0&request=GetCapabilities",
+    "reason": "404"
+  },
+  {
+    "url": "https://bhumi.atrbpn.go.id/api/proksi",
+    "reason": "400"
+  }
+]

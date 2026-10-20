@@ -1,0 +1,23 @@
+[
+  {
+    "url": "https://lb.dnr.gxzf.gov.cn/"
+  },
+  {
+    "url": "https://guangxi.tianditu.gov.cn/tdtapinewmanager/gis/gisLayer/listLayerTreePublic"
+  },
+  {
+    "url": "https://guangxi.tianditu.gov.cn/"
+  },
+  {
+    "url": "https://guangxi.tianditu.gov.cn/mapgxservice/rest/services/TMP/oldTM260414new/MapServer?f=pjson"
+  },
+  {
+    "url": "https://guangxi.tianditu.gov.cn/mapgxservice/rest/services/TMP/oldTM260414new/MapServer/8?f=pjson"
+  },
+  {
+    "url": "https://guangxi.tianditu.gov.cn/mapgxservice/rest/services/TMP/oldTM260414new/MapServer/8/query"
+  },
+  {
+    "url": "https://guangxi.tianditu.gov.cn/mapgxservice/rest/services/TMP/oldTM260414new/MapServer/2/query and /5/query and /8/query"
+  }
+]

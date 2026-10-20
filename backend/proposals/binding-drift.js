@@ -8,7 +8,8 @@
 // can be added to a transfer of named titles. Used by GET /proposals/:id/binding-drift.
 
 import { createRequire } from 'node:module';
-import { computeBinding, parcelActBinding, parseTolerance, validateSiteGeometry, COVERAGE, SERVER_CADASTRE_SOURCE } from './binding.js';
+import { computeBinding, parcelActBinding, parseTolerance, validateSiteGeometry, COVERAGE } from './binding.js';
+import { resolveParcelSourceDescriptor } from '../parcels/sources.js';
 
 const requireCjs = createRequire(import.meta.url);
 const driftApi = requireCjs('../../frontend/js/proposals/binding-drift.js');
@@ -32,8 +33,22 @@ export const BINDING_DRIFT_ROW_SQL = `
 export const DRIFT_UNCHECKABLE = Object.freeze({
     noBinding: 'no-binding',
     noSite: 'no-site',
-    unknownCoverage: 'unknown-coverage'
+    unknownCoverage: 'unknown-coverage',
+    unknownSource: 'unknown-source'
 });
+
+const HR_PARCEL_SOURCE_ID = 'hr-cadastre';
+
+// The source identity is the descriptor, never the human-readable `binding.source` label. The
+// built-in HR database source is not in the external adapter catalog and maps to the SQL path.
+export function bindingParcelSourceId(stored) {
+    const sourceId = stored?.parcelSource?.sourceId;
+    if (sourceId === HR_PARCEL_SOURCE_ID) return { known: true, parcelSourceId: null };
+    if (typeof sourceId !== 'string' || !resolveParcelSourceDescriptor(sourceId)) {
+        return { known: false, parcelSourceId: null };
+    }
+    return { known: true, parcelSourceId: sourceId };
+}
 
 function parseJson(value) {
     if (value === null || value === undefined) return null;
@@ -55,9 +70,13 @@ export async function computeBindingDrift(db, idParam, { now } = {}) {
     }
     const tolerance = parseTolerance(typeof stored.toleranceM === 'number' ? stored.toleranceM : undefined);
     const toleranceM = tolerance.ok ? tolerance.value : 0;
-    // Recheck the provider that supplied the published evidence, even when the city defaults to DB.
-    const parcelSourceId = typeof stored.source === 'string' && stored.source.startsWith('server:')
-        && stored.source !== SERVER_CADASTRE_SOURCE ? stored.source.slice('server:'.length) : null;
+    // Recheck the provider named by the typed descriptor. An absent or unrecognized descriptor
+    // leaves source identity unknown; it must not fall through to a city default or label parsing.
+    const source = bindingParcelSourceId(stored);
+    if (!source.known) {
+        return { ...base, checkable: false, reason: DRIFT_UNCHECKABLE.unknownSource, stored };
+    }
+    const { parcelSourceId } = source;
 
     let current;
     if (stored.subject === 'declared-parcels') {

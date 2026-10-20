@@ -1,0 +1,21 @@
+[
+  {
+    "url": "https://nspd.gov.ru/map",
+    "reason": "timeout"
+  },
+  {
+    "url": "https://gov.karelia.ru/news/31-01-2025-v-karelii-nachali-podgotovku-k-gosudarstvennoy-kadastrovoy-otsenke-zemelnykh-uchastkov-v-2026-godu/"
+  },
+  {
+    "url": "https://kodeks.karelia.ru/api/show/919330320"
+  },
+  {
+    "url": "https://nspd.gov.ru/"
+  },
+  {
+    "url": "https://nspd.gov.ru/api/geoportal/v2/search/geoportal?query=61.7820967154525%2C34.3496012260753&thematicSearchId=1"
+  },
+  {
+    "url": "https://rosreestr.gov.ru/"
+  }
+]

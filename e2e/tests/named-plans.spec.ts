@@ -30,6 +30,17 @@ async function publishPark(page: any, routes: (page: any, serverId: string) => P
   await expect(share.locator('.share-modal-link').first()).toHaveValue(/\/proposals\/\d+\?/);
   await share.locator('.share-modal .close-circle-btn').click();
   const serverId = [...server.records.keys()][0];
+  const publicationApiBase = await page.evaluate(() => (window as any).getBackendBase());
+  // This helper creates a published local-copy fixture for the named-plan consumers below. The
+  // API row is meaningful only together with the publication endpoint that issued it.
+  await page.evaluate(({ localId, serverId, publicationApiBase }: any) => {
+    const proposal = (window as any).proposalStorage.getProposal(localId);
+    if (!proposal) throw new Error(`Published fixture ${localId} is missing from local storage`);
+    proposal.id = String(serverId);
+    proposal.serverProposalId = String(serverId);
+    proposal.publicationApiBase = publicationApiBase;
+    (window as any).proposalStorage.save();
+  }, { localId, serverId, publicationApiBase });
   await page.evaluate(() => (window as any).hideProposalDetailsPanel(true));
   return { localId, serverId, title: String(title) };
 }
@@ -37,12 +48,12 @@ async function publishPark(page: any, routes: (page: any, serverId: string) => P
 async function routePlans(page: any, serverId: string): Promise<void> {
   const plan = {
     slug: SLUG, name: `${SLUG}.proposals.urbangametheory.eth`, title: 'E2E harbor plan', description: 'A park and nothing else.',
-    author: 'Plan tester', place: 'Harbor', city: 'zagreb', proposalIds: [serverId], memberCount: 1, superseded: false,
+    author: 'Plan tester', place: 'Harbor', city: 'zagreb', proposalRowIds: [serverId], memberCount: 1, superseded: false,
     proposalAccount: null, createdAt: '2026-10-17T10:00:00.000Z'
   };
   await page.route(/\/plans(\?.*)?$/, (route: any) => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ plans: [plan] }) }));
   await page.route(`**/plans/${SLUG}`, (route: any) => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({
-    ...plan, supersededBy: [], members: [{ id: serverId, proposalId: 'p-park', title: 'Harbor park', type: 'park', goal: 'park', changed: false }]
+    ...plan, supersededBy: [], members: [{ proposalRowId: serverId, authoredProposalId: 'p-park', title: 'Harbor park', type: 'park', goal: 'park', changed: false }]
   }) }));
 }
 
@@ -50,13 +61,13 @@ async function routePlans(page: any, serverId: string): Promise<void> {
 const SECOND = 'e2e-harbor-plan-two';
 const EARLIER = 'e2e-harbor-plan-earlier';
 async function routeTwoPlans(page: any, serverId: string): Promise<void> {
-  const base = { author: 'Plan tester', place: 'Harbor', city: 'zagreb', proposalIds: [serverId], memberCount: 1, proposalAccount: null, createdAt: '2026-10-17T10:00:00.000Z' };
+  const base = { author: 'Plan tester', place: 'Harbor', city: 'zagreb', proposalRowIds: [serverId], memberCount: 1, proposalAccount: null, createdAt: '2026-10-17T10:00:00.000Z' };
   const plans = [
     { ...base, slug: SLUG, name: `${SLUG}.proposals.urbangametheory.eth`, title: 'E2E harbor plan', description: 'A park and nothing else.', superseded: false },
     { ...base, slug: SECOND, name: `${SECOND}.proposals.urbangametheory.eth`, title: 'E2E harbor plan two', description: 'The park again.', superseded: false },
     { ...base, slug: EARLIER, name: `${EARLIER}.proposals.urbangametheory.eth`, title: 'E2E harbor plan, earlier', description: 'Before plan two.', superseded: true },
   ];
-  const members = [{ id: serverId, proposalId: 'p-park', title: 'Harbor park', type: 'park', goal: 'park', changed: false }];
+  const members = [{ proposalRowId: serverId, authoredProposalId: 'p-park', title: 'Harbor park', type: 'park', goal: 'park', changed: false }];
   await page.route(/\/plans(\?.*)?$/, (route: any) => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ plans }) }));
   for (const plan of plans) {
     await page.route(`**/plans/${plan.slug}`, (route: any) => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({
@@ -100,7 +111,7 @@ test.describe('Named plans @features', () => {
     await openParcelMenu(page);
     await page.locator('#parcel-menu [data-command="parcel.proposals"]').click();
     const line = page.locator('#proposals-content .proposal-plan-link');
-    await expect(line).toHaveText(/Part of plan E2E harbor plan/);
+    await expect(line).toHaveText(/Part of named plan E2E harbor plan/);
 
     await page.locator('#parcel-info-panel [data-parcel-proposals-view="plans"]').click();
     await expect(page.locator('#parcel-plans-content .plan-item')).toHaveCount(1);
@@ -123,7 +134,7 @@ test.describe('Named plans @features', () => {
     // Applying a plan goes through its published records: the member stands as the record of its row id.
     await expect.poll(() => page.evaluate((id: string) => {
       const w = window as any;
-      return w.proposalStorage.getAllProposals().some((p: any) => String(w.getServerProposalId(p)) === id && w.isProposalCurrentlyApplied(p));
+      return w.proposalStorage.getAllProposals().some((p: any) => String(w.getProposalPublicationLookup(p)) === id && w.isProposalCurrentlyApplied(p));
     }, serverId), { timeout: 30_000 }).toBe(true);
     // Apply plan ends the way a plan link used to: framing what it applied and opening its panel.
     await expect(page.locator('#proposal-details-panel')).toBeVisible({ timeout: 30_000 });
@@ -141,7 +152,7 @@ test.describe('Named plans @features', () => {
     await expect.poll(() => page.evaluate(() => location.pathname)).toBe('/');
   });
 
-  test('a proposal in two plans lists both behind In 2 plans, and an earlier plan links to its newer version', async ({ mockApi: page }) => {
+  test('a proposal in two plans lists both behind In 2 named plans, and an earlier plan links to its newer version', async ({ mockApi: page }) => {
     const { localId } = await publishPark(page, routeTwoPlans);
     // Off the map, so the parcel it stands on can be clicked again.
     await page.evaluate((id: string) => (window as any).ProposalManager.unapplyProposal(id), localId);
@@ -150,7 +161,7 @@ test.describe('Named plans @features', () => {
     await page.locator('#parcel-menu [data-command="parcel.proposals"]').click();
     // The superseded plan is not counted; the two current ones fold behind one line.
     const toggle = page.locator('#proposals-content .proposal-plan-toggle');
-    await expect(toggle).toHaveText(/In 2 plans/);
+    await expect(toggle).toHaveText(/In 2 named plans/);
     await expect(toggle).toHaveAttribute('aria-expanded', 'false');
     const options = page.locator('#proposals-content .proposal-plan-options');
     await expect(options).toBeHidden();
@@ -173,12 +184,12 @@ test.describe('Named plans @features', () => {
     await expect.poll(() => page.evaluate(() => location.pathname)).toBe(`/proposals/${SECOND}`);
   });
 
-  test('the proposals list has a Plans source whose rows open their plan', async ({ mockApi: page }) => {
+  test('the proposals list has a Named plans source whose rows open their plan', async ({ mockApi: page }) => {
     await publishPark(page);
     await page.evaluate(() => (window as any).showAllProposalsModal());
     const source = page.locator('.proposal-source-btn[data-source="plans"]');
-    await expect(source).toHaveText(/Plans \(1\)/);
-    await expect(page.locator('.proposal-list-item .proposal-plan-link')).toHaveText(/Part of plan E2E harbor plan/);
+    await expect(source).toHaveText(/Named plans \(1\)/);
+    await expect(page.locator('.proposal-list-item .proposal-plan-link')).toHaveText(/Part of named plan E2E harbor plan/);
     await source.click();
     await expect(page.locator('.proposal-list-modal .proposal-filters-toggle')).toHaveCount(0);
     await page.locator('.proposal-list-modal .plan-item').click();

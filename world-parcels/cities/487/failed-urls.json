@@ -1,0 +1,6 @@
+[
+  {
+    "url": "https://bz1uwwpkuinzbk94.svcs5.arcgis.com/bz1uwWPKUInZBK94/arcgis/rest/services/CA_Statewide_Parcels_Public_view/FeatureServer/0",
+    "reason": "Held at the geometry gate: every source check passed (44 requests, 1 qualifier run(s) on this city) but the independent metric audit failed for Santa Barbara (us-ca-calfire-statewide-parcels) with 23 material overlap pair(s) (> 0.01 m2; max 140 m2, 100% of the smaller; total 1.67e+03 m2) among 207 cached features (06083~027-640-001 / 06083~027-640-CA1: 140 m2 = 100% of the smaller; 06083~027-500-…"
+  }
+]

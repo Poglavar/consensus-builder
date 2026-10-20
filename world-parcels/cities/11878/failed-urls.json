@@ -1,0 +1,10 @@
+[
+  {
+    "url": "https://guangdong.tianditu.gov.cn/geostar/sc/wfs?service=WFS&request=GetCapabilities",
+    "reason": "404"
+  },
+  {
+    "url": "https://guangdong.tianditu.gov.cn/server/biaohui/wfs?service=WFS&request=GetCapabilities",
+    "reason": "503"
+  }
+]

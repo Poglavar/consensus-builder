@@ -1,0 +1,17 @@
+[
+  {
+    "url": "https://webgis.alandis.jp/miyazaki45/portal/"
+  },
+  {
+    "url": "https://www.geospatial.jp/ckan/dataset/houmusyouchizu-2026-1-1889"
+  },
+  {
+    "url": "https://www.city.miyazaki.miyazaki.jp/life/house/dwelling/778.html"
+  },
+  {
+    "url": "https://services.arcgis.com/wlVTGRSYTzAbjjiC/ArcGIS/rest/services/touki/FeatureServer/5/query?where=CityCode%3D%2745201%27&outFields=OBJECTID%2CBoundaryId%2CCityCode&resultRecordCount=3&returnGeometry=true&outSR=4326&f=json"
+  },
+  {
+    "url": "https://www.geospatial.jp/ckan/dataset/9778e762-b145-4d58-8813-b4ce8a80e321/resource/3a115301-53da-4f6b-8c10-8428d0f9d89d/download/45201-3500-2025.zip"
+  }
+]

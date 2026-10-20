@@ -1,0 +1,22 @@
+[
+  {
+    "url": "https://maps.planogis.org/arcgiswad/rest/services/PlanoGISintegrations/ESRICommunityBasemap/MapServer/11/query",
+    "reason": "timeout after 30 seconds"
+  },
+  {
+    "url": "https://maps.planogis.org/arcgiswad/rest/services?f=pjson",
+    "reason": "timeout after 20 seconds"
+  },
+  {
+    "url": "https://maps.planogis.org/arcgiswad/rest/services/PlanoGISintegrations/ESRICommunityBasemap/MapServer/11"
+  },
+  {
+    "url": "https://maps.planogis.org/arcgiswad/rest/services/PlanoGISintegrations/Clariti_PublicPortal/MapServer/1"
+  },
+  {
+    "url": "https://geographic.texas.gov/stratmap/land-parcels.html"
+  },
+  {
+    "url": "https://maps.planogis.org/arcgiswad/rest/services/Planning/LandUseAndHousingInventoryWebViewer/MapServer/layers"
+  }
+]

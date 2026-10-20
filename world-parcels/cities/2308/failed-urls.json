@@ -1,0 +1,23 @@
+[
+  {
+    "url": "https://service-public.gov.gn/ova_sev/certificat-dimmatriculation-de-titre-foncier/"
+  },
+  {
+    "url": "https://www.dgpeip.gov.gn/patrimoine"
+  },
+  {
+    "url": "https://ville-nzerekore.com/carte-territoire"
+  },
+  {
+    "url": "https://cadastre.mines.gov.gn/arcgis/rest/services/SSRSMaps_SOE/MapServer?f=pjson"
+  },
+  {
+    "url": "https://cadastre.mines.gov.gn/arcgis/rest/services/SSRSMaps_SOE/MapServer/0?f=pjson"
+  },
+  {
+    "url": "https://cadastre.mines.gov.gn/arcgis/rest/services/SSRSMaps_SOE/MapServer/0/query?f=pjson&where=ISO_CTRY%3D%27GN%27&outFields=OBJECTID%2CISO_CTRY&returnGeometry=false&resultRecordCount=3"
+  },
+  {
+    "url": "https://cadastre.mines.gov.gn/arcgis/rest/services/MapPortal/GuineaPortal_ApplicationLayer/MapServer?f=pjson"
+  }
+]

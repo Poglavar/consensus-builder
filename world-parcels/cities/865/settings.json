@@ -1,0 +1,108 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "865",
+  "name": "Dubai, United Arab Emirates",
+  "point": [
+    25.095,
+    55.157
+  ],
+  "bindings": [
+    {
+      "appCityId": "dubai",
+      "runtimeConfig": {
+        "id": "dubai",
+        "label": "Dubai, United Arab Emirates",
+        "currency": {
+          "locale": "ar-AE",
+          "code": "AED"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            25.095,
+            55.157
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            25.095,
+            55.157
+          ],
+          "fallbackDataset": [
+            55.157,
+            25.095
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.0025,
+          "source": "parcel-source",
+          "sourceId": "ae-dubai-dda-public-plots",
+          "idPrefix": "AE-DDA-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 6,
+          "attribution": "<a href=\"https://gis.dda.gov.ae/dis/\">Dubai Development Authority · publisher &amp; conditions</a> · Official public-viewer plot layer; Dubai Marina area verified. Other emirates are separate sources. · adapted"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "ae-dubai-dda-public-plots",
+      "adapter": "dda-public-plots",
+      "countryCode": "AE",
+      "endpoint": "https://gis.dda.gov.ae/server/rest/services/DIS/MAIN_MAP/MapServer/13",
+      "idField": "PLOT_NUMBER",
+      "idType": "string",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "AE-DDA-",
+      "outFields": [
+        "OBJECTID",
+        "PLOT_NUMBER"
+      ],
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "cityIds": [
+        "dubai"
+      ],
+      "metricSrid": 32640,
+      "name": "Dubai DDA public cadastral plots",
+      "operator": "Dubai Development Authority",
+      "catalogueUrl": "https://gis.dda.gov.ae/dis/",
+      "scope": "Dubai plots published in the public DDA Development Information System; UAE nationwide coverage not asserted.",
+      "coverageNote": "Official public-viewer plot layer; Dubai Marina area verified. Other emirates are separate sources.",
+      "attribution": "Dubai Development Authority. Adapted to WGS84.",
+      "licenceNote": "Source conditions are informational; users choose their source and intended use.",
+      "maxConcurrentQueries": 2,
+      "sourceCrs": "EPSG:3997, WGS 84 / Dubai Local TM; service output EPSG:4326"
+    }
+  ]
+}

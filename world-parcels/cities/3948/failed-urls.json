@@ -1,0 +1,16 @@
+[
+  {
+    "url": "https://pkk.rosreestr.ru/",
+    "reason": "timeout"
+  },
+  {
+    "url": "https://nspd.gov.ru/",
+    "reason": "timeout_or_unavailable"
+  },
+  {
+    "url": "https://eks.kostroma.gov.ru/app_oopt/portal/default/page?id=1"
+  },
+  {
+    "url": "https://gradkostroma.ru/qa/list.aspx?id=4"
+  }
+]

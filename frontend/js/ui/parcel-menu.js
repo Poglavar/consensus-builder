@@ -105,6 +105,7 @@
         return {
             parcelId: id,
             displayId: model.displayParcelId(props, id),
+            identityKind: model.parcelIdentityKind(props, id),
             isRoad: typeof win.isRoadParcel === 'function' ? !!win.isRoadParcel(id) : false,
             multiSelectActive: !!(multi && multi.isActive),
             selectionCount: multi && multi.selectedParcels ? multi.selectedParcels.size : 0,
@@ -161,9 +162,10 @@
         const closeLabel = t('modal.common.close', 'Close');
         close.setAttribute('aria-label', closeLabel);
         close.title = closeLabel;
-        el.querySelector('.parcel-menu__title').textContent = facts.isGround
+        const identityTitle = model.parcelIdentityTitle(facts.identityKind);
+        el.querySelector('.parcel-menu__title').textContent = facts.isGround && facts.identityKind !== 'plotPiece'
             ? t('parcelMenu.groundTitle', 'Open ground')
-            : t('panel.parcel.multi.parcelLabel', 'Parcel {{number}}', { number: facts.displayId });
+            : t(identityTitle.key, identityTitle.fallback, { number: facts.displayId });
         const line = factsLine(facts);
         const factsEl = el.querySelector('.parcel-menu__facts');
         factsEl.textContent = line;

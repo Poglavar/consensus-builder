@@ -1,7 +1,7 @@
 // Purpose: characterize crawler discovery and archive validation without network or PostgreSQL.
 import { describe, expect, it, vi } from 'vitest';
 import { crawl, discoverTargets, discoverTargetsWithStats } from '../floor-plans/crawler.js';
-import { countPendingTargets, createTargetSelector, normalizeSiteHost, LOCATED_ASSET_SQL, OWNED_ASSET_SQL } from '../floor-plans/crawl-queue.js';
+import { countPendingTargets, createTargetSelector, normalizeSiteHost, PROCESSABLE_ASSET_SQL, OWNED_ASSET_SQL, PLAN_ASSET_SQL } from '../floor-plans/crawl-queue.js';
 import { DEFERRED_GENERATED_SEARCH_SQL, isGeneratedSearchTarget } from '../floor-plans/discovery-policy.js';
 import { importAgencies, saveObservation } from '../floor-plans/archive.js';
 import { seedKnownSites } from '../floor-plans/agency-sites.js';
@@ -239,7 +239,7 @@ describe('floor-plan queue fairness', () => {
             { url: 'https://b.test/not-owned.pdf', kind: 'asset', priority: 100, matchStatus: 'verified', buildingId: 'b-1', owned: false, last_fetched_at: null, next_check_at: 0 },
         );
         return { query: vi.fn(async (sql, [, excluded]) => {
-        const kindClause = sql.match(/AND (t\.kind(?: IN \([^)]*\)|='[^']+'))/);
+        const kindClause = [...sql.matchAll(/AND (t\.kind(?: IN \([^)]*\)|='[^']+'))/g)].at(-1);
         const kinds = kindClause?.[1].match(/'([^']+)'/g)?.map(k => k.slice(1, -1)) || [];
         const nestedSitemaps = sql.includes("regexp_replace(t.discovered_from,'^https?://[^/]+','') NOT IN ('','/')");
         const rootSitemaps = sql.includes("regexp_replace(t.discovered_from,'^https?://[^/]+','') IN ('','/')") && !sql.includes("regexp_replace(t.discovered_from,'^https?://[^/]+','') NOT IN ('','/')");
@@ -368,7 +368,7 @@ describe('site-scoped queue', () => {
             if (scoped) expect(site).toBe('opereta.hr');
             if (selection || scoped) expect(sql).toContain("regexp_replace(lower(split_part(t.url,'/',3)),'^www\\.','')");
             if (scoped) expect(sql).toContain("regexp_replace(lower(split_part(site_listing.url,'/',3)),'^www\\.','')");
-            const planOnly = sql.includes("asset->>'kind' IN ('floor-plan','document')") || sql.includes("'kind','floor-plan'");
+            const planOnly = sql.includes("asset->>'kind' IN ('floor-plan','document')") || sql.includes(`AND ${PLAN_ASSET_SQL}`);
             const locatedOnly = sql.includes("l.location_status IN ('located','probable')");
             const selected = targets.filter(target => due.has(target.url) && (
                 target.kind === 'asset'
@@ -376,7 +376,7 @@ describe('site-scoped queue', () => {
                         asset.url === target.url && (!planOnly || ['floor-plan', 'document'].includes(asset.kind))
                         && (!locatedOnly || ['located','probable'].includes(listing.location_status))))
                     : !site || host(target.url) === site));
-            const kind = sql.match(/AND t\.kind='(asset|page|home|sitemap)'/)?.[1];
+            const kind = [...sql.matchAll(/AND t\.kind='(asset|page|home|sitemap)'/g)].at(-1)?.[1];
             const eligible = selected.filter(target => !kind || target.kind === kind);
             if (!selection) return { rows: [{ n: eligible.length }] };
             const row = eligible.find(target => !params[1].includes(host(target.url)));
@@ -535,7 +535,7 @@ it('fetches an addressless listing once, records its exclusion, and skips it bef
         return { rowCount: 1, rows: [] };
     }) };
     const listingUrl = 'https://agency.test/stan/bez-adrese';
-    const fetcher = vi.fn(async url => ({ body: Buffer.from('<script type="application/ld+json">{"@type":"Apartment","name":"Stan bez adrese"}</script><main><h1>Stan bez adrese</h1><div class="gallery"><img src="/plan.jpg" alt="Tlocrt"></div></main>'), status: 200, headers: { contentType: 'text/html' }, finalUrl: url }));
+    const fetcher = vi.fn(async url => ({ body: Buffer.from('<script type="application/ld+json">{"@type":"Apartment","name":"Stan bez adrese"}</script><main><h1>Stan bez adrese</h1><div class="gallery"><img src="/photo.jpg" alt="Fotografija"></div></main>'), status: 200, headers: { contentType: 'text/html' }, finalUrl: url }));
     let selected = 0;
     const result = await crawl(db, { maxPages: 2, maxMinutes: 1, log: () => {},
         selectTarget: async () => selected++ < 2 ? { url: listingUrl, kind: 'page', agency_id: 1 } : null,
@@ -543,7 +543,7 @@ it('fetches an addressless listing once, records its exclusion, and skips it bef
     expect(fetcher).toHaveBeenCalledTimes(1);
     expect(result.counters).toMatchObject({ requestsAttempted: 1, excluded: 2 });
     expect(calls.some(([sql]) => sql.includes('INSERT INTO floor_plan.exclusion'))).toBe(true);
-    expect(calls.some(([sql, params]) => sql.includes('INSERT INTO floor_plan.target(url,agency_id,kind') && params[0] === 'https://agency.test/plan.jpg')).toBe(false);
+    expect(calls.some(([sql, params]) => sql.includes('INSERT INTO floor_plan.target(url,agency_id,kind') && params[0] === 'https://agency.test/photo.jpg')).toBe(false);
     expect(calls.some(([sql]) => sql.includes('INSERT INTO floor_plan.blob'))).toBe(false);
 });
 
@@ -633,10 +633,10 @@ it('persists request, response, host, and decoded-body metrics after each attemp
 });
 
 it('counts only work eligible in the current phase and reports deferred unmatched assets separately', async () => {
-    expect(LOCATED_ASSET_SQL).toContain("l.location_status IN ('located','probable')");
-    expect(LOCATED_ASSET_SQL).toContain("l.match_status='verified'");
-    expect(LOCATED_ASSET_SQL).toContain('l.building_id IS NOT NULL');
-    expect(LOCATED_ASSET_SQL).toContain("'listingOwned',true");
+    expect(PROCESSABLE_ASSET_SQL).toContain("l.location_status IN ('located','probable')");
+    expect(PROCESSABLE_ASSET_SQL).toContain("l.match_status='verified'");
+    expect(PROCESSABLE_ASSET_SQL).toContain('l.building_id IS NOT NULL');
+    expect(PROCESSABLE_ASSET_SQL).toContain("'listingOwned',true");
     expect(OWNED_ASSET_SQL).toContain("l.facts->>'sourceEvidenceStatus' IS DISTINCT FROM 'not-a-listing'");
     expect(OWNED_ASSET_SQL).toContain("'listingOwned',true");
     const calls = [];

@@ -1,0 +1,15 @@
+[
+  {
+    "url": "https://maps.oxnard.org/arcgis/rest/services/BasemapLayers/MapServer/2"
+  },
+  {
+    "url": "https://www.oxnard.gov/city-clerks-office/public-records"
+  },
+  {
+    "url": "https://maps.venturacounty.gov/arcgis/rest/services/SDs/Basemap/MapServer/9"
+  },
+  {
+    "url": "https://bz1uwwpkuinzbk94.svcs5.arcgis.com/bz1uwWPKUInZBK94/arcgis/rest/services/CA_Statewide_Parcels_Public_view/FeatureServer/0",
+    "reason": "Held: the production adapter fails closed in Oxnard because the CAL FIRE statewide layer uses APN 'common' (FIPS 06111) as a placeholder on 1,977+ distinct polygons (1,809 distinct Shape__Area values in a direct non-geometry reread), so the fresh collected-ID reread fails with 'conflicting geometry for one parcel ID' (502) and exactIds/stableGeometry fail; the metric audit additionally failed wit…"
+  }
+]

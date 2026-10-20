@@ -49,6 +49,38 @@ function clickEvent(currentTarget, target = currentTarget) {
 }
 
 describe('proposal list navigation', () => {
+    it('qualifies local-copy lookups from server list clicks with the current publication API', async () => {
+        const apiBase = 'https://api.example.test';
+        const local = { proposalId: 'local-copy' };
+        const findLocal = vi.fn(() => local);
+        const row = {
+            getAttribute: name => ({ 'data-proposal-id': 'server-proposal', 'data-server-id': '42' })[name] || null,
+            classList: { add: vi.fn() },
+            querySelectorAll: () => []
+        };
+        const { context } = loadListUi({
+            modal: { querySelectorAll: () => [] },
+            context: {
+                proposalListState: { source: 'server' },
+                resolveBackendBaseUrl: () => apiBase,
+                findLocalCopyOfServerProposal: findLocal,
+                getProposalKey: () => local.proposalId
+            }
+        });
+
+        await context.handleProposalListItemClick(clickEvent(row));
+        expect(findLocal).toHaveBeenCalledWith({ serverProposalId: '42', publicationApiBase: apiBase });
+
+        findLocal.mockClear();
+        context.openListedProposal = vi.fn();
+        const details = {
+            getAttribute: name => name === 'data-proposal-details' ? 'server-proposal' : null,
+            closest: selector => selector === '.proposal-list-item' ? row : null
+        };
+        await context.handleProposalListDetailsClick(clickEvent(details));
+        expect(findLocal).toHaveBeenCalledWith({ serverProposalId: '42', publicationApiBase: apiBase });
+    });
+
     it('replaces the temporary loading shell when mounting the proposal list', () => {
         const spinner = { className: 'proposal-list-loading' };
         const modal = { className: '' };

@@ -1,0 +1,26 @@
+[
+  {
+    "url": "https://geoportal.ancpi.ro/inspireview/rest/services/CP/CP_View/MapServer/1"
+  },
+  {
+    "url": "https://cj.ancpi.ro/b-c-p-i-cluj-napoca/"
+  },
+  {
+    "url": "https://primariaclujnapoca.ro/informatii-publice/comunicate/eliberarea-automata-a-certificatelor-de-urbanism-de-informare-gis/"
+  },
+  {
+    "url": "https://geoportal.ancpi.ro/inspireview/rest/services/CP/CP_View/MapServer/1?f=json"
+  },
+  {
+    "url": "https://geoportal.ancpi.ro/inspireview/rest/services/CP/CP_View/MapServer/1/query"
+  },
+  {
+    "url": "https://geoportal.gov.ro/inspireview/rest/services/CP/CP_View/MapServer/exts/InspireView/domainInfo/layers"
+  },
+  {
+    "url": "https://gis.primariaclujnapoca.ro/Public/"
+  },
+  {
+    "url": "https://www.ancpi.ro/pnccf_docs2/Cluj/Tabel%20sectoare%20CJ%2030.12.2025.pdf"
+  }
+]

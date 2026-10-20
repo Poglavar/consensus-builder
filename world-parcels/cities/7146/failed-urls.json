@@ -1,0 +1,10 @@
+[
+  {
+    "url": "https://services9.arcgis.com/Gh9awoU677aKree0/arcgis/rest/services/Florida_Statewide_Cadastral/FeatureServer/0",
+    "reason": "Held at the geometry gate: every source check passed (194 requests, 1 qualifier run(s) on this city) but the independent metric audit failed for The Reserve of Old Tampa Bay (us-fl-dor-statewide-cadastral) with 3 material overlap pair(s) (> 0.01 m2; max 1.14 m2, 0.0687% of the smaller; total 1.68 m2) among 116 cached features (39~1728260A2000077000580U / 39~172826ZZZ000000376401U: 1.14 m2 = 0.068…"
+  },
+  {
+    "url": "https://services9.arcgis.com/Gh9awoU677aKree0/arcgis/rest/services/Florida_Statewide_Cadastral/FeatureServer/0/query?where=CO_NO+%3C%3E+0+AND+PARCEL_ID+%3C%3E+%27+%27&geometry=-82.5781970776082%2C28.011883885569%2C-82.5776970776082%2C28.012383885569&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+    "reason": "UND_ERR_CONNECT_TIMEOUT"
+  }
+]

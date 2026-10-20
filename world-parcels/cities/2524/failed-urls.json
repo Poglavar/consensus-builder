@@ -1,0 +1,16 @@
+[
+  {
+    "url": "https://geoportal.quito.gob.ec/arcgis/rest/services?f=json",
+    "reason": "403"
+  },
+  {
+    "url": "https://ide.sigtierras.gob.ec/geoserver/ows?service=WFS&request=GetCapabilities"
+  },
+  {
+    "url": "https://sitios.quito.gob.ec/, https://ide.quito.gob.ec/, https://datosabiertos.quito.gob.ec/"
+  },
+  {
+    "url": "https://geoportal.quito.gob.ec/ , /arcgis/rest/services?f=json , /arcgis/rest/services/Catastro",
+    "reason": "403"
+  }
+]

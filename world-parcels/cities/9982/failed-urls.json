@@ -1,0 +1,20 @@
+[
+  {
+    "url": "https://www.caoxian.gov.cn/",
+    "reason": "DNS resolution timeout after 8 seconds"
+  },
+  {
+    "url": "https://www.heze.gov.cn/",
+    "reason": "DNS resolution timeout after 8 seconds"
+  },
+  {
+    "url": "https://rerc.com.cn/",
+    "reason": "web fetch HTTP 502; shell DNS failure"
+  },
+  {
+    "url": "https://www.huaibei.gov.cn/gzdt/jndt/57377631.html"
+  },
+  {
+    "url": "https://www.beijing.gov.cn/gate/big5/www.gov.cn/zhengce/gfxwj/sj/202205/t20220523_2718876.html"
+  }
+]

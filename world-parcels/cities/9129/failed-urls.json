@@ -1,0 +1,26 @@
+[
+  {
+    "url": "https://gis.eregistrationukgov.in/gisportal/"
+  },
+  {
+    "url": "https://gis.eregistrationukgov.in/gisportal/CitizenPortal/config.json"
+  },
+  {
+    "url": "https://gis.eregistrationukgov.in/portal/sharing/rest/content/items/3cccaa6a8cb54d3990d471d30a252a88/data?f=pjson"
+  },
+  {
+    "url": "https://naksha.dolr.gov.in/NakshaPortal/"
+  },
+  {
+    "url": "https://gis.eregistrationukgov.in/gisportal/CitizenPortal/index.html"
+  },
+  {
+    "url": "https://gis.eregistrationukgov.in/server/rest/services/UKSTAMPS/SRO_Circle_Rate_Main_Basemap/MapServer?f=pjson"
+  },
+  {
+    "url": "https://gis.eregistrationukgov.in/server/rest/services/UKSTAMPS/SRO_Circle_Rate_Main_Basemap/MapServer/21?f=pjson"
+  },
+  {
+    "url": "https://gis.eregistrationukgov.in/server/rest/services/UKSTAMPS/SRO_Circle_Rate_Main_Basemap/MapServer/21/query"
+  }
+]

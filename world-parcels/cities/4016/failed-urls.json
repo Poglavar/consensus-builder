@@ -1,0 +1,6 @@
+[
+  {
+    "url": "https://ide.igvsb.gob.ve/wms?SERVICE=WMS&REQUEST=GetCapabilities&VERSION=1.1.1",
+    "reason": "timeout/unknown"
+  }
+]

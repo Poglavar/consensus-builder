@@ -1,0 +1,20 @@
+[
+  {
+    "url": "https://www.ondolandportal.org/map/",
+    "reason": "500"
+  },
+  {
+    "url": "https://www.ondolandportal.org/api/v1/public/search/?q=Igbokoda",
+    "reason": "404"
+  },
+  {
+    "url": "https://www.ondolandportal.org/api/v1/public/properties/search/?search_type=location&search_term=Igbokoda",
+    "reason": "404"
+  },
+  {
+    "url": "https://ondostate.gov.ng/wp-content/uploads/2022/12/Survey-Plan-Processess.pdf"
+  },
+  {
+    "url": "https://osgof.gov.ng/cadastral-legal-surveys/"
+  }
+]

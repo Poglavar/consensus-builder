@@ -1,0 +1,15 @@
+[
+  {
+    "url": "https://data.changchun.gov.cn/"
+  },
+  {
+    "url": "https://zrzyj.changchun.gov.cn/"
+  },
+  {
+    "url": "https://www.tianditu.gov.cn/",
+    "reason": "418"
+  },
+  {
+    "url": "https://www.mnr.gov.cn/ and https://data.gov.cn/"
+  }
+]

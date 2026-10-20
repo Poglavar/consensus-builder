@@ -1,0 +1,9 @@
+[
+  {
+    "url": "https://ds.qassim.gov.sa/opendata/api/BranchDetailsP/getdata",
+    "reason": "TLS certificate verification failure"
+  },
+  {
+    "url": "https://rega.gov.sa/rega-services/platforms/geospatial-real-estate-portal/"
+  }
+]

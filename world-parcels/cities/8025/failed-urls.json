@@ -1,0 +1,8 @@
+[
+  {
+    "url": "https://www.waynecounty.com/gisserver/rest/services/ParcelViewer/prcls_fullAdd_parsed_FINAL/FeatureServer/0?f=pjson"
+  },
+  {
+    "url": "https://www.waynecounty.com/gisserver/rest/services/ParcelViewer/prcls_fullAdd_parsed_FINAL/FeatureServer/0/query"
+  }
+]

@@ -1,0 +1,6 @@
+[
+  {
+    "url": "https://gisdata.in.gov/server/rest/services/Hosted/Parcel_Boundaries_of_Indiana_Current/FeatureServer/0",
+    "reason": "Held: the production adapter refuses the Indiana statewide layer around Lafayette: in qualifier cell 0 (bbox -86.894,40.413,-86.893,40.414) 17 rows carry only 13 distinct state_parcel_id values (790729254003000004 x2, 790729254006000004 x2, 790729254007000004 x3, each with distinct geometries), so sampling/completeness fail with 'conflicting geometry for one parcel ID' (502); explicitAbsence also…"
+  }
+]

@@ -1,4 +1,4 @@
-// Content identity of named plans (plans.md): what each member proposal builds is hashed when the plan
+// Content identity of named plans (plans.md): each member's decision kind, site and design are hashed when the plan
 // is named, so a member repaired in place later is detectable instead of silently changing a plan
 // people bet on. Pure: rows in, hex digests out.
 import { createHash } from 'node:crypto';
@@ -65,20 +65,28 @@ export function stableStringify(value) {
 }
 
 /**
- * What a proposal builds — the part of a row a plan commits to. Descriptions, thumbnails, lifecycle
+ * What a proposal decides and builds — the part of a row a plan commits to. Descriptions, thumbnails, lifecycle
  * state and chain pointers are left out on purpose: they may change without changing the plan.
- * The stored `site` is left out too: it is derived by PostGIS from the geometry below, and two
- * PostGIS versions return the same union with different vertex order (measured 2026-10-10, prod
- * PG16 vs local PG17), which would make one plan hash differently in two databases.
- * @param row { type, goal, cadastre_parcel_ids, road_proposal, building_proposal,
+ * The authored `proposal_data.site` is committed, not the PostGIS projection in `row.site`:
+ * PostGIS versions can return the same union with different vertex order (measured 2026-10-10,
+ * PG16 vs PG17). The authored record is also the serializer's source of site geometry.
+ * @param row { proposal_data, type, goal, cadastre_parcel_ids, road_proposal, building_proposal,
  *              structure_proposal, reparcellization, geometry }
  */
 export function memberContent(row) {
-    if (reparcellizationDeal.isReadjustment(row)) {
-        return reparcellizationDeal.fingerprint(readjustmentProposal(row));
-    }
     const proposalData = row.proposal_data && typeof row.proposal_data === 'object' ? row.proposal_data : {};
+    const scope = {
+        kind: proposalData.kind ?? null,
+        site: proposalData.site ?? null
+    };
+    if (Array.isArray(proposalData.sourceReferences) && proposalData.sourceReferences.length) {
+        scope.sourceReferences = proposalData.sourceReferences;
+    }
+    if (reparcellizationDeal.isReadjustment(row)) {
+        return { ...scope, readjustmentDeal: reparcellizationDeal.fingerprint(readjustmentProposal(row)) };
+    }
     const content = {
+        ...scope,
         type: row.type ?? null,
         goal: row.goal ?? null,
         parcels: Array.isArray(row.cadastre_parcel_ids) ? [...row.cadastre_parcel_ids].map(String).sort() : [],
@@ -103,10 +111,7 @@ export function memberContent(row) {
 }
 
 export function memberHash(row) {
-    const content = memberContent(row);
-    // LR content is already committed by the shared versioned canonical fingerprint. Keep this
-    // branch out of the legacy projection so old non-LR member hashes remain byte-identical.
-    return typeof content === 'string' ? content : sha256(stableStringify(content));
+    return sha256(stableStringify(memberContent(row)));
 }
 
 const choose = (value, fallback) => value === undefined || value === null ? fallback : value;
@@ -121,7 +126,7 @@ function readjustmentProposal(row) {
     const numericOffer = choose(row.offer, data.offer);
     return {
         ...data,
-        goal: choose(row.goal, choose(data.goal, row.type)),
+        goal: choose(row.goal, data.goal),
         reparcellization: choose(row.reparcellization, data.reparcellization),
         cadastreParcelIds: choose(row.cadastre_parcel_ids, data.cadastreParcelIds),
         offer: numericOffer === undefined || numericOffer === null ? numericOffer : Number(numericOffer),
@@ -156,7 +161,7 @@ export function nextVersionSlug(slug, taken) {
 // Members whose current content no longer matches what the plan was named with.
 export function changedMembers(memberHashes, currentRows) {
     const byId = new Map(currentRows.map(row => [String(row.id), row]));
-    return Object.entries(memberHashes || {})
+    return Object.entries(memberHashes)
         .filter(([id, hash]) => {
             const row = byId.get(String(id));
             if (!row) return true;

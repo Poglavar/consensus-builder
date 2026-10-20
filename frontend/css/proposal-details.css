@@ -266,7 +266,7 @@
     background: var(--cb-success-soft);
 }
 
-.proposal-parcels-list .proposal-parcel-row.is-removed {
+.proposal-parcels-list .proposal-parcel-row.is-replaced {
     opacity: 0.7;
 }
 
@@ -314,7 +314,8 @@
     font: var(--fa-font-solid);
 }
 
-.parcel-status-removed {
+.parcel-status-replaced,
+.parcel-status-unloaded {
     color: var(--cb-text-faint);
     font-style: italic;
 }

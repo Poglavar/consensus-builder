@@ -155,6 +155,11 @@
         if (roadFlag) {
             return { ...roadStyle };
         }
+        if (properties.estimated === true) {
+            const color = global.getComputedStyle(global.document.documentElement)
+                .getPropertyValue('--cb-parcel-estimate-boundary').trim();
+            return { color, fillColor: color, fillOpacity: 0.12, weight: 2, opacity: 1, dashArray: '' };
+        }
 
         const isAdParcel = Boolean(global.showAdParcels && idStr && adParcelIdSet.has(idStr));
         if (isAdParcel) {
@@ -196,7 +201,7 @@
         // Check if this is a track parcel (via layer or by searching parcelLayer)
         const isTrackParcelFlag = properties.isTrack === true || Boolean(layer && layer._trackStyle);
 
-        if (roadFlag || isAdParcel || isTrackParcelFlag || parcelHasAppliedSpatialProposal(idStr)) {
+        if (properties.estimated === true || roadFlag || isAdParcel || isTrackParcelFlag || parcelHasAppliedSpatialProposal(idStr)) {
             return null;
         }
 

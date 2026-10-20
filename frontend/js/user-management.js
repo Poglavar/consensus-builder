@@ -2176,10 +2176,11 @@ function setUserTotalWealthDisplay(balanceEth) {
         return;
     }
     const portfolioAttr = totalNode.getAttribute('data-portfolio-value');
-    const hasPortfolio = portfolioAttr !== null && portfolioAttr !== '';
+    const hasPortfolio = portfolioAttr !== null && portfolioAttr.trim() !== '';
     const portfolioValue = hasPortfolio ? Number(portfolioAttr) : NaN;
-    const total = (Number.isFinite(portfolioValue) ? portfolioValue : 0) + balanceEth;
-    totalNode.textContent = CbFormat.formatMoney(total, 'ETH');
+    const total = typeof calculateModeledTotalEth === 'function'
+        ? calculateModeledTotalEth(balanceEth, portfolioValue) : null;
+    totalNode.textContent = Number.isFinite(total) ? CbFormat.formatMoney(total, 'ETH') : '-';
 }
 
 async function readConnectedWalletEthBalance(walletState) {

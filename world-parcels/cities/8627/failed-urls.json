@@ -1,0 +1,18 @@
+[
+  {
+    "url": "https://land.jg.gov.ng/api",
+    "reason": "404"
+  },
+  {
+    "url": "https://land.jg.gov.ng/map",
+    "reason": "404"
+  },
+  {
+    "url": "https://land.jg.gov.ng/maps",
+    "reason": "404"
+  },
+  {
+    "url": "https://land.jg.gov.ng/api/parcels",
+    "reason": "404"
+  }
+]

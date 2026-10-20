@@ -1,0 +1,6 @@
+[
+  {
+    "url": "https://mapy.geoportal.gov.pl/wss/ext/PowiatoweBazyEwidencjiGruntow/0461?SERVICE=WFS&REQUEST=GetCapabilities",
+    "reason": "400"
+  }
+]

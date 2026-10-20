@@ -2,7 +2,6 @@
 // footprint resolver are tested directly; the endpoint + POST /proposals recompute are tested with a
 // mock pool. The PostGIS query itself (against the real parcel layer) needs verification on prod data.
 import { describe, it, expect } from 'vitest';
-import request from 'supertest';
 import express from 'express';
 import { createMockPool } from './helpers/mock-pool.js';
 import {
@@ -29,16 +28,16 @@ describe('normalizeCorridorOwnershipType', () => {
         expect(normalizeCorridorOwnershipType('institution')).toBe('institution');
         expect(normalizeCorridorOwnershipType('company')).toBe('company');
         expect(normalizeCorridorOwnershipType('mixed')).toBe('mixed');
-        expect(normalizeCorridorOwnershipType(null)).toBe('individual');
+        expect(normalizeCorridorOwnershipType(null)).toBeNull();
     });
 });
 
 describe('computeCorridorAcquisitionStats', () => {
     it('sums market price and difficulty with the ownership coefficients', () => {
         const rows = [
-            { parcelId: 'A', fullAreaM2: 100, takenAreaM2: 40, ownershipDetails: { type: 'private individual' } }, // coeff 2
-            { parcelId: 'B', fullAreaM2: 200, takenAreaM2: 50, ownershipDetails: { type: 'company' } },            // coeff 1
-            { parcelId: 'C', fullAreaM2: 300, takenAreaM2: 60, ownershipDetails: { type: 'government' } }          // coeff 0
+            { parcelId: 'A', fullAreaM2: 100, takenAreaM2: 40, ownershipDetails: { type: 'private individual', owners: [{ name: 'A1', ownership: '50%' }, { name: 'A2', ownership: '50%' }] } }, // coeff 2, two source owners
+            { parcelId: 'B', fullAreaM2: 200, takenAreaM2: 50, ownershipDetails: { type: 'company', owners: [{ name: 'B1', ownership: '100%' }] } }, // coeff 1
+            { parcelId: 'C', fullAreaM2: 300, takenAreaM2: 60, ownershipDetails: { type: 'government', owners: [{ name: 'C1', ownership: '100%' }] } } // coeff 0
         ];
         const stats = computeCorridorAcquisitionStats(rows, { classify, pricePerM2: 100 });
 
@@ -47,15 +46,19 @@ describe('computeCorridorAcquisitionStats', () => {
         // A: 100*100*2=20000, B: 200*100*1=20000, C: 300*100*0=0 → 40000
         expect(stats.totalAcquiringDifficulty).toBe(40000);
         expect(stats.ownershipCounts).toEqual({ individual: 1, company: 1, government: 1, institution: 0, mixed: 0 });
-        expect(stats.individualOwners).toBe(1);
+        expect(stats.ownerEntryCount).toBe(4);
+        expect(stats.knownOwnerEntryCount).toBe(4);
+        expect(stats.missingOwnerEvidenceParcelCount).toBe(0);
         expect(stats.areaTakenM2).toBe(150);
+        expect(stats.currency).toBe('EUR');
+        expect(stats.priceBasis).toEqual({ kind: 'area-model', ratePerM2: 100, currency: 'EUR' });
         expect(stats.source).toBe('server');
     });
 
     it('government and institution parcels add price but zero difficulty', () => {
         const rows = [
-            { parcelId: 'G', fullAreaM2: 500, takenAreaM2: 500, ownershipDetails: { type: 'government' } },
-            { parcelId: 'I', fullAreaM2: 500, takenAreaM2: 500, ownershipDetails: { type: 'institution' } }
+            { parcelId: 'G', fullAreaM2: 500, takenAreaM2: 500, ownershipDetails: { type: 'government', owners: [{ name: 'Agency', ownership: '100%' }] } },
+            { parcelId: 'I', fullAreaM2: 500, takenAreaM2: 500, ownershipDetails: { type: 'institution', owners: [{ name: 'Institution', ownership: '100%' }] } }
         ];
         const stats = computeCorridorAcquisitionStats(rows, { classify, pricePerM2: 100 });
         expect(stats.totalMarketPrice).toBe(100000);
@@ -67,6 +70,20 @@ describe('computeCorridorAcquisitionStats', () => {
         const stats = computeCorridorAcquisitionStats(
             [{ parcelId: 'X', fullAreaM2: 0, ownershipDetails: {} }], { classify });
         expect(stats.parcelIds).toEqual([]);
+    });
+
+    it('does not invent missing ownership evidence or a difficulty score', () => {
+        const stats = computeCorridorAcquisitionStats([
+            { parcelId: 'unknown', fullAreaM2: 100, takenAreaM2: 25, ownershipDetails: null }
+        ], { classify, pricePerM2: 100 });
+        expect(stats.totalMarketPrice).toBe(10000);
+        expect(stats.totalAcquiringDifficulty).toBeNull();
+        expect(stats.ownerEntryCount).toBeNull();
+        expect(stats.knownOwnerEntryCount).toBe(0);
+        expect(stats.missingOwnerEvidenceParcelCount).toBe(1);
+        expect(stats.unknownOwnershipParcelCount).toBe(1);
+        expect(stats.currency).toBe('EUR');
+        expect(stats.priceBasis).toEqual({ kind: 'area-model', ratePerM2: 100, currency: 'EUR' });
     });
 });
 
@@ -92,9 +109,18 @@ describe('resolveRoadFootprintGeometry', () => {
 describe('POST /road-corridor/stats', () => {
     function makeApp(pool) {
         const app = express();
-        app.use(express.json());
         setupRoadCorridorRoute(app, pool);
         return app;
+    }
+
+    async function postStats(app, body) {
+        const layer = app._router.stack.find(item => item.route?.path === '/road-corridor/stats');
+        const handler = layer.route.stack.find(item => item.method === 'post').handle;
+        let status = 200;
+        let responseBody;
+        const response = { status(code) { status = code; return this; }, json(value) { responseBody = value; return this; } };
+        await handler({ body }, response);
+        return { status, body: responseBody };
     }
 
     it('runs the query and returns aggregated stats for a footprint', async () => {
@@ -105,26 +131,30 @@ describe('POST /road-corridor/stats', () => {
             ]
         });
         const app = makeApp(pool);
-        const res = await request(app).post('/road-corridor/stats').send({ geometry: SQUARE });
+        const res = await postStats(app, { geometry: SQUARE });
         expect(res.status).toBe(200);
         expect(res.body.source).toBe('server');
         expect(res.body.parcelIds).toEqual(['HR-1']);
-        // details null → classifier returns null → 'individual' (coeff 2): price 10000, difficulty 20000
+        // Missing ownership leaves the difficulty score unknown while the area-price estimate remains.
         expect(res.body.totalMarketPrice).toBe(10000);
+        expect(res.body.totalAcquiringDifficulty).toBeNull();
+        expect(res.body.ownerEntryCount).toBeNull();
+        expect(res.body.currency).toBe('EUR');
+        expect(res.body.priceBasis.kind).toBe('area-model');
         // The query buffers the footprint into 3765 and intersects the parcel layer.
         expect(pool.getCalls()[0].sql).toMatch(/ST_Intersection/);
         expect(pool.getCalls()[0].sql).toMatch(/FROM parcel p/);
     });
 
     it('400s without geometry or points+width', async () => {
-        const res = await request(makeApp(createMockPool())).post('/road-corridor/stats').send({});
+        const res = await postStats(makeApp(createMockPool()), {});
         expect(res.status).toBe(400);
     });
 
     it('500s when the query fails', async () => {
         const pool = createMockPool();
         pool.query = async () => { throw new Error('boom'); };
-        const res = await request(makeApp(pool)).post('/road-corridor/stats').send({ geometry: SQUARE });
+        const res = await postStats(makeApp(pool), { geometry: SQUARE });
         expect(res.status).toBe(500);
     });
 });

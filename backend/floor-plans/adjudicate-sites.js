@@ -39,8 +39,8 @@ async function currentLocation(db, task) {
     return row && row.current_sha256 === task.source_sha256 && row.location?.sourceSha256 === task.source_sha256 ? row.location : null;
 }
 
-export async function adjudicateSites(db, options = {}) {
-    return runBatchStage(db, {
+export function siteStageAdapter() {
+    return {
         stage: 'buildings', processor: SITE_PROCESSOR, schema: SITE_SCHEMA,
         counters: { located: 0, probable: 0, ambiguous: 0, unresolved: 0, stale: 0 },
         async prepare(db, task, llm, limits) {
@@ -60,5 +60,9 @@ export async function adjudicateSites(db, options = {}) {
                 [task.listing_url, JSON.stringify(next), next.status]);
             return { [next.status]: 1 };
         },
-    }, options);
+    };
+}
+
+export async function adjudicateSites(db, options = {}) {
+    return runBatchStage(db, siteStageAdapter(), options);
 }

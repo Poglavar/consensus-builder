@@ -1,0 +1,18 @@
+[
+  {
+    "url": "https://yamunanagar.nic.in/revenue/"
+  },
+  {
+    "url": "https://yamunanagar.nic.in/e-governance/"
+  },
+  {
+    "url": "https://haryanait.gov.in/web-halris/"
+  },
+  {
+    "url": "https://www.dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/71"
+  },
+  {
+    "url": "https://hsacggm.in/map/rest/services/EODB/EODB_v1/MapServer/19",
+    "reason": "Held: metric (72 parcels, 103 requests) {\"metric\":{\"errorType\":\"Error\",\"code\":\"metric-report-failed\"}}"
+  }
+]

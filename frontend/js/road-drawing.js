@@ -321,14 +321,14 @@ let lockedStats = {
 };
 
 // Pieces formed on open ground that the corridor crosses (piece id → m²): subdivision plots, parks,
-// building plots with no cadastral parcel. They have no owner and nothing to acquire, so they are
+// building plots with no cadastral parcel. Their ownership is unknown; in this drawing model they are
 // never counted as parcels; the panel shows them as open ground. `locked` follows the committed
 // corridor, `preview` the segment under the cursor.
 const roadOpenGroundCrossed = { locked: new Map(), preview: new Map() };
 
 // Helper to get locked individual owners count
 function getLockedIndividualOwnersCount() {
-    return lockedStats.individualOwners || 0;
+    return roadOwnershipSummary(roadAffectedParcels).totalOwnerEntryCount;
 }
 
 // Cached committed road geometry metrics - updated once per segment commit, not per mousemove
@@ -613,16 +613,13 @@ function makeFreshRoadSnapshot(sourceProposal, definition, options = {}) {
         'proposalId', 'proposal_id', 'id', 'hash', 'serverProposalId',
         'chainProposalId', 'tokenId', 'onchain', 'nft', 'isMinted',
         'createdAt', 'updatedAt', 'proposalDraftId', 'lens',
-        'copiedFromProposalId', 'supersedesProposalIds'
+        'proposalOrigin', 'publicationApiBase', 'supersedesProposalIds'
     ].forEach(key => delete clone[key]);
 
-    const sourceId = options.sourceProposalId == null ? null : String(options.sourceProposalId);
-    if (sourceId) {
-        clone.sourceProposalId = sourceId;
-        clone.replacementOfProposalId = sourceId;
-    } else {
-        delete clone.sourceProposalId;
-        delete clone.replacementOfProposalId;
+    if (options.sourceLocalProposalId) {
+        clone.proposalOrigin = window.ProposalOrigin.fromRecord(sourceProposal, {
+            relation: 'revision', localProposalId: String(options.sourceLocalProposalId), backendBase: getBackendBase()
+        });
     }
 
     const cleanDefinition = cloneRoadValue(definition);
@@ -921,7 +918,7 @@ async function runLocalCorridorGeometryUpdate(proposalIdOrHash, mutateDefinition
     if (window.ProposalLineage?.isPublished?.(sourceProposal)) {
         const forkIds = [];
         for (const [index, definition] of componentDefinitions.entries()) {
-            const fork = makeFreshRoadSnapshot(sourceProposal, definition, { sourceProposalId: sourceKey });
+            const fork = makeFreshRoadSnapshot(sourceProposal, definition, { sourceLocalProposalId: sourceKey });
             if (index > 0) {
                 fork.title = `${fork.title || fork.name || 'Road'} (${index + 1})`;
                 if (fork.name) fork.name = fork.title;
@@ -967,7 +964,7 @@ async function runLocalCorridorGeometryUpdate(proposalIdOrHash, mutateDefinition
     // is the one thing here that really does become a new record.
     componentDefinitions.slice(1).forEach((definition, index) => {
         const stretch = makeFreshRoadSnapshot(sourceProposal, definition, {
-            sourceProposalId: sourceKey
+            sourceLocalProposalId: sourceKey
         });
         const baseTitle = stretch.title || stretch.name || 'Road';
         stretch.title = `${baseTitle} (${index + 2})`;
@@ -1523,7 +1520,7 @@ function saveCurrentCorridorDrawingDraft(kind = corridorDrawingKind()) {
         seed,
         copySource,
         parcelIds: selectedParcelIds,
-        sourceProposalId: copySource && copySource.proposalId ? String(copySource.proposalId) : null
+        sourceLocalProposalId: copySource && copySource.proposalId ? String(copySource.proposalId) : null
     });
     // A fresh drawing creates its draft at finish time — adopt it into the design session so
     // instantCreate consumes exactly this draft.
@@ -1941,17 +1938,6 @@ function showRoadAlert(key, fallback, params = {}) {
     return message;
 }
 
-function normalizeParcelOwnershipType(type) {
-    const value = (type || '').toString().toLowerCase();
-    if (value === 'mixed') return 'mixed';
-    if (value.includes('gov') || value.includes('state') || value.includes('city') || value.includes('municip')) return 'government';
-    if (value.includes('institution') || value.includes('university') || value.includes('school') || value.includes('hospital') || value.includes('church')) return 'institution';
-    if (value.includes('company') || value.includes('business') || value.includes('corp') || value.includes('llc') || value.includes('gmbh') || value.includes('d.o.o') || value.includes('d.o.o.') || value.includes('d.d') || value.includes('d.d.') || value.includes('inc') || value.includes('sa') || value.includes('spa')) {
-        return 'company';
-    }
-    return 'individual';
-}
-
 function setRoadOwnershipCounts(counts) {
     Object.entries(ROAD_OWNERSHIP_TYPE_IDS).forEach(([type, elementId]) => {
         const el = document.getElementById(elementId);
@@ -1965,313 +1951,78 @@ function setRoadOwnershipCounts(counts) {
     });
 }
 
+// Ownership evidence and price estimates retain separate counts, currencies and model bases.
+function roadOwnershipSummary(parcels) {
+    return window.RoadOwnershipModel.summarize((parcels || []).map(getRoadDrawingParcelProperties),
+        typeof getOwnershipType === 'function' ? getOwnershipType : undefined);
+}
+
+function roadPriceEstimate(parcel) {
+    return window.ParcelPriceModel.buildEstimate(getRoadDrawingParcelProperties(parcel), Number(parcel?.area),
+        { areaPricePerSqm: 100, currency: 'EUR' });
+}
+
 function getMarketPrice(parcelId, currency) {
-    // For now, ignore currency parameter
-    // Find the parcel in roadAffectedParcels or roadPreviewAffectedParcels
-    const targetId = getParcelId(parcelId);
-    if (!targetId) return 0;
+    const parcel = [...roadAffectedParcels, ...roadPreviewAffectedParcels]
+        .find(entry => getParcelIdFromAny(entry) === getParcelId(parcelId));
+    const estimate = parcel ? roadPriceEstimate(parcel) : null;
+    return estimate && (!currency || estimate.currency === currency) ? estimate.amount : null;
+}
 
-    let parcel = roadAffectedParcels.find(p => getParcelIdFromAny(p) === targetId);
-    if (!parcel) {
-        parcel = roadPreviewAffectedParcels.find(p => getParcelIdFromAny(p) === targetId);
-    }
-
-    // Check for precalculated estimatedMarketPrice first
-    if (parcel) {
-        const estimatedPrice = parcel.estimatedMarketPrice ||
-            getRoadDrawingParcelProperties(parcel).estimatedMarketPrice;
-        if (Number.isFinite(estimatedPrice) && estimatedPrice > 0) {
-            return estimatedPrice;
-        }
-    }
-
-    const liveFeature = getRoadDrawingLiveFeature(targetId);
-    if (liveFeature) {
-        const estimatedPrice = liveFeature.properties?.estimatedMarketPrice;
-        if (Number.isFinite(estimatedPrice) && estimatedPrice > 0) return estimatedPrice;
-        const area = Number(liveFeature.properties?.calculatedArea) || 0;
-        return area * 100;
-    }
-
-    // If found in arrays but no estimatedMarketPrice, use stored area
-    if (parcel && Number.isFinite(parcel.area)) {
-        return parcel.area * 100;
-    }
-
-    return 0;
+function roadAcquisitionModel(parcels) {
+    const list = Array.isArray(parcels) ? parcels : [];
+    const ownership = roadOwnershipSummary(list);
+    const estimates = list.map(roadPriceEstimate);
+    const total = window.ParcelPriceModel.aggregate(estimates, list.length);
+    const coefficients = { government: 0, institution: 0, company: 1, individual: 2, mixed: 2 };
+    const score = total.amount !== null && !ownership.unknownParcelCount
+        ? list.reduce((sum, parcel, index) => sum + estimates[index].amount * coefficients[getOwnershipTypeFromParcel(parcel)], 0)
+        : null;
+    return {
+        ownerEntryCount: ownership.totalOwnerEntryCount,
+        knownOwnerEntryCount: ownership.knownOwnerEntryCount,
+        missingOwnerEvidenceParcelCount: ownership.missingOwnerEvidenceParcelCount,
+        unknownOwnershipParcelCount: ownership.unknownParcelCount,
+        ownershipCounts: ownership.categoryCounts,
+        totalMarketPrice: total.amount,
+        totalAcquiringDifficulty: score,
+        currency: total.currency,
+        priceBasis: { kind: total.basis, fallbackRatePerM2: 100, fallbackCurrency: 'EUR' },
+        difficultyBasis: 'category-weighted value model',
+        source: 'browser-model'
+    };
 }
 
 function updateRoadMarketPrice(parcels) {
-    const parcelsList = Array.isArray(parcels) ? parcels : [];
     const marketEl = document.getElementById('road-market-price');
     if (!marketEl) return;
-
-    if (parcelsList.length === 0) {
-        marketEl.textContent = '—';
-        return;
-    }
-
-    const totalPrice = parcelsList.reduce((sum, parcel) => {
-        // Check for precalculated estimatedMarketPrice first
-        const estimatedPrice = parcel?.estimatedMarketPrice ||
-            getRoadDrawingParcelProperties(parcel).estimatedMarketPrice;
-        if (Number.isFinite(estimatedPrice) && estimatedPrice > 0) {
-            return sum + estimatedPrice;
-        }
-
-        // Fallback: get parcel ID and use getMarketPrice
-        const parcelId = getParcelIdFromAny(parcel);
-        if (!parcelId) return sum;
-        const price = getMarketPrice(parcelId);
-        return sum + (Number.isFinite(price) ? price : 0);
-    }, 0);
-
-    marketEl.textContent = formatCurrency(totalPrice);
+    const stats = roadAcquisitionModel(parcels);
+    marketEl.textContent = stats.totalMarketPrice !== null && stats.currency
+        ? CbFormat.formatMoney(stats.totalMarketPrice, stats.currency, { maxFractionDigits: 0 }) : '—';
 }
 
 async function updateRoadAcquiringDifficulty(parcels) {
-    const parcelsList = Array.isArray(parcels) ? parcels : [];
     const difficultyEl = document.getElementById('road-acquire-difficulty');
     if (!difficultyEl) return;
-
-    if (parcelsList.length === 0) {
-        difficultyEl.textContent = '—';
-        return;
-    }
-
-    // Ownership type coefficients
-    const OWNERSHIP_COEFFICIENTS = {
-        government: 0,
-        institution: 0,
-        company: 1,
-        individual: 2,
-        mixed: 2 // Mixed ownership defaults to individual difficulty (highest)
-    };
-
-    const hasOwnershipFn = typeof getOwnershipType === 'function';
-
-    let totalDifficulty = 0;
-
-    // Process parcels
-    const parcelDifficulties = parcelsList.map((parcel) => {
-        const parcelId = getParcelIdFromAny(parcel);
-        if (!parcelId) return 0;
-
-        // Get market price - check for precalculated estimatedMarketPrice first
-        let marketPrice = 0;
-        const estimatedPrice = parcel?.estimatedMarketPrice ||
-            getRoadDrawingParcelProperties(parcel).estimatedMarketPrice;
-        if (Number.isFinite(estimatedPrice) && estimatedPrice > 0) {
-            marketPrice = estimatedPrice;
-        } else if (parcel && Number.isFinite(parcel.area)) {
-            marketPrice = parcel.area * 100;
-        } else {
-            marketPrice = getMarketPrice(parcelId);
-        }
-        if (!Number.isFinite(marketPrice) || marketPrice <= 0) return 0;
-
-        // Get ownership type from parcel feature properties (from GET /parcels/)
-        let ownershipType = 'individual'; // default
-        const featureProps = getRoadDrawingParcelProperties(parcel);
-        const ownershipList = featureProps.ownershipList || [];
-        const ownershipTypeFromProps = featureProps.ownershipType;
-
-        if (ownershipTypeFromProps) {
-            ownershipType = normalizeParcelOwnershipType(ownershipTypeFromProps);
-        } else if (Array.isArray(ownershipList) && ownershipList.length > 0 && hasOwnershipFn) {
-            // Determine type from ownershipList if ownershipType not available
-            const ownerTypes = ownershipList.map(owner => {
-                const ownerLabel = owner?.ownerLabel || owner?.name || owner || '';
-                return normalizeParcelOwnershipType(getOwnershipType(ownerLabel));
-            }).filter(Boolean);
-            const uniqueTypes = Array.from(new Set(ownerTypes.length ? ownerTypes : ['individual']));
-            ownershipType = uniqueTypes.length === 1 ? uniqueTypes[0] : 'mixed';
-        } else {
-            // Check cache as fallback
-            const cachedType = roadOwnershipTypeCache.get(parcelId);
-            if (cachedType) {
-                ownershipType = normalizeParcelOwnershipType(cachedType);
-            }
-        }
-
-        // Calculate difficulty: market_price * coefficient
-        const coefficient = OWNERSHIP_COEFFICIENTS[ownershipType] || OWNERSHIP_COEFFICIENTS.individual;
-        return marketPrice * coefficient;
-    });
-
-    totalDifficulty = parcelDifficulties.reduce((sum, diff) => sum + diff, 0);
-
-    difficultyEl.textContent = totalDifficulty > 0 ? CbFormat.formatNumber(totalDifficulty, { maxFractionDigits: 0 }) : '—';
+    const stats = roadAcquisitionModel(parcels);
+    difficultyEl.textContent = stats.totalAcquiringDifficulty !== null
+        ? `${CbFormat.formatNumber(stats.totalAcquiringDifficulty, { maxFractionDigits: 0 })} (${stats.currency} basis)` : '—';
 }
 
-// Collect ownership and acquisition stats from the road info panel
+// Persist the computed data, never numbers parsed back out of translated display text.
 function collectOwnershipAndAcquisitionStats() {
-    const stats = {
-        individualOwners: null,
-        ownershipCounts: {
-            individual: null,
-            company: null,
-            government: null,
-            institution: null,
-            mixed: null
-        },
-        totalMarketPrice: null,
-        totalAcquiringDifficulty: null
-    };
-
-    // Get individual owners count
-    const individualOwnersEl = document.getElementById('road-individual-owners');
-    if (individualOwnersEl && individualOwnersEl.textContent !== '—') {
-        const value = parseInt(individualOwnersEl.textContent, 10);
-        if (Number.isFinite(value)) {
-            stats.individualOwners = value;
-        }
-    }
-
-    // Get ownership type counts
-    Object.entries(ROAD_OWNERSHIP_TYPE_IDS).forEach(([type, elementId]) => {
-        const el = document.getElementById(elementId);
-        if (el && el.textContent !== '—') {
-            const value = parseInt(el.textContent, 10);
-            if (Number.isFinite(value)) {
-                stats.ownershipCounts[type] = value;
-            }
-        }
-    });
-
-    // Get total market price
-    const marketPriceEl = document.getElementById('road-market-price');
-    if (marketPriceEl && marketPriceEl.textContent !== '—') {
-        // Remove all non-digit characters (handles Croatian locale: spaces, dots, commas as thousand separators)
-        // Since these are rounded integers from Math.round(), we don't need to preserve decimals
-        const cleaned = marketPriceEl.textContent.replace(/\D/g, '');
-        if (cleaned.length > 0) {
-            const value = parseInt(cleaned, 10);
-            if (Number.isFinite(value) && value >= 0) {
-                stats.totalMarketPrice = value;
-            }
-        }
-    }
-
-    // Get total acquiring difficulty
-    const difficultyEl = document.getElementById('road-acquire-difficulty');
-    if (difficultyEl && difficultyEl.textContent !== '—') {
-        // Remove all non-digit characters (handles Croatian locale: spaces, dots, commas as thousand separators)
-        const cleaned = difficultyEl.textContent.replace(/\D/g, '');
-        if (cleaned.length > 0) {
-            const value = parseInt(cleaned, 10);
-            if (Number.isFinite(value) && value >= 0) {
-                stats.totalAcquiringDifficulty = value;
-            }
-        }
-    }
-
-    // Return null if no stats were collected (all null)
-    const hasAnyStats = stats.individualOwners !== null ||
-        Object.values(stats.ownershipCounts).some(v => v !== null) ||
-        stats.totalMarketPrice !== null ||
-        stats.totalAcquiringDifficulty !== null;
-
-    return hasAnyStats ? stats : null;
+    return roadAffectedParcels.length ? roadAcquisitionModel(roadAffectedParcels) : null;
 }
 
 async function updateRoadOwnershipCounts(parcels) {
-    const parcelsList = Array.isArray(parcels) ? parcels : [];
-    const requestId = ++roadOwnershipStatsRequestId;
-
-    if (parcelsList.length === 0) {
-        setRoadOwnershipCounts(null);
-        const ownerCountEl = document.getElementById('road-individual-owners');
-        if (ownerCountEl) ownerCountEl.textContent = '—';
-        return;
-    }
-
-    const hasOwnershipFn = typeof getOwnershipType === 'function';
-    const typeCounts = { individual: 0, company: 0, government: 0, institution: 0, mixed: 0 };
-    let totalIndividualOwners = 0;
-
-    const parcelData = parcelsList.map((parcel) => {
-        const parcelId = getParcelIdFromAny(parcel);
-        if (!parcelId) return { type: null, individualOwnerCount: 0 };
-
-        // Get ownership data from parcel feature properties (from GET /parcels/)
-        const featureProps = getRoadDrawingParcelProperties(parcel);
-        const ownershipList = featureProps.ownershipList || [];
-        const ownershipType = featureProps.ownershipType;
-
-        let parcelType = null;
-        let individualOwnerCount = 0;
-
-        // Use ownershipType from feature properties if available
-        if (ownershipType) {
-            parcelType = normalizeParcelOwnershipType(ownershipType);
-        }
-
-        // Count individual owners from ownershipList
-        if (Array.isArray(ownershipList) && ownershipList.length > 0) {
-            if (hasOwnershipFn) {
-                // Use getOwnershipType function to determine owner types
-                ownershipList.forEach(owner => {
-                    const ownerLabel = owner?.ownerLabel || owner?.name || owner || '';
-                    const ownerType = normalizeParcelOwnershipType(getOwnershipType(ownerLabel));
-                    if (ownerType === 'individual') {
-                        individualOwnerCount++;
-                    }
-                });
-            } else {
-                // Fallback: if no getOwnershipType function, count all as individuals
-                individualOwnerCount = ownershipList.length;
-            }
-
-            // If we don't have ownershipType but have ownershipList, determine type
-            if (!parcelType && hasOwnershipFn) {
-                const ownerTypes = ownershipList.map(owner => {
-                    const ownerLabel = owner?.ownerLabel || owner?.name || owner || '';
-                    return normalizeParcelOwnershipType(getOwnershipType(ownerLabel));
-                }).filter(Boolean);
-                const uniqueTypes = Array.from(new Set(ownerTypes.length ? ownerTypes : ['individual']));
-                parcelType = uniqueTypes.length === 1 ? uniqueTypes[0] : 'mixed';
-            } else if (!parcelType) {
-                // Default to individual if we can't determine
-                parcelType = 'individual';
-            }
-        } else {
-            // No ownership data available, use default
-            if (!parcelType) {
-                parcelType = 'individual';
-            }
-            individualOwnerCount = 1; // Assume single owner
-        }
-
-        // Cache the type for future use
-        if (parcelType) {
-            roadOwnershipTypeCache.set(parcelId, parcelType);
-        }
-
-        return { type: parcelType, individualOwnerCount };
-    });
-
-    if (requestId !== roadOwnershipStatsRequestId) {
-        return;
-    }
-
-    parcelData.forEach(({ type, individualOwnerCount }) => {
-        if (type) {
-            const normalized = normalizeParcelOwnershipType(type);
-            if (!typeCounts[normalized]) {
-                typeCounts[normalized] = 0;
-            }
-            typeCounts[normalized] += 1;
-        }
-        totalIndividualOwners += individualOwnerCount;
-    });
-
-    setRoadOwnershipCounts(typeCounts);
-
+    const list = Array.isArray(parcels) ? parcels : [];
+    const summary = roadOwnershipSummary(list);
+    setRoadOwnershipCounts(list.length ? summary.categoryCounts : null);
+    const unknownEl = document.getElementById('road-ownership-unknown');
+    if (unknownEl) unknownEl.textContent = list.length ? String(summary.unknownParcelCount) : '—';
     const ownerCountEl = document.getElementById('road-individual-owners');
-    if (ownerCountEl) {
-        ownerCountEl.textContent = totalIndividualOwners > 0 ? totalIndividualOwners.toString() : '—';
-    }
+    if (ownerCountEl) ownerCountEl.textContent = list.length && summary.totalOwnerEntryCount !== null
+        ? String(summary.totalOwnerEntryCount) : '—';
 }
 
 // Entering the drawing tool clears the map of whatever you were looking at: an open proposal, a
@@ -3058,7 +2809,13 @@ function roadConflictMarkerPoints(entry, segmentPolygon) {
     try { corridor = entry.structures.length ? corridorFeatureFromLatLngRing(segmentPolygon) : null; } catch (_) { corridor = null; }
     entry.structures.forEach(hit => {
         let crossed = null;
-        try { crossed = corridor ? turf.intersect(corridor, hit.feature) : null; } catch (_) { crossed = null; }
+        try { crossed = corridor ? turf.intersect(corridor, hit.feature) : null; } catch (error) {
+            // Marker placement only: the ring goes to the structure's own middle, reported.
+            const api = window.__parcelArrangement || null;
+            if (api) api.reportClipFailure('intersect', error, { site: 'road-drawing.conflictMarker' }, [corridor, hit.feature]);
+            else console.error(`[${new Date().toISOString()}] [clip] intersect failed at road-drawing.conflictMarker`, error);
+            crossed = null;
+        }
         push(middle(crossed || hit.feature));
     });
     entry.crossings.forEach(hit => push(hit.point ? { lat: hit.point.lat, lng: hit.point.lng } : null));
@@ -3278,24 +3035,9 @@ function undoLastRoadSegment() {
     refreshRoadGradeSeparationLayer();
     recomputeLockedParcelsFromPolygon(updatedPolygon);
 
-    // Update UI
     setRoadParcelStats(lockedStats.parcelCount, formatParcelArea(lockedStats.totalArea));
-    setRoadOwnershipCounts(lockedStats.ownershipCounts);
-
-    const marketEl = document.getElementById('road-market-price');
-    if (marketEl) {
-        if (lockedStats.marketPrice > 0) {
-            marketEl.textContent = formatCurrency(lockedStats.marketPrice);
-        } else {
-            marketEl.textContent = '—';
-        }
-    }
-
-    const ownerCountEl = document.getElementById('road-individual-owners');
-    if (ownerCountEl) {
-        ownerCountEl.textContent = lockedStats.individualOwners > 0 ? lockedStats.individualOwners.toString() : '—';
-    }
-
+    updateRoadOwnershipCounts(roadAffectedParcels);
+    updateRoadMarketPrice(roadAffectedParcels);
     updateRoadAcquiringDifficulty(roadAffectedParcels);
     updateRoadInfoPanel();
     // Undo with the pen up resumes the last segment, so the pen may be down again: say which.
@@ -4016,38 +3758,8 @@ function findNewAffectedParcelsForSegment(segmentPolygon) {
 
 // Get ownership type from parcel's feature properties
 function getOwnershipTypeFromParcel(parcel) {
-    const featureProps = getRoadDrawingParcelProperties(parcel);
-    const ownershipTypeFromProps = featureProps.ownershipType;
-
-    if (ownershipTypeFromProps) {
-        return normalizeParcelOwnershipType(ownershipTypeFromProps);
-    }
-
-    // Try to derive from ownership list
-    const ownershipList = featureProps.ownershipList || [];
-    if (Array.isArray(ownershipList) && ownershipList.length > 0) {
-        const hasOwnershipFn = typeof getOwnershipType === 'function';
-        const ownerTypes = ownershipList.map(owner => {
-            const ownerLabel = owner?.ownerLabel || owner?.name || owner || '';
-            if (hasOwnershipFn) {
-                return normalizeParcelOwnershipType(getOwnershipType(ownerLabel));
-            }
-            return normalizeParcelOwnershipType(ownerLabel);
-        }).filter(Boolean);
-        const uniqueTypes = Array.from(new Set(ownerTypes.length ? ownerTypes : ['individual']));
-        return uniqueTypes.length === 1 ? uniqueTypes[0] : 'mixed';
-    }
-
-    // Check cache as fallback
-    const parcelId = parcel.id || getParcelIdFromAny(parcel);
-    if (parcelId) {
-        const cachedType = roadOwnershipTypeCache.get(parcelId);
-        if (cachedType) {
-            return normalizeParcelOwnershipType(cachedType);
-        }
-    }
-
-    return 'individual'; // Default
+    return window.RoadOwnershipModel.classifyParcel(getRoadDrawingParcelProperties(parcel),
+        typeof getOwnershipType === 'function' ? getOwnershipType : undefined).category;
 }
 
 // Locked parcels and their stats are derived state: they are exactly "the parcels the corridor covers".
@@ -4085,62 +3797,15 @@ function lockParcelsFromSegment(segmentPolygon) {
             lockedStats.parcelCount++;
             lockedStats.totalArea += (Number(parcel.area) || 0);
 
-            // Get ownership type for this parcel (sync, from feature properties)
-            const ownershipType = getOwnershipTypeFromParcel(parcel);
-            if (lockedStats.ownershipCounts[ownershipType] !== undefined) {
-                lockedStats.ownershipCounts[ownershipType]++;
-            } else {
-                lockedStats.ownershipCounts.individual++;
-            }
-
-            // Add market price
-            const price = Number(parcel.estimatedMarketPrice) || 0;
-            lockedStats.marketPrice += price;
-
-            // Count individual owners from ownership list
-            const featureProps = getRoadDrawingParcelProperties(parcel);
-            const ownershipList = featureProps.ownershipList || [];
-            if (Array.isArray(ownershipList) && ownershipList.length > 0) {
-                for (const owner of ownershipList) {
-                    const ownerLabel = owner?.ownerLabel || owner?.name || owner || '';
-                    if (typeof getOwnershipType === 'function') {
-                        const ownerType = getOwnershipType(ownerLabel);
-                        // getOwnershipType returns 'private individual' for individuals
-                        if (ownerType === 'individual' || ownerType === 'private individual' || ownerType === 'Fizička osoba') {
-                            lockedStats.individualOwners++;
-                        }
-                    } else {
-                        // If getOwnershipType isn't available, count all owners as individuals
-                        lockedStats.individualOwners++;
-                    }
-                }
-            } else {
-                // No ownership list - assume 1 individual owner
-                lockedStats.individualOwners++;
-            }
         }
     }
-
-    // Update UI with locked stats
+    const stats = roadAcquisitionModel(roadAffectedParcels);
+    lockedStats.ownershipCounts = stats.ownershipCounts;
+    lockedStats.marketPrice = stats.totalMarketPrice;
+    lockedStats.individualOwners = stats.ownerEntryCount;
     setRoadParcelStats(lockedStats.parcelCount, formatParcelArea(lockedStats.totalArea));
-    setRoadOwnershipCounts(lockedStats.ownershipCounts);
-
-    // Update market price display
-    const marketEl = document.getElementById('road-market-price');
-    if (marketEl) {
-        if (lockedStats.marketPrice > 0) {
-            marketEl.textContent = formatCurrency(lockedStats.marketPrice);
-        } else {
-            marketEl.textContent = '—';
-        }
-    }
-
-    // Update individual owners count display
-    const ownerCountEl = document.getElementById('road-individual-owners');
-    if (ownerCountEl) {
-        ownerCountEl.textContent = lockedStats.individualOwners > 0 ? lockedStats.individualOwners.toString() : '—';
-    }
-
+    updateRoadOwnershipCounts(roadAffectedParcels);
+    updateRoadMarketPrice(roadAffectedParcels);
     updateRoadAcquiringDifficulty(roadAffectedParcels);
 }
 
@@ -4273,11 +3938,8 @@ function updateRoadInfoPanel() {
         }
 
         setRoadParcelStats(lockedStats.parcelCount, formatParcelArea(lockedStats.totalArea));
-        setRoadOwnershipCounts(lockedStats.ownershipCounts);
-        const marketEl = document.getElementById('road-market-price');
-        if (marketEl) {
-            marketEl.textContent = lockedStats.marketPrice > 0 ? formatCurrency(lockedStats.marketPrice) : '—';
-        }
+        updateRoadOwnershipCounts(roadAffectedParcels);
+        updateRoadMarketPrice(roadAffectedParcels);
         updateRoadAcquiringDifficulty(roadAffectedParcels);
     } else {
         resetRoadMetricPlaceholders();
@@ -4887,72 +4549,11 @@ function findPreviewAffectedParcels(previewPolygon) {
     const combinedCount = lockedStats.parcelCount + newPreviewParcels.length;
     const combinedArea = lockedStats.totalArea + previewArea;
 
-    // Calculate combined ownership counts and market price for live preview
-    const combinedOwnershipCounts = { ...lockedStats.ownershipCounts };
-    let combinedMarketPrice = lockedStats.marketPrice;
-    let previewIndividualOwners = 0;
-
-    for (const parcel of newPreviewParcels) {
-        // Add market price
-        combinedMarketPrice += Number(parcel.estimatedMarketPrice) || 0;
-
-        // Get ownership type and count
-        const ownershipType = getOwnershipTypeFromParcel(parcel);
-        if (combinedOwnershipCounts[ownershipType] !== undefined) {
-            combinedOwnershipCounts[ownershipType]++;
-        } else {
-            combinedOwnershipCounts.individual++;
-        }
-
-        // Count individual owners from parcel properties
-        const featureProps = getRoadDrawingParcelProperties(parcel);
-        const ownershipList = featureProps.ownershipList || [];
-        if (Array.isArray(ownershipList)) {
-            for (const owner of ownershipList) {
-                const ownerLabel = owner?.ownerLabel || owner?.name || owner || '';
-                if (typeof getOwnershipType === 'function') {
-                    const ownerType = getOwnershipType(ownerLabel);
-                    // getOwnershipType returns 'private individual' for individuals
-                    if (ownerType === 'individual' || ownerType === 'private individual' || ownerType === 'Fizička osoba') {
-                        previewIndividualOwners++;
-                    }
-                } else {
-                    // If getOwnershipType isn't available, count all owners as individuals
-                    previewIndividualOwners++;
-                }
-            }
-        } else if (!ownershipList || ownershipList.length === 0) {
-            // No ownership list - assume 1 individual owner
-            previewIndividualOwners++;
-        }
-    }
-
-    // Update UI with combined stats
-    if (combinedCount > 0) {
-        setRoadParcelStats(combinedCount, formatParcelArea(combinedArea));
-    } else {
-        setRoadParcelStats(0, translateRoadText('panel.road.parcelsNone', 'None'));
-    }
-
-    // Update ownership counts
-    setRoadOwnershipCounts(combinedOwnershipCounts);
-
-    // Update market price
-    const marketEl = document.getElementById('road-market-price');
-    if (marketEl) {
-        marketEl.textContent = combinedMarketPrice > 0 ? formatCurrency(combinedMarketPrice) : '—';
-    }
-
-    // Update individual owners count (locked + preview)
-    const lockedIndividualOwners = getLockedIndividualOwnersCount();
-    const totalIndividualOwners = lockedIndividualOwners + previewIndividualOwners;
-    const ownerCountEl = document.getElementById('road-individual-owners');
-    if (ownerCountEl) {
-        ownerCountEl.textContent = totalIndividualOwners > 0 ? totalIndividualOwners.toString() : '—';
-    }
-
-    // Update acquiring difficulty with combined parcels
+    setRoadParcelStats(combinedCount, combinedCount > 0
+        ? formatParcelArea(combinedArea) : translateRoadText('panel.road.parcelsNone', 'None'));
     const combinedParcels = [...roadAffectedParcels, ...newPreviewParcels];
+    updateRoadOwnershipCounts(combinedParcels);
+    updateRoadMarketPrice(combinedParcels);
     updateRoadAcquiringDifficulty(combinedParcels);
 }
 
@@ -5121,8 +4722,8 @@ function showAcquiringDifficultyDialog() {
     if (typeof document === 'undefined') return;
 
     const t = translateRoadText;
-    const title = t('panel.road.acquiringDifficultyTitle', 'Total Estimated Acquiring Difficulty');
-    const explanation = t('panel.road.acquiringDifficultyTooltip', 'Smaller is better. The acquiring difficulty is calculated based on ownership type of properties involved, with these coefficients:\nGovernment: 0\nInstitution: 0\nCompany: 1\nIndividual: 2\nThe market value of each parcel is multiplied by its ownership type and all these are summed.');
+    const title = t('panel.road.acquiringDifficultyTitle', 'Modeled acquisition score');
+    const explanation = t('panel.road.acquiringDifficultyTooltip', 'An illustrative score: each parcel value is multiplied by a category weight. It does not estimate legal rights, acquisition cost or consent.\nGovernment: 0\nInstitution: 0\nCompany: 1\nIndividual or mixed: 2\nMissing ownership categories, unusable prices or mixed currencies leave the score unknown. Area estimates use a fixed EUR 100/m² model.');
     const closeLabel = t('modal.common.close', 'Close');
     const okLabel = t('panel.road.acquiringDifficultyDialogOk', 'OK');
 
@@ -5256,7 +4857,7 @@ if (typeof window !== 'undefined') {
         getRoadDrawingLiveFeature, liveRoadDrawingParcelsIntersecting, roadDrawingParcelEntry,
         getParcelIdFromAny, getRoadDrawingParcelProperties, setRoadParcelStats,
         renderRoadOpenGroundStat, formatParcelArea, resetRoadMetricPlaceholders, formatRoadText,
-        translateRoadText, showRoadAlert, normalizeParcelOwnershipType, setRoadOwnershipCounts,
+        translateRoadText, showRoadAlert, setRoadOwnershipCounts,
         getMarketPrice, updateRoadMarketPrice, updateRoadAcquiringDifficulty,
         collectOwnershipAndAcquisitionStats, updateRoadOwnershipCounts, clearMapSelectionsForDrawing,
         disableMultiSelectForDrawing, setRoadPanelLabelsForMode, requestCorridorDrawingTool,

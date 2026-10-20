@@ -1,0 +1,31 @@
+[
+  {
+    "url": "https://dzds.dz/",
+    "reason": "403"
+  },
+  {
+    "url": "https://www.anfu.dz/",
+    "reason": "500"
+  },
+  {
+    "url": "https://geoportail.asal.dz/server/rest/services/Forage/FeatureServer?f=pjson"
+  },
+  {
+    "url": "https://geoportail.asal.dz/server/rest/services/"
+  },
+  {
+    "url": "https://www.an-cadastre.dz/"
+  },
+  {
+    "url": "https://www.an-cadastre.dz/wathikacad/WathikaCad.php"
+  },
+  {
+    "url": "https://www.mf.gov.dz/"
+  },
+  {
+    "url": "https://bndg.asga.dz/bndg/CARTO200K_P/Default_BNDG.aspx"
+  },
+  {
+    "url": "https://services.interieur.gov.dz/fr/"
+  }
+]

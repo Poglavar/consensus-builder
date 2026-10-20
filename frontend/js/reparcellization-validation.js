@@ -82,16 +82,25 @@
                 catch (error) { issue('invalid-polygon', `New parcel ${index + 1}: ${error.message}`, 'geometry', { plotIndex: index }); }
             });
             if (!errors.length) {
+                // Each clip below that throws becomes a ClipFailure (counted in clipHealth()); the
+                // validation still answers with its invalid-pool issue, carrying the clip's message.
+                const clipped = (operation, a, b) => {
+                    try { return turf[operation](a, b); } catch (error) {
+                        const api = (typeof window !== 'undefined' && window.__parcelArrangement)
+                            || (typeof require === 'function' ? require('./proposals/parcel-arrangement.js') : null);
+                        throw api ? api.clipFailure(operation, error, { site: 'reparcellization-validation.pool', proposalId: proposal && proposal.proposalId }, [a, b]) : error;
+                    }
+                };
                 try {
                     let union = null, overlapAreaM2 = 0;
                     for (let i = 0; i < shapes.length; i++) {
                         if (union) {
-                            const hit = turf.intersect(union, shapes[i]);
+                            const hit = clipped('intersect', union, shapes[i]);
                             const area = hit ? turf.area(hit) : 0;
                             overlapAreaM2 += area;
                             if (area > overlapTolerance(areas[i])) issue('overlapping-polygons', `New parcel ${i + 1} overlaps another new parcel.`, 'geometry', { plotIndex: i, areaM2: area });
                         }
-                        union = union ? turf.union(union, shapes[i]) : shapes[i];
+                        union = union ? clipped('union', union, shapes[i]) : shapes[i];
                         if (!union) throw new Error('The new parcel union could not be computed.');
                     }
                     // A saved pool is the proposed take, not the union of whole cadastral inputs.
@@ -101,7 +110,7 @@
                         : (options.site || plan.poolGeometry);
                     const pool = rawPool ? polygon(rawPool, turf) : union;
                     const area = turf.area(pool);
-                    const gap = turf.difference(pool, union), outside = turf.difference(union, pool);
+                    const gap = clipped('difference', pool, union), outside = clipped('difference', union, pool);
                     Object.assign(metrics, { poolAreaM2: area, plotAreaM2: areas.reduce((a, b) => a + b, 0),
                         uncoveredAreaM2: gap ? turf.area(gap) : 0, outsideAreaM2: outside ? turf.area(outside) : 0, overlapAreaM2 });
                     if (metrics.uncoveredAreaM2 > coverageTolerance(area)) issue('coverage-gap', 'The new parcels leave part of the declared pool uncovered.', 'geometry', { areaM2: metrics.uncoveredAreaM2 });
@@ -147,7 +156,7 @@
                 normalizedOwnership.forEach((shaped, index) => (shaped?.owners || []).forEach(owner => {
                     assigned.set(owner.ownerKey, (assigned.get(owner.ownerKey) || 0) + areas[index] * owner.percentageShare / 100);
                 }));
-                const owners = (plan.ownerShares || []).filter(owner => owner && owner.noOwner !== true && owner.ownerKey !== PUBLIC_LAND_KEY
+                const owners = (plan.ownerShares || []).filter(owner => owner && owner.unrepresentedGround !== true && owner.ownerKey !== PUBLIC_LAND_KEY
                     && finite(owner.contributedArea) && owner.contributedArea > 0)
                     .map(owner => ({ ownerKey: String(owner.ownerKey), contributedAreaM2: owner.contributedArea, assignedAreaM2: assigned.get(String(owner.ownerKey)) || 0 }));
                 regimeCheck = regimes().checkAllocation(template, {

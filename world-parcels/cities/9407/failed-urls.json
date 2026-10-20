@@ -1,0 +1,20 @@
+[
+  {
+    "url": "https://shivamogga.nic.in/",
+    "reason": "timeout (web fetch)"
+  },
+  {
+    "url": "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/570"
+  },
+  {
+    "url": "https://www.bhunaksha.nic.in/bhunaksha/customization.jsp"
+  },
+  {
+    "url": "https://landrecords.karnataka.gov.in/",
+    "reason": "timeout"
+  },
+  {
+    "url": "https://bhoomi.karnataka.gov.in/",
+    "reason": "timeout/incomplete client attempt"
+  }
+]

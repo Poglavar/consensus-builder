@@ -54,7 +54,7 @@
         if (record) selectRecord(record);
     }
     function inspectProposal(proposal) {
-        const key = root.getProposalKey?.(proposal) || proposal.proposalId || proposal.hash;
+        const key = root.getProposalKey(proposal);
         const record = root.PlanningRepresentations.proposed(proposal, { key,
             city: root.CityConfigManager.getCurrentCityId(), applied: root.isProposalApplied?.(proposal) === true });
         if (record) {
@@ -189,7 +189,14 @@
                     : item.assessment.meaning === 'zoning-area' ? 'zoningAreaNote'
                         : sourceResult ? (item.volumes.length ? 'oneOption' : 'savedNoShape')
                         : item.role === 'existing' ? 'observedNote' : 'authoredNote')));
-        if (item.assessment.status) inspector.append(element('p', 'planning-inspector__description', resultLabel(item.assessment.status)));
+        if (item.role === 'proposed') {
+            const proposal = root.proposalStorage?.getProposal(item.proposalId);
+            const lifecycleKey = root.getProposalLifecycleKey(proposal);
+            inspector.append(element('p', 'planning-inspector__description', root.getProposalLifecycleLabel(lifecycleKey)));
+            const state = root.__proposalDisplayState.of(proposal);
+            const hint = root.__proposalDisplayState.rungHint(state.rung, (key, fallback) => root.i18n.t(key) || fallback);
+            if (hint) inspector.append(element('p', 'planning-inspector__description', hint));
+        } else if (item.assessment.status) inspector.append(element('p', 'planning-inspector__description', resultLabel(item.assessment.status)));
         if (item.assessment.reason) inspector.append(element('p', 'planning-cache-reason', item.assessment.reason));
         if (item.assessment.current === false) inspector.append(element('p', 'planning-inspector__description', t('savedWithdrawn')));
         if (referenceStatus && referenceStatus !== 'same') inspector.append(element('p', 'planning-assessment', t('referenceChanged')));
@@ -266,7 +273,7 @@
         if (item.role === 'proposed') {
             const action = element('button', 'btn', t('proposalActions'));
             action.type = 'button'; action.addEventListener('click', async () => {
-                const proposal = root.getProposalByIdOrHash?.(item.proposalId);
+                const proposal = root.proposalStorage?.getProposal(item.proposalId);
                 if (!proposal) return;
                 if (root.__mapModeState?.desired === 'model') await root.requestMapMode('2d');
                 actionsOpen = true; renderInspector();
@@ -425,7 +432,7 @@
             return;
         }
         if (id.startsWith('proposed:')) {
-            const proposal = root.getProposalByIdOrHash?.(id.slice('proposed:'.length));
+            const proposal = root.proposalStorage?.getProposal(id.slice('proposed:'.length));
             if (proposal) root.ProposalSelection.select(proposal);
             return;
         }

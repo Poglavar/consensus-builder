@@ -1,0 +1,32 @@
+[
+  {
+    "url": "https://geo.lutskrada.gov.ua/ua/dataset-page/12376028776684568"
+  },
+  {
+    "url": "https://geo.lutskrada.gov.ua/access-page/12376028776684568?service_type=TMS"
+  },
+  {
+    "url": "https://geo.lutskrada.gov.ua/geoinformacini-resursi-ta-servisi"
+  },
+  {
+    "url": "https://cnap.lutskrada.gov.ua/functionality/22810/"
+  },
+  {
+    "url": "https://nsdi.gov.ua/docs/api/v2/geodata.html"
+  },
+  {
+    "url": "https://geo.lutskrada.gov.ua/map/rtile/carto_12376028776684568/ua/14/9345/5502.png"
+  },
+  {
+    "url": "https://nsdi.gov.ua/api/geo/parcel?lat=50.7507560557239&lon=25.3429472477178"
+  },
+  {
+    "url": "https://nsdi.gov.ua/api/v2/geo/parcel?lat=50.7507560557239&lon=25.3429472477178"
+  },
+  {
+    "url": "https://nsdi.gov.ua/geo/parcel?lat=50.7507560557239&lon=25.3429472477178"
+  },
+  {
+    "url": "https://newmap.land.gov.ua/"
+  }
+]

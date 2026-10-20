@@ -1,0 +1,115 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "7644",
+  "name": "Madison, United States",
+  "point": [
+    43.0731,
+    -89.4012
+  ],
+  "bindings": [
+    {
+      "appCityId": "madison",
+      "runtimeConfig": {
+        "id": "madison",
+        "label": "Madison, United States",
+        "currency": {
+          "locale": "en-US",
+          "code": "USD"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            43.0731,
+            -89.4012
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            43.0731,
+            -89.4012
+          ],
+          "fallbackDataset": [
+            -89.4012,
+            43.0731
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.0025,
+          "source": "parcel-source",
+          "sourceId": "us-wi-madison-parcels",
+          "idPrefix": "US-WI-MADISON-DANE-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 6,
+          "attribution": "<a href=\"https://services3.arcgis.com/n6uYoouQZW75n5WI/ArcGIS/rest/services/Wisconsin_Statewide_Parcels_DB/FeatureServer/0\">Wisconsin State Cartographer’s Office / Dane County · publisher &amp; conditions</a> · V12 2026 compilation · Dane County · adapted"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "us-wi-madison-parcels",
+      "name": "Dane County parcels — Madison",
+      "adapter": "arcgis",
+      "endpoint": "https://services3.arcgis.com/n6uYoouQZW75n5WI/ArcGIS/rest/services/Wisconsin_Statewide_Parcels_DB/FeatureServer/0",
+      "idField": "PARCELID",
+      "objectIdField": "OBJECTID",
+      "idType": "string",
+      "idPrefix": "US-WI-MADISON-DANE-",
+      "outFields": [
+        "OBJECTID",
+        "PARCELID",
+        "CONAME"
+      ],
+      "parcelNumberField": "PARCELID",
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "maxConcurrentQueries": 2,
+      "metricSrid": 32616,
+      "countryCode": "US",
+      "stateCode": "WI",
+      "cityIds": [
+        "madison"
+      ],
+      "operator": "Wisconsin State Cartographer’s Office / Dane County",
+      "scope": "Dane County assessment parcel mapping configured for Madison. Native identifier namespace is county-scoped.",
+      "catalogueUrl": "https://services3.arcgis.com/n6uYoouQZW75n5WI/ArcGIS/rest/services/Wisconsin_Statewide_Parcels_DB/FeatureServer/0",
+      "caveats": [
+        "Assessment mapping; not a boundary survey."
+      ],
+      "attributeFilters": {
+        "CONAME": "DANE"
+      },
+      "attribution": "Wisconsin State Cartographer’s Office / Dane County. Adapted to WGS84.",
+      "licenceNote": "Source conditions are informational; users choose their source and intended use."
+    }
+  ]
+}

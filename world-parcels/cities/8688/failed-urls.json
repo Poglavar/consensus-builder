@@ -1,0 +1,23 @@
+[
+  {
+    "url": "https://onemapup.nic.in/gnida/"
+  },
+  {
+    "url": "https://onemapup.nic.in/gnida/Map.aspx?UNIQUEPLOTID=ALPHA-01B3RES"
+  },
+  {
+    "url": "https://onemapup.nic.in/gnida/config/mapConfig.js"
+  },
+  {
+    "url": "https://onemapup.nic.in/gnida/config/mapConfig_hindi.js"
+  },
+  {
+    "url": "https://onemapup.nic.in/server/rest/services/GNIDA/GNIDA_Web/MapServer?f=pjson"
+  },
+  {
+    "url": "https://onemapup.nic.in/server/rest/services/GNIDA/GNIDA_Web/MapServer/15?f=pjson"
+  },
+  {
+    "url": "https://onemapup.nic.in/server/rest/services/GNIDA/GNIDA_Web/MapServer/15/query"
+  }
+]

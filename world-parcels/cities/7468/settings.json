@@ -1,0 +1,123 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "7468",
+  "name": "Alafaya, United States",
+  "point": [
+    28.5645463354798,
+    -81.1884381841486
+  ],
+  "bindings": [
+    {
+      "appCityId": "alafaya",
+      "runtimeConfig": {
+        "id": "alafaya",
+        "wupCityCode": "7468",
+        "label": "Alafaya, United States",
+        "currency": {
+          "locale": "en-US",
+          "code": "USD"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            28.5645463354798,
+            -81.1884381841486
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            28.5645463354798,
+            -81.1884381841486
+          ],
+          "fallbackDataset": [
+            -81.1884381841486,
+            28.5645463354798
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "orlando-ocpa-arcgis",
+          "idPrefix": "US-ORANGE-COUNTY-PARCEL-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Orange County Property Appraiser · assessment parcel references · adapted"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "orlando-ocpa-arcgis",
+      "name": "Orlando Orange County assessment parcel polygons",
+      "adapter": "arcgis",
+      "endpoint": "https://vgispublic.ocpafl.org/server/rest/services/Webmap/PARCEL/MapServer/4",
+      "idField": "PARCEL",
+      "objectIdField": "OBJECTID",
+      "idType": "string",
+      "idPrefix": "US-ORANGE-COUNTY-PARCEL-",
+      "outFields": [
+        "OBJECTID",
+        "PARCEL"
+      ],
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "pageSize": 25,
+      "maxFeatures": 3000,
+      "maxBboxKm2": 25,
+      "boundsSrid": 2236,
+      "boundsProjection": "+proj=tmerc +lat_0=24.3333333333333 +lon_0=-81 +k=0.999941177 +x_0=200000.0001016 +y_0=0 +datum=NAD83 +units=us-ft +no_defs +type=crs",
+      "countryCode": "US",
+      "metricSrid": 26917,
+      "cityIds": [
+        "alafaya"
+      ],
+      "maxConcurrentQueries": 1,
+      "operator": "Orange County Property Appraiser",
+      "scope": "Six distinct Orange County assessment parcel polygons passed bounded public adapter qualification around the unchanged Orlando WUP settlement locator. Thirteen 0.001-degree cells contain the same large point-containing parcel; its complete footprint discovers six distinct parcels. All six native PARCEL strings passed fresh independent reads, forced one-feature pages and matching full geometry hashes. Exact-point containment, explicit absence and one-parcel proposal binding passed. Independent root EPSG:26917 full-polygon GEOS audit found no invalidity, duplicate geometry, overlap above 0.01 m² or operation errors. Assessment parcel references are not legal title; bounded evidence does not establish citywide completeness, survey accuracy or currentness.",
+      "stateCode": "FL",
+      "responseCrs": "EPSG:4326",
+      "parcelNumberField": "PARCEL",
+      "catalogueUrl": "https://webmap.ocpafl.org/search",
+      "attribution": "Orange County Property Appraiser · assessment parcel references · adapted",
+      "licenceNote": "Source conditions and data age are informational. Legal title and survey accuracy unverified; only public PARCEL/OBJECTID identifiers and geometry requested.",
+      "metricSridByCity": {
+        "alafaya": 32617
+      },
+      "defaultForCity": true,
+      "cityScopes": {
+        "buenaventura_lakes": "Bounded qualification around the UN DESA WUP 2025 settlement locator for Buenaventura Lakes. Passing all eight gates and independent geometry audit supports local parcel integration only; citywide completeness, legal title, survey accuracy and currentness are not established.",
+        "alafaya": "Bounded qualification around the UN DESA WUP 2025 settlement locator for Alafaya. Passing all eight gates and independent geometry audit supports local parcel integration only; citywide completeness, legal title, survey accuracy and currentness are not established."
+      },
+      "queryFormat": "esri-json"
+    }
+  ]
+}

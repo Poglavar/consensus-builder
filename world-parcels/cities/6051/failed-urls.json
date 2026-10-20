@@ -1,0 +1,6 @@
+[
+  {
+    "url": "https://taxmaps.traviscountytx.gov/arcgis/rest/services/Parcels/FeatureServer/0?f=pjson",
+    "reason": "timeout (20 s)"
+  }
+]

@@ -1,10 +1,10 @@
 // Project observed buildings and authored designs into the same inspection contract as sources.
 // These projections never mutate the source record or manufacture missing heights/quantities.
 (function (root, factory) {
-    const api = factory();
+    const api = factory(root);
     if (typeof module === 'object' && module.exports) module.exports = api;
     if (root) root.PlanningRepresentations = api;
-})(typeof window !== 'undefined' ? window : globalThis, function () {
+})(typeof window !== 'undefined' ? window : globalThis, function (root) {
     'use strict';
     const finite = value => typeof value === 'number' && Number.isFinite(value);
     const spatialReference = Object.freeze({ horizontal: 'OGC:CRS84', vertical: 'relative-ground', unit: 'm' });
@@ -41,15 +41,21 @@
     function proposed(proposal, { key, city, applied = false } = {}) {
         if (!proposal || !key) return null;
         const id = `proposed:${key}`;
+        const status = root.getLifecycleStatus || require('../proposals/status.js').getLifecycleStatus;
+        const origin = root.ProposalOrigin || require('../proposals/origin.js');
+        const apiBase = origin.apiBase(proposal.publicationApiBase);
+        const rowId = origin.rowId(proposal.serverProposalId);
+        const publication = apiBase && rowId ? { apiBase, proposalRowId: rowId } : null;
         const volumes = (proposal.geometry?.buildings || []).map((feature, index) => volume(feature, `${id}:${index}`)).filter(Boolean);
         return { id, role: 'proposed', proposalId: String(key),
             title: proposal.name || proposal.title || String(key), site: proposal.site || null, volumes, spatialReference,
             source: { id: 'authored-proposal', recordId: String(key), city: proposal.city || city,
                 version: proposal.updatedAt || proposal.createdAt || null, parcel: proposal.cadastreParcelIds?.[0] || null },
             assessment: { meaning: 'authored-design', geometry: volumes.length ? 'available' : 'not-available',
-                constraints: 'not-evaluated', status: proposal.lifecycleStatus || null, applied },
+                constraints: 'not-evaluated', status: status(proposal), applied },
             metrics: { floorAreaM2: null, heightM: volumes.length ? Math.max(...volumes.map(part => part.topM)) : null },
             constraints: [], sourceEvidence: { type: proposal.type, kind: proposal.kind,
+                publication, lifecycleEvidence: proposal.lifecycleEvidence || null,
                 cadastreParcelIds: proposal.cadastreParcelIds, sourceReferences: proposal.sourceReferences || [] } };
     }
     return { built, proposed, volume, observedMeshFeature };

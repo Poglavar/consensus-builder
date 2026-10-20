@@ -7,6 +7,22 @@
     'use strict';
 
     const g = typeof global !== 'undefined' ? global : (typeof window !== 'undefined' ? window : globalThis);
+    const DEVNET_GENESIS_HASH = 'EtWTRABZaYq6iMfeYKouRu166VU2xqa1wcaWoxPkrZBG';
+
+    async function verifiedConnection(cluster) {
+        // The configured proposal deployment is on devnet. An endpoint name cannot establish
+        // that identity, and an unknown cluster must not fall through to the loader's default.
+        if (cluster !== 'devnet') throw new Error('Proposal sync supports the verified Solana devnet deployment only.');
+        const connection = g.SolanaChainDataLoader.getConnection(cluster);
+        if (await connection.getGenesisHash() !== DEVNET_GENESIS_HASH) throw new Error('Solana RPC network does not match devnet.');
+        return connection;
+    }
+
+    function syncMessage(key, fallback, params = {}) {
+        const translated = g.i18n?.t(key, params);
+        if (translated && translated !== key) return translated;
+        return fallback.replace(/\{\{(\w+)\}\}/g, (_match, name) => String(params[name] ?? ''));
+    }
 
     function isWalletConnected() {
         const wm = g.solanaWalletManager;
@@ -20,7 +36,7 @@
     }
 
     function buildChainProposalId(cluster, programAddress, proposalAddress) {
-        return `solana-${cluster}-${(programAddress || '').toLowerCase()}-${proposalAddress}`;
+        return `solana-${cluster}-${String(programAddress || '')}-${proposalAddress}`;
     }
 
     function parseContractStatus(statusCode) {
@@ -54,23 +70,14 @@
         return ids;
     }
 
-    function findLocalProposalByParcels(parcelIds) {
-        if (!Array.isArray(parcelIds) || parcelIds.length === 0) return null;
-        if (!g.proposalStorage || typeof g.proposalStorage.getAllProposals !== 'function') return null;
-
-        const normalizedSearchIds = parcelIds.map(id => String(id)).sort();
-        return g.proposalStorage.getAllProposals().find(proposal => {
-            const proposalParcelIds = Array.isArray(proposal?.cadastreParcelIds)
-                ? proposal.cadastreParcelIds.map(id => String(id)).sort()
-                : [];
-            if (proposalParcelIds.length !== normalizedSearchIds.length) return false;
-            return normalizedSearchIds.every((id, index) => proposalParcelIds[index] === id);
-        }) || null;
-    }
-
-    function createProposalFromChainData({ cluster, programAddress, proposalAddress, onchainData }) {
+    function createProposalFromChainData({ cluster, programAddress, proposalAddress, onchainData, observedAt = new Date().toISOString() }) {
         const statusStr = parseContractStatus(onchainData.statusCode);
         const proposalId = buildChainProposalId(cluster, programAddress, proposalAddress);
+        const chainRef = { chainType: 'solana', chainId: cluster, contract: String(programAddress || ''), tokenId: proposalAddress };
+        const lifecycleEvidence = g.ProposalLifecycleEvidence?.projectLifecycleEvidence({
+            lifecycleStatus: statusStr,
+            chainRead: { status: statusStr, observedAt, chainRef }
+        }).lifecycleEvidence;
 
         return {
             proposalId,
@@ -81,16 +88,17 @@
             type: 'Purchase',
             proposalMainType: 'Purchase',
             lifecycleStatus: statusStr,
+            ...(lifecycleEvidence ? { lifecycleEvidence } : {}),
             acquisitionStrategy: onchainData.isConditional ? 'conditional' : 'partial',
             isMinted: true,
             nft: {
                 chain: `solana-${cluster}`,
-                contract: (programAddress || '').toLowerCase(),
+                contract: String(programAddress || ''),
                 tokenId: proposalAddress
             },
             onchain: {
                 chainId: `solana-${cluster}`,
-                contractAddress: (programAddress || '').toLowerCase(),
+                contractAddress: String(programAddress || ''),
                 proposalId: proposalAddress,
                 acceptanceCount: onchainData.acceptanceCount || '0',
                 solBalance: onchainData.solBalance || onchainData.ethBalance || '0',
@@ -110,21 +118,23 @@
             if (!isWalletConnected()) return false;
             if (!g.SolanaChainDataLoader) return false;
 
-            const connection = g.SolanaChainDataLoader.getConnection(cluster);
+            const connection = await verifiedConnection(cluster);
             const accountInfo = await connection.getAccountInfo(new g.solanaWeb3.PublicKey(proposalAddress));
             if (!accountInfo || !accountInfo.data) return false;
+            if (accountInfo.owner?.toBase58?.() !== programAddress) throw new Error('Solana proposal belongs to a different program.');
 
             const onchainData = g.SolanaChainDataLoader.parseProposalAccount(accountInfo.data, proposalAddress);
             if (!onchainData) return false;
+            const observedAt = new Date().toISOString();
+            const chainRef = { chainType: 'solana', chainId: cluster, contract: String(programAddress || ''), tokenId: proposalAddress };
+            const lifecycleEvidence = g.ProposalLifecycleEvidence?.projectLifecycleEvidence({
+                lifecycleStatus: parseContractStatus(onchainData.statusCode),
+                chainRead: { status: parseContractStatus(onchainData.statusCode), observedAt, chainRef }
+            }).lifecycleEvidence;
 
-            const chainProposalId = buildChainProposalId(cluster, programAddress, proposalAddress);
-            let localProposal = null;
-            if (g.proposalStorage && typeof g.proposalStorage.getProposal === 'function') {
-                localProposal = g.proposalStorage.getProposal(chainProposalId);
-            }
-            if (!localProposal) {
-                localProposal = findLocalProposalByParcels(cadastreIdsFromChainData(onchainData));
-            }
+            const localProposal = g.ChainProposalRef.findByReference(
+                g.proposalStorage?.getAllProposals?.() || [],
+                { chainType: 'solana', chainId: cluster, contract: programAddress, tokenId: proposalAddress });
 
             if (localProposal && g.proposalStorage && typeof g.proposalStorage.importOnChainProposal === 'function') {
                 g.proposalStorage.importOnChainProposal({
@@ -133,9 +143,10 @@
                     isConditional: onchainData.isConditional === true,
                     imageURI: onchainData.imageURI || '',
                     acceptancePossible: onchainData.acceptancePossible !== false,
-                    status: onchainData.status || 'Active',
+                    lifecycleStatus: parseContractStatus(onchainData.statusCode),
+                    lifecycleEvidence,
                     solBalance: onchainData.solBalance || onchainData.ethBalance || '0',
-                ethBalance: onchainData.solBalance || onchainData.ethBalance || '0',
+                    ethBalance: onchainData.solBalance || onchainData.ethBalance || '0',
                     tokenBalance: onchainData.tokenBalance || '0',
                     acceptanceCount: onchainData.acceptanceCount || '0',
                     expiryTimestamp: onchainData.expiryTimestamp || '0',
@@ -143,14 +154,14 @@
                     acceptedParcels: onchainData.acceptedParcels || [],
                     owner: onchainData.owner || null,
                     chainId: `solana-${cluster}`,
-                    contractAddress: (programAddress || '').toLowerCase(),
+                    contractAddress: String(programAddress || ''),
                     onchain: {
                         chainId: `solana-${cluster}`,
-                        contractAddress: (programAddress || '').toLowerCase(),
+                        contractAddress: String(programAddress || ''),
                         proposalId: proposalAddress,
                         acceptanceCount: onchainData.acceptanceCount || '0',
                         solBalance: onchainData.solBalance || onchainData.ethBalance || '0',
-                ethBalance: onchainData.solBalance || onchainData.ethBalance || '0',
+                        ethBalance: onchainData.solBalance || onchainData.ethBalance || '0',
                         tokenBalance: onchainData.tokenBalance || '0',
                         expiryTimestamp: onchainData.expiryTimestamp || '0',
                         expiringPercentage: onchainData.expiringPercentage || '0',
@@ -164,7 +175,7 @@
             if (!localProposal && typeof g.chainProposalBelongsHere === 'function' && !g.chainProposalBelongsHere(cadastreIdsFromChainData(onchainData))) {
                 return false;
             }
-            const newProposal = createProposalFromChainData({ cluster, programAddress, proposalAddress, onchainData });
+            const newProposal = createProposalFromChainData({ cluster, programAddress, proposalAddress, onchainData, observedAt });
 
             if (localProposal) {
                 Object.assign(localProposal, newProposal);
@@ -179,7 +190,7 @@
             return true;
         } catch (err) {
             console.error('Solana sync single proposal failed', err);
-            return false;
+            throw err;
         }
     }
 
@@ -218,9 +229,10 @@
 
         const results = [];
         for (const { cluster, programAddress } of solanaContracts) {
+            let synced = 0;
             try {
+                await verifiedConnection(cluster);
                 const proposals = await g.SolanaChainDataLoader.getAllProposals(cluster, programAddress);
-                let synced = 0;
                 for (const p of proposals) {
                     const ok = await syncSingleProposal(cluster, programAddress, p.proposalId);
                     if (ok) synced++;
@@ -228,14 +240,19 @@
                 results.push({ cluster, programAddress, synced, total: proposals.length });
             } catch (err) {
                 console.error('Solana sync failed for', programAddress, err);
-                results.push({ cluster, programAddress, error: err.message });
+                results.push({ cluster, programAddress, synced, error: err.message });
             }
         }
 
         const totalSynced = results.reduce((s, r) => s + (r.synced || 0), 0);
         if (typeof g.refreshProposalsLayer === 'function') g.refreshProposalsLayer();
         if (typeof g.updateStatus === 'function') {
-            g.updateStatus(totalSynced > 0 ? `Synced ${totalSynced} proposal(s) from Solana` : 'No new Solana proposals');
+            const failure = results.find(result => result.error);
+            g.updateStatus(failure
+                ? syncMessage('status.messages.solana_sync_incomplete', 'Solana sync incomplete; {{count}} proposal(s) synced. {{reason}}', { count: totalSynced, reason: failure.error })
+                : totalSynced > 0
+                    ? syncMessage('status.messages.solana_sync_complete', 'Synced {{count}} proposal(s) from Solana', { count: totalSynced })
+                    : syncMessage('status.messages.solana_sync_no_new', 'No new Solana proposals'));
         }
 
         return { totalSynced, contracts: results };
@@ -243,7 +260,7 @@
 
     g.SolanaBlockchainSync = {
         sync: syncBlockchainProposals,
-        syncSingle: syncSingleProposal,
+        syncSingle: (...args) => syncSingleProposal(...args).catch(() => false),
         isWalletConnected
     };
 })(typeof window !== 'undefined' ? window : globalThis);

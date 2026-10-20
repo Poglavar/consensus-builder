@@ -1,0 +1,22 @@
+[
+  {
+    "url": "https://nspd.gov.ru/",
+    "reason": "timeout after 15 seconds"
+  },
+  {
+    "url": "https://nspd.gov.ru/maps",
+    "reason": "timeout after 20 seconds"
+  },
+  {
+    "url": "https://tagancity.ru/vlast/gradostroitelnaya-deyatelnost/pravila-zemlepolzovaniya-i-zastroyki-munitsipalnogo-obrazovaniya-gorod-taganrog/"
+  },
+  {
+    "url": "https://tagancity.ru/vlast/gradostroitelnaya-deyatelnost/generalnyy-plan-munitsipalnogo-obrazovaniya-gorod-taganrog/"
+  },
+  {
+    "url": "https://roskadastr.tatarstan.ru/index.htm/news/2499998.htm"
+  },
+  {
+    "url": "https://cgko.tatarstan.ru/index.htm/news/2372481.htm"
+  }
+]

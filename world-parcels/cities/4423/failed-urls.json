@@ -1,0 +1,17 @@
+[
+  {
+    "url": "https://portal.londrina.pr.gov.br/mapa-cidade"
+  },
+  {
+    "url": "https://portal.londrina.pr.gov.br/o-que-e-siglon"
+  },
+  {
+    "url": "https://geo.londrina.pr.gov.br/server/rest/services/Gerais/BCarSiglon/MapServer/0?f=pjson"
+  },
+  {
+    "url": "https://geo.londrina.pr.gov.br/server/rest/services/Gerais/BCarSiglon/MapServer/0"
+  },
+  {
+    "url": "https://geo.londrina.pr.gov.br/server/rest/services/Gerais/BCarSiglon/MapServer/0/query?geometry=-51.1766120351161%2C-23.3040374340556&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID%2CQUADR_C%2CLOTE_C&returnGeometry=true&outSR=4326&resultRecordCount=3&f=geojson"
+  }
+]

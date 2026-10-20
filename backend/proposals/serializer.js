@@ -3,9 +3,11 @@ import { buildParcelSet } from './parcel-set.js';
 import { createRequire } from 'node:module';
 
 const requireCjs = createRequire(import.meta.url);
+const proposalOrigin = requireCjs('../../frontend/js/proposals/origin.js');
 const authoredRecord = requireCjs('../../frontend/js/proposals/authored-record.js');
 const siteBinding = requireCjs('../../frontend/js/proposals/site-binding.js');
 const chainRecord = requireCjs('../../frontend/js/proposals/chain-record.js');
+const lifecycleEvidence = requireCjs('../../frontend/js/proposals/lifecycle-evidence.js');
 const sourceProposal = requireCjs('../../frontend/js/planning/source-proposal.js');
 
 const isPolygonGeometry = value => !!value && typeof value === 'object'
@@ -136,7 +138,13 @@ export function stripLocalProposalState(proposal) {
     sourceProposal.validateReferences(proposal.sourceReferences);
     const sanitized = JSON.parse(JSON.stringify(proposal));
     [
-        'applied', 'appliedAt', 'status', 'localEditAt', 'editSeq', 'revertSnapshot',
+        'applied', 'appliedAt', 'localPurchaseSimulation', 'status', 'localEditAt', 'editSeq', 'revertSnapshot',
+        // No current producer verifies an execution-event time. Observation/receipt times stay
+        // in their qualified evidence records; this client field is not that evidence.
+        'executedAt', 'publicationApiBase', 'lifecycleEvidence', 'proposalDraftId', 'proposalDraftRevision',
+        // These identifiers belong to this browser's agent/draft state, not the published record.
+        'authorAgentId',
+        'sourceProposalId', 'replacementOfProposalId', 'copiedFromProposalId', 'copiedFromName',
         'childParcelIds', 'descendantParcelIds', 'parentFeatures',
         'parentProposals', 'childProposals', 'parentProposalIds', 'childProposalIds',
         'formation', 'demolishedBuildings', 'demolitionScanned', 'parcelSourceId',
@@ -144,10 +152,12 @@ export function stripLocalProposalState(proposal) {
         // decisions and authority workflow state are runtime claims from one client and never do.
         'ownerApprovals', 'ownerApprovalHistory', 'approvalState', 'approvalRuntimeState',
         'authorityApprovals', 'authorityApprovalHistory', 'authorityState', 'authorityRuntimeState',
+        'acceptedParcelIds', 'ownerAcceptances',
         // the prepared artifact travels with a record to its publication, which stores it in
         // consensus.proposal_prepared; it is never part of the record itself
         'preparedArtifact'
     ].forEach(key => delete sanitized[key]);
+    if (sanitized.proposalOrigin) sanitized.proposalOrigin = proposalOrigin.portable(sanitized.proposalOrigin);
     delete sanitized.childFeatures;
 
     if (sanitized.geometry && typeof sanitized.geometry === 'object') {
@@ -191,6 +201,24 @@ export function stripLocalProposalState(proposal) {
     );
 }
 
+// Reconstruction archives are portable authored records, not API rows or browser snapshots.
+// Keep the authored metadata sanitizer above, then remove identities that only make sense in the
+// source database and paid-agent claim projection (a verified mirror can carry its own provenance).
+export function stripProposalArchiveState(proposal) {
+    const sanitized = stripLocalProposalState(proposal);
+    if (!sanitized || typeof sanitized !== 'object' || Array.isArray(sanitized)) return sanitized;
+    delete sanitized.id;
+    delete sanitized.serverProposalId;
+    delete sanitized.agent;
+    return sanitized;
+}
+
+export function projectProposalLifecycleEvidence({ lifecycleStatus, chainMirror, lifecycleEvent, expiresAt, now } = {}) {
+    return lifecycleEvidence.projectLifecycleEvidence({
+        lifecycleStatus, chainMirror, lifecycleEvent, expiresAt, now
+    });
+}
+
 export function serializeProposalRow(row, options = {}) {
     assertCanonicalProposalRow(row);
     const proposal = stripLocalProposalState(row?.proposal_data ? { ...row.proposal_data } : {});
@@ -204,8 +232,10 @@ export function serializeProposalRow(row, options = {}) {
     proposal.description = choose(row.description, proposal.description);
     proposal.author = choose(row.author, proposal.author);
     proposal.type = choose(row.type, proposal.type);
-    proposal.lifecycleStatus = row.effective_status
-        || effectiveLifecycleStatus(choose(row.lifecycle_status, proposal.lifecycleStatus), choose(row.expires_at, proposal.expiresAt), options.now);
+    // The lifecycle column owns this fact. Missing/invalid state cannot be repaired from an older
+    // authored JSON projection or inferred from a deadline.
+    proposal.lifecycleStatus = effectiveLifecycleStatus(
+        row.effective_status ?? row.lifecycle_status, row.expires_at, options.now);
 
     proposal.offer = present(row.offer) ? Number(row.offer) : proposal.offer;
     proposal.offerCurrency = choose(row.offer_currency, proposal.offerCurrency);
@@ -234,20 +264,18 @@ export function serializeProposalRow(row, options = {}) {
     proposal.binding = choose(row.binding, proposal.binding ?? null);
     proposal.parcelSet = buildParcelSet({
         parcelIds: proposal.cadastreParcelIds || [],
-        jurisdiction: proposal.city || 'unknown',
-        referenceAt: proposal.cadastreFrame?.capturedAt || proposal.createdAt || null,
-        geometryHash: proposal.cadastreFrame?.geometryHash || null
+        parcelSource: proposal.binding?.parcelSource ?? null
     });
-    proposal.acceptedParcelIds = choose(row.accepted_parcel_ids, proposal.acceptedParcelIds);
-    proposal.ownerAcceptances = choose(row.owner_acceptances, proposal.ownerAcceptances);
     proposal.roadProposal = choose(row.road_proposal, proposal.roadProposal);
     proposal.buildingProposal = choose(row.building_proposal, proposal.buildingProposal);
     proposal.structureProposal = choose(row.structure_proposal, proposal.structureProposal);
     proposal.reparcellization = choose(row.reparcellization, proposal.reparcellization);
     proposal.lens = choose(row.lens, proposal.lens);
     proposal.bounds = choose(row.bounds, proposal.bounds);
-    proposal.onchain = choose(row.onchain_data, proposal.onchain);
-    proposal.onchainData = choose(row.onchain_data, proposal.onchainData);
+    // Chain attachment is a server-owned projection. An absent/NULL column cannot resurrect a
+    // stale location from authored JSON, and the API exposes exactly one representation.
+    proposal.onchain = row.onchain_data ?? null;
+    delete proposal.onchainData;
     proposal.screenshotUrl = row.screenshot_url
         ?? row.onchain_data?.imageUrl
         ?? proposal.screenshotUrl
@@ -282,5 +310,14 @@ export function serializeProposalRow(row, options = {}) {
         if (proposal.chainMirror.agent) proposal.agent = structuredClone(proposal.chainMirror.agent);
     }
 
-    return stripLocalProposalState(proposal);
+    const projection = projectProposalLifecycleEvidence({
+        lifecycleStatus: proposal.lifecycleStatus,
+        chainMirror: proposal.chainMirror,
+        lifecycleEvent: row.lifecycle_event ?? null,
+        expiresAt: proposal.expiresAt,
+        now: options.now
+    });
+    const serialized = stripLocalProposalState(proposal);
+    serialized.lifecycleEvidence = projection.lifecycleEvidence;
+    return serialized;
 }

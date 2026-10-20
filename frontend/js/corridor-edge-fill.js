@@ -33,6 +33,15 @@
     const offsetPolylinePlanar = resolve('offsetPolylinePlanar', './corridor-profile.js');
     const corridorStripSpans = resolve('corridorStripSpans', './corridor-profile.js');
 
+    // The fill is a 3D display (corridor-edge-fill-scene.js): a clip that fails drops that cut, is
+    // reported and counted in clipHealth() (parcel-arrangement.js), and the fill carries on.
+    function reportClip(operation, error, context, operands) {
+        const clips = global.__parcelArrangement
+            || (typeof require === 'function' ? require('./proposals/parcel-arrangement.js') : null);
+        if (!clips || typeof clips.reportClipFailure !== 'function') throw error;
+        return clips.reportClipFailure(operation, error, context, operands);
+    }
+
     // Lane types that really run to the boundary of the street. A verge or a parking lane stops at
     // its drawn width; a footway takes whatever is left over between the kerb and the frontage.
     const EDGE_FILL_TYPES = new Set(['sidewalk']);
@@ -303,6 +312,8 @@
                 piece = turf.intersect(cut, band);
             } catch (error) {
                 report.intersectError = String(error && error.message).slice(0, 80);
+                // The caller's report is optional (the scene passes none), so it is not the record.
+                reportClip('intersect', error, { site: 'corridor-edge-fill.cut' }, [cut, band]);
                 return note('intersectThrew');
             }
             if (!piece) return note('outsideBand');
@@ -331,6 +342,7 @@
                 merged = turf.union(region, piece);
             } catch (error) {
                 report.unionError = String(error && error.message).slice(0, 80);
+                reportClip('union', error, { site: 'corridor-edge-fill.merge' }, [region, piece]);
                 return note('unionThrew');
             }
             if (!merged) return note('unionNull');

@@ -115,6 +115,27 @@ describe('GET /ens/:sender/:data', () => {
         expect(abi.decode(['string'], result)[0]).toBe('');
     });
 
+    it('resolves a named plan only when its saved commitment is complete', async () => {
+        pool.setResult({ rows: [{
+            slug: 'harbor-plan', proposal_ids: ['1', '2'], title: 'Harbor',
+            member_hashes: { '1': 'a'.repeat(64), '2': 'b'.repeat(64) }, plan_hash: 'c'.repeat(64),
+        }] });
+        const validCall = textUrlCallData('harbor-plan.proposals.urbangametheory.eth');
+        const valid = await request(app).get(`/ens/${SENDER}/${validCall}.json`);
+        const [validResult] = abi.decode(['bytes', 'uint64', 'bytes'], valid.body.data);
+        expect(abi.decode(['string'], validResult)[0]).toBe('https://urbangametheory.xyz/proposals/1,2');
+        expect(pool.getCalls()[0].sql).toMatch(/member_hashes,\s*plan_hash/i);
+
+        pool.setResult({ rows: [{
+            slug: 'harbor-plan', proposal_ids: ['1', '2'], title: 'Harbor',
+            member_hashes: { '1': 'a'.repeat(64) }, plan_hash: 'c'.repeat(64),
+        }] });
+        const invalidCall = textUrlCallData('harbor-plan.proposals.urbangametheory.eth');
+        const invalid = await request(app).get(`/ens/${SENDER}/${invalidCall}.json`);
+        const [invalidResult] = abi.decode(['bytes', 'uint64', 'bytes'], invalid.body.data);
+        expect(abi.decode(['string'], invalidResult)[0]).toBe('');
+    });
+
     it('resolves a chain-qualified mirror name to the chain proposal path', async () => {
         const chainRef = { chainType: 'evm', chainId: '84532', contract: '0x1234567890123456789012345678901234567890', tokenId: '9' };
         pool.setResult({ rows: [{

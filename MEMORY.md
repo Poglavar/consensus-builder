@@ -1,5 +1,8 @@
 # Memory
 
+- 2026-10-19: Vocabulary work proceeds in small verified changes under one current contract; experimental records may be recreated instead of preserving legacy data through migrations or parallel code paths.
+
+
 - 2026-10-19: Existing regulations, permitted massing and permits are to be restated as obligatory proposals through scripts and automation. Manual conversion into a new proposal is not the main flow. Keep binding applicability and authority separate from voting/deal kind, local application and construction: an obligatory maximum does not oblige building to that maximum. Import Colosseum's vocabulary and maintain it with domain changes. Audit the National Zoning Atlas against native capabilities and the GUP restatement before outreach; demonstrate supported visualization before making the pitch.
 
 - 2026-10-19: Design existing buildings, permitted envelopes/massing and proposals around shared city-neutral geometry and 2D/3D presentation, using the finished Zagreb solver as the first provider adapter; keep local planning rules and source formats behind adapters.
@@ -679,6 +682,9 @@ Expanded SAM 3 head fine-tuning used 96 training tiles and fresh 16-tile validat
 - 2026-10-13: ParcelBench keeps a living plan in `world-parcels/parcel-bench/PLAN.md` (steps, loop, success checks, ETA, spend, dated "Learned" log); update it whenever a step finishes or a result changes the plan. User decision; README stays the design of record.
 - 2026-10-19: ParcelBench prioritizes suburban and village communities and their growth edges; dense urban centres are secondary. Rationale: the user expects most growth in those communities. Future sampling, training coverage and headline metrics must reflect settlement context rather than treating low cadastral parcel count as a settlement label; preserve frozen historical benchmarks and decisions.
 - 2026-10-19: ParcelBench ultimately targets high-growth areas in Africa and Asia; the user authorized training on existing data despite regional gaps. Rationale: use the available labelled data now while keeping regional transfer and village coverage unproven.
+- 2026-10-19: UrbanGameTheory's fallback target is plausible imagery-derived plots where cadastral data is unavailable, especially African/Asian villages; cadastral labels should help teach boundaries rather than require exact registered-parcel recovery. Rationale: useful physical divisions can disagree with cadastral subdivisions; new evaluation must reflect the imagery-supported plot task while preserving historical benchmarks.
+- 2026-10-19: For inferred plots, missed boundaries that merge distinct plots are much more costly than extra subdivisions; separate house, courtyard and vegetable-bed regions within one cadastral parcel are acceptable. Rationale: preserve real divisions without needing to infer common ownership; prioritize final-polygon false merges and visible-boundary recall, with fragmentation secondary and overlapping masks still resolved.
+- 2026-10-19: First image-only ParcelBench diagnostic froze 27 division probes and nine same-surface checks on nine Croatian images (agent-draft). Disabling 120 m² merging left all three-seed outcomes unchanged: 6 joins/81 separation evaluations, full pair coverage. Raw contour geometry was invalid in 18/27 controls; exact-cell construction preserves all labels and yields valid, non-overlapping geometry for all 54 variants. Use the cell geometry candidate for upstream boundary/seed investigation; do not promote a model or infer target-village accuracy. Evidence: `world-parcels/parcel-bench/studies/visible-divisions-v1.md`.
 - 2026-10-13: Croatian orthophotos (low-altitude aircraft, 0.15–0.5 m) are the best case; most of the world has only satellite imagery, so ParcelBench results for uncovered cities are read against satellite-like input (PLAN.md step 11). Imagery licences are tracked in `world-parcels/parcel-bench/IMAGERY.md`; Google Maps imagery is used only once a written permission waiving its no-bulk-download, no-caching, no-tracing and no-ML-training clauses is on file.
 - 2026-10-13: ParcelBench round 2 (three seeds): a few dozen labelled tiles of the target city (50 on Split) close most of the zero-shot gap and more add little; a distant same-country donor (Zagreb) adds nothing as a starting point; mixing cities in one model costs the bigger city. Next: visibility audit, satellite domain, a nearby same-climate donor (PLAN.md steps 5, 11, 12).
 
@@ -755,6 +761,43 @@ Expanded SAM 3 head fine-tuning used 96 training tiles and fresh 16-tile validat
 - 2026-10-18: The system validates proposals for correctness only, never for plausibility, and treats agent and human proposers the same; making sensible proposals is the proposing agent's job (user decision; the audit idea of a plausibility gate for agent proposals is dropped).
 - 2026-10-18: Old `cadastre_proposals` envelope blobs are abandoned, no migration: nothing reads, converts, validates or deletes them, so a browser that still holds one boots with no local proposals and keeps the blob untouched (user decision: no backwards compatibility).
 - 2026-10-18: The boot replay runs in clock-checked slices (frontend/js/work-slicer.js: clock read after every unit, ~8 ms slices, yields via scheduler.postTask background priority, never scheduler.yield), long steps are generator step functions whose one-shot callers run them to completion (one implementation), it is cancelled at a slice boundary by cityLeaving/cityChanged or cancelReplay, and its deadline is 60 s without progress instead of 120 s total. Rationale: scheduler.yield's high-priority continuations starved timers and fetch replies for seconds, and a total limit rolled slow phones back mid-replay.
+
+- 2026-10-19: The user requested continuous learning across city discovery, review and adapter qualification: independent stage queues share the latest tested code, adapters and evidence-backed findings, so subsequent cities benefit from earlier work. Keep per-job checkpoints and immutable evidence; publish adapter changes only after validated admission.
+- 2026-10-19: Novogradnje AI processing follows the user's 2026-10-16 decision to use manually invoked subscription CLI chunks; keep the paid API worker and recurring scheduling disabled. Collect or replay already-submitted API results without new submissions, and preserve per-task usage/checkpoints separately from metered spend.
+- 2026-10-19: Manual Novogradnje processing uses Codex CLI with gpt-6.1-sol at medium or high effort (high by default), including image triage, and at most 30 tasks per manual pass; preserve the cohort when retrying unsupported-model failures. The public apartment floor-plan viewer opens in 3D when reconstructed geometry is available.
+
+- 2026-10-19: Novogradnje apartments rotate slowly in 3D on opening until the first pointer interaction; project and apartment pages include a separate fixed-centre neighbourhood view using existing city survey meshes within 65 m, with rotation and tilt only. The public header uses the baby-hardhat favicon and Novogradnja linking to the catalogue root.
+- 2026-10-19: Novogradnje includes archived Pionir whole-floor layouts as separate deep-linked floor plans, never fabricated apartments; listing refreshes retire only listing-derived site identities, preserving models owned by the building-floor registry. Known completion years sort newest first, unknown years last.
+- 2026-10-19: The user requested a private Stanovanje.plus reconstruction trial and a permission-outreach draft before incorporating its archive with attribution; the email has not been sent and the trial is not publicly published.
+
+## Parcel research storage (2026-10-19)
+
+- 2026-10-20: The user approved a quick illustrative plot demo using OSM, simple browser image processing and geometric growth, with explicit caveats and no LLM calls; keep it separate from trained models and human-review evaluation.
+- 2026-10-20: The user wants the demo's inferred property borders straightened into line segments near their existing positions; simplify shared borders together so the display and export use matching neighbouring polygons.
+
+The user requires only per-city failed URL lists and working settings plus shared adapter code as permanent knowledge; stage evidence and worktrees are disposable to prevent disk growth.
+
+- 2026-10-19: The user reversed the location-required plan policy: retain, reconstruct and expose source-backed plans with **Nepoznata lokacija**; keep their geographic location, building placement and surroundings absent until evidence identifies the building. The shared worldwide geodata API owns published plans and retained original-source metadata, with Novogradnje and the Consensus Builder archive as consumers.
+- 2026-10-19: Keep the public name and collection path **Novogradnje /novogradnje**; context viewers permit tilt, rotation and zoom, with panning disabled and a bounded 100 m survey radius.
+- 2026-10-19: The user approved a ten-building private Stanovanje.plus LLM feasibility trial using subscription Codex; full-archive processing and public incorporation remain separate from that trial.
+
+- 2026-10-19: The user chose plural Novogradnje detail URLs before public adoption: zgrade/stanovi/tlocrti; keep IDs and remove singular routes instead of adding aliases. Continue refining the ten private Stanovanje.plus sources until drawings are practically usable, rather than stopping at format validation.
+
+- 2026-10-19: The user requested a mobile annotation pipeline for public-transport trips. Autokatastar in ParcelBench uses immutable image packs, phone-first saving, explicit downloads for offline review, revision-safe synchronization and a separate human observation export; uncertain pairs remain unscored and evaluation roles stay unassigned.
+- 2026-10-19: The user named the annotation app Autokatastar and requested publication at `zagreb.lol/autokatastar/pregled`; deploy its dedicated app subtree and keep imagery and human reviews outside code releases.
+
+- 2026-10-19: Autokatastar, the bot monitor, Veleprojekti admin, and the other key-protected zagreb.lol review tools use one owner-selected access key; keep its value only in private environment files.
+
+- 2026-10-19: The user chose the current project domain for semantic vocabulary identifiers; use the clear `/vocabulary/` path and versioned definitions so published meanings stay stable.
+
+- 2026-10-20: The user required conceptual coherence before further feature work; the current contract uses API-qualified publication origins, explicit parcel-source descriptors, separate lifecycle evidence, canonical draft goals and currency-qualified quantities, with experimental records recreated for intentional breaks instead of compatibility readers.
+
+- 2026-10-20: Apartment daylight reuses the stop viewer's SunCalc astronomy, compresses a Zagreb civil day into 20 seconds, and casts window-aware shadows with an assumed closed ceiling; unconfirmed north remains explicit and adjustable.
+
+- 2026-10-20: The user asked for four-sided, roughly rectangular illustrative plots and dropped equidistance requirements; the browser demo now uses rectangle-first subdivision, with incompatible fits explicitly unassigned.
+
+- 2026-10-20: The user wants imagery-generated parcels saved in browser localStorage and usable through normal parcel selection and local proposal tools; retain estimated provenance rather than keeping a transient display-only overlay.
+
 - 2026-10-19: Preserve the last saved envelope while a newer calculation is queued, running, failed or awaiting review. Replace it atomically only after acceptance; keep refresh reasons separate and visible, and withdraw the only result only with an explicit stored reason. `current=false` is not a work queue. Polygon ordering alone must not erase coverage; use the existing cache and a named, verified refresh process.
 - 2026-10-19: A bulk envelope invalidation needs cohort-wide recovery, not a repair limited to the example parcel; restore every eligible saved result and report the reasons for remaining gaps.
 # Planning infrastructure priorities (2026-10-19)

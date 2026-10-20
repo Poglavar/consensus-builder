@@ -65,7 +65,7 @@
     }
 
     // A session-level ground source the visitor chose when the register could not be loaded (a
-    // register link of their own). It stands in for the network for that city
+    // register link of their own, or saved imagery estimates). It stands in for the network for that city
     // and nothing else: see parcels/ground-fallback.js.
     function groundOverride(city) {
         try {
@@ -74,6 +74,23 @@
         } catch (_) {
             return null;
         }
+    }
+
+    // Stamp only the catalog descriptor used for this exact provider request. Custom URL sources
+    // are not catalog identities; mismatched adapter metadata also stays unqualified.
+    function withParcelSource(features, requestedSourceId, answeredSourceId = null, snapshotId = null) {
+        const rows = Array.isArray(features) ? features : [];
+        const qualified = typeof requestedSourceId === 'string' && !!requestedSourceId.trim()
+            && !requestedSourceId.startsWith('custom.')
+            && (!answeredSourceId || answeredSourceId === requestedSourceId);
+        const sourceId = qualified ? requestedSourceId.trim() : null;
+        const revision = typeof snapshotId === 'string' && snapshotId.trim() ? snapshotId.trim() : null;
+        return rows.map(feature => {
+            const properties = { ...(feature?.properties || {}) };
+            delete properties.parcelSource;
+            if (sourceId) properties.parcelSource = { sourceId, snapshotId: revision };
+            return { ...feature, properties };
+        });
     }
 
     // Settings → Information names the source behind the parcels in view: the last one that answered.
@@ -311,7 +328,7 @@
                 }
                 const accounted = new Set([...payload.features.map(normalizeFeatureId), ...payload.absentIds]);
                 if (batch.some(id => !accounted.has(id))) throw new Error('Parcel source omitted requested IDs.');
-                features.push(...payload.features);
+                features.push(...withParcelSource(payload.features, sourceId, payload.sourceId, payload.snapshotId));
             }
         } else if (importedIdParameters[provider?.source]) {
             features = await requestOneByOne(ids, provider.source, importedIdParameters[provider.source]);
@@ -358,7 +375,7 @@
             throw new Error('Parcel source returned an incomplete point response.');
         }
         noteSourceInView(city);
-        return { status: 'ready', complete: true, queryType: 'point', features: payload.features, absentIds: [], returnsWGS84: true, sourceSrid: payload.sourceSrid || 'EPSG:4326' };
+        return { status: 'ready', complete: true, queryType: 'point', features: withParcelSource(payload.features, provider.sourceId, payload.sourceId, payload.snapshotId), absentIds: [], returnsWGS84: true, sourceSrid: payload.sourceSrid || 'EPSG:4326' };
     }
 
     function datasetToLatLng(easting, northing, city) {
@@ -411,7 +428,7 @@
             });
             if (payload.complete !== true || !Array.isArray(payload.features)) throw new Error('Parcel source returned an incomplete viewport response.');
             noteSourceInView(context.city || currentCity());
-            return { features: payload.features, returnsWGS84: true, sourceSrid: payload.sourceSrid || 'EPSG:4326' };
+            return { features: withParcelSource(payload.features, provider.sourceId, payload.sourceId, payload.snapshotId), returnsWGS84: true, sourceSrid: payload.sourceSrid || 'EPSG:4326' };
         }
         if (readsDguRegister(context.city)) {
             let fromDgu = false;
@@ -531,7 +548,7 @@
         const meets = (a, b) => a[0] <= b[2] && a[2] >= b[0] && a[1] <= b[3] && a[3] >= b[1];
         return { cells: cells.map(({ key, box }) => ({ key, result: { status: 'ready', returnsWGS84: true,
             sourceSrid: payload.sourceSrid || 'EPSG:4326', absentIds: [],
-            features: payload.features.filter((_, index) => meets(boxes[index], box)) } })) };
+            features: withParcelSource(payload.features.filter((_, index) => meets(boxes[index], box)), provider.sourceId, payload.sourceId, payload.snapshotId) } })) };
     }
 
     async function fetchBounds(_bounds, options = {}) {
@@ -580,13 +597,21 @@
         const geom = geometry && geometry.type === 'Feature' ? geometry.geometry : geometry;
         if (!geom || !geom.type) throw new Error('Cadastral footprint geometry is missing.');
         const parcelsOnly = options.parcelsOnly === true;
+        const override = groundOverride(options.city || currentCity());
+        if (override?.fetchUnderGeometry) {
+            if (options.srid !== undefined && options.srid !== 4326) throw new Error('Local parcel geometry must use WGS84.');
+            const answer = await override.fetchUnderGeometry(geom);
+            noteSourceInView(options.city || currentCity(), override);
+            return { status: 'ready', features: answer.features, absentIds: [], returnsWGS84: true,
+                sourceSrid: 'EPSG:4326', coverage: null, count: answer.features.length, queryMs: null };
+        }
         const provider = cityConfig(options.city || currentCity())?.parcels;
         if (provider?.source === 'parcel-source') {
             if (options.srid !== undefined && options.srid !== 4326) throw new Error('Browser parcel geometry must use WGS84.');
             if (!global.BrowserParcelSources) throw new Error('Browser parcel adapters are unavailable.');
             const payload = await global.BrowserParcelSources.queryGeometry(provider.sourceId, geom, { city: options.city || currentCity() });
             if (payload.complete !== true || !Array.isArray(payload.features)) throw new Error('Parcel source returned an incomplete footprint response.');
-            return { status: 'ready', features: payload.features, absentIds: [], returnsWGS84: true, sourceSrid: payload.sourceSrid || 'EPSG:4326',
+            return { status: 'ready', features: withParcelSource(payload.features, provider.sourceId, payload.sourceId, payload.snapshotId), absentIds: [], returnsWGS84: true, sourceSrid: payload.sourceSrid || 'EPSG:4326',
                 coverage: null, count: payload.features.length, queryMs: null };
         }
         const path = '/parcels/under';
@@ -621,6 +646,7 @@
 
     function supportsRoadIds(options = {}) {
         const city = String(options.city || currentCity());
+        if (groundOverride(city)) return false;
         return Boolean(roadConfig(city)?.url);
     }
 

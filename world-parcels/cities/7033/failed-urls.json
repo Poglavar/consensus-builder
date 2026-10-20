@@ -1,0 +1,41 @@
+[
+  {
+    "url": "https://settlement.gov.bd/Map/MapSearch"
+  },
+  {
+    "url": "https://settlement.gov.bd/js/MapSearch.js?v=yIrkacclePMWogM6Pmn4B9h1nLF0RbM3YSk70pezUfQ"
+  },
+  {
+    "url": "https://settlement.gov.bd/Map/GetDivisionList"
+  },
+  {
+    "url": "https://settlement.gov.bd/Khatian/getdistrictlistdivisionwise"
+  },
+  {
+    "url": "https://settlement.gov.bd/Khatian/GetSurveyListDistrictWise"
+  },
+  {
+    "url": "https://settlement.gov.bd/Khatian/GetThanaListBySurveyMap"
+  },
+  {
+    "url": "https://map.settlement.gov.bd/api/public-stats"
+  },
+  {
+    "url": "https://map.settlement.gov.bd/api/locations/districts?division=%E0%A6%AC%E0%A6%B0%E0%A6%BF%E0%A6%B6%E0%A6%BE%E0%A6%B2"
+  },
+  {
+    "url": "https://map.settlement.gov.bd/api/locations/upazilas?division=%E0%A6%AC%E0%A6%B0%E0%A6%BF%E0%A6%B6%E0%A6%BE%E0%A6%B2&district=%E0%A6%AD%E0%A7%8B%E0%A6%AC%E0%A6%BE"
+  },
+  {
+    "url": "https://map.settlement.gov.bd/api/locations/mouzas?division=%E0%A6%AC%E0%A6%B0%E0%A6%BF%E0%A6%B6%E0%A6%BE%E0%A6%B2&district=%E0%A6%AD%E0%A7%8B%E0%A6%B2%E0%A6%BE&search=%E0%A6%AD%E0%A7%8B%E0%A6%BF%E0%A6%B2%E0%A6%BE"
+  },
+  {
+    "url": "https://map.settlement.gov.bd/api/search?division=%E0%A6%AC%E0%A6%B0%E0%A6%BF%E0%A6%B6%E0%A6%BE%E0%A6%B2&district=%E0%A6%AD%E0%A6%BE%E0%A6%B2%E0%A6%BE&upazila=%E0%A6%AD%E0%A7%8B%E0%A6%BE%E0%A6%B2%E0%A6%BE%20%E0%A6%B8%E0%A6%A6%E0%A6%B0&mouza=%E0%A6%AD%E0%A6%BE%E0%A6%B2%E0%A6%BE&page=1&limit=21"
+  },
+  {
+    "url": "https://map.settlement.gov.bd/api/maps/715700975217729000"
+  },
+  {
+    "url": "https://map.settlement.gov.bd/map-viewer/715700975217729000"
+  }
+]

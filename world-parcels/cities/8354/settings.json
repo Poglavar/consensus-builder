@@ -1,0 +1,119 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "8354",
+  "name": "New York, USA",
+  "point": [
+    40.7128,
+    -74.006
+  ],
+  "bindings": [
+    {
+      "appCityId": "new_york",
+      "runtimeConfig": {
+        "id": "new_york",
+        "label": "New York, USA",
+        "currency": {
+          "locale": "en-US",
+          "code": "USD"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            40.7128,
+            -74.006
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            40.7128,
+            -74.006
+          ],
+          "fallbackDataset": [
+            -74.006,
+            40.7128
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.005,
+          "source": "parcel-nyc",
+          "liveSource": {
+            "sourceId": "us-nyc-dof-digital-tax-map",
+            "idPrefix": "US-NYC-BBL-"
+          },
+          "requiresBackend": true
+        },
+        "buildings": {
+          "source": "nyc"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "us-nyc-dof-digital-tax-map",
+      "name": "NYC Department of Finance Digital Tax Map",
+      "adapter": "arcgis",
+      "endpoint": "https://services6.arcgis.com/yG5s3afENB5iO9fj/ArcGIS/rest/services/DTM_ETL_DAILY_view/FeatureServer/0",
+      "idField": "BBL",
+      "idType": "string",
+      "idPattern": "^[0-9]{10}$",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "US-NYC-BBL-",
+      "parcelNumberField": "BBL",
+      "outFields": [
+        "OBJECTID",
+        "BBL"
+      ],
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "countryCode": "US",
+      "metricSrid": 32618,
+      "cityIds": [
+        "new_york"
+      ],
+      "defaultForCity": false,
+      "scope": "NYC five borough tax lots; distinct BBL identity, imported SWIS identity is not assumed equivalent.",
+      "licenceNote": "Source terms are informational; users choose their source and intended use.",
+      "stateCode": "NY"
+    },
+    {
+      "id": "parcel-nyc",
+      "name": "New York tax parcels in the app database (NYS)",
+      "cityIds": [
+        "new_york"
+      ],
+      "idPrefix": "US-NY-",
+      "ownership": {
+        "adapter": "us-nyc",
+        "attribution": "New York State Tax Parcels (NYS ITS) assessment-roll owners; condominium unit owners from NYC Department of Finance Property Valuation and Assessment Data.",
+        "licence": null
+      },
+      "sourceKind": "database"
+    }
+  ]
+}

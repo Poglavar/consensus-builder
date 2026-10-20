@@ -1,0 +1,23 @@
+[
+  {
+    "url": "https://www.armenia.gov.co/armenia/subsecretaria-de-catastro"
+  },
+  {
+    "url": "https://apps.nazcacatastro.com/public/63001/"
+  },
+  {
+    "url": "https://pruebassig.igac.gov.co/server/rest/services/SIG_QUINDIO/Cartografia_basica/MapServer/76"
+  },
+  {
+    "url": "https://www.igac.gov.co/datos-abiertos/datos-abiertos-geoespaciales"
+  },
+  {
+    "url": "https://geoservicios.nazcacatastro.com/geoserver/ws011_armenia/ows?service=WFS&version=1.0.0&request=GetCapabilities"
+  },
+  {
+    "url": "https://geoservicios.nazcacatastro.com/geoserver/ws011_armenia/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=ws011_armenia:PrediosConsulta&outputFormat=application/json&srsName=EPSG:9377"
+  },
+  {
+    "url": "https://geoservicios.nazcacatastro.com/geoserver/ws011_armenia/ows"
+  }
+]

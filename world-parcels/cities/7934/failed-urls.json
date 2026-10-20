@@ -1,0 +1,6 @@
+[
+  {
+    "url": "https://services3.arcgis.com/n6uYoouQZW75n5WI/ArcGIS/rest/services/Wisconsin_Statewide_Parcels_DB/FeatureServer/0",
+    "reason": "Held at the geometry gate: all source checks passed but the metric audit failed with 43 exact-duplicate geometries / 43 overlap pairs (max 8,506 m2, 100% of the smaller) among 77 cached Wisconsin V12 polygons around Green Bay: distinct parcel IDs (00912-195, 00912-196, 00912-197, 00912-200-3, 00912-201) share one identical polygon, consistent with stacked condominium units (not confirmed; only ID…"
+  }
+]

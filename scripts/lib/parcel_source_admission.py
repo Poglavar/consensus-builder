@@ -21,6 +21,7 @@ from urllib.parse import urlsplit, urlunsplit
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import parcel_discovery_outcomes
 from parcel_qualification_policy import REQUIRED_CHECKS, initial_qualification_review
+from parcel_city_storage import export_settings
 
 REQUIRED = (
     "candidate.json",
@@ -47,6 +48,7 @@ RELEASE_TESTS = (
     "backend/test/world-coverage-geography.test.js",
     "backend/test/frontend-world-coverage.test.js",
 )
+RELEASE_TEST_EXCLUDES = ("**/tmp/**", "**/node_modules/**")
 
 
 def _json(path: Path) -> Any:
@@ -151,9 +153,10 @@ def _existing_integration(root: Path, code: str, name: str, source_id: str,
                           bindings: list[dict[str, Any]]) -> dict[str, Any] | None:
     if not bindings:
         return None
-    binding = bindings[0]
-    if binding.get("sourceId") != source_id:
-        return _block(f"{name} is already configured with a different parcel source ({binding.get('sourceId')}); source switching needs separate review")
+    binding = next((row for row in bindings if row.get("sourceId") == source_id), None)
+    if binding is None:
+        first_source = bindings[0].get("sourceId")
+        return _block(f"{name} is already configured with a different parcel source ({first_source}); source switching needs separate review")
     app_city_id = binding.get("id")
     catalog_doc = _json(root / "backend/parcels/source-catalog.json")
     catalog_source = next((row for row in catalog_doc.get("sources", []) if row.get("id") == source_id), None)
@@ -195,6 +198,34 @@ def _run_checked(command: list[str], root: Path, label: str, timeout: int = 180)
     if result.returncode:
         raise RuntimeError(f"{label} failed ({result.returncode}): {output[-1600:]}")
     return output
+
+
+def _release_test_command(root: Path, action: str) -> list[str]:
+    command = ["node", str(root / "backend/node_modules/vitest/vitest.mjs"), action]
+    if action == "list":
+        command.extend(["--filesOnly", "--json"])
+    else:
+        command.extend(["--pool=threads", "--maxWorkers=4"])
+    for pattern in RELEASE_TEST_EXCLUDES:
+        command.extend(["--exclude", pattern])
+    return [*command, *RELEASE_TESTS]
+
+
+def _verify_release_test_scope(root: Path) -> None:
+    result = _run(_release_test_command(root, "list"), cwd=root, timeout=120)
+    if result.returncode:
+        raise RuntimeError(f"headless release test scope listing failed: {(result.stderr or result.stdout)[-1200:]}")
+    try:
+        rows = json.loads(result.stdout)
+        actual = {Path(row["file"]).resolve() for row in rows}
+    except (json.JSONDecodeError, KeyError, TypeError) as error:
+        raise RuntimeError("headless release test scope listing was malformed") from error
+    expected = {(root / relative).resolve() for relative in RELEASE_TESTS}
+    if actual != expected or len(rows) != len(expected):
+        unexpected = sorted(str(path) for path in actual - expected)
+        missing = sorted(str(path) for path in expected - actual)
+        raise RuntimeError(f"headless release test scope differs from the exact seven files; "
+                           f"unexpected={unexpected}, missing={missing}")
 
 
 def _block(summary: str, manifest: str | None = None, changed: list[str] | None = None) -> dict[str, Any]:
@@ -397,6 +428,10 @@ def admit_candidate(runner: Any, city: dict[str, Any], receipt: dict[str, Any], 
         if not configured:
             return _fail("admission did not create the expected city-config source binding", manifest_rel, changed)
 
+        # The proven working configuration is the permanent city record. Reports
+        # and release checks consume it while the qualification evidence is live.
+        export_settings(root, [code])
+
         try:
             _run_checked(["node", str(root / "scripts/build-world-coverage.mjs"), "--run"], root,
                          "world coverage report build", timeout=300)
@@ -406,8 +441,8 @@ def admit_candidate(runner: Any, city: dict[str, Any], receipt: dict[str, Any], 
             changed = _changed_files(root, before, release, code)
             return _fail(f"admission was applied, but coverage report build/readiness failed: {error}", manifest_rel, changed)
         try:
-            _run_checked(["node", str(root / "backend/node_modules/vitest/vitest.mjs"), "run",
-                          "--pool=threads", "--maxWorkers=4", *RELEASE_TESTS], root,
+            _verify_release_test_scope(root)
+            _run_checked(_release_test_command(root, "run"), root,
                          "headless admission release checks", timeout=300)
         except Exception as error:
             changed = _changed_files(root, before, release, code)

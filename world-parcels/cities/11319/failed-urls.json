@@ -1,0 +1,19 @@
+[
+  {
+    "url": "https://bhunaksha.bihar.gov.in/WMS?SERVICE=WMS&REQUEST=GetCapabilities",
+    "reason": "500"
+  },
+  {
+    "url": "https://bhunaksha.bihar.gov.in/ScalarDatahandler?OP=5&state=10&levels=21,01,04,0100,CS,06,01,&plotno=1",
+    "reason": "401"
+  },
+  {
+    "url": "https://bhunaksha.bihar.gov.in/index.jsp"
+  },
+  {
+    "url": "https://biharbhumi.bihar.gov.in/"
+  },
+  {
+    "url": "https://dlrs.bihar.gov.in/services.html"
+  }
+]

@@ -10,12 +10,16 @@ const { _applyReparcellizationProposal } = require('../../frontend/js/proposals/
 const { ProposalManager } = require('../../frontend/js/proposal-manager.js');
 require('../../frontend/js/proposal-parcel-identity.js'); // installs _getParcelIdFromFeature etc. on globalThis
 const formationEdit = require('../../frontend/js/proposals/formation-edit.js');
+const contiguity = require('../../frontend/js/proposals/parcel-contiguity.js');
+const deal = require('../../frontend/js/reparcellization-deal.js');
+const authoredRecord = require('../../frontend/js/proposals/authored-record.js');
 
 const GLOBAL_KEYS = [
     '_normalizeProposalId', 'updateStatus', 'turf', 'window',
     '_resolveRootParcelIdFromProperties', '_resolveRootParcelNumberFromProperties',
     '_calculateGeoJsonArea',
-    'persistAppliedProposal', 'refreshProposalUIAfterApply'
+    'persistAppliedProposal', 'refreshProposalUIAfterApply', 'transferParcelOwnership',
+    'getOrCreateAgentForRecipient'
 ];
 const saved = {};
 
@@ -43,7 +47,7 @@ beforeEach(() => {
     globalThis._normalizeProposalId = v => (v == null ? '' : String(v));
     globalThis.updateStatus = spy();
     globalThis.turf = turf;
-    globalThis.window = { __formationEdit: formationEdit };
+    globalThis.window = { __formationEdit: formationEdit, __parcelContiguity: contiguity, turf };
     globalThis._resolveRootParcelIdFromProperties = (props, explicit) =>
         (props && props.cadastreParcelIds && props.cadastreParcelIds[0])
         || (props && props.rootParcelId) || explicit || null;
@@ -140,6 +144,37 @@ describe('_applyReparcellizationProposal — flat anchors', () => {
 });
 
 describe('_applyReparcellizationProposal — deterministic derivation', () => {
+    it('keeps authored plot references and allocations when later corridors remove and split plots', async () => {
+        const manager = makeManager();
+        const data = proposalData();
+        const authored = structuredClone(data.reparcellization);
+        // The carver has consumed the first plot and split the second into two connected pieces.
+        manager._groundAfterLaterCorridors = () => ({
+            corridorIds: ['later-road'],
+            geometries: [null, { type: 'MultiPolygon', coordinates: [
+                rect(1, 0, 2, 2).coordinates, rect(3, 0, 4, 2).coordinates
+            ] }]
+        });
+        globalThis.transferParcelOwnership = spy();
+        globalThis.getOrCreateAgentForRecipient = spy('recipient-a');
+        await expect(manager._applyReparcellizationProposal('p-rep', data, {})).resolves.toBe(true);
+        const plots = manager.added.filter(feature => feature.properties.readjustmentPiece?.role === 'plot');
+        const remainders = manager.added.filter(feature => feature.properties.readjustmentPiece?.role === 'remainder');
+        expect(plots).toHaveLength(2);
+        plots.forEach(feature => expect(feature.properties.readjustmentPiece).toEqual({
+            role: 'plot', plotFingerprint: deal.plotFingerprint(authored.polygons[1])
+        }));
+        expect(new Set(plots.map(feature => feature.properties.parcelId)).size).toBe(2);
+        expect(remainders.length).toBeGreaterThan(0);
+        remainders.forEach(feature => expect(feature.properties.readjustmentPiece).toEqual({ role: 'remainder' }));
+        expect(globalThis.transferParcelOwnership.calls.map(call => call[0]).sort())
+            .toEqual(plots.map(feature => feature.properties.parcelId).sort());
+        expect(data.reparcellization).toEqual(authored);
+        // Selecting a live plot as new authored geometry must not persist its runtime relationship.
+        expect(authoredRecord.cleanFeature(plots[0]).properties).not.toHaveProperty('readjustmentPiece');
+        expect(plots[0].properties.readjustmentPiece.role).toBe('plot');
+    });
+
     it('derives the same disposable ids on every replay without storing them', async () => {
         const firstManager = makeManager();
         const first = proposalData();

@@ -1,0 +1,20 @@
+[
+  {
+    "url": "https://mun.rak.ae/home/open-data/rules-regulations/geographic-information-system/"
+  },
+  {
+    "url": "https://maps.rak.ae/Addressing/Map"
+  },
+  {
+    "url": "https://www.rakmediaoffice.ae/en/media-center/press-releases/ras-al-khaimah-is-the-first-city-in-the-middle-east-to-implement-parcel-fabric-technology-for-managing-spatial-data/"
+  },
+  {
+    "url": "https://maps.rak.ae/Addressing/static/media/manual_Ar.da0dac72.pdf"
+  },
+  {
+    "url": "https://gis.rak.ae/server/rest/services/RakLocator/ParcelLocator/GeocodeServer?f=pjson"
+  },
+  {
+    "url": "https://gis.rak.ae/server/rest/services/RakLocatorMap/AddressBaseMapEnglish/MapServer?f=pjson"
+  }
+]

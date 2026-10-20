@@ -1,0 +1,31 @@
+[
+  {
+    "url": "https://www.bhunaksha.rajasthan.gov.in/georef_gmaps.html",
+    "reason": "timeout after 25 seconds from local request"
+  },
+  {
+    "url": "https://rajdharaa.rajasthan.gov.in/citizenudh/index",
+    "reason": "not issued after local viewer timeout"
+  },
+  {
+    "url": "https://bhunaksha.rajasthan.gov.in/georef_gmaps.html"
+  },
+  {
+    "url": "https://www.lsg.urban.rajasthan.gov.in/content/dam/raj/udh/organizations/ctp/pdf/Gangapur%20City%20Final.pdf"
+  },
+  {
+    "url": "https://swcstest.rajasthan.gov.in/ComprehensiveLandInformation.aspx"
+  },
+  {
+    "url": "https://www.bhunaksha.rajasthan.gov.in/rest/Levels/count"
+  },
+  {
+    "url": "https://www.bhunaksha.rajasthan.gov.in/rest/MapInfo/getVVVVExtentGeoref"
+  },
+  {
+    "url": "https://www.bhunaksha.rajasthan.gov.in/WMS?service=WMS&request=GetCapabilities"
+  },
+  {
+    "url": "https://www.bhunaksha.rajasthan.gov.in/rest/PlotImage?state=08&giscode=<not-established>&plotno=<not-issued>"
+  }
+]

@@ -1,0 +1,116 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "8439",
+  "name": "Albany, United States",
+  "point": [
+    42.6526,
+    -73.7562
+  ],
+  "bindings": [
+    {
+      "appCityId": "albany",
+      "runtimeConfig": {
+        "id": "albany",
+        "label": "Albany, United States",
+        "currency": {
+          "locale": "en-US",
+          "code": "USD"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            42.6526,
+            -73.7562
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            42.6526,
+            -73.7562
+          ],
+          "fallbackDataset": [
+            -73.7562,
+            42.6526
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.0025,
+          "source": "parcel-source",
+          "sourceId": "us-ny-albany-parcels",
+          "idPrefix": "US-NY-ALBANY-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 6,
+          "attribution": "<a href=\"https://gis.ny.gov/parcel-polygon-metadata\">New York State Office of Information Technology Services, Geospatial Services; contributing counties · publisher &amp; conditions</a> · Albany County · 2024 data, published May 2026 · adapted"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "endpoint": "https://nysgeohub.ny.gov/arcgis/rest/services/Parcels/NYS_Tax_Parcels_Public/MapServer/1",
+      "adapter": "arcgis",
+      "name": "NYS Tax Parcels Public (2024, published May 2026)",
+      "operator": "New York State Office of Information Technology Services, Geospatial Services; contributing counties",
+      "idField": "SWIS_SBL_ID",
+      "objectIdField": "OBJECTID",
+      "idType": "string",
+      "idPattern": ".+",
+      "outFields": [
+        "OBJECTID",
+        "SWIS_SBL_ID",
+        "COUNTY_NAME"
+      ],
+      "parcelNumberField": "SWIS_SBL_ID",
+      "metricSrid": 32618,
+      "attributeFilters": {
+        "COUNTY_NAME": "Albany"
+      },
+      "id": "us-ny-albany-parcels",
+      "idPrefix": "US-NY-ALBANY-",
+      "pageSize": 1000,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "maxConcurrentQueries": 2,
+      "stateCode": "NY",
+      "countryCode": "US",
+      "catalogueUrl": "https://gis.ny.gov/parcel-polygon-metadata",
+      "scope": "Albany County subset of the NYS public 2024 tax parcel compilation.",
+      "caveats": [
+        "2024 assessment data published May 2026; not a current survey."
+      ],
+      "cityIds": [
+        "albany"
+      ],
+      "attribution": "New York State Office of Information Technology Services, Geospatial Services; contributing counties. Adapted to WGS84.",
+      "licenceNote": "Source conditions are informational; users choose their source and intended use."
+    }
+  ]
+}

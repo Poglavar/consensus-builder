@@ -10,6 +10,8 @@ function environment() {
     const features = new Map([
         ['ad-plot', { parcelId: 'ad-plot' }],
         ['road-plot', { parcelId: 'road-plot', isRoad: true }],
+        ['estimated-plot', { parcelId: 'estimated-plot', estimated: true }],
+        ['estimated-road', { parcelId: 'estimated-road', estimated: true, isRoad: true }],
         ['plain-plot', { parcelId: 'plain-plot' }]
     ].map(([id, properties]) => [id, { type: 'Feature', properties }]));
     const layers = new Map([...features.keys()].map(id => [id, {
@@ -19,6 +21,7 @@ function environment() {
         console: { log() {}, warn() {} },
         addEventListener() {},
         document: { getElementById: () => null },
+        getComputedStyle: () => ({ getPropertyValue: () => '#b5f7b2' }),
         map: { getBounds: () => [0, 0, 1, 1] },
         getParcelsInBounds: () => [...layers.values()],
         LiveParcelFabric: {
@@ -59,5 +62,13 @@ describe('parcel style precedence under an ownership highlight', () => {
         expect(layers.get('road-plot').options).toMatchObject(context.roadStyle);
         expect(layers.get('plain-plot').options).toMatchObject(PRIVATE_STYLE);
         expect(context.getParcelStyle('plain-plot', layers.get('plain-plot'))).toMatchObject(PRIVATE_STYLE);
+    });
+
+    it('keeps estimates light green while a road made from estimated ground uses the road style', () => {
+        const { context, layers } = environment();
+        context.refreshParcelStylesForAppliedProposals();
+        expect(layers.get('estimated-plot').options).toMatchObject({ color: '#b5f7b2', fillColor: '#b5f7b2' });
+        expect(context.getParcelStyle('estimated-plot', layers.get('estimated-plot')).color).toBe('#b5f7b2');
+        expect(layers.get('estimated-road').options).toMatchObject(context.roadStyle);
     });
 });

@@ -1,0 +1,10 @@
+[
+  {
+    "url": "https://upbhunaksha.gov.in/bhunakshaserver/v1/khasramap/plot?bhucode=16000834147082&id=5SXCWn7rSceIV4cSJKxKmA",
+    "reason": "401"
+  },
+  {
+    "url": "https://upbhunaksha.gov.in/bhunakshaserver/WMS/tile?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetCapabilities&LAYERS=VILLAGE_MAP&gis_code=16000834147082",
+    "reason": "401"
+  }
+]

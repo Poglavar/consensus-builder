@@ -1,0 +1,20 @@
+[
+  {
+    "url": "https://www.sedgwickcounty.org/gis/"
+  },
+  {
+    "url": "https://www.sedgwickcounty.org/gis/data-layers/"
+  },
+  {
+    "url": "https://www.wichita.gov/553/Map-Search---GIS"
+  },
+  {
+    "url": "https://gismaps.wichita.gov/ageweb/rest/services/COWGIS/Property_and_Location/MapServer/4?f=pjson"
+  },
+  {
+    "url": "https://gismaps.wichita.gov/ageweb/rest/services/COWGIS/Property_and_Location/MapServer/4/query"
+  },
+  {
+    "url": "https://gismaps.sedgwickcounty.org/arcgis/rest/services/Map/Op_Parcel_Dynamic_SP/MapServer"
+  }
+]

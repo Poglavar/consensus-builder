@@ -1,0 +1,20 @@
+[
+  {
+    "url": "https://kupwara.nic.in/service/revenue-department/"
+  },
+  {
+    "url": "https://d14fnjoywemmi.cloudfront.net/jklr/"
+  },
+  {
+    "url": "https://d14fnjoywemmi.cloudfront.net/jklr-api/api/v1/get-district-list"
+  },
+  {
+    "url": "https://d14fnjoywemmi.cloudfront.net/jklr-api/api/v1/get-districts"
+  },
+  {
+    "url": "https://d14fnjoywemmi.cloudfront.net/jklr-api/api/v1/get-tehsil-by-district"
+  },
+  {
+    "url": "https://d14fnjoywemmi.cloudfront.net/jklr-api/api/v1/get-village-by-tehsil"
+  }
+]

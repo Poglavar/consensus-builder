@@ -239,6 +239,41 @@ test('archive request-budget exhaustion remains actionable instead of becoming p
     assert.equal((await f.storage.getAuthority(f.releaseId, 1)).ready, false);
 });
 
+test.each([
+    [403, 'parcel-source-blocked', undefined],
+    [429, 'parcel-source-rate-limited', 45],
+    [503, 'parcel-source-unavailable', undefined]
+])('archive HTTP %s preserves its cause before checking release metadata', async (status, code, retryAfterSeconds) => {
+    const f = fixture();
+    let cancelled = false;
+    const source = f.create({}, { fetchImpl: async (url, options) => {
+        if (!f.endpoints.includes(url)) return f.fetchImpl(url, options);
+        return new Response(new ReadableStream({
+            start(controller) { controller.enqueue(strToU8('Request refused')); },
+            cancel() { cancelled = true; }
+        }), { status, headers: { 'retry-after': '45' } });
+    } });
+    await assert.rejects(source.queryIds([`${HMLR_BROWSER_GROUND_PREFIX}1002`]), error => {
+        assert.equal(error.code, code);
+        assert.equal(error.upstreamStatus, status);
+        assert.equal(error.retryAfterSeconds, retryAfterSeconds);
+        assert.match(error.message, new RegExp(`HTTP ${status}`));
+        return true;
+    });
+    assert.equal(cancelled, true);
+    assert.equal((await f.storage.getAuthority(f.releaseId, 1)).ready, false);
+});
+
+test('a successful archive response still requires the pinned ETag', async () => {
+    const f = fixture();
+    const source = f.create({}, { fetchImpl: async (url, options) => {
+        if (!f.endpoints.includes(url)) return f.fetchImpl(url, options);
+        return response(f.archives[1], { etag: '"different-release"' });
+    } });
+    await assert.rejects(source.queryIds([`${HMLR_BROWSER_GROUND_PREFIX}1002`]), /ETag changed/);
+    assert.equal((await f.storage.getAuthority(f.releaseId, 1)).ready, false);
+});
+
 test('fresh Node adapters share disk partitions and coalesce concurrent authority loads', async () => {
     const f = fixture(), store = createNodeHmlrFeatureStore();
     try {

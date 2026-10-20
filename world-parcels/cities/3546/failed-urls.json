@@ -1,0 +1,26 @@
+[
+  {
+    "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&request=GetCapabilities",
+    "reason": "400"
+  },
+  {
+    "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=wfs&request=getfeature&Typenames=cp.cadastralparcel&SRSname=EPSG::25830&bbox=445800,4113900,446050,4114200",
+    "reason": "400"
+  },
+  {
+    "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=wfs&version=2.0.0&request=getfeature&STOREDQUERIE_ID=GetParcel&refcat=18100A00100001&srsname=EPSG::25830",
+    "reason": "400"
+  },
+  {
+    "url": "https://ovc.catastro.meh.es/cartografia/INSPIRE/spadgcwms.aspx?SERVICE=WMS&REQUEST=GetCapabilities",
+    "reason": "400"
+  },
+  {
+    "url": "https://www1.sedecatastro.gob.es/Cartografia/INSPIRE/spadgcwms.aspx?SERVICE=WMS&REQUEST=GetCapabilities",
+    "reason": "503"
+  },
+  {
+    "url": "https://www.sedecatastro.gob.es/Cartografia/INSPIRE/spadgcwms.aspx?SERVICE=WMS&REQUEST=GetCapabilities",
+    "reason": "404"
+  }
+]

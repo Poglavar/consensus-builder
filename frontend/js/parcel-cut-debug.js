@@ -54,7 +54,16 @@
         out.corridorsWithoutFootprint = takes.filter(take => !take.geometry).map(take => take.title);
 
         const usable = takes.filter(take => take.geometry);
-        const overlapping = A.takesOverlapping(entry.feature, usable);
+        // A take whose overlap with the parcel cannot be computed throws a ClipFailure
+        // (parcel-arrangement.js takeHitsOn) — and that is the answer to "why is it uncut".
+        let overlapping = [];
+        try {
+            overlapping = A.takesOverlapping(entry.feature, usable);
+        } catch (error) {
+            out.overlapFailed = { site: error.site || null, take: error.takeId || null, message: error.message };
+            out.verdict = `The overlap test THROWS for this parcel, so its arrangement refuses: ${error.message}`;
+            return out;
+        }
         out.takesReachingIt = overlapping.map(take => take.title);
 
         // How much each corridor actually covers — a near miss and a real crossing look the same on
@@ -64,7 +73,11 @@
             try {
                 const hit = turf.intersect(entry.feature, take.geometry.geometry ? take.geometry : turf.feature(take.geometry));
                 m2 = hit ? turf.area(hit) : 0;
-            } catch (error) { m2 = `error: ${error && error.message}`; }
+            } catch (error) {
+                // Shown in the answer, and counted in clipHealth() like every clip failure.
+                if (typeof A.clipFailure === 'function') A.clipFailure('intersect', error, { site: 'parcel-cut-debug.overlapM2', parcelId: entry.id, takeId: take.id }, [entry.feature, take.geometry]);
+                m2 = `error: ${error && error.message}`;
+            }
             return { road: take.title, m2: typeof m2 === 'number' ? Math.round(m2 * 100) / 100 : m2 };
         }).filter(row => row.m2 !== 0).sort((a, b) => (b.m2 || 0) - (a.m2 || 0)).slice(0, 8);
         out.minimumPieceM2 = A.MIN_PIECE_M2;

@@ -1,0 +1,16 @@
+[
+  {
+    "url": "https://jharbhunaksha.jharkhand.gov.in/",
+    "reason": "fetch failed"
+  },
+  {
+    "url": "https://ranchi.nic.in/service/land-records/"
+  },
+  {
+    "url": "https://gis.jharkhand.gov.in/"
+  },
+  {
+    "url": "https://indianopenmaps.com/not-so-open/cadastrals/jharkhand/jsac/{z}/{x}/{y}.pbf",
+    "reason": "Held before qualification: Parcel tile fragments do not close across a tile edge."
+  }
+]

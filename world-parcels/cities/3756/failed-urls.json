@@ -1,0 +1,10 @@
+[
+  {
+    "url": "https://geoweb.heidelberg.de/mapproxy/service?SERVICE=WMS&REQUEST=GetCapabilities",
+    "reason": "503"
+  },
+  {
+    "url": "https://geoweb.heidelberg.de/OsirisGeoserver?SERVICE=WMS&REQUEST=GetCapabilities",
+    "reason": "404"
+  }
+]

@@ -7,8 +7,12 @@ import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
 const status = require('../../frontend/js/proposals/status.js');
 const displayState = require('../../frontend/js/proposals/display-state.js');
+const evidenceModel = require('../../frontend/js/proposals/lifecycle-evidence.js');
 const source = readFileSync(new URL('../../frontend/js/proposals/server-sync.js', import.meta.url), 'utf8');
 const body = source.slice(source.indexOf('const SERVER_TERMINAL_LIFECYCLES'), source.indexOf('function isServerProposalDownloaded('));
+const evidenceBody = source.slice(source.indexOf('function serverLifecycleEvidenceFor('), source.indexOf('function getServerSyncGroundService('));
+const serverLifecycleEvidenceFor = new Function('serverSyncLifecycleOf', 'serverSyncLifecycleEvidence',
+    `${evidenceBody}; return serverLifecycleEvidenceFor;`)(status.getLifecycleStatus, evidenceModel);
 
 function harness(local) {
     const proposalStorage = {
@@ -17,10 +21,10 @@ function harness(local) {
     };
     const ProposalManager = { unapplyProposal: vi.fn(async () => { local.applied = false; return true; }) };
     const updateProposalList = vi.fn();
-    const api = new Function('serverSyncLifecycleOf', 'isApplied', 'window', 'proposalStorage', 'ProposalManager',
+    const api = new Function('serverSyncLifecycleOf', 'serverLifecycleEvidenceFor', 'isApplied', 'window', 'proposalStorage', 'ProposalManager',
         'findLocalCopyOfServerProposal', 'updateProposalList', 'console',
         `${body} return { followServerLifecycle, followServerLifecycles };`)(
-        status.getLifecycleStatus, status.isApplied, { __proposalDisplayState: displayState }, proposalStorage,
+        status.getLifecycleStatus, serverLifecycleEvidenceFor, status.isApplied, { __proposalDisplayState: displayState }, proposalStorage,
         ProposalManager, summary => (String(summary.serverProposalId) === String(local.serverProposalId) ? local : null),
         updateProposalList, { info() {}, error() {} });
     return { ...api, proposalStorage, ProposalManager, updateProposalList };
@@ -60,5 +64,24 @@ describe('local copies follow the server lifecycle', () => {
         expect(changed).toBe(1);
         expect(local).toMatchObject({ lifecycleStatus: 'Cancelled', applied: false });
         expect(updateProposalList).toHaveBeenCalledOnce();
+    });
+
+    it('copies fresh server evidence and removes stale local evidence when summaries omit it', async () => {
+        const local = {
+            proposalId: 'p-3', serverProposalId: '3', lifecycleStatus: 'Executed',
+            lifecycleEvidence: { protocol: 'proposal-lifecycle-evidence/1', state: 'observed', status: 'Executed', source: 'chain-state-read', observedAt: '2026-10-20T10:00:00.000Z' }
+        };
+        const { followServerLifecycle, proposalStorage } = harness(local);
+        const serverEvidence = {
+            protocol: 'proposal-lifecycle-evidence/1', state: 'unknown',
+            claimedStatus: 'Executed', reason: 'no-matching-observation'
+        };
+        expect(await followServerLifecycle(local, 'Executed', serverEvidence)).toBe(true);
+        expect(local.lifecycleEvidence).toEqual(serverEvidence);
+        expect(proposalStorage.save).toHaveBeenCalledOnce();
+
+        expect(await followServerLifecycle(local, 'Executed')).toBe(true);
+        expect(local).not.toHaveProperty('lifecycleEvidence');
+        expect(proposalStorage.save).toHaveBeenCalledTimes(2);
     });
 });

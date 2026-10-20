@@ -40,9 +40,10 @@ describe('agent dialog proposal meta', () => {
         expect(getProposalDisplayMeta({ proposalId: '780', serverProposalId: '780' })).toMatchObject({ minted: false, displayId: '780' });
     });
 
-    it('keeps the cached-id fallbacks: numeric means minted, legacy local numbers read local-<n>', () => {
-        expect(getProposalDisplayMeta(null, '42')).toMatchObject({ minted: true, displayId: '42' });
+    it('does not infer minting or rewrite local keys from their spelling', () => {
+        expect(getProposalDisplayMeta(null, '42')).toMatchObject({ minted: false, displayId: '42' });
         expect(getProposalDisplayMeta(null, 'p-xyz')).toMatchObject({ minted: false, displayId: 'p-xyz' });
+        expect(getProposalDisplayMeta({ proposalId: '42' })).toMatchObject({ minted: false, displayId: '42' });
         expect(getProposalDisplayMeta({ proposalId: 'local-7' })).toMatchObject({ minted: false, displayId: 'local-7' });
     });
 });

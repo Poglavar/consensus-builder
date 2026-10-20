@@ -77,12 +77,12 @@
 
     async function readSummary(proposal) {
         const client = await dependencies();
-        const { cluster } = walletContextOrGuest();
-        const connection = root.SolanaChainDataLoader.getConnection(cluster);
+        const connection = await root.SolanaChainDataLoader.getVerifiedConnection('devnet');
         const wallet = root.solanaWalletManager?.getProvider?.()?.publicKey || null;
         const [marketAddress] = client.getMarketPda(proposal);
         const [market, chainStatus] = await Promise.all([client.readMarket(connection, proposal), readChainStatus(connection, proposal)]);
         if (!market) return { market: null, marketAddress: marketAddress.toBase58(), wallet: wallet?.toBase58?.() || null, chainStatus };
+        if (market.stakeMint !== DEVNET_USDC_MINT) throw new Error('Market stake mint does not match devnet USDC.');
         const [yes, no] = wallet ? await Promise.all([
             client.readPosition(connection, proposal, wallet, client.constants.SIDE_YES),
             client.readPosition(connection, proposal, wallet, client.constants.SIDE_NO)
@@ -98,53 +98,38 @@
         const wallet = root.solanaWalletManager?.getProvider?.()?.publicKey || null;
         const accounts = Array.from(new Set((proposals || []).filter(Boolean)));
         if (!wallet || !accounts.length) return {};
-        const { cluster } = walletContextOrGuest();
-        const connection = root.SolanaChainDataLoader.getConnection(cluster);
+        const connection = await root.SolanaChainDataLoader.getVerifiedConnection('devnet');
         const sides = [['yes', client.constants.SIDE_YES], ['no', client.constants.SIDE_NO]];
         const keys = [];
         accounts.forEach(proposal => {
             const [market] = client.getMarketPda(proposal, options.programId);
-            sides.forEach(([name, side]) => keys.push({ proposal, name, address: client.getPositionPda(market, wallet, side, options.programId)[0] }));
+            sides.forEach(([name, side]) => keys.push({ proposal, name, market, side, address: client.getPositionPda(market, wallet, side, options.programId)[0] }));
         });
         const infos = [];
         // getMultipleAccountsInfo takes at most 100 keys per call.
         for (let start = 0; start < keys.length; start += 100) {
             const chunk = keys.slice(start, start + 100);
             const batch = await connection.getMultipleAccountsInfo(chunk.map(item => item.address), 'confirmed');
-            infos.push(...(batch || []));
+            if (!Array.isArray(batch) || batch.length !== chunk.length) throw new Error('Market position response is incomplete.');
+            infos.push(...batch);
         }
         const result = {};
         keys.forEach((item, index) => {
             const entry = result[item.proposal] || (result[item.proposal] = { yes: null, no: null });
             const info = infos[index];
             if (!info || !info.data) return;
-            try {
-                entry[item.name] = client.decodePosition(info.data);
-            } catch (error) {
-                console.warn(`[${new Date().toISOString()}] [market] position unreadable for ${item.proposal} ${item.name}:`, error);
-            }
+            entry[item.name] = client.readPositionAccount(info, item.market, wallet, item.side, options.programId);
         });
         return result;
     }
 
     // The proposal account's own status name ('Active' | 'Executed' | 'Cancelled' | 'Expired'), which is
-    // what the market program resolves from; null when the account is unreadable here.
+    // what the market program resolves from. A missing or invalid account fails the summary;
+    // it must not make a market look like a valid pool with an unknown subject.
     async function readChainStatus(connection, proposal) {
-        const reader = root.SolanaAcceptanceClient && typeof root.SolanaAcceptanceClient.readProposal === 'function' ? root.SolanaAcceptanceClient.readProposal : null;
-        if (!reader) return null;
-        try {
-            const info = await connection.getAccountInfo(new root.solanaWeb3.PublicKey(proposal), 'confirmed');
-            const decoded = info && info.data ? reader(info.data, proposal) : null;
-            return decoded && decoded.status && decoded.status !== 'Unknown' ? decoded.status : null;
-        } catch (error) {
-            console.warn(`[${new Date().toISOString()}] [market] proposal status unavailable for ${proposal}:`, error);
-            return null;
-        }
-    }
-
-    function walletContextOrGuest() {
-        const manager = root.solanaWalletManager;
-        return { cluster: manager?.getCluster?.() || 'devnet' };
+        const decoded = await root.SolanaAcceptanceClient.fetchProposal(connection, proposal);
+        if (!decoded?.status || decoded.status === 'Unknown') throw new Error('Proposal account status is unavailable.');
+        return decoded.status;
     }
 
     async function createMarket(options = {}) {
@@ -213,8 +198,7 @@
         const client = await dependencies();
         const wallet = root.solanaWalletManager?.getProvider?.()?.publicKey || null;
         if (!wallet) return null;
-        const { cluster } = walletContextOrGuest();
-        const connection = root.SolanaChainDataLoader.getConnection(cluster);
+        const connection = await root.SolanaChainDataLoader.getVerifiedConnection('devnet');
         const mint = options.stakeMint || new root.solanaWeb3.PublicKey(DEVNET_USDC_MINT);
         const tokenAccount = client.getAssociatedTokenAddress(wallet, mint);
         const balance = await connection.getTokenAccountBalance(tokenAccount, 'confirmed').catch(() => null);

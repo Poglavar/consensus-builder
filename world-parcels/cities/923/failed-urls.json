@@ -1,0 +1,23 @@
+[
+  {
+    "url": "https://www.dadc.gouv.tg/index.php/contacts.html"
+  },
+  {
+    "url": "https://www.dadc.gouv.tg/index.php/services-dccfe/cadastre/vision-et-missions-du-cadastre.html"
+  },
+  {
+    "url": "https://geodata.gouv.tg/services"
+  },
+  {
+    "url": "https://api.geodata.gouv.tg/app/get_open_data_config"
+  },
+  {
+    "url": "https://api.geodata.gouv.tg/app/regions/geos/"
+  },
+  {
+    "url": "https://geoserver.geoportail.gouv.tg/geoserver/ows?service=WFS&request=GetCapabilities"
+  },
+  {
+    "url": "https://dccfe.otr.tg/"
+  }
+]

@@ -125,8 +125,8 @@ export async function enqueueSheetTasks(db, { listingUrls = null, limit = 100, d
     return { sources: sources.size, enqueued, reused, deferred };
 }
 
-export async function readSheets(db, options = {}) {
-    return runBatchStage(db, {
+export function sheetStageAdapter() {
+    return {
         stage: 'plans', processor: SHEET_PROCESSOR, schema: SHEET_SCHEMA, counters: { read: 0 },
         async prepare(db, task, llm, { deadline, maxOutputTokens }) {
             const image = await renderImageForClassification(db, task, { deadline });
@@ -141,7 +141,11 @@ export async function readSheets(db, options = {}) {
                 [task.id, JSON.stringify({ sheet, model: item.model })]);
             return { read: 1 };
         },
-    }, options);
+    };
+}
+
+export async function readSheets(db, options = {}) {
+    return runBatchStage(db, sheetStageAdapter(), options);
 }
 
 export async function sheetContexts(db, hashes) {

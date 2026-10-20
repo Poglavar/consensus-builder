@@ -7,7 +7,7 @@ const bridgeSource = fs.readFileSync(new URL('../../frontend/js/solana/market-br
 describe('Solana market bridge', () => {
     it('loads an optional market and both connected-wallet positions through the shared client', async () => {
         const wallet = { toBase58: () => 'wallet-1' };
-        const market = { stakeMint: 'mint-1', yesPool: 100n, noPool: 50n, resolved: false };
+        const market = { stakeMint: '4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU', yesPool: 100n, noPool: 50n, resolved: false };
         const client = {
             constants: { SIDE_YES: 1, SIDE_NO: 0 },
             getMarketPda: vi.fn(() => [{ toBase58: () => 'market-pda-1' }]),
@@ -17,8 +17,9 @@ describe('Solana market bridge', () => {
         const window = {
             solanaWeb3: { Transaction: class Transaction {} },
             SolanaMarketClient: client,
-            SolanaChainDataLoader: { getConnection: vi.fn(() => ({ rpc: 'devnet' })) },
-            solanaWalletManager: { getCluster: vi.fn(() => 'devnet'), getProvider: vi.fn(() => ({ publicKey: wallet })) }
+            SolanaChainDataLoader: { getConnection: vi.fn(), getVerifiedConnection: vi.fn(async () => ({ rpc: 'devnet' })) },
+            SolanaAcceptanceClient: { fetchProposal: vi.fn(async () => ({ status: 'Active' })) },
+            solanaWalletManager: { getCluster: vi.fn(() => 'mainnet-beta'), getProvider: vi.fn(() => ({ publicKey: wallet })) }
         };
         vm.runInNewContext(bridgeSource, { window });
 
@@ -26,6 +27,13 @@ describe('Solana market bridge', () => {
             market, marketAddress: 'market-pda-1', wallet: 'wallet-1', yes: { side: 1 }, no: { side: 0 }
         });
         expect(client.readPosition).toHaveBeenCalledTimes(2);
+        expect(window.SolanaChainDataLoader.getVerifiedConnection).toHaveBeenCalledWith('devnet');
+        expect(window.SolanaChainDataLoader.getConnection).not.toHaveBeenCalled();
+        market.stakeMint = 'another-mint';
+        await expect(window.SolanaMarketBridge.readSummary('proposal-1')).rejects.toThrow('stake mint');
+        market.stakeMint = window.SolanaMarketBridge.DEVNET_USDC_MINT;
+        window.SolanaAcceptanceClient.fetchProposal.mockResolvedValue(null);
+        await expect(window.SolanaMarketBridge.readSummary('proposal-1')).rejects.toThrow('status is unavailable');
     });
 
     it('reads the connected wallet\'s positions for a whole list of proposals in one RPC call', async () => {
@@ -34,7 +42,7 @@ describe('Solana market bridge', () => {
             constants: { SIDE_YES: 1, SIDE_NO: 0 },
             getMarketPda: vi.fn(proposal => [{ toBase58: () => `market:${proposal}` }]),
             getPositionPda: vi.fn((market, _owner, side) => [{ key: `${market.toBase58()}:${side}` }]),
-            decodePosition: vi.fn(data => data)
+            readPositionAccount: vi.fn(info => info.data)
         };
         const connection = {
             getMultipleAccountsInfo: vi.fn(async keys => keys.map(key => (key.key === 'market:proposal-2:0' ? { data: { amount: 50000n, side: 0 } } : null)))
@@ -42,7 +50,7 @@ describe('Solana market bridge', () => {
         const window = {
             solanaWeb3: { Transaction: class Transaction {} },
             SolanaMarketClient: client,
-            SolanaChainDataLoader: { getConnection: vi.fn(() => connection) },
+            SolanaChainDataLoader: { getConnection: vi.fn(() => connection), getVerifiedConnection: vi.fn(async () => connection) },
             solanaWalletManager: { getCluster: vi.fn(() => 'devnet'), getProvider: vi.fn(() => ({ publicKey: wallet })) }
         };
         vm.runInNewContext(bridgeSource, { window });
@@ -59,6 +67,10 @@ describe('Solana market bridge', () => {
         window.solanaWalletManager.getProvider = vi.fn(() => null);
         await expect(window.SolanaMarketBridge.readPositions(['proposal-1'])).resolves.toEqual({});
         expect(connection.getMultipleAccountsInfo).toHaveBeenCalledTimes(1);
+
+        window.solanaWalletManager.getProvider = vi.fn(() => ({ publicKey: wallet }));
+        connection.getMultipleAccountsInfo.mockResolvedValue([]);
+        await expect(window.SolanaMarketBridge.readPositions(['proposal-1'])).rejects.toThrow('incomplete');
     });
 
     it('preflights, signs, confirms, and reports every stake transaction state', async () => {

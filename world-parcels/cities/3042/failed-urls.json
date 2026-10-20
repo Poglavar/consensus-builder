@@ -1,0 +1,14 @@
+[
+  {
+    "url": "https://www.idep.gob.pe/geovisor/SNCP/config.json",
+    "reason": "404"
+  },
+  {
+    "url": "https://www.idep.gob.pe/geovisor/SNCP/config/config.json",
+    "reason": "404"
+  },
+  {
+    "url": "https://www.idep.gob.pe/geovisor/SNCP/config/config_widgets.json",
+    "reason": "404"
+  }
+]

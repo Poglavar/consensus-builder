@@ -2,10 +2,11 @@ import { selectNativeOption } from '../helpers/controls';
 import { test, expect } from '../helpers/fixtures';
 import { clickMapPoint, openCity, PARCEL_GEOMETRY, PARCEL_ID, proposalState, showProposal } from '../helpers/runtime';
 import { connectWalletByConnectorId, injectMockSolanaWallet, waitForBlockchainRuntime } from '../helpers/blockchain';
+import { installSolanaProposalAccount } from '../helpers/solana-proposal-account';
 
 const SOLANA_WALLET = '7xKXtg2CWYcy6EH8d9xvPht4JyhV46Lxgq6vN6hS9wZT';
 const PROPOSAL_ACCOUNT = '3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg';
-const PARCEL_PROGRAM = '4zadC1FgWPQLv6qv66mjEBthBqTvrmxL5oDcHQzNtkV1';
+const PROPOSAL_PROGRAM = '3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg';
 
 async function chooseInMemoryProposal(page: import('@playwright/test').Page): Promise<void> {
   const confirm = page.locator('.cb-dialog-overlay--confirm');
@@ -48,6 +49,7 @@ async function installMarketRpcFixture(page: import('@playwright/test').Page): P
     provider.signTransaction = async (transaction: any) => { transaction.serialize = () => new Uint8Array([1, 2, 3]); return transaction; };
     w.SolanaChainDataLoader.getConnection = () => connection;
   }, { proposal: PROPOSAL_ACCOUNT, wallet: SOLANA_WALLET });
+  await installSolanaProposalAccount(page, { proposal: PROPOSAL_ACCOUNT, owner: SOLANA_WALLET });
 }
 
 async function expandProposalDetails(page: import('@playwright/test').Page): Promise<void> {
@@ -156,9 +158,11 @@ test.describe('Proposal browsing @features', () => {
       status: 200, contentType: 'application/json',
       body: JSON.stringify({
         parcelUid: PARCEL_ID,
-        anchor: { account: PROPOSAL_ACCOUNT, exists: true, mintedAt: '2026-08-12T10:00:00Z' },
+        anchor: { account: PROPOSAL_ACCOUNT, exists: null, source: 'unavailable' },
         events: [
           { type: 'proposal_created', at: '2026-08-10T08:00:00Z', title: 'Parcel history proposal' },
+          { type: 'proposal_chain_observed', at: '2026-08-10T08:06:00Z', proposalId: 'proposal-42',
+            link: `https://explorer.solana.com/address/${PROPOSAL_ACCOUNT}?cluster=devnet` },
           { type: 'proposal_acceptance', at: '2026-08-11T09:00:00Z', proposalId: 'proposal-42', owner: SOLANA_WALLET },
         ],
       }),
@@ -171,7 +175,7 @@ test.describe('Proposal browsing @features', () => {
     const proposalId = await page.evaluate((data) => (window as any).proposalStorage.addProposal({
       title: 'Parcel history proposal', goal: 'park', lifecycleStatus: 'Active', cadastreParcelIds: [data.parcelId],
       isMinted: true, nft: { chain: 'solana-devnet', contract: data.program, tokenId: data.account },
-    }), { parcelId: PARCEL_ID, program: PARCEL_PROGRAM, account: PROPOSAL_ACCOUNT });
+    }), { parcelId: PARCEL_ID, program: PROPOSAL_PROGRAM, account: PROPOSAL_ACCOUNT });
     await showProposal(page, proposalId);
     await expandProposalDetails(page);
     await openProposalSection(page, 'verification');
@@ -179,8 +183,14 @@ test.describe('Proposal browsing @features', () => {
     const history = page.locator('.proposal-parcel-history-card');
     await expect(history).toBeVisible();
     await history.locator(`[data-parcel-history="${PARCEL_ID}"] summary`).click();
+    const observation = history.locator('[data-history-type="proposal_chain_observed"]');
+    await expect(observation).toContainText('Proposal observed on Solana devnet');
+    await expect(observation).toContainText('this is not the mint time');
+    await expect(observation.locator('time')).toHaveAttribute('datetime', '2026-08-10T08:06:00Z');
+    await expect(observation.getByRole('link', { name: 'View' })).toHaveAttribute('href', /\/address\/.+cluster=devnet/);
     await expect(history.locator('[data-history-type="proposal_acceptance"]')).toContainText('Owner said yes');
-    await expect(history.locator('.parcel-history-anchor')).toContainText('Anchored on chain since');
+    await expect(history.locator('.parcel-history-anchor')).toContainText('Parcel anchor status unavailable');
+    await expect(history.locator('.parcel-history-anchor')).not.toContainText('No parcel anchor found');
   });
 
   test('stacked proposals open the visible side-by-side parcel comparison', async ({ mockApi: page }) => {

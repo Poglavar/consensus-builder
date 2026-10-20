@@ -1,0 +1,11 @@
+[
+  {
+    "url": "https://gis.pr.gov/Pages/default.aspx"
+  },
+  {
+    "url": "https://casp.pr.gov/Leyes/Ley_Num_107-2020.pdf"
+  },
+  {
+    "url": "https://sigejp.pr.gov/server/rest/services/crim/crim_parcelas/MapServer/0?f=pjson"
+  }
+]

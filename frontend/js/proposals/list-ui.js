@@ -166,12 +166,12 @@ function handleProposalParcelClick(parcelId, event) {
     event.stopPropagation();
     event.preventDefault();
 
-    // Check if this is a removed ancestor parcel
+    // A source replaced in the map model keeps its location without selecting a live input face.
     const parcelItem = event.currentTarget;
-    const isRemoved = parcelItem && parcelItem.getAttribute('data-parcel-removed') === 'true';
+    const isReplaced = parcelItem && parcelItem.getAttribute('data-parcel-replaced') === 'true';
 
-    if (isRemoved) {
-        // Focus on the location where the parcel was, but don't try to select it
+    if (isReplaced) {
+        // Focus on its source location; an unloaded source instead follows the normal details path.
         focusOnRemovedParcelLocation(parcelId, parcelItem);
         return false;
     }
@@ -596,9 +596,9 @@ function sortProposalDataset(dataset) {
             case 'parcels-asc':
                 return am.parcelCount - bm.parcelCount;
             case 'area-desc':
-                return bm.area - am.area;
+                return window.ProposalArea.compareAreas(am.area, bm.area);
             case 'area-asc':
-                return am.area - bm.area;
+                return window.ProposalArea.compareAreas(am.area, bm.area, true);
             case 'author-asc':
                 return am.authorLower.localeCompare(bm.authorLower);
             case 'author-desc':
@@ -613,8 +613,8 @@ function sortProposalDataset(dataset) {
 }
 
 // The lifecycle rung of one proposal, the ladder every list shows (docs/design-language.md):
-// Draft → Published → Minted → Executed, and a modifier for a cancelled, expired, concluded or
-// unfunded record. → { rung, label, modifier: { className, label } | null }. The proposals list, the
+// Draft, Published, Minted or Execution recorded, and a modifier for a cancelled, expired,
+// concluded or unfunded record. → { rung, label, hint, modifier: { className, label } | null }. The proposals list, the
 // parcel and block panels and the parcel-set list all read it, so a proposal is named the same
 // wherever it is listed. The derivation is proposals/display-state.js, shared with the details panel.
 function getProposalLadder(proposal) {
@@ -623,7 +623,8 @@ function getProposalLadder(proposal) {
     const modifier = state.modifier
         ? { className: state.modifierTone, label: getProposalLifecycleLabel(state.modifier) }
         : null;
-    return { rung: state.rung, label: window.__proposalDisplayState.rungLabel(state.rung, t), modifier };
+    return { rung: state.rung, label: window.__proposalDisplayState.rungLabel(state.rung, t),
+        hint: window.__proposalDisplayState.rungHint(state.rung, t), modifier };
 }
 
 // Who decides (proposal-kinds.md), once the kind is settled: chosen in the dialog, or published
@@ -649,7 +650,7 @@ function proposalLadderBadgesHtml(proposal, options = {}) {
         ? { applied: options.applied }
         : {});
     return [
-        `<span class="cb-badge cb-badge--${ladder.rung}">${escapeHtml(ladder.label)}</span>`,
+        `<span class="cb-badge cb-badge--${ladder.rung}" title="${escapeHtml(ladder.hint)}">${escapeHtml(ladder.label)}</span>`,
         proposalKindBadgeHtml(proposal, ladder.rung !== 'draft'),
         applied ? `<span class="cb-badge cb-badge--applied"><i class="fas fa-check" aria-hidden="true"></i> ${escapeHtml(t('common.lifecycle.applied', 'Applied'))}</span>` : '',
         ladder.modifier ? `<span class="cb-badge ${ladder.modifier.className}">${escapeHtml(ladder.modifier.label)}</span>` : ''
@@ -658,14 +659,17 @@ function proposalLadderBadgesHtml(proposal, options = {}) {
 
 function buildProposalActionButtons(proposal, isExecuted = false) {
     // Action buttons (Apply to map / Remove from map) are now only available in proposal details modal.
-    // Exception: open sale offers (Ownership: Third party · Anyone) get a Buy button so a buyer can
-    // claim the offer directly from the list. Stop propagation so the row preview doesn't also run.
+    // Open sale offers have a browser-local purchase simulation. Stop propagation so the row
+    // preview does not also run; retain the separate local result alongside the shared lifecycle.
     const t = getProposalI18nHelper();
     const buttons = [];
-    if (!isExecuted && typeof isProposalOpenSaleOffer === 'function' && isProposalOpenSaleOffer(proposal)) {
-        const buyLabel = t('panel.proposal.buy.button', 'Buy');
+    if (proposal.localPurchaseSimulation) {
+        buttons.push(`<span class="proposal-purchase-simulation">${escapeHtml(t('panel.proposal.purchaseSimulation.result', 'Purchase simulated in this browser'))}</span>`);
+    } else if (!isExecuted && typeof isProposalOpenSaleOffer === 'function' && isProposalOpenSaleOffer(proposal)) {
+        const buyLabel = t('panel.proposal.purchaseSimulation.button', 'Simulate purchase');
+        const hint = t('panel.proposal.purchaseSimulation.hint', 'Updates modeled parcel ownership in this browser. No payment is made.');
         const pid = proposal.proposalId || proposal.id || '';
-        buttons.push(`<button type="button" class="btn btn-success btn-sm proposal-buy-btn" title="${buyLabel}" onclick="event.stopPropagation(); claimSaleOffer('${pid}');"><i class="fas fa-handshake" aria-hidden="true"></i> ${buyLabel}</button>`);
+        buttons.push(`<button type="button" class="btn btn-success btn-sm proposal-buy-btn" title="${escapeHtml(hint)}" onclick="event.stopPropagation(); simulateSaleOfferPurchase('${pid}');"><i class="fas fa-handshake" aria-hidden="true"></i> ${buyLabel}</button>`);
     }
     // The list has no inline editor. Its row previews the proposal; the explicit Details button
     // opens the details panel with actions such as editing, creating a proposal, parking, or deletion.
@@ -679,7 +683,6 @@ function buildProposalListItemsHtml(dataset, options = {}) {
     const metaLabels = {
         author: t('modal.roadWidth.proposalList.meta.author', 'Author:'),
         created: t('modal.roadWidth.proposalList.meta.created', 'Created:'),
-        acceptance: t('modal.roadWidth.proposalList.meta.acceptance', 'Acceptance:'),
         parcels: t('modal.roadWidth.proposalList.meta.parcels', 'Parcels:'),
         area: t('modal.roadWidth.proposalList.meta.area', 'Area:'),
         offer: t('modal.roadWidth.proposalList.meta.offer', 'Offer:'),
@@ -704,9 +707,9 @@ function buildProposalListItemsHtml(dataset, options = {}) {
         const serialProposalId = typeof getSerialProposalId === 'function' ? getSerialProposalId(proposal) : null;
         const color = typeof getProposalColor === 'function' ? getProposalColor(proposalId || '') : '#007bff';
         const typeLabel = escapeHtml(formatProposalTypeLabel(metrics.goalKey));
-        const acceptanceText = metrics.parcelCount > 0
-            ? `${metrics.acceptedCount}/${metrics.parcelCount} ${t('modal.roadWidth.proposalList.meta.acceptedWord', 'accepted')}`
-            : '—';
+        const consentLabels = metrics.consentBasis && window.ProposalApprovalText.consentLabels(metrics.consentBasis, t,
+            { accepted: metrics.acceptedCount, total: metrics.parcelCount });
+        const acceptanceText = metrics.parcelCount > 0 && consentLabels ? consentLabels.parcelSummary : '';
         const areaText = formatAreaMetric(metrics.area);
         // No offer → no "—" placeholder in the meta line; the line simply has one fewer item.
         const offerText = (Number.isFinite(metrics.offerValue) && metrics.offerValue > 0)
@@ -786,11 +789,11 @@ function buildProposalListItemsHtml(dataset, options = {}) {
             `<span>${safeAuthor}</span>`,
             `<span>${escapeHtml(createdDate)}</span>`,
             `<span>${escapeHtml(t('proposals.autoName.parcels', '{{count}} parcels', { count: metrics.parcelCount }))}</span>`,
-            `<span title="${escapeHtml(metaLabels.acceptance)}">${escapeHtml(acceptanceText)}</span>`
+            acceptanceText ? `<span data-consent-basis="${metrics.consentBasis}" title="${escapeHtml(consentLabels.hint)}">${escapeHtml(acceptanceText)}</span>` : ''
         ].filter(Boolean).join('<span class="proposal-card-dot">·</span>');
 
         return `
-            <div class="${classAttr} proposal-list-item--compact" data-proposal-id="${proposalId}" style="border-left: 4px ${isUnsaved ? 'dashed' : 'solid'} ${color};">
+            <div class="${classAttr} proposal-list-item--compact" data-proposal-id="${proposalId}"${isServerSource ? ` data-server-id="${escapeHtml(proposal.serverProposalId || '')}"` : ''} style="border-left: 4px ${isUnsaved ? 'dashed' : 'solid'} ${color};">
                 <div class="proposal-card-head">
                     <span class="proposal-card-icon" title="${escapeHtml(goalIconTitle)}" aria-hidden="true">${escapeHtml(goalIcon)}</span>
                     <span class="proposal-list-title" title="${safeTitle}">${safeTitle}</span>
@@ -874,13 +877,20 @@ async function handleProposalListItemClick(event) {
     const source = proposalListState.source || 'local';
     console.log('[ProposalList] click on proposal item', { proposalIdAttr, source });
 
-    // Check local storage first, even when browsing the server tab
-    let proposal = getProposalByIdOrHash(proposalIdAttr);
+    // Server rows refer to local copies by their declared row reference, never by an authored-ID
+    // collision with a local key or chain token.
+    const serverRowId = source === 'server' ? item.getAttribute('data-server-id') : null;
+    let proposal = source === 'server'
+        ? findLocalCopyOfServerProposal({
+            serverProposalId: serverRowId,
+            publicationApiBase: typeof resolveBackendBaseUrl === 'function' ? resolveBackendBaseUrl() : null
+        })
+        : getProposalByIdOrHash(proposalIdAttr);
 
     // A published proposal opens like any other: it is fetched into this browser on the way, with
     // no "Download?" question (that was an implementation detail asked of the user).
     if (!proposal && source === 'server') {
-        const serverId = proposalIdAttr;
+        const serverId = serverRowId;
         try {
             updateStatus('Downloading proposal…');
             proposal = await importServerProposal(serverId);
@@ -944,10 +954,17 @@ async function handleProposalListDetailsClick(event) {
     const proposalId = event.currentTarget?.getAttribute('data-proposal-details');
     if (!proposalId) return;
 
-    let proposal = getProposalByIdOrHash(proposalId);
+    const serverRowId = proposalListState.source === 'server'
+        ? event.currentTarget.closest('.proposal-list-item')?.getAttribute('data-server-id') : null;
+    let proposal = proposalListState.source === 'server'
+        ? findLocalCopyOfServerProposal({
+            serverProposalId: serverRowId,
+            publicationApiBase: typeof resolveBackendBaseUrl === 'function' ? resolveBackendBaseUrl() : null
+        })
+        : getProposalByIdOrHash(proposalId);
     if (!proposal && proposalListState.source === 'server') {
         try {
-            proposal = await importServerProposal(proposalId);
+            proposal = await importServerProposal(serverRowId);
         } catch (error) {
             if (error?.code === 'proposal-in-other-city') {
                 await openProposalInItsCity(proposalId, error.cityId);

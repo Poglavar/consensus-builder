@@ -1,0 +1,11 @@
+[
+  {
+    "url": "https://ovc.catastro.meh.es/Cartografia/INSPIRE/spadgcwms.aspx?service=WMS&request=GetCapabilities"
+  },
+  {
+    "url": "http://ovc.catastro.meh.es/Cartografia/INSPIRE/spadgcwms.aspx?service=wms&request=GetCapabilities&version=1.1.1"
+  },
+  {
+    "url": "http://ovc.catastro.meh.es/Cartografia/INSPIRE/spadgcwms.aspx?service=wms&request=getfeatureinfo&srs=epsg:25830&width=50&height=50&format=image/png&query_layers=CP.CADASTRALPARCEL&bbox=433291.967,4811439.021,433293.967,4811441.021&i=25&j=25"
+  }
+]

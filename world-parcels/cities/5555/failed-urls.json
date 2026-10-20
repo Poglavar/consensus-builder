@@ -1,0 +1,18 @@
+[
+  {
+    "url": "https://rosreestr.gov.ru/",
+    "reason": "timeout after 20 seconds"
+  },
+  {
+    "url": "https://pkk.rosreestr.ru/",
+    "reason": "timeout after 20 seconds; request batch stopped"
+  },
+  {
+    "url": "https://ppk.rosreestr.ru/",
+    "reason": "not completed after preceding bounded timeout"
+  },
+  {
+    "url": "https://rosreestr.gov.ru/wps/portal/p/cc_ib_portal_services/online_request",
+    "reason": "not completed after preceding bounded timeout"
+  }
+]

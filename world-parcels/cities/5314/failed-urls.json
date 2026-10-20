@@ -1,0 +1,10 @@
+[
+  {
+    "url": "https://kbs2.corum.bel.tr/",
+    "reason": "search-indexed first-party page; direct host DNS failed during this attempt"
+  },
+  {
+    "url": "https://harita.corum.bel.tr/",
+    "reason": "timeout after 20 seconds"
+  }
+]

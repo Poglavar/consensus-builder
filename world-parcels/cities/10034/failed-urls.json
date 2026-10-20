@@ -1,0 +1,27 @@
+[
+  {
+    "url": "https://zwfw.jinan.gov.cn/jpaas-jiq-web-jnywtb/front/transition/ywTransToDetail?areaCode=370114000000&innerCode=a52763d0-09f6-4b81-bd3c-eb063ffbd0e6&taskType=GG",
+    "reason": "403"
+  },
+  {
+    "url": "https://nrp.jinan.gov.cn/oshs/pages/oshs/appoint3/telephone.jsf?mbean=pointMBean&subType=3-1&type=3",
+    "reason": "403"
+  },
+  {
+    "url": "https://nrp.jinan.gov.cn/",
+    "reason": "403"
+  },
+  {
+    "url": "https://www.tianditu.gov.cn/",
+    "reason": "418"
+  },
+  {
+    "url": "https://www.jinan.gov.cn/art/2024/1/23/art_81008_4969733.html"
+  },
+  {
+    "url": "https://www.webmap.cn/main.do?method=index1"
+  },
+  {
+    "url": "https://www.jnzq.gov.cn/"
+  }
+]

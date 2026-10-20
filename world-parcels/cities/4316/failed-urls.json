@@ -1,0 +1,17 @@
+[
+  {
+    "url": "https://www.inspire.niedersachsen.de/doorman/noauth/alkis-dls-cp?REQUEST=GetCapabilities&SERVICE=WFS"
+  },
+  {
+    "url": "https://www.hannover.de/Service/Presse-Medien/Landeshauptstadt-Hannover/Stadtkarte-1-1000-SKH1000"
+  },
+  {
+    "url": "https://numis.niedersachsen.de/trefferanzeige?docuuid=d5b05158-fd60-4749-9913-4d4afa85986b"
+  },
+  {
+    "url": "https://www.inspire.niedersachsen.de/doorman/noauth/alkis-dls-cp?SERVICE=WFS&VERSION=2.0.0&REQUEST=DescribeFeatureType&TYPENAMES=cp%3ACadastralParcel"
+  },
+  {
+    "url": "https://www.inspire.niedersachsen.de/doorman/noauth/alkis-dls-cp?SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&TYPENAMES=cp%3ACadastralParcel&BBOX=9.7540%2C52.3779%2C9.7542%2C52.3781%2Curn%3Aogc%3Adef%3Acrs%3AOGC%3A%3ACRS84"
+  }
+]

@@ -1,0 +1,14 @@
+[
+  {
+    "url": "https://gisdata.pima.gov/arcgis1/rest/services/GISOpenData/LandRecords/MapServer/12"
+  },
+  {
+    "url": "https://pimamaps.pima.gov/Geocortex/Essentials/PublicPM/REST/sites/pchydrosite/map/mapservices/primarysource-10"
+  },
+  {
+    "url": "https://gis.pima.gov/parcels/"
+  },
+  {
+    "url": "https://pro.tucsonaz.gov/parcel_search/10926004D"
+  }
+]

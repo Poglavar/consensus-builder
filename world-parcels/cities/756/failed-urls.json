@@ -1,0 +1,23 @@
+[
+  {
+    "url": "https://gdcg.mlmupc.gov.kh/",
+    "reason": "403"
+  },
+  {
+    "url": "https://cadastral.mlmupc.gov.kh/",
+    "reason": "403"
+  },
+  {
+    "url": "https://report-cis.mlmupc.gov.kh/",
+    "reason": "403"
+  },
+  {
+    "url": "https://mlmupc.gov.kh/services/"
+  },
+  {
+    "url": "https://mlmupc.gov.kh/electronic-cadastral-services/"
+  },
+  {
+    "url": "https://db.ncdd.gov.kh/gazetteer/view/district.castle?ds=1710"
+  }
+]

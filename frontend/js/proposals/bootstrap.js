@@ -1,7 +1,7 @@
 /* proposals/bootstrap.js — final browser wiring for the proposal subsystem. */
 
 if (typeof window !== 'undefined') {
-    window.claimSaleOffer = claimSaleOffer;
+    window.simulateSaleOfferPurchase = simulateSaleOfferPurchase;
     window.recordRecipientConsent = recordRecipientConsent;
     window.isProposalOpenSaleOffer = isProposalOpenSaleOffer;
     window.acceptAsRecipient = acceptAsRecipient;

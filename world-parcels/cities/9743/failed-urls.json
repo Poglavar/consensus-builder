@@ -1,0 +1,23 @@
+[
+  {
+    "url": "https://upbhunaksha.gov.in/bhunakshaserver/Levels/stateCode"
+  },
+  {
+    "url": "https://upbhunaksha.gov.in/bhunakshaserver/Levels/loginLevel"
+  },
+  {
+    "url": "https://upbhunaksha.gov.in/bhunakshaserver/Levels/mapLevelCount"
+  },
+  {
+    "url": "https://upbhunaksha.gov.in/bhunakshaserver/Levels/levelLabels"
+  },
+  {
+    "url": "https://upbhunaksha.gov.in/bhunakshaserver/masterdata/levelvalue"
+  },
+  {
+    "url": "https://upbhunaksha.gov.in/bhunakshaserver/MapInfo/getPlotAtXY"
+  },
+  {
+    "url": "https://upbhunaksha.gov.in/bhunakshaserver/api/plots?gisCode=170&plotNo=1"
+  }
+]

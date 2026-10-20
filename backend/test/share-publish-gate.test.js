@@ -12,11 +12,14 @@ const require = createRequire(import.meta.url);
 const source = readFileSync(fileURLToPath(new URL('../../frontend/js/proposals/sharing-routes.js', import.meta.url)), 'utf8');
 const ProposalKind = require('../../frontend/js/proposals/proposal-kind.js');
 const ProposalPublishTerms = require('../../frontend/js/proposals/publish-terms.js');
+const API_BASE = 'https://api.example.test';
 
-function load(records) {
+function load(records, rowCopies = [], currentProposalDetailsContext = null) {
     const shown = [];
     const openPublishTermsDialog = vi.fn();
     const store = new Map(records.map(record => [record.proposalId, record]));
+    const getProposalByServerRowId = vi.fn((rowId, apiBase) => rowCopies.find(record =>
+        String(record.serverProposalId) === String(rowId) && record.publicationApiBase === apiBase) || null);
     const window = {
         ProposalKind,
         ProposalPublishTerms,
@@ -30,13 +33,18 @@ function load(records) {
         getProposalI18nHelper: () => (_key, fallback) => fallback,
         getShareI18nHelper: () => (_key, fallback) => fallback,
         getProposalKey: record => record.proposalId,
-        currentProposalDetailsContext: null,
-        proposalStorage: { getProposal: id => store.get(id) || null, getAllProposals: () => Array.from(store.values()) },
+        currentProposalDetailsContext,
+        proposalStorage: {
+            getProposal: id => store.get(id) || null,
+            getAllProposals: () => Array.from(store.values()),
+            getProposalByServerRowId
+        },
+        resolveBackendBaseUrl: () => API_BASE,
         showUploadProposalModal: record => shown.push(record.proposalId),
         showEphemeralMessage: () => {}
     });
     runInContext(source, context, { filename: 'frontend/js/proposals/sharing-routes.js' });
-    return { context, shown, openPublishTermsDialog, store };
+    return { context, shown, openPublishTermsDialog, store, getProposalByServerRowId };
 }
 
 describe('Share and the publish step', () => {
@@ -61,5 +69,42 @@ describe('Share and the publish step', () => {
         context.shareSingleProposal('p-server');
         expect(shown).toEqual(['p-terms', 'p-server']);
         expect(openPublishTermsDialog).not.toHaveBeenCalled();
+    });
+
+    it('resolves a publication row only in the current API and ignores generic id aliases', () => {
+        const row = { proposalId: 'local-row-copy', serverProposalId: '99', publicationApiBase: API_BASE,
+            kind: 'owner-deal', termsConfirmed: true };
+        const { context, shown, getProposalByServerRowId } = load([
+            { proposalId: 'local-alias', id: '99', kind: 'owner-deal', termsConfirmed: true }
+        ], [row]);
+        context.shareSingleProposal('99');
+        expect(getProposalByServerRowId).toHaveBeenCalledWith('99', API_BASE);
+        expect(shown).toEqual(['local-row-copy']);
+    });
+
+    it('does not resolve the same row number from another publication API', () => {
+        const foreignRow = { proposalId: 'foreign-row-copy', serverProposalId: '99',
+            publicationApiBase: 'https://other.example.test', kind: 'owner-deal', termsConfirmed: true };
+        const { context, shown, getProposalByServerRowId } = load([], [foreignRow]);
+        context.shareSingleProposal('99');
+        expect(getProposalByServerRowId).toHaveBeenCalledWith('99', API_BASE);
+        expect(shown).toEqual([]);
+    });
+
+    it('does not share a record merely because its generic id matches a requested row', () => {
+        const { context, shown, getProposalByServerRowId } = load([
+            { proposalId: 'local-alias', id: '99', kind: 'owner-deal', termsConfirmed: true }
+        ]);
+        context.shareSingleProposal('99');
+        expect(getProposalByServerRowId).toHaveBeenCalledWith('99', API_BASE);
+        expect(shown).toEqual([]);
+    });
+
+    it('does not treat a details-context generic id as a publication-row reference', () => {
+        const contextProposal = { id: '99', kind: 'owner-deal', termsConfirmed: true };
+        const { context, shown, getProposalByServerRowId } = load([], [], contextProposal);
+        context.shareSingleProposal('99');
+        expect(getProposalByServerRowId).toHaveBeenCalledWith('99', API_BASE);
+        expect(shown).toEqual([]);
     });
 });

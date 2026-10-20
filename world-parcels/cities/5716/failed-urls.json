@@ -1,0 +1,10 @@
+[
+  {
+    "url": "https://services1.arcgis.com/t2DiVWqSr8z6f9DT/ArcGIS/rest/services/fukushimashimap_%E8%A1%A8%E7%A4%BA/FeatureServer",
+    "reason": "400"
+  },
+  {
+    "url": "https://services1.arcgis.com/t2DiVWqSr8z6f9DT/ArcGIS/rest/services/fukushimashimap_%E8%A1%A8%E7%A4%BA/FeatureServer/0/query",
+    "reason": "400"
+  }
+]

@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Resumable, reviewed WUP parcel-research loop for the Valhalla worker host.
 
-Nothing runs unless --run is supplied. State and raw Codex JSONL logs live under
-tmp/valhalla-parcel-research; per-city research workers only own their city packet.
+Nothing runs unless --run is supplied. Only per-city settings and failed URLs are
+permanent knowledge. Stage packets, logs and qualification workspaces are temporary.
 """
 from __future__ import annotations
 
@@ -18,7 +18,9 @@ import signal
 import subprocess
 import sys
 import time
+import threading
 import uuid
+from contextlib import contextmanager
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -403,6 +405,86 @@ class Runner:
         self.known_sources_rel: str | None = None
         self.known_sources_sha256: str | None = None
         self._state_was_present = self.state_path.exists()
+        self.pipeline_jobs = {}
+
+    def _refresh_shared_runtime(self):
+        shared = getattr(self.args, "shared_root", None)
+        if not shared:
+            return {}
+        import parcel_shared_runtime as runtime
+        with runtime.runtime_lock(shared):
+            marker = self.root / "tmp/parcel-shared-runtime/write-in-progress.json"
+            if marker.exists():
+                transaction = json_read(marker)
+                pid = transaction["pid"]
+                identity = process_start_identity(pid)
+                if identity is not None and identity == transaction.get("pidStartIdentity"):
+                    raise RuntimeError("shared adapter write is still owned by a live process")
+                runtime.restore_runtime(shared, self.root, runtime.current_runtime(shared),
+                                        transaction["beforePaths"])
+                marker.unlink()
+                self.log("recovered interrupted shared adapter write; qualified artifacts retained")
+            result = runtime.sync_runtime(shared, self.root)
+        self.state["sharedRuntime"] = {key: result[key] for key in ("generation", "codeGeneration")}
+        return result
+
+    @contextmanager
+    def _shared_write(self):
+        shared = getattr(self.args, "shared_root", None)
+        if not shared:
+            yield {}
+            return
+        import parcel_shared_runtime as runtime
+        with runtime.runtime_lock(shared):
+            self.shared_write_rolled_back = False
+            self._refresh_shared_runtime()
+            before = runtime.current_runtime(shared)
+            paths = runtime.runtime_paths(self.root)
+            marker = self.root / "tmp/parcel-shared-runtime/write-in-progress.json"
+            atomic_json(marker, {"pid": os.getpid(), "pidStartIdentity": process_start_identity(os.getpid()),
+                                 "generation": before["generation"], "beforePaths": paths})
+            try:
+                yield before
+                published = runtime.publish_runtime(shared, self.root, expected_generation=before["generation"])
+                # The caller's live marker is expected during this final audit.
+                runtime.sync_runtime(shared, self.root)
+                self.state["sharedRuntime"] = {key: published[key] for key in ("generation", "codeGeneration")}
+            except BaseException:
+                runtime.restore_runtime(shared, self.root, before, paths)
+                self.shared_write_rolled_back = True
+                raise
+            finally:
+                marker.unlink(missing_ok=True)
+                runtime.prune_runtime(shared)
+
+    def _qualification_fingerprint(self, city, saved):
+        from parcel_source_stage import _artifact_hashes
+        root = saved.get("artifactRoot")
+        if not root or not Path(root).is_dir():
+            return None
+        try:
+            current = _artifact_hashes(self.root, Path(root))
+        except (OSError, ValueError, TypeError, KeyError, json.JSONDecodeError):
+            return None
+        return hashlib.sha256(json.dumps({"receipt": saved.get("receiptSha256"), "artifacts": current},
+                                         sort_keys=True).encode()).hexdigest()
+
+    def _learning_prompt(self, city, stage):
+        from parcel_city_storage import knowledge_root
+        directory = knowledge_root(self) / "world-parcels/cities" / str(city["cityCode"])
+        records = {}
+        for name in ("failed-urls.json", "settings.json"):
+            path = directory / name
+            if path.is_file():
+                records[name] = json_read(path)
+        return ("\nCity knowledge: failed URLs describe unsuccessful attempts, not proof of absent cadastre. "
+                "Use working sources/settings and current shared adapter code. Avoid repeating failed routes "
+                "unless fixing their recorded cause. All other evidence is temporary.\n" +
+                json.dumps(records, ensure_ascii=False))
+
+    def _record_shared_learning(self, city, lane, row):
+        from parcel_city_storage import record_attempts
+        record_attempts(self, city, self._queue_path().parent)
 
     def _model(self, role: str) -> dict[str, Any]:
         if self.models is None:
@@ -427,10 +509,11 @@ class Runner:
 
     def log(self, message: str, **fields: Any) -> None:
         event = {"at": utc_now(), "message": message, **fields}
-        append_jsonl(self.events_path, event)
         print(f"[{event['at']}] {message}", flush=True)
 
     def save_state(self) -> None:
+        from parcel_city_storage import forget_histories
+        forget_histories(self.state.get("cities", {}))
         self.state["heartbeat"] = utc_now()
         self.state["pid"] = os.getpid()
         self.state["pidStartIdentity"] = process_start_identity(os.getpid())
@@ -443,6 +526,17 @@ class Runner:
             self.state["activeProcesses"].extend(
                 {**item, "role": "qualification", "worktree": str(worker.root)}
                 for item in worker.state.get("activeProcesses", []))
+        self.state["pipelineActive"] = [
+            {"pid": job["process"].pid, "lane": job["spec"]["lane"],
+             "cityCodes": job["spec"]["cityCodes"], "directory": str(job["directory"])}
+            for job in self.pipeline_jobs.values()]
+        for job in self.pipeline_jobs.values():
+            checkpoint = job["directory"] / "state.json"
+            if checkpoint.is_file():
+                child_state = json_read(checkpoint)
+                self.state["activeProcesses"].extend(
+                    {**item, "pipelineLane": job["spec"]["lane"]}
+                    for item in child_state.get("activeProcesses", []))
         self.state["discoveryCounts"] = discovery_outcomes.counts(self.state)
         atomic_json(self.state_path, self.state)
 
@@ -481,7 +575,7 @@ class Runner:
             self.state["status"] = "resuming"
             self.state["lastError"] = None
             self.state["systemicFailure"] = None
-            self.log("resumed from durable state; prior logs and artifacts are preserved", queueSha256=digest)
+            self.log("resumed operational progress; city settings and failed URLs preserve knowledge", queueSha256=digest)
         else:
             self.state = new_state(self.args.job_name, str(queue_path), digest)
             self.log("created durable run state", queueSha256=digest)
@@ -563,8 +657,10 @@ class Runner:
                     hosts.append(parsed.hostname.lower().rstrip("."))
         return """
 NEW-SOURCE-ONLY POLICY (mandatory for this run): a candidate must use a source ID and service endpoint that are absent from both the frozen known-source snapshot and the current live catalog. Query-string, fragment, trailing-slash, or HTTP-to-HTTPS changes do not make an endpoint new; compare host, pathname and normalized port. Explicit known provider hosts are excluded too. Do not retry or repackage a known provider as a new source. Search this city's municipal/local registry, regional/state/provincial agencies, national cadastre or geodata alternatives, and English plus local-language web sources for a genuinely different cadastral dataset and public service. Probe for first-party parcel purpose and an observed positive polygon within this city's actual coverage. If the bounded search finds only known services, record a completed rejection; a known service with a concrete temporary access blocker may be recorded as blocked, never candidate. Use already-supported only for a verified existing city binding.
-Known IDs/endpoints from the snapshot and current catalog:
-""" + json.dumps({"sources": entries, "knownProviderHosts": hosts}, ensure_ascii=False, indent=2)
+Before probing a proposed endpoint, check its source ID, endpoint and host against both complete files:
+""" + json.dumps({"knownSnapshot": self.known_sources_rel,
+                  "liveCatalog": "backend/parcels/source-catalog.json",
+                  "knownSourceCount": len(entries), "knownProviderHosts": hosts}, ensure_ascii=False)
 
     def request_stop(self, _signum: int | None = None, _frame: Any = None) -> None:
         self.stop_requested = True
@@ -591,13 +687,21 @@ Known IDs/endpoints from the snapshot and current catalog:
                     pass
 
     def _command(self, call: dict[str, Any], schema_path: Path, answer_path: Path) -> list[str]:
-        return [self.codex, "--ask-for-approval", "never", "--search", "exec",
+        return [self.codex, "--ask-for-approval", "never", "--search", "exec", "--ephemeral",
                 "--sandbox", "workspace-write", "-c", "sandbox_workspace_write.network_access=true",
                 "-c", 'forced_login_method="chatgpt"',
                 "-m", call["model"], "-c", f'model_reasoning_effort="{call["effort"]}"',
                 "--json", "--output-schema", str(schema_path), "--output-last-message", str(answer_path), "-"]
 
     def _start_call(self, call: dict[str, Any]) -> dict[str, Any]:
+        permit = None
+        if getattr(self.args, "shared_root", None):
+            from parcel_model_slots import acquire_model_slot
+            role = "qualification" if getattr(self.args, "pipeline_lane", None) == "qualification" else (
+                "review" if call["role"] in {"review", "reviewer"} else "research")
+            permit = acquire_model_slot(self.args.shared_root, role=role, limit=self.args.model_slots,
+                                        stop_requested=lambda: self.stop_requested, task_id=call.get("taskId"))
+            permit.__enter__()
         call_id = f"{datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S')}-{uuid.uuid4().hex[:8]}"
         call["callId"] = call_id
         call_dir = self.run_dir / call_id
@@ -623,7 +727,17 @@ Known IDs/endpoints from the snapshot and current catalog:
         except Exception:
             out_stream.close()
             err_stream.close()
+            if permit:
+                permit.__exit__(None, None, None)
             raise
+        if permit:
+            def release_when_finished():
+                try:
+                    while proc.poll() is None:
+                        time.sleep(0.1)
+                finally:
+                    permit.__exit__(None, None, None)
+            threading.Thread(target=release_when_finished, daemon=True).start()
         return {"call": call, "process": proc, "started": self.clock(), "startedAt": utc_now(),
                 "termSentAt": None, "timedOut": False, "interrupted": False,
                 "out": out_stream, "err": err_stream, "answerPath": answer_path,
@@ -739,10 +853,8 @@ Known IDs/endpoints from the snapshot and current catalog:
         city_file = f"city-{code}-{slug}.json"
         review_file = f"{slug}-service-review.json"
         retry_block = ""
-        learning_files = getattr(self.args, "learning_file", [])
-        learning_block = "\nRead these current integration learning files before investigating this city:\n" + "\n".join(
-            f"- `{path}`" for path in learning_files) if learning_files else ""
         novelty_block = self._source_novelty_prompt()
+        novelty_block += self._learning_prompt(city, "research")
         if previous_errors:
             retry_block = """
 
@@ -757,16 +869,15 @@ Your single immutable WUP queue record is:
 {json.dumps(city, ensure_ascii=False, indent=2)}
 ```
 Attempt {attempt} of {self.args.max_retries}. Cohort directory: `{cohort_dir.relative_to(self.root)}`.
-{learning_block}
 {novelty_block}
 
-Write only `{city_file}`, `{review_file}`, and at most one sample GeoJSON containing no more than three full parcel polygons in this cohort directory. Scratch/request caches and temporary qualification evidence belong under `tmp/valhalla-parcel-research/` (ignored); never clear prior logs or artifacts. Do not edit registry/catalog/runtime city config, global/generated reports, queue/identity ledgers, or another city's files. Do not commit, push, deploy, email, or contact anyone.
+Write only `{city_file}`, `{review_file}`, and at most one sample GeoJSON containing no more than three full parcel polygons in this cohort directory. Scratch/request caches belong only under `tmp/valhalla-parcel-research/{code}/` (ignored); These files are temporary and are deleted when the city finishes. Write an explicit `failedUrls` array of objects with `url` and optional `reason` into the city packet for every unsuccessful parcel-source URL tried. Do not edit registry/catalog/runtime city config, global/generated reports, queue/identity ledgers, or another city's files. Do not commit, push, deploy, email, or contact anyone.
 
 Preserve `cityCode={code}`, rank {city.get('rank')}, country `{city.get('country')}` / `{city.get('iso2')}`, exact WUP point `{city.get('point')}` in latitude/longitude order, `population2025={round(float(city.get('pop2025k')) * 1000)}` persons, `population2025k={city.get('pop2025k')}`, and `populationUnit="persons"`. Do not shift a coordinate to force a parcel hit. A zero exact-point hit, map extent miss, timeout, login wall, or unusable UI is not evidence of citywide absence.
 
 For retained GeoJSON samples, put exactly one safe stable identity in `properties`, preferably `{{"id": "<stable-identity>"}}`. Prefer native IDs or proven composite keys. If the provider exposes geometry without a safe durable key, a deterministic geometry-derived ID is acceptable: record the exact canonicalization/hash recipe, source namespace, collision/deduplication policy and stability limits. Do not label derived IDs native or reject otherwise usable geometry solely for lacking a native key. Never use response order, a random ID or an ephemeral row counter. Put source field mappings and identity provenance in metadata; retain no raw attribute sets.
 
-Use the queue's `priorEvidence` and `appBindings` as starting evidence, including past holds and qualification diagnostics. Read their referenced files before repeating work. Recheck current endpoints and investigate the specific unresolved blocker or another official route; a previous hold is a lead, not a permanent verdict. Existing app support is bounded coverage and must not be overwritten by a new failed probe.
+Use the queue's `priorEvidence` and `appBindings` as starting evidence, including past holds and qualification diagnostics. Use the retained city settings and failed URLs before repeating work; old research artifact paths are retired. Recheck current endpoints and investigate the specific unresolved blocker or another official route; a previous hold is a lead, not a permanent verdict. Existing app support is bounded coverage and must not be overwritten by a new failed probe.
 
 Apply these integration lessons explicitly:
 - Search the city's own government/cadastre sites, regional/state/provincial government, national cadastre/geodata portals, and general web results in both English and the actual local language. Record each level checked, actual URLs and outcomes, including why a regional level is inapplicable. Use official portals, viewer JavaScript/configuration, catalog searches and documented download routes rather than stopping at agency prose.
@@ -776,7 +887,6 @@ Apply these integration lessons explicitly:
 - Check the service extent against the exact WUP city and distinguish centre-point from district or partial-city coverage. Place bounded windows inside the actual city coverage, record each window, and do not claim all-city coverage from a sample.
 - Inspect CRS, coordinate order, paging limits, maximum bbox area, stable IDs, duplicate geometries and overlapping/invalid parcels. Read exact case-sensitive field names from actual responses (for example objectid may differ from OBJECTID). Check WFS version/type names and ArcGIS layer IDs, ID-list/page support, current/historic validity fields and response transfer limits. Filter historic duplicates only with evidenced field semantics; do not suppress genuine overlaps.
 - Record CRS, geometry quality, completeness, source binding and repeatable exact-ID read questions as qualification follow-ups. Repeatable exact-ID reads and stable geometry are checked at the required qualification stage before activation; unresolved details do not erase a valid initial parcel-source discovery.
-- Follow the alignment policy in `world-parcels/research/parcel-alignment-2026-10-14/index.json` during the second-pass follow-up: fix only evidenced CRS/axis/unit/datum-operation mistakes. Never fit a translation, rotation or scale to OSM or imagery, guess a CRS, alter measured boundaries, or invent an epoch. Record missing grids, ambiguous operations, custom CRS and unexplained source displacement as follow-up findings; do not claim an unverified conversion. Basemap agreement is not proof of cadastral survey accuracy.
 - Retain at most three full polygons unchanged, preserving rings, holes, multipolygons and precision. Attribute minimization must never simplify geometry. Record source authority, licence/reuse evidence or uncertainty, attribution, observation time and safe field allowlist.
 - Run one request at a time per provider host, honour Retry-After, use bounded timeouts and at most two retries for transient failures. Stop repeated 403/429/5xx or CAPTCHA failures and record them. Use official viewer configuration, WFS/ArcGIS/OGC endpoints or official downloadable polygon files as alternative routes; do not bypass access controls.
 - Record access failure, unsupported format, wrong extent, provider unavailability and geometry defects separately from unestablished registry presence. Include the next concrete qualification action where a source is promising. Discovery evidence alone never admits a source to the app.
@@ -801,6 +911,7 @@ The paired service review MUST contain `"cityRecord": "{city_file}"` at the top 
         receipt_dir = self._receipt_dir().relative_to(self.root).as_posix()
         if self.discovery_workflow():
             novelty_block = self._source_novelty_prompt()
+            novelty_block += "\n".join(self._learning_prompt(city, "review") for city in city_items)
             return f"""You are the serial evidence reviewer for a finite city cadastral discovery queue.
 Review only the city packets listed below. Write durable review receipts and supplemental request/response evidence under `{receipt_dir}`;
 do not edit registry, catalog, runtime, generated reports, queue identity or another city's packet.
@@ -1567,11 +1678,22 @@ Output MUST be a single JSON object satisfying the supplied schema: `reviewedIds
         validated_done = 0
         for city in cities:
             entry = self._city_entry(city)
+            if entry.get("storageComplete"):
+                validated_done += 1
+                continue
             packet = self._packet(city, cohort_dir)
             if self._reviewed_city_receipt(city, packet) is not None:
                 validated_done += 1
+            elif entry.get("status") in discovery_outcomes.REVIEWED_STATUSES:
+                entry["status"] = "research-complete" if packet.get("valid") else "pending"
         self.log("queue loaded", count=len(cities), rankStart=start_rank, rankEnd=end_rank,
                  validatedReviewedOnResume=validated_done, workers=self.args.workers)
+
+        if getattr(self.args, "shared_root", None):
+            from parcel_continuous_pipeline import ContinuousPipeline
+            if not self.discovery_workflow():
+                raise ValueError("--shared-root requires a finite discovery/adapters queue")
+            return ContinuousPipeline(self, cities, cohort_dir).run(), end_rank
 
         # Start the existing qualification backlog promptly after a restart.
         if getattr(self.args, "qualification_workers", 1) == 2:
@@ -1735,7 +1857,7 @@ Output MUST be a single JSON object satisfying the supplied schema: `reviewedIds
                 self.stop_children()
                 self.state["status"] = "stopped-checkpointed"
                 self.save_state()
-                self.log("stopped after process-group shutdown; checkpoints and logs retained")
+                self.log("stopped after process-group shutdown; only active work is retained for resume")
             for sig, handler in previous_handlers.items():
                 signal.signal(sig, handler)
             if self.lock_stream:
@@ -1762,10 +1884,12 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--queue", type=Path, default=DEFAULT_QUEUE)
     parser.add_argument("--source", type=Path, default=DEFAULT_SOURCE, help="official local WUP 2025 gzip source for later ranges")
     parser.add_argument("--state-dir", type=Path, default=DEFAULT_STATE)
+    parser.add_argument("--shared-root", type=Path, help="canonical shared runtime and source learning root")
+    parser.add_argument("--model-slots", type=int, default=4, help="global concurrent model-call limit across shared jobs")
+    parser.add_argument("--pipeline-task", type=Path, help=argparse.SUPPRESS)
     parser.add_argument("--codex", help="Codex CLI executable (default: codex from PATH)")
     parser.add_argument("--research-model", help="override the shared cheap Codex research model")
     parser.add_argument("--review-model", help="override the shared Codex review model")
-    parser.add_argument("--learning-file", action="append", default=[], help="repository-relative integration evidence to read before discovery")
     parser.add_argument("--max-turn-minutes", type=int, default=90, help="per Codex turn timeout, capped at 90 minutes")
     parser.add_argument("--max-retries", type=int, default=3, help="per-city/per-review retry cap (maximum 3)")
     parser.add_argument("--range-size", type=int, default=100, help="rank range generated after the first fixed queue")
@@ -1778,6 +1902,9 @@ def build_parser() -> argparse.ArgumentParser:
 def main(argv: list[str] | None = None) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
+    if args.pipeline_task:
+        from parcel_continuous_pipeline import execute_task
+        return execute_task(Runner, args)
     if args.status or args.stop:
         root = args.repo_root.resolve()
         state_dir = (root / args.state_dir).resolve() if not args.state_dir.is_absolute() else args.state_dir.resolve()
@@ -1869,6 +1996,8 @@ def main(argv: list[str] | None = None) -> int:
                           "heartbeat": state.get("heartbeat"), "heartbeatAgeSeconds": heartbeat_age,
                           "queuePath": state.get("queuePath"), "currentRankStart": state.get("currentRankStart"),
                           "currentRankEnd": state.get("currentRankEnd"), "activeProcesses": active,
+                          "pipelineActive": state.get("pipelineActive", []),
+                          "sharedRuntime": state.get("sharedRuntime"),
                           "failedSkippedCount": len(state.get("failedItems", {})),
                           "discoveryCounts": discovery_outcomes.counts(state),
                           "adapterStageBlocked": state.get("adapterStageBlocked"),
@@ -1883,6 +2012,12 @@ def main(argv: list[str] | None = None) -> int:
         parser.error("--new-sources-only requires --with-adapters")
     if args.known_sources and not args.new_sources_only:
         parser.error("--known-sources requires --new-sources-only")
+    if args.shared_root and (not args.stop_after_queue or not (args.discovery_only or args.with_adapters)):
+        parser.error("--shared-root requires a finite discovery/adapters queue")
+    if args.shared_root and args.with_adapters and args.qualification_workers != 2:
+        parser.error("--shared-root with adapters requires two isolated qualification workers")
+    if args.model_slots < 1 or args.model_slots > 4:
+        parser.error("--model-slots must be between 1 and 4")
     if not 1 <= args.max_turn_minutes <= 90:
         parser.error("--max-turn-minutes must be between 1 and 90")
     if not 1 <= args.max_retries <= MAX_RETRIES:

@@ -143,7 +143,7 @@ class Harness:
                      if self.block_type == "material-overlaps" else [ref_path]}
             (evidence / "source-block.json").write_text(json.dumps(block))
         if self.answer_status == "technical-qualified":
-            descriptor = {"id": "source-1", "endpoint": "https://example.test/source"}
+            descriptor = {"id": "source-1", "endpoint": "https://example.test/source", "adapter": "arcgis"}
             if self.wrong_binding:
                 descriptor["id"] = "other-source"
             candidate = {"descriptor": descriptor,
@@ -187,6 +187,9 @@ class ParcelSourceStageTests(unittest.TestCase):
         context_file = self.root / "backend/parcels/source-catalog.json"
         context_file.parent.mkdir(parents=True, exist_ok=True)
         context_file.write_text('{"sources":[]}\n')
+        (self.root / "backend/parcels/arcgis-source.js").write_text(
+            "import { stable } from './shared.js';\nexport const adapter = stable;\n")
+        (self.root / "backend/parcels/shared.js").write_text("export const stable = true;\n")
         probes = []
         for index, bbox in enumerate(([30, -3, 31, -2], [31, -3, 32, -2], [32, -3, 33, -2]), 1):
             rel = f"probe-{index}.json"
@@ -232,6 +235,16 @@ class ParcelSourceStageTests(unittest.TestCase):
         self.assertEqual(result["inputHashes"]["packetSha256"], hashlib.sha256((self.cohort / "city.json").read_bytes()).hexdigest())
         self.assertEqual(set(result["inputHashes"]["sampleFiles"]),
                          {"cohort/city-sample.geojson", "cohort/review-sample.geojson"})
+
+    def test_qualification_prompt_includes_shared_learning_and_adapter_improvement_instruction(self):
+        harness = Harness(self.root, self.attempt_dir)
+        harness._learning_prompt = lambda city, stage_name: (
+            "Prefer the reusable provider paging fix." if stage_name == "qualification" else "")
+        result = self.call_stage(harness)
+        self.assertEqual(result["status"], "adapter-ready")
+        self.assertIn("Prefer the reusable provider paging fix.", harness.call["prompt"])
+        self.assertIn("Actively build or improve the production adapter", harness.call["prompt"])
+        self.assertIn("Record transferable", harness.call["prompt"])
 
     def test_changed_adapter_requires_and_fails_focused_tests(self):
         FakeBuild.test_ok = False
@@ -363,9 +376,17 @@ class ParcelSourceStageTests(unittest.TestCase):
     def test_non_candidate_receipt_and_invalid_scope_fail_before_worker(self):
         harness = Harness(self.root, self.attempt_dir)
         receipt = dict(self.receipt, decision="already-supported")
-        with self.assertRaisesRegex(ValueError, "decision"):
-            stage.run_candidate(harness, self.city, receipt, self.packet)
+        result = stage.run_candidate(harness, self.city, receipt, self.packet)
+        self.assertEqual(result["status"], "failed")
+        self.assertIn("decision", result["summary"])
         self.assertIsNone(harness.call)
+
+    def test_partial_and_bounded_coverage_are_valid_candidate_scopes(self):
+        for scope in ("partial-city", "bounded-sample"):
+            with self.subTest(scope=scope):
+                receipt = json.loads(json.dumps(self.receipt))
+                receipt["coverage"]["scope"] = scope
+                self.assertEqual(stage._validate_inputs(self.city, receipt, self.packet)[0], "1868")
 
     def test_adapter_ready_result_revalidates_and_detects_artifact_or_code_edits(self):
         harness = Harness(self.root, self.attempt_dir)
@@ -404,15 +425,73 @@ class ParcelSourceStageTests(unittest.TestCase):
 
     def test_revalidation_detects_changed_backend_adapter_source(self):
         harness = Harness(self.root, self.attempt_dir)
-        adapter = self.root / "backend/parcels/reused.js"
-        adapter.parent.mkdir(parents=True, exist_ok=True)
-        adapter.write_text("export const original = true;\n")
+        adapter = self.root / "backend/parcels/arcgis-source.js"
         result = self.call_stage(harness)
         self.assertTrue(stage.revalidate_stage(harness, self.city, self.receipt, self.packet, result)[0])
-        adapter.write_text("export const original = false;\n")
+        adapter.write_text("export const changed = true;\n")
         valid, reason = stage.revalidate_stage(harness, self.city, self.receipt, self.packet, result)
         self.assertFalse(valid)
         self.assertIn("backend adapter code changed", reason)
+
+    def test_revalidation_ignores_unrelated_adapter_but_tracks_dependency_closure_and_descriptor(self):
+        harness = Harness(self.root, self.attempt_dir)
+        result = self.call_stage(harness)
+        unrelated = self.root / "backend/parcels/unrelated-source.js"
+        unrelated.write_text("export const unrelated = true;\n")
+        self.assertTrue(stage.revalidate_stage(harness, self.city, self.receipt, self.packet, result)[0])
+        shared = self.root / "backend/parcels/shared.js"
+        shared.write_text("export const stable = false;\n")
+        valid, reason = stage.revalidate_stage(harness, self.city, self.receipt, self.packet, result)
+        self.assertFalse(valid)
+        self.assertIn("backend adapter code changed", reason)
+
+    def test_old_global_adapter_hashes_migrate_only_with_exact_artifacts_and_dependencies(self):
+        harness = Harness(self.root, self.attempt_dir)
+        result = self.call_stage(harness)
+        scoped = result["artifactHashes"]
+        old = {"artifacts": dict(scoped["artifacts"]),
+               "backendAdapters": {**scoped["backendAdapters"],
+                                   "backend/parcels/unrelated-source.js": "old-unrelated"}}
+        result["artifactHashes"] = old
+        (self.root / "backend/parcels/unrelated-source.js").write_text("export const newSource = true;\n")
+        valid, reason = stage.revalidate_stage(harness, self.city, self.receipt, self.packet, result)
+        self.assertTrue(valid, reason)
+        self.assertIn("sourceDescriptor", result["artifactHashes"])
+
+        result["artifactHashes"] = old
+        (self.root / "backend/parcels/shared.js").write_text("export const stable = false;\n")
+        self.assertFalse(stage.revalidate_stage(harness, self.city, self.receipt, self.packet, result)[0])
+        (self.root / "backend/parcels/shared.js").write_text("export const stable = true;\n")
+        result["artifactHashes"] = old
+        candidate = self.attempt_dir / "candidate.json"
+        candidate.write_text(candidate.read_text() + " ")
+        self.assertFalse(stage.revalidate_stage(harness, self.city, self.receipt, self.packet, result)[0])
+
+    def test_unknown_adapter_can_declare_validated_module_for_dependency_freshness(self):
+        module = self.root / "backend/parcels/future-source.js"
+        module.write_text("import { stable } from './shared.js';\nexport { stable };\n")
+        descriptor = {"adapter": "future-adapter", "adapterModule": "future-source.js"}
+        hashes = stage._adapter_dependency_hashes(self.root, descriptor)
+        self.assertEqual(set(hashes), {"backend/parcels/future-source.js", "backend/parcels/shared.js"})
+
+    def test_future_adapter_module_is_inferred_from_runtime_registry(self):
+        parcels = self.root / "backend/parcels"
+        (parcels / "future-source.js").write_text("export function createFuture() {}\n")
+        (parcels / "sources.js").write_text(
+            "import { createFuture } from './future-source.js';\n"
+            "const factory = { 'future-adapter': createFuture }[descriptor.adapter];\n")
+        hashes = stage._adapter_dependency_hashes(self.root, {"adapter": "future-adapter"})
+        self.assertEqual(set(hashes), {"backend/parcels/future-source.js"})
+
+    def test_validation_failure_retains_attempt_and_original_error(self):
+        harness = Harness(self.root, self.attempt_dir)
+        receipt = dict(self.receipt, decision="already-supported")
+        result = stage.run_candidate(harness, self.city, receipt, self.packet)
+        self.assertEqual(result["status"], "failed")
+        self.assertIn("receipt.decision", result["summary"])
+        self.assertTrue(Path(result["artifactRoot"]).is_dir())
+        self.assertTrue((Path(result["artifactRoot"]) / "result.json").is_file())
+        self.assertIsNone(harness.call)
 
     def test_revalidation_detects_changed_coverage_probe_evidence(self):
         harness = Harness(self.root, self.attempt_dir)
@@ -454,16 +533,20 @@ class ParcelSourceStageTests(unittest.TestCase):
     def test_probe_evidence_hash_mismatch_stops_before_worker(self):
         harness = Harness(self.root, self.attempt_dir)
         (self.root / "probe-1.json").write_text("changed after review\n")
-        with self.assertRaisesRegex(ValueError, "probe 0 evidence SHA-256 mismatch"):
-            stage.run_candidate(harness, self.city, self.receipt, self.packet)
+        result = stage.run_candidate(harness, self.city, self.receipt, self.packet)
+        self.assertEqual(result["status"], "failed")
+        self.assertIn("probe 0 evidence SHA-256 mismatch", result["summary"])
+        self.assertTrue(Path(result["artifactRoot"]).is_dir())
         self.assertIsNone(harness.call)
 
     def test_missing_sample_reference_is_not_ignored(self):
         harness = Harness(self.root, self.attempt_dir)
         packet = dict(self.packet)
         packet["city"] = {"cityCode": "1868", "sampleFiles": ["missing-sample.geojson"]}
-        with self.assertRaisesRegex(ValueError, "city packet sample is not a file"):
-            stage.run_candidate(harness, self.city, self.receipt, packet)
+        result = stage.run_candidate(harness, self.city, self.receipt, packet)
+        self.assertEqual(result["status"], "failed")
+        self.assertIn("city packet sample is not a file", result["summary"])
+        self.assertTrue(Path(result["artifactRoot"]).is_dir())
         self.assertIsNone(harness.call)
 
     def test_http_endpoint_allowed_when_discovery_receipt_allows_it(self):

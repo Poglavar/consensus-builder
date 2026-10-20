@@ -1,0 +1,21 @@
+[
+  {
+    "url": "https://gis.cantho.gov.vn/",
+    "reason": "getaddrinfo ENOTFOUND; no HTTP response"
+  },
+  {
+    "url": "https://gis.cantho.gov.vn/portal/sharing/rest/content/items/2f90698e50684964a78f80d8953f7389/data?f=json",
+    "reason": "getaddrinfo ENOTFOUND; no HTTP response"
+  },
+  {
+    "url": "https://www.cnvpdkkv4.cantho.gov.vn/home/b%E1%BA%A3n-%C4%91%E1%BB%93-h%C3%A0nh-ch%C3%ADnh-34-t%E1%BB%89nh-th%C3%A0nh",
+    "reason": "getaddrinfo ENOTFOUND; no HTTP response"
+  },
+  {
+    "url": "https://btgdv.cantho.gov.vn/vi/news/dua-nghi-quyet-cua-dang-vao-cuoc-song/can-tho-tiep-tuc-doi-moi-hoan-thien-the-che-chinh-sach-nang-cao-hieu-luc-hieu-qua-quan-ly-va-su-dung-dat-dai-theo-tinh-than-nghi-quyet-so-18-nq-tw-1580.html",
+    "reason": "getaddrinfo ENOTFOUND; no HTTP response"
+  },
+  {
+    "url": "https://gis.cantho.gov.vn/portal/apps/instantgallery/index.html?webmap=2f90698e50684964a78f80d8953f7389"
+  }
+]

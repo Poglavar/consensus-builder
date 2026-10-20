@@ -1,0 +1,9 @@
+[
+  {
+    "url": "https://bhumi.atrbpn.go.id/expapi/getPersil",
+    "reason": "401"
+  },
+  {
+    "url": "https://geoportal.palembang.go.id/geoserver/palapa/wfs?service=WFS&version=2.0.0&request=GetCapabilities"
+  }
+]

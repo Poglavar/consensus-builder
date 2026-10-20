@@ -461,6 +461,9 @@ describe(`POST ${AGENT_PROPOSALS_PATH} — paid`, () => {
         ['a retired land declaration', { parentParcelIds: ['HR-1234-5678'] }],
         ['an unknown lifecycle', { lifecycleStatus: 'Approved' }],
         ['a purely numeric proposalId', { proposalId: '51' }],
+        ['a row id on creation', { id: 51 }],
+        ['an authored ID under the SQL column name', { proposal_id: 'other-authored-id' }],
+        ['a numeric-typed authored ID', { proposalId: 17.5 }],
         ['no type', { type: '' }],
         ['an offer the column cannot hold', { offer: 1e15 }]
     ])('refuses %s with 400 before settling, even with a payment attached', async (_label, override) => {

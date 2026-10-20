@@ -1,0 +1,23 @@
+[
+  {
+    "url": "https://nspd.gov.ru/",
+    "reason": "connection timeout after 8 seconds"
+  },
+  {
+    "url": "https://es.vologda-portal.ru/catalog"
+  },
+  {
+    "url": "https://invest.vologda-portal.ru/"
+  },
+  {
+    "url": "https://nspd.gov.ru/map",
+    "reason": "bounded request produced no response"
+  },
+  {
+    "url": "https://35.rosreestr.gov.ru/",
+    "reason": "connection timeout after 8 seconds"
+  },
+  {
+    "url": "https://invest.vologda-portal.ru/wp-content/uploads/2026/03/EGRN-911.pdf"
+  }
+]

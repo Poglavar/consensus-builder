@@ -1,0 +1,22 @@
+[
+  {
+    "url": "https://contribuyentes.sigat.net/api/v1/alcaldias/320",
+    "reason": "404"
+  },
+  {
+    "url": "https://contribuyentes.sigat.net/api/v1/contribuyente/alcaldias/320",
+    "reason": "403"
+  },
+  {
+    "url": "https://cumana.sigat.net/"
+  },
+  {
+    "url": "https://contribuyentes.sigat.net/?alcaldia=320"
+  },
+  {
+    "url": "https://contribuyentes.sigat.net/api/v1/alcaldias"
+  },
+  {
+    "url": "https://www.igvsb.gob.ve/"
+  }
+]

@@ -1,0 +1,20 @@
+[
+  {
+    "url": "https://nspd.gov.ru/"
+  },
+  {
+    "url": "https://nspd.gov.ru/api/geoportal/v2/search/geoportal?query=59.9340,30.3377&thematicSearchId=1"
+  },
+  {
+    "url": "https://nspd.gov.ru/api/aeggis/v3/36048/wms?REQUEST=GetMap&SERVICE=WMS&VERSION=1.3.0&FORMAT=image/png&LAYERS=36048&CRS=EPSG:3857&BBOX=3376000,8383000,3377000,8384000&WIDTH=256&HEIGHT=256"
+  },
+  {
+    "url": "https://rgis.spb.ru/"
+  },
+  {
+    "url": "https://data.gov.spb.ru/"
+  },
+  {
+    "url": "https://rosreestr.gov.ru/"
+  }
+]

@@ -1,0 +1,24 @@
+[
+  {
+    "url": "https://inspire.landregistry.gov.uk/inspire/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=inspire:CP.CadastralParcel",
+    "reason": "ServiceUnavailable"
+  },
+  {
+    "url": "https://www.data.gov.uk/dataset/811bcf4c-fbbf-4597-aa9c-3d5bd3bfd455/inspire-index-polygons-spatial-data"
+  },
+  {
+    "url": "https://use-land-property-data.service.gov.uk/datasets/inspire/download"
+  },
+  {
+    "url": "https://www.bcpcouncil.gov.uk/planning-and-building-control/local-land-charges"
+  },
+  {
+    "url": "https://inspire.landregistry.gov.uk/inspire/ows?Service=WMS&Request=Getcapabilities"
+  },
+  {
+    "url": "https://use-land-property-data.service.gov.uk/datasets/inspire/download/Bournemouth_Christchurch_and_Poole_Council.zip"
+  },
+  {
+    "url": "https://inspire.landregistry.gov.uk/inspire/ows?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetFeatureInfo&LAYERS=inspire:CP.CadastralParcel&QUERY_LAYERS=inspire:CP.CadastralParcel"
+  }
+]

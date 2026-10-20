@@ -2,6 +2,8 @@
 // Geometry lives once, as ordinary GeoJSON features. Proposal-only metadata is kept in a
 // foreign member, which GeoJSON explicitly permits, so GIS tools can still open the file.
 
+import { stripProposalArchiveState } from './serializer.js';
+
 export const RECONSTRUCTION_GEOJSON_SCHEMA = 'consensus-builder.reconstruction.v1';
 
 const RUNTIME_KEYS = new Set([
@@ -63,14 +65,16 @@ export function proposalToReconstructionGeoJSON(proposal) {
         : [];
     if (!buildings.length) throw new Error('Proposal must contain at least one building.');
 
-    const proposalMetadata = withoutKeys(proposal, RUNTIME_KEYS);
-    const buildingProposalMetadata = withoutKeys(proposal.buildingProposal || {}, new Set(['buildingFeature', 'buildings']));
+    const proposalMetadata = withoutKeys(stripProposalArchiveState(proposal), RUNTIME_KEYS);
+    const buildingProposalMetadata = withoutKeys(stripProposalArchiveState(proposal.buildingProposal || {}), new Set(['buildingFeature', 'buildings']));
     const collection = {
         type: 'FeatureCollection',
         name: proposal.title || proposal.name || proposal.proposalId || 'Reconstructed proposal',
         bbox: clone(proposal.bounds),
         reconstruction: {
             schema: RECONSTRUCTION_GEOJSON_SCHEMA,
+            geometryInterpretation: { role: 'building-reconstruction',
+                physicalStatus: 'not-established-by-archive', planningCompliance: 'not-evaluated' },
             proposal: proposalMetadata,
             buildingProposal: buildingProposalMetadata
         },
@@ -100,9 +104,10 @@ export function reconstructionGeoJSONToProposal(collection) {
 
     const site = stripArchiveProperties(feature(siteFeatures[0], 'Site'));
     const buildings = buildingFeatures.map((entry, index) => stripArchiveProperties(feature(entry, `Building ${index + 1}`)));
+    const archivedProposal = stripProposalArchiveState(collection.reconstruction.proposal || {});
+    const archivedBuildingProposal = stripProposalArchiveState(collection.reconstruction.buildingProposal || {});
     const proposal = {
-        ...clone(collection.reconstruction.proposal || {}),
-        applied: false,
+        ...archivedProposal,
         geometry: {
             superParcel: site,
             buildings
@@ -111,11 +116,12 @@ export function reconstructionGeoJSONToProposal(collection) {
         buildingProperties: clone(buildings[0].properties || {}),
         properties: clone(buildings[0].properties || {}),
         buildingProposal: {
-            ...clone(collection.reconstruction.buildingProposal || {}),
+            ...archivedBuildingProposal,
             buildingFeature: clone(buildings[0]),
             buildings: clone(buildings)
         }
     };
+    proposal.applied = false;
     if (!proposal.bounds && Array.isArray(collection.bbox)) proposal.bounds = clone(collection.bbox);
     return proposal;
 }

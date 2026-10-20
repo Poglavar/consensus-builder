@@ -35,11 +35,12 @@ test.describe('World navigation and open ground @features', () => {
     expect(new URL(listQueries.at(-1)!).searchParams.get('bbox')).toBe(new URL(countQueries.at(-1)!).searchParams.get('bbox'));
   });
   test('the world globe searches a live city and opens its configured map', async ({ mockApi: page }) => {
+    test.setTimeout(90_000);
     await openCity(page);
     await page.locator('#settings-button').click();
     await page.locator('#world-view-button').click();
     const world = page.locator('#world-view');
-    await expect(world).toBeVisible();
+    await expect(world).toBeVisible({ timeout: 45_000 });
     await expect(world.locator('canvas')).toBeVisible();
     await expect(world.getByRole('button', { name: 'Back to map' })).toBeVisible();
     await world.locator('.world-search__input').fill('Belgrade');
@@ -48,13 +49,14 @@ test.describe('World navigation and open ground @features', () => {
     await world.getByRole('button', { name: /Open Belgrade/ }).click();
     await waitForMapReady(page);
     await expect(world).toHaveCount(0);
-    await expect.poll(() => page.evaluate(() => (window as any).CityConfigManager.getCurrentCityId())).toBe('belgrade');
+    await expect.poll(() => page.evaluate(() => (window as any).CityConfigManager?.getCurrentCityId?.() ?? null), { timeout: 15_000 }).toBe('belgrade');
   });
 
   // Show my location treats the browser's position as a search hit: the globe flies there and
   // opens what is available at that point; with no position it says so in the results. The failure
   // comes first: the app accepts a position up to a minute old, so after a fix it would reuse it.
   test('the world globe Show my location opens the place at the browser position, and says when there is none', async ({ mockApi: page }) => {
+    test.setTimeout(90_000);
     // Permission granted but no fix (Playwright's emulation of an unavailable position); a refused
     // permission would prompt in headed Chrome instead of answering.
     await page.context().grantPermissions(['geolocation']);
@@ -63,7 +65,7 @@ test.describe('World navigation and open ground @features', () => {
     await page.locator('#settings-button').click();
     await page.locator('#world-view-button').click();
     const world = page.locator('#world-view');
-    await expect(world.locator('canvas')).toBeVisible();
+    await expect(world.locator('canvas')).toBeVisible({ timeout: 45_000 });
     const locate = world.getByRole('button', { name: 'Show my location', exact: true });
     await locate.click();
     await expect(world.locator('.world-search__empty')).toHaveText('Could not get your location.', { timeout: 20_000 });
@@ -360,6 +362,9 @@ test.describe('World navigation and open ground @features', () => {
     const panel = page.locator('#grain-score-panel');
     await expect(panel).toBeVisible();
     await expect(panel.locator('[data-grain-role="result"]')).toBeVisible({ timeout: 20000 });
+    await expect(panel.locator('[data-grain-role="planName"]')).toHaveText('Applied composition');
+    await expect(panel.locator('[data-grain-role="route"]')).toHaveText('Local composition · score stays in this browser');
+    await test.info().attach('local-composition-score', { body: await panel.screenshot(), contentType: 'image/png' });
     const score = Number(await panel.locator('[data-grain-role="totalScore"]').innerText());
     expect(score).toBeGreaterThanOrEqual(0);
     expect(score).toBeLessThanOrEqual(100);

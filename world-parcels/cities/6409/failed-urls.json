@@ -1,0 +1,35 @@
+[
+  {
+    "url": "https://settlement.gov.bd/Map/MapSearch"
+  },
+  {
+    "url": "https://map.settlement.gov.bd/"
+  },
+  {
+    "url": "https://map.land.gov.bd/"
+  },
+  {
+    "url": "https://dlrs.portal.gov.bd/"
+  },
+  {
+    "url": "https://map.settlement.gov.bd/api/settings/public"
+  },
+  {
+    "url": "https://map.settlement.gov.bd/api/locations/divisions"
+  },
+  {
+    "url": "https://map.settlement.gov.bd/api/locations/districts?division=ঢাকা"
+  },
+  {
+    "url": "https://map.settlement.gov.bd/api/locations/upazilas?division=ঢাকা&district=মুন্সিগঞ্জ"
+  },
+  {
+    "url": "https://map.settlement.gov.bd/api/locations/mouzas?division=ঢাকা&search=Mathbarer"
+  },
+  {
+    "url": "https://map.settlement.gov.bd/api/search?division=ঢাকা&district=মুন্সিগঞ্জ&upazila=মুন্সিগঞ্জ%20সদর&mouza=Mathbarer%20Char&page=1&limit=21"
+  },
+  {
+    "url": "https://map.settlement.gov.bd/api/search?division=বরিশাল&district=ভোলা&upazila=মনপুরা&mouza=Mathbarer%20Char&page=1&limit=21"
+  }
+]

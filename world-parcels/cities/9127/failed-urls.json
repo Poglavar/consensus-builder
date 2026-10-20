@@ -1,0 +1,41 @@
+[
+  {
+    "url": "https://bhulekh.uk.gov.in/Bhulekh/public/public_ror/Public_ROR.jsp",
+    "reason": "UND_ERR_CONNECT_TIMEOUT to bhulekh.uk.gov.in:443 after 10 seconds"
+  },
+  {
+    "url": "https://bhunaksha.uk.gov.in/",
+    "reason": "UND_ERR_CONNECT_TIMEOUT to bhunaksha.uk.gov.in:443 after 10 seconds"
+  },
+  {
+    "url": "http://bharatnetprogress.nic.in/nicclouddb/rest/services/uk/UK_admin/MapServer?f=pjson",
+    "reason": "UND_ERR_CONNECT_TIMEOUT to bharatnetprogress.nic.in:80 after 10 seconds"
+  },
+  {
+    "url": "https://bharatnetprogress.nic.in/nicclouddb/rest/services/uk/UK_admin/MapServer?f=pjson",
+    "reason": "UND_ERR_CONNECT_TIMEOUT to bharatnetprogress.nic.in:443 after 10 seconds"
+  },
+  {
+    "url": "http://bharatnetprogress.nic.in/nicclouddb/rest/services/uk/UK_stamp_reg/MapServer?f=pjson",
+    "reason": "UND_ERR_CONNECT_TIMEOUT to bharatnetprogress.nic.in:80 after 10 seconds"
+  },
+  {
+    "url": "https://bharatnetprogress.nic.in/nicclouddb/rest/services/uk/UK_stamp_reg/MapServer?f=pjson",
+    "reason": "UND_ERR_CONNECT_TIMEOUT to bharatnetprogress.nic.in:443 after 10 seconds"
+  },
+  {
+    "url": "https://bor.uk.gov.in/hi/"
+  },
+  {
+    "url": "https://nainital.nic.in/hi/service/%E0%A4%AD%E0%A5%82%E0%A4%B2%E0%A5%87%E0%A4%96-%E0%A4%96%E0%A4%BE%E0%A4%A4%E0%A5%8C%E0%A4%A8%E0%A5%80/"
+  },
+  {
+    "url": "https://bhunaksha.nic.in/bhunaksha/userhome.jsp"
+  },
+  {
+    "url": "https://eregistrationukgov.in/GIS/MapClient.aspx"
+  },
+  {
+    "url": "https://gis.eregistrationukgov.in/gisportal/HelpDocument/Citizen%20Portal/help.html"
+  }
+]

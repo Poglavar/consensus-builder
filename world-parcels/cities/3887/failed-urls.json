@@ -1,0 +1,17 @@
+[
+  {
+    "url": "https://www.rioverde.go.gov.br/superintendencia-de-desenvolvimento-urbano-suderv/"
+  },
+  {
+    "url": "https://rioverde360.rioverde.go.gov.br/"
+  },
+  {
+    "url": "https://app.rioverde360.rioverde.go.gov.br/api/projects/rio-verde-360"
+  },
+  {
+    "url": "https://geoserver.ospa.place/geoserver/ows?service=WFS&version=2.0.0&request=GetCapabilities&authkey=c2edb869-a636-4010-92d3-8965f894408d"
+  },
+  {
+    "url": "https://geoserver.ospa.place/geoserver/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=place-data:rvrd_relation_lotes_legislation&outputFormat=application%2Fjson&count=3&propertyName=ref_id,geometry,crs&bbox=-50.9235,-17.7878,-50.9223,-17.7860,EPSG:4326"
+  }
+]
