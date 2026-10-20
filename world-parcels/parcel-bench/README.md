@@ -12,6 +12,15 @@ cadastral parcel. Evaluate false merges and visible-boundary recall first; track
 a secondary cost. Final regions must still have coherent, non-overlapping geometry.
 See [the current product contract and proposed next work](PLAN.md#current-product-target-plausible-plots-where-cadastre-is-unavailable).
 
+**Output availability after cleanup (2026-10-20):** a targeted cleanup removed 7,339 cached
+`.npz` arrays and 51 older `.pt` checkpoints from historical training, imagery and reconstruction
+runs. It reclaimed **30.443876352 GB** and left **10.732556288 GB** in `output/`. Retired arrays
+must be regenerated before reproducing affected evaluations; retired checkpoints require retraining.
+The annotation imagery/review data, heuristic demo, v5 settlement comparison and current v5
+checkpoints, visible-boundary and visible-divisions outputs remain available. Historical result
+descriptions below retain their original meaning. See the [cleanup receipt](studies/storage-cleanup-20261020.md)
+and its [per-file deletion inventory](studies/storage-cleanup-20261020.files.json.gz).
+
 **First visible-division diagnostic (2026-10-19):** on nine Croatian images × three baseline seeds,
 disabling the 120 m² small-region merge left all probe outcomes unchanged: six joins across 81
 separation-pair evaluations, with full pair coverage. The comparison exposed invalid contour output;
