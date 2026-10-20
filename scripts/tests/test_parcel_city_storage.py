@@ -103,6 +103,20 @@ class CityStorageTests(unittest.TestCase):
         catalog = json.loads((self.root / "backend/parcels/source-catalog.json").read_text())
         self.assertNotIn("evidenceFile", catalog["sources"][0])
 
+    def test_failed_candidate_with_null_packet_source_keeps_reviewed_url(self):
+        self.packet.write_text(json.dumps({"source": None}))
+        endpoint = "https://example.test/reviewed-parcels"
+        self.receipt.write_text(json.dumps({"source": {"endpoint": endpoint}}))
+        self.row.update(status="reviewed-candidate", discoveryDecision="candidate",
+                        qualification={"status": "failed", "summary": "qualification interrupted"})
+
+        self.assertTrue(storage.finish_city(self.runner, self.city, self.cohort))
+        saved = json.loads((self.root / "world-parcels/cities/123/failed-urls.json").read_text())
+        self.assertEqual(saved, [{"url": endpoint, "reason": "qualification interrupted"}])
+        self.assertTrue(self.row["storageComplete"])
+        self.assertFalse(self.packet.exists())
+        self.assertFalse(self.receipt.exists())
+
     def _qualified_artifact(self, *, complete=True):
         # Exercise the real recovery CLI and its hash/check guards in an isolated project root.
         (self.root / "package.json").write_text('{"type":"module"}')

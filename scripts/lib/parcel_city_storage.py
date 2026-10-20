@@ -175,7 +175,8 @@ def finish_city(runner, city, cohort):
                           for url in urls_from_document(document))
     if row.get("discoveryDecision") == "candidate" and row.get("qualification", {}).get("status") != "integrated":
         for _, document in documents:
-            endpoint = document.get("source", {}).get("endpoint") if isinstance(document, dict) else None
+            source = document.get("source") if isinstance(document, dict) else None
+            endpoint = source.get("endpoint") if isinstance(source, dict) else None
             if endpoint:
                 failed.append({"url": endpoint, **({"reason": reason} if reason else {})})
     record_failed_urls(knowledge_root(runner), city["cityCode"], failed)
