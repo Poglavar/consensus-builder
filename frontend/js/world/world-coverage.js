@@ -1,4 +1,4 @@
-// Parcel-coverage lookups for the world view: which tier a clicked point is in, and place search.
+// Parcel-coverage lookups and city/point destinations for the world view.
 // Pure (no DOM, no three.js) and UMD, so it runs in the browser as window.WorldCoverage and in node
 // tests via require(). Data comes from frontend/data/world-coverage.json, built by
 // scripts/build-world-coverage.mjs (which documents what each tier means).
@@ -13,15 +13,18 @@
 //                                                       publication with no city); null = explore
 //   coverage.nameAt(lat, lon, zoom) -> { kind: 'city'|'country'|'territory'|'ocean'|'world', name, cc }  the chip name
 //   coverage.regionAt(lat, lon) -> region record | null  the state/province/UK nation outline holding a point
-//   coverage.searchPlaces(query, { limit }) -> Place[]  diacritic-insensitive, best first
+//   coverage.pointAt(lat, lon) -> point destination     exact coordinates, with their app routing
+//   coverage.cityPlace(city) -> city destination       preserves the explicit marker/search identity
+//   coverage.searchPlaces(query, { limit }) -> Place[]  cities only, diacritic-insensitive, best first
 //   coverage.liveSummary -> { cityCount, countryCount } unique configured live-city and country counts
 //   coverage.tierColors / WorldCoverage.TIERS
 //
-// Place: { kind: 'live-city' | 'city' | 'region' | 'country' | 'territory' | 'ocean', tier: 'live'|'source'|'none'|'unknown',
+// Place: { kind: 'live-city' | 'city' | 'point' | 'region' | 'country' | 'territory' | 'ocean', tier: 'live'|'source'|'none'|'unknown',
 //          name, country, cc, note, lat, lon, placeKey, cityId?, regionId?, coverage?, coverageSources? }
 //   Countries and regions carry geographic coverage (full/mostly/partial/none/unknown), independently of app
 //   routing. A region (US state, Canadian province, England, ...) answers for its part of a country,
 //   except inside a countrywide-live country, whose routing the country place carries.
+//   Only city and point places are navigation destinations; area places are coverage context.
 //   WorldCoverage.statusKey(place) selects the matching localized label/description prefix.
 //   cityId is set when tier is 'live' (the configured app city to open). placeKey is a stable id for
 //   city requests: registry city id, 'region:<ISO 3166-2>', 'country:<ISO2>', 'territory:<source-id>'
@@ -302,6 +305,24 @@
             return hit ? hit.cityId : null;
         }
 
+        // Coverage outlines describe data availability; they are never navigation destinations.
+        // A background click stays the exact point even inside a city or countrywide cadastre.
+        function pointAt(lat, lon) {
+            const cityId = jurisdictionAt(lat, lon);
+            const country = countryAt(lat, lon);
+            return { kind: 'point', tier: cityId ? 'live' : 'unknown', ...(cityId ? { cityId } : {}),
+                name: `${lat.toFixed(5)}, ${lon.toFixed(5)}`, country: country?.name || '', cc: country?.cc || null,
+                lat, lon, note: '', placeKey: `point:${lat.toFixed(5)},${lon.toFixed(5)}` };
+        }
+
+        function cityPlace(city) {
+            const live = liveById.get(city.id);
+            if (live) return livePlace(live, live.lat, live.lon);
+            return { kind: 'city', tier: city.tier, name: city.name, country: countryName(city.cc), cc: city.cc,
+                note: city.note || '', coverageSources: city.coverageSources,
+                lat: city.lat, lon: city.lon, placeKey: city.id };
+        }
+
         // The name of where the map is (the explore city chip): the nearest configured or registry
         // city within NAME_CITY_RADIUS_KM, else the country, else '' (open water). Tighter than the
         // coverage radii above, which say which data covers a point, not what the place is called:
@@ -327,17 +348,6 @@
             cities.map(c => ({
                 kind: 'city', priority: 1, tier: c.tier, name: c.name, country: countryName(c.cc), cc: c.cc, note: c.note, coverageSources: c.coverageSources,
                 lat: c.lat, lon: c.lon, placeKey: c.id, keys: [normalizeText(c.name)]
-            })),
-            countries.filter(c => c.center).map(c => ({
-                kind: 'country', priority: 2, tier: c.tier, coverage: c.coverage, coverageSources: c.coverageSources,
-                name: c.name, country: c.name, cc: c.cc, note: c.note,
-                lat: c.center[0], lon: c.center[1], placeKey: 'country:' + c.cc, keys: [normalizeText(c.name), c.cc.toLowerCase()]
-            })),
-            regions.filter(r => r.center).map(r => Object.assign(regionPlace(r, r.center[0], r.center[1]), {
-                priority: 2, keys: [normalizeText(r.name)]
-            })),
-            territories.filter(c => c.center).map(c => Object.assign(territoryPlace(c, c.center[0], c.center[1]), {
-                priority: 2, keys: [normalizeText(c.name)]
             }))
         );
 
@@ -366,7 +376,8 @@
             });
         }
 
-        return { data, tierAt, liveCitiesAt, jurisdictionAt, nameAt, regionAt, searchPlaces, countries, regions, territories, cities, liveCities, liveSummary };
+        return { data, tierAt, liveCitiesAt, jurisdictionAt, nameAt, regionAt, pointAt, cityPlace,
+            searchPlaces, countries, regions, territories, cities, liveCities, liveSummary };
     }
 
     function load(url) {

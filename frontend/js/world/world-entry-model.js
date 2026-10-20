@@ -16,7 +16,6 @@
 //   resolveLanding({ cityId, point, currentCityId, cityView, focus, explore }) -> landing (see below)
 //   liveCityFor({ place, currentCityId, sameCadastre }) -> the city a live place opens
 //   arrivesAtLatest(landing) -> boolean   a landing goes on to the city's latest proposal
-//   exploreZoomFor(place) -> zoom for an explore landing
 //   resolveEntry({ pathname, search, storedCityId, resolveCityParam, jurisdictionAt }) -> entry (see below)
 (function (root, factory) {
     const api = factory();
@@ -28,10 +27,9 @@
     const EXPLORE_CITY_ID = 'explore';
     const MIN_ZOOM = 3;
     const MAX_ZOOM = 19;
-    // Croatian parcels draw from zoom 17 (every city's parcelZoomRange.min): a countrywide-live
-    // point (Osijek, inland Croatia) lands there so the parcels around it load at once.
+    // Precise search results must land close enough for parcels to load; globe points use zoom 19.
     const PARCEL_ZOOM = 17;
-    const EXPLORE_ZOOM = { precise: 15, city: 12, area: 10 };
+    const EXPLORE_ZOOM = 19;
     // Web Mercator stops at ±85.0511°; Leaflet clamps beyond it, so such a value is not a real view.
     const MAX_LAT = 85.0511;
 
@@ -117,11 +115,6 @@
         return finite(zoom) && zoom > 4;
     }
 
-    function exploreZoomFor(place) {
-        const kind = place && place.kind;
-        return kind === 'city' || kind === 'live-city' ? EXPLORE_ZOOM.city : EXPLORE_ZOOM.area;
-    }
-
     function samePoint(a, b) {
         return !!(a && b && finite(a.lat) && finite(a.lon) && Math.abs(a.lat - b.lat) < 1e-6 && Math.abs(a.lon - b.lon) < 1e-6);
     }
@@ -147,14 +140,13 @@
         if (!targetCityId) throw new Error('resolveLanding: no city to land in');
         const inPlace = targetCityId === input.currentCityId;
         if (input.explore) {
-            const zoom = precise ? Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, focus.zoom)) : exploreZoomFor(place);
+            const zoom = precise ? Math.min(MAX_ZOOM, Math.max(PARCEL_ZOOM, focus.zoom)) : EXPLORE_ZOOM;
             return { cityId: targetCityId, inPlace, view: { lat: point.lat, lon: point.lon, zoom }, carryAt: true };
         }
-        // A live city reached through its whole country (Croatian parcels are countrywide), or a
-        // precise search result: open at that spot. A click on the city itself: the city's default
-        // view — a globe click is kilometres coarse, so its exact point means nothing at street zoom.
-        if (precise || place.kind === 'country') {
-            const zoom = precise ? Math.min(MAX_ZOOM, Math.max(PARCEL_ZOOM, focus.zoom)) : PARCEL_ZOOM;
+        // A background click or precise search result opens the exact spot. Only an explicit city
+        // marker/search selection uses the city's default view and latest proposal.
+        if (precise || place.kind === 'point') {
+            const zoom = precise ? Math.min(MAX_ZOOM, Math.max(PARCEL_ZOOM, focus.zoom)) : EXPLORE_ZOOM;
             return { cityId: targetCityId, inPlace, view: { lat: point.lat, lon: point.lon, zoom }, carryAt: true };
         }
         const cityView = input.cityView || {};
@@ -164,12 +156,12 @@
     }
 
     // Which configured city a live place opens (the globe popup's "Open <city>"). A place reached
-    // through a countrywide cadastre (kind 'country': anywhere in Croatia) stays in the loaded city
+    // through a countrywide cadastre (kind 'point': anywhere in Croatia) stays in the loaded city
     // when that city reads the same cadastre — the parcels are there already, like the search box's
     // "here". A click on a city itself always opens that city.
     function liveCityFor(input) {
         const place = (input && input.place) || {};
-        if (place.kind === 'country' && input.sameCadastre && input.currentCityId) return input.currentCityId;
+        if (place.kind === 'point' && input.sameCadastre && input.currentCityId) return input.currentCityId;
         return place.cityId || null;
     }
 
@@ -222,7 +214,7 @@
 
     return {
         EXPLORE_CITY_ID, MIN_ZOOM, MAX_ZOOM, PARCEL_ZOOM, EXPLORE_ZOOM,
-        parseAt, formatAt, addressWithView, isSharedRoute, bootDecision, canReturnToMap, resolveLanding, liveCityFor, exploreZoomFor, arrivesAtLatest,
+        parseAt, formatAt, addressWithView, isSharedRoute, bootDecision, canReturnToMap, resolveLanding, liveCityFor, arrivesAtLatest,
         shouldReturnToGlobe, resolveEntry
     };
 });

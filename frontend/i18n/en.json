@@ -6679,20 +6679,18 @@
     },
     "world": {
         "title": "Choose a place",
-        "hint": "Drag to spin · click anywhere to see what parcel data exists there",
+        "hint": "Drag to spin · select a city or an exact location",
         "reach": {
             "headline": "{{cities}} cities · {{countries}} countries",
             "caption": "With parcel data, ready to explore"
         },
-        "canvasLabel": "Globe. Drag to rotate, scroll to zoom, click a place to check parcel data.",
+        "canvasLabel": "Globe. Drag to rotate, scroll to zoom, select a city or an exact location.",
         "close": "Close",
         "backToMap": "Back to map",
         "search": {
-            "placeholder": "Search a city or country",
-            "label": "Search places",
-            "country": "Country",
-            "territory": "Territory",
-            "noResults": "No matching place",
+            "placeholder": "City name",
+            "label": "Search cities",
+            "noResults": "No matching city",
             "locate": "Show my location",
             "locateFailed": "Could not get your location."
         },
@@ -6769,15 +6767,15 @@
             }
         },
         "popup": {
-            "ocean": "Open water",
-            "oceanText": "No land here, so no parcels. You can still open the map at this spot.",
-            "coverageSource": "Coverage source"
+            "coverageSource": "Coverage source",
+            "location": "Selected location",
+            "locationText": "Open this exact location at street level to view or create proposals."
         },
         "action": {
             "open": "Open {{city}}",
             "explore": "Open the map here",
             "askCity": "Ask for this city",
-            "askArea": "Ask for this area"
+            "askPoint": "Ask for parcels here"
         },
         "request": {
             "sending": "Sending…",

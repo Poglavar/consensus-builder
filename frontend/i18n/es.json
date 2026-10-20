@@ -6730,20 +6730,18 @@
     },
     "world": {
         "title": "Elige un lugar",
-        "hint": "Arrastra para girar · haz clic en cualquier lugar para ver qué datos de parcelas existen",
+        "hint": "Arrastra para girar · selecciona una ciudad o una ubicación exacta",
         "reach": {
             "headline": "Ciudades: {{cities}} · países: {{countries}}",
             "caption": "Con datos de parcelas, listo para explorar"
         },
-        "canvasLabel": "Globo. Arrastra para girar, desplaza para acercar, haz clic en un lugar para ver sus datos de parcelas.",
+        "canvasLabel": "Globo. Arrastra para girar, desplázate para acercar y selecciona una ciudad o una ubicación exacta.",
         "close": "Cerrar",
         "backToMap": "Volver al mapa",
         "search": {
-            "placeholder": "Busca una ciudad o un país",
-            "label": "Buscar lugares",
-            "country": "País",
-            "territory": "Territorio",
-            "noResults": "Ningún lugar coincide",
+            "placeholder": "Nombre de la ciudad",
+            "label": "Buscar ciudades",
+            "noResults": "No hay ciudades coincidentes",
             "locate": "Mostrar mi ubicación",
             "locateFailed": "No se pudo obtener tu ubicación."
         },
@@ -6820,15 +6818,15 @@
             }
         },
         "popup": {
-            "ocean": "Mar abierto",
-            "oceanText": "Aquí no hay tierra, así que no hay parcelas. Aun así puedes abrir el mapa en este punto.",
-            "coverageSource": "Fuente de cobertura"
+            "coverageSource": "Fuente de cobertura",
+            "location": "Ubicación seleccionada",
+            "locationText": "Abre esta ubicación exacta a nivel de calle para ver o crear propuestas."
         },
         "action": {
             "open": "Abrir {{city}}",
             "explore": "Abrir el mapa aquí",
             "askCity": "Pedir esta ciudad",
-            "askArea": "Pedir esta zona"
+            "askPoint": "Solicitar parcelas aquí"
         },
         "request": {
             "sending": "Enviando…",

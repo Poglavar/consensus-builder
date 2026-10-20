@@ -1,4 +1,4 @@
-// Uncoded Natural Earth polygons remain searchable geography without inheriting a nearby country's
+// Uncoded Natural Earth polygons remain geographic context without inheriting a nearby country's
 // parcel-coverage status. This exercises the real compiler output and its browser-side lookup model.
 import { describe, it, expect } from 'vitest';
 import { createRequire } from 'node:module';
@@ -112,13 +112,13 @@ describe('uncoded land in world coverage', () => {
     it.each([
         ['Somaliland', 'ne:1159321259', 9.443889, 46.731595],
         ['N. Cyprus', 'ne:1159320531', 35.216071, 33.692434]
-    ])('looks up, names, and searches %s without assigning a country code', (name, id, lat, lon) => {
+    ])('keeps %s as geographic context without offering a territory destination', (name, id, lat, lon) => {
         // Remove city overlays here so these coordinates characterize the polygon hit itself.
         const polygonOnly = WorldCoverage.create({ ...data, cities: [], liveCities: [] });
         const place = polygonOnly.tierAt(lat, lon);
         expect(place).toMatchObject({ kind: 'territory', name, cc: null, tier: 'unknown', coverage: 'unknown', placeKey: `territory:${id}` });
         expect(polygonOnly.nameAt(lat, lon, 7)).toMatchObject({ kind: 'territory', name, cc: null });
-        expect(coverage.searchPlaces(name).some(result => result.kind === 'territory' && result.placeKey === `territory:${id}` && result.cc === null)).toBe(true);
+        expect(coverage.searchPlaces(name).every(result => ['city', 'live-city'].includes(result.kind))).toBe(true);
     });
 
     it('leaves open water in the Gulf of Aden as ocean', () => {

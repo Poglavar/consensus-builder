@@ -70,8 +70,33 @@ test.describe('World navigation and open ground @features', () => {
 
     await page.context().setGeolocation({ latitude: 44.8125, longitude: 20.4612 });
     await locate.click();
-    await expect(world.locator('.world-popup__title')).toHaveText('Belgrade', { timeout: 20_000 });
-    await expect(world.getByRole('button', { name: /Open Belgrade/ })).toBeVisible();
+    await expect(world.locator('.world-popup__title')).toHaveText('Selected location', { timeout: 20_000 });
+    await expect(world.getByRole('button', { name: 'Open the map here' })).toBeVisible();
+  });
+
+  test('the world globe excludes province destinations and opens a clicked point at street level', async ({ mockApi: page }) => {
+    await openCity(page);
+    await page.locator('#settings-button').click();
+    await page.locator('#world-view-button').click();
+    const world = page.locator('#world-view');
+    await world.getByRole('combobox', { name: 'Search cities' }).fill('Ontario');
+    await expect(world.getByRole('option')).toHaveCount(0);
+    await expect(world.locator('.world-search__empty')).toHaveText('No matching city');
+    // Orient the camera; the actual destination is then chosen by a canvas pointer click.
+    await page.evaluate(async () => { await (window as any).WorldView.flyTo({ lat: 50.52, lon: -84.79 }, { altitudeKm: 8500 }); });
+    const pixel = await page.evaluate(() => (window as any).WorldView.project(50.52, -84.79));
+    const canvas = await world.locator('canvas').first().boundingBox();
+    if (!canvas || !pixel) throw new Error('Globe destination is not visible');
+    await page.mouse.click(canvas.x + pixel.x, canvas.y + pixel.y);
+    await expect(world.locator('.world-popup__title')).toHaveText('Selected location');
+    await expect(world.getByRole('button', { name: 'Ask for this area' })).toHaveCount(0);
+    await world.getByRole('button', { name: 'Open the map here' }).click();
+    await waitForMapReady(page);
+    await expect(world).toHaveCount(0);
+    const view = await page.evaluate(() => ({ center: (window as any).map.getCenter(), zoom: (window as any).map.getZoom() }));
+    expect(view.zoom).toBe(19);
+    expect(view.center.lat).toBeCloseTo(50.52, 2);
+    expect(view.center.lng).toBeCloseTo(-84.79, 2);
   });
 
   test('Back to map closes the world globe and restores the current city map', async ({ mockApi: page }) => {

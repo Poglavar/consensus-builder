@@ -6731,20 +6731,18 @@
     },
     "world": {
         "title": "Izaberite mesto",
-        "hint": "Prevucite za okretanje · kliknite bilo gde da vidite koji podaci o parcelama postoje",
+        "hint": "Prevuci za okretanje · izaberi grad ili tačnu lokaciju",
         "reach": {
             "headline": "Gradovi: {{cities}} · države: {{countries}}",
             "caption": "Uz katastarske podatke, spremno za istraživanje"
         },
-        "canvasLabel": "Globus. Prevucite za okretanje, točkićem zumirajte, kliknite mesto da proverite podatke o parcelama.",
+        "canvasLabel": "Globus. Prevuci za okretanje, pomeraj točkić za zumiranje i izaberi grad ili tačnu lokaciju.",
         "close": "Zatvori",
         "backToMap": "Nazad na mapu",
         "search": {
-            "placeholder": "Pretražite grad ili državu",
-            "label": "Pretraga mesta",
-            "country": "Država",
-            "territory": "Teritorija",
-            "noResults": "Nema takvog mesta",
+            "placeholder": "Naziv grada",
+            "label": "Pretraži gradove",
+            "noResults": "Nema odgovarajućeg grada",
             "locate": "Prikaži moju lokaciju",
             "locateFailed": "Nije moguće utvrditi vašu lokaciju."
         },
@@ -6821,15 +6819,15 @@
             }
         },
         "popup": {
-            "ocean": "Otvoreno more",
-            "oceanText": "Ovde nema kopna, pa ni parcela. Mapu ipak možete otvoriti na ovom mestu.",
-            "coverageSource": "Izvor podataka o pokrivenosti"
+            "coverageSource": "Izvor podataka o pokrivenosti",
+            "location": "Izabrana lokacija",
+            "locationText": "Otvori ovu tačnu lokaciju na nivou ulice za pregled ili izradu predloga."
         },
         "action": {
             "open": "Otvori {{city}}",
             "explore": "Otvori mapu ovde",
             "askCity": "Zatraži ovaj grad",
-            "askArea": "Zatraži ovo područje"
+            "askPoint": "Zatraži parcele ovde"
         },
         "request": {
             "sending": "Šaljem…",

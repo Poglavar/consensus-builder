@@ -6731,20 +6731,18 @@
     },
     "world": {
         "title": "Odaberite mjesto",
-        "hint": "Povucite za okretanje · kliknite bilo gdje da vidite koji podaci o česticama postoje",
+        "hint": "Povuci za okretanje · odaberi grad ili točnu lokaciju",
         "reach": {
             "headline": "Gradovi: {{cities}} · države: {{countries}}",
             "caption": "Uz katastarske podatke, spremno za istraživanje"
         },
-        "canvasLabel": "Globus. Povucite za okretanje, kotačićem zumirajte, kliknite mjesto da provjerite podatke o česticama.",
+        "canvasLabel": "Globus. Povuci za okretanje, pomiči kotačić za zumiranje i odaberi grad ili točnu lokaciju.",
         "close": "Zatvori",
         "backToMap": "Natrag na kartu",
         "search": {
-            "placeholder": "Tražite grad ili državu",
-            "label": "Pretraga mjesta",
-            "country": "Država",
-            "territory": "Područje",
-            "noResults": "Nema takvog mjesta",
+            "placeholder": "Naziv grada",
+            "label": "Pretraži gradove",
+            "noResults": "Nema odgovarajućeg grada",
             "locate": "Prikaži moju lokaciju",
             "locateFailed": "Nije moguće dohvatiti vašu lokaciju."
         },
@@ -6821,15 +6819,15 @@
             }
         },
         "popup": {
-            "ocean": "Otvoreno more",
-            "oceanText": "Ovdje nema kopna, pa ni čestica. Kartu ipak možete otvoriti na ovom mjestu.",
-            "coverageSource": "Izvor podataka o pokrivenosti"
+            "coverageSource": "Izvor podataka o pokrivenosti",
+            "location": "Odabrana lokacija",
+            "locationText": "Otvori ovu točnu lokaciju na razini ulice za pregled ili izradu prijedloga."
         },
         "action": {
             "open": "Otvori {{city}}",
             "explore": "Otvori kartu ovdje",
             "askCity": "Zatraži ovaj grad",
-            "askArea": "Zatraži ovo područje"
+            "askPoint": "Zatraži čestice ovdje"
         },
         "request": {
             "sending": "Šaljem…",

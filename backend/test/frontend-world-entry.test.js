@@ -200,7 +200,7 @@ describe('where a globe pick lands', () => {
         const zagrebClick = { lat: 45.83, lon: 16.05, place: coverage.tierAt(45.83, 16.05) };
         expect(Model.arrivesAtLatest(Model.resolveLanding({ cityId: 'zagreb', point: zagrebClick, currentCityId: 'split', cityView: zagrebView }))).toBe(true);
         // a spot in the countrywide cadastre, a searched address, explore: the spot itself
-        const osijek = { lat: 45.55, lon: 18.69, place: coverage.tierAt(45.55, 18.69) };
+        const osijek = { lat: 45.55, lon: 18.69, place: coverage.pointAt(45.55, 18.69) };
         expect(Model.arrivesAtLatest(Model.resolveLanding({ cityId: 'zagreb', point: osijek, currentCityId: 'zagreb', cityView: zagrebView }))).toBe(false);
         const address = { lat: 45.8132, lon: 15.9772, place: coverage.tierAt(45.8132, 15.9772) };
         expect(Model.arrivesAtLatest(Model.resolveLanding({ cityId: 'zagreb', point: address, currentCityId: 'new_york', cityView: zagrebView,
@@ -210,14 +210,14 @@ describe('where a globe pick lands', () => {
     });
 
     it('inland Croatia opens the nearest Croatian city AT the clicked point, at parcel zoom', () => {
-        const osijek = { lat: 45.55, lon: 18.69, place: coverage.tierAt(45.55, 18.69) };
-        expect(osijek.place).toMatchObject({ kind: 'country', tier: 'live', cc: 'HR' });
+        const osijek = { lat: 45.55, lon: 18.69, place: coverage.pointAt(45.55, 18.69) };
+        expect(osijek.place).toMatchObject({ kind: 'point', tier: 'live', cc: 'HR' });
         const landing = Model.resolveLanding({ cityId: osijek.place.cityId, point: osijek, currentCityId: 'new_york', cityView: zagrebView });
-        expect(landing).toEqual({ cityId: osijek.place.cityId, inPlace: false, view: { lat: 45.55, lon: 18.69, zoom: Model.PARCEL_ZOOM }, carryAt: true });
+        expect(landing).toEqual({ cityId: osijek.place.cityId, inPlace: false, view: { lat: 45.55, lon: 18.69, zoom: 19 }, carryAt: true });
     });
 
     it('a Croatian spot opens in the loaded Croatian city (one countrywide cadastre), a city click switches', () => {
-        const osijek = coverage.tierAt(45.55, 18.69);
+        const osijek = coverage.pointAt(45.55, 18.69);
         expect(Model.liveCityFor({ place: osijek, currentCityId: 'split', sameCadastre: true })).toBe('split');
         expect(Model.liveCityFor({ place: osijek, currentCityId: 'new_york', sameCadastre: false })).toBe(osijek.cityId);
         expect(Model.liveCityFor({ place: coverage.tierAt(45.83, 16.05), currentCityId: 'split', sameCadastre: true })).toBe('zagreb');
@@ -225,7 +225,7 @@ describe('where a globe pick lands', () => {
         // ... and then lands in place, at the spot.
         const point = { lat: 45.55, lon: 18.69, place: osijek };
         expect(Model.resolveLanding({ cityId: 'split', point, currentCityId: 'split', cityView: zagrebView }))
-            .toEqual({ cityId: 'split', inPlace: true, view: { lat: 45.55, lon: 18.69, zoom: Model.PARCEL_ZOOM }, carryAt: true });
+            .toEqual({ cityId: 'split', inPlace: true, view: { lat: 45.55, lon: 18.69, zoom: 19 }, carryAt: true });
     });
 
     it('a precise search result opens exactly there, never below parcel zoom', () => {
@@ -239,13 +239,13 @@ describe('where a globe pick lands', () => {
         expect(other.carryAt).toBe(false);
     });
 
-    it('explore goes to the explore city at the point, zoom by what was picked', () => {
+    it('explore opens cities and exact points at street level', () => {
         const tokyo = { lat: 35.69, lon: 139.69, place: coverage.tierAt(35.69, 139.69) };
         expect(Model.resolveLanding({ point: tokyo, currentCityId: 'zagreb', explore: true }))
-            .toEqual({ cityId: 'explore', inPlace: false, view: { lat: 35.69, lon: 139.69, zoom: Model.EXPLORE_ZOOM.city }, carryAt: true });
-        const sea = { lat: 30, lon: -40, place: coverage.tierAt(30, -40) };
+            .toEqual({ cityId: 'explore', inPlace: false, view: { lat: 35.69, lon: 139.69, zoom: 19 }, carryAt: true });
+        const sea = { lat: 30, lon: -40, place: coverage.pointAt(30, -40) };
         expect(Model.resolveLanding({ point: sea, currentCityId: 'explore', explore: true }))
-            .toMatchObject({ cityId: 'explore', inPlace: true, view: { zoom: Model.EXPLORE_ZOOM.area } });
+            .toMatchObject({ cityId: 'explore', inPlace: true, view: { zoom: 19 } });
         const precise = Model.resolveLanding({ point: tokyo, currentCityId: 'zagreb', explore: true, focus: { lat: 35.69, lon: 139.69, zoom: 18 } });
         expect(precise.view.zoom).toBe(18);
     });
@@ -253,6 +253,14 @@ describe('where a globe pick lands', () => {
     it('refuses a pick without a usable point or city', () => {
         expect(() => Model.resolveLanding({ cityId: 'zagreb', point: { lat: null, lon: 1 } })).toThrow();
         expect(() => Model.resolveLanding({ point: { lat: 1, lon: 1, place: {} }, currentCityId: 'zagreb' })).toThrow();
+    });
+
+    it('keeps an arbitrary live-city point at street level rather than opening its city center or latest proposal', () => {
+        const point = { lat: 45.83, lon: 16.05, place: coverage.pointAt(45.83, 16.05) };
+        const landing = Model.resolveLanding({ cityId: point.place.cityId, point,
+            currentCityId: 'new_york', cityView: zagrebView });
+        expect(landing).toMatchObject({ carryAt: true, view: { lat: 45.83, lon: 16.05, zoom: 19 } });
+        expect(Model.arrivesAtLatest(landing)).toBe(false);
     });
 
 });

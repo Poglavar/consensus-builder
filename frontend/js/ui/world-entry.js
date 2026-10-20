@@ -296,12 +296,10 @@
         return node;
     }
 
-    function askLabel(place) {
+    function askLabel() {
         if (state.request === 'sending') return t('world.request.sending', 'Sending…');
         if (state.request === 'done') return t('world.request.done', 'Request noted, thank you');
-        return place && (place.kind === 'country' || place.kind === 'region')
-            ? t('world.action.askArea', 'Ask for this area')
-            : t('world.action.askCity', 'Ask for this city');
+        return t('world.action.askPoint', 'Ask for parcels here');
     }
 
     function askFromBanner() {
@@ -309,8 +307,8 @@
         state.request = 'sending';
         renderBanner();
         coverage().then(cov => {
-            const place = cov.tierAt(center.lat, center.lng);
-            if (place.kind === 'ocean') throw new Error('no place to ask for at the map centre (open water)');
+            if (cov.tierAt(center.lat, center.lng).kind === 'ocean') throw new Error('no place to ask for at the map centre (open water)');
+            const place = cov.pointAt(center.lat, center.lng);
             return requestCity(place);
         }).then(() => { state.request = 'done'; renderBanner(); }, error => {
             console.error(`[${new Date().toISOString()}] [world-entry] city request failed`, error);
@@ -345,7 +343,7 @@
         // The actions are the shared small buttons (css/primitives.css), Ask the one primary.
         const actions = el('div', 'explore-banner__actions');
         if (!place || place.kind !== 'ocean') {
-            const ask = el('button', 'btn btn-sm btn-primary', { type: 'button', id: 'explore-banner-ask', text: askLabel(place) });
+            const ask = el('button', 'btn btn-sm btn-primary', { type: 'button', id: 'explore-banner-ask', text: askLabel() });
             ask.disabled = state.request === 'sending' || state.request === 'done';
             ask.addEventListener('click', askFromBanner);
             actions.appendChild(ask);
