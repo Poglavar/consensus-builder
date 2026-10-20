@@ -33,7 +33,7 @@ function fakeDb(tasks = [], shared = null) {
             if (locks.exclusive || locks.readers.size) return { rows: [{ locked: false }] };
             locks.exclusive = true; return { rows: [{ locked: true }] };
         }
-        if (sql.startsWith('SELECT q.*')) return { rows: state.tasks.filter(task => task.status === 'queued'
+        if (sql.startsWith('WITH pending_cli_tasks AS MATERIALIZED')) return { rows: state.tasks.filter(task => task.status === 'queued'
             && (!params[2] || params[2].includes(task.id))).slice(0, params[1]).map(task => structuredClone(task)) };
         const match = sql.match(/UPDATE floor_plan\.(building_task|image_task|plan_task)/);
         if (match) {
@@ -69,8 +69,8 @@ describe('subscription CLI floor-plan worker', () => {
         }) });
 
         await expect(run(db, stage, reader)).resolves.toMatchObject({ completed: 1, costUsd: 0 });
-        const selection = db.state.calls.find(([sql]) => sql.startsWith('SELECT q.*'));
-        expect(selection[0]).toContain('q.processor=$1');
+        const selection = db.state.calls.find(([sql]) => sql.startsWith('WITH pending_cli_tasks AS MATERIALIZED'));
+        expect(selection[0]).toContain("processor=$1 AND status='queued'");
         expect(selection[0]).toContain('LIMIT $2');
         expect(selection[1]).toEqual(['reader-v1', 1]);
         const responseSave = db.state.calls.findIndex(([sql, params]) => sql.includes('usage=$3')

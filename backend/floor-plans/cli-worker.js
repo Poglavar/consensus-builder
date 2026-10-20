@@ -21,8 +21,10 @@ export function cliTaskSelection(adapter, { taskIds = false } = {}) {
              WHERE t.kind='asset' AND t.current_sha256=q.source_sha256 AND b.bytes_available)`
         : `EXISTS (SELECT 1 FROM floor_plan.listing l JOIN floor_plan.target t ON ${currentOwner}
              WHERE l.url=q.listing_url AND t.current_sha256=q.source_sha256 AND ${eligibleListingSql()})`;
-    return `SELECT q.* FROM floor_plan.${table} q WHERE q.processor=$1 AND q.status='queued'
-        AND NOT (q.result ? 'paidResponse') AND ${ownership}${taskIds ? ' AND q.id=ANY($3::text[])' : ''}
+    return `WITH pending_cli_tasks AS MATERIALIZED (
+        SELECT * FROM floor_plan.${table} WHERE processor=$1 AND status='queued'
+        AND NOT (result ? 'paidResponse')${taskIds ? ' AND id=ANY($3::text[])' : ''}
+    ) SELECT q.* FROM pending_cli_tasks q WHERE ${ownership}
         ORDER BY (q.result ? 'cliResponse') DESC,q.created_at,q.id LIMIT $2`;
 }
 
