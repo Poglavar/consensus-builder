@@ -90,6 +90,7 @@ body[data-planning-existing-scope="removed"] .leaflet-observedReferences-pane { 
 .planning-study-checks dd span { color: var(--cb-text-muted); margin-top: var(--cb-space-1); }
 .planning-study-checks [data-status="fail"] strong { color: var(--cb-danger); }
 .planning-study-checks [data-status="unknown"] strong { color: var(--cb-warning-soft-ink); }
+.planning-envelope-height { width: max-content; padding: var(--cb-space-1); border-radius: var(--cb-radius-sm); background: var(--cb-surface); color: var(--cb-text); font-size: var(--cb-text-xs); white-space: nowrap; }
 .planning-views[hidden], .planning-inspector[hidden] { display: none; }
 @media (max-width: 899.98px) {
     .planning-layer-name { gap: var(--cb-space-1); font-size: var(--cb-text-xs); }

@@ -1,5 +1,6 @@
 {
   "planningStudy": {
+    "exactStartHint": "Opens this exact parcel with an editable design and a selectable front edge.",
     "title": "Parcel study",
     "envelopeTitle": "Partial envelope",
     "designTitle": "Design test",
@@ -7749,6 +7750,24 @@
         }
     },
   "planningViews": {
+    "zoningAreas": "Zoning source areas",
+    "envelopeCoverage": "Partial envelopes are derived from the loaded parcel and zoning records. Parcels without massing are counted by reason; missing massing does not establish zero capacity.",
+    "envelopeSummary": "{{count}} parcel records inspected: {{shapes}} with partial envelopes, {{missing}} without massing.",
+    "envelopeNote": "Partial parcel envelopes from direct source dimensions. The front edge is unknown, so the shape includes alternative edge interpretations. Area budgets and unresolved rules still apply.",
+    "envelopesLoaded": {
+      "one": "{{count}} partial parcel envelope · {{missing}} parcels without massing",
+      "other": "{{count}} partial parcel envelopes · {{missing}} parcels without massing"
+    },
+    "envelopeUnavailable": {
+      "envelope-geometry-error": "Source geometry could not be evaluated",
+      "overlapping-parcel-identities": "Overlapping parcel identities",
+      "use-prohibited": "Housing type recorded as prohibited",
+      "missing-direct-height": "No direct height limit",
+      "empty-supported-bound": "No space within supported setbacks",
+      "unsupported-parcel-shape": "Unsupported parcel shape",
+      "study-multiple-zoning-areas": "Multiple zoning areas on one parcel",
+      "study-zoning-missing": "No zoning source for parcel"
+    },
     "refreshPending": "Awaiting refresh",
     "refreshCount": {
       "one": "{{count}} result awaiting refresh",

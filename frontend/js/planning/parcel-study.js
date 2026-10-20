@@ -80,11 +80,13 @@
         if (!item.source.parcelStudy) return;
         const section = node('section', undefined, 'planning-study-start');
         const button = node('button', t('start'), 'btn'); button.type = 'button';
-        const hint = node('p', t('startHint'), 'planning-source-note');
+        const parcel = item.sourceEvidence?.parcelReference?.parcelId;
+        const hint = node('p', t(parcel ? 'exactStartHint' : 'startHint'), 'planning-source-note');
         button.addEventListener('click', async () => {
             button.disabled = true; hint.textContent = t('loading');
             const point = root.PlanningViews.getSelectionPoint() || root.map.getCenter();
-            try { await load({ city: item.source.city, source: item.source.id, scenario: item.source.scenario, point: [point.lng, point.lat] }); }
+            try { await load({ city: item.source.city, source: item.source.id, scenario: item.source.scenario,
+                ...(parcel ? { parcel } : { point: [point.lng, point.lat] }) }); }
             catch (error) {
                 console.error('[planning-study] Source read failed', error);
                 const key = `planningStudy.errors.${error.message}`;

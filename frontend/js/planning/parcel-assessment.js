@@ -94,6 +94,21 @@
             center[1] + (p[1] - center[1]) * form.scale + form.northM]);
         return { geometry: bound.local.geometryOf(points), baseM: 0, topM: form.heightM };
     }
+    // Without street evidence, retain every supported front-edge interpretation. Their union
+    // is an outer bound, not a claim that the whole solid can be built or that an edge is verified.
+    function unorientedEnvelope(context, geometryOps) {
+        let geometry = null, heightM = null, interpretations = 0;
+        for (let edge = 0; edge < ring(context.parcel.geometry).length; edge++) {
+            let bound;
+            try { bound = derive(context, edge, geometryOps); }
+            catch (error) { if (error.message === 'unsupported-parcel-shape') continue; throw error; }
+            heightM = bound.heightM; interpretations++;
+            if (bound.geometry) geometry = geometry ? geometryOps.union(geometryOps.feature(geometry),
+                geometryOps.feature(bound.geometry)).geometry : bound.geometry;
+        }
+        if (!interpretations) invalid('unsupported-parcel-shape');
+        return { geometry, heightM, interpretations, areaM2: geometry ? geometryOps.area(geometryOps.feature(geometry)) : 0 };
+    }
     function assess(context, design, frontEdge = 0, geometryOps) {
         const bound = derive(context, frontEdge, geometryOps), local = bound.local;
         const points = ring(design.geometry).map(local.project);
@@ -141,5 +156,5 @@
             && saved.sourceReference.revision === context.sourceReference.revision
             && saved.parcelReference.revision === context.parcelReference.revision ? 'same' : 'changed';
     }
-    return { derive, assess, designFromForm, referenceState };
+    return { derive, unorientedEnvelope, assess, designFromForm, referenceState };
 });

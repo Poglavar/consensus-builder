@@ -9,6 +9,14 @@ const { reference } = require('../../frontend/js/planning/source-proposal.js');
 const assessment = require('../../frontend/js/planning/parcel-assessment.js');
 const fail = (code, status = 422) => { throw Object.assign(new Error(code), { code, status }); };
 
+export async function readStudyZoning(provider, query, bbox) {
+    const answer = await provider.query(null, { ...query, bbox, limit: 200 });
+    if (answer.nextAfter != null || answer.omitted) fail('study-zoning-incomplete');
+    // Viewport clipping is a display projection, never the geometry used to prove parcel coverage.
+    return (await Promise.all(answer.items.map(item => provider.record(null,
+        { recordId: item.source.recordId, scenario: query.scenario })))).flat();
+}
+
 export async function loadParcelStudy(query, { sources, parcelProvider = descriptor => runtimeParcelSource(descriptor) } = {}) {
     const provider = sourcesFor(query, sources)[0];
     if (!query.source || !provider?.descriptor.parcelSourceId || provider.descriptor.parcelStudy !== 'direct-dimensions.v1') fail('study-unavailable');
@@ -26,13 +34,12 @@ export async function loadParcelStudy(query, { sources, parcelProvider = descrip
         : turf.booleanPointInPolygon(turf.point(query.point), feature));
     if (!parcels.length) fail('study-parcel-missing');
     if (parcels.length !== 1) fail('study-parcel-ambiguous');
-    const parcel = parcels[0], bbox = turf.bbox(parcel);
+    const parcel = parcels[0];
+    return assembleParcelStudy(parcel, descriptor, await readStudyZoning(provider, query, turf.bbox(parcel)));
+}
+
+export function assembleParcelStudy(parcel, descriptor, records) {
     if (turf.area(parcel) > 1000000 || parcel.geometry.type !== 'Polygon') fail('unsupported-parcel-shape');
-    const answer = await provider.query(null, { ...query, bbox, limit: 200 });
-    if (answer.nextAfter != null || answer.omitted) fail('study-zoning-incomplete');
-    // Viewport clipping is a display projection, never the geometry used to prove parcel coverage.
-    const records = (await Promise.all(answer.items.map(item => provider.record(null,
-        { recordId: item.source.recordId, scenario: query.scenario })))).flat();
     const overlaps = records.filter(item => {
         const intersection = turf.intersect(parcel, turf.feature(item.site));
         return intersection && turf.area(intersection) > 0.01;

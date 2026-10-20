@@ -530,7 +530,7 @@
     function hasVisiblePlanningRepresentations() {
         if (!window.PlanningViews) return false;
         const policy = window.PlanningViews.getPolicy();
-        return window.PlanningViews.getItems().some(item => policy[item.role] !== 'off')
+        return window.PlanningViews.getItems().some(item => window.PlanningViews.getAppearance(item) !== 'off')
             || window.PlanningViews.getSelected()?.role === 'existing' && policy.existing !== 'off';
     }
     function rebuildPlanningSources3D() {
@@ -543,7 +543,7 @@
         if (!planningSourcesGroup.visible) { invalidateThreeView(); return; }
         const selectedId = window.PlanningViews.getState()?.selectedId;
         for (const item of window.PlanningViews.getItems()) {
-            const appearance = view[item.role];
+            const appearance = window.PlanningViews.getAppearance(item);
             if (appearance === 'off') continue;
             const color = window.PlanningViews.color(item.role);
             for (const area of item.areas || []) {

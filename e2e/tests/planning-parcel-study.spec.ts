@@ -27,7 +27,7 @@ test('Atlas parcel study edits actual geometry, rechecks limits and survives rel
     if (!['xhr','fetch'].includes(route.request().resourceType())) return route.fallback();
     const path = new URL(route.request().url()).pathname;
     const json = path.endsWith('/study') ? context() : path.endsWith('/sources') ? {city:'colorado',sources:[source]}
-      : { schemaVersion:'planning-representations.v1',city:'colorado',items:[],sources:[source],summaries:[],coverage:'source-results',nextCursor:null,omitted:0 };
+      : { schemaVersion:'planning-representations.v1',city:'colorado',items:[],sources:[source],summaries:[],unavailable:[],coverage:'source-results',nextCursor:null,omitted:0 };
     await route.fulfill({json});
   });
   await page.goto(url); await waitForMapReady(page);
@@ -71,7 +71,7 @@ test('changed Atlas input requires an explicit new study and retains the old dra
     if (!['xhr','fetch'].includes(route.request().resourceType())) return route.fallback();
     const path = new URL(route.request().url()).pathname;
     await route.fulfill({json:path.endsWith('/study') ? context(revision) : path.endsWith('/sources') ? {city:'colorado',sources:[source]}
-      : {schemaVersion:'planning-representations.v1',city:'colorado',items:[],sources:[source],summaries:[],coverage:'source-results',nextCursor:null,omitted:0}});
+      : {schemaVersion:'planning-representations.v1',city:'colorado',items:[],sources:[source],summaries:[],unavailable:[],coverage:'source-results',nextCursor:null,omitted:0}});
   });
   await page.goto(url); await waitForMapReady(page);
   const inspector = page.locator('#planning-inspector');
@@ -85,4 +85,44 @@ test('changed Atlas input requires an explicit new study and retains the old dra
   await inspector.getByRole('button',{name:'Start again with current sources'}).click();
   await expect(inspector.getByLabel('Design height (m)')).toHaveValue('9');
   expect(await page.evaluate(() => JSON.parse((window as any).PersistentStorage.getItem('cb_planning_parcel_study_v1')).sourceReference.revision)).toBe('source-2');
+});
+
+test('Permitted draws viewport parcel volumes without a study and zoning areas have their own control @features', async ({ mockApi: page }) => {
+  const input=context();
+  const envelope={id:'envelope:atlas-study-test:parcel-test:family1',role:'permitted',proposalId:null,parcelEnvelope:true,
+    title:'Synthetic parcel envelope',source:{...source,parcel:'parcel-test'},site:geometry,areas:[],
+    volumes:[{id:'bound',geometry,baseM:0,topM:10.668}],
+    spatialReference:{horizontal:'OGC:CRS84',vertical:'relative-ground',unit:'m'},
+    assessment:{meaning:'partial-envelope',status:'unresolved'},metrics:{heightM:10.668,footprintM2:1000},constraints:[],
+    sourceEvidence:{parcelReference:input.parcelReference,sourceReferences:[input.sourceReference]}};
+  const zone={...input.source,title:'Synthetic zoning area',areas:[{geometry}],volumes:[],metrics:{heightM:null},
+    assessment:{meaning:'zoning-area',status:'allowed'}};
+  await page.route('**/planning/**', async route => {
+    if (!['xhr','fetch'].includes(route.request().resourceType())) return route.fallback();
+    const path=new URL(route.request().url()).pathname;
+    await route.fulfill({json:path.endsWith('/study') ? input : path.endsWith('/sources') ? {city:'colorado',sources:[source]}
+      : {schemaVersion:'planning-representations.v1',city:'colorado',sources:[source],items:path.endsWith('/envelopes')?[envelope]:[zone],
+        summaries:[],unavailable:[],coverage:'source-results',nextCursor:null,omitted:0}});
+  });
+  await page.goto(url.replace('&planningParcel=parcel-test','')); await waitForMapReady(page);
+  await expect(page.locator('.planning-envelope-height')).toHaveText('10.7 m',{timeout:45_000});
+  expect(await page.evaluate(() => (window as any).PlanningParcelStudy.getContext())).toBeUndefined();
+  await page.getByRole('button',{name:'Buildings and massing',exact:true}).click();
+  const panel=page.locator('#planning-views');
+  await expect(panel.locator('[data-planning-setting="zoningAreas"]')).toHaveValue('off');
+  await panel.locator('[data-planning-setting="permitted"]').selectOption('off');
+  await expect(page.locator('.planning-envelope-height')).toHaveCount(0);
+  await panel.locator('[data-planning-setting="zoningAreas"]').selectOption('ghost');
+  await expect(page.getByRole('button',{name:'Inspect source zoning area Synthetic zoning area',exact:true})).toBeAttached();
+  await expect(page.locator('.planning-envelope-height')).toHaveCount(0);
+  await panel.locator('[data-planning-setting="zoningAreas"]').selectOption('off');
+  await panel.locator('[data-planning-setting="permitted"]').selectOption('solid');
+  await expect(page.locator('.planning-envelope-height')).toHaveCount(1);
+  await page.getByRole('button',{name:'Buildings and massing',exact:true}).click();
+  await page.getByRole('button',{name:'Inspect permitted massing on parcel-test',exact:true}).click();
+  const inspector=page.locator('#planning-inspector');
+  await expect(inspector.getByText('Partial envelope',{exact:true})).toBeVisible();
+  await inspector.getByRole('button',{name:'Test a parcel here',exact:true}).click();
+  await expect(inspector.getByLabel('Design height (m)')).toBeVisible();
+  expect(await page.evaluate(() => (window as any).PlanningViews.getItems().filter((item:any)=>item.parcelEnvelope).length)).toBe(0);
 });

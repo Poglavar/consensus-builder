@@ -1,5 +1,6 @@
 {
   "planningStudy": {
+    "exactStartHint": "Otvara ovu točnu česticu s izmjenjivim projektom i odabirom prednjeg ruba.",
     "title": "Studija čestice",
     "envelopeTitle": "Djelomična omotnica",
     "designTitle": "Provjera oblikovanja",
@@ -7815,6 +7816,25 @@
         }
     },
   "planningViews": {
+    "zoningAreas": "Područja izvornog plana",
+    "envelopeCoverage": "Djelomične ovojnice izvedene su iz učitanih katastarskih i planskih zapisa. Čestice bez volumena prebrojene su prema razlogu; izostanak volumena ne dokazuje nulti kapacitet.",
+    "envelopeSummary": "Pregledano {{count}} katastarskih zapisa: {{shapes}} s djelomičnim ovojnicama, {{missing}} bez volumena.",
+    "envelopeNote": "Djelomične ovojnice čestica iz izravnih vrijednosti izvora. Prednji rub nije utvrđen pa oblik uključuje alternativna tumačenja rubova. Ograničenja površine i nerazriješena pravila i dalje vrijede.",
+    "envelopesLoaded": {
+      "one": "{{count}} djelomična ovojnica čestice · {{missing}} čestica bez volumena",
+      "few": "{{count}} djelomične ovojnice čestica · {{missing}} čestica bez volumena",
+      "other": "{{count}} djelomičnih ovojnica čestica · {{missing}} čestica bez volumena"
+    },
+    "envelopeUnavailable": {
+      "envelope-geometry-error": "Izvornu geometriju nije moguće procijeniti",
+      "overlapping-parcel-identities": "Preklapanje identiteta čestica",
+      "use-prohibited": "Stambeni tip zabilježen kao zabranjen",
+      "missing-direct-height": "Nema izravnog ograničenja visine",
+      "empty-supported-bound": "Nema prostora unutar podržanih odmaka",
+      "unsupported-parcel-shape": "Nepodržan oblik čestice",
+      "study-multiple-zoning-areas": "Više planskih područja na jednoj čestici",
+      "study-zoning-missing": "Nema planskog izvora za česticu"
+    },
     "refreshPending": "Čeka osvježavanje",
     "refreshCount": {
       "one": "{{count}} rezultat čeka osvježavanje",

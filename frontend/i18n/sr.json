@@ -1,5 +1,6 @@
 {
   "planningStudy": {
+    "exactStartHint": "Otvara ovu tačnu parcelu sa izmenjivim projektom i izborom prednje ivice.",
     "title": "Studija parcele",
     "envelopeTitle": "Delimični omotač",
     "designTitle": "Provera oblikovanja",
@@ -7815,6 +7816,25 @@
         }
     },
   "planningViews": {
+    "zoningAreas": "Područja izvornog plana",
+    "envelopeCoverage": "Delimični omotači izvedeni su iz učitanih katastarskih i planskih zapisa. Parcele bez volumena prebrojane su prema razlogu; izostanak volumena ne dokazuje nulti kapacitet.",
+    "envelopeSummary": "Pregledano {{count}} katastarskih zapisa: {{shapes}} sa delimičnim omotačima, {{missing}} bez volumena.",
+    "envelopeNote": "Delimični omotači parcela iz direktnih vrednosti izvora. Prednja ivica nije utvrđena pa oblik uključuje alternativna tumačenja ivica. Ograničenja površine i nerazrešena pravila i dalje važe.",
+    "envelopesLoaded": {
+      "one": "{{count}} delimični omotač parcele · {{missing}} parcela bez volumena",
+      "few": "{{count}} delimična omotača parcela · {{missing}} parcela bez volumena",
+      "other": "{{count}} delimičnih omotača parcela · {{missing}} parcela bez volumena"
+    },
+    "envelopeUnavailable": {
+      "envelope-geometry-error": "Izvornu geometriju nije moguće proceniti",
+      "overlapping-parcel-identities": "Preklapanje identiteta parcela",
+      "use-prohibited": "Stambeni tip zabeležen kao zabranjen",
+      "missing-direct-height": "Nema direktnog ograničenja visine",
+      "empty-supported-bound": "Nema prostora unutar podržanih odstojanja",
+      "unsupported-parcel-shape": "Nepodržan oblik parcele",
+      "study-multiple-zoning-areas": "Više planskih područja na jednoj parceli",
+      "study-zoning-missing": "Nema planskog izvora za parcelu"
+    },
     "refreshPending": "Čeka osvežavanje",
     "refreshCount": {
       "one": "{{count}} rezultat čeka osvežavanje",

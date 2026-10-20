@@ -2,6 +2,7 @@
 import { validateBounds } from '../parcels/source-contract.js';
 import { planningRepresentations, planningParcel, planningRecord, getPlanningSources } from '../planning/sources.js';
 import { loadParcelStudy } from '../planning/parcel-study.js';
+import { loadParcelEnvelopes } from '../planning/parcel-envelopes.js';
 
 function validCity(city) { return typeof city === 'string' && /^[a-z][a-z0-9_-]{0,79}$/.test(city); }
 function validSource(source) { return source === undefined || (typeof source === 'string' && /^[a-z0-9_-]{1,100}$/.test(source)); }
@@ -9,7 +10,24 @@ function validSource(source) { return source === undefined || (typeof source ===
 export function setupPlanningRoutes(app, pool, { sources = getPlanningSources(),
     query = (pool, query) => planningRepresentations(pool, query, sources),
     parcelQuery = (pool, query) => planningParcel(pool, query, sources),
-    studyQuery = query => loadParcelStudy(query, { sources }) } = {}) {
+    studyQuery = query => loadParcelStudy(query, { sources }),
+    envelopeQuery = query => loadParcelEnvelopes(query, { sources }) } = {}) {
+    app.get('/planning/envelopes', async (req, res) => {
+        res.set('Cache-Control', 'no-store');
+        const { city, source, scenario } = req.query;
+        const bbox = typeof req.query.bbox === 'string' ? req.query.bbox.split(',').map(value => value.trim() ? Number(value) : NaN) : [];
+        try {
+            if (!validCity(city) || !source || !validSource(source) || !validSource(scenario)) {
+                return res.status(400).json({ code: 'invalid-planning-query' });
+            }
+            validateBounds(bbox, 0.5);
+            res.json(await envelopeQuery({ city, source, scenario, bbox }));
+        } catch (error) {
+            const status = [400, 422].includes(error.status) ? error.status : 503;
+            if (status === 503) console.error('[planning-envelopes] Source read failed.');
+            res.status(status).json({ code: status === 400 ? 'envelope-area-too-large' : 'planning-source-unavailable' });
+        }
+    });
     app.get('/planning/study', async (req, res) => {
         res.set('Cache-Control', 'no-store');
         const { city, source, scenario, parcel, point } = req.query;

@@ -210,6 +210,28 @@ Manual verification in dedicated headed Chrome used the real public sample and p
 
 A useful demonstration must show the same selected source proposal in 2D and 3D, source constraints alongside observed buildings and a design, explicit estimated/unsupported rules, and a design edit that either revalidates or reports what cannot be checked. It must survive save/reload and a second import without duplicate proposals or source-to-design identity confusion.
 
+### Permitted viewport follow-up, 2026-10-21
+
+User verification exposed a gap: enabling Permitted still displayed flat Atlas zoning areas, while only an opened study had parcel massing. Permitted now loads `/planning/envelopes` for the visible parcels without creating a study. The same parcel volumes provide 2D footprints with height labels and 3D extrusions. A separate **Zoning source areas** control, off by default, displays the original ground polygons.
+
+This read is bounded to 0.5 km² and 400 complete parcel identities. It inspects zoning across full parcel outlines, not viewport-clipped shapes. Unknown street orientation is handled by the union of supported front-edge interpretations, labelled as a partial outer bound. A direct positive height is required. Prohibited uses, overlapping parcel identities, missing heights, unsupported shapes, multiple zoning areas and failed geometry operations are counted with explicit reasons. One invalid geometry cannot hide the remaining parcels, and a failed source read cannot masquerade as complete coverage. Parcel boundaries are never repaired or rewritten. Independent area budgets and legal applicability remain unresolved.
+
+Clicking a viewport envelope opens its evidence; **Test a parcel here** then uses the exact selected parcel. The study replaces only that parcel's viewport envelope. A live sample read over `[-105.0925,39.9975,-105.089,39.9995]` returned 25 volumes at 35 ft from 75 parcel identities, with 38 missing direct heights, 7 unsupported shapes, 4 parcels crossing zoning areas and 1 geometry failure.
+
+Targeted validation for this follow-up (none stopped; no full suites):
+
+| Type | Scope | Result |
+| --- | --- | --- |
+| Headless unit | 7 files: parcel envelopes, parcel study, representations, inspection, Atlas, i18n style, design tokens | 275 passed, 3 failed: exact floating-point assertion, new CSS `!important`, and the existing translation duplicate budget |
+| Headless unit | Parcel envelopes and design tokens after corrections | 181 passed |
+| Headless Playwright | 3 parcel-study specs | 2 passed; new spec failed on an incorrect accessible-name locator |
+| Headless Playwright | New viewport spec after correcting its locator | 1 passed |
+| Headless unit | Parcel envelopes and frontend static build after geometry-isolation coverage and script updates | 24 passed |
+
+The floating-point assertion uses a numeric tolerance and the CSS override was removed. English duplicate groups remain unchanged at 350 against the pre-existing 348 budget.
+
+Manual headed Chrome verification first loaded 18 live viewport envelopes and showed their 2D height labels without a study. Later wider-viewport reads from Colorado's public parcel service timed out, including one diagnostic request given 45 seconds. The 3D rendering and 390 px control layout were therefore checked by replaying the complete 25-envelope real-source response captured earlier in this run, solely inside the verification browser. All 25 height-bounded volumes rendered, and the separate source-area control fit the phone layout. The replay was removed and the browser closed; normal app requests still use the live provider and report its failures. This distinction is part of the validation result, not a production data fallback.
+
 The first local follow-up demonstrated the Atlas public Lafayette sample through the shared adapter and inspector: housing-type changes, source estimates, URL selection/reload, 2D areas and ground-plane areas alongside observed buildings in 3D. The parcel study above now adds bounded design-edit checks with explicit unresolved requirements. Complete interpretation of all zoning rules remains unfinished. A bounded current claim is: **“We can visualize source zoning areas and recorded constraints in linked 2D and 3D views, derive a partial parcel envelope, and recheck an edited test design against supported dimensions while retaining unresolved conditions.”**
 
 There is also a concrete distribution question for a partnership: the published Land Use Labs standard purchase license limits use to internal purposes and restricts public display/redistribution, including reconstructable derivatives. A public product integration needs appropriate display/reuse terms rather than assuming the map's public visibility grants them. This audit used public documentation and the public sample; no purchase/license acceptance was made. [License, updated September 10, 2026](https://www.landuselabs.com/license).

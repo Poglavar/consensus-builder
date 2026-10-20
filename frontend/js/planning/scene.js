@@ -11,15 +11,19 @@
         existing: displayStates, permitted: displayStates, proposed: displayStates,
         existingScope: ['all', 'surviving', 'removed'],
         proposedForm: ['massing', 'buildout', 'both'],
-        permittedMap: ['footprint', 'steps']
+        permittedMap: ['footprint', 'steps'], zoningAreas: ['off', 'ghost']
     });
     const defaults = Object.freeze({ existing: 'ghost', permitted: 'ghost', proposed: 'solid',
-        existingScope: 'all', proposedForm: 'both', permittedMap: 'footprint' });
+        existingScope: 'all', proposedForm: 'both', permittedMap: 'footprint', zoningAreas: 'off' });
     function settings(input = {}) {
         return Object.fromEntries(Object.entries(defaults).map(([key, value]) =>
             [key, choices[key].includes(input[key]) ? input[key] : value]));
     }
     function displayPolicy(state) { const values = settings(state); return Object.fromEntries(roles.map(role => [role, values[role]])); }
+    function itemAppearance(item, state) {
+        const values = settings(state);
+        return item.assessment?.meaning === 'zoning-area' ? values.zoningAreas : values[item.role];
+    }
     function createStore(initial = {}) {
         let state = Object.freeze({ ...settings(initial), variation: '', selectedId: null, revision: 0 });
         const listeners = new Set();
@@ -66,5 +70,5 @@
         return joined?.geometry ? [{ ...joined, properties: { representationId: item.id, role: item.role } }] : [];
     }
     function queryKey(city, bbox) { return `${city}:${bbox.map(value => Number(value).toFixed(5)).join(',')}`; }
-    return { roles, displayStates, choices, defaults, settings, displayPolicy, createStore, builtGeometry, volumeFeatures, mapFeatures, queryKey };
+    return { roles, displayStates, choices, defaults, settings, displayPolicy, itemAppearance, createStore, builtGeometry, volumeFeatures, mapFeatures, queryKey };
 });

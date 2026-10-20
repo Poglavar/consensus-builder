@@ -1,5 +1,6 @@
 {
   "planningStudy": {
+    "exactStartHint": "Abre esta parcela exacta con un diseño editable y un borde frontal seleccionable.",
     "title": "Estudio de parcela",
     "envelopeTitle": "Envolvente parcial",
     "designTitle": "Prueba de diseño",
@@ -7800,6 +7801,24 @@
         }
     },
   "planningViews": {
+    "zoningAreas": "Áreas de la fuente urbanística",
+    "envelopeCoverage": "Las envolventes parciales se derivan de los registros parcelarios y urbanísticos cargados. Las parcelas sin volumen se cuentan por motivo; la ausencia de volumen no demuestra una capacidad nula.",
+    "envelopeSummary": "{{count}} registros parcelarios examinados: {{shapes}} con envolventes parciales, {{missing}} sin volumen.",
+    "envelopeNote": "Envolventes parciales de parcelas a partir de dimensiones directas de la fuente. Se desconoce el frente, por lo que la forma incluye interpretaciones alternativas de los bordes. Siguen aplicándose los límites de superficie y las reglas pendientes.",
+    "envelopesLoaded": {
+      "one": "{{count}} envolvente parcial de parcela · {{missing}} parcelas sin volumen",
+      "other": "{{count}} envolventes parciales de parcelas · {{missing}} parcelas sin volumen"
+    },
+    "envelopeUnavailable": {
+      "envelope-geometry-error": "No se pudo evaluar la geometría de la fuente",
+      "overlapping-parcel-identities": "Identidades de parcelas superpuestas",
+      "use-prohibited": "Tipo de vivienda registrado como prohibido",
+      "missing-direct-height": "Sin límite directo de altura",
+      "empty-supported-bound": "Sin espacio dentro de los retranqueos disponibles",
+      "unsupported-parcel-shape": "Forma de parcela no compatible",
+      "study-multiple-zoning-areas": "Varias áreas urbanísticas en una parcela",
+      "study-zoning-missing": "Sin fuente urbanística para la parcela"
+    },
     "refreshPending": "Pendiente de actualización",
     "refreshCount": {
       "one": "{{count}} resultado pendiente de actualización",
