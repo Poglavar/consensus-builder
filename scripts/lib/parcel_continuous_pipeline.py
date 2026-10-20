@@ -220,7 +220,8 @@ class ContinuousPipeline:
         for code in spec["cityCodes"]:
             current = self.runner.state["cities"][code]
             child = result.get("cities", {}).get(code, {})
-            if result.get("error") and not result.get("interrupted"):
+            if (result.get("error") and not result.get("interrupted")
+                    and not result.get("adapterStageBlocked")):
                 failures = current.setdefault("pipelineFailures", {})
                 failures[lane] = failures.get(lane, 0) + 1
                 if failures[lane] >= self.runner.args.max_retries:

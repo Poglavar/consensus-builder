@@ -122,6 +122,17 @@ class PipelineTests(unittest.TestCase):
         self.accept('qualification', result)
         self.assertEqual(self.runner.state['cities']['1']['qualification']['status'], 'failed')
 
+    def test_workspace_block_does_not_exhaust_candidate_retries(self):
+        self.runner.args.max_retries = 1
+        block = {'cityCode': '1', 'reason': 'workspace preparation failed'}
+        self.accept('qualification', {
+            'cities': {'1': {'qualification': {'status': 'pending'}}},
+            'error': 'workspace preparation failed', 'adapterStageBlocked': block})
+        row = self.runner.state['cities']['1']
+        self.assertEqual(row['qualification']['status'], 'pending')
+        self.assertNotIn('pipelineFailures', row)
+        self.assertEqual(self.runner.state['adapterStageBlocked'], block)
+
     def test_failed_stage_cannot_validate_an_unchanged_integrated_result(self):
         saved = {'status': 'integrated', 'receiptSha256': 'receipt'}
         self.runner.state['cities']['1']['qualification'] = saved
