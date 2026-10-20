@@ -1,0 +1,120 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "2020",
+  "name": "Gqeberha, South Africa",
+  "point": [
+    -33.8853793668229,
+    25.5502896875663
+  ],
+  "bindings": [
+    {
+      "appCityId": "gqeberha",
+      "runtimeConfig": {
+        "id": "gqeberha",
+        "wupCityCode": "2020",
+        "label": "Gqeberha, South Africa",
+        "currency": {
+          "locale": "en-ZA",
+          "code": "ZAR"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            -33.8853793668229,
+            25.5502896875663
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            -33.8853793668229,
+            25.5502896875663
+          ],
+          "fallbackDataset": [
+            25.5502896875663,
+            -33.8853793668229
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "za-csg-property-viewer-erven",
+          "idPrefix": "ZA-CSG-PV-ERVEN-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Chief Surveyor-General · Property Viewer Erven · adapted"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "za-csg-property-viewer-erven",
+      "adapter": "arcgis",
+      "endpoint": "https://csggis.dlrrd.gov.za/server/rest/services/Property_Viewer/MapServer/2",
+      "name": "Chief Surveyor-General Property Viewer Erven",
+      "operator": "Chief Surveyor-General, South Africa",
+      "countryCode": "ZA",
+      "catalogueUrl": "https://csggis.dlrrd.gov.za/server/rest/services/Property_Viewer/MapServer/2",
+      "attribution": "Chief Surveyor-General · Property Viewer Erven · adapted",
+      "idPrefix": "ZA-CSG-PV-ERVEN-",
+      "idField": "PRCL_KEY",
+      "objectIdField": "OBJECTID",
+      "idType": "string",
+      "idPattern": "^[A-Z0-9]{26}$",
+      "identityKind": "native-key-geometry-sha256-v1",
+      "outFields": [
+        "OBJECTID",
+        "PRCL_KEY"
+      ],
+      "queryFormat": "geojson",
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "pageSize": 500,
+      "idBatchSize": 80,
+      "maxFeatures": 2000,
+      "maxBboxKm2": 2,
+      "metricSrid": 32735,
+      "cityIds": [
+        "gqeberha"
+      ],
+      "defaultForCity": true,
+      "scope": "Anonymous surveyed and approved urban Erven polygons in separated bounded Gqeberha sectors. Full unchanged geometries are referenced by native key plus full-geometry hash. Citywide completeness, legal title, survey accuracy, current-ground status and cross-service synchronization remain unestablished.",
+      "licenceNote": "Public anonymous access; explicit parcel-geometry redistribution licence remains unestablished.",
+      "nativeCrs": "EPSG:4148",
+      "responseCrs": "EPSG:4326",
+      "coordinateOrder": "longitude,latitude",
+      "capabilities": {
+        "areaEnumeration": true,
+        "exactIds": true
+      }
+    }
+  ]
+}

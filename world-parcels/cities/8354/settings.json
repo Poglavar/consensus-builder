@@ -110,8 +110,7 @@
       "idPrefix": "US-NY-",
       "ownership": {
         "adapter": "us-nyc",
-        "attribution": "New York State Tax Parcels (NYS ITS) assessment-roll owners; condominium unit owners from NYC Department of Finance Property Valuation and Assessment Data.",
-        "licence": null
+        "attribution": "New York State Tax Parcels (NYS ITS) assessment-roll owners; condominium unit owners from NYC Department of Finance Property Valuation and Assessment Data."
       },
       "sourceKind": "database"
     }

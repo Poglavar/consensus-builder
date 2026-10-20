@@ -1,0 +1,126 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "10705",
+  "name": "Adirampattinam, India",
+  "point": [
+    10.3413345244115,
+    79.3817483505255
+  ],
+  "bindings": [
+    {
+      "appCityId": "adirampattinam",
+      "runtimeConfig": {
+        "id": "adirampattinam",
+        "wupCityCode": "10705",
+        "label": "Adirampattinam, India",
+        "currency": {
+          "locale": "en-IN",
+          "code": "INR"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            10.3413345244115,
+            79.3817483505255
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            10.3413345244115,
+            79.3817483505255
+          ],
+          "fallbackDataset": [
+            79.3817483505255,
+            10.3413345244115
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "in-tn-tngis-tiles",
+          "idPrefix": "IN-TN-TNGIS-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "TNGIS cadastral maps (tngis.tn.gov.in, reachable only from India). Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "in-tn-tngis-tiles",
+      "name": "Tamil Nadu cadastral maps — indianopenmaps tile snapshot (TNGIS_TN_Cadastrals)",
+      "adapter": "vector-tiles",
+      "endpoint": "https://indianopenmaps.com/not-so-open/cadastrals/tamil-nadu/tngis/{z}/{x}/{y}.pbf",
+      "zoom": 14,
+      "layer": "TNGIS_TN_Cadastrals",
+      "groupFields": [
+        "id"
+      ],
+      "parcelNumberField": "survey_number",
+      "outFields": [
+        "id",
+        "survey_number",
+        "lgd_village_code",
+        "lgd_taluk_code",
+        "lgd_district_code"
+      ],
+      "idPrefix": "IN-TN-TNGIS-",
+      "identityKind": "geometry-sha256-v1",
+      "lookupCellSize": 0.002,
+      "maxBboxKm2": 4,
+      "maxTiles": 36,
+      "maxFeatures": 10000,
+      "maxConcurrentQueries": 2,
+      "overlapResolution": "overlap-ground-v1-area-desc-id-asc-turf6",
+      "countryCode": "IN",
+      "stateCode": "TN",
+      "cityIds": [
+        "adirampattinam"
+      ],
+      "scope": "Cadastral parcels of Tamil Nadu from the TNGIS_TN_Cadastrals snapshot that ramSeraph/indian_cadastrals collected from the government map service and serves as vector tiles at indianopenmaps.com. Parcels are rebuilt from zoom-14 tiles. Coverage follows the villages in that snapshot and can omit city cores.",
+      "attribution": "TNGIS cadastral maps (tngis.tn.gov.in, reachable only from India). Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.",
+      "catalogueUrl": "https://github.com/ramSeraph/indian_cadastrals",
+      "licenceNote": "The collection is published as CC0 1.0 with a request to credit Datameet and the original government source; the original services state no reuse licence. The tile path is marked \"not-so-open\" by its maintainer.",
+      "caveats": [
+        "A third-party snapshot of a government cadastral map, not the live register: not proof of current title or ownership, and it does not change when the original does.",
+        "Geometry is rebuilt from zoom-14 vector tiles: outlines are snapped to a grid of about 0.6 m and may be lightly simplified compared with the original.",
+        "Some outlines overlap (neighbouring village maps were drawn and georeferenced separately). Each overlap is given to the larger outline (equal areas: the lower reference); the smaller parcel shows the rest as derived ground.",
+        "Plot numbers are shown as published; application references are derived from each rebuilt outline.",
+        "Found and collected by ramSeraph/indian_cadastrals (github.com/ramSeraph/indian_cadastrals). The tiles answer browsers directly (CORS allows any site); no relay is used."
+      ],
+      "metricSridByCity": {
+        "adirampattinam": 32644
+      },
+      "metricSrid": 32643
+    }
+  ]
+}

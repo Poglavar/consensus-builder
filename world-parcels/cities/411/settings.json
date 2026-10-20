@@ -1,0 +1,123 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "411",
+  "name": "Windhoek, Namibia",
+  "point": [
+    -22.5253108270478,
+    17.0442106526956
+  ],
+  "bindings": [
+    {
+      "appCityId": "windhoek",
+      "runtimeConfig": {
+        "id": "windhoek",
+        "wupCityCode": "411",
+        "label": "Windhoek, Namibia",
+        "currency": {
+          "locale": "en-NA",
+          "code": "NAD"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            -22.5253108270478,
+            17.0442106526956
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            -22.5253108270478,
+            17.0442106526956
+          ],
+          "fallbackDataset": [
+            17.0442106526956,
+            -22.5253108270478
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "na-windhoek-cadastral1-public-arcgis",
+          "idPrefix": "NA-WINDHOEK-CADASTRAL1-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Windhoek municipality (origin claimed by Cadastral1 publisher); public hosted copy attributed to 2013, with positional and attribute inaccuracies."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "na-windhoek-cadastral1-public-arcgis",
+      "name": "Windhoek Cadastral1 public cadastral copy",
+      "adapter": "arcgis",
+      "endpoint": "https://services9.arcgis.com/gWyguONsWr81ViQt/arcgis/rest/services/Cadastral1/FeatureServer/0",
+      "idField": "PRCL_KEY",
+      "idType": "string",
+      "idPattern": "^[A-Z0-9]{26}$",
+      "objectIdField": "FID",
+      "idPrefix": "NA-WINDHOEK-CADASTRAL1-",
+      "outFields": [
+        "FID",
+        "PRCL_KEY"
+      ],
+      "queryFormat": "geojson",
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "pageSize": 500,
+      "idBatchSize": 80,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "countryCode": "NA",
+      "metricSrid": 32733,
+      "cityIds": [
+        "windhoek"
+      ],
+      "operator": "Public ArcGIS publisher; provider asserts municipal data origin",
+      "scope": "Hosted cadastral copy with Windhoek urban-sector discovery evidence. Initial qualification uses three exact parcels only; no citywide completeness or currentness claim.",
+      "catalogueUrl": "https://www.arcgis.com/home/item.html?id=5dcc166070374390858de60bc8852fb1",
+      "attribution": "Windhoek municipality (origin claimed by Cadastral1 publisher); public hosted copy attributed to 2013, with positional and attribute inaccuracies.",
+      "licenceNote": "Item licenseInfo is null. Municipal endorsement, explicit reuse rights and redistribution authority remain unverified.",
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "NA",
+          "basis": "Provider item identifies Windhoek municipal cadastral information; official City Geomatics confirms municipal survey/mapping function but does not authenticate this copy.",
+          "evidence": [
+            "evidence/source-item.json",
+            "evidence/source-layer.json",
+            "evidence/municipal-purpose.json"
+          ]
+        }
+      },
+      "defaultForCity": true
+    }
+  ]
+}

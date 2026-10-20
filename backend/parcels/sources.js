@@ -24,6 +24,8 @@ import { createHamburgAlkisParcelSource } from './hamburg-alkis-source.js';
 import { createFrankfurtWfsParcelSource } from './frankfurt-wfs-source.js';
 import { createGmlWfsParcelSource } from './gml-wfs-source.js';
 import { createPulsePublicParcelSource } from './pulse-public-source.js';
+import { createBfDgiParcelSource } from './bf-dgi-source.js';
+import { createDivoEcommunesSource } from './divo-ecommunes-source.js';
 import { createHttpsJsonFetch } from './https-json-fetch.js';
 import { HttpError } from '../utils/helpers.js';
 import { decodeCustomSource } from './custom-source-config.js';
@@ -86,6 +88,8 @@ export function createParcelSource(descriptor, options = {}) {
         'frankfurt-wfs': createFrankfurtWfsParcelSource,
         'gml-wfs': createGmlWfsParcelSource,
         'pulse-public': createPulsePublicParcelSource,
+        'bf-dgi-geojson': createBfDgiParcelSource,
+        'divo-ecommunes-xml': createDivoEcommunesSource,
         socrata: createSocrataParcelSource }[descriptor.adapter];
     if (!factory) throw new Error(`Unsupported parcel adapter: ${descriptor.adapter}`);
     if (descriptor.caCertificate && !options.fetchImpl) {

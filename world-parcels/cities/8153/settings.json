@@ -1,0 +1,120 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "8153",
+  "name": "Abak, Nigeria",
+  "point": [
+    4.98542874500456,
+    7.78822366120289
+  ],
+  "bindings": [
+    {
+      "appCityId": "abak",
+      "runtimeConfig": {
+        "id": "abak",
+        "wupCityCode": "8153",
+        "label": "Abak, Nigeria",
+        "currency": {
+          "locale": "en-NG",
+          "code": "NGN"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            4.98542874500456,
+            7.78822366120289
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            4.98542874500456,
+            7.78822366120289
+          ],
+          "fallbackDataset": [
+            7.78822366120289,
+            4.98542874500456
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "ng-akwaibom-akwagis-surveymap-parcel-drafter",
+          "idPrefix": "NG-AKWAGIS-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "AkwaGIS / Akwa Ibom State Government, Ministry of Lands and Office of the State Surveyor-General."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "ng-akwaibom-akwagis-surveymap-parcel-drafter",
+      "name": "AkwaGIS Parcel_Drafter",
+      "operator": "AkwaGIS / Akwa Ibom State Government",
+      "adapter": "arcgis",
+      "endpoint": "https://akwagis.xyz/server/rest/services/SurveyMap/mainDrafter/FeatureServer/3",
+      "publicTokenUrl": "https://akwagis.akwaibomstate.gov.ng/api/v1/gis/public-token",
+      "idField": "globalid",
+      "idType": "string",
+      "objectIdField": "objectid",
+      "idPrefix": "NG-AKWAGIS-",
+      "idPattern": "^\\{[0-9A-Fa-f]{8}(?:-[0-9A-Fa-f]{4}){3}-[0-9A-Fa-f]{12}\\}$",
+      "outFields": [
+        "objectid",
+        "globalid"
+      ],
+      "queryFormat": "geojson",
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "pageSize": 100,
+      "idBatchSize": 80,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "maxConcurrentQueries": 1,
+      "countryCode": "NG",
+      "stateCode": "AK",
+      "cityIds": [
+        "abak"
+      ],
+      "metricSrid": 32632,
+      "sourceCrs": "EPSG:26332",
+      "scope": "Akwa Ibom state survey/registry parcel layer; bounded distributed partial Abak access, completeness unverified.",
+      "attribution": "AkwaGIS / Akwa Ibom State Government, Ministry of Lands and Office of the State Surveyor-General.",
+      "licence": "No explicit reuse or redistribution licence established; permission requires second-pass review.",
+      "catalogueUrl": "https://akwagis.akwaibomstate.gov.ng/api/v1/gis/public-drafter-config",
+      "capabilities": {
+        "areaEnumeration": true,
+        "exactIds": true
+      },
+      "defaultForCity": true
+    }
+  ]
+}

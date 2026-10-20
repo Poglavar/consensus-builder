@@ -13,8 +13,8 @@ pieces fit, and what is still open. The storage and import contract is specified
 |---|---|---|
 | Floor-plan data model (`building-floor-plans.v2`), validation, 3D rendering, X-ray + cutaway UI | **Done** (Oct 6–7) | `frontend/js/building-floor-plans.js`, `frontend/js/three-floor-plans.js`, `frontend/js/three-mode.js` |
 | Versioned registry of authored models, joined onto proposals and surveyed buildings on read | **Done** (Oct 7) | `consensus.building_floor_model`, `backend/buildings/floor-models.js`, `backend/scripts/import-building-floor-plans.mjs` |
-| Source adapter for developer PDF catalogues (vector CAD insets → architecture) | **Done**, 67 floors / 9 buildings / 4 sites | `backend/scripts/pionir_floor_architecture.py`, `backend/scripts/reconstruct-*-floors.py`, `rekonstrukcije/**/floor-plan-sources.json` |
-| Agency floor-plan archive (public listing drawings → immutable archive → OCR drafts → reviewed unit models) | **Done**, daily crawl; 5 reviewed apartment units for one project | `backend/floor-plans/`, schema `floor_plan`, `frontend/floor-plan-archive.html` |
+| Source adapter for developer PDF catalogues (vector CAD insets → architecture) | **Done**, 67 floors / 9 buildings / 4 sites | `backend/scripts/pionir_floor_architecture.py`, `backend/scripts/reconstruct-*-floors.py`, `restatements/**/floor-plan-sources.json` |
+| Agency floor-plan archive (public listing drawings → immutable archive → OCR drafts → reviewed unit models) | **Done**, daily crawl; 5 reviewed apartment units for one project | `backend/floor-plans/`, schema `floor_plan`, `frontend/floor-plans.html` |
 | **New buildings**: a repeatable way to obtain more or less every floor plan | **Done** through the two sources above | this file, section "New buildings" |
 | **Old buildings**: deduce floor plans where no drawing exists | **Pending** (TBD); first step: typical layouts by era behind "Existing buildings too" | section "Pending: old buildings", section "Existing buildings" |
 | **Proposed buildings**: default layouts to see something in X-ray for every proposal / urban rule | **Built on branch `default-floor-plans`** (this document's branch): cores, rooms, balconies, wings, blind walls, shops, garage, regional presets, 2D layer | `frontend/js/default-floor-plans.js`, `default-floor-plan-rooms.js`, `default-floor-plan-context.js`, `suggested-layouts-2d.js` |
@@ -84,7 +84,7 @@ byte by SHA-256, extracts OCR/linework drafts, and matches listings to buildings
 models; a reviewed unit model (`unit-floor-models.v1`, same `floor-architecture.v1` geometry) is
 imported only when its source hash is archived at the declared URL. One project has five reviewed
 units, none yet with a verified whole-floor registration, so they are reviewable locally but not
-published as building interiors. A review UI (`frontend/floor-plan-archive.html`) browses registered
+published as building interiors. A review UI (`frontend/floor-plans.html`) browses registered
 buildings, unit models and archived sources.
 
 Together these give a repeatable path: find the drawing, archive it, extract geometry, review,

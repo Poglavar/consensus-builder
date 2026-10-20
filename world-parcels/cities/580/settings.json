@@ -1,0 +1,129 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "580",
+  "name": "Kigali, Rwanda",
+  "point": [
+    -1.95092395958257,
+    30.0945497299371
+  ],
+  "bindings": [
+    {
+      "appCityId": "kigali",
+      "runtimeConfig": {
+        "id": "kigali",
+        "wupCityCode": "580",
+        "label": "Kigali, Rwanda",
+        "currency": {
+          "locale": "en-RW",
+          "code": "RWF"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            -1.95092395958257,
+            30.0945497299371
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            -1.95092395958257,
+            30.0945497299371
+          ],
+          "fallbackDataset": [
+            30.0945497299371,
+            -1.95092395958257
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "rw-nla-rsdi-kigali-parcels",
+          "idPrefix": "RW-LAIS-KGL-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "National Land Authority (NLA), Rwanda Spatial Data Infrastructure (RSDI), Kigali Parcels (LAIS)."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "rw-nla-rsdi-kigali-parcels",
+      "adapter": "arcgis",
+      "endpoint": "https://geodata.rw/server/rest/services/LAISData/Kigali_Parcels/FeatureServer/11",
+      "idField": "upi",
+      "idType": "string",
+      "idPrefix": "RW-LAIS-KGL-",
+      "idPattern": "^[0-9]+(?:/[0-9]+){4}$",
+      "objectIdField": "objectid",
+      "outFields": [
+        "objectid",
+        "upi"
+      ],
+      "pageSize": 2000,
+      "idBatchSize": 80,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "boundsQueryMode": "offset",
+      "idsQueryMode": "offset",
+      "scope": "Kigali LAIS cadastral parcels returned by bounded and exact-UPI queries; completeness across the City of Kigali is unverified.",
+      "licenceNote": "Public anonymous access observed. Explicit reuse and redistribution terms are unverified; public readability is not a reuse licence.",
+      "attribution": "National Land Authority (NLA), Rwanda Spatial Data Infrastructure (RSDI), Kigali Parcels (LAIS).",
+      "queryFormat": "esri-json",
+      "name": "Kigali Parcels (LAIS)",
+      "operator": "National Land Authority through Rwanda Spatial Data Infrastructure",
+      "countryCode": "RW",
+      "maxConcurrentQueries": 2,
+      "metricSrid": 32736,
+      "cityIds": [
+        "kigali"
+      ],
+      "capabilities": {
+        "bbox": true,
+        "exactId": true,
+        "areaEnumeration": true,
+        "geometry": "full-wgs84"
+      },
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "RW",
+          "basis": "NLA/RSDI publishes the Kigali-specific LAIS cadastral parcel layer. Receipt probes establish substantial-city discovery coverage, not exhaustive coverage.",
+          "evidence": [
+            "evidence/source-purpose.json",
+            "evidence/portal-item.json",
+            "evidence/layer-metadata.json"
+          ]
+        }
+      },
+      "defaultForCity": true
+    }
+  ]
+}

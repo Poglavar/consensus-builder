@@ -8,6 +8,7 @@ import { createHttpsJsonFetch } from './https-json-fetch.js';
 import { createPublicSourceFetch, isPublicSourceAddress, validatePublicSourceUrl } from './public-source-fetch.js';
 import { decodeCustomSource } from './custom-source-config.js';
 import { officialArchiveFetch } from './gml-snapshot-source.js';
+import { AKWAGIS_PUBLIC_TOKEN_URL } from './akwagis-public-fetch.js';
 
 const HMLR = 'https://use-land-property-data.service.gov.uk';
 const HMLR_ROOT = `${HMLR}/datasets/inspire/download`;
@@ -51,6 +52,10 @@ function descriptorResources(descriptor) {
     }
     if (descriptor.adapter === 'dda-public-plots' || descriptor.id === 'ae-dubai-municipality-public-plots') resources.push(DDA_VIEWER);
     if (descriptor.adapter === 'pulse-public') resources.push(PULSE_TOKEN);
+    if (descriptor.id === 'ng-akwaibom-akwagis-surveymap-parcel-drafter'
+        && descriptor.adapter === 'arcgis'
+        && descriptor.endpoint === 'https://akwagis.xyz/server/rest/services/SurveyMap/mainDrafter/FeatureServer/3'
+        && descriptor.publicTokenUrl === AKWAGIS_PUBLIC_TOKEN_URL) resources.push(AKWAGIS_PUBLIC_TOKEN_URL);
     if (descriptor.adapter === 'shenzhen-land-certain') resources.push(SHENZHEN_VIEWER, SHENZHEN_SCRIPT);
     if (descriptor.adapter === 'kerala-entebhoomi') {
         const code = descriptor.locationCode;

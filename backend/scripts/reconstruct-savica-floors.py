@@ -17,7 +17,7 @@ from shapely.ops import unary_union
 from pionir_floor_architecture import pieces, strip
 
 ROOT = Path(__file__).resolve().parents[2]
-PROJECT = ROOT / 'rekonstrukcije/pionir-paron/savica-f1-f3'
+PROJECT = ROOT / 'restatements/pionir-paron/savica-f1-f3'
 spec = importlib.util.spec_from_file_location('reconstruction', Path(__file__).with_name('reconstruct-borongaj-floors.py'))
 rec = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(rec)

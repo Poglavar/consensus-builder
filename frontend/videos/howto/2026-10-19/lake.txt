@@ -1,0 +1,5 @@
+Select a parcel and choose Lake to create a lake proposal on the map.
+
+The lake follows the selected site. Switch to 3D to inspect the result.
+
+Tilt, rotate and zoom to see the water and shoreline in context.

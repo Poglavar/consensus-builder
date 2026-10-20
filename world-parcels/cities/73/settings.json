@@ -113,20 +113,6 @@
         "keepPublishedFields": true
       },
       "geometryField": "GEOM"
-    },
-    {
-      "id": "parcel-lj",
-      "name": "Ljubljana cadastral parcels in the app database (GURS)",
-      "cityIds": [
-        "ljubljana"
-      ],
-      "idPrefix": "SI-",
-      "ownership": {
-        "adapter": "si-gurs",
-        "attribution": "Geodetska uprava Republike Slovenije (GURS), land cadastre ownership rights (anonymised holders).",
-        "licence": null
-      },
-      "sourceKind": "database"
     }
   ]
 }

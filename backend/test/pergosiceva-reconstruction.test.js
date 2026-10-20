@@ -10,7 +10,7 @@ import {
 } from '../proposals/reconstruction-geojson.js';
 
 const PROPOSAL_PATH = fileURLToPath(new URL(
-    '../../rekonstrukcije/pionir-paron/pergosiceva-a1-a4/proposal.geojson',
+    '../../restatements/pionir-paron/pergosiceva-a1-a4/proposal.geojson',
     import.meta.url
 ));
 
@@ -22,7 +22,7 @@ async function readProposal() {
 describe('Pergošićeva A1–A4 reconstruction', () => {
     it('contains the four west-to-east current DGU footprints on one parcel', async () => {
         const { proposal } = await readProposal();
-        expect(proposal.parentParcelIds).toEqual(['HR-340057-2859/15']);
+        expect(proposal.cadastreParcelIds).toEqual(['HR-340057-2859/15']);
         expect(proposal.geometry.buildings.map(feature => feature.properties.dguBuildingId)).toEqual([
             13391607,
             13391608,

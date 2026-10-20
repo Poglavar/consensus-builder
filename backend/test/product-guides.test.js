@@ -16,10 +16,8 @@ const guidePairs = [
     ['how-to-use-views.html', 'kako-koristiti-prikazi.html']
 ];
 const guidePages = guidePairs.flat();
-const clips = [
-    '01-house', '02-park', '03-square', '04-auto-readjustment', '05-manual-readjustment',
-    '06-keep-parcels', '07-road-section', '08-row-houses', '09-parcel-rules'
-].map(name => `videos/howto/consensus-builder-${name}-review`);
+const clips = ['block', 'row', 'detached', 'freeform', 'readjustment', 'park', 'square', 'lake', 'road', 'track', 'station', 'counterproposal']
+    .map(name => `videos/howto/2026-10-19/${name}`);
 
 describe('public product guides', () => {
     it.each(['how-to-use.html', 'kako-koristiti.html'])('%s explains the current proposal lifecycle', (name) => {
@@ -40,6 +38,33 @@ describe('public product guides', () => {
         expect(html).not.toMatch(/built road is not yet a proposal|Izgrađena cesta još nije prijedlog/);
     });
 
+    it.each([
+        ['how-to-use.html', 'Source parcels are provider records; a formed ground piece is a modeled result, not proof of a legal lot or ownership.'],
+        ['kako-koristiti.html', 'Izvorne čestice su zapisi pružatelja podataka; oblikovani dio tla modelirani je rezultat, a ne dokaz pravne čestice ili vlasništva.']
+    ])('%s distinguishes source evidence from modeled ground', (name, statement) => {
+        expect(readFrontend(name)).toContain(statement);
+    });
+
+    it.each([
+        ['how-to-use.html', 'The shared composition preserves the applied set and its dependencies. It is distinct from a named plan, which records an ordered set of published proposal rows.', 'An execution status or source event is evidence of a recorded state; it does not prove payment, legal registration or physical construction.'],
+        ['kako-koristiti.html', 'Dijeljena kompozicija čuva skup primijenjenih prijedloga i njihove ovisnosti. Razlikuje se od imenovanog plana, koji bilježi uređeni skup objavljenih redaka prijedloga.', 'Status izvršenja ili izvorni događaj dokaz je zabilježenog stanja; ne dokazuje plaćanje, pravnu registraciju ni fizičku izgradnju.']
+    ])('%s distinguishes local sharing, named membership and execution evidence', (name, sharing, evidence) => {
+        const html = readFrontend(name);
+        expect(html).toContain(sharing);
+        expect(html).toContain(evidence);
+    });
+
+    it.each([
+        ['how-to-use-views.html', 'The slider models floor-area value at a selected EUR per m² of floor area.', 'not sale prices or amounts paid to owners'],
+        ['kako-koristiti-prikazi.html', 'Klizač modelira vrijednost etažne površine prema odabranoj cijeni u EUR po m² etažne površine.', 'a ne prodajne cijene ni iznosi isplaćeni vlasnicima'],
+        ['how-to-use-reparcellization.html', 'Cash figures in this ledger are EUR.', 'the EUR 100/m² fallback applies only when no source price is present'],
+        ['kako-koristiti-reparcelacija.html', 'Novčani iznosi u ovom obračunu iskazani su u EUR.', 'model od 100 EUR/m² koristi se samo kad izvorna cijena ne postoji']
+    ])('%s names the basis and limits of money amounts', (name, basis, limit) => {
+        const html = readFrontend(name);
+        expect(html).toContain(basis);
+        expect(html).toContain(limit);
+    });
+
     it('uses capability horizons instead of expired roadmap dates', () => {
         const html = readFrontend('roadmap.html');
 
@@ -54,7 +79,7 @@ describe('public product guides', () => {
         const ids = $('[id]').map((_, node) => $(node).attr('id')).get();
         expect(new Set(ids).size).toBe(ids.length);
 
-        $('a[href], link[href], img[src], source[src], video[poster]').each((_, node) => {
+        $('a[href], link[href], img[src], source[src], track[src], video[poster]').each((_, node) => {
             const element = $(node);
             const href = element.attr('href') || element.attr('src') || element.attr('poster');
             const url = new URL(href, `https://guide.test/${name}`);
@@ -74,7 +99,7 @@ describe('public product guides', () => {
         expect(sources(en)).toEqual(sources(hr));
     });
 
-    it.each(guidePairs[0])('%s links all nine clips to their matching walkthrough players', name => {
+    it.each(guidePairs[0])('%s links all twelve clips to their matching walkthrough players', name => {
         const $ = load(readFrontend(name));
         const cards = $('.video-library a.video-card');
         expect(cards).toHaveLength(clips.length);
@@ -99,6 +124,8 @@ describe('public product guides', () => {
             expect(player.attr('aria-label')).toBeTruthy();
             expect($(`#${player.attr('aria-describedby')}`).text().trim()).toBeTruthy();
             expect(player.find('source').attr('type')).toBe('video/mp4');
+            expect(player.find('track[kind="captions"]').attr('srclang')).toBe('en');
+            expect(player.closest('figure').find('.video-transcript p[lang="en"]').text().trim()).toBeTruthy();
             expect(player.find('a').attr('href')).toBe(player.find('source').attr('src'));
         });
     });

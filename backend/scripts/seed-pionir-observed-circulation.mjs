@@ -37,7 +37,7 @@ const {
     corridorProfileWidth
 } = require('../../frontend/js/corridor-profile.js');
 
-const ARCHIVE_ROOT = fileURLToPath(new URL('../../rekonstrukcije/pionir-paron/', import.meta.url));
+const ARCHIVE_ROOT = fileURLToPath(new URL('../../restatements/pionir-paron/', import.meta.url));
 const RECONSTRUCTION_DATE = '2026-08-13T00:00:00.000Z';
 
 export const MIN_SEGMENT_LENGTH_M = 8;
@@ -417,7 +417,7 @@ export function assessParkingCandidate(candidate) {
     return { included: true, measuredWidthM, drivingWidthM };
 }
 
-function commonProposalFields(buildingProposal, proposalId, title, description, parentParcelIds, footprint) {
+function commonProposalFields(buildingProposal, proposalId, title, description, cadastreParcelIds, footprint) {
     return {
         proposalId,
         city: buildingProposal.city || 'zagreb',
@@ -433,9 +433,7 @@ function commonProposalFields(buildingProposal, proposalId, title, description, 
         createdAt: RECONSTRUCTION_DATE,
         updatedAt: RECONSTRUCTION_DATE,
         tags: ['roads', 'research', 'reconstruction', 'observed-built-state'],
-        parentParcelIds,
-        cadastreParcelIds: parentParcelIds,
-        parcelIds: parentParcelIds,
+        cadastreParcelIds,
         acceptedParcelIds: [],
         geometry: clone(footprint.geometry),
         bounds: turf.bbox({ type: 'Feature', properties: {}, geometry: footprint.geometry })
@@ -455,7 +453,7 @@ async function buildRoadComponentProposal(pool, project, component, componentInd
         + 'Središnjice i oznake namjene preuzete su iz aktualnog lokalnog OSM sloja; širine slijede OSM oznake, a kada ih nema, standarde profila aplikacije. '
         + 'Ovo nije geodetska snimka ni geometrija iz dozvole. Podzemni, prekratki i zgradama preklopljeni potezi nisu uključeni.';
     const proposalId = `${project.proposal.proposalId}-access-${firstOsmId}`;
-    const parentParcelIds = [...new Set(project.proposal.parentParcelIds || [])];
+    const cadastreParcelIds = [...new Set(project.proposal.cadastreParcelIds)];
     const points = sorted.map(candidate => linePoints(candidate.geometry));
     const segmentIds = sorted.map(candidate => candidate.id);
     const defaultProfile = clone(sorted[0].profile);
@@ -498,10 +496,9 @@ async function buildRoadComponentProposal(pool, project, component, componentInd
         }
     };
     const proposal = {
-        ...commonProposalFields(project.proposal, proposalId, title, description, parentParcelIds, footprint),
+        ...commonProposalFields(project.proposal, proposalId, title, description, cadastreParcelIds, footprint),
         roadProposal: {
             definition,
-            parentParcelIds: clone(parentParcelIds),
             childParcelIds: [],
             mode: 'import',
             isCorridor: true
@@ -527,7 +524,7 @@ function buildParkingProposal(project, candidate, assessment, parkingIndex, park
         : 'površinsko parkiralište';
     const title = `${project.proposal.title} – ${parkingLabel}`;
     const proposalId = `${project.proposal.proposalId}-parking-${candidate.parkingOsmId}`;
-    const parentParcelIds = [...new Set(project.proposal.parentParcelIds || [])];
+    const cadastreParcelIds = [...new Set(project.proposal.cadastreParcelIds)];
     const profile = {
         strips: [
             { type: 'parking_perpendicular', width: 5 },
@@ -574,11 +571,10 @@ function buildParkingProposal(project, candidate, assessment, parkingIndex, park
     };
     return {
         proposal: {
-            ...commonProposalFields(project.proposal, proposalId, title, description, parentParcelIds, footprint),
+            ...commonProposalFields(project.proposal, proposalId, title, description, cadastreParcelIds, footprint),
             tags: ['roads', 'parking', 'research', 'reconstruction', 'observed-built-state'],
             roadProposal: {
                 definition,
-                parentParcelIds: clone(parentParcelIds),
                 childParcelIds: [],
                 mode: 'import',
                 isCorridor: true

@@ -81,8 +81,7 @@
       "idPrefix": "SR-",
       "ownership": {
         "adapter": "rs-bg",
-        "attribution": "Republički geodetski zavod (RGZ), digital cadastral plan parcels. The layer publishes no owners.",
-        "licence": null
+        "attribution": "Republički geodetski zavod (RGZ), digital cadastral plan parcels. The layer publishes no owners."
       },
       "sourceKind": "database"
     }

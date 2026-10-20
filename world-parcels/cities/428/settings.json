@@ -1,0 +1,117 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "428",
+  "name": "Gaborone (428), Botswana",
+  "point": [
+    -24.6105783487141,
+    25.8754886810294
+  ],
+  "bindings": [
+    {
+      "appCityId": "gaborone_bw",
+      "runtimeConfig": {
+        "id": "gaborone_bw",
+        "wupCityCode": "428",
+        "label": "Gaborone (428), Botswana",
+        "currency": {
+          "locale": "en-BW",
+          "code": "BWP"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            -24.6105783487141,
+            25.8754886810294
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            -24.6105783487141,
+            25.8754886810294
+          ],
+          "fallbackDataset": [
+            25.8754886810294,
+            -24.6105783487141
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "bw-bofinet-botswana-lapcas-plots",
+          "idPrefix": "bofinet:Botswana_PLOTS:FID:",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "BoFiNet public ArcGIS BOTSWANA_PLOTS layer 0 (PLOTS); described by the publisher as Botswana LAPCAS plots."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "bw-bofinet-botswana-lapcas-plots",
+      "adapter": "arcgis",
+      "name": "BoFiNet Botswana LAPCAS plots",
+      "endpoint": "https://bofinetarcgisportal.bofinet.co.bw/server/rest/services/PUBLIC/BOTSWANA_PLOTS/MapServer/0",
+      "idPrefix": "bofinet:Botswana_PLOTS:FID:",
+      "idField": "FID",
+      "objectIdField": "FID",
+      "idType": "integer",
+      "outFields": [
+        "FID"
+      ],
+      "queryFormat": "esri-json",
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "pageSize": 80,
+      "idBatchSize": 80,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "maxConcurrentQueries": 1,
+      "cityIds": [
+        "gaborone_bw"
+      ],
+      "countryCode": "BW",
+      "defaultForCity": true,
+      "metricSrid": 32735,
+      "nativeCrs": "EPSG:4326",
+      "responseCrs": "EPSG:4326",
+      "coordinateOrder": "longitude,latitude",
+      "capabilities": {
+        "areaEnumeration": true,
+        "exactIds": true
+      },
+      "scope": "National published Botswana LAPCAS plot layer with reviewed substantial Gaborone coverage. This initial qualification retains three exact-ID samples and does not establish citywide or national completeness, currentness, legal title or survey accuracy.",
+      "catalogueUrl": "https://bofinetarcgisportal.bofinet.co.bw/server/rest/services/PUBLIC/BOTSWANA_PLOTS/MapServer/0",
+      "attribution": "BoFiNet public ArcGIS BOTSWANA_PLOTS layer 0 (PLOTS); described by the publisher as Botswana LAPCAS plots.",
+      "licenceNote": "Anonymous public query access verified; item licenseInfo and accessInformation are empty. Explicit reuse/redistribution conditions and custodian lineage remain second-pass follow-ups."
+    }
+  ]
+}

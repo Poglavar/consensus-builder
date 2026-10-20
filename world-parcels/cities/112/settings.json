@@ -1,0 +1,133 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "112",
+  "name": "Rubavu, Rwanda",
+  "point": [
+    -1.6920227940991,
+    29.2892956900186
+  ],
+  "bindings": [
+    {
+      "appCityId": "rubavu",
+      "runtimeConfig": {
+        "id": "rubavu",
+        "wupCityCode": "112",
+        "label": "Rubavu, Rwanda",
+        "currency": {
+          "locale": "en-RW",
+          "code": "RWF"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            -1.6920227940991,
+            29.2892956900186
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            -1.6920227940991,
+            29.2892956900186
+          ],
+          "fallbackDataset": [
+            29.2892956900186,
+            -1.6920227940991
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "rw-nla-lais-rubavu-parcels",
+          "idPrefix": "RW-LAIS-RUBAVU-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "National Land Authority, Rwanda Spatial Data Infrastructure; LAIS Rubavu Parcels."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "rw-nla-lais-rubavu-parcels",
+      "adapter": "arcgis",
+      "endpoint": "https://geodata.rw/server/rest/services/LAISData/Rubavu_Parcels/FeatureServer/24/query",
+      "name": "Rubavu Parcels (LAIS)",
+      "operator": "Rwanda National Land Authority / Rwanda Spatial Data Infrastructure / LAIS Data Service",
+      "countryCode": "RW",
+      "cityIds": [
+        "rubavu"
+      ],
+      "idPrefix": "RW-LAIS-RUBAVU-",
+      "idField": "upi",
+      "idType": "string",
+      "idPattern": "^[0-9]+(?:/[0-9]+){4}$",
+      "objectIdField": "objectid",
+      "outFields": [
+        "objectid",
+        "upi"
+      ],
+      "queryFormat": "esri-json",
+      "boundsQueryMode": "offset",
+      "idsQueryMode": "offset",
+      "pageSize": 2000,
+      "idBatchSize": 80,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "maxConcurrentQueries": 1,
+      "metricSrid": 32735,
+      "sourceCrs": "PROJCRS[\"ITRF_2005\",BASEGEOGCRS[\"GCS_ITRF_2005\",DATUM[\"D_ITRF_2005\",ELLIPSOID[\"GRS_1980\",6378137.0,298.257222101,LENGTHUNIT[\"Meter\",1.0]]],PRIMEM[\"Greenwich\",0.0,ANGLEUNIT[\"Degree\",0.0174532925199433]],CS[ellipsoidal,2],AXIS[\"Latitude (lat)\",north,ORDER[1]],AXIS[\"Longitude (lon)\",east,ORDER[2]],ANGLEUNIT[\"Degree\",0.0174532925199433]],CONVERSION[\"Transverse_Mercator\",METHOD[\"Transverse_Mercator\"],PARAMETER[\"False_Easting\",500000.0,LENGTHUNIT[\"Meter\",1.0]],PARAMETER[\"False_Northing\",5000000.0,LENGTHUNIT[\"Meter\",1.0]],PARAMETER[\"Central_Meridian\",30.0,ANGLEUNIT[\"Degree\",0.0174532925199433]],PARAMETER[\"Scale_Factor\",0.9999,SCALEUNIT[\"Unity\",1.0]],PARAMETER[\"Latitude_Of_Origin\",0.0,ANGLEUNIT[\"Degree\",0.0174532925199433]]],CS[Cartesian,2],AXIS[\"Easting (X)\",east,ORDER[1]],AXIS[\"Northing (Y)\",north,ORDER[2]],LENGTHUNIT[\"Meter\",1.0]]",
+      "catalogueUrl": "https://geodata.rw/portal/sharing/rest/content/items/1012ccedce054d2da74df7a47994f6c9?f=pjson",
+      "attribution": "National Land Authority, Rwanda Spatial Data Infrastructure; LAIS Rubavu Parcels.",
+      "licenceNote": "Anonymous read access is verified. Portal licenseInfo is null; reuse/redistribution permission remains unverified.",
+      "scope": "Rubavu district cadastral parcel layer with distributed Rubavu/Gisenyi observations. Initial exact sample reads do not establish citywide completeness or currentness.",
+      "capabilities": {
+        "bbox": true,
+        "exactId": true,
+        "areaEnumeration": true,
+        "geometry": "full-wgs84"
+      },
+      "defaultForCity": true,
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "RW",
+          "basis": "First-party RSDI portal names LAIS Rubavu Parcels and publishes a district extent spanning the unchanged WUP locator; district extent and bounded samples do not prove full urban coverage.",
+          "evidence": [
+            "evidence/source-purpose.json",
+            "evidence/portal-item.json",
+            "evidence/layer-metadata.json",
+            "evidence/coverage-review.json"
+          ]
+        }
+      },
+      "identityNote": "UPI is retained as the native key for repeatable exact reads. Source-wide uniqueness is unproven: the observed repeated objectid/UPI is rejected by the strict adapter, without suppression, geometry union, clipping or repair."
+    }
+  ]
+}

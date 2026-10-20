@@ -192,7 +192,15 @@ describe('what a proposal does to this parcel', () => {
         }
         expect(status({ serverProposalId: '17' }).key).toBe('published');
         expect(status({ nft: { contract: 'program', tokenId: 'account' } }).key).toBe('minted');
-        expect(status({ lifecycleStatus: 'Executed' })).toMatchObject({ key: 'executed', lifecycle: 'executed' });
+        expect(status({ lifecycleStatus: 'Executed' })).toMatchObject({ key: 'execution-unverified', lifecycle: 'executed' });
+        const evidence = require('../../frontend/js/proposals/lifecycle-evidence.js').projectLifecycleEvidence({
+            lifecycleStatus: 'Executed',
+            chainRead: {
+                status: 'Executed', observedAt: '2026-10-20T10:04:00.000Z',
+                chainRef: { chainType: 'solana', chainId: 'solana-devnet', contract: 'program', tokenId: 'account' }
+            }
+        });
+        expect(status(evidence)).toMatchObject({ key: 'executed', lifecycle: 'executed' });
         expect(status({ lifecycleStatus: 'Cancelled', applied: true }, { applied: true }))
             .toMatchObject({ key: 'local', lifecycle: 'cancelled', applied: false });
     });

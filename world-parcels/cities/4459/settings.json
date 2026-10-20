@@ -111,8 +111,7 @@
       "idPrefix": "AR-",
       "ownership": {
         "adapter": "ar-caba",
-        "attribution": "Gobierno de la Ciudad de Buenos Aires, cadastre API (epok.buenosaires.gob.ar), horizontal-property units.",
-        "licence": null
+        "attribution": "Gobierno de la Ciudad de Buenos Aires, cadastre API (epok.buenosaires.gob.ar), horizontal-property units."
       },
       "sourceKind": "database"
     }

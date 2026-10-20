@@ -1,0 +1,126 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "9893",
+  "name": "Bhinga, India",
+  "point": [
+    27.7032046169579,
+    81.930672828741
+  ],
+  "bindings": [
+    {
+      "appCityId": "bhinga",
+      "runtimeConfig": {
+        "id": "bhinga",
+        "wupCityCode": "9893",
+        "label": "Bhinga, India",
+        "currency": {
+          "locale": "en-IN",
+          "code": "INR"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            27.7032046169579,
+            81.930672828741
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            27.7032046169579,
+            81.930672828741
+          ],
+          "fallbackDataset": [
+            81.930672828741,
+            27.7032046169579
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "in-up-ncog-tiles",
+          "idPrefix": "IN-UP-NCOG-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "NCOG (BISAG-N) Uttar Pradesh cadastral maps (ncog.gov.in, no longer reachable); 34 districts, partly covered. Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "in-up-ncog-tiles",
+      "name": "Uttar Pradesh cadastral maps — indianopenmaps tile snapshot (NCOG_UttarPradesh_Cadastrals)",
+      "adapter": "vector-tiles",
+      "endpoint": "https://indianopenmaps.com/not-so-open/cadastrals/uttar-pradesh/ncog/{z}/{x}/{y}.pbf",
+      "zoom": 14,
+      "layer": "NCOG_UttarPradesh_Cadastrals",
+      "groupFields": [
+        "gid"
+      ],
+      "parcelNumberField": "khasra",
+      "outFields": [
+        "gid",
+        "khasra",
+        "village",
+        "tahsil",
+        "district"
+      ],
+      "idPrefix": "IN-UP-NCOG-",
+      "identityKind": "geometry-sha256-v1",
+      "lookupCellSize": 0.002,
+      "maxBboxKm2": 4,
+      "maxTiles": 36,
+      "maxFeatures": 10000,
+      "maxConcurrentQueries": 2,
+      "overlapResolution": "overlap-ground-v1-area-desc-id-asc-turf6",
+      "countryCode": "IN",
+      "stateCode": "UP",
+      "cityIds": [
+        "bhinga"
+      ],
+      "scope": "Cadastral parcels of Uttar Pradesh from the NCOG_UttarPradesh_Cadastrals snapshot that ramSeraph/indian_cadastrals collected from the government map service and serves as vector tiles at indianopenmaps.com. Parcels are rebuilt from zoom-14 tiles. Coverage follows the villages in that snapshot and can omit city cores.",
+      "attribution": "NCOG (BISAG-N) Uttar Pradesh cadastral maps (ncog.gov.in, no longer reachable); 34 districts, partly covered. Collected by the Datameet community and ramSeraph (github.com/ramSeraph/indian_cadastrals); vector tiles from indianopenmaps.com. Rebuilt from tiles and adapted to WGS84.",
+      "catalogueUrl": "https://github.com/ramSeraph/indian_cadastrals",
+      "licenceNote": "The collection is published as CC0 1.0 with a request to credit Datameet and the original government source; the original services state no reuse licence. The tile path is marked \"not-so-open\" by its maintainer.",
+      "caveats": [
+        "A third-party snapshot of a government cadastral map, not the live register: not proof of current title or ownership, and it does not change when the original does.",
+        "Geometry is rebuilt from zoom-14 vector tiles: outlines are snapped to a grid of about 0.6 m and may be lightly simplified compared with the original.",
+        "Some outlines overlap (neighbouring village maps were drawn and georeferenced separately). Each overlap is given to the larger outline (equal areas: the lower reference); the smaller parcel shows the rest as derived ground.",
+        "Plot numbers are shown as published; application references are derived from each rebuilt outline.",
+        "Found and collected by ramSeraph/indian_cadastrals (github.com/ramSeraph/indian_cadastrals). The tiles answer browsers directly (CORS allows any site); no relay is used."
+      ],
+      "metricSridByCity": {
+        "bhinga": 32644
+      },
+      "metricSrid": 32643
+    }
+  ]
+}

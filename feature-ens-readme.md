@@ -1,5 +1,8 @@
 # ENS for Urban Game Theory — what we built & how it works
 
+> Integration reference: deployment statements below describe the implementation at the time of writing. For current app workflows, videos and setup, use the [documentation index](docs/README.md). Verify the active network and contracts before running these procedures.
+
+
 > A reader's guide, not the implementation spec. For build details, env vars, and
 > open work see [`feature-ens.md`](./feature-ens.md).
 

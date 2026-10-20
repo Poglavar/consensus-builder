@@ -240,7 +240,7 @@ body > .cb-page-header {
 
 .video-card-preview {
     position: relative;
-    aspect-ratio: 3 / 2;
+    aspect-ratio: 16 / 9;
     background: var(--cb-surface-2);
 }
 
@@ -324,7 +324,7 @@ body > .cb-page-header {
     display: block;
     width: 100%;
     height: auto;
-    aspect-ratio: 3 / 2;
+    aspect-ratio: 16 / 9;
     border-radius: 8px;
     background: var(--guide-ink);
 }
@@ -790,3 +790,9 @@ body > .cb-page-header {
         justify-self: start;
     }
 }
+
+/* Caption downloads and readable transcripts accompany the narrated guide clips. */
+.video-links { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: .6rem; }
+.video-transcript { margin-top: 1rem; color: var(--guide-muted); line-height: 1.6; }
+.video-transcript summary { cursor: pointer; color: var(--guide-blue); }
+.video-transcript p { white-space: pre-line; }

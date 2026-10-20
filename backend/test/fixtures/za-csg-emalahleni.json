@@ -1,0 +1,196 @@
+{
+  "descriptor": {
+    "id": "za-csg-dffe-erven",
+    "adapter": "arcgis",
+    "endpoint": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2",
+    "idPrefix": "ZA-CSG-DFFE-ERVEN-",
+    "idField": "PRCL_KEY",
+    "objectIdField": "OBJECTID",
+    "idType": "string",
+    "outFields": [
+      "OBJECTID",
+      "PRCL_KEY"
+    ],
+    "queryFormat": "esri-json",
+    "pageSize": 1000,
+    "idBatchSize": 80,
+    "maxFeatures": 2000,
+    "maxBboxKm2": 2,
+    "boundsQueryMode": "object-ids",
+    "idsQueryMode": "object-ids",
+    "name": "Chief Surveyor-General public Erven polygons",
+    "operator": "Office of the Chief Surveyor-General; DFFE public service host",
+    "catalogueUrl": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer",
+    "countryCode": "ZA",
+    "metricSrid": 32735,
+    "attribution": "Office of the Chief Surveyor-General, National Cadastral Layer, Erven; served by DFFE.",
+    "evidenceFile": "evidence/source-purpose.json",
+    "scope": "Bounded eMalahleni/Witbank reference parcels. Four discovery samples span the WUP area, central Witbank, Del Judor and Tasbet Park. Exact qualification reads establish availability only; citywide completeness, currentness and legal title are unverified.",
+    "licenceNote": "Anonymous public government reference service. Open reuse terms are not established; retain attribution and resolve reuse in second-pass review."
+  },
+  "response": {
+    "displayFieldName": "SS_NAME",
+    "fieldAliases": {
+      "OBJECTID": "OBJECTID",
+      "PRCL_KEY": "PRCL_KEY"
+    },
+    "geometryType": "esriGeometryPolygon",
+    "spatialReference": {
+      "wkid": 4326,
+      "latestWkid": 4326
+    },
+    "fields": [
+      {
+        "name": "OBJECTID",
+        "type": "esriFieldTypeOID",
+        "alias": "OBJECTID"
+      },
+      {
+        "name": "PRCL_KEY",
+        "type": "esriFieldTypeString",
+        "alias": "PRCL_KEY",
+        "length": 50
+      }
+    ],
+    "features": [
+      {
+        "attributes": {
+          "OBJECTID": 7293672,
+          "PRCL_KEY": "M312T0JS000700001669000000"
+        },
+        "geometry": {
+          "rings": [
+            [
+              [
+                29.24285727800003,
+                -25.900482829999927
+              ],
+              [
+                29.243031114000075,
+                -25.900532577999975
+              ],
+              [
+                29.243056874000043,
+                -25.900583330999954
+              ],
+              [
+                29.242996469000047,
+                -25.90068976499999
+              ],
+              [
+                29.242792009000024,
+                -25.900631252999972
+              ],
+              [
+                29.24285727800003,
+                -25.900482829999927
+              ]
+            ]
+          ]
+        }
+      },
+      {
+        "attributes": {
+          "OBJECTID": 7304469,
+          "PRCL_KEY": "M312T0JS006300002028000000"
+        },
+        "geometry": {
+          "rings": [
+            [
+              [
+                29.224674681000067,
+                -25.932255270999978
+              ],
+              [
+                29.225206367000045,
+                -25.931853321999938
+              ],
+              [
+                29.225650667000025,
+                -25.93234090599999
+              ],
+              [
+                29.22511898000005,
+                -25.932742884999982
+              ],
+              [
+                29.224674681000067,
+                -25.932255270999978
+              ]
+            ]
+          ]
+        }
+      },
+      {
+        "attributes": {
+          "OBJECTID": 7297732,
+          "PRCL_KEY": "M312T0JS001000001229000000"
+        },
+        "geometry": {
+          "rings": [
+            [
+              [
+                29.23256992700004,
+                -25.874827611999933
+              ],
+              [
+                29.232619210000053,
+                -25.87463110199996
+              ],
+              [
+                29.232868186000072,
+                -25.87489230399996
+              ],
+              [
+                29.23266716300003,
+                -25.874906075999945
+              ],
+              [
+                29.23258465800006,
+                -25.87486008299993
+              ],
+              [
+                29.23256992700004,
+                -25.874827611999933
+              ]
+            ]
+          ]
+        }
+      },
+      {
+        "attributes": {
+          "OBJECTID": 7308085,
+          "PRCL_KEY": "M312T0JS003500001106000000"
+        },
+        "geometry": {
+          "rings": [
+            [
+              [
+                29.221709884000063,
+                -25.889071730999948
+              ],
+              [
+                29.221764978000067,
+                -25.88884082399994
+              ],
+              [
+                29.222136072000065,
+                -25.88890991699997
+              ],
+              [
+                29.222080979000047,
+                -25.88914082299993
+              ],
+              [
+                29.221709884000063,
+                -25.889071730999948
+              ]
+            ]
+          ]
+        }
+      }
+    ]
+  },
+  "responseSha256": "b6dd4ac0960bb82985ba548dde8446d3340887e33c2847c8cd13bdda7e855adf",
+  "provenance": "Fresh anonymous exact native-key read; only OBJECTID, PRCL_KEY and full returned geometry requested."
+}

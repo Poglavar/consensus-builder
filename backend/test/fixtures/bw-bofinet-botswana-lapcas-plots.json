@@ -1,0 +1,167 @@
+{
+  "purpose": "Unchanged fresh BoFiNet FID-only Esri JSON polygon responses and production descriptor.",
+  "descriptor": {
+    "id": "bw-bofinet-botswana-lapcas-plots",
+    "adapter": "arcgis",
+    "name": "BoFiNet Botswana LAPCAS plots",
+    "endpoint": "https://bofinetarcgisportal.bofinet.co.bw/server/rest/services/PUBLIC/BOTSWANA_PLOTS/MapServer/0",
+    "idPrefix": "bofinet:Botswana_PLOTS:FID:",
+    "idField": "FID",
+    "objectIdField": "FID",
+    "idType": "integer",
+    "outFields": [
+      "FID"
+    ],
+    "queryFormat": "esri-json",
+    "boundsQueryMode": "object-ids",
+    "idsQueryMode": "object-ids",
+    "pageSize": 80,
+    "idBatchSize": 80,
+    "maxFeatures": 10000,
+    "maxBboxKm2": 25,
+    "maxConcurrentQueries": 1,
+    "cityIds": [
+      "428"
+    ],
+    "countryCode": "BW",
+    "defaultForCity": false,
+    "metricSrid": 32735,
+    "nativeCrs": "EPSG:4326",
+    "responseCrs": "EPSG:4326",
+    "coordinateOrder": "longitude,latitude",
+    "capabilities": {
+      "areaEnumeration": true,
+      "exactIds": true
+    },
+    "scope": "National published Botswana LAPCAS plot layer with reviewed substantial Gaborone coverage. This initial qualification retains three exact-ID samples and does not establish citywide or national completeness, currentness, legal title or survey accuracy.",
+    "evidenceFile": "evidence/source-purpose.json",
+    "catalogueUrl": "https://bofinetarcgisportal.bofinet.co.bw/server/rest/services/PUBLIC/BOTSWANA_PLOTS/MapServer/0",
+    "attribution": "BoFiNet public ArcGIS BOTSWANA_PLOTS layer 0 (PLOTS); described by the publisher as Botswana LAPCAS plots.",
+    "licenceNote": "Anonymous public query access verified; item licenseInfo and accessInformation are empty. Explicit reuse/redistribution conditions and custodian lineage remain second-pass follow-ups."
+  },
+  "response": {
+    "displayFieldName": "VILLAGE_TO",
+    "fieldAliases": {
+      "FID": "FID"
+    },
+    "geometryType": "esriGeometryPolygon",
+    "spatialReference": {
+      "wkid": 4326,
+      "latestWkid": 4326
+    },
+    "fields": [
+      {
+        "name": "FID",
+        "type": "esriFieldTypeOID",
+        "alias": "FID"
+      }
+    ],
+    "features": [
+      {
+        "attributes": {
+          "FID": 5986
+        },
+        "geometry": {
+          "rings": [
+            [
+              [
+                25.807960281000078,
+                -24.67553270999997
+              ],
+              [
+                25.811665751000078,
+                -24.67566630099998
+              ],
+              [
+                25.811591774000078,
+                -24.677914383999962
+              ],
+              [
+                25.807330317000037,
+                -24.677386702999968
+              ],
+              [
+                25.807538803000057,
+                -24.67603151999998
+              ],
+              [
+                25.807960281000078,
+                -24.67553270999997
+              ]
+            ]
+          ]
+        }
+      },
+      {
+        "attributes": {
+          "FID": 11324
+        },
+        "geometry": {
+          "rings": [
+            [
+              [
+                25.858036051000056,
+                -24.634655256999963
+              ],
+              [
+                25.858040300000027,
+                -24.63485834499994
+              ],
+              [
+                25.858076649000054,
+                -24.634844597999972
+              ],
+              [
+                25.858081257000038,
+                -24.634955514999945
+              ],
+              [
+                25.857738948000076,
+                -24.63502742999998
+              ],
+              [
+                25.85767392500003,
+                -24.63473216099993
+              ],
+              [
+                25.858036051000056,
+                -24.634655256999963
+              ]
+            ]
+          ]
+        }
+      },
+      {
+        "attributes": {
+          "FID": 41315
+        },
+        "geometry": {
+          "rings": [
+            [
+              [
+                25.900260970000033,
+                -24.570038344999944
+              ],
+              [
+                25.899670366000066,
+                -24.57033000599995
+              ],
+              [
+                25.899224883000045,
+                -24.569575424999982
+              ],
+              [
+                25.899815482000065,
+                -24.569283763999977
+              ],
+              [
+                25.900260970000033,
+                -24.570038344999944
+              ]
+            ]
+          ]
+        }
+      }
+    ]
+  }
+}

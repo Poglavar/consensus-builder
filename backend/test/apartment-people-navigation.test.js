@@ -93,7 +93,7 @@ describe('apartment people ground navigation',()=>{
         expect(nav.canWalk([2,3])).toBe(true);expect(nav.canWalk([2,1])).toBe(false);
     });
     it('uses the five source-backed Avenue V apartments without placing anyone in walls or slab holes',()=>{
-        const fixture=JSON.parse(fs.readFileSync(new URL('../../rekonstrukcije/avenue-v/unit-models.json',import.meta.url),'utf8'));
+        const fixture=JSON.parse(fs.readFileSync(new URL('../../restatements/avenue-v/unit-models.json',import.meta.url),'utf8'));
         for(const unit of fixture.units){const nav=buildNavigation(unit.architecture),walkers=createWalkers(nav,()=>.5);
             expect(walkers).toHaveLength(2);walkers.forEach(w=>expect(nav.canWalk([w.x,w.y])).toBe(true));}
     });

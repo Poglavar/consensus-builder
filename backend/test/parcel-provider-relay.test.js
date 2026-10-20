@@ -32,6 +32,16 @@ afterEach(() => {
 });
 
 describe('parcel provider relay validation', () => {
+    it('permits the reviewed AkwaGIS anonymous token route only for its registered layer', () => {
+        const descriptor = parcelSourceCatalog.sources.find(source => source.id === 'ng-akwaibom-akwagis-surveymap-parcel-drafter');
+        const url = 'https://akwagis.akwaibomstate.gov.ng/api/v1/gis/public-token';
+        expect(validateParcelProviderRelayRequest(descriptor.id, { url }, { sources: [descriptor] }).target.href).toBe(url);
+        expect(() => validateParcelProviderRelayRequest(descriptor.id, { url: url.replace('public-token', 'admin') }, { sources: [descriptor] })).toThrow();
+        expect(() => validateParcelProviderRelayRequest(descriptor.id, { url }, { sources: [{ ...descriptor, endpoint: descriptor.endpoint + '/other' }] })).toThrow();
+        const other = parcelSourceCatalog.sources.find(source => source.adapter === 'arcgis' && source.id !== descriptor.id);
+        expect(() => validateParcelProviderRelayRequest(other.id, { url }, { sources: [other] })).toThrow();
+    });
+
     it('injects the configured DGU token server-side and rejects client credentials', () => {
         process.env.OSS_PUBLIC_ACCESS_TOKEN = 'server-secret';
         const validated = validateParcelProviderRelayRequest(dgu.id, { url: `${dgu.endpoint}?service=WFS&token=browser-relay` }, { sources: [dgu] });

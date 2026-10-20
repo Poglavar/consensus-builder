@@ -81,8 +81,8 @@ def reconstruct(unit,cache,qa):
 def main():
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('--cache',type=Path,required=True)
-    p.add_argument('--manifest',type=Path,default=ROOT/'rekonstrukcije/avenue-v/floor-plan-sources.json')
-    p.add_argument('--output',type=Path,default=ROOT/'rekonstrukcije/avenue-v/unit-models.json')
+    p.add_argument('--manifest',type=Path,default=ROOT/'restatements/avenue-v/floor-plan-sources.json')
+    p.add_argument('--output',type=Path,default=ROOT/'restatements/avenue-v/unit-models.json')
     p.add_argument('--qa',type=Path,required=True)
     args=p.parse_args();source=json.loads(args.manifest.read_text())
     units=[]

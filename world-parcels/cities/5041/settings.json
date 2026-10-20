@@ -1,0 +1,118 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "5041",
+  "name": "Polokwane, South Africa",
+  "point": [
+    -23.8681459171116,
+    29.4132145590407
+  ],
+  "bindings": [
+    {
+      "appCityId": "polokwane",
+      "runtimeConfig": {
+        "id": "polokwane",
+        "wupCityCode": "5041",
+        "label": "Polokwane, South Africa",
+        "currency": {
+          "locale": "en-ZA",
+          "code": "ZAR"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            -23.8681459171116,
+            29.4132145590407
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            -23.8681459171116,
+            29.4132145590407
+          ],
+          "fallbackDataset": [
+            29.4132145590407,
+            -23.8681459171116
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "za-polokwane-municipal-land-information-polokwane-properties",
+          "idPrefix": "ZA-POLOKWANE-LIM-SG32-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "City of Polokwane Local Municipality GIS / Land Information Management / Polokwane Properties. Provider WGS84 output; complete returned polygon rings retained."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "za-polokwane-municipal-land-information-polokwane-properties",
+      "name": "City of Polokwane municipal Land Information / Polokwane Properties",
+      "adapter": "arcgis",
+      "endpoint": "https://gis.polokwane.gov.za/server/rest/services/Land_Information_Management/Polokwane_SDF/FeatureServer/14",
+      "countryCode": "ZA",
+      "cityIds": [
+        "polokwane"
+      ],
+      "defaultForCity": true,
+      "idPrefix": "ZA-POLOKWANE-LIM-SG32-",
+      "idField": "SG32",
+      "idType": "string",
+      "idPattern": "^[A-Z0-9]{32}$",
+      "objectIdField": "OBJECTID",
+      "outFields": [
+        "OBJECTID",
+        "SG32"
+      ],
+      "queryFormat": "esri-json",
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "pageSize": 1000,
+      "idBatchSize": 80,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "metricSrid": 32735,
+      "sourceCrs": "EPSG:4148",
+      "nativeCrs": "EPSG:4148",
+      "responseCrs": "EPSG:4326",
+      "returnsWGS84": true,
+      "capabilities": {
+        "exactIds": true,
+        "areaEnumeration": true
+      },
+      "attribution": "City of Polokwane Local Municipality GIS / Land Information Management / Polokwane Properties. Provider WGS84 output; complete returned polygon rings retained.",
+      "licenceNote": "Anonymous public access is verified. No explicit reusable licence was established; permission and attribution terms require second-pass review.",
+      "scope": "Municipal cadastral property records observed across the urban area. Bounded distributed discovery and five exact samples do not establish whole-city or municipality completeness. Rural gaps remain in the reviewed packet."
+    }
+  ]
+}

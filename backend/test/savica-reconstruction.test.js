@@ -9,7 +9,7 @@ import {
 } from '../proposals/reconstruction-geojson.js';
 import { mapBuiltBuildings } from '../scripts/seed-savica-f1-f3-proposal.mjs';
 
-const PROJECT_ROOT = fileURLToPath(new URL('../../rekonstrukcije/pionir-paron/savica-f1-f3/', import.meta.url));
+const PROJECT_ROOT = fileURLToPath(new URL('../../restatements/pionir-paron/savica-f1-f3/', import.meta.url));
 
 async function readJson(name) {
     return JSON.parse(await readFile(`${PROJECT_ROOT}${name}`, 'utf8'));

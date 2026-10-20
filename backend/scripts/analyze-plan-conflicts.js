@@ -14,7 +14,7 @@
 //               a proposal standing on another proposal's ground is refused, not silently stacked)
 //
 // Read-only. Borovje repairs live in
-// rekonstrukcije/upu-borovje/repair-imported-proposals.mjs, so there is one writer,
+// restatements/upu-borovje/repair-imported-proposals.mjs, so there is one writer,
 // not two.
 //
 //   node scripts/analyze-plan-conflicts.js --ids 633-651,699

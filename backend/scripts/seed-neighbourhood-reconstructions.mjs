@@ -29,7 +29,7 @@ dotenv.config({ path: fileURLToPath(new URL('../.env', import.meta.url)), quiet:
 const require = createRequire(import.meta.url);
 const { corridorProfileFromOsmTags, corridorProfileWidth } = require('../../frontend/js/corridor-profile.js');
 
-const ARCHIVE_ROOT = fileURLToPath(new URL('../../rekonstrukcije/nova-naselja/', import.meta.url));
+const ARCHIVE_ROOT = fileURLToPath(new URL('../../restatements/nova-naselja/', import.meta.url));
 const RECONSTRUCTION_DATE = '2026-08-14T00:00:00.000Z';
 const MIN_PARENT_INTERSECTION_M2 = 0.25;
 const MIN_ROAD_SEGMENT_LENGTH_M = 3;

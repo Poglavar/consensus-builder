@@ -6,6 +6,8 @@ import { createOgcApiParcelSource } from './ogc-api-source.js';
 import { createSocrataParcelSource } from './socrata-source.js';
 import { createDdaParcelSource } from './dda-source.js';
 import { createPulsePublicParcelSource } from './pulse-public-source.js';
+import { createBfDgiParcelSource } from './bf-dgi-source.js';
+import { createDivoEcommunesSource } from './divo-ecommunes-source.js';
 import { createShenzhenLandCertainSource } from './shenzhen-source.js';
 import { createDguParcelSource } from './dgu-source.js';
 import { createGeojsonSnapshotParcelSource } from './geojson-snapshot-source.js';
@@ -38,6 +40,7 @@ export const browserParcelFactories = Object.freeze({
     'hmlr-browser': async (descriptor, options) => (await import('./hmlr-browser-source.js')).createHmlrBrowserParcelSource(descriptor, options), arcgis: createArcgisParcelSource, wfs: createWfsParcelSource,
     'ogc-api': createOgcApiParcelSource, socrata: createSocrataParcelSource,
     'dda-public-plots': createDdaParcelSource, 'pulse-public': createPulsePublicParcelSource,
+    'bf-dgi-geojson': createBfDgiParcelSource, 'divo-ecommunes-xml': createDivoEcommunesSource,
     'shenzhen-land-certain': (_descriptor, options) => createShenzhenLandCertainSource(options),
     'dgu-wfs': createDguParcelSource,
     'geojson-snapshot': (descriptor, options) => descriptor.snapshotFormat === 'shapefile-zip'

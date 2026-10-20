@@ -1,0 +1,111 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "1936",
+  "name": "Sumbe, Angola",
+  "point": [
+    -11.2178706676586,
+    13.8457791803372
+  ],
+  "bindings": [
+    {
+      "appCityId": "sumbe",
+      "runtimeConfig": {
+        "id": "sumbe",
+        "wupCityCode": "1936",
+        "label": "Sumbe, Angola",
+        "currency": {
+          "locale": "pt-AO",
+          "code": "AOA"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            -11.2178706676586,
+            13.8457791803372
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            -11.2178706676586,
+            13.8457791803372
+          ],
+          "fallbackDataset": [
+            13.8457791803372,
+            -11.2178706676586
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "ao-ggpen-agt-cuanza-sul-official-sumbe-polygons",
+          "idPrefix": "AO-SUMBE-AGT-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Government of Angola GGPEN/AGT — CuanzaSul_AGT_Oficial_gdb / CuanzaSul_AGT_Oficial, Inscreva Já property-registration workflow."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "ao-ggpen-agt-cuanza-sul-official-sumbe-polygons",
+      "adapter": "arcgis",
+      "name": "GGPEN/AGT Cuanza Sul official property-registration parcels — Sumbe",
+      "endpoint": "https://services-eu1.arcgis.com/7r9gTPdSG9MPi1LZ/arcgis/rest/services/CuanzaSul_AGT_Oficial_gdb/FeatureServer/0",
+      "idField": "GlobalID_2",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "AO-SUMBE-AGT-",
+      "idType": "string",
+      "idPattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+      "outFields": [
+        "OBJECTID",
+        "GlobalID_2"
+      ],
+      "queryFormat": "geojson",
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "pageSize": 500,
+      "idBatchSize": 80,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "countryCode": "AO",
+      "metricSrid": 32733,
+      "cityIds": [
+        "sumbe"
+      ],
+      "scope": "Cuanza Sul provincial property-registration polygons. Reviewed discovery supports substantial partial Sumbe coverage, not completeness. No municipal or temporal filter is inferred.",
+      "catalogueUrl": "https://www.arcgis.com/sharing/rest/content/items/479b8f41f794492abc0d95aa16737400?f=pjson",
+      "licenceNote": "Public anonymous reads verified. Item licenseInfo and accessInformation are null; redistribution permission and final attribution terms remain second-pass follow-ups.",
+      "attribution": "Government of Angola GGPEN/AGT — CuanzaSul_AGT_Oficial_gdb / CuanzaSul_AGT_Oficial, Inscreva Já property-registration workflow.",
+      "defaultForCity": true
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+Select the parcels, open Propose, and choose Detached.
+
+Choose the maximum number of floors, distance from parcel boundaries and minimum plot size.
+
+Finish to place the houses on the map, then inspect them in 3D.
+
+Inspect the resulting buildings in 3D. Tilt and rotate to compare their scale and spacing.

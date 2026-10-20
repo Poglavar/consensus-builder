@@ -1,0 +1,27 @@
+1
+00:00:00,000 --> 00:00:04,133
+Select the parcels, open Propose, and choose Detached.
+
+2
+00:00:04,483 --> 00:00:07,664
+Choose the maximum number of floors, distance from
+
+3
+00:00:07,745 --> 00:00:10,985
+parcel boundaries and minimum plot size.
+
+4
+00:00:11,350 --> 00:00:13,312
+Finish to place the houses on the map,
+
+5
+00:00:13,626 --> 00:00:15,901
+then inspect them in 3D.
+
+6
+00:00:16,251 --> 00:00:19,746
+Inspect the resulting buildings in 3D. Tilt and
+
+7
+00:00:19,827 --> 00:00:23,217
+rotate to compare their scale and spacing.

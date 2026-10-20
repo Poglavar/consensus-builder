@@ -5,7 +5,7 @@ import { createRequire } from 'node:module';
 import { validateUnitModel } from '../floor-plans/unit-models.js';
 const require=createRequire(import.meta.url);
 const geometry=require('../../frontend/js/building-floor-plans.js');
-const manifest=JSON.parse(readFileSync(new URL('../../rekonstrukcije/avenue-v/unit-models.json',import.meta.url)));
+const manifest=JSON.parse(readFileSync(new URL('../../restatements/avenue-v/unit-models.json',import.meta.url)));
 describe('Avenue V unit model review gates',()=>{
  it('retains five distinct source-backed models without inventing whole-floor coverage',()=>{
   expect(new Set(manifest.units.map(x=>x.source.sha256)).size).toBe(5);

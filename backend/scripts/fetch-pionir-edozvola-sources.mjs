@@ -10,7 +10,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 const WFS_URL = 'https://oss.uredjenazemlja.hr/OssWebServices/external/eDozvole';
 const TYPE_PREFIX = 'eEditorDozvola_MGIPU_Public:';
 const ARCHIVE_DATE = '2026-08-13';
-const ARCHIVE_ROOT = fileURLToPath(new URL('../../rekonstrukcije/pionir-paron/', import.meta.url));
+const ARCHIVE_ROOT = fileURLToPath(new URL('../../restatements/pionir-paron/', import.meta.url));
 const LAYERS = Object.freeze([
     'eDozvola_area_polygon',
     'eDozvola_building_line',
@@ -217,7 +217,7 @@ function usage() {
     console.log(`Usage: node backend/scripts/fetch-pionir-edozvola-sources.mjs [--project <folder>] [--case <id>]
 
 Fetches public national eDozvola WFS features in EPSG:4326 and writes reproducible
-source snapshots below rekonstrukcije/pionir-paron. No database rows are changed.`);
+source snapshots below restatements/pionir-paron. No database rows are changed.`);
 }
 
 function parseArgs(args) {

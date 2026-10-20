@@ -1,0 +1,120 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "2954",
+  "name": "Dodoma, Tanzania",
+  "point": [
+    -6.16336934279916,
+    35.7436551366206
+  ],
+  "bindings": [
+    {
+      "appCityId": "dodoma",
+      "runtimeConfig": {
+        "id": "dodoma",
+        "wupCityCode": "2954",
+        "label": "Dodoma, Tanzania",
+        "currency": {
+          "locale": "sw-TZ",
+          "code": "TZS"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            -6.16336934279916,
+            35.7436551366206
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            -6.16336934279916,
+            35.7436551366206
+          ],
+          "fallbackDataset": [
+            35.7436551366206,
+            -6.16336934279916
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "tz-mlhhds-eardhi-taspro-spatial-units36",
+          "idPrefix": "tz-mlhhds-eardhi-taspro-spatial-units36/uid/",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Tanzania MLHHSD e-Ardhi / TASPRO cadastral spatial units"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "tz-mlhhds-eardhi-taspro-spatial-units36",
+      "name": "Tanzania MLHHSD e-Ardhi Dodoma cadastral spatial units",
+      "adapter": "wfs",
+      "endpoint": "https://eardhi.lands.go.tz/map/geoserver/taspro/wfs",
+      "featureType": "taspro:spatial_units36",
+      "version": "1.0.0",
+      "idField": "uid",
+      "idType": "string",
+      "idPattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+      "idPrefix": "tz-mlhhds-eardhi-taspro-spatial-units36/uid/",
+      "geometryField": "geom",
+      "requestProperties": true,
+      "outFields": [
+        "uid"
+      ],
+      "pageSize": 100,
+      "idBatchSize": 40,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "minRequestIntervalMs": 500,
+      "countryCode": "TZ",
+      "cityIds": [
+        "dodoma"
+      ],
+      "scope": "Substantial partial Dodoma urban coverage evidenced in three separated windows; bounded qualification does not establish municipal completeness.",
+      "operator": "Tanzania Ministry of Lands, Housing and Human Settlements Development (MLHHSD)",
+      "catalogueUrl": "https://eardhi.lands.go.tz/",
+      "attribution": "Tanzania MLHHSD e-Ardhi / TASPRO cadastral spatial units",
+      "licenceNote": "Anonymous official WFS reads observed. Explicit geometry redistribution/reuse licence not established.",
+      "defaultForCity": true,
+      "capabilities": {
+        "areaEnumeration": true,
+        "exactIds": true,
+        "queryGeometry": true
+      },
+      "metricSridByCity": {
+        "dodoma": 32736
+      },
+      "metricSrid": 32736
+    }
+  ]
+}

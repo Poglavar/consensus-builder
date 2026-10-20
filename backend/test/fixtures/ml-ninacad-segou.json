@@ -1,0 +1,162 @@
+{
+  "comment": "Safe Ségou NINACAD WFS sample and descriptor. Only native identifier and unchanged returned geometry are retained.",
+  "descriptor": {
+    "id": "ml-sprdf-ninacad-parcelle-wfs",
+    "adapter": "wfs",
+    "endpoint": "https://geodata.sprdf.ml/geoserver/sifMali/ows",
+    "featureType": "sifMali:parcelle",
+    "version": "2.0.0",
+    "name": "SPRDF / NINACAD cadastral parcels",
+    "countryCode": "ML",
+    "cityIds": [
+      "segou"
+    ],
+    "idField": "ninacad",
+    "idType": "string",
+    "idPattern": "^[0-9]{11}$",
+    "idPrefix": "ML-NINACAD-",
+    "geometryField": "geom",
+    "outFields": [
+      "ninacad"
+    ],
+    "requestProperties": true,
+    "pageSize": 100,
+    "idBatchSize": 80,
+    "maxFeatures": 10000,
+    "maxBboxKm2": 25,
+    "metricSrid": 32629,
+    "wireCrs": "CRS:84",
+    "wireAxisOrder": "longitude,latitude",
+    "returnsWGS84": true,
+    "scope": "Ségou commune 04101 is exposed by the official portal with 11 sections. Initial qualification verifies only three distributed exact parcel reads; no municipal or section completeness claim. Adjacent Pelengana 04121 is excluded from the city coverage claim. The shared WFS layer serves multiple communes; commune filtering and exhaustive coverage require follow-up.",
+    "evidenceFile": "evidence/source-metadata.json",
+    "catalogueUrl": "https://ninacad.sprdf.ml/",
+    "licenceUrl": "https://ninacad.sprdf.ml/",
+    "licenceNote": "Anonymous public geometry service. Explicit geometry redistribution permission and attribution terms remain unverified; initial technical qualification does not establish a reuse licence.",
+    "attribution": "SPRDF / NINACAD cadastral parcels; see publisher conditions.",
+    "capabilities": {
+      "areaEnumeration": true,
+      "exactIds": true
+    }
+  },
+  "response": {
+    "type": "FeatureCollection",
+    "features": [
+      {
+        "type": "Feature",
+        "id": "parcelle.2154805",
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [
+                -6.3292507646,
+                13.4114134836
+              ],
+              [
+                -6.3293260725,
+                13.4113220851
+              ],
+              [
+                -6.3294128442,
+                13.4113922021
+              ],
+              [
+                -6.3293563417,
+                13.4114962195
+              ],
+              [
+                -6.3293465132,
+                13.4114870575
+              ],
+              [
+                -6.3292507646,
+                13.4114134836
+              ]
+            ]
+          ]
+        },
+        "properties": {
+          "ninacad": "04101010046"
+        }
+      },
+      {
+        "type": "Feature",
+        "id": "parcelle.2154859",
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [
+                -6.3053066884,
+                13.4195146398
+              ],
+              [
+                -6.3054976938,
+                13.4194321332
+              ],
+              [
+                -6.3055905266,
+                13.4196278423
+              ],
+              [
+                -6.3054055799,
+                13.4197099337
+              ],
+              [
+                -6.3053066884,
+                13.4195146398
+              ]
+            ]
+          ]
+        },
+        "properties": {
+          "ninacad": "04101011661"
+        }
+      },
+      {
+        "type": "Feature",
+        "id": "parcelle.2162917",
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [
+                -6.2566884085,
+                13.4379036178
+              ],
+              [
+                -6.2564223554,
+                13.4379153062
+              ],
+              [
+                -6.2563584644,
+                13.4377394579
+              ],
+              [
+                -6.2566284713,
+                13.4377249672
+              ],
+              [
+                -6.2566884085,
+                13.4379036178
+              ]
+            ]
+          ]
+        },
+        "properties": {
+          "ninacad": "04101090868"
+        }
+      }
+    ],
+    "totalFeatures": 3,
+    "numberMatched": 3,
+    "numberReturned": 3,
+    "crs": {
+      "type": "name",
+      "properties": {
+        "name": "urn:ogc:def:crs:EPSG::4326"
+      }
+    }
+  }
+}

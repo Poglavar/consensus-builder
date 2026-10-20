@@ -124,8 +124,7 @@
       "idPrefix": "HR-",
       "ownership": {
         "adapter": "hr-oss",
-        "attribution": "Državna geodetska uprava, OSS Uređena zemlja public parcel information (parcel-info).",
-        "licence": null
+        "attribution": "Državna geodetska uprava, OSS Uređena zemlja public parcel information (parcel-info)."
       },
       "sourceKind": "database"
     }

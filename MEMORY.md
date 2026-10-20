@@ -45,7 +45,7 @@
 
 - 2026-08-11: **Block names minted between 10:04 and 17:01 that day carry a parcel id** (`Block HR-330264-628#prqroga`) — the first batch naming took `block.parcelIds[0]`, and a parcel one of our own roads has cut carries a piece token. `blockBaseName` (892de84) now derives the name from the block's own outline (`Block 4237-K7QM`). Leftovers are renamed with `planBlockRenames()` (reports, changes nothing) then `renameLegacyBlockNames()`, both globals from `block-batch.js`, run in the browser because the fingerprint needs the parcel rings the map holds; it REFUSES a block whose parcels are not all loaded, because fingerprinting a subset mints a name for different ground. The write goes through `PATCH /proposals/:id/name` (new; name and title move together) rather than re-uploading a proposal to change a label.
 
-- 2026-08-11: **`rekonstrukcije/` is the canonical archive for real former/existing plans and built projects reconstructed as proposals.** Keep each reconstruction's provenance, normalized/source GeoJSON and reproducible conversion/import scripts together; developer-oriented research series may be grouped below it (currently `rekonstrukcije/pionir-paron/`). A reconstruction's use of the proposal data model does not imply it is a future proposal.
+- 2026-08-11: **`restatements/` is the canonical archive for real former/existing plans and built projects reconstructed as proposals.** Keep each reconstruction's provenance, normalized/source GeoJSON and reproducible conversion/import scripts together; developer-oriented research series may be grouped below it (currently `restatements/pionir-paron/`). A reconstruction's use of the proposal data model does not imply it is a future proposal.
 - 2026-08-13: Pionir/Paron reconstructions keep company roles and geometry states separate: do not call GIP PIONIR the investor when an act names PARON or TEHNIKAGRADNJA, and use current DGU footprints for completed projects while retaining permit footprints as dated evidence layers.
 - 2026-08-13: Historical DGU reconstructions deduplicate identical `current=true` rows by `geom_hash`, keeping the newest source row. A GDI survey year supplies only a latest-safe completion bound, never an exact construction date.
 - 2026-08-13: Published apartment/commercial/garage totals stay at project level unless a source allocates them to individual buildings; do not divide or copy site totals across footprints.
@@ -761,6 +761,8 @@ Expanded SAM 3 head fine-tuning used 96 training tiles and fresh 16-tile validat
 - 2026-10-19: Manual Novogradnje processing uses Codex CLI with gpt-6.1-sol at medium or high effort (high by default), including image triage, and at most 30 tasks per manual pass; preserve the cohort when retrying unsupported-model failures. The public apartment floor-plan viewer opens in 3D when reconstructed geometry is available.
 
 - 2026-10-19: Novogradnje apartments rotate slowly in 3D on opening until the first pointer interaction; project and apartment pages include a separate fixed-centre neighbourhood view using existing city survey meshes within 65 m, with rotation and tilt only. The public header uses the baby-hardhat favicon and Novogradnja linking to the catalogue root.
+
+- 2026-10-19: The user renamed the source archive to `restatements/`: existing situations and published plans expressed using the app’s proposal and plan tools, with dates and source provenance retained.
 - 2026-10-19: Novogradnje includes archived Pionir whole-floor layouts as separate deep-linked floor plans, never fabricated apartments; listing refreshes retire only listing-derived site identities, preserving models owned by the building-floor registry. Known completion years sort newest first, unknown years last.
 - 2026-10-19: The user requested a private Stanovanje.plus reconstruction trial and a permission-outreach draft before incorporating its archive with attribution; the email has not been sent and the trial is not publicly published.
 
@@ -791,3 +793,5 @@ The user requires only per-city failed URL lists and working settings plus share
 - 2026-10-20: The user asked for four-sided, roughly rectangular illustrative plots and dropped equidistance requirements; the browser demo now uses rectangle-first subdivision, with incompatible fits explicitly unassigned.
 
 - 2026-10-20: The user wants imagery-generated parcels saved in browser localStorage and usable through normal parcel selection and local proposal tools; retain estimated provenance rather than keeping a transient display-only overlay.
+
+- 2026-10-20: During branch integration, the user gave the current semantics contract precedence; incoming providers, guides and publication changes must conform to its identity, evidence, quantity and storage boundaries.

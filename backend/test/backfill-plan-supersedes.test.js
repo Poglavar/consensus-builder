@@ -2,7 +2,7 @@
 // is the importer's own, and a link is written only where none is recorded, never over another.
 import { describe, expect, it } from 'vitest';
 import { parseArgs, planBackfill, supersessionLinks } from '../scripts/backfill-plan-supersedes.mjs';
-import { PLANS } from '../../rekonstrukcije/upu-borovje/name-plans.mjs';
+import { PLANS } from '../../restatements/upu-borovje/name-plans.mjs';
 
 describe('the Borovje version chain', () => {
     it('is the one the importer names the plans with: v2 supersedes v1 and v3 supersedes v2, for both plans', () => {

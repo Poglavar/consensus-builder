@@ -154,7 +154,6 @@
       "parcelNumberField": "VGIN_QPID",
       "metricSrid": 32618,
       "idPrefix": "US-VA-RICHMOND-",
-      "attributeFilters": null,
       "id": "us-va-richmond-parcels",
       "stateCode": "VA",
       "cityIds": [

@@ -81,7 +81,7 @@ describe('revisedRecord', () => {
 });
 
 describe('the committed correction (data/cadastral-snap.json)', () => {
-    const snap = JSON.parse(readFileSync(new URL('../../rekonstrukcije/upu-borovje/data/cadastral-snap.json', import.meta.url), 'utf8'));
+    const snap = JSON.parse(readFileSync(new URL('../../restatements/upu-borovje/data/cadastral-snap.json', import.meta.url), 'utf8'));
     const layouts = ['p-upu-borovje-parcelacija', 'p-upu-borovje-parcelacija-2', 'p-upu-borovje-parcelacija-3'];
     const roads = ['upu-borovje-ulice', 'upu-borovje-ulice-split-1'];
 
@@ -136,7 +136,7 @@ describe('the committed correction (data/cadastral-snap.json)', () => {
 });
 
 describe('v3: every street takes exactly the ground its lanes cut (data/streets-fit.json)', () => {
-    const read = name => JSON.parse(readFileSync(new URL(`../../rekonstrukcije/upu-borovje/data/${name}`, import.meta.url), 'utf8'));
+    const read = name => JSON.parse(readFileSync(new URL(`../../restatements/upu-borovje/data/${name}`, import.meta.url), 'utf8'));
     const fit = read('streets-fit.json');
     const { footprints } = read('street-footprints.json');
     const streets = ['upu-borovje-ulice-v2', 'upu-borovje-ulice-split-1-v2'];

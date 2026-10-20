@@ -1,0 +1,120 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "3172",
+  "name": "Ijebu-Ode, Nigeria",
+  "point": [
+    6.82182062949707,
+    3.93868739084507
+  ],
+  "bindings": [
+    {
+      "appCityId": "ijebu_ode",
+      "runtimeConfig": {
+        "id": "ijebu_ode",
+        "wupCityCode": "3172",
+        "label": "Ijebu-Ode, Nigeria",
+        "currency": {
+          "locale": "en-NG",
+          "code": "NGN"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            6.82182062949707,
+            3.93868739084507
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            6.82182062949707,
+            3.93868739084507
+          ],
+          "fallbackDataset": [
+            3.93868739084507,
+            6.82182062949707
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "ng-ogun-sdi-geonode-parcels",
+          "idPrefix": "NG-OGUN-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Ogun State Spatial Data Infrastructure / Bureau of Lands and Survey (BLS). Source catalogue declares public_domain and No Constraints. Full geographic response polygons retained unchanged."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "ng-ogun-sdi-geonode-parcels",
+      "name": "Ogun SDI / BLS cadastral parcels",
+      "adapter": "wfs",
+      "endpoint": "https://geoserver.ogunstate.gov.ng/geoserver/ows",
+      "version": "2.0.0",
+      "featureType": "geonode:parcels",
+      "geometryField": "geom",
+      "nativeIdMode": "feature-id",
+      "featureIdParameter": "resourceId",
+      "idType": "string",
+      "idPattern": "^parcels\\.[0-9]+$",
+      "idPrefix": "NG-OGUN-",
+      "outFields": [],
+      "requestProperties": false,
+      "unfilteredSchemaProfile": "ng-ogun-parcels-v1",
+      "pageSize": 250,
+      "idBatchSize": 80,
+      "maxFeatures": 5000,
+      "maxBboxKm2": 25,
+      "maxResponseBytes": 8388608,
+      "minRequestIntervalMs": 250,
+      "countryCode": "NG",
+      "cityIds": [
+        "ijebu_ode"
+      ],
+      "metricSrid": 32631,
+      "nativeCrs": "EPSG:26331",
+      "responseCrs": "CRS:84",
+      "returnsWGS84": true,
+      "scope": "Official Ogun cadastral land-ownership/status layer; this initial qualification proves repeatable exact access to five dispersed Ijebu-Ode native parcel records. Citywide completeness and current/historic semantics remain unverified.",
+      "attribution": "Ogun State Spatial Data Infrastructure / Bureau of Lands and Survey (BLS). Source catalogue declares public_domain and No Constraints. Full geographic response polygons retained unchanged.",
+      "licence": "public_domain (first-party catalogue metadata)",
+      "licenceUrl": "https://gis.ogunstate.gov.ng/api/v2/resources/339",
+      "catalogueUrl": "https://gis.ogunstate.gov.ng/catalogue/#/dataset/339",
+      "capabilities": {
+        "exactIds": true,
+        "areaEnumeration": true
+      },
+      "defaultForCity": true
+    }
+  ]
+}

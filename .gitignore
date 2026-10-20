@@ -44,14 +44,14 @@ frontend/rpc-config.js
 /data/floor-plan-agencies/**/*.jpeg
 /data/floor-plan-agencies/**/*.webp
 /data/floor-plan-agencies/**/*.html
-/rekonstrukcije/avenue-v/raw/
-/rekonstrukcije/avenue-v/downloads/
-/rekonstrukcije/avenue-v/**/*.pdf
-/rekonstrukcije/avenue-v/**/*.png
-/rekonstrukcije/avenue-v/**/*.jpg
-/rekonstrukcije/avenue-v/**/*.jpeg
-/rekonstrukcije/avenue-v/**/*.webp
-/rekonstrukcije/avenue-v/**/*.html
+/restatements/avenue-v/raw/
+/restatements/avenue-v/downloads/
+/restatements/avenue-v/**/*.pdf
+/restatements/avenue-v/**/*.png
+/restatements/avenue-v/**/*.jpg
+/restatements/avenue-v/**/*.jpeg
+/restatements/avenue-v/**/*.webp
+/restatements/avenue-v/**/*.html
 
 # Raw guide-video renders (the packaged clips live in frontend/videos/howto); too large for git.
 data/video/

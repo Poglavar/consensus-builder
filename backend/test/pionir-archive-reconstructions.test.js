@@ -10,7 +10,7 @@ import {
 } from '../proposals/reconstruction-geojson.js';
 
 const PROJECT_ROOT = fileURLToPath(new URL(
-    '../../rekonstrukcije/pionir-paron/',
+    '../../restatements/pionir-paron/',
     import.meta.url
 ));
 
@@ -22,7 +22,7 @@ async function readProposal(key) {
 describe('archive-resolved Pionir reconstructions', () => {
     it('represents Špansko C–D as four physical buildings on the two current parcels', async () => {
         const { proposal } = await readProposal('spansko-c-d');
-        expect(proposal.parentParcelIds).toEqual([
+        expect(proposal.cadastreParcelIds).toEqual([
             'HR-340057-2811/1',
             'HR-340057-2811/3'
         ]);
@@ -37,7 +37,7 @@ describe('archive-resolved Pionir reconstructions', () => {
 
     it('retains all seven Stenjevečki odvojak footprints without guessing phase labels', async () => {
         const { proposal } = await readProposal('spansko-stenjevecki-odvojak');
-        expect(proposal.parentParcelIds).toEqual(['HR-340057-2976/1']);
+        expect(proposal.cadastreParcelIds).toEqual(['HR-340057-2976/1']);
         expect(proposal.geometry.buildings.map(feature => feature.properties.dguBuildingId)).toEqual([
             13392284,
             13392285,
@@ -53,7 +53,7 @@ describe('archive-resolved Pionir reconstructions', () => {
 
     it('contains only the archived S–S12 Selska parcel sequence', async () => {
         const { proposal } = await readProposal('selska-bastijanova-viteziceva');
-        expect(proposal.parentParcelIds).toEqual([
+        expect(proposal.cadastreParcelIds).toEqual([
             'HR-339270-2682/89',
             'HR-339270-2682/91',
             'HR-339270-2682/93',

@@ -1,0 +1,9 @@
+Select a site on the map. Open Propose, then choose Block.
+
+Adjust the setback, building width and height. Choose whether that height is fixed, a maximum, or a range.
+
+Finish the design to place it on the map.
+
+Switch to 3D to inspect the proposed massing in its surroundings.
+
+Tilt, rotate and zoom to compare the building with the surrounding streets.

@@ -1,0 +1,51 @@
+1
+00:00:00,000 --> 00:00:02,392
+Click a parcel to see the proposals affecting
+
+2
+00:00:02,450 --> 00:00:05,898
+it. Parcel owners can accept offers or vote
+
+3
+00:00:05,956 --> 00:00:07,198
+on designs.
+
+4
+00:00:07,548 --> 00:00:10,787
+To counterpropose, fork a proposal and edit the
+
+5
+00:00:10,834 --> 00:00:11,495
+copy.
+
+6
+00:00:11,848 --> 00:00:14,739
+Give the alternative a name, then open Edit
+
+7
+00:00:14,901 --> 00:00:16,724
+to change its geometry.
+
+8
+00:00:17,081 --> 00:00:19,763
+Lower the height and narrow the building depth
+
+9
+00:00:20,181 --> 00:00:23,408
+to open up the courtyard. Save the revised
+
+10
+00:00:23,443 --> 00:00:24,326
+design.
+
+11
+00:00:24,681 --> 00:00:28,071
+Choose who decides: an owner deal, an owner
+
+12
+00:00:28,129 --> 00:00:31,682
+vote, or a community vote. Create the alternative
+
+13
+00:00:31,728 --> 00:00:32,901
+for comparison.

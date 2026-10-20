@@ -1,0 +1,113 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "4161",
+  "name": "Diepsloot, South Africa",
+  "point": [
+    -25.9317614563184,
+    28.0108704187243
+  ],
+  "bindings": [
+    {
+      "appCityId": "diepsloot",
+      "runtimeConfig": {
+        "id": "diepsloot",
+        "wupCityCode": "4161",
+        "label": "Diepsloot, South Africa",
+        "currency": {
+          "locale": "en-ZA",
+          "code": "ZAR"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            -25.9317614563184,
+            28.0108704187243
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            -25.9317614563184,
+            28.0108704187243
+          ],
+          "fallbackDataset": [
+            28.0108704187243,
+            -25.9317614563184
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "za-csggis-erven",
+          "idPrefix": "ZA-CSGGIS-ERVEN-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Office of the Chief Surveyor General (CSG); Department of Land Reform and Rural Development"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "za-csggis-erven",
+      "adapter": "arcgis",
+      "endpoint": "https://csggis.dlrrd.gov.za/server/rest/services/CSGSearch/MapServer/2",
+      "idPrefix": "ZA-CSGGIS-ERVEN-",
+      "idField": "PRCL_KEY",
+      "objectIdField": "OBJECTID",
+      "idType": "string",
+      "outFields": [
+        "OBJECTID",
+        "PRCL_KEY"
+      ],
+      "queryFormat": "esri-json",
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "pageSize": 100,
+      "idBatchSize": 40,
+      "maxFeatures": 2000,
+      "maxBboxKm2": 2,
+      "maxConcurrentQueries": 1,
+      "name": "Chief Surveyor General CSGSearch Erven",
+      "operator": "Office of the Chief Surveyor General, Department of Land Reform and Rural Development",
+      "countryCode": "ZA",
+      "cityIds": [
+        "diepsloot"
+      ],
+      "metricSrid": 32735,
+      "sourceCrs": "EPSG:4148",
+      "catalogueUrl": "https://csg.dlrrd.gov.za/data.htm",
+      "attribution": "Office of the Chief Surveyor General (CSG); Department of Land Reform and Rural Development",
+      "scope": "National surveyed urban cadastral-reference layer; initial qualification concerns five exact parcel reads in distributed Diepsloot windows only. Discovery windows and any later 13-cell sample do not establish citywide completeness. No legal title, survey accuracy or currentness claim.",
+      "licenceNote": "Anonymous public service. Saved first-party portal metadata gives attribution and a disclaimer, but no explicit reusable licence was established. Redistribution permission remains a second-pass question.",
+      "defaultForCity": true
+    }
+  ]
+}

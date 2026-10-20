@@ -9,10 +9,10 @@ import {
     explodePolygons,
     MIN_PLOT_AREA_M2,
     roadDefinitionFor
-} from '../../rekonstrukcije/upu-borovje/plan-topology.mjs';
+} from '../../restatements/upu-borovje/plan-topology.mjs';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
-const dataDir = path.resolve(here, '..', '..', 'rekonstrukcije', 'upu-borovje', 'data');
+const dataDir = path.resolve(here, '..', '..', 'restatements', 'upu-borovje', 'data');
 const load = async name => JSON.parse(await readFile(path.join(dataDir, name), 'utf8'));
 
 describe('UPU Borovje clean ground topology', () => {

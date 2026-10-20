@@ -10,7 +10,7 @@ import {
 } from '../proposals/reconstruction-geojson.js';
 import { mapSelskaBuildings } from '../scripts/seed-selska-drniska-proposal.mjs';
 
-const PROJECT_ROOT = fileURLToPath(new URL('../../rekonstrukcije/pionir-paron/selska-drniska/', import.meta.url));
+const PROJECT_ROOT = fileURLToPath(new URL('../../restatements/pionir-paron/selska-drniska/', import.meta.url));
 
 async function readJson(name) {
     return JSON.parse(await readFile(`${PROJECT_ROOT}${name}`, 'utf8'));
@@ -68,7 +68,7 @@ describe('Selska–Drniška reconstruction', () => {
     it('round-trips exactly three editable building footprints', async () => {
         const collection = await readJson('proposal.geojson');
         const proposal = reconstructionGeoJSONToProposal(collection);
-        expect(proposal.parentParcelIds).toEqual(['HR-339270-5652/1']);
+        expect(proposal.cadastreParcelIds).toEqual(['HR-339270-5652/1']);
         expect(assertReconstructionGeoJSONRoundTrip(proposal).buildingCount).toBe(3);
     });
 });

@@ -137,14 +137,14 @@ describe('city configuration with a browser-owned custom source', () => {
         expect(custom.manager.getCurrentCityConfig()).toMatchObject({id:'zagreb',parcels:{source:'parcel-source',sourceId:selected.id,
             idPrefix:selected.idPrefix,strategy:'grid',gridSize:100,requiresBackend:true,ownership:false}});
         expect(custom.scopes).toEqual(normal.scopes);
-        expect(custom.manager.getCityConfig('ljubljana').parcels.source).not.toBe('parcel-source');
+        expect(custom.manager.getCityConfig('ljubljana').parcels).toMatchObject({source:'parcel-source',sourceId:'si-gurs-kn-parcele-wfs',ownership:false});
         expect(normal.manager.getCurrentCityConfig().parcels.sourceId).not.toBe(selected.id);
     });
-    it('keeps DB defaults without a choice and honors explicit defaults despite a saved custom', () => {
+    it('keeps configured defaults without a choice and honors explicit defaults despite a saved custom', () => {
         const global=globalFor(), selected=choice('zagreb');settings.saveChoice('zagreb',selected,global);
         global.location.search='?parcelSource=default';
         expect(bootCity('zagreb',global).manager.getCurrentCityConfig().parcels.source).toBe('oss-wfs');
-        expect(bootCity('ljubljana',globalFor()).manager.getCurrentCityConfig().parcels.source).not.toBe('parcel-source');
+        expect(bootCity('ljubljana',globalFor()).manager.getCurrentCityConfig().parcels).toMatchObject({source:'parcel-source',sourceId:'si-gurs-kn-parcele-wfs',ownership:false});
     });
     it('uses a degree grid for a city with an existing degree grid instead of a metre-sized value', () => {
         const global=globalFor(), selected=choice('belgrade');settings.saveChoice('belgrade',selected,global);

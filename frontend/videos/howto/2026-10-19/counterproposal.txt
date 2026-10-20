@@ -1,0 +1,9 @@
+Click a parcel to see the proposals affecting it. Parcel owners can accept offers or vote on designs.
+
+To counterpropose, fork a proposal and edit the copy.
+
+Give the alternative a name, then open Edit to change its geometry.
+
+Lower the height and narrow the building depth to open up the courtyard. Save the revised design.
+
+Choose who decides: an owner deal, an owner vote, or a community vote. Create the alternative for comparison.
