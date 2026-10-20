@@ -5,20 +5,20 @@
     "asOf": "2026-10-19",
     "demographicSnapshotDate": "2026-10-12",
     "statisticsYear": 2025,
-    "cityCount": 3190,
+    "cityCount": 3200,
     "countryCount": 255,
     "statisticalJurisdictions": 237,
-    "checkedCityCount": 3063,
+    "checkedCityCount": 3073,
     "uncheckedCityCount": 127,
-    "cityRegistryFoundCount": 2469,
-    "verifiedCitySampleCount": 1818,
+    "cityRegistryFoundCount": 2484,
+    "verifiedCitySampleCount": 1833,
     "nationalCadastreCount": 72,
     "countryTwoRegionCount": 50,
-    "populationMatchedCount": 2595,
+    "populationMatchedCount": 2610,
     "growthMatchedCount": 1617,
-    "checkedCitiesMissingDate": 10,
+    "checkedCitiesMissingDate": 16,
     "wikiCityCount": 282,
-    "configuredAppCityCount": 1746,
+    "configuredAppCityCount": 1761,
     "unmatchedStatisticalAmounts": {
       "landAreaKm2": 0,
       "builtUpAreaKm2": 0.003000000084284693,
@@ -27,7 +27,9 @@
     "warnings": [
       "Zagreb guess-spike records were not available at report build time",
       "Missing referenced evidence file: world-parcels/evidence/source-item.json",
-      "Missing referenced evidence file: world-parcels/evidence/source-purpose.json"
+      "Missing referenced evidence file: world-parcels/evidence/source-purpose.json",
+      "Missing referenced evidence file: world-parcels/research/qualification-2026-10-20-retry-19/710/qualification.json",
+      "Missing referenced evidence file: world-parcels/research/qualification-2026-10-20-retry-19/204/qualification.json"
     ]
   },
   "world": {
@@ -29922,6 +29924,57 @@
       "wikipediaEvidence": null
     },
     {
+      "id": "wup2025:2556",
+      "name": "Bloemfontein",
+      "country": "South Africa",
+      "countryCode": "ZA",
+      "latitude": -29.1652013339971,
+      "longitude": 26.2428621568224,
+      "registryCityIds": [
+        "wup2025:2556"
+      ],
+      "appCityIds": [
+        "bloemfontein_za"
+      ],
+      "cohorts": [
+        "app",
+        "registry"
+      ],
+      "wupCityCode": 2556,
+      "wupName": "Bloemfontein",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": 496295,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": null,
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [],
+      "sourceIds": [
+        "za-csg-dffe-erven"
+      ],
+      "evidenceUrls": [
+        "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2"
+      ],
+      "evidenceFiles": [
+        "world-parcels/cities/2556/settings.json",
+        "research/overnight-cities-2026-10-08/klipgat-csg-acceptance.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=-29.16520&mlon=26.24286#map=12/-29.16520/26.24286",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-29.16520%2C26.24286",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:558",
       "name": "Blouberg Rise",
       "country": "South Africa",
@@ -43455,18 +43508,23 @@
       "countryCode": "ZM",
       "latitude": -15.5418921428215,
       "longitude": 28.2573091534986,
-      "registryCityIds": [],
-      "appCityIds": [],
+      "registryCityIds": [
+        "wup2025:1594"
+      ],
+      "appCityIds": [
+        "chilanga"
+      ],
       "cohorts": [
-        "integration-attempt"
+        "app",
+        "registry"
       ],
       "wupCityCode": 1594,
-      "wupName": null,
+      "wupName": "Chilanga",
       "growthRank": null,
       "researchFocusRegion": null,
       "researchPriority": null,
       "population2015": null,
-      "population2025": null,
+      "population2025": 133860,
       "annualGrowthPct2015To2025": null,
       "populationPlausibility2025": null,
       "populationMatch": null,
@@ -43477,10 +43535,10 @@
         "path": "world-parcels/research/qualification-outcomes/2026-10-12-valhalla.json",
         "field": "$.cities[77].finishedAt"
       },
-      "registryFound": null,
-      "registryFindingBasis": null,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
       "registryBasis": null,
-      "verifiedSample": false,
+      "verifiedSample": true,
       "impliedParcelsTried": null,
       "integrationAttempts": [
         {
@@ -43497,9 +43555,16 @@
           }
         }
       ],
-      "sourceIds": [],
-      "evidenceUrls": [],
-      "evidenceFiles": [],
+      "sourceIds": [
+        "zm-szi-zilmis-parcels-wfs"
+      ],
+      "evidenceUrls": [
+        "https://gis.szi.gov.zm/gn/ows"
+      ],
+      "evidenceFiles": [
+        "world-parcels/cities/1594/settings.json",
+        "world-parcels/research/qualification-2026-10-20-retry-19/710/qualification.json"
+      ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-15.54189&mlon=28.25731#map=12/-15.54189/28.25731",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-15.54189%2C28.25731",
       "wikipediaUrl": null,
@@ -44693,6 +44758,57 @@
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=17.82985&mlon=82.93566#map=12/17.82985/82.93566",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=17.82985%2C82.93566",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
+      "id": "wup2025:710",
+      "name": "Choma",
+      "country": "Zambia",
+      "countryCode": "ZM",
+      "latitude": -16.8095488756458,
+      "longitude": 26.9843616973629,
+      "registryCityIds": [
+        "wup2025:710"
+      ],
+      "appCityIds": [
+        "choma"
+      ],
+      "cohorts": [
+        "app",
+        "registry"
+      ],
+      "wupCityCode": 710,
+      "wupName": "Choma",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": 138447,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": null,
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [],
+      "sourceIds": [
+        "zm-szi-zilmis-parcels-wfs"
+      ],
+      "evidenceUrls": [
+        "https://gis.szi.gov.zm/gn/ows"
+      ],
+      "evidenceFiles": [
+        "world-parcels/cities/710/settings.json",
+        "world-parcels/research/qualification-2026-10-20-retry-19/710/qualification.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=-16.80955&mlon=26.98436#map=12/-16.80955/26.98436",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-16.80955%2C26.98436",
       "wikipediaUrl": null,
       "wikipediaEvidence": null
     },
@@ -59200,6 +59316,57 @@
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=52.03538&mlon=5.65323#map=12/52.03538/5.65323",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=52.03538%2C5.65323",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
+      "id": "wup2025:5008",
+      "name": "Edendale",
+      "country": "South Africa",
+      "countryCode": "ZA",
+      "latitude": -29.6564531242963,
+      "longitude": 30.3431977067269,
+      "registryCityIds": [
+        "wup2025:5008"
+      ],
+      "appCityIds": [
+        "edendale"
+      ],
+      "cohorts": [
+        "app",
+        "registry"
+      ],
+      "wupCityCode": 5008,
+      "wupName": "Edendale",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": 342930,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": null,
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [],
+      "sourceIds": [
+        "za-csg-dffe-erven"
+      ],
+      "evidenceUrls": [
+        "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2"
+      ],
+      "evidenceFiles": [
+        "world-parcels/cities/5008/settings.json",
+        "research/overnight-cities-2026-10-08/klipgat-csg-acceptance.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=-29.65645&mlon=30.34320#map=12/-29.65645/30.34320",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-29.65645%2C30.34320",
       "wikipediaUrl": null,
       "wikipediaEvidence": null
     },
@@ -91440,6 +91607,57 @@
       "wikipediaEvidence": null
     },
     {
+      "id": "wup2025:204",
+      "name": "João Teves",
+      "country": "Cabo Verde",
+      "countryCode": "CV",
+      "latitude": 15.0638094222344,
+      "longitude": -23.5950028346745,
+      "registryCityIds": [
+        "wup2025:204"
+      ],
+      "appCityIds": [
+        "joao_teves"
+      ],
+      "cohorts": [
+        "app",
+        "registry"
+      ],
+      "wupCityCode": 204,
+      "wupName": "João Teves",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": 135022,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": null,
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [],
+      "sourceIds": [
+        "cv-ingt-planta-pre-cadastro"
+      ],
+      "evidenceUrls": [
+        "https://ingtgeo.gov.cv/arcgisingt/rest/services/PLANTA_PRE_CADASTRO/MapServer/0"
+      ],
+      "evidenceFiles": [
+        "world-parcels/cities/204/settings.json",
+        "world-parcels/research/qualification-2026-10-20-retry-19/204/qualification.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=15.06381&mlon=-23.59500#map=12/15.06381/-23.59500",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=15.06381%2C-23.59500",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:5536",
       "name": "Jodhpur",
       "country": "India",
@@ -96520,18 +96738,23 @@
       "countryCode": "ZA",
       "latitude": -25.3932903572785,
       "longitude": 31.1640581037001,
-      "registryCityIds": [],
-      "appCityIds": [],
+      "registryCityIds": [
+        "wup2025:5368"
+      ],
+      "appCityIds": [
+        "kanyamazane"
+      ],
       "cohorts": [
-        "integration-attempt"
+        "app",
+        "registry"
       ],
       "wupCityCode": 5368,
-      "wupName": null,
+      "wupName": "Kanyamazane",
       "growthRank": null,
       "researchFocusRegion": null,
       "researchPriority": null,
       "population2015": null,
-      "population2025": null,
+      "population2025": 292211,
       "annualGrowthPct2015To2025": null,
       "populationPlausibility2025": null,
       "populationMatch": null,
@@ -96542,10 +96765,10 @@
         "path": "world-parcels/research/qualification-outcomes/africa-recovered-2026-10-18.json",
         "field": "$.cities[10].finishedAt"
       },
-      "registryFound": null,
-      "registryFindingBasis": null,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
       "registryBasis": null,
-      "verifiedSample": false,
+      "verifiedSample": true,
       "impliedParcelsTried": null,
       "integrationAttempts": [
         {
@@ -96567,9 +96790,16 @@
           }
         }
       ],
-      "sourceIds": [],
-      "evidenceUrls": [],
-      "evidenceFiles": [],
+      "sourceIds": [
+        "za-csg-dffe-erven"
+      ],
+      "evidenceUrls": [
+        "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2"
+      ],
+      "evidenceFiles": [
+        "world-parcels/cities/5368/settings.json",
+        "research/overnight-cities-2026-10-08/klipgat-csg-acceptance.json"
+      ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-25.39329&mlon=31.16406#map=12/-25.39329/31.16406",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-25.39329%2C31.16406",
       "wikipediaUrl": null,
@@ -96748,6 +96978,57 @@
       "evidenceFiles": [],
       "osmUrl": "https://www.openstreetmap.org/?mlat=24.10881&mlon=90.56902#map=12/24.10881/90.56902",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=24.10881%2C90.56902",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
+      "id": "wup2025:2183",
+      "name": "Kapiri Mposhi",
+      "country": "Zambia",
+      "countryCode": "ZM",
+      "latitude": -13.9721581932875,
+      "longitude": 28.6836406822377,
+      "registryCityIds": [
+        "wup2025:2183"
+      ],
+      "appCityIds": [
+        "kapiri_mposhi"
+      ],
+      "cohorts": [
+        "app",
+        "registry"
+      ],
+      "wupCityCode": 2183,
+      "wupName": "Kapiri Mposhi",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": 141802,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": null,
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [],
+      "sourceIds": [
+        "zm-szi-zilmis-parcels-wfs"
+      ],
+      "evidenceUrls": [
+        "https://gis.szi.gov.zm/gn/ows"
+      ],
+      "evidenceFiles": [
+        "world-parcels/cities/2183/settings.json",
+        "world-parcels/research/qualification-2026-10-20-retry-19/710/qualification.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=-13.97216&mlon=28.68364#map=12/-13.97216/28.68364",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-13.97216%2C28.68364",
       "wikipediaUrl": null,
       "wikipediaEvidence": null
     },
@@ -133100,6 +133381,58 @@
       "wikipediaEvidence": null
     },
     {
+      "id": "wup2025:3184",
+      "name": "Mohadin",
+      "country": "South Africa",
+      "countryCode": "ZA",
+      "latitude": -26.7245308836029,
+      "longitude": 27.0331580659226,
+      "registryCityIds": [
+        "wup2025:3184"
+      ],
+      "appCityIds": [
+        "mohadin"
+      ],
+      "cohorts": [
+        "app",
+        "registry"
+      ],
+      "wupCityCode": 3184,
+      "wupName": "Mohadin",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": 140960,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": null,
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [],
+      "sourceIds": [
+        "za-csg-csggis-property-viewer-erven"
+      ],
+      "evidenceUrls": [
+        "https://csggis.dlrrd.gov.za/server/rest/services/Property_Viewer/MapServer/2"
+      ],
+      "evidenceFiles": [
+        "world-parcels/cities/3184/settings.json",
+        "world-parcels/research/qualification-2026-10-19-bridge-4359-4c1a9ad4bfc5/4359/qualification.json",
+        "evidence/source-purpose.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=-26.72453&mlon=27.03316#map=12/-26.72453/27.03316",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-26.72453%2C27.03316",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:10689",
       "name": "Mohammadabad",
       "country": "India",
@@ -152968,18 +153301,23 @@
       "countryCode": "BJ",
       "latitude": 9.3503067221846,
       "longitude": 2.62184184014862,
-      "registryCityIds": [],
-      "appCityIds": [],
+      "registryCityIds": [
+        "wup2025:2317"
+      ],
+      "appCityIds": [
+        "parakou"
+      ],
       "cohorts": [
-        "integration-attempt"
+        "app",
+        "registry"
       ],
       "wupCityCode": 2317,
-      "wupName": null,
+      "wupName": "Parakou",
       "growthRank": null,
       "researchFocusRegion": null,
       "researchPriority": null,
       "population2015": null,
-      "population2025": null,
+      "population2025": 395528,
       "annualGrowthPct2015To2025": null,
       "populationPlausibility2025": null,
       "populationMatch": null,
@@ -152990,10 +153328,10 @@
         "path": "world-parcels/research/qualification-outcomes/africa-recovered-2026-10-18.json",
         "field": "$.cities[3].finishedAt"
       },
-      "registryFound": null,
-      "registryFindingBasis": null,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
       "registryBasis": null,
-      "verifiedSample": false,
+      "verifiedSample": true,
       "impliedParcelsTried": null,
       "integrationAttempts": [
         {
@@ -153015,9 +153353,18 @@
           }
         }
       ],
-      "sourceIds": [],
-      "evidenceUrls": [],
-      "evidenceFiles": [],
+      "sourceIds": [
+        "bj-andf-efoncier-geoserver"
+      ],
+      "evidenceUrls": [
+        "https://geoserver.andf.bj/geoserver/efb/wfs"
+      ],
+      "evidenceFiles": [
+        "world-parcels/cities/2317/settings.json",
+        "research/cotonou.json",
+        "research/cotonou-live-assessment.json",
+        "research/cotonou-live.json"
+      ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=9.35031&mlon=2.62184#map=12/9.35031/2.62184",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=9.35031%2C2.62184",
       "wikipediaUrl": null,
@@ -158387,6 +158734,63 @@
       "wikipediaEvidence": null
     },
     {
+      "id": "wup2025:2542",
+      "name": "Pobè",
+      "country": "Benin",
+      "countryCode": "BJ",
+      "latitude": 6.9765206823812,
+      "longitude": 2.6571185386098,
+      "registryCityIds": [
+        "wup2025:2542"
+      ],
+      "appCityIds": [
+        "pobe"
+      ],
+      "cohorts": [
+        "app",
+        "registry"
+      ],
+      "wupCityCode": 2542,
+      "wupName": "Pobè",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": 123350,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": "2026-10-03",
+      "checkedDateEvidence": {
+        "date": "2026-10-03",
+        "path": "research/cotonou-live-assessment.json",
+        "field": "integrationAttempts[0].checkedAt"
+      },
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": null,
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [],
+      "sourceIds": [
+        "bj-andf-efoncier-geoserver"
+      ],
+      "evidenceUrls": [
+        "https://geoserver.andf.bj/geoserver/efb/wfs"
+      ],
+      "evidenceFiles": [
+        "world-parcels/cities/2542/settings.json",
+        "research/cotonou.json",
+        "research/cotonou-live-assessment.json",
+        "research/cotonou-live.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=6.97652&mlon=2.65712#map=12/6.97652/2.65712",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=6.97652%2C2.65712",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "capital:ME:podgorica",
       "name": "Podgorica",
       "country": "Montenegro",
@@ -160225,6 +160629,83 @@
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=6.49690&mlon=2.62890#map=12/6.49690/2.62890",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=6.49690%2C2.62890",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
+      "id": "wup2025:2241",
+      "name": "Porto-Novo",
+      "country": "Benin",
+      "countryCode": "BJ",
+      "latitude": 6.50766879735021,
+      "longitude": 2.62222651952885,
+      "registryCityIds": [
+        "wup2025:2241"
+      ],
+      "appCityIds": [
+        "porto_novo"
+      ],
+      "cohorts": [
+        "app",
+        "registry"
+      ],
+      "wupCityCode": 2241,
+      "wupName": "Porto-Novo",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": 818617,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": "2026-10-14",
+      "checkedDateEvidence": {
+        "date": "2026-10-14",
+        "path": "world-parcels/research/qualification-outcomes/2026-10-14-africa-capitals.json",
+        "field": "$.cities[1].finishedAt"
+      },
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": null,
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [
+        {
+          "outcome": "held",
+          "registryCityId": "capital:BJ:porto-novo",
+          "summary": "Held: protocol, exact ID rereads, 13-cell sampling, forced paging and binding passed in a bounded Porto-Novo neighbourhood, but the 264-feature metric audit found one invalid polygon and nine material overlaps (largest 25,095 m², 98.9% of the smaller parcel). The tested point differs from the WUP centre and is recorded in diagnostics; citywide coverage is unverified.",
+          "checkedAt": "2026-10-14T07:39:45.913286Z",
+          "sources": [
+            {
+              "id": "bj-andf-efoncier-geoserver",
+              "name": "ANDF e-Foncier cadastral parcels — Cotonou"
+            }
+          ],
+          "evidenceUrl": "https://github.com/Poglavar/consensus-builder/blob/colosseum-worlds-fair/world-parcels/research/qualification-outcomes/2026-10-14-africa-capitals.json",
+          "diagnosticsUrl": "https://github.com/Poglavar/consensus-builder/blob/colosseum-worlds-fair/world-parcels/research/africa-capital-qualification-2026-10-14/porto-novo/qualification.json",
+          "checkedDateEvidence": {
+            "date": "2026-10-14",
+            "path": "world-parcels/research/qualification-outcomes/2026-10-14-africa-capitals.json",
+            "field": "$.cities[1].finishedAt"
+          }
+        }
+      ],
+      "sourceIds": [
+        "bj-andf-efoncier-geoserver"
+      ],
+      "evidenceUrls": [
+        "https://geoserver.andf.bj/geoserver/efb/wfs"
+      ],
+      "evidenceFiles": [
+        "world-parcels/cities/2241/settings.json",
+        "research/cotonou.json",
+        "research/cotonou-live-assessment.json",
+        "research/cotonou-live.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=6.50767&mlon=2.62223#map=12/6.50767/2.62223",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=6.50767%2C2.62223",
       "wikipediaUrl": null,
       "wikipediaEvidence": null
     },
@@ -169261,18 +169742,23 @@
       "countryCode": "ZA",
       "latitude": -33.0021744275905,
       "longitude": 27.8660738634439,
-      "registryCityIds": [],
-      "appCityIds": [],
+      "registryCityIds": [
+        "wup2025:3067"
+      ],
+      "appCityIds": [
+        "reeston"
+      ],
       "cohorts": [
-        "integration-attempt"
+        "app",
+        "registry"
       ],
       "wupCityCode": 3067,
-      "wupName": null,
+      "wupName": "Reeston",
       "growthRank": null,
       "researchFocusRegion": null,
       "researchPriority": null,
       "population2015": null,
-      "population2025": null,
+      "population2025": 244390,
       "annualGrowthPct2015To2025": null,
       "populationPlausibility2025": null,
       "populationMatch": null,
@@ -169283,10 +169769,10 @@
         "path": "world-parcels/research/qualification-outcomes/2026-10-12-valhalla.json",
         "field": "$.cities[168].finishedAt"
       },
-      "registryFound": null,
-      "registryFindingBasis": null,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
       "registryBasis": null,
-      "verifiedSample": false,
+      "verifiedSample": true,
       "impliedParcelsTried": null,
       "integrationAttempts": [
         {
@@ -169303,9 +169789,17 @@
           }
         }
       ],
-      "sourceIds": [],
-      "evidenceUrls": [],
-      "evidenceFiles": [],
+      "sourceIds": [
+        "za-csg-csggis-property-viewer-erven"
+      ],
+      "evidenceUrls": [
+        "https://csggis.dlrrd.gov.za/server/rest/services/Property_Viewer/MapServer/2"
+      ],
+      "evidenceFiles": [
+        "world-parcels/cities/3067/settings.json",
+        "world-parcels/research/qualification-2026-10-19-bridge-4359-4c1a9ad4bfc5/4359/qualification.json",
+        "evidence/source-purpose.json"
+      ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-33.00217&mlon=27.86607#map=12/-33.00217/27.86607",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-33.00217%2C27.86607",
       "wikipediaUrl": null,
@@ -181304,6 +181798,63 @@
       "wikipediaEvidence": null
     },
     {
+      "id": "wup2025:1033",
+      "name": "Ségou",
+      "country": "Mali",
+      "countryCode": "ML",
+      "latitude": 13.4286099987787,
+      "longitude": -6.25080382642436,
+      "registryCityIds": [
+        "wup2025:1033"
+      ],
+      "appCityIds": [
+        "segou"
+      ],
+      "cohorts": [
+        "app",
+        "registry"
+      ],
+      "wupCityCode": 1033,
+      "wupName": "Ségou",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": 295589,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": "2026-10-03",
+      "checkedDateEvidence": {
+        "date": "2026-10-03",
+        "path": "research/bamako-live-assessment.json",
+        "field": "integrationAttempts[0].checkedAt"
+      },
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": null,
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [],
+      "sourceIds": [
+        "ml-sprdf-ninacad-parcelle-wfs"
+      ],
+      "evidenceUrls": [
+        "https://geodata.sprdf.ml/geoserver/sifMali/ows"
+      ],
+      "evidenceFiles": [
+        "world-parcels/cities/1033/settings.json",
+        "research/bamako.json",
+        "research/bamako-live-assessment.json",
+        "research/bamako-live.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=13.42861&mlon=-6.25080#map=12/13.42861/-6.25080",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=13.42861%2C-6.25080",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:9161",
       "name": "Sehore",
       "country": "India",
@@ -187313,18 +187864,23 @@
       "countryCode": "ML",
       "latitude": 11.3136054897523,
       "longitude": -5.66973498556137,
-      "registryCityIds": [],
-      "appCityIds": [],
+      "registryCityIds": [
+        "wup2025:1363"
+      ],
+      "appCityIds": [
+        "sikasso"
+      ],
       "cohorts": [
-        "integration-attempt"
+        "app",
+        "registry"
       ],
       "wupCityCode": 1363,
-      "wupName": null,
+      "wupName": "Sikasso",
       "growthRank": null,
       "researchFocusRegion": null,
       "researchPriority": null,
       "population2015": null,
-      "population2025": null,
+      "population2025": 389804,
       "annualGrowthPct2015To2025": null,
       "populationPlausibility2025": null,
       "populationMatch": null,
@@ -187335,10 +187891,10 @@
         "path": "world-parcels/research/qualification-outcomes/africa-recovered-2026-10-18.json",
         "field": "$.cities[0].finishedAt"
       },
-      "registryFound": null,
-      "registryFindingBasis": null,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
       "registryBasis": null,
-      "verifiedSample": false,
+      "verifiedSample": true,
       "impliedParcelsTried": null,
       "integrationAttempts": [
         {
@@ -187360,9 +187916,18 @@
           }
         }
       ],
-      "sourceIds": [],
-      "evidenceUrls": [],
-      "evidenceFiles": [],
+      "sourceIds": [
+        "ml-sprdf-ninacad-parcelle-wfs"
+      ],
+      "evidenceUrls": [
+        "https://geodata.sprdf.ml/geoserver/sifMali/ows"
+      ],
+      "evidenceFiles": [
+        "world-parcels/cities/1363/settings.json",
+        "research/bamako.json",
+        "research/bamako-live-assessment.json",
+        "research/bamako-live.json"
+      ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=11.31361&mlon=-5.66973#map=12/11.31361/-5.66973",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=11.31361%2C-5.66973",
       "wikipediaUrl": null,
@@ -214925,6 +215490,63 @@
       "wikipediaEvidence": null
     },
     {
+      "id": "wup2025:1370",
+      "name": "Whydah",
+      "country": "Benin",
+      "countryCode": "BJ",
+      "latitude": 6.36521247398017,
+      "longitude": 2.08072638707345,
+      "registryCityIds": [
+        "wup2025:1370"
+      ],
+      "appCityIds": [
+        "whydah"
+      ],
+      "cohorts": [
+        "app",
+        "registry"
+      ],
+      "wupCityCode": 1370,
+      "wupName": "Whydah",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": 134144,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": "2026-10-03",
+      "checkedDateEvidence": {
+        "date": "2026-10-03",
+        "path": "research/cotonou-live-assessment.json",
+        "field": "integrationAttempts[0].checkedAt"
+      },
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": null,
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [],
+      "sourceIds": [
+        "bj-andf-efoncier-geoserver"
+      ],
+      "evidenceUrls": [
+        "https://geoserver.andf.bj/geoserver/efb/wfs"
+      ],
+      "evidenceFiles": [
+        "world-parcels/cities/1370/settings.json",
+        "research/cotonou.json",
+        "research/cotonou-live-assessment.json",
+        "research/cotonou-live.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=6.36521&mlon=2.08073#map=12/6.36521/2.08073",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=6.36521%2C2.08073",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:3051",
       "name": "Widnes",
       "country": "United Kingdom of Great Britain and Northern Ireland",
@@ -222857,8 +223479,8 @@
       "population": 14814459,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 4,
-      "citiesWithRegistry": 2,
+      "citiesChecked": 7,
+      "citiesWithRegistry": 6,
       "checked": true,
       "checkedDate": "2026-09-30",
       "nationalCadastreFound": true,
@@ -223486,8 +224108,8 @@
       "population": 527325,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 1,
-      "citiesWithRegistry": 1,
+      "citiesChecked": 2,
+      "citiesWithRegistry": 2,
       "checked": true,
       "checkedDate": "2026-09-30",
       "nationalCadastreFound": null,
@@ -227027,8 +227649,8 @@
       "population": 25198822,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 2,
-      "citiesWithRegistry": 1,
+      "citiesChecked": 3,
+      "citiesWithRegistry": 3,
       "checked": true,
       "checkedDate": "2026-09-29",
       "nationalCadastreFound": null,
@@ -229580,8 +230202,8 @@
       "population": 64747320,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 81,
-      "citiesWithRegistry": 37,
+      "citiesChecked": 84,
+      "citiesWithRegistry": 42,
       "checked": true,
       "checkedDate": "2026-09-29",
       "nationalCadastreFound": null,
@@ -231390,8 +232012,8 @@
       "population": 21913874,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 17,
-      "citiesWithRegistry": 11,
+      "citiesChecked": 19,
+      "citiesWithRegistry": 14,
       "checked": true,
       "checkedDate": "2026-09-30",
       "nationalCadastreFound": false,

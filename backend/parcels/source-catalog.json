@@ -1697,18 +1697,15 @@
       "idPattern": "^[0-9]{11}$",
       "idPrefix": "ML-NINACAD-",
       "outFields": [
-        "ninacad",
-        "uoid",
-        "numeroparc",
-        "section",
-        "surface",
-        "perimetre"
+        "ninacad"
       ],
       "pageSize": 500,
       "maxFeatures": 10000,
       "maxBboxKm2": 25,
       "cityIds": [
-        "bamako"
+        "bamako",
+        "sikasso",
+        "segou"
       ],
       "adapter": "wfs",
       "name": "SPRDF / NINACAD cadastral parcels",
@@ -1720,7 +1717,17 @@
       "licenceUrl": "https://ninacad.sprdf.ml/",
       "catalogueUrl": "https://ninacad.sprdf.ml/",
       "attribution": "SPRDF / NINACAD cadastral parcels; adapted to WGS84. See publisher conditions.",
-      "parcelNumberField": "numeroparc"
+      "geometryField": "geom",
+      "requestProperties": true,
+      "cityScopes": {
+        "sikasso": "Fresh initial qualification on 2026-10-20: 3 bounded public parcel polygons passed repeated exact native-ID reads with unchanged geometry. This is not citywide completeness, survey accuracy, legal title, verified coordinate alignment, currentness or reuse permission.",
+        "segou": "Fresh initial qualification on 2026-10-20: 3 bounded public parcel polygons passed repeated exact native-ID reads with unchanged geometry. This is not citywide completeness, survey accuracy, legal title, verified coordinate alignment, currentness or reuse permission."
+      },
+      "metricSridByCity": {
+        "bamako": 32629,
+        "sikasso": 32630,
+        "segou": 32629
+      }
     },
     {
       "id": "pe-sedapal-publicaciones-lotes",
@@ -2098,9 +2105,7 @@
       "idType": "string",
       "idPrefix": "BJ-ANDF-",
       "outFields": [
-        "nup",
-        "local_parcel_identification",
-        "commune_name"
+        "nup"
       ],
       "pageSize": 500,
       "maxFeatures": 10000,
@@ -2108,17 +2113,28 @@
       "metricSrid": 32631,
       "name": "ANDF e-Foncier cadastral parcels — Cotonou",
       "cityIds": [
-        "cotonou"
+        "cotonou",
+        "porto_novo",
+        "parakou",
+        "whydah",
+        "pobe"
       ],
       "countryCode": "BJ",
       "idPattern": "^[0-9]+$",
-      "parcelNumberField": "local_parcel_identification",
       "scope": "Verified bounded Cotonou cadastral parcel samples from the ANDF e-Foncier service. Only the configured Cotonou entry is enabled; coverage beyond the tested cells and national completeness are unverified.",
       "licenceNote": "ANDF describes public consultation and duplication except personal or confidential information, with online/private access subject to conditions and fees. GeoServer Fees NONE / AccessConstraints NONE are service defaults, not a reuse licence. Publisher conditions remain informational.",
       "licenceUrl": "https://andf.bj/cadastre/",
       "catalogueUrl": "https://cadastre.andf.bj/",
       "attribution": "ANDF (Agence Nationale du Domaine et du Foncier), e-Foncier cadastral parcels; adapted to WGS84. Verified Cotonou samples only.",
-      "evidenceFile": "research/cotonou-live.json"
+      "evidenceFile": "research/cotonou-live.json",
+      "geometryField": "boundary",
+      "requestProperties": true,
+      "cityScopes": {
+        "porto_novo": "Fresh initial qualification on 2026-10-20: 3 bounded public parcel polygons passed repeated exact native-ID reads with unchanged geometry. This is not citywide completeness, survey accuracy, legal title, verified coordinate alignment, currentness or reuse permission. Earlier broader Porto-Novo audit found one invalid polygon and nine material overlaps (largest 25095 square metres); these remain unresolved and no source geometry was repaired.",
+        "parakou": "Fresh initial qualification on 2026-10-20: 2 bounded public parcel polygons passed repeated exact native-ID reads with unchanged geometry. This is not citywide completeness, survey accuracy, legal title, verified coordinate alignment, currentness or reuse permission.",
+        "whydah": "Fresh initial qualification on 2026-10-20: 3 bounded public parcel polygons passed repeated exact native-ID reads with unchanged geometry. This is not citywide completeness, survey accuracy, legal title, verified coordinate alignment, currentness or reuse permission.",
+        "pobe": "Fresh initial qualification on 2026-10-20: 3 bounded public parcel polygons passed repeated exact native-ID reads with unchanged geometry. This is not citywide completeness, survey accuracy, legal title, verified coordinate alignment, currentness or reuse permission."
+      }
     },
     {
       "id": "hr-dgu-oss-dkp-cestice",
@@ -6680,7 +6696,10 @@
         "vosman",
         "masetjhaba_view",
         "emalahleni",
-        "middelburg"
+        "middelburg",
+        "bloemfontein_za",
+        "edendale",
+        "kanyamazane"
       ],
       "evidenceFile": "research/overnight-cities-2026-10-08/klipgat-csg-acceptance.json",
       "scope": "Public Chief Surveyor-General Erven reference polygons hosted by DFFE; separately qualified bounded Klipgat and Evaton settlement views. Complete native PRCL_KEY identity and Esri straight-ring geometry are preserved. Each city retains its own extent and geometry-quality evidence; wider coverage, current legal title and survey accuracy remain unverified. Additional enabled city entries have separate bounded qualification evidence; wider coverage remains unverified.",
@@ -6721,7 +6740,10 @@
         "matsulu": "199 unchanged native parcel polygons passed all eight qualification gates in bounded cells around the UN/WUP locator. Fresh independent metric audit (EPSG:32736) found zero invalid polygons, identity conflicts, duplicate geometry, material overlaps, or operation errors. Citywide completeness, legal title, survey accuracy, and currentness are not established.",
         "khuma": "57 unchanged native parcel polygons passed all eight qualification gates in bounded cells around the UN/WUP locator. Fresh independent metric audit (EPSG:32735) found zero invalid polygons, identity conflicts, duplicate geometry, material overlaps, or operation errors. Citywide completeness, legal title, survey accuracy, and currentness are not established.",
         "lenasia": "Bounded qualification around the UN DESA WUP 2025 settlement locator for Lenasia. Passing all eight gates and independent geometry audit supports local parcel integration only; citywide completeness, legal title, survey accuracy and currentness are not established.",
-        "vosman": "Bounded qualification around the UN DESA WUP 2025 settlement locator for Vosman. Passing all eight gates and independent geometry audit supports local parcel integration only; citywide completeness, legal title, survey accuracy and currentness are not established."
+        "vosman": "Bounded qualification around the UN DESA WUP 2025 settlement locator for Vosman. Passing all eight gates and independent geometry audit supports local parcel integration only; citywide completeness, legal title, survey accuracy and currentness are not established.",
+        "bloemfontein_za": "Fresh initial qualification on 2026-10-20: 3 bounded public parcel polygons passed repeated exact native-ID reads with unchanged geometry. This is not citywide completeness, survey accuracy, legal title, verified coordinate alignment, currentness or reuse permission.",
+        "edendale": "Fresh initial qualification on 2026-10-20: 3 bounded public parcel polygons passed repeated exact native-ID reads with unchanged geometry. This is not citywide completeness, survey accuracy, legal title, verified coordinate alignment, currentness or reuse permission. The current sample has 1 material overlap(s), maximum 2730.421 square metres; retain unchanged and investigate source quality.",
+        "kanyamazane": "Fresh initial qualification on 2026-10-20: 3 bounded public parcel polygons passed repeated exact native-ID reads with unchanged geometry. This is not citywide completeness, survey accuracy, legal title, verified coordinate alignment, currentness or reuse permission."
       },
       "metricSridByCity": {
         "klipgat": 32735,
@@ -6745,7 +6767,10 @@
         "vosman": 32735,
         "masetjhaba_view": 32735,
         "emalahleni": 32735,
-        "middelburg": 32735
+        "middelburg": 32735,
+        "bloemfontein_za": 32735,
+        "edendale": 32736,
+        "kanyamazane": 32736
       },
       "qualificationEvidence": [
         {
@@ -16384,7 +16409,9 @@
       "maxBboxKm2": 2,
       "metricSrid": 32735,
       "cityIds": [
-        "centurion"
+        "centurion",
+        "reeston",
+        "mohadin"
       ],
       "defaultForCity": true,
       "evidenceFile": "evidence/source-purpose.json",
@@ -16396,6 +16423,10 @@
       "capabilities": {
         "areaEnumeration": true,
         "exactIds": true
+      },
+      "cityScopes": {
+        "reeston": "Fresh initial qualification on 2026-10-20: 3 bounded public parcel polygons passed repeated exact native-ID reads with unchanged geometry. This is not citywide completeness, survey accuracy, legal title, verified coordinate alignment, currentness or reuse permission.",
+        "mohadin": "Fresh initial qualification on 2026-10-20: 1 bounded public parcel polygons passed repeated exact native-ID reads with unchanged geometry. This is not citywide completeness, survey accuracy, legal title, verified coordinate alignment, currentness or reuse permission."
       }
     },
     {
@@ -16743,6 +16774,90 @@
         "Full layer topology, completeness, currentness, reuse terms and application binding are second-pass follow-ups."
       ],
       "defaultForCity": true
+    },
+    {
+      "id": "zm-szi-zilmis-parcels-wfs",
+      "name": "Zambia SZI GeoServer cadastral parcels (native feature IDs)",
+      "adapter": "wfs",
+      "endpoint": "https://gis.szi.gov.zm/gn/ows",
+      "featureType": "gn:Parcels",
+      "version": "2.0.0",
+      "geometryField": "the_geom",
+      "nativeIdMode": "feature-id",
+      "featureIdParameter": "resourceId",
+      "idField": null,
+      "idType": "string",
+      "idPrefix": "ZM-SZI-FID-",
+      "idPattern": "^Parcels\\.[0-9]+$",
+      "outFields": [],
+      "requestProperties": true,
+      "pageSize": 100,
+      "idBatchSize": 80,
+      "maxFeatures": 3000,
+      "maxBboxKm2": 1,
+      "maxResponseBytes": 8388608,
+      "countryCode": "ZM",
+      "metricSrid": 32735,
+      "cityIds": [
+        "kapiri_mposhi",
+        "choma",
+        "chilanga"
+      ],
+      "defaultForCity": true,
+      "sourceCrs": "EPSG:32735",
+      "returnsWGS84": true,
+      "capabilities": {
+        "areaEnumeration": true,
+        "exactIds": true
+      },
+      "scope": "Bounded Choma observations; national service extent is not a municipal boundary. No citywide completeness claim.",
+      "licenceNote": "Official metadata states Copyright / otherRestictions. Open reuse licence and permission remain unverified; technical qualification does not authorize redistribution.",
+      "catalogueUrl": "https://znsdi.szi.gov.zm/srv/api/records/e6a52b47-0c0a-433b-9fd4-c1222dc3eec2",
+      "attribution": "Zambia NSDI / Smart Zambia Institute; MLNR Land Cadastre.",
+      "cityScopes": {
+        "kapiri_mposhi": "Fresh initial qualification on 2026-10-20: 1 bounded public parcel polygons passed repeated exact native-ID reads with unchanged geometry. This is not citywide completeness, survey accuracy, legal title, verified coordinate alignment, currentness or reuse permission.",
+        "choma": "Fresh initial qualification on 2026-10-20: 3 bounded public parcel polygons passed repeated exact native-ID reads with unchanged geometry. This is not citywide completeness, survey accuracy, legal title, verified coordinate alignment, currentness or reuse permission.",
+        "chilanga": "Fresh initial qualification on 2026-10-20: 3 bounded public parcel polygons passed repeated exact native-ID reads with unchanged geometry. This is not citywide completeness, survey accuracy, legal title, verified coordinate alignment, currentness or reuse permission."
+      }
+    },
+    {
+      "id": "cv-ingt-planta-pre-cadastro",
+      "name": "INGT Cabo Verde preliminary cadastral parcels",
+      "adapter": "arcgis",
+      "endpoint": "https://ingtgeo.gov.cv/arcgisingt/rest/services/PLANTA_PRE_CADASTRO/MapServer/0",
+      "idField": "GLOBALID",
+      "idType": "string",
+      "idPattern": "^\\{[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}\\}$",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "CV-INGT-PRE-",
+      "outFields": [
+        "OBJECTID",
+        "GLOBALID"
+      ],
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "queryFormat": "geojson",
+      "pageSize": 1000,
+      "idBatchSize": 20,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "timeoutMs": 45000,
+      "countryCode": "CV",
+      "metricSrid": 32627,
+      "scope": "Preliminary cadastral records. Only three near-locator parcel polygons qualified initially; discovery observed additional bounded windows. No citywide or finalized-registry completeness established.",
+      "attribution": "Instituto Nacional de Gestão do Território (INGT), Cabo Verde. Preliminary cadastre; source geometry retained.",
+      "catalogueUrl": "https://ingtgeo.gov.cv/arcgisingt/rest/services/PLANTA_PRE_CADASTRO/MapServer/0?f=pjson",
+      "licenceNote": "No explicit reuse licence established in first-party service metadata; verify reuse terms and attribution before activation.",
+      "capabilities": {
+        "areaEnumeration": true
+      },
+      "cityIds": [
+        "joao_teves"
+      ],
+      "defaultForCity": true,
+      "cityScopes": {
+        "joao_teves": "Fresh initial qualification on 2026-10-20: 3 bounded public parcel polygons passed repeated exact native-ID reads with unchanged geometry. This is not citywide completeness, survey accuracy, legal title, verified coordinate alignment, currentness or reuse permission."
+      }
     }
   ],
   "databaseSources": [
