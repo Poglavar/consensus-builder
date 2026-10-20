@@ -6546,6 +6546,16 @@
             "ai": "AI photorealistic render",
             "aiNeedsPhoto": "Switch to photo view first — the AI render works from the photorealistic scene"
         },
+        "photoParcels": {
+            "toggle": "Cadastral parcel boundaries",
+            "sourceParcel": "Source parcel",
+            "loading": "Loading source parcel boundaries…",
+            "ready": "Source parcels · click the city to inspect",
+            "empty": "No source parcels returned for this area.",
+            "failed": "Parcel boundaries could not load. Toggle the layer to retry.",
+            "note": "Source boundaries projected onto Google imagery. Imagery and cadastre may differ in date and alignment.",
+            "overlap": "Overlapping source outlines: {{index}} / {{count}}. Click again to cycle."
+        },
         "parcelPanel": {
             "title": "Parcel",
             "built": "Built",

@@ -6597,6 +6597,16 @@
             "ai": "Renderizado fotorrealista con IA",
             "aiNeedsPhoto": "Cambia primero a la vista foto — el render de IA parte de la escena fotorrealista"
         },
+        "photoParcels": {
+            "toggle": "Límites de parcelas catastrales",
+            "sourceParcel": "Parcela de origen",
+            "loading": "Cargando límites de las parcelas de origen…",
+            "ready": "Parcelas de origen · haz clic en la ciudad para inspeccionar",
+            "empty": "No se han devuelto parcelas de origen para esta zona.",
+            "failed": "No se pudieron cargar los límites. Desactiva y activa la capa para reintentar.",
+            "note": "Límites de origen proyectados sobre imágenes de Google. Las imágenes y el catastro pueden diferir en fecha y alineación.",
+            "overlap": "Contornos de origen superpuestos: {{index}} / {{count}}. Haz clic de nuevo para alternar."
+        },
         "parcelPanel": {
             "title": "Parcela",
             "built": "Construido",

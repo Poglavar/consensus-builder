@@ -25,7 +25,9 @@
     const LOCK_MAX_WAIT_S = 12;
     const LOCK_SAMPLE_INTERVAL_S = 0.25;
     const FAR_EARTH_LIMIT_M = 1500;       // |ground z| beyond this = a coarse far-earth tile
-    const NO_CONTENT_TIMEOUT_S = 20;
+    // Ion authentication and Google's root tileset are sequential network requests. Give slow
+    // connections the same 45-second completion budget as the other interactive map loaders.
+    const NO_CONTENT_TIMEOUT_S = 45;
     const MAX_UNSEATED_WAIT_S = 60;
     const MAX_BOOTSTRAP_ATTEMPTS = 8;
     const ROAD_BOUNDARY_SAMPLE_SPACING_M = 4;
@@ -2057,6 +2059,26 @@
         renderCarveMask(maskCenterX, maskCenterY);
     }
 
+    // Shared across retained tile sessions: re-entry replaces the texture, never the uniform objects
+    // captured by previously compiled Google materials.
+    let parcelOverlay = null;
+    const parcelUniforms = {
+        uParcelOverlay: { value: null }, uParcelMin: { value: new window.THREE.Vector2() },
+        uParcelInvSpan: { value: 1 }, uParcelOn: { value: 0 }
+    };
+
+    function pickPhotoSurface(event) {
+        if (!tiles || !grounded || !builtVisible) return null;
+        const rect = internals.renderer.domElement.getBoundingClientRect();
+        const ray = new window.THREE.Raycaster();
+        ray.setFromCamera(new window.THREE.Vector2(
+            (event.clientX - rect.left) / rect.width * 2 - 1,
+            -(event.clientY - rect.top) / rect.height * 2 + 1), internals.camera);
+        internals.scene.updateMatrixWorld(true);
+        const hit = ray.intersectObject(tiles.group, true).find(hit => googleSourceHitVisibility(hit) === true);
+        return hit?.point || null;
+    }
+
     // -- tile material patch (onBeforeCompile; all patched shaders share corridorUniforms) --
     function patchTileMaterial(material) {
         if (!material || (material.userData && material.userData.__corridorPatched)) return;
@@ -2113,6 +2135,7 @@
                     + '        }\n'
                     + '    }\n'
                     + '}\n');
+            window.__photorealParcels.patchShader(shader, parcelUniforms);
         };
         material.needsUpdate = true;
     }
@@ -2265,6 +2288,7 @@
     // ---- per-frame hook (registered with three-mode's render loop) ----
     function onFrame(now) {
         if (!tiles || !internals) return;
+        parcelOverlay?.update();
         const dtS = lastFrameNow ? Math.min(0.25, (now - lastFrameNow) / 1000) : 0.016;
         lastFrameNow = now;
         const camera = internals.camera;
@@ -2422,6 +2446,8 @@
             if (!window.__photorealGround) throw new Error('photoreal-ground helper missing');
             if (meshSeamCapsActive() && !window.__photorealSeam) throw new Error('photoreal-seam helper missing');
             mercatorK = frame.mercatorScaleFactor(anchor.lat);
+            parcelOverlay = window.__photorealParcels.create({ root: window, internals: internals,
+                pickSurface: pickPhotoSurface, uniforms: parcelUniforms });
 
             // URL-driven entry (frameProposal): hide the abstract 3D behind a loading cover until
             // the composed scene is ready. Skip it when reusing an already-seated session (instant).
@@ -2587,6 +2613,8 @@
         activationGeneration++;
         activating = false;
         active = false;
+        parcelOverlay?.dispose();
+        parcelOverlay = null;
         hideCover(); // never let the loading cover outlive the mode (e.g. no-coverage fallback)
         setPhotorealLoading(false); // clear the globe spinner on exit / failure to compose
         if (typeof window.unregisterThreeModeFrameHook === 'function') {

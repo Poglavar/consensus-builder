@@ -50,6 +50,9 @@
     --cb-success-soft: #ecfdf5;
     --cb-success-soft-ink: #166534;
     --cb-parcel-estimate-boundary: #b5f7b2;
+    --cb-photo-parcel-boundary: #fff3a6;
+    --cb-photo-parcel-halo: #282418;
+    --cb-photo-parcel-selected: #48e4f1;
 
     --cb-warning: #b45309;
     --cb-warning-soft: #fffbeb;

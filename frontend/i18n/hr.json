@@ -6602,6 +6602,16 @@
             "ai": "AI fotorealistični prikaz",
             "aiNeedsPhoto": "Prvo prijeđi na foto prikaz — AI render radi iz fotorealistične scene"
         },
+        "photoParcels": {
+            "toggle": "Granice katastarskih čestica",
+            "sourceParcel": "Izvorna čestica",
+            "loading": "Učitavanje granica izvornih čestica…",
+            "ready": "Izvorne čestice · klikni na grad za pregled",
+            "empty": "Za ovo područje nisu vraćene izvorne čestice.",
+            "failed": "Granice čestica nisu učitane. Isključi i uključi sloj za novi pokušaj.",
+            "note": "Izvorne granice projicirane na Google snimke. Snimke i katastar mogu se razlikovati po datumu i položaju.",
+            "overlap": "Izvorni obrisi se preklapaju: {{index}} / {{count}}. Ponovno klikni za sljedeći."
+        },
         "parcelPanel": {
             "title": "Čestica",
             "built": "Izgrađeno",

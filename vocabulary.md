@@ -324,6 +324,14 @@ The common Croatian identifier is `HR-<cadastral municipality>-<parcel number>`;
 
 A URL identifies the selected source configuration, not a dataset release, a cadastral jurisdiction or a legal authority. URL aliases are not merged. Here a native ID means the first usable source key from the supported parcel/id fields, `OBJECTID`, `FID`, `gml_id`, or GeoJSON feature ID; it may identify a provider row rather than a cadastral unit. Its reference stays stable while that key and URL remain the same, including across geometry edits. Reused keys do not establish continuity of a parcel entity across dataset revisions. Anonymous geometry references change with the encoded geometry. No version or retrieval-time evidence is manufactured from the URL or the browser's city. This intentionally replaces the unqualified `URL:<native ID>` / short geometry-hash contract; affected experimental records must be recreated, with no compatibility lookup for old references. The tab's saved URL is still the source configuration, so restoration derives current references from fresh source data. Provider descriptors do not manufacture missing release, jurisdiction, or authority evidence; such values remain unknown unless the source supplies them.
 
+Photo view's **cadastral parcel boundaries** layer projects immutable `CadastralParcelRepository`
+source outlines vertically onto the visible Google mesh, including roofs and vegetation. It does
+not render the proposal-derived live fabric or infer boundaries from imagery. Selection reports the
+source reference and geometry area in m²; overlapping source outlines remain individually selectable.
+The bounded overlay follows the camera's target and retains the provider's horizontal coordinates.
+Mesh LOD and visual alignment do not change source geometry, legal certainty or parcel identity.
+[Photo overlay](frontend/js/photoreal-parcels.js).
+
 ### Live parcel / fabric piece — `FabricPiece`
 
 A face of the currently materialized land fabric: unchanged cadastral ground, a proposed body, or a remainder created by applying formations. It has a runtime identity and provenance back to cadastral anchors and/or synthetic open ground. One base parcel can produce several pieces; a resulting piece can span several base parcels. A piece is not a newly registered cadastral parcel.

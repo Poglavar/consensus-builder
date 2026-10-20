@@ -12,7 +12,7 @@
             'js/life/life-graph.js', 'js/life/life-surface.js', 'js/life/life-agents.js', 'js/three-life.js', 'js/three-mode.js'
         ],
         photo: ['js/photoreal-frame.js', 'js/photoreal-ground.js', 'js/photoreal-seam.js',
-            'js/photoreal-protect.js', 'js/photoreal-attribution.js', 'js/photoreal-mode.js'],
+            'js/photoreal-protect.js', 'js/photoreal-attribution.js', 'js/photoreal-parcels.js', 'js/photoreal-mode.js'],
         ai: ['js/ai-scene-frustum.js', 'js/ai-scene.js']
     };
     const scripts = new Map();

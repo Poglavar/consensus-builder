@@ -6602,6 +6602,16 @@
             "ai": "AI fotorealistični prikaz",
             "aiNeedsPhoto": "Prvo pređi na foto prikaz — AI render radi iz fotorealistične scene"
         },
+        "photoParcels": {
+            "toggle": "Granice katastarskih parcela",
+            "sourceParcel": "Izvorna parcela",
+            "loading": "Učitavanje granica izvornih parcela…",
+            "ready": "Izvorne parcele · klikni na grad za pregled",
+            "empty": "Za ovo područje nisu vraćene izvorne parcele.",
+            "failed": "Granice parcela nisu učitane. Isključi i uključi sloj za novi pokušaj.",
+            "note": "Izvorne granice projektovane na Google snimke. Snimci i katastar mogu se razlikovati po datumu i položaju.",
+            "overlap": "Izvorni obrisi se preklapaju: {{index}} / {{count}}. Klikni ponovo za sledeći."
+        },
         "parcelPanel": {
             "title": "Parcela",
             "built": "Izgrađeno",
