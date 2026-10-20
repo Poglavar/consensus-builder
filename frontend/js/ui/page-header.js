@@ -1,6 +1,6 @@
 // The words of the shared satellite-page header (css/page-chrome.css) in the four UI languages, for
 // the pages that translate themselves by script without the app's i18n tables
-// (floor-plans.html, parcel-coverage-report.html). CbPageHeader.apply(lang) rewrites every
+// (parcel-coverage-report.html). CbPageHeader.apply(lang) rewrites every
 // [data-page-header-key] element; pages on the app's i18n use their own keys instead.
 (function attachPageHeader(root) {
     'use strict';

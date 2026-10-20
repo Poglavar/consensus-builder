@@ -143,90 +143,6 @@
       "controlType": "button"
     },
     {
-      "id": "control-4607247bfff293-1",
-      "source": "floor-plans.html",
-      "markup": "<button id=\"tab-buildings\" class=\"cb-tab\" type=\"button\" role=\"tab\" aria-controls=\"panel-buildings\" aria-selected=\"true\" data-i18n=\"buildingTab\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-9fd43fc7b1ec7d-1",
-      "source": "floor-plans.html",
-      "markup": "<button id=\"tab-sites\" class=\"cb-tab\" type=\"button\" role=\"tab\" aria-controls=\"panel-sites\" aria-selected=\"false\" tabindex=\"-1\" data-i18n=\"sitesTab\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-bea44a6e057032-1",
-      "source": "floor-plans.html",
-      "markup": "<button id=\"tab-agencies\" class=\"cb-tab\" type=\"button\" role=\"tab\" aria-controls=\"panel-agencies\" aria-selected=\"false\" tabindex=\"-1\" data-i18n=\"agencyTab\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-2b97f3a23d5def-1",
-      "source": "floor-plans.html",
-      "markup": "<select id=\"building\">",
-      "interaction": "change",
-      "controlType": "select"
-    },
-    {
-      "id": "control-f9b240b12d65d6-1",
-      "source": "floor-plans.html",
-      "markup": "<select id=\"unit\">",
-      "interaction": "change",
-      "controlType": "select"
-    },
-    {
-      "id": "control-226b32dbb7ab4c-1",
-      "source": "floor-plans.html",
-      "markup": "<input id=\"source-filter\" type=\"search\">",
-      "interaction": "change",
-      "controlType": "search"
-    },
-    {
-      "id": "control-aee09b3d482125-1",
-      "source": "floor-plans.html",
-      "markup": "<button id=\"previous\" class=\"btn\" type=\"button\" data-i18n=\"previous\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-3a45cf736a1a29-1",
-      "source": "floor-plans.html",
-      "markup": "<button id=\"next\" class=\"btn\" type=\"button\" data-i18n=\"next\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-e6f94adb46d905-1",
-      "source": "floor-plans.html",
-      "markup": "<button id=\"show-building\" class=\"btn btn-sm\" type=\"button\" data-i18n=\"resetView\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-3fce83e62a2e23-1",
-      "source": "floor-plans.html",
-      "markup": "<button id=\"view3d\" class=\"btn btn-sm\" type=\"button\" data-i18n=\"view3d\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-b2a8ba57ea2518-1",
-      "source": "floor-plans.html",
-      "markup": "<select id=\"site\">",
-      "interaction": "change",
-      "controlType": "select"
-    },
-    {
-      "id": "control-dbb772ad10d3fe-1",
-      "source": "floor-plans.html",
-      "markup": "<input id=\"agency-search\" type=\"search\">",
-      "interaction": "change",
-      "controlType": "search"
-    },
-    {
       "id": "control-0af35de405f5ec-1",
       "source": "how-to-use-buildings.html",
       "markup": "<a class=\"btn btn-quiet\" href=\"how-to-use.html\">",
@@ -3947,42 +3863,6 @@
       "markup": "<button type=\"button\" class=\"cb-link cb-link--quiet ens-name-value\" title=\"${copyLabel}: ${fullName}\"` + ` aria-label=\"${copyLabel}: ${fullName}\"` + ` onclick=\"copyEnsName(${inlineJsArg(name)}, this)\">",
       "interaction": "click",
       "controlType": "button"
-    },
-    {
-      "id": "control-6264d6cdd5da55-1",
-      "source": "js/floor-plan-archive.js",
-      "markup": "document.createElement(tag)",
-      "exempt": "This generic element helper only creates content, table cells, links and options; it has no button callsite.",
-      "mustRemainInactive": true,
-      "guards": [
-        {
-          "source": "js/floor-plan-archive.js",
-          "pattern": "\\btextNode\\(['\"]button['\"]",
-          "occurrences": 0
-        }
-      ],
-      "interaction": "auto",
-      "controlType": "dynamic"
-    },
-    {
-      "id": "control-252fa66042ffb4-1",
-      "source": "js/floor-plan-sites.js",
-      "markup": "document.createElement(tag)",
-      "exempt": "The floor-plan site text factory only creates table cells, labels, paragraphs and select options. It has no button, anchor or button-role caller.",
-      "mustRemainInactive": true,
-      "guards": [
-        {
-          "source": "js/floor-plan-sites.js",
-          "includes": "function textNode(tag, value, className) { const node = document.createElement(tag);"
-        },
-        {
-          "source": "js/floor-plan-sites.js",
-          "pattern": "textNode\\((?!tag\\b|'(?:td|dt|dd|p|span|option)')",
-          "occurrences": 0
-        }
-      ],
-      "interaction": "auto",
-      "controlType": "dynamic"
     },
     {
       "id": "control-31b64299080aeb-1",

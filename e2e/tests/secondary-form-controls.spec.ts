@@ -55,69 +55,7 @@ test.describe('Supporting page form controls @core', () => {
     await expect(page.locator('.canton-party-id[title="Lens::form-test"]')).toBeVisible();
   });
 
-  test('floor-plan archive building, unit, site, and agency controls select their actual records', async ({ mockApi: page }) => {
-    const sources = [
-      { sha256: 'archive-source-alpha', label: 'Central archive drawing', sourceUrl: 'https://plans.example/central.pdf', status: 'reviewed' },
-      { sha256: 'archive-source-beta', label: 'Western cadastral sheet', sourceUrl: 'https://plans.example/western.pdf', status: 'needs_review' },
-    ];
-    const agencies = [
-      { legal_name: 'Northern Registry Office', registered_address: 'North District', website: 'https://north.example' },
-      { legal_name: 'Southern Survey Agency', registered_address: 'South District', website: 'https://south.example' },
-    ];
-    await page.route('**/api/floor-plans?*', route => json(route, {
-      plans: [
-        { id: 'north-floor-1', scope: 'floor', floor: 0, label: 'North floor 1', source: { sha256: 'a'.repeat(64), url: 'https://plans.example/north-1.pdf' }, buildingId: 'building-north', building: { name: 'North Building', label: 'North Building' } },
-        { id: 'north-floor-2', scope: 'floor', floor: 1, label: 'North floor 2', source: { sha256: 'b'.repeat(64), url: 'https://plans.example/north-2.pdf' }, buildingId: 'building-north', building: { name: 'North Building', label: 'North Building' } },
-        { id: 'south-floor-1', scope: 'floor', floor: 0, label: 'South floor 1', source: { sha256: 'c'.repeat(64), url: 'https://plans.example/south-1.pdf' }, buildingId: 'building-south', building: { name: 'South Building', label: 'South Building' } },
-      ],
-      limit: 100, offset: 0, hasMore: false,
-    }));
-    await page.route('**/floor-plan-archive/catalogue', route => json(route, { buildings: [], sources }));
-    await page.route('**/floor-plan-archive/status', route => json(route, { coverage: { agencies: { total: 2, websites: 2 } } }));
-    await page.route('**/floor-plan-archive/agencies?*', route => json(route, { agencies }));
-    await page.route('**/floor-plan-archive/sites', route => json(route, { sites: [
-      { siteKey: 'site-north', label: 'North Site', postings: 2, placed: 1, plans: 2 },
-      { siteKey: 'site-south', label: 'South Site', postings: 1, placed: 0, plans: 1 },
-    ] }));
-    await page.route('**/floor-plan-archive/site?*', route => {
-      const key = new URL(route.request().url()).searchParams.get('key');
-      return json(route, { siteKey: key, label: key === 'site-south' ? 'South Site' : 'North Site', listingUrl: `https://plans.example/${key}`, siblings: [], envelope: {}, footprint: {}, placements: [] });
-    });
-    await page.route('**/floor-plan-archive/source/**', route => {
-      const source = sources.find(item => new URL(route.request().url()).pathname.endsWith(item.sha256));
-      return source ? json(route, source) : route.fulfill({ status: 404, json: { error: 'Source not found' } });
-    });
 
-    await page.goto('/floor-plans.html?building=archive');
-    const building = page.locator('#building');
-    await selectNativeOption(building, 'published:building-north');
-    await expect(page.locator('#selection-name')).toHaveText('North Building');
-    await selectNativeOption(page.locator('#unit'), '1');
-    await expect(page.locator('#source-link a')).toHaveAttribute('href', 'https://plans.example/north-2.pdf');
-    await selectNativeOption(building, 'published:building-south');
-    await expect(page.locator('#selection-name')).toHaveText('South Building');
-    await expect(page.locator('#source-link a')).toHaveAttribute('href', 'https://plans.example/south-1.pdf');
-    await page.locator('#tab-sites').click();
-    await expect(page.locator('#site-name')).toHaveText('North Site');
-    await selectNativeOption(page.locator('#site'), 'site-south');
-    await expect(page.locator('#site-name')).toHaveText('South Site');
-    const sourceFilter = page.locator('#source-filter');
-    await page.locator('#tab-buildings').click();
-    await selectNativeOption(building, 'archive');
-    await expect(sourceFilter).toBeVisible();
-    await sourceFilter.fill('western');
-    await expect(page.locator('#unit option')).toHaveCount(1);
-    await expect(page.locator('#unit option:checked')).toHaveText('Western cadastral sheet');
-    await expect(page.locator('#selection-name')).toHaveText('Western cadastral sheet');
-
-    await page.locator('#tab-agencies').click();
-    const agencySearch = page.locator('#agency-search');
-    await agencySearch.fill('Northern');
-    await expect(page.locator('#agency-count')).toHaveText('1 / 2');
-    await expect(page.locator('#agencies tr')).toHaveCount(1);
-    await expect(page.locator('#agencies')).toContainText('Northern Registry Office');
-    await expect(page.locator('#agencies')).not.toContainText('Southern Survey Agency');
-  });
 
   test('Lens directory and verdict fields select a service and submit its recorded outcome', async ({ mockApi: page }) => {
     const posted: any[] = [];

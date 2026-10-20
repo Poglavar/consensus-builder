@@ -358,46 +358,7 @@ test.describe('Supporting secondary controls @core', () => {
     await expect(page.locator('#tx-tbody .tx-row')).toHaveCount(2);
   });
 
-  test('published floor-plan View in 3D renders the plan without inventing a whole-building model', async ({ mockApi: page }) => {
-    const rectangle = (x: number, y: number, width: number, depth: number) => [[
-      [x, y], [x + width, y], [x + width, y + depth], [x, y + depth],
-    ]];
-    const architecture = {
-      schema: 'consensus-builder.floor-architecture.v1', dimensionsM: [10, 10], wallHeightM: 2.7, slabThicknessM: 0.2,
-      walls: [rectangle(0, 0, 1, 0.025)], slabs: [rectangle(0, 0, 1, 1)],
-      landings: [], platforms: [], openings: [], stairs: [], railings: [],
-    };
-    await page.route('**/api/floor-plans?*', route => json(route, {
-      plans: [{
-        id: 'plan-one', scope: 'floor', floor: 0, label: 'Plan One', architecture,
-        source: { url: 'https://plans.example/plan.png', sha256: 'f'.repeat(64) },
-        buildingId: 'ui-building', building: { label: 'UI Building' },
-      }],
-      limit: 100, offset: 0, hasMore: false,
-    }));
-    await page.route('**/floor-plan-archive/catalogue', route => json(route, {
-      buildings: [], sources: [],
-    }));
-    await page.route('**/floor-plan-archive/status', route => json(route, { coverage: { agencies: { total: 1, websites: 1 } } }));
-    await page.route('**/floor-plan-archive/agencies?*', route => json(route, { agencies: [] }));
-    await page.goto('/floor-plans.html?building=ui-building');
-    await expect(page.locator('#selection-name')).toHaveText('UI Building');
-    const mode = page.locator('#view3d');
-    await expect(mode).toBeEnabled();
-    await expect(mode).toHaveText('3D view');
-    await expect(page.locator('#plan svg')).toBeVisible();
-    await mode.click();
-    await expect(mode).toHaveText('2D view');
-    await expect(page.locator('#plan canvas')).toBeVisible();
-    await expect(page.locator('#plan svg')).toHaveCount(0);
-    await mode.click();
-    await expect(mode).toHaveText('3D view');
-    await expect(page.locator('#plan svg')).toBeVisible();
-    await expect(page.locator('#plan canvas')).toHaveCount(0);
-    await expect(page.locator('#show-building')).toBeDisabled();
-    await expect(page.locator('#building-3d')).toHaveText('No whole-building model is linked to this source.');
-    await expect(page.locator('#building-3d canvas')).toHaveCount(0);
-  });
+
 
   test.describe('Controls with slow map bootstrap @core', () => {
     test.describe.configure({ timeout: 60_000 });

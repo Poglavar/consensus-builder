@@ -285,39 +285,7 @@ test.describe('Supporting pages @core', () => {
     await expect(page.locator('#sharing')).toBeInViewport();
   });
 
-  test('floor plan archive tabs and plan navigation update the selected view', async ({ mockApi: page }) => {
-    await page.route('**/api/floor-plans?*', route => json(route, {
-      plans: [
-        { id: 'plan-one', scope: 'unit', label: 'Plan One', source: { sha256: 'd'.repeat(64), url: 'https://plans.example/one.pdf' }, buildingId: 'sample-building', building: { name: 'Sample Building', label: 'Sample Building' } },
-        { id: 'plan-two', scope: 'unit', label: 'Plan Two', source: { sha256: 'e'.repeat(64), url: 'https://plans.example/two.pdf' }, buildingId: 'sample-building', building: { name: 'Sample Building', label: 'Sample Building' } },
-      ],
-      limit: 100, offset: 0, hasMore: false,
-    }));
-    await page.route('**/floor-plan-archive/catalogue', route => json(route, {
-      buildings: [], sources: [],
-    }));
-    await page.route('**/floor-plan-archive/status', route => json(route, { coverage: { agencies: { total: 1, websites: 1 } } }));
-    await page.route('**/floor-plan-archive/agencies?*', route => json(route, { agencies: [{ legal_name: 'Sample Agency', registered_address: 'Zagreb', website: 'https://agency.example' }] }));
-    await page.goto('/floor-plans.html?building=sample-building');
-    await expect(page.locator('#selection-name')).toHaveText('Sample Building');
-    await expect(page.locator('#unit')).toHaveValue('0');
-    await page.locator('#next').click();
-    await expect(page.locator('#unit')).toHaveValue('1');
-    await expect(page.locator('#unit option:checked')).toHaveText('Plan Two');
-    await expect(page.locator('#previous')).toBeEnabled();
-    await expect(page.locator('#next')).toBeDisabled();
-    await page.locator('#previous').click();
-    await expect(page.locator('#unit')).toHaveValue('0');
-    await expect(page.locator('#unit option:checked')).toHaveText('Plan One');
 
-    await page.locator('#tab-agencies').click();
-    await expect(page.locator('#tab-agencies')).toHaveAttribute('aria-selected', 'true');
-    await expect(page.locator('#panel-agencies')).toBeVisible();
-    await expect(page.locator('#agencies')).toContainText('Sample Agency');
-    await page.locator('#tab-buildings').click();
-    await expect(page.locator('#tab-buildings')).toHaveAttribute('aria-selected', 'true');
-    await expect(page.locator('#panel-buildings')).toBeVisible();
-  });
 
   test('coverage report Print report invokes the browser print action', async ({ mockApi: page }) => {
     await page.addInitScript(() => {

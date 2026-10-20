@@ -98,7 +98,6 @@ DDL_FILES=(
     db/proposal-prepared-ddl.sql
     db/proposal-owner-decision-ddl.sql
     db/building-floor-model.sql
-    db/floor-plan-archive.sql
     ens/ens-plan-ddl.sql
     db/publication-immutability.sql
     ens/parcel-ens-ddl.sql
