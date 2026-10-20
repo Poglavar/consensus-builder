@@ -41,7 +41,7 @@ function renderDetail({ selected = false, fallbackPaths = false, located = true,
     const body = element('body');
     body.classList = { add() {}, contains: name => name === 'detail-page' };
     const loading={start:vi.fn(()=>vi.fn()),media:vi.fn(()=>vi.fn())};
-    const viewer = { mountApartment: vi.fn(() => ({ dispose() {} })), mountEnvelope: vi.fn(() => ({ dispose() {} })), mountContext: vi.fn(() => ({ dispose() {} })) };
+    const viewer = { mountApartment: vi.fn(() => ({ dispose() {} })), mountEnvelope: vi.fn(() => ({ dispose() {} })), mountContext: vi.fn(() => ({ dispose() {} })), mountExpandable: vi.fn(() => ({ dispose() {} })) };
     const catalogue = { decodeFilters: () => ({}), normalizeFilters: value => value, encodeFilters: () => '', filterProjects: () => [], hasEnvelope: model => Boolean(model?.envelope?.footprint && model.envelope.storeys?.length) };
     const location = { search: '', href: 'https://example.test/novogradnje/' };
     const context = {
@@ -79,7 +79,7 @@ describe('Novogradnje detail layout', () => {
     });
 
     it('renders exactly four separate sibling panels for an apartment and keeps sources in the source panel', () => {
-        const { detail } = renderDetail({ selected: true });
+        const { detail, viewer } = renderDetail({ selected: true });
         const panels = descendants(detail).filter(node => node.className.split(' ').includes('viewer-panel'));
         expect(panels).toHaveLength(4);
         expect(panels.map(panel => panel.children[0].textContent)).toEqual([
@@ -87,6 +87,8 @@ describe('Novogradnje detail layout', () => {
         ]);
         expect(descendants(panels[2]).filter(node => node.className === 'source-link')).toHaveLength(3);
         expect(panels.slice(0, 2).flatMap(descendants).some(node => node.className === 'source-link')).toBe(false);
+        expect(viewer.mountExpandable).toHaveBeenCalledOnce();
+        expect(viewer.mountExpandable).toHaveBeenCalledWith(panels[0],panels[0].children[0]);
     });
 
     it('tracks original image and PDF loading in their own preview panels',()=>{

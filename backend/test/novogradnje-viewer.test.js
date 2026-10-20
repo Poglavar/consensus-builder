@@ -14,18 +14,27 @@ function deferred() {
 }
 
 function makeElement(tag) {
+    const classes=new Set();
     return {
         tag, children: [], listeners: {}, className: '', textContent: '', type: '',
+        classList:{add:name=>classes.add(name),remove:name=>classes.delete(name),contains:name=>classes.has(name)},
         setAttribute(name, value) { this[name] = value; },
         replaceChildren(...children) { this.children = children; },
-        append(...children) { this.children.push(...children); },
+        append(...children) { for(const child of children){child.remove();child.parentNode=this;this.children.push(child);} },
+        before(child) { child.parentNode=this.parentNode;this.parentNode.children.splice(this.parentNode.children.indexOf(this),0,child); },
+        replaceWith(child) { const parent=this.parentNode,index=parent.children.indexOf(this);child.remove();parent.children[index]=child;child.parentNode=parent;this.parentNode=null; },
+        remove() { if(this.parentNode){this.parentNode.children.splice(this.parentNode.children.indexOf(this),1);this.parentNode=null;} },
         addEventListener(name, fn) { this.listeners[name] = fn; },
+        removeEventListener(name, fn) { if(this.listeners[name]===fn)delete this.listeners[name]; },
+        focus:vi.fn(),
+        showModal() { this.open=true; },
+        close() { this.open=false;this.listeners.close?.(); },
         click() { this.listeners.click?.(); }
     };
 }
 
 function loadViewer(overrides = {}) {
-    const document = { createElement: makeElement, createElementNS: (_ns, tag) => makeElement(tag) };
+    const document = { body:makeElement('body'),createElement: makeElement, createElementNS: (_ns, tag) => makeElement(tag) };
     const root = {
         document,
         AbortController,
@@ -48,6 +57,43 @@ function loadViewer(overrides = {}) {
 
 describe('Novogradnje viewer mounts', () => {
     afterEach(() => vi.restoreAllMocks());
+
+    function expandable(){
+        const root=loadViewer(),parent=makeElement('grid'),panel=makeElement('section'),heading=makeElement('h3'),canvas=makeElement('canvas');
+        panel.className='viewer-panel';heading.textContent='Tlocrt i 3D prikaz';panel.append(heading,canvas);parent.append(panel);
+        const mounted=root.NovogradnjeViewer.mountExpandable(panel,heading),button=heading.children[0];
+        return {root,parent,panel,canvas,button,mounted};
+    }
+
+    it('expands the existing panel into a labelled modal and restores its place and focus on collapse',()=>{
+        const {root,parent,panel,canvas,button}=expandable();
+        expect(button['aria-label']).toBe('Proširi prikaz');expect(button['aria-expanded']).toBe('false');
+        button.click();
+        const dialog=root.document.body.children[0];
+        expect(dialog.tag).toBe('dialog');expect(dialog.open).toBe(true);expect(dialog['aria-label']).toBe('Tlocrt i 3D prikaz');
+        expect(dialog.children[0]).toBe(panel);expect(panel.children[1]).toBe(canvas);
+        expect(parent.children[0]['aria-hidden']).toBe('true');expect(button['aria-expanded']).toBe('true');
+        expect(root.document.body.classList.contains('viewer-expanded')).toBe(true);
+        button.click();
+        expect(parent.children).toEqual([panel]);expect(panel.children[1]).toBe(canvas);
+        expect(root.document.body.children).toHaveLength(0);expect(root.document.body.classList.contains('viewer-expanded')).toBe(false);
+        expect(button['aria-label']).toBe('Proširi prikaz');expect(button.focus).toHaveBeenCalledTimes(2);
+    });
+
+    it('restores the panel after a native dialog close and supports opening it again',()=>{
+        const {root,parent,panel,button}=expandable();
+        button.click();root.document.body.children[0].close();
+        expect(parent.children).toEqual([panel]);expect(button['aria-expanded']).toBe('false');
+        button.click();expect(root.document.body.children[0].open).toBe(true);expect(button['aria-label']).toBe('Smanji prikaz');
+    });
+
+    it('cleans up an expanded panel when its page is disposed',()=>{
+        const {root,parent,panel,button,mounted}=expandable();
+        button.click();mounted.dispose();
+        expect(parent.children).toEqual([panel]);expect(root.document.body.children).toHaveLength(0);
+        expect(root.document.body.classList.contains('viewer-expanded')).toBe(false);
+        expect(button.parentNode).toBeNull();button.click();expect(root.document.body.children).toHaveLength(0);
+    });
 
     it.each(['ready', 'error'])('keeps the envelope loading until the renderer settles: %s', async outcome => {
         const preview = deferred(), root = loadViewer({ __floorPlanReviewRenderer: { preview: vi.fn(() => preview.promise) } });

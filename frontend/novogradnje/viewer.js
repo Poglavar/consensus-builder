@@ -4,6 +4,32 @@
     const SVG = 'http://www.w3.org/2000/svg';
     const el = (tag, cls) => { const n = document.createElement(tag); if (cls) n.className = cls; return n; };
     const svg = (tag, attrs = {}) => { const n = document.createElementNS(SVG, tag); Object.entries(attrs).forEach(([k,v]) => n.setAttribute(k, String(v))); return n; };
+    function mountExpandable(panel, heading) {
+        const label=heading.textContent,button=el('button','viewer-expand');button.type='button';button.setAttribute('aria-haspopup','dialog');
+        const icon=svg('svg',{viewBox:'0 0 24 24','aria-hidden':'true',fill:'none',stroke:'currentColor','stroke-width':1.8,'stroke-linecap':'round','stroke-linejoin':'round'}),path=svg('path');
+        icon.append(path);button.append(icon);heading.append(button);
+        let dialog=null,placeholder=null;
+        function update(expanded){
+            const text=expanded?'Smanji prikaz':'Proširi prikaz';
+            button.setAttribute('aria-label',text);button.setAttribute('title',text);button.setAttribute('aria-expanded',String(expanded));
+            path.setAttribute('d',expanded?'M4 9h5V4m6 0v5h5M4 15h5v5m6 0v-5h5':'M9 4H4v5m11-5h5v5M4 15v5h5m6 0h5v-5');
+        }
+        function restore(){
+            if(!dialog)return;
+            const previous=dialog;dialog=null;
+            previous.removeEventListener('close',restore);
+            placeholder.replaceWith(panel);placeholder=null;
+            previous.remove();document.body.classList.remove('viewer-expanded');update(false);button.focus();
+        }
+        function toggle(){
+            if(dialog){dialog.close();return;}
+            placeholder=el('div',panel.className);placeholder.setAttribute('aria-hidden','true');panel.before(placeholder);
+            dialog=el('dialog','viewer-dialog');dialog.setAttribute('aria-label',label);dialog.append(panel);document.body.append(dialog);
+            dialog.addEventListener('close',restore);document.body.classList.add('viewer-expanded');update(true);dialog.showModal();button.focus();
+        }
+        update(false);button.addEventListener('click',toggle);
+        return {dispose(){if(dialog){dialog.close();restore();}button.removeEventListener('click',toggle);button.remove();}};
+    }
     function planSvg(apartment) {
         const a = apartment?.architecture;
         if (!a || !Array.isArray(a.dimensionsM) || a.dimensionsM.length !== 2) return null;
@@ -167,5 +193,5 @@
         });
         return {dispose(){generation++;stopLoading?.();current?.dispose();host.replaceChildren();}};
     }
-    root.NovogradnjeViewer={mountPlan,mountApartment,mountEnvelope,mountContext};
+    root.NovogradnjeViewer={mountPlan,mountApartment,mountEnvelope,mountContext,mountExpandable};
 })(window);

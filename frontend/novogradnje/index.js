@@ -144,6 +144,7 @@
             const grid=node('div','viewer-grid apartment-viewer-grid');
             const plan=node('section','viewer-panel'),planTitle=node('h3','','Tlocrt i 3D prikaz'),planHost=node('div','viewer-host');
             plan.append(planTitle,planHost);
+            viewers.push(V.mountExpandable(plan,planTitle));
             if(hasGeometry)viewers.push(V.mountApartment(planHost,selected,{location:project.location}));
             else {planHost.append(node('div','viewer-canvas'),node('p','viewer-copy','3D rekonstrukcija tlocrta nije dostupna.'));if(!hasPlan)planHost.firstChild.textContent='Tlocrt nije dostupan.';}
             grid.append(plan);
