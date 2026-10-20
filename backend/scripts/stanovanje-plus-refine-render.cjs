@@ -2,8 +2,9 @@
 // Keep prior model input crops so checkpointed semantic requests remain reviewable.
 const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
 const sharp=require(process.env.STANOVANJE_SHARP_PATH || path.join(require('node:os').homedir(),'.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/sharp'));
-const root=path.resolve(__dirname,'../logs/stanovanje-plus-ten-20261019');
-const codes=process.argv.slice(2);
+const rootArg=process.argv.find(a=>a.startsWith('--root='));
+const root=path.resolve(rootArg?rootArg.slice(7):path.join(__dirname,'../logs/stanovanje-plus-ten-20261019'));
+const codes=process.argv.slice(2).filter(a=>!a.startsWith('--root='));
 if(!codes.length){console.log('Usage: node stanovanje-plus-refine-render.cjs <original-code> ...');process.exit(0);}
 const selected=new Set(JSON.parse(fs.readFileSync(path.join(root,'selection.json'))).map(s=>s.code));
 (async()=>{for(const code of codes){

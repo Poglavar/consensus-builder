@@ -2,6 +2,7 @@
 (async function(){
 'use strict';
 const $=id=>document.getElementById(id),D=await fetch('/review-data.json').then(r=>{if(!r.ok)throw Error('Review data unavailable');return r.json();});
+$('archive-summary').textContent=`${new Set(D.items.map(i=>i.source.buildingCode||i.source.code)).size} archive building entries · ${D.items.length} retained floor drawings · ${D.items.filter(i=>i.model).length} reconstructed drawings · review status shown per model`;
 const escape=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const ringpath=r=>'M'+r.map(p=>p.join(',')).join('L')+'Z',polypath=p=>p.map(ringpath).join(' ');
 const query=new URLSearchParams(location.search);

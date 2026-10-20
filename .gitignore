@@ -19,6 +19,7 @@ blockchain/solana/.prospective-external-market.private.json
 backend/logs/
 backend/coverage/
 backend/.venv-floor-plans/
+backend/.venv-stanovanje/
 scripts/__pycache__/
 backend/scripts/__pycache__/
 backend/test/__pycache__/

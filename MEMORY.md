@@ -795,3 +795,5 @@ The user requires only per-city failed URL lists and working settings plus share
 - 2026-10-20: The user wants imagery-generated parcels saved in browser localStorage and usable through normal parcel selection and local proposal tools; retain estimated provenance rather than keeping a transient display-only overlay.
 
 - 2026-10-20: During branch integration, the user gave the current semantics contract precedence; incoming providers, guides and publication changes must conform to its identity, evidence, quantity and storage boundaries.
+
+- 2026-10-20: The user authorized full Stanovanje.plus archive processing locally. Inventory all building entries and distinct floor drawings, reuse the ten trial checkpoints, and prepare the shared catalogue privately while the recorded source-permission outreach remains unresolved.
