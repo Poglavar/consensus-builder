@@ -37,6 +37,7 @@ export function screenHousingParcels(parcels,evidence,{turf,area,now=new Date()}
     const obstacles=[];
     for(const feature of evidence.features) {
         if(feature.properties.screen==='transit') continue;
+        if(feature.properties.screen==='corridor' && !feature.properties.railway_type && ['parking_aisle','driveway'].includes(feature.properties.tags?.service)) continue;
         // Geographic expansion overestimates the metric buffer, then exact geometry decides.
         const width=feature.properties.screen==='corridor' ? Math.max(8,(feature.properties.width_meters||0)/2+3) : feature.geometry.type==='Point' ? 20 : 0;
         const box=turf.bbox(feature), lat=Math.max(Math.abs(box[1]),Math.abs(box[3]));
@@ -50,7 +51,13 @@ export function screenHousingParcels(parcels,evidence,{turf,area,now=new Date()}
     const stops=evidence.features.filter(f=>f.properties.screen==='transit');
     return parcels.map((p,index)=>{
         const ground=grounds[index].feature, center=turf.pointOnFeature(ground);
-        const excluded=obstacles.some(f=>overlaps(grounds[index].box,f.box) && turf.booleanIntersects(ground,f.feature));
+        const interior=turf.buffer(ground,-3,{units:'meters'});
+        const excluded=obstacles.some(f=>{
+            const target=f.feature.properties.screen==='corridor' ? interior : ground;
+            if(!target || !overlaps(grounds[index].box,f.box) || !turf.booleanIntersects(target,f.feature)) return false;
+            const intersection=turf.intersect(target,f.feature);
+            return intersection && turf.area(intersection)>1;
+        });
         const distances=stops.map(f=>turf.distance(center,f,{units:'meters'}));
         return {...p,housingArea:area,housingScreen:{complete:true,excluded,
             transitDistanceM:distances.length?Math.min(...distances):null,source:'OpenStreetMap via Overpass (ODbL)',

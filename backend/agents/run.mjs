@@ -306,13 +306,24 @@ async function parcelsForArea({ pool, apiBase, area, persona, runKey, day, runs,
         const city = cities.length ? cities[hash32(`${runKey}:${persona.name}`) % cities.length] : 'zagreb';
         return { parcels: open.filter(parcel => parcel.city === city).slice(0, limit), city, where: `contest (${city}, ${open.length} open parcels)` };
     }
+    if (persona.housingResearch) {
+        for (let attempt=0; attempt<3; attempt++) {
+            const window=windowIn(area.bbox, `${runKey}:housing${attempt}`, persona.name, area.windowM ?? 850);
+            const collection=await fetchSourceParcels(apiBase,area.sourceId,window,{log});
+            if(collection?.complete!==true) throw new Error('Affordabot requires a complete parcel source response');
+            const parcels=fresh(parcelsFromSource(collection,{turf,place:area.label,minAreaM2:1200,maxAreaM2:20000}));
+            const screened=await fetchHousingScreen(parcels,turf.bbox(turf.buffer(turf.bboxPolygon(window),0.85,{units:'kilometers'})),{turf,area});
+            const eligible=screened.filter(p=>!p.housingScreen.excluded && p.housingScreen.transitDistanceM!==null && p.housingScreen.transitDistanceM<=800);
+            log(`affordabot ${area.city} window ${attempt+1}/3: ${collection.features.length} source parcels, ${parcels.length} sized, ${eligible.length} screened leads`);
+            if(eligible.length) return {parcels:eligible.slice(0,limit),city:area.city,where:`${area.city} ${window.join(',')}`};
+        }
+        return {parcels:[],city:area.city,where:`${area.city} (3 bounded windows screened)`};
+    }
     const window = windowIn(area.bbox, runKey, persona.name, area.windowM ?? 350);
     if (area.sourceId) {
         const collection = await fetchSourceParcels(apiBase, area.sourceId, window, { log });
-        if (persona.housingResearch && collection?.complete!==true) throw new Error('Affordabot requires a complete parcel source response');
-        let parcels = fresh(parcelsFromSource(collection, { turf, place: area.label ?? null, ...(persona.housingResearch ? {minAreaM2:1200,maxAreaM2:20000} : {}) }))
+        const parcels = fresh(parcelsFromSource(collection, { turf, place: area.label ?? null }))
             .map(parcel => (area.floorCap ? { ...parcel, floorCap: area.floorCap } : parcel));
-        if (persona.housingResearch) parcels = (await fetchHousingScreen(parcels, turf.bbox(turf.buffer(turf.bboxPolygon(window),0.85,{units:'kilometers'})), { turf, area })).filter(p=>!p.housingScreen.excluded);
         return { parcels: parcels.slice(0, limit), city: area.city, where: `${area.city} ${window.join(',')}` };
     }
     const rows = await fetchCandidateParcels(pool, { city: area.city, bbox: window, limit });

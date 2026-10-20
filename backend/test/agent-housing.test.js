@@ -27,6 +27,14 @@ describe('Affordabot housing research',()=>{
    const screened=screenHousingParcels([parcel],{features:[road]},{turf,area});
    expect(screened[0].housingScreen.excluded).toBe(true);expect(planHousingCandidates(screened,persona,{turf})).toEqual([]);
  });
+ it('keeps off-street lots when a sidewalk merely touches the boundary',()=>{
+   const sidewalk=turf.lineString([[-.001,-.00007],[.002,-.00007]],{screen:'corridor',width_meters:1});
+   expect(screenHousingParcels([parcel],{features:[sidewalk]},{turf,area})[0].housingScreen.excluded).toBe(false);
+ });
+ it('does not mistake a parking aisle for a public street parcel',()=>{
+   const aisle=turf.lineString([[-.001,.0005],[.002,.0005]],{screen:'corridor',tags:{service:'parking_aisle'}});
+   expect(screenHousingParcels([parcel],{features:[aisle]},{turf,area})[0].housingScreen.excluded).toBe(false);
+ });
  it('fails closed on partial and truncated replies, including HTTP-200 Overpass errors',()=>{
    expect(()=>screenHousingParcels([parcel],{features:[],partial:true},{turf,area})).toThrow();
    expect(()=>screenHousingParcels([parcel],{features:[],truncated:true},{turf,area})).toThrow();

@@ -20,8 +20,8 @@ not zoning. No worldwide euro rent defaults or owner uplift offers are used. Pub
 limited-profit delivery, an affordability covenant, verified local costs and funding are prerequisites.
 Exact amendments remain unknown until sourced local planning controls exist.
 
-Each window uses complete Overpass replies for mapped roads/rail, buildings, transit and public/
-sensitive uses. A mapped obstruction excludes the parcel; a stop must be within 800 m straight line.
+Each run tries at most three bounded windows. Each window uses complete Overpass replies for mapped roads/rail, buildings, transit and public/
+sensitive uses. Mapped buildings/public uses exclude the parcel; transport corridors exclude the setback envelope. Parking aisles/driveways may be redeveloped, subject to ownership/access review; a stop must be within 800 m straight line.
 OSM completeness is not inventory completeness, vacancy, walking access or planning permission.
 Source timestamps and evidence gaps persist inside `agent.housing` in immutable metadata.
 Missing/partial screening fails the run. No candidate is an explicit no-picks result, not a fabricated proposal.
