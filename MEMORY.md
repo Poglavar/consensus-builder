@@ -825,3 +825,7 @@ Postpone refresh/server-to-local synchronization. For empty parcels, display onl
 - 2026-10-20: Merge Colosseum work into omitted-gems-fixes with Colosseum semantic contracts authoritative; adapt retained features to qualified publication/source identity rather than restoring retired aliases.
 
 - 2026-10-20: The user authorized full Stanovanje.plus archive processing locally. Inventory all building entries and distinct floor drawings, reuse the ten trial checkpoints, and prepare the shared catalogue privately while the recorded source-permission outreach remains unresolved.
+
+- 2026-10-21 (Schelling design direction, not implemented): Separate spatial/rule proposals from their shared allocation agreement. Two roads and four independently authored parcel layouts may be covered by one agreement; drawing steps must not force separate settlement pools. The distinction and naming of plans, proposals and agreements remain under discussion.
+- 2026-10-21: Proposals must not depend on other proposals; they require the ground they affect to be available. Earlier suggestions of proposal-result prerequisites are rejected.
+- 2026-10-21: Keep the agreement model focused on ownership and rules, with the associated allocation and monetary terms. Construction timing, delivery schedules and time-triggered obligations are outside the current scope; simplicity takes precedence over a general promise or workflow engine.
