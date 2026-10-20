@@ -112,8 +112,13 @@
                 try {
                     const clipped = turf.difference(featureOf(kept), featureOf(removals[i].geometry));
                     kept = (clipped && clipped.geometry) ? clipped.geometry : null;
-                } catch (_) {
+                } catch (error) {
                     kept = null; // fail toward cutting, never toward a building that should be gone
+                    // A display degrade, reported and counted in clipHealth() (parcel-arrangement.js).
+                    const clips = global.__parcelArrangement
+                        || (typeof require === 'function' ? require('./proposals/parcel-arrangement.js') : null);
+                    if (!clips || typeof clips.reportClipFailure !== 'function') throw error;
+                    clips.reportClipFailure('difference', error, { site: 'photoreal-protect.selectProtectedBuildingFootprints' }, [featureOf(grown), featureOf(removals[i].geometry)]);
                 }
                 if (!isPolygonal(kept)) break;
             }

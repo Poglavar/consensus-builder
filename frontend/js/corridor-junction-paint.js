@@ -22,6 +22,15 @@
         throw new Error('corridor-junction-paint: turf is not available');
     }
 
+    // A clip that fails here only changes how a junction is painted: it is reported and counted in
+    // clipHealth() (parcel-arrangement.js), and the caller paints the old look.
+    function reportClip(operation, error, context, operands) {
+        const clips = (global && global.__parcelArrangement)
+            || (typeof require === 'function' ? require('./proposals/parcel-arrangement.js') : null);
+        if (!clips || typeof clips.reportClipFailure !== 'function') throw error;
+        return clips.reportClipFailure(operation, error, context, operands);
+    }
+
     const finite = value => typeof value === 'number' && Number.isFinite(value);
     const toCoordinate = point => (Array.isArray(point) ? [point[1], point[0]] : [point.lng, point.lat]);
     const toLatLng = ([lng, lat]) => ({ lat, lng });
@@ -72,7 +81,9 @@
             try {
                 united = united ? turf.union(united, feature) : feature;
             } catch (error) {
-                console.warn('[corridor-junction-paint] a junction piece could not be united; it is painted on its own', error);
+                // Measured on the real Šibenik plan: "Maximum call stack size exceeded" here. The
+                // piece is painted on its own (the old double-painted look), reported and counted.
+                reportClip('union', error, { site: 'corridor-junction-paint.unionOfRings' }, [united, feature]);
             }
         });
         return united && united.geometry ? united.geometry : null;
@@ -134,7 +145,8 @@
                 if (!left || !left.geometry) return null;
                 feature = left;
             } catch (error) {
-                console.warn('[corridor-junction-paint] a strip could not be clipped to its junction; it is painted whole', error);
+                // The strip is painted whole under that junction; reported and counted.
+                reportClip('difference', error, { site: 'corridor-junction-paint.clipGeometry' }, [feature, cover.coverage]);
             }
         }
         return feature.geometry;

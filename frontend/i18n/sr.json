@@ -6362,7 +6362,7 @@
         "expand": "Prikaži kontrole",
         "title": "Ilustrativne procene parcela",
         "disclaimer": "Procenjene granice mogu biti nepotpune ili pogrešne i ne utvrđuju pravne granice.",
-        "help": "Pomeranjem ili zumiranjem mape izaberite vidljivo područje pa napravite pravougaone procene na osnovu satelitskih snimaka i mapiranih objekata.",
+        "help": "Prva procena pokreće se automatski. Pomerite mapu ili prilagodite kontrole pa ponovo napravite procenu.",
         "viewport": "Trenutni prikaz mape",
         "size": "Veličina područja",
         "sensitivity": "Prati ivice slike",

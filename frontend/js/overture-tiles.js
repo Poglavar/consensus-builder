@@ -242,7 +242,15 @@
             const seen = byId.get(feature.id);
             if (!seen) { byId.set(feature.id, feature); continue; }
             let merged = null;
-            try { merged = turf.union(seen, feature); } catch (_) { merged = null; }
+            try { merged = turf.union(seen, feature); } catch (error) {
+                // Context buildings for display: the larger copy stands in, as before, and the
+                // failure is reported and counted in clipHealth() (parcel-arrangement.js).
+                const clips = (typeof window !== 'undefined' && window.__parcelArrangement)
+                    || (typeof require === 'function' ? require('./proposals/parcel-arrangement.js') : null);
+                if (!clips || typeof clips.reportClipFailure !== 'function') throw error;
+                clips.reportClipFailure('union', error, { site: 'overture-tiles.mergeTileCopies', parcelId: feature.id }, [seen, feature]);
+                merged = null;
+            }
             if (merged && merged.geometry) byId.set(feature.id, { ...seen, geometry: merged.geometry });
             else if (turf.area(feature) > turf.area(seen)) byId.set(feature.id, feature);
         }

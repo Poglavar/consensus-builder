@@ -148,6 +148,7 @@
                 'css/command-palette.css',
                 'css/world.css',
                 'css/ground-fallback.css',
+                'css/parcel-estimate.css?v=20261020-viewport',
                 'css/urban-blocks.css',
                 'css/urban-blocks-playground.css',
                 'css/schelling-plan.css',
@@ -1614,7 +1615,7 @@
                     <div class="metric-value" id="road-open-ground">—</div>
                 </div>
                 <div class="metric-group">
-                    <div class="metric-label" data-i18n-key="panel.road.individualOwnersLabel">Individual owners:</div>
+                    <div class="metric-label" data-i18n-key="panel.road.individualOwnersLabel">Listed owner entries:</div>
                     <div class="metric-value" id="road-individual-owners">—</div>
                 </div>
                 <div class="metric-group">
@@ -1641,7 +1642,11 @@
                     <div class="metric-value" id="road-owned-mixed">—</div>
                 </div>
                 <div class="metric-group">
-                    <div class="metric-label" data-i18n-key="panel.road.costLabel">Cost:</div>
+                    <div class="metric-label" data-i18n-key="panel.road.unknownOwnershipLabel">Ownership category unknown:</div>
+                    <div class="metric-value" id="road-ownership-unknown">—</div>
+                </div>
+                <div class="metric-group">
+                    <div class="metric-label" data-i18n-key="panel.road.costLabel">Estimated parcel value:</div>
                     <div class="metric-value" id="road-market-price">—</div>
                 </div>
                 <div class="metric-group">
@@ -1833,6 +1838,7 @@
     </script>
     <script>
         window.writeVersionedLocalScripts([
+            'js/proposals/lifecycle-evidence.js?v=20261020-observation',
             'js/solana/rpc-routing.js',
             'js/proposals/status.js?v=20261019-local-consent',
             'js/proposals/display-state.js?v=20261020-recorded-execution',
@@ -1876,7 +1882,7 @@
             'js/parcels/browser-client.js',
             // bundle:start parcel-data-clients
             'js/data-source.js',
-            'js/basemap.js?v=20261009-map-credits',
+            'js/basemap.js?v=20261020-estimates',
             'js/parcels/source-in-view.js',
             'js/ui/map-credits.js?v=20261013-source-in-view',
             'js/parcels/utils/fetch-config.js',
@@ -1966,7 +1972,8 @@
             'js/parcels/source-health.js',
             'js/parcels/schelling-grid.js',
             'js/parcels/custom-url-identity.js?v=20261019-source-identity',
-            'js/parcels/ground-fallback.js?v=20261019-source-identity',
+            'js/parcels/estimated-layer.js?v=20261020-auto',
+            'js/parcels/ground-fallback.js?v=20261020-estimates',
             'js/parcels/source-progress.js',
             'js/parcels/dgu-live.js',
             'js/parcels/fetch.js?v=20261008-point-parcels',
@@ -2005,9 +2012,11 @@
             'js/proposals/publish-binding.js',
             'js/proposals/chain-record.js',
             'js/proposals/mint-binding.js',
+            'js/proposals/origin.js?v=20261020-qualified-origin',
             'js/proposals/binding-drift.js',
             'js/proposals/parcel-arrangement.js',
             'js/proposals/readjustment-contributions.js',
+            'js/proposals/design-goals.js?v=20261020-canonical-goals',
             'js/proposals/authored-record.js?v=20261019-plot-provenance',
             'js/proposals/formation-depth.js?v=20261019-local-consent',
             'js/proposals/parcel-contiguity.js',
@@ -2092,7 +2101,6 @@
             'js/proposal-drafts.js?v=20261019-local-purchase',
             'js/corridor-draft.js',
             'js/proposals/copy.js',
-            'js/proposals/design-goals.js?v=20261019-design-goals',
             'js/proposal-editor-adapters.js?v=20261019-design-goals',
             'js/proposal-editor-shell.js',
             'js/road-editing-zoom.js',
@@ -2156,6 +2164,7 @@
             'js/ui/map-compare-control.js',
             'js/ui/map-before-after.js',
             'js/reparcellization.js?v=20261019-unknown-ownership',
+            'js/road-ownership-model.js?v=20261020-evidence',
             'js/financials.js?v=20261020-modeled-totals',
             'js/agent-action-engine.js',
             'js/actor-explorer.js',

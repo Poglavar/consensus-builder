@@ -1,17 +1,25 @@
 // Draft keyboard handlers must not consume Escape, Enter, or undo/draw keys after a transition
 // into 3D. These handlers are private closures in browser modules, so exercise their source bodies
 // with the same body-class state MapShell owns and assert their user-visible side effects stay idle.
+// The road drawing tool is node-loadable: its cases drive the real road-drawing.js in the fake
+// browser world (helpers/road-drawing-env.js) and press the keys on its document.
 import fs from 'node:fs';
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi, afterEach } from 'vitest';
+import { loadRoadDrawing, at } from './helpers/road-drawing-env.js';
 
 const read = path => fs.readFileSync(new URL(path, import.meta.url), 'utf8');
 const sources = {
     site: read('../../frontend/js/site-drawing.js'),
     transit: read('../../frontend/js/transit-stations.js'),
     areaDraw: read('../../frontend/js/area-monitor/draw.js'),
-    areaPaint: read('../../frontend/js/area-monitor/paint.js'),
-    road: read('../../frontend/js/road-drawing.js')
+    areaPaint: read('../../frontend/js/area-monitor/paint.js')
 };
+
+let roadEnv = null;
+afterEach(() => {
+    roadEnv?.dispose();
+    roadEnv = null;
+});
 
 function between(source, startMarker, endMarker) {
     const start = source.indexOf(startMarker);
@@ -80,37 +88,33 @@ describe('draft keyboard handlers in 3D', () => {
         }
     });
 
-    it('does not consume road-drawing undo or finish keys in 3D', () => {
-        const undo = vi.fn();
-        const finish = vi.fn();
-        const handleRoadKeydown = new Function(
-            'document', 'undoLastRoadSegment', 'finishRoadDrawing', 'exitRoadDrawingMode', 'handleRoadEscape',
-            'updateStatus', 'translateRoadText', 'hasDrawableCorridor', 'roadFinalizationGate',
-            'roadSegmentPlacementInProgress', 'roadHasStarted',
-            `${between(sources.road, 'function handleRoadKeydown(e)', '\nfunction handleRoadDrawHotkey')}; return handleRoadKeydown;`
-        )(inThreeMode(), undo, finish, vi.fn(), vi.fn(), vi.fn(), (_key, fallback) => fallback,
-            () => true, { isRunning: () => false }, false, false);
-        const event = key('u');
+    it('does not consume road-drawing undo or finish keys in 3D', async () => {
+        // A road drawn in 2D, then the map moved into 3D under the open tool.
+        roadEnv = loadRoadDrawing();
+        await roadEnv.api.requestCorridorDrawingTool('road');
+        await roadEnv.click(at(0, 0));
+        await roadEnv.click(at(100, 0));
+        roadEnv.document.body.classList.add('three-mode-active');
 
-        handleRoadKeydown(event);
+        const undo = roadEnv.key('u');
+        const finish = roadEnv.key('f');
+        await roadEnv.idle();
 
-        expect(event.preventDefault).not.toHaveBeenCalled();
-        expect(undo).not.toHaveBeenCalled();
-        expect(finish).not.toHaveBeenCalled();
+        expect(undo.defaultPrevented).toBe(false);
+        expect(finish.defaultPrevented).toBe(false);
+        expect(roadEnv.session.roadSegments[0]).toHaveLength(2);
+        expect(globalThis.instantCreateProposalFromDraft.calls).toHaveLength(0);
+        expect(roadEnv.session.roadDrawingMode).toBe(true);
     });
 
-    it('does not start the road-drawing shortcut in 3D', () => {
-        const requestRoadDrawTool = vi.fn();
-        const handler = new Function(
-            'document', 'isEditableTarget', 'isAnyModalOpen', 'toggleBuildingReferenceLayers',
-            'toggleRoadDrawTool', 'requestRoadDrawTool',
-            `${between(sources.road, 'function handleRoadDrawHotkey(event)', '\nfunction attachRoadDrawHotkey')}; return handleRoadDrawHotkey;`
-        )(inThreeMode(), () => false, () => false, vi.fn(), vi.fn(), requestRoadDrawTool);
-        const event = key('r');
+    it('does not start the road-drawing shortcut in 3D', async () => {
+        roadEnv = loadRoadDrawing();
+        roadEnv.document.body.classList.add('three-mode-active');
+        const event = roadEnv.key('r');
+        await roadEnv.idle();
 
-        handler(event);
-
-        expect(event.preventDefault).not.toHaveBeenCalled();
-        expect(requestRoadDrawTool).not.toHaveBeenCalled();
+        expect(event.defaultPrevented).toBe(false);
+        expect(roadEnv.session.roadDrawingMode).toBe(false);
+        expect(roadEnv.map.listens('click')).toBe(false);
     });
 });

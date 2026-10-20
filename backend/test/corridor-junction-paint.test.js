@@ -167,16 +167,17 @@ describe('the footway\'s edge fill is clipped the same way', () => {
 });
 
 describe('when turf refuses a piece', () => {
-    let warn;
-    beforeEach(() => { warn = vi.spyOn(console, 'warn').mockImplementation(() => {}); });
-    afterEach(() => { warn.mockRestore(); delete globalThis.turf; });
+    const clips = require('../../frontend/js/proposals/parcel-arrangement.js');
+    beforeEach(() => { vi.spyOn(console, 'error').mockImplementation(() => {}); });
+    afterEach(() => { vi.restoreAllMocks(); delete globalThis.turf; });
 
     it('paints the strip whole rather than dropping it, and says so', () => {
         const { treatment, mainStrips } = tJunction();
         const fresh = JSON.parse(JSON.stringify(treatment)); // its own paint cache entry
         globalThis.turf = { ...turf, difference: () => { throw new Error('degenerate'); } };
+        const before = clips.clipHealth().bySite['corridor-junction-paint.clipGeometry'] || 0;
         const painted = paint.clipStrips(mainStrips, [fresh]);
         painted.forEach((strip, index) => expect(strip.polygons[0]).toBe(mainStrips[index].polygons[0]));
-        expect(warn).toHaveBeenCalled();
+        expect(clips.clipHealth().bySite['corridor-junction-paint.clipGeometry']).toBeGreaterThan(before);
     });
 });

@@ -9,6 +9,13 @@
         return;
     }
     const meshSanitize = (typeof window !== 'undefined') ? window.__threeMeshSanitize : null;
+    // The 3D view is display only: a polygon clip that fails degrades what is drawn, and is reported
+    // and counted in clipHealth() (parcel-arrangement.js) instead of being swallowed.
+    function reportThreeClip(operation, error, site, operands) {
+        const clips = window.__parcelArrangement;
+        if (!clips || typeof clips.reportClipFailure !== 'function') throw error;
+        clips.reportClipFailure(operation, error, { site: site }, operands);
+    }
     if (!meshSanitize) {
         console.error('[3D] City-model mesh sanitizer is unavailable. Skipping 3D mode initialization.');
         return;
@@ -827,7 +834,7 @@
         });
 
         const titleEl = panel.querySelector('[data-role="value-title"]');
-        if (titleEl) titleEl.textContent = threeI18n('threeMode.parcelPanel.valueTitle', 'Value @ €{{p}}/m²', { p: formatInt(priceEurPerM2) });
+        if (titleEl) titleEl.textContent = threeI18n('threeMode.parcelPanel.valueTitle', 'Floor-area model @ €{{p}}/m²', { p: formatInt(priceEurPerM2) });
 
         const gainEl = panel.querySelector('[data-role="gain"]');
         if (gainEl) {
@@ -835,12 +842,12 @@
             // built value. Show that as a positive figure instead of a negative delta.
             if (!hasProposed) {
                 gainEl.className = 'parcel-panel-gain' + (currentValue > 0 ? ' gain-positive' : '');
-                gainEl.textContent = `${threeI18n('threeMode.parcelPanel.currentValue', 'Current value')}: ${formatEur(currentValue)}`;
+                gainEl.textContent = `${threeI18n('threeMode.parcelPanel.currentValue', 'Modeled existing floor-area value')}: ${formatEur(currentValue)}`;
             } else {
                 const cls = gain > 0 ? 'gain-positive' : (gain < 0 ? 'gain-negative' : '');
                 gainEl.className = 'parcel-panel-gain ' + cls;
                 const sign = gain > 0 ? '+' : '';
-                gainEl.textContent = `${threeI18n('threeMode.parcelPanel.gain', 'Proposal gain')}: ${sign}${formatEur(gain)}`;
+                gainEl.textContent = `${threeI18n('threeMode.parcelPanel.gain', 'Modeled floor-area value change')}: ${sign}${formatEur(gain)}`;
             }
         }
 
@@ -1671,23 +1678,11 @@
         if (!focusIds || !focusIds.size) return null;
         if (typeof proposalStorage === 'undefined' || typeof proposalStorage.getAllProposals !== 'function') return null;
         if (typeof collectProposalFeatureSets !== 'function' || typeof turf === 'undefined') return null;
-        const idsOf = (p) => {
-            const ids = [];
-            if (!p) return ids;
-            if (p.proposalId != null) ids.push(String(p.proposalId));
-            if (p.serverProposalId != null) ids.push(String(p.serverProposalId));
-            if (typeof window.getServerProposalId === 'function') {
-                const s = window.getServerProposalId(p); if (s != null) ids.push(String(s));
-            }
-            if (typeof window.getProposalKey === 'function') {
-                const k = window.getProposalKey(p); if (k) ids.push(String(k));
-            }
-            return ids;
-        };
         const features = [];
         try {
             (proposalStorage.getAllProposals() || []).forEach(p => {
-                if (!idsOf(p).some(id => focusIds.has(id))) return;
+                // Shared arrivals resolve publication rows before entering this local selection.
+                if (p?.proposalId == null || !focusIds.has(String(p.proposalId))) return;
                 const sets = collectProposalFeatureSets(p) || {};
                 (sets.primaryFeatures || []).forEach(f => { if (f && f.geometry) features.push(f); });
             });
@@ -2703,7 +2698,11 @@
         const T = turf;
         if (typeof T.lineSplit !== 'function' || typeof T.booleanPointInPolygon !== 'function') return featureCollection;
         let mask = null;
-        try { footprints.forEach(fp => { mask = mask ? (T.union(mask, fp) || mask) : fp; }); } catch (_) { mask = null; }
+        try { footprints.forEach(fp => { mask = mask ? (T.union(mask, fp) || mask) : fp; }); } catch (error) {
+            // The lines pass through unchanged, as documented above.
+            reportThreeClip('union', error, 'three-mode.clipTransitLinesOutsideProposals', [mask]);
+            mask = null;
+        }
         if (!mask) return featureCollection;
         let maskBbox = null;
         try { maskBbox = T.bbox(mask); } catch (_) { maskBbox = null; }
@@ -2951,7 +2950,8 @@
                 if (!remainder) return null;
                 current = remainder;
             } catch (error) {
-                console.error('[three-mode] ground opening failed for a parcel', error);
+                // The parcel ground is drawn without this opening.
+                reportThreeClip('difference', error, 'three-mode.cutGroundOpeningsOutOfFeature', [current, cut]);
             }
         }
         return current;
@@ -4648,14 +4648,27 @@
             for (const { region, bbox } of regions) {
                 if (!bboxesOverlap(footprintBbox, bbox)) continue;
                 let part = null;
-                try { part = turf.intersect(footprint, region); } catch (_) { part = null; }
+                try { part = turf.intersect(footprint, region); } catch (error) {
+                    // This region does not clear the building in the view.
+                    reportThreeClip('intersect', error, 'three-mode.structureClearanceCarve', [footprint, region]);
+                    part = null;
+                }
                 if (!part || (Number(turf.area(part)) || 0) < 2) continue;
                 if (!demolishedUnion) demolishedUnion = part;
-                else { try { demolishedUnion = turf.union(demolishedUnion, part) || demolishedUnion; } catch (_) { } }
+                else {
+                    try { demolishedUnion = turf.union(demolishedUnion, part) || demolishedUnion; } catch (error) {
+                        // Only the earlier regions' clearance is drawn.
+                        reportThreeClip('union', error, 'three-mode.structureClearanceCarve', [demolishedUnion, part]);
+                    }
+                }
             }
             if (!demolishedUnion) return null;
             let remainder = null;
-            try { remainder = turf.difference(footprint, demolishedUnion); } catch (_) { remainder = null; }
+            try { remainder = turf.difference(footprint, demolishedUnion); } catch (error) {
+                // No remainder: the building is drawn as cleared whole.
+                reportThreeClip('difference', error, 'three-mode.structureClearanceCarve', [footprint, demolishedUnion]);
+                remainder = null;
+            }
             const footprintArea = Number(turf.area(footprint)) || 0;
             const remainderArea = remainder ? (Number(turf.area(remainder)) || 0) : 0;
             const minArea = window.CARVE_MIN_REMAINDER_AREA_M2 || 10;
@@ -6228,7 +6241,10 @@
         const sliceData = [];
         candidateParcels.forEach((parcelFeature) => {
             let intersection = null;
-            try { intersection = turf.intersect(buildingFeature, parcelFeature); } catch (_) { }
+            try { intersection = turf.intersect(buildingFeature, parcelFeature); } catch (error) {
+                // That parcel's slice is not drawn.
+                reportThreeClip('intersect', error, 'three-mode.createBuildingSlices', [buildingFeature, parcelFeature]);
+            }
             if (!intersection) return;
             try { slicedArea += turf.area(intersection); } catch (_) { }
             let cx = 0, cy = 0;
@@ -6888,7 +6904,12 @@
                     if (!building?.geometry) return false;
                     const other = turf.bbox(building);
                     if (other[2] < bbox[0] || other[0] > bbox[2] || other[3] < bbox[1] || other[1] > bbox[3]) return false;
-                    const overlap = turf.intersect(feature, building);
+                    let overlap = null;
+                    try { overlap = turf.intersect(feature, building); } catch (error) {
+                        // Taken as not replaced: the suggested interior is drawn.
+                        reportThreeClip('intersect', error, 'three-mode.appendSuggestedExistingFloorPlans', [feature, building]);
+                        return false;
+                    }
                     return !!overlap && turf.area(overlap) > 1;
                 });
             } catch (_) { replaced = false; }

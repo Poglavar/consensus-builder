@@ -6304,7 +6304,7 @@
         "expand": "Show controls",
         "title": "Illustrative parcel estimates",
         "disclaimer": "Estimated boundaries may be incomplete or wrong and do not establish legal boundaries.",
-        "help": "Pan or zoom to choose the visible map area, then generate rectangular estimates from satellite imagery and mapped features.",
+        "help": "The first estimate starts automatically. Move the map or adjust the controls, then generate again to update it.",
         "viewport": "Current viewport",
         "size": "Area size",
         "sensitivity": "Follow image edges",

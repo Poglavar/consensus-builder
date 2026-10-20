@@ -182,6 +182,16 @@ async function fetchJsonWithRetry(url, options = {}, retries = 3, delay = 2000) 
     throw lastError || new Error('Failed to fetch JSON');
 }
 
+// Road detection is a heuristic over many parcels: a clip that fails skips one pair, but it is
+// logged and counted in clipHealth() (parcel-arrangement.js), never silently.
+function roadDetectionReportClip(operation, error, site, operands, parcelId) {
+    const api = (typeof window !== 'undefined' && window.__parcelArrangement)
+        || (typeof require === 'function' ? require('./proposals/parcel-arrangement.js') : null);
+    if (api) return api.reportClipFailure(operation, error, { site, parcelId }, operands);
+    console.error(`[${new Date().toISOString()}] [clip] Polygon ${operation} failed at ${site}${parcelId ? ` (parcel ${parcelId})` : ''} — skipped`, error);
+    return error;
+}
+
 // Check if two polygonal features are geometrically identical (within tolerance)
 // Compute Intersection-over-Union (IoU) between two polygonal features
 function computeIoU(featureA, featureB) {
@@ -190,7 +200,11 @@ function computeIoU(featureA, featureB) {
         const areaB = turf.area(featureB);
         if (!isFinite(areaA) || !isFinite(areaB) || areaA <= 0 || areaB <= 0) return 0;
         let inter = null;
-        try { inter = turf.intersect(featureA, featureB); } catch (_) { inter = null; }
+        // A detection heuristic: a pair the clipper cannot measure counts as no match, reported.
+        try { inter = turf.intersect(featureA, featureB); } catch (error) {
+            roadDetectionReportClip('intersect', error, 'road-detection.computeIoU', [featureA, featureB]);
+            inter = null;
+        }
         const areaI = inter ? turf.area(inter) : 0;
         const areaU = areaA + areaB - areaI;
         if (areaU <= 0) return 0;
@@ -266,7 +280,11 @@ async function detectRoadsFromWFS() {
                             continue;
                         }
                         let inter = null;
-                        try { inter = turf.intersect(parcelGeoJSON, usage); } catch (_) { inter = null; }
+                        // Detection heuristic: unmeasurable counts as no match, reported.
+                        try { inter = turf.intersect(parcelGeoJSON, usage); } catch (error) {
+                            roadDetectionReportClip('intersect', error, 'road-detection.landUseOverlap', [parcelGeoJSON, usage]);
+                            inter = null;
+                        }
                         const areaI = inter ? turf.area(inter) : 0;
                         overlapA = areaI / areaA;
                         overlapB = areaI / areaB;
@@ -1008,7 +1026,8 @@ async function detectIfParcelIsRoad(parcel, osmGeoJSON) {
                 try {
                     intersection = turf.intersect(parcelBuffer, bufferedRoad);
                 } catch (intersectError) {
-                    console.warn(`Error calculating intersection between parcel ${parcelId} and road:`, intersectError);
+                    // Detection heuristic: this road is skipped for this parcel, reported and counted.
+                    roadDetectionReportClip('intersect', intersectError, 'road-detection.parcelRoadOverlap', [parcelBuffer, bufferedRoad], parcelId);
                     continue; // Skip this road and continue with others
                 }
 
@@ -1117,7 +1136,10 @@ async function detectRoadsByOSMLinesFirst(parcels, osmGeoJSON) {
                 let intersection = null;
                 try {
                     intersection = turf.intersect(parcelBuffer, bufferedRoad);
-                } catch (_) { }
+                } catch (error) {
+                    // Detection heuristic: the parcel is not marked from this road, reported.
+                    roadDetectionReportClip('intersect', error, 'road-detection.osmRoadOverlap', [parcelBuffer, bufferedRoad], resolveParcelId(parcelGeoJSON));
+                }
                 if (!intersection) continue;
 
                 const intersectionArea = turf.area(intersection);

@@ -283,7 +283,7 @@ function renderProposalListModal() {
     // Active/Executed tabs. Every lifecycle status is selectable; labels reuse getProposalLifecycleLabel.
     const lifecycleFilterOptions = [
         { value: 'all', label: t('modal.roadWidth.proposalList.filters.statusAll', 'All statuses') },
-        ...['active', 'executed', 'expired', 'cancelled', 'vote-open', 'vote-concluded', 'accepted-not-funded']
+        ...['active', 'executed', 'expired', 'cancelled', 'vote-open', 'vote-concluded', 'awaiting-funding']
             .map(key => ({ value: key, label: getProposalLifecycleLabel(key) }))
     ];
     const appliedFilterOptions = [
@@ -365,7 +365,7 @@ function renderProposalListModal() {
                 ${escapeHtml(modalStrings.sources.blockchain)} (${blockchainCount})
             </button>
             <button type="button" class="cb-segmented__option proposal-source-btn" aria-pressed="${source === 'plans' ? 'true' : 'false'}" data-source="plans">
-                ${escapeHtml(t('plans.title', 'Plans'))} (${plansCountLabel})
+                ${escapeHtml(t('plans.title', 'Named plans'))} (${plansCountLabel})
             </button>
         </div>
     `;
@@ -380,7 +380,7 @@ function renderProposalListModal() {
         if (source === 'plans') {
             if (!plansResult) return `<div class="proposal-list-loading">${escapeHtml(t('plans.list.loading', 'Loading plans…'))}</div>`;
             if (plansResult.error) return `<div class="proposal-list-error">${escapeHtml(t('plans.unavailable', 'Plans could not be loaded: {{reason}}', { reason: plansResult.error }))}</div>`;
-            return plansApi.planRowsHtml(currentPlans, { t, emptyText: t('plans.list.emptyCity', 'No plans in this city yet. Apply proposals and share them as a plan to make one.') });
+            return plansApi.planRowsHtml(currentPlans, { t, emptyText: t('plans.list.emptyCity', 'No named plans in this city yet. Share applied proposals, then choose Create named plan.') });
         }
         if (showServerError) return errorHtml;
         if (showServerLoading) return loadingHtml;
@@ -671,10 +671,10 @@ function getSharedInspectorI18nHelper() {
     return (key, fallback, params = {}) => t(`${namespace}.${key}`, fallback, params);
 }
 
-// --- Share Plan panel ---------------------------------------------------------------------------
+// --- Applied-composition sharing panel ----------------------------------------------------------
 // The share-plan UI is a right-docked, full-height panel (like the proposals list), NOT a modal:
-// the map stays visible so the plan can be read spatially while it is being composed. While the
-// panel is open the app is in share-plan mode (window.sharePlanMode): the map is pan/zoom ONLY —
+// the map stays visible so the applied composition can be read spatially while selecting proposals.
+// While the panel is open the app is in share-plan mode (window.sharePlanMode): the map is pan/zoom ONLY —
 // parcels and proposals are click/hover-inert, the sidebar and mode switches are disabled (CSS
 // lockdown via body.share-plan-mode). Every CHECKED proposal is painted on the map in its row's
 // colour so the exact content of the shared plan is visible at a glance; hovering or clicking a
@@ -734,6 +734,22 @@ function closeSharePlanPanel() {
 //
 // options.onProgress(text) receives the same progress line the panel shows, because while the
 // caller's dialog is up the panel is behind it and cannot be read.
+// The overlap the share panel uses to pick the parcels a proposal stands on. A clip that fails is
+// an UNKNOWN overlap, not none: it is reported and counted in clipHealth() (parcel-arrangement.js)
+// and the parcel is kept — showing a parcel too many beats silently dropping the ground it stands on.
+function shareGroundIntersectionArea(a, b) {
+    try {
+        const hit = turf.intersect(a, b);
+        return hit ? (turf.area(hit) || 0) : 0;
+    } catch (error) {
+        const clips = (typeof window !== 'undefined' && window.__parcelArrangement)
+            || (typeof require === 'function' ? require('./parcel-arrangement.js') : null);
+        if (!clips || typeof clips.reportClipFailure !== 'function') throw error;
+        clips.reportClipFailure('intersect', error, { site: 'dialog-share.groundUnderBody' }, [a, b]);
+        return Number.POSITIVE_INFINITY;
+    }
+}
+
 function showSharePlanPanel(options) {
     const onProgress = (options && typeof options.onProgress === 'function') ? options.onProgress : null;
     const readySignal = (typeof __readySignal === 'object' && __readySignal)
@@ -811,7 +827,7 @@ function showSharePlanPanel(options) {
         const panelHeader = document.createElement('div');
         panelHeader.className = 'share-plan-panel-header';
         const panelTitle = document.createElement('h2');
-        panelTitle.textContent = tShare('plan.title', 'Share Plan');
+        panelTitle.textContent = tShare('plan.title', 'Share applied proposals');
         const panelCloseBtn = document.createElement('button');
         panelCloseBtn.type = 'button';
         panelCloseBtn.className = 'close-circle-btn close-circle-btn--lg';
@@ -900,7 +916,7 @@ function showSharePlanPanel(options) {
         });
         const kindHint = document.createElement('p');
         kindHint.className = 'share-plan-kind__hint';
-        kindHint.textContent = tShare('plan.kindHint', 'Applies to the proposals in this plan whose terms were never chosen; the rest keep their own.');
+        kindHint.textContent = tShare('plan.kindHint', 'Applies to selected proposals whose terms were never chosen; the rest keep their own.');
         kindRow.append(kindHeading, kindGroup, kindHint);
         panelContent.appendChild(kindRow);
 
@@ -989,9 +1005,7 @@ function showSharePlanPanel(options) {
             const api = (typeof window !== 'undefined') ? window.__hoverGround : null;
             if (!api || typeof api.groundUnderBody !== 'function' || typeof turf === 'undefined') return parcelFeatures;
             return api.groundUnderBody(parcelFeatures, bodyFeatures, {
-                intersectionArea: (a, b) => {
-                    try { const hit = turf.intersect(a, b); return hit ? (turf.area(hit) || 0) : 0; } catch (_) { return 0; }
-                }
+                intersectionArea: shareGroundIntersectionArea
             });
         };
 
@@ -1212,12 +1226,12 @@ function showSharePlanPanel(options) {
             try { map.fitBounds(bounds, { ...padding, maxZoom: 18, animate: false }); } catch (_) { }
         };
 
-        const totalInPlan = proposalsByHash.size;
+        const appliedProposalCount = proposalsByHash.size;
         const countLine = document.createElement('div');
         countLine.style.fontSize = '13px';
         countLine.style.color = '#475569';
-        countLine.textContent = tShare('plan.countHeading', 'There are {{count}} proposals in the current plan (that is, applied on the map)', {
-            count: totalInPlan
+        countLine.textContent = tShare('plan.countHeading', '{{count}} proposals applied on this map', {
+            count: appliedProposalCount
         });
         container.appendChild(countLine);
 
@@ -1288,7 +1302,7 @@ function showSharePlanPanel(options) {
 
         shareArea.appendChild(linkRow);
 
-        // --- Named plan (ENS): give this plan a globally-unique, mutable name
+        // --- Named plan (ENS): create a fixed named record of the selected proposals
         // resolvable as <name>.proposals.urbangametheory.eth ---
         const planNameWrap = document.createElement('div');
         planNameWrap.style.display = 'flex';
@@ -1301,8 +1315,13 @@ function showSharePlanPanel(options) {
         const planNameLabel = document.createElement('div');
         planNameLabel.style.fontSize = '13px';
         planNameLabel.style.color = '#475569';
-        planNameLabel.textContent = tShare('plan.nameHeading', 'Or give this plan a memorable name (ENS):');
+        planNameLabel.textContent = tShare('plan.nameHeading', 'Create a named plan from the selected proposals (ENS):');
         planNameWrap.appendChild(planNameLabel);
+
+        const compositionHint = document.createElement('p');
+        compositionHint.className = 'share-plan-kind__hint';
+        compositionHint.textContent = tShare('plan.compositionHint', 'A share link shares your selection. A named plan keeps that selection fixed; later changes need a new named plan.');
+        planNameWrap.appendChild(compositionHint);
 
         const planNameRow = document.createElement('div');
         planNameRow.style.display = 'flex';
@@ -1330,7 +1349,7 @@ function showSharePlanPanel(options) {
         const planNameBtn = document.createElement('button');
         planNameBtn.type = 'button';
         planNameBtn.className = 'btn';
-        planNameBtn.textContent = tShare('plan.nameButton', 'Save name');
+        planNameBtn.textContent = tShare('plan.nameButton', 'Create named plan');
 
         planNameRow.append(planNameInput, planSuffix, planNameBtn);
         planNameWrap.appendChild(planNameRow);
@@ -1356,7 +1375,7 @@ function showSharePlanPanel(options) {
                 planNameStatus.textContent = tShare('plan.nameInvalid', 'Use at least 3 characters: a–z, 0–9, hyphens.');
                 return;
             }
-            const proposalIds = idMatch[1].split(',');
+            const proposalRowIds = idMatch[1].split(',');
             const base = (typeof window.getBackendBase === 'function') ? window.getBackendBase().replace(/\/$/, '') : '';
             const city = (window.CityConfigManager && typeof window.CityConfigManager.getCurrentCityId === 'function')
                 ? window.CityConfigManager.getCurrentCityId() : null;
@@ -1368,7 +1387,7 @@ function showSharePlanPanel(options) {
                 // takes the next version of the name, which the server suggests when it is taken.
                 const resp = await fetch(`${base}/plans`, {
                     method: 'POST', headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ slug, proposalIds, city })
+                    body: JSON.stringify({ slug, proposalRowIds, city })
                 });
                 const data = await resp.json().catch(() => ({}));
                 if (resp.status === 409) {
@@ -1563,7 +1582,7 @@ function showSharePlanPanel(options) {
             uploadedLabel.style.display = 'none';
 
             uploadBtn.addEventListener('click', async () => {
-                uploadState.set(key, { uploaded: false, uploading: true, serverId: getServerProposalId(proposal) });
+                uploadState.set(key, { uploaded: false, uploading: true, serverId: getProposalPublicationLookup(proposal) });
                 updateRowState(key);
                 try {
                     // Terms never chosen: the plan's kind confirms them before the record leaves.
@@ -1605,7 +1624,7 @@ function showSharePlanPanel(options) {
                     updateShareUrl();
                 } catch (error) {
                     console.error('plan upload failed', error);
-                    uploadState.set(key, { uploaded: false, uploading: false, serverId: getServerProposalId(proposal) });
+                    uploadState.set(key, { uploaded: false, uploading: false, serverId: getProposalPublicationLookup(proposal) });
                     updateRowState(key);
                     setStatus(error.message || tShare('uploadError', 'Failed to upload proposal. Please try again.'));
                 }
@@ -1634,7 +1653,7 @@ function showSharePlanPanel(options) {
         };
 
         const refreshUploadState = async (key, proposal, known = null) => {
-            const serverId = getServerProposalId(proposal);
+            const serverId = getProposalPublicationLookup(proposal);
             if (!serverId) {
                 uploadState.set(key, { uploaded: false, uploading: false, serverId: null });
                 updateRowState(key);
@@ -2245,5 +2264,5 @@ function shouldAutofocusProposalListSearch(win) {
 
 // Node-only: lets backend tests exercise the pure helpers above. Inert in the browser.
 if (typeof module !== 'undefined' && module.exports) {
-    module.exports = { countActiveProposalListFilters, shouldAutofocusProposalListSearch };
+    module.exports = { countActiveProposalListFilters, shouldAutofocusProposalListSearch, shareGroundIntersectionArea };
 }

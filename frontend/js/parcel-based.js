@@ -331,22 +331,25 @@
         }
         const valid = (Array.isArray(features) ? features : []).filter(feature => feature?.geometry);
         if (!valid.length) return null;
-        const asMultiPolygon = () => {
-            const coordinates = [];
-            valid.forEach(feature => {
-                const geometry = feature.geometry;
-                if (geometry.type === 'Polygon') coordinates.push(geometry.coordinates);
-                else if (geometry.type === 'MultiPolygon') coordinates.push(...geometry.coordinates);
-            });
-            return coordinates.length ? {
-                type: 'Feature', properties: {}, geometry: { type: 'MultiPolygon', coordinates }
-            } : null;
-        };
+        // A union the clipper cannot do refuses the site. The old fallback stacked the parcels into
+        // one MultiPolygon whose parts share edges — not a union, and not valid ground to build on.
         let site = valid[0];
         for (const feature of valid.slice(1)) {
-            try { site = turf.union(site, feature) || site; } catch (_) { return asMultiPolygon(); }
+            let merged = null;
+            try { merged = turf.union(site, feature); } catch (error) {
+                throw parcelBasedClipFailure('union', error, 'parcel-based.siteFeature', [site, feature]);
+            }
+            if (!merged) throw parcelBasedClipFailure('union', new Error('union came back empty'), 'parcel-based.siteFeature', [site, feature]);
+            site = merged;
         }
         return site;
+    }
+
+    // A polygon clip that cannot be done, typed and counted (parcel-arrangement.js ClipFailure).
+    function parcelBasedClipFailure(operation, error, site, operands) {
+        const api = (typeof window !== 'undefined' && window.__parcelArrangement)
+            || (typeof require === 'function' ? require('./proposals/parcel-arrangement.js') : null);
+        return api ? api.clipFailure(operation, error, { site }, operands) : error;
     }
 
     // Draw the example build-out solid, inside the permitted envelope drawn as a dashed outline —
@@ -978,7 +981,16 @@
             type: 'FeatureCollection',
             features: features
         };
-        parcelBasedBoundary = parcelBasedSiteFeature(features, block.site);
+        try {
+            parcelBasedBoundary = parcelBasedSiteFeature(features, block.site);
+        } catch (error) {
+            if (error && error.code === 'clip-failed' && typeof updateStatus === 'function') {
+                console.error(`[${new Date().toISOString()}] [parcel-based] the selected parcels could not be merged into one site`, error);
+                updateStatus(translateParcelBasedText('status.messages.parcels_could_not_be_merged',
+                    'Could not merge the selected parcels into one site: {{reason}}', { reason: error.message }));
+            }
+            throw error;
+        }
 
         // Add the parcels to the map with distinct styling to show borders
         parcelBasedParcelLayer = L.geoJSON(featureCollection, {

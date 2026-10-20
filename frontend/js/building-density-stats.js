@@ -55,14 +55,25 @@
         }
     }
 
+    // What unionFootprints answers when the clipper threw: the footprint is unknown.
+    const UNKNOWN_UNION = Object.freeze({ unknown: true });
+
     function unionFootprints(turfApi, features) {
         if (!features.length) return null;
         let combined = features[0];
         for (let index = 1; index < features.length; index += 1) {
             try {
                 combined = turfApi.union(combined, features[index]) || combined;
-            } catch (_) {
-                return null;
+            } catch (error) {
+                // Was: null, which summarizeDensity read as "no union" and reported the SUMMED
+                // footprints — overlaps counted twice — as the coverage. Now the footprint, its
+                // overlap and the coverage are unknown (shown as "—"), and the failure is reported
+                // and counted in clipHealth() (parcel-arrangement.js).
+                const clips = (typeof window !== 'undefined' && window.__parcelArrangement)
+                    || (typeof require === 'function' ? require('./proposals/parcel-arrangement.js') : null);
+                if (!clips || typeof clips.reportClipFailure !== 'function') throw error;
+                clips.reportClipFailure('union', error, { site: 'building-density-stats.unionFootprints' }, [combined, features[index]]);
+                return UNKNOWN_UNION;
             }
         }
         return combined;
@@ -94,7 +105,8 @@
         const union = typeof turfApi.union === 'function'
             ? unionFootprints(turfApi, measured.map(item => item.feature))
             : null;
-        const footprintAreaM2 = union ? safeArea(turfApi, union) : summedFootprintAreaM2;
+        const footprintAreaM2 = union === UNKNOWN_UNION ? null
+            : (union ? safeArea(turfApi, union) : summedFootprintAreaM2);
         const aboveGroundGbpM2 = measured.reduce(
             (sum, item) => sum + (item.footprintAreaM2 * item.floors),
             0
@@ -105,10 +117,10 @@
             parcelAreaM2,
             footprintAreaM2,
             summedFootprintAreaM2,
-            overlapAreaM2: Math.max(0, summedFootprintAreaM2 - footprintAreaM2),
+            overlapAreaM2: footprintAreaM2 === null ? null : Math.max(0, summedFootprintAreaM2 - footprintAreaM2),
             // Ratios over the ground (a parcel, or a drawn site on open ground). With no ground
             // polygon there is nothing to divide by: null, not a 0 that reads like an empty plot.
-            siteCoveragePercent: parcelAreaM2 > 0 ? (footprintAreaM2 / parcelAreaM2) * 100 : null,
+            siteCoveragePercent: parcelAreaM2 > 0 && footprintAreaM2 !== null ? (footprintAreaM2 / parcelAreaM2) * 100 : null,
             aboveGroundGbpM2,
             kin: parcelAreaM2 > 0 ? aboveGroundGbpM2 / parcelAreaM2 : null
         };

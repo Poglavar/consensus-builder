@@ -129,7 +129,10 @@
             features = [];
         }
         return features
-            .map(feature => ({ id: String(feature.properties?.parcelId ?? fabric.featureId(feature)), geometry: feature.geometry }))
+            .map(feature => ({
+                id: String(feature.properties?.parcelId ?? fabric.featureId(feature)), geometry: feature.geometry,
+                ...(feature.properties?.parcelSource ? { parcelSource: feature.properties.parcelSource } : {})
+            }))
             .filter(parcel => parcel.id && parcel.geometry);
     }
 
@@ -358,7 +361,12 @@
             return;
         }
         const started = performance.now();
-        state.preview = bindingApi().bindingFromParcels(state.site, parcels, { toleranceM: state.toleranceM });
+        const binding = bindingApi();
+        const sources = parcels.map(parcel => binding.normalizeParcelSource(parcel.parcelSource));
+        const parcelSource = sources.length && sources.every(source => source
+            && source.sourceId === sources[0].sourceId && source.snapshotId === sources[0].snapshotId)
+            ? sources[0] : null;
+        state.preview = binding.bindingFromParcels(state.site, parcels, { toleranceM: state.toleranceM, parcelSource });
         const touching = new Set(state.preview.parcels.concat(state.preview.touched).map(hit => String(hit.parcelId)));
         parcels.forEach(parcel => { if (touching.has(parcel.id)) state.previewParcels.set(parcel.id, parcel.geometry); });
         state.openGround = draftApi().openGroundOf(state.site, parcels, { toleranceM: state.toleranceM });
@@ -601,7 +609,15 @@
             const parcelFeature = win.turf.feature(geometry);
             next = operation === 'include' ? win.turf.union(siteFeature, parcelFeature) : win.turf.difference(siteFeature, parcelFeature);
         } catch (error) {
-            console.warn('[SiteTool] reshape failed', error);
+            // Not "it would split the site": the clipper could not do it. Said as such, recorded
+            // as a ClipFailure, and the site is left unchanged.
+            const api = win.__parcelArrangement
+                || (typeof require === 'function' ? require('./proposals/parcel-arrangement.js') : null);
+            const failure = api ? api.clipFailure(operation === 'include' ? 'union' : 'difference', error,
+                { site: 'site-drawing.reshape', parcelId }, [state.site, geometry]) : error;
+            console.error(`[${new Date().toISOString()}] [SiteTool] ${operation} ${parcelId}: reshape failed`, failure);
+            notify(t('siteTool.errors.reshapeFailed', 'The site could not be reshaped: {{reason}}', { reason: failure.message }), 'error');
+            return;
         }
         const ring = next ? outerRingOf(next.geometry) : null;
         if (!ring) {
@@ -730,7 +746,7 @@
         if (sum) {
             parts.push(`<p class="site-panel__coverage site-panel__coverage--${sum.coverage}">${escapeHtml(coverageText(sum))}</p>`);
             if (sum.openGround && sum.coverage !== 'none') {
-                parts.push(`<p class="site-panel__note">${escapeHtml(t('siteTool.binding.openGround', 'Hatched: open ground with no owner on record; executing needs an authority\'s verdict.'))}</p>`);
+                parts.push(`<p class="site-panel__note">${escapeHtml(t('siteTool.binding.openGround', 'Hatched: ground outside the supplied parcels; ownership is unknown. On-chain execution requires an authority verdict.'))}</p>`);
             }
         }
         const status = state.serverPending

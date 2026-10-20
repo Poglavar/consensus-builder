@@ -6362,7 +6362,7 @@
         "expand": "Prikaži kontrole",
         "title": "Ilustrativne procjene čestica",
         "disclaimer": "Procijenjene granice mogu biti nepotpune ili pogrešne i ne utvrđuju pravne granice.",
-        "help": "Pomicanjem ili zumiranjem karte odaberite vidljivo područje pa izradite pravokutne procjene na temelju satelitskih snimaka i kartiranih objekata.",
+        "help": "Prva procjena pokreće se automatski. Pomaknite kartu ili prilagodite kontrole pa ponovno izradite procjenu.",
         "viewport": "Trenutačni prikaz karte",
         "size": "Veličina područja",
         "sensitivity": "Prati rubove slike",

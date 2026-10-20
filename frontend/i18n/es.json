@@ -6355,7 +6355,7 @@
         "expand": "Mostrar controles",
         "title": "Estimaciones ilustrativas de parcelas",
         "disclaimer": "Los límites estimados pueden estar incompletos o ser erróneos y no establecen límites legales.",
-        "help": "Desplaza o amplía el mapa para elegir el área visible y genera estimaciones rectangulares a partir de imágenes satelitales y elementos cartografiados.",
+        "help": "La primera estimación comienza automáticamente. Mueve el mapa o ajusta los controles y vuelve a generar para actualizarla.",
         "viewport": "Vista actual del mapa",
         "size": "Tamaño del área",
         "sensitivity": "Seguir los bordes de la imagen",

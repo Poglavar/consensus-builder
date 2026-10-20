@@ -128,7 +128,8 @@
         // (estimatedMarketPrice, area fallback) so owners are entitled to plots
         // of proportional value. contributionRatio reserves land for public uses
         // (roads/parks); it stays 1 in P1 until the public-carve step lands.
-        contributionBasis: 'value',
+        contributionBasis: 'area',
+        valuationCurrency: null,
         totalValue: 0,
         poolUnitValue: 0,
         contributionRatio: 1,
@@ -175,7 +176,7 @@
         opening: false,
         // A subdivision (PARCEL-OPTIONAL.md phase 4): the pool is a drawn site, partly or wholly
         // open ground. { site, boundParcelIds, pool } — pool is proposals/subdivision.js sitePool():
-        // the bound parcels' parts (their owners contribute) and the open ground (no owner).
+        // the bound parcels' parts (modeled owners contribute) and open ground (ownership unknown).
         sitePool: null
     };
 
@@ -183,15 +184,15 @@
         return window.__subdivision || null;
     }
 
-    function isNoOwnerEntry(entry) {
+    function isUnrepresentedGroundEntry(entry) {
         const api = subdivisionApi();
-        return !!(entry && (entry.noOwner || (api && api.isOpenGroundOwnerKey(entry.ownerKey))));
+        return !!(entry && (entry.unrepresentedGround || (api && api.isOpenGroundOwnerKey(entry.ownerKey))));
     }
 
     // Pseudo-owner for land assigned to public use (roads, parks, etc.). Rendered
     // white so it reads as "not an owner"; excluded from owner cash accounting.
     const PUBLIC_LAND_KEY = 'public-land';
-    // Open ground (no owner) in a subdivision: a pale sand, distinct from public land's white.
+    // Open ground (ownership unknown): a pale sand, distinct from public land's white.
     const OPEN_GROUND_COLOR = '#e8dcc0';
     function getPublicLandOwner() {
         return {
@@ -775,7 +776,7 @@
                     : null;
                 state.algorithm = option.key;
                 state.subtitleData.algorithmLabel = option.label;
-                updateSubtitleWithOwners(state.ownerShares.filter(entry => !isNoOwnerEntry(entry)).length);
+                updateSubtitleWithOwners(state.ownerShares.filter(entry => !isUnrepresentedGroundEntry(entry)).length);
                 // The sweep orientation point only belongs to sweep-line mode.
                 if (option.key !== 'sweep-line') {
                     destroySweepOrientation();
@@ -886,7 +887,8 @@
     // True when we have meaningful land value to redistribute by; otherwise the
     // ledger falls back to area (m²) as the contribution metric.
     function ledgerUsesMoney() {
-        return Number.isFinite(state.poolUnitValue) && state.poolUnitValue > 0;
+        return state.contributionBasis === 'value' && state.valuationCurrency === 'EUR'
+            && Number.isFinite(state.poolUnitValue) && state.poolUnitValue > 0;
     }
 
     function formatLedgerMetric(value) {
@@ -898,8 +900,8 @@
     // after the public-land contribution ratio, what they've been assigned, and
     // the cash balance (+ owner pays for surplus land, − owner is compensated).
     function computeOwnerLedger(entry) {
-        // Open ground has no owner: nothing is owed or paid (subdivision.js ledgerOf, balance null).
-        if (isNoOwnerEntry(entry) && subdivisionApi()) {
+        // No ownership party is represented for open ground (subdivision.js ledgerOf, balance null).
+        if (isUnrepresentedGroundEntry(entry) && subdivisionApi()) {
             return subdivisionApi().ledgerOf(entry, {
                 basis: ledgerUsesMoney() ? 'value' : 'area',
                 poolUnitValue: state.poolUnitValue,
@@ -937,7 +939,7 @@
 
     function computeProRataJointOwners() {
         return window.ReparcellizationPlanUtils.jointOwnersForLayout(
-            state.ownerShares.filter(owner => owner.ownerKey !== PUBLIC_LAND_KEY && !isNoOwnerEntry(owner)),
+            state.ownerShares.filter(owner => owner.ownerKey !== PUBLIC_LAND_KEY && !isUnrepresentedGroundEntry(owner)),
             state.slices, turf, ledgerUsesMoney() ? state.poolUnitValue : 1
         );
     }
@@ -1045,14 +1047,14 @@
     // a shortfall is compensated and a surplus is paid for. Without one the balance is in m² and
     // says nothing about money, so the default is none.
     function defaultCashOffer(ledger) {
-        if (ledger.noOwner) return null;
+        if (ledger.unrepresentedGround) return null;
         if (!ledgerUsesMoney() || !Number.isFinite(ledger.cashBalance)) return 0;
         return -ledger.cashBalance;
     }
 
     // Signed cash for an owner (+ receives, − pays): the user's edited override if any, else the default.
     function getCashOffer(ownerKey, ledger) {
-        if (ledger && ledger.noOwner) return null;
+        if (ledger && ledger.unrepresentedGround) return null;
         if (Object.prototype.hasOwnProperty.call(state.cashOfferOverrides, ownerKey)) {
             return Math.round(state.cashOfferOverrides[ownerKey] * 100) / 100;
         }
@@ -1071,7 +1073,7 @@
     function computeCashTotals() {
         let payOut = 0, payIn = 0;
         for (const entry of state.ownerShares) {
-            if (isNoOwnerEntry(entry)) continue;
+            if (isUnrepresentedGroundEntry(entry)) continue;
             const amount = getCashOffer(entry.ownerKey, computeOwnerLedger(entry));
             if (!Number.isFinite(amount)) return { payOut: NaN, payIn: NaN };
             if (amount > 0) payOut += amount; else payIn -= amount;
@@ -1085,8 +1087,8 @@
 
     function updateCashTotalDisplay() {
         if (!state.cashTotalEl) return;
-        // A pool with no owner (a subdivision of bare ground) has nobody to pay or compensate.
-        if (!state.ownerShares.some(entry => !isNoOwnerEntry(entry))) {
+        // A pool consisting only of open ground has no represented party in this cash model.
+        if (!state.ownerShares.some(entry => !isUnrepresentedGroundEntry(entry))) {
             state.cashTotalEl.textContent = '';
             return;
         }
@@ -1202,15 +1204,15 @@
                 const color = safePlanColor(entry.color, pickOwnerColor(entry.ownerKey, index));
                 entry.color = color;
                 const ledger = computeOwnerLedger(entry);
-                if (ledger.noOwner) {
-                    // Open ground: pooled and assigned area, no balance and no cash (nobody to pay).
+                if (ledger.unrepresentedGround) {
+                    // Open ground: measured area, with no calculated balance or cash allocation.
                     const tr = document.createElement('tr');
                     tr.className = 'reparcel-ledger-row--no-owner';
                     tr.innerHTML = `
                     <td>${ownerLegendCellHtml({ ...entry, displayName: ownerDisplayName(entry.displayName) }, color)}</td>
                     <td class="area-cell">${formatArea(ledger.contributed)}</td>
                     <td class="area-cell">${formatArea(ledger.assignedArea)}</td>
-                    <td class="area-cell bal-even" title="${escapeHtml(t('reparcellization.modal.noOwnerBalance', 'Open ground has no owner: nothing is owed or paid.'))}">—</td>
+                    <td class="area-cell bal-even" title="${escapeHtml(t('reparcellization.modal.noOwnerBalance', 'Ownership is unknown. This draft calculates no balance or cash allocation for this ground.'))}">—</td>
                     <td class="cash-offer-cell">—</td>`;
                     tbody.appendChild(tr);
                     return;
@@ -1350,7 +1352,7 @@
     function updateOwnerReview() {
         const host = state.ownerReviewEl;
         if (!host) return;
-        const owners = state.ownerShares.filter(owner => !isNoOwnerEntry(owner));
+        const owners = state.ownerShares.filter(owner => !isUnrepresentedGroundEntry(owner));
         if (!owners.some(owner => owner.ownerKey === state.reviewOwnerKey)) state.reviewOwnerKey = '';
         host.replaceChildren();
         const label = document.createElement('label');
@@ -1884,7 +1886,7 @@
         const radio = state.modal && state.modal.querySelector(`input[name="reparcel-algorithm"][value="${option.key}"]`);
         if (radio) radio.checked = true;
         if (state.subtitleData) state.subtitleData.algorithmLabel = option.label;
-        updateSubtitleWithOwners(state.ownerShares.filter(entry => !isNoOwnerEntry(entry)).length);
+        updateSubtitleWithOwners(state.ownerShares.filter(entry => !isUnrepresentedGroundEntry(entry)).length);
         updateDrawToolButtons();
         updateActiveModeHint();
     }
@@ -4098,6 +4100,7 @@
             // Land-readjustment accounting metadata so downstream views/audits can
             // reconstruct entitlements and cash balances without re-deriving them.
             contributionBasis: state.contributionBasis,
+            valuationCurrency: state.valuationCurrency,
             totalValue: state.totalValue,
             poolUnitValue: state.poolUnitValue,
             contributionRatio: state.contributionRatio,
@@ -4112,7 +4115,7 @@
                 return {
                     ownerKey: entry.ownerKey,
                     displayName: entry.displayName,
-                    ...(ledger.noOwner ? { noOwner: true } : {}),
+                    ...(ledger.unrepresentedGround ? { unrepresentedGround: true } : {}),
                     percent: entry.percent,
                     color: entry.color,
                     contributedArea: entry.area,
@@ -4122,7 +4125,7 @@
                     assignedValue: ledger.assigned,
                     cashBalance: ledger.cashBalance,
                     // Open ground keeps a null cash offer; owners store payouts and payments separately.
-                    ...storedCash(ledger.noOwner ? null : getCashOffer(entry.ownerKey, ledger))
+                    ...storedCash(ledger.unrepresentedGround ? null : getCashOffer(entry.ownerKey, ledger))
                 };
             }),
             polygons: state.slices.map(slice => ({
@@ -4203,7 +4206,7 @@
         if (draft && window.proposalDraftStore?.getDraft?.(draft.id)) {
             window.proposalDraftStore.updateDraft(draft.id, { fields: { approvalConfig: setup.approvalConfig, lens: setup.lens } }, { coalesceKey: 'reparcel-approval' });
         }
-        const keysOf = shares => shares.filter(entry => !isNoOwnerEntry(entry)).map(entry => entry.ownerKey).sort().join('|');
+        const keysOf = shares => shares.filter(entry => !isUnrepresentedGroundEntry(entry)).map(entry => entry.ownerKey).sort().join('|');
         const before = keysOf(state.ownerShares);
         state.ownerShares = await buildOwnerShares(state.selection);
         const changed = keysOf(state.ownerShares) !== before;
@@ -4221,7 +4224,7 @@
             // The undo history describes owners that no longer exist.
             if (state.historyCtl) state.historyCtl.clear();
         }
-        updateSubtitleWithOwners(state.ownerShares.filter(entry => !isNoOwnerEntry(entry)).length);
+        updateSubtitleWithOwners(state.ownerShares.filter(entry => !isUnrepresentedGroundEntry(entry)).length);
         updateLegend(state.ownerShares);
         drawPreview();
         updateCommitState();
@@ -4229,7 +4232,7 @@
         updateApprovalRow();
         setStatus(changed
             ? t('reparcellization.modal.status.ownersFromRights', 'The owners now come from the rights file: {{count}} owner(s). Check each plot\'s owners.', {
-                count: state.ownerShares.filter(entry => !isNoOwnerEntry(entry)).length })
+                count: state.ownerShares.filter(entry => !isUnrepresentedGroundEntry(entry)).length })
             : t('reparcellization.modal.status.approvalSaved', 'Ownership and approval saved.'), 'info');
     }
 
@@ -4268,17 +4271,14 @@
     // so it is unit-tested headless. It fixed the bare-"50" bug (see that file).
     const { parseShareValue, normalizeOwnerSlots } = window.ReparcellizationShares;
 
-    // Land value for a parcel: explicit estimatedMarketPrice when present,
-    // otherwise area × average €/m². This is the contribution basis for
-    // value-based readjustment (falls back to pure area when no price exists).
+    // Readjustment currently models monetary entitlements in EUR. A source price in another
+    // currency (or without one) is unusable here; the whole pool then uses square metres.
     function getParcelLandValue(feature, area) {
-        const props = (feature && feature.properties) || {};
-        const explicit = Number(props.estimatedMarketPrice);
-        if (Number.isFinite(explicit) && explicit > 0) return explicit;
-        const avg = (typeof window !== 'undefined' && Number.isFinite(window.SQM_AVG_PRICE))
-            ? window.SQM_AVG_PRICE
+        const avg = Number.isFinite(window.SQM_AVG_PRICE) ? window.SQM_AVG_PRICE
             : (typeof SQM_AVG_PRICE !== 'undefined' ? SQM_AVG_PRICE : 133);
-        return (Number(area) || 0) * avg;
+        const estimate = window.ParcelPriceModel.buildEstimate(feature?.properties, area,
+            { areaPricePerSqm: avg, currency: 'EUR' });
+        return estimate.currency === 'EUR' ? estimate.amount : null;
     }
 
     // Explicit owner IDs alone join contributions across parcels. Without one, a slot stays a
@@ -4293,7 +4293,7 @@
         for (const plot of state.initialPolygons || []) {
             for (const owner of [plot, ...(Array.isArray(plot.owners) ? plot.owners : [])]) {
                 const id = owner?.ownerKey;
-                if (id && id !== PUBLIC_LAND_KEY && !owner.noOwner) ids.add(String(id));
+                if (id && id !== PUBLIC_LAND_KEY && !owner.unrepresentedGround) ids.add(String(id));
             }
         }
         return [...ids].sort();
@@ -4322,7 +4322,16 @@
         state.poolUnitValue = Object.prototype.hasOwnProperty.call(saved, 'poolUnitValue')
             ? saved.poolUnitValue
             : (Number.isFinite(state.totalValue) && totalArea > 0 ? state.totalValue / totalArea : null);
-        state.contributionBasis = saved.contributionBasis || (state.totalValue > 0 ? 'value' : 'area');
+        state.contributionBasis = saved.contributionBasis || 'area';
+        state.valuationCurrency = saved.valuationCurrency || null;
+        if (state.contributionBasis !== 'value') {
+            state.totalValue = null;
+            state.poolUnitValue = null;
+            state.valuationCurrency = null;
+        }
+        if (state.contributionBasis === 'value' && state.valuationCurrency !== 'EUR') {
+            throw new Error('Saved readjustment needs an explicit EUR valuation basis; recreate this experimental record.');
+        }
     }
 
     function replaceSavedInputOwnersFromRights(inputs, liveToCadastreIds = new Map()) {
@@ -4359,7 +4368,7 @@
 
     function labelAbstractOwners(entries) {
         const ids = [...new Set([
-            ...entries.filter(entry => !entry.noOwner && entry.ownerKey && entry.ownerKey !== PUBLIC_LAND_KEY).map(entry => entry.ownerKey),
+            ...entries.filter(entry => !entry.unrepresentedGround && entry.ownerKey && entry.ownerKey !== PUBLIC_LAND_KEY).map(entry => entry.ownerKey),
             ...savedOutputRecipientIds(),
             ...(state.amendInputs || []).flatMap(input => (input.owners || []).map(owner => owner.ownerKey).filter(Boolean))
         ])].sort();
@@ -4401,7 +4410,7 @@
 
     // Owner shares of a subdivision's site pool: each bound parcel's owners contribute the part of
     // the parcel INSIDE the site (not the whole parcel), the open ground contributes its area with
-    // no owner. Measured by area (subdivision.js poolShares: open ground has no known value).
+    // unknown ownership. Measured by area (subdivision.js poolShares: open ground has no known value).
     async function buildSitePoolShares() {
         const api = subdivisionApi();
         const pool = state.sitePool && state.sitePool.pool;
@@ -4431,14 +4440,15 @@
         }
         const result = api.poolShares(Array.from(byOwner.values()), {
             openGroundM2: pool.openGroundM2,
-            openGroundLabel: t('reparcellization.modal.openGroundOwner', 'Open ground (no owner)')
+            openGroundLabel: t('reparcellization.modal.openGroundOwner', 'Open ground (ownership unknown)')
         });
         state.contributionBasis = result.basis;
+        state.valuationCurrency = result.basis === 'value' ? 'EUR' : null;
         state.totalValue = result.totalValue;
         state.poolUnitValue = result.poolUnitValue;
         return labelAbstractOwners(result.shares.map((entry, index) => ({
             ...entry,
-            color: entry.noOwner ? OPEN_GROUND_COLOR : pickOwnerColor(entry.ownerKey, index)
+            color: entry.unrepresentedGround ? OPEN_GROUND_COLOR : pickOwnerColor(entry.ownerKey, index)
         })));
     }
 
@@ -4459,6 +4469,7 @@
         const parcelFeatures = liveSelectionFeatures(selection);
         let totalArea = 0;
         let totalValue = 0;
+        let allValuesKnown = true;
 
         for (const feature of parcelFeatures) {
             if (!feature || !feature.properties) continue;
@@ -4470,7 +4481,8 @@
 
             const value = getParcelLandValue(feature, area);
             totalArea += area;
-            totalValue += value;
+            if (Number.isFinite(value)) totalValue += value;
+            else allValuesKnown = false;
 
             let slots = [];
             const declared = declaredOwnerSlots(cadastralIdentity);
@@ -4517,7 +4529,7 @@
                     totalValue: 0
                 };
                 existing.totalArea += area * fraction;
-                existing.totalValue += value * fraction;
+                if (Number.isFinite(value)) existing.totalValue += value * fraction;
                 if (parcelId) existing.parcelIds.add(parcelId);
                 result.set(ownerKey, existing);
             });
@@ -4528,6 +4540,7 @@
             state.totalValue = 0;
             state.poolUnitValue = 0;
             state.contributionBasis = 'area';
+            state.valuationCurrency = null;
             return labelAbstractOwners(appendSavedOutputRecipients([]));
         }
 
@@ -4542,10 +4555,11 @@
         // not through a helper: readjustment-owner-identity.test.js runs this function on its own.
         const scheme = state.approvalConfig?.regime;
         const schemeBasis = scheme ? window.ProposalApprovalRegimes?.get(scheme.id, scheme.version)?.allocation?.basis : null;
-        const useValue = totalValue > 0 && schemeBasis !== 'area';
-        state.totalValue = totalValue;
+        const useValue = allValuesKnown && totalValue > 0 && schemeBasis !== 'area';
+        state.totalValue = useValue ? totalValue : null;
         state.poolUnitValue = useValue && totalArea > 0 ? totalValue / totalArea : 0;
         state.contributionBasis = useValue ? 'value' : 'area';
+        state.valuationCurrency = useValue ? 'EUR' : null;
 
         const entries = Array.from(result.values()).map((entry, index) => {
             const percent = useValue
@@ -4556,7 +4570,7 @@
                 displayName: entry.displayName,
                 parcelIds: Array.from(entry.parcelIds),
                 area: entry.totalArea,
-                value: entry.totalValue,
+                value: useValue ? entry.totalValue : null,
                 percent,
                 color: pickOwnerColor(entry.ownerKey, index)
             };
@@ -4565,12 +4579,12 @@
         return labelAbstractOwners(entries);
     }
 
+    // A null for a clip that threw read as "no overlap" / "nothing left": a ClipFailure instead.
     function safeIntersect(featureA, featureB) {
         try {
             return turf.intersect(featureA, featureB);
         } catch (error) {
-            console.warn('safeIntersect failed during reparcellization', error);
-            return null;
+            throw reparcellizationClipFailure('intersect', error, 'reparcellization.safeIntersect', [featureA, featureB]);
         }
     }
 
@@ -4578,9 +4592,15 @@
         try {
             return turf.difference(featureA, featureB);
         } catch (error) {
-            console.warn('safeDifference failed during reparcellization', error);
-            return null;
+            throw reparcellizationClipFailure('difference', error, 'reparcellization.safeDifference', [featureA, featureB]);
         }
+    }
+
+    // A polygon clip that cannot be done, typed and counted (parcel-arrangement.js ClipFailure).
+    function reparcellizationClipFailure(operation, error, site, operands) {
+        const api = (typeof window !== 'undefined' && window.__parcelArrangement)
+            || (typeof require === 'function' ? require('./proposals/parcel-arrangement.js') : null);
+        return api ? api.clipFailure(operation, error, { site }, operands) : error;
     }
 
     // Sweep-line subdivision lives in frontend/js/reparcellization-slice.js (loaded first) so it is
@@ -4600,7 +4620,7 @@
         );
         ensureCommitAvailability(false);
         state.ownerShares = await buildOwnerShares(state.selection);
-        const realOwnerCount = state.ownerShares.filter(entry => !isNoOwnerEntry(entry)).length;
+        const realOwnerCount = state.ownerShares.filter(entry => !isUnrepresentedGroundEntry(entry)).length;
         // A single owner can still readjust: the implicit second party is PUBLIC LAND (the land
         // the proposal cedes to public use, or plots the city would sell on later). Open with a
         // half/half split — the sweep handle and plot editing take it from there. Contribution
@@ -4739,9 +4759,15 @@
             .map(p => (p && p.geometry) ? { type: 'Feature', properties: {}, geometry: p.geometry } : null)
             .filter(Boolean);
         if (!features.length) return null;
+        // A pool with a plot silently left out of it is not the plan's ground: refuse instead.
         let union = features[0];
         for (let i = 1; i < features.length; i++) {
-            try { union = t.union(union, features[i]) || union; } catch (_) { /* keep what unioned */ }
+            let merged = null;
+            try { merged = t.union(union, features[i]); } catch (error) {
+                throw reparcellizationClipFailure('union', error, 'reparcellization.buildSuperParcelFromPlan', [union, features[i]]);
+            }
+            if (!merged) throw reparcellizationClipFailure('union', new Error('union came back empty'), 'reparcellization.buildSuperParcelFromPlan', [union, features[i]]);
+            union = merged;
         }
         if (!union || !union.geometry) return null;
         return {
@@ -4829,7 +4855,7 @@
     // A subdivision's pool (PARCEL-OPTIONAL.md phase 4): the drawn site, split into the bound
     // parcels' parts (cadastral geometry from the repository — the same source the open-ground
     // host is derived from at apply) and the open ground. Every bound parcel must resolve: a
-    // missing one would be counted as open ground, i.e. land with no owner, which it is not.
+    // missing one would be counted as open ground, hiding a declared parcel's contribution.
     async function buildSitePool(sitePool) {
         const api = subdivisionApi();
         const site = sitePool && sitePool.site;
@@ -4867,7 +4893,7 @@
         }
         const pool = api.sitePool(site, parcels);
         // The plan saved its open ground. Finding MORE now means bound parcels are missing from the
-        // inputs: their ground would be counted as ownerless, so refuse rather than open on it.
+        // inputs: their ground would be counted as open ground, so refuse rather than open on it.
         const expected = sitePool.expectedOpenGroundM2;
         if (typeof expected === 'number' && Number.isFinite(expected)
             && pool.openGroundM2 > expected + Math.max(1, expected * 0.01)) {
@@ -4898,7 +4924,7 @@
             || window.getActiveProposalDesignDraft?.()?.fields?.lens || [];
         const pendingPlan = window.pendingReparcellizationPlan || {};
         state.savedOwnerShares = JSON.parse(JSON.stringify(pendingPlan.ownerShares || []));
-        state.savedLedgerMetadata = Object.fromEntries(['contributionBasis', 'totalValue', 'poolUnitValue']
+        state.savedLedgerMetadata = Object.fromEntries(['contributionBasis', 'valuationCurrency', 'totalValue', 'poolUnitValue']
             .filter(key => Object.prototype.hasOwnProperty.call(pendingPlan, key))
             .map(key => [key, pendingPlan[key]]));
 
@@ -4949,9 +4975,21 @@
             const explicitPool = savedPool && /Polygon/.test(String(savedPool.type || ''))
                 ? { type: 'Feature', properties: { parcelIds: planIds.slice() }, geometry: JSON.parse(JSON.stringify(savedPool)) }
                 : null;
+            // The pool of a saved plan that cannot be computed refuses the editor, saying why.
+            const poolOrRefuse = (polygons) => {
+                try { return buildSuperParcelFromPlan(polygons, planIds); } catch (error) {
+                    if (!error || error.code !== 'clip-failed') throw error;
+                    console.error(`[${new Date().toISOString()}] [reparcellization] the plan's pool could not be computed`, error);
+                    const message = t('reparcellization.modal.poolClipFailed', 'The ground of this plan could not be computed: {{reason}}', { reason: error.message });
+                    if (typeof updateStatus === 'function') updateStatus(message);
+                    try { if (typeof window.showEphemeralMessage === 'function') window.showEphemeralMessage(message, 8000, 'warning'); } catch (_) { }
+                    return false;
+                }
+            };
             const inputPool = resolved.features.length && !resolved.missing.length
-                ? buildSuperParcelFromPlan(resolved.features, planIds)
+                ? poolOrRefuse(resolved.features)
                 : null;
+            if (inputPool === false) return false;
             if (explicitPool) {
                 console.debug('[reparcellization] pooled from the plan\'s saved connected extent',
                     { inputs: planIds.length, plots: savedPolygons.length });
@@ -4966,7 +5004,8 @@
                 // so rather than presenting a derived boundary as if it were the cadastre.
                 console.warn('[reparcellization] could not resolve every input parcel — pooling from the plan geometry instead',
                     { declared: planIds.length, resolved: resolved.features.length, missing: resolved.missing });
-                planPool = buildSuperParcelFromPlan(savedPolygons, planIds);
+                planPool = poolOrRefuse(savedPolygons);
+                if (planPool === false) return false;
                 state.poolFromOutputs = true;
             }
             if (planPool) selection = { ids: planIds.slice(), source: 'cadastre' };
@@ -5033,7 +5072,7 @@
         state.ownershipMode = 'multiple';
         state.cashOfferOverrides = Object.fromEntries((savedPolygons?.length
             ? window.pendingReparcellizationPlan?.ownerShares || [] : [])
-            .filter(owner => !owner.noOwner && Number.isFinite(owner.cashOffer) && owner.cashOffer >= 0)
+            .filter(owner => !owner.unrepresentedGround && Number.isFinite(owner.cashOffer) && owner.cashOffer >= 0)
             .map(owner => [owner.ownerKey, window.ReparcellizationDeal.netCash(owner)]));
         state.algorithm = options.algorithm || 'sweep-line';
         state.initialPolygons = (Array.isArray(options.initialPolygons) && options.initialPolygons.length)
@@ -5087,7 +5126,7 @@
     return {
         state,
         liveReparcellizationFeature, ownerDisplayName, liveSelectionFeatures, subdivisionApi,
-        isNoOwnerEntry, getPublicLandOwner, formatTemplate, t, applyTranslations, hashToColorIndex,
+        isUnrepresentedGroundEntry, getPublicLandOwner, formatTemplate, t, applyTranslations, hashToColorIndex,
         pickOwnerColor, formatPercent, updateSubtitleWithOwners, getAlgorithmOptions,
         getAlgorithmOptionByKey, buildAlgorithmRadios, setStatus, updateActiveModeHint, destroyMap,
         layoutSignature, isDirty, cancelModal, confirmDiscard, closeModal, buildModalStructure, initMap,

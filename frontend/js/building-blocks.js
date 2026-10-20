@@ -1394,8 +1394,15 @@ function showBlockifyModal() {
 
     // Store the block globally for the modal
     blockifyBlock = block;
+    let initialGeometryError = null;
     if (!blockifyGenerationSite) {
-        blockifyGenerationSite = blockifyAuthoredSite || robustUnion(blockifyFeaturesForBlock(block));
+        try {
+            blockifyGenerationSite = blockifyAuthoredSite || robustUnion(blockifyFeaturesForBlock(block));
+        } catch (error) {
+            // Keep the editor available for recovery, but never generate from a partial site.
+            // Report the failure once its controls and error dialog are ready below.
+            initialGeometryError = error;
+        }
     }
     const blockLabel = getBlockifyDisplayName();
 
@@ -1914,6 +1921,10 @@ function showBlockifyModal() {
 
     // Generate building immediately
     setTimeout(() => {
+        if (initialGeometryError) {
+            reportBlockifyGenerationError(initialGeometryError);
+            return;
+        }
         if (seed && seed.mode === 'existing') {
             // Existing-buildings mode refetches footprints; entering the mode does the drawing.
             enterExistingMode();
@@ -2176,6 +2187,23 @@ function displayBlockOnMap(block) {
 // inside `parcel` so no edge ends up outside the parcel. Clipping an outline that is already inside
 // returns it unchanged, so a fully-inside simplified outline keeps its low vertex count. Used by both
 // the parametric builder and the manual (freeform) builder.
+// A polygon clip that cannot be done, typed and counted (parcel-arrangement.js ClipFailure).
+function buildingBlocksClipFailure(operation, error, site, operands) {
+    const api = (typeof window !== 'undefined' && window.__parcelArrangement)
+        || (typeof require === 'function' ? require('./proposals/parcel-arrangement.js') : null);
+    return api ? api.clipFailure(operation, error, { site }, operands) : error;
+}
+
+// One gap cut out of a block building. A gap the clipper could not cut is a building other than
+// the one asked for, so it refuses; an empty difference keeps the building as it was (as before).
+function cutBuildingGap(buildingGeom, cutterPoly) {
+    let diff = null;
+    try { diff = turf.difference(buildingGeom, cutterPoly); } catch (e) {
+        throw buildingBlocksClipFailure('difference', e, 'building-blocks.cutGap', [buildingGeom, cutterPoly]);
+    }
+    return (diff && diff.geometry) ? diff : buildingGeom;
+}
+
 function simplifyAndClipOutline(feature, simplifyM, parcel) {
     let outline = feature;
     if (simplifyM > 0 && outline && outline.geometry) {
@@ -2201,7 +2229,9 @@ function simplifyAndClipOutline(feature, simplifyM, parcel) {
                 outline = toSingleLargestPolygon(clipped) || outline;
             }
         } catch (err) {
-            console.warn('Clip-to-parcel failed', err);
+            // Unclipped, the outline can reach into the neighbour (the reason this clip exists):
+            // refuse. The generators' own catch says so in the modal.
+            throw buildingBlocksClipFailure('intersect', err, 'building-blocks.clipOutlineToParcel', [outline, parcel]);
         }
     }
     return outline;
@@ -2382,12 +2412,15 @@ function addWingsToBuilding(buildingFeature, { outerCoords, superparcel, wingWid
         try { wingPoly = turf.polygon([[baseLeft, baseRight, tipRight, tipLeft, baseLeft]]); } catch (_) { continue; }
         if (!wingPoly || !wingPoly.geometry) continue;
 
-        try {
-            const unioned = turf.union(result, wingPoly);
-            if (unioned && unioned.geometry) result = unioned;
-        } catch (e) {
-            console.warn('Wing union failed for wing', w, e);
+        // A wing the clipper could not add is a building other than the one asked for: refuse.
+        let unioned = null;
+        try { unioned = turf.union(result, wingPoly); } catch (e) {
+            throw buildingBlocksClipFailure('union', e, 'building-blocks.addWing', [result, wingPoly]);
         }
+        if (!unioned || !unioned.geometry) {
+            throw buildingBlocksClipFailure('union', new Error('union came back empty'), 'building-blocks.addWing', [result, wingPoly]);
+        }
+        result = unioned;
     }
 
     // turf.union drops properties; restore the building's and record the wing params
@@ -2743,14 +2776,7 @@ function generateBuildingInModal() {
                 const cutterPoly = turf.polygon([cutterCoords]);
 
                 if (cutterPoly && cutterPoly.geometry) {
-                    try {
-                        const diff = turf.difference(resultGeom, cutterPoly);
-                        if (diff && diff.geometry) {
-                            resultGeom = diff;
-                        }
-                    } catch (e) {
-                        console.warn('Gap cutter difference failed for gap', g, e);
-                    }
+                    resultGeom = cutBuildingGap(resultGeom, cutterPoly);
                 }
             }
 
@@ -2874,26 +2900,31 @@ function generateBuildingInModal() {
         }
 
     } catch (error) {
-        console.error('Error creating building block:', error);
-        setBlockifyInfo(
-            'blockify.modal.messages.errorWithMessage',
-            'Error: {{message}}',
-            { message: error && error.message ? error.message : '' }
-        );
+        reportBlockifyGenerationError(error);
+    }
+}
 
-        // Only show error popup for algorithmic failures, not for slider validation
-        if (!error.message.includes('Failed to create outer building polygon')) {
-            showErrorPopup(translateBuildingText(
-                'blockify.modal.messages.creationFailed',
-                'Building block creation failed -- perhaps the parcel is too complex. Consider breaking it up with roads or try a different blockification algorithm.'
-            ));
-        }
+// Initial site construction and later regeneration share the same visible, recoverable failure.
+function reportBlockifyGenerationError(error) {
+    console.error(`[${new Date().toISOString()}] Error creating building block:`, error);
+    setBlockifyInfo(
+        'blockify.modal.messages.errorWithMessage',
+        'Error: {{message}}',
+        { message: error && error.message ? error.message : '' }
+    );
 
-        // Disable create proposal button if there was an error
-        const doneButton = document.getElementById('btn-blockify-done');
-        if (doneButton) {
-            doneButton.disabled = true;
-        }
+    // Only show error popup for algorithmic failures, not for slider validation
+    if (!error.message.includes('Failed to create outer building polygon')) {
+        showErrorPopup(translateBuildingText(
+            'blockify.modal.messages.creationFailed',
+            'Building block creation failed -- perhaps the parcel is too complex. Consider breaking it up with roads or try a different blockification algorithm.'
+        ));
+    }
+
+    // Disable create proposal button if there was an error
+    const doneButton = document.getElementById('btn-blockify-done');
+    if (doneButton) {
+        doneButton.disabled = true;
     }
 }
 
@@ -3823,7 +3854,8 @@ function openUrbanRuleForParcels({ blockName, parcelIds, initialState = null, si
         valid: true,
         polygon: null
     };
-    blockifyGenerationSite = normalizedSite || robustUnion(features);
+    // The modal constructs the parcel union where it can present a recoverable geometry error.
+    blockifyGenerationSite = normalizedSite;
     blockifyBlockNameOverride = blockName || describeParcelSelection(ids);
     return showBlockifyModal();
 }

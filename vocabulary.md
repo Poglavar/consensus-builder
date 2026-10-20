@@ -508,7 +508,9 @@ undo history is session-local. This intentionally replaces v2 distance growth, s
 straightening and draft identity without a compatibility reader. The three-example playground and the main map share this one recipe; frozen evaluation records
 remain separate. The main-map **imagery estimate layer** defaults to the current viewport, with
 128, 256 or 512 m squares available as explicit choices. The viewport follows pan/zoom until generation
-starts; opening the layer does not reposition the map. Areas are limited to 2 km per side, with
+starts; opening the layer does not reposition the map and starts one estimate automatically when the
+viewport is valid. Subsequent pan/zoom and control changes require explicit regeneration; reopening
+an already open layer does not start another request. Areas are limited to 2 km per side, with
 a 512-cell longest edge and the shorter extent rounded outward by less than one cell to preserve
 square metric cells. The export retains the requested geographic bounds and actual raster frame.
 MapTiler satellite pixels and bounded OSM context supply the evidence. Its working frame is spherical
