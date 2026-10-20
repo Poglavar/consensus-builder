@@ -1040,6 +1040,7 @@ async function createProposal() {
             proposal.proposalOrigin = window.ProposalOrigin.fromRecord(copySource, {
                 relation: 'copy', backendBase: window.getBackendBase()
             });
+            if (copySource.sourceReferences) proposal.sourceReferences = JSON.parse(JSON.stringify(copySource.sourceReferences));
         }
         if (publishingDraftId) {
             const source = window.pendingProposalReplacementSource || {};

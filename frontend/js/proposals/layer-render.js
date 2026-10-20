@@ -699,6 +699,7 @@ function clearProposalOwnParcelInfo(expectedParcelIds = null) {
 // card, collapsed to its header so the proposal stays the primary surface. Proposals that currently
 // produce no parcel and those that create many (reparcellization) open nothing here.
 function showOwnParcelInfoForProposal(proposal) {
+    if (window.PlanningViews?.isInspecting()) return;
     // 3D is a viewing mode: the details card does not open there (showProposalInfo bails out), so
     // a collapsed parcel row would be the leftover of a selection the card has already dropped.
     if (typeof document !== 'undefined' && document.body?.classList?.contains('three-mode-active')) {

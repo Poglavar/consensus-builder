@@ -231,6 +231,7 @@
     }
 
     function showParcelInfoPanel(feature) {
+        if (!global.__openParcelInfoCollapsed) global.PlanningViews?.select(null);
         bindParcelPanelControls();
         renderParcelHistory(feature);
         const props = feature?.properties || {};
@@ -865,6 +866,7 @@
         }
 
         global.document.getElementById('info-content').innerHTML = infoContent;
+        global.PlanningViews?.showParcelEvidence(global.document.getElementById('info-content'), parcelId);
 
         const ownersCountElement = global.document.getElementById('parcel-owners-count');
         if (ownersCountElement) {
@@ -1098,7 +1100,7 @@
         }
     }
 
-    function hideParcelInfoPanel() {
+    function hideParcelInfoPanel({ preserveProposalSelection = false } = {}) {
         // The panel may have been opened as the secondary surface for a proposal-owned parcel.
         // A direct dismissal transfers no ownership, so discard that one-shot association too.
         global.__proposalOwnParcelPanelId = null;
@@ -1132,7 +1134,7 @@
         }
 
         try { if (typeof global.clearProposalInfoHoverOverlay === 'function') global.clearProposalInfoHoverOverlay(); } catch (_) { }
-        try { if (typeof global.clearProposalHighlights === 'function') global.clearProposalHighlights(); } catch (_) { }
+        try { if (!preserveProposalSelection && typeof global.clearProposalHighlights === 'function') global.clearProposalHighlights(); } catch (_) { }
         // The stack panel described THIS selection — run after the state above is cleared.
         try { global.__drillUi?.hideIfNothingSelected?.(); } catch (_) { }
 

@@ -21,7 +21,7 @@
         'isCorridor', 'proposalOrigin', 'landFork', 'freePlacement', 'agent',
         // The approval setup (rights snapshot and policy): with the parcels and lens it is the
         // approval context every owner decision signs, so chain + IPFS alone can verify decisions.
-        'approvalConfig'
+        'approvalConfig', 'sourceReferences'
     ]);
     const clone = value => JSON.parse(JSON.stringify(value));
     const dependency = (name, path) => global[name] || (typeof require === 'function' ? require(path) : null);
@@ -38,6 +38,7 @@
 
     // The kind and its terms (proposal-kinds.md): a vote never carries money.
     function checkKind(record) {
+        dependency('PlanningSourceProposal', '../planning/source-proposal.js').validateReferences(record.sourceReferences);
         const errors = dependency('ProposalKind', './proposal-kind.js').kindErrors(record);
         if (errors.length) fail(`The proposal kind is invalid: ${errors[0].message}`);
     }

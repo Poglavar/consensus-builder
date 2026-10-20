@@ -10,6 +10,7 @@ import { selectors } from '../helpers/selectors';
 // a time, Esc with focus restored, the close button, an outside click).
 
 const SHEETS = [
+  { name: 'Buildings and massing', button: '#planning-views-button', sheet: '#planning-views' },
   { name: 'Layers', button: selectors.layersButton, sheet: selectors.layersSheet },
   { name: 'Settings', button: selectors.settingsButton, sheet: selectors.settingsSheet },
   { name: 'Proposals', button: selectors.proposalsButton, sheet: selectors.proposalsSheet },
@@ -52,6 +53,42 @@ test.describe('Map shell sheets @features', () => {
       await expect(page.locator(selectors.openSheet)).toHaveCount(0);
     });
   }
+
+  test('Buildings and massing stays beside the city on narrow screens and starts collapsed after reload', async ({ mockApi: page }) => {
+    const trigger = page.getByRole('button', { name: 'Buildings and massing', exact: true });
+    const panel = page.locator('#planning-views');
+    await expect(trigger).toBeVisible();
+    for (const width of [1280, 390, 320]) {
+      await page.setViewportSize({ width, height: 844 });
+      const city = await page.locator('.map-search__chip').boundingBox();
+      const search = await page.locator('.map-search').boundingBox();
+      const button = await trigger.boundingBox();
+      const avatar = await page.locator('#username-display').boundingBox();
+      if (!city || !search || !button || !avatar) throw new Error('Top-left controls are missing');
+      expect(Math.abs(button.y + button.height / 2 - city.y - city.height / 2)).toBeLessThan(3);
+      expect(button.x).toBeGreaterThanOrEqual(search.x + search.width);
+      expect(button.x + button.width).toBeLessThanOrEqual(avatar.x);
+      await trigger.click();
+      await expect(panel).toBeVisible();
+      const bounds = await panel.boundingBox();
+      if (!bounds) throw new Error('Massing controls did not open');
+      expect(bounds.x).toBeGreaterThanOrEqual(0);
+      expect(bounds.x + bounds.width).toBeLessThanOrEqual(width);
+      await page.keyboard.press('Escape');
+      await expect(panel).toBeHidden();
+      await expect(trigger).toBeFocused();
+    }
+    await trigger.click();
+    await panel.getByRole('combobox', { name: 'Built appearance', exact: true }).selectOption('off');
+    await trigger.click();
+    await expect.poll(() => page.evaluate(() => (window as any).PlanningViews.getState().existing)).toBe('off');
+    await page.reload();
+    await waitForMapReady(page);
+    await expect(trigger).toBeVisible();
+    await expect(panel).toBeHidden();
+    await expect(trigger).toHaveAttribute('aria-expanded', 'false');
+    await expect.poll(() => page.evaluate(() => (window as any).PlanningViews.getState().existing)).toBe('off');
+  });
 
   test('opening a second sheet closes the first', async ({ mockApi: page }) => {
     await page.locator(selectors.layersButton).click();

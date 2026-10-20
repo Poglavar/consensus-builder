@@ -89,7 +89,7 @@ function harness({ reduceMotion = false, altitudeKm = 10000 } = {}) {
         const selections = [];
         const picks = [];
         const liveLabels = [{ node: labelNode, city: { lat: 41, lon: 29 } }];
-        const coverage = { tierAt: (lat, lon) => ({ lat, lon, kind: 'live-city' }) };
+        const coverage = { cityPlace: city => ({ ...city, kind: 'live-city' }) };
         function rememberListener(registry, type, listener, options) {
             const entries = registry.get(type) || [];
             entries.push({ listener, options });

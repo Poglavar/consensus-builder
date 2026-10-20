@@ -79,6 +79,9 @@ export function memberContent(row) {
         kind: proposalData.kind ?? null,
         site: proposalData.site ?? null
     };
+    if (Array.isArray(proposalData.sourceReferences) && proposalData.sourceReferences.length) {
+        scope.sourceReferences = proposalData.sourceReferences;
+    }
     if (reparcellizationDeal.isReadjustment(row)) {
         return { ...scope, readjustmentDeal: reparcellizationDeal.fingerprint(readjustmentProposal(row)) };
     }

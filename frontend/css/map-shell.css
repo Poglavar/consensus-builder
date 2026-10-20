@@ -34,6 +34,9 @@
     top: var(--map-shell-edge);
     left: var(--map-shell-edge);
     z-index: var(--cb-z-map-chrome);
+    display: flex;
+    align-items: center;
+    gap: var(--map-shell-gap);
 }
 
 .map-shell-slot--tray {

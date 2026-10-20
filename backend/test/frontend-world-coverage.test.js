@@ -194,7 +194,7 @@ describe('tierAt', () => {
         const dubrovnik = coverage.tierAt(42.65, 18.09);
         expect(dubrovnik.tier).toBe('live');
         expect(['split', 'sibenik']).toContain(dubrovnik.cityId);
-        expect(coverage.searchPlaces('Croatia')[0]).toMatchObject({
+        expect(osijek).toMatchObject({
             kind: 'country', cc: 'HR', tier: 'live', coverage: 'full',
             coverageSources: expect.arrayContaining([expect.objectContaining({
                 url: 'https://catalog.uredjenazemlja.hr/katalogpodataka/atom-usluga-preuzimanja-dkp-a'
@@ -203,8 +203,8 @@ describe('tierAt', () => {
     });
 
     it('keeps Serbia partial while Belgrade still resolves to its single configured live entry', () => {
-        expect(coverage.searchPlaces('Serbia')[0]).toMatchObject({
-            kind: 'country', cc: 'RS', tier: 'source', coverage: 'partial'
+        expect(coverage.countries.find(country => country.cc === 'RS')).toMatchObject({
+            cc: 'RS', tier: 'source', coverage: 'partial'
         });
         const belgradeHits = coverage.searchPlaces('Belgrade');
         expect(belgradeHits).toHaveLength(1);
@@ -248,8 +248,8 @@ describe('tierAt', () => {
         expect(lakeDistrict.coverageSources.length).toBeGreaterThan(0);
         expect(coverage.tierAt(52.3, -3.6)).toMatchObject({ kind: 'region', regionId: 'GB-WLS', coverage: 'full' });
         expect(coverage.tierAt(57.3, -4.9)).toMatchObject({ kind: 'region', regionId: 'GB-SCT', coverage: 'partial' });
-        expect(coverage.searchPlaces('United Kingdom')[0]).toMatchObject({ kind: 'country', cc: 'GB', coverage: 'partial' });
-        expect(coverage.searchPlaces('England')[0]).toMatchObject({ kind: 'region', regionId: 'GB-ENG', coverage: 'mostly' });
+        expect(coverage.countries.find(country => country.cc === 'GB')).toMatchObject({ coverage: 'partial' });
+        expect(coverage.searchPlaces('England').every(place => ['city', 'live-city'].includes(place.kind))).toBe(true);
     });
 
     it('prefers a live city over a registry city at the same place', () => {
@@ -273,11 +273,10 @@ describe('country coverage axis', () => {
         cities: [], liveCities: []
     });
 
-    it('carries geographic coverage and its evidence into country point hits and search results', () => {
+    it('retains country coverage evidence without offering a country destination', () => {
         const point = sample.tierAt(0.5, 0.5);
-        const search = sample.searchPlaces('Sampleland')[0];
         expect(point).toMatchObject({ kind: 'country', tier: 'live', coverage: 'partial', coverageSources: scopeSources });
-        expect(search).toMatchObject({ kind: 'country', tier: 'live', coverage: 'partial', coverageSources: scopeSources });
+        expect(sample.searchPlaces('Sampleland')).toEqual([]);
     });
 
     it.each(['full', 'partial', 'none', 'unknown'])('uses the %s coverage label for country places', coverageLevel => {
@@ -318,12 +317,38 @@ describe('region coverage axis', () => {
         expect(sample(true).tierAt(0.5, 0.5)).toMatchObject({ kind: 'country', tier: 'live', cityId: 'capital' });
     });
 
-    it('finds regions by name and labels them on the region coverage axis', () => {
-        const hit = sample(false).searchPlaces('upl')[0];
-        expect(hit).toMatchObject({ kind: 'region', regionId: 'AA-ONE', coverage: 'full', lat: 0.5, lon: 0.5, country: 'Sampleland' });
+    it('keeps region coverage available as context but removes it from destinations', () => {
+        expect(sample(false).searchPlaces('upl')).toEqual([]);
         for (const level of ['full', 'partial', 'none', 'unknown']) {
             expect(WorldCoverage.statusKey({ kind: 'region', tier: 'source', coverage: level })).toBe(`world.regionCoverage.${level}`);
         }
+    });
+});
+
+describe('city and exact-point destinations', () => {
+    it('keeps an Ontario background click at its exact coordinates without selecting the province', () => {
+        const point = coverage.pointAt(50.52023, -84.79045);
+        expect(point).toMatchObject({ kind: 'point', lat: 50.52023, lon: -84.79045, tier: 'unknown',
+            placeKey: 'point:50.52023,-84.79045', cc: 'CA' });
+        expect(point).not.toHaveProperty('regionId');
+        expect(point).not.toHaveProperty('coverage');
+        expect(point).not.toHaveProperty('cityId');
+    });
+
+    it('keeps a background click inside a live city as a point while retaining parcel routing', () => {
+        expect(coverage.pointAt(45.83, 16.05)).toMatchObject({
+            kind: 'point', cityId: 'zagreb', lat: 45.83, lon: 16.05, placeKey: 'point:45.83000,16.05000'
+        });
+    });
+
+    it('preserves an explicitly selected city when another city shares its coordinates', () => {
+        const first = { id: 'first', name: 'First', lat: 10, lon: 20, cc: 'AA' };
+        const second = { ...first, id: 'second', name: 'Second' };
+        const model = WorldCoverage.create({ countries: [], cities: [], liveCities: [first, second] });
+        expect(model.cityPlace(first)).toMatchObject({ kind: 'live-city', cityId: 'first', name: 'First' });
+        expect(model.cityPlace(second)).toMatchObject({ kind: 'live-city', cityId: 'second', name: 'Second' });
+        expect(model.cityPlace({ id: 'unconfigured', name: 'Other', lat: 30, lon: 40, tier: 'unknown' }))
+            .toMatchObject({ kind: 'city', placeKey: 'unconfigured', name: 'Other', lat: 30, lon: 40 });
     });
 });
 
@@ -343,14 +368,13 @@ describe('searchPlaces', () => {
     it('ranks prefix matches above substrings and configured cities above others', () => {
         const hits = coverage.searchPlaces('bel');
         expect(hits[0]).toMatchObject({ kind: 'live-city', cityId: 'belgrade' });
-        const idx = name => hits.findIndex(h => h.name === name);
-        if (idx('Belgium') >= 0) expect(idx('Belgium')).toBeGreaterThan(0);
+        expect(hits.every(place => ['city', 'live-city'].includes(place.kind))).toBe(true);
     });
 
-    it('finds countries with a flyable centre', () => {
-        const japan = coverage.searchPlaces('japan')[0];
-        expect(japan).toMatchObject({ kind: 'country', cc: 'JP', tier: 'source' });
-        expect(Number.isFinite(japan.lat) && Number.isFinite(japan.lon)).toBe(true);
+    it.each(['Ontario', 'Japan', 'United Kingdom', 'England', 'N. Cyprus'])('offers only cities for %s', query => {
+        const hits = coverage.searchPlaces(query);
+        expect(hits.every(place => ['city', 'live-city'].includes(place.kind))).toBe(true);
+        expect(hits.some(place => /^(country|region|territory):/.test(place.placeKey))).toBe(false);
     });
 
     it('does not list a registry duplicate of a configured city', () => {

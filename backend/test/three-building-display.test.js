@@ -4,7 +4,6 @@ import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
 const {
-    displayStatesForKind,
     resolveBuiltDisplayPolicy,
     resolveBuildingRenderParts,
     updateRetainedBuildingMaterials
@@ -15,9 +14,10 @@ const frontendIndex = readFrontendIndex();
 const modelScripts = mapModeModelScripts();
 
 describe('3D building display policy', () => {
-    it('offers Removed only for existing Built fabric', () => {
-        expect(displayStatesForKind('built')).toEqual(['solid', 'ghost', 'surviving', 'removed', 'off']);
-        expect(displayStatesForKind('planned')).toEqual(['solid', 'ghost', 'off']);
+    it('combines surviving or removed content with independent transparency and visibility', () => {
+        expect(resolveBuiltDisplayPolicy('ghost', 'surviving')).toEqual({ visible: true, material: 'ghost', showSurviving: true, showDemolished: false, showExistingRail: true });
+        expect(resolveBuiltDisplayPolicy('ghost', 'removed')).toEqual({ visible: true, material: 'ghost', showSurviving: false, showDemolished: true, showExistingRail: false });
+        expect(resolveBuiltDisplayPolicy('off', 'removed').visible).toBe(false);
     });
 
     it('loads the policy through the model loader before the 3D view that consumes it', () => {
@@ -28,7 +28,7 @@ describe('3D building display policy', () => {
     });
 
     it('shows only demolished buildings and cut portions in Removed mode', () => {
-        expect(resolveBuiltDisplayPolicy('removed')).toEqual({
+        expect(resolveBuiltDisplayPolicy('solid', 'removed')).toEqual({
             visible: true,
             material: 'solid',
             showSurviving: false,
@@ -38,7 +38,7 @@ describe('3D building display policy', () => {
     });
 
     it('keeps Surviving as the exact complement of Removed', () => {
-        expect(resolveBuiltDisplayPolicy('surviving')).toEqual({
+        expect(resolveBuiltDisplayPolicy('solid', 'surviving')).toEqual({
             visible: true,
             material: 'solid',
             showSurviving: true,
@@ -62,8 +62,8 @@ describe('3D building display policy', () => {
     it('selects the exact carve halves for Surviving and Removed views', () => {
         const cut = { remainder: { type: 'Polygon' }, demolished: { type: 'Polygon' } };
         const full = { remainder: null, demolished: { type: 'Polygon' } };
-        const surviving = resolveBuiltDisplayPolicy('surviving');
-        const removed = resolveBuiltDisplayPolicy('removed');
+        const surviving = resolveBuiltDisplayPolicy('solid', 'surviving');
+        const removed = resolveBuiltDisplayPolicy('solid', 'removed');
 
         expect(resolveBuildingRenderParts(null, surviving)).toEqual({
             detailed: true, remainder: false, demolished: false

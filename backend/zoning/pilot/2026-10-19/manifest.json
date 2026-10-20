@@ -1,0 +1,143 @@
+{
+  "purpose": "Public-data screening; no lot is a reviewed legal entitlement.",
+  "fetchedAt": "2026-10-19T08:33:03.259Z",
+  "snapshotHash": "b76130654abce627e6ae621b90e8e721634140f97f07304d191d542be3d72a4d",
+  "ruleVersion": "r6a-interior-2026-10-19",
+  "limit": 25,
+  "metadata": {
+    "MAPPLUTO": {
+      "url": "https://services5.arcgis.com/GfwWNkhOj9bNBqoJ/ArcGIS/rest/services/MAPPLUTO/FeatureServer/0?f=json",
+      "lastEditDate": 1788967824444,
+      "dataLastEditDate": 1788967824444
+    },
+    "nyzd": {
+      "url": "https://services5.arcgis.com/GfwWNkhOj9bNBqoJ/ArcGIS/rest/services/nyzd/FeatureServer/0?f=json",
+      "lastEditDate": 1790802521266,
+      "dataLastEditDate": 1790802521266
+    },
+    "nyco": {
+      "url": "https://services5.arcgis.com/GfwWNkhOj9bNBqoJ/ArcGIS/rest/services/nyco/FeatureServer/0?f=json",
+      "lastEditDate": 1790803151841,
+      "dataLastEditDate": 1790803151841
+    },
+    "nysp": {
+      "url": "https://services5.arcgis.com/GfwWNkhOj9bNBqoJ/ArcGIS/rest/services/nysp/FeatureServer/0?f=json",
+      "lastEditDate": 1790802987254,
+      "dataLastEditDate": 1790802987254
+    },
+    "nylh": {
+      "url": "https://services5.arcgis.com/GfwWNkhOj9bNBqoJ/ArcGIS/rest/services/nylh/FeatureServer/0?f=json",
+      "lastEditDate": 1790803085751,
+      "dataLastEditDate": 1790803085751
+    },
+    "nycmih": {
+      "url": "https://services5.arcgis.com/GfwWNkhOj9bNBqoJ/ArcGIS/rest/services/nycmih/FeatureServer/0?f=json",
+      "lastEditDate": 1790803998524,
+      "dataLastEditDate": 1790803998524
+    }
+  },
+  "plutoRowsUpdatedAt": 1787604531,
+  "queryUrl": "https://data.cityofnewyork.us/resource/64uk-42ks.json?%24select=bbl%2Caddress%2Cborough%2Ccd%2Cversion%2Czonedist1%2Czonedist2%2Czonedist3%2Czonedist4%2Coverlay1%2Coverlay2%2Cspdist1%2Cspdist2%2Cspdist3%2Cltdheight%2Cresidfar%2Ccommfar%2Cfacilfar%2Caffresfar%2Clotarea%2Clotfront%2Clotdepth%2Clottype%2Cirrlotcode%2Cnumfloors%2Cbldgarea%2Cbuiltfar%2Cbldgclass%2Clanduse%2Cnumbldgs%2Cyearbuilt%2Csplitzone%2Chistdist%2Clandmark%2Cedesignum%2Cfirm07_flag%2Cpfirm15_flag%2Clatitude%2Clongitude&%24where=zonedist1+%3D+%27R6A%27+AND+cd+%3D+%27303%27+AND+lotfront+%3E%3D+18+AND+lotfront+%3C+40+AND+lotdepth+%3E%3D+95+AND+lotdepth+%3C%3D+110&%24order=bbl&%24limit=2000",
+  "candidates": [
+    {
+      "bbl": "3014810010",
+      "inputFingerprint": "0daf5255c8f2acd6dee6b6f9fe446bd2af5ad095968ef7865933342e069fa109"
+    },
+    {
+      "bbl": "3015910006",
+      "inputFingerprint": "f8a09385d256a370e8f372ca82f6677ea45b8a1816d723738750a5bf69ab2d92"
+    },
+    {
+      "bbl": "3015930012",
+      "inputFingerprint": "31d5e6869e4d743428ed12061c742999c45f4b7014f6b758422f96b72130dbf2"
+    },
+    {
+      "bbl": "3015940005",
+      "inputFingerprint": "110b64c60a89f2c1ce65611e70404c7f75bb3e5cdb1c2c0589108acbb9b423eb"
+    },
+    {
+      "bbl": "3015990002",
+      "inputFingerprint": "43a1f1a05983d024ff9cf94c7fd17f5a581364d6cd802ef672fda909a3ebc05e"
+    },
+    {
+      "bbl": "3016010012",
+      "inputFingerprint": "33cda1f26438a827bf10a8c397c073c6d55e7203b0f2b54ce573a33a52ad80d1"
+    },
+    {
+      "bbl": "3016020015",
+      "inputFingerprint": "92c528893a9a9dc8cad7afa4b48655700d283362da98cb1e79f0d5aa65dcc864"
+    },
+    {
+      "bbl": "3016030002",
+      "inputFingerprint": "148186867f936549aa047ed14f5a7bc4fbffa299e874e873d3ba5da10ca8ae92"
+    },
+    {
+      "bbl": "3016060032",
+      "inputFingerprint": "7cd48f919d085fd3a71e96cc9c59bc625712e01210889d456d7044b79d521ada"
+    },
+    {
+      "bbl": "3016070005",
+      "inputFingerprint": "8ededd210a99600d884c571d0b800de83f8f3710d0e23b36f1584e9fe917f544"
+    },
+    {
+      "bbl": "3016160058",
+      "inputFingerprint": "4a4b1175aa2a2238ae8af8703bb5e85ed8d0948483a09d1abe756cd8118ea4e9"
+    },
+    {
+      "bbl": "3016170001",
+      "inputFingerprint": "b67e27919010dc2a2644db6453646acab31a5ac89f27ee73ba6f9a14183f41ad"
+    },
+    {
+      "bbl": "3016180002",
+      "inputFingerprint": "b005f9a4e6ba53993398dda5388877db54afa23fd9da2b645cdc90eccc141bc1"
+    },
+    {
+      "bbl": "3016200043",
+      "inputFingerprint": "39b1bef90ec4526c2332531803a0ffd5dfaa204762093f8da6d9eac18d9928b0"
+    },
+    {
+      "bbl": "3016220081",
+      "inputFingerprint": "3849ca2e996a1b07af8f55ec47f85c441a0a0acd7af2b3f39b165bcc9e2d47fc"
+    },
+    {
+      "bbl": "3016230003",
+      "inputFingerprint": "2c8d2f74fcb6c33814aa90e2050d1d008a3541965933d2ded1e935edf19211e9"
+    },
+    {
+      "bbl": "3016250045",
+      "inputFingerprint": "87db0b3051db5b706b26a33163089017b8b146b47ee9bd2a6666aaa096a2b5ef"
+    },
+    {
+      "bbl": "3016270046",
+      "inputFingerprint": "6b5054ea94fd14be5a3f9577c7766526dfa04d8ed4328865d9e76829f5e6a764"
+    },
+    {
+      "bbl": "3016300035",
+      "inputFingerprint": "f756e32c27e586157d838bffb333302c60f7b025dc7010e4adb13b9b29321531"
+    },
+    {
+      "bbl": "3016310060",
+      "inputFingerprint": "7fe0982b453cbc5dc6b00636177de8d23bb6e72fa061c29c0960fcf050b5388b"
+    },
+    {
+      "bbl": "3016320045",
+      "inputFingerprint": "cc1194f75baedede05d72a9b6cafb3cdade4c3dd0ca7eedf6730098f0c3e9bf9"
+    },
+    {
+      "bbl": "3016330052",
+      "inputFingerprint": "fc50816b2cae1968ee268ec7712f3dd079ffc159adf233950942c47db76a46e6"
+    },
+    {
+      "bbl": "3016370011",
+      "inputFingerprint": "dc10279a7a849322e48ed4db4aecf02d21b38dab111be499f085d84852e03d03"
+    },
+    {
+      "bbl": "3016380030",
+      "inputFingerprint": "c5d6e98f1c242dcc465659de1559f877b93ad34efd00d01a2112b3f4c34e2c71"
+    },
+    {
+      "bbl": "3016820080",
+      "inputFingerprint": "16e34f05143d999759cbcb4144e50405ebc45dd2649e821930df80357cbe0445"
+    }
+  ]
+}

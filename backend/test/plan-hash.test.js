@@ -145,6 +145,26 @@ describe('memberHash', () => {
         expect(memberHash(building)).toBe(expected);
     });
 
+    it.each([
+        ['building', () => structuredClone(building)],
+        ['readjustment', () => asDatabaseRow(readjustment())]
+    ])('commits to pinned planning-source references for a %s member', (_label, makeRow) => {
+        const original = makeRow();
+        const referenced = makeRow();
+        referenced.proposal_data.sourceReferences = [{
+            proposalId: 'source:example:record', providerId: 'example', recordId: 'record',
+            edition: '2025', revision: 'first', city: 'example', scenario: 'default', parcelId: null
+        }];
+        const changed = structuredClone(referenced);
+        changed.proposal_data.sourceReferences[0].revision = 'second';
+        expect(memberHash(referenced)).not.toBe(memberHash(original));
+        expect(memberHash(changed)).not.toBe(memberHash(referenced));
+        expect(changedMembers({ 7: memberHash(referenced) }, [{ ...changed, id: 7 }])).toEqual(['7']);
+        const empty = makeRow();
+        empty.proposal_data.sourceReferences = [];
+        expect(memberHash(empty)).toBe(memberHash(original));
+    });
+
     it('includes the shared LR deal fingerprint within the plan member commitment', () => {
         const proposal = readjustment();
         const row = asDatabaseRow(proposal);

@@ -48,6 +48,12 @@ async function focusProposalDetails(proposalIdOrHash, options = {}) {
 }
 
 function showProposalInfo(proposal, currentParcelId = null, preserveScrollPosition = null, options = {}) {
+    // A single inspection surface follows selection across map and model. The existing
+    // detailed action panel remains available explicitly for authoring, votes and deals.
+    if (!options.planningActions && window.PlanningViews?.isReady()) {
+        window.PlanningViews.inspectProposal(proposal);
+        return;
+    }
     // The proposal action panel is 2D-only for now: in 3D the selection/isolation machinery
     // still runs, but the button box would float context-less over the scene.
     if (typeof document !== 'undefined' && document.body?.classList?.contains('three-mode-active')) {

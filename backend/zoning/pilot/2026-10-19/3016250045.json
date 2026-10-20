@@ -1,0 +1,168 @@
+{
+  "bbl": "3016250045",
+  "address": "176 STUYVESANT AVENUE",
+  "snapshotHash": "b76130654abce627e6ae621b90e8e721634140f97f07304d191d542be3d72a4d",
+  "fetchedAt": "2026-10-19T08:33:15.711Z",
+  "pluto": {
+    "address": "176 STUYVESANT AVENUE",
+    "borough": "BK",
+    "version": "26v2",
+    "zonedist1": "R6A",
+    "zonedist2": null,
+    "zonedist3": null,
+    "zonedist4": null,
+    "overlay1": null,
+    "overlay2": null,
+    "spdist1": null,
+    "spdist2": null,
+    "spdist3": null,
+    "lotArea": 2500,
+    "lotFront": 25,
+    "lotDepth": 100,
+    "residFar": 3,
+    "commFar": 0,
+    "facilFar": 3,
+    "affResFar": 3.9,
+    "numFloors": 3,
+    "bldgArea": 5628,
+    "builtFar": 2.25,
+    "numBldgs": 1,
+    "yearBuilt": 1931,
+    "latitude": 40.6893302,
+    "longitude": -73.9336303,
+    "communityDistrict": "303",
+    "lotType": "5",
+    "bldgClass": "C6",
+    "landUse": "2",
+    "limitedHeight": null,
+    "historicDistrict": null,
+    "landmark": null,
+    "eDesignation": null,
+    "bbl": "3016250045",
+    "splitZone": false,
+    "irregularLot": false,
+    "flood2007": null,
+    "flood2015": null
+  },
+  "rawPluto": {
+    "bbl": "3016250045.00000000",
+    "address": "176 STUYVESANT AVENUE",
+    "borough": "BK",
+    "cd": "303",
+    "version": "26v2",
+    "zonedist1": "R6A",
+    "residfar": "3.00000000000",
+    "commfar": "0.00000000000",
+    "facilfar": "3.00000000000",
+    "affresfar": "3.90000000000",
+    "lotarea": "2500",
+    "lotfront": "25.0000000",
+    "lotdepth": "100.0000000",
+    "lottype": "5",
+    "irrlotcode": false,
+    "numfloors": "3.0000000",
+    "bldgarea": "5628",
+    "builtfar": "2.25000000000",
+    "bldgclass": "C6",
+    "landuse": "2",
+    "numbldgs": "1",
+    "yearbuilt": "1931",
+    "splitzone": false,
+    "latitude": "40.6893302",
+    "longitude": "-73.9336303"
+  },
+  "inputFingerprint": "87db0b3051db5b706b26a33163089017b8b146b47ee9bd2a6666aaa096a2b5ef",
+  "parcel": {
+    "url": "https://services5.arcgis.com/GfwWNkhOj9bNBqoJ/ArcGIS/rest/services/MAPPLUTO/FeatureServer/0/query?f=json&where=BBL+%3D+3016250045&outFields=BBL%2CVersion%2CZoneDist1%2CLotArea%2CLotFront%2CLotDepth%2CLotType%2CIrrLotCode&returnGeometry=true&outSR=2263",
+    "features": [
+      {
+        "attributes": {
+          "BBL": 3016250045,
+          "Version": "26v2",
+          "ZoneDist1": "R6A",
+          "LotArea": 2500,
+          "LotFront": 25,
+          "LotDepth": 100,
+          "LotType": "5",
+          "IrrLotCode": "N"
+        },
+        "geometry": {
+          "rings": [
+            [
+              [
+                1002707.74719048,
+                190422.278640747
+              ],
+              [
+                1002609.02330923,
+                190406.760967255
+              ],
+              [
+                1002607.96260309,
+                190406.594302654
+              ],
+              [
+                1002604.33565903,
+                190429.291097164
+              ],
+              [
+                1002704.36301994,
+                190445.013200283
+              ],
+              [
+                1002707.74719048,
+                190422.278640747
+              ]
+            ]
+          ]
+        }
+      }
+    ]
+  },
+  "intersections": {
+    "nyzd": {
+      "url": "https://services5.arcgis.com/GfwWNkhOj9bNBqoJ/ArcGIS/rest/services/nyzd/FeatureServer/0/query?f=json&geometry=%7B%22rings%22%3A%5B%5B%5B1002707.74719048%2C190422.278640747%5D%2C%5B1002609.02330923%2C190406.760967255%5D%2C%5B1002607.96260309%2C190406.594302654%5D%2C%5B1002604.33565903%2C190429.291097164%5D%2C%5B1002704.36301994%2C190445.013200283%5D%2C%5B1002707.74719048%2C190422.278640747%5D%5D%5D%2C%22spatialReference%22%3A%7B%22wkid%22%3A2263%7D%7D&geometryType=esriGeometryPolygon&inSR=2263&spatialRel=esriSpatialRelIntersects&outFields=*&returnGeometry=false",
+      "features": [
+        {
+          "attributes": {
+            "OBJECTID": 4794,
+            "ZONEDIST": "R6A",
+            "Shape__Area": 4022058.0850372314,
+            "Shape__Length": 30124.339649635134
+          }
+        }
+      ]
+    },
+    "nyco": {
+      "url": "https://services5.arcgis.com/GfwWNkhOj9bNBqoJ/ArcGIS/rest/services/nyco/FeatureServer/0/query?f=json&geometry=%7B%22rings%22%3A%5B%5B%5B1002707.74719048%2C190422.278640747%5D%2C%5B1002609.02330923%2C190406.760967255%5D%2C%5B1002607.96260309%2C190406.594302654%5D%2C%5B1002604.33565903%2C190429.291097164%5D%2C%5B1002704.36301994%2C190445.013200283%5D%2C%5B1002707.74719048%2C190422.278640747%5D%5D%5D%2C%22spatialReference%22%3A%7B%22wkid%22%3A2263%7D%7D&geometryType=esriGeometryPolygon&inSR=2263&spatialRel=esriSpatialRelIntersects&outFields=*&returnGeometry=false",
+      "features": []
+    },
+    "nysp": {
+      "url": "https://services5.arcgis.com/GfwWNkhOj9bNBqoJ/ArcGIS/rest/services/nysp/FeatureServer/0/query?f=json&geometry=%7B%22rings%22%3A%5B%5B%5B1002707.74719048%2C190422.278640747%5D%2C%5B1002609.02330923%2C190406.760967255%5D%2C%5B1002607.96260309%2C190406.594302654%5D%2C%5B1002604.33565903%2C190429.291097164%5D%2C%5B1002704.36301994%2C190445.013200283%5D%2C%5B1002707.74719048%2C190422.278640747%5D%5D%5D%2C%22spatialReference%22%3A%7B%22wkid%22%3A2263%7D%7D&geometryType=esriGeometryPolygon&inSR=2263&spatialRel=esriSpatialRelIntersects&outFields=*&returnGeometry=false",
+      "features": []
+    },
+    "nylh": {
+      "url": "https://services5.arcgis.com/GfwWNkhOj9bNBqoJ/ArcGIS/rest/services/nylh/FeatureServer/0/query?f=json&geometry=%7B%22rings%22%3A%5B%5B%5B1002707.74719048%2C190422.278640747%5D%2C%5B1002609.02330923%2C190406.760967255%5D%2C%5B1002607.96260309%2C190406.594302654%5D%2C%5B1002604.33565903%2C190429.291097164%5D%2C%5B1002704.36301994%2C190445.013200283%5D%2C%5B1002707.74719048%2C190422.278640747%5D%5D%5D%2C%22spatialReference%22%3A%7B%22wkid%22%3A2263%7D%7D&geometryType=esriGeometryPolygon&inSR=2263&spatialRel=esriSpatialRelIntersects&outFields=*&returnGeometry=false",
+      "features": []
+    },
+    "nycmih": {
+      "url": "https://services5.arcgis.com/GfwWNkhOj9bNBqoJ/ArcGIS/rest/services/nycmih/FeatureServer/0/query?f=json&geometry=%7B%22rings%22%3A%5B%5B%5B1002707.74719048%2C190422.278640747%5D%2C%5B1002609.02330923%2C190406.760967255%5D%2C%5B1002607.96260309%2C190406.594302654%5D%2C%5B1002604.33565903%2C190429.291097164%5D%2C%5B1002704.36301994%2C190445.013200283%5D%2C%5B1002707.74719048%2C190422.278640747%5D%5D%5D%2C%22spatialReference%22%3A%7B%22wkid%22%3A2263%7D%7D&geometryType=esriGeometryPolygon&inSR=2263&spatialRel=esriSpatialRelIntersects&outFields=*&returnGeometry=false",
+      "features": []
+    }
+  },
+  "flags": [],
+  "publicScreen": "no-mapped-conflict-found",
+  "envelopeStatus": "needs-review",
+  "result": null,
+  "remainingReview": {
+    "zoningMap": "Verify the entire legal lot is R6A with no overlays, special/limited-height districts or MIH requirements.",
+    "zoningLotAndRights": "Verify this BBL is the entire zoning lot and has its full standard residential entitlement; review mergers, transfers, easements and restrictive declarations.",
+    "survey": "Verify a rectangular interior zoning lot, dimensions, one legal street frontage and a horizontal established base plane from survey evidence.",
+    "streetAndBlock": "Verify legal street width and line, no sidewalk widening, no lot portion within 100 feet of a street corner, and no frontage on the short dimension of a block.",
+    "geographicRestrictions": "Verify no landmark/historic, waterfront, flood, environmental or other site-specific restriction affecting this path.",
+    "districtAdjacency": "Verify no R1–R5 district boundary, public-park modification or transportation-infrastructure-adjacent frontage affecting the lot.",
+    "siteActions": "Review DOB/BSA/CPC actions and recorded agreements for site-specific or vested bulk controls.",
+    "residentialScenario": "Verify applicability of full-site new attached multifamily standard residences, with a full-width street wall on the street line and the ordinary bulk rules."
+  },
+  "zolaUrl": "https://zola.planning.nyc.gov/l/lot/3/1625/45"
+}

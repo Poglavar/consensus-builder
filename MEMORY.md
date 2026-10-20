@@ -2,6 +2,13 @@
 
 - 2026-10-19: Vocabulary work proceeds in small verified changes under one current contract; experimental records may be recreated instead of preserving legacy data through migrations or parallel code paths.
 
+
+
+- 2026-10-19: Existing regulations, permitted massing and permits are to be restated as obligatory proposals through scripts and automation. Manual conversion into a new proposal is not the main flow. Keep binding applicability and authority separate from voting/deal kind, local application and construction: an obligatory maximum does not oblige building to that maximum. Import Colosseum's vocabulary and maintain it with domain changes. Audit the National Zoning Atlas against native capabilities and the GUP restatement before outreach; demonstrate supported visualization before making the pitch.
+
+- 2026-10-19: Design existing buildings, permitted envelopes/massing and proposals around shared city-neutral geometry and 2D/3D presentation, using the finished Zagreb solver as the first provider adapter; keep local planning rules and source formats behind adapters.
+
+- 2026-10-19: Resume NYC envelopes with a narrow R6A interior-lot pilot in Brooklyn Community District 3, expanding by explicit rule families; parcel capacity requires cited site evidence because clean PLUTO attributes do not establish zoning-lot rights.
 - 2026-10-19: Run two additional persistent web researchers for unsupported cities outside Africa, seeking genuinely new cadastral sources rather than extending known providers; preserve the separate two-worker Africa research queue.
 
 - 2026-10-19: Process the qualified-city backlog on Valhalla with four parallel admission workers; keep shared app-data writes serial so city bindings and reports cannot overwrite one another. Continue fresh city-by-city web discovery alongside admission.
@@ -795,3 +802,13 @@ The user requires only per-city failed URL lists and working settings plus share
 - 2026-10-20: The user wants imagery-generated parcels saved in browser localStorage and usable through normal parcel selection and local proposal tools; retain estimated provenance rather than keeping a transient display-only overlay.
 
 - 2026-10-20: During branch integration, the user gave the current semantics contract precedence; incoming providers, guides and publication changes must conform to its identity, evidence, quantity and storage boundaries.
+
+- 2026-10-19: Preserve the last saved envelope while a newer calculation is queued, running, failed or awaiting review. Replace it atomically only after acceptance; keep refresh reasons separate and visible, and withdraw the only result only with an explicit stored reason. `current=false` is not a work queue. Polygon ordering alone must not erase coverage; use the existing cache and a named, verified refresh process.
+- 2026-10-19: A bulk envelope invalidation needs cohort-wide recovery, not a repair limited to the example parcel; restore every eligible saved result and report the reasons for remaining gaps.
+# Planning infrastructure priorities (2026-10-19)
+
+Postpone refresh/server-to-local synchronization. For empty parcels, display only an explanation already present in the existing source cache; do not introduce another cache, solver, diagnostic pipeline or inferred reason. Continue shared selection/inspection, obligatory source proposal semantics and provider/edition support separately from solver work.
+
+- 2026-10-20: Atlas should plug into Permitted through URLs, retaining source identity, edition and evidence in the shared inspector.
+- 2026-10-20: World navigation offers cities and exact map points only. Administrative regions are coverage context, never clickable destinations. A background globe click or geolocation opens the exact point at street level, where proposals live.
+- 2026-10-20: Buildings and massing starts collapsed behind a cubes icon beside the city/search control at the upper left. Its display settings keep their values when the panel closes.

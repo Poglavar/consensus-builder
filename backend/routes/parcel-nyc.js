@@ -1,3 +1,7 @@
+import { fetchPluto } from '../zoning/pluto.js';
+import { computeEnvelope } from '../zoning/envelope.js';
+import { SITE_REVIEWS } from '../zoning/reviews.js';
+import { getPilotEvidence } from '../zoning/pilot.js';
 import { MAX_CELL_BBOX_KM2, wgs84BboxAreaKm2 } from '../utils/helpers.js';
 import { buildOwnershipSummary } from './parcels.js';
 import { isPlaceholderOwner, isCondoBillingLot } from './nyc-condo-owners.js';
@@ -318,6 +322,36 @@ export function setupParcelNycRoute(app, pool) {
         } catch (error) {
             console.error('Error in /parcel-nyc:', error);
             res.status(500).json({ error: 'Failed to fetch New York parcels.' });
+        }
+    });
+
+    // Screen the current PLUTO record and publish a bulk envelope only when a
+    // curated site review matches its inputs. Unresolved evidence is returned explicitly.
+    app.get('/parcel-nyc/:parcelId/envelope', async (req, res) => {
+        const parcelId = normalizeParcelValue((req.params.parcelId || '').trim());
+        if (!parcelId) {
+            return res.status(400).json({ error: 'parcelId is required.' });
+        }
+        if (!isValidParcelValue(parcelId)) {
+            return res.status(400).json({
+                error: 'Invalid parcelId format. Expected US-NY-<parcel_id> or <parcel_id>.'
+            });
+        }
+
+        try {
+            const pluto = await fetchPluto(parcelId);
+            if (!pluto) {
+                return res.status(404).json({ error: 'No PLUTO zoning record found for the requested parcelId.' });
+            }
+            res.json({
+                parcelId: buildParcelId(parcelId),
+                bbl: pluto.bbl,
+                address: pluto.address,
+                envelope: computeEnvelope(pluto, SITE_REVIEWS[pluto.bbl], { publicScreen: getPilotEvidence(pluto) }),
+            });
+        } catch (error) {
+            console.error(`Error in /parcel-nyc/${parcelId}/envelope:`, error);
+            res.status(502).json({ error: 'Failed to fetch zoning data from PLUTO.' });
         }
     });
 }

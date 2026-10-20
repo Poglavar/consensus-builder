@@ -516,6 +516,8 @@ export function precheckProposalCreate(req) {
     if (!req.chainMirror && (body.onchain || body.onchainData || body.nft || body.chainMirror)) {
         return fail('Minted proposals must be mirrored from their chain location using POST /proposals/mirror.', 'chain-mirror-required');
     }
+    try { require('../../frontend/js/planning/source-proposal.js').validateReferences(body.sourceReferences); }
+    catch (error) { return { ok: false, status: 422, code: error.code, error: error.message }; }
     const legacyDeclaration = findLegacyCadastreDeclaration(body);
     if (legacyDeclaration) {
         return fail(`${legacyDeclaration.path} is retired. Send the proposal's land once in cadastreParcelIds.`);
@@ -541,6 +543,9 @@ export function precheckProposalCreate(req) {
     }
 
     const explicitProposalId = validated.proposalId ?? null;
+    if (String(explicitProposalId || '').startsWith('source:')) {
+        return fail('The source: identity namespace belongs to read-only provider records.', 'source-proposal-read-only');
+    }
     if (explicitProposalId !== null && isProposalRowId(explicitProposalId)) {
         return fail('proposalId must not be purely numeric: numeric ids are the server\'s row ids.');
     }

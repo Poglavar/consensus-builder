@@ -2231,7 +2231,6 @@
             "individualOwnersLabel": "Entradas de titulares registradas:",
             "unknownOwnershipLabel": "Categoría de propiedad desconocida:",
             "ownershipMixedLabel": "Parcelas con categoría de propiedad mixta:",
-            "acquiringDifficultyLabel": "Índice modelado de adquisición:",
             "acquiringDifficultyTitle": "Índice modelado de adquisición",
             "acquiringDifficultyTooltip": "Índice ilustrativo: valor de la parcela × peso de la categoría. No determina el coste de adquisición, la disponibilidad legal ni el consentimiento.\nPropiedad pública: 0\nInstitución: 0\nEmpresa: 1\nIndividual o mixta: 2\nSin categorías o precios utilizables, o con monedas distintas, el índice es desconocido. El modelo por superficie usa 100 EUR/m².",
             "acquiringDifficultyDialogOk": "OK",
@@ -6502,11 +6501,9 @@
             "stateOff": "Apagado",
             "built": "Construido",
             "both": "Ambos",
-            "planned": "Planificado",
             "radius": "Radio",
             "radiusTooltip": "Radio — qué tan ancha es la franja de edificios reales del entorno que se carga y se muestra como contexto",
             "builtTooltip": "Construido — los edificios reales existentes que hay hoy en el terreno",
-            "plannedTooltip": "Planificado — estructuras y terrenos propuestos (parques, plazas, agua y sus decoraciones)",
             "stateSolidTooltip": "Sólido — dibujado totalmente opaco",
             "stateGhostTooltip": "Transparente — dibujado semitransparente para poder ver a través",
             "stateSurvivingTooltip": "Restantes — los edificios existentes se muestran sólidos, pero los que el plan demuele se ocultan (el estado posterior al plan)",
@@ -6519,7 +6516,6 @@
             "life": "Personas y tráfico",
             "lifeTooltip": "Muestra u oculta personas y vehículos esquemáticos que se mueven por la vista 3D",
             "water": "Agua",
-            "plannedAs": "Planificado como",
             "facades": "Fachadas",
             "facadeStyle": "Estilo de fachada",
             "facadesTooltip": "Ejemplos de ventanas y materiales en los edificios propuestos. Cada edificio conserva su diseño.",
@@ -6554,7 +6550,6 @@
                 "stone": "Piedra clara",
                 "plaster": "Revoco"
             },
-            "plannedAsTooltip": "Planificado como — dibuja el volumen que permite la norma, un ejemplo de lo que podría construirse, o ambos",
             "representationMassing": "Volumen",
             "representationMassingTooltip": "Volumen — el volumen que permite la norma, que es lo que la propuesta establece",
             "representationBuildOut": "Edificación",
@@ -6804,20 +6799,18 @@
     },
     "world": {
         "title": "Elige un lugar",
-        "hint": "Arrastra para girar · haz clic en cualquier lugar para ver qué datos de parcelas existen",
+        "hint": "Arrastra para girar · selecciona una ciudad o una ubicación exacta",
         "reach": {
             "headline": "Ciudades: {{cities}} · países: {{countries}}",
             "caption": "Con datos de parcelas, listo para explorar"
         },
-        "canvasLabel": "Globo. Arrastra para girar, desplaza para acercar, haz clic en un lugar para ver sus datos de parcelas.",
+        "canvasLabel": "Globo. Arrastra para girar, desplázate para acercar y selecciona una ciudad o una ubicación exacta.",
         "close": "Cerrar",
         "backToMap": "Volver al mapa",
         "search": {
-            "placeholder": "Busca una ciudad o un país",
-            "label": "Buscar lugares",
-            "country": "País",
-            "territory": "Territorio",
-            "noResults": "Ningún lugar coincide",
+            "placeholder": "Nombre de la ciudad",
+            "label": "Buscar ciudades",
+            "noResults": "No hay ciudades coincidentes",
             "locate": "Mostrar mi ubicación",
             "locateFailed": "No se pudo obtener tu ubicación."
         },
@@ -6894,15 +6887,15 @@
             }
         },
         "popup": {
-            "ocean": "Mar abierto",
-            "oceanText": "Aquí no hay tierra, así que no hay parcelas. Aun así puedes abrir el mapa en este punto.",
-            "coverageSource": "Fuente de cobertura"
+            "coverageSource": "Fuente de cobertura",
+            "location": "Ubicación seleccionada",
+            "locationText": "Abre esta ubicación exacta a nivel de calle para ver o crear propuestas."
         },
         "action": {
             "open": "Abrir {{city}}",
             "explore": "Abrir el mapa aquí",
             "askCity": "Pedir esta ciudad",
-            "askArea": "Pedir esta zona"
+            "askPoint": "Solicitar parcelas aquí"
         },
         "request": {
             "sending": "Enviando…",
@@ -7451,7 +7444,7 @@
     },
     "parcelEstimate": {
         "collapse": "Contraer controles",
-        "expand": "Mostrar controles",
+        "expand": "Mostrar controles de parcelas",
         "title": "Estimaciones ilustrativas de parcelas",
         "disclaimer": "Los límites estimados pueden estar incompletos o ser erróneos y no establecen límites legales.",
         "help": "Las estimaciones nuevas comienzan automáticamente y se guardan en este navegador. Selecciona una parcela para usar las herramientas de planificación habituales. Volver a generar sustituye esta fuente local.",
@@ -7687,5 +7680,139 @@
                 "apply": "Aplicar plan"
             }
         }
-    }
+    },
+  "planningViews": {
+    "refreshPending": "Pendiente de actualización",
+    "refreshCount": {
+      "one": "{{count}} resultado pendiente de actualización",
+      "other": "{{count}} resultados pendientes de actualización"
+    },
+    "refreshNote": "Se muestra el último cálculo guardado con su versión y fecha originales.",
+    "refreshFailed": "La última actualización no se completó.",
+    "refreshCause": {
+      "LOCAL_SYNC_PENDING": "La copia local está pendiente de sincronización.",
+      "SOURCE_INPUT_CHANGED": "Los datos de origen cambiaron; el nuevo cálculo está pendiente.",
+      "UNREVIEWED_CAPACITY_LOSS": "El cálculo de reemplazo reduciría la estimación anterior y está pendiente de revisión.",
+      "UNREVIEWED_CAPACITY_COHORT_CHANGE": "El cambio de cobertura del cálculo está pendiente de revisión."
+    },
+    "title": "Edificios y volúmenes",
+    "detailsLabel": "Detalles de la fuente de planificación",
+    "permitted": "Permitido",
+    "loading": "Cargando volúmenes permitidos…",
+    "zoom": "Acerca el mapa para explorar los volúmenes permitidos.",
+    "unavailable": "Esta ciudad aún no tiene una fuente de volúmenes permitidos conectada.",
+    "empty": "No hay volúmenes representados en esta zona. Esto no significa que esté prohibido construir.",
+    "error": "No se pudo cargar la fuente de planificación.",
+    "loaded": {
+      "one": "{{count}} volumen guardado en la vista",
+      "other": "{{count}} volúmenes guardados en la vista"
+    },
+    "loadingProgress": "Cargando volúmenes permitidos… {{count}} de {{total}} perfiles leídos",
+    "partial": {
+      "one": "{{count}} opción visible · parte de la geometría de origen no está disponible",
+      "other": "{{count}} opciones visibles · parte de la geometría de origen no está disponible"
+    },
+    "sourceProposal": "Volumen permitido",
+    "close": "Cerrar detalles de la fuente",
+    "obligatory": "Propuesta de fuente obligatoria",
+    "sourceEvidenceBadge": "Evidencia de la fuente",
+    "approximate": "Aproximado",
+    "oneOption": "Una opción calculada según las reglas de la fuente. No representa todos los diseños posibles.",
+    "floorArea": "Superficie construida calculada",
+    "height": "Altura del volumen",
+    "dwellingLimit": "Límite de viviendas",
+    "conditionsTitle": "Condiciones pendientes de comprobar",
+    "conditionsNote": "La aplicabilidad y los límites independientes siguen sin resolverse. Esta forma no es un permiso de construcción verificado.",
+    "sourceDetails": "Fuente y evidencia",
+    "computed": "Calculado el {{date}}",
+    "sourceTerms": "Cálculo y evaluación guardados de la fuente",
+    "readSource": "Leer el plan original",
+    "constraint": {
+      "dwellings": "Máximo de viviendas",
+      "floorArea": "Superficie construida máxima",
+      "naturalGround": "Terreno natural mínimo",
+      "frontSetback": "Retiro frontal mínimo",
+      "sideSetback": "Retiro lateral mínimo",
+      "rearSetback": "Retiro posterior mínimo",
+      "height": "Altura máxima",
+      "lotArea": "Superficie mínima de parcela"
+    },
+    "photoNote": "Explora los volúmenes permitidos en el mapa o en el modelo 3D.",
+    "openModel": "Abrir el modelo 3D",
+    "displayLabel": "Apariencia: {{role}}",
+    "existingScope": "Selección de edificios existentes",
+    "proposedForm": "Representación propuesta",
+    "permittedMap": "Volumen permitido en el mapa",
+    "footprint": "Huella",
+    "steps": "Niveles de altura",
+    "permittedOff": "Los volúmenes permitidos están ocultos.",
+    "coverageTitle": "¿Qué cubre esta fuente?",
+    "coverageNote": "Se muestran los cálculos guardados por la fuente. Algunos contienen volúmenes; otros indican falta de pruebas, condiciones incumplidas u otro procedimiento urbanístico. Un resultado sin geometría no demuestra capacidad nula. Los niveles muestran las partes a distintas alturas.",
+    "inspectHint": "Seleccione un edificio o geometría de la fuente para inspeccionarlo.",
+    "inspectMassing": "Inspeccionar el volumen permitido en {{parcel}}",
+    "heightParts": "Alturas de las partes: {{heights}}",
+    "cacheSummary": "{{count}} resultados guardados en esta área: {{shapes}} con geometría, {{missing}} sin geometría.",
+    "stockBadge": "Estimación de edificación existente",
+    "stockEstimate": "La fuente estima la edificación existente para este régimen urbanístico. Esta geometría no es una envolvente calculada para obra nueva.",
+    "solverVersion": "Versión del cálculo: {{version}}",
+    "otherResult": "Otro resultado de la fuente",
+    "resultStatus": {
+      "condition_failed": "Condiciones incumplidas",
+      "evidence_missing": "Faltan pruebas",
+      "existing_stock_estimate": "Estimaciones de edificación existente",
+      "geometry_failed": "Falló la validación geométrica",
+      "geometry_validated": "Geometría validada",
+      "instrument_handoff": "Se aplica otro instrumento urbanístico",
+      "no_validated_candidate": "Sin candidato validado",
+      "procedure_required": "Requiere procedimiento urbanístico",
+      "route": "Otra vía urbanística",
+      "unresolved_context": "Contexto sin resolver",
+      "unsupported_calculation": "Cálculo no compatible",
+      "allowed": "Registrado como permitido",
+      "hearing": "Se requiere audiencia",
+      "prohibited": "Registrado como prohibido",
+      "overlay": "Se aplican condiciones de superposición",
+      "nomention": "Uso no mencionado",
+      "clear": "Revisión pública: sin conflictos cartografiados",
+      "flagged": "Revisión pública: conflictos cartografiados"
+    },
+    "savedResult": "Resultado urbanístico guardado",
+    "inspectResult": "Inspeccionar resultado",
+    "savedWithdrawn": "Este resultado guardado no se muestra actualmente como volumen.",
+    "recorded": "Registrado el {{date}}",
+    "sourceEdition": "Fuente / edición",
+    "evidenceOnly": "Solo datos de revisión guardados. Esta fuente no aporta geometría de envolvente aceptada.",
+    "savedNoShape": "Este resultado guardado no contiene un volumen visible.",
+    "builtRecord": "Edificio observado",
+    "proposedRecord": "Propuesta de diseño",
+    "observedNote": "Datos del edificio de la fuente. Las medidas que faltan siguen siendo desconocidas.",
+    "authoredNote": "Un diseño propuesto. Mostrarlo no acredita autorización ni construcción.",
+    "proposalActions": "Acciones de la propuesta",
+    "footprintArea": "Superficie de huella",
+    "referenceChanged": "La fuente cambió desde la versión citada por el diseño. Se muestra el registro guardado actual; la revisión citada no se ha reconstruido.",
+    "referencedSource": "Fuente: {{source}} · {{revision}}",
+    "referenceUnavailable": "El registro de fuente citado no está disponible.",
+    "scenarioLabel": "Tipo de vivienda",
+    "zoningAreaNote": "Áreas de zonificación y restricciones registradas de la fuente. Estas áreas no son envolventes de edificios. La aplicabilidad sigue sin verificar.",
+    "areasLoaded": {
+      "one": "{{count}} área de zonificación de la fuente visible",
+      "other": "{{count}} áreas de zonificación de la fuente visibles"
+    },
+    "scenario": {
+      "family1": "Una familia",
+      "family2": "Dos familias",
+      "family3": "Tres familias",
+      "family4": "Cuatro o más familias",
+      "accessory": "Vivienda accesoria",
+      "plannedresidential": "Residencial planificado",
+      "cached-calculation": "Cálculo guardado",
+      "new-attached-multifamily": "Nueva vivienda multifamiliar adosada"
+    },
+    "evidence": {
+      "direct": "Valor directo de la fuente",
+      "estimated": "Estimación de la fuente"
+    },
+    "zoningArea": "Área de zonificación de la fuente",
+    "inspectArea": "Inspeccionar área de zonificación {{parcel}}"
+  }
 }

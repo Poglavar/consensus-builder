@@ -577,9 +577,10 @@ async function fetchDguBuildings(boundsOverride = null) {
         if (dguBuildingLayer) {
             try { map.removeLayer(dguBuildingLayer); } catch (_) { }
         }
+        if (!map.getPane('observedReferences')) map.createPane('observedReferences');
         dguBuildingLayer = L.geoJSON({ type: 'FeatureCollection', features: (converted?.features || []) }, {
             // Reference only: it must never intercept clicks meant for the parcels beneath it.
-            interactive: false,
+            pane: 'observedReferences', interactive: false,
             style: window.BuildingLayersDialog?.style || { color: '#7c3aed', opacity: 0.55, weight: 1, fillColor: '#7c3aed', fillOpacity: 0.12 }
         });
         const checkbox = document.getElementById('showBuildingsDgu');
@@ -656,9 +657,10 @@ async function fetchOsmBuildings(boundsOverride = null) {
         if (osmBuildingLayer) {
             try { map.removeLayer(osmBuildingLayer); } catch (_) { }
         }
+        if (!map.getPane('observedReferences')) map.createPane('observedReferences');
         osmBuildingLayer = L.geoJSON({ type: 'FeatureCollection', features: (data?.features || []) }, {
             // Reference only: it must never intercept clicks meant for the parcels beneath it.
-            interactive: false,
+            pane: 'observedReferences', interactive: false,
             style: window.BuildingLayersDialog?.style || { color: '#7c3aed', opacity: 0.55, weight: 1, fillColor: '#7c3aed', fillOpacity: 0.12 }
         });
         const checkbox = document.getElementById('showBuildingsOsm');
@@ -729,7 +731,7 @@ function buildingFeatureWithOutcome(feature, state) {
     const outcome = classify
         ? classify(id, state)
         : (record ? (record.remainder ? 'cut' : 'destroyed') : (state.tunnelledIds.has(id) ? 'tunnelled' : null));
-    const geometry = (record && record.remainder) ? record.remainder : feature.geometry;
+    const geometry = window.PlanningScene.builtGeometry(feature.geometry, record, window.PlanningViews?.getState()?.existingScope);
     return { ...feature, geometry, properties: { ...(feature.properties || {}), __outcome: outcome } };
 }
 
@@ -741,9 +743,10 @@ function reconcileBuildingFeatureEntries(previousSignatures, features, getId, pr
         const id = getId(source);
         if (!id || !source?.geometry) continue;
         const feature = prepareFeature(source);
+        nextFeatures.set(id, source);
+        if (!feature?.geometry) continue;
         const signature = signatureOf(feature);
         nextSignatures.set(id, signature);
-        nextFeatures.set(id, source);
         if (previousSignatures.get(id) !== signature) changed.push({ id, feature });
     }
     const removed = [];
@@ -807,10 +810,12 @@ function applyBuildingFeatureLayerChanges(layerGroup, layersById, changes) {
 }
 
 function buildingLayerOptions() {
+    if (!map.getPane('observedBuildings')) map.createPane('observedBuildings');
     return {
-        // Context only: existing buildings must never intercept clicks meant for the parcels
-        // beneath them (they are inspectable in 3D, not in 2D).
-        interactive: false,
+        pane: 'observedBuildings',
+        // The shared inspector handles observed buildings in either view. Edit tools still
+        // own pointer events while their map lock is held.
+        interactive: true,
         style: buildingStyleForFeature,
         onEachFeature: (feature, layer) => {
             const id = buildingPoolFeatureKey(feature);
@@ -818,6 +823,11 @@ function buildingLayerOptions() {
             const layers = buildingRenderedLayersById.get(id) || [];
             layers.push(layer);
             buildingRenderedLayersById.set(id, layers);
+            layer.on('click', event => {
+                if (window.__mapEditLock?.isHeld()) return;
+                L.DomEvent.stopPropagation(event);
+                window.PlanningViews?.inspectBuilding(feature, id);
+            });
         }
     };
 }
@@ -888,6 +898,7 @@ function refreshBuildingOutcomesFromRecords() {
             return;
         }
         const effective = buildingFeatureWithOutcome(source, state);
+        if (!effective.geometry) { renderedBuildingFeatureSignatures.delete(id); return; }
         try { buildingLayer.addData(effective); } catch (error) {
             console.error('[map-core] local building outcome refresh failed', id, error);
             return;

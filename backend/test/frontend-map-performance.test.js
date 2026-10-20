@@ -1,5 +1,7 @@
 import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
+import { createRequire } from 'node:module';
+const planningScene = createRequire(import.meta.url)('../../frontend/js/planning/scene.js');
 import { parse } from '@babel/parser';
 import { describe, expect, it } from 'vitest';
 
@@ -30,22 +32,29 @@ function loadBuildingLayerRuntime() {
     const declarations = ast.program.body.filter(node => node.type === 'FunctionDeclaration' && names.includes(node.id.name));
     expect(declarations.map(node => node.id.name).sort()).toEqual([...names].sort());
 
-    const fixture = { state: { demolishedById: new Map(), tunnelledIds: new Set(), affectedIds: new Set() } };
+    const fixture = { state: { demolishedById: new Map(), tunnelledIds: new Set(), affectedIds: new Set() }, inspections: [], stoppedEvents: [] };
     const layersById = new Map();
     const allLayers = new Set();
     const mapLayers = new Set();
     const optionsByFeature = new Map();
+    const panes = new Map();
     const map = {
+        getPane(name) { return panes.get(name); },
+        createPane(name) { const pane = {}; panes.set(name, pane); return pane; },
         hasLayer(layer) { return mapLayers.has(layer); },
         addLayer(layer) { mapLayers.add(layer); return this; },
         removeLayer(layer) { mapLayers.delete(layer); return this; }
     };
     const L = {
+        DomEvent: { stopPropagation: event => fixture.stoppedEvents.push(event) },
         geoJSON(_data, options) {
             const group = {
                 options,
                 addData(feature) {
-                    const layer = { feature, style: options.style(feature) };
+                    const handlers = new Map();
+                    const layer = { feature, style: options.style(feature),
+                        on: (name, handler) => handlers.set(name, handler),
+                        fire: (name, event) => handlers.get(name)?.(event) };
                     allLayers.add(layer);
                     options.onEachFeature(feature, layer);
                 },
@@ -66,6 +75,10 @@ function loadBuildingLayerRuntime() {
         collectDemolishedBuildingRecords: () => Array.from(fixture.state.demolishedById.values())
     });
     context.window = context;
+    context.PlanningScene = planningScene;
+    context.PlanningViews = { getState: () => ({ existingScope: fixture.existingScope || 'all' }),
+        inspectBuilding: (feature, id) => fixture.inspections.push({ feature, id }) };
+    context.__mapEditLock = { isHeld: () => fixture.editLocked === true };
     context.collectTunnelledBuildingIds = () => fixture.state.tunnelledIds;
     context.buildingOutcomeStyle = outcome => ({ color: outcome || 'normal' });
     vm.runInContext('let buildingLayer = null; let buildingFeatureById = new Map(); let buildingRenderedLayersById = new Map(); let renderedBuildingOutcomeSignatures = new Map(); let renderedBuildingFeatureSignatures = new Map();', context);
@@ -214,6 +227,15 @@ describe('incremental building presentation model', () => {
         const bLayer = context.getRenderedLayers().get('b')[0];
         expect(mapLayers.has(group)).toBe(false);
         expect(allLayers.size).toBe(2);
+        const click = { type: 'click' };
+        aLayer.fire('click', click);
+        expect(fixture.inspections).toEqual([{ feature: aLayer.feature, id: 'a' }]);
+        expect(fixture.stoppedEvents).toEqual([click]);
+        fixture.editLocked = true;
+        bLayer.fire('click', { type: 'click' });
+        expect(fixture.inspections).toHaveLength(1);
+        expect(fixture.stoppedEvents).toHaveLength(1);
+        fixture.editLocked = false;
 
         checkbox.checked = true;
         context.rebuildBuildingLayerFromPool();
@@ -228,6 +250,9 @@ describe('incremental building presentation model', () => {
         expect(context.getRenderedLayers().get('a')[0]).toBe(aLayer);
         expect(context.getRenderedLayers().get('b')).toHaveLength(1);
         expect(context.getRenderedLayers().get('b')[0]).not.toBe(bLayer);
+        expect(context.getRenderedLayers().get('b')[0].feature.geometry).toEqual(b.geometry);
+        fixture.existingScope = 'surviving';
+        context.rebuildBuildingLayerFromPool();
         expect(context.getRenderedLayers().get('b')[0].feature.geometry).toEqual(fixture.state.demolishedById.get('b').remainder);
         expect(context.getRenderedLayers().get('b')[0].style).toEqual({ color: 'cut' });
 

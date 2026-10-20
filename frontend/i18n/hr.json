@@ -2218,7 +2218,6 @@
             "individualOwnersLabel": "Zabilježeni vlasnički unosi:",
             "unknownOwnershipLabel": "Nepoznata kategorija vlasništva:",
             "ownershipMixedLabel": "Čestice s mješovitom kategorijom vlasništva:",
-            "acquiringDifficultyLabel": "Modelirani pokazatelj stjecanja:",
             "acquiringDifficultyTitle": "Modelirani pokazatelj stjecanja",
             "acquiringDifficultyTooltip": "Ilustrativni pokazatelj: vrijednost čestice × težina kategorije. Ne utvrđuje trošak stjecanja, pravnu raspoloživost ni suglasnost.\nJavno vlasništvo: 0\nUstanova: 0\nTvrtka: 1\nPrivatno ili mješovito: 2\nBez kategorije vlasništva ili upotrebljivih cijena te uz različite valute pokazatelj ostaje nepoznat. Površinski model koristi 100 EUR/m².",
             "acquiringDifficultyDialogOk": "OK",
@@ -6503,11 +6502,9 @@
             "stateOff": "Isključeno",
             "built": "Izgrađeno",
             "both": "Oboje",
-            "planned": "Planirano",
             "radius": "Radijus",
             "radiusTooltip": "Radijus — koliko širok pojas okolnih stvarnih zgrada se učitava i prikazuje kao kontekst",
             "builtTooltip": "Izgrađeno — postojeće stvarne zgrade koje danas stoje na terenu",
-            "plannedTooltip": "Planirano — predložene građevine i površine (parkovi, trgovi, voda i njihove dekoracije)",
             "stateSolidTooltip": "Puno — iscrtano potpuno neprozirno",
             "stateGhostTooltip": "Prozirno — iscrtano poluprozirno da se vidi kroz njega",
             "stateSurvivingTooltip": "Preostale — postojeće zgrade prikazane puno, ali one koje plan ruši su skrivene (stanje nakon plana)",
@@ -6520,7 +6517,6 @@
             "life": "Ljudi i promet",
             "lifeTooltip": "Prikažite ili sakrijte shematske ljude i vozila koji se kreću 3D prikazom",
             "water": "Voda",
-            "plannedAs": "Planirano kao",
             "facades": "Pročelja",
             "facadeStyle": "Stil pročelja",
             "facadesTooltip": "Primjeri prozora i materijala na planiranim zgradama. Svaka zgrada zadržava isti izgled.",
@@ -6555,7 +6551,6 @@
                 "stone": "Svijetli kamen",
                 "plaster": "Žbuka"
             },
-            "plannedAsTooltip": "Planirano kao — prikaži gabarit koji pravilo dopušta, jedan primjer izgradnje po njemu, ili oboje",
             "representationMassing": "Gabarit",
             "representationMassingTooltip": "Gabarit — volumen koji pravilo dopušta, ono što prijedlog zapravo propisuje",
             "representationBuildOut": "Izgradnja",
@@ -6805,20 +6800,18 @@
     },
     "world": {
         "title": "Odaberite mjesto",
-        "hint": "Povucite za okretanje · kliknite bilo gdje da vidite koji podaci o česticama postoje",
+        "hint": "Povuci za okretanje · odaberi grad ili točnu lokaciju",
         "reach": {
             "headline": "Gradovi: {{cities}} · države: {{countries}}",
             "caption": "Uz katastarske podatke, spremno za istraživanje"
         },
-        "canvasLabel": "Globus. Povucite za okretanje, kotačićem zumirajte, kliknite mjesto da provjerite podatke o česticama.",
+        "canvasLabel": "Globus. Povuci za okretanje, pomiči kotačić za zumiranje i odaberi grad ili točnu lokaciju.",
         "close": "Zatvori",
         "backToMap": "Natrag na kartu",
         "search": {
-            "placeholder": "Tražite grad ili državu",
-            "label": "Pretraga mjesta",
-            "country": "Država",
-            "territory": "Područje",
-            "noResults": "Nema takvog mjesta",
+            "placeholder": "Naziv grada",
+            "label": "Pretraži gradove",
+            "noResults": "Nema odgovarajućeg grada",
             "locate": "Prikaži moju lokaciju",
             "locateFailed": "Nije moguće dohvatiti vašu lokaciju."
         },
@@ -6895,15 +6888,15 @@
             }
         },
         "popup": {
-            "ocean": "Otvoreno more",
-            "oceanText": "Ovdje nema kopna, pa ni čestica. Kartu ipak možete otvoriti na ovom mjestu.",
-            "coverageSource": "Izvor podataka o pokrivenosti"
+            "coverageSource": "Izvor podataka o pokrivenosti",
+            "location": "Odabrana lokacija",
+            "locationText": "Otvori ovu točnu lokaciju na razini ulice za pregled ili izradu prijedloga."
         },
         "action": {
             "open": "Otvori {{city}}",
             "explore": "Otvori kartu ovdje",
             "askCity": "Zatraži ovaj grad",
-            "askArea": "Zatraži ovo područje"
+            "askPoint": "Zatraži čestice ovdje"
         },
         "request": {
             "sending": "Šaljem…",
@@ -7458,7 +7451,7 @@
     },
     "parcelEstimate": {
         "collapse": "Sažmi kontrole",
-        "expand": "Prikaži kontrole",
+        "expand": "Prikaži kontrole parcela",
         "title": "Ilustrativne procjene čestica",
         "disclaimer": "Procijenjene granice mogu biti nepotpune ili pogrešne i ne utvrđuju pravne granice.",
         "help": "Nove procjene pokreću se automatski i spremaju u ovaj preglednik. Odaberite česticu za uobičajene alate planiranja. Ponovna izrada zamjenjuje ovaj lokalni izvor.",
@@ -7697,5 +7690,143 @@
                 "apply": "Primijeni plan"
             }
         }
-    }
+    },
+  "planningViews": {
+    "refreshPending": "Čeka osvježavanje",
+    "refreshCount": {
+      "one": "{{count}} rezultat čeka osvježavanje",
+      "few": "{{count}} rezultata čeka osvježavanje",
+      "other": "{{count}} rezultata čeka osvježavanje"
+    },
+    "refreshNote": "Prikazuje se posljednji spremljeni izračun s izvornom verzijom i datumom.",
+    "refreshFailed": "Posljednje osvježavanje nije dovršeno.",
+    "refreshCause": {
+      "LOCAL_SYNC_PENDING": "Lokalna kopija čeka sinkronizaciju.",
+      "SOURCE_INPUT_CHANGED": "Izvorni podaci su promijenjeni; čeka se novi izračun.",
+      "UNREVIEWED_CAPACITY_LOSS": "Zamjenski izračun smanjio bi prethodnu procjenu i čeka provjeru.",
+      "UNREVIEWED_CAPACITY_COHORT_CHANGE": "Promijenjeni obuhvat izračuna čeka provjeru."
+    },
+    "title": "Zgrade i građevne mase",
+    "detailsLabel": "Podaci o planskom izvoru",
+    "permitted": "Dopušteno",
+    "loading": "Učitavanje dopuštenih građevnih masa…",
+    "zoom": "Približite kartu za prikaz dopuštenih građevnih masa.",
+    "unavailable": "Za ovaj grad još nije povezan izvor dopuštenih građevnih masa.",
+    "empty": "U ovom području nema prikazanih građevnih masa. To ne znači da je gradnja zabranjena.",
+    "error": "Planski izvor nije moguće učitati.",
+    "loaded": {
+      "one": "{{count}} spremljena građevna masa u prikazu",
+      "few": "{{count}} spremljene građevne mase u prikazu",
+      "other": "{{count}} spremljenih građevnih masa u prikazu"
+    },
+    "loadingProgress": "Učitavanje dopuštenih volumena… {{count}} od {{total}} profila učitano",
+    "partial": {
+      "one": "Prikazana je {{count}} varijanta · dio izvorne geometrije nije dostupan",
+      "few": "Prikazane su {{count}} varijante · dio izvorne geometrije nije dostupan",
+      "other": "Prikazano je {{count}} varijanti · dio izvorne geometrije nije dostupan"
+    },
+    "sourceProposal": "Dopuštena građevna masa",
+    "close": "Zatvori podatke o izvoru",
+    "obligatory": "Obvezujući izvorni prijedlog",
+    "sourceEvidenceBadge": "Dokaz iz izvora",
+    "approximate": "Približno",
+    "oneOption": "Jedna izračunata mogućnost prema izvornim pravilima. Ne predstavlja sve moguće oblike gradnje.",
+    "floorArea": "Izračunata podna površina",
+    "height": "Visina građevne mase",
+    "dwellingLimit": "Najviše stanova",
+    "conditionsTitle": "Uvjeti još zahtijevaju provjeru",
+    "conditionsNote": "Primjenjivost i neovisna ograničenja nisu razriješeni. Ovaj oblik nije potvrđena dozvola za gradnju.",
+    "sourceDetails": "Izvor i dokazi",
+    "computed": "Izračunato {{date}}",
+    "sourceTerms": "Spremljeni izvorni izračun i ocjena",
+    "readSource": "Pročitaj izvorni plan",
+    "constraint": {
+      "dwellings": "Najveći broj stanova",
+      "floorArea": "Najveća podna površina",
+      "naturalGround": "Najmanji udio prirodnog terena",
+      "frontSetback": "Najmanji prednji odmak",
+      "sideSetback": "Najmanji bočni odmak",
+      "rearSetback": "Najmanji stražnji odmak",
+      "height": "Najveća visina",
+      "lotArea": "Najmanja površina čestice"
+    },
+    "photoNote": "Dopuštene volumene pregledajte na karti ili u 3D modelu.",
+    "openModel": "Otvori 3D model",
+    "displayLabel": "Prikaz: {{role}}",
+    "existingScope": "Odabir postojećih zgrada",
+    "proposedForm": "Oblik prikaza prijedloga",
+    "permittedMap": "Dopušteni volumen na karti",
+    "footprint": "Tlocrt",
+    "steps": "Visinski dijelovi",
+    "permittedOff": "Dopušteni volumeni su skriveni.",
+    "coverageTitle": "Što obuhvaća ovaj izvor?",
+    "coverageNote": "Prikazuju se spremljeni izračuni izvora. Neki sadrže građevnu masu, a drugi navode nedostatak dokaza, neispunjene uvjete ili drugi planski postupak. Rezultat bez geometrije nije dokaz nultog kapaciteta. Visinski dijelovi prikazuju dijelove na različitim visinama.",
+    "inspectHint": "Odaberite zgradu ili izvornu geometriju za pregled.",
+    "inspectMassing": "Pregledaj dopušteni volumen na čestici {{parcel}}",
+    "heightParts": "Visinski dijelovi: {{heights}}",
+    "cacheSummary": "{{count}} spremljenih rezultata u ovom području: {{shapes}} s geometrijom, {{missing}} bez geometrije.",
+    "stockBadge": "Procjena postojećih zgrada",
+    "stockEstimate": "Izvor procjenjuje postojeće zgrade za ovaj planski režim. Ova geometrija nije izračunata ovojnica nove gradnje.",
+    "solverVersion": "Verzija izračuna: {{version}}",
+    "otherResult": "Drugi ishod izvora",
+    "resultStatus": {
+      "condition_failed": "Uvjeti nisu ispunjeni",
+      "evidence_missing": "Nedostaju dokazi",
+      "existing_stock_estimate": "Procjene postojećih zgrada",
+      "geometry_failed": "Provjera geometrije nije uspjela",
+      "geometry_validated": "Geometrija je provjerena",
+      "instrument_handoff": "Primjenjuje se drugi plan",
+      "no_validated_candidate": "Nema provjerene varijante",
+      "procedure_required": "Potreban je planski postupak",
+      "route": "Drugi planski put",
+      "unresolved_context": "Kontekst nije razriješen",
+      "unsupported_calculation": "Izračun nije podržan",
+      "allowed": "Zabilježeno kao dopušteno",
+      "hearing": "Potrebna rasprava",
+      "prohibited": "Zabilježeno kao zabranjeno",
+      "overlay": "Primjenjuju se uvjeti dodatnog sloja",
+      "nomention": "Namjena nije navedena",
+      "clear": "Javna provjera: nije pronađen kartirani sukob",
+      "flagged": "Javna provjera: pronađeni kartirani sukobi"
+    },
+    "savedResult": "Spremljeni planski rezultat",
+    "inspectResult": "Pregledaj rezultat",
+    "savedWithdrawn": "Ovaj spremljeni rezultat trenutačno se ne prikazuje kao volumen.",
+    "recorded": "Zabilježeno {{date}}",
+    "sourceEdition": "Izvor / izdanje",
+    "evidenceOnly": "Samo spremljeni podaci provjere. Ovaj izvor nema prihvaćenu geometriju ovojnice.",
+    "savedNoShape": "Ovaj spremljeni rezultat nema prikazani volumen.",
+    "builtRecord": "Postojeća zgrada",
+    "proposedRecord": "Autorski prijedlog",
+    "observedNote": "Izvorni podaci o zgradi. Nedostajuće mjere ostaju nepoznate.",
+    "authoredNote": "Autorski projekt. Njegov prikaz ne potvrđuje dozvolu ni izgradnju.",
+    "proposalActions": "Radnje prijedloga",
+    "footprintArea": "Tlocrtna površina",
+    "referenceChanged": "Izvor se promijenio od verzije navedene u projektu. Prikazuje se trenutačno spremljeni zapis; navedena verzija nije rekonstruirana.",
+    "referencedSource": "Izvor: {{source}} · {{revision}}",
+    "referenceUnavailable": "Navedeni izvorni zapis nije dostupan.",
+    "scenarioLabel": "Vrsta stanovanja",
+    "zoningAreaNote": "Izvorna područja zoniranja i zabilježena ograničenja. Ta područja nisu ovojnice zgrada. Primjenjivost nije provjerena.",
+    "areasLoaded": {
+      "one": "{{count}} izvorno područje zoniranja u prikazu",
+      "few": "{{count}} izvorna područja zoniranja u prikazu",
+      "other": "{{count}} izvornih područja zoniranja u prikazu"
+    },
+    "scenario": {
+      "family1": "Jednoobiteljsko",
+      "family2": "Dvije obitelji",
+      "family3": "Tri obitelji",
+      "family4": "Četiri ili više obitelji",
+      "accessory": "Pomoćno stanovanje",
+      "plannedresidential": "Planirano stanovanje",
+      "cached-calculation": "Spremljeni izračun",
+      "new-attached-multifamily": "Nova višestambena izgradnja u nizu"
+    },
+    "evidence": {
+      "direct": "Izravna izvorna vrijednost",
+      "estimated": "Procjena izvora"
+    },
+    "zoningArea": "Izvorno područje zoniranja",
+    "inspectArea": "Pregledaj izvorno područje zoniranja {{parcel}}"
+  }
 }

@@ -2194,7 +2194,6 @@
             "individualOwnersLabel": "Listed owner entries:",
             "unknownOwnershipLabel": "Ownership category unknown:",
             "ownershipMixedLabel": "Parcels classed as mixed ownership:",
-            "acquiringDifficultyLabel": "Modeled acquisition score:",
             "acquiringDifficultyTitle": "Modeled acquisition score",
             "acquiringDifficultyTooltip": "Illustrative score: parcel value × category weight. This is not acquisition cost, legal availability or consent.\nGovernment: 0\nInstitution: 0\nCompany: 1\nIndividual or mixed: 2\nMissing ownership categories, unusable prices or mixed currencies leave the score unknown. Area estimates use a fixed EUR 100/m² model.",
             "acquiringDifficultyDialogOk": "OK",
@@ -6451,11 +6450,9 @@
             "stateOff": "Off",
             "built": "Built",
             "both": "Both",
-            "planned": "Planned",
             "radius": "Radius",
             "radiusTooltip": "Radius — how wide a band of surrounding real buildings is loaded and shown as context",
             "builtTooltip": "Built — the existing real buildings standing on the ground today",
-            "plannedTooltip": "Planned — proposed structures and grounds (parks, squares, water and their decorations)",
             "stateSolidTooltip": "Solid — drawn fully opaque",
             "stateGhostTooltip": "Transparent — drawn semi-transparent so you can see through it",
             "stateSurvivingTooltip": "Surviving — existing buildings shown solid, but the ones the plan demolishes are hidden (the after-the-plan state)",
@@ -6468,7 +6465,6 @@
             "life": "People and traffic",
             "lifeTooltip": "Show or hide schematic people and vehicles moving through the 3D view",
             "water": "Water",
-            "plannedAs": "Planned as",
             "facades": "Facades",
             "facadeStyle": "Facade style",
             "facadesTooltip": "Illustrative windows and materials on proposed buildings. Each building keeps its design.",
@@ -6503,7 +6499,6 @@
                 "stone": "Pale stone",
                 "plaster": "Plaster"
             },
-            "plannedAsTooltip": "Planned as — draw the volume the rule permits, one example of what could be built under it, or both",
             "representationMassing": "Massing",
             "representationMassingTooltip": "Massing — the volume the rule permits, which is what the proposal asserts",
             "representationBuildOut": "Build-out",
@@ -6753,20 +6748,18 @@
     },
     "world": {
         "title": "Choose a place",
-        "hint": "Drag to spin · click anywhere to see what parcel data exists there",
+        "hint": "Drag to spin · select a city or an exact location",
         "reach": {
             "headline": "{{cities}} cities · {{countries}} countries",
             "caption": "With parcel data, ready to explore"
         },
-        "canvasLabel": "Globe. Drag to rotate, scroll to zoom, click a place to check parcel data.",
+        "canvasLabel": "Globe. Drag to rotate, scroll to zoom, select a city or an exact location.",
         "close": "Close",
         "backToMap": "Back to map",
         "search": {
-            "placeholder": "Search a city or country",
-            "label": "Search places",
-            "country": "Country",
-            "territory": "Territory",
-            "noResults": "No matching place",
+            "placeholder": "City name",
+            "label": "Search cities",
+            "noResults": "No matching city",
             "locate": "Show my location",
             "locateFailed": "Could not get your location."
         },
@@ -6843,15 +6836,15 @@
             }
         },
         "popup": {
-            "ocean": "Open water",
-            "oceanText": "No land here, so no parcels. You can still open the map at this spot.",
-            "coverageSource": "Coverage source"
+            "coverageSource": "Coverage source",
+            "location": "Selected location",
+            "locationText": "Open this exact location at street level to view or create proposals."
         },
         "action": {
             "open": "Open {{city}}",
             "explore": "Open the map here",
             "askCity": "Ask for this city",
-            "askArea": "Ask for this area"
+            "askPoint": "Ask for parcels here"
         },
         "request": {
             "sending": "Sending…",
@@ -7400,7 +7393,7 @@
     },
     "parcelEstimate": {
         "collapse": "Collapse controls",
-        "expand": "Show controls",
+        "expand": "Show parcel controls",
         "title": "Illustrative parcel estimates",
         "disclaimer": "Estimated boundaries may be incomplete or wrong and do not establish legal boundaries.",
         "help": "New estimates start automatically and are saved in this browser. Select a parcel to use the usual planning tools. Generate again to replace this local source.",
@@ -7636,5 +7629,139 @@
                 "apply": "Apply plan"
             }
         }
-    }
+    },
+  "planningViews": {
+    "refreshPending": "Awaiting refresh",
+    "refreshCount": {
+      "one": "{{count}} result awaiting refresh",
+      "other": "{{count}} results awaiting refresh"
+    },
+    "refreshNote": "Showing the last saved calculation with its original version and date.",
+    "refreshFailed": "The latest refresh did not complete.",
+    "refreshCause": {
+      "LOCAL_SYNC_PENDING": "The local copy is awaiting synchronization.",
+      "SOURCE_INPUT_CHANGED": "Source data changed; recalculation is pending.",
+      "UNREVIEWED_CAPACITY_LOSS": "The replacement would reduce the previous estimate and is awaiting review.",
+      "UNREVIEWED_CAPACITY_COHORT_CHANGE": "The changed calculation coverage is awaiting review."
+    },
+    "title": "Buildings and massing",
+    "detailsLabel": "Planning source details",
+    "permitted": "Permitted",
+    "loading": "Loading permitted massing…",
+    "zoom": "Zoom in to explore permitted massing.",
+    "unavailable": "No permitted-massing source is connected for this city yet.",
+    "empty": "No represented massing in this area. This does not mean building is prohibited.",
+    "error": "The planning source could not be loaded.",
+    "loaded": {
+      "one": "{{count}} cached massing in view",
+      "other": "{{count}} cached massings in view"
+    },
+    "loadingProgress": "Loading permitted massing… {{count}} of {{total}} profiles read",
+    "partial": {
+      "one": "{{count}} option shown · some source geometry is unavailable",
+      "other": "{{count}} options shown · some source geometry is unavailable"
+    },
+    "sourceProposal": "Permitted massing",
+    "close": "Close source details",
+    "obligatory": "Obligatory source proposal",
+    "sourceEvidenceBadge": "Source evidence",
+    "approximate": "Approximate",
+    "oneOption": "One calculated option under the source rules. It is not the full range of possible designs.",
+    "floorArea": "Calculated floor area",
+    "height": "Massing height",
+    "dwellingLimit": "Dwelling limit",
+    "conditionsTitle": "Conditions still need checking",
+    "conditionsNote": "Applicability and independent limits are unresolved. This shape is not a verified building permission.",
+    "sourceDetails": "Source and evidence",
+    "computed": "Calculated {{date}}",
+    "sourceTerms": "Saved source calculation and assessment",
+    "readSource": "Read the source plan",
+    "constraint": {
+      "dwellings": "Maximum dwellings",
+      "floorArea": "Maximum floor area",
+      "naturalGround": "Minimum natural ground",
+      "frontSetback": "Minimum front setback",
+      "sideSetback": "Minimum side setback",
+      "rearSetback": "Minimum rear setback",
+      "height": "Maximum height",
+      "lotArea": "Minimum lot area"
+    },
+    "photoNote": "Explore permitted massing in the map or 3D model view.",
+    "openModel": "Open 3D model view",
+    "displayLabel": "{{role}} appearance",
+    "existingScope": "Built building selection",
+    "proposedForm": "Proposed representation",
+    "permittedMap": "Permitted massing on the map",
+    "footprint": "Footprint",
+    "steps": "Height steps",
+    "permittedOff": "Permitted massing is hidden.",
+    "coverageTitle": "What does this source cover?",
+    "coverageNote": "Showing the provider’s saved calculations. Some results contain massing; others report missing evidence, unmet conditions or another planning procedure. A result without geometry is not proof of zero capacity. Height steps shows the parts at different elevations.",
+    "inspectHint": "Select a building or source geometry to inspect it.",
+    "inspectMassing": "Inspect permitted massing on {{parcel}}",
+    "heightParts": "Height parts: {{heights}}",
+    "cacheSummary": "{{count}} saved results in this area: {{shapes}} with geometry, {{missing}} without geometry.",
+    "stockBadge": "Existing-stock estimate",
+    "stockEstimate": "The source estimates existing building stock for this planning regime. This geometry is not a calculated new-build envelope.",
+    "solverVersion": "Solver version: {{version}}",
+    "otherResult": "Other source outcome",
+    "resultStatus": {
+      "condition_failed": "Conditions not met",
+      "evidence_missing": "Evidence missing",
+      "existing_stock_estimate": "Existing-stock estimates",
+      "geometry_failed": "Geometry validation failed",
+      "geometry_validated": "Geometry validated",
+      "instrument_handoff": "Another planning instrument applies",
+      "no_validated_candidate": "No validated candidate",
+      "procedure_required": "Planning procedure required",
+      "route": "Another planning route",
+      "unresolved_context": "Context unresolved",
+      "unsupported_calculation": "Calculation unsupported",
+      "allowed": "Recorded as allowed",
+      "hearing": "Hearing required",
+      "prohibited": "Recorded as prohibited",
+      "overlay": "Overlay conditions apply",
+      "nomention": "Use not mentioned",
+      "clear": "Public screen: no mapped conflict found",
+      "flagged": "Public screen: mapped conflicts found"
+    },
+    "savedResult": "Saved planning result",
+    "inspectResult": "Inspect result",
+    "savedWithdrawn": "This saved result is not currently displayed as massing.",
+    "recorded": "Recorded {{date}}",
+    "sourceEdition": "Source / edition",
+    "evidenceOnly": "Saved screening evidence only. This source provides no accepted envelope geometry.",
+    "savedNoShape": "This saved result contains no displayed massing.",
+    "builtRecord": "Observed building",
+    "proposedRecord": "Authored proposal",
+    "observedNote": "Source building data. Missing measurements remain unknown.",
+    "authoredNote": "An authored design. Displaying it does not establish permission or construction.",
+    "proposalActions": "Proposal actions",
+    "footprintArea": "Footprint area",
+    "referenceChanged": "This source has changed since the design referenced it. Showing the currently saved record; the referenced revision is not reconstructed.",
+    "referencedSource": "Source: {{source}} · {{revision}}",
+    "referenceUnavailable": "The referenced source record is unavailable.",
+    "scenarioLabel": "Housing type",
+    "zoningAreaNote": "Source zoning areas and recorded constraints. These areas are not building envelopes. Applicability remains unchecked.",
+    "areasLoaded": {
+      "one": "{{count}} source zoning area in view",
+      "other": "{{count}} source zoning areas in view"
+    },
+    "scenario": {
+      "family1": "One-family",
+      "family2": "Two-family",
+      "family3": "Three-family",
+      "family4": "Four-or-more-family",
+      "accessory": "Accessory housing",
+      "plannedresidential": "Planned residential",
+      "cached-calculation": "Saved calculation",
+      "new-attached-multifamily": "New attached multifamily"
+    },
+    "evidence": {
+      "direct": "Direct source value",
+      "estimated": "Source estimate"
+    },
+    "zoningArea": "Source zoning area",
+    "inspectArea": "Inspect source zoning area {{parcel}}"
+  }
 }

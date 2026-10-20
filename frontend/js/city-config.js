@@ -103,7 +103,7 @@
         try { fromStore = model.parseAt(localStorage.getItem(EXPLORE_AT_KEY)); } catch (_) { /* storage blocked */ }
         const view = fromQuery || fromStore;
         if (!view) return EXPLORE_DEFAULT_VIEW;
-        return { lat: view.lat, lon: view.lon, zoom: Number.isFinite(view.zoom) ? view.zoom : model.EXPLORE_ZOOM.city };
+        return { lat: view.lat, lon: view.lon, zoom: Number.isFinite(view.zoom) ? view.zoom : model.EXPLORE_ZOOM };
     })();
 
     const CITY_CONFIGS = {

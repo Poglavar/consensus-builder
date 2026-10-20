@@ -23,7 +23,7 @@ body.map-search-expanded .map-shell-slot--search {
 }
 
 /* The search moves the 2D map, which the model/photo views cover. */
-body.three-mode-active .map-shell-slot--search {
+body.three-mode-active .map-search {
     display: none;
 }
 
@@ -313,6 +313,7 @@ body.app-loading .map-search {
     }
 
     .map-search__chip {
+        min-width: 0;
         max-width: 96px;
         padding: 0 10px;
     }
@@ -320,6 +321,11 @@ body.app-loading .map-search {
     /* Exploring: compass + the place name ("Explore · Tokyo" truncated to "Explor…" before). */
     body.explore-city {
         --map-search-compact-width: 150px;
+    }
+
+    /* Leave room for massing, the avatar, Layers and Settings on the same top row. */
+    .map-search:not(.is-expanded) {
+        max-width: min(var(--map-search-compact-width), calc(100vw - 2 * var(--map-shell-edge) - 4 * var(--map-shell-button-size) - 4 * var(--map-shell-gap)));
     }
 
     .map-search__chip.is-explore {

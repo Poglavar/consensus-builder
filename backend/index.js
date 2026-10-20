@@ -22,6 +22,7 @@ import { setupParcelOwnershipRoute } from './routes/parcel-ownership.js';
 import { setupParcelSourcesRoute } from './routes/parcel-sources.js';
 import { createParcelProviderRelayRouter } from './routes/parcel-provider-relay.js';
 import { setupBuildingSourcesRoute } from './routes/building-sources.js';
+import { setupPlanningRoutes } from './routes/planning.js';
 import { setupBuildingsRoute } from './routes/buildings.js';
 import { setupFloorPlanArchiveRoute } from './routes/floor-plan-archive.js';
 import { setupBuildingFloorModelsRoute } from './routes/building-floor-models.js';
@@ -456,6 +457,7 @@ export function createApp({
     app.use('/parcel-provider-relay', createParcelProviderRelayRouter());
     setupParcelSourcesRoute(app);
     setupBuildingSourcesRoute(app);
+    setupPlanningRoutes(app, activePool);
     setupBuildingsRoute(app, activePool);
     setupFloorPlanArchiveRoute(app, activePool);
     setupBuildingFloorModelsRoute(app, activePool);

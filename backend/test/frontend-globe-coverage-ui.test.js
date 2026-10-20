@@ -1,7 +1,7 @@
 // Exercise the globe's actual country- and region-painting function and coverage-label contract
 // without WebGL or a browser. AST extraction keeps paintEarth and its palette coupled to the running
 // frontend.
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { createRequire } from 'node:module';
 import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
@@ -156,5 +156,40 @@ describe('globe geographic coverage UI contract', () => {
         }
         // The region texts must not reuse the country wording.
         expect(lookup(dictionaries.en, 'world.regionCoverage.full.short')).not.toBe(lookup(dictionaries.en, 'world.coverage.full.short'));
+    });
+});
+
+describe('globe destination wiring', () => {
+    it('picks an exact point on the globe background and only snaps to a drawn city marker', () => {
+        const pointAt = vi.fn((lat, lon) => ({ kind: 'point', lat, lon }));
+        const cityPlace = vi.fn(city => ({ kind: 'live-city', cityId: city.id, lat: city.lat, lon: city.lon }));
+        const select = vi.fn(), deselect = vi.fn();
+        const visibleMarkers = [];
+        const context = { visibleMarkers, select, deselect, coverage: { pointAt, cityPlace },
+            renderer: { domElement: { getBoundingClientRect: () => ({ left: 0, top: 0, width: 400, height: 400 }) } },
+            screenOf: () => ({ x: 200, y: 200 }),
+            camera: { position: { toArray: () => [0, 0, 2] } },
+            THREE: { Vector3: class { unproject() { return this; } sub() { return this; } toArray() { return [0, 0, -1]; } } },
+            GM: { raySphere: () => [0, 0, 1], vectorToLatLon: () => ({ lat: 50.52023, lon: -84.79045 }) } };
+        vm.runInNewContext(`${extractFunction('pickAt')}; this.pickAt = pickAt;`, context);
+        context.pickAt(200, 200);
+        expect(select).toHaveBeenLastCalledWith({ kind: 'point', lat: 50.52023, lon: -84.79045 });
+        expect(cityPlace).not.toHaveBeenCalled();
+        visibleMarkers.push({ entry: { live: true, vec: [], city: { id: 'toronto', lat: 43.65, lon: -79.38 } } });
+        context.pickAt(200, 200);
+        expect(select).toHaveBeenLastCalledWith({ kind: 'live-city', cityId: 'toronto', lat: 43.65, lon: -79.38 });
+        expect(pointAt).toHaveBeenCalledTimes(1);
+    });
+
+    it('keeps the chosen city search result instead of replacing it with a geographic-area lookup', async () => {
+        const select = vi.fn(), fly = vi.fn(async () => {});
+        const context = { searchInput: { value: '', setAttribute() {}, blur() {} }, results: {}, deselect: vi.fn(),
+            select, fly, searchHits: [], activeIndex: 0 };
+        vm.runInNewContext(`${extractFunction('choose')}; this.choose = choose;`, context);
+        const place = { kind: 'live-city', cityId: 'toronto', name: 'Toronto', lat: 43.65, lon: -79.38 };
+        context.choose(place);
+        await Promise.resolve();
+        expect(select).toHaveBeenCalledExactlyOnceWith(place);
+        expect(fly).toHaveBeenCalledWith({ lat: 43.65, lon: -79.38, altitudeKm: 8500 }, { hop: 0.6 });
     });
 });

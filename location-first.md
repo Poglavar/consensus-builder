@@ -19,6 +19,12 @@ User direction, 2026-10-17:
 - `city=zagreb` becomes an alias for the coordinates of Zagreb's centre.
 - Headless and headed tests cover the change.
 
+World navigation, implemented 2026-10-20: destinations are cities or exact points. Globe search
+contains only cities; marker clicks retain that city's identity. Clicking elsewhere on the globe,
+or using Show my location, selects the exact coordinates and opens them at zoom 19 without a
+latest-proposal detour. Country, province, region and territory outlines remain coverage context
+and cannot be selected as destinations. Coverage still determines which data source serves a point.
+
 ## Concepts
 
 | Term | Meaning |
@@ -253,5 +259,7 @@ Headed (a launched Chrome over agent-browser, checked by eye):
 - 2026-10-17: a session keeps its boot jurisdiction for parcels/proposals/storage; geography follows
   the camera.
 - 2026-10-17: one IndexedDB per city stays (user).
+- 2026-10-20: no clickable administrative regions. A world destination is a city or a precise point
+  where proposals can be viewed and created at street level.
 - 2026-10-17: a publication's city is the site's, never the request's; nothing is refused for where
   it was drawn from. Lists filter by that label (it is the site's city), plans by their members'.

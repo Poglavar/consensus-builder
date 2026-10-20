@@ -154,7 +154,8 @@
                 'css/schelling-plan.css',
                 'css/proposal-details.css?v=20261020-source-state',
                 'css/proposal-approval.css?v=20261020-approval-rules',
-                'css/plans.css'
+                'css/plans.css',
+                'css/planning-views.css'
             ];
             var cacheBuster = (typeof window !== 'undefined' && typeof window.getCacheBustToken === 'function')
                 ? window.getCacheBustToken()
@@ -406,7 +407,13 @@
 
         <!-- The search box (omnibox) with the city chip, js/ui/map-search.js, top-left. The mode
              strip is laid out underneath it (see --map-mode-slot-* in map.css). -->
-        <div id="map-search-slot" class="map-shell-slot map-shell-slot--search"></div>
+        <div id="map-search-slot" class="map-shell-slot map-shell-slot--search">
+            <button type="button" id="planning-views-button" class="map-shell-button" data-sheet-target="planning-views"
+                aria-controls="planning-views" aria-expanded="false" title="Buildings and massing" aria-label="Buildings and massing"
+                data-i18n-key="planningViews.title" data-i18n-attr="title,aria-label" hidden>
+                <i class="fas fa-cubes" aria-hidden="true"></i>
+            </button>
+        </div>
 
         <!-- Username Display -->
         <div id="username-display" class="username-display" role="button" tabindex="0">
@@ -445,6 +452,27 @@
             <i class="fas fa-wand-magic-sparkles" aria-hidden="true"></i>
         </button>
         <div id="three-container" aria-hidden="true"></div>
+
+        <!-- Content is shared across map and model; changing view never applies a source proposal. -->
+        <section id="planning-views" class="map-sheet planning-views" role="dialog" aria-labelledby="planning-views-title" hidden>
+            <div class="map-sheet-header">
+                <h2 id="planning-views-title" class="map-sheet-title" data-i18n-key="planningViews.title">Buildings and massing</h2>
+                <div class="planning-control-heading">
+                    <button type="button" id="planning-reroll" class="btn btn-icon planning-reroll"><i class="fa-solid fa-dice" aria-hidden="true"></i></button>
+                    <button type="button" class="map-sheet-close close-circle-btn close-circle-btn--lg" data-sheet-close
+                        aria-label="Close" title="Close" data-i18n-key="common.close" data-i18n-attr="aria-label,title">×</button>
+                </div>
+            </div>
+            <div class="map-sheet-body">
+                <div class="planning-layer-controls"></div>
+                <p class="planning-view-status" role="status" aria-live="polite"></p>
+                <button type="button" id="planning-view-retry" class="cb-link planning-view-retry" hidden></button>
+                <p class="planning-inspect-hint"></p>
+                <details class="planning-coverage"><summary></summary><p></p><p class="planning-cache-summary"></p><dl class="planning-result-counts"></dl></details>
+                <button type="button" id="planning-open-model" class="cb-link planning-open-model" hidden></button>
+            </div>
+        </section>
+        <aside id="planning-inspector" class="planning-inspector" aria-label="Planning source details" data-i18n-key="planningViews.detailsLabel" data-i18n-attr="aria-label" hidden></aside>
 
         <div id="area-monitor-drawing-toolbar" class="map-editor-toolbar" hidden>
             <span data-i18n-key="mapShell.reorg.watchedAreas">Watched areas</span>
@@ -715,7 +743,8 @@
                                     <input type="checkbox" id="showBuildingsOsm" onchange="toggleLayer('buildingsOsm')">
                                     <span data-i18n-key="sidebar.buildings.showOsm">OSM buildings (matches the map)</span>
                                 </label>
-                                <label>
+                                <!-- The shared view selector owns proposed-building visibility. -->
+                                <label hidden>
                                     <input type="checkbox" id="showProposedBuildings"
                                         onchange="toggleLayer('proposedBuildings')">
                                     <span data-i18n-key="sidebar.buildings.showProposed">Show Proposed Buildings</span>
@@ -1651,8 +1680,7 @@
                 </div>
                 <div class="metric-group">
                     <div class="metric-label" id="road-acquire-difficulty-label">
-                        <span data-i18n-key="panel.road.acquiringDifficultyLabel">Total Estimated Acquiring
-                            Difficulty</span>
+                        <span data-i18n-key="panel.road.acquiringDifficultyTitle">Modeled acquisition score</span>
                         <i class="fas fa-question-circle acquiring-difficulty-help-icon"
                             onclick="showAcquiringDifficultyDialog()" aria-label="Help"></i>
                     </div>
@@ -1775,16 +1803,16 @@
             'js/version-history.js',
             'js/environment.js',
             'js/wipe-local-data.js',
-            'js/world/world-entry-model.js',
+            'js/world/world-entry-model.js?v=20261020-point-destinations',
             'data/boot-coverage.js',
-            'js/world/world-coverage.js?v=20261017-location-first',
+            'js/world/world-coverage.js?v=20261020-point-destinations',
             'js/metric-frame.js',
             'js/parcel-source-settings.js',
             // bundle:end environment-before-city
             'js/city-config.js?v=20261020-ljubljana-gurs',
             // bundle:start environment-after-city
             'js/parcel-source-notice.js',
-            'js/ui/world-entry.js?v=20261020-local-estimates',
+            'js/ui/world-entry.js?v=20261020-merged-semantics',
             'js/city-switch-prompt.js',
             'js/ens/ens-name.js'
             // bundle:end environment-after-city
@@ -1914,6 +1942,11 @@
             'js/ui/busy-control.js',
             'js/ui/commands.js',
             'js/ui/map-shell.js',
+            'js/planning/scene.js',
+            'js/planning/representations.js?v=20261020-qualified-inspection',
+            'js/planning/source-proposal.js',
+            'js/planning/feed.js',
+            'js/planning/views.js?v=20261020-qualified-inspection',
             'js/bets/bets-link.js',
             'js/bets/lmsr.js',
             'js/bets/sha256.js',
@@ -1935,8 +1968,8 @@
             'js/world/activity.js?v=20261008-mobile-globe',
             'js/world/proposal-entry.js?v=20261009-view-buttons',
             'js/world/arrival.js?v=20261009-view-buttons',
-            'js/world/globe.js?v=20261012-city-counts',
-            'js/ui/map-search.js?v=20261008-point-parcels',
+            'js/world/globe.js?v=20261020-point-destinations',
+            'js/ui/map-search.js?v=20261020-collapsed-controls',
             'js/ui/command-palette.js',
             'js/parcels/parcel-id.js',
             'js/parcels/state.js',

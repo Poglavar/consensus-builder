@@ -68,6 +68,13 @@
     /* A named plan hatched on the map (css/plans.css); drawn over the map tiles, so one value serves both themes. */
     --cb-plan: #7c3aed;
 
+    /* Spatial representation roles, shared by the map and model comparison. */
+    --cb-planning-existing: #64748b;
+    --cb-planning-permitted: #168b87;
+    --cb-planning-proposed: #c26336;
+    --cb-planning-control-width: 440px;
+    --cb-planning-inspector-width: 330px;
+
     /* Country coverage and source evidence on the world globe. */
     --cb-world-coverage-full: #71bc91;
     --cb-world-coverage-mostly: #b1dac2;

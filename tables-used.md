@@ -76,6 +76,7 @@ mapping lives in `backend/buildings/overture-cities.js`.
 - ads.ad_parcel
 - public.area_monitor
 - public.cadastral_municipality
+- public.parcel_build_envelope
 - public.dgu_building
 - public.dgu_gdi_building_match
 - public.dgu_road_usage

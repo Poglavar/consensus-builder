@@ -1,7 +1,7 @@
 // World view: a full-viewport three.js globe for choosing a place. Land is painted by parcel-data
 // coverage (world-coverage.js), country by country and, where coverage differs inside a country,
-// region by region (US states, England, ...); clicking anywhere shows what is available there, a
-// search box flies to a place, and flyTo() dives the camera to a point for the handoff into the 2D map.
+// region by region (US states, England, ...). Navigation selects cities or exact points; coverage
+// outlines are informational. flyTo() dives to the destination for the handoff into the 2D map.
 // Browser only; depends on window.whenThreeReady() (index.html import map), window.GlobeMath and
 // window.WorldCoverage and window.WorldCityDisplay. Nothing here touches the app's map or city config:
 // every action is a callback.
@@ -45,7 +45,6 @@
     const COVERAGE_COLORS = { full: '#71bc91', mostly: '#b1dac2', partial: '#ffc24b', none: '#d8918c', unknown: '#a4acb8' };
     const TIER_COLORS = { live: '#43e6a6', source: COVERAGE_COLORS.partial, none: COVERAGE_COLORS.none, unknown: COVERAGE_COLORS.unknown };
     const COVERAGE_LABELS = { full: 'Full country coverage', mostly: 'Most checked cities work', partial: 'Some open data', none: 'Checked: none found', unknown: 'Unchecked / inconclusive' };
-    const REGION_COVERAGE_LABELS = { full: 'Full region coverage', mostly: 'Most checked cities in this region work', partial: 'Some open data in this region', none: 'Checked: none found in this region', unknown: 'Region unchecked / inconclusive' };
     const TIER_LABELS = { live: 'In the app', source: 'Open data found', none: 'No open data', unknown: 'Unconfirmed' };
 
     let coveragePromise = null;
@@ -339,7 +338,7 @@
         renderer.setClearColor(0x000000, 0);
         renderer.domElement.className = 'world-view__canvas';
         renderer.domElement.setAttribute('tabindex', '0');
-        renderer.domElement.setAttribute('aria-label', t('world.canvasLabel', 'Globe. Drag to rotate, scroll to zoom, click a place to check parcel data.'));
+        renderer.domElement.setAttribute('aria-label', t('world.canvasLabel', 'Globe. Drag to rotate, scroll to zoom, select a city or an exact location.'));
         stage.appendChild(renderer.domElement);
 
         const scene = new THREE.Scene();
@@ -485,7 +484,7 @@
             node.addEventListener('click', ev => {
                 ev.stopPropagation();
                 // Pointer taps use the shared drag gesture; keyboard activation stays native.
-                if (ev.detail === 0 && item.city) select(coverage.tierAt(item.city.lat, item.city.lon));
+                if (ev.detail === 0 && item.city) select(coverage.cityPlace(item.city));
             });
             labelLayer.appendChild(node);
             return item;
@@ -500,8 +499,8 @@
 
         function renderStaticText() {
             root.setAttribute('aria-label', t('world.title', 'Choose a place'));
-            searchInput.placeholder = t('world.search.placeholder', 'Search a city or country');
-            searchInput.setAttribute('aria-label', t('world.search.label', 'Search places'));
+            searchInput.placeholder = t('world.search.placeholder', 'City name');
+            searchInput.setAttribute('aria-label', t('world.search.label', 'Search cities'));
             locateBtn.setAttribute('aria-label', t('world.search.locate', 'Show my location'));
             locateBtn.title = t('world.search.locate', 'Show my location');
             reachHeadline.textContent = t('world.reach.headline', '{{cities}} cities · {{countries}} countries', {
@@ -652,7 +651,7 @@
             if (!drag) return;
             const elapsed = performance.now() - drag.t0;
             if (drag.moved <= TAP_MAX_PX && elapsed <= TAP_MAX_MS) {
-                if (drag.city) select(coverage.tierAt(drag.city.lat, drag.city.lon));
+                if (drag.city) select(coverage.cityPlace(drag.city));
                 else pickAt(ev.clientX, ev.clientY);
             } else if (drag.samples.length > 1) {
                 const span = Math.max(16, drag.samples[drag.samples.length - 1].t - drag.samples[0].t);
@@ -880,13 +879,13 @@
                 const d = Math.hypot(s.x - x, s.y - y);
                 if (d < (marker.entry.live ? 14 : 8) && d < best) { best = d; snap = marker.entry.city; }
             });
-            if (snap) { select(coverage.tierAt(snap.lat, snap.lon)); return; }
+            if (snap) { select(coverage.cityPlace(snap)); return; }
             const ndc = new THREE.Vector3((x / rect.width) * 2 - 1, -(y / rect.height) * 2 + 1, 0.5).unproject(camera);
             const dir = ndc.sub(camera.position);
             const hit = GM.raySphere(camera.position.toArray(), dir.toArray(), 1);
             if (!hit) { deselect(); return; }
             const ll = GM.vectorToLatLon(hit);
-            select(coverage.tierAt(ll.lat, ll.lon));
+            select(coverage.pointAt(ll.lat, ll.lon));
         }
 
         // ---- popup ----
@@ -912,10 +911,8 @@
             if (!selected) return;
             const place = selected;
             const tier = place.tier;
-            const country = place.kind === 'country';
-            const region = place.kind === 'region';
-            const area = country || region;
-            const status = area ? place.coverage : tier;
+            const pointSelection = place.kind === 'point';
+            const status = tier;
             const statusKey = global.WorldCoverage.statusKey(place);
             popup.textContent = '';
             popup.className = 'world-popup world-popup--' + status;
@@ -923,12 +920,12 @@
             close.addEventListener('click', deselect);
             const badge = el('p', 'world-popup__tier');
             badge.append(el('span', 'world-tier-dot world-tier-dot--' + status), el('span', '', {
-                text: t(statusKey + '.short', region ? REGION_COVERAGE_LABELS[status] : country ? COVERAGE_LABELS[status] : TIER_LABELS[status])
+                text: t(statusKey + '.short', TIER_LABELS[status])
             }));
-            const heading = place.kind === 'ocean' ? t('world.popup.ocean', 'Open water') : place.name;
+            const heading = pointSelection ? t('world.popup.location', 'Selected location') : place.name;
             const titleNode = el('h2', 'world-popup__title', { text: heading });
             const subtitleParts = [];
-            if (place.kind !== 'country' && place.country) subtitleParts.push(place.country);
+            if (place.country) subtitleParts.push(place.country);
             subtitleParts.push(formatLatLon(place.lat, place.lon));
             const subtitle = el('p', 'world-popup__subtitle', { text: subtitleParts.join(' · ') });
             const texts = {
@@ -937,33 +934,19 @@
                 none: 'We looked and found no open parcel data here. You can still draw a site and propose here; without parcels, a proposal executes only through an authority\'s verdict.',
                 unknown: 'Open parcel data has not been confirmed here; this place is unchecked or the check was inconclusive. You can still draw a site and propose here; without parcels, a proposal executes only through an authority\'s verdict.'
             };
-            const countryTexts = {
-                full: 'Open parcel data is confirmed for the whole country. Cities available in the app are marked separately.',
-                mostly: 'Open parcel data covers the whole country, and it works in most cities we checked, but the parcel check failed in a few. Cities available in the app are marked separately.',
-                partial: 'Open parcel data is confirmed in at least one city or region. Coverage at this specific location, or across the whole country, is not confirmed. Cities available in the app are marked separately.',
-                none: 'We checked for open parcel data in this country and found none. This records the result of our search, not proof that no source exists.',
-                unknown: 'This country has not been checked, or the check was inconclusive. We have not confirmed whether open parcel data is available.'
-            };
-            const regionTexts = {
-                full: 'Open parcel data is confirmed for this whole region. Cities available in the app are marked separately.',
-                mostly: 'Open parcel data covers this whole region, and it works in most cities we checked, but the parcel check failed in a few. Cities available in the app are marked separately.',
-                partial: 'Open parcel data is confirmed somewhere in this region. Coverage at this specific location, or across the whole region, is not confirmed. Cities available in the app are marked separately.',
-                none: 'We checked for open parcel data in this region and found none. This records the result of our search, not proof that no source exists.',
-                unknown: 'This region has not been checked, or the check was inconclusive. We have not confirmed whether open parcel data is available.'
-            };
             const text = el('p', 'world-popup__text', {
-                text: place.kind === 'ocean'
-                    ? t('world.popup.oceanText', 'No land here, so no parcels. You can still open the map at this spot.')
+                text: pointSelection
+                    ? t('world.popup.locationText', 'Open this exact location at street level to view or create proposals.')
                     : place.sourceId
                         ? (place.queryMode === 'point'
                             ? t('world.tier.live.pointText', 'Tap the map to load and select an individual parcel. Loading every parcel in an area is unavailable for this source.')
                             : place.dataVersion
                             ? t('world.tier.live.datedStreamText', 'Parcels load as you zoom in and pan. This source is a {{version}} dataset; current boundaries may differ.', { version: place.dataVersion })
                             : t('world.tier.live.streamText', 'Parcels load from the local source as you zoom in and pan. Nearby municipalities may use different data.'))
-                    : t(statusKey + '.text', region ? regionTexts[status] : country ? countryTexts[status] : texts[tier])
+                    : t(statusKey + '.text', texts[tier])
             });
             popup.append(close, badge, titleNode, subtitle, text);
-            if (place.note && (area || tier !== 'live')) popup.appendChild(el('p', 'world-popup__note', { text: place.note }));
+            if (place.note && tier !== 'live') popup.appendChild(el('p', 'world-popup__note', { text: place.note }));
             for (const source of place.coverageSources || []) {
                 if (!/^https:\/\//.test(source.url)) continue;
                 popup.appendChild(el('a', 'world-popup__source', {
@@ -978,8 +961,10 @@
                 : null;
             if (liveCityId) {
                 const cityLabel = (coverage.liveCities.find(c => c.id === liveCityId) || {}).name || place.name;
-                const open = el('button', 'btn btn-primary', { type: 'button', text: t('world.action.open', 'Open {{city}}', { city: cityLabel }) });
-                // Landing flies, looks up the city's latest proposal and loads it: the button spins meanwhile.
+                const open = el('button', 'btn btn-primary', { type: 'button', text: pointSelection
+                    ? t('world.action.explore', 'Open the map here')
+                    : t('world.action.open', 'Open {{city}}', { city: cityLabel }) });
+                // Explicit cities can load their latest proposal; point selections retain their coordinates.
                 open.addEventListener('click', () => {
                     if (typeof opts.onOpenCity === 'function') global.BusyControl.track(open, () => opts.onOpenCity(liveCityId, point));
                 });
@@ -998,7 +983,7 @@
                     const ask = el('button', 'btn btn-primary', {
                         type: 'button',
                         text: requestState === 'done' || requestState === 'sending' ? labels[requestState]
-                            : area ? t('world.action.askArea', 'Ask for this area') : t('world.action.askCity', 'Ask for this city')
+                            : t('world.action.askCity', 'Ask for this city')
                     });
                     if (requestState === 'done' || requestState === 'sending') ask.disabled = true;
                     ask.addEventListener('click', () => {
@@ -1055,23 +1040,17 @@
                 const li = el('li', 'world-search__result' + (i === activeIndex ? ' world-search__result--active' : ''), {
                     role: 'option', id: 'world-search-opt-' + i, 'aria-selected': i === activeIndex ? 'true' : 'false'
                 });
-                const area = place.kind === 'country' || place.kind === 'region';
-                li.append(el('span', 'world-tier-dot world-tier-dot--' + (area ? place.coverage : place.tier)));
+                li.append(el('span', 'world-tier-dot world-tier-dot--' + place.tier));
                 const textWrap = el('span', 'world-search__text');
                 textWrap.append(el('span', 'world-search__name', { text: place.name }),
-                    el('span', 'world-search__meta', { text: place.kind === 'country'
-                        ? t('world.search.country', 'Country') + ' · ' + t(global.WorldCoverage.statusKey(place) + '.short', COVERAGE_LABELS[place.coverage])
-                        : place.kind === 'region'
-                            ? place.country + ' · ' + t(global.WorldCoverage.statusKey(place) + '.short', REGION_COVERAGE_LABELS[place.coverage])
-                        : place.kind === 'territory' ? t('world.search.territory', 'Territory')
-                        : place.country }));
+                    el('span', 'world-search__meta', { text: place.country }));
                 li.append(textWrap);
                 li.addEventListener('pointerdown', ev => ev.preventDefault());
                 li.addEventListener('click', () => choose(place));
                 results.appendChild(li);
             });
             if (!searchHits.length && searchInput.value.trim()) {
-                results.appendChild(el('li', 'world-search__empty', { text: t('world.search.noResults', 'No matching place') }));
+                results.appendChild(el('li', 'world-search__empty', { text: t('world.search.noResults', 'No matching city') }));
             }
             const open = !!searchInput.value.trim();
             results.hidden = !open;
@@ -1107,10 +1086,7 @@
             results.hidden = true; searchInput.setAttribute('aria-expanded', 'false');
             searchInput.blur();
             deselect();
-            const area = place.kind === 'country' || place.kind === 'region' || place.kind === 'territory';
-            const altitudeKm = area ? Math.max(11000, Math.min(cam.altitudeKm, 16000)) : 8500;
-            const popupPlace = area ? Object.assign({}, place) : coverage.tierAt(place.lat, place.lon);
-            fly({ lat: place.lat, lon: place.lon, altitudeKm }, { hop: 0.6 }).then(() => select(popupPlace));
+            fly({ lat: place.lat, lon: place.lon, altitudeKm: 8500 }, { hop: 0.6 }).then(() => select(place));
         }
 
         // Asks the browser for its position (the browser's own permission prompt is the consent) and
@@ -1129,7 +1105,7 @@
                 deselect();
                 const lat = coords.latitude; const lon = coords.longitude;
                 log('located at ' + formatLatLon(lat, lon) + ' ±' + Math.round(coords.accuracy) + ' m');
-                fly({ lat, lon, altitudeKm: 8500 }, { hop: 0.6 }).then(() => select(coverage.tierAt(lat, lon)));
+                fly({ lat, lon, altitudeKm: 8500 }, { hop: 0.6 }).then(() => select(coverage.pointAt(lat, lon)));
             }, error => {
                 console.warn('[' + new Date().toISOString() + '] [world] location unavailable:', error && (error.message || error.code));
                 if (closed) return;
@@ -1342,7 +1318,7 @@
             getCamera() { return { lat: cam.lat, lon: cam.lon, altitudeKm: cam.altitudeKm }; },
             project(lat, lon) { placeCamera(); return screenOf(GM.latLonToVector(lat, lon, 1.001)); },
             selectPlace(lat, lon) {
-                const place = coverage.tierAt(lat, lon);
+                const place = coverage.pointAt(lat, lon);
                 return fly({ lat, lon, altitudeKm: cam.altitudeKm }, { hop: 0.3 }).then(() => select(place));
             }
         };

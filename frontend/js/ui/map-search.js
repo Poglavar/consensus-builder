@@ -174,9 +174,9 @@
                     key: `world:${place.placeKey}`,
                     kind: 'world',
                     rank: (Model.matchRank(place.name, query) ?? 3) + 0.5,
-                    icon: place.kind === 'country' ? 'fas fa-flag' : 'fas fa-earth-europe',
+                    icon: 'fas fa-city',
                     label: place.name,
-                    sublabel: [place.kind === 'country' ? '' : place.country, t(win.WorldCoverage.statusKey(place) + '.short', place.coverage || place.tier)]
+                    sublabel: [place.country, t(win.WorldCoverage.statusKey(place) + '.short', place.tier)]
                         .filter(Boolean).join(' · '),
                     run: () => runWorldPlace(place)
                 })));
@@ -906,7 +906,7 @@
         root.appendChild(chip);
         root.appendChild(field);
         root.appendChild(list);
-        slot.appendChild(root);
+        slot.prepend(root);
         Object.assign(state, { root, input, list, chip, chipIcon, chipLabel, chipShortLabel, clear, back, searchButton });
 
         input.addEventListener('focus', () => { expand(); openList(); });
