@@ -130,7 +130,7 @@
             }
             if(Number.isFinite(project.location?.lng)&&Number.isFinite(project.location?.lat)&&['Polygon','MultiPolygon'].includes(project.model?.envelope?.footprint?.type)){
             const context=node('section','viewer-panel context-panel'),contextTitle=node('h3','','Kontekst zgrade'),contextHost=node('div','viewer-canvas');
-            context.append(contextTitle,contextHost,node('p','viewer-copy','Okolica prikazana prema dostupnim podacima. Novije promjene možda nisu uključene.'));
+            context.append(contextTitle,contextHost);
             viewers.push(V.mountContext(contextHost,project));right.prepend(context);
             }
             if(right.childNodes.length)layout.append(right);
@@ -141,7 +141,6 @@
             const hasGeometry=Boolean(selected.architecture);
             const hasOriginal=Boolean(safeHref(selected.source?.assetUrl));
             const hasPlan=selected.hasPlan||hasGeometry||hasOriginal;
-            const review=!hasPlan?'Tlocrt još nije obrađen.':hasGeometry?(selected.reviewStatus==='reviewed'||selected.reviewStatus==='published'?'Pregledana geometrija tlocrta.':'Procijenjena rekonstrukcija tlocrta; potrebna je provjera.'):'Dostupan je izvorni tlocrt.';
             const grid=node('div','viewer-grid apartment-viewer-grid');
             const plan=node('section','viewer-panel'),planTitle=node('h3','','Tlocrt i 3D prikaz'),planHost=node('div','viewer-host');
             plan.append(planTitle,planHost);
@@ -169,10 +168,10 @@
             grid.append(original);
 
             const context=node('section','viewer-panel context-panel'),contextTitle=node('h3','','Kontekst zgrade'),contextHost=node('div','viewer-canvas');
-            context.append(contextTitle,contextHost,node('p','viewer-copy',project.location?'Okolica prikazana prema dostupnim podacima. Novije promjene možda nisu uključene.':'Okolica se može prikazati kada utvrdimo lokaciju zgrade.'));
+            context.append(contextTitle,contextHost);
+            if(!project.location)context.append(node('p','viewer-copy','Okolica se može prikazati kada utvrdimo lokaciju zgrade.'));
             viewers.push(V.mountContext(contextHost,project));grid.append(context);
             card.append(grid);
-            card.append(node('p','confidence-note',isFloorPlan?review:`${review} Orijentacije i površine prikazane su samo kada su navedene u izvoru.`));
         }
         host.append(card);if(detailError)host.append(node('p','confidence-note',detailError));if(apartmentId&&!selected)host.append(node('p','confidence-note','Traženi stan nije dostupan u trenutnom katalogu.'));
     }
