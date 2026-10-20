@@ -229,6 +229,32 @@ class AdmissionBridgeTests(unittest.TestCase):
         self.assertIn("cache bytes differ", result["summary"])
         run.assert_called_once()
 
+    def test_existing_integration_prefers_matching_source_binding(self):
+        (self.root / "backend/parcels").mkdir(parents=True)
+        (self.root / "backend/parcels/source-catalog.json").write_text(
+            json.dumps({"sources": [{"id": "test-source", "cityIds": ["testville"]}]})
+        )
+        (self.root / "world-parcels").mkdir(exist_ok=True)
+        (self.root / "world-parcels/registry.json").write_text(json.dumps({
+            "cities": [{"wupCityCode": 1, "appCityId": "testville", "sourceIds": ["test-source"]}],
+            "sources": [{"sourceId": "test-source", "liveIntegration": {"status": "enabled", "cityIds": ["testville"]}}],
+        }))
+        (self.root / "frontend/data").mkdir(parents=True)
+        (self.root / "frontend/data/parcel-coverage-report.json").write_text(json.dumps({
+            "cities": [{"wupCityCode": 1, "appCityIds": ["testville"], "sourceIds": ["test-source"]}]
+        }))
+        (self.root / "frontend/data/world-coverage.json").write_text(json.dumps({
+            "liveCities": [{"id": "testville", "sourceId": "test-source"}]
+        }))
+        with patch.object(admission, "_verify_published_evidence", return_value=None) as verify:
+            result = admission._existing_integration(
+                self.root, "1", "Testville", "test-source", self.artifacts, {}, [
+                    {"id": "legacy_testville", "wupCityCode": 1, "sourceId": "other-source"},
+                    {"id": "testville", "wupCityCode": 1, "sourceId": "test-source"},
+                ])
+        self.assertEqual(result["status"], "integrated")
+        verify.assert_called_once_with(self.root, self.artifacts, "test-source")
+
 
 if __name__ == "__main__":
     unittest.main()

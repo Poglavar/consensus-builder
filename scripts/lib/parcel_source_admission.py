@@ -153,9 +153,10 @@ def _existing_integration(root: Path, code: str, name: str, source_id: str,
                           bindings: list[dict[str, Any]]) -> dict[str, Any] | None:
     if not bindings:
         return None
-    binding = bindings[0]
-    if binding.get("sourceId") != source_id:
-        return _block(f"{name} is already configured with a different parcel source ({binding.get('sourceId')}); source switching needs separate review")
+    binding = next((row for row in bindings if row.get("sourceId") == source_id), None)
+    if binding is None:
+        first_source = bindings[0].get("sourceId")
+        return _block(f"{name} is already configured with a different parcel source ({first_source}); source switching needs separate review")
     app_city_id = binding.get("id")
     catalog_doc = _json(root / "backend/parcels/source-catalog.json")
     catalog_source = next((row for row in catalog_doc.get("sources", []) if row.get("id") == source_id), None)
