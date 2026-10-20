@@ -81,6 +81,16 @@ def compact_row(row):
     return result
 
 
+def failure_reason(row):
+    qualification = row.get("qualification", {})
+    admission = row.get("admission", {})
+    nested_admission = qualification.get("admission", {})
+    return (admission.get("summary")
+            or nested_admission.get("summary")
+            or qualification.get("summary")
+            or row.get("lastError"))
+
+
 def export_settings(root, codes=None):
     command = ["node", str(Path(root) / "scripts/lib/parcel-city-settings.mjs"), "--root", str(root)]
     if codes:
@@ -154,7 +164,7 @@ def finish_city(runner, city, cohort):
     documents = city_documents(runner, city, cohort)
     manifest = row.get("admission", {}).get("manifestFile")
     failed = []
-    reason = row.get("qualification", {}).get("summary") or row.get("lastError")
+    reason = failure_reason(row)
     negative = row.get("discoveryDecision") in {"blocked", "rejected"}
     for _, document in documents:
         failed.extend(extract_failed_urls(document))

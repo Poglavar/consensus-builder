@@ -61,6 +61,32 @@ class CityStorageTests(unittest.TestCase):
         self.assertTrue(self.packet.exists())
         self.assertNotIn("storageComplete", self.row)
 
+    def test_integration_refusal_reason_survives_compaction_and_cleanup(self):
+        self.packet.write_text(json.dumps({
+            "status": "complete",
+            "source": {"endpoint": "https://example.test/parcel-service"},
+        }))
+        refusal = "integration refused: browser adapter contract failed"
+        self.row.update(
+            status="reviewed-candidate",
+            discoveryDecision="candidate",
+            qualification={
+                "status": "integration-blocked",
+                "summary": "Technical qualification succeeded.",
+                "admission": {"status": "failed", "summary": refusal},
+            },
+            admission={"status": "failed", "summary": refusal},
+        )
+
+        self.assertTrue(storage.finish_city(self.runner, self.city, self.cohort))
+        saved = json.loads((self.root / "world-parcels/cities/123/failed-urls.json").read_text())
+        self.assertEqual(saved, [{"url": "https://example.test/parcel-service", "reason": refusal}])
+        self.assertTrue(self.row["storageComplete"])
+        self.assertFalse(self.packet.exists())
+        self.assertFalse(self.review.exists())
+        self.assertFalse(self.receipt.exists())
+        self.assertLess(len(json.dumps(self.row)), 500)
+
     def test_success_can_rebuild_from_settings_after_evidence_deleted(self):
         for directory in ("scripts/lib", "frontend/js", "backend/parcels", "world-parcels/report"):
             (self.root / directory).mkdir(parents=True, exist_ok=True)
