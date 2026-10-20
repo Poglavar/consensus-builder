@@ -406,7 +406,13 @@
 
         <!-- The search box (omnibox) with the city chip, js/ui/map-search.js, top-left. The mode
              strip is laid out underneath it (see --map-mode-slot-* in map.css). -->
-        <div id="map-search-slot" class="map-shell-slot map-shell-slot--search"></div>
+        <div id="map-search-slot" class="map-shell-slot map-shell-slot--search">
+            <button type="button" id="planning-views-button" class="map-shell-button" data-sheet-target="planning-views"
+                aria-controls="planning-views" aria-expanded="false" title="Buildings and massing" aria-label="Buildings and massing"
+                data-i18n-key="planningViews.title" data-i18n-attr="title,aria-label" hidden>
+                <i class="fas fa-cubes" aria-hidden="true"></i>
+            </button>
+        </div>
 
         <!-- Username Display -->
         <div id="username-display" class="username-display" role="button" tabindex="0">
@@ -447,14 +453,23 @@
         <div id="three-container" aria-hidden="true"></div>
 
         <!-- Content is shared across map and model; changing view never applies a source proposal. -->
-        <section id="planning-views" class="planning-views" aria-label="Buildings and massing" data-i18n-key="planningViews.title" data-i18n-attr="aria-label" hidden>
-            <div class="planning-control-heading"><p class="planning-eyebrow"></p><button type="button" class="btn btn-icon planning-reroll"><i class="fa-solid fa-dice" aria-hidden="true"></i></button></div>
-            <div class="planning-layer-controls"></div>
-            <p class="planning-view-status" role="status" aria-live="polite"></p>
-            <button type="button" class="cb-link planning-view-retry" hidden></button>
-            <p class="planning-inspect-hint"></p>
-            <details class="planning-coverage"><summary></summary><p></p><p class="planning-cache-summary"></p><dl class="planning-result-counts"></dl></details>
-            <button type="button" class="cb-link planning-open-model" hidden></button>
+        <section id="planning-views" class="map-sheet planning-views" role="dialog" aria-labelledby="planning-views-title" hidden>
+            <div class="map-sheet-header">
+                <h2 id="planning-views-title" class="map-sheet-title" data-i18n-key="planningViews.title">Buildings and massing</h2>
+                <div class="planning-control-heading">
+                    <button type="button" id="planning-reroll" class="btn btn-icon planning-reroll"><i class="fa-solid fa-dice" aria-hidden="true"></i></button>
+                    <button type="button" class="map-sheet-close close-circle-btn close-circle-btn--lg" data-sheet-close
+                        aria-label="Close" title="Close" data-i18n-key="common.close" data-i18n-attr="aria-label,title">×</button>
+                </div>
+            </div>
+            <div class="map-sheet-body">
+                <div class="planning-layer-controls"></div>
+                <p class="planning-view-status" role="status" aria-live="polite"></p>
+                <button type="button" id="planning-view-retry" class="cb-link planning-view-retry" hidden></button>
+                <p class="planning-inspect-hint"></p>
+                <details class="planning-coverage"><summary></summary><p></p><p class="planning-cache-summary"></p><dl class="planning-result-counts"></dl></details>
+                <button type="button" id="planning-open-model" class="cb-link planning-open-model" hidden></button>
+            </div>
         </section>
         <aside id="planning-inspector" class="planning-inspector" aria-label="Planning source details" data-i18n-key="planningViews.detailsLabel" data-i18n-attr="aria-label" hidden></aside>
 
@@ -1927,7 +1942,7 @@
             'js/planning/representations.js',
             'js/planning/source-proposal.js',
             'js/planning/feed.js',
-            'js/planning/views.js',
+            'js/planning/views.js?v=20261020-collapsed-controls',
             'js/bets/bets-link.js',
             'js/bets/lmsr.js',
             'js/bets/sha256.js',
@@ -1950,7 +1965,7 @@
             'js/world/proposal-entry.js?v=20261009-view-buttons',
             'js/world/arrival.js?v=20261009-view-buttons',
             'js/world/globe.js?v=20261020-point-destinations',
-            'js/ui/map-search.js?v=20261020-point-destinations',
+            'js/ui/map-search.js?v=20261020-collapsed-controls',
             'js/ui/command-palette.js',
             'js/parcels/parcel-id.js',
             'js/parcels/state.js',

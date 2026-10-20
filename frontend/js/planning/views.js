@@ -175,7 +175,7 @@
         heading.append(element('p', 'planning-eyebrow', t(item.areas?.length ? 'zoningArea' : sourceResult ? (item.volumes.length ? 'sourceProposal' : 'savedResult') : item.role === 'existing' ? 'builtRecord' : 'proposedRecord')), element('h2', '', item.title));
         const close = element('button', 'close-circle-btn', '×');
         close.type = 'button'; close.setAttribute('aria-label', t('close'));
-        close.addEventListener('click', () => { select(null); panel.querySelector('[data-planning-setting="permitted"]')?.focus(); });
+        close.addEventListener('click', () => { select(null); document.getElementById('planning-views-button').focus(); });
         header.append(heading, close);
         inspector.append(header);
         const badges = element('div', 'planning-inspector__badges');
@@ -278,7 +278,7 @@
     }
     function render() {
         if (!ready) return;
-        panel.querySelector('.planning-eyebrow').textContent = t('title');
+        panel.querySelector('.map-sheet-title').textContent = t('title');
         panel.querySelector('.planning-source-label').textContent = t('sourceEdition');
         const sourceSelect = panel.querySelector('.planning-source-select');
         sourceSelect.setAttribute('aria-label', t('sourceEdition'));
@@ -476,14 +476,15 @@
         store = core.createStore(saved);
         panel = document.getElementById('planning-views');
         inspector = document.getElementById('planning-inspector');
+        const body = panel.querySelector('.map-sheet-body');
         const sourceField = element('label', 'planning-source-field');
         sourceField.append(element('span', 'planning-source-label'));
         const sourceInput = element('select', 'planning-layer-select planning-source-select');
-        sourceField.append(sourceInput); panel.append(sourceField, element('p', 'planning-source-note'));
+        sourceField.append(sourceInput); body.append(sourceField, element('p', 'planning-source-note'));
         const scenarioField = element('label', 'planning-source-field');
         scenarioField.append(element('span', 'planning-scenario-label'));
         const scenarioInput = element('select', 'planning-layer-select planning-scenario-select');
-        scenarioField.append(scenarioInput); panel.append(scenarioField);
+        scenarioField.append(scenarioInput); body.append(scenarioField);
         scenarioInput.addEventListener('change', () => {
             const previousId = selected()?.role === 'permitted' ? store.get().selectedId : null;
             scenarioId = scenarioInput.value; controller?.abort(); request++; loadedKey = ''; items = []; payload = null;
@@ -523,9 +524,8 @@
         root.map.getPane('planningSources').classList.add('planning-sources-pane');
         layer = root.L.featureGroup().addTo(root.map);
         selectionLayer = root.L.featureGroup().addTo(root.map);
-        ready = true; panel.hidden = false;
-        // Keep the phone sheet below these controls even when coverage text expands or wraps.
-        new ResizeObserver(() => document.documentElement.style.setProperty('--planning-panel-height', `${panel.offsetHeight}px`)).observe(panel);
+        ready = true;
+        document.getElementById('planning-views-button').hidden = false;
         store.subscribe(syncView);
         root.map.on('moveend', () => refresh());
         root.map.on('click', () => select(null));

@@ -763,3 +763,4 @@ Postpone refresh/server-to-local synchronization. For empty parcels, display onl
 
 - 2026-10-20: Atlas should plug into Permitted through URLs, retaining source identity, edition and evidence in the shared inspector.
 - 2026-10-20: World navigation offers cities and exact map points only. Administrative regions are coverage context, never clickable destinations. A background globe click or geolocation opens the exact point at street level, where proposals live.
+- 2026-10-20: Buildings and massing starts collapsed behind a cubes icon beside the city/search control at the upper left. Its display settings keep their values when the panel closes.

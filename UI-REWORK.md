@@ -30,7 +30,7 @@ coverage.
 
 | Place | What |
 |---|---|
-| top-left | **Search box** (omnibox) with the **city chip** (current city; click → world view) |
+| top-left | **Search box** (omnibox) with the **city chip** (current city; click → world view), followed by the **Buildings and massing** cubes button; its panel starts collapsed, and the button remains available in 3D |
 | top-right | existing **user bubble** (`#username-display`), **Layers** button, **Settings** button |
 | left edge, under search | existing **mode strip** (2D/3D/photo/AI/walk, cadastre view) |
 | bottom-left | nothing but the scale bar (the Game pill was removed: the simulation is a section of the Activity sheet) |

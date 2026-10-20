@@ -906,7 +906,7 @@
         root.appendChild(chip);
         root.appendChild(field);
         root.appendChild(list);
-        slot.appendChild(root);
+        slot.prepend(root);
         Object.assign(state, { root, input, list, chip, chipIcon, chipLabel, chipShortLabel, clear, back, searchButton });
 
         input.addEventListener('focus', () => { expand(); openList(); });
