@@ -42,6 +42,8 @@ import * as turf from '@turf/turf';
 import { fetchCandidateParcels } from './parcel-source.js';
 import { chooseArea, contestParcels, parcelsFromSource, pickedParcelIds, runKeyFor, seedFor, slotLabel, windowIn, withPublishedParcelSources } from './area-plan.js';
 import { planCandidates } from './planner.js';
+import { chooseHousingArea, planHousingCandidates, housingOutreach } from './housing-policy.js';
+import { fetchHousingScreen } from './housing-screen.js';
 import { prepareAgentPublication, verifyPublicationReadable, mirrorAgentPublication } from './chain-publication.js';
 import { markAgentRunFailed, safeFailureDiagnostic } from './run-failure.js';
 import { fetchSourceParcels } from './source-fetch.js';
@@ -307,8 +309,9 @@ async function parcelsForArea({ pool, apiBase, area, persona, runKey, day, runs,
     const window = windowIn(area.bbox, runKey, persona.name, area.windowM ?? 350);
     if (area.sourceId) {
         const collection = await fetchSourceParcels(apiBase, area.sourceId, window, { log });
-        const parcels = fresh(parcelsFromSource(collection, { turf, place: area.label ?? null }))
+        let parcels = fresh(parcelsFromSource(collection, { turf, place: area.label ?? null, ...(persona.housingResearch ? {minAreaM2:1200,maxAreaM2:20000} : {}) }))
             .map(parcel => (area.floorCap ? { ...parcel, floorCap: area.floorCap } : parcel));
+        if (persona.housingResearch) parcels = (await fetchHousingScreen(parcels, turf.bbox(turf.buffer(turf.bboxPolygon(window),0.85,{units:'kilometers'})), { turf, area })).filter(p=>!p.housingScreen.excluded);
         return { parcels: parcels.slice(0, limit), city: area.city, where: `${area.city} ${window.join(',')}` };
     }
     const rows = await fetchCandidateParcels(pool, { city: area.city, bbox: window, limit });
@@ -339,9 +342,15 @@ async function main() {
     const failures = [];
     const report = [];
     const startedRuns = new Set();
+    let housingLock = null;
     try {
         // ---- stage 1: plan (every persona) ----------------------------------------------------
         const entries = [];
+        if (personas.some(p=>p.housingResearch) && args.live) {
+            housingLock = await pool.connect();
+            const {rows} = await housingLock.query('SELECT pg_try_advisory_lock(57401, hashtext($1)) AS locked', ['affordabot']);
+            if (!rows[0]?.locked) throw new Error('Affordabot is already running; refusing concurrent publication');
+        }
         const allRuns = await listRuns(pool);
         for (const [i, persona] of personas.entries()) {
             const runId = `${runKey}-${persona.name}`;
@@ -375,9 +384,9 @@ async function main() {
                 entries.push({ persona, runId, run, candidates });
                 continue;
             }
-            const area = chooseArea(persona.areas, runKey, persona.name);
+            const area = persona.housingResearch ? chooseHousingArea(persona.areas, day) : chooseArea(persona.areas, runKey, persona.name);
             const { parcels, city, where } = await parcelsForArea({ pool, apiBase, area, persona, runKey, day, runs: allRuns, limit: args.candidates * 6 });
-            const planned = planCandidates(parcels, persona, { turf, limit: args.candidates * 2, seed: seedFor(runKey) });
+            const planned = (persona.housingResearch ? planHousingCandidates : planCandidates)(parcels, persona, { turf, limit: args.candidates * 2, seed: seedFor(runKey) });
             // The default envelope for a parcel without a stated rule (5 floors) is taller than anything
             // the 2025 GUP actually says in this bbox (3), so rule-backed candidates come first and the
             // default-rule ones are only used when nothing else is on offer.
@@ -726,6 +735,7 @@ async function main() {
                 status: personaFailed ? 'failed' : (done && untilStage === 'staked' ? 'done' : 'running'),
                 summaryPatch: {
                     mints, posts, stakes, activities,
+                    ...(persona.housingResearch ? {outreach: picks.filter(p=>posts[p.candidateId]).map(p=>housingOutreach({candidate:e.candidates.find(c=>c.candidateId===p.candidateId),post:posts[p.candidateId],publicBase:'https://urbangametheory.xyz'}))} : {}),
                     error: personaFailed ? failures.filter(value => value.startsWith(persona.name)).map(safeFailureDiagnostic).join('; ').slice(0, 500) : null,
                     outcome: personaFailed ? 'failed' : (done && untilStage === 'staked' ? 'completed' : 'partial')
                 }
@@ -739,6 +749,10 @@ async function main() {
         }
         throw error;
     } finally {
+        if (housingLock) {
+            try { await housingLock.query('SELECT pg_advisory_unlock(57401, hashtext($1))', ['affordabot']); }
+            finally { housingLock.release(); }
+        }
         await pool.end();
     }
 

@@ -86,7 +86,7 @@ function societyJob(name, persona, cron, caps) {
 }
 
 module.exports = {
-  apps: [{
+  apps: [{...proposerJob('consensus-builder-affordabot', 'affordabot', '20 7 * * *'), args:'--live --controller algorithm --persona affordabot --candidates 4 --api https://api.urbangametheory.xyz', env:{...proposerJob('', '', '').env, AGENT_DAILY_USDC_CAP:'0.02'}}, {
     name: 'consensus-builder-agents',
     script: 'agents/run.mjs',
     // The lens comes from the attester directory (GET /agent/lenses/members), which the two lens

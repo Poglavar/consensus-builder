@@ -63,14 +63,15 @@ export function buildProposalRecord({ candidate, pick, persona, runId, city, onc
             persona: personaName,
             rationale,
             run_id: runId,
-            ...(persona?.controller ? { controller: persona.controller } : {})
+            ...(persona?.controller ? { controller: persona.controller } : {}),
+            ...(candidate.housing ? {housing:candidate.housing} : {})
         },
         cadastreParcelIds: [candidate.parcelId],
         offer: candidate.offerEur,
         offerCurrency: 'EUR', // the offer is derived from the € gain at priceEurPerM2; market stakes are the USDC side,
         isConditional: true,
         disbursementMode: 'conditional',
-        facets: { landUse: 'single', parcels: 'as-is', ownership: 'to-me' },
+        facets: { landUse: 'single', parcels: 'as-is', ownership: candidate.housing ? 'no-change' : 'to-me' },
         buildingProposal: {
             blockName,
             typologyType: 'single',
