@@ -1554,7 +1554,7 @@
       "catalogueUrl": "https://ipi.eprostor.gov.si/wfs-si-gurs-kn/wfs",
       "attribution": "Geodetska uprava Republike Slovenije (GURS), cadastral parcels. Adapted to WGS84.",
       "licenceNote": "GURS source conditions remain informational. No ownership or personal fields are retained by this descriptor.",
-      "defaultForCity": false,
+      "defaultForCity": true,
       "discovery": {
         "jurisdiction": {
           "countryCode": "SI",

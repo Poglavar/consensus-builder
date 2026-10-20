@@ -4430,6 +4430,7 @@
                 "other": "Se cargaron {{count}} parcelas catastrales."
             },
             "cadastral_ground_already_loaded": "El catastro de esta zona ya está cargado.",
+            "no_cadastral_parcels_returned": "La fuente catastral no devolvió parcelas para esta zona.",
             "parcels_read_from_dgu": "El servidor de este sitio no responde: las parcelas se leen directamente del catastro estatal (DGU), sin titularidad.",
             "loaded_parcels_from_source": "Se cargaron {{count}} parcelas de {{source}}.",
             "checking_cadastral_ground": "Comprobando el catastro…",

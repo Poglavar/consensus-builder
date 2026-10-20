@@ -85617,8 +85617,7 @@
       "impliedParcelsTried": null,
       "integrationAttempts": [],
       "sourceIds": [
-        "si-gurs-kn-parcele-wfs",
-        "parcel-lj"
+        "si-gurs-kn-parcele-wfs"
       ],
       "evidenceUrls": [
         "https://ipi.eprostor.gov.si/wfs-si-gurs-kn/wfs"
