@@ -66,6 +66,20 @@ def floor_candidate(evidence, decimals):
     return unary_union(list(polygonize(unary_union(lines))))
 
 
+def floor_outline_candidate(evidence, meters_per_unit):
+    """Use the finest closing CAD precision; never bridge separate source regions."""
+    counts = []
+    for decimals in [2, 1]:
+        if math.sqrt(2)*(.5*10**-decimals)*meters_per_unit > .03:
+            continue
+        candidate = floor_candidate(evidence, decimals)
+        large = [p for p in polygons(candidate) if p.area*meters_per_unit**2 > 2]
+        counts.append(len(large))
+        if len(large) == 1:
+            return large[0], decimals
+    raise ValueError(f'{counts} detached floor components at bounded CAD precision; needs explicit source-region selection')
+
+
 def door_candidates(evidence, tolerance=.04):
     """Match a drawn leaf to the two endpoints of its quarter-circle swing.
 
@@ -179,14 +193,9 @@ def prepare(root, code):
     old = json.loads((d/'response.json').read_text())['data']
     model = json.loads((d/'model.json').read_text())
     m = model['source']['metersPerSourceUnit']
-    decimals = 1 if code == '10839im' else 2
-    candidate = floor_candidate(e, decimals)
-    # The selected three have a single evidenced outer silhouette. Do not
-    # silently bridge distinct buildings or inset drawings.
-    large = [p for p in polygons(candidate) if p.area*m*m > 2]
-    if len(large) != 1:
-        raise ValueError(f'{code}: {len(large)} detached floor components; needs explicit source-region selection')
-    floor = large[0]
+    # A single evidenced outer silhouette is required. Do not silently bridge
+    # distinct buildings or inset drawings. Quantization displacement stays below 3 cm.
+    floor, decimals = floor_outline_candidate(e, m)
     walls = source_walls(e, old)
     floor = unary_union([floor, walls])
     cs = {'schema': 'stanovanje-plus.refinement-candidates.v1', 'code': code,

@@ -42,6 +42,9 @@ and managed job are gone before removing its lock and resuming.
 with code 2; format validity alone does not establish usability. Source-only roof drawings
 remain viewable without fabricated walls. Geometric refinements retain measured wall solids;
 ambiguous components and unsupported voids remain explicit review failures.
+The floor candidate tries 0.01 then 0.1 source-unit precision to close CAD rounding gaps,
+bounded to 3 cm theoretical displacement at the retained scale. Measured walls are unchanged;
+distinct source regions are never joined. Precision and displacement are recorded for review.
 
 An inspected workspace-routing failure with no saved response can be retried explicitly using
 `stanovanje-plus-worker.mjs --root=<archive> --stage=reading --retry-codes=<drawing-code>`.

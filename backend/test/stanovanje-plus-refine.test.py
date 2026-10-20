@@ -64,6 +64,20 @@ class RefineTests(unittest.TestCase):
         self.assertEqual(len(m.polygons(m.floor_candidate(e,2))),2)
         self.assertEqual(m.floor_candidate(e,2).area,5)
 
+    def test_cad_rounding_can_close_a_source_junction_with_recorded_precision(self):
+        e={'paths':[path('floor','input|tanko+pogled',[sub([[0,0],[4,0],[4,4],[0,4],[0,.03]])])]}
+        floor,decimals=m.floor_outline_candidate(e,.4)
+        self.assertEqual(decimals,1);self.assertEqual(floor.area,16)
+        self.assertLess(math.sqrt(2)*.05*.4,.03)
+
+    def test_rounding_never_merges_independent_regions_or_exceeds_three_centimetres(self):
+        e={'paths':[path('main','input|tanko+pogled',[sub([[0,0],[4,0],[4,4],[0,4]],closed=True)]),path('inset','input|tanko+pogled',[sub([[10,0],[14,0],[14,4],[10,4]],closed=True)])]}
+        with self.assertRaisesRegex(ValueError,'explicit source-region'):
+            m.floor_outline_candidate(e,.1)
+        e={'paths':[path('floor','input|tanko+pogled',[sub([[0,0],[4,0],[4,4],[0,4],[0,.03]])])]}
+        with self.assertRaisesRegex(ValueError,'explicit source-region'):
+            m.floor_outline_candidate(e,1)
+
     def test_source_wall_solids_are_not_replaced_with_outlines(self):
         e={'paths':[path('walls','wall',[sub([[0,0],[3,0],[3,1],[0,1]],closed=True)],'black'),path('outside','wall',[sub([[6,0],[7,0],[7,1],[6,1]],closed=True)],'black')]}
         reading={'wallFillLayers':['wall'],'wallClosedOutlineLayers':[],'excludePathIds':[]}
