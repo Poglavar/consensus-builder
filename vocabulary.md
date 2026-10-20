@@ -80,6 +80,10 @@ The provider registry declares editions, supported scenarios, geographic scope a
 
 An **Atlas URL source** is an operator-configured provider with an explicit city, source ID and edition, pointing to a public HTTPS Slices GeoJSON dataset (`PLANNING_ATLAS_SOURCES`). Its durable source is the remote dataset; the backend retains one validated in-memory snapshot for its process lifetime, loaded on demand. It adds no database records or refresh schedule. A restart can load changed source content, whose canonical record revision then changes without rewriting a design's pinned reference. Failed loading means unavailable, while a successfully loaded source with no intersecting slices means an empty viewport. Source bounds are known after loading; the configured city is a routing scope, not a claim that the dataset covers the whole city.
 
+## Accepted direction: urban-rule overlap in the Schelling rework
+
+User decision, 2026-10-21, not implemented as part of this discussion: urban-rule proposals remain spatially exclusive with one another. Applying an overlapping urban-rule proposal unapplies the conflicting urban-rule proposal(s); do not introduce rule stacking or per-field merging. An urban rule may coexist with a parcel-border change on the same ground. This records the intended relationship without asserting that every current apply path implements it. The proposed replacement of the term **Proposal** with **Change** remains undecided.
+
 ## Central terms as implemented
 
 ### Proposal — `Proposal`
