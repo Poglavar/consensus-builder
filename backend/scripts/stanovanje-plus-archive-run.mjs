@@ -12,6 +12,7 @@ const rootArg=process.argv.find(a=>a.startsWith('--root='));
 if(!rootArg||!process.argv.includes('--run')){console.log('Usage: node stanovanje-plus-archive-run.mjs --root=<archive> --run');process.exit(0);}
 const root=path.resolve(rootArg.slice(7)),repo=path.resolve(path.dirname(new URL(import.meta.url).pathname),'../..');
 const concurrency=Number(process.argv.find(a=>a.startsWith('--concurrency='))?.slice(14)||2);
+const localOnly=process.argv.includes('--local-only');
 if(!Number.isInteger(concurrency)||concurrency<1||concurrency>8)throw Error('Concurrency must be 1–8');
 const python=path.join(repo,'backend/.venv-stanovanje/bin/python'),scripts=path.join(repo,'backend/scripts');
 const read=file=>JSON.parse(fs.readFileSync(file,'utf8'));
@@ -48,7 +49,7 @@ try{
    }
   }
   const reading=eligibleSources(root,sources,'reading');
-  if(reading.length)await runStage(root,'reading',{concurrency});
+  if(reading.length&&!localOnly)await runStage(root,'reading',{concurrency});
   const updated=read(path.join(root,'selection.json')).filter(s=>s.sourceSha256);
   for(const source of updated){
    const dir=path.join(root,source.code);
@@ -59,7 +60,7 @@ try{
     catch(error){errors[source.code+':refinement-render']={code:source.code,stage:'refinement-render',error:error.stderr?.toString().slice(-1000)||error.message};write(errorsFile,errors);}
    }
   }
-  const refinement=eligibleSources(root,updated,'refinement');if(refinement.length)await runStage(root,'refinement',{concurrency});
+  const refinement=eligibleSources(root,updated,'refinement');if(refinement.length&&!localOnly)await runStage(root,'refinement',{concurrency});
   for(const source of updated){const dir=path.join(root,source.code);
    if(fs.existsSync(path.join(dir,'refinement-response.json'))&&!fs.existsSync(path.join(dir,'model.refined.json')))local('apply',source);
   }
@@ -74,16 +75,21 @@ try{
   const pending=eligibleSources(root,read(path.join(root,'selection.json')),'reading').length+eligibleSources(root,updated,'refinement').length;
   const incomplete=Object.keys(errors).length||failures.length||states.some(s=>s.validation.length);
   write(path.join(root,'processing-summary.json'),{at:new Date().toISOString(),private:true,totalDrawings:read(path.join(root,'selection.json')).length,
-   status:pending||!collectionComplete()?'running':incomplete?'partial':'complete-with-review',
+   status:localOnly?'checkpointed':pending||!collectionComplete()?'running':incomplete?'partial':'complete-with-review',
    collected:updated.length,models:states.filter(s=>s.model&&!s.validation.length).length,refined:states.filter(s=>s.status==='refined-awaiting-visual-review').length,
    errors:Object.values(errors),failedOrInterruptedAttempts:failures,drawings:states});
   write(path.join(root,'publication-bundle.json'),archiveCatalogue(root));
   console.log(new Date().toISOString(),'CHECKPOINT',states.length,'collected',states.filter(s=>s.model).length,'models',Object.keys(errors).length,'local errors');
+  if(localOnly)break;
   const latest=read(path.join(root,'selection.json')).filter(s=>s.sourceSha256);
   if(eligibleSources(root,latest,'reading').length||eligibleSources(root,latest,'refinement').length||latest.length>sources.length)continue;
   if(collectionComplete())break;
   await waitForCollection();
  }
+}catch(error){
+ const summary=path.join(root,'processing-summary.json'),previous=fs.existsSync(summary)?read(summary):{};
+ write(summary,{...previous,at:new Date().toISOString(),status:'failed',error:error.message});
+ throw error;
 }finally{fs.rmSync(lock,{recursive:true});}
 console.log(new Date().toISOString(),'Archive processing finished; review processing-summary.json for unresolved drawings.');
 if(read(path.join(root,'processing-summary.json')).status==='partial')process.exitCode=2;

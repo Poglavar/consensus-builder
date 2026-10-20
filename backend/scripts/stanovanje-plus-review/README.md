@@ -42,6 +42,9 @@ and managed job are gone before removing its lock and resuming.
 with code 2; format validity alone does not establish usability. Source-only roof drawings
 remain viewable without fabricated walls. Geometric refinements retain measured wall solids;
 ambiguous components and unsupported voids remain explicit review failures.
+An uncaught processor failure records `status: failed` and its error before releasing the lock.
+Add `--local-only` to replay saved responses into geometry and refresh the private catalogue
+without making any new model calls; that pass records `status: checkpointed`.
 The floor candidate tries 0.01 then 0.1 source-unit precision to close CAD rounding gaps,
 bounded to 3 cm theoretical displacement at the retained scale. Measured walls are unchanged;
 distinct source regions are never joined. Precision and displacement are recorded for review.
