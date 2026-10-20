@@ -14,6 +14,9 @@ const {
     footprintWithinBoundary,
     geometryCenter,
     isSimpleRing,
+    validFootprint,
+    withFootprintRing,
+    importedHeight,
     moveGeometry,
     moveGeometryCenter,
     rotateGeometry
@@ -105,5 +108,59 @@ describe('freeform polygon editing', () => {
         expect(GROUND_AREA_EPSILON_M2).toBe(0.01);
         expect(footprintWithinBoundary(outsideByAboutPointZeroTwo, host, turf)).toBe(false);
         expect(footprintWithinBoundary(outsideByAboutPointZeroZeroFive, host, turf)).toBe(true);
+    });
+});
+
+
+describe('complete imported building footprints', () => {
+    const exterior = [[16,45],[16.002,45],[16.002,45.002],[16,45.002],[16,45]];
+    const hole = [[16.0005,45.0005],[16.0005,45.001],[16.001,45.001],[16.001,45.0005],[16.0005,45.0005]];
+    const courtyard = turf.polygon([exterior, hole], { height: 18, source: 'survey' });
+
+    it('allows editing a courtyard ring without replacing the exterior or source metadata', () => {
+        const nextHole = structuredClone(hole);
+        nextHole[1][1] += 0.0001;
+        const changed = withFootprintRing(courtyard, 0, 1, nextHole);
+        expect(validFootprint(changed, turf)).toBe(true);
+        expect(changed.geometry.coordinates[0]).toEqual(exterior);
+        expect(changed.geometry.coordinates[1]).toEqual(nextHole);
+        expect(changed.properties).toEqual(courtyard.properties);
+        expect(courtyard.geometry.coordinates[1]).toEqual(hole);
+        const changedOuter = withFootprintRing(changed, 0, 0, exterior.map(([x,y]) => [x - 0.0001,y]));
+        expect(changedOuter.geometry.coordinates[1]).toEqual(nextHole);
+    });
+
+    it('validates every courtyard rather than only the exterior', () => {
+        expect(validFootprint(courtyard, turf)).toBe(true);
+        expect(validFootprint(turf.polygon([exterior, hole.map(([x,y]) => [x + 0.01,y])]), turf)).toBe(false);
+        expect(validFootprint(turf.polygon([exterior, hole, hole]), turf)).toBe(false);
+        const crossing = [[16.0002,45.0002],[16.0015,45.0015],[16.0002,45.0015],[16.0015,45.0002],[16.0002,45.0002]];
+        expect(validFootprint(turf.polygon([exterior, crossing]), turf)).toBe(false);
+    });
+
+    it('preserves every multipart ring through move and rotate and edits only the selected ring', () => {
+        const multipart = turf.multiPolygon([[exterior, hole], [exterior.map(([x,y]) => [x + 0.01,y])]], { height: 18 });
+        const moved = moveGeometry(multipart.geometry, { lat: 45.001, lng: 16.006 }, { lat: 46, lng: 16 });
+        const rotated = rotateGeometry(moved, 25);
+        expect(rotated.coordinates.map(rings => rings.map(ring => ring.length))).toEqual([[5,5],[5]]);
+        const ring = multipart.geometry.coordinates[1][0].map(([x,y]) => [x + 0.001,y]);
+        const changed = withFootprintRing(multipart, 1, 0, ring);
+        expect(changed.geometry.coordinates[0]).toEqual(multipart.geometry.coordinates[0]);
+        expect(changed.geometry.coordinates[1][0]).toEqual(ring);
+        expect(validFootprint(changed, turf)).toBe(true);
+    });
+
+    it('accepts narrow valid corners and a courtyard touching the exterior at one point', () => {
+        const narrow = [[16,45],[16.000002,45],[16.000002,45.000002],[16.000001,45.000002],[16.000001,45.0000019],[16,45.0000019],[16,45]];
+        expect(isSimpleRing(narrow)).toBe(true);
+        const touching = [[16,45],[16.0005,45.001],[16.001,45.0005],[16,45]];
+        expect(validFootprint(turf.polygon([exterior,touching]),turf)).toBe(true);
+    });
+
+    it('uses uploaded heights and floors before editor defaults', () => {
+        expect(importedHeight({ height: 18, floors: 2 }, 10)).toBe(18);
+        expect(importedHeight({ heightM: 21 }, 10)).toBe(21);
+        expect(importedHeight({ floors: 4 }, 10)).toBe(12);
+        expect(importedHeight({}, 10)).toBe(10);
     });
 });

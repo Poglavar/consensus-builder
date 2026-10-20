@@ -1,4 +1,4 @@
-/* Parcel and building source settings (js/parcel-source-settings.js): a native <dialog>
+/* Parcel, building and imagery source settings (js/parcel-source-settings.js): a native <dialog>
    (showModal) wearing the dialog primitive (css/primitives.css). Only what a native dialog needs
    on top is here: no UA border or padding, centred when open (a bottom sheet on phones), the token
    backdrop; then the inside's layout. */
@@ -35,3 +35,6 @@ body.ground-fallback-open #parcel-source-status {
 .parcel-source-formats table { width: 100%; border-collapse: collapse; font-size: var(--cb-text-base); }
 .parcel-source-formats th, .parcel-source-formats td { padding: var(--cb-space-3); text-align: left; vertical-align: top; border-bottom: 1px solid var(--cb-line-strong); overflow-wrap: anywhere; }
 
+
+.imagery-source-presets .btn + .btn { margin-left: var(--cb-space-2); }
+.parcel-source-settings__result select { width: 100%; margin-top: var(--cb-space-2); }

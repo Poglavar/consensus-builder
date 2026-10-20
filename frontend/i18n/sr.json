@@ -491,6 +491,7 @@
         "outsideSite": "Geometrija predloga prelazi granice lokacije. Zadržite je unutar lokacije ili uredite lokaciju pre primene.",
         "groundUnavailable": "Podaci katastarskih parcela nisu mogli da se učitaju. Proverite vezu i pokušajte ponovo.",
         "groundMissing": "Katastarski podaci nisu dostupni za: {{parcels}}. Predlog ne može da se primeni dok se te parcele ne učitaju.",
+        "needsParcels": "Ovaj predlog se odnosi na katastarske parcele ili nema sopstvenu geometriju. Učitajte njegove parcele pre primene.",
         "undeclared": "Predlog nema katastarske parcele ni lokaciju na slobodnom zemljištu. Odredite lokaciju pre primene.",
         "invalidGeometry": "Geometrija predloga nedostaje ili nije ispravna. Uredite je pre primene.",
         "applyFailed": "Predlog nije mogao da se postavi na mapu jer geometrija nije mogla da se izvede iz izabranog zemljišta.",
@@ -659,7 +660,11 @@
         },
         "design": {
             "corridorSummary": "{{segments}} segment(a) · širina {{width}} m",
-            "buildingSummary": "{{count}} zgrada · {{typology}}",
+            "buildingSummary": {
+                "one": "{{count}} zgrada · {{typology}}",
+                "few": "{{count}} zgrade · {{typology}}",
+                "other": "{{count}} zgrada · {{typology}}"
+            },
             "reparcelSummary": "{{count}} zamenskih parcela · {{algorithm}}",
             "parcelSummary": "{{count}} obuhvaćenih parcela",
             "manual": "ručno",
@@ -1707,6 +1712,7 @@
                 "applyFailedUnknown": "Nije moguće primeniti ovaj predlog. Pokušajte ponovo.",
                 "applyUnavailable": "Ovaj predlog nije moguće primeniti na mapu.",
                 "applyUnsupported": "Ova vrsta predloga ne podržava primenu na mapi.",
+                "proposalNotLoaded": "Ovaj predlog nije učitan u ovom pregledaču. Otvorite ga sa liste predloga pa pokušajte ponovo.",
                 "missingProposal": "Nije izabran predlog za primenu.",
                 "unapplyFailed": "Ovaj predlog nije moguće ukloniti sa mape: {{reason}}",
                 "unapplyFailedUnknown": "Ovaj predlog nije moguće ukloniti sa mape. Pokušajte ponovo.",
@@ -2460,7 +2466,7 @@
             "surroundingsGreen": "Zelenilo",
             "surroundingsInfo": "Jedan izbor za celu površinu parcela oko svih zgrada u ovom predlogu. Postojeće zgrade na tim parcelama uklanjaju se u svakom slučaju.",
             "uploadGeojsonLabel": "Učitaj GeoJSON",
-            "uploadNoPolygon": "U datoteci nije pronađen upotrebljiv poligon.",
+            "uploadNoPolygon": "Datoteku nije moguće uvesti. Koristite ispravne osnove zgrada tipa Polygon ili MultiPolygon.",
             "uploadOutside": "Učitani poligon se ne preklapa s ovim blokom na upotrebljiv način.",
             "uploadError": "Datoteku nije moguće pročitati.",
             "infoText": "Prevucite osnovu da je pomerite. Prevucite teme da promenite oblik, kliknite ivicu da dodate teme ili izaberite teme pa ga obrišite dugmetom kante ili tasterom Delete/Backspace. Zaključajte početnu lokaciju da bi zgrada ostala u njoj; u suprotnom je možete slobodno pomerati.",
@@ -2470,7 +2476,7 @@
             "parcelWhole": "Uzmi cele parcele",
             "parcelInfo": "Zgrada podrazumevano formira sopstvenu parcelu prema osnovi, a ostatak zemljišta ostaje vlasniku. Uzimanjem celih parcela one postaju parcela zgrade kakve jesu.",
             "moveTogether": "Pomeri ceo predlog",
-            "uploadInvalid": "Otpremljeni poligon nije ispravan ili je izvan zaključane lokacije."
+            "uploadInvalid": "Otpremljena geometrija nije ispravna ili je izvan zaključane lokacije."
         },
         "buildingUpload": {
             "title": "Učitaj 3D model zgrade",
@@ -2730,7 +2736,11 @@
             "show": "Prikaži"
         },
         "corridorTunnel": {
-            "offer": "Ovaj {{kind}} preseca {{count}} zgradu/zgrada. Zadržati ga kroz njih na površini ili kroz njih projektovati tunel?",
+            "offer": {
+                "one": "Ovaj {{kind}} preseca {{count}} zgradu. Zadržati ga kroz nju na površini ili kroz nju projektovati tunel?",
+                "few": "Ovaj {{kind}} preseca {{count}} zgrade. Zadržati ga kroz njih na površini ili kroz njih projektovati tunel?",
+                "other": "Ovaj {{kind}} preseca {{count}} zgrada. Zadržati ga kroz njih na površini ili kroz njih projektovati tunel?"
+            },
             "road": "put",
             "track": "pruga",
             "proposalImpact": "Ovaj put je kasniji od ovih predloga zgrada; površinski prelaz preuzima njihovo zemljište tokom ponovne izvedbe:",
@@ -3117,7 +3127,9 @@
                     "materializing": "Pokrećem primenu predloga…",
                     "applyingAllTitle": "Primenjivanje podeljenih predloga",
                     "fetchingPlan": "Preuzimanje podeljenih predloga…",
+                    "loadFailed": "Plan ili predlog sa linka nije moguće učitati. Pokušajte ponovo.",
                     "fetchingPlanTitle": "Preuzimanje podeljenih predloga",
+                    "changedSincePreview": "Imenovani plan se promenio ili nije mogao da se proveri. Ponovo ga otvorite da pregledate trenutne članove.",
                     "rebuildingStatus": "Ponovno sastavljanje primenjene kompozicije…",
                     "rebuildingStatusCount": "Ponovno sastavljanje primenjene kompozicije {{done}}/{{total}}…",
                     "progress": {
@@ -3763,12 +3775,21 @@
                 "additionalFloors": "Dodatni spratovi:",
                 "floorHeight": "Visina sprata (m):",
                 "helper": "Izaberite pravilo: predložena visina crta svaku zgradu tačno na toj visini; dodatni spratovi dodaju spratove na trenutnu visinu svake zgrade (zahteva poznate visine).",
-                "summaryExact": "Predlaže se {{count}} zgrada visine {{height}} m.",
+                "summaryExact": {
+                    "one": "Predlaže se {{count}} zgrada visine {{height}} m.",
+                    "few": "Predlažu se {{count}} zgrade visine {{height}} m.",
+                    "other": "Predlaže se {{count}} zgrada visine {{height}} m."
+                },
                 "loading": "Učitavanje postojećih zgrada…",
                 "notAvailable": "Podaci o postojećim zgradama još nisu dostupni za ovaj grad.",
                 "noneFound": "Na izabranim parcelama nisu pronađene postojeće zgrade.",
                 "loadFailed": "Učitavanje postojećih zgrada nije uspelo. Pokušajte ponovo.",
-                "summary": "Povisuje se {{count}} od {{total}} postojećih zgrada."
+                "summary": "Povisuje se {{count}} od {{existingBuildings}}.",
+                "buildingCount": {
+                    "one": "{{count}} postojeće zgrade",
+                    "few": "{{count}} postojeće zgrade",
+                    "other": "{{count}} postojećih zgrada"
+                }
             },
             "warnings": {
                 "oversizedBlock": "Ovaj blok je velik — obilazak pešice trajao bi oko {{minutes}} minuta. Preporučeni blokovi su između 50×50 m i 200×200 m, tako da se mogu obići za oko 2½ do 10 minuta. Želite li da nastavite?",
@@ -3786,8 +3807,8 @@
                 "entryFailed": "Ovaj obris je previše složen za ručno uređivanje — nazad na klizače. Savet: povećajte „Pojednostavi (m)“ da ga izgladite, pa pokušajte ponovo.",
                 "vertex": "Prevucite za oblikovanje",
                 "deleteVertex": "Obriši izabrani vrh",
-                "uploadGeojson": "Učitaj GeoJSON",
-                "uploadNoPolygon": "U datoteci nije pronađen upotrebljiv poligon.",
+                "uploadGeojson": "Uvezi GeoJSON slobodnih zgrada",
+                "uploadNoPolygon": "Datoteku nije moguće uvesti. Koristite ispravne osnove zgrada tipa Polygon ili MultiPolygon.",
                 "uploadError": "Nije moguće pročitati datoteku."
             },
             "regenerate": "Regeneriši"
@@ -3823,8 +3844,8 @@
             },
             "rotateCounterclockwise": "Zakreni 5 stepeni suprotno od kazaljke na satu",
             "rotateClockwise": "Zakreni 5 stepeni u smeru kazaljke na satu",
-            "uploadGeojson": "Učitaj GeoJSON",
-            "uploadNoPolygon": "U datoteci nije pronađen upotrebljiv poligon.",
+            "uploadGeojson": "Uvezi GeoJSON slobodnih zgrada",
+            "uploadNoPolygon": "Datoteku nije moguće uvesti. Koristite ispravne osnove zgrada tipa Polygon ili MultiPolygon.",
             "uploadOutside": "Učitani poligon se ne preklapa s ovim parcelama na upotrebljiv način.",
             "uploadError": "Datoteku nije moguće pročitati.",
             "vertexLabel": "Teme osnove",
@@ -4434,6 +4455,7 @@
             "parcels_read_from_dgu": "Server ovog sajta ne odgovara: parcele se čitaju direktno iz državnog katastra (DGU), bez podataka o vlasništvu.",
             "loaded_parcels_from_source": "Učitano {{count}} parcela iz izvora {{source}}.",
             "checking_cadastral_ground": "Provera katastarske podloge…",
+            "without_parcels": "Nastavak bez parcela. Projekti koriste sopstvenu geometriju.",
             "loading_cadastral_ground": "Učitavanje katastarske podloge {{done}}/{{total}}…",
             "parcel_source_downloading": "Preuzimanje {{authority}}… {{loaded}} / {{total}} MB",
             "parcel_source_decompressing": "Raspakivanje {{authority}}…",
@@ -7262,7 +7284,11 @@
             "short": "zadire"
         },
         "buildings": {
-            "count": "Zgrada: {{count}}",
+            "count": {
+                "one": "{{count}} zgrada",
+                "few": "{{count}} zgrade",
+                "other": "{{count}} zgrada"
+            },
             "footprint": "osnova {{area}}",
             "floorArea": "BRGP {{area}}",
             "height": "spratova: {{floors}} · {{height}}"
@@ -7353,6 +7379,24 @@
         "close": "Zatvori",
         "retry": "Ponovo učitaj izvor parcela",
         "dismiss": "Sakrij upozorenje izvora"
+    },
+    "imagerySources": {
+        "title": "Izaberi izvor snimaka",
+        "intro": "Dodaj javni HTTPS URL XYZ pločica (sa {z}, {x}, {y}) ili WMS servis za ovo područje. Snimci su vizuelna pozadina; ne menjaju parcele ni zgrade.",
+        "url": "URL izvora snimaka",
+        "matched": "Slika je potvrđena preko {{adapter}}. Pokrivenost van probnog područja zavisi od izvora.",
+        "layer": "WMS sloj",
+        "selectLayer": "Izaberi WMS sloj pa proveri ponovo.",
+        "presets": "Predloženo za ovo područje",
+        "dgu2022": "DGU ortofoto 2022.",
+        "dgu2024": "DGU ortofoto 2024.",
+        "dguCoverage": "Samo zapadna Hrvatska; pokrivenost varira unutar ovog područja.",
+        "unavailable": "Snimci nisu mogli da se učitaju. Pokušaj ponovo ili izaberi drugi izvor.",
+        "retry": "Ponovo učitaj snimke",
+        "noAdapter": "Nije pronađen podržan izvor snimaka. Koristi predložak XYZ pločica ili WMS servis.",
+        "default": "Koristi standardnu osnovnu mapu",
+        "standard": "Standardna osnovna mapa",
+        "unsupportedCrs": "Ovaj WMS zahteva podržani geografski koordinatni sistem ili Web Mercator."
     },
     "parcelSourceHealth": {
         "offline": "Izgleda da nemaš internet vezu. Poveži se na internet i pokušaj ponovo.",
@@ -7499,6 +7543,10 @@
         },
         "options": {
             "later": "Ne sada",
+            "withoutParcels": {
+                "title": "Nastavi bez parcela",
+                "desc": "Pregledaj i primeni projekte prema njihovoj geometriji. Granice parcela i podaci o vlasništvu neće biti dostupni."
+            },
             "retry": {
                 "title": "Ponovo pokušaj zvanični registar",
                 "desc": "Ponovo upitajte registar. Pravi izbor za mrežni prekid ili server koji je kratko bio nedostupan."
@@ -7664,6 +7712,7 @@
             "loading": "Učitavanje plana…",
             "error": "Plan nije bilo moguće učitati: {{reason}}",
             "hint": "Šrafirano na mapi: šta bi ovaj plan izgradio. Ništa se ne menja dok ga ne primenite.",
+            "appliedHint": "Na ovoj karti je primenjeno {{applied}} od {{total}} predloga.",
             "newer": "Postoji novija verzija ovog plana:",
             "membersHeading": "Predlozi u ovom planu",
             "changed": {

@@ -1557,6 +1557,7 @@ function showProposalDialog(overrides = null) {
     const descriptionInputEl = document.getElementById('proposalDescription');
     if (nameInputEl && overridePrefill.name) {
         nameInputEl.value = overridePrefill.name;
+        nameInputEl.dataset.titleOrigin = overridePrefill.titleOrigin === 'generated' ? 'generated' : 'user';
     }
     if (descriptionInputEl && overridePrefill.description) {
         descriptionInputEl.value = overridePrefill.description;

@@ -491,6 +491,7 @@
         "outsideSite": "La geometría de la propuesta se extiende más allá de su emplazamiento. Mantenla dentro del emplazamiento o edítalo antes de aplicarla.",
         "groundUnavailable": "No se pudieron cargar los datos de las parcelas catastrales. Comprueba tu conexión e inténtalo de nuevo.",
         "groundMissing": "No hay datos catastrales disponibles para: {{parcels}}. No se puede aplicar esta propuesta hasta que se carguen esas parcelas.",
+        "needsParcels": "Esta propuesta actúa sobre parcelas catastrales o no tiene geometría propia. Carga sus parcelas antes de aplicarla.",
         "undeclared": "Esta propuesta no tiene parcelas catastrales ni un emplazamiento de terreno libre. Define su emplazamiento antes de aplicarla.",
         "invalidGeometry": "La geometría de la propuesta falta o no es válida. Edítala antes de aplicarla.",
         "applyFailed": "No se pudo colocar la propuesta en el mapa porque no fue posible derivar su geometría del terreno seleccionado.",
@@ -659,7 +660,10 @@
         },
         "design": {
             "corridorSummary": "{{segments}} segmento(s) · {{width}} m de ancho",
-            "buildingSummary": "{{count}} edificio(s) · {{typology}}",
+            "buildingSummary": {
+                "one": "{{count}} edificio · {{typology}}",
+                "other": "{{count}} edificios · {{typology}}"
+            },
             "reparcelSummary": "{{count}} parcela(s) de reemplazo · {{algorithm}}",
             "parcelSummary": "{{count}} parcela(s) afectadas",
             "manual": "manual",
@@ -1720,6 +1724,7 @@
                 "applyFailedUnknown": "No se pudo aplicar esta propuesta. Inténtalo de nuevo.",
                 "applyUnavailable": "Esta propuesta no se puede aplicar al mapa.",
                 "applyUnsupported": "Este tipo de propuesta no admite su aplicación al mapa.",
+                "proposalNotLoaded": "Esta propuesta no está cargada en este navegador. Ábrela desde la lista de propuestas y vuelve a intentarlo.",
                 "missingProposal": "No se seleccionó ninguna propuesta para aplicar.",
                 "unapplyFailed": "No se pudo quitar esta propuesta del mapa: {{reason}}",
                 "unapplyFailedUnknown": "No se pudo quitar esta propuesta del mapa. Inténtalo de nuevo.",
@@ -2495,7 +2500,7 @@
             "surroundingsGreen": "Verde",
             "surroundingsInfo": "Una sola opción para toda la superficie de las parcelas alrededor de cada edificio de esta propuesta. Los edificios existentes en esas parcelas se eliminan en cualquier caso.",
             "uploadGeojsonLabel": "Subir GeoJSON",
-            "uploadNoPolygon": "No se encontró ningún polígono utilizable en ese archivo.",
+            "uploadNoPolygon": "No se pudo importar el archivo. Usa huellas de edificios Polygon o MultiPolygon válidas.",
             "uploadOutside": "El polígono subido no se superpone con este bloque de forma utilizable.",
             "uploadError": "No se pudo leer ese archivo.",
             "infoText": "Arrastra la huella para moverla. Arrastra un vértice para cambiar la forma, haz clic en un borde para añadir uno o selecciona un vértice y usa la papelera o Supr/Retroceso para eliminarlo. Usa «Fijar a la ubicación inicial» para mantenerla dentro; de lo contrario, puedes moverla libremente.",
@@ -2505,7 +2510,7 @@
             "parcelWhole": "Tomar las parcelas enteras",
             "parcelInfo": "Por defecto el edificio forma su propia parcela según su huella y el resto del terreno queda con su propietario. Al tomar parcelas enteras, estas pasan a ser la parcela del edificio tal como están.",
             "moveTogether": "Mover toda la propuesta",
-            "uploadInvalid": "El polígono subido no es válido o está fuera de la ubicación fijada."
+            "uploadInvalid": "La geometría subida no es válida o está fuera de la ubicación fijada."
         },
         "buildingUpload": {
             "title": "Subir un modelo de edificio",
@@ -2760,7 +2765,10 @@
             "show": "Mostrar"
         },
         "corridorTunnel": {
-            "offer": "Este {{kind}} cruza {{count}} edificio(s). ¿Mantenerlo en superficie a través de ellos o atravesarlos con túneles?",
+            "offer": {
+                "one": "Este {{kind}} cruza {{count}} edificio. ¿Mantenerlo en superficie a través de él o atravesarlo con un túnel?",
+                "other": "Este {{kind}} cruza {{count}} edificios. ¿Mantenerlo en superficie a través de ellos o atravesarlos con túneles?"
+            },
             "road": "camino",
             "track": "vía férrea",
             "proposalImpact": "Esta carretera es posterior a estas propuestas de edificios; un cruce en superficie ocupa su suelo durante la repetición:",
@@ -3148,7 +3156,9 @@
                     "materializing": "Iniciando la materialización de las propuestas…",
                     "applyingAllTitle": "Aplicando propuestas compartidas",
                     "fetchingPlan": "Obteniendo propuestas compartidas…",
+                    "loadFailed": "No se pudo cargar el plan o la propuesta del enlace. Inténtalo de nuevo.",
                     "fetchingPlanTitle": "Obteniendo propuestas compartidas",
+                    "changedSincePreview": "Este plan con nombre cambió o no se pudo verificar. Ábrelo de nuevo para revisar sus miembros actuales.",
                     "rebuildingStatus": "Reconstruyendo la composición aplicada…",
                     "rebuildingStatusCount": "Reconstruyendo la composición aplicada {{done}}/{{total}}…",
                     "progress": {
@@ -3764,12 +3774,19 @@
                 "additionalFloors": "Plantas adicionales:",
                 "floorHeight": "Altura de planta (m):",
                 "helper": "Elige una regla: la altura propuesta dibuja cada edificio exactamente a esa altura; las plantas adicionales añaden plantas sobre la altura actual de cada edificio (requiere alturas conocidas).",
-                "summaryExact": "Se proponen {{count}} edificios de {{height}} m.",
+                "summaryExact": {
+                    "one": "Se propone {{count}} edificio de {{height}} m.",
+                    "other": "Se proponen {{count}} edificios de {{height}} m."
+                },
                 "loading": "Cargando edificios existentes…",
                 "notAvailable": "Los datos de edificios existentes aún no están disponibles para esta ciudad.",
                 "noneFound": "No se encontraron edificios existentes en las parcelas seleccionadas.",
                 "loadFailed": "No se pudieron cargar los edificios existentes. Inténtalo de nuevo.",
-                "summary": "Se elevan {{count}} de {{total}} edificios existentes."
+                "summary": "Se elevan {{count}} de {{existingBuildings}}.",
+                "buildingCount": {
+                    "one": "{{count}} edificio existente",
+                    "other": "{{count}} edificios existentes"
+                }
             },
             "warnings": {
                 "oversizedBlock": "Este bloque es grande — dar la vuelta caminando tardaría unos {{minutes}} minutos. Los bloques recomendados miden entre 50×50 m y 200×200 m, de modo que se pueden rodear a pie en unos 2½ a 10 minutos. ¿Quieres continuar?",
@@ -3787,8 +3804,8 @@
                 "entryFailed": "Este contorno es demasiado complejo para editarlo a mano — vuelta a los controles. Consejo: sube «Simplificar (m)» para suavizarlo y prueba a editarlo de nuevo.",
                 "vertex": "Arrastra para remodelar",
                 "deleteVertex": "Eliminar el vértice seleccionado",
-                "uploadGeojson": "Subir GeoJSON",
-                "uploadNoPolygon": "No se encontró ningún polígono utilizable en ese archivo.",
+                "uploadGeojson": "Importar GeoJSON de edificios libres",
+                "uploadNoPolygon": "No se pudo importar el archivo. Usa huellas de edificios Polygon o MultiPolygon válidas.",
                 "uploadError": "No se pudo leer el archivo."
             },
             "regenerate": "Regenerar"
@@ -3824,8 +3841,8 @@
             },
             "rotateCounterclockwise": "Girar 5 grados en sentido antihorario",
             "rotateClockwise": "Girar 5 grados en sentido horario",
-            "uploadGeojson": "Subir GeoJSON",
-            "uploadNoPolygon": "No se encontró ningún polígono utilizable en ese archivo.",
+            "uploadGeojson": "Importar GeoJSON de edificios libres",
+            "uploadNoPolygon": "No se pudo importar el archivo. Usa huellas de edificios Polygon o MultiPolygon válidas.",
             "uploadOutside": "El polígono subido no se superpone con estas parcelas de forma utilizable.",
             "uploadError": "No se pudo leer ese archivo.",
             "vertexLabel": "Vértice de la huella",
@@ -4434,6 +4451,7 @@
             "parcels_read_from_dgu": "El servidor de este sitio no responde: las parcelas se leen directamente del catastro estatal (DGU), sin titularidad.",
             "loaded_parcels_from_source": "Se cargaron {{count}} parcelas de {{source}}.",
             "checking_cadastral_ground": "Comprobando el catastro…",
+            "without_parcels": "Continuando sin parcelas. Los diseños usan su propia geometría.",
             "loading_cadastral_ground": "Cargando el catastro {{done}}/{{total}}…",
             "parcel_source_downloading": "Descargando {{authority}}… {{loaded}} / {{total}} MB",
             "parcel_source_decompressing": "Descomprimiendo {{authority}}…",
@@ -7258,7 +7276,10 @@
             "short": "entra"
         },
         "buildings": {
-            "count": "{{count}} edificio(s)",
+            "count": {
+                "one": "{{count}} edificio",
+                "other": "{{count}} edificios"
+            },
             "footprint": "huella {{area}}",
             "floorArea": "superficie construida {{area}}",
             "height": "{{floors}} plantas · {{height}}"
@@ -7349,6 +7370,24 @@
         "close": "Cerrar",
         "retry": "Reintentar la fuente de parcelas",
         "dismiss": "Ocultar aviso de la fuente"
+    },
+    "imagerySources": {
+        "title": "Elegir una fuente de imágenes",
+        "intro": "Añade una URL pública HTTPS de teselas XYZ (con {z}, {x}, {y}) o un servicio WMS para esta zona. Las imágenes son un fondo visual; no modifican parcelas ni edificios.",
+        "url": "URL de la fuente de imágenes",
+        "matched": "Imagen verificada mediante {{adapter}}. La cobertura fuera del área de prueba depende de la fuente.",
+        "layer": "Capa WMS",
+        "selectLayer": "Elige una capa WMS y vuelve a comprobar.",
+        "presets": "Sugerencias para esta zona",
+        "dgu2022": "Ortofoto DGU 2022",
+        "dgu2024": "Ortofoto DGU 2024",
+        "dguCoverage": "Solo Croacia occidental; la cobertura varía dentro de esta zona.",
+        "unavailable": "No se pudieron cargar las imágenes. Vuelve a intentarlo o elige otra fuente.",
+        "retry": "Reintentar imágenes",
+        "noAdapter": "No se encontró ninguna fuente de imágenes compatible. Usa una plantilla de teselas XYZ o un servicio WMS.",
+        "default": "Usar el mapa base estándar",
+        "standard": "Mapa base estándar",
+        "unsupportedCrs": "Este WMS necesita un sistema de coordenadas geográfico o Web Mercator compatible."
     },
     "parcelSourceHealth": {
         "offline": "Parece que no tienes conexión. Conéctate a internet y vuelve a intentarlo.",
@@ -7492,6 +7531,10 @@
         },
         "options": {
             "later": "Ahora no",
+            "withoutParcels": {
+                "title": "Continuar sin parcelas",
+                "desc": "Visualiza y aplica los diseños a partir de su geometría. Los límites y la propiedad de las parcelas no estarán disponibles."
+            },
             "retry": {
                 "title": "Reintentar el registro oficial",
                 "desc": "Volver a consultar el registro. Adecuado para un corte de red o un servidor caído por poco tiempo."
@@ -7656,6 +7699,7 @@
             "loading": "Cargando el plan…",
             "error": "No se pudo cargar el plan: {{reason}}",
             "hint": "Rayado en el mapa: lo que construiría este plan. Nada cambia hasta que lo apliques.",
+            "appliedHint": "Se han aplicado {{applied}} de {{total}} propuestas en este mapa.",
             "newer": "Existe una versión más reciente de este plan:",
             "membersHeading": "Propuestas de este plan",
             "changed": {

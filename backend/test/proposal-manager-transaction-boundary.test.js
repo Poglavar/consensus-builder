@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { createRequire } from 'node:module';
+import * as turf from '@turf/turf';
 
 const require = createRequire(import.meta.url);
 const { ProposalManager } = require('../../frontend/js/proposal-manager.js');
@@ -7,6 +8,7 @@ const { setProposalApplied } = require('../../frontend/js/proposals/status.js');
 
 describe('ProposalManager mutation boundary', () => {
     let previousStorage;
+    let previousTurf;
     let originalApplyBody;
     let originalUnapplyBody;
     let originalRefresh;
@@ -22,6 +24,8 @@ describe('ProposalManager mutation boundary', () => {
     beforeEach(() => {
         ProposalManager._lastApplyFailureByProposalId.clear();
         previousStorage = globalThis.proposalStorage;
+        previousTurf = globalThis.turf;
+        globalThis.turf = turf;
         originalApplyBody = ProposalManager._applyProposalTransactionBody;
         originalUnapplyBody = ProposalManager._unapplyProposalTransactionBody;
         originalRefresh = ProposalManager._refreshUIAfterProposalChange;
@@ -80,6 +84,7 @@ describe('ProposalManager mutation boundary', () => {
     });
 
     afterEach(() => {
+        if (previousTurf === undefined) delete globalThis.turf; else globalThis.turf = previousTurf;
         ProposalManager._applyProposalTransactionBody = originalApplyBody;
         ProposalManager._unapplyProposalTransactionBody = originalUnapplyBody;
         ProposalManager._refreshUIAfterProposalChange = originalRefresh;
@@ -126,6 +131,42 @@ describe('ProposalManager mutation boundary', () => {
         expect(conflictIdentity).toEqual({ proposalId: 'conflict', applied: true, value: 'before' });
         expect(store.proposals.has('created-during-apply')).toBe(false);
         expect(store.batchDepth).toBe(0);
+    });
+
+    it('chooses every plan member together and releases only their geometric rivals', async () => {
+        store.proposals.set('second', { proposalId: 'second', applied: false });
+        store.proposals.set('untouched', { proposalId: 'untouched', applied: true });
+        const rebuilt = [];
+        ProposalManager._collectAppliedAlternativesForExplicitApply = (_member, candidates, options) => {
+            expect(candidates.map(record => record.proposalId)).toEqual(['conflict', 'untouched']);
+            return [options._parcelMutation.proposals.getProposal('conflict')];
+        };
+        ProposalManager.rebuildAppliedFabric = async options => {
+            rebuilt.push(options._parcelMutation.proposals.getAllProposals().map(record => [record.proposalId, record.applied]));
+            expect(options.resetProposalIds).toEqual(['conflict']);
+            return { ok: true, failed: [] };
+        };
+        const result = await ProposalManager.applyProposalPlan(['target', 'second', 'target']);
+        expect(result.ok).toBe(true);
+        expect(result.releasedIds).toEqual(['conflict']);
+        expect(rebuilt).toEqual([[['target', true], ['conflict', false], ['second', true], ['untouched', true]]]);
+        expect(store.getProposal('target').applied).toBe(true);
+        expect(store.getProposal('second').applied).toBe(true);
+        expect(store.getProposal('conflict').applied).toBe(false);
+        expect(store.getProposal('untouched').applied).toBe(true);
+    });
+
+    it('keeps the entire previous composition when any incoming plan member refuses', async () => {
+        store.proposals.set('second', { proposalId: 'second', applied: false });
+        const before = structuredClone([...store.proposals]);
+        ProposalManager._collectAppliedAlternativesForExplicitApply = (_member, _candidates, options) => [options._parcelMutation.proposals.getProposal('conflict')];
+        ProposalManager.rebuildAppliedFabric = async options => {
+            expect(options._parcelMutation.proposals.getProposal('conflict').applied).toBe(false);
+            return { ok: false, failed: [{ proposalId: 'second', code: 'bad-ground', reason: 'Ground missing' }] };
+        };
+        await expect(ProposalManager.applyProposalPlan(['target', 'second'])).resolves.toBe(false);
+        expect([...store.proposals]).toEqual(before);
+        expect(ProposalManager._lastFailedPlanApplySummary.failed[0].code).toBe('bad-ground');
     });
 
     it('restores state and rethrows the original error', async () => {
@@ -299,7 +340,7 @@ describe('ProposalManager mutation boundary', () => {
         });
         const edited = () => ({
             goal: 'park', value: 'after', structureProposal: { kind: 'park' }, cadastreParcelIds: ['HR-1', 'HR-2'],
-            sourceProposalId: 'target', replacementOfProposalId: 'target', proposalDraftId: 'draft-1'
+            proposalOrigin: { relation: 'revision', source: { localProposalId: 'target' } }, proposalDraftId: 'draft-1'
         });
 
         it('keeps the id and the record count, and re-derives the old and new ground', async () => {
@@ -315,7 +356,8 @@ describe('ProposalManager mutation boundary', () => {
             const target = store.getProposal('target');
             expect(target).toMatchObject({ proposalId: 'target', value: 'after', applied: true, createdAt: '2026-10-01T10:00:00.000Z' });
             expect(target.cadastreParcelIds).toEqual(['HR-1', 'HR-2']);
-            // An edit is not its own source.
+            // An in-place edit keeps its prior origin, never a revision pointing at itself.
+            expect(target.proposalOrigin).toBeUndefined();
             expect(target.sourceProposalId).toBeUndefined();
             expect(target.replacementOfProposalId).toBeUndefined();
             expect(seeds).toEqual([{ id: 'target', parcels: ['HR-1'] }, { id: 'target', parcels: ['HR-1', 'HR-2'] }]);

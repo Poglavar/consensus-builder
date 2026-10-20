@@ -680,6 +680,10 @@
     let currentViewFetch = null;
 
     async function fetchParcelData(customBounds) {
+        if (global.ParcelGroundFallback?.isWithoutParcels?.(currentCity())) {
+            global.updateStatus?.(statusText('without_parcels', 'Continuing without parcels. Designs use their own geometry.'));
+            return null;
+        }
         if (cityConfig(currentCity())?.parcels?.strategy === 'point' && !groundOverride(currentCity())) {
             global.PointParcelMap?.sync?.();
             global.updateStatus?.(statusText('tap_parcel_to_load', 'Tap a parcel to load its boundary. Area-wide parcel loading is unavailable.'));
@@ -715,8 +719,8 @@
         try {
             // ensureBounds joins in-flight cells before its first await, so the older view is
             // cancelled only after this one has claimed the cells they share.
-            const pending = repository.ensureBounds(requestedBounds, {
-                signal: view.signal,
+            const load = signal => repository.ensureBounds(requestedBounds, {
+                signal,
                 onProgress: detail => {
                     if (currentViewFetch !== view) return;
                     const message = global.ParcelSourceProgress?.format(detail, {
@@ -733,6 +737,12 @@
                     }
                 }
             });
+            const configuredTimeout = global.PARCEL_LOAD_TIMEOUT_MS;
+            const timeoutMs = typeof configuredTimeout === 'number' && Number.isFinite(configuredTimeout) && configuredTimeout > 0
+                ? configuredTimeout : 30000;
+            const pending = global.ParcelSourceHealth?.withDeadline
+                ? global.ParcelSourceHealth.withDeadline(load, { timeoutMs, signal: view.signal })
+                : load(view.signal);
             superseded?.abort();
             const result = await pending;
             if (view.signal.aborted) return result;
@@ -822,6 +832,11 @@
         // An explicit refresh is the visitor asking again, so a fallback screen they closed earlier
         // may be shown again if the register still fails.
         try { global.ParcelGroundFallback?.resetDismissal?.(currentCity()); } catch (_) { }
+        if (global.ParcelGroundFallback?.isWithoutParcels?.(currentCity())) {
+            global.ParcelGroundFallback.clearWithoutParcels(currentCity());
+            global.location.reload();
+            return;
+        }
         const task = () => fetchParcelDataReported(customBounds, 'parcel refresh button');
         return button && typeof global.runWithButtonBusyState === 'function'
             ? global.runWithButtonBusyState(button, { key: 'common.busy.refreshing', fallback: 'Refreshing...' }, task)

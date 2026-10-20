@@ -371,32 +371,11 @@ function buildSharedProposalsPayload(appliedProposals) {
     };
 }
 
-function coordinatedPlanIdOfSharedRecord(record) {
-    if (!record || record.coordinatedPlanId === undefined || record.coordinatedPlanId === null) return '';
-    return String(record.coordinatedPlanId).trim();
-}
-
 function sharedMaterializationPhase(record) {
     const rawGoal = record && record.goal;
     const goal = (typeof applyRoute !== 'undefined' && applyRoute && typeof applyRoute.normalizeGoalKey === 'function')
         ? applyRoute.normalizeGoalKey(rawGoal)
         : String(rawGoal || '');
-    // A coordinated plan explicitly publishes complementary readjustment plots and road bands.
-    // Its plots must stand first so corridor derivation can retain them and fill their intentional
-    // gaps. Ordinary packages keep the interactive authoring order: roads form blocks first, then
-    // a readjustment partitions the remainders.
-    if (coordinatedPlanIdOfSharedRecord(record)) {
-        if (goal === 'reparcellization' || goal === 'decide-later'
-            || !!(record && (record.reparcellization || record.decideLaterProposal))) return 0;
-        if (goal === 'road-track' || !!(record && record.roadProposal)) return 1;
-        const coordinatedBuilding = !!(record && record.buildingProposal)
-            || !!(typeof applyRoute !== 'undefined' && applyRoute
-                && typeof applyRoute.isBuildingGoal === 'function' && applyRoute.isBuildingGoal(goal));
-        if (coordinatedBuilding) return 2;
-        if (goal === 'park' || goal === 'square' || goal === 'lake' || goal === 'station'
-            || !!(record && record.structureProposal)) return 3;
-        return 4;
-    }
     if (goal === 'road-track' || !!(record && record.roadProposal)) return 0;
     if (goal === 'reparcellization' || goal === 'decide-later'
         || !!(record && (record.reparcellization || record.decideLaterProposal))) return 1;
@@ -650,11 +629,28 @@ function reportSharedPlanProgress(event) {
 // Each parked member goes directly through the canonical replay materializer. It keeps the rollback
 // boundary, but avoids the explicit-click state transition and rival pass that used to run
 // before the same materializer. Package dependency order remains immutable inside each phase.
+// An explicit Apply plan click chooses its members over existing geometric rivals. A link
+// import still uses the non-displacing shared-ground gate below.
+async function materializeExplicitProposalPlan(proposalIds) {
+    const ids = orderQueuedSharedProposalIds(proposalIds);
+    const result = await ProposalManager.applyProposalPlan(ids, { onProgress: reportSharedPlanProgress });
+    if (result && result.ok === true) return { appliedIds: ids, failedIds: [] };
+    const summary = ProposalManager._lastFailedPlanApplySummary;
+    const failure = summary?.failed?.[0];
+    ids.forEach(id => {
+        if (ProposalManager.getLastApplyFailure?.(id)) return;
+        ProposalManager._setLastApplyFailure?.(id, {
+            code: failure?.code || 'plan-apply-failed',
+            message: failure?.reason || failure?.message || 'The plan could not be applied; the previous map was kept.'
+        });
+    });
+    return { appliedIds: [], failedIds: ids };
+}
+
 async function materializeQueuedSharedProposals(proposalIds, options = {}) {
-    // Package dependencies outrank URL and creation order. Ordinary packages form road-bounded
-    // blocks before partitioning them; explicitly coordinated packages publish a pre-tessellated
-    // readjustment first, then fill its reserved road bands. Buildings and public spaces follow in
-    // both cases. Immutable input order still breaks ties within each phase.
+    // Package dependencies outrank URL and creation order: corridors form road-bounded blocks
+    // before readjustments partition them. Buildings and public spaces follow. Immutable input
+    // order breaks ties within each phase.
     const orderedIds = orderQueuedSharedProposalIds(proposalIds);
     const appliedIds = [];
     const failedIds = [];
@@ -761,8 +757,7 @@ async function materializeQueuedSharedProposals(proposalIds, options = {}) {
                 : String((record && record.goal) || '');
             const isRoad = goal === 'road-track' || !!(record && record.roadProposal);
 
-            // Consecutive roads in the ordered package are one network mutation. This is equally valid
-            // before an ordinary readjustment and after a coordinated one; only their phase changes.
+            // Consecutive roads in the ordered package are one network mutation.
             if (isRoad && ProposalManager && typeof ProposalManager.materializeCorridorBatch === 'function') {
                 const roadIds = [];
                 let cursor = index;
@@ -786,8 +781,7 @@ async function materializeQueuedSharedProposals(proposalIds, options = {}) {
                 for (const roadId of roadIds) {
                     let roadRecord = null;
                     try { roadRecord = proposalStorage.getProposal(roadId); } catch (_) { roadRecord = null; }
-                    if (!coordinatedPlanIdOfSharedRecord(roadRecord)
-                        && typeof ProposalManager.validateSharedProposalGround === 'function') {
+                    if (typeof ProposalManager.validateSharedProposalGround === 'function') {
                         const validation = ProposalManager.validateSharedProposalGround(
                             roadId,
                             planMemberIds,
@@ -827,11 +821,10 @@ async function materializeQueuedSharedProposals(proposalIds, options = {}) {
             await paintSharedPlanProgress(firstProposalProgress || proposalPosition === orderedIds.length);
             try {
                 // Refuse unrelated holders in memory, then use the direct one-boundary materializer for
-                // every shared member. The old non-coordinated path first marked state in one full-map
-                // transaction and then replay-applied in a second; neither extra snapshot nor the
-                // explicit-Apply rival path belongs to opening a plan link.
-                if (!coordinatedPlanIdOfSharedRecord(record)
-                    && ProposalManager && typeof ProposalManager.validateSharedProposalGround === 'function') {
+                // every shared member. The old path marked state in one full-map transaction and then
+                // replay-applied in a second; neither extra snapshot nor explicit-Apply rival path
+                // belongs to opening a plan link.
+                if (ProposalManager && typeof ProposalManager.validateSharedProposalGround === 'function') {
                     const validation = ProposalManager.validateSharedProposalGround(
                         id,
                         planMemberIds,
@@ -877,9 +870,9 @@ async function materializeQueuedSharedProposals(proposalIds, options = {}) {
         try {
             // Imports may have suppressed their own save. Ensure the outer batch has one pending
             // write even if every queued member was refused before reaching a type handler.
-            if (batchStore && typeof batchStore.save === 'function') batchStore.save();
+            if (batchStore && typeof batchStore.save === 'function') await batchStore.save();
         } finally {
-            if (storageBatched) batchStore.endBatch();
+            if (storageBatched) await batchStore.endBatch();
         }
         storageMs = now() - storageStarted;
 
@@ -1613,6 +1606,23 @@ function describeSharedProposalFetchFailure(id, payload) {
     return technical;
 }
 
+// Bound the complete response, including its JSON body. A stalled batch must not expand into
+// thousands of individual requests when the shared API itself is unavailable.
+async function fetchSharedProposalResponse(url, options = {}) {
+    const runtime = typeof window !== 'undefined' ? window : globalThis;
+    const load = async signal => {
+        const response = await fetch(url, { ...options, ...(signal ? { signal } : {}) });
+        let data = null;
+        try { data = await response.json(); } catch (error) { if (response.ok) throw error; }
+        return { ok: response.ok, status: response.status, statusText: response.statusText, data };
+    };
+    const configured = runtime.PARCEL_LOAD_TIMEOUT_MS;
+    const timeoutMs = typeof configured === 'number' && Number.isFinite(configured) && configured > 0 ? configured : 30000;
+    return runtime.ParcelSourceHealth?.withDeadline
+        ? runtime.ParcelSourceHealth.withDeadline(load, { timeoutMs, code: 'proposal-load-timeout' })
+        : load();
+}
+
 async function fetchSharedProposalBatch(ids, backendBase) {
     const requested = Array.from(new Set((Array.isArray(ids) ? ids : [])
         .map(id => String(id || '').trim()).filter(Boolean)));
@@ -1622,31 +1632,84 @@ async function fetchSharedProposalBatch(ids, backendBase) {
     // the plan result, not a generic "not found".
     const errors = new Map();
     if (!requested.length) return { records, missing, errors, supported: true, requests: 0 };
+    const seen = new Set();
+    let requests = 0;
+    for (let start = 0; start < requested.length; start += 1000) {
+        requests += 1;
+        try {
+            const chunk = requested.slice(start, start + 1000);
+            const response = await fetchSharedProposalResponse(`${backendBase}/proposals/batch`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+                body: JSON.stringify({ ids: chunk })
+            });
+            if (!response.ok) return { records, missing, errors, supported: false, requests };
+            const payload = response.data;
+            if (!payload || !Array.isArray(payload.items)) return { records, missing, errors, supported: false, requests };
+            payload.items.forEach(item => {
+                const id = item && item.id !== undefined && item.id !== null ? String(item.id) : '';
+                if (!id) return;
+                seen.add(id);
+                if (item.proposal) records.set(id, normalizePublicationResponse(item.proposal, backendBase));
+                else {
+                    missing.add(id);
+                    const reason = describeSharedProposalFetchFailure(id, item);
+                    if (reason) errors.set(id, reason);
+                }
+            });
+        } catch (error) {
+            if (error?.code === 'proposal-load-timeout') throw error;
+            console.warn('[shared-plan] batch proposal fetch unavailable; falling back', error);
+            return { records, missing, errors, supported: false, requests };
+        }
+    }
+    return { records, missing, errors, supported: requested.every(id => seen.has(id)), requests };
+}
+
+function namedPlanSnapshotError(expected, current, requestedIds, backendBase) {
+    if (!expected || typeof expected !== 'object') return null;
+    const expectedApi = window.ProposalOrigin?.apiBase(expected.publicationApiBase);
+    const currentApi = window.ProposalOrigin?.apiBase(backendBase);
+    if (!expectedApi || !currentApi || expectedApi !== currentApi) return 'publication API changed';
+    if (typeof expected.slug !== 'string' || !expected.slug
+        || typeof expected.planHash !== 'string' || !/^[a-f0-9]{64}$/.test(expected.planHash)) return 'named-plan commitment unavailable';
+    const expectedIds = Array.isArray(expected.proposalRowIds) ? expected.proposalRowIds.map(String) : [];
+    const requested = Array.isArray(requestedIds) ? requestedIds.map(String) : [];
+    if (!expectedIds.length || expectedIds.length !== requested.length
+        || expectedIds.some((id, index) => id !== requested[index])) return 'named-plan membership changed';
+    if (!current || current.slug !== expected.slug || current.planHash !== expected.planHash) {
+        return 'named-plan commitment changed';
+    }
+    const currentIds = Array.isArray(current.proposalRowIds) ? current.proposalRowIds.map(String) : [];
+    const members = Array.isArray(current.members) ? current.members : [];
+    if (currentIds.length !== expectedIds.length || currentIds.some((id, index) => id !== expectedIds[index])
+        || members.length !== expectedIds.length) return 'named-plan membership changed';
+    const byId = new Map(members.map(member => [String(member?.proposalRowId ?? ''), member]));
+    if (byId.size !== expectedIds.length || expectedIds.some(id => {
+        const member = byId.get(id);
+        return !member || member.changed !== false || member.missing === true;
+    })) return 'named-plan member changed or is missing';
+    return null;
+}
+
+async function verifyNamedPlanSnapshot(expected, requestedIds, backendBase) {
+    if (!expected) return null;
+    const expectedApi = window.ProposalOrigin?.apiBase(expected.publicationApiBase);
+    const currentApi = window.ProposalOrigin?.apiBase(backendBase);
+    if (!expectedApi || !currentApi || expectedApi !== currentApi) return 'publication API changed';
+    const expectedIds = Array.isArray(expected.proposalRowIds) ? expected.proposalRowIds.map(String) : [];
+    const requested = Array.isArray(requestedIds) ? requestedIds.map(String) : [];
+    if (!expectedIds.length || expectedIds.length !== requested.length
+        || expectedIds.some((id, index) => id !== requested[index])) return 'named-plan membership changed';
+    if (typeof expected.slug !== 'string' || !expected.slug
+        || typeof expected.planHash !== 'string' || !/^[a-f0-9]{64}$/.test(expected.planHash)) return 'named-plan commitment unavailable';
     try {
-        const response = await fetch(`${backendBase}/proposals/batch`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-            body: JSON.stringify({ ids: requested })
-        });
-        if (!response.ok) return { records, missing, errors, supported: false, requests: 1 };
-        const payload = await response.json();
-        if (!payload || !Array.isArray(payload.items)) return { records, missing, errors, supported: false, requests: 1 };
-        const seen = new Set();
-        payload.items.forEach(item => {
-            const id = item && item.id !== undefined && item.id !== null ? String(item.id) : '';
-            if (!id) return;
-            seen.add(id);
-            if (item.proposal) records.set(id, normalizePublicationResponse(item.proposal, backendBase));
-            else {
-                missing.add(id);
-                const reason = describeSharedProposalFetchFailure(id, item);
-                if (reason) errors.set(id, reason);
-            }
-        });
-        return { records, missing, errors, supported: requested.every(id => seen.has(id)), requests: 1 };
+        const response = await fetchSharedProposalResponse(
+            `${backendBase}/plans/${encodeURIComponent(expected.slug)}`);
+        if (!response.ok) return `named-plan verification failed (HTTP ${response.status})`;
+        return namedPlanSnapshotError(expected, response.data, requestedIds, backendBase);
     } catch (error) {
-        console.warn('[shared-plan] batch proposal fetch unavailable; falling back', error);
-        return { records, missing, errors, supported: false, requests: 1 };
+        return `named-plan verification failed: ${error?.message || 'request error'}`;
     }
 }
 
@@ -1672,9 +1735,9 @@ async function sharedProposalCityBlocksLoad(firstProposalId, prefetchedPayload =
         if (!payload) {
             const backendBase = resolveBackendBaseUrl();
             requestMade = true;
-            const response = await fetch(`${backendBase}/proposals/${encodeURIComponent(firstProposalId)}`);
+            const response = await fetchSharedProposalResponse(`${backendBase}/proposals/${encodeURIComponent(firstProposalId)}`);
             if (!response.ok) return { blocked: false, payload: null, requestMade };
-            payload = normalizePublicationResponse(await response.json(), backendBase);
+            payload = normalizePublicationResponse(response.data, backendBase);
         }
         if (typeof promptCityMismatchForProposal !== 'function') return { blocked: false, payload, requestMade };
         const proposalCityId = sharedRecordCityOf(payload);
@@ -1768,6 +1831,35 @@ async function handleSharedPlanRoute(idParts, attempt = 0, options = {}) {
             individualRequests: 0,
             batchSupported: batchRecords.supported
         };
+
+        if (options.namedPlan) {
+            const exactBatch = batchRecords.records.size === uniqueIncomingIds.length
+                && uniqueIncomingIds.every(id => batchRecords.records.has(id));
+            if (!exactBatch) {
+                hideProposalLoadOverlay();
+                if (typeof showEphemeralMessage === 'function') {
+                    showEphemeralMessage(tShare('plan.changedSincePreview',
+                        'This named plan changed or could not be verified. Open it again to review the current members.'), 6000, 'error');
+                }
+                return {
+                    applied: [], skipped: [], failed: uniqueIncomingIds, blocked: true,
+                    reason: 'named-plan member batch is incomplete'
+                };
+            }
+        }
+
+        // Plan preview and proposal import are separate requests. Recheck the immutable plan
+        // commitment after fetching its current members so an edit between preview and Apply is
+        // refused before any of those records are materialized.
+        const namedPlanError = await verifyNamedPlanSnapshot(options.namedPlan, uniqueIncomingIds, backendBase);
+        if (namedPlanError) {
+            hideProposalLoadOverlay();
+            if (typeof showEphemeralMessage === 'function') {
+                showEphemeralMessage(tShare('plan.changedSincePreview',
+                    'This named plan changed or could not be verified. Open it again to review the current members.'), 6000, 'error');
+            }
+            return { applied: [], skipped: [], failed: uniqueIncomingIds, blocked: true, reason: namedPlanError };
+        }
 
         // The ?city= param is only a hint the sharer's browser attached; it can be absent or lost.
         // The proposal itself knows which city it belongs to, so ask before applying it to whatever
@@ -2075,8 +2167,8 @@ async function handleSharedPlanRoute(idParts, attempt = 0, options = {}) {
                     if (batchRecords.supported && batchRecords.missing.has(qid)) return;
                     try {
                         recordFetchProfile.individualRequests += 1;
-                        const resp = await fetch(`${backendBase}/proposals/${encodeURIComponent(qid)}`);
-                        if (resp.ok) loadedById.set(qid, normalizePublicationResponse(await resp.json(), backendBase));
+                        const resp = await fetchSharedProposalResponse(`${backendBase}/proposals/${encodeURIComponent(qid)}`);
+                        if (resp.ok) loadedById.set(qid, normalizePublicationResponse(resp.data, backendBase));
                     } catch (_) { /* the apply loop retries and reports this id itself */ }
                 }));
                 const items = queue.map(qid => {
@@ -2107,7 +2199,7 @@ async function handleSharedPlanRoute(idParts, attempt = 0, options = {}) {
                 if (!payload) continue;
                 unionCadastreIds.push(...getCadastrePrerequisiteIds(payload));
             }
-            if (unionCadastreIds.length > 0) {
+            if (unionCadastreIds.length > 0 && !window.ParcelGroundFallback?.isWithoutParcels?.()) {
                 groundService.ensureIds(unionCadastreIds, { onProgress: reportSharedPlanProgress }).catch(err => {
                     console.warn('[handleSharedPlanRoute] Union cadastral-ground load failed', err);
                 });
@@ -2187,14 +2279,14 @@ async function handleSharedPlanRoute(idParts, attempt = 0, options = {}) {
                         progress: { done: fetchProgressIds.size, total: totalProposals }
                     });
                     recordFetchProfile.individualRequests += 1;
-                    const response = await fetch(`${backendBase}/proposals/${encodeURIComponent(id)}`);
+                    const response = await fetchSharedProposalResponse(`${backendBase}/proposals/${encodeURIComponent(id)}`);
                     if (!response.ok) {
                         let reason;
                         if (response.status === 404) {
                             reason = tShare('plan.notFoundOnServer', 'Not found on server');
                         } else {
                             let serverMessage = '';
-                            try { serverMessage = describeSharedProposalFetchFailure(id, await response.json()); } catch (_) { serverMessage = ''; }
+                            try { serverMessage = describeSharedProposalFetchFailure(id, response.data); } catch (_) { serverMessage = ''; }
                             reason = serverMessage
                                 || `HTTP ${response.status}${response.statusText ? ` ${response.statusText}` : ''}`.trim();
                         }
@@ -2202,7 +2294,7 @@ async function handleSharedPlanRoute(idParts, attempt = 0, options = {}) {
                         markFetchProgress(id);
                         continue;
                     }
-                    proposal = normalizePublicationResponse(await response.json(), backendBase);
+                    proposal = normalizePublicationResponse(response.data, backendBase);
                     loadedById.set(id, proposal);
                     try {
                         const inferredType = formatSharedProposalTypeLabel(proposal);
@@ -2217,7 +2309,7 @@ async function handleSharedPlanRoute(idParts, attempt = 0, options = {}) {
                 // transport; the route neither classifies IDs nor resolves geometry itself.
                 const cadastreIds = getCadastrePrerequisiteIds(proposal);
 
-                if (cadastreIds.length > 0) {
+                if (cadastreIds.length > 0 && !window.ParcelGroundFallback?.isWithoutParcels?.()) {
                     const fetchResult = await groundService.ensureIds(cadastreIds, { onProgress: reportSharedPlanProgress });
                     try {
                         lastMissingCadastrePrereqIdsById.set(String(id), fetchResult.missingIds);
@@ -2320,6 +2412,18 @@ async function handleSharedPlanRoute(idParts, attempt = 0, options = {}) {
 
         }
 
+        if (options.explicitApply === true && options.namedPlan && (failed.length || cancelled.length)) {
+            const reason = tShare('plan.changedSincePreview',
+                'This named plan changed or could not be verified. Open it again to review the current members.');
+            applied.forEach(entry => failed.push({
+                ...entry,
+                type: entry.type || '',
+                missingPrereqs: [],
+                reason
+            }));
+            applied.length = 0;
+        }
+
         // All imported members are now parked records. Materialise only that queue through the
         // direct replay materializer; startup already restored everything else on the map.
         if (applied.length > 0) {
@@ -2328,10 +2432,12 @@ async function handleSharedPlanRoute(idParts, attempt = 0, options = {}) {
                 ...incomingAlreadyApplied.map(record => record.proposalId),
                 ...applied.map(entry => entry.id)
             ].filter(Boolean).map(String));
-            const scoped = await materializeQueuedSharedProposals(applied.map(entry => entry.id), {
-                recordFetchProfile,
-                planMemberIds: sharedPlanMemberIds
-            });
+            const scoped = options.explicitApply === true
+                ? await materializeExplicitProposalPlan(applied.map(entry => entry.id))
+                : await materializeQueuedSharedProposals(applied.map(entry => entry.id), {
+                    recordFetchProfile,
+                    planMemberIds: sharedPlanMemberIds
+                });
             const scopedFailures = new Set(scoped.failedIds.map(String));
             for (let i = applied.length - 1; i >= 0; i -= 1) {
                 const entry = applied[i];
@@ -2420,7 +2526,7 @@ async function handleSharedPlanRoute(idParts, attempt = 0, options = {}) {
             && typeof window.focusThreeModeOnProposals === 'function') {
             // The scene is up and the 2D map frozen under it: take the camera there instead.
             window.focusThreeModeOnProposals([lastProposalId]);
-        } else if (lastProposalId && typeof map !== 'undefined' && map && !userTookOver()) {
+        } else if (!options.suppressFocus && lastProposalId && typeof map !== 'undefined' && map && !userTookOver()) {
             try {
                 const beforeCenter = (typeof map.getCenter === 'function') ? map.getCenter() : null;
                 const beforeZoom = (typeof map.getZoom === 'function') ? map.getZoom() : null;

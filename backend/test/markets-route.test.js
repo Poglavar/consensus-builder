@@ -89,7 +89,9 @@ describe('GET /markets', () => {
         const PLAN_ACCOUNT = '5A9kzK2SzjP5nU2Dnz958wQcy96KkMnavoMNGxt7p1h3';
         const plan = { slug: 'borovje-urbani-blokovi', title: 'Borovje – urbani blokovi', place: 'Borovje', author: 'UGT',
             created_at: new Date('2026-10-10T10:00:00Z'), proposal_ids: ['790'],
-            onchain_data: { chainId: 'solana-devnet', contractAddress: PROPOSAL_PROGRAM_ID, proposalId: PLAN_ACCOUNT } };
+            onchain_data: { chainId: 'solana-devnet', contractAddress: PROPOSAL_PROGRAM_ID, proposalId: PLAN_ACCOUNT },
+            thumbnail_url: '/uploads/images/plan-after.png', thumbnail_before_url: '/uploads/images/plan-before.png',
+            thumbnail_pair_url: '/uploads/images/plan-pair.png' };
         const res = await request(appFor({
             pool: poolFor(rows(), [plan]),
             readMarkets: async () => new Map([[ACCOUNT, { address: 'MKT', market: null }], [PLAN_ACCOUNT, { address: 'PMKT', market: { yesPool: 5n, noPool: 3n, resolved: false, outcome: 0 } }]]),
@@ -102,7 +104,8 @@ describe('GET /markets', () => {
             ['proposal', 'agent-densifier-01-2026-10-01-1']
         ]);
         expect(contest.proposals[0]).toMatchObject({ planSlug: 'borovje-urbani-blokovi', memberCount: 1, bettable: true,
-            proposalAccount: PLAN_ACCOUNT, market: { poolAtomic: '8' } });
+            proposalAccount: PLAN_ACCOUNT, market: { poolAtomic: '8' }, screenshotUrl: '/uploads/images/plan-after.png',
+            screenshotBeforeUrl: '/uploads/images/plan-before.png', screenshotPairUrl: '/uploads/images/plan-pair.png' });
         expect(contest.proposals[0].members.map(member => member.proposalId)).toEqual(['local-rival']);
     });
 

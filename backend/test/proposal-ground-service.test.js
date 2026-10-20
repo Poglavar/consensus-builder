@@ -76,6 +76,27 @@ function fixture(options = {}) {
 }
 
 describe('CadastralParcelRepository', () => {
+    it('times out a wedged id transport and permits retry without recording absence', async () => {
+        const fetchParcelsByIds = vi.fn()
+            .mockImplementationOnce(() => new Promise(() => {}))
+            .mockImplementation(async ids => parcelResult(ids));
+        const { service } = fixture({ root: { PARCEL_LOAD_TIMEOUT_MS: 5 }, fetchParcelsByIds });
+        await expect(service.ensureIds(['HR-A'])).rejects.toMatchObject({ name: 'TimeoutError', code: 'cadastral-ground-unavailable' });
+        expect(service.get('HR-A')).toBeNull();
+        expect((await service.ensureIds(['HR-A'])).missingIds).toEqual([]);
+        expect(fetchParcelsByIds).toHaveBeenCalledTimes(2);
+    });
+
+    it('times out a wedged footprint transport and retries the same footprint', async () => {
+        const fetchParcelsUnderGeometry = vi.fn()
+            .mockImplementationOnce(() => new Promise(() => {}))
+            .mockImplementation(async () => parcelResult(['HR-A']));
+        const { service } = fixture({ root: { PARCEL_LOAD_TIMEOUT_MS: 5 }, fetchParcelsUnderGeometry });
+        await expect(service.ensureFootprint(polygon(0))).rejects.toMatchObject({ name: 'TimeoutError', code: 'cadastral-ground-unavailable' });
+        expect((await service.ensureFootprint(polygon(0))).result.ids).toEqual(['HR-A']);
+        expect(fetchParcelsUnderGeometry).toHaveBeenCalledTimes(2);
+    });
+
     it('serves loaded and known-missing ids from its cache after one transport request', async () => {
         const fetchParcelsByIds = vi.fn(async ids => {
             const found = ids.filter(id => id === 'HR-A' || id === 'HR-B');

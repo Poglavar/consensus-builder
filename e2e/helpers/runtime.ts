@@ -80,7 +80,13 @@ export async function proposalState(page: Page, id: string): Promise<any> {
 
 export async function showProposal(page: Page, id: string): Promise<void> {
   await page.evaluate(id => (window as any).showProposalDetails(id), id);
-  await expect(page.locator('#proposal-details-panel')).toBeVisible();
+  const inspector = page.locator('#planning-inspector');
+  const details = page.locator('#proposal-details-panel');
+  await expect.poll(async () => await inspector.isVisible() || await details.isVisible()).toBe(true);
+  if (await inspector.isVisible()) {
+    await inspector.getByRole('button', { name: 'Proposal actions', exact: true }).click();
+    await expect(details).toBeVisible();
+  }
 }
 
 export async function drawCorridor(page: Page, kind: 'road'|'track'): Promise<string> {

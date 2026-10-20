@@ -29,11 +29,12 @@ import { markAgentRunFailed, safeFailureDiagnostic } from './run-failure.js';
 import { createAgentLlm, estimateBatchCostUsd, runPickBatch } from './llm-picker.js';
 import { buildChoiceRequest, optionId, parseChoice } from './society-llm.js';
 import { createRpcConnection } from '../solana/rpc.js';
-import { ensureBotSolFunding } from './funding.js';
+import { ensureBotSolFunding, fundBotAction } from './funding.js';
 import { createRetryingFetch } from '../utils/retrying-fetch.js';
 import { sendAndConfirmPolling } from './solana-send.js';
 import { sendTelegram } from './telegram.js';
 import { isEntrypoint } from './entrypoint.js';
+import { discoverProposalInputs, loadPlanRecord, refreshNamedPlanStatuses } from './discovery.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const require = createRequire(import.meta.url);
@@ -50,8 +51,6 @@ const CONTROLLERS = ['algorithm', 'llm'];
 const MAX_RECORDS = 40;
 // Proposals read per turn: summary pages (newest first) and, of those, minted ones whose market and
 // positions are read. A cut is logged, never silent.
-const SUMMARY_PAGE = 1000;
-const MAX_DISCOVERED = 3000;
 const MAX_MINTED = 500;
 const PLEDGE_STATUS = ['active', 'fulfilled', 'revoked', 'voided'];
 // proposal_nft status byte → word (oracle/proposal-lifecycle.js); collect.js maps terminal ones to an outcome.
@@ -130,8 +129,8 @@ function loadKeypair(persona) {
     return keypair;
 }
 
-async function fetchJson(url) {
-    const response = await createRetryingFetch({ requestLabel: () => 'proposal-read' })(url, { headers: { accept: 'application/json' } });
+async function fetchJson(url, options = {}) {
+    const response = await createRetryingFetch({ requestLabel: () => 'proposal-read' })(url, { headers: { accept: 'application/json' }, ...options });
     if (!response.ok) throw new Error(`${url} returned HTTP ${response.status}`);
     return response.json();
 }
@@ -146,25 +145,8 @@ export function discoveryCities(persona) {
     return cities.includes('*') ? [null] : Array.from(new Set(cities));
 }
 
-async function readSummaries(apiBase, city) {
-    const proposals = [];
-    let count = Infinity;
-    for (let offset = 0; offset < Math.min(count, MAX_DISCOVERED); offset += SUMMARY_PAGE) {
-        const query = `${city ? `city=${encodeURIComponent(city)}&` : ''}limit=${SUMMARY_PAGE}&offset=${offset}`;
-        const page = await fetchJson(`${apiBase}/proposals/summary?${query}`);
-        proposals.push(...(page.proposals || []));
-        count = Number(page.count) || 0;
-        if (!(page.proposals || []).length) break;
-    }
-    if (count > proposals.length) log(`${city || 'all cities'}: read the newest ${proposals.length} of ${count} proposals (cap ${MAX_DISCOVERED})`);
-    return proposals;
-}
-
 async function discoverProposals(apiBase, persona) {
-    const pages = await Promise.all(discoveryCities(persona).map(city => readSummaries(apiBase, city)));
-    const byId = new Map();
-    pages.flat().forEach(proposal => byId.set(proposalKey(proposal), proposal));
-    return Array.from(byId.values()).sort((a, b) => String(b.createdAt || '').localeCompare(String(a.createdAt || '')));
+    return discoverProposalInputs({ apiBase, cities: discoveryCities(persona), fetchJson, log });
 }
 
 function decodeOrNull(info, decode) {
@@ -180,7 +162,7 @@ export function readAccounts(connection, addresses, env = process.env) {
 // turn k−1 signed. Markets and both of the persona's positions are read for every minted proposal
 // (any lifecycle); the on-chain status only where an open market holds an unclaimed own position.
 async function gatherInputs({ apiBase, persona, needs, connection, wallet }) {
-    const proposals = await discoverProposals(apiBase, persona);
+    const proposals = await refreshNamedPlanStatuses(await discoverProposals(apiBase, persona), connection);
     let minted = proposals.filter(isSolanaMinted);
     if (minted.length > MAX_MINTED) {
         log(`${persona.name}: ${minted.length} minted proposals; reading markets for the newest ${MAX_MINTED}`);
@@ -237,7 +219,9 @@ async function gatherInputs({ apiBase, persona, needs, connection, wallet }) {
         const others = minted.filter(proposal => isOthersActiveMinted(proposal, { wallet, personaName: persona.name })).slice(0, MAX_RECORDS);
         await Promise.all(others.map(async proposal => {
             try {
-                proposal.record = await fetchJson(`${apiBase}/proposals/${encodeURIComponent(proposal.id ?? proposalKey(proposal))}`);
+                proposal.record = proposal.planSlug
+                    ? await loadPlanRecord({ apiBase, plan: proposal, fetchJson })
+                    : await fetchJson(`${apiBase}/proposals/${encodeURIComponent(proposal.id ?? proposalKey(proposal))}`);
             } catch (error) {
                 recordFailures += 1;
                 log(`${persona.name}: record ${proposalKey(proposal)} unavailable (${error.message}); scoring it from its summary text`);
@@ -253,13 +237,14 @@ async function gatherInputs({ apiBase, persona, needs, connection, wallet }) {
     return { proposals, markets, positions, proposalStatuses, chain, recordFailures };
 }
 
-const ADAPTERS = { ensureMarketAndStake, ensurePledgeBookAndSet, revokePledge, resolveProposalMarket, claimProposalMarket };
+const ADAPTERS = { fundBotAction, ensureMarketAndStake, ensurePledgeBookAndSet, revokePledge, resolveProposalMarket, claimProposalMarket };
 
 /** Sign one society action. `adapters` replaces the chain calls in tests. */
-export async function execute({ action, connection, keypair, caps, adapters = {} }) {
+export async function execute({ action, connection, keypair, caps, pool, persona, runId, adapters = {} }) {
     const act = { ...ADAPTERS, ...adapters };
     if (action.usdc > caps.maxUsdc + 1e-9) throw new Error(`${action.type} of ${action.amount} USDC exceeds AGENT_SOCIETY_USDC_CAP ${caps.maxUsdc}`);
     if (action.type === 'stake' && (action.side === 'yes' || action.side === 'no')) {
+        await act.fundBotAction({ action, connection, pool, persona, runId });
         // targetAmount makes a retried turn a replay instead of a second stake.
         return act.ensureMarketAndStake({
             connection, ownerKeypair: keypair, proposalPda: action.proposalAccount, stakeMint: USDC_DEVNET,
@@ -456,7 +441,7 @@ async function main() {
                 const execution = await runtime.run(actor, {
                     source: 'live',
                     action: { type: action.type, proposalId: action.proposalId, amount: action.amount, side: action.side || null },
-                    execute: async () => ({ ...(await execute({ action, connection, keypair, caps })), message: activityMessage(persona, action) })
+                    execute: async () => ({ ...(await execute({ action, connection, keypair, caps, pool, persona, runId: turn.runId })), message: activityMessage(persona, action) })
                 });
                 const { message: _message, ...result } = execution.outcome;
                 const acted = Boolean(result.signature || result.stakeSignature || result.resolveSignature) && result.replayed !== true;

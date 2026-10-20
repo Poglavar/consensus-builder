@@ -117,6 +117,22 @@
     // a failure is kept as long so it is not retried in a loop.
     const TTL_MS = 60 * 1000;
     const cache = new Map();
+    const rowDecorationGenerations = new WeakMap();
+    const ROW_DECORATION_BUDGET_MS = 8;
+
+    function yieldToBrowser() {
+        if (root && typeof root.yieldToBrowser === 'function') return root.yieldToBrowser();
+        return new Promise(resolve => setTimeout(resolve, 0));
+    }
+
+    function rowDecorationIsCurrent(container, generation) {
+        return container.isConnected && rowDecorationGenerations.get(container) === generation;
+    }
+
+    function now() {
+        return root && root.performance && typeof root.performance.now === 'function'
+            ? root.performance.now() : Date.now();
+    }
 
     function cityCode() {
         try { return root.normalizeCityCodeForApi(root.resolveCurrentCityCode()) || null; } catch (_) { return null; }
@@ -188,17 +204,29 @@
     // line in the row. Rows already carrying a line are left alone.
     function decorateRows(container, { rowSelector, serverIdOf, place }) {
         if (!container) return Promise.resolve();
+        const generation = (rowDecorationGenerations.get(container) || 0) + 1;
+        rowDecorationGenerations.set(container, generation);
         bindPlanLinks(container);
-        return cityPlans().then(({ plans }) => {
-            if (!container.isConnected) return;
+        return cityPlans().then(async ({ plans }) => {
+            if (!rowDecorationIsCurrent(container, generation)) return;
             const byMember = plansByMember(plans);
             if (!byMember.size) return;
-            container.querySelectorAll(rowSelector).forEach(row => {
-                if (row.querySelector('.proposal-plan-line')) return;
-                const serverId = serverIdOf(row);
-                const html = serverId ? planLineHtml(byMember.get(String(serverId)) || [], { t }) : '';
-                if (html) place(row, html);
-            });
+            const rows = container.querySelectorAll(rowSelector);
+            let deadline = now() + ROW_DECORATION_BUDGET_MS;
+            for (const row of rows) {
+                if (!rowDecorationIsCurrent(container, generation)) return;
+                if (!row.querySelector('.proposal-plan-line')) {
+                    const serverId = serverIdOf(row);
+                    if (!rowDecorationIsCurrent(container, generation)) return;
+                    const html = serverId ? planLineHtml(byMember.get(String(serverId)) || [], { t }) : '';
+                    if (html && rowDecorationIsCurrent(container, generation)) place(row, html);
+                }
+                if (now() >= deadline) {
+                    await yieldToBrowser();
+                    if (!rowDecorationIsCurrent(container, generation)) return;
+                    deadline = now() + ROW_DECORATION_BUDGET_MS;
+                }
+            }
         });
     }
 

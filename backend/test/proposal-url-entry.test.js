@@ -3,6 +3,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
 
+const sharedSource = readFileSync(new URL('../../frontend/js/proposals/sharing-routes.js', import.meta.url), 'utf8');
 const source = readFileSync(new URL('../../frontend/js/proposals/core.js', import.meta.url), 'utf8');
 
 function boot(pathname, connected = false) {
@@ -17,6 +18,8 @@ function boot(pathname, connected = false) {
         fetch: vi.fn(async () => ({ ok: true, json: async () => ({ proposalRowIds: [12, 13] }) })),
         console: { log() {}, debug() {}, warn: vi.fn(), error: vi.fn() }
     });
+    vm.runInContext(sharedSource, context);
+    context.handleSharedPlanRoute = vi.fn(async () => {});
     vm.runInContext(source, context);
     return context;
 }
@@ -48,8 +51,11 @@ describe('proposal URL entry', () => {
     it.each(['/proposals/garden-plan', '/proposals/garden-plan/'])('opens the named plan at %s without applying it', async pathname => {
         const app = boot(pathname);
         await app.handleProposalRouteFromUrl();
-        expect(app.fetch).toHaveBeenCalledWith(expect.stringContaining('/plans/garden-plan'));
-        expect(app.window.PlanView.open).toHaveBeenCalledWith('garden-plan', { plan: expect.objectContaining({ proposalRowIds: [12, 13] }) });
+        expect(app.fetch).toHaveBeenCalledWith(expect.stringContaining('/plans/garden-plan'), {});
+        expect(app.window.PlanView.open).toHaveBeenCalledWith('garden-plan', {
+            plan: expect.objectContaining({ proposalRowIds: [12, 13] }),
+            publicationApiBase: 'https://api.urbangametheory.xyz'
+        });
         const openedPlan = app.window.PlanView.open.mock.calls[0][1].plan;
         expect(openedPlan).not.toHaveProperty('proposalIds');
         expect(app.handleSharedPlanRoute).not.toHaveBeenCalled();

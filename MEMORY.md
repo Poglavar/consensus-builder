@@ -767,6 +767,16 @@ Expanded SAM 3 head fine-tuning used 96 training tiles and fresh 16-tile validat
 - 2026-10-19: Novogradnje AI processing follows the user's 2026-10-16 decision to use manually invoked subscription CLI chunks; keep the paid API worker and recurring scheduling disabled. Collect or replay already-submitted API results without new submissions, and preserve per-task usage/checkpoints separately from metered spend.
 - 2026-10-19: Manual Novogradnje processing uses Codex CLI with gpt-6.1-sol at medium or high effort (high by default), including image triage, and at most 30 tasks per manual pass; preserve the cohort when retrying unsupported-model failures. The public apartment floor-plan viewer opens in 3D when reconstructed geometry is available.
 
+- 2026-10-19: Direct named-plan bets show a whole-plan before/after image pair; plan member thumbnails cannot represent a bet on the collection. Rationale: the user needs to see the complete design being forecast.
+
+- 2026-10-19: Parcel-source failures have a bounded wait and an explicit Continue without parcels choice; linked designs can apply locally from their own geometry while their published parcel IDs and binding remain unchanged.
+
+- 2026-10-19: Keep all omitted-gems work in the existing `omitted-gems-fixes` branch and matching worktree; do not create separate branches or worktrees for its follow-up fixes.
+
+- 2026-10-20: Configurable imagery uses the same area-specific source setup as parcels/buildings, beginning with public DGU 2022/2024 orthophotos; imagery remains visual context, independent of cadastral geometry.
+
+- 2026-10-20: Image generation must pick up unfinished work on its next run, using missing persisted image results as the retry candidates; do not add a separate recovery scheduler.
+
 - 2026-10-19: Novogradnje apartments rotate slowly in 3D on opening until the first pointer interaction; project and apartment pages include a separate fixed-centre neighbourhood view using existing city survey meshes within 65 m, with rotation and tilt only. The public header uses the baby-hardhat favicon and Novogradnja linking to the catalogue root.
 
 - 2026-10-19: The user renamed the source archive to `restatements/`: existing situations and published plans expressed using the app’s proposal and plan tools, with dates and source provenance retained.
@@ -812,3 +822,4 @@ Postpone refresh/server-to-local synchronization. For empty parcels, display onl
 - 2026-10-20: Atlas should plug into Permitted through URLs, retaining source identity, edition and evidence in the shared inspector.
 - 2026-10-20: World navigation offers cities and exact map points only. Administrative regions are coverage context, never clickable destinations. A background globe click or geolocation opens the exact point at street level, where proposals live.
 - 2026-10-20: Buildings and massing starts collapsed behind a cubes icon beside the city/search control at the upper left. Its display settings keep their values when the panel closes.
+- 2026-10-20: Merge Colosseum work into omitted-gems-fixes with Colosseum semantic contracts authoritative; adapt retained features to qualified publication/source identity rather than restoring retired aliases.

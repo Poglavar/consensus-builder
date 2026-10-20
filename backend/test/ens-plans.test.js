@@ -56,7 +56,7 @@ describe('named plans CRUD', () => {
         const res = await request(app).post('/plans').send({ slug: 'harbor-plan', proposalRowIds: ['1', '2', '3'], title: 'Harbor' });
         expect(res.status).toBe(201);
         expect(res.body.name).toBe('harbor-plan.proposals.urbangametheory.eth');
-        expect(res.body.url).toBe('/proposals/1,2,3');
+        expect(res.body.url).toBe('/proposals/harbor-plan');
         expect(res.body.proposalRowIds).toEqual(['1', '2', '3']);
         expect(res.body.planHash).toMatch(/^[0-9a-f]{64}$/);
         expect(res.body.editToken).toBeUndefined();
@@ -250,14 +250,9 @@ describe('named plans CRUD', () => {
     });
 });
 
-// Naming a plan refused at 51 proposals — "Too many proposals (max 50)" — which is a fifth of an
-// ordinary plan here, so the feature was unusable on anything real.
-//
-// The count was a proxy. What a name actually carries is one link: `<base>/proposals/<id,id,id…>`,
-// handed to a browser through the ENS `url` text record. So the limit belongs on the LENGTH of that
-// link, which is also the only form that stays correct as ids grow — three hundred four-digit ids
-// fit comfortably and three hundred seven-digit ones do not.
-describe('how big a named plan may be', () => {
+// Named plans use a short slug route; the route resolves membership server-side. Member limits bound
+// server work and payloads, while deduplication keeps repeated IDs from inflating a plan.
+describe('named plan membership bound and URL', () => {
     let app;
     beforeEach(() => {
         app = createRouteApp((application) => setupEnsPlansRoute(application, null, { store: makeStore() }));
@@ -265,30 +260,24 @@ describe('how big a named plan may be', () => {
 
     const ids = (count, start = 900) => Array.from({ length: count }, (_, i) => String(start + i));
 
-    it('takes a plan of three hundred — the size people actually build', async () => {
-        const res = await request(app).post('/plans').send({ slug: 'sibenik-2066-1', proposalRowIds: ids(300) });
+    it('names a 1,105-member plan of seven-digit row IDs using the short slug route', async () => {
+        const res = await request(app).post('/plans').send({ slug: 'candlestick-plan', proposalRowIds: ids(1105, 1234567) });
         expect(res.status, res.body && res.body.error).toBe(201);
-        expect(res.body.proposalRowIds).toHaveLength(300);
+        expect(res.body.proposalRowIds).toHaveLength(1105);
+        expect(res.body.url).toBe('/proposals/candlestick-plan');
     });
 
-    it('refuses the same count when the ids are long enough to overflow the link', async () => {
-        const res = await request(app).post('/plans').send({ slug: 'seven-digit', proposalRowIds: ids(300, 1234567) });
+    it('rejects a deduplicated membership beyond the generic 5,000-member bound', async () => {
+        const res = await request(app).post('/plans').send({ slug: 'too-many-members', proposalRowIds: ids(5001) });
         expect(res.status).toBe(400);
-        expect(res.body.error).toMatch(/characters/);
+        expect(res.body.error).toMatch(/max 5000/);
     });
 
-    it('says how many are too many, instead of only that there are', async () => {
-        // "Too long" leaves you guessing at how many to drop.
-        const res = await request(app).post('/plans').send({ slug: 'way-too-big', proposalRowIds: ids(900, 1234567) });
-        expect(res.body.error).toMatch(/too many/);
-        expect(res.body.error).toMatch(/roughly \d+ fit/);
-    });
-
-    it('measures the DEDUPLICATED list, which is what the link carries', async () => {
-        const duplicated = ids(300).concat(ids(300));
+    it('applies the member cap after deduplicating IDs', async () => {
+        const duplicated = ids(3000).concat(ids(3000));
         const res = await request(app).post('/plans').send({ slug: 'with-dupes', proposalRowIds: duplicated });
         expect(res.status, res.body && res.body.error).toBe(201);
-        expect(res.body.proposalRowIds).toHaveLength(300);
+        expect(res.body.proposalRowIds).toHaveLength(3000);
     });
 
     it('still refuses an empty plan', async () => {

@@ -9,7 +9,7 @@
 
     const PROTOCOL = 'proposal-chain/1';
     const FIELDS = Object.freeze([
-        'proposalId', 'city', 'type', 'goal', 'proposalRole', 'name', 'title', 'description', 'author',
+        'proposalId', 'city', 'type', 'goal', 'proposalRole', 'name', 'title', 'titleOrigin', 'description', 'author',
         'createdAt', 'authoredAt', 'expiresAt', 'epochYear', 'offer', 'offerCurrency', 'budget',
         'budgetCurrency', 'decayEnabled', 'decayPercent', 'decayDurationMs', 'depositEnabled',
         'depositPercent', 'disbursementMode', 'isConditional', 'kind', 'voteExpiryDays',

@@ -199,7 +199,7 @@
         if (!b || b.count === null) return [DASH];
         if (b.count === 0) return [t('parcelCompare.none', 'None')];
         return [
-            t('parcelCompare.buildings.count', '{{count}} building(s)', { count: b.count }),
+            t('parcelCompare.buildings.count', 'Buildings: {{count}}', { count: b.count }),
             t('parcelCompare.buildings.footprint', 'footprint {{area}}', { area: m2(b.footprintM2) }),
             t('parcelCompare.buildings.floorArea', 'floor area {{area}}', { area: m2(b.floorAreaM2) }),
             t('parcelCompare.buildings.height', '{{floors}} floors · {{height}}', { floors: range(b.floors, ''), height: range(b.heightM, ' m') })

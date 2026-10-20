@@ -33,7 +33,13 @@
     var currentBaseMapKey = null;
     var baseTileLayer = null;
 
+    function imageryChoice() {
+        var city = global.CityConfigManager?.getCurrentCityId?.();
+        return city ? global.ParcelSourceSettings?.choiceForCity(city, global, 'imagery') : null;
+    }
+
     function getStoredBasemapKey() {
+        if (imageryChoice()) return 'imagery';
         try {
             if (typeof global.PersistentStorage !== 'undefined' && global.PersistentStorage && typeof global.PersistentStorage.getItem === 'function') {
                 var stored = global.PersistentStorage.getItem(BASEMAP_STORAGE_KEY);
@@ -64,8 +70,25 @@
     }
 
     function buildBasemapLayer(key) {
+        var source = key === 'imagery' ? imageryChoice() : null;
         var config = BASEMAPS[key] || BASEMAPS.openstreetmap;
-        var layer = L.tileLayer(config.url, config.options);
+        var layer;
+        if (source) {
+            var options = { maxZoom: 22, maxNativeZoom: source.maxZoom ?? 22, minZoom: source.minZoom ?? 0,
+                attribution: global.ImagerySource.escapeAttribution(source.attribution || source.name) };
+            if (source.bounds) options.bounds = [[source.bounds[1], source.bounds[0]], [source.bounds[3], source.bounds[2]]];
+            var base = String(global.getBackendBase()).replace(/\/+$/, '');
+            layer = L.tileLayer('', options);
+            layer.getTileUrl = function (coords) { return global.ImagerySource.tileUrl(base, source, coords); };
+            var failed = false;
+            layer.on('tileload', function () { if (!failed) global.ParcelSourceSettings.clearFailure(global, 'imagery'); });
+            layer.on('tileerror', function () {
+                failed = true;
+                var key = 'imagerySources.unavailable', translated = global.i18n?.t?.(key);
+                global.ParcelSourceSettings.reportFailure(global, translated && translated !== key ? translated : 'Imagery could not be loaded. Retry or choose another source.',
+                    'imagery', function () { currentBaseMapKey = null; applyBasemap(global.map, 'imagery'); });
+            });
+        } else layer = L.tileLayer(config.url, config.options);
 
         layer.on('tileerror', function (error) {
             var tile = error.tile;
@@ -114,13 +137,13 @@
 
     function applyBasemap(map, key) {
         if (!map) return null;
-        var targetKey = BASEMAPS[key] ? key : 'openstreetmap';
+        var targetKey = key === 'imagery' && imageryChoice() ? 'imagery' : BASEMAPS[key] ? key : 'openstreetmap';
         if (currentBaseMapKey === targetKey && baseTileLayer && map.hasLayer(baseTileLayer)) {
             return baseTileLayer;
         }
         if (baseTileLayer) {
             try {
-                baseTileLayer.off('tileerror');
+                baseTileLayer.off();
                 map.removeLayer(baseTileLayer);
             } catch (_) { }
         }
@@ -128,6 +151,7 @@
         tileErrorTracker.totalErrors = 0;
         tileErrorTracker.errors = [];
 
+        global.ParcelSourceSettings?.clearFailure(global, 'imagery');
         baseTileLayer = buildBasemapLayer(targetKey);
         baseTileLayer.addTo(map);
         currentBaseMapKey = targetKey;
@@ -142,11 +166,21 @@
         try {
             var select = document.getElementById('tile-source-select');
             if (!select) return;
+            var source = imageryChoice();
+            if (source) {
+                var option = document.createElement('option'); option.value = 'imagery'; option.textContent = source.name; select.append(option);
+            }
             var initialKey = getStoredBasemapKey();
-            if (BASEMAPS[initialKey]) {
+            if (BASEMAPS[initialKey] || initialKey === 'imagery') {
                 select.value = initialKey;
             }
             select.addEventListener('change', function () {
+                if (select.value !== 'imagery') {
+                    var city = global.CityConfigManager?.getCurrentCityId?.();
+                    try { global.localStorage.removeItem(global.ParcelSourceSettings.storageKey(city, global, 'imagery')); } catch (_) {}
+                    var url = new URL(global.location.href); url.searchParams.delete('imagerySource'); global.history.replaceState(null, '', url.href);
+                    select.querySelector('option[value="imagery"]')?.remove();
+                }
                 applyBasemap(map, select.value);
             });
         } catch (_) { }
@@ -172,6 +206,8 @@
         getTileLoadingStats: getTileLoadingStats,
         getStoredBasemapKey: getStoredBasemapKey,
         getCurrentBasemapKey: function () { return currentBaseMapKey; },
+        getCurrentSource: function () { return currentBaseMapKey === 'imagery' ? imageryChoice() : null; },
+        getCurrentAttribution: function () { return baseTileLayer?.options?.attribution || ''; },
         // 256px raster for thumbnail stitching (map-screenshot.js assumes 256px tiles).
         THUMBNAIL_TILE_URL: 'https://api.maptiler.com/maps/basic-v2/256/{z}/{x}/{y}.png?key=' + MAPTILER_API_KEY
     };

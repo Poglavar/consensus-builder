@@ -491,6 +491,7 @@
         "outsideSite": "The proposal geometry extends beyond its site. Keep it inside the site, or edit the site before applying.",
         "groundUnavailable": "Cadastral parcel data could not be loaded. Check your connection and try applying again.",
         "groundMissing": "Cadastral parcel data is unavailable for: {{parcels}}. This proposal cannot be applied until those parcels can be loaded.",
+        "needsParcels": "This proposal acts on cadastral parcels or has no geometry of its own. Load its parcels before applying.",
         "undeclared": "This proposal has no cadastral parcels or open-ground site. Define its site before applying.",
         "invalidGeometry": "The proposal geometry is missing or invalid. Edit its geometry before applying.",
         "applyFailed": "The proposal could not be placed on the map because its geometry could not be derived from the selected land.",
@@ -659,7 +660,10 @@
         },
         "design": {
             "corridorSummary": "{{segments}} segment(s) · {{width}} m wide",
-            "buildingSummary": "{{count}} building(s) · {{typology}}",
+            "buildingSummary": {
+                "one": "{{count}} building · {{typology}}",
+                "other": "{{count}} buildings · {{typology}}"
+            },
             "reparcelSummary": "{{count}} replacement parcel(s) · {{algorithm}}",
             "parcelSummary": "{{count}} affected parcel(s)",
             "manual": "manual",
@@ -1673,6 +1677,7 @@
                 "applyFailedUnknown": "Could not apply this proposal. Please try again.",
                 "applyUnavailable": "This proposal cannot be applied to the map.",
                 "applyUnsupported": "This proposal type does not support map application.",
+                "proposalNotLoaded": "This proposal is not loaded in this browser. Open it from the proposals list, then try again.",
                 "missingProposal": "No proposal was selected to apply.",
                 "unapplyFailed": "Could not remove this proposal from the map: {{reason}}",
                 "unapplyFailedUnknown": "Could not remove this proposal from the map. Please try again.",
@@ -2444,7 +2449,7 @@
             "surroundingsGreen": "Green",
             "surroundingsInfo": "One choice for the whole parcel area around every building in this proposal. Existing buildings on these parcels are cleared either way.",
             "uploadGeojsonLabel": "Upload GeoJSON",
-            "uploadNoPolygon": "No usable polygon found in that file.",
+            "uploadNoPolygon": "Could not import the file. Use valid Polygon or MultiPolygon building footprints.",
             "uploadOutside": "The uploaded polygon does not overlap this block in a usable way.",
             "uploadError": "Could not read that file.",
             "infoText": "Drag the footprint to move it. Drag a vertex to reshape it, click an edge to add a vertex, or select a vertex and use the trash button or Delete/Backspace to remove it. Use “Lock to starting site” to keep it within this site; otherwise you can move it freely.",
@@ -2454,7 +2459,7 @@
             "parcelWhole": "Take the whole parcels",
             "parcelInfo": "By default the building forms its own parcel from its footprint and the rest of the land stays with its owner. Taking whole parcels makes them the building’s parcel as they are.",
             "moveTogether": "Move whole proposal",
-            "uploadInvalid": "The uploaded polygon is invalid or outside the locked site."
+            "uploadInvalid": "The uploaded geometry is invalid or outside the locked site."
         },
         "buildingUpload": {
             "title": "Upload a building model",
@@ -2709,7 +2714,10 @@
             "show": "Show"
         },
         "corridorTunnel": {
-            "offer": "This {{kind}} intersects {{count}} building(s). Keep it at surface level through them, or tunnel through them?",
+            "offer": {
+                "one": "This {{kind}} intersects {{count}} building. Keep it at surface level through it, or tunnel through it?",
+                "other": "This {{kind}} intersects {{count}} buildings. Keep it at surface level through them, or tunnel through them?"
+            },
             "road": "road",
             "track": "track",
             "proposalImpact": "This road is later than these building proposals; a surface crossing takes their ground during replay:",
@@ -3126,7 +3134,9 @@
                     "materializing": "Starting proposal materialization…",
                     "applyingAllTitle": "Applying shared proposals",
                     "fetchingPlan": "Fetching shared proposals…",
+                    "loadFailed": "The linked plan or proposal could not be loaded. Please try again.",
                     "fetchingPlanTitle": "Shared proposal import",
+                    "changedSincePreview": "This named plan changed or could not be verified. Open it again to review the current members.",
                     "rebuildingStatus": "Rebuilding the applied composition…",
                     "rebuildingStatusCount": "Rebuilding the applied composition {{done}}/{{total}}…",
                     "progress": {
@@ -3713,12 +3723,19 @@
                 "additionalFloors": "Additional floors:",
                 "floorHeight": "Floor height (m):",
                 "helper": "Pick a rule: proposed height draws every building at exactly that height; additional floors adds floors on top of each building's current height (needs known heights).",
-                "summaryExact": "Proposing {{count}} buildings at {{height}} m.",
+                "summaryExact": {
+                    "one": "Proposing {{count}} building at {{height}} m.",
+                    "other": "Proposing {{count}} buildings at {{height}} m."
+                },
                 "loading": "Loading existing buildings…",
                 "notAvailable": "Existing building data is not available for this city yet.",
                 "noneFound": "No existing buildings found on the selected parcels.",
                 "loadFailed": "Could not load existing buildings. Try again.",
-                "summary": "Raising {{count}} of {{total}} existing buildings."
+                "summary": "Raising {{count}} of {{existingBuildings}}.",
+                "buildingCount": {
+                    "one": "{{count}} existing building",
+                    "other": "{{count}} existing buildings"
+                }
             },
             "warnings": {
                 "oversizedBlock": "This block is large — walking around it would take about {{minutes}} minutes. Recommended blocks are between 50×50 m and 200×200 m, so they can be walked around in about 2½ to 10 minutes. Do you want to proceed?",
@@ -3736,8 +3753,8 @@
                 "entryFailed": "This outline is too complex to edit by hand — back to the sliders. Tip: raise \"Simplify (m)\" to smooth it, then try editing again.",
                 "vertex": "Drag to reshape",
                 "deleteVertex": "Delete selected vertex",
-                "uploadGeojson": "Upload GeoJSON",
-                "uploadNoPolygon": "No usable polygon found in that file.",
+                "uploadGeojson": "Import Freeform GeoJSON",
+                "uploadNoPolygon": "Could not import the file. Use valid Polygon or MultiPolygon building footprints.",
                 "uploadError": "Could not read that file."
             },
             "regenerate": "Regenerate"
@@ -3773,8 +3790,8 @@
             },
             "rotateCounterclockwise": "Rotate counterclockwise 5 degrees",
             "rotateClockwise": "Rotate clockwise 5 degrees",
-            "uploadGeojson": "Upload GeoJSON",
-            "uploadNoPolygon": "No usable polygon found in that file.",
+            "uploadGeojson": "Import Freeform GeoJSON",
+            "uploadNoPolygon": "Could not import the file. Use valid Polygon or MultiPolygon building footprints.",
             "uploadOutside": "The uploaded polygon does not overlap these parcels in a usable way.",
             "uploadError": "Could not read that file.",
             "vertexLabel": "Footprint vertex",
@@ -4383,6 +4400,7 @@
             "parcels_read_from_dgu": "This site's server is not answering: parcels are read directly from the state cadastre (DGU), without ownership.",
             "loaded_parcels_from_source": "Loaded {{count}} parcels from {{source}}.",
             "checking_cadastral_ground": "Checking cadastral ground…",
+            "without_parcels": "Continuing without parcels. Designs use their own geometry.",
             "loading_cadastral_ground": "Loading cadastral ground {{done}}/{{total}}…",
             "parcel_source_downloading": "Downloading {{authority}}… {{loaded}} / {{total}} MB",
             "parcel_source_decompressing": "Decompressing {{authority}}…",
@@ -7207,7 +7225,10 @@
             "short": "reaches in"
         },
         "buildings": {
-            "count": "{{count}} building(s)",
+            "count": {
+                "one": "{{count}} building",
+                "other": "{{count}} buildings"
+            },
             "footprint": "footprint {{area}}",
             "floorArea": "floor area {{area}}",
             "height": "{{floors}} floors · {{height}}"
@@ -7298,6 +7319,24 @@
         "close": "Close",
         "retry": "Retry parcel source",
         "dismiss": "Dismiss source warning"
+    },
+    "imagerySources": {
+        "title": "Choose an imagery source",
+        "intro": "Add a public HTTPS XYZ tile URL (with {z}, {x}, {y}) or WMS service for this area. Imagery is a visual background; it does not change parcels or buildings.",
+        "url": "Imagery source URL",
+        "matched": "Image verified using {{adapter}}. Coverage outside the test area depends on the source.",
+        "layer": "WMS layer",
+        "selectLayer": "Choose a WMS layer, then check again.",
+        "presets": "Suggested for this area",
+        "dgu2022": "DGU orthophoto 2022",
+        "dgu2024": "DGU orthophoto 2024",
+        "dguCoverage": "Western Croatia only; coverage varies within this area.",
+        "unavailable": "Imagery could not be loaded. Retry or choose another source.",
+        "retry": "Retry imagery",
+        "noAdapter": "No supported imagery found. Use an XYZ tile template or WMS service.",
+        "default": "Use the standard base map",
+        "standard": "Standard base map",
+        "unsupportedCrs": "This WMS needs a supported geographic or Web Mercator coordinate system."
     },
     "parcelSourceHealth": {
         "offline": "You appear to be offline. Connect to the internet and try again.",
@@ -7441,6 +7480,10 @@
         },
         "options": {
             "later": "Not now",
+            "withoutParcels": {
+                "title": "Continue without parcels",
+                "desc": "View and apply designs from their geometry. Parcel boundaries and ownership will not be available."
+            },
             "retry": {
                 "title": "Retry the official register",
                 "desc": "Ask the register again. Right for a network hiccup or a server that was briefly down."
@@ -7605,6 +7648,7 @@
             "loading": "Loading the plan…",
             "error": "The plan could not be loaded: {{reason}}",
             "hint": "Hatched on the map: what this plan would build. Nothing changes until you apply it.",
+            "appliedHint": "{{applied}} of {{total}} proposals are applied on this map.",
             "newer": "A newer version of this plan exists:",
             "membersHeading": "Proposals in this plan",
             "changed": {

@@ -17,6 +17,11 @@ describe('map credits helpers', () => {
         expect(providerCredits('unknown')).toEqual(providerCredits('openstreetmap'));
     });
 
+    it('credits a chosen imagery provider instead of OpenStreetMap', () => {
+        expect(providerCredits('imagery', { name: 'Public orthophoto', endpoint: 'https://imagery.example/wms' }))
+            .toEqual([['Public orthophoto', 'https://imagery.example/wms']]);
+    });
+
     it('deduplicates city and raster credits without carrying credits between cities', () => {
         const oldCityCredit = '<a href="https://old.example/">Old city source</a>';
         const newCityCredit = '<a href="https://new.example/">New city source</a>';

@@ -14,6 +14,7 @@
         token: 0,
         slug: null,
         plan: null,
+        publicationApiBase: null,
         error: null,
         loading: false,
         records: new Map(),      // member row id -> proposal record (held here, or as published)
@@ -51,27 +52,38 @@
 
     // ---- data ----
 
-    async function fetchPlan(slug) {
-        const response = await fetch(`${win.resolveBackendBaseUrl()}/plans/${encodeURIComponent(slug)}`);
+    function normalizedApiBase(value) {
+        if (typeof win.ProposalOrigin?.apiBase !== 'function') return null;
+        return win.ProposalOrigin.apiBase(value);
+    }
+
+    async function fetchPlan(slug, publicationApiBase) {
+        const response = await win.fetchSharedProposalResponse(`${publicationApiBase}/plans/${encodeURIComponent(slug)}`);
         if (response.status === 404) throw new Error(t('plans.view.notFound', 'There is no plan named {{name}}.', { name: slug }));
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
-        return response.json();
+        return { plan: response.data, publicationApiBase };
     }
 
     // Each member as a proposal record: the copy this browser holds (it knows whether it stands on
     // the map), else the published record, normalised as an import would but not stored.
     async function loadRecords(ids) {
         const standing = record => typeof win.isProposalCurrentlyApplied === 'function' && win.isProposalCurrentlyApplied(record);
-        // Several local records can answer to one published row (a draft and the copy a plan link
-        // imported): the one standing on the map is the member's state here.
         const held = new Map();
-        (win.proposalStorage.getAllProposals() || []).forEach(record => {
-            const id = win.ProposalPlans.serverIdOfRecord(record);
-            if (id && (!held.has(id) || (!standing(held.get(id)) && standing(record)))) held.set(id, record);
+        const publicationApiBase = state.publicationApiBase;
+        if (!publicationApiBase) throw new Error('Plan preview has no publication API identity.');
+        const getPublishedCopy = win.proposalStorage && win.proposalStorage.getProposalByServerRowId;
+        if (typeof getPublishedCopy !== 'function') {
+            throw new Error('Plan preview requires API-qualified local publication lookup.');
+        }
+        // Storage rejects duplicate copies for this exact API + row. Never choose by applied state:
+        // that would make a fork or stale copy impersonate an immutable named-plan member.
+        ids.forEach(id => {
+            const record = getPublishedCopy.call(win.proposalStorage, id, publicationApiBase);
+            if (record) held.set(id, record);
         });
         const missing = ids.filter(id => !held.has(id));
         const batch = missing.length
-            ? await win.fetchSharedProposalBatch(missing, win.resolveBackendBaseUrl())
+            ? await win.fetchSharedProposalBatch(missing, publicationApiBase)
             : { records: new Map() };
         const records = new Map();
         const applied = new Set();
@@ -90,6 +102,42 @@
 
     // What each member draws: its own geometry (road, buildings, structure, plots, site), else the
     // cadastral parcels it declares, fetched when they are not loaded yet.
+    function parcelSourceOf(record) {
+        const normalize = value => {
+            if (!value || typeof value !== 'object' || Array.isArray(value)) return null;
+            if (Object.keys(value).some(key => !['sourceId', 'snapshotId'].includes(key))) return null;
+            const sourceId = typeof value.sourceId === 'string' ? value.sourceId.trim() : '';
+            if (!sourceId) return null;
+            let snapshotId = null;
+            if (value.snapshotId !== undefined && value.snapshotId !== null) {
+                if (typeof value.snapshotId !== 'string' || !value.snapshotId.trim()) return null;
+                snapshotId = value.snapshotId.trim();
+            }
+            return { sourceId, snapshotId };
+        };
+        const set = record && record.parcelSet;
+        if (set && Object.prototype.hasOwnProperty.call(set, 'parcelSource')) {
+            return normalize(set.parcelSource);
+        }
+        return normalize(record && record.binding && record.binding.parcelSource);
+    }
+
+    function parcelHasSource(feature, expected) {
+        const actual = parcelSourceOf({ parcelSet: { parcelSource: feature?.properties?.parcelSource } });
+        return !!actual && actual.sourceId === expected.sourceId && actual.snapshotId === expected.snapshotId;
+    }
+
+    function apiCity(value) {
+        const raw = typeof value === 'string' ? value.trim() : '';
+        if (!raw) return null;
+        try {
+            const normalized = typeof win.normalizeCityCodeForApi === 'function' ? win.normalizeCityCodeForApi(raw) : raw.toLowerCase();
+            return typeof normalized === 'string' && normalized.trim() ? normalized.trim().toLowerCase() : null;
+        } catch (_) {
+            return null;
+        }
+    }
+
     async function memberFeatures(records) {
         const features = new Map();
         const parcelOnly = [];
@@ -98,13 +146,29 @@
             if (own.length) features.set(id, own);
             else parcelOnly.push(id);
         });
-        const parcelIds = Array.from(new Set(parcelOnly.flatMap(id => (records.get(id).cadastreParcelIds || []).map(String))));
-        if (parcelIds.length) {
+        const currentCity = apiCity(typeof win.resolveCurrentCityCode === 'function'
+            ? win.resolveCurrentCityCode() : win.CityConfigManager?.getCurrentCityId?.());
+        const eligible = parcelOnly.filter(id => {
+            const record = records.get(id);
+            return currentCity && apiCity(record?.city) === currentCity && parcelSourceOf(record);
+        });
+        const parcelIds = Array.from(new Set(eligible.flatMap(id => (records.get(id).cadastreParcelIds || []).map(String))));
+        if (parcelIds.length && !win.ParcelGroundFallback?.isWithoutParcels?.()) {
             const repository = win.CadastralParcelRepository;
-            await repository.ensureIds(parcelIds);
-            parcelOnly.forEach(id => {
-                const list = repository.getMany((records.get(id).cadastreParcelIds || []).map(String));
-                if (list.length) features.set(id, list);
+            if (!repository || typeof repository.ensureIds !== 'function' || typeof repository.getMany !== 'function') {
+                throw new Error('Plan preview parcel repository is unavailable.');
+            }
+            await repository.ensureIds(parcelIds, { city: currentCity });
+            eligible.forEach(id => {
+                const record = records.get(id);
+                const source = parcelSourceOf(record);
+                const ids = Array.from(new Set((record.cadastreParcelIds || []).map(String)));
+                const list = repository.getMany(ids, { city: currentCity });
+                // A same-looking parcel ID from another provider or release is not this member's
+                // geometry. Unknown or mismatched source provenance stays undrawn.
+                if (ids.length && list.length === ids.length && list.every(feature => parcelHasSource(feature, source))) {
+                    features.set(id, list);
+                }
             });
         }
         return features;
@@ -289,11 +353,31 @@
         return `<h4 class="plan-view-heading">${escapeText(t('plans.view.membersHeading', 'Proposals in this plan'))}</h4><ol class="plan-view-members">${items}</ol>`;
     }
 
+    function planMemberIds(plan) {
+        return (Array.isArray(plan?.proposalRowIds) ? plan.proposalRowIds : []).map(String);
+    }
+
+    // A named plan commits to its exact published members and their hashes. Do not let a partial
+    // batch response or stale/missing member status turn Apply into a best-effort subset operation.
+    function canApplyPlan(plan) {
+        if (!plan || state.loading || state.error) return false;
+        if (!state.publicationApiBase
+            || normalizedApiBase(state.publicationApiBase) !== normalizedApiBase(win.resolveBackendBaseUrl())) return false;
+        const ids = planMemberIds(plan);
+        const members = Array.isArray(plan.members) ? plan.members : [];
+        if (!ids.length || members.length !== ids.length || new Set(ids).size !== ids.length) return false;
+        const memberIds = members.map(member => String(member?.proposalRowId ?? ''));
+        if (new Set(memberIds).size !== memberIds.length || ids.some(id => !memberIds.includes(id))) return false;
+        if (members.some(member => member?.changed !== false || member?.missing === true)) return false;
+        if (state.records.size !== ids.length || ids.some(id => !state.records.has(id))) return false;
+        return !ids.every(id => state.applied.has(id));
+    }
+
     function actionsHtml(plan) {
-        const total = (plan.proposalRowIds || []).length;
-        const allApplied = total > 0 && state.applied.size >= total;
+        const ids = planMemberIds(plan);
+        const allApplied = ids.length > 0 && ids.every(id => state.applied.has(id));
         const applyLabel = allApplied ? t('plans.view.onMap', 'On the map') : t('plans.view.actions.apply', 'Apply plan');
-        const ready = !state.loading && state.records.size > 0 && !allApplied;
+        const ready = canApplyPlan(plan);
         const bet = plan.proposalAccount
             ? `<button type="button" class="btn" data-plan-action="bet"><i class="fas fa-coins" aria-hidden="true"></i> ${escapeText(t('panel.proposal.actions.betOutcome', 'Bet on outcome'))}</button>`
             : '';
@@ -320,7 +404,13 @@
             ? `<p class="plan-view-note plan-view-note--info">${escapeText(t('plans.view.newer', 'A newer version of this plan exists:'))} ${plan.supersededBy.map(slug => `<button type="button" class="cb-link" data-plan-open="${escapeText(slug)}">${escapeText(slug)}</button>`).join(', ')}</p>`
             : '';
         panel.querySelector('[data-plan-region="body"]').innerHTML = `
-            <p class="plan-view-hint">${escapeText(t('plans.view.hint', 'Hatched on the map: what this plan would build. Nothing changes until you apply it.'))}</p>
+            <p class="plan-view-hint">${escapeText(state.applied.size > 0
+                ? t('plans.view.appliedHint', '{{applied}} of {{total}} proposals are applied on this map.', {
+                    applied: state.applied.size, total: (plan.proposalRowIds || []).length
+                })
+                : t('plans.view.hint', 'Hatched on the map: what this plan would build. Nothing changes until you apply it.'))}</p>
+            ${win.ParcelGroundFallback?.isWithoutParcels?.() ? `<p class="plan-view-note plan-view-note--info">${escapeText(t(
+                'status.messages.without_parcels', 'Continuing without parcels. Designs use their own geometry.'))}</p>` : ''}
             ${newer}
             ${status}
             ${state.plan ? actionsHtml(plan) : ''}
@@ -335,14 +425,22 @@
     // ---- actions ----
 
     async function applyPlan(button) {
-        const ids = (state.plan.proposalRowIds || []).map(String);
+        const plan = state.plan;
+        if (!canApplyPlan(plan)) return;
+        const ids = planMemberIds(plan);
         log(`applying ${state.slug} (${ids.length} proposals)`);
         // The apply frames and opens what it applied; the preview and its panel step aside first.
         await win.BusyControl.track(button, async () => {
             const slug = state.slug;
             hide();
-            win.__currentNamedPlan = { ...state.plan, slug };
-            await win.handleSharedPlanRoute(ids);
+            win.__currentNamedPlan = { ...plan, slug };
+            await win.handleSharedPlanRoute(ids, 0, {
+                explicitApply: true,
+                suppressDetails: true,
+                suppressFocus: true,
+                namedPlan: { ...plan, slug, publicationApiBase: state.publicationApiBase }
+            });
+            await open(slug);
         });
     }
 
@@ -371,7 +469,7 @@
         if (!action) return;
         switch (action.getAttribute('data-plan-action')) {
             case 'close': close(); break;
-            case 'apply': applyPlan(action); break;
+            case 'apply': return applyPlan(action);
             case 'share': win.BusyControl.track(action, copyLink); break;
             case 'bet': win.openBetDialog({ proposalAccount: state.plan.proposalAccount }); break;
             default: break;
@@ -399,12 +497,16 @@
     // ---- public ----
 
     // Opens the plan named slug. plan: the GET /plans/<slug> answer when the caller already has it.
-    async function open(slug, { plan = null } = {}) {
+    async function open(slug, { plan = null, publicationApiBase = null } = {}) {
         if (!slug) throw new Error('PlanView.open: a plan name is required');
         if (!state.keyWired) { doc.addEventListener('keydown', onKeyDown); state.keyWired = true; }
         const token = ++state.token;
         state.slug = String(slug);
         state.plan = plan;
+        const suppliedPlanApiBase = normalizedApiBase(plan?.publicationApiBase);
+        const suppliedOptionApiBase = normalizedApiBase(publicationApiBase);
+        state.publicationApiBase = suppliedPlanApiBase || suppliedOptionApiBase
+            || normalizedApiBase(win.resolveBackendBaseUrl());
         state.error = null;
         state.loading = true;
         state.records = new Map();
@@ -418,7 +520,17 @@
         renderPanel();
         setAddress(state.slug);
         try {
-            const resolved = plan && Array.isArray(plan.members) ? plan : await fetchPlan(state.slug);
+            if ((plan?.publicationApiBase !== undefined && !suppliedPlanApiBase)
+                || (suppliedPlanApiBase && suppliedOptionApiBase && suppliedPlanApiBase !== suppliedOptionApiBase)) {
+                throw new Error('Plan preview publication API identity is invalid or inconsistent.');
+            }
+            const loaded = plan && Array.isArray(plan.members)
+                ? { plan, publicationApiBase: suppliedPlanApiBase || suppliedOptionApiBase || state.publicationApiBase }
+                : await fetchPlan(state.slug, state.publicationApiBase);
+            if (normalizedApiBase(loaded.publicationApiBase) !== normalizedApiBase(state.publicationApiBase)) {
+                throw new Error('Plan preview publication API identity changed while loading.');
+            }
+            const resolved = loaded.plan;
             if (token !== state.token) return;
             state.plan = resolved;
             renderPanel();
@@ -456,6 +568,7 @@
         setAddress(null);
         state.slug = null;
         state.plan = null;
+        state.publicationApiBase = null;
     }
 
     win.PlanView = { open, close, isOpen, current: () => state.slug };

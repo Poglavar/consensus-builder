@@ -105,6 +105,19 @@ describe('GET /ens/:sender/:data', () => {
         expect(abi.decode(['string'], result)[0]).toBe('https://urbangametheory.xyz/proposals/51');
     });
 
+    it('resolves a named plan ENS URL through its short slug route, regardless of membership size', async () => {
+        const ids = Array.from({ length: 1105 }, (_, index) => String(1234567 + index));
+        pool.setResult({ rows: [{ slug: 'candlestick-plan', proposal_ids: ids, title: 'Candlestick',
+            member_hashes: Object.fromEntries(ids.map(id => [id, 'a'.repeat(64)])), plan_hash: 'b'.repeat(64) }], rowCount: 1 });
+        const callData = textUrlCallData('candlestick-plan.proposals.urbangametheory.eth');
+        const res = await request(app).get(`/ens/${SENDER}/${callData}.json`);
+
+        expect(res.status).toBe(200);
+        const [result] = abi.decode(['bytes', 'uint64', 'bytes'], res.body.data);
+        expect(abi.decode(['string'], result)[0]).toBe('https://urbangametheory.xyz/proposals/candlestick-plan');
+        expect(pool.getCalls()[0].params).toEqual(['candlestick-plan']);
+    });
+
     it('does not fabricate a url for a numeric proposal missing from this server', async () => {
         // Mock pool returns no rows → the proposal does not exist here, so the
         // gateway must resolve to an empty url instead of a dead /proposals link.
@@ -123,7 +136,7 @@ describe('GET /ens/:sender/:data', () => {
         const validCall = textUrlCallData('harbor-plan.proposals.urbangametheory.eth');
         const valid = await request(app).get(`/ens/${SENDER}/${validCall}.json`);
         const [validResult] = abi.decode(['bytes', 'uint64', 'bytes'], valid.body.data);
-        expect(abi.decode(['string'], validResult)[0]).toBe('https://urbangametheory.xyz/proposals/1,2');
+        expect(abi.decode(['string'], validResult)[0]).toBe('https://urbangametheory.xyz/proposals/harbor-plan');
         expect(pool.getCalls()[0].sql).toMatch(/member_hashes,\s*plan_hash/i);
 
         pool.setResult({ rows: [{

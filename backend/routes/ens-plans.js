@@ -10,18 +10,13 @@ import { proposalAccountOf } from '../markets/contests.js';
 import { assertPlanCommitment, planCommitmentError } from '../plans/plan-commitment.js';
 import { publicApiBaseUrl } from '../utils/public-base-url.js';
 import { planDocument, SEMANTIC_BASE_ERROR } from '../semantics/published-records.js';
+import { enqueuePlanThumbnail } from '../thumbnails/plan-thumbnail.js';
 
 const ENS_NAMESPACE = 'proposals.urbangametheory.eth';
-// A named plan resolves to `<publicBaseUrl>/proposals/<id,id,id…>` (see ens.js), and that string is
-// what the ENS `url` text record hands a browser. So the real limit is the LENGTH of that link, not
-// a count — the count was 50, which is a fifth of an ordinary plan here and refused naming outright.
-//
-// 1800 leaves room under the ~2000 characters that proxies and older browsers can be relied on for,
-// with 150 of it reserved for the base URL this file cannot see. A count cap alone goes quietly
-// wrong as ids grow: 300 four-digit ids fit comfortably, 300 seven-digit ones do not.
-const MAX_PROPOSALS = 1000;
-const MAX_RESOLVED_URL = 1800;
-const BASE_URL_ALLOWANCE = 150;
+// Named plans resolve to the existing short `/proposals/<slug>` route. That route fetches the
+// membership from GET /plans/:slug, so ENS text-record size is independent of plan size. Keep a
+// generic member cap to bound plan reads, hashing, and persistence payloads.
+const MAX_PROPOSALS = 5000;
 const SLUG_RE = /^[a-z0-9][a-z0-9-]{1,61}[a-z0-9]$/; // 3–63 chars, no edge hyphen
 const NUMERIC_LABEL_RE = /^[0-9]+(-[0-9]+)*$/;          // reserved for proposal ids
 const PROPOSAL_ROW_ID_RE = /^[0-9]+$/;
@@ -47,24 +42,11 @@ function validateSlug(raw) {
 
 function validateProposalRowIds(value) {
     if (!Array.isArray(value) || value.length === 0) return { error: 'proposalRowIds must be a non-empty array.' };
-    if (value.length > MAX_PROPOSALS) return { error: `Too many proposals (max ${MAX_PROPOSALS}).` };
     const ids = value.map((v) => (v === undefined || v === null ? '' : v.toString().trim()));
     if (!ids.every((id) => PROPOSAL_ROW_ID_RE.test(id))) return { error: 'proposalRowIds must contain database row IDs (digits), not authored IDs or chain references.' };
 
     const unique = [...new Set(ids)];
-    // Measured on the deduplicated list, because that is what the link will actually carry.
-    const linkLength = BASE_URL_ALLOWANCE + '/proposals/'.length + unique.join(',').length;
-    if (linkLength > MAX_RESOLVED_URL) {
-        // Say how far over, and roughly what fits — "too long" alone leaves you guessing at how
-        // many to drop.
-        const perId = Math.max(2, Math.round(unique.join(',').length / unique.length));
-        const fits = Math.floor((MAX_RESOLVED_URL - BASE_URL_ALLOWANCE - '/proposals/'.length) / perId);
-        return {
-            error: `That plan's link would be ${linkLength} characters, over the ${MAX_RESOLVED_URL} a `
-                + `name can carry. ${unique.length} proposals is about ${unique.length - fits} too many `
-                + `— roughly ${fits} fit.`
-        };
-    }
+    if (unique.length > MAX_PROPOSALS) return { error: `Too many proposals (max ${MAX_PROPOSALS}).` };
     return { ids: unique };
 }
 
@@ -84,12 +66,15 @@ const planView = (row) => ({
     onchain: row.onchain_data || null,
     // The plan's own Solana proposal account once minted: its betting pool (markets/contests.js).
     proposalAccount: proposalAccountOf(row.onchain_data),
+    screenshotUrl: row.thumbnail_url || null,
+    screenshotBeforeUrl: row.thumbnail_before_url || null,
+    screenshotPairUrl: row.thumbnail_pair_url || null,
     mintable: row.has_site === true,
     createdAt: row.created_at || null,
     // Listing only: how many proposals the plan names, and whether a later version replaces it.
     ...(row.member_count === undefined ? {} : { memberCount: Number(row.member_count) }),
     ...(row.superseded === undefined ? {} : { superseded: row.superseded === true }),
-    url: `/proposals/${(Array.isArray(row.proposal_ids) ? row.proposal_ids : []).join(',')}`,
+    url: `/proposals/${row.slug}`,
 });
 
 export function setupEnsPlansRoute(app, pool, { store = createPlanStore(pool) } = {}) {
@@ -186,6 +171,9 @@ export function setupEnsPlansRoute(app, pool, { store = createPlanStore(pool) } 
                 supersedes, creatorIp: req.ip || null, creatorFingerprint: text(req.body?.fingerprint, 64),
             });
             assertPlanCommitment(row);
+            if (typeof pool?.query === 'function' && row?.slug && row.plan_hash && row.member_hashes) {
+                enqueuePlanThumbnail(pool, row.slug, { baseUrl: publicApiBaseUrl() });
+            }
             res.status(201).json(planView(row));
         } catch (e) {
             if (e.code === 'plan-commitment-invalid') return res.status(e.status).json({ code: e.code, error: e.message });

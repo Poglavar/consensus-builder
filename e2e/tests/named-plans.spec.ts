@@ -8,6 +8,7 @@ import { createSpace, openCity, showProposal, clickMapPoint, publishOn, chooseTe
 import { attachSharedProposalServer, createSharedProposalServer } from '../helpers/mocks/shared-server';
 
 const SLUG = 'e2e-harbor-plan';
+const PLAN_HASH = 'a'.repeat(64);
 
 // The published park (uploaded through the real Share → Upload) is the plan's one member. The plan
 // answers are routed before the app loads: it asks for the city's plans early and keeps the answer.
@@ -45,23 +46,27 @@ async function publishPark(page: any, routes: (page: any, serverId: string) => P
   return { localId, serverId, title: String(title) };
 }
 
-async function routePlans(page: any, serverId: string): Promise<void> {
+async function routePlans(page: any, serverId: string, memberChanged = false): Promise<void> {
   const plan = {
     slug: SLUG, name: `${SLUG}.proposals.urbangametheory.eth`, title: 'E2E harbor plan', description: 'A park and nothing else.',
     author: 'Plan tester', place: 'Harbor', city: 'zagreb', proposalRowIds: [serverId], memberCount: 1, superseded: false,
-    proposalAccount: null, createdAt: '2026-10-17T10:00:00.000Z'
+    proposalAccount: null, createdAt: '2026-10-17T10:00:00.000Z', planHash: PLAN_HASH
   };
   await page.route(/\/plans(\?.*)?$/, (route: any) => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ plans: [plan] }) }));
   await page.route(`**/plans/${SLUG}`, (route: any) => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({
-    ...plan, supersededBy: [], members: [{ proposalRowId: serverId, authoredProposalId: 'p-park', title: 'Harbor park', type: 'park', goal: 'park', changed: false }]
+    ...plan, supersededBy: [], members: [{ proposalRowId: serverId, authoredProposalId: 'p-park', title: 'Harbor park', type: 'park', goal: 'park', changed: memberChanged }]
   }) }));
+}
+
+async function routeChangedPlan(page: any, serverId: string): Promise<void> {
+  await routePlans(page, serverId, true);
 }
 
 // The park in two current plans, and an earlier version of the second that it superseded.
 const SECOND = 'e2e-harbor-plan-two';
 const EARLIER = 'e2e-harbor-plan-earlier';
 async function routeTwoPlans(page: any, serverId: string): Promise<void> {
-  const base = { author: 'Plan tester', place: 'Harbor', city: 'zagreb', proposalRowIds: [serverId], memberCount: 1, proposalAccount: null, createdAt: '2026-10-17T10:00:00.000Z' };
+  const base = { author: 'Plan tester', place: 'Harbor', city: 'zagreb', proposalRowIds: [serverId], memberCount: 1, proposalAccount: null, createdAt: '2026-10-17T10:00:00.000Z', planHash: PLAN_HASH };
   const plans = [
     { ...base, slug: SLUG, name: `${SLUG}.proposals.urbangametheory.eth`, title: 'E2E harbor plan', description: 'A park and nothing else.', superseded: false },
     { ...base, slug: SECOND, name: `${SECOND}.proposals.urbangametheory.eth`, title: 'E2E harbor plan two', description: 'The park again.', superseded: false },
@@ -130,14 +135,15 @@ test.describe('Named plans @features', () => {
     const apply = panel.locator('[data-plan-action="apply"]');
     await expect(apply).toBeEnabled();
     await apply.click();
-    await expect(panel).toBeHidden();
+    // The plan stays available while its members are selected atomically.
     // Applying a plan goes through its published records: the member stands as the record of its row id.
     await expect.poll(() => page.evaluate((id: string) => {
       const w = window as any;
       return w.proposalStorage.getAllProposals().some((p: any) => String(w.getProposalPublicationLookup(p)) === id && w.isProposalCurrentlyApplied(p));
     }, serverId), { timeout: 30_000 }).toBe(true);
-    // Apply plan ends the way a plan link used to: framing what it applied and opening its panel.
-    await expect(page.locator('#proposal-details-panel')).toBeVisible({ timeout: 30_000 });
+    // Apply returns to the entire plan, rather than a single member's parcel panel.
+    await expect(panel).toBeVisible({ timeout: 30_000 });
+    await expect(page.locator('#proposal-details-panel')).toBeHidden();
 
     // Opened again, the plan says it is on the map; Copy link and Close work, and Escape closes too.
     await page.evaluate((slug: string) => (window as any).PlanView.open(slug), SLUG);
@@ -196,5 +202,15 @@ test.describe('Named plans @features', () => {
     await expect(page.locator('#plan-view-panel')).toBeVisible();
     await page.keyboard.press('Escape');
     await expect(page.locator('#plan-view-panel')).toBeHidden();
+  });
+
+  test('a plan with a changed member keeps Apply disabled', async ({ mockApi: page }) => {
+    await publishPark(page, routeChangedPlan);
+    await page.evaluate((slug: string) => (window as any).PlanView.open(slug), SLUG);
+    const panel = page.locator('#plan-view-panel');
+    await expect(panel).toBeVisible();
+    await expect(page.locator('.plan-preview-member')).toHaveCount(1);
+    await expect(panel.locator('.plan-view-note--warning')).toContainText('1 proposal changed after the plan was named.');
+    await expect(panel.locator('[data-plan-action="apply"]')).toBeDisabled();
   });
 });

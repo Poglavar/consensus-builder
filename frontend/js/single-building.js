@@ -11,7 +11,7 @@
     let singleRectGroup = null;
     let singleRectLayer = null;
     let singleActivePolygonLayer = null;
-    let singlePolygonEditor = null;
+    let singlePolygonEditors = [];
     let singlePendingVertexActionIndex = null;
     let singleDragMarker = null; // legacy marker; not rendered anymore
     let singleBlockFeature = null; // starting site, retained as an optional placement guide
@@ -364,7 +364,12 @@
     function refreshBuildingSelector() {
         const select = document.getElementById('single-building-selector');
         if (!select) return;
-        select.innerHTML = buildingEntries.map(b => `<option value="${b.id}">${b.name}</option>`).join('');
+        select.replaceChildren(...buildingEntries.map(building => {
+            const option = document.createElement('option');
+            option.value = String(building.id);
+            option.textContent = building.name;
+            return option;
+        }));
         select.value = String(activeBuildingId);
     }
 
@@ -469,20 +474,6 @@
         try { return JSON.parse(JSON.stringify(feature)); } catch (_) { return null; }
     }
 
-    function editableOuterRing(feature) {
-        if (!feature?.geometry || feature.geometry.type !== 'Polygon') return null;
-        const ring = feature.geometry.coordinates?.[0];
-        if (!Array.isArray(ring) || ring.length < 4) return null;
-        return ring;
-    }
-
-    function featureWithOuterRing(feature, ring) {
-        const next = cloneSingleFeature(feature);
-        if (!next?.geometry || next.geometry.type !== 'Polygon' || !Array.isArray(ring)) return null;
-        next.geometry.coordinates[0] = ring;
-        return next;
-    }
-
     function featureWithGeometry(feature, geometry) {
         const next = cloneSingleFeature(feature);
         if (!next || !geometry) return null;
@@ -492,10 +483,7 @@
 
     function editableFootprintValid(feature) {
         try {
-            const ring = editableOuterRing(feature);
-            if (!ring || !window.SingleBuildingGeometry?.isSimpleRing(ring)) return false;
-            if (turf.area(feature) < 0.5) return false;
-            if (typeof turf.kinks === 'function' && turf.kinks(feature).features.length) return false;
+            if (!window.SingleBuildingGeometry.validFootprint(feature, turf)) return false;
             return !singleSession?.placement || singleSession.placement.accepts(feature);
         } catch (_) {
             return false;
@@ -851,17 +839,15 @@
     }
 
     function destroySinglePolygonEditor() {
-        if (!singlePolygonEditor) return;
-        try { singlePolygonEditor.destroy(); } catch (_) { }
-        singlePolygonEditor = null;
+        singlePolygonEditors.forEach(editor => editor.destroy());
+        singlePolygonEditors = [];
     }
 
-    function commitSharedPolygonRing(ring) {
-        const closedRing = window.SingleBuildingGeometry.ensureClosedRing(ring);
-        const candidate = featureWithOuterRing(singleRectFeature, closedRing);
+    function commitSharedPolygonRing(ring, polygonIndex, ringIndex) {
+        const candidate = window.SingleBuildingGeometry.withFootprintRing(singleRectFeature, polygonIndex, ringIndex, ring);
         if (!candidate || !editableFootprintValid(candidate)) {
             // The shared handle followed the pointer freely. Only now, on release, restore the last
-            // valid footprint if the ring crosses itself or violates an explicitly locked site.
+            // valid footprint if any ring crosses itself or violates an explicitly locked site.
             updateRectangleLayers();
             return false;
         }
@@ -871,75 +857,92 @@
         return true;
     }
 
+    function importedBuildingFeatures(data) {
+        return window.PolygonGeometryEditor.polygonFeaturesFromGeoJSON(data).map(feature => {
+            if (!window.SingleBuildingGeometry.validFootprint(feature, turf)) throw new Error('Invalid building footprint.');
+            return markAsEditablePolygon(feature,
+                window.SingleBuildingGeometry.importedHeight(feature.properties, currentHeightM || DEFAULT_HEIGHT_M), 0);
+        });
+    }
+
     function loadSingleBuildingGeoJSON(file) {
         if (!file || !window.PolygonGeometryEditor) return;
         const reader = new FileReader();
         reader.onload = () => {
-            let ring = null;
+            let features;
             try {
-                const data = JSON.parse(reader.result);
-                ring = window.PolygonGeometryEditor.extractOuterRingFromGeoJSON(data, turf);
+                features = importedBuildingFeatures(JSON.parse(reader.result));
+                if (features.some(feature => !editableFootprintValid(feature))) throw new Error('Footprint outside locked site.');
             } catch (error) {
-                console.error('Freeform-building GeoJSON parse failed', error);
-            }
-            if (!ring) {
-                showSingleBuildingEditorAlert('uploadNoPolygon', 'No usable polygon found in that file.');
+                console.error('Freeform-building GeoJSON import failed', error);
+                showSingleBuildingEditorAlert('uploadInvalid', 'The uploaded geometry is invalid or outside the locked site.');
                 return;
             }
-
-            const constrained = singleSession?.placement?.locked
-                ? (window.PolygonGeometryEditor.constrainRingToBoundary(ring, singleBlockFeature, turf) || ring) : ring;
-            const closedRing = window.SingleBuildingGeometry.ensureClosedRing(constrained);
-            const candidate = featureWithOuterRing(singleRectFeature, closedRing);
-            if (!candidate || !editableFootprintValid(candidate)) {
-                showSingleBuildingEditorAlert('uploadInvalid', 'The uploaded polygon is invalid or outside the locked site.');
-                return;
-            }
-
             ensureSingleBuildingHistory().record();
-            const active = getActiveBuilding();
-            currentRotationDeg = 0;
-            if (active) active.rotation = 0;
-            candidate.properties = { ...(candidate.properties || {}), rotation: 0 };
-            setActiveFeature(candidate);
-            updateRectangleLayers();
+            const activeIndex = buildingEntries.findIndex(entry => entry.id === activeBuildingId);
+            const imported = features.map(feature => addNewBuildingEntry(featureCenterLatLng(feature), {
+                feature, height: feature.properties.height, name: feature.properties.name, rotation: 0
+            }));
+            // Replace the selected footprint, keeping the other authored buildings. A collection
+            // adds all its buildings; Done saves each as its own ordinary Freeform proposal.
+            buildingEntries.splice(activeIndex, 1);
+            refreshBuildingSelector();
+            setActiveBuilding(imported[0].id);
+            singleSession?.fitFeature({ type: 'FeatureCollection', features });
         };
         reader.onerror = () => showSingleBuildingEditorAlert('uploadError', 'Could not read that file.');
         reader.readAsText(file);
     }
 
+    // Fixed footprints uploaded from a rule use the ordinary Freeform editor. The same design
+    // session continues, so X/Esc still discards and Done still follows the ordinary edit policy.
+    function openFreeformGeoJSONBuildings(data, { closeSource, blockName } = {}) {
+        const features = importedBuildingFeatures(data);
+        const site = features.reduce((combined, feature) => combined ? turf.union(combined, feature) : feature, null).geometry;
+        const result = window.stageActiveFreeformBuildings({ buildings: [{
+            building: features[0], site: cloneSingleFeature(features[0].geometry)
+        }] });
+        if (!result.ok) throw new Error(result.reason);
+        closeSource();
+        return openSingleBuildingForParcels({ blockName, parcelIds: [], site, initialBuildings: features });
+    }
+
     function renderSharedPolygonEditor() {
-        const initialSelectedVertexIndex = singlePendingVertexActionIndex;
+        const selection = singlePendingVertexActionIndex;
         singlePendingVertexActionIndex = null;
         destroySinglePolygonEditor();
-        const ring = editableOuterRing(singleRectFeature);
-        if (!singleMap || !ring || window.__mapModeState?.desired === 'model' || window.__mapModeState?.desired === 'photo') return;
+        if (!singleMap || !singleRectFeature?.geometry || window.__mapModeState?.desired === 'model' || window.__mapModeState?.desired === 'photo') return;
         if (!window.PolygonGeometryEditor || typeof window.PolygonGeometryEditor.create !== 'function') {
             console.error('Shared polygon geometry editor is unavailable.');
             return;
         }
-        singlePolygonEditor = window.PolygonGeometryEditor.create({
-            map: singleMap,
-            pane: HANDLE_PANE,
-            leaflet: L,
-            turf,
-            ring,
-            boundary: () => singleSession?.placement?.locked ? singleBlockFeature : null,
-            snapCoordinate: (coordinate, event) => singleSession.placement.snapCoordinate(coordinate, event),
-            undo: false,
-            initialSelectedVertexIndex,
-            showInitialDeleteAction: Number.isInteger(initialSelectedVertexIndex),
-            vertexTitle: translateSingleBuildingText('modal.singleBuilding.vertexLabel', 'Drag to reshape'),
-            deleteTitle: translateSingleBuildingText('modal.singleBuilding.deleteVertexLabel', 'Delete selected vertex'),
-            onCommit: ({ ring: committedRing, reason, vertexIndex }) => {
-                singlePendingVertexActionIndex = reason === 'move' ? vertexIndex : null;
-                const committed = commitSharedPolygonRing(committedRing);
-                // A normal commit consumes this synchronously while recreating the editor. If a host
-                // update exits early, do not let a stale selection leak into a later redraw.
-                singlePendingVertexActionIndex = null;
-                return committed;
-            }
-        });
+        const geometry = singleRectFeature.geometry;
+        const polygons = geometry.type === 'Polygon' ? [geometry.coordinates] : geometry.coordinates;
+        polygons.forEach((rings, polygonIndex) => rings.forEach((ring, ringIndex) => {
+            const selected = selection?.polygonIndex === polygonIndex && selection?.ringIndex === ringIndex;
+            singlePolygonEditors.push(window.PolygonGeometryEditor.create({
+                map: singleMap,
+                pane: HANDLE_PANE,
+                leaflet: L,
+                turf,
+                ring,
+                boundary: () => singleSession?.placement?.locked ? singleBlockFeature : null,
+                snapCoordinate: (coordinate, event) => singleSession.placement.snapCoordinate(coordinate, event),
+                undo: false,
+                initialSelectedVertexIndex: selected ? selection.vertexIndex : null,
+                showInitialDeleteAction: selected,
+                vertexTitle: translateSingleBuildingText('modal.singleBuilding.vertexLabel', 'Drag to reshape'),
+                deleteTitle: translateSingleBuildingText('modal.singleBuilding.deleteVertexLabel', 'Delete selected vertex'),
+                onCommit: ({ ring: committedRing, reason, vertexIndex }) => {
+                    singlePendingVertexActionIndex = reason === 'move' ? { polygonIndex, ringIndex, vertexIndex } : null;
+                    const committed = commitSharedPolygonRing(committedRing, polygonIndex, ringIndex);
+                    // A normal commit consumes this synchronously while recreating the editor. If a host
+                    // update exits early, do not let a stale selection leak into a later redraw.
+                    singlePendingVertexActionIndex = null;
+                    return committed;
+                }
+            }));
+        }));
     }
 
     function rotatedFootprintCandidate(deltaDeg) {
@@ -1366,6 +1369,23 @@
         }
         if (typeof window !== 'undefined') {
             window.pendingBuildingFromBlockify = buildingFeatures[0] || null;
+        }
+
+        if (buildingFeatures.length > 1) {
+            const staged = window.stageActiveFreeformBuildings({ buildings: buildingFeatures.map((building, index) => ({
+                building,
+                site: index === 0 ? currentPlacementSite([building]) : cloneSingleFeature(building.geometry),
+                ...(index === 0 ? { surroundings: {
+                    groundSurface: singleContext.groundSurface,
+                    groundBoundary: singleContext.groundBoundary,
+                    takeWholeParcels: singleContext.takeWholeParcels
+                } } : {})
+            })) });
+            if (!staged.ok) {
+                console.error('Freeform buildings could not be prepared', staged.reason);
+                showSingleBuildingEditorAlert('uploadInvalid', 'Could not prepare the building geometry.');
+                return;
+            }
         }
 
         const afterConfirm = singleUploadOnConfirm;
@@ -2073,6 +2093,7 @@
     }
 
     window.openSingleBuildingForParcels = openSingleBuildingForParcels;
+    window.openFreeformGeoJSONBuildings = openFreeformGeoJSONBuildings;
     window.createSingleBuildingProposal = createSingleBuildingProposal;
     window.createSingleBuildingFromUpload = createSingleBuildingFromUpload;
     window.clearSingleBuildingPendingState = clearSingleBuildingPendingState;

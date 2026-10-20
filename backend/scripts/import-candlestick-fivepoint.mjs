@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 // Recreates the approved FivePoint plan for Candlestick Point (2024 Modified Project Variant) as a
-// building proposal: a massing read off the plan's own height map and block plan — one footprint per
+// named plan of Freeform buildings: massing read off the plan's own height map and block plan — connected pieces per
 // height zone of each development block (40–180 ft), eleven tower boxes A–K at their encouraged
-// locations (220–420 ft), mid-block breaks kept open — on the same 271-acre site as the courtyard
-// concept, so the two stand in one contest. Published through the normal API (site binding first).
+// locations (220–420 ft), mid-block breaks kept open. Each footprint is its own Freeform proposal;
+// the proposals are grouped in one named plan. Published through the normal API.
 // Without --apply nothing is posted: the conversion is validated, summarized and written to --out.
 //
 //   node scripts/import-candlestick-fivepoint.mjs [--apply]
@@ -12,17 +12,20 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
+import { createHash } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
 import * as turf from '@turf/turf';
 import { canonicalSeedRecord } from './lib/canonical-seed-record.mjs';
-import { DEFAULTS as COMMON, bboxOf, publish, siteCoveringFootprints, siteFromBoundary } from './lib/candlestick-common.mjs';
+import { partitionBuildingFootprints, polygonBuildingParts } from './lib/building-import-geometry.mjs';
+import { DEFAULTS as COMMON, bboxOf, publish, publishNamedPlan } from './lib/candlestick-common.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const DEFAULTS = Object.freeze({
     ...COMMON,
     layers: path.join(HERE, 'data/candlestick/fivepoint'),
     proposalId: 'sf-candlestick-fivepoint-2024',
+    planSlug: 'candlestick-fivepoint-2024',
     out: path.join(HERE, '../../output/candlestick-fivepoint-proposal.json')
 });
 const FT = 0.3048;
@@ -42,14 +45,15 @@ function usage(code = 0) {
         'Usage: node scripts/import-candlestick-fivepoint.mjs [options]',
         '',
         `  --layers <dir>            The digitized plan layers (default ${path.relative(process.cwd(), DEFAULTS.layers)}).`,
-        `  --boundary <path>         Site boundary GeoJSON, WGS84 (default ${path.relative(process.cwd(), DEFAULTS.boundary)}).`,
         `  --backend <url>           API to publish to (default ${DEFAULTS.backend}).`,
         `  --origin <url>            Origin header for the write gate (default ${DEFAULTS.origin}; localhost only outside production).`,
         `  --city <id>               City id (default ${DEFAULTS.city}).`,
         `  --proposal-id <id>        Stable proposal id (default ${DEFAULTS.proposalId}); an existing one is left alone.`,
+        '  --source-proposal-id <id> Link replacement buildings to their published source proposal.',
+        `  --plan-slug <slug>        Immutable named plan (default ${DEFAULTS.planSlug}).`,
         `  --expires-in-days <n>     Expiry from now so a pool on it can auto-settle (default ${DEFAULTS.expiresInDays}; 0 = never).`,
         `  --out <path>              Where the converted record is written (default ${path.relative(process.cwd(), DEFAULTS.out)}).`,
-        '  --apply                   Bind the site and POST the proposal. Without it: convert, validate, summarize, write --out.',
+        '  --apply                   Bind and POST each building, then name their collection as a plan. Without it: convert, validate, summarize, write --out.',
         '  --help                    This text.'
     ].join('\n'));
     process.exit(code);
@@ -58,8 +62,8 @@ function usage(code = 0) {
 function parseCli() {
     const { values } = parseArgs({
         options: {
-            layers: { type: 'string' }, boundary: { type: 'string' }, backend: { type: 'string' }, origin: { type: 'string' },
-            city: { type: 'string' }, 'proposal-id': { type: 'string' }, 'expires-in-days': { type: 'string' }, out: { type: 'string' },
+            layers: { type: 'string' }, backend: { type: 'string' }, origin: { type: 'string' },
+            city: { type: 'string' }, 'source-proposal-id': { type: 'string' }, 'proposal-id': { type: 'string' }, 'plan-slug': { type: 'string' }, 'expires-in-days': { type: 'string' }, out: { type: 'string' },
             apply: { type: 'boolean', default: false }, help: { type: 'boolean', default: false }
         },
         strict: true
@@ -69,11 +73,12 @@ function parseCli() {
     if (!Number.isInteger(expiresInDays) || expiresInDays < 0) throw new Error('--expires-in-days must be a non-negative integer');
     return {
         layers: path.resolve(values.layers || DEFAULTS.layers),
-        boundary: path.resolve(values.boundary || DEFAULTS.boundary),
         backend: (values.backend || DEFAULTS.backend).replace(/\/+$/, ''),
         origin: values.origin || DEFAULTS.origin,
         city: values.city || DEFAULTS.city,
         proposalId: values['proposal-id'] || DEFAULTS.proposalId,
+        sourceProposalId: values['source-proposal-id'] || null,
+        planSlug: values['plan-slug'] || DEFAULTS.planSlug,
         expiresInDays,
         out: path.resolve(values.out || DEFAULTS.out),
         apply: values.apply
@@ -86,27 +91,11 @@ function round7(geometry) {
     return turf.truncate(turf.feature(geometry), { precision: 7, coordinates: 2, mutate: false }).geometry;
 }
 
-function largestPolygon(geometry) {
-    if (!geometry) return null;
-    if (geometry.type === 'Polygon') return geometry;
-    if (geometry.type === 'MultiPolygon') {
-        let best = null; let bestArea = 0;
-        for (const coordinates of geometry.coordinates) {
-            const area = turf.area(turf.polygon(coordinates));
-            if (area > bestArea) { best = { type: 'Polygon', coordinates }; bestArea = area; }
-        }
-        return best;
-    }
-    return null;
-}
-
 // A height-zone polygon pulled in from its edges so neighbouring zones do not touch; falls back to
 // the zone itself when the inset collapses (slivers).
 function insetFootprint(geometry, insetM = ZONE_INSET_M) {
-    let inset = null;
-    try { inset = turf.buffer(turf.feature(geometry), -insetM, { units: 'meters' }); } catch (_) { inset = null; }
-    const shrunk = inset && inset.geometry ? largestPolygon(inset.geometry) : null;
-    return shrunk && turf.area(turf.feature(shrunk)) > 0 ? shrunk : largestPolygon(geometry);
+    const inset = turf.buffer(turf.feature(geometry), -insetM, { units: 'meters' });
+    return inset && turf.area(inset) > 0 ? inset.geometry : geometry;
 }
 
 // Mid-block breaks stay open: cut them out of the footprints they cross.
@@ -116,12 +105,10 @@ function withoutBreaks(geometry, breaks) {
     for (const brk of breaks) {
         const other = turf.bbox(brk);
         if (other[0] > box[2] || box[0] > other[2] || other[1] > box[3] || box[1] > other[3]) continue;
-        try {
-            const cut = turf.difference(current, brk); // turf 6.5: two features
-            if (cut && cut.geometry) current = cut;
-        } catch (_) { /* keep the uncut footprint rather than lose it */ }
+        current = turf.difference(current, brk); // turf 6.5: two features
+        if (!current) return null;
     }
-    return largestPolygon(current.geometry) || geometry;
+    return current.geometry;
 }
 
 // A tower floorplate: a square of TOWER_SIDE_M around the encouraged location, clipped to its block.
@@ -131,10 +118,8 @@ function towerFootprint(point, block, sideM = TOWER_SIDE_M) {
     const corners = [45, 135, 225, 315].map(bearing => turf.destination(center, half, bearing, { units: 'kilometers' }).geometry.coordinates);
     let square = turf.polygon([[...corners, corners[0]]]);
     if (block) {
-        try {
-            const clipped = turf.intersect(square, turf.feature(block)); // turf 6.5: two features
-            if (clipped && clipped.geometry) square = turf.feature(largestPolygon(clipped.geometry) || square.geometry);
-        } catch (_) { /* unclipped square */ }
+        square = turf.intersect(square, turf.feature(block)); // turf 6.5: two features
+        if (!square) throw new Error('The encouraged tower footprint does not intersect its block.');
     }
     return square.geometry;
 }
@@ -145,7 +130,8 @@ function storeys(heightM) {
 
 /**
  * Convert the digitized layers into building features (WGS84), one per height zone of every
- * development block that is not a park, plus one per tower.
+ * development block that is not a park, plus each tower; disconnected pieces are retained and
+ * tower footprints are removed from lower volumes so all proposals can stand together.
  * @param {{ blocks: object, zones: object, towers: object, breaks?: object }} layers GeoJSON FeatureCollections
  */
 export function convertPlan({ blocks, zones, towers, breaks = { features: [] } }) {
@@ -165,20 +151,25 @@ export function convertPlan({ blocks, zones, towers, breaks = { features: [] } }
         if (!Number.isFinite(heightFt) || heightFt <= 0) { skippedBlocks.push(`${props.block_id} (no height)`); continue; }
         const index = (zoneIndexByBlock.get(props.block_id) || 0) + 1;
         zoneIndexByBlock.set(props.block_id, index);
-        const footprint = round7(withoutBreaks(insetFootprint(zone.geometry), breakFeatures));
+        const cut = withoutBreaks(insetFootprint(zone.geometry), breakFeatures);
+        if (!cut) { skippedBlocks.push(`${props.block_id} (entire zone is a passage)`); continue; }
+        const footprint = round7(cut);
         const heightM = Number((heightFt * FT).toFixed(2));
         heightsFt[heightFt] = (heightsFt[heightFt] || 0) + 1;
         features.push({
             type: 'Feature',
             properties: {
-                type: 'proposedBuilding',
+                type: 'proposedBuildingSingle',
                 id: `${props.block_id}-${index}`,
                 block: props.block_id,
                 name: `${landUse} · ${heightFt} ft`,
                 neighborhood: block.properties.neighborhood || null,
                 landUse,
                 levels: storeys(heightM),
+                floors: storeys(heightM),
+                storeys: storeys(heightM),
                 height: heightM,
+                heightM,
                 source: 'height zone'
             },
             geometry: footprint
@@ -194,21 +185,30 @@ export function convertPlan({ blocks, zones, towers, breaks = { features: [] } }
         features.push({
             type: 'Feature',
             properties: {
-                type: 'proposedBuilding',
+                type: 'proposedBuildingSingle',
                 id: `tower-${props.tower}`,
                 block: props.block_id || null,
                 name: `Tower ${props.tower} · ${heightFt} ft`,
                 neighborhood: block ? block.properties.neighborhood || null : null,
                 landUse: block ? String(block.properties.land_use || '') : null,
                 levels: storeys(heightM),
+                floors: storeys(heightM),
+                storeys: storeys(heightM),
                 height: heightM,
+                heightM,
                 source: 'encouraged tower location'
             },
             geometry: round7(towerFootprint(tower.geometry.coordinates, block ? block.geometry : null))
         });
     }
-    const footprintM2 = Math.round(features.reduce((sum, feature) => sum + turf.area(feature), 0));
-    return { features, skippedBlocks: Array.from(new Set(skippedBlocks)), heightsFt, footprintM2, blockCount: blockById.size };
+    const connected = partitionBuildingFootprints(features);
+    const footprintM2 = Math.round(connected.reduce((sum, feature) => sum + turf.area(feature), 0));
+    Object.keys(heightsFt).forEach(height => delete heightsFt[height]);
+    connected.forEach(feature => {
+        const height = Math.round(feature.properties.height / FT);
+        heightsFt[height] = (heightsFt[height] || 0) + 1;
+    });
+    return { features: connected, skippedBlocks: Array.from(new Set(skippedBlocks)), heightsFt, footprintM2, blockCount: blockById.size };
 }
 
 // ---- the record ---------------------------------------------------------------------------
@@ -234,60 +234,65 @@ function describe(program, stats) {
         `South); heights are 40 to 85 ft on most blocks, up to 180 ft in the Innovation District, with eleven encouraged tower locations`,
         `A–K from 170 to 420 ft.`,
         `This massing was read off the plan's own figures (FEIR Addendum 7, August 2024, land-use and maximum-height maps; the 2024 Design`,
-        `for Development block plans), georeferenced to within a few metres: ${stats.features.length} volumes, one per height zone of each`,
+        `for Development block plans), georeferenced to within a few metres: ${stats.features.length} connected volumes from each height zone of each`,
         `development block plus the eleven towers at their encouraged locations. It is a faithful envelope, not the developer's building`,
-        `designs. Sources: ${SOURCE_LINKS.ocii} · ${SOURCE_LINKS.documents}`
+        `designs. Towers own their footprints; lower volumes exclude the tower bases. Sources: ${SOURCE_LINKS.ocii} · ${SOURCE_LINKS.documents}`
     ].join(' ');
 }
 
-function buildRecord({ program, stats, site, city, proposalId, expiresInDays }) {
+export function buildRecords({ program, stats, city, proposalId, expiresInDays, sourceProposalId = null }) {
     const now = new Date();
     const expiresAt = expiresInDays > 0 ? new Date(now.getTime() + expiresInDays * 86400000).toISOString() : null;
-    const title = 'Candlestick Point as approved (FivePoint, 2024 plan): 7,218 homes, 11 towers up to 420 ft';
-    return {
-        proposalId,
-        city,
-        type: 'building',
-        goal: 'buildings',
-        typologyType: 'block',
-        primaryType: 'Buildings',
-        name: title,
-        title,
-        description: describe(program, stats),
-        author: 'FivePoint (approved plan)',
-        lifecycleStatus: 'Active',
-        applied: false,
-        termsConfirmed: true,
-        createdAt: now.toISOString(),
-        ...(expiresAt ? { expiresAt } : {}),
-        site,
-        // Binding tolerance (metres): the figures' traced boundary and DataSF's outline differ by
-        // centimetres along the edge, and the server ignores footprint slivers narrower than this.
-        toleranceM: 0.5,
-        cadastreParcelIds: [],
-        geometry: { buildings: stats.features },
-        buildingProposal: {
-            typologyType: 'block',
-            createdFrom: 'import',
+    const planTitle = 'Candlestick Point as approved (FivePoint, 2024 plan): 7,218 homes, 11 towers up to 420 ft';
+    return polygonBuildingParts(stats.features).map((building, index) => {
+        const sourceId = String(building.properties.id || index + 1);
+        const slug = sourceId.toLowerCase().replace(/[^a-z0-9-]+/g, '-').replace(/^-+|-+$/g, '') || 'building';
+        const idSuffix = `${slug}-${createHash('sha256').update(sourceId).digest('hex').slice(0, 8)}`;
+        const title = `${planTitle} — ${building.properties.name || sourceId}`;
+        const buildingProposal = {
+            typologyType: 'single',
+            createdFrom: 'blockify',
             blockName: 'Candlestick Point',
             parameters: {
-                mode: 'imported',
+                typology: 'single',
+                height: building.properties.height,
+                rotation: 0,
+                footprintMode: 'polygon',
                 source: {
                     plan: '2024 Modified Project Variant (FEIR Addendum 7, Aug 2024; 2024 Design for Development)',
                     digitized: 'scripts/data/candlestick/fivepoint (vector figure content, similarity fit to the DataSF boundary)',
-                    links: SOURCE_LINKS
-                },
-                buildings: stats.features.length,
-                developmentBlocks: stats.blockCount,
-                heightsFt: stats.heightsFt,
-                footprintM2: stats.footprintM2,
-                zoneInsetM: ZONE_INSET_M,
-                towerSideM: TOWER_SIDE_M
+                    links: SOURCE_LINKS,
+                    featureId: sourceId,
+                    sourceType: building.properties.source,
+                    blockId: building.properties.block || null
+                }
             },
             ineligibleParcels: []
-        },
-        tags: ['buildings', 'candlestick-point', 'approved-plan']
-    };
+        };
+        return {
+            proposalId: `${proposalId}-${idSuffix}`,
+            city,
+            ...(sourceProposalId ? { sourceProposalId: String(sourceProposalId) } : {}),
+            type: 'building',
+            goal: 'single',
+            typologyType: 'single',
+            primaryType: 'Urban Rule',
+            name: title,
+            title,
+            description: describe(program, stats),
+            author: 'FivePoint (approved plan)',
+            lifecycleStatus: 'Active',
+            applied: false,
+            termsConfirmed: true,
+            createdAt: now.toISOString(),
+            ...(expiresAt ? { expiresAt } : {}),
+            site: building.geometry,
+            cadastreParcelIds: [],
+            geometry: { buildings: [building] },
+            buildingProposal,
+            tags: ['buildings', 'candlestick-point', 'approved-plan']
+        };
+    });
 }
 
 // ---- main ---------------------------------------------------------------------------------
@@ -306,21 +311,39 @@ async function main() {
     };
     const program = readLayer(cli.layers, 'program.json');
     const stats = convertPlan(layers);
-    const boundary = siteFromBoundary(JSON.parse(fs.readFileSync(cli.boundary, 'utf8')));
-    const covering = siteCoveringFootprints(boundary, stats.features);
-    if (covering.widened.length) log(`site widened by ${covering.widened.length} footprint(s) that cross the boundary: ${covering.widened.slice(0, 6).join(', ')}${covering.widened.length > 6 ? ', …' : ''}`);
-    const record = buildRecord({ program, stats, site: covering.site, city: cli.city, proposalId: cli.proposalId, expiresInDays: cli.expiresInDays });
-    canonicalSeedRecord(record);
+    const records = buildRecords({ program, stats, city: cli.city, proposalId: cli.proposalId, expiresInDays: cli.expiresInDays, sourceProposalId: cli.sourceProposalId });
+    records.forEach(canonicalSeedRecord);
+    const planDefinition = {
+        slug: cli.planSlug,
+        title: 'Candlestick Point as approved (FivePoint, 2024 plan)',
+        description: `The FivePoint approved-plan building collection: ${records.length} individual Freeform building proposals.`,
+        author: 'FivePoint (approved plan)',
+        place: 'Candlestick Point, San Francisco',
+        city: cli.city,
+        authoredProposalIds: records.map(record => record.proposalId)
+    };
     const heights = stats.features.map(feature => feature.properties.height);
     log(`converted ${stats.features.length} volumes from ${stats.blockCount} blocks (${stats.features.filter(f => f.properties.source === 'height zone').length} height zones + ${stats.features.filter(f => f.properties.source !== 'height zone').length} towers); skipped ${stats.skippedBlocks.length}${stats.skippedBlocks.length ? `: ${stats.skippedBlocks.join(', ')}` : ''}`);
     log(`heights (ft → count) ${JSON.stringify(stats.heightsFt)} · ${Math.min(...heights)}–${Math.max(...heights)} m · footprints ${stats.footprintM2} m²`);
-    log(`bbox ${bboxOf(stats.features).join(', ')} · record ${(JSON.stringify(record).length / 1024).toFixed(0)} KB${record.expiresAt ? ` · expires ${record.expiresAt}` : ''}`);
+    log(`bbox ${bboxOf(stats.features).join(', ')} · ${records.length} Freeform proposals · records ${(JSON.stringify(records).length / 1024).toFixed(0)} KB${records[0]?.expiresAt ? ` · expires ${records[0].expiresAt}` : ''}`);
     fs.mkdirSync(path.dirname(cli.out), { recursive: true });
-    fs.writeFileSync(cli.out, JSON.stringify(record));
+    fs.writeFileSync(cli.out, JSON.stringify({ plan: planDefinition, proposals: records }));
     log(`record written to ${cli.out}`);
     if (!cli.apply) { log('dry run: nothing posted (add --apply to publish)'); return; }
-    const result = await publish(record, { backend: cli.backend, origin: cli.origin, city: cli.city });
-    log(result.skipped ? 'done (existing)' : `done: ${cli.backend}/proposals/${result.id}`);
+    let created = 0; let skipped = 0;
+    const proposalRowIds = [];
+    for (const record of records) {
+        const result = await publish(record, { backend: cli.backend, origin: cli.origin, city: cli.city });
+        if (result.skipped) skipped++; else created++;
+        if (result.id === undefined || result.id === null) throw new Error(`Proposal ${record.proposalId} has no database row id; cannot name the plan.`);
+        proposalRowIds.push(String(result.id));
+    }
+    log(`done: ${created} created, ${skipped} existing`);
+    const plan = await publishNamedPlan({
+        ...planDefinition,
+        proposalRowIds
+    }, { backend: cli.backend, origin: cli.origin });
+    log(plan.skipped ? `named plan ${cli.planSlug} already matches this collection` : `named plan created: ${cli.planSlug}`);
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {

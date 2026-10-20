@@ -20,11 +20,13 @@ import { ensureMarketAndStake, usdcToAtomic } from './bettor.js';
 import { getRun, startRun, updateRun } from './ledger.js';
 import { markAgentRunFailed, safeFailureDiagnostic } from './run-failure.js';
 import { createRpcConnection } from '../solana/rpc.js';
-import { ensureBotSolFunding } from './funding.js';
+import { ensureBotSolFunding, fundBotAction } from './funding.js';
 import { createRetryingFetch } from '../utils/retrying-fetch.js';
 import { sendAndConfirmPolling } from './solana-send.js';
 import { sendTelegram } from './telegram.js';
 import { runKeyFor, slotLabel } from './area-plan.js';
+import { isEntrypoint } from './entrypoint.js';
+import { discoverProposalInputs, refreshNamedPlanStatuses } from './discovery.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const require = createRequire(import.meta.url);
@@ -86,20 +88,16 @@ function loadKeypair(persona) {
     return keypair;
 }
 
-async function fetchJson(url) {
-    const response = await createRetryingFetch({ requestLabel: () => 'proposal-read' })(url, { headers: { accept: 'application/json' } });
+async function fetchJson(url, options = {}) {
+    const response = await createRetryingFetch({ requestLabel: () => 'proposal-read' })(url, { headers: { accept: 'application/json' }, ...options });
     if (!response.ok) throw new Error(`${url} returned HTTP ${response.status}`);
     return response.json();
 }
 
 async function discoverProposals(apiBase, persona) {
     const cities = persona.support?.cities?.length ? persona.support.cities : ['zagreb'];
-    const pages = await Promise.all(cities.map(city => fetchJson(
-        `${apiBase}/proposals/summary?city=${encodeURIComponent(city)}&lifecycle=Active&limit=100`
-    )));
-    const byId = new Map();
-    pages.flatMap(page => page.proposals || []).forEach(proposal => byId.set(String(proposal.proposalId || proposal.id), proposal));
-    return Array.from(byId.values());
+    return discoverProposalInputs({ apiBase, cities: cities.includes('*') ? [null] : Array.from(new Set(cities)), fetchJson,
+        log: message => console.log(`[${new Date().toISOString()}] ${message}`) });
 }
 
 // Reads this wallet's existing on-chain support so the picker never re-selects a proposal it already
@@ -124,26 +122,27 @@ async function alreadySupportedProposalIds({ connection, wallet, persona, propos
     return supported.filter(Boolean);
 }
 
-async function executeSupport({ decision, connection, keypair, runId }) {
+export async function executeSupport({ decision, connection, keypair, runId, pool, persona, adapters = {} }) {
     const amountAtomic = usdcToAtomic(decision.amount);
     const capAtomic = usdcToAtomic(String(process.env.AGENT_SUPPORT_USDC_CAP || '0.25'));
     if (amountAtomic > capAtomic) {
         throw new Error(`support amount ${decision.amount} USDC exceeds AGENT_SUPPORT_USDC_CAP`);
     }
+    await (adapters.fundBotAction || fundBotAction)({ action: decision, connection, pool, persona, runId });
     if (decision.type === 'pledge') {
-        return ensurePledgeBookAndSet({
+        return (adapters.ensurePledgeBookAndSet || ensurePledgeBookAndSet)({
             connection, pledgerKeypair: keypair, proposalPda: decision.proposalAccount,
             amountAtomic, sendAndConfirm: sendAndConfirmPolling
         });
     }
     if (decision.type === 'donate') {
-        return ensureDonationEscrowAndDonate({
+        return (adapters.ensureDonationEscrowAndDonate || ensureDonationEscrowAndDonate)({
             connection, donorKeypair: keypair, proposalPda: decision.proposalAccount, amountAtomic,
             operationId: `${runId}:${decision.proposalId}:donate`, sendAndConfirm: sendAndConfirmPolling
         });
     }
     if (decision.type === 'stake') {
-        return ensureMarketAndStake({
+        return (adapters.ensureMarketAndStake || ensureMarketAndStake)({
             connection, ownerKeypair: keypair, proposalPda: decision.proposalAccount,
             stakeMint: USDC_DEVNET, side: SIDE_YES, amountAtomic, sendAndConfirm: sendAndConfirmPolling
         });
@@ -186,7 +185,7 @@ async function main() {
                     const funding = await ensureBotSolFunding({ connection, persona });
                     if (funding.status === 'funded') await updateRun(pool, runId, { summaryPatch: { funding } });
                 }
-                const proposals = await discoverProposals(apiBase, persona);
+                const proposals = await refreshNamedPlanStatuses(await discoverProposals(apiBase, persona), connection);
                 const excludeProposalIds = await alreadySupportedProposalIds({ connection, wallet, persona, proposals });
                 const choice = selectSupportAction({ day: runKey, persona, proposals, wallet, excludeProposalIds });
                 console.log(`[${new Date().toISOString()}] ${persona.name}: ${choice.reason}`);
@@ -219,7 +218,7 @@ async function main() {
                         type: choice.selected.type, proposalId: choice.selected.proposalId,
                         amount: choice.selected.amount, side: choice.selected.side
                     },
-                    execute: () => executeSupport({ decision: choice.selected, connection, keypair, runId })
+                    execute: () => executeSupport({ decision: choice.selected, connection, keypair, runId, pool, persona })
                 });
                 // A replayed adapter result found the support already on-chain: record a no-op, not an action.
                 const verdict = classifySupportExecution(execution.outcome);
@@ -252,7 +251,7 @@ async function main() {
     }
 }
 
-main().catch(async error => {
+if (isEntrypoint(import.meta.url)) main().catch(async error => {
     const diagnostic = safeFailureDiagnostic(error);
     console.error(`[${new Date().toISOString()}] SUPPORTER FAILED: ${diagnostic}`);
     await sendTelegram(`Supporter agent FAILED: ${diagnostic}`, { alert: true });

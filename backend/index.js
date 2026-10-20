@@ -23,6 +23,7 @@ import { setupParcelSourcesRoute } from './routes/parcel-sources.js';
 import { createParcelProviderRelayRouter } from './routes/parcel-provider-relay.js';
 import { setupBuildingSourcesRoute } from './routes/building-sources.js';
 import { setupPlanningRoutes } from './routes/planning.js';
+import { setupImagerySourcesRoute } from './routes/imagery-sources.js';
 import { setupBuildingsRoute } from './routes/buildings.js';
 import { setupFloorPlanArchiveRoute } from './routes/floor-plan-archive.js';
 import { setupBuildingFloorModelsRoute } from './routes/building-floor-models.js';
@@ -232,6 +233,7 @@ export const READ_ONLY_POST_PATHS = new Set([
     '/parcels/under',
     '/parcel-sources/discover',
     '/building-sources/discover',
+    '/imagery-sources/discover',
     '/decor/near',
     '/decor/water',
     '/proposals/batch',
@@ -458,6 +460,7 @@ export function createApp({
     setupParcelSourcesRoute(app);
     setupBuildingSourcesRoute(app);
     setupPlanningRoutes(app, activePool);
+    setupImagerySourcesRoute(app);
     setupBuildingsRoute(app, activePool);
     setupFloorPlanArchiveRoute(app, activePool);
     setupBuildingFloorModelsRoute(app, activePool);

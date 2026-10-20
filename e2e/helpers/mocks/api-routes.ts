@@ -69,6 +69,7 @@ export async function mockAllApiRoutes(page: Page): Promise<void> {
   await mockAreaMonitorsRoute(page);
   await mockParcelsRoute(page);
   await mockProposalsRoute(page);
+  await mockPlanningRoutes(page);
   await mockBuildingsRoute(page);
   await mockPlannedRoadsRoute(page);
   await mockStreetsRoute(page);
@@ -195,6 +196,27 @@ export async function mockProposalsRoute(page: Page): Promise<void> {
     } else {
       route.continue();
     }
+  });
+}
+
+// NYC/other deterministic API fixtures do not include a planning feed. Keep the shared
+// Built/Permitted/Proposed view explicit: an empty provider catalogue and unavailable parcel
+// evidence use the same response shapes/statuses as backend/routes/planning.js.
+export async function mockPlanningRoutes(page: Page): Promise<void> {
+  await page.route('**/planning/sources**', route => {
+    const request = route.request();
+    if (!isApiDataRequest(request.url(), request.resourceType(), 'planning/sources') || request.method() !== 'GET') {
+      return route.continue();
+    }
+    const city = new URL(request.url()).searchParams.get('city');
+    return route.fulfill({ status: 200, headers: { 'Cache-Control': 'no-store' }, json: { city, sources: [] } });
+  });
+  await page.route('**/planning/parcel**', route => {
+    const request = route.request();
+    if (!isApiDataRequest(request.url(), request.resourceType(), 'planning/parcel') || request.method() !== 'GET') {
+      return route.continue();
+    }
+    return route.fulfill({ status: 503, headers: { 'Cache-Control': 'no-store' }, json: { error: 'Planning source is unavailable.' } });
   });
 }
 

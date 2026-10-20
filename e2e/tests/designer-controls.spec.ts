@@ -290,51 +290,27 @@ test.describe('Designer controls persist their edits @features', () => {
     await expect.poll(ineligibleVisibleMeshes).toHaveLength(0);
   });
 
-  test('manual building outline accepts a real GeoJSON upload and saves the uploaded footprint', async ({ mockApi: page }) => {
+  test('Block GeoJSON upload opens a Freeform footprint and saves it exactly', async ({ mockApi: page }) => {
     await openCity(page);
     await openParcel(page, 'proposals');
     await page.locator('.parcel-build-btn--buildings').click();
-    const wholeParcelPrompt = page.getByRole('alertdialog');
-    if (await wholeParcelPrompt.isVisible().catch(() => false)) {
-      await wholeParcelPrompt.getByRole('button', { name: 'No, just this parcel' }).click();
-    }
+    await resolveParcelScopePrompt(page, page.locator('#btn-blockify-done'), false);
     await expect(page.locator('#btn-blockify-done')).toBeEnabled({ timeout: 20_000 });
-    const editor = page.getByRole('region', { name: 'Urban rule' });
-    const manualToggle = editor.locator('#blockify-manual-toggle');
-    if (!(await manualToggle.isVisible())) await editor.locator('details.on-map-editor__more-options > summary').click();
-    await manualToggle.click();
-    await expect.poll(() => page.locator('#map-container .polygon-geometry-editor__vertex').count()).toBeGreaterThan(2);
-
-    // Upload is the actual manual-mode file control; the editor clips this polygon to the selected parcel.
     const uploaded = {
-      type: 'Feature', properties: { name: 'fixture manual footprint' },
+      type: 'Feature', properties: { name: 'fixture manual footprint', height: 18 },
       geometry: { type: 'Polygon', coordinates: [[[15.9820,45.80010],[15.98235,45.80010],[15.98235,45.80030],[15.9820,45.80030],[15.9820,45.80010]]] },
     };
     await page.locator('#blockify-geojson-input').setInputFiles({
       name: 'building.geojson', mimeType: 'application/geo+json', buffer: Buffer.from(JSON.stringify(uploaded)),
     });
-    // FileReader finishes asynchronously. The old outline already had vertices, so merely
-    // counting them could click Done before the uploaded footprint reached the live editor.
-    const uploadedVertices = uploaded.geometry.coordinates[0].slice(0, -1)
-      .sort((a, b) => a[0] - b[0] || a[1] - b[1]);
-    await expect.poll(() => page.evaluate(() => {
-      const vertices: number[][] = [];
-      (window as any).map.eachLayer((layer: any) => {
-        if (!layer.getElement?.()?.classList.contains('polygon-geometry-editor__vertex')) return;
-        const coordinate = layer.getLatLng();
-        vertices.push([coordinate.lng, coordinate.lat]);
-      });
-      return vertices.sort((a, b) => a[0] - b[0] || a[1] - b[1]);
-    })).toEqual(uploadedVertices);
-    await expect(page.locator('#blockify-manual-toggle')).toHaveAttribute('aria-pressed', 'true');
-    await page.locator('#btn-blockify-done').click();
-
+    await expect(page.locator('#single-building-editor .on-map-editor__panel')).toBeVisible();
+    await page.locator('#single-building-confirm').click();
     await expect.poll(() => page.evaluate(() => (window as any).proposalStorage.getAllProposals()
-      .some((proposal: any) => proposal.applied && proposal.buildingProposal?.parameters?.mode === 'manual'))).toBe(true);
-    const saved = await page.evaluate(() => (window as any).proposalStorage.getAllProposals().find((proposal: any) => proposal.applied && proposal.buildingProposal?.parameters?.mode === 'manual'));
-    expect(saved.buildingProposal.parameters.manualOuterRing.slice().sort((a: number[], b: number[]) => a[0] - b[0] || a[1] - b[1])).toEqual(uploadedVertices);
+      .some((p: any) => p.applied && p.goal === 'single' && p.geometry?.buildings?.[0]?.properties?.name === 'fixture manual footprint'))).toBe(true);
+    const saved = await page.evaluate(() => (window as any).proposalStorage.getAllProposals()
+      .find((p: any) => p.goal === 'single' && p.geometry?.buildings?.[0]?.properties?.name === 'fixture manual footprint'));
     expect(saved.geometry.buildings).toHaveLength(1);
-    expect(saved.geometry.buildings[0].geometry.type).toBe('Polygon');
+    expect(saved.geometry.buildings[0].geometry).toEqual(uploaded.geometry);
   });
 
   test('existing-building mode uses loaded footprints and saves the additional-floor rule', async ({ mockApi: page }) => {

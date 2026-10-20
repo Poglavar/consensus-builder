@@ -27,7 +27,10 @@ describe('algorithmic agent schedule', () => {
     it('enables bounded devnet fee funding for all configured actor and lens jobs', () => {
         const actors = apps.filter(item => /^agents\/(run|support-run|society-run|lens-member-run)\.mjs$/.test(item.script));
         expect(actors).toHaveLength(10);
-        for (const actor of actors) expect(actor.env.AGENT_SOL_FUNDING_ENABLED).toBe('1');
+        for (const actor of actors) {
+            expect(actor.env.AGENT_SOL_FUNDING_ENABLED).toBe('1');
+            expect(actor.env.AGENT_USDC_FUNDING_ENABLED).toBe('1');
+        }
     });
     it('uses the production provider account limit for the API and every actor', () => {
         const apiEnv = require('../ecosystem.config.cjs').apps.find(item => item.name === 'consensus-builder-api').env;

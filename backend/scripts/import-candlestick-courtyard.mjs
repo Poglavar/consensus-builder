@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 // Recreates the "Courtyard Candlestick" concept (Courtyard Urbanist, 2026-10-05) as a building
 // proposal in this app: 1,105 courtyard-building footprints with levels and heights, on the
-// 271-acre Candlestick Point site, published through the normal API (site binding first, then the
-// proposal) so the server rules apply exactly as they do for a browser. Without --apply nothing
-// is posted: the conversion is validated and summarized, and the record is written to --out.
+// 271-acre Candlestick Point site, published as independent Freeform buildings through the normal
+// API (site binding first, then each proposal) so the server rules apply as they do for a browser.
+// Without --apply nothing is posted: the conversion is validated, summarized, and written to --out.
 //
 //   node scripts/import-candlestick-courtyard.mjs --source <Candlestick_FG3D_Editable_Design.json> [--apply]
 //
@@ -15,13 +15,16 @@ import { createHash } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
 import proj4 from 'proj4';
+import * as turf from '@turf/turf';
 import { canonicalSeedRecord } from './lib/canonical-seed-record.mjs';
-import { DEFAULTS as COMMON, bboxOf, publish, siteCoveringFootprints, siteFromBoundary } from './lib/candlestick-common.mjs';
+import { polygonBuildingParts } from './lib/building-import-geometry.mjs';
+import { DEFAULTS as COMMON, bboxOf, publish, publishNamedPlan } from './lib/candlestick-common.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const DEFAULTS = Object.freeze({
     ...COMMON,
     proposalId: 'sf-candlestick-courtyard-2026',
+    planSlug: 'candlestick-courtyard-2026',
     out: path.join(HERE, '../../output/candlestick-courtyard-proposal.json')
 });
 // NAD83 / UTM zone 10N, the model's coordinate system (metres).
@@ -40,14 +43,15 @@ function usage(code = 0) {
         'Usage: node scripts/import-candlestick-courtyard.mjs --source <design.json> [options]',
         '',
         '  --source <path>           The concept model JSON (Candlestick_FG3D_Editable_Design.json). Required.',
-        `  --boundary <path>         Site boundary GeoJSON, WGS84 (default: ${path.relative(process.cwd(), DEFAULTS.boundary)}).`,
         `  --backend <url>           API to publish to (default ${DEFAULTS.backend}).`,
         `  --origin <url>            Origin header for the write gate (default ${DEFAULTS.origin}; localhost only outside production).`,
         `  --city <id>               City id (default ${DEFAULTS.city}).`,
         `  --proposal-id <id>        Stable proposal id (default ${DEFAULTS.proposalId}); an existing one is left alone.`,
+        '  --source-proposal-id <id> Counterproposal lineage source row ID (for recreation of an existing record).',
+        `  --plan-slug <slug>        Immutable named plan (default ${DEFAULTS.planSlug}).`,
         `  --expires-in-days <n>     Expiry from now so a market on it can auto-settle (default ${DEFAULTS.expiresInDays}; 0 = never).`,
         `  --out <path>              Where the converted record is written (default ${path.relative(process.cwd(), DEFAULTS.out)}).`,
-        '  --apply                   Bind the site and POST the proposal. Without it: convert, validate, summarize, write --out.',
+        '  --apply                   Bind and POST each building, then name their collection as a plan. Without it: convert, validate, summarize, write --out.',
         '  --help                    This text.'
     ].join('\n'));
     process.exit(code);
@@ -56,8 +60,8 @@ function usage(code = 0) {
 function parseCli() {
     const { values } = parseArgs({
         options: {
-            source: { type: 'string' }, boundary: { type: 'string' }, backend: { type: 'string' }, origin: { type: 'string' },
-            city: { type: 'string' }, 'proposal-id': { type: 'string' }, 'expires-in-days': { type: 'string' }, out: { type: 'string' },
+            source: { type: 'string' }, backend: { type: 'string' }, origin: { type: 'string' },
+            city: { type: 'string' }, 'proposal-id': { type: 'string' }, 'source-proposal-id': { type: 'string' }, 'plan-slug': { type: 'string' }, 'expires-in-days': { type: 'string' }, out: { type: 'string' },
             apply: { type: 'boolean', default: false }, help: { type: 'boolean', default: false }
         },
         strict: true
@@ -67,11 +71,12 @@ function parseCli() {
     if (!Number.isInteger(expiresInDays) || expiresInDays < 0) throw new Error('--expires-in-days must be a non-negative integer');
     return {
         source: path.resolve(values.source),
-        boundary: path.resolve(values.boundary || DEFAULTS.boundary),
         backend: (values.backend || DEFAULTS.backend).replace(/\/+$/, ''),
         origin: values.origin || DEFAULTS.origin,
         city: values.city || DEFAULTS.city,
         proposalId: values['proposal-id'] || DEFAULTS.proposalId,
+        sourceProposalId: values['source-proposal-id'] || null,
+        planSlug: values['plan-slug'] || DEFAULTS.planSlug,
         expiresInDays,
         out: path.resolve(values.out || DEFAULTS.out),
         apply: values.apply
@@ -85,7 +90,7 @@ const toWgs84 = proj4(EPSG_26910, 'EPSG:4326');
 function ringToWgs84(ring) {
     const out = ring.map(([x, y]) => {
         const [lon, lat] = toWgs84.forward([x, y]);
-        return [Number(lon.toFixed(7)), Number(lat.toFixed(7))];
+        return [lon, lat];
     });
     const first = out[0];
     const last = out[out.length - 1];
@@ -132,7 +137,8 @@ export function convertBuildings(model) {
     const levelsHistogram = {};
     let footprintM2 = 0;
     for (const building of model.buildings || []) {
-        const footprint = footprintToWgs84(building.footprint_utm_m);
+        const convertedFootprint = footprintToWgs84(building.footprint_utm_m);
+        const footprint = convertedFootprint ? turf.cleanCoords(turf.feature(convertedFootprint)).geometry : null;
         const height = footprint ? buildingHeightM(building) : null;
         if (!footprint || height === null) { dropped.push(building.id); continue; }
         const control = building.source_control_properties || {};
@@ -142,12 +148,21 @@ export function convertBuildings(model) {
         features.push({
             type: 'Feature',
             properties: {
-                type: 'proposedBuilding',
+                type: 'proposedBuildingSingle',
                 id: building.id,
                 block: building.block_id || null,
                 name: control.program || null,
                 levels,
-                height
+                floors: levels,
+                storeys: levels,
+                height,
+                heightM: height,
+                source: 'Courtyard Candlestick published design model',
+                sourceBuildingId: building.id,
+                sourceBlockId: building.block_id || null,
+                sourceControlProperties: control,
+                sourceFootprintAreaM2: building.footprint_area_m2 ?? null,
+                sourceOccupiedFloorplates: building.occupied_floorplates || []
             },
             geometry: footprint
         });
@@ -177,55 +192,67 @@ function describe(model, stats) {
     ].filter(Boolean).join(' ');
 }
 
-function buildRecord({ model, stats, site, city, proposalId, expiresInDays, sourceSha256 }) {
+export function buildRecords({ model, stats, city, proposalId, expiresInDays, sourceSha256, sourceProposalId = null }) {
     const now = new Date();
     const expiresAt = expiresInDays > 0 ? new Date(now.getTime() + expiresInDays * 86400000).toISOString() : null;
-    const title = 'Courtyard Candlestick: 1,105 courtyard buildings, about 16,400 homes, no towers';
-    return {
-        proposalId,
-        city,
-        type: 'building',
-        goal: 'buildings',
-        typologyType: 'block',
-        primaryType: 'Buildings',
-        name: title,
-        title,
-        description: describe(model, stats),
-        author: 'Courtyard Urbanist',
-        lifecycleStatus: 'Active',
-        applied: false,
-        termsConfirmed: true,
-        createdAt: now.toISOString(),
-        ...(expiresAt ? { expiresAt } : {}),
-        site,
-        // Binding tolerance (metres): the author's boundary and DataSF's outline differ by centimetres
-        // along the edge, and the server ignores footprint slivers outside the site narrower than this.
-        toleranceM: 0.5,
-        cadastreParcelIds: [],
-        geometry: { buildings: stats.features },
-        buildingProposal: {
-            typologyType: 'block',
-            createdFrom: 'import',
+    const planTitle = 'Courtyard Candlestick: 1,105 courtyard buildings, about 16,400 homes, no towers';
+    const buildings = polygonBuildingParts(stats.features);
+    return buildings.map((building, index) => {
+        const rawSourceId = building.properties.id;
+        if (rawSourceId === undefined || rawSourceId === null || rawSourceId === '') throw new Error(`Building at output index ${index} has no stable source ID.`);
+        const sourceId = String(rawSourceId);
+        const slug = sourceId.toLowerCase().replace(/[^a-z0-9-]+/g, '-').replace(/^-+|-+$/g, '') || 'building';
+        const idSuffix = `${slug}-${createHash('sha256').update(sourceId).digest('hex').slice(0, 8)}`;
+        const title = `${planTitle} — ${building.properties.name || sourceId}`;
+        const buildingProposal = {
+            typologyType: 'single',
+            createdFrom: 'blockify',
             blockName: 'Candlestick Point',
             parameters: {
-                mode: 'imported',
+                typology: 'single',
+                height: building.properties.height,
+                rotation: 0,
+                footprintMode: 'polygon',
                 source: {
                     schema: model.schema_version || null,
                     release: model.release || null,
                     createdUtc: model.created_utc || null,
                     sha256: sourceSha256,
                     crs: 'EPSG:26910',
-                    links: SOURCE_LINKS
-                },
-                buildings: stats.features.length,
-                droppedFootprints: stats.dropped.length,
-                levelsHistogram: stats.levelsHistogram,
-                footprintM2: stats.footprintM2
+                    links: SOURCE_LINKS,
+                    buildingId: sourceId,
+                    componentIndex: building.properties.sourceComponentIndex || null,
+                    blockId: building.properties.sourceBlockId || null,
+                    sourceControlProperties: building.properties.sourceControlProperties || {},
+                    sourceOccupiedFloorplates: building.properties.sourceOccupiedFloorplates || []
+                }
             },
             ineligibleParcels: []
-        },
-        tags: ['buildings', 'candlestick-point', 'courtyard']
-    };
+        };
+        return {
+            proposalId: `${proposalId}-${idSuffix}`,
+            ...(sourceProposalId ? { sourceProposalId: String(sourceProposalId) } : {}),
+            city,
+            type: 'building',
+            goal: 'single',
+            typologyType: 'single',
+            primaryType: 'Urban Rule',
+            name: title,
+            title,
+            description: describe(model, stats),
+            author: 'Courtyard Urbanist',
+            lifecycleStatus: 'Active',
+            applied: false,
+            termsConfirmed: true,
+            createdAt: now.toISOString(),
+            ...(expiresAt ? { expiresAt } : {}),
+            site: building.geometry,
+            cadastreParcelIds: [],
+            geometry: { buildings: [building] },
+            buildingProposal,
+            tags: ['buildings', 'candlestick-point', 'courtyard']
+        };
+    });
 }
 
 // ---- main ---------------------------------------------------------------------------------
@@ -238,27 +265,45 @@ async function main() {
     log(`source ${path.basename(cli.source)} sha256 ${sourceSha256} (${model.release || 'release unknown'}, ${(model.buildings || []).length} buildings)`);
 
     const stats = convertBuildings(model);
-    const boundary = siteFromBoundary(JSON.parse(fs.readFileSync(cli.boundary, 'utf8')));
-    const covering = siteCoveringFootprints(boundary, stats.features);
-    if (covering.widened.length) log(`site widened by ${covering.widened.length} footprint(s) that cross the boundary: ${covering.widened.slice(0, 6).join(', ')}${covering.widened.length > 6 ? ', …' : ''}`);
-    const record = buildRecord({ model, stats, site: covering.site, city: cli.city, proposalId: cli.proposalId, expiresInDays: cli.expiresInDays, sourceSha256 });
+    const records = buildRecords({ model, stats, city: cli.city, proposalId: cli.proposalId, expiresInDays: cli.expiresInDays, sourceSha256, sourceProposalId: cli.sourceProposalId });
     // The same projection and readability check every seed gets before a row can exist.
-    canonicalSeedRecord(record);
+    records.forEach(canonicalSeedRecord);
+    const planDefinition = {
+        slug: cli.planSlug,
+        title: 'Courtyard Candlestick (2026 concept)',
+        description: `The Courtyard Candlestick concept building collection: ${records.length} individual Freeform building proposals.`,
+        author: 'Courtyard Urbanist',
+        place: 'Candlestick Point, San Francisco',
+        city: cli.city,
+        authoredProposalIds: records.map(record => record.proposalId)
+    };
     const heights = stats.features.map(feature => feature.properties.height);
     log(`converted ${stats.features.length} buildings, dropped ${stats.dropped.length}${stats.dropped.length ? ` (${stats.dropped.slice(0, 5).join(', ')}${stats.dropped.length > 5 ? ', …' : ''})` : ''}`);
     log(`levels ${JSON.stringify(stats.levelsHistogram)} · heights ${Math.min(...heights)}–${Math.max(...heights)} m · footprints ${stats.footprintM2} m²`);
-    log(`bbox ${bboxOf(stats.features).join(', ')} · record ${(JSON.stringify(record).length / 1024).toFixed(0)} KB${record.expiresAt ? ` · expires ${record.expiresAt}` : ''}`);
+    log(`bbox ${bboxOf(stats.features).join(', ')} · ${records.length} Freeform proposals · records ${(JSON.stringify(records).length / 1024).toFixed(0)} KB${records[0]?.expiresAt ? ` · expires ${records[0].expiresAt}` : ''}`);
 
     fs.mkdirSync(path.dirname(cli.out), { recursive: true });
-    fs.writeFileSync(cli.out, JSON.stringify(record));
+    fs.writeFileSync(cli.out, JSON.stringify({ plan: planDefinition, proposals: records }));
     log(`record written to ${cli.out}`);
 
     if (!cli.apply) {
         log('dry run: nothing posted (add --apply to publish)');
         return;
     }
-    const result = await publish(record, { backend: cli.backend, origin: cli.origin, city: cli.city });
-    log(result.skipped ? 'done (existing)' : `done: ${cli.backend}/proposals/${result.id}`);
+    let created = 0; let skipped = 0;
+    const proposalRowIds = [];
+    for (const record of records) {
+        const result = await publish(record, { backend: cli.backend, origin: cli.origin, city: cli.city });
+        if (result.skipped) skipped++; else created++;
+        if (result.id === undefined || result.id === null) throw new Error(`Proposal ${record.proposalId} has no database row id; cannot name the plan.`);
+        proposalRowIds.push(String(result.id));
+    }
+    log(`done: ${created} created, ${skipped} existing`);
+    const plan = await publishNamedPlan({
+        ...planDefinition,
+        proposalRowIds
+    }, { backend: cli.backend, origin: cli.origin });
+    log(plan.skipped ? `named plan ${cli.planSlug} already matches this collection` : `named plan created: ${cli.planSlug}`);
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {

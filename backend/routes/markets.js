@@ -57,7 +57,8 @@ const PROPOSALS_SQL = `
 // Named plans of the city (plans.md): members are proposal row ids; the plan's own account, if minted;
 // the version it supersedes, so older versions fold under the current one.
 const PLANS_SQL = `
-    SELECT slug, title, place, author, created_at, proposal_ids, onchain_data, supersedes
+    SELECT slug, title, place, author, created_at, proposal_ids, onchain_data, supersedes,
+        thumbnail_url, thumbnail_before_url, thumbnail_pair_url
     FROM ens_plan e
     WHERE ${PLAN_IN_CITY_SQL('e', '$1')}
     ORDER BY created_at DESC
@@ -72,6 +73,9 @@ export function rowToPlan(row) {
         createdAt: row.created_at instanceof Date ? row.created_at.toISOString() : row.created_at,
         memberIds: Array.isArray(row.proposal_ids) ? row.proposal_ids.map(String) : [],
         proposalAccount: proposalAccountOf(row.onchain_data),
+        screenshotUrl: row.thumbnail_url || null,
+        screenshotBeforeUrl: row.thumbnail_before_url || null,
+        screenshotPairUrl: row.thumbnail_pair_url || null,
         supersedes: typeof row.supersedes === 'string' && row.supersedes.trim() ? row.supersedes.trim() : null
     };
 }

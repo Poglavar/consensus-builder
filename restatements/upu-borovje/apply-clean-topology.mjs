@@ -33,7 +33,6 @@ const READJUSTMENT_IDS = Object.freeze([
     'p-upu-borovje-parcelacija-2',
     'p-upu-borovje-parcelacija-3'
 ]);
-const COORDINATED_PLAN_ID = 'upu-borovje';
 const REBUILD_MARK = 'repair-upu-borovje/clean-connected-plan-v1';
 const MIN_INTERSECTION_M2 = 0.25;
 const COLORS = Object.freeze({ M1: '#e8a24a', Z1: '#69b86b', R2: '#3aa88a' });
@@ -135,7 +134,6 @@ function readjustmentRecord(sourceRow, component, index, parentParcelIds) {
     Object.assign(data, {
         proposalId,
         proposal_id: proposalId,
-        coordinatedPlanId: COORDINATED_PLAN_ID,
         city: 'zagreb',
         goal: 'reparcellization',
         type: 'parcel',
@@ -144,7 +142,6 @@ function readjustmentRecord(sourceRow, component, index, parentParcelIds) {
         description: `Nova parcelacija povezanog bloka ${blockNumber} od 3. Ulična mreža odvaja ga od ostalih dijelova obuhvata, zato su tri nepovezana područja objavljena kao tri zasebna prijedloga parcelacije.`,
         parentParcelIds: parentParcelIds.slice(),
         cadastreParcelIds: parentParcelIds.slice(),
-        coordinatedPlanId: COORDINATED_PLAN_ID,
         reparcellization
     });
     return { proposalId, title, description: data.description, parentParcelIds, data, reparcellization };
@@ -161,7 +158,6 @@ function roadRecord(sourceRow, road, parentParcelIds) {
     delete roadProposal.childParcelIds;
     delete roadProposal.applied;
     Object.assign(data, {
-        coordinatedPlanId: COORDINATED_PLAN_ID,
         parentParcelIds: parentParcelIds.slice(),
         cadastreParcelIds: parentParcelIds.slice(),
         roadProposal
@@ -183,7 +179,6 @@ function parkRecord(sourceRow, plot, parentParcelIds) {
     };
     delete structureProposal.applied;
     Object.assign(data, {
-        coordinatedPlanId: COORDINATED_PLAN_ID,
         parentParcelIds: parentParcelIds.slice(),
         cadastreParcelIds: parentParcelIds.slice(),
         structureProposal

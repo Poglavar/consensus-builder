@@ -11,7 +11,7 @@ const SITE = {
 };
 function authored(overrides = {}) {
     return chainRecord.authoredRecord({
-        proposalId: 'portable-1', city: 'zagreb', type: 'structure', goal: 'park', title: 'Pocket park',
+        proposalId: 'portable-1', city: 'zagreb', type: 'structure', goal: 'park', title: 'Pocket park', titleOrigin: 'user',
         description: 'A small authored park', author: 'Guest 12', isConditional: false, lens: ['0x000000000000000000000000000000000000000a'],
         site: SITE, binding: { coverage: 'complete', parcels: [{ parcelId: 'HR-1', overlapM2: 100 }], toleranceM: 0 },
         cadastreSnapshot: { protocol: 'cadastre-snapshot/1', source: 'cadastre-v1', regionHasCadastre: true,

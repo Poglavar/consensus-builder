@@ -423,7 +423,7 @@
         if (['buildings', 'row', 'parcelBased', 'single'].includes(draft.goal) || ['buildings', 'row', 'parcelBased', 'single'].includes(draft.adapterKey)) {
             const context = payload.context || {};
             const count = context.buildings?.length || (context.buildingFeature ? 1 : 0);
-            return tDraft('proposalDrafts.design.buildingSummary', '{{count}} building(s) · {{typology}}', { count, typology: payload.typology || draft.goal });
+            return tDraft('proposalDrafts.design.buildingSummary', 'Buildings: {{count}} · {{typology}}', { count, typology: payload.typology || draft.goal });
         }
         if (draft.goal === 'reparcellization') {
             return tDraft('proposalDrafts.design.reparcelSummary', '{{count}} replacement parcel(s) · {{algorithm}}', {
@@ -635,9 +635,11 @@
         if (!path || !editorState.draftId || !global.proposalDraftStore) return;
         editorState.localMutation = true;
         const value = valueFromInput(input);
+        const patch = patchForPath(path, value);
+        if (path === 'fields.name') patch.fields.titleOrigin = 'user';
         global.proposalDraftStore.updateDraft(
             editorState.draftId,
-            patchForPath(path, value),
+            patch,
             { coalesceKey: `field:${path}`, validate: false }
         );
         let draft = validate
@@ -1274,15 +1276,23 @@
     // active draft id; saved (or dropped) by finishProposalDraftDesignSession.
     const freeformSiblingDrafts = new Map();
 
-    // A Detached rule's conversion: one Freeform proposal per house, each standing on its own
-    // `site`. `houses` is [{ feature, site }], the rule's stored massing per parcel (moved by the drag
-    // offset when dropped). The active draft becomes the first house: in place for one's own local
-    // record, a counterproposal of a published one. Every further house is a new proposal, or a
-    // counterproposal of the same published source. Resolves { ok, reason, cancelled }.
-    async function convertActiveDesignToFreeformBuildings({ houses, typology = 'parcelBased', confirm = true } = {}) {
-        const list = (houses || []).filter(house => house?.feature?.geometry);
-        if (list.length <= 1) {
-            return convertActiveDesignToFreeform({ features: list.map(house => house.feature), site: list[0]?.site, typology, confirm });
+    // Stage independent, already-authored Freeform buildings on their own sites. The caller owns
+    // confirmation and closing: the active draft is only prepared here, and the design session's
+    // normal Done path saves it and then its siblings. Each feature is one Polygon building, so
+    // holes and source metadata pass through unchanged; disconnected MultiPolygon components are
+    // separate entries supplied by the importer.
+    function stageActiveFreeformBuildings({ buildings } = {}) {
+        const incoming = Array.isArray(buildings) ? buildings : [];
+        const list = incoming.map(item => ({
+            ...item,
+            site: item?.site?.type === 'Feature' ? item.site.geometry : item?.site
+        }));
+        if (!list.length || list.some(item => item?.building?.type !== 'Feature'
+            || item.building.geometry?.type !== 'Polygon'
+            || !Array.isArray(item.building.geometry.coordinates?.[0])
+            || item.building.geometry.coordinates[0].length < 4
+            || !['Polygon', 'MultiPolygon'].includes(item.site?.type))) {
+            return { ok: false, reason: 'Each Freeform building needs a Polygon footprint and polygonal site.' };
         }
         const conversion = global.__freeformConversion;
         const store = global.proposalDraftStore;
@@ -1290,14 +1300,9 @@
         if (!conversion || !store || !draft) {
             return { ok: false, reason: tDraft('proposalDrafts.design.unavailable', 'This design editor is unavailable.') };
         }
-        const merged = list.map(house => mergeRuleBuildings([house.feature]));
-        const refused = merged.find(result => !result.ok);
-        if (refused) return refused;
         const source = draft.sourceLocalProposalId ? proposalById(draft.sourceLocalProposalId) : null;
         const published = !!source && global.ProposalLineage?.editsInPlace?.(source) !== true;
-        if (confirm && !(await confirmFreeformConversion(source || { title: draft.fields?.name }, typology, list.length))) {
-            return { ok: false, cancelled: true };
-        }
+        const previousSiblings = freeformSiblingDrafts.get(String(draft.id)) || [];
         const siblings = [];
         try {
             list.slice(1).forEach((house, index) => {
@@ -1307,20 +1312,46 @@
                     ? store.createDraftFromProposal(source, { activate: false, forceNew: true })
                     : store.createDraft({
                         cityId: draft.cityId, goal: draft.goal, adapterKey: draft.adapterKey, proposalType: draft.proposalType,
-                        fields: { ...(draft.fields || {}), name: '', description: '' },
+                        fields: { ...(draft.fields || {}), name: '', titleOrigin: 'generated', description: '' },
                         editorPayload: draft.editorPayload, activate: false
                     });
                 siblings.push(sibling.id);
-                const patch = conversion.freeformDraftPatch(sibling, { building: merged[index + 1].building, site: house.site });
-                replaceWithFreeform(store, sibling, { ...patch, fields: { ...(patch.fields || {}), name: '', description: '' } });
+                const patch = conversion.freeformDraftPatch(sibling, { building: house.building, site: house.site });
+                replaceWithFreeform(store, sibling, { ...patch, fields: { ...(patch.fields || {}), name: '', titleOrigin: 'generated', description: '' } });
             });
+            const firstPatch = conversion.freeformDraftPatch(draft, { building: list[0].building, site: list[0].site });
+            if (list[0].surroundings) {
+                const { groundSurface = null, groundBoundary = null, takeWholeParcels = false } = list[0].surroundings;
+                Object.assign(firstPatch.editorPayload.context, JSON.parse(JSON.stringify({ groundSurface, groundBoundary, takeWholeParcels })));
+            }
+            replaceWithFreeform(store, draft, firstPatch);
         } catch (error) {
             siblings.forEach(id => { try { store.deleteDraft(id); } catch (_) { } });
             return { ok: false, reason: error?.message || String(error) };
         }
-        replaceWithFreeform(store, draft, conversion.freeformDraftPatch(draft, { building: merged[0].building, site: list[0].site }));
         freeformSiblingDrafts.set(String(draft.id), siblings);
+        previousSiblings.forEach(id => { try { store.deleteDraft(id); } catch (_) { } });
         return { ok: true, count: list.length };
+    }
+
+    // A Detached rule's conversion: the maximum-height envelope on each parcel becomes one Freeform
+    // building there. This wrapper retains its rule-specific confirmation and massing normalization,
+    // then uses the same staging and sequential-save path as fixed-geometry imports.
+    async function convertActiveDesignToFreeformBuildings({ houses, typology = 'parcelBased', confirm = true } = {}) {
+        const list = (houses || []).filter(house => house?.feature?.geometry);
+        if (!list.length) return { ok: false, code: 'no-buildings', reason: MERGE_REFUSALS['no-buildings'][1] };
+        const merged = list.map(house => mergeRuleBuildings([house.feature]));
+        const refused = merged.find(result => !result.ok);
+        if (refused) return refused;
+        const source = getActiveProposalDesignDraft()?.sourceLocalProposalId
+            ? proposalById(getActiveProposalDesignDraft().sourceLocalProposalId) : null;
+        if (confirm && !(await confirmFreeformConversion(source || { title: getActiveProposalDesignDraft()?.fields?.name }, typology, list.length))) {
+            return { ok: false, cancelled: true };
+        }
+        return stageActiveFreeformBuildings({ buildings: list.map((house, index) => ({
+            building: merged[index].building,
+            site: house.site
+        })) });
     }
 
     // The further houses save one after another once the first has saved: they are cut into the
@@ -1799,8 +1830,11 @@
         // dissolves without residue.
         // An abandoned session (X/Esc) never reaches this point — discardProposalDraftDesignSession
         // clears the commit id first, so tearing the tool down publishes nothing.
-        if (geometryEditCommitDraftId && String(geometryEditCommitDraftId) === String(activeId)) {
-            const commitId = geometryEditCommitDraftId;
+        // A collection uploaded from the form's Design tab also produces ordinary local objects
+        // on Done. Leaving its siblings tied to the closed session would delete their geometry.
+        const stagedSiblings = freeformSiblingDrafts.get(String(activeId)) || [];
+        if ((geometryEditCommitDraftId && String(geometryEditCommitDraftId) === String(activeId)) || stagedSiblings.length) {
+            const commitId = activeId;
             geometryEditCommitDraftId = null;
             const current = global.proposalDraftStore.getDraft(commitId);
             const siblings = freeformSiblingDrafts.get(String(commitId)) || [];
@@ -1943,7 +1977,10 @@
         if (conditional && typeof fields.isConditional === 'boolean') conditional.checked = fields.isConditional;
         const name = global.document?.getElementById('proposalName');
         const description = global.document?.getElementById('proposalDescription');
-        if (name) name.value = fields.name || '';
+        if (name) {
+            name.value = fields.name || '';
+            name.dataset.titleOrigin = fields.titleOrigin === 'generated' ? 'generated' : fields.titleOrigin === 'user' ? 'user' : '';
+        }
         if (description) description.value = fields.description || '';
     }
 
@@ -2149,12 +2186,15 @@
     async function instantCreateProposalFromDraftInner(draftId, store, draft, profile, options = {}) {
 
         const currentName = String(draft.fields?.name || '').trim();
-        const typeLabel = draft.proposalType || proposalLabel(draft.adapterKey || draft.goal);
+        const typeLabel = draft.goal === 'single' || draft.adapterKey === 'single'
+            ? proposalLabel('single')
+            : draft.proposalType || proposalLabel(draft.adapterKey || draft.goal);
         const autoFields = {};
         if (!currentName || /^New (road|track)$/i.test(currentName)) {
             autoFields.name = typeof global.generateDefaultProposalName === 'function'
                 ? global.generateDefaultProposalName(typeLabel, { parcelIds: draft.fields?.selectedParcelIds || [] })
                 : `${typeLabel} ${new Date().toISOString().slice(5, 16).replace(/[-T:]/g, '')}`;
+            autoFields.titleOrigin = 'generated';
         }
         // Every object carries the standard description pattern from birth. Terms (kind, money,
         // voting period) are chosen only when it is published (proposal-kinds.md): no placeholder offer.
@@ -2203,9 +2243,9 @@
         // A free building can move off the parcels it started on. A generated name and description
         // were written from that starting selection, so write them again from the final binding.
         const boundIds = draft.fields?.cadastreParcelIds || [];
-        if (autoFields.name && boundIds.length && global.proposalDraftPlacement?.isFreePlacementDraft?.(draft)
+        if (draft.fields?.titleOrigin === 'generated' && boundIds.length && global.proposalDraftPlacement?.isFreePlacementDraft?.(draft)
             && typeof global.generateDefaultProposalName === 'function') {
-            const renamed = { name: global.generateDefaultProposalName(typeLabel, { parcelIds: boundIds }) };
+            const renamed = { name: global.generateDefaultProposalName(typeLabel, { parcelIds: boundIds }), titleOrigin: 'generated' };
             if (autoFields.description && typeof global.generateDefaultProposalDescription === 'function') {
                 renamed.description = global.generateDefaultProposalDescription(typeLabel, renamed.name);
             }
@@ -2572,6 +2612,7 @@
     global.convertProposalToFreeform = convertProposalToFreeform;
     global.convertActiveDesignToFreeform = convertActiveDesignToFreeform;
     global.convertActiveDesignToFreeformBuildings = convertActiveDesignToFreeformBuildings;
+    global.stageActiveFreeformBuildings = stageActiveFreeformBuildings;
     global.chooseRuleDrop = chooseRuleDrop;
     global.moveActiveDesignToParcels = moveActiveDesignToParcels;
     global.ruleDropLabel = ruleLabel;

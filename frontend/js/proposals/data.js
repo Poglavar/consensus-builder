@@ -403,7 +403,7 @@ const proposalStorage = {
         }
         if (this._suspendSaveCount === 0 && this._hasPendingSave) {
             this._hasPendingSave = false;
-            this._persist();
+            return this._persist();
         }
     },
     _ensureIndexes() {
@@ -885,7 +885,7 @@ const proposalStorage = {
             this._hasPendingSave = true;
             return;
         }
-        this._persist();
+        return this._persist();
     },
 
     _persist() {
@@ -933,10 +933,14 @@ const proposalStorage = {
                 if (name.startsWith(PROPOSAL_ROW_PREFIX) && !this.proposals.has(name.slice(PROPOSAL_ROW_PREFIX.length))) deletes.push(name);
             });
             puts.set(PROPOSALS_MANIFEST_KEY, proposalManifest(this.nextProposalId));
-            this._persistFragments = fragments;
-            Promise.resolve(PersistentStorage.atomicWrite({ puts, deletes })).catch(error => {
+            const write = Promise.resolve(PersistentStorage.atomicWrite({ puts, deletes }))
+                .then(() => { this._persistFragments = fragments; });
+            // Fire-and-forget callers still report failures. A plan's final save awaits the same
+            // promise, so its saving phase cannot finish before the durable write does.
+            write.catch(error => {
                 console.error('proposalStorage.save: Failed to persist proposals', error);
             });
+            return write;
         } catch (error) {
             console.error('proposalStorage.save: Failed to persist proposals', error);
             throw error;
@@ -1100,11 +1104,6 @@ const proposalStorage = {
             options.selectedParcelIds
         );
         const normalized = this._normalizeProposal(candidate);
-        const seed = this._buildHashSeed(normalized);
-        const duplicate = this._findDuplicateBySeed(seed);
-        if (duplicate) {
-            console.debug('[proposalStorage] Duplicate seed detected; allowing insert', { seed, existingId: duplicate.proposalId });
-        }
 
         normalized.createdAt = normalized.createdAt || new Date().toISOString();
         normalized.updatedAt = new Date().toISOString();
@@ -1559,15 +1558,6 @@ const proposalStorage = {
         const seed = this._buildHashSeed(proposal);
         const digest = hashStringDeterministic(seed);
         return `p-${digest}`;
-    },
-
-    _findDuplicateBySeed(seed) {
-        for (const proposal of this.proposals.values()) {
-            if (this._buildHashSeed(proposal) === seed) {
-                return proposal;
-            }
-        }
-        return null;
     }
 };
 

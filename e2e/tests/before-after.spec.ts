@@ -307,6 +307,31 @@ test.describe('Before / after in the bet dialog @features', () => {
     await expect(page.locator('.bets-dialog__compare, .map-compare__handle')).toHaveCount(0);
   });
 
+  test('a direct named-plan bet uses the whole-plan before and after image pair', async ({ mockApi: page }) => {
+    const payload = marketsPayload({ screenshotUrl: PIXEL_PNG, screenshotBeforeUrl: PIXEL_PNG });
+    Object.assign(payload.contests[0].proposals[0], {
+      id: 'plan:harbor-plan', kind: 'plan', planSlug: 'harbor-plan',
+      title: 'Harbor plan', goal: 'plan', memberCount: 2,
+      members: [{ id: 701, title: 'First building' }, { id: 702, title: 'Second building' }]
+    });
+    await page.route('**/markets?*', route => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(payload) }));
+    await page.goto(`/bets/${PROPOSAL_ACCOUNT}?city=zg&reduceMotion=1`);
+    const dialog = page.locator('#proposalMarketOverlay');
+    await expect(dialog).toBeVisible();
+    const compare = dialog.locator('.bets-dialog__compare');
+    await expect(compare.locator('img')).toHaveCount(2);
+    expect(await compare.locator('img').first().evaluate(el => getComputedStyle(el).objectFit)).toBe('contain');
+    const sizes = await compare.locator('img').evaluateAll(images => images.map(image => image.getBoundingClientRect().height));
+    expect(Math.abs(sizes[0] - sizes[1])).toBeLessThan(1);
+    expect((await compare.boundingBox())!.height).toBeGreaterThanOrEqual(sizes[0]);
+    const slider = compare.getByRole('slider');
+    await expect(slider).toHaveAttribute('aria-valuenow', '50');
+    await slider.focus();
+    await page.keyboard.press('Home');
+    await expect(slider).toHaveAttribute('aria-valuenow', '0');
+    await expect(dialog.getByText('Harbor plan', { exact: true })).toBeVisible();
+  });
+
   test('without a before picture the dialog keeps its plain thumbnail', async ({ mockApi: page }) => {
     await page.route('**/markets?*', route => route.fulfill({ status: 200, contentType: 'application/json',
       body: JSON.stringify(marketsPayload({ screenshotUrl: PIXEL_PNG, screenshotBeforeUrl: null })) }));

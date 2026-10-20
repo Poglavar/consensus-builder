@@ -79,6 +79,9 @@ reproducible across sessions or releases. V19 records this bounded resolution in
   `parcel_ids` filters retain their existing meanings.
 - `GET /plans/:slug` exposes each member's `proposalRowId` and `authoredProposalId` separately.
   A missing member retains `proposalRowId` and reports `missing: true`; its authored ID is unavailable.
+- Named plans contain at most 5,000 deduplicated proposal row IDs. Their URL is the short
+  `/proposals/<slug>` route; membership is looked up server-side, so row-ID length does not affect
+  ENS text-record size.
 - The retired creation field `proposalIds` and query filter `proposal_ids` return 400, including
   when supplied alongside the new fields. Responses have no old aliases.
 
@@ -134,6 +137,13 @@ One plan → one on-chain proposal account → one `proposal_market` pool. No pr
   Expired (lifecycle lens verdict) → NO.
 - A single proposal stays bettable on its own; a plan of one is never required.
 
+A named plan has its own after/before image pair, rendered from all unchanged members in one
+frame. Individual member thumbnails are not used as a whole-plan preview. The bet dialog shows
+the pair with a divider; link unfurls use its side-by-side image. These derived images do not
+change the plan hash. Creation queues rendering, and `scripts/backfill-plan-thumbnails.mjs`
+retries interrupted or missing renders (`--slug`, dry run by default; `--apply --base-url <origin>`
+for writes). A changed or incomplete member snapshot is not rendered.
+
 ## Contests
 
 `GET /markets` still groups by shared land. A named plan is an entry of its own (kind `plan`),
@@ -169,6 +179,7 @@ must be discarded and recreated. This adds neither an older-contract reader nor 
 
 ## Links
 
-- `/proposals/<slug>` opens the named-plan preview. **Apply plan** applies its members locally.
+- `/proposals/<slug>` opens the named-plan preview, including ENS `url` records. **Apply plan**
+  applies its members locally; named-plan URLs use the slug rather than expanding row IDs into the path.
 - `/proposals/<row IDs>` shares selected published proposals without a named-plan record.
 - `/bets/<plan account>` opens the plan's bet, as for proposals.

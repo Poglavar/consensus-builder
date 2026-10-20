@@ -109,6 +109,38 @@
         'J.D.O.O'
     ]);
 
+    // Canonical values arrive from ownership adapters and are already decisions, not labels to
+    // classify. Keep this vocabulary here so the browser and backend accept the same values.
+    const CANONICAL_OWNER_TYPES = Object.freeze([
+        'private individual', 'company', 'government', 'institution'
+    ]);
+
+    function normalizeCanonicalOwnerType(value) {
+        if (typeof value !== 'string') return null;
+        const normalized = value.trim().toLowerCase().replace(/\s+/g, ' ');
+        if (normalized === 'city') return 'government';
+        return CANONICAL_OWNER_TYPES.includes(normalized) ? normalized : null;
+    }
+
+    // Labels observed in the NYC parcel feed. These are deliberately authority-specific: words
+    // such as "city" or "authority" alone can occur in private company names.
+    const US_PUBLIC_BODY_PATTERNS = Object.freeze([
+        /^CITY OF NEW YORK$/,
+        /^CITY OF NEW YORK (?:DEPARTMENT|HOUSING AUTHORITY|WATER BOARD|TRANSIT AUTHORITY)\b/,
+        /^NEW YORK CITY HOUSING AUTHORITY\b/,
+        /^NEW YORK CITY TRANSIT AUTHORITY\b/,
+        /^NEW YORK CITY DEPARTMENT OF [A-Z ]+$/,
+        /^NEW YORK CITY DEPT OF [A-Z ]+$/,
+        /^NYC DEPARTMENT OF [A-Z ]+$/,
+        /^NYC DEPT OF [A-Z ]+$/,
+        /^NYC HOUSING AUTHORITY\b/,
+        /^NYC TRANSIT AUTHORITY\b/,
+        /^METROPOLITAN TRANSPORTATION AUTHORITY\b/,
+        /^UNITED STATES (?:OF AMERICA|GOVERNMENT)$/
+    ]);
+
+    const US_COMPANY_SUFFIX = /\b(?:LLC|L L C|INC|CORP|CORPORATION|LTD|LIMITED|LP|L P|LLP|L L P|PLLC|PC|P C)\b$/;
+
     const CITY_OWNER_MAPPERS = Object.freeze({
         zagreb: Object.freeze({
             exact: createNormalizedKeywordList([
@@ -166,11 +198,19 @@
             // (preserveCity); the map UI collapses both to 'government'.
             return options.preserveCity === true ? 'city' : 'government';
         }
-        if (includesAnyKeyword(normalizedLabel, GOVERNMENT_KEYWORDS)) {
-            return 'government';
-        }
         // Any city or municipality, not just the handful spelled out in GOVERNMENT_KEYWORDS.
         if (PUBLIC_BODY_PATTERNS.some(pattern => pattern.test(normalizedLabel))) {
+            return 'government';
+        }
+        if (US_PUBLIC_BODY_PATTERNS.some(pattern => pattern.test(normalizedLabel))) {
+            return 'government';
+        }
+        // A recognised U.S. legal suffix is stronger evidence than a loose Croatian keyword such
+        // as "HOLDING" that can appear inside an unrelated company name.
+        if (US_COMPANY_SUFFIX.test(normalizedLabel)) {
+            return 'company';
+        }
+        if (includesAnyKeyword(normalizedLabel, GOVERNMENT_KEYWORDS)) {
             return 'government';
         }
         if (includesAnyKeyword(normalizedLabel, INSTITUTION_KEYWORDS)) {
@@ -188,12 +228,14 @@
 
     global.normalizeOwnerLabel = normalizeOwnerLabel;
     global.normalizeOwnerLabelLoose = normalizeOwnerLabelLoose;
+    global.normalizeCanonicalOwnerType = normalizeCanonicalOwnerType;
     global.isCityOwnedLabel = isCityOwnedLabel;
     global.classifyOwnershipLabel = classifyOwnershipLabel;
     global.getOwnershipType = getOwnershipType;
     global.ParcelsOwnership = Object.assign({}, global.ParcelsOwnership, {
         normalizeOwnerLabel,
         normalizeOwnerLabelLoose,
+        normalizeCanonicalOwnerType,
         isCityOwnedLabel,
         classifyOwnershipLabel,
         getOwnershipType
@@ -208,6 +250,7 @@
             COMPANY_MARKERS,
             normalizeOwnerLabel,
             normalizeOwnerLabelLoose,
+            normalizeCanonicalOwnerType,
             isCityOwnedLabel,
             classifyOwnershipLabel,
             getOwnershipType

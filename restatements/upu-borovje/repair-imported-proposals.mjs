@@ -66,7 +66,6 @@ const READJUSTMENT_ID = 633;          // the plan's ground: 82 imported parts, a
 const MEMBER_IDS = [634, 635, 636, 637, 638, 639, 640, 641, 642, 643, 644, 645, 646, 647, 648, 649, 650];
 const ROAD_IDS = [651, 699];          // the street network, split into two connected stretches
 const ALL_IDS = [READJUSTMENT_ID, ...MEMBER_IDS, ...ROAD_IDS];
-const COORDINATED_PLAN_ID = 'upu-borovje';
 
 // Same floor as plan-order.js: below this an intersection is shared-border noise, not a claim.
 const MIN_INTERSECTION_M2 = 0.25;
@@ -225,21 +224,17 @@ async function main() {
             return;
         }
 
-        // All twenty rows are one pre-tessellated package: the readjustment owns the non-road
-        // plots, the two road records own the complementary bands, and content follows both. The
-        // marker is generic application metadata — no Borovje id is hard-coded in the runtime.
         // Remove the readjustment's old apply-time pool geometry too: its authored footprint is its
         // plot list, while the omitted street bands intentionally belong to sibling records.
-        const coordinationWrites = [];
+        const readjustmentGeometryWrites = [];
         for (const row of rows) {
             const data = row.effective;
-            let changed = data.coordinatedPlanId !== COORDINATED_PLAN_ID;
-            data.coordinatedPlanId = COORDINATED_PLAN_ID;
+            let changed = false;
             if (row.id === READJUSTMENT_ID && data.geometry && /Polygon/.test(String(data.geometry.type || ''))) {
                 delete data.geometry;
                 changed = true;
             }
-            if (changed) coordinationWrites.push({ id: row.id });
+            if (changed) readjustmentGeometryWrites.push({ id: row.id });
         }
 
         // The plan's own ground, and the bodies standing on it, as PostGIS geometry in 3765.
@@ -837,7 +832,7 @@ async function main() {
         if (!apply) {
             console.log(`\nDRY RUN — ${roadWrites.length} corridor(s), ${bodyWrites.length} neighbour(s), `
                 + `${anchorWrites.length} anchor rewrite(s), ${renameWrites.length} rename(s), `
-                + `${coordinationWrites.length} coordinated-package stamp(s)`
+                + `${readjustmentGeometryWrites.length} readjustment geometry repair(s)`
                 + `${restored ? ', plan restored' : ''}${reparcelled ? ', plots rebuilt' : ''}. Re-run with --apply.`);
             await client.query('ROLLBACK');
             return;
@@ -857,7 +852,7 @@ async function main() {
         const touched = Array.from(new Set([
             ...anchorWrites.map(w => w.id), ...roadWrites.map(w => w.id),
             ...bodyWrites.map(w => w.id), ...renameWrites.map(w => w.id),
-            ...coordinationWrites.map(w => w.id),
+            ...readjustmentGeometryWrites.map(w => w.id),
             ...(restored || reparcelled ? [READJUSTMENT_ID] : [])
         ]));
         for (const id of touched) {

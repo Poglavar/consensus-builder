@@ -178,6 +178,7 @@
             : [];
         return {
             name: proposal?.title || proposal?.name || proposal?.proposalName || '',
+            ...(proposal?.titleOrigin === 'generated' || proposal?.titleOrigin === 'user' ? { titleOrigin: proposal.titleOrigin } : {}),
             description: proposal?.description || '',
             // Draft selection is transient editor state. Keep the immutable authored declaration
             // separately so an untouched edit does not need the live map to rediscover it.

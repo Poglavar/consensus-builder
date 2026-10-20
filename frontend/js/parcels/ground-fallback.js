@@ -1,18 +1,19 @@
 // What happens when the official parcel register cannot be loaded.
 //
 // A visitor arriving somewhere first sees the official register attempted (fetch.js). When that
-// attempt fails, or the city has no register on record at all, this module offers four ways on:
+// attempt fails, or the city has no register on record at all, this module offers five ways on:
 //
 //   1. Retry        — only for a failure that reads as temporary (network, 5xx, timeout).
-//   2. Own link     — a GeoJSON / OGC API Features / ArcGIS FeatureServer URL the visitor knows,
+//   2. No parcels   — keeps the linked plan and derives designs from their saved geometry.
+//   3. Own link     — a GeoJSON / OGC API Features / ArcGIS FeatureServer URL the visitor knows,
 //                     validated on a bounded sample before it is trusted for the viewport.
-//   3. Imagery      — best-effort inference of parcel boundaries from satellite imagery, saved as
+//   4. Imagery      — best-effort inference of parcel boundaries from satellite imagery, saved as
 //                     a local estimated parcel source. OCR is only the recovery option's name.
-//   4. Schelling    — shows the Schelling plan layer (js/schelling/): streets, blocks and plots
+//   5. Schelling    — shows the Schelling plan layer (js/schelling/): streets, blocks and plots
 //                     everyone can derive independently, drawn over whatever ground is here. It is
 //                     not a parcel source; what is proposed from it stands on open ground.
 //
-// Option 2 becomes a parcel SOURCE for the city for this browser session: fetch.js asks
+// Option 3 becomes a parcel SOURCE for the city for this browser session: fetch.js asks
 // `activeSource(city)` before it talks to the network, so the repository, fabric and presenter see
 // these parcels the way they see cadastral ones. Imagery estimates use the same source boundary,
 // with their polygons retained in localStorage. Every feature keeps its source provenance.
@@ -23,6 +24,8 @@
     'use strict';
 
     const SESSION_KEY_PREFIX = 'cb_ground_source:';
+    const WITHOUT_PARCELS_KEY_PREFIX = 'cb_without_parcels:';
+    const withoutParcels = new Set();
     const DISMISSED_KEY_PREFIX = 'cb_ground_fallback_dismissed:';
     const SAMPLE_FEATURE_LIMIT = 2000;
 
@@ -153,9 +156,30 @@
         return sources.get(String(cityId || currentCityId())) || null;
     }
 
+    function isWithoutParcels(cityId) {
+        const city = String(cityId || currentCityId());
+        return withoutParcels.has(city) || readSession(WITHOUT_PARCELS_KEY_PREFIX + city) === '1';
+    }
+
+    function clearWithoutParcels(cityId) {
+        const city = String(cityId || currentCityId());
+        withoutParcels.delete(city);
+        writeSession(WITHOUT_PARCELS_KEY_PREFIX + city, null);
+    }
+
+    function continueWithoutParcels(cityId) {
+        const city = String(cityId || currentCityId());
+        withoutParcels.add(city);
+        writeSession(WITHOUT_PARCELS_KEY_PREFIX + city, '1');
+        // Reload with the same route: outstanding register requests cannot seed late ground into
+        // a composition that the visitor explicitly chose to view without that register.
+        reloadWithSource();
+    }
+
     function installSource(cityId, source) {
         const city = String(cityId || currentCityId());
         if (!source || typeof source.fetchCell !== 'function') throw new TypeError('A ground source needs fetchCell().');
+        clearWithoutParcels(city);
         if (source.kind !== 'estimated-local' && global.EstimatedParcelSource) {
             global.EstimatedParcelSource.createStore(global.localStorage).setActive(city, false);
         }
@@ -424,7 +448,7 @@
         const verdict = classify(detail.error, { parcelSettings: cityParcelSettings(city) });
         const context = { ...detail, city, verdict, explicit: detail.explicit === true };
         failures.set(city, context);
-        if (!city || sources.has(city) || openDialog || isDismissed(city)) return false;
+        if (!city || isWithoutParcels(city) || sources.has(city) || openDialog || isDismissed(city)) return false;
         presentDialog(context);
         return true;
     }
@@ -576,9 +600,21 @@
                         close();
                         status(t('groundFallback.status.retrying', 'Retrying the parcel register…'));
                         resetDismissal(city);
+                        if (isWithoutParcels(city)) {
+                            clearWithoutParcels(city);
+                            reloadWithSource();
+                            return;
+                        }
                         await refetchViewport();
                     }));
             }
+            list.appendChild(option('without-parcels', 'fa-layer-group',
+                t('groundFallback.options.withoutParcels.title', 'Continue without parcels'),
+                t('groundFallback.options.withoutParcels.desc', 'View and apply designs from their geometry. Parcel boundaries and ownership will not be available.'),
+                () => {
+                    close();
+                    continueWithoutParcels(city);
+                }));
             list.appendChild(option('url', 'fa-link',
                 t('groundFallback.options.url.title', 'Enter your own link to a register'),
                 t('groundFallback.options.url.desc', 'A GeoJSON file, an OGC API Features collection, or an ArcGIS FeatureServer layer with parcel polygons.'),
@@ -704,6 +740,9 @@
         urlForBox,
         validateFeatureCollection,
         activeSource,
+        isWithoutParcels,
+        clearWithoutParcels,
+        continueWithoutParcels,
         installSource,
         clearSource,
         reloadWithSource,

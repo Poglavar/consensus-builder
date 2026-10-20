@@ -133,6 +133,13 @@
     function createCadastralParcelRepository(dependencies = {}) {
         const root = dependencies.root || defaultRoot || {};
         const source = dependencies.transport || null;
+        const health = root.ParcelSourceHealth || (typeof require === 'function' ? require('./source-health.js') : null);
+        const timedTransport = operation => {
+            const configured = root.PARCEL_LOAD_TIMEOUT_MS;
+            const timeoutMs = typeof configured === 'number' && Number.isFinite(configured) && configured > 0
+                ? configured : 30000;
+            return health.withDeadline(operation, { timeoutMs, code: 'cadastral-ground-unavailable' });
+        };
         const featureStores = new Map();
         const absentStores = new Map();
         const idInFlight = new Map();
@@ -358,14 +365,15 @@
                 if (typeof fetchByIds !== 'function') throw new Error('Cadastral id transport is unavailable.');
                 emit(options.onProgress, { phase: 'ground-load-ids', done: 0, total: requestedIds.length });
                 ownRequest = Promise.resolve()
-                    .then(() => fetchByIds(requestedIds, {
+                    .then(() => timedTransport(signal => fetchByIds(requestedIds, {
                         city,
+                        signal,
                         onProgress: progress => emit(options.onProgress, {
                             phase: 'ground-load-ids-progress',
                             done: typeof progress === 'number' ? progress : progress && progress.done,
                             total: requestedIds.length
                         })
-                    }))
+                    })))
                     .then(result => acceptTransportResult(result, {
                         city,
                         requestedIds,
@@ -533,10 +541,11 @@
                     if (typeof fetchUnderGeometry !== 'function') {
                         throw new Error('Cadastral footprint transport is unavailable.');
                     }
-                    return fetchUnderGeometry(geom, {
-                    city,
-                    parcelsOnly: options.parcelsOnly !== false
-                    });
+                    return timedTransport(signal => fetchUnderGeometry(geom, {
+                        city,
+                        signal,
+                        parcelsOnly: options.parcelsOnly !== false
+                    }));
                 })
                 .then(async outcome => {
                     if (outcome && outcome.cached) {

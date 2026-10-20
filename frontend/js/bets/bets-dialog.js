@@ -357,11 +357,11 @@
         const image = absoluteImage(row.screenshotUrl);
         const beforeImage = absoluteImage(row.screenshotBeforeUrl);
         if (image) {
-            const img = el('img', 'bets-dialog__thumb');
+            const img = el('img', 'bets-dialog__thumb' + (row.kind === 'plan' ? ' bets-dialog__thumb--plan' : ''));
             img.src = image; img.alt = ''; img.loading = 'lazy';
             // The same ground without the proposal under a divider (dividers.md, M3), once rendered.
             if (beforeImage && root.__MapBeforeAfter && typeof root.__MapBeforeAfter.attachDivider === 'function') {
-                const compare = el('div', 'bets-dialog__compare');
+                const compare = el('div', 'bets-dialog__compare' + (row.kind === 'plan' ? ' bets-dialog__compare--plan' : ''));
                 const before = el('img', 'bets-dialog__thumb map-compare__before');
                 before.src = beforeImage; before.alt = ''; before.loading = 'lazy';
                 compare.append(img, before);

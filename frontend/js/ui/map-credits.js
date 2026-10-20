@@ -67,7 +67,10 @@
         if (buildings.source === 'overture-tiles' || buildings.fallback === 'overture-tiles') credits.push(OVERTURE_BUILDINGS_CREDIT);
         return credits.filter(Boolean);
     }
-    function providerCredits(key) { return providers[key] || providers.openstreetmap; }
+    function providerCredits(key, source = null) {
+        if (key === 'imagery' && source) return [[source.attribution || source.name, safeUrl(source.endpoint)]];
+        return providers[key] || providers.openstreetmap;
+    }
     // The source behind the parcels in view as display lines ({ text, label?, url?, html?, strong? }),
     // built without the DOM. latest comes from ParcelSourceInView; info is the catalog's public
     // description of a browser source; credits are the configured city's attribution, used for
@@ -163,7 +166,6 @@
             renderGeneration += 1;
             target.replaceChildren();
             const city = root.CityConfigManager.getCurrentCityConfig();
-            const basemap = root.BasemapManager.getCurrentBasemapKey();
             function row(label, credits) {
                 const title = doc.createElement('dt');
                 title.textContent = label;
@@ -174,7 +176,7 @@
                 });
                 target.append(title, body);
             }
-            row(tr('basemap', 'Map'), [root.BasemapManager.BASEMAPS[basemap].options.attribution]);
+            row(tr('basemap', 'Map'), [root.BasemapManager.getCurrentAttribution()]);
             const latest = root.ParcelSourceInView?.latest?.();
             if (latest) renderInView(latest, city);
             else {
@@ -198,7 +200,7 @@
         function renderControl() {
             if (!container) return;
             container.replaceChildren();
-            providerCredits(root.BasemapManager.getCurrentBasemapKey()).forEach(([name, url]) => {
+            providerCredits(root.BasemapManager.getCurrentBasemapKey(), root.BasemapManager.getCurrentSource()).forEach(([name, url]) => {
                 container.appendChild(makeLink(name, url, true));
             });
             renderDetails();

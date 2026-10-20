@@ -3,6 +3,7 @@ import vm from 'node:vm';
 import { createRequire } from 'node:module';
 import { describe, expect, it, vi } from 'vitest';
 
+const SourceHealth = createRequire(import.meta.url)('../../frontend/js/parcels/source-health.js');
 const displayState = createRequire(import.meta.url)('../../frontend/js/proposals/display-state.js');
 const sharedLinkCopies = createRequire(import.meta.url)('../../frontend/js/proposals/shared-link-copies.js');
 const proposalOrigin = createRequire(import.meta.url)('../../frontend/js/proposals/origin.js');
@@ -37,7 +38,7 @@ function loadSharedImportHelpers(overrides = {}) {
     };
     vm.createContext(context);
     vm.runInContext(
-        `${source}\nthis.sharedImportHelpersForTest = { importAndApplySharedProposal, materializeQueuedSharedProposals, fetchSharedProposalBatch, selectSharedPlanFocusId, sharedPlanProgressView, sharedCorridorCountPhrase, refreshSharedFloorPlanModels };`,
+        `${source}\nthis.sharedImportHelpersForTest = { importAndApplySharedProposal, materializeQueuedSharedProposals, fetchSharedProposalBatch, selectSharedPlanFocusId, sharedPlanProgressView, sharedCorridorCountPhrase, refreshSharedFloorPlanModels, fetchSharedProposalResponse, namedPlanSnapshotError, verifyNamedPlanSnapshot, handleSharedPlanRoute };`,
         context
     );
     return context.sharedImportHelpersForTest;
@@ -148,6 +149,93 @@ describe('shared-plan focus selection', () => {
         const { selectSharedPlanFocusId } = loadSharedImportHelpers();
 
         expect(selectSharedPlanFocusId([], [], [], () => 99)).toBeNull();
+    });
+});
+
+describe('named-plan apply snapshot', () => {
+    const expected = {
+        slug: 'harbor',
+        planHash: 'c'.repeat(64),
+        proposalRowIds: ['42'],
+        publicationApiBase: PUBLICATION_API_BASE
+    };
+    const current = {
+        slug: 'harbor',
+        planHash: 'c'.repeat(64),
+        proposalRowIds: ['42'],
+        members: [{ proposalRowId: '42', changed: false }]
+    };
+
+    it('rechecks the current API plan after member fetch and accepts only the committed unchanged set', async () => {
+        const fetch = vi.fn(async () => ({ ok: true, json: async () => current }));
+        const { verifyNamedPlanSnapshot } = loadSharedImportHelpers({ fetch });
+
+        expect(await verifyNamedPlanSnapshot(expected, ['42'], PUBLICATION_API_BASE)).toBeNull();
+        expect(fetch).toHaveBeenCalledOnce();
+        expect(fetch.mock.calls[0][0]).toBe(`${PUBLICATION_API_BASE}/plans/harbor`);
+    });
+
+    it.each([
+        ['changed member', { ...current, members: [{ proposalRowId: '42', changed: true }] }],
+        ['missing member', { ...current, members: [{ proposalRowId: '42', changed: true, missing: true }] }],
+        ['changed membership', { ...current, proposalRowIds: ['43'], members: [{ proposalRowId: '43', changed: false }] }]
+    ])('refuses a latest plan with %s', async (_reason, latest) => {
+        const fetch = vi.fn(async () => ({ ok: true, json: async () => latest }));
+        const { verifyNamedPlanSnapshot } = loadSharedImportHelpers({ fetch });
+
+        expect(await verifyNamedPlanSnapshot(expected, ['42'], PUBLICATION_API_BASE)).toMatch(/changed|missing/);
+    });
+
+    it('refuses to verify against a different publication API', async () => {
+        const fetch = vi.fn();
+        const { verifyNamedPlanSnapshot } = loadSharedImportHelpers({ fetch });
+
+        expect(await verifyNamedPlanSnapshot(expected, ['42'], 'https://other.example.test/api'))
+            .toBe('publication API changed');
+        expect(fetch).not.toHaveBeenCalled();
+    });
+
+    it('blocks the real plan route before importing when one batch member is absent', async () => {
+        const proposalStorage = { importProposal: vi.fn(), getAllProposals: vi.fn(() => []) };
+        const ProposalManager = { applyProposalPlan: vi.fn() };
+        const fetch = vi.fn(async () => ({
+            ok: true,
+            status: 200,
+            json: async () => ({ items: [{ id: '42', proposal: { id: '42', proposalId: 'authored-42' } }] })
+        }));
+        const showEphemeralMessage = vi.fn();
+        const hideProposalLoadOverlay = vi.fn();
+        const translate = (_key, fallback, params = {}) => String(fallback).replace(/\{\{(\w+)\}\}/g,
+            (_match, name) => Object.prototype.hasOwnProperty.call(params, name) ? params[name] : _match);
+        const { handleSharedPlanRoute } = loadSharedImportHelpers({
+            fetch,
+            map: {},
+            resolveBackendBaseUrl: () => PUBLICATION_API_BASE,
+            getProposalI18nHelper: () => translate,
+            getShareI18nHelper: () => translate,
+            releaseDeepLinkParcelFetch: vi.fn(),
+            ProposalManager,
+            showProposalLoadOverlay: vi.fn(),
+            hideProposalLoadOverlay,
+            showEphemeralMessage,
+            proposalStorage,
+            window: { shouldSkipWelcomeForProposalLink: () => true }
+        });
+
+        const result = await handleSharedPlanRoute(['42', '43'], 0, {
+            explicitApply: true,
+            namedPlan: {
+                ...expected,
+                proposalRowIds: ['42', '43']
+            }
+        });
+
+        expect(result).toMatchObject({ blocked: true, applied: [], failed: ['42', '43'] });
+        expect(result.reason).toMatch(/batch is incomplete/);
+        expect(proposalStorage.importProposal).not.toHaveBeenCalled();
+        expect(ProposalManager.applyProposalPlan).not.toHaveBeenCalled();
+        expect(hideProposalLoadOverlay).toHaveBeenCalledOnce();
+        expect(showEphemeralMessage).toHaveBeenCalledOnce();
     });
 });
 
@@ -330,6 +418,51 @@ describe('shared-plan import boundary', () => {
         expect(result.supported).toBe(false);
         expect(result.records.size).toBe(0);
         expect(result.requests).toBe(1);
+    });
+
+    it('loads large named plans in ordered batches of at most 1000 unique ids', async () => {
+        const ids = Array.from({ length: 1121 }, (_, index) => `id-${index}`);
+        const fetch = vi.fn(async (_url, options) => {
+            const chunk = JSON.parse(options.body).ids;
+            return { ok: true, json: async () => ({ items: chunk.map(id => ({ id, proposal: { id: String(Number(id.slice(3)) + 1), proposalId: id } })) }) };
+        });
+        const { fetchSharedProposalBatch } = loadSharedImportHelpers({ fetch });
+
+        const result = await fetchSharedProposalBatch([...ids, ids[0], ids[1120]], 'http://api.test');
+
+        expect(fetch).toHaveBeenCalledTimes(2);
+        expect(JSON.parse(fetch.mock.calls[0][1].body).ids).toHaveLength(1000);
+        expect(JSON.parse(fetch.mock.calls[1][1].body).ids).toEqual(ids.slice(1000));
+        expect(result).toMatchObject({ supported: true, requests: 2 });
+        expect(result.records.size).toBe(1121);
+    });
+
+    it('keeps first-chunk results and falls back when a later batch is malformed or unavailable', async () => {
+        const ids = Array.from({ length: 1001 }, (_, index) => `id-${index}`);
+        const fetch = vi.fn()
+            .mockResolvedValueOnce({ ok: true, json: async () => ({ items: [{ id: ids[0], proposal: { id: '1', proposalId: ids[0] } }] }) })
+            .mockResolvedValueOnce({ ok: true, json: async () => ({ nope: [] }) });
+        const { fetchSharedProposalBatch } = loadSharedImportHelpers({ fetch });
+
+        const result = await fetchSharedProposalBatch(ids, 'http://api.test');
+
+        expect(result).toMatchObject({ supported: false, requests: 2 });
+        expect(result.records.get(ids[0])).toMatchObject({ proposalId: ids[0], serverProposalId: '1', publicationApiBase: 'http://api.test' });
+        expect(result.records.size).toBe(1);
+    });
+
+    it('merges missing and serialization errors from every batch', async () => {
+        const ids = Array.from({ length: 1001 }, (_, index) => `id-${index}`);
+        const fetch = vi.fn()
+            .mockResolvedValueOnce({ ok: true, json: async () => ({ items: [{ id: ids[0], proposal: null, code: 'serialization-error', detail: 'old record' }] }) })
+            .mockResolvedValueOnce({ ok: true, json: async () => ({ items: [{ id: ids[1000], proposal: null }] }) });
+        const { fetchSharedProposalBatch } = loadSharedImportHelpers({ fetch, getShareI18nHelper: () => (_key, fallback) => fallback });
+
+        const result = await fetchSharedProposalBatch(ids, 'http://api.test');
+
+        expect(result).toMatchObject({ supported: false, requests: 2 });
+        expect([...result.missing]).toEqual([ids[0], ids[1000]]);
+        expect(result.errors.get(ids[0])).toContain('old record');
     });
 
     it('rejects a batch proposal without its own publication row ID', async () => {
@@ -680,23 +813,23 @@ describe('shared-plan import boundary', () => {
         });
     });
 
-    it('materialises a coordinated readjustment before its reserved road bands', async () => {
+    it('uses the ordinary corridor-before-readjustment order regardless of legacy metadata', async () => {
         const events = [];
         const applyProposal = vi.fn(async id => { events.push(id); return true; });
         const materializeCorridorBatch = vi.fn(async ids => {
             events.push(`roads:${ids.join('+')}`);
             return { ok: true, appliedIds: ids, failedIds: [] };
         });
-        const coordinatedPlanId = 'plan-one';
+        const validateSharedProposalGround = vi.fn(() => ({ ok: true }));
         const records = new Map([
-            ['plots', { goal: 'reparcellization', coordinatedPlanId }],
-            ['park', { goal: 'park', coordinatedPlanId }],
-            ['building', { goal: 'single', buildingProposal: {}, coordinatedPlanId }],
-            ['road-a', { goal: 'road-track', coordinatedPlanId }],
-            ['road-b', { roadProposal: { definition: {} }, coordinatedPlanId }]
+            ['plots', { goal: 'reparcellization', coordinatedPlanId: 'legacy-plan' }],
+            ['park', { goal: 'park', coordinatedPlanId: 'legacy-plan' }],
+            ['building', { goal: 'single', buildingProposal: {}, coordinatedPlanId: 'legacy-plan' }],
+            ['road-a', { goal: 'road-track', coordinatedPlanId: 'legacy-plan' }],
+            ['road-b', { roadProposal: { definition: {} }, coordinatedPlanId: 'legacy-plan' }]
         ]);
         const { materializeQueuedSharedProposals } = loadSharedImportHelpers({
-            ProposalManager: { applyProposal, materializeCorridorBatch },
+            ProposalManager: { applyProposal, materializeCorridorBatch, validateSharedProposalGround },
             proposalStorage: { getProposal: id => records.get(id) || null },
             applyRoute: {
                 normalizeGoalKey: goal => goal,
@@ -708,14 +841,16 @@ describe('shared-plan import boundary', () => {
             'park', 'road-a', 'building', 'plots', 'road-b'
         ]);
 
-        expect(events).toEqual(['plots', 'roads:road-a+road-b', 'building', 'park']);
+        expect(events).toEqual(['roads:road-a+road-b', 'plots', 'building', 'park']);
+        expect(validateSharedProposalGround.mock.calls.map(([id]) => id))
+            .toEqual(['road-a', 'road-b', 'plots', 'building', 'park']);
         expect(applyProposal.mock.calls).toEqual([
             ['plots', { replay: true, silent: true, deferPresentation: true }],
             ['building', { replay: true, silent: true, deferPresentation: true }],
             ['park', { replay: true, silent: true, deferPresentation: true }]
         ]);
         expect(result).toEqual({
-            appliedIds: ['plots', 'road-a', 'road-b', 'building', 'park'],
+            appliedIds: ['road-a', 'road-b', 'plots', 'building', 'park'],
             failedIds: []
         });
     });
@@ -782,5 +917,35 @@ describe('shared import of a cancelled proposal', () => {
 
         expect(followServerLifecycle).toHaveBeenCalledWith(local, 'Cancelled');
         expect(result).toMatchObject({ applied: false, cancelled: true, reason: 'Cancelled' });
+    });
+});
+
+describe('shared response deadline', () => {
+    it('bounds the complete plan response body rather than waiting indefinitely', async () => {
+        vi.useFakeTimers();
+        try {
+            const fetch = vi.fn(async () => ({ ok: true, status: 200, json: () => new Promise(() => {}) }));
+            const { fetchSharedProposalResponse } = loadSharedImportHelpers({ fetch,
+                window: { ParcelSourceHealth: SourceHealth, PARCEL_LOAD_TIMEOUT_MS: 10 } });
+            const pending = fetchSharedProposalResponse('/plans/test');
+            const rejected = expect(pending).rejects.toMatchObject({ code: 'proposal-load-timeout', status: 504 });
+            await vi.advanceTimersByTimeAsync(10);
+            await rejected;
+            expect(fetch.mock.calls[0][1].signal.aborted).toBe(true);
+        } finally { vi.useRealTimers(); }
+    });
+
+    it('does not multiply a hung batch into individual proposal requests', async () => {
+        vi.useFakeTimers();
+        try {
+            const fetch = vi.fn(() => new Promise(() => {}));
+            const { fetchSharedProposalBatch } = loadSharedImportHelpers({ fetch,
+                window: { ParcelSourceHealth: SourceHealth, PARCEL_LOAD_TIMEOUT_MS: 10 } });
+            const pending = fetchSharedProposalBatch(['1', '2'], 'https://api.example');
+            const rejected = expect(pending).rejects.toMatchObject({ code: 'proposal-load-timeout' });
+            await vi.advanceTimersByTimeAsync(10);
+            await rejected;
+            expect(fetch).toHaveBeenCalledOnce();
+        } finally { vi.useRealTimers(); }
     });
 });
