@@ -161,6 +161,8 @@
                 }
             }
         });
+        // Opening the imagery option starts one estimate; subsequent changes remain explicit.
+        if (state.area) start.click();
     }
     global.ParcelEstimates = { open, close, isOpen: () => Boolean(active) };
     global.addEventListener('cityChanged', close);

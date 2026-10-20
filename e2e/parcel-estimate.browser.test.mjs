@@ -48,10 +48,11 @@ test('parcel estimate recovery creates, exports, edits, cancels and closes an il
     const actions=panel.locator('.parcel-estimate-actions'),collapse=panel.getByRole('button',{name:'Collapse controls'});await collapse.click();assert.equal(await actions.isVisible(),false);await panel.getByRole('button',{name:'Show controls'}).click();assert.equal(await actions.isVisible(),true);
     assert.equal(await page.locator('#parcel-estimate-size').inputValue(),'viewport');
     assert.deepEqual(await page.evaluate(()=>({bounds:map.getBounds().toBBoxString(),zoom:map.getZoom()})),beforeOpen);
-    await page.evaluate(()=>map.panBy([30,20],{animate:false}));
     const requestedBounds=await page.evaluate(()=>map.getBounds().toBBoxString().split(',').map(Number));
-    const generate=panel.getByRole('button',{name:'Generate estimates'});await generate.click();
+    const generate=panel.getByRole('button',{name:'Generate estimates'});
+    // Opening the recovery choice must create estimates without pressing Generate.
     await page.waitForFunction(()=>document.querySelectorAll('.parcel-estimate-plot').length>0,{timeout:60000});
+    assert.equal(contextCalls,1);
     const paths=page.locator('.parcel-estimate-plot');assert(await paths.count()>0);assert(await paths.first().getAttribute('d'));
     assert.equal(await paths.first().evaluate(el=>getComputedStyle(el).stroke),'rgb(181, 247, 178)');
     const downloadGeo=async()=>{const pending=page.waitForEvent('download');await panel.getByRole('button',{name:'Export GeoJSON'}).click();const dl=await pending;const file=await dl.path();return JSON.parse(await readFile(file,'utf8'))};
@@ -59,6 +60,8 @@ test('parcel estimate recovery creates, exports, edits, cancels and closes an il
     assert.equal(exported.demo.raster.height,512);assert(exported.demo.raster.width<512);
     assert.deepEqual(exported.demo.source_features.requested_bounds,requestedBounds);
     assert.equal(exported.demo.source_image.hash_format,`RGBA8 ${exported.demo.raster.width}x512`);
+    await page.evaluate(async()=>{map.panBy([30,20],{animate:false});await ParcelEstimates.open()});
+    assert.equal(contextCalls,1);
     await panel.getByRole('button',{name:'Remove a plot'}).click();await paths.first().dispatchEvent('click');
     const afterRemove=await downloadGeo();assert.equal(afterRemove.features.length,exported.features.length-1);assert.equal(afterRemove.demo.removed_plot_ids.length,1);
     const remaining=afterRemove.features.length,remainingIds=afterRemove.features.map(f=>f.id).sort();await generate.click();await secondContextStarted;await panel.getByRole('button',{name:'Cancel'}).click();
@@ -79,6 +82,10 @@ test('parcel estimate recovery creates, exports, edits, cancels and closes an il
     await page.evaluate(()=>map.setZoom(18,{animate:false}));assert.equal(await generate.isEnabled(),true);
     assert.equal(await page.locator('.parcel-estimate-status').textContent().then(t=>t.includes('illustrative plots')),true);
     await panel.getByRole('button',{name:'Close estimates'}).click();assert.equal(await page.locator('.parcel-estimate-panel').count(),0);assert.equal(await page.locator('.parcel-estimate-frame').count(),0);assert.equal(await page.locator('body').evaluate(el=>el.classList.contains('parcel-estimate-open')),false);assert.equal(await page.locator('#explore-banner').isVisible(),true);
+    await page.evaluate(async()=>{map.setZoom(14,{animate:false});await ParcelEstimates.open()});
+    assert.equal(contextCalls,4);assert.equal(await generate.isDisabled(),true);
+    await page.getByText('Zoom in to an area no wider or taller than 2 km, or choose a fixed area size.').waitFor();
+    await panel.getByRole('button',{name:'Close estimates'}).click();
     assert.deepEqual(errors,[]);
   }finally{releaseContext();if(browser)await browser.close();await close(s)}
 });
