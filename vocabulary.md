@@ -1256,6 +1256,8 @@ No run was stopped. No persistent database schema, stored proposal or chain stat
 
 ## Continuous parcel-source processing
 
+Qualification workspace preparation failures are operational blocks, not failed source qualifications. A partially prepared batch releases its owned workspaces before any model worker starts; qualification remains blocked until the infrastructure problem is resolved.
+
 A **city knowledge record** is either `world-parcels/cities/<WUP code>/failed-urls.json` (a deduplicated list of unsuccessful parcel-source URL attempts, with optional reasons) or `settings.json` (working parcel source descriptors, adapter configuration, and explicit app-city bindings). An unsuccessful attempt never proves that a city has no cadastre. Settings rebuild parcel bindings and source configuration; shared adapter code preserves implementation knowledge. A **pipeline task** owns temporary research, review, or qualification inputs, logs and checks. Its completed result is reduced to city knowledge and small operational queue progress; its worktree and evidence are then deleted. Only active work may retain recovery files. The shared runtime keeps the current code generation and any interrupted transaction's rollback generation. **Intentional contract break, 2026-10-19:** permanent research packets, shared findings, snapshot sidecars, qualification histories and admission archives are retired; successful settings and failed URLs replace them. Existing unresolved domain audit findings elsewhere in this document remain open.
 
 ## Manual floor-plan processing

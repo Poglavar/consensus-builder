@@ -171,6 +171,29 @@ class ParallelTests(unittest.TestCase):
         self.assertEqual(self.runner.state["qualificationWorkers"], [])
         self.assertTrue(all(e["qualification"]["status"] == "integrated" for e in self.runner.state["cities"].values()))
 
+    def test_partial_workspace_preparation_failure_releases_slots_and_blocks_qualification(self):
+        workspaces = []
+
+        def prepare(root, state_dir, slot, city, receipt, packet):
+            if slot == 2:
+                raise RuntimeError("qualification worktree path exists without owned metadata")
+            workspace = self.prepare(root, state_dir, slot, city, receipt, packet)
+            workspaces.append(workspace)
+            return workspace
+
+        with patch.object(parallel, "prepare_workspace", side_effect=prepare), \
+                patch.object(parallel, "finish_workspace") as finish, \
+                patch.object(stage, "run_candidate") as qualify:
+            with self.assertRaisesRegex(RuntimeError, "without owned metadata"):
+                parallel.advance_candidates(self.runner, [self.city, {"cityCode": "43"}], self.root)
+
+        qualify.assert_not_called()
+        finish.assert_called_once_with(workspaces[0])
+        self.discard_mock.assert_called_once_with(workspaces[0])
+        self.assertEqual(self.runner._city_entry(self.city)["qualification"]["status"], "pending")
+        self.assertIn("without owned metadata", self.runner.state["adapterStageBlocked"]["reason"])
+        self.assertFalse(parallel.advance_candidates(self.runner, [self.city], self.root))
+
     def test_import_keeps_artifact_names_and_bytes_and_revalidates(self):
         ws, isolation, document = self.isolated()
         result = parallel._import_result(self.runner, self.city, {}, {}, isolation, document)

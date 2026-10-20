@@ -344,22 +344,42 @@ def advance_candidates(runner, cities, cohort_dir):
         workspace_options["base_revision"] = subprocess.check_output(
             ["git", "-C", str(shared_root), "rev-parse", "HEAD"], text=True).strip()
     jobs = []
-    for slot, (city, receipt, packet, digest) in enumerate(selected, 1):
-        workspace = prepare_workspace(runner.root, runner.state_dir, slot, city, receipt, packet, **workspace_options)
-        _, parent_attempt = stage._next_attempt(stage._stage_city_root(runner.state_dir, str(city["cityCode"])))
-        args = copy.copy(runner.args)
-        args.repo_root, args.state_dir = workspace["root"], workspace["stateDir"]
-        child = type(runner)(args)
-        child.models, child.codex_env = copy.deepcopy(runner.models), dict(runner.codex_env)
-        child.qualification_attempt_name = parent_attempt.name
-        result_path = runner.state_dir / "qualification-workers" / f"{workspace['runId']}.json"
-        isolation = {"workspace": stage._jsonable(workspace), "runId": workspace["runId"],
-                     "parentAttempt": str(parent_attempt), "resultPath": str(result_path),
-                     "baseBackendAdapters": stage._artifact_hashes(workspace["root"], parent_attempt)["backendAdapters"]}
-        runner._city_entry(city)["qualification"] = {"status": "running", "startedAt": now(),
-                                                     "receiptSha256": digest, "isolation": isolation}
-        jobs.append((child, city, receipt, packet, digest, workspace, isolation))
+    prepared = []
+    try:
+        for slot, (city, receipt, packet, digest) in enumerate(selected, 1):
+            workspace = prepare_workspace(runner.root, runner.state_dir, slot, city, receipt, packet, **workspace_options)
+            prepared.append((city, digest, workspace))
+            _, parent_attempt = stage._next_attempt(stage._stage_city_root(runner.state_dir, str(city["cityCode"])))
+            args = copy.copy(runner.args)
+            args.repo_root, args.state_dir = workspace["root"], workspace["stateDir"]
+            child = type(runner)(args)
+            child.models, child.codex_env = copy.deepcopy(runner.models), dict(runner.codex_env)
+            child.qualification_attempt_name = parent_attempt.name
+            result_path = runner.state_dir / "qualification-workers" / f"{workspace['runId']}.json"
+            isolation = {"workspace": stage._jsonable(workspace), "runId": workspace["runId"],
+                         "parentAttempt": str(parent_attempt), "resultPath": str(result_path),
+                         "baseBackendAdapters": stage._artifact_hashes(workspace["root"], parent_attempt)["backendAdapters"]}
+            runner._city_entry(city)["qualification"] = {"status": "running", "startedAt": now(),
+                                                         "receiptSha256": digest, "isolation": isolation}
+            jobs.append((child, city, receipt, packet, digest, workspace, isolation))
+            runner.save_state()
+    except Exception as exc:
+        # No model workers have started. Release every slot this batch prepared;
+        # an infrastructure failure must not become a failed source qualification.
+        runner.state["adapterStageBlocked"] = {"cityCode": str(city["cityCode"]),
+            "reason": f"Qualification workspace preparation failed: {type(exc).__name__}: {exc}", "at": now()}
+        cleanup_errors = []
+        for prepared_city, digest, workspace in prepared:
+            runner._city_entry(prepared_city)["qualification"] = {"status": "pending", "receiptSha256": digest}
+            try:
+                finish_workspace(workspace)
+                discard_workspace(workspace)
+            except Exception as cleanup_error:
+                cleanup_errors.append(f"slot {workspace['slot']}: {type(cleanup_error).__name__}: {cleanup_error}")
+        if cleanup_errors:
+            runner.state["adapterStageBlocked"]["workspaceCleanupErrors"] = cleanup_errors
         runner.save_state()
+        raise
     runner.qualification_runners = [job[0] for job in jobs]
     runner.state["qualificationWorkers"] = [{"cityCode": str(job[1]["cityCode"]), "slot": index,
                                                "worktree": str(job[0].root)} for index, job in enumerate(jobs, 1)]
