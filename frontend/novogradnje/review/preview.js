@@ -3,10 +3,11 @@
  const data=await fetch('drafts.json',{cache:'no-store'}).then(response=>{if(!response.ok)throw new Error('Draft data unavailable');return response.json();});
  const byId=new Map(data.map(d=>[d.unitId,d]));
  const requested=new URLSearchParams(location.search).get('stan'),draft=byId.get(requested)||data[0];
- for(const item of data){const link=document.createElement('a');link.href='?stan='+encodeURIComponent(item.unitId);link.textContent=item.unitId;link.setAttribute('aria-current',String(item.unitId===draft.unitId));document.getElementById('units').append(link);}
- document.title='Draft '+draft.unitId+' · Novogradnje';
- document.getElementById('unit-title').textContent='Apartment '+draft.unitId;
- document.getElementById('unit-info').textContent=(draft.floor===0?'Ground floor':'Floor '+draft.floor)+' · '+draft.architecture.walls.length+' reconstructed wall segments';
+ for(const item of data){const link=document.createElement('a');link.href='?stan='+encodeURIComponent(item.unitId);link.textContent=item.navLabel||item.label||item.unitId;link.title=item.label||item.unitId;link.setAttribute('aria-current',String(item.unitId===draft.unitId));document.getElementById('units').append(link);}
+ document.title=(draft.label||'Draft '+draft.unitId)+' · Novogradnje';
+ document.getElementById('building-label').textContent=draft.buildingLabel||'PREGLED TLOCRTA';
+ document.getElementById('unit-title').textContent=draft.label||'Apartment '+draft.unitId;
+ document.getElementById('unit-info').textContent=(Number.isFinite(draft.floor)?draft.floor===0?'Ground floor':'Floor '+draft.floor:'Floor not specified')+' · '+draft.architecture.walls.length+' reconstructed wall segments';
  const correction=draft.correction,correctionNotice=document.getElementById('correction-notice');
  if(correction){
   const revision=Number.isInteger(correction.annotationRevision)&&correction.annotationRevision>=0?correction.annotationRevision:null;
