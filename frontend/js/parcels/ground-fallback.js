@@ -660,37 +660,16 @@
             requestAnimationFrame(() => input.focus({ preventScroll: true }));
         }
 
-        // -- option 3: satellite boundary recognition (OCR working name) --
-        function renderOcr() {
-            body.replaceChildren();
-            const section = el('div', 'ground-fallback-section');
-            section.appendChild(el('h4', null, t('groundFallback.options.ocr.title', 'Estimate parcel boundaries from satellite imagery')));
-            const jobs = global.ParcelOcrJobs;
-            if (jobs && typeof jobs.start === 'function') {
-                section.appendChild(el('p', 'ground-fallback-help', t('groundFallback.ocr.help', 'Estimate likely parcel boundaries from satellite imagery of this area. The job runs in the background. Results may be incomplete or wrong and need review; imagery does not establish legal boundaries.')));
-                const actions = el('div', 'ground-fallback-actions');
-                const start = el('button', 'btn btn-primary btn-block', t('groundFallback.ocr.start', 'Start boundary recognition'));
-                start.type = 'button';
-                start.addEventListener('click', async () => {
-                    start.disabled = true;
-                    try {
-                        await jobs.start({ city, bounds: viewBox(), onReady: () => refetchViewport() });
-                        close();
-                    } catch (error) {
-                        start.disabled = false;
-                        section.appendChild(el('p', 'ground-fallback-result is-error', String(error && error.message || error)));
-                    }
-                });
-                actions.appendChild(backButton());
-                actions.appendChild(start);
-                section.appendChild(actions);
-            } else {
-                section.appendChild(el('p', 'ground-fallback-help', t('groundFallback.ocr.unavailable', 'Parcel-boundary recognition from satellite imagery is not available from this screen yet. Any estimates will be best effort and need review; imagery does not establish legal boundaries.')));
-                const actions = el('div', 'ground-fallback-actions');
-                actions.appendChild(backButton());
-                section.appendChild(actions);
+        // -- option 3: temporary illustrative rectangles, separate from cadastral ground --
+        async function renderOcr() {
+            try {
+                await global.ParcelEstimates.open({ city });
+                close();
+            } catch (error) {
+                body.replaceChildren();
+                body.appendChild(el('p', 'ground-fallback-result is-error', String(error.message || error)));
+                body.appendChild(backButton());
             }
-            body.appendChild(section);
         }
 
         renderOptions();

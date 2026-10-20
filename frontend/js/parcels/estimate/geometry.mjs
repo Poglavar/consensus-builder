@@ -14,10 +14,11 @@ export function pointInPolygons([x, y], polygons) {
     return inside;
   });
 }
-export function vectorize(result, sample, settings, edits, { project }) {
-  if (!PROJECTIONS[sample.crs]) throw new Error('This imagery projection is not configured.');
+export function vectorize(result, sample, settings, edits, { project, toWgs84 } = {}) {
+  if (!toWgs84 && !PROJECTIONS[sample.crs]) throw new Error('This imagery projection is not configured.');
   const { width, height, regions, plots } = result, [x0, y0, x1, y1] = sample.bbox;
-  const toWorld = ([x, y]) => project(PROJECTIONS[sample.crs], 'EPSG:4326', [x0 + x / width * (x1 - x0), y1 - y / height * (y1 - y0)]);
+  const transform = toWgs84 || (point => project(PROJECTIONS[sample.crs], 'EPSG:4326', point));
+  const toWorld = ([x, y]) => transform([x0 + x / width * (x1 - x0), y1 - y / height * (y1 - y0)]);
   const byId = new Map(plots.map(plot => [plot.id, plot.polygons]));
   const features = regions.map(region => {
     const polygons = byId.get(region.id);
@@ -31,9 +32,12 @@ export function vectorize(result, sample, settings, edits, { project }) {
   });
   return { type: 'FeatureCollection', features, demo: { schema: 'illustrative-plots-v3', recipe: result.recipe,
     disclaimer: 'Illustrative plots generated from mapped features and visible divisions; not surveyed cadastral boundaries or ownership.',
-    source_image: { sha256: sample.image_sha256, url: sample.source_url, attribution: sample.attribution, license: sample.license },
+    source_image: { sha256: sample.image_sha256, url: sample.source_url, attribution: sample.attribution, license: sample.license,
+      ...(sample.image_hash_format ? { hash_format: sample.image_hash_format, tiles: sample.image_tiles } : {}) },
     source_features: { ...sample.provenance, attribution: sample.osm_attribution, license: sample.osm_license,
       fetched_at: sample.osm_fetched_at, snapshot_at: sample.osm_snapshot_at },
-    raster: { width, height, bbox: sample.bbox, crs: sample.crs }, rectangle_constraints: result.rectangle_constraints, settings, edits,
+    raster: { width, height, bbox: sample.bbox, crs: sample.crs,
+      ...(sample.mercator_scale ? { mercator_scale: sample.mercator_scale, center: sample.center } : {}) },
+    rectangle_constraints: result.rectangle_constraints, settings, edits,
     stats: result.stats, warnings: [...sample.warnings, ...result.warnings] } };
 }

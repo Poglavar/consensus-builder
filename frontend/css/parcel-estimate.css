@@ -1,0 +1,47 @@
+/* Estimate controls reuse fields, actions and notices; map geometry uses these palette roles. */
+.parcel-estimate-panel {
+    width: min(310px, calc(100vw - 85px));
+    max-height: calc(100dvh - var(--map-shell-top-clearance, 58px) - var(--map-shell-bottom-clearance, 60px) - 20px);
+    overflow: auto;
+    box-sizing: border-box;
+    padding: 12px;
+    background: var(--cb-surface, #fff);
+    color: var(--cb-text);
+    border: 1px solid var(--cb-border);
+    border-radius: 10px;
+    box-shadow: var(--cb-shadow);
+}
+.leaflet-top .parcel-estimate-panel { margin-top: var(--map-shell-top-clearance, 58px); }
+.parcel-estimate-panel.is-collapsed > :not(.parcel-estimate-heading) { display: none; }
+/* The recovery choice is now being acted on; its general notice must not cover the controls. */
+body.parcel-estimate-open #explore-banner { display: none; }
+.parcel-estimate-heading, .parcel-estimate-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+.parcel-estimate-heading h3 { margin: 0; font-size: 15px; }
+.parcel-estimate-heading button { font-size: 18px; }
+.parcel-estimate-notice {
+    padding: 8px;
+    background: var(--cb-warning-soft);
+    border-left: 3px solid var(--cb-warning);
+    font-size: 12px;
+}
+.parcel-estimate-help, .parcel-estimate-status { font-size: 12px; line-height: 1.4; }
+.parcel-estimate-field { display: grid; gap: 4px; margin: 10px 0; font-size: 12px; }
+.parcel-estimate-field input, .parcel-estimate-field select { width: 100%; box-sizing: border-box; }
+.parcel-estimate-actions { flex-wrap: wrap; justify-content: flex-start; }
+.parcel-estimate-actions button { min-height: 36px; font-size: 12px; }
+.parcel-estimate-actions [hidden] { display: none; }
+.parcel-estimate-actions [aria-pressed="true"] { background: var(--cb-warning-soft); border-color: var(--cb-warning); }
+.parcel-estimate-attribution { display: flex; flex-wrap: wrap; gap: 6px; font-size: 10px; }
+.parcel-estimate-frame { fill: none; stroke: var(--cb-primary, #467cff); stroke-width: 2; stroke-dasharray: 7 5; }
+.parcel-estimate-plot { fill: var(--cb-warning, #d58a16); fill-opacity: 0.12; stroke: var(--cb-warning, #d58a16); stroke-opacity: 1; stroke-width: 2; }
+.parcel-estimate-plot:hover { fill-opacity: 0.35; }
+.leaflet-parcelEstimateImagery-pane { z-index: 350; pointer-events: none; }
+@media (max-width: 400px) {
+    .parcel-estimate-panel { padding: 9px; }
+    .parcel-estimate-actions button { flex: 1 1 auto; }
+}

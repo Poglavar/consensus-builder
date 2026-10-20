@@ -1,6 +1,6 @@
 // Keep rectangular subdivision off the UI thread; export the displayed geometry.
-import { compute } from './core.mjs';
-import { vectorize } from './geometry.mjs';
+import { compute } from '/estimate/core.mjs';
+import { vectorize } from '/estimate/geometry.mjs';
 let prepared, completed;
 self.onmessage = async ({ data }) => {
   const { id, type } = data;

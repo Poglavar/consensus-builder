@@ -2,7 +2,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createRequire } from 'node:module';
-import { vectorize, PROJECTIONS } from '../public/geometry.mjs';
+import { vectorize, PROJECTIONS } from '../../../../frontend/js/parcels/estimate/geometry.mjs';
 
 const require = createRequire(new URL('../../../../backend/package.json', import.meta.url));
 const { intersection } = require('polygon-clipping');

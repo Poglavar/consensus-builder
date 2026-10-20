@@ -231,7 +231,7 @@ describe('the wiring', () => {
         });
         // Every key the dialog asks for exists; a typo here would silently show the English fallback.
         const used = Array.from(fallbackSource.matchAll(/t\('(groundFallback\.[a-zA-Z.]+)'/g), m => m[1]);
-        expect(used.length).toBeGreaterThan(40);
+        expect(used).toContain('groundFallback.options.ocr.title');
         const available = new Set(reference.map(key => `groundFallback.${key}`));
         used.forEach(key => expect(available.has(key), key).toBe(true));
     });

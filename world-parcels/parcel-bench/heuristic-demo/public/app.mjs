@@ -1,7 +1,7 @@
 // Browser orchestration: prepared inputs, worker jobs, editable overlays, local drafts and GeoJSON downloads.
 import { ImageViewer } from '/shared/viewer.mjs';
-import { DEFAULTS, RECIPE } from './core.mjs';
-import { pointInPolygons } from './geometry.mjs';
+import { DEFAULTS, RECIPE } from '/estimate/core.mjs';
+import { pointInPolygons } from '/estimate/geometry.mjs';
 import { text } from './strings.mjs';
 const $ = id => document.getElementById(id), NS = 'http://www.w3.org/2000/svg';
 const clone = value => structuredClone(value);

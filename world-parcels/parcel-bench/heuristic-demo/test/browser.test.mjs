@@ -9,7 +9,7 @@ const require = createRequire(new URL('../../../../e2e/package.json', import.met
 const { chromium } = require('playwright');
 const geoRequire = createRequire(new URL('../../../../backend/package.json', import.meta.url));
 const project = geoRequire('proj4'), { intersection } = geoRequire('polygon-clipping');
-const { PROJECTIONS } = await import('../public/geometry.mjs');
+const { PROJECTIONS } = await import('../../../../frontend/js/parcels/estimate/geometry.mjs');
 const ringArea = ring => Math.abs(ring.slice(1).reduce((sum, point, i) =>
   sum + ring[i][0] * point[1] - point[0] * ring[i][1], 0) / 2);
 const multiPolygonArea = polygons => polygons.reduce((sum, polygon) => sum + ringArea(polygon[0])

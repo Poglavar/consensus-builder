@@ -6347,6 +6347,36 @@
             }
         }
     },
+    "parcelEstimate": {
+        "collapse": "Contraer controles",
+        "expand": "Mostrar controles",
+        "title": "Estimaciones ilustrativas de parcelas",
+        "disclaimer": "Los límites estimados pueden estar incompletos o ser erróneos y no establecen límites legales.",
+        "help": "Mueve el mapa para colocar el cuadrado azul y genera estimaciones rectangulares a partir de imágenes satelitales y elementos cartografiados.",
+        "size": "Tamaño del área",
+        "sensitivity": "Seguir los bordes de la imagen",
+        "rectangularity": "Alineación con las calles",
+        "ready": "Las estimaciones solo aparecen en esta sesión del mapa.",
+        "generate": "Generar estimaciones",
+        "cancel": "Cancelar",
+        "export": "Exportar GeoJSON",
+        "remove": "Quitar una parcela",
+        "close": "Cerrar estimaciones",
+        "loading": "Cargando imágenes satelitales y elementos cartografiados…",
+        "processing": "Buscando parcelas rectangulares…",
+        "cancelled": "Cancelado. Las estimaciones existentes no han cambiado.",
+        "result": "{count} parcelas ilustrativas · {coverage}% de la superficie apta cubierta · {unassigned} edificios sin asignar · {removed} eliminadas. La cobertura describe la generación antes de las eliminaciones.",
+        "plot": "Estimación ilustrativa · unos {area} m²",
+        "errors": {
+            "map": "El mapa no está listo. Inténtalo de nuevo.",
+            "area": "Elige un área válida entre 80°S y 80°N, lejos de la línea internacional de cambio de fecha.",
+            "context": "No se pudieron obtener edificios, carreteras o agua. Inténtalo de nuevo.",
+            "imagery": "No se pudieron cargar imágenes satelitales para esta zona.",
+            "busy": "El proveedor está limitando las solicitudes. Inténtalo más tarde.",
+            "processing": "No se pudieron generar las estimaciones. Inténtalo de nuevo.",
+            "network": "El servicio de estimaciones no está disponible. Comprueba tu conexión e inténtalo de nuevo."
+        }
+    },
     "groundFallback": {
         "reopen": "Elegir cómo continuar",
         "title": "No se pudo cargar ningún registro de parcelas aquí",
@@ -6398,11 +6428,6 @@
             "noPolygons": "La respuesta contiene {count} elemento(s), pero ninguno es un polígono cerrado en longitud/latitud.",
             "empty": "La respuesta no contiene elementos para esta zona.",
             "farAway": "La respuesta tiene {count} polígono(s), pero ninguno está cerca de esta vista del mapa."
-        },
-        "ocr": {
-            "help": "Estimar los límites probables de las parcelas a partir de imágenes satelitales de esta zona. El trabajo se ejecuta en segundo plano. Los resultados pueden ser incompletos o erróneos y deben revisarse; las imágenes no establecen límites legales.",
-            "start": "Iniciar el reconocimiento de límites",
-            "unavailable": "El reconocimiento de límites de parcelas a partir de imágenes satelitales aún no está disponible en esta pantalla. Las estimaciones tendrán una precisión limitada y deberán revisarse; las imágenes no establecen límites legales."
         }
     },
     "bets": {

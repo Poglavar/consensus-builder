@@ -163,6 +163,10 @@
 
     global.BasemapManager = {
         BASEMAPS: BASEMAPS,
+        // A small, user-requested crop for the non-commercial illustrative boundary estimator.
+        satelliteTileUrl: function (tile) {
+            return 'https://api.maptiler.com/tiles/satellite-v2/' + tile.z + '/' + tile.x + '/' + tile.y + '.jpg?key=' + MAPTILER_API_KEY;
+        },
         applyBasemap: applyBasemap,
         initBasemapSelector: initBasemapSelector,
         getTileLoadingStats: getTileLoadingStats,

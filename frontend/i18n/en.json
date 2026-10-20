@@ -6296,6 +6296,36 @@
             }
         }
     },
+    "parcelEstimate": {
+        "collapse": "Collapse controls",
+        "expand": "Show controls",
+        "title": "Illustrative parcel estimates",
+        "disclaimer": "Estimated boundaries may be incomplete or wrong and do not establish legal boundaries.",
+        "help": "Move the map to position the blue square, then generate rectangular estimates from satellite imagery and mapped features.",
+        "size": "Area size",
+        "sensitivity": "Follow image edges",
+        "rectangularity": "Street alignment",
+        "ready": "Estimates appear only in this map session.",
+        "generate": "Generate estimates",
+        "cancel": "Cancel",
+        "export": "Export GeoJSON",
+        "remove": "Remove a plot",
+        "close": "Close estimates",
+        "loading": "Loading satellite imagery and mapped features…",
+        "processing": "Finding rectangular plots…",
+        "cancelled": "Cancelled. Existing estimates are unchanged.",
+        "result": "{count} illustrative plots · {coverage}% of eligible ground covered · {unassigned} buildings unassigned · {removed} removed. Coverage describes generation before removals.",
+        "plot": "Illustrative estimate · about {area} m²",
+        "errors": {
+            "map": "The map is not ready. Please try again.",
+            "area": "Choose a valid area between 80°S and 80°N, away from the date line.",
+            "context": "Could not retrieve buildings, roads or water. Please retry.",
+            "imagery": "Satellite imagery could not be loaded for this area.",
+            "busy": "The data source is limiting requests. Please try again later.",
+            "processing": "Could not generate estimates. Please try again.",
+            "network": "The estimate service is unavailable. Check your connection and try again."
+        }
+    },
     "groundFallback": {
         "reopen": "Choose how to continue",
         "title": "No parcel register could be loaded here",
@@ -6347,11 +6377,6 @@
             "noPolygons": "The reply holds {count} feature(s) but none is a closed polygon in longitude/latitude.",
             "empty": "The reply holds no features for this area.",
             "farAway": "The reply has {count} polygon(s) but none of them is near this map view."
-        },
-        "ocr": {
-            "help": "Estimate likely parcel boundaries from satellite imagery of this area. The job runs in the background. Results may be incomplete or wrong and need review; imagery does not establish legal boundaries.",
-            "start": "Start boundary recognition",
-            "unavailable": "Parcel-boundary recognition from satellite imagery is not available from this screen yet. Any estimates will be best effort and need review; imagery does not establish legal boundaries."
         }
     },
     "bets": {

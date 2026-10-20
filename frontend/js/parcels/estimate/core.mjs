@@ -1,5 +1,5 @@
 // Prepare mapped barriers and whole-building anchors, then fit strict oriented rectangular plots.
-import { rectangularPartition } from './rectangles.mjs';
+import { rectangularPartition } from './rectangles.mjs?v=20261020';
 export const RECIPE = 'browser-heuristic-v3';
 export const DEFAULTS = Object.freeze({ sensitivity: 55, rectangularity: 65 });
 const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));

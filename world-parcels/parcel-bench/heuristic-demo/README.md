@@ -4,6 +4,9 @@ A small browser demonstration of plausible plot divisions from prepared aerial i
 mapped buildings, roads and water. Every output plot is a four-sided rectangle. It offers three locations, image-edge sensitivity and
 street-alignment controls, manual seeds and dividing lines, local saved edits, and GeoJSON export.
 It is separate from the human annotation app and the frozen ParcelBench evaluations.
+The solver and exporter now live in `frontend/js/parcels/estimate/`, shared with the main map's
+satellite-imagery estimate option. The playground server serves those same modules at `/estimate/`;
+there is no copied or second algorithm.
 
 ## Run locally
 

@@ -6354,6 +6354,36 @@
             }
         }
     },
+    "parcelEstimate": {
+        "collapse": "Skupi kontrole",
+        "expand": "Prikaži kontrole",
+        "title": "Ilustrativne procene parcela",
+        "disclaimer": "Procenjene granice mogu biti nepotpune ili pogrešne i ne utvrđuju pravne granice.",
+        "help": "Pomerite mapu da postavite plavi kvadrat, pa napravite pravougaone procene na osnovu satelitskih snimaka i mapiranih objekata.",
+        "size": "Veličina područja",
+        "sensitivity": "Prati ivice slike",
+        "rectangularity": "Poravnanje sa ulicama",
+        "ready": "Procene su vidljive samo u ovoj sesiji mape.",
+        "generate": "Napravi procene",
+        "cancel": "Otkaži",
+        "export": "Izvezi GeoJSON",
+        "remove": "Ukloni parcelu",
+        "close": "Zatvori procene",
+        "loading": "Učitavanje satelitskih snimaka i mapiranih objekata…",
+        "processing": "Pronalaženje pravougaonih parcela…",
+        "cancelled": "Otkazano. Postojeće procene nisu promenjene.",
+        "result": "{count} ilustrativnih parcela · pokriveno {coverage}% pogodnog zemljišta · {unassigned} nedodeljenih zgrada · uklonjeno {removed}. Pokrivenost opisuje izradu pre uklanjanja.",
+        "plot": "Ilustrativna procena · oko {area} m²",
+        "errors": {
+            "map": "Mapa nije spremna. Pokušajte ponovo.",
+            "area": "Izaberite ispravno područje između 80° južne i 80° severne širine, dalje od datumske granice.",
+            "context": "Nije moguće preuzeti zgrade, puteve ili vodu. Pokušajte ponovo.",
+            "imagery": "Satelitske snimke za ovo područje nije moguće učitati.",
+            "busy": "Izvor podataka trenutno ograničava broj zahteva. Pokušajte kasnije.",
+            "processing": "Nije moguće napraviti procene. Pokušajte ponovo.",
+            "network": "Usluga procene nije dostupna. Proverite vezu i pokušajte ponovo."
+        }
+    },
     "groundFallback": {
         "reopen": "Izaberite kako da nastavite",
         "title": "Ovde nije mogao da se učita nijedan registar parcela",
@@ -6405,11 +6435,6 @@
             "noPolygons": "Odgovor sadrži {count} objekata, ali nijedan nije zatvoren poligon u geografskoj dužini/širini.",
             "empty": "Odgovor ne sadrži objekte za ovo područje.",
             "farAway": "Odgovor ima {count} poligona, ali nijedan nije blizu ovog prikaza mape."
-        },
-        "ocr": {
-            "help": "Procenite verovatne granice parcela iz satelitskih snimaka ovog područja. Obrada se izvršava u pozadini. Rezultati mogu biti nepotpuni ili pogrešni i treba ih proveriti; snimci ne utvrđuju pravne granice parcela.",
-            "start": "Pokreni prepoznavanje granica",
-            "unavailable": "Prepoznavanje granica parcela iz satelitskih snimaka još nije dostupno na ovom ekranu. Procene će biti ograničene pouzdanosti i trebaće ih proveriti; snimci ne utvrđuju pravne granice parcela."
         }
     },
     "bets": {

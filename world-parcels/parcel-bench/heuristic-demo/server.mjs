@@ -15,8 +15,9 @@ export function createDemoServer({ dataDir = resolve(here, '../output/heuristic-
         res.setHeader('Content-Type', 'text/javascript; charset=utf-8');
         res.end(req.method === 'HEAD' ? undefined : await readFile(resolve(here, '../annotation-app/public/viewer.mjs'))); return;
       }
-      const data = path.startsWith('/data/'), root = data ? dataDir : resolve(here, 'public');
-      path = data ? path.slice(6) : path === '/' ? 'index.html' : path.slice(1);
+      const data = path.startsWith('/data/'), shared = path.startsWith('/estimate/');
+      const root = shared ? resolve(here, '../../../frontend/js/parcels/estimate') : data ? dataDir : resolve(here, 'public');
+      path = shared ? path.slice(10) : data ? path.slice(6) : path === '/' ? 'index.html' : path.slice(1);
       if (path.split('/').some(p => p.startsWith('.') || p === 'cache')) { res.writeHead(404); res.end(); return; }
       const file = resolve(root, path);
       if (!file.startsWith(resolve(root) + sep) || !(await stat(file)).isFile()) { res.writeHead(404); res.end(); return; }

@@ -489,11 +489,23 @@ IDs, anchor kind/count, image and feature hashes, source attribution, controls a
 All features are explicitly estimated and unvalidated. Rectangularity is measured in the source
 metric CRS, not longitude/latitude angles. Local drafts are bound to recipe and source hashes;
 undo history is session-local. This intentionally replaces v2 distance growth, shared-arc
-straightening and draft identity without a compatibility reader. The three-example playground does
-not change frozen evaluation records or integrate a runtime cadastre fallback.
-[Recipe](world-parcels/parcel-bench/heuristic-demo/public/core.mjs),
-[rectangular subdivision](world-parcels/parcel-bench/heuristic-demo/public/rectangles.mjs),
-[export](world-parcels/parcel-bench/heuristic-demo/public/geometry.mjs),
+straightening and draft identity without a compatibility reader. The three-example playground and the main map share this one recipe; frozen evaluation records
+remain separate. The main-map **imagery estimate layer** uses a visitor-positioned 128, 256 or
+512 m square, MapTiler satellite pixels and bounded OSM context. Its working frame is spherical
+Web Mercator scaled by cosine of the centre latitude; metric areas are local approximations,
+not survey measurements. The export records that scale, centre, source hashes and generated
+coverage. Removed plot IDs are recorded separately; coverage refers to generation before removals.
+
+The layer is temporary browser-session presentation, created only by the satellite-imagery option.
+It never seeds `CadastralParcelRepository` or `LiveParcelFabric`, changes a parcel source, creates
+consent/ownership IDs, or publishes a proposal. Regeneration replaces only this layer after successful
+completion; cancellation, source failures and incomplete/truncated OSM replies retain the previous
+result. Closing the panel or changing city removes it. GeoJSON downloads retain estimated and
+unvalidated labels. This replaces the unimplemented `ParcelOcrJobs` hook with `ParcelEstimates`;
+there is no background server job or compatibility reader.
+[Recipe](frontend/js/parcels/estimate/core.mjs),
+[rectangular subdivision](frontend/js/parcels/estimate/rectangles.mjs),
+[export](frontend/js/parcels/estimate/geometry.mjs),
 [usage and limits](world-parcels/parcel-bench/heuristic-demo/README.md).
 
 ## Supporting vocabulary

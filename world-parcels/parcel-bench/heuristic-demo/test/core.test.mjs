@@ -1,8 +1,8 @@
 // Small synthetic scenes verify the browser-independent segmentation contract and its controls.
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { compute, DEFAULTS, imageEdges, paintPolygon } from '../public/core.mjs';
-import { pointInPolygons } from '../public/geometry.mjs';
+import { compute, DEFAULTS, imageEdges, paintPolygon } from '../../../../frontend/js/parcels/estimate/core.mjs';
+import { pointInPolygons } from '../../../../frontend/js/parcels/estimate/geometry.mjs';
 import { createRequire } from 'node:module';
 const require = createRequire(new URL('../../../../backend/package.json', import.meta.url));
 const { intersection } = require('polygon-clipping');
