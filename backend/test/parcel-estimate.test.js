@@ -1,6 +1,6 @@
 // Check bounded map geometry, feature projection and cancellation without a browser or network.
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { makeArea, tilePlan, toPixel, prepareSample, geographic } from '../../frontend/js/parcels/estimate/area.mjs';
+import { makeArea, makeViewportArea, tilePlan, toPixel, prepareSample, geographic } from '../../frontend/js/parcels/estimate/area.mjs';
 import { runWorker } from '../../frontend/js/parcels/estimate/runtime.mjs';
 import { compute, DEFAULTS } from '../../frontend/js/parcels/estimate/core.mjs';
 import { vectorize } from '../../frontend/js/parcels/estimate/geometry.mjs';
@@ -34,6 +34,54 @@ describe('map parcel estimates', () => {
         expect(sample.features.water[0].rings[0][0][1]).toBeCloseTo(512, 6);
         expect(sample.features.roads[0]).toMatchObject({ id: 'w2', width_m: 5, bridge: false });
         expect(() => prepareSample(area, { features: [], partial: true }, 'a', 'b')).toThrow('context');
+    });
+    it('covers portrait and landscape viewports with square metric cells and bounded imagery', () => {
+        for (const lat of [-79, -26, 0, 79]) for (const [dx, dy] of [[.001, .003], [.004, .001], [.001, .001]]) {
+            const bounds = [32, lat, 32 + dx, lat + dy], area = makeViewportArea(bounds);
+            const cell = (area.bbox[2] - area.bbox[0]) / area.width;
+            expect((area.bbox[3] - area.bbox[1]) / area.height).toBeCloseTo(cell, 8);
+            expect(Math.max(area.width, area.height)).toBe(512);
+            expect(area.bounds[0]).toBeLessThanOrEqual(bounds[0] + 1e-10);
+            expect(area.bounds[1]).toBeLessThanOrEqual(bounds[1] + 1e-10);
+            expect(area.bounds[2]).toBeGreaterThanOrEqual(bounds[2] - 1e-10);
+            expect(area.bounds[3]).toBeGreaterThanOrEqual(bounds[3] - 1e-10);
+            const nw = toPixel([bounds[0], bounds[3]], area), se = toPixel([bounds[2], bounds[1]], area);
+            expect(nw[0]).toBeCloseTo(area.width - se[0], 5);
+            expect(nw[1]).toBeCloseTo(area.height - se[1], 5);
+            expect(nw.every(v => v >= -1e-7 && v < .5 + 1e-7)).toBe(true);
+            const tiles = tilePlan(area);
+            expect(tiles.length).toBeLessThanOrEqual(9);
+            expect(Math.min(...tiles.map(t => t.dx))).toBeLessThanOrEqual(0);
+            expect(Math.min(...tiles.map(t => t.dy))).toBeLessThanOrEqual(0);
+            expect(Math.max(...tiles.map(t => t.dx + t.size))).toBeGreaterThanOrEqual(area.width - 1e-6);
+            expect(Math.max(...tiles.map(t => t.dy + t.size))).toBeGreaterThanOrEqual(area.height - 1e-6);
+        }
+        expect(() => makeViewportArea([0, 0, .03, .03])).toThrow('extent');
+        expect(() => makeViewportArea([179.999, 0, 180.001, .001])).toThrow('area');
+        expect(() => makeViewportArea([0, 80, .001, 80.001])).toThrow('area');
+    });
+    it('generates and exports a rectangular viewport without changing its image aspect or metric frame', () => {
+        const area = makeViewportArea([32, -26, 32.001, -25.998]);
+        const sample = prepareSample(area, { features: [] }, 'abc123', 'def456');
+        const rgba = new Uint8ClampedArray(area.width * area.height * 4).fill(128);
+        const result = compute({ sample, rgba, width: area.width, height: area.height, settings: DEFAULTS });
+        const collection = vectorize(result, sample, DEFAULTS, {}, {
+            toWgs84: point => geographic(point.map(value => value / area.scale))
+        });
+        expect(collection.features.length).toBeGreaterThan(0);
+        expect(collection.demo.raster.width).toBe(area.width);
+        expect(collection.demo.raster.height).toBe(area.height);
+        expect(collection.demo.source_image.hash_format).toBe(`RGBA8 ${area.width}x${area.height}`);
+        expect(collection.demo.source_features.requested_bounds).toEqual(area.requestedBounds);
+        for (const feature of collection.features) {
+            for (const point of feature.geometry.coordinates[0]) {
+                const [x, y] = toPixel(point, area);
+                expect(x).toBeGreaterThanOrEqual(-1e-6);
+                expect(x).toBeLessThanOrEqual(area.width + 1e-6);
+                expect(y).toBeGreaterThanOrEqual(-1e-6);
+                expect(y).toBeLessThanOrEqual(area.height + 1e-6);
+            }
+        }
     });
     it('exports the displayed rectangles in WGS84 with estimated identity and reproducible metric frame', () => {
         const area = makeArea({ lat: -26, lng: 32 }, 128);

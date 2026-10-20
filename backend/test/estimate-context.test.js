@@ -15,9 +15,16 @@ describe('parcel estimate context route', () => {
         const fetchContext = vi.fn(); const app = appFor(fetchContext);
         expect((await request(app).get('/parcel-estimate/context').query({ bbox:'bad',crs:'EPSG:4326' })).status).toBe(400);
         expect((await request(app).get('/parcel-estimate/context').query({ bbox:'0,,0.001,0.001',crs:'EPSG:4326' })).status).toBe(400);
-        expect((await request(app).get('/parcel-estimate/context').query({ bbox:'0,0,0.01,0.01',crs:'EPSG:4326' })).status).toBe(400);
+        expect((await request(app).get('/parcel-estimate/context').query({ bbox:'0,0,0.03,0.03',crs:'EPSG:4326' })).status).toBe(400);
         expect((await request(app).get('/parcel-estimate/context').query({ bbox:box,crs:'EPSG:3857' })).status).toBe(400);
         expect(fetchContext).not.toHaveBeenCalled();
+    });
+    it('accepts bounded landscape and portrait viewports larger than the fixed squares', async () => {
+        const fetchContext = vi.fn(async () => ({ features: [] })), app = appFor(fetchContext);
+        for (const bbox of ['0,0,0.017,0.009', '0,0,0.009,0.017']) {
+            expect((await request(app).get('/parcel-estimate/context').query({ bbox, crs:'EPSG:4326' })).status).toBe(200);
+        }
+        expect(fetchContext).toHaveBeenCalledTimes(2);
     });
     it('returns standard GeoJSON and rejects partial or failed upstream context', async () => {
         const app = appFor(async () => ({ type:'FeatureCollection', features:[{type:'Feature',id:'w1',geometry:{type:'LineString',coordinates:[[0,0],[1,1]]},properties:{kind:'road',source_id:'w1'}}] }));

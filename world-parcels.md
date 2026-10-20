@@ -67,7 +67,9 @@ Show: **“We could not find an open data source for your city's parcels.”** O
 2. **Guess parcels.** This is an explicitly estimated layer, never labelled cadastre. Use available satellite imagery rights, OSM buildings/roads, and local geometry heuristics: avoid splitting individual homes where evidence supports it, but allow for OSM footprints that aggregate buildings across several parcels; road edges constrain fronts; rectilinear/orthogonal candidates should be preferred where appropriate. Voronoi is only a seed. Evaluate a self-hosted segmentation model such as SAM 3 for boundary hints, then vectorize, close, and validate polygons. Use no paid LLM calls or LLM tokens in this pipeline. Store confidence/provenance, expose manual corrections, and do not treat inferred boundaries as ownership evidence.
 
    **Available main-map option (2026-10-20):** choose **Estimate parcel boundaries from satellite imagery**,
-   move the map to position the blue square and generate a 128, 256 or 512 m area. A bounded MapTiler
+   pan/zoom to choose the current viewport (the default), or select a 128, 256 or 512 m square.
+   Viewports are limited to 2 km per side and sampled without stretching on a grid whose longest
+   edge is 512 cells; the shorter extent expands by less than one cell. Borders use light green. A bounded MapTiler
    satellite crop and complete OSM buildings/roads/water context feed the shared rectangular browser
    recipe in a cancellable Web Worker. At most nine imagery tiles are requested. Source failure or
    partial OSM context is an error, not an empty map. Sliders change image-edge support and street

@@ -26,8 +26,8 @@
     async function open() {
         if (active) return;
         const token = {}; opening = token;
-        const [{ makeArea, SIZES }, { generate, ATTRIBUTION }] = await Promise.all([
-            import('./estimate/area.mjs?v=20261020'), import('./estimate/runtime.mjs?v=20261020')
+        const [{ makeArea, makeViewportArea, SIZES }, { generate, ATTRIBUTION }] = await Promise.all([
+            import('./estimate/area.mjs?v=20261020-viewport'), import('./estimate/runtime.mjs?v=20261020-viewport')
         ]);
         if (opening !== token || active) return;
         const map = global.map, L = global.L;
@@ -52,8 +52,9 @@
         root.appendChild(node('p', 'parcel-estimate-help', tr('help')));
         const sizeLabel = node('label', 'parcel-estimate-field', tr('size'));
         const size = node('select'); size.id = 'parcel-estimate-size';
+        const viewport = node('option', null, tr('viewport')); viewport.value = 'viewport'; size.appendChild(viewport);
         for (const value of SIZES) { const option = node('option', null, `${value} × ${value} m`); option.value = value; size.appendChild(option); }
-        size.value = '256'; sizeLabel.appendChild(size); root.appendChild(sizeLabel);
+        size.value = 'viewport'; sizeLabel.appendChild(size); root.appendChild(sizeLabel);
         const settings = {};
         for (const [key, initial] of [['sensitivity', 55], ['rectangularity', 65]]) {
             const label = node('label', 'parcel-estimate-field', tr(key)), input = node('input');
@@ -88,11 +89,19 @@
         function updateArea() {
             if (state.controller) return;
             try {
-                state.area = makeArea(map.getCenter(), Number(size.value));
+                const bounds = map.getBounds();
+                state.area = size.value === 'viewport'
+                    ? makeViewportArea([bounds.getWest(), bounds.getSouth(), bounds.getEast(), bounds.getNorth()])
+                    : makeArea(map.getCenter(), Number(size.value));
                 const [w, s, e, n] = state.area.bounds;
                 frame.setBounds([[s, w], [n, e]]);
+                if (!group.hasLayer(frame)) frame.addTo(group);
                 start.disabled = false;
-            } catch (_) { state.area = null; start.disabled = true; status.textContent = tr('errors.area'); }
+                if (state.areaError) { state.areaError = false; state.collection ? showSummary() : status.textContent = tr('ready'); }
+            } catch (error) {
+                state.area = null; state.areaError = true; start.disabled = true; frame.remove();
+                status.textContent = tr(error.message === 'extent' ? 'errors.extent' : 'errors.area');
+            }
         }
         function showSummary() {
             const stats = state.collection.demo.stats;
@@ -102,7 +111,6 @@
         }
         size.addEventListener('change', updateArea);
         map.on('moveend', updateArea); updateArea();
-        if (state.area) map.fitBounds(frame.getBounds(), { padding: [28, 28], maxZoom: 18, animate: false });
         cancel.addEventListener('click', () => state.controller?.abort());
         erase.addEventListener('click', () => {
             state.erase = !state.erase; erase.setAttribute('aria-pressed', String(state.erase));

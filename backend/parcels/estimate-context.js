@@ -135,14 +135,15 @@ function parseBbox(raw, crs) {
     const [w,s,e,n] = a;
     if (w < -180 || e > 180 || s < -80 || n > 80 || !(e > w) || !(n > s)) return null;
     const lat = (s+n)/2, mPerLon = 111320 * Math.cos(lat * Math.PI / 180), mPerLat = 111320;
-    if ((e-w)*mPerLon > 600 || (n-s)*mPerLat > 600) return null;
+    // One metre accommodates the frontend's local Mercator scale vs this geographic guard.
+    if ((e-w)*mPerLon > 2001 || (n-s)*mPerLat > 2001) return null;
     return a;
 }
 
 export function setupEstimateContextRoute(app, options = {}) {
     app.get('/parcel-estimate/context', async (req,res) => {
         const bbox = parseBbox(req.query.bbox, req.query.crs);
-        if (!bbox) return res.status(400).json({ error: 'bbox must be a finite EPSG:4326 w,s,e,n box no larger than 600 m per side, within latitude ±80°' });
+        if (!bbox) return res.status(400).json({ error: 'bbox must be a finite EPSG:4326 w,s,e,n box no larger than 2 km per side, within latitude ±80°' });
         try {
             const fc = await (options.fetchContext || fetchDefault)(bbox, options);
             if (fc.partial || fc.truncated) return res.status(502).json({ error: fc.truncated ? 'OSM context was truncated; retry with a smaller area' : 'OSM context is incomplete; retry later' });

@@ -1,5 +1,5 @@
 // Fetch small imagery/context inputs and own a cancellable worker; no cadastral writes.
-import { GRID, tilePlan, prepareSample } from './area.mjs?v=20261020';
+import { tilePlan, prepareSample } from './area.mjs?v=20261020-viewport';
 export const ATTRIBUTION = '© <a href="https://www.maptiler.com/copyright/">MapTiler</a> · © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>';
 const hash = async bytes => [...new Uint8Array(await crypto.subtle.digest('SHA-256', bytes))].map(v => v.toString(16).padStart(2, '0')).join('');
 export function runWorker(input, signal) {
@@ -26,7 +26,8 @@ export async function generate({ area, settings, signal, base, tileUrl, onProgre
   if (!response.ok) throw new Error(response.status === 429 ? 'busy' : 'context');
   const context = await response.json();
   if (context.partial || context.truncated || !Array.isArray(context.features) || context.features.length > 5000) throw new Error('context');
-  const canvas = document.createElement('canvas'); canvas.width = canvas.height = GRID;
+  const { width, height } = area;
+  const canvas = document.createElement('canvas'); canvas.width = width; canvas.height = height;
   const ctx = canvas.getContext('2d', { willReadFrequently: true }), tiles = tilePlan(area);
   // At most nine tiles, three requests at a time; exact Mercator placement without map labels.
   for (let i = 0; i < tiles.length; i += 3) {
@@ -39,13 +40,13 @@ export async function generate({ area, settings, signal, base, tileUrl, onProgre
       try { ctx.drawImage(bitmap, tile.dx, tile.dy, tile.size, tile.size); } finally { bitmap.close(); }
     }));
   }
-  const rgba = ctx.getImageData(0, 0, GRID, GRID).data;
+  const rgba = ctx.getImageData(0, 0, width, height).data;
   if (rgba.some((v, i) => i % 4 === 3 && v !== 255)) throw new Error('imagery');
   const imageHash = await hash(rgba), contextHash = await hash(new TextEncoder().encode(JSON.stringify(context)));
   const sample = prepareSample(area, context, imageHash, contextHash);
   const imageUrl = canvas.toDataURL('image/jpeg', 0.92);
   onProgress('processing');
-  const result = await runWorker({ sample, rgba, settings, width: GRID, height: GRID }, signal);
+  const result = await runWorker({ sample, rgba, settings, width, height }, signal);
   signal.throwIfAborted();
   return { ...result, imageUrl };
 }
