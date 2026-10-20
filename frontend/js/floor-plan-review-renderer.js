@@ -37,7 +37,7 @@ async function preview(host,build,isCurrent,options={}){
  const observer=new ResizeObserver(resize);observer.observe(host);resize();
  let disposeExtension=null;
  const dispose=()=>{disposeExtension?.();observer.disconnect();if(animationFrame)cancelAnimationFrame(animationFrame);renderer.domElement.removeEventListener('pointerdown',stopAutoRotate);controls.removeEventListener('change',render);controls.dispose();global.__threeFloorPlans.disposeGroup(group);renderer.dispose();renderer.forceContextLoss();};
- try{disposeExtension=await options.setup?.({THREE,scene,group,camera,renderer,controls,render});}catch(error){dispose();throw error;}
+ try{disposeExtension=await options.setup?.({THREE,scene,group,camera,renderer,controls,render,stopAutoRotate});}catch(error){dispose();throw error;}
  if(!isCurrent()){dispose();return null;}
  return dispose;
 }

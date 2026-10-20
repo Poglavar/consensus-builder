@@ -3,7 +3,7 @@ import {describe,expect,it,vi} from 'vitest';
 import {createRequire} from 'node:module';
 const require=createRequire(import.meta.url),navigation=require('../../frontend/js/apartment-people-navigation.js');
 const {mount}=require('../../frontend/js/apartment-people.js');
-function harness({reduced=false,hidden=false,offscreen=false,small=false}={}) {
+function harness({reduced=false,hidden=false,offscreen=false,small=false,firstPerson=false}={}) {
     const resources=[],observers=[];
     class Vector {set(x,y,z){Object.assign(this,{x,y,z});return this;}copy(v){return this.set(v.x,v.y,v.z);}}
     class Group {
@@ -17,19 +17,20 @@ function harness({reduced=false,hidden=false,offscreen=false,small=false}={}) {
     const media=new EventTarget();media.matches=reduced;
     const doc=new EventTarget();doc.hidden=hidden;
     let rafId=0;const frames=new Map();
-    const env={document:doc,innerWidth:1000,innerHeight:800,matchMedia:()=>media,
+    const personView={update:vi.fn(),dispose:vi.fn()};
+    const env={__apartmentPersonView:{mount:vi.fn(()=>personView)},document:doc,innerWidth:1000,innerHeight:800,matchMedia:()=>media,
         __apartmentPeopleNavigation:{...navigation,createWalkers(nav){const walkers=navigation.createWalkers(nav,()=>.5);walkers.forEach(w=>w.pause=0);return walkers;},advanceWalkers:vi.fn(navigation.advanceWalkers)},
         requestAnimationFrame:fn=>{frames.set(++rafId,fn);return rafId;},cancelAnimationFrame:id=>frames.delete(id),
         IntersectionObserver:class {constructor(fn){this.callback=fn;this.disconnect=vi.fn();observers.push(this);}observe(){}}
     };
     const group=new Group(),render=vi.fn(),host={getBoundingClientRect:()=>({top:offscreen?900:0,left:0,bottom:offscreen?1100:400,right:700})};
     const architecture={dimensionsM:small?[1,1]:[6,5],slabs:[[[[0,0],[1,0],[1,1],[0,1]]]],walls:[],landings:[],stairs:[],railings:[],openings:[]};
-    const dispose=mount({THREE,group,render,host,architecture},env);
+    const dispose=mount({THREE,group,render,host,architecture,...(firstPerson?{camera:{},controls:{},renderer:{}}:{})},env);
     const step=time=>{const pending=[...frames.values()];frames.clear();pending.forEach(fn=>fn(time));};
     const visible=value=>{observers[0].callback([{isIntersecting:value}]);};
     const motion=value=>{media.matches=value;media.dispatchEvent(new Event('change'));};
     const hide=value=>{doc.hidden=value;doc.dispatchEvent(new Event('visibilitychange'));};
-    return {group,render,dispose,frames,step,visible,motion,hide,resources,observers,advance:env.__apartmentPeopleNavigation.advanceWalkers};
+    return {personView,group,render,dispose,frames,step,visible,motion,hide,resources,observers,advance:env.__apartmentPeopleNavigation.advanceWalkers};
 }
 describe('apartment people preview runtime',()=>{
     it('mounts one male and one female at real metre proportions, and moves them below 24 updates/second',()=>{
@@ -64,6 +65,11 @@ describe('apartment people preview runtime',()=>{
         expect(h.resources.length).toBeGreaterThan(0);h.resources.forEach(r=>expect(r.dispose).toHaveBeenCalledTimes(1));
         const renders=h.render.mock.calls.length;h.hide(true);h.hide(false);h.motion(true);h.motion(false);
         expect(h.render).toHaveBeenCalledTimes(renders);expect(h.frames.size).toBe(0);
+    });
+    it('updates the eye camera when people move and disposes it with the figures',()=>{
+        const h=harness({firstPerson:true});h.step(0);h.step(60);
+        expect(h.personView.update).toHaveBeenCalledOnce();h.dispose();h.dispose();
+        expect(h.personView.dispose).toHaveBeenCalledOnce();
     });
     it('omits figures and allocates no resources when there is too little supported floor',()=>{
         const h=harness({small:true});expect(h.group.children).toEqual([]);expect(h.resources).toEqual([]);expect(h.observers).toEqual([]);expect(h.frames.size).toBe(0);h.dispose();

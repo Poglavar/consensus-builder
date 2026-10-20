@@ -61,3 +61,11 @@
 
 /* One loading indicator for data, media, maps and 3D previews. */
 .is-loading{position:relative}.loading-indicator{position:absolute;z-index:8;inset:0;display:grid;place-items:center;min-height:40px;border-radius:inherit;pointer-events:none}.loading-indicator::before{content:"";display:block;width:28px;height:28px;border:3px solid #aabdaf;border-top-color:var(--green);border-radius:50%;box-shadow:0 0 0 5px #fffdf8d9;animation:loading-spin .8s linear infinite}.results-grid.is-loading{min-height:120px}.original-preview{position:relative}.context-google-status[hidden]{display:none}@keyframes loading-spin{to{transform:rotate(360deg)}}@media(prefers-reduced-motion:reduce){.loading-indicator::before{animation:none;border-top-color:var(--amber)}}
+/* Eye-level visits stay inside the apartment preview. */
+.apartment-lit-host .viewer-canvas{position:relative}
+.person-view-controls{position:absolute;z-index:2;top:8px;left:8px;right:8px;display:flex;gap:4px;pointer-events:none}
+.person-view-controls button{pointer-events:auto;min-height:36px;padding:5px 9px;border:1px solid #c8c7bc;border-radius:7px;background:rgba(255,253,248,.94);color:#202522;font-size:.68rem;font-weight:600;box-shadow:0 1px 5px #0001}
+.person-view-controls button[aria-pressed="true"]{background:#f8e4bf;border-color:#bd7d1c}
+.person-view-controls button[hidden]{display:none}
+.person-view-hint{position:absolute;z-index:2;bottom:7px;left:auto;right:8px;width:fit-content;max-width:calc(100% - 132px);margin:0;padding:4px 7px;border-radius:5px;background:rgba(255,253,248,.92);color:#39423c;font-size:.62rem;line-height:1.3;pointer-events:none}
+@media(max-width:760px),(pointer:coarse){.person-view-controls button{min-height:44px}}

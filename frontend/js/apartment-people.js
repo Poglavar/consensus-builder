@@ -32,14 +32,15 @@
             const swing=!standing&&walker.moving?Math.sin(walker.phase)*.35:0;
             for(const limb of limbs){limb.leg.rotation.y=swing*limb.sign;limb.arm.rotation.y=-swing*.8*limb.sign;}
         }
-        return {group,pose};
+        return {group,pose,eyeHeight:1.62*g};
     }
-    function mount({THREE,group,render,host,architecture},env=globalThis) {
+    function mount({THREE,group,render,host,architecture,camera,controls,renderer,stopAutoRotate},env=globalThis) {
         const navigation=env.__apartmentPeopleNavigation;
         const nav=navigation.buildNavigation(architecture),walkers=navigation.createWalkers(nav);
         if(!walkers.length)return ()=>{};
         const people=new THREE.Group();people.name='ApartmentPeople';group.add(people);
         const figures=walkers.map((walker,index)=>{const figure=createFigure(THREE,index===1);people.add(figure.group);figure.pose(walker);return figure;});
+        const personView=camera?env.__apartmentPersonView.mount({THREE,group,figures,walkers,camera,controls,renderer,render,host,stopAutoRotate},env):null;
         const media=env.matchMedia?.('(prefers-reduced-motion: reduce)'),doc=env.document;
         let frame=0,lastTime=null,disposed=false,reduced=Boolean(media?.matches);
         const bounds=host.getBoundingClientRect();
@@ -50,7 +51,7 @@
             if(lastTime===null)lastTime=time;
             if(time-lastTime>=1000/24) {
                 const changed=navigation.advanceWalkers(nav,walkers,(time-lastTime)/1000);lastTime=time;
-                if(changed){figures.forEach((figure,index)=>figure.pose(walkers[index]));render();}
+                if(changed){figures.forEach((figure,index)=>figure.pose(walkers[index]));personView?.update();render();}
             }
             frame=env.requestAnimationFrame(tick);
         }
@@ -66,7 +67,7 @@
         render();sync();
         return function dispose() {
             if(disposed)return;disposed=true;sync();observer?.disconnect();doc.removeEventListener('visibilitychange',sync);media?.removeEventListener('change',motionChanged);
-            group.remove(people);
+            personView?.dispose();group.remove(people);
             const geometries=new Set(),materials=new Set();
             people.traverse(object=>{if(object.geometry)geometries.add(object.geometry);if(object.material)materials.add(object.material);});
             geometries.forEach(geometry=>geometry.dispose());materials.forEach(material=>material.dispose());
