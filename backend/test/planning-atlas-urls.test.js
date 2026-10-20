@@ -41,6 +41,11 @@ describe('Atlas URL configuration', () => {
     it('refuses source IDs already owned by a built-in provider', () => {
         expect(() => createPlanningSources(config({ ...metadata, id: 'nyc-r6a-pilot-2026-10-19' }))).toThrow(/conflicts/);
     });
+    it('retains an explicitly configured parcel provider and rejects malformed provider IDs', () => {
+        const sources = createPlanningSources(config({ ...metadata, parcelSourceId: 'us-co-oit-statewide-parcels' }));
+        expect(sources.at(-1).descriptor).toMatchObject({ parcelSourceId: 'us-co-oit-statewide-parcels', parcelStudy: 'direct-dimensions.v1' });
+        expect(() => parseAtlasSources(config({ ...metadata, parcelSourceId: '../invalid' }))).toThrow(/Invalid PLANNING_ATLAS_SOURCES/);
+    });
 });
 
 describe('Atlas URL loading', () => {

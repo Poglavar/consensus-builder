@@ -820,6 +820,7 @@ The user requires only per-city failed URL lists and working settings plus share
 Postpone refresh/server-to-local synchronization. For empty parcels, display only an explanation already present in the existing source cache; do not introduce another cache, solver, diagnostic pipeline or inferred reason. Continue shared selection/inspection, obligatory source proposal semantics and provider/edition support separately from solver work.
 
 - 2026-10-20: Atlas should plug into Permitted through URLs, retaining source identity, edition and evidence in the shared inspector.
+- 2026-10-21: Build a parcel-backed Atlas demonstration with a supported partial envelope and design-edit checks, preserving explicit unresolved rules and independent source/parcel identities.
 - 2026-10-20: World navigation offers cities and exact map points only. Administrative regions are coverage context, never clickable destinations. A background globe click or geolocation opens the exact point at street level, where proposals live.
 - 2026-10-20: Buildings and massing starts collapsed behind a cubes icon beside the city/search control at the upper left. Its display settings keep their values when the panel closes.
 - 2026-10-20: Merge Colosseum work into omitted-gems-fixes with Colosseum semantic contracts authoritative; adapt retained features to qualified publication/source identity rather than restoring retired aliases.

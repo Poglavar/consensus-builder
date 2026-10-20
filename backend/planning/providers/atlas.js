@@ -13,10 +13,11 @@ const dimensions = [
     ['maxheightft', 'height', 'ft', 'maximum'],
     ['minlotacres', 'lotArea', 'acres', 'minimum']
 ];
-export function atlasSourceDescriptor({ id, city, label, edition, url, default: isDefault = true }, bbox = null) {
+export function atlasSourceDescriptor({ id, city, label, edition, url, parcelSourceId, default: isDefault = true }, bbox = null) {
     return { id, city, label, edition, url, default: isDefault, kind: 'regulation',
         coverage: 'zoning-areas', bbox, storage: 'supplied-atlas-dataset',
         capabilities: { volumes: false, areas: true, parcelEvidence: false, constraintEvaluation: false },
+        ...(parcelSourceId ? { parcelSourceId, parcelStudy: 'direct-dimensions.v1' } : {}),
         scenarios, scenario: scenarios[0] };
 }
 export function createAtlasProvider(collection, metadata) {

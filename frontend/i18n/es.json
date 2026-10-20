@@ -1,4 +1,68 @@
 {
+  "planningStudy": {
+    "title": "Estudio de parcela",
+    "envelopeTitle": "Envolvente parcial",
+    "designTitle": "Prueba de diseño",
+    "start": "Evaluar una parcela aquí",
+    "startHint": "Usa la parcela en el punto seleccionado o en el centro del mapa. Las zonas y las parcelas conservan identidades distintas.",
+    "loading": "Leyendo la parcela y las fuentes de zonificación…",
+    "scope": "Edita un volumen de prueba con los valores directos del Atlas. La envolvente muestra el subconjunto dimensional evaluable, con un lindero frontal supuesto y altura relativa al suelo.",
+    "heightM": "Altura del diseño (m)",
+    "scale": "Escala de la huella (%)",
+    "eastM": "Mover al este (m)",
+    "northM": "Mover al norte (m)",
+    "frontEdge": "Lindero frontal supuesto",
+    "edge": "Lindero {{number}}",
+    "breach": "El diseño supera al menos un límite evaluado. Otros requisitos siguen sin resolver.",
+    "unresolved": "No se superan los límites evaluados. Quedan requisitos sin resolver.",
+    "measured": "Medido",
+    "limit": "Límite",
+    "missingDirectValue": "No hay un valor directo de la fuente.",
+    "unresolvedTitle": "Requisitos y supuestos sin resolver",
+    "saved": "Borrador guardado en este navegador. No se ha aplicado ni publicado ninguna propuesta.",
+    "saveError": "No se pudo guardar el borrador en este navegador.",
+    "changed": "La fuente de la parcela o la zonificación ha cambiado. Se conserva el borrador anterior; su evaluación ya no está vigente.",
+    "restart": "Reiniciar con las fuentes actuales",
+    "reset": "Restablecer el diseño de prueba",
+    "references": "Referencias fijadas de zonificación y parcela",
+    "invalidInput": "Introduce dimensiones dentro de los intervalos indicados. El mapa conserva el último diseño válido.",
+    "status": {
+      "pass": "Dentro del límite evaluado",
+      "fail": "Supera el límite evaluado",
+      "unknown": "Sin resolver"
+    },
+    "checks": {
+      "parcelContainment": "Dentro de la parcela de origen",
+      "zoningCoverage": "Área del diseño fuera de la cobertura",
+      "frontSetback": "Retiro frontal",
+      "sideSetback": "Retiros laterales",
+      "rearSetback": "Retiro posterior",
+      "buildingCoverage": "Ocupación de la edificación",
+      "use": "Tratamiento residencial registrado"
+    },
+    "unresolvedReasons": {
+      "applicability": "No se han verificado la aplicabilidad legal actual, las superposiciones, las excepciones ni las audiencias necesarias.",
+      "edge-assumption": "Los linderos frontal, posterior y laterales dependen del lindero frontal elegido. Esta interpretación no se ha verificado con datos de calles o del solar legal.",
+      "vertical-reference": "La altura usa una referencia plana relativa al suelo. No se han verificado el terreno medido, las reglas de cubierta ni la referencia de altura de la normativa.",
+      "measurement-basis": "Las comprobaciones de superficie usan esta parcela y la huella de prueba. Las definiciones legales de solar, edificio y superficie construida pueden diferir.",
+      "other-rules": "No se evalúan aparcamiento, superficie construida, densidad de viviendas, ocupación, infraestructura ni otras reglas no admitidas. Los campos completos siguen en el inspector de zonificación.",
+      "partial-source-coverage": "{{area}} de la parcela queda fuera de la zona suministrada. La envolvente parcial excluye esa superficie; su aplicabilidad sigue sin resolver."
+    },
+    "errors": {
+      "study-source-unavailable": "No se pudo leer una fuente. Reintenta cuando esté disponible.",
+      "study-unavailable": "Esta fuente no tiene un estudio de parcela configurado.",
+      "study-parcel-source-unavailable": "La fuente de parcelas configurada no está disponible.",
+      "study-parcel-missing": "No se encontró una parcela en este punto. Haz clic dentro de una parcela y reintenta.",
+      "study-parcel-ambiguous": "Varias identidades de parcela se superponen aquí. Elige una parcela exacta; no se ha inferido ninguna identidad.",
+      "study-parcel-incomplete": "La cobertura de parcelas está incompleta.",
+      "study-zoning-incomplete": "La fuente de zonificación devolvió cobertura incompleta.",
+      "study-multiple-zoning-areas": "Esta parcela atraviesa varias zonas. Sus reglas aún no se han combinado.",
+      "study-zoning-missing": "Ninguna zona suministrada intersecta esta parcela.",
+      "unsupported-parcel-shape": "Esta demostración admite parcelas convexas pequeñas sin huecos. Esta parcela necesita otro evaluador geométrico.",
+      "empty-supported-bound": "Los retiros evaluables no dejan una envolvente dibujable.",
+      "invalid-front-edge": "Elige un lindero válido de la parcela."
+    }
+  },
   "onMapEditor": {
     "missingSite": "Este edificio guardado no tiene un límite de terreno válido, por lo que su geometría no se puede editar de forma segura.",
     "cancel": "Cancelar",

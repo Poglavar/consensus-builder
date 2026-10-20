@@ -527,20 +527,28 @@
 
     // Source massing is a representation of an obligatory proposal, never an applied building.
     // Reuse the scene's polygon extrusion and resource ownership without slicing the live cadastre.
+    function hasVisiblePlanningRepresentations() {
+        if (!window.PlanningViews) return false;
+        const policy = window.PlanningViews.getPolicy();
+        return window.PlanningViews.getItems().some(item => policy[item.role] !== 'off')
+            || window.PlanningViews.getSelected()?.role === 'existing' && policy.existing !== 'off';
+    }
     function rebuildPlanningSources3D() {
         if (!isActive || !planningSourcesGroup || !window.PlanningViews) return;
         clearGroupChildren(planningSourcesGroup);
         const view = window.PlanningViews.getPolicy();
         const inspected = window.PlanningViews.getSelected();
         const builtSelection = inspected?.role === 'existing' && view.existing !== 'off';
-        planningSourcesGroup.visible = (view.permitted !== 'off' || builtSelection) && !realisticLayerActive;
+        planningSourcesGroup.visible = hasVisiblePlanningRepresentations() && !realisticLayerActive;
         if (!planningSourcesGroup.visible) { invalidateThreeView(); return; }
         const selectedId = window.PlanningViews.getState()?.selectedId;
-        const color = window.PlanningViews.color('permitted');
-        for (const item of view.permitted === 'off' ? [] : window.PlanningViews.getItems()) {
+        for (const item of window.PlanningViews.getItems()) {
+            const appearance = view[item.role];
+            if (appearance === 'off') continue;
+            const color = window.PlanningViews.color(item.role);
             for (const area of item.areas || []) {
                 const material = new THREE.MeshBasicMaterial({ color, transparent: true,
-                    opacity: view.permitted === 'solid' ? 0.55 : 0.15, depthWrite: false, side: THREE.DoubleSide });
+                    opacity: appearance === 'solid' ? 0.55 : 0.15, depthWrite: false, side: THREE.DoubleSide });
                 const meshes = polygonFeatureToMeshes({ type: 'Feature', geometry: area.geometry }, material, 0.01, 0);
                 if (!meshes.length) material.dispose();
                 for (const mesh of meshes) {
@@ -557,8 +565,8 @@
             for (const feature of window.PlanningScene.volumeFeatures(item)) {
                 const selected = item.id === selectedId;
                 const material = new THREE.MeshPhongMaterial({ color, emissive: selected ? color : 0, emissiveIntensity: selected ? 0.15 : 0,
-                    transparent: view.permitted === 'ghost', opacity: view.permitted === 'solid' ? 1 : 0.25,
-                    depthWrite: view.permitted === 'solid', side: THREE.FrontSide, polygonOffset: true,
+                    transparent: appearance === 'ghost', opacity: appearance === 'solid' ? 1 : 0.25,
+                    depthWrite: appearance === 'solid', side: THREE.FrontSide, polygonOffset: true,
                     polygonOffsetFactor: -1, polygonOffsetUnits: -1 });
                 const meshes = polygonFeatureToMeshes(feature, material, feature.properties.baseM, feature.properties.height);
                 if (!meshes.length) { material.dispose(); continue; }
@@ -8590,8 +8598,7 @@
     window.setRealisticLayerActive = function (on, options = {}) {
         realisticLayerActive = !!on;
         if (planningSourcesGroup) planningSourcesGroup.visible = !realisticLayerActive
-            && (window.PlanningViews?.getPolicy().permitted !== 'off'
-                || (window.PlanningViews?.getSelected()?.role === 'existing' && window.PlanningViews.getPolicy().existing !== 'off'));
+            && hasVisiblePlanningRepresentations();
         if (flatGroup) flatGroup.visible = !realisticLayerActive;
         if (treesGroup) treesGroup.visible = treesEnabled && !realisticLayerActive;
         if (waterGroup) waterGroup.visible = waterEnabled && !realisticLayerActive;

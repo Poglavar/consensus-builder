@@ -1,4 +1,68 @@
 {
+  "planningStudy": {
+    "title": "Parcel study",
+    "envelopeTitle": "Partial envelope",
+    "designTitle": "Design test",
+    "start": "Test a parcel here",
+    "startHint": "Uses the parcel at the clicked point, or at the map centre. Source areas and parcels keep their own identities.",
+    "loading": "Reading the parcel and zoning sources…",
+    "scope": "Edit a test volume against direct Atlas values. The envelope shows only the supported dimensional subset, with an assumed front edge and relative ground height.",
+    "heightM": "Design height (m)",
+    "scale": "Footprint scale (%)",
+    "eastM": "Move east (m)",
+    "northM": "Move north (m)",
+    "frontEdge": "Assumed front edge",
+    "edge": "Edge {{number}}",
+    "breach": "The design exceeds at least one tested limit. Other requirements remain unresolved.",
+    "unresolved": "No breach of the tested limits. Unresolved requirements remain.",
+    "measured": "Measured",
+    "limit": "Limit",
+    "missingDirectValue": "No direct source value is available.",
+    "unresolvedTitle": "Unresolved requirements and assumptions",
+    "saved": "Draft saved in this browser. No proposal has been applied or published.",
+    "saveError": "The draft could not be saved in this browser.",
+    "changed": "The parcel or zoning source has changed. The previous draft is retained; its assessment is no longer current.",
+    "restart": "Start again with current sources",
+    "reset": "Reset test design",
+    "references": "Pinned zoning and parcel references",
+    "invalidInput": "Enter dimensions within the displayed ranges. The map still shows the last valid design.",
+    "status": {
+      "pass": "Within tested limit",
+      "fail": "Exceeds tested limit",
+      "unknown": "Unresolved"
+    },
+    "checks": {
+      "parcelContainment": "Inside the source parcel",
+      "zoningCoverage": "Design area outside source coverage",
+      "frontSetback": "Front setback",
+      "sideSetback": "Side setbacks",
+      "rearSetback": "Rear setback",
+      "buildingCoverage": "Building coverage",
+      "use": "Recorded housing treatment"
+    },
+    "unresolvedReasons": {
+      "applicability": "Current legal applicability, overlays, exceptions and any required hearing remain unverified.",
+      "edge-assumption": "Front, rear and side edges follow the chosen front edge. This interpretation has not been verified against street or legal-lot evidence.",
+      "vertical-reference": "Height uses a flat relative ground reference. Surveyed terrain, roof rules and the ordinance’s height datum are unverified.",
+      "measurement-basis": "Area checks use this parcel and the test footprint. Legal lot, building and floor-area definitions may differ.",
+      "other-rules": "Parking, floor area, dwelling density, occupancy, infrastructure and other unsupported rules are not evaluated. Full source fields remain in the zoning inspector.",
+      "partial-source-coverage": "{{area}} of the parcel lies outside the supplied zoning area. The partial envelope excludes that area; its applicability is unresolved."
+    },
+    "errors": {
+      "study-source-unavailable": "A source could not be read. Retry when it is available.",
+      "study-unavailable": "This source has no configured parcel study.",
+      "study-parcel-source-unavailable": "The configured parcel source is unavailable.",
+      "study-parcel-missing": "No parcel was returned at this point. Click inside a parcel and retry.",
+      "study-parcel-ambiguous": "Several parcel identities overlap this point. Choose an exact parcel; no identity was inferred.",
+      "study-parcel-incomplete": "Parcel coverage is incomplete.",
+      "study-zoning-incomplete": "The zoning source returned incomplete coverage.",
+      "study-multiple-zoning-areas": "This parcel crosses multiple zoning areas. Their rules have not been composed.",
+      "study-zoning-missing": "No supplied zoning area intersects this parcel.",
+      "unsupported-parcel-shape": "This demonstration supports small convex parcels without holes. This parcel needs a different geometry evaluator.",
+      "empty-supported-bound": "The supported setbacks leave no drawable bound.",
+      "invalid-front-edge": "Choose a valid parcel edge."
+    }
+  },
   "onMapEditor": {
     "missingSite": "This saved building has no valid authored site boundary, so its geometry cannot be edited safely.",
     "cancel": "Cancel",

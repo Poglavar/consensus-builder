@@ -1,4 +1,68 @@
 {
+  "planningStudy": {
+    "title": "Studija čestice",
+    "envelopeTitle": "Djelomična omotnica",
+    "designTitle": "Provjera oblikovanja",
+    "start": "Provjeri česticu ovdje",
+    "startHint": "Koristi česticu na odabranoj točki ili u središtu karte. Zonska područja i čestice zadržavaju zasebne identitete.",
+    "loading": "Učitavanje čestice i izvora prostornih pravila…",
+    "scope": "Uredite probni volumen prema izravnim vrijednostima Atlasa. Omotnica prikazuje podržani dio dimenzijskih ograničenja, uz pretpostavljeni prednji rub i relativnu visinu tla.",
+    "heightM": "Visina oblikovanja (m)",
+    "scale": "Mjerilo tlocrta (%)",
+    "eastM": "Pomak na istok (m)",
+    "northM": "Pomak na sjever (m)",
+    "frontEdge": "Pretpostavljeni prednji rub",
+    "edge": "Rub {{number}}",
+    "breach": "Oblikovanje prelazi barem jedno provjereno ograničenje. Ostali uvjeti ostaju nerazriješeni.",
+    "unresolved": "Provjerena ograničenja nisu prekoračena. Nerazriješeni uvjeti ostaju.",
+    "measured": "Izmjereno",
+    "limit": "Ograničenje",
+    "missingDirectValue": "Nije dostupna izravna vrijednost izvora.",
+    "unresolvedTitle": "Nerazriješeni uvjeti i pretpostavke",
+    "saved": "Nacrt je spremljen u ovom pregledniku. Prijedlog nije primijenjen ni objavljen.",
+    "saveError": "Nacrt se nije mogao spremiti u ovom pregledniku.",
+    "changed": "Izvor čestice ili prostornih pravila se promijenio. Prethodni nacrt je sačuvan; njegova procjena više nije aktualna.",
+    "restart": "Počni ponovno s aktualnim izvorima",
+    "reset": "Vrati početno probno oblikovanje",
+    "references": "Fiksirane reference pravila i čestice",
+    "invalidInput": "Unesite dimenzije unutar prikazanih raspona. Karta i dalje prikazuje posljednje valjano oblikovanje.",
+    "status": {
+      "pass": "Unutar provjerenog ograničenja",
+      "fail": "Prekoračeno provjereno ograničenje",
+      "unknown": "Nerazriješeno"
+    },
+    "checks": {
+      "parcelContainment": "Unutar izvorne čestice",
+      "zoningCoverage": "Dio oblikovanja izvan pokrivenosti izvora",
+      "frontSetback": "Prednji odmak",
+      "sideSetback": "Bočni odmaci",
+      "rearSetback": "Stražnji odmak",
+      "buildingCoverage": "Izgrađenost",
+      "use": "Zabilježeni uvjet stambene namjene"
+    },
+    "unresolvedReasons": {
+      "applicability": "Aktualna pravna primjenjivost, preklopna pravila, iznimke i potrebna rasprava nisu provjereni.",
+      "edge-assumption": "Prednji, stražnji i bočni rubovi proizlaze iz odabranog prednjeg ruba. Tumačenje nije provjereno prema ulici ili pravnom obuhvatu građevne čestice.",
+      "vertical-reference": "Visina koristi ravnu relativnu referencu tla. Izmjereni teren, pravila krova i visinska referenca propisa nisu provjereni.",
+      "measurement-basis": "Provjera površina koristi ovu česticu i probni tlocrt. Pravne definicije čestice, zgrade i etažne površine mogu se razlikovati.",
+      "other-rules": "Parkiranje, etažna površina, gustoća stanovanja, uvjeti stanovanja, infrastruktura i ostala nepodržana pravila nisu procijenjeni. Sva polja izvora ostaju u inspektoru prostornih pravila.",
+      "partial-source-coverage": "{{area}} čestice leži izvan dostavljenog zonskog područja. Djelomična omotnica isključuje tu površinu; primjenjivost ostaje nerazriješena."
+    },
+    "errors": {
+      "study-source-unavailable": "Izvor se nije mogao učitati. Pokušajte ponovno kada bude dostupan.",
+      "study-unavailable": "Za ovaj izvor nije postavljena studija čestice.",
+      "study-parcel-source-unavailable": "Postavljeni izvor čestica nije dostupan.",
+      "study-parcel-missing": "Na ovoj točki nije pronađena čestica. Kliknite unutar čestice i pokušajte ponovno.",
+      "study-parcel-ambiguous": "Na ovoj točki preklapa se više identiteta čestica. Odaberite točnu česticu; identitet nije pretpostavljen.",
+      "study-parcel-incomplete": "Pokrivenost česticama nije potpuna.",
+      "study-zoning-incomplete": "Izvor prostornih pravila vratio je nepotpunu pokrivenost.",
+      "study-multiple-zoning-areas": "Čestica prelazi više zonskih područja. Njihova pravila još nisu objedinjena.",
+      "study-zoning-missing": "Nijedno dostavljeno zonsko područje ne siječe ovu česticu.",
+      "unsupported-parcel-shape": "Demonstracija podržava male konveksne čestice bez rupa. Za ovu česticu potreban je drugi geometrijski evaluator.",
+      "empty-supported-bound": "Podržani odmaci ne ostavljaju omotnicu za prikaz.",
+      "invalid-front-edge": "Odaberite valjani rub čestice."
+    }
+  },
   "onMapEditor": {
     "missingSite": "Ova spremljena zgrada nema valjanu granicu izvorne lokacije pa nije moguće sigurno uređivati njezinu geometriju.",
     "cancel": "Odustani",

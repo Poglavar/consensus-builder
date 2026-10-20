@@ -1,13 +1,34 @@
 // Read-only, bounded provider results for the shared Built / Permitted / Proposed experience.
 import { validateBounds } from '../parcels/source-contract.js';
 import { planningRepresentations, planningParcel, planningRecord, getPlanningSources } from '../planning/sources.js';
+import { loadParcelStudy } from '../planning/parcel-study.js';
 
 function validCity(city) { return typeof city === 'string' && /^[a-z][a-z0-9_-]{0,79}$/.test(city); }
 function validSource(source) { return source === undefined || (typeof source === 'string' && /^[a-z0-9_-]{1,100}$/.test(source)); }
 
 export function setupPlanningRoutes(app, pool, { sources = getPlanningSources(),
     query = (pool, query) => planningRepresentations(pool, query, sources),
-    parcelQuery = (pool, query) => planningParcel(pool, query, sources) } = {}) {
+    parcelQuery = (pool, query) => planningParcel(pool, query, sources),
+    studyQuery = query => loadParcelStudy(query, { sources }) } = {}) {
+    app.get('/planning/study', async (req, res) => {
+        res.set('Cache-Control', 'no-store');
+        const { city, source, scenario, parcel, point } = req.query;
+        const coordinates = typeof point === 'string' ? point.split(',').map(value => value.trim() ? Number(value) : NaN) : null;
+        if (!validCity(city) || !source || !validSource(source) || !validSource(scenario)
+            || Boolean(parcel) === Boolean(point)
+            || parcel && (typeof parcel !== 'string' || !/^[A-Za-z0-9][A-Za-z0-9_./~:-]{0,249}$/.test(parcel))
+            || point && (!coordinates || coordinates.length !== 2 || !coordinates.every(Number.isFinite)
+                || Math.abs(coordinates[0]) > 180 || Math.abs(coordinates[1]) >= 85)) {
+            return res.status(400).json({ error: 'Invalid parcel study query.', code: 'invalid-study-query' });
+        }
+        try { res.json(await studyQuery({ city, source, scenario, parcel, point: coordinates })); }
+        catch (error) {
+            const status = [400, 422].includes(error.status) ? error.status : 503;
+            if (status === 503) console.error(`[${new Date().toISOString()}] [planning-study] Source read failed (${error.code || 'upstream-error'}).`);
+            res.status(status).json({ error: 'Parcel study could not be assembled.',
+                code: status === 503 ? 'study-source-unavailable' : error.code || 'study-unavailable' });
+        }
+    });
     app.get('/planning/record', async (req, res) => {
         res.set('Cache-Control', 'no-store');
         if (!validCity(req.query.city) || !req.query.source || !validSource(req.query.source)
