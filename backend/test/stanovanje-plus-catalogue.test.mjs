@@ -21,6 +21,10 @@ test('groups floor variants without inventing apartments, levels or a geographic
   assert.notEqual(bundle.sources[0].sha256,sha);assert.equal(bundle.sources[0].originalSvg.sha256,sha);
   const id=bundle.rows[0].id;fs.writeFileSync(path.join(root,sources[0].code,'source-full.png'),'changed-raster');
   assert.ok(archiveCatalogue(root).rows.some(r=>r.id===id));
+  const pending=[{...sources[0],sourceSha256:undefined},sources[1]];
+  fs.writeFileSync(path.join(root,'selection.json'),JSON.stringify(pending));
+  assert.equal(archiveCatalogue(root).rows.length,1);
+  fs.writeFileSync(path.join(root,'selection.json'),JSON.stringify(sources));
   fs.writeFileSync(path.join(root,sources[0].code,'source.svg'),'changed');assert.throws(()=>archiveCatalogue(root),/hash mismatch/);
  }finally{fs.rmSync(root,{recursive:true});}
 });

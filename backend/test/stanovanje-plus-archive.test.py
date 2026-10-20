@@ -1,6 +1,8 @@
 """Headless unit checks for archive coverage and drawing/building identity."""
 import importlib.util
+import json
 from pathlib import Path
+import tempfile
 import unittest
 
 script = Path(__file__).resolve().parents[1]/'scripts/stanovanje-plus-archive.py'
@@ -46,6 +48,30 @@ class ArchiveTests(unittest.TestCase):
     def test_foreign_source_origin_is_rejected(self):
         with self.assertRaisesRegex(ValueError, 'origin'):
             archive.url('https://example.test/info.php?code=abc')
+
+    def test_recrawl_keeps_retained_drawings_ready_while_retrying_a_missing_source(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root/'index.html').write_text('<table><tr><td><a href="info.php?code=example">Building</a></td><td>Architect</td><td>City</td><td><a href="nacrti.php?code=example&amp;nc=tl-kk1">T1</a></td><td><a href="nacrti.php?code=example&amp;nc=tl-pr">Ground</a></td></tr></table>')
+            archive.write(root/'robots.json', {'status':404,'text':''})
+            building = root/'buildings'/'example'; building.mkdir(parents=True)
+            (building/'info.html').write_text('<meta charset="utf-8"><table/>')
+            (building/'tl-kk1.svg').write_bytes(b'<svg/>')
+            source = root/'example'; source.mkdir(); (source/'source.svg').write_bytes(b'<svg/>')
+            archive.write(source/'source.json', {'sourceUrl':archive.BASE+'2026nacrti.php?code=example&nc=tl-kk1','sourceSha256':archive.digest(b'<svg/>')})
+            observed = []
+            original = archive.fetch
+            def unavailable(_url):
+                observed.append(bool(archive.read(root/'selection.json')[0].get('sourceSha256')))
+                raise ValueError('upstream drawing unavailable')
+            archive.fetch = unavailable
+            try:
+                archive.collect(root)
+            finally:
+                archive.fetch = original
+            self.assertEqual(observed, [True])
+            self.assertEqual(archive.read(root/'collection-summary.json')['ready'], 1)
+            self.assertEqual(archive.read(root/'collection-summary.json')['errors'], 1)
 
 
 if __name__ == '__main__':

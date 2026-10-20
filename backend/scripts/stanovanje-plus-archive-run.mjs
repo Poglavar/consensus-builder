@@ -15,6 +15,10 @@ const concurrency=Number(process.argv.find(a=>a.startsWith('--concurrency='))?.s
 if(!Number.isInteger(concurrency)||concurrency<1||concurrency>8)throw Error('Concurrency must be 1–8');
 const python=path.join(repo,'backend/.venv-stanovanje/bin/python'),scripts=path.join(repo,'backend/scripts');
 const read=file=>JSON.parse(fs.readFileSync(file,'utf8'));
+function collectionComplete(){
+ const summary=path.join(root,'collection-summary.json'),selection=path.join(root,'selection.json');
+ return fs.existsSync(summary)&&fs.existsSync(selection)&&fs.statSync(summary).mtimeMs>=fs.statSync(selection).mtimeMs;
+}
 const errorsFile=path.join(root,'processing-errors.json'),errors=fs.existsSync(errorsFile)?read(errorsFile):{};
 for(const [key,error] of Object.entries(errors))if(error.stage==='render'&&fs.existsSync(path.join(root,error.code,'source-only.json')))delete errors[key];
 const lock=path.join(root,'processing.lock');
@@ -26,9 +30,12 @@ function local(stage,source){
  catch(error){errors[key]={code:source.code,stage,error:error.stderr?.toString().slice(-2000)||error.message};write(errorsFile,errors);console.log(new Date().toISOString(),'LOCAL ERROR',source.code,stage,errors[key].error);return false;}
 }
 async function waitForCollection(){
- if(fs.existsSync(path.join(root,'collection-summary.json')))return;
+ if(collectionComplete())return;
  console.log(new Date().toISOString(),'Waiting for the next collected sources');
- await new Promise((resolve,reject)=>{const watcher=fs.watch(root,(_event,file)=>{if(['selection.json','collection-summary.json'].includes(file)){watcher.close();resolve();}});watcher.on('error',reject);});
+ const selection=path.join(root,'selection.json'),before=fs.existsSync(selection)?fs.statSync(selection).mtimeMs:null;
+ await new Promise((resolve,reject)=>{const watcher=fs.watch(root,(_event,file)=>{if(['selection.json','collection-summary.json'].includes(file)){watcher.close();resolve();}});watcher.on('error',reject);
+  if(collectionComplete()||(fs.existsSync(selection)&&fs.statSync(selection).mtimeMs!==before)){watcher.close();resolve();}
+ });
 }
 try{
  for(;;){
@@ -67,14 +74,14 @@ try{
   const pending=eligibleSources(root,read(path.join(root,'selection.json')),'reading').length+eligibleSources(root,updated,'refinement').length;
   const incomplete=Object.keys(errors).length||failures.length||states.some(s=>s.validation.length);
   write(path.join(root,'processing-summary.json'),{at:new Date().toISOString(),private:true,totalDrawings:read(path.join(root,'selection.json')).length,
-   status:pending||!fs.existsSync(path.join(root,'collection-summary.json'))?'running':incomplete?'partial':'complete-with-review',
+   status:pending||!collectionComplete()?'running':incomplete?'partial':'complete-with-review',
    collected:updated.length,models:states.filter(s=>s.model&&!s.validation.length).length,refined:states.filter(s=>s.status==='refined-awaiting-visual-review').length,
    errors:Object.values(errors),failedOrInterruptedAttempts:failures,drawings:states});
   write(path.join(root,'publication-bundle.json'),archiveCatalogue(root));
   console.log(new Date().toISOString(),'CHECKPOINT',states.length,'collected',states.filter(s=>s.model).length,'models',Object.keys(errors).length,'local errors');
   const latest=read(path.join(root,'selection.json')).filter(s=>s.sourceSha256);
   if(eligibleSources(root,latest,'reading').length||eligibleSources(root,latest,'refinement').length||latest.length>sources.length)continue;
-  if(fs.existsSync(path.join(root,'collection-summary.json')))break;
+  if(collectionComplete())break;
   await waitForCollection();
  }
 }finally{fs.rmSync(lock,{recursive:true});}

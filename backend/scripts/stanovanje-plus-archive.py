@@ -143,7 +143,16 @@ def collect(root):
         allowed(BASE+'nacrtitab.php')
         index.write_bytes(fetch(BASE+'nacrtitab.php'))
     buildings, plans = inventory(index.read_bytes())
+    for plan in plans:
+        saved = root/plan['code']/'source.json'
+        svg = root/plan['code']/'source.svg'
+        if saved.exists() and svg.exists():
+            prior = read(saved)
+            raw = svg.read_bytes()
+            if prior.get('sourceUrl') == plan['sourceUrl'] and prior.get('sourceSha256') == digest(raw):
+                plan.update(sourceSha256=prior['sourceSha256'], bytes=len(raw))
     write(root/'buildings.json', buildings)
+    write(root/'selection.json', plans)
     by_drawing = {(p['buildingCode'], p['drawingId']): p for p in plans}
     started = time.monotonic()
 

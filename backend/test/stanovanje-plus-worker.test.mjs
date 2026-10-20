@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import {eligibleSources,runStage} from '../scripts/stanovanje-plus-worker.mjs';
+import {eligibleSources,runStage,retryRoutingFailures} from '../scripts/stanovanje-plus-worker.mjs';
 test('a saved response resumes without another model call; interrupted attempts stay blocked',async()=>{
  const root=fs.mkdtempSync(path.join(os.tmpdir(),'archive-worker-'));
  try{
@@ -35,5 +35,11 @@ test('repeated service failures checkpoint the pass and leave queued identities 
   const passes=fs.readdirSync(path.join(root,'passes'));const pass=JSON.parse(fs.readFileSync(path.join(root,'passes',passes[0])));
   assert.equal(pass.results.filter(r=>r.status==='failed').length,3);
   assert.equal(pass.results.filter(r=>r.status==='deferred-service-unavailable').length,3);
+  retryRoutingFailures(root,'reading',['source-1']);
+  const retried=await runStage(root,'reading',{codes:['source-1'],llm:{complete:async()=>({data:{code:'source-1'},model:'test',costUsd:0})}});
+  assert.equal(retried.length,1);assert.ok(retried[0].attemptId.endsWith('-02'));
+  assert.equal(fs.existsSync(path.join(root,'source-1','attempt-history','reading-1.json')),true);
+  assert.equal(fs.existsSync(path.join(root,'source-3','attempt.json')),false);
+  assert.throws(()=>retryRoutingFailures(root,'reading',['source-1']),/Only inspected routing failures/);
  }finally{fs.rmSync(root,{recursive:true});}
 });

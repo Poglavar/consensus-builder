@@ -13,6 +13,7 @@ const hash=bytes=>createHash('sha256').update(bytes).digest('hex');
 export function archiveCatalogue(root){
  const selection=read(path.join(root,'selection.json')),groups=new Map(),sources=[],issues=[];
  for(const source of selection){
+  if(!source.sourceSha256){issues.push({code:source.code,reason:'Source collection is pending or unavailable'});continue;}
   const dir=path.join(root,source.code),raster=path.join(dir,'source-full.png'),svg=path.join(dir,'source.svg');
   if(!fs.existsSync(raster)||!fs.existsSync(svg)){issues.push({code:source.code,reason:'Retained source raster unavailable'});continue;}
   if(hash(fs.readFileSync(svg))!==source.sourceSha256)throw Error('Source hash mismatch: '+source.code);

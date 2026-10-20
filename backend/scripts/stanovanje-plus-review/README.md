@@ -43,6 +43,11 @@ with code 2; format validity alone does not establish usability. Source-only roo
 remain viewable without fabricated walls. Geometric refinements retain measured wall solids;
 ambiguous components and unsupported voids remain explicit review failures.
 
+An inspected workspace-routing failure with no saved response can be retried explicitly using
+`stanovanje-plus-worker.mjs --root=<archive> --stage=reading --retry-codes=<drawing-code>`.
+This archives the failed request/attempt, checks the unchanged source hash, assigns a new attempt
+number and restricts the pass to those same drawing identities. It does not add a new cohort.
+
 The processor refreshes `publication-bundle.json` after each pass. It uses the existing shared
 publication projection and catalogue consumer. Source PNG hashes identify full-source rasters;
 the bundle also records their original SVG hashes and URLs. Whole-floor variants do not create
