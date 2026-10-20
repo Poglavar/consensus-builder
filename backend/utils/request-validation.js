@@ -76,6 +76,7 @@ export const validators = {
         maxLength = null,
         pattern = null,
         disallowControlChars = false,
+        allowLineBreaks = false,
         label = null,
         typeMessage = null,
         minLengthMessage = null,
@@ -96,7 +97,7 @@ export const validators = {
             if (maxLength != null && normalized.length > maxLength) {
                 return fail(maxLengthMessage || `${fieldLabel} must be at most ${maxLength} characters.`);
             }
-            if (disallowControlChars && /\p{C}/u.test(normalized)) {
+            if (disallowControlChars && /\p{C}/u.test(allowLineBreaks ? normalized.replace(/[\r\n]/g, '') : normalized)) {
                 return fail(controlCharsMessage || `${fieldLabel} contains invalid control characters.`);
             }
             if (pattern && !pattern.test(normalized)) {

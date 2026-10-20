@@ -26,6 +26,7 @@ export function chainAgentStamp(record, chain, personas = agentPersonas) {
         rationale: String(record.agent.rationale || record.description || '').slice(0, 10000),
         run_id: String(record.agent.run_id || '').slice(0, 255),
         ...(['algorithm', 'llm'].includes(record.agent.controller) ? { controller: record.agent.controller } : {}),
+        ...(persona.housingResearch && record.agent.housing?.status === 'research-concept' ? { housing: structuredClone(record.agent.housing) } : {}),
         verified: { method: 'chain', chainRef: chain.ref } };
 }
 

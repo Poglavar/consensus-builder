@@ -5,6 +5,8 @@ import {planHousingCandidates,housingPick,housingOutreach,chooseHousingArea} fro
 import {housingFeatures,screenHousingParcels} from '../agents/housing-screen.js';
 import {selectAlgorithmicPicks} from '../agents/algorithmic-picker.js';
 import {buildProposalRecord} from '../agents/record-builder.js';
+import { proposalCreateBodyValidator } from '../routes/proposals.js';
+import { chainAgentStamp } from '../proposals/chain-mirror.js';
 import {createRequire} from 'node:module';
 const require=createRequire(import.meta.url), chainRecord=require('../../frontend/js/proposals/chain-record.js');
 const area={city:'test',label:'Test City',medianMultiple:14.1,rankingUrl:'https://example.org/report',authority:{name:'Planning',url:'https://example.org/planning',email:'planning@example.org'}};
@@ -68,6 +70,19 @@ describe('Affordabot housing research',()=>{
    const r=buildProposalRecord({candidate:c,pick,persona,runId:'test',city:'test',turf});
    expect(r.facets.ownership).toBe('no-change');expect(r.offer).toBe(0);expect(r.agent.housing.rent).toBeNull();
    expect(r.agent.housing.requiredZoningChanges).toBeNull();expect(r.geometry.buildings[0].geometry.coordinates).toHaveLength(2);
+ });
+ it('passes the real publication body validator with multiline research text',()=>{
+   const c=planned(),pick={...housingPick(c),proposalId:'test-proposal'};
+   const record=buildProposalRecord({candidate:c,pick,persona,runId:'test',city:'test',turf});
+   let error=null,called=false;
+   const res={status(){return this;},json(body){error=body;}};
+   proposalCreateBodyValidator({body:record},res,()=>{called=true;});
+   expect(error).toBeNull();expect(called).toBe(true);
+ });
+ it('keeps signed housing evidence in the authenticated chain agent stamp',()=>{
+   const record={author:'wallet',agent:{persona:'affordabot',housing:planned().housing}};
+   const stamp=chainAgentStamp(record,{ref:{chainType:'solana'},owner:'wallet'},[{...persona,wallet:'wallet'}]);
+   expect(stamp.housing).toEqual(record.agent.housing);expect(stamp.housing).not.toBe(record.agent.housing);
  });
  it('queues published proposals with official role contacts and disabled X automation',()=>{
    const q=housingOutreach({candidate:planned(),post:{proposalId:'chain_123',id:5},publicBase:'https://example.org'});

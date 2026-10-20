@@ -158,3 +158,12 @@ describe('validators', () => {
         expect(validator('ftp://example.com', 'link')).toEqual({ ok: false, error: 'link must use http or https.' });
     });
 });
+describe('multiline descriptions', () => {
+    it('allows line breaks only when explicitly enabled and continues rejecting other controls', () => {
+        const multiline=validators.string({disallowControlChars:true,allowLineBreaks:true});
+        expect(multiline('One.\nTwo.\r\nThree.', 'description').ok).toBe(true);
+        expect(multiline('One\u0000Two', 'description').ok).toBe(false);
+        expect(multiline('One\tTwo', 'description').ok).toBe(false);
+        expect(validators.string({disallowControlChars:true})('One\nTwo','title').ok).toBe(false);
+    });
+});
