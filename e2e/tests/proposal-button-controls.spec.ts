@@ -4,6 +4,7 @@ import { openCity, createSpace, showProposal, chooseTermsForShare, PARCEL_GEOMET
 import { attachSharedProposalServer, createSharedProposalServer } from '../helpers/mocks/shared-server';
 import { connectWalletByConnectorId, injectMockEvmWallet, injectMockSolanaWallet, routeSolanaReads, waitForBlockchainRuntime } from '../helpers/blockchain';
 import { installProposalEvmBoundary, PROPOSAL_EVM_ACCOUNT } from '../helpers/proposal-chain-boundary';
+import { installSolanaProposalAccount } from '../helpers/solana-proposal-account';
 
 async function addProposal(page: import('@playwright/test').Page, proposal: Record<string, unknown>): Promise<string> {
   return page.evaluate(record => (window as any).proposalStorage.addProposal(record), proposal);
@@ -101,6 +102,7 @@ test.describe('proposal detail button controls @features', () => {
 
   test('Copy hash copies the declared proposal oracle recipe digest', async ({ mockApi: page }) => {
     const proposalAccount = '3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg';
+    const owner = '7xKXtg2CWYcy6EH8d9xvPht4JyhV46Lxgq6vN6hS9wZT';
     await mockEmptySolanaRpc(page);
     const digest = `sha256:${'a'.repeat(64)}`;
     await page.route('**/oracle/recipes/proposal-lifecycle-v1?*', route => route.fulfill({ json: {
@@ -108,6 +110,8 @@ test.describe('proposal detail button controls @features', () => {
     } }));
     await page.route('**/oracle/events?*', route => route.fulfill({ json: { events: [] } }));
     await openCity(page);
+    await waitForBlockchainRuntime(page, ['SolanaChainDataLoader', 'SolanaMarketBridge', 'SolanaAcceptanceClient', 'solanaWeb3', 'ProposalMarketView']);
+    await installSolanaProposalAccount(page, { proposal: proposalAccount, owner });
     await page.evaluate(() => (window as any).i18n.setLanguage('en'));
     await page.context().grantPermissions(['clipboard-read', 'clipboard-write'], { origin: new URL(page.url()).origin });
     const proposalId = await addProposal(page, {

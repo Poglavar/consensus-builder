@@ -611,7 +611,7 @@ const proposalStorage = {
             ? getProposalGoalLabel(normalizedGoal)
             : `Proposal ${proposalId}`;
 
-        const title = pickPreferredString(
+        const titleCandidates = [
             existing && existing.title,
             existing && existing.name,
             existing && existing.proposalName,
@@ -629,10 +629,14 @@ const proposalStorage = {
             raw.metadata && raw.metadata.name,
             raw.metadata && raw.metadata.title,
             raw.onchain && raw.onchain.metadata && raw.onchain.metadata.name,
-            raw.onchain && raw.onchain.metadata && raw.onchain.metadata.title,
-            raw.description,
-            fallbackTitle
-        );
+            raw.onchain && raw.onchain.metadata && raw.onchain.metadata.title
+        ];
+        // Generated labels are fallbacks, even when a prior chain scan saved one before metadata
+        // arrived. Their longer qualified ID must not outrank the author's actual title.
+        const generatedTitles = new Set([fallbackTitle, `Proposal ${proposalId}`]);
+        const title = pickPreferredString(...titleCandidates.filter(value =>
+            !generatedTitles.has(typeof value === 'string' ? value.trim() : value)
+        )) || fallbackTitle;
 
         const description = pickPreferredString(
             raw.description,

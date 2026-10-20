@@ -5,6 +5,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { createRequire } from 'node:module';
 import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
+import { parse } from '@babel/parser';
 import * as turfModule from '@turf/turf';
 import { setupUrbanBlocksRoutes } from '../routes/urban-blocks.js';
 import { blockRoadsToGeoJSON, buildBlockRoadQuery, fetchBlockRoads } from '../streets/block-roads.js';
@@ -367,6 +368,28 @@ describe('block road source and HTTP route', () => {
 });
 
 describe('worldwide layer entry and click ownership', () => {
+    it('ignores dragged map clicks while still selecting blocks on ordinary clicks', () => {
+        const source = readFileSync(new URL('../../frontend/js/urban-blocks-view.js', import.meta.url), 'utf8');
+        const wrapper = parse(source).program.body.find(node => node.type === 'ExpressionStatement').expression.callee;
+        const node = wrapper.body.body.find(node => node.type === 'FunctionDeclaration' && node.id.name === 'captureClick');
+        for (const [dragged, boxZoomed] of [[true, false], [false, true], [false, false]]) {
+            const point = { lat: 1, lng: 2 };
+            const selectAt = vi.fn();
+            const event = { target: { closest: selector => selector === '.leaflet-pane' ? {} : null }, stopImmediatePropagation: vi.fn() };
+            const win = { map: { dragging: { moved: () => dragged }, boxZoom: { moved: () => boxZoomed },
+                mouseEventToLatLng: () => point } };
+            const captureClick = new Function('win', 'ownsClicks', 'selectAt', `${source.slice(node.start, node.end)}; return captureClick;`)(win, () => true, selectAt);
+            captureClick(event);
+            if (dragged || boxZoomed) {
+                expect(selectAt).not.toHaveBeenCalled();
+                expect(event.stopImmediatePropagation).not.toHaveBeenCalled();
+            } else {
+                expect(selectAt).toHaveBeenCalledWith(point);
+                expect(event.stopImmediatePropagation).toHaveBeenCalledTimes(1);
+            }
+        }
+    });
+
     it('keeps the Layers control visible in the explore city', () => {
         const css = readFileSync(new URL('../../frontend/css/world.css', import.meta.url), 'utf8');
         const exploreRules = [...css.matchAll(/body\.explore-city[^\{]*\{[^}]*\}/g)].map(match => match[0]);

@@ -317,7 +317,7 @@ test.describe('proposal button controls: modal and alternate states @features', 
     await showProposal(page, id);
     await page.locator('#proposal-details-footer .btn-share-proposal').click();
     await chooseTermsForShare(page);
-    await page.getByRole('button', { name: 'Share applied proposals…', exact: true }).click();
+    await page.getByRole('button', { name: 'Share applied proposals', exact: true }).click();
 
     const plan = page.locator('.share-plan-panel');
     await expect(plan).toBeVisible({ timeout: 30000 });

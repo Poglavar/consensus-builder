@@ -189,7 +189,7 @@ test('ownership and approval set up in the designer lands on the created proposa
   await dialog.locator('[data-action-id="apply"]').click();
   await expect(dialog).toHaveCount(0);
   await expect(row).toContainText('Rights for 1 parcel(s), 2 owner(s)');
-  await expect(row).toContainText('Madrid — compensation by the owners: Passes with at least 1/2 of the area, and needs the municipality’s approval.');
+  await expect(row).toContainText('Madrid — compensation by the owners: Configured approval rules require at least 1/2 of the area and the municipality’s approval.');
   // The owners now come from the rights file.
   await expect.poll(async () => (await plotRows(page)).join(' ')).toMatch(/Owner A.*Owner B|Owner B.*Owner A/);
 

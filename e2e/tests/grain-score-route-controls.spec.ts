@@ -139,13 +139,14 @@ test(`named-plan grain-score route ${scenario} verifies its published membership
         return w.proposalStorage.getAllProposals().filter((p: any) => w.isProposalCurrentlyApplied(p)).map((p: any) => p.proposalId);
       });
       expect(await appliedIds()).toEqual([forkId]);
-      // Re-enter from the score action. It must fetch current verification and reject the fork
-      // even though the shared loader considers its original already represented on the map.
+      // Re-enter from the score action. The verified plan names the published row, so the loader
+      // tries that exact copy. Its ground conflicts with the still-applied fork; scoring must stop
+      // while preserving the user's current composition.
       await Promise.all([
         receiver.page.waitForRequest(request => request.method() === 'GET' && request.url().endsWith(`/plans/${slug}`)),
         receiver.page.evaluate(() => (window as any).summonUrbanistRooster()),
       ]);
-      await expect(panel.locator('[data-grain-role="error"]')).toContainText('A local edit or fork cannot replace a member.');
+      await expect(panel.locator('[data-grain-role="error"]')).toContainText('The named plan cannot be scored because not all of its proposals could be applied.');
       await expect(panel.locator('[data-grain-action="start"]')).toBeHidden();
       await expect(panel.locator('[data-grain-role="result"]')).toBeHidden();
       expect(await appliedIds()).toEqual([forkId]);

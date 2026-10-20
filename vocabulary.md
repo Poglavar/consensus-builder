@@ -131,6 +131,10 @@ removed and reimported; no parcel-similarity or bare-ID compatibility path remai
 [Reference comparison](frontend/js/proposals/chain-ref.js), [chain import](frontend/js/proposals/data.js),
 [EVM sync](frontend/js/blockchain-sync.js), [Solana sync](frontend/js/solana/blockchain-sync.js).
 
+Chain-import title fields use supplied names or titles. A generated goal label or
+`Proposal <local key>` is only a fallback and cannot outrank a later metadata title because its
+qualified identifier is longer. Description text remains a description, not an inferred title.
+
 #### Proposal identifiers at API boundaries
 
 | Term | Current representation and meaning | Boundary rule |

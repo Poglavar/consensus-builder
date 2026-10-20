@@ -4,17 +4,19 @@ import { clickMapPoint, createBuilding, createSpace, drawCorridor, openCity, ope
 import { connectWalletByConnectorId, injectMockSolanaWallet, waitForBlockchainRuntime } from '../helpers/blockchain';
 import { selectNativeOption } from '../helpers/controls';
 import { surveyResponse } from '../helpers/mocks/survey-data';
+import { installSolanaProposalAccount } from '../helpers/solana-proposal-account';
 
 const BET_ACCOUNT = 'Ekpt4qMsJWyyraDfPfq2zkT1JwMsJCKrSmkoNGgHreFR';
 const BET_WALLET = 'Cp886ML2Ja4FF3SMmyUeW16rRGsLrBcRW8kfWS1VfN7W';
 
 function settledMarkets(outcome: 'yes' | 'no' = 'no') {
+  const chainStatus = outcome === 'yes' ? 'Executed' : 'Cancelled';
   const market = {
     address: 'HQqbGtviQr5KRs4x8CWSCVhnkrLKDiYqXmVSBY8GZdfw', yesPool: '250000', noPool: '50000',
     poolAtomic: '300000', resolved: true, outcome,
   };
   const proposal = {
-    id: 789, proposalId: 'minted-one', title: 'Plan-led infill', goal: 'single', lifecycleStatus: 'Executed',
+    id: 789, proposalId: 'minted-one', title: 'Plan-led infill', goal: 'single', lifecycleStatus: chainStatus, chainStatus,
     createdAt: '2026-10-01T09:30:00Z', expiresAt: null, author: 'densifier-01', agent: true,
     proposalRole: null, screenshotUrl: null, parcelIds: ['HR-335614-2311'], proposalAccount: BET_ACCOUNT,
     bettable: false, canOpenMarket: false, market,
@@ -104,6 +106,7 @@ async function prepareWinningsPage(page: import('@playwright/test').Page, side: 
     w.__betClaimExpectedPosition = position.toBase58();
     w.SolanaChainDataLoader.getConnection = () => connection;
   }, { account: BET_ACCOUNT, wallet: BET_WALLET, side });
+  await installSolanaProposalAccount(page, { proposal: BET_ACCOUNT, owner: BET_WALLET, status: side === 'yes' ? 1 : 2 });
 }
 
 const ADJACENT_PARCEL_ID = 'HR-335754-1235';

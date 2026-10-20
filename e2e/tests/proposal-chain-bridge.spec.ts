@@ -192,6 +192,9 @@ test.describe('Proposal chain bridge @features', () => {
       chainId: '84532',
       contractAddress: '0x6c3AdE19a8947bC4CC75B2AE3F2E25F4cBb23709',
       explorerUrl: 'https://sepolia.basescan.org/tx/0xaccept123',
+      proposalId: '5',
+      lifecycle: null,
+      blockNumber: undefined,
     });
   });
 

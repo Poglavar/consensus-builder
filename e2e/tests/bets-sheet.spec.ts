@@ -10,6 +10,7 @@ const PROPOSAL_ACCOUNT = 'Ekpt4qMsJWyyraDfPfq2zkT1JwMsJCKrSmkoNGgHreFR';
 const SOLANA_WALLET = 'Cp886ML2Ja4FF3SMmyUeW16rRGsLrBcRW8kfWS1VfN7W';
 
 function marketsPayload(market: Record<string, unknown> = { address: 'HQqbGtviQr5KRs4x8CWSCVhnkrLKDiYqXmVSBY8GZdfw', yesPool: '250000', noPool: '50000', poolAtomic: '300000', resolved: false, outcome: null }) {
+  const chainStatus = market.resolved ? (market.outcome === 'yes' ? 'Executed' : 'Cancelled') : 'Active';
   return {
     city: 'zagreb', generatedAt: '2026-10-09T07:00:00.000Z', cluster: 'devnet', stakeDecimals: 6,
     marketProgram: 'GDYnzduynKhKgxDhvvKVarn2s23DtzA26s6hycuUYDRB', stakeMint: '4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU',
@@ -18,7 +19,7 @@ function marketsPayload(market: Record<string, unknown> = { address: 'HQqbGtviQr
       id: 'c-test', parcelIds: ['HR-335614-2311'], proposalCount: 2, mintedCount: 1, marketCount: 1, openMarketCount: 1,
       poolAtomic: '300000', latestCreatedAt: '2026-10-02T00:00:00Z',
       proposals: [
-        { id: 789, proposalId: 'minted-one', title: 'Plan-led infill', goal: 'single', lifecycleStatus: 'Active', createdAt: '2026-10-01T09:30:00Z',
+        { id: 789, proposalId: 'minted-one', title: 'Plan-led infill', goal: 'single', lifecycleStatus: 'Active', chainStatus, createdAt: '2026-10-01T09:30:00Z',
           expiresAt: null, author: 'densifier-01', agent: true, proposalRole: null, screenshotUrl: null, parcelIds: ['HR-335614-2311'],
           proposalAccount: PROPOSAL_ACCOUNT, bettable: !market.resolved, canOpenMarket: false, market },
         { id: 790, proposalId: 'rival', title: 'Rival park', goal: 'park', lifecycleStatus: 'Active', createdAt: '2026-10-02T00:00:00Z',
@@ -226,7 +227,7 @@ test.describe('Bets sheet @features', () => {
     await dialog.locator('[data-market-submit]').click();
     await expect(dialog.locator('.cb-dialog__title')).toHaveText('Bet placed');
     await expect(dialog.locator('.proposal-boost-copy')).toHaveText('0.05 USDC on no is in the pool.');
-    await expect(dialog.locator('.proposal-market-placed__pool')).toContainText('71.4% chance');
+    await expect(dialog.locator('.proposal-market-placed__pool')).toContainText('71.4% of pool');
     await expect(dialog.locator('.proposal-market-placed__mine')).toHaveText('Your bets: no 0.05 USDC');
     await expect(page.locator('#bets-sheet')).toBeVisible();
     await expect(row).toHaveClass(/is-updated/);

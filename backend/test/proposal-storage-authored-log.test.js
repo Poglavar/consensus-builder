@@ -198,6 +198,20 @@ describe('proposalStorage authored-log persistence', () => {
         expect(fetch).toHaveBeenCalledTimes(1);
     });
 
+    it('uses metadata titles instead of generated chain labels or descriptions', () => {
+        const { storage } = bootStore();
+        const raw = { proposalId: '11', chainId: '84532', contractAddress: '0x1234567890abcdef',
+            cadastreParcelIds: ['parcel-a'], description: 'A description longer than the authored name.' };
+        const initial = storage.importOnChainProposal(raw);
+        expect(initial.title).toBe(`Proposal ${initial.proposalId}`);
+        const refreshed = storage.importOnChainProposal({ ...raw,
+            metadata: { name: 'Garden', description: raw.description } });
+        expect(refreshed.proposalId).toBe(initial.proposalId);
+        expect(refreshed).toMatchObject({ title: 'Garden', name: 'Garden', proposalName: 'Garden', description: raw.description });
+        const direct = storage.importOnChainProposal({ ...raw, proposalId: '12', metadata: { title: 'Park' } });
+        expect(direct.title).toBe('Park');
+    });
+
     it('keeps bare token IDs, authored IDs, shared parcels and different chain locations separate', () => {
         const { storage } = bootStore();
         const draft = { proposalId: 'same-authored-id', title: 'Local draft', cadastreParcelIds: ['parcel-a'] };

@@ -9,7 +9,7 @@ const WALLET = 'Cp886ML2Ja4FF3SMmyUeW16rRGsLrBcRW8kfWS1VfN7W';
 
 function payload(entry: Record<string, unknown> = {}) {
   const proposal = {
-    id: 789, proposalId: 'minted-one', title: 'Plan-led infill', goal: 'single', lifecycleStatus: 'Active',
+    id: 789, proposalId: 'minted-one', title: 'Plan-led infill', goal: 'single', lifecycleStatus: 'Active', chainStatus: 'Active',
     createdAt: '2026-10-01T09:30:00Z', expiresAt: null, author: 'densifier-01', agent: true,
     proposalRole: null, screenshotUrl: null, parcelIds: ['HR-335614-2311'], proposalAccount: ACCOUNT,
     bettable: true, canOpenMarket: false,
@@ -191,7 +191,7 @@ test.describe('Bets shared button variants @features', () => {
 
   for (const action of [
     { name: 'Open the pool', row: { bettable: false, canOpenMarket: true, market: null, lifecycleStatus: 'Active' } },
-    { name: 'Settle the pool', row: { bettable: false, canOpenMarket: false, lifecycleStatus: 'Executed', market: { address: 'HQqbGtviQr5KRs4x8CWSCVhnkrLKDiYqXmVSBY8GZdfw', yesPool: '250000', noPool: '50000', poolAtomic: '300000', resolved: false, outcome: null } } },
+    { name: 'Settle the pool', row: { bettable: false, canOpenMarket: false, lifecycleStatus: 'Executed', chainStatus: 'Executed', market: { address: 'HQqbGtviQr5KRs4x8CWSCVhnkrLKDiYqXmVSBY8GZdfw', yesPool: '250000', noPool: '50000', poolAtomic: '300000', resolved: false, outcome: null } } },
   ]) {
     test(`${action.name} requests a wallet before the pool transaction`, async ({ mockApi: page }) => {
       await routeMarkets(page, payload(action.row));

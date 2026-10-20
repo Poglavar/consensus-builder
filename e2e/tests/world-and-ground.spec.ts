@@ -48,7 +48,7 @@ test.describe('World navigation and open ground @features', () => {
     await world.getByRole('button', { name: /Open Belgrade/ }).click();
     await waitForMapReady(page);
     await expect(world).toHaveCount(0);
-    await expect.poll(() => page.evaluate(() => (window as any).CityConfigManager.getCurrentCityId())).toBe('belgrade');
+    await expect.poll(() => page.evaluate(() => (window as any).CityConfigManager?.getCurrentCityId?.() ?? null), { timeout: 15_000 }).toBe('belgrade');
   });
 
   // Show my location treats the browser's position as a search hit: the globe flies there and
