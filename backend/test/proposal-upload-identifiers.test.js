@@ -14,7 +14,8 @@ function loadBuildUploadReadyProposal({ fingerprint }) {
 
     const context = {
         stampCurrentAuthor: proposal => proposal,
-        proposalStorage: { getProposal: () => null },
+        proposalStorage: { proposals: new Map() },
+        getBackendBase: () => 'https://api.example.test',
         resolveProposalGoalKey: proposal => proposal.goal,
         mapGoalToBackendType: () => 'structure',
         getProposalCityId: () => 'test-city',
@@ -22,7 +23,7 @@ function loadBuildUploadReadyProposal({ fingerprint }) {
         window: null
     };
     context.window = context;
-    context.ProposalLineage = { publishedSourceIds: () => ({}) };
+    context.ProposalOrigin = require('../../frontend/js/proposals/origin.js');
     context.__cadastreAncestry = {
         validateCadastreParcelIds: ({ cadastreParcelIds }) => cadastreParcelIds,
         publishDeclaration: proposal => proposal.cadastreParcelIds,

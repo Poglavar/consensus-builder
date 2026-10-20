@@ -647,28 +647,22 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         ? escapeHtml(proposalDisplayDescription)
         : proposalDisplayDescription;
 
-    // "Based on <name>" — set when this proposal was forked via "Copy into new proposal". The
-    // link jumps to the source; fall back to the stored name if the source is no longer local.
-    const copiedFromId = (fullProposal && (fullProposal.sourceProposalId || fullProposal.replacementOfProposalId || fullProposal.copiedFromProposalId))
-        || proposal.sourceProposalId || proposal.replacementOfProposalId || proposal.copiedFromProposalId || null;
+    // A local source is navigable only through its typed reference. An unresolved publication
+    // keeps the authored relationship and title; the lineage response can supply a verified link.
+    const origin = window.ProposalOrigin.normalize((fullProposal || proposal).proposalOrigin);
     let copiedFromHtml = '';
-    if (copiedFromId) {
-        const storedName = (fullProposal && fullProposal.copiedFromName) || proposal.copiedFromName || null;
-        let sourceLabel = storedName || copiedFromId;
-        let sourceExists = false;
+    if (origin) {
+        let sourceProposal = null;
         try {
-            const sourceProposal = (typeof getProposalByIdOrHash === 'function') ? getProposalByIdOrHash(copiedFromId) : null;
-            if (sourceProposal) {
-                sourceExists = true;
-                sourceLabel = sourceProposal.title || sourceProposal.name || sourceLabel;
-            }
+            sourceProposal = window.ProposalOrigin.resolveLocal(origin,
+                proposalStorage.getAllProposals(), getBackendBase());
         } catch (_) { }
+        const sourceLabel = sourceProposal?.title || sourceProposal?.name || origin.title
+            || tProposal('panel.proposal.lineage.untitled', 'Untitled proposal');
         const safeLabel = typeof escapeHtml === 'function' ? escapeHtml(String(sourceLabel)) : String(sourceLabel);
-        const safeId = typeof escapeHtml === 'function' ? escapeHtml(String(copiedFromId)) : String(copiedFromId);
         const basedOnLabel = tProposal('panel.proposal.basedOn', 'Based on');
-        // The source opens in this panel: a script link (button.cb-link), never an external mark.
-        const inner = sourceExists
-            ? `<button type="button" class="cb-link proposal-based-on-link" onclick="focusProposalDetails(${inlineJsArg(copiedFromId)})">${safeLabel}</button>`
+        const inner = sourceProposal
+            ? `<button type="button" class="cb-link proposal-based-on-link" data-lineage-local-id="${safeAgentText(sourceProposal.proposalId)}">${safeLabel}</button>`
             : `<span class="proposal-based-on-name">${safeLabel}</span>`;
         copiedFromHtml = `<div class="proposal-based-on-row">${basedOnLabel}: ${inner}</div>`;
         // A land fork names how its parcels relate to the origin's, instead of a bare "Based on".
@@ -1162,11 +1156,11 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
 
             const statsItems = [];
 
-            if (stats.individualOwners !== null && stats.individualOwners !== undefined) {
+            if (stats.ownerEntryCount !== null && stats.ownerEntryCount !== undefined) {
                 statsItems.push(`
                     <div class="metric-group">
-                        <span class="metric-label">${tProposal('panel.proposal.stats.individualOwners', 'Estimated individual-owner entries:')}</span>
-                        <span class="metric-value">${stats.individualOwners}</span>
+                        <span class="metric-label">${tProposal('panel.proposal.stats.ownerEntryCount', 'Listed owner entries:')}</span>
+                        <span class="metric-value">${stats.ownerEntryCount}</span>
                     </div>
                 `);
             }
@@ -1212,11 +1206,11 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                     `);
                 }
             }
-            if (stats.totalMarketPrice !== null && stats.totalMarketPrice !== undefined) {
+            if (Number.isFinite(stats.totalMarketPrice) && stats.currency) {
                 statsItems.push(`
                     <div class="metric-group">
-                        <span class="metric-label">${tProposal('panel.proposal.stats.totalMarketPrice', 'Estimated total value:')}</span>
-                        <span class="metric-value">${Math.round(stats.totalMarketPrice).toLocaleString('hr-HR')} EUR</span>
+                        <span class="metric-label">${tProposal('panel.proposal.stats.totalMarketPrice', 'Modeled total parcel value:')}</span>
+                        <span class="metric-value">${CbFormat.formatMoney(stats.totalMarketPrice, stats.currency, { maxFractionDigits: 0 })}</span>
                     </div>
                 `);
             }

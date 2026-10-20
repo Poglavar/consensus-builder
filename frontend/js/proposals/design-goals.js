@@ -24,10 +24,15 @@
     ].map(([key, label, definition, structure = false]) => Object.freeze({ key, label, definition, structure }));
     const byKey = new Map(definitions.map(concept => [concept.key, concept]));
     const get = key => byKey.get(key) || null;
+    const keyOf = record => {
+        const key = typeof record?.goal === 'string' ? record.goal : '';
+        return byKey.has(key) ? key : null;
+    };
     return Object.freeze({
         concepts: Object.freeze(definitions),
         keys: Object.freeze(definitions.map(concept => concept.key)),
         structureKeys: Object.freeze(definitions.filter(concept => concept.structure).map(concept => concept.key)),
-        get
+        get,
+        keyOf
     });
 });

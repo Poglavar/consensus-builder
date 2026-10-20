@@ -8,6 +8,16 @@ const lifecyclePhaseOf = (typeof getLifecycleStatus === 'function')
     ? getLifecycleStatus
     : require('./status.js').getLifecycleStatus;
 
+function lifecycleEvidenceModel() {
+    if (typeof window !== 'undefined' && window.ProposalLifecycleEvidence) return window.ProposalLifecycleEvidence;
+    return typeof require === 'function' ? require('./lifecycle-evidence.js') : null;
+}
+
+function hasObservedLifecycleEvidence(proposal, status) {
+    const model = lifecycleEvidenceModel();
+    return model?.hasObservedStatus?.(proposal, status) === true;
+}
+
 function isProposalOpenSaleOffer(proposal) {
     if (!proposal || proposal.localPurchaseSimulation) return false;
     const otp = proposal.ownershipTransferProposal || {};
@@ -289,6 +299,9 @@ function getProposalVoteStatusLabel(proposal) {
 
 function getProposalLifecycleKey(proposal) {
     const lifecycleField = lifecyclePhaseOf(proposal).toLowerCase();
+    if (lifecycleField === 'executed') {
+        return hasObservedLifecycleEvidence(proposal, 'Executed') ? 'executed' : 'execution-unverified';
+    }
     if (['unknown', 'draft', 'cancelled', 'executed'].includes(lifecycleField)) return lifecycleField;
     // Known voting records read "Open for voting" until the deadline, then "Vote concluded".
     // Missing evidence and explicit draft/terminal states are preserved above.
@@ -313,6 +326,8 @@ function getProposalLifecycleLabel(key) {
             return t('panel.proposal.voting.concluded', 'Vote concluded');
         case 'executed':
             return t('panel.proposal.lifecycle.executed', 'Execution recorded');
+        case 'execution-unverified':
+            return t('panel.proposal.lifecycle.executionUnverified', 'Execution reported; verification unavailable');
         case 'expired':
             return t('panel.proposal.lifecycle.expired', 'Expired');
         case 'cancelled':
@@ -336,6 +351,8 @@ function getProposalLifecycleClass(key) {
             return 'expired';
         case 'executed':
             return 'executed';
+        case 'execution-unverified':
+            return 'unknown';
         case 'expired':
             return 'expired';
         case 'cancelled':
@@ -388,6 +405,7 @@ if (typeof module !== 'undefined' && module.exports) {
         isVoteProposal,
         isNonBindingProposal,
         isProposalExpired,
+        getProposalLifecycleKey,
         checkAndUpdateProposalExpiry,
         parseExpiryTime,
         formatProposalOfferValue,

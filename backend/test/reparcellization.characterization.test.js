@@ -396,7 +396,7 @@ describe('editing a saved readjustment', () => {
                 { ownerKey: 'ana', displayName: 'Ana', contributedArea: 2000, contributedValue: 266000, percent: 0.4 },
                 { ownerKey: 'bo', displayName: 'Bo', contributedArea: 3000, contributedValue: 399000, percent: 0.6 }
             ],
-            contributionBasis: 'value', totalValue: 665000, poolUnitValue: 133
+            contributionBasis: 'value', valuationCurrency: 'EUR', totalValue: 665000, poolUnitValue: 133
         };
     }
 
@@ -457,14 +457,14 @@ describe('other starting layouts and pools', () => {
         expect(globalThis.pendingReparcellizationPlan.inputParcels.map(input => input.parcelId)).toEqual(['P1', 'P2']);
     });
 
-    it('a subdivision pools a drawn site: the bound parcel\'s part plus open ground with no owner', async () => {
+    it('a subdivision pools a drawn site: the bound parcel\'s part plus unrepresented open ground', async () => {
         const w = world({ selection: null });
         const site = box(0, 0, 60, 50);   // P1 whole (2,000 m²) and 1,000 m² of open ground beside it
         expect(await w.editor.openReparcellizationModal({ sitePool: { site, boundParcelIds: ['P1'] } })).toBe(true);
         expect(globalThis.OnMapEditor.open.calls[0][0].title).toBe('Subdivision');
-        const shares = w.state.ownerShares.map(owner => [owner.ownerKey, !!owner.noOwner]);
+        const shares = w.state.ownerShares.map(owner => [owner.ownerKey, !!owner.unrepresentedGround]);
         expect(shares.find(([key]) => key === 'ana')).toEqual(['ana', false]);
-        expect(shares.filter(([, noOwner]) => noOwner)).toHaveLength(1);
+        expect(shares.filter(([, unrepresentedGround]) => unrepresentedGround)).toHaveLength(1);
         expect(w.state.ownerShares.some(owner => owner.ownerKey === 'public-land')).toBe(false);
         // "Keep existing parcels" has nothing to keep on open ground.
         expect(w.$('input[name="reparcel-algorithm"][value="amend"]').hasAttribute('disabled')).toBe(true);

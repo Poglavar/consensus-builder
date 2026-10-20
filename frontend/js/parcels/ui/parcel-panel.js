@@ -241,16 +241,12 @@
         const area = Number.isFinite(Number(areaSource)) ? Number(areaSource) : 0;
         const formattedArea = area ? CbFormat.formatArea(area) : 'N/A';
 
-        // Use market price from backend if available, otherwise calculate
-        const backendPrice = props.estimatedMarketPrice;
-        const backendCurrency = props.estimatedMarketPriceCurrency || props.currency || 'EUR';
-        const estimatedPrice = Number.isFinite(Number(backendPrice))
-            ? Number(backendPrice)
-            : (area ? area * SQM_AVG_PRICE : 0);
-        // Amount then code ("431,000 EUR"); the computed fallback uses SQM_AVG_PRICE, which is EUR.
-        const formattedPrice = estimatedPrice
-            ? CbFormat.formatMoney(estimatedPrice, backendCurrency, { maxFractionDigits: 0 })
-            : 'N/A';
+        const estimate = global.ParcelPriceModel
+            ? global.ParcelPriceModel.buildEstimate(props, area, { areaPricePerSqm: SQM_AVG_PRICE, currency: 'EUR' })
+            : { amount: null, currency: null, basis: 'unavailable' };
+        const formattedPrice = estimate.amount === null
+            ? 'N/A'
+            : CbFormat.formatMoney(estimate.amount, estimate.currency, { maxFractionDigits: 0 });
 
         const ownerLabel = tParcel('panel.parcel.metrics.owner', {}, 'Owner:');
         const shareLabel = tParcel('panel.parcel.metrics.share', {}, 'Share:');
@@ -258,7 +254,9 @@
         const blockLabel = tParcel('panel.parcel.metrics.block', {}, 'Block:');
         const notPartOfBlockLabel = tParcel('panel.parcel.block.notPart', {}, 'Not part of a block');
         const areaLabel = tParcel('panel.parcel.metrics.area', {}, 'Area:');
-        const marketPriceLabel = tParcel('panel.parcel.metrics.marketPrice', {}, 'Est. Mkt. Price:');
+        const marketPriceLabel = estimate.basis === 'area-model'
+            ? `Modeled area estimate (${CbFormat.formatMoney(estimate.rate, estimate.currency, { maxFractionDigits: 2 })}/m²):`
+            : tParcel('panel.parcel.metrics.marketPrice', {}, 'Est. Mkt. Price:');
 
         const normalizedParcelId = resolveParcelId(feature);
         const brojCestice = feature.properties.BROJ_CESTICE ?? feature.properties.broj_cestice;

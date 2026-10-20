@@ -5,6 +5,8 @@ import { describe, expect, it, vi } from 'vitest';
 
 const displayState = createRequire(import.meta.url)('../../frontend/js/proposals/display-state.js');
 const sharedLinkCopies = createRequire(import.meta.url)('../../frontend/js/proposals/shared-link-copies.js');
+const proposalOrigin = createRequire(import.meta.url)('../../frontend/js/proposals/origin.js');
+const PUBLICATION_API_BASE = 'https://proposals.example.test/api';
 
 const source = readFileSync(
     new URL('../../frontend/js/proposals/sharing-routes.js', import.meta.url),
@@ -15,8 +17,15 @@ function loadSharedImportHelpers(overrides = {}) {
     const browserWindow = overrides.window || {};
     browserWindow.__proposalDisplayState ||= displayState;
     browserWindow.SharedLinkCopies ||= sharedLinkCopies;
+    browserWindow.ProposalOrigin ||= proposalOrigin;
     const context = {
         console,
+        normalizePublicationResponse: (payload, backendBase) => {
+            const rowId = proposalOrigin.rowId(payload?.id);
+            const apiBase = proposalOrigin.apiBase(backendBase);
+            if (!rowId || !apiBase || typeof payload?.proposalId !== 'string') throw new Error('invalid publication response');
+            return { ...payload, serverProposalId: rowId, publicationApiBase: apiBase };
+        },
         prepareProposalForImport: proposal => structuredClone(proposal),
         computeRequiredParentIdsForSharedProposal: () => [],
         ensureArrayOfStrings: value => Array.isArray(value) ? value.map(String) : [],
@@ -36,13 +45,13 @@ function loadSharedImportHelpers(overrides = {}) {
 
 describe('shared floor model refresh', () => {
     it('updates only derived buildings belonging to the applied source and requests one redraw', () => {
-        const local = { proposalId:'local',serverProposalId:'781',applied:true,geometry:{untouched:true} };
+        const local = { proposalId:'local',serverProposalId:'781',publicationApiBase:PUBLICATION_API_BASE,applied:true,geometry:{untouched:true} };
         const before=structuredClone(local),target={properties:{proposalId:'local'}},other={properties:{proposalId:'another'}};
         const plans={schema:'model'},sources=[{properties:{floorPlans:plans}}];
         const refresh=vi.fn(current=>({changed:1,buildings:current.map(b=>({...b,properties:{...b.properties,floorPlans:plans}}))}));
         const browser={proposedBuildings:[target,other],__buildingFloorPlans:{refreshRegisteredFloorPlans:refresh},dispatchEvent:vi.fn()};
         const {refreshSharedFloorPlanModels}=loadSharedImportHelpers({window:browser,CustomEvent:class{constructor(type){this.type=type;}}});
-        expect(refreshSharedFloorPlanModels([local],new Map([['781',{id:'781',geometry:{buildings:sources}}]]))).toBe(1);
+        expect(refreshSharedFloorPlanModels([local],new Map([['781',{id:'781',serverProposalId:'781',publicationApiBase:PUBLICATION_API_BASE,geometry:{buildings:sources}}]]))).toBe(1);
         expect(refresh).toHaveBeenCalledExactlyOnceWith([target],sources);
         expect(browser.proposedBuildings[0].properties.floorPlans).toBe(plans);
         expect(browser.proposedBuildings[1]).toBe(other);
@@ -53,9 +62,24 @@ describe('shared floor model refresh', () => {
     it('leaves replacements, missing sources and unchanged models untouched', () => {
         const refresh=vi.fn(()=>({changed:0,buildings:[]})),browser={proposedBuildings:[],__buildingFloorPlans:{refreshRegisteredFloorPlans:refresh},dispatchEvent:vi.fn()};
         const {refreshSharedFloorPlanModels}=loadSharedImportHelpers({window:browser});
-        const remote=new Map([['782',{id:'782',geometry:{buildings:[{properties:{floorPlans:{}}}]}}]]);
-        expect(refreshSharedFloorPlanModels([{proposalId:'edit',serverProposalId:'782',replacementOfProposalId:'original'},{proposalId:'absent'},{proposalId:'same',serverProposalId:'782'}],remote)).toBe(0);
+        const remote=new Map([['782',{id:'782',serverProposalId:'782',publicationApiBase:PUBLICATION_API_BASE,geometry:{buildings:[{properties:{floorPlans:{}}}]}}]]);
+        expect(refreshSharedFloorPlanModels([
+            { proposalId: 'edit', serverProposalId: '782', proposalOrigin: {
+                relation: 'revision', source: { kind: 'publication', apiBase: 'https://example.test', proposalRowId: '781' }
+            } },
+            { proposalId: 'absent' }, { proposalId: 'same', serverProposalId: '782', publicationApiBase: PUBLICATION_API_BASE }
+        ], remote)).toBe(0);
         expect(refresh).toHaveBeenCalledOnce();expect(browser.dispatchEvent).not.toHaveBeenCalled();
+    });
+    it('does not refresh a same-numbered row from a different publication API', () => {
+        const refresh=vi.fn(()=>({changed:0,buildings:[]}));
+        const browser={proposedBuildings:[],__buildingFloorPlans:{refreshRegisteredFloorPlans:refresh},dispatchEvent:vi.fn()};
+        const {refreshSharedFloorPlanModels}=loadSharedImportHelpers({window:browser});
+        const local={proposalId:'local',serverProposalId:'782',publicationApiBase:PUBLICATION_API_BASE};
+        const foreign=new Map([['782',{id:'782',serverProposalId:'782',publicationApiBase:'https://other.example.test/api',geometry:{buildings:[{properties:{floorPlans:{}}}]}}]]);
+        expect(refreshSharedFloorPlanModels([local],foreign)).toBe(0);
+        expect(refresh).not.toHaveBeenCalled();
+        expect(browser.dispatchEvent).not.toHaveBeenCalled();
     });
 });
 
@@ -142,13 +166,14 @@ describe('shared-plan import boundary', () => {
         const result = await importAndApplySharedProposal({
             proposalId: 'shared-building',
             serverProposalId: '781',
+            publicationApiBase: PUBLICATION_API_BASE,
             goal: 'building',
             cadastreParcelIds: ['HR-1'],
             buildingProposal: {}
         }, { skipDependencyFetch: true });
 
         expect(result).toMatchObject({ applied: true, skipped: false, queued: true });
-        expect(proposalStorage.getProposalByServerRowId).toHaveBeenCalledWith('781');
+        expect(proposalStorage.getProposalByServerRowId).toHaveBeenCalledWith('781', PUBLICATION_API_BASE);
         expect(proposalStorage.getProposal).not.toHaveBeenCalled();
         expect(proposalStorage.importProposal).toHaveBeenCalledOnce();
         expect(unrelated).toEqual({ proposalId: 'shared-building', applied: true, lifecycleStatus: 'Active' });
@@ -167,6 +192,7 @@ describe('shared-plan import boundary', () => {
         const result = await importAndApplySharedProposal({
             proposalId: 'shared-building',
             serverProposalId: '781',
+            publicationApiBase: PUBLICATION_API_BASE,
             goal: 'building',
             cadastreParcelIds: ['HR-1'],
             buildingProposal: {}
@@ -178,7 +204,7 @@ describe('shared-plan import boundary', () => {
             proposalId: 'custom-local-key',
             reason: 'Already applied'
         });
-        expect(proposalStorage.getProposalByServerRowId).toHaveBeenCalledWith('781');
+        expect(proposalStorage.getProposalByServerRowId).toHaveBeenCalledWith('781', PUBLICATION_API_BASE);
         expect(proposalStorage.getProposal).not.toHaveBeenCalled();
         expect(proposalStorage.importProposal).not.toHaveBeenCalled();
     });
@@ -274,9 +300,9 @@ describe('shared-plan import boundary', () => {
             ok: true,
             json: async () => ({
                 items: [
-                    { id: 'a', proposal: { proposalId: 'a' } },
+                    { id: 'a', proposal: { id: '1', proposalId: 'a' } },
                     { id: 'missing', proposal: null },
-                    { id: 'b', proposal: { proposalId: 'b' } }
+                    { id: 'b', proposal: { id: '2', proposalId: 'b' } }
                 ]
             })
         }));
@@ -290,6 +316,7 @@ describe('shared-plan import boundary', () => {
             body: JSON.stringify({ ids: ['a', 'missing', 'b'] })
         }));
         expect([...result.records.keys()]).toEqual(['a', 'b']);
+        expect(result.records.get('a')).toMatchObject({ serverProposalId: '1', publicationApiBase: 'http://api.test' });
         expect([...result.missing]).toEqual(['missing']);
         expect(result).toMatchObject({ supported: true, requests: 1 });
     });
@@ -303,6 +330,17 @@ describe('shared-plan import boundary', () => {
         expect(result.supported).toBe(false);
         expect(result.records.size).toBe(0);
         expect(result.requests).toBe(1);
+    });
+
+    it('rejects a batch proposal without its own publication row ID', async () => {
+        const fetch = vi.fn(async () => ({
+            ok: true,
+            json: async () => ({ items: [{ id: 'authored-a', proposal: { proposalId: 'authored-a' } }] })
+        }));
+        const { fetchSharedProposalBatch } = loadSharedImportHelpers({ fetch });
+        const result = await fetchSharedProposalBatch(['authored-a'], 'http://api.test');
+        expect(result).toMatchObject({ supported: false, requests: 1 });
+        expect(result.records.size).toBe(0);
     });
 
     it('imports a missing proposal parked, ready for the scoped apply pass', async () => {

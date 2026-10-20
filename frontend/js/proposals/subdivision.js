@@ -12,7 +12,7 @@
     'use strict';
 
     // The accounting placeholder for open ground, with no represented ownership party. It is
-    // never an agent, cash recipient or ownership transfer; it does not establish ownerless land.
+    // never an agent, cash recipient or ownership transfer; it makes no title finding.
     const OPEN_GROUND_OWNER_KEY = 'open-ground';
     // Below this a piece is clipping noise, not ground.
     const MIN_PIECE_M2 = 0.5;
@@ -136,16 +136,16 @@
         if (openGroundM2 > 0) {
             shares.push({
                 ownerKey: OPEN_GROUND_OWNER_KEY,
-                displayName: opts.openGroundLabel || 'Open ground (ownership unknown)',
+                displayName: opts.openGroundLabel || 'Open ground (unrepresented allocation)',
                 parcelIds: [],
                 area: openGroundM2,
                 value: null,
                 percent: openGroundM2 / totalArea,
-                noOwner: true // Accounting exclusion, not an ownership finding.
+                unrepresentedGround: true // Accounting exclusion, not a title finding.
             });
         }
         return {
-            shares: shares.filter(entry => entry.percent > 0).sort((a, b) => (a.noOwner === b.noOwner ? b.percent - a.percent : (a.noOwner ? 1 : -1))),
+            shares: shares.filter(entry => entry.percent > 0).sort((a, b) => (a.unrepresentedGround === b.unrepresentedGround ? b.percent - a.percent : (a.unrepresentedGround ? 1 : -1))),
             basis: useValue ? 'value' : 'area',
             totalArea,
             totalValue,
@@ -156,10 +156,16 @@
     /**
      * Readjustment ledger of one share entry. The open-ground placeholder has no represented
      * party, so this model leaves its balance and cash offer null. Null is not a settled debt of 0.
-     * @param {object} entry a share ({area, value, noOwner})
+     * @param {object} entry a share ({area, value, unrepresentedGround})
      * @param {{basis: string, poolUnitValue: number|null, contributionRatio?: number, assignedArea: number}} context
      */
     function ledgerOf(entry, context) {
+        if (Object.prototype.hasOwnProperty.call(entry || {}, 'noOwner')) {
+            throw new Error('The noOwner marker is retired; use unrepresentedGround');
+        }
+        if (entry?.unrepresentedGround === true && entry.ownerKey !== OPEN_GROUND_OWNER_KEY) {
+            throw new Error('Unrepresented ground cannot also name a represented owner');
+        }
         const ctx = context || {};
         const useMoney = ctx.basis === 'value' && finite(ctx.poolUnitValue) && ctx.poolUnitValue > 0;
         const unit = useMoney ? ctx.poolUnitValue : 1;
@@ -169,14 +175,14 @@
         const entitled = contributed * ratio;
         const assignedArea = finite(ctx.assignedArea) && ctx.assignedArea > 0 ? ctx.assignedArea : 0;
         const assigned = assignedArea * unit;
-        const noOwner = !!(entry && (entry.noOwner || isOpenGroundOwnerKey(entry.ownerKey)));
+        const unrepresentedGround = !!(entry && (entry.unrepresentedGround === true || isOpenGroundOwnerKey(entry.ownerKey)));
         return {
             contributed,
             entitled,
             assigned,
             assignedArea,
-            cashBalance: noOwner ? null : assigned - entitled,
-            noOwner
+            cashBalance: unrepresentedGround ? null : assigned - entitled,
+            unrepresentedGround
         };
     }
 
@@ -201,7 +207,7 @@
         let best = null;
         let bestArea = MIN_PIECE_M2;
         for (const share of shares || []) {
-            const area = share.noOwner || isOpenGroundOwnerKey(share.ownerKey)
+            const area = share.unrepresentedGround || isOpenGroundOwnerKey(share.ownerKey)
                 ? overlap(pool.openGround)
                 : (share.parcelIds || []).reduce((sum, id) => sum + (byParcel.get(String(id)) || 0), 0);
             if (area > bestArea) { best = share.ownerKey; bestArea = area; }

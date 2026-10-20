@@ -7,18 +7,20 @@ const {
     classifyParcelSetRelation,
     findParcelSetRelations,
     normalizeParcelIds,
+    parcelSourceOf,
     proposalIdsForParcelSet
 } = require('../../frontend/js/proposals/parcel-set-relations.js');
 
 const proposal = (proposalId, parcelIds, setHash = null) => ({
     proposalId,
     cadastreParcelIds: parcelIds,
-    ...(setHash ? { parcelSet: { parcelIds, setHash } } : {})
+    parcelSet: { parcelIds, parcelSource: { sourceId: 'register-a', snapshotId: null }, ...(setHash ? { setHash } : {}) }
 });
 
 describe('proposal parcel-set relations', () => {
     it('lists every proposal over one canonical set hash and nothing for a missing hash', () => {
         const proposals = [proposal('a', ['1', '2'], 'sha256:x'), proposal('b', ['2', '1'], 'sha256:x'), proposal('c', ['1'], 'sha256:y'), proposal('d', ['1', '2'])];
+        proposals.push({ proposalId: 'unknown', cadastreParcelIds: ['1', '2'], parcelSet: { setHash: 'sha256:x', parcelSource: null } });
         expect(proposalIdsForParcelSet(proposals, 'sha256:x')).toEqual(['a', 'b']);
         expect(proposalIdsForParcelSet(proposals, '')).toEqual([]);
         expect(proposalIdsForParcelSet(null, 'sha256:x')).toEqual([]);
@@ -58,10 +60,30 @@ describe('proposal parcel-set relations', () => {
         expect(relation).toMatchObject({ kind: 'same', sharedCount: 2, unionCount: 2, overlapRatio: 1 });
     });
 
-    it('does not relate identical local ids across different jurisdictions', () => {
+    it('does not infer jurisdiction from city or relate references across providers or snapshots', () => {
         const zagreb = { ...proposal('a', ['123/4']), city: 'zagreb' };
         const split = { ...proposal('b', ['123/4']), city: 'split' };
+        expect(classifyParcelSetRelation(zagreb, split)).toMatchObject({ kind: 'same' });
+        split.parcelSet.parcelSource = { sourceId: 'register-b', snapshotId: null };
         expect(classifyParcelSetRelation(zagreb, split)).toBeNull();
+        split.parcelSet.parcelSource = { sourceId: 'register-a', snapshotId: 'snapshot-2' };
+        expect(classifyParcelSetRelation(zagreb, split)).toBeNull();
+    });
+
+    it('does not claim relations when either source is unknown', () => {
+        const known = proposal('known', ['1']);
+        const unknown = { proposalId: 'unknown', cadastreParcelIds: ['1'], parcelSet: { parcelSource: null } };
+        expect(classifyParcelSetRelation(known, unknown)).toBeNull();
+        expect(classifyParcelSetRelation(unknown, unknown)).toBeNull();
+    });
+
+    it('rejects conflicting parcel-set and binding source evidence', () => {
+        const conflicted = proposal('conflicted', ['1']);
+        conflicted.parcelSet.setHash = 'sha256:x';
+        conflicted.binding = { parcelSource: { sourceId: 'register-b', snapshotId: null } };
+        expect(parcelSourceOf(conflicted)).toBeNull();
+        expect(classifyParcelSetRelation(conflicted, proposal('same-id', ['1']))).toBeNull();
+        expect(proposalIdsForParcelSet([conflicted], 'sha256:x')).toEqual([]);
     });
 
     it('distinguishes containing, contained and partial overlaps', () => {

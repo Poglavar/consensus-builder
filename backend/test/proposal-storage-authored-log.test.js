@@ -38,6 +38,7 @@ function bootStore() {
     install('__formationDepth', formationDepth);
     install('__planOrder', planOrder);
     install('ChainProposalRef', require('../../frontend/js/proposals/chain-ref.js'));
+    install('ProposalOrigin', require('../../frontend/js/proposals/origin.js'));
     install('getProposalGoalLabel', value => value);
     install('ProposalAuthoredRecord', require('../../frontend/js/proposals/authored-record.js'));
     install('buildChainProposalId', (chain, contract, token) => `${chain}-${contract}-${token}`);
@@ -66,10 +67,11 @@ function bootStore() {
 }
 
 describe('proposalStorage authored-log persistence', () => {
-    it('looks up local keys and unique explicit server rows without chain aliases', () => {
+    it('keeps local keys, qualified publication rows and chain aliases in separate namespaces', () => {
         const { storage } = bootStore();
+        const apiBase = 'https://api.example';
         const chain = { proposalId: 'qualified-chain-key', tokenId: '7', chainProposalId: 'old-chain-alias', onchain: { chainProposalId: 'nested-alias' } };
-        const server = { proposalId: 'local-server-copy', serverProposalId: '42', id: '42' };
+        const server = { proposalId: 'local-server-copy', serverProposalId: '42', publicationApiBase: apiBase, id: '42' };
         const numericLocal = { proposalId: '42' };
         [chain, server, numericLocal].forEach(record => storage.proposals.set(record.proposalId, record));
         for (const alias of ['7', 'old-chain-alias', 'nested-alias']) {
@@ -78,17 +80,19 @@ describe('proposalStorage authored-log persistence', () => {
         }
         expect(storage.getProposal(chain.proposalId)).toBe(chain);
         expect(storage.getProposal('42')).toBe(numericLocal);
-        expect(storage.getProposalByServerRowId('42')).toBe(server);
+        expect(storage.getProposalByServerRowId('42')).toBeNull();
+        expect(storage.getProposalByServerRowId('42', apiBase)).toBe(server);
         const syncSource = readFileSync(new URL('../../frontend/js/proposals/server-sync.js', import.meta.url), 'utf8');
         const findLocal = new Function('proposalStorage', `${syncSource}; return findLocalCopyOfServerProposal;`)(storage);
-        expect(findLocal({ id: 42, proposalId: chain.proposalId })).toBe(server);
-        expect(findLocal({ id: 7, proposalId: chain.proposalId })).toBeNull();
+        expect(findLocal({ serverProposalId: '42', publicationApiBase: apiBase })).toBe(server);
+        expect(findLocal({ serverProposalId: '42', publicationApiBase: 'https://other.example' })).toBeNull();
         expect(findLocal({ proposalId: server.proposalId })).toBeNull();
         storage.proposals.delete('42');
-        expect(storage.getProposal('42')).toBe(server);
-        storage.proposals.set('conflicting-copy', { proposalId: 'conflicting-copy', serverProposalId: '42' });
-        expect(() => storage.getProposalByServerRowId('42')).toThrow(/Multiple local proposals/);
-        expect(() => storage.removeProposal('42')).toThrow(/Multiple local proposals/);
+        expect(storage.getProposal('42')).toBeNull();
+        expect(storage.getProposalByServerRowId('42', apiBase)).toBe(server);
+        storage.proposals.set('conflicting-copy', { proposalId: 'conflicting-copy', serverProposalId: '42', publicationApiBase: apiBase });
+        expect(() => storage.getProposalByServerRowId('42', apiBase)).toThrow(/Multiple local proposals/);
+        expect(storage.removeProposal('42')).toBeNull();
         expect(storage.proposals.size).toBe(3);
     });
 
@@ -102,14 +106,14 @@ describe('proposalStorage authored-log persistence', () => {
 
     it('refreshes a published row under its original local key and rejects another publication at that key', () => {
         const { storage } = bootStore();
-        const current = { proposalId: 'original-local', serverProposalId: '42', goal: 'as-is', cadastreParcelIds: ['source-a'] };
+        const current = { proposalId: 'original-local', serverProposalId: '42', publicationApiBase: 'https://api.example', goal: 'as-is', cadastreParcelIds: ['source-a'] };
         storage.addProposal(current);
         const refreshed = storage.importProposal({ ...current, proposalId: 'published-authored', title: 'Updated metadata' });
         expect(refreshed.proposalId).toBe('original-local');
         expect([...storage.proposals.keys()]).toEqual(['original-local']);
         expect(refreshed.title).toBe('Updated metadata');
         expect(() => storage.importProposal({ ...current, serverProposalId: '43' })).toThrow(/different publication identity/);
-        expect(() => storage.importProposal({ ...current, serverProposalId: undefined })).toThrow(/different publication identity/);
+        expect(() => storage.importProposal({ ...current, publicationApiBase: 'https://other.example' })).toThrow(/different publication identity/);
         expect(storage.getProposal('original-local')).toBe(refreshed);
     });
 

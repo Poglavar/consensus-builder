@@ -1,6 +1,6 @@
 // Purpose: derive an editable road-drawing seed from an immutable corridor proposal definition.
 (function attachCorridorDraft(global) {
-    const ACTIVE_DRAFT_KEY = global.PROPOSAL_DRAFT_STORAGE_KEY || 'consensus-builder.proposal-drafts.v2';
+    const ACTIVE_DRAFT_KEY = global.PROPOSAL_DRAFT_STORAGE_KEY || 'consensus-builder.proposal-drafts.v3';
     const injectedStores = typeof WeakMap !== 'undefined' ? new WeakMap() : null;
 
     let createStore = global.createProposalDraftStore || null;
@@ -88,9 +88,9 @@
             draftId: draft.id,
             kind,
             cityId: draft.cityId,
-            sourceProposalId: draft.sourceProposalId,
-            copySource: draft.sourceProposalId ? {
-                proposalId: draft.sourceProposalId,
+            sourceLocalProposalId: draft.sourceLocalProposalId,
+            copySource: draft.sourceLocalProposalId ? {
+                proposalId: draft.sourceLocalProposalId,
                 name: draft.sourceSnapshot?.title || draft.sourceSnapshot?.name || draft.fields?.name || null,
                 draftId: draft.id,
                 prefill: cloneDraftValue(draft.fields || {})
@@ -123,7 +123,7 @@
         const explicitId = draft.draftId || draft.copySource?.draftId || null;
         let existing = explicitId ? store.getDraft(explicitId) : null;
         if (existing && existing.goal !== 'road-track') existing = null;
-        const sourceProposalId = draft.sourceProposalId || draft.copySource?.proposalId || existing?.sourceProposalId || null;
+        const sourceLocalProposalId = draft.sourceLocalProposalId || draft.copySource?.proposalId || existing?.sourceLocalProposalId || null;
         const definition = corridorDefinitionFromSeed(draft.seed, draft.kind, existing?.editorPayload?.definition);
         let saved = null;
         if (existing) {
@@ -143,7 +143,7 @@
                 goal: 'road-track',
                 proposalType: draft.kind === 'track' ? 'Track' : 'Road',
                 adapterKey: 'road-track',
-                sourceProposalId,
+                sourceLocalProposalId,
                 fields: {
                     name: draft.copySource?.prefill?.name || draft.copySource?.name || '',
                     description: draft.copySource?.prefill?.description || '',

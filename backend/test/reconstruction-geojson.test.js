@@ -46,7 +46,27 @@ describe('reconstruction GeoJSON', () => {
     it('stores one site and every building as ordinary GeoJSON features', () => {
         const output = proposalToReconstructionGeoJSON(proposal());
         expect(output.reconstruction.schema).toBe(RECONSTRUCTION_GEOJSON_SCHEMA);
+        expect(output.reconstruction.geometryInterpretation).toEqual({ role: 'building-reconstruction',
+            physicalStatus: 'not-established-by-archive', planningCompliance: 'not-evaluated' });
         expect(output.features.map(feature => feature.properties['consensus:role']))
+            .toEqual(['site', 'building', 'building']);
+    });
+
+    it('recomputes archive geometry interpretation on export after import', () => {
+        const collection = proposalToReconstructionGeoJSON(proposal());
+        collection.reconstruction.geometryInterpretation = {
+            role: 'approved-construction', physicalStatus: 'completed', planningCompliance: 'verified'
+        };
+
+        const imported = reconstructionGeoJSONToProposal(collection);
+        const exported = proposalToReconstructionGeoJSON(imported);
+
+        expect(exported.reconstruction.geometryInterpretation).toEqual({
+            role: 'building-reconstruction',
+            physicalStatus: 'not-established-by-archive',
+            planningCompliance: 'not-evaluated'
+        });
+        expect(exported.features.map(feature => feature.properties['consensus:role']))
             .toEqual(['site', 'building', 'building']);
     });
 
@@ -56,6 +76,34 @@ describe('reconstruction GeoJSON', () => {
         expect(imported.geometry.buildings).toHaveLength(2);
         expect(imported.buildingProposal.buildings[1].properties.name).toBe('B');
         expect(imported.geometry.superParcel.properties).toEqual({ id: 'HR-1-2/3' });
+    });
+
+    it('excludes browser, unsigned and source-row state on archive export and import', () => {
+        const source = {
+            ...proposal(), id: 91, serverProposalId: 91, authorAgentId: 'local-agent-key',
+            proposalDraftId: 'browser-draft-key', proposalDraftRevision: 7,
+            appliedAt: '2026-10-19T00:00:00.000Z',
+            localPurchaseSimulation: { outcome: 'purchased' },
+            lifecycleEvidence: { protocol: 'proposal-lifecycle-evidence/1', state: 'observed', status: 'Executed' },
+            agent: { persona: 'unsigned-local-claim' },
+            proposalOrigin: { relation: 'copy', source: { kind: 'local', localProposalId: 'browser-source-key' }, title: 'Source' }
+        };
+        const collection = proposalToReconstructionGeoJSON(source);
+        const archived = collection.reconstruction.proposal;
+        for (const key of ['id', 'serverProposalId', 'authorAgentId', 'proposalDraftId', 'proposalDraftRevision',
+            'appliedAt', 'localPurchaseSimulation', 'lifecycleEvidence', 'agent']) {
+            expect(archived).not.toHaveProperty(key);
+        }
+        expect(archived.proposalOrigin).toEqual({ relation: 'copy', source: null, title: 'Source' });
+
+        collection.reconstruction.proposal = { ...archived, ...source };
+        const imported = reconstructionGeoJSONToProposal(collection);
+        for (const key of ['id', 'serverProposalId', 'authorAgentId', 'proposalDraftId', 'proposalDraftRevision',
+            'appliedAt', 'localPurchaseSimulation', 'lifecycleEvidence', 'agent']) {
+            expect(imported).not.toHaveProperty(key);
+        }
+        expect(imported.proposalOrigin).toEqual({ relation: 'copy', source: null, title: 'Source' });
+        expect(imported.applied).toBe(false);
     });
 
     it('survives export/import/export without losing any feature or metadata', () => {

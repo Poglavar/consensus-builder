@@ -47,6 +47,22 @@ describe('mint binding from cadastral source geometry', () => {
         expect(result.cadastreSnapshot.parcels.map(parcel => parcel.id)).toEqual(['HR-1']);
     });
 
+    it('carries only shared, explicit source provenance into a locally computed binding', async () => {
+        const descriptor = { sourceId: 'ca-on-toronto', snapshotId: 'snapshot-7' };
+        const sourced = await mintBinding.buildRecord(proposal(), {
+            parcels: features({ left: { parcelSource: descriptor }, right: { parcelSource: descriptor } }),
+            source: 'capture-label-only', turf
+        });
+        expect(sourced.binding.parcelSource).toEqual(descriptor);
+
+        const unknown = await mintBinding.buildRecord(proposal(), { parcels: features(), source: 'ca-on-toronto', turf });
+        expect(unknown.binding.parcelSource).toBeNull();
+        const mixed = await mintBinding.buildRecord(proposal(), {
+            parcels: features({ left: { parcelSource: descriptor }, right: { parcelSource: { sourceId: 'other-source', snapshotId: null } } }), turf
+        });
+        expect(mixed.binding.parcelSource).toBeNull();
+    });
+
     it('keeps unavailable source revision/hash null and saves source geometry plus its computed hash', async () => {
         const result = await mintBinding.buildRecord(proposal(), {
             parcels: features(), source: 'zagreb-source', turf,

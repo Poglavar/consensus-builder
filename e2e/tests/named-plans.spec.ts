@@ -30,6 +30,17 @@ async function publishPark(page: any, routes: (page: any, serverId: string) => P
   await expect(share.locator('.share-modal-link').first()).toHaveValue(/\/proposals\/\d+\?/);
   await share.locator('.share-modal .close-circle-btn').click();
   const serverId = [...server.records.keys()][0];
+  const publicationApiBase = await page.evaluate(() => (window as any).getBackendBase());
+  // This helper creates a published local-copy fixture for the named-plan consumers below. The
+  // API row is meaningful only together with the publication endpoint that issued it.
+  await page.evaluate(({ localId, serverId, publicationApiBase }: any) => {
+    const proposal = (window as any).proposalStorage.getProposal(localId);
+    if (!proposal) throw new Error(`Published fixture ${localId} is missing from local storage`);
+    proposal.id = String(serverId);
+    proposal.serverProposalId = String(serverId);
+    proposal.publicationApiBase = publicationApiBase;
+    (window as any).proposalStorage.save();
+  }, { localId, serverId, publicationApiBase });
   await page.evaluate(() => (window as any).hideProposalDetailsPanel(true));
   return { localId, serverId, title: String(title) };
 }
@@ -123,7 +134,7 @@ test.describe('Named plans @features', () => {
     // Applying a plan goes through its published records: the member stands as the record of its row id.
     await expect.poll(() => page.evaluate((id: string) => {
       const w = window as any;
-      return w.proposalStorage.getAllProposals().some((p: any) => String(w.getServerProposalId(p)) === id && w.isProposalCurrentlyApplied(p));
+      return w.proposalStorage.getAllProposals().some((p: any) => String(w.getProposalPublicationLookup(p)) === id && w.isProposalCurrentlyApplied(p));
     }, serverId), { timeout: 30_000 }).toBe(true);
     // Apply plan ends the way a plan link used to: framing what it applied and opening its panel.
     await expect(page.locator('#proposal-details-panel')).toBeVisible({ timeout: 30_000 });

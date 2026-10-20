@@ -25,6 +25,8 @@
     const lifecycleOf = (root && typeof root.getLifecycleStatus === 'function')
         ? root.getLifecycleStatus
         : require('./status.js').getLifecycleStatus;
+    const lifecycleEvidence = (root && root.ProposalLifecycleEvidence)
+        || require('./lifecycle-evidence.js');
 
     // Lifecycle keys (proposals/lifecycle.js getProposalLifecycleKey) that add a modifier badge to the
     // rung, with the badge tone each uses.
@@ -39,6 +41,7 @@
 
     const RUNG_LABELS = Object.freeze({
         executed: ['panel.proposal.lifecycle.executed', 'Execution recorded'],
+        'execution-unverified': ['panel.proposal.lifecycle.executionUnverified', 'Execution reported; verification unavailable'],
         minted: ['panel.proposal.lifecycle.minted', 'Minted'],
         published: ['common.lifecycle.published', 'Published'],
         draft: ['common.lifecycle.draft', 'Draft']
@@ -87,7 +90,8 @@
 
         const minted = hasMintRecord(proposal);
         const applicable = lifecycle !== 'Cancelled';
-        const rung = lifecycle === 'Executed' ? 'executed'
+        const executionObserved = lifecycleEvidence.hasObservedStatus(proposal, 'Executed');
+        const rung = lifecycle === 'Executed' ? (executionObserved ? 'executed' : 'execution-unverified')
             : minted ? 'minted'
                 : serial ? 'published' : 'draft';
         const modifier = Object.prototype.hasOwnProperty.call(MODIFIER_TONES, lifecycleKey) ? lifecycleKey : null;
@@ -111,7 +115,7 @@
     // The lifecycle field has no uniform durable proof of execution. Even a mint reference does
     // not upgrade it to verified payment, title registration or physical realization.
     function rungHint(rung, translate) {
-        const label = rung === 'executed'
+        const label = rung === 'executed' || rung === 'execution-unverified'
             ? ['panel.proposal.lifecycle.executedHint', 'This record reports execution. The status alone does not verify payment, legal registration or physical construction.']
             : rung === 'minted' ? ['panel.proposal.lifecycle.mintedHint', 'Minted on-chain'] : null;
         return label ? (typeof translate === 'function' ? translate(...label) : label[1]) : '';

@@ -85,6 +85,38 @@
         return Array.isArray(record && record.cadastreParcelIds) ? record.cadastreParcelIds.map(String) : [];
     }
 
+    function parcelSourceOfRecord(record) {
+        const setSource = record?.parcelSet?.parcelSource ?? null;
+        const bindingSource = record?.binding?.parcelSource ?? null;
+        const normalize = source => source && typeof source === 'object' && !Array.isArray(source)
+            && !Object.keys(source).some(key => !['sourceId', 'snapshotId'].includes(key))
+            && typeof source.sourceId === 'string' && source.sourceId.trim()
+            && (source.snapshotId == null || (typeof source.snapshotId === 'string' && source.snapshotId.trim()))
+            ? { sourceId: source.sourceId.trim(), snapshotId: source.snapshotId?.trim() || null } : null;
+        const a = normalize(setSource), b = normalize(bindingSource);
+        if ((setSource && !a) || (bindingSource && !b)) return null;
+        if (a && b && (a.sourceId !== b.sourceId || a.snapshotId !== b.snapshotId)) return null;
+        return a || b;
+    }
+
+    function parcelSourceOfParcel(parcel) {
+        const direct = parcel?.parcelSource ?? null;
+        const feature = parcel?.feature?.properties?.parcelSource ?? null;
+        const normalize = source => source && typeof source === 'object' && !Array.isArray(source)
+            && !Object.keys(source).some(key => !['sourceId', 'snapshotId'].includes(key))
+            && typeof source.sourceId === 'string' && source.sourceId.trim()
+            && (source.snapshotId == null || (typeof source.snapshotId === 'string' && source.snapshotId.trim()))
+            ? { sourceId: source.sourceId.trim(), snapshotId: source.snapshotId?.trim() || null } : null;
+        const a = normalize(direct), b = normalize(feature);
+        if ((direct && !a) || (feature && !b)) return null;
+        if (a && b && (a.sourceId !== b.sourceId || a.snapshotId !== b.snapshotId)) return null;
+        return a || b;
+    }
+
+    function sameParcelSource(left, right) {
+        return !!left && !!right && left.sourceId === right.sourceId && left.snapshotId === right.snapshotId;
+    }
+
     // The parcel as the comparison sees it: { id, cadastreIds: [...], feature }.
     function parcelKeys(parcel) {
         const ids = Array.isArray(parcel && parcel.cadastreIds) && parcel.cadastreIds.length
@@ -161,7 +193,10 @@
         const t = T(opts);
         if (!record || !parcel) return null;
         const keys = parcelKeys(parcel);
-        const declared = declaredIds(record).some(id => keys.has(id));
+        // Bare cadastral IDs are source-scoped. A matching string only names this parcel when the
+        // proposal's binding and the selected parcel share the same explicit provider descriptor.
+        const declared = sameParcelSource(parcelSourceOfRecord(record), parcelSourceOfParcel(parcel))
+            && declaredIds(record).some(id => keys.has(id));
         const parcelFeature = featureOf(parcel.feature);
         let clip = null;
         let unmeasured = false;

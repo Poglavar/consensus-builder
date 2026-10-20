@@ -893,7 +893,9 @@ function agentDecideAction(agent, turnContext = null) {
                 return {
                     type: 'donate',
                     proposalId,
-                    amount: Math.round(donation * 100) / 100
+                    amount: Math.round(donation * 100) / 100,
+                    currency: 'ETH',
+                    basis: 'simulated-agent-eth-balance'
                 };
             }
             return { type: 'nothing' };
@@ -914,7 +916,9 @@ function agentDecideAction(agent, turnContext = null) {
             return {
                 type: 'pledge',
                 proposalId: proposal.proposalId || proposal.id || proposal.tokenId,
-                amount: Math.round(Math.max(0.01, Math.random() * maxPledge) * 100) / 100
+                amount: Math.round(Math.max(0.01, Math.random() * maxPledge) * 100) / 100,
+                currency: 'ETH',
+                basis: 'simulated-agent-eth-balance'
             };
         }
 
@@ -1098,7 +1102,7 @@ async function executeAgentAction(agent, action) {
                 const proposal = proposalStorage.getProposal(action.proposalId);
                 if (proposal && window.AgentSupportSimulation) {
                     try {
-                        window.AgentSupportSimulation.donate(proposal, agent, action.amount);
+                        window.AgentSupportSimulation.donate(proposal, agent, action);
                     } catch (_) {
                         return `<button type="button" class="cb-link agent-link-clickable" data-agent-id="${agent.id}">${agent.name}</button> tried to donate to a proposal but failed.`;
                     }
@@ -1124,13 +1128,13 @@ async function executeAgentAction(agent, action) {
                                 objectType: 'proposal',
                                 objectId: action.proposalId,
                                 objectPosition: proposalPosition,
-                                action: `donated ${action.amount} ${getChainCurrencySymbol()} to proposal`
+                                action: `donated ${action.amount} ${action.currency} to proposal`
                             });
                         }
                     }
 
                     const proposalLink = buildProposalLogLinkAgent(action.proposalId, proposal);
-                    return `<button type="button" class="cb-link agent-link-clickable" data-agent-id="${agent.id}">${agent.name}</button> donated ${action.amount} ${getChainCurrencySymbol()} to proposal ${proposalLink}.`;
+                    return `<button type="button" class="cb-link agent-link-clickable" data-agent-id="${agent.id}">${agent.name}</button> donated ${action.amount} ${action.currency} to proposal ${proposalLink}.`;
                 }
             }
             return `<button type="button" class="cb-link agent-link-clickable" data-agent-id="${agent.id}">${agent.name}</button> tried to donate to a proposal but failed.`;
@@ -1140,7 +1144,7 @@ async function executeAgentAction(agent, action) {
                 const proposal = proposalStorage.getProposal(action.proposalId);
                 if (proposal) {
                     try {
-                        window.AgentSupportSimulation.pledge(proposal, agent, action.amount);
+                        window.AgentSupportSimulation.pledge(proposal, agent, action);
                     } catch (_) {
                         return `<button type="button" class="cb-link agent-link-clickable" data-agent-id="${agent.id}">${agent.name}</button> tried to pledge to a proposal but failed.`;
                     }
@@ -1152,10 +1156,10 @@ async function executeAgentAction(agent, action) {
                         if (proposalPosition) window.agentBubbleManager.addBubble({
                             agentId: agent.id, agentName: agent.name, avatarIndex: agent.avatarIndex,
                             objectType: 'proposal', objectId: action.proposalId, objectPosition: proposalPosition,
-                            action: `pledged ${action.amount} ${getChainCurrencySymbol()} to proposal`
+                            action: `pledged ${action.amount} ${action.currency} to proposal`
                         });
                     }
-                    return `<button type="button" class="cb-link agent-link-clickable" data-agent-id="${agent.id}">${agent.name}</button> pledged ${action.amount} ${getChainCurrencySymbol()} to proposal ${buildProposalLogLinkAgent(action.proposalId, proposal)}.`;
+                    return `<button type="button" class="cb-link agent-link-clickable" data-agent-id="${agent.id}">${agent.name}</button> pledged ${action.amount} ${action.currency} to proposal ${buildProposalLogLinkAgent(action.proposalId, proposal)}.`;
                 }
             }
             return `<button type="button" class="cb-link agent-link-clickable" data-agent-id="${agent.id}">${agent.name}</button> tried to pledge to a proposal but failed.`;
@@ -1351,10 +1355,10 @@ async function showAgentDialog(agentId, options = {}) {
 
     const lensButtonTitle = translateText('modal.lens.triggerDescription', 'Lens for viewing the world');
     const labelEthBalance = translateText('agentDialog.ethBalance', 'ETH balance');
-    const labelPortfolioValue = translateText('agentDialog.portfolioValue', 'Modeled land value');
-    const labelTotalWealth = translateText('agentDialog.totalWealth', 'Modeled total');
+    const labelPortfolioValue = translateText('agentDialog.portfolioValue', 'Modeled land estimate (ETH)');
+    const labelTotalWealth = translateText('agentDialog.totalWealth', 'Modeled total (ETH)');
     const portfolioBasisLabel = translateText('agentDialog.portfolioBasis',
-        'Land model: USD {{pricePerSqmUsd}}/m², converted at USD {{usdPerEth}} per ETH.', portfolioBasis);
+        'Area-based land model: USD {{pricePerSqmUsd}}/m², converted at USD {{usdPerEth}}/ETH. Portfolio estimate and total are modeled ETH amounts.', portfolioBasis);
     const labelProposalsPending = translateText('agentDialog.proposalsPending', 'Proposals Pending ({{count}})', { count: filteredPending.length });
     const labelProposalsCreated = translateText('agentDialog.proposalsCreated', 'Proposals Created ({{count}})', { count: filteredCreated.length });
     const labelProposalsAccepted = translateText('agentDialog.proposalsAccepted', 'Recorded acceptances ({{count}})', { count: filteredAccepted.length });

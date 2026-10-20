@@ -116,11 +116,9 @@
             if (!courtyard) continue;
             const overlap = turfApi.intersect(pool, courtyard);
             if (overlap && turfApi.area(overlap) >= 1) {
-                const id = proposal.proposalId ?? proposal.id ?? proposal.serverProposalId;
                 const title = proposal.title ?? proposal.name ?? proposal.proposalName ?? '';
                 entries.push({ proposal, courtyard, derivation: {
                     kind: 'building-courtyard',
-                    sourceProposalId: String(id ?? ''),
                     sourceTitle: String(title),
                     sourceFootprint: clone(footprintUnion.geometry)
                 } });

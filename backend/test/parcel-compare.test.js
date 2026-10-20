@@ -23,8 +23,9 @@ const rect = (x0, y0, x1, y1) => ({
 
 // The owner's parcel: 40 m × 25 m = 1000 m².
 const PARCEL_ID = 'HR-1-100';
+const PARCEL_SOURCE = { sourceId: 'hr-dgu-oss-dkp-cestice', snapshotId: null };
 const PARCEL_GEOMETRY = rect(0, 0, 40, 25);
-const PARCEL = { id: PARCEL_ID, cadastreIds: [PARCEL_ID], feature: { type: 'Feature', properties: {}, geometry: PARCEL_GEOMETRY } };
+const PARCEL = { id: PARCEL_ID, cadastreIds: [PARCEL_ID], feature: { type: 'Feature', properties: { parcelSource: PARCEL_SOURCE }, geometry: PARCEL_GEOMETRY } };
 
 beforeAll(() => {
     globalThis.turf = turf;
@@ -33,7 +34,7 @@ beforeAll(() => {
 
 describe('which proposals touch the parcel', () => {
     it('lists declared proposals and sites that reach in undeclared, and leaves open-ground proposals elsewhere out', () => {
-        const declared = { proposalId: 'park', goal: 'park', cadastreParcelIds: [PARCEL_ID],
+        const declared = { proposalId: 'park', goal: 'park', cadastreParcelIds: [PARCEL_ID], binding: { parcelSource: PARCEL_SOURCE },
             structureProposal: { kind: 'park', geometry: rect(-5, -5, 45, 30) } };
         // A site on a neighbour that reaches 0.3 m over the shared edge, below its record's tolerance.
         const sliver = { proposalId: 'sliver', goal: 'park', cadastreParcelIds: ['HR-1-101'],
@@ -49,16 +50,23 @@ describe('which proposals touch the parcel', () => {
     });
 
     it('counts a declared proposal without geometry (overlap unknown, not zero)', () => {
-        const hit = compare.relationOf({ proposalId: 'x', goal: 'single', cadastreParcelIds: [PARCEL_ID] }, PARCEL);
+        const hit = compare.relationOf({ proposalId: 'x', goal: 'single', cadastreParcelIds: [PARCEL_ID], binding: { parcelSource: PARCEL_SOURCE } }, PARCEL);
         expect(hit.relation).toBe('bound');
         expect(hit.overlapM2).toBeNull();
         expect(hit.intrusionM).toBeNull();
+    });
+
+    it('does not treat an equal raw parcel ID as the same parcel across missing or different sources', () => {
+        const record = { proposalId: 'x', goal: 'single', cadastreParcelIds: [PARCEL_ID] };
+        expect(compare.relationOf(record, PARCEL)).toBeNull();
+        expect(compare.relationOf({ ...record, binding: { parcelSource: { sourceId: 'another-register', snapshotId: null } } }, PARCEL))
+            .toBeNull();
     });
 });
 
 describe('what a proposal does to this parcel', () => {
     it('a park over the whole parcel takes it whole and cedes it to public ground', () => {
-        const park = { proposalId: 'park', goal: 'park', cadastreParcelIds: [PARCEL_ID],
+        const park = { proposalId: 'park', goal: 'park', cadastreParcelIds: [PARCEL_ID], binding: { parcelSource: PARCEL_SOURCE },
             structureProposal: { kind: 'park', geometry: rect(-5, -5, 45, 30) } };
         const effect = compare.parcelEffect(park, PARCEL, { channel: 'acceptance' });
         expect(effect.relation).toBe('bound');
@@ -76,7 +84,7 @@ describe('what a proposal does to this parcel', () => {
 
     it('a road along one edge takes an edge strip, with its intrusion width and corridor', () => {
         // 6 m wide road whose centreline runs 1 m outside the parcel's south edge: 2 m reach in.
-        const road = { proposalId: 'road', goal: 'road-track', cadastreParcelIds: [PARCEL_ID], serverProposalId: 17,
+        const road = { proposalId: 'road', goal: 'road-track', cadastreParcelIds: [PARCEL_ID], binding: { parcelSource: PARCEL_SOURCE }, serverProposalId: 17,
             roadProposal: { definition: { width: 6, polygon: rect(-10, -4, 50, 2) } } };
         const effect = compare.parcelEffect(road, PARCEL);
         expect(effect.take.extent).toBe('edge');
@@ -151,7 +159,7 @@ describe('what a proposal does to this parcel', () => {
     });
 
     it('reads offers and status, but refuses raw consent aggregates without a current summary', () => {
-        const record = { proposalId: 'offer', goal: 'as-is', cadastreParcelIds: [PARCEL_ID, 'HR-1-101'],
+        const record = { proposalId: 'offer', goal: 'as-is', cadastreParcelIds: [PARCEL_ID, 'HR-1-101'], binding: { parcelSource: PARCEL_SOURCE },
             offer: 200000, offerCurrency: 'EUR', isMinted: true, acceptedParcelIds: [PARCEL_ID],
             ownerAcceptances: { [PARCEL_ID]: { ownerOrder: ['a', 'b'], acceptedOwnerKeys: ['b'] } } };
         const effect = compare.parcelEffect(record, PARCEL, { areaShare: 0.25, channel: 'offer' });

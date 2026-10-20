@@ -69,6 +69,34 @@ describe('corridor reconstruction GeoJSON', () => {
         expect(imported.roadProposal.definition.points).toHaveLength(2);
     });
 
+    it('excludes browser, unsigned and source-row state on archive export and import', () => {
+        const source = {
+            ...proposal(), id: 92, serverProposalId: 92, authorAgentId: 'local-agent-key',
+            proposalDraftId: 'browser-draft-key', proposalDraftRevision: 7,
+            appliedAt: '2026-10-19T00:00:00.000Z',
+            localPurchaseSimulation: { outcome: 'purchased' },
+            lifecycleEvidence: { protocol: 'proposal-lifecycle-evidence/1', state: 'observed', status: 'Executed' },
+            agent: { persona: 'unsigned-local-claim' },
+            proposalOrigin: { relation: 'copy', source: { kind: 'local', localProposalId: 'browser-source-key' }, title: 'Source' }
+        };
+        const collection = corridorProposalToReconstructionGeoJSON(source, polygon(15.999));
+        const archived = collection.reconstruction.proposal;
+        for (const key of ['id', 'serverProposalId', 'authorAgentId', 'proposalDraftId', 'proposalDraftRevision',
+            'appliedAt', 'localPurchaseSimulation', 'lifecycleEvidence', 'agent']) {
+            expect(archived).not.toHaveProperty(key);
+        }
+        expect(archived.proposalOrigin).toEqual({ relation: 'copy', source: null, title: 'Source' });
+
+        collection.reconstruction.proposal = { ...archived, ...source };
+        const { proposal: imported } = corridorReconstructionGeoJSONToProposal(collection);
+        for (const key of ['id', 'serverProposalId', 'authorAgentId', 'proposalDraftId', 'proposalDraftRevision',
+            'appliedAt', 'localPurchaseSimulation', 'lifecycleEvidence', 'agent']) {
+            expect(imported).not.toHaveProperty(key);
+        }
+        expect(imported.proposalOrigin).toEqual({ relation: 'copy', source: null, title: 'Source' });
+        expect(imported.applied).toBe(false);
+    });
+
     it('survives export/import/export losslessly', () => {
         const result = assertCorridorReconstructionGeoJSONRoundTrip(proposal(), polygon(15.999));
         expect(result.segmentCount).toBe(2);

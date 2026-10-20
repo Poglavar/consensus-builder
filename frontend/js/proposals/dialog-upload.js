@@ -31,8 +31,8 @@ function updateProposalScreenshotGoalIcon(toolKey) {
 
 function shouldSkipProposalScreenshot(proposal) {
     if (!proposal) return true;
-    const goalKey = normalizeGoalKey(proposal.goal || proposal.proposalType || proposal.type || '');
-    return PROPOSAL_SCREENSHOT_SKIP_GOALS.has(goalKey);
+    const goalKey = ProposalDesignGoals.keyOf(proposal);
+    return !!goalKey && PROPOSAL_SCREENSHOT_SKIP_GOALS.has(goalKey);
 }
 
 // Proposal thumbnails are rendered SERVER-SIDE at upload (backend/thumbnails/), not in the browser.
@@ -608,13 +608,7 @@ function showUploadProposalModal(proposal) {
 
     const computeShareUrlFromProposal = () => {
         try {
-            // Prefer the serial (numeric) id: getServerProposalId returns the first non-local
-            // candidate, which for a downloaded proposal can be the uploader's local id. Falling
-            // back to it would hide the share link and offer to re-upload something already there.
-            const serialId = typeof getSerialProposalId === 'function' ? getSerialProposalId(proposal) : null;
-            const serverId = serialId || (typeof getServerProposalId === 'function'
-                ? getServerProposalId(proposal)
-                : (proposal && (proposal.serverProposalId || proposal.id)));
+            const serverId = getSerialProposalId(proposal);
             if (serverId && /^\d+$/.test(String(serverId))) {
                 const joiner = cityQueryParam ? '&' : '?';
                 return `${resolveFrontendBaseUrl()}/proposals/${serverId}${cityQueryParam}${joiner}3d${shareLangParam()}`;

@@ -236,7 +236,7 @@ describe('cadastral parcel fetch transport', () => {
 
     it('queries configured live parcel sources through BrowserParcelSources without route fallback', async () => {
         const feature = { type: 'Feature', properties: { parcelId: 'PL-SAMPLE-7' }, geometry: { type: 'Polygon', coordinates: [] } };
-        const queryIds = vi.fn(async () => ({ complete: true, features: [feature], absentIds: [] }));
+        const queryIds = vi.fn(async () => ({ complete: true, sourceId: 'pl-sample-source', snapshotId: 'snapshot-7', features: [feature], absentIds: [] }));
         const fetch = vi.fn();
         const transport = bootTransport('sample', fetch,
             { source: 'parcel-source', sourceId: 'pl-sample-source' }, { queryIds });
@@ -244,8 +244,24 @@ describe('cadastral parcel fetch transport', () => {
         const result = await transport.fetchByIds(['PL-SAMPLE-7']);
 
         expect(result.features[0].properties.parcelId).toBe('PL-SAMPLE-7');
+        expect(result.features[0].properties.parcelSource).toEqual({ sourceId: 'pl-sample-source', snapshotId: 'snapshot-7' });
         expect(queryIds).toHaveBeenCalledWith('pl-sample-source', ['PL-SAMPLE-7'], { city: 'sample' });
         expect(fetch).not.toHaveBeenCalled();
+    });
+
+    it('does not qualify browser features when the adapter identifies another source or a custom URL', async () => {
+        const feature = { type: 'Feature', properties: { parcelId: 'A-1', parcelSource: { sourceId: 'unverified', snapshotId: null } }, geometry: { type: 'Polygon', coordinates: [] } };
+        const mismatched = bootTransport('sample', vi.fn(), { source: 'parcel-source', sourceId: 'catalog-a' }, {
+            queryIds: vi.fn(async () => ({ complete: true, sourceId: 'catalog-b', features: [feature], absentIds: [] }))
+        });
+        const mismatchResult = await mismatched.fetchByIds(['A-1']);
+        expect(mismatchResult.features[0].properties).not.toHaveProperty('parcelSource');
+
+        const custom = bootTransport('sample', vi.fn(), { source: 'parcel-source', sourceId: 'custom.session-1' }, {
+            queryIds: vi.fn(async () => ({ complete: true, sourceId: 'custom.session-1', features: [feature], absentIds: [] }))
+        });
+        const customResult = await custom.fetchByIds(['A-1']);
+        expect(customResult.features[0].properties).not.toHaveProperty('parcelSource');
     });
 
     it('reads curated road parcel ids from the ids-only /road-parcels answer', async () => {

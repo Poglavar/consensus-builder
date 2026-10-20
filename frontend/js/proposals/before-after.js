@@ -3,7 +3,7 @@
 // their original shape, every other presented parcel as it is now, and the existing buildings when
 // the Layers sheet shows them. The divider itself is ui/map-before-after.js.
 //
-// Two refinements of "before": a proposal that replaces an earlier version (its sourceProposalId,
+// Two refinements of "before": a proposal that replaces an earlier version (its typed proposalOrigin,
 // not a land fork) gets that version's footprint drawn as a dashed outline, so the two versions can
 // be told apart (M5); and a readjustment can be opened for one parcel, which is then outlined on the
 // before side while the plots that came out of it are outlined on the after side (M6, the owner's
@@ -340,9 +340,8 @@
             // counterproposal on different ground, not a version of the same thing).
             previousVersionOf: proposal => {
                 if (!proposal || proposal.landFork) return null;
-                const id = proposal.sourceProposalId || proposal.replacementOfProposalId;
-                if (!id || typeof w.getProposalByIdOrHash !== 'function') return null;
-                const record = w.getProposalByIdOrHash(id);
+                const record = w.ProposalOrigin.resolveLocal(proposal.proposalOrigin,
+                    w.proposalStorage.getAllProposals(), w.getBackendBase());
                 return record && record !== proposal ? record : null;
             },
             // Keep framed land clear of the details panel (proposals/list-ui.js).

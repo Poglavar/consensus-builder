@@ -193,7 +193,7 @@ function collectProposalFeatureSets(proposal, options = {}) {
     // populate parcelFeatures for parents or road descendants here to avoid the
     // O(N) toGeoJSON clones that dominated collectProposalFeatureSets runtime.
 
-    if (resolveProposalGoalKey(proposal, null) === 'road-track' && proposal.roadProposal?.definition) {
+    if (window.ProposalDesignGoals?.keyOf(proposal) === 'road-track' && proposal.roadProposal?.definition) {
         const definition = proposal.roadProposal.definition;
         let geometry = definition.polygon;
         if (!geometry && typeof corridorSurfaceFootprintForDefinition === 'function') {
@@ -1186,18 +1186,16 @@ function computeProposalArea(proposal) {
 
 function computeProposalMetrics(proposal) {
     const createdAt = Date.parse(proposal.createdAt) || 0;
-    const executedAt = proposal.executedAt ? (Date.parse(proposal.executedAt) || 0) : 0;
     const consent = getProposalConsentMetrics(proposal);
     const offerValue = Number.isFinite(Number(proposal.offer)) ? Number(proposal.offer) : (Number.isFinite(Number(proposal.budget)) ? Number(proposal.budget) : 0);
     const area = computeProposalArea(proposal);
-    const goalKey = resolveProposalGoalKey(proposal, null) || 'other';
+    const goalKey = window.ProposalDesignGoals?.keyOf(proposal) || 'other';
     const typeKey = goalKey;
     const author = (proposal.author || '').trim();
     const title = (proposal.title || '').trim();
 
     return {
         createdAt,
-        executedAt,
         ...consent,
         offerValue,
         area,
@@ -1259,9 +1257,7 @@ function buildProposalThumbHtml(proposal) {
     // No image: show the goal badge and nothing else. Thumbnails are rendered server-side when a
     // proposal is uploaded, so there is no "generate" action left for the user to take here — a
     // proposal without one is either purely local or one the backfill has yet to reach.
-    const goalKey = (typeof normalizeGoalKey === 'function')
-        ? normalizeGoalKey(proposal.goal || proposal.proposalType || '')
-        : '';
+    const goalKey = window.ProposalDesignGoals?.keyOf(proposal) || '';
     const badge = (typeof getProposalGoalBadge === 'function') ? getProposalGoalBadge(goalKey) : null;
     const icon = badge ? badge.text : '🖼';
     return `

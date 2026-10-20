@@ -125,7 +125,7 @@ function draftFor(adapter, proposal, overrides = {}) {
         cityId: source.city || 'zagreb',
         goal: seeded.adapterKey || source.goal,
         adapterKey: seeded.adapterKey,
-        sourceProposalId: source.proposalId,
+        sourceLocalProposalId: source.proposalId,
         sourceSnapshot: source,
         fields: seeded.fields,
         editorPayload: seeded.editorPayload,
@@ -182,6 +182,12 @@ describe('proposal editor adapter registry', () => {
         expect(registry.get('road')).toBe(registry.get('road-track'));
         expect(registry.get('parcel-based')).toBe(registry.get('parcelBased'));
         expect(registry.get('ownership-transfer-from-me')).toBe(registry.get('ownership-transfer'));
+    });
+
+    it('selects an editor for persisted records from the canonical goal field only', () => {
+        expect(registry.get({ goal: 'park', type: 'urban-rule' })).toBe(registry.get('park'));
+        expect(registry.get({ proposalType: 'park', type: 'park', structureProposal: { kind: 'park' } })).toBeNull();
+        expect(registry.get({ goal: 'Transit Station', typologyType: 'station' })).toBeNull();
     });
 });
 
@@ -600,7 +606,7 @@ describe('building proposal adapters', () => {
 describe('saved single-building geometry edits', () => {
     it('normalizes the generic buildings adapter key to block when saving a block design', () => {
         const draft = {
-            id: 'saved-block-edit', sourceProposalId: 'proposal-block', adapterKey: 'buildings', goal: 'buildings',
+            id: 'saved-block-edit', sourceLocalProposalId: 'proposal-block', adapterKey: 'buildings', goal: 'buildings',
             editorPayload: { typology: 'buildings', context: {} }, fields: { selectedParcelIds: [] }
         };
         let savedPatch = null;
@@ -669,7 +675,7 @@ describe('saved single-building geometry edits', () => {
 
     it('does not replace source selection anchors with transient live child parcels', () => {
         const draft = {
-            id: 'saved-single-edit', sourceProposalId: 'proposal-1', adapterKey: 'single', goal: 'single',
+            id: 'saved-single-edit', sourceLocalProposalId: 'proposal-1', adapterKey: 'single', goal: 'single',
             editorPayload: { typology: 'single', context: {} }, fields: { selectedParcelIds: ['cadastre-a', 'cadastre-b'] }
         };
         let savedPatch = null;
@@ -737,7 +743,7 @@ describe('saved lake geometry edits', () => {
         const geometry = { type: 'Polygon', coordinates: [[[0, 0], [2, 0], [2, 1], [0, 1], [0, 0]]] };
         const graphics = { geometry, shore: { type: 'Polygon', coordinates: [] }, water: { type: 'Polygon', coordinates: [] } };
         const draft = {
-            id: 'saved-lake-edit', sourceProposalId: 'lake-1', adapterKey: 'lake', goal: 'lake',
+            id: 'saved-lake-edit', sourceLocalProposalId: 'lake-1', adapterKey: 'lake', goal: 'lake',
             editorPayload: { structureProposal: { kind: 'lake', geometry, lakeGraphics: { version: 'stale' } } }
         };
         let savedPatch = null;
@@ -765,7 +771,7 @@ describe('geometry draft starters respect an incumbent map editor', () => {
         ['startInstantSiteDesign', (start, site) => start('single', site, ['parcel-1'])],
         ['startSiteSubdivision', (start, site) => start(site)]
     ])('%s refuses without replacing the active draft or its commit context', async (name, invoke) => {
-        const activeDraft = { id: 'incumbent-draft', sourceProposalId: 'proposal-1' };
+        const activeDraft = { id: 'incumbent-draft', sourceLocalProposalId: 'proposal-1' };
         const createDraft = vi.fn(() => ({ id: 'unexpected-new-draft' }));
         const openProposalDraftDesign = vi.fn();
         const global = {
@@ -1137,8 +1143,7 @@ describe('site-first drafts', () => {
         const source = {
             proposalId: 'park-source', goal: 'park', title: 'Old park',
             site: SITE, cadastreParcelIds: ['old-parcel'],
-            serverProposalId: 41, isMinted: true, onchainData: { tokenId: 'old-token' },
-            chainId: 'old-chain', lifecycleStatus: 'published', effectiveStatus: 'Published',
+            serverProposalId: '41', publicationApiBase: 'https://example.test',
             preparation: { id: 'stale-preparation' }, effectHash: 'old-effect',
             acceptedParcelIds: ['old-parcel'], ownerAcceptances: { 'old-parcel': true },
             structureProposal: { kind: 'park', geometry: POLYGON, decorations: { trees: [{ id: 'old-tree' }] } }
@@ -1286,7 +1291,7 @@ describe('site-first drafts', () => {
         expect(reopenedSeed.fields.binding).toEqual(saved.binding);
         expect(reopenedSeed.fields.selectedParcelIds).toEqual([]);
         const reopened = {
-            id: 'reopened-single', sourceProposalId: 'moved-single', sourceSnapshot: saved,
+            id: 'reopened-single', sourceLocalProposalId: 'moved-single', sourceSnapshot: saved,
             cityId: 'zagreb', adapterKey: 'single', goal: 'single', ...reopenedSeed
         };
         const previous = {
@@ -1353,7 +1358,7 @@ describe('site-first drafts', () => {
             globalThis.buildBlockifySeed = context => ({ ...(context.parameters || {}) });
             try {
                 await expect(adapter.openDesignEditor({
-                    id: `${typologyType}-draft`, sourceProposalId: saved.proposalId, sourceSnapshot: saved,
+                    id: `${typologyType}-draft`, sourceLocalProposalId: saved.proposalId, sourceSnapshot: saved,
                     cityId: 'zagreb', adapterKey: key, goal: 'buildings', ...seed
                 })).resolves.toBe(true);
                 expect(open.mock.calls[0][0]).not.toHaveProperty('placement');
@@ -1505,7 +1510,9 @@ describe('published source identity classification', () => {
     it('does not treat a generic hash as publication, but recognizes immutable published records', () => {
         expect(isPublishedProposalRecord({ proposalId: 'local-1', hash: 'content-hash' })).toBe(false);
         expect(isPublishedProposalRecord({ serverProposalId: 51 })).toBe(true);
-        expect(isPublishedProposalRecord({ lifecycleStatus: 'published' })).toBe(true);
+        expect(isPublishedProposalRecord({
+            serverProposalId: '51', publicationApiBase: 'https://example.test'
+        })).toBe(true);
     });
 });
 
@@ -1527,7 +1534,7 @@ describe('reparcellization publish handoff', () => {
         };
         const draft = {
             id: 'draft-handoff', goal: 'reparcellization', adapterKey: 'reparcellization',
-            sourceProposalId: null, sourceSnapshot: {}, revision: 4,
+            sourceLocalProposalId: null, sourceSnapshot: {}, revision: 4,
             fields: { selectedParcelIds: ['live-piece-1', 'live-piece-2'], name: 'Block', description: 'Plan', offer: 10, offerCurrency: 'USDT' },
             editorPayload: { plan }, validation: { valid: true }
         };

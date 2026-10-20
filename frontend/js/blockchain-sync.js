@@ -144,7 +144,7 @@
     /**
      * Create proposal from chain data
      */
-    function createProposalFromChainData({ chainId, contractAddress, tokenId, onchainData, owner }) {
+    function createProposalFromChainData({ chainId, contractAddress, tokenId, onchainData, owner, observedAt = new Date().toISOString() }) {
         const [parcelIds, isConditional, imageURI, acceptancePossible, status,
                ethBalance, tokenBalance, acceptanceCount, expiryTimestamp, expiringPercentage] = onchainData;
 
@@ -152,6 +152,11 @@
         const statusStr = parseContractStatus(status);
         const cadastreParcelIds = canonicalCadastreParcelIds(parcelIds);
 
+        const chainRef = { chainType: 'evm', chainId: normalizeChainId(chainId), contract: contractAddress.toLowerCase(), tokenId: tokenId.toString() };
+        const lifecycleEvidence = global.ProposalLifecycleEvidence?.projectLifecycleEvidence({
+            lifecycleStatus: statusStr,
+            chainRead: { status: statusStr, observedAt, chainRef }
+        }).lifecycleEvidence;
         return {
             proposalId,
             cadastreParcelIds,
@@ -161,6 +166,7 @@
             type: 'Purchase',
             proposalMainType: 'Purchase',
             lifecycleStatus: statusStr,
+            ...(lifecycleEvidence ? { lifecycleEvidence } : {}),
             acquisitionStrategy: isConditional ? 'conditional' : 'partial',
             isMinted: true,
             nft: {
@@ -187,7 +193,7 @@
     /**
      * Update existing proposal with chain data
      */
-    function updateProposalWithChainData(proposal, { chainId, contractAddress, tokenId, onchainData, owner }) {
+    function updateProposalWithChainData(proposal, { chainId, contractAddress, tokenId, onchainData, owner, observedAt = new Date().toISOString() }) {
         const [parcelIds, isConditional, imageURI, acceptancePossible, status,
                ethBalance, tokenBalance, acceptanceCount, expiryTimestamp, expiringPercentage] = onchainData;
 
@@ -229,6 +235,12 @@
         // It must NEVER touch `applied`, or every chain poll would silently un-apply a road (the
         // exact bug the status split fixes). No application status alias is written.
         proposal.lifecycleStatus = statusStr;
+        const chainRef = { chainType: 'evm', chainId: normalizeChainId(chainId), contract: contractAddress.toLowerCase(), tokenId: tokenId.toString() };
+        const lifecycleEvidence = global.ProposalLifecycleEvidence?.projectLifecycleEvidence({
+            lifecycleStatus: statusStr,
+            chainRead: { status: statusStr, observedAt, chainRef }
+        }).lifecycleEvidence;
+        if (lifecycleEvidence) proposal.lifecycleEvidence = lifecycleEvidence;
 
         // Update acquisition strategy
         if (proposal.acquisitionStrategy !== (isConditional ? 'conditional' : 'partial')) {
@@ -334,6 +346,7 @@
 
             // Fetch proposal data
             const onchainData = await contract.getProposal(tokenId);
+            const observedAt = new Date().toISOString();
             let owner = null;
 
             try {
@@ -356,7 +369,8 @@
                     contractAddress,
                     tokenId,
                     onchainData,
-                    owner
+                    owner,
+                    observedAt
                 });
 
                 // Save updated proposal
@@ -375,7 +389,8 @@
                     contractAddress,
                     tokenId,
                     onchainData,
-                    owner
+                    owner,
+                    observedAt
                 });
 
                 // Add to storage

@@ -881,7 +881,10 @@ async function handleProposalListItemClick(event) {
     // collision with a local key or chain token.
     const serverRowId = source === 'server' ? item.getAttribute('data-server-id') : null;
     let proposal = source === 'server'
-        ? findLocalCopyOfServerProposal({ serverProposalId: serverRowId })
+        ? findLocalCopyOfServerProposal({
+            serverProposalId: serverRowId,
+            publicationApiBase: typeof resolveBackendBaseUrl === 'function' ? resolveBackendBaseUrl() : null
+        })
         : getProposalByIdOrHash(proposalIdAttr);
 
     // A published proposal opens like any other: it is fetched into this browser on the way, with
@@ -954,7 +957,10 @@ async function handleProposalListDetailsClick(event) {
     const serverRowId = proposalListState.source === 'server'
         ? event.currentTarget.closest('.proposal-list-item')?.getAttribute('data-server-id') : null;
     let proposal = proposalListState.source === 'server'
-        ? findLocalCopyOfServerProposal({ serverProposalId: serverRowId })
+        ? findLocalCopyOfServerProposal({
+            serverProposalId: serverRowId,
+            publicationApiBase: typeof resolveBackendBaseUrl === 'function' ? resolveBackendBaseUrl() : null
+        })
         : getProposalByIdOrHash(proposalId);
     if (!proposal && proposalListState.source === 'server') {
         try {

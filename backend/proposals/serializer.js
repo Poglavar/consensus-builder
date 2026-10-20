@@ -3,9 +3,11 @@ import { buildParcelSet } from './parcel-set.js';
 import { createRequire } from 'node:module';
 
 const requireCjs = createRequire(import.meta.url);
+const proposalOrigin = requireCjs('../../frontend/js/proposals/origin.js');
 const authoredRecord = requireCjs('../../frontend/js/proposals/authored-record.js');
 const siteBinding = requireCjs('../../frontend/js/proposals/site-binding.js');
 const chainRecord = requireCjs('../../frontend/js/proposals/chain-record.js');
+const lifecycleEvidence = requireCjs('../../frontend/js/proposals/lifecycle-evidence.js');
 
 const isPolygonGeometry = value => !!value && typeof value === 'object'
     && (value.type === 'Polygon' || value.type === 'MultiPolygon') && Array.isArray(value.coordinates);
@@ -135,7 +137,10 @@ export function stripLocalProposalState(proposal) {
         'applied', 'appliedAt', 'localPurchaseSimulation', 'status', 'localEditAt', 'editSeq', 'revertSnapshot',
         // No current producer verifies an execution-event time. Observation/receipt times stay
         // in their qualified evidence records; this client field is not that evidence.
-        'executedAt',
+        'executedAt', 'publicationApiBase', 'lifecycleEvidence', 'proposalDraftId', 'proposalDraftRevision',
+        // These identifiers belong to this browser's agent/draft state, not the published record.
+        'authorAgentId',
+        'sourceProposalId', 'replacementOfProposalId', 'copiedFromProposalId', 'copiedFromName',
         'childParcelIds', 'descendantParcelIds', 'parentFeatures',
         'parentProposals', 'childProposals', 'parentProposalIds', 'childProposalIds',
         'formation', 'demolishedBuildings', 'demolitionScanned', 'parcelSourceId',
@@ -148,6 +153,7 @@ export function stripLocalProposalState(proposal) {
         // consensus.proposal_prepared; it is never part of the record itself
         'preparedArtifact'
     ].forEach(key => delete sanitized[key]);
+    if (sanitized.proposalOrigin) sanitized.proposalOrigin = proposalOrigin.portable(sanitized.proposalOrigin);
     delete sanitized.childFeatures;
 
     if (sanitized.geometry && typeof sanitized.geometry === 'object') {
@@ -189,6 +195,24 @@ export function stripLocalProposalState(proposal) {
     return authoredRecord.stripCadastreAliases(
         authoredRecord.cleanFeatureContainers(sanitized)
     );
+}
+
+// Reconstruction archives are portable authored records, not API rows or browser snapshots.
+// Keep the authored metadata sanitizer above, then remove identities that only make sense in the
+// source database and paid-agent claim projection (a verified mirror can carry its own provenance).
+export function stripProposalArchiveState(proposal) {
+    const sanitized = stripLocalProposalState(proposal);
+    if (!sanitized || typeof sanitized !== 'object' || Array.isArray(sanitized)) return sanitized;
+    delete sanitized.id;
+    delete sanitized.serverProposalId;
+    delete sanitized.agent;
+    return sanitized;
+}
+
+export function projectProposalLifecycleEvidence({ lifecycleStatus, chainMirror, lifecycleEvent, expiresAt, now } = {}) {
+    return lifecycleEvidence.projectLifecycleEvidence({
+        lifecycleStatus, chainMirror, lifecycleEvent, expiresAt, now
+    });
 }
 
 export function serializeProposalRow(row, options = {}) {
@@ -236,7 +260,7 @@ export function serializeProposalRow(row, options = {}) {
     proposal.binding = choose(row.binding, proposal.binding ?? null);
     proposal.parcelSet = buildParcelSet({
         parcelIds: proposal.cadastreParcelIds || [],
-        jurisdiction: proposal.city || null
+        parcelSource: proposal.binding?.parcelSource ?? null
     });
     proposal.roadProposal = choose(row.road_proposal, proposal.roadProposal);
     proposal.buildingProposal = choose(row.building_proposal, proposal.buildingProposal);
@@ -282,5 +306,14 @@ export function serializeProposalRow(row, options = {}) {
         if (proposal.chainMirror.agent) proposal.agent = structuredClone(proposal.chainMirror.agent);
     }
 
-    return stripLocalProposalState(proposal);
+    const projection = projectProposalLifecycleEvidence({
+        lifecycleStatus: proposal.lifecycleStatus,
+        chainMirror: proposal.chainMirror,
+        lifecycleEvent: row.lifecycle_event ?? null,
+        expiresAt: proposal.expiresAt,
+        now: options.now
+    });
+    const serialized = stripLocalProposalState(proposal);
+    serialized.lifecycleEvidence = projection.lifecycleEvidence;
+    return serialized;
 }

@@ -42,8 +42,8 @@ describe('sitePool', () => {
 describe('poolShares', () => {
     it('gives an unrepresented site an open-ground share with unknown ownership, never NaN', () => {
         const { shares, basis, poolUnitValue, totalValue } = subdivision.poolShares([], { openGroundM2: 5000 });
-        expect(shares).toEqual([expect.objectContaining({ ownerKey: 'open-ground', percent: 1, area: 5000, value: null, noOwner: true,
-            displayName: 'Open ground (ownership unknown)' })]);
+        expect(shares).toEqual([expect.objectContaining({ ownerKey: 'open-ground', percent: 1, area: 5000, value: null, unrepresentedGround: true,
+            displayName: 'Open ground (unrepresented allocation)' })]);
         expect(basis).toBe('area');
         expect(poolUnitValue).toBeNull();
         expect(totalValue).toBeNull();
@@ -79,14 +79,14 @@ describe('poolShares', () => {
 
 describe('ledgerOf', () => {
     it('leaves the open-ground balance uncalculated (null), with measured area retained', () => {
-        const ledger = subdivision.ledgerOf({ ownerKey: 'open-ground', area: 600, value: null, noOwner: true },
+        const ledger = subdivision.ledgerOf({ ownerKey: 'open-ground', area: 600, value: null, unrepresentedGround: true },
             { basis: 'area', poolUnitValue: null, assignedArea: 450 });
-        expect(ledger).toMatchObject({ contributed: 600, entitled: 600, assigned: 450, assignedArea: 450, cashBalance: null, noOwner: true });
+        expect(ledger).toMatchObject({ contributed: 600, entitled: 600, assigned: 450, assignedArea: 450, cashBalance: null, unrepresentedGround: true });
     });
 
     it('never yields NaN for an owner with missing numbers', () => {
         const ledger = subdivision.ledgerOf({ ownerKey: 'a', area: undefined, value: null }, { basis: 'value', poolUnitValue: null, assignedArea: NaN });
-        Object.entries(ledger).filter(([key]) => key !== 'noOwner').forEach(([, value]) => expect(isNumber(value)).toBe(true));
+        Object.entries(ledger).filter(([key]) => key !== 'unrepresentedGround').forEach(([, value]) => expect(isNumber(value)).toBe(true));
         expect(ledger.cashBalance).toBe(0);
     });
 });

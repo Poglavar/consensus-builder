@@ -117,7 +117,7 @@
     function render(container, proposal, serverId, response) {
         if (!container || !container.isConnected || container.dataset.bindingDriftFor !== serverId) return;
         container.querySelectorAll('.proposal-binding-drift').forEach(node => node.remove());
-        const reboundAs = api().findRebound(localRecords(), { serverId, proposalId: proposal.proposalId });
+        const reboundAs = api().findRebound(localRecords(), proposal, global.getBackendBase());
         const notice = api().driftNotice(response, { reboundAs });
         if (!notice) return;
         const box = global.document.createElement('div');
@@ -172,7 +172,7 @@
 
         let derived;
         try {
-            derived = api().deriveReboundRecord(source, response, { sourceServerId: serverId });
+            derived = api().deriveReboundRecord(source, response, { backendBase: global.getBackendBase() });
         } catch (error) {
             alertText(error.message || String(error));
             return null;

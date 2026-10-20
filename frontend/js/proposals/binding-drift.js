@@ -5,11 +5,12 @@
 // re-bind publishes — the source record is never edited. Pure; UMD so backend tests and the
 // server require it, the browser reads `window.__bindingDrift`.
 (function (root, factory) {
-    const api = factory();
+    const api = factory(root);
     if (typeof module === 'object' && module.exports) module.exports = api;
     if (root) root.__bindingDrift = api;
-})(typeof window !== 'undefined' ? window : globalThis, function () {
+})(typeof window !== 'undefined' ? window : globalThis, function (root) {
     'use strict';
+    const Origin = root.ProposalOrigin || (typeof require === 'function' ? require('./origin.js') : null);
 
     // Open ground that grows or shrinks by less than this is arithmetic, not a cadastre change
     // (the same 1 m² sliver budget as the live fabric and the arrangement's MIN_PIECE_M2).
@@ -30,7 +31,7 @@
         'ownershipFlow', 'cadastreFrame', 'effectHash', 'screenshotUrl', 'screenshot_url',
         'editToken', 'agentPaymentId', 'agent_payment_id',
         'proposalDraftId', 'proposalDraftRevision',
-        'replacementOfProposalId', 'sourceProposalId', 'copiedFromProposalId', 'copiedFromName',
+        'proposalOrigin', 'publicationApiBase',
         'landFork', 'rebind'
     ]);
     const SUB_PROPOSAL_KEYS = Object.freeze(['roadProposal', 'buildingProposal', 'structureProposal', 'reparcellization', 'decideLaterProposal']);
@@ -83,12 +84,15 @@
         const toGround = openGroundOf(current);
         const groundMoved = fromGround !== null && toGround !== null
             && Math.abs(toGround - fromGround) >= OPEN_GROUND_CHANGE_M2;
-        const coverageChanged = (stored.coverage || null) !== (current.coverage || null) || groundMoved;
+        const sourceChanged = stored.parcelSource?.sourceId !== current.parcelSource?.sourceId
+            || stored.parcelSource?.snapshotId !== current.parcelSource?.snapshotId;
+        const coverageChanged = sourceChanged || (stored.coverage || null) !== (current.coverage || null) || groundMoved;
         if (!added.length && !removed.length && !coverageChanged) return null;
         return {
             added,
             removed,
             coverageChanged,
+            sourceChanged,
             coverage: { from: stored.coverage || null, to: current.coverage || null },
             openGroundM2: { from: fromGround, to: toGround }
         };
@@ -128,7 +132,8 @@
     // Same set of bound parcels and coverage → same key. Part of the derived record's content, so
     // re-binding twice against the same cadastre publishes once, and a later cadastre gives a new record.
     function bindingKey(binding) {
-        return `${binding && binding.coverage ? binding.coverage : 'none'}:${boundParcelIds(binding).join(',')}`;
+        return JSON.stringify([binding?.parcelSource?.sourceId || null, binding?.parcelSource?.snapshotId || null,
+            binding?.coverage || null, boundParcelIds(binding)]);
     }
 
     /**
@@ -143,8 +148,7 @@
         if (!source || typeof source !== 'object') throw new Error('A source record is required.');
         const current = response && response.current;
         if (!current || !Array.isArray(current.parcels)) throw new Error('The current binding is missing.');
-        const sourceId = source.proposalId ?? source.id;
-        if (sourceId === undefined || sourceId === null || sourceId === '') throw new Error('The source record has no id.');
+        const origin = Origin.fromRecord(source, { relation: 'rebind', backendBase: opts.backendBase });
         const derived = clone(source);
         RECORD_STATE_KEYS.forEach(key => { delete derived[key]; });
         SUB_PROPOSAL_KEYS.forEach(key => {
@@ -160,12 +164,8 @@
         // The ordinary counterproposal lineage back to the published source. Applying the derived
         // record stands the source down only where their ground overlaps, as for any two
         // proposals (proposals/claims.js appliedRivals).
-        derived.sourceProposalId = String(sourceId);
-        derived.replacementOfProposalId = String(sourceId);
-        derived.copiedFromName = source.title || source.name || null;
+        derived.proposalOrigin = origin;
         derived.rebind = {
-            sourceProposalId: String(sourceId),
-            sourceServerId: opts.sourceServerId ? String(opts.sourceServerId) : (source.serverProposalId ? String(source.serverProposalId) : null),
             storedComputedAt: response.stored && response.stored.computedAt ? response.stored.computedAt : null,
             currentComputedAt: current.computedAt || null,
             added: drift ? drift.added.map(entry => entry.parcelId) : [],
@@ -175,15 +175,12 @@
         return derived;
     }
 
-    // A local record derived from the published record `serverId` (or local id), if any.
-    function findRebound(records, { serverId, proposalId } = {}) {
-        const server = serverId === undefined || serverId === null ? null : String(serverId);
-        const local = proposalId === undefined || proposalId === null ? null : String(proposalId);
-        return (Array.isArray(records) ? records : []).find(record => {
-            const link = record && record.rebind;
-            if (!link) return false;
-            return (server && link.sourceServerId === server) || (local && link.sourceProposalId === local);
-        }) || null;
+    // Rebind provenance uses the same qualified relationship as every other fork.
+    function findRebound(records, source, backendBase) {
+        const reference = Origin.fromRecord(source, { relation: 'rebind', backendBase }).source;
+        return (Array.isArray(records) ? records : []).find(record =>
+            record?.proposalOrigin?.relation === 'rebind'
+            && Origin.sameReference(record.proposalOrigin.source, reference)) || null;
     }
 
     return {

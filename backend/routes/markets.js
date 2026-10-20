@@ -6,7 +6,7 @@
 import { createRequire } from 'node:module';
 import { createHash } from 'node:crypto';
 import { Connection } from '@solana/web3.js';
-import { buildContests, proposalAccountOf } from '../markets/contests.js';
+import { buildContests, normalizeKnownParcelSource, proposalAccountOf } from '../markets/contests.js';
 import { PLAN_IN_CITY_SQL } from '../plans/plan-store.js';
 import { decodeProposalState } from '../agents/lifecycle-actions.js';
 import { EFFECTIVE_STATUS_SQL, normalizeCityCode } from './proposals.js';
@@ -15,6 +15,7 @@ import { DEVNET_GENESIS_HASH, PROPOSAL_PROGRAM_ID } from '../oracle/proposal-lif
 
 const require = createRequire(import.meta.url);
 const web3 = require('@solana/web3.js');
+const proposalDesignGoals = require('../../frontend/js/proposals/design-goals.js');
 // The same codec the browser and the agent bettor use (frontend/js/solana/market-client.js).
 const marketClient = require('../../frontend/js/solana/market-client.js');
 marketClient.configure({ web3 });
@@ -35,7 +36,7 @@ async function assertMarketNetwork(connection) {
 export const PROPOSAL_COLUMNS_SQL = `
         id, proposal_id, city,
         COALESCE(title, name, proposal_data->>'title', proposal_data->>'name') AS title,
-        COALESCE(proposal_data->>'goal', type) AS goal,
+        proposal_data->>'goal' AS goal,
         ${EFFECTIVE_STATUS_SQL} AS lifecycle_status,
         created_at, expires_at, cadastre_parcel_ids, onchain_data,
         COALESCE(author, proposal_data->>'author') AS author,
@@ -43,6 +44,7 @@ export const PROPOSAL_COLUMNS_SQL = `
         proposal_data->>'proposalRole' AS proposal_role,
         COALESCE(screenshot_url, onchain_data->>'imageUrl') AS screenshot_url,
         screenshot_before_url, screenshot_pair_url,
+        COALESCE(binding, proposal_data->'binding') AS binding,
         COALESCE(building_proposal->>'blockName', structure_proposal->>'blockName', proposal_data->'buildingProposal'->>'blockName') AS site_name`;
 
 const PROPOSALS_SQL = `
@@ -75,12 +77,17 @@ export function rowToPlan(row) {
 }
 
 export function rowToProposal(row) {
+    let binding = row.binding;
+    if (typeof binding === 'string') {
+        try { binding = JSON.parse(binding); } catch { binding = null; }
+    }
+    const qualifiedParcelSource = normalizeKnownParcelSource(binding?.parcelSource);
     return {
         id: row.id,
         city: row.city || null,
         proposalId: row.proposal_id,
         title: row.title,
-        goal: row.goal,
+        goal: proposalDesignGoals.keyOf({ goal: row.goal }),
         lifecycleStatus: row.lifecycle_status,
         createdAt: row.created_at instanceof Date ? row.created_at.toISOString() : row.created_at,
         expiresAt: row.expires_at instanceof Date ? row.expires_at.toISOString() : row.expires_at,
@@ -91,6 +98,7 @@ export function rowToProposal(row) {
         screenshotBeforeUrl: row.screenshot_before_url || null,
         screenshotPairUrl: row.screenshot_pair_url || null,
         parcelIds: Array.isArray(row.cadastre_parcel_ids) ? row.cadastre_parcel_ids : [],
+        parcelSource: qualifiedParcelSource,
         siteName: typeof row.site_name === 'string' && row.site_name.trim() ? row.site_name.trim() : null,
         proposalAccount: proposalAccountOf(row.onchain_data)
     };

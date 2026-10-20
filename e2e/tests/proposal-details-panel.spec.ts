@@ -8,8 +8,9 @@ test.describe('Proposal details panel @features', () => {
       const w = window as any;
       return w.proposalStorage.addProposal({
         title: 'E2E proposal minimize',
-        goal: 'parcelBased',
+        goal: 'park',
         lifecycleStatus: 'Active',
+        lifecycleEvidence: { protocol: 'proposal-lifecycle-evidence/1', state: 'unknown', claimedStatus: 'Active', reason: 'no-matching-observation' },
         cadastreParcelIds: [parcelId],
       });
     }, PARCEL_ID);
@@ -33,14 +34,18 @@ test.describe('Proposal details panel @features', () => {
       map.once('moveend', () => resolve());
       map.panBy([120, 0], { animate: false });
     }));
-    const afterPan = await page.evaluate(() => ({
+    const afterPan = await page.evaluate((id) => ({
       proposalId: (window as any).currentlyHighlightedProposalId,
       panelVisible: document.getElementById('proposal-details-panel')?.classList.contains('visible'),
       minimized: document.getElementById('proposal-details-panel')?.classList.contains('is-minimized'),
-    }));
+      lifecycleEvidence: (window as any).proposalStorage.getProposal(id)?.lifecycleEvidence,
+    }), proposalId);
     expect(afterPan.proposalId).toBe(proposalId);
     expect(afterPan.panelVisible).toBe(true);
     expect(afterPan.minimized).toBe(true);
+    expect(afterPan.lifecycleEvidence).toMatchObject({
+      protocol: 'proposal-lifecycle-evidence/1', state: 'unknown', claimedStatus: 'Active',
+    });
 
     await minimizeButton.click();
     await expect(minimizeButton).toHaveAttribute('aria-expanded', 'true');

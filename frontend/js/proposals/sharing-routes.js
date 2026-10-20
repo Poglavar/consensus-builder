@@ -10,10 +10,13 @@
 function refreshSharedFloorPlanModels(localProposals, loadedById) {
     let refreshedFloors = 0;
     for (const local of localProposals) {
-        if (local.replacementOfProposalId || local.sourceProposalId) continue;
+        if (local.proposalOrigin) continue;
         const rowId = window.SharedLinkCopies.rowId(local.serverProposalId);
+        const apiBase = window.ProposalOrigin.apiBase(local.publicationApiBase);
         const remote = rowId && [...loadedById.values()].find(record =>
-            window.SharedLinkCopies.rowId(record?.id) === rowId);
+            apiBase
+            && window.ProposalOrigin.apiBase(record?.publicationApiBase) === apiBase
+            && window.SharedLinkCopies.rowId(record?.serverProposalId) === rowId);
         if (!remote?.geometry?.buildings?.some(building => building.properties?.floorPlans)) continue;
         const current = (window.proposedBuildings || []).filter(building =>
             String(building.properties?.proposalId) === String(local.proposalId));
@@ -214,24 +217,23 @@ function shareSingleProposal(proposalIdOrProposal) {
 
         // Next, prefer the proposal currently rendered in the details panel
         if (!proposal && currentProposalDetailsContext) {
-            const currentId = getProposalKey(currentProposalDetailsContext)
-                || currentProposalDetailsContext.serverProposalId
-                || currentProposalDetailsContext.id;
+            const currentId = getProposalKey(currentProposalDetailsContext);
             if (!requestedId || String(currentId) === String(requestedId)) {
                 proposal = currentProposalDetailsContext;
             }
         }
 
-        // Finally, fall back to storage lookups when needed
+        // A share route accepts a local key or an explicit row in the current publication API.
+        // Generic record aliases (`id`, authored IDs and hashes) do not identify a published row.
         if (!proposal && requestedId && hasStorage) {
-            proposal = proposalStorage.getProposal(requestedId);
-        }
-        if (!proposal && requestedId && hasStorage) {
-            const all = typeof proposalStorage.getAllProposals === 'function' ? proposalStorage.getAllProposals() : [];
-            proposal = all.find(p => String(p.serverProposalId || p.id || p.proposalId) === String(requestedId));
-        }
-        if (!proposal && requestedId && typeof getProposalByIdOrHash === 'function') {
-            proposal = getProposalByIdOrHash(requestedId);
+            const requested = String(requestedId);
+            const currentApi = typeof resolveBackendBaseUrl === 'function' ? resolveBackendBaseUrl() : null;
+            proposal = currentApi
+                ? proposalStorage.getProposalByServerRowId?.(requested, currentApi) || null
+                : null;
+            if (!proposal && !/^[1-9]\d*$/.test(requested)) {
+                proposal = proposalStorage.getProposal(requested);
+            }
         }
         if (!proposal) {
             if (typeof showEphemeralMessage === 'function') {
@@ -1070,7 +1072,8 @@ async function loadSharedProposalFromLink(sharedProposal, payload) {
         normalized.proposalId = targetHash;
 
         let stored = proposalStorage.getProposal(targetHash);
-        if (stored) await followServerLifecycle(stored, normalized.lifecycleStatus);
+        if (stored) await followServerLifecycle(stored, normalized.lifecycleStatus,
+            ...(normalized.lifecycleEvidence ? [normalized.lifecycleEvidence] : []));
         if (!stored) {
             const imported = proposalStorage.importProposal(normalized, { overwrite: false });
             stored = imported || proposalStorage.getProposal(targetHash);
@@ -1523,10 +1526,11 @@ async function importAndApplySharedProposal(sharedProposal, options = {}) {
     const proposalId = normalized?.proposalId || fallbackHash;
     if (!normalized) return { applied: false, skipped: false, proposalId, reason: 'Unable to normalize shared proposal' };
 
-    let existing = window.SharedLinkCopies.rowId(normalized.serverProposalId)
-        ? proposalStorage.getProposalByServerRowId(normalized.serverProposalId)
+    let existing = window.SharedLinkCopies.rowId(normalized.serverProposalId) && normalized.publicationApiBase
+        ? proposalStorage.getProposalByServerRowId(normalized.serverProposalId, normalized.publicationApiBase)
         : proposalStorage.getProposal(normalized.proposalId);
-    if (existing) await followServerLifecycle(existing, normalized.lifecycleStatus);
+    if (existing) await followServerLifecycle(existing, normalized.lifecycleStatus,
+        ...(normalized.lifecycleEvidence ? [normalized.lifecycleEvidence] : []));
     if (existing && isProposalCurrentlyApplied(existing)) {
         return { applied: false, skipped: true, proposalId: existing.proposalId, reason: 'Already applied' };
     }
@@ -1632,7 +1636,7 @@ async function fetchSharedProposalBatch(ids, backendBase) {
             const id = item && item.id !== undefined && item.id !== null ? String(item.id) : '';
             if (!id) return;
             seen.add(id);
-            if (item.proposal) records.set(id, item.proposal);
+            if (item.proposal) records.set(id, normalizePublicationResponse(item.proposal, backendBase));
             else {
                 missing.add(id);
                 const reason = describeSharedProposalFetchFailure(id, item);
@@ -1670,7 +1674,7 @@ async function sharedProposalCityBlocksLoad(firstProposalId, prefetchedPayload =
             requestMade = true;
             const response = await fetch(`${backendBase}/proposals/${encodeURIComponent(firstProposalId)}`);
             if (!response.ok) return { blocked: false, payload: null, requestMade };
-            payload = await response.json();
+            payload = normalizePublicationResponse(await response.json(), backendBase);
         }
         if (typeof promptCityMismatchForProposal !== 'function') return { blocked: false, payload, requestMade };
         const proposalCityId = sharedRecordCityOf(payload);
@@ -1867,8 +1871,9 @@ async function handleSharedPlanRoute(idParts, attempt = 0, options = {}) {
         // (followServerLifecycle, server-sync.js), BEFORE the applied-state analysis below: a copy
         // the server reports Cancelled is unapplied, so the link does not count it as standing.
         for (const record of batchRecords.records.values()) {
-            const local = findLocalCopyOfServerProposal({ id: record?.id });
-            if (local) await followServerLifecycle(local, record?.lifecycleStatus);
+            const local = findLocalCopyOfServerProposal(record);
+            if (local) await followServerLifecycle(local, record?.lifecycleStatus,
+                ...(record?.lifecycleEvidence ? [record.lifecycleEvidence] : []));
         }
 
         const urlRequests3D = is3DModeRequestedFromUrl();
@@ -1882,7 +1887,7 @@ async function handleSharedPlanRoute(idParts, attempt = 0, options = {}) {
         // URL references name publication rows (or authored IDs resolved by a fetched row).
         // Keep all downstream map membership and focus keys in the browser's local namespace.
         const resolveLinkCopies = () => window.SharedLinkCopies.match(
-            proposalStorage.getAllProposals() || [], incomingIds, loadedById);
+            proposalStorage.getAllProposals() || [], incomingIds, loadedById, backendBase);
         let linkCopies;
         let orderByLocalKey;
         const refreshLinkCopies = () => {
@@ -2071,7 +2076,7 @@ async function handleSharedPlanRoute(idParts, attempt = 0, options = {}) {
                     try {
                         recordFetchProfile.individualRequests += 1;
                         const resp = await fetch(`${backendBase}/proposals/${encodeURIComponent(qid)}`);
-                        if (resp.ok) loadedById.set(qid, await resp.json());
+                        if (resp.ok) loadedById.set(qid, normalizePublicationResponse(await resp.json(), backendBase));
                     } catch (_) { /* the apply loop retries and reports this id itself */ }
                 }));
                 const items = queue.map(qid => {
@@ -2197,7 +2202,7 @@ async function handleSharedPlanRoute(idParts, attempt = 0, options = {}) {
                         markFetchProgress(id);
                         continue;
                     }
-                    proposal = await response.json();
+                    proposal = normalizePublicationResponse(await response.json(), backendBase);
                     loadedById.set(id, proposal);
                     try {
                         const inferredType = formatSharedProposalTypeLabel(proposal);

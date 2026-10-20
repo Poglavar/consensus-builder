@@ -412,12 +412,9 @@ const proposalStorage = {
         }
     },
 
-    _normalizeProposalIdentity(proposal, context = {}) {
+    _normalizeProposalIdentity(proposal) {
         if (!proposal || typeof proposal !== 'object') return proposal;
-        const { existingHash = null } = context;
-        const candidate = proposal.proposalId
-            || proposal.tokenId
-            || existingHash;
+        const candidate = proposal.proposalId;
         if (candidate !== undefined && candidate !== null) {
             proposal.proposalId = String(candidate);
         }
@@ -440,10 +437,7 @@ const proposalStorage = {
         const canonical = this._normalizeProposal({ ...proposal });
         Object.keys(proposal).forEach(key => { delete proposal[key]; });
         Object.assign(proposal, canonical);
-        const id = this._coerceProposalId(
-            proposal.proposalId
-            || proposal.tokenId
-        );
+        const id = this._coerceProposalId(proposal.proposalId);
         if (!id) return null;
         // Any re-index is a content change: its cached persistence fragment is no longer valid.
         this._persistFragments?.delete(id);
@@ -458,18 +452,22 @@ const proposalStorage = {
         if (this.proposals.has(key)) {
             return key;
         }
-        // General callers may name an explicit published row. Chain locations are resolved only
-        // through ChainProposalRef; neither a bare token nor an old alias identifies a local copy.
-        return this.getProposalByServerRowId(key)?.proposalId || null;
+        // This method is exclusively a browser-local key lookup. Publication rows require an API
+        // scope at getProposalByServerRowId; chain locations require ChainProposalRef.
+        return null;
     },
 
-    getProposalByServerRowId(rowId) {
+    getProposalByServerRowId(rowId, publicationApiBase) {
         this._ensureIndexes();
         if (!/^[1-9]\d*$/.test(String(rowId ?? ''))) return null;
         const key = String(rowId);
+        const originApi = (typeof window !== 'undefined' && window.ProposalOrigin)
+            || (typeof require === 'function' ? require('./origin.js') : null);
+        const requestedBase = originApi?.apiBase(publicationApiBase);
         let found = null;
         for (const proposal of this.proposals.values()) {
             if (!proposal || String(proposal.serverProposalId ?? '') !== key) continue;
+            if (!requestedBase || originApi?.apiBase(proposal.publicationApiBase) !== requestedBase) continue;
             if (found && found !== proposal) {
                 throw new Error(`Multiple local proposals refer to server row ${key}.`);
             }
@@ -670,6 +668,19 @@ const proposalStorage = {
             imageURI: raw.imageURI || '',
             acceptancePossible: raw.acceptancePossible !== false,
             lifecycleStatus: getLifecycleStatus({ lifecycleStatus: raw.lifecycleStatus ?? raw.status }),
+            ...(raw.lifecycleEvidence?.protocol === 'proposal-lifecycle-evidence/1'
+                && raw.lifecycleEvidence.state === 'observed'
+                && String(raw.lifecycleEvidence.status || '').toLowerCase()
+                    === String(raw.lifecycleStatus ?? raw.status ?? '').toLowerCase()
+                && Number.isFinite(Date.parse(raw.lifecycleEvidence.observedAt))
+                && raw.lifecycleEvidence.observations?.some(observation => observation.source === 'chain-state-read'
+                    && observation.status === raw.lifecycleEvidence.status
+                    && observation.chainRef?.chainType === incomingRef.chainType
+                    && observation.chainRef?.chainId === incomingRef.chainId
+                    && observation.chainRef?.contract === incomingRef.contract
+                    && observation.chainRef?.tokenId === incomingRef.tokenId)
+                ? { lifecycleEvidence: raw.lifecycleEvidence }
+                : existing?.lifecycleEvidence ? { lifecycleEvidence: existing.lifecycleEvidence } : {}),
             ethBalance: raw.ethBalance || '0',
             tokenBalance: raw.tokenBalance || '0',
             acceptanceCount: raw.acceptanceCount || '0',
@@ -1183,7 +1194,7 @@ const proposalStorage = {
         const incomingId = this._coerceProposalId(normalized.proposalId);
 
         const publishedCopy = normalized.serverProposalId
-            ? this.getProposalByServerRowId(normalized.serverProposalId) : null;
+            ? this.getProposalByServerRowId(normalized.serverProposalId, normalized.publicationApiBase) : null;
         let idKey = publishedCopy?.proposalId || incomingId;
         if (!idKey || isLocalProposalId(idKey)) {
             idKey = this._buildDeterministicId(normalized);
@@ -1198,7 +1209,8 @@ const proposalStorage = {
         // another browser's claims (or erase it when the portable record correctly omits them).
         // The tally starts empty and is recomputed against the incoming terms, never copied.
         const existing = this.proposals.get(idKey);
-        if (existing && String(existing.serverProposalId || '') !== String(normalized.serverProposalId || '')) {
+        if (existing && (String(existing.serverProposalId || '') !== String(normalized.serverProposalId || '')
+            || (existing.publicationApiBase || null) !== (normalized.publicationApiBase || null))) {
             throw new Error('Cannot import proposal: its local key belongs to a different publication identity.');
         }
         if (existing?.ownerAcceptances && typeof existing.ownerAcceptances === 'object') {
@@ -1323,8 +1335,7 @@ const proposalStorage = {
         return true;
     },
 
-    _normalizeProposal(proposal, context = {}) {
-        const { existingHash = null } = context || {};
+    _normalizeProposal(proposal) {
         const root = typeof window !== 'undefined' ? window : globalThis;
         const depthApi = root && root.__formationDepth;
         if (!depthApi || typeof depthApi.stripDerivedRecordData !== 'function' || typeof depthApi.decodeRoadView !== 'function') {
@@ -1387,7 +1398,7 @@ const proposalStorage = {
         );
 
         // Normalize identity to proposalId and drop legacy hash fields
-        this._normalizeProposalIdentity(proposal, { existingHash });
+        this._normalizeProposalIdentity(proposal);
 
         // Minted flag default (keep local-only proposals as not minted)
         if (proposal.isMinted === undefined || proposal.isMinted === null) {
@@ -1396,14 +1407,9 @@ const proposalStorage = {
             proposal.isMinted = !!proposal.isMinted;
         }
 
-        // Ensure proposalId is preserved (it is the canonical key used across the UI and persistence).
-        // IMPORTANT: Do NOT delete proposal.proposalId here, otherwise uploaded proposals lose their server id on save,
-        // and reload will re-wrap them as local-*.
-        const derivedId = proposal.proposalId
-            ?? proposal.serverProposalId
-            ?? proposal.id
-            ?? proposal.tokenId
-            ?? existingHash;
+        // Preserve the explicit browser key. Publication rows and chain tokens are separate
+        // namespaces; an absent browser key is allocated from authored content below.
+        const derivedId = proposal.proposalId;
         if (derivedId !== undefined && derivedId !== null && String(derivedId).trim().length > 0) {
             proposal.proposalId = String(derivedId);
         }
@@ -1969,6 +1975,7 @@ const multiParcelSelection = {
     showMultiParcelInfo() {
         const parcels = this.getSelectedParcels();
         const avgSqmPrice = (typeof SQM_AVG_PRICE !== 'undefined' ? SQM_AVG_PRICE : 133);
+        const priceModel = window.ParcelPriceModel;
 
         const parcelSummaries = parcels.map(parcel => {
             const parcelId = window.ParcelPresenter?.getIdForLayer?.(parcel) || null;
@@ -1979,16 +1986,27 @@ const multiParcelSelection = {
                 || props.parcelArea
                 || props.informationTechnical?.superficie_total;
             const area = Number.isFinite(Number(areaSource)) ? Number(areaSource) : 0;
-            const explicitPrice = Number(props.estimatedMarketPrice);
-            const price = Number.isFinite(explicitPrice) ? explicitPrice : (area ? area * avgSqmPrice : 0);
-            const currency = props.estimatedMarketPriceCurrency || props.currency || 'EUR';
-            return { parcel, parcelId, feature, area, price, currency };
+            const estimate = priceModel
+                ? priceModel.buildEstimate(props, area, { areaPricePerSqm: avgSqmPrice, currency: 'EUR' })
+                : { amount: null, currency: null, basis: 'unavailable' };
+            return { parcel, parcelId, feature, area, estimate };
         }).filter(summary => summary.feature);
 
         const totalArea = parcelSummaries.reduce((sum, p) => sum + (p.area || 0), 0);
-        const totalEstimatedPrice = parcelSummaries.reduce((sum, p) => sum + (p.price || 0), 0);
-        // One city's parcels share one price currency; the computed fallback (SQM_AVG_PRICE) is EUR.
-        const totalCurrency = (parcelSummaries[0] && parcelSummaries[0].currency) || 'EUR';
+        const totalEstimate = priceModel
+            ? priceModel.aggregate(parcelSummaries.map(p => p.estimate), parcels.length)
+            : { amount: null, currency: null, basis: 'unavailable' };
+        const baseEstimateLabel = tParcelMulti('panel.parcel.multi.estValue', {}, 'Est. Val.');
+        const totalEstimateLabel = totalEstimate.basis === 'area-model'
+            ? `${baseEstimateLabel} (modeled area value)`
+            : totalEstimate.basis === 'source-estimate'
+                ? `${baseEstimateLabel} (source estimates)`
+                : totalEstimate.basis === 'combined-estimates'
+                    ? `${baseEstimateLabel} (combined estimate bases)`
+                    : baseEstimateLabel;
+        const totalEstimateDisplay = totalEstimate.amount === null
+            ? 'N/A'
+            : CbFormat.formatMoney(totalEstimate.amount, totalEstimate.currency, { maxFractionDigits: 0 });
 
         // Calculate total owners across all parcels
         let totalOwners = 0;
@@ -2065,8 +2083,8 @@ const multiParcelSelection = {
             </div>
             <div style="display: flex; gap: 8px;">
                 <div class="metric-group" style="flex: 1;">
-                    <div class="metric-label" data-i18n-key="panel.parcel.multi.estValue">${tParcelMulti('panel.parcel.multi.estValue', {}, 'Est. Val.:')}</div>
-                    <div class="metric-value">${CbFormat.formatMoney(totalEstimatedPrice, totalCurrency, { maxFractionDigits: 0 })}</div>
+                    <div class="metric-label">${totalEstimateLabel}:</div>
+                    <div class="metric-value">${totalEstimateDisplay}</div>
                 </div>
                 <div class="metric-group" style="flex: 1;">
                     <div class="metric-label" data-i18n-key="panel.parcel.multi.totalOwners">${tParcelMulti('panel.parcel.multi.totalOwners', {}, 'Total owners:')}</div>
@@ -2077,17 +2095,21 @@ const multiParcelSelection = {
             <div class="selected-parcels-section">
                 <div class="metric-label" data-i18n-key="panel.parcel.multi.selectedParcelsHeading">${tParcelMulti('panel.parcel.multi.selectedParcelsHeading', {}, 'Selected Parcels:')}</div>
                 <div class="selected-parcels-list">
-                        ${parcelSummaries.map(({ parcelId, feature, area, price, currency }) => {
+                        ${parcelSummaries.map(({ parcelId, feature, area, estimate }) => {
             const isRoad = parcelId && typeof window.isRoadParcel === 'function' ? window.isRoadParcel(parcelId) : false;
             const parcelNumberDisplay = getParcelDisplayNumberFromProperties(feature.properties, parcelId);
             const parcelLabel = tParcelMulti('panel.parcel.multi.parcelLabel', { number: parcelNumberDisplay || parcelId }, `Parcel ${parcelNumberDisplay || parcelId}`);
             const roadLabel = tParcelMulti('panel.parcel.multi.roadTag', {}, 'Road');
+            const priceDisplay = estimate.amount === null
+                ? 'N/A'
+                : CbFormat.formatMoney(estimate.amount, estimate.currency, { maxFractionDigits: 0 });
+            const priceBasis = estimate.basis === 'area-model' ? 'Modeled' : (estimate.basis === 'source-estimate' ? 'Source estimate' : '');
             return `
                             <div class="selected-parcel-item">
                                 <div class="parcel-number"><span class="parcel-id-text" title="${escapeHtml(String(parcelId))}">${escapeHtml(parcelLabel)}</span></div>
                                 <div class="parcel-details">
                                             ${CbFormat.formatArea(area)} •
-                                            ${CbFormat.formatMoney(price, currency, { maxFractionDigits: 0 })}
+                                            ${priceBasis ? `${priceBasis}: ` : ''}${priceDisplay}
                                     ${isRoad ? ` • <span style="color: #28a745;">${roadLabel}</span>` : ''}
                                 </div>
                             </div>

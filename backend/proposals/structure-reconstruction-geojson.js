@@ -2,7 +2,7 @@
 // The site and authored structure stay ordinary GeoJSON features; proposal-only metadata is
 // retained in a foreign member so desktop GIS tools can still consume the archive directly.
 
-import { stripLocalProposalState } from './serializer.js';
+import { stripProposalArchiveState } from './serializer.js';
 import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
@@ -69,7 +69,7 @@ function stripArchiveProperties(input) {
 
 export function structureProposalToReconstructionGeoJSON(proposal, siteFeature) {
     if (!proposal || typeof proposal !== 'object') throw new Error('Proposal is required.');
-    proposal = stripLocalProposalState(proposal);
+    proposal = stripProposalArchiveState(proposal);
     const structure = proposal.structureProposal;
     if (!structure || typeof structure !== 'object') throw new Error('Structure proposal is required.');
 
@@ -114,7 +114,7 @@ export function structureReconstructionGeoJSONToProposal(collection) {
         geometry: clone(footprint.geometry)
     };
     assertStructureKind(structureProposal);
-    const proposal = stripLocalProposalState({
+    const proposal = stripProposalArchiveState({
         ...withoutKeys(collection.reconstruction.proposal, PROPOSAL_RUNTIME_KEYS),
         geometry: clone(footprint.geometry),
         structureProposal

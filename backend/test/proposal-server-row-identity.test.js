@@ -4,6 +4,9 @@ import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
 
 const source = readFileSync(new URL('../../frontend/js/proposals/server-sync.js', import.meta.url), 'utf8');
+const Origin = require('../../frontend/js/proposals/origin.js');
+const DesignGoals = require('../../frontend/js/proposals/design-goals.js');
+const API_BASE = 'https://api.example.test';
 
 function setup(records) {
     const store = {
@@ -12,9 +15,9 @@ function setup(records) {
         _indexProposal: vi.fn(record => store.proposals.set(record.proposalId, record)),
         save: vi.fn()
     };
-    const context = vm.createContext({ proposalStorage: store, console });
+    const context = vm.createContext({ proposalStorage: store, console, window: { ProposalOrigin: Origin, ProposalDesignGoals: DesignGoals }, resolveBackendBaseUrl: () => API_BASE });
     vm.runInContext(source, context);
-    return { sync: context.syncProposalWithServerId, store };
+    return { sync: context.syncProposalWithServerId, lookup: context.getProposalPublicationLookup, context, store };
 }
 
 describe('publication row identity', () => {
@@ -22,7 +25,7 @@ describe('publication row identity', () => {
         const local = { proposalId: 'p-local-draft', ...(previousId ? { id: previousId } : {}) };
         const { sync, store } = setup([local]);
         expect(sync({ ...local }, 42)).toBe(local);
-        expect(local).toEqual({ proposalId: 'p-local-draft', id: '42', serverProposalId: '42' });
+        expect(local).toEqual({ proposalId: 'p-local-draft', id: '42', serverProposalId: '42', publicationApiBase: API_BASE });
         expect([...store.proposals.keys()]).toEqual(['p-local-draft']);
         expect(store._indexProposal).toHaveBeenCalledExactlyOnceWith(local);
         expect(store.save).toHaveBeenCalledOnce();
@@ -45,4 +48,12 @@ describe('publication row identity', () => {
         expect(local).toEqual({ proposalId: 'p-local' });
         expect(store.save).not.toHaveBeenCalled();
     });
+});
+
+
+it('uses content identity for an existence lookup, never a numeric browser key or foreign row', () => {
+    const { lookup, context } = setup([]);
+    context.proposalContentFingerprint = () => 'c2-current-content';
+    expect(lookup({ proposalId: '42', id: '42' })).toBe('c2-current-content');
+    expect(lookup({ proposalId: 'local', serverProposalId: '42', publicationApiBase: 'https://elsewhere.example' })).toBeNull();
 });

@@ -245,6 +245,7 @@
                     rootParcelNumber,
                     calculatedArea: Math.round(_calculateGeoJsonArea(slice.geometry)),
                     isProposed: true,
+                    ownershipEvidence: ownership?.owners?.length ? 'authored-allocation' : 'unrepresented',
                     color: slice.color || null,
                     ownerKey: firstOwner?.ownerKey || slice.ownerKey || null,
                     displayName: slice.displayName || firstOwner?.name || null,

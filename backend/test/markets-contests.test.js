@@ -13,7 +13,7 @@ const account = n => `Acct${String(n).padStart(2, '1')}${'z'.repeat(36)}`;
 const proposal = (overrides) => ({
     id: 1, proposalId: 'p-1', title: 'One', goal: 'single', lifecycleStatus: 'Active',
     createdAt: '2026-10-01T00:00:00Z', expiresAt: null, author: 'a', agent: false, proposalRole: null,
-    screenshotUrl: null, parcelIds: ['SF-1'], proposalAccount: null, ...overrides
+    screenshotUrl: null, parcelIds: ['SF-1'], parcelSource: { sourceId: 'hr-cadastre', snapshotId: null }, proposalAccount: null, ...overrides
 });
 const market = (address, yesPool, noPool, resolved = false, outcome = 0) => ({
     address, market: { yesPool, noPool, resolved, outcome }
@@ -50,6 +50,32 @@ describe('groupByLand', () => {
         expect(normalizeParcelIds([' P1 ', 'P1', '', null, 'P0'])).toEqual(['P0', 'P1']);
         expect(groupByLand([proposal({ parcelIds: [' P1'] }), proposal({ parcelIds: ['P1 '] })])).toHaveLength(1);
     });
+
+    it('qualifies parcel matches by recognized source and snapshot, leaving unknown sources isolated', () => {
+        const rows = [
+            proposal({ proposalId: 'hr', parcelIds: ['P1'] }),
+            proposal({ proposalId: 'other-source', parcelIds: ['P1'], parcelSource: { sourceId: 'us-ca-sf-datasf-active-parcels', snapshotId: null } }),
+            proposal({ proposalId: 'unknown', parcelIds: ['P1'], parcelSource: null }),
+            proposal({ proposalId: 'unknown-too', parcelIds: ['P1'], parcelSource: null })
+        ];
+        expect(groupByLand(rows).map(group => group.map(row => row.proposalId).sort()))
+            .toEqual([['hr'], ['other-source'], ['unknown'], ['unknown-too']]);
+    });
+
+    it('keeps same-source references together but distinguishes snapshots', () => {
+        const rows = [
+            proposal({ proposalId: 'captured', parcelIds: ['P1'], parcelSource: { sourceId: 'hr-cadastre', snapshotId: '2025' } }),
+            proposal({ proposalId: 'same', parcelIds: ['P1'], parcelSource: { sourceId: 'hr-cadastre', snapshotId: '2025' } }),
+            proposal({ proposalId: 'other-snapshot', parcelIds: ['P1'], parcelSource: { sourceId: 'hr-cadastre', snapshotId: '2026' } })
+        ];
+        expect(groupByLand(rows).map(group => group.map(row => row.proposalId).sort())).toEqual([['captured', 'same'], ['other-snapshot']]);
+    });
+
+    it('resolves explicit plan-member edges regardless of input ordering', () => {
+        const member = proposal({ id: 21, proposalId: 'member', parcelSource: null });
+        const namedPlan = { id: 'plan:p', proposalId: 'p', isPlan: true, memberIds: ['21'], parcelIds: [], parcelRefs: [] };
+        expect(groupByLand([namedPlan, member])).toHaveLength(1);
+    });
 });
 
 describe('siteNameOf', () => {
@@ -61,8 +87,11 @@ describe('siteNameOf', () => {
 
 describe('contestId', () => {
     it('depends on the land, not on which proposals happen to be in the contest', () => {
-        expect(contestId(['P2', 'P1'])).toBe(contestId(['P1', 'P2']));
-        expect(contestId(['P1'])).not.toBe(contestId(['P2']));
+        const p1 = { sourceId: 'hr-cadastre', snapshotId: null, parcelId: 'P1' };
+        const p2 = { sourceId: 'hr-cadastre', snapshotId: null, parcelId: 'P2' };
+        expect(contestId([p2, p1])).toBe(contestId([p1, p2]));
+        expect(contestId([p1])).not.toBe(contestId([p2]));
+        expect(contestId([p1])).not.toBe(contestId([{ ...p1, sourceId: 'dgu-wfs' }]));
         expect(contestId([], 'p-1')).not.toBe(contestId([], 'p-2'));
         expect(contestId(['P1'])).toMatch(/^c-[0-9a-f]{12}$/);
     });
@@ -169,6 +198,31 @@ describe('named plans in contests', () => {
             { siteName: 'UPU Borovje Z1-5' }, { siteName: 'UPU Borovje Z1-5' },
             { kind: 'plan', siteName: 'Borovje' }
         ])).toBe('Borovje');
+    });
+
+    it('folds explicit plan members even when their parcel source is unknown, without asserting land identity', () => {
+        const member = proposal({ id: 11, proposalId: 'unknown-member', parcelIds: ['P1'], parcelSource: null });
+        const unrelated = proposal({ id: 12, proposalId: 'unknown-unrelated', parcelIds: ['P1'], parcelSource: null });
+        const { contests } = buildContests({ city: 'zagreb', proposals: [member, unrelated], plans: [plan({ slug: 'named-plan', memberIds: ['11'], proposalAccount: ACCOUNT_A })],
+            markets: new Map([[ACCOUNT_A, { address: 'M', market: null }]]), statuses: new Map([[ACCOUNT_A, 'Active']]) });
+        expect(contests).toHaveLength(1);
+        expect(contests[0].proposals.map(entry => entry.proposalId)).toEqual(['named-plan']);
+        expect(contests[0].parcelRefs).toEqual([]);
+        expect(contests[0].parcelIds).toEqual(['P1']);
+    });
+
+    it('emits the named plan union of qualified refs from members across sources', () => {
+        const memberA = proposal({ id: 31, proposalId: 'member-a', parcelIds: ['P1'], parcelSource: { sourceId: 'hr-cadastre', snapshotId: '2025' } });
+        const memberB = proposal({ id: 32, proposalId: 'member-b', parcelIds: ['P1'], parcelSource: { sourceId: 'us-ca-sf-datasf-active-parcels', snapshotId: null } });
+        const { contests } = buildContests({ city: 'zagreb', proposals: [memberA, memberB],
+            plans: [plan({ slug: 'mixed-plan', memberIds: ['31', '32'], proposalAccount: ACCOUNT_A })],
+            markets: new Map([[ACCOUNT_A, { address: 'M', market: null }]]), statuses: new Map([[ACCOUNT_A, 'Active']]) });
+        const [entry] = contests[0].proposals;
+        expect(entry.kind).toBe('plan');
+        expect(entry.parcelRefs).toEqual([
+            { sourceId: 'hr-cadastre', snapshotId: '2025', parcelId: 'P1' },
+            { sourceId: 'us-ca-sf-datasf-active-parcels', snapshotId: null, parcelId: 'P1' }
+        ]);
     });
 });
 

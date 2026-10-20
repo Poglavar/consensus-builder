@@ -17,6 +17,7 @@ import {
     findLegacyCadastreDeclaration,
     findNonCadastralParentDeclaration,
     isDerivedParcelDeclaration,
+    projectProposalLifecycleEvidence,
     serializeProposalRow,
     stripLocalProposalState
 } from '../proposals/serializer.js';
@@ -41,7 +42,9 @@ import { createOwnerDecisionHandlers, createOwnerDecisionStore } from '../propos
 import { createUploadRateLimiter } from '../utils/nft-asset-upload.js';
 
 const require = createRequire(import.meta.url);
+const proposalDesignGoals = require('../../frontend/js/proposals/design-goals.js');
 const proposalKind = require('../../frontend/js/proposals/proposal-kind.js');
+const proposalOrigin = require('../../frontend/js/proposals/origin.js');
 
 const MAX_PROPOSAL_ID_LENGTH = 255;
 const MAX_CITY_LENGTH = 100;
@@ -403,7 +406,7 @@ export const proposalCreateBodyValidator = createJsonBodyValidator({
         // Which cadastre frame the stamps were measured against ({ capturedAt }) — D5/§11.
         cadastreFrame: { required: false, validate: validators.optional(validators.plainObject({ label: 'cadastreFrame' })) },
         // Hash of the published EFFECT (footprint + per-parcel cession); acceptances bind to it.
-        // Room for a scheme prefix: a readjustment's is `lr2-sha256:` + 64 hex (75 characters).
+        // Room for a scheme prefix: a readjustment's is `lr3-sha256:` + 64 hex.
         effectHash: { required: false, validate: validators.optional(validators.string({ maxLength: 128, label: 'effectHash', disallowControlChars: true })) },
         acceptedParcelIds: { required: false, validate: validators.optional(stringArrayValidator('acceptedParcelIds'), { nullValue: [] }) },
         ownerAcceptances: { required: false, validate: validators.optional(validators.plainObject({ label: 'ownerAcceptances' }), { nullValue: {} }) },
@@ -500,6 +503,13 @@ export function precheckProposalCreate(req) {
             return fail(`${field} is not a creation field. Send the authored identifier as proposalId; the server assigns the database row id.`);
         }
     }
+    for (const key of ['sourceProposalId', 'replacementOfProposalId', 'copiedFromProposalId', 'copiedFromName']) {
+        if (Object.prototype.hasOwnProperty.call(body, key)) return fail(`${key} is retired. Send one typed proposalOrigin.`);
+    }
+    try {
+        const origin = proposalOrigin.normalize(body.proposalOrigin);
+        if (origin?.source?.kind === 'local') return fail('A published proposalOrigin cannot contain a browser-local key.');
+    } catch (error) { return fail(error.message); }
     if (Object.prototype.hasOwnProperty.call(body, 'onchainData')) {
         return fail('onchainData is retired. Minted proposals must be verified through POST /proposals/mirror.');
     }
@@ -1111,6 +1121,29 @@ export const EFFECTIVE_STATUS_SQL = `
         ELSE 'Unknown'
     END`;
 
+const PROPOSAL_LIFECYCLE_EVENT_SQL = `(
+    SELECT jsonb_build_object(
+        'id', event_id,
+        'eventType', event_type,
+        'subject', jsonb_build_object('type', subject_type, 'id', subject_id),
+        'outcome', outcome,
+        'observedAt', source_observed_at,
+        'attester', jsonb_build_object('kind', 'solana_program', 'address', attester),
+        'source', jsonb_build_object(
+            'chain', evidence->'source'->>'chain',
+            'transaction', transaction_signature,
+            'hash', source_hash
+        ),
+        'evidence', evidence
+    )
+    FROM consensus.land_event
+    WHERE event_type = 'proposal_lifecycle'
+      AND subject_type = 'proposal'
+      AND subject_id = proposal_data->'chainMirror'->'ref'->>'tokenId'
+    ORDER BY source_observed_at DESC, created_at DESC
+    LIMIT 1
+)`;
+
 export function setupProposalsRoute(app, pool, mirrorOptions = {}) {
 
     // The complete public proposal representation. The single and batch endpoints deliberately
@@ -1127,7 +1160,8 @@ export function setupProposalsRoute(app, pool, mirrorOptions = {}) {
         cadastre_parcel_ids, ownership_flow, cadastre_frame,
         accepted_parcel_ids, owner_acceptances,
         road_proposal, building_proposal, structure_proposal, reparcellization,
-        lens, bounds, onchain_data, screenshot_url, epoch_year, agent_payment_id, proposal_data`;
+        lens, bounds, onchain_data, screenshot_url, epoch_year, agent_payment_id, proposal_data,
+        ${PROPOSAL_LIFECYCLE_EVENT_SQL} AS lifecycle_event`;
 
     // ORDER BY only over columns the summary actually carries. Computed sorts the client offers
     // (area, parcel count, acceptance ratio) need per-row geometry/JSONB work the list endpoint
@@ -1246,7 +1280,7 @@ export function setupProposalsRoute(app, pool, mirrorOptions = {}) {
         }
 
         if (goal) {
-            clauses.push(`COALESCE(proposal_data->>'goal', type) = $${params.length + 1}`);
+            clauses.push(`proposal_data->>'goal' = $${params.length + 1}`);
             params.push(goal);
         }
 
@@ -1374,12 +1408,13 @@ export function setupProposalsRoute(app, pool, mirrorOptions = {}) {
                 COALESCE(title, name, proposal_data->>'title', proposal_data->>'name') AS display_title,
                 COALESCE(author, proposal_data->>'author') AS author,
                 COALESCE(type, proposal_data->>'type') AS type,
-                -- The goal is the specific proposal kind (building / structure / reparcellization /
-                -- road / ...); type is the lossy backend column. Serving goal here stops the client
-                -- re-deriving it from type and mis-badging building/structure/parcel rows.
-                COALESCE(proposal_data->>'goal', type) AS goal,
+                -- Goal is an authored DesignGoals key; backend type is too broad to reconstruct it.
+                proposal_data->>'goal' AS goal,
                 ${EFFECTIVE_STATUS_SQL} AS effective_status,
                 created_at,
+                expires_at,
+                proposal_data->'chainMirror' AS chain_mirror,
+                ${PROPOSAL_LIFECYCLE_EVENT_SQL} AS lifecycle_event,
                 -- Base ancestry rides along so the claims/dossier surfaces can answer "does this
                 -- server proposal touch my parcel" without fetching every proposal in full.
                 cadastre_parcel_ids,
@@ -1418,8 +1453,14 @@ export function setupProposalsRoute(app, pool, mirrorOptions = {}) {
                     title: proposal.title || null,
                     author: proposal.author || null,
                     type: proposal.type || null,
-                    goal: row.goal || null,
+                    goal: proposalDesignGoals.keyOf({ goal: row.goal }),
                     lifecycleStatus: proposal.lifecycleStatus,
+                    lifecycleEvidence: projectProposalLifecycleEvidence({
+                        lifecycleStatus: proposal.lifecycleStatus,
+                        chainMirror: row.chain_mirror,
+                        lifecycleEvent: row.lifecycle_event,
+                        expiresAt: row.expires_at
+                    }).lifecycleEvidence,
                     createdAt: proposal.createdAt || null,
                     cadastreParcelIds: Array.isArray(row.cadastre_parcel_ids) ? row.cadastre_parcel_ids : null,
                     parcelSet: proposal.parcelSet,
@@ -1502,7 +1543,7 @@ export function setupProposalsRoute(app, pool, mirrorOptions = {}) {
                 SELECT id, proposal_id, city,
                        COALESCE(name, title, proposal_data->>'name', proposal_data->>'title') AS display_name,
                        COALESCE(type, proposal_data->>'type') AS type,
-                       COALESCE(proposal_data->>'goal', type) AS goal,
+                       proposal_data->>'goal' AS goal,
                        epoch_year, bounds, created_at,
                        COALESCE(screenshot_url, onchain_data->>'imageUrl') AS screenshot_url
                 FROM proposal
@@ -1525,7 +1566,7 @@ export function setupProposalsRoute(app, pool, mirrorOptions = {}) {
                     city: row.city,
                     name: row.display_name,
                     type: row.type,
-                    goal: row.goal,
+                    goal: proposalDesignGoals.keyOf({ goal: row.goal }),
                     epochYear: year,
                     bounds: row.bounds,
                     createdAt: row.created_at,
@@ -1620,61 +1661,55 @@ export function setupProposalsRoute(app, pool, mirrorOptions = {}) {
     // Pinning spends the IPFS quota, so it shares the upload routes' per-client limit.
     app.post('/proposals/:id/owner-decisions/bundle', createUploadRateLimiter(), ownerDecisions.bundle);
 
-    // Where a proposal came from and what was made from it. A fork or counterproposal records its
-    // source's id in proposal_data (sourceProposalId / replacementOfProposalId / copiedFromProposalId,
-    // written by the browser, frontend/js/proposals/create.js); this resolves the source when it was
-    // published and lists every published record that names this one as its source, so the original
-    // can show its counterproposals. An absent source lookup establishes only that this store
-    // cannot resolve the reference; it says nothing about prior publication or other stores.
+    // Publication references are scoped by canonical API base and database row. Browser keys
+    // and equal-looking authored identifiers never participate in publication lineage.
     app.get('/proposals/:id/lineage', async (req, res) => {
         try {
             const target = await pool.query(`
-                SELECT id, proposal_id,
-                       COALESCE(proposal_data->>'sourceProposalId', proposal_data->>'replacementOfProposalId', proposal_data->>'copiedFromProposalId') AS source_key,
-                       proposal_data->>'copiedFromName' AS source_name
-                FROM proposal
-                ${oneProposalByIdentifierClause(req.params.id)}
+                SELECT id, proposal_id, proposal_data->'proposalOrigin' AS proposal_origin
+                FROM proposal ${oneProposalByIdentifierClause(req.params.id)}
             `, [req.params.id]);
             const row = target.rows[0];
             if (!row) return res.status(404).json({ error: 'Proposal not found' });
-
+            const apiBase = proposalOrigin.apiBase(publicApiBaseUrl());
+            const origin = proposalOrigin.normalize(row.proposal_origin);
             let source = null;
-            if (row.source_key) {
-                const found = await pool.query(`
-                    SELECT id, proposal_id, title, name, ${EFFECTIVE_STATUS_SQL} AS effective_status
-                    FROM proposal
-                    ${oneProposalByIdentifierClause(row.source_key)}
-                `, [String(row.source_key)]);
-                const hit = found.rows[0];
-                source = hit
-                    ? { resolution: 'resolved', proposalRowId: hit.id, authoredProposalId: hit.proposal_id, title: hit.title || hit.name || null, status: hit.effective_status }
-                    : { resolution: 'not-found', reference: String(row.source_key), title: row.source_name || null };
+            if (origin) {
+                const reference = origin.source;
+                source = { resolution: 'unresolved', reference, title: origin.title };
+                if (reference?.kind === 'publication') {
+                    if (reference.apiBase !== apiBase) source.resolution = 'external';
+                    else {
+                        const found = await pool.query(`
+                            SELECT id, proposal_id, title, name, ${EFFECTIVE_STATUS_SQL} AS effective_status
+                            FROM proposal WHERE id = $1::bigint
+                        `, [reference.proposalRowId]);
+                        const hit = found.rows[0];
+                        source = hit
+                            ? { ...source, resolution: 'resolved', proposalRowId: hit.id,
+                                publicationApiBase: apiBase, authoredProposalId: hit.proposal_id,
+                                title: hit.title || hit.name || origin.title, status: hit.effective_status }
+                            : { ...source, resolution: 'not-found' };
+                    }
+                }
             }
-
-            const keys = [String(row.proposal_id), String(row.id)];
-            const derived = await pool.query(`
+            const derived = apiBase ? await pool.query(`
                 SELECT id, proposal_id, title, name, author, created_at, ${EFFECTIVE_STATUS_SQL} AS effective_status,
                        (proposal_data ? 'landFork') AS land_fork
                 FROM proposal
                 WHERE id <> $2
-                  AND (proposal_data->>'sourceProposalId' = ANY($1::text[])
-                    OR proposal_data->>'replacementOfProposalId' = ANY($1::text[])
-                    OR proposal_data->>'copiedFromProposalId' = ANY($1::text[]))
-                ORDER BY created_at DESC
-                LIMIT 50
-            `, [keys, row.id]);
+                  AND proposal_data->'proposalOrigin'->'source'->>'kind' = 'publication'
+                  AND proposal_data->'proposalOrigin'->'source'->>'apiBase' = $1
+                  AND proposal_data->'proposalOrigin'->'source'->>'proposalRowId' = $3
+                ORDER BY created_at DESC LIMIT 50
+            `, [apiBase, row.id, String(row.id)]) : { rows: [] };
             res.json({
-                proposalRowId: row.id,
-                authoredProposalId: row.proposal_id,
-                source,
+                proposalRowId: row.id, authoredProposalId: row.proposal_id, publicationApiBase: apiBase, source,
                 derived: derived.rows.map(entry => ({
-                    proposalRowId: entry.id,
-                    authoredProposalId: entry.proposal_id,
-                    title: entry.title || entry.name || null,
-                    author: entry.author || null,
-                    createdAt: entry.created_at,
-                    status: entry.effective_status,
-                    landFork: entry.land_fork === true
+                    proposalRowId: entry.id, publicationApiBase: apiBase,
+                    authoredProposalId: entry.proposal_id, title: entry.title || entry.name || null,
+                    author: entry.author || null, createdAt: entry.created_at,
+                    status: entry.effective_status, landFork: entry.land_fork === true
                 }))
             });
         } catch (err) {

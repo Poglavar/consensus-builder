@@ -10,7 +10,7 @@ import { parseCityConfigs } from '../../scripts/build-world-coverage.mjs';
 import { stripLocalProposalState } from '../proposals/serializer.js';
 import { computeBindingDrift } from '../proposals/binding-drift.js';
 const publisher = createRequire(import.meta.url)('../../frontend/js/proposals/publish-binding.js');
-const descriptor = { id:'test-db-alternative',adapter:'wfs',endpoint:'https://example.org/wfs',featureType:'cad:parcels',idField:'native',idType:'string',idPrefix:'HR-',outFields:['native'],cityIds:['zagreb'],metricSrid:3765,defaultForCity:false };
+const descriptor = { id:'test-db-alternative',adapter:'wfs',endpoint:'https://example.org/wfs',featureType:'cad:parcels',idField:'native',idType:'string',idPrefix:'HR-',outFields:['native'],cityIds:['zagreb'],metricSrid:3765,defaultForCity:false,snapshotId:'test-snapshot' };
 const geometry = {type:'Polygon',coordinates:[[[15.97,45.81],[15.971,45.81],[15.971,45.811],[15.97,45.811],[15.97,45.81]]]};
 const raw = {type:'Feature',id:'row.1',properties:{native:'123456-1'},geometry};
 function upstream(){vi.stubGlobal('fetch',vi.fn(async()=>new Response(JSON.stringify({type:'FeatureCollection',features:[raw],numberMatched:1,numberReturned:1}))));}
@@ -32,7 +32,7 @@ describe('database defaults and explicit upstream alternatives',()=>{
  it('binds sites and declared acts through the selected provider without parcel tables',async()=>{
   parcelSourceCatalog.sources.push(descriptor);upstream();const db={query:vi.fn(()=>{throw Error('Unexpected DB parcel query');})};
   const opts={city:'zagreb',parcelSourceId:descriptor.id};const result=await computeBinding(db,{...opts,site:geometry});
-  expect(result.binding).toMatchObject({source:'server:'+descriptor.id,coverage:'complete'});
+  expect(result.binding).toMatchObject({source:'server:'+descriptor.id,coverage:'complete',parcelSource:{sourceId:descriptor.id,snapshotId:'test-snapshot'}});
   expect(result.binding.parcels.map(p=>p.parcelId)).toEqual(['HR-123456-1']);
   expect((await parcelActBinding(db,['HR-123456-1'],opts)).extra).toEqual([]);expect(db.query).not.toHaveBeenCalled();
  });
@@ -47,7 +47,7 @@ describe('database defaults and explicit upstream alternatives',()=>{
   const db={query:vi.fn(()=>{throw Error('Unexpected DB parcel query');})};
   const app=express();app.use(express.json());setupProposalBindingRoute(app,db);
   const good=await request(app).post('/proposals/binding').send({site:geometry,city:'zagreb',parcelSourceId:descriptor.id});
-  expect(good.status).toBe(200);expect(good.body.binding.source).toBe('server:'+descriptor.id);
+  expect(good.status).toBe(200);expect(good.body.binding).toMatchObject({source:'server:'+descriptor.id,parcelSource:{sourceId:descriptor.id,snapshotId:'test-snapshot'}});
   const foreign=await request(app).post('/proposals/binding').send({site:geometry,city:'toronto',parcelSourceId:descriptor.id});
   expect(foreign.status).toBe(400);expect(foreign.body.code).toBe('invalid-parcel-source');expect(db.query).not.toHaveBeenCalled();
  });

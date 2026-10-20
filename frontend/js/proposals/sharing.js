@@ -10,6 +10,8 @@ const SHARE_PAYLOAD_VERSION = 1;
 const SHARE_ENCODING_PREFIX_COMPRESSED = 'z.';
 const SHARE_ENCODING_PREFIX_RAW = 'u.';
 const SHARE_BASE64_ALLOWED = /^[A-Za-z0-9_-]+$/;
+const sharingProposalOrigin = (typeof window !== 'undefined' && window.ProposalOrigin)
+    || (typeof require === 'function' ? require('./origin.js') : null);
 
 function base64UrlEncodeBytes(bytes) {
     if (!(bytes instanceof Uint8Array) || bytes.length === 0) return '';
@@ -84,6 +86,9 @@ function shareLangParam() {
 function getSerialProposalId(proposal) {
     // Browser records carry publication explicitly. Local keys, authored IDs and generic `id`
     // fields cannot establish a published row; API rows acquire this reference during import.
+    const currentBase = sharingProposalOrigin.apiBase(typeof getBackendBase === 'function' ? getBackendBase() : null);
+    const publishedBase = sharingProposalOrigin.apiBase(proposal?.publicationApiBase);
+    if (!currentBase || publishedBase !== currentBase) return null;
     const id = String(proposal?.serverProposalId ?? '');
     return /^[1-9]\d*$/.test(id) ? id : null;
 }
@@ -151,6 +156,14 @@ function proposalContentPayload(proposal, includeCadastre = false) {
     // The kind is chosen at publish (proposal-kinds.md); only records that have one commit it, so
     // fingerprints of records published before kinds existed do not move.
     if (proposal.kind) content.kind = proposal.kind;
+    if (proposal.proposalOrigin) {
+        const origin = sharingProposalOrigin.portable(proposal.proposalOrigin, {
+            findLocal: id => typeof proposalStorage !== 'undefined' ? proposalStorage.proposals?.get(id) : null,
+            backendBase: typeof getBackendBase === 'function' ? getBackendBase() : null
+        });
+        // Derivation changes the published record. The source's display title is not identity.
+        content.proposalOrigin = { relation: origin.relation, source: origin.source };
+    }
     if (Number(proposal.toleranceM) > 0) content.toleranceM = Number(proposal.toleranceM);
     // A re-bind (binding-drift.js) carries the same site and design as its source; the binding it
     // was derived for makes it a different record, so its upload is not deduplicated onto the source.

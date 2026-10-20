@@ -242,6 +242,19 @@
         return value;
     }
 
+    // A provider identity is claimable only when the caller supplies its descriptor. The preview
+    // label (`source`) is explanatory text and never identifies the cadastral source.
+    function parcelSourceOf(value) {
+        if (!value || typeof value !== 'object' || Array.isArray(value)) return null;
+        if (Object.keys(value).some(key => !['sourceId', 'snapshotId'].includes(key))) return null;
+        const sourceId = typeof value.sourceId === 'string' ? value.sourceId.trim() : '';
+        if (!sourceId) return null;
+        const snapshotId = value.snapshotId == null ? null
+            : (typeof value.snapshotId === 'string' ? value.snapshotId.trim() : '');
+        if (snapshotId === '') return null;
+        return { sourceId, snapshotId };
+    }
+
     /**
      * The binding of `site` over the given parcels.
      * @param {object} site GeoJSON Polygon/MultiPolygon (or Feature), EPSG:4326.
@@ -273,9 +286,10 @@
         const siteFeature = t.feature(siteGeometry);
         const siteM2 = t.area(siteFeature);
         const source = opts.source || 'client-preview';
+        const parcelSource = opts.regionHasCadastre === false ? null : parcelSourceOf(opts.parcelSource);
 
         if (opts.regionHasCadastre === false) {
-            return { parcels: [], touched: [], toleranceM, coverage: COVERAGE.none, unsurveyedM2: round(siteM2, 2), siteM2: round(siteM2, 2), source };
+            return { parcels: [], touched: [], toleranceM, coverage: COVERAGE.none, unsurveyedM2: round(siteM2, 2), siteM2: round(siteM2, 2), source, parcelSource };
         }
 
         const bound = [];
@@ -329,7 +343,8 @@
             coverage: unsurveyedM2 > 0 ? COVERAGE.partial : COVERAGE.complete,
             unsurveyedM2: round(unsurveyedM2, 2),
             siteM2: round(siteM2, 2),
-            source
+            source,
+            parcelSource
         };
     }
 
@@ -364,6 +379,7 @@
         survivesInwardBuffer: (feature, radiusM, options) => survivesInwardBuffer(T(options), feature, radiusM),
         intrusionWidth,
         bindingFromParcels,
+        normalizeParcelSource: parcelSourceOf,
         boundParcelIds,
         compareDeclaration
     };

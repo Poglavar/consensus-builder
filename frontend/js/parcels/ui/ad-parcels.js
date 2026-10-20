@@ -283,8 +283,8 @@
             }
             const proposals = proposalManager.getProposals() || [];
             const fromMeProposals = proposals.filter(p => {
-                const goal = (p.goal || p.type || '').toString().toLowerCase();
-                return goal === 'ownership-transfer-from-me' && getLifecycleStatus(p) !== 'Executed' && getLifecycleStatus(p) !== 'Expired';
+                const isOwnerSale = global.ProposalKind?.isOwnerSaleOffer?.(p) === true;
+                return isOwnerSale && getLifecycleStatus(p) !== 'Executed' && getLifecycleStatus(p) !== 'Expired';
             });
 
             fromMeProposals.forEach(proposal => {

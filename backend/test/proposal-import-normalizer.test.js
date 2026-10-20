@@ -73,7 +73,8 @@ describe('proposal import boundary', () => {
             const imported = prepareProposalForImport({ proposalId, goal: 'as-is', cadastreParcelIds: ['source-a'] });
             expect(imported.serverProposalId).toBeNull();
         }
-        expect(prepareProposalForImport({ proposalId: 'authored', id: 42, cadastreParcelIds: ['source-a'] }).serverProposalId).toBe('42');
+        expect(prepareProposalForImport({ proposalId: 'authored', id: 42, cadastreParcelIds: ['source-a'] }).serverProposalId).toBeNull();
+        expect(prepareProposalForImport({ proposalId: 'authored', id: 42, publicationApiBase: 'https://api.example.test', cadastreParcelIds: ['source-a'] }).serverProposalId).toBe('42');
         expect(normalizeServerProposalSummary({ proposalId: 'authored', title: 'Missing row', goal: 'as-is' }, 'test-city'))
             .toMatchObject({ proposalId: 'authored', id: null, serverProposalId: null });
     });
@@ -142,7 +143,7 @@ describe('proposal import boundary', () => {
                 parentParcelIds: ['HR-1#c-old-1'],
                 definition: { width: 10, points: [] }
             }
-        })).toThrow(/run migrate-tessellation\.js first/);
+        })).toThrow(/missing-cadastral-provenance.*legacy-cadastral-declaration/);
     });
 
     it('refuses a compatibility alias even when it duplicates canonical ground', () => {
@@ -167,5 +168,14 @@ describe('proposal import boundary', () => {
         expect(summary.lifecycleStatus).toBe('Cancelled');
         expect(summary).not.toHaveProperty('status');
         expect(summary).not.toHaveProperty('applied');
+    });
+
+    it('does not infer a semantic goal from a backend type or identifier alias', () => {
+        const summary = normalizeServerProposalSummary({ id: 7, proposalId: 'p-7', type: 'road' }, 'zagreb');
+        expect(summary.goal).toBeNull();
+        expect(summary.serverProposalId).toBe('7');
+        const imported = prepareProposalForImport({ proposalId: 'authored-7', type: 'road', cadastreParcelIds: ['HR-1'] });
+        expect(imported.goal).toBeNull();
+        expect(imported.serverProposalId).toBeNull();
     });
 });

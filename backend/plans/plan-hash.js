@@ -123,7 +123,7 @@ function readjustmentProposal(row) {
     const numericOffer = choose(row.offer, data.offer);
     return {
         ...data,
-        goal: choose(row.goal, choose(data.goal, row.type)),
+        goal: choose(row.goal, data.goal),
         reparcellization: choose(row.reparcellization, data.reparcellization),
         cadastreParcelIds: choose(row.cadastre_parcel_ids, data.cadastreParcelIds),
         offer: numericOffer === undefined || numericOffer === null ? numericOffer : Number(numericOffer),

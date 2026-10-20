@@ -442,6 +442,13 @@ body:has(#selection-tray) .map-feedback-stack {
     gap: 8px;
 }
 
+/* Currency and model explanations need a whole row, including on narrow screens. */
+.road-metrics-grid .metric-group:has(#road-market-price),
+.road-metrics-grid .metric-group:has(#road-acquire-difficulty),
+.road-metrics-grid .metric-group:has(#road-ownership-unknown) {
+    grid-column: 1 / -1;
+}
+
 /* A metric with nothing to report (open ground on a purely cadastral road) is left out. */
 .road-metrics-grid .metric-group[hidden] {
     display: none;

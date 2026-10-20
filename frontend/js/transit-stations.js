@@ -237,7 +237,7 @@
         if (!stationLayer) stationLayer = global.L.featureGroup().addTo(global.map);
         stationLayer.clearLayers();
         for (const station of global.transitStations || []) {
-            const editingProposalId = stationEditor?.sourceProposalId;
+            const editingProposalId = stationEditor?.sourceLocalProposalId;
             if (editingProposalId && String(station?.properties?.proposalId || '') === String(editingProposalId)) continue;
             const feature = stationFeature(station);
             const type = stationType(station);
@@ -1073,14 +1073,14 @@
         const type = normalizeType(structure?.stationType);
         const center = coordinate(structure?.center);
         if (!draft || (draft.adapterKey || draft.goal) !== 'station' || !type || !center) return false;
-        const sourceProposalId = draft.sourceProposalId || draft.sourceSnapshot?.proposalId || draft.sourceSnapshot?.id || null;
+        const sourceLocalProposalId = draft.sourceLocalProposalId || draft.sourceSnapshot?.proposalId || draft.sourceSnapshot?.id || null;
         stationEditor = {
             draftId: draft.id,
             type,
             center: center.slice(),
             bearing: Math.round(normalizeBearing(structure.bearing)),
             platformHeightM: normalizePlatformHeight(structure.platformHeightM, type),
-            sourceProposalId,
+            sourceLocalProposalId,
             reselectKey: global.ProposalSelection?.getKey?.() || null,
             panel: null,
             layer: null,

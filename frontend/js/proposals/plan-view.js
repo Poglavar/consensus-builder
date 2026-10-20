@@ -235,7 +235,7 @@
         const counts = new Map();
         members.forEach(member => {
             if (member.missing) return;
-            const key = member.goal || member.type || 'other';
+            const key = win.ProposalDesignGoals?.keyOf(member) || 'other';
             counts.set(key, (counts.get(key) || 0) + 1);
         });
         const label = key => (typeof win.formatProposalTypeLabel === 'function' ? win.formatProposalTypeLabel(key) : key);
@@ -271,7 +271,7 @@
             const id = String(member.proposalRowId);
             const record = state.records.get(id);
             const title = member.title || (record && (record.title || record.name)) || t('modal.roadWidth.proposalList.untitled', 'Untitled proposal');
-            const type = member.goal || member.type;
+            const type = win.ProposalDesignGoals?.keyOf(member);
             const typeLabel = type && typeof win.formatProposalTypeLabel === 'function' ? win.formatProposalTypeLabel(type) : '';
             const badges = [
                 state.applied.has(id) ? `<span class="cb-badge cb-badge--applied">${escapeText(t('plans.view.onMap', 'On the map'))}</span>` : '',

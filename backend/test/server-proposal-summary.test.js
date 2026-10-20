@@ -13,16 +13,23 @@ import { readFileSync } from 'node:fs';
 import { createContext, runInContext } from 'node:vm';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
+import { createRequire } from 'node:module';
+
+const require = createRequire(import.meta.url);
+const Origin = require('../../frontend/js/proposals/origin.js');
+const DesignGoals = require('../../frontend/js/proposals/design-goals.js');
+const API_BASE = 'https://api.example.test';
 
 const scriptPath = join(dirname(fileURLToPath(import.meta.url)), '../../frontend/js/proposals/server-sync.js');
 
 function loadNormalizer() {
     const context = createContext({
-        window: undefined,
+        window: { ProposalOrigin: Origin, ProposalDesignGoals: DesignGoals },
         console,
         normalizeProposalGoalKey: goal => (goal || '').toString().trim().toLowerCase(),
         getLifecycleStatus: proposal => proposal.lifecycleStatus || proposal.status || 'Active',
-        getCurrentCityId: () => 'zagreb'
+        getCurrentCityId: () => 'zagreb',
+        resolveBackendBaseUrl: () => API_BASE
     });
     runInContext(readFileSync(scriptPath, 'utf8'), context);
     return context.normalizeServerProposalSummary;
@@ -73,6 +80,7 @@ describe('normalizeServerProposalSummary', () => {
     it('still maps the identifying fields the list keys off', () => {
         const normalized = normalizeServerProposalSummary(summaryRow, 'zagreb');
         expect(normalized.serverProposalId).toBe('62');
+        expect(normalized.publicationApiBase).toBe(API_BASE);
         expect(normalized.proposalId).toBe('p-9qg43kxlmm');
         expect(normalized.city).toBe('zagreb');
         expect(normalized.lifecycleStatus).toBe('Active');
@@ -84,11 +92,12 @@ describe('serverListQuery (server-side search/sort mapping)', () => {
     // Load the script into a context we can mutate proposalListState on.
     function loadWithState(state) {
         const context = createContext({
-            window: undefined,
+            window: { ProposalOrigin: Origin, ProposalDesignGoals: DesignGoals },
             console,
             normalizeProposalGoalKey: goal => (goal || '').toString().trim().toLowerCase(),
             getLifecycleStatus: proposal => proposal.lifecycleStatus || proposal.status || 'Active',
             getCurrentCityId: () => 'zagreb',
+            resolveBackendBaseUrl: () => API_BASE,
             proposalListState: state
         });
         runInContext(readFileSync(scriptPath, 'utf8'), context);

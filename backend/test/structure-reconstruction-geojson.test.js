@@ -70,14 +70,23 @@ describe('structure reconstruction GeoJSON', () => {
         const localClaims = {
             appliedAt: '2026-10-19T00:00:00Z', executedAt: '2026-10-19T00:00:00Z',
             localPurchaseSimulation: { outcome: 'purchased' }, serverProposalId: 42,
-            acceptedParcelIds: ['HR-1-2/3'], ownerAcceptances: { 'HR-1-2/3': { accepted: true } }
+            acceptedParcelIds: ['HR-1-2/3'], ownerAcceptances: { 'HR-1-2/3': { accepted: true } },
+            authorAgentId: 'local-agent-key', proposalDraftId: 'browser-draft-key', proposalDraftRevision: 7,
+            lifecycleEvidence: { protocol: 'proposal-lifecycle-evidence/1', state: 'observed', status: 'Executed' },
+            agent: { persona: 'unsigned-local-claim' }
         };
-        const source = { ...proposal(), ...localClaims };
+        const source = {
+            ...proposal(), ...localClaims,
+            proposalOrigin: { relation: 'copy', source: { kind: 'local', localProposalId: 'browser-source-key' }, title: 'Source' }
+        };
         const collection = structureProposalToReconstructionGeoJSON(source, polygon(15.999));
         for (const key of Object.keys(localClaims)) expect(collection.reconstruction.proposal).not.toHaveProperty(key);
+        expect(collection.reconstruction.proposal.proposalOrigin).toEqual({ relation: 'copy', source: null, title: 'Source' });
         Object.assign(collection.reconstruction.proposal, localClaims);
+        collection.reconstruction.proposal.proposalOrigin = source.proposalOrigin;
         const { proposal: imported } = structureReconstructionGeoJSONToProposal(collection);
         for (const key of Object.keys(localClaims)) expect(imported).not.toHaveProperty(key);
+        expect(imported.proposalOrigin).toEqual({ relation: 'copy', source: null, title: 'Source' });
         expect(imported.applied).toBe(false);
         expect(source.localPurchaseSimulation).toEqual(localClaims.localPurchaseSimulation);
     });

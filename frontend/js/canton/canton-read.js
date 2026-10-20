@@ -54,7 +54,7 @@
         const i = String(party).indexOf('::');
         return i === -1 ? { hint: String(party), fp: '' } : { hint: String(party).slice(0, i), fp: String(party).slice(i + 2) };
     }
-    const price = (p) => (p == null ? '' : String(p).replace(/0+$/, '').replace(/\.$/, ''));
+    const price = (value, currency) => window.CantonReadPrice.formatAmount(value, currency);
 
     // view state
     let currentParty = '';
@@ -163,12 +163,13 @@
         // Which role the loaded party plays in this contract (it can be more than one).
         const roles = ['buyer', 'owner', 'lens'].filter((r) => it[r] && it[r] === currentParty);
         const youTag = roles.length ? `<span class="cb-badge canton-you">you: ${roles.join(', ')}</span>` : '';
+        const priceText = price(it.price, it.priceCurrency || it.currency);
         return `
             <div class="canton-card">
                 <div class="canton-card-top">
                     <span class="canton-parcel">${it.parcelId || '—'}</span>
                     ${youTag}
-                    <span class="canton-price">${price(it.price)}</span>
+                    <span class="canton-price">${priceText}</span>
                 </div>
                 <dl class="canton-meta">
                     <dt>buyer</dt><dd title="${it.buyer || ''}">${short(it.buyer)}</dd>
@@ -274,10 +275,12 @@
             const parcels = (fc.features || []).map((f) => f.properties || {}).filter((p) => p.parcelId);
             if (!parcels.length) throw new Error('no parcels returned');
             sel.innerHTML = parcels.map((p) => {
-                const mp = p.estimatedMarketPrice != null ? Number(p.estimatedMarketPrice).toFixed(2) : '';
+                const hasPrice = p.estimatedMarketPrice != null && Number.isFinite(Number(p.estimatedMarketPrice));
+                const mp = hasPrice ? Number(p.estimatedMarketPrice).toFixed(2) : '';
+                const priceCurrency = window.CantonReadPrice.currencyCode(p.estimatedMarketPriceCurrency) || '';
                 const owner = (p.ownershipList && p.ownershipList[0] && p.ownershipList[0].ownerLabel) || '';
-                const tag = [owner.slice(0, 22), mp && `$${Math.round(mp).toLocaleString()}`].filter(Boolean).join(' · ');
-                return `<option value="${p.parcelId}" data-price="${mp}">${p.parcelId}${tag ? ` — ${tag}` : ''}</option>`;
+                const tag = [owner.slice(0, 22), mp && price(mp, priceCurrency)].filter(Boolean).join(' · ');
+                return `<option value="${p.parcelId}" data-price="${mp}" data-price-currency="${priceCurrency}">${p.parcelId}${tag ? ` — ${tag}` : ''}</option>`;
             }).join('');
             syncPriceFromParcel();
             sel.addEventListener('change', syncPriceFromParcel);
@@ -294,6 +297,9 @@
         if (!sel || !priceEl) return;
         const opt = sel.options[sel.selectedIndex];
         const p = opt && opt.getAttribute('data-price');
+        const unitEl = document.getElementById('create-price-unit');
+        const currency = window.CantonReadPrice.currencyCode(opt?.getAttribute('data-price-currency'));
+        if (unitEl) unitEl.textContent = currency || 'currency unknown';
         if (p) priceEl.value = p;
     }
 

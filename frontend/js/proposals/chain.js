@@ -15,7 +15,11 @@ function isProposalMinted(proposal) {
 function isProposalImmutable(proposal) {
     if (!proposal) return false;
     if (isProposalMinted(proposal)) return true;
-    return !!proposal.serverProposalId;
+    const origin = (typeof window !== 'undefined' && window.ProposalOrigin)
+        || (typeof ProposalOrigin !== 'undefined' ? ProposalOrigin : null);
+    return !!origin
+        && !!origin.rowId(proposal.serverProposalId)
+        && !!origin.apiBase(proposal.publicationApiBase);
 }
 
 function buildChainProposalId(chainId, contractAddress, tokenId) {

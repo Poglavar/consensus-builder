@@ -196,7 +196,11 @@ function stampCurrentAuthor(proposal) {
     if (!policy) throw new Error('guest-policy.js is not loaded');
     if (!proposal || typeof proposal !== 'object') return proposal;
     const agent = (typeof getCurrentUserAgent === 'function') ? getCurrentUserAgent() : null;
-    const immutable = typeof isProposalImmutable === 'function' ? isProposalImmutable(proposal) : !!proposal.serverProposalId;
+    const origin = (typeof window !== 'undefined' && window.ProposalOrigin)
+        || (typeof ProposalOrigin !== 'undefined' ? ProposalOrigin : null);
+    const immutable = typeof isProposalImmutable === 'function'
+        ? isProposalImmutable(proposal)
+        : !!origin && !!origin.rowId(proposal.serverProposalId) && !!origin.apiBase(proposal.publicationApiBase);
     const verdict = policy.outgoingAuthor(proposal, agent, { immutable });
     if (!verdict.restamped) return proposal;
     console.info(`[${new Date().toISOString()}] [GuestPolicy] record ${proposal.proposalId || '?'} leaves the device as "${verdict.author}" (was "${proposal.author || ''}")`);

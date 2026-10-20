@@ -8,7 +8,7 @@
 
     // Applied on the map, and neither uploaded nor minted — i.e. it lives only in this browser's
     // storage. "Uploaded" means a real numeric server SERIAL: getSerialProposalId returns that (or
-    // null), whereas getServerProposalId falls back to the local id and is never null. A minted or
+    // null); an authored-content existence query is not publication evidence. A minted or
     // uploaded proposal that was edited counts as unsaved too: editing detaches its published
     // pointers (see runLocalCorridorGeometryUpdate), so the fork is unsaved until re-uploaded/minted.
     function isUnsavedLocalWork(proposal) {

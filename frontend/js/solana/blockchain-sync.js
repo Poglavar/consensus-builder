@@ -70,9 +70,14 @@
         return ids;
     }
 
-    function createProposalFromChainData({ cluster, programAddress, proposalAddress, onchainData }) {
+    function createProposalFromChainData({ cluster, programAddress, proposalAddress, onchainData, observedAt = new Date().toISOString() }) {
         const statusStr = parseContractStatus(onchainData.statusCode);
         const proposalId = buildChainProposalId(cluster, programAddress, proposalAddress);
+        const chainRef = { chainType: 'solana', chainId: cluster, contract: String(programAddress || ''), tokenId: proposalAddress };
+        const lifecycleEvidence = g.ProposalLifecycleEvidence?.projectLifecycleEvidence({
+            lifecycleStatus: statusStr,
+            chainRead: { status: statusStr, observedAt, chainRef }
+        }).lifecycleEvidence;
 
         return {
             proposalId,
@@ -83,6 +88,7 @@
             type: 'Purchase',
             proposalMainType: 'Purchase',
             lifecycleStatus: statusStr,
+            ...(lifecycleEvidence ? { lifecycleEvidence } : {}),
             acquisitionStrategy: onchainData.isConditional ? 'conditional' : 'partial',
             isMinted: true,
             nft: {
@@ -119,6 +125,12 @@
 
             const onchainData = g.SolanaChainDataLoader.parseProposalAccount(accountInfo.data, proposalAddress);
             if (!onchainData) return false;
+            const observedAt = new Date().toISOString();
+            const chainRef = { chainType: 'solana', chainId: cluster, contract: String(programAddress || ''), tokenId: proposalAddress };
+            const lifecycleEvidence = g.ProposalLifecycleEvidence?.projectLifecycleEvidence({
+                lifecycleStatus: parseContractStatus(onchainData.statusCode),
+                chainRead: { status: parseContractStatus(onchainData.statusCode), observedAt, chainRef }
+            }).lifecycleEvidence;
 
             const localProposal = g.ChainProposalRef.findByReference(
                 g.proposalStorage?.getAllProposals?.() || [],
@@ -132,6 +144,7 @@
                     imageURI: onchainData.imageURI || '',
                     acceptancePossible: onchainData.acceptancePossible !== false,
                     lifecycleStatus: parseContractStatus(onchainData.statusCode),
+                    lifecycleEvidence,
                     solBalance: onchainData.solBalance || onchainData.ethBalance || '0',
                     ethBalance: onchainData.solBalance || onchainData.ethBalance || '0',
                     tokenBalance: onchainData.tokenBalance || '0',
@@ -162,7 +175,7 @@
             if (!localProposal && typeof g.chainProposalBelongsHere === 'function' && !g.chainProposalBelongsHere(cadastreIdsFromChainData(onchainData))) {
                 return false;
             }
-            const newProposal = createProposalFromChainData({ cluster, programAddress, proposalAddress, onchainData });
+            const newProposal = createProposalFromChainData({ cluster, programAddress, proposalAddress, onchainData, observedAt });
 
             if (localProposal) {
                 Object.assign(localProposal, newProposal);

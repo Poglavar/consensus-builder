@@ -56,9 +56,13 @@
             }
         }
         const used = parcelAct ? facts.filter(fact => declared.includes(fact.id)) : facts;
+        const knownSources = used.map(fact => siteApi.normalizeParcelSource(fact.properties?.parcelSource));
+        const parcelSource = knownSources.length && knownSources.every(value => value
+            && value.sourceId === knownSources[0].sourceId && value.snapshotId === knownSources[0].snapshotId)
+            ? knownSources[0] : null;
         const binding = siteApi.bindingFromParcels(site, used, {
             toleranceM: record.toleranceM ?? proposal.binding?.toleranceM,
-            regionHasCadastre, source: 'client-cadastre', turf
+            regionHasCadastre, source: 'client-cadastre', parcelSource, turf
         });
         if (binding.unresolved?.length) fail('The site reaches a parcel by almost exactly its tolerance. Adjust the design before minting.');
         if (parcelAct) {

@@ -1494,8 +1494,8 @@ function showProposalDialog(overrides = null) {
             const marketCurrency = window.CityConfigManager?.getCurrentCityConfig?.()?.currency?.code || 'EUR';
 
             const lines = [];
-            if (overrideSummaryStats.individualOwners !== null && overrideSummaryStats.individualOwners !== undefined) {
-                lines.push(`<p><strong>Individual owners:</strong> ${formatNumber(overrideSummaryStats.individualOwners)}</p>`);
+            if (overrideSummaryStats.ownerEntryCount !== null && overrideSummaryStats.ownerEntryCount !== undefined) {
+                lines.push(`<p><strong>Listed owner entries:</strong> ${formatNumber(overrideSummaryStats.ownerEntryCount)}</p>`);
             }
             const counts = overrideSummaryStats.ownershipCounts || {};
             const countEntries = Object.entries(counts).filter(([, value]) => value !== null && value !== undefined);
@@ -1503,13 +1503,13 @@ function showProposalDialog(overrides = null) {
                 const countText = countEntries
                     .map(([key, value]) => `${labelMap[key] || key}: ${formatNumber(value)}`)
                     .join(' • ');
-                lines.push(`<p><strong>Ownership mix:</strong> ${countText}</p>`);
+                lines.push(`<p><strong>Parcel category counts:</strong> ${countText}</p>`);
             }
-            if (overrideSummaryStats.totalMarketPrice !== null && overrideSummaryStats.totalMarketPrice !== undefined) {
-                lines.push(`<p><strong>Total market price:</strong> ${CbFormat.formatMoney(Number(overrideSummaryStats.totalMarketPrice), marketCurrency, { maxFractionDigits: 0 })}</p>`);
+            if (Number.isFinite(overrideSummaryStats.totalMarketPrice) && overrideSummaryStats.currency) {
+                lines.push(`<p><strong>Estimated parcel value:</strong> ${CbFormat.formatMoney(Number(overrideSummaryStats.totalMarketPrice), overrideSummaryStats.currency, { maxFractionDigits: 0 })}</p>`);
             }
             if (overrideSummaryStats.totalAcquiringDifficulty !== null && overrideSummaryStats.totalAcquiringDifficulty !== undefined) {
-                lines.push(`<p><strong>Acquiring difficulty:</strong> ${formatNumber(overrideSummaryStats.totalAcquiringDifficulty)}</p>`);
+                lines.push(`<p><strong>Modeled acquisition score:</strong> ${formatNumber(overrideSummaryStats.totalAcquiringDifficulty)}</p>`);
             }
 
             if (lines.length) {
@@ -1673,7 +1673,7 @@ function showProposalDialog(overrides = null) {
                 const proposalId = p.proposalId || '';
                 const title = typeof escapeHtml === 'function' ? escapeHtml(p.title || similarUnknownTitle) : (p.title || similarUnknownTitle);
                 const author = typeof escapeHtml === 'function' ? escapeHtml(p.author || similarUnknownAuthor) : (p.author || similarUnknownAuthor);
-                const goalKey = resolveProposalGoalKey ? resolveProposalGoalKey(p, null) : (p.goal || p.type || 'other');
+                const goalKey = ProposalDesignGoals.keyOf(p) || 'other';
                 const typeLabel = typeof formatProposalTypeLabel === 'function'
                     ? formatProposalTypeLabel(goalKey)
                     : (goalKey || '');

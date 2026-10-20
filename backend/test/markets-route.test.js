@@ -3,7 +3,7 @@
 import express from 'express';
 import request from 'supertest';
 import { describe, expect, it, vi } from 'vitest';
-import { rowToProposal, setupMarketsRoute } from '../routes/markets.js';
+import { PROPOSAL_COLUMNS_SQL, rowToProposal, setupMarketsRoute } from '../routes/markets.js';
 
 import { PROPOSAL_PROGRAM_ID } from '../oracle/proposal-lifecycle.js';
 
@@ -14,12 +14,14 @@ function rows() {
         id: 789, proposal_id: 'agent-densifier-01-2026-10-01-1', city: 'zagreb', title: 'Plan-led infill',
         goal: 'single', lifecycle_status: 'Active', created_at: new Date('2026-10-01T10:00:00Z'), expires_at: null,
         cadastre_parcel_ids: ['HR-335614-2311'], onchain_data: { chainId: 'solana-devnet', contractAddress: PROPOSAL_PROGRAM_ID, proposalId: ACCOUNT },
-        author: 'densifier-01', agent: true, proposal_role: null, screenshot_url: null, screenshot_before_url: null, screenshot_pair_url: null, site_name: 'Rudeš'
+        author: 'densifier-01', agent: true, proposal_role: null, screenshot_url: null, screenshot_before_url: null, screenshot_pair_url: null, site_name: 'Rudeš',
+        binding: { parcelSource: { sourceId: 'hr-cadastre', snapshotId: null }, source: 'server:untrusted-label' }
     }, {
         id: 790, proposal_id: 'local-rival', city: 'zagreb', title: 'Rival', goal: 'park', lifecycle_status: 'Active',
         created_at: new Date('2026-10-02T10:00:00Z'), expires_at: new Date('2026-12-31T00:00:00Z'),
         cadastre_parcel_ids: ['HR-335614-2311'], onchain_data: null, author: 'someone', agent: false,
-        proposal_role: null, screenshot_url: null
+        proposal_role: null, screenshot_url: null,
+        binding: { parcelSource: { sourceId: 'hr-cadastre', snapshotId: null } }
     }];
 }
 
@@ -144,8 +146,23 @@ describe('GET /markets', () => {
     it('maps a database row to the contest input shape', () => {
         expect(rowToProposal(rows()[0])).toMatchObject({
             id: 789, proposalId: 'agent-densifier-01-2026-10-01-1', createdAt: '2026-10-01T10:00:00.000Z',
-            parcelIds: ['HR-335614-2311'], proposalAccount: ACCOUNT, agent: true
+            parcelIds: ['HR-335614-2311'], proposalAccount: ACCOUNT, agent: true, goal: 'single'
         });
+        expect(rowToProposal(rows()[0]).parcelSource).toEqual({ sourceId: 'hr-cadastre', snapshotId: null });
+        expect(PROPOSAL_COLUMNS_SQL).toMatch(/COALESCE\(binding, proposal_data->'binding'\) AS binding/);
+    });
+
+    it('does not infer parcel source from a display label or accept an unknown descriptor', () => {
+        const [source] = rows();
+        expect(rowToProposal({ ...source, binding: { source: 'server:hr-cadastre' } }).parcelSource).toBeNull();
+        expect(rowToProposal({ ...source, binding: { parcelSource: { sourceId: 'unknown-provider', snapshotId: null } } }).parcelSource).toBeNull();
+    });
+
+    it('uses only a recognized authored goal, never the broad proposal type', () => {
+        expect(PROPOSAL_COLUMNS_SQL).toMatch(/proposal_data->>'goal' AS goal/);
+        expect(PROPOSAL_COLUMNS_SQL).not.toMatch(/COALESCE\(proposal_data->>'goal', type\)/);
+        expect(rowToProposal({ ...rows()[0], goal: 'invented-goal' }).goal).toBeNull();
+        expect(rowToProposal({ ...rows()[0], goal: null }).goal).toBeNull();
     });
 
     it('does not query devnet for an account declared on another network or program', async () => {

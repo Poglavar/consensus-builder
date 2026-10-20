@@ -11,6 +11,7 @@ const FRONTEND = '../../../frontend/js/';
 const ROAD_DRAWING_PATH = process.env.ROAD_DRAWING_SOURCE || require.resolve(`${FRONTEND}road-drawing.js`);
 
 const turf = require('@turf/turf');
+const priceModel = require(`${FRONTEND}financials.js`);
 const metricFrame = require(`${FRONTEND}metric-frame.js`);
 const corridorFootprint = require(`${FRONTEND}corridor-footprint.js`);
 const corridorGeometry = require(`${FRONTEND}corridor-geometry.js`);
@@ -90,7 +91,7 @@ const ELEMENT_IDS = [
     'road-info-panel', 'road-drawing-controls', 'road-panel-title', 'road-length-label', 'road-area-label',
     'road-length', 'road-area', 'road-parcels-count', 'road-parcels-area', 'road-open-ground',
     'road-individual-owners', 'road-owned-individuals', 'road-owned-companies', 'road-owned-government',
-    'road-owned-institution', 'road-owned-mixed', 'road-market-price', 'road-acquire-difficulty',
+    'road-owned-institution', 'road-owned-mixed', 'road-ownership-unknown', 'road-market-price', 'road-acquire-difficulty',
     'roadDrawButton', 'trackDrawButton', 'undoRoadButton', 'finishRoadButton', 'editRoadCrossSectionButton',
     'road-panel-minimize', 'status', 'mode-3d-toggle', 'mode-realistic-toggle', 'mode-ai-toggle',
     'showBuildings', 'showBuildingsDgu', 'showBuildingsOsm',
@@ -300,6 +301,7 @@ export function loadRoadDrawing(options = {}) {
 
     const installs = {
         window: g,
+        ParcelPriceModel: { buildEstimate: priceModel.buildParcelPriceEstimate, aggregate: priceModel.aggregateParcelPriceEstimates },
         document,
         map,
         L: makeLeaflet(),
@@ -310,6 +312,9 @@ export function loadRoadDrawing(options = {}) {
         RoadStrokeState: roadStrokeState,
         RoadFinalizationState: roadFinalizationState,
         CbFormat: cbFormat,
+        RoadOwnershipModel: require(`${FRONTEND}road-ownership-model.js`),
+        ProposalOrigin: require(`${FRONTEND}proposals/origin.js`),
+        getBackendBase: () => 'https://api.example.test',
         PersistentStorage: memoryStorage(),
         __formationEdit: formationEdit,
         ...corridorGeometry,

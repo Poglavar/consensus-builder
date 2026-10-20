@@ -236,7 +236,7 @@ function buildReadjustmentCashReviewHtml(proposal) {
         return `<p class="readjustment-cash-review-invalid">${t('panel.proposal.acceptance.invalidReadjustment', 'Correct the readjustment allocations and cash terms before accepting.')}</p>`;
     }
     if (!deal) return '';
-    const ids = [...new Set((proposal.reparcellization.ownerShares || []).filter(owner => !owner.noOwner)
+    const ids = [...new Set((proposal.reparcellization.ownerShares || []).filter(owner => !owner.unrepresentedGround && owner.ownerKey !== 'open-ground')
         .map(owner => String(owner.ownerKey).trim()))].sort();
     // With a complete rights snapshot, "Owner A" here is the same owner as in the owner rows, the
     // Owner acceptance card and the Accept review; a ledger recipient outside it is named as such.
@@ -253,7 +253,7 @@ function buildReadjustmentCashReviewHtml(proposal) {
         : t('panel.proposal.acceptance.moneyReceives', 'receives {{amount}}', { amount: money(cents) }));
     // Owners in label order (A, B, C…), then any recipient outside the ownership snapshot.
     const outside = id => (rights?.ready && !rights.ownerIds.includes(id) ? 1 : 0);
-    const rows = deal.ledger.filter(owner => !owner.noOwner)
+    const rows = deal.ledger.filter(owner => !owner.unrepresentedGround)
         .sort((a, b) => outside(a.ownerKey) - outside(b.ownerKey)
             || String(labels.get(a.ownerKey) || a.ownerKey).localeCompare(String(labels.get(b.ownerKey) || b.ownerKey), undefined, { numeric: true }))
         .map(owner => {
