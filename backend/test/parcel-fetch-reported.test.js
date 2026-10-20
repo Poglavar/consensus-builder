@@ -62,6 +62,18 @@ describe('fetchParcelDataReported', () => {
         await expect(window.fetchParcelDataReported(undefined, 'x')).resolves.toMatchObject({ features: [1, 2] });
     });
 
+    it.each([false, true])('reports an empty viewport honestly (cached: %s)', async cached => {
+        const { window, statuses } = boot(async () => ({ cached, features: [] }));
+        await window.fetchParcelDataReported(undefined, 'empty view');
+        expect(statuses.at(-1)).toBe('The parcel source returned no parcels for this area.');
+    });
+
+    it('reports already loaded only when cached parcels exist', async () => {
+        const { window, statuses } = boot(async () => ({ cached: true, features: [1] }));
+        await window.fetchParcelDataReported(undefined, 'cached view');
+        expect(statuses.at(-1)).toBe('Cadastral ground already loaded.');
+    });
+
     it('uses clone-free fabric counts when reporting a failed fetch', async () => {
         const counts = vi.fn().mockReturnValueOnce(2).mockReturnValueOnce(7);
         const queryBounds = vi.fn(() => { throw new Error('queryBounds should not clone for counts'); });

@@ -500,9 +500,12 @@
             parcels: {
                 strategy: 'grid',
                 gridSize: 500,
-                source: 'parcel-lj',
-                liveSource: { sourceId: 'si-gurs-kn-parcele-wfs', idPrefix: 'SI-' },
-                requiresBackend: true
+                // The imported Ljubljana table is empty; read the official GURS register directly.
+                source: 'parcel-source',
+                sourceId: 'si-gurs-kn-parcele-wfs',
+                idPrefix: 'SI-',
+                requiresBackend: true,
+                ownership: false
             },
             buildings: {
                 source: 'overture-tiles'

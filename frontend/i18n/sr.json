@@ -4381,6 +4381,7 @@
                 "other": "Učitano {{count}} katastarskih parcela."
             },
             "cadastral_ground_already_loaded": "Katastarska podloga je već učitana.",
+            "no_cadastral_parcels_returned": "Izvor podataka nije vratio katastarske parcele za ovo područje.",
             "parcels_read_from_dgu": "Server ovog sajta ne odgovara: parcele se čitaju direktno iz državnog katastra (DGU), bez podataka o vlasništvu.",
             "loaded_parcels_from_source": "Učitano {{count}} parcela iz izvora {{source}}.",
             "checking_cadastral_ground": "Provera katastarske podloge…",

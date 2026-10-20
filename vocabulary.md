@@ -80,6 +80,8 @@ Other uses of “plan” need qualification: a statutory planning document, a fl
 
 A source land unit referenced by its provider's parcel identity and geometry. Within a browser session the cadastral repository preserves source facts independently of the mutable map. A source feature may have multiple disconnected polygon parts. Its identity is not its polygon, display label, owner, or a generated fabric ID.
 
+**Ljubljana source, 2026-10-20:** the default is the official GURS WFS (`si-gurs-kn-parcele-wfs`), retaining `SI-<EID_PARCELA>` identities, with ownership unavailable. It replaces the empty imported `parcel_lj` dataset as the current source; no database fallback is added. A completed viewport query may return no source parcels. The status reports that empty answer explicitly, including when cached; it does not establish citywide absence or claim that parcel geometry was loaded.
+
 The common Croatian identifier is `HR-<cadastral municipality>-<parcel number>`; other providers have different identifiers and sometimes geometry-derived display identities. `cadastreParcelIds` is the durable relationship on a proposal, but the field name alone does not establish the legal quality or authority of a provider. Use source and jurisdiction context when interpreting an ID. [Ground repository](frontend/js/parcels/ground-service.js), [source adapters](backend/parcels/sources.js), [source normalization](frontend/js/parcels/ground-fallback.js), [authored ID checks](frontend/js/proposals/authored-record.js).
 
 ### Live parcel / fabric piece — `FabricPiece`

@@ -4530,7 +4530,7 @@
         "cityIds": [
           "ljubljana"
         ],
-        "defaultForCity": false,
+        "defaultForCity": true,
         "verifiedAt": "2026-10-03",
         "adapter": "wfs",
         "evidenceFile": "research/db-city-wfs-live-2026-10-03.json",

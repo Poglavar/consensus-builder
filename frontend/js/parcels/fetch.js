@@ -716,7 +716,9 @@
             // since it replaces the notice serverOrDgu showed.
             const inView = global.ParcelSourceInView?.latest?.();
             const viaDgu = !source && inView?.cityId === currentCity() && !!inView?.detail?.liveHost;
-            global.updateStatus?.(result.cached
+            global.updateStatus?.(!count
+                ? statusText('no_cadastral_parcels_returned', 'The parcel source returned no parcels for this area.')
+                : result.cached
                 ? statusText('cadastral_ground_already_loaded', 'Cadastral ground already loaded.')
                 : (source
                     ? statusText('loaded_parcels_from_source', `Loaded ${count} parcels from ${source.label || source.kind}.`, { count, source: source.label || source.kind })
