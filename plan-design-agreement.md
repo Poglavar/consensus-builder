@@ -2,16 +2,20 @@
 
 # Plan, design, agreement
 
-**Status (2026-10-21): M1 (a) is built.** "Lay out parcels" replaces the land-readjustment drawing: a
-geometry-only parcel-layout design with Equal plots (count + sweep handle), Schelling plots (the plan
-layer's settings, street strips as plots), Keep existing borders and Draw freely, applied with
-ownership carried over. The old create-dialog path, separate agreements and the per-design terms of
-a layout are gone; a layout refuses to publish until its agreement exists (M2). Next: M1 (b), the
-agreement record and the Create-agreement dialog. Leftovers noted while building, to flatten when
-touched: `readjustment-contributions.js` is loaded but unused; `subdivision.js planCreateVerdict`
-and `formation-edit.js clipPiecesByTaking` are used only by tests; `readjustmentPiece` keeps its
-name; the how-to guides still describe the old editor; the backend scripts and tests that read the
-old `reparcellization` record are untouched until the server work of M2.
+**Status (2026-10-21): M1 is built (a and b).** "Lay out parcels" replaces the land-readjustment
+drawing: a geometry-only parcel-layout design with Equal plots (count + sweep handle), Schelling plots
+(the plan layer's settings, street strips as plots), Keep existing borders and Draw freely, applied
+with ownership carried over. The **agreement** exists as a browser record with its Create-agreement
+dialog, agreement panel (current or stale against the map, before/after over its input land) and
+Agreements list, per the "M1 (b) build contract" at the end of this file; a layout's Share stays
+refused until M2 publishes agreements. Leftovers noted while building, to flatten when touched:
+`readjustment-contributions.js` is loaded but unused; `subdivision.js planCreateVerdict` and
+`formation-edit.js clipPiecesByTaking` are used only by tests; `readjustmentPiece` keeps its name;
+the how-to guides still describe the old editor; the backend scripts and tests that read the old
+`reparcellization` record are untouched until the server work of M2; an output piece anchored to a
+parcel outside the inputs counts with its whole area in the ledger (land in and land out can differ);
+unowned output land is in no ledger row; the rights preview names local parties by agent id; the
+share panel's "Who decides" row and "Create named plan" block stay until M2 re-points them.
 
 A rework of what sits above a single authored change. Started 2026-10-21 on branch
 `plan-design-agreement` (off `colosseum-worlds-fair` at 3a62b4a7e, which includes the Schelling plan
@@ -235,3 +239,212 @@ build follows; it changes only by a recorded decision.
   agreements, owner shares, LR approval) are deleted. `e2e/control-contract.json` is regenerated.
 - **Kept for M1 (b):** `reparcellization-deal.js`, `-allocation.js`, `-ownership.js`, `-shares.js`,
   `-validation.js` and the approval engine stay, unused by the layout, for the agreement dialog.
+
+## M1 (b) build contract: the agreement as a browser record (2026-10-21)
+
+Local only: no server, no chain, no change to how designs publish. The agreement is a record in the
+browser's city database; the dialog creates and edits it over applied designs. This section is the
+contract the build follows; it changes only by a recorded decision.
+
+### Record
+
+`agreement`, stored as JSON at the key `agreement:<id>` in the city's IndexedDB `kv` store, next to
+the `proposal:<id>` rows. It never takes part in `ParcelMutation`: an agreement changes no fabric.
+
+```
+{
+  schema: 'agreement/v1',
+  id: 'ag-…',                      // local key, stable across edits (not a content hash)
+  title: string | null,
+  city: string | null,
+  createdAt, updatedAt: ISO,
+  designs: [{ proposalId, title, goal, fingerprint }],     // authored order; fingerprint = the
+                                                           // design's content fingerprint (c2-…)
+  inputs: {                                                // the land the designs take, on the ground
+    parcels: [{ parcelId, areaM2: number | null,           // they were applied to: base cadastral ids
+                holders: [{ ownerKey, displayName, share }] }],   // holders from the local owner
+    openGroundM2: number                                   // records; [] = unowned
+  },
+  outputs: [{ hash, pieceId, areaM2, fromParcelIds: [], producedBy: proposalId | null,
+              role: 'plot' | 'remainder' | 'corridor' | 'part' | 'parcel',
+              holders: [{ ownerKey, displayName, share }], geometry }],
+                                                           // every piece standing on the input land
+                                                           // after the designs are applied; hash =
+                                                           // 'piece1-sha256:' + sha256 of the canonical
+                                                           // geometry (coordinates rounded to 7 decimals)
+  allocations: [{ output: hash, to: { kind: 'holders' } | { kind: 'party', ownerKey }
+                                     | { kind: 'public' } | { kind: 'joint', shares: [{ ownerKey, share }] } }],
+                                                           // an output without a line is 'holders'
+                                                           // (the carried-over holding)
+  money: { currency: 'EUR', lines: [{ ownerKey, amountCents }] },   // + receives, − pays; the
+                                                           // sponsor line is computed, never stored
+  rule: { electorate: 'owners' | 'community', binding: boolean,
+          approvalConfig: { schema: 'proposal-approval/v1', rights, policy, regime? } | null,
+          lens: [] },                                      // community: non-binding, no config
+  deadline: ISO | null
+}
+```
+
+- **Inputs are derived, never typed.** For each design: its declared `cadastreParcelIds` plus the
+  cadastral ids of the pieces the fabric says it produced. Area comes from the original cadastral
+  feature; holders from the local owner records (`parcel_<id>_owner`; a joint-pool agent expands to
+  its members). Open ground is the sum of the layouts' `openGroundM2`.
+- **Outputs are read from the fabric**: `LiveParcelFabric.entriesForCadastre(inputIds, { includeCorridors: true })`,
+  so plots, remainders, corridor bodies, split parts and untouched parcels all appear; holders are
+  what the fabric carries. Outputs are sorted by `fromParcelIds`, then area descending, then hash.
+- **Decision rule** = the existing approval engine, unchanged: `rule.approvalConfig` is a
+  `proposal-approval/v1` config (rights, policy, regime) and the engine's `inspect`/`tally` take
+  `{ cadastreParcelIds: input ids, approvalConfig, lens }`. The three decision kinds become
+  `electorate` + `binding`: owner deal = owners, binding; owner vote = owners, non-binding; community
+  vote = community, non-binding (no config). The default rights snapshot is built from the inputs'
+  local holders (`parcel-rights/v1`, provider `local-owners`, shares in basis points, the last
+  holder taking the remainder); importing a rights file replaces it.
+- **Ledger** (reuse): per party, contributed m² (inputs × share), assigned m² (outputs × share by
+  allocation), the change, and cash; the money schedule and its balance come from
+  `ReparcellizationDeal.schedule`; joint shares parse with `ReparcellizationAllocation.parsePercentShares`.
+- **Current or stale**: the panel re-derives inputs and outputs from the fabric and compares them
+  with the record (`AgreementGround.check`): a missing, unapplied or changed design, or different
+  input ids or output hashes, mark the agreement stale and disable Compare. Nothing is auto-updated;
+  Edit recomputes.
+- Flattened (not carried over): deposit, decay, conditional and disbursement terms (chain funding
+  mechanics, revisited in M3); per-input child agreements; the LR deal payload and its fingerprint
+  (the agreement's CID replaces it in M2); `reparcellizationAgreement` on records.
+
+### Modules
+
+- `frontend/js/agreement-record.js` — pure, UMD, `window.AgreementRecord`: `SCHEMA`, `newId()`,
+  `outputHash(geometry)`, `normalize(raw)` (throws `code: 'invalid-agreement'`),
+  `validate(agreement, { designOf?, isApplied? })` → `{ valid, errors: [{ code, message, section }], warnings }`
+  with sections `designs | land | allocation | money | rule | details` and codes `no-designs`,
+  `design-not-applied`, `no-inputs`, `allocation-unknown-output`, `allocation-unknown-party`,
+  `allocation-shares-invalid`, `money-currency`, `money-party-unknown`, `money-amount-invalid`,
+  `rule-invalid`, `rule-community-binding`, `deadline-invalid`; warnings `rule-not-ready` (the
+  engine's `inspect` reason) and `open-ground`; `ledger(agreement)` → `{ parties: [{ ownerKey,
+  displayName, contributedM2, assignedM2, changeM2, cashCents }], publicM2, money }`;
+  `rightsFromInputs(inputs)`; `approvalSubject(agreement)`; `stableStringify`.
+- `frontend/js/agreement-ground.js` — pure, UMD, `window.AgreementGround`:
+  `derive({ designs, fabric, originals, ownerOf, area })` → `{ inputs, outputs }`;
+  `check(agreement, { designOf, isApplied, fingerprintOf, fabric, originals, ownerOf, area })` →
+  `{ current, reasons: [{ code: 'design-missing' | 'design-not-applied' | 'design-changed' | 'ground-changed', proposalId? }] }`;
+  `localHolders({ storage, agents })` → the `ownerOf(parcelId)` lookup over the local owner records.
+- `frontend/js/agreement-store.js` — `window.AgreementStore`: `list()`, `get(id)`, `save(agreement)`,
+  `remove(id)`, `clear()`, `subscribe(fn)`; writes refuse in a secondary tab (`code: 'secondary-tab'`);
+  `clearLocalProposalData` also clears agreements.
+- `frontend/js/agreement-dialog.js` — `window.AgreementDialog.open({ agreementId?, designIds? })` on
+  `CbDialog`, one scrolling body with sections `[data-agreement-section=designs|land|allocation|money|rule|details]`:
+  a checklist of the applied local designs (`[data-agreement-design=<id>]`), the derived inputs and
+  outputs (`[data-agreement-inputs]`, `[data-agreement-outputs]`) with one allocation select per
+  output (`[data-agreement-allocation=<hash>]`: current holders, each input party, public), cash per
+  party (`[data-agreement-cash=<ownerKey>]`, EUR) with the computed sponsor line, the rule
+  (`[name=agreement-electorate]`, `[data-agreement-binding]`, and for owners the approval form
+  `ProposalApprovalSetup.html(...)` inside `[data-agreement-rule-form]`, with its import, template,
+  remove and custom-test actions), a title and a deadline; errors in `[data-agreement-errors]`;
+  Save validates, stores and opens the panel; Cancel discards.
+- `frontend/js/agreement-panel.js` — `window.AgreementPanel.open(id)`, `close()`: the docked
+  `section#agreement-panel.info-panel.right-dock-panel.agreement-panel` (the plan view's pattern):
+  status badge (current or stale with reasons), designs (`[data-agreement-design=<id>]` selects the
+  design on the map), land, allocations, ledger, rule summary, actions
+  `[data-agreement-action=compare|edit|delete|close]`. Compare runs the before/after over the
+  agreement's input parcels (`toggleAgreementBeforeAfter(id)` in `before-after.js`).
+- `frontend/js/agreement-list.js` — `window.AgreementList.open()`: a dialog listing the local
+  agreements (`.agreement-item[data-agreement-id]`) with "Create agreement" (`[data-agreement-action=create]`).
+- Entry points: the sidebar button `#agreementsButton` ("Agreements", command `proposals.agreements`)
+  and the details panel's "Create agreement" (`.btn-create-agreement`, shown for an applied design;
+  for a layout it is the main action next to the disabled Share).
+- CSS: `frontend/css/agreement-dialog.css` (the dialog) and `frontend/css/agreement.css` (panel, list, sidebar button) on the tokens; i18n namespace `agreement.*`
+  plus `sidebar.proposals.agreementsButton` and `panel.proposal.actions.createAgreement`, in en, es,
+  hr and sr.
+- Tests: headless unit tests `backend/test/agreement-record.test.js`, `agreement-ground.test.js`,
+  `agreement-store.test.js`; Playwright `e2e/tests/agreement-dialog.spec.ts` (apply a layout, create
+  an agreement from its details, see inputs and outputs, pick a rule, save, reopen from the list,
+  compare, edit, delete). `e2e/control-contract.json` and `feature-inventory.json` gain the new controls.
+
+## M2 build contract: publish (2026-10-21, drafted after M1; the three flagged calls await the user)
+
+Designs and agreements leave the device as content-addressed objects; the server is an index and a
+courier, never the identity. Everything below follows the decisions above; the places where a call
+had to be made are marked **(call)**.
+
+### Identity: one CID scheme
+
+- A published object's identity is its **CIDv1, codec `raw` (0x55), multihash sha2-256, base32
+  lower-case** (`bafkrei…`), over the object's canonical bytes: `stableStringify` (keys sorted at
+  every depth, no whitespace) encoded as UTF-8. Computed in the browser by a pure module
+  `frontend/js/cid.js` on the vendored noble sha256; the server recomputes it from the bytes it
+  receives and refuses a mismatch. **(call)** Pinata reproduces a raw-leaf CID for a single-chunk
+  file pinned with `cidVersion: 1`; the courier compares its answer with the computed CID and refuses
+  on a difference, so a wrong assumption fails loudly at the first pin, never silently.
+- **Design object** `design/v1`: `{ schema, goal, title, description, author, city, site, toleranceM,
+  roadProposal | buildingProposal | structureProposal | parcelLayout | decideLaterProposal (cleaned
+  as `proposalContentPayload` cleans them today), geometry, origin: { cid } | null, authoredAt }`.
+  Nothing else: no cadastre ids, terms, kind, approval, lens, lifecycle, server ids, thumbnails.
+  A local design's CID replaces `proposalContentFingerprint` (`c2-…`), `effectHash`, the consent
+  fingerprint and the LR design fingerprint; `designs[].fingerprint` of a local agreement becomes
+  `designs[].cid`.
+- **Agreement object** `agreement/v1` (published form of the M1 (b) record): `designs: [{ cid, goal,
+  title }]` in authored order; `inputs` (parcel ids with `parcelSourceId`, areas, the holders
+  snapshot) and `openGroundM2`; `outputs: [{ hash, areaM2, fromParcelIds, role, producedBy: cid | null }]`
+  without geometry (the hash commits to it; a reader re-derives the pieces by applying the designs
+  and checks the hashes); `allocations`, `money`, `rule` (with the rights snapshot and lens keys),
+  `deadline`, `title`, `author`, `city`, `createdAt`. Its CID commits to the design CIDs and so to
+  everything transitively; a counter-agreement reuses the design objects.
+- Drafts stay local records with local ids; publishing computes the CIDs, pins the designs that have
+  none, then the agreement.
+
+### Courier and index (server)
+
+- `POST /pins` `{ kind: 'design' | 'agreement', cid, bytes (base64) }`: recompute the CID, pin the
+  exact bytes through Pinata with `cidVersion: 1`, compare, answer `{ cid, pinnedAt }` or 409
+  `cid-mismatch`. 1 MB per object. Walrus is removed entirely (storage module, route, scripts,
+  frontend provider switch, CSP entry, tests).
+- Tables, one definition each under `backend/db/`: `design` (`cid` PK, `city`, `goal`, `title`,
+  `author`, `site` geometry, `bounds`, `binding` JSONB = the parcels the server finds under the site,
+  `content` JSONB, `origin_cid`, `created_at`, thumbnail URLs) and `agreement` (`cid` PK, `city`,
+  `title`, `author`, `design_cids TEXT[]`, `input_parcel_ids TEXT[]`, `parcel_source_id`, `deadline`,
+  `content` JSONB, `created_at`, thumbnail URLs, `onchain` JSONB for M3). Decisions move to
+  `agreement_decision` keyed by agreement CID. **(call)** M2 removes every write path into the
+  `proposal` table (the create and mirror routes, prepare, binding-drift, effect-hash stamping, edit
+  tokens, the serializer's publish side) and the named plans entirely (`ens_plan`, `/plans`, plan
+  hash, plan view, Create named plan, plan thumbnails, backfills); content consumers are re-pointed
+  in M2 (thumbnails, JSON-LD, the OG worker, ENS numeric labels, the proposal list's server source).
+  The chain readers (markets, bets, oracle, agents, lifecycle) still read `proposal` until M3
+  re-points them at `agreement`; the table itself is dropped as M3's last server step, so the
+  backend keeps booting in between and no parallel write path exists at any time. Prod demo
+  content is recreated after M3.
+- `POST /designs` `{ cid, content }`: verify the CID and the schema, derive the city from the site,
+  derive the binding (which parcels the site takes, as `checkProposalBinding` derives it today, no
+  declaration to compare), insert, queue the thumbnail. `GET /designs/:cid`, `GET /designs?city|bbox`,
+  `POST /designs/batch`. A parcel layout is indexed only as part of an agreement publish.
+- `POST /agreements` `{ cid, content }`: verify the CID, every design CID indexed, the inputs equal
+  the union of the designs' server bindings (the former "declaration equals binding" check, now
+  agreement-level), the rights snapshot well-formed, the deadline in the future; insert; thumbnail.
+  `GET /agreements/:cid`, `?design=<cid>`, `?parcel=<id>`, `?city`. Expired is computed from the
+  deadline; Executed and Cancelled come from the chain in M3.
+- Owner decisions: the signed statement becomes `{ schema: 'agreement-decision/v1', agreementCid,
+  ownerId, actorId, contextHash, decision, decidedAt }`; relay at `/agreements/:cid/decisions`
+  (admit, fold, list) with the same receipt verification as today; the lens approval endpoints take
+  the agreement CID as the subject. The engine (`ProposalApproval.tally`) counts over admitted
+  receipts in the browser and on the server for the index's `decision` summary.
+
+### Browser
+
+- Publishing a design: "Share" on an applied design pins and indexes it and copies
+  `/designs/<cid>`; several applied designs share as `/designs/<cid>,<cid>`. The upload modal, the
+  terms dialog, the "Who decides" row, "Create named plan", `?shared=` payload links and the
+  `/proposals/<ids>` route go; the reader of `/designs/<cids>` imports from the index (from IPFS in M3).
+- Publishing an agreement: "Propose" on the agreement panel (the verb for putting an agreement to
+  its parties): pin designs, pin the agreement, index, copy `/agreements/<cid>`. The panel then
+  shows the decision tally and the owner Accept / Withdraw actions (today's owner-acceptance card,
+  moved from the design details to the agreement and signing the agreement CID). Design details
+  lose their consent card, lifecycle badges, expiry and funding rows.
+- Design dialogs lose every term and kind control (`dialog-create.js` options rows, the editor's
+  Terms and Approval tabs, `publish-terms.js` down to `publishRefusal`, `proposal-kind.js` deleted);
+  the record loses the term fields; "Fork proposal" becomes "Fork design" and records `origin.cid`.
+- Vocabulary: `proposal*` modules and routes touched by this milestone are renamed to `design*`
+  as they are rewritten; untouched ones keep their names and the mapping table.
+- Order of work (user rule, 2026-10-21, for M2 and M3): every code change of the milestone first,
+  then all tests written in one pass at the end, then fixes. No test writing or test runs in between.
+- Tests, in that final pass: pure tests for `cid.js` (known CID vectors), design and agreement
+  canonical objects, the decision statement; route tests for pins, designs and agreements;
+  Playwright for sharing a design and proposing an agreement against the mocked API; the control
+  contract regenerated; the named-plan, prepare, terms, kind and Walrus tests deleted with their code.

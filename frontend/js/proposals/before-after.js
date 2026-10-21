@@ -12,22 +12,48 @@
 // (ownerFocusParts). A parcel layout names no owners, so it has no owner focus: who holds its plots
 // is carried over from the ground and shown on the parcels themselves.
 //
-// beforeLayers() and canCompare() are pure and tested headlessly; create() takes its collaborators
-// as a function so the browser instance can resolve the app's globals at call time (they load
-// after this file). window.ProposalBeforeAfter is that instance; toggleProposalBeforeAfter(key) is
-// the details panel button's handler.
+// An agreement (plan-design-agreement.md, M1 b) is compared the same way over its input parcels:
+// "before" is that land as the cadastre has it, "after" the live map with every one of its designs
+// applied. Its session key is agreementKey(id), so it never collides with a proposal's.
+//
+// beforeLayers(), canCompare() and canCompareAgreement() are pure and tested headlessly; create()
+// takes its collaborators as a function so the browser instance can resolve the app's globals at
+// call time (they load after this file). window.ProposalBeforeAfter is that instance;
+// toggleProposalBeforeAfter(key) is the details panel button's handler and
+// toggleAgreementBeforeAfter(id) the agreement panel's (agreement-panel.js).
 (function (root, factory) {
     const api = factory();
     if (typeof module === 'object' && module.exports) module.exports = api;
     if (root && typeof root.document !== 'undefined') {
         const instance = api.create(() => api.browserDependencies(root));
-        root.ProposalBeforeAfter = Object.assign(instance, { beforeLayers: api.beforeLayers, create: api.create });
+        root.ProposalBeforeAfter = Object.assign(instance, { beforeLayers: api.beforeLayers, create: api.create, agreementKey: api.agreementKey });
         root.toggleProposalBeforeAfter = (key, options) => instance.toggle(key, options);
+        root.toggleAgreementBeforeAfter = id => instance.toggleAgreement(id);
     }
 })(typeof window !== 'undefined' ? window : globalThis, function () {
     'use strict';
 
     const idOf = value => (value === undefined || value === null ? '' : String(value));
+    const AGREEMENT_KEY_PREFIX = 'agreement:';
+    const agreementKey = id => (idOf(id) ? AGREEMENT_KEY_PREFIX + idOf(id) : '');
+
+    // The land an agreement settles: its input cadastral parcels, each once.
+    function agreementInputIds(agreement) {
+        const parcels = agreement && agreement.inputs && Array.isArray(agreement.inputs.parcels) ? agreement.inputs.parcels : [];
+        return Array.from(new Set(parcels.map(parcel => idOf(parcel && parcel.parcelId)).filter(Boolean)));
+    }
+
+    // An agreement has an "after" only while every one of its designs is held here and applied,
+    // and a "before" only when it takes cadastral land.
+    function canCompareAgreement(agreement, { isApplied, recordOf } = {}) {
+        if (!agreement || typeof isApplied !== 'function' || typeof recordOf !== 'function') return false;
+        const designs = Array.isArray(agreement.designs) ? agreement.designs : [];
+        if (!designs.length || !agreementInputIds(agreement).length) return false;
+        return designs.every(design => {
+            const record = recordOf(idOf(design && design.proposalId));
+            return !!record && !!isApplied(record);
+        });
+    }
 
     // A comparison needs something on the map to compare: an applied record with a footprint
     // (buildings, a corridor, a structure, a parcel layout). Content-only records have no "after".
@@ -176,23 +202,46 @@
         async function start(proposal, key, options = {}) {
             const deps = resolveDependencies();
             if (!canCompare(proposal, deps)) return false;
-            if (!deps.map || !deps.L || typeof deps.attach !== 'function') return false;
-            const affectedIds = new Set((deps.claims && typeof deps.claims.cadastreParcelIdsOf === 'function'
-                ? deps.claims.cadastreParcelIdsOf(proposal)
-                : (Array.isArray(proposal.cadastreParcelIds) ? proposal.cadastreParcelIds : [])).map(idOf).filter(Boolean));
-            const focusParcelId = idOf(options.focusParcelId) || null;
             const focusOwnerId = idOf(options.focusOwnerId) || null;
             const ownerParts = focusOwnerId ? ownerFocusParts(proposal, focusOwnerId) : null;
-            const previous = typeof deps.previousVersionOf === 'function' ? deps.previousVersionOf(proposal) : null;
-            const [originals, presented] = await Promise.all([originalParcels(deps, affectedIds), presentedParcels(deps)]);
+            return startWith({
+                key,
+                affectedIds: deps.claims && typeof deps.claims.cadastreParcelIdsOf === 'function'
+                    ? deps.claims.cadastreParcelIdsOf(proposal)
+                    : (Array.isArray(proposal.cadastreParcelIds) ? proposal.cadastreParcelIds : []),
+                previous: typeof deps.previousVersionOf === 'function' ? deps.previousVersionOf(proposal) : null,
+                focusParcelId: options.focusParcelId,
+                focusOwnerId,
+                focusParcelIds: ownerParts ? ownerParts.parcelIds : null
+            });
+        }
+
+        // An agreement's comparison: its input parcels in their original shape before, the live
+        // map after. Refused unless every one of its designs is applied here.
+        async function startAgreement(agreement, key) {
+            if (!canCompareAgreement(agreement, resolveDependencies())) return false;
+            return startWith({ key, affectedIds: agreementInputIds(agreement) });
+        }
+
+        // The comparison itself, over the cadastral parcels `affectedIds` names. `previous` is the
+        // version a proposal replaces; `focusParcelIds` (one owner's parcels) or `focusParcelId`
+        // (one parcel) outline the focused land on both sides.
+        async function startWith({ key, affectedIds, previous = null, focusParcelId = null, focusOwnerId = null, focusParcelIds = null } = {}) {
+            const deps = resolveDependencies();
+            if (!deps.map || !deps.L || typeof deps.attach !== 'function') return false;
+            const affected = new Set(Array.from(affectedIds || [], idOf).filter(Boolean));
+            const focusParcel = idOf(focusParcelId) || null;
+            const focusOwner = idOf(focusOwnerId) || null;
+            const focusMany = Array.isArray(focusParcelIds) ? focusParcelIds : null;
+            const [originals, presented] = await Promise.all([originalParcels(deps, affected), presentedParcels(deps)]);
             if (session) dispose();
             const layers = beforeLayers({
-                affectedIds, originals, presented,
+                affectedIds: affected, originals, presented,
                 buildings: typeof deps.buildingPool === 'function' ? deps.buildingPool() : [],
                 buildingsShown: typeof deps.buildingsShown === 'function' ? deps.buildingsShown() : false,
                 previous: footprintFeatures(previous, deps.footprintParts),
-                focusParcelId,
-                focusParcelIds: ownerParts ? ownerParts.parcelIds : [],
+                focusParcelId: focusParcel,
+                focusParcelIds: focusMany || [],
                 idOfFeature: feature => featureIdOf(feature, deps.fabric)
             });
             const t = typeof deps.t === 'function' ? deps.t : (_key, fallback) => fallback;
@@ -200,7 +249,7 @@
             let afterFocus = [];
             // The live pieces on the focused land (the one parcel, or every parcel of the focused
             // owner), outlined on the live ("after") map.
-            const focusIds = ownerParts ? ownerParts.parcelIds : (focusParcelId ? [focusParcelId] : []);
+            const focusIds = focusMany || (focusParcel ? [focusParcel] : []);
             if (focusIds.length && deps.fabric && typeof deps.fabric.entriesForCadastre === 'function') {
                 let plots = [];
                 try { plots = withGeometry(deps.fabric.entriesForCadastre(focusIds, { includeCorridors: true })); } catch (_) { plots = []; }
@@ -213,7 +262,7 @@
             // of the map the panel leaves free, and start the divider through its middle so "before"
             // shows the old parcel and "after" the new plots.
             let percent;
-            const framed = (ownerParts || focusParcelId)
+            const framed = (focusMany || focusParcel)
                 ? focusBounds(layers.focus.concat(afterFocus))
                 : null;
             if (framed && typeof deps.map.fitBounds === 'function') {
@@ -263,7 +312,7 @@
                 }
             });
             activeKey = idOf(key);
-            activeFocus = focusOwnerId ? `owner:${focusOwnerId}` : focusParcelId;
+            activeFocus = focusOwner ? `owner:${focusOwner}` : focusParcel;
             // What the before map holds, for a test or a reader of the DOM: the canvas cannot be read.
             try {
                 session.beforeEl.dataset.layers = JSON.stringify({
@@ -272,7 +321,7 @@
                     afterFocus: afterFocus.length
                 });
             } catch (_) { /* no dataset on this host */ }
-            if (typeof deps.onChange === 'function') deps.onChange(true, { key: activeKey, focusParcelId, focusOwnerId });
+            if (typeof deps.onChange === 'function') deps.onChange(true, { key: activeKey, focusParcelId: focusParcel, focusOwnerId: focusOwner });
             // The divider is what the reader now operates.
             try { session.handleEl && session.handleEl.focus({ preventScroll: true }); } catch (_) { /* no focus in this host */ }
             return true;
@@ -283,6 +332,7 @@
             activeKey: () => activeKey,
             activeFocus: () => activeFocus,
             canCompare: proposal => canCompare(proposal, resolveDependencies()),
+            canCompareAgreement: agreement => canCompareAgreement(agreement, resolveDependencies()),
             dispose,
             // Called by the details panel on every render: a different proposal, or one no longer
             // applied, ends the comparison; a re-render of the same applied proposal keeps it.
@@ -308,6 +358,19 @@
                 starting = start(proposal, key, owner ? { focusOwnerId: owner } : { focusParcelId: focus })
                     .finally(() => { starting = null; });
                 return starting;
+            },
+            // toggleAgreement(id) starts the comparison of the stored agreement `id`, replacing any
+            // other comparison, or ends it when it is the one showing.
+            async toggleAgreement(id) {
+                const key = agreementKey(id);
+                if (!key) return false;
+                if (session && key === activeKey) { dispose(); return false; }
+                if (starting) return starting;
+                const deps = resolveDependencies();
+                starting = Promise.resolve(typeof deps.findAgreement === 'function' ? deps.findAgreement(idOf(id)) : null)
+                    .then(agreement => (agreement ? startAgreement(agreement, key) : false))
+                    .finally(() => { starting = null; });
+                return starting;
             }
         };
     }
@@ -320,6 +383,9 @@
             presenter: w.ParcelPresenter, fabric: w.LiveParcelFabric, repository: w.CadastralParcelRepository,
             claims: w.__claims,
             isApplied: w.isApplied,
+            // An agreement's designs as this browser holds them, and the stored agreement itself.
+            recordOf: id => (w.proposalStorage && typeof w.proposalStorage.getProposal === 'function' ? w.proposalStorage.getProposal(id) : null),
+            findAgreement: id => (w.AgreementStore && typeof w.AgreementStore.get === 'function' ? w.AgreementStore.get(id) : null),
             footprintParts: w.__footprintParts && w.__footprintParts.footprintParts,
             attach: w.__MapBeforeAfter && w.__MapBeforeAfter.attach,
             findProposal: key => (typeof w.getProposalByIdOrHash === 'function' ? w.getProposalByIdOrHash(key) : null),
@@ -350,14 +416,19 @@
                 } catch (_) { return fallback; }
             },
             warn: (...args) => console.warn(...args),
-            onChange: (active, { focusParcelId } = {}) => {
-                w.document.querySelectorAll('.btn-compare-proposal').forEach(button => button.setAttribute('aria-pressed', String(active)));
+            onChange: (active, { key, focusParcelId } = {}) => {
+                const agreement = typeof key === 'string' && key.startsWith(AGREEMENT_KEY_PREFIX);
+                w.document.querySelectorAll('.btn-compare-proposal').forEach(button => button.setAttribute('aria-pressed', String(active && !agreement)));
                 w.document.querySelectorAll('.btn-compare-parcel').forEach(button => {
                     button.setAttribute('aria-pressed', String(active && !!focusParcelId && button.dataset.focusParcel === String(focusParcelId)));
                 });
+                w.document.querySelectorAll('[data-agreement-action="compare"]').forEach(button => button.setAttribute('aria-pressed', String(active && agreement)));
             }
         };
     }
 
-    return { canCompare, beforeLayers, footprintFeatures, ownerFocusParts, focusBounds, create, browserDependencies, PREVIOUS_STYLE, FOCUS_BEFORE_STYLE, FOCUS_AFTER_STYLE };
+    return {
+        canCompare, canCompareAgreement, agreementKey, agreementInputIds, beforeLayers, footprintFeatures, ownerFocusParts, focusBounds,
+        create, browserDependencies, PREVIOUS_STYLE, FOCUS_BEFORE_STYLE, FOCUS_AFTER_STYLE
+    };
 });

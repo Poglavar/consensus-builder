@@ -296,3 +296,79 @@ describe('owner focus (what one owner puts in, and what stands on it now)', () =
         expect(h.instance.isActive()).toBe(false);
     });
 });
+
+describe('agreement comparison (plan-design-agreement.md, M1 b)', () => {
+    const stored = (overrides = {}) => ({
+        id: 'ag-1',
+        designs: [{ proposalId: 'p-1' }, { proposalId: 'p-2' }],
+        inputs: { parcels: [{ parcelId: 'A' }, { parcelId: 'B' }, { parcelId: 'A' }], openGroundM2: 0 },
+        ...overrides
+    });
+    // The single-proposal harness, with the agreement's designs held by this browser and the
+    // stored agreement it reads by id.
+    function agreementHarness({ applied = { 'p-1': true, 'p-2': true }, agreement = stored() } = {}) {
+        const h = harness({ originals: [feature('A', square(16, 45.8, 0.002)), feature('B', square(16.002, 45.8))] });
+        h.deps.recordOf = id => (Object.prototype.hasOwnProperty.call(applied, id) ? { proposalId: id, applied: applied[id] } : null);
+        h.deps.findAgreement = vi.fn(id => (agreement && id === agreement.id ? agreement : null));
+        return h;
+    }
+
+    it('takes its input parcels as the affected land: every piece standing on them gives way to the original', async () => {
+        const h = agreementHarness();
+        expect(await h.instance.toggleAgreement('ag-1')).toBe(true);
+        expect(h.deps.findAgreement).toHaveBeenCalledWith('ag-1');
+        expect(h.instance.activeKey()).toBe(BeforeAfter.agreementKey('ag-1'));
+        expect(h.instance.isActive('agreement:ag-1')).toBe(true);
+        expect(h.instance.isActive('ag-1')).toBe(false);
+        expect(h.repository.ensureIds).toHaveBeenCalledWith(['A', 'B'], { retainOnly: true });
+        // A:plot-1 (on A) and B are both input land: the before map holds the two originals only.
+        expect(h.drawn[0].target).toBe('before-map');
+        expect(h.drawn[0].collection.features.map(f => f.properties.parcelId)).toEqual(['A', 'B']);
+        expect(h.changes).toEqual([true]);
+
+        expect(await h.instance.toggleAgreement('ag-1')).toBe(false);
+        expect(h.instance.isActive()).toBe(false);
+        expect(h.sessions[0].disposed).toBe(1);
+    });
+
+    it('refuses while a design is unapplied or gone, without land, or when the agreement is not stored', async () => {
+        const unapplied = agreementHarness({ applied: { 'p-1': true, 'p-2': false } });
+        expect(await unapplied.instance.toggleAgreement('ag-1')).toBe(false);
+        expect(unapplied.sessions).toHaveLength(0);
+        expect(unapplied.repository.ensureIds).not.toHaveBeenCalled();
+
+        const gone = agreementHarness({ applied: { 'p-1': true } });
+        expect(await gone.instance.toggleAgreement('ag-1')).toBe(false);
+
+        const landless = agreementHarness({ agreement: stored({ inputs: { parcels: [], openGroundM2: 40 } }) });
+        expect(await landless.instance.toggleAgreement('ag-1')).toBe(false);
+
+        const missing = agreementHarness();
+        expect(await missing.instance.toggleAgreement('ag-2')).toBe(false);
+        expect(await missing.instance.toggleAgreement('')).toBe(false);
+        expect(missing.sessions).toHaveLength(0);
+    });
+
+    it('replaces a proposal comparison, and ends when the details panel shows a proposal', async () => {
+        const h = agreementHarness();
+        await h.instance.toggle('p-1');
+        expect(h.instance.isActive('p-1')).toBe(true);
+        expect(await h.instance.toggleAgreement('ag-1')).toBe(true);
+        expect(h.instance.isActive('agreement:ag-1')).toBe(true);
+        expect(h.sessions.map(s => s.disposed)).toEqual([1, 0]);
+        expect(h.instance.reconcile(h.proposal, 'p-1')).toBe(true);
+        expect(h.instance.isActive()).toBe(false);
+    });
+
+    it('canCompareAgreement needs designs, land and every design applied', () => {
+        const deps = { isApplied, recordOf: id => ({ proposalId: id, applied: id !== 'p-off' }) };
+        expect(BeforeAfter.canCompareAgreement(stored(), deps)).toBe(true);
+        expect(BeforeAfter.canCompareAgreement(stored({ designs: [{ proposalId: 'p-1' }, { proposalId: 'p-off' }] }), deps)).toBe(false);
+        expect(BeforeAfter.canCompareAgreement(stored({ designs: [] }), deps)).toBe(false);
+        expect(BeforeAfter.canCompareAgreement(stored(), { isApplied })).toBe(false);
+        expect(BeforeAfter.canCompareAgreement(null, deps)).toBe(false);
+        expect(BeforeAfter.agreementInputIds(stored())).toEqual(['A', 'B']);
+        expect(BeforeAfter.agreementKey('ag-1')).toBe('agreement:ag-1');
+        expect(BeforeAfter.agreementKey(null)).toBe('');
+    });
+});

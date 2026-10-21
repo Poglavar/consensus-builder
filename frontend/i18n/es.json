@@ -1239,6 +1239,7 @@
             "shareButton": "Compartir propuestas aplicadas",
             "shareButtonEmpty": "No hay propuestas aplicadas. Aplica algunas primero",
             "shareButtonPreparing": "Preparando propuestas…",
+            "agreementsButton": "Acuerdos",
             "clearButton": "Restablecer propuestas (este navegador)",
             "planStats": {
                 "buttonLabel": "Estadísticas de propuestas aplicadas",
@@ -1784,6 +1785,7 @@
                 "unapplyFailedUnknown": "No se pudo quitar esta propuesta del mapa. Inténtalo de nuevo.",
                 "unapplyUnavailable": "Esta propuesta no se puede quitar del mapa.",
                 "betOutcome": "Apostar al resultado",
+                "createAgreement": "Crear acuerdo",
                 "editApprovalHintCounterproposal": "Abre el editor en la pestaña Aprobación. Al guardar se crea una contrapropuesta; las aceptaciones de esta no se trasladan.",
                 "convertToFreeformHint": "Conserva el volumen de la regla a la mayor altura que permite, como un edificio que editas directamente. Después los parámetros de la regla ya no se aplican."
             },
@@ -7673,6 +7675,127 @@
             },
             "actions": {
                 "apply": "Aplicar plan"
+            }
+        }
+    },
+    "agreement": {
+        "dialog": {
+            "titleCreate": "Crear acuerdo",
+            "titleEdit": "Editar acuerdo",
+            "intro": "Un acuerdo reúne diseños del mapa con quién decide, quién recibe qué suelo y qué dinero se mueve. Por ahora nada sale de este dispositivo.",
+            "save": "Guardar acuerdo"
+        },
+        "sections": {
+            "designs": "Diseños",
+            "land": "Suelo",
+            "allocation": "Asignación",
+            "money": "Dinero",
+            "rule": "Regla de decisión",
+            "details": "Detalles"
+        },
+        "designs": {
+            "hint": "Solo los diseños aplicados al mapa pueden formar parte de un acuerdo.",
+            "empty": "No hay diseños aplicados. Aplica primero un diseño.",
+            "onMap": "Aplicado"
+        },
+        "land": {
+            "loading": "Leyendo el suelo bajo los diseños…",
+            "failed": "No se pudo leer el suelo bajo los diseños: {{reason}}",
+            "inputsHeading": "Parcelas aportadas",
+            "outputsHeading": "Porciones resultantes",
+            "parcel": "Parcela",
+            "area": "Superficie",
+            "holders": "Titulares",
+            "unowned": "Sin propietario registrado",
+            "openGround": "Terreno abierto: {{area}}",
+            "from": "Origen",
+            "piece": "Porción",
+            "empty": "Los diseños seleccionados no ocupan suelo catastral."
+        },
+        "allocation": {
+            "hint": "Quién recibe cada porción resultante. Los titulares actuales son los que los diseños conservaron.",
+            "to": "Se asigna a",
+            "holders": "Titulares actuales",
+            "public": "Público"
+        },
+        "money": {
+            "hint": "Dinero por parte, en euros: positivo recibe, negativo paga. El promotor cubre la diferencia.",
+            "party": "Parte",
+            "amount": "Importe (EUR)",
+            "sponsorFunds": "El promotor aporta {{amount}}",
+            "sponsorReceives": "El promotor recibe {{amount}}",
+            "sponsorNothing": "Los pagos de las partes se compensan; el promotor no paga nada.",
+            "balanced": "No se mueve dinero."
+        },
+        "rule": {
+            "who": "Quién decide",
+            "owners": "Los propietarios del suelo aportado, según unas reglas",
+            "community": "Cualquiera: un voto vecinal, nunca vinculante",
+            "binding": "Vinculante: cuando se cumple la regla, el suelo y el dinero se transfieren en la ejecución",
+            "bindingShort": "Vinculante",
+            "nonBinding": "No vinculante",
+            "electorate": {
+                "owners": "Lo deciden los propietarios",
+                "community": "Lo decide un voto vecinal"
+            }
+        },
+        "details": {
+            "title": "Título (opcional)",
+            "deadline": "Plazo (opcional)"
+        },
+        "errors": {
+            "noDesigns": "Elige al menos un diseño.",
+            "designNotApplied": "Todos los diseños deben estar aplicados al mapa.",
+            "noInputs": "Los diseños no ocupan suelo catastral.",
+            "allocationUnknownOutput": "Una asignación nombra una porción que ya no existe.",
+            "allocationUnknownParty": "Una asignación nombra a una parte que no tiene suelo aportado.",
+            "allocationSharesInvalid": "Las cuotas conjuntas deben sumar el 100 %.",
+            "moneyCurrency": "El dinero debe estar en EUR.",
+            "moneyPartyUnknown": "Una línea de dinero nombra a una parte que no tiene suelo aportado.",
+            "moneyAmountInvalid": "Un importe no es válido.",
+            "ruleInvalid": "La regla de decisión está incompleta: {{reason}}",
+            "ruleCommunityBinding": "Un voto vecinal no puede ser vinculante.",
+            "deadlineInvalid": "El plazo debe ser una fecha futura.",
+            "secondaryTab": "Otra pestaña tiene los datos de esta ciudad; los acuerdos solo se pueden editar allí."
+        },
+        "warnings": {
+            "ruleNotReady": "Todavía no se puede evaluar la regla: {{reason}}",
+            "openGround": "Parte del suelo es terreno abierto sin propietario registrado."
+        },
+        "panel": {
+            "title": "Acuerdo",
+            "untitled": "Acuerdo del {{date}}",
+            "status": {
+                "current": "Coincide con el mapa",
+                "stale": "Ya no coincide con el mapa",
+                "error": "No se pudo comprobar el acuerdo con el mapa: {{reason}}",
+                "reasons": {
+                    "designMissing": "se eliminó un diseño",
+                    "designNotApplied": "un diseño ya no está aplicado",
+                    "designChanged": "un diseño cambió",
+                    "groundChanged": "el terreno cambió"
+                }
+            },
+            "ledgerHeading": "Balance",
+            "ledger": {
+                "contributes": "Aporta",
+                "receives": "Recibe",
+                "change": "Variación neta",
+                "cash": "Dinero"
+            },
+            "deadline": "Plazo: {{date}}",
+            "actions": {
+                "edit": "Editar",
+                "delete": "Eliminar"
+            },
+            "deleteConfirm": "¿Eliminar este acuerdo? Sus diseños se quedan en el mapa."
+        },
+        "list": {
+            "create": "Crear acuerdo",
+            "empty": "Aún no hay acuerdos. Aplica diseños y luego crea uno.",
+            "designs": {
+                "one": "{{count}} diseño",
+                "other": "{{count}} diseños"
             }
         }
     },

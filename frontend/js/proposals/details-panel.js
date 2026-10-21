@@ -488,6 +488,15 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         </button>
     `;
 
+    // Create agreement (plan-design-agreement.md, M1 b) over an applied design: who decides, who
+    // receives which piece and what money moves. A parcel layout leaves the device only with its
+    // agreement, so there it is the main action, before the disabled Share; elsewhere it follows Share.
+    const createAgreementButtonHtml = (appliedState === true && proposalKey) ? `
+        <button type="button" class="btn ${publishRefusal ? 'btn-primary ' : ''}btn-create-agreement" onclick="window.AgreementDialog.open({ designIds: [${inlineJsArg(proposalKey)}] })">
+            <i class="fas fa-handshake" aria-hidden="true"></i> ${tProposal('panel.proposal.actions.createAgreement', 'Create agreement')}
+        </button>
+    ` : '';
+
     const betButtonHtml = proposalKey && !publishRefusal ? `
         <button type="button" class="btn btn-bet-proposal" onclick="openProposalOutcomeBet(${inlineJsArg(proposalKey)})">
             <i class="fas fa-coins" aria-hidden="true"></i> ${tProposal('panel.proposal.actions.betOutcome', 'Bet on outcome')}
@@ -640,7 +649,9 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     const primaryActionsHtml = `
         <div class="proposal-actions proposal-actions-group proposal-primary-actions">
             ${mapActionButtonHtml}
+            ${publishRefusal ? createAgreementButtonHtml : ''}
             ${shareButtonHtml}
+            ${publishRefusal ? '' : createAgreementButtonHtml}
             ${forkButtonHtml}
             <button type="button" class="btn btn-proposal-details" onclick="toggleProposalDetailsPanelMinimized(false)">
                 <i class="fas fa-circle-info" aria-hidden="true"></i> ${tProposal('panel.proposal.actions.details', 'Details')}

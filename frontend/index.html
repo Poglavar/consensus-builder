@@ -155,6 +155,8 @@
                 'css/proposal-details.css?v=20261020-source-state',
                 'css/proposal-approval.css?v=20261020-approval-rules',
                 'css/plans.css',
+                'css/agreement.css',
+                'css/agreement-dialog.css',
                 'css/planning-views.css'
             ];
             var cacheBuster = (typeof window !== 'undefined' && typeof window.getCacheBustToken === 'function')
@@ -1053,6 +1055,10 @@
                                 <i class="fas fa-spinner fa-spin"></i>
                                 <span data-i18n-key="sidebar.proposals.shareButtonPreparing">Preparing proposals…</span>
                             </span>
+                        </button>
+                        <button id="agreementsButton" type="button" class="btn btn-block agreements-button" onclick="window.AgreementList.open()">
+                            <i class="fas fa-handshake" aria-hidden="true"></i>
+                            <span data-i18n-key="sidebar.proposals.agreementsButton">Agreements</span>
                         </button>
                     </div>
                 </div>
@@ -2163,6 +2169,12 @@
             'js/proposals/ready-signal.js',
             'js/proposals/dialog-upload.js',
             'js/proposals/dialog-share.js?v=20261019-seller-offer',
+            'js/agreement-record.js',
+            'js/agreement-ground.js',
+            'js/agreement-store.js',
+            'js/agreement-dialog.js',
+            'js/agreement-panel.js',
+            'js/agreement-list.js',
             'js/building-floor-plans.js',
             'js/default-floor-plan-rooms.js',
             'js/default-floor-plans.js',

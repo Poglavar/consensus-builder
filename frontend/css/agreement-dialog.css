@@ -1,0 +1,263 @@
+/* The Create agreement dialog (js/agreement-dialog.js): one scrolling column of sections on the
+   shared dialog (css/primitives.css) — designs, land, allocation, money, decision rule, details.
+   Layout only, on the tokens; the controls are the shared ones (base form controls, cb-badge), and
+   the approval form inside keeps its own rules (css/proposal-editor.css). On a phone the dialog is
+   the shared bottom sheet, the tables wrap within its width and the allocation rows stack. */
+
+.agreement-dialog {
+    display: grid;
+    align-content: start;
+    gap: var(--cb-space-4);
+}
+
+.agreement-intro {
+    margin: 0;
+    color: var(--cb-text-muted);
+    font-size: var(--cb-text-md);
+    line-height: var(--cb-leading);
+}
+
+/* Errors and warnings at the top of the body; an empty list takes no room. */
+.agreement-issues {
+    margin: 0;
+    padding: var(--cb-space-2) var(--cb-space-3) var(--cb-space-2) var(--cb-space-6);
+    border-radius: var(--cb-radius-md);
+    font-size: var(--cb-text-md);
+    line-height: var(--cb-leading);
+}
+
+.agreement-issues:empty {
+    display: none;
+}
+
+.agreement-issues--error {
+    background: var(--cb-danger-soft);
+    color: var(--cb-danger-soft-ink);
+}
+
+.agreement-issues--warning {
+    background: var(--cb-warning-soft);
+    color: var(--cb-warning-soft-ink);
+}
+
+.agreement-section {
+    display: grid;
+    gap: var(--cb-space-2);
+    min-width: 0;
+    padding-top: var(--cb-space-3);
+    border-top: 1px solid var(--cb-line);
+}
+
+.agreement-section__title {
+    margin: 0;
+    font-size: var(--cb-text-lg);
+    font-weight: var(--cb-weight-semibold);
+    color: var(--cb-text-strong);
+}
+
+.agreement-hint {
+    margin: 0;
+    color: var(--cb-text-muted);
+    font-size: var(--cb-text-sm);
+    line-height: var(--cb-leading);
+}
+
+.agreement-notice,
+.agreement-alert {
+    margin: 0;
+    padding: var(--cb-space-2) var(--cb-space-3);
+    border-radius: var(--cb-radius-md);
+    font-size: var(--cb-text-sm);
+    line-height: var(--cb-leading);
+    overflow-wrap: anywhere;
+}
+
+.agreement-notice {
+    background: var(--cb-warning-soft);
+    color: var(--cb-warning-soft-ink);
+}
+
+.agreement-alert {
+    background: var(--cb-danger-soft);
+    color: var(--cb-danger-soft-ink);
+}
+
+/* ---- Designs: one checkbox row per applied design ---- */
+.agreement-design-list,
+.agreement-allocation-list {
+    display: grid;
+    gap: var(--cb-space-2);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.agreement-design-row {
+    display: flex;
+    align-items: center;
+    gap: var(--cb-space-2);
+    min-height: var(--cb-control-height);
+    padding: var(--cb-space-1) var(--cb-space-3);
+    box-sizing: border-box;
+    border: 1px solid var(--cb-line);
+    border-radius: var(--cb-radius-md);
+    cursor: pointer;
+}
+
+.agreement-design-row:has(input:checked) {
+    border-color: var(--cb-primary);
+    background: var(--cb-primary-soft);
+}
+
+.agreement-design-row input {
+    flex: 0 0 auto;
+    margin: 0;
+}
+
+.agreement-design-row__title {
+    flex: 1 1 auto;
+    min-width: 0;
+    font-weight: var(--cb-weight-medium);
+    overflow-wrap: anywhere;
+}
+
+.agreement-design-row__type {
+    flex: 0 0 auto;
+}
+
+/* ---- Land: the input parcels and the resulting pieces ---- */
+.agreement-land {
+    display: grid;
+    gap: var(--cb-space-3);
+    min-width: 0;
+}
+
+.agreement-table-scroll {
+    max-width: 100%;
+    overflow-x: auto;
+}
+
+.agreement-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--cb-text-sm);
+    line-height: var(--cb-leading);
+}
+
+.agreement-table caption {
+    padding-bottom: var(--cb-space-1);
+    text-align: left;
+    font-size: var(--cb-text-md);
+    font-weight: var(--cb-weight-semibold);
+    color: var(--cb-text);
+}
+
+.agreement-table th,
+.agreement-table td {
+    padding: var(--cb-space-1) var(--cb-space-2);
+    border-bottom: 1px solid var(--cb-line);
+    text-align: left;
+    vertical-align: top;
+    overflow-wrap: anywhere;
+}
+
+.agreement-table thead th {
+    color: var(--cb-text-muted);
+    font-weight: var(--cb-weight-semibold);
+}
+
+.agreement-table tbody th {
+    font-weight: var(--cb-weight-medium);
+    color: var(--cb-text-strong);
+}
+
+.agreement-table .agreement-table__number {
+    text-align: right;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+}
+
+/* ---- Allocation and money: a label beside its control, two columns ---- */
+.agreement-allocations,
+.agreement-money {
+    display: grid;
+    gap: var(--cb-space-2);
+    min-width: 0;
+}
+
+.agreement-column-head,
+.agreement-allocation-row,
+.agreement-money-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: center;
+    gap: var(--cb-space-2);
+}
+
+.agreement-column-head {
+    color: var(--cb-text-muted);
+    font-size: var(--cb-text-sm);
+    font-weight: var(--cb-weight-semibold);
+}
+
+.agreement-allocation-row__piece,
+.agreement-money-row__name {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.agreement-allocation-row select,
+.agreement-money-row input {
+    width: 100%;
+    min-width: 0;
+}
+
+.agreement-money-row input {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+}
+
+.agreement-sponsor {
+    margin: 0;
+    font-weight: var(--cb-weight-semibold);
+    color: var(--cb-text-strong);
+}
+
+.agreement-sponsor:empty {
+    display: none;
+}
+
+/* ---- Decision rule ---- */
+.agreement-fieldset {
+    display: grid;
+    gap: var(--cb-space-2);
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+.agreement-fieldset legend {
+    margin-bottom: var(--cb-space-1);
+    padding: 0;
+    font-size: var(--cb-text-sm);
+    font-weight: var(--cb-weight-semibold);
+    color: var(--cb-text);
+}
+
+.agreement-rule-form {
+    min-width: 0;
+}
+
+/* A phone sheet: each piece above the select that names its recipient (so the column head goes);
+   a party and its amount stay side by side. */
+@media (max-width: 767.98px) {
+    .agreement-allocation-row {
+        grid-template-columns: minmax(0, 1fr);
+        gap: var(--cb-space-1);
+    }
+
+    .agreement-column-head--allocation {
+        display: none;
+    }
+}

@@ -1040,6 +1040,7 @@
             "shareButton": "Podeli primenjene predloge",
             "shareButtonEmpty": "Nema primenjenih predloga. Prvo primeni neke",
             "shareButtonPreparing": "Priprema predloga…",
+            "agreementsButton": "Sporazumi",
             "clearButton": "Resetuj predloge (ovaj pregledač)",
             "planStats": {
                 "buttonLabel": "Statistika primenjenih predloga",
@@ -1772,6 +1773,7 @@
                 "unapplyFailedUnknown": "Ovaj predlog nije moguće ukloniti sa mape. Pokušajte ponovo.",
                 "unapplyUnavailable": "Ovaj predlog nije moguće ukloniti sa mape.",
                 "betOutcome": "Kladi se na ishod",
+                "createAgreement": "Napravi sporazum",
                 "editApprovalHintCounterproposal": "Otvara uređivač na kartici Odobravanje. Čuvanje pravi protivpredlog; prihvatanja ovog predloga se ne prenose.",
                 "convertToFreeformHint": "Zadrži volumen pravila u najvećoj visini koju dozvoljava, kao jednu zgradu koju uređujete direktno. Parametri pravila posle više ne važe."
             },
@@ -7687,6 +7689,128 @@
             },
             "actions": {
                 "apply": "Primeni plan"
+            }
+        }
+    },
+    "agreement": {
+        "dialog": {
+            "titleCreate": "Napravi sporazum",
+            "titleEdit": "Uredi sporazum",
+            "intro": "Sporazum povezuje dizajne na mapi sa tim ko odlučuje, ko dobija koje zemljište i koji se novac kreće. Zasad ništa ne napušta ovaj uređaj.",
+            "save": "Sačuvaj sporazum"
+        },
+        "sections": {
+            "designs": "Dizajni",
+            "land": "Zemljište",
+            "allocation": "Raspodela",
+            "money": "Novac",
+            "rule": "Pravilo odlučivanja",
+            "details": "Detalji"
+        },
+        "designs": {
+            "hint": "Deo sporazuma mogu da budu samo dizajni primenjeni na mapu.",
+            "empty": "Nema primenjenih dizajna. Najpre primenite dizajn.",
+            "onMap": "Primenjen"
+        },
+        "land": {
+            "loading": "Čitanje zemljišta ispod dizajna…",
+            "failed": "Zemljište ispod dizajna nije moglo da se pročita: {{reason}}",
+            "inputsHeading": "Ulazne parcele",
+            "outputsHeading": "Nastali delovi",
+            "parcel": "Parcela",
+            "area": "Površina",
+            "holders": "Nosioci",
+            "unowned": "Nema upisanog vlasnika",
+            "openGround": "Otvoreno tlo: {{area}}",
+            "from": "Poreklo",
+            "piece": "Deo",
+            "empty": "Izabrani dizajni ne zauzimaju katastarsko zemljište."
+        },
+        "allocation": {
+            "hint": "Ko dobija koji nastali deo. Sadašnji nosioci su oni koje su dizajni preneli.",
+            "to": "Pripada",
+            "holders": "Sadašnji nosioci",
+            "public": "Javno"
+        },
+        "money": {
+            "hint": "Novac po strani, u evrima: pozitivan iznos strana prima, negativan plaća. Razliku pokriva investitor.",
+            "party": "Strana",
+            "amount": "Iznos (EUR)",
+            "sponsorFunds": "Investitor finansira {{amount}}",
+            "sponsorReceives": "Investitor prima {{amount}}",
+            "sponsorNothing": "Plaćanja strana su uravnotežena; investitor ne plaća ništa.",
+            "balanced": "Novac se ne kreće."
+        },
+        "rule": {
+            "who": "Ko odlučuje",
+            "owners": "Vlasnici ulaznog zemljišta, prema pravilima",
+            "community": "Bilo ko: glasanje zajednice, nikad obavezujuće",
+            "binding": "Obavezujuće: kad je pravilo ispunjeno, zemljište i novac se prenose pri izvršenju",
+            "bindingShort": "Obavezujuće",
+            "nonBinding": "Neobavezujuće",
+            "electorate": {
+                "owners": "Odlučuju vlasnici",
+                "community": "Odlučuje glasanje zajednice"
+            }
+        },
+        "details": {
+            "title": "Naslov (neobavezno)",
+            "deadline": "Rok (neobavezno)"
+        },
+        "errors": {
+            "noDesigns": "Izaberite bar jedan dizajn.",
+            "designNotApplied": "Svaki dizajn mora da bude primenjen na mapu.",
+            "noInputs": "Dizajni ne zauzimaju katastarsko zemljište.",
+            "allocationUnknownOutput": "Raspodela navodi deo koji više ne postoji.",
+            "allocationUnknownParty": "Raspodela navodi stranu koja nema ulaznog zemljišta.",
+            "allocationSharesInvalid": "Zbir zajedničkih udela mora da bude 100%.",
+            "moneyCurrency": "Novac mora da bude u EUR.",
+            "moneyPartyUnknown": "Novčana stavka navodi stranu koja nema ulaznog zemljišta.",
+            "moneyAmountInvalid": "Jedan novčani iznos nije ispravan.",
+            "ruleInvalid": "Pravilo odlučivanja nije potpuno: {{reason}}",
+            "ruleCommunityBinding": "Glasanje zajednice ne može da bude obavezujuće.",
+            "deadlineInvalid": "Rok mora da bude datum u budućnosti.",
+            "secondaryTab": "Podatke ovog grada drži druga kartica; sporazumi mogu da se uređuju samo tamo."
+        },
+        "warnings": {
+            "ruleNotReady": "Pravilo još ne može da se proceni: {{reason}}",
+            "openGround": "Deo zemljišta je otvoreno tlo bez upisanog vlasnika."
+        },
+        "panel": {
+            "title": "Sporazum",
+            "untitled": "Sporazum od {{date}}",
+            "status": {
+                "current": "Odgovara mapi",
+                "stale": "Više ne odgovara mapi",
+                "error": "Sporazum nije mogao da se proveri prema mapi: {{reason}}",
+                "reasons": {
+                    "designMissing": "dizajn je izbrisan",
+                    "designNotApplied": "dizajn više nije primenjen",
+                    "designChanged": "dizajn se promenio",
+                    "groundChanged": "tlo se promenilo"
+                }
+            },
+            "ledgerHeading": "Bilans",
+            "ledger": {
+                "contributes": "Unosi",
+                "receives": "Dobija",
+                "change": "Neto promena",
+                "cash": "Novac"
+            },
+            "deadline": "Rok: {{date}}",
+            "actions": {
+                "edit": "Uredi",
+                "delete": "Izbriši"
+            },
+            "deleteConfirm": "Izbrisati ovaj sporazum? Njegovi dizajni ostaju na mapi."
+        },
+        "list": {
+            "create": "Napravi sporazum",
+            "empty": "Još nema sporazuma. Primenite dizajne, a zatim napravite sporazum.",
+            "designs": {
+                "one": "{{count}} dizajn",
+                "few": "{{count}} dizajna",
+                "other": "{{count}} dizajna"
             }
         }
     },

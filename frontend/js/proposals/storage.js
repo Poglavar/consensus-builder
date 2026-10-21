@@ -385,6 +385,8 @@ async function clearLocalProposalData() {
         if (!cleared || cleared.ok !== true) {
             throw new Error('The proposal set could not be removed safely.');
         }
+        // Agreements name the designs just removed (plan-design-agreement.md, M1 b): they go too.
+        window.AgreementStore?.clear();
 
         // Clear any proposal highlights
         clearProposalHighlights();

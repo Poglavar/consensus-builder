@@ -129,6 +129,21 @@ Without a verified front edge, viewport massing unions the supported front-edge 
 
 **Zoning source areas** have a separate display control, off by default. Their raw Atlas representations remain source evidence and can be inspected on the 2D map or 3D ground plane. The Permitted appearance control governs parcel volumes, not these source polygons. This intentionally replaces the earlier coupling of zoning-area visibility to Permitted; no compatibility display path is retained.
 
+## M1 (b) state: the agreement as a browser record (2026-10-21, being built)
+
+An **agreement** is a local record (`agreement:<id>` in the city's IndexedDB store, module
+`agreement-record.js`): the applied designs it bundles (by local id and content fingerprint), the
+**inputs** derived from the fabric (the base cadastral parcels the designs take, with their holders
+from the local owner records, plus open ground), the **outputs** read from the fabric (every piece
+standing on the input land after the designs are applied, identified by `piece1-sha256:` content
+hash), **allocations** (who receives each output: the carried-over holders, one input party, the
+public or joint shares), **money** (EUR cash lines per party; the sponsor line is computed) and the
+**decision rule** (`electorate` owners or community, `binding`, and for owners the unchanged
+`proposal-approval/v1` config evaluated by `ProposalApproval`). It is "current" while every design is
+present, applied and unchanged and the re-derived inputs and output hashes match; otherwise "stale".
+Nothing about an agreement leaves the device until M2; it has no lifecycle, consent, publication,
+mint or market yet. See [plan-design-agreement.md](plan-design-agreement.md), "M1 (b) build contract".
+
 ## Central terms as implemented
 
 ### Proposal — `Proposal`

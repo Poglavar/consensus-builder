@@ -1061,6 +1061,7 @@
             "shareButton": "Share applied proposals",
             "shareButtonEmpty": "No applied proposals. Apply some first",
             "shareButtonPreparing": "Preparing proposals…",
+            "agreementsButton": "Agreements",
             "clearButton": "Reset proposals (this browser)",
             "planStats": {
                 "buttonLabel": "Applied proposal stats",
@@ -1737,6 +1738,7 @@
                 "unapplyFailedUnknown": "Could not remove this proposal from the map. Please try again.",
                 "unapplyUnavailable": "This proposal cannot be removed from the map.",
                 "betOutcome": "Bet on outcome",
+                "createAgreement": "Create agreement",
                 "editApprovalHintCounterproposal": "Opens the editor on its Approval tab. Saving creates a counterproposal; acceptances of this one do not carry over.",
                 "convertToFreeformHint": "Keep the rule's massing at the greatest height it allows, as one building you edit directly. The rule's parameters no longer apply afterwards."
             },
@@ -7622,6 +7624,127 @@
             },
             "actions": {
                 "apply": "Apply plan"
+            }
+        }
+    },
+    "agreement": {
+        "dialog": {
+            "titleCreate": "Create agreement",
+            "titleEdit": "Edit agreement",
+            "intro": "An agreement bundles designs on the map with who decides, who gets which land and what money moves. Nothing leaves this device yet.",
+            "save": "Save agreement"
+        },
+        "sections": {
+            "designs": "Designs",
+            "land": "Land",
+            "allocation": "Allocation",
+            "money": "Money",
+            "rule": "Decision rule",
+            "details": "Details"
+        },
+        "designs": {
+            "hint": "Only designs applied to the map can be part of an agreement.",
+            "empty": "No applied designs. Apply a design first.",
+            "onMap": "Applied"
+        },
+        "land": {
+            "loading": "Reading the land under the designs…",
+            "failed": "The land under the designs could not be read: {{reason}}",
+            "inputsHeading": "Input parcels",
+            "outputsHeading": "Resulting pieces",
+            "parcel": "Parcel",
+            "area": "Area",
+            "holders": "Holders",
+            "unowned": "No recorded owner",
+            "openGround": "Open ground: {{area}}",
+            "from": "From",
+            "piece": "Piece",
+            "empty": "The selected designs take no cadastral land."
+        },
+        "allocation": {
+            "hint": "Who receives each resulting piece. The current holders are what the designs carried over.",
+            "to": "Goes to",
+            "holders": "Current holders",
+            "public": "Public"
+        },
+        "money": {
+            "hint": "Cash per party, in euros: positive receives, negative pays. The sponsor covers the difference.",
+            "party": "Party",
+            "amount": "Amount (EUR)",
+            "sponsorFunds": "Sponsor funds {{amount}}",
+            "sponsorReceives": "Sponsor receives {{amount}}",
+            "sponsorNothing": "The parties' payments balance; the sponsor pays nothing.",
+            "balanced": "No money moves."
+        },
+        "rule": {
+            "who": "Who decides",
+            "owners": "The owners of the input land, under rules",
+            "community": "Anyone: a community vote, never binding",
+            "binding": "Binding: when the rule is met, land and money move at execution",
+            "bindingShort": "Binding",
+            "nonBinding": "Non-binding",
+            "electorate": {
+                "owners": "Decided by the owners",
+                "community": "Decided by a community vote"
+            }
+        },
+        "details": {
+            "title": "Title (optional)",
+            "deadline": "Deadline (optional)"
+        },
+        "errors": {
+            "noDesigns": "Choose at least one design.",
+            "designNotApplied": "Every design must be applied to the map.",
+            "noInputs": "The designs take no cadastral land.",
+            "allocationUnknownOutput": "An allocation names a piece that no longer exists.",
+            "allocationUnknownParty": "An allocation names a party that holds no input land.",
+            "allocationSharesInvalid": "Joint shares must sum to 100 %.",
+            "moneyCurrency": "Money must be in EUR.",
+            "moneyPartyUnknown": "A cash line names a party that holds no input land.",
+            "moneyAmountInvalid": "A cash amount is not a valid amount.",
+            "ruleInvalid": "The decision rule is incomplete: {{reason}}",
+            "ruleCommunityBinding": "A community vote cannot be binding.",
+            "deadlineInvalid": "The deadline must be a date in the future.",
+            "secondaryTab": "Another tab holds this city's data; agreements can be edited there only."
+        },
+        "warnings": {
+            "ruleNotReady": "The rule cannot be evaluated yet: {{reason}}",
+            "openGround": "Part of the land is open ground with no recorded owner."
+        },
+        "panel": {
+            "title": "Agreement",
+            "untitled": "Agreement of {{date}}",
+            "status": {
+                "current": "Matches the map",
+                "stale": "No longer matches the map",
+                "error": "The agreement could not be checked against the map: {{reason}}",
+                "reasons": {
+                    "designMissing": "a design was deleted",
+                    "designNotApplied": "a design is no longer applied",
+                    "designChanged": "a design changed",
+                    "groundChanged": "the ground changed"
+                }
+            },
+            "ledgerHeading": "Ledger",
+            "ledger": {
+                "contributes": "Contributes",
+                "receives": "Receives",
+                "change": "Net change",
+                "cash": "Cash"
+            },
+            "deadline": "Deadline: {{date}}",
+            "actions": {
+                "edit": "Edit",
+                "delete": "Delete"
+            },
+            "deleteConfirm": "Delete this agreement? Its designs stay on the map."
+        },
+        "list": {
+            "create": "Create agreement",
+            "empty": "No agreements yet. Apply designs, then create one.",
+            "designs": {
+                "one": "{{count}} design",
+                "other": "{{count}} designs"
             }
         }
     },
