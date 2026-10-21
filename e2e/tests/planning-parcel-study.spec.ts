@@ -6,7 +6,7 @@ import { selectNativeOption } from '../helpers/controls';
 test.use({ seedCity: 'colorado' });
 const geometry = { type: 'Polygon', coordinates: [[[-104.9907,39.7391],[-104.9902,39.7391],[-104.9902,39.7395],[-104.9907,39.7395],[-104.9907,39.7391]]] };
 const source = { id: 'atlas-study-test', city: 'colorado', label: 'Synthetic Atlas study', edition: 'test',
-  url: 'https://example.test/source', recordId: 'slice-test', version: 'source-1', scenario: 'family1', scenarios: ['family1'],
+  url: 'https://example.test/source', recordId: 'slice-test', version: 'source-1', scenario: 'family1', scenarios: ['family1','family2','family4'],
   default: true, capabilities: { areas: true, volumes: false }, parcelStudy: 'direct-dimensions.v1', parcelSourceId: 'parcel-test' };
 function context(revision = 'source-1') {
   return { schemaVersion: 'planning-parcel-study.v1',
@@ -95,12 +95,20 @@ test('changed Atlas input requires an explicit new study and retains the old dra
 
 test('Permitted draws viewport parcel volumes without a study and zoning areas have their own control @features', async ({ mockApi: page }) => {
   const input=context();
-  const envelope={id:'envelope:atlas-study-test:parcel-test:family1',role:'permitted',proposalId:null,parcelEnvelope:true,
-    title:'Synthetic parcel envelope',source:{...source,parcel:'parcel-test'},site:geometry,areas:[],
-    volumes:[{id:'bound',geometry,baseM:0,topM:10.668}],
+  // Two drawable configurations inside one bound: the inner footprint is the western half of the parcel.
+  const inner = { type:'Polygon', coordinates:[[[-104.9907,39.7391],[-104.99045,39.7391],[-104.99045,39.7395],[-104.9907,39.7395],[-104.9907,39.7391]]] };
+  const configuration = (id:string, topM:number, treatment='allowed') => ({ id, treatment, unavailableReason:null,
+    volumes:[{id:`bound:${id}`,geometry:inner,baseM:0,topM}], metrics:{footprintM2:500,heightM:topM}, edgeInterpretations:4,
+    constraints:[{quantity:'height',value:topM/0.3048,unit:'ft',bound:'maximum',evidence:'direct',scenario:id}],
+    sourceReference:{...input.sourceReference,scenario:id} });
+  const envelope={id:'envelope:atlas-study-test:parcel-test',role:'permitted',proposalId:null,parcelEnvelope:true,
+    title:'Synthetic parcel envelope',source:{...source,scenario:null,parcel:'parcel-test'},site:geometry,areas:[],
+    volumes:[{id:'bound',geometry,baseM:0,topM:13.716}],
+    configurations:[configuration('family1',10.668,'hearing'),configuration('family2',13.716),
+      {id:'family4',treatment:'allowed',unavailableReason:'missing-direct-height',volumes:[],metrics:{footprintM2:null,heightM:null},constraints:[],edgeInterpretations:0}],
     spatialReference:{horizontal:'OGC:CRS84',vertical:'relative-ground',unit:'m'},
-    assessment:{meaning:'partial-envelope',status:'unresolved'},metrics:{heightM:10.668,footprintM2:1000},constraints:[],
-    sourceEvidence:{parcelReference:input.parcelReference,sourceReferences:[input.sourceReference]}};
+    assessment:{meaning:'outer-bound',status:'unresolved'},metrics:{heightM:13.716,footprintM2:1000},constraints:[],
+    sourceEvidence:{parcelReference:input.parcelReference,zoningRecordId:'slice-test',excludedConfigurations:{family3:'prohibited'}}};
   const zone={...input.source,title:'Synthetic zoning area',areas:[{geometry}],volumes:[],metrics:{heightM:null},
     assessment:{meaning:'zoning-area',status:'allowed'}};
   await page.route('**/planning/**', async route => {
@@ -110,11 +118,27 @@ test('Permitted draws viewport parcel volumes without a study and zoning areas h
       : {schemaVersion:'planning-representations.v1',city:'colorado',sources:[source],items:path.endsWith('/envelopes')?[envelope]:[zone],
         summaries:[],unavailable:[],coverage:'source-results',nextCursor:null,omitted:0}});
   });
-  await page.goto(url.replace('&planningParcel=parcel-test','')); await waitForMapReady(page);
-  await expect(page.locator('.planning-envelope-height')).toHaveText('10.7 m',{timeout:45_000});
+  await page.goto(url.replace('&planningParcel=parcel-test','').replace('planningScenario=family1','planningScenario=all')); await waitForMapReady(page);
+  // The label names the shown configuration's height, never the bound's; the roll decides which one.
+  const heightLabel = page.locator('.planning-envelope-height');
+  await expect(heightLabel).toHaveCount(1,{timeout:45_000});
+  const shown = async () => page.evaluate(() => (window as any).PlanningViews.permittedFeatures((window as any).PlanningViews.getItems()[0]).configuration.id);
+  const first = await shown();
+  await expect(heightLabel).toHaveText(first === 'family1' ? '10.7 m' : '13.7 m');
   expect(await page.evaluate(() => (window as any).PlanningParcelStudy.getContext())).toBeUndefined();
   await page.getByRole('button',{name:'Buildings and massing',exact:true}).click();
   const panel=page.locator('#planning-views');
+  await expect(panel.locator('.planning-scenario-select')).toHaveValue('all');
+  // Rolling the dice switches the shown configuration; pinning a housing type overrides the roll.
+  await panel.locator('#planning-reroll').click();
+  expect(await shown()).not.toBe(first);
+  await selectNativeOption(panel.locator('.planning-scenario-select'), 'family2');
+  await expect(heightLabel).toHaveText('13.7 m');
+  expect(await shown()).toBe('family2');
+  await selectNativeOption(panel.locator('.planning-scenario-select'), 'all');
+  await selectNativeOption(panel.locator('[data-planning-setting="permittedForm"]'), 'bound');
+  await expect(heightLabel).toHaveText('13.7 m');
+  await selectNativeOption(panel.locator('[data-planning-setting="permittedForm"]'), 'both');
   await expect(panel.locator('[data-planning-setting="zoningAreas"]')).toHaveValue('off');
   await selectNativeOption(panel.locator('[data-planning-setting="permitted"]'), 'off');
   await expect(page.locator('.planning-envelope-height')).toHaveCount(0);
@@ -127,8 +151,17 @@ test('Permitted draws viewport parcel volumes without a study and zoning areas h
   await page.getByRole('button',{name:'Buildings and massing',exact:true}).click();
   await page.getByRole('button',{name:'Inspect permitted massing on parcel-test',exact:true}).click();
   const inspector=page.locator('#planning-inspector');
-  await expect(inspector.getByText('Partial envelope',{exact:true})).toBeVisible();
+  await expect(inspector.getByText('Permitted envelope',{exact:true})).toBeVisible();
+  await expect(inspector.locator('.planning-configurations__pick')).toHaveCount(3);
+  await expect(inspector.locator('[data-configuration="family4"]')).toContainText('No direct height limit');
+  await expect(inspector.getByText('Not configurable here: Three-family (Recorded as prohibited).')).toBeVisible();
+  // Picking a configuration pins it for this parcel; the inspector marks it and the map follows.
+  await inspector.locator('[data-configuration="family1"] button').click();
+  await expect(inspector.locator('[data-configuration="family1"] button')).toHaveAttribute('aria-pressed','true');
+  await expect(heightLabel).toHaveText('10.7 m');
   await inspector.getByRole('button',{name:'Test a parcel here',exact:true}).click();
   await expect(inspector.getByLabel('Design height (m)')).toBeVisible();
   expect(await page.evaluate(() => (window as any).PlanningViews.getItems().filter((item:any)=>item.parcelEnvelope).length)).toBe(0);
+  expect(new URL(page.url()).searchParams.get('planningStudyScenario')).toBe('family1');
+  expect(new URL(page.url()).searchParams.get('planningScenario')).toBe('all');
 });

@@ -562,11 +562,14 @@
                     for (const border of borders) { markOwnedMaterial(border, line); planningSourcesGroup.add(border); }
                 }
             }
-            for (const feature of window.PlanningScene.volumeFeatures(item)) {
+            // The outer bound behind a shown configuration is a faint hull; alone, it is the body.
+            const { bound, body } = window.PlanningViews.permittedFeatures(item);
+            for (const feature of [...bound, ...body]) {
                 const selected = item.id === selectedId;
+                const hull = feature.properties.geometryRole === 'bound' && body.length > 0;
                 const material = new THREE.MeshPhongMaterial({ color, emissive: selected ? color : 0, emissiveIntensity: selected ? 0.15 : 0,
-                    transparent: appearance === 'ghost', opacity: appearance === 'solid' ? 1 : 0.25,
-                    depthWrite: appearance === 'solid', side: THREE.FrontSide, polygonOffset: true,
+                    transparent: hull || appearance === 'ghost', opacity: hull ? 0.1 : appearance === 'solid' ? 1 : 0.25,
+                    depthWrite: !hull && appearance === 'solid', side: THREE.FrontSide, polygonOffset: true,
                     polygonOffsetFactor: -1, polygonOffsetUnits: -1 });
                 const meshes = polygonFeatureToMeshes(feature, material, feature.properties.baseM, feature.properties.height);
                 if (!meshes.length) { material.dispose(); continue; }
@@ -576,7 +579,7 @@
                     mesh.renderOrder = 3;
                     planningSourcesGroup.add(mesh);
                     const geometry = new THREE.EdgesGeometry(mesh.geometry);
-                    const edgeMaterial = new THREE.LineBasicMaterial({ color, transparent: true, opacity: selected ? 1 : 0.6, depthWrite: false });
+                    const edgeMaterial = new THREE.LineBasicMaterial({ color, transparent: true, opacity: hull ? 0.35 : selected ? 1 : 0.6, depthWrite: false });
                     const edges = new THREE.LineSegments(geometry, edgeMaterial);
                     markOwnedGeometry(edges, geometry); markOwnedMaterial(edges, edgeMaterial);
                     edges.renderOrder = 4;

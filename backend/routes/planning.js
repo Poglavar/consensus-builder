@@ -1,6 +1,6 @@
 // Read-only, bounded provider results for the shared Built / Permitted / Proposed experience.
 import { validateBounds } from '../parcels/source-contract.js';
-import { planningRepresentations, planningParcel, planningRecord, getPlanningSources } from '../planning/sources.js';
+import { planningRepresentations, planningParcel, planningRecord, getPlanningSources, providersFor } from '../planning/sources.js';
 import { loadParcelStudy } from '../planning/parcel-study.js';
 import { loadParcelEnvelopes } from '../planning/parcel-envelopes.js';
 
@@ -56,10 +56,14 @@ export function setupPlanningRoutes(app, pool, { sources = getPlanningSources(),
         try { res.json(await planningRecord(pool, { city: req.query.city, source: req.query.source, recordId: req.query.recordId, scenario: req.query.scenario }, sources)); }
         catch (error) { console.error('[planning] Source record read failed', error); res.status(error.status === 400 ? 400 : 503).json({ error: 'Planning source is unavailable.' }); }
     });
+    // Lists the city's own sources plus bounds-registered sources intersecting the given viewport.
     app.get('/planning/sources', (req, res) => {
         res.set('Cache-Control', 'no-store');
         if (!validCity(req.query.city)) return res.status(400).json({ error: 'Invalid city.' });
-        res.json({ city: req.query.city, sources: sources.filter(p => p.descriptor.city === req.query.city).map(p => p.descriptor) });
+        const bbox = typeof req.query.bbox === 'string' ? req.query.bbox.split(',').map(value => value.trim() ? Number(value) : NaN) : null;
+        try { if (bbox) validateBounds(bbox, Infinity); } catch (_) { return res.status(400).json({ error: 'Invalid bbox.' }); }
+        res.json({ city: req.query.city, sources: providersFor({ city: req.query.city, bbox }, sources)
+            .map(p => ({ ...p.descriptor, city: req.query.city })) });
     });
     app.get('/planning/parcel', async (req, res) => {
         res.set('Cache-Control', 'no-store');

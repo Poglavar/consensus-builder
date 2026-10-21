@@ -7817,14 +7817,23 @@
     },
   "planningViews": {
     "zoningAreas": "Áreas de la fuente urbanística",
+    "envelopeTitle": "Envolvente permitida",
+    "permittedForm": "Representación de lo permitido",
+    "bound": "Límite exterior",
+    "configuration": "Una configuración",
+    "configurationsTitle": "Configuraciones registradas para esta parcela",
+    "configurationShown": "Mostrada",
+    "configurationShow": "Mostrar esta configuración",
+    "excludedConfigurations": "No configurable aquí: {{list}}.",
     "envelopeCoverage": "Las envolventes parciales se derivan de los registros parcelarios y urbanísticos cargados. Las parcelas sin volumen se cuentan por motivo; la ausencia de volumen no demuestra una capacidad nula.",
     "envelopeSummary": "{{count}} registros parcelarios examinados: {{shapes}} con envolventes parciales, {{missing}} sin volumen.",
-    "envelopeNote": "Envolventes parciales de parcelas a partir de dimensiones directas de la fuente. Se desconoce el frente, por lo que la forma incluye interpretaciones alternativas de los bordes. Siguen aplicándose los límites de superficie y las reglas pendientes.",
+    "envelopeNote": "El casco translúcido es el límite exterior de todos los tipos de vivienda registrados y de las interpretaciones del frente. El volumen interior es una configuración: tira el dado o elige una abajo. Siguen aplicándose los límites de superficie y las reglas pendientes.",
     "envelopesLoaded": {
       "one": "{{count}} envolvente parcial de parcela · {{missing}} parcelas sin volumen",
       "other": "{{count}} envolventes parciales de parcelas · {{missing}} parcelas sin volumen"
     },
     "envelopeUnavailable": {
+      "use-not-recorded": "Ningún tipo de vivienda registrado como permitido",
       "envelope-geometry-error": "No se pudo evaluar la geometría de la fuente",
       "overlapping-parcel-identities": "Identidades de parcelas superpuestas",
       "use-prohibited": "Tipo de vivienda registrado como prohibido",
@@ -7909,6 +7918,7 @@
     "solverVersion": "Versión del cálculo: {{version}}",
     "otherResult": "Otro resultado de la fuente",
     "resultStatus": {
+      "unrecorded": "Sin registro",
       "condition_failed": "Condiciones incumplidas",
       "evidence_missing": "Faltan pruebas",
       "existing_stock_estimate": "Estimaciones de edificación existente",
@@ -7951,6 +7961,7 @@
       "other": "{{count}} áreas de zonificación de la fuente visibles"
     },
     "scenario": {
+      "all": "Todos los tipos de vivienda (al azar por parcela)",
       "family1": "Una familia",
       "family2": "Dos familias",
       "family3": "Tres familias",

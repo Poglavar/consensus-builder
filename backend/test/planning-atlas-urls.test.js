@@ -1,7 +1,7 @@
 // URL-configured Atlas sources must retain identity/evidence and isolate download failures.
 import { describe, expect, it, vi } from 'vitest';
 import { parseAtlasSources, createAtlasUrlProvider } from '../planning/atlas-url-sources.js';
-import { createPlanningSources, planningRepresentations, planningRecord } from '../planning/sources.js';
+import { createPlanningSources, planningRepresentations, planningRecord, providersFor, sourcesFor } from '../planning/sources.js';
 import { createAtlasProvider } from '../planning/providers/atlas.js';
 import { setupPlanningRoutes } from '../routes/planning.js';
 
@@ -38,12 +38,51 @@ describe('Atlas URL configuration', () => {
         expect(() => parseAtlasSources(value)).toThrow(/^Invalid PLANNING_ATLAS_SOURCES configuration\./);
         try { parseAtlasSources(value); } catch (error) { expect(error.message).not.toContain('hidden'); }
     });
+    it('registers a dataset once by geographic bounds and serves every city whose viewport intersects it', async () => {
+        const national = { id: 'atlas-national', bbox: [-125, 24, -66, 50], label: 'Atlas · national', edition: 'sample',
+            url: 'https://example.com/national.geojson' };
+        const sources = createPlanningSources(config(national, metadata), { fetchImpl: async () => response(collection()) });
+        const bounds = sources.find(s => s.descriptor.id === 'atlas-national');
+        expect(bounds.descriptor).toMatchObject({ city: null, scope: 'bounds', bbox: national.bbox, parcelStudy: 'direct-dimensions.v1' });
+        const denver = { city: 'colorado', bbox: [-105.1, 39.9, -104.9, 40.1] };
+        expect(providersFor(denver, sources).map(s => s.descriptor.id)).toEqual(['atlas-national']);
+        expect(providersFor({ city: 'colorado' }, sources)).toEqual([]);
+        expect(providersFor({ city: 'colorado', bbox: [10, 40, 10.1, 40.1] }, sources)).toEqual([]);
+        // An explicit ID resolves from any city, for records and studies that carry no viewport.
+        expect(sourcesFor({ city: 'colorado', source: 'atlas-national' }, sources)).toEqual([bounds]);
+        expect(providersFor({ city: 'example', bbox: [10, 40, 10.1, 40.1] }, sources).map(s => s.descriptor.id)).toEqual(['atlas-example']);
+        // Representations and records name the requesting city, so a shared dataset reads as that city's source.
+        const viewport = await planningRepresentations({}, { ...denver, bbox: [10, 40, 10.002, 40.002], source: 'atlas-national', limit: 10 }, sources);
+        expect(viewport.items[0].source).toMatchObject({ id: 'atlas-national', city: 'colorado' });
+        expect(viewport.items[0].proposal.source.city).toBe('colorado');
+    });
+    it('requires a city or bounds scope and rejects malformed bounds', () => {
+        const scoped = { id: 'x', label: 'x', edition: 'x', url: metadata.url };
+        for (const value of [config(scoped), config({ ...scoped, bbox: [1, 2, 3] }), config({ ...scoped, bbox: [10, 40, 9, 41] }),
+            config({ ...scoped, bbox: ['10', '40', '11', '41'] }), config({ ...scoped, bbox: [-181, 40, 11, 41] })]) {
+            expect(() => parseAtlasSources(value)).toThrow(/^Invalid PLANNING_ATLAS_SOURCES configuration\./);
+        }
+        expect(parseAtlasSources(config({ ...scoped, bbox: [10, 40, 11, 41] }))[0].bbox).toEqual([10, 40, 11, 41]);
+    });
+    it('lists bounds-scoped sources for a viewport through the sources route', () => {
+        const sources = createPlanningSources(config({ id: 'atlas-national', bbox: [-125, 24, -66, 50], label: 'n', edition: 'e', url: metadata.url }, metadata));
+        const handlers = {};
+        setupPlanningRoutes({ get: (path, fn) => { handlers[path] = fn; } }, {}, { sources });
+        const res = { set: vi.fn(), status: vi.fn().mockReturnThis(), json: vi.fn() };
+        handlers['/planning/sources']({ query: { city: 'colorado' } }, res);
+        expect(res.json).toHaveBeenLastCalledWith({ city: 'colorado', sources: [] });
+        handlers['/planning/sources']({ query: { city: 'colorado', bbox: '-105.1,39.9,-104.9,40.1' } }, res);
+        expect(res.json.mock.lastCall[0].sources.map(s => [s.id, s.city])).toEqual([['atlas-national', 'colorado']]);
+        handlers['/planning/sources']({ query: { city: 'colorado', bbox: '-105.1,39.9,,40.1' } }, res);
+        expect(res.status).toHaveBeenLastCalledWith(400);
+    });
     it('refuses source IDs already owned by a built-in provider', () => {
         expect(() => createPlanningSources(config({ ...metadata, id: 'nyc-r6a-pilot-2026-10-19' }))).toThrow(/conflicts/);
     });
     it('retains an explicitly configured parcel provider and rejects malformed provider IDs', () => {
         const sources = createPlanningSources(config({ ...metadata, parcelSourceId: 'us-co-oit-statewide-parcels' }));
         expect(sources.at(-1).descriptor).toMatchObject({ parcelSourceId: 'us-co-oit-statewide-parcels', parcelStudy: 'direct-dimensions.v1' });
+        expect(createPlanningSources(config(metadata)).at(-1).descriptor).not.toHaveProperty('parcelSourceId');
         expect(() => parseAtlasSources(config({ ...metadata, parcelSourceId: '../invalid' }))).toThrow(/Invalid PLANNING_ATLAS_SOURCES/);
     });
 });

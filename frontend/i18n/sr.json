@@ -7831,15 +7831,24 @@
     },
   "planningViews": {
     "zoningAreas": "Područja izvornog plana",
+    "envelopeTitle": "Dozvoljeni omotač",
+    "permittedForm": "Prikaz dozvoljenog",
+    "bound": "Spoljna granica",
+    "configuration": "Jedna konfiguracija",
+    "configurationsTitle": "Konfiguracije zabeležene za ovu parcelu",
+    "configurationShown": "Prikazana",
+    "configurationShow": "Prikaži ovu konfiguraciju",
+    "excludedConfigurations": "Ovde nije moguće: {{list}}.",
     "envelopeCoverage": "Delimični omotači izvedeni su iz učitanih katastarskih i planskih zapisa. Parcele bez volumena prebrojane su prema razlogu; izostanak volumena ne dokazuje nulti kapacitet.",
     "envelopeSummary": "Pregledano {{count}} katastarskih zapisa: {{shapes}} sa delimičnim omotačima, {{missing}} bez volumena.",
-    "envelopeNote": "Delimični omotači parcela iz direktnih vrednosti izvora. Prednja ivica nije utvrđena pa oblik uključuje alternativna tumačenja ivica. Ograničenja površine i nerazrešena pravila i dalje važe.",
+    "envelopeNote": "Providna ljuska je spoljna granica svih zabeleženih tipova stanovanja i tumačenja prednje ivice. Volumen unutra je jedna konfiguracija: bacite kockicu ili izaberite jednu ispod. Ograničenja površine i nerazrešena pravila i dalje važe.",
     "envelopesLoaded": {
       "one": "{{count}} delimični omotač parcele · {{missing}} parcela bez volumena",
       "few": "{{count}} delimična omotača parcela · {{missing}} parcela bez volumena",
       "other": "{{count}} delimičnih omotača parcela · {{missing}} parcela bez volumena"
     },
     "envelopeUnavailable": {
+      "use-not-recorded": "Nijedan tip stanovanja nije zabeležen kao dozvoljen",
       "envelope-geometry-error": "Izvornu geometriju nije moguće proceniti",
       "overlapping-parcel-identities": "Preklapanje identiteta parcela",
       "use-prohibited": "Stambeni tip zabeležen kao zabranjen",
@@ -7927,6 +7936,7 @@
     "solverVersion": "Verzija proračuna: {{version}}",
     "otherResult": "Drugi ishod izvora",
     "resultStatus": {
+      "unrecorded": "Nije zabeleženo",
       "condition_failed": "Uslovi nisu ispunjeni",
       "evidence_missing": "Nedostaju dokazi",
       "existing_stock_estimate": "Procene postojećih zgrada",
@@ -7970,6 +7980,7 @@
       "other": "{{count}} izvornih područja zoniranja u prikazu"
     },
     "scenario": {
+      "all": "Svi tipovi stanovanja (nasumično po parceli)",
       "family1": "Jednoporodično",
       "family2": "Dve porodice",
       "family3": "Tri porodice",

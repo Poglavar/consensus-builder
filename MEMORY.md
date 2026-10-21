@@ -829,3 +829,4 @@ Postpone refresh/server-to-local synchronization. For empty parcels, display onl
 
 - 2026-10-21: Permitted must display supported parcel massing directly across the viewport; raw zoning areas have a separate optional overlay, because a study-only envelope did not meet the comparison workflow.
 - 2026-10-21: Qualification owns each city through source verification, configuration, adapter implementation, integration and testing in the real app; genuine blockers are acceptable after a real attempt, while fixable failures must return to the worker for repair.
+- 2026-10-21: Permitted envelopes carry an outer bound plus `configurations[]` (one per usable housing type); the dice rolls the shown configuration per parcel, housing type `all` is the default, and Atlas sources can be registered once by `bbox` instead of per city. Zagreb stays one-option until the solver stores all typology candidates.
