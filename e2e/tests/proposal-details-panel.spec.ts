@@ -1,5 +1,5 @@
 import { test, expect } from '../helpers/fixtures';
-import { openCity, PARCEL_ID } from '../helpers/runtime';
+import { openCity, PARCEL_ID, showProposal } from '../helpers/runtime';
 
 test.describe('Proposal details panel @features', () => {
   test('minimizing preserves the selected proposal across a map pan', async ({ mockApi: page }) => {
@@ -16,6 +16,9 @@ test.describe('Proposal details panel @features', () => {
     }, PARCEL_ID);
     await page.locator('#proposals-button').click();
     await page.locator(`.proposal-list-item[data-proposal-id="${proposalId}"] .proposal-list-details-btn`).click();
+    await expect(page.locator('#planning-inspector')).toBeVisible();
+    await expect.poll(() => page.evaluate(() => (window as any).currentlyHighlightedProposalId)).toBe(proposalId);
+    await showProposal(page, proposalId);
 
     const panel = page.locator('#proposal-details-panel');
     const minimizeButton = panel.locator('#proposal-details-minimize');

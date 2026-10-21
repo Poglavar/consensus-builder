@@ -1,6 +1,6 @@
 // Verify walk-upload, drill-stack and ownership-transfer dialog actions.
 import { test, expect } from '../helpers/fixtures';
-import { clickMapPoint, openCity, PARCEL_GEOMETRY, PARCEL_ID } from '../helpers/runtime';
+import { clickMapPoint, openCity, showProposal, PARCEL_GEOMETRY, PARCEL_ID } from '../helpers/runtime';
 import { sampleParcels } from '../helpers/mocks/parcel-data';
 import { attachSharedProposalServer, createSharedProposalServer } from '../helpers/mocks/shared-server';
 
@@ -119,7 +119,7 @@ test.describe('proposal button controls follow-up @features', () => {
       ownershipTransferProposal: { direction: 'from-me', recipientScope: 'any', status: 'open' },
     }), { parcelId: PARCEL_ID, geometry: PARCEL_GEOMETRY });
     await page.evaluate(() => (window as any).i18n.setLanguage('en'));
-    await page.evaluate(id => (window as any).showProposalDetails(id), proposalId);
+    await showProposal(page, proposalId);
     const panel = page.locator('#proposal-details-panel');
     const expand = panel.getByRole('button', { name: 'Expand', exact: true });
     if (await expand.isVisible()) await expand.click();

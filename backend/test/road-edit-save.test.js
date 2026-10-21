@@ -69,7 +69,7 @@ describe('runLocalCorridorGeometryUpdate: in place for a local road, a counterpr
     });
 
     it('saves an edit of a published road as a counterproposal and leaves the published road as it was', async () => {
-        const source = road('published-road', { serverProposalId: '741' });
+        const source = road('published-road', { serverProposalId: '741', publicationApiBase: 'https://api.example.test' });
         const h = harness(source);
         globalThis.ProposalSelection.is = key => key === 'published-road';
         const before = clone(source);
@@ -80,7 +80,7 @@ describe('runLocalCorridorGeometryUpdate: in place for a local road, a counterpr
         expect(source).toEqual(before);
         expect(h.ProposalManager.createCorridorProposalAtomically.calls).toHaveLength(1);
         const [fork, options] = h.ProposalManager.createCorridorProposalAtomically.calls[0];
-        expect(fork.sourceProposalId).toBe('published-road');
+        expect(fork.proposalOrigin).toEqual({ relation: 'revision', source: { kind: 'publication', apiBase: 'https://api.example.test', proposalRowId: '741' }, title: 'Main street' });
         expect(fork.serverProposalId).toBeUndefined();
         expect(endOf(fork).lng).toBeCloseTo(at(150, 0).lng, 12);
         expect(options).toEqual({ _parcelMutation: h.mutation });
@@ -113,6 +113,7 @@ describe('corridorEditorSave: the cross-section is saved from the open editor, n
             corridorEditorI18n: (_key, fallback) => fallback,
             corridorProfileWidth: () => 6,
             getProposalKey: record => record.proposalId,
+            selectAndHighlightProposal: vi.fn(),
             updateStatus: vi.fn(),
             // The removed detour: reopening the road as a drawing must never be reached.
             copyCorridorIntoNewProposal: vi.fn(async () => true),
@@ -130,8 +131,14 @@ describe('corridorEditorSave: the cross-section is saved from the open editor, n
 
     it('closes the editor once a local road is saved in place', async () => {
         const h = harness(async () => 'road-1');
+        h.context.selectAndHighlightProposal.mockImplementation(() => {
+            expect(h.context.corridorEditorState).toBeNull();
+        });
         await h.save();
         expect(h.context.__closeSpy).toHaveBeenCalledOnce();
+        expect(h.context.selectAndHighlightProposal).toHaveBeenCalledWith(
+            'road-1', null, false, true, false, { planningActions: true, presentation: 'details' }
+        );
         expect(h.context.updateStatus).toHaveBeenCalledWith('Cross-section updated.');
     });
 
@@ -147,12 +154,16 @@ describe('corridorEditorSave: the cross-section is saved from the open editor, n
         expect(h.context.copyCorridorIntoNewProposal).not.toHaveBeenCalled();
         expect(h.context.reopenCorridorAsDrawing).not.toHaveBeenCalled();
         expect(h.context.showProposalAlertMessage).not.toHaveBeenCalled();
+        expect(h.context.selectAndHighlightProposal).not.toHaveBeenCalled();
     });
 
     it('closes the editor when a published road\'s edit was saved as a counterproposal', async () => {
         const h = harness(async () => 'fork-1');
         await h.save();
         expect(h.context.__closeSpy).toHaveBeenCalledOnce();
+        expect(h.context.selectAndHighlightProposal).toHaveBeenCalledWith(
+            'fork-1', null, false, true, false, { planningActions: true, presentation: 'details' }
+        );
         expect(h.context.updateStatus).not.toHaveBeenCalledWith('Cross-section updated.');
     });
 });

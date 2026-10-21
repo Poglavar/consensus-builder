@@ -9,7 +9,7 @@ function loadGeometry(deriveCorridor, producedFeatures = []) {
         console,
         Set,
         buildProposalFeatureCache: vi.fn(() => ({})),
-        resolveProposalGoalKey: vi.fn(() => 'road-track'),
+        ProposalDesignGoals: { keyOf: proposal => proposal?.goal || null },
         corridorIsTrack: vi.fn(() => false),
         corridorSurfaceFootprintForDefinition: deriveCorridor
     };

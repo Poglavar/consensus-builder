@@ -234,9 +234,9 @@ test('shared proposal editor imports rights, saves approval policy and forks wit
     const replacement = w.proposalDraftStore.buildProposalFromDraft(id);
     const newId = w.proposalStorage.addProposal(replacement);
     const saved = w.proposalStorage.getProposal(newId);
-    const source = w.proposalStorage.getProposal(draft.sourceProposalId);
+    const source = w.proposalStorage.getProposal(draft.sourceLocalProposalId);
     return {
-      newId, sourceId: draft.sourceProposalId,
+      newId, sourceId: draft.sourceLocalProposalId,
       sourceGeometry: source.geometry, replacementGeometry: saved.geometry,
       sourceRights: source.approvalConfig.rights, replacementRights: saved.approvalConfig.rights,
       sourceApprovals: source.ownerApprovals || {},

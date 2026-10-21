@@ -19,7 +19,7 @@ function marketsPayload(market: Record<string, unknown> = { address: 'HQqbGtviQr
       id: 'c-test', parcelIds: ['HR-335614-2311'], proposalCount: 2, mintedCount: 1, marketCount: 1, openMarketCount: 1,
       poolAtomic: '300000', latestCreatedAt: '2026-10-02T00:00:00Z',
       proposals: [
-        { id: 789, proposalId: 'minted-one', title: 'Plan-led infill', goal: 'single', lifecycleStatus: 'Active', chainStatus, createdAt: '2026-10-01T09:30:00Z',
+        { id: 789, proposalId: 'minted-one', title: 'Plan-led infill', goal: 'single', lifecycleStatus: 'Active', lifecycleEvidence: { protocol: 'proposal-lifecycle-evidence/1', state: 'unknown', claimedStatus: 'Active', reason: 'no-matching-observation' }, chainStatus, createdAt: '2026-10-01T09:30:00Z',
           expiresAt: null, author: 'densifier-01', agent: true, proposalRole: null, screenshotUrl: null, parcelIds: ['HR-335614-2311'],
           proposalAccount: PROPOSAL_ACCOUNT, bettable: !market.resolved, canOpenMarket: false, market },
         { id: 790, proposalId: 'rival', title: 'Rival park', goal: 'park', lifecycleStatus: 'Active', createdAt: '2026-10-02T00:00:00Z',
@@ -49,6 +49,7 @@ async function captureClipboard(page: import('@playwright/test').Page): Promise<
 const addressWithoutView = (page: import('@playwright/test').Page) => page.evaluate(() => {
   const params = new URLSearchParams(location.search);
   params.delete('at');
+  for (const key of ['existing', 'permitted', 'proposed', 'existingScope', 'proposedForm', 'permittedMap', 'zoningAreas']) params.delete(key);
   return `${location.pathname}?${params}`;
 });
 
@@ -58,7 +59,7 @@ test.describe('Bets sheet @features', () => {
   test('unknown chain status shows no bet or settle action even when the app deadline expired', async ({ mockApi: page }) => {
     const payload = marketsPayload();
     Object.assign(payload.contests[0].proposals[0], {
-      lifecycleStatus: 'Expired', expiresAt: '2026-10-01T00:00:00Z', chainStatus: null, bettable: false, canOpenMarket: false
+      lifecycleStatus: 'Expired', lifecycleEvidence: { protocol: 'proposal-lifecycle-evidence/1', state: 'unknown', claimedStatus: 'Expired', reason: 'no-matching-observation' }, expiresAt: '2026-10-01T00:00:00Z', chainStatus: null, bettable: false, canOpenMarket: false
     });
     await mockMarkets(page, payload);
     await openCity(page);

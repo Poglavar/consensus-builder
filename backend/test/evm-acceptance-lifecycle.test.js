@@ -49,8 +49,12 @@ function fixture({ statusCode = 1n, readError = false, networkChanged = false, t
 describe('EVM acceptance lifecycle read', () => {
     it('reads the same contract at the receipt block after confirmation', async () => {
         const { accept, read, submit, events } = fixture();
-        expect(await accept()).toMatchObject({ transactionHash: hash, chainId: '84532', contractAddress: address,
+        const before = Date.now();
+        const result = await accept();
+        expect(result).toMatchObject({ transactionHash: hash, chainId: '84532', contractAddress: address,
             proposalId: '5', blockNumber: 42, lifecycle: { statusCode: 1, blockNumber: 42 } });
+        expect(Date.parse(result.lifecycle.observedAt)).toBeGreaterThanOrEqual(before);
+        expect(Date.parse(result.lifecycle.observedAt)).toBeLessThanOrEqual(Date.now());
         expect(events).toEqual(['confirmed', 'read']);
         expect(read).toHaveBeenCalledWith(5n, { blockTag: 42 });
         expect(submit).toHaveBeenCalledOnce();

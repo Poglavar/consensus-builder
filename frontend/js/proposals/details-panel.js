@@ -48,9 +48,13 @@ async function focusProposalDetails(proposalIdOrHash, options = {}) {
 }
 
 function showProposalInfo(proposal, currentParcelId = null, preserveScrollPosition = null, options = {}) {
-    // A single inspection surface follows selection across map and model. The existing
-    // detailed action panel remains available explicitly for authoring, votes and deals.
-    if (!options.planningActions && window.PlanningViews?.isReady()) {
+    // New selections use the shared inspector. Refreshing actions already opened for this
+    // proposal (after a vote, wallet switch or receipt read) keeps that action context.
+    const activeActionsPanel = document.getElementById('proposal-details-panel');
+    const activeActionsContent = document.getElementById('proposal-details-content');
+    const refreshingActions = activeActionsPanel?.classList.contains('visible')
+        && activeActionsContent?.dataset.proposalId === String(getProposalKey(proposal));
+    if (!options.planningActions && !refreshingActions && window.PlanningViews?.isReady()) {
         window.PlanningViews.inspectProposal(proposal);
         return;
     }
@@ -2505,7 +2509,7 @@ function copyProposalIdToClipboard(id) {
 }
 window.copyProposalIdToClipboard = copyProposalIdToClipboard;
 
-function hideProposalDetailsPanel(clearHighlights = false) {
+function hideProposalDetailsPanel(clearHighlights = false, { preserveCorridorSegment = false } = {}) {
     const proposalPanel = document.getElementById('proposal-details-panel');
     if (proposalPanel) {
         setProposalDetailsPanelMinimized(proposalPanel, false);
@@ -2533,13 +2537,10 @@ function hideProposalDetailsPanel(clearHighlights = false) {
         clearProposalHighlights();
     }
 
-    // Drop the amber selected-segment corridor outline: closing the panel means the road is no
-    // longer selected. This path (panel close / a parcel taking over the selection) clears proposal
-    // highlights but never touched ProposalSelection, so the ProposalSelection subscription that
-    // normally repaints/clears the amber never fired here — the outline lingered. Nulling the
-    // remembered segment also stops a later strip refresh from repainting it.
+    // A dismissed selection drops the segment edit scope. Switching to the shared inspector
+    // for that same road keeps the clicked segment available to its Cross-section action.
     try {
-        if (typeof window !== 'undefined') {
+        if (!preserveCorridorSegment && typeof window !== 'undefined') {
             window.corridorLastClickedSegment = null;
             if (typeof window.refreshSelectedCorridorSegmentHighlight === 'function') {
                 window.refreshSelectedCorridorSegmentHighlight();

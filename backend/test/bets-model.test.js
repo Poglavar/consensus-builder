@@ -191,7 +191,8 @@ describe('BetsModel.contest row order (D6)', () => {
 describe('the sheet and GET /markets agree on the order', () => {
     it('re-sorting the API\'s contests and rows in the sheet changes nothing, from any arrival order', () => {
         const proposal = (id, parcel, account, createdAt) => ({ id, proposalId: `p-${id}`, title: `P${id}`, goal: 'single', lifecycleStatus: 'Active',
-            createdAt, expiresAt: null, author: 'a', agent: false, proposalRole: null, screenshotUrl: null, parcelIds: [parcel], proposalAccount: account });
+            createdAt, expiresAt: null, author: 'a', agent: false, proposalRole: null, screenshotUrl: null,
+            parcelIds: [parcel], parcelSource: { sourceId: 'hr-cadastre', snapshotId: null }, proposalAccount: account });
         const market = (yesPool, noPool, resolved = false, outcome = 0, closesAt) => ({ address: 'M', market: { yesPool, noPool, resolved, outcome, closesAt } });
         const payload = buildContests({
             city: 'zagreb',

@@ -57,16 +57,16 @@ test.describe('Data sources @features', () => {
     expect(discoverBodies[1]).toMatchObject({ url: URL_IN, city: 'zagreb', heightUnit: 'ft' });
     await expect(result.getByLabel('Height unit')).toHaveValue('ft');
 
+    // Capture the provider fetch triggered by the source-switch reload, before it can be cached.
     const reloaded = page.waitForNavigation();
+    const footprints = page.waitForRequest(request => request.url().endsWith('/buildings/footprints') && request.method() === 'POST');
     await dialog.getByRole('button', { name: 'Use this source' }).click();
     await reloaded; await waitForMapReady(page);
     expect(new URL(page.url()).searchParams.get('buildingSource')).toBe(sourceId('ft'));
     expect(await page.evaluate(() => (window as any).CityConfigManager.getBuildingSourceId())).toBe(sourceId('ft'));
     expect(await page.evaluate(() => Object.keys(localStorage).some(key => key.startsWith('cb_building_source:') && key.endsWith(':zagreb')))).toBe(true);
 
-    const footprints = page.waitForRequest(request => request.url().endsWith('/buildings/footprints') && request.method() === 'POST');
-    await page.evaluate(() => (window as any).ensureBuildingFootprintsForBounds((window as any).map.getBounds()));
-    // the visitor's source for the city in view; the place, not a city name, tells the server where
+    // The initial provider load uses the visitor's selected source; the place, not a city name, tells the server where
     const footprintsBody = (await footprints).postDataJSON();
     expect(footprintsBody).toMatchObject({ source: sourceId('ft') });
     expect(footprintsBody.city).toBeUndefined();

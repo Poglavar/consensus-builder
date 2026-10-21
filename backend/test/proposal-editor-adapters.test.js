@@ -1231,6 +1231,70 @@ describe('site-first drafts', () => {
         });
     });
 
+    // This regression uses the reported exact-fit moved ground polygon, whose shared boundary Turf says is not within.
+    it('accepts exact moved-site boundaries and rejects outside, malformed, or missing containment geometry', () => {
+        const site = { type: 'MultiPolygon', coordinates: [[[
+            [15.98240961971112, 45.8004999999987],
+            [15.982409619714531, 45.799999999998704],
+            [15.983009619714494, 45.80000000000071],
+            [15.983009619711197, 45.800500000000696],
+            [15.98240961971112, 45.8004999999987]
+        ]]] };
+        const building = { type: 'Feature', properties: { height: 37 }, geometry: { type: 'Polygon', coordinates: [[
+            [15.982487698659497, 45.80008786100589], [15.98296363310726, 45.8000878610073],
+            [15.982963634522434, 45.80042075223726], [15.982487697240344, 45.80042075223588],
+            [15.982487698659497, 45.80008786100589]
+        ]] } };
+        const exactGround = { type: 'Polygon', coordinates: [[
+            [15.98240961971112, 45.8004999999987], [15.982409619714531, 45.799999999998704],
+            [15.983009619714494, 45.80000000000071], [15.983009619713913, 45.800088099707324],
+            [15.982963633108275, 45.80008809970721], [15.98296363310726, 45.8000878610073],
+            [15.982487698659497, 45.80008786100589], [15.982487697240344, 45.80042075223588],
+            [15.982562753480233, 45.8004207522361], [15.982562753479215, 45.80042099093621],
+            [15.983009619711718, 45.80042099093729], [15.983009619711197, 45.800500000000696],
+            [15.98240961971112, 45.8004999999987]
+        ]] };
+        const makeDraft = ground => {
+            const adapter = buildBuildingAdapter('single');
+            const draft = draftFor(adapter, {
+                proposalId: 'exact-moved-site', goal: 'single', title: 'Exact fit', site,
+                cadastreParcelIds: ['source-parcel'], geometry: { buildings: [building] },
+                buildingProposal: { typologyType: 'single' }
+            });
+            const placement = freePlacementPatch(draft, { free: true, site });
+            draft.fields = { ...draft.fields, ...placement.fields, binding: {
+                source: 'server:live-cadastre', coverage: 'none', parcels: []
+            } };
+            draft.editorPayload.placement = { ...placement.placement, bindingStatus: 'bound' };
+            draft.editorPayload.context.groundSurface = { treatment: 'green', polygon: ground };
+            return { adapter, draft };
+        };
+        const feature = geometry => ({ type: 'Feature', properties: {}, geometry });
+        const siteFeature = feature(site);
+        const groundFeature = feature(exactGround);
+        const exactDraft = makeDraft(exactGround);
+
+        expect(turf.booleanWithin(groundFeature, siteFeature)).toBe(false);
+        expect(turf.difference(groundFeature, siteFeature)).toBeNull();
+        expect(exactDraft.adapter.serializeProposal(exactDraft.draft).freePlacement).toBe(true);
+
+        const outside = structuredClone(exactGround);
+        outside.coordinates[0][10][0] += 0.000001;
+        const outsideDraft = makeDraft(outside);
+        expect(() => outsideDraft.adapter.serializeProposal(outsideDraft.draft)).toThrow(/surroundings must fit/i);
+
+        const malformedDraft = makeDraft({ type: 'Polygon', coordinates: [[]] });
+        expect(() => malformedDraft.adapter.serializeProposal(malformedDraft.draft)).toThrow(/surroundings must fit/i);
+
+        const missingBuilding = makeDraft(exactGround);
+        missingBuilding.draft.editorPayload.context.buildings[0].geometry = null;
+        expect(() => missingBuilding.adapter.serializeProposal(missingBuilding.draft)).toThrow(/building geometry must fit/i);
+
+        const missingSite = makeDraft(exactGround);
+        missingSite.draft.editorPayload.placement.site = null;
+        expect(() => missingSite.adapter.serializeProposal(missingSite.draft)).toThrow(/building geometry must fit/i);
+    });
+
     // User decision 2026-10-18: Block, Row and Detached are rules on their parcels; leaving them is a
     // conversion to Freeform or a re-run of the rule there, never a free placement.
     it('keeps the building rules (Block, Row, Detached) out of free placement', () => {

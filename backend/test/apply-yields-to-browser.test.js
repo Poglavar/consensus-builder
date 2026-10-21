@@ -64,7 +64,7 @@ describe('the proposed-buildings layer is drawn once per run, not once per propo
     });
 
     it('checks the hold before doing any work', () => {
-        const fn = buildings.slice(buildings.indexOf('function updateProposedBuildingsLayer() {'));
+        const fn = buildings.slice(buildings.indexOf('function updateProposedBuildingsLayer('));
         const guard = fn.indexOf('if (proposedBuildingsRefreshHeld) {');
         const work = fn.indexOf('map.removeLayer(proposedBuildingLayer);');
         expect(guard).toBeGreaterThan(-1);

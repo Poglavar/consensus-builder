@@ -98,7 +98,7 @@ export async function attachSharedProposalServer(page: Page, server: SharedPropo
     const rootIndex = path.lastIndexOf('/proposals');
     const suffix = rootIndex >= 0 ? path.slice(rootIndex + '/proposals'.length).replace(/^\//, '') : null;
     if (suffix === null || !['', 'batch', 'binding', 'prepare', 'count', 'summary'].includes(suffix)
-        && !/^\d+$/.test(suffix) && !/^p-[a-z0-9]+$/i.test(suffix)) {
+        && !/^\d+$/.test(suffix) && !/^p-[a-z0-9]+$/i.test(suffix) && !/^c2-[a-z0-9]+$/i.test(suffix)) {
       await route.fallback();
       return;
     }
@@ -176,6 +176,21 @@ export async function attachSharedProposalServer(page: Page, server: SharedPropo
           : { status: 404, contentType: 'application/json', body: JSON.stringify({ error: 'Proposal not found' }) });
         return;
       }
+    }
+
+    // Published proposals may also be looked up by their content fingerprint. Resolve that
+    // identity against stored records; an absent fingerprint must stay absent instead of falling
+    // through to the generic mock API's fabricated success response.
+    if (suffix && /^c2-[a-z0-9]+$/i.test(suffix) && (request.method() === 'GET' || request.method() === 'HEAD')) {
+      const record = [...server.records.values()].find(proposal => String(proposal.proposalId) === suffix);
+      if (request.method() === 'HEAD') {
+        await route.fulfill({ status: record ? 200 : 404, body: '' });
+        return;
+      }
+      await route.fulfill(record
+        ? { status: 200, contentType: 'application/json', body: JSON.stringify(record) }
+        : { status: 404, contentType: 'application/json', body: JSON.stringify({ error: 'Proposal not found' }) });
+      return;
     }
 
     // Locally authored proposals use p-* hashes before publishing. The default mock API returns a

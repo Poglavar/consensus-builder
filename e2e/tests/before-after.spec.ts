@@ -83,12 +83,12 @@ test.describe('Before / after on the main map @features', () => {
     await expect(button).toHaveAttribute('aria-pressed', 'false');
     expect(await dragging(page)).toBe(true);
 
-    // Unapplying ends the comparison and takes the button with it: there is no "after" any more.
+    // Unapplying ends the comparison and hides its action: there is no "after" any more.
     await button.click();
     await expect(beforeMap(page)).toBeVisible();
     await page.evaluate(id => (window as any).removeProposalFromMap(id), id);
     await expect(beforeMap(page)).toHaveCount(0);
-    await expect(page.locator('#proposal-details-panel .btn-compare-proposal')).toHaveCount(0);
+    await expect(page.locator('#proposal-details-panel .btn-compare-proposal')).toBeHidden();
     expect(await dragging(page)).toBe(true);
   });
 
@@ -96,6 +96,8 @@ test.describe('Before / after on the main map @features', () => {
     await openCity(page);
     const id = await createSpace(page, 'park');
     await showProposal(page, id);
+    // Keep both grip positions on exposed map, outside the expanded proposal panel.
+    await page.locator('#proposal-details-minimize').click();
     const button = page.locator('#proposal-details-panel .btn-compare-proposal');
     await button.click();
     const state = () => page.evaluate(() => {
@@ -136,7 +138,8 @@ test.describe('Before / after on the main map @features', () => {
     }), [PARCEL_ID, PARCEL_GEOMETRY] as const);
     const currentId = await page.evaluate(([parcelId, geometry, previousId]) => (window as any).proposalStorage.addProposal({
       title: 'Newer version', goal: 'square', lifecycleStatus: 'Active', cadastreParcelIds: [parcelId],
-      structureProposal: { kind: 'square', geometry }, sourceProposalId: previousId
+      structureProposal: { kind: 'square', geometry },
+      proposalOrigin: { relation: 'revision', source: { kind: 'local', localProposalId: previousId }, title: 'Earlier version' }
     }), [PARCEL_ID, PARCEL_GEOMETRY, previousId] as const);
     await page.evaluate(id => (window as any).applyProposalToMap(id), currentId);
     await expect.poll(() => page.evaluate(id => (window as any).isApplied((window as any).getProposalByIdOrHash(id)), currentId)).toBe(true);

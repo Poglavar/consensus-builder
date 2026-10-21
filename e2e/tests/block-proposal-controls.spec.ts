@@ -64,9 +64,19 @@ for (const kind of ['road', 'building', 'park'] as const) {
     const id = await createBlockFixture(page, kind);
     await page.locator('#proposals-button').click();
     await page.locator(`#proposals-sheet .proposal-list-item[data-proposal-id="${id}"] .proposal-list-details-btn`).click();
-    await page.locator(`#proposal-details-footer [id="proposal-action-btn-${id}"]`).click();
+    // The current list action opens the Planning inspector first; use its explicit action to
+    // reach proposal map controls while preserving the list-navigation path under test.
+    const inspector = page.locator('#planning-inspector');
+    if (await inspector.isVisible()) await inspector.getByRole('button', { name: 'Proposal actions', exact: true }).click();
+    await expect(page.locator('#proposal-details-panel')).toBeVisible();
+    const action = page.locator(`#proposal-details-footer [id="proposal-action-btn-${id}"]`);
+    // Keep the selected record identity explicit through the details action; the trace confirms
+    // the action key is the same canonical ID returned by proposalStorage.addProposal().
+    await expect(action).toHaveAttribute('id', `proposal-action-btn-${id}`);
+    await action.click();
     await expect.poll(async () => (await proposalState(page, id)).applied).toBe(false);
-    await page.locator('#proposal-details-close').click();
+    const closeDetails = page.locator('#proposal-details-close');
+    if (await closeDetails.isVisible()) await closeDetails.click();
 
     const name = await openBlock(page);
     // Associate the authored fixture with the detected block; application and removal stay real.

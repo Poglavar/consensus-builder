@@ -2,10 +2,11 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { createParcelSource } from '../parcels/sources.js';
+import { createParcelSource, parcelSourceForCity } from '../parcels/sources.js';
 
 const fixture = JSON.parse(readFileSync(new URL('./fixtures/za-csg-chief-albert-luthuli-park.json', import.meta.url)));
-const descriptor = { ...fixture.descriptor, pageSize: 1 };
+// The receipt retains its historical descriptor; live reads use the one canonical provider.
+const descriptor = { ...parcelSourceForCity('chief_albert_luthuli_park').descriptor, pageSize: 1 };
 const rows = fixture.response.features;
 const response = value => ({ ok: true, status: 200, json: async () => structuredClone(value) });
 
@@ -21,7 +22,7 @@ function provider({ truncate = false, manifestDelta = 0 } = {}) {
             if (params.get('returnCountOnly') === 'true') return response({ count: rows.length + manifestDelta });
             return response({ objectIdFieldName: 'OBJECTID', objectIds: rows.map(row => row.attributes.OBJECTID) });
         }
-        assert.equal(params.get('outFields'), 'OBJECTID,PRCL_KEY');
+        assert.equal(params.get('outFields'), descriptor.outFields.join(','));
         assert.equal(params.get('outSR'), '4326');
         assert.equal(params.get('returnTrueCurves'), 'true');
         assert.equal(params.has('geometryPrecision'), false);
@@ -35,7 +36,10 @@ function provider({ truncate = false, manifestDelta = 0 } = {}) {
 }
 
 test('city 4544 uses the receipt source and preserves all five native-key polygons on repeated reads', async () => {
-    assert.equal(descriptor.id, 'za-csg-dffe-national-erven');
+    assert.equal(descriptor.id, 'za-csg-dffe-erven');
+    assert.equal(descriptor.metricSrid, 32735);
+    assert.equal(descriptor.endpoint, fixture.descriptor.endpoint);
+    assert.equal(descriptor.idPrefix, fixture.descriptor.idPrefix);
     const first = provider(), second = provider();
     const result = await first.source.queryIds(fixture.sampleIds);
     const repeated = await second.source.queryIds(fixture.sampleIds);

@@ -388,6 +388,24 @@ function makeEditorHarness(decorations, options = {}) {
 const currentMarkers = harness => harness.groups.at(-1).items.filter(item => typeof item.getLatLng === 'function');
 
 describe('structure geometry editor history wiring', () => {
+    it('restores the selected proposal actions after cancelling a geometry edit', () => {
+        const harness = makeEditorHarness(null, { commitSession: true });
+        harness.context.ProposalSelection.getKey = () => 'proposal-1';
+        harness.context.selectAndHighlightProposal = vi.fn();
+        harness.context.discardProposalDraftDesignSession = vi.fn();
+
+        expect(harness.open()).toBe(true);
+        harness.cancel();
+
+        expect(harness.context.isStructureGeometryEditorActive()).toBe(false);
+        expect(harness.context.discardProposalDraftDesignSession).toHaveBeenCalledOnce();
+        expect(harness.savedPayload).toBeNull();
+        expect(harness.context.selectAndHighlightProposal).toHaveBeenCalledWith(
+            'proposal-1', null, false, true, false,
+            { planningActions: true, presentation: 'compact' }
+        );
+    });
+
     it('allows a lake to move outside its starting site and saves its new placement binding', () => {
         const originalRing = [[15, 45.8], [15.001, 45.8], [15.001, 45.801], [15, 45.801]];
         const geometry = { type: 'Polygon', coordinates: [[...originalRing, originalRing[0]]] };

@@ -46,10 +46,16 @@
             const target = focusedRecord?.id === id ? focusedRecord : sceneItems().find(item => item.id === id);
             if (target?.role !== 'proposed' || target.study) root.ProposalSelection?.clear();
             root.Parcels?.uiParcelPanel?.hideParcelInfoPanel?.({ preserveProposalSelection: target?.role === 'proposed' });
-            root.hideProposalDetailsPanel?.();
+            root.hideProposalDetailsPanel?.(false, {
+                preserveCorridorSegment: target?.role === 'proposed'
+                    && root.corridorLastClickedSegment?.proposalKey === target.proposalId
+            });
             root.hideRoadInfoPanel?.();
         }
-        else if (selected()?.role === 'proposed') root.ProposalSelection?.clear();
+        else if (selected()?.role === 'proposed') {
+            root.ProposalSelection?.clear();
+            root.hideProposalDetailsPanel?.();
+        }
         actionsOpen = false;
         restoreId = null;
         store.select(id);

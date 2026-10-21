@@ -1,7 +1,7 @@
 // Cover recipient consent, typology choices and the two shared-link error dismiss controls.
 import { test, expect } from '../helpers/fixtures';
 import { waitForMapReady } from '../helpers/app';
-import { createSpace, openCity, openParcel, PARCEL_GEOMETRY, PARCEL_ID } from '../helpers/runtime';
+import { createSpace, openCity, openParcel, showProposal, PARCEL_GEOMETRY, PARCEL_ID } from '../helpers/runtime';
 import { sampleParcels } from '../helpers/mocks/parcel-data';
 
 const BLOCK_PARCEL_IDS = ['HR-335754-1234', 'HR-335754-1235'];
@@ -89,6 +89,9 @@ async function openDetailsFromLocalProposalList(page: import('@playwright/test')
   const row = page.locator(`#proposals-sheet .proposal-list-item[data-proposal-id="${proposalId}"]`);
   await expect(row).toBeVisible();
   await row.locator('.proposal-list-details-btn').click();
+  await expect(page.locator('#planning-inspector')).toBeVisible();
+  await expect.poll(() => page.evaluate(() => (window as any).currentlyHighlightedProposalId)).toBe(proposalId);
+  await showProposal(page, proposalId);
   await expect(page.locator('#proposal-details-panel')).toBeVisible();
 }
 

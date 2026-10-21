@@ -15,13 +15,15 @@ describe('parcel alignment audit inventory and safe observations', () => {
         const catalog = JSON.parse(read('backend/parcels/source-catalog.json'));
         const cities = parseCityConfigs(read('frontend/js/city-config.js'));
         const inventory = centerInventory(cities, catalog.sources);
-        expect(catalog.sources).toHaveLength(253);
-        expect(inventory).toHaveLength(649);
+        expect(new Set(catalog.sources.map(source => source.id)).size).toBe(catalog.sources.length);
+        const expectedCityIds = [...new Set(catalog.sources.flatMap(source => source.cityIds || []))].sort();
+        expect(inventory.map(city => city.cityId).sort()).toEqual(expectedCityIds);
         expect(inventory.every(city => city.center && city.bindings.length > 0)).toBe(true);
-        expect(inventory.flatMap(city => city.bindings)).toHaveLength(652);
-        // Nine: Denver's Colorado OIT source became the city's default (6875b43f).
-        expect(inventory.flatMap(city => city.bindings).filter(binding => binding.optIn)).toHaveLength(9);
-        expect(cities).toHaveLength(650);
+        const actualBindings = inventory.flatMap(city => city.bindings.map(binding =>
+            [city.cityId, binding.sourceId, binding.optIn])).sort((a, b) => a.join('\0').localeCompare(b.join('\0')));
+        const expectedBindings = catalog.sources.flatMap(source => (source.cityIds || []).map(cityId =>
+            [cityId, source.id, source.defaultForCity === false])).sort((a, b) => a.join('\0').localeCompare(b.join('\0')));
+        expect(actualBindings).toEqual(expectedBindings);
     });
 
     it('hashes descriptors independent of object key order and records source CRS separately from metric CRS', () => {

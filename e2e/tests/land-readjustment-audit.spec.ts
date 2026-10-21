@@ -208,8 +208,12 @@ test('joint imported ownership survives apply and reload, then unapply restores 
   await page.locator('#proposals-button').click();
   const item = page.locator(`#proposals-sheet .proposal-list-item[data-proposal-id="${plan.proposalId}"]`);
   await item.locator('.proposal-list-details-btn').click();
+  const inspector = page.locator('#planning-inspector');
+  await expect(inspector).toBeVisible();
+  // The proposal action menu is opened from the current Planning inspector.
+  await inspector.getByRole('button', { name: 'Proposal actions', exact: true }).click();
   await expect(page.locator('#proposal-details-panel')).toBeVisible();
-  await page.locator(`#proposal-action-btn-${plan.proposalId}`).click();
+  await page.locator(`#proposal-details-footer [id="proposal-action-btn-${plan.proposalId}"]`).click();
   await expect.poll(() => page.evaluate(id => (window as any).proposalStorage.getProposal(id)?.applied, plan.proposalId)).toBe(false);
   await expect.poll(outputOwners).toHaveLength(0);
   await expect.poll(() => page.evaluate(id => !!(window as any).LiveParcelFabric.get(id), PARCEL_ID)).toBe(true);

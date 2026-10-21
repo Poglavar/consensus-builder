@@ -198,7 +198,11 @@ test.describe('Supporting secondary controls @core', () => {
     await openCity(page);
     await page.evaluate(() => (window as any).proposalStorage.addProposal({
       proposalId: 'scope-proposal', title: 'Scoped park plan', goal: 'park', city: 'zagreb',
-      cadastreParcelIds: ['HR-335754-1234'], parcelSet: { setHash: 'scope-land-hash', parcelIds: ['HR-335754-1234'] },
+      cadastreParcelIds: ['HR-335754-1234'],
+      parcelSet: {
+        setHash: 'scope-land-hash', parcelIds: ['HR-335754-1234'],
+        parcelSource: { sourceId: 'hr-cadastre', snapshotId: null },
+      },
     }));
     const scopedEvent = {
       id: 'scoped-event', occurredAt: '2026-10-01T12:00:00Z', recordedAt: '2026-10-01T12:00:00Z',

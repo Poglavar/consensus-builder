@@ -169,6 +169,7 @@
                     algorithm: 'amend', agreementMode: 'single', generatedAt: proposal.createdAt,
                     poolGeometry: clone(part.input.geometry), totalArea: part.totalArea,
                     contributionBasis: proposal.reparcellization.contributionBasis,
+                    valuationCurrency: proposal.reparcellization.valuationCurrency,
                     poolUnitValue: proposal.reparcellization.poolUnitValue,
                     contributionRatio: 1, totalValue: part.totalArea * (proposal.reparcellization.poolUnitValue || 0),
                     isSingleOwner: false, inputParcels: [clone(part.input)], ownerShares,

@@ -7270,14 +7270,14 @@
             "serverNoRecords": "Poslužitelj nema katastar za ovo mjesto, pa čestice i vlasništvo nisu utvrđeni. Čestice na karti samo su pregled.",
             "previewOnly": "Pregled prema česticama učitanima na karti.",
             "serverNoCadastre": "Poslužitelj potvrđuje: ovo mjesto ne pokriva nijedan katastar.",
-            "localEstimates": "Povezano s procijenjenim parcelama spremljenima u ovom pregledniku. Granice i vlasništvo nisu potvrđeni."
+            "localEstimates": "Povezano s procijenjenim česticama spremljenima u ovom pregledniku. Granice i vlasništvo nisu potvrđeni."
         },
         "coverage": {
             "complete": "potpuna — cijela lokacija leži na katastarskim česticama",
-            "estimatedComplete": "Lokalno procijenjene parcele pokrivaju cijelu lokaciju.",
-            "estimatedPartial": "Lokalno procijenjene parcele pokrivaju dio lokacije.",
-            "estimatedNone": "Nijedna spremljena procijenjena parcela ne pokriva ovu lokaciju.",
-            "estimatedUnknown": "Pokrivenost lokalno procijenjenim parcelama nije poznata.",
+            "estimatedComplete": "Lokalno procijenjene čestice pokrivaju cijelu lokaciju.",
+            "estimatedPartial": "Lokalno procijenjene čestice pokrivaju dio lokacije.",
+            "estimatedNone": "Nijedna spremljena procijenjena čestica ne pokriva ovu lokaciju.",
+            "estimatedUnknown": "Pokrivenost lokalno procijenjenim česticama nije poznata.",
             "partial": "djelomična — dio lokacije je otvoreno tlo (bez čestice)",
             "none": "nema — ovdje nema čestica; cijela lokacija je otvoreno tlo",
             "unknown": "nepoznata — ovdje nema upisanog katastra",
@@ -7359,11 +7359,6 @@
             "short": "zadire"
         },
         "buildings": {
-            "count": {
-                "one": "{{count}} zgrada",
-                "few": "{{count}} zgrade",
-                "other": "{{count}} zgrada"
-            },
             "footprint": "tlocrt {{area}}",
             "floorArea": "BRP {{area}}",
             "height": "katova: {{floors}} · {{height}}"
@@ -7570,7 +7565,7 @@
     },
     "parcelEstimate": {
         "collapse": "Sažmi kontrole",
-        "expand": "Prikaži kontrole parcela",
+        "expand": "Prikaži kontrole čestica",
         "title": "Ilustrativne procjene čestica",
         "disclaimer": "Procijenjene granice mogu biti nepotpune ili pogrešne i ne utvrđuju pravne granice.",
         "help": "Nove procjene pokreću se automatski i spremaju u ovaj preglednik. Odaberite česticu za uobičajene alate planiranja. Ponovna izrada zamjenjuje ovaj lokalni izvor.",

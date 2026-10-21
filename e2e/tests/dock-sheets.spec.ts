@@ -47,15 +47,16 @@ test.describe('Dock sheets', () => {
   test('a phone list tap opens the proposal compact on the map and closes the list', async ({ mockApi: page }) => {
     await openCity(page);
     const parkId = await createSpace(page, 'park');
+    const title = await page.evaluate(id => (window as any).proposalStorage.getProposal(id)?.title, parkId);
     await page.evaluate(() => (window as any).hideProposalDetailsPanel?.(true));
     await page.setViewportSize({ width: 390, height: 844 });
     await page.locator('#proposals-button').click();
     const row = page.locator(`#proposals-sheet .proposal-list-item[data-proposal-id="${parkId}"]`);
     await row.locator('.proposal-list-title').click();
     await expect(page.locator('#proposals-sheet')).toBeHidden();
-    const panel = page.locator('#proposal-details-panel');
+    const panel = page.getByRole('complementary', { name: 'Planning source details' });
     await expect(panel).toBeVisible();
-    await expect(panel).toHaveClass(/is-minimized/);
+    await expect(panel).toContainText(title);
     await expect(row).not.toHaveClass(/is-previewing/);
     expect(await page.evaluate(() => (window as any).currentlyHighlightedProposalId)).toBe(parkId);
   });

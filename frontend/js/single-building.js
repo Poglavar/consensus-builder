@@ -2004,55 +2004,49 @@
         return true;
     }
 
-    // `initialBuildings` (optional) reopens the editor on previously-saved building features
-    // instead of one default building — used by "Copy into new proposal".
-    // `initialGroundTreatment` restores the proposal's surroundings choice the same way.
-    function openSingleBuildingForParcels({ blockName, parcelIds, initialBuildings = null, site = null, initialGroundTreatment = null, initialTakeWholeParcels = null, initialGroundBoundary = null }) {
-        if (singleEditor) return false;
+    // Uploaded and generated designs share the same explicit site or live-parcel boundary.
+    function singleBuildingPlacementContext({ blockName, parcelIds, site = null }) {
         const ids = Array.from(new Set((Array.isArray(parcelIds) ? parcelIds : []).map(String).filter(Boolean)));
         const siteGeometry = site?.type === 'Feature' ? site.geometry : site;
         const siteOnly = !ids.length && ['Polygon', 'MultiPolygon'].includes(siteGeometry?.type);
         if (!ids.length && !siteOnly) {
             setSingleBuildingStatus('select_parcels_before_launching_the_single_building_tool', 'Select a site before launching the single building tool.');
-            return;
+            return null;
         }
-        singleBuildingSeedBuildings = (Array.isArray(initialBuildings) && initialBuildings.length) ? initialBuildings : null;
-        singleBuildingSeedGroundTreatment = initialGroundTreatment;
-        singleBuildingSeedGroundBoundary = initialGroundBoundary;
-        singleBuildingSeedTakeWholeParcels = initialTakeWholeParcels;
         const liveParcels = siteOnly ? [{ id: 'site:single', feature: {
             type: 'Feature', properties: { parcelId: 'site:single', synthetic: true, siteParcel: true },
             geometry: cloneSingleFeature(siteGeometry)
         } }] : singleBuildingParcelsForIds(ids);
         if (!siteOnly && liveParcels.length !== ids.length) {
             setSingleBuildingStatus('could_not_resolve_parcel_data_for_the_single_building_tool', 'Could not resolve parcel data for the single building tool.');
-            return;
+            return null;
         }
-        singleBuildingOverrideContext = {
-            blockName: blockName || describeSingleBuildingSelection(ids),
-            parcels: liveParcels,
-            parcelIds: ids,
-            site: cloneSingleFeature(site)
-        };
+        return { blockName: blockName || describeSingleBuildingSelection(ids),
+            parcels: liveParcels, parcelIds: ids, site: cloneSingleFeature(site) };
+    }
+
+    // `initialBuildings` (optional) reopens the editor on previously-saved building features
+    // instead of one default building — used by "Copy into new proposal".
+    // `initialGroundTreatment` restores the proposal's surroundings choice the same way.
+    function openSingleBuildingForParcels({ blockName, parcelIds, initialBuildings = null, site = null, initialGroundTreatment = null, initialTakeWholeParcels = null, initialGroundBoundary = null }) {
+        if (singleEditor) return false;
+        const context = singleBuildingPlacementContext({ blockName, parcelIds, site });
+        if (!context) return false;
+        singleBuildingSeedBuildings = (Array.isArray(initialBuildings) && initialBuildings.length) ? initialBuildings : null;
+        singleBuildingSeedGroundTreatment = initialGroundTreatment;
+        singleBuildingSeedGroundBoundary = initialGroundBoundary;
+        singleBuildingSeedTakeWholeParcels = initialTakeWholeParcels;
+        singleBuildingOverrideContext = context;
         return showSingleBuildingMapEditor();
     }
 
     // Uploads enter the same placement editor; only Done saves the design and completes the
     // upload caller's form status. The mesh reference stays attached to the editable footprint.
-    function createSingleBuildingFromUpload({ blockName, parcelIds, width, length, height, modelName, modelUrl, onConfirm } = {}) {
+    function createSingleBuildingFromUpload({ blockName, parcelIds, site = null, width, length, height, modelName, modelUrl, onConfirm } = {}) {
         if (singleEditor || window.OnMapEditor?.isActive?.()) return false;
-        const ids = Array.from(new Set((Array.isArray(parcelIds) ? parcelIds : []).map(String).filter(Boolean)));
-        if (!ids.length) {
-            setSingleBuildingStatus('select_parcels_before_launching_the_single_building_tool', 'Select parcels before uploading a building.');
-            return false;
-        }
-        const liveParcels = singleBuildingParcelsForIds(ids);
-        if (liveParcels.length !== ids.length) {
-            setSingleBuildingStatus('could_not_resolve_parcel_data_for_the_single_building_tool', 'Could not resolve parcel data for the uploaded building.');
-            return false;
-        }
-
-        singleBuildingOverrideContext = { blockName: blockName || describeSingleBuildingSelection(ids), parcels: liveParcels, parcelIds: ids };
+        const context = singleBuildingPlacementContext({ blockName, parcelIds, site });
+        if (!context) return false;
+        singleBuildingOverrideContext = context;
         singleBlockFeature = getSelectedBlockFeature();
         if (!singleBlockFeature) {
             setSingleBuildingStatus('select_a_block_first', 'Could not build a block from the selected parcels.');

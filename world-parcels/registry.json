@@ -12251,7 +12251,8 @@
         "wup2025:4800",
         "wup2025:4507",
         "wup2025:4836",
-        "wup2025:4940"
+        "wup2025:4940",
+        "wup2025:4544"
       ],
       "verificationStatus": "verified_live_city_adapter",
       "liveIntegration": {
@@ -12278,7 +12279,8 @@
           "vosman",
           "masetjhaba_view",
           "emalahleni",
-          "middelburg"
+          "middelburg",
+          "chief_albert_luthuli_park"
         ],
         "verifiedAt": "2026-10-11",
         "adapter": "arcgis",
@@ -12304,7 +12306,8 @@
         "wup2025:3946": "268 unchanged native parcel polygons passed all eight qualification gates in bounded cells around the UN/WUP locator. Fresh independent metric audit (EPSG:32735) found zero invalid polygons, identity conflicts, duplicate geometry, material overlaps, or operation errors. Citywide completeness, legal title, survey accuracy, and currentness are not established.",
         "wup2025:4975": "137 unchanged native parcel polygons passed all eight qualification gates in bounded cells around the UN/WUP locator. Fresh independent metric audit (EPSG:32735) found zero invalid polygons, identity conflicts, duplicate geometry, material overlaps, or operation errors. Citywide completeness, legal title, survey accuracy, and currentness are not established.",
         "wup2025:5476": "199 unchanged native parcel polygons passed all eight qualification gates in bounded cells around the UN/WUP locator. Fresh independent metric audit (EPSG:32736) found zero invalid polygons, identity conflicts, duplicate geometry, material overlaps, or operation errors. Citywide completeness, legal title, survey accuracy, and currentness are not established.",
-        "wup2025:3126": "57 unchanged native parcel polygons passed all eight qualification gates in bounded cells around the UN/WUP locator. Fresh independent metric audit (EPSG:32735) found zero invalid polygons, identity conflicts, duplicate geometry, material overlaps, or operation errors. Citywide completeness, legal title, survey accuracy, and currentness are not established."
+        "wup2025:3126": "57 unchanged native parcel polygons passed all eight qualification gates in bounded cells around the UN/WUP locator. Fresh independent metric audit (EPSG:32735) found zero invalid polygons, identity conflicts, duplicate geometry, material overlaps, or operation errors. Citywide completeness, legal title, survey accuracy, and currentness are not established.",
+        "wup2025:4544": "National cadastral Erven service; initial exact-read qualification for Chief Albert Luthuli Park only. No citywide completeness claim."
       },
       "appCityIds": [
         "klipgat",
@@ -12328,7 +12331,8 @@
         "vosman",
         "masetjhaba_view",
         "emalahleni",
-        "middelburg"
+        "middelburg",
+        "chief_albert_luthuli_park"
       ],
       "initialQualificationReviews": {
         "masetjhaba_view": {
@@ -12426,6 +12430,38 @@
               "reason": "Deferred to second-pass review."
             }
           ]
+        },
+        "chief_albert_luthuli_park": {
+          "policy": "parcel-availability-v1",
+          "passed": true,
+          "requiredChecks": [
+            "classification",
+            "exactIds",
+            "stableGeometry"
+          ],
+          "status": "follow-up-required",
+          "followUp": [
+            {
+              "check": "explicitAbsence",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "sampling",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "completeness",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "binding",
+              "reason": "Deferred to second-pass review."
+            },
+            {
+              "check": "alignment",
+              "reason": "Deferred to second-pass review."
+            }
+          ]
         }
       },
       "qualificationWarningsByCity": {
@@ -12474,6 +12510,28 @@
           }
         ],
         "middelburg": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "alignment",
+            "reason": "Deferred to second-pass review."
+          }
+        ],
+        "chief_albert_luthuli_park": [
           {
             "check": "explicitAbsence",
             "reason": "Deferred to second-pass review."
@@ -75734,90 +75792,6 @@
       },
       "qualificationWarningsByCity": {
         "polokwane": [
-          {
-            "check": "explicitAbsence",
-            "reason": "Deferred to second-pass review."
-          },
-          {
-            "check": "sampling",
-            "reason": "Deferred to second-pass review."
-          },
-          {
-            "check": "completeness",
-            "reason": "Deferred to second-pass review."
-          },
-          {
-            "check": "binding",
-            "reason": "Deferred to second-pass review."
-          },
-          {
-            "check": "alignment",
-            "reason": "Deferred to second-pass review."
-          }
-        ]
-      }
-    },
-    {
-      "sourceId": "za-csg-dffe-national-erven",
-      "name": "Chief Surveyor-General national Erven polygons (DFFE host)",
-      "operator": "Chief Surveyor-General; DFFE public ArcGIS host",
-      "countryCode": "ZA",
-      "scope": "National cadastral Erven service; initial exact-read qualification for Chief Albert Luthuli Park only. No citywide completeness claim.",
-      "endpoint": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2",
-      "method": "Public bounded real-adapter parcel availability qualification with exact-ID reads and stable geometry",
-      "responseFormat": "Canonical GeoJSON Polygon/MultiPolygon",
-      "crs": "EPSG:4326 output; per-city UTM independent metric audit",
-      "reuseStatus": "Source conditions and data age are informational. Legal title and survey accuracy unverified; only public parcel identifiers and geometry requested.",
-      "verifiedCityIds": [
-        "wup2025:4544"
-      ],
-      "verificationStatus": "verified_live_city_adapter",
-      "liveIntegration": {
-        "status": "enabled",
-        "cityIds": [
-          "chief_albert_luthuli_park"
-        ],
-        "additionalCityEvidence": {}
-      },
-      "appCityIds": [
-        "chief_albert_luthuli_park"
-      ],
-      "initialQualificationReviews": {
-        "chief_albert_luthuli_park": {
-          "policy": "parcel-availability-v1",
-          "passed": true,
-          "requiredChecks": [
-            "classification",
-            "exactIds",
-            "stableGeometry"
-          ],
-          "status": "follow-up-required",
-          "followUp": [
-            {
-              "check": "explicitAbsence",
-              "reason": "Deferred to second-pass review."
-            },
-            {
-              "check": "sampling",
-              "reason": "Deferred to second-pass review."
-            },
-            {
-              "check": "completeness",
-              "reason": "Deferred to second-pass review."
-            },
-            {
-              "check": "binding",
-              "reason": "Deferred to second-pass review."
-            },
-            {
-              "check": "alignment",
-              "reason": "Deferred to second-pass review."
-            }
-          ]
-        }
-      },
-      "qualificationWarningsByCity": {
-        "chief_albert_luthuli_park": [
           {
             "check": "explicitAbsence",
             "reason": "Deferred to second-pass review."
@@ -221943,7 +221917,7 @@
       ],
       "parcelStatus": "verified_sample_partial_coverage",
       "sourceIds": [
-        "za-csg-dffe-national-erven"
+        "za-csg-dffe-erven"
       ],
       "population2025": 441204,
       "population2015": 353334,

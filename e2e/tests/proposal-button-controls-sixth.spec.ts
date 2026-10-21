@@ -190,6 +190,10 @@ test.describe('proposal button controls sixth pass @features', () => {
     await expect.poll(() => page.evaluate(() => (window as any).proposalStorage.getAllProposals()
       .some((proposal: any) => proposal.serverProposalId === '7017' && proposal.title === 'Downloadable proposal'))).toBe(true);
     await row.getByRole('button', { name: 'Details', exact: true }).click();
+    const importedId = await page.evaluate(() => (window as any).proposalStorage.getAllProposals()
+      .find((proposal: any) => proposal.serverProposalId === '7017' && proposal.title === 'Downloadable proposal')?.proposalId);
+    expect(importedId).toBeTruthy();
+    await showProposal(page, importedId);
     await expect(page.locator('#proposal-details-panel')).toContainText('Downloadable proposal');
     expect(await page.evaluate(() => (window as any).proposalStorage.getProposal('7017').title)).toBe('Unrelated numeric local key');
   });
@@ -222,7 +226,7 @@ test.describe('proposal button controls sixth pass @features', () => {
     await edit.click();
     await expect(page.locator('#structure-geometry-editor').locator('.on-map-editor__panel')).toBeVisible();
     await expect(page.locator('#structure-geometry-editor [data-action="save"]')).toBeVisible();
-    await expect.poll(() => page.evaluate(() => (window as any).proposalDraftStore.getActiveDraft()?.sourceProposalId)).toBeTruthy();
+    await expect.poll(() => page.evaluate(() => (window as any).proposalDraftStore.getActiveDraft()?.sourceLocalProposalId)).toBeTruthy();
   });
 
   test('Solana mint success View opens the devnet transaction explorer', async ({ mockApi: page }) => {

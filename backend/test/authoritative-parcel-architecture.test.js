@@ -85,8 +85,17 @@ describe('authoritative parcel source contracts', () => {
 
         files.filter(path => !allowed.has(rel(path))).forEach(path => {
             // This single output is the provider's native row key, not a parent land reference.
-            const source = rel(path) === 'parcels/custom-url-identity.js'
-                ? read(path).replace('sourceParcelId: nativeId,', '') : read(path);
+            let source = read(path);
+            if (rel(path) === 'parcels/custom-url-identity.js') {
+                expect(source.match(/sourceParcelId: nativeId,/g)).toHaveLength(1);
+                source = source.replace('sourceParcelId: nativeId,', 'providerNativeKey: nativeId,');
+            }
+            if (rel(path) === 'parcels/estimated-source.js') {
+                expect(source.match(/raw\.properties\?\.sourceParcelId/g)).toHaveLength(1);
+                expect(source.match(/sourceParcelId: originalId,/g)).toHaveLength(1);
+                source = source.replace('raw.properties?.sourceParcelId', 'raw.properties?.providerNativeKey')
+                    .replace('sourceParcelId: originalId,', 'providerNativeKey: originalId,');
+            }
             expect(source, rel(path)).not.toMatch(retiredFieldAccess);
         });
     });

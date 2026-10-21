@@ -7351,10 +7351,6 @@
             "short": "entra"
         },
         "buildings": {
-            "count": {
-                "one": "{{count}} edificio",
-                "other": "{{count}} edificios"
-            },
             "footprint": "huella {{area}}",
             "floorArea": "superficie construida {{area}}",
             "height": "{{floors}} plantas · {{height}}"

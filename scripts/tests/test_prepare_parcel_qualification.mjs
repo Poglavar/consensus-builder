@@ -199,6 +199,7 @@ test('accepts a provider jurisdiction basis backed by evidence as source-purpose
     const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'parcel-preparer-jurisdiction-'));
     t.after(() => fs.rm(sourceRoot, { recursive: true, force: true }));
     const uldk = parcelSourceCatalog.sources.find(row => row.id === 'pl-gugik-uldk');
+    const jurisdictionBasis = 'The provider operates the official land and building register for Poland.';
     await fs.writeFile(path.join(sourceRoot, 'sample.geojson'), JSON.stringify({ type: 'FeatureCollection', features: [
         { type: 'Feature', properties: { id: '146506_8.0104.1' }, geometry: polygon(21.0) }
     ] }));
@@ -207,11 +208,12 @@ test('accepts a provider jurisdiction basis backed by evidence as source-purpose
     const city = () => ({
         cityCode: '2093', cityName: 'Example', point: [52.2, 21.0], sampleFiles: [{ path: 'sample.geojson' }],
         providerReuse: { descriptor: { id: uldk.id, adapter: uldk.adapter, idPrefix: uldk.idPrefix, endpoint: uldk.endpoint,
-            idField: uldk.idField, idPattern: uldk.idPattern, outFields: uldk.outFields }, sourceEvidenceFiles: [{ path: 'country.json' }] }
+            idField: uldk.idField, idPattern: uldk.idPattern, outFields: uldk.outFields }, sourceEvidenceFiles: [{ path: 'country.json' }],
+            scopeEvidence: [{ basis: jurisdictionBasis, countryCode: 'PL', evidence: ['country.json'] }] }
     });
     const prepared = await prepareCandidate(city(), { repoRoot, sourceRoot });
     assert.equal(prepared.status, 'prepared', prepared.reason);
-    assert.ok(prepared.candidate.sourceClassification.evidence.includes(uldk.discovery.jurisdiction.basis));
+    assert.ok(prepared.candidate.sourceClassification.evidence.includes(jurisdictionBasis));
     assert.equal(prepared.candidate.absentId, 'PL-ULDK-146506_8.0104.999999');
     await fs.writeFile(path.join(sourceRoot, 'sample.geojson'), JSON.stringify({ type: 'FeatureCollection', features: [
         { type: 'Feature', properties: { id: '247301_1.0089.AR_7.3035/160' }, geometry: polygon(18.5) }
@@ -225,7 +227,9 @@ test('accepts a provider jurisdiction basis backed by evidence as source-purpose
     const profile = uldk.discovery;
     delete uldk.discovery;
     t.after(() => { uldk.discovery = profile; });
-    const unbacked = await prepareCandidate(city(), { repoRoot, sourceRoot });
+    const unbackedCity = city();
+    delete unbackedCity.providerReuse.scopeEvidence;
+    const unbacked = await prepareCandidate(unbackedCity, { repoRoot, sourceRoot });
     assert.equal(unbacked.status, 'needs-llm');
     assert.match(unbacked.reason, /source-purpose evidence/);
     const packetScope = city();
@@ -236,7 +240,7 @@ test('accepts a provider jurisdiction basis backed by evidence as source-purpose
 test('statewide ArcGIS: host case is not a conflict, composite absent IDs keep their escapes, no all-nines placeholder', async t => {
     const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'parcel-preparer-statewide-'));
     t.after(() => fs.rm(sourceRoot, { recursive: true, force: true }));
-    await fs.writeFile(path.join(sourceRoot, 'proof.json'), JSON.stringify({ status: 'verified' }));
+    await fs.writeFile(path.join(sourceRoot, 'proof.json'), JSON.stringify({ purpose: 'Official cadastral parcel boundaries.', status: 'verified' }));
     const prepare = async (sourceId, id, descriptorOverrides = {}) => {
         const entry = parcelSourceCatalog.sources.find(row => row.id === sourceId);
         await fs.writeFile(path.join(sourceRoot, 'sample.geojson'), JSON.stringify({ type: 'FeatureCollection', features: [
@@ -276,7 +280,7 @@ test('statewide ArcGIS: host case is not a conflict, composite absent IDs keep t
 test('absent IDs keep the fixed parts of an ID format, whether the catalog or only the adapter knows it; the smallest sample goes first', async t => {
     const sourceRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'parcel-preparer-anchored-'));
     t.after(() => fs.rm(sourceRoot, { recursive: true, force: true }));
-    await fs.writeFile(path.join(sourceRoot, 'proof.json'), JSON.stringify({ status: 'verified' }));
+    await fs.writeFile(path.join(sourceRoot, 'proof.json'), JSON.stringify({ purpose: 'Official cadastral parcel boundaries.', status: 'verified' }));
     const box = (x, size) => ({ type: 'Polygon', coordinates: [[[x, 48], [x + size, 48], [x + size, 48 + size], [x, 48 + size], [x, 48]]] });
     const prepare = async (sourceId, samples) => {
         const entry = parcelSourceCatalog.sources.find(row => row.id === sourceId);

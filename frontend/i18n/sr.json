@@ -7359,11 +7359,6 @@
             "short": "zadire"
         },
         "buildings": {
-            "count": {
-                "one": "{{count}} zgrada",
-                "few": "{{count}} zgrade",
-                "other": "{{count}} zgrada"
-            },
             "footprint": "osnova {{area}}",
             "floorArea": "BRGP {{area}}",
             "height": "spratova: {{floors}} · {{height}}"

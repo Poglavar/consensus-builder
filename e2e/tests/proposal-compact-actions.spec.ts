@@ -2,7 +2,7 @@
 // They cover compact-card actions and the narrow mobile footer, where a visible button must remain
 // reachable and complete its real UI transition rather than merely exist in the rendered markup.
 import { test, expect } from '../helpers/fixtures';
-import { openCity, proposalState, PARCEL_GEOMETRY, PARCEL_ID } from '../helpers/runtime';
+import { openCity, proposalState, showProposal, PARCEL_GEOMETRY, PARCEL_ID } from '../helpers/runtime';
 
 async function addLocalEditableProposal(page: import('@playwright/test').Page, key: string): Promise<string> {
   return page.evaluate(({ parcelId, geometry, key }) => {
@@ -41,6 +41,9 @@ async function openCompactFromProposalList(page: import('@playwright/test').Page
   await expect(row).toBeVisible();
   // This is the actual list action that opens proposal details, not a direct JS call to the panel.
   await row.locator('.proposal-list-details-btn').click();
+  await expect(page.locator('#planning-inspector')).toBeVisible();
+  await expect.poll(() => page.evaluate(() => (window as any).currentlyHighlightedProposalId)).toBe(proposalId);
+  await showProposal(page, proposalId);
   const panel = page.locator('#proposal-details-panel');
   await expect(panel).toBeVisible();
   const toggle = panel.locator('#proposal-details-minimize');

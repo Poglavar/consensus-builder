@@ -1,6 +1,6 @@
 // Exercise the proposal shell through selection, design, approval, and publication controls.
 import { test, expect } from '../helpers/fixtures';
-import { clickMapPoint, openCity, openParcel, PARCEL_GEOMETRY, PARCEL_ID } from '../helpers/runtime';
+import { clickMapPoint, openCity, openParcel, showProposal, PARCEL_GEOMETRY, PARCEL_ID } from '../helpers/runtime';
 import { readFile } from 'node:fs/promises';
 import { fillNativeDateTime, selectNativeOption } from '../helpers/controls';
 
@@ -224,6 +224,9 @@ test.describe('Shared proposal editor shell controls @core', () => {
     await expect.poll(() => page.evaluate(id => (window as any).proposalStorage.getProposal(id)?.description, sourceId), { timeout: 45_000 })
       .toBe('Updated description from the proposal editor.');
     await expect.poll(() => page.evaluate(id => (window as any).proposalDraftStore.getDraft(id), draftId)).toBeNull();
+    await expect(page.locator('#planning-inspector')).toBeVisible();
+    await expect.poll(() => page.evaluate(() => (window as any).currentlyHighlightedProposalId)).toBe(sourceId);
+    await showProposal(page, sourceId);
     await expect(page.locator('#proposal-details-panel')).toBeVisible();
     expect(await page.evaluate(id => (window as any).proposalStorage.getAllProposals()
       .some((proposal: any) => proposal.sourceProposalId === id), sourceId)).toBe(false);
@@ -237,6 +240,7 @@ test.describe('Shared proposal editor shell controls @core', () => {
       const storage = (window as any).proposalStorage;
       const source = storage.getProposal(id);
       source.serverProposalId = '7412';
+      source.publicationApiBase = (window as any).getBackendBase();
       storage._indexProposal(source);
       storage.save();
     }, sourceId);

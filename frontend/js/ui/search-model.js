@@ -260,10 +260,14 @@
         const nearbyKm = options.nearbyKm || NEARBY_CITY_KM;
         const list = (Array.isArray(cities) ? cities : []).filter(c => Array.isArray(c.center));
         if (!point || !Number.isFinite(point.lat) || !Number.isFinite(point.lon) || !list.length) return { kind: 'world' };
-        const withDistance = list.map(city => ({ city, km: haversineKm(point.lat, point.lon, city.center[0], city.center[1]) }))
-            .sort((a, b) => a.km - b.km);
-        const current = withDistance.find(item => item.city.id === currentCityId);
-        const nearest = withDistance[0];
+        // Only the nearest city is used. Keep catalogue order for ties without sorting every city.
+        let nearest = null;
+        let current = null;
+        for (const city of list) {
+            const km = haversineKm(point.lat, point.lon, city.center[0], city.center[1]);
+            if (!nearest || km < nearest.km) nearest = { city, km };
+            if (city.id === currentCityId) current = { city, km };
+        }
         if (nearest.km <= nearbyKm) {
             const sameCadastre = current && current.city.parcelSource && current.city.parcelSource === nearest.city.parcelSource;
             if (nearest.city.id === currentCityId || sameCadastre) return { kind: 'here', city: nearest.city, distanceKm: nearest.km };

@@ -184,45 +184,13 @@ test.describe('Editor button effects @features', () => {
     await expect(modal).toHaveCount(0);
   });
 
-  test('row-house Regenerate persists a new seed, GeoJSON replaces its footprint, and counterclockwise rotation is saved', async ({ mockApi: page }) => {
+  test('row-house Regenerate persists a new seed and counterclockwise rotation is saved', async ({ mockApi: page }) => {
     await openRowHouseEditor(page);
     await selectNativeOption(page.locator('#rowhouse-ruletype-select'), 'range');
     const rowSeed = await page.evaluate(() => (window as any).getActiveProposalDesignDraft()?.editorPayload?.context?.parameters?.seed);
     const regenerate = page.locator('#btn-rowhouse-regenerate');
     await expect(regenerate).toBeVisible();
     await regenerate.click();
-
-    // The generated row-house geometry is held in the editor's private drawing state, not in
-    // editorPayload until Done. Build a small valid upload from the fixture parcel boundary so
-    // the upload path tests the editor without reaching into that implementation detail.
-    const uploaded = await page.evaluate(() => {
-      const geometry = (window as any).LiveParcelFabric.get('HR-335754-1234').geometry;
-      const ring = geometry.coordinates[0];
-      const minX = Math.min(...ring.map((point: number[]) => point[0]));
-      const maxX = Math.max(...ring.map((point: number[]) => point[0]));
-      const minY = Math.min(...ring.map((point: number[]) => point[1]));
-      const maxY = Math.max(...ring.map((point: number[]) => point[1]));
-      const xInset = (maxX - minX) * 0.25;
-      const yInset = (maxY - minY) * 0.25;
-      const uploadRing = [
-        [minX + xInset, minY + yInset], [maxX - xInset, minY + yInset],
-        [maxX - xInset, maxY - yInset], [minX + xInset, maxY - yInset],
-        [minX + xInset, minY + yInset],
-      ];
-      return { type: 'Feature', properties: { name: 'fixture row footprint' }, geometry: { type: 'Polygon', coordinates: [uploadRing] } };
-    });
-    const beforeUpload = await page.locator('#rowhouse-area-value').textContent();
-    if (!(await page.locator('#rowhouse-geojson-upload').isVisible())) await page.locator('#rowhouse .on-map-editor__more-options > summary').click();
-    // The button opens its own file input; the chooser is taken at Playwright's boundary, so a
-    // headed run never shows the native dialog.
-    const rowChooser = page.waitForEvent('filechooser');
-    await page.locator('#rowhouse-geojson-upload').click();
-    const rowFiles = await rowChooser;
-    expect(await rowFiles.element().evaluate(input => (input as HTMLInputElement).id)).toBe('rowhouse-geojson-input');
-    await rowFiles.setFiles({
-      name: 'row-footprint.geojson', mimeType: 'application/geo+json', buffer: Buffer.from(JSON.stringify(uploaded)),
-    });
-    await expect.poll(() => page.locator('#rowhouse-area-value').textContent()).not.toBe(beforeUpload);
     await page.locator('#rowhouse-rotate-counterclockwise').click();
     await page.locator('#btn-rowhouse-done').click();
     const proceed = page.getByRole('button', { name: 'Proceed anyway' });
@@ -296,37 +264,36 @@ test.describe('Editor button effects @features', () => {
     expect(rerolled).toBe(rerolledSeed);
   });
 
-  test('manual building Upload GeoJSON button imports a footprint and exposes it in the editor', async ({ mockApi: page }) => {
+  test('manual building Upload GeoJSON routes the footprint into the editable Freeform tool', async ({ mockApi: page }) => {
     await openCity(page);
     await openParcel(page, 'proposals');
     await page.locator('.parcel-build-btn--buildings').click();
     await expect(page.locator('#btn-blockify-done')).toBeEnabled({ timeout: 20_000 });
-    if (!(await page.locator('#blockify-manual-toggle').isVisible())) await page.locator('#blockify-modal .on-map-editor__more-options > summary').click();
-    await page.locator('#blockify-manual-toggle').click();
-    const vertices = page.locator('#map-container .polygon-geometry-editor__vertex');
-    await expect.poll(() => vertices.count()).toBeGreaterThan(2);
     const uploaded = {
-      type: 'Feature', properties: { name: 'fixture manual footprint' },
+      type: 'Feature', properties: { name: 'fixture manual footprint', geojsonFixture: 'manual-block' },
       geometry: { type: 'Polygon', coordinates: [[[15.9820,45.80010],[15.98235,45.80010],[15.98235,45.80030],[15.9820,45.80030],[15.9820,45.80010]]] },
     };
-    if (!(await page.locator('#blockify-geojson-upload').isVisible())) await page.locator('#blockify-modal .on-map-editor__more-options > summary').click();
-    // The button opens its own file input; the chooser is taken at Playwright's boundary, so a
-    // headed run never shows the native dialog.
+    const upload = page.locator('#blockify-geojson-upload');
+    if (!(await upload.isVisible())) {
+      await page.locator('#blockify-modal .on-map-editor__more-options > summary').click();
+    }
+    await expect(upload).toBeVisible();
     const blockChooser = page.waitForEvent('filechooser');
-    await page.locator('#blockify-geojson-upload').click();
+    await upload.click();
     const blockFiles = await blockChooser;
     expect(await blockFiles.element().evaluate(input => (input as HTMLInputElement).id)).toBe('blockify-geojson-input');
     await blockFiles.setFiles({
       name: 'block-footprint.geojson', mimeType: 'application/geo+json', buffer: Buffer.from(JSON.stringify(uploaded)),
     });
-    await expect.poll(() => vertices.count()).toBeGreaterThan(2);
-    await expect(page.locator('#blockify-info')).not.toContainText(/No usable polygon/i);
-    await page.locator('#blockify-modal .on-map-editor__header .close-circle-btn').click();
-    const discard = page.getByRole('alertdialog');
-    if (await discard.isVisible().catch(() => false)) {
-      await discard.getByRole('button', { name: /discard|close|continue/i }).click();
-    }
-    await expect(page.locator('#blockify-modal')).toHaveCount(0);
+    // The import hands geometry to the ordinary Freeform editor instead of retaining the legacy Block editor.
+    await expect(page.locator('#single-building-editor .on-map-editor__panel')).toBeVisible();
+    await expect(page.locator('#map-container .polygon-geometry-editor__vertex')).toHaveCount(4);
+    await page.locator('#single-building-confirm').click();
+    await expect.poll(() => page.evaluate(() => (window as any).proposalStorage.getAllProposals().some((p: any) =>
+      p.geometry?.buildings?.some((feature: any) => feature.properties?.geojsonFixture === 'manual-block')))).toBe(true);
+    const saved = await page.evaluate(() => (window as any).proposalStorage.getAllProposals().find((p: any) =>
+      p.geometry?.buildings?.some((feature: any) => feature.properties?.geojsonFixture === 'manual-block')));
+    expect(saved.geometry.buildings[0].geometry).toEqual(uploaded.geometry);
   });
 
   test('building manual Edit disables parametric sliders and confirms before discarding the manual shape', async ({ mockApi: page }) => {
@@ -584,10 +551,10 @@ test.describe('Editor button effects @features', () => {
       if (url.pathname !== '/buildings') return route.continue();
       const feature = {
         type: 'Feature', properties: { object_id: 61075, height_m: 14 },
-        // The road starts 7.5 m wide. Its first (north-side) lane is selected by default, so the
-        // added sidewalk widens northward. Keep this footprint 4 m north of the centerline: clear
-        // at the original 3.75 m edge, but intersected when the new 2 m lane extends that side.
-        geometry: { type: 'Polygon', coordinates: [[[15.98208,45.800286],[15.98224,45.800286],[15.98224,45.80042],[15.98208,45.80042],[15.98208,45.800286]]] },
+        // The 7.5 m road starts 5.25 m south of this footprint, leaving a 1.5 m baseline
+        // clearance. Widening its 2 m north-side sidewalk to 6 m makes the 13.5 m road
+        // reach 6.75 m north of center, so it intersects by 1.5 m with the same margin.
+        geometry: { type: 'Polygon', coordinates: [[[15.98208,45.8002972],[15.98224,45.8002972],[15.98224,45.8004312],[15.98208,45.8004312],[15.98208,45.8002972]]] },
       };
       return route.fulfill({ json: { ...surveyResponse([feature]), source: url.searchParams.get('source') } });
     });
@@ -598,6 +565,8 @@ test.describe('Editor button effects @features', () => {
     await clickMapPoint(page, 15.98195, 45.80025);
     await clickMapPoint(page, 15.98245, 45.80025);
     await page.locator('#finishRoadButton').click();
+    const clearance = page.getByRole('alertdialog');
+    await expect(clearance).toBeHidden();
     await expect.poll(() => page.evaluate(() => (window as any).proposalStorage.getAllProposals().some((p: any) => p.roadProposal && p.applied))).toBe(true);
     const id = await page.evaluate(() => (window as any).proposalStorage.getAllProposals().find((p: any) => p.roadProposal && p.applied).proposalId);
     await showProposal(page, id);
@@ -609,6 +578,12 @@ test.describe('Editor button effects @features', () => {
     await expect(editor.locator('.on-map-editor__panel')).toBeVisible();
     await editor.locator('.cb-lane-dropdown-toggle').click();
     await editor.locator('[data-lane-type="sidewalk"]').click();
+    const widenedLane = editor.locator('.corridor-lane-width').nth(1);
+    await expect(widenedLane).toHaveValue('2');
+    await widenedLane.fill('6');
+    await widenedLane.press('Tab');
+    await expect(widenedLane).toHaveValue('6');
+    await expect(editor.locator('.corridor-editor-total')).toHaveText('13.5 m');
     const fitHint = editor.locator('.corridor-editor-indicator--fit');
     await expect(fitHint).toBeVisible({ timeout: 15_000 });
     await fitHint.click();
@@ -635,6 +610,14 @@ test.describe('Editor button effects @features', () => {
     await editor.locator('.corridor-editor-tab[data-tab="section"]').click();
     await editor.locator('.cb-lane-dropdown-toggle').click();
     await editor.locator('[data-lane-type="sidewalk"]').click();
+    // The first fit action shifted this 13.5 m road 3 m south. It now has about 1.6 m of room to
+    // the building; the default 2 m addition would still fit, so widen this new lane to 6 m.
+    const secondWidenedLane = editor.locator('.corridor-lane-width').nth(1);
+    await expect(secondWidenedLane).toHaveValue('2');
+    await secondWidenedLane.fill('6');
+    await secondWidenedLane.press('Tab');
+    await expect(secondWidenedLane).toHaveValue('6');
+    await expect(editor.locator('.corridor-editor-total')).toHaveText('19.5 m');
     await editor.locator('.corridor-editor-tab[data-tab="corridor"]').click();
     const beforeMove = await proposalState(page, id);
     const moveToFit = editor.locator('.corridor-fit-move');

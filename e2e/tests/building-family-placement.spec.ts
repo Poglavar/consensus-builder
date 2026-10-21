@@ -196,6 +196,8 @@ async function markPublished(page: Page, proposalId: string): Promise<void> {
     const storage = (window as any).proposalStorage;
     const source = storage.getProposal(id);
     source.serverProposalId = '741';
+    source.publicationApiBase = (window as any).getBackendBase();
+    source.lifecycleEvidence = { protocol: 'proposal-lifecycle-evidence/1', state: 'unknown', claimedStatus: 'Active', reason: 'no-matching-observation' };
     storage.setProposalLifecycleStatus(id, 'Active');
     storage.save();
   }, proposalId);
@@ -684,6 +686,7 @@ test.describe('Building-family placement @features', () => {
     await openDetachedOnTwoPlots(page);
     const source = await saveDetached(page);
     await markPublished(page, source.proposalId);
+    const publicationApiBase = await page.evaluate(() => (window as any).getBackendBase());
     const publishedBefore = await proposalState(page, source.proposalId);
     await reopenGeometryEditor(page, source.proposalId, '#parcelbased');
     const recordsBefore = await proposalIds(page);
@@ -695,7 +698,8 @@ test.describe('Building-family placement @features', () => {
     await proceedIfAsked(page);
     const counterproposals = await newFreeforms(page, recordsBefore, 2);
     counterproposals.forEach(item => {
-      expect(item).toMatchObject({ goal: 'single', applied: true, sourceProposalId: source.proposalId });
+      expect(item).toMatchObject({ goal: 'single', applied: true,
+        proposalOrigin: { relation: 'revision', source: { kind: 'publication', apiBase: publicationApiBase, proposalRowId: '741' } } });
       expect(item.geometry.buildings).toHaveLength(1);
     });
     const publishedAfter = await proposalState(page, source.proposalId);
@@ -805,6 +809,7 @@ test.describe('Building-family placement @features', () => {
     await openCity(page);
     const publishedId = await createBuilding(page, 'range');
     await markPublished(page, publishedId);
+    const publicationApiBase = await page.evaluate(() => (window as any).getBackendBase());
     const published = await proposalState(page, publishedId);
     const recordsBefore = await proposalIds(page);
     await showProposal(page, publishedId);
@@ -814,7 +819,8 @@ test.describe('Building-family placement @features', () => {
     await expect(confirm).toContainText('is published');
     await confirm.getByRole('button', { name: 'Convert', exact: true }).click();
     const [counterproposal] = await newFreeforms(page, recordsBefore, 1);
-    expect(counterproposal).toMatchObject({ goal: 'single', applied: true, sourceProposalId: publishedId });
+    expect(counterproposal).toMatchObject({ goal: 'single', applied: true,
+      proposalOrigin: { relation: 'revision', source: { kind: 'publication', apiBase: publicationApiBase, proposalRowId: '741' } } });
     expect(counterproposal.geometry.buildings).toHaveLength(1);
     expect(counterproposal.geometry.buildings[0].properties.height).toBe(published.buildingProposal.parameters.rule.maxHeightM);
     const after = await proposalState(page, publishedId);

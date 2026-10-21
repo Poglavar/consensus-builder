@@ -64,8 +64,12 @@ test.describe('Leaflet runtime control effects @features', () => {
     await page.locator('#parcel-menu').getByRole('menuitem', { name: 'Propose here', exact: true }).click();
     await page.locator('#parcel-info-panel .parcel-transport-btn--bus').click();
     await clickMapPoint(page, 15.9822, 45.80025);
-    const stationId = await page.evaluate(() => (window as any).proposalStorage.getAllProposals()
-      .find((proposal: any) => proposal.structureProposal?.stationType === 'bus')?.proposalId);
+    const station = await page.evaluate(() => {
+      const proposal = (window as any).proposalStorage.getAllProposals()
+        .find((item: any) => item.structureProposal?.stationType === 'bus');
+      return proposal ? { id: proposal.proposalId, title: proposal.title || proposal.name } : null;
+    });
+    const stationId = station?.id;
     expect(stationId).toBeTruthy();
     await expect.poll(() => page.evaluate(id => (window as any).transitStations?.some((station: any) =>
       String(station?.properties?.proposalId) === String(id)), stationId)).toBe(true);
@@ -73,7 +77,9 @@ test.describe('Leaflet runtime control effects @features', () => {
     await expect(marker).toBeVisible();
     await marker.click();
     await expect.poll(() => page.evaluate(() => (window as any).ProposalSelection?.getKey?.())).toBe(stationId);
-    await expect(page.locator('#proposal-details-panel')).toBeVisible();
+    const inspector = page.getByRole('complementary', { name: 'Planning source details' });
+    await expect(inspector).toBeVisible();
+    if (station?.title) await expect(inspector).toContainText(station.title);
   });
 
   test('Leaflet Close popup dismisses the node detail popup in the editable real plan', async ({ mockApi: page }) => {

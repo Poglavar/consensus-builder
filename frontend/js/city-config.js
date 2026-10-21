@@ -20539,7 +20539,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [9.00578119930776, 38.7494189124444], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [9.00578119930776, 38.7494189124444], fallbackDataset: [38.7494189124444, 9.00578119930776] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'et-addis-eland-geoserver-parcel-publish', idPrefix: 'ET-ADDIS-ELAND-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Addis Ababa City Administration Landholding Registration and Information Agency, e-Land cadastral parcels' },
-            buildings: { source: 'osm' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         bobo_dioulasso: {
             id: 'bobo_dioulasso', wupCityCode: '378',
@@ -20565,7 +20565,7 @@
             currency: { locale: 'en-ZA', code: 'ZAR' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [-26.1276446337782, 28.442109859765], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [-26.1276446337782, 28.442109859765], fallbackDataset: [28.442109859765, -26.1276446337782] },
-            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'za-csg-dffe-national-erven', idPrefix: 'ZA-CSG-DFFE-ERVEN-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Chief Surveyor-General; DFFE hosted Erven; provider output in WGS84.' },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'za-csg-dffe-erven', idPrefix: 'ZA-CSG-DFFE-ERVEN-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Chief Surveyor-General; DFFE hosted Erven; provider output in WGS84.' },
             buildings: { source: 'overture-tiles' }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         diepsloot: {

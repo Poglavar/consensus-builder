@@ -123,8 +123,14 @@ test.describe('Remaining UI controls @features', () => {
     const similar = dialog.locator(`.proposal-similar-item[data-proposal-id="${similarId}"]`);
     await expect(similar).toBeVisible();
     await similar.click();
-    await expect(details).toBeVisible();
+    await expect(page.locator('#planning-inspector')).toBeVisible();
     await expect.poll(() => page.evaluate(() => (window as any).currentlyHighlightedProposalId)).toBe(similarId);
+    // Opening a similar proposal intentionally keeps the create dialog open; dismiss it before
+    // the helper clicks Proposal actions in the inspector underneath.
+    await dialog.getByRole('button', { name: 'Close proposal dialog', exact: true }).click();
+    await expect(dialog).toBeHidden();
+    await showProposal(page, similarId);
+    await expect(details).toBeVisible();
     await expect(details).toContainText('Related park proposal for navigation');
   });
 

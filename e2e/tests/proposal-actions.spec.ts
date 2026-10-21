@@ -1,5 +1,5 @@
 import { test, expect } from '../helpers/fixtures';
-import { openCity, openParcel, proposalState, showProposal, PARCEL_ID } from '../helpers/runtime';
+import { openCity, openParcel, proposalState, showProposal, PARCEL_GEOMETRY, PARCEL_ID } from '../helpers/runtime';
 import { connectWalletByConnectorId, injectMockEvmWallet, injectMockSolanaWallet, stubSolanaBridgeSuccess, waitForBlockchainRuntime } from '../helpers/blockchain';
 
 import { installProposalEvmBoundary, PROPOSAL_EVM_CONTRACT } from '../helpers/proposal-chain-boundary';
@@ -124,6 +124,14 @@ async function expandProposalDetails(page: import('@playwright/test').Page): Pro
   if (await expand.isVisible()) await expand.click();
 }
 
+async function openListProposalDetails(page: import('@playwright/test').Page, row: import('@playwright/test').Locator): Promise<void> {
+  await row.locator('.proposal-list-details-btn').click();
+  const inspector = page.locator('#planning-inspector');
+  await expect(inspector).toBeVisible();
+  await inspector.getByRole('button', { name: 'Proposal actions', exact: true }).click();
+  await expect(page.locator('#proposal-details-panel')).toBeVisible();
+}
+
 async function openProposalSection(page: import('@playwright/test').Page, section: 'land' | 'market'): Promise<void> {
   const details = page.locator(`#proposal-details-panel details[data-proposal-section="${section}"]`);
   await details.locator(':scope > summary').click();
@@ -161,7 +169,7 @@ test.describe('Proposal actions @features', () => {
     await expect(localRow.locator('[data-consent-basis="local-records"]')).toHaveText('1/1 parcels with local consent');
     await expect(signedRow.locator('[data-consent-basis="signed-receipts"]')).toHaveText('0/1 parcels with verified receipts');
     await expect(page.locator(`#proposals-sheet .proposal-list-item[data-proposal-id="${ids.vote}"] [data-consent-basis]`)).toHaveCount(0);
-    await localRow.locator('.proposal-list-details-btn').click();
+    await openListProposalDetails(page, localRow);
     await expandProposalDetails(page);
     await openProposalSection(page, 'land');
     await expect(page.locator('#proposal-parcel-acceptance-section .acceptance-label')).toHaveText('Locally recorded parcel consent: (1/1)');
@@ -175,7 +183,7 @@ test.describe('Proposal actions @features', () => {
     // Opening details closes the list sheet; reopening performs the visible list refresh.
     await page.locator('#proposals-button').click();
     await expect(localRow.locator('[data-consent-basis="local-records"]')).toHaveText('0/1 parcels with local consent');
-    await localRow.locator('.proposal-list-details-btn').click();
+    await openListProposalDetails(page, localRow);
     await expandProposalDetails(page);
     const land = page.locator('#proposal-details-panel details[data-proposal-section="land"]');
     if (!await land.evaluate(node => (node as HTMLDetailsElement).open)) await openProposalSection(page, 'land');
@@ -275,7 +283,8 @@ test.describe('Proposal actions @features', () => {
     await page.evaluate(() => (window as any).i18n.setLanguage('en'));
     const id = await page.evaluate(() => {
       const storage = (window as any).proposalStorage;
-      const base = { goal: 'as-is', lifecycleStatus: 'Active', cadastreParcelIds: ['reference-card-1', 'reference-card-2'] };
+      const base = { goal: 'as-is', lifecycleStatus: 'Active', cadastreParcelIds: ['reference-card-1', 'reference-card-2'],
+        parcelSet: { parcelSource: { sourceId: 'e2e:reference-fixture', snapshotId: null } } };
       const id = storage.addProposal({ ...base, title: 'Reference comparison target' });
       for (let i = 0; i < 15; i++) storage.addProposal({ ...base, title: `Reference comparison ${i}`,
         cadastreParcelIds: i < 13 ? base.cadastreParcelIds : ['reference-card-2'] });
@@ -288,9 +297,13 @@ test.describe('Proposal actions @features', () => {
     await expect(card.getByRole('heading')).toHaveText('Proposals sharing references');
     await expect(card.locator('p')).toHaveText('2 declared cadastral references. Of 15 loaded matches, 13 use the same references and 2 share some. Showing 12.');
     await expect(card.locator('[data-related-proposal-id]')).toHaveCount(12);
-    await card.locator('[data-related-proposal-id]').first().click();
-    await expect(page.locator('#proposal-details-title')).toContainText('Reference comparison');
-    await expect(page.locator('#proposal-details-title')).not.toHaveText('Reference comparison target');
+    const firstRelated = card.locator('[data-related-proposal-id]').first();
+    const firstRelatedId = await firstRelated.getAttribute('data-related-proposal-id');
+    expect(firstRelatedId).toBeTruthy();
+    if (!firstRelatedId) throw new Error('The first related proposal has no local identity.');
+    await firstRelated.click();
+    await expect.poll(() => page.evaluate(() => (window as any).PlanningViews.getSelected()?.proposalId)).toBe(firstRelatedId);
+    await expect(page.locator('#planning-inspector').getByRole('heading', { name: 'Reference comparison 0', exact: true })).toBeVisible();
   });
 
   test('unloaded source references are not presented as removed parcels', async ({ mockApi: page }) => {
@@ -323,7 +336,7 @@ test.describe('Proposal actions @features', () => {
     const ids = await page.evaluate(parcelId => {
       const w = window as any;
       const common = { title: 'Ownership count fixture', goal: 'as-is', lifecycleStatus: 'Active', cadastreParcelIds: [parcelId],
-        ownershipAndAcquisitionStats: { individualOwners: 99, ownershipCounts: { individual: 4 } } };
+        ownershipAndAcquisitionStats: { ownerEntryCount: 99, ownershipCounts: { individual: 4 } } };
       const source = { provider: 'upload', reference: 'declared-rights-fixture' };
       const declared = w.proposalStorage.addProposal({ ...common, approvalConfig: { schema: 'proposal-approval/v1',
         rights: { schema: 'parcel-rights/v1', source, parcels: [{ parcelId, complete: true, areaM2: 100,
@@ -344,7 +357,7 @@ test.describe('Proposal actions @features', () => {
     await expect(metric).toContainText('Declared owner parties:');
     await expect(metric.locator('.metric-value')).toHaveText('2');
     await expect(page.locator('[data-ownership-estimates]')).toContainText('may repeat across parcels');
-    const estimates = page.locator('.metric-group').filter({ hasText: 'Estimated individual-owner entries:' });
+    const estimates = page.locator('#proposal-details-panel .metric-group').filter({ hasText: 'Listed owner entries:' });
     await expect(estimates.locator('.metric-value')).toHaveText('99');
 
     await showProposal(page, ids.unresolved);
@@ -493,22 +506,31 @@ test.describe('Proposal actions @features', () => {
     await openCity(page);
     await establishLocalProfile(page);
     await loadParcelOwnershipFixture(page);
-    const proposalId = await page.evaluate((parcelId) => (window as any).proposalStorage.addProposal({
+    const proposalId = await page.evaluate(({ parcelId, geometry }) => (window as any).proposalStorage.addProposal({
       title: 'Single owner consent',
-      goal: 'parcelBased',
+      goal: 'park',
       lifecycleStatus: 'Active',
       funded: true,
       offer: 0,
       cadastreParcelIds: [parcelId],
-    }), PARCEL_ID);
+      structureProposal: { kind: 'park', geometry },
+    }), { parcelId: PARCEL_ID, geometry: PARCEL_GEOMETRY });
     const ownerBefore = await page.evaluate(parcelId => (window as any).PersistentStorage.getItem(`parcel_${parcelId}_owner`), PARCEL_ID);
     await showProposal(page, proposalId);
     await expandProposalDetails(page);
     await openProposalSection(page, 'land');
+    // Keep the shared helpers and parcel-menu setup in English; switch only after the action panel
+    // and its land section are open, then rerender that same proposal in Spanish.
+    await page.evaluate(async id => {
+      const w = window as any;
+      await w.i18n.setLanguage('es');
+      w.showProposalInfo(w.proposalStorage.getProposal(id));
+    }, proposalId);
 
     const ownerRow = page.locator('.owner-acceptance-row').first();
-    await expect(ownerRow.getByRole('button', { name: 'Accept' })).toBeVisible();
-    await ownerRow.getByRole('button', { name: 'Accept' }).click();
+    const accept = ownerRow.getByRole('button', { name: 'Aceptar', exact: true });
+    await expect(accept).toBeVisible();
+    await accept.click();
 
     await expect.poll(async () => (await proposalState(page, proposalId)).acceptedParcelIds).toEqual([PARCEL_ID]);
     const accepted = await proposalState(page, proposalId);
@@ -519,8 +541,20 @@ test.describe('Proposal actions @features', () => {
     const profile = await page.evaluate(() => (window as any).getCurrentUserAgent());
     expect(profile.proposalsAccepted).toContain(proposalId);
     expect(profile.proposalsExecuted).not.toContain(proposalId);
-    await expect(ownerRow.getByRole('button', { name: 'Undo' })).toBeVisible();
-    await expect(page.locator('#proposal-details-panel').getByRole('button', { name: /Apply to map/ })).toBeVisible();
+    await expect(ownerRow.getByRole('button', { name: 'Deshacer', exact: true })).toBeVisible();
+    const apply = page.locator('#proposal-details-panel').getByRole('button', { name: /Aplicar al mapa/ });
+    await expect(apply).toBeVisible();
+    await apply.click();
+    await expect.poll(async () => (await proposalState(page, proposalId)).applied).toBe(true);
+
+    // Apply selects the result in the planning inspector; its action opens the detail panel again.
+    const inspector = page.locator('#planning-inspector');
+    await expect(inspector).toBeVisible();
+    await inspector.getByRole('button', { name: 'Acciones de la propuesta', exact: true }).click();
+    const details = page.locator('#proposal-details-panel');
+    await expect(details).toBeVisible();
+    await details.getByRole('button', { name: 'Cerrar', exact: true }).click();
+    await expect(details).toBeHidden();
   });
 
   test('withdrawing local consent preserves the recorded execution lifecycle', async ({ mockApi: page }) => {
@@ -548,8 +582,8 @@ test.describe('Proposal actions @features', () => {
     await openProposalSection(page, 'land');
     const ownerRow = page.locator('.owner-acceptance-row').first();
     const executed = await proposalState(page, proposalId);
-    await expect(page.locator('#proposal-details-panel .cb-badge--executed')).toHaveText('Execution recorded');
-    await expect(page.locator('#proposal-details-panel .cb-badge--executed')).toHaveAttribute('title', /does not verify payment/);
+    await expect(page.locator('#proposal-details-panel .cb-badge--execution-unverified')).toHaveText('Execution reported; verification unavailable');
+    await expect(page.locator('#proposal-details-panel .cb-badge--execution-unverified')).toHaveAttribute('title', /does not verify payment/);
     expect(executed.acceptedParcelIds).toContain(PARCEL_ID);
     expect(executed.executedAt).toBeTruthy();
     await ownerRow.getByRole('button', { name: 'Undo' }).click();

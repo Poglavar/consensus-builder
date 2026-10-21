@@ -829,7 +829,7 @@
             const state = await contract.getProposal(proposalIdArg, { blockTag: receipt.blockNumber });
             if (globalScope.ProposalChainStatus?.decodeProposalStatus(state.status) === 'Unknown'
                 || !globalScope.ProposalChainStatus) throw new Error('The contract returned an unknown proposal status.');
-            lifecycle = { statusCode: Number(state.status), blockNumber: receipt.blockNumber };
+            lifecycle = { statusCode: Number(state.status), blockNumber: receipt.blockNumber, observedAt: new Date().toISOString() };
         } catch (error) {
             console.warn(`[${new Date().toISOString()}] Acceptance confirmed; proposal status refresh failed`, error);
         }

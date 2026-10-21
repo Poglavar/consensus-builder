@@ -1,6 +1,7 @@
 import { expect } from '@playwright/test';
 import { test } from '../helpers/fixtures';
 import { waitForMapReady, waitForParcelsLoaded } from '../helpers/app';
+import { showProposal } from '../helpers/runtime';
 
 /**
  * Proposals are geometry; their parcels are derived (js/proposals/ground-rebase.js). A building
@@ -44,13 +45,13 @@ test.describe('re-applying a proposal to changed ground', () => {
   });
 
   test('a published record keeps its parcels and offers a new proposal with the same geometry', async ({ mockApi: page }) => {
-    await page.evaluate(async fixture => {
-      const w = window as any;
-      w.proposalStorage.addProposal(fixture);
-      w.showProposalInfo(w.proposalStorage.getProposal(fixture.proposalId));
-      await w.applyProposalToMap(fixture.proposalId);
-    }, record('e2e-rebase-published', { serverProposalId: '880001' }));
-
+    await page.evaluate(fixture => {
+      (window as any).proposalStorage.addProposal(fixture);
+    }, record('e2e-rebase-published', { serverProposalId: '880001', publicationApiBase: 'https://proposals.example.test' }));
+    // A new selection opens the Planning Inspector; use its current Proposal actions flow so the
+    // failure notice and published-record fork action render in the full action panel.
+    await showProposal(page, 'e2e-rebase-published');
+    await page.evaluate(id => (window as any).applyProposalToMap(id), 'e2e-rebase-published');
     const notice = page.locator('[data-proposal-map-action-error="e2e-rebase-published"]');
     await expect(notice).toContainText('extends beyond its selected cadastral parcels');
     expect(await page.evaluate(() => (window as any).proposalStorage.getProposal('e2e-rebase-published').cadastreParcelIds))
@@ -59,7 +60,7 @@ test.describe('re-applying a proposal to changed ground', () => {
     await notice.getByRole('button', { name: 'New proposal with same geometry' }).click();
     await expect.poll(() => page.evaluate(() => (window as any).pendingProposalReplacementSource?.proposalId || null)).toBe('e2e-rebase-published');
     const draft = await page.evaluate(() => (window as any).proposalDraftStore.listDrafts()
-      .filter((d: any) => d.sourceProposalId === 'e2e-rebase-published').map((d: any) => d.fields.cadastreParcelIds));
+      .filter((d: any) => d.sourceLocalProposalId === 'e2e-rebase-published').map((d: any) => d.fields.cadastreParcelIds));
     expect(draft).toEqual([['HR-335754-1234']]);
   });
 });

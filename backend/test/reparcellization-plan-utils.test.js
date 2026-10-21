@@ -128,11 +128,11 @@ describe('reparcellization plan utilities', () => {
         expect(candidates).toHaveLength(1);
         expect(candidates[0].proposal.geometry.blockMassing.geometry).toEqual(block.geometry);
         expect(candidates[0].derivation).toEqual({
-            kind: 'building-courtyard', sourceProposalId: 'block-proposal', sourceTitle: 'Block title', sourceFootprint: block.geometry
+            kind: 'building-courtyard', sourceTitle: 'Block title', sourceFootprint: block.geometry
         });
     });
 
-    it('snapshots building source identity, title, and footprint independently of later edits', () => {
+    it('snapshots building source title and footprint independently of later edits', () => {
         const pool = square(0, 0, 10, 10);
         const footprint = turf.polygon([[[20, 20], [28, 20], [28, 28], [20, 28], [20, 20]], [[3, 3], [3, 7], [7, 7], [7, 3], [3, 3]]]);
         const proposal = { proposalId: 'building-7', title: 'Original title', buildingProposal: {},
@@ -144,7 +144,7 @@ describe('reparcellization plan utilities', () => {
         proposal.geometry.blockMassing.geometry.coordinates[0][0][0] = 99;
 
         expect(candidate.derivation).toEqual({
-            kind: 'building-courtyard', sourceProposalId: 'building-7', sourceTitle: 'Original title',
+            kind: 'building-courtyard', sourceTitle: 'Original title',
             sourceFootprint: originalFootprint
         });
     });

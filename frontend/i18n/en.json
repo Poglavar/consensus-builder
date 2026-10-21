@@ -7300,10 +7300,6 @@
             "short": "reaches in"
         },
         "buildings": {
-            "count": {
-                "one": "{{count}} building",
-                "other": "{{count}} buildings"
-            },
             "footprint": "footprint {{area}}",
             "floorArea": "floor area {{area}}",
             "height": "{{floors}} floors · {{height}}"

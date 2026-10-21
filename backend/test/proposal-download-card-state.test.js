@@ -209,7 +209,10 @@ describe('the renderer shows it in both tabs', () => {
             { __proposalDisplayState: require('../../frontend/js/proposals/display-state.js'),
                 ProposalKind: require('../../frontend/js/proposals/proposal-kind.js') },
             () => (_key, fallback) => fallback, key => key, require('../../frontend/js/shared-utils.js').escapeHtml);
-        const recorded = { lifecycleStatus: 'Executed', kind: 'owner-deal' };
+        const recorded = {
+            lifecycleStatus: 'Executed', kind: 'owner-deal',
+            lifecycleEvidence: { protocol: 'proposal-lifecycle-evidence/1', state: 'observed', status: 'Executed', observedAt: '2026-10-01T00:00:00.000Z' }
+        };
         expect(render(recorded)).toContain('Execution recorded</span>');
         expect(render(recorded)).toContain('title="This record reports execution.');
         expect(render(recorded)).not.toContain('cb-badge--applied');

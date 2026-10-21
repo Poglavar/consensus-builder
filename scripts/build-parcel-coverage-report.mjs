@@ -77,15 +77,29 @@ export function buildParcelReport({ registry, evidence, enrichment, countryData,
             appCityByRegistryCity.set(city.cityId, city.appCityId);
         }
     }
+    // A source may also explicitly configure one app city for its sole verified registry city.
+    // Require both lists to be singleton; multiple app-city or registry-city entries remain
+    // ambiguous. The runtime source must still agree; names/proximity never bind it.
     for (const source of registry.sources) {
         const integration = source.liveIntegration;
-        const appCityId = integration?.appCityId;
-        if (integration?.status !== 'enabled' || typeof appCityId !== 'string'
+        const configuredCityIds = typeof integration?.appCityId === 'string'
+            ? [integration.appCityId]
+            : integration?.cityIds;
+        if (integration?.status !== 'enabled' || !Array.isArray(configuredCityIds) || configuredCityIds.length !== 1
             || !Array.isArray(source.verifiedCityIds) || source.verifiedCityIds.length !== 1) continue;
+        const [appCityId] = configuredCityIds;
         const liveCity = liveById.get(appCityId);
         if (!liveCity || liveCity.sourceId !== source.sourceId) continue;
         const [registryCityId] = source.verifiedCityIds;
         if (typeof registryCityId !== 'string' || !registryCityId) continue;
+        const reviewedRows = registry.cities.filter(city => city.cityId === registryCityId);
+        if (reviewedRows.some(city => (city.appCityId && city.appCityId !== appCityId)
+            || (Array.isArray(city.sourceIds) && city.sourceIds.length > 0 && !city.sourceIds.includes(source.sourceId)))) {
+            // Reviewed city rows outrank an inferred source-level singleton. A bad singleton
+            // cannot invalidate an explicit crosswalk, and it cannot bind around a contradictory
+            // reviewed row either.
+            continue;
+        }
         if (appCityByRegistryCity.has(registryCityId) && appCityByRegistryCity.get(registryCityId) !== appCityId) ambiguousRegistryCities.add(registryCityId);
         else appCityByRegistryCity.set(registryCityId, appCityId);
     }
@@ -95,6 +109,40 @@ export function buildParcelReport({ registry, evidence, enrichment, countryData,
             if (appCityId && !ambiguousRegistryCities.has(registryCityId) && !city.appCityIds.includes(appCityId)) {
                 city.appCityIds.push(appCityId);
             }
+        }
+    }
+    // An explicitly configured provider city is app coverage even when research has no reviewed
+    // registry-city crosswalk for it. Keep that identity as a separate app-only row rather than
+    // attaching it by name/coordinates to a registry row. A registry row that already names this
+    // appCityId is an explicit crosswalk (including a conflicting one), so do not bypass it here.
+    const reviewedAppCityIds = new Set(registry.cities.map(city => city.appCityId).filter(Boolean));
+    const publishedAppCityIds = new Set(inputCities.flatMap(city => city.appCityIds));
+    for (const source of registry.sources) {
+        const integration = source.liveIntegration;
+        if (integration?.status !== 'enabled' || !Array.isArray(integration.cityIds)) continue;
+        const catalogSource = (sourceCatalog.sources || []).find(candidate => candidate.id === source.sourceId);
+        for (const appCityId of integration.cityIds) {
+            const isSingletonCrosswalk = integration.cityIds.length === 1
+                && Array.isArray(source.verifiedCityIds) && source.verifiedCityIds.length === 1;
+            const hasConflictingReviewedCrosswalk = isSingletonCrosswalk
+                && source.verifiedCityIds.some(registryCityId => registry.cities.some(city =>
+                    city.cityId === registryCityId && city.appCityId && city.appCityId !== appCityId
+                    && city.sourceIds?.includes(source.sourceId)));
+            const hasAmbiguousVerifiedCity = isSingletonCrosswalk
+                && source.verifiedCityIds.some(registryCityId => ambiguousRegistryCities.has(registryCityId));
+            if (reviewedAppCityIds.has(appCityId) || publishedAppCityIds.has(appCityId)) continue;
+            if (hasConflictingReviewedCrosswalk || hasAmbiguousVerifiedCity) continue;
+            const liveCity = liveById.get(appCityId);
+            if (!liveCity || !catalogSource?.cityIds?.includes(appCityId)) continue;
+            if (liveCity.sourceId && liveCity.sourceId !== source.sourceId) continue;
+            const id = `app:${appCityId}`;
+            if (inputCities.some(city => city.id === id)) throw new Error(`App city report identity conflicts with a registry city: ${appCityId}`);
+            inputCities.push({
+                id, name: liveCity.name, countryCode: liveCity.cc,
+                latitude: liveCity.lat, longitude: liveCity.lon,
+                registryCityIds: [], appCityIds: [appCityId], cohorts: []
+            });
+            publishedAppCityIds.add(appCityId);
         }
     }
     const cities = inputCities.map(city => {

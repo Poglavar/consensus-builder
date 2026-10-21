@@ -910,7 +910,11 @@
         // back for the proposal that was selected. (On save the shell re-selects the rebuilt
         // proposal itself, which may carry a NEW id.)
         if (!saved && reselectKey && typeof global.selectAndHighlightProposal === 'function') {
-            try { global.selectAndHighlightProposal(reselectKey, null, false, true); } catch (_) { }
+            try {
+                global.selectAndHighlightProposal(reselectKey, null, false, true, false, {
+                    planningActions: true, presentation: 'compact'
+                });
+            } catch (_) { }
         }
         return finished;
     }

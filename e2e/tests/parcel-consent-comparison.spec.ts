@@ -1,19 +1,33 @@
 import { test, expect } from '../helpers/fixtures';
 import { openCity, PARCEL_ID } from '../helpers/runtime';
+import { isApiDataRequest } from '../helpers/mocks/api-routes';
+import { sampleParcels } from '../helpers/mocks/parcel-data';
 
 test('comparison distinguishes current consent evidence and explicit full-proposal money terms', async ({ mockApi: page }) => {
+  // Consent is scoped to a provider-qualified source reference. Supply that provenance through
+  // the fixture response so the real parcel ingestion and comparison use the same descriptor.
+  await page.route('**/parcels**', route => {
+    const request = route.request();
+    if (!isApiDataRequest(request.url(), request.resourceType(), 'parcels')) return route.fallback();
+    if (request.method() !== 'GET' && !(request.method() === 'POST' && new URL(request.url()).pathname.endsWith('/parcels/under'))) return route.fallback();
+    return route.fulfill({ json: { ...sampleParcels, features: sampleParcels.features.map(feature => ({
+      ...feature, properties: { ...feature.properties, parcelSource: { sourceId: 'fixture-comparison', snapshotId: null } }
+    })) } });
+  });
   await openCity(page);
   const ids = await page.evaluate(async parcelId => {
     const w = window as any;
     await w.i18n.setLanguage('en');
+    const parcelSet = { parcelSource: w.CadastralParcelRepository.get(parcelId).properties.parcelSource };
+    if (!parcelSet.parcelSource?.sourceId) throw new Error('Comparison fixture needs the parcel provider identity');
     const local = w.proposalStorage.addProposal({ proposalId: 'p-comparison-local', title: 'Local consent preview', goal: 'as-is',
-      kind: 'owner-deal', cadastreParcelIds: [parcelId], lifecycleStatus: 'Active', offer: 125, offerCurrency: 'EUR' });
+      kind: 'owner-deal', parcelSet, cadastreParcelIds: [parcelId], lifecycleStatus: 'Active', offer: 125, offerCurrency: 'EUR' });
     const signed = w.proposalStorage.addProposal({ proposalId: 'p-comparison-signed', title: 'Signed consent preview', goal: 'as-is',
-      kind: 'owner-deal', cadastreParcelIds: [parcelId], lifecycleStatus: 'Active', budget: 999, budgetCurrency: 'USD',
+      kind: 'owner-deal', parcelSet, cadastreParcelIds: [parcelId], lifecycleStatus: 'Active', budget: 999, budgetCurrency: 'USD',
       approvalConfig: { schema: 'proposal-approval/v1', policy: { type: 'unanimous' }, rights: {
         schema: 'parcel-rights/v1', source: { provider: 'fixture' }, parcels: [{ parcelId, areaM2: 100, complete: true, owners: [{ ownerId: 'owner-a', share: '1/1' }] }]
       } } });
-    w.getParcelOwnerSlots = () => [{ key: 'a' }, { key: 'b' }];
+    w.getOwnerSlotsForParcel = () => [{ key: 'a' }, { key: 'b' }];
     for (const id of [local, signed]) {
       const record = w.proposalStorage.peekAllProposals().find((p: any) => p.proposalId === id);
       record.acceptedParcelIds = [parcelId];
@@ -51,7 +65,7 @@ test('comparison distinguishes current consent evidence and explicit full-propos
   await expect(cell('offer-a')).toContainText('EUR');
   await page.evaluate(({ ids, parcelId }) => {
     const w = window as any;
-    w.getParcelOwnerSlots = () => [];
+    w.getOwnerSlotsForParcel = () => [];
     delete w.proposalStorage.peekAllProposals().find((p: any) => p.proposalId === ids.local).offerCurrency;
     w.ParcelCompare.open(parcelId, [ids.local, ids.signed]);
   }, { ids, parcelId: PARCEL_ID });
@@ -66,7 +80,11 @@ test('comparison distinguishes current consent evidence and explicit full-propos
   await page.evaluate(({ ids, parcelId }) => {
     const w = window as any;
     const all = w.proposalStorage.peekAllProposals();
-    all.find((p: any) => p.proposalId === ids.local).lifecycleStatus = 'Executed';
+    Object.assign(all.find((p: any) => p.proposalId === ids.local), w.ProposalLifecycleEvidence.projectLifecycleEvidence({
+      lifecycleStatus: 'Executed',
+      chainRead: { status: 'Executed', observedAt: '2026-10-19T12:00:00.000Z',
+        chainRef: { chainType: 'solana', chainId: 'solana-devnet', contract: 'fixture-program', tokenId: '7' } },
+    }));
     const withdrawn = all.find((p: any) => p.proposalId === ids.signed);
     withdrawn.lifecycleStatus = 'Cancelled';
     withdrawn.applied = true;

@@ -1,6 +1,7 @@
 // Synthetic source responses exercise actual study controls, persistence and stale-reference handling.
 import { test, expect } from '../helpers/fixtures';
 import { waitForMapReady } from '../helpers/app';
+import { selectNativeOption } from '../helpers/controls';
 
 test.use({ seedCity: 'colorado' });
 const geometry = { type: 'Polygon', coordinates: [[[-104.9907,39.7391],[-104.9902,39.7391],[-104.9902,39.7395],[-104.9907,39.7395],[-104.9907,39.7391]]] };
@@ -45,6 +46,11 @@ test('Atlas parcel study edits actual geometry, rechecks limits and survives rel
   await expect(inspector.locator('[data-check="height"]')).toHaveAttribute('data-status','fail');
   await inspector.getByLabel('Design height (m)').fill('9');
   await expect(inspector.locator('[data-check="height"]')).toHaveAttribute('data-status','pass');
+  await inspector.getByLabel('Footprint scale (%)').fill('80');
+  expect(await page.evaluate(() => (window as any).PlanningParcelStudy.getForm().scale)).toBe(0.8);
+  await inspector.getByLabel('Move north (m)').fill('50');
+  await expect(inspector.locator('[data-check="parcelContainment"]')).toHaveAttribute('data-status','fail');
+  await inspector.getByLabel('Move north (m)').fill('0');
   await inspector.getByLabel('Move east (m)').fill('50');
   await expect(inspector.locator('[data-check="parcelContainment"]')).toHaveAttribute('data-status','fail');
   expect(await page.evaluate(() => (window as any).PlanningViews.getItems().filter((item:any) => item.study).length)).toBe(2);
@@ -52,7 +58,7 @@ test('Atlas parcel study edits actual geometry, rechecks limits and survives rel
   await expect(inspector.locator('[data-study-summary]')).toHaveAttribute('data-study-summary','unresolved');
   await inspector.getByLabel('Move east (m)').fill('');
   await inspector.getByLabel('Design height (m)').fill('12');
-  await inspector.locator('select[data-study-input="frontEdge"]').selectOption('1');
+  await selectNativeOption(inspector.locator('select[data-study-input="frontEdge"]'), '1');
   await expect(inspector.locator('[data-study-summary]')).toHaveCount(0);
   await expect(inspector.getByLabel('Move east (m)')).toHaveAttribute('aria-invalid','true');
   expect(await page.evaluate(() => (window as any).PlanningViews.getItems().find((item:any) => item.assessment.meaning === 'study-design').volumes[0].topM)).toBe(9);
@@ -110,13 +116,13 @@ test('Permitted draws viewport parcel volumes without a study and zoning areas h
   await page.getByRole('button',{name:'Buildings and massing',exact:true}).click();
   const panel=page.locator('#planning-views');
   await expect(panel.locator('[data-planning-setting="zoningAreas"]')).toHaveValue('off');
-  await panel.locator('[data-planning-setting="permitted"]').selectOption('off');
+  await selectNativeOption(panel.locator('[data-planning-setting="permitted"]'), 'off');
   await expect(page.locator('.planning-envelope-height')).toHaveCount(0);
-  await panel.locator('[data-planning-setting="zoningAreas"]').selectOption('ghost');
+  await selectNativeOption(panel.locator('[data-planning-setting="zoningAreas"]'), 'ghost');
   await expect(page.getByRole('button',{name:'Inspect source zoning area Synthetic zoning area',exact:true})).toBeAttached();
   await expect(page.locator('.planning-envelope-height')).toHaveCount(0);
-  await panel.locator('[data-planning-setting="zoningAreas"]').selectOption('off');
-  await panel.locator('[data-planning-setting="permitted"]').selectOption('solid');
+  await selectNativeOption(panel.locator('[data-planning-setting="zoningAreas"]'), 'off');
+  await selectNativeOption(panel.locator('[data-planning-setting="permitted"]'), 'solid');
   await expect(page.locator('.planning-envelope-height')).toHaveCount(1);
   await page.getByRole('button',{name:'Buildings and massing',exact:true}).click();
   await page.getByRole('button',{name:'Inspect permitted massing on parcel-test',exact:true}).click();

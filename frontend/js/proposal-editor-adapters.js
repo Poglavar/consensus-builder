@@ -347,9 +347,21 @@
         return Array.isArray(ring) && ring.length >= 4;
     }
 
+    function polygonCoordinatesValid(geometry) {
+        if (!geometry || !['Polygon', 'MultiPolygon'].includes(geometry.type)) return false;
+        const polygons = geometry.type === 'Polygon' ? [geometry.coordinates] : geometry.coordinates;
+        return Array.isArray(polygons) && polygons.length > 0 && polygons.every(rings =>
+            Array.isArray(rings) && rings.length > 0 && rings.every(ring =>
+                Array.isArray(ring) && ring.length >= 4
+                && ring.every(point => Array.isArray(point) && point.length >= 2
+                    && Number.isFinite(point[0]) && Number.isFinite(point[1]))
+                && ring[0][0] === ring[ring.length - 1][0]
+                && ring[0][1] === ring[ring.length - 1][1]));
+    }
+
     function featureFromSite(site) {
         const geometry = site && site.type === 'Feature' ? site.geometry : site;
-        if (!siteDraftApi().isPolygonal(geometry)) return null;
+        if (!siteDraftApi().isPolygonal(geometry) || !polygonCoordinatesValid(geometry)) return null;
         return { type: 'Feature', properties: {}, geometry: clone(geometry) };
     }
 
@@ -357,16 +369,16 @@
         const t = turfRef || global.turf;
         const candidateFeature = featureFromSite(candidate);
         const siteFeature = featureFromSite(site);
-        if (!t || typeof t.booleanWithin !== 'function' || !candidateFeature || !siteFeature) return false;
+        if (!t || typeof t.difference !== 'function' || !candidateFeature || !siteFeature) return false;
         try {
-            // Gaps can split one building into several pieces. Turf's first argument supports
-            // Polygon, so check every piece against the complete site, including its holes.
+            // Gaps can split one building into several pieces. Difference-null is exact
+            // containment, including shared boundaries and holes, without a distance tolerance.
             const parts = candidateFeature.geometry.type === 'MultiPolygon'
                 ? candidateFeature.geometry.coordinates
                 : [candidateFeature.geometry.coordinates];
-            return parts.every(coordinates => t.booleanWithin({
+            return parts.every(coordinates => t.difference({
                 type: 'Feature', properties: {}, geometry: { type: 'Polygon', coordinates }
-            }, siteFeature));
+            }, siteFeature) === null);
         } catch (_) { return false; }
     }
 

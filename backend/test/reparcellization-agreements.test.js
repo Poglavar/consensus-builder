@@ -6,6 +6,8 @@ import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
 const planUtils = require('../../frontend/js/reparcellization-plan-utils.js');
 const agreements = require('../../frontend/js/reparcellization-agreements.js');
+const deal = require('../../frontend/js/reparcellization-deal.js');
+const validation = require('../../frontend/js/reparcellization-validation.js');
 const square = (x1, y1, x2, y2) => turf.polygon([[[x1, y1], [x2, y1], [x2, y2], [x1, y2], [x1, y1]]]);
 const feature = geometry => turf.feature(geometry);
 const clone = value => JSON.parse(JSON.stringify(value));
@@ -27,7 +29,8 @@ function fixture() {
     const parts = planUtils.splitPlanPerParcel(plan, turf);
     const proposal = {
         proposalId: 'preview-1', title: 'Block plan', name: 'Block plan', offer: 1000, budget: 1000,
-        sourceProposalId: 'source-1', replacementOfProposalId: 'source-1', createdAt: '2026-01-01T00:00:00Z',
+        goal: 'reparcellization', offerCurrency: 'EUR',
+        proposalOrigin: { relation: 'revision', source: { kind: 'local', localProposalId: 'source-1' } }, createdAt: '2026-01-01T00:00:00Z',
         site: turf.union(first, second).geometry,
         binding: { coverage: 'complete', parcels: [{ parcelId: 'p1' }, { parcelId: 'p2' }] },
         reparcellization: { contributionBasis: 'area', poolUnitValue: 2, ownerShares: [
@@ -106,10 +109,25 @@ describe('reparcellization agreements', () => {
         expect(batch.items.map(item => item.record.reparcellization.totalCashOffer)).toEqual([700, 300]);
         expect(batch.items[0].record.reparcellization.polygons.some(plot => plot.jointPool)).toBe(true);
         expect(f.proposal).toEqual(original);
-        expect(batch.items.every(item => item.record.sourceProposalId === 'source-1' && item.record.replacementOfProposalId === 'source-1')).toBe(true);
+        expect(batch.items.every(item => JSON.stringify(item.record.proposalOrigin) === JSON.stringify(f.proposal.proposalOrigin))).toBe(true);
         const total = batch.items.flatMap(item => item.record.reparcellization.polygons)
             .reduce((sum, plot) => sum + plot.area, 0);
         expect(total).toBeCloseTo(f.inputs.reduce((sum, p) => sum + turf.area(feature(p.geometry)), 0), 3);
+    });
+
+    it.each([
+        { basis: 'area', currency: undefined },
+        { basis: 'value', currency: 'EUR' }
+    ])('preserves the $basis valuation basis in valid child agreements', ({ basis, currency }) => {
+        const f = fixture();
+        f.proposal.reparcellization.contributionBasis = basis;
+        if (currency) f.proposal.reparcellization.valuationCurrency = currency;
+        const batch = agreements.buildBatch({ proposal: f.proposal, parts: f.parts, cadastralParcels: f.cadastralParcels,
+            groupId: 'group-valuation', titleForParcel: (name, parcel) => `${name} — ${parcel}` }, turf);
+        for (const { record } of batch.items) {
+            expect(deal.content(record).valuation).toMatchObject({ contributionBasis: basis, currency: currency ?? null });
+            expect(validation.validate(record, { turf }).errors).toEqual([]);
+        }
     });
 
     it('allocates each owner offer in cents by that owner contribution across child parcels', () => {

@@ -1,7 +1,7 @@
 import { test, expect } from '../helpers/fixtures';
-import { openCity, openParcel, PARCEL_ID, expectStatusLogged } from '../helpers/runtime';
+import { openCity, openParcel, createBuilding, proposalState, PARCEL_ID, expectStatusLogged } from '../helpers/runtime';
 import { installLayerDatasets } from '../helpers/mocks/layer-datasets';
-import { openAndClosePopup } from '../helpers/controls';
+import { openAndClosePopup, selectNativeOption } from '../helpers/controls';
 
 const PARCEL_IDS = ['HR-335754-1234', 'HR-335754-1235', 'HR-335754-1236', 'HR-335754-1237', 'HR-335754-1238'];
 
@@ -169,33 +169,29 @@ test.describe('Layers sheet behavior @features', () => {
 
   test('proposed-building visibility follows a real applied building proposal', async ({ mockApi: page }) => {
     await openLayers(page);
-    await openParcel(page, 'proposals');
-    await page.locator('.parcel-build-btn--single').click();
-    const prompt = page.getByRole('alertdialog');
-    if (await prompt.isVisible().catch(() => false)) {
-      await prompt.getByRole('button', { name: 'No, just this parcel' }).click();
-    }
-    await expect(page.locator('#single-building-editor').locator('.on-map-editor__panel')).toBeVisible();
-    await expect(page.locator('#single-building-confirm')).toBeEnabled();
-    await page.locator('#single-building-confirm').click();
-    await expect.poll(() => page.evaluate(() => (window as any).proposedBuildings.length)).toBeGreaterThan(0);
     await page.locator('#layers-button').click();
-    // Proposed buildings use one Leaflet canvas renderer, so SVG path counts are not their display
-    // contract. Count only features reachable from layers currently attached to the real map.
-    const visibleProposalBuildings = () => page.evaluate(() => {
+    const proposalId = await createBuilding(page);
+    const saved = await proposalState(page, proposalId);
+    await expect.poll(() => page.evaluate(() => (window as any).proposedBuildings.length)).toBeGreaterThan(0);
+    await page.locator('#planning-views-button').click();
+    await expect(page.locator('#planning-views')).toBeVisible();
+    // Planning appearance hides the canvas pane without deleting its geometry or source record.
+    const renderedProposalBuildings = () => page.evaluate(() => {
       const map = (window as any).map;
       let count = 0;
-      const visit = (layer: any) => {
-        if (layer?.feature?.properties?.proposalId) count++;
-        layer?.eachLayer?.(visit);
-      };
-      map.eachLayer(visit);
+      map.eachLayer((layer: any) => {
+        if (layer?.options?.pane === 'proposedBuildingsPane' && layer.feature?.properties?.proposalId) count++;
+      });
       return count;
     });
-    await page.locator('#showProposedBuildings').check();
-    await expect.poll(visibleProposalBuildings).toBeGreaterThan(0);
-    await page.locator('#showProposedBuildings').uncheck();
-    await expect.poll(visibleProposalBuildings).toBe(0);
+    const canvas = page.locator('.leaflet-proposedBuildings-pane canvas');
+    const proposedDisplay = page.locator('[data-planning-setting="proposed"]');
+    await selectNativeOption(proposedDisplay, 'solid');
+    await expect.poll(renderedProposalBuildings).toBeGreaterThan(0);
+    await expect(canvas).toBeVisible();
+    await selectNativeOption(proposedDisplay, 'off');
+    await expect(canvas).toBeHidden();
+    expect(await proposalState(page, proposalId)).toEqual(saved);
   });
 
   for (const kind of ['park', 'square'] as const) {

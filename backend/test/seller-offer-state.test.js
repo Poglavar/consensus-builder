@@ -9,6 +9,7 @@ const require = createRequire(import.meta.url);
 const records = require('../../frontend/js/proposals/formation-depth.js');
 const chainRecord = require('../../frontend/js/proposals/chain-record.js');
 const fingerprints = require('../../frontend/js/proposals/sharing.js');
+const lifecycleEvidence = require('../../frontend/js/proposals/lifecycle-evidence.js');
 
 const sources = ['status', 'proposal-kind', 'lifecycle', 'execution'].map(name =>
     readFileSync(new URL(`../../frontend/js/proposals/${name}.js`, import.meta.url), 'utf8'));
@@ -29,6 +30,7 @@ function fixture(extra = {}) {
         showEphemeralMessage: vi.fn()
     });
     context.window = context;
+    context.ProposalLifecycleEvidence = lifecycleEvidence;
     sources.forEach(source => runInContext(source, context));
     return { context, proposal, save, transfer };
 }
@@ -90,8 +92,11 @@ describe('seller offer state', () => {
     });
 
     it.each(['Executed', 'Cancelled', 'Expired', 'Unknown'])('keeps %s ahead of unfunded sale intent', lifecycleStatus => {
-        const { context, proposal, save, transfer } = fixture({ lifecycleStatus });
-        expect(context.getProposalLifecycleKey(proposal)).toBe(lifecycleStatus.toLowerCase());
+        const extra = lifecycleStatus === 'Executed'
+            ? { lifecycleEvidence: { protocol: 'proposal-lifecycle-evidence/1', state: 'observed', status: 'Executed', observedAt: '2026-10-01T00:00:00.000Z' } }
+            : {};
+        const { context, proposal, save, transfer } = fixture({ lifecycleStatus, ...extra });
+        expect(context.getProposalLifecycleKey(proposal)).toBe(lifecycleStatus === 'Executed' ? 'executed' : lifecycleStatus.toLowerCase());
         expect(context.isProposalOpenSaleOffer(proposal)).toBe(false);
         expect(context.simulateSaleOfferPurchase(proposal.proposalId, 'buyer')).toBe(false);
         expect(proposal.lifecycleStatus).toBe(lifecycleStatus);

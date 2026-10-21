@@ -57,7 +57,7 @@ async function openCourtyard(page: Page, enclosed = true) {
     const w = window as any;
     w.proposalStorage.addProposal({
       title: 'Courtyard source block', goal: 'buildings', primaryType: 'Building',
-      cadastreParcelIds: inputIds, applied: false,
+      lifecycleStatus: 'Active', cadastreParcelIds: inputIds, applied: false,
       buildingProposal: { parameters: { mode: 'block' } },
       geometry: { blockMassing: { type: 'Feature', properties: {}, geometry: {
         type: 'Polygon', coordinates: hasCourtyard ? [outerRing, innerRing] : [outerRing],
@@ -217,13 +217,11 @@ test('courtyard derivation preserves private plots, joint title and saved shares
   const joint = plans[0].reparcellization.polygons.filter((plot: any) => plot.jointPool);
   expect(joint).toHaveLength(1);
   expect(joint[0].owners).toHaveLength(2);
-  const sourceBuildingId = await page.evaluate(() => (window as any).proposalStorage.getAllProposals()
-    .find((proposal: any) => proposal.title === 'Courtyard source block')?.proposalId);
-  expect(sourceBuildingId).toBeTruthy();
   expect(joint[0].derivation).toMatchObject({
-    kind: 'building-courtyard', sourceProposalId: sourceBuildingId, sourceTitle: 'Courtyard source block',
+    kind: 'building-courtyard', sourceTitle: 'Courtyard source block',
     sourceFootprint: { type: 'Polygon', coordinates: [outer, inner] },
   });
+  expect(joint[0].derivation).not.toHaveProperty('sourceProposalId');
   expect(joint[0].owners.map((owner: any) => owner.displayName).sort()).toEqual(['Owner A', 'Owner B']);
   expect(joint[0].owners.reduce((sum: number, owner: any) => sum + owner.share, 0)).toBeCloseTo(1, 12);
   expect(joint[0].owners[0].share).not.toBeCloseTo(joint[0].owners[1].share, 3);

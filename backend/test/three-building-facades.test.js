@@ -3,6 +3,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { createRequire } from 'node:module';
 import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
+import { parse } from '@babel/parser';
 
 const require = createRequire(import.meta.url);
 const facades = require('../../frontend/js/three-building-facades.js');
@@ -17,6 +18,24 @@ const rectangle = polygon([[15, 44], [15.001, 44], [15.001, 44.001], [15, 44.001
 const shader = () => ({ uniforms: {}, vertexShader: 'void main() {\n#include <begin_vertex>\n}',
     fragmentShader: 'void main() {\n#include <color_fragment>\n#include <alphatest_fragment>\n}' });
 const material = () => ({ userData: {}, onBeforeCompile() {}, customProgramCacheKey() { return 'phong'; } });
+
+function declarationSource(name) {
+    const source = readFileSync(new URL('../../frontend/js/three-mode.js', import.meta.url), 'utf8');
+    const ast = parse(source, { sourceType: 'script' });
+    const found = [];
+    const visit = node => {
+        if (!node || typeof node !== 'object') return;
+        if (node.type === 'FunctionDeclaration' && node.id?.name === name) found.push(node);
+        for (const [key, value] of Object.entries(node)) {
+            if (key === 'loc' || key === 'start' || key === 'end') continue;
+            if (Array.isArray(value)) value.forEach(visit);
+            else if (value && typeof value === 'object') visit(value);
+        }
+    };
+    visit(ast);
+    expect(found, `Expected one ${name} declaration`).toHaveLength(1);
+    return source.slice(found[0].start, found[0].end);
+}
 
 describe('procedural building facades', () => {
     it('keeps a parcel design across volumes, proposals, regeneration and height changes', () => {
@@ -163,8 +182,7 @@ describe('procedural building facades', () => {
 
     it('constructs controls without overwriting saved preferences, then restores and saves user changes', () => {
         // Exercise the real viewer setter with storage/control collaborators, without a browser.
-        const source = readFileSync(new URL('../../frontend/js/three-mode.js', import.meta.url), 'utf8');
-        const setter = source.slice(source.indexOf('    function setFacadeAppearance('), source.indexOf('    function setRerollBusy('));
+        const setter = declarationSource('setFacadeAppearance');
         const saved = new Map([['enabled', '1'], ['style', 'brick']]);
         const context = {
             buildingFacades: facades, facadeState: facades.createState(THREE),
