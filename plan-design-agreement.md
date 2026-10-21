@@ -60,6 +60,21 @@ decisions are appended as they are made and the open list shrinks.
 - **Draft agreements (confirmed):** an agreement may be drafted over local unpublished designs;
   publishing or minting it pins them first.
 
+### Drawing is only drawing; allocation is separate (pitfall 4, user 2026-10-21)
+
+- The Approval tab's "Agreement rules" (voluntary all-owners, the research templates, custom) is
+  the agreement's **decision rule**; the approval engine behind it moves to the agreement unchanged.
+- An agreement always settles the whole input land of its designs (option A). Gradual
+  participation is done with separate designs, each confined to the land its own agreement
+  settles; a shared courtyard is one agreement, all or nothing. The per-input "separate
+  agreements" mode of `reparcellization-agreements.js` (child proposals with their own site and
+  anchor, largest-remainder cash per child) is dropped.
+- The **parcel-layout design keeps only geometry**: the pool outline and the output plots.
+  Recipient, public or joint role, valuation and cash are allocation lines of the agreement.
+  "Assign this plot to public" is no longer a drawing act.
+- Standing rule (user): anything that exists now but is more complicated than the new design
+  needs is flagged and flattened, not carried over. Candidates are listed under "Simplifications".
+
 ### Carried over from the Codex design session of 2026-10-21 (notes commits 0a5d0c9b0, ac30810b3)
 
 - Roads inside a readjustment are drawn as roads, ordinary road designs. The plots are their own
@@ -93,8 +108,7 @@ demo content may all change, and affected records are recreated.
 1. Plan vs agreement. **Decided above.**
 2. Consent and execution per design. **Decided above.**
 3. Decision kinds. **Resolved with 1**: the decision rule lives on the agreement.
-4. "Agreement" already names the per-input-parcel sub-deals of the courtyard flow
-   (`reparcellization-agreements.js`) and the Approval tab's "Agreement rules". Fold or drop.
+4. The two existing "agreement" meanings. **Decided above.**
 5. Pooled before/after is an agreement-level computation: contributions on the ground before any
    covered design, allocations on the fabric after all of them. Per-design numbers lose the road
    land from the pool and double count crossings.
@@ -110,3 +124,37 @@ demo content may all change, and affected records are recreated.
    automatic layout. M2, publish agreements with consent bound to the agreement hash. M3, mint
    agreements and settle markets on them. The one-road-plus-cash flow keeps working throughout as an
    agreement created in the same step as its design.
+
+## Simplifications the new design allows (candidates, flagged 2026-10-21)
+
+1. **Designs carry no cadastre references.** A design is geometry on a site; which parcels it
+   touches is derived by applying it to whatever ground is there ("proposals are geometry, parcels
+   are derived", 2026-10-17). Only the agreement names parcels: its **inputs** (cadastral ids plus
+   a rights snapshot, or open-ground entries) and its **outputs** (the pieces left after its designs
+   are applied, by content hash). The publish-time rule "declared parcels must equal the server's
+   binding" becomes an agreement-level check by the lens. This closes three open items by
+   construction: pooled before/after is inputs versus outputs (5); replay order and content-hash ids
+   are how outputs are computed, and changed ground changes the hashes and refuses the agreement
+   (6); estimated parcels can be drawn over freely but can never be an agreement input, so they
+   are exploration or open ground (7). To confirm.
+2. One CID scheme replaces the effect hash, the plan hash and the member hashes (decided).
+3. The named-plan record and its routes, hash, supersession, mint script, thumbnail backfill, plan
+   view and "Part of plan" rows become the agreement's; one container type instead of two.
+4. The proposal row loses every term column: `offer`, `offerCurrency`, `budget`, `decay*`,
+   `deposit*`, `isConditional`, `disbursementMode`, `expiresAt`, approval configuration, decision
+   kind and the sale-offer predicate. A sale is an agreement with no design at all.
+5. Transaction goals (`ownership-transfer-from-me`) leave the goal taxonomy; a goal is a design
+   type only, and `structureProposal.kind` can fold into it.
+6. Per-design consent and lifecycle machinery goes: owner acceptances and tallies, signed owner
+   decisions per proposal, effect-hash stamping, the lifecycle oracle keyed on proposal accounts,
+   `verdict_may_execute` on proposals, parcel-history events per proposal. One set of these exists,
+   keyed on the agreement.
+7. The chain programs shrink to one agreement program: create (CID, lens, deadline), fund, attest,
+   execute, cancel or expire. No per-parcel consent, owner lists, EAS self-claims, withdrawal or
+   vote variants on chain; owner decisions are published documents the engine counts.
+8. Lineage flattens: a design fork is a new CID with an optional link to the CID it came from; a
+   terms counterproposal is a counter-agreement. The typed `proposalOrigin` and the lineage route
+   can go.
+9. The road and corridor import no longer declares parcels when a design is created (the
+   `loadGroundUnder` step); the agreement derives them when it is created.
+10. Market contests group agreements by shared input land; no folding of proposals under plans.
