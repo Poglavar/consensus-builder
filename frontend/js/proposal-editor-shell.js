@@ -1,4 +1,4 @@
-// Purpose: render the shared proposal editor (the "Create proposal" terms flow) and the
+// Purpose: render the shared proposal editor (the "Create proposal" flow) and the
 // design-session plumbing behind instant creation and geometry editing. There is no user-facing
 // drafts list: what is on the map IS the draft, editable until proposed.
 (function attachProposalEditorShell(global) {
@@ -7,9 +7,6 @@
     const TAB_LABELS = {
         design: ['proposalDrafts.tabs.design', 'Design'],
         parcels: ['proposalDrafts.tabs.parcels', 'Parcels'],
-        ownership: ['proposalDrafts.tabs.ownership', 'Ownership'],
-        approval: ['proposalDrafts.tabs.approval', 'Approval'],
-        terms: ['proposalDrafts.tabs.terms', 'Terms'],
         details: ['proposalDrafts.tabs.details', 'Details']
     };
     const editorState = {
@@ -18,9 +15,7 @@
         tab: null,
         comparison: 'overlay',
         localMutation: false,
-        unsubscribe: null,
-        approvalError: null,
-        approvalImportSequence: 0
+        unsubscribe: null
     };
     const failedDraftReopenInFlight = new Set();
     const placementBindingInFlight = new Map();
@@ -48,6 +43,34 @@
         } catch (_) { return null; }
     }
 
+    // The binding the server gives a design on this site (POST /designs/binding: derived, nothing
+    // stored), read with the city's parcel source. A refusal reads as the index's own message.
+    async function fetchPlacementBinding({ site, toleranceM, city }) {
+        const unavailable = () => tDraft('proposalDrafts.placement.bindingUnavailable', 'The authoritative site binding service is unavailable. Your moved draft is saved locally.');
+        const backendBase = typeof global.resolveBackendBaseUrl === 'function'
+            ? global.resolveBackendBaseUrl()
+            : (typeof global.getBackendBase === 'function' ? global.getBackendBase() : '');
+        if (!backendBase || typeof global.fetch !== 'function') throw new Error(unavailable());
+        let response;
+        try {
+            response = await global.fetch(`${String(backendBase).replace(/\/$/, '')}/designs/binding`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ site, toleranceM, city, parcelSourceId: global.DesignSync.parcelSourceIdOf(city) })
+            });
+        } catch (error) {
+            throw Object.assign(new Error(unavailable()), { code: 'binding-unavailable', cause: error });
+        }
+        let payload = null;
+        try { payload = await response.json(); } catch (_) { payload = null; }
+        if (!response.ok) {
+            throw Object.assign(new Error(global.DesignSync.refusalMessage(response.status, payload)),
+                { code: (payload && payload.code) || `http-${response.status}` });
+        }
+        if (!payload || !payload.binding) throw Object.assign(new Error(unavailable()), { code: 'binding-unavailable' });
+        return payload.binding;
+    }
+
     async function rebindFreePlacementDraft(draftId) {
         const store = global.proposalDraftStore;
         let draft = store?.getDraft?.(draftId) || null;
@@ -65,15 +88,7 @@
             const placement = draft.editorPayload?.placement || {};
             const site = placementApi.freePlacementPatch(draft, placement)?.site;
             if (!site) throw new Error(tDraft('proposalDrafts.placement.invalidSite', 'A free placement needs a valid polygon site.'));
-            const bindingApi = global.__publishBinding;
-            const backendBase = typeof global.resolveBackendBaseUrl === 'function'
-                ? global.resolveBackendBaseUrl()
-                : (typeof global.getBackendBase === 'function' ? global.getBackendBase() : '');
-            if (!bindingApi?.createFetchBinding || !backendBase || typeof global.fetch !== 'function') {
-                throw new Error(tDraft('proposalDrafts.placement.bindingUnavailable', 'The authoritative site binding service is unavailable. Your moved draft is saved locally.'));
-            }
-            const fetchBinding = bindingApi.createFetchBinding(global.fetch.bind(global), backendBase);
-            const binding = await fetchBinding({
+            const binding = await fetchPlacementBinding({
                 site,
                 toleranceM: Number(draft.fields?.toleranceM) || 0,
                 city: draft.cityId || draft.sourceSnapshot?.city || currentCityId() || null
@@ -109,33 +124,6 @@
     function proposalLabel(goal) {
         const adapter = global.proposalEditorAdapterRegistry?.get(goal);
         return adapter?.label || String(goal || tDraft('proposalDrafts.proposal', 'Proposal')).replace(/-/g, ' ');
-    }
-
-    function rejectRetiredProposalGoal(goalOrProposal) {
-        let rawGoal = goalOrProposal;
-        if (goalOrProposal && typeof goalOrProposal === 'object') {
-            if (goalOrProposal.decideLaterProposal) rawGoal = 'decide-later';
-            else {
-                try {
-                    rawGoal = global.ProposalDesignGoals?.keyOf(goalOrProposal)
-                        || (goalOrProposal.goal === 'decide-later' ? 'decide-later' : '');
-                } catch (_) {
-                    rawGoal = global.ProposalDesignGoals?.keyOf(goalOrProposal) || (goalOrProposal.goal === 'decide-later' ? 'decide-later' : '');
-                }
-            }
-        }
-        const normalized = global.proposalEditorAdapterRegistry?.normalizeGoal?.(rawGoal)
-            || String(rawGoal || '').trim().toLowerCase().replace(/\s+/g, '-');
-        if (normalized !== 'decide-later') return false;
-
-        const message = tDraft(
-            'modal.createProposal.proposal_type_no_longer_available',
-            'Merge / Decide Later is no longer available. Use Lay out parcels.'
-        );
-        if (typeof global.showStyledAlert === 'function') global.showStyledAlert(message);
-        else if (typeof global.updateStatus === 'function') global.updateStatus(message);
-        else console.warn(message);
-        return true;
     }
 
     function relativeTime(value) {
@@ -185,14 +173,6 @@
         return root;
     }
 
-    function formatInputDate(value) {
-        if (!value) return '';
-        const date = new Date(value);
-        if (!Number.isFinite(date.getTime())) return '';
-        const pad = number => String(number).padStart(2, '0');
-        return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
-    }
-
     // What saving this draft does to its source, for the editor's copy: 'new' (no source), 'edit' (one's
     // own local record, saved in place) or 'counterproposal' (a published or minted source, which stays
     // as it is). The same rule as the save itself (proposals/lineage.js editsInPlace).
@@ -217,7 +197,6 @@
             ? `<label class="proposal-editor-field">
                     <span>${escapeHtml(tDraft('proposalDrafts.fields.type', 'Proposal type'))}</span>
                     <select data-draft-goal>${(global.proposalEditorAdapterRegistry?.list?.() || [])
-                        .filter(entry => !entry.readOnly)
                         .map(entry => option(entry.key, entry.label, draft.adapterKey || draft.goal))
                         .join('')}</select>
                 </label>`
@@ -256,157 +235,6 @@
 
     function option(value, label, selected) {
         return `<option value="${escapeHtml(value)}"${String(selected || '') === String(value) ? ' selected' : ''}>${escapeHtml(label)}</option>`;
-    }
-
-    function renderOwnership(draft) {
-        const fields = draft.fields || {};
-        return `
-            <section class="proposal-editor-section" data-editor-section="ownership">
-                <h3>${escapeHtml(tDraft('proposalDrafts.sections.ownershipTitle', 'Ownership'))}</h3>
-                <p class="proposal-editor-section-copy">${escapeHtml(tDraft('proposalDrafts.sections.ownershipCopy', 'Set who receives the land and any recipient constraint.'))}</p>
-                <label class="proposal-editor-field">
-                    <span>${escapeHtml(tDraft('proposalDrafts.fields.ownership', 'Ownership change'))}</span>
-                    <select data-draft-path="fields.ownership">
-                        ${option('', tDraft('proposalDrafts.ownership.inherit', 'Keep source setting'), fields.ownership)}
-                        ${option('no-change', tDraft('proposalDrafts.ownership.noChange', 'No change'), fields.ownership)}
-                        ${option('to-me', tDraft('proposalDrafts.ownership.toMe', 'To me'), fields.ownership)}
-                        ${option('to-city', tDraft('proposalDrafts.ownership.toCity', 'To city'), fields.ownership)}
-                        ${option('third-party', tDraft('proposalDrafts.ownership.thirdParty', 'Third party'), fields.ownership)}
-                    </select>
-                </label>
-                <label class="proposal-editor-field">
-                    <span>${escapeHtml(tDraft('proposalDrafts.fields.recipientScope', 'Recipient scope'))}</span>
-                    <select data-draft-path="fields.recipientScope">
-                        ${option('', tDraft('proposalDrafts.ownership.notApplicable', 'Not applicable'), fields.recipientScope)}
-                        ${option('any', tDraft('proposalDrafts.ownership.anyone', 'Anyone'), fields.recipientScope)}
-                        ${option('specific', tDraft('proposalDrafts.ownership.specific', 'Specific recipient'), fields.recipientScope)}
-                    </select>
-                </label>
-                <label class="proposal-editor-field">
-                    <span>${escapeHtml(tDraft('proposalDrafts.fields.recipientAddress', 'Recipient address or name'))}</span>
-                    <input type="text" data-draft-path="fields.recipientAddress" value="${escapeHtml(fields.recipientAddress || '')}" autocomplete="off">
-                </label>
-            </section>`;
-    }
-
-    function approvalApi() {
-        return global.ProposalApproval || null;
-    }
-
-    function approvalConfigFor(draft) {
-        const api = approvalApi();
-        if (!api || typeof api.normalizeConfig !== 'function') return null;
-        return api.normalizeConfig(draft.fields?.approvalConfig || {
-            schema: api.CONFIG_SCHEMA || 'proposal-approval/v1',
-            rights: null,
-            policy: { type: 'unanimous' }
-        });
-    }
-
-    function approvalCadastreParcelIds(draft) {
-        const fields = draft?.fields || {};
-        const registry = global.proposalEditorAdapterRegistry;
-        const adapter = registry?.get?.(draft?.adapterKey || draft?.goal);
-        if (typeof adapter?.serializeProposal === 'function') {
-            try {
-                // Serializers are the source of truth for live-piece to cadastral projection.
-                // Pass a JSON copy so preview and template generation cannot mutate the draft.
-                const serialized = adapter.serializeProposal(JSON.parse(JSON.stringify(draft)));
-                if (Array.isArray(serialized?.cadastreParcelIds)) {
-                    return [...new Set(serialized.cadastreParcelIds.map(String))];
-                }
-            } catch (_) { }
-        }
-        return [...new Set((Array.isArray(fields.cadastreParcelIds) ? fields.cadastreParcelIds : []).map(String))];
-    }
-
-    // The Ownership and approval form is shared with the create dialog (proposals/approval-setup.js).
-    function approvalSetup() {
-        return global.ProposalApprovalSetup || (typeof require === 'function' ? require('./proposals/approval-setup.js') : null);
-    }
-
-    // The approval setup is written whole: a patch would be deep-merged (proposal-drafts.js
-    // mergeDraftValues), and a config that drops its scheme pin or source would keep the old one.
-    function writeApprovalConfig(draftId, approvalConfig, coalesceKey) {
-        global.proposalDraftStore.updateDraft(draftId, next => {
-            next.fields = { ...(next.fields || {}), approvalConfig };
-            return next;
-        }, { coalesceKey });
-    }
-
-    function renderApprovalPreview(config, draft) {
-        return approvalSetup().previewHtml(config, approvalCadastreParcelIds(draft));
-    }
-
-    function approvalPolicyText(policy, regime = null) {
-        return approvalSetup().policyText(policy, regime);
-    }
-
-    // The review's words for the approval setup and the lens, which displayValue would print as JSON.
-    function approvalReviewText(key, value) {
-        if (key === 'lens') {
-            const keys = (Array.isArray(value) ? value : [])
-                .map(entry => typeof entry === 'string' ? entry : (entry?.address || entry?.key || '')).filter(Boolean);
-            if (!keys.length) return tDraft('proposalDrafts.review.noLens', 'No lens members');
-            const short = keys.map(entry => entry.length > 12 ? `${entry.slice(0, 4)}…${entry.slice(-4)}` : entry).join(', ');
-            return tDraft('proposalDrafts.review.lensMembers', '{{count}} lens member(s): {{keys}}', { count: keys.length, keys: short });
-        }
-        if (!value || typeof value !== 'object') return tDraft('proposalDrafts.review.noApproval', 'No approval setup');
-        const rights = value.rights;
-        const rightsText = rights && Array.isArray(rights.parcels)
-            ? tDraft('proposalDrafts.review.rights', 'Rights for {{parcels}} parcel(s), {{owners}} owner(s), from {{source}}.', {
-                parcels: rights.parcels.length,
-                owners: new Set(rights.parcels.flatMap(parcel => (parcel.owners || []).map(owner => owner.ownerId))).size,
-                source: [rights.source?.provider, rights.source?.reference].filter(Boolean).join(' · ') || '—'
-            })
-            : tDraft('proposalDrafts.review.noRights', 'No ownership data.');
-        return `${rightsText} ${approvalPolicyText(value.policy, value.regime)}`;
-    }
-
-    function renderApproval(draft) {
-        return approvalSetup().html({
-            config: draft.fields?.approvalConfig,
-            lens: draft.fields?.lens,
-            cadastreParcelIds: approvalCadastreParcelIds(draft),
-            error: editorState.approvalError
-        });
-    }
-
-    function renderTerms(draft) {
-        const fields = draft.fields || {};
-        return `
-            <section class="proposal-editor-section" data-editor-section="terms">
-                <h3>${escapeHtml(tDraft('proposalDrafts.sections.termsTitle', 'Terms'))}</h3>
-                <p class="proposal-editor-section-copy">${escapeHtml(tDraft('proposalDrafts.sections.termsCopy', 'Adjust financing, expiry, decay, and deposit terms.'))}</p>
-                <div class="proposal-editor-grid">
-                    <label class="proposal-editor-field">
-                        <span>${escapeHtml(tDraft('proposalDrafts.fields.offer', 'Offer'))}</span>
-                        <input type="number" min="0" step="any" data-draft-path="fields.offer" data-draft-number="true" value="${escapeHtml(fields.offer ?? 0)}">
-                    </label>
-                    <label class="proposal-editor-field">
-                        <span>${escapeHtml(tDraft('proposalDrafts.fields.currency', 'Currency'))}</span>
-                        <select data-draft-path="fields.offerCurrency">
-                            ${['EUR', 'USD', 'ETH', 'ARS', 'USDC', 'USDT'].map(currency => option(currency, currency, fields.offerCurrency || 'USDT')).join('')}
-                        </select>
-                    </label>
-                </div>
-                <label class="proposal-editor-check"><input type="checkbox" data-draft-path="fields.isConditional"${fields.isConditional ? ' checked' : ''}>${escapeHtml(tDraft('proposalDrafts.fields.conditional', 'Conditional payout'))}</label>
-                <label class="proposal-editor-field">
-                    <span>${escapeHtml(tDraft('proposalDrafts.fields.expiry', 'Expires at'))}</span>
-                    <input type="datetime-local" data-draft-path="fields.expiresAt" data-draft-date="true" value="${escapeHtml(formatInputDate(fields.expiresAt))}">
-                </label>
-                <div class="proposal-editor-card">
-                    <label class="proposal-editor-check"><input type="checkbox" data-draft-path="fields.decayEnabled"${fields.decayEnabled ? ' checked' : ''}>${escapeHtml(tDraft('proposalDrafts.fields.decay', 'Offer decay'))}</label>
-                    <div class="proposal-editor-grid">
-                        <label class="proposal-editor-field"><span>${escapeHtml(tDraft('proposalDrafts.fields.percent', 'Percent'))}</span><input type="number" min="0" max="100" data-draft-path="fields.decayPercent" data-draft-number="true" value="${escapeHtml(fields.decayPercent ?? 0)}"></label>
-                        <label class="proposal-editor-field"><span>${escapeHtml(tDraft('proposalDrafts.fields.durationMs', 'Duration (ms)'))}</span><input type="number" min="0" data-draft-path="fields.decayDurationMs" data-draft-number="true" value="${escapeHtml(fields.decayDurationMs ?? 0)}"></label>
-                    </div>
-                </div>
-                <div class="proposal-editor-card">
-                    <label class="proposal-editor-check"><input type="checkbox" data-draft-path="fields.depositEnabled"${fields.depositEnabled ? ' checked' : ''}>${escapeHtml(tDraft('proposalDrafts.fields.deposit', 'Deposit'))}</label>
-                    <label class="proposal-editor-field"><span>${escapeHtml(tDraft('proposalDrafts.fields.percent', 'Percent'))}</span><input type="number" min="0" max="200" data-draft-path="fields.depositPercent" data-draft-number="true" value="${escapeHtml(fields.depositPercent ?? 0)}"></label>
-                </div>
-            </section>`;
     }
 
     // The layouts the parcel-layout editor offers (plan-design-agreement.md, M1 (a)).
@@ -487,10 +315,6 @@
         return String(value);
     }
 
-    function reviewValue(key, value) {
-        return key === 'approvalConfig' || key === 'lens' ? approvalReviewText(key, value) : displayValue(value);
-    }
-
     function renderReview(draft) {
         const summary = typeof global.summarizeProposalDraftChanges === 'function'
             ? global.summarizeProposalDraftChanges(draft)
@@ -499,7 +323,7 @@
         const rows = changed.map(change => `
             <div class="proposal-editor-diff-row">
                 <dt>${escapeHtml(change.label || change.key)}</dt>
-                <dd><s>${escapeHtml(reviewValue(change.key, change.before))}</s><br>${escapeHtml(reviewValue(change.key, change.after))}</dd>
+                <dd><s>${escapeHtml(displayValue(change.before))}</s><br>${escapeHtml(displayValue(change.after))}</dd>
             </div>`).join('');
         const parcels = summary?.parcels || { added: [], removed: [] };
         const geometry = summary?.geometry || {};
@@ -552,19 +376,15 @@
             return;
         }
         const adapter = global.proposalEditorAdapterRegistry?.get(draft.adapterKey || draft.goal);
-        // Approval goes with ownership: a design whose editor sets no owners (a parcel layout) has
-        // no one to approve it until an agreement includes it.
-        const baseSections = adapter?.sections || ['parcels', 'ownership', 'terms', 'details'];
-        const sections = baseSections.includes('ownership') ? [...new Set([...baseSections, 'approval'])] : baseSections;
+        // Who decides and on what terms is the agreement's (plan-design-agreement.md): a design's
+        // editor has its design, its parcels and its details only.
+        const sections = adapter?.sections || ['parcels', 'details'];
         if (!editorState.tab || !sections.includes(editorState.tab)) editorState.tab = sections.includes('design') ? 'design' : sections[0];
         const reviewing = draft.state === 'review';
         let body = '';
         if (reviewing) body = renderReview(draft);
         else if (editorState.tab === 'design') body = renderDesign(draft, adapter);
         else if (editorState.tab === 'parcels') body = renderParcels(draft);
-        else if (editorState.tab === 'ownership') body = renderOwnership(draft);
-        else if (editorState.tab === 'approval') body = renderApproval(draft);
-        else if (editorState.tab === 'terms') body = renderTerms(draft);
         else body = renderDetails(draft);
 
         const sourceText = draft.sourceLocalProposalId
@@ -630,14 +450,6 @@
         if (input.dataset.draftArray === 'true') {
             return [...new Set(String(input.value || '').split(/[\n,]+/).map(value => value.trim()).filter(Boolean))];
         }
-        if (input.type === 'checkbox') return input.checked;
-        if (input.dataset.draftNumber === 'true') {
-            const number = Number(input.value);
-            return Number.isFinite(number) ? number : 0;
-        }
-        if (input.dataset.draftDate === 'true') {
-            return input.value ? new Date(input.value).toISOString() : null;
-        }
         return input.value;
     }
 
@@ -668,23 +480,6 @@
     }
 
     function handleShellChange(event) {
-        const sourceControl = event.target?.closest?.('[data-approval-source]');
-        if (sourceControl) {
-            approvalSetup().syncSourceControls(ensureShell());
-            return;
-        }
-        const policyControl = event.target?.closest?.('[data-approval-rule]');
-        if (policyControl && editorState.draftId) {
-            saveApprovalPolicy();
-            return;
-        }
-        const lensControl = event.target?.closest?.('[data-approval-lens]');
-        if (lensControl && editorState.draftId) {
-            const addresses = approvalSetup().lensFromText(lensControl.value);
-            global.proposalDraftStore.updateDraft(editorState.draftId, { fields: { lens: addresses } }, { coalesceKey: 'approval-lens' });
-            renderShell();
-            return;
-        }
         const corridorKindInput = event.target?.closest?.('[data-draft-corridor-kind]');
         if (corridorKindInput && editorState.draftId) {
             const kind = corridorKindInput.value === 'track' ? 'track' : 'road';
@@ -720,63 +515,6 @@
         const input = event.target?.closest?.('[data-draft-path]');
         if (!input) return;
         mutateFromInput(input, true);
-    }
-
-    function saveApprovalPolicy() {
-        if (!approvalApi()?.normalizeConfig || !editorState.draftId) return;
-        try {
-            const draft = global.proposalDraftStore.getDraft(editorState.draftId);
-            const normalized = approvalSetup().withPolicyFromForm(ensureShell(), draft.fields?.approvalConfig);
-            editorState.approvalError = null;
-            writeApprovalConfig(editorState.draftId, normalized, 'approval-policy');
-        } catch (error) {
-            editorState.approvalError = error?.message || String(error);
-        }
-        renderShell();
-    }
-
-    async function importApprovalRights() {
-        const store = global.proposalDraftStore;
-        const draft = store?.getDraft(editorState.draftId);
-        if (!approvalApi()?.normalizeRights || !draft) return;
-        const importSequence = ++editorState.approvalImportSequence;
-        try {
-            const imported = await approvalSetup().importRights(ensureShell(), draft.fields?.approvalConfig, {
-                parcelIds: approvalCadastreParcelIds(draft)
-            });
-            if (importSequence !== editorState.approvalImportSequence || editorState.draftId !== draft.id) return;
-            const latest = store.getDraft(draft.id);
-            if (!latest) return;
-            // Rights replace the dataset; the policy edited meanwhile stays.
-            const approvalConfig = approvalApi().normalizeConfig({ ...approvalConfigFor(latest), rights: imported.rights });
-            editorState.approvalError = null;
-            writeApprovalConfig(draft.id, approvalConfig, 'approval-rights-import');
-        } catch (error) {
-            // Keep the previous canonical snapshot untouched when a file or provider fails.
-            if (importSequence !== editorState.approvalImportSequence || editorState.draftId !== draft.id) return;
-            editorState.approvalError = error?.message || String(error);
-        }
-        renderShell();
-    }
-
-    function removeApprovalRights() {
-        editorState.approvalImportSequence += 1;
-        const draft = global.proposalDraftStore?.getDraft(editorState.draftId);
-        if (!approvalApi()?.normalizeConfig || !draft) return;
-        try {
-            const approvalConfig = approvalSetup().withoutRights(draft.fields?.approvalConfig);
-            editorState.approvalError = null;
-            writeApprovalConfig(draft.id, approvalConfig, 'approval-rights-remove');
-        } catch (error) {
-            editorState.approvalError = error?.message || String(error);
-        }
-        renderShell();
-    }
-
-    function downloadApprovalTemplate() {
-        const draft = global.proposalDraftStore?.getDraft(editorState.draftId);
-        if (!draft) return;
-        approvalSetup().downloadTemplate(approvalCadastreParcelIds(draft), draft.fields?.approvalConfig);
     }
 
     // The app's confirm (js/ui/dialogs.js): every question here throws work away, so the safe answer
@@ -854,22 +592,6 @@
             store.updateDraft(draftId, { fields: { selectedParcelIds: (context.ids || []).map(String) } });
             store.validateDraft(draftId);
             renderShell();
-        } else if (action === 'approval-import') {
-            await importApprovalRights();
-        } else if (action === 'approval-template') {
-            downloadApprovalTemplate();
-        } else if (action === 'approval-remove') {
-            removeApprovalRights();
-        } else if (action === 'approval-test-add' || action === 'approval-test-remove') {
-            const draft = store.getDraft(draftId);
-            try {
-                const approvalConfig = approvalSetup().withRuleAction(ensureShell(), draft.fields?.approvalConfig, action, button.dataset.testIndex);
-                editorState.approvalError = null;
-                writeApprovalConfig(draftId, approvalConfig, 'approval-policy');
-            } catch (error) {
-                editorState.approvalError = error?.message || String(error);
-            }
-            renderShell();
         } else if (action === 'focus-issue') {
             const draft = store.getDraft(draftId);
             const issues = [...(draft.validation?.errors || []), ...(draft.validation?.warnings || [])];
@@ -915,8 +637,6 @@
         let section = null;
         if (path === 'fields.name' || path === 'fields.description') section = 'details';
         else if (path === 'fields.selectedParcelIds') section = 'parcels';
-        else if (path.startsWith('fields.ownership') || path.startsWith('fields.recipient')) section = 'ownership';
-        else if (path.startsWith('fields.')) section = 'terms';
         if (section && editorState.tab !== section) {
             editorState.tab = section;
             renderShell();
@@ -977,7 +697,6 @@
         if (!store) return null;
         const draft = store.getDraft(draftId);
         if (!draft) return null;
-        if (editorState.draftId !== draft.id) editorState.approvalError = null;
         store.resumeDraft(draft.id);
         editorState.draftId = draft.id;
         editorState.tab = options.tab || null;
@@ -1030,12 +749,6 @@
         return openProposalEditorShell(draft.id, { tab: options.tab || null });
     }
 
-    // The details panel's way into the editor's Approval tab (rights, rule, lens). Saving edits a
-    // local record in place and forks a published one (proposals/lineage.js editsInPlace).
-    function editProposalApproval(proposalIdOrHash) {
-        return editProposal(proposalIdOrHash, { tab: 'approval' });
-    }
-
     // "Fork proposal" on an existing map object: skip the editor entirely and go straight to the
     // create dialog, prefilled from the object. A fork is always a new record that links back
     // through sourceLocalProposalId; the object it was made from stays as it is.
@@ -1043,7 +756,6 @@
         // No guest gate: creating stays on this device (GuestPolicy 'create' is 'none').
         const proposal = proposalById(proposalIdOrHash);
         if (!proposal) return null;
-        if (rejectRetiredProposalGoal(proposal)) return null;
         const draft = global.proposalDraftStore.createDraftFromProposal(proposal, { activate: true });
         if (!draft) return null;
         try { if (typeof global.hideProposalDetailsPanel === 'function') global.hideProposalDetailsPanel(); } catch (_) { }
@@ -1056,7 +768,6 @@
             ? global.getCurrentParcelSelectionContext()
             : { ids: [] };
         const goal = options.goal || 'as-is';
-        if (rejectRetiredProposalGoal(goal)) return null;
         const draft = global.proposalDraftStore.createDraft({
             cityId: options.cityId || currentCityId(),
             goal,
@@ -1065,9 +776,7 @@
             fields: {
                 name: options.name || '',
                 description: options.description || '',
-                selectedParcelIds: (options.parcelIds || context.ids || []).map(String),
-                offer: Number(options.offer) || 0,
-                offerCurrency: options.offerCurrency || 'USDT'
+                selectedParcelIds: (options.parcelIds || context.ids || []).map(String)
             },
             editorPayload: options.editorPayload || {},
             previewGeometry: options.previewGeometry || null
@@ -1449,8 +1158,8 @@
 
     // Build-first creation from the parcel panel's Build palette: a fresh draft seeded with the
     // selection opens the type's design tool directly (no create dialog); closing the tool with a
-    // design commits it as an applied object, exactly like a geometry edit does. Terms and minting
-    // come later via "Create proposal" on the object.
+    // design commits it as an applied object, exactly like a geometry edit does. Who decides and on
+    // what terms is set later, in an agreement over the object (plan-design-agreement.md).
     async function startInstantProposalDesign(adapterKey, parcelIds) {
         if (global.OnMapEditor?.isActive?.()) return false;
         const ids = (parcelIds || []).map(String).filter(Boolean);
@@ -1462,10 +1171,7 @@
             adapterKey,
             // The selection's union is the design's site (a block's superparcel): the binding at
             // publish is computed from it, so parcels the rule left without a building stay bound.
-            // A parcel layout carries no terms at all (plan-design-agreement.md, M1 (a)).
-            fields: adapterKey === 'parcel-layout'
-                ? { name: '', description: '', selectedParcelIds: ids, site: siteOfLiveSelection(ids) }
-                : { name: '', description: '', selectedParcelIds: ids, site: siteOfLiveSelection(ids), offer: 0, offerCurrency: 'USDT' },
+            fields: { name: '', description: '', selectedParcelIds: ids, site: siteOfLiveSelection(ids) },
             editorPayload: {},
             previewGeometry: null
         });
@@ -1492,16 +1198,14 @@
     // ---- Site-first creation (js/site-drawing.js, PARCEL-OPTIONAL.md phase 2) ----
     // siteContext: { site (MultiPolygon), toleranceM, binding (preview or server), selectionIds? }. The draft carries the site; its declaration starts as the binding's parcels
     // and is replaced by the server binding at publish.
-    // `terms: false` for a parcel layout, which carries no terms at all.
-    function siteDraftFields(siteContext, selectedParcelIds, { terms = true } = {}) {
+    function siteDraftFields(siteContext, selectedParcelIds) {
         return {
             name: '',
             description: '',
             selectedParcelIds: (selectedParcelIds || []).map(String),
             site: JSON.parse(JSON.stringify(siteContext.site)),
             toleranceM: Number(siteContext.toleranceM) || 0,
-            binding: siteContext.binding ? JSON.parse(JSON.stringify(siteContext.binding)) : null,
-            ...(terms ? { offer: 0, offerCurrency: 'USDT' } : {})
+            binding: siteContext.binding ? JSON.parse(JSON.stringify(siteContext.binding)) : null
         };
     }
 
@@ -1674,7 +1378,7 @@
             goal: 'parcel-layout',
             proposalType: proposalLabel('parcel-layout'),
             adapterKey: 'parcel-layout',
-            fields: siteDraftFields(siteContext, [], { terms: false }),
+            fields: siteDraftFields(siteContext, []),
             editorPayload: { plan: { poolSource: 'site', pool: site, algorithm: 'equal', plots: [] } },
             previewGeometry: null
         });
@@ -1734,7 +1438,7 @@
     }
 
     // One-click structures: a park/square/lake IS the selection's union — there is no design
-    // tool, the object simply appears applied (auto-named). Terms come later via "Create proposal".
+    // tool, the object simply appears applied (auto-named).
     async function instantCreateStructureFromSelection(kind, parcelIds) {
         if (!STRUCTURE_KIND_LABELS[kind]) return null;
         const ids = (parcelIds || []).map(String).filter(Boolean);
@@ -1789,7 +1493,7 @@
             goal: kind,
             proposalType: STRUCTURE_KIND_LABELS[kind],
             adapterKey: kind,
-            fields: { name: '', description: '', selectedParcelIds: liveIds, site: siteOfLiveSelection(liveIds), offer: 0, offerCurrency: 'USDT' },
+            fields: { name: '', description: '', selectedParcelIds: liveIds, site: siteOfLiveSelection(liveIds) },
             editorPayload: {
                 structureProposal: {
                     kind,
@@ -1925,16 +1629,6 @@
         );
     }
 
-    function formatDuration(ms) {
-        const seconds = Math.max(0, Math.round(Number(ms || 0) / 1000));
-        if (!seconds) return null;
-        const hours = Math.floor(seconds / 3600);
-        const minutes = Math.floor((seconds % 3600) / 60);
-        const remainder = seconds % 60;
-        const pad = number => String(number).padStart(2, '0');
-        return `${pad(hours)}h:${pad(minutes)}m:${pad(remainder)}s`;
-    }
-
     function dialogGoal(draft) {
         if (['buildings', 'row', 'parcelBased'].includes(draft.adapterKey || draft.goal)) return 'urban-rule';
         return draft.goal;
@@ -1987,9 +1681,6 @@
             recipient.value = fields.recipientAddress;
         }
         if (typeof global.onProposalOwnershipChange === 'function') global.onProposalOwnershipChange();
-        // Ownership initialization resets payment defaults; retain the draft's saved choice.
-        const conditional = global.document?.getElementById('proposalConditionalCheckbox');
-        if (conditional && typeof fields.isConditional === 'boolean') conditional.checked = fields.isConditional;
         const name = global.document?.getElementById('proposalName');
         const description = global.document?.getElementById('proposalDescription');
         if (name) {
@@ -2002,8 +1693,7 @@
     async function stageProposalDraftForPublishing(draftId, options = {}) {
         const store = global.proposalDraftStore;
         let draft = store?.getDraft?.(draftId) || null;
-        // The create dialog attaches terms for publishing; a parcel layout has none and is shared
-        // only with its agreement (ProposalPublishTerms.publishRefusal).
+        // A parcel layout is shared only with its agreement (ProposalPublishTerms.publishRefusal).
         const refusal = draft ? global.ProposalPublishTerms?.publishRefusal?.({ goal: draft.goal }) : null;
         if (refusal) {
             if (typeof global.showStyledAlert === 'function') global.showStyledAlert(refusal.message);
@@ -2071,21 +1761,9 @@
         }
         const seeded = seedDraftPendingState(draft);
         const fields = draft.fields || {};
-        const expiryMs = fields.expiresAt ? new Date(fields.expiresAt).getTime() - Date.now() : 0;
         const prefill = {
             name: fields.name || '',
-            description: fields.description || '',
-            offer: Number(fields.offer) || 0,
-            offerCurrency: fields.offerCurrency || 'USDT',
-            ...(fields.kind ? { kind: fields.kind } : {}),
-            ...(fields.voteExpiryDays > 0 ? { voteExpiryDays: fields.voteExpiryDays } : {}),
-            isConditional: fields.isConditional === true,
-            expiryTime: formatDuration(expiryMs),
-            decayEnabled: fields.decayEnabled === true,
-            decayPercent: Number(fields.decayPercent) || 0,
-            decayTime: formatDuration(fields.decayDurationMs),
-            depositEnabled: fields.depositEnabled === true,
-            depositPercent: Number(fields.depositPercent) || 0
+            description: fields.description || ''
         };
         global.pendingProposalDraftId = draft.id;
         global.pendingProposalReplacementSource = {
@@ -2132,15 +1810,9 @@
         const submit = global.document?.getElementById('createProposalSubmitButton');
         if (submit) {
             const source = draft.sourceLocalProposalId ? proposalById(draft.sourceLocalProposalId) : null;
-            // A vote (either kind chosen in the dialog, proposal-kinds.md) wins over the
-            // create/save/counterproposal label, matching updateCreateProposalSubmitState().
-            const isVote = typeof global.getSelectedProposalKind === 'function'
-                && global.ProposalKind.isNonBinding({ kind: global.getSelectedProposalKind() });
-            submit.textContent = isVote
-                ? tDraft('panel.proposal.voting.submit', 'Submit for voting')
-                : (source
-                    ? global.ProposalLineage.forkSubmitLabel(draft.sourceLocalProposalId, { fork: options.fork === true })
-                    : tDraft('proposalDrafts.actions.createProposal', 'Create proposal'));
+            submit.textContent = source
+                ? global.ProposalLineage.forkSubmitLabel(draft.sourceLocalProposalId, { fork: options.fork === true })
+                : tDraft('proposalDrafts.actions.createProposal', 'Create proposal');
             submit.dataset.proposalDraftId = draft.id;
         }
         closeProposalEditorShell();
@@ -2215,8 +1887,7 @@
                 : `${typeLabel} ${new Date().toISOString().slice(5, 16).replace(/[-T:]/g, '')}`;
             autoFields.titleOrigin = 'generated';
         }
-        // Every object carries the standard description pattern from birth. Terms (kind, money,
-        // voting period) are chosen only when it is published (proposal-kinds.md): no placeholder offer.
+        // Every object carries the standard description pattern from birth.
         const resolvedName = autoFields.name || currentName;
         if (!String(draft.fields?.description || '').trim() && typeof global.generateDefaultProposalDescription === 'function') {
             autoFields.description = global.generateDefaultProposalDescription(typeLabel, resolvedName);
@@ -2276,9 +1947,6 @@
         try { proposal = store.buildProposalFromDraft(draftId); }
         catch (error) { return keepAsDraft(error?.message || String(error)); }
         if (!proposal) return keepAsDraft();
-        // A fork is a fresh, not-yet-proposed object even when its source had terms; an in-place
-        // save keeps the record's own terms (proposals/lineage.js inPlaceRecord).
-        delete proposal.termsConfirmed;
         if (!proposal.author) {
             try { proposal.author = global.getCurrentUserAgent?.()?.name || undefined; } catch (_) { }
         }
@@ -2626,7 +2294,6 @@
     global.closeProposalEditorShell = closeProposalEditorShell;
     global.editProposal = editProposal;
     global.editProposalAsReplacement = editProposal;
-    global.editProposalApproval = editProposalApproval;
     global.proposeExistingProposal = proposeExistingProposal;
     global.confirmProposalEditDependents = confirmEditDependents;
     global.editProposalGeometry = editProposalGeometry;
@@ -2669,12 +2336,8 @@
 
     if (typeof module !== 'undefined' && module.exports) {
         module.exports = {
-            formatDuration,
             patchForPath,
-            displayValue,
-            approvalCadastreParcelIds,
-            renderApprovalPreview,
-            reviewValue
+            displayValue
         };
     }
 })(typeof window !== 'undefined' ? window : globalThis);

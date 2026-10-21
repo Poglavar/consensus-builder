@@ -1,4 +1,6 @@
 // Validates abstract rights, independent authority providers, and exact owner/area approval rules.
+// Decisions are taken on an agreement and sign its CID (plan-design-agreement.md M2): the subject is
+// an agreement-like object { agreementCid, cadastreParcelIds, approvalConfig, lens, ownerApprovals }.
 import { describe, it, expect } from 'vitest';
 import { createRequire } from 'node:module';
 import { readFileSync } from 'node:fs';
@@ -6,6 +8,10 @@ import { createContext, runInContext } from 'node:vm';
 
 const require = createRequire(import.meta.url);
 const approval = require('../../frontend/js/proposals/approval.js');
+const Cid = require('../../frontend/js/cid.js');
+// The agreement the decisions are taken on, and a counter-agreement over the same land and rule.
+const AGREEMENT_CID = Cid.cidOfObject({ schema: 'agreement/v1', title: 'Approval test' });
+const COUNTER_CID = Cid.cidOfObject({ schema: 'agreement/v1', title: 'Approval test, other terms' });
 const providerSource = readFileSync(new URL('../../frontend/js/proposals/approval-providers.js', import.meta.url), 'utf8');
 const runtimeSource = readFileSync(new URL('../../frontend/js/proposals/approval-runtime.js', import.meta.url), 'utf8');
 
@@ -27,11 +33,11 @@ const threshold = (owners, area, strict = false) => ({
     owners: { numerator: owners[0], denominator: owners[1], strict },
     area: { numerator: area[0], denominator: area[1], strict }
 });
-const proposal = (parcels, {
+const agreement = (parcels, {
     selected = parcels.map(row => row.parcelId),
     policy = { type: 'unanimous' }, lens = ['court-member-a'], sourceReference = 'snapshot-1'
 } = {}) => ({
-    proposalId: 'approval-test',
+    agreementCid: AGREEMENT_CID,
     cadastreParcelIds: selected,
     approvalConfig: {
         schema: 'proposal-approval/v1',
@@ -62,7 +68,7 @@ function evidenceFor(target, ownerId = 'owner-a', actorId = 'actor-a', overrides
 
 describe('parcel approval model', () => {
     it('counts four distinct owners across three parcels, including co-owned interests', () => {
-        const item = proposal([
+        const item = agreement([
             parcel('parcel-a', 100, [owner('owner-a')]),
             parcel('parcel-b', 50, [owner('owner-b')]),
             parcel('parcel-c', 25, [owner('owner-c', '1/2'), owner('owner-d', '1/2')])
@@ -77,7 +83,7 @@ describe('parcel approval model', () => {
     });
 
     it('counts one owner once when they own several declared parcels', () => {
-        const item = proposal([
+        const item = agreement([
             parcel('parcel-a', 12, [owner('owner-a')]),
             parcel('parcel-b', 34, [owner('owner-a')])
         ]);
@@ -89,7 +95,7 @@ describe('parcel approval model', () => {
     });
 
     it('credits whole-parcel area only after every co-owner agrees', () => {
-        const item = proposal([
+        const item = agreement([
             parcel('shared-80', 80, [owner('owner-a', '1/2'), owner('owner-b', '1/2')]),
             parcel('solo-20', 20, [owner('owner-c')])
         ], { policy: threshold([1, 2], [7, 10]) });
@@ -107,8 +113,8 @@ describe('parcel approval model', () => {
             parcel('c-20', 20, [owner('owner-c')]),
             parcel('d-10', 10, [owner('owner-d')])
         ];
-        const strict = proposal(parcels, { policy: threshold([1, 2], [7, 10], true) });
-        const inclusive = proposal(parcels, { policy: threshold([1, 2], [7, 10], false) });
+        const strict = agreement(parcels, { policy: threshold([1, 2], [7, 10], true) });
+        const inclusive = agreement(parcels, { policy: threshold([1, 2], [7, 10], false) });
 
         expect(withMet(approval.tally(strict, ['owner-a', 'owner-d']))).toMatchObject({
             acceptedOwners: 2, acceptedAreaM2: 50, ownerThresholdMet: false, areaThresholdMet: false, passed: false
@@ -130,7 +136,7 @@ describe('parcel approval model', () => {
             parcel('two-thirds', 2, [owner('owner-c')])
         ]);
         // Use a separate three-owner electorate for the exact 1/3 headcount boundary.
-        const thirds = proposal([
+        const thirds = agreement([
             parcel('area-a', 1, [owner('owner-a')]),
             parcel('area-b', 1, [owner('owner-b')]),
             parcel('area-c', 1, [owner('owner-c')])
@@ -155,7 +161,7 @@ describe('parcel approval model', () => {
 
     it('fails closed for missing or incomplete rights instead of passing a zero-over-zero vote', () => {
         const missing = { cadastreParcelIds: [], approvalConfig: { schema: 'proposal-approval/v1', rights: null } };
-        const incomplete = proposal([parcel('incomplete', null, [], false)]);
+        const incomplete = agreement([parcel('incomplete', null, [], false)]);
 
         expect(withMet(approval.tally(missing, []))).toMatchObject({ ready: false, reason: 'missing-rights', ownerThresholdMet: false, areaThresholdMet: false, passed: false });
         expect(withMet(approval.tally(incomplete, []))).toMatchObject({ ready: false, reason: 'incomplete-rights', ownerThresholdMet: false, areaThresholdMet: false, passed: false });
@@ -175,7 +181,7 @@ describe('parcel approval model', () => {
     });
 
     it('uses owner IDs rather than display names as identities and keeps renames cosmetic', () => {
-        const original = proposal([parcel('parcel-a', 10, [owner('stable-owner-id', '1/1', { name: 'Alice' })])]);
+        const original = agreement([parcel('parcel-a', 10, [owner('stable-owner-id', '1/1', { name: 'Alice' })])]);
         const renamed = structuredClone(original);
         renamed.approvalConfig.rights.parcels[0].owners[0].name = 'Beatrice';
 
@@ -186,7 +192,7 @@ describe('parcel approval model', () => {
     });
 
     it('binds source, lens, policy, rights, and selected cadastral scope while canonicalizing order', () => {
-        const original = proposal([
+        const original = agreement([
             parcel('parcel-a', 60, [owner('owner-a', '1/2'), owner('owner-b', '1/2')]),
             parcel('parcel-b', 40, [owner('owner-c')])
         ], { lens: ['member-a', 'member-b'] });
@@ -212,7 +218,7 @@ describe('parcel approval model', () => {
     });
 
     it('rejects forged or mismatched receipts and evidence for the wrong lens, owner, context, or actor', () => {
-        const item = proposal([parcel('parcel-a', 100, [owner('owner-a')])]);
+        const item = agreement([parcel('parcel-a', 100, [owner('owner-a')])]);
         const contextHash = approval.contextHash(item);
         const validEvidence = evidenceFor(item);
         expect(approval.evidenceAllows(item, 'owner-a', 'actor-a', validEvidence)).toBe(true);
@@ -228,21 +234,41 @@ describe('parcel approval model', () => {
         }
 
         const fakeReceipt = {
-            ownerId: 'owner-a', actorId: 'actor-a', effectHash: 'effect-1', acceptedAt: '2026-10-11T00:00:00.000Z',
+            ownerId: 'owner-a', actorId: 'actor-a', decision: 'approve', decidedAt: '2026-10-11T00:00:00.000Z',
             evidence: { ...validEvidence, authority: { ...validEvidence.authority, evidenceRef: 'caller-invented' } }
         };
         item.ownerApprovals = { 'owner-a': fakeReceipt };
-        expect(approval.validOwnerIds(item, 'effect-1')).toEqual([]);
-        const verifiedReceipt = { ...fakeReceipt, signature: 'verified-by-test-key', decision: 'approve', evidence: validEvidence };
+        // Nothing counts without a verifier, or when the verifier refuses the receipt.
+        expect(approval.validOwnerIds(item)).toEqual([]);
+        expect(approval.validOwnerIds(item, () => false)).toEqual([]);
+        const verify = (_agreement, receipt) => receipt.signature === 'verified-by-test-key';
+        const verifiedReceipt = { ...fakeReceipt, signature: 'verified-by-test-key', evidence: validEvidence };
         item.ownerApprovals = { 'owner-a': verifiedReceipt };
-        expect(approval.validOwnerIds(item, 'effect-1', (_proposal, receipt) => receipt.signature === 'verified-by-test-key'))
-            .toEqual(['owner-a']);
+        expect(approval.validOwnerIds(item, verify)).toEqual(['owner-a']);
+        // A withdrawal is not an approval, and a draft agreement (no CID yet) counts nobody.
+        expect(approval.validOwnerIds({ ...item, ownerApprovals: { 'owner-a': { ...verifiedReceipt, decision: 'withdraw' } } }, verify)).toEqual([]);
+        expect(approval.validOwnerIds({ ...item, agreementCid: undefined }, verify)).toEqual([]);
         expect(approval.evidenceAllows(item, 'owner-a', 'actor-b', validEvidence)).toBe(false);
         expect(validEvidence.authority.contextHash).toBe(contextHash);
     });
 
-    it('records one owner across all their parcels, replaces changed terms, and archives approval and withdrawal receipts', () => {
-        const item = proposal([
+    it('signs the agreement-decision/v1 statement naming the agreement’s CID, and no terms hash', () => {
+        const item = agreement([parcel('parcel-a', 100, [owner('owner-a')])]);
+        const receipt = { ownerId: 'owner-a', actorId: 'actor-a', decision: 'approve', decidedAt: '2026-10-11T00:00:00.000Z',
+            evidence: evidenceFor(item), effectHash: 'ignored-terms', providerId: 'test-provider' };
+        expect(approval.decisionContent(item, receipt)).toEqual({
+            schema: approval.DECISION_SCHEMA, agreementCid: AGREEMENT_CID, ownerId: 'owner-a', actorId: 'actor-a',
+            contextHash: approval.contextHash(item), decision: 'approve', decidedAt: '2026-10-11T00:00:00.000Z'
+        });
+        expect(approval.DECISION_SCHEMA).toBe('agreement-decision/v1');
+        // Another agreement over the same land and rule is another statement; a draft has none.
+        expect(approval.decisionContent({ ...item, agreementCid: COUNTER_CID }, receipt).agreementCid).toBe(COUNTER_CID);
+        expect(() => approval.decisionContent({ ...item, agreementCid: undefined }, receipt)).toThrowError(expect.objectContaining({ code: 'invalid-proposal-approval' }));
+        expect(() => approval.decisionContent({ ...item, agreementCid: 'agreement-1' }, receipt)).toThrow(/not a CID/);
+    });
+
+    it('records one owner across all their parcels once per agreement, and archives approval and withdrawal receipts', () => {
+        const item = agreement([
             parcel('parcel-a', 40, [owner('owner-a')]),
             parcel('parcel-b', 60, [owner('owner-a')])
         ]);
@@ -257,32 +283,45 @@ describe('parcel approval model', () => {
             const statement = approval.stableStringify(approval.decisionContent(target, receipt));
             return signedStatements.has(statement) && receipt.decisionProof === `trusted-signature:${statement}`;
         };
-        const decide = (target, { effectHash, actorId = 'actor-a', decision = 'approve', acceptedAt }) => {
-            const receipt = { ownerId: 'owner-a', actorId, effectHash, evidence: evidenceFor(item, 'owner-a', actorId), acceptedAt,
+        const decide = (target, { actorId = 'actor-a', decision = 'approve', decidedAt }) => {
+            const receipt = { ownerId: 'owner-a', actorId, evidence: evidenceFor(item, 'owner-a', actorId), decidedAt,
                 decision, providerId: 'test-provider' };
             return approval.recordDecision(target, { ...receipt, withdraw: decision === 'withdraw',
                 decisionProof: proofFor(target, receipt), verifyReceipt: verify });
         };
 
-        const first = decide(item, { effectHash: 'effect-1', acceptedAt: '2026-10-11T00:00:00.000Z' });
+        const first = decide(item, { decidedAt: '2026-10-11T00:00:00.000Z' });
         expect(first.tally).toMatchObject({ passed: true, acceptedParcelIds: ['parcel-a', 'parcel-b'], acceptedAreaM2: 100 });
-        expect(approval.validOwnerIds(first.proposal, 'effect-1', verify)).toEqual(['owner-a']);
+        expect(first.agreement.acceptedParcelIds).toEqual(['parcel-a', 'parcel-b']);
+        expect(approval.validOwnerIds(first.agreement, verify)).toEqual(['owner-a']);
+        // The input is not changed; the decision is on the copy returned.
+        expect(item.ownerApprovals).toBeUndefined();
+        // The approval signs this agreement's CID: it does not count for a counter-agreement.
+        expect(approval.validOwnerIds({ ...first.agreement, agreementCid: COUNTER_CID }, verify)).toEqual([]);
 
-        const replacement = decide(first.proposal, { effectHash: 'effect-2', acceptedAt: '2026-10-11T00:01:00.000Z' });
-        expect(replacement.tally).toMatchObject({ passed: true, acceptedParcelIds: ['parcel-a', 'parcel-b'] });
-        expect(replacement.proposal.ownerApprovalHistory).toHaveLength(1);
-        expect(replacement.proposal.ownerApprovalHistory[0]).toMatchObject({ effectHash: 'effect-1', decision: 'approve' });
-        expect(approval.validOwnerIds(replacement.proposal, 'effect-1', verify)).toEqual([]);
-
-        expect(() => decide(replacement.proposal, { effectHash: 'effect-2', actorId: 'actor-b', decision: 'withdraw',
-            acceptedAt: '2026-10-11T00:02:00.000Z' })).toThrow(/Only the actor/);
-        const withdrawn = decide(replacement.proposal, { effectHash: 'effect-2', decision: 'withdraw',
-            acceptedAt: '2026-10-11T00:03:00.000Z' });
-        expect(withdrawn.proposal.ownerApprovals).not.toHaveProperty('owner-a');
-        expect(withdrawn.proposal.ownerApprovalHistory).toHaveLength(3);
-        expect(withdrawn.proposal.ownerApprovalHistory[1]).toMatchObject({ effectHash: 'effect-2', decision: 'approve' });
-        expect(withdrawn.proposal.ownerApprovalHistory[2]).toMatchObject({ effectHash: 'effect-2', decision: 'withdraw', actorId: 'actor-a' });
+        // One approval per owner and agreement: there are no terms to accept again.
+        expect(() => decide(first.agreement, { decidedAt: '2026-10-11T00:01:00.000Z' })).toThrow(/already approved this agreement/);
+        expect(() => decide(first.agreement, { actorId: 'actor-b', decision: 'withdraw',
+            decidedAt: '2026-10-11T00:02:00.000Z' })).toThrow(/Only the actor/);
+        const withdrawn = decide(first.agreement, { decision: 'withdraw', decidedAt: '2026-10-11T00:03:00.000Z' });
+        expect(withdrawn.agreement.ownerApprovals).not.toHaveProperty('owner-a');
+        expect(withdrawn.agreement.ownerApprovalHistory).toHaveLength(2);
+        expect(withdrawn.agreement.ownerApprovalHistory[0]).toMatchObject({ decision: 'approve', decidedAt: '2026-10-11T00:00:00.000Z' });
+        expect(withdrawn.agreement.ownerApprovalHistory[1]).toMatchObject({ decision: 'withdraw', actorId: 'actor-a', decidedAt: '2026-10-11T00:03:00.000Z' });
         expect(withdrawn.tally).toMatchObject({ passed: false, acceptedParcelIds: [], acceptedAreaM2: 0 });
+
+        // Approving again after the withdrawal is a new decision; the history keeps both earlier ones.
+        const again = decide(withdrawn.agreement, { decidedAt: '2026-10-11T00:04:00.000Z' });
+        expect(again.tally).toMatchObject({ passed: true, acceptedParcelIds: ['parcel-a', 'parcel-b'] });
+        expect(again.agreement.ownerApprovalHistory).toHaveLength(2);
+        expect(again.agreement.ownerApprovals['owner-a']).toMatchObject({ decision: 'approve', decidedAt: '2026-10-11T00:04:00.000Z' });
+
+        // A decision needs a proposed agreement, a signing time and a verified signature.
+        const unsigned = { ownerId: 'owner-a', actorId: 'actor-a', evidence: evidenceFor(item), decidedAt: '2026-10-11T00:00:00.000Z', providerId: 'test-provider' };
+        expect(() => approval.recordDecision({ ...item, agreementCid: undefined }, { ...unsigned, decisionProof: 'forged', verifyReceipt: () => true }))
+            .toThrow(/published agreement/);
+        expect(() => decide(item, { decidedAt: 'yesterday' })).toThrow(/not been verified/);
+        expect(() => approval.recordDecision(item, { ...unsigned, decisionProof: 'forged', verifyReceipt: verify })).toThrow(/not been verified/);
     });
 });
 
@@ -302,23 +341,26 @@ describe('approval providers and trusted runtime', () => {
             .rejects.toThrow('The rights snapshot names a different provider.');
     });
 
-    it('does not install authority from proposal data and verifies trusted async signatures against the current effect', async () => {
+    it('does not install authority from agreement data, and decides on the agreement’s CID through a trusted provider', async () => {
         const context = loadProviderRuntime();
-        const item = proposal([parcel('parcel-a', 100, [owner('owner-a')])]);
+        const runtime = context.ProposalApprovalRuntime;
+        const item = agreement([parcel('parcel-a', 100, [owner('owner-a')])]);
         item.authorityResolver = { id: 'caller-invented', trusted: true };
         item.authorityEvidence = evidenceFor(item);
         item.ownerApprovals = {
-            'owner-a': { ownerId: 'owner-a', actorId: 'actor-a', effectHash: 'effect-1', evidence: item.authorityEvidence }
+            'owner-a': { ownerId: 'owner-a', actorId: 'actor-a', decision: 'approve', decidedAt: '2026-10-11T00:00:00.000Z', evidence: item.authorityEvidence }
         };
         const actor = { id: 'actor-a' };
 
         expect(context.ProposalApprovalAuthorities.resolve(item, 'owner-a', actor)).toBeNull();
-        expect(await context.ProposalApprovalRuntime.decide(item, 'parcel-a', 'owner-a', actor, 'effect-1'))
-            .toEqual({ error: 'authority-unresolved' });
-        expect(context.ProposalApprovalRuntime.summary(item, 'effect-1').acceptedOwners).toBe(0);
-        expect(context.ProposalApprovalRuntime.state(item, 'parcel-a', actor, 'effect-1').entries[0].termsChanged).toBe(false);
+        expect(await runtime.decide(item, 'parcel-a', 'owner-a', actor)).toEqual({ error: 'authority-unresolved' });
+        expect(runtime.summary(item).acceptedOwners).toBe(0);
+        expect(runtime.state(item, 'parcel-a', actor).entries[0]).toMatchObject({ ownerId: 'owner-a', accepted: false, canAccept: false, canUndo: false });
+        // The fifth argument is the withdraw flag: a terms hash in its place is refused.
+        await expect(runtime.decide(item, 'parcel-a', 'owner-a', actor, 'effect-1')).rejects.toThrow(/withdraw is a boolean/);
         // An unverified injected receipt must not block the genuine owner's later decision.
 
+        let cidWhileSigning = null;
         const signedStatements = new Set();
         const unregister = context.ProposalApprovalAuthorities.register('test-trusted-authority', {
             authorize: request => {
@@ -327,9 +369,11 @@ describe('approval providers and trusted runtime', () => {
                 proof.authority.contextHash = request.contextHash;
                 return proof;
             },
-            signDecision: async ({ statement }) => {
+            signDecision: async ({ agreement: target, statement }) => {
                 const canonical = approval.stableStringify(statement);
                 signedStatements.add(canonical);
+                // The agreement being decided on is given another CID while the wallet signs.
+                if (cidWhileSigning) target.agreementCid = cidWhileSigning;
                 return `trusted-signature:${canonical}`;
             },
             verifyReceipt: ({ receipt, statement }) => {
@@ -340,15 +384,37 @@ describe('approval providers and trusted runtime', () => {
         const evidence = context.ProposalApprovalAuthorities.resolve(item, 'owner-a', actor);
         expect(evidence).toBeTruthy();
         expect(approval.evidenceAllows(item, 'owner-a', actor.id, evidence.evidence)).toBe(true);
-        await expect(context.ProposalApprovalRuntime.decide(item, 'parcel-a', 'owner-a', actor, 'effect-1'))
-            .resolves.toMatchObject({ passed: true, acceptedParcelIds: ['parcel-a'] });
-        expect(context.ProposalApprovalRuntime.summary(item, 'effect-1')).toMatchObject({ acceptedOwners: 1, passed: true });
+        expect(runtime.authorizedOwnerIds(item, actor)).toEqual(['owner-a']);
+        expect(runtime.state(item, 'parcel-a', actor).entries[0]).toMatchObject({ accepted: false, canAccept: true });
+
+        // A draft agreement (no CID yet) cannot be decided, and nobody may act for it; a closed one takes no decision.
+        const draft = { ...item, agreementCid: undefined };
+        expect(await runtime.decide(draft, 'parcel-a', 'owner-a', actor)).toEqual({ error: 'not-proposed' });
+        expect(runtime.authorizedOwnerIds(draft, actor)).toEqual([]);
+        expect(await runtime.decide({ ...item, lifecycleStatus: 'Expired' }, 'parcel-a', 'owner-a', actor)).toEqual({ error: 'agreement-closed' });
+
+        await expect(runtime.decide(item, 'parcel-a', 'owner-a', actor))
+            .resolves.toMatchObject({ passed: true, acceptedParcelIds: ['parcel-a'], ownerId: 'owner-a' });
+        expect(runtime.summary(item)).toMatchObject({ acceptedOwners: 1, passed: true });
+        expect(item.ownerApprovals['owner-a']).toMatchObject({ actorId: 'actor-a', decision: 'approve', providerId: 'test-trusted-authority' });
         expect(item.ownerApprovalHistory).toHaveLength(1);
         expect(item.ownerApprovalHistory[0].decisionProof).toBeUndefined();
+        expect(runtime.state(item, 'parcel-a', actor).entries[0]).toMatchObject({ accepted: true, canAccept: false, canUndo: true });
+        // The acceptance is of this agreement only.
+        expect(runtime.summary({ ...structuredClone(item), agreementCid: COUNTER_CID }).acceptedOwners).toBe(0);
 
-        const stale = await context.ProposalApprovalRuntime.decide(item, 'parcel-a', 'owner-a', actor, 'effect-2', false, () => 'effect-3');
-        expect(stale).toEqual({ error: 'terms-changed' });
-        expect(item.ownerApprovals['owner-a'].effectHash).toBe('effect-1');
+        // The agreement changed while the wallet signed: nothing is recorded.
+        const moving = structuredClone(item);
+        cidWhileSigning = COUNTER_CID;
+        expect(await runtime.decide(moving, 'parcel-a', 'owner-a', actor, true)).toEqual({ error: 'terms-changed' });
+        expect(moving.ownerApprovals).toEqual(item.ownerApprovals);
+        expect(moving.ownerApprovalHistory).toEqual(item.ownerApprovalHistory);
+        cidWhileSigning = null;
+
+        // The signer who accepted withdraws it, and the parcel stops counting.
+        await expect(runtime.decide(item, 'parcel-a', 'owner-a', actor, true)).resolves.toMatchObject({ passed: false, acceptedParcelIds: [] });
+        expect(item.ownerApprovals).not.toHaveProperty('owner-a');
+        expect(item.ownerApprovalHistory.at(-1)).toMatchObject({ decision: 'withdraw', actorId: 'actor-a' });
         unregister();
         expect(context.ProposalApprovalAuthorities.resolve(item, 'owner-a', actor)).toBeNull();
     });

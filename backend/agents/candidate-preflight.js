@@ -1,6 +1,6 @@
 // Check the exact proposal body the runner intends to publish before choosing or minting it.
 // The checker is injected so this orchestration stays headless and testable; production passes the
-// same checkProposalBinding used by POST /agent/proposals.
+// the server's checkProposalBinding (proposals/binding.js).
 import { buildProposalRecord } from './record-builder.js';
 import { retryParcelRead } from './parcel-read-retry.js';
 

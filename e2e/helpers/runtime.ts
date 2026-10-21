@@ -1,5 +1,7 @@
-import { Locator, Page, expect } from '@playwright/test';
+import { Browser, BrowserContext, Page, expect } from '@playwright/test';
 import { sampleParcels } from './mocks/parcel-data';
+import { mockAllApiRoutes } from './mocks/api-routes';
+import { attachSharedIndex, ensurePageIndex, fileDesign, SharedIndex } from './mocks/shared-server';
 import { waitForMapReady } from './app';
 import { selectNativeOption } from './controls';
 
@@ -11,6 +13,33 @@ export const PARCEL_GEOMETRY = sampleParcels.features[0].geometry;
 // asserted from the session's status log instead.
 export async function expectStatusLogged(page: Page, text: string): Promise<void> {
   await expect.poll(() => page.evaluate(t => (window as any).statusLogEntries().some((entry: any) => String(entry.message).includes(t)), text)).toBe(true);
+}
+
+// Basemap tiles answered locally, so a spec never waits on the tile network.
+export async function stubBasemapTiles(page: Page): Promise<void> {
+  await page.route(/https:\/\/[^/]*tile\.openstreetmap\.org\//, route => route.fulfill({
+    contentType: 'image/svg+xml',
+    body: '<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256"><rect width="256" height="256" fill="#eee"/></svg>',
+  }));
+}
+
+// Another device opening `url`: its own browser context and storage, answered by the same index
+// (mocks/shared-server.ts) as the device that published.
+export async function openOnAnotherDevice(browser: Browser, url: string, index: SharedIndex, baseURL: string | undefined): Promise<{ context: BrowserContext; page: Page }> {
+  const context = await browser.newContext({ baseURL });
+  await context.addInitScript(() => {
+    try {
+      localStorage.setItem('cb_current_city', 'new_york');
+      localStorage.setItem('cb_site_intro_seen_v1', '1');
+    } catch (_) { /* opaque origin */ }
+  });
+  const page = await context.newPage();
+  await mockAllApiRoutes(page);
+  await attachSharedIndex(page, index);
+  await stubBasemapTiles(page);
+  await page.goto(url, { waitUntil: 'domcontentloaded' });
+  await waitForMapReady(page);
+  return { context, page };
 }
 
 export async function openCity(page: Page, parcelId = PARCEL_ID): Promise<void> {
@@ -54,17 +83,33 @@ export async function openParcel(page: Page, tab = 'info', id = PARCEL_ID): Prom
   await expect(page.locator('#parcel-info-panel')).toBeVisible();
 }
 
-// A proposal published on the server that this browser has never loaded: the answer to the Proposals
-// tabs' GET /proposals/summary?parcel_ids=… (js/parcels/parcel-set-proposals.js).
-export async function publishOn(page: Page, parcelId: string): Promise<void> {
-  await page.route('**/proposals/summary**', route => {
-    const publicationApiBase = new URL(route.request().url()).origin;
-    return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({
-      proposals: [{ id: 41, proposalId: 'p-published', publicationApiBase, city: 'zagreb', title: 'Published park', type: 'park', goal: 'park',
-        lifecycleStatus: 'Active', createdAt: '2026-10-12T10:00:00.000Z', cadastreParcelIds: [parcelId], screenshotUrl: null }],
-      count: 1, limit: 200, offset: 0
-    }) });
+// A design published in the index that this browser has never loaded: a park on the parcel, found by
+// the Proposals tabs' GET /designs?bbox=… (js/parcels/parcel-set-proposals.js). Returns its CID, the
+// rows' data-server-id.
+export async function publishOn(page: Page, parcelId: string): Promise<string> {
+  const parcel = sampleParcels.features.find(feature => feature.properties.parcelId === parcelId);
+  if (!parcel) throw new Error(`publishOn: ${parcelId} is not a fixture parcel`);
+  const content = {
+    schema: 'design/v1', goal: 'park', title: 'Published park', description: null, author: 'Fixture author', city: 'zagreb',
+    site: parcel.geometry, toleranceM: null, geometry: null, origin: null, authoredAt: '2026-10-12T10:00:00.000Z',
+    structureProposal: { kind: 'park' },
+  };
+  // Bound to exactly this parcel, whichever fixture faces the page shows.
+  return fileDesign(await ensurePageIndex(page), content, {
+    binding: { parcels: [{ parcelId, overlapM2: 100, intrusionM: 10 }], touched: [], toleranceM: 0, coverage: 'complete', unsurveyedM2: 0, siteM2: 100, source: 'server:e2e-fixture-cadastre' },
+    createdAt: '2026-10-12T10:00:00.000Z',
   });
+}
+
+// A guest asked for a profile name before something leaves the device (GuestPolicy 'publish' opens
+// the welcome dialog) chooses one.
+export async function chooseProfileName(page: Page, name: string): Promise<void> {
+  const welcome = page.locator('#welcome-modal');
+  await expect(welcome).toBeVisible({ timeout: 15_000 });
+  await welcome.locator('#username-input').fill(name);
+  await welcome.locator('#welcome-submit-btn').click();
+  await expect(welcome).toBeHidden();
+  await expect(page.locator('#username-text')).toHaveText(name);
 }
 
 export async function createSpace(page: Page, kind: 'park'|'square'|'lake'): Promise<string> {
@@ -117,32 +162,4 @@ export async function createBuilding(page: Page, rule: 'exact' | 'max' | 'range'
   await page.locator('#btn-blockify-done').click();
   await expect.poll(() => page.evaluate(() => (window as any).proposalStorage.getAllProposals().some((p: any) => p.geometry?.buildings?.length && p.applied))).toBe(true);
   return page.evaluate(() => (window as any).proposalStorage.getAllProposals().find((p: any) => p.geometry?.buildings?.length && p.applied).proposalId);
-}
-
-/**
- * Share on a local proposal whose terms were never chosen opens the create dialog in its terms
- * mode first (proposal-kinds.md): pick who decides, save, and the share dialog opens for the
- * terms-confirmed record, whose current local identity this returns.
- */
-export async function chooseTermsForShare(page: Page, kind: 'owner-deal'|'owner-vote'|'community-vote' = 'community-vote'): Promise<string> {
-  const form = page.locator('.create-proposal-modal:visible');
-  await expect(form).toBeVisible();
-  await expect(form.locator('input[name="proposalKind"][value="community-vote"]')).toBeChecked();
-  await expect(form).toHaveAttribute('data-publish-in-place', '');
-  await expect(form.locator('#proposalGoalGroup')).toBeHidden();
-  await form.locator(`input[name="proposalKind"][value="${kind}"]`).locator('..').click();
-  await expect(form.locator('#createProposalSubmitButton')).toHaveText('Save terms');
-  await form.locator('#createProposalSubmitButton').click();
-  await expect(form).toBeHidden({ timeout: 30_000 });
-  await expect(page.locator('.share-modal-overlay')).toBeVisible({ timeout: 30_000 });
-  return page.evaluate(kind => {
-    const saved = (window as any).proposalStorage.getAllProposals().filter((p: any) => p.termsConfirmed && p.kind === kind);
-    return saved[saved.length - 1].proposalId;
-  }, kind);
-}
-
-/** Pick who decides in an open create dialog; only an owner deal shows the money terms. */
-export async function chooseProposalKind(dialog: Locator, kind: 'owner-deal'|'owner-vote'|'community-vote'): Promise<void> {
-  await dialog.locator(`input[name="proposalKind"][value="${kind}"]`).locator('..').click();
-  await expect(dialog).toHaveAttribute('data-proposal-kind', kind);
 }

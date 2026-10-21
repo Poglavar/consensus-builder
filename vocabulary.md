@@ -100,10 +100,10 @@ them. Until a rename lands, the two columns name the same thing.
 
 | New term (UI, new code) | Existing name (code, API, storage) |
 | --- | --- |
-| design | `proposal`, `Proposal`, `/proposals`, `proposal` table |
+| design (published object `design/v1`, CID `bafkrei…`, `design` table, `/designs`) | `proposal`, `Proposal`, the read-only `/proposals` routes and `proposal` table that the chain readers keep until M3 |
 | parcel layout (design type `parcel-layout`, record `parcelLayout`; landed in M1 (a)) | land readjustment / reparcellization: the `reparcellization*.js` modules kept for the agreement work, the `readjustmentPiece` runtime property, the backend `reparcellization` column and routes (server untouched until M2) |
 | decision rule (on the agreement) | decision kind (`proposal.kind`, `proposal-kinds.md`), "Agreement rules" (approval regimes) |
-| agreement | named plan (`ens_plan`, `/plans`), the readjustment deal (`reparcellization-deal.js`), proposal terms (offer, budget, deposit, decay, expiry) |
+| agreement (published object `agreement/v1`, `agreement` table, `/agreements`, decisions at `/agreements/:cid/decisions`) | named plan (removed in M2), the readjustment deal (`reparcellization-deal.js`, ledger helpers kept), proposal terms (removed in M2), `proposal_owner_decision` |
 | plan (informal: the applied composition, a share link) | applied composition `WorkingComposition`, "Share applied proposals" |
 
 ## M1 (a) state: the parcel-layout design (2026-10-21)
@@ -144,38 +144,61 @@ present, applied and unchanged and the re-derived inputs and output hashes match
 Nothing about an agreement leaves the device until M2; it has no lifecycle, consent, publication,
 mint or market yet. See [plan-design-agreement.md](plan-design-agreement.md), "M1 (b) build contract".
 
+## M2 state: publishing designs and agreements (2026-10-21, code complete, tests pending)
+
+A published **design** is its `design/v1` object (goal, text, site, tolerance, one design payload,
+`origin.cid`, `authoredAt`; no parcels, terms, kind, approval, lifecycle or server ids) addressed by
+its **CID**: CIDv1, codec `raw`, sha2-256, base32 (`bafkrei…`) over the stable-stringified UTF-8
+bytes (`frontend/js/cid.js`, `backend/cid.js`, identical answers). The payload leaves out what
+applying it writes in one browser: the applied flag, the materialization, the demolition scan
+(`formation-depth.js` `stripDerivedPayloadData`) and a park's or square's `decorations`
+(`design-record.js`), so applying a design never changes its CID; hand-placed park or square
+furniture is therefore not published either, and a receiver lays out its own. A published **agreement** is its
+`agreement/v1` object: design CIDs in authored order, inputs with the holders snapshot, outputs by
+`piece1-sha256:` hash without geometry, allocations, money, rule, deadline, title, author, the
+`sponsor` wallet, city. One CID scheme replaced the content, consent and effect fingerprints, the
+readjustment deal fingerprint and the plan hash. The browser pins the exact bytes through the
+courier `POST /pins` (Pinata, `cidVersion: 1`, one chunk, refused on a CID mismatch) and indexes
+them in `consensus.design` and `consensus.agreement` (`POST/GET /designs`, `/designs/batch`,
+`/designs/binding` for the site tool's preview, `POST/GET /agreements`; JSON-LD with
+`?format=jsonld`). The server derives a design's city and binding from its site and compares an
+agreement's inputs with the union of its designs' bindings: the former "declaration equals
+binding" rule, now agreement-level. A parcel layout is indexed only inside an agreement publish.
+Share links are `/designs/<cid,…>` and `/agreements/<cid>`. In the browser a published local design
+or agreement carries `published: { cid, publishedAt, apiBase }`; a design reads as Published only
+while it still hashes to that CID for that API (`DesignSync.publishedCid`), and a design read back
+from the index is stored as `design-<cid>` ([design-sync](frontend/js/proposals/design-sync.js),
+[agreement-sync](frontend/js/agreement-sync.js)). Owner decisions sign
+`agreement-decision/v1` `{ agreementCid, ownerId, actorId, contextHash, decision, decidedAt }`
+and are relayed at `/agreements/:cid/decisions` into `consensus.agreement_decision`; the engine
+counts them off-chain. Removed: Walrus, `POST /proposals` and `/mirror`, `/proposals/prepare`,
+edit tokens and the PATCH routes, effect-hash stamping, binding drift, the proposal owner-decision
+relay (`/proposals/:id/owner-decisions`), named plans (`ens_plan`,
+`/plans`, plan view, plan hash, Create named plan), every design-level term and the decision kind,
+the owner-offer mode, the consent card on design details, the epoch and rename server writes. The
+`proposal` table is read-only for the chain readers (markets, bets, oracle, agents, ENS `chain-`
+labels) until M3 re-points them at agreements and drops it. A design is never an act on parcels:
+`site-binding.js` lost `isParcelAct`, and a road designation binds by its polygon. See
+[plan-design-agreement.md](plan-design-agreement.md), "M2 build contract" and "M3 notes".
+
 ## Central terms as implemented
 
 ### Proposal — `Proposal`
 
-A portable authored record expressing a proposed change, rule, or transaction concerning land. It combines design intent, applicable geometry, cadastral references, optional deal terms, and optional approval configuration. A proposal can describe several buildings or corridor segments; it is not necessarily one physical object. It can also change ownership or rules without supplying a new building.
+A portable authored record expressing a proposed change, rule, or transaction concerning land. It combines design intent and applicable geometry; cadastral references, deal terms and approval configuration belong to the agreement since M2. A proposal can describe several buildings or corridor segments; it is not necessarily one physical object. It can also change ownership or rules without supplying a new building.
 
 The durable record is the cleaned object handled by `ProposalAuthoredRecord` and the API serializer. A browser materialization adds local state and generated land pieces; those are not part of the portable instruction. A material proposal may have **zero cadastral anchors** when it has its own site. Parcel acts require cadastral land. At publication the declared cadastral IDs must match the server's site binding, subject to the parcel-act path.
 
-Identity has several layers: `proposal.id` is a database row key; API `proposalId` / SQL `proposal_id` is the authored/external identifier; browser publication identity is the pair `publicationApiBase` and `serverProposalId`; a chain reference also needs chain type, network, contract/program and token/account. These must not be exported as interchangeable identifiers. [Authored boundary](frontend/js/proposals/authored-record.js), [serializer](backend/proposals/serializer.js), [DDL](backend/routes/proposals-ddl.sql), [API validation and lookup](backend/routes/proposals.js), [chain references](frontend/js/proposals/chain-ref.js).
-
-The browser's `proposalId` is a stable local record key, which is not always the published authored ID. `buildUploadReadyProposal` assigns a content fingerprint to the upload copy's `proposalId` while leaving the author's local key intact; imported copies normally use the published authored ID as their local key. Upload actions pass the stored local record to the uploader, which owns that projection and syncs the publication result back to the original local key. `serverProposalId` together with canonical `publicationApiBase` is the explicit link from either browser copy to the published row. Exact named-plan membership uses that qualified link, never local-key equality or source ancestry.
-
-Publication sync attaches the returned positive numeric row ID to `id` and `serverProposalId`, and
-stamps `publicationApiBase` on the exact local record. It preserves the local `proposalId` and its sole storage key; a chain
-token, authored ID or server-row alias cannot select a different local record for this update.
-Earlier experimental copies whose `id` contains a local key require a fresh sync or reimport;
-no compatibility reader or record migration is provided. [Sync boundary](frontend/js/proposals/server-sync.js).
-
-Browser lookup first accepts an exact local key, then a unique explicit API-plus-row reference. It
-never searches bare chain tokens, chain-ID aliases or generic `id` fields. Server summaries,
-lifecycle reconciliation, shared-link reads and server-list navigation use the explicit row lookup directly;
-equal local/authored strings do not prove that a local record is a copy of a published row. Multiple
-copies declaring the same row fail as ambiguous. A server import refreshes that row's existing local
-key; a colliding key with a different or absent publication reference is rejected without replacement.
-Numeric local keys no longer imply publication on import. Publication badges, named-plan membership,
-unsaved-work/count checks and metadata writers read the explicit positive numeric `serverProposalId`
-through one shared predicate. A numeric local `proposalId` or generic `id` is insufficient, even when
-this browser holds an edit token for a row with that number. `getProposalPublicationLookup` may return
-an authored-content fingerprint as an existence-query candidate; it is not proof of publication.
-Edit tokens are keyed by canonical API base plus row ID, and no unqualified legacy token is read.
-Recreate conflicting experimental records rather than retaining the former alias rules.
-[Storage](frontend/js/proposals/data.js), [server list](frontend/js/proposals/list-ui.js).
+Identity since M2 (2026-10-22): a local design has a stable local key, `proposalId`, which never
+leaves the device. A published design is identified by its **CID**, the CIDv1 raw-leaf hash of its
+`design/v1` object; the local record remembers where it went in `published: { cid, publishedAt,
+apiBase }`, and the predicate `DesignSync.publishedCid(record)` recomputes the CID and compares it, so
+an edited record reads as unpublished again. An imported copy uses `design-<cid>` as its local key. A
+chain reference still needs chain type, network, program and account (M3). Row ids, authored ids,
+`serverProposalId`, `publicationApiBase` and edit tokens are gone; the read-only `proposal` rows the
+chain readers still consume until M3 keep their own `id`/`proposal_id` columns and are never written.
+[Design object](frontend/js/design-record.js), [publish and import](frontend/js/proposals/design-sync.js),
+[index](backend/routes/designs.js).
 
 Shared publication URLs resolve numeric references only through a local record's explicit API-plus-row
 reference; authored URL references first require a normalized response with row ID and API base. Local-key,
@@ -189,8 +212,7 @@ source on reopening a source URL. The fork remains separate; the existing ground
 refuses a conflicting source instead of removing unrelated applied work. Share the fork's own
 publication to identify it. This removes an ancestry-based alias; retired unqualified lineage fields
 are rejected or stripped from portable records.
-[Publication-copy matching](frontend/js/proposals/shared-link-copies.js),
-[shared routes](frontend/js/proposals/sharing-routes.js).
+[Shared routes](frontend/js/proposals/sharing-routes.js).
 
 Mint confirmation takes a separate `localProposalId` for opening browser details and a complete
 `chainRef` for display. It labels the chain/network, contract/program and token/account separately;
@@ -201,43 +223,28 @@ The proposal record panel labels its copy action “Copy local ID”: it copies 
 `proposalId`, not its server row or chain token/account. An imported authored ID can be the local
 key, but this control does not assert those namespaces are interchangeable.
 
-**Typed proposal origin, 2026-10-20:** a derived proposal carries `proposalOrigin` with a `relation`
-of `copy`, `revision`, or `rebind`, an optional display `title`, and one `source`: a same-browser
-`localProposalId`, a publication reference `{ apiBase, proposalRowId }`, or `null` when no portable
-source identity is known. `apiBase` is the canonical publication API URL; the row ID is scoped to
-that API. Draft editing retains `sourceLocalProposalId` for finding the source in the same browser.
-When the source is published, sync records `publicationApiBase`; portable projection qualifies it
-with the row ID. A publication row without a valid API stamp remains local/unknown; the current API
-is never inferred as its source. An unpublished local source is omitted from portable identity rather than guessed
-from its title, type, or generic ID. The API rejects local-key sources. A missing/not-found source
-does not prove the source was never published or is absent from another publication store.
+**Typed proposal origin (2026-10-20; sources re-keyed 2026-10-22):** a derived proposal carries
+`proposalOrigin` with a `relation` of `copy`, `revision`, or `rebind`, an optional display `title`, and
+one `source`: a same-browser `{ kind: 'local', localProposalId }`, a published design
+`{ kind: 'design', cid }`, or `null` when no portable source identity is known. A source published
+when the fork is made is named by its CID (`published.cid`); portable projection carries a local
+source that has since been published as its CID, and omits an unpublished one rather than guessing
+it from its title, type, or generic ID. The server-row reference `{ apiBase, proposalRowId }` went
+with the proposal write path (M2): a stored row still carrying one refuses as an older-version
+record. A fork of a published design also records `origin: { cid }`, the link its design/v1 object
+carries. Draft editing retains `sourceLocalProposalId` for finding the source in the same browser.
 [Origin contract](frontend/js/proposals/origin.js), [drafts](frontend/js/proposal-drafts.js),
-[sync](frontend/js/proposals/server-sync.js), [lineage route](backend/routes/proposals.js).
-
-The fork list keeps published row references and local record keys separate when merging and
-opening entries. Only an explicit `(publicationApiBase, serverProposalId)` pair deduplicates a local copy against a server
-entry; equal authored/local strings do not. A published link opens the unique row-linked copy or
-imports that row, while a missing local link never falls through to a server lookup. A source
-resolved by the lineage API replaces any locally inferred source link. The retired unqualified
-`sourceProposalId` / `replacementOfProposalId` / `copiedFromProposalId` inputs are rejected by
-proposal creation and stripped from portable serialization; they are not the current lineage
-contract. Draft provenance uses `sourceLocalProposalId`, while `proposalOrigin` is the typed
-portable source. Sharing resolves a local key or an explicit published row in the current API;
-generic `id`, `proposalId`, and hash aliases do not identify a publication copy.
-[Lineage presentation](frontend/js/proposals/lineage.js), [creation validation](backend/routes/proposals.js),
 [serializer](backend/proposals/serializer.js).
 
-The lineage API names `proposalRowId` and `authoredProposalId` separately for its subject,
-resolved source and derived entries. A source has `resolution: 'resolved'` with those identifiers,
-or `resolution: 'not-found'` with the typed stored `reference` and optional title. A failed
-lookup cannot establish that a source was never published, is a draft, or is absent from another
-store. The browser describes missing sources within this publication store and shows an
-unavailable notice when fetching fails; a failed request cannot produce an empty-result claim.
-**2026-10-20 API contract change:** the lineage response replaces `id` / `proposalId` and its
-`published` boolean with the qualified fields and resolution outcome; clients must use this one
-response contract. It resolves source identity only for the typed publication reference; it does
-not establish identity for remaining local or historical lineage metadata.
-[Lineage route](backend/routes/proposals.js).
+**Lineage by CID, 2026-10-22** (plan-design-agreement.md, simplification 8): there is no fork list
+and no lineage route. A design's published lineage is the one CID link it carries: the details panel
+says "Forked from <short CID>", linking to `/designs/<cid>`, when the record has `origin.cid`; "Based
+on" names a source this browser holds, by its local key or as a local copy of the design it names by
+CID. The retired unqualified `sourceProposalId` / `replacementOfProposalId` / `copiedFromProposalId`
+inputs are stripped from portable serialization. Whether saving an edit forks is the edit rule:
+a published design or a minted record is immutable, one's own local record is edited in place.
+[Details panel](frontend/js/proposals/details-panel.js), [edit rule](frontend/js/proposals/lineage.js),
+[serializer](backend/proposals/serializer.js).
 
 Browser chain imports use chain family, network, contract/program and token/account together.
 EVM network/token numbers compare in decimal or hexadecimal form, and EVM contract addresses
@@ -302,7 +309,9 @@ even alongside their replacements; responses contain no aliases. Browser consume
 script use this single contract. The stored `ens_plan.proposal_ids` column still contains row-ID
 strings; this API rename changes neither membership nor content commitments. [Plan API](plans.md#api-identifiers).
 
-### Named plan — `NamedPlan`
+### Named plan — `NamedPlan` (removed 2026-10-21, M2)
+
+The named plan no longer exists: the agreement is the container (see "M2 state" above). The paragraphs below describe the record as it was, for the audit register's history.
 
 An immutable named, ordered collection of published proposal rows. `ens_plan.slug` identifies it; `proposal_ids` stores deduplicated **database row IDs as strings**. A proposal can belong to multiple named plans. A plan must have at least one member when created. It may cover several cities; its stored city is selected from member cities.
 
@@ -715,7 +724,7 @@ This intentionally replaces the transient overlay-only contract; no old overlay 
 | **Owner sale offer** | A direction of owner deal: identified by goal `ownership-transfer-from-me`, role `owner-offer`, or transfer direction `from-me`. A seller declares an offer concerning land; this declaration supplies no owner acceptance records. New `from-me` offers begin with `funded: false` and display “Awaiting funding.” These aliases remain in current predicates. | [proposal-kind.js](frontend/js/proposals/proposal-kind.js): `isOwnerSaleOffer`; [lifecycle](frontend/js/proposals/lifecycle.js): `isProposalOpenSaleOffer` |
 | **Facets** | Additional authored dimensions such as ownership destination and parcel treatment, found as `facets` and `proposalFacets`. They describe intended effects; they no longer define the current decision-kind enum. | [adapter serialization](frontend/js/proposal-editor-adapters.js), [creation](frontend/js/proposals/create.js), [consent payload](frontend/js/proposals/sharing.js) |
 | **Published / uploaded / minted** | Uploaded means a server proposal record exists. Minted means a chain account/token and its metadata exist. A published row is not necessarily minted. A chain-only record may be reconstructed or mirrored into the API. None of these means the design has been built. | [sharing routes](frontend/js/proposals/sharing-routes.js), [minting](frontend/js/proposals/publish-mint.js), [chain record](frontend/js/proposals/chain-record.js), [serializer](backend/proposals/serializer.js) |
-| **Fork / counterproposal** | A new proposal identity derived from an existing proposal. Drafts locate the local source by `sourceLocalProposalId`; the portable `proposalOrigin` carries either a local key, a publication API plus row ID, or unknown. Normal design editing forks published or minted sources and preserves them; a local unpublished record can be edited in place. This creates branching lineage, not a mutable “latest version” alias or an automatic replacement in a named plan. A separate `landFork` relation describes a derived parcel declaration that differs from its source under the current parcel rules; it is not proposal lineage or a source identifier. | [origin](frontend/js/proposals/origin.js); [drafts](frontend/js/proposal-drafts.js); [parcel relations](frontend/js/proposals/parcel-set-relations.js) |
+| **Fork / counterproposal** | A new proposal identity derived from an existing proposal. Drafts locate the local source by `sourceLocalProposalId`; the portable `proposalOrigin` carries either a local key, a published design's CID, or unknown. Normal design editing forks published or minted sources and preserves them; a local unpublished record can be edited in place. This creates branching lineage, not a mutable “latest version” alias or an automatic replacement in a named plan. A separate `landFork` relation describes a derived parcel declaration that differs from its source under the current parcel rules; it is not proposal lineage or a source identifier. | [origin](frontend/js/proposals/origin.js); [drafts](frontend/js/proposal-drafts.js); [parcel relations](frontend/js/proposals/parcel-set-relations.js) |
 | **Lifecycle status** | Authored/server enum `Active`, `Executed`, `Cancelled`, `Expired`, `draft`; missing or unrecognized existing state reads as `Unknown`. Only `Active` expires from a deadline. The creation input resolver still accepts legacy `status: applied/unapplied` as initial `Active`; existing browser/API reads do not infer lifecycle from application state. | [lifecycle](backend/proposals/lifecycle.js), [DDL](backend/routes/proposals-ddl.sql) |
 | **Lifecycle evidence** | A sibling qualification of the operational lifecycle claim, not a replacement state axis. `proposal-lifecycle-evidence/1` marks a matching chain mirror/read/event as `observed`, an elapsed deadline as `derived`, or an unmatched/missing claim as `unknown` with any observations. Local map application and purchase simulation are not lifecycle evidence. Unknown evidence does not silently erase a stored terminal lifecycle status; it limits what can be claimed about the source of that status. | [evidence projection](frontend/js/proposals/lifecycle-evidence.js), [serializer](backend/proposals/serializer.js) |
 | **Lifecycle evidence** | A sibling qualification of the operational lifecycle claim, not a replacement state axis. `proposal-lifecycle-evidence/1` marks a matching chain mirror/read/event as `observed`, an elapsed deadline as `derived`, or an unmatched/missing claim as `unknown` with any observations. Local map application and purchase simulation are not lifecycle evidence. Unknown evidence does not silently erase a stored terminal lifecycle status; it limits what can be claimed about the source of that status. | [evidence projection](frontend/js/proposals/lifecycle-evidence.js), [serializer](backend/proposals/serializer.js) |
@@ -747,7 +756,7 @@ nested classifications retain their own scopes; they are not declared equivalent
 
 `ownerAcceptances[parcelId]` holds an owner-slot roster (`owners`, `ownerOrder`), claimed accepted keys, per-key metadata (`acceptedBy`) and optional history. A local acceptance counts only when its nonempty `effectHash` matches the current commitment. A parcel enters the evaluated tally only if it belongs to `cadastreParcelIds` and every slot in its nonempty roster has a current acceptance. Reading owner state updates the roster before evaluating that tally. Missing records, missing commitments and an unavailable evaluator count no consent. The helper does not manufacture a decision, signer or timestamp from `acceptedParcelIds`, `executedAt`, `updatedAt` or the clock. The “Terms changed” hint requires a stored commitment that differs from the available current commitment; a hashless record cannot establish that comparison. These are local app records: a matching hash proves neither signer authority nor legal ownership. [Bookkeeping](frontend/js/proposals/owner-acceptance.js), [validity](frontend/js/proposals/ownership-flow.js), [browser adapter](frontend/js/proposals/execution.js).
 
-Signed `ownerApprovals` use a different evidence contract: a party (`ownerId`, including holder/authority roles), acting signer (`actorId`), decision, terms commitment, authority/rights evidence, source decision time and signature proof. The relay re-verifies admitted receipts and appends them; readers verify them again. Neither publishing a proposal nor receiving an API parcel tally grants this authority. [Runtime](frontend/js/proposals/approval-runtime.js), [relay verification](frontend/js/proposals/approval-relay.js), [receipt storage](backend/proposals/owner-decisions.js).
+Signed decisions (M2) use a different evidence contract: a party (`ownerId`, including holder/authority roles), acting signer (`actorId`), decision, the agreement CID as the terms commitment, the approval context hash, authority/rights evidence, `decidedAt` and signature proof (`agreement-decision/v1`). The relay re-verifies admitted receipts and appends them; readers verify them again. Neither publishing a design nor receiving a tally grants this authority. [Runtime](frontend/js/proposals/approval-runtime.js), [relay verification](frontend/js/proposals/approval-relay.js), [receipt storage](backend/agreements/decisions.js).
 
 **Intentional contract break, 2026-10-19:** hashless local acceptances and parcel-only flags no longer establish current consent in the owner-state evaluator; old records remain inspectable, but require a new acceptance to count. No inferred timestamps, compatibility path or preservation migration is provided. This does not retroactively change an existing execution lifecycle. The API projection was subsequently closed by the unsigned-consent boundary below. The current-roster correction above subsequently removed placeholder and previously stored owner slots from current tallies. Comparison surfaces and approval labels were subsequently corrected under V06/V07 on 2026-10-20. Authority and completeness of real local owner declarations remain unverified evidence; these declarations must not be exported as signed decision evidence.
 
@@ -998,7 +1007,7 @@ The reserved `ownerKey: 'open-ground'` entry with `unrepresentedGround: true` ac
 | **Declared-reference relation** | Equality, containment or intersection of normalized `cadastreParcelIds` in loaded proposal records, only after known parcel-source identity matches. Known conflicting jurisdiction or authority metadata also prevent a relation, but do not alter provider identity or the set hash. A supplied hash or stale `parcelSet.parcelIds` cannot override the current declaration. The panel counts all loaded matches and displays the first 12. This is neither geometric overlap nor an exclusivity claim. | [reference comparison](frontend/js/proposals/parcel-set-relations.js), [panel](frontend/js/proposals/details-panel.js) |
 | **Cadastre frame** | Publication-time context for cadastral-dependent stamps (`capturedAt`, and an optional geometry hash where supplied). The current object is not a full reproducible copy of the cadastre. | [DDL](backend/routes/proposals-ddl.sql), [serializer](backend/proposals/serializer.js) |
 | **Open / unsurveyed ground** | Land within a modeled site not represented by supplied/bound cadastral parcels. The fabric can host it as `ground:<siteHash>` with `groundIds` provenance. Readjustment uses an accounting placeholder with no represented ownership party. Absence of an owner in this model is not evidence of legally ownerless land. | [open-ground.js](frontend/js/proposals/open-ground.js), [subdivision.js](frontend/js/proposals/subdivision.js), [deal](frontend/js/reparcellization-deal.js) |
-| **Formation** | A spatial proposal's ground-forming role: it cuts/replaces live land and produces pieces. `potential-formation` describes authored intent before materialization. Formations include corridor, structure, some building, readjustment and the `decide-later` merge goal. “Mints ground” in these modules can mean creating runtime pieces, independently of blockchain minting. | [formation-depth.js](frontend/js/proposals/formation-depth.js), [parcel apply](frontend/js/proposals/apply/parcels.js) |
+| **Formation** | A spatial proposal's ground-forming role: it cuts/replaces live land and produces pieces. `potential-formation` describes authored intent before materialization. Formations include corridor, structure, some building and readjustment goals. “Mints ground” in these modules can mean creating runtime pieces, independently of blockchain minting. | [formation-depth.js](frontend/js/proposals/formation-depth.js), [parcel apply](frontend/js/proposals/apply/parcels.js) |
 | **Plot / lot / slice** | In the partition editor, an authored output polygon or multipolygon with allocation metadata (`ownerKey`, `owners`, joint-pool information). It is a planned unit of land, not a registered parcel. A multipolygon can contain several connected pieces; record count and connected-piece count can differ. “Lot” elsewhere may be a provider's tax/legal unit and needs that source qualification. | [readjustment editor](frontend/js/reparcellization.js), [ownership shaping](frontend/js/reparcellization-ownership.js), [deal projection](frontend/js/reparcellization-deal.js): `plot` |
 | **Readjustment / reparcellization** | A proposal pooling input land and assigning output plots, owner contributions/entitlements and optional cash. The persistent object is `reparcellization`; its canonical `land-readjustment-deal/v3` commits to partition, ledger (including the `unrepresentedGround` accounting marker), terms and approval context. The `lr3-sha256:` fingerprint replaces the prior deal contract; affected experimental commitments require recreation, with no compatibility verifier. Generated child parcels are apply-time results. | [deal](frontend/js/reparcellization-deal.js): `content`, `fingerprint`; [authored cleaner](frontend/js/proposals/authored-record.js) |
 | **Subdivision / pool** | The site-based partition path: pool = site; cadastral contributions = site intersections with supplied parcels; the remainder is open ground in the model. The editor outputs plots, including public land as an allocated plot. It is not a separate cadastral registration process. | [subdivision.js](frontend/js/proposals/subdivision.js): `sitePool`; [readjustment editor](frontend/js/reparcellization.js) |
@@ -1073,7 +1082,7 @@ does not calculate a current decayed offer or assert funding, payment or complet
 | **Offer / budget / deposit / disbursement** | Distinct financial terms: offered consideration, separate budget, deposit settings and payout mode. Votes exclude specified money terms. In a readjustment, the proposal offer must equal the outgoing owner cash ledger; owner payments are separately represented, and cash-bearing deals currently require EUR. | [DDL](backend/routes/proposals-ddl.sql), [kind validation](frontend/js/proposals/proposal-kind.js), [deal](frontend/js/reparcellization-deal.js): `content`, `schedule` |
 | **Gain / uplift** | An estimate derived from existing/proposed floor area and valuation inputs. It is neither a cash balance nor observed transaction proceeds. Record assumptions and the area basis. | [gain](frontend/js/proposals/gain.js), [planner](backend/agents/planner.js) |
 | **Market / contest** | A market is a betting instrument associated with a chain proposal account, including a named plan's account. A contest groups entries transitively through shared qualified parcel references `(sourceId, snapshotId, parcelId)` from a recognized explicit `binding.parcelSource`; missing or unrecognized source identity cannot match by raw parcel ID. Named-plan membership folds explicitly listed members into the plan contest but does not assert a parcel relation when no qualified references exist. Shared qualified references can group disjoint takes of one parcel; site-only overlaps do not establish membership through that algorithm. An unqualified contest has a proposal-scoped identity. A contest is not a formal conflict or exclusivity proof. | [contests](backend/markets/contests.js): `groupByLand`, `contestId`; [market route](backend/routes/markets.js); [market question](frontend/js/bets/market-question.js) |
-| **Fingerprint / hash** | A commitment to a specified projection, not a universal identity function. Browser content/legacy consent/effect hashes, SHA-256 approval commitments, readjustment deal hashes and plan hashes cover different fields and use different algorithms. Equality is meaningful only with the scheme/version and canonicalization rules. | [sharing](frontend/js/proposals/sharing.js), [ownership effect](frontend/js/proposals/ownership-flow.js), [approval](frontend/js/proposals/approval.js), [deal](frontend/js/reparcellization-deal.js), [plan hashing](backend/plans/plan-hash.js) |
+| **Fingerprint / hash** | A commitment to a specified projection, not a universal identity function. Since M2 a published design or agreement has one identity, its CID over canonical bytes; the SHA-256 approval context hash and the `piece1-sha256:` output hash commit to narrower projections. Equality is meaningful only with the scheme/version and canonicalization rules. | [cid](frontend/js/cid.js), [design object](frontend/js/design-record.js), [agreement object](frontend/js/agreement-record.js), [approval](frontend/js/proposals/approval.js) |
 
 #### Quantity bases used by current records
 

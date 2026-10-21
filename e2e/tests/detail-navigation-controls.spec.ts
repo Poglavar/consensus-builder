@@ -118,29 +118,4 @@ test.describe('Detail navigation controls @features', () => {
     await expect(agentDialog).toBeVisible();
     await expect(agentDialog.locator('#agent-dialog-title')).toHaveText(author.name);
   });
-
-  test('Edit approval opens the proposal editor on its Approval tab', async ({ mockApi: page }) => {
-    await openCity(page);
-    const proposalId = await addProposal(page, {
-      proposalId: 'e2e-edit-approval-navigation', title: 'Approval editor destination', goal: 'as-is',
-      city: 'zagreb', lifecycleStatus: 'Active', cadastreParcelIds: [PARCEL_ID], geometry: PARCEL_GEOMETRY,
-    });
-    await showProposal(page, proposalId);
-    const details = page.locator('#proposal-details-panel');
-    if (await details.evaluate(element => element.classList.contains('is-minimized'))) {
-      await details.locator('#proposal-details-minimize').click();
-    }
-    await expect(details).not.toHaveClass(/is-minimized/);
-    const ownership = details.locator('details[data-proposal-section="land"]');
-    if (!(await ownership.evaluate((element: HTMLDetailsElement) => element.open))) {
-      await ownership.locator(':scope > summary').click();
-    }
-    const editApproval = details.locator('.btn-edit-approval');
-    await expect(editApproval).toBeVisible();
-    await editApproval.click();
-    const editor = page.locator('.proposal-editor-shell');
-    await expect(editor).toBeVisible();
-    await expect(editor.locator('[data-editor-action="tab"][data-editor-tab="approval"]')).toHaveAttribute('aria-selected', 'true');
-    await expect(editor.locator('[data-editor-section="approval"]')).toBeVisible();
-  });
 });

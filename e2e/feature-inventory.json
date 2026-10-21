@@ -436,7 +436,7 @@
     {
       "id": "parcel.proposals",
       "specs": [
-        "tests/named-plans.spec.ts"
+        "tests/parcel-info-tabs.spec.ts"
       ]
     },
     {
@@ -449,12 +449,6 @@
       "id": "parcel.tools",
       "specs": [
         "tests/parcel-tools.spec.ts"
-      ]
-    },
-    {
-      "id": "parcel.offer",
-      "specs": [
-        "tests/proposal-actions.spec.ts"
       ]
     },
     {
@@ -717,6 +711,18 @@
       ]
     },
     {
+      "feature": "proposing an agreement: Propose (after a profile name) pins the parcel layout and the agreement/v1 object and indexes them, the panel shows it Proposed under its CID without Edit, Copy link, the owners’ decisions card reading the relay and closing once expired, /agreements/<cid> opening it on another device, and a hung agreement read giving up at the parcel-load deadline",
+      "specs": [
+        "tests/agreement-propose.spec.ts"
+      ]
+    },
+    {
+      "feature": "owner decisions on a proposed agreement: the decisions card, a second lens member, review on a phone, an authority in the scheme, each owner’s deal readable by anyone, decisions shared through the relay between two browsers",
+      "specs": [
+        "tests/proposal-approval-lens.spec.ts"
+      ]
+    },
+    {
       "feature": "site draw, redraw, undo and selected/open ground",
       "specs": [
         "tests/site-drawing.spec.ts",
@@ -730,7 +736,7 @@
       ]
     },
     {
-      "feature": "consent, withdrawal, execution, support, owner offers, minting and markets",
+      "feature": "design area metrics, reference comparison, ownership estimates, unloaded source references, parcel claim tools and parcel minting",
       "specs": [
         "tests/proposal-actions.spec.ts"
       ]
@@ -742,7 +748,13 @@
       ]
     },
     {
-      "feature": "individual/whole-plan publication, fresh-device import and replay",
+      "feature": "publishing a design: Share (after a profile name) pins its design/v1 object and indexes it under the CID the browser computed, Published with that CID, the copied /designs/<cid> link applying it on another device, a second Share sending nothing",
+      "specs": [
+        "tests/design-share.spec.ts"
+      ]
+    },
+    {
+      "feature": "the share panel: publishing selected designs, the /designs/<cid>,<cid> link applied once on another device, a parcel layout refused, links to missing or invalid designs",
       "specs": [
         "tests/proposals-sharing.spec.ts"
       ]
@@ -827,15 +839,9 @@
       ]
     },
     {
-      "feature": "Lens directory, pasted keys, coverage filtering and failed ownership-proof gates",
+      "feature": "Lens directory, pasted keys and coverage filtering",
       "specs": [
         "tests/lens-picker.spec.ts"
-      ]
-    },
-    {
-      "feature": "advanced proposal terms, recipient selection and per-slice ownership",
-      "specs": [
-        "tests/proposal-terms.spec.ts"
       ]
     },
     {
@@ -851,15 +857,9 @@
       ]
     },
     {
-      "feature": "published track cab-simulator handoff",
+      "feature": "published track cab-simulator handoff (the sim receives the track’s design CID once it is shared)",
       "specs": [
         "tests/track-drive.spec.ts"
-      ]
-    },
-    {
-      "feature": "pledge creation, revocation, fulfillment, expired settlement and donation release/refund",
-      "specs": [
-        "tests/proposal-support-actions.spec.ts"
       ]
     },
     {
@@ -869,7 +869,7 @@
       ]
     },
     {
-      "feature": "signed prepare-then-publish, a site filed in the city it lies in, proposals opening in their own city (city-less records by their parcels), address bar following the map, read-only second tab per city",
+      "feature": "a design published through the courier and the index with its city’s parcel source, proposals opening in their own city (a wrong-city link asks first), address bar following the map, read-only second tab per city",
       "specs": [
         "tests/world-city-publication.spec.ts"
       ]

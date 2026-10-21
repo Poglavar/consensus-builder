@@ -393,8 +393,7 @@
             // counterproposal on different ground, not a version of the same thing).
             previousVersionOf: proposal => {
                 if (!proposal || proposal.landFork) return null;
-                const record = w.ProposalOrigin.resolveLocal(proposal.proposalOrigin,
-                    w.proposalStorage.getAllProposals(), w.getBackendBase());
+                const record = w.ProposalOrigin.resolveLocal(proposal.proposalOrigin, w.proposalStorage.getAllProposals());
                 return record && record !== proposal ? record : null;
             },
             // Keep framed land clear of the details panel (proposals/list-ui.js).

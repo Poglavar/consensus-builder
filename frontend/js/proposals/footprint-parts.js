@@ -62,8 +62,9 @@
      * `centerline` is set only for a road stored without its corridor polygon and flagged
      * `constructionFrame.kind: 'legacy-centreline'` by the legacy migration: the server buffers the
      * centreline by width/2, which is why such a footprint is `approximate`. An unflagged centre
-     * line without its polygon is `invalid` with `corridorUnprepared: true`: a material proposal
-     * whose land the server has not built yet.
+     * line without its polygon is `invalid` with `corridorUnprepared: true`: a road whose land the
+     * browser has not built yet (road-drawing.js builds it as the road is drawn; the server no
+     * longer prepares it).
      */
     function footprintParts(proposal) {
         const out = { polygons: [], centerline: null, sources: [], approximate: false, vertexCount: 0, invalid: null };
@@ -93,11 +94,12 @@
             const segments = centerlineSegments(definition);
             const width = Number(definition.width);
             // Only a record the legacy migration flagged is read from its centre line: a corridor
-            // built today carries its land, materialised by POST /proposals/prepare, so a centre
-            // line without land is an unprepared draft — never a footprint (projections.md §3).
+            // drawn today carries its land, built in the browser as the road is drawn
+            // (road-drawing.js), so a centre line without land is an unbuilt draft — never a
+            // footprint (projections.md §3).
             const legacy = !!definition.constructionFrame && definition.constructionFrame.kind === 'legacy-centreline';
             if (segments.length && !legacy) {
-                out.invalid = 'roadProposal.definition has a centre line but no corridor land; prepare the proposal (POST /proposals/prepare)';
+                out.invalid = 'roadProposal.definition has a centre line but no corridor land: its corridor polygon has not been built (road-drawing.js builds it as the road is drawn)';
                 out.corridorUnprepared = true;
             } else if (segments.length && Number.isFinite(width) && width > 0) {
                 out.centerline = { definition, segments, halfWidthM: width / 2 };

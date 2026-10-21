@@ -209,9 +209,10 @@ describe('proposal API serializer', () => {
         });
     });
 
-    // PARCEL-OPTIONAL.md: a material proposal may stand on ground with no cadastral parcel, but only
-    // with its site; an act on parcels never has an empty declaration.
-    it('accepts an empty declaration only for a material record that carries its site', () => {
+    // PARCEL-OPTIONAL.md: a record may stand on ground with no cadastral parcel, but only with its site.
+    // Since M2 no goal or kind makes a record an act on parcels (plan-design-agreement.md: site-binding.js
+    // lost isParcelAct), so the site alone decides.
+    it('accepts an empty declaration only for a record that carries its site', () => {
         const site = { type: 'MultiPolygon', coordinates: [[[[15.97, 45.8], [15.971, 45.8], [15.971, 45.801], [15.97, 45.8]]]] };
         const binding = { parcels: [], coverage: 'partial', toleranceM: 0, unsurveyedM2: 9000 };
         const open = serializeProposalRow({
@@ -223,10 +224,13 @@ describe('proposal API serializer', () => {
         expect(open.binding).toEqual(binding);
         expect(rejectionOf({ cadastre_parcel_ids: [], proposal_data: { goal: 'park', cadastreParcelIds: [] } }).detail)
             .toMatch(/cadastre_parcel_ids is required/);
-        expect(rejectionOf({ cadastre_parcel_ids: [], proposal_data: { goal: 'ownership-transfer', cadastreParcelIds: [], site } }).detail)
+        expect(rejectionOf({ cadastre_parcel_ids: [], proposal_data: { goal: 'ownership-transfer', cadastreParcelIds: [] } }).detail)
             .toMatch(/cadastre_parcel_ids is required/);
-        expect(rejectionOf({ cadastre_parcel_ids: [], proposal_data: { goal: 'park', kind: 'owner-vote', cadastreParcelIds: [], site } }).detail)
-            .toMatch(/cadastre_parcel_ids is required/);
+        for (const proposalData of [{ goal: 'ownership-transfer', cadastreParcelIds: [], site }, { goal: 'park', kind: 'owner-vote', cadastreParcelIds: [], site }]) {
+            const read = serializeProposalRow({ id: 10, proposal_id: 'p-act', type: 'parcel', cadastre_parcel_ids: [], proposal_data: proposalData });
+            expect(read.cadastreParcelIds).toEqual([]);
+            expect(read.site).toEqual(site);
+        }
     });
 
     it('rejects full database rows with missing, conflicting, or generated cadastral identity', () => {
@@ -253,6 +257,22 @@ describe('proposal API serializer', () => {
         expect(error.message).toBe(PROPOSAL_RECORD_INVALID_MESSAGE);
         expect(error.message).not.toMatch(/parentParcelIds|record/i);
         expect(error.detail).toBe('Invalid proposal record: parentParcelIds is a retired parcel declaration.');
+    });
+
+    it('serves an origin by design CID, drops a browser key, and refuses a server-row origin as an older record', () => {
+        const cid = 'bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku';
+        const row = origin => ({ cadastre_parcel_ids: ['HR-1'], proposal_data: { cadastreParcelIds: ['HR-1'], proposalOrigin: origin } });
+        expect(serializeProposalRow(row({ relation: 'copy', source: { kind: 'design', cid }, title: 'Source' })).proposalOrigin)
+            .toEqual({ relation: 'copy', source: { kind: 'design', cid }, title: 'Source' });
+        expect(serializeProposalRow(row({ relation: 'copy', source: { kind: 'local', localProposalId: 'p-1' }, title: 'Source' })).proposalOrigin)
+            .toEqual({ relation: 'copy', source: null, title: 'Source' });
+        let refusal = null;
+        try {
+            serializeProposalRow(row({ relation: 'revision', source: { kind: 'publication', apiBase: 'https://api.example', proposalRowId: '17' } }));
+        } catch (error) { refusal = error; }
+        expect(isInvalidRecordError(refusal)).toBe(true);
+        expect(refusal.status).toBe(422);
+        expect(refusal.detail).toMatch(/proposalOrigin/);
     });
 
     it('never serves the archived legacy provenance of a migrated record', () => {

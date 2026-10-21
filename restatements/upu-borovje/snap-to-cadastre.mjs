@@ -12,7 +12,7 @@
 // the southern edge of its band, is re-centred in the band as plan sheet 2a draws it, so its cross-section
 // fits between the plots and the edge; the crossings that end on it move with it.
 //
-// Named plans never change (plans.md), so nothing existing is edited. The corrected members are published as
+// Named plans never changed (removed 2026-10-21; the restatement is recreated as agreements in M3), so nothing existing is edited. The corrected members are published as
 // new records `<proposal_id>-v2` (revisionOf the original) and named as new plan versions by name-plans.mjs.
 //
 //   node snap-to-cadastre.mjs --compute        # local PostGIS → data/cadastral-snap.json

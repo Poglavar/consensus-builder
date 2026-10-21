@@ -60,12 +60,8 @@ across bot processes. Each successful transfer is recorded as `summary.usdcFundi
 Pledges, revocations, claims, dry runs and adequately funded wallets trigger no USDC top-up.
 The actor's normal spending caps apply to its selected action; funding does not increase them.
 
-Supporter and society discovery read paginated proposal summaries and minted named plans.
-Plans use `plan:<slug>` as the policy input identity and their actual Solana proposal account
-for support, market reads and staking. Missing or changed plan members exclude the plan with
-an explicit log entry; unavailable API or chain reads fail the run. Chain state determines whether
-a plan is active or settled. Density policies load members in batches only when needed and
-measure the member building geometry, including holes, using each member's floor/height data.
+Supporter and society discovery read paginated proposal summaries; unavailable API or chain
+reads fail the run. Chain state determines whether a proposal is active or settled.
 
 `run.mjs` (the orchestrator) owns the sequencing, the checkpoints, the proposal ids, the daily
 spend cap, signed-action/USDC caps and the Telegram summary. The modules here hold no state and

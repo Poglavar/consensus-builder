@@ -79,7 +79,7 @@
     }
 
     function sourceGoal(proposal) {
-        return designGoals.keyOf(proposal) || (proposal?.goal === 'decide-later' ? 'decide-later' : '');
+        return designGoals.keyOf(proposal) || '';
     }
 
     function sourceId(proposal) {
@@ -115,23 +115,12 @@
             binding: clone(proposal?.binding || null),
             site: clone(proposal?.site || null),
             toleranceM: Number.isFinite(Number(proposal?.toleranceM)) ? Number(proposal.toleranceM) : 0,
-            offer: Number.isFinite(Number(proposal?.offer)) ? Number(proposal.offer) : 0,
-            offerCurrency: proposal?.offerCurrency || proposal?.budgetCurrency || 'USDT',
             acquisitionMode: proposal?.acquisitionMode || null,
             boundaryAdjustment: proposal?.boundaryAdjustment || null,
             ownership: proposal?.facets?.ownership || proposal?.proposalFacets?.ownership || null,
             recipientScope: proposal?.facets?.recipientScope || proposal?.proposalFacets?.recipientScope || proposal?.recipientScope || null,
             recipientAddress: proposal?.facets?.recipientAddress || proposal?.proposalFacets?.recipientAddress || proposal?.recipientAddress || null,
-            isConditional: proposal?.isConditional === true,
-            expiresAt: proposal?.expiresAt || null,
-            decayEnabled: proposal?.decayEnabled === true,
-            decayPercent: Number(proposal?.decayPercent) || 0,
-            decayDurationMs: Number(proposal?.decayDurationMs) || 0,
-            depositEnabled: proposal?.depositEnabled === true,
-            depositPercent: Number(proposal?.depositPercent) || 0,
-            facets: clone(proposal?.facets || proposal?.proposalFacets || null),
-            approvalConfig: clone(proposal?.approvalConfig || null),
-            lens: clone(Array.isArray(proposal?.lens) ? proposal.lens : [])
+            facets: clone(proposal?.facets || proposal?.proposalFacets || null)
         };
     }
 
@@ -213,6 +202,13 @@
         if (global.__siteDraft) return global.__siteDraft;
         if (typeof require === 'function') return require('./proposals/site-draft.js');
         throw new Error('Cannot validate a draft: proposals/site-draft.js is not loaded.');
+    }
+
+    // The keys of a published or minted identity (proposals/corridor-authoring.js).
+    function publishedIdentityKeys() {
+        const api = global.CorridorAuthoring || (typeof require === 'function' ? require('./proposals/corridor-authoring.js') : null);
+        if (!api) throw new Error('Cannot build proposal: proposals/corridor-authoring.js is not loaded.');
+        return api.PUBLISHED_IDENTITY_KEYS;
     }
 
     // Synthetic plots cut from a site on bare ground (proposals/site-plots.js) are design input,
@@ -408,12 +404,15 @@
         return { errors: (result.errors || []).map(shape), warnings: (result.warnings || []).map(shape) };
     }
 
+    // A draft's source as a new design: none of the source's local, published (`published`) or
+    // minted identity, lifecycle or consent carries over.
     function stripImmutableProposalIdentity(proposal) {
         const output = clone(proposal || {});
         [
-            'proposalId', 'proposal_id', 'id', 'hash', 'chainProposalId', 'tokenId', 'onchain', 'nft',
-            'onchainData', 'serverProposalId', 'isMinted', 'chainId', 'contractAddress', 'metadataUri',
-            'imageURI', 'chainRef', 'lifecycleStatus', 'effectiveStatus', 'effective_status', 'mintedAt', 'publishedAt',
+            ...publishedIdentityKeys(),
+            'proposalId', 'proposal_id', 'id',
+            'onchainData', 'chainId', 'contractAddress', 'metadataUri',
+            'imageURI', 'chainRef', 'lifecycleStatus', 'effectiveStatus', 'effective_status', 'mintedAt',
             'createdAt', 'updatedAt', 'acceptedParcelIds', 'ownerAcceptances', 'ownerApprovals',
             'ownerApprovalHistory', 'ownershipApprovals', 'executedAt', 'appliedAt', 'localPurchaseSimulation'
         ].forEach(key => delete output[key]);
@@ -463,26 +462,8 @@
         output.proposalName = output.title;
         output.description = fields.description || '';
         output.cadastreParcelIds = cadastreParcelIds.slice();
-        // The kind and its terms through the one builder every publish path uses
-        // (proposals/publish-terms.js). A local draft has no kind and no invented offer.
-        const publishTerms = global.ProposalPublishTerms || require('./proposals/publish-terms.js');
-        Object.assign(output, publishTerms.publishFields(fields, {
-            saleOffer: global.ProposalKind?.isOwnerSaleOffer?.(output) === true
-        }));
         output.acquisitionMode = fields.acquisitionMode || output.acquisitionMode || null;
         output.boundaryAdjustment = fields.boundaryAdjustment || output.boundaryAdjustment || null;
-        const approval = global.ProposalApproval;
-        const approvalConfig = publishTerms.approvalSetupFor({
-            kind: output.kind ?? null,
-            approvalConfig: fields.approvalConfig && typeof fields.approvalConfig === 'object' ? fields.approvalConfig : null
-        });
-        if (!approvalConfig) delete output.approvalConfig;
-        else output.approvalConfig = approval?.normalizeConfig ? approval.normalizeConfig(approvalConfig) : clone(approvalConfig);
-        if (Array.isArray(fields.lens)) {
-            output.lens = clone(fields.lens);
-        } else {
-            delete output.lens;
-        }
         const facets = clone(fields.facets || output.facets || output.proposalFacets || {}) || {};
         if (fields.ownership !== undefined && fields.ownership !== null && fields.ownership !== '') facets.ownership = fields.ownership;
         if (fields.recipientScope !== undefined && fields.recipientScope !== null && fields.recipientScope !== '') facets.recipientScope = fields.recipientScope;
@@ -522,21 +503,10 @@
         const allFacets = [
             ['name', 'Name'],
             ['description', 'Description'],
-            ['offer', 'Offer'],
-            ['offerCurrency', 'Currency'],
             ['ownership', 'Ownership'],
             ['recipientScope', 'Recipient'],
             ['recipientAddress', 'Recipient address'],
-            ['acquisitionMode', 'Acquisition'],
-            ['isConditional', 'Conditional terms'],
-            ['expiresAt', 'Expiry'],
-            ['decayEnabled', 'Decay'],
-            ['decayPercent', 'Decay percent'],
-            ['decayDurationMs', 'Decay duration'],
-            ['depositEnabled', 'Deposit'],
-            ['depositPercent', 'Deposit percent'],
-            ['approvalConfig', 'Approval rights and policy'],
-            ['lens', 'Lens members']
+            ['acquisitionMode', 'Acquisition']
         ];
         const facets = Array.isArray(facetKeys) ? allFacets.filter(([key]) => facetKeys.includes(key)) : allFacets;
         const changedFacets = facets.filter(([key]) => !same(before[key], after[key])).map(([key, label]) => ({
@@ -792,7 +762,7 @@
             'road-track': 'Road / Track', buildings: 'Block', row: 'Row houses', parcelBased: 'Detached houses',
             single: 'Freeform building', 'parcel-layout': 'Parcel layout', park: 'Park', square: 'Square', lake: 'Lake',
             station: 'Transit station',
-            'urban-rule': 'Urban rule', 'decide-later': 'Merge parcels', 'ownership-transfer': 'Ownership transfer', 'as-is': 'Proposal'
+            'urban-rule': 'Urban rule', 'ownership-transfer': 'Ownership transfer', 'as-is': 'Proposal'
         };
         return labels[goal] || String(goal || 'Proposal').replace(/-/g, ' ');
     }
@@ -801,7 +771,7 @@
         return {
             key,
             label: options.label || proposalTypeLabel(key),
-            sections: options.sections || ['parcels', 'ownership', 'approval', 'terms', 'details'],
+            sections: options.sections || ['parcels', 'details'],
             hasDesign: options.hasDesign === true,
             canEdit() { return true; },
             draftFromProposal(proposal) {
@@ -861,7 +831,7 @@
     function buildStructureAdapter(key) {
         const adapter = buildGenericAdapter(key, {
             hasDesign: true,
-            sections: ['design', 'parcels', 'ownership', 'approval', 'terms', 'details']
+            sections: ['design', 'parcels', 'details']
         });
         adapter.draftFromProposal = function draftStructureFromProposal(proposal) {
             const geometry = structureGeometry(proposal);
@@ -925,7 +895,7 @@
     function buildStationAdapter() {
         const adapter = buildGenericAdapter('station', {
             label: 'Transit station',
-            sections: ['design', 'parcels', 'ownership', 'approval', 'terms', 'details'],
+            sections: ['design', 'parcels', 'details'],
             hasDesign: true
         });
         adapter.draftFromProposal = function draftStationFromProposal(proposal) {
@@ -1008,7 +978,7 @@
     const corridorAdapter = {
         key: 'road-track',
         label: 'Road / Track',
-        sections: ['design', 'parcels', 'ownership', 'approval', 'terms', 'details'],
+        sections: ['design', 'parcels', 'details'],
         hasDesign: true,
         canEdit(proposal) {
             const definition = corridorDefinition(proposal);
@@ -1126,7 +1096,7 @@
         return {
             key,
             label: proposalTypeLabel(key),
-            sections: ['design', 'parcels', 'ownership', 'approval', 'terms', 'details'],
+            sections: ['design', 'parcels', 'details'],
             hasDesign: true,
             canEdit(proposal) {
                 const context = proposalBuildingContext(proposal);
@@ -1311,16 +1281,13 @@
         };
     }
 
-    // The record fields a parcel layout never carries: it is geometry only, and its terms, owners and
-    // approval belong to the agreement that includes it (plan-design-agreement.md, M1 (a)).
+    // The record fields a parcel layout never carries: it is geometry only, and its owners belong to
+    // the agreement that includes it (plan-design-agreement.md, M1 (a)).
     const PARCEL_LAYOUT_DROPPED_FIELDS = Object.freeze([
-        'kind', 'offer', 'budget', 'offerCurrency', 'budgetCurrency', 'isConditional', 'disbursementMode',
-        'expiresAt', 'voteExpiryDays', 'decayEnabled', 'decayPercent', 'decayDurationMs', 'depositEnabled',
-        'depositPercent', 'acquisitionMode', 'boundaryAdjustment', 'approvalConfig', 'lens', 'facets',
-        'proposalFacets', 'recipientScope', 'recipientAddress'
+        'acquisitionMode', 'boundaryAdjustment', 'facets', 'proposalFacets', 'recipientScope', 'recipientAddress'
     ]);
 
-    // A layout's draft fields: its name, description and ground, never terms, owners or approval.
+    // A layout's draft fields: its name, description and ground, never owners.
     function parcelLayoutFields(proposal) {
         const fields = sourceFields(proposal);
         return Object.fromEntries(['name', 'titleOrigin', 'description', 'selectedParcelIds', 'cadastreParcelIds', 'binding', 'site', 'toleranceM']
@@ -1439,7 +1406,6 @@
     function createRegistry() {
         const adapters = new Map();
         const aliases = new Map();
-        const readOnly = new Map();
 
         function register(key, adapter, options = {}) {
             const normalized = normalizeGoal(key);
@@ -1452,28 +1418,13 @@
             return value;
         }
 
-        function declareReadOnly(key, reason) {
-            const normalized = normalizeGoal(key);
-            readOnly.set(normalized, reason || 'This proposal type is read-only.');
-        }
-
         function get(keyOrProposal) {
             const rawKey = typeof keyOrProposal === 'object' ? sourceGoal(keyOrProposal) : normalizeGoal(keyOrProposal);
             // A direct adapter key always wins; aliases only catch names no adapter owns.
             // (The generic 'building(s)' label normalizes to 'single' — an alias registered under
             // that name would shadow the Detached adapter and open the wrong design editor.)
             const key = adapters.has(rawKey) ? rawKey : (aliases.get(rawKey) || rawKey);
-            if (adapters.has(key)) return adapters.get(key);
-            if (readOnly.has(key)) {
-                return {
-                    key,
-                    label: proposalTypeLabel(key),
-                    sections: ['details'],
-                    hasDesign: false,
-                    canEdit: () => ({ editable: false, reason: readOnly.get(key) })
-                };
-            }
-            return null;
+            return adapters.get(key) || null;
         }
 
         function canEdit(proposal) {
@@ -1486,16 +1437,15 @@
         }
 
         function completeness(goals = CREATABLE_PROPOSAL_GOALS) {
-            const missing = goals.map(normalizeGoal).filter(key => !adapters.has(key) && !readOnly.has(key));
+            const missing = goals.map(normalizeGoal).filter(key => !adapters.has(key));
             return { complete: missing.length === 0, missing };
         }
 
         function list() {
-            return [...adapters.entries()].map(([key, adapter]) => ({ key, label: adapter.label || proposalTypeLabel(key), readOnly: false }))
-                .concat([...readOnly.entries()].map(([key, reason]) => ({ key, label: proposalTypeLabel(key), readOnly: true, reason })));
+            return [...adapters.entries()].map(([key, adapter]) => ({ key, label: adapter.label || proposalTypeLabel(key) }));
         }
 
-        return { register, declareReadOnly, get, getAdapter: get, canEdit, completeness, list, normalizeGoal };
+        return { register, get, getAdapter: get, canEdit, completeness, list, normalizeGoal };
     }
 
     const registry = createRegistry();
@@ -1511,9 +1461,6 @@
     registry.register('square', buildStructureAdapter('square'));
     registry.register('lake', buildStructureAdapter('lake'));
     registry.register('station', buildStationAdapter(), { aliases: ['transit-station'] });
-    // Existing stored merge proposals remain readable/applicable, but this removed goal cannot be
-    // used as the source of a new or replacement draft.
-    registry.declareReadOnly('decide-later', 'Merge / Decide Later is no longer a creatable proposal type.');
     registry.register('ownership-transfer', buildGenericAdapter('ownership-transfer'), {
         aliases: ['ownership-transfer-to-me', 'ownership-transfer-from-me']
     });

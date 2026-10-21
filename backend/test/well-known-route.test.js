@@ -25,30 +25,33 @@ function appFor(options = {}) {
 }
 
 describe('GET /.well-known/x402', () => {
-    it('lists both paid resources in x402scan shape', async () => {
+    // The paid proposal route went with the server's proposal writes (plan-design-agreement.md M2):
+    // oracle facts are the one paid resource, whatever the proposal price is still set to.
+    it('lists the paid oracle-fact resource in x402scan shape', async () => {
         const res = await request(appFor()).get('/.well-known/x402');
         expect(res.status).toBe(200);
         expect(res.body).toMatchObject({
             version: 1,
             x402Version: 2,
-            resources: ['https://api.example.test/agent/proposals', 'https://api.example.test/agent/oracle/facts']
+            resources: ['https://api.example.test/agent/oracle/facts']
         });
         expect(res.body.endpoints).toEqual([
-            expect.objectContaining({ url: 'https://api.example.test/agent/proposals', method: 'POST', price: '$0.05', network: 'solana:devnet' }),
-            expect.objectContaining({ url: 'https://api.example.test/agent/oracle/facts', method: 'GET', price: '$0.01' })
+            expect.objectContaining({ url: 'https://api.example.test/agent/oracle/facts', method: 'GET', price: '$0.01', network: 'solana:devnet' })
         ]);
+        expect(JSON.stringify(res.body)).not.toContain('/agent/proposals');
     });
 
     it('omits a resource whose x402 config is incomplete', async () => {
         const partial = { ...env, X402_PRICE_ORACLE_FACT: '' };
         const res = await request(appFor({ env: partial })).get('/.well-known/x402');
-        expect(res.body.resources).toEqual(['https://api.example.test/agent/proposals']);
+        expect(res.body.resources).toEqual([]);
+        expect(res.body.endpoints).toEqual([]);
     });
 
     it('never leaks CDP credentials', async () => {
         const cdp = { ...env, X402_FACILITATOR_URL: 'https://api.cdp.coinbase.com/platform/v2/x402', CDP_API_KEY_ID: 'kid', CDP_API_KEY_SECRET: 'sekret' };
         const res = await request(appFor({ env: cdp })).get('/.well-known/x402');
-        expect(res.body.resources).toHaveLength(2);
+        expect(res.body.resources).toHaveLength(1);
         expect(JSON.stringify(res.body)).not.toContain('sekret');
     });
 });
@@ -71,39 +74,14 @@ describe('GET /llms.txt', () => {
         expect(res.headers['content-type']).toMatch(/^text\/markdown/);
         expect(res.text.startsWith('# Urban Game Theory API\n')).toBe(true);
         expect(res.text).toContain('(https://api.example.test/docs/agents)');
-        expect(res.text).toContain('POST https://api.example.test/agent/proposals');
+        expect(res.text).toContain('[GET https://api.example.test/agent/oracle/facts]');
+        expect(res.text).not.toContain('/agent/proposals');
         expect(res.text).toContain('https://api.example.test/agent/lenses/members');
     });
 });
 
 describe('GET /openapi.json', () => {
-    it('is OpenAPI 3.1 with the recipe schema as the paid request body', async () => {
-        const res = await request(appFor()).get('/openapi.json');
-        expect(res.status).toBe(200);
-        expect(res.body.openapi).toBe('3.1.0');
-        expect(res.body.servers).toEqual([{ url: 'https://api.example.test' }]);
-        const post = res.body.paths['/agent/proposals'].post;
-        const schema = post.requestBody.content['application/json'].schema;
-        expect(schema.anyOf.map(branch => branch.required[0])).toEqual(['cadastreParcelIds', 'site']);
-        expect(schema.$schema).toBeUndefined();
-        expect(post['x-x402']).toEqual({ price: '$0.05', network: 'solana:devnet', payTo: env.X402_PAY_TO });
-        expect(post.responses[402]).toBeDefined();
-    });
-
-    it('documents the site binding read and the recipe site/tolerance fields', async () => {
-        const res = await request(appFor()).get('/openapi.json');
-        const binding = res.body.paths['/agent/binding'].post;
-        expect(binding.requestBody.content['application/json'].schema.required).toEqual(['site']);
-        const answer = binding.responses[200].content['application/json'].schema.properties.binding.properties;
-        expect(answer.coverage.enum).toEqual(['complete', 'partial', 'none', 'unknown']);
-        expect(answer.parcels.items.properties).toHaveProperty('intrusionM');
-        expect(binding['x-x402']).toBeUndefined();
-        const recipe = res.body.paths['/agent/proposals'].post.requestBody.content['application/json'].schema.properties;
-        expect(recipe).toHaveProperty('site');
-        expect(recipe.toleranceM.maximum).toBe(1);
-    });
-
-    it('lists the lens directory and schema endpoints and the recipe lens field', async () => {
+    it('lists the lens directory and schema endpoints, and none of the removed publication routes', async () => {
         const res = await request(appFor()).get('/openapi.json');
         for (const path of ['/lenses/members', '/agent/lenses/members', '/lenses/schemas']) {
             expect(res.body.paths[path]?.get, path).toBeDefined();
@@ -114,9 +92,10 @@ describe('GET /openapi.json', () => {
         expect(item.required).toContain('serviceUrl');
         expect(item.properties.serviceUrl.type).toEqual(['string', 'null']);
         expect(item.properties.kind.enum).toEqual(['owner-consent', 'court', 'permit', 'imagery', 'osm', 'lifecycle', null]);
-        const lens = res.body.paths['/agent/proposals'].post.requestBody.content['application/json'].schema.properties.lens;
-        expect(lens).toMatchObject({ type: 'array', minItems: 1 });
-        expect(lens.description).toMatch(/immutable/);
+        expect(res.body.paths['/agent/oracle/facts']?.get).toBeDefined();
+        for (const path of ['/agent/proposals', '/agent/binding', '/proposals/{id}/binding-drift']) {
+            expect(res.body.paths[path], path).toBeUndefined();
+        }
     });
 });
 

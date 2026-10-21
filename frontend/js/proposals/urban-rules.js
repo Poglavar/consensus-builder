@@ -114,7 +114,6 @@ function normalizeProposalGoalKey(rawGoal) {
 
     // Canonical mappings (human labels -> goal keys)
     if (text === 'road/track' || text === 'road' || text === 'track') return 'road-track';
-    if (text === 'decide later' || text === 'decide-later') return 'decide-later';
     if (text === 'building(s)' || text === 'single building' || text === 'single') return 'single';
     if (text === 'buildings' || text === 'residences') return 'buildings';
 
@@ -122,7 +121,6 @@ function normalizeProposalGoalKey(rawGoal) {
     const key = dashed.replace(/\//g, '-');
 
     if (key === 'road-track') return 'road-track';
-    if (key === 'decide-later') return 'decide-later';
     if (key === 'parcel-layout') return 'parcel-layout';
     if (key === 'park' || key === 'square' || key === 'lake' || key === 'station' || key === 'transit-station') {
         return key === 'transit-station' ? 'station' : key;
@@ -253,8 +251,6 @@ function updateGoalDependentSections(toolKey) {
         const acquisitionMode = isRoad ? 'partial-preferred' : 'full';
         setProposalAcquisitionMode(acquisitionMode);
         setProposalBoundaryMode('multiple', { unlock: true });
-        // Reset options when switching away from ownership transfer
-        resetOwnershipTransferOptions();
     }
 
     renderGeometrySection(toolKey);
@@ -302,10 +298,6 @@ function onProposalLandUseChange() {
 }
 
 function selectLandUse(key, { skipChecks = false } = {}) {
-    if (key === 'decide-later') {
-        console.warn('[proposals] Merge / Decide Later is no longer a creatable goal.');
-        return false;
-    }
     if (!skipChecks && ['park', 'square', 'lake'].includes(key)) {
         const contiguity = proposalGroundContiguity();
         if (!contiguity.contiguous) {
@@ -396,7 +388,6 @@ function initProposalFacets(overrideGoal) {
 
     const g = overrideGoal ? (typeof normalizeGoalKey === 'function' ? normalizeGoalKey(overrideGoal) : overrideGoal) : null;
     if (!g || g === 'as-is') { syncProposalFacets(); return; }
-    if (g === 'decide-later') { syncProposalFacets(); return; }
     if (g === 'ownership-transfer' || g === 'ownership-transfer-to-me' || g === 'ownership-transfer-from-me') {
         setProposalOwnershipMode('to-me'); onProposalOwnershipChange(); return;
     }
@@ -489,7 +480,6 @@ function handleProposalToolButton(toolKey) {
     // set the proposal goal programmatically — route every goal through the facet model
     // so the three persistent sections (Land use / Parcels / Ownership) stay in sync.
     const key = (typeof normalizeGoalKey === 'function' ? (normalizeGoalKey(toolKey) || toolKey) : toolKey);
-    if (key === 'decide-later') return false;
     if (key === 'ownership-transfer' || key === 'ownership-transfer-to-me' || key === 'ownership-transfer-from-me') {
         setProposalOwnershipMode('to-me'); onProposalOwnershipChange(); return;
     }

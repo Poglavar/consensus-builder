@@ -10,6 +10,16 @@
       "zIndexLiterals": 0,
       "important": 0
     },
+    "css/agreement-dialog.css": {
+      "colourLiterals": 0,
+      "zIndexLiterals": 0,
+      "important": 0
+    },
+    "css/agreement.css": {
+      "colourLiterals": 0,
+      "zIndexLiterals": 0,
+      "important": 0
+    },
     "css/ai-scene.css": {
       "colourLiterals": 0,
       "zIndexLiterals": 0,
@@ -76,7 +86,7 @@
       "important": 7
     },
     "css/hackathon-demo.css": {
-      "colourLiterals": 44,
+      "colourLiterals": 22,
       "zIndexLiterals": 0,
       "important": 0
     },
@@ -116,9 +126,24 @@
       "important": 18
     },
     "css/modals.css": {
-      "colourLiterals": 52,
+      "colourLiterals": 34,
       "zIndexLiterals": 0,
-      "important": 6
+      "important": 3
+    },
+    "css/on-map-building.css": {
+      "colourLiterals": 0,
+      "zIndexLiterals": 0,
+      "important": 0
+    },
+    "css/on-map-editor.css": {
+      "colourLiterals": 0,
+      "zIndexLiterals": 0,
+      "important": 0
+    },
+    "css/on-map-reparcellization.css": {
+      "colourLiterals": 0,
+      "zIndexLiterals": 0,
+      "important": 0
     },
     "css/page-chrome.css": {
       "colourLiterals": 0,
@@ -131,6 +156,11 @@
       "important": 2
     },
     "css/parcel-coverage-report.css": {
+      "colourLiterals": 0,
+      "zIndexLiterals": 0,
+      "important": 0
+    },
+    "css/parcel-estimate.css": {
       "colourLiterals": 0,
       "zIndexLiterals": 0,
       "important": 0
@@ -151,6 +181,11 @@
       "important": 1
     },
     "css/pitch-variants.css": {
+      "colourLiterals": 0,
+      "zIndexLiterals": 0,
+      "important": 0
+    },
+    "css/planning-views.css": {
       "colourLiterals": 0,
       "zIndexLiterals": 0,
       "important": 0
@@ -176,7 +211,7 @@
       "important": 0
     },
     "css/proposals.css": {
-      "colourLiterals": 108,
+      "colourLiterals": 49,
       "zIndexLiterals": 0,
       "important": 6
     },
@@ -186,6 +221,11 @@
       "important": 0
     },
     "css/roadmap.css": {
+      "colourLiterals": 0,
+      "zIndexLiterals": 0,
+      "important": 0
+    },
+    "css/schelling-plan.css": {
       "colourLiterals": 0,
       "zIndexLiterals": 0,
       "important": 0
@@ -267,15 +307,14 @@
     "body | css/base.css > css/layout.css | width"
   ],
   "i18n": {
-    "titleCaseLabels": 32,
-    "caseConflicts": 72,
+    "titleCaseLabels": 31,
+    "caseConflicts": 69,
     "threeDots": 0,
-    "duplicateGroups": 348
+    "duplicateGroups": 327
   },
   "js": {
     "js/blockchain-sync.js": 2,
-    "js/building-blocks.js": 1,
-    "js/corridor-editor.js": 2,
+    "js/corridor-editor.js": 1,
     "js/data-source.js": 1,
     "js/legacy-road-centerlines.js": 1,
     "js/map-core.js": 4,
@@ -285,18 +324,15 @@
     "js/parcels/ui/claim.js": 2,
     "js/parcels/ui/locate.js": 1,
     "js/parcels/ui/visibility.js": 1,
-    "js/proposals/apply/parcels.js": 2,
     "js/proposals/apply/structures.js": 1,
     "js/proposals/core.js": 4,
-    "js/proposals/create.js": 19,
-    "js/proposals/dialog-create.js": 1,
+    "js/proposals/create.js": 2,
     "js/proposals/geometry.js": 2,
     "js/proposals/list-ui.js": 4,
     "js/proposals/urban-rules.js": 2,
     "js/road-detection.js": 22,
-    "js/road-drawing.js": 4,
+    "js/road-drawing.js": 3,
     "js/row-house.js": 2,
-    "js/structures.js": 1,
     "js/user-management.js": 3
   }
 }

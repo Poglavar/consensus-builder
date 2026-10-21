@@ -1,4 +1,6 @@
 // Protect the real proposal details renderer from hiding or dropping actions as its footer is reorganized.
+// Since M2 (plan-design-agreement.md) a design's details carry no lifecycle badges, consent card,
+// terms, funding, support, market or bet: those belong to the agreement that includes the design.
 import { describe, expect, it, vi } from 'vitest';
 import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
@@ -10,7 +12,8 @@ const require = createRequire(import.meta.url);
 const supportView = require('../../frontend/js/proposals/support-view.js');
 const displayText = require('../../frontend/js/proposals/display-text.js');
 const groundRebase = require('../../frontend/js/proposals/ground-rebase.js');
-const ProposalKind = require('../../frontend/js/proposals/proposal-kind.js');
+const designRecord = require('../../frontend/js/design-record.js');
+const designSync = require('../../frontend/js/proposals/design-sync.js');
 const displayState = require('../../frontend/js/proposals/display-state.js');
 const panelPresentation = require('../../frontend/js/proposals/panel-presentation.js');
 const referenceRelations = require('../../frontend/js/proposals/parcel-set-relations.js');
@@ -20,9 +23,13 @@ const proposalOrigin = require('../../frontend/js/proposals/origin.js');
 const acceptanceClient = require('../../frontend/js/solana/acceptance-client.js');
 // A mint record as the mint paths write it (proposals/display-state.js hasMintRecord).
 const MINT_RECORD = Object.freeze({ chain: 'solana-devnet', contract: acceptanceClient.constants.PROPOSAL_NFT_PROGRAM_ID, tokenId: 'Token1111111111111111111111111111111111' });
+// The index the renderer's DesignSync reads publication against (design-sync.js publishedCid).
+const API_BASE = 'https://api.example.test';
+// A local design marked published at API_BASE under the CID it hashes to.
+const published = record => ({ ...record, published: { cid: designRecord.cidOf(record), publishedAt: '2026-10-21T10:00:00.000Z', apiBase: API_BASE } });
 const source = readFileSync(new URL('../../frontend/js/proposals/details-panel.js', import.meta.url), 'utf8');
 const renderStart = source.indexOf('function safeAgentText(');
-const renderEnd = source.indexOf('\nlet proposalSupportWalletRefreshBound =');
+const renderEnd = source.indexOf('\nfunction rerenderProposalDetailsForLanguage(');
 if (renderStart < 0 || renderEnd <= renderStart) throw new Error('Could not isolate proposal details renderer');
 const renderSource = `let proposalDetailsEscapeHandler = null;\n${source.slice(renderStart, renderEnd)}`;
 
@@ -81,8 +88,8 @@ function render(proposal, { applied = false, connected = false, road = false, su
         },
         __siteDraft: { siteAreaM2: site => siteDraft.siteAreaM2(site, { turf }) },
         ProposalSupportView: supportView,
-        ProposalKind,
         ProposalOrigin: proposalOrigin,
+        DesignSync: { publishedCid: record => designSync.publishedCid(record, API_BASE) },
         ProposalPublishTerms: require('../../frontend/js/proposals/publish-terms.js'),
         ProposalOrigin: require('../../frontend/js/proposals/origin.js'),
         solanaWalletManager: { getState: () => connected ? { status: 'connected', accounts: ['wallet'] } : { status: 'disconnected', accounts: [] } },
@@ -120,8 +127,6 @@ function render(proposal, { applied = false, connected = false, road = false, su
         ProposalMapAction: { presentation: isApplied => ({ label: isApplied ? 'Unapply' : 'Apply', iconClass: 'fa-check', className: 'btn-warning' }) },
         computeProposalCategoryFlags: () => ({ isRoadProposal: road, isBuildingProposal: false, isStructureProposal: false, isParcelLayoutProposal: false, supportsMapToggle: true }),
         resolveProposalActionTypeKey: () => 'building', getLifecycleStatus: () => lifecycle,
-        isNonBindingProposal: proposal => ProposalKind.isNonBinding(proposal),
-        proposalKindBadgeHtml: () => '',   // list-ui.js; the kind badge is not this test's subject
         getProposalLifecycleKey: () => lifecycle.toLowerCase(), getProposalLifecycleClass: () => '', getProposalLifecycleLabel: () => lifecycle,
         buildProposalOwnerAcceptanceSummaryFast: () => ({ totalOwners: 0 }),
         getProposalLensEntries: () => [], getLensPatternDataUrl: () => null,
@@ -186,25 +191,6 @@ describe('proposal details action footer', () => {
         const nextProposal = context === 'different' ? { ...proposal, proposalId: 'another-proposal' } : proposal;
         result.rerender(nextProposal);
         expect(inspectProposal).toHaveBeenCalledExactlyOnceWith(nextProposal);
-    });
-
-    it('does not show devnet funding for unqualified references or another deployment', () => {
-        for (const change of [{ chain: 'solana' }, { chain: 'solana-mainnet-beta' }, { contract: 'another-program' }, { contract: null }]) {
-            const result = render({ proposalId: 'wrong-deployment', cadastreParcelIds: [], nft: { ...MINT_RECORD, ...change } });
-            expect(parse(result.content.innerHTML)('.proposal-pledge-summary, .proposal-market-summary').length).toBe(0);
-            expect(parse(result.footer.innerHTML)('[data-proposal-support-actions]').length).toBe(0);
-        }
-    });
-    it('shows authored payout terms without promising that acceptance releases money', () => {
-        const base = { proposalId: 'payout-terms', cadastreParcelIds: [] };
-        const badge = terms => parse(render({ ...base, ...terms }).content.innerHTML)('[data-proposal-payout-terms]');
-        expect(badge({}).length).toBe(0);
-        expect(badge({ offer: 0, isConditional: false }).length).toBe(0);
-        expect(badge({ kind: 'owner-vote', offer: 100, isConditional: true }).length).toBe(0);
-        expect(badge({ offer: 100, isConditional: true }).text()).toBe('Payout terms: all owners');
-        expect(badge({ offer: 100, isConditional: true }).attr('title')).toContain('does not confirm funding or payment');
-        expect(badge({ offer: 100, isConditional: false }).text()).toBe('Payout terms: partial');
-        expect(badge({ offer: 100, isConditional: false }).attr('title')).toContain('Acceptance alone does not confirm payment');
     });
 
     it('shows unknown source areas as an em dash and gives partial sums their actual coverage', () => {
@@ -274,31 +260,14 @@ describe('proposal details action footer', () => {
         const sourceFeature = { type: 'Feature', properties: { parcelId: 'source-1' }, geometry };
         const available = parse(render(proposal, { sourceFeature }).content.innerHTML)('.proposal-parcel-row');
         expect(available.attr('data-reference-state')).toBe('available');
-        expect(available.find('.parcel-status').text()).toBe('Pending');
+        // A design has no owner acceptance: an available reference carries no Accepted/Pending status.
+        expect(available.find('.parcel-status').length).toBe(0);
+        expect(available.hasClass('is-accepted')).toBe(false);
         const replaced = parse(render(proposal, { sourceFeature, sourceReplaced: true }).content.innerHTML)('.proposal-parcel-row');
         expect(replaced.attr('data-parcel-replaced')).toBe('true');
         expect(replaced.hasClass('is-replaced')).toBe(true);
         expect(replaced.find('.parcel-status').text()).toBe('Replaced in map model');
         expect(JSON.parse(replaced.attr('data-parcel-geometry'))).toEqual(geometry);
-    });
-
-    it.each([
-        { goal: 'ownership-transfer-from-me', funded: false },
-        { goal: 'parcelBased', ownershipTransferProposal: { direction: 'from-me' }, funded: true },
-        { goal: 'ownership-transfer-from-me', funded: true, decayEnabled: true, decayPercent: 10, decayDurationMs: 60000 }
-    ])('shows seller funding availability without a synthetic remaining amount or payment action: %j', terms => {
-        const proposal = { proposalId: 'seller-1', title: 'Seller offer', cadastreParcelIds: [], offer: 100, offerCurrency: 'EUR', ...terms };
-        const $ = parse(render(proposal).content.innerHTML);
-        expect($('.proposal-offer-funding-note').text()).toBe('Funding this offer is not available here.');
-        expect($('.offer-amount').text()).toBe('€100');
-        expect($('.proposal-no-deposit-warning').text().trim()).toBe('⚠️ No deposit specified');
-        expect($('.proposal-offer-bar button').length).toBe(0);
-        expect($.text()).not.toContain('Amount still needed');
-    });
-
-    it('does not apply the seller funding note to a general proposal offer', () => {
-        const $ = parse(render({ proposalId: 'park-1', goal: 'park', cadastreParcelIds: [], offer: 100 }).content.innerHTML);
-        expect($('.proposal-offer-funding-note').length).toBe(0);
     });
 
     it('keeps a failed map-application reason visible in the proposal panel', () => {
@@ -324,19 +293,17 @@ describe('proposal details action footer', () => {
     it.each([
         { proposalId: 'local-1', cadastreParcelIds: [] },
         { proposalId: 'minted-1', cadastreParcelIds: [], nft: MINT_RECORD }
-    ])('offers Bet on outcome last, on its own row of the shared action footer, for every proposal', proposal => {
-        const result = render(proposal);
+    ])('offers no bet, support or approval action on a design: those are its agreement\'s (%j)', proposal => {
+        const result = render(proposal, { applied: true, connected: true, approvalSetup: true, editable: true });
         const footer = parse(result.footer.innerHTML);
-        const button = footer('.proposal-bet-actions .btn-bet-proposal');
-        expect(button.length).toBe(1);
-        expect(footer('.proposal-primary-actions .btn-bet-proposal').length).toBe(0);
-        expect(footer('button').last().hasClass('btn-bet-proposal')).toBe(true);
-        expect(button.text()).toContain('Bet on outcome');
-        expect(button.attr('disabled')).toBeUndefined();
-        expect(result.footer.innerHTML).toContain(`openProposalOutcomeBet("${proposal.proposalId}")`);
-        expect(parse(result.content.innerHTML)('.btn-bet-proposal').length).toBe(0);
-        const approval = render(proposal, { approvalSetup: true });
-        expect(parse(approval.footer.innerHTML)('.btn-bet-proposal').length).toBe(1);
+        const content = parse(result.content.innerHTML);
+        expect(footer('.btn-bet-proposal, [data-proposal-support-actions], .btn-connect-proposal-support, .proposal-buy-btn').length).toBe(0);
+        expect(content('.btn-bet-proposal, .btn-edit-approval, .proposal-lens-card, .approval-card-slot').length).toBe(0);
+        expect(content('.proposal-pledge-summary, .proposal-market-summary, [data-proposal-payout-terms], .proposal-expiry-countdown').length).toBe(0);
+        expect(content('#proposal-parcel-acceptance-section, #proposal-owner-acceptance-section').length).toBe(0);
+        // The share and fork actions stay.
+        expect(footer('.btn-share-proposal').length).toBe(1);
+        expect(footer('.btn-counterpropose-proposal').length).toBe(1);
     });
 
     it('keeps a parcel layout local: Share disabled with its reason, no Fork, Bet or approval action', () => {
@@ -347,7 +314,7 @@ describe('proposal details action footer', () => {
         expect(share.length).toBe(1);
         expect(share.attr('disabled')).toBeDefined();
         expect(share.attr('onclick')).toBeUndefined();
-        expect(footer('.proposal-publish-later').text()).toBe('Parcel layouts are shared together with their agreement. Coming soon.');
+        expect(footer('.proposal-publish-later').text()).toBe('A parcel layout is published with its agreement. Propose an agreement that includes it.');
         expect(footer('.btn-counterpropose-proposal').length).toBe(0);
         expect(footer('.btn-bet-proposal').length).toBe(0);
         expect(parse(result.content.innerHTML)('.btn-edit-approval').length).toBe(0);
@@ -390,116 +357,79 @@ describe('proposal details action footer', () => {
         }
     });
 
-    it('leaves out donations, pledges and the market for a minted approval setup the contract never executes', () => {
-        const proposal = { proposalId: 'approval-1', title: 'Readjustment', cadastreParcelIds: [], nft: MINT_RECORD };
-        const plain = render(proposal, { connected: true });
-        expect(parse(plain.footer.innerHTML)('[data-proposal-support-actions]').length).toBe(1);
-        expect(parse(plain.content.innerHTML)('.proposal-pledge-summary, .proposal-market-summary').length).toBe(2);
-        const setup = render(proposal, { connected: true, approvalSetup: true });
-        const content = parse(setup.content.innerHTML);
-        expect(parse(setup.footer.innerHTML)('[data-proposal-support-actions]').length).toBe(0);
-        expect(content('.proposal-pledge-summary, .proposal-market-summary').length).toBe(0);
-        expect(content('[data-proposal-section="funding"], [data-proposal-section="market"]').length).toBe(0);
-        expect(content('.proposal-lens-card').length).toBe(1);
-        expect(content('.approval-card-slot').length).toBe(1);
-    });
-
-    it('opens the editor on its Approval tab from Land & ownership, only for a proposal the editor can open', () => {
-        const proposal = { proposalId: 'p-1', title: 'Readjustment', cadastreParcelIds: [] };
-        const button = options => parse(render(proposal, options).content.innerHTML)('.btn-edit-approval');
-        expect(button({ editable: true }).text()).toContain('Add ownership and approval');
-        expect(render(proposal, { editable: true }).content.innerHTML).toContain('onclick="editProposalApproval("p-1")"');
-        expect(button({ editable: true, approvalSetup: true }).text()).toContain('Edit ownership and approval');
-        expect(button({ editable: false, approvalSetup: true }).length).toBe(0);
-        expect(button({}).length).toBe(0);
-    });
-
-    it('renders primary and contextual actions, plus disconnected support in the footer once', () => {
-        const proposal = { proposalId: 'proposal-1', title: 'Garden', cadastreParcelIds: [], nft: MINT_RECORD, saleOffer: true };
+    it('renders the primary and contextual actions once, Fork named for the design', () => {
+        const proposal = { proposalId: 'proposal-1', title: 'Garden', cadastreParcelIds: [], nft: MINT_RECORD };
         const result = render(proposal, { connected: false });
         const $ = parse(result.footer.innerHTML);
         expect($('.proposal-action-default').length + $('[onclick^="removeProposalFromMap"]').length).toBe(1);
-        expect($('[onclick^="shareProposalFromDetails"]').length).toBe(1);
+        expect($('[onclick*="shareProposalFromDetails"]').length).toBe(1);
+        expect($('.btn-share-proposal').attr('title')).toBe('Publish this design and copy its link');
         expect($('[onclick^="proposeExistingProposal"]').length).toBe(1);
+        expect($('.btn-counterpropose-proposal').text().trim()).toBe('Fork design');
+        expect($('.btn-counterpropose-proposal').attr('title')).toBe('Create an editable copy. The design you are viewing stays unchanged.');
         expect($('.btn-proposal-details').length).toBe(1);
-        expect($('.proposal-buy-btn').length).toBe(1);
-        expect($('.btn-connect-proposal-support').length).toBe(1);
-        expect($('[data-proposal-support-actions]').length).toBe(1);
-        expect(parse(result.content.innerHTML)('[data-proposal-support-actions]').length).toBe(0);
         expect($.text()).not.toContain('changed land');
     });
 
-    it('renders contextual geometry and track actions, and refreshes support actions after summary hydration', async () => {
+    it('renders contextual geometry and track actions; Drive only for a track design published at this index', () => {
         const building = render({ proposalId: 'local-1', title: 'House', cadastreParcelIds: [] });
         expect(parse(building.footer.innerHTML)('.btn-edit-geometry').length).toBe(1);
 
-        const road = render({ proposalId: 'track-1', title: 'Rail', cadastreParcelIds: [], roadProposal: { definition: {} } }, { applied: true, road: true });
-        expect(parse(road.footer.innerHTML)('.btn-cross-section').length).toBe(1);
-        expect(parse(road.footer.innerHTML)('.btn-drive-proposal').length, road.footer.innerHTML).toBe(1);
+        const track = { proposalId: 'track-1', goal: 'road-track', title: 'Rail', cadastreParcelIds: [], roadProposal: { definition: { points: [[[15.96, 45.8], [15.961, 45.8]]] } } };
+        const draft = render(track, { applied: true, road: true });
+        expect(parse(draft.footer.innerHTML)('.btn-cross-section').length).toBe(1);
+        // The sim reads a track by its CID, so a draft cannot be driven.
+        expect(parse(draft.footer.innerHTML)('.btn-drive-proposal').length).toBe(0);
+        const shared = render(published(track), { applied: true, road: true });
+        expect(parse(shared.footer.innerHTML)('.btn-drive-proposal').length, shared.footer.innerHTML).toBe(1);
+        // A mark for another index, or a design edited after publishing, is not published here.
+        const elsewhere = { ...published(track), published: { ...published(track).published, apiBase: 'https://other.example.test' } };
+        expect(parse(render(elsewhere, { applied: true, road: true }).footer.innerHTML)('.btn-drive-proposal').length).toBe(0);
+        const edited = { ...published(track), title: 'Rail, edited' };
+        expect(parse(render(edited, { applied: true, road: true }).footer.innerHTML)('.btn-drive-proposal').length).toBe(0);
 
-        const onchain = render({ proposalId: 'chain-1', title: 'Garden', cadastreParcelIds: [], nft: MINT_RECORD }, {
-            connected: true, summary: { wallet: 'wallet', myPledge: { status: 0, amount: 25n } }
-        });
+        const onchain = render({ proposalId: 'chain-1', title: 'Garden', cadastreParcelIds: [], nft: MINT_RECORD }, { connected: true });
         expect(parse(onchain.footer.innerHTML)('.btn-edit-geometry').length).toBe(1);
-        await Promise.resolve();
-        await Promise.resolve();
-        const support = parse(onchain.footer.innerHTML);
-        expect(support('.btn-donate-proposal').length).toBe(1);
-        expect(support('.btn-pledge-proposal').length).toBe(1);
-        expect(support('.proposal-support-actions').text()).toContain('Revoke my pledge');
-
-        const executed = render({ proposalId: 'chain-executed', title: 'Built', cadastreParcelIds: [], nft: MINT_RECORD }, {
-            connected: true, lifecycle: 'Executed',
-            summary: { wallet: 'wallet', donations: { totalDonated: 25n, totalRefunded: 0n, released: false } }
-        });
-        await Promise.resolve();
-        await Promise.resolve();
-        expect(parse(executed.footer.innerHTML)('.proposal-support-actions').text()).toContain('Release donations');
-
-        const cancelled = render({ proposalId: 'chain-cancelled', title: 'Cancelled', cadastreParcelIds: [], nft: MINT_RECORD }, {
-            connected: true, lifecycle: 'Cancelled',
-            summary: { wallet: 'wallet', myDonations: [{ amount: 10n, refunded: false }], myPledge: { status: 0, amount: 5n } }
-        });
-        await Promise.resolve();
-        await Promise.resolve();
-        expect(parse(cancelled.footer.innerHTML)('.proposal-support-actions').text()).toContain('Refund my donations');
-        expect(parse(cancelled.footer.innerHTML)('.proposal-support-actions').text()).toContain('Clear my pledge');
+        expect(parse(onchain.footer.innerHTML)('.btn-donate-proposal, .btn-pledge-proposal, .proposal-support-actions').length).toBe(0);
     });
 
     // Proposal 781 on the local stack: Cancelled on the server, applied in this browser. The panel
-    // showed Published + Applied and an Unapply button.
-    it('shows a cancelled proposal applied in this browser as Cancelled, without Applied or a map action', () => {
-        const cancelled = render({ proposalId: 'c2-uh980k1g32gls', serverProposalId: '781', title: 'Road 1008-1649', cadastreParcelIds: [] },
+    // showed Published + Applied and an Unapply button. A design shows no lifecycle badge since M2,
+    // but a withdrawn record still cannot stand on the map (proposals/display-state.js).
+    it('shows a cancelled record applied in this browser without Applied or a map action', () => {
+        const cancelled = render({ proposalId: 'road-781', title: 'Road 1008-1649', cadastreParcelIds: [] },
             { applied: true, lifecycle: 'Cancelled' });
         const badges = parse(cancelled.content.innerHTML)('.proposal-badges-row');
         expect(badges.find('.cb-badge--applied')).toHaveLength(0);
-        expect(badges.text()).toContain('Cancelled');
+        expect(badges.text()).not.toContain('Cancelled');
         expect(badges.find('.cb-badge--minted')).toHaveLength(0);
         const footer = parse(cancelled.footer.innerHTML);
         expect(footer('[onclick^="removeProposalFromMap"]')).toHaveLength(0);
         expect(footer('[onclick^="applyProposalToMap"]')).toHaveLength(0);
         expect(footer.text()).not.toContain('Unapply');
 
-        const active = render({ proposalId: 'c2-cyjp51xcmdh3', serverProposalId: '780', title: 'Block 1108-0124', cadastreParcelIds: [] },
+        const active = render({ proposalId: 'block-780', title: 'Block 1108-0124', cadastreParcelIds: [] },
             { applied: true, lifecycle: 'Active' });
         expect(parse(active.content.innerHTML)('.proposal-badges-row .cb-badge--applied')).toHaveLength(1);
         expect(parse(active.footer.innerHTML)('[onclick^="removeProposalFromMap"]')).toHaveLength(1);
     });
 
-    it('badges a mint record Minted and a bare numeric id only by its serial', () => {
-        const minted = render({ proposalId: 'chain-2', title: 'Garden', cadastreParcelIds: [], nft: MINT_RECORD });
-        expect(parse(minted.content.innerHTML)('.proposal-badges-row .cb-badge--minted')).toHaveLength(1);
-        const serial = render({ proposalId: '780', title: 'Block', cadastreParcelIds: [] });
-        expect(parse(serial.content.innerHTML)('.proposal-badges-row .cb-badge--minted')).toHaveLength(0);
+    it('badges a mint record Minted, a design published here Published, and anything else Draft', () => {
+        const badge = proposal => parse(render(proposal).content.innerHTML)('.proposal-badges-row .cb-badge').first();
+        expect(badge({ proposalId: 'chain-2', title: 'Garden', cadastreParcelIds: [], nft: MINT_RECORD }).hasClass('cb-badge--minted')).toBe(true);
+        const design = { proposalId: 'park-780', goal: 'park', title: 'Block', cadastreParcelIds: [], site: { type: 'Polygon', coordinates: [[[0, 0], [0.001, 0], [0.001, 0.001], [0, 0]]] } };
+        expect(badge(published(design)).hasClass('cb-badge--published')).toBe(true);
+        // A bare numeric id says nothing about publication.
+        expect(badge({ proposalId: '780', title: 'Block', cadastreParcelIds: [] }).hasClass('cb-badge--draft')).toBe(true);
+        expect(badge(design).hasClass('cb-badge--draft')).toBe(true);
     });
 
-    it('presents execution as the recorded lifecycle with a separate map-state badge', () => {
-        const result = render({ proposalId: 'recorded-execution', lifecycleStatus: 'Executed', cadastreParcelIds: [],
-            lifecycleEvidence: { protocol: 'proposal-lifecycle-evidence/1', state: 'observed', status: 'Executed', observedAt: '2026-10-20T10:00:00.000Z' } },
-            { lifecycle: 'Executed', applied: true });
-        const badges = parse(result.content.innerHTML)('.proposal-badges-row');
-        expect(badges.find('.cb-badge--executed').text()).toBe('Execution recorded');
-        expect(badges.find('.cb-badge--executed').attr('title')).toContain('does not verify payment');
-        expect(badges.find('.cb-badge--applied')).toHaveLength(1);
+    it('names the CID a published design is published as in its record section', () => {
+        const design = published({ proposalId: 'park-1', goal: 'park', title: 'Pocket park', cadastreParcelIds: [] });
+        const row = parse(render(design).content.innerHTML)('[data-proposal-published-cid]');
+        expect(row.attr('data-proposal-published-cid')).toBe(design.published.cid);
+        expect(row.find('.proposal-published-cid').attr('title')).toBe(design.published.cid);
+        expect(row.find('.proposal-published-cid').text()).toBe(`${design.published.cid.slice(0, 12)}…${design.published.cid.slice(-6)}`);
+        expect(parse(render({ proposalId: 'park-2', goal: 'park', title: 'Local', cadastreParcelIds: [] }).content.innerHTML)('[data-proposal-published-cid]').length).toBe(0);
     });
 });

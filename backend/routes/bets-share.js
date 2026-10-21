@@ -7,7 +7,7 @@
 
 import { createRequire } from 'node:module';
 import { buildContests, DEVNET_PROPOSAL_LOCATION_SQL } from '../markets/contests.js';
-import { PROPOSAL_COLUMNS_SQL, defaultMarketReader, defaultProposalStatusReader, rowToPlan, rowToProposal } from './markets.js';
+import { PROPOSAL_COLUMNS_SQL, defaultMarketReader, defaultProposalStatusReader, rowToProposal } from './markets.js';
 
 const require = createRequire(import.meta.url);
 // The same codecs the sheet renders with, so the preview quotes the numbers the row will show.
@@ -30,34 +30,15 @@ const PROPOSAL_BY_ACCOUNT_SQL = `
     ORDER BY created_at DESC
     LIMIT 1`;
 
-// A named plan minted as its own account (plans.md), and its members for the land and the image.
-const PLAN_BY_ACCOUNT_SQL = `
-    SELECT slug, title, place, author, created_at, proposal_ids, onchain_data, city,
-        thumbnail_url, thumbnail_before_url, thumbnail_pair_url
-    FROM ens_plan
-    WHERE ${DEVNET_PROPOSAL_LOCATION_SQL} AND onchain_data->>'proposalId' = $1
-    LIMIT 1`;
-const PLAN_MEMBERS_SQL = `SELECT ${PROPOSAL_COLUMNS_SQL} FROM proposal WHERE id = ANY($1::int[])`;
-
-// The bet behind an account: a minted proposal, else a minted named plan. Returns what the page
-// needs ({ city, title, screenshotUrl, proposals, plans }) or null.
+// The bet behind an account: a minted proposal. Returns what the page needs
+// ({ city, title, screenshotUrl, proposals }) or null.
 async function betSubject(pool, proposalAccount) {
     const { rows } = await pool.query(PROPOSAL_BY_ACCOUNT_SQL, [proposalAccount]);
-    if (rows.length) {
-        const proposal = rowToProposal(rows[0]);
-        if (proposal.proposalAccount !== proposalAccount) return null;
-        // The preview shows before and after side by side when the pair has been rendered.
-        return { city: proposal.city, title: proposal.title, screenshotUrl: proposal.screenshotPairUrl || proposal.screenshotUrl, proposals: [proposal], plans: [] };
-    }
-    const { rows: planRows } = await pool.query(PLAN_BY_ACCOUNT_SQL, [proposalAccount]);
-    if (!planRows.length) return null;
-    const plan = rowToPlan(planRows[0]);
-    if (plan.proposalAccount !== proposalAccount) return null;
-    const { rows: memberRows } = await pool.query(PLAN_MEMBERS_SQL, [plan.memberIds.map(Number)]);
-    const members = memberRows.map(rowToProposal);
-    // A plan preview has to represent the whole named plan; an individual member's image is not a substitute.
-    const image = plan.screenshotPairUrl || null;
-    return { city: planRows[0].city || null, title: plan.title || plan.slug, screenshotUrl: image, proposals: members, plans: [plan] };
+    if (!rows.length) return null;
+    const proposal = rowToProposal(rows[0]);
+    if (proposal.proposalAccount !== proposalAccount) return null;
+    // The preview shows before and after side by side when the pair has been rendered.
+    return { city: proposal.city, title: proposal.title, screenshotUrl: proposal.screenshotPairUrl || proposal.screenshotUrl, proposals: [proposal] };
 }
 
 export function escapeHtml(value) {
@@ -155,7 +136,7 @@ export function setupBetsShareRoute(app, pool, options = {}) {
             const subject = await betSubject(pool, proposalAccount);
             if (!subject) return res.status(404).send(renderPage(generic));
             const [markets, statuses] = await Promise.all([readMarkets([proposalAccount]), readProposalStatuses([proposalAccount])]);
-            const { contests } = buildContests({ city: subject.city, proposals: subject.proposals, plans: subject.plans, markets, statuses, now: now() });
+            const { contests } = buildContests({ city: subject.city, proposals: subject.proposals, markets, statuses, now: now() });
             const entry = contests.flatMap(contest => contest.proposals).find(item => item.proposalAccount === proposalAccount) || null;
             const row = entry ? BetsModel.row(entry) : null;
             // The link's own city wins (it is the id the app was opened in); the row's is the fallback.

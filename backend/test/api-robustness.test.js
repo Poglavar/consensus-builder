@@ -52,9 +52,12 @@ describe('async handler rejections reach the error handler', () => {
         expect(res.status).toBe(400);
     });
 
-    it('turns a rejecting handler into a 500 and keeps serving', async () => {
+    it('turns a failing query into a 500 and keeps serving', async () => {
         vi.spyOn(console, 'error').mockImplementation(() => { });
-        // GET /plans/:slug awaits pool.query with no try/catch of its own.
+        // Every route now catches its own query failures (the last one that did not, GET /plans/:slug,
+        // went with the named plans); a rejection that escapes a handler is checked on a bare wrapped
+        // app below.
+        const designPath = '/designs/bafkreibm6jg3ux5qumhcn2b3flc3tyu6dmlb4xa7u5bf44yegnrjhc4yeq';
         let fail = true;
         const pool = recordingPool(async () => {
             if (fail) throw new Error('database offline');
@@ -62,12 +65,12 @@ describe('async handler rejections reach the error handler', () => {
         });
         const server = app(pool);
 
-        const failed = await request(server).get('/plans/some-plan');
+        const failed = await request(server).get(designPath);
         expect(failed.status).toBe(500);
         expect(failed.body).toEqual({ error: 'Internal server error' });
 
         fail = false;
-        const next = await request(server).get('/plans/some-plan');
+        const next = await request(server).get(designPath);
         expect(next.status).toBe(404);
         const health = await request(server).get('/health');
         expect(health.status).toBe(200);
@@ -234,11 +237,38 @@ describe('the Origin gate lets read-only POSTs through and still stops writes', 
 
     it('still refuses a write without an Origin, before any SQL', async () => {
         const pool = recordingPool();
-        const res = await request(app(pool)).post('/proposals').send({ cadastreParcelIds: ['HR-335240-2379'] });
-
-        expect(res.status).toBe(403);
-        expect(res.body).toEqual({ error: 'Forbidden' });
+        const server = app(pool);
+        // The publish routes write (the index) or spend our pinning quota: none is a read.
+        for (const path of ['/designs', '/agreements', '/pins']) {
+            const res = await request(server).post(path).send({ cid: 'bafkreibm6jg3ux5qumhcn2b3flc3tyu6dmlb4xa7u5bf44yegnrjhc4yeq', content: {} });
+            expect(res.status, path).toBe(403);
+            expect(res.body, path).toEqual({ error: 'Forbidden' });
+        }
         expect(pool.calls).toHaveLength(0);
+    });
+});
+
+// M2 (plan-design-agreement.md) removed every write into the proposal table and the named plans: the
+// routes are not registered at all, so each answers the app's 404, even with an allowed Origin.
+describe('removed publication routes', () => {
+    it.each([
+        ['post', '/proposals'], ['post', '/proposals/mirror'], ['post', '/proposals/prepare'], ['post', '/proposals/binding'],
+        ['post', '/agent/proposals'], ['post', '/agent/binding'], ['post', '/agent/prepare'],
+        ['patch', '/proposals/41/screenshot'], ['patch', '/proposals/41/epoch'], ['patch', '/proposals/epochs'], ['patch', '/proposals/41/name'],
+        ['get', '/proposals/41/binding-drift'], ['get', '/proposals/41/owner-decisions'], ['post', '/proposals/41/owner-decisions'],
+        ['post', '/proposals/41/owner-decisions/bundle'],
+        ['get', '/plans'], ['get', '/plans/borovje'], ['post', '/plans'], ['post', '/walrus/upload'], ['post', '/reparcellization/validate']
+    ])('%s %s is gone', async (method, path) => {
+        const pool = recordingPool();
+        const res = await request(app(pool))[method](path).set('Origin', 'http://localhost:5173').send({});
+        expect(res.status).toBe(404);
+        expect(pool.calls).toHaveLength(0);
+    });
+
+    it('lists the design reads, and no write, among the read-only POSTs', () => {
+        expect(READ_ONLY_POST_PATHS).toContain('/designs/batch');
+        expect(READ_ONLY_POST_PATHS).toContain('/designs/binding');
+        for (const write of ['/designs', '/agreements', '/pins', '/proposals', '/proposals/binding']) expect(READ_ONLY_POST_PATHS.has(write), write).toBe(false);
     });
 });
 

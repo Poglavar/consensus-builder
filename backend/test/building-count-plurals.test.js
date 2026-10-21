@@ -33,7 +33,7 @@ describe('building counts follow each active language', () => {
         it(`${language}: summaries and comparisons select singular, few and plural`, async () => {
             const t = await translator(language);
             for (const count of [0, 1, 2, 5, 21]) {
-                for (const key of ['proposalDrafts.design.buildingSummary', 'parcelCompare.buildings.count', 'blockify.modal.existing.summaryExact']) {
+                for (const key of ['proposalDrafts.design.buildingSummary', 'blockify.modal.existing.summaryExact']) {
                     const text = t(key, { count, height: 12, typology: 'Block' });
                     expect(text).toContain(`${count} ${noun(language, count)}`);
                     expect(text).not.toMatch(/\(s\)|\{\{/);

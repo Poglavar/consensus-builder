@@ -1,6 +1,6 @@
 // Unit tests for frontend/js/agreement-ground.js: an agreement's inputs and outputs derived from a
-// fake live fabric, the current/stale check of a stored agreement, and the holders the local owner
-// records name, joint pools included.
+// fake live fabric, the current/stale check of a stored agreement (its designs named by CID), and the
+// holders the local owner records name, joint pools included.
 import { describe, it, expect } from 'vitest';
 import { createRequire } from 'node:module';
 
@@ -9,6 +9,7 @@ const turf = require('@turf/turf');
 const ground = require('../../frontend/js/agreement-ground.js');
 const record = require('../../frontend/js/agreement-record.js');
 const approval = require('../../frontend/js/proposals/approval.js');
+const Cid = require('../../frontend/js/cid.js');
 
 // Rectangles in units of 1e-3 degree from the test origin (≈ 78 m east, 111 m north).
 function rect(x0, y0, x1, y1) {
@@ -115,9 +116,10 @@ describe('derive', () => {
         const derived = ground.derive({ designs: designs(), fabric: fakeFabric(pieces()), originals, ownerOf, area });
         const agreement = {
             schema: record.SCHEMA, id: record.newId(),
-            designs: designs().map(design => ({ proposalId: design.proposalId, goal: design.goal, fingerprint: `c2-${design.proposalId}` })),
+            designs: designs().map(design => ({ proposalId: design.proposalId, goal: design.goal, cid: Cid.cidOfObject({ design: design.proposalId }) })),
             ...derived,
-            rule: { electorate: 'owners', binding: true, approvalConfig: { schema: 'proposal-approval/v1', rights: record.rightsFromInputs(derived.inputs), policy: { type: 'unanimous' } } }
+            rule: { electorate: 'owners', binding: true, lens: ['lens-member-1'],
+                approvalConfig: { schema: 'proposal-approval/v1', rights: record.rightsFromInputs(derived.inputs), policy: { type: 'unanimous' } } }
         };
         const result = record.validate(agreement);
         expect(result.valid).toBe(true);
@@ -127,12 +129,13 @@ describe('derive', () => {
 });
 
 describe('check', () => {
-    const fingerprintOf = design => `c2-${design.proposalId}-v${design.version || 1}`;
+    // The panel passes DesignRecord.cidOf; any content identity that moves with the design will do.
+    const fingerprintOf = design => Cid.cidOfObject({ design: design.proposalId, version: design.version || 1 });
     function storedAgreement() {
         const derived = ground.derive({ designs: designs(), fabric: fakeFabric(pieces()), originals, ownerOf, area });
         return {
             schema: record.SCHEMA, id: 'ag-1',
-            designs: designs().map(design => ({ proposalId: design.proposalId, title: null, goal: design.goal, fingerprint: fingerprintOf(design) })),
+            designs: designs().map(design => ({ proposalId: design.proposalId, title: null, goal: design.goal, cid: fingerprintOf(design) })),
             ...derived,
             allocations: [], money: { currency: 'EUR', lines: [] },
             rule: { electorate: 'community', binding: false, approvalConfig: null, lens: [] }, deadline: null
@@ -156,6 +159,15 @@ describe('check', () => {
         const changed = { ...designs()[0], version: 2 };
         const result = ground.check(storedAgreement(), context({ designOf: id => id === 'layout-1' ? changed : designs()[1] }));
         expect(result).toEqual({ current: false, reasons: [{ code: 'design-changed', proposalId: 'layout-1' }] });
+    });
+
+    it('compares each design with the CID its entry stores, not with any other field', () => {
+        const stored = storedAgreement();
+        stored.designs[1] = { ...stored.designs[1], cid: Cid.cidOfObject({ design: 'road-1', version: 7 }), fingerprint: fingerprintOf(designs()[1]) };
+        expect(ground.check(stored, context())).toEqual({ current: false, reasons: [{ code: 'design-changed', proposalId: 'road-1' }] });
+        const unnamed = storedAgreement();
+        delete unnamed.designs[0].cid;
+        expect(ground.check(unnamed, context()).reasons).toEqual([{ code: 'design-changed', proposalId: 'layout-1' }]);
     });
 
     it('reports changed ground when the output pieces differ', () => {

@@ -3,7 +3,7 @@
 //
 //   acceptance  — the proposal takes or reshapes this parcel's RETAINED ground: binding, the veto
 //   offer       — content proposed on ground the owner keeps: accept or decline
-//   vote        — rules and vote-proposals: political, never per-owner vetoed
+//   vote        — urban rules: political, never per-owner vetoed
 //   disclosure  — anything standing on ground this parcel already cedes to an EARLIER formation
 //                 (the school on the strip taken for it), or a formation that reaches this
 //                 parcel's ancestry but takes nothing measurable: prices the owner's decision on
@@ -106,20 +106,16 @@
 
     // Which channel one proposal lands in for one parcel root. `ctx`:
     //   flow          — this proposal's ownership flow entries
-    //   isVote        — the app's real predicate for either vote kind (isNonBindingProposal)
     //   cedingFlows   — [{ id, createdAt, footprint, cededM2 }] of formations ceding this ground
     //   parcelFeature — the parcel's polygon, for the on-ceded-ground geometry checks
     function channelFor(proposal, parcelRoot, ctx) {
         const api = planOrder();
         const flowApi = ownershipFlow();
         const context = ctx || {};
-        const isVote = typeof context.isVote === 'function'
-            ? context.isVote
-            : (p => !!(p && (p.kind === 'owner-vote' || p.kind === 'community-vote')));
         const goal = String(proposal && proposal.goal !== undefined && proposal.goal !== null ? proposal.goal : '').trim();
 
-        // Rules are political whatever ground they touch; votes reuse the same channel.
-        if (goal === 'urban-rule' || isVote(proposal)) return 'vote';
+        // Rules are political whatever ground they touch.
+        if (goal === 'urban-rule') return 'vote';
 
         const flow = Array.isArray(context.flow) ? context.flow : [];
         const mine = flow.find(entry => entry && String(entry.parcelId) === String(parcelRoot));
@@ -217,7 +213,7 @@
 
     // The dossier itself. `proposals` is every proposal the caller knows about; membership is by
     // explicit cadastral provenance (the claims-rescue rule). Options:
-    //   isVote, isApplied — the app's real predicates
+    //   isApplied         — the app's real predicate
     //   baseParcels       — [{ id, feature }] for computing unstamped flows
     //   parcelFeature     — this parcel's polygon (enables the ceded-ground checks + remainder)
     //   assumeMembership  — the caller already projected membership through explicit cadastral
@@ -277,7 +273,6 @@
             const mine = flow.filter(f => f && roots.includes(String(f.parcelId)));
             const channels = roots.map(parcelRoot => channelFor(p, parcelRoot, {
                     flow,
-                    isVote: opts.isVote,
                     cedingFlows,
                     parcelFeature: opts.parcelFeature
                 }));
@@ -286,7 +281,6 @@
             const destination = mine.map(item => String(item.destination || '')).find(Boolean) || null;
             return {
                 proposalId: p.proposalId ? String(p.proposalId) : null,
-                serverProposalId: p.serverProposalId ? String(p.serverProposalId) : null,
                 title: p.title || p.name || '',
                 goal: p.goal || '',
                 channel,

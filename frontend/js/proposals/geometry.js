@@ -518,7 +518,7 @@ function renderGeometrySection(goalKey) {
         if (labelEl) labelEl.textContent = label.geometry;
     };
 
-    if (goalKey === 'decide-later' || goalKey === 'ownership-transfer') {
+    if (goalKey === 'ownership-transfer') {
         updateCreateProposalSubmitState();
         return; // No geometry section shown
     }
@@ -1039,9 +1039,6 @@ function calculateProposalGeometryBounds(proposal) {
         if (proposal.structureProposal && proposal.structureProposal.geometry) {
             addGeom(proposal.structureProposal.geometry);
         }
-        if (proposal.decideLaterProposal && proposal.decideLaterProposal.geometry) {
-            addGeom(proposal.decideLaterProposal.geometry);
-        }
         // A parcel layout's shape lives in its plot list, not in a single `geometry`. Without this
         // it had NO geometry fallback: opening its link centred the map only if the layout's child
         // parcels already happened to be loaded, and on a fresh page load they are not — so the
@@ -1154,8 +1151,7 @@ function computeProposalArea(proposal) {
 
 function computeProposalMetrics(proposal) {
     const createdAt = Date.parse(proposal.createdAt) || 0;
-    const consent = getProposalConsentMetrics(proposal);
-    const offerValue = Number.isFinite(Number(proposal.offer)) ? Number(proposal.offer) : (Number.isFinite(Number(proposal.budget)) ? Number(proposal.budget) : 0);
+    const parcelCount = normalizeParcelIdList(proposal.cadastreParcelIds).length;
     const area = computeProposalArea(proposal);
     const goalKey = window.ProposalDesignGoals?.keyOf(proposal) || 'other';
     const typeKey = goalKey;
@@ -1164,8 +1160,7 @@ function computeProposalMetrics(proposal) {
 
     return {
         createdAt,
-        ...consent,
-        offerValue,
+        parcelCount,
         area,
         goalKey,
         typeKey,
@@ -1189,7 +1184,6 @@ function buildProposalThumbHtml(proposal) {
         if (typeof proposalStorage !== 'undefined' && typeof proposalStorage.getProposal === 'function') {
             const candidates = [
                 proposal.proposalId,
-                proposal.serverProposalId,
                 proposal.id
             ].filter(Boolean);
             for (const key of candidates) {

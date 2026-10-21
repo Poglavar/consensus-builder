@@ -1,10 +1,10 @@
 // Proposals on a set of parcels (a parcel, a multi-parcel selection, a drawn site's bound parcels):
-// those this browser holds and those published on the server, one entry per proposal with the
+// those this browser holds and those published in the designs index, one entry per proposal with the
 // parcels of the set it covers, and the list the panels' Proposals tab shows. The published ones come
-// from the summary the proposal list's Server tab reads (GET /proposals/summary, here with
-// ?parcel_ids=), normalized and matched to local copies the same way, and are imported when opened,
-// as the list does. collect, withPublished and listHtml take no DOM and are exported via CommonJS
-// for headless tests; the rest is the thin DOM layer.
+// from the index the proposal list's Server tab reads (GET /designs, here by the parcels' bounding box,
+// kept when their binding takes one of the parcels), are matched to local copies by CID the same way,
+// and are imported when opened. collect, withPublished and listHtml take no DOM and are exported via
+// CommonJS for headless tests; the rest is the thin DOM layer.
 (function (root, factory) {
     const api = factory(root);
     if (typeof module === 'object' && module.exports) module.exports = api;
@@ -154,13 +154,23 @@
         const cached = publishedCache.get(key);
         if (cached && (cached.promise || Date.now() - cached.at < PUBLISHED_TTL_MS)) return cached;
         const entry = { at: Date.now(), summaries: cached ? cached.summaries : null, error: null, promise: null, listeners: new Set() };
-        const url = `${root.resolveBackendBaseUrl()}/proposals/summary?parcel_ids=${encodeURIComponent(cadastreIds.join(','))}`
-            + (city ? `&city=${encodeURIComponent(city)}` : '') + '&limit=200';
-        entry.promise = fetch(url)
-            .then(response => (response.ok ? response.json() : response.text().then(text => { throw new Error(text || `HTTP ${response.status}`); })))
+        // The index answers by area, not by parcel: ask for the designs whose site meets the box of
+        // the parcels this browser holds, and keep those whose binding takes one of them.
+        const features = root.CadastralParcelRepository.peekMany(cadastreIds);
+        const wanted = new Set(cadastreIds.map(String));
+        const box = features.length ? root.turf.bbox({ type: 'FeatureCollection', features }) : null;
+        const url = box
+            ? `${root.resolveBackendBaseUrl()}/designs?bbox=${box.map(value => value.toFixed(7)).join(',')}`
+                + (city ? `&city=${encodeURIComponent(city)}` : '') + '&limit=200'
+            : null;
+        const answer = url
+            ? fetch(url).then(response => (response.ok ? response.json() : response.text().then(text => { throw new Error(text || `HTTP ${response.status}`); })))
+            : Promise.resolve({ designs: [] });
+        entry.promise = answer
             .then(payload => {
-                entry.summaries = (Array.isArray(payload && payload.proposals) ? payload.proposals : [])
-                    .map(raw => root.normalizeServerProposalSummary(raw, city || undefined)).filter(Boolean);
+                entry.summaries = (Array.isArray(payload && payload.designs) ? payload.designs : [])
+                    .map(row => root.DesignSync.designSummary(row)).filter(Boolean)
+                    .filter(summary => summary.cadastreParcelIds.some(id => wanted.has(String(id))));
             })
             .catch(error => {
                 console.warn(`[${new Date().toISOString()}] [ParcelSetProposals] published proposals for ${cadastreIds.length} parcel(s) unavailable`, error);
@@ -193,7 +203,7 @@
         const merged = withPublished(local, state.summaries, cadastreIdsOf, summary => !!root.findLocalCopyOfServerProposal(summary));
         const entries = collect(ids, merged.proposalsForParcel, proposal => proposal.proposalId);
         entries.forEach(entry => {
-            if (merged.publishedOnly.has(entry.proposal)) entry.serverId = String(entry.proposal.serverProposalId || entry.proposal.id);
+            if (merged.publishedOnly.has(entry.proposal)) entry.serverId = String(entry.proposal.cid);
         });
         return { ids, entries, published: { loading: !!state.promise, error: state.error } };
     }
@@ -205,8 +215,8 @@
     }
 
     // A row opens its proposal the way a parcel's list does (selectAndHighlight via
-    // showProposalDetails, with the first parcel of the set it covers); a published-only row is
-    // imported first, as the proposal list's Server tab does. Bound once per container.
+    // showProposalDetails, with the first parcel of the set it covers); a published-only row (its
+    // data-server-id is the design's CID) is imported first. Bound once per container.
     function bindRows(container) {
         if (!container || container.dataset.parcelSetProposalsBound) return;
         container.dataset.parcelSetProposalsBound = 'true';
@@ -217,7 +227,7 @@
             const serverId = row.getAttribute('data-server-id');
             if (serverId) {
                 try {
-                    const proposal = await root.importServerProposal(serverId);
+                    const proposal = root.DesignSync.importDesign(await root.DesignSync.fetchDesign(serverId));
                     key = root.getProposalKey(proposal) || key;
                 } catch (error) {
                     console.error(`[${new Date().toISOString()}] [ParcelSetProposals] could not load published proposal ${serverId}`, error);

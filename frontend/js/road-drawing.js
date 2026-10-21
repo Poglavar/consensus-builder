@@ -610,17 +610,21 @@ function stripRoadDerivedFields(record) {
 function makeFreshRoadSnapshot(sourceProposal, definition, options = {}) {
     const clone = cloneRoadValue(sourceProposal);
     [
-        'proposalId', 'proposal_id', 'id', 'hash', 'serverProposalId',
+        'proposalId', 'proposal_id', 'id', 'hash', 'published',
         'chainProposalId', 'tokenId', 'onchain', 'nft', 'isMinted',
         'createdAt', 'updatedAt', 'proposalDraftId', 'lens',
-        'proposalOrigin', 'publicationApiBase', 'supersedesProposalIds'
+        'proposalOrigin', 'supersedesProposalIds'
     ].forEach(key => delete clone[key]);
 
     if (options.sourceLocalProposalId) {
         clone.proposalOrigin = window.ProposalOrigin.fromRecord(sourceProposal, {
-            relation: 'revision', localProposalId: String(options.sourceLocalProposalId), backendBase: getBackendBase()
+            relation: 'revision', localProposalId: String(options.sourceLocalProposalId)
         });
     }
+    // A fork of a published design links the design it came from by its CID (plan-design-agreement.md,
+    // M2: "Fork design" records origin.cid); the publication mark itself stays with the source.
+    const sourcePublication = sourceProposal && sourceProposal.published;
+    if (sourcePublication && window.Cid.isCid(sourcePublication.cid)) clone.origin = { cid: sourcePublication.cid };
 
     const cleanDefinition = cloneRoadValue(definition);
     delete cleanDefinition.demolishedBuildings;
@@ -2513,7 +2517,6 @@ function isAnyModalOpen() {
         '.welcome-modal',
         '.parcel-coverage-modal',
         '.proposal-info-modal',
-        '.proposal-boost-modal',
         '.parcel-list-modal',
         '.parcel-selection-modal',
         '.agent-dialog-modal',

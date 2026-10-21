@@ -70,7 +70,7 @@ non-station formation into parcels cut from the live fabric, which needs cadastr
 ## 4. Apply
 - `_resolveLiveFormationParents` (proposal-manager.js:3305-3423): `formation-cadastre-unresolved` on empty
   declaration, ≥95% footprint coverage by `fabric.entriesForCadastre`, live-parcel overlap check; used by
-  buildings, structures (not station), reparcellization, decide-later. Formations mint parcels stamped with
+  buildings, structures (not station), reparcellization. Formations mint parcels stamped with
   cadastre ids (apply/buildings.js 316-396 incl. "No parcels found under the building footprint" 360-375;
   apply/structures.js 437/447; apply/parcels.js 191-207).
 - Scope: `_resolveAndStampFlatCadastreAnchors` 1179-1215, `_flatScopeSeeds` 1217-1235,

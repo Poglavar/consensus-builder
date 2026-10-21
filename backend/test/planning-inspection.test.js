@@ -10,6 +10,7 @@ import { planningParcel, sourcesFor } from '../planning/sources.js';
 import { setupPlanningRoutes } from '../routes/planning.js';
 const require = createRequire(import.meta.url);
 const representations = require('../../frontend/js/planning/representations.js');
+const Cid = require('../../frontend/js/cid.js');
 const geometry = { type: 'Polygon', coordinates: [[[10,40],[10.001,40],[10.001,40.001],[10,40]]] };
 
 describe('cache-only parcel inspection', () => {
@@ -172,15 +173,18 @@ describe('shared building and proposal representations', () => {
         expect(item.assessment).toMatchObject({ status: 'Active', applied: true, constraints: 'not-evaluated' });
         expect(item.metrics.floorAreaM2).toBeNull(); expect(JSON.stringify(proposal)).toBe(before);
     });
-    it('qualifies publication separately from the local selection key and preserves lifecycle evidence', () => {
-        const proposal = { proposalId: 'local-key', id: 17, serverProposalId: 28, lifecycleStatus: 'Executed',
+    it('names publication by the design CID, separately from the local selection key, and preserves lifecycle evidence', () => {
+        const proposal = { proposalId: 'local-key', id: 17, lifecycleStatus: 'Executed',
             lifecycleEvidence: { protocol: 'proposal-lifecycle-evidence/1', state: 'unknown', claimedStatus: 'Executed' } };
-        const unknownStore = representations.proposed(proposal, { key: proposal.proposalId });
-        expect(unknownStore.id).toBe('proposed:local-key');
-        expect(unknownStore.sourceEvidence.publication).toBeNull();
-        expect(unknownStore.sourceEvidence.lifecycleEvidence).toEqual(proposal.lifecycleEvidence);
-        const qualified = representations.proposed({ ...proposal, publicationApiBase: 'https://api.example/' }, { key: proposal.proposalId });
-        expect(qualified.sourceEvidence.publication).toEqual({ apiBase: 'https://api.example', proposalRowId: '28' });
+        const unpublished = representations.proposed(proposal, { key: proposal.proposalId });
+        expect(unpublished.id).toBe('proposed:local-key');
+        expect(unpublished.sourceEvidence.publication).toBeNull();
+        expect(unpublished.sourceEvidence.lifecycleEvidence).toEqual(proposal.lifecycleEvidence);
+        const cid = Cid.cidOfObject({ schema: 'design/v1', title: 'Example' });
+        const published = representations.proposed({ ...proposal, published: { cid, publishedAt: null, apiBase: 'https://api.example' } }, { key: proposal.proposalId });
+        expect(published.id).toBe('proposed:local-key');
+        expect(published.sourceEvidence.publication).toEqual({ cid });
+        expect(representations.proposed({ ...proposal, published: { cid: 'not-a-cid' } }, { key: proposal.proposalId }).sourceEvidence.publication).toBeNull();
         expect(representations.proposed({ proposalId: 'unknown' }, { key: 'unknown' }).assessment.status).toBe('Unknown');
     });
 });

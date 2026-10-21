@@ -1,13 +1,13 @@
+// Opening shared designs (frontend/js/proposals/sharing-routes.js; plan-design-agreement.md, M2): a
+// /designs/<cid>,<cid> link is read from the index, imported parked, applied in package order through
+// the one-boundary replay materializer, framed on its latest-authored design and summarised. The
+// progress labels, the materializer and the route itself run here against stubs of what they call.
 import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
 import { createRequire } from 'node:module';
 import { describe, expect, it, vi } from 'vitest';
 
-const SourceHealth = createRequire(import.meta.url)('../../frontend/js/parcels/source-health.js');
-const displayState = createRequire(import.meta.url)('../../frontend/js/proposals/display-state.js');
-const sharedLinkCopies = createRequire(import.meta.url)('../../frontend/js/proposals/shared-link-copies.js');
-const proposalOrigin = createRequire(import.meta.url)('../../frontend/js/proposals/origin.js');
-const PUBLICATION_API_BASE = 'https://proposals.example.test/api';
+const Cid = createRequire(import.meta.url)('../../frontend/js/cid.js');
 
 const source = readFileSync(
     new URL('../../frontend/js/proposals/sharing-routes.js', import.meta.url),
@@ -16,73 +16,19 @@ const source = readFileSync(
 
 function loadSharedImportHelpers(overrides = {}) {
     const browserWindow = overrides.window || {};
-    browserWindow.__proposalDisplayState ||= displayState;
-    browserWindow.SharedLinkCopies ||= sharedLinkCopies;
-    browserWindow.ProposalOrigin ||= proposalOrigin;
     const context = {
         console,
-        normalizePublicationResponse: (payload, backendBase) => {
-            const rowId = proposalOrigin.rowId(payload?.id);
-            const apiBase = proposalOrigin.apiBase(backendBase);
-            if (!rowId || !apiBase || typeof payload?.proposalId !== 'string') throw new Error('invalid publication response');
-            return { ...payload, serverProposalId: rowId, publicationApiBase: apiBase };
-        },
-        prepareProposalForImport: proposal => structuredClone(proposal),
-        computeRequiredParentIdsForSharedProposal: () => [],
-        ensureArrayOfStrings: value => Array.isArray(value) ? value.map(String) : [],
         isProposalCurrentlyApplied: proposal => proposal?.applied === true,
-        setProposalApplied: (proposal, applied) => { proposal.applied = applied; },
-        followServerLifecycle: async () => false,
         ...overrides,
         window: browserWindow
     };
     vm.createContext(context);
     vm.runInContext(
-        `${source}\nthis.sharedImportHelpersForTest = { importAndApplySharedProposal, materializeQueuedSharedProposals, fetchSharedProposalBatch, selectSharedPlanFocusId, sharedPlanProgressView, sharedCorridorCountPhrase, refreshSharedFloorPlanModels, fetchSharedProposalResponse, namedPlanSnapshotError, verifyNamedPlanSnapshot, handleSharedPlanRoute };`,
+        `${source}\nthis.sharedImportHelpersForTest = { materializeQueuedSharedProposals, sharedPlanProgressView, sharedCorridorCountPhrase, latestAuthoredDesignId, handleSharedDesignRoute, context: this };`,
         context
     );
     return context.sharedImportHelpersForTest;
 }
-
-describe('shared floor model refresh', () => {
-    it('updates only derived buildings belonging to the applied source and requests one redraw', () => {
-        const local = { proposalId:'local',serverProposalId:'781',publicationApiBase:PUBLICATION_API_BASE,applied:true,geometry:{untouched:true} };
-        const before=structuredClone(local),target={properties:{proposalId:'local'}},other={properties:{proposalId:'another'}};
-        const plans={schema:'model'},sources=[{properties:{floorPlans:plans}}];
-        const refresh=vi.fn(current=>({changed:1,buildings:current.map(b=>({...b,properties:{...b.properties,floorPlans:plans}}))}));
-        const browser={proposedBuildings:[target,other],__buildingFloorPlans:{refreshRegisteredFloorPlans:refresh},dispatchEvent:vi.fn()};
-        const {refreshSharedFloorPlanModels}=loadSharedImportHelpers({window:browser,CustomEvent:class{constructor(type){this.type=type;}}});
-        expect(refreshSharedFloorPlanModels([local],new Map([['781',{id:'781',serverProposalId:'781',publicationApiBase:PUBLICATION_API_BASE,geometry:{buildings:sources}}]]))).toBe(1);
-        expect(refresh).toHaveBeenCalledExactlyOnceWith([target],sources);
-        expect(browser.proposedBuildings[0].properties.floorPlans).toBe(plans);
-        expect(browser.proposedBuildings[1]).toBe(other);
-        expect(target.properties.floorPlans).toBeUndefined();expect(local).toEqual(before);
-        expect(browser.dispatchEvent).toHaveBeenCalledOnce();
-        expect(browser.dispatchEvent.mock.calls[0][0].type).toBe('proposedBuildingsUpdated');
-    });
-    it('leaves replacements, missing sources and unchanged models untouched', () => {
-        const refresh=vi.fn(()=>({changed:0,buildings:[]})),browser={proposedBuildings:[],__buildingFloorPlans:{refreshRegisteredFloorPlans:refresh},dispatchEvent:vi.fn()};
-        const {refreshSharedFloorPlanModels}=loadSharedImportHelpers({window:browser});
-        const remote=new Map([['782',{id:'782',serverProposalId:'782',publicationApiBase:PUBLICATION_API_BASE,geometry:{buildings:[{properties:{floorPlans:{}}}]}}]]);
-        expect(refreshSharedFloorPlanModels([
-            { proposalId: 'edit', serverProposalId: '782', proposalOrigin: {
-                relation: 'revision', source: { kind: 'publication', apiBase: 'https://example.test', proposalRowId: '781' }
-            } },
-            { proposalId: 'absent' }, { proposalId: 'same', serverProposalId: '782', publicationApiBase: PUBLICATION_API_BASE }
-        ], remote)).toBe(0);
-        expect(refresh).toHaveBeenCalledOnce();expect(browser.dispatchEvent).not.toHaveBeenCalled();
-    });
-    it('does not refresh a same-numbered row from a different publication API', () => {
-        const refresh=vi.fn(()=>({changed:0,buildings:[]}));
-        const browser={proposedBuildings:[],__buildingFloorPlans:{refreshRegisteredFloorPlans:refresh},dispatchEvent:vi.fn()};
-        const {refreshSharedFloorPlanModels}=loadSharedImportHelpers({window:browser});
-        const local={proposalId:'local',serverProposalId:'782',publicationApiBase:PUBLICATION_API_BASE};
-        const foreign=new Map([['782',{id:'782',serverProposalId:'782',publicationApiBase:'https://other.example.test/api',geometry:{buildings:[{properties:{floorPlans:{}}}]}}]]);
-        expect(refreshSharedFloorPlanModels([local],foreign)).toBe(0);
-        expect(refresh).not.toHaveBeenCalled();
-        expect(browser.dispatchEvent).not.toHaveBeenCalled();
-    });
-});
 
 describe('shared-plan progress labels', () => {
     const t = (_key, fallback, params = {}) => String(fallback).replace(/\{\{(\w+)\}\}/g,
@@ -130,173 +76,7 @@ describe('shared-plan progress labels', () => {
     });
 });
 
-describe('shared-plan focus selection', () => {
-    it('chooses only a final successful/present member, latest in link order', () => {
-        const { selectSharedPlanFocusId } = loadSharedImportHelpers();
-        const alreadyApplied = [{ serverProposalId: 'server-existing', ord: 3 }];
-
-        const selected = selectSharedPlanFocusId(
-            [{ id: 'local-success', ord: 1, childParcelIds: [] }],
-            [{ id: 'local-duplicate', ord: 2 }],
-            alreadyApplied,
-            proposal => proposal.ord
-        );
-
-        expect(selected).toBe('server-existing');
-    });
-
-    it('returns no focus target when every parked import failed materialisation', () => {
-        const { selectSharedPlanFocusId } = loadSharedImportHelpers();
-
-        expect(selectSharedPlanFocusId([], [], [], () => 99)).toBeNull();
-    });
-});
-
-describe('named-plan apply snapshot', () => {
-    const expected = {
-        slug: 'harbor',
-        planHash: 'c'.repeat(64),
-        proposalRowIds: ['42'],
-        publicationApiBase: PUBLICATION_API_BASE
-    };
-    const current = {
-        slug: 'harbor',
-        planHash: 'c'.repeat(64),
-        proposalRowIds: ['42'],
-        members: [{ proposalRowId: '42', changed: false }]
-    };
-
-    it('rechecks the current API plan after member fetch and accepts only the committed unchanged set', async () => {
-        const fetch = vi.fn(async () => ({ ok: true, json: async () => current }));
-        const { verifyNamedPlanSnapshot } = loadSharedImportHelpers({ fetch });
-
-        expect(await verifyNamedPlanSnapshot(expected, ['42'], PUBLICATION_API_BASE)).toBeNull();
-        expect(fetch).toHaveBeenCalledOnce();
-        expect(fetch.mock.calls[0][0]).toBe(`${PUBLICATION_API_BASE}/plans/harbor`);
-    });
-
-    it.each([
-        ['changed member', { ...current, members: [{ proposalRowId: '42', changed: true }] }],
-        ['missing member', { ...current, members: [{ proposalRowId: '42', changed: true, missing: true }] }],
-        ['changed membership', { ...current, proposalRowIds: ['43'], members: [{ proposalRowId: '43', changed: false }] }]
-    ])('refuses a latest plan with %s', async (_reason, latest) => {
-        const fetch = vi.fn(async () => ({ ok: true, json: async () => latest }));
-        const { verifyNamedPlanSnapshot } = loadSharedImportHelpers({ fetch });
-
-        expect(await verifyNamedPlanSnapshot(expected, ['42'], PUBLICATION_API_BASE)).toMatch(/changed|missing/);
-    });
-
-    it('refuses to verify against a different publication API', async () => {
-        const fetch = vi.fn();
-        const { verifyNamedPlanSnapshot } = loadSharedImportHelpers({ fetch });
-
-        expect(await verifyNamedPlanSnapshot(expected, ['42'], 'https://other.example.test/api'))
-            .toBe('publication API changed');
-        expect(fetch).not.toHaveBeenCalled();
-    });
-
-    it('blocks the real plan route before importing when one batch member is absent', async () => {
-        const proposalStorage = { importProposal: vi.fn(), getAllProposals: vi.fn(() => []) };
-        const ProposalManager = { applyProposalPlan: vi.fn() };
-        const fetch = vi.fn(async () => ({
-            ok: true,
-            status: 200,
-            json: async () => ({ items: [{ id: '42', proposal: { id: '42', proposalId: 'authored-42' } }] })
-        }));
-        const showEphemeralMessage = vi.fn();
-        const hideProposalLoadOverlay = vi.fn();
-        const translate = (_key, fallback, params = {}) => String(fallback).replace(/\{\{(\w+)\}\}/g,
-            (_match, name) => Object.prototype.hasOwnProperty.call(params, name) ? params[name] : _match);
-        const { handleSharedPlanRoute } = loadSharedImportHelpers({
-            fetch,
-            map: {},
-            resolveBackendBaseUrl: () => PUBLICATION_API_BASE,
-            getProposalI18nHelper: () => translate,
-            getShareI18nHelper: () => translate,
-            releaseDeepLinkParcelFetch: vi.fn(),
-            ProposalManager,
-            showProposalLoadOverlay: vi.fn(),
-            hideProposalLoadOverlay,
-            showEphemeralMessage,
-            proposalStorage,
-            window: { shouldSkipWelcomeForProposalLink: () => true }
-        });
-
-        const result = await handleSharedPlanRoute(['42', '43'], 0, {
-            explicitApply: true,
-            namedPlan: {
-                ...expected,
-                proposalRowIds: ['42', '43']
-            }
-        });
-
-        expect(result).toMatchObject({ blocked: true, applied: [], failed: ['42', '43'] });
-        expect(result.reason).toMatch(/batch is incomplete/);
-        expect(proposalStorage.importProposal).not.toHaveBeenCalled();
-        expect(ProposalManager.applyProposalPlan).not.toHaveBeenCalled();
-        expect(hideProposalLoadOverlay).toHaveBeenCalledOnce();
-        expect(showEphemeralMessage).toHaveBeenCalledOnce();
-    });
-});
-
-describe('shared-plan import boundary', () => {
-    it('does not mistake an unrelated same-named local record for the published row copy', async () => {
-        const unrelated = { proposalId: 'shared-building', applied: true, lifecycleStatus: 'Active' };
-        const proposalStorage = {
-            getProposal: vi.fn(() => unrelated),
-            getProposalByServerRowId: vi.fn(() => null),
-            importProposal: vi.fn(proposal => structuredClone(proposal)),
-            _indexProposal: vi.fn(),
-            save: vi.fn()
-        };
-        const { importAndApplySharedProposal } = loadSharedImportHelpers({ proposalStorage });
-
-        const result = await importAndApplySharedProposal({
-            proposalId: 'shared-building',
-            serverProposalId: '781',
-            publicationApiBase: PUBLICATION_API_BASE,
-            goal: 'building',
-            cadastreParcelIds: ['HR-1'],
-            buildingProposal: {}
-        }, { skipDependencyFetch: true });
-
-        expect(result).toMatchObject({ applied: true, skipped: false, queued: true });
-        expect(proposalStorage.getProposalByServerRowId).toHaveBeenCalledWith('781', PUBLICATION_API_BASE);
-        expect(proposalStorage.getProposal).not.toHaveBeenCalled();
-        expect(proposalStorage.importProposal).toHaveBeenCalledOnce();
-        expect(unrelated).toEqual({ proposalId: 'shared-building', applied: true, lifecycleStatus: 'Active' });
-    });
-
-    it('skips only the exact row-linked applied copy and returns its local key', async () => {
-        const localCopy = { proposalId: 'custom-local-key', serverProposalId: '781', applied: true };
-        const proposalStorage = {
-            getProposal: vi.fn(() => null),
-            getProposalByServerRowId: vi.fn(rowId => rowId === '781' ? localCopy : null),
-            importProposal: vi.fn(),
-            save: vi.fn()
-        };
-        const { importAndApplySharedProposal } = loadSharedImportHelpers({ proposalStorage });
-
-        const result = await importAndApplySharedProposal({
-            proposalId: 'shared-building',
-            serverProposalId: '781',
-            publicationApiBase: PUBLICATION_API_BASE,
-            goal: 'building',
-            cadastreParcelIds: ['HR-1'],
-            buildingProposal: {}
-        }, { skipDependencyFetch: true });
-
-        expect(result).toEqual({
-            applied: false,
-            skipped: true,
-            proposalId: 'custom-local-key',
-            reason: 'Already applied'
-        });
-        expect(proposalStorage.getProposalByServerRowId).toHaveBeenCalledWith('781', PUBLICATION_API_BASE);
-        expect(proposalStorage.getProposal).not.toHaveBeenCalled();
-        expect(proposalStorage.importProposal).not.toHaveBeenCalled();
-    });
-
+describe('materializing a shared link', () => {
     it('gives the browser frames for cached-member progress and the two final phases', async () => {
         let clock = 0;
         const actions = [];
@@ -383,193 +163,6 @@ describe('shared-plan import boundary', () => {
         expect(paint).toHaveBeenCalledTimes(5);
     });
 
-    it('loads a whole proposal id set through one ordered batch response', async () => {
-        const fetch = vi.fn(async () => ({
-            ok: true,
-            json: async () => ({
-                items: [
-                    { id: 'a', proposal: { id: '1', proposalId: 'a' } },
-                    { id: 'missing', proposal: null },
-                    { id: 'b', proposal: { id: '2', proposalId: 'b' } }
-                ]
-            })
-        }));
-        const { fetchSharedProposalBatch } = loadSharedImportHelpers({ fetch });
-
-        const result = await fetchSharedProposalBatch(['a', 'missing', 'b', 'a'], 'http://api.test');
-
-        expect(fetch).toHaveBeenCalledOnce();
-        expect(fetch).toHaveBeenCalledWith('http://api.test/proposals/batch', expect.objectContaining({
-            method: 'POST',
-            body: JSON.stringify({ ids: ['a', 'missing', 'b'] })
-        }));
-        expect([...result.records.keys()]).toEqual(['a', 'b']);
-        expect(result.records.get('a')).toMatchObject({ serverProposalId: '1', publicationApiBase: 'http://api.test' });
-        expect([...result.missing]).toEqual(['missing']);
-        expect(result).toMatchObject({ supported: true, requests: 1 });
-    });
-
-    it('marks an unavailable batch endpoint for individual-request fallback', async () => {
-        const fetch = vi.fn(async () => ({ ok: false, status: 404 }));
-        const { fetchSharedProposalBatch } = loadSharedImportHelpers({ fetch });
-
-        const result = await fetchSharedProposalBatch(['a'], 'http://api.test');
-
-        expect(result.supported).toBe(false);
-        expect(result.records.size).toBe(0);
-        expect(result.requests).toBe(1);
-    });
-
-    it('loads large named plans in ordered batches of at most 1000 unique ids', async () => {
-        const ids = Array.from({ length: 1121 }, (_, index) => `id-${index}`);
-        const fetch = vi.fn(async (_url, options) => {
-            const chunk = JSON.parse(options.body).ids;
-            return { ok: true, json: async () => ({ items: chunk.map(id => ({ id, proposal: { id: String(Number(id.slice(3)) + 1), proposalId: id } })) }) };
-        });
-        const { fetchSharedProposalBatch } = loadSharedImportHelpers({ fetch });
-
-        const result = await fetchSharedProposalBatch([...ids, ids[0], ids[1120]], 'http://api.test');
-
-        expect(fetch).toHaveBeenCalledTimes(2);
-        expect(JSON.parse(fetch.mock.calls[0][1].body).ids).toHaveLength(1000);
-        expect(JSON.parse(fetch.mock.calls[1][1].body).ids).toEqual(ids.slice(1000));
-        expect(result).toMatchObject({ supported: true, requests: 2 });
-        expect(result.records.size).toBe(1121);
-    });
-
-    it('keeps first-chunk results and falls back when a later batch is malformed or unavailable', async () => {
-        const ids = Array.from({ length: 1001 }, (_, index) => `id-${index}`);
-        const fetch = vi.fn()
-            .mockResolvedValueOnce({ ok: true, json: async () => ({ items: [{ id: ids[0], proposal: { id: '1', proposalId: ids[0] } }] }) })
-            .mockResolvedValueOnce({ ok: true, json: async () => ({ nope: [] }) });
-        const { fetchSharedProposalBatch } = loadSharedImportHelpers({ fetch });
-
-        const result = await fetchSharedProposalBatch(ids, 'http://api.test');
-
-        expect(result).toMatchObject({ supported: false, requests: 2 });
-        expect(result.records.get(ids[0])).toMatchObject({ proposalId: ids[0], serverProposalId: '1', publicationApiBase: 'http://api.test' });
-        expect(result.records.size).toBe(1);
-    });
-
-    it('merges missing and serialization errors from every batch', async () => {
-        const ids = Array.from({ length: 1001 }, (_, index) => `id-${index}`);
-        const fetch = vi.fn()
-            .mockResolvedValueOnce({ ok: true, json: async () => ({ items: [{ id: ids[0], proposal: null, code: 'serialization-error', detail: 'old record' }] }) })
-            .mockResolvedValueOnce({ ok: true, json: async () => ({ items: [{ id: ids[1000], proposal: null }] }) });
-        const { fetchSharedProposalBatch } = loadSharedImportHelpers({ fetch, getShareI18nHelper: () => (_key, fallback) => fallback });
-
-        const result = await fetchSharedProposalBatch(ids, 'http://api.test');
-
-        expect(result).toMatchObject({ supported: false, requests: 2 });
-        expect([...result.missing]).toEqual([ids[0], ids[1000]]);
-        expect(result.errors.get(ids[0])).toContain('old record');
-    });
-
-    it('rejects a batch proposal without its own publication row ID', async () => {
-        const fetch = vi.fn(async () => ({
-            ok: true,
-            json: async () => ({ items: [{ id: 'authored-a', proposal: { proposalId: 'authored-a' } }] })
-        }));
-        const { fetchSharedProposalBatch } = loadSharedImportHelpers({ fetch });
-        const result = await fetchSharedProposalBatch(['authored-a'], 'http://api.test');
-        expect(result).toMatchObject({ supported: false, requests: 1 });
-        expect(result.records.size).toBe(0);
-    });
-
-    it('imports a missing proposal parked, ready for the scoped apply pass', async () => {
-        const imported = [];
-        const proposalStorage = {
-            getProposal: vi.fn(() => null),
-            importProposal: vi.fn(proposal => {
-                const stored = structuredClone(proposal);
-                imported.push(stored);
-                return stored;
-            }),
-            _indexProposal: vi.fn(),
-            save: vi.fn()
-        };
-        const { importAndApplySharedProposal: importProposal } = loadSharedImportHelpers({ proposalStorage });
-
-        const result = await importProposal({
-            proposalId: 'shared-building',
-            goal: 'building',
-            cadastreParcelIds: ['HR-1'],
-            buildingProposal: {}
-        }, { skipDependencyFetch: true });
-
-        expect(result).toEqual({
-            applied: true,
-            skipped: false,
-            proposalId: 'shared-building',
-            queued: true
-        });
-        expect(imported).toHaveLength(1);
-        expect(imported[0].applied).toBe(false);
-        expect(proposalStorage.importProposal).toHaveBeenCalledWith(
-            expect.objectContaining({ proposalId: 'shared-building' }),
-            { overwrite: true, deferSave: true }
-        );
-        expect(proposalStorage._indexProposal).toHaveBeenCalledWith(imported[0]);
-        expect(proposalStorage.save).toHaveBeenCalledOnce();
-    });
-
-    it('defers every plan-member write to the outer materialization commit', async () => {
-        const proposalStorage = {
-            getProposal: vi.fn(() => null),
-            importProposal: vi.fn(proposal => structuredClone(proposal)),
-            _indexProposal: vi.fn(),
-            save: vi.fn()
-        };
-        const { importAndApplySharedProposal: importProposal } = loadSharedImportHelpers({ proposalStorage });
-
-        const result = await importProposal({
-            proposalId: 'shared-building',
-            goal: 'building',
-            cadastreParcelIds: ['HR-1'],
-            buildingProposal: {}
-        }, { skipDependencyFetch: true, deferSave: true });
-
-        expect(result.queued).toBe(true);
-        expect(proposalStorage.importProposal).toHaveBeenCalledWith(
-            expect.objectContaining({ proposalId: 'shared-building' }),
-            { overwrite: true, deferSave: true }
-        );
-        expect(proposalStorage.save).not.toHaveBeenCalled();
-    });
-
-    it('replaces a stale parked copy with the current server definition', async () => {
-        const stale = {
-            proposalId: 'shared-road',
-            goal: 'road-track',
-            applied: false,
-            cadastreParcelIds: ['OLD'],
-            roadProposal: { definition: { width: 30 } }
-        };
-        const proposalStorage = {
-            getProposal: vi.fn(() => stale),
-            importProposal: vi.fn(proposal => structuredClone(proposal)),
-            _indexProposal: vi.fn(),
-            save: vi.fn()
-        };
-        const { importAndApplySharedProposal: importProposal } = loadSharedImportHelpers({ proposalStorage });
-
-        const result = await importProposal({
-            proposalId: 'shared-road',
-            goal: 'road-track',
-            cadastreParcelIds: ['HR-1'],
-            roadProposal: { definition: { width: 12 } }
-        }, { skipDependencyFetch: true });
-
-        expect(result.queued).toBe(true);
-        expect(proposalStorage.importProposal).toHaveBeenCalledWith(
-            expect.objectContaining({
-                proposalId: 'shared-road',
-                roadProposal: expect.objectContaining({ definition: { width: 12 } })
-            }),
-            { overwrite: true, deferSave: true }
-        );
-    });
-
     it('materialises only the queued ids through scoped apply, never a whole-plan rebuild', async () => {
         const applyProposal = vi.fn(async id => id !== 'bad');
         const ProposalManager = { applyProposal };
@@ -637,13 +230,14 @@ describe('shared-plan import boundary', () => {
 
     it('refuses an externally-held ordinary member before replay without stopping its siblings', async () => {
         const applyProposal = vi.fn(async () => true);
-        const alreadyStanding = { proposalId: 'outside', serverProposalId: '781', goal: 'building', buildingProposal: {}, applied: true };
-        const planMate = { proposalId: '781', goal: 'building', buildingProposal: {}, applied: true };
+        const alreadyStanding = { proposalId: 'outside', goal: 'building', buildingProposal: {}, applied: true };
+        // A design of this link that was already on the map (the route's skipped local copy).
+        const planMate = { proposalId: 'standing-mate', goal: 'building', buildingProposal: {}, applied: true };
         const records = new Map([
             ['clear', { proposalId: 'clear', goal: 'building', buildingProposal: {} }],
             ['held', { proposalId: 'held', goal: 'building', buildingProposal: {} }],
             ['outside', alreadyStanding],
-            ['781', planMate]
+            ['standing-mate', planMate]
         ]);
         const validateSharedProposalGround = vi.fn(id => ({ ok: id !== 'held', blockers: id === 'held' ? [{}] : [] }));
         const { materializeQueuedSharedProposals } = loadSharedImportHelpers({
@@ -656,7 +250,7 @@ describe('shared-plan import boundary', () => {
         });
 
         const result = await materializeQueuedSharedProposals(['clear', 'held'], {
-            planMemberIds: new Set(['781'])
+            planMemberIds: new Set(['standing-mate'])
         });
 
         expect(result).toEqual({ appliedIds: ['clear'], failedIds: ['held'] });
@@ -668,7 +262,7 @@ describe('shared-plan import boundary', () => {
         });
         expect(validateSharedProposalGround).toHaveBeenCalledTimes(2);
         const membership = validateSharedProposalGround.mock.calls[0][1];
-        expect([...membership].sort()).toEqual(['781', 'clear', 'held']);
+        expect([...membership].sort()).toEqual(['clear', 'held', 'standing-mate']);
         expect(validateSharedProposalGround.mock.calls[0][2], 'plan-mates were scanned as external holders')
             .toEqual([alreadyStanding]);
     });
@@ -871,81 +465,263 @@ describe('shared-plan import boundary', () => {
     });
 });
 
-// A link to a proposal the server reports Cancelled opens it with its Cancelled badge but never
-// applies it, and a local copy follows that lifecycle before the "already applied" shortcut.
-describe('shared import of a cancelled proposal', () => {
-    it('stores a cancelled record parked and skips it instead of queueing it', async () => {
-        const imported = [];
-        const proposalStorage = {
-            getProposal: vi.fn(() => null),
-            getProposalByServerRowId: vi.fn(() => null),
-            importProposal: vi.fn(proposal => { const stored = structuredClone(proposal); imported.push(stored); return stored; }),
-            _indexProposal: vi.fn(),
-            save: vi.fn()
-        };
-        const { importAndApplySharedProposal } = loadSharedImportHelpers({ proposalStorage });
+describe('the design a shared link frames', () => {
+    it('is the latest-authored of the standing designs, the later one on a tie', () => {
+        const records = new Map([
+            ['old', { proposalId: 'old', createdAt: '2026-10-01T10:00:00.000Z' }],
+            ['new', { proposalId: 'new', createdAt: '2026-10-20T10:00:00.000Z' }],
+            ['same-a', { proposalId: 'same-a', createdAt: '2026-10-05T10:00:00.000Z' }],
+            ['same-b', { proposalId: 'same-b', createdAt: '2026-10-05T10:00:00.000Z' }],
+            ['undated', { proposalId: 'undated' }]
+        ]);
+        const { latestAuthoredDesignId } = loadSharedImportHelpers({ proposalStorage: { getProposal: id => records.get(id) || null } });
 
-        const result = await importAndApplySharedProposal({
-            proposalId: 'c2-uh980k1g32gls', serverProposalId: '781', lifecycleStatus: 'Cancelled',
-            goal: 'road-track', cadastreParcelIds: ['HR-1'], roadProposal: {}
-        }, { skipDependencyFetch: true });
-
-        expect(result).toEqual({ applied: false, skipped: false, cancelled: true, proposalId: 'c2-uh980k1g32gls', reason: 'Cancelled' });
-        expect(imported).toHaveLength(1);
-        expect(imported[0].lifecycleStatus).toBe('Cancelled');
-        expect(proposalStorage.save).toHaveBeenCalledOnce();
-    });
-
-    it('lets an existing local copy follow the server lifecycle before the already-applied check', async () => {
-        const local = { proposalId: 'c2-uh980k1g32gls', lifecycleStatus: 'Active', applied: true };
-        const followServerLifecycle = vi.fn(async (copy, lifecycle) => {
-            copy.lifecycleStatus = lifecycle;
-            copy.applied = false;
-            return true;
-        });
-        const proposalStorage = {
-            getProposal: vi.fn(() => local),
-            importProposal: vi.fn(proposal => structuredClone(proposal)),
-            _indexProposal: vi.fn(),
-            save: vi.fn()
-        };
-        const { importAndApplySharedProposal } = loadSharedImportHelpers({ proposalStorage, followServerLifecycle });
-
-        const result = await importAndApplySharedProposal({
-            proposalId: 'c2-uh980k1g32gls', lifecycleStatus: 'Cancelled', goal: 'road-track', cadastreParcelIds: ['HR-1'], roadProposal: {}
-        }, { skipDependencyFetch: true });
-
-        expect(followServerLifecycle).toHaveBeenCalledWith(local, 'Cancelled');
-        expect(result).toMatchObject({ applied: false, cancelled: true, reason: 'Cancelled' });
+        expect(latestAuthoredDesignId(['old', 'new', 'undated'])).toBe('new');
+        expect(latestAuthoredDesignId(['same-a', 'same-b'])).toBe('same-b');
+        expect(latestAuthoredDesignId(['gone', 'undated'])).toBe('undated');
+        expect(latestAuthoredDesignId(['gone'])).toBeNull();
+        expect(latestAuthoredDesignId([])).toBeNull();
     });
 });
 
-describe('shared response deadline', () => {
-    it('bounds the complete plan response body rather than waiting indefinitely', async () => {
-        vi.useFakeTimers();
-        try {
-            const fetch = vi.fn(async () => ({ ok: true, status: 200, json: () => new Promise(() => {}) }));
-            const { fetchSharedProposalResponse } = loadSharedImportHelpers({ fetch,
-                window: { ParcelSourceHealth: SourceHealth, PARCEL_LOAD_TIMEOUT_MS: 10 } });
-            const pending = fetchSharedProposalResponse('/plans/test');
-            const rejected = expect(pending).rejects.toMatchObject({ code: 'proposal-load-timeout', status: 504 });
-            await vi.advanceTimersByTimeAsync(10);
-            await rejected;
-            expect(fetch.mock.calls[0][1].signal.aborted).toBe(true);
-        } finally { vi.useRealTimers(); }
+const cidOf = text => Cid.cidOf(new TextEncoder().encode(text));
+const translate = (_key, fallback, params = {}) => String(fallback).replace(/\{\{(\w+)\}\}/g,
+    (match, name) => (Object.prototype.hasOwnProperty.call(params, name) ? params[name] : match));
+// An index row as DesignSync.fetchDesigns hands it over (routes/designs.js serializeDesignRow).
+const row = (name, { goal = 'park', authoredAt = '2026-10-10T10:00:00.000Z', city = 'zagreb', parcels = [`HR-${name}`] } = {}) => ({
+    cid: cidOf(name), city, title: name, goal, parcels,
+    content: { schema: 'design/v1', goal, title: name, authoredAt }
+});
+
+// A /designs link opened against stubs of everything the route calls. `designs` are the rows the index
+// holds; `local` the local copies DesignSync.localCopyOf finds, by CID; `refused` the local ids the
+// apply precheck refuses, with its message; `failing` the local ids whose apply fails, with the stored
+// failure; `foreignCity` a city whose rows belong to another city's store.
+function designLink({ designs = [], local = {}, refused = {}, failing = {}, foreignCity = null, leaveForCity = true,
+    wants3D = false, replayDone = true, tookOver = false, fetchError = null } = {}) {
+    const records = new Map(Object.values(local).map(record => [record.proposalId, record]));
+    const rows = new Map(designs.map(design => [design.cid, design]));
+    const order = [];
+    const takeover = { stop: vi.fn(), tookOver: () => tookOver };
+    const window = {
+        Cid,
+        DesignSync: {
+            fetchDesigns: vi.fn(async cids => {
+                if (fetchError) throw fetchError;
+                return {
+                    rows: new Map(cids.filter(cid => rows.has(cid)).map(cid => [cid, rows.get(cid)])),
+                    missing: cids.filter(cid => !rows.has(cid))
+                };
+            }),
+            localCopyOf: vi.fn(cid => local[cid] || null),
+            importDesign: vi.fn(design => {
+                const payload = design.goal === 'single' ? { buildingProposal: {} } : { structureProposal: {} };
+                const record = { proposalId: `design-${design.cid}`, goal: design.goal, title: design.title, createdAt: design.content.authoredAt,
+                    cadastreParcelIds: design.parcels, applied: false, ...payload };
+                records.set(record.proposalId, record);
+                order.push(`import:${design.title}`);
+                return record;
+            })
+        },
+        CityConfigManager: { foreignCityFor: city => (foreignCity && city === foreignCity ? foreignCity : null) },
+        shouldSkipWelcomeForProposalLink: () => true,
+        ReplayStatus: { watchUserTakeover: vi.fn(() => takeover), statusReporter: vi.fn(() => vi.fn()) },
+        __claims: { cadastreParcelIdsOf: record => (record && record.cadastreParcelIds) || [] },
+        __applyValidate: {
+            validatePlan: vi.fn(items => {
+                const blocked = items.filter(item => refused[item.proposalId])
+                    .map(item => ({ proposalId: item.proposalId, verdict: { code: 'held', message: refused[item.proposalId] } }));
+                return { applicable: items.filter(item => !refused[item.proposalId]), blocked, total: items.length };
+            })
+        },
+        __applyRoute: { classifyApplyRoute: () => 'replay' }
+    };
+    const ProposalManager = {
+        _initialReapplyDone: replayDone,
+        reapplyAppliedProposals: vi.fn(async () => { order.push('replay'); ProposalManager._initialReapplyDone = true; }),
+        applyProposal: vi.fn(async id => {
+            order.push(`apply:${records.get(id).title}`);
+            if (failing[id]) return false;
+            records.get(id).applied = true;
+            return true;
+        }),
+        _refreshUIAfterProposalChange: vi.fn()
+    };
+    const stubs = {
+        console: { log() {}, info() {}, debug() {}, warn: vi.fn(), error: vi.fn() },
+        document: {},
+        map: { fitBounds: vi.fn() },
+        proposalStorage: { getProposal: id => records.get(String(id)) || null, getAllProposals: () => [...records.values()], save: vi.fn(() => { order.push('save'); }) },
+        ProposalManager,
+        CadastralParcelRepository: { ensureIds: vi.fn(async () => { order.push('ground'); }) },
+        promptCityMismatchForProposal: vi.fn(async () => leaveForCity),
+        getProposalI18nHelper: () => translate,
+        getShareI18nHelper: () => translate,
+        formatSharedProposalLabel: (record, fallback) => (record && record.title) || String(fallback),
+        getStoredApplyFailureInfo: id => (failing[id] ? { message: failing[id] } : null),
+        calculateBoundsForLastAppliedProposal: id => ({ id, isValid: () => true }),
+        focusProposalDetails: vi.fn(async () => {}),
+        showProposalLoadOverlay: vi.fn(), updateProposalLoadOverlay: vi.fn(), hideProposalLoadOverlay: vi.fn(),
+        updateProposalLayer: vi.fn(), updateShowProposalsButton: vi.fn(),
+        showSimpleShareModal: vi.fn(), showEphemeralMessage: vi.fn(),
+        escapeHtml: value => String(value).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'),
+        is3DModeRequestedFromUrl: () => wants3D,
+        url3DModeHandled: false,
+        enterUrlDrivenView: vi.fn()
+    };
+    const helpers = loadSharedImportHelpers({ ...stubs, window });
+    return { ...stubs, window, records, order, takeover, context: helpers.context, open: (cids, options) => helpers.handleSharedDesignRoute(cids, options) };
+}
+
+describe('opening a /designs link', () => {
+    const park = row('Park', { authoredAt: '2026-10-02T10:00:00.000Z', parcels: ['HR-1', 'HR-2'] });
+    const block = row('Block', { goal: 'single', authoredAt: '2026-10-09T10:00:00.000Z', parcels: ['HR-3'] });
+    const square = row('Square', { authoredAt: '2026-09-30T10:00:00.000Z', parcels: ['HR-4'] });
+    const standingSquare = { proposalId: 'local-square', title: 'Square', goal: 'park', createdAt: '2026-09-30T10:00:00.000Z', applied: true };
+
+    it('imports the designs parked, applies what is not on the map in package order and frames the latest-authored', async () => {
+        const link = designLink({ designs: [park, block, square], local: { [square.cid]: standingSquare } });
+
+        const result = await link.open([park.cid, block.cid, square.cid]);
+
+        expect(link.window.DesignSync.fetchDesigns).toHaveBeenCalledExactlyOnceWith([park.cid, block.cid, square.cid]);
+        // The square stands on the map already: used as it is, never imported or applied again.
+        expect(link.window.DesignSync.importDesign.mock.calls.map(([design, options]) => [design.title, options]))
+            .toEqual([['Park', { deferSave: true }], ['Block', { deferSave: true }]]);
+        // One write for all the imports, then one ground prefetch for what will be applied; buildings go
+        // before public spaces through the one-boundary replay materializer, which writes once at its end.
+        expect(link.CadastralParcelRepository.ensureIds).toHaveBeenCalledExactlyOnceWith(['HR-1', 'HR-2', 'HR-3'], expect.any(Object));
+        expect(link.order).toEqual(['replay', 'import:Park', 'import:Block', 'save', 'ground', 'apply:Block', 'apply:Park', 'save']);
+        expect(link.ProposalManager.applyProposal.mock.calls.map(([, options]) => options))
+            .toEqual([{ replay: true, silent: true, deferPresentation: true }, { replay: true, silent: true, deferPresentation: true }]);
+
+        const parkId = `design-${park.cid}`;
+        const blockId = `design-${block.cid}`;
+        expect(result.applied).toEqual([parkId, blockId]);
+        expect(result.skipped).toEqual(['local-square']);
+        expect(result.failed).toEqual([]);
+        expect(result.blocked).toBe(false);
+        expect([...result.localIds]).toEqual([[park.cid, parkId], [block.cid, blockId], [square.cid, 'local-square']]);
+
+        // The latest-authored standing design is framed and opened.
+        expect(link.map.fitBounds).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({ id: blockId }),
+            { padding: [80, 80], maxZoom: 18, animate: false });
+        expect(link.focusProposalDetails).toHaveBeenCalledExactlyOnceWith(blockId, { centerOnProposal: false, showDetails: true });
+        expect(link.showEphemeralMessage).toHaveBeenCalledExactlyOnceWith('Applied 2 shared designs.', 5000, 'info');
+        expect(link.showSimpleShareModal).not.toHaveBeenCalled();
+        expect(link.updateProposalLayer).toHaveBeenCalledOnce();
+        expect(link.hideProposalLoadOverlay).toHaveBeenCalled();
     });
 
-    it('does not multiply a hung batch into individual proposal requests', async () => {
-        vi.useFakeTimers();
-        try {
-            const fetch = vi.fn(() => new Promise(() => {}));
-            const { fetchSharedProposalBatch } = loadSharedImportHelpers({ fetch,
-                window: { ParcelSourceHealth: SourceHealth, PARCEL_LOAD_TIMEOUT_MS: 10 } });
-            const pending = fetchSharedProposalBatch(['1', '2'], 'https://api.example');
-            const rejected = expect(pending).rejects.toMatchObject({ code: 'proposal-load-timeout' });
-            await vi.advanceTimersByTimeAsync(10);
-            await rejected;
-            expect(fetch).toHaveBeenCalledOnce();
-        } finally { vi.useRealTimers(); }
+    it('reports every design it could not open in one dialog and still applies the rest', async () => {
+        const held = row('Held lot', { goal: 'single' });
+        const broken = row('Broken <road>');
+        const gone = cidOf('never published');
+        const heldId = `design-${held.cid}`;
+        const brokenId = `design-${broken.cid}`;
+        const link = designLink({
+            designs: [park, held, broken],
+            refused: { [heldId]: 'Another applied design holds this ground.' },
+            failing: { [brokenId]: 'The ground changed under it.' }
+        });
+
+        const result = await link.open(['p-12', gone, held.cid, broken.cid, park.cid]);
+
+        // Not a CID: never asked for.
+        expect(link.window.DesignSync.fetchDesigns).toHaveBeenCalledExactlyOnceWith([gone, held.cid, broken.cid, park.cid]);
+        expect(result.failed).toEqual([
+            { id: 'p-12', label: 'p-12', reason: 'This is not a design link.' },
+            { id: gone, label: gone, reason: 'This design is not on the server.' },
+            { id: heldId, label: 'Held lot', reason: 'Another applied design holds this ground.' },
+            { id: brokenId, label: 'Broken <road>', reason: 'The ground changed under it.' }
+        ]);
+        // The refused design never reaches the materializer; the failing one is tried, the park applies.
+        expect(link.order.filter(step => step.startsWith('apply:'))).toEqual(['apply:Broken <road>', 'apply:Park']);
+        expect(result.applied).toEqual([`design-${park.cid}`]);
+
+        expect(link.showSimpleShareModal).toHaveBeenCalledOnce();
+        const dialog = link.showSimpleShareModal.mock.calls[0][0];
+        expect(dialog.title).toBe('Shared designs');
+        expect(dialog.body).toContain('4 of the shared designs could not be opened:');
+        expect(dialog.body).toContain('<li>Held lot · Another applied design holds this ground.</li>');
+        expect(dialog.body).toContain('<li>Broken &lt;road&gt; · The ground changed under it.</li>');
+        expect(link.showEphemeralMessage).not.toHaveBeenCalled();
+    });
+
+    it('says the designs are already on the map when every one stands there', async () => {
+        const standingPark = { proposalId: 'local-park', title: 'Park', goal: 'park', createdAt: '2026-10-02T10:00:00.000Z', applied: true };
+        const link = designLink({ designs: [park, square], local: { [park.cid]: standingPark, [square.cid]: standingSquare } });
+
+        const result = await link.open([park.cid, square.cid]);
+
+        expect(result).toMatchObject({ applied: [], skipped: ['local-park', 'local-square'], failed: [] });
+        expect(link.window.DesignSync.importDesign).not.toHaveBeenCalled();
+        expect(link.ProposalManager.applyProposal).not.toHaveBeenCalled();
+        expect(link.proposalStorage.save).not.toHaveBeenCalled();
+        expect(link.showEphemeralMessage).toHaveBeenCalledExactlyOnceWith('These shared designs are already on the map.', 4000, 'info');
+        expect(link.focusProposalDetails).toHaveBeenCalledExactlyOnceWith('local-park', { centerOnProposal: false, showDetails: true });
+    });
+
+    it('asks to go to the city a design belongs to, and imports nothing here when it goes', async () => {
+        const split = row('Riva', { city: 'split' });
+        const link = designLink({ designs: [park, split], foreignCity: 'split' });
+
+        const result = await link.open([park.cid, split.cid]);
+
+        expect(link.promptCityMismatchForProposal).toHaveBeenCalledExactlyOnceWith('split');
+        expect(result.blocked).toBe(true);
+        expect(link.window.DesignSync.importDesign).not.toHaveBeenCalled();
+        expect(link.ProposalManager.reapplyAppliedProposals).not.toHaveBeenCalled();
+        expect(link.hideProposalLoadOverlay).toHaveBeenCalled();
+    });
+
+    it('applies the designs and nothing else for the agreement route', async () => {
+        const link = designLink({ designs: [park, block] });
+
+        const result = await link.open([park.cid, block.cid], { openDetails: false, frame: false, summary: false, enter3D: false });
+
+        expect(result.applied).toEqual([`design-${park.cid}`, `design-${block.cid}`]);
+        expect([...result.localIds.keys()]).toEqual([park.cid, block.cid]);
+        expect(link.map.fitBounds).not.toHaveBeenCalled();
+        expect(link.focusProposalDetails).not.toHaveBeenCalled();
+        expect(link.showEphemeralMessage).not.toHaveBeenCalled();
+        expect(link.showSimpleShareModal).not.toHaveBeenCalled();
+    });
+
+    it('enters 3D framed on its own designs when the link asks for it, once', async () => {
+        const link = designLink({ designs: [park, square], wants3D: true });
+
+        await link.open([park.cid, square.cid]);
+        expect(link.enterUrlDrivenView).toHaveBeenCalledExactlyOnceWith([`design-${park.cid}`, `design-${square.cid}`]);
+        expect(link.context.url3DModeHandled).toBe(true);
+
+        await link.open([park.cid]);
+        expect(link.enterUrlDrivenView).toHaveBeenCalledOnce();
+    });
+
+    it('waits for the boot replay, and leaves the view alone when the visitor took over meanwhile', async () => {
+        const link = designLink({ designs: [park], replayDone: false, tookOver: true });
+
+        const result = await link.open([park.cid]);
+
+        expect(link.window.ReplayStatus.watchUserTakeover).toHaveBeenCalledExactlyOnceWith(link.document);
+        expect(link.ProposalManager.reapplyAppliedProposals.mock.calls[0][0]).toEqual({ onProgress: expect.any(Function) });
+        expect(link.takeover.stop).toHaveBeenCalledOnce();
+        expect(link.order.indexOf('replay')).toBeLessThan(link.order.indexOf('import:Park'));
+        // The design is applied; the map and the details stay where the visitor put them.
+        expect(result.applied).toEqual([`design-${park.cid}`]);
+        expect(link.map.fitBounds).not.toHaveBeenCalled();
+        expect(link.focusProposalDetails).not.toHaveBeenCalled();
+    });
+
+    it('reports an index that cannot be read instead of throwing', async () => {
+        const link = designLink({ fetchError: new Error('The server could not be reached.') });
+
+        const result = await link.open([park.cid]);
+
+        expect(result.failed).toEqual([{ id: null, label: '', reason: 'The server could not be reached.' }]);
+        expect(link.showEphemeralMessage).toHaveBeenCalledExactlyOnceWith('The server could not be reached.', 8000, 'error');
+        expect(link.hideProposalLoadOverlay).toHaveBeenCalled();
+        expect(link.ProposalManager.applyProposal).not.toHaveBeenCalled();
     });
 });

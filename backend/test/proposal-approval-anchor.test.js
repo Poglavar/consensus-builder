@@ -1,61 +1,42 @@
-// Chain adapter for approval setups (land-readjustmend.md §20): the minted record commits the
-// approval setup, decisions sign the chain identity, and a pinned bundle plus a Memo v1 pointer let a
-// reader with only chain + IPFS recover and re-verify every decision.
+// Chain anchor for the owner decisions on a minted agreement (approval-anchor.js): decisions sign the
+// agreement's CID whether or not it is minted, and a pinned bundle plus a Memo v1 pointer let a reader
+// with only chain + IPFS recover and re-verify every decision; the relay pins the bundle under the
+// CID of its bytes (POST /agreements/:cid/decisions/bundle, agreements/decisions.js).
 import { describe, it, expect } from 'vitest';
 import { createRequire } from 'node:module';
 import express from 'express';
 import request from 'supertest';
 import * as web3 from '@solana/web3.js';
-import { createMemoryOwnerDecisionStore, createOwnerDecisionHandlers } from '../proposals/owner-decisions.js';
-import { approvalConfig, decision, proposal as baseProposal, TERMS, wallets } from './helpers/approval-decisions.js';
+import { createAgreementDecisionHandlers, createMemoryAgreementDecisionStore } from '../agreements/decisions.js';
+import { serializeAgreementRow } from '../routes/agreements.js';
+import { AGREEMENT_CID, COUNTER_AGREEMENT_CID, DESIGN_CID, PARCEL_IDS, agreement, agreementContent, decision, wallets } from './helpers/approval-decisions.js';
 
 const require = createRequire(import.meta.url);
 const approval = require('../../frontend/js/proposals/approval.js');
 const relay = require('../../frontend/js/proposals/approval-relay.js');
 const anchors = require('../../frontend/js/proposals/approval-anchor.js');
-const chainRecord = require('../../frontend/js/proposals/chain-record.js');
+const Cid = require('../../frontend/js/cid.js');
 
 const ACCOUNT = web3.Keypair.generate().publicKey.toBase58();
-const minted = (overrides = {}) => baseProposal({
-    onchain: { chainId: 'solana-devnet', proposalId: ACCOUNT, contractAddress: '3WsVS6ProgramIdPlaceholder' }, ...overrides
-});
-const SUBJECT = `solana:devnet:${ACCOUNT}`;
-const counted = (item, approvals) => approval.validOwnerIds({ ...item, ownerApprovals: approvals }, TERMS, relay.verifyLensReceipt).sort();
-const SITE = { type: 'Polygon', coordinates: [[[15.97, 45.8], [15.971, 45.8], [15.971, 45.801], [15.97, 45.801], [15.97, 45.8]]] };
+const ONCHAIN = { chainId: 'solana-devnet', proposalId: ACCOUNT };
+const minted = (overrides = {}) => agreement({ onchain: ONCHAIN, ...overrides });
+// The memo subject is the CID every decision signs.
+const SUBJECT = AGREEMENT_CID;
+const counted = (item, approvals) => approval.validOwnerIds({ ...item, ownerApprovals: approvals }, relay.verifyLensReceipt).sort();
 
-describe('minting an approval setup', () => {
-    const record = overrides => chainRecord.authoredRecord({
-        proposalId: 'portable-lr', city: 'zagreb', type: 'structure', goal: 'park', title: 'Readjustment', author: 'Guest',
-        isConditional: false, lens: [baseProposal().lens[0]], site: SITE,
-        binding: { coverage: 'complete', parcels: [{ parcelId: 'parcel-a', overlapM2: 100 }], toleranceM: 0 },
-        cadastreSnapshot: { protocol: 'cadastre-snapshot/1', source: 'cadastre-v1', regionHasCadastre: true,
-            parcels: [{ id: 'parcel-a', sourceId: 'cadastre-v1', sourceVersion: null, sourceGeometryHash: null, geometryHash: 'a'.repeat(64), geometry: SITE }] },
-        structureProposal: { geometry: SITE }, cadastreParcelIds: ['parcel-a'], ...overrides
-    });
-
-    it('commits the normalized approval setup in the portable record and restores it from metadata', () => {
-        const config = { ...approvalConfig, rights: { ...approvalConfig.rights, parcels: [approvalConfig.rights.parcels[0]] } };
-        const minted = record({ approvalConfig: config });
-        expect(minted.approvalConfig).toEqual(approval.normalizeConfig(config));
-        const restored = chainRecord.fromMetadata({ properties: chainRecord.metadataProperties(minted) });
-        expect(restored.approvalConfig).toEqual(minted.approvalConfig);
-        // The context every decision signs is the same from the record as from the original.
-        expect(approval.contextHash({ ...restored, approvalConfig: restored.approvalConfig }))
-            .toBe(approval.contextHash({ cadastreParcelIds: ['parcel-a'], approvalConfig: config, lens: minted.lens }));
-        expect(() => record({ approvalConfig: { schema: 'wrong' } })).toThrow(/approval setup is invalid/);
-        const tampered = { properties: chainRecord.metadataProperties(minted) };
-        tampered.properties.proposal.approvalConfig = { schema: 'proposal-approval/v1', rights: [], policy: { type: 'unanimous' } };
-        expect(() => chainRecord.fromMetadata(tampered)).toThrow(/approval setup is invalid/);
-    });
-
-    it('decides a minted proposal under its chain account, so an off-chain receipt does not carry over', () => {
-        expect(approval.subjectOf(baseProposal())).toBe('relay-proposal');
-        expect(approval.subjectOf(minted())).toBe(SUBJECT);
-        expect(() => approval.subjectOf(baseProposal({ onchain: { chainId: '11155111', proposalId: '7' } }))).toThrow(/only for proposals minted on Solana/);
-        const onChain = decision(wallets.a, 'owner-a', { item: minted() });
-        expect(relay.verifyLensReceipt(minted(), onChain)).toBe(true);
-        expect(relay.verifyLensReceipt(minted(), decision(wallets.a, 'owner-a'))).toBe(false);
-        expect(relay.verifyLensReceipt(minted({ onchain: { chainId: 'solana-devnet', proposalId: web3.Keypair.generate().publicKey.toBase58() } }), onChain)).toBe(false);
+describe('the subject a decision signs', () => {
+    it('is the agreement’s CID before and after it is minted, and never another agreement’s', () => {
+        expect(approval.subjectOf(agreement())).toBe(AGREEMENT_CID);
+        expect(approval.subjectOf(minted())).toBe(AGREEMENT_CID);
+        expect(() => approval.subjectOf(agreement({ agreementCid: undefined }))).toThrow(/not a CID/);
+        expect(() => approval.subjectOf(agreement({ agreementCid: `solana:devnet:${ACCOUNT}` }))).toThrow(/not a CID/);
+        // Minting records the agreement on chain; it does not change what its owners signed.
+        const offChain = decision(wallets.a, 'owner-a');
+        expect(relay.verifyLensReceipt(minted(), offChain)).toBe(true);
+        expect(relay.verifyLensReceipt(minted({ agreementCid: COUNTER_AGREEMENT_CID }), offChain)).toBe(false);
+        expect(anchors.chainRef(minted())).toEqual({ cluster: 'devnet', account: ACCOUNT });
+        expect(anchors.chainRef(agreement())).toBeNull();
+        expect(anchors.chainRef(minted({ onchain: { chainId: '11155111', proposalId: '7' } }))).toBeNull();
     });
 });
 
@@ -69,6 +50,7 @@ describe('anchor memos and bundles', () => {
         for (const bad of [ours.replace('ipfs://', 'https://'), ours.replace(hash, 'sha256:xyz'), `${ours} extra`, ours.replace('/1 ', '/2 ')]) {
             expect(anchors.pointersIn(`[${bad.length}] ${bad}`, SUBJECT)).toEqual([]);
         }
+        expect(anchors.pointersIn(memo, COUNTER_AGREEMENT_CID)).toEqual([]);
         expect(anchors.memoTexts(null)).toEqual([]);
     });
 
@@ -80,6 +62,8 @@ describe('anchor memos and bundles', () => {
         expect(forward.decisions).toHaveLength(2);
         expect(anchors.hashOf(backward)).toBe(anchors.hashOf(forward));
         expect(anchors.hashOf(forward)).toMatch(/^sha256:[0-9a-f]{64}$/);
+        // Decisions on a counter-agreement do not belong in this agreement's bundle.
+        expect(anchors.bundleOf(minted({ agreementCid: COUNTER_AGREEMENT_CID }), rows).decisions).toEqual([]);
     });
 
     it('records the pointer in a Memo v1 instruction that names the lookup address unsigned', async () => {
@@ -99,10 +83,12 @@ describe('anchor memos and bundles', () => {
         expect(instruction.programId.toBase58()).toBe(anchors.MEMO_V1_PROGRAM_ID);
         expect(instruction.keys).toEqual([{ pubkey: anchors.inboxAddress(web3, ACCOUNT), isSigner: false, isWritable: false }]);
         expect(Buffer.from(instruction.data).toString('utf8')).toBe(anchors.memoText(published));
-        await expect(anchors.anchor(minted(), { publishBundle: async () => ({ ...published, subject: 'solana:devnet:other' }), connection, web3, provider }))
+        await expect(anchors.anchor(minted(), { publishBundle: async () => ({ ...published, subject: COUNTER_AGREEMENT_CID }), connection, web3, provider }))
             .rejects.toMatchObject({ code: 'bad-bundle' });
-        await expect(anchors.anchor(baseProposal(), { publishBundle: async () => published, connection, web3, provider }))
+        await expect(anchors.anchor(agreement(), { publishBundle: async () => published, connection, web3, provider }))
             .rejects.toMatchObject({ code: 'not-minted' });
+        await expect(anchors.anchor(minted(), { publishBundle: async () => published, connection, web3, provider: {} }))
+            .rejects.toMatchObject({ code: 'wallet-required' });
     });
 
     it('recovers decisions from chain + IPFS alone, rejecting bundles that do not match their memo', async () => {
@@ -110,7 +96,8 @@ describe('anchor memos and bundles', () => {
         const good = anchors.bundleOf(item, [decision(wallets.a, 'owner-a', { item, offset: 1 }), decision(wallets.c, 'owner-c', { item, offset: 2 })]);
         const later = anchors.bundleOf(item, [decision(wallets.d, 'owner-d', { item, offset: 3 })]);
         const swapped = { ...later, decisions: [decision(wallets.b, 'owner-b', { item, offset: 4 })] };
-        const foreign = { ...anchors.bundleOf(minted({ onchain: { chainId: 'solana-devnet', proposalId: web3.Keypair.generate().publicKey.toBase58() } }), []) };
+        // A counter-agreement's bundle, posted under this agreement's subject.
+        const foreign = anchors.bundleOf(minted({ agreementCid: COUNTER_AGREEMENT_CID }), []);
         const files = { 'ipfs://bafkgood000000000000000000': good, 'ipfs://bafklater00000000000000000': later,
             'ipfs://bafkswap000000000000000000': swapped, 'ipfs://bafkforeign0000000000000000': foreign };
         const memo = (uri, bundle) => {
@@ -141,39 +128,59 @@ describe('anchor memos and bundles', () => {
         expect(relay.merge(reader, read.decisions, relay.verifyLensReceipt).changed).toBe(true);
         expect(counted(reader, reader.ownerApprovals)).toEqual(['owner-a', 'owner-c', 'owner-d']);
         expect(anchors.anchoredSignatures(read).size).toBe(3);
-        expect(await anchors.readAnchors(baseProposal(), { connection, web3, fetchJson: async () => null })).toBeNull();
+        expect(await anchors.readAnchors(agreement(), { connection, web3, fetchJson: async () => null })).toBeNull();
     });
 });
 
 describe('bundle pinning route', () => {
-    function app(published, pins) {
-        const store = createMemoryOwnerDecisionStore();
+    const bundlePath = `/agreements/${AGREEMENT_CID}/decisions/bundle`;
+    // The agreement as the index serves it (GET /agreements/:cid), minted when `onchain` is given.
+    const indexed = onchain => serializeAgreementRow({
+        cid: AGREEMENT_CID, city: 'test-city', title: 'Block readjustment', author: 'Test author', design_cids: [DESIGN_CID],
+        input_parcel_ids: PARCEL_IDS, parcel_source_id: null, deadline: null, status: 'active', content: agreementContent(), onchain,
+        screenshot_url: null, screenshot_before_url: null, screenshot_pair_url: null, created_at: new Date('2026-10-21T10:00:00.000Z')
+    });
+    function app(row, pins, { pinFailure = null } = {}) {
+        const store = createMemoryAgreementDecisionStore();
         const server = express();
         server.use(express.json());
-        const handlers = createOwnerDecisionHandlers({ store, loadProposal: async id => (id === '41' ? published : null),
-            pinJson: async (bundle, name) => { pins.push({ bundle, name }); return `ipfs://bafkpinned${pins.length}${'0'.repeat(20)}`; } });
-        server.post('/proposals/:id/owner-decisions', handlers.post);
-        server.post('/proposals/:id/owner-decisions/bundle', handlers.bundle);
-        return server;
+        const handlers = createAgreementDecisionHandlers({ store, loadAgreement: async cid => (cid === row.cid ? row : null),
+            pinBytes: async ({ bytes, name, cid }) => {
+                if (pinFailure) throw pinFailure;
+                pins.push({ bytes, name, cid });
+                return { cid, pinnedAt: '2026-10-21T10:05:00.000Z' };
+            } });
+        server.post('/agreements/:cid/decisions', handlers.post);
+        server.post('/agreements/:cid/decisions/bundle', handlers.bundle);
+        return { server, store };
+    }
+    async function decided(server, item) {
+        for (const receipt of [decision(wallets.a, 'owner-a', { item, offset: 1 }), decision(wallets.c, 'owner-c', { item, offset: 2 })]) {
+            expect((await request(server).post(`/agreements/${AGREEMENT_CID}/decisions`).send({ receipt })).status).toBe(201);
+        }
     }
 
-    it('pins the verified decisions of a minted proposal once and refuses what cannot be anchored', async () => {
+    it('pins the verified decisions of a minted agreement once, under the CID of their bytes', async () => {
         const pins = [];
         const item = minted();
-        const server = app(item, pins);
-        expect((await request(server).post('/proposals/41/owner-decisions/bundle')).body.code).toBe('nothing_to_anchor');
-        for (const receipt of [decision(wallets.a, 'owner-a', { item, offset: 1 }), decision(wallets.c, 'owner-c', { item, offset: 2 })]) {
-            expect((await request(server).post('/proposals/41/owner-decisions').send({ receipt })).status).toBe(201);
-        }
-        const first = await request(server).post('/proposals/41/owner-decisions/bundle');
+        const { server } = app(indexed(ONCHAIN), pins);
+        expect((await request(server).post(bundlePath)).body.code).toBe('nothing_to_anchor');
+        await decided(server, item);
+        const first = await request(server).post(bundlePath);
         expect(first.status).toBe(200);
-        expect(first.body).toMatchObject({ subject: SUBJECT, count: 2, uri: expect.stringMatching(/^ipfs:\/\//) });
-        expect(first.body.hash).toBe(anchors.hashOf(pins[0].bundle));
-        const again = await request(server).post('/proposals/41/owner-decisions/bundle');
+        expect(first.body).toMatchObject({ subject: SUBJECT, count: 2, uri: `ipfs://${first.body.cid}` });
+        // The pinned bytes are the bundle a reader hashes: their CID carries the same sha256.
+        const pinned = new Uint8Array(pins[0].bytes);
+        const bundle = JSON.parse(Buffer.from(pinned).toString('utf8'));
+        expect(Cid.cidOf(pinned)).toBe(first.body.cid);
+        expect(first.body.hash).toBe(anchors.hashOf(bundle));
+        expect(`sha256:${Buffer.from(Cid.parse(first.body.cid).digest).toString('hex')}`).toBe(first.body.hash);
+        expect(bundle.decisions.map(row => row.ownerId)).toEqual(['owner-a', 'owner-c']);
+        const again = await request(server).post(bundlePath);
         expect(again.body).toEqual(first.body);
         expect(pins).toHaveLength(1);
         // What was pinned is exactly what a reader would accept for this memo.
-        const read = await anchors.readAnchors(item, { web3, fetchJson: async () => pins[0].bundle, connection: {
+        const read = await anchors.readAnchors(item, { web3, fetchJson: async () => bundle, connection: {
             getSignaturesForAddress: async () => {
                 const text = anchors.memoText({ subject: SUBJECT, uri: first.body.uri, hash: first.body.hash });
                 return [{ signature: 'tx', err: null, memo: `[${text.length}] ${text}` }];
@@ -181,9 +188,20 @@ describe('bundle pinning route', () => {
         } });
         expect(read).toMatchObject({ bundles: 1, rejected: 0 });
 
-        const unminted = app(baseProposal(), []);
-        const notMinted = await request(unminted).post('/proposals/41/owner-decisions/bundle');
-        expect(notMinted.status).toBe(409);
-        expect(notMinted.body.code).toBe('not_minted');
+        const notMinted = await request(app(indexed(null), []).server).post(bundlePath);
+        expect({ status: notMinted.status, code: notMinted.body.code }).toEqual({ status: 409, code: 'not_minted' });
+    });
+
+    it('answers 503 when this server cannot pin and 502 when the pin fails, keeping the decisions', async () => {
+        const unconfigured = app(indexed(ONCHAIN), [], { pinFailure: Object.assign(new Error('no keys'), { code: 'pinning-unconfigured' }) });
+        await decided(unconfigured.server, minted());
+        const refused = await request(unconfigured.server).post(bundlePath);
+        expect({ status: refused.status, code: refused.body.code }).toEqual({ status: 503, code: 'pinning_unconfigured' });
+        expect(await unconfigured.store.list(AGREEMENT_CID)).toHaveLength(2);
+
+        const failing = app(indexed(ONCHAIN), [], { pinFailure: new Error('gateway down') });
+        await decided(failing.server, minted());
+        const failed = await request(failing.server).post(bundlePath);
+        expect({ status: failed.status, code: failed.body.code }).toEqual({ status: 502, code: 'pin_failed' });
     });
 });

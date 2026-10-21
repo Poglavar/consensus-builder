@@ -45,7 +45,7 @@ function loadActions(overrides = {}) {
 }
 
 describe('whole-block fresh-proposal suggestion', () => {
-    it('renders transport icons with full station labels, followed by a separate Ownership group', () => {
+    it('renders transport icons with full station labels, and no Ownership group (M2: owner offers are gone)', () => {
         const container = { innerHTML: '' };
         const document = {
             querySelector: vi.fn(() => null),
@@ -73,9 +73,11 @@ describe('whole-block fresh-proposal suggestion', () => {
         expect(html).toContain('Tram station');
         expect(html).toContain('Metro station');
         expect(html).toContain('Elevated station');
-        expect(html).toContain('parcel-ownership-group');
-        expect(html.indexOf('parcel-transport-group')).toBeLessThan(html.indexOf('parcel-ownership-group'));
-        expect(html.indexOf('parcel-ownership-group')).toBeLessThan(html.indexOf('parcel-build-btn--offer'));
+        expect(html).not.toContain('parcel-ownership-group');
+        expect(html).not.toContain('parcel-build-btn--offer');
+        // The transport group closes the palette, after the construction tools.
+        expect(html.indexOf('parcel-build-btn--park')).toBeGreaterThan(-1);
+        expect(html.indexOf('parcel-build-btn--park')).toBeLessThan(html.indexOf('parcel-transport-group'));
     });
 
     it('offers Lay out parcels first and opens the parcel-layout design tool on the selection', async () => {
@@ -127,7 +129,7 @@ describe('whole-block fresh-proposal suggestion', () => {
 
         ['buildings', 'row', 'parcelBased', 'single', 'parcel-layout', 'park', 'square', 'lake', 'urban-rule']
             .forEach(goal => expect(window.shouldSuggestWholeBlockForFreshProposal(goal)).toBe(true));
-        ['offer', 'road-track', 'ownership-transfer', 'as-is', 'decide-later']
+        ['offer', 'road-track', 'ownership-transfer', 'as-is']
             .forEach(goal => expect(window.shouldSuggestWholeBlockForFreshProposal(goal)).toBe(false));
     });
 

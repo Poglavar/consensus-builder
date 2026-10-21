@@ -1,7 +1,7 @@
 /* ========== Agreements ==========
    The agreement panel docked on the right of the map (js/agreement-panel.js), the Agreements list
    dialog (js/agreement-list.js) and the Proposals sheet's Agreements button. The panel follows the
-   plan view's dock rules (css/plans.css); on phones the shared bottom-sheet rules (css/panels.css,
+   right-dock rules of css/panels.css; on phones the shared bottom-sheet rules (css/panels.css,
    css/utilities.css) place it. Tokens only (css/tokens.css); the buttons keep the .btn look and are
    only laid out here. The Agreements button (.agreements-button) is a sheet row like its
    neighbours: css/map-shell.css lays it out, so it needs no rule of its own. */
@@ -76,6 +76,26 @@
 .agreement-panel-note--danger {
     background: var(--cb-danger-soft);
     color: var(--cb-danger-soft-ink);
+}
+
+/* A proposed agreement (M2): its CID, Copy link and the index's status on one wrapping row, then
+   where its parties decide (the owners' card, proposals/approval-panel.js, or the community note). */
+.agreement-panel-published {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--cb-space-2);
+}
+
+.agreement-panel-cid {
+    font-family: var(--cb-font-mono);
+    font-size: var(--cb-text-sm);
+    color: var(--cb-text-strong);
+    overflow-wrap: anywhere;
+}
+
+.agreement-panel-section .approval-card-slot {
+    margin-top: var(--cb-space-2);
 }
 
 .agreement-panel-actions {

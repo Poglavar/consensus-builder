@@ -1,8 +1,10 @@
 // agreement-panel.js — one agreement of this device docked on the right of the map
 // (plan-design-agreement.md, "M1 (b) build contract"): whether it still matches the map, its designs,
 // the land it settles, who receives each resulting piece, the ledger, the decision rule and the
-// deadline, with Before / after (over its input parcels), Edit and Delete. window.AgreementPanel;
-// the pure helpers are exported for backend/test/agreement-panel.test.js.
+// deadline, with Before / after (over its input parcels), Edit and Delete. Propose puts a current
+// agreement to its parties (M2, agreement-sync.js); a proposed one shows its CID with its link, the
+// index's status and the owners' decisions (proposals/approval-panel.js), and is no longer edited.
+// window.AgreementPanel; the pure helpers are exported for backend/test/agreement-panel.test.js.
 (function (root, factory) {
     const api = factory(root);
     if (typeof module === 'object' && module.exports) module.exports = api;
@@ -261,13 +263,43 @@
             + '</div>';
     }
 
-    function actionsHtml({ canCompare = false, comparing = false } = {}, tr = t) {
+    // Propose is the main action of a current agreement not yet proposed; a proposed agreement is
+    // immutable, so it has no Edit (a change is a new agreement).
+    function actionsHtml({ canCompare = false, comparing = false, canPropose = false, published = false } = {}, tr = t) {
         return '<div class="agreement-panel-actions">'
-            + `<button type="button" class="btn btn-primary" data-agreement-action="compare" aria-pressed="${comparing ? 'true' : 'false'}"${canCompare ? '' : ' disabled'}>`
+            + (canPropose ? `<button type="button" class="btn btn-primary" data-agreement-action="propose"><i class="fas fa-paper-plane" aria-hidden="true"></i> ${esc(tr('agreement.publish.propose', 'Propose'))}</button>` : '')
+            + `<button type="button" class="btn${canPropose ? '' : ' btn-primary'}" data-agreement-action="compare" aria-pressed="${comparing ? 'true' : 'false'}"${canCompare ? '' : ' disabled'}>`
             + `<i class="fas fa-left-right" aria-hidden="true"></i> ${esc(tr('mapCompare.toggle', 'Before / after'))}</button>`
-            + `<button type="button" class="btn" data-agreement-action="edit"><i class="fas fa-pen" aria-hidden="true"></i> ${esc(tr('agreement.panel.actions.edit', 'Edit'))}</button>`
+            + (published ? '' : `<button type="button" class="btn" data-agreement-action="edit"><i class="fas fa-pen" aria-hidden="true"></i> ${esc(tr('agreement.panel.actions.edit', 'Edit'))}</button>`)
             + `<button type="button" class="btn btn-danger" data-agreement-action="delete"><i class="fas fa-trash" aria-hidden="true"></i> ${esc(tr('agreement.panel.actions.delete', 'Delete'))}</button>`
             + '</div>';
+    }
+
+    // The index's status of a proposed agreement, in words: active, expired, or not read (yet).
+    function remoteStatusOf(remote, tr = t) {
+        if (!remote || remote.loading) return { tone: 'neutral', label: tr('agreement.publish.statusChecking', 'Checking the server…') };
+        if (remote.error) return { tone: 'warning', label: tr('agreement.publish.statusUnavailable', 'Server status unavailable: {{reason}}', { reason: remote.error }) };
+        if (remote.status === 'expired') return { tone: 'danger', label: tr('agreement.publish.statusExpired', 'Expired') };
+        return { tone: 'success', label: tr('agreement.publish.statusActive', 'Active') };
+    }
+
+    // A proposed agreement: its CID (shortened; the whole one in the title), Copy link, the index's
+    // status, and where its parties decide: the owners' card, or the community note.
+    function publishedHtml({ published, remote = null, electorate = 'owners' } = {}, tr = t) {
+        if (!published) return '';
+        const cid = idOf(published.cid);
+        const short = cid.length > 20 ? `${cid.slice(0, 12)}…${cid.slice(-6)}` : cid;
+        const status = remoteStatusOf(remote, tr);
+        const decide = electorate === 'owners'
+            ? '<div class="approval-card-slot" data-approval-card-slot></div>'
+            : `<p class="agreement-panel-note" data-agreement-community-note>${esc(tr('agreement.publish.communityNote', 'Votes on a community rule are counted off-chain in M3.'))}</p>`;
+        return sectionHtml(tr('threeMode.parcelPanel.proposed', 'Proposed'),
+            '<div class="agreement-panel-published">'
+            + `<code class="agreement-panel-cid" title="${esc(cid)}">${esc(short)}</code>`
+            + `<button type="button" class="btn btn-sm" data-agreement-action="link"><i class="fas fa-link" aria-hidden="true"></i> ${esc(tr('agreement.publish.copyLink', 'Copy link'))}</button>`
+            + `<span class="cb-badge cb-badge--${status.tone}" data-agreement-remote-status="${esc((remote && remote.status) || '')}">${esc(status.label)}</span>`
+            + '</div>'
+            + decide);
     }
 
     function designsHtml(rows, tr = t) {
@@ -327,7 +359,8 @@
 
     function browserPanel(win) {
         const doc = win.document;
-        const state = { token: 0, id: null, agreement: null, check: null, checking: false, error: null, panel: null, wired: false };
+        // remote: the index's row of a proposed agreement ({ cid, loading, status, error }), read once per open.
+        const state = { token: 0, id: null, agreement: null, check: null, checking: false, error: null, panel: null, wired: false, remote: null };
         const log = (message, ...rest) => console.log(`[${new Date().toISOString()}] [AgreementPanel] ${message}`, ...rest);
         const isOpen = () => !!(state.panel && state.panel.classList.contains('visible'));
         const designOf = id => (win.proposalStorage && typeof win.proposalStorage.getProposal === 'function' ? win.proposalStorage.getProposal(id) || null : null);
@@ -367,7 +400,7 @@
             return ground.check(agreement, {
                 designOf,
                 isApplied: win.isApplied,
-                fingerprintOf: win.proposalContentFingerprint,
+                fingerprintOf: record => win.DesignRecord.cidOf(record),
                 fabric,
                 originals: dialogApi().originalsById(features, fabric && fabric.featureId),
                 ownerOf: ground.localHolders({ storage: win.PersistentStorage, agents: win.agentStorage }),
@@ -415,8 +448,15 @@
             const rule = ruleSummary(agreement.rule, t, setup && typeof setup.summaryText === 'function' ? setup.summaryText : null);
             const deadline = agreement.deadline ? format().formatDate(agreement.deadline) : '';
             const current = !!state.check && state.check.current === true && !state.checking && !state.error;
+            const published = !!agreement.published;
+            // An agreement imported from its link whose pieces did not re-derive here keeps them by hash.
+            const byHashOnly = (agreement.outputs || []).some(output => !output.geometry)
+                ? `<p class="agreement-panel-note" data-agreement-rederive>${esc(t('agreement.publish.rederive', 'Its pieces are known here by their hashes only: apply its designs on the same ground to re-derive them and compare.'))}</p>`
+                : '';
             return status
-                + actionsHtml({ canCompare: current, comparing: comparing(state.id) })
+                + byHashOnly
+                + actionsHtml({ canCompare: current, comparing: comparing(state.id), canPropose: current && !published, published })
+                + publishedHtml({ published: agreement.published, remote: state.remote, electorate: agreement.rule && agreement.rule.electorate })
                 + designsHtml(designRows(agreement, { designOf, isApplied: win.isApplied, typeLabel }))
                 + landHtml(landSummary(agreement))
                 + allocationHtml(allocationLines(agreement))
@@ -432,8 +472,34 @@
             close.setAttribute('aria-label', closeLabel);
             close.title = closeLabel;
             panel.querySelector('[data-agreement-region="body"]').innerHTML = bodyHtml();
+            // The owners' decisions on a proposed agreement (proposals/approval-panel.js).
+            const slot = panel.querySelector('[data-approval-card-slot]');
+            if (slot && win.ProposalApprovalPanel) win.ProposalApprovalPanel.render(slot, state.id);
             panel.classList.add('visible');
             doc.body.classList.add('agreement-panel-open');
+        }
+
+        // The index's row of a proposed agreement: its status, and the relay's decisions on it. Read
+        // once per open (and after Propose); a later render reuses it.
+        async function readRemote(agreement) {
+            const cid = agreement && agreement.published ? agreement.published.cid : null;
+            if (!cid || (state.remote && state.remote.cid === cid)) return;
+            const id = agreement.id;
+            state.remote = { cid, loading: true, status: null, error: null };
+            try {
+                const row = await win.AgreementSync.fetchAgreement(cid);
+                if (state.id !== id) return;
+                state.remote = { cid, loading: false, status: row.status, error: null };
+            } catch (error) {
+                if (state.id !== id) return;
+                console.warn(`[${new Date().toISOString()}] [AgreementPanel] the server status of ${cid} is unavailable`, error);
+                state.remote = { cid, loading: false, status: null, error: (error && error.message) || String(error) };
+            }
+            if (win.ProposalApprovalPanel) {
+                win.ProposalApprovalPanel.setStatus(id, state.remote.status);
+                win.ProposalApprovalPanel.sync(id);
+            }
+            if (isOpen() && state.id === id) renderPanel();
         }
 
         // Reads the agreement again and checks it against the map; a newer call wins.
@@ -451,6 +517,7 @@
                 state.checking = true;
                 state.error = null;
                 renderPanel();
+                readRemote(agreement);
                 const check = await checkAgreement(agreement);
                 if (token !== state.token) return;
                 state.check = check;
@@ -506,6 +573,33 @@
             close();
         }
 
+        // Propose (agreement-sync.js): publishes the designs and the agreement, then copies the link.
+        async function propose() {
+            const id = state.id;
+            try {
+                const { cid, link } = await win.AgreementSync.publishAgreement(id);
+                log(`${id} proposed as ${cid}`);
+                state.remote = null;
+                if (await win.DesignSync.copyLink(link)) {
+                    win.showEphemeralMessage(t('agreement.publish.linkCopied', 'Agreement proposed. Its link is copied.'), 5000, 'success');
+                } else {
+                    win.showEphemeralMessage(t('agreement.publish.proposedAt', 'Agreement proposed: {{link}}', { link }), 9000, 'success');
+                }
+            } catch (error) {
+                if (error && error.cancelled) return;
+                report(`proposing ${id} failed`, error);
+            }
+            if (state.id === id && isOpen()) refresh();
+        }
+
+        async function copyLink() {
+            const agreement = state.agreement;
+            if (!agreement || !agreement.published) return;
+            const link = win.AgreementSync.agreementLink(agreement.published.cid, { city: agreement.city });
+            if (await win.DesignSync.copyLink(link)) win.showEphemeralMessage(t('agreement.publish.linkCopiedShort', 'Agreement link copied.'), 3000, 'success');
+            else win.showEphemeralMessage(link, 9000, 'info');
+        }
+
         // A design's own details take the right dock, so this panel steps aside.
         function selectDesign(proposalId) {
             if (typeof win.selectAndHighlightProposal !== 'function') throw new Error('selectAndHighlightProposal is not loaded.');
@@ -521,6 +615,8 @@
             switch (action.getAttribute('data-agreement-action')) {
                 case 'close': close(); break;
                 case 'compare': win.BusyControl.track(action, () => win.toggleAgreementBeforeAfter(state.id)); break;
+                case 'propose': win.BusyControl.track(action, () => propose()); break;
+                case 'link': copyLink(); break;
                 case 'edit': edit(); break;
                 case 'delete': remove(); break;
                 default: break;
@@ -557,14 +653,12 @@
             state.wired = true;
         }
 
-        // The agreement takes the right dock: the sheets, a parcel's panel, a design's panel and a
-        // named plan make way.
+        // The agreement takes the right dock: the sheets, a parcel's panel and a design's panel make way.
         function makeWay() {
             if (win.MapShell && typeof win.MapShell.closeSheets === 'function') win.MapShell.closeSheets();
             if (win.ParcelMenu && typeof win.ParcelMenu.close === 'function') win.ParcelMenu.close();
             if (doc.getElementById('parcel-info-panel')?.classList.contains('visible') && typeof win.hideParcelInfoPanel === 'function') win.hideParcelInfoPanel();
             if (doc.getElementById('proposal-details-panel')?.classList.contains('visible') && typeof win.hideProposalDetailsPanel === 'function') win.hideProposalDetailsPanel(true);
-            if (win.PlanView && typeof win.PlanView.isOpen === 'function' && win.PlanView.isOpen()) win.PlanView.close();
         }
 
         async function open(id) {
@@ -574,6 +668,7 @@
             const token = ++state.token;
             // Another agreement's before / after does not belong to this one.
             if (state.id && state.id !== agreementId && comparing(state.id)) win.ProposalBeforeAfter.dispose();
+            if (state.id !== agreementId) state.remote = null;
             state.id = agreementId;
             state.agreement = null;
             state.check = null;
@@ -593,6 +688,7 @@
             state.check = null;
             state.error = null;
             state.checking = false;
+            state.remote = null;
             if (state.panel) state.panel.classList.remove('visible');
             doc.body.classList.remove('agreement-panel-open');
         }
@@ -602,6 +698,6 @@
 
     return {
         titleOf, statusOf, landSummary, allocationLines, ledgerRows, ruleSummary, ruleShort, designRows, groundIds, holdersLine,
-        statusHtml, actionsHtml, designsHtml, landHtml, allocationHtml, ledgerHtml, ruleHtml, browserPanel
+        statusHtml, actionsHtml, remoteStatusOf, publishedHtml, designsHtml, landHtml, allocationHtml, ledgerHtml, ruleHtml, browserPanel
     };
 });

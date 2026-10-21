@@ -49,7 +49,7 @@ describe('groundUnderBody', () => {
     });
 
     it('returns every parcel when the proposal has no body to stand on', () => {
-        // A decide-later formation authors no geometry; its parcels ARE the proposal.
+        // A record with no authored geometry: its parcels ARE the proposal.
         const kept = groundUnderBody([PLOT, REMAINDER], [], ctx);
 
         expect(kept.map(f => f.properties.id)).toEqual(['plot', 'remainder']);

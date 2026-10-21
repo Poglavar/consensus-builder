@@ -433,7 +433,6 @@
         parcelCommand('history', { labelKey: 'parcelMenu.actions.history', fallbackLabel: 'History', icon: 'fas fa-clock-rotate-left' }),
         parcelCommand('compare', { labelKey: 'parcelMenu.actions.compare', fallbackLabel: 'Compare proposals here', icon: 'fas fa-code-compare' }),
         parcelCommand('tools', { labelKey: 'parcelMenu.actions.tools', fallbackLabel: 'Tools', icon: 'fas fa-screwdriver-wrench' }),
-        parcelCommand('offer', { modes: ['2d'], labelKey: 'parcelMenu.actions.offer', fallbackLabel: 'Offer my land', icon: 'fas fa-handshake' }),
         parcelCommand('detectBlock', { modes: ['2d'], labelKey: 'parcelMenu.actions.detectBlock', fallbackLabel: 'Detect block', icon: 'fas fa-fill-drip' }),
         parcelCommand('useAsSite', { modes: ['2d'], labelKey: 'parcelMenu.actions.useAsSite', fallbackLabel: 'Use as site', icon: 'fas fa-draw-polygon' }),
 

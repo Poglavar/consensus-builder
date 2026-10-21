@@ -379,13 +379,12 @@ describe('explicit geometry-only local application', () => {
         expect(openGround.groundIdsOf(fabric.producedBy('park-offline')[0])).toHaveLength(1);
     });
 
-    it('refuses a parcel act without looking up its declared parcel', async () => {
-        const merge = { proposalId: 'merge-offline', goal: 'decide-later', applied: false,
-            site: SITE_HALF, cadastreParcelIds: ['HR-330264-9'] };
-        const { manager, repository } = await harness({ records: [merge] });
+    it('refuses a record with neither a site nor a footprint as needing parcels', async () => {
+        const nothing = { proposalId: 'park-nowhere', goal: 'park', applied: false, cadastreParcelIds: ['HR-330264-9'] };
+        const { manager, repository } = await harness({ records: [nothing] });
         chooseWithoutParcels();
-        await expect(manager.applyProposal('merge-offline')).resolves.toBe(false);
-        expect(manager.getLastApplyFailureInfo('merge-offline').code).toBe('proposal-needs-parcels');
+        await expect(manager.applyProposal('park-nowhere')).resolves.toBe(false);
+        expect(manager.getLastApplyFailureInfo('park-nowhere').code).toBe('proposal-needs-parcels');
         expect(repository.calls).toEqual([]);
     });
 

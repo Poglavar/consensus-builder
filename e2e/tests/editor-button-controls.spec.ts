@@ -170,7 +170,16 @@ test.describe('Editor button effects @features', () => {
     await expect.poll(() => footprint.getAttribute('d')).not.toBe(counterclockwisePath);
     await page.locator('#single-building-confirm').click();
     await expect(modal).toHaveCount(0);
-    await expect.poll(() => page.evaluate(() => (window as any).pendingSingleBuildingFeatures?.[0]?.geometry?.coordinates?.[0]?.length)).toBe(5);
+    // Done saved the uploaded footprint, turned both ways, as an applied freeform design: a four-corner
+    // ring of the uploaded area.
+    await expect.poll(() => page.evaluate(upload => {
+      const w = window as any;
+      return w.proposalStorage.getAllProposals()
+        .filter((p: any) => p.applied && p.buildingProposal?.typologyType === 'single')
+        .flatMap((p: any) => p.geometry?.buildings || [])
+        .some((building: any) => building.geometry?.coordinates?.[0]?.length === 5
+          && Math.abs(w.turf.area(building.geometry) - w.turf.area(upload)) < 1);
+    }, uploaded.geometry), { timeout: 30_000 }).toBe(true);
   });
 
   test('row-house Close dismisses the editor without saving', async ({ mockApi: page }) => {

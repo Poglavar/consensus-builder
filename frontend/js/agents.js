@@ -4,20 +4,6 @@
     that can interact with the parcel system and make proposals.
 */
 
-// Detect active chain currency based on connected wallet
-function getChainCurrencySymbol() {
-    try {
-        const wm = window.solanaWalletManager;
-        if (wm && typeof wm.getState === 'function') {
-            const st = wm.getState();
-            if (st && st.status === 'connected' && Array.isArray(st.accounts) && st.accounts.length > 0) {
-                return 'SOL';
-            }
-        }
-    } catch (_) { }
-    return 'ETH';
-}
-
 // The stored form of the agents. ownedParcels mirrors the parcel owner rows, and a derived live
 // piece's owner row is memory-only (persistent-storage.js isMemoryOnlyKey: the replay rebuilds it),
 // so derived piece ids are left out of the stored list too.
@@ -410,15 +396,6 @@ function getOrCreateCityAgent(options = {}) {
     return CITY_AGENT_ID;
 }
 
-function findAgentByName(name, options = {}) {
-    if (!name) return null;
-    const target = String(name).trim().toLowerCase();
-    if (!target) return null;
-    const store = options.agentStore || agentStorage;
-    const match = store.getAllAgents().find(a => (a.name || '').trim().toLowerCase() === target);
-    return match ? match.id : null;
-}
-
 function _recipientHash(s) {
     let h = 0;
     for (let i = 0; i < s.length; i++) { h = (h * 31 + s.charCodeAt(i)) | 0; }
@@ -474,36 +451,11 @@ function getOrCreateJointPoolAgent(label, members, options = {}) {
     return id;
 }
 
-// Resolve the agent id that should RECEIVE the parcels for a proposal's ownership facet.
-// Returns null for no-transfer / open-sale (no fixed recipient yet).
-function resolveProposalRecipientAgentId(proposal, options = {}) {
-    if (!proposal) return null;
-    const otp = proposal.ownershipTransferProposal || {};
-    const facets = proposal.facets || {};
-    const recipient = otp.recipient || facets.ownership || null;
-    switch (recipient) {
-        case 'to-me': {
-            const byAuthor = findAgentByName(proposal.author, options);
-            if (byAuthor) return byAuthor;
-            const cur = (typeof getCurrentUserAgent === 'function') ? getCurrentUserAgent() : null;
-            return cur ? cur.id : null;
-        }
-        case 'to-city':
-            return getOrCreateCityAgent(options);
-        case 'third-party':
-            if (otp.recipientScope === 'any') return null; // open sale: buyer unknown until claimed
-            return getOrCreateAgentForRecipient(otp.recipientAddress || facets.recipientAddress, options);
-        default:
-            return null; // no-change / unknown
-    }
-}
-
 // Parcel ownership in game mode is tracked browser-local (parcel_<id>_owner); canonical ownership
 // is on-chain. The old non-canonical server cache (/parcel-ownership) was removed — its read-back
 // was never wired in, so it was a write-only, unauthenticated upsert.
 
 if (typeof window !== 'undefined') {
-    window.resolveProposalRecipientAgentId = resolveProposalRecipientAgentId;
     window.getOrCreateCityAgent = getOrCreateCityAgent;
     window.CITY_AGENT_ID = CITY_AGENT_ID;
 }
@@ -855,9 +807,6 @@ function agentDecideAction(agent, turnContext = null) {
                 return { type: 'nothing' };
             }
 
-            const maxBudget = Math.floor(agent.ethBalance * 0.05 * 100) / 100; // Max 5% of ETH, rounded to 2 decimals
-            const budget = Math.max(0.01, Math.random() * maxBudget);
-
             return {
                 type: 'create',
                 parcelIds: proposalParcels.map(p => p.id),
@@ -865,8 +814,7 @@ function agentDecideAction(agent, turnContext = null) {
                 goal: randomType,
                 proposalType: randomType, // legacy logging only; remove once consumers migrated
                 title: randomType,
-                description: `${randomType} development proposed by ${agent.name}`,
-                budget: Math.round(budget * 100) / 100 // Round to 2 decimal places
+                description: `${randomType} development proposed by ${agent.name}`
             };
 
         case 'donate':
@@ -962,10 +910,7 @@ async function executeAgentAction(agent, action) {
 
         case 'accept':
             if (typeof acceptProposal === 'function') {
-                const approvalProposal = proposalStorage.getProposal(action.proposalId);
-                const result = typeof usesAbstractProposalApproval === 'function' && usesAbstractProposalApproval(approvalProposal)
-                    ? await recordAbstractProposalDecision(approvalProposal, action.parcelId, action.ownerKey || null, agent)
-                    : await acceptProposal(action.proposalId, action.parcelId, action.ownerKey || null, {
+                const result = await acceptProposal(action.proposalId, action.parcelId, action.ownerKey || null, {
                     acceptedByAgentId: agent.id,
                     acceptedByName: agent.name,
                     suppressAlerts: true
@@ -1039,8 +984,6 @@ async function executeAgentAction(agent, action) {
                     author: agent.name,
                     title: action.title,
                     description: action.description,
-                    offer: action.budget, // This is the budget that will be paid out
-                    budget: action.budget, // Add budget field as specified
                     cadastreParcelIds,
                     goal: action.goal || 'square',
                     structureProposal: {
@@ -1068,10 +1011,6 @@ async function executeAgentAction(agent, action) {
                     agentStorage.updateAgent(agent.id, { proposalsCreated: agent.proposalsCreated });
                 }
 
-                // Deduct budget from agent's balance
-                agent.ethBalance -= action.budget;
-                agentStorage.updateAgent(agent.id, { ethBalance: agent.ethBalance });
-
                 // Show agent bubble for this interaction
                 if (typeof window.agentBubbleManager !== 'undefined') {
                     const proposalPosition = window.agentBubbleManager.getProposalPosition(proposalId);
@@ -1093,7 +1032,7 @@ async function executeAgentAction(agent, action) {
                     : null;
                 const proposalLink = buildProposalLogLinkAgent(proposalId, storedProposal);
 
-                return `<button type="button" class="cb-link agent-link-clickable" data-agent-id="${agent.id}">${agent.name}</button> created a ${(action.goal || action.proposalType || 'proposal')} proposal (${proposalLink}) for ${action.parcelIds.length} parcel(s) with budget ${action.budget} ${getChainCurrencySymbol()}.`;
+                return `<button type="button" class="cb-link agent-link-clickable" data-agent-id="${agent.id}">${agent.name}</button> created a ${(action.goal || action.proposalType || 'proposal')} proposal (${proposalLink}) for ${action.parcelIds.length} parcel(s).`;
             }
             return `<button type="button" class="cb-link agent-link-clickable" data-agent-id="${agent.id}">${agent.name}</button> tried to create a proposal but failed.`;
 
@@ -1779,18 +1718,6 @@ function getAgentProposalTypeLabel(proposal) {
     }
 
     return typeKey ? typeKey.charAt(0).toUpperCase() + typeKey.slice(1) : '';
-}
-
-function getAgentProposalOfferDisplay(proposal) {
-    if (window.ProposalKind.kindOf(proposal) !== window.ProposalKind.OWNER_DEAL) return null;
-    const offer = window.ProposalPublishTerms.authoredOffer(proposal);
-    return {
-        amountLabel: offer ? CbFormat.formatNumber(offer.amount, { maxFractionDigits: 2 }) : '',
-        currencyLabel: offer?.currency || '',
-        label: offer
-            ? translateText('agentDialog.proposalOffer', 'Original full-proposal offer')
-            : translateText('agentDialog.proposalOfferUnknown', 'Original offer not recorded')
-    };
 }
 
 function getAgentProposalTitle(proposal, fallbackId = '') {
@@ -2618,13 +2545,10 @@ function renderAgentProposalLink(link, pending = false) {
     const localKeyLabel = translateText('agentDialog.localProposalKey', 'Local ID {{id}}', { id: localId });
     const chainBadge = chainLabel ? `<span class="proposal-chain-label">[${escapeHtml(chainLabel)}]</span>` : '';
     const typeBadge = agentProposalTypeBadgeHtml(escapeHtml(getAgentProposalTypeLabel(proposal)));
-    const offerInfo = getAgentProposalOfferDisplay(proposal);
-    const offerHtml = offerInfo ? `<span class="proposal-offer">${escapeHtml(offerInfo.label)}${offerInfo.amountLabel
-        ? `: <span class="proposal-offer-amount">${escapeHtml(offerInfo.amountLabel)}</span> <span class="proposal-offer-currency">${escapeHtml(offerInfo.currencyLabel)}</span>` : ''}</span>` : '';
     return `<div class="proposal-item agent-dialog-proposal-item ${proposalColor ? 'has-color' : ''} ${isUnseen ? 'unseen-proposal' : ''}" ${colorStyle}
         data-proposal-link="${linkData}" onclick="openAgentProposalLink(JSON.parse(this.dataset.proposalLink), ${pending})">
         <span class="agent-dialog-proposal-primary">${isUnseen ? '<span class="unseen-indicator">●</span>' : ''}${escapeHtml(displayTitle)} (${escapeHtml(localKeyLabel)})</span>
-        <span class="agent-dialog-proposal-meta">${typeBadge}${badge}${chainBadge}${offerHtml}</span>
+        <span class="agent-dialog-proposal-meta">${typeBadge}${badge}${chainBadge}</span>
     </div>`;
 }
 

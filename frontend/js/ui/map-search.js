@@ -1,6 +1,6 @@
 // ui/map-search.js — the map search box (omnibox) top-left, with the city chip: one input whose
 // grouped, keyboard-navigable results cover cities (configured + the world coverage registry, "Use
-// my location"), parcel ids (locateParcelById), proposals (GET /proposals/summary?q=), addresses
+// my location"), parcel ids (locateParcelById), published designs (GET /designs?q=), addresses
 // (Photon geocoder) and commands (UiCommands). The decisions live in js/ui/search-model.js; this
 // file only renders and wires them. window.MapSearch: initialize, focus, showCities, refreshChip, close.
 (function (win) {
@@ -258,7 +258,7 @@
         const results = Model.mergeProposalSearchResults(local, withCity, current);
         const items = results.map(raw => {
             const otherCity = raw.cityId && raw.cityId !== current;
-            const id = String(raw.id ?? raw.proposalId);
+            const id = String(raw.localOnly ? raw.proposalId : raw.cid);
             return item({
                 key: `proposal:${id}`,
                 kind: 'proposal',
@@ -284,7 +284,10 @@
             const records = typeof store.peekAllProposals === 'function'
                 ? store.peekAllProposals()
                 : (typeof store.getAllProposals === 'function' ? store.getAllProposals() : []);
-            return Model.rankLocalProposals(records, query);
+            // A published local copy carries its CID, so the index row of the same design is dropped.
+            const byId = new Map(records.map(record => [record && record.proposalId, record]));
+            return Model.rankLocalProposals(records, query)
+                .map(item => Object.assign(item, { cid: win.DesignSync.publishedCid(byId.get(item.proposalId) || item) }));
         } catch (error) {
             console.warn('[map-search] could not search local proposals', error);
             return [];
@@ -447,11 +450,11 @@
     async function fetchProposals(query, signal) {
         if (typeof win.getBackendBase !== 'function') throw new Error('getBackendBase() is not defined');
         const base = String(win.getBackendBase() || '').replace(/\/+$/, '');
-        const url = `${base}/proposals/summary?q=${encodeURIComponent(query)}&limit=${Model.GROUP_LIMITS.proposals}`;
+        const url = `${base}/designs?q=${encodeURIComponent(query)}&limit=${Model.GROUP_LIMITS.proposals}`;
         const response = await win.fetch(url, { signal, headers: { Accept: 'application/json' } });
         if (!response.ok) throw new Error(`HTTP ${response.status} from ${url}`);
         const payload = await response.json();
-        return Array.isArray(payload && payload.proposals) ? payload.proposals : [];
+        return Array.isArray(payload && payload.designs) ? payload.designs : [];
     }
 
     async function fetchPlaces(query, signal) {
@@ -526,10 +529,10 @@
         setNote(key, { kind: 'error', text: result.message || t('sidebar.parcels.locateNotFound', 'Parcel not found') });
     }
 
-    // Open a server proposal the way the browse list does: the local copy if this browser holds
-    // one, else download (after the same confirmation) and open it. A proposal in another city goes
-    // through the shared-link path: /proposals/<id> in the URL and the city-mismatch prompt, which
-    // reloads into that city keeping the path (or drops the path when the person stays).
+    // Open a published design the way the browse list does: the local copy if this browser holds
+    // one, else download (after the same confirmation) and open it. A design of another city opens
+    // through its link: /designs/<cid> in the URL and the city-mismatch prompt, which reloads into
+    // that city keeping the path (or drops the path when the person stays).
     async function runProposal(raw) {
         if (raw.localOnly) {
             const proposalId = win.getProposalKey(raw) || raw.proposalId;
@@ -538,18 +541,20 @@
             close({ blur: true });
             return;
         }
-        const serverId = String(raw.id ?? raw.proposalId);
-        const key = `proposal:${serverId}`;
+        const cid = String(raw.cid);
+        const key = `proposal:${cid}`;
+        // the design's link, opened in its city; this page keeps its history entry
+        const openInItsCity = cityId => {
+            const url = new win.URL(win.location.href);
+            url.pathname = win.DesignSync.designsPath([cid]);
+            return win.promptCityMismatchForProposal(cityId, { url: url.href });
+        };
         if (raw.cityId && raw.cityId !== currentCityId()) {
             close({ blur: true });
-            // the proposal's route, opened in its city; this page keeps its history entry
-            const url = new win.URL(win.location.href);
-            url.pathname = `/proposals/${encodeURIComponent(serverId)}`;
-            await win.promptCityMismatchForProposal(raw.cityId, { url: url.href });
+            await openInItsCity(raw.cityId);
             return;
         }
-        const summary = win.normalizeServerProposalSummary(raw, raw.city);
-        let proposal = win.findLocalCopyOfServerProposal(summary);
+        let proposal = win.DesignSync.localCopyOf(cid);
         if (!proposal) {
             // The confirm takes over: close the box first, so focus leaves the input (a second
             // Enter would stack a second confirm) and the outcome is not written into a list that
@@ -560,18 +565,19 @@
             const status = text => { if (typeof win.updateStatus === 'function') win.updateStatus(text); };
             status(t('mapSearch.proposalDownloading', 'Downloading…'));
             try {
-                proposal = await win.importServerProposal(summary.serverProposalId);
+                // The index row carries the design itself (GET /designs returns whole rows).
+                proposal = win.DesignSync.importDesign(raw);
             } catch (error) {
                 if (error?.code === 'proposal-in-other-city') {
-                    await win.openProposalInItsCity(serverId, error.cityId);
+                    await openInItsCity(error.cityId);
                     return;
                 }
-                console.error('[map-search] could not download proposal', serverId, error);
+                console.error('[map-search] could not download design', cid, error);
                 status(t('modal.roadWidth.proposalList.downloadError', 'Failed to download proposal'));
                 return;
             }
         }
-        if (!win.openProposalFromList(win.getProposalKey(proposal) || serverId, {
+        if (!win.openProposalFromList(win.getProposalKey(proposal) || proposal.proposalId, {
             proposal, closeSheets: true, presentation: 'compact'
         })) return;
         state.notes.delete(key);

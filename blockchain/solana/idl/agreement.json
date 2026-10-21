@@ -1,0 +1,889 @@
+{
+  "address": "Agreement1111111111111111111111111111111111",
+  "metadata": {
+    "name": "agreement",
+    "version": "0.1.0",
+    "spec": "0.1.0",
+    "description": "Urban Game Theory Agreement - escrow settled by a lens attestation (Solana)"
+  },
+  "instructions": [
+    {
+      "name": "attest",
+      "docs": [
+        "Record the lens's decision from its AgreementDecision-v1 SAS attestation (checks in the module",
+        "docs). Permissionless: the outcome comes from the attestation, never from the caller. Only",
+        "one decision is ever recorded, while Active and before the deadline. Keeps the attestation's",
+        "key and the sha256 of its whole account bytes, so the evidence outlives the SAS account."
+      ],
+      "discriminator": [
+        83,
+        148,
+        120,
+        119,
+        144,
+        139,
+        117,
+        160
+      ],
+      "accounts": [
+        {
+          "name": "agreement",
+          "writable": true
+        },
+        {
+          "name": "attestation",
+          "docs": [
+            "issuer and payload are checked in the handler."
+          ]
+        },
+        {
+          "name": "credential",
+          "docs": [
+            "checked in the handler."
+          ]
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "cancel",
+      "docs": [
+        "The authority withdraws an Active agreement and the escrow returns to it. Refused",
+        "once a satisfied decision is recorded (the parties rely on the escrow from then on); after a",
+        "refusal it is the authority's early exit."
+      ],
+      "discriminator": [
+        232,
+        219,
+        223,
+        41,
+        219,
+        236,
+        220,
+        190
+      ],
+      "accounts": [
+        {
+          "name": "agreement",
+          "writable": true
+        },
+        {
+          "name": "authority",
+          "docs": [
+            "Signs the cancellation and receives the refund."
+          ],
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "agreement"
+          ]
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "create",
+      "docs": [
+        "Commit an agreement to the chain at PDA [\"agreement\", authority, sha256(cid)], the signing",
+        "authority being its sponsor. `lens` is the lens member key whose AgreementDecision",
+        "attestation settles it; `deadline` is unix seconds in the future, or NO_DEADLINE (0);",
+        "`open_ground` records that the agreement's land includes open ground (read by indexers, no",
+        "effect here); `required_lamports` is the escrow execution needs (0: none); `payout` receives",
+        "the whole escrow at execution (the agreement's settlement account)."
+      ],
+      "discriminator": [
+        24,
+        30,
+        200,
+        40,
+        5,
+        28,
+        7,
+        119
+      ],
+      "accounts": [
+        {
+          "name": "agreement",
+          "writable": true
+        },
+        {
+          "name": "authority",
+          "docs": [
+            "The sponsor: part of the address, pays the rent, the only key that may fund or cancel, and",
+            "the one every refund returns to."
+          ],
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "cid",
+          "type": "string"
+        },
+        {
+          "name": "lens",
+          "type": "pubkey"
+        },
+        {
+          "name": "deadline",
+          "type": "i64"
+        },
+        {
+          "name": "open_ground",
+          "type": "bool"
+        },
+        {
+          "name": "required_lamports",
+          "type": "u64"
+        },
+        {
+          "name": "payout",
+          "type": "pubkey"
+        }
+      ]
+    },
+    {
+      "name": "execute",
+      "docs": [
+        "Execute a satisfied agreement before its deadline: the escrow must hold `required_lamports`,",
+        "and all of it goes to `payout`. Permissionless: the payout is fixed at create. Its",
+        "AgreementExecuted is the one event the backend writes parcel history from."
+      ],
+      "discriminator": [
+        130,
+        221,
+        242,
+        154,
+        13,
+        193,
+        189,
+        29
+      ],
+      "accounts": [
+        {
+          "name": "agreement",
+          "writable": true
+        },
+        {
+          "name": "payout",
+          "writable": true
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "expire",
+      "docs": [
+        "Anyone expires an Active agreement whose deadline has passed (an agreement without a",
+        "deadline never expires); the escrow returns to the authority."
+      ],
+      "discriminator": [
+        243,
+        83,
+        205,
+        58,
+        57,
+        201,
+        247,
+        146
+      ],
+      "accounts": [
+        {
+          "name": "agreement",
+          "writable": true
+        },
+        {
+          "name": "authority",
+          "writable": true,
+          "relations": [
+            "agreement"
+          ]
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "fund",
+      "docs": [
+        "The authority moves `lamports` into the escrow, while the agreement is Active, not refused",
+        "and before its deadline."
+      ],
+      "discriminator": [
+        218,
+        188,
+        111,
+        221,
+        152,
+        113,
+        174,
+        7
+      ],
+      "accounts": [
+        {
+          "name": "agreement",
+          "writable": true
+        },
+        {
+          "name": "authority",
+          "docs": [
+            "Pays the lamports in."
+          ],
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "agreement"
+          ]
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "lamports",
+          "type": "u64"
+        }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "Agreement",
+      "discriminator": [
+        83,
+        212,
+        5,
+        110,
+        225,
+        249,
+        197,
+        84
+      ]
+    }
+  ],
+  "events": [
+    {
+      "name": "AgreementAttested",
+      "discriminator": [
+        216,
+        25,
+        77,
+        47,
+        56,
+        236,
+        174,
+        2
+      ]
+    },
+    {
+      "name": "AgreementCancelled",
+      "discriminator": [
+        132,
+        200,
+        190,
+        125,
+        242,
+        4,
+        12,
+        146
+      ]
+    },
+    {
+      "name": "AgreementCreated",
+      "discriminator": [
+        131,
+        148,
+        204,
+        18,
+        83,
+        92,
+        57,
+        18
+      ]
+    },
+    {
+      "name": "AgreementExecuted",
+      "discriminator": [
+        65,
+        68,
+        243,
+        222,
+        242,
+        187,
+        19,
+        100
+      ]
+    },
+    {
+      "name": "AgreementExpired",
+      "discriminator": [
+        139,
+        169,
+        189,
+        84,
+        24,
+        97,
+        248,
+        145
+      ]
+    },
+    {
+      "name": "AgreementFunded",
+      "discriminator": [
+        3,
+        226,
+        171,
+        220,
+        62,
+        93,
+        176,
+        91
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "NotActive",
+      "msg": "The agreement is not Active"
+    },
+    {
+      "code": 6001,
+      "name": "NotAttested",
+      "msg": "No decision has been attested for this agreement"
+    },
+    {
+      "code": 6002,
+      "name": "DecisionRefused",
+      "msg": "The lens attested that the agreement's decision was refused"
+    },
+    {
+      "code": 6003,
+      "name": "DeadlinePassed",
+      "msg": "The agreement's deadline has passed"
+    },
+    {
+      "code": 6004,
+      "name": "DeadlineNotPassed",
+      "msg": "The agreement's deadline has not passed, or it has none"
+    },
+    {
+      "code": 6005,
+      "name": "Underfunded",
+      "msg": "The escrow holds less than the agreement's required funding"
+    },
+    {
+      "code": 6006,
+      "name": "WrongLens",
+      "msg": "The attestation was not issued by the agreement's lens"
+    },
+    {
+      "code": 6007,
+      "name": "InvalidAttestation",
+      "msg": "The account is not a valid SAS attestation or credential, or the credential's authority did not sign it"
+    },
+    {
+      "code": 6008,
+      "name": "Unauthorized",
+      "msg": "Only the agreement's authority may do this"
+    },
+    {
+      "code": 6009,
+      "name": "CidTooLong",
+      "msg": "The CID is longer than 64 bytes"
+    },
+    {
+      "code": 6010,
+      "name": "InvalidCid",
+      "msg": "The CID must be 1-64 ASCII letters and digits"
+    },
+    {
+      "code": 6011,
+      "name": "NoLens",
+      "msg": "A lens key is required"
+    },
+    {
+      "code": 6012,
+      "name": "InvalidPayout",
+      "msg": "The payout must be a real account other than the agreement itself"
+    },
+    {
+      "code": 6013,
+      "name": "ZeroAmount",
+      "msg": "Amount must be greater than zero"
+    },
+    {
+      "code": 6014,
+      "name": "WrongAuthority",
+      "msg": "The account is not the agreement's authority"
+    },
+    {
+      "code": 6015,
+      "name": "WrongPayout",
+      "msg": "The account is not the agreement's payout account"
+    },
+    {
+      "code": 6016,
+      "name": "AlreadyAttested",
+      "msg": "A decision is already recorded for this agreement"
+    },
+    {
+      "code": 6017,
+      "name": "DecisionSatisfied",
+      "msg": "The lens attested the decision as satisfied: the agreement can no longer be cancelled"
+    },
+    {
+      "code": 6018,
+      "name": "AttestationExpired",
+      "msg": "The attestation has expired"
+    },
+    {
+      "code": 6019,
+      "name": "WrongSchema",
+      "msg": "The attestation is not under its credential's AgreementDecision v1 schema"
+    },
+    {
+      "code": 6020,
+      "name": "InvalidAttestationPayload",
+      "msg": "The attestation payload does not match the AgreementDecision-v1 layout"
+    },
+    {
+      "code": 6021,
+      "name": "WrongAgreement",
+      "msg": "The attestation is about a different agreement"
+    },
+    {
+      "code": 6022,
+      "name": "InvalidDecision",
+      "msg": "The attested decision must be satisfied or refused"
+    },
+    {
+      "code": 6023,
+      "name": "AttestationFromFuture",
+      "msg": "The attestation's source time is in the future"
+    },
+    {
+      "code": 6024,
+      "name": "ArithmeticOverflow",
+      "msg": "Arithmetic overflow"
+    },
+    {
+      "code": 6025,
+      "name": "InsufficientEscrowBalance",
+      "msg": "Insufficient escrow balance"
+    },
+    {
+      "code": 6026,
+      "name": "WrongSponsor",
+      "msg": "The attestation names a different sponsor than the agreement's authority"
+    }
+  ],
+  "types": [
+    {
+      "name": "Agreement",
+      "docs": [
+        "One agreement: PDA [\"agreement\", authority, sha256(cid)]. Every fixed-size field comes before",
+        "`cid`, so their offsets are the same in every account (README, \"Agreement account\") and memcmp",
+        "filters on authority, lens or status work."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "authority",
+            "docs": [
+              "The sponsor (part of the address): pays the rent, is the only key that may fund or cancel,",
+              "receives refunds."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "lens",
+            "docs": [
+              "The lens member key whose AgreementDecision attestation settles the agreement."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "payout",
+            "docs": [
+              "Receives the whole escrow at execution."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "deadline",
+            "docs": [
+              "Unix seconds; NO_DEADLINE (0) for none."
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "created_at",
+            "type": "i64"
+          },
+          {
+            "name": "required_lamports",
+            "docs": [
+              "Escrow execution needs (0: none)."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "escrow_lamports",
+            "docs": [
+              "Lamports brought in by `fund` and not yet paid out or refunded."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "status",
+            "type": {
+              "defined": {
+                "name": "AgreementStatus"
+              }
+            }
+          },
+          {
+            "name": "open_ground",
+            "docs": [
+              "The agreement's land includes open ground (recorded for readers; no effect on execution)."
+            ],
+            "type": "bool"
+          },
+          {
+            "name": "decision",
+            "type": {
+              "defined": {
+                "name": "Decision"
+              }
+            }
+          },
+          {
+            "name": "decision_attested_at",
+            "docs": [
+              "Chain time the decision was recorded (0 while Pending)."
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "decision_observed_at",
+            "docs": [
+              "The attestation's sourceObservedAt (0 while Pending)."
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "decision_attestation",
+            "docs": [
+              "The AgreementDecision attestation that was recorded (default key while Pending)."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "decision_hash",
+            "docs": [
+              "sha256 of that attestation's whole account bytes."
+            ],
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "executed_at",
+            "docs": [
+              "Chain time of execution (0 unless Executed)."
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          },
+          {
+            "name": "cid",
+            "docs": [
+              "The agreement's CIDv1 (`bafkrei…`), the IPFS object this account commits to."
+            ],
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "name": "AgreementAttested",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "agreement",
+            "type": "pubkey"
+          },
+          {
+            "name": "cid",
+            "type": "string"
+          },
+          {
+            "name": "decision",
+            "docs": [
+              "1 satisfied, 2 refused."
+            ],
+            "type": "u8"
+          },
+          {
+            "name": "lens",
+            "type": "pubkey"
+          },
+          {
+            "name": "attestation",
+            "type": "pubkey"
+          },
+          {
+            "name": "attestation_hash",
+            "docs": [
+              "sha256 of the attestation's whole account bytes."
+            ],
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "evidence_ref",
+            "type": "string"
+          },
+          {
+            "name": "source_observed_at",
+            "type": "i64"
+          },
+          {
+            "name": "attested_at",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "AgreementCancelled",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "agreement",
+            "type": "pubkey"
+          },
+          {
+            "name": "cid",
+            "type": "string"
+          },
+          {
+            "name": "refunded_lamports",
+            "docs": [
+              "Returned to the authority."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "cancelled_at",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "AgreementCreated",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "agreement",
+            "type": "pubkey"
+          },
+          {
+            "name": "cid",
+            "type": "string"
+          },
+          {
+            "name": "authority",
+            "type": "pubkey"
+          },
+          {
+            "name": "lens",
+            "type": "pubkey"
+          },
+          {
+            "name": "payout",
+            "type": "pubkey"
+          },
+          {
+            "name": "deadline",
+            "type": "i64"
+          },
+          {
+            "name": "required_lamports",
+            "type": "u64"
+          },
+          {
+            "name": "open_ground",
+            "type": "bool"
+          },
+          {
+            "name": "created_at",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "AgreementExecuted",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "agreement",
+            "type": "pubkey"
+          },
+          {
+            "name": "cid",
+            "type": "string"
+          },
+          {
+            "name": "payout",
+            "type": "pubkey"
+          },
+          {
+            "name": "lamports",
+            "docs": [
+              "The escrow released to `payout`."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "lens",
+            "type": "pubkey"
+          },
+          {
+            "name": "decision_attestation",
+            "type": "pubkey"
+          },
+          {
+            "name": "executed_at",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "AgreementExpired",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "agreement",
+            "type": "pubkey"
+          },
+          {
+            "name": "cid",
+            "type": "string"
+          },
+          {
+            "name": "refunded_lamports",
+            "docs": [
+              "Returned to the authority."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "expired_at",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "AgreementFunded",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "agreement",
+            "type": "pubkey"
+          },
+          {
+            "name": "cid",
+            "type": "string"
+          },
+          {
+            "name": "lamports",
+            "type": "u64"
+          },
+          {
+            "name": "escrow_lamports",
+            "docs": [
+              "The escrow after this fund."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "funded_at",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "AgreementStatus",
+      "docs": [
+        "Same codes as proposal_nft's ProposalStatus."
+      ],
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Active"
+          },
+          {
+            "name": "Executed"
+          },
+          {
+            "name": "Cancelled"
+          },
+          {
+            "name": "Expired"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Decision",
+      "docs": [
+        "The lens's recorded decision; Pending until `attest`."
+      ],
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Pending"
+          },
+          {
+            "name": "Satisfied"
+          },
+          {
+            "name": "Refused"
+          }
+        ]
+      }
+    }
+  ]
+}

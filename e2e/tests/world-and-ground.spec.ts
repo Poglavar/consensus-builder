@@ -1,10 +1,28 @@
+import { Page } from '@playwright/test';
 import { test, expect } from '../helpers/fixtures';
-import { openCity, clickMapPoint, createSpace } from '../helpers/runtime';
+import { openCity, clickMapPoint, createSpace, PARCEL_GEOMETRY } from '../helpers/runtime';
 import { waitForMapReady } from '../helpers/app';
+import { fileDesign, pageIndex } from '../helpers/mocks/shared-server';
+
+// `count` parks published in Zagreb, as the design index lists them (GET /designs, newest first).
+function publishParks(page: Page, count: number): string[] {
+  return Array.from({ length: count }, (_, index) => fileDesign(pageIndex(page), {
+    schema: 'design/v1', goal: 'park', title: `Published park ${index + 1}`, description: null, author: 'Fixture author', city: 'zagreb',
+    site: PARCEL_GEOMETRY, toleranceM: null, geometry: null, origin: null, authoredAt: `2026-10-1${index % 10}T10:00:00.000Z`,
+    structureProposal: { kind: 'park', blockName: null },
+  }));
+}
+
+// A park drawn here, as the design/v1 object it would be published as.
+const designOf = (page: Page, id: string) => page.evaluate(id => {
+  const w = window as any;
+  return JSON.parse(JSON.stringify(w.DesignRecord.published(w.proposalStorage.getProposal(id))));
+}, id);
 
 test.describe('World navigation and open ground @features', () => {
   test('city arrival loads the proposal pill count before opening the list and stops its pulse on first opening', async ({ mockApi: page }) => {
-    await page.route('**/proposals/count?*', route => route.fulfill({ json: { count: 7 } }));
+    // The count is the city's published designs the index lists (DesignSync: the index has no count route).
+    publishParks(page, 7);
     await page.goto('/?city=zg&lang=en'); await waitForMapReady(page);
     const count = page.locator('#proposals-button-count');
     await expect(count).toHaveText('7'); await expect(count).toBeVisible();
@@ -17,22 +35,24 @@ test.describe('World navigation and open ground @features', () => {
   });
 
   test('Explore arrival counts and lists server proposals using the same visible area', async ({ mockApi: page }) => {
-    const countQueries: string[] = [], listQueries: string[] = [];
-    await page.route('**/proposals/count?*', route => {
-      countQueries.push(route.request().url()); return route.fulfill({ json: { count: 7 } });
-    });
-    await page.route('**/proposals/summary?*', route => {
-      listQueries.push(route.request().url()); return route.fulfill({ json: { proposals: [], count: 7 } });
+    // One listing answers both: GET /designs by the visible area, whose rows are the count.
+    const listQueries: string[] = [];
+    const rows = publishParks(page, 7).map(cid => pageIndex(page).designs.get(cid));
+    await page.route(url => url.pathname.endsWith('/designs'), route => {
+      if (route.request().resourceType() !== 'fetch' && route.request().resourceType() !== 'xhr') return route.fallback();
+      listQueries.push(route.request().url());
+      return route.fulfill({ json: { designs: rows, count: rows.length } });
     });
     // Dhaka: no configured city covers it, so the address alone opens explore there
     await page.goto('/?at=23.7104,90.4074,16&lang=en&reduceMotion=1'); await waitForMapReady(page);
     await expect(page.locator('#proposals-button-count')).toHaveText('7');
-    expect(new URL(countQueries.at(-1)!).searchParams.has('bbox')).toBe(true);
-    expect(new URL(countQueries.at(-1)!).searchParams.has('city')).toBe(false);
+    const first = new URL(listQueries.at(-1)!);
+    expect(first.searchParams.has('bbox')).toBe(true);
+    expect(first.searchParams.has('city')).toBe(false);
     await page.locator('#proposals-button').click();
     await expect(page.locator('#proposals-sheet .proposal-list-modal')).toBeVisible();
     await expect.poll(() => listQueries.length).toBeGreaterThan(0);
-    expect(new URL(listQueries.at(-1)!).searchParams.get('bbox')).toBe(new URL(countQueries.at(-1)!).searchParams.get('bbox'));
+    expect(new URL(listQueries.at(-1)!).searchParams.get('bbox')).toBe(first.searchParams.get('bbox'));
   });
   test('the world globe searches a live city and opens its configured map', async ({ mockApi: page }) => {
     test.setTimeout(90_000);
@@ -114,16 +134,26 @@ test.describe('World navigation and open ground @features', () => {
     await expect(page.locator('#map')).toBeVisible();
   });
 
-  // A city pick arrives on the city's newest proposal in 3D (js/world/arrival.js); a city with none
-  // lands on its map as before. Zagreb is already loaded here, so the pick lands in place.
+  // A city pick arrives on the city's newest published design in 3D (js/world/arrival.js: GET
+  // /designs?city=…&limit=1); a city with none lands on its map as before. Zagreb is already loaded
+  // here, so the pick lands in place. The design was published elsewhere: it is downloaded, parked.
   for (const hasProposal of [true, false]) {
     test(`a city pick ${hasProposal ? 'arrives in 3D on its latest proposal' : 'with no proposals lands on the 2D map'}`, async ({ mockApi: page }) => {
-      await openCity(page); const id = await createSpace(page, 'park');
-      const summaries: string[] = [];
-      await page.route('**/proposals/summary?*', route => {
-        summaries.push(route.request().url());
-        return route.fulfill({ json: { proposals: hasProposal ? [{ id: 77, proposalId: id }] : [], count: hasProposal ? 1 : 0 } });
-      });
+      test.setTimeout(120_000);
+      await openCity(page);
+      let cid: string | null = null;
+      if (hasProposal) {
+        // Someone's park: drawn here for its object, then removed, so only the index holds it.
+        const id = await createSpace(page, 'park');
+        const content = await designOf(page, id);
+        await page.evaluate(async id => {
+          const w = window as any;
+          await w.ProposalManager.unapplyProposal(id, { silent: true, suppressCameraMove: true });
+          w.proposalStorage.removeProposal(id);
+          w.proposalStorage.save();
+        }, id);
+        cid = fileDesign(pageIndex(page), content);
+      }
       await page.evaluate(() => (window as any).map.setView([45.85, 16.05], 12, { animate: false }));
       await page.locator('#settings-button').click(); await page.locator('#world-view-button').click();
       const world = page.locator('#world-view');
@@ -131,27 +161,24 @@ test.describe('World navigation and open ground @features', () => {
       await world.getByRole('option').filter({ hasText: 'Zagreb' }).first().click();
       await world.getByRole('button', { name: /Open Zagreb/ }).click();
       await expect(world).toHaveCount(0, { timeout: 15000 });
-      await expect.poll(() => summaries.length).toBeGreaterThan(0);
-      expect(new URL(summaries[0]).searchParams.get('limit')).toBe('1');
+      const latest = () => pageIndex(page).requests.filter(request => request.method === 'GET' && /^\/designs\?/.test(request.path)
+        && new URL(request.path, 'http://index').searchParams.get('limit') === '1');
+      await expect.poll(() => latest().length).toBeGreaterThan(0);
+      expect(new URL(latest()[0].path, 'http://index').searchParams.get('city')).toBe('zagreb');
       // The arrival caption card was removed (fbe3758d): the pick lands in 3D on the selected
-      // proposal, and the 2D mode tile leads back to the map.
+      // design, and the 2D mode tile leads back to the map.
       if (hasProposal) {
+        const localId = `design-${cid}`;
         await expect.poll(() => page.evaluate(() => (window as any).isThreeModeActive?.() ?? false), { timeout: 20000 }).toBe(true);
-        await expect.poll(() => page.evaluate(id => (window as any).ProposalSelection.getKey() === id, id)).toBe(true);
-        expect(new URL(page.url()).searchParams.has('arrive')).toBe(false);
-        await expect(page.locator('#mode-3d-toggle')).toHaveAttribute('aria-pressed', 'true');
-        // Back on the map the proposal is still selected, framed, and opens from the map.
-        await page.locator('#mode-2d-toggle').click();
-        await expect.poll(() => page.evaluate(() => (window as any).isThreeModeActive())).toBe(false);
-        await expect(page.locator('path.proposal-primary-outline').first()).toBeVisible();
-        await clickMapPoint(page, 15.9822, 45.80025);
-        const inspector = page.locator('#planning-inspector');
-        await expect(inspector.getByRole('heading', { name: 'Park · parcel 1234', exact: true })).toBeVisible();
-        await expect.poll(() => page.evaluate(() => (window as any).ProposalSelection?.getKey?.())).toBe(id);
-        await expect(inspector.getByRole('button', { name: 'Proposal actions', exact: true })).toBeVisible();
+        await expect.poll(() => page.evaluate(id => (window as any).ProposalSelection.getKey() === id, localId)).toBe(true);
+        // Downloaded by its CID and parked: shown while selected, not applied, and published as that CID.
+        expect(await page.evaluate(id => {
+          const w = window as any;
+          const record = w.getProposalByIdOrHash(id);
+          return { applied: record.applied === true, cid: w.DesignSync.publishedCid(record) };
+        }, localId)).toEqual({ applied: false, cid });
       } else {
-        await expect(page.locator('#mode-2d-toggle')).toHaveAttribute('aria-pressed', 'true');
-        expect(await page.evaluate(() => (window as any).isThreeModeActive?.() ?? false)).toBe(false);
+        await expect.poll(() => page.evaluate(() => (window as any).isThreeModeActive?.() ?? false)).toBe(false);
       }
     });
   }
@@ -245,18 +272,21 @@ test.describe('World navigation and open ground @features', () => {
   }
 
   test('a cross-city event keeps the globe cover over the default world map until its downloaded proposal is framed', async ({ mockApi: page }) => {
+    test.setTimeout(120_000);
     // A record is stored only in the city its parcels are in (c97bceea, projections.md M8), so the
-    // remote proposal is a Zagreb park and the event is picked from another city (Explore).
+    // remote proposal is a Zagreb park and the event is picked from another city (Explore). It is a
+    // published design: the event names its CID and the arrival downloads it from the index.
     await openCity(page); const id = await createSpace(page, 'park');
-    const proposal = await page.evaluate(id => JSON.parse(JSON.stringify((window as any).getProposalByIdOrHash(id))), id);
+    const cid = fileDesign(pageIndex(page), { ...(await designOf(page, id)), title: 'Remote park' });
     let releaseDownload!: () => void;
     const download = new Promise<void>(resolve => { releaseDownload = resolve; });
-    await page.route('**/proposals/98765', async route => {
+    await page.route(url => url.pathname.endsWith(`/designs/${cid}`), async route => {
+      if (route.request().resourceType() !== 'fetch' && route.request().resourceType() !== 'xhr') return route.fallback();
       await download;
-      await route.fulfill({ json: { ...proposal, id: 98765, proposalId: '98765', cityId: 'zagreb', applied: false } });
+      await route.fallback();
     });
     await page.route('**/activity/recent?*', route => route.fulfill({ json: { events: [{
-      id: 'remote-park', action: { type: 'create', proposalId: '98765' }, proposalName: 'Remote park', cityId: 'zagreb',
+      id: 'remote-park', action: { type: 'create', proposalId: cid }, proposalName: 'Remote park', cityId: 'zagreb',
       location: { lat: 45.80025, lon: 15.9822 }, occurredAt: '2026-10-02T12:00:00Z',
     }] } }));
     await page.goto('/?city=explore&at=44.8,20.4,14&reduceMotion=1&lang=en'); await waitForMapReady(page);
@@ -272,7 +302,7 @@ test.describe('World navigation and open ground @features', () => {
     // Zagreb has 3D buildings, so the pick arrives in 3D first (js/world/arrival.js); the 2D tile
     // goes back to the map (the caption card was removed in fbe3758d).
     await expect.poll(() => page.evaluate(() => (window as any).isThreeModeActive?.() ?? false), { timeout: 20000 }).toBe(true);
-    await expect.poll(() => page.evaluate(() => (window as any).ProposalSelection.getKey())).toBe('98765');
+    await expect.poll(() => page.evaluate(() => (window as any).ProposalSelection.getKey())).toBe(`design-${cid}`);
     await page.locator('#mode-2d-toggle').click();
     await expect.poll(() => page.evaluate(() => (window as any).isThreeModeActive())).toBe(false);
     expect(await page.evaluate(() => (window as any).CityConfigManager.getCurrentCityId())).toBe('zagreb');

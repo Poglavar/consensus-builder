@@ -22,18 +22,20 @@ describe('Pionir reconstruction archive migration', () => {
         ])).toMatchObject({ action: 'apply-bundle', target: 'production', confirmProduction: true });
     });
 
-    it('builds all archived projects with stable ids and a named plan each', async () => {
+    // Named plans are gone (plan-design-agreement.md M2): a project is its proposals, in order.
+    it('builds all archived projects with stable ids, without named plans', async () => {
         const bundle = await buildArchiveBundle();
         const summary = validateBundle(bundle);
         expect(bundle.projects.map(project => project.key)).toEqual([...EXPECTED_PROJECT_KEYS]);
-        expect(summary).toMatchObject({ projectCount: 12, proposalCount: 25, planCount: 12 });
+        expect(summary).toEqual({ projectCount: 12, proposalCount: 25, checksum: expect.any(String) });
+        expect(bundle.projects.some(project => 'plan' in project)).toBe(false);
         expect(bundle.projects.every(project => project.proposals.at(-1).buildingProposal)).toBe(true);
         expect(JSON.stringify(bundle)).not.toContain('storedId');
     });
 
     it('detects any mutation after the bundle checksum is created', async () => {
         const bundle = await buildArchiveBundle();
-        bundle.projects[0].plan.title = 'tampered';
+        bundle.projects[0].proposals[0].title = 'tampered';
         expect(() => validateBundle(bundle)).toThrow('checksum');
     });
 });

@@ -196,18 +196,12 @@ describe('road tool glue (corridor-structures.js)', () => {
 });
 
 describe('i18n', () => {
-    it('has the plot prompt and the drift notice in en/hr/es/sr', () => {
+    it('has the plot prompt in en/hr/es/sr', () => {
         ['en', 'hr', 'es', 'sr'].forEach(lang => {
             const dict = require(`../../frontend/i18n/${lang}.json`);
             ['offer', 'line', 'plotOne', 'plotMany', 'note', 'blocked', 'blockedLine', 'blockedNote',
                 'blockedBuilding', 'blockedBuildingLine', 'blockedBuildingNote']
                 .forEach(key => expect(dict.modal.corridorPlots[key], `${lang} ${key}`).toBeTruthy());
-            ['title', 'addedOne', 'addedMany', 'removed', 'addedList', 'removedList', 'coverage', 'note', 'rebind',
-                'reboundAs', 'confirm', 'cancel', 'unavailable', 'failed', 'done']
-                .forEach(key => expect(dict.panel.proposal.bindingDrift[key], `${lang} ${key}`).toBeTruthy());
-            ['complete', 'partial', 'none', 'unknown']
-                .forEach(key => expect(dict.panel.proposal.bindingDrift.coverageKinds[key], `${lang} ${key}`).toBeTruthy());
-            expect(dict.panel.proposal.bindingDrift.title).toContain('{{summary}}');
             expect(dict.modal.corridorPlots.line).toContain('{{area}}');
         });
     });

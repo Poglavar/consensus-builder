@@ -154,7 +154,6 @@
                 'css/schelling-plan.css',
                 'css/proposal-details.css?v=20261020-source-state',
                 'css/proposal-approval.css?v=20261020-approval-rules',
-                'css/plans.css',
                 'css/agreement.css',
                 'css/agreement-dialog.css',
                 'css/planning-views.css'
@@ -1050,8 +1049,7 @@
                             <span class="share-plan-label" data-i18n-key="sidebar.proposals.shareButton">Share applied proposals</span>
                             <span class="share-plan-subtext" data-i18n-key="sidebar.proposals.shareButtonEmpty">No
                                 applied proposals. Apply some first</span>
-                            <span class="share-plan-spinner" aria-live="polite"
-                                style="display: none; gap: 6px; align-items: center;">
+                            <span class="share-plan-spinner" aria-live="polite" hidden>
                                 <i class="fas fa-spinner fa-spin"></i>
                                 <span data-i18n-key="sidebar.proposals.shareButtonPreparing">Preparing proposals…</span>
                             </span>
@@ -1486,16 +1484,8 @@
 
                 <!-- Proposals Tab -->
                 <div id="proposals-tab" class="parcel-tab-content" role="tabpanel" hidden>
-                    <!-- The parcel's proposals, or the named plans with a proposal on it (js/proposals/plans.js);
-                         js/parcels/ui/parcel-panel.js fills both and keeps the counts. -->
-                    <div class="cb-segmented cb-segmented--fill parcel-proposals-switch" role="group">
-                        <button type="button" class="cb-segmented__option" aria-pressed="true" data-parcel-proposals-view="proposals"><span
-                                data-i18n-key="panel.parcel.tabProposals">Proposals</span> <span class="parcel-proposals-switch__count" data-parcel-proposals-count="proposals"></span></button>
-                        <button type="button" class="cb-segmented__option" aria-pressed="false" data-parcel-proposals-view="plans"><span
-                                data-i18n-key="plans.title">Named plans</span> <span class="parcel-proposals-switch__count" data-parcel-proposals-count="plans"></span></button>
-                    </div>
+                    <!-- The parcel's proposals; js/parcels/ui/parcel-panel.js fills it. -->
                     <div id="proposals-content"></div>
-                    <div id="parcel-plans-content" hidden></div>
                 </div>
 
                 <!-- Tools Tab: the parcel NFT first (Mint is the tab's one primary action; claim.js
@@ -1839,11 +1829,6 @@
             // bundle:end environment-after-city
         ]);
     </script>
-    <!-- pako is DECODE-ONLY legacy support. Share links are short server-side ids now, and nothing
-         calls compressBytes any more — but decodeSharedPayload() in js/proposals/sharing.js still
-         inflates the old `z.`-prefixed (and bare legacy) payloads, and throws without pako. Do not
-         drop it: every compressed link already shared would stop resolving. -->
-    <script src="vendor/pako-2.1.0/pako.min.js"></script>
     <!-- ethers was pinned only to `@6`, so a CDN minor bump could change wallet-signing behaviour
          with no commit to bisect. Now frozen at the 6.17.0 that `@6` resolved to.
 
@@ -1912,7 +1897,7 @@
             'js/solana/market-bridge.js?v=20261020-verified-funding',
             'js/solana/parcel-mint.js',
             'js/solana/blockchain-sync.js?v=20261020-network-identity',
-            'js/ipfs.js',
+            'js/asset-upload.js',
             'js/contracts-loader.js',
             'js/chain-data-loader.js',
             'js/proposal-contracts.js',
@@ -2047,9 +2032,7 @@
             'js/proposals/selection.js',
             // bundle:end map-ui
             'js/proposals/state.js',
-            'js/proposals/proposal-kind.js',
             'js/proposals/publish-terms.js?v=20261020-profile-offers',
-            'js/proposals/publish-mint.js',
             'js/proposals/lifecycle.js?v=20261020-recorded-execution',
             'js/proposals/parcel-id.js?v=20261008-geometry-reference',
             // The road record form and its lane vocabulary load before the proposal store: a stored
@@ -2066,11 +2049,8 @@
             'js/proposals/site-plots.js',
             'js/proposals/subdivision.js?v=20261019-unknown-ownership',
             'js/proposals/site-draft.js',
-            'js/proposals/publish-binding.js',
             'js/proposals/chain-record.js',
-            'js/proposals/mint-binding.js?v=20261020-local-estimates',
             'js/proposals/origin.js?v=20261020-qualified-origin',
-            'js/proposals/binding-drift.js',
             'js/proposals/parcel-arrangement.js',
             'js/proposals/readjustment-contributions.js',
             'js/proposals/design-goals.js?v=20261020-canonical-goals',
@@ -2091,6 +2071,7 @@
             'js/proposals/drill-stack.js',
             'js/proposals/hover-ground.js',
             'vendor/noble-hashes-1.8.0/sha256.js',
+            'js/cid.js',
             'vendor/noble-curves-1.2.0/ed25519.js',
             'js/proposals/approval-regimes.js',
             'js/proposals/approval.js',
@@ -2128,10 +2109,9 @@
             'js/proposals/reparcel.js',
             'js/proposals/storage.js?v=20261020-estimated-city',
             'js/proposals/agent-provenance.js',
-            'js/proposals/server-sync.js?v=20261020-row-lookup',
+            'js/proposals/design-sync.js',
             'js/proposals/urban-rules.js',
             'js/proposals/display-text.js',
-            'js/proposals/plans.js?v=20261020-explicit-publication',
             'js/proposals/panel-presentation.js?v=20261020-complete-area',
             'js/proposals/list-ui.js?v=20261020-row-lookup',
             'js/proposals/map-action.js',
@@ -2152,10 +2132,8 @@
             'js/proposals/bids-card.js',
             'js/proposals/bet-entry.js?v=20261014',
             'js/proposals/details-panel.js?v=20261020-verified-funding',
-            'js/proposals/consent-summary.js?v=20261020-comparison-consent',
             'js/proposals/parcel-compare.js?v=20261020-comparison-status',
             'js/proposals/parcel-compare-ui.js?v=20261020-comparison-status',
-            'js/proposals/binding-drift-panel.js',
             'js/proposals/create.js?v=20261020-mint-identifiers',
             'js/proposal-drafts.js?v=20261019-local-purchase',
             'js/corridor-draft.js',
@@ -2167,29 +2145,28 @@
             'js/road-node-edit.js',
             'js/proposals/dialog-create.js?v=20261019-unknown-ownership',
             'js/proposals/ready-signal.js',
-            'js/proposals/dialog-upload.js',
+            'js/proposals/create-preview.js',
             'js/proposals/dialog-share.js?v=20261019-seller-offer',
+            'js/design-record.js',
             'js/agreement-record.js',
             'js/agreement-ground.js',
             'js/agreement-store.js',
             'js/agreement-dialog.js',
             'js/agreement-panel.js',
             'js/agreement-list.js',
+            'js/agreement-sync.js',
             'js/building-floor-plans.js',
             'js/default-floor-plan-rooms.js',
             'js/default-floor-plans.js',
             'js/default-floor-plan-context.js',
             'js/suggested-layouts-2d.js',
             'js/proposals/replay-status.js',
-            'js/proposals/shared-link-copies.js?v=20261020-publication-copies',
             'js/proposals/sharing-routes.js?v=20261020-publication-copies',
-            'js/proposals/plan-view.js',
             'js/proposals/grain-score-rules.js',
             'js/proposals/chain-proposal-loader.js',
             'js/proposals/core.js?v=20261020-explicit-owner-roster',
             'js/proposals/data.js?v=20261020-chain-title',
             'js/proposals/bootstrap.js?v=20261019-local-purchase',
-            'js/proposals/sharing.js?v=20261020-explicit-publication',
             'js/proposals/plan-yield.js',
             'js/proposals/site-stats.js',
             'js/proposals/maintenance.js',

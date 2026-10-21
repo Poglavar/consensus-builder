@@ -10,6 +10,7 @@ const Store = require('../../frontend/js/agreement-store.js');
 const Dialog = require('../../frontend/js/agreement-dialog.js');
 // The real money schedule the agreement ledger hands back (AgreementRecord.ledger(...).money).
 const Deal = require('../../frontend/js/reparcellization-deal.js');
+const Cid = require('../../frontend/js/cid.js');
 
 // A PersistentStorage-shaped map; like the real one, forEach swallows what its iterator throws.
 function fakeStorage(seed = {}) {
@@ -306,6 +307,9 @@ describe('the deadline field', () => {
 });
 
 describe('the record the form describes', () => {
+    // Each design is named by its CID (DesignRecord.cidOf), which the dialog looks up per design.
+    const LAYOUT_CID = Cid.cidOfObject({ design: 'layout' });
+    const ROAD_CID = Cid.cidOfObject({ design: 'road' });
     const designs = [
         { proposalId: 'layout', title: 'Courtyard plots', goal: 'parcel-layout', city: 'ny' },
         { proposalId: 'road', name: 'New lane', goal: 'road-track' },
@@ -313,7 +317,7 @@ describe('the record the form describes', () => {
     ];
     const formState = {
         id: 'ag-1', city: 'ny', designs, land,
-        fingerprints: new Map([['layout', 'c2-layout'], ['road', 'c2-road']]),
+        fingerprints: new Map([['layout', LAYOUT_CID], ['road', ROAD_CID]]),
         approvalConfig: { schema: 'proposal-approval/v1', rights: null, policy: { type: 'unanimous' } },
         lens: ['lens-key-1']
     };
@@ -333,9 +337,9 @@ describe('the record the form describes', () => {
             createdAt: null,
             updatedAt: null,
             designs: [
-                { proposalId: 'layout', title: 'Courtyard plots', goal: 'parcel-layout', fingerprint: 'c2-layout' },
-                { proposalId: 'road', title: 'New lane', goal: 'road-track', fingerprint: 'c2-road' },
-                { proposalId: 'untitled', title: 'Untitled proposal', goal: null, fingerprint: null }
+                { proposalId: 'layout', title: 'Courtyard plots', goal: 'parcel-layout', cid: LAYOUT_CID },
+                { proposalId: 'road', title: 'New lane', goal: 'road-track', cid: ROAD_CID },
+                { proposalId: 'untitled', title: 'Untitled proposal', goal: null, cid: null }
             ],
             inputs: land.inputs,
             outputs: land.outputs,

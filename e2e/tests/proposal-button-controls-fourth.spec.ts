@@ -1,21 +1,28 @@
-// Verify proposal download actions through their browser effects.
+// Verify the map search's published-design download through its browser effects: the design index
+// answers GET /designs?q=, Cancel keeps it off this device and Download imports and opens it.
 import { test, expect } from '../helpers/fixtures';
-import { openCity, showProposal, PARCEL_GEOMETRY, PARCEL_ID } from '../helpers/runtime';
+import { openCity, showProposal, PARCEL_GEOMETRY } from '../helpers/runtime';
+import { cidOfObject, pageIndex } from '../helpers/mocks/shared-server';
 
 test.describe('proposal button controls fourth pass @features', () => {
   test('map search Cancel declines a remote download and Download imports and opens it', async ({ mockApi: page }) => {
-    let detailRequests = 0;
-    await page.route('**/proposals/summary?*', route => route.fulfill({ json: {
-      proposals: [{ id: '777', proposalId: 'remote-proposal-777', title: 'Remote proposal', author: 'Tester', goal: 'park' }],
-    } }));
-    await page.route('**/proposals/777', route => {
-      detailRequests += 1;
-      return route.fulfill({ json: {
-        id: '777', proposalId: 'remote-proposal-777', title: 'Remote proposal', author: 'Tester', goal: 'park',
-        lifecycleStatus: 'Active', cityId: 'zagreb', cadastreParcelIds: [PARCEL_ID], geometry: PARCEL_GEOMETRY,
-      } });
+    // A park published by someone else: its design/v1 object, filed in the index under its CID, in
+    // the shape this app publishes a park (blockName is part of a structure payload).
+    const content = {
+      schema: 'design/v1', goal: 'park', title: 'Remote proposal', description: null, author: 'Tester', city: 'zagreb',
+      site: null, toleranceM: null, geometry: PARCEL_GEOMETRY, origin: null, authoredAt: '2026-10-12T10:00:00.000Z',
+      structureProposal: { kind: 'park', geometry: PARCEL_GEOMETRY, blockName: null },
+    };
+    const cid = cidOfObject(content);
+    const index = pageIndex(page);
+    index.designs.set(cid, {
+      cid, city: 'zagreb', goal: 'park', title: 'Remote proposal', author: 'Tester', originCid: null,
+      binding: { parcels: [], touched: [], toleranceM: 0, coverage: 'complete', unsurveyedM2: 0, siteM2: 0, source: 'server:e2e-fixture-cadastre' },
+      content, screenshotUrl: null, screenshotBeforeUrl: null, screenshotPairUrl: null, createdAt: '2026-10-12T10:00:00.000Z',
     });
     await openCity(page);
+    const localId = `design-${cid}`;
+    const held = () => page.evaluate(id => !!(window as any).proposalStorage.getProposal(id), localId);
 
     const search = page.getByRole('combobox', { name: 'Search the map' });
     const results = page.locator('.map-search__results [role="option"]');
@@ -29,21 +36,26 @@ test.describe('proposal button controls fourth pass @features', () => {
     };
 
     await chooseRemoteProposal();
+    expect(index.requests.some(request => request.method === 'GET' && request.path.startsWith('/designs?q=Remote'))).toBe(true);
     await expect(confirm).toBeVisible();
     await confirm.getByRole('button', { name: 'Cancel', exact: true }).click();
     await expect(confirm).toBeHidden();
-    expect(detailRequests).toBe(0);
+    expect(await held()).toBe(false);
 
     await chooseRemoteProposal();
     await expect(confirm).toBeVisible();
     await confirm.getByRole('button', { name: 'Download', exact: true }).click();
     await expect(confirm).toBeHidden();
-    const importedId = await page.evaluate(() => (window as any).proposalStorage.getAllProposals()
-      .find((proposal: any) => proposal.serverProposalId === '777')?.proposalId);
-    expect(importedId).toBeTruthy();
-    await showProposal(page, importedId);
+    await expect.poll(held).toBe(true);
+    const imported = await page.evaluate(id => {
+      const w = window as any;
+      const record = w.proposalStorage.getProposal(id);
+      return { title: record.title, cid: w.DesignSync.publishedCid(record), applied: !!w.isApplied(record) };
+    }, localId);
+    // Imported as published, parked: downloading never applies it.
+    expect(imported).toEqual({ title: 'Remote proposal', cid, applied: false });
+    await showProposal(page, localId);
     await expect(page.locator('#proposal-details-panel')).toBeVisible();
     await expect(page.locator('#proposal-details-title')).toHaveText('Remote proposal');
-    expect(detailRequests).toBe(1);
   });
 });

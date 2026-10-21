@@ -12,9 +12,8 @@ test('modeled totals require known land value and keep their ETH denomination', 
     w.agentStorage.addAgent(agent);
     w.PersistentStorage.setItem(`parcel_${parcelId}_owner`, agent.id);
     w.ethUsdEstimate = 4000;
-    // Exercise the dialog's handling of an unavailable calculation and a different active chain.
+    // Exercise the dialog's handling of an unavailable calculation.
     w.calculatePortfolioValue = async () => NaN;
-    w.getChainCurrencySymbol = () => 'SOL';
     await w.showAgentDialog(agent.id);
     return agent.id;
   }, PARCEL_ID);
@@ -34,7 +33,6 @@ test('modeled totals require known land value and keep their ETH denomination', 
   }, id);
   await expect(dialog.locator('[data-agent-portfolio-value]')).toContainText('17');
   await expect(dialog.locator('[data-agent-portfolio-value]')).toContainText('ETH');
-  await expect(dialog.locator('[data-agent-portfolio-value]')).not.toContainText('SOL');
   await expect(dialog.locator('[data-agent-total-wealth]')).toContainText('117');
   await expect(dialog.locator('[data-agent-total-wealth]')).toContainText('ETH');
 });

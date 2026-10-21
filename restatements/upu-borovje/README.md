@@ -140,10 +140,9 @@ The drawn boundary follows parcel lines, so `snap-to-cadastre.mjs` rebuilds the 
 node snap-to-cadastre.mjs --compute                                   # local PostGIS → data/cadastral-snap.json
 node snap-to-cadastre.mjs --backend <api> --origin <app> --apply      # publish the corrected members as <id>-v2
 node build-urban-blocks.mjs --revision v2 --backend <api> --origin <app> --apply
-node name-plans.mjs --backend <api> --origin <app> --apply            # names upu-borovje-v2, borovje-urbani-blokovi-v2
 ```
 
-Named plans never change (`plans.md`), so nothing existing is edited: the seven corrected members (three
+Named plans never changed (removed 2026-10-21 by the plan/design/agreement rework; this restatement is recreated as agreements in M3), so nothing existing is edited: the seven corrected members (three
 parcel layouts, both street records, parks Z1-1 and Z1-5) and the four urban blocks on changed plots are new
 `-v2` records, and the corrected plans are `upu-borovje-v2` and `borovje-urbani-blokovi-v2`, which supersede
 the originals. The geometry is computed once and committed; the cadastre it was computed on is identical on
@@ -166,7 +165,6 @@ node fit-streets.mjs --capture --app <app url> --backend <api>       # → data/
 node fit-streets.mjs --compute --backend <api>                       # → data/streets-fit.json
 node fit-streets.mjs --backend <api> --origin <app> --apply          # publish the changed members as <id>-v3
 node build-urban-blocks.mjs --revision v3 --backend <api> --origin <app> --apply
-node name-plans.mjs --backend <api> --origin <app> --apply           # names upu-borovje-v3, borovje-urbani-blokovi-v3
 ```
 
 Result: street land 16,501 → 13,376 m²; eleven plots change (most by a sliver where lanes crossed them; M1-3,

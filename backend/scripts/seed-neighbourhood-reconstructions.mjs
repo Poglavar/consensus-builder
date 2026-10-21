@@ -12,7 +12,6 @@
 //   node backend/scripts/seed-neighbourhood-reconstructions.mjs --apply --export
 
 import { createRequire } from 'node:module';
-import crypto from 'node:crypto';
 import dotenv from 'dotenv';
 import * as turf from '@turf/turf';
 import { mkdir, writeFile } from 'node:fs/promises';
@@ -59,7 +58,6 @@ export const NEIGHBOURHOODS = Object.freeze([
         key: 'novi-jelkovec',
         planName: 'DPU stambenog naselja na lokaciji Sopnica - Jelkovec',
         title: 'Novi Jelkovec – rekonstrukcija naselja',
-        planTitle: 'Novi Jelkovec – zgrade, parkovi, trgovi i prometnice',
         buildingTitle: 'Novi Jelkovec – rekonstrukcija izvedenih zgrada',
         buildingDescription: 'Rekonstrukcija glavnih izvedenih zgrada unutar DPU-a Sopnica–Jelkovec. Tlocrti su aktualna pravna DGU geometrija, a visine su iz najboljega lokalnog podudaranja s GDI snimkom. Terase, stubišta, nadstrešnice, trafostanice i drugi pomoćni poligoni nisu zasebni volumeni.',
         buildingMode: 'observed',
@@ -77,7 +75,6 @@ export const NEIGHBOURHOODS = Object.freeze([
         key: 'podbrezje',
         planName: 'UPU Podbrežje',
         title: 'Podbrežje – rekonstrukcija UPU-a',
-        planTitle: 'Podbrežje – izvedene i planirane zgrade, park i prometnice',
         buildingTitle: 'Podbrežje – jedanaest stambenih blokova UPU-a',
         buildingDescription: 'Četiri izvedena bloka imaju aktualne DGU tlocrte i podudarne GDI visine. Preostalih sedam prikazano je kao plan-derived envelope: položaj i os slijede jedanaest službenih polja M1 te pobjednički urbanistički koncept, a širina i završni odmaci kalibrirani su na četiri izvedena bloka. To nisu tlocrti iz budućih građevinskih dozvola niti sigurna veza s oznakama A1–A11.',
         buildingMode: 'podbrezje-plan',
@@ -97,7 +94,6 @@ export const NEIGHBOURHOODS = Object.freeze([
         key: 'vrbani-iii',
         planName: 'UPU Vrbani III',
         title: 'Vrbani III – rekonstrukcija naselja',
-        planTitle: 'Vrbani III – izvedene zgrade, parkovi i prometnice',
         buildingTitle: 'Vrbani III – rekonstrukcija izvedenih zgrada',
         buildingDescription: 'Rekonstrukcija glavnih izvedenih zgrada unutar UPU-a Vrbani III. Tlocrti su aktualna pravna DGU geometrija, a visine su iz najboljega lokalnog podudaranja s GDI snimkom. Uključene su i veće kuće koje službena granica UPU-a obuhvaća; pomoćni DGU poligoni nisu zasebni volumeni.',
         buildingMode: 'observed',
@@ -117,7 +113,7 @@ function usage() {
     console.log(`Usage: node backend/scripts/seed-neighbourhood-reconstructions.mjs --dry-run|--apply [--export] [--only key,key]
 
   --dry-run  Build and validate all proposals without writing database rows.
-  --apply    Upsert proposals and named plans in the local database.
+  --apply    Upsert proposals in the local database.
   --export   Write canonical GeoJSON archives and plan manifests.
   --only     Limit the run to comma-separated keys: novi-jelkovec,podbrezje,vrbani-iii.`);
 }
@@ -901,22 +897,6 @@ async function upsertProposal(pool, authored) {
     return rows[0];
 }
 
-async function upsertNamedPlan(pool, config, proposalRows) {
-    const tokenHash = crypto.createHash('sha256').update(`local-reconstruction:${config.key}`).digest('hex');
-    const proposalIds = proposalRows.map(row => String(row.id));
-    const { rows } = await pool.query(`
-        INSERT INTO public.ens_plan (slug, proposal_ids, title, city, edit_token_hash)
-        VALUES ($1, $2::jsonb, $3, 'zagreb', $4)
-        ON CONFLICT (slug) DO UPDATE SET
-            proposal_ids = EXCLUDED.proposal_ids,
-            title = EXCLUDED.title,
-            city = EXCLUDED.city,
-            updated_at = NOW()
-        RETURNING slug, proposal_ids
-    `, [config.key, JSON.stringify(proposalIds), config.planTitle, tokenHash]);
-    return rows[0];
-}
-
 function archiveFilename(proposal) {
     if (proposal.roadProposal) return 'proposal-roads.geojson';
     if (proposal.buildingProposal) return 'proposal-buildings.geojson';
@@ -961,13 +941,10 @@ async function exportNeighbourhood(result) {
         schema: 'consensus-builder.reconstruction-plan.v1',
         project: result.config.key,
         title: result.config.title,
-        planTitle: result.config.planTitle,
         sourcePlan: result.config.planName,
         planYears: result.config.planYears,
         implementationStatus: result.config.status,
         generatedAt: RECONSTRUCTION_DATE,
-        planSlug: result.config.key,
-        localPath: `/proposals/${result.config.key}?city=zagreb`,
         sources: clone(result.config.sources),
         context: { file: 'plan-land-use.geojson', areaM2: result.context.areaM2 },
         proposals: entries,
@@ -1001,8 +978,7 @@ function summary(result) {
         squares: result.squares.length,
         roadCentrelines: result.road.roadProposal.definition.segmentIds.length,
         roadLengthM: Number(result.road.source.lengthM.toFixed(1)),
-        roadFootprintAreaM2: Number(result.road.source.footprintAreaM2.toFixed(1)),
-        localPath: `/proposals/${result.config.key}?city=zagreb`
+        roadFootprintAreaM2: Number(result.road.source.footprintAreaM2.toFixed(1))
     };
 }
 
@@ -1034,9 +1010,8 @@ export async function main(argv = process.argv.slice(2)) {
                 try {
                     const rows = [];
                     for (const proposal of result.proposals) rows.push(await upsertProposal(pool, proposal));
-                    const plan = await upsertNamedPlan(pool, config, rows);
                     await pool.query('COMMIT');
-                    console.log(`Stored ${rows.length} local proposals and /proposals/${plan.slug}?city=zagreb.`);
+                    console.log(`Stored ${rows.length} local proposals.`);
                 } catch (error) {
                     await pool.query('ROLLBACK');
                     throw error;

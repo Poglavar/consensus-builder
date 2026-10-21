@@ -1,132 +1,63 @@
-// Unit test for normalizeServerProposalSummary (frontend/js/proposals/server-sync.js): the mapper
-// that turns a row from GET /proposals/summary into the object the proposal list renders.
+// Unit test for designSummary (frontend/js/proposals/design-sync.js): the mapper that turns a row of
+// the designs index (GET /designs) into the object the proposal list's Server tab renders.
 //
-// It exists because that mapper silently dropped `screenshotUrl`, so every row in the list's Server
-// tab fell back to the goal emoji even though the server had rendered a thumbnail for nearly all of
-// them. The field is only ever read by buildProposalThumbHtml, so nothing else noticed.
-//
-// server-sync.js is a classic script with no exports that reads cross-file globals, so it is
-// evaluated in a vm context with the cross-file globals this function touches stubbed in.
+// Its predecessor silently dropped `screenshotUrl`, so every row in the list's Server tab fell back
+// to the goal emoji even though the server had rendered a thumbnail for nearly all of them. The field
+// is only ever read by buildProposalThumbHtml, so nothing else noticed.
 
 import { describe, it, expect } from 'vitest';
-import { readFileSync } from 'node:fs';
-import { createContext, runInContext } from 'node:vm';
-import { fileURLToPath } from 'node:url';
-import { dirname, join } from 'node:path';
 import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
-const Origin = require('../../frontend/js/proposals/origin.js');
-const DesignGoals = require('../../frontend/js/proposals/design-goals.js');
-const API_BASE = 'https://api.example.test';
+const { designSummary } = require('../../frontend/js/proposals/design-sync.js');
+const Cid = require('../../frontend/js/cid.js');
 
-const scriptPath = join(dirname(fileURLToPath(import.meta.url)), '../../frontend/js/proposals/server-sync.js');
+const CID = Cid.cidOfObject({ schema: 'design/v1', title: 'Road 1407-0247' });
 
-function loadNormalizer() {
-    const context = createContext({
-        window: { ProposalOrigin: Origin, ProposalDesignGoals: DesignGoals },
-        console,
-        normalizeProposalGoalKey: goal => (goal || '').toString().trim().toLowerCase(),
-        getLifecycleStatus: proposal => proposal.lifecycleStatus || proposal.status || 'Active',
-        getCurrentCityId: () => 'zagreb',
-        resolveBackendBaseUrl: () => API_BASE
-    });
-    runInContext(readFileSync(scriptPath, 'utf8'), context);
-    return context.normalizeServerProposalSummary;
-}
-
-describe('normalizeServerProposalSummary', () => {
-    const normalizeServerProposalSummary = loadNormalizer();
-
-    // The shape GET /proposals/summary actually returns (verified against api.urbangametheory.xyz).
-    const summaryRow = {
-        id: 62,
-        proposalId: 'p-9qg43kxlmm',
+describe('designSummary', () => {
+    // The shape GET /designs returns (backend/routes/designs.js serializeDesignRow).
+    const indexRow = {
+        cid: CID,
         city: 'zagreb',
-        name: 'Road 1407-0247',
+        goal: 'road-track',
         title: 'Road 1407-0247',
         author: 'Guest 9888',
-        type: 'road',
-        status: 'Active',
-        createdAt: '2026-07-14T00:47:49.263Z',
-        screenshotUrl: 'https://api.urbangametheory.xyz/uploads/images/proposal-thumb-62-1784065207119.png',
-        agent: {
-            persona: 'densifier-01',
-            wallet: 'AgentWallet111111111111111111111111111111111',
-            paid: { tx: 'SettlementSignature111111111111111111111111111' }
-        }
+        originCid: null,
+        binding: { coverage: 'complete', parcels: [{ parcelId: 'HR-335789-1204' }, { parcelId: 'HR-335789-1199' }] },
+        content: { schema: 'design/v1' },
+        screenshotUrl: 'https://api.urbangametheory.xyz/uploads/images/design-thumb-1784065207119.png',
+        screenshotBeforeUrl: null,
+        screenshotPairUrl: null,
+        createdAt: '2026-07-14T00:47:49.263Z'
     };
 
     it('carries the server-rendered thumbnail url through to the list item', () => {
-        const normalized = normalizeServerProposalSummary(summaryRow, 'zagreb');
-        expect(normalized.screenshotUrl).toBe(summaryRow.screenshotUrl);
+        expect(designSummary(indexRow).screenshotUrl).toBe(indexRow.screenshotUrl);
     });
 
-    it('accepts the snake_case spelling too', () => {
-        const { screenshotUrl, ...snake } = summaryRow;
-        snake.screenshot_url = screenshotUrl;
-        expect(normalizeServerProposalSummary(snake, 'zagreb').screenshotUrl).toBe(screenshotUrl);
+    it('leaves screenshotUrl null when the server has no thumbnail for the design', () => {
+        const { screenshotUrl, ...withoutThumb } = indexRow;
+        expect(designSummary(withoutThumb).screenshotUrl).toBeNull();
     });
 
-    it('leaves screenshotUrl null when the server has no thumbnail for the proposal', () => {
-        const { screenshotUrl, ...withoutThumb } = summaryRow;
-        expect(normalizeServerProposalSummary(withoutThumb, 'zagreb').screenshotUrl).toBeNull();
-    });
-
-    it('carries verified agent provenance through to the list card', () => {
-        expect(normalizeServerProposalSummary(summaryRow, 'zagreb').agent).toEqual(summaryRow.agent);
-    });
-
-    it('still maps the identifying fields the list keys off', () => {
-        const normalized = normalizeServerProposalSummary(summaryRow, 'zagreb');
-        expect(normalized.serverProposalId).toBe('62');
-        expect(normalized.publicationApiBase).toBe(API_BASE);
-        expect(normalized.proposalId).toBe('p-9qg43kxlmm');
-        expect(normalized.city).toBe('zagreb');
-        expect(normalized.lifecycleStatus).toBe('Active');
-        expect(normalized).not.toHaveProperty('status');
-    });
-});
-
-describe('serverListQuery (server-side search/sort mapping)', () => {
-    // Load the script into a context we can mutate proposalListState on.
-    function loadWithState(state) {
-        const context = createContext({
-            window: { ProposalOrigin: Origin, ProposalDesignGoals: DesignGoals },
-            console,
-            normalizeProposalGoalKey: goal => (goal || '').toString().trim().toLowerCase(),
-            getLifecycleStatus: proposal => proposal.lifecycleStatus || proposal.status || 'Active',
-            getCurrentCityId: () => 'zagreb',
-            resolveBackendBaseUrl: () => API_BASE,
-            proposalListState: state
+    it('maps the identifying fields the list keys off, and the parcels the index bound', () => {
+        expect(designSummary(indexRow)).toMatchObject({
+            id: CID, cid: CID, proposalId: CID, indexed: true, city: 'zagreb', goal: 'road-track',
+            title: 'Road 1407-0247', name: 'Road 1407-0247', author: 'Guest 9888',
+            createdAt: indexRow.createdAt, cadastreParcelIds: ['HR-335789-1199', 'HR-335789-1204'], isMinted: false
         });
-        runInContext(readFileSync(scriptPath, 'utf8'), context);
-        return context;
-    }
-
-    it('passes the trimmed search text as q', () => {
-        const ctx = loadWithState({ source: 'server', searchText: '  ilica  ', sortKey: 'created-desc' });
-        expect(ctx.serverListQuery().q).toBe('ilica');
     });
 
-    it('only forwards DB-derivable sort keys; computed ones stay client-side', () => {
-        expect(loadWithState({ sortKey: 'value-desc' }).serverListQuery().sort).toBe('value-desc');
-        expect(loadWithState({ sortKey: 'created-asc' }).serverListQuery().sort).toBe('created-asc');
-        // area/acceptance/parcels are computed client-side → not sent (empty = server default)
-        expect(loadWithState({ sortKey: 'area-desc' }).serverListQuery().sort).toBe('');
-        expect(loadWithState({ sortKey: 'acceptance-desc' }).serverListQuery().sort).toBe('');
+    it('carries no lifecycle: a design has none', () => {
+        const summary = designSummary({ ...indexRow, lifecycleStatus: 'Cancelled', status: 'Active', applied: true });
+        expect(summary).not.toHaveProperty('lifecycleStatus');
+        expect(summary).not.toHaveProperty('status');
+        expect(summary).not.toHaveProperty('applied');
     });
 
-    it('signature changes when the query changes, and is stable otherwise', () => {
-        const a = loadWithState({ searchText: 'foo', sortKey: 'value-desc' }).serverListQuerySignature();
-        const b = loadWithState({ searchText: 'foo', sortKey: 'value-desc' }).serverListQuerySignature();
-        const c = loadWithState({ searchText: 'bar', sortKey: 'value-desc' }).serverListQuerySignature();
-        expect(a).toBe(b);
-        expect(a).not.toBe(c);
-    });
-
-    it('isServerListTab reflects the active source', () => {
-        expect(loadWithState({ source: 'server' }).isServerListTab()).toBe(true);
-        expect(loadWithState({ source: 'local' }).isServerListTab()).toBe(false);
+    it('does not infer a goal from a backend type, and lists nothing that is not filed under a CID', () => {
+        expect(designSummary({ ...indexRow, goal: undefined, type: 'road' }).goal).toBeNull();
+        expect(designSummary({ ...indexRow, cid: '62' })).toBeNull();
+        expect(designSummary(null)).toBeNull();
     });
 });

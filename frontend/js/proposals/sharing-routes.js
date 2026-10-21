@@ -1,35 +1,9 @@
-// proposals/sharing-routes.js — proposal share actions and URL route handlers
-
-// (handleSharedPlanRoute etc.). Extracted from proposals.js. The share codec it uses
-// (base64UrlEncodeBytes/base64UrlDecodeToBytes/compressBytes/inflateBytes/decodeBytesToJson/
-// decodeSharedPayload) and the SHARE_* constants live in proposals/sharing.js and are used here as
-// globals; this file used to carry a duplicate set of them, which sharing.js (loaded later) shadowed
-// so they never actually ran.
-
-// Update the derived display evidence for unchanged shared buildings; the authored log stays intact.
-function refreshSharedFloorPlanModels(localProposals, loadedById) {
-    let refreshedFloors = 0;
-    for (const local of localProposals) {
-        if (local.proposalOrigin) continue;
-        const rowId = window.SharedLinkCopies.rowId(local.serverProposalId);
-        const apiBase = window.ProposalOrigin.apiBase(local.publicationApiBase);
-        const remote = rowId && [...loadedById.values()].find(record =>
-            apiBase
-            && window.ProposalOrigin.apiBase(record?.publicationApiBase) === apiBase
-            && window.SharedLinkCopies.rowId(record?.serverProposalId) === rowId);
-        if (!remote?.geometry?.buildings?.some(building => building.properties?.floorPlans)) continue;
-        const current = (window.proposedBuildings || []).filter(building =>
-            String(building.properties?.proposalId) === String(local.proposalId));
-        const refreshed = window.__buildingFloorPlans.refreshRegisteredFloorPlans(current, remote.geometry.buildings);
-        if (!refreshed.changed) continue;
-        const replacements = new Map(current.map((building,index) => [building, refreshed.buildings[index]]));
-        window.proposedBuildings = window.proposedBuildings.map(building => replacements.get(building) || building);
-        refreshedFloors += refreshed.changed;
-    }
-    if (refreshedFloors) window.dispatchEvent(new CustomEvent('proposedBuildingsUpdated'));
-
-    return refreshedFloors;
-}
+// proposals/sharing-routes.js — sharing designs and opening shared designs (plan-design-agreement.md,
+// M2 "Browser"). Share on a design publishes it (DesignSync.publishDesign) and copies its
+// /designs/<cid> link; the sidebar's share panel (dialog-share.js) publishes a selection and links
+// /designs/<cid>,<cid>. handleSharedDesignRoute opens such a link: it reads the designs from the index,
+// imports them, applies them in replay order, frames them and opens the latest one's details
+// (core.js handleProposalRouteFromUrl dispatches the path here; agreement-sync.js reuses it).
 
 function getSharedGroundService() {
     if (typeof CadastralParcelRepository !== 'undefined' && CadastralParcelRepository) {
@@ -147,19 +121,12 @@ function setSharePlanButtonBusy(busy) {
     const label = button.querySelector('.share-plan-label');
     const subtext = button.querySelector('.share-plan-subtext');
     const spinner = button.querySelector('.share-plan-spinner');
-    if (busy) {
-        button.dataset.sharePlanBusy = '1';
-        button.disabled = true;
-        if (label) label.style.display = 'none';
-        if (subtext) subtext.style.display = 'none';
-        if (spinner) spinner.style.display = 'inline-flex';
-    } else {
-        delete button.dataset.sharePlanBusy;
-        button.disabled = false;
-        if (label) label.style.display = '';
-        if (subtext) subtext.style.display = '';
-        if (spinner) spinner.style.display = 'none';
-    }
+    if (busy) button.dataset.sharePlanBusy = '1';
+    else delete button.dataset.sharePlanBusy;
+    button.disabled = !!busy;
+    if (label) label.hidden = !!busy;
+    if (subtext) subtext.hidden = !!busy;
+    if (spinner) spinner.hidden = !busy;
 }
 
 // Resolves when the panel is ready to look at, so a caller that opened this from its own dialog
@@ -194,188 +161,81 @@ function shareAppliedProposals(options) {
     });
 }
 
-function shareSingleProposal(proposalIdOrProposal) {
-    // A share link carries its author (GuestPolicy 'share').
-    if (guestPolicyBlocks('share')) return;
+// The design a Share action names: the object given, the design open in the details panel, or a
+// local key.
+function resolveDesignToShare(proposalIdOrProposal) {
+    if (proposalIdOrProposal && typeof proposalIdOrProposal === 'object') return proposalIdOrProposal;
+    const requested = proposalIdOrProposal == null ? '' : String(proposalIdOrProposal);
+    if (currentProposalDetailsContext && (!requested || String(getProposalKey(currentProposalDetailsContext)) === requested)) {
+        return currentProposalDetailsContext;
+    }
+    return requested && typeof proposalStorage !== 'undefined' ? proposalStorage.getProposal(requested) : null;
+}
+
+// A link that could not be copied is shown, selected, for copying by hand.
+function showDesignLinkDialog(link, title) {
+    const t = getProposalI18nHelper();
+    const body = document.createElement('div');
+    body.className = 'design-link';
+    const intro = document.createElement('p');
+    intro.textContent = t('proposals.share.copyByHand', 'The link could not be copied automatically. Copy it from here:');
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.readOnly = true;
+    input.className = 'design-link__input';
+    input.value = link;
+    input.setAttribute('aria-label', t('proposals.share.linkLabel', 'Link to the published design'));
+    body.append(intro, input);
+    // The dialog's own focus lands a frame later: it must land on the link, selected, so Ctrl+C
+    // copies it, not on the Close button.
+    showSimpleShareModal({ title, body, initialFocus: input, actions: [{ label: t('modal.common.close', 'Close'), primary: true }] });
+    input.focus();
+    input.select();
+}
+
+// Share on a design: publish it (pinned and indexed once; DesignSync.publishDesign) and copy its
+// /designs/<cid> link. A parcel layout is published with its agreement, so it is refused
+// (ProposalPublishTerms.publishRefusal). Resolves { cid, link } or null.
+async function shareSingleProposal(proposalIdOrProposal) {
+    const t = getProposalI18nHelper();
+    const proposal = resolveDesignToShare(proposalIdOrProposal);
+    if (!proposal) {
+        showEphemeralMessage(t('ephemeral.messages.cannot_share_this_proposal_right_now', 'Cannot share this proposal right now.'), 4000, 'error');
+        return null;
+    }
+    const refusal = window.ProposalPublishTerms.publishRefusal(proposal);
+    if (refusal) {
+        showEphemeralMessage(refusal.message, 5000, 'info');
+        return null;
+    }
     try {
-        const t = getProposalI18nHelper();
-        const tShare = getShareI18nHelper();
-        const hasStorage = typeof proposalStorage !== 'undefined';
-
-        // Accept either a proposal object or an identifier
-        const requestedId = (proposalIdOrProposal && typeof proposalIdOrProposal === 'object')
-            ? (getProposalKey(proposalIdOrProposal)
-                || proposalIdOrProposal.serverProposalId
-                || proposalIdOrProposal.id
-                || proposalIdOrProposal.proposalId)
-            : proposalIdOrProposal;
-
-        // Prefer the proposal object if provided directly
-        let proposal = (proposalIdOrProposal && typeof proposalIdOrProposal === 'object')
-            ? proposalIdOrProposal
-            : null;
-
-        // Next, prefer the proposal currently rendered in the details panel
-        if (!proposal && currentProposalDetailsContext) {
-            const currentId = getProposalKey(currentProposalDetailsContext);
-            if (!requestedId || String(currentId) === String(requestedId)) {
-                proposal = currentProposalDetailsContext;
-            }
+        const { cid } = await window.DesignSync.publishDesign(proposal);
+        const link = window.DesignSync.designLink([cid], { city: proposal.city });
+        console.info(`[${new Date().toISOString()}] [share] ${proposal.proposalId} → ${link}`);
+        if (await window.DesignSync.copyLink(link)) {
+            showEphemeralMessage(t('proposals.share.linkCopied', 'Design published. Its link is copied.'), 5000, 'success');
+        } else {
+            showDesignLinkDialog(link, t('proposals.share.publishedTitle', 'Design published'));
         }
-
-        // A share route accepts a local key or an explicit row in the current publication API.
-        // Generic record aliases (`id`, authored IDs and hashes) do not identify a published row.
-        if (!proposal && requestedId && hasStorage) {
-            const requested = String(requestedId);
-            const currentApi = typeof resolveBackendBaseUrl === 'function' ? resolveBackendBaseUrl() : null;
-            proposal = currentApi
-                ? proposalStorage.getProposalByServerRowId?.(requested, currentApi) || null
-                : null;
-            if (!proposal && !/^[1-9]\d*$/.test(requested)) {
-                proposal = proposalStorage.getProposal(requested);
-            }
+        // The panel says Published now.
+        if (currentProposalDetailsContext && String(getProposalKey(currentProposalDetailsContext)) === String(proposal.proposalId)
+            && typeof showProposalInfo === 'function') {
+            showProposalInfo(proposalStorage.getProposal(proposal.proposalId) || proposal, null, null, { planningActions: true });
         }
-        if (!proposal) {
-            if (typeof showEphemeralMessage === 'function') {
-                showEphemeralMessage(t('ephemeral.messages.cannot_share_this_proposal_right_now', 'Cannot share this proposal right now.'), 4000, 'error');
-            }
-            return;
-        }
-        // A parcel layout is shared together with its agreement (ProposalPublishTerms.publishRefusal).
-        const refusal = window.ProposalPublishTerms.publishRefusal(proposal);
-        if (refusal) {
-            if (typeof showEphemeralMessage === 'function') showEphemeralMessage(refusal.message, 5000, 'info');
-            else if (typeof updateStatus === 'function') updateStatus(refusal.message);
-            return;
-        }
-
-        // Sharing publishes, and publishing has one step (proposal-kinds.md): a local proposal
-        // whose terms were never chosen gets them first, appended to that same record in the create
-        // dialog, and is then shared; the share dialog uploads or mints it.
-        const terms = window.ProposalPublishTerms;
-        if (terms.needsTerms(proposal, { isPublished: record => window.isPublishedProposalRecord?.(record) === true })) {
-            window.openPublishTermsDialog(proposal.proposalId, {
-                afterSave: savedId => shareSingleProposal(savedId)
-            });
-            return;
-        }
-
-        // If the proposal is already minted, still show the full share modal
-        // (the upload modal handles minted state in the mint row UI)
-
-        showUploadProposalModal(proposal);
+        return { cid, link };
     } catch (error) {
-        console.error('shareSingleProposal failed', error);
-        if (typeof showEphemeralMessage === 'function') {
-            const t = getProposalI18nHelper();
-            showEphemeralMessage(t('ephemeral.messages.unable_to_generate_share_link', 'Unable to generate share link.'), 5000, 'error');
-        }
+        if (error && error.cancelled) return null;
+        console.error(`[${new Date().toISOString()}] [share] publishing ${proposal.proposalId} failed`, error);
+        showEphemeralMessage((error && error.message) || t('proposals.share.errors.failed', 'The design could not be published.'), 7000, 'error');
+        return null;
     }
 }
 
 function shareProposalFromDetails() {
-    try {
-        if (currentProposalDetailsContext) {
-            shareSingleProposal(currentProposalDetailsContext);
-            return;
-        }
-
-        const panel = document.getElementById('proposal-details-content');
-        const idElement = panel ? panel.querySelector('[data-proposal-id]') : null;
-        const fallbackId = idElement ? idElement.getAttribute('data-proposal-id') : null;
-        shareSingleProposal(fallbackId);
-    } catch (error) {
-        console.error('shareProposalFromDetails failed', error);
-        shareSingleProposal(null);
-    }
-}
-
-function buildSharedProposalsPayload(appliedProposals) {
-    if (!Array.isArray(appliedProposals) || appliedProposals.length === 0) {
-        return null;
-    }
-    const ancestryApi = (typeof window !== 'undefined') ? window.__cadastreAncestry : null;
-    const depthApi = (typeof window !== 'undefined') ? window.__formationDepth : null;
-    if (!ancestryApi || typeof ancestryApi.validateCadastreParcelIds !== 'function'
-        || !depthApi || typeof depthApi.preparePublishRecord !== 'function') {
-        throw new Error('Cannot share: the cadastral publish gate is unavailable.');
-    }
-
-    const featuresForBounds = [];
-    const addGeometry = (geometry, properties = {}) => {
-        if (!geometry || !/Polygon$/.test(String(geometry.type || ''))) return;
-        featuresForBounds.push({ type: 'Feature', properties, geometry: deepClone(geometry) });
-    };
-    const addFeature = feature => {
-        if (feature?.type === 'Feature' && feature.geometry) featuresForBounds.push(deepClone(feature));
-    };
-    const sanitized = appliedProposals.map(proposal => {
-        window.ProposalPublishTerms.assertPublishable(proposal);
-        // Sharing publishes the same authored record the local store owns. It never reconstructs
-        // parcel parents or children from runtime output; those pieces belong to LiveParcelFabric.
-        // A share link carries its author: this profile's own drafts carry its current name.
-        const candidate = deepClone(stampCurrentAuthor(proposal));
-        delete candidate.authorAgentId; // device-local: which profile here owns the draft
-        candidate.goal = resolveProposalGoalKey(proposal) || proposal.goal || null;
-        // A corridor publishes every parcel its polygon covers; others exactly their selection.
-        candidate.cadastreParcelIds = ancestryApi.validateCadastreParcelIds(typeof ancestryApi.publishDeclaration === 'function'
-            ? { ...proposal, cadastreParcelIds: ancestryApi.publishDeclaration(proposal) }
-            : proposal);
-        candidate.ownershipFlow = typeof ancestryApi.computeOwnershipFlow === 'function'
-            ? ancestryApi.computeOwnershipFlow(proposal)
-            : (Array.isArray(proposal.ownershipFlow) ? deepCloneArray(proposal.ownershipFlow) : []);
-        candidate.minted = isProposalMinted(proposal);
-
-        addGeometry(candidate.roadProposal?.definition?.polygon, { proposalId: candidate.proposalId });
-        (candidate.roadProposal?.definition?.features || []).forEach(addFeature);
-        (candidate.geometry?.buildings || []).forEach(addFeature);
-        addFeature(candidate.geometry?.blockMassing);
-        addFeature(candidate.geometry?.groundSurface);
-        addGeometry(candidate.structureProposal?.geometry, {
-            proposalId: candidate.proposalId,
-            structureKind: candidate.structureProposal?.kind || null
-        });
-        (candidate.parcelLayout?.plots || []).forEach(plot => addGeometry(plot?.geometry, {
-            proposalId: candidate.proposalId
-        }));
-
-        const gate = depthApi.preparePublishRecord(candidate);
-        if (!gate.verdict.flat) {
-            const detail = gate.verdict.violations
-                .map(item => item.code + (item.field ? ` (${item.field})` : ''))
-                .join(', ');
-            throw new Error(`Cannot share non-conforming proposal ${proposal.proposalId || ''}: ${detail}`);
-        }
-        return gate.proposal;
-    });
-
-    const camera = (typeof map !== 'undefined' && map && typeof map.getCenter === 'function')
-        ? { lat: map.getCenter().lat, lng: map.getCenter().lng, zoom: map.getZoom() }
-        : null;
-
-    const bbox = computeSharedBoundingBoxFromFeatures(featuresForBounds) || (function () {
-        if (typeof map !== 'undefined' && map && typeof map.getBounds === 'function') {
-            const bounds = map.getBounds();
-            return {
-                west: bounds.getWest(),
-                south: bounds.getSouth(),
-                east: bounds.getEast(),
-                north: bounds.getNorth()
-            };
-        }
-        return null;
-    })();
-
-    return {
-        version: SHARE_PAYLOAD_VERSION,
-        generatedAt: new Date().toISOString(),
-        author: (typeof getCurrentUsername === 'function' && getCurrentUsername())
-            ? getCurrentUsername()
-            : (appliedProposals[0]?.author || 'Unknown'),
-        proposals: sanitized,
-        bbox,
-        camera
-    };
+    if (currentProposalDetailsContext) return shareSingleProposal(currentProposalDetailsContext);
+    const panel = document.getElementById('proposal-details-content');
+    const idElement = panel ? panel.querySelector('[data-proposal-id]') : null;
+    return shareSingleProposal(idElement ? idElement.getAttribute('data-proposal-id') : null);
 }
 
 function sharedMaterializationPhase(record) {
@@ -384,8 +244,7 @@ function sharedMaterializationPhase(record) {
         ? applyRoute.normalizeGoalKey(rawGoal)
         : String(rawGoal || '');
     if (goal === 'road-track' || !!(record && record.roadProposal)) return 0;
-    if (goal === 'parcel-layout' || goal === 'decide-later'
-        || !!(record && (record.parcelLayout || record.decideLaterProposal))) return 1;
+    if (goal === 'parcel-layout' || !!(record && record.parcelLayout)) return 1;
     const building = !!(record && record.buildingProposal)
         || !!(typeof applyRoute !== 'undefined' && applyRoute
             && typeof applyRoute.isBuildingGoal === 'function' && applyRoute.isBuildingGoal(goal));
@@ -408,33 +267,6 @@ function orderQueuedSharedProposalIds(proposalIds) {
         })
         .sort((a, b) => a.phase - b.phase || a.index - b.index)
         .map(entry => entry.id);
-}
-
-// Presentation focus is chosen only from the FINAL result sets. An imported record is parked before
-// materialisation, so "last imported" is not proof that it ever reached the map; keeping that value
-// as a fallback made an all-failed queue focus a proposal whose geometry/fabric was never applied.
-function selectSharedPlanFocusId(appliedItems, skippedItems, alreadyAppliedProposals, linkOrderResolver) {
-    let selectedId = null;
-    let selectedOrder = -1;
-    const consider = (candidateId, order) => {
-        if (!candidateId) return;
-        const effectiveOrder = Number.isFinite(order) ? order : -1;
-        if (effectiveOrder >= selectedOrder) {
-            selectedOrder = effectiveOrder;
-            selectedId = String(candidateId);
-        }
-    };
-
-    (Array.isArray(appliedItems) ? appliedItems : [])
-        .forEach(item => consider(item && item.id, item && item.ord));
-    (Array.isArray(skippedItems) ? skippedItems : [])
-        .forEach(item => consider(item && item.id, item && item.ord));
-    (Array.isArray(alreadyAppliedProposals) ? alreadyAppliedProposals : []).forEach(proposal => {
-        const order = (typeof linkOrderResolver === 'function') ? linkOrderResolver(proposal) : -1;
-        consider(proposal && (proposal.proposalId || proposal.serverProposalId), order);
-    });
-
-    return selectedId;
 }
 
 function sharedCorridorCountPhrase(roads, tracks, tShare) {
@@ -635,25 +467,8 @@ function reportSharedPlanProgress(event) {
 // happened to have applied locally (and, on a 26-member plan, paid the same 20-second replay twice).
 // Each parked member goes directly through the canonical replay materializer. It keeps the rollback
 // boundary, but avoids the explicit-click state transition and rival pass that used to run
-// before the same materializer. Package dependency order remains immutable inside each phase.
-// An explicit Apply plan click chooses its members over existing geometric rivals. A link
-// import still uses the non-displacing shared-ground gate below.
-async function materializeExplicitProposalPlan(proposalIds) {
-    const ids = orderQueuedSharedProposalIds(proposalIds);
-    const result = await ProposalManager.applyProposalPlan(ids, { onProgress: reportSharedPlanProgress });
-    if (result && result.ok === true) return { appliedIds: ids, failedIds: [] };
-    const summary = ProposalManager._lastFailedPlanApplySummary;
-    const failure = summary?.failed?.[0];
-    ids.forEach(id => {
-        if (ProposalManager.getLastApplyFailure?.(id)) return;
-        ProposalManager._setLastApplyFailure?.(id, {
-            code: failure?.code || 'plan-apply-failed',
-            message: failure?.reason || failure?.message || 'The plan could not be applied; the previous map was kept.'
-        });
-    });
-    return { appliedIds: [], failedIds: ids };
-}
-
+// before the same materializer. Package dependency order remains immutable inside each phase, and
+// a link import uses the non-displacing shared-ground gate below.
 async function materializeQueuedSharedProposals(proposalIds, options = {}) {
     // Package dependencies outrank URL and creation order: corridors form road-bounded blocks
     // before parcel layouts partition them. Buildings and public spaces follow. Immutable input
@@ -915,17 +730,13 @@ async function materializeQueuedSharedProposals(proposalIds, options = {}) {
 // fell back to framing EVERY applied proposal.
 // A proposal that has no BUILDINGS can never satisfy a wait for proposedBuildings. A road or a
 // structure link therefore sat out the whole 8 s deadline before 3D opened — measured at 9 s on
-// prod for /proposals/95 — with nothing on screen to explain it. Waiting is only meaningful for
+// prod for a road link — with nothing on screen to explain it. Waiting is only meaningful for
 // building proposals; anything else is ready as soon as it is applied.
 function urlFocusNeedsBuildings(ids) {
     try {
         const all = (typeof proposalStorage !== 'undefined' && proposalStorage.getAllProposals)
             ? proposalStorage.getAllProposals() : [];
-        const focused = all.filter(p => {
-            const key = String((typeof getProposalKey === 'function' ? getProposalKey(p) : null)
-                || p.proposalId || p.serverProposalId || '');
-            return ids.includes(key);
-        });
+        const focused = all.filter(p => ids.includes(String(p.proposalId || '')));
         // Unknown to storage yet: keep the old behaviour and wait.
         if (!focused.length) return true;
         return focused.some(p => p && p.buildingProposal);
@@ -970,1720 +781,234 @@ function isTruthyUrlFlag(params, key) {
     }
 }
 
-function handleSingleProposalShareFromUrl(attempt = 0) {
-    try {
-        const t = getProposalI18nHelper();
-        const tShare = getShareI18nHelper();
-        if (singleProposalShareHandled) return;
-        const params = new URLSearchParams(window.location.search);
-        const encoded = params.get('proposalShare');
-        if (!encoded) return;
-
-        if (typeof map === 'undefined' || !map) {
-            if (attempt < 15) {
-                setTimeout(() => handleSingleProposalShareFromUrl(attempt + 1), 400);
-            }
-            return;
-        }
-
-        let payload;
-        try {
-            payload = decodeSharedPayload(encoded);
-        } catch (_) {
-            showSimpleShareModal({
-                title: tShare('invalidTitle', 'Invalid Share Link'),
-                body: `<p>${tShare('invalidBody', 'We could not decode this shared proposal link. Please ask the sender to regenerate it.')}</p>`,
-                actions: [{ label: t('modal.common.close', 'Close'), primary: true }]
-            });
-            params.delete('proposalShare');
-            cleanSharedQuery(params);
-            singleProposalShareHandled = true;
-            return;
-        }
-
-        params.delete('proposalShare');
-        cleanSharedQuery(params);
-        singleProposalShareHandled = true;
-
-        if (!payload || !Array.isArray(payload.proposals) || payload.proposals.length === 0) {
-            showSimpleShareModal({
-                title: tShare('emptyTitle', 'No Proposal Found'),
-                body: `<p>${tShare('emptyBody', 'The shared link did not contain a proposal to load.')}</p>`,
-                actions: [{ label: t('modal.common.close', 'Close'), primary: true }]
-            });
-            return;
-        }
-
-        const sharedProposal = payload.proposals[0];
-
-        // Update Open Graph metadata for social sharing
-        if (typeof updateProposalOGMetadata === 'function') {
-            updateProposalOGMetadata(sharedProposal);
-        }
-
-        (async () => {
-            try {
-                await loadSharedProposalFromLink(sharedProposal, payload);
-            } catch (error) {
-                const message = error && error.message
-                    ? escapeHtml(error.message)
-                    : tShare('unknownError', 'An unknown error occurred while loading the shared proposal.');
-                showSimpleShareModal({
-                    title: tShare('failureTitle', 'Unable to Load Shared Proposal'),
-                    body: `<p>${message}</p>`,
-                    actions: [{ label: t('modal.common.close', 'Close'), primary: true }]
-                });
-            }
-        })();
-    } catch (error) {
-        console.error('handleSingleProposalShareFromUrl failed', error);
-    }
+// A newcomer chooses a profile (the welcome dialog) before a link imports anything, unless the link
+// opens without one (window.shouldSkipWelcomeForProposalLink).
+async function waitForSharedLinkWelcome() {
+    if (typeof window.shouldSkipWelcomeForProposalLink === 'function' && window.shouldSkipWelcomeForProposalLink()) return;
+    const welcome = document.getElementById('welcome-modal');
+    const visible = !!(welcome && !welcome.hidden);
+    const hasUserAgent = typeof currentUserAgent !== 'undefined' && currentUserAgent !== null;
+    if (!visible && hasUserAgent) return;
+    console.log(`[${new Date().toISOString()}] [handleSharedDesignRoute] waiting for the welcome dialog`);
+    await new Promise(resolve => window.addEventListener('welcomeModalComplete', resolve, { once: true }));
 }
 
-async function loadSharedProposalFromLink(sharedProposal, payload) {
-    if (!sharedProposal) {
-        throw new Error('Shared proposal data is missing.');
-    }
-
-    let suppressedHere = false;
-    if (!isCameraMovementSuppressed()) {
-        try {
-            window.suppressCameraMoves = true;
-            suppressedHere = true;
-        } catch (_) { }
-    }
-
-    try {
-        const normalized = prepareProposalForImport(sharedProposal);
-        if (!normalized) {
-            throw new Error('Unable to normalise shared proposal data.');
+// The latest-authored of the designs now standing for a link: the one a link frames and opens.
+function latestAuthoredDesignId(proposalIds) {
+    let best = null;
+    let bestAt = -Infinity;
+    proposalIds.forEach(id => {
+        const record = proposalStorage.getProposal(id);
+        if (!record) return;
+        const at = Date.parse(record.createdAt) || 0;
+        if (at >= bestAt) {
+            bestAt = at;
+            best = String(id);
         }
-
-        const ground = getSharedGroundService();
-        if (!ground || typeof ground.ensureProposalGround !== 'function') {
-            throw new Error('Cadastral ground service is unavailable.');
-        }
-        await ground.ensureProposalGround([normalized], { purpose: 'application' });
-
-        parkProposalForImport(normalized);
-        normalized.acceptedParcelIds = [];
-
-        const targetHash = normalized.proposalId || sharedProposal.proposalId || `shared_${Date.now()}`;
-        normalized.proposalId = targetHash;
-
-        let stored = proposalStorage.getProposal(targetHash);
-        if (stored) await followServerLifecycle(stored, normalized.lifecycleStatus,
-            ...(normalized.lifecycleEvidence ? [normalized.lifecycleEvidence] : []));
-        if (!stored) {
-            const imported = proposalStorage.importProposal(normalized, { overwrite: false });
-            stored = imported || proposalStorage.getProposal(targetHash);
-        }
-
-        if (!stored) {
-            const addedId = proposalStorage.addProposal({ ...normalized, proposalId: undefined });
-            stored = addedId ? proposalStorage.getProposal(addedId) : null;
-        }
-
-        if (!stored) {
-            throw new Error('Failed to store the shared proposal locally.');
-        }
-
-        if (suppressedHere) {
-            try {
-                window.suppressCameraMoves = false;
-                suppressedHere = false;
-            } catch (_) { }
-        }
-
-        await preloadProposalParcelOwners(stored.cadastreParcelIds, { forceRefresh: true });
-
-        const focusParcelId = Array.isArray(stored.cadastreParcelIds) ? stored.cadastreParcelIds[0] : null;
-        const storedKey = getProposalKey(stored);
-        selectAndHighlightProposal(storedKey, focusParcelId, true);
-        showProposalInfo(stored, focusParcelId);
-        const panel = document.getElementById('proposal-details-panel');
-        if (panel) {
-            panel.classList.add('visible');
-            document.body.classList.add('proposal-details-open');
-        }
-        await focusMapThenMaybeEnter3D(() => focusMapOnSharedProposal(stored, payload));
-        if (typeof showEphemeralMessage === 'function') {
-            const t = getProposalI18nHelper();
-            showEphemeralMessage(t('ephemeral.messages.shared_proposal_loaded', 'Shared proposal loaded.'));
-        }
-    } finally {
-        if (suppressedHere) {
-            try { window.suppressCameraMoves = false; } catch (_) { }
-        }
-    }
+    });
+    return best;
 }
 
-function handleSharedProposalsFromUrl(attempt = 0) {
+/**
+ * Opens shared designs: a /designs/<cid>,<cid> link (core.js handleProposalRouteFromUrl). Reads them
+ * from the index (DesignSync.fetchDesigns), imports each as a local design (a local copy of the same
+ * CID is used as it stands), applies the ones not yet on the map in replay order, frames the
+ * latest-authored one and opens its details. A design of another city asks to switch city first.
+ * @param cids the link's design CIDs
+ * @param options { openDetails = true, frame = true, enter3D = true, summary = true } — the agreement
+ *   route (agreement-sync.js) applies its designs and opens the agreement instead.
+ * @returns {Promise<{ applied: string[], skipped: string[], failed: { id, label, reason }[],
+ *   blocked: boolean, localIds: Map<string, string> }>} local proposal ids; localIds maps CID → local id
+ */
+async function handleSharedDesignRoute(cids, options = {}) {
+    const t = getProposalI18nHelper();
+    const tShare = getShareI18nHelper();
+    const log = (message, ...rest) => console.log(`[${new Date().toISOString()}] [handleSharedDesignRoute] ${message}`, ...rest);
+    const result = { applied: [], skipped: [], failed: [], blocked: false, localIds: new Map() };
+    const labelOf = (record, fallback) => formatSharedProposalLabel(record, fallback);
+    let replayTakeover = null;
     try {
-        const t = getProposalI18nHelper();
-        const tShare = getShareI18nHelper();
-        if (sharedProposalsHandled) return;
-        const params = new URLSearchParams(window.location.search);
-        const encoded = params.get('shared');
-        if (!encoded) return;
-
-        if (typeof map === 'undefined' || !map) {
-            if (attempt < 15) {
-                setTimeout(() => handleSharedProposalsFromUrl(attempt + 1), 400);
-            }
-            return;
-        }
-
-        let payload;
-        try {
-            payload = decodeSharedPayload(encoded);
-        } catch (error) {
-            showSimpleShareModal({
-                title: tShare('invalidBulkTitle', 'Invalid Shared Proposals Link'),
-                body: `<p>${tShare('invalidBulkBody', 'We could not decode the shared proposals link. Please ask the sender to regenerate it.')}</p>`,
-                actions: [{ label: t('modal.common.close', 'Close'), primary: true }]
-            });
-            params.delete('shared');
-            cleanSharedQuery(params);
-            sharedProposalsHandled = true;
-            return;
-        }
-
-        params.delete('shared');
-        cleanSharedQuery(params);
-        sharedProposalsHandled = true;
-
-        if (!payload || !Array.isArray(payload.proposals) || payload.proposals.length === 0) {
-            showSimpleShareModal({
-                title: tShare('noBulkTitle', 'No Proposals Found'),
-                body: `<p>${tShare('noBulkBody', 'The shared link did not contain any proposals to apply.')}</p>`,
-                actions: [{ label: t('modal.common.close', 'Close'), primary: true }]
-            });
-            return;
-        }
-
-        // Update Open Graph metadata for social sharing (use first proposal or create summary)
-        if (typeof updateProposalOGMetadata === 'function' && payload.proposals.length > 0) {
-            const firstProposal = payload.proposals[0];
-            // Enhance with summary info if multiple proposals
-            if (payload.proposals.length > 1) {
-                const summaryProposal = {
-                    ...firstProposal,
-                    title: `${firstProposal.title || 'Proposal'} (+${payload.proposals.length - 1} more)`,
-                    description: `A collection of ${payload.proposals.length} proposals shared on Consensus Builder. ${firstProposal.description || ''}`
-                };
-                updateProposalOGMetadata(summaryProposal);
-            } else {
-                updateProposalOGMetadata(firstProposal);
-            }
-        }
-
-        // Before applying anything, show a full payload inspector with per-proposal checkboxes
-        ; (async () => {
-            try {
-                const selected = await showSharedPayloadInspector(payload);
-                if (!selected || !(selected instanceof Set)) {
-                    if (typeof showEphemeralMessage === 'function') {
-                        showEphemeralMessage(tShare('importCancelled', 'Shared proposal import cancelled.'));
-                    }
-                    return;
-                }
-                await applySharedProposalsFromPayload(payload, selected);
-            } catch (e) {
-                console.error('Shared payload inspector error:', e);
-            }
-        })();
-    } catch (error) {
-        console.error('handleSharedProposalsFromUrl failed', error);
-    }
-}
-
-// §11's first rung — replay fidelity. After a shared apply, verify each proposal takes the SAME
-// ground here as when it was published: the stamped ownership flow against one re-derived from
-// the receiver's live cadastre. A green apply proves the mechanics ran, not that the effect
-// reproduced (invariant #5) — a different cadastre vintage or a missing sibling formation shows
-// up as a flow difference, and that is a fact the user should see, not a silent divergence.
-// Returns [{ id, title, diff }]; detail goes to the console, the summary shows one line.
-function collectRebasedSharedProposals(appliedIds) {
-    try {
-        const flowApi = (typeof window !== 'undefined') ? window.__ownershipFlow : null;
-        const ancestry = (typeof window !== 'undefined') ? window.__cadastreAncestry : null;
-        if (!flowApi || !ancestry || typeof flowApi.compareOwnershipFlows !== 'function') return [];
-        const knownParcelIds = new Set(ancestry.loadedCadastreParcels().map(entry => String(entry.id)));
-        const rebased = [];
-        (Array.isArray(appliedIds) ? appliedIds : []).forEach(id => {
-            const stored = (typeof getProposalByIdOrHash === 'function')
-                ? getProposalByIdOrHash(id)
-                : ((typeof proposalStorage !== 'undefined' && proposalStorage.getProposal) ? proposalStorage.getProposal(id) : null);
-            if (!stored || !Array.isArray(stored.ownershipFlow) || !stored.ownershipFlow.length) return;
-            const live = ancestry.computeOwnershipFlow(stored);
-            const diff = flowApi.compareOwnershipFlows(stored.ownershipFlow, live, { knownParcelIds });
-            if (!diff.same) rebased.push({ id: String(id), title: stored.title || String(id), diff });
+        if (typeof map === 'undefined' || !map) throw new Error('The map is not ready.');
+        const requested = Array.from(new Set((Array.isArray(cids) ? cids : []).map(cid => String(cid || '').trim()).filter(Boolean)));
+        const valid = requested.filter(cid => window.Cid.isCid(cid));
+        requested.filter(cid => !window.Cid.isCid(cid)).forEach(cid => {
+            result.failed.push({ id: cid, label: cid, reason: t('proposals.share.errors.notACid', 'This is not a design link.') });
         });
-        if (rebased.length) {
-            console.info('[shared-apply] re-based: these take different ground here than when published', rebased);
-        }
-        return rebased;
-    } catch (error) {
-        console.warn('[shared-apply] replay-fidelity check failed', error);
-        return [];
-    }
-}
+        log(`opening ${valid.length} design(s)`, valid);
+        await waitForSharedLinkWelcome();
 
-async function applySharedProposalsFromPayload(payload, selectedIds) {
-    try {
-        // Suppress camera moves for the duration of shared apply
-        try { window.suppressCameraMoves = true; } catch (_) { }
-        let proposals = Array.isArray(payload.proposals) ? payload.proposals.slice() : [];
-        if (selectedIds && selectedIds.size >= 0) {
-            proposals = proposals.filter(p => selectedIds.has(getProposalKey(p)));
-        }
-        if (proposals.length === 0) return;
-
-        if (typeof updateStatus === 'function') {
-            updateStatus(`Preparing ${proposals.length} shared proposal${proposals.length === 1 ? '' : 's'}...`);
-        }
-
-        // Declare the records themselves, not their bounding box. The service chooses registry,
-        // in-flight, negative-cache, id transport, or footprint transport for each one.
-        const normalizedForGround = proposals.map(proposal => {
-            try { return prepareProposalForImport(proposal); } catch (_) { return null; }
-        }).filter(Boolean);
-        const ground = getSharedGroundService();
-        if (!ground || typeof ground.ensureProposalGround !== 'function') {
-            throw new Error('Cadastral ground service is unavailable.');
-        }
-        await ground.ensureProposalGround(normalizedForGround, { purpose: 'application' });
-
-        // Same single-flight restore barrier as handleSharedPlanRoute. Do not inspect applied
-        // flags to decide whether to wait: ordered replay deliberately clears them mid-pass.
-        if (typeof ProposalManager !== 'undefined'
-            && typeof ProposalManager.reapplyAppliedProposals === 'function') {
-            await ProposalManager.reapplyAppliedProposals();
-        }
-
-        const t = getProposalI18nHelper();
-        const tShare = getShareI18nHelper();
-
-        // The same immutable order drives imports and every later replay. No geometry or map state
-        // participates, so loading tiles cannot reshuffle the plan.
-        const sorted = (typeof window !== 'undefined' && window.__planOrder
-            && typeof window.__planOrder.orderFormations === 'function')
-            ? window.__planOrder.orderFormations(proposals)
-            : proposals.slice().sort((a, b) => {
-                const at = Date.parse(a?.createdAt) || 0;
-                const bt = Date.parse(b?.createdAt) || 0;
-                return at - bt || String(a?.proposalId || '').localeCompare(String(b?.proposalId || ''), undefined, { numeric: true });
-            });
-
-        // Position of each proposal in the sorted payload (oldest-first), so the view can end
-        // up framing the most recently created loaded proposal.
-        const payloadOrder = new Map();
-        sorted.forEach((p, idx) => {
-            [getProposalKey(p), p.proposalId].forEach(key => {
-                if (key) payloadOrder.set(String(key), idx);
-            });
+        showProposalLoadOverlay(t('proposals.share.route.fetching', 'Fetching the shared designs…'), {
+            total: valid.length,
+            title: t('proposals.share.route.title', 'Shared designs')
+        });
+        const fetched = valid.length ? await window.DesignSync.fetchDesigns(valid) : { rows: new Map(), missing: [] };
+        fetched.missing.forEach(cid => {
+            result.failed.push({ id: cid, label: cid, reason: t('proposals.share.errors.notFound', 'This design is not on the server.') });
         });
 
-        const actuallyApplied = [];
-        const skipped = [];
-        const failures = [];
-        // Members the server reports Cancelled: stored and opened, never applied, never "present".
-        const cancelled = [];
-        let lastLoadedProposalIdFor3D = null;
-
-        // ONE ordered pass (A6). Records are flat and the ground a formation consumes resolves
-        // geometrically at apply time (§15a), so there is nothing a requeue lap could discover:
-        // a member that cannot apply is a loud failure with its reason, never healed.
-        for (let proposalIndex = 0; proposalIndex < sorted.length; proposalIndex += 1) {
-            const proposal = sorted[proposalIndex];
-            try {
-                if (typeof updateStatus === 'function') {
-                    const displayId = proposal.proposalId ? String(proposal.proposalId) : '?';
-                    const label = proposal.title || `#${displayId}`;
-                    updateStatus(tShare('plan.preparingNamed',
-                        'Preparing {{label}} ({{done}}/{{total}})…', {
-                            label,
-                            done: proposalIndex + 1,
-                            total: sorted.length
-                        }));
-                }
-            } catch (_) { }
-
-            const result = await importAndApplySharedProposal(proposal, {
-                deferSave: true,
-                skipDependencyFetch: true
-            });
-            const proposalId = (result && result.proposalId) || getProposalKey(proposal) || proposal.proposalId;
-
-            if (result && result.cancelled) {
-                cancelled.push(proposalId);
-                if (proposalId) lastLoadedProposalIdFor3D = proposalId;
-                continue;
-            }
-
-            if (result && result.skipped) {
-                skipped.push(proposalId);
-                if (proposalId) lastLoadedProposalIdFor3D = proposalId;
-                continue;
-            }
-
-            if (result && result.applied) {
-                actuallyApplied.push(proposalId);
-                if (proposalId) lastLoadedProposalIdFor3D = proposalId;
-                continue;
-            }
-
-            failures.push(proposalId || proposal.proposalId || '');
-        }
-
-        if (actuallyApplied.length > 0) {
-            const payloadPlanMemberIds = new Set([...actuallyApplied, ...skipped].filter(Boolean).map(String));
-            const scoped = await materializeQueuedSharedProposals(actuallyApplied, {
-                planMemberIds: payloadPlanMemberIds
-            });
-            const scopedFailures = new Set(scoped.failedIds.map(String));
-            for (let i = actuallyApplied.length - 1; i >= 0; i -= 1) {
-                if (!scopedFailures.has(String(actuallyApplied[i]))) continue;
-                failures.push(actuallyApplied[i]);
-                actuallyApplied.splice(i, 1);
-            }
-        }
-
-        if (actuallyApplied.length > 0 || skipped.length > 0 || cancelled.length > 0 || failures.length > 0) {
-            if (typeof updateProposalLayer === 'function') {
-                updateProposalLayer();
-            }
-            if (typeof updateShowProposalsButton === 'function') {
-                updateShowProposalsButton();
-            }
-
-            // Center map on the most recently loaded proposal (latest in payload order among
-            // applied and skipped-as-duplicate), framed as if it had been loaded alone:
-            // fit its current derived bounds and open its details panel.
-            let lastProposalId = null;
-            let lastProposalOrd = -1;
-            [...actuallyApplied, ...skipped, ...cancelled].forEach(pid => {
-                if (!pid) return;
-                const key = String(pid);
-                const ord = payloadOrder.has(key) ? payloadOrder.get(key) : -1;
-                if (ord >= lastProposalOrd) {
-                    lastProposalOrd = ord;
-                    lastProposalId = pid;
-                }
-            });
-            if (!lastProposalId) {
-                lastProposalId = lastLoadedProposalIdFor3D
-                    || (actuallyApplied.length > 0 ? actuallyApplied[actuallyApplied.length - 1] : null)
-                    || (skipped.length > 0 ? skipped[skipped.length - 1] : null);
-            }
-            if (lastProposalId && typeof map !== 'undefined' && map) {
-                try {
-                    const bounds = calculateBoundsForLastAppliedProposal(lastProposalId);
-                    if (bounds && bounds.isValid && bounds.isValid()) {
-                        map.fitBounds(bounds, { padding: [80, 80], maxZoom: 18 });
-                    }
-                    if (typeof focusProposalDetails === 'function') {
-                        await focusProposalDetails(lastProposalId, {
-                            centerOnProposal: false, // camera has already been fit to bounds above
-                            showDetails: true
-                        });
-                    }
-                } catch (error) {
-                    console.warn('Failed to center map on last applied proposal:', error);
-                }
-            }
-
-            // Do not auto-enable proposals mode; keep interactions normal
-            const bodyLines = [];
-            const authorName = payload.author || t('common.userFallback', 'User');
-            bodyLines.push(`<p>${tShare('summary.appliedFrom', 'Applied proposals from {{author}}.', { author: escapeHtml(authorName) })}</p>`);
-            if (actuallyApplied.length > 0) {
-                bodyLines.push(`<p>${tShare('summary.appliedCount', '{{count}} applied.', {
-                    count: actuallyApplied.length
-                })}</p>`);
-                const rebased = collectRebasedSharedProposals(actuallyApplied);
-                if (rebased.length) {
-                    const escapeRebased = typeof escapeHtml === 'function' ? escapeHtml : (v => v);
-                    bodyLines.push(`<p class="shared-plan-rebased">${tShare('rebased',
-                        '{{count}} of them take different ground here than when published: {{titles}} (details in the console).', {
-                            count: rebased.length,
-                            titles: rebased.map(r => escapeRebased(r.title)).join(', ')
-                        })}</p>`);
-                }
-            }
-            if (skipped.length > 0) {
-                bodyLines.push(`<p>${tShare('summary.skippedCount', 'Skipped {{count}} duplicate proposals (already present).', {
-                    count: skipped.length
-                })}</p>`);
-            }
-            if (cancelled.length > 0) {
-                const titleOf = id => {
-                    const record = proposalStorage.getProposal(id);
-                    return escapeHtml((record && (record.title || record.name)) || String(id));
-                };
-                bodyLines.push(`<p>${tShare('plan.cancelledToast', 'Not applied, withdrawn: {{titles}}.', {
-                    titles: cancelled.map(titleOf).join(', ')
-                })}</p>`);
-            }
-            if (failures.length > 0) {
-                bodyLines.push(`<p>${tShare('summary.failedCount', '{{count}} failed.', {
-                    count: failures.length
-                })}</p>`);
-                // Name them, with the gate's own words. "3 failed." with no titles and no reason
-                // left a plan that was visibly missing its readjustment looking like a lost record
-                // rather than a refused one — every reason already existed, it just never surfaced.
-                const escape = typeof escapeHtml === 'function' ? escapeHtml : (v => String(v));
-                const failureItems = failures.map(id => {
-                    const record = (typeof proposalStorage !== 'undefined' && proposalStorage
-                        && typeof proposalStorage.getProposal === 'function') ? proposalStorage.getProposal(id) : null;
-                    const title = (record && (record.title || record.name)) || String(id || '');
-                    const reason = (typeof ProposalManager !== 'undefined' && ProposalManager
-                        && typeof ProposalManager.getLastApplyFailure === 'function')
-                        ? ProposalManager.getLastApplyFailure(id) : null;
-                    return `<li>${escape(title)}${reason ? ` — ${escape(reason)}` : ''}</li>`;
-                }).filter(Boolean);
-                if (failureItems.length) {
-                    bodyLines.push(`<ul class="shared-plan-failures">${failureItems.join('')}</ul>`);
-                }
-            }
-            showSimpleShareModal({
-                title: tShare('summary.title', 'Applied Shared Proposals'),
-                body: bodyLines.join(''),
-                actions: [
-                    { label: t('modal.common.close', 'Close'), primary: true },
-                    ...(actuallyApplied.length > 0 ? [{
-                        label: tShare('summary.unapplyApplied', 'Unapply applied'),
-                        onClick: async () => {
-                            try {
-                                actuallyApplied.forEach(hash => {
-                                    const record = proposalStorage.getProposal(hash);
-                                    if (!record) return;
-                                    if (typeof setProposalApplied === 'function') {
-                                        setProposalApplied(record, false, { stamp: false });
-                                    } else {
-                                        record.applied = false;
-                                    }
-                                });
-                                proposalStorage.save?.();
-                                await ProposalManager.rebuildAppliedFabric();
-                                ProposalManager._refreshUIAfterProposalChange?.(null);
-                            } catch (_) { }
-                        }
-                    }] : [])
-                ]
-            });
-
-            // Nothing was loaded (only failures): firmly return to parcel-mode
-            // hover/leave behavior. When a proposal was loaded we keep its highlight and
-            // details panel, matching the single shared-proposal flow.
-            if (!lastProposalId) {
-                try { clearProposalInfoHoverOverlay(); } catch (_) { }
-                try { clearProposalHighlights(); } catch (_) { }
-                try { if (typeof setParcelNumberLabelFilter === 'function') setParcelNumberLabelFilter(null); } catch (_) { }
-            }
-        }
-
-        if (failures.length > 0 && typeof showEphemeralMessage === 'function') {
-            showEphemeralMessage(t('ephemeral.messages.failed_to_apply_shared_proposals_summary', `Unable to apply ${failures.length} shared proposal${failures.length === 1 ? '' : 's'}.`, {
-                count: failures.length
-            }), 6000, 'error');
-        }
-
-        // Optional URL-driven 3D mode: after shared apply completes, enter 3D framed on THIS
-        // link's proposals only.
-        try {
-            if (!url3DModeHandled && is3DModeRequestedFromUrl()) {
-                // Wait for map centering to complete (if we centered on proposals above)
-                const allProposalIds = [...actuallyApplied, ...skipped].filter(Boolean);
-                if (allProposalIds.length > 0) {
-                    await createLeafletViewSettlePromise(null, null);
-                }
-                // Pass the link's LOCAL proposal ids as the 3D focus — without them the camera
-                // framed the union of every applied proposal (this is the path every fresh
-                // download of a shared link takes; the already-applied fast paths pass ids).
-                url3DModeHandled = true;
-                enterUrlDrivenViewWhenReady(allProposalIds);
-            }
-        } catch (_) { }
-    } catch (error) {
-        console.error('applySharedProposalsFromPayload failed', error);
-        if (typeof showEphemeralMessage === 'function') {
-            const t = getProposalI18nHelper();
-            showEphemeralMessage(t('ephemeral.messages.failed_to_apply_shared_proposals', 'Failed to apply shared proposals.'), 6000, 'error');
-        }
-    } finally {
-        // Re-enable camera moves after shared apply completes
-        try { window.suppressCameraMoves = false; } catch (_) { }
-    }
-}
-
-async function importAndApplySharedProposal(sharedProposal, options = {}) {
-    const fallbackHash = sharedProposal ? (sharedProposal.proposalId || getProposalKey(sharedProposal)) : null;
-    if (!sharedProposal || !sharedProposal.proposalId) return { applied: false, skipped: false, proposalId: fallbackHash, reason: 'Missing proposal payload' };
-
-    const normalized = prepareProposalForImport(sharedProposal);
-    const proposalId = normalized?.proposalId || fallbackHash;
-    if (!normalized) return { applied: false, skipped: false, proposalId, reason: 'Unable to normalize shared proposal' };
-
-    let existing = window.SharedLinkCopies.rowId(normalized.serverProposalId) && normalized.publicationApiBase
-        ? proposalStorage.getProposalByServerRowId(normalized.serverProposalId, normalized.publicationApiBase)
-        : proposalStorage.getProposal(normalized.proposalId);
-    if (existing) await followServerLifecycle(existing, normalized.lifecycleStatus,
-        ...(normalized.lifecycleEvidence ? [normalized.lifecycleEvidence] : []));
-    if (existing && isProposalCurrentlyApplied(existing)) {
-        return { applied: false, skipped: true, proposalId: existing.proposalId, reason: 'Already applied' };
-    }
-    // A member of another city's plan is refused before its ground is fetched from this city's
-    // cadastre (storage would refuse the import anyway): it belongs to that city's store.
-    const cityManager = (typeof window !== 'undefined' && window.CityConfigManager) || null;
-    const foreignCity = cityManager?.foreignCityFor?.(sharedRecordCityOf({
-        city: sharedProposal.city ?? normalized.city,
-        cadastreParcelIds: normalized.cadastreParcelIds || sharedProposal.cadastreParcelIds
-    }));
-    if (foreignCity) {
-        return { applied: false, skipped: false, proposalId, reason: `Belongs to another city (${cityManager.getCityLabel(foreignCity)})` };
-    }
-
-    const skipDependencyFetch = options && options.skipDependencyFetch === true;
-    let parentIds = [];
-    if (!skipDependencyFetch) {
-        try {
-            parentIds = ensureArrayOfStrings(computeRequiredParentIdsForSharedProposal(sharedProposal));
-            const ground = getSharedGroundService();
-            if (!ground || typeof ground.ensureProposalGround !== 'function') {
-                throw new Error('Cadastral ground service is unavailable.');
-            }
-            await ground.ensureProposalGround([normalized], { purpose: 'application' });
-        } catch (error) {
-            console.warn('Failed to fetch parent parcels for shared proposal', sharedProposal.proposalId, error);
-            return { applied: false, skipped: false, proposalId, reason: `Failed to fetch parent parcels: ${error && error.message ? error.message : 'unknown error'}` };
-        }
-    } else {
-        try {
-            parentIds = ensureArrayOfStrings(computeRequiredParentIdsForSharedProposal(sharedProposal));
-        } catch (_) {
-            parentIds = [];
-        }
-    }
-
-    // A parked local copy may be an older server snapshot left by an interrupted/partial package
-    // apply. Replace it too; otherwise the route repairs its order but faithfully replays stale
-    // road and readjustment geometry forever. Applied records returned above remain untouched.
-    // Import and the parked-state adjustment below are one record mutation. Suppress the storage
-    // write here so a standalone import persists once after both changes, while a shared-plan
-    // caller can defer all members to the plan's single batch commit.
-    existing = proposalStorage.importProposal(normalized, { overwrite: true, deferSave: true });
-    if (!existing) return { applied: false, skipped: false, proposalId, reason: 'Failed to import proposal' };
-
-    // A cancelled proposal is stored, so the link still opens it with its Cancelled badge, but it is
-    // not queued: it cannot stand on a map (proposals/display-state.js).
-    if (!window.__proposalDisplayState.isApplicable(existing)) {
-        if (options.deferSave !== true) proposalStorage.save?.();
-        return { applied: false, skipped: false, cancelled: true, proposalId: existing.proposalId || proposalId, reason: 'Cancelled' };
-    }
-
-    // Import changes records only. Keep every queued member parked until the complete ordered set
-    // is present; the caller then sends them through the direct scoped materializer one by one.
-    // Pre-marking them made later members look as if they already stood on the map, and forced the
-    // caller to rebuild every unrelated local proposal merely to materialise this queue.
-    if (typeof setProposalApplied === 'function') setProposalApplied(existing, false, { stamp: false });
-    else existing.applied = false;
-    proposalStorage._indexProposal?.(existing);
-    if (options.deferSave !== true) proposalStorage.save?.();
-    return { applied: true, skipped: false, proposalId: existing.proposalId || proposalId, queued: true };
-}
-
-// Reads the shared proposal's own `city` and, when it disagrees with the city on screen, hands the
-// decision to the user. Returns true when the caller must stop: either we are reloading into the
-// other city, or the user chose to stay and the route was dropped. Never blocks on legacy proposals
-// that predate the `city` stamp, nor on a server that cannot be reached — those fall through to the
-// existing behaviour rather than stranding the user on a dialog.
-// The reason shown in the plan result for a proposal the server refused. A record the server can no
-// longer read (422 `proposal-record-invalid`) gets a plain-language sentence; which field made it
-// unreadable is for the console only, never the visitor.
-function describeSharedProposalFetchFailure(id, payload) {
-    const technical = String((payload && (payload.detail || payload.error)) || '');
-    if (payload && payload.code === 'proposal-record-invalid') {
-        console.warn(`[shared-plan] proposal ${id} is unreadable on the server:`, technical);
-        const tShare = getShareI18nHelper();
-        return tShare('plan.recordOutdated',
-            'This proposal was made with an older version of the site and can no longer be opened.');
-    }
-    return technical;
-}
-
-// Bound the complete response, including its JSON body. A stalled batch must not expand into
-// thousands of individual requests when the shared API itself is unavailable.
-async function fetchSharedProposalResponse(url, options = {}) {
-    const runtime = typeof window !== 'undefined' ? window : globalThis;
-    const load = async signal => {
-        const response = await fetch(url, { ...options, ...(signal ? { signal } : {}) });
-        let data = null;
-        try { data = await response.json(); } catch (error) { if (response.ok) throw error; }
-        return { ok: response.ok, status: response.status, statusText: response.statusText, data };
-    };
-    const configured = runtime.PARCEL_LOAD_TIMEOUT_MS;
-    const timeoutMs = typeof configured === 'number' && Number.isFinite(configured) && configured > 0 ? configured : 30000;
-    return runtime.ParcelSourceHealth?.withDeadline
-        ? runtime.ParcelSourceHealth.withDeadline(load, { timeoutMs, code: 'proposal-load-timeout' })
-        : load();
-}
-
-async function fetchSharedProposalBatch(ids, backendBase) {
-    const requested = Array.from(new Set((Array.isArray(ids) ? ids : [])
-        .map(id => String(id || '').trim()).filter(Boolean)));
-    const records = new Map();
-    const missing = new Set();
-    // A row the server refuses to serialize comes back with its reason; that reason belongs in
-    // the plan result, not a generic "not found".
-    const errors = new Map();
-    if (!requested.length) return { records, missing, errors, supported: true, requests: 0 };
-    const seen = new Set();
-    let requests = 0;
-    for (let start = 0; start < requested.length; start += 1000) {
-        requests += 1;
-        try {
-            const chunk = requested.slice(start, start + 1000);
-            const response = await fetchSharedProposalResponse(`${backendBase}/proposals/batch`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-                body: JSON.stringify({ ids: chunk })
-            });
-            if (!response.ok) return { records, missing, errors, supported: false, requests };
-            const payload = response.data;
-            if (!payload || !Array.isArray(payload.items)) return { records, missing, errors, supported: false, requests };
-            payload.items.forEach(item => {
-                const id = item && item.id !== undefined && item.id !== null ? String(item.id) : '';
-                if (!id) return;
-                seen.add(id);
-                if (item.proposal) records.set(id, normalizePublicationResponse(item.proposal, backendBase));
-                else {
-                    missing.add(id);
-                    const reason = describeSharedProposalFetchFailure(id, item);
-                    if (reason) errors.set(id, reason);
-                }
-            });
-        } catch (error) {
-            if (error?.code === 'proposal-load-timeout') throw error;
-            console.warn('[shared-plan] batch proposal fetch unavailable; falling back', error);
-            return { records, missing, errors, supported: false, requests };
-        }
-    }
-    return { records, missing, errors, supported: requested.every(id => seen.has(id)), requests };
-}
-
-function namedPlanSnapshotError(expected, current, requestedIds, backendBase) {
-    if (!expected || typeof expected !== 'object') return null;
-    const expectedApi = window.ProposalOrigin?.apiBase(expected.publicationApiBase);
-    const currentApi = window.ProposalOrigin?.apiBase(backendBase);
-    if (!expectedApi || !currentApi || expectedApi !== currentApi) return 'publication API changed';
-    if (typeof expected.slug !== 'string' || !expected.slug
-        || typeof expected.planHash !== 'string' || !/^[a-f0-9]{64}$/.test(expected.planHash)) return 'named-plan commitment unavailable';
-    const expectedIds = Array.isArray(expected.proposalRowIds) ? expected.proposalRowIds.map(String) : [];
-    const requested = Array.isArray(requestedIds) ? requestedIds.map(String) : [];
-    if (!expectedIds.length || expectedIds.length !== requested.length
-        || expectedIds.some((id, index) => id !== requested[index])) return 'named-plan membership changed';
-    if (!current || current.slug !== expected.slug || current.planHash !== expected.planHash) {
-        return 'named-plan commitment changed';
-    }
-    const currentIds = Array.isArray(current.proposalRowIds) ? current.proposalRowIds.map(String) : [];
-    const members = Array.isArray(current.members) ? current.members : [];
-    if (currentIds.length !== expectedIds.length || currentIds.some((id, index) => id !== expectedIds[index])
-        || members.length !== expectedIds.length) return 'named-plan membership changed';
-    const byId = new Map(members.map(member => [String(member?.proposalRowId ?? ''), member]));
-    if (byId.size !== expectedIds.length || expectedIds.some(id => {
-        const member = byId.get(id);
-        return !member || member.changed !== false || member.missing === true;
-    })) return 'named-plan member changed or is missing';
-    return null;
-}
-
-async function verifyNamedPlanSnapshot(expected, requestedIds, backendBase) {
-    if (!expected) return null;
-    const expectedApi = window.ProposalOrigin?.apiBase(expected.publicationApiBase);
-    const currentApi = window.ProposalOrigin?.apiBase(backendBase);
-    if (!expectedApi || !currentApi || expectedApi !== currentApi) return 'publication API changed';
-    const expectedIds = Array.isArray(expected.proposalRowIds) ? expected.proposalRowIds.map(String) : [];
-    const requested = Array.isArray(requestedIds) ? requestedIds.map(String) : [];
-    if (!expectedIds.length || expectedIds.length !== requested.length
-        || expectedIds.some((id, index) => id !== requested[index])) return 'named-plan membership changed';
-    if (typeof expected.slug !== 'string' || !expected.slug
-        || typeof expected.planHash !== 'string' || !/^[a-f0-9]{64}$/.test(expected.planHash)) return 'named-plan commitment unavailable';
-    try {
-        const response = await fetchSharedProposalResponse(
-            `${backendBase}/plans/${encodeURIComponent(expected.slug)}`);
-        if (!response.ok) return `named-plan verification failed (HTTP ${response.status})`;
-        return namedPlanSnapshotError(expected, response.data, requestedIds, backendBase);
-    } catch (error) {
-        return `named-plan verification failed: ${error?.message || 'request error'}`;
-    }
-}
-
-// The city a shared record belongs to, by the rule storage applies when importing it
-// (proposals/data.js proposalCityOf): the city it names, else where its parcels are — so a record
-// without a city is routed to its city here instead of being imported, and refused, in this one.
-function sharedRecordCityOf(record) {
-    if (!record) return null;
-    const data = record.proposal_data || {};
-    const input = { city: record.city ?? data.city, cadastreParcelIds: record.cadastreParcelIds || data.cadastreParcelIds };
-    return typeof proposalCityOf === 'function' ? proposalCityOf(input) : (input.city || null);
-}
-
-async function sharedProposalCityBlocksLoad(firstProposalId, prefetchedPayload = null) {
-    // Returns { blocked, payload }. Measured: this fetch (of the WHOLE proposal, just to read its
-    // .city) was the biggest single cost on a shared-link open, and the apply loop then fetched the
-    // very same proposal a SECOND time. Hand the payload back so the caller can reuse it — one fetch
-    // instead of two. `blocked` is true only when the user chose to stay in the other city.
-    if (!firstProposalId) return { blocked: false, payload: null, requestMade: false };
-    let payload = prefetchedPayload || null;
-    let requestMade = false;
-    try {
-        if (!payload) {
-            const backendBase = resolveBackendBaseUrl();
-            requestMade = true;
-            const response = await fetchSharedProposalResponse(`${backendBase}/proposals/${encodeURIComponent(firstProposalId)}`);
-            if (!response.ok) return { blocked: false, payload: null, requestMade };
-            payload = normalizePublicationResponse(response.data, backendBase);
-        }
-        if (typeof promptCityMismatchForProposal !== 'function') return { blocked: false, payload, requestMade };
-        const proposalCityId = sharedRecordCityOf(payload);
-        if (!proposalCityId) return { blocked: false, payload, requestMade };
-        const blocked = await promptCityMismatchForProposal(String(proposalCityId));
-        return { blocked, payload, requestMade };
-    } catch (error) {
-        console.warn('[sharedProposalCityBlocksLoad] Could not determine the proposal city:', error);
-        return { blocked: false, payload, requestMade };
-    }
-}
-
-async function handleSharedPlanRoute(idParts, attempt = 0, options = {}) {
-    try {
-        const t = getProposalI18nHelper();
-        const tShare = getShareI18nHelper();
-
-        console.log('[handleSharedPlanRoute] Starting with IDs:', idParts, 'attempt:', attempt);
-
-        if (typeof map === 'undefined' || !map) {
-            if (attempt < 15) {
-                console.log('[handleSharedPlanRoute] Map not ready, retrying... attempt:', attempt);
-                setTimeout(() => handleSharedPlanRoute(idParts, attempt + 1, options), 400);
-            } else {
-                console.error('[handleSharedPlanRoute] Map not ready after 15 attempts');
-            }
-            return;
-        }
-
-        const skipWelcomeGate = typeof window.shouldSkipWelcomeForProposalLink === 'function'
-            ? window.shouldSkipWelcomeForProposalLink()
-            : false;
-
-        if (!skipWelcomeGate) {
-            const welcomeModal = document.getElementById('welcome-modal');
-            const isWelcomeModalVisible = welcomeModal && !welcomeModal.hidden;
-            const hasUserAgent = typeof currentUserAgent !== 'undefined' && currentUserAgent !== null;
-
-            console.log('[handleSharedPlanRoute] Welcome gate check:', {
-                skipWelcomeGate,
-                isWelcomeModalVisible,
-                hasUserAgent
-            });
-
-            if (isWelcomeModalVisible || !hasUserAgent) {
-                console.log('[handleSharedPlanRoute] Waiting for welcome modal to complete...');
-                await new Promise((resolve) => {
-                    if (!isWelcomeModalVisible && hasUserAgent) {
-                        resolve();
-                        return;
-                    }
-                    const onWelcomeComplete = () => {
-                        console.log('[handleSharedPlanRoute] Welcome modal completed');
-                        window.removeEventListener('welcomeModalComplete', onWelcomeComplete);
-                        resolve();
-                    };
-                    window.addEventListener('welcomeModalComplete', onWelcomeComplete, { once: true });
-                });
-            }
-        }
-
-        // Import the complete flat record set, prefetch its base cadastral anchors, then replay it
-        // once. Derived ids are invalid transport data and are never prerequisites.
-        const normalizeId = (raw) => {
-            const s = (raw !== undefined && raw !== null) ? String(raw).trim() : '';
-            return s;
-        };
-
-        const uniqueIncomingIds = Array.from(new Set(idParts.map(normalizeId).filter(Boolean)));
-        const totalProposals = uniqueIncomingIds.length;
-        // Set while the link waits for the boot replay with the map usable (replay-status.js): a
-        // user who pans, zooms, clicks or types meanwhile keeps the view, so the link's framing and
-        // panel opening below step aside.
-        let replayTakeover = null;
-        let replayHidModal = false;
-        const userTookOver = () => !!(replayTakeover && replayTakeover.tookOver());
-        const firstProposalId = uniqueIncomingIds[0];
-
-        // Show the overlay BEFORE the city check: that check fetches the first proposal (the slowest
-        // single step on a shared-link open), and it used to run with a frozen, feedback-less screen.
-        console.log('[handleSharedPlanRoute] Showing load overlay and fetching proposals...', { totalProposals });
-        showProposalLoadOverlay(tShare('plan.fetchingPlan', 'Fetching shared proposals…'), {
-            total: totalProposals,
-            title: tShare('plan.fetchingPlanTitle', 'Shared proposal import')
-        });
-
-        const backendBase = resolveBackendBaseUrl();
-        const batchRecords = await fetchSharedProposalBatch(uniqueIncomingIds, backendBase);
-        const recordFetchProfile = {
-            batchRequests: batchRecords.requests,
-            individualRequests: 0,
-            batchSupported: batchRecords.supported
-        };
-
-        if (options.namedPlan) {
-            const exactBatch = batchRecords.records.size === uniqueIncomingIds.length
-                && uniqueIncomingIds.every(id => batchRecords.records.has(id));
-            if (!exactBatch) {
-                hideProposalLoadOverlay();
-                if (typeof showEphemeralMessage === 'function') {
-                    showEphemeralMessage(tShare('plan.changedSincePreview',
-                        'This named plan changed or could not be verified. Open it again to review the current members.'), 6000, 'error');
-                }
-                return {
-                    applied: [], skipped: [], failed: uniqueIncomingIds, blocked: true,
-                    reason: 'named-plan member batch is incomplete'
-                };
-            }
-        }
-
-        // Plan preview and proposal import are separate requests. Recheck the immutable plan
-        // commitment after fetching its current members so an edit between preview and Apply is
-        // refused before any of those records are materialized.
-        const namedPlanError = await verifyNamedPlanSnapshot(options.namedPlan, uniqueIncomingIds, backendBase);
-        if (namedPlanError) {
+        // The designs know their city. The first one that belongs to another city's store asks to
+        // switch there; staying drops the link.
+        const cityManager = window.CityConfigManager;
+        const foreign = [...fetched.rows.values()].find(row => cityManager.foreignCityFor(row.city));
+        if (foreign && await promptCityMismatchForProposal(String(foreign.city))) {
+            log('the designs belong to another city; the link was dropped or reloads there');
             hideProposalLoadOverlay();
-            if (typeof showEphemeralMessage === 'function') {
-                showEphemeralMessage(tShare('plan.changedSincePreview',
-                    'This named plan changed or could not be verified. Open it again to review the current members.'), 6000, 'error');
-            }
-            return { applied: [], skipped: [], failed: uniqueIncomingIds, blocked: true, reason: namedPlanError };
+            result.blocked = true;
+            return result;
         }
 
-        // The ?city= param is only a hint the sharer's browser attached; it can be absent or lost.
-        // The proposal itself knows which city it belongs to, so ask before applying it to whatever
-        // map happens to be on screen. Every fetched member is looked at, not just the first: the
-        // first that belongs to another city's store (CityConfigManager.foreignCityFor) is the one
-        // asked about, and members of yet another city are refused below. The fetched payload is
-        // reused (see prefetchedFirst) so the apply loop does not fetch this same proposal again.
-        const cityManager = (typeof window !== 'undefined' && window.CityConfigManager) || null;
-        const foreignId = uniqueIncomingIds.find(id => cityManager?.foreignCityFor?.(sharedRecordCityOf(batchRecords.records.get(id))));
-        const checkedId = foreignId || firstProposalId;
-        const cityCheck = await sharedProposalCityBlocksLoad(checkedId, batchRecords.records.get(checkedId));
-        if (cityCheck.requestMade) recordFetchProfile.individualRequests += 1;
-        if (cityCheck.blocked) {
-            console.log('[handleSharedPlanRoute] Aborting: proposal belongs to another city.');
-            hideProposalLoadOverlay();
-            return { applied: [], skipped: [], failed: [], blocked: true };
-        }
-        const prefetchedFirst = checkedId === firstProposalId ? (cityCheck.payload || null) : null;
-
-        const applied = [];
-        const skipped = [];
-        const failed = [];
-        // Members the server reports Cancelled: stored and opened, never applied, never "present".
-        const cancelled = [];
-
-        const fetchProgressIds = new Set();
-        const markFetchProgress = (rawId) => {
-            const normalized = normalizeId(rawId);
-            if (!normalized || fetchProgressIds.has(normalized)) return;
-            fetchProgressIds.add(normalized);
-            updateProposalLoadOverlay({ progress: { done: fetchProgressIds.size, total: totalProposals } });
-        };
-        const getFetchOrdinal = (rawId) => {
-            const normalized = normalizeId(rawId);
-            if (!normalized) return fetchProgressIds.size + 1;
-            return fetchProgressIds.has(normalized) ? fetchProgressIds.size : fetchProgressIds.size + 1;
-        };
-        const getCadastrePrerequisiteIds = (proposal) => {
-            if (!proposal || typeof proposal !== 'object') return [];
-            const normalized = (typeof canonicalizeProposalCadastreAnchors === 'function')
-                ? canonicalizeProposalCadastreAnchors(proposal)
-                : proposal;
-            const claims = (typeof window !== 'undefined') ? window.__claims : null;
-            if (!claims || typeof claims.cadastreParcelIdsOf !== 'function') {
-                throw new Error('Proposal cadastre claims service is unavailable.');
-            }
-            return claims.cadastreParcelIdsOf(normalized);
-        };
-        let queue = idParts.map(normalizeId).filter(Boolean);
-        // Position of each id in the link. Share URLs list proposals oldest-first, so the
-        // highest position is the most recently created proposal — the one the view should
-        // end up framing, exactly as if it had been loaded alone.
-        const linkOrder = new Map();
-        queue.forEach((id, idx) => linkOrder.set(id, idx));
-        // The /proposals/... path is the canonical share state and STAYS in the address bar:
-        // a refresh re-enters through the already-applied fast path, so stripping it (the old
-        // cleanPlanUrl) only broke refresh and re-sharing from the URL bar.
-        updateProposalLoadOverlay({ progress: { done: fetchProgressIds.size, total: totalProposals } });
-        const loadedById = new Map();
-        batchRecords.records.forEach((proposal, id) => loadedById.set(id, proposal));
-        // Reuse the proposal the city check already fetched — keyed by the same normalized id the
-        // apply loop shifts off the queue — so the loop's `if (!proposal)` fetch is skipped for it.
-        if (prefetchedFirst && firstProposalId) loadedById.set(firstProposalId, prefetchedFirst);
-        const proposalTypeById = new Map();
-        const lastMissingCadastrePrereqIdsById = new Map();
-        const groundService = getSharedGroundService();
-        if (!groundService || typeof groundService.ensureIds !== 'function') {
-            throw new Error('Cadastral ground service is unavailable.');
-        }
-
-        // Wait for PersistentStorage to be ready before checking local proposals.
-        if (typeof PersistentStorage !== 'undefined' && PersistentStorage && typeof PersistentStorage.ensureReady === 'function') {
+        if (typeof PersistentStorage !== 'undefined' && typeof PersistentStorage.ensureReady === 'function') {
             await new Promise(resolve => PersistentStorage.ensureReady(resolve));
         }
-
-        // Ensure previously-applied proposals have finished re-materializing before we analyse
-        // conflicts OR synchronize an incoming snapshot onto a local record. The replay is an
-        // ordered fold and temporarily marks its whole target set unapplied; testing "is anything
-        // applied?" here therefore races with the exact interval this barrier exists to protect.
-        // `reapplyAppliedProposals` is single-flight and returns its in-flight promise, so always
-        // await it. A reload is a reader of the completed fabric, never a concurrent apply pass.
-        // The link's own records are in hand, so a rebuild still running needs no modal: the map
-        // stays usable and the status line counts the rebuild instead.
-        if (typeof ProposalManager !== 'undefined' && typeof ProposalManager.reapplyAppliedProposals === 'function') {
-            if (ProposalManager._initialReapplyDone !== true) {
-                hideProposalLoadOverlay();
-                replayHidModal = true;
-                replayTakeover = window.ReplayStatus.watchUserTakeover(document);
-            }
-            try {
-                await ProposalManager.reapplyAppliedProposals({
-                    onProgress: window.ReplayStatus.statusReporter(tShare,
-                        text => { if (typeof updateStatus === 'function') updateStatus(text, { transient: true }); })
-                });
-            } finally {
-                if (replayTakeover) replayTakeover.stop();
-            }
-        }
-
-        // Local copies of the linked records follow the lifecycle the server just sent for them
-        // (followServerLifecycle, server-sync.js), BEFORE the applied-state analysis below: a copy
-        // the server reports Cancelled is unapplied, so the link does not count it as standing.
-        for (const record of batchRecords.records.values()) {
-            const local = findLocalCopyOfServerProposal(record);
-            if (local) await followServerLifecycle(local, record?.lifecycleStatus,
-                ...(record?.lifecycleEvidence ? [record.lifecycleEvidence] : []));
-        }
-
-        const urlRequests3D = is3DModeRequestedFromUrl();
-
-        // Analyze what's currently applied vs what's incoming
-        const incomingIds = new Set(queue.map(normalizeId).filter(Boolean));
-        let incomingAlreadyApplied = [];
-
-        console.log('[handleSharedPlanRoute] Incoming IDs from URL:', Array.from(incomingIds));
-
-        // URL references name publication rows (or authored IDs resolved by a fetched row).
-        // Keep all downstream map membership and focus keys in the browser's local namespace.
-        const resolveLinkCopies = () => window.SharedLinkCopies.match(
-            proposalStorage.getAllProposals() || [], incomingIds, loadedById, backendBase);
-        let linkCopies;
-        let orderByLocalKey;
-        const refreshLinkCopies = () => {
-            linkCopies = resolveLinkCopies();
-            orderByLocalKey = new Map();
-            for (const [reference, local] of linkCopies) {
-                const key = String(local.proposalId);
-                orderByLocalKey.set(key, Math.max(orderByLocalKey.get(key) ?? -1, linkOrder.get(reference) ?? -1));
-            }
-        };
-        refreshLinkCopies();
-        const getFocusProposalIds = () => [...new Set([...resolveLinkCopies().values()]
-            .map(proposal => String(proposal.proposalId)))];
-        const coveredIncomingIds = new Set();
-        for (const [reference, proposal] of linkCopies) {
-            if (!isProposalCurrentlyApplied(proposal)) continue;
-            coveredIncomingIds.add(reference);
-            if (!incomingAlreadyApplied.includes(proposal)) incomingAlreadyApplied.push(proposal);
-        }
-
-        const linkOrderForProposal = proposal => orderByLocalKey.get(String(proposal?.proposalId)) ?? -1;
-
-        const mostRecentIncomingApplied = () => {
-            let best = null;
-            let bestOrd = -1;
-            incomingAlreadyApplied.forEach(p => {
-                const ord = linkOrderForProposal(p);
-                if (ord >= bestOrd) {
-                    bestOrd = ord;
-                    best = p;
-                }
-            });
-            return best;
-        };
-
-        // What is already on the map STAYS on the map. A partly applied plan used to be torn down
-        // and rebuilt from scratch — every standing member unapplied one at a time, then the whole
-        // plan re-applied — on the reasoning that the remainder would otherwise be tested against
-        // stale ground. The cost was out of all proportion to that, and it could not converge: one
-        // member that can never apply (an unalignable park) leaves the plan permanently "partly
-        // applied", so EVERY re-open unapplied 298 members to re-derive the same 298. Measured.
-        //
-        // Now the already-applied members are simply skipped by the filter below and only what is
-        // missing is attempted. The one thing this gives up is that a member applied locally will
-        // not pick up a repaired server definition on re-open; unapplying it explicitly still will.
-
-        refreshSharedFloorPlanModels(incomingAlreadyApplied, loadedById);
-
-        // Count references rather than local records: two URL identifiers can resolve to one row.
-        const allIncomingApplied = coveredIncomingIds.size === totalProposals;
-
-        console.log('[handleSharedPlanRoute] Applied-state analysis:',
-            'totalProposals=' + totalProposals,
-            'incomingAlreadyApplied=' + incomingAlreadyApplied.length,
-            'allIncomingApplied=' + allIncomingApplied
-        );
-
-        // Helper: focus on applied proposals — frame and open them the same way a
-        // single-proposal link would (center on its current derivation + details panel).
-        // Move the camera to the plan and open its details. Separate from the 3D advance below so
-        // it can run unconditionally: framing is what a link to a proposal is FOR, and it is not a
-        // decision the user needs to confirm.
-        const frameAppliedProposals = async (proposalIdToFocus) => {
-            if (!proposalIdToFocus || typeof map === 'undefined' || !map) return;
-            if (userTookOver()) {
-                console.info(`[${new Date().toISOString()}] [handleSharedPlanRoute] the map was used while the plan rebuilt; not framing ${proposalIdToFocus}`);
-                return;
-            }
-            try {
-                const in3D = typeof window.isThreeModeActive === 'function' && window.isThreeModeActive();
-                if (in3D && typeof window.focusThreeModeOnProposals === 'function') {
-                    window.focusThreeModeOnProposals([proposalIdToFocus]);
-                } else if (!in3D) {
-                    const bounds = calculateBoundsForLastAppliedProposal(proposalIdToFocus);
-                    if (bounds && bounds.isValid && bounds.isValid()) {
-                        map.fitBounds(bounds, { padding: [80, 80], maxZoom: 18 });
-                    }
-                }
-                if (typeof focusProposalDetails === 'function') {
-                    await focusProposalDetails(proposalIdToFocus, {
-                        centerOnProposal: false,
-                        showDetails: true
-                    });
-                }
-            } catch (err) {
-                console.warn('[handleSharedPlanRoute] Failed to focus on applied proposal:', err);
-            }
-        };
-
-        const focusOnAppliedProposals = async (proposalIdToFocus) => {
+        // The boot replay finishes before the link looks at what is applied (it marks its whole set
+        // unapplied while it runs). Its own records are in hand, so the map stays usable meanwhile.
+        if (ProposalManager._initialReapplyDone !== true) {
             hideProposalLoadOverlay();
-            await frameAppliedProposals(proposalIdToFocus);
-            if (urlRequests3D) {
-                try { url3DModeHandled = true; enterUrlDrivenViewWhenReady(getFocusProposalIds()); } catch (_) { }
-            }
-        };
-
-        // Plan already fully applied.
-        // → "Plan Already Applied [Show me] [OK]"
-        if (allIncomingApplied) {
-            hideProposalLoadOverlay();
-            const lastApplied = mostRecentIncomingApplied() || incomingAlreadyApplied[0];
-            const focusId = lastApplied ? (lastApplied.proposalId || lastApplied.serverProposalId) : null;
-            // Go there FIRST. Reloading a proposal link used to leave the map wherever it opened —
-            // usually the city centre — because the only thing that moved the camera was the
-            // "Show me" button on this dialog. Opening the link is already the request to see it;
-            // the dialog just explains why nothing needed applying.
-            await frameAppliedProposals(focusId);
-            if (options.suppressSummary) {
-                return {
-                    applied: [],
-                    skipped: incomingAlreadyApplied.map(proposal => ({
-                        id: proposal.proposalId || proposal.serverProposalId,
-                        label: formatSharedProposalLabel(proposal, proposal.proposalId || proposal.serverProposalId)
-                    })),
-                    failed: []
-                };
-            }
-            // Nothing to decide, so no dialog: the camera is already on it (above). A note says
-            // why nothing was applied, and a link that asks for 3D goes straight there — the
-            // "Show me / OK" dialog was one more thing to dismiss on every reload of the link.
-            // Applied here from a LOCAL copy — but the batch fetch above asked the server too. A row
-            // that has since been deleted still opens fine in this browser and nowhere else; the
-            // link looks shareable and is not. Say so instead of letting that be discovered by
-            // whoever it is sent to.
-            const goneFromServer = uniqueIncomingIds.filter(id => /^\d+$/.test(id) && batchRecords.missing.has(id));
-            if (goneFromServer.length && typeof showEphemeralMessage === 'function') {
-                console.warn(`[${new Date().toISOString()}] [handleSharedPlanRoute] linked proposals no longer on the server:`, goneFromServer);
-                showEphemeralMessage(tShare('plan.goneFromServer',
-                    'Proposal {{ids}} is no longer on the server. Only your local copy is left, so this link will not open for anyone else.',
-                    { ids: goneFromServer.map(id => `#${id}`).join(', ') }), 10000, 'warning');
-            } else if (typeof showEphemeralMessage === 'function') {
-                showEphemeralMessage(tShare('plan.alreadyAppliedMessage', 'These shared proposals are already applied to the map.'), 4000, 'info');
-            }
-            if (urlRequests3D) {
-                try { url3DModeHandled = true; enterUrlDrivenViewWhenReady(getFocusProposalIds()); } catch (_) { }
-            }
-            return { applied: [], skipped: incomingAlreadyApplied, failed: [] };
-        }
-
-        // Only exact published copies cover incoming references. A fork is a separate record;
-        // the ordinary ground-holder check preserves it when the linked source would conflict.
-        const alreadyAppliedServerIds = coveredIncomingIds;
-
-        // Queue only proposals that are NOT already applied (deduplicated). The excluded ones
-        // still count as skipped-duplicates in the summary — otherwise a reload that skips the
-        // whole plan reports "Skipped 7" with the eighth member silently unaccounted for.
-        queue = Array.from(new Set(idParts.map(normalizeId).filter(id => {
-            if (!id) return false;
-            if (alreadyAppliedServerIds.has(id)) {
-                console.log('[handleSharedPlanRoute] Skipping already-applied proposal:', id);
-                const local = linkCopies.get(id);
-                skipped.push({ id, label: formatSharedProposalLabel(local, (local && local.proposalId) || id) });
-                return false;
-            }
-            return true;
-        })));
-
-        console.log('[handleSharedPlanRoute] Queue after filtering out already-applied:', queue.length, 'of', totalProposals);
-        updateProposalLoadOverlay({ progress: { done: fetchProgressIds.size, total: totalProposals } });
-
-        // If nothing left to apply after filtering, focus on what's already applied and we're done
-        if (queue.length === 0) {
-            console.log('[handleSharedPlanRoute] All proposals already applied, focusing on them');
-            const lastApplied = mostRecentIncomingApplied() || incomingAlreadyApplied[0];
-            const focusId = lastApplied ? (lastApplied.proposalId || lastApplied.serverProposalId) : null;
-            await focusOnAppliedProposals(focusId);
-            return { applied: [], skipped, failed: [] };
-        }
-
-        // What remains is the link's own import: modal again, as for the fetch.
-        if (replayHidModal) {
-            showProposalLoadOverlay(tShare('plan.fetchingPlan', 'Fetching shared proposals…'), {
-                total: totalProposals,
-                title: tShare('plan.fetchingPlanTitle', 'Shared proposal import')
+            replayTakeover = window.ReplayStatus.watchUserTakeover(document);
+            await ProposalManager.reapplyAppliedProposals({
+                onProgress: window.ReplayStatus.statusReporter(tShare,
+                    text => { if (typeof updateStatus === 'function') updateStatus(text, { transient: true }); })
             });
-            updateProposalLoadOverlay({ progress: { done: fetchProgressIds.size, total: totalProposals } });
+            replayTakeover.stop();
+            showProposalLoadOverlay(t('proposals.share.route.importing', 'Importing the shared designs…'), {
+                total: fetched.rows.size,
+                title: t('proposals.share.route.title', 'Shared designs')
+            });
         }
+        await ProposalManager.reapplyAppliedProposals();
 
-        // Fetch every record once, then use the same immutable record order as canonical replay.
-        try {
-            if (typeof window !== 'undefined' && window.__planOrder && queue.length > 1) {
-                await Promise.all(queue.map(async (qid) => {
-                    if (loadedById.has(qid)) return;
-                    if (batchRecords.supported && batchRecords.missing.has(qid)) return;
-                    try {
-                        recordFetchProfile.individualRequests += 1;
-                        const resp = await fetchSharedProposalResponse(`${backendBase}/proposals/${encodeURIComponent(qid)}`);
-                        if (resp.ok) loadedById.set(qid, normalizePublicationResponse(resp.data, backendBase));
-                    } catch (_) { /* the apply loop retries and reports this id itself */ }
-                }));
-                const items = queue.map(qid => {
-                    const payload = loadedById.get(qid);
-                    return payload
-                        ? { ...payload, key: qid, serverProposalId: payload.serverProposalId || qid }
-                        : { key: qid, serverProposalId: qid, createdAt: null };
-                });
-                if (typeof window.__planOrder.orderFormations === 'function') {
-                    queue = window.__planOrder.orderFormations(items).map(item => String(item.key));
-                    console.log('[handleSharedPlanRoute] Immutable apply order:', queue);
-                }
-            }
-        } catch (orderError) {
-            console.warn('[handleSharedPlanRoute] Record ordering failed; keeping link order', orderError);
-        }
-
-        // One union prefetch for the whole plan: every preloaded proposal's
-        // declared cadastral anchors start downloading in one batched chain up
-        // front, so the per-proposal awaits inside the loop find them fetched
-        // or in flight instead of paying one serial round-trip chain per
-        // proposal. Proposals whose payload was not preloaded (single-proposal
-        // links, fetch failures) still fetch their bases in the loop as before.
-        try {
-            const unionCadastreIds = [];
-            for (const qid of queue) {
-                const payload = loadedById.get(qid);
-                if (!payload) continue;
-                unionCadastreIds.push(...getCadastrePrerequisiteIds(payload));
-            }
-            if (unionCadastreIds.length > 0 && !window.ParcelGroundFallback?.isWithoutParcels?.()) {
-                groundService.ensureIds(unionCadastreIds, { onProgress: reportSharedPlanProgress }).catch(err => {
-                    console.warn('[handleSharedPlanRoute] Union cadastral-ground load failed', err);
-                });
-            }
-        } catch (err) {
-            console.warn('[handleSharedPlanRoute] Union cadastral-ground prefetch failed; per-proposal loads cover it', err);
-        }
-
-        // Judge the WHOLE plan from its records before applying any of it. The apply already
-        // refuses in ~30 named ways, but it does so one member at a time after the expensive setup,
-        // so a plan of 299 learns at member 140 that member 140 was never applicable. Blocked
-        // members are reported at the end alongside real failures — the clear ones still apply,
-        // which is the point: one unusable record must not cost the other 298.
-        //
-        // The precheck is deliberately conservative and defers to the apply whenever it is unsure,
-        // so this can only ever skip work the apply would itself have refused.
-        try {
-            const validator = (typeof window !== 'undefined') ? window.__applyValidate : null;
-            const routeApi = (typeof window !== 'undefined') ? window.__applyRoute : null;
-            if (validator && typeof validator.validatePlan === 'function') {
-                const report = validator.validatePlan(
-                    queue.map(qid => ({ proposalId: qid, record: loadedById.get(qid) })),
-                    routeApi ? { classify: (record) => routeApi.classifyApplyRoute(record) } : null
-                );
-                // Announced on every plan, including the clean case: a precheck that only speaks
-                // when it refuses something is indistinguishable from one that never ran.
-                console.log(`[handleSharedPlanRoute] precheck: ${report.applicable.length} applicable, `
-                    + `${report.blocked.length} refused of ${report.total}`);
-                if (report.blocked.length) {
-                    const blockedIds = new Set(report.blocked.map(item => String(item.proposalId)));
-                    report.blocked.forEach(item => {
-                        console.warn('[handleSharedPlanRoute] precheck refused', item.proposalId,
-                            item.verdict.code, item.verdict.message);
-                        failed.push({
-                            id: item.proposalId,
-                            label: formatSharedProposalLabel(loadedById.get(item.proposalId), item.proposalId),
-                            reason: item.verdict.message
-                        });
-                        markFetchProgress(item.proposalId);
-                    });
-                    queue = queue.filter(qid => !blockedIds.has(String(qid)));
-                }
-            }
-        } catch (precheckError) {
-            // A precheck that throws must never cost the plan its apply.
-            console.warn('[handleSharedPlanRoute] precheck failed; applying without it', precheckError);
-        }
-
-        // Captured before the loop drains it. Applying is the long half of a plan open — a
-        // 299-proposal plan spends minutes here, one proposal at a time — and until now the
-        // overlay had no counter for it: it sat at the fetch phase's completed 299/299 while
-        // the real work scrolled past in the console. The bar now follows what is happening.
-        const applyTotal = queue.length;
-        let applyDone = 0;
-
-        while (queue.length > 0) {
-            const id = queue.shift();
+        // Import: a local copy of the CID already applied stands as it is; anything else is stored
+        // parked and queued.
+        const queue = [];
+        let imported = 0;
+        for (const cid of valid) {
+            const row = fetched.rows.get(cid);
+            if (!row) continue;
             try {
-                let proposal = loadedById.get(id);
-                if (!proposal) {
-                    if (batchRecords.supported && batchRecords.missing.has(id)) {
-                        failed.push({
-                            id,
-                            label: formatSharedProposalLabel(null, id),
-                            reason: batchRecords.errors?.get(id) || tShare('plan.notFoundOnServer', 'Not found on server')
-                        });
-                        markFetchProgress(id);
-                        continue;
-                    }
-                    const baseStatus = tShare('plan.fetching', 'Fetching proposal #{{id}}…', { id });
-                    const ordinal = getFetchOrdinal(id);
-                    const fetchingStatus = (totalProposals > 0)
-                        ? `${baseStatus} (${ordinal}/${totalProposals})`
-                        : baseStatus;
-                    updateProposalLoadOverlay({
-                        status: fetchingStatus,
-                        progress: { done: fetchProgressIds.size, total: totalProposals }
-                    });
-                    recordFetchProfile.individualRequests += 1;
-                    const response = await fetchSharedProposalResponse(`${backendBase}/proposals/${encodeURIComponent(id)}`);
-                    if (!response.ok) {
-                        let reason;
-                        if (response.status === 404) {
-                            reason = tShare('plan.notFoundOnServer', 'Not found on server');
-                        } else {
-                            let serverMessage = '';
-                            try { serverMessage = describeSharedProposalFetchFailure(id, response.data); } catch (_) { serverMessage = ''; }
-                            reason = serverMessage
-                                || `HTTP ${response.status}${response.statusText ? ` ${response.statusText}` : ''}`.trim();
-                        }
-                        failed.push({ id, label: formatSharedProposalLabel(null, id), reason });
-                        markFetchProgress(id);
-                        continue;
-                    }
-                    proposal = normalizePublicationResponse(response.data, backendBase);
-                    loadedById.set(id, proposal);
-                    try {
-                        const inferredType = formatSharedProposalTypeLabel(proposal);
-                        if (inferredType) proposalTypeById.set(id, inferredType);
-                    } catch (_) { }
-                }
-
-                markFetchProgress(id);
-
-                // Ensure the proposal's normalized cadastral declaration before the attempt.
-                // The repository decides whether each fact is cached, in flight, absent, or needs
-                // transport; the route neither classifies IDs nor resolves geometry itself.
-                const cadastreIds = getCadastrePrerequisiteIds(proposal);
-
-                if (cadastreIds.length > 0 && !window.ParcelGroundFallback?.isWithoutParcels?.()) {
-                    const fetchResult = await groundService.ensureIds(cadastreIds, { onProgress: reportSharedPlanProgress });
-                    try {
-                        lastMissingCadastrePrereqIdsById.set(String(id), fetchResult.missingIds);
-                        if (proposal && proposal.proposalId) lastMissingCadastrePrereqIdsById.set(String(proposal.proposalId), fetchResult.missingIds);
-                    } catch (_) { }
-                }
-
-                // Fallback wording matches the locale entry — en.json wins over the fallback, so a
-                // divergent fallback only ever lies about what the user will see.
-                applyDone += 1;
-                updateProposalLoadOverlay({
-                    status: tShare(
-                        'plan.preparingNamed',
-                        'Preparing {{label}} ({{done}}/{{total}})…',
-                        { label: formatSharedProposalLabel(proposal, id), done: applyDone, total: applyTotal }
-                    ),
-                    progress: { done: applyDone, total: applyTotal }
-                });
-                const result = await importAndApplySharedProposal(proposal, {
-                    skipDependencyFetch: true,
-                    deferSave: true
-                });
-
-                const proposalId = (result && result.proposalId) || proposal?.proposalId || id;
-                const label = formatSharedProposalLabel(proposal, proposalId);
-                try {
-                    const inferredType = proposalTypeById.get(id) || formatSharedProposalTypeLabel(proposal);
-                    if (inferredType) {
-                        proposalTypeById.set(id, inferredType);
-                        if (proposalId) proposalTypeById.set(String(proposalId), inferredType);
-                    }
-                } catch (_) { }
-
-                // Ensure the repository result is also keyed by the final resolved proposal id.
-                try {
-                    const pidKey = proposalId ? String(proposalId) : '';
-                    if (pidKey && Array.isArray(cadastreIds)) {
-                        const missingCadastre = lastMissingCadastrePrereqIdsById.get(String(id))
-                            || lastMissingCadastrePrereqIdsById.get((proposal && proposal.proposalId) ? String(proposal.proposalId) : '')
-                            || [];
-                        if (Array.isArray(missingCadastre) && missingCadastre.length) {
-                            lastMissingCadastrePrereqIdsById.set(pidKey, missingCadastre);
-                        }
-                    }
-                } catch (_) { }
-
-                if (result && result.cancelled) {
-                    cancelled.push({ id: proposalId, label, ord: linkOrder.has(normalizeId(id)) ? linkOrder.get(normalizeId(id)) : -1 });
+                const existing = window.DesignSync.localCopyOf(cid);
+                if (existing && isProposalCurrentlyApplied(existing)) {
+                    result.skipped.push(String(existing.proposalId));
+                    result.localIds.set(cid, String(existing.proposalId));
                     continue;
                 }
-
-                if (result && result.skipped) {
-                    skipped.push({ id: proposalId, label, ord: linkOrder.has(normalizeId(id)) ? linkOrder.get(normalizeId(id)) : -1 });
-                    continue;
-                }
-
-                if (result && result.applied) {
-                    applied.push({ id: proposalId, label, ord: linkOrder.has(normalizeId(id)) ? linkOrder.get(normalizeId(id)) : -1 });
-                    continue;
-                }
-
-                const reason = (result && result.reason) || tShare('plan.applyUnknownFailure', 'Unknown error while importing.');
-                failed.push({
-                    id: proposalId,
-                    label,
-                    type: (proposalTypeById.get(String(proposalId)) || proposalTypeById.get(String(id)) || formatSharedProposalTypeLabel(proposal) || ''),
-                    missingPrereqs: ensureArrayOfStrings(lastMissingCadastrePrereqIdsById.get(String(proposalId || id)) || []),
-                    reason
-                });
+                const stored = existing || window.DesignSync.importDesign(row, { deferSave: true });
+                if (!existing) imported += 1;
+                result.localIds.set(cid, String(stored.proposalId));
+                queue.push(String(stored.proposalId));
             } catch (error) {
-                console.error('apply plan item failed', id, error);
-                const reason = (error && error.message) ? error.message : 'Unexpected error';
-                // No requeue and no healing (§15a): a thrown apply is a loud failure with its
-                // reason and named prerequisites.
-                {
-                    const cachedProposal = loadedById.get(id) || null;
-                    failed.push({
-                        id,
-                        label: formatSharedProposalLabel(cachedProposal, id),
-                        type: (proposalTypeById.get(id) || formatSharedProposalTypeLabel(cachedProposal) || ''),
-                        missingPrereqs: (() => {
-                            try {
-                                const key = String(id);
-                                const explicitMissing = lastMissingCadastrePrereqIdsById.get(key);
-                                if (Array.isArray(explicitMissing) && explicitMissing.length) return explicitMissing;
-                                const storedFailure = getStoredApplyFailureInfo(key);
-                                if (storedFailure && Array.isArray(storedFailure.missingIds) && storedFailure.missingIds.length) {
-                                    return ensureArrayOfStrings(storedFailure.missingIds);
-                                }
-                                return [];
-                            } catch (_) {
-                                return [];
-                            }
-                        })(),
-                        reason
-                    });
-                }
-                markFetchProgress(id);
+                console.warn(`[${new Date().toISOString()}] [handleSharedDesignRoute] ${cid} could not be imported`, error);
+                result.failed.push({ id: cid, label: row.title || cid, reason: (error && error.message) || String(error) });
             }
-
+            updateProposalLoadOverlay({ progress: { done: result.localIds.size + result.failed.length, total: valid.length } });
         }
+        if (imported) proposalStorage.save();
 
-        if (options.explicitApply === true && options.namedPlan && (failed.length || cancelled.length)) {
-            const reason = tShare('plan.changedSincePreview',
-                'This named plan changed or could not be verified. Open it again to review the current members.');
-            applied.forEach(entry => failed.push({
-                ...entry,
-                type: entry.type || '',
-                missingPrereqs: [],
-                reason
-            }));
-            applied.length = 0;
+        // The cadastral ground of every queued design in one prefetch, then a precheck of the whole
+        // set: a design the apply would refuse is reported, and the others still apply.
+        const groundService = getSharedGroundService();
+        const unionCadastreIds = queue.flatMap(id => window.__claims.cadastreParcelIdsOf(proposalStorage.getProposal(id)));
+        if (unionCadastreIds.length && !window.ParcelGroundFallback?.isWithoutParcels?.()) {
+            try {
+                await groundService.ensureIds(unionCadastreIds, { onProgress: reportSharedPlanProgress });
+            } catch (error) {
+                // The cadastre did not answer: offer the ways on, as a parcel link does
+                // (parcels/route.js). Continue without parcels reloads this link, which then applies
+                // its designs by their own geometry.
+                window.ParcelGroundFallback?.onGroundUnavailable?.({ error, city: window.CityConfigManager.getCurrentCityId() });
+                throw error;
+            }
         }
+        const report = window.__applyValidate.validatePlan(
+            queue.map(id => ({ proposalId: id, record: proposalStorage.getProposal(id) })),
+            { classify: record => window.__applyRoute.classifyApplyRoute(record) });
+        log(`precheck: ${report.applicable.length} applicable, ${report.blocked.length} refused of ${report.total}`);
+        const blockedIds = new Set(report.blocked.map(item => String(item.proposalId)));
+        report.blocked.forEach(item => {
+            console.warn(`[${new Date().toISOString()}] [handleSharedDesignRoute] precheck refused`, item.proposalId, item.verdict.code, item.verdict.message);
+            result.failed.push({ id: item.proposalId, label: labelOf(proposalStorage.getProposal(item.proposalId), item.proposalId), reason: item.verdict.message });
+        });
+        const toApply = queue.filter(id => !blockedIds.has(id));
 
-        // All imported members are now parked records. Materialise only that queue through the
-        // direct replay materializer; startup already restored everything else on the map.
-        if (applied.length > 0) {
+        if (toApply.length) {
             updateProposalLoadOverlay({ status: tShare('plan.materializing', 'Starting proposal materialization…') });
-            const sharedPlanMemberIds = new Set([
-                ...incomingAlreadyApplied.map(record => record.proposalId),
-                ...applied.map(entry => entry.id)
-            ].filter(Boolean).map(String));
-            const scoped = options.explicitApply === true
-                ? await materializeExplicitProposalPlan(applied.map(entry => entry.id))
-                : await materializeQueuedSharedProposals(applied.map(entry => entry.id), {
-                    recordFetchProfile,
-                    planMemberIds: sharedPlanMemberIds
+            const scoped = await materializeQueuedSharedProposals(toApply, {
+                planMemberIds: new Set([...result.skipped, ...toApply]),
+                recordFetchProfile: { batchRequests: Math.ceil(valid.length / 1000), individualRequests: 0, batchSupported: true }
+            });
+            const failedIds = new Set(scoped.failedIds.map(String));
+            toApply.forEach(id => {
+                if (!failedIds.has(id)) {
+                    result.applied.push(id);
+                    return;
+                }
+                result.failed.push({
+                    id, label: labelOf(proposalStorage.getProposal(id), id),
+                    reason: getStoredApplyFailureInfo(id)?.message || t('proposals.share.errors.applyFailed', 'The design could not be applied to the ground here.')
                 });
-            const scopedFailures = new Set(scoped.failedIds.map(String));
-            for (let i = applied.length - 1; i >= 0; i -= 1) {
-                const entry = applied[i];
-                if (!scopedFailures.has(String(entry.id))) continue;
-                const record = proposalStorage.getProposal(entry.id);
-                failed.push({
-                    id: entry.id,
-                    label: entry.label,
-                    type: formatSharedProposalTypeLabel(record) || '',
-                    missingPrereqs: [],
-                    reason: getStoredApplyFailureInfo(entry.id)?.message || 'The proposal could not be derived from the loaded cadastre.'
-                });
-                applied.splice(i, 1);
-            }
+            });
+            updateProposalLayer();
+            updateShowProposalsButton();
         }
-
         hideProposalLoadOverlay();
+        log(`applied ${result.applied.length}, already applied ${result.skipped.length}, failed ${result.failed.length}`);
 
-
-        const escape = typeof escapeHtml === 'function' ? escapeHtml : (value => value);
-        const renderList = (items, formatter) => {
-            const content = items.map(formatter).join('');
-            return `<div class="shared-plan-list" style="max-height: 320px; overflow-y: auto; padding-right: 4px;"><ul style="margin: 0; padding-left: 18px;">${content}</ul></div>`;
-        };
-
-        const bodyLines = [];
-        let rebasedCount = 0;
-        if (applied.length > 0) {
-            const appliedItems = renderList(applied, item => `<li>${escape(item.label || formatSharedProposalLabel(null, item.id))}</li>`);
-            bodyLines.push(`<p>${tShare('plan.appliedCountDetailed', 'Applied {{count}} proposals:', {
-                count: applied.length
-            })}</p>${appliedItems}`);
-            const rebased = collectRebasedSharedProposals(applied.map(item => item.id));
-            rebasedCount = rebased.length;
-            if (rebased.length) {
-                bodyLines.push(`<p class="shared-plan-rebased">${tShare('rebased',
-                    '{{count}} of them take different ground here than when published: {{titles}} (details in the console).', {
-                        count: rebased.length,
-                        titles: rebased.map(r => escape(r.title)).join(', ')
-                    })}</p>`);
+        const standing = [...result.applied, ...result.skipped];
+        const focusId = latestAuthoredDesignId(standing);
+        const userTookOver = () => !!(replayTakeover && replayTakeover.tookOver());
+        if (focusId && options.frame !== false && !userTookOver()) {
+            if (typeof window.isThreeModeActive === 'function' && window.isThreeModeActive()) {
+                window.focusThreeModeOnProposals([focusId]);
+            } else {
+                const bounds = calculateBoundsForLastAppliedProposal(focusId);
+                if (bounds && bounds.isValid()) map.fitBounds(bounds, { padding: [80, 80], maxZoom: 18, animate: false });
             }
         }
-        if (skipped.length > 0) {
-            if (bodyLines.length > 0) bodyLines.push('<br>');
-            const skippedItems = renderList(skipped, item => `<li>${escape(item.label || formatSharedProposalLabel(null, item.id))}</li>`);
-            bodyLines.push(`<p>${tShare('plan.skippedCountDetailed', 'Skipped {{count}} duplicate proposals (already present):', {
-                count: skipped.length
-            })}</p>${skippedItems}`);
-        }
-        if (failed.length > 0) {
-            if (bodyLines.length > 0) bodyLines.push('<br>');
-            // Raw prerequisite-id dumps belong in the console, not in the user's face.
-            try { console.warn('[handleSharedPlanRoute] failed proposals detail', failed); } catch (_) { }
-            const failedItems = renderList(failed, item => {
-                const label = escape(item.label || formatSharedProposalLabel(null, item.id));
-                const type = item.type ? ` (${escape(item.type)})` : '';
-                const reason = item.reason ? ` · ${escape(item.reason)}` : '';
-                return `<li>${label}${type}${reason}</li>`;
-            });
-            bodyLines.push(`<p>${tShare('plan.failedCountDetailed', 'Failed to apply {{count}} proposals:', {
-                count: failed.length
-            })}</p>${failedItems}`);
+        if (focusId && options.openDetails !== false && !userTookOver()) {
+            await focusProposalDetails(focusId, { centerOnProposal: false, showDetails: true });
         }
 
-        const wants3DFromUrl = (!url3DModeHandled && is3DModeRequestedFromUrl());
-
-        if (applied.length > 0) {
-            if (typeof updateProposalLayer === 'function') updateProposalLayer();
-            if (typeof updateShowProposalsButton === 'function') updateShowProposalsButton();
-        }
-
-        // Center map on the most recently loaded proposal — the one
-        // latest in link order among everything now on the map (applied, skipped as duplicate,
-        // or filtered out earlier because it was already applied) — as if it were loaded alone.
-        // Link order is a presentation choice; fabric precedence remains immutable record order.
-        refreshLinkCopies();
-        const lastProposalId = selectSharedPlanFocusId(
-            applied,
-            [...skipped, ...cancelled],
-            incomingAlreadyApplied,
-            linkOrderForProposal
-        );
-        console.log('[handleSharedPlanRoute] Centering on proposal:', lastProposalId);
-
-        if (lastProposalId && typeof window.isThreeModeActive === 'function' && window.isThreeModeActive()
-            && typeof window.focusThreeModeOnProposals === 'function') {
-            // The scene is up and the 2D map frozen under it: take the camera there instead.
-            window.focusThreeModeOnProposals([lastProposalId]);
-        } else if (!options.suppressFocus && lastProposalId && typeof map !== 'undefined' && map && !userTookOver()) {
-            try {
-                const beforeCenter = (typeof map.getCenter === 'function') ? map.getCenter() : null;
-                const beforeZoom = (typeof map.getZoom === 'function') ? map.getZoom() : null;
-                const settlePromise = createLeafletViewSettlePromise(beforeCenter, beforeZoom);
-                const bounds = calculateBoundsForLastAppliedProposal(lastProposalId);
-                if (bounds && bounds.isValid && bounds.isValid()) {
-                    map.fitBounds(bounds, { padding: [80, 80], maxZoom: 18 });
-                }
-                await settlePromise;
-            } catch (error) {
-                console.warn('Failed to center map on last applied proposal:', error);
-            }
-        }
-
-        // Highlight the loaded proposal + open details panel. handleSharedPlanRoute only applied
-        // the proposal and centered the map; without this call, window.currentlyHighlightedProposal
-        // stays null and no overlays are drawn. For a multi-id share we highlight the last one
-        // (same semantics as centering, which uses the last applied id).
-        if (!options.suppressDetails && lastProposalId && typeof focusProposalDetails === 'function' && !userTookOver()) {
-            try {
-                await focusProposalDetails(lastProposalId, {
-                    centerOnProposal: false, // camera has already been fit to bounds above
-                    showDetails: true
+        if (options.summary !== false) {
+            if (result.failed.length) {
+                const escape = value => escapeHtml(String(value == null ? '' : value));
+                const items = result.failed.map(item => `<li>${escape(item.label)}${item.reason ? ` · ${escape(item.reason)}` : ''}</li>`).join('');
+                showSimpleShareModal({
+                    title: t('proposals.share.route.title', 'Shared designs'),
+                    body: `<p>${escape(t('proposals.share.route.failedCount', '{{count}} of the shared designs could not be opened:', { count: result.failed.length }))}</p>`
+                        + `<ul class="shared-plan-failures">${items}</ul>`,
+                    actions: [{ label: t('modal.common.close', 'Close'), primary: true }]
                 });
-            } catch (error) {
-                console.warn('[handleSharedPlanRoute] focusProposalDetails failed', error);
+            } else if (result.applied.length) {
+                showEphemeralMessage(t('proposals.share.route.applied', 'Applied {{count}} shared designs.', { count: result.applied.length }), 5000, 'info');
+            } else if (result.skipped.length) {
+                showEphemeralMessage(t('proposals.share.route.alreadyApplied', 'These shared designs are already on the map.'), 4000, 'info');
             }
         }
 
-        // A dialog only when there is something to read: a failure, or proposals that landed on
-        // different ground than they were published on. A clean apply is already on screen (framed,
-        // details open) — a modal saying so was one more thing to dismiss, and on a phone it stacked
-        // over the city-switch dialog that opened the link.
-        const summaryHasIssues = failed.length > 0 || rebasedCount > 0;
-        const showSummaryModal = !options.suppressSummary
-            && bodyLines.length > 0
-            && summaryHasIssues;
-
-        let planSummaryModal = null;
-        if (showSummaryModal) {
-            planSummaryModal = showSimpleShareModal({
-                title: tShare('plan.summary', 'Shared proposals result'),
-                body: bodyLines.join(''),
-                actions: [
-                    {
-                        label: tShare('plan.copyResult', 'Copy'),
-                        keepOpen: true,
-                        onClick: (api) => {
-                            try {
-                                const text = `${tShare('plan.summary', 'Shared proposals result')}\n\n`
-                                    + String(api && api.body ? api.body.innerText : '').trim();
-                                const copied = () => {
-                                    if (typeof showEphemeralMessage === 'function') {
-                                        showEphemeralMessage(tShare('plan.copiedResult', 'Result copied.'), 2500, 'success');
-                                    }
-                                };
-                                if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
-                                    navigator.clipboard.writeText(text).then(copied, err => {
-                                        console.warn('[handleSharedPlanRoute] copy failed', err);
-                                    });
-                                } else {
-                                    const scratch = document.createElement('textarea');
-                                    scratch.value = text;
-                                    document.body.appendChild(scratch);
-                                    scratch.select();
-                                    document.execCommand('copy');
-                                    scratch.remove();
-                                    copied();
-                                }
-                            } catch (err) {
-                                console.warn('[handleSharedPlanRoute] copy failed', err);
-                            }
-                        }
-                    },
-                    { label: t('modal.common.close', 'Close'), primary: true }
-                ],
-                onClose: () => {
-                    // Dismissing the summary takes you to what it just told you about. The camera
-                    // is already framed by the time this dialog opens — but only when the framing
-                    // above found usable bounds, and it can miss (a read-only second tab, parcels
-                    // not yet loaded, a proposal whose children are still materialising). Doing it
-                    // again on Close costs nothing when the view is already right and rescues the
-                    // case where the dialog was dismissed onto the city centre.
-                    try { frameAppliedProposals(lastProposalId); } catch (_) { }
-                    // URL-driven 3D mode: only enter after the user dismisses the results dialog.
-                    try {
-                        if (wants3DFromUrl && !url3DModeHandled) {
-                            url3DModeHandled = true;
-                            enterUrlDrivenViewWhenReady(getFocusProposalIds());
-                        }
-                    } catch (_) { }
-                }
-            });
-        } else if (!options.suppressSummary && (applied.length > 0 || skipped.length > 0 || cancelled.length > 0) && typeof showEphemeralMessage === 'function') {
-            // Clean apply: lightweight feedback instead of a modal.
-            const bits = [];
-            const appliedOrPresent = applied.length + skipped.length;
-            if (appliedOrPresent > 0) {
-                bits.push(tShare('plan.appliedToast', 'Applied {{count}} proposals.', {
-                    count: appliedOrPresent
-                }));
-            }
-            if (cancelled.length > 0) {
-                bits.push(tShare('plan.cancelledToast', 'Not applied, withdrawn: {{titles}}.', {
-                    titles: cancelled.map(item => item.label).join(', ')
-                }));
-            }
-            showEphemeralMessage(bits.join(' '), 6000, 'info');
+        // A link that asks for 3D opens the scene framed on its own designs.
+        if (options.enter3D !== false && !url3DModeHandled && is3DModeRequestedFromUrl() && standing.length) {
+            url3DModeHandled = true;
+            enterUrlDrivenViewWhenReady(standing);
         }
-
-        // No dialog shown -> honor URL-driven 3D immediately after focusing.
-        if (!planSummaryModal) {
-            // The same rescue the dialog's Close runs: re-frame when the fit above found no bounds.
-            try { if (lastProposalId) frameAppliedProposals(lastProposalId); } catch (_) { }
-            try {
-                if (wants3DFromUrl && !url3DModeHandled) {
-                    url3DModeHandled = true;
-                    enterUrlDrivenViewWhenReady(getFocusProposalIds());
-                }
-            } catch (_) { }
-        }
-        return { applied, skipped, failed };
+        return result;
     } catch (error) {
-        console.error('handleSharedPlanRoute failed', error);
+        console.error(`[${new Date().toISOString()}] [handleSharedDesignRoute] failed`, error);
         hideProposalLoadOverlay();
-        return {
-            applied: [],
-            skipped: [],
-            failed: [{ id: null, label: '', reason: error && error.message ? error.message : 'Unexpected error' }]
-        };
-    } finally {
-        releaseDeepLinkParcelFetch();
+        if (replayTakeover) replayTakeover.stop();
+        showEphemeralMessage((error && error.message) || t('proposals.share.route.failed', 'The shared designs could not be opened.'), 8000, 'error');
+        result.failed.push({ id: null, label: '', reason: (error && error.message) || 'Unexpected error' });
+        return result;
     }
 }
 
 function handleStandalone3DModeFromUrl(attempt = 0) {
     try {
         if (url3DModeHandled) return;
-        const wants3D = is3DModeRequestedFromUrl();
-        if (!wants3D) return;
+        if (!is3DModeRequestedFromUrl()) return;
 
-        // Check if there are proposal-related URL params - if so, let proposal handlers deal with 3D
-        const params = new URLSearchParams(window.location.search || '');
-        const hasProposalParams = params.has('proposalShare') || params.has('shared')
-            || window.location.pathname.startsWith('/proposals/')
-            || window.location.pathname.startsWith('/plans/');
-        if (hasProposalParams) {
-            // Proposal handlers will handle 3D mode, so we don't need to do anything here
-            return;
-        }
+        // A record route (a design link, an agreement, a chain proposal) enters 3D itself, framed on
+        // what it opens.
+        const pathname = window.location.pathname || '';
+        if (pathname.startsWith('/proposals/') || pathname.startsWith('/designs/') || pathname.startsWith('/agreements/')) return;
 
         if (typeof map === 'undefined' || !map) {
             if (attempt < 15) {
@@ -2704,3 +1029,5 @@ function handleStandalone3DModeFromUrl(attempt = 0) {
         console.error('handleStandalone3DModeFromUrl failed', error);
     }
 }
+
+if (typeof window !== 'undefined') window.handleSharedDesignRoute = handleSharedDesignRoute;

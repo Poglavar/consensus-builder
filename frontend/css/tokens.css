@@ -68,9 +68,6 @@
     --cb-info-soft: #f0f9ff;
     --cb-info-soft-ink: #075985;
 
-    /* A named plan hatched on the map (css/plans.css); drawn over the map tiles, so one value serves both themes. */
-    --cb-plan: #7c3aed;
-
     /* Spatial representation roles, shared by the map and model comparison. */
     --cb-planning-existing: #64748b;
     --cb-planning-permitted: #168b87;
@@ -183,8 +180,8 @@
     /* The page ladder. */
     --cb-z-map-pane-estimate-imagery: 350; /* estimate satellite crop: above tiles, below parcel vectors */
     --cb-z-map-pane-plan: 620;      /* the Schelling plan layer: over parcels and blocks, under the site tool (640) */
-    --cb-z-map-pane-plan-view: 630; /* a named plan hatched on the map (css/plans.css): over the Schelling plan, under the site tool */
     --cb-z-map-pane-site: 640;      /* the site tool's Leaflet pane: over the markers (600), under tooltips (650) */
+    --cb-z-map-pane-share-highlight: 690; /* the share panel's chosen designs (css/proposals.css): over every fabric pane, under popups (700) */
     --cb-z-map-compare: 800;        /* before/after overlay inside a Leaflet container: above its panes (<= 700) */
     --cb-z-three: 900;              /* the 3D view over the 2D map's panes, under the map chrome */
     --cb-z-map-chrome: 1000;        /* floating buttons, search, tray */

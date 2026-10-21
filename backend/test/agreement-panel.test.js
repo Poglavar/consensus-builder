@@ -1,6 +1,7 @@
 // Unit tests for frontend/js/agreement-panel.js and agreement-list.js: the pure helpers that word an
 // agreement in its docked panel and in the Agreements list (status, land, allocations, ledger, rule,
-// title, list rows), over hand-made records, a stubbed ground check and the real AgreementRecord ledger.
+// title, list rows, and once proposed its CID, link, index status and decision slot), over hand-made
+// records, a stubbed ground check and the real AgreementRecord ledger.
 import { describe, it, expect } from 'vitest';
 import { createRequire } from 'node:module';
 
@@ -40,7 +41,7 @@ function agreement(overrides = {}) {
         city: 'zagreb',
         createdAt: '2026-10-21T10:00:00.000Z',
         updatedAt: '2026-10-21T10:00:00.000Z',
-        designs: [{ proposalId: 'layout-1', title: 'Courtyard layout', goal: 'parcel-layout', fingerprint: 'c2-layout' }],
+        designs: [{ proposalId: 'layout-1', title: 'Courtyard layout', goal: 'parcel-layout', cid: 'bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku' }],
         inputs: {
             parcels: [{ parcelId: 'k9', areaM2: 700, holders: [ana] }, { parcelId: 'k10', areaM2: 300, holders: [boris] }],
             openGroundM2: 12.5
@@ -206,6 +207,46 @@ describe('panel HTML', () => {
         expect(panel.actionsHtml({ canCompare: true, comparing: true })).toMatch(/data-agreement-action="compare" aria-pressed="true">/);
         expect(panel.actionsHtml()).toContain('data-agreement-action="edit"');
         expect(panel.actionsHtml()).toMatch(/class="btn btn-danger" data-agreement-action="delete"/);
+    });
+
+    it('offers Propose only for a current agreement not yet proposed, and no Edit once proposed', () => {
+        const draft = panel.actionsHtml({ canCompare: true, canPropose: true });
+        expect(draft).toMatch(/class="btn btn-primary" data-agreement-action="propose"/);
+        // Propose takes the main place; Before / after steps back beside it.
+        expect(draft).toMatch(/class="btn" data-agreement-action="compare"/);
+        expect(draft).toContain('data-agreement-action="edit"');
+        expect(panel.actionsHtml({ canCompare: true })).not.toContain('data-agreement-action="propose"');
+        // A proposed agreement is immutable: a change is a new agreement.
+        const proposed = panel.actionsHtml({ canCompare: true, published: true });
+        expect(proposed).not.toContain('data-agreement-action="propose"');
+        expect(proposed).not.toContain('data-agreement-action="edit"');
+        expect(proposed).toMatch(/class="btn btn-primary" data-agreement-action="compare"/);
+        expect(proposed).toContain('data-agreement-action="delete"');
+    });
+
+    it('words what the index says of a proposed agreement', () => {
+        expect(panel.remoteStatusOf(null)).toEqual({ tone: 'neutral', label: 'Checking the server…' });
+        expect(panel.remoteStatusOf({ loading: true, status: 'active' })).toMatchObject({ tone: 'neutral' });
+        expect(panel.remoteStatusOf({ error: 'offline' })).toEqual({ tone: 'warning', label: 'Server status unavailable: offline' });
+        expect(panel.remoteStatusOf({ status: 'expired' })).toEqual({ tone: 'danger', label: 'Expired' });
+        expect(panel.remoteStatusOf({ status: 'active' })).toEqual({ tone: 'success', label: 'Active' });
+    });
+
+    it('shows a proposed agreement by its CID with its link and status, and where its parties decide', () => {
+        const cid = 'bafkreibm6jg3ux5qumhcn2b3flc3tyu6dmlb4xa7u5bf44yegnrjhc4yeq';
+        const published = { cid, publishedAt: '2026-10-21T12:00:00.000Z', apiBase: 'https://api.example.test' };
+        expect(panel.publishedHtml({ published: null })).toBe('');
+        const owners = panel.publishedHtml({ published, remote: { cid, status: 'active' }, electorate: 'owners' });
+        expect(owners).toContain(`<code class="agreement-panel-cid" title="${cid}">${cid.slice(0, 12)}…${cid.slice(-6)}</code>`);
+        expect(owners).toContain('data-agreement-action="link"');
+        expect(owners).toContain('data-agreement-remote-status="active"');
+        expect(owners).toContain('cb-badge--success');
+        expect(owners).toContain('data-approval-card-slot');
+        expect(owners).not.toContain('data-agreement-community-note');
+        const community = panel.publishedHtml({ published, remote: { cid, status: 'expired' }, electorate: 'community' });
+        expect(community).toContain('data-agreement-community-note');
+        expect(community).not.toContain('data-approval-card-slot');
+        expect(community).toContain('cb-badge--danger');
     });
 
     it('makes every design a button that selects it, and every piece a line', () => {

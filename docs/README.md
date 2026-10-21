@@ -26,4 +26,4 @@ The protocol build is maintained on `colosseum-worlds-fair`. Its [architecture](
 
 ## Specialist and historical references
 
-[ENS](../feature-ens-readme.md), [Walrus](../feature-walrus-readme.md) and [Canton/DAML](../feature-daml-readme.md) preserve implementation notes for those integrations. Use their dated deployment statements as historical evidence, and verify current configuration before running a chain-specific operation. They are not the current map walkthrough.
+[ENS](../feature-ens-readme.md) and [Canton/DAML](../feature-daml-readme.md) preserve implementation notes for those integrations. Use their dated deployment statements as historical evidence, and verify current configuration before running a chain-specific operation. They are not the current map walkthrough.

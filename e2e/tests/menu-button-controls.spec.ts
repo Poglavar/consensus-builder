@@ -50,22 +50,12 @@ test('selection tray Detect block expands its selected seed to the cadastral blo
   await expect.poll(() => page.evaluate(() => (window as any).multiParcelSelection.selectedParcels.size)).toBe(5);
 });
 
-test('parcel menu Offer my land explains the ownership proof required from a guest', async ({ mockApi: page }) => {
-  await openCity(page);
-  await clickMapPoint(page, 15.9822, 45.80025);
-  await page.locator('#parcel-menu [data-command="parcel.offer"]').click();
-  const notice = page.locator('#ephemeral-message-container .ephemeral-message');
-  await expect(notice).toBeVisible();
-  await expect(notice).toContainText('Offering your land needs proof that it is yours: connect your Solana wallet');
-  await expect(page.locator('.create-proposal-modal:visible')).toHaveCount(0);
-});
-
 test('global 3D mode opens from a selected parcel and retains parcel picking and isolation', async ({ mockApi: page }) => {
   await mockBuildingScene(page);
   await openCity(page);
   await page.evaluate(({ id, geometry }) => (window as any).proposalStorage.addProposal({
-    title: '3D parcel proposal', goal: 'decide-later', kind: 'owner-deal', lifecycleStatus: 'Active',
-    cadastreParcelIds: [id], geometry, applied: false,
+    title: '3D parcel proposal', goal: 'park', lifecycleStatus: 'Active',
+    cadastreParcelIds: [id], geometry, structureProposal: { kind: 'park', geometry }, applied: false,
   }), { id: PARCEL_ID, geometry: PARCEL_GEOMETRY });
   await clickMapPoint(page, 15.9822, 45.80025);
   await page.locator('#mode-3d-toggle').click();
@@ -99,7 +89,7 @@ test('parcel menu Compare opens both proposals and Details follows the chosen si
   await openCity(page);
   await page.evaluate(({ id, geometry }) => {
     for (const title of ['Unapplied park option', 'Unapplied square option']) (window as any).proposalStorage.addProposal({
-      title, goal: 'decide-later', kind: 'owner-deal', lifecycleStatus: 'Active', geometry, cadastreParcelIds: [id], applied: false,
+      title, goal: 'park', lifecycleStatus: 'Active', geometry, structureProposal: { kind: 'park', geometry }, cadastreParcelIds: [id], applied: false,
     });
   }, { id: PARCEL_ID, geometry: PARCEL_GEOMETRY });
   await clickMapPoint(page, 15.9822, 45.80025);

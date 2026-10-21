@@ -2,7 +2,7 @@
 
 // Mints New York City parcels as ParcelNFTs from the parcel_nyc_geom + parcel_nyc_unit tables.
 // One NFT per tax lot (swis_sbl_id), parcel id formatted as US-NY-<swis_sbl_id>. Uses the shared
-// mint-parcels harness; run with --storage=walrus to store metadata on Walrus (Sui).
+// mint-parcels harness.
 
 const { ethers } = require('ethers');
 const { createMintParcelsService, metadataHelpers } = require('./mint-parcels');

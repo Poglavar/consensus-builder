@@ -3,13 +3,8 @@
 // /llms.txt, /openapi.json (agent-facing subset), /agents.json (alias of /docs/agents.json) and
 // /robots.txt. All read-only, built from the same x402 config as the paid routes themselves.
 
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import { readX402Config, readX402OracleConfig } from '../utils/x402-payment.js';
+import { readX402OracleConfig } from '../utils/x402-payment.js';
 import { publicBase } from './agent-discovery.js';
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 // RFC 9116 security contact: the project mailbox.
 export const SECURITY_CONTACT = 'mailto:urbangametheory@gmail.com';
@@ -18,21 +13,13 @@ const SECURITY_TXT_TTL_DAYS = 180;
 const SITE_URL = 'https://urbangametheory.xyz';
 const NAME = 'Urban Game Theory API';
 const DESCRIPTION = 'Cadastral parcels, 3D buildings and urban-development proposals for Zagreb and other cities. '
-    + 'Agents post proposals and buy recipe-bound oracle facts over x402 (Solana devnet USDC).';
+    + 'Agents buy recipe-bound oracle facts over x402 (Solana devnet USDC).';
 
 // The paid x402 resources this server actually offers right now: a route whose config is missing
 // answers 503, so it is not advertised (an indexer would probe it and record a broken resource).
 export function paidResources(base, env) {
-    const proposals = readX402Config(env);
     const oracle = readX402OracleConfig(env);
     const out = [];
-    if (proposals.enabled) {
-        out.push({
-            url: `${base}/agent/proposals`, method: 'POST', price: proposals.priceProposal,
-            network: proposals.network, payTo: proposals.payTo,
-            description: 'Post an urban-development proposal on cadastral parcels; the paying wallet becomes its author.'
-        });
-    }
     if (oracle.enabled) {
         out.push({
             url: `${base}/agent/oracle/facts`, method: 'GET', price: oracle.priceOracleFact,
@@ -103,14 +90,6 @@ export function buildLlmsTxt(base, env) {
     ].join('\n');
 }
 
-function readRecipeSchema() {
-    const schema = JSON.parse(fs.readFileSync(path.join(__dirname, 'agent-recipe-schema.json'), 'utf8'));
-    // OpenAPI 3.1 embeds JSON Schema 2020-12 directly; the standalone document markers do not belong inline.
-    delete schema.$schema;
-    delete schema.$id;
-    return schema;
-}
-
 // Frozen by lens-model.md: the directory response shape.
 const LENS_REGISTRATION_BODY = {
     type: 'object',
@@ -157,46 +136,6 @@ const LENS_MEMBERS_SCHEMA = {
     }
 };
 
-// POST /agent/binding (= /proposals/binding), see proposals/binding.js and PARCEL-OPTIONAL.md.
-const BINDING_PARCEL = {
-    type: 'object',
-    properties: {
-        parcelId: { type: 'string' },
-        overlapM2: { type: 'number' },
-        intrusionM: { type: 'number', description: 'Width of site ∩ parcel: diameter of the largest inscribed circle, metres.' }
-    }
-};
-const BINDING_REQUEST_SCHEMA = {
-    type: 'object',
-    required: ['site'],
-    properties: {
-        site: { type: 'object', description: 'GeoJSON Polygon or MultiPolygon, EPSG:4326.' },
-        toleranceM: { type: 'number', minimum: 0, maximum: 1, default: 0, description: 'A parcel is bound when the site reaches into it by more than this width.' },
-        city: { type: 'string', description: 'City id; a city with no cadastre (explore) answers coverage none instead of unknown.' }
-    }
-};
-const BINDING_RESPONSE_SCHEMA = {
-    type: 'object',
-    properties: {
-        binding: {
-            type: 'object',
-            properties: {
-                parcels: { type: 'array', items: BINDING_PARCEL, description: 'Bound parcels: exactly what cadastreParcelIds must contain.' },
-                touched: { type: 'array', items: BINDING_PARCEL, description: 'Reached into by less than toleranceM; not bound.' },
-                toleranceM: { type: 'number' },
-                coverage: { type: 'string', enum: ['complete', 'partial', 'none', 'unknown'] },
-                unsurveyedM2: { type: 'number' },
-                unknownM2: { type: 'number' },
-                siteM2: { type: 'number' },
-                source: { type: 'string' },
-                computedAt: { type: 'string', format: 'date-time' },
-                reason: { type: 'string' }
-            }
-        },
-        queryMs: { type: 'integer' }
-    }
-};
-
 export function buildOpenApi(base, env) {
     const paid = Object.fromEntries(paidResources(base, env).map(r => [r.url, r]));
     const x402 = (url) => paid[url]
@@ -213,44 +152,6 @@ export function buildOpenApi(base, env) {
         servers: [{ url: base }],
         tags: [{ name: 'x402', description: 'Paid over the x402 protocol.' }],
         paths: {
-            '/agent/proposals': {
-                post: {
-                    tags: ['x402'],
-                    summary: 'Post a proposal (x402-paid)',
-                    operationId: 'postAgentProposal',
-                    requestBody: { required: true, content: { 'application/json': { schema: readRecipeSchema() } } },
-                    responses: {
-                        201: { description: 'Proposal created.' },
-                        400: { description: 'Invalid recipe.' },
-                        402: paymentRequired,
-                        503: { description: 'x402 is not configured on this server.' }
-                    },
-                    ...x402(`${base}/agent/proposals`)
-                }
-            },
-            '/agent/binding': {
-                post: {
-                    summary: 'The cadastral binding of a proposal site: the parcels it reaches into (intrusion as a width), and how much of it is open ground. Same as POST /proposals/binding; a read, free',
-                    operationId: 'postAgentBinding',
-                    requestBody: { required: true, content: { 'application/json': { schema: BINDING_REQUEST_SCHEMA } } },
-                    responses: {
-                        200: { description: 'The binding.', content: { 'application/json': { schema: BINDING_RESPONSE_SCHEMA } } },
-                        400: { description: 'invalid-site or invalid-tolerance.' },
-                        413: { description: 'too-many-parcels: the site meets more than 5000 parcels.' }
-                    }
-                }
-            },
-            '/proposals/{id}/binding-drift': {
-                get: {
-                    summary: 'Whether the cadastre changed under a published proposal: its stored binding beside the binding its stored site gets today. A read, free; the record is never edited (re-bind publishes a new derived record)',
-                    operationId: 'getProposalBindingDrift',
-                    parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string' }, description: 'Server row id or proposal id.' }],
-                    responses: {
-                        200: { description: '{ id, proposalId, checkable, reason?, stored, current, drift: { added, removed, coverageChanged, coverage, openGroundM2 } | null }' },
-                        404: { description: 'No such proposal.' }
-                    }
-                }
-            },
             '/agent/oracle/facts': {
                 get: {
                     tags: ['x402'],

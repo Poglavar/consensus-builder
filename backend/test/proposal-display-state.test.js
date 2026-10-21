@@ -1,17 +1,28 @@
 // One derivation of a proposal's displayed state (frontend/js/proposals/display-state.js): the ladder
-// rung, Minted from a mint record only, and no "Applied" or map action for a cancelled proposal. A
-// cancelled proposal (781 on the local stack) used to read Published + Applied with an Unapply button.
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+// rung, Published only while a design still hashes to the CID it was published as at this index
+// (proposals/design-sync.js publishedCid), Minted from a mint record only, and no "Applied" or map
+// action for a cancelled proposal. A cancelled proposal (781 on the local stack) used to read
+// Published + Applied with an Unapply button.
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
 const displayState = require('../../frontend/js/proposals/display-state.js');
-const { getSerialProposalId } = require('../../frontend/js/proposals/sharing.js');
+const { publishedCid } = require('../../frontend/js/proposals/design-sync.js');
+const DesignRecord = require('../../frontend/js/design-record.js');
 const lifecycleEvidence = require('../../frontend/js/proposals/lifecycle-evidence.js');
 const API = 'https://api.example';
 
-const published = (extra = {}) => ({ proposalId: 'c2-uh980k1g32gls', serverProposalId: '781', publicationApiBase: API, ...extra });
-const stateOf = (proposal, inputs = {}) => displayState.of(proposal, { lifecycleKey: undefined, serial: getSerialProposalId(proposal), ...inputs });
+const SITE = { type: 'Polygon', coordinates: [[[15.97, 45.8], [15.971, 45.8], [15.971, 45.801], [15.97, 45.801], [15.97, 45.8]]] };
+const design = (extra = {}) => ({ proposalId: 'p-781', goal: 'park', title: 'Pocket park', site: SITE,
+    createdAt: '2026-10-01T12:00:00.000Z', structureProposal: { kind: 'park', geometry: SITE }, ...extra });
+// A design published at API: it carries the CID its content hashes to. Lifecycle, application and
+// mint fields are not content, so they leave the CID as it is.
+const published = (extra = {}) => {
+    const record = design(extra);
+    return { ...record, published: { cid: DesignRecord.cidOf(record), publishedAt: '2026-10-02T08:00:00.000Z', apiBase: API } };
+};
+const stateOf = (proposal, inputs = {}) => displayState.of(proposal, { lifecycleKey: undefined, serial: publishedCid(proposal, API), ...inputs });
 const observedExecuted = () => lifecycleEvidence.projectLifecycleEvidence({
     lifecycleStatus: 'Executed',
     chainRead: {
@@ -20,29 +31,37 @@ const observedExecuted = () => lifecycleEvidence.projectLifecycleEvidence({
     }
 });
 
-beforeEach(() => vi.stubGlobal('getBackendBase', () => API));
 afterEach(() => vi.unstubAllGlobals());
 
 describe('proposal display state', () => {
-    it('requires the production row-reference predicate before displaying Published', () => {
-        for (const record of [{ proposalId: '42' }, { id: 42 }, { proposalId: 'p-local', serverProposalId: 'authored' }]) {
-            expect(getSerialProposalId(record)).toBeNull();
-            expect(displayState.of({ ...record, lifecycleStatus: 'Active' }, { serial: getSerialProposalId(record) }))
-                .toMatchObject({ rung: 'draft', published: false });
-        }
-        for (const serverProposalId of [42, '42']) {
-            const record = { proposalId: 'p-local', serverProposalId, publicationApiBase: API, lifecycleStatus: 'Active' };
-            expect(getSerialProposalId(record)).toBe('42');
-            expect(displayState.of(record, { serial: getSerialProposalId(record) })).toMatchObject({ rung: 'published', published: true });
-        }
-        for (const record of [
-            { proposalId: 'p-local', serverProposalId: '42' },
-            { proposalId: 'p-local', serverProposalId: '42', publicationApiBase: 'https://elsewhere.example' }
+    it('displays Published only while the design still hashes to the CID it was published as at this index', () => {
+        const record = published({ lifecycleStatus: 'Active' });
+        expect(publishedCid(record, API)).toBe(record.published.cid);
+        expect(displayState.of(record, { serial: publishedCid(record, API) })).toMatchObject({ rung: 'published', published: true });
+        for (const draft of [
+            design({ lifecycleStatus: 'Active' }),
+            // Edited in place after publishing: another design than the one published.
+            { ...record, title: 'Pocket park, wider' },
+            // Published to another index.
+            { ...record, published: { ...record.published, apiBase: 'https://elsewhere.example' } },
+            { ...record, published: { ...record.published, cid: 'not-a-cid' } },
+            // A server row number is no publication.
+            design({ lifecycleStatus: 'Active', serverProposalId: '781', publicationApiBase: API })
         ]) {
-            expect(getSerialProposalId(record)).toBeNull();
-            expect(displayState.of(record, { serial: getSerialProposalId(record) })).toMatchObject({ rung: 'draft', published: false });
+            expect(publishedCid(draft, API)).toBeNull();
+            expect(displayState.of(draft, { serial: publishedCid(draft, API) })).toMatchObject({ rung: 'draft', published: false });
         }
     });
+
+    it('reads the published CID from window.DesignSync when the caller passes none', () => {
+        const record = published({ lifecycleStatus: 'Active' });
+        expect(displayState.of(record, { lifecycleKey: 'active' })).toMatchObject({ rung: 'draft', published: false });
+        const ask = vi.fn(proposal => publishedCid(proposal, API));
+        vi.stubGlobal('DesignSync', { publishedCid: ask });
+        expect(displayState.of(record, { lifecycleKey: 'active' })).toMatchObject({ rung: 'published', published: true });
+        expect(ask).toHaveBeenCalledWith(record);
+    });
+
     it('shows unavailable lifecycle without inferring it from publication or map application', () => {
         expect(stateOf(published({ applied: true }), { applied: true }))
             .toMatchObject({ lifecycle: 'Unknown', rung: 'published', modifier: 'unknown', applied: true, mapAction: 'unapply' });
@@ -75,10 +94,10 @@ describe('proposal display state', () => {
             .toMatchObject({ rung: 'execution-unverified', applied: true, modifier: null });
     });
 
-    it('calls a numeric server serial Published, never Minted', () => {
-        const serialOnly = { proposalId: '780', serverProposalId: '780', publicationApiBase: API, lifecycleStatus: 'Active' };
-        expect(displayState.hasMintRecord(serialOnly)).toBe(false);
-        expect(stateOf(serialOnly, { applied: false, lifecycleKey: 'active' })).toMatchObject({ rung: 'published', minted: false });
+    it('calls a published design Published, never Minted', () => {
+        const cidOnly = published({ lifecycleStatus: 'Active' });
+        expect(displayState.hasMintRecord(cidOnly)).toBe(false);
+        expect(stateOf(cidOnly, { applied: false, lifecycleKey: 'active' })).toMatchObject({ rung: 'published', minted: false });
     });
 
     it('calls a proposal Minted only from a mint record, and keeps it Minted when cancelled', () => {

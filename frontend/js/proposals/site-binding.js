@@ -42,20 +42,6 @@
     // A tolerance is measurement error, never a design allowance; above this it is refused.
     const MAX_INTRUSION_TOLERANCE_M = 1;
 
-    // Goals that ARE acts on parcels: their subject is the parcels themselves, so their binding
-    // must not be empty. (An owner vote needs owners to vote, so it is one whatever its design
-    // (proposal-kinds.md); owner offers are flagged with proposalRole 'owner-offer'; road
-    // designations are recognised by shape.)
-    const PARCEL_ACT_GOALS = Object.freeze([
-        'offer',
-        'ownership-transfer',
-        'ownership-transfer-to-me',
-        'ownership-transfer-from-me',
-        'parcel',
-        'as-is',
-        'decide-later'
-    ]);
-    const PARCEL_ACT_GOAL_SET = new Set(PARCEL_ACT_GOALS);
 
     const COVERAGE = Object.freeze({ complete: 'complete', partial: 'partial', none: 'none', unknown: 'unknown' });
 
@@ -88,25 +74,9 @@
         return String(goal).trim().toLowerCase().replace(/\s+/g, '-').replace(/\//g, '-');
     }
 
-    // A designation names existing parcels as road land: a polygon and no centreline
-    // (corridor-profile.js corridorIsDesignation).
-    function isRoadDesignation(record) {
-        const definition = record && record.roadProposal && record.roadProposal.definition;
-        if (!definition || typeof definition !== 'object' || !definition.polygon) return false;
-        const points = Array.isArray(definition.points) ? definition.points : [];
-        const segments = Array.isArray(definition.segments) ? definition.segments : [];
-        const centerline = Array.isArray(definition.centerline) ? definition.centerline : [];
-        return points.length < 2 && !segments.some(s => Array.isArray(s) && s.length >= 2) && centerline.length < 2;
-    }
-
-    function isParcelAct(record) {
-        if (!record || typeof record !== 'object') return false;
-        if (record.kind === 'owner-vote') return true;
-        if (record.proposalRole === 'owner-offer') return true;
-        if (PARCEL_ACT_GOAL_SET.has(normalizeGoal(record.goal))) return true;
-        return isRoadDesignation(record);
-    }
-
+    // A design is never an act on parcels: it names none, its agreement does (plan-design-agreement.md,
+    // simplification 1). A road designation (a polygon and no centreline) is a footprint like any
+    // other, and the parcels it covers come from the binding.
     function asPolygonGeometry(value) {
         const geometry = value && value.type === 'Feature' ? value.geometry : value;
         return geometry && (geometry.type === 'Polygon' || geometry.type === 'MultiPolygon') ? geometry : null;
@@ -125,11 +95,10 @@
         return !!api && !!record && !!api.footprintParts(record).corridorUnprepared;
     }
 
-    // Whether this record can only exist with a non-empty parcel declaration: a parcel act, or a
-    // record that has neither its own geometry nor an authored site (it would be about nothing).
+    // Whether this record is about nothing: neither its own geometry nor an authored site. Such a
+    // record cannot be bound to ground, and a design must have one or the other.
     function requiresParcels(record) {
         if (!record || typeof record !== 'object') return true;
-        if (isParcelAct(record)) return true;
         return !asPolygonGeometry(record.site) && !hasOwnFootprint(record) && !isUnpreparedCorridor(record);
     }
 
@@ -139,25 +108,10 @@
         return g.type === 'MultiPolygon' ? g : { type: 'MultiPolygon', coordinates: [g.coordinates] };
     }
 
-    function unionAll(t, features) {
-        let acc = null;
-        for (const feature of features) {
-            if (!feature) continue;
-            if (!acc) { acc = feature; continue; }
-            try { acc = t.union(acc, feature) || acc; } catch (error) {
-                // Keeping what we have would leave this parcel out of the site.
-                throw clipFailureApi().clipFailure('union', error, { site: 'site-binding.unionAll' }, [acc, feature]);
-            }
-        }
-        return acc;
-    }
-
     /**
      * The proposal's site as a GeoJSON MultiPolygon (EPSG:4326), or null.
      *   1. an authored `record.site`;
-     *   2. else the record's own footprint (plan-order.footprintOf: union of footprintParts);
-     *   3. else, for a parcel act, the union of its declared parcels' geometries from
-     *      `options.parcels` ([{ id, geometry }]).
+     *   2. else the record's own footprint (plan-order.footprintOf: union of footprintParts).
      */
     function siteOf(record, options) {
         const opts = options || {};
@@ -171,13 +125,7 @@
             const geometry = toMultiPolygon(footprint && (footprint.geometry || footprint));
             if (geometry) return geometry;
         }
-        if (!t || !Array.isArray(opts.parcels) || !isParcelAct(record)) return null;
-        const declared = new Set((record.cadastreParcelIds || []).map(String));
-        const features = opts.parcels
-            .filter(parcel => parcel && declared.has(String(parcel.id)) && asPolygonGeometry(parcel.geometry))
-            .map(parcel => t.feature(asPolygonGeometry(parcel.geometry)));
-        const union = unionAll(t, features);
-        return union ? toMultiPolygon(union.geometry) : null;
+        return null;
     }
 
     // turf.buffer (JSTS) returns nothing for a polygon only centimetres across — exactly the 3 cm
@@ -367,12 +315,9 @@
         INTRUSION_NOISE_M,
         SPHERE_BAND,
         MAX_INTRUSION_TOLERANCE_M,
-        PARCEL_ACT_GOALS,
         COVERAGE,
         normalizeGoal,
         normalizeTolerance,
-        isRoadDesignation,
-        isParcelAct,
         hasOwnFootprint,
         requiresParcels,
         siteOf,

@@ -100,7 +100,7 @@ const MIN_OPEN_PARCEL_M2 = 150;
 // in it is the kind of thing that surfaces two months later as an unexplained refusal.
 const MIN_REAL_HOLE_M2 = 5;
 
-const SUB_KEYS = ['roadProposal', 'buildingProposal', 'structureProposal', 'reparcellization', 'decideLaterProposal'];
+const SUB_KEYS = ['roadProposal', 'buildingProposal', 'structureProposal', 'reparcellization'];
 
 function usage() {
     console.log([

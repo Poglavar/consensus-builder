@@ -1,6 +1,6 @@
 // Unit tests for frontend/js/agreement-record.js: the agreement record's output hash, canonical
 // form and validation codes, the per-party ledger, the default rights snapshot and the subject the
-// approval engine counts.
+// approval engine counts, and the published agreement/v1 object with its CID (M2).
 import { describe, it, expect } from 'vitest';
 import { createRequire } from 'node:module';
 import { createHash } from 'node:crypto';
@@ -8,8 +8,13 @@ import { createHash } from 'node:crypto';
 const require = createRequire(import.meta.url);
 const record = require('../../frontend/js/agreement-record.js');
 const approval = require('../../frontend/js/proposals/approval.js');
+const Cid = require('../../frontend/js/cid.js');
 
 const sha256 = text => createHash('sha256').update(text).digest('hex');
+// The designs' CIDs as a published agreement links them, and the lens member that verifies owners.
+const LAYOUT_CID = Cid.cidOfObject({ schema: 'design/v1', goal: 'parcel-layout', title: 'Lay out block seven' });
+const ROAD_CID = Cid.cidOfObject({ schema: 'design/v1', goal: 'road', title: 'Draw road' });
+const MEMBER = 'lens-member-1';
 // Rectangles in units of 1e-3 degree from the test origin.
 function rect(x0, y0, x1, y1) {
     const LON = 15.96, LAT = 45.8;
@@ -42,8 +47,8 @@ function fixture() {
         schema: 'agreement/v1', id: 'ag-test', title: 'Block seven', city: 'test-city',
         createdAt: '2026-10-21T10:00:00.000Z', updatedAt: '2026-10-21T10:00:00.000Z',
         designs: [
-            { proposalId: 'layout-1', title: 'Lay out block seven', goal: 'parcel-layout', fingerprint: 'c2-layout' },
-            { proposalId: 'road-1', title: 'Draw road', goal: 'road', fingerprint: 'c2-road' }
+            { proposalId: 'layout-1', title: 'Lay out block seven', goal: 'parcel-layout', cid: LAYOUT_CID },
+            { proposalId: 'road-1', title: 'Draw road', goal: 'road', cid: ROAD_CID }
         ],
         inputs,
         outputs,
@@ -60,7 +65,7 @@ function fixture() {
             ]
         },
         rule: {
-            electorate: 'owners', binding: true, lens: [],
+            electorate: 'owners', binding: true, lens: [MEMBER],
             approvalConfig: { schema: 'proposal-approval/v1', rights: record.rightsFromInputs(inputs), policy: { type: 'unanimous' } }
         },
         deadline: null
@@ -385,7 +390,7 @@ describe('rightsFromInputs', () => {
     it('makes a snapshot the engine can count once every input has holders', () => {
         const subject = record.approvalSubject(fixture());
         expect(subject.cadastreParcelIds).toEqual(['k9', 'k10']);
-        expect(subject.lens).toEqual([]);
+        expect(subject.lens).toEqual([MEMBER]);
         const state = approval.inspect(subject);
         expect(state.ready).toBe(true);
         expect(state.ownerIds).toEqual(['agent-ana', 'agent-boris', 'agent-cyril']);
@@ -401,5 +406,152 @@ describe('stableStringify', () => {
     it('sorts keys at every depth and refuses numbers that are not finite', () => {
         expect(record.stableStringify({ b: [{ d: 1, c: 2 }], a: null, skip: undefined })).toBe('{"a":null,"b":[{"c":2,"d":1}]}');
         expect(() => record.stableStringify({ a: NaN })).toThrow(/finite/);
+    });
+});
+
+describe('the lens of an owners rule', () => {
+    it('warns when owners decide and no lens member is named, since no decision could be verified', () => {
+        const raw = fixture();
+        raw.rule.lens = [];
+        const result = record.validate(raw);
+        expect(result.valid).toBe(true);
+        expect(result.warnings).toEqual([expect.objectContaining({ code: 'rule-lens-missing', section: 'rule' })]);
+        delete raw.rule.lens;
+        expect(codes(record.validate(raw).warnings)).toEqual(['rule-lens-missing']);
+        const vote = fixture();
+        vote.rule = { electorate: 'community', binding: false, approvalConfig: null, lens: [] };
+        expect(record.validate(vote).warnings).toEqual([]);
+    });
+});
+
+describe('normalize (published records)', () => {
+    const PUBLISHED = { cid: Cid.cidOfObject({ schema: 'agreement/v1', title: 'Block seven' }), publishedAt: '2026-10-21T12:00:00Z', apiBase: 'https://api.example.test' };
+
+    it('keeps each design by its CID and drops anything else the entry carries', () => {
+        const raw = fixture();
+        raw.designs[0].fingerprint = 'c2-layout';
+        expect(record.normalize(raw).designs).toEqual([
+            { proposalId: 'layout-1', title: 'Lay out block seven', goal: 'parcel-layout', cid: LAYOUT_CID },
+            { proposalId: 'road-1', title: 'Draw road', goal: 'road', cid: ROAD_CID }
+        ]);
+        delete raw.designs[1].cid;
+        expect(record.normalize(raw).designs[1].cid).toBeNull();
+    });
+
+    it('keeps where a proposed agreement went, and refuses a mark without a CID or an API', () => {
+        expect(record.normalize(fixture()).published).toBeNull();
+        expect(record.normalize({ ...fixture(), published: PUBLISHED }).published)
+            .toEqual({ cid: PUBLISHED.cid, publishedAt: '2026-10-21T12:00:00.000Z', apiBase: 'https://api.example.test' });
+        [{ ...PUBLISHED, cid: 'c2-abc' }, { ...PUBLISHED, apiBase: ' ' }, { ...PUBLISHED, publishedAt: 'noon' }, 'bafy']
+            .forEach(published => expect(thrownCode(() => record.normalize({ ...fixture(), published }))).toBe('invalid-agreement'));
+    });
+
+    it('keeps an output known by its hash alone, as an agreement read from its published object has them', () => {
+        const raw = fixture();
+        const hash = raw.outputs[0].hash;
+        raw.outputs[0] = { ...raw.outputs[0], geometry: null };
+        const result = record.normalize(raw);
+        expect(result.outputs[0]).toMatchObject({ hash, geometry: null, pieceId: 'k9-p1' });
+        expect(record.validate(raw).valid).toBe(true);
+        raw.outputs[0].hash = 'piece1-sha256:abc';
+        expect(thrownCode(() => record.normalize(raw))).toBe('invalid-agreement');
+        raw.outputs[0].hash = raw.outputs[1].hash;
+        expect(() => record.normalize(raw)).toThrow(/geometry of another output/);
+    });
+});
+
+describe('published', () => {
+    const SPONSOR = '9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrrpZb9PusVFin';
+    const local = () => ({
+        ...fixture(),
+        author: ' Ana ', sponsor: SPONSOR,
+        published: { cid: Cid.cidOfObject({ any: 'earlier' }), publishedAt: '2026-10-21T12:00:00Z', apiBase: 'https://api.example.test' }
+    });
+
+    it('is the agreement/v1 object: designs by CID, inputs with holders, outputs by hash without geometry', () => {
+        const raw = local();
+        raw.inputs.parcels[0].parcelSourceId = 'zagreb-dgu';
+        const object = record.published(raw);
+        expect(Object.keys(object).sort()).toEqual(['allocations', 'author', 'city', 'createdAt', 'deadline', 'designs', 'inputs',
+            'money', 'outputs', 'rule', 'schema', 'sponsor', 'title']);
+        expect(object).toMatchObject({ schema: 'agreement/v1', title: 'Block seven', author: 'Ana', sponsor: SPONSOR, city: 'test-city',
+            createdAt: '2026-10-21T10:00:00.000Z', deadline: null });
+        expect(object.designs).toEqual([
+            { cid: LAYOUT_CID, goal: 'parcel-layout', title: 'Lay out block seven' },
+            { cid: ROAD_CID, goal: 'road', title: 'Draw road' }
+        ]);
+        expect(object.inputs).toEqual({
+            parcels: [
+                { parcelId: 'k9', parcelSourceId: 'zagreb-dgu', areaM2: 1000, holders: [ana()] },
+                { parcelId: 'k10', areaM2: 800, holders: [boris(0.25), cyril(0.75)] }
+            ],
+            openGroundM2: 0
+        });
+        expect(object.outputs).toEqual(raw.outputs.map(output => ({
+            hash: output.hash, areaM2: output.areaM2, fromParcelIds: output.fromParcelIds, role: output.role,
+            producedBy: output.producedBy === 'road-1' ? ROAD_CID : LAYOUT_CID
+        })));
+        expect(object.allocations).toEqual(fixture().allocations);
+        expect(object.money).toEqual(fixture().money);
+        expect(object.rule).toEqual(record.normalize(fixture()).rule);
+        expect(JSON.stringify(object)).not.toMatch(/ag-test|updatedAt|pieceId|coordinates|apiBase/);
+    });
+
+    it('names an output from a design outside the agreement by its hash alone (producedBy null)', () => {
+        const raw = local();
+        raw.outputs[0].producedBy = 'road-9';
+        expect(record.published(raw).outputs[0].producedBy).toBeNull();
+        expect(record.published(raw, id => ({ 'layout-1': LAYOUT_CID, 'road-1': ROAD_CID }[id] || null)).outputs[0].producedBy).toBeNull();
+    });
+
+    it('takes the designs\' CIDs from designCidOf when given, and refuses a design without one', () => {
+        const fresh = { 'layout-1': Cid.cidOfObject({ edited: 'layout' }), 'road-1': ROAD_CID };
+        expect(record.published(local(), id => fresh[id]).designs.map(design => design.cid)).toEqual([fresh['layout-1'], ROAD_CID]);
+        const unnamed = local();
+        unnamed.designs[1].cid = null;
+        expect(thrownCode(() => record.published(unnamed))).toBe('invalid-agreement');
+        expect(() => record.published(unnamed)).toThrow(/road-1 has no CID/);
+        expect(thrownCode(() => record.published(local(), () => 'c2-road'))).toBe('invalid-agreement');
+    });
+
+    it('has null author and sponsor when the object names none', () => {
+        const object = record.published(fixture());
+        expect(object.author).toBeNull();
+        expect(object.sponsor).toBeNull();
+    });
+});
+
+describe('publishedCid', () => {
+    it('is the CID of the published object, unmoved by what stays on this device', () => {
+        const cid = record.publishedCid(fixture());
+        expect(cid).toBe(Cid.cidOfObject(record.published(fixture())));
+        expect(Cid.isCid(cid)).toBe(true);
+        const relabelled = fixture();
+        Object.assign(relabelled, { id: 'ag-other', updatedAt: '2026-10-22T08:00:00.000Z',
+            published: { cid, publishedAt: '2026-10-22T08:00:00.000Z', apiBase: 'https://api.example.test' } });
+        relabelled.outputs[0].pieceId = 'k9-renamed';
+        relabelled.outputs[0].holders = [cyril(1)];
+        expect(record.publishedCid(relabelled)).toBe(cid);
+    });
+
+    it('moves with the designs, land, allocations, money, rule, deadline and sponsor', () => {
+        const cid = record.publishedCid(fixture());
+        const edits = [
+            raw => { raw.designs.reverse(); },
+            raw => { raw.designs[0].cid = Cid.cidOfObject({ another: 'layout' }); },
+            raw => { raw.inputs.parcels[0].holders = [cyril(1)]; },
+            raw => { raw.allocations.pop(); },
+            raw => { raw.money.lines[0].amountCents += 1; },
+            raw => { raw.rule.binding = false; },
+            raw => { raw.rule.lens = ['lens-member-2']; },
+            raw => { raw.deadline = '2026-12-31T00:00:00.000Z'; },
+            raw => { raw.sponsor = '9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrrpZb9PusVFin'; },
+            raw => { raw.title = 'Block eight'; }
+        ];
+        edits.forEach(edit => {
+            const raw = fixture();
+            edit(raw);
+            expect(record.publishedCid(raw), edit.toString()).not.toBe(cid);
+        });
     });
 });

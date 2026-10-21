@@ -1,5 +1,7 @@
 // The portable, immutable proposal in NFT metadata. Chain readers and server mirrors use this
 // exact record; browser application state and server preparation signatures never enter it.
+// Only the reading side remains: the mint that wrote such records went with the design mint path
+// (plan-design-agreement.md, M2), and agreements mint in M3.
 (function (root, factory) {
     const api = factory(root);
     if (typeof module === 'object' && module.exports) module.exports = api;
@@ -10,12 +12,10 @@
     const PROTOCOL = 'proposal-chain/1';
     const FIELDS = Object.freeze([
         'proposalId', 'city', 'type', 'goal', 'proposalRole', 'name', 'title', 'titleOrigin', 'description', 'author',
-        'createdAt', 'authoredAt', 'expiresAt', 'epochYear', 'offer', 'offerCurrency', 'budget',
-        'budgetCurrency', 'decayEnabled', 'decayPercent', 'decayDurationMs', 'depositEnabled',
-        'depositPercent', 'disbursementMode', 'isConditional', 'kind', 'voteExpiryDays',
+        'createdAt', 'authoredAt', 'epochYear',
         'cadastreParcelIds', 'site', 'binding', 'toleranceM', 'cadastreSnapshot', 'ownershipFlow',
         'cadastreFrame', 'lens', 'bounds', 'geometry', 'roadProposal', 'buildingProposal',
-        'structureProposal', 'parcelLayout', 'decideLaterProposal', 'ownershipTransfer',
+        'structureProposal', 'parcelLayout', 'ownershipTransfer',
         'ownershipTransferDirection', 'ownershipTransferRecipient', 'ownershipTransferProposal',
         'acquisitionMode', 'boundaryAdjustment', 'primaryType', 'typologyType', 'tags', 'facets',
         'isCorridor', 'proposalOrigin', 'landFork', 'freePlacement', 'agent',
@@ -36,30 +36,8 @@
         return values.slice();
     }
 
-    // The kind and its terms (proposal-kinds.md): a vote never carries money.
-    function checkKind(record) {
+    function checkSourceReferences(record) {
         dependency('PlanningSourceProposal', '../planning/source-proposal.js').validateReferences(record.sourceReferences);
-        const errors = dependency('ProposalKind', './proposal-kind.js').kindErrors(record);
-        if (errors.length) fail(`The proposal kind is invalid: ${errors[0].message}`);
-    }
-
-    function authoredRecord(proposal) {
-        const boundary = dependency('__formationDepth', './formation-depth.js');
-        const gate = boundary.preparePublishRecord(proposal);
-        if (!gate.verdict.flat) fail('The minted proposal must contain only authored geometry and original cadastral parcel IDs.');
-        const record = {};
-        for (const key of FIELDS) if (gate.proposal[key] !== undefined) record[key] = clone(gate.proposal[key]);
-        if (record.proposalOrigin) record.proposalOrigin = dependency('ProposalOrigin', './origin.js').portable(record.proposalOrigin, {
-            findLocal: id => global.proposalStorage?.proposals?.get(id),
-            backendBase: typeof global.getBackendBase === 'function' ? global.getBackendBase() : null
-        });
-        record.cadastreParcelIds = parcelIds(record.cadastreParcelIds);
-        record.isConditional = proposal.isConditional === true || proposal.conditional === true;
-        if (record.lens) record.lens = record.lens.map(entry => typeof entry === 'string' ? entry : entry.address);
-        if (record.ownershipTransferProposal) delete record.ownershipTransferProposal.status;
-        if (record.approvalConfig != null) record.approvalConfig = approvalConfig(record.approvalConfig);
-        checkKind(record);
-        return record;
     }
 
     function approvalConfig(value) {
@@ -68,10 +46,6 @@
         } catch (error) {
             return fail(`The approval setup is invalid: ${error.message}`);
         }
-    }
-
-    function metadataProperties(proposal) {
-        return { proposalProtocol: PROTOCOL, proposal: authoredRecord(proposal) };
     }
 
     function fromMetadata(metadata) {
@@ -87,7 +61,7 @@
             if (origin.source?.kind === 'local') fail('NFT proposal origin cannot contain a browser-local key.');
         }
         parcelIds(record.cadastreParcelIds);
-        checkKind(record);
+        checkSourceReferences(record);
         if (!record.site || !record.binding || !record.cadastreSnapshot) fail('NFT proposal is missing its site, binding, or cadastral snapshot.');
         const gate = dependency('__formationDepth', './formation-depth.js').preparePublishRecord(record);
         if (!gate.verdict.flat) fail('NFT proposal contains invalid cadastral references.');
@@ -107,9 +81,6 @@
         const ids = parcelIds(record.cadastreParcelIds);
         if (!sameIds(ids, parcelIds(chain.cadastreParcelIds))) fail('NFT metadata and the on-chain consent list disagree.');
         if (!sameIds(ids, (record.binding?.parcels || []).map(hit => hit.parcelId))) fail('NFT binding and consent list disagree.');
-        if (typeof chain.isConditional === 'boolean' && record.isConditional !== chain.isConditional) {
-            fail('NFT metadata and the on-chain conditional flag disagree.');
-        }
         if (Array.isArray(chain.lens) && !sameIds(record.lens || [], chain.lens, chain.ref?.chainType === 'evm')) {
             fail('NFT metadata and the on-chain lens disagree.');
         }
@@ -122,5 +93,5 @@
         return record;
     }
 
-    return { PROTOCOL, FIELDS, authoredRecord, metadataProperties, fromMetadata, verifyAgainstChain, parcelIds };
+    return { PROTOCOL, FIELDS, fromMetadata, verifyAgainstChain, parcelIds };
 });

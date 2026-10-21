@@ -1,5 +1,5 @@
 // Owner offers: an attested owner mints a proposal on its own land and invites bids, which arrive as
-// proposal_pledge pledges and donations. The pure half (mode gate, bid ranking) has no DOM and is
+// proposal_pledge pledges and donations. The pure half (bid ranking) has no DOM and is
 // exported via CommonJS for node tests; the DOM half mounts the Details "Bids" card after the support
 // card and points the owner at the lens card's Say yes rather than duplicating it.
 (function (root, factory) {
@@ -21,43 +21,6 @@
         if (typeof value === 'number' && Number.isFinite(value) && Number.isInteger(value)) return BigInt(value);
         if (typeof value === 'string' && /^\d+$/.test(value.trim())) return BigInt(value.trim());
         return null;
-    }
-
-    // The mode gate. results: [{ memberKey, parcelUid, attestations: [...] | null }] from asking each
-    // lens member's service GET /lens/attestations?parcelUid=&owner=. A parcel counts as the wallet's
-    // only on an unexpired ownership attestation naming this parcel and this owner, signed by the
-    // member that was asked, and that member is in the chosen lens. A null list (service not asked or
-    // down) proves nothing. Eligible = at least one selected parcel attested; submittable = all.
-    function ownerOfferEligibility({ parcelIds = [], results = [], owner = null, lensKeys = [], nowSeconds } = {}) {
-        const now = typeof nowSeconds === 'number' && Number.isFinite(nowSeconds) ? nowSeconds : Math.floor(Date.now() / 1000);
-        const selected = Array.from(new Set((parcelIds || []).map(String)));
-        const lens = new Set((lensKeys || []).map(String));
-        const attestedBy = {};
-        if (owner) {
-            for (const result of results || []) {
-                if (!result || !lens.has(String(result.memberKey)) || !Array.isArray(result.attestations)) continue;
-                const parcelUid = String(result.parcelUid);
-                if (!selected.includes(parcelUid)) continue;
-                const match = result.attestations.some(att => att
-                    && (att.kind === undefined || att.kind === null || att.kind === '' || att.kind === 'ownership')
-                    && att.parcelUid === parcelUid
-                    && att.owner === owner
-                    && (!att.authority || att.authority === result.memberKey)
-                    && !(typeof att.expiry === 'number' && att.expiry > 0 && att.expiry <= now));
-                if (!match) continue;
-                const members = attestedBy[parcelUid] || (attestedBy[parcelUid] = []);
-                if (!members.includes(result.memberKey)) members.push(result.memberKey);
-            }
-        }
-        const attestedParcelIds = selected.filter(id => attestedBy[id]);
-        const unattestedParcelIds = selected.filter(id => !attestedBy[id]);
-        return {
-            eligible: attestedParcelIds.length > 0,
-            submittable: selected.length > 0 && unattestedParcelIds.length === 0,
-            attestedParcelIds,
-            unattestedParcelIds,
-            attestedBy
-        };
     }
 
     // Bids = active or fulfilled pledges plus unrefunded donations, each one on-chain account.
@@ -302,7 +265,6 @@
     return {
         OWNER_OFFER_ROLE,
         isOwnerOffer,
-        ownerOfferEligibility,
         rankBids,
         explorerLink,
         mount

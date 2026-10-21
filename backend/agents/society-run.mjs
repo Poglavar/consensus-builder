@@ -34,7 +34,7 @@ import { createRetryingFetch } from '../utils/retrying-fetch.js';
 import { sendAndConfirmPolling } from './solana-send.js';
 import { sendTelegram } from './telegram.js';
 import { isEntrypoint } from './entrypoint.js';
-import { discoverProposalInputs, loadPlanRecord, refreshProposalStatuses } from './discovery.js';
+import { discoverProposalInputs, refreshProposalStatuses } from './discovery.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const require = createRequire(import.meta.url);
@@ -219,9 +219,7 @@ async function gatherInputs({ apiBase, persona, needs, connection, wallet, pool 
         const others = minted.filter(proposal => isOthersActiveMinted(proposal, { wallet, personaName: persona.name })).slice(0, MAX_RECORDS);
         await Promise.all(others.map(async proposal => {
             try {
-                proposal.record = proposal.planSlug
-                    ? await loadPlanRecord({ apiBase, plan: proposal, fetchJson })
-                    : await fetchJson(`${apiBase}/proposals/${encodeURIComponent(proposal.id ?? proposalKey(proposal))}`);
+                proposal.record = await fetchJson(`${apiBase}/proposals/${encodeURIComponent(proposal.id ?? proposalKey(proposal))}`);
             } catch (error) {
                 recordFailures += 1;
                 log(`${persona.name}: record ${proposalKey(proposal)} unavailable (${error.message}); scoring it from its summary text`);

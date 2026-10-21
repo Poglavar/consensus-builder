@@ -8,6 +8,8 @@ const { ProposalManager } = require('../../frontend/js/proposal-manager.js');
 
 const P = (lat, lng, extra = {}) => ({ lat, lng, ...extra });
 const clone = value => JSON.parse(JSON.stringify(value));
+// Where a design was published (DesignSync): its CID at one index.
+const PUBLISHED = { cid: 'bafkreibm6jg3ux5qumhcn2b3flc3tyu6dmlb4xa7u5bf44yegnrjhc4yeq', publishedAt: '2026-10-21T12:00:00.000Z', apiBase: 'https://api.example.test' };
 
 function corridor(id, segments, options = {}) {
     const definition = {
@@ -330,7 +332,7 @@ describe('atomic corridor authoring plan', () => {
     it('detaches only identities of copies published elsewhere', () => {
         const record = corridor('local-id', [[P(0, 0), P(0, 1)]], {
             identity: {
-                serverProposalId: 42,
+                published: PUBLISHED,
                 chainProposalId: 'chain-42',
                 tokenId: 'token-42',
                 onchain: { account: 'x' },
@@ -342,8 +344,10 @@ describe('atomic corridor authoring plan', () => {
         const removed = authoring.detachPublishedIdentity(record);
 
         expect(Object.keys(removed).sort()).toEqual([
-            'chainProposalId', 'hash', 'onchain', 'serverProposalId', 'tokenId'
+            'chainProposalId', 'hash', 'onchain', 'published', 'tokenId'
         ]);
+        expect(removed.published).toEqual(PUBLISHED);
+        expect(record.published).toBeUndefined();
         expect(record.proposalId).toBe('local-id');
         expect(record.author).toBe('Ana');
         expect(record.roadProposal).toBeTruthy();
@@ -353,7 +357,7 @@ describe('atomic corridor authoring plan', () => {
 describe('corridor authoring commit boundary', () => {
     it('persists both sides of a T before deriving its ground', async () => {
         const through = corridor('through', [[P(0, 0), P(0, 10)]], {
-            identity: { serverProposalId: 77 }
+            identity: { published: PUBLISHED }
         });
         const branch = corridor(null, [[P(5, 5), P(0, 5)]]);
         const derive = vi.fn(async (records, options) => {
@@ -373,13 +377,13 @@ describe('corridor authoring commit boundary', () => {
         expect(result.topology.changedProposalIds).toEqual(['through']);
         expect(addProposal).toHaveBeenCalledWith(expect.any(Object), { emitEvent: false });
         expect(records.get('new-road').applied).toBe(true);
-        expect(through.serverProposalId).toBeUndefined();
+        expect(through.published).toBeUndefined();
         expect(derive).toHaveBeenCalledOnce();
     });
 
     it('restores every touched road and removes the provisional proposal when derivation fails', async () => {
         const through = corridor('through', [[P(0, 0), P(0, 10)]], {
-            identity: { serverProposalId: 77, hash: 'published' }
+            identity: { published: PUBLISHED, hash: 'published' }
         });
         const original = clone(through);
         const branch = corridor(null, [[P(5, 5), P(0, 5)]]);

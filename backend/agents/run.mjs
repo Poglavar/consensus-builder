@@ -4,15 +4,17 @@
 // pick on Solana devnet with complete immutable IPFS metadata, mirror the verified chain record
 // into the server index, then stake on its market. Every stage is
 // checkpointed in consensus.agent_run so a rerun never redoes a mint, upload or stake.
+// The design mint path is removed (plan-design-agreement.md, M2): agents mint agreements in M3, so
+// until then the mint stage refuses every pick that is not minted yet, before anything is signed.
 // Before minting anything new, the retire phase closes the persona's own stale proposals (Active,
 // no acceptances, older than AGENT_RETIRE_AFTER_DAYS): cancel → resolve NO → claim the YES refund.
-// With a lifecycle lens member configured (AGENT_LIFECYCLE_LENS_SERVICE_URL + _OPERATOR_TOKEN) the
-// member's key joins every new mint's lens, and proposals whose lens includes it are expired by the
-// member's "expired" verdict (settle_with_verdict) instead of cancelled by their author.
+// With a lifecycle lens member configured (AGENT_LIFECYCLE_LENS_SERVICE_URL + _OPERATOR_TOKEN),
+// proposals whose lens includes its key are expired by the member's "expired" verdict
+// (settle_with_verdict) instead of cancelled by their author.
 //
 // Usage:
 //   node agents/run.mjs --dry-run [--controller algorithm|llm] [--persona NAME] [--day YYYY-MM-DD]
-//   node agents/run.mjs --live    [--controller algorithm|llm] [--persona NAME] [--until STAGE] [--lens KEY,KEY] [--slot auto|LABEL]
+//   node agents/run.mjs --live    [--controller algorithm|llm] [--persona NAME] [--until STAGE] [--slot auto|LABEL]
 //   --slot lets a persona run several times a day: run ids and proposal ids become <day>-<slot>-…
 //   Parcel reads get at most three attempts within 180 seconds, with 5s/15s backoff or the
 //   provider's longer cooldown. Persistent incomplete replies fail; signed actions are not retried by this policy.
@@ -21,8 +23,6 @@
 //   { city, bbox } (Croatian cadastre in the database), { city, label, sourceId, bbox } (a live parcel
 //   source through GET /parcel-sources/:id), or { mode: 'contest' } (other agents' recent parcels,
 //   answered with a different build-out so both compete in one contest).
-//   The lens (whose attestations decide the proposal) is --lens or, when absent, chosen from the attester
-//   directory (GET /agent/lenses/members, agents/lens-directory-client.js); never the persona's own key.
 //   STAGE: planned | chosen | minted | posted | staked (default staked)
 // Env: DATABASE_URL (from backend/.env), AGENT_DAILY_ACTION_CAP (4),
 //      AGENT_RETIRE_AFTER_DAYS (7), AGENT_RETIRE_MAX_PER_RUN (3),
@@ -47,15 +47,13 @@ import { planCandidates } from './planner.js';
 import { chooseHousingArea, planHousingCandidates, housingOutreach } from './housing-policy.js';
 import { fetchHousingScreen } from './housing-screen.js';
 import { refreshProposalStatuses } from './discovery.js';
-import { prepareAgentPublication, verifyPublicationReadable, mirrorAgentPublication } from './chain-publication.js';
+import { mirrorAgentPublication } from './chain-publication.js';
 import { markAgentRunFailed, safeFailureDiagnostic } from './run-failure.js';
 import { fetchSourceParcels } from './source-fetch.js';
 import { bindingRejection, checkCandidateBinding, preflightCandidates, prioritizedPlannedCandidates } from './candidate-preflight.js';
 import { checkProposalBinding } from '../proposals/binding.js';
 import { hash32, selectAlgorithmicPicks } from './algorithmic-picker.js';
 import { buildPickRequests, parsePicks, estimateBatchCostUsd, runPickBatch, pickCustomId, createAgentLlm } from './llm-picker.js';
-import { mintProposal } from './minter.js';
-import { resolveLens, describeLensChoice } from './lens-directory-client.js';
 import { ensureMarketAndStake, usdcToAtomic } from './bettor.js';
 import { getRun, startRun, updateRun, recordCosts, dailySpendUsd, assertUnderCap, dailyCapUsd, listRuns } from './ledger.js';
 import { sendTelegram } from './telegram.js';
@@ -64,7 +62,7 @@ import { ensureBotSolFunding, fundBotAction } from './funding.js';
 import { sendAndConfirmPolling } from './solana-send.js';
 import {
     assertExecutionPlan, decisionCompletion, executionPolicy, summarizeExecutionPlan,
-    retirePolicy, ownedProposalsFromRuns, retirementsSpent, planRetirements, ageInDays, lifecycleLensConfig, createAction
+    retirePolicy, ownedProposalsFromRuns, retirementsSpent, planRetirements, ageInDays, lifecycleLensConfig
 } from './run-policy.js';
 import { fetchLensStatus } from './lens-ownership-client.js';
 import { inspectRetirement, executeRetirement } from './lifecycle-actions.js';
@@ -91,9 +89,9 @@ function usage(exitCode) {
         '  --candidates N       Candidates per persona offered to the controller (default 8)',
         '  --until STAGE        Stop after STAGE: planned | chosen | minted | posted | staked',
         '  --api URL            Backend base for POST /proposals/mirror (default AGENT_API_BASE or http://localhost:$API_PORT)',
-        '  --lens KEY,KEY       Lens member keys for every mint (default: chosen from GET /agent/lenses/members;',
-        '                       an empty directory refuses to mint; the persona\'s own key alone is refused)',
-        '  --help               This text'
+        '  --help               This text',
+        '',
+        'Minting is refused until agents mint agreements (M3): a live run stops at the first pick not minted yet.'
     ].join('\n'));
     process.exit(exitCode);
 }
@@ -157,23 +155,6 @@ function proposalIdFor(persona, day, index) {
     return `agent-${persona.name}-${day}-${index + 1}`;
 }
 
-// Dry-run view of the lens each persona with picks would mint with, and why; a refusal is printed,
-// not thrown, so the rest of the plan stays visible.
-async function logLensPlan({ entries, picksFor, args, apiBase }) {
-    for (const entry of entries) {
-        if (!picksFor(entry)) continue;
-        try {
-            const choice = withLifecycleMember(
-                await resolveLens({ explicit: args.lens, proposer: entry.persona.wallet, apiBase }),
-                await lifecycleMember()
-            );
-            log(`${entry.persona.name} ${describeLensChoice(choice)}`);
-        } catch (err) {
-            log(`${entry.persona.name} would REFUSE to mint: ${safeFailureDiagnostic(err)}`);
-        }
-    }
-}
-
 // The configured lifecycle lens member ({ serviceUrl, operatorToken, key, credentialName }) or null.
 // Its key and credential come from the member's own GET /lens/status, never from local config.
 async function lifecycleMember() {
@@ -183,15 +164,6 @@ async function lifecycleMember() {
     return { ...config, key: status.key, credentialName: status.credentialName || undefined, kind: status.kind ?? null };
 }
 
-// A mint's lens plus the lifecycle member, so the member's expiry verdict can later settle it.
-function withLifecycleMember(choice, member) {
-    if (!member || choice.lens.includes(member.key)) return choice;
-    return {
-        ...choice,
-        lens: [...choice.lens, member.key],
-        reason: `${choice.reason}; + lifecycle member ${member.key} (AGENT_LIFECYCLE_LENS_SERVICE_URL) for expiry verdicts`
-    };
-}
 
 // Retire phase. Proposals come from this persona's own agent_run rows (age = the row's run `day`);
 // their state comes from the chain, so a rerun skips whatever is already cancelled/resolved/claimed.
@@ -446,7 +418,6 @@ async function main() {
                 for (const pick of decision.picks) log(`   ${pick.candidateId}: ${pick.name}`);
             }
             if (args.dryRun) {
-                await logLensPlan({ entries, args, apiBase, picksFor: entry => decisions.get(entry.persona.name)?.picks?.length });
                 await retireStage({
                     pool, connection: createRpcConnection(rpcUrl, 'confirmed'), entries, day, dryRun: true, controller,
                     plannedActions: summarizeExecutionPlan(entries.map(entry => ({
@@ -491,7 +462,6 @@ async function main() {
             log(`batch: ${requests.length} request(s) · estimated ≤ $${estimate.toFixed(4)} · spent today $${spent.toFixed(4)} · cap $${cap}`);
             if (args.dryRun) {
                 // The model is not called in a dry run, so assume each persona uses its full daily quota.
-                await logLensPlan({ entries, args, apiBase, picksFor: entry => entry.candidates.length });
                 await retireStage({
                     pool, connection: createRpcConnection(rpcUrl, 'confirmed'), entries, day, dryRun: true, controller,
                     plannedActions: summarizeExecutionPlan(entries.map(entry => ({
@@ -612,7 +582,6 @@ async function main() {
             if (!picks.length) continue;
             const { keypair } = loadKeypair(persona.keypairPath);
             if (keypair.publicKey.toBase58() !== persona.wallet) throw new Error(`Wallet does not match persona ${persona.name}`);
-            const publications = { ...(summary.publications ?? {}) };
             const mints = { ...(summary.mints ?? {}) };
             const posts = { ...(summary.posts ?? {}) };
             const stakes = { ...(summary.stakes ?? {}) };
@@ -636,24 +605,7 @@ async function main() {
                 return result.outcome;
             };
 
-            // The lens is chosen once per persona-day and checkpointed, so a resumed run mints with the
-            // same authorities. No lens → no mint (never a silent self-lens).
-            let lensChoice = summary.lensChoice ?? null;
-            if (!lensChoice && picks.some(pick => !mints[pick.candidateId])) {
-                try {
-                    lensChoice = withLifecycleMember(
-                        await resolveLens({ explicit: args.lens, proposer: keypair.publicKey.toBase58(), apiBase }),
-                        await lifecycleMember()
-                    );
-                    await updateRun(pool, e.runId, { status: 'running', summaryPatch: { lensChoice } });
-                    log(`${persona.name} ${describeLensChoice(lensChoice)}`);
-                } catch (err) {
-                    failures.push(`${persona.name} lens: ${safeFailureDiagnostic(err)}`);
-                    personaFailed = true;
-                }
-            }
-
-            for (const [k, pick] of (personaFailed ? [] : picks.entries())) {
+            for (const [k, pick] of picks.entries()) {
                 const candidate = e.candidates.find((c) => c.candidateId === pick.candidateId);
                 if (!candidate) { failures.push(`${persona.name}: pick ${pick.candidateId} has no candidate`); personaFailed = true; break; }
                 const tag = `${persona.name} ${k + 1}/${picks.length} ${pick.proposalId}`;
@@ -682,33 +634,13 @@ async function main() {
                     }
                 }
 
-                // mint
+                // mint: the design mint path is removed (plan-design-agreement.md, M2) and agents
+                // mint agreements in M3. A pick that is not minted yet stops the persona here,
+                // before anything is signed; a pick minted by an earlier run goes on to its mirror.
                 if (!mints[pick.candidateId]) {
-                    try {
-                        if (!publications[pick.candidateId]) {
-                            publications[pick.candidateId] = await prepareAgentPublication({
-                                pool, candidate, pick, persona: { ...persona, controller: runController },
-                                runId: e.runId, city, lens: lensChoice.lens
-                            }, { log });
-                            await updateRun(pool, e.runId, { status: 'running', summaryPatch: { publications } });
-                        }
-                        const publication = await verifyPublicationReadable(publications[pick.candidateId]);
-                        const record = publication.record;
-                        const minted = await runAction(createAction({ proposalId: pick.proposalId, lens: lensChoice.lens }), () => mintProposal({
-                            connection, programId: PROPOSAL_NFT_PROGRAM, ownerKeypair: keypair,
-                            parcelIds: record.cadastreParcelIds, isConditional: record.isConditional,
-                            site: record.site, binding: record.binding,
-                            imageUri: publication.metadataUri, lamports: 0n, lens: record.lens,
-                            sendAndConfirm: sendAndConfirmPolling
-                        }));
-                        mints[pick.candidateId] = { ...minted, metadataUri: publication.metadataUri, count: minted.count === undefined ? undefined : String(minted.count) };
-                        await updateRun(pool, e.runId, { stage: 'chosen', status: 'running', summaryPatch: { mints, activities } });
-                        log(`${tag} minted: pda ${minted.proposalPda} tx ${minted.signature}`);
-                    } catch (err) {
-                        failures.push(`${tag} mint: ${safeFailureDiagnostic(err)}`);
-                        personaFailed = true;
-                        break;
-                    }
+                    failures.push(`${tag} mint refused: agent mints wait for agreements (M3); nothing was signed for this pick`);
+                    personaFailed = true;
+                    break;
                 }
                 if (stageIndex(args.until) < stageIndex('posted')) continue;
 

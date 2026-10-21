@@ -1,6 +1,7 @@
-// Signed lens evidence and owner decisions for abstract proposal approval: the canonical statements,
-// the exact text each key signs and their Ed25519 verification. Shared by the browser, the lens member
-// and Node tests, so all three accept exactly the same signatures.
+// Signed lens evidence and owner decisions for abstract approval: the canonical statements, the exact
+// text each key signs and their Ed25519 verification. A decision is taken on an agreement and signs its
+// CID (ProposalApproval.decisionContent). Shared by the browser, the lens member and Node tests, so all
+// three accept exactly the same signatures.
 (function (root, factory) {
     const api = factory(root);
     if (typeof module === 'object' && module.exports) module.exports = api;
@@ -66,15 +67,16 @@
         return ['Urban Game Theory lens attestation', approval().stableStringify(statement)].join('\n');
     }
 
-    // The text a wallet signs for one owner decision: a readable summary, then every signed field.
+    // The text a wallet signs for one decision on an agreement: a readable summary, then every signed
+    // field. The agreement's CID commits to its designs, land, allocations, money and rule.
     function decisionMessage(statement) {
         const verb = statement.decision === 'withdraw' ? 'Withdraw the acceptance of' : 'Accept';
         return [
             'Urban Game Theory owner decision',
-            `${verb} proposal ${statement.proposalId} as owner ${statement.ownerId}.`,
-            `Terms: ${statement.effectHash}`,
+            `${verb} the agreement as owner ${statement.ownerId}.`,
+            `Agreement: ${statement.agreementCid}`,
             `Approval context: ${statement.contextHash}`,
-            `Signed at: ${statement.acceptedAt}`,
+            `Signed at: ${statement.decidedAt}`,
             '',
             approval().stableStringify(statement)
         ].join('\n');
@@ -128,8 +130,9 @@
     }
 
     // A complete owner receipt: both lens facts verify and name this context, owner and signer; the
-    // decision falls inside their validity; the signer's own signature covers the canonical statement.
-    // Lens membership and the current context are checked by ProposalApproval.evidenceAllows.
+    // decision falls inside their validity; the signer's own signature covers the canonical statement,
+    // and so the agreement's CID. Lens membership and the current context are checked by
+    // ProposalApproval.evidenceAllows.
     function verifyReceipt({ receipt, statement, parcelIds = null }) {
         try {
             const { rights, authority } = receipt?.evidence || {};
@@ -138,7 +141,7 @@
                 || authority.ownerId !== receipt.ownerId || authority.actorId !== receipt.actorId
                 || rights.contextHash !== statement.contextHash || authority.contextHash !== statement.contextHash) return false;
             if (parcelIds && approval().stableStringify(rights.parcelIds) !== approval().stableStringify(parcelIds)) return false;
-            if (!validAt(rights, statement.acceptedAt) || !validAt(authority, statement.acceptedAt)) return false;
+            if (!validAt(rights, statement.decidedAt) || !validAt(authority, statement.decidedAt)) return false;
             const proof = receipt.decisionProof;
             return proof?.scheme === DECISION_SCHEME
                 && verifySignature(receipt.actorId, decisionMessage(statement), proof.signature);

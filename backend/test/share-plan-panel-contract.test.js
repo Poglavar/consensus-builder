@@ -1,7 +1,8 @@
 // Integration contract for the Share Plan panel: it is a right-docked PANEL (not a modal) that
 // puts the app in share-plan mode — the map is pan/zoom only, every fabric surface is inert, and
-// the checked proposals are painted on the map. These greps lock the lockdown wiring so a guard
-// cannot silently drop out of one of the several files that each hold a piece of it.
+// the checked designs are painted on the map. These greps lock the lockdown wiring so a guard
+// cannot silently drop out of one of the several files that each hold a piece of it. Since M2 a row
+// publishes its design (DesignSync.publishDesign) and the link names the selection by CID.
 import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
 
@@ -26,7 +27,7 @@ function sourceSection(source, startMarker, endMarker) {
 }
 
 describe('share plan panel contract', () => {
-    const panelFn = sourceSection(dialogShare, 'function showSharePlanPanel(', 'function showShareLinkModal');
+    const panelFn = sourceSection(dialogShare, 'function showSharePlanPanel(', 'function showSimpleShareModal(');
 
     it('opens as a right-docked panel, never through the share modal', () => {
         expect(panelFn).toContain("panelRoot.className = 'share-plan-panel'");
@@ -71,20 +72,46 @@ describe('share plan panel contract', () => {
         // toggle, and a file-wide grep for 'drawingProposals' would fail on that even though the
         // fill still draws nothing. Asserting the absence of a string is a proxy; the property is
         // that opening the panel starts no drawing.
-        const fill = panelFn.slice(panelFn.indexOf('(async () => {'), panelFn.indexOf('await initializeUploadChecks();'));
-        expect(fill).not.toContain("'drawingProposals'");
+        const fill = sourceSection(panelFn, '(async () => {', "console.error('share plan: filling the panel failed'");
+        expect(fill).not.toContain("'proposals.share.panel.drawing'");
         expect(fill).not.toContain('syncPlanOverlay');
-        // One pass in the fill — the rows. A second would be a drawing pass.
-        expect(fill.match(/if \(!await inChunks\(/g) || []).toHaveLength(1);
+        expect(fill).not.toContain('buildPlanOverlay');
+        // Two passes in the fill — the rows, then each row's publication state. Neither draws: a row's
+        // state only restyles an overlay that already exists (updateRowState), and none does yet.
+        expect(fill.match(/if \(!await inChunks\(/g) || []).toHaveLength(2);
+        expect(sourceSection(panelFn, 'const updateRowState = (key) => {', 'const onCheckboxChange ='))
+            .toContain('if (overlayByKey.has(key)) syncPlanOverlay(key);');
     });
 
-    it('offers the subset highlight as All/Uploaded/Not-uploaded, starting on All', () => {
-        // Hovering rows one at a time answers "is THIS one uploaded"; it cannot answer "which of my
+    it('knows which designs are published from their own CIDs, asking no server', () => {
+        // A design reads as published while it hashes to the CID it was published as at this index
+        // (DesignSync.publishedCid). The city-scoped server listing this replaced missed designs it
+        // did not cover and offered to upload them a second time.
+        const fill = sourceSection(panelFn, '(async () => {', "console.error('share plan: filling the panel failed'");
+        expect(fill).toContain('publishState.set(key, { cid: window.DesignSync.publishedCid(proposal), publishing: false });');
+        expect(panelFn).not.toMatch(/\bfetch\(/);
+        // The link waits for every selected design to be published, then names them by CID.
+        const link = sourceSection(panelFn, 'const updateShareUrl = () => {', 'const updateRowState =');
+        expect(link).toContain('if (cids.length !== selectedKeys.length) {');
+        expect(link).toContain('showLink(window.DesignSync.designLink(cids));');
+    });
+
+    it('publishes a row through DesignSync and never a parcel layout', () => {
+        // A layout is published with the agreement that settles its land (ProposalPublishTerms.publishRefusal).
+        expect(panelFn).toContain('const refusal = window.ProposalPublishTerms.publishRefusal(proposal);');
+        expect(panelFn).toContain('const selected = new Set([...proposalsByHash.keys()].filter(key => !publishRefusals.has(key)));');
+        const publish = sourceSection(panelFn, 'const publishRow = async (key) => {', 'const attachRow =');
+        expect(publish).toContain('if (!proposal || publishRefusals.has(key)) return;');
+        expect(publish).toContain('await window.DesignSync.publishDesign(proposal);');
+    });
+
+    it('offers the subset highlight as All/Published/Not published yet, starting on All', () => {
+        // Hovering rows one at a time answers "is THIS one published"; it cannot answer "which of my
         // three hundred are". The filter can, in the treatments the legend defines. "All" is the
         // base drawing the map already shows, so it must be the starting mode and paint nothing.
-        expect(panelFn).toContain("{ value: 'all', key: 'plan.filterAll'");
-        expect(panelFn).toContain("{ value: 'uploaded', key: 'plan.filterUploaded'");
-        expect(panelFn).toContain("{ value: 'pending', key: 'plan.filterPending'");
+        expect(panelFn).toContain("{ value: 'all', key: 'modal.roadWidth.share.plan.filterAll'");
+        expect(panelFn).toContain("{ value: 'published', key: 'proposals.share.panel.filterPublished'");
+        expect(panelFn).toContain("{ value: 'pending', key: 'proposals.share.panel.filterPending'");
         expect(panelFn).toContain("let highlightMode = 'all';");
         // And it draws in slices, like the row build — 300 overlays in one task is the freeze the
         // panel was rebuilt to avoid.
@@ -109,7 +136,7 @@ describe('share plan panel contract', () => {
     });
 
     // Painting the subset ON TOP of the base drawing answered nothing: the whole city is already
-    // drawn, so "Not uploaded yet" looked like "All" with one more shape in it. Choosing a subset
+    // drawn, so "Not published yet" looked like "All" with one more shape in it. Choosing a subset
     // has to push everything else back.
     it('dims everything that is not the chosen subset, and undims on All', () => {
         const apply = sourceSection(panelFn, 'const applyHighlightMode', 'const setHighlightMode');
@@ -148,9 +175,9 @@ describe('share plan panel contract', () => {
             .not.toMatch(/const features = groundFeaturesFor\([^)]*\);\s*\n\s*if \(!features\.length\) return;/);
     });
 
-    // An upload changes only which treatment a proposal wears and which group it sits in. Rebuilding
+    // Publishing changes only which treatment a design wears and which group it sits in. Rebuilding
     // its layer would throw away geometry that did not change.
-    it('restyles and moves a layer on upload instead of rebuilding it', () => {
+    it('restyles and moves a layer on publish instead of rebuilding it', () => {
         const sync = sourceSection(panelFn, 'const syncPlanOverlay = (key)', 'const applyHighlightMode');
         expect(sync).toContain('existing.layer.setStyle(overlayStyleFor(');
         expect(sync).toContain('overlayGroups[bucket].addLayer(existing.layer)');

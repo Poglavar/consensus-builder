@@ -1,86 +1,86 @@
 {
-  "planningStudy": {
-    "exactStartHint": "Opens this exact parcel with an editable design and a selectable front edge.",
-    "title": "Parcel study",
-    "envelopeTitle": "Partial envelope",
-    "designTitle": "Design test",
-    "start": "Test a parcel here",
-    "startHint": "Uses the parcel at the clicked point, or at the map centre. Source areas and parcels keep their own identities.",
-    "loading": "Reading the parcel and zoning sources…",
-    "scope": "Edit a test volume against direct Atlas values. The envelope shows only the supported dimensional subset, with an assumed front edge and relative ground height.",
-    "heightM": "Design height (m)",
-    "scale": "Footprint scale (%)",
-    "eastM": "Move east (m)",
-    "northM": "Move north (m)",
-    "frontEdge": "Assumed front edge",
-    "edge": "Edge {{number}}",
-    "breach": "The design exceeds at least one tested limit. Other requirements remain unresolved.",
-    "unresolved": "No breach of the tested limits. Unresolved requirements remain.",
-    "measured": "Measured",
-    "limit": "Limit",
-    "missingDirectValue": "No direct source value is available.",
-    "unresolvedTitle": "Unresolved requirements and assumptions",
-    "saved": "Draft saved in this browser. No proposal has been applied or published.",
-    "saveError": "The draft could not be saved in this browser.",
-    "changed": "The parcel or zoning source has changed. The previous draft is retained; its assessment is no longer current.",
-    "restart": "Start again with current sources",
-    "reset": "Reset test design",
-    "references": "Pinned zoning and parcel references",
-    "invalidInput": "Enter dimensions within the displayed ranges. The map still shows the last valid design.",
-    "status": {
-      "pass": "Within tested limit",
-      "fail": "Exceeds tested limit",
-      "unknown": "Unresolved"
+    "planningStudy": {
+        "exactStartHint": "Opens this exact parcel with an editable design and a selectable front edge.",
+        "title": "Parcel study",
+        "envelopeTitle": "Partial envelope",
+        "designTitle": "Design test",
+        "start": "Test a parcel here",
+        "startHint": "Uses the parcel at the clicked point, or at the map centre. Source areas and parcels keep their own identities.",
+        "loading": "Reading the parcel and zoning sources…",
+        "scope": "Edit a test volume against direct Atlas values. The envelope shows only the supported dimensional subset, with an assumed front edge and relative ground height.",
+        "heightM": "Design height (m)",
+        "scale": "Footprint scale (%)",
+        "eastM": "Move east (m)",
+        "northM": "Move north (m)",
+        "frontEdge": "Assumed front edge",
+        "edge": "Edge {{number}}",
+        "breach": "The design exceeds at least one tested limit. Other requirements remain unresolved.",
+        "unresolved": "No breach of the tested limits. Unresolved requirements remain.",
+        "measured": "Measured",
+        "limit": "Limit",
+        "missingDirectValue": "No direct source value is available.",
+        "unresolvedTitle": "Unresolved requirements and assumptions",
+        "saved": "Draft saved in this browser. No proposal has been applied or published.",
+        "saveError": "The draft could not be saved in this browser.",
+        "changed": "The parcel or zoning source has changed. The previous draft is retained; its assessment is no longer current.",
+        "restart": "Start again with current sources",
+        "reset": "Reset test design",
+        "references": "Pinned zoning and parcel references",
+        "invalidInput": "Enter dimensions within the displayed ranges. The map still shows the last valid design.",
+        "status": {
+            "pass": "Within tested limit",
+            "fail": "Exceeds tested limit",
+            "unknown": "Unresolved"
+        },
+        "checks": {
+            "parcelContainment": "Inside the source parcel",
+            "zoningCoverage": "Design area outside source coverage",
+            "frontSetback": "Front setback",
+            "sideSetback": "Side setbacks",
+            "rearSetback": "Rear setback",
+            "buildingCoverage": "Building coverage",
+            "use": "Recorded housing treatment"
+        },
+        "unresolvedReasons": {
+            "applicability": "Current legal applicability, overlays, exceptions and any required hearing remain unverified.",
+            "edge-assumption": "Front, rear and side edges follow the chosen front edge. This interpretation has not been verified against street or legal-lot evidence.",
+            "vertical-reference": "Height uses a flat relative ground reference. Surveyed terrain, roof rules and the ordinance’s height datum are unverified.",
+            "measurement-basis": "Area checks use this parcel and the test footprint. Legal lot, building and floor-area definitions may differ.",
+            "other-rules": "Parking, floor area, dwelling density, occupancy, infrastructure and other unsupported rules are not evaluated. Full source fields remain in the zoning inspector.",
+            "partial-source-coverage": "{{area}} of the parcel lies outside the supplied zoning area. The partial envelope excludes that area; its applicability is unresolved."
+        },
+        "errors": {
+            "study-source-unavailable": "A source could not be read. Retry when it is available.",
+            "study-unavailable": "This source has no configured parcel study.",
+            "study-parcel-source-unavailable": "The configured parcel source is unavailable.",
+            "study-parcel-missing": "No parcel was returned at this point. Click inside a parcel and retry.",
+            "study-parcel-ambiguous": "Several parcel identities overlap this point. Choose an exact parcel; no identity was inferred.",
+            "study-parcel-incomplete": "Parcel coverage is incomplete.",
+            "study-zoning-incomplete": "The zoning source returned incomplete coverage.",
+            "study-multiple-zoning-areas": "This parcel crosses multiple zoning areas. Their rules have not been composed.",
+            "study-zoning-missing": "No supplied zoning area intersects this parcel.",
+            "unsupported-parcel-shape": "This demonstration supports small convex parcels without holes. This parcel needs a different geometry evaluator.",
+            "empty-supported-bound": "The supported setbacks leave no drawable bound.",
+            "invalid-front-edge": "Choose a valid parcel edge."
+        }
     },
-    "checks": {
-      "parcelContainment": "Inside the source parcel",
-      "zoningCoverage": "Design area outside source coverage",
-      "frontSetback": "Front setback",
-      "sideSetback": "Side setbacks",
-      "rearSetback": "Rear setback",
-      "buildingCoverage": "Building coverage",
-      "use": "Recorded housing treatment"
+    "onMapEditor": {
+        "missingSite": "This saved building has no valid authored site boundary, so its geometry cannot be edited safely.",
+        "cancel": "Cancel",
+        "editing": "Editing",
+        "controls": "Controls",
+        "showControls": "Show controls",
+        "hideControls": "Hide controls",
+        "moreOptions": "More options",
+        "undo": "Undo",
+        "lockReject": "The current footprint is outside the locked site. Move it back inside to use site lock.",
+        "placement": {
+            "snap": "Snap to edges",
+            "lock": "Lock to starting site",
+            "outside": "Outside the starting site. Save to recalculate affected parcels.",
+            "lockOutside": "Move the design inside the starting site before locking it."
+        }
     },
-    "unresolvedReasons": {
-      "applicability": "Current legal applicability, overlays, exceptions and any required hearing remain unverified.",
-      "edge-assumption": "Front, rear and side edges follow the chosen front edge. This interpretation has not been verified against street or legal-lot evidence.",
-      "vertical-reference": "Height uses a flat relative ground reference. Surveyed terrain, roof rules and the ordinance’s height datum are unverified.",
-      "measurement-basis": "Area checks use this parcel and the test footprint. Legal lot, building and floor-area definitions may differ.",
-      "other-rules": "Parking, floor area, dwelling density, occupancy, infrastructure and other unsupported rules are not evaluated. Full source fields remain in the zoning inspector.",
-      "partial-source-coverage": "{{area}} of the parcel lies outside the supplied zoning area. The partial envelope excludes that area; its applicability is unresolved."
-    },
-    "errors": {
-      "study-source-unavailable": "A source could not be read. Retry when it is available.",
-      "study-unavailable": "This source has no configured parcel study.",
-      "study-parcel-source-unavailable": "The configured parcel source is unavailable.",
-      "study-parcel-missing": "No parcel was returned at this point. Click inside a parcel and retry.",
-      "study-parcel-ambiguous": "Several parcel identities overlap this point. Choose an exact parcel; no identity was inferred.",
-      "study-parcel-incomplete": "Parcel coverage is incomplete.",
-      "study-zoning-incomplete": "The zoning source returned incomplete coverage.",
-      "study-multiple-zoning-areas": "This parcel crosses multiple zoning areas. Their rules have not been composed.",
-      "study-zoning-missing": "No supplied zoning area intersects this parcel.",
-      "unsupported-parcel-shape": "This demonstration supports small convex parcels without holes. This parcel needs a different geometry evaluator.",
-      "empty-supported-bound": "The supported setbacks leave no drawable bound.",
-      "invalid-front-edge": "Choose a valid parcel edge."
-    }
-  },
-  "onMapEditor": {
-    "missingSite": "This saved building has no valid authored site boundary, so its geometry cannot be edited safely.",
-    "cancel": "Cancel",
-    "editing": "Editing",
-    "controls": "Controls",
-    "showControls": "Show controls",
-    "hideControls": "Hide controls",
-    "moreOptions": "More options",
-    "undo": "Undo",
-    "lockReject": "The current footprint is outside the locked site. Move it back inside to use site lock.",
-    "placement": {
-      "snap": "Snap to edges",
-      "lock": "Lock to starting site",
-      "outside": "Outside the starting site. Save to recalculate affected parcels.",
-      "lockOutside": "Move the design inside the starting site before locking it."
-    }
-  },
     "optionalTools": {
         "loadFailed": "Could not load this tool. Please try again."
     },
@@ -414,15 +414,11 @@
             "withOwner": "With {{owner}}’s acceptance: {{progress}}",
             "passesWithOwner": "{{owner}}’s acceptance would meet the configured approval rules.",
             "needsMoreThanOwner": "Further decisions besides {{owner}}’s acceptance would still be needed under the configured approval rules.",
-            "showOnMap": "Show on map",
-            "showOnMapHint": "Before: the parcels this owner puts in. After: the plots they get.",
             "acceptAsOwner": "I am {{owner}} — review and accept"
         },
-        "ownershipUnresolved": "Ownership unresolved. You can design and share this proposal; owner approval needs a complete rights snapshot.",
         "areaUnknown": "Parcel areas are unresolved.",
         "chainUnsupported": "This approval setup is not supported by the current chain adapter.",
         "approvalUnavailable": "The selected lens has not established these rights and your authority to act for this owner.",
-        "invalidTerms": "Correct the proposal terms before accepting.",
         "status": {
             "passed": "Configured approval rules met",
             "pending": "Configured approval rules not met",
@@ -449,7 +445,6 @@
         "acceptedAs": "Accepted as {{owner}}",
         "withdraw": "Withdraw acceptance",
         "actForOwner": "Act for an owner",
-        "actForOwnerHint": "A member of this proposal’s lens confirms which owners your wallet may act for. Nothing is accepted until you review and sign.",
         "done": "Done",
         "verify": {
             "intro": "Choose a lens member. Your wallet signs a one-time challenge so the member can tell you which owners you may act for.",
@@ -478,7 +473,6 @@
             "coOwnedWith": "co-owned with {{owners}}",
             "openUntil": "Open until {{date}}",
             "noDeadline": "No deadline",
-            "signNote": "Your wallet signs these exact terms. If they change, your acceptance stops counting.",
             "progressOwners": "{{accepted}} of {{total}} owners",
             "progressBoth": "{{accepted}} of {{total}} owners, {{area}} of {{totalArea}}",
             "alreadyAccepted": "This owner has already accepted these terms.",
@@ -495,28 +489,12 @@
             "planTitle": "The plan to decide on"
         },
         "receipt": {
-            "signed": "Signed by {{signer}} on {{date}}.",
-            "passed": "The verified decisions meet this proposal’s configured approval rules.",
-            "pending": "Further decisions are needed to meet this proposal’s configured approval rules."
+            "signed": "Signed by {{signer}} on {{date}}."
         },
         "amountOf": "{{amount}} of {{total}}",
         "outsideSnapshot": "Recipient outside the ownership snapshot",
         "relay": {
-            "shared": "Shared: other browsers can verify and count this decision.",
-            "unpublished": "Saved in this browser only: the proposal is not published yet.",
-            "retry": "Saved in this browser only for now; it is sent again the next time this proposal opens.",
-            "localOnly": "Acceptances stay in this browser until the proposal is published."
-        },
-        "chain": {
-            "reading": "Reading anchored decisions from the chain…",
-            "readFailed": "The chain could not be read; decisions shown are from this browser and the relay.",
-            "anchored": "On chain: {{anchored}} of {{total}} decisions anchored.",
-            "lastAnchor": "Latest anchor transaction",
-            "anchor": "Anchor on chain",
-            "scope": "The chain keeps the approval setup and the signed decisions so anyone can recount them; it does not count or pay them.",
-            "anchoring": "Pinning the decisions and waiting for your wallet…",
-            "anchoredNow": "Anchored {{count}} decisions.",
-            "anchorFailed": "Nothing was anchored: {{reason}}"
+            "shared": "Shared: other browsers can verify and count this decision."
         }
     },
     "proposalGroundRebase": {
@@ -566,9 +544,6 @@
         "tabs": {
             "design": "Design",
             "parcels": "Parcels",
-            "ownership": "Ownership",
-            "approval": "Approval",
-            "terms": "Terms",
             "details": "Details"
         },
         "time": {
@@ -581,10 +556,6 @@
             "detailsTitle": "Proposal details",
             "parcelsTitle": "Affected parcels",
             "parcelsCopy": "Use the current map selection, or edit the parcel IDs directly.",
-            "ownershipTitle": "Ownership",
-            "ownershipCopy": "Set who receives the land and any recipient constraint.",
-            "termsTitle": "Terms",
-            "termsCopy": "Adjust financing, expiry, decay, and deposit terms.",
             "designTitle": "Design details",
             "designCopy": "Edit canonical geometry and parameters in the existing map-aware design tool.",
             "detailsCopyNew": "Describe what this proposal does, so others can follow it.",
@@ -677,28 +648,7 @@
             "type": "Proposal type",
             "corridorKind": "Corridor type",
             "description": "Description",
-            "parcelIds": "Parcel IDs",
-            "ownership": "Ownership change",
-            "recipientScope": "Recipient scope",
-            "recipientAddress": "Recipient address or name",
-            "offer": "Offer",
-            "currency": "Currency",
-            "conditional": "Conditional payout",
-            "expiry": "Expires at",
-            "decay": "Offer decay",
-            "percent": "Percent",
-            "durationMs": "Duration (ms)",
-            "deposit": "Deposit"
-        },
-        "ownership": {
-            "inherit": "Keep source setting",
-            "noChange": "No change",
-            "toMe": "To me",
-            "toCity": "To city",
-            "thirdParty": "Third party",
-            "notApplicable": "Not applicable",
-            "anyone": "Anyone",
-            "specific": "Specific recipient"
+            "parcelIds": "Parcel IDs"
         },
         "design": {
             "corridorSummary": "{{segments}} segment(s) · {{width}} m wide",
@@ -748,11 +698,6 @@
             "geometry": "Geometry",
             "changed": "Changed",
             "unchanged": "Unchanged",
-            "noLens": "No lens members",
-            "lensMembers": "{{count}} lens member(s): {{keys}}",
-            "noApproval": "No approval setup",
-            "rights": "Rights for {{parcels}} parcel(s), {{owners}} owner(s), from {{source}}.",
-            "noRights": "No ownership data.",
             "inPlaceNotice": "Saving updates this proposal in place. It keeps its id.",
             "counterproposalNotice": "Saving creates a counterproposal. The published proposal is not changed or removed."
         },
@@ -840,12 +785,6 @@
         "noGeometryYet": "This draft has no geometry yet — start drawing to give it one.",
         "keptAsDraft": "Could not create the object — the drawing has been reopened so you can fix it.",
         "keptUnopened": "The design tool could not reopen this. Your work is kept as a draft — fix what it complained about and open it again.",
-        "uploadRateLimited": "Too many uploads for now. Wait a few minutes and upload the rest.",
-        "uploadRateLimitedIn": {
-            "one": "Too many uploads for now. Try the rest in about {minutes} minute.",
-            "few": "Too many uploads for now. Try the rest in about {minutes} minutes.",
-            "other": "Too many uploads for now. Try the rest in about {minutes} minutes."
-        },
         "reverted": "Restored the previous version.",
         "revertFailed": "Could not restore the previous version.",
         "geometryUpdated": "Geometry updated.",
@@ -858,11 +797,6 @@
         },
         "builtButParked": "The object was created but could not be placed on the map (a conflict blocked it). It is parked in your proposals list — select it there to see and apply it.",
         "builtButParkedBecause": "The object was created but could not be placed on the map: {{reason}} It is parked in your proposals list — select it there to see and apply it.",
-        "uploadRateLimitedAt": {
-            "one": "Too many uploads for now. You can upload the rest at {{at}}, in about {{minutes}} minute.",
-            "few": "Too many uploads for now. You can upload the rest at {{at}}, in about {{minutes}} minutes.",
-            "other": "Too many uploads for now. You can upload the rest at {{at}}, in about {{minutes}} minutes."
-        },
         "freeform": {
             "title": "Convert to freeform building",
             "convert": "Convert",
@@ -905,7 +839,6 @@
         "unknown": "Unknown",
         "unknownOwner": "Unknown owner",
         "privateOwner": "Private owner",
-        "userFallback": "User",
         "close": "Close",
         "cancel": "Cancel",
         "seeTransaction": "See the transaction",
@@ -952,7 +885,62 @@
         "recovery": {
             "offer": "Proposals you made {{when}} could not be saved, because the app was open in another tab at the time ({{count}}).\n\nRestore them now?"
         },
-        "inOtherCity": "This proposal belongs to {{city}}, not {{current}}: open it there."
+        "inOtherCity": "This proposal belongs to {{city}}, not {{current}}: open it there.",
+        "share": {
+            "shareHint": "Publish this design and copy its link",
+            "publishedAs": "Published as:",
+            "linkCopied": "Design published. Its link is copied.",
+            "publishedTitle": "Design published",
+            "copyByHand": "The link could not be copied automatically. Copy it from here:",
+            "linkLabel": "Link to the published design",
+            "errors": {
+                "cidMismatch": "The server computed a different identity for this design, so nothing was published.",
+                "pinningUnconfigured": "This server cannot pin published designs yet (pinning is not configured).",
+                "layoutNeedsAgreement": "A parcel layout is published with the agreement that settles its land.",
+                "tooLarge": "This design is too large to publish (more than 1 MB).",
+                "rateLimitedFor": "Too many publications for now. Try again in about {{minutes}} min.",
+                "rateLimited": "Too many publications for now. Wait a few minutes and try again.",
+                "refused": "The server refused this design: {{reason}}",
+                "networkFailed": "The server could not be reached. Check the connection and try again.",
+                "notFound": "This design is not on the server.",
+                "failed": "The design could not be published.",
+                "notACid": "This is not a design link.",
+                "applyFailed": "The design could not be applied to the ground here."
+            },
+            "panel": {
+                "title": "Share applied designs",
+                "filterPublished": "Published",
+                "filterPending": "Not published yet",
+                "drawing": "Drawing {{done}}/{{total}} designs on the map…",
+                "count": {
+                    "one": "{{count}} design applied on this map",
+                    "other": "{{count}} designs applied on this map"
+                },
+                "linkLabel": "Link to the selected designs",
+                "selectHint": "Select at least one design to share.",
+                "publishing": "Publishing…",
+                "publishHint": "Publish every selected design to get the link, or deselect some.",
+                "noPublishedHint": "Publish at least one design to get a link.",
+                "publish": "Publish",
+                "published": "Published",
+                "listing": "Listing {{done}}/{{total}} designs…",
+                "checking": "Checking {{done}}/{{total}} designs…"
+            },
+            "route": {
+                "fetching": "Fetching the shared designs…",
+                "title": "Shared designs",
+                "importing": "Importing the shared designs…",
+                "failedCount": {
+                    "other": "{{count}} of the shared designs could not be opened:"
+                },
+                "applied": {
+                    "one": "Applied {{count}} shared design.",
+                    "other": "Applied {{count}} shared designs."
+                },
+                "alreadyApplied": "These shared designs are already on the map.",
+                "failed": "The shared designs could not be opened."
+            }
+        }
     },
     "wallet": {
         "connect": "Connect wallet",
@@ -1106,25 +1094,11 @@
                 "title": "Urban grain score",
                 "appliedComposition": "Applied composition",
                 "localScope": "Local composition · score stays in this browser",
-                "namedScope": "Named plan · {{path}}",
                 "closeAria": "Close grain score",
                 "loading": "Preparing proposals for inspection…",
-                "loadingNamed": "Loading named plan…",
-                "applyingNamedPlan": "Applying named-plan proposals to the map…",
-                "ready": {
-                    "one": "The rooster found {{count}} measurable resulting parcel. He will try it now.",
-                    "other": "The rooster found {{count}} measurable resulting parcels. He will try them one by one."
-                },
-                "start": "Start the inspection",
                 "unavailable": "The grain score is unavailable for these proposals.",
                 "noApplied": "Apply at least one proposal before summoning the rooster.",
                 "noGeometry": "The resulting parcel shapes could not be measured.",
-                "planNotFound": "This named plan could not be found.",
-                "planLoadFailed": "The named plan could not be loaded.",
-                "incompletePlan": "The named plan cannot be scored because not all of its proposals could be applied.",
-                "exactMembersRequired": "This named plan requires every original published proposal to be verified and applied. A local edit or fork cannot replace a member.",
-                "otherApplied": "Other proposals are applied on this map. Unapply them before scoring this named plan.",
-                "fabricChanged": "The map changed after this inspection was prepared. Reopen the grain score to measure it again.",
                 "verdictFine": "Fine grain",
                 "verdictGood": "A good direction",
                 "verdictMixed": "Mixed grain",
@@ -1414,8 +1388,6 @@
         "proposalsCreated": "Proposals created ({{count}})",
         "noProposalsCreated": "No proposals created",
         "proposalsAccepted": "Recorded acceptances ({{count}})",
-        "proposalOffer": "Original full-proposal offer",
-        "proposalOfferUnknown": "Original offer not recorded",
         "noProposalsAccepted": "No recorded acceptances",
         "localProposalUnavailable": "Local proposal record unavailable",
         "chainProposalUnloaded": "Chain proposal not loaded",
@@ -1508,19 +1480,13 @@
                 "park": "Park",
                 "square": "Square",
                 "lake": "Lake",
-                "offer": "Offer",
                 "transport": "Transport",
-                "ownershipCategory": "Ownership",
                 "road": "Road",
                 "track": "Track",
                 "busStation": "Bus station",
                 "tramStation": "Tram station",
                 "undergroundStation": "Metro station",
                 "elevatedStation": "Elevated station",
-                "noParcelSelected": "No parcel selected. Please select a parcel first.",
-                "useMainCreateButton": "Please use the main \"Create Proposal\" button when multiple parcels are selected.",
-                "enableMultiSelect": "Enable multi-parcel selection to use this action.",
-                "selectAtLeastOne": "Select at least one parcel to create a proposal.",
                 "selectParcelFirst": "Select a parcel first.",
                 "rulesCategory": "Urban rules",
                 "structuresCategory": "Structures"
@@ -1581,7 +1547,6 @@
                 "details": {
                     "id": "ID:",
                     "author": "Author:",
-                    "offer": "Offer:",
                     "budget": "Budget:",
                     "budgetUnit": "ETH",
                     "unknownAuthor": "Unknown"
@@ -1651,8 +1616,7 @@
                 "destination": {
                     "public": "public",
                     "proposer": "the proposer",
-                    "carryOver": "stays with its owners",
-                    "undecided": "to be decided"
+                    "carryOver": "stays with its owners"
                 },
                 "takes": "Takes {{area}} m² of this parcel → {{destination}}",
                 "remainder": "Proposed formations take {{taken}} m²; you keep {{kept}} m².",
@@ -1663,26 +1627,11 @@
         },
         "proposal": {
             "copyId": "Copy local ID",
-            "mintConfirmation": {
-                "title": "Proposal minted",
-                "chain": "Chain: {{type}} / {{network}}",
-                "contract": "Contract/program: {{id}}",
-                "token": "Token/account: {{id}}",
-                "viewTransaction": "View transaction",
-                "ok": "OK"
-            },
             "title": "Proposal details",
             "roadSuffix": " (Road)",
             "mapStatus": {
                 "applied": "Applied",
-                "notApplied": "Not applied",
                 "includedIn": "Included in {{name}}"
-            },
-            "disbursement": {
-                "conditional": "Payout terms: all owners",
-                "partial": "Payout terms: partial",
-                "conditionalHint": "Authored terms require every owner to accept before payout. This does not confirm funding or payment.",
-                "partialHint": "Authored terms allow partial payouts. Acceptance alone does not confirm payment."
             },
             "parcelSet": {
                 "eyebrow": "Declared cadastral references",
@@ -1722,12 +1671,9 @@
                 "details": "Proposal details",
                 "propose": "Propose",
                 "editDetails": "Details",
-                "counterpropose": "Fork proposal",
-                "counterproposeHint": "Counterpropose by creating an editable copy. The proposal you are viewing stays unchanged.",
+                "forkDesign": "Fork design",
+                "forkDesignHint": "Create an editable copy. The design you are viewing stays unchanged.",
                 "apply_disabled_for_type": "Apply is disabled for this proposal type.",
-                "editApproval": "Edit ownership and approval",
-                "addApproval": "Add ownership and approval",
-                "editApprovalHint": "Opens the editor on its Approval tab. Saving updates this proposal in place; acceptances given so far are cleared.",
                 "applyFailed": "Could not apply this proposal: {{reason}}",
                 "applyFailedUnknown": "Could not apply this proposal. Please try again.",
                 "applyUnavailable": "This proposal cannot be applied to the map.",
@@ -1739,12 +1685,7 @@
                 "unapplyUnavailable": "This proposal cannot be removed from the map.",
                 "betOutcome": "Bet on outcome",
                 "createAgreement": "Create agreement",
-                "editApprovalHintCounterproposal": "Opens the editor on its Approval tab. Saving creates a counterproposal; acceptances of this one do not carry over.",
                 "convertToFreeformHint": "Keep the rule's massing at the greatest height it allows, as one building you edit directly. The rule's parameters no longer apply afterwards."
-            },
-            "expiry": {
-                "expired": "Proposal expired",
-                "countdown": "Expires in:"
             },
             "acceptance": {
                 "title": "Parcel acceptance status:",
@@ -1775,14 +1716,6 @@
                 "recipient": "recipient",
                 "solanaLensHint": "Say yes in the Lens card"
             },
-            "voting": {
-                "voteYes": "Vote yes",
-                "rescind": "Rescind",
-                "open": "Open for voting",
-                "concluded": "Vote concluded",
-                "submit": "Submit for voting",
-                "parcelTitle": "Parcel support:"
-            },
             "ownerAcceptance": {
                 "statusLabel": "Owner acceptance status:",
                 "accept": "Accept",
@@ -1792,13 +1725,9 @@
                 "expiredTooltip": "Proposal has expired"
             },
             "metrics": {
-                "declaredOwnerParties": "Declared owner parties:",
-                "localOwnerEntries": "Local parcel-owner entries:",
                 "id": "ID:",
                 "author": "Author:",
                 "description": "Description:",
-                "offer": "Offer:",
-                "offerOriginal": "(was {{amount}})",
                 "parcels": "Parcels in proposal:",
                 "area": "Area:",
                 "siteArea": "Site area:",
@@ -1808,79 +1737,28 @@
                 "areaUnit": "m²",
                 "created": "Created:"
             },
-            "offer": {
-                "noDepositWarning": "No deposit specified",
-                "sellerFundingUnavailable": "Funding this offer is not available here."
-            },
             "boost": {
                 "buttonLabel": "Pledge USDC to this proposal",
-                "title": "Pledge to this proposal",
-                "closeLabel": "Close pledge dialog",
-                "copy": "Publish a revocable USDC commitment. No USDC leaves your wallet until you fulfil it after execution.",
-                "send": "Pledge USDC"
-            },
-            "support": {
-                "connect": "Connect Solana wallet",
-                "donate": "Donate USDC",
-                "revoke": "Revoke my pledge",
-                "release": "Release donations to proposal owner",
-                "fulfill": "Fulfill my pledge",
-                "refund": "Refund my donations",
-                "void": "Clear my pledge"
+                "copy": "Publish a revocable USDC commitment. No USDC leaves your wallet until you fulfil it after execution."
             },
             "pledge": {
-                "summary": "Funding & commitments",
-                "onchain": "On-chain support",
-                "donations": "Donations",
-                "pledges": "Pledges",
-                "connect": "Connect a Solana wallet to see your support.",
                 "proposalExplorer": "Proposal account",
-                "programExplorer": "Funding program",
-                "donationMeaningTitle": "Donation",
-                "donationMeaning": "moves USDC into escrow now; it is refundable if the proposal is cancelled or expires.",
-                "pledgeMeaningTitle": "Pledge",
-                "pledgeMeaning": "is a revocable public commitment; no USDC moves until you fulfil it after execution.",
-                "loading": "Loading…",
-                "none": "0 USDC · no backers yet",
-                "unavailable": "Unavailable"
+                "none": "0 USDC · no backers yet"
             },
             "market": {
-                "oracleTitle": "Oracle recipe",
-                "oracleLoading": "Loading proposal-lifecycle-v1…",
-                "recipeLink": "Recipe declaration",
-                "copyHash": "Copy hash",
-                "hashCopied": "Copied",
-                "eventLink": "Source event",
-                "finalVerifier": "The Solana program remains the final verifier.",
                 "yesSide": "Yes · executed on-chain",
                 "noSide": "No · cancelled or expired",
-                "ruleTitle": "How it settles",
-                "nextTitle": "What happens next",
-                "ruleLoading": "Reading the pool rule…",
-                "nextLoading": "Loading the proposal and its pool…",
                 "connectPosition": "Connect a Solana wallet to see your bets.",
-                "history": "Recent bets",
-                "historyEmpty": "No bets on this proposal in the recent activity feed.",
                 "historyOpened": "Opened the pool",
                 "historyBet": "Bet",
                 "historySettled": "Settled",
-                "historyCollected": "Collected",
                 "poolAccount": "Pool account",
-                "poolProgram": "Pool program",
-                "noPool": "No pool yet for this proposal.",
                 "yourBets": "Your bets: {{lines}}",
                 "noBets": "You have no bets on this proposal.",
                 "betLine": "{{side}} {{amount}}",
                 "collect": "Collect {{side}} winnings",
-                "nothingToCollect": "Nothing to collect.",
-                "settle": "Settle {{outcome}} from the proposal's status",
-                "betYes": "Bet yes",
-                "betNo": "Bet no",
                 "dialogTitle": "Bet {{side}}",
                 "dialogCopy": "Bet devnet USDC on the proposal’s on-chain status: Executed settles yes; Cancelled or Expired settles no. Bets stay in the pool until settlement.",
-                "preparingCollect": "Preparing collection…",
-                "preparingPool": "Preparing the pool…",
-                "preparingSettle": "Preparing settlement…",
                 "collectedMessage": "Collected {{side}} winnings.",
                 "settledMessage": "Settled from the proposal's on-chain status.",
                 "rule": "The pool reads the proposal account on Solana: executed settles yes; cancelled or expired settles no. Anyone can settle it.",
@@ -1946,13 +1824,7 @@
             "descendantRoadNamedSuffix": " • Road: {{name}}",
             "basedOn": "Based on",
             "lineage": {
-                "title": "Counterproposals and forks ({{count}})",
-                "none": "No related proposals found in this publication store or this browser.",
-                "unavailable": "Published proposal relationships could not be loaded.",
                 "untitled": "Untitled proposal",
-                "differentLand": "on different land",
-                "localOnly": "only in this browser",
-                "sourceNotFound": "{{name}} (source not found in this publication store)",
                 "openFailed": "That proposal could not be opened."
             },
             "agent": {
@@ -1974,12 +1846,6 @@
                 "relationInside": "{{shared}} of the {{origin}} original parcels",
                 "relationOverlap": "{{shared}} parcels shared with the original, {{added}} added, {{removed}} removed",
                 "relationDisjoint": "No parcels in common with the original"
-            },
-            "purchaseSimulation": {
-                "button": "Simulate purchase",
-                "hint": "Updates modeled parcel ownership in this browser. No payment is made.",
-                "result": "Purchase simulated in this browser",
-                "done": "Purchase simulated in this browser. No payment was made."
             },
             "stats": {
                 "summaryScope": "Estimates from proposal metadata; owner entries may repeat across parcels and include assumed owners.",
@@ -2088,8 +1954,6 @@
                 }
             },
             "ownerOffer": {
-                "badge": "Owner offer",
-                "badgeTitle": "The owner offers this land; bids are pledges and donations",
                 "eyebrow": "Owner offer",
                 "title": "Bids",
                 "loading": "Loading bids…",
@@ -2105,35 +1969,9 @@
                 "sayYes": "Say yes to execute",
                 "ownerHint": "You own this offer. Saying yes on each of your parcels in the lens card executes it and releases the donations to you."
             },
-            "bindingDrift": {
-                "title": "The cadastre changed since this was published: {{summary}}",
-                "addedOne": "+1 parcel",
-                "addedMany": "+{{count}} parcels",
-                "removed": "−{{count}}",
-                "addedList": "Now also reaches: {{list}}",
-                "removedList": "No longer reaches: {{list}}",
-                "coverage": "Coverage: {{from}} → {{to}}",
-                "coverageKinds": {
-                    "complete": "complete",
-                    "partial": "partial (open ground)",
-                    "none": "no cadastre",
-                    "unknown": "unknown"
-                },
-                "note": "Re-binding publishes a new record with the current parcels. This one stays as it was published.",
-                "rebind": "Re-bind",
-                "reboundAs": "Re-bound as",
-                "confirm": "Publish a new record with the same site and design and the current parcels? The record you are viewing is not changed.",
-                "cancel": "Cancel",
-                "unavailable": "The current binding of this record is not available. Reopen it and try again.",
-                "failed": "Re-binding failed: {{reason}}",
-                "done": "Re-bound: published as record {{id}}."
-            },
             "detailsSections": {
-                "fundingHint": "Donations, pledges and owner offer",
-                "market": "Prediction market",
-                "marketHint": "Yes / No bets and settlement rules",
                 "land": "Land & ownership",
-                "landHint": "Declared references: {{count}} · matching proposals and consent",
+                "landHintDesign": "Declared references: {{count}} · designs on the same parcels",
                 "verification": "Verification & history",
                 "verificationHint": "Lens, evidence and activity",
                 "record": "Proposal record",
@@ -2149,7 +1987,8 @@
                 "openMint": "Open minting options",
                 "approval": "Betting is not available for proposals with ownership and approval rules yet. Those decisions do not settle a betting pool.",
                 "chain": "Betting is currently available only for proposals minted on Solana. This proposal was minted on another chain."
-            }
+            },
+            "forkedFrom": "Forked from {{cid}}"
         },
         "block": {
             "title": "Block info",
@@ -2553,7 +2392,6 @@
             "readOnlyTitle": "Proposal lens",
             "readOnlySubtitle": "Saved with this proposal; editing is disabled.",
             "readOnlyNote": "This lens is baked into the proposal and cannot be edited.",
-            "proposalTriggerTitle": "View proposal lens (read-only)",
             "picker": {
                 "title": "Lens for this proposal",
                 "subtitle": "Pick the lens members whose ownership attestations this proposal will accept. The lens is fixed at mint.",
@@ -3002,16 +2840,12 @@
                     "acceptedWord": "accepted",
                     "parcels": "Parcels:",
                     "area": "Area:",
-                    "offer": "Offer:",
                     "applied": "Applied:",
-                    "disbursement": "Disbursement:",
                     "minted": "Minted:"
                 },
                 "labels": {
                     "applied": "Applied",
                     "notApplied": "Not applied",
-                    "conditional": "Conditional",
-                    "partial": "Partial payouts",
                     "onServer": "On server",
                     "local": "Local",
                     "unsaved": "Unsaved",
@@ -3159,7 +2993,6 @@
                 "mintWaitingSignature": "Waiting for wallet signature…",
                 "mintingOnChain": "Minting on chain…",
                 "mintSavingServer": "Saving proposal to server…",
-                "mintSavedChainOnly": "Minted on-chain, but saving to the server failed — the ENS link may not resolve until you retry.",
                 "processingImageForUpload": "Processing image for upload…",
                 "downloadButton": "Download",
                 "downloadSuccess": "Proposal downloaded as JSON",
@@ -3169,7 +3002,6 @@
                 "copyUrlButton": "Copy URL",
                 "sharePlanButton": "Share applied proposals",
                 "plan": {
-                    "kindHint": "Applies to selected proposals whose terms were never chosen; the rest keep their own.",
                     "uploadAncestorsMissing": "Include these ancestor proposals in the plan: {{list}}",
                     "title": "Share applied proposals",
                     "fetching": "Fetching proposal #{{id}}…",
@@ -3226,22 +3058,6 @@
                         "presentation": "Refreshing the map and proposal list…",
                         "corridorStrips": "Refreshing road and track surfaces…"
                     },
-                    "countHeading": {
-                        "one": "{{count}} proposal applied on this map",
-                        "few": "{{count}} proposals applied on this map",
-                        "other": "{{count}} proposals applied on this map"
-                    },
-                    "nameHeading": "Create a named plan from the selected proposals (ENS):",
-                    "compositionHint": "A share link shares your selection. A named plan keeps that selection fixed; later changes need a new named plan.",
-                    "namePlaceholder": "e.g. harbor-redevelopment",
-                    "nameButton": "Create named plan",
-                    "namePrepFirst": "Prepare the share link above first (upload all selected proposals).",
-                    "nameInvalid": "Use at least 3 characters: a–z, 0–9, hyphens.",
-                    "nameSaving": "Saving…",
-                    "nameTaken": "That name is taken — pick another.",
-                    "nameTakenVersion": "That name is taken, and a named plan never changes. Save this one as {{name}}?",
-                    "nameError": "Could not save the name.",
-                    "nameSaved": "saved (resolves to this plan).",
                     "applyUnknownFailure": "Unknown error while applying.",
                     "checking": "Checking…",
                     "checkingHint": "Checking upload status…",
@@ -3320,15 +3136,10 @@
                     "pickedOnMap": "Selected {{title}} — {{parcel}}",
                     "pickedNotInPlan": "That proposal is not in this plan.",
                     "filterLabel": "Highlight on the map",
-                    "filterAll": "All",
-                    "filterUploaded": "Uploaded",
-                    "filterPending": "Not uploaded yet"
+                    "filterAll": "All"
                 },
                 "rebased": "{{count}} of them take different ground here than when published: {{titles}} (details in the console).",
-                "checkingProposals": "Checking {{done}}/{{total}} proposals on the server…",
-                "listingProposals": "Listing {{done}}/{{total}} proposals…",
                 "drawingProposals": "Drawing {{done}}/{{total}} proposals on the map…",
-                "preparingPlan": "Preparing proposals…",
                 "uploadExplainer": "To share a proposal with others, you first need to upload it to the server"
             },
             "sharedInspector": {
@@ -3363,18 +3174,6 @@
             "summaryCoverage": "Approximate coverage of view: {{percent}}%"
         },
         "createProposal": {
-            "publishTitle": "Before publishing",
-            "publishSubmit": "Save terms",
-            "kind": {
-                "heading": "Who decides?",
-                "ownerDeal": "Owner deal",
-                "ownerVote": "Owner vote",
-                "communityVote": "Community vote",
-                "explainOwnerDeal": "The owners accept a binding deal, and you offer money for it.",
-                "explainSale": "You offer your own parcels and a buyer pays. Binding.",
-                "explainOwnerVote": "The owners of these parcels vote. Non-binding: nothing is paid and no one's land changes.",
-                "explainCommunityVote": "Residents take part through the organiser. Non-binding: nothing is paid and no one's land changes."
-            },
             "title": "Create proposal",
             "editTitle": "Proposal",
             "titlePark": "Create park proposal",
@@ -3401,7 +3200,6 @@
                 "square": "Square",
                 "lake": "Lake",
                 "roadTrack": "Road/Track",
-                "decideLater": "Merge",
                 "urbanRule": "Urban rule",
                 "ownershipTransfer": "Ownership transfer"
             },
@@ -3468,25 +3266,6 @@
             "descriptionLabel": "Description",
             "descriptionPlaceholder": "Describe your proposal…",
             "descriptionPlaceholderStructure": "Describe your {{kind}}…",
-            "offerLabel": "Offer",
-            "offerPlaceholder": "0",
-            "optionsLabel": "Options",
-            "options": {
-                "conditional": "Conditional",
-                "conditionalHelperOn": "Pay reward only if/when all owners accept",
-                "conditionalHelperOff": "Payout only when all parcels accept",
-                "expireAfter": "Expire after",
-                "expiryPlaceholder": "00h:05m:00s",
-                "voteExpiry": "Voting period",
-                "voteExpiryDaysSuffix": "days (max 365)",
-                "decay": "Offer decay",
-                "decayHelper": "Offer amount will decrease with time to entice acceptance.",
-                "decayPercentSuffix": "% over",
-                "decayTimePlaceholder": "00h:05m:00s",
-                "deposit": "Deposit",
-                "depositHelper": "% of offer",
-                "areaProportional": "Payouts are proportional to parcel area"
-            },
             "summary": {
                 "title": "Proposal summary",
                 "parcels": "Parcels selected:",
@@ -3498,15 +3277,6 @@
                 "title": "Similar proposals:",
                 "unknownTitle": "Untitled proposal",
                 "unknownAuthor": "Unknown"
-            },
-            "balance": {
-                "label": "Balance: {{value}}",
-                "placeholder": "--",
-                "notOnChain": "not on-chain",
-                "connectWallet": "Connect wallet",
-                "unavailable": "unavailable",
-                "missingTokenAddress": "token address missing",
-                "value": "{{amount}} {{currency}}"
             },
             "unknownParcel": "Unknown",
             "ownerTooltip": "Owner: {{name}}",
@@ -3528,15 +3298,7 @@
                 "missingParcels": "Missing parcels or geometry for this proposal.",
                 "couldNotDetermineParcels": "Could not determine parcels for this block.",
                 "parcelsNotContiguous": "Parcels not contiguous",
-                "undeclaredParcels": "This proposal's geometry lies on {{count}} parcel(s) you did not select: {{list}}. Select them too, or keep the geometry inside the selected parcels.",
-                "bindingMissing": "The site reaches into parcels the proposal does not name ({{count}}): {{list}}.",
-                "bindingExtra": "The proposal names parcels its site does not reach ({{count}}): {{list}}.",
-                "bindingFix": "Include those parcels in the site, or change the design so it stays inside it.",
-                "bindingFailed": "Could not check which parcels this proposal's site reaches into: {{reason}}",
-                "bindingUnresolved": "The site reaches into {{list}} by almost exactly the tolerance, so it cannot be decided whether it takes land there. Move the design a millimetre into or away from it.",
-                "preparationChanged": "This proposal changed after it was prepared for publishing ({{reason}}). Publish it again.",
-                "noMintGeometry": "This proposal has no site or parcel geometry to mint.",
-                "noMintParcels": "This proposal names no parcels and has no site, so it cannot be minted."
+                "undeclaredParcels": "This proposal's geometry lies on {{count}} parcel(s) you did not select: {{list}}. Select them too, or keep the geometry inside the selected parcels."
             },
             "walletNotConnected": {
                 "message": "You are not connected with a wallet, so you can't mint proposals on chain.",
@@ -3560,65 +3322,19 @@
                 "anchorExplainer": "A parcel anchor is the parcel's on-chain identity. Nobody owns it and creating it confers no ownership; you only pay its rent. Ownership reaches the chain separately, as a lens member's attestation. You can also create anchors from the Parcel Info panel's Tools tab.",
                 "createAnchor": "Create the parcel anchor",
                 "createAnchors": "Create the parcel anchors",
-                "anchorThenCreate": "Create the parcel anchors, then click Create again.",
                 "title": "Parcels not on the chain yet",
                 "anchorTitle": "Parcel anchors missing"
             },
-            "onchainMintFailed": {
-                "message": "On-chain mint failed for reason:",
-                "unknown": "Unknown error",
-                "cancel": "Cancel",
-                "createInMemory": "Create in memory"
-            },
             "optionsSectionTitle": "Options",
-            "mintTarget": {
-                "offchain": "Off-chain (this browser only)",
-                "mintsOn": "Mints on",
-                "noWalletTooltip": "No wallet connected; the proposal stays in this browser."
-            },
-            "proposal_type_no_longer_available": "Merge / Decide Later is no longer available. Use Lay out parcels.",
             "titleLake": "Create lake proposal",
             "typeLake": "Lake",
-            "ownerOffer": {
-                "label": "Offer my land",
-                "explain": "You offer your own parcels and invite bids. Bids arrive as pledges and donations on this proposal; nobody else can accept it. When a bid suits you, you execute the offer by saying yes on your parcels. The offer amount is your asking price.",
-                "recheck": "Check again",
-                "proof": {
-                    "intro": "Offering your land needs proof that it is yours:",
-                    "wallet": "connect your Solana wallet",
-                    "attestation": "ask a member of your lens to attest your wallet as the owner of these parcels",
-                    "name": "choose a profile name (top-right bubble)"
-                },
-                "checking": "Checking your ownership attestations…",
-                "needLens": "Choose your lens first: the offer needs a lens member that attested your ownership.",
-                "needParcels": "Select the parcels you own.",
-                "noService": "None of your lens members publishes a service URL, so your ownership cannot be checked.",
-                "unavailable": "Ownership attestations cannot be checked right now.",
-                "notAttested": "No lens member in your lens has attested this wallet as owner of a selected parcel.",
-                "attested": "Your wallet is the attested owner of {{attested}} of {{total}} selected parcels.",
-                "deselectOthers": "Offer only your own parcels: deselect {{parcels}}."
-            },
             "site": {
                 "bound": "Site of {{area}} m², bound parcels: {{count}}. Publishing checks the binding against the full cadastre.",
-                "unbound": "Site of {{area}} m² without bound parcel records. Ownership is unknown. On-chain execution requires an authority verdict.",
-                "binding": "Checking which parcels the site reaches into…"
+                "unbound": "Site of {{area}} m² without bound parcel records. Ownership is unknown. On-chain execution requires an authority verdict."
             },
             "tolerance": {
                 "label": "Parcel intrusion tolerance (m)",
                 "help": "A parcel joins the proposal when the site reaches into it by more than this width (linear, not area). In cities keep 0: you cannot take any of a neighbour's parcel. Use it only for measurement error; max 1 m."
-            },
-            "smallIntrusions": {
-                "question": "The site reaches only slightly into these parcels: {{list}}. Publishing includes them, so their owners must agree too. Include them, or cancel and change the design.",
-                "include": "Include them",
-                "change": "Change the design",
-                "cancelled": "Publishing cancelled: change the design so it stays inside the parcels you mean."
-            },
-            "landShift": {
-                "question": "The server built this corridor's land from its lanes, and it lies up to {{shift}} from what the map showed. Publish the server's version?",
-                "far": "far",
-                "publish": "Publish it",
-                "cancel": "Cancel",
-                "cancelled": "Publishing cancelled: the corridor was not published."
             }
         },
         "unapplyTour": {
@@ -3901,7 +3617,7 @@
         }
     },
     "parcelLayout": {
-        "publishLater": "Parcel layouts are shared together with their agreement. Coming soon.",
+        "publishWithAgreement": "A parcel layout is published with its agreement. Propose an agreement that includes it.",
         "editor": {
             "title": "Lay out parcels",
             "mapHint": "Draw the plots here. Who receives which plot is decided later, in the agreement.",
@@ -4275,6 +3991,8 @@
             "resolving_parcel_claim_details": "Resolving parcel claim details…",
             "review_proposal_before_applying": "Review proposal before applying.",
             "revoked_acceptance_for_owner_on_parcel": "Revoked acceptance for {{owner}} on parcel {{parcelId}}.",
+            "withdrawing_acceptance_on_chain": "Withdrawing acceptance on chain…",
+            "acceptance_withdrawn_on_chain": "Acceptance withdrawn on chain.",
             "analyzed_roads_summary": "Analyzed {{count}} roads. {{summary}}",
             "road_measurements_calculated_and_added_to_panel": "Road measurements calculated and added to panel.",
             "road_proposal_created_and_applied": "Road proposal \"{{name}}\" created and applied.",
@@ -6368,12 +6086,6 @@
             "proposal_conflict_close": "Close",
             "cannot_share_this_proposal_right_now": "Cannot share this proposal right now.",
             "failed_to_apply_road_proposal_review_proposals_for_details": "Failed to apply road proposal. Review proposals for details.",
-            "failed_to_apply_shared_proposals": "Failed to apply shared proposals.",
-            "failed_to_apply_shared_proposals_summary": {
-                "one": "Failed to apply {{count}} shared proposal. Check console for details.",
-                "few": "Failed to apply {{count}} shared proposals. Check console for details.",
-                "other": "Failed to apply {{count}} shared proposals. Check console for details."
-            },
             "failed_to_encode_share_data": "Failed to encode share data.",
             "failed_to_encode_shared_proposal_data": "Failed to encode shared proposal data.",
             "failed_to_generate_share_link": "Failed to generate share link.",
@@ -6383,10 +6095,8 @@
             "onchain_proposal_mint_failed_with_reason": "On-chain proposal mint failed: {{error}}.",
             "logged_out_ai_controls": "Logged out. AI will control your agent.",
             "logged_out_agent_inactive": "Logged out. Agent is now inactive.",
-            "shared_proposal_loaded": "Shared proposal loaded.",
             "proposal_executed_all_parcels": "Proposal {{hash}} executed! All {{count}} parcels accepted.",
             "proposal_executed": "Proposal {{hash}} executed!",
-            "unable_to_generate_share_link": "Unable to generate share link.",
             "unable_to_prepare_proposal_for_sharing": "Unable to prepare proposal for sharing.",
             "unable_to_prepare_proposals_for_sharing": "Unable to prepare proposals for sharing.",
             "welcome_back_user": "Welcome back, {{name}}! You've taken control of your agent.",
@@ -6584,17 +6294,24 @@
             "overture": "Overture Maps buildings",
             "estimated": "{{count}} of {{total}} heights estimated",
             "partial": "some may be missing"
+        },
+        "walkGate": {
+            "title": "Publish before walking",
+            "intro": "These applied designs are not published yet. The walk view loads published designs only, so they are published first. The dialog closes and the walk starts as soon as all of them are published.",
+            "publishAll": "Publish all",
+            "layoutSkipped": "A parcel layout is published with its agreement, so the walk goes on without it.",
+            "openFailed": "The publish dialog could not open."
         }
     },
     "structureEditor": {
-    "titleLake": "Lake boundary editor",
-    "instructionsLake": "Drag boundary points to reshape the lake. Tap an edge to add a point.",
-    "lakeBoundaryHint": "The shore and water update with the outline.",
-    "hintLake": "Select a boundary point to move or delete it.",
-    "lakeInvalid": "A lake boundary must form one connected area. Adjust the outline and try again.",
-    "lakeVertexTitle": "Drag to reshape the lake boundary",
-    "lakeDeleteVertexTitle": "Delete this boundary point",
-    "lakeUndoTitle": "Undo lake boundary edit",
+        "titleLake": "Lake boundary editor",
+        "instructionsLake": "Drag boundary points to reshape the lake. Tap an edge to add a point.",
+        "lakeBoundaryHint": "The shore and water update with the outline.",
+        "hintLake": "Select a boundary point to move or delete it.",
+        "lakeInvalid": "A lake boundary must form one connected area. Adjust the outline and try again.",
+        "lakeVertexTitle": "Drag to reshape the lake boundary",
+        "lakeDeleteVertexTitle": "Delete this boundary point",
+        "lakeUndoTitle": "Undo lake boundary edit",
         "ariaLabel": "Structure geometry editor",
         "titlePark": "Park editor",
         "titleSquare": "Square editor",
@@ -6940,7 +6657,6 @@
             "history": "History",
             "compare": "Compare proposals here",
             "tools": "Tools",
-            "offer": "Offer my land",
             "view3d": "View in 3D",
             "detectBlock": "Detect block",
             "useAsSite": "Use as site"
@@ -7169,8 +6885,6 @@
         "tableLabel": "Comparison for this parcel",
         "intrusion": "reaches {{width}} m in",
         "none": "None",
-        "yes": "Yes",
-        "no": "No",
         "extent": {
             "whole": "Whole parcel",
             "edge": "Edge only",
@@ -7206,23 +6920,11 @@
         "status": {
             "local": "Local (this browser)"
         },
-        "market": {
-            "none": "No market",
-            "noStakes": "No stakes yet",
-            "totalStake": "{{amount}} total stake"
-        },
         "sections": {
             "ground": "Your ground",
             "after": "On this parcel afterwards",
-            "ownership": "Ownership",
-            "consent": "What you are asked",
-            "support": "Support"
+            "ownership": "Ownership"
         },
-        "localConsentBasis": "Unsigned browser records matched to current terms and owner entries.",
-        "signedConsentBasis": "Signed decisions verified for current terms and the declared approval context.",
-        "consentUnavailable": "Current consent evidence unavailable.",
-        "ownerEntries": "{{accepted}}/{{total}} local owner entries",
-        "ownerParties": "{{accepted}}/{{total}} declared owner parties",
         "rows": {
             "take": "Takes of this parcel",
             "buildings": "Buildings",
@@ -7230,15 +6932,6 @@
             "corridor": "Road / track",
             "plots": "Plots it becomes",
             "ceded": "Ceded ground → to",
-            "offer": "Original full-proposal offer",
-            "consentNeeded": "Your consent needed",
-            "consentBasis": "Consent evidence",
-            "parcelAccepted": "Consent covers selected references",
-            "owners": "Owner consent for selected references",
-            "parcels": "Source references with consent (whole proposal)",
-            "donations": "Total donated (devnet USDC)",
-            "pledges": "Active pledges (devnet USDC)",
-            "market": "YES pool share (devnet USDC)",
             "status": "Status"
         },
         "bar": {
@@ -7487,7 +7180,6 @@
             "empty": "No bets match this filter."
         },
         "dialog": {
-            "open": "Open bet",
             "poolLabel": "Pool",
             "paysLabel": "Pays",
             "yesPays": "Yes {{multiple}}×",
@@ -7575,58 +7267,6 @@
         "viewName": "View ENS name",
         "copyName": "Copy ENS name"
     },
-    "plans": {
-        "title": "Named plans",
-        "unavailable": "Plans could not be loaded: {{reason}}",
-        "line": {
-            "single": "Part of named plan {{name}}",
-            "many": {
-                "one": "In {{count}} named plan",
-                "other": "In {{count}} named plans"
-            }
-        },
-        "list": {
-            "empty": "No named plans here yet.",
-            "pool": "Betting pool",
-            "loading": "Loading plans…",
-            "emptyCity": "No named plans in this city yet. Share applied proposals, then choose Create named plan."
-        },
-        "parcel": {
-            "loading": "Looking for plans…",
-            "empty": "No plan includes a proposal on this parcel yet."
-        },
-        "view": {
-            "title": "Named plan",
-            "notFound": "There is no plan named {{name}}.",
-            "loading": "Loading the plan…",
-            "error": "The plan could not be loaded: {{reason}}",
-            "hint": "Hatched on the map: what this plan would build. Nothing changes until you apply it.",
-            "appliedHint": "{{applied}} of {{total}} proposals are applied on this map.",
-            "newer": "A newer version of this plan exists:",
-            "membersHeading": "Proposals in this plan",
-            "changed": {
-                "one": "{{count}} proposal changed after the plan was named.",
-                "other": "{{count}} proposals changed after the plan was named."
-            },
-            "missing": {
-                "one": "{{count}} proposal is no longer on the server.",
-                "other": "{{count}} proposals are no longer on the server."
-            },
-            "linkCopied": "Plan link copied.",
-            "linkInAddressBar": "Copy the plan link from the address bar.",
-            "onMap": "On the map",
-            "totals": {
-                "proposalsApplied": "{{count}}, {{applied}} on this map",
-                "kinds": "What it builds"
-            },
-            "member": {
-                "missing": "Missing"
-            },
-            "actions": {
-                "apply": "Apply plan"
-            }
-        }
-    },
     "agreement": {
         "dialog": {
             "titleCreate": "Create agreement",
@@ -7709,6 +7349,7 @@
         },
         "warnings": {
             "ruleNotReady": "The rule cannot be evaluated yet: {{reason}}",
+            "ruleLensMissing": "No lens member is named, so no owner decision can be verified.",
             "openGround": "Part of the land is open ground with no recorded owner."
         },
         "panel": {
@@ -7746,158 +7387,199 @@
                 "one": "{{count}} design",
                 "other": "{{count}} designs"
             }
+        },
+        "publish": {
+            "propose": "Propose",
+            "statusChecking": "Checking the server…",
+            "statusUnavailable": "Server status unavailable: {{reason}}",
+            "statusExpired": "Expired",
+            "statusActive": "Active",
+            "communityNote": "Votes on a community rule are counted off-chain in M3.",
+            "copyLink": "Copy link",
+            "rederive": "Its pieces are known here by their hashes only: apply its designs on the same ground to re-derive them and compare.",
+            "linkCopied": "Agreement proposed. Its link is copied.",
+            "proposedAt": "Agreement proposed: {{link}}",
+            "linkCopiedShort": "Agreement link copied.",
+            "decisionKept": "Not shared yet: the server did not take the decision. It is sent again when this agreement’s decisions are next read in this session.",
+            "decisionClosed": "This agreement no longer takes decisions.",
+            "actForOwnerHint": "A member of this agreement’s lens confirms which owners your wallet may act for. Nothing is accepted until you review and sign.",
+            "tallyHeading": "Owner decisions",
+            "ownershipUnresolved": "Ownership unresolved: the owners’ decision needs a complete rights snapshot in the agreement’s rule.",
+            "signNote": "Your wallet signs this agreement’s identity (its CID), which fixes its designs, land, allocations, money and rule.",
+            "receiptPassed": "The verified decisions meet this agreement’s rule.",
+            "receiptPending": "Further decisions are needed to meet this agreement’s rule.",
+            "errors": {
+                "cidMismatch": "The server computed a different identity for this agreement, so it was not proposed.",
+                "designNotIndexed": {
+                    "other": "The server does not hold {{count}} of the agreement’s designs, so it was not proposed."
+                },
+                "inputsDifferFromBinding": "The agreement’s land is not the land its designs take on the server ({{parcels}}). Edit the agreement on the current map and propose it again.",
+                "pinningUnconfigured": "This server cannot pin published agreements yet (pinning is not configured).",
+                "deadlinePast": "The agreement’s deadline has passed. Edit the deadline and propose it again.",
+                "refused": "The server refused this agreement: {{reason}}",
+                "notACid": "This is not an agreement link.",
+                "notFound": "This agreement is not on the server.",
+                "missing": "The agreement is no longer on this device.",
+                "designMissing": "A design of this agreement is no longer on this device."
+            },
+            "route": {
+                "designsFailed": {
+                    "other": "{{count}} of the agreement’s designs could not be applied here: {{reasons}}"
+                },
+                "failed": "The agreement could not be opened."
+            }
         }
     },
-  "planningViews": {
-    "zoningAreas": "Zoning source areas",
-    "envelopeCoverage": "Partial envelopes are derived from the loaded parcel and zoning records. Parcels without massing are counted by reason; missing massing does not establish zero capacity.",
-    "envelopeSummary": "{{count}} parcel records inspected: {{shapes}} with partial envelopes, {{missing}} without massing.",
-    "envelopeNote": "Partial parcel envelopes from direct source dimensions. The front edge is unknown, so the shape includes alternative edge interpretations. Area budgets and unresolved rules still apply.",
-    "envelopesLoaded": {
-      "one": "{{count}} partial parcel envelope · {{missing}} parcels without massing",
-      "other": "{{count}} partial parcel envelopes · {{missing}} parcels without massing"
-    },
-    "envelopeUnavailable": {
-      "envelope-geometry-error": "Source geometry could not be evaluated",
-      "overlapping-parcel-identities": "Overlapping parcel identities",
-      "use-prohibited": "Housing type recorded as prohibited",
-      "missing-direct-height": "No direct height limit",
-      "empty-supported-bound": "No space within supported setbacks",
-      "unsupported-parcel-shape": "Unsupported parcel shape",
-      "study-multiple-zoning-areas": "Multiple zoning areas on one parcel",
-      "study-zoning-missing": "No zoning source for parcel"
-    },
-    "refreshPending": "Awaiting refresh",
-    "refreshCount": {
-      "one": "{{count}} result awaiting refresh",
-      "other": "{{count}} results awaiting refresh"
-    },
-    "refreshNote": "Showing the last saved calculation with its original version and date.",
-    "refreshFailed": "The latest refresh did not complete.",
-    "refreshCause": {
-      "LOCAL_SYNC_PENDING": "The local copy is awaiting synchronization.",
-      "SOURCE_INPUT_CHANGED": "Source data changed; recalculation is pending.",
-      "UNREVIEWED_CAPACITY_LOSS": "The replacement would reduce the previous estimate and is awaiting review.",
-      "UNREVIEWED_CAPACITY_COHORT_CHANGE": "The changed calculation coverage is awaiting review."
-    },
-    "title": "Buildings and massing",
-    "detailsLabel": "Planning source details",
-    "permitted": "Permitted",
-    "loading": "Loading permitted massing…",
-    "zoom": "Zoom in to explore permitted massing.",
-    "unavailable": "No permitted-massing source is connected for this city yet.",
-    "empty": "No represented massing in this area. This does not mean building is prohibited.",
-    "error": "The planning source could not be loaded.",
-    "loaded": {
-      "one": "{{count}} cached massing in view",
-      "other": "{{count}} cached massings in view"
-    },
-    "loadingProgress": "Loading permitted massing… {{count}} of {{total}} profiles read",
-    "partial": {
-      "one": "{{count}} option shown · some source geometry is unavailable",
-      "other": "{{count}} options shown · some source geometry is unavailable"
-    },
-    "sourceProposal": "Permitted massing",
-    "close": "Close source details",
-    "obligatory": "Obligatory source proposal",
-    "sourceEvidenceBadge": "Source evidence",
-    "approximate": "Approximate",
-    "oneOption": "One calculated option under the source rules. It is not the full range of possible designs.",
-    "floorArea": "Calculated floor area",
-    "height": "Massing height",
-    "dwellingLimit": "Dwelling limit",
-    "conditionsTitle": "Conditions still need checking",
-    "conditionsNote": "Applicability and independent limits are unresolved. This shape is not a verified building permission.",
-    "sourceDetails": "Source and evidence",
-    "computed": "Calculated {{date}}",
-    "sourceTerms": "Saved source calculation and assessment",
-    "readSource": "Read the source plan",
-    "constraint": {
-      "dwellings": "Maximum dwellings",
-      "floorArea": "Maximum floor area",
-      "naturalGround": "Minimum natural ground",
-      "frontSetback": "Minimum front setback",
-      "sideSetback": "Minimum side setback",
-      "rearSetback": "Minimum rear setback",
-      "height": "Maximum height",
-      "lotArea": "Minimum lot area"
-    },
-    "photoNote": "Explore permitted massing in the map or 3D model view.",
-    "openModel": "Open 3D model view",
-    "displayLabel": "{{role}} appearance",
-    "existingScope": "Built building selection",
-    "proposedForm": "Proposed representation",
-    "permittedMap": "Permitted massing on the map",
-    "footprint": "Footprint",
-    "steps": "Height steps",
-    "permittedOff": "Permitted massing is hidden.",
-    "coverageTitle": "What does this source cover?",
-    "coverageNote": "Showing the provider’s saved calculations. Some results contain massing; others report missing evidence, unmet conditions or another planning procedure. A result without geometry is not proof of zero capacity. Height steps shows the parts at different elevations.",
-    "inspectHint": "Select a building or source geometry to inspect it.",
-    "inspectMassing": "Inspect permitted massing on {{parcel}}",
-    "heightParts": "Height parts: {{heights}}",
-    "cacheSummary": "{{count}} saved results in this area: {{shapes}} with geometry, {{missing}} without geometry.",
-    "stockBadge": "Existing-stock estimate",
-    "stockEstimate": "The source estimates existing building stock for this planning regime. This geometry is not a calculated new-build envelope.",
-    "solverVersion": "Solver version: {{version}}",
-    "otherResult": "Other source outcome",
-    "resultStatus": {
-      "condition_failed": "Conditions not met",
-      "evidence_missing": "Evidence missing",
-      "existing_stock_estimate": "Existing-stock estimates",
-      "geometry_failed": "Geometry validation failed",
-      "geometry_validated": "Geometry validated",
-      "instrument_handoff": "Another planning instrument applies",
-      "no_validated_candidate": "No validated candidate",
-      "procedure_required": "Planning procedure required",
-      "route": "Another planning route",
-      "unresolved_context": "Context unresolved",
-      "unsupported_calculation": "Calculation unsupported",
-      "allowed": "Recorded as allowed",
-      "hearing": "Hearing required",
-      "prohibited": "Recorded as prohibited",
-      "overlay": "Overlay conditions apply",
-      "nomention": "Use not mentioned",
-      "clear": "Public screen: no mapped conflict found",
-      "flagged": "Public screen: mapped conflicts found"
-    },
-    "savedResult": "Saved planning result",
-    "inspectResult": "Inspect result",
-    "savedWithdrawn": "This saved result is not currently displayed as massing.",
-    "recorded": "Recorded {{date}}",
-    "sourceEdition": "Source / edition",
-    "evidenceOnly": "Saved screening evidence only. This source provides no accepted envelope geometry.",
-    "savedNoShape": "This saved result contains no displayed massing.",
-    "builtRecord": "Observed building",
-    "proposedRecord": "Authored proposal",
-    "observedNote": "Source building data. Missing measurements remain unknown.",
-    "authoredNote": "An authored design. Displaying it does not establish permission or construction.",
-    "proposalActions": "Proposal actions",
-    "footprintArea": "Footprint area",
-    "referenceChanged": "This source has changed since the design referenced it. Showing the currently saved record; the referenced revision is not reconstructed.",
-    "referencedSource": "Source: {{source}} · {{revision}}",
-    "referenceUnavailable": "The referenced source record is unavailable.",
-    "scenarioLabel": "Housing type",
-    "zoningAreaNote": "Source zoning areas and recorded constraints. These areas are not building envelopes. Applicability remains unchecked.",
-    "areasLoaded": {
-      "one": "{{count}} source zoning area in view",
-      "other": "{{count}} source zoning areas in view"
-    },
-    "scenario": {
-      "family1": "One-family",
-      "family2": "Two-family",
-      "family3": "Three-family",
-      "family4": "Four-or-more-family",
-      "accessory": "Accessory housing",
-      "plannedresidential": "Planned residential",
-      "cached-calculation": "Saved calculation",
-      "new-attached-multifamily": "New attached multifamily"
-    },
-    "evidence": {
-      "direct": "Direct source value",
-      "estimated": "Source estimate"
-    },
-    "zoningArea": "Source zoning area",
-    "inspectArea": "Inspect source zoning area {{parcel}}"
-  }
+    "planningViews": {
+        "zoningAreas": "Zoning source areas",
+        "envelopeCoverage": "Partial envelopes are derived from the loaded parcel and zoning records. Parcels without massing are counted by reason; missing massing does not establish zero capacity.",
+        "envelopeSummary": "{{count}} parcel records inspected: {{shapes}} with partial envelopes, {{missing}} without massing.",
+        "envelopeNote": "Partial parcel envelopes from direct source dimensions. The front edge is unknown, so the shape includes alternative edge interpretations. Area budgets and unresolved rules still apply.",
+        "envelopesLoaded": {
+            "one": "{{count}} partial parcel envelope · {{missing}} parcels without massing",
+            "other": "{{count}} partial parcel envelopes · {{missing}} parcels without massing"
+        },
+        "envelopeUnavailable": {
+            "envelope-geometry-error": "Source geometry could not be evaluated",
+            "overlapping-parcel-identities": "Overlapping parcel identities",
+            "use-prohibited": "Housing type recorded as prohibited",
+            "missing-direct-height": "No direct height limit",
+            "empty-supported-bound": "No space within supported setbacks",
+            "unsupported-parcel-shape": "Unsupported parcel shape",
+            "study-multiple-zoning-areas": "Multiple zoning areas on one parcel",
+            "study-zoning-missing": "No zoning source for parcel"
+        },
+        "refreshPending": "Awaiting refresh",
+        "refreshCount": {
+            "one": "{{count}} result awaiting refresh",
+            "other": "{{count}} results awaiting refresh"
+        },
+        "refreshNote": "Showing the last saved calculation with its original version and date.",
+        "refreshFailed": "The latest refresh did not complete.",
+        "refreshCause": {
+            "LOCAL_SYNC_PENDING": "The local copy is awaiting synchronization.",
+            "SOURCE_INPUT_CHANGED": "Source data changed; recalculation is pending.",
+            "UNREVIEWED_CAPACITY_LOSS": "The replacement would reduce the previous estimate and is awaiting review.",
+            "UNREVIEWED_CAPACITY_COHORT_CHANGE": "The changed calculation coverage is awaiting review."
+        },
+        "title": "Buildings and massing",
+        "detailsLabel": "Planning source details",
+        "permitted": "Permitted",
+        "loading": "Loading permitted massing…",
+        "zoom": "Zoom in to explore permitted massing.",
+        "unavailable": "No permitted-massing source is connected for this city yet.",
+        "empty": "No represented massing in this area. This does not mean building is prohibited.",
+        "error": "The planning source could not be loaded.",
+        "loaded": {
+            "one": "{{count}} cached massing in view",
+            "other": "{{count}} cached massings in view"
+        },
+        "loadingProgress": "Loading permitted massing… {{count}} of {{total}} profiles read",
+        "partial": {
+            "one": "{{count}} option shown · some source geometry is unavailable",
+            "other": "{{count}} options shown · some source geometry is unavailable"
+        },
+        "sourceProposal": "Permitted massing",
+        "close": "Close source details",
+        "obligatory": "Obligatory source proposal",
+        "sourceEvidenceBadge": "Source evidence",
+        "approximate": "Approximate",
+        "oneOption": "One calculated option under the source rules. It is not the full range of possible designs.",
+        "floorArea": "Calculated floor area",
+        "height": "Massing height",
+        "dwellingLimit": "Dwelling limit",
+        "conditionsTitle": "Conditions still need checking",
+        "conditionsNote": "Applicability and independent limits are unresolved. This shape is not a verified building permission.",
+        "sourceDetails": "Source and evidence",
+        "computed": "Calculated {{date}}",
+        "sourceTerms": "Saved source calculation and assessment",
+        "readSource": "Read the source plan",
+        "constraint": {
+            "dwellings": "Maximum dwellings",
+            "floorArea": "Maximum floor area",
+            "naturalGround": "Minimum natural ground",
+            "frontSetback": "Minimum front setback",
+            "sideSetback": "Minimum side setback",
+            "rearSetback": "Minimum rear setback",
+            "height": "Maximum height",
+            "lotArea": "Minimum lot area"
+        },
+        "photoNote": "Explore permitted massing in the map or 3D model view.",
+        "openModel": "Open 3D model view",
+        "displayLabel": "{{role}} appearance",
+        "existingScope": "Built building selection",
+        "proposedForm": "Proposed representation",
+        "permittedMap": "Permitted massing on the map",
+        "footprint": "Footprint",
+        "steps": "Height steps",
+        "permittedOff": "Permitted massing is hidden.",
+        "coverageTitle": "What does this source cover?",
+        "coverageNote": "Showing the provider’s saved calculations. Some results contain massing; others report missing evidence, unmet conditions or another planning procedure. A result without geometry is not proof of zero capacity. Height steps shows the parts at different elevations.",
+        "inspectHint": "Select a building or source geometry to inspect it.",
+        "inspectMassing": "Inspect permitted massing on {{parcel}}",
+        "heightParts": "Height parts: {{heights}}",
+        "cacheSummary": "{{count}} saved results in this area: {{shapes}} with geometry, {{missing}} without geometry.",
+        "stockBadge": "Existing-stock estimate",
+        "stockEstimate": "The source estimates existing building stock for this planning regime. This geometry is not a calculated new-build envelope.",
+        "solverVersion": "Solver version: {{version}}",
+        "otherResult": "Other source outcome",
+        "resultStatus": {
+            "condition_failed": "Conditions not met",
+            "evidence_missing": "Evidence missing",
+            "existing_stock_estimate": "Existing-stock estimates",
+            "geometry_failed": "Geometry validation failed",
+            "geometry_validated": "Geometry validated",
+            "instrument_handoff": "Another planning instrument applies",
+            "no_validated_candidate": "No validated candidate",
+            "procedure_required": "Planning procedure required",
+            "route": "Another planning route",
+            "unresolved_context": "Context unresolved",
+            "unsupported_calculation": "Calculation unsupported",
+            "allowed": "Recorded as allowed",
+            "hearing": "Hearing required",
+            "prohibited": "Recorded as prohibited",
+            "overlay": "Overlay conditions apply",
+            "nomention": "Use not mentioned",
+            "clear": "Public screen: no mapped conflict found",
+            "flagged": "Public screen: mapped conflicts found"
+        },
+        "savedResult": "Saved planning result",
+        "inspectResult": "Inspect result",
+        "savedWithdrawn": "This saved result is not currently displayed as massing.",
+        "recorded": "Recorded {{date}}",
+        "sourceEdition": "Source / edition",
+        "evidenceOnly": "Saved screening evidence only. This source provides no accepted envelope geometry.",
+        "savedNoShape": "This saved result contains no displayed massing.",
+        "builtRecord": "Observed building",
+        "proposedRecord": "Authored proposal",
+        "observedNote": "Source building data. Missing measurements remain unknown.",
+        "authoredNote": "An authored design. Displaying it does not establish permission or construction.",
+        "proposalActions": "Proposal actions",
+        "footprintArea": "Footprint area",
+        "referenceChanged": "This source has changed since the design referenced it. Showing the currently saved record; the referenced revision is not reconstructed.",
+        "referencedSource": "Source: {{source}} · {{revision}}",
+        "referenceUnavailable": "The referenced source record is unavailable.",
+        "scenarioLabel": "Housing type",
+        "zoningAreaNote": "Source zoning areas and recorded constraints. These areas are not building envelopes. Applicability remains unchecked.",
+        "areasLoaded": {
+            "one": "{{count}} source zoning area in view",
+            "other": "{{count}} source zoning areas in view"
+        },
+        "scenario": {
+            "family1": "One-family",
+            "family2": "Two-family",
+            "family3": "Three-family",
+            "family4": "Four-or-more-family",
+            "accessory": "Accessory housing",
+            "plannedresidential": "Planned residential",
+            "cached-calculation": "Saved calculation",
+            "new-attached-multifamily": "New attached multifamily"
+        },
+        "evidence": {
+            "direct": "Direct source value",
+            "estimated": "Source estimate"
+        },
+        "zoningArea": "Source zoning area",
+        "inspectArea": "Inspect source zoning area {{parcel}}"
+    }
 }

@@ -1,9 +1,11 @@
-// Chain anchor for the owner decisions of a proposal minted on Solana, with no program change. A
+// Chain anchor for the owner decisions on an agreement minted on Solana, with no program change. A
 // canonical bundle of signed decisions is pinned to IPFS, and a Memo v1 transaction records
 // `ugt-owner-decisions/1 <subject> <ipfs uri> sha256:<hash>` with a lookup address derived from the
-// proposal account. A reader that knows only the proposal account lists those memos, fetches each
-// bundle, checks its hash and verifies every decision itself, so chain + IPFS reproduce the tally
-// without our server. The chain records decisions here; it does not count or pay them.
+// agreement's chain account; the subject is the agreement's CID, which every decision signs. A
+// reader that knows only the account lists those memos, fetches each bundle, checks its hash and
+// verifies every decision itself, so chain + IPFS reproduce the tally without our server. The chain
+// records decisions here; it does not count or pay them. Every function takes the agreement-like
+// object of ProposalApproval's decision functions, with `onchain` once the agreement is minted.
 (function (root, factory) {
     const api = factory(root);
     if (typeof module === 'object' && module.exports) module.exports = api;
@@ -28,19 +30,21 @@
         return error;
     }
 
-    // The proposal's Solana account, or null when it is not minted there.
-    function chainRef(proposal) {
-        const onchain = proposal?.onchain || {};
+    // The agreement's Solana account, or null when it is not minted there.
+    // M2: agreements are minted in M3; until the browser flow passes the agreement-like object with
+    // `onchain: { chainId: 'solana-<cluster>', proposalId: <account> }`, nothing is anchored or read.
+    function chainRef(agreement) {
+        const onchain = agreement?.onchain || {};
         const chainId = String(onchain.chainId || '');
         if (onchain.proposalId == null || !String(onchain.proposalId) || !/^solana-[a-z-]+$/.test(chainId)) return null;
         return { cluster: chainId.slice('solana-'.length), account: String(onchain.proposalId) };
     }
 
-    // The decisions that apply, in signing order, under this proposal's subject and context.
-    function bundleOf(proposal, decisions, verify) {
+    // The decisions that apply, in signing order, under this agreement's CID and context.
+    function bundleOf(agreement, decisions, verify) {
         const A = approval();
-        return { schema: BUNDLE_SCHEMA, subject: A.subjectOf(proposal), contextHash: A.contextHash(proposal),
-            decisions: relay().fold(proposal, decisions, verify).applied };
+        return { schema: BUNDLE_SCHEMA, subject: A.subjectOf(agreement), contextHash: A.contextHash(agreement),
+            decisions: relay().fold(agreement, decisions, verify).applied };
     }
     const hashOf = bundle => `sha256:${sha256().sha256Hex(approval().stableStringify(bundle))}`;
     const memoText = ({ subject, uri, hash }) => `${MEMO_PREFIX} ${subject} ${uri} ${hash}`;
@@ -82,15 +86,15 @@
     }
 
     /**
-     * Every decision anchored for a minted proposal, from chain + IPFS alone. Bundles whose content
+     * Every decision anchored for a minted agreement, from chain + IPFS alone. Bundles whose content
      * does not hash to their memo, or that name another subject, are rejected; the decisions in
      * the rest still have to verify when folded (merge/fold does that).
      * @param {{ connection: object, web3: object, fetchJson: (uri: string) => Promise<object> }} io
      */
-    async function readAnchors(proposal, { connection, web3, fetchJson }) {
-        const ref = chainRef(proposal);
+    async function readAnchors(agreement, { connection, web3, fetchJson }) {
+        const ref = chainRef(agreement);
         if (!ref) return null;
-        const subject = approval().subjectOf(proposal);
+        const subject = approval().subjectOf(agreement);
         const rows = await connection.getSignaturesForAddress(inboxAddress(web3, ref.account), { limit: 1000 }, 'confirmed');
         // Keyed by URI and hash: anyone can post a memo, so a bogus URI under a genuine hash must
         // not shadow the genuine pointer. A hash is accepted once, from the first URI that matches it.
@@ -130,18 +134,18 @@
     const anchoredSignatures = read => new Set((read?.decisions || []).map(relay().signatureOf).filter(Boolean));
 
     /**
-     * Pins this proposal's current decisions and records the pointer with one wallet transaction.
+     * Pins this agreement's current decisions and records the pointer with one wallet transaction.
      * @param {{ publishBundle: () => Promise<{ uri: string, hash: string, subject: string }>, connection: object,
      *   web3: object, provider: { publicKey: object, signTransaction(tx: object): Promise<object> } }} io
      */
-    async function anchor(proposal, { publishBundle, connection, web3, provider }) {
-        const ref = chainRef(proposal);
-        if (!ref) throw failure('not-minted', 'This proposal is not minted on Solana.');
+    async function anchor(agreement, { publishBundle, connection, web3, provider }) {
+        const ref = chainRef(agreement);
+        if (!ref) throw failure('not-minted', 'This agreement is not minted on Solana.');
         if (!provider?.publicKey || typeof provider.signTransaction !== 'function') throw failure('wallet-required', 'Connect a Solana wallet first.');
         const published = await publishBundle();
-        const subject = approval().subjectOf(proposal);
+        const subject = approval().subjectOf(agreement);
         if (published?.subject !== subject || !/^ipfs:\/\//.test(published.uri || '') || !/^sha256:[0-9a-f]{64}$/.test(published.hash || '')) {
-            throw failure('bad-bundle', 'The pinned bundle does not belong to this proposal.');
+            throw failure('bad-bundle', 'The pinned bundle does not belong to this agreement.');
         }
         // A wallet's PublicKey may come from its own web3.js copy; rebuild it in ours.
         const payer = new web3.PublicKey(typeof provider.publicKey.toBase58 === 'function' ? provider.publicKey.toBase58() : String(provider.publicKey));

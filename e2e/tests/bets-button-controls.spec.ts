@@ -1,8 +1,7 @@
 // Exercise the Bets sheet and dialog actions through their real navigation and wallet boundaries.
 import { test, expect } from '../helpers/fixtures';
-import { createSpace, openCity, showProposal, chooseTermsForShare } from '../helpers/runtime';
+import { createSpace, openCity } from '../helpers/runtime';
 import { connectWalletByConnectorId, injectMockSolanaWallet } from '../helpers/blockchain';
-import { attachSharedProposalServer, createSharedProposalServer } from '../helpers/mocks/shared-server';
 
 const ACCOUNT = 'Ekpt4qMsJWyyraDfPfq2zkT1JwMsJCKrSmkoNGgHreFR';
 const WALLET = 'Cp886ML2Ja4FF3SMmyUeW16rRGsLrBcRW8kfWS1VfN7W';
@@ -89,63 +88,6 @@ test.describe('Bets shared button variants @features', () => {
     const inspector = page.getByRole('complementary', { name: 'Planning source details' });
     await expect(inspector).toBeVisible();
     await expect(inspector).toContainText(title);
-  });
-
-  test('Open the plan resolves its named-plan route and opens the plan on the map', async ({ mockApi: page }) => {
-    const server = createSharedProposalServer();
-    const slug = 'bets-open-plan-test';
-    await attachSharedProposalServer(page, server);
-    await page.route(`**/plans/${slug}`, route => route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify({ slug, title: 'Bets named plan', city: 'zagreb', proposalRowIds: [...server.records.keys()], proposalAccount: ACCOUNT }),
-    }));
-    await openCity(page);
-    await page.locator('#username-display').click();
-    await expect(page.locator('#welcome-modal')).toBeVisible();
-    await page.locator('#username-input').fill('Bets named-plan tester');
-    await page.locator('#welcome-submit-btn').click();
-    await expect(page.locator('#welcome-modal')).toBeHidden();
-
-    const drawingId = await createSpace(page, 'park');
-    await showProposal(page, drawingId);
-    await page.locator('#proposal-details-panel .btn-share-proposal').click();
-    const localId = await chooseTermsForShare(page);
-    const title = await page.evaluate(id => (window as any).proposalStorage.getProposal(id)?.title, localId);
-    const share = page.locator('.share-modal-overlay');
-    await expect(share).toBeVisible();
-    await share.getByRole('button', { name: 'Upload', exact: true }).click();
-    await expect(share.locator('.share-modal-link').first()).toHaveValue(/\/proposals\/\d+\?/);
-    const serverId = [...server.records.keys()][0];
-    expect(serverId).toBeTruthy();
-    // Upload leaves its success screen open. Dismiss that real share dialog before opening Bets,
-    // otherwise its full-screen overlay intercepts the shell button click.
-    await share.locator('.share-modal .close-circle-btn').click();
-    await expect(share).toBeHidden();
-
-    await routeMarkets(page, payload({
-      id: `plan:${slug}`, kind: 'plan', planSlug: slug, proposalId: slug,
-      title: 'Bets named plan', memberCount: 1,
-      members: [{ id: serverId, proposalId: title, title: String(title), goal: 'park' }],
-      proposalAccount: ACCOUNT, bettable: true,
-    }));
-    await page.locator('#bets-button').click();
-    await page.locator('#bets-sheet .bets-row__title').click();
-    const dialog = page.locator('#proposalMarketOverlay');
-    await expect(dialog).toBeVisible();
-    await dialog.getByRole('button', { name: 'Open the plan', exact: true }).click();
-    await expect(dialog).toHaveCount(0);
-    await expect(page.locator('#bets-sheet')).toBeHidden();
-    await expect.poll(() => page.evaluate(() => (window as any).__currentNamedPlan?.slug), { timeout: 30_000 }).toBe(slug);
-    await expect.poll(() => page.evaluate(() => new URL(location.href).pathname)).toBe(`/proposals/${slug}`);
-    // The plan is previewed, not applied: its panel offers Apply plan.
-    await expect(page.locator('#plan-view-panel')).toBeVisible();
-    await expect(page.locator('#plan-view-panel [data-plan-action="apply"]')).toBeVisible();
-    // The plan's panel leads back to the same bet.
-    await page.locator('#plan-view-panel [data-plan-action="bet"]').click();
-    await expect(dialog).toBeVisible();
-    await expect(dialog.locator('.cb-dialog__title')).toHaveText('Bets named plan');
-    await expect(dialog.getByRole('button', { name: 'Open the plan', exact: true })).toBeVisible();
   });
 
   test('the dialog Yes button opens a Yes stake form, and quick stakes set the entered amount', async ({ mockApi: page }) => {

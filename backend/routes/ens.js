@@ -1,14 +1,14 @@
 // ENS CCIP-Read gateway route. Resolves names forwarded by the L1
 // OffchainResolver and returns signed records, for two namespaces:
 //   <slug>.parcels.urbangametheory.eth     -> parcel_ens mapping
-//   <id>.proposals.urbangametheory.eth     -> legacy numeric proposal, unique chain mirror, or named plan
+//   <cid>.proposals.urbangametheory.eth    -> a published agreement or design (its CID), or a chain mirror
 // ownerOf (addr record) is best-effort and parcel-only.
 import { JsonRpcProvider, Contract } from 'ethers';
 import { createRequire } from 'node:module';
 import { resolveQuery, buildTextValue } from '../ens/gateway.js';
 import { parcelIdToCity } from '../ens/slug.js';
 import { cityNameAt } from '../jurisdiction.js';
-import { planCommitmentError } from '../plans/plan-commitment.js';
+import { isCid } from '../cid.js';
 
 const require = createRequire(import.meta.url);
 const { buildChainProposalPath } = require('../../frontend/js/proposals/chain-ref.js');
@@ -35,25 +35,28 @@ function buildConfig(env) {
     };
 }
 
-// Text records for numeric legacy proposal names and chain-qualified mirror names.
+// The app path of a published record, by its CID (plan-design-agreement.md M2: /designs/<cid>,
+// /agreements/<cid>).
+const RECORD_PATHS = Object.freeze({ agreement: 'agreements', design: 'designs' });
+
+// Text records for CID names (agreements, designs) and chain-qualified mirror names.
 function proposalTextValue(key, { record, config, isApex }) {
     if (!record) {
-        if (!isApex) return ''; // not a resolvable proposal / plan
+        if (!isApex) return ''; // not a resolvable agreement, design or mirror
         if (key === 'url') return config.publicBaseUrl;
         if (key === 'description') return 'Urban Game Theory — proposals';
         return '';
     }
-    const ids = record.ids || [];
     switch (key) {
         case 'url':
-            if (record.isPlan && record.slug) return `${config.publicBaseUrl}/proposals/${record.slug}`;
+            if (record.cid) return `${config.publicBaseUrl}/${RECORD_PATHS[record.kind]}/${record.cid}`;
             if (record.chainRef) {
                 const path = buildChainProposalPath(record.chainRef);
                 return path ? `${config.publicBaseUrl}${path}` : '';
             }
-            return `${config.publicBaseUrl}/proposals/${ids.join(',')}`;
+            return '';
         case 'description':
-            return record.title || (ids.length > 1 ? `Plan of ${ids.length} proposals` : `Proposal ${ids[0]}`);
+            return record.title || (record.kind === 'agreement' ? 'Agreement' : record.kind === 'design' ? 'Design' : 'Proposal');
         case 'avatar':
             return record.screenshot_url || '';
         default:
@@ -100,11 +103,24 @@ export function setupEnsRoute(app, pool) {
         return { ...row, city_name: placed || (city ? city.cityName : null) };
     }
 
-    // Resolve a proposals label to a legacy proposal id list, one chain mirror, or a named plan:
-    //   - numeric / hyphen-chain (1, 1-2-3) → those minted proposal id(s)
+    // Resolve a proposals label to the record it names:
+    //   - a CID (bafkrei…) → the published agreement with that CID, else the published design
     //   - chain-<48 hex chars> → one unique canonical chain_<sha256> mirror
-    //   - otherwise a named plan slug → its short, slug-based PlanView route
     async function lookupProposal(label) {
+        if (isCid(label)) {
+            try {
+                for (const kind of ['agreement', 'design']) {
+                    const { rows } = await pool.query(
+                        `SELECT cid, title, screenshot_url FROM consensus.${kind} WHERE cid = $1 LIMIT 1`,
+                        [label],
+                    );
+                    if (rows.length) return { kind, cid: rows[0].cid, title: rows[0].title, screenshot_url: rows[0].screenshot_url };
+                }
+            } catch (_) {
+                return null; // table absent / query failed → don't fabricate a link
+            }
+            return null;
+        }
         const chainMatch = /^chain-([0-9a-f]{48})$/i.exec(label);
         if (chainMatch) {
             const prefix = `chain_${chainMatch[1].toLowerCase()}`;
@@ -134,38 +150,6 @@ export function setupEnsRoute(app, pool) {
                 return null; // absent/old schema or query failure → fail closed
             }
         }
-        if (/^[0-9]+(-[0-9]+)*$/.test(label)) {
-            const ids = label.split('-');
-            let title;
-            let screenshot_url;
-            // Resolve only ids that actually exist on THIS server. A proposal
-            // minted on-chain elsewhere (e.g. saved to a different DB) would
-            // otherwise yield a live ENS name pointing at a dead /proposals/<id>
-            // link. Fail closed: if we can't confirm existence, don't resolve.
-            try {
-                const { rows } = await pool.query(
-                    'SELECT proposal_id, title, name, screenshot_url FROM proposal WHERE proposal_id = ANY($1)',
-                    [ids],
-                );
-                const found = new Set(rows.map(r => String(r.proposal_id)));
-                if (!ids.every(id => found.has(id))) return null; // unknown proposal → not resolvable
-                if (ids.length === 1) {
-                    const row = rows[0];
-                    title = row.title || row.name;
-                    screenshot_url = row.screenshot_url;
-                }
-            } catch (_) {
-                return null; // proposal table absent / query failed → don't fabricate a link
-            }
-            return { ids, title, screenshot_url };
-        }
-        // Named plan
-        try {
-            const { rows } = await pool.query('SELECT slug, proposal_ids, title, member_hashes, plan_hash FROM ens_plan WHERE slug = $1 LIMIT 1', [label]);
-            if (rows.length && !planCommitmentError(rows[0])) {
-                return { slug: label, title: rows[0].title, isPlan: true };
-            }
-        } catch (_) { /* ens_plan absent */ }
         return null;
     }
 

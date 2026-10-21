@@ -1083,36 +1083,6 @@ body:has(#selection-tray) .map-feedback-stack {
     color: var(--cb-text);
 }
 
-.proposal-option-row {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.proposal-option-row input[type="checkbox"] {
-    width: 16px;
-    height: 16px;
-    cursor: pointer;
-}
-
-.proposal-option-row input[type="text"] {
-    padding: 6px 10px;
-    border: 1px solid var(--cb-line-strong);
-    border-radius: 4px;
-    font-size: 14px;
-    font-family: monospace;
-}
-
-.proposal-option-row input[type="text"]:disabled {
-    background-color: var(--cb-surface-3);
-    color: var(--cb-text-muted);
-}
-
-.proposal-option-row input[type="text"]:not(:disabled) {
-    background-color: var(--cb-surface);
-    color: var(--cb-text-strong);
-}
-
 .proposal-author-row {
     display: flex;
     align-items: center;

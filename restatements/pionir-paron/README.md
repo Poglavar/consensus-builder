@@ -61,7 +61,7 @@ Pergošićeva A1–A4 and Selska–Drniška remain building-only because the ava
 node backend/scripts/seed-pionir-observed-circulation.mjs --apply --export
 ```
 
-For environment migration, build a checksum-protected bundle from the canonical archives and inspect the target before applying it. The importer resolves proposal row ids independently in every database and writes all proposals and named plans in one transaction:
+For environment migration, build a checksum-protected bundle from the canonical archives and inspect the target before applying it. The importer resolves proposal row ids independently in every database and writes all proposals in one transaction:
 
 ```sh
 node backend/scripts/migrate-pionir-reconstruction-archive.cjs --build-bundle /tmp/pionir-paron.json

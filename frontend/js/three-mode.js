@@ -1972,7 +1972,7 @@
     function proposalApplied3D(proposal) {
         if (!proposal) return false;
         if (isApplied(proposal)) return true;
-        return ['roadProposal', 'buildingProposal', 'structureProposal', 'parcelLayout', 'decideLaterProposal']
+        return ['roadProposal', 'buildingProposal', 'structureProposal', 'parcelLayout']
             .some(k => proposal[k] && isApplied(proposal, proposal[k]));
     }
 
@@ -8105,17 +8105,11 @@
 
     // --- Walk-through (zagreb.lol/voznja) launcher ---
     // The user clicks the walk button while in 3D, then clicks a point on the ground;
-    // we open zagreb.lol/voznja in a new tab with that lat/lng plus the currently-applied
-    // proposal serial IDs so voznja loads exactly the same scene the user is looking at.
-    function pickSerialProposalId(proposal) {
-        if (typeof window.getSerialProposalId === 'function') return window.getSerialProposalId(proposal);
-        const candidates = [proposal && proposal.serverProposalId, proposal && proposal.proposalId, proposal && proposal.id];
-        for (const c of candidates) {
-            if (c == null) continue;
-            const s = String(c);
-            if (/^\d+$/.test(s)) return s;
-        }
-        return null;
+    // we open zagreb.lol/voznja in a new tab with that lat/lng plus the CIDs of the
+    // currently-applied published designs, which voznja reads from the index (GET /designs/:cid),
+    // so it loads exactly the same scene the user is looking at.
+    function publishedDesignCid(proposal) {
+        return proposal ? window.DesignSync.publishedCid(proposal) : null;
     }
 
     function getAppliedProposals() {
@@ -8125,7 +8119,7 @@
             return storage.getAllProposals().filter(p => {
                 if (!p) return false;
                 if (isApplied(p)) return true;
-                return ['roadProposal', 'buildingProposal', 'structureProposal', 'parcelLayout', 'decideLaterProposal']
+                return ['roadProposal', 'buildingProposal', 'structureProposal', 'parcelLayout']
                     .some(key => p[key] && isApplied(p, p[key]));
             });
         } catch (e) {
@@ -8134,25 +8128,22 @@
         }
     }
 
-    function getAppliedSerialProposalIds() {
-        const seen = new Set();
-        const out = [];
-        for (const p of getAppliedProposals()) {
-            const sid = pickSerialProposalId(p);
-            if (sid && !seen.has(sid)) { seen.add(sid); out.push(sid); }
-        }
-        // Numeric ascending (matches sortProposalIdsForShare output for numeric IDs).
-        return out.sort((a, b) => Number(a) - Number(b));
+    function getAppliedDesignCids() {
+        // Sorted and de-duplicated, the order of a /designs/<cids> link.
+        return window.DesignSync.sortedCids(getAppliedProposals().map(publishedDesignCid).filter(Boolean));
     }
 
+    // The applied designs the walk still waits for: unpublished ones that can be published alone. A
+    // parcel layout is published only with its agreement (ProposalPublishTerms.publishRefusal), so
+    // the walk goes on without it.
     function getNonUploadedAppliedProposals() {
-        return getAppliedProposals().filter(p => !pickSerialProposalId(p));
+        return getAppliedProposals().filter(p => !publishedDesignCid(p) && !window.ProposalPublishTerms.publishRefusal(p));
     }
 
     function buildWalkUrl(lat, lng) {
         // Param shape per zagreb-isochrone-main/website/station-3d/modes/cab.js
         // (buildWalkShareUrl): st3d=walk, lat, lon (NOT lng), heading, pitch, proposals.
-        const ids = getAppliedSerialProposalIds();
+        const ids = getAppliedDesignCids();
         const params = new URLSearchParams();
         params.set('st3d', 'walk');
         params.set('lat', lat.toFixed(6));
@@ -8397,9 +8388,9 @@
                 return;
             }
 
-            // Some applied proposals lack a numeric serverProposalId, so the walk page can't
-            // load them. Open the upload-gate modal; it auto-closes when the list is empty
-            // and then we drop straight into the walk pick.
+            // Some applied designs are not published, so the walk page can't load them. Open
+            // the upload-gate modal; it auto-closes when the list is empty and then we drop
+            // straight into the walk pick.
             if (typeof window.showWalkUploadGateModal === 'function') {
                 window.showWalkUploadGateModal({
                     onComplete: () => {

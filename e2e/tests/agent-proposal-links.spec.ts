@@ -1,50 +1,14 @@
-// Exercise qualified profile links with local, published-row and chain-token collisions.
+// Exercise qualified profile links with local-key and chain-token collisions.
 import { test, expect } from '../helpers/fixtures';
 import { openCity, PARCEL_ID } from '../helpers/runtime';
-
-test('profile offers retain authored whole-proposal amounts without a pending-money total', async ({ mockApi: page }) => {
-  await openCity(page);
-  await page.evaluate(async parcelId => {
-    const w = window as any;
-    await w.i18n.setLanguage('en');
-    const records = [
-      { title: 'Recorded consideration', offer: 125, offerCurrency: 'EUR', decayEnabled: true, decayPercent: 50 },
-      { title: 'Explicit zero offer', offer: 0, offerCurrency: 'USDC' },
-      { title: 'Unknown consideration', offer: null, budget: 900, budgetCurrency: 'ETH', ethBalance: 1e18 },
-      { title: 'Unknown currency', offer: 75, currency: 'ETH' },
-      { title: 'Nonbinding vote', kind: 'owner-vote', offer: null }
-    ];
-    const agent = w.createAgent();
-    agent.name = 'Offer display preview';
-    agent.proposalsCreated = records.map((record, index) => w.proposalStorage.addProposal({
-      proposalId: `p-profile-offer-${index}`, kind: 'owner-deal', lifecycleStatus: 'Active', cadastreParcelIds: [parcelId], ...record
-    }));
-    w.agentStorage.addAgent(agent);
-    w.getChainCurrencySymbol = () => 'SOL';
-    await w.showAgentDialog(agent.id);
-  }, PARCEL_ID);
-  const dialog = page.locator('.agent-dialog-modal');
-  await expect(dialog.locator('[data-agent-pending-amount]')).toHaveCount(0);
-  const created = dialog.locator('[data-list-type="created"]');
-  const row = (title: string) => created.locator('.agent-dialog-proposal-item').filter({ hasText: title });
-  await expect(row('Recorded consideration').locator('.proposal-offer')).toHaveText('Original full-proposal offer: 125 EUR');
-  await expect(row('Explicit zero offer').locator('.proposal-offer')).toHaveText('Original full-proposal offer: 0 USDC');
-  for (const title of ['Unknown consideration', 'Unknown currency']) {
-    await expect(row(title).locator('.proposal-offer')).toHaveText('Original offer not recorded');
-    await expect(row(title).locator('.proposal-offer-amount')).toHaveCount(0);
-  }
-  await expect(row('Nonbinding vote').locator('.proposal-offer')).toHaveCount(0);
-  await expect(created.locator('.proposal-offer').filter({ hasText: 'SOL' })).toHaveCount(0);
-});
 
 test('profile chain links preserve their location and never open a colliding local draft', async ({ mockApi: page }) => {
   await openCity(page);
   const ids = await page.evaluate(async parcelId => {
     const w = window as any;
     await w.i18n.setLanguage('en');
-    const draftId = w.proposalStorage.addProposal({ proposalId: '77', title: 'Unrelated numeric draft', cadastreParcelIds: [parcelId], kind: 'proposal', lifecycleStatus: 'Active' });
-    const chainId = w.proposalStorage.addProposal({ proposalId: 'p-chain-profile', title: 'Observed chain design', cadastreParcelIds: [parcelId], kind: 'proposal', lifecycleStatus: 'Active', isMinted: true, onchain: { chainId: '0x1', contractAddress: '0xabc', proposalId: '77' } });
-    const rowId = w.proposalStorage.addProposal({ proposalId: 'p-row-profile', serverProposalId: '88', title: 'Unrelated published row', cadastreParcelIds: [parcelId], kind: 'proposal', lifecycleStatus: 'Active' });
+    const draftId = w.proposalStorage.addProposal({ proposalId: '77', title: 'Unrelated numeric draft', cadastreParcelIds: [parcelId], lifecycleStatus: 'Active' });
+    const chainId = w.proposalStorage.addProposal({ proposalId: 'p-chain-profile', title: 'Observed chain design', cadastreParcelIds: [parcelId], lifecycleStatus: 'Active', isMinted: true, onchain: { chainId: '0x1', contractAddress: '0xabc', proposalId: '77' } });
     const agent = w.createAgent(); agent.name = 'Proposal link preview'; agent.userControlled = true; agent.proposalsCreated = [draftId, '88'];
     w.agentStorage.addAgent(agent);
     w.walletManager = { getState: () => ({ status: 'connected', accounts: ['0x1111111111111111111111111111111111111111'], chainId: '0x1' }), getProvider: () => ({}) };
@@ -66,7 +30,7 @@ test('profile chain links preserve their location and never open a colliding loc
     w.__profileChainReads = [];
     w.handleChainProposalRoute = (ref: any) => w.__profileChainReads.push(ref);
     await w.showAgentDialog(agent.id);
-    return { agent: agent.id, draftId, chainId, rowId };
+    return { agent: agent.id, draftId, chainId };
   }, PARCEL_ID);
   const dialog = page.locator('.agent-dialog-modal');
   const created = dialog.locator('[data-list-type="created"]');
@@ -75,7 +39,6 @@ test('profile chain links preserve their location and never open a colliding loc
   await expect(created).toContainText('Observed chain design');
   await expect(created).toContainText('Local proposal record unavailable');
   await expect(created).toContainText('Local ID 88');
-  await expect(created).not.toContainText('Unrelated published row');
   await expect(created).toContainText('Chain proposal not loaded');
   await expect(created).toContainText('evm / 0x1 · 0xabc · 99');
   await expect(created).not.toContainText('(deleted)');

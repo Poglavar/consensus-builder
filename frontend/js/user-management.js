@@ -16,11 +16,9 @@ const ATTESTIFY_BASE_URLS = Object.freeze({
 function isProposalDeepLinkPath() {
     try {
         const path = (typeof window !== 'undefined' && window.location && window.location.pathname) ? window.location.pathname : '';
-        // Numeric id, comma-separated ids, a named-plan slug, or the named plan's score view — the
+        // A design link (/designs/<cid>[,<cid>…]) or an agreement link (/agreements/<cid>) — the
         // same forms handleProposalRouteFromUrl (js/proposals/core.js) routes.
-        return /^\/proposals\/[0-9,]+\/?$/.test(path)
-            || /^\/proposals\/[a-z0-9][a-z0-9-]{1,61}[a-z0-9]\/?$/i.test(path)
-            || /^\/plans\/[a-z0-9][a-z0-9-]{1,61}[a-z0-9]\/score\/?$/i.test(path);
+        return /^\/(designs|agreements)\/[^/]+\/?$/.test(path);
     } catch (_) {
         return false;
     }
@@ -2299,44 +2297,3 @@ window.bindLanguageSegmented = bindLanguageSegmented;
 window.isProposalDeepLink = isProposalDeepLinkPath;
 window.ensureGuestUserAgentForDeepLink = ensureGuestUserAgentForDeepLink;
 window.shouldSkipWelcomeForProposalLink = isProposalDeepLinkPath;
-// Where a proposal created right now would be minted.
-//
-// createProposal() decides this implicitly, from three independent globals checked in a fixed order
-// (Canton mode, then a Solana wallet, then an EVM wallet). Nothing told the user, so a proposal could
-// go to a chain they had forgotten they selected. This is that same decision, named once, so the create
-// dialog and the mint dispatch cannot disagree — keep the order in step with createProposal().
-function getActiveMintTarget() {
-    try {
-        if (window.CantonMode && typeof window.CantonMode.isActive === 'function' && window.CantonMode.isActive()) {
-            const party = (typeof window.CantonMode.getParty === 'function') ? window.CantonMode.getParty() : '';
-            return { chain: 'canton', label: 'Canton (DevNet)', onchain: true, identity: party || null };
-        }
-    } catch (_) { }
-
-    try {
-        const solana = window.solanaWalletManager;
-        const state = solana && typeof solana.getState === 'function' ? solana.getState() : null;
-        if (state && state.status === 'connected' && Array.isArray(state.accounts) && state.accounts.length) {
-            const cluster = (typeof window.getSolanaChainId === 'function') ? window.getSolanaChainId() : 'solana';
-            const info = NETWORK_LABELS[cluster];
-            return { chain: cluster, label: (info && info.label) || 'Solana', onchain: true, identity: state.accounts[0] };
-        }
-    } catch (_) { }
-
-    try {
-        const wallet = window.walletManager;
-        const state = wallet && typeof wallet.getState === 'function' ? wallet.getState() : null;
-        if (state && state.status === 'connected' && state.chainId) {
-            const info = getNetworkDisplayInfo(state.chainId, state.status);
-            return { chain: info.chainId, label: info.text, onchain: true, identity: (state.accounts && state.accounts[0]) || null };
-        }
-    } catch (_) { }
-
-    // Chain names above are proper nouns; the off-chain label is prose, so it is translated.
-    const offchainLabel = (window.i18n && typeof window.i18n.t === 'function')
-        ? window.i18n.t('modal.createProposal.mintTarget.offchain')
-        : 'Off-chain (this browser only)';
-    return { chain: null, label: offchainLabel, onchain: false, identity: null };
-}
-
-window.getActiveMintTarget = getActiveMintTarget;

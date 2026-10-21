@@ -99,7 +99,6 @@
             const kind = claimKindForGoal(p.goal);
             entries.push({
                 proposalId: p.proposalId ? String(p.proposalId) : null,
-                serverProposalId: p.serverProposalId ? String(p.serverProposalId) : null,
                 title: p.title || p.name || '',
                 goal: p.goal || '',
                 kind,

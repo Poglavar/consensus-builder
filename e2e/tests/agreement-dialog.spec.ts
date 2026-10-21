@@ -3,93 +3,22 @@
 // allocation, cash and decision rule, the docked agreement panel (status, Before / after, Edit,
 // Delete), the Agreements list, an agreement whose design left the map, and a dialog with nothing to bundle.
 import { test, expect } from '../helpers/fixtures';
-import { openCity, openParcel, showProposal, PARCEL_ID } from '../helpers/runtime';
+import { openCity, showProposal, stubBasemapTiles, PARCEL_ID } from '../helpers/runtime';
 import { fillNativeDateTime, selectNativeOption } from '../helpers/controls';
-import type { Locator, Page } from '@playwright/test';
+import {
+  OWNER, applyLayout, agreementDialog, agreementPanel, storedAgreements, landLoaded, createFromDetails, openAgreementsList, panelStatus,
+} from '../helpers/agreements';
+import type { Page } from '@playwright/test';
 
 test.beforeEach(async ({ mockApi: page }) => {
-  await page.route(/https:\/\/[^/]*tile\.openstreetmap\.org\//, route => route.fulfill({
-    contentType: 'image/svg+xml',
-    body: '<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256"><rect width="256" height="256" fill="#eee"/></svg>',
-  }));
+  await stubBasemapTiles(page);
 });
 
-const OWNER = 'Ana Owner';
 const TITLE = 'Block 1234 readjustment';
-
-// Parcel 1234 held by one local owner, laid out into two equal plots and applied: the design an
-// agreement settles. The owner record is written first, so the layout carries it over to the plots.
-async function applyLayout(page: Page): Promise<{ layoutId: string; ownerKey: string }> {
-  await openCity(page);
-  const ownerKey = await page.evaluate(async ({ parcelId, name }) => {
-    const w = window as any;
-    await w.i18n.setLanguage('en');
-    const agent = w.createAgent();
-    agent.name = name;
-    w.agentStorage.addAgent(agent);
-    w.PersistentStorage.setItem(`parcel_${parcelId}_owner`, agent.id);
-    return String(agent.id);
-  }, { parcelId: PARCEL_ID, name: OWNER });
-  await openParcel(page, 'proposals');
-  await page.locator('.parcel-build-btn--parcel-layout').click();
-  const editor = page.locator('.on-map-reparcellization');
-  const done = editor.locator('[data-reparcel-commit]');
-  await expect(done).toBeEnabled({ timeout: 15_000 });
-  await done.click();
-  await expect(editor).toHaveCount(0);
-  await expect.poll(() => page.evaluate(() => (window as any).proposalStorage.getAllProposals()
-    .filter((proposal: any) => proposal.applied && proposal.goal === 'parcel-layout').length)).toBe(1);
-  const layoutId = await page.evaluate(() => String((window as any).proposalStorage.getAllProposals()
-    .find((proposal: any) => proposal.applied && proposal.goal === 'parcel-layout').proposalId));
-  return { layoutId, ownerKey };
-}
-
-const agreementDialog = (page: Page) => page.locator('.agreement-dialog-overlay');
-const agreementPanel = (page: Page) => page.locator('section#agreement-panel');
-const storedAgreements = (page: Page) => page.evaluate(() => JSON.parse(JSON.stringify((window as any).AgreementStore.list())));
 const isLayoutApplied = (page: Page, id: string) => page.evaluate(id => {
   const w = window as any;
   return !!w.isApplied(w.proposalStorage.getProposal(id));
 }, id);
-
-// The land under the chosen designs, once it is read: input parcels and the pieces standing on them.
-async function landLoaded(dialog: Locator): Promise<void> {
-  await expect(dialog.locator('table[data-agreement-inputs] tr[data-agreement-input]').first()).toBeVisible({ timeout: 30_000 });
-  await expect(dialog.locator('[data-agreement-land-loading]')).toHaveCount(0);
-  await expect(dialog.locator('table[data-agreement-outputs] tr[data-agreement-output]').first()).toBeVisible();
-}
-
-// The details panel's Create agreement opens the dialog over that one design.
-async function createFromDetails(page: Page, layoutId: string): Promise<Locator> {
-  await showProposal(page, layoutId);
-  await page.locator('#proposal-details-panel .btn-create-agreement').click();
-  const dialog = agreementDialog(page);
-  await expect(dialog.locator('.cb-dialog__title')).toHaveText('Create agreement');
-  await expect(dialog.locator(`input[data-agreement-design="${layoutId}"]`)).toBeChecked();
-  await landLoaded(dialog);
-  return dialog;
-}
-
-// The Agreements button sits in the Proposals sheet, under Proposal tools.
-async function openAgreementsList(page: Page): Promise<Locator> {
-  const sheet = page.locator('#proposals-sheet');
-  if (!(await sheet.isVisible())) await page.locator('#proposals-button').click();
-  await expect(sheet).toBeVisible();
-  const tools = page.locator('#proposal-list-actions');
-  if (!(await tools.evaluate(element => (element as HTMLDetailsElement).open))) await tools.locator('summary').click();
-  await page.locator('#agreementsButton').click();
-  const list = page.locator('.agreement-list-dialog');
-  await expect(list).toBeVisible();
-  return list;
-}
-
-// The panel on the right dock and the status it reached against the map.
-async function panelStatus(page: Page, status: 'current' | 'stale'): Promise<Locator> {
-  await expect(agreementPanel(page)).toBeVisible();
-  const badge = agreementPanel(page).locator(`[data-agreement-status="${status}"]`);
-  await expect(badge).toBeVisible({ timeout: 30_000 });
-  return badge;
-}
 
 test('an agreement over an applied parcel layout is created from its details, compared, edited, listed and deleted @core', async ({ mockApi: page }) => {
   test.setTimeout(180_000);
@@ -102,6 +31,7 @@ test('an agreement over an applied parcel layout is created from its details, co
   const create = primary.locator('.btn-create-agreement');
   await expect(create).toHaveClass(/\bbtn-primary\b/);
   await expect(primary.locator('.btn-share-proposal')).toBeDisabled();
+  await expect(page.locator('#proposal-publish-later-note')).toHaveText('A parcel layout is published with its agreement. Propose an agreement that includes it.');
   expect(await primary.locator('.btn-create-agreement, .btn-share-proposal').evaluateAll(buttons => buttons
     .map(button => (button.classList.contains('btn-create-agreement') ? 'create agreement' : 'share')))).toEqual(['create agreement', 'share']);
   await create.click();
@@ -191,7 +121,13 @@ test('an agreement over an applied parcel layout is created from its details, co
     rule: { electorate: 'community', binding: false, approvalConfig: null, lens: [] },
   });
   expect(saved.id).toMatch(/^ag-[0-9a-f]{32}$/);
-  expect(saved.designs[0].fingerprint).toMatch(/^c2-/);
+  // A design is named by its content CID (js/design-record.js), the identity the index files it under.
+  expect(saved.designs[0].cid).toMatch(/^bafkrei[a-z2-7]{52}$/);
+  expect(saved.designs[0].cid).toBe(await page.evaluate(id => {
+    const w = window as any;
+    return w.DesignRecord.cidOf(w.proposalStorage.getProposal(id));
+  }, layoutId));
+  expect(saved.designs[0]).not.toHaveProperty('fingerprint');
   expect(saved.inputs.parcels.map((parcel: any) => parcel.parcelId)).toEqual([PARCEL_ID]);
   expect(saved.outputs.map((output: any) => output.hash)).toEqual(hashes);
 

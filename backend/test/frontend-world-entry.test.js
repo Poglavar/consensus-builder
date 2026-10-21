@@ -12,6 +12,12 @@ const require = createRequire(import.meta.url);
 const REPO = path.resolve(fileURLToPath(new URL('.', import.meta.url)), '../..');
 const read = rel => readFileSync(path.join(REPO, rel), 'utf8');
 const Model = require(path.join(REPO, 'frontend/js/world/world-entry-model.js'));
+const Cid = require(path.join(REPO, 'frontend/js/cid.js'));
+// Design and agreement links name published objects by CID (plan-design-agreement.md, M2).
+const cidOf = text => Cid.cidOf(new TextEncoder().encode(text));
+const DESIGN_A = cidOf('design-a');
+const DESIGN_B = cidOf('design-b');
+const AGREEMENT = cidOf('agreement-a');
 const WorldCoverage = require(path.join(REPO, 'frontend/js/world/world-coverage.js'));
 const coverage = WorldCoverage.create(JSON.parse(read('frontend/data/world-coverage.json')));
 
@@ -45,11 +51,10 @@ describe('?at= parsing', () => {
 
 describe('shared routes and first visit', () => {
     const shared = [
-        { pathname: '/proposals' }, { pathname: '/proposals/' },
-        { pathname: '/proposals/12' }, { pathname: '/proposals/1,2,3' }, { pathname: '/proposals/my-plan' },
-        { pathname: '/plans/my-plan/score' }, { pathname: '/parcel/HR-335240-1323/2' }, { pathname: '/monitors/4' },
-        { pathname: '/', search: '?parcel=HR-1' }, { pathname: '/', search: '?proposalShare=abc' },
-        { pathname: '/', search: '?shared=abc' }, { pathname: '/', search: '?focusProposal=abc' }, { pathname: '/', search: '?activity=agent:7' },
+        { pathname: '/proposals' }, { pathname: '/proposals/' }, { pathname: '/proposals/solana/devnet/abc/7' },
+        { pathname: `/designs/${DESIGN_A}` }, { pathname: `/designs/${DESIGN_A},${DESIGN_B}` }, { pathname: `/agreements/${AGREEMENT}` },
+        { pathname: '/parcel/HR-335240-1323/2' }, { pathname: '/monitors/4' },
+        { pathname: '/', search: '?parcel=HR-1' }, { pathname: '/', search: `?focusProposal=${DESIGN_A}` }, { pathname: '/', search: '?activity=agent:7' },
         { pathname: '/', search: '?scene=slug' }, { pathname: '/', search: '?photo' }, { pathname: '/', search: '?model=1' },
         { pathname: '/', search: '?at=-1.264,36.840,17' }, { pathname: '/', search: '?at=51.5,-0.1' },
         { pathname: '/bets/Ekpt4qMsJWyyraDfPfq2zkT1JwMsJCKrSmkoNGgHreFR', search: '?city=zg' },
@@ -57,7 +62,11 @@ describe('shared routes and first visit', () => {
     ];
     const plain = [
         { pathname: '/', search: '' }, { pathname: '/', search: '?city=zg' }, { pathname: '/', search: '?lang=hr&reduceMotion=1' },
-        { pathname: '/', search: '?world=1' }, { pathname: '/', search: '?at=bad' }, { pathname: '/', search: '?at=91,15,12' }, { pathname: '/index.html' }
+        { pathname: '/', search: '?world=1' }, { pathname: '/', search: '?at=bad' }, { pathname: '/', search: '?at=91,15,12' }, { pathname: '/index.html' },
+        // The id, comma-list, named-plan and payload (?shared=, ?proposalShare=) links went with M2:
+        // they name nothing to show any more.
+        { pathname: '/proposals/12' }, { pathname: '/proposals/1,2,3' }, { pathname: '/plans/my-plan/score' }, { pathname: '/designs' },
+        { pathname: '/', search: '?shared=encoded' }, { pathname: '/', search: '?proposalShare=abc' }
     ];
 
     it('recognises every link form that names what to show', () => {
@@ -72,7 +81,11 @@ describe('shared routes and first visit', () => {
         const end = src.indexOf('\n}\n', start);
         expect(start).toBeGreaterThan(-1);
         const appCheck = pathname => new Function('window', `${src.slice(start, end + 2)}; return isProposalDeepLinkPath();`)({ location: { pathname } });
-        for (const pathname of ['/proposals/12', '/proposals/1,2', '/proposals/zagreb-plan', '/plans/zagreb-plan/score', '/', '/about']) {
+        // The app's own check recognises the design and agreement links, and nothing else here.
+        expect(appCheck(`/designs/${DESIGN_A},${DESIGN_B}`)).toBe(true);
+        expect(appCheck(`/agreements/${AGREEMENT}`)).toBe(true);
+        expect(appCheck('/proposals/12')).toBe(false);
+        for (const pathname of [`/designs/${DESIGN_A}`, `/designs/${DESIGN_A},${DESIGN_B}/`, `/agreements/${AGREEMENT}`, '/proposals/12', '/', '/about']) {
             if (appCheck(pathname)) expect(Model.isSharedRoute({ pathname }), pathname).toBe(true);
         }
     });
@@ -135,8 +148,8 @@ describe('globe boot uses the arrival URL', () => {
     });
 
     it.each([
-        ['?proposalShare=encoded', '/'], ['?shared=encoded', '/'], ['', '/proposals/851'], ['', '/proposals'], ['', '/proposals/'],
-        ['', '/plans/garden-plan/score'], ['', '/parcel/HR-335240-1323/2'], ['', '/bets/market-account']
+        ['', `/designs/${DESIGN_A}`], ['', `/agreements/${AGREEMENT}`], ['', '/proposals'], ['', '/proposals/'],
+        ['', '/proposals/solana/devnet/abc/7'], ['', '/parcel/HR-335240-1323/2'], ['', '/bets/market-account']
     ])('does not hijack %s %s when another boot handler consumes its query', (search, pathname) => {
         const app = boot(search, pathname);
         app.window.location.search = '';
@@ -168,9 +181,9 @@ describe('zoom out return to globe', () => {
 
 describe('the address follows the map', () => {
     it('writes the view as ?at=, keeping the rest of the address, and nothing when it is already there', () => {
-        const next = Model.addressWithView('http://localhost:5682/proposals/5?city=zagreb&lang=hr', { lat: 45.800451, lon: 15.978789, zoom: 17.4 });
+        const next = Model.addressWithView(`http://localhost:5682/designs/${DESIGN_A}?city=zagreb&lang=hr`, { lat: 45.800451, lon: 15.978789, zoom: 17.4 });
         const url = new URL(next);
-        expect(url.pathname).toBe('/proposals/5');
+        expect(url.pathname).toBe(`/designs/${DESIGN_A}`);
         expect(url.searchParams.get('city')).toBe('zagreb');
         expect(url.searchParams.get('lang')).toBe('hr');
         expect(url.searchParams.get('at')).toBe('45.80045,15.97879,17');

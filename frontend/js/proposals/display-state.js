@@ -6,8 +6,8 @@
 //
 // Rules (lifecycle = the record's canonical lifecycleStatus, proposals/status.js):
 //   - Minted means a mint record exists: the isMinted flag, an on-chain transaction, or an NFT/on-chain
-//     token id under a contract. An explicit server row reference is Published, never a mint record;
-//     a numeric local key alone says nothing about publication.
+//     token id under a contract. A published design (its CID, DesignSync.publishedCid) is Published,
+//     never a mint record; a local key alone says nothing about publication.
 //     The mint is a fact about the chain, so a cancelled proposal that was minted stays Minted and
 //     carries the Cancelled modifier (the market resolves NO by reading that same NFT account).
 //   - A Cancelled proposal is withdrawn: it cannot stand on a map, so it shows no "Applied" and is
@@ -34,8 +34,6 @@
         unknown: 'cb-badge--expired',
         cancelled: 'cb-badge--expired',
         expired: 'cb-badge--expired',
-        'vote-open': 'cb-badge--published',
-        'vote-concluded': 'cb-badge--expired',
         'awaiting-funding': 'cb-badge--published'
     });
 
@@ -70,7 +68,7 @@
     }
 
     // inputs: { applied, lifecycleKey, serial } — this browser's applied flag, the lifecycle key
-    // (vote / expiry / funding aware) and the server serial. Each defaults to the browser global that
+    // (funding aware) and the published CID. Each defaults to the browser global that
     // owns it, so callers in the app pass only what they already hold.
     function of(proposal, inputs = {}) {
         const lifecycle = lifecycleOf(proposal);
@@ -86,7 +84,7 @@
                 : lifecycle.toLowerCase());
         const serial = inputs.serial !== undefined
             ? inputs.serial
-            : (root && typeof root.getSerialProposalId === 'function' ? root.getSerialProposalId(proposal) : null);
+            : (root && root.DesignSync ? root.DesignSync.publishedCid(proposal) : null);
 
         const minted = hasMintRecord(proposal);
         const applicable = lifecycle !== 'Cancelled';

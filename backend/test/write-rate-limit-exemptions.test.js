@@ -18,6 +18,7 @@ import request from 'supertest';
 import { createApp, WRITE_RATE_LIMIT } from '../index.js';
 
 const WRITE_LIMIT = WRITE_RATE_LIMIT;   // read, never restated
+const DESIGN_CID = 'bafkreibm6jg3ux5qumhcn2b3flc3tyu6dmlb4xa7u5bf44yegnrjhc4yeq';
 
 // A pool that answers everything with nothing: this test is about the middleware in front of the
 // routes, not about what they return.
@@ -106,11 +107,24 @@ describe('read-only POSTs are not rationed as writes', () => {
         expect(codes).not.toContain(429);
         expect(served(codes)).toBe(WRITE_LIMIT + 5);
     }, 30000);
+
+    // The design reader asks the index for every design of a link at once, and the site tool asks for
+    // the binding preview on every site edit: both read (plan-design-agreement.md M2).
+    it.each([
+        ['/designs/batch', { cids: [DESIGN_CID] }],
+        ['/designs/binding', { site: { type: 'Polygon', coordinates: [[[15.97, 45.8], [15.971, 45.8], [15.971, 45.801], [15.97, 45.801], [15.97, 45.8]]] } }]
+    ])('serves %s past it because it only reads', async (path, body) => {
+        const codes = await hammer(app(), path, body, WRITE_LIMIT + 5);
+        expect(codes).not.toContain(403);
+        expect(codes).not.toContain(429);
+        expect(served(codes)).toBe(WRITE_LIMIT + 5);
+    }, 60000);
 });
 
 describe('genuine writes are still rationed', () => {
     it('starts refusing an actual write endpoint once the budget is spent', async () => {
-        const codes = await hammer(app(), '/proposals', { title: 'x' }, WRITE_LIMIT + 5);
+        // POST /designs indexes a design: a write, whatever it answers this empty one.
+        const codes = await hammer(app(), '/designs', { cid: DESIGN_CID, content: {} }, WRITE_LIMIT + 5);
         expect(codes).toContain(429);
         // The first fifty got through: the limiter rations, it does not simply block.
         expect(codes.slice(0, WRITE_LIMIT)).not.toContain(429);

@@ -125,11 +125,6 @@ function renderProposalListModal() {
         ? allStoredProposals.filter(proposal => window.__proposalCounts.proposalIntersectsBounds(proposal, area.bounds))
         : allStoredProposals;
 
-    // Check and update expiry status for all proposals
-    allProposals.forEach(proposal => {
-        checkAndUpdateProposalExpiry(proposal);
-    });
-
     const buildDatasets = (augmentedList) => {
         // Single list — lifecycle status and applied state are dropdown filters inside
         // applyProposalListFilters now, not Active/Executed tabs. `sorted` is what the list renders.
@@ -192,19 +187,6 @@ function renderProposalListModal() {
     const blockchainCantonNote = (source === 'blockchain' && cantonActiveNow)
         ? `<p class="proposal-list-note canton-empty">${escapeHtml('On Canton, proposals are private, so they are not listed here.')}</p>`
         : '';
-
-    // Plans source: the city's named plans (proposals/plans.js). The answer is cached there; when it
-    // lands after this render, the list renders again with it.
-    const plansApi = window.ProposalPlans;
-    const plansPromise = plansApi.cityPlans(normalizedCity);
-    plansPromise.then(result => {
-        if (proposalListState.plansResult === result) return;
-        proposalListState.plansResult = result;
-        if (modal.isConnected) renderProposalListModal();
-    });
-    const plansResult = proposalListState.plansResult || null;
-    const currentPlans = plansResult ? plansApi.current(plansResult.plans) : [];
-    const plansCountLabel = plansResult ? currentPlans.length : '…';
 
     const chosen = source === 'server' ? serverDatasets
         : source === 'blockchain' ? blockchainDatasets
@@ -298,7 +280,7 @@ function renderProposalListModal() {
     // ~30-60px. There the filters fold behind a toggle (collapsed by default, showing how many are
     // active); the CSS honours the collapse at the phone breakpoint and on short desktop windows,
     // where the capped 340px sheet otherwise left the list no height; tall desktops show them.
-    const resultCountText = `${source === 'plans' ? currentPlans.length : chosen.sorted.length} ${t('modal.roadWidth.proposalList.resultCountWord', 'shown')}`;
+    const resultCountText = `${chosen.sorted.length} ${t('modal.roadWidth.proposalList.resultCountWord', 'shown')}`;
 
     const activeFilterCount = countActiveProposalListFilters(proposalListState);
     const filtersOpen = proposalListState.filtersOpen === true;
@@ -364,9 +346,6 @@ function renderProposalListModal() {
             <button type="button" class="cb-segmented__option proposal-source-btn" aria-pressed="${source === 'blockchain' ? 'true' : 'false'}" data-source="blockchain">
                 ${escapeHtml(modalStrings.sources.blockchain)} (${blockchainCount})
             </button>
-            <button type="button" class="cb-segmented__option proposal-source-btn" aria-pressed="${source === 'plans' ? 'true' : 'false'}" data-source="plans">
-                ${escapeHtml(t('plans.title', 'Named plans'))} (${plansCountLabel})
-            </button>
         </div>
     `;
 
@@ -377,11 +356,6 @@ function renderProposalListModal() {
     const errorHtml = `<div class="proposal-list-error">${escapeHtml(modalStrings.serverError)} <button class="proposal-server-retry">${escapeHtml(modalStrings.retry)}</button></div>`;
 
     const buildTabContent = (sortedList) => {
-        if (source === 'plans') {
-            if (!plansResult) return `<div class="proposal-list-loading">${escapeHtml(t('plans.list.loading', 'Loading plans…'))}</div>`;
-            if (plansResult.error) return `<div class="proposal-list-error">${escapeHtml(t('plans.unavailable', 'Plans could not be loaded: {{reason}}', { reason: plansResult.error }))}</div>`;
-            return plansApi.planRowsHtml(currentPlans, { t, emptyText: t('plans.list.emptyCity', 'No named plans in this city yet. Share applied proposals, then choose Create named plan.') });
-        }
         if (showServerError) return errorHtml;
         if (showServerLoading) return loadingHtml;
         return buildProposalListItemsHtml(sortedList, {
@@ -406,8 +380,8 @@ function renderProposalListModal() {
         <div class="proposal-list-modal-content">
             ${sourceToggleHtml}
             ${blockchainCantonNote}
-            ${source === 'plans' ? '' : filtersToggleHtml}
-            ${source === 'plans' ? '' : controlsHtml}
+            ${filtersToggleHtml}
+            ${controlsHtml}
             <div class="proposal-list-count">${escapeHtml(resultCountText)}</div>
             <div class="proposal-list-modal-body">
                 <div id="proposals-list" class="proposal-tab-content">
@@ -601,21 +575,6 @@ function renderProposalListModal() {
         button.addEventListener('click', handleProposalDownloadClick);
     });
 
-    // Plan rows open their plan; proposal rows say which plan they are part of.
-    plansApi.bindPlanRows(modal);
-    if (source !== 'plans') {
-        const serverIds = new Map(chosen.sorted.map(entry => [String(getProposalKey(entry.proposal)),
-            source === 'server' ? String(entry.proposal.serverProposalId || entry.proposal.id || '') : plansApi.serverIdOfRecord(entry.proposal)]));
-        plansApi.decorateRows(modal, {
-            rowSelector: '.proposal-list-item[data-proposal-id]',
-            serverIdOf: row => serverIds.get(row.getAttribute('data-proposal-id')) || null,
-            place: (row, html) => {
-                const badges = row.querySelector('.proposal-card-badges');
-                if (badges) badges.insertAdjacentHTML('beforebegin', html); else row.insertAdjacentHTML('beforeend', html);
-            }
-        });
-    }
-
     const bodyEl = modal.querySelector('.proposal-list-modal-body');
     if (bodyEl) {
         bodyEl.scrollTop = scrollPositions.body;
@@ -624,7 +583,7 @@ function renderProposalListModal() {
     // Vremenska crta plana (epoch buckets) — crta se samo kad neka epoha postoji.
     // Epoha pojedinog prijedloga se postavlja izbornikom na njegovoj kartici.
     try {
-        if (window.__proposalEpoch && source !== 'plans') window.__proposalEpoch.injectTimeline(modal);
+        if (window.__proposalEpoch) window.__proposalEpoch.injectTimeline(modal);
     } catch (_) { }
 
     const navigationHint = modal.querySelector('.proposal-list-navigation-hint');
@@ -663,12 +622,6 @@ async function showAllProposalsModal() {
         return;
     }
     await mountProposalList();
-}
-
-function getSharedInspectorI18nHelper() {
-    const t = getProposalI18nHelper();
-    const namespace = 'modal.roadWidth.sharedInspector';
-    return (key, fallback, params = {}) => t(`${namespace}.${key}`, fallback, params);
 }
 
 // --- Applied-composition sharing panel ----------------------------------------------------------
@@ -726,14 +679,6 @@ function closeSharePlanPanel() {
     try { if (typeof clearProposalHoverLayers === 'function') clearProposalHoverLayers(); } catch (_) { }
 }
 
-// Returns a promise that settles once the panel is worth LOOKING at — rows listed and the map
-// fitted — so a caller can hold its own dialog up until then instead of dropping the user onto a
-// half-built map. It deliberately does NOT wait for the upload checks: those are a per-proposal
-// round trip each, they report their own progress inside the panel, and making the user watch a
-// spinner through them would be worse than the flicker this replaces.
-//
-// options.onProgress(text) receives the same progress line the panel shows, because while the
-// caller's dialog is up the panel is behind it and cannot be read.
 // The overlap the share panel uses to pick the parcels a proposal stands on. A clip that fails is
 // an UNKNOWN overlap, not none: it is reported and counted in clipHealth() (parcel-arrangement.js)
 // and the parcel is kept — showing a parcel too many beats silently dropping the ground it stands on.
@@ -750,6 +695,13 @@ function shareGroundIntersectionArea(a, b) {
     }
 }
 
+// Returns a promise that settles once the panel is worth LOOKING at — rows listed and the map
+// fitted — so a caller can hold its own dialog up until then instead of dropping the user onto a
+// half-built map. Whether each design is published is known here (its record hashes to the CID it
+// was published as, DesignSync.publishedCid), so no row waits on the server.
+//
+// options.onProgress(text) receives the same progress line the panel shows, because while the
+// caller's dialog is up the panel is behind it and cannot be read.
 function showSharePlanPanel(options) {
     const onProgress = (options && typeof options.onProgress === 'function') ? options.onProgress : null;
     const readySignal = (typeof __readySignal === 'object' && __readySignal)
@@ -807,15 +759,17 @@ function showSharePlanPanel(options) {
         // proposals list makes when it opens.
         if (window.MapShell) window.MapShell.closeSheets();
 
-        // A parcel layout is shared only with its agreement (ProposalPublishTerms.publishRefusal):
-        // its row is listed, never selected or uploaded.
+        // A parcel layout is published only with its agreement (ProposalPublishTerms.publishRefusal):
+        // its row is listed, never selected or published.
         const publishRefusals = new Map();
         proposalsByHash.forEach((proposal, key) => {
             const refusal = window.ProposalPublishTerms.publishRefusal(proposal);
             if (refusal) publishRefusals.set(key, refusal);
         });
         const selected = new Set([...proposalsByHash.keys()].filter(key => !publishRefusals.has(key)));
-        const uploadState = new Map(); // key -> { uploaded, uploading, serverId }
+        // key -> { cid: the CID the design is published as here, or null; publishing }
+        const publishState = new Map();
+        const isPublished = key => !!(publishState.get(key) || {}).cid;
         const rowControls = new Map();
 
         const colorByKey = new Map();
@@ -834,7 +788,7 @@ function showSharePlanPanel(options) {
         const panelHeader = document.createElement('div');
         panelHeader.className = 'share-plan-panel-header';
         const panelTitle = document.createElement('h2');
-        panelTitle.textContent = tShare('plan.title', 'Share applied proposals');
+        panelTitle.textContent = t('proposals.share.panel.title', 'Share applied designs');
         const panelCloseBtn = document.createElement('button');
         panelCloseBtn.type = 'button';
         panelCloseBtn.className = 'close-circle-btn close-circle-btn--lg';
@@ -844,29 +798,16 @@ function showSharePlanPanel(options) {
         panelHeader.append(panelTitle, panelCloseBtn);
         panelContent.appendChild(panelHeader);
 
-        // The subset filter. There used to be a legend of two swatches beside it, explaining that a
-        // solid shape is uploaded and a dashed one is not — necessary while the map painted both at
-        // once and you had to tell them apart. It no longer does: each mode shows one state and the
-        // pressed button names it, so the legend explained a distinction that is never on screen.
+        // Which subset to highlight on the map. The map ALREADY draws every applied design, so "All"
+        // is the view you arrived with and paints nothing extra; the other two highlight the
+        // published or the not-yet-published designs on top of it. Switching adds and removes a
+        // Leaflet layer GROUP: the overlays are built once, on the first switch away from All.
         const filterRow = document.createElement('div');
         filterRow.className = 'share-plan-filter';
-
-        // Which subset to highlight on the map.
-        //
-        // The map ALREADY draws every applied proposal, so "All" is the view you arrived with and
-        // paints nothing extra. The other two answer the only question this panel actually raises —
-        // "which of my three hundred are not on the server yet" — by highlighting that subset on top
-        // of what is already there. Nothing is hidden: the highlight is strong enough to read
-        // against the base drawing, and hiding the rest would cost a second pass over every layer.
-        //
-        // Switching is an add/remove of a Leaflet layer GROUP, not a rebuild. The overlays are built
-        // once, on the first switch away from All, and then kept — which is the whole point. The
-        // checkbox this replaces rebuilt three hundred footprints on every tick, each one a
-        // geometry resolve, and was slow enough that the answer was not worth the wait.
         const HIGHLIGHT_MODES = [
-            { value: 'all', key: 'plan.filterAll', fallback: 'All' },
-            { value: 'uploaded', key: 'plan.filterUploaded', fallback: 'Uploaded' },
-            { value: 'pending', key: 'plan.filterPending', fallback: 'Not uploaded yet' }
+            { value: 'all', key: 'modal.roadWidth.share.plan.filterAll', fallback: 'All' },
+            { value: 'published', key: 'proposals.share.panel.filterPublished', fallback: 'Published' },
+            { value: 'pending', key: 'proposals.share.panel.filterPending', fallback: 'Not published yet' }
         ];
         let highlightMode = 'all';
         const modeButtons = new Map();
@@ -879,7 +820,7 @@ function showSharePlanPanel(options) {
             const button = document.createElement('button');
             button.type = 'button';
             button.className = 'cb-segmented__option share-plan-mode-btn';
-            button.textContent = tShare(mode.key, mode.fallback);
+            button.textContent = t(mode.key, mode.fallback);
             button.setAttribute('aria-pressed', String(mode.value === highlightMode));
             button.addEventListener('click', () => { setHighlightMode(mode.value); });
             modeButtons.set(mode.value, button);
@@ -888,65 +829,26 @@ function showSharePlanPanel(options) {
         filterRow.appendChild(modeWrap);
         panelContent.appendChild(filterRow);
 
-        // Who decides, asked once for the whole plan (proposal-kinds.md): every proposal in it whose
-        // terms were never chosen is uploaded under this kind; proposals with terms keep theirs.
-        const kindApi = window.ProposalKind;
-        let planKind = kindApi.DEFAULT_PUBLISH_KIND;
-        const kindRow = document.createElement('div');
-        kindRow.className = 'share-plan-kind';
-        const kindHeading = document.createElement('div');
-        kindHeading.className = 'cb-kicker';
-        kindHeading.id = 'sharePlanKindHeading';
-        kindHeading.textContent = t('modal.createProposal.kind.heading', 'Who decides?');
-        const kindGroup = document.createElement('div');
-        kindGroup.className = 'cb-segmented';
-        kindGroup.setAttribute('role', 'radiogroup');
-        kindGroup.setAttribute('aria-labelledby', kindHeading.id);
-        const kindLabels = {
-            'owner-deal': t('modal.createProposal.kind.ownerDeal', 'Owner deal'),
-            'owner-vote': t('modal.createProposal.kind.ownerVote', 'Owner vote'),
-            'community-vote': t('modal.createProposal.kind.communityVote', 'Community vote')
-        };
-        kindApi.KINDS.forEach(kind => {
-            const option = document.createElement('label');
-            option.className = 'cb-segmented__option proposal-radio';
-            const input = document.createElement('input');
-            input.type = 'radio';
-            input.name = 'sharePlanKind';
-            input.value = kind;
-            input.checked = kind === planKind;
-            input.addEventListener('change', () => { if (input.checked) planKind = kind; });
-            const text = document.createElement('span');
-            text.textContent = kindLabels[kind];
-            option.append(input, text);
-            kindGroup.appendChild(option);
-        });
-        const kindHint = document.createElement('p');
-        kindHint.className = 'share-plan-kind__hint';
-        kindHint.textContent = tShare('plan.kindHint', 'Applies to selected proposals whose terms were never chosen; the rest keep their own.');
-        kindRow.append(kindHeading, kindGroup, kindHint);
-        panelContent.appendChild(kindRow);
-
         const container = document.createElement('div');
         container.className = 'share-plan-panel-body';
         panelContent.appendChild(container);
 
-        // One coloured, non-interactive map sublayer per CHECKED proposal, keyed by proposal, and
-        // held in the group for its upload state. Splitting them by state at build time is what
+        // One coloured, non-interactive map sublayer per CHECKED design, keyed by design, and
+        // held in the group for its publication state. Splitting them by state at build time is what
         // makes switching subsets free: the filter adds one group and removes the other, instead of
         // walking three hundred layers to decide which still belong.
         //
         // Neither group is on the map until a subset is chosen — "All" is the base drawing alone.
         const hasLeafletMap = (typeof L !== 'undefined' && typeof map !== 'undefined' && map);
         const overlayGroups = hasLeafletMap
-            ? { uploaded: L.layerGroup(), pending: L.layerGroup() }
+            ? { published: L.layerGroup(), pending: L.layerGroup() }
             : null;
         const overlayByKey = new Map(); // key -> { layer, bucket }
         let overlaysBuilt = false;
 
         // Choosing a subset has to REMOVE the rest from view, not just draw on top of it. Painting
         // the subset over the base drawing answered nothing on a 298-member plan: the whole city is
-        // already blue, so "Not uploaded yet" looked exactly like "All" with one more shape in it.
+        // already blue, so "Not published yet" looked exactly like "All" with one more shape in it.
         //
         // The base drawing belongs to the app, not to this panel, so it cannot be filtered
         // layer-by-layer from here — and walking hundreds of layers to restyle them is the cost this
@@ -954,13 +856,9 @@ function showSharePlanPanel(options) {
         // single body class drops the opacity of every other pane. One class toggle, no layer work,
         // and it reverts exactly.
         const HIGHLIGHT_PANE = 'shareplan-highlight';
+        // Its stacking and inertness are .leaflet-shareplan-highlight-pane's (css/proposals.css).
         if (hasLeafletMap && typeof map.createPane === 'function' && !map.getPane(HIGHLIGHT_PANE)) {
-            try {
-                const pane = map.createPane(HIGHLIGHT_PANE);
-                // Above every fabric pane, below popups (700) so nothing swallows a click target.
-                pane.style.zIndex = '690';
-                pane.style.pointerEvents = 'none';
-            } catch (_) { /* no pane: the highlight still draws, just not above everything */ }
+            map.createPane(HIGHLIGHT_PANE);
         }
 
         const proposalFeaturesFor = (proposal) => {
@@ -1016,19 +914,19 @@ function showSharePlanPanel(options) {
             });
         };
 
-        // Already on the server, or still only here? Shown as SOLID versus DASHED rather than as two
-        // colours: every proposal already owns a colour to tell it from its neighbours, so a second
+        // Already published, or still only here? Shown as SOLID versus DASHED rather than as two
+        // colours: every design already owns a colour to tell it from its neighbours, so a second
         // colour axis would collide with the first. A dashed, fainter shape reads as provisional,
-        // which is exactly what "not uploaded yet" is.
-        const overlayStyleFor = (uploaded, color) => ({
+        // which is exactly what "not published yet" is.
+        const overlayStyleFor = (published, color) => ({
             color,
-            weight: uploaded ? 2 : 3,
-            dashArray: uploaded ? null : '7 6',
+            weight: published ? 2 : 3,
+            dashArray: published ? null : '7 6',
             fillColor: color,
             // 0.40 against 0.10, not 0.35 against 0.14: over aerial imagery a quarter of a step in
             // opacity is not a difference anyone can see, and the dash is the only other cue on a
             // shape too small to show one.
-            fillOpacity: uploaded ? 0.40 : 0.10
+            fillOpacity: published ? 0.40 : 0.10
         });
 
         // Resolving a proposal's ground is the expensive half — turf work per proposal — so it
@@ -1050,7 +948,7 @@ function showSharePlanPanel(options) {
         // child parcels at all — it crosses mostly unparcelled land — so its ground fell through to
         // a fallback that produced twelve fragments measuring 0-4 px on screen, while its body is
         // the 472x155 px corridor you actually want to see. Ground remains the fallback for anything
-        // with no body geometry of its own, such as a decide-later claim over existing parcels.
+        // with no body geometry of its own.
         const buildPlanOverlay = (key) => {
             if (!overlayGroups || overlayByKey.has(key) || !selected.has(key)) return;
             const proposal = proposalsByHash.get(key);
@@ -1061,10 +959,10 @@ function showSharePlanPanel(options) {
             if (!features.length) return;
             try {
                 const color = colorByKey.get(key) || '#4363d8';
-                const uploaded = !!(uploadState.get(key) || {}).uploaded;
-                const bucket = uploaded ? 'uploaded' : 'pending';
+                const published = isPublished(key);
+                const bucket = published ? 'published' : 'pending';
                 const layer = L.geoJSON({ type: 'FeatureCollection', features }, {
-                    style: overlayStyleFor(uploaded, color),
+                    style: overlayStyleFor(published, color),
                     interactive: false,
                     // Its own pane, so the subset stays at full strength while everything else dims.
                     pane: map.getPane(HIGHLIGHT_PANE) ? HIGHLIGHT_PANE : undefined
@@ -1076,8 +974,8 @@ function showSharePlanPanel(options) {
             }
         };
 
-        // Bring one proposal's overlay back in line with its current selection and upload state.
-        // An upload only changes the STYLE and which group it belongs to, so it restyles and moves
+        // Bring one design's overlay back in line with its current selection and publication state.
+        // Publishing only changes the STYLE and which group it belongs to, so it restyles and moves
         // the existing layer — the geometry it was built from has not changed.
         const syncPlanOverlay = (key) => {
             if (!overlayGroups) return;
@@ -1096,14 +994,14 @@ function showSharePlanPanel(options) {
                 if (overlaysBuilt) buildPlanOverlay(key);
                 return;
             }
-            const uploaded = !!(uploadState.get(key) || {}).uploaded;
-            const bucket = uploaded ? 'uploaded' : 'pending';
+            const published = isPublished(key);
+            const bucket = published ? 'published' : 'pending';
             if (existing.bucket !== bucket) {
                 try { overlayGroups[existing.bucket].removeLayer(existing.layer); } catch (_) { }
                 try { overlayGroups[bucket].addLayer(existing.layer); } catch (_) { }
                 existing.bucket = bucket;
             }
-            try { existing.layer.setStyle(overlayStyleFor(uploaded, colorByKey.get(key) || '#4363d8')); } catch (_) { }
+            try { existing.layer.setStyle(overlayStyleFor(published, colorByKey.get(key) || '#4363d8')); } catch (_) { }
         };
 
         // Add one group, remove the other. Everything expensive already happened.
@@ -1113,7 +1011,7 @@ function showSharePlanPanel(options) {
                 try { if (map.hasLayer(overlayGroups[bucket])) map.removeLayer(overlayGroups[bucket]); } catch (_) { }
             };
             if (highlightMode === 'all') {
-                detach('uploaded');
+                detach('published');
                 detach('pending');
                 try { document.body.classList.remove('share-plan-highlighting'); } catch (_) { }
                 setStatus('');
@@ -1125,12 +1023,12 @@ function showSharePlanPanel(options) {
                 // In frame-sized slices, like the row build: three hundred overlays in one task is
                 // the freeze this panel was rebuilt to avoid.
                 const finished = await inChunks([...proposalsByHash.keys()], key => buildPlanOverlay(key),
-                    'drawingProposals', 'Drawing {done}/{total} proposals on the map...');
+                    'proposals.share.panel.drawing', 'Drawing {{done}}/{{total}} designs on the map…');
                 modeButtons.forEach(button => { button.disabled = false; });
                 if (finished === false) return; // the panel closed mid-build
             }
-            const show = highlightMode === 'uploaded' ? 'uploaded' : 'pending';
-            detach(show === 'uploaded' ? 'pending' : 'uploaded');
+            const show = highlightMode === 'published' ? 'published' : 'pending';
+            detach(show === 'published' ? 'pending' : 'published');
             try { if (!map.hasLayer(overlayGroups[show])) overlayGroups[show].addTo(map); } catch (_) { }
             try { document.body.classList.add('share-plan-highlighting'); } catch (_) { }
             setStatus('');
@@ -1179,7 +1077,7 @@ function showSharePlanPanel(options) {
             const proposal = proposalsByHash.get(key);
             if (!proposal) return;
             if (typeof highlightFeatureGroupsForHover !== 'function') return;
-            const uploaded = !!(uploadState.get(key) || {}).uploaded;
+            const published = isPublished(key);
             // Same live-children resolver as the paint, so hover outlines exactly what is painted.
             const bodyFeatures = proposalBodyFeaturesFor(proposal);
             const parcelFeatures = groundFeaturesFor(proposalFeaturesFor(proposal), bodyFeatures);
@@ -1194,17 +1092,17 @@ function showSharePlanPanel(options) {
                 {
                     // Last, so the body sits above the parcels rather than under them.
                     //
-                    // Solid and filled when the server already has it, dashed and hollow when it is
-                    // still only here — the same language the subset filter and the plan overlay use. This
-                    // is the surface that actually gets looked at: the overlay repaints on a
-                    // CHECKBOX toggle, and every row starts checked, so unless you untick and retick
-                    // a row the overlay never runs and the upload state was invisible.
+                    // Solid and filled when it is published, dashed and hollow when it is still only
+                    // here — the same language the subset filter and the plan overlay use. This is
+                    // the surface that actually gets looked at: the overlay repaints on a CHECKBOX
+                    // toggle, and every row starts checked, so unless you untick and retick a row the
+                    // overlay never runs and the publication state was invisible.
                     features: bodyFeatures,
                     color: SHARE_PLAN_HOVER_BODY_COLOR,
-                    weight: uploaded ? 4 : 5,
-                    dashArray: uploaded ? null : '8 6',
+                    weight: published ? 4 : 5,
+                    dashArray: published ? null : '8 6',
                     fillColor: SHARE_PLAN_HOVER_BODY_COLOR,
-                    fillOpacity: uploaded ? 0.35 : 0.05,
+                    fillOpacity: published ? 0.35 : 0.05,
                     showLabels: false
                 }
             ]);
@@ -1233,27 +1131,23 @@ function showSharePlanPanel(options) {
             try { map.fitBounds(bounds, { ...padding, maxZoom: 18, animate: false }); } catch (_) { }
         };
 
-        const appliedProposalCount = proposalsByHash.size;
-        const countLine = document.createElement('div');
-        countLine.style.fontSize = '13px';
-        countLine.style.color = '#475569';
-        countLine.textContent = tShare('plan.countHeading', '{{count}} proposals applied on this map', {
-            count: appliedProposalCount
-        });
+
+        const countLine = document.createElement('p');
+        countLine.className = 'share-plan-count';
+        countLine.textContent = t('proposals.share.panel.count', '{{count}} designs applied on this map', { count: proposalsByHash.size });
         container.appendChild(countLine);
 
-        const statusLine = document.createElement('div');
-        statusLine.style.minHeight = '18px';
-        statusLine.style.color = '#b3261e';
-        statusLine.style.fontSize = '12px';
+        const statusLine = document.createElement('p');
+        statusLine.className = 'share-plan-status';
+        statusLine.setAttribute('role', 'status');
+        statusLine.setAttribute('aria-live', 'polite');
         container.appendChild(statusLine);
 
-        // The panel opens before its rows know anything: each proposal is then asked, one at a time,
-        // whether the server already has it. On a big plan that is a long quiet tail, so it counts
+        // The panel opens before its rows know anything; listing and checking a large plan counts
         // itself out loud instead of leaving rows to flicker.
         const progressRow = document.createElement('div');
         progressRow.className = 'share-plan-progress';
-        progressRow.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span></span>';
+        progressRow.innerHTML = '<i class="fas fa-spinner fa-spin" aria-hidden="true"></i><span></span>';
         const progressText = progressRow.querySelector('span');
         container.appendChild(progressRow);
 
@@ -1261,272 +1155,114 @@ function showSharePlanPanel(options) {
         listWrap.className = 'share-plan-list';
         container.appendChild(listWrap);
 
+        // The link to the selection, shown once every selected design is published.
         const shareArea = document.createElement('div');
         shareArea.className = 'share-plan-share-area';
-
         const linkRow = document.createElement('div');
-        linkRow.style.display = 'flex';
-        linkRow.style.alignItems = 'center';
-        linkRow.style.gap = '8px';
-
+        linkRow.className = 'share-plan-link';
+        linkRow.hidden = true;
         const linkInput = document.createElement('input');
         linkInput.type = 'text';
         linkInput.readOnly = true;
-        linkInput.className = 'share-modal-link';
-        linkInput.style.flex = '1';
-        linkInput.style.padding = '0.5rem 0.75rem';
-        linkInput.style.border = '1px solid #d8ddf0';
-        linkInput.style.borderRadius = '8px';
-        linkInput.style.background = '#f7f8fb';
-        linkInput.style.fontSize = '13px';
-        linkInput.style.color = '#212744';
-        linkInput.style.boxSizing = 'border-box';
-        linkInput.style.height = 'auto';
-        linkInput.style.minHeight = '38px';
-        linkRow.appendChild(linkInput);
-
+        linkInput.className = 'share-plan-link__input';
+        linkInput.setAttribute('aria-label', t('proposals.share.panel.linkLabel', 'Link to the selected designs'));
         const copyBtn = document.createElement('button');
         copyBtn.type = 'button';
         copyBtn.className = 'btn';
         copyBtn.textContent = tShare('copyUrlButton', 'Copy URL');
-        copyBtn.addEventListener('click', () => {
+        copyBtn.addEventListener('click', async () => {
             if (!linkInput.value) return;
-            if (navigator.clipboard && navigator.clipboard.writeText) {
-                navigator.clipboard.writeText(linkInput.value).then(() => {
-                    if (typeof showEphemeralMessage === 'function') {
-                        showEphemeralMessage(tShare('copySuccess', 'Share link copied to clipboard!'));
-                    }
-                }).catch(() => {
-                    linkInput.focus();
-                    linkInput.select();
-                });
+            if (await window.DesignSync.copyLink(linkInput.value)) {
+                showEphemeralMessage(tShare('copySuccess', 'Share link copied to clipboard!'));
             } else {
                 linkInput.focus();
                 linkInput.select();
             }
         });
-        linkRow.appendChild(copyBtn);
-
+        linkRow.append(linkInput, copyBtn);
         shareArea.appendChild(linkRow);
-
-        // --- Named plan (ENS): create a fixed named record of the selected proposals
-        // resolvable as <name>.proposals.urbangametheory.eth ---
-        const planNameWrap = document.createElement('div');
-        planNameWrap.style.display = 'flex';
-        planNameWrap.style.flexDirection = 'column';
-        planNameWrap.style.gap = '6px';
-        planNameWrap.style.marginTop = '6px';
-        planNameWrap.style.paddingTop = '8px';
-        planNameWrap.style.borderTop = '1px solid #e5e9f5';
-
-        const planNameLabel = document.createElement('div');
-        planNameLabel.style.fontSize = '13px';
-        planNameLabel.style.color = '#475569';
-        planNameLabel.textContent = tShare('plan.nameHeading', 'Create a named plan from the selected proposals (ENS):');
-        planNameWrap.appendChild(planNameLabel);
-
-        const compositionHint = document.createElement('p');
-        compositionHint.className = 'share-plan-kind__hint';
-        compositionHint.textContent = tShare('plan.compositionHint', 'A share link shares your selection. A named plan keeps that selection fixed; later changes need a new named plan.');
-        planNameWrap.appendChild(compositionHint);
-
-        const planNameRow = document.createElement('div');
-        planNameRow.style.display = 'flex';
-        planNameRow.style.gap = '8px';
-        planNameRow.style.alignItems = 'center';
-        planNameRow.style.flexWrap = 'wrap';
-
-        const planNameInput = document.createElement('input');
-        planNameInput.type = 'text';
-        planNameInput.placeholder = tShare('plan.namePlaceholder', 'e.g. harbor-redevelopment');
-        planNameInput.style.flex = '1';
-        planNameInput.style.minWidth = '140px';
-        planNameInput.style.padding = '0.4rem 0.6rem';
-        planNameInput.style.border = '1px solid #d8ddf0';
-        planNameInput.style.borderRadius = '8px';
-        planNameInput.style.fontSize = '13px';
-        planNameInput.style.boxSizing = 'border-box';
-
-        const planSuffix = document.createElement('span');
-        planSuffix.textContent = '.proposals.urbangametheory.eth';
-        planSuffix.style.fontSize = '12px';
-        planSuffix.style.color = '#64748b';
-        planSuffix.style.whiteSpace = 'nowrap';
-
-        const planNameBtn = document.createElement('button');
-        planNameBtn.type = 'button';
-        planNameBtn.className = 'btn';
-        planNameBtn.textContent = tShare('plan.nameButton', 'Create named plan');
-
-        planNameRow.append(planNameInput, planSuffix, planNameBtn);
-        planNameWrap.appendChild(planNameRow);
-
-        const planNameStatus = document.createElement('div');
-        planNameStatus.style.fontSize = '12px';
-        planNameStatus.style.minHeight = '16px';
-        planNameWrap.appendChild(planNameStatus);
-
-        const slugifyPlanName = (s) => (s || '').toString().trim().toLowerCase()
-            .replace(/[^a-z0-9-]+/g, '-').replace(/^-+|-+$/g, '');
-
-        async function submitNamedPlan() {
-            const idMatch = (linkInput.value || '').match(/\/proposals\/([0-9,]+)/);
-            if (!idMatch) {
-                planNameStatus.style.color = '#b3261e';
-                planNameStatus.textContent = tShare('plan.namePrepFirst', 'Prepare the share link above first (upload all selected proposals).');
-                return;
-            }
-            const slug = slugifyPlanName(planNameInput.value);
-            if (slug.length < 3) {
-                planNameStatus.style.color = '#b3261e';
-                planNameStatus.textContent = tShare('plan.nameInvalid', 'Use at least 3 characters: a–z, 0–9, hyphens.');
-                return;
-            }
-            const proposalRowIds = idMatch[1].split(',');
-            const base = (typeof window.getBackendBase === 'function') ? window.getBackendBase().replace(/\/$/, '') : '';
-            const city = (window.CityConfigManager && typeof window.CityConfigManager.getCurrentCityId === 'function')
-                ? window.CityConfigManager.getCurrentCityId() : null;
-            planNameBtn.disabled = true;
-            planNameStatus.style.color = '#475569';
-            planNameStatus.textContent = tShare('plan.nameSaving', 'Saving…');
-            try {
-                // Named plans never change (plans.md): a name is claimed once, and a revised plan
-                // takes the next version of the name, which the server suggests when it is taken.
-                const resp = await fetch(`${base}/plans`, {
-                    method: 'POST', headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ slug, proposalRowIds, city })
-                });
-                const data = await resp.json().catch(() => ({}));
-                if (resp.status === 409) {
-                    planNameStatus.style.color = '#b3261e';
-                    if (data.suggestion) {
-                        planNameInput.value = data.suggestion;
-                        planNameStatus.textContent = tShare('plan.nameTakenVersion', 'That name is taken, and a named plan never changes. Save this one as {{name}}?', { name: data.suggestion });
-                    } else {
-                        planNameStatus.textContent = tShare('plan.nameTaken', 'That name is taken — pick another.');
-                    }
-                    return;
-                }
-                if (!resp.ok) {
-                    planNameStatus.style.color = '#b3261e';
-                    planNameStatus.textContent = data.error || tShare('plan.nameError', 'Could not save the name.');
-                    return;
-                }
-                // The new plan shows on its proposals and in the Plans lists at once.
-                window.ProposalPlans.forget();
-                planNameStatus.style.color = '#0a7d28';
-                planNameStatus.textContent = (data.name || `${slug}.proposals.urbangametheory.eth`)
-                    + ' — ' + tShare('plan.nameSaved', 'saved (resolves to this plan).');
-            } catch (_) {
-                planNameStatus.style.color = '#b3261e';
-                planNameStatus.textContent = tShare('plan.nameError', 'Could not save the name.');
-            } finally {
-                planNameBtn.disabled = false;
-            }
-        }
-        planNameBtn.addEventListener('click', submitNamedPlan);
-        planNameInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') submitNamedPlan(); });
-
-        shareArea.appendChild(planNameWrap);
         container.appendChild(shareArea);
 
         const setStatus = (message) => {
             statusLine.textContent = message || '';
         };
 
+        // The link names the selected designs by CID: /designs/<cid>,<cid>, sorted.
         const updateShareUrl = () => {
-            const hasSelection = selected.size > 0;
-            if (!hasSelection) {
-                linkInput.value = '';
-                linkRow.style.display = 'none';
-                setStatus(tShare('plan.selectHint', 'Select at least one proposal to share.'));
-                return;
-            }
-
             const selectedKeys = Array.from(selected);
-            const selectedProposals = selectedKeys.map(key => proposalsByHash.get(key)).filter(Boolean);
-
-            const selectedStates = selectedKeys
-                .map(key => uploadState.get(key))
-                .filter(Boolean);
-
-            const anyUploading = selectedStates.some(s => !!s.uploading);
-            if (anyUploading) {
-                linkInput.value = '';
-                linkRow.style.display = 'none';
-                setStatus(tShare('plan.checkingHint', 'Checking upload status…'));
+            const showLink = url => {
+                linkInput.value = url || '';
+                linkRow.hidden = !url;
+            };
+            if (!selectedKeys.length) {
+                showLink(null);
+                setStatus(t('proposals.share.panel.selectHint', 'Select at least one design to share.'));
                 return;
             }
-
-            const uploadedIds = selectedKeys
-                .map(key => uploadState.get(key))
-                .filter(state => state && state.uploaded && state.serverId)
-                .map(state => state.serverId)
-                .filter(id => {
-                    // Only include numeric serial IDs, never hashes
-                    return id && /^\d+$/.test(String(id));
-                });
-
-            if (uploadedIds.length !== selectedKeys.length) {
-                linkInput.value = '';
-                linkRow.style.display = 'none';
-                const anyUploaded = uploadedIds.length > 0;
-                setStatus(anyUploaded
-                    ? tShare('plan.uploadHint', 'Upload all selected proposals to enable sharing, or deselect some.')
-                    : tShare('plan.noUploadedHint', 'Upload at least one proposal to enable sharing.')
-                );
+            if (selectedKeys.some(key => (publishState.get(key) || {}).publishing)) {
+                showLink(null);
+                setStatus(t('proposals.share.panel.publishing', 'Publishing…'));
                 return;
             }
-
-            const sortedIds = sortProposalIdsForShare(uploadedIds);
-            const cityParam = buildCityQueryParam();
-            const queryJoiner = cityParam ? '&' : '?';
-            const shareUrl = `${resolveFrontendBaseUrl()}/proposals/${sortedIds.join(',')}${cityParam}${queryJoiner}3d${shareLangParam()}`;
-            linkInput.value = shareUrl;
-            linkRow.style.display = 'flex';
+            const cids = selectedKeys.map(key => (publishState.get(key) || {}).cid).filter(Boolean);
+            if (cids.length !== selectedKeys.length) {
+                showLink(null);
+                setStatus(cids.length
+                    ? t('proposals.share.panel.publishHint', 'Publish every selected design to get the link, or deselect some.')
+                    : t('proposals.share.panel.noPublishedHint', 'Publish at least one design to get a link.'));
+                return;
+            }
+            showLink(window.DesignSync.designLink(cids));
             setStatus('');
         };
 
         const updateRowState = (key) => {
             const controls = rowControls.get(key);
-            const state = uploadState.get(key) || { uploaded: false, uploading: false };
             if (!controls) return;
-            if (state.uploaded) {
-                controls.uploadBtn.style.display = 'none';
-                controls.uploadedLabel.style.display = 'inline-flex';
-                controls.uploadedLabel.textContent = tShare('plan.uploaded', 'Uploaded');
-            } else {
-                controls.uploadedLabel.style.display = 'none';
-                controls.uploadBtn.style.display = 'inline-flex';
-                controls.uploadBtn.disabled = state.uploading || publishRefusals.has(key);
-                controls.uploadBtn.textContent = state.uploading
-                    ? tShare('plan.uploading', 'Uploading…')
-                    : tShare('plan.upload', 'Upload');
-            }
+            const state = publishState.get(key) || { cid: null, publishing: false };
+            controls.publishBtn.hidden = !!state.cid;
+            controls.publishedLabel.hidden = !state.cid;
+            controls.publishBtn.disabled = !!state.publishing || publishRefusals.has(key);
+            controls.publishBtn.textContent = state.publishing
+                ? t('proposals.share.panel.publishing', 'Publishing…')
+                : t('proposals.share.panel.publish', 'Publish');
             controls.checkbox.checked = selected.has(key);
-            if (controls.row) controls.row.classList.toggle('is-excluded', !selected.has(key));
-            controls.row.classList.toggle('is-uploaded', !!state.uploaded);
-            // The map says the same thing the row says. An overlay painted before the server
-            // answered would otherwise keep claiming "not uploaded" after the answer arrived.
+            controls.row.classList.toggle('is-excluded', !selected.has(key));
+            controls.row.classList.toggle('is-published', !!state.cid);
+            // The map says the same thing the row says.
             if (overlayByKey.has(key)) syncPlanOverlay(key);
-        };
-
-        const toggleCheckbox = (key, checked) => {
-            const controls = rowControls.get(key);
-            if (controls) {
-                controls.checkbox.checked = checked;
-                if (controls.row) controls.row.classList.toggle('is-excluded', !checked);
-            }
         };
 
         const onCheckboxChange = (key, checked) => {
             if (checked) selected.add(key);
             else selected.delete(key);
-            toggleCheckbox(key, checked);
             // Toggling a row paints or unpaints THAT row. The map is not painted when the panel
             // opens (see the fill below) — checked means "in the plan", not "drawn right now".
+            updateRowState(key);
             syncPlanOverlay(key);
             setStatus('');
+            updateShareUrl();
+        };
+
+        const publishRow = async (key) => {
+            const proposal = proposalsByHash.get(key);
+            if (!proposal || publishRefusals.has(key)) return;
+            publishState.set(key, { cid: (publishState.get(key) || {}).cid || null, publishing: true });
+            updateRowState(key);
+            updateShareUrl();
+            try {
+                const { cid } = await window.DesignSync.publishDesign(proposal);
+                proposalsByHash.set(key, proposalStorage.getProposal(key) || proposal);
+                publishState.set(key, { cid, publishing: false });
+            } catch (error) {
+                publishState.set(key, { cid: null, publishing: false });
+                if (!(error && error.cancelled)) {
+                    console.error(`[${new Date().toISOString()}] [share-plan] publishing ${key} failed`, error);
+                    setStatus((error && error.message) || t('proposals.share.errors.failed', 'The design could not be published.'));
+                }
+            }
+            updateRowState(key);
+            if (!(publishState.get(key) || {}).cid) return;
             updateShareUrl();
         };
 
@@ -1534,10 +1270,8 @@ function showSharePlanPanel(options) {
             const row = document.createElement('div');
             row.className = 'share-plan-row';
 
-            const left = document.createElement('div');
-            left.style.display = 'flex';
-            left.style.alignItems = 'center';
-            left.style.gap = '8px';
+            const main = document.createElement('label');
+            main.className = 'share-plan-row__main';
 
             const refusal = publishRefusals.get(key) || null;
             const checkbox = document.createElement('input');
@@ -1545,200 +1279,68 @@ function showSharePlanPanel(options) {
             checkbox.checked = !refusal;
             checkbox.disabled = !!refusal;
             checkbox.addEventListener('change', () => onCheckboxChange(key, checkbox.checked));
-            left.appendChild(checkbox);
 
-            // The chip (a cb-badge) carries the exact colour this proposal is painted with on the
-            // map: data, so the one inline style it may have.
+            // The chip (a cb-badge) carries the exact colour this design is painted with on the map:
+            // data, so it is a custom property the stylesheet reads.
             const chip = document.createElement('span');
             chip.className = 'cb-badge share-plan-color-chip';
             chip.setAttribute('aria-hidden', 'true');
-            chip.style.background = colorByKey.get(key) || '#4363d8';
-            left.appendChild(chip);
+            chip.style.setProperty('--share-plan-color', colorByKey.get(key) || '#4363d8');
 
-            const title = document.createElement('div');
-            title.style.display = 'flex';
-            title.style.flexDirection = 'column';
-            title.style.gap = '2px';
-
+            const text = document.createElement('span');
+            text.className = 'share-plan-row__text';
             const name = document.createElement('span');
+            name.className = 'share-plan-row__title';
             name.textContent = proposal.title || proposal.name || tShare('untitled', '(Untitled)');
-            name.style.fontWeight = '600';
-            name.style.fontSize = '13px';
-            title.appendChild(name);
-
             const meta = document.createElement('span');
-            meta.style.fontSize = '12px';
-            meta.style.color = '#475569';
-            const displayId = proposal.proposalId || getProposalKey(proposal) || 'local';
-            meta.textContent = `${displayId} · ${(resolveProposalGoalKey(proposal) || 'proposal')}`;
-            title.appendChild(meta);
+            meta.className = 'share-plan-row__meta';
+            meta.textContent = formatProposalTypeLabel(resolveProposalGoalKey(proposal) || 'other');
+            text.append(name, meta);
             if (refusal) {
                 const note = document.createElement('span');
                 note.className = 'share-plan-row__refusal';
                 note.textContent = refusal.message;
-                title.appendChild(note);
+                text.appendChild(note);
             }
+            main.append(checkbox, chip, text);
 
-            left.appendChild(title);
-
-            const right = document.createElement('div');
-            right.style.display = 'flex';
-            right.style.alignItems = 'center';
-            right.style.gap = '8px';
-
-            const uploadBtn = document.createElement('button');
-            uploadBtn.type = 'button';
-            uploadBtn.className = 'btn';
-            uploadBtn.textContent = tShare('plan.upload', 'Upload');
-
-            const uploadedLabel = document.createElement('span');
-            uploadedLabel.style.fontSize = '12px';
-            uploadedLabel.style.color = '#0f766e';
-            uploadedLabel.style.display = 'none';
-
+            const actions = document.createElement('div');
+            actions.className = 'share-plan-row__actions';
+            const publishBtn = document.createElement('button');
+            publishBtn.type = 'button';
+            publishBtn.className = 'btn btn-sm';
+            publishBtn.textContent = t('proposals.share.panel.publish', 'Publish');
             if (refusal) {
-                uploadBtn.disabled = true;
-                uploadBtn.title = refusal.message;
+                publishBtn.disabled = true;
+                publishBtn.title = refusal.message;
             }
-            uploadBtn.addEventListener('click', async () => {
-                if (refusal) return;
-                uploadState.set(key, { uploaded: false, uploading: true, serverId: getProposalPublicationLookup(proposal) });
-                updateRowState(key);
-                try {
-                    // Terms never chosen: the plan's kind confirms them before the record leaves.
-                    const publishTerms = window.ProposalPublishTerms;
-                    if (publishTerms.needsTerms(proposal, { isPublished: record => window.isPublishedProposalRecord?.(record) === true })) {
-                        const confirmed = publishTerms.confirmedRecordFields(proposal, planKind);
-                        const stored = proposalStorage.getProposal(key);
-                        Object.assign(proposal, confirmed);
-                        if (stored && stored !== proposal) Object.assign(stored, confirmed);
-                        proposalStorage._indexProposal?.(stored || proposal);
-                        proposalStorage.save?.();
-                    }
-                    const result = await uploadProposalToServer(proposal);
-                    if (!result.ok) {
-                        throw new Error(result.message || tShare('uploadError', 'Failed to upload proposal. Please try again.'));
-                    }
-                    // Always use the serial ID (numeric) from the server response, never a hash
-                    const serverId = result.id ? String(result.id) : (result.proposalId ? String(result.proposalId) : null);
-                    if (!serverId || !/^\d+$/.test(serverId)) {
-                        throw new Error(tShare('uploadError', 'Server did not return a valid serial ID. Please try again.'));
-                    }
+            publishBtn.addEventListener('click', () => publishRow(key));
+            const publishedLabel = document.createElement('span');
+            publishedLabel.className = 'cb-badge cb-badge--published share-plan-row__published';
+            publishedLabel.textContent = t('proposals.share.panel.published', 'Published');
+            publishedLabel.hidden = true;
+            actions.append(publishBtn, publishedLabel);
 
-                    // syncProposalWithServerId updates the stored proposal with serverProposalId.
-                    // Keep using the local proposal key for UI/state to avoid collisions with on-chain numeric ids.
-                    const updatedProposal = proposalStorage.getProposal(key) || proposal;
+            row.append(main, actions);
 
-                    // Update the proposal in our map with fresh data
-                    proposalsByHash.set(key, updatedProposal);
-
-                    // Update the meta display with new ID
-                    const controls = rowControls.get(key);
-                    if (controls && controls.meta) {
-                        const displayId = updatedProposal.proposalId || getProposalKey(updatedProposal) || 'local';
-                        controls.meta.textContent = `${displayId} · ${(resolveProposalGoalKey(updatedProposal) || 'proposal')}`;
-                    }
-
-                    uploadState.set(key, { uploaded: true, uploading: false, serverId });
-                    updateRowState(key);
-                    updateShareUrl();
-                } catch (error) {
-                    console.error('plan upload failed', error);
-                    uploadState.set(key, { uploaded: false, uploading: false, serverId: getProposalPublicationLookup(proposal) });
-                    updateRowState(key);
-                    setStatus(error.message || tShare('uploadError', 'Failed to upload proposal. Please try again.'));
-                }
-            });
-
-            right.appendChild(uploadBtn);
-            right.appendChild(uploadedLabel);
-
-            row.appendChild(left);
-            row.appendChild(right);
-
-            // Rows are the ONLY proposal interaction in share-plan mode: hovering outlines the
-            // proposal on the map, clicking also frames it. Nothing opens details.
+            // Rows are the ONLY design interaction in share-plan mode: hovering outlines the design
+            // on the map, clicking also frames it. Nothing opens details.
             row.addEventListener('mouseenter', () => highlightRowProposal(key));
             row.addEventListener('mouseleave', () => {
                 try { if (typeof clearProposalHoverLayers === 'function') clearProposalHoverLayers(); } catch (_) { }
             });
             row.addEventListener('click', (event) => {
-                if (event.target && event.target.closest && event.target.closest('input, button')) return;
+                if (event.target && event.target.closest && event.target.closest('input, button, label')) return;
                 highlightRowProposal(key);
                 frameRowProposal(key);
             });
 
             listWrap.appendChild(row);
-            rowControls.set(key, { row, checkbox, chip, uploadBtn, uploadedLabel, meta });
-        };
-
-        const refreshUploadState = async (key, proposal, known = null) => {
-            const serverId = getProposalPublicationLookup(proposal);
-            if (!serverId) {
-                uploadState.set(key, { uploaded: false, uploading: false, serverId: null });
-                updateRowState(key);
-                return;
-            }
-            uploadState.set(key, { uploaded: false, uploading: true, serverId });
-            updateRowState(key);
-            // `known` is the whole server list when it could be fetched completely; consult it
-            // rather than making a request per proposal. Null means we could not get an
-            // authoritative list, so ask about this one — slow, never wrong.
-            //
-            // But it is authoritative only FOR ITS CITY: the list is fetched with ?city=, so a
-            // proposal stored without one (or under another) is missing from it while sitting
-            // happily on the server. A miss is therefore not proof of absence, and treating it as
-            // proof is not merely cosmetic — the row invites an upload that creates a SECOND copy
-            // of something already there. So a miss is confirmed one proposal at a time, which
-            // costs a request only for the rows that were about to be reported as missing anyway.
-            let exists = (known instanceof Set)
-                ? known.has(String(serverId))
-                : await headProposalExists(serverId, proposal.city, proposal);
-            if (!exists && (known instanceof Set)) {
-                exists = await headProposalExists(serverId, proposal.city, proposal);
-            }
-
-            // After headProposalExists, the proposal may have been synced with serverProposalId
-            // Get the serial ID (numeric) if available
-            // headProposalExists syncs the proposal when checking by hash, so refresh our reference
-            const refreshedProposal = proposalStorage.getProposal(key) || proposal;
-            let serialId = getSerialProposalId(refreshedProposal);
-
-            // If proposal exists but we still don't have serial ID, try fetching it directly
-            if (!serialId && exists) {
-                const isNumericId = /^\d+$/.test(String(serverId));
-                if (!isNumericId) {
-                    // We checked by hash, need to fetch the full proposal to get serial ID
-                    try {
-                        const backendBase = resolveBackendBaseUrl();
-                        const url = `${backendBase}/proposals/${encodeURIComponent(serverId)}`;
-                        const response = await fetch(url);
-                        if (response.ok) {
-                            const payload = await response.json();
-                            if (payload && payload.id) {
-                                serialId = String(payload.id);
-                                // Sync the proposal with the serial ID
-                                syncProposalWithServerId(refreshedProposal, serialId);
-                            }
-                        }
-                    } catch (error) {
-                        console.warn('Failed to fetch serial ID for proposal', serverId, error);
-                    }
-                } else {
-                    // serverId is already numeric, use it
-                    serialId = String(serverId);
-                }
-            }
-
-            // Only use serial ID for share links, never hashes
-            const shareId = serialId && /^\d+$/.test(serialId) ? serialId : null;
-            uploadState.set(key, { uploaded: !!exists, uploading: false, serverId: shareId });
-            updateRowState(key);
-            updateShareUrl();
+            rowControls.set(key, { row, checkbox, chip, publishBtn, publishedLabel, meta });
         };
 
         const showProgress = (phraseKey, fallback, done, total) => {
-            const text = tShare(phraseKey, fallback, { done, total });
+            const text = t(phraseKey, fallback, { done, total });
             if (progressText) progressText.textContent = text;
             // Mirrored to the opener: its dialog is covering this panel until we are ready.
             if (onProgress) { try { onProgress(text); } catch (_) { } }
@@ -1749,62 +1351,9 @@ function showSharePlanPanel(options) {
             if (progressRow && progressRow.parentNode) progressRow.parentNode.removeChild(progressRow);
         };
 
-        // Which proposals the server already has — asked ONCE, not once per proposal.
-        //
-        // This used to be a sequential request per row: 300 proposals, 300 round trips, and in a
-        // plan where none had been uploaded, 300 consecutive 404s in the console. The list endpoint
-        // answers the same question in one call.
-        //
-        // Absence is only proof when the list is COMPLETE, so the count is checked against what came
-        // back. Short list, or any failure, and this returns null — the caller then falls back to
-        // asking per proposal, which is slow but never wrong. A truncated list treated as complete
-        // would report uploaded proposals as missing and offer to upload them again.
-        const serverProposalIndex = async () => {
-            try {
-                const base = (typeof resolveBackendBaseUrl === 'function') ? resolveBackendBaseUrl() : '';
-                const city = (typeof CityConfigManager !== 'undefined' && CityConfigManager.getCurrentCityId)
-                    ? CityConfigManager.getCurrentCityId() : '';
-                const query = city ? `city=${encodeURIComponent(city)}` : '';
-                const countResponse = await fetch(`${base}/proposals/count?${query}`);
-                if (!countResponse.ok) return null;
-                const expected = Number((await countResponse.json()).count);
-                if (!Number.isFinite(expected)) return null;
-
-                const listResponse = await fetch(`${base}/proposals/summary?${query}&limit=${expected + 50}`);
-                if (!listResponse.ok) return null;
-                const payload = await listResponse.json();
-                const rows = Array.isArray(payload && payload.proposals) ? payload.proposals : null;
-                if (!rows || rows.length < expected) return null;
-
-                const known = new Set();
-                rows.forEach(row => {
-                    if (row && row.proposalId) known.add(String(row.proposalId));
-                    if (row && row.id !== undefined && row.id !== null) known.add(String(row.id));
-                });
-                return known;
-            } catch (_) { return null; }
-        };
-
-        const initializeUploadChecks = async () => {
-            const total = proposalsByHash.size;
-            let done = 0;
-            showProgress('checkingProposals', 'Checking {done}/{total} proposals on the server...', done, total);
-            const known = await serverProposalIndex();
-            if (!panelStillOpen()) return;
-            for (const [key, proposal] of proposalsByHash.entries()) {
-                if (!panelStillOpen()) return;
-                await refreshUploadState(key, proposal, known);
-                done += 1;
-                showProgress('checkingProposals', 'Checking {done}/{total} proposals on the server...', done, total);
-            }
-            updateShareUrl();
-        };
-
-        // The panel goes up EMPTY and fills itself in. Building it in one go meant a row and a map
-        // overlay (turf intersections + a Leaflet layer) per applied proposal before a single pixel
-        // appeared — seconds of frozen page on a real plan, with no way to show a spinner because
-        // nothing could paint. Each pass now yields the moment it has held the thread long enough,
-        // so the list grows in front of you and the map is never locked for more than a frame.
+        // The panel goes up EMPTY and fills itself in, yielding a frame whenever it has held the
+        // thread long enough, so the list grows in front of you and the map is never locked for
+        // more than a frame.
         const FRAME_BUDGET_MS = 12;
         const nextFrame = () => new Promise(resolve => {
             if (typeof requestAnimationFrame === 'function') requestAnimationFrame(() => resolve());
@@ -1833,17 +1382,14 @@ function showSharePlanPanel(options) {
             return panelStillOpen();
         };
 
+
         document.body.appendChild(panelRoot);
         const unregisterEscape = window.ModalEscape?.register(panelRoot, closeSharePlanPanel);
         _sharePlanPanelState = { root: panelRoot, overlayGroups, unregisterEscape, token: panelToken };
 
-        // Clicking a proposal ON THE MAP finds it in the list. The map and the panel are two views
-        // of one plan, so pointing at something in either should say where it is in the other —
-        // otherwise finding one row among several hundred means scrolling and reading titles.
-        //
-        // The resolution from a clicked parcel to its applied proposal already exists in
-        // onParcelClick (parcels/ui/parcel-selection.js), which is why this is a callback it can
-        // reach rather than a second map handler racing it for the same click.
+        // Clicking a design ON THE MAP finds it in the list. The resolution from a clicked parcel
+        // to its applied design already exists in onParcelClick (parcels/ui/parcel-selection.js),
+        // which is why this is a callback it can reach rather than a second map handler racing it.
         window.__sharePlanPickProposal = (proposal, parcelId) => {
             if (!panelStillOpen() || !proposal) return;
             const key = keyOfProposal(proposal);
@@ -1860,23 +1406,22 @@ function showSharePlanPanel(options) {
         (async () => {
             try {
                 const entries = [...proposalsByHash.entries()];
-                // Rows first, and all of them before the checks start: a check that lands before
-                // its row exists updates nothing (updateRowState bails on a missing control).
                 if (!await inChunks(entries, ([key, proposal]) => attachRow(proposal, key),
-                    'listingProposals', 'Listing {done}/{total} proposals...')) return;
+                    'proposals.share.panel.listing', 'Listing {{done}}/{{total}} designs…')) return;
 
-                // The map is NOT painted on open. Opening a list is not a request to draw three
-                // hundred overlays: it cost seconds of turf and Leaflet work before the panel was
-                // usable, and it left the map unreadable under the whole plan at once. Overlays are
-                // what HOVER and CLICK are for, and toggling a row still syncs its own overlay.
+                // The map is NOT painted on open: overlays are what HOVER and CLICK are for, and
+                // toggling a row still syncs its own overlay.
                 try { if (typeof fitMapToAppliedProposals === 'function') fitMapToAppliedProposals(); } catch (_) { }
 
-                // Rows are up and the map is framed: this is the moment the panel stops looking
-                // half-built, so whoever is holding a dialog over it can let go. The upload
-                // checks below fill in badges afterwards, in plain sight.
+                // Rows are up and the map is framed: whoever is holding a dialog over the panel can
+                // let go. Which rows are published is filled in next, in plain sight.
                 readySignal.settle('ready');
 
-                await initializeUploadChecks();
+                if (!await inChunks(entries, ([key, proposal]) => {
+                    publishState.set(key, { cid: window.DesignSync.publishedCid(proposal), publishing: false });
+                    updateRowState(key);
+                }, 'proposals.share.panel.checking', 'Checking {{done}}/{{total}} designs…')) return;
+                updateShareUrl();
             } catch (error) {
                 console.error('share plan: filling the panel failed', error);
             } finally {
@@ -1900,132 +1445,6 @@ function showSharePlanPanel(options) {
         if (!fillStarted) readySignal.settle('not-shown');
     }
     return readySignal.promise;
-}
-
-function showShareLinkModal(shareUrl, payload, options = {}) {
-    if (typeof document === 'undefined') return;
-
-    const t = getProposalI18nHelper();
-    const tShare = getShareI18nHelper();
-    const proposals = Array.isArray(payload?.proposals) ? payload.proposals : [];
-    const proposalCount = proposals.length;
-    const fragment = document.createDocumentFragment();
-
-    if (options && options.nearLimit) {
-        const warning = document.createElement('p');
-        warning.style.color = '#b00020';
-        warning.style.fontWeight = '600';
-        warning.textContent = tShare('sizeWarning', 'Warning: This link is close to the maximum size the server accepts. Consider sharing fewer parcels if it fails.');
-        fragment.appendChild(warning);
-    }
-
-    const intro = document.createElement('p');
-    const introParams = (options && options.introParams) || { count: proposalCount };
-    intro.innerHTML = (options && options.introHtml)
-        ? options.introHtml
-        : tShare('defaultIntro', 'Share this link to load {{count}} applied proposals.', introParams);
-    fragment.appendChild(intro);
-
-    const textarea = document.createElement('textarea');
-    textarea.className = 'share-modal-link';
-    textarea.value = shareUrl;
-    textarea.setAttribute('readonly', 'readonly');
-    fragment.appendChild(textarea);
-
-    const info = document.createElement('p');
-    const unknownText = t('common.unknown', 'Unknown');
-    const zoomValue = payload?.camera && typeof payload.camera.zoom === 'number'
-        ? payload.camera.zoom
-        : unknownText;
-    const encodedLength = (options && typeof options.encodedLength === 'number') ? options.encodedLength : null;
-    const contentLabel = tShare('stats.contentLabel', 'Content:');
-    const sizeLabel = tShare('stats.sizeLabel', 'Size:');
-    const authorLabel = tShare('authorLabel', 'Author:');
-    const cameraLabel = tShare('cameraLabel', 'Camera zoom:');
-    const proposalsLabel = tShare('proposalsLabel', 'Proposals:');
-    const sizeStats = (function () {
-        try {
-            const totalProposals = proposalCount;
-            const roadCount = proposals.filter(p => p.roadProposal).length;
-            const buildingCount = proposals.filter(p => p.buildingProposal).length;
-            const parcelCount = proposals.reduce((sum, p) => sum + (Array.isArray(p.cadastreParcelIds) ? p.cadastreParcelIds.length : 0), 0);
-            const estimatedBytes = encodedLength !== null
-                ? encodedLength
-                : (typeof TextEncoder !== 'undefined' ? new TextEncoder().encode(JSON.stringify(payload)).length : JSON.stringify(payload).length);
-            const kb = (estimatedBytes / 1024).toFixed(1);
-            const maxKb = (SHARE_URL_MAX_LENGTH / 1024).toFixed(1);
-            const contentSummary = tShare('stats.contentSummary', '{{total}} proposals • {{roads}} roads • {{buildings}} buildings • {{parcels}} parcels', {
-                total: totalProposals,
-                roads: roadCount,
-                buildings: buildingCount,
-                parcels: parcelCount
-            });
-            const sizeSummary = tShare('stats.sizeSummary', '~{{kb}} KB of encoded link (server limit ~{{maxKb}} KB)', {
-                kb,
-                maxKb
-            });
-            return `<br><strong>${contentLabel}</strong> ${contentSummary}` +
-                `<br><strong>${sizeLabel}</strong> ${sizeSummary}`;
-        } catch (_) { return ''; }
-    })();
-    const authorText = payload?.author || unknownText;
-    const safeAuthor = typeof escapeHtml === 'function' ? escapeHtml(authorText) : authorText;
-    info.innerHTML = `<strong>${authorLabel}</strong> ${safeAuthor}<br><strong>${cameraLabel}</strong> ${zoomValue}<br><strong>${proposalsLabel}</strong> ${proposalCount}${sizeStats}`;
-    fragment.appendChild(info);
-
-    const note = document.createElement('p');
-    note.style.color = '#555';
-    note.innerHTML = tShare('note', 'Server-backed sharing is coming soon. JSON export is provided for archival/manual sharing; future compatibility is not guaranteed.');
-    fragment.appendChild(note);
-
-    const modal = showSimpleShareModal({
-        title: tShare('title', 'Share Proposal'),
-        body: fragment,
-        actions: [
-            {
-                label: tShare('saveJson', 'Save as JSON'),
-                onClick: () => {
-                    try { savePlanPayloadAsJson(payload); } catch (e) { console.warn('Save JSON failed', e); }
-                }
-            },
-            {
-                label: tShare('copyLink', 'Copy Link'),
-                primary: true,
-                onClick: () => {
-                    if (navigator.clipboard && navigator.clipboard.writeText) {
-                        navigator.clipboard.writeText(shareUrl).then(() => {
-                            if (typeof showEphemeralMessage === 'function') {
-                                showEphemeralMessage(tShare('copySuccess', 'Share link copied to clipboard!'));
-                            }
-                        }).catch(() => {
-                            textarea.focus();
-                            textarea.select();
-                        });
-                    } else {
-                        textarea.focus();
-                        textarea.select();
-                    }
-                }
-            }
-        ]
-    });
-
-    if (modal && textarea) {
-        setTimeout(() => {
-            textarea.focus();
-            textarea.select();
-        }, 75);
-    }
-}
-
-function showShareTooLargeModal() {
-    const t = getProposalI18nHelper();
-    const tShare = getShareI18nHelper();
-    showSimpleShareModal({
-        title: tShare('tooLargeTitle', 'Proposal Set Too Large'),
-        body: `<p>${tShare('tooLargeBody', 'Links are limited to roughly 7.5 KB on the server, so this proposal set cannot be embedded in the URL. Reduce the number of parcels/proposals or use the JSON export while we finish server-side sharing.')}</p>`,
-        actions: [{ label: t('modal.common.close', 'Close'), primary: true }]
-    });
 }
 
 function showSimpleShareModal(options = {}) {
@@ -2057,6 +1476,9 @@ function showSimpleShareModal(options = {}) {
         closeOnBackdrop: options.closeOnOverlay !== false,
         closeOnEscape: options.closeOnEscape !== false,
         autoCloseActions: options.autoCloseActions !== false,
+        // The element the dialog focuses once it has laid out (CbDialog focuses on the next frame,
+        // after a caller's own synchronous focus), e.g. a link input to copy by hand.
+        initialFocus: options.initialFocus || null,
         onClose: () => { if (typeof options.onClose === 'function') options.onClose(); }
     });
     if (!api) return null;
@@ -2069,193 +1491,6 @@ function showSimpleShareModal(options = {}) {
         getActionButton: (id) => api.getActionButton(id)
     };
     return modalApi;
-}
-
-function showSharedPayloadInspector(payload) {
-    return new Promise(resolve => {
-        try {
-            const t = getProposalI18nHelper();
-            const tShare = getShareI18nHelper();
-            const tShared = getSharedInspectorI18nHelper();
-            const unknownText = t('common.unknown', 'Unknown');
-            const container = document.createElement('div');
-            container.className = 'shared-payload-inspector';
-
-            // Summary
-            const summary = document.createElement('div');
-            summary.className = 'spi-summary';
-            const total = Array.isArray(payload.proposals) ? payload.proposals.length : 0;
-            const bytes = (() => { try { return new TextEncoder().encode(JSON.stringify(payload)).length; } catch (_) { return 0; } })();
-            const kb = (bytes / 1024).toFixed(1);
-            summary.innerHTML = `
-                <p><strong>${tShared('author', 'Author:')}</strong> ${escapeHtml(payload.author || unknownText)}
-                &nbsp;•&nbsp;<strong>${tShared('version', 'Version:')}</strong> ${String(payload.version ?? '')}
-                &nbsp;•&nbsp;<strong>${tShared('generated', 'Generated:')}</strong> ${escapeHtml(payload.generatedAt || '')}
-                &nbsp;•&nbsp;<strong>${tShared('count', 'Proposals:')}</strong> ${total}
-                &nbsp;•&nbsp;<strong>${tShared('payload', 'Payload:')}</strong> ~${kb} KB</p>
-            `;
-            container.appendChild(summary);
-
-            // Full JSON view (collapsible)
-            const detailsWrap = document.createElement('details');
-            const detailsSum = document.createElement('summary');
-            detailsSum.textContent = tShared('viewJson', 'View full decoded payload JSON');
-            detailsWrap.appendChild(detailsSum);
-            const pre = document.createElement('pre');
-            pre.style.maxHeight = '240px';
-            pre.style.overflow = 'auto';
-            pre.textContent = (() => { try { return JSON.stringify(payload, null, 2); } catch (_) { return '[unserializable]'; } })();
-            detailsWrap.appendChild(pre);
-            container.appendChild(detailsWrap);
-
-            // Proposal selection list
-            const list = document.createElement('div');
-            list.className = 'spi-proposal-list';
-            const selected = new Set();
-            (payload.proposals || []).forEach((p, idx) => {
-                const item = document.createElement('div');
-                item.className = 'spi-proposal-item';
-                item.style.border = '1px solid #ddd';
-                item.style.borderRadius = '6px';
-                item.style.padding = '8px';
-                item.style.marginBottom = '8px';
-
-                const id = `spi-prop-${idx}-${(p.proposalId || '').slice(0, 8)}`;
-                const checkbox = document.createElement('input');
-                checkbox.type = 'checkbox';
-                checkbox.id = id;
-                checkbox.checked = true;
-                checkbox.dataset.hash = p.proposalId || '';
-                checkbox.addEventListener('change', () => {
-                    const h = checkbox.dataset.hash;
-                    if (!h) return;
-                    if (checkbox.checked) selected.add(h); else selected.delete(h);
-                });
-
-                // Default add to selection
-                if (p.proposalId) selected.add(p.proposalId);
-
-                const label = document.createElement('label');
-                label.setAttribute('for', id);
-                const displayId = p.proposalId ? String(p.proposalId) : '';
-                const title = `${p.title || tShare('untitled', '(Untitled)')}${displayId ? ` (ID #${displayId})` : ''}`;
-                label.innerHTML = `<strong>${escapeHtml(title)}</strong> • ${escapeHtml(p.type || 'parcel')} • ${escapeHtml(p.proposalId || '')}`;
-
-                const meta = document.createElement('div');
-                meta.className = 'spi-proposal-meta';
-                const parentIdsDisplay = Array.isArray(p.cadastreParcelIds) ? p.cadastreParcelIds.join(', ') : '';
-                const roadParents = '';
-                const buildingParents = '';
-                meta.innerHTML = `
-                    <small>
-                        ${tShared('ancestorIds', 'Parent Parcel IDs:')} ${escapeHtml(parentIdsDisplay)}<br>
-                        ${tShared('roadParents', 'Road parents:')} ${escapeHtml(roadParents)}<br>
-                        ${tShared('buildingParents', 'Building parents:')} ${escapeHtml(buildingParents)}
-                    </small>
-                `;
-
-                const propDetails = document.createElement('details');
-                const propSummary = document.createElement('summary');
-                propSummary.textContent = tShared('details', 'Details');
-                propDetails.appendChild(propSummary);
-                const propPre = document.createElement('pre');
-                propPre.style.maxHeight = '180px';
-                propPre.style.overflow = 'auto';
-                try { propPre.textContent = JSON.stringify(p, null, 2); } catch (_) { propPre.textContent = '[unserializable]'; }
-                propDetails.appendChild(propPre);
-
-                item.appendChild(checkbox);
-                item.appendChild(label);
-                item.appendChild(meta);
-                item.appendChild(propDetails);
-                list.appendChild(item);
-            });
-            container.appendChild(list);
-
-            // autoCloseActions is off so each action resolves before closing (closeModal fires
-            // onClose, whose resolve(null) is then a no-op). Dismissing the modal any other way
-            // (×, Escape, overlay click) resolves as a cancel instead of hanging the caller.
-            const modal = showSimpleShareModal({
-                title: tShared('title', 'Review Shared Proposals'),
-                body: container,
-                autoCloseActions: false,
-                actions: [
-                    {
-                        label: t('modal.common.cancel', 'Cancel'),
-                        onClick: (modalApi) => {
-                            resolve(null);
-                            if (modalApi && typeof modalApi.close === 'function') modalApi.close();
-                        }
-                    },
-                    {
-                        id: 'apply',
-                        label: tShared('loading', 'Parcels still loading...'),
-                        primary: true,
-                        disabled: true,
-                        onClick: (modalApi) => {
-                            resolve(selected);
-                            if (modalApi && typeof modalApi.close === 'function') modalApi.close();
-                        }
-                    }
-                ],
-                onClose: () => resolve(null)
-            });
-
-            // Extra safety: ensure button starts disabled right after modal mount
-            try {
-                const applyBtn = modal && typeof modal.getActionButton === 'function' ? modal.getActionButton('apply') : null;
-                if (applyBtn) {
-                    applyBtn.disabled = true;
-                    applyBtn.classList.add('disabled');
-                    applyBtn.textContent = tShared('loading', 'Parcels still loading...');
-                }
-            } catch (_) { }
-
-            // Prepare the exact ground declared by the proposals. CadastralParcelRepository decides
-            // whether that means a cache hit, joining an in-flight request, or server transport.
-            (async () => {
-                try {
-                    try { window.suppressCameraMoves = true; } catch (_) { }
-                    const ground = (typeof CadastralParcelRepository !== 'undefined' && CadastralParcelRepository)
-                        ? CadastralParcelRepository
-                        : ((typeof window !== 'undefined') ? window.CadastralParcelRepository : null);
-                    if (!ground || typeof ground.ensureProposalGround !== 'function') {
-                        throw new Error('Cadastral ground service is unavailable.');
-                    }
-                    await ground.ensureProposalGround(payload.proposals || [], { purpose: 'application' });
-                } catch (e) {
-                    console.warn('Preparing cadastral ground for shared payload failed (continuing):', e);
-                } finally {
-                    try {
-                        const applyBtn = modal && typeof modal.getActionButton === 'function' ? modal.getActionButton('apply') : null;
-                        if (applyBtn) {
-                            applyBtn.disabled = false;
-                            applyBtn.classList.remove('disabled');
-                            applyBtn.textContent = tShared('applySelected', 'Apply Selected');
-                        }
-                    } catch (_) { }
-                    try { window.suppressCameraMoves = false; } catch (_) { }
-                }
-            })();
-
-            // As a fallback, also enable on parcelDataLoaded event (in case of cached data or fast path)
-            const onParcelLoaded = () => {
-                try {
-                    const applyBtn = modal && typeof modal.getActionButton === 'function' ? modal.getActionButton('apply') : null;
-                    if (applyBtn) {
-                        applyBtn.disabled = false;
-                        applyBtn.classList.remove('disabled');
-                        applyBtn.textContent = tShared('applySelected', 'Apply Selected');
-                    }
-                } catch (_) { }
-                try { window.removeEventListener('parcelDataLoaded', onParcelLoaded); } catch (_) { }
-            };
-            try { window.addEventListener('parcelDataLoaded', onParcelLoaded, { once: true }); } catch (_) { }
-        } catch (e) {
-            console.error('showSharedPayloadInspector failed', e);
-            resolve(null);
-        }
-    });
 }
 
 // Number of list filters that currently narrow the result (sort order is not a filter). Shown on

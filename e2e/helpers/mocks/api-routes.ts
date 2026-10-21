@@ -1,7 +1,7 @@
 import { Page } from '@playwright/test';
 import { sampleParcels } from './parcel-data';
-import { sampleProposalsList, makeRoadProposal } from './proposal-data';
-import { fixtureSiteBinding } from './site-binding';
+import { sampleProposalsList } from './proposal-data';
+import { ensurePageIndex } from './shared-server';
 import { mockOvertureTiles } from './overture-tiles';
 
 export const isApiDataRequest = (pageUrl: string, resourceType: string, endpoint: string): boolean => {
@@ -69,6 +69,8 @@ export async function mockAllApiRoutes(page: Page): Promise<void> {
   await mockAreaMonitorsRoute(page);
   await mockParcelsRoute(page);
   await mockProposalsRoute(page);
+  // POST /pins and the design and agreement index, in memory per page (shared-server.ts).
+  await ensurePageIndex(page);
   await mockPlanningRoutes(page);
   await mockBuildingsRoute(page);
   await mockPlannedRoadsRoute(page);
@@ -170,6 +172,8 @@ export async function mockParcelsRoute(page: Page): Promise<void> {
   });
 }
 
+// The chain readers' GET /proposals… routes are what is left of the proposal API (M2 removed its
+// write routes); any other method is a removed route and is refused here, never sent on.
 export async function mockProposalsRoute(page: Page): Promise<void> {
   await page.route('**/proposals**', (route) => {
     const request = route.request();
@@ -178,23 +182,18 @@ export async function mockProposalsRoute(page: Page): Promise<void> {
       return;
     }
 
-    if (request.method() === 'POST' && new URL(request.url()).pathname.endsWith('/proposals/binding')) {
-      const body = request.postDataJSON();
-      route.fulfill({ status: 200, json: { binding: fixtureSiteBinding(body.site, body.toleranceM) } });
-    } else if (request.method() === 'GET') {
+    if (request.method() === 'GET') {
       route.fulfill({
         status: 200,
         contentType: 'application/json',
         body: JSON.stringify(sampleProposalsList),
       });
-    } else if (request.method() === 'POST') {
-      route.fulfill({
-        status: 201,
-        contentType: 'application/json',
-        body: JSON.stringify(makeRoadProposal()),
-      });
     } else {
-      route.continue();
+      route.fulfill({
+        status: 404,
+        contentType: 'application/json',
+        body: JSON.stringify({ error: `The e2e API has no ${request.method()} ${new URL(request.url()).pathname}: the proposal write routes were removed.`, code: 'not-mocked' }),
+      });
     }
   });
 }

@@ -1,7 +1,6 @@
-// Cover recipient consent, typology choices and the two shared-link error dismiss controls.
+// Cover the create dialog's urban-rule typology choices.
 import { test, expect } from '../helpers/fixtures';
-import { waitForMapReady } from '../helpers/app';
-import { createSpace, openCity, openParcel, showProposal, PARCEL_GEOMETRY, PARCEL_ID } from '../helpers/runtime';
+import { openCity } from '../helpers/runtime';
 import { sampleParcels } from '../helpers/mocks/parcel-data';
 
 const BLOCK_PARCEL_IDS = ['HR-335754-1234', 'HR-335754-1235'];
@@ -61,81 +60,7 @@ async function openFreshProposalFromBlock(page: import('@playwright/test').Page)
   await expect(page.locator('.create-proposal-modal:visible')).toBeVisible();
 }
 
-async function establishLocalProfile(page: import('@playwright/test').Page): Promise<void> {
-  await page.locator('#username-display').click();
-  await expect(page.locator('#welcome-modal')).toBeVisible();
-  await page.locator('#username-input').fill('Proposal fifth-pass tester');
-  await page.locator('#welcome-submit-btn').click();
-  await expect(page.locator('#welcome-modal')).toBeHidden();
-}
-
-async function loadParcelOwnershipFixture(page: import('@playwright/test').Page): Promise<void> {
-  const ownerWallet = '7xKXtg2CWYcy6EH8d9xvPht4JyhV46Lxgq6vN6hS9wZT';
-  await page.addInitScript(wallet => { (window as any).fetchParcelNftOwnerAddress = async () => wallet; }, ownerWallet);
-  await page.evaluate(wallet => { (window as any).fetchParcelNftOwnerAddress = async () => wallet; }, ownerWallet);
-  await page.route('**/parcel-ownership/**', route => route.fulfill({
-    status: 200, contentType: 'application/json',
-    body: JSON.stringify({ contract: 'parcel-ownership/1', owners: [{ name: 'Fixture private owner', shareText: '1/1', sharePercent: 100, ownerType: 'private individual' }] }),
-  }));
-  await openParcel(page, 'info');
-  await page.waitForFunction(parcelId => {
-    const slots = (window as any).getParcelOwnerSlots?.(parcelId);
-    return Array.isArray(slots) && slots.length > 0 && slots.every((slot: any) => !slot.placeholder);
-  }, PARCEL_ID);
-}
-
-async function openDetailsFromLocalProposalList(page: import('@playwright/test').Page, proposalId: string): Promise<void> {
-  await page.locator('#proposals-button').click();
-  const row = page.locator(`#proposals-sheet .proposal-list-item[data-proposal-id="${proposalId}"]`);
-  await expect(row).toBeVisible();
-  await row.locator('.proposal-list-details-btn').click();
-  await expect(page.locator('#planning-inspector')).toBeVisible();
-  await expect.poll(() => page.evaluate(() => (window as any).currentlyHighlightedProposalId)).toBe(proposalId);
-  await showProposal(page, proposalId);
-  await expect(page.locator('#proposal-details-panel')).toBeVisible();
-}
-
 test.describe('proposal button controls fifth pass @features', () => {
-  test('the named recipient Accept action records consent and refreshes the proposal details', async ({ mockApi: page }) => {
-    await openCity(page);
-    await establishLocalProfile(page);
-    await loadParcelOwnershipFixture(page);
-    const proposalId = await page.evaluate(({ parcelId, geometry }) => (window as any).proposalStorage.addProposal({
-      proposalId: 'recipient-consent-button',
-      title: 'Specific recipient ownership transfer',
-      goal: 'ownership-transfer-from-me',
-      lifecycleStatus: 'Active',
-      ownershipTransferProposal: {
-        direction: 'from-me',
-        recipient: 'third-party',
-        recipientScope: 'specific',
-        recipientAddress: 'City of Zagreb',
-        status: 'open',
-      },
-      cadastreParcelIds: [parcelId],
-      geometry,
-    }), { parcelId: PARCEL_ID, geometry: PARCEL_GEOMETRY });
-
-    await page.evaluate(() => (window as any).i18n.setLanguage('en'));
-    await openDetailsFromLocalProposalList(page, proposalId);
-    const panel = page.locator('#proposal-details-panel');
-    const expand = panel.getByRole('button', { name: 'Expand', exact: true });
-    if (await expand.isVisible()) await expand.click();
-
-    const recipient = page.locator('#proposal-details-content .owner-acceptance-recipient');
-    await page.locator('#proposal-details-content details[data-proposal-section="land"] > summary').click();
-    await expect(recipient).toContainText('City of Zagreb');
-    const accept = recipient.getByRole('button', { name: 'Accept', exact: true });
-    await expect(accept).toBeVisible();
-    await accept.click();
-
-    await expect.poll(() => page.evaluate(id =>
-      (window as any).proposalStorage.getProposal(id)?.recipientConsented === true, proposalId
-    )).toBe(true);
-    await expect(recipient).toContainText('Accepted');
-    await expect(recipient.getByRole('button', { name: 'Accept', exact: true })).toHaveCount(0);
-  });
-
   test('urban-rule typology shows the three real block, row, and parcel-based choices', async ({ mockApi: page }) => {
     await openFreshProposalFromBlock(page);
     const dialog = page.locator('.create-proposal-modal:visible');
@@ -152,14 +77,5 @@ test.describe('proposal button controls fifth pass @features', () => {
       await expect(group.locator('.proposal-typology-button[aria-pressed="true"]')).toHaveCount(1);
       await expect.poll(() => page.evaluate(() => (window as any).proposalFacets?.landUse)).toBe('urban-rule');
     }
-  });
-
-  for (const target of ['.share-modal .close-circle-btn', '.share-modal .cb-dialog__footer button']) test(`shared-link error ${target} dismisses an invalid link notice`, async ({ mockApi: page }) => {
-    await page.goto('/?city=zg&proposalShare=not-valid-base64!!!', { waitUntil: 'domcontentloaded' });
-    await waitForMapReady(page);
-    const modal = page.locator('.share-modal-overlay');
-    await expect(modal).toContainText(/Invalid share link/i);
-    await modal.locator(target).click();
-    await expect(modal).toBeHidden();
   });
 });

@@ -29,7 +29,7 @@ const MIN_INTERSECTION_M2 = 0.25;
 // the noise floor — kerf-sized touches between neighbours are normal composition.
 const MIN_MEMBER_OVERLAP_M2 = 25;
 
-const SUB_KEYS = ['roadProposal', 'buildingProposal', 'structureProposal', 'reparcellization', 'decideLaterProposal'];
+const SUB_KEYS = ['roadProposal', 'buildingProposal', 'structureProposal', 'reparcellization'];
 
 function usage() {
     console.log([

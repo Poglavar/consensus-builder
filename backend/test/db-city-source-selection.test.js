@@ -1,15 +1,9 @@
-import express from 'express';
-import request from 'supertest';
-import { setupProposalBindingRoute } from '../routes/proposal-binding.js';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { readFileSync } from 'node:fs';
-import { createRequire } from 'node:module';
 import { parcelSourceCatalog, parcelSourceForCity, parcelSourceForIds } from '../parcels/sources.js';
 import { computeBinding, parcelActBinding } from '../proposals/binding.js';
 import { parseCityConfigs } from '../../scripts/build-world-coverage.mjs';
 import { stripLocalProposalState } from '../proposals/serializer.js';
-import { computeBindingDrift } from '../proposals/binding-drift.js';
-const publisher = createRequire(import.meta.url)('../../frontend/js/proposals/publish-binding.js');
 const descriptor = { id:'test-db-alternative',adapter:'wfs',endpoint:'https://example.org/wfs',featureType:'cad:parcels',idField:'native',idType:'string',idPrefix:'HR-',outFields:['native'],cityIds:['zagreb'],metricSrid:3765,defaultForCity:false,snapshotId:'test-snapshot' };
 const geometry = {type:'Polygon',coordinates:[[[15.97,45.81],[15.971,45.81],[15.971,45.811],[15.97,45.811],[15.97,45.81]]]};
 const raw = {type:'Feature',id:'row.1',properties:{native:'123456-1'},geometry};
@@ -35,21 +29,6 @@ describe('database defaults and explicit upstream alternatives',()=>{
   expect(result.binding).toMatchObject({source:'server:'+descriptor.id,coverage:'complete',parcelSource:{sourceId:descriptor.id,snapshotId:'test-snapshot'}});
   expect(result.binding.parcels.map(p=>p.parcelId)).toEqual(['HR-123456-1']);
   expect((await parcelActBinding(db,['HR-123456-1'],opts)).extra).toEqual([]);expect(db.query).not.toHaveBeenCalled();
- });
- it('rechecks the published provider while the city defaults to DB',async()=>{
-  parcelSourceCatalog.sources.push(descriptor);upstream();
-  const stored={parcels:[{parcelId:'HR-123456-1',overlapM2:1}],touched:[],coverage:'complete',source:'server:'+descriptor.id,parcelSource:{sourceId:descriptor.id,snapshotId:'test-snapshot'},subject:'declared-parcels'};
-  const db={query:vi.fn(async()=>({rows:[{id:1,city:'zagreb',binding:stored}]}))};
-  expect((await computeBindingDrift(db,'1')).current.source).toBe(stored.source);expect(db.query).toHaveBeenCalledOnce();
- });
- it('uses city-scoped provider hints through the public binding endpoint',async()=>{
-  parcelSourceCatalog.sources.push(descriptor);upstream();
-  const db={query:vi.fn(()=>{throw Error('Unexpected DB parcel query');})};
-  const app=express();app.use(express.json());setupProposalBindingRoute(app,db);
-  const good=await request(app).post('/proposals/binding').send({site:geometry,city:'zagreb',parcelSourceId:descriptor.id});
-  expect(good.status).toBe(200);expect(good.body.binding).toMatchObject({source:'server:'+descriptor.id,parcelSource:{sourceId:descriptor.id,snapshotId:'test-snapshot'}});
-  const foreign=await request(app).post('/proposals/binding').send({site:geometry,city:'toronto',parcelSourceId:descriptor.id});
-  expect(foreign.status).toBe(400);expect(foreign.body.code).toBe('invalid-parcel-source');expect(db.query).not.toHaveBeenCalled();
  });
  it('keeps city routes and plan storage; live opt-in applies to explicit-city lookup',()=>{
   const normal=boot('?city=zagreb'),live=boot('?city=zagreb&parcelSource=live');
@@ -89,10 +68,5 @@ describe('database defaults and explicit upstream alternatives',()=>{
   const cities=parseCityConfigs(readFileSync(new URL('../../frontend/js/city-config.js',import.meta.url),'utf8'));
   expect(cities.find(c=>c.id==='new_york').sourceId).toBeUndefined();
   expect(cities.find(c=>c.id==='shenzhen').sourceId).toBe('cn-shenzhen-land-certain');
- });
- it('sends the configured provider with binding requests',async()=>{
-  globalThis.CityConfigManager={getCityConfig:()=>({parcels:{sourceId:descriptor.id}})};
-  const fetch=vi.fn(async()=>({ok:true,json:async()=>({binding:{parcels:[]}})}));
-  await publisher.createFetchBinding(fetch,'http://localhost')({site:geometry,city:'zagreb'});expect(JSON.parse(fetch.mock.calls[0][1].body).parcelSourceId).toBe(descriptor.id);
  });
 });

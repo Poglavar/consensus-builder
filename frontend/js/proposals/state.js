@@ -43,25 +43,9 @@ let constrainedCorridorState = null;
 
 let parcelLayoutModulePromise = null;
 
-let teardownProposalBalanceWatcher = null;
-
-let proposalBalanceRequestSeq = 0;
-
-let addressesJsonCache = null;
-
-let addressesJsonPromise = null;
-
-let expiryCountdownInterval = null;
-
-let decayCountdownInterval = null;
-
 let _proposalListFilterInputDebounceTimer = null;
 
 let url3DModeHandled = false;
-
-let singleProposalShareHandled = false;
-
-let sharedProposalsHandled = false;
 
 let proposalLoadOverlay = null;
 

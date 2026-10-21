@@ -175,11 +175,8 @@
         const fields = (draft && draft.fields) || {};
         const hasParcels = Array.isArray(fields.selectedParcelIds) && fields.selectedParcelIds.length > 0;
         if (hasParcels) return null;
-        const api = siteBinding();
-        const parcelAct = api && typeof api.isParcelAct === 'function' ? api.isParcelAct(draftRecordShape(draft)) : true;
-        if (parcelAct) {
-            return { code: 'missing-parcels', message: 'Select at least one parcel.', path: 'fields.selectedParcelIds' };
-        }
+        // A design is ground plus geometry: an authored site or its own design geometry places it;
+        // the parcels it takes are derived from that, never selected for it.
         if (draftSite(draft) || draftHasDesignGeometry(draft)) return null;
         return { code: 'missing-site', message: 'Draw a site or select parcels.', path: 'fields.site' };
     }

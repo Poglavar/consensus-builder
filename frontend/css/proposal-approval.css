@@ -1,13 +1,9 @@
-/* Owner acceptance for approval-setup proposals (js/proposals/approval-panel.js): the card in
-   Details > Land & ownership and its two dialogs, "Act for an owner" and "Accept as Owner X".
+/* Owner decisions on a proposed agreement (js/proposals/approval-panel.js): the card in the
+   agreement panel and its two dialogs, "Act for an owner" and "Accept as Owner X".
    Tokens only (docs/design-language.md). */
 
 .approval-card-slot {
     margin: var(--cb-space-2) 0 var(--cb-space-3);
-}
-
-.approval-edit-action {
-    margin: 0 0 var(--cb-space-3);
 }
 
 .approval-card {
@@ -131,19 +127,6 @@
     padding-left: var(--cb-space-4);
     color: var(--cb-text-muted);
     font-size: var(--cb-text-sm);
-}
-
-.approval-card__chain {
-    display: flex;
-    flex-direction: column;
-    gap: var(--cb-space-1);
-    padding-top: var(--cb-space-2);
-    border-top: 1px solid var(--cb-line);
-}
-
-.approval-card__chain-line {
-    margin: 0;
-    font-weight: var(--cb-weight-medium);
 }
 
 /* "What each owner puts in and gets": one button per abstract owner, readable by anyone. */

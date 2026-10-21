@@ -1,12 +1,9 @@
-// Guest rules: what a visitor without a profile name, a wallet or an ownership attestation may do.
-// One table, consulted by every gate (publish, share link, mint, Offer my land); see next-steps.md.
+// Guest rules: what a visitor without a profile name may do. One table, consulted by every gate
+// (publish, share link, mint); see next-steps.md.
 //
 //   none            Stays on this device: create, edit, fork, apply, compare.
 //   name            Leaves the device and carries an author: publish/upload, share link, mint,
 //                   joining a public list. A guest is asked to choose a profile name.
-//   ownership-proof Asserts ownership (Offer my land / owner offer): a connected wallet that a lens
-//                   member attested as owner of the parcels. A name alone is not enough; the offer is
-//                   also published, so the name is required as well.
 //
 // Also decides which author an outgoing record carries (claimAuthorAgentId / outgoingAuthor below).
 //
@@ -27,8 +24,7 @@
         publish: 'name',
         share: 'name',
         mint: 'name',
-        joinList: 'name',
-        ownerOffer: 'ownership-proof'
+        joinList: 'name'
     });
 
     function requires(action) {
@@ -38,18 +34,13 @@
         return RULES[action];
     }
 
-    // state: { isGuest, walletConnected, ownershipAttested }. A missing fact counts as unmet (an
-    // unknown profile is a guest), never as a guess that it holds.
-    // -> what is missing, in the order the user should fix it: 'wallet', 'attestation', 'name'.
+    // state: { isGuest }. A missing fact counts as unmet (an unknown profile is a guest), never as a
+    // guess that it holds. -> what is missing: [] or ['name'].
     function missing(action, state) {
         const requirement = requires(action);
         const s = state || {};
         const out = [];
         if (requirement === 'none') return out;
-        if (requirement === 'ownership-proof') {
-            if (s.walletConnected !== true) out.push('wallet');
-            if (s.ownershipAttested !== true) out.push('attestation');
-        }
         if (s.isGuest !== false) out.push('name');
         return out;
     }

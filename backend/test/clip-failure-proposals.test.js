@@ -187,11 +187,6 @@ describe('readjustment-contributions', () => {
 describe('site-binding', () => {
     const parcels = [{ id: 'HR-1', geometry: rect(0, 0, 5, 10) }, { id: 'HR-2', geometry: rect(5, 0, 10, 10) }];
 
-    it('siteOf refuses instead of leaving a declared parcel out of the site', () => {
-        const record = { goal: 'parcel', cadastreParcelIds: ['HR-1', 'HR-2'] };
-        expectClipFailure(() => siteBinding.siteOf(record, { parcels, turf: failingTurf(['union']) }), 'site-binding.unionAll');
-    });
-
     it('bindingFromParcels refuses instead of leaving a parcel the site reaches into unbound', () => {
         const failure = expectClipFailure(() => siteBinding.bindingFromParcels(rect(1, 1, 9, 9), parcels,
             { turf: failingTurf(['intersect']) }), 'site-binding.bindingFromParcels');
@@ -529,14 +524,5 @@ describe('proposals/geometry.js', () => {
         ctx.turf = failingTurf(['union']);
         const lake = { type: 'MultiPolygon', coordinates: [rect(0, 0, 50, 50).coordinates, rect(50, 0, 100, 50).coordinates] };
         expectReported(() => ctx.buildLakeGraphicsFromGeometry(lake, {}), 'proposals-geometry.lakeUnion');
-    });
-});
-
-describe('proposal-road-geometry.js _mergeParcelGeometries', () => {
-    it('throws the clipper\'s error instead of a null the caller can only call "failed to merge"', () => {
-        const ctx = classicContext('../../frontend/js/proposal-road-geometry.js');
-        ctx.turf = failingTurf(['union']);
-        expectClipFailure(() => ctx._mergeParcelGeometries([feature(rect(0, 0, 5, 10)), feature(rect(5, 0, 10, 10))]),
-            'proposal-road-geometry.mergeParcelGeometries');
     });
 });

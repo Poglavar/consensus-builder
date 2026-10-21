@@ -35,11 +35,9 @@
             const current = global.CityConfigManager?.getCurrentCityId?.();
             if (current) url.searchParams.set('city', current);
             else url.searchParams.delete('city');
-            url.searchParams.delete('proposalShare');
-            url.searchParams.delete('shared');
             url.searchParams.delete('bets');
             url.searchParams.delete('focusProposal');
-            const path = (url.pathname.startsWith('/proposals/') || url.pathname.startsWith('/plans/') || url.pathname.startsWith('/bets/')) ? '/' : url.pathname;
+            const path = ['/proposals/', '/designs/', '/agreements/', '/bets/'].some(prefix => url.pathname.startsWith(prefix)) ? '/' : url.pathname;
             global.history.replaceState(null, '', `${path}${url.search}${url.hash}`);
         } catch (_) { /* a stale URL is better than a thrown error */ }
     }

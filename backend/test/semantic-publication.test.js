@@ -1,163 +1,199 @@
+// JSON-LD of published designs and agreements (semantics/published-records.js, plan-design-agreement.md
+// M2): a record's IRI is its CID under the canonical PUBLIC_API_BASE_URL, only its CID-addressed
+// content speaks for it, and every local term an expanded export uses is defined in the published
+// vocabulary (semantics/vocabulary.js, regenerated into frontend/vocabulary by build-vocabulary.mjs).
 import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
 import jsonld from 'jsonld';
-import { proposalDocument, planDocument, canonicalPublicationBase } from '../semantics/published-records.js';
-import { vocabularyDocument, NAMESPACE, CONTEXT, designGoals, decisionKinds } from '../semantics/vocabulary.js';
-import { LIFECYCLE_STATUSES } from '../proposals/lifecycle.js';
+import {
+    agreementDocument, canonicalPublicationBase, designDocument, SEMANTIC_BASE_ERROR, SEMANTIC_RECORD_ERROR
+} from '../semantics/published-records.js';
+import { CONTEXT, DECISION_RULES, NAMESPACE, decisionRuleOf, designGoals, vocabularyDocument } from '../semantics/vocabulary.js';
 import { vocabularyArtifacts } from '../scripts/build-vocabulary.mjs';
-import { memberHash } from '../plans/plan-hash.js';
+import { agreementContent, cidOf, designContent, layoutContent, SITE } from './helpers/content-fixtures.js';
 
 const baseUrl = 'https://publication.example/api';
-const site = { type: 'Polygon', coordinates: [[[12, 45], [12.01, 45], [12.01, 45.01], [12, 45]]] };
-const proposal = (patch = {}) => ({ id: 7, proposalId: 'draft-7', kind: 'community-vote', goal: 'park', lifecycleStatus: 'Active', site, cadastreParcelIds: ['source:7'], ...patch });
+const designRow = (content = designContent()) => ({ cid: cidOf(content), content, city: 'ignored-column', title: 'ignored column' });
+const agreementRowOf = (content) => ({ cid: cidOf(content), content, deadline: '2001-02-03T04:05:06.000Z', status: 'expired' });
 const nodeWithType = (nodes, type) => nodes.find(node => node['@type']?.includes(type));
 const values = (node, property) => (node[property] || []).map(value => value['@value']);
 const ids = (node, property) => (node[property] || []).map(value => value['@id']);
 
-describe('published JSON-LD consumer questions', () => {
-    it('distinguishes a publication row, authored ID, design goal, decision kind and site', async () => {
-        const nodes = await jsonld.flatten(proposalDocument(proposal(), { baseUrl }));
-        const record = nodeWithType(nodes, `${NAMESPACE}Proposal`);
-        expect(record['@id']).toBe(`${baseUrl}/proposals/7#proposal`);
-        expect(values(record, `${NAMESPACE}proposalRowId`)).toEqual(['7']);
-        expect(values(record, `${NAMESPACE}authoredProposalId`)).toEqual(['draft-7']);
-        expect(ids(record, `${NAMESPACE}designGoal`)).toEqual([`${NAMESPACE}goal-park`]);
-        expect(ids(record, `${NAMESPACE}decisionKind`)).toEqual([`${NAMESPACE}kind-community-vote`]);
+describe('a published design as JSON-LD', () => {
+    it('is identified by its CID under the publication base, with its goal, labels and site', async () => {
+        const content = designContent();
+        const cid = cidOf(content);
+        const doc = designDocument(designRow(content), { baseUrl });
+        expect(doc['@id']).toBe(`${baseUrl}/designs/${cid}#design`);
+        expect(doc['schema:url']).toEqual({ '@id': `${baseUrl}/designs/${cid}?format=jsonld` });
+        expect(doc['cb:cid']).toBe(cid);
+
+        const nodes = await jsonld.flatten(doc);
+        const design = nodeWithType(nodes, `${NAMESPACE}Design`);
+        expect(design['@type']).toEqual(expect.arrayContaining(['https://schema.org/CreativeWork', `${CONTEXT.prov}Entity`]));
+        expect(values(design, 'https://schema.org/name')).toEqual(['Riverside park']);
+        expect(values(design, 'https://schema.org/description')).toEqual(['A park on the river bank.']);
+        expect(values(design, `${NAMESPACE}authorLabel`)).toEqual(['Studio North']);
+        expect(values(design, 'https://schema.org/dateCreated')).toEqual([content.authoredAt]);
+        expect(values(design, `${NAMESPACE}declaredGoal`)).toEqual(['park']);
+        expect(ids(design, `${NAMESPACE}designGoal`)).toEqual([`${NAMESPACE}goal-park`]);
         const geometry = nodeWithType(nodes, `${CONTEXT.geo}Geometry`);
         const serialization = geometry[`${CONTEXT.geo}asGeoJSON`][0];
         expect(serialization['@type']).toBe(`${CONTEXT.geo}geoJSONLiteral`);
-        expect(JSON.parse(serialization['@value'])).toEqual(site);
-        const cadastral = nodeWithType(nodes, `${NAMESPACE}CadastreReference`);
-        expect(values(cadastral, `${NAMESPACE}declaredIdentifier`)).toEqual(['source:7']);
-        expect(cadastral['@id']).not.toBe(nodeWithType(nodes, `${NAMESPACE}ProposalSite`)['@id']);
-        expect(nodes.some(node => node['@type']?.includes('https://schema.org/Building'))).toBe(false);
+        expect(JSON.parse(serialization['@value'])).toEqual(SITE);
+        expect(nodeWithType(nodes, `${NAMESPACE}DesignSite`)['@id']).toBe(`${baseUrl}/designs/${cid}#site`);
     });
 
-    it('scopes identical local IDs to their publication stores without merging cadastral references', () => {
-        const a = proposalDocument(proposal(), { baseUrl });
-        const b = proposalDocument(proposal(), { baseUrl: 'https://second.example/api' });
-        const c = proposalDocument(proposal({ id: 8 }), { baseUrl });
-        expect(a['@id']).not.toBe(b['@id']);
-        expect(a['cb:cadastreReference'][0]['@id']).not.toBe(c['cb:cadastreReference'][0]['@id']);
+    it('links a fork to the design it came from, by CID', () => {
+        const original = designContent({ title: 'Original' });
+        const fork = designContent({ origin: { cid: cidOf(original) } });
+        expect(designDocument(designRow(fork), { baseUrl })['prov:wasDerivedFrom'])
+            .toEqual({ '@id': `${baseUrl}/designs/${cidOf(original)}#design` });
+        expect(designDocument(designRow(original), { baseUrl })).not.toHaveProperty('prov:wasDerivedFrom');
     });
 
-    it('does not turn arbitrary authored content, unknown goals or local claims into RDF assertions', async () => {
-        const doc = proposalDocument(proposal({ goal: 'custom-shape', lifecycleStatus: 'nonsense',
-            applied: true, executedAt: '2026-01-01', ownerAcceptances: ['signed-by-nobody'], author: 'Declared studio',
-            '@context': { evil: 'https://injected.example/' }, 'evil:owner': 'someone',
-            chainMirror: { lifecycleStatus: 'Executed' }, onchainData: { proposalId: 'wrong' }
-        }), { baseUrl });
-        const rdf = await jsonld.toRDF(doc, { format: 'application/n-quads' });
-        expect(rdf).toContain(`${NAMESPACE}lifecycle-Unknown`);
-        expect(rdf).toContain('custom-shape');
-        expect(rdf).not.toMatch(/injected|signed-by-nobody|executedAt|applied|Person|Organization|wrong/);
+    it('says nothing the content does not: no index columns, no unknown goal concept, no injected terms', async () => {
+        const content = designContent({ goal: 'custom-shape', site: null, geometry: { type: 'Polygon', coordinates: SITE.coordinates } });
+        const doc = designDocument({ ...designRow(content), city: 'zagreb', binding: { parcels: [{ parcelId: 'HR-1-1' }] },
+            content: { ...content, '@context': { evil: 'https://injected.example/' }, 'evil:owner': 'someone', applied: true } }, { baseUrl });
         expect(doc['cb:designGoal']).toBeUndefined();
-        expect(doc['cb:declaredChainReference']).toBeUndefined();
-        expect(doc['cb:authorLabel']).toBe('Declared studio');
+        expect(doc['cb:declaredGoal']).toBe('custom-shape');
+        expect(doc['cb:site']).toBeUndefined();
+        const rdf = await jsonld.toRDF(doc, { format: 'application/n-quads' });
+        expect(rdf).toContain('custom-shape');
+        expect(rdf).not.toMatch(/injected|someone|applied|zagreb|HR-1-1|ignored/);
     });
 
-    it('keeps explicit zero-valued offers and budget currencies distinct from atomic chain balances', async () => {
-        const nodes = await jsonld.flatten(proposalDocument(proposal({ offer: 0, offerCurrency: 'EUR', budget: 120, budgetCurrency: 'USD',
-            onchain: { chainType: 'solana', chainId: 'solana-devnet', contractAddress: 'CaseSensitiveProgram', proposalId: 'CaseSensitiveAccount', balance: '999000000' }
-        }), { baseUrl }));
-        const record = nodeWithType(nodes, `${NAMESPACE}Proposal`);
-        const offer = nodes.find(node => node['@id'] === ids(record, `${NAMESPACE}offeredConsideration`)[0]);
-        expect(values(offer, 'https://schema.org/value')).toEqual([0]);
-        expect(values(offer, 'https://schema.org/currency')).toEqual(['EUR']);
-        const budget = nodes.find(node => node['@id'] === ids(record, `${NAMESPACE}budget`)[0]);
-        expect(values(budget, 'https://schema.org/value')).toEqual([120]);
-        expect(values(budget, 'https://schema.org/currency')).toEqual(['USD']);
-        const chain = nodeWithType(nodes, `${NAMESPACE}ChainReference`);
-        expect(values(chain, `${NAMESPACE}contract`)).toEqual(['CaseSensitiveProgram']);
-        expect(values(chain, `${NAMESPACE}tokenId`)).toEqual(['CaseSensitiveAccount']);
-        expect(JSON.stringify(nodes)).not.toContain('999000000');
-    });
-
-    it('omits an incomplete monetary or chain declaration instead of guessing its missing basis', () => {
-        const doc = proposalDocument(proposal({ offer: 20, budget: '30', budgetCurrency: 'EUR', onchain: { proposalId: 'bare-token' } }), { baseUrl });
-        expect(doc['cb:offeredConsideration']).toBeUndefined();
-        expect(doc['cb:budget']).toBeUndefined();
-        expect(doc['cb:declaredChainReference']).toBeUndefined();
-    });
-
-    it('preserves the canonical lowercase draft lifecycle rather than reclassifying it as Unknown', async () => {
-        const expanded = await jsonld.expand(proposalDocument(proposal({ lifecycleStatus: 'draft' }), { baseUrl }));
-        expect(ids(expanded[0], `${NAMESPACE}recordedLifecycle`)).toEqual([`${NAMESPACE}lifecycle-draft`]);
+    it('scopes identical CIDs to their publication stores', () => {
+        const a = designDocument(designRow(), { baseUrl });
+        const b = designDocument(designRow(), { baseUrl: 'https://second.example/api/' });
+        expect(a['@id']).not.toBe(b['@id']);
+        expect(b['@id']).toBe(`https://second.example/api/designs/${cidOf(designContent())}#design`);
     });
 
     it.each([
         { type: 'Polygon', coordinates: [] },
         { type: 'Polygon', coordinates: [[[12, 45], [12.01, 45], [12.01, 45.01], [12.005, 45]]] },
-        { ...site, crs: { type: 'name', properties: { name: 'EPSG:3857' } } }
-    ])('refuses to label an invalid or differently referenced site as CRS84 GeoJSON', invalidSite => {
-        expect(() => proposalDocument(proposal({ site: invalidSite }), { baseUrl })).toThrow();
+        { ...SITE, crs: { type: 'name', properties: { name: 'EPSG:3857' } } }
+    ])('refuses to label an invalid or differently referenced site as CRS84 GeoJSON', site => {
+        expect(() => designDocument(designRow(designContent({ site })), { baseUrl }))
+            .toThrow(expect.objectContaining({ code: SEMANTIC_RECORD_ERROR, status: 422 }));
     });
 
-    it('lets a consumer recover ordered plan commitments with unchanged, changed and missing members', async () => {
-        const a = { id: 3, proposal_id: 'three', goal: 'park', proposal_data: { site } };
-        const b = { id: 2, proposal_id: 'two', goal: 'lake', proposal_data: { site } };
-        const row = { slug: 'harbor-plan', proposal_ids: ['3', '2', '1'], plan_hash: 'a'.repeat(64), supersedes: 'harbor-old',
-            member_hashes: { 3: memberHash(a), 2: memberHash(b), 1: 'b'.repeat(64) } };
-        const doc = planDocument(row, [a, { ...b, goal: 'park' }], ['harbor-next'], { baseUrl });
+    it('refuses a row that is not a published design', () => {
+        const content = designContent();
+        for (const row of [{ cid: 'design-7', content }, { cid: cidOf(content), content: { ...content, schema: 'agreement/v1' } },
+            { cid: cidOf(content), content: null }, null]) {
+            expect(() => designDocument(row, { baseUrl })).toThrow(expect.objectContaining({ code: SEMANTIC_RECORD_ERROR, status: 422 }));
+        }
+    });
+});
+
+describe('a published agreement as JSON-LD', () => {
+    const park = designContent();
+    const layout = layoutContent();
+
+    it('lists its designs by CID in authored order, its rule, deadline and input parcels', async () => {
+        const content = agreementContent([layout, park]);
+        const cid = cidOf(content);
+        const doc = agreementDocument(agreementRowOf(content), { baseUrl });
+        expect(doc['@id']).toBe(`${baseUrl}/agreements/${cid}#agreement`);
+        expect(doc['cb:cid']).toBe(cid);
+        expect(doc['cb:designs']).toEqual({ '@list': [cidOf(layout), cidOf(park)].map(designCid => ({ '@id': `${baseUrl}/designs/${designCid}#design` })) });
+        expect(doc['cb:decisionRule']).toEqual({ '@id': 'cb:rule-owner-deal' });
+        expect(doc['cb:agreementDeadline']).toEqual({ '@value': '2099-01-01T00:00:00.000Z', '@type': 'xsd:dateTime' });
+        expect(doc['cb:cadastreReference'].map(reference => [reference['@id'], reference['cb:declaredIdentifier']])).toEqual([
+            [`${baseUrl}/agreements/${cid}#cadastre-HR-335649-100`, 'HR-335649-100'],
+            [`${baseUrl}/agreements/${cid}#cadastre-HR-335649-101`, 'HR-335649-101']
+        ]);
+
         const nodes = await jsonld.flatten(doc);
-        const plan = nodeWithType(nodes, `${NAMESPACE}NamedPlan`);
-        const list = plan[`${NAMESPACE}memberships`][0]['@list'];
-        const entries = list.map(item => nodes.find(node => node['@id'] === item['@id']));
-        expect(entries.map(entry => ids(entry, `${NAMESPACE}member`)[0])).toEqual(['3', '2', '1'].map(id => `${baseUrl}/proposals/${id}#proposal`));
-        expect(entries.map(entry => values(entry, `${NAMESPACE}memberChanged`)[0])).toEqual([false, true, true]);
-        expect(entries.map(entry => values(entry, `${NAMESPACE}memberMissing`)[0])).toEqual([false, false, true]);
-        expect(values(entries[1], `${NAMESPACE}committedMemberHash`)).toEqual([memberHash(b)]);
-        expect(values(entries[1], `${NAMESPACE}currentMemberHash`)).not.toEqual([memberHash(b)]);
-        expect(entries[2][`${NAMESPACE}currentMemberHash`]).toBeUndefined();
-        expect(ids(plan, `${NAMESPACE}supersedes`)).toEqual([`${baseUrl}/plans/harbor-old#plan`]);
-        expect(ids(plan, `${NAMESPACE}supersededBy`)).toEqual([`${baseUrl}/plans/harbor-next#plan`]);
+        const agreement = nodeWithType(nodes, `${NAMESPACE}Agreement`);
+        expect(values(agreement, 'https://schema.org/name')).toEqual(['Riverside deal']);
+        expect(values(agreement, 'https://schema.org/dateCreated')).toEqual([content.createdAt]);
+        const list = agreement[`${NAMESPACE}designs`][0]['@list'];
+        expect(list.map(item => item['@id'])).toEqual([cidOf(layout), cidOf(park)].map(designCid => `${baseUrl}/designs/${designCid}#design`));
         expect(await jsonld.toRDF(doc, { format: 'application/n-quads' })).toContain(`${CONTEXT.rdf}first`);
     });
 
-    it('refuses malformed plan commitments rather than presenting an uncommitted membership list', () => {
-        expect(() => planDocument({ slug: 'broken', proposal_ids: ['1'], member_hashes: {}, plan_hash: 'a'.repeat(64) }, [], [], { baseUrl })).toThrow(/invalid saved commitment/);
+    it('takes its status from nothing but its content: the index\'s columns do not speak for it', async () => {
+        const content = agreementContent([park], { deadline: null });
+        const doc = agreementDocument({ ...agreementRowOf(content), onchain: { proposalId: 'not-in-content' } }, { baseUrl });
+        expect(doc['cb:agreementDeadline']).toBeUndefined();
+        const rdf = await jsonld.toRDF(doc, { format: 'application/n-quads' });
+        expect(rdf).not.toMatch(/expired|2001-02-03|not-in-content/);
     });
 
-    it('reports an existing but invalid readjustment member without inventing a current hash', () => {
-        const row = { slug: 'invalid-current', proposal_ids: ['1'], member_hashes: { 1: 'a'.repeat(64) }, plan_hash: 'b'.repeat(64) };
-        const invalidMember = { id: 1, proposal_id: 'invalid-deal', goal: 'reparcellization', reparcellization: {} };
-        const doc = planDocument(row, [invalidMember], [], { baseUrl });
-        const entry = doc['cb:memberships']['@list'][0];
-        expect(entry['cb:memberChanged']).toBe(true);
-        expect(entry['cb:memberMissing']).toBe(false);
-        expect(entry['cb:memberInvalid']).toBe(true);
-        expect(entry['cb:currentMemberHash']).toBeUndefined();
-        expect(entry['cb:committedMemberHash']).toBe('a'.repeat(64));
+    it.each([
+        [{ electorate: 'owners', binding: true, lens: [] }, 'owner-deal'],
+        [{ electorate: 'owners', binding: false, lens: [] }, 'owner-vote'],
+        [{ electorate: 'community', binding: false, lens: [] }, 'community-vote'],
+        [{ electorate: 'community', binding: true, lens: [] }, null],
+        [{ electorate: 'residents', binding: false, lens: [] }, null]
+    ])('names the decision rule of %j as %s', (rule, key) => {
+        expect(decisionRuleOf(rule)).toBe(key);
+        const doc = agreementDocument(agreementRowOf(agreementContent([park], { rule })), { baseUrl });
+        expect(doc['cb:decisionRule']).toEqual(key ? { '@id': `cb:rule-${key}` } : undefined);
     });
 
+    it('escapes a parcel id in its scoped IRI and keeps it exact as the declared identifier', () => {
+        const content = agreementContent([park], { inputs: { parcels: [{ parcelId: 'HR-335649-1021/3', areaM2: 10, holders: [{ ownerKey: 'a', share: 1 }] }], openGroundM2: 0 } });
+        const [reference] = agreementDocument(agreementRowOf(content), { baseUrl })['cb:cadastreReference'];
+        expect(reference['@id']).toBe(`${baseUrl}/agreements/${cidOf(content)}#cadastre-HR-335649-1021%2F3`);
+        expect(reference['cb:declaredIdentifier']).toBe('HR-335649-1021/3');
+    });
+
+    it('refuses an agreement whose designs or input parcels are not identified', () => {
+        const noCid = agreementContent([park]);
+        noCid.designs[0] = { ...noCid.designs[0], cid: 'design-1' };
+        const noParcelId = agreementContent([park]);
+        noParcelId.inputs.parcels[0] = { ...noParcelId.inputs.parcels[0], parcelId: '' };
+        for (const content of [noCid, noParcelId]) {
+            expect(() => agreementDocument(agreementRowOf(content), { baseUrl })).toThrow(expect.objectContaining({ code: SEMANTIC_RECORD_ERROR, status: 422 }));
+        }
+        expect(() => agreementDocument({ cid: cidOf(park), content: park }, { baseUrl })).toThrow(/not agreement\/v1 content/);
+    });
+});
+
+describe('the publication base', () => {
     it.each(['', 'relative/api', 'https://user:secret@publication.example', 'https://publication.example/?tenant=x', 'https://publication.example/#fragment', 'ftp://publication.example'])('refuses an unsuitable canonical publication base %s', value => {
         expect(() => canonicalPublicationBase(value)).toThrow(/PUBLIC_API_BASE_URL/);
+        expect(() => designDocument(designRow(), { baseUrl: value })).toThrow(expect.objectContaining({ code: SEMANTIC_BASE_ERROR, status: 503 }));
+        expect(() => agreementDocument(agreementRowOf(agreementContent([designContent()])), { baseUrl: value })).toThrow(expect.objectContaining({ code: SEMANTIC_BASE_ERROR }));
     });
 
-    it('defines every local term used by an expanded export and generates deterministic static artifacts', async () => {
+    it('drops a trailing slash', () => {
+        expect(canonicalPublicationBase('https://publication.example/api///')).toBe('https://publication.example/api');
+    });
+});
+
+describe('the published vocabulary', () => {
+    it('defines every local term an expanded export uses, and generates the static artifacts deterministically', async () => {
         const definitions = await jsonld.flatten(vocabularyDocument());
         const defined = new Set(definitions.map(node => node['@id']));
-        const expanded = await jsonld.expand(proposalDocument(proposal({ offer: 10, offerCurrency: 'EUR' }), { baseUrl }));
         function walk(value) {
-            if (typeof value === 'string' && value.startsWith(NAMESPACE)) expect(defined.has(value)).toBe(true);
+            if (typeof value === 'string' && value.startsWith(NAMESPACE)) expect(defined.has(value), value).toBe(true);
             else if (Array.isArray(value)) value.forEach(walk);
             else if (value && typeof value === 'object') Object.entries(value).forEach(([key, child]) => { walk(key); walk(child); });
         }
-        walk(expanded);
-        for (const goal of designGoals.keys) walk(await jsonld.expand(proposalDocument(proposal({ goal }), { baseUrl })));
-        for (const kind of decisionKinds.KINDS) walk(await jsonld.expand(proposalDocument(proposal({ kind }), { baseUrl })));
-        for (const lifecycleStatus of [...LIFECYCLE_STATUSES, 'Unknown']) {
-            const doc = proposalDocument(proposal({ lifecycleStatus }), { baseUrl });
-            expect(doc['cb:recordedLifecycle']['@id']).toBe(`cb:lifecycle-${lifecycleStatus}`);
+        const original = designContent({ title: 'Original' });
+        walk(await jsonld.expand(designDocument(designRow(designContent({ origin: { cid: cidOf(original) } })), { baseUrl })));
+        for (const goal of designGoals.keys) walk(await jsonld.expand(designDocument(designRow(designContent({ goal })), { baseUrl })));
+        for (const rule of DECISION_RULES) {
+            const doc = agreementDocument(agreementRowOf(agreementContent([original], { rule: { electorate: rule.electorate, binding: rule.binding, lens: [] } })), { baseUrl });
+            expect(doc['cb:decisionRule']).toEqual({ '@id': `cb:rule-${rule.key}` });
             walk(await jsonld.expand(doc));
         }
-        walk(await jsonld.expand(planDocument({ slug: 'plan-terms', proposal_ids: ['1'],
-            member_hashes: { 1: 'a'.repeat(64) }, plan_hash: 'b'.repeat(64), supersedes: 'old-plan'
-        }, [{ id: 1 }], ['new-plan'], { baseUrl })));
-        expect(defined.has(`${NAMESPACE}DesignGoals`)).toBe(true);
+        for (const term of ['Design', 'Agreement', 'DesignSite', 'CadastreReference', 'cid', 'designs', 'decisionRule', 'DecisionRules', 'DesignGoals']) {
+            expect(defined.has(`${NAMESPACE}${term}`), term).toBe(true);
+        }
+        // The proposal, plan and lifecycle terms went with the proposal records.
+        for (const retired of ['Proposal', 'NamedPlan', 'memberships', 'recordedLifecycle', 'decisionKind', 'proposalRowId']) {
+            expect(defined.has(`${NAMESPACE}${retired}`), retired).toBe(false);
+        }
         expect(await jsonld.toRDF(vocabularyDocument(), { format: 'application/n-quads' })).toContain(`${CONTEXT.skos}inScheme`);
         for (const [path, content] of vocabularyArtifacts()) {
-            expect(readFileSync(new URL(`../../frontend/vocabulary/${path}`, import.meta.url), 'utf8')).toBe(content);
+            expect(readFileSync(new URL(`../../frontend/vocabulary/${path}`, import.meta.url), 'utf8'), path).toBe(content);
         }
         const html = vocabularyArtifacts().get('1/index.html');
         for (const id of defined) if (id.startsWith(NAMESPACE)) expect(html).toContain(`id="${id.slice(NAMESPACE.length)}"`);

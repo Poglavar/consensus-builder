@@ -118,8 +118,7 @@
         .forEach(name => forward('roadDetection', name));
 
     [
-        'openSingleBuildingForParcels', 'openFreeformGeoJSONBuildings',
-        'createSingleBuildingProposal', 'createSingleBuildingFromUpload'
+        'openSingleBuildingForParcels', 'openFreeformGeoJSONBuildings', 'createSingleBuildingFromUpload'
     ].forEach(name => forward('singleBuilding', name, {
         guardMapMode: name === 'openSingleBuildingForParcels' || name === 'openFreeformGeoJSONBuildings'
     }));

@@ -324,19 +324,6 @@ async function launchParcelBasedToolForSelection() {
     return opened !== false;
 }
 
-function toggleDepositInput() {
-    const checkbox = document.getElementById('proposalDepositCheckbox');
-    const percentInput = document.getElementById('proposalDepositPercent');
-    if (checkbox && percentInput) {
-        const enabled = checkbox.checked;
-        percentInput.disabled = !enabled;
-        if (enabled) {
-            percentInput.focus();
-            percentInput.select();
-        }
-    }
-}
-
 function computeProposalCategoryFlags(proposal, options = {}) {
     const fallback = options && options.fallbackProposal ? options.fallbackProposal : null;
     const subject = proposal || fallback || {};
@@ -357,13 +344,12 @@ function computeProposalCategoryFlags(proposal, options = {}) {
     const structureKind = ((structureProposal && structureProposal.kind) || (subject.structureProposal && subject.structureProposal.kind) || (fallback && fallback.structureProposal && fallback.structureProposal.kind) || '').toLowerCase();
     const isRoadProposal = goalKey === 'road-track';
     const isParcelLayoutProposal = goalKey === 'parcel-layout' || !!subject.parcelLayout || !!(fallback && fallback.parcelLayout);
-    const isDecideLaterProposal = goalKey === 'decide-later' || !!subject.decideLaterProposal || !!(fallback && fallback.decideLaterProposal);
     const isBuildingGoal = ['buildings', 'building(s)', 'single-building', 'parcelBased'].includes(goalKey);
     const isStructureGoal = ['park', 'square', 'lake', 'station'].includes(goalKey) || ['park', 'square', 'lake', 'station'].includes(structureKind);
     const isBuildingProposal = (!isRoadProposal) && (isBuildingGoal || !!subject.buildingProposal || !!subject.buildingGeometry || !!(fallback && (fallback.buildingProposal || fallback.buildingGeometry)));
     const isStructureProposal = (!isRoadProposal) && (!isBuildingProposal) && (isStructureGoal || hasStructureProposal);
 
-    const supportsMapToggle = isRoadProposal || isBuildingProposal || isStructureProposal || isParcelLayoutProposal || isDecideLaterProposal;
+    const supportsMapToggle = isRoadProposal || isBuildingProposal || isStructureProposal || isParcelLayoutProposal;
 
     return {
         structureProposal: structureProposal || null,
@@ -371,7 +357,6 @@ function computeProposalCategoryFlags(proposal, options = {}) {
         isBuildingProposal,
         isStructureProposal,
         isParcelLayoutProposal,
-        isDecideLaterProposal,
         supportsMapToggle
     };
 }
@@ -395,10 +380,6 @@ function getProposalDisplayType(proposal) {
 
     if (goalKey === 'parcel-layout') {
         return 'parcel-layout';
-    }
-
-    if (goalKey === 'decide-later') {
-        return 'decide later';
     }
 
     return 'other';
@@ -583,14 +564,6 @@ function sortProposalDataset(dataset) {
         switch (sortKey) {
             case 'created-asc':
                 return am.createdAt - bm.createdAt;
-            case 'acceptance-desc':
-                return bm.acceptanceRatio - am.acceptanceRatio;
-            case 'acceptance-asc':
-                return am.acceptanceRatio - bm.acceptanceRatio;
-            case 'value-desc':
-                return bm.offerValue - am.offerValue;
-            case 'value-asc':
-                return am.offerValue - bm.offerValue;
             case 'parcels-desc':
                 return bm.parcelCount - am.parcelCount;
             case 'parcels-asc':
@@ -613,8 +586,8 @@ function sortProposalDataset(dataset) {
 }
 
 // The lifecycle rung of one proposal, the ladder every list shows (docs/design-language.md):
-// Draft, Published, Minted or Execution recorded, and a modifier for a cancelled, expired,
-// concluded or unfunded record. → { rung, label, hint, modifier: { className, label } | null }. The proposals list, the
+// Draft, Published, Minted or Execution recorded, and a modifier for a cancelled, expired
+// or unfunded record. → { rung, label, hint, modifier: { className, label } | null }. The proposals list, the
 // parcel and block panels and the parcel-set list all read it, so a proposal is named the same
 // wherever it is listed. The derivation is proposals/display-state.js, shared with the details panel.
 function getProposalLadder(proposal) {
@@ -627,21 +600,7 @@ function getProposalLadder(proposal) {
         hint: window.__proposalDisplayState.rungHint(state.rung, t), modifier };
 }
 
-// Who decides (proposal-kinds.md), once the kind is settled: chosen in the dialog, or published
-// (a published record without one is an owner deal). A quick local drawing has no kind yet.
-function proposalKindBadgeHtml(proposal, published) {
-    if (!proposal || (!proposal.kind && !published)) return '';
-    const kind = window.ProposalKind.kindOf(proposal);
-    if (!kind) return '';
-    const t = getProposalI18nHelper();
-    const label = kind === 'owner-vote' ? t('modal.createProposal.kind.ownerVote', 'Owner vote')
-        : kind === 'community-vote' ? t('modal.createProposal.kind.communityVote', 'Community vote')
-            : t('modal.createProposal.kind.ownerDeal', 'Owner deal');
-    const variant = kind === 'owner-deal' ? 'cb-badge--neutral' : 'cb-badge--info';
-    return `<span class="cb-badge ${variant}" data-proposal-kind="${kind}">${escapeHtml(label)}</span>`;
-}
-
-// The ladder as badges: the rung, the kind, "Applied" when the proposal is on this map
+// The ladder as badges: the rung, "Applied" when the proposal is on this map
 // (options.applied, else read from the proposal; never for a cancelled one) and the modifier.
 function proposalLadderBadgesHtml(proposal, options = {}) {
     const t = getProposalI18nHelper();
@@ -651,29 +610,9 @@ function proposalLadderBadgesHtml(proposal, options = {}) {
         : {});
     return [
         `<span class="cb-badge cb-badge--${ladder.rung}" title="${escapeHtml(ladder.hint)}">${escapeHtml(ladder.label)}</span>`,
-        proposalKindBadgeHtml(proposal, ladder.rung !== 'draft'),
         applied ? `<span class="cb-badge cb-badge--applied"><i class="fas fa-check" aria-hidden="true"></i> ${escapeHtml(t('common.lifecycle.applied', 'Applied'))}</span>` : '',
         ladder.modifier ? `<span class="cb-badge ${ladder.modifier.className}">${escapeHtml(ladder.modifier.label)}</span>` : ''
     ].join('');
-}
-
-function buildProposalActionButtons(proposal, isExecuted = false) {
-    // Action buttons (Apply to map / Remove from map) are now only available in proposal details modal.
-    // Open sale offers have a browser-local purchase simulation. Stop propagation so the row
-    // preview does not also run; retain the separate local result alongside the shared lifecycle.
-    const t = getProposalI18nHelper();
-    const buttons = [];
-    if (proposal.localPurchaseSimulation) {
-        buttons.push(`<span class="proposal-purchase-simulation">${escapeHtml(t('panel.proposal.purchaseSimulation.result', 'Purchase simulated in this browser'))}</span>`);
-    } else if (!isExecuted && typeof isProposalOpenSaleOffer === 'function' && isProposalOpenSaleOffer(proposal)) {
-        const buyLabel = t('panel.proposal.purchaseSimulation.button', 'Simulate purchase');
-        const hint = t('panel.proposal.purchaseSimulation.hint', 'Updates modeled parcel ownership in this browser. No payment is made.');
-        const pid = proposal.proposalId || proposal.id || '';
-        buttons.push(`<button type="button" class="btn btn-success btn-sm proposal-buy-btn" title="${escapeHtml(hint)}" onclick="event.stopPropagation(); simulateSaleOfferPurchase('${pid}');"><i class="fas fa-handshake" aria-hidden="true"></i> ${buyLabel}</button>`);
-    }
-    // The list has no inline editor. Its row previews the proposal; the explicit Details button
-    // opens the details panel with actions such as editing, creating a proposal, parking, or deletion.
-    return buttons.join('');
 }
 
 function buildProposalListItemsHtml(dataset, options = {}) {
@@ -685,9 +624,7 @@ function buildProposalListItemsHtml(dataset, options = {}) {
         created: t('modal.roadWidth.proposalList.meta.created', 'Created:'),
         parcels: t('modal.roadWidth.proposalList.meta.parcels', 'Parcels:'),
         area: t('modal.roadWidth.proposalList.meta.area', 'Area:'),
-        offer: t('modal.roadWidth.proposalList.meta.offer', 'Offer:'),
         applied: t('modal.roadWidth.proposalList.meta.applied', 'Applied:'),
-        disbursement: t('modal.roadWidth.proposalList.meta.disbursement', 'Disbursement:'),
         minted: t('modal.roadWidth.proposalList.meta.minted', 'Minted:')
     };
     const emptyText = t('modal.roadWidth.proposalList.empty', 'No proposals match the current filters.');
@@ -704,23 +641,16 @@ function buildProposalListItemsHtml(dataset, options = {}) {
     return dataset.map(entry => {
         const { proposal, metrics } = entry;
         const proposalId = getProposalKey(proposal);
-        const serialProposalId = typeof getSerialProposalId === 'function' ? getSerialProposalId(proposal) : null;
+        const publishedCid = window.DesignSync.publishedCid(proposal);
         const color = typeof getProposalColor === 'function' ? getProposalColor(proposalId || '') : '#007bff';
         const typeLabel = escapeHtml(formatProposalTypeLabel(metrics.goalKey));
-        const consentLabels = metrics.consentBasis && window.ProposalApprovalText.consentLabels(metrics.consentBasis, t,
-            { accepted: metrics.acceptedCount, total: metrics.parcelCount });
-        const acceptanceText = metrics.parcelCount > 0 && consentLabels ? consentLabels.parcelSummary : '';
         const areaText = formatAreaMetric(metrics.area);
-        // No offer → no "—" placeholder in the meta line; the line simply has one fewer item.
-        const offerText = (Number.isFinite(metrics.offerValue) && metrics.offerValue > 0)
-            ? formatCurrencyMetric(metrics.offerValue, proposal.offerCurrency)
-            : '';
         const createdDate = (metrics.createdAt && CbFormat.formatDate(metrics.createdAt)) || '—';
         const isExecuted = getLifecycleStatus(proposal) === 'Executed';
         // Save state is a property of the PROPOSAL, not of which tab it is shown in: it is "Unsaved"
-        // (local-only, at risk) unless it is minted on-chain or uploaded to the server (numeric serial).
+        // (local-only, at risk) unless it is minted on-chain or published (it has a CID).
         const isMinted = isProposalMinted(proposal);
-        const isUnsaved = !isMinted && !serialProposalId;
+        const isUnsaved = !isMinted && !publishedCid;
         const classes = ['proposal-list-item'];
 
         if (isExecuted) classes.push('is-executed');
@@ -746,13 +676,6 @@ function buildProposalListItemsHtml(dataset, options = {}) {
         if (appliedState) classes.push('is-applied');
         const classAttr = classes.join(' ');
 
-        // Determine disbursement mode (conditional/partial)
-        const disbursementModeRaw = (proposal.disbursementMode || '').toLowerCase();
-        const isConditional = proposal.isConditional === true || disbursementModeRaw === 'conditional';
-        const disbursementLabel = isConditional
-            ? t('modal.roadWidth.proposalList.labels.conditional', 'Conditional')
-            : t('modal.roadWidth.proposalList.labels.partial', 'Partial payouts');
-
         // The lifecycle badges from the ladder (proposalLadderBadgesHtml): the rung, "Applied" when
         // the proposal is on this map and the modifier. Where the record is held (this browser, the
         // server) is what the tabs say; it is not repeated on every row.
@@ -761,7 +684,7 @@ function buildProposalListItemsHtml(dataset, options = {}) {
         // The card's buttons: Download (or Delete) beside the title, Details the card's one primary.
         // The proposal-* classes are the hooks the list's delegated clicks and the specs use.
         const downloadButtonHtml = downloadEligible
-            ? `<button type="button" class="btn btn-sm proposal-download-btn" data-proposal-id="${escapeHtml(proposalId)}" data-server-id="${escapeHtml(proposal.serverProposalId || proposal.id || '')}" ${isDownloaded ? 'disabled' : ''}>${escapeHtml(isDownloaded ? downloadedLabel : downloadLabel)}</button>`
+            ? `<button type="button" class="btn btn-sm proposal-download-btn" data-proposal-id="${escapeHtml(proposalId)}" data-cid="${escapeHtml(proposal.cid || '')}" ${isDownloaded ? 'disabled' : ''}>${escapeHtml(isDownloaded ? downloadedLabel : downloadLabel)}</button>`
             : '';
         const deleteButtonHtml = isServerSource ? '' : `
                     <button type="button" class="btn btn-sm btn-icon btn-danger proposal-delete-btn" onclick="event.stopPropagation(); deleteProposal('${proposalId}')" title="${escapeHtml(deleteTooltip)}" aria-label="${escapeHtml(deleteTooltip)}">
@@ -776,7 +699,6 @@ function buildProposalListItemsHtml(dataset, options = {}) {
         const goalBadge = (typeof getProposalGoalBadge === 'function') ? getProposalGoalBadge(metrics.goalKey) : null;
         const goalIcon = (goalBadge && goalBadge.text) ? goalBadge.text : '📄';
         const goalIconTitle = (goalBadge && goalBadge.label) ? goalBadge.label : typeLabel;
-        const buyButtonHtml = buildProposalActionButtons(proposal, isExecuted); // usually empty (Buy on open sale offers)
         const agentProvenance = typeof ProposalAgentProvenance !== 'undefined'
             ? ProposalAgentProvenance.read(proposal)
             : null;
@@ -785,19 +707,16 @@ function buildProposalListItemsHtml(dataset, options = {}) {
             ? `${agentProvenance.persona} · ${agentProvenance.paymentLabel}`
             : '';
         const metaBits = [
-            offerText ? `<span class="proposal-card-offer">${escapeHtml(offerText)}</span>` : '',
             `<span>${safeAuthor}</span>`,
             `<span>${escapeHtml(createdDate)}</span>`,
-            `<span>${escapeHtml(t('proposals.autoName.parcels', '{{count}} parcels', { count: metrics.parcelCount }))}</span>`,
-            acceptanceText ? `<span data-consent-basis="${metrics.consentBasis}" title="${escapeHtml(consentLabels.hint)}">${escapeHtml(acceptanceText)}</span>` : ''
-        ].filter(Boolean).join('<span class="proposal-card-dot">·</span>');
+            `<span>${escapeHtml(t('proposals.autoName.parcels', '{{count}} parcels', { count: metrics.parcelCount }))}</span>`
+        ].join('<span class="proposal-card-dot">·</span>');
 
         return `
-            <div class="${classAttr} proposal-list-item--compact" data-proposal-id="${proposalId}"${isServerSource ? ` data-server-id="${escapeHtml(proposal.serverProposalId || '')}"` : ''} style="border-left: 4px ${isUnsaved ? 'dashed' : 'solid'} ${color};">
+            <div class="${classAttr} proposal-list-item--compact" data-proposal-id="${proposalId}"${isServerSource ? ` data-cid="${escapeHtml(proposal.cid || '')}"` : ''} style="border-left: 4px ${isUnsaved ? 'dashed' : 'solid'} ${color};">
                 <div class="proposal-card-head">
                     <span class="proposal-card-icon" title="${escapeHtml(goalIconTitle)}" aria-hidden="true">${escapeHtml(goalIcon)}</span>
                     <span class="proposal-list-title" title="${safeTitle}">${safeTitle}</span>
-                    ${serialProposalId ? `<span class="proposal-meta-number">#${escapeHtml(serialProposalId)}</span>` : ''}
                     ${downloadButtonHtml || deleteButtonHtml}
                 </div>
                 <div class="proposal-card-sub">${metaBits}</div>
@@ -805,8 +724,6 @@ function buildProposalListItemsHtml(dataset, options = {}) {
                     ${window.__proposalEpoch ? window.__proposalEpoch.cardEpochSelectHtml(proposal, proposalId) : ''}
                     ${proposalLadderBadgesHtml(proposal, { applied: appliedState })}
                     ${agentProvenance ? `<span class="cb-badge cb-badge--published proposal-agent-badge" title="${escapeHtml(agentBadgeTitle)}"><i class="fas fa-robot" aria-hidden="true"></i> ${escapeHtml(agentBadgeLabel)}</span>` : ''}
-                    ${proposal && proposal.proposalRole === 'owner-offer' ? `<span class="cb-badge cb-badge--executed proposal-owner-offer-badge" title="${escapeHtml(t('panel.proposal.ownerOffer.badgeTitle', 'The owner offers this land; bids are pledges and donations'))}">${escapeHtml(t('panel.proposal.ownerOffer.badge', 'Owner offer'))}</span>` : ''}
-                    ${buyButtonHtml}
                 </div>
                 <div class="proposal-card-actions">${detailsButtonHtml}</div>
             </div>
@@ -850,15 +767,14 @@ function resetParcelSelectionForProposalListInteraction() {
     } catch (_) { }
 }
 
-// Download a server proposal into local storage. Downloading does not apply the proposal to this
-// map, so import parks it (applied: false). Keeping the uploader's "applied" made the details panel
-// announce a proposal as on the map while no geometry had been drawn, and offer "Remove from map"
-// where "Apply to map" belonged. The lifecycle is the server's and is kept. Shared by a list row
-// click and the map search box's proposal results.
-async function importServerProposal(serverId) {
-    const serverProposal = await fetchServerProposalById(serverId, resolveCurrentCityCode());
-    const proposal = proposalStorage.importProposal(serverProposal, { overwrite: true });
-    if (!proposal) throw new Error(`Failed to import proposal ${serverId}`);
+// Download a published design, by its CID, into local storage (DesignSync.importDesign: a local
+// copy of the same CID is returned as it is). Downloading does not apply the design to this map, so
+// import parks it (applied: false). Keeping the publisher's "applied" made the details panel announce
+// a proposal as on the map while no geometry had been drawn, and offer "Remove from map" where
+// "Apply to map" belonged. Shared by a list row and its Download button, the map search box's
+// results and the entries that open a design by its CID (activity, globe, bets).
+async function importServerProposal(cid) {
+    const proposal = window.DesignSync.importDesign(await window.DesignSync.fetchDesign(cid));
     updateShowProposalsButton();
     return proposal;
 }
@@ -877,23 +793,19 @@ async function handleProposalListItemClick(event) {
     const source = proposalListState.source || 'local';
     console.log('[ProposalList] click on proposal item', { proposalIdAttr, source });
 
-    // Server rows refer to local copies by their declared row reference, never by an authored-ID
-    // collision with a local key or chain token.
-    const serverRowId = source === 'server' ? item.getAttribute('data-server-id') : null;
+    // Server rows refer to local copies by their CID, never by an authored-ID collision with a
+    // local key or chain token.
+    const rowCid = source === 'server' ? item.getAttribute('data-cid') : null;
     let proposal = source === 'server'
-        ? findLocalCopyOfServerProposal({
-            serverProposalId: serverRowId,
-            publicationApiBase: typeof resolveBackendBaseUrl === 'function' ? resolveBackendBaseUrl() : null
-        })
+        ? findLocalCopyOfServerProposal({ cid: rowCid })
         : getProposalByIdOrHash(proposalIdAttr);
 
     // A published proposal opens like any other: it is fetched into this browser on the way, with
     // no "Download?" question (that was an implementation detail asked of the user).
     if (!proposal && source === 'server') {
-        const serverId = serverRowId;
         try {
             updateStatus('Downloading proposal…');
-            proposal = await importServerProposal(serverId);
+            proposal = await importServerProposal(rowCid);
             // The card still said "Download". Downloading by clicking the ROW leaves the same card
             // on screen as downloading by its own button does, so it has to end in the same state —
             // otherwise the list keeps offering to fetch something it already holds.
@@ -903,10 +815,10 @@ async function handleProposalListItemClick(event) {
         } catch (error) {
             // Another city's proposal (the explore list shows every city's): it opens in its city.
             if (error?.code === 'proposal-in-other-city') {
-                await openProposalInItsCity(serverId, error.cityId);
+                await openProposalInItsCity(rowCid, error.cityId);
                 return;
             }
-            console.error('Failed to download server proposal on click', serverId, error);
+            console.error('Failed to download server proposal on click', rowCid, error);
             const t = getProposalI18nHelper();
             updateStatus(t('modal.roadWidth.proposalList.downloadError', 'Failed to download proposal'));
             return;
@@ -954,23 +866,20 @@ async function handleProposalListDetailsClick(event) {
     const proposalId = event.currentTarget?.getAttribute('data-proposal-details');
     if (!proposalId) return;
 
-    const serverRowId = proposalListState.source === 'server'
-        ? event.currentTarget.closest('.proposal-list-item')?.getAttribute('data-server-id') : null;
+    const rowCid = proposalListState.source === 'server'
+        ? event.currentTarget.closest('.proposal-list-item')?.getAttribute('data-cid') : null;
     let proposal = proposalListState.source === 'server'
-        ? findLocalCopyOfServerProposal({
-            serverProposalId: serverRowId,
-            publicationApiBase: typeof resolveBackendBaseUrl === 'function' ? resolveBackendBaseUrl() : null
-        })
+        ? findLocalCopyOfServerProposal({ cid: rowCid })
         : getProposalByIdOrHash(proposalId);
     if (!proposal && proposalListState.source === 'server') {
         try {
-            proposal = await importServerProposal(serverRowId);
+            proposal = await importServerProposal(rowCid);
         } catch (error) {
             if (error?.code === 'proposal-in-other-city') {
-                await openProposalInItsCity(proposalId, error.cityId);
+                await openProposalInItsCity(rowCid, error.cityId);
                 return;
             }
-            console.error('Failed to download server proposal for details', proposalId, error);
+            console.error('Failed to download server proposal for details', rowCid, error);
             updateStatus(getProposalI18nHelper()('modal.roadWidth.proposalList.downloadError', 'Failed to download proposal'));
             return;
         }
@@ -1251,9 +1160,9 @@ function proposalUnionCountNow() {
         ? records.filter(proposal => counts?.proposalIntersectsBounds?.(proposal, area.bounds))
         : records;
     const local = scoped.map(proposal => ({
-        // "On server" by the same test the list card uses for its badge — a DOWNLOADED proposal
-        // carries the serial as proposalId/id, and counting it as local-only would double it.
-        onServer: !!(typeof getSerialProposalId === 'function' && getSerialProposalId(proposal))
+        // "On server" by the same test the list card uses for its save state: a DOWNLOADED design is
+        // published (it has its CID), and counting it as local-only would double it.
+        onServer: !!window.DesignSync.publishedCid(proposal)
     }));
     // The server half of the number. A refresh in flight (the cache is reset on every download and
     // re-asked) must not empty it: the badge then read the LOCAL count alone (418 → 1 → 2) and the

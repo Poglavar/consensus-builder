@@ -23,7 +23,6 @@ const drillUi = read('js/proposals/drill-ui.js');
 const threeMode = read('js/three-mode.js');
 const parcelBlocks = read('js/parcel-blocks.js');
 const listUi = read('js/proposals/list-ui.js');
-const sharingRoutes = read('js/proposals/sharing-routes.js');
 const cityPrompt = read('js/city-switch-prompt.js');
 
 // Body of the first `selector { … }` block whose selector text matches, searched from `from`.
@@ -292,17 +291,6 @@ describe('smaller fixes', () => {
     it('reports "applied" on a server card from the local copy this browser holds', () => {
         expect(listUi).toMatch(/const appliedSubject = localCopy \|\| proposal;/);
         expect(listUi).toMatch(/isProposalApplied\(appliedSubject\)/);
-    });
-
-    it('shows the shared-plan dialog only when there is something to read', () => {
-        expect(sharingRoutes).toMatch(/const summaryHasIssues = failed\.length > 0 \|\| rebasedCount > 0;/);
-        expect(sharingRoutes).not.toMatch(/&& \(summaryHasIssues \|\| !wants3DFromUrl\)/);
-        expect(sharingRoutes).not.toContain("tShare('plan.alreadyAppliedTitle'");
-    });
-
-    it('warns when an already-applied link points at proposals deleted from the server', () => {
-        expect(sharingRoutes).toContain("tShare('plan.goneFromServer'");
-        expect(sharingRoutes).toContain('batchRecords.missing.has(id)');
     });
 
     it('takes down the loading card before asking which city to open', () => {

@@ -152,27 +152,6 @@ describe('proposal rows: inserts do no whole-store duplicate scan', () => {
     });
 });
 
-describe('proposal rows: inserts do no whole-store duplicate scan', () => {
-    it('adds authored records without hashing unrelated stored geometry, even for an explicit id', () => {
-        const storage = fakeStorage();
-        const store = bootStore(storage);
-        install('getCurrentCityId', () => 'zagreb');
-        install('hashStringDeterministic', deterministicHash);
-        let unrelatedReads = 0;
-        const unrelated = record('existing');
-        Object.defineProperty(unrelated, 'geometry', { get() {
-            unrelatedReads += 1;
-            return {};
-        } });
-        store.proposals.set('existing', unrelated);
-        const seed = vi.spyOn(store, '_buildHashSeed');
-        expect(store.addProposal(record('authored-new'), { deferSave: true })).toBe('authored-new');
-        expect(unrelatedReads).toBe(0);
-        expect(seed).not.toHaveBeenCalled();
-        expect(store.getProposal('authored-new').title).toBe('authored-new');
-    });
-});
-
 describe('proposal rows: deterministic ID collisions', () => {
     it('allocates unique ids when several authored proposals share one immutable seed in the same millisecond, and reloads every row', () => {
         vi.useFakeTimers();
@@ -205,29 +184,6 @@ describe('proposal rows: deterministic ID collisions', () => {
         } finally {
             vi.useRealTimers();
         }
-    });
-});
-
-describe('proposal rows: publication identity', () => {
-    it('matches a server row only when the publication API base is explicit', () => {
-        const storage = fakeStorage();
-        const store = bootStore(storage);
-        const apiA = 'https://api-a.example';
-        const apiB = 'https://api-b.example';
-        install('getBackendBase', () => apiA);
-        const currentCopy = record('current-copy', { serverProposalId: '17', publicationApiBase: apiA });
-        const foreignCopy = record('foreign-copy', { serverProposalId: '17', publicationApiBase: apiB });
-        const bareCopy = record('bare-copy', { serverProposalId: '17' });
-        store.proposals.set(currentCopy.proposalId, currentCopy);
-        store.proposals.set(foreignCopy.proposalId, foreignCopy);
-        store.proposals.set(bareCopy.proposalId, bareCopy);
-
-        expect(store.getProposalByServerRowId('17', apiA)).toBe(currentCopy);
-        expect(store.getProposalByServerRowId('17', apiB)).toBe(foreignCopy);
-        expect(store.getProposalByServerRowId('17', undefined)).toBeNull();
-        expect(store.getProposalByServerRowId('17', apiA)).not.toBe(foreignCopy);
-        expect(store.getProposalByServerRowId('17', apiB)).not.toBe(bareCopy);
-        expect(store._resolveProposalId('17')).toBeNull();
     });
 });
 

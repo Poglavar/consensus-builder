@@ -190,18 +190,25 @@ async function footprintFacts(page: Page, footprint: any, reference: any, parcel
   }, [footprint, reference, parcelId]);
 }
 
-// Marks a saved local record as published on the server: an edit of it is a counterproposal.
-async function markPublished(page: Page, proposalId: string): Promise<void> {
-  await page.evaluate(id => {
-    const storage = (window as any).proposalStorage;
-    const source = storage.getProposal(id);
-    source.serverProposalId = '741';
-    source.publicationApiBase = (window as any).getBackendBase();
-    source.lifecycleEvidence = { protocol: 'proposal-lifecycle-evidence/1', state: 'unknown', claimedStatus: 'Active', reason: 'no-matching-observation' };
-    storage.setProposalLifecycleStatus(id, 'Active');
-    storage.save();
+// Marks a saved local record published, as publishing it does (DesignSync.markPublished under the CID
+// it hashes to): an edit of it is a counterproposal. Returns that CID.
+async function markPublished(page: Page, proposalId: string): Promise<string> {
+  const cid = await page.evaluate(id => {
+    const w = window as any;
+    const source = w.proposalStorage.getProposal(id);
+    const cid = w.DesignRecord.cidOf(source);
+    w.DesignSync.markPublished(source, { cid, publishedAt: new Date().toISOString(), apiBase: w.DesignSync.apiBase() });
+    return cid;
   }, proposalId);
+  expect(await publishedCidOf(page, proposalId)).toBe(cid);
+  return cid;
 }
+
+// The CID a local record is published under here (null once it no longer hashes to it).
+const publishedCidOf = (page: Page, proposalId: string) => page.evaluate(id => {
+  const w = window as any;
+  return w.DesignSync.publishedCid(w.proposalStorage.getProposal(id));
+}, proposalId);
 
 const EDITOR_DONE: Record<string, string> = { '#blockify-modal': '#btn-blockify-done', '#rowhouse': '#btn-rowhouse-done', '#parcelbased': '#btn-parcelbased-done' };
 
@@ -685,8 +692,7 @@ test.describe('Building-family placement @features', () => {
   test('a published Detached dropped off its parcels gets one Freeform counterproposal per house and stays as it was', async ({ mockApi: page }) => {
     await openDetachedOnTwoPlots(page);
     const source = await saveDetached(page);
-    await markPublished(page, source.proposalId);
-    const publicationApiBase = await page.evaluate(() => (window as any).getBackendBase());
+    const publishedCid = await markPublished(page, source.proposalId);
     const publishedBefore = await proposalState(page, source.proposalId);
     await reopenGeometryEditor(page, source.proposalId, '#parcelbased');
     const recordsBefore = await proposalIds(page);
@@ -699,12 +705,14 @@ test.describe('Building-family placement @features', () => {
     const counterproposals = await newFreeforms(page, recordsBefore, 2);
     counterproposals.forEach(item => {
       expect(item).toMatchObject({ goal: 'single', applied: true,
-        proposalOrigin: { relation: 'revision', source: { kind: 'publication', apiBase: publicationApiBase, proposalRowId: '741' } } });
+        proposalOrigin: { relation: 'revision', source: { kind: 'design', cid: publishedCid } } });
+      expect(item.published).toBeUndefined();
       expect(item.geometry.buildings).toHaveLength(1);
     });
     const publishedAfter = await proposalState(page, source.proposalId);
     expect(publishedAfter.goal).toBe(publishedBefore.goal);
     expect(publishedAfter.geometry).toEqual(publishedBefore.geometry);
+    expect(await publishedCidOf(page, source.proposalId)).toBe(publishedCid);
   });
 
   test('a saved Detached on one parcel: Put it back leaves nothing to discard, and the rule re-run on the next parcel saves there', async ({ mockApi: page }) => {
@@ -808,8 +816,7 @@ test.describe('Building-family placement @features', () => {
   test('details-panel Convert to freeform building on a published block makes a Freeform counterproposal and leaves the block as it was', async ({ mockApi: page }) => {
     await openCity(page);
     const publishedId = await createBuilding(page, 'range');
-    await markPublished(page, publishedId);
-    const publicationApiBase = await page.evaluate(() => (window as any).getBackendBase());
+    const publishedCid = await markPublished(page, publishedId);
     const published = await proposalState(page, publishedId);
     const recordsBefore = await proposalIds(page);
     await showProposal(page, publishedId);
@@ -820,12 +827,14 @@ test.describe('Building-family placement @features', () => {
     await confirm.getByRole('button', { name: 'Convert', exact: true }).click();
     const [counterproposal] = await newFreeforms(page, recordsBefore, 1);
     expect(counterproposal).toMatchObject({ goal: 'single', applied: true,
-      proposalOrigin: { relation: 'revision', source: { kind: 'publication', apiBase: publicationApiBase, proposalRowId: '741' } } });
+      proposalOrigin: { relation: 'revision', source: { kind: 'design', cid: publishedCid } } });
+    expect(counterproposal.published).toBeUndefined();
     expect(counterproposal.geometry.buildings).toHaveLength(1);
     expect(counterproposal.geometry.buildings[0].properties.height).toBe(published.buildingProposal.parameters.rule.maxHeightM);
     const after = await proposalState(page, publishedId);
     expect(after.goal).toBe(published.goal);
     expect(after.geometry).toEqual(published.geometry);
+    expect(await publishedCidOf(page, publishedId)).toBe(publishedCid);
   });
 
   // User decision 2026-10-18: a converted or moved design that lands on an applied proposal goes

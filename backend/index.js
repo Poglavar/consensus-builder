@@ -36,15 +36,12 @@ import { setupUrbanRulesRoute } from './routes/urban-rules.js';
 import { setupLandUsesRoute } from './routes/land-uses.js';
 import { setupDocsRoute } from './routes/docs.js';
 import { setupIpfsRoute } from './routes/ipfs.js';
-import { setupWalrusRoute } from './routes/walrus.js';
 import { setupAssetsRoute } from './routes/assets.js';
 import { setupFileStorageRoutes } from './routes/file-storage.js';
 import { setupAdsRoute } from './routes/ads.js';
 import { setupRoadParcelsRoute } from './routes/road-parcels.js';
 import { setupProposalsRoute } from './routes/proposals.js';
-import { setupProposalBindingRoute, PROPOSAL_BINDING_PATHS, BINDING_DRIFT_PATH } from './routes/proposal-binding.js';
-import { setupProposalPrepareRoute, PROPOSAL_PREPARE_PATHS } from './routes/proposal-prepare.js';
-import { setupAgentProposalsRoute } from './routes/agent-proposals.js';
+import { registerContentRoutes } from './routes/content-routes.js';
 import { setupAgentPledgesRoute } from './routes/agent-pledges.js';
 import { setupAgentActivityRoute } from './routes/agent-activity.js';
 import { setupAgentDiscoveryRoute } from './routes/agent-discovery.js';
@@ -62,11 +59,9 @@ import { setupMarketsRoute } from './routes/markets.js';
 import { setupBetsShareRoute } from './routes/bets-share.js';
 import { isAgentPath } from './utils/x402-payment.js';
 import { setupRoadCorridorRoute } from './routes/road-corridor.js';
-import { setupReparcellizationRoute } from './routes/reparcellization.js';
 import { setupCityStatsRoute } from './routes/city-stats.js';
 import { setupAreaMonitorsRoute } from './routes/area-monitors.js';
 import { setupEnsRoute } from './routes/ens.js';
-import { setupEnsPlansRoute } from './routes/ens-plans.js';
 import { setupCantonRoute } from './routes/canton.js';
 import { setupAiSceneRoute } from './routes/ai-scene.js';
 import { forwardAsyncErrors } from './utils/async-routes.js';
@@ -215,11 +210,6 @@ export const WRITE_RATE_LIMIT = 600;
 // body of up to 15 MB, so it gets its own, much larger, budget instead of none at all.
 export const PARCELS_UNDER_RATE_LIMIT = 3000;
 
-// POST /proposals/binding (and its /agent/binding alias) is the same kind of PostGIS read over a
-// site, asked by the browser once per publish and by a drawing preview as the site changes. Its own
-// budget: not a write, not unlimited.
-export const PROPOSAL_BINDING_RATE_LIMIT = 1200;
-
 // POST routes that are READS: they take a POST only because their input (a GeoJSON geometry, a list
 // of ids) is too big for a query string, and they change nothing. So neither the Origin gate nor the
 // write limiter in createApp applies to them — one list, so the two can never disagree about what is
@@ -236,7 +226,8 @@ export const READ_ONLY_POST_PATHS = new Set([
     '/decor/near',
     '/decor/water',
     '/proposals/batch',
-    '/proposals/binding'
+    '/designs/batch',
+    '/designs/binding'
 ]);
 const PARCEL_SOURCE_UNDER_PATH = /^\/parcel-sources\/[^/]+\/under$/;
 
@@ -251,8 +242,7 @@ export function createApp({
     env = process.env,
     pool: providedPool,
     writeRateLimit = WRITE_RATE_LIMIT,
-    parcelsUnderRateLimit = PARCELS_UNDER_RATE_LIMIT,
-    proposalBindingRateLimit = PROPOSAL_BINDING_RATE_LIMIT
+    parcelsUnderRateLimit = PARCELS_UNDER_RATE_LIMIT
 } = {}) {
     // Before ANY route or middleware is registered: every async handler's rejection goes to the
     // error handler below instead of becoming an unhandled rejection that exits the process.
@@ -400,25 +390,10 @@ export function createApp({
         legacyHeaders: false,
         message: { error: 'Too many requests, please try again later.' }
     });
-    const proposalBindingRateLimiter = rateLimit({
-        windowMs: 15 * 60 * 1000,
-        max: proposalBindingRateLimit,
-        standardHeaders: true,
-        legacyHeaders: false,
-        message: { error: 'Too many requests, please try again later.' }
-    });
     app.use((req, res, next) => {
-        // A drift check recomputes a binding with PostGIS: same budget as POST /proposals/binding.
-        if (req.method === 'GET' && BINDING_DRIFT_PATH.test(req.path)) {
-            return proposalBindingRateLimiter(req, res, next);
-        }
         if (['POST', 'PUT', 'PATCH'].includes(req.method)) {
             if (req.method === 'POST' && (req.path === '/parcels/under' || PARCEL_SOURCE_UNDER_PATH.test(req.path))) {
                 return parcelsUnderRateLimiter(req, res, next);
-            }
-            // A publish asks for one preparation, as it asks for one binding: the same budget.
-            if (req.method === 'POST' && (PROPOSAL_BINDING_PATHS.includes(req.path) || PROPOSAL_PREPARE_PATHS.includes(req.path))) {
-                return proposalBindingRateLimiter(req, res, next);
             }
             // /agent/* pays per request, so the payment is the limiter (design decision, not an oversight).
             if (req.method === 'POST' && (READ_ONLY_POST_PATHS.has(req.path) || isAgentPath(req.path))) {
@@ -473,15 +448,12 @@ export function createApp({
     setupWellKnownRoutes(app, { env }); // /.well-known/x402, llms.txt, openapi.json, robots.txt; must precede docs (/agents.json aliases /docs/agents.json)
     setupDocsRoute(app, activePool);
     setupIpfsRoute(app);
-    setupWalrusRoute(app);
     setupAssetsRoute(app);
     setupFileStorageRoutes(app);
     setupAdsRoute(app, activePool);
     setupRoadParcelsRoute(app, activePool);
-    setupProposalBindingRoute(app, activePool); // before /proposals/:id routes
-    setupProposalPrepareRoute(app, activePool); // before /proposals/:id routes
     setupProposalsRoute(app, activePool);
-    setupAgentProposalsRoute(app, activePool, { env }); // paid x402 front door to the same create handler
+    registerContentRoutes(app, activePool); // designs and agreements: pins, the index, decisions (plan-design-agreement.md M2)
     setupAgentPledgesRoute(app, { env }); // read-only view; pledge writes go directly to Solana
     setupAgentActivityRoute(app, activePool); // shared live activity source for human/agent explorer UI
     setupAgentDiscoveryRoute(app, { env }); // hosted Bazaar listing proof; credentials remain server-side
@@ -497,11 +469,9 @@ export function createApp({
     setupMarketsRoute(app, activePool, { env }); // contests per city with each proposal's prediction market (Bets sheet)
     setupBetsShareRoute(app, activePool, { env }); // /bets/<account>: link preview for one bet, then on to the app
     setupRoadCorridorRoute(app, activePool);
-    setupReparcellizationRoute(app);
     setupCityStatsRoute(app, activePool);
     setupAreaMonitorsRoute(app, activePool);
     setupEnsRoute(app, activePool);
-    setupEnsPlansRoute(app, activePool);
     if (isCantonEnabled(env)) {
         setupCantonRoute(app); // Canton chain option — no DB pool needed (talks to Ledger API)
     } else {

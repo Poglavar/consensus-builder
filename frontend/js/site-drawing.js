@@ -1,7 +1,7 @@
 // The site tool (window.SiteTool): draw a proposal's SITE on the map — click corners, snap to parcel
 // and existing-building outlines, edit vertices — and see its binding as you go: bound parcels outlined, parcels reached into
 // by under half a metre flagged with the width, open ground hatched, a coverage label; a preview over
-// the loaded parcels first (labelled), then the server's answer (POST /proposals/binding), except
+// the loaded parcels first (labelled), then the server's answer (POST /designs/binding), except
 // browser-local estimates whose binding stays local. From the
 // site panel, "Propose here" opens the site's proposal panel: the parcel panel's twin, with Info and
 // Proposals tabs and the same palette. Structures use the site directly, a block uses it as
@@ -378,6 +378,21 @@
         log(`preview: ${state.preview.parcels.length} bound, ${state.preview.touched.length} touched, coverage ${state.preview.coverage} over ${parcels.length} loaded parcels in ${Math.round(performance.now() - started)} ms`);
     }
 
+    // The parcels the server would bind a design on this site to (POST /designs/binding, derive only).
+    async function fetchDesignBinding({ site, toleranceM, city }) {
+        const response = await win.fetch(`${backendBase()}/designs/binding`, {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ site, toleranceM, city })
+        });
+        const payload = await response.json().catch(() => null);
+        if (!response.ok) {
+            const error = new Error(payload && payload.error ? payload.error : `The server answered ${response.status}.`);
+            error.code = payload && payload.code ? payload.code : 'binding-unavailable';
+            throw error;
+        }
+        return payload.binding;
+    }
+
     function requestServerBinding() {
         const seq = ++state.serverSeq;
         state.server = null;
@@ -385,10 +400,9 @@
         state.serverPending = false;
         // The server cannot read this browser's saved source. Its official-source response would
         // overwrite a complete local binding with "no cadastre" and discard the selected estimates.
-        if (!state.site || !win.__publishBinding || hasLocalEstimatedSource()) return;
+        if (!state.site || hasLocalEstimatedSource()) return;
         state.serverPending = true;
-        const fetchBinding = win.__publishBinding.createFetchBinding(win.fetch.bind(win), backendBase());
-        fetchBinding({ site: state.site, toleranceM: state.toleranceM, city: cityId() })
+        fetchDesignBinding({ site: state.site, toleranceM: state.toleranceM, city: cityId() })
             .then(binding => {
                 if (seq !== state.serverSeq) return;
                 state.server = binding;
@@ -817,7 +831,6 @@
         return win.buildProposalPaletteHtml({
             buildHandler: 'SiteTool.build',
             transportHandler: 'SiteTool.transport',
-            includeOwnership: false,
             disabled: disabledTools(),
             labels: subdividable() ? { 'parcel-layout': t('siteTool.palette.subdivide', 'Subdivide') } : {}
         });

@@ -108,7 +108,6 @@
             identityKind: model.parcelIdentityKind(props, id),
             isRoad: typeof win.isRoadParcel === 'function' ? !!win.isRoadParcel(id) : false,
             multiSelectActive: !!(multi && multi.isActive),
-            selectionCount: multi && multi.selectedParcels ? multi.selectedParcels.size : 0,
             historyIds,
             isGround,
             blocksEnabled: blocksEnabled(),
@@ -408,8 +407,6 @@
         compare: facts => win.ParcelCompare.open(facts.parcelId),
         // Same seed as Shift+click: the selected parcel starts the multi-selection.
         selectMore: () => win.multiParcelSelection.toggle({ preserveSelectedParcel: true }),
-        // The build palette's own Offer tool (it opens the ownership-only proposal dialog).
-        offer: () => win.startParcelBuildTool('offer'),
         detectBlock: () => win.animateFloodfillFromSelected(),
         // This parcel as the starting outline of an editable site (js/site-drawing.js).
         useAsSite: facts => win.SiteTool.startFromParcels([facts.parcelId])

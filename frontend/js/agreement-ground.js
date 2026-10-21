@@ -129,7 +129,7 @@
                 reasons.push({ code: 'design-not-applied', proposalId });
                 return null;
             }
-            if (fingerprintOf(found) !== design.fingerprint) reasons.push({ code: 'design-changed', proposalId });
+            if (fingerprintOf(found) !== design.cid) reasons.push({ code: 'design-changed', proposalId });
             return found;
         });
         if (records.every(Boolean)) {

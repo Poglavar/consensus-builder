@@ -1,9 +1,11 @@
-// Cloudflare Worker: per-link social preview (og:image / twitter:card) for /proposals/* links.
-// Social/forum crawlers do not run JS, so the SPA's static <head> makes every share look identical.
-// This Worker sits in front of urbangametheory.xyz/proposals/* and injects per-link meta before the
-// crawler sees the HTML, and serves a proposal's image at a stable URL. Two link shapes:
-//   /proposals/:ids                       -> the proposal(s)' own preview
-//   /proposals/:ids?scene=<slug>          -> a shared AI render: card = the AI image itself
+// Cloudflare Worker: per-link social preview (og:image / twitter:card) for shared design and
+// agreement links (plan-design-agreement.md M2). Social/forum crawlers do not run JS, so the SPA's
+// static <head> makes every share look identical. This Worker sits in front of
+// urbangametheory.xyz/designs/* and /agreements/* and injects per-link meta before the crawler sees
+// the HTML, and serves the record's image at a stable URL. Link shapes:
+//   /designs/<cid>[,<cid>…]               -> the (first) design's own preview
+//   /agreements/<cid>                     -> the agreement's own preview
+//   either, with ?scene=<slug>            -> a shared AI render: card = the AI image itself
 // Humans get the same HTML (SPA still boots); only <head> is augmented.
 
 // Fallback card, used when an upstream lookup fails. We strip the page's own static og tags before
@@ -82,51 +84,51 @@ async function sceneMeta(slug, url, env, base) {
     };
 }
 
-async function proposalMeta(firstId, url, env, base) {
-    const resp = await fetch(`${env.API_BASE}/proposals/${encodeURIComponent(firstId)}`);
-    if (!resp.ok) return base;
-    const p = await resp.json();
-    const title = p.title || p.name || `Proposal #${firstId}`;
+// The records a link can name, by path prefix, and the API route that serves each by its CID.
+const RECORD_KINDS = Object.freeze([
+    { prefix: '/designs/', api: 'designs', label: 'Design' },
+    { prefix: '/agreements/', api: 'agreements', label: 'Agreement' }
+]);
+// The CID scheme of published records: CIDv1, raw, sha2-256, base32 (`bafkrei…`, 59 characters).
+const CID = /^bafkrei[a-z2-7]{52}$/;
+
+async function readRecord(kind, cid, env) {
+    const resp = await fetch(`${env.API_BASE}/${kind.api}/${encodeURIComponent(cid)}`);
+    return resp.ok ? resp.json() : null;
+}
+
+// The card of a design or agreement: its title and description come from its CID-addressed content.
+async function recordMeta(kind, cid, url, env, base) {
+    const record = await readRecord(kind, cid, env);
+    if (!record) return base;
+    const content = record.content || {};
     return {
         ...base,
-        title: `${title} · ${DEFAULTS.siteName}`,
-        description: p.description ? clip(p.description) : base.description,
-        // The proposal's own image may be a data: URL server-side, so route the card through our
-        // image endpoint (Route 2), which always yields absolute PNG bytes.
-        image: `${env.SITE_BASE}/proposals/${encodeURIComponent(firstId)}/og-image.png`,
+        title: `${content.title || kind.label} · ${DEFAULTS.siteName}`,
+        description: content.description ? clip(content.description) : base.description,
+        // Routed through our image endpoint (Route 2), so the card URL is stable and absolute.
+        image: `${env.SITE_BASE}/${kind.api}/${encodeURIComponent(cid)}/og-image.png`,
         url: url.toString()
     };
 }
 
-// Route 2: serve a proposal's image as real PNG bytes at a stable URL (redirect hosted/IPFS, decode
-// data: URLs). Scenes don't use this — their imageUrl is already an absolute hosted PNG.
-async function handleProposalImage(id, env) {
-    const resp = await fetch(`${env.API_BASE}/proposals/${encodeURIComponent(id)}`);
-    if (!resp.ok) return Response.redirect(DEFAULTS.image, 302);
-    const p = await resp.json();
-
-    const hosted = p.screenshotUrl || (p.onchainData && p.onchainData.imageUrl);
-    if (hosted && /^https?:\/\//.test(hosted)) {
-        return Response.redirect(hosted, 302);
-    }
-    const dataUrl = p.screenshotDataUrl || (p.proposal_data && p.proposal_data.screenshotDataUrl);
-    const m = typeof dataUrl === 'string' && dataUrl.match(/^data:(image\/[a-zA-Z0-9.+-]+);base64,(.+)$/);
-    if (m) {
-        const bytes = Uint8Array.from(atob(m[2]), c => c.charCodeAt(0));
-        return new Response(bytes, {
-            headers: { 'Content-Type': m[1], 'Cache-Control': 'public, max-age=86400' }
-        });
-    }
+// Route 2: serve a record's image at a stable URL: a redirect to its hosted before/after pair (the
+// server-rendered link-preview image), else its thumbnail, else the site card. Scenes don't use
+// this — their imageUrl is already an absolute hosted PNG.
+async function handleRecordImage(kind, cid, env) {
+    const record = CID.test(cid) ? await readRecord(kind, cid, env) : null;
+    const hosted = record && (record.screenshotPairUrl || record.screenshotUrl);
+    if (hosted && /^https?:\/\//.test(hosted)) return Response.redirect(hosted, 302);
     return Response.redirect(DEFAULTS.image, 302);
 }
 
-async function handleHtml(url, request, env) {
+async function handleHtml(kind, url, request, env) {
     const originResp = await fetch(request); // origin index.html (SPA fallback); unchanged for humans
     const ct = originResp.headers.get('content-type') || '';
     if (!ct.includes('text/html')) return originResp;
 
-    const ids = url.pathname.replace(/^\/proposals\//, '').split(',').map(s => s.trim()).filter(Boolean);
-    const firstId = ids[0];
+    const cids = url.pathname.slice(kind.prefix.length).split(',').map(s => s.trim()).filter(Boolean);
+    const firstCid = cids[0];
     // Canonical drops tracking and debug parameters; only ?scene= names a different page.
     const canonical = new URL(url.origin + url.pathname);
     if (url.searchParams.get('scene')) canonical.searchParams.set('scene', url.searchParams.get('scene'));
@@ -134,7 +136,7 @@ async function handleHtml(url, request, env) {
     try {
         const scene = url.searchParams.get('scene');
         if (scene) meta = await sceneMeta(scene, url, env, meta);
-        else if (firstId) meta = await proposalMeta(firstId, url, env, meta);
+        else if (firstCid && CID.test(firstCid)) meta = await recordMeta(kind, firstCid, url, env, meta);
     } catch (_) { /* keep defaults on any upstream failure */ }
 
     // Strip the SPA's static social tags so ours are the only ones the crawler can see, then append.
@@ -154,10 +156,12 @@ export default {
         const url = new URL(request.url);
         const path = url.pathname;
 
-        const imgMatch = path.match(/^\/proposals\/([^/]+)\/og-image\.png$/);
-        if (imgMatch) return handleProposalImage(imgMatch[1], env);
-
-        if (path.startsWith('/proposals/')) return handleHtml(url, request, env);
+        for (const kind of RECORD_KINDS) {
+            if (!path.startsWith(kind.prefix)) continue;
+            const image = path.slice(kind.prefix.length).match(/^([^/]+)\/og-image\.png$/);
+            if (image) return handleRecordImage(kind, image[1], env);
+            return handleHtml(kind, url, request, env);
+        }
 
         return fetch(request); // not ours — pass through
     }

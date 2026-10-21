@@ -15,10 +15,15 @@ const abi = AbiCoder.defaultAbiCoder();
 const wallet = new Wallet('0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d');
 const SENDER = getAddress('0x1111111111111111111111111111111111111111');
 
-function textUrlCallData(name) {
-    const inner = SELECTOR.TEXT + abi.encode(['bytes32', 'string'], [namehash(name), 'url']).slice(2);
+function textCallData(name, key) {
+    const inner = SELECTOR.TEXT + abi.encode(['bytes32', 'string'], [namehash(name), key]).slice(2);
     return SELECTOR.RESOLVE + abi.encode(['bytes', 'bytes'], [dnsEncode(name), inner]).slice(2);
 }
+const textUrlCallData = name => textCallData(name, 'url');
+// The text record a signed gateway answer carries.
+const textOf = res => abi.decode(['string'], abi.decode(['bytes', 'uint64', 'bytes'], res.body.data)[0])[0];
+const AGREEMENT_CID = 'bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku';
+const DESIGN_CID = 'bafkreibm6jg3ux5qumhcn2b3flc3tyu6dmlb4xa7u5bf44yegnrjhc4yeq';
 
 let pool;
 let app;
@@ -93,60 +98,58 @@ describe('GET /ens/:sender/:data', () => {
         expect(res.headers['access-control-allow-origin']).toBe('*');
     });
 
-    it('resolves a proposals name only when the proposal exists on this server', async () => {
-        pool.setResult({
-            rows: [{ proposal_id: '51', title: 'Riverside Lane', name: null, screenshot_url: null }],
-            rowCount: 1,
-        });
-        const callData = textUrlCallData('51.proposals.urbangametheory.eth');
-        const res = await request(app).get(`/ens/${SENDER}/${callData}.json`);
+    // Published records are named by CID (plan-design-agreement.md M2): an agreement first, then a design.
+    it('resolves a CID label to the published agreement it names, with its title and thumbnail', async () => {
+        pool.setResult({ rows: [{ cid: AGREEMENT_CID, title: 'Riverside deal', screenshot_url: 'https://api.example/uploads/images/agreement.png' }], rowCount: 1 });
+        const name = `${AGREEMENT_CID}.proposals.urbangametheory.eth`;
+        const res = await request(app).get(`/ens/${SENDER}/${textUrlCallData(name)}.json`);
         expect(res.status).toBe(200);
-        const [result] = abi.decode(['bytes', 'uint64', 'bytes'], res.body.data);
-        expect(abi.decode(['string'], result)[0]).toBe('https://urbangametheory.xyz/proposals/51');
+        expect(textOf(res)).toBe(`https://urbangametheory.xyz/agreements/${AGREEMENT_CID}`);
+        expect(pool.getCalls()[0].sql).toMatch(/FROM consensus\.agreement WHERE cid = \$1/);
+        expect(pool.getCalls()[0].params).toEqual([AGREEMENT_CID]);
+
+        pool.setResult({ rows: [{ cid: AGREEMENT_CID, title: 'Riverside deal', screenshot_url: 'https://api.example/uploads/images/agreement.png' }] });
+        expect(textOf(await request(app).get(`/ens/${SENDER}/${textCallData(name, 'description')}.json`))).toBe('Riverside deal');
+        pool.setResult({ rows: [{ cid: AGREEMENT_CID, title: null, screenshot_url: 'https://api.example/uploads/images/agreement.png' }] });
+        expect(textOf(await request(app).get(`/ens/${SENDER}/${textCallData(name, 'avatar')}.json`))).toBe('https://api.example/uploads/images/agreement.png');
     });
 
-    it('resolves a named plan ENS URL through its short slug route, regardless of membership size', async () => {
-        const ids = Array.from({ length: 1105 }, (_, index) => String(1234567 + index));
-        pool.setResult({ rows: [{ slug: 'candlestick-plan', proposal_ids: ids, title: 'Candlestick',
-            member_hashes: Object.fromEntries(ids.map(id => [id, 'a'.repeat(64)])), plan_hash: 'b'.repeat(64) }], rowCount: 1 });
-        const callData = textUrlCallData('candlestick-plan.proposals.urbangametheory.eth');
-        const res = await request(app).get(`/ens/${SENDER}/${callData}.json`);
+    it('resolves a CID label to a design when no agreement has it, and to nothing when neither does', async () => {
+        pool.setResults([{ rows: [] }, { rows: [{ cid: DESIGN_CID, title: null, screenshot_url: null }] }]);
+        const name = `${DESIGN_CID}.proposals.urbangametheory.eth`;
+        const design = await request(app).get(`/ens/${SENDER}/${textUrlCallData(name)}.json`);
+        expect(textOf(design)).toBe(`https://urbangametheory.xyz/designs/${DESIGN_CID}`);
+        expect(pool.getCalls().map(call => call.sql.match(/consensus\.(\w+)/)[1])).toEqual(['agreement', 'design']);
 
-        expect(res.status).toBe(200);
-        const [result] = abi.decode(['bytes', 'uint64', 'bytes'], res.body.data);
-        expect(abi.decode(['string'], result)[0]).toBe('https://urbangametheory.xyz/proposals/candlestick-plan');
-        expect(pool.getCalls()[0].params).toEqual(['candlestick-plan']);
+        // The default description of an untitled design is its kind.
+        pool.reset();
+        pool.setResults([{ rows: [] }, { rows: [{ cid: DESIGN_CID, title: null, screenshot_url: null }] }]);
+        expect(textOf(await request(app).get(`/ens/${SENDER}/${textCallData(name, 'description')}.json`))).toBe('Design');
+
+        pool.reset();
+        expect(textOf(await request(app).get(`/ens/${SENDER}/${textUrlCallData(name)}.json`))).toBe('');
+        expect(pool.getCalls()).toHaveLength(2);
     });
 
-    it('does not fabricate a url for a numeric proposal missing from this server', async () => {
-        // Mock pool returns no rows → the proposal does not exist here, so the
-        // gateway must resolve to an empty url instead of a dead /proposals link.
-        const callData = textUrlCallData('53.proposals.urbangametheory.eth');
-        const res = await request(app).get(`/ens/${SENDER}/${callData}.json`);
+    it('fails closed when the index cannot be read', async () => {
+        pool.query = async () => { throw new Error('relation "consensus.agreement" does not exist'); };
+        const res = await request(app).get(`/ens/${SENDER}/${textUrlCallData(`${AGREEMENT_CID}.proposals.urbangametheory.eth`)}.json`);
         expect(res.status).toBe(200);
-        const [result] = abi.decode(['bytes', 'uint64', 'bytes'], res.body.data);
-        expect(abi.decode(['string'], result)[0]).toBe('');
+        expect(textOf(res)).toBe('');
     });
 
-    it('resolves a named plan only when its saved commitment is complete', async () => {
-        pool.setResult({ rows: [{
-            slug: 'harbor-plan', proposal_ids: ['1', '2'], title: 'Harbor',
-            member_hashes: { '1': 'a'.repeat(64), '2': 'b'.repeat(64) }, plan_hash: 'c'.repeat(64),
-        }] });
-        const validCall = textUrlCallData('harbor-plan.proposals.urbangametheory.eth');
-        const valid = await request(app).get(`/ens/${SENDER}/${validCall}.json`);
-        const [validResult] = abi.decode(['bytes', 'uint64', 'bytes'], valid.body.data);
-        expect(abi.decode(['string'], validResult)[0]).toBe('https://urbangametheory.xyz/proposals/harbor-plan');
-        expect(pool.getCalls()[0].sql).toMatch(/member_hashes,\s*plan_hash/i);
-
-        pool.setResult({ rows: [{
-            slug: 'harbor-plan', proposal_ids: ['1', '2'], title: 'Harbor',
-            member_hashes: { '1': 'a'.repeat(64) }, plan_hash: 'c'.repeat(64),
-        }] });
-        const invalidCall = textUrlCallData('harbor-plan.proposals.urbangametheory.eth');
-        const invalid = await request(app).get(`/ens/${SENDER}/${invalidCall}.json`);
-        const [invalidResult] = abi.decode(['bytes', 'uint64', 'bytes'], invalid.body.data);
-        expect(abi.decode(['string'], invalidResult)[0]).toBe('');
+    it('no longer resolves row numbers or plan slugs, and does not even look them up', async () => {
+        // A row number, two plan slugs and a truncated CID.
+        for (const label of ['51', 'harbor-plan', 'candlestick-plan', AGREEMENT_CID.slice(0, 58)]) {
+            pool.reset();
+            pool.setResult({ rows: [{ proposal_id: '51', slug: label, title: 'Riverside Lane', screenshot_url: null }] });
+            const res = await request(app).get(`/ens/${SENDER}/${textUrlCallData(`${label}.proposals.urbangametheory.eth`)}.json`);
+            expect(res.status, label).toBe(200);
+            expect(textOf(res), label).toBe('');
+            expect(pool.getCalls(), label).toEqual([]);
+        }
+        // The namespace apex still answers its own records.
+        expect(textOf(await request(app).get(`/ens/${SENDER}/${textUrlCallData('proposals.urbangametheory.eth')}.json`))).toBe('https://urbangametheory.xyz');
     });
 
     it('resolves a chain-qualified mirror name to the chain proposal path', async () => {

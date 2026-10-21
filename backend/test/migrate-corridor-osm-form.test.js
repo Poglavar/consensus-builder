@@ -1,11 +1,10 @@
 // Tests for backend/scripts/migrate-corridor-osm-form.mjs migrateRow: a stored row's definition
 // becomes the record (the OSM document, no stretch fields) that reads back as the same road; a row
-// already in record shape is skipped; a designation is reported, not changed; and the plan member
-// hash is the same before and after.
+// already in record shape is skipped; and a designation is reported, not changed. (Named plans and
+// their member hashes are gone, plan-design-agreement.md M2, so the migration no longer reports them.)
 import { describe, it, expect } from 'vitest';
 import { createRequire } from 'node:module';
 import { migrateRow } from '../scripts/migrate-corridor-osm-form.mjs';
-import { memberHash } from '../plans/plan-hash.js';
 
 const require = createRequire(import.meta.url);
 const osmForm = require('../../frontend/js/corridor-osm-form.js');
@@ -18,7 +17,7 @@ const profile = { strips: P.CORRIDOR_PROFILE_PRESETS[10].map(lane => ({ ...lane 
 const row = definition => ({ id: 7, type: 'road', goal: 'road-track', city: 'zagreb', cadastre_parcel_ids: ['HR-1-1'], road_proposal: { definition, mode: 'draw' }, proposal_data: { roadProposal: { definition } } });
 
 describe('migrateRow', () => {
-    it('turns a view row into a record that reads back as the same road, with the same member hash', () => {
+    it('turns a view row into a record that reads back as the same road', () => {
         const before = row({ points: [[A, B], [B, C]], segments: [[A, B], [B, C]], segmentIds: ['s1', 's2'], profile, segmentProfiles: {}, width: 10, polygon: { type: 'Polygon', coordinates: [] }, tunnels: [] });
         const result = migrateRow(before);
         expect(result.status).toBe('canonicalised'); // `segmentProfiles: {}` is spelled as no overrides
@@ -26,8 +25,8 @@ describe('migrateRow', () => {
         expect(result.record.osm.elements.filter(element => element.type === 'way')).toHaveLength(2);
         expect(result.record).toMatchObject({ polygon: { type: 'Polygon' }, tunnels: [] });
         expect(osmForm.toView(result.record).points).toEqual([[A, B], [B, C]]);
-        expect(result.hashChanged).toBe(false);
-        expect(memberHash({ ...before, road_proposal: { definition: result.record } })).toBe(memberHash(before));
+        expect(osmForm.toView(result.record).segmentIds).toEqual(['s1', 's2']);
+        expect(Object.keys(result).sort()).toEqual(['record', 'status']);
     });
 
     it('reports a row that already is a record as done, and a designation as unencodable', () => {

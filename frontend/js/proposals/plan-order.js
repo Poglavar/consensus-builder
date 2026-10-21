@@ -229,7 +229,7 @@
     }
 
     function numericRecordId(record) {
-        const candidates = record ? [record.serverProposalId, record.serverId, record.id] : [];
+        const candidates = record ? [record.id] : [];
         for (const value of candidates) {
             if (typeof value === 'number' && Number.isFinite(value)) return value;
             if (typeof value === 'string' && /^\d+$/.test(value)) return Number(value);

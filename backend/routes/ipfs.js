@@ -1,46 +1,13 @@
-const PINATA_FILE_ENDPOINT = 'https://api.pinata.cloud/pinning/pinFileToIPFS';
 const PINATA_JSON_ENDPOINT = 'https://api.pinata.cloud/pinning/pinJSONToIPFS';
 
 import { createJsonBodyValidator, validators } from '../utils/request-validation.js';
 import { createUploadRateLimiter, decodeUploadImage, validateNftMetadata } from '../utils/nft-asset-upload.js';
+import { pinataCredentials, pinFileToPinata } from '../storage/pinning.js';
 
 const MAX_FILE_NAME_LENGTH = 255;
 
-function ensurePinataCredentials() {
-    const apiKey = process.env.PINATA_API_KEY;
-    const apiSecret = process.env.PINATA_API_SECRET;
-    if (!apiKey || !apiSecret) {
-        throw new Error('Pinata API credentials are not configured. Set PINATA_API_KEY and PINATA_API_SECRET.');
-    }
-    return { apiKey, apiSecret };
-}
-
 export async function uploadImageToPinata({ buffer, fileName, contentType }) {
-    const { apiKey, apiSecret } = ensurePinataCredentials();
-    const blob = new Blob([buffer], { type: contentType || 'application/octet-stream' });
-    const formData = new FormData();
-    formData.append('file', blob, fileName);
-
-    const response = await fetch(PINATA_FILE_ENDPOINT, {
-        method: 'POST',
-        headers: {
-            'pinata_api_key': apiKey,
-            'pinata_secret_api_key': apiSecret
-        },
-        body: formData
-    });
-
-    if (!response.ok) {
-        const errorBody = await response.text();
-        throw new Error(`Failed to upload image to Pinata: ${response.status} ${errorBody}`);
-    }
-
-    const result = await response.json();
-    const ipfsHash = result?.IpfsHash;
-    if (!ipfsHash) {
-        throw new Error('Pinata response did not include IpfsHash for the image upload.');
-    }
-
+    const { cid: ipfsHash } = await pinFileToPinata({ bytes: buffer, fileName, contentType: contentType || 'application/octet-stream' });
     return {
         ipfsUri: `ipfs://${ipfsHash}`,
         gatewayUrl: `https://gateway.pinata.cloud/ipfs/${ipfsHash}`,
@@ -49,7 +16,7 @@ export async function uploadImageToPinata({ buffer, fileName, contentType }) {
 }
 
 export async function uploadMetadataToPinata(metadata, pinName) {
-    const { apiKey, apiSecret } = ensurePinataCredentials();
+    const { apiKey, apiSecret } = pinataCredentials();
 
     const body = {
         pinataContent: metadata,

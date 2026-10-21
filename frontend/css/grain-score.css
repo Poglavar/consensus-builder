@@ -294,7 +294,6 @@
 }
 
 .grain-score-loading,
-.grain-score-ready,
 .grain-score-error {
     padding: 18px 4px 4px;
     color: #4e453a;
@@ -312,11 +311,6 @@
 .grain-score-error {
     color: #8a231e;
     font-weight: 650;
-}
-
-/* Start the inspection: the panel's one .btn .btn-primary, the full width of the card. */
-.grain-score-start {
-    margin-top: var(--cb-space-2);
 }
 
 .grain-score-hero {

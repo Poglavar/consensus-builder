@@ -1,4 +1,4 @@
-// Verify persisted design goals are explicit canonical values at editor and upload boundaries.
+// Verify persisted design goals are explicit canonical values at the editor and create-preview boundaries.
 import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
@@ -7,11 +7,12 @@ import { parse } from '@babel/parser';
 
 const require = createRequire(import.meta.url);
 const ProposalDesignGoals = require('../../frontend/js/proposals/design-goals.js');
-const uploadSource = readFileSync(new URL('../../frontend/js/proposals/dialog-upload.js', import.meta.url), 'utf8');
+// The screenshot rule moved to the create dialog's preview helpers with the upload modal's removal (M2).
+const previewSource = readFileSync(new URL('../../frontend/js/proposals/create-preview.js', import.meta.url), 'utf8');
 const createSource = readFileSync(new URL('../../frontend/js/proposals/dialog-create.js', import.meta.url), 'utf8');
 
-function loadUploadSkipFunction() {
-    const ast = parse(uploadSource, { sourceType: 'script' });
+function loadPreviewSkipFunction() {
+    const ast = parse(previewSource, { sourceType: 'script' });
     const declaration = ast.program.body.find(node => node.type === 'FunctionDeclaration'
         && node.id.name === 'shouldSkipProposalScreenshot');
     expect(declaration, 'shouldSkipProposalScreenshot declaration exists').toBeTruthy();
@@ -19,7 +20,7 @@ function loadUploadSkipFunction() {
         ProposalDesignGoals,
         PROPOSAL_SCREENSHOT_SKIP_GOALS: new Set(['urban-rule', 'ownership-transfer'])
     });
-    vm.runInContext(`${uploadSource.slice(declaration.start, declaration.end)}\nthis.shouldSkip = shouldSkipProposalScreenshot;`, context);
+    vm.runInContext(`${previewSource.slice(declaration.start, declaration.end)}\nthis.shouldSkip = shouldSkipProposalScreenshot;`, context);
     return context.shouldSkip;
 }
 
@@ -32,9 +33,11 @@ describe('goal-driven UI reads the canonical goal field only', () => {
     });
 
     it('skips screenshots only when the canonical goal is in the skip set', () => {
-        const shouldSkip = loadUploadSkipFunction();
+        const shouldSkip = loadPreviewSkipFunction();
         expect(shouldSkip({ type: 'urban-rule' })).toBe(false);
         expect(shouldSkip({ goal: 'urban-rule', type: 'park' })).toBe(true);
+        expect(shouldSkip({ goal: 'park' })).toBe(false);
+        expect(shouldSkip(null)).toBe(true);
     });
 
     it('uses the shared projection for similar-proposal goal labels', () => {

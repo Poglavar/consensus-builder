@@ -249,8 +249,8 @@
         return 'https://api.urbangametheory.xyz';
     }
 
-    // openProposal(id): when the host can open a proposal in place (the map), proposal links call it
-    // instead of navigating away; the standalone page keeps plain /proposals/<id> links.
+    // openProposal(id): when the host can open a proposal in place (the map), an event's proposal is a
+    // button that calls it; the standalone page has no opener, so there the proposal is a plain label.
     function mount(element, { events = [], loadRun = null, openProposal = null, showFilters = true } = {}) {
         if (!element || !root?.document) throw new Error('ActorExplorer.mount needs an element and a document');
         const doc = root.document;
@@ -327,12 +327,14 @@
                 item.append(text(doc, 'time', formatWhen(event.recordedAt), 'ae-muted'));
                 const meta = doc.createElement('div'); meta.className = 'ae-meta';
                 if (event.entity?.id) {
-                    const proposal = text(doc, 'a', `Proposal ${event.entity.id}`, 'cb-link');
-                    proposal.href = `/proposals/${encodeURIComponent(event.entity.id)}`;
+                    const label = `Proposal ${event.entity.id}`;
                     if (typeof openProposal === 'function') {
-                        proposal.addEventListener('click', clickEvent => { clickEvent.preventDefault(); openProposal(String(event.entity.id)); });
+                        const proposal = text(doc, 'button', label, 'cb-link'); proposal.type = 'button';
+                        proposal.addEventListener('click', () => openProposal(String(event.entity.id)));
+                        meta.append(proposal);
+                    } else {
+                        meta.append(text(doc, 'span', label));
                     }
-                    meta.append(proposal);
                 }
                 if (event.transaction) {
                     const transaction = text(doc, 'a', `tx ${short(event.transaction)}`, 'cb-link cb-link--external ae-wallet');

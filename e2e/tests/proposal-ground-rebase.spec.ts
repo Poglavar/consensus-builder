@@ -18,7 +18,7 @@ const massing = {
 
 // Inside fixture parcel HR-335754-1234, declared on HR-335754-1236 two parcels east.
 const record = (proposalId: string, extra: Record<string, unknown> = {}) => ({
-  proposalId, title: proposalId, description: 'Ground rebase fixture', offer: 0, offerCurrency: 'EUR',
+  proposalId, title: proposalId, description: 'Ground rebase fixture',
   city: 'zg', goal: 'buildings', lifecycleStatus: 'Active', applied: false,
   cadastreParcelIds: ['HR-335754-1236'],
   geometry: { buildings: [massing], blockMassing: massing },
@@ -45,9 +45,14 @@ test.describe('re-applying a proposal to changed ground', () => {
   });
 
   test('a published record keeps its parcels and offers a new proposal with the same geometry', async ({ mockApi: page }) => {
+    // Published: the record carries the mark publishing gives it, under the CID it hashes to.
     await page.evaluate(fixture => {
-      (window as any).proposalStorage.addProposal(fixture);
-    }, record('e2e-rebase-published', { serverProposalId: '880001', publicationApiBase: 'https://proposals.example.test' }));
+      const w = window as any;
+      w.proposalStorage.addProposal(fixture);
+      const stored = w.proposalStorage.getProposal(fixture.proposalId);
+      w.DesignSync.markPublished(stored, { cid: w.DesignRecord.cidOf(stored), publishedAt: '2026-10-21T10:00:00.000Z', apiBase: w.DesignSync.apiBase() });
+    }, record('e2e-rebase-published'));
+    expect(await page.evaluate(() => !!(window as any).DesignSync.publishedCid((window as any).proposalStorage.getProposal('e2e-rebase-published')))).toBe(true);
     // A new selection opens the Planning Inspector; use its current Proposal actions flow so the
     // failure notice and published-record fork action render in the full action panel.
     await showProposal(page, 'e2e-rebase-published');

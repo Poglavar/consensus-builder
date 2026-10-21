@@ -1,15 +1,9 @@
 // The strict land rule on the server, generalised (PARCEL-OPTIONAL.md): cadastreParcelIds must EQUAL
 // the PostGIS binding of the proposal's site — missing and extra parcels are refused separately; an
 // empty declaration is allowed for a material proposal with a site; parcel acts still need parcels.
-// Covers the shared footprint builder, checkProposalBinding against a scripted cadastre, the free
-// POST /proposals, the paid /agent/proposals (refusal before any payment) and POST /proposals/binding.
+// Covers the shared footprint builder and checkProposalBinding against a scripted cadastre.
 // The SQL itself is run against a real database in proposal-binding-db.test.js (RUN_DB_TESTS=1).
-import { beforeAll, describe, expect, it, vi } from 'vitest';
-import express from 'express';
-import request from 'supertest';
-import { generateKeyPairSigner } from '@solana/kit';
-import { createMockPool } from './helpers/mock-pool.js';
-import { validProposalBody, insertResult, updateResult } from './helpers/fixtures.js';
+import { describe, expect, it } from 'vitest';
 import {
     MAX_FOOTPRINT_VERTICES,
     footprintParts,
@@ -30,14 +24,7 @@ import {
     parseTolerance,
     validateSiteGeometry
 } from '../proposals/binding.js';
-import { setupProposalsRoute } from '../routes/proposals.js';
-import { setupProposalBindingRoute } from '../routes/proposal-binding.js';
-import { setupAgentProposalsRoute, AGENT_PROPOSALS_PATH } from '../routes/agent-proposals.js';
-import { READ_ONLY_POST_PATHS } from '../index.js';
-
-vi.mock('../thumbnails/proposal-thumbnail.js', () => ({
-    generateAndStoreProposalThumbnail: vi.fn(async () => null)
-}));
+import { validProposalBody } from './helpers/fixtures.js';
 
 const box = (w, s, e, n) => ({ type: 'Polygon', coordinates: [[[w, s], [e, s], [e, n], [w, n], [w, s]]] });
 const PARK = box(15.97, 45.80, 15.971, 45.801);
@@ -66,11 +53,13 @@ describe('footprintParts (shared by browser, API and migration)', () => {
             width: 12,
             points: [{ lat: 45.8, lng: 15.97 }, { lat: 45.801, lng: 15.971 }]
         } } });
-        expect(parts.invalid).toMatch(/no corridor land; prepare the proposal/);
+        expect(parts.invalid).toMatch(/no corridor land: its corridor polygon has not been built/);
+        expect(parts.invalid).not.toMatch(/prepare/);
         expect(parts.corridorUnprepared).toBe(true);
         expect(parts.centerline).toBeNull();
-        // A client cannot opt a NEW record into the approximate path: preparation strips the flag
-        // (proposals/prepare.js authoredDefinition) and publication requires preparation.
+        // A client cannot opt a NEW design into the approximate path: the design index refuses a
+        // flagged centre line without land (routes/designs.js prepareDesign), so only stored legacy
+        // rows are read from their centre line.
     });
 
     it('marks a flagged legacy road stored without its corridor polygon as an approximate centreline footprint', () => {
@@ -258,14 +247,20 @@ describe('checkProposalBinding (declared == binding)', () => {
             source: 'server:unbound', parcelSource: null, parcels: [{ parcelId: 'BG-77-1' }] });
     });
 
-    it('still needs parcels for acts on parcels', async () => {
+    it('needs parcels only for a record about nothing: no goal makes a record an act on parcels', async () => {
         const db = cadastre({ parcels: [] });
         expect(await checkProposalBinding(db, { goal: 'ownership-transfer' }, [])).toMatchObject({ ok: false, code: 'parcels-required' });
         expect(db.calls).toHaveLength(0);
-        // A designation whose polygon lies on no parcel.
+        // With a site, a former parcel-act goal is bound like any design (plan-design-agreement.md M2).
+        const onSite = await checkProposalBinding(cadastre({ parcels: [], unsurveyedM2: 9000 }), { goal: 'ownership-transfer' }, [], { site: SITE, derive: true });
+        expect(onSite).toMatchObject({ ok: true, cadastreParcelIds: [], binding: { coverage: 'partial', parcels: [] } });
+        // A road designation (land, no centre line) binds by its polygon; it names no parcels of its own.
         const designation = { goal: 'road-track', roadProposal: { definition: { polygon: PARK, centerline: [] } } };
+        const bound = await checkProposalBinding(cadastre({ parcels: SPILL }), designation, [], { derive: true });
+        expect(bound).toMatchObject({ ok: true, cadastreParcelIds: ['HR-335649-100', 'HR-335649-101'] });
+        // A declaration on it is compared with that binding like any other.
         expect(await checkProposalBinding(cadastre({ parcels: [], unsurveyedM2: 10 }), designation, ['HR-335649-100']))
-            .toMatchObject({ ok: false, code: 'parcels-required' });
+            .toMatchObject({ ok: false, code: 'unbound-parcels', extra: [{ id: 'HR-335649-100', intrusionM: 0 }] });
     });
 
     it('binds a parcel act without geometry to its declared parcels and refuses ids that are not current parcels', async () => {
@@ -275,8 +270,8 @@ describe('checkProposalBinding (declared == binding)', () => {
         expect(unknown).toMatchObject({ ok: false, code: 'unbound-parcels', extra: [{ id: 'HR-335649-404' }] });
     });
 
-    // POST /proposals/prepare: a material proposal's declaration is DERIVED from its binding, a
-    // parcel act keeps (and is verified on) the parcels it names — in every branch.
+    // Derive mode (the design index, the agents' preflight): a material record's parcels are DERIVED
+    // from its binding; a record with no ground keeps (and is verified on) the parcels it names.
     it('derives the declaration in derive mode, and keeps a parcel act\'s named parcels', async () => {
         const material = await checkProposalBinding(cadastre({ parcels: SPILL }), parkBody({ cadastreParcelIds: [] }), [], { derive: true });
         expect(material).toMatchObject({ ok: true });
@@ -296,238 +291,10 @@ describe('checkProposalBinding (declared == binding)', () => {
     });
 });
 
-// The route pool: binding statements from the scripted cadastre, everything else queued.
-function routePool(cadastreOptions) {
-    const pool = createMockPool();
-    const scripted = cadastre(cadastreOptions);
-    pool.bindingAnswer = (sql, params) => ([BINDING_COUNT_SQL, BINDING_SQL, FOOTPRINT_OUTSIDE_SITE_SQL, PARCEL_ACT_SITE_SQL].includes(sql)
-        ? null : undefined);
-    const queued = pool.query.bind(pool);
-    pool.bindingQueries = 0;
-    pool.query = async (sql, params) => {
-        if ([BINDING_COUNT_SQL, BINDING_SQL, FOOTPRINT_OUTSIDE_SITE_SQL, PARCEL_ACT_SITE_SQL].includes(sql)) {
-            pool.bindingQueries += 1;
-            return scripted.query(sql, params);
-        }
-        return queued(sql, params);
-    };
-    pool.bindingAnswer = null;
-    pool.connect = async () => ({ query: pool.query, release() {}, on() {}, off() {} });
-    return pool;
-}
-
 const parkBody = (overrides = {}) => validProposalBody({
     type: 'structure',
     goal: 'park',
     cadastreParcelIds: ['HR-335649-100'],
     structureProposal: { kind: 'park', geometry: PARK },
     ...overrides
-});
-
-function freeApp(pool) {
-    const app = express();
-    app.use(express.json({ limit: '15mb' }));
-    setupProposalBindingRoute(app, pool);
-    setupProposalsRoute(app, pool);
-    return app;
-}
-
-describe('POST /proposals — declaration must equal the binding', () => {
-    it('answers 400 undeclared-parcels with missing/extra and writes nothing', async () => {
-        const pool = routePool({ parcels: SPILL });
-        const res = await request(freeApp(pool)).post('/proposals').send(parkBody());
-        expect(res.status).toBe(400);
-        expect(res.body.code).toBe('undeclared-parcels');
-        expect(res.body.missing).toEqual([{ id: 'HR-335649-101', overlapM2: 50, intrusionM: 0.42 }]);
-        expect(res.body.extra).toEqual([]);
-        expect(pool.getCalls().some(call => /INSERT INTO proposal/.test(call.sql))).toBe(false);
-    });
-
-    it('answers 400 unbound-parcels for a declared parcel the site does not reach', async () => {
-        const pool = routePool({ parcels: SPILL });
-        const res = await request(freeApp(pool)).post('/proposals')
-            .send(parkBody({ cadastreParcelIds: ['HR-335649-100', 'HR-335649-101', 'HR-335649-7'] }));
-        expect(res.status).toBe(400);
-        expect(res.body.code).toBe('unbound-parcels');
-        expect(res.body.extra).toEqual([{ id: 'HR-335649-7', intrusionM: 0 }]);
-    });
-
-    it('stores the server site and binding (a client binding is ignored) when the declaration matches', async () => {
-        const pool = routePool({ parcels: SPILL });
-        pool.setResults([insertResult(), updateResult()]);
-        const res = await request(freeApp(pool)).post('/proposals')
-            .send(parkBody({ cadastreParcelIds: ['HR-335649-100', 'HR-335649-101'], binding: { parcels: [], coverage: 'complete' }, toleranceM: 0 }));
-        expect(res.status).toBe(201);
-        expect(pool.bindingQueries).toBe(2);
-        const insert = pool.getCalls().find(call => /INSERT INTO proposal/.test(call.sql));
-        expect(insert.sql).toMatch(/site, binding/);
-        const [site, binding] = insert.params.slice(39);
-        expect(JSON.parse(site).type).toBe('MultiPolygon');
-        expect(JSON.parse(binding).parcels.map(p => p.parcelId)).toEqual(['HR-335649-100', 'HR-335649-101']);
-        const data = JSON.parse(insert.params[32]);
-        expect(data.binding).toEqual(JSON.parse(binding));
-        expect(data.site).toEqual(JSON.parse(site));
-        expect(data).not.toHaveProperty('toleranceM');
-    });
-
-    it('binds geometry the body validator does not know about (a building proposal\'s own footprint)', async () => {
-        const pool = routePool({ parcels: SPILL });
-        const body = validProposalBody({
-            type: 'building',
-            goal: 'buildings',
-            cadastreParcelIds: ['HR-335649-100'],
-            geometry: { buildings: [{ type: 'Feature', properties: {}, geometry: PARK }] }
-        });
-        const res = await request(freeApp(pool)).post('/proposals').send(body);
-        expect(res.status).toBe(400);
-        expect(res.body.code).toBe('undeclared-parcels');
-        expect(pool.bindingQueries).toBe(2);
-    });
-
-    it('stores a material proposal on unsurveyed ground with an empty declaration', async () => {
-        const pool = routePool({ parcels: [], unsurveyedM2: 9000 });
-        pool.setResults([insertResult(), updateResult()]);
-        const res = await request(freeApp(pool)).post('/proposals')
-            .send(parkBody({ cadastreParcelIds: [], site: SITE }));
-        expect(res.status).toBe(201);
-        const insert = pool.getCalls().find(call => /INSERT INTO proposal/.test(call.sql));
-        expect(insert.params[21]).toBe('[]');
-        expect(JSON.parse(insert.params[32]).cadastreParcelIds).toEqual([]);
-        expect(JSON.parse(insert.params[40])).toMatchObject({ coverage: 'partial', unsurveyedM2: 9000 });
-        // Omitting the field entirely is the same empty declaration.
-        const pool2 = routePool({ parcels: [], unsurveyedM2: 9000 });
-        pool2.setResults([insertResult(), updateResult()]);
-        const body = parkBody({ site: SITE });
-        delete body.cadastreParcelIds;
-        expect((await request(freeApp(pool2)).post('/proposals').send(body)).status).toBe(201);
-    });
-
-    it('refuses an empty declaration for a parcel act, and one with no ground at all, before any SQL', async () => {
-        const pool = routePool({ parcels: [] });
-        const transfer = await request(freeApp(pool)).post('/proposals')
-            .send(validProposalBody({ goal: 'ownership-transfer', cadastreParcelIds: [], site: SITE }));
-        expect(transfer.body).toMatchObject({ code: 'parcels-required' });
-        expect(transfer.status).toBe(400);
-        expect(transfer.body.code).toBe('parcels-required');
-        const nothing = await request(freeApp(pool)).post('/proposals').send(validProposalBody({ goal: 'park', cadastreParcelIds: [] }));
-        expect(nothing.status).toBe(400);
-        expect(nothing.body.code).toBe('parcels-required');
-        expect(pool.bindingQueries).toBe(0);
-    });
-
-    it('refuses a malformed site or tolerance with a stable code', async () => {
-        const pool = routePool({});
-        const badSite = await request(freeApp(pool)).post('/proposals').send(parkBody({ site: { type: 'Point', coordinates: [1, 2] } }));
-        expect(badSite.status).toBe(400);
-        expect(badSite.body.code).toBe('invalid-site');
-        const badTolerance = await request(freeApp(pool)).post('/proposals').send(parkBody({ toleranceM: 3 }));
-        expect(badTolerance.status).toBe(400);
-        expect(pool.bindingQueries).toBe(0);
-    });
-});
-
-describe('POST /proposals/binding', () => {
-    it('answers the binding of a site, on both paths', async () => {
-        for (const path of ['/proposals/binding', '/agent/binding']) {
-            const pool = routePool({ parcels: SPILL, unsurveyedM2: 4 });
-            const res = await request(freeApp(pool)).post(path).send({ site: SITE, toleranceM: 0.01 });
-            expect(res.status, path).toBe(200);
-            expect(res.body.binding).toMatchObject({ coverage: 'partial', toleranceM: 0.01, unsurveyedM2: 4 });
-            expect(res.body.binding.parcels.map(p => p.parcelId)).toEqual(['HR-335649-100', 'HR-335649-101']);
-        }
-    });
-
-    it('validates before any SQL and refuses an over-cap site with 413', async () => {
-        const pool = routePool({});
-        const app = freeApp(pool);
-        expect((await request(app).post('/proposals/binding').send({})).body.code).toBe('invalid-site');
-        expect((await request(app).post('/proposals/binding').send({ site: SITE, toleranceM: -1 })).body.code).toBe('invalid-tolerance');
-        expect((await request(app).post('/proposals/binding').send({ site: SITE, city: 42 })).status).toBe(400);
-        expect(pool.bindingQueries).toBe(0);
-        const big = await request(freeApp(routePool({ count: MAX_BINDING_PARCELS + 1 }))).post('/proposals/binding').send({ site: SITE });
-        expect(big.status).toBe(413);
-        expect(big.body.code).toBe('too-many-parcels');
-    });
-
-    it('is a read: exempt from the Origin gate and the write limiter', () => {
-        expect(READ_ONLY_POST_PATHS.has('/proposals/binding')).toBe(true);
-    });
-
-    it('answers 500 (not a fake empty binding) when the cadastre query fails', async () => {
-        const pool = routePool({});
-        pool.query = async () => { throw new Error('db down'); };
-        const error = vi.spyOn(console, 'error').mockImplementation(() => {});
-        const res = await request(freeApp(pool)).post('/proposals/binding').send({ site: SITE });
-        error.mockRestore();
-        expect(res.status).toBe(500);
-        expect(res.body.binding).toBeUndefined();
-    });
-});
-
-describe(`POST ${AGENT_PROPOSALS_PATH} — binding precheck`, () => {
-    let env;
-    beforeAll(async () => {
-        const treasury = await generateKeyPairSigner();
-        env = {
-            X402_NETWORK: 'solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1',
-            X402_FACILITATOR_URL: 'https://facilitator.test',
-            X402_PAY_TO: treasury.address,
-            X402_PRICE_PROPOSAL: '$0.05'
-        };
-    });
-
-    function paidApp(pool, facilitator) {
-        const app = express();
-        app.use(express.json({ limit: '15mb' }));
-        setupProposalsRoute(app, pool);
-        setupAgentProposalsRoute(app, pool, { env, facilitatorClient: facilitator });
-        return app;
-    }
-    const fakeFacilitator = () => ({ getSupported: vi.fn(async () => ({ kinds: [], extensions: [], signers: {} })), verify: vi.fn(), settle: vi.fn() });
-
-    it('refuses a mismatched declaration with 400 before the payment challenge and never settles', async () => {
-        const facilitator = fakeFacilitator();
-        const pool = routePool({ parcels: SPILL });
-        const body = parkBody();
-        delete body.author;
-        const unpaid = await request(paidApp(pool, facilitator)).post(AGENT_PROPOSALS_PATH).send(body);
-        expect(unpaid.status).toBe(400);
-        expect(unpaid.body.code).toBe('undeclared-parcels');
-        expect(unpaid.headers['payment-required']).toBeUndefined();
-
-        const paid = await request(paidApp(pool, facilitator)).post(AGENT_PROPOSALS_PATH)
-            .set('PAYMENT-SIGNATURE', 'anything').send(body);
-        expect(paid.status).toBe(400);
-        expect(facilitator.settle).not.toHaveBeenCalled();
-        expect(facilitator.verify).not.toHaveBeenCalled();
-    });
-
-    it('lets a matching declaration (or an empty one on open ground) through to the payment challenge', async () => {
-        const pool = routePool({ parcels: SPILL });
-        const body = parkBody({ cadastreParcelIds: ['HR-335649-100', 'HR-335649-101'] });
-        delete body.author;
-        const res = await request(paidApp(pool, fakeFacilitator())).post(AGENT_PROPOSALS_PATH).send(body);
-        // Past the precheck: the (unconfigured) payment gate answers, not a 400.
-        expect(res.status).not.toBe(400);
-        expect(pool.bindingQueries).toBe(2);
-
-        const open = routePool({ parcels: [], unsurveyedM2: 9000 });
-        const openBody = parkBody({ cadastreParcelIds: [], site: SITE });
-        delete openBody.author;
-        expect((await request(paidApp(open, fakeFacilitator())).post(AGENT_PROPOSALS_PATH).send(openBody)).status).not.toBe(400);
-        expect(open.bindingQueries).toBe(3); // footprint-inside-site, count, binding
-    });
-
-    it('refuses with 503 (nothing charged) when the cadastre lookup fails', async () => {
-        const facilitator = fakeFacilitator();
-        const pool = routePool({});
-        pool.query = async () => { throw new Error('db down'); };
-        const error = vi.spyOn(console, 'error').mockImplementation(() => {});
-        const body = parkBody();
-        delete body.author;
-        const res = await request(paidApp(pool, facilitator)).post(AGENT_PROPOSALS_PATH).send(body);
-        error.mockRestore();
-        expect(res.status).toBe(503);
-        expect(facilitator.settle).not.toHaveBeenCalled();
-    });
 });

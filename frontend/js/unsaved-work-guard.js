@@ -1,21 +1,19 @@
-// Warns on leaving the app if there is applied local work that has NOT been uploaded or minted, so a
-// localStorage wipe cannot silently lose it. The browser shows its own generic "leave site?" prompt
+// Warns on leaving the app if there is applied local work that has NOT been published or minted, so
+// a localStorage wipe cannot silently lose it. The browser shows its own generic "leave site?" prompt
 // (the text cannot be customized); we only arm it when there is genuinely unsaved local work, so a
-// clean session leaves without a prompt. This is the "exit gate" companion to the share gate, which
-// already blocks including un-uploaded proposals in a share link.
+// clean session leaves without a prompt. This is the "exit gate" companion to the share panel, whose
+// link names only published designs.
 (function (global) {
     'use strict';
 
-    // Applied on the map, and neither uploaded nor minted — i.e. it lives only in this browser's
-    // storage. "Uploaded" means a real numeric server SERIAL: getSerialProposalId returns that (or
-    // null); an authored-content existence query is not publication evidence. A minted or
-    // uploaded proposal that was edited counts as unsaved too: editing detaches its published
-    // pointers (see runLocalCorridorGeometryUpdate), so the fork is unsaved until re-uploaded/minted.
+    // Applied on the map, and neither published nor minted — i.e. it lives only in this browser's
+    // storage. "Published" means the design still hashes to the CID it was published as at this
+    // index (DesignSync.publishedCid), so an edit of a published design, which derives a new
+    // design, counts as unsaved until it is published or minted in turn.
     function isUnsavedLocalWork(proposal) {
         if (!proposal) return false;
         if (typeof isProposalCurrentlyApplied === 'function' && !isProposalCurrentlyApplied(proposal)) return false;
-        const serial = (typeof getSerialProposalId === 'function') ? getSerialProposalId(proposal) : null;
-        if (serial) return false;
+        if (global.DesignSync.publishedCid(proposal)) return false;
         if (typeof isProposalMinted === 'function' && isProposalMinted(proposal)) return false;
         return true;
     }

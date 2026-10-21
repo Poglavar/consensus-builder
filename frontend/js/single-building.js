@@ -128,7 +128,6 @@
     const DEFAULT_WIDTH_M = 3;  // along X
     const DEFAULT_HEIGHT_M = 10; // meters
     let currentHeightM = DEFAULT_HEIGHT_M;
-    let pendingSingleBuildingMeta = null;
     let singleBuildingOverrideContext = null;
     let buildingEntries = [];
     let activeBuildingId = null;
@@ -204,12 +203,6 @@
                 { height }
             );
         }
-    };
-
-    const showSingleBuildingAlert = (key, fallback, params = {}) => {
-        const message = translateSingleBuildingText(`alerts.messages.${key}`, fallback, params);
-        window.CbDialog.alert(message);
-        return message;
     };
 
     const showSingleBuildingEditorAlert = (key, fallback) => {
@@ -376,8 +369,6 @@
     // Proposed building collection shares the same layer/array as blockify
     if (typeof window !== 'undefined') {
         try { if (!Array.isArray(window.proposedBuildings)) window.proposedBuildings = []; } catch (_) { }
-        try { window.pendingSingleBuildingFeature = null; } catch (_) { }
-        try { window.pendingSingleBuildingFeatures = null; } catch (_) { }
     }
 
     function getSingleBuildingContext() {
@@ -1160,12 +1151,7 @@
     }
 
     function clearSingleBuildingPendingState() {
-        pendingSingleBuildingMeta = null;
         singleBuildingOverrideContext = null;
-        if (typeof window !== 'undefined') {
-            try { window.pendingSingleBuildingFeature = null; } catch (_) { }
-            try { window.pendingSingleBuildingFeatures = null; } catch (_) { }
-        }
     }
 
     // The X / Esc path. Closing NEVER saves — only "Done" (confirmSingleBuilding) does. When the
@@ -1333,17 +1319,6 @@
             return;
         }
 
-        if (typeof window !== 'undefined') {
-            try { window.pendingSingleBuildingFeatures = clonedBuildings.map(b => b.feature); } catch (_) { }
-            try { window.pendingSingleBuildingFeature = clonedBuildings[0]?.feature || null; } catch (_) { }
-        }
-
-        pendingSingleBuildingMeta = {
-            blockName: blockLabel,
-            parcelIds: normalizedParcelIds.slice(),
-            buildings: clonedBuildings
-        };
-
         const buildingFeatures = clonedBuildings.map(b => b.feature).filter(f => f && f.geometry);
         const singleContext = {
             parcelIds: normalizedParcelIds.slice(),
@@ -1396,272 +1371,6 @@
 
         const description = document.getElementById('proposalDescription');
         if (description) description.focus();
-    }
-
-    function createSingleBuildingProposal(event) {
-        if (event && typeof event.preventDefault === 'function') {
-            event.preventDefault();
-        }
-
-        const authorInput = document.getElementById('proposalAuthor');
-        const typeInput = document.getElementById('proposalType');
-        const descriptionInput = document.getElementById('proposalDescription');
-        const offerInput = document.getElementById('proposalOffer');
-
-        const author = (typeof getProposalAuthorValue === 'function'
-            ? getProposalAuthorValue()
-            : (authorInput ? authorInput.value.trim() : ''));
-        const proposalType = typeInput ? typeInput.value : 'Building(s)';
-        const nameInput = document.getElementById('proposalName');
-        const proposalName = (nameInput && nameInput.value ? nameInput.value.trim() : '')
-            || (typeof generateDefaultProposalName === 'function' ? generateDefaultProposalName(proposalType) : proposalType);
-        const description = descriptionInput ? descriptionInput.value.trim() : '';
-        const offer = offerInput ? (typeof window.parseProposalOfferValue === 'function' ? window.parseProposalOfferValue(offerInput.value) : parseFloat(offerInput.value)) : NaN;
-
-        if (!author) {
-            showSingleBuildingAlert('please_enter_an_author_name', 'Please enter an author name.');
-            return;
-        }
-        if (!proposalType) {
-            showSingleBuildingAlert('please_choose_a_proposal_type', 'Please choose a proposal type.');
-            return;
-        }
-        if (!description) {
-            showSingleBuildingAlert('please_enter_a_description_for_the_proposal', 'Please enter a description for the proposal.');
-            return;
-        }
-        if (!Number.isFinite(offer) || offer <= 0) {
-            showSingleBuildingAlert('please_enter_a_valid_offer_amount_eur', 'Please enter a valid offer amount (EUR).');
-            return;
-        }
-
-        const buildingMetaList = Array.isArray(pendingSingleBuildingMeta?.buildings)
-            ? pendingSingleBuildingMeta.buildings
-            : [];
-        const pendingFeatureList = (typeof window !== 'undefined')
-            ? (window.pendingSingleBuildingFeatures
-                || (window.pendingSingleBuildingFeature ? [window.pendingSingleBuildingFeature] : []))
-            : [];
-        const preparedBuildings = buildingMetaList.map(b => {
-            if (!b || !b.feature || !b.feature.geometry) return null;
-            const feature = JSON.parse(JSON.stringify(b.feature));
-            return {
-                id: b.id,
-                name: b.name,
-                color: b.color,
-                feature,
-                height: Math.max(3, Number(b.height) || DEFAULT_HEIGHT_M),
-                rotation: Number(b.rotation) || 0
-            };
-        }).filter(Boolean);
-
-        if (!preparedBuildings.length) {
-            pendingFeatureList.forEach(f => {
-                if (f && f.geometry) {
-                    try {
-                        const clone = JSON.parse(JSON.stringify(f));
-                        preparedBuildings.push({
-                            id: null,
-                            name: 'Building',
-                            color: null,
-                            feature: clone,
-                            height: Math.max(3, Number(clone?.properties?.height) || DEFAULT_HEIGHT_M),
-                            rotation: Number(clone?.properties?.rotation) || 0
-                        });
-                    } catch (_) { }
-                }
-            });
-        }
-
-        if (!preparedBuildings.length) {
-            showSingleBuildingAlert('no_building_geometry_prepared_please_create_the_building_again', 'No building geometry prepared. Please create the building again.');
-            return;
-        }
-
-        const blockName = (pendingSingleBuildingMeta && pendingSingleBuildingMeta.blockName) || (getSingleBuildingContext()?.blockName) || selectedBlockName || null;
-
-        let finalParcelIds = [];
-        if (typeof multiParcelSelection !== 'undefined' && multiParcelSelection.selectedParcels && multiParcelSelection.selectedParcels.size > 0) {
-            finalParcelIds = Array.from(multiParcelSelection.selectedParcels);
-        } else if (pendingSingleBuildingMeta && Array.isArray(pendingSingleBuildingMeta.parcelIds) && pendingSingleBuildingMeta.parcelIds.length > 0) {
-            finalParcelIds = pendingSingleBuildingMeta.parcelIds.slice();
-        }
-
-        finalParcelIds = finalParcelIds
-            .map(value => value != null ? value.toString() : null)
-            .filter(Boolean);
-
-        if (finalParcelIds.length === 0) {
-            showSingleBuildingAlert('no_parcels_selected_for_this_proposal', 'No parcels selected for this proposal.');
-            return;
-        }
-
-        const uniqueParcelIds = Array.from(new Set(finalParcelIds));
-
-        const fabric = (typeof window !== 'undefined') ? window.LiveParcelFabric : null;
-        if (!fabric || typeof fabric.cadastreIdsForParcelIds !== 'function') {
-            showSingleBuildingAlert('proposal_storage_is_unavailable', 'Cadastral ground is unavailable.');
-            return;
-        }
-        let cadastreParcelIds;
-        try {
-            cadastreParcelIds = fabric.cadastreIdsForParcelIds(uniqueParcelIds);
-        } catch (_) {
-            showSingleBuildingAlert('no_parcels_selected_for_this_proposal', 'The selected parcel ground is no longer current.');
-            return;
-        }
-
-        const primaryBuilding = preparedBuildings[0];
-        const proposedHeightMeters = Math.round(Number(primaryBuilding.height || currentHeightM || DEFAULT_HEIGHT_M));
-        const proposedRotationDeg = Number(primaryBuilding.rotation || currentRotationDeg || 0);
-
-        if (!primaryBuilding.feature.properties) {
-            primaryBuilding.feature.properties = {};
-        }
-        primaryBuilding.feature.properties.height = proposedHeightMeters;
-        primaryBuilding.feature.properties.rotation = proposedRotationDeg;
-        primaryBuilding.feature.properties.footprintMode = 'polygon';
-        delete primaryBuilding.feature.properties.width;
-        delete primaryBuilding.feature.properties.length;
-        delete primaryBuilding.feature.properties.chamfer;
-        primaryBuilding.feature.properties.block = blockName;
-        primaryBuilding.feature.properties.type = 'proposedBuildingSingle';
-
-        const buildingFeatures = preparedBuildings.map(b => {
-            if (!b.feature.properties) b.feature.properties = {};
-            b.feature.properties.block = blockName;
-            b.feature.properties.type = 'proposedBuildingSingle';
-            b.feature.properties.height = Math.max(3, Number(b.height) || DEFAULT_HEIGHT_M);
-            b.feature.properties.rotation = Number(b.rotation) || 0;
-            b.feature.properties.footprintMode = 'polygon';
-            delete b.feature.properties.width;
-            delete b.feature.properties.length;
-            delete b.feature.properties.chamfer;
-            b.feature.properties.color = b.color;
-            return b.feature;
-        });
-
-        const buildingProposalMetadata = {
-            createdFrom: 'single-building',
-            blockName: blockName,
-            parameters: {
-                height: proposedHeightMeters,
-                rotation: proposedRotationDeg,
-                footprintMode: 'polygon'
-            }
-        };
-
-        const nowIso = new Date().toISOString();
-        const offerCurrency = 'EUR';
-        const geometryObject = {
-            superParcel: null,
-            lakeGraphics: null,
-            parkGraphics: null,
-            squareGraphics: null,
-            buildings: buildingFeatures.map(f => ({
-                type: f.type || 'Feature',
-                geometry: f.geometry ? JSON.parse(JSON.stringify(f.geometry)) : null,
-                properties: f.properties ? { ...f.properties } : {}
-            }))
-        };
-
-        const proposal = {
-            proposalId: null,
-            name: proposalName,
-            title: proposalName,
-            proposalName,
-            description: description || proposalName,
-            author,
-            createdAt: nowIso,
-            updatedAt: nowIso,
-            lifecycleStatus: 'draft',
-            applied: false,
-            tags: ['buildings'],
-            lens: undefined,
-            cadastreParcelIds,
-            media: { screenshotUrl: null, imageUrl: null },
-            goal: 'buildings',
-            acquisitionStrategy: 'full',
-            typologyType: 'block',
-            boundaryAdjustmentType: null,
-            offer,
-            budget: offer,
-            offerCurrency,
-            budgetCurrency: offerCurrency,
-            corridorType: null,
-            blockName: blockName || null,
-            geometry: geometryObject,
-            authorName: author,
-            type: 'building',
-            buildingProposal: buildingProposalMetadata,
-            acceptedParcelIds: []
-        };
-
-        // Capture the active lens so single-building proposals carry the expected pattern and metadata
-        const lensSnapshot = normalizeLensEntries(typeof getLensEntries === 'function' ? getLensEntries() : []);
-        if (lensSnapshot.length) {
-            proposal.lens = lensSnapshot;
-        }
-
-        const storage = (typeof Proposals !== 'undefined' && Proposals.storage) ? Proposals.storage : proposalStorage;
-        const addProposalFn = storage && (storage.addProposal || storage.add);
-        if (!storage || typeof addProposalFn !== 'function') {
-            showSingleBuildingAlert('proposal_storage_is_unavailable', 'Proposal storage is unavailable.');
-            return;
-        }
-
-        const proposalId = addProposalFn.call(storage, proposal, {
-            selectedParcelIds: uniqueParcelIds
-        });
-        if (!proposalId) {
-            showSingleBuildingAlert('a_proposal_with_the_same_parcels_already_exists', 'A proposal with the same parcels already exists.');
-            return;
-        }
-
-        const primaryParcelId = uniqueParcelIds.length ? uniqueParcelIds[0] : null;
-
-        if (typeof window !== 'undefined') {
-            try { window.pendingSingleBuildingFeature = null; } catch (_) { }
-            try { window.pendingSingleBuildingFeatures = null; } catch (_) { }
-        }
-        pendingSingleBuildingMeta = null;
-
-        if (typeof multiParcelSelection !== 'undefined') {
-            multiParcelSelection.clearSelection();
-            if (typeof multiParcelSelection.updateUI === 'function') multiParcelSelection.updateUI();
-        }
-
-        if (typeof hideParcelInfoPanel === 'function') {
-            hideParcelInfoPanel();
-        }
-
-        if (typeof closeProposalDialog === 'function') {
-            closeProposalDialog();
-        }
-
-        closeSingleBuildingMapEditor();
-
-        if (typeof updateProposalList === 'function') {
-            updateProposalList();
-        }
-
-        if (typeof focusProposalDetails === 'function') {
-            const proposalKey = proposalId || null;
-            focusProposalDetails(proposalKey, {
-                parcelId: primaryParcelId,
-                centerOnProposal: true
-            });
-        }
-
-        if (blockName && typeof refreshBlockInfoProposalTab === 'function') {
-            setTimeout(() => refreshBlockInfoProposalTab(blockName), 0);
-        }
-
-        setSingleBuildingStatus(
-            'single_building_proposal_created_use_apply_when_ready',
-            'Proposal "{{title}}" created. Use Apply to map from the proposal details when ready.',
-            { title: proposalName }
-        );
     }
 
     function showSingleBuildingMapEditor() {
@@ -2087,7 +1796,6 @@
 
     window.openSingleBuildingForParcels = openSingleBuildingForParcels;
     window.openFreeformGeoJSONBuildings = openFreeformGeoJSONBuildings;
-    window.createSingleBuildingProposal = createSingleBuildingProposal;
     window.createSingleBuildingFromUpload = createSingleBuildingFromUpload;
     window.clearSingleBuildingPendingState = clearSingleBuildingPendingState;
 })();

@@ -13,7 +13,6 @@ describe('normalizeGoalKey', () => {
         }
     });
     it('canonicalises the remaining known goals', () => {
-        expect(normalizeGoalKey('decide')).toBe('decide-later');
         expect(normalizeGoalKey('parcel-layout')).toBe('parcel-layout');
         expect(normalizeGoalKey('Parcel Layout')).toBe('parcel-layout');
         expect(normalizeGoalKey('Park')).toBe('park');
@@ -33,7 +32,7 @@ describe('normalizeGoalKey', () => {
 describe('isBuildingGoal', () => {
     it('is true only for the building typologies', () => {
         ['buildings', 'single', 'row', 'parcelBased'].forEach(k => expect(isBuildingGoal(k)).toBe(true));
-        ['road-track', 'park', 'parcel-layout', 'decide-later', ''].forEach(k => expect(isBuildingGoal(k)).toBe(false));
+        ['road-track', 'park', 'parcel-layout', ''].forEach(k => expect(isBuildingGoal(k)).toBe(false));
     });
 });
 
@@ -43,7 +42,6 @@ describe('classifyApplyRoute', () => {
     it('routes each spatial type to its apply path', () => {
         expect(route('road-track')).toBe('road-track');
         expect(route('parcel-layout')).toBe('parcel-layout');
-        expect(route('decide-later')).toBe('decide-later');
         expect(route('buildings')).toBe('building');
         expect(route('single')).toBe('building');
         expect(route('park')).toBe('structure');

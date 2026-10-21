@@ -9,7 +9,7 @@
 // where the only neighbour is the plan's edge (the strip between the collector and the gardens south of it)
 // it is not taken at all and stays with its cadastral parcel, which is city land.
 //
-// Named plans never change (plans.md): the changed members are published as `<id>-v3` records and named as
+// Named plans never changed (removed 2026-10-21; the restatement is recreated as agreements in M3): the changed members are published as `<id>-v3` records and named as
 // the -v3 plans by name-plans.mjs.
 //
 //   node fit-streets.mjs --capture --app <app url> --backend <api>         # the app's own footprints → data/street-footprints.json (agent-browser)

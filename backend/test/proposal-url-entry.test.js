@@ -1,25 +1,39 @@
-// Exercise proposal URL dispatch without a browser, including collection URLs and trailing slashes.
+// Exercise the record-route dispatch (proposals/core.js handleProposalRouteFromUrl) without a browser:
+// the proposal list, design and agreement links (plan-design-agreement.md, M2), the boot's parcel
+// fetch handed back however a link ends, and the retired id and named-plan links answering nothing.
 import { describe, expect, it, vi } from 'vitest';
 import { readFileSync } from 'node:fs';
+import { createRequire } from 'node:module';
 import vm from 'node:vm';
 
+const require = createRequire(import.meta.url);
+const Cid = require('../../frontend/js/cid.js');
 const sharedSource = readFileSync(new URL('../../frontend/js/proposals/sharing-routes.js', import.meta.url), 'utf8');
 const source = readFileSync(new URL('../../frontend/js/proposals/core.js', import.meta.url), 'utf8');
+
+const cidOf = text => Cid.cidOf(new TextEncoder().encode(text));
+const DESIGN_A = cidOf('design-a');
+const DESIGN_B = cidOf('design-b');
+const AGREEMENT = cidOf('agreement-a');
 
 function boot(pathname, connected = false) {
     const window = {
         location: { pathname, search: '?city=nairobi', hash: '#details' },
         walletManager: { getState: () => ({ status: connected ? 'connected' : 'disconnected', accounts: connected ? ['wallet'] : [] }) },
         openMintedProposalsModal: vi.fn(),
-        PlanView: { open: vi.fn(async () => {}) }
+        AgreementSync: { handleAgreementRoute: vi.fn(async () => ({})) },
+        // A design or agreement link holds the boot's viewport parcel fetch (map-core.js IS_PROPOSAL_DEEP_LINK).
+        skipParcelFetchUntilProposalLoaded: true
     };
     const context = vm.createContext({
-        window, showAllProposalsModal: vi.fn(), handleSharedPlanRoute: vi.fn(async () => {}),
-        fetch: vi.fn(async () => ({ ok: true, json: async () => ({ proposalRowIds: [12, 13] }) })),
-        console: { log() {}, debug() {}, warn: vi.fn(), error: vi.fn() }
+        window, showAllProposalsModal: vi.fn(),
+        map: { fire: vi.fn() },
+        fetch: vi.fn(async () => ({ ok: true, json: async () => ({}) })),
+        console: { log() {}, debug() {}, info() {}, warn: vi.fn(), error: vi.fn() }
     });
     vm.runInContext(sharedSource, context);
-    context.handleSharedPlanRoute = vi.fn(async () => {});
+    // The design route itself is exercised in shared-plan-import.test.js; here only the dispatch.
+    context.handleSharedDesignRoute = vi.fn(async () => ({}));
     vm.runInContext(source, context);
     return context;
 }
@@ -40,33 +54,48 @@ describe('proposal URL entry', () => {
         expect(app.showAllProposalsModal).not.toHaveBeenCalled();
     });
 
-    it.each(['/proposals/12,13', '/proposals/12,13/'])('loads the same shared selection at %s', async pathname => {
+    it.each([`/designs/${DESIGN_A},${DESIGN_B}`, `/designs/${DESIGN_A},${DESIGN_B}/`])('opens the shared designs at %s, then gives the parcel fetch back', async pathname => {
         const app = boot(pathname);
         await app.handleProposalRouteFromUrl();
-        expect(app.handleSharedPlanRoute).toHaveBeenCalledWith(['12', '13']);
+        expect(app.handleSharedDesignRoute).toHaveBeenCalledExactlyOnceWith([DESIGN_A, DESIGN_B]);
+        expect(app.window.AgreementSync.handleAgreementRoute).not.toHaveBeenCalled();
+        expect(app.window.skipParcelFetchUntilProposalLoaded).toBe(false);
+        expect(app.map.fire).toHaveBeenCalledWith('moveend');
         expect(app.window.location.pathname).toBe(pathname);
     });
 
-    // A named plan opens hatched on the map with its panel (PlanView); Apply plan there applies it.
-    it.each(['/proposals/garden-plan', '/proposals/garden-plan/'])('opens the named plan at %s without applying it', async pathname => {
+    it('opens a proposed agreement at /agreements/<cid>', async () => {
+        const app = boot(`/agreements/${AGREEMENT}`);
+        await app.handleProposalRouteFromUrl();
+        expect(app.window.AgreementSync.handleAgreementRoute).toHaveBeenCalledExactlyOnceWith(AGREEMENT);
+        expect(app.handleSharedDesignRoute).not.toHaveBeenCalled();
+        expect(app.window.skipParcelFetchUntilProposalLoaded).toBe(false);
+    });
+
+    it('gives the parcel fetch back when a design link fails', async () => {
+        const app = boot(`/designs/${DESIGN_A}`);
+        app.handleSharedDesignRoute = vi.fn(async () => { throw new Error('index unreachable'); });
+        await app.handleProposalRouteFromUrl();
+        expect(app.window.skipParcelFetchUntilProposalLoaded).toBe(false);
+        expect(app.map.fire).toHaveBeenCalledWith('moveend');
+        expect(app.console.error).toHaveBeenCalledWith('handleProposalRouteFromUrl failed:', expect.objectContaining({ message: 'index unreachable' }));
+    });
+
+    it.each(['/proposals/12,13', '/proposals/garden-plan'])('answers the retired link %s with no route', async pathname => {
         const app = boot(pathname);
         await app.handleProposalRouteFromUrl();
-        expect(app.fetch).toHaveBeenCalledWith(expect.stringContaining('/plans/garden-plan'), {});
-        expect(app.window.PlanView.open).toHaveBeenCalledWith('garden-plan', {
-            plan: expect.objectContaining({ proposalRowIds: [12, 13] }),
-            publicationApiBase: 'https://api.urbangametheory.xyz'
-        });
-        const openedPlan = app.window.PlanView.open.mock.calls[0][1].plan;
-        expect(openedPlan).not.toHaveProperty('proposalIds');
-        expect(app.handleSharedPlanRoute).not.toHaveBeenCalled();
-        expect(app.window.location.pathname).toBe(pathname);
+        expect(app.handleSharedDesignRoute).not.toHaveBeenCalled();
+        expect(app.showAllProposalsModal).not.toHaveBeenCalled();
+        expect(app.fetch).not.toHaveBeenCalled();
+        expect(app.console.warn).toHaveBeenCalledWith(expect.stringContaining(`no proposal route matches ${pathname}`));
     });
 
     it('ignores unrelated path prefixes', async () => {
         const app = boot('/proposals-archive');
         await app.handleProposalRouteFromUrl();
         expect(app.showAllProposalsModal).not.toHaveBeenCalled();
-        expect(app.handleSharedPlanRoute).not.toHaveBeenCalled();
+        expect(app.handleSharedDesignRoute).not.toHaveBeenCalled();
         expect(app.fetch).not.toHaveBeenCalled();
+        expect(app.console.warn).not.toHaveBeenCalled();
     });
 });

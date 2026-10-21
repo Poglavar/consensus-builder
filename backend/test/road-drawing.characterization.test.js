@@ -4,7 +4,10 @@
 // the observable effects asserted: session state, layers on the map, panel text, status lines, and
 // what reached the collaborators (draft store, proposal store, parcel mutation).
 import { describe, it, expect, afterEach } from 'vitest';
+import { createRequire } from 'node:module';
 import { loadRoadDrawing, at, boxRing } from './helpers/road-drawing-env.js';
+
+const Cid = createRequire(import.meta.url)('../../frontend/js/cid.js');
 
 let env = null;
 function open(options) {
@@ -641,7 +644,8 @@ describe('editing a saved road (updateLocalCorridorGeometry)', () => {
 
     it('a published road keeps its land; the edit becomes a counterproposal that is selected', async () => {
         const world = open({ parcels: [PARCEL_ON_ROUTE, PARCEL_AT_NEW_END] });
-        const record = withProfile(localRoad({ published: true, serverProposalId: '71', publicationApiBase: 'https://api.example.test' }));
+        const cid = Cid.cidOfObject({ schema: 'design/v1', title: 'Road' });
+        const record = withProfile(localRoad({ published: { cid, publishedAt: '2026-01-02T00:00:00.000Z', apiBase: 'https://api.example.test' } }));
         world.store.addProposal(record);
         globalThis.ProposalSelection.is = key => key === 'road-1';
         const result = await globalThis.updateLocalCorridorGeometry('road-1', definition => {
@@ -651,7 +655,10 @@ describe('editing a saved road (updateLocalCorridorGeometry)', () => {
         expect(near(record.roadProposal.definition.points[0][1], at(100, 0))).toBe(true);
         const [fork] = globalThis.ProposalManager.createCorridorProposalAtomically.calls[0];
         expect(fork.proposalId).toBeUndefined();
-        expect(fork.proposalOrigin).toMatchObject({ relation: 'revision', source: { kind: 'publication', apiBase: 'https://api.example.test' } });
+        // The fork names its published source by CID, twice over: the typed relation and the design link.
+        expect(fork.proposalOrigin).toMatchObject({ relation: 'revision', source: { kind: 'design', cid } });
+        expect(fork.origin).toEqual({ cid });
+        expect(fork).not.toHaveProperty('published');
         expect(fork.applied).toBe(false);
         expect(fork.createdAt).toBe(record.createdAt);
         expect(fork.cadastreParcelIds).toEqual(['HR-1', 'HR-3']);

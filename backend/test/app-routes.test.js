@@ -10,10 +10,13 @@ const require = createRequire(import.meta.url);
 const { isAppPath, markUnknownPath } = require('../../frontend/js/app-routes.js');
 const repoRoot = fileURLToPath(new URL('../../', import.meta.url));
 
+// Published designs and agreements are linked by CID (plan-design-agreement.md M2).
+const DESIGN = 'bafkreibm6jg3ux5qumhcn2b3flc3tyu6dmlb4xa7u5bf44yegnrjhc4yeq';
+const AGREEMENT = 'bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku';
 const appPaths = [
-    '/', '/index.html', '/proposals', '/proposals/879', '/proposals/12,13', '/proposals/borovje-v3',
-    '/proposals/solana/devnet/abc/7', '/plans/borovje', '/plans/borovje/score', '/parcel/HR-335533-2895',
-    '/bets/5x8hiYo9V6kWpG8eVoyXZf4BHXnKSoCP3r7r3PyMBg4z', '/monitors/3', '/proposals/879/monitors/12/'
+    '/', '/index.html', '/proposals', `/designs/${DESIGN}`, `/designs/${DESIGN},${AGREEMENT}`, `/agreements/${AGREEMENT}`,
+    '/proposals/solana/devnet/abc/7', '/parcel/HR-335533-2895',
+    '/bets/5x8hiYo9V6kWpG8eVoyXZf4BHXnKSoCP3r7r3PyMBg4z', '/monitors/3', `/designs/${DESIGN}/monitors/12/`
 ];
 
 describe('isAppPath', () => {
@@ -21,7 +24,9 @@ describe('isAppPath', () => {
         expect(isAppPath(path)).toBe(true);
     });
 
-    it.each(['/foo', '/how-to-use', '/plans', '/parcel', '/monitors', '/admin/login', '/proposalsx'])('%s is not', (path) => {
+    // Row ids, named plans and their scores are gone with the server's proposal writes (M2).
+    it.each(['/foo', '/how-to-use', '/plans', '/plans/borovje', '/plans/borovje/score', '/proposals/879', '/proposals/12,13',
+        '/proposals/borovje-v3', '/designs', '/agreements', '/parcel', '/monitors', '/admin/login', '/proposalsx'])('%s is not', (path) => {
         expect(isAppPath(path)).toBe(false);
     });
 });
@@ -43,7 +48,7 @@ describe('markUnknownPath', () => {
     it('leaves an app path alone', () => {
         const doc = fakeDoc();
         let notices = 0;
-        expect(markUnknownPath({ doc, pathname: '/proposals/879', notify: () => notices++ })).toBe(false);
+        expect(markUnknownPath({ doc, pathname: `/agreements/${AGREEMENT}`, notify: () => notices++ })).toBe(false);
         expect(doc.head.children).toEqual([]);
         expect(notices).toBe(0);
     });
@@ -69,7 +74,8 @@ describe('routers and nginx agree with the route list', () => {
     }
 
     it('finds the routers', () => {
-        expect([...prefixes]).toEqual(expect.arrayContaining(['proposals', 'plans', 'parcel', 'bets']));
+        expect([...prefixes]).toEqual(expect.arrayContaining(['proposals', 'designs', 'agreements', 'parcel', 'bets']));
+        expect([...prefixes]).not.toContain('plans');
     });
 
     it.each([...prefixes])('/%s/… is an app path', (prefix) => {

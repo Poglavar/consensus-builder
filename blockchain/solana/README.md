@@ -10,6 +10,11 @@ Solana equivalents of the EVM ParcelNFT and ProposalNFT contracts.
 - **proposal_market**: parimutuel markets on a proposal's terminal state, and external markets
   resolved from SAS court evidence
 - **proposal_pledge**: USDC donations and soft pledges on a proposal
+- **agreement** (M3 of `../../plan-design-agreement.md`; placeholder id, not deployed): one account
+  per agreement (PDA of its sponsor and CID) with a SOL escrow, settled by its lens's
+  AgreementDecision-v1 attestation;
+  replaces the per-proposal consent machinery. See [`programs/agreement/README.md`](programs/agreement/README.md)
+  and the codec `agreement-client.js`
 - **crates/sas_attestation**: byte-level SAS account readers shared by proposal_nft and
   proposal_market (not a program)
 

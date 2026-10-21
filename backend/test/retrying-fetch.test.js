@@ -1,8 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { createHash } from 'node:crypto';
 import { fetchLensMembers } from '../agents/lens-directory-client.js';
-import { mirrorAgentPublication } from '../agents/chain-publication.js';
-import { readChainMetadata } from '../proposals/chain-mirror.js';
 import { createRetryingFetch } from '../utils/retrying-fetch.js';
 
 const response = (body, status = 200) => new Response(JSON.stringify(body), {
@@ -106,39 +103,5 @@ describe('shared transient fetch retries', () => {
         const retryLog = options.log.mock.calls.flat().join('\n');
         expect(retryLog).not.toContain('api.example.test');
         expect(retryLog).not.toContain('upstream');
-    });
-
-    it('retries metadata GET and canonical mirror POST at their approved idempotent paths', async () => {
-        const metadataFetch = vi.fn()
-            .mockResolvedValueOnce(new Response('upstream', { status: 502 }))
-            .mockResolvedValueOnce(response({ ok: true }));
-        await expect(readChainMetadata(`ipfs://Qm${'a'.repeat(44)}`, {
-            fetchImpl: metadataFetch,
-            env: { IPFS_READ_GATEWAY: 'https://gateway.example.test/ipfs' },
-            retryOptions: retryOptions()
-        })).resolves.toEqual({ ok: true });
-        expect(metadataFetch).toHaveBeenCalledTimes(2);
-
-        const mint = {
-            chainId: 'solana-devnet',
-            contractAddress: '3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg',
-            proposalPda: 'Fq6vQHmvTsvZzpYBbdmPKYQL2mVd6wDhLVv69q6rXmYz',
-            metadataUri: `ipfs://Qm${'b'.repeat(44)}`
-        };
-        const body = JSON.stringify({ chainRef: {
-            chainType: 'solana', chainId: mint.chainId, contract: mint.contractAddress, tokenId: mint.proposalPda
-        } });
-        const proposalId = `chain_${createHash('sha256').update(JSON.stringify({
-            chainType: 'solana', chainId: mint.chainId, contract: mint.contractAddress, tokenId: mint.proposalPda
-        })).digest('hex')}`;
-        const mirrorFetch = vi.fn()
-            .mockResolvedValueOnce(new Response('upstream', { status: 502 }))
-            .mockResolvedValueOnce(response({ id: 22, proposalId }, 201));
-        const options = retryOptions();
-        await expect(mirrorAgentPublication({ apiBase: 'https://api.example.test', mint, fetchImpl: mirrorFetch,
-            retryOptions: options })).resolves.toEqual({ id: 22, proposalId, status: 201, method: 'chain-mirror' });
-        expect(mirrorFetch).toHaveBeenCalledTimes(2);
-        expect(mirrorFetch.mock.calls.map(([, init]) => init.body)).toEqual([body, body]);
-        expect(options.log.mock.calls.flat().join('\n')).not.toContain('api.example.test');
     });
 });

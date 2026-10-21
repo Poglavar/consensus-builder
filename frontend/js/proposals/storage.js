@@ -8,10 +8,6 @@ function resolveProposalResourceUrl(url) {
         const ipfsPath = value.slice('ipfs://'.length).replace(/^ipfs\//i, '');
         return ipfsPath ? `https://ipfs.io/ipfs/${ipfsPath}` : '';
     }
-    if (value.startsWith('walrus://')) {
-        const blobId = value.slice('walrus://'.length).replace(/^\/+/, '');
-        return blobId ? `${walrusAggregatorBase()}/v1/blobs/${blobId}` : '';
-    }
     if (typeof window === 'undefined' || !window.location) return value;
     try {
         if (value.startsWith('//')) {
@@ -167,8 +163,7 @@ function currentProfileIsGuest() {
 
 // The name gate for acts that leave the device (GuestPolicy 'name': publish, share, mint). Returns
 // null when allowed, or the explanation (truthy) when the act is BLOCKED: the guest is then shown
-// the profile dialog and the explanation. Acts that stay
-// on the device have no gate at all; ownership acts go through requireOwnerOfferProof (create.js).
+// the profile dialog and the explanation. Acts that stay on the device have no gate at all.
 function guestPolicyBlocks(action) {
     const policy = window.GuestPolicy;
     if (!policy) throw new Error('guest-policy.js is not loaded');
@@ -202,12 +197,8 @@ function stampCurrentAuthor(proposal) {
     if (!policy) throw new Error('guest-policy.js is not loaded');
     if (!proposal || typeof proposal !== 'object') return proposal;
     const agent = (typeof getCurrentUserAgent === 'function') ? getCurrentUserAgent() : null;
-    const origin = (typeof window !== 'undefined' && window.ProposalOrigin)
-        || (typeof ProposalOrigin !== 'undefined' ? ProposalOrigin : null);
-    const immutable = typeof isProposalImmutable === 'function'
-        ? isProposalImmutable(proposal)
-        : !!origin && !!origin.rowId(proposal.serverProposalId) && !!origin.apiBase(proposal.publicationApiBase);
-    const verdict = policy.outgoingAuthor(proposal, agent, { immutable });
+    // A published or minted design keeps the author it left the device with (proposals/chain.js).
+    const verdict = policy.outgoingAuthor(proposal, agent, { immutable: isProposalImmutable(proposal) });
     if (!verdict.restamped) return proposal;
     console.info(`[${new Date().toISOString()}] [GuestPolicy] record ${proposal.proposalId || '?'} leaves the device as "${verdict.author}" (was "${proposal.author || ''}")`);
     const stored = (typeof proposalStorage !== 'undefined' && proposal.proposalId && typeof proposalStorage.getProposal === 'function')
@@ -284,26 +275,6 @@ function refreshProposalData() {
     }
 }
 
-async function loadAddressesJson() {
-    if (addressesJsonCache) return addressesJsonCache;
-    if (addressesJsonPromise) return addressesJsonPromise;
-    addressesJsonPromise = (async () => {
-        try {
-            const resp = await fetch('/contracts/addresses.json');
-            if (resp && resp.ok) {
-                const data = await resp.json();
-                addressesJsonCache = data || {};
-                return addressesJsonCache;
-            }
-        } catch (error) {
-            console.warn('Failed to load addresses.json', error);
-        }
-        addressesJsonCache = {};
-        return addressesJsonCache;
-    })();
-    return addressesJsonPromise;
-}
-
 function deleteProposal(proposalId) {
     const t = getProposalI18nHelper();
     try {
@@ -324,12 +295,10 @@ function deleteProposal(proposalId) {
             || goalKey === 'square'
             || goalKey === 'lake'
             || goalKey === 'parcel-layout'
-            || goalKey === 'decide-later'
             || !!proposal.roadProposal
             || !!proposal.buildingProposal
             || !!proposal.structureProposal
             || !!proposal.parcelLayout
-            || !!proposal.decideLaterProposal
         );
         if (managedByProposalManager && typeof ProposalManager !== 'undefined' && ProposalManager.deleteProposal) {
             ProposalManager.deleteProposal(proposalId);
@@ -478,36 +447,6 @@ async function offerBlockedWorkRecovery() {
         if (typeof refreshProposalsLayer === 'function') refreshProposalsLayer();
     } catch (error) {
         console.error('[proposalStorage] recovery offer failed', error);
-    }
-}
-
-function savePlanPayloadAsJson(payload) {
-    try {
-        const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        const ts = new Date().toISOString().replace(/[:.]/g, '-');
-        a.download = `consensus-plan-${ts}.json`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-    } catch (e) {
-        console.error('Failed to save plan JSON', e);
-        try {
-            const tShare = getShareI18nHelper();
-            const message = tShare('saveJsonError', 'Failed to save JSON.');
-            const alertFn = (typeof window !== 'undefined' && typeof window.showStyledAlert === 'function') ? window.showStyledAlert : window.alert;
-            if (typeof alertFn === 'function') {
-                alertFn(message);
-            }
-        } catch (_) {
-            const alertFn = (typeof window !== 'undefined' && typeof window.showStyledAlert === 'function') ? window.showStyledAlert : window.alert;
-            if (typeof alertFn === 'function') {
-                alertFn('Failed to save JSON.');
-            }
-        }
     }
 }
 

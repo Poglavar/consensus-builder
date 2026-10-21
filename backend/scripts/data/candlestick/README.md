@@ -1,7 +1,7 @@
 # Candlestick Point (San Francisco) inputs
 
 Inputs for `backend/scripts/import-candlestick-courtyard.mjs`, which recreates the "Courtyard
-Candlestick" concept as an ordinary named plan of Freeform building proposals so it can stand next to the official plan.
+Candlestick" concept as ordinary Freeform building proposals so it can stand next to the official plan.
 
 ## candlestick-point-boundary-wgs84.geojson
 
@@ -9,7 +9,7 @@ The project-area boundary: DataSF dataset `m288-24sn` ("Former SF Redevelopment 
 Areas"), feature "Bayview Hunters Point Area B Zone 1", about 271 acres, reprojected to WGS84.
 Licence: PDDL 1.0 (City and County of San Francisco). Both the courtyard concept and the official
 FivePoint plan describe the same 271.6-acre development. This boundary is source context; each
-Freeform proposal owns its own footprint site, and the named plan groups the complete development.
+Freeform proposal owns its own footprint site.
 
 ## The courtyard concept model (not in the repository, 37 MB)
 

@@ -9,6 +9,7 @@ const require = createRequire(import.meta.url);
 globalThis.turf = turf;
 const { appliedRivals, editDependents } = require('../../frontend/js/proposals/claims.js');
 const lineage = require('../../frontend/js/proposals/lineage.js');
+const Cid = require('../../frontend/js/cid.js');
 const planOrder = require('../../frontend/js/proposals/plan-order.js');
 const { isApplied } = require('../../frontend/js/proposals/status.js');
 const collectAppliedProposalAlternatives = (proposal, records, options = {}) =>
@@ -302,13 +303,26 @@ describe('editDependents: who stands on ground an in-place edit changes', () => 
 });
 
 describe('lineage: what saving an edit does to its source', () => {
+    const published = (extra = {}) => ({ cid: Cid.cidOfObject({ schema: 'design/v1', title: 'Published' }), publishedAt: null,
+        apiBase: 'https://api.example.test', ...extra });
+
+    it('takes a design CID mark or mint evidence as published, and no generic hash, lifecycle label or row id', () => {
+        expect(lineage.isPublished({ published: published() })).toBe(true);
+        expect(lineage.isPublished({ isMinted: true })).toBe(true);
+        expect(lineage.isPublished({ onchain: { transactionHash: '0xabc' } })).toBe(true);
+        expect(lineage.isPublished({ published: published({ cid: 'not-a-cid' }) })).toBe(false);
+        expect(lineage.isPublished({ hash: 'abc', lifecycleStatus: 'published' })).toBe(false);
+        // A server row id is no publication any more (M2): a published design is named by its CID.
+        expect(lineage.isPublished({ serverProposalId: '17', publicationApiBase: 'https://api.example.test' })).toBe(false);
+        expect(lineage.isPublished(null)).toBe(false);
+    });
+
     it('edits one\'s own local record in place, forks a published or minted one, and forks on an explicit Fork', () => {
         expect(lineage.editsInPlace({ proposalId: 'own', applied: true })).toBe(true);
-        expect(lineage.editsInPlace({ proposalId: 'p', serverProposalId: '901', publicationApiBase: 'https://api.example.test' })).toBe(false);
-        expect(lineage.editsInPlace({ proposalId: 'p', serverProposalId: '901' })).toBe(true);
+        expect(lineage.editsInPlace({ proposalId: 'p', published: published() })).toBe(false);
         expect(lineage.editsInPlace({ proposalId: 'p', isMinted: true })).toBe(false);
         expect(lineage.editsInPlace({ proposalId: 'p', lifecycleStatus: 'published' })).toBe(true);
-        expect(lineage.editsInPlace({ proposalId: 'p', lifecycleStatus: 'Active', serverProposalId: '902', publicationApiBase: 'https://api.example.test' })).toBe(false);
+        expect(lineage.editsInPlace({ proposalId: 'p', lifecycleStatus: 'Active', published: published() })).toBe(false);
         expect(lineage.editsInPlace({ proposalId: 'own' }, { fork: true })).toBe(false);
         expect(lineage.editsInPlace(null)).toBe(false);
     });
@@ -327,5 +341,22 @@ describe('lineage: what saving an edit does to its source', () => {
             proposalOrigin: { relation: 'revision', source: { kind: 'local', localProposalId: 'published-original' }, title: 'Published original' }, title: 'New',
             roadProposal: { definition: {}, id: 'own', proposalId: 'own' }
         });
+    });
+
+    it('preserves the land fork and draft metadata, and defaults the author and lifecycle, on in-place edits', () => {
+        const source = {
+            proposalId: 'draft', createdAt: '2026-10-01',
+            proposalOrigin: { relation: 'copy', source: { kind: 'local', localProposalId: 'source' }, title: 'Source' },
+            landFork: { kind: 'overlap' }, proposalDraftId: 'draft-group', proposalDraftRevision: 3,
+            authorAgentId: 'agent', lifecycleStatus: 'Draft', termsConfirmed: true
+        };
+        const out = lineage.inPlaceRecord(source, { title: 'Edited' });
+        expect(out).toMatchObject({
+            proposalId: 'draft', createdAt: '2026-10-01', proposalOrigin: source.proposalOrigin,
+            landFork: source.landFork, proposalDraftId: 'draft-group', proposalDraftRevision: 3,
+            authorAgentId: 'agent', lifecycleStatus: 'Draft', title: 'Edited'
+        });
+        // A design has no terms to confirm (M2): the retired flag is not carried into the edit.
+        expect(out).not.toHaveProperty('termsConfirmed');
     });
 });

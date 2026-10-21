@@ -199,7 +199,7 @@ parent `HR-339270-6804/1` (13,350 m²) came back as 2,644 m² of children — a 
 clickable parcel under the building.
 
 Fixed in `350a9ed`: only typologies that genuinely *consume* their parents (road, reparcellization,
-decide-later) may block a slice. Buildings and structures overlay, and `apply/buildings.js` /
+Decide later) may block a slice. Buildings and structures overlay, and `apply/buildings.js` /
 `apply/structures.js` never touch the parcel layer at all. — **SHIPPED**
 
 ### 2.2 The unshareable plan (partly fixed)
@@ -666,7 +666,7 @@ what lies beneath. **Invariant #4 would have to be rewritten, not extended**, an
 hole-prevention rule re-derived under the new regime.
 
 It also redraws the taxonomy along a better line — **forming** (building, park, square, lake, road,
-reparcellization, boundary adjustment) versus **non-forming** (votes, designations, decide-later),
+reparcellization, boundary adjustment) versus **non-forming** (votes, designations, Decide later),
 rather than overlay-versus-fabric.
 
 **Open question only the user can answer:** whether a park or square legally requires its own parcel in
@@ -993,7 +993,7 @@ bookkeeping, per-parcel acceptance rows, the vote flow and share fingerprinting 
    `frontend/js/proposals/ownership-flow.js`: `computeOwnershipFlow(proposal, baseParcels)` →
    `[{ parcelId, cededM2, destination }]`, destination declared per typology
    (road/park/square/lake/station → `public`, freeform building → `proposer`, reparcellization →
-   `mapping`, decide-later → `undecided`; content-only goals have no formation). Stamped in
+   `mapping`, Decide later → `undecided`; content-only goals have no formation). Stamped in
    `buildUploadReadyProposal` and in the payload-share builder, stored in
    `proposal.ownership_flow`, validated server-side, returned by the serializer, carried through
    import. Backfill: `backend/scripts/backfill-ownership-flow.js` (dry-run default) recomputes
@@ -1316,7 +1316,7 @@ neighbours still referenced the old one.
      requeue carousel (now ONE A6-ordered pass with intra-payload occupancy exemption — §3.3 as a
      first-class rule on both routes), the plan route's intra-plan conflict RETRY (first-pass
      exemption is the rule; a conflict that still surfaces parks visibly as overlapped), the
-     mixed/derived prerequisite waiting ladder, the catch-path requeue, and decide-later's
+     mixed/derived prerequisite waiting ladder, the catch-path requeue, and Decide later's
      PersistentStorage scan-recovery. Base-parcel prefetch stays (loading, not healing) with one
      bounded fetch-then-retry per missing base id.
    - *The gate that replaces healing*: `formation-depth.js: preparePublishRecord` — mechanical
@@ -1484,7 +1484,7 @@ neighbours still referenced the old one.
    corridor slice as a parent and its footprint covers it), and the drill ranked it ABOVE the
    road at a corridor point — parent-depth plus the newer-first tiebreak — so clicking the
    corridor selected the subdivision. The claims model now says it outright
-   (`drill-stack.js`): a ground-authoring formation (reparcellization/decide-later) that did
+   (`drill-stack.js`): a ground-authoring formation (reparcellization/Decide later) that did
    not mint the live parcel at the point never places above live fabric minted by a different
    proposal; base ground is unaffected, so a readjustment still sits above the pool parcels it
    stands on. Clean records were already ordered correctly — the cap makes degraded ones

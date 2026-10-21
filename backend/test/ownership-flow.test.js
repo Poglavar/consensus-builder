@@ -52,7 +52,6 @@ describe('destinationForGoal', () => {
         expect(flowApi.destinationForGoal('buildings')).toBe('proposer');
         expect(flowApi.destinationForGoal('parcel-layout')).toBe('carry-over');
         expect(flowApi.destinationForGoal('reparcellization')).toBeNull();
-        expect(flowApi.destinationForGoal('decide-later')).toBe('undecided');
     });
 
     it('content-only typologies have no formation', () => {
@@ -333,18 +332,20 @@ describe('effectFingerprintOf memo', () => {
     });
 });
 
-describe('effectFingerprintOf on a published record', () => {
-    it('returns the stamped hash without touching the footprint', () => {
+// The server no longer stamps an effect hash at publish (M2, plan-design-agreement.md: a published
+// design is named by its CID), so a stamp left on a record is never read back as the effect.
+describe('effectFingerprintOf ignores a stamped effectHash', () => {
+    it('computes the effect from the footprint even when the record carries a stamp', () => {
         let reads = 0;
         const previous = globalThis.__planOrder;
         globalThis.__planOrder = { ...planOrder, footprintOf: () => { reads += 1; return t.feature(STRIP.geometry); } };
         try {
-            const published = { goal: 'road-track', ownershipFlow: [], effectHash: 'e-stamped' };
-            expect(flowApi.effectFingerprintOf(published)).toBe('e-stamped');
-            expect(reads).toBe(0);
-            // A draft hashed under a supplied flow is computed, stamp or not.
-            expect(flowApi.effectFingerprintOf(published, { ownershipFlow: [] })).not.toBe('e-stamped');
+            const stamped = { goal: 'road-track', ownershipFlow: [], effectHash: 'e-stamped' };
+            const computed = flowApi.effectFingerprintOf(stamped);
+            expect(computed).toMatch(/^e-/);
+            expect(computed).not.toBe('e-stamped');
             expect(reads).toBe(1);
+            expect(computed).toBe(flowApi.effectFingerprintOf({ goal: 'road-track', ownershipFlow: [] }));
         } finally {
             globalThis.__planOrder = previous;
         }

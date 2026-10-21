@@ -1,7 +1,7 @@
 // Contests group a city's proposals by shared land and put each proposal's market beside it;
 // these tests pin the grouping, the ordering and the public shape GET /markets serves.
 import { describe, expect, it } from 'vitest';
-import { buildContests, closesAtOf, contestId, foldVersions, groupByLand, normalizeParcelIds, proposalAccountOf, siteNameOf } from '../markets/contests.js';
+import { buildContests, closesAtOf, contestId, groupByLand, normalizeParcelIds, proposalAccountOf, siteNameOf } from '../markets/contests.js';
 import { PROPOSAL_PROGRAM_ID } from '../oracle/proposal-lifecycle.js';
 
 const ACCOUNT_A = 'Ekpt4qMsJWyyraDfPfq2zkT1JwMsJCKrSmkoNGgHreFR';
@@ -69,12 +69,6 @@ describe('groupByLand', () => {
             proposal({ proposalId: 'other-snapshot', parcelIds: ['P1'], parcelSource: { sourceId: 'hr-cadastre', snapshotId: '2026' } })
         ];
         expect(groupByLand(rows).map(group => group.map(row => row.proposalId).sort())).toEqual([['captured', 'same'], ['other-snapshot']]);
-    });
-
-    it('resolves explicit plan-member edges regardless of input ordering', () => {
-        const member = proposal({ id: 21, proposalId: 'member', parcelSource: null });
-        const namedPlan = { id: 'plan:p', proposalId: 'p', isPlan: true, memberIds: ['21'], parcelIds: [], parcelRefs: [] };
-        expect(groupByLand([namedPlan, member])).toHaveLength(1);
     });
 });
 
@@ -164,178 +158,6 @@ describe('buildContests', () => {
     });
 });
 
-describe('named plans in contests', () => {
-    const plan = (overrides) => ({ slug: 'p', title: 'Plan', place: null, author: 'a', createdAt: '2026-10-10T00:00:00Z',
-        memberIds: [], proposalAccount: null, ...overrides });
-
-    it('folds members under every plan that lists them and keeps other proposals as rows', () => {
-        const street = proposal({ id: 1, proposalId: 'street', parcelIds: ['P1', 'P2'] });
-        const slab = proposal({ id: 2, proposalId: 'slab', parcelIds: ['P2'] });
-        const block = proposal({ id: 3, proposalId: 'block', parcelIds: ['P2'] });
-        const rival = proposal({ id: 4, proposalId: 'rival', parcelIds: ['P1'], proposalAccount: ACCOUNT_C });
-        const { contests } = buildContests({
-            city: 'zagreb',
-            proposals: [street, slab, block, rival],
-            statuses: new Map([[ACCOUNT_A, 'Active'], [ACCOUNT_B, 'Active'], [ACCOUNT_C, 'Active']]),
-            plans: [
-                plan({ slug: 'official', place: 'Borovje', memberIds: ['1', '2'], proposalAccount: ACCOUNT_A }),
-                plan({ slug: 'blocks', place: 'Borovje', memberIds: ['1', '3'], proposalAccount: ACCOUNT_B })
-            ]
-        });
-        expect(contests).toHaveLength(1);
-        const [contest] = contests;
-        expect(contest.siteName).toBe('Borovje');
-        expect(contest.planCount).toBe(2);
-        expect(contest.foldedCount).toBe(3);
-        expect(contest.proposals.map(entry => entry.proposalId).sort()).toEqual(['blocks', 'official', 'rival']);
-        const official = contest.proposals.find(entry => entry.proposalId === 'official');
-        expect(official.members.map(member => member.proposalId)).toEqual(['street', 'slab']);
-        expect(official.canOpenMarket).toBe(true);
-    });
-
-    it('lets a plan name the contest over the pieces\' block names', () => {
-        expect(siteNameOf([
-            { siteName: 'UPU Borovje Z1-5' }, { siteName: 'UPU Borovje Z1-5' },
-            { kind: 'plan', siteName: 'Borovje' }
-        ])).toBe('Borovje');
-    });
-
-    it('folds explicit plan members even when their parcel source is unknown, without asserting land identity', () => {
-        const member = proposal({ id: 11, proposalId: 'unknown-member', parcelIds: ['P1'], parcelSource: null });
-        const unrelated = proposal({ id: 12, proposalId: 'unknown-unrelated', parcelIds: ['P1'], parcelSource: null });
-        const { contests } = buildContests({ city: 'zagreb', proposals: [member, unrelated], plans: [plan({ slug: 'named-plan', memberIds: ['11'], proposalAccount: ACCOUNT_A })],
-            markets: new Map([[ACCOUNT_A, { address: 'M', market: null }]]), statuses: new Map([[ACCOUNT_A, 'Active']]) });
-        expect(contests).toHaveLength(1);
-        expect(contests[0].proposals.map(entry => entry.proposalId)).toEqual(['named-plan']);
-        expect(contests[0].parcelRefs).toEqual([]);
-        expect(contests[0].parcelIds).toEqual(['P1']);
-    });
-
-    it('emits the named plan union of qualified refs from members across sources', () => {
-        const memberA = proposal({ id: 31, proposalId: 'member-a', parcelIds: ['P1'], parcelSource: { sourceId: 'hr-cadastre', snapshotId: '2025' } });
-        const memberB = proposal({ id: 32, proposalId: 'member-b', parcelIds: ['P1'], parcelSource: { sourceId: 'us-ca-sf-datasf-active-parcels', snapshotId: null } });
-        const { contests } = buildContests({ city: 'zagreb', proposals: [memberA, memberB],
-            plans: [plan({ slug: 'mixed-plan', memberIds: ['31', '32'], proposalAccount: ACCOUNT_A })],
-            markets: new Map([[ACCOUNT_A, { address: 'M', market: null }]]), statuses: new Map([[ACCOUNT_A, 'Active']]) });
-        const [entry] = contests[0].proposals;
-        expect(entry.kind).toBe('plan');
-        expect(entry.parcelRefs).toEqual([
-            { sourceId: 'hr-cadastre', snapshotId: '2025', parcelId: 'P1' },
-            { sourceId: 'us-ca-sf-datasf-active-parcels', snapshotId: null, parcelId: 'P1' }
-        ]);
-    });
-});
-
-describe('plan versions (F2)', () => {
-    const plan = (overrides) => ({ slug: 'p', title: 'Plan', place: 'Borovje', author: 'a', createdAt: '2026-10-10T00:00:00Z',
-        memberIds: [], proposalAccount: null, supersedes: null, ...overrides });
-    // Three versions of one plan, as the Borovje importer names them: v2 supersedes v1, v3 supersedes v2.
-    // v1's market is still open on-chain, v2's settled no, v3 is the current version.
-    const V1 = account(1);
-    const V2 = account(2);
-    const V3 = account(3);
-    const RIVAL = account(4);
-    const input = () => ({
-        city: 'zagreb',
-        proposals: [
-            proposal({ id: 1, proposalId: 'street', parcelIds: ['P1', 'P2'] }),
-            proposal({ id: 2, proposalId: 'slab', parcelIds: ['P2'] }),
-            proposal({ id: 3, proposalId: 'slab-v2', parcelIds: ['P2'] }),
-            proposal({ id: 4, proposalId: 'rival', parcelIds: ['P1'], proposalAccount: RIVAL })
-        ],
-        plans: [
-            plan({ slug: 'upu-borovje-v3', title: 'UPU Borovje', createdAt: '2026-10-10T19:02:23Z', memberIds: ['1', '3'], proposalAccount: V3, supersedes: 'upu-borovje-v2',
-                screenshotUrl: '/plans/v3-after.png', screenshotBeforeUrl: '/plans/v3-before.png', screenshotPairUrl: '/plans/v3-pair.png' }),
-            plan({ slug: 'upu-borovje-v2', title: 'UPU Borovje', createdAt: '2026-10-10T18:17:15Z', memberIds: ['1', '3'], proposalAccount: V2, supersedes: 'upu-borovje' }),
-            plan({ slug: 'upu-borovje', title: 'UPU Borovje', createdAt: '2026-10-10T14:08:54Z', memberIds: ['1', '2'], proposalAccount: V1 })
-        ],
-        markets: new Map([
-            [V1, market('MKT-1', 300000n, 100000n)],
-            [V2, market('MKT-2', 50000n, 150000n, true, 0)],
-            [V3, market('MKT-3', 100000n, 0n)],
-            [RIVAL, market('MKT-R', 10000n, 10000n)]
-        ]),
-        statuses: new Map([[V1, 'Active'], [V2, 'Cancelled'], [V3, 'Active'], [RIVAL, 'Active']])
-    });
-
-    it('lists one row per plan and folds the versions it replaced under it, newest first', () => {
-        const out = buildContests(input());
-        expect(out.contests).toHaveLength(1);
-        const [contest] = out.contests;
-        expect(contest.proposals.map(entry => [entry.kind, entry.proposalId])).toEqual([['plan', 'upu-borovje-v3'], ['proposal', 'rival']]);
-        const current = contest.proposals[0];
-        expect(current).toMatchObject({ planSlug: 'upu-borovje-v3', supersedes: 'upu-borovje-v2', bettable: true });
-        expect(current).toMatchObject({ screenshotUrl: '/plans/v3-after.png', screenshotBeforeUrl: '/plans/v3-before.png', screenshotPairUrl: '/plans/v3-pair.png' });
-        expect(current.olderVersions.map(old => [old.slug, old.supersededBy])).toEqual([
-            ['upu-borovje-v2', 'upu-borovje-v3'],
-            ['upu-borovje', 'upu-borovje-v2']
-        ]);
-        // A piece only the first version used folds away with it instead of resurfacing as a row.
-        expect(contest.proposals.some(entry => entry.proposalId === 'slab')).toBe(false);
-    });
-
-    it('keeps an older version reachable for its pool but never offers it', () => {
-        const [{ proposals: [current] }] = buildContests(input()).contests;
-        const [v2, v1] = current.olderVersions;
-        // Still open on-chain: reachable, its state says so, but it is not a bet the API offers.
-        expect(v1).toMatchObject({ slug: 'upu-borovje', title: 'UPU Borovje', createdAt: '2026-10-10T14:08:54Z', proposalAccount: V1,
-            state: 'open', bettable: false, canOpenMarket: false, market: { address: 'MKT-1', poolAtomic: '400000', resolved: false } });
-        // Settled: positions in it can be collected.
-        expect(v2).toMatchObject({ slug: 'upu-borovje-v2', proposalAccount: V2, state: 'resolved-no', bettable: false, canOpenMarket: false,
-            market: { resolved: true, outcome: 'no' } });
-        // The current version's members travel once, with the current version.
-        expect(v1.members).toBeUndefined();
-        expect(v1.memberCount).toBe(2);
-    });
-
-    it('counts current versions only, and the folded versions with the folded members', () => {
-        const out = buildContests(input());
-        expect(out.contests[0]).toMatchObject({
-            proposalCount: 2, planCount: 1, foldedCount: 3 + 2, mintedCount: 2, marketCount: 2, openMarketCount: 2,
-            // v3 (0.1) and the rival (0.02); the older versions' pools are theirs, reached through the fold.
-            poolAtomic: '120000'
-        });
-        expect(out.summary).toEqual({ contests: 1, proposals: 2, markets: 2, openMarkets: 2, poolAtomic: '120000' });
-    });
-
-    it('keeps a contest listed for an older version\'s pool when no current version is minted', () => {
-        const base = input();
-        const plans = base.plans.map(item => (item.slug === 'upu-borovje-v3' ? { ...item, proposalAccount: null } : item));
-        const proposals = base.proposals.filter(item => item.id !== 4);
-        const { contests } = buildContests({ ...base, plans, proposals });
-        expect(contests).toHaveLength(1);
-        expect(contests[0].mintedCount).toBe(0);
-        expect(contests[0].proposals[0].olderVersions.map(old => old.proposalAccount)).toEqual([V2, V1]);
-    });
-});
-
-describe('foldVersions', () => {
-    const slugs = ({ current, older }) => ({
-        current: current.map(plan => plan.slug),
-        older: Object.fromEntries(current.map(plan => [plan.slug, older.get(plan.slug).map(({ plan: old, supersededBy }) => `${old.slug}<${supersededBy}`)]))
-    });
-
-    it('walks a chain from its newest version', () => {
-        expect(slugs(foldVersions([{ slug: 'a' }, { slug: 'a-v2', supersedes: 'a' }, { slug: 'a-v3', supersedes: 'a-v2' }, { slug: 'b' }])))
-            .toEqual({ current: ['a-v3', 'b'], older: { 'a-v3': ['a-v2<a-v3', 'a<a-v2'], b: [] } });
-    });
-
-    it('lets a version whose predecessor is on other land stand', () => {
-        expect(slugs(foldVersions([{ slug: 'a-v2', supersedes: 'a' }]))).toEqual({ current: ['a-v2'], older: { 'a-v2': [] } });
-    });
-
-    it('folds a version two revisions replaced under one of them only', () => {
-        const out = slugs(foldVersions([{ slug: 'a' }, { slug: 'x', supersedes: 'a' }, { slug: 'y', supersedes: 'a' }]));
-        expect(out.current).toEqual(['x', 'y']);
-        expect([...out.older.x, ...out.older.y]).toEqual(['a<x']);
-    });
-
-    it('drops nothing when versions supersede each other in a loop', () => {
-        const out = slugs(foldVersions([{ slug: 'a', supersedes: 'b' }, { slug: 'b', supersedes: 'a' }]));
-        expect(out).toEqual({ current: ['a'], older: { a: ['b<a'] } });
-    });
-});
-
 describe('closesAtOf', () => {
     it('reads the market deadline from i64 Unix seconds, and nothing from a legacy pool', () => {
         expect(closesAtOf({ closesAt: 1795000000n })).toBe(new Date(1795000000 * 1000).toISOString());
@@ -406,20 +228,5 @@ describe('row order inside a contest (D6)', () => {
             statuses: new Map([[ACCOUNT_A, 'Executed'], [ACCOUNT_B, 'Active']])
         });
         expect(contests.map(contest => contest.proposals[0].proposalId)).toEqual(['open-tiny', 'settled-huge']);
-    });
-
-    it('breaks ties with the whole plan before its pieces, then the newest', () => {
-        const { contests } = buildContests({
-            city: 'zagreb',
-            proposals: [
-                proposal({ id: 1, proposalId: 'older-piece', parcelIds: ['T1'], proposalAccount: ACCOUNT_A, createdAt: '2026-10-01T00:00:00Z' }),
-                proposal({ id: 2, proposalId: 'newer-piece', parcelIds: ['T1'], proposalAccount: ACCOUNT_B, createdAt: '2026-10-05T00:00:00Z' }),
-                proposal({ id: 3, proposalId: 'member', parcelIds: ['T1'] })
-            ],
-            plans: [{ slug: 'whole', title: 'Whole', place: null, author: 'a', createdAt: '2026-09-01T00:00:00Z', memberIds: ['3'], proposalAccount: ACCOUNT_C }],
-            markets: new Map([[ACCOUNT_A, market('MA', 0n, 0n)], [ACCOUNT_B, market('MB', 0n, 0n)], [ACCOUNT_C, market('MC', 0n, 0n)]]),
-            statuses: new Map([[ACCOUNT_A, 'Active'], [ACCOUNT_B, 'Active'], [ACCOUNT_C, 'Active']])
-        });
-        expect(contests[0].proposals.map(entry => entry.proposalId)).toEqual(['whole', 'newer-piece', 'older-piece']);
     });
 });

@@ -3,7 +3,6 @@ import { describe, expect, it } from 'vitest';
 import { createRequire } from 'node:module';
 import { gupRecord } from '../planning/providers/zagreb-gup.js';
 import { stripLocalProposalState } from '../proposals/serializer.js';
-import { precheckProposalCreate } from '../routes/proposals.js';
 const require = createRequire(import.meta.url);
 const contract = require('../../frontend/js/planning/source-proposal.js');
 const chain = require('../../frontend/js/proposals/chain-record.js');
@@ -42,20 +41,15 @@ describe('source-backed obligatory proposal', () => {
         expect(result.sourceReferences).toEqual(sourceReferences); expect(result).not.toHaveProperty('applied');
         expect(result.sourceReferences).not.toBe(sourceReferences);
     });
-    it('keeps the same references through portable chain metadata', () => {
+    // Only the reading side of chain metadata remains (the design mint went in M2): a record minted
+    // earlier reads back with its references, and a malformed reference is refused, never dropped.
+    it('keeps the same references through portable chain metadata, and refuses malformed ones', () => {
         const geometry = { type: 'Polygon', coordinates: [[[10,40],[10.001,40],[10.001,40.001],[10,40]]] };
         const authored = { proposalId: 'design', type: 'structure', cadastreParcelIds: ['HR-1-17'],
             site: geometry, binding: { parcels: [] }, cadastreSnapshot: { parcels: [] },
             sourceReferences: [contract.reference(gupRecord(row).proposal)] };
-        const metadata = { properties: chain.metadataProperties(authored) };
-        expect(chain.fromMetadata(metadata).sourceReferences).toEqual(authored.sourceReferences);
-    });
-    it('refuses malformed references before a publication could charge or store them', () => {
-        const body = { type: 'parcel', cadastreParcelIds: ['HR-1-17'], sourceReferences: [{ revision: 'latest' }] };
-        expect(precheckProposalCreate({ body, validatedBody: body })).toMatchObject({ ok: false, status: 422, code: 'invalid-source-reference' });
-    });
-    it('reserves provider identities from the authored publication route', () => {
-        const body = { proposalId: 'source:pretend', type: 'parcel', cadastreParcelIds: ['HR-1-17'] };
-        expect(precheckProposalCreate({ body, validatedBody: body })).toMatchObject({ ok: false, code: 'source-proposal-read-only' });
+        const metadata = proposal => ({ properties: { proposalProtocol: chain.PROTOCOL, proposal } });
+        expect(chain.fromMetadata(metadata(authored)).sourceReferences).toEqual(authored.sourceReferences);
+        expect(() => chain.fromMetadata(metadata({ ...authored, sourceReferences: [{ revision: 'latest' }] }))).toThrow(/source reference/);
     });
 });

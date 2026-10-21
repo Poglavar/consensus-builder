@@ -103,14 +103,14 @@
             const isCanton = global.CantonMode && global.CantonMode.isCantonProposal;
             const evm = isCanton ? proposals.filter((p) => !global.CantonMode.isCantonProposal(p)) : proposals;
 
-            // If the server has authoritative counts for this parcel, use them (everyone agrees) and
-            // add only the browser-local proposals never uploaded (drafts + minted-not-uploaded), so
-            // they aren't double-counted against the server's copy. Otherwise fall back to local.
+            // If the server has counts for this parcel, use them (everyone agrees) and add this
+            // browser's proposals. A local record names no server row since M2 (a design published
+            // from here is indexed by CID, never written to the proposal table these counts come
+            // from), so none is taken off as the server's copy. Otherwise fall back to local.
             const key = parcelId.toString();
             if (serverProposalCounts.has(key)) {
                 const serverCount = serverProposalCounts.get(key) || 0;
-                const localOnly = evm.filter(p => p && !p.serverProposalId).length;
-                return serverCount + localOnly;
+                return serverCount + evm.length;
             }
             return evm.length;
         } catch (error) {

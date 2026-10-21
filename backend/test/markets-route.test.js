@@ -25,11 +25,11 @@ function rows() {
     }];
 }
 
-// A pool that answers the proposals query with `proposalRows` and the plans query with `planRows`.
-function poolFor(proposalRows = rows(), planRows = []) {
-    return { query: vi.fn(async (sql) => ({ rows: /FROM ens_plan/.test(sql) ? planRows : proposalRows })) };
+// A pool that answers the proposals query with `proposalRows`.
+function poolFor(proposalRows = rows()) {
+    return { query: vi.fn(async () => ({ rows: proposalRows })) };
 }
-const proposalQueries = pool => pool.query.mock.calls.filter(([sql]) => !/FROM ens_plan/.test(sql)).length;
+const proposalQueries = pool => pool.query.mock.calls.length;
 
 function appFor({ pool, readMarkets, readProposalStatuses, now } = {}) {
     const app = express();
@@ -83,53 +83,6 @@ describe('GET /markets', () => {
         // Right after a confirmed transaction the sheet needs the chain's answer, not the cache's.
         await request(app).get('/markets?city=zagreb&fresh=1');
         expect(proposalQueries(pool)).toBe(4);
-    });
-
-    it('lists a minted named plan with its member proposals folded under it', async () => {
-        const PLAN_ACCOUNT = '5A9kzK2SzjP5nU2Dnz958wQcy96KkMnavoMNGxt7p1h3';
-        const plan = { slug: 'borovje-urbani-blokovi', title: 'Borovje – urbani blokovi', place: 'Borovje', author: 'UGT',
-            created_at: new Date('2026-10-10T10:00:00Z'), proposal_ids: ['790'],
-            onchain_data: { chainId: 'solana-devnet', contractAddress: PROPOSAL_PROGRAM_ID, proposalId: PLAN_ACCOUNT },
-            thumbnail_url: '/uploads/images/plan-after.png', thumbnail_before_url: '/uploads/images/plan-before.png',
-            thumbnail_pair_url: '/uploads/images/plan-pair.png' };
-        const res = await request(appFor({
-            pool: poolFor(rows(), [plan]),
-            readMarkets: async () => new Map([[ACCOUNT, { address: 'MKT', market: null }], [PLAN_ACCOUNT, { address: 'PMKT', market: { yesPool: 5n, noPool: 3n, resolved: false, outcome: 0 } }]]),
-            readProposalStatuses: async () => new Map([[ACCOUNT, 'Active'], [PLAN_ACCOUNT, 'Active']])
-        })).get('/markets?city=zagreb');
-        const [contest] = res.body.contests;
-        expect(contest.siteName).toBe('Borovje');
-        expect(contest.proposals.map(entry => [entry.kind, entry.proposalId])).toEqual([
-            ['plan', 'borovje-urbani-blokovi'],
-            ['proposal', 'agent-densifier-01-2026-10-01-1']
-        ]);
-        expect(contest.proposals[0]).toMatchObject({ planSlug: 'borovje-urbani-blokovi', memberCount: 1, bettable: true,
-            proposalAccount: PLAN_ACCOUNT, market: { poolAtomic: '8' }, screenshotUrl: '/uploads/images/plan-after.png',
-            screenshotBeforeUrl: '/uploads/images/plan-before.png', screenshotPairUrl: '/uploads/images/plan-pair.png' });
-        expect(contest.proposals[0].members.map(member => member.proposalId)).toEqual(['local-rival']);
-    });
-
-    it('reads which plan version supersedes which, and serves one row per plan with the older versions folded', async () => {
-        const V1 = '5A9kzK2SzjP5nU2Dnz958wQcy96KkMnavoMNGxt7p1h3';
-        const V2 = 'Fh3K8apDKKKjPUPLVV5Y327Hd5s2HY9Y7bqAvjidFcC5';
-        const version = (slug, supersedes, account, at) => ({ slug, title: 'UPU Borovje', place: 'Borovje', author: 'Grad Zagreb',
-            created_at: new Date(at), proposal_ids: ['790'], supersedes, onchain_data: { chainId: 'solana-devnet', contractAddress: PROPOSAL_PROGRAM_ID, proposalId: account } });
-        const pool = poolFor(rows(), [version('upu-borovje-v2', 'upu-borovje', V2, '2026-10-10T18:17:15Z'), version('upu-borovje', null, V1, '2026-10-10T14:08:54Z')]);
-        const res = await request(appFor({
-            pool,
-            readMarkets: async () => new Map([[ACCOUNT, { address: 'MKT', market: null }],
-                [V1, { address: 'M1', market: { yesPool: 3n, noPool: 1n, resolved: false, outcome: 0 } }],
-                [V2, { address: 'M2', market: { yesPool: 2n, noPool: 0n, resolved: false, outcome: 0 } }]]),
-            readProposalStatuses: async () => new Map([[ACCOUNT, 'Active'], [V1, 'Active'], [V2, 'Active']])
-        })).get('/markets?city=zagreb');
-        expect(pool.query.mock.calls.find(([sql]) => /FROM ens_plan/.test(sql))[0]).toMatch(/\bsupersedes\b/);
-        const [contest] = res.body.contests;
-        expect(contest.proposals.filter(entry => entry.kind === 'plan').map(entry => entry.planSlug)).toEqual(['upu-borovje-v2']);
-        expect(contest).toMatchObject({ planCount: 1, proposalCount: 2 });
-        expect(contest.proposals[0].olderVersions).toEqual([expect.objectContaining({
-            slug: 'upu-borovje', supersededBy: 'upu-borovje-v2', proposalAccount: V1, state: 'open', bettable: false, canOpenMarket: false,
-            createdAt: '2026-10-10T14:08:54.000Z', market: expect.objectContaining({ poolAtomic: '4' })
-        })]);
     });
 
     it('lets the proposal account, not the database word, decide whether a bet is open', async () => {

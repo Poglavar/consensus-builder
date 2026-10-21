@@ -10,13 +10,12 @@
     'use strict';
 
     // Menu order. Each id is also the suffix of its UiCommands command (`parcel.<id>`).
-    const ACTIONS = Object.freeze(['propose', 'selectMore', 'details', 'proposals', 'history', 'compare', 'tools', 'offer', 'detectBlock', 'useAsSite']);
+    const ACTIONS = Object.freeze(['propose', 'selectMore', 'details', 'proposals', 'history', 'compare', 'tools', 'detectBlock', 'useAsSite']);
     // What stays available on a piece of open ground (no cadastral parcel under it).
     const GROUND_ACTIONS = new Set(['details', 'useAsSite']);
 
-    // The build palette (parcels/ui/proposal-actions.js renderParcelProposalActions) renders — and
-    // with it the Ownership "Offer" tool — whenever there is a parcel context: a non-empty
-    // multi-selection or a single parcel. One predicate for both the palette and the menu.
+    // The build palette (parcels/ui/proposal-actions.js renderParcelProposalActions) renders whenever
+    // there is a parcel context: a non-empty multi-selection or a single parcel.
     function buildPaletteAvailable(state) {
         const s = state || {};
         const count = typeof s.selectionCount === 'number' && Number.isFinite(s.selectionCount) ? s.selectionCount : 0;
@@ -36,14 +35,14 @@
         return { historyIds: id ? [id] : [], isGround: false };
     }
 
-    // facts: { parcelId, isRoad, multiSelectActive, selectionCount, historyIds: [], blocksEnabled,
+    // facts: { parcelId, isRoad, multiSelectActive, historyIds: [], blocksEnabled,
     // compareCount }. Missing facts count as "not available" — never as a guess that it is.
     function isActionAvailable(action, facts) {
         const f = facts || {};
         const hasParcel = typeof f.parcelId === 'string' ? f.parcelId !== '' : (typeof f.parcelId === 'number');
         if (!hasParcel) return false;
-        // A piece on open ground is not a cadastral parcel: nothing that acts on parcels (an offer,
-        // a parcel history, a build palette over a parcel selection, a block seed) applies to it.
+        // A piece on open ground is not a cadastral parcel: nothing that acts on parcels (a parcel
+        // history, a build palette over a parcel selection, a block seed) applies to it.
         if (f.isGround === true && !GROUND_ACTIONS.has(action)) return false;
         switch (action) {
             case 'propose':
@@ -59,12 +58,6 @@
             case 'compare':
                 // Two proposals on this parcel to set side by side (proposals/parcel-compare-ui.js).
                 return typeof f.compareCount === 'number' && f.compareCount >= 2;
-            case 'offer':
-                return buildPaletteAvailable({
-                    multiSelectActive: f.multiSelectActive === true,
-                    selectionCount: f.selectionCount,
-                    parcelContextId: f.parcelId
-                });
             case 'useAsSite':
                 // The parcel (or the selection) as an editable site; needs the site tool.
                 return f.siteToolAvailable === true;

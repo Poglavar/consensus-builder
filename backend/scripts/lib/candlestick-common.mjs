@@ -1,6 +1,6 @@
 // Shared by the Candlestick Point importers (import-candlestick-courtyard.mjs and
 // import-candlestick-fivepoint.mjs): publish each ordinary Freeform building on its own footprint
-// through the normal API (site binding first, then the proposal), and name the complete collection.
+// through the normal API (site binding first, then the proposal).
 // Restarts verify stored content before skipping a record, so source edits require a new version.
 
 export const DEFAULTS = Object.freeze({
@@ -90,43 +90,4 @@ export async function publish(record, { backend, origin, city, parcelSourceId = 
     log(`created proposal ${record.proposalId} (row ${id}) with ${parcelIds.length} parcels`);
     // The server returns the edit token exactly once; hand it back so the caller can keep it.
     return { skipped: false, id, parcelIds, preparationId, editToken: (created.json && created.json.editToken) || null };
-}
-
-export async function publishNamedPlan(plan, { backend, origin, requestFn = request }) {
-    const expectedIds = plan.proposalRowIds.map(String);
-    const existing = await requestFn(backend, origin, 'GET', `/plans/${encodeURIComponent(plan.slug)}`);
-    if (existing.status === 200) {
-        const actualIds = (existing.json?.proposalRowIds || []).map(String);
-        if (actualIds.length !== expectedIds.length || actualIds.some((id, index) => id !== expectedIds[index])) {
-            throw new Error(`named plan ${plan.slug} already exists with different members; named plans are immutable`);
-        }
-        return { skipped: true, slug: plan.slug };
-    }
-    if (existing.status !== 404) throw new Error(`named plan lookup failed (${existing.status}): ${existing.text.slice(0, 300)}`);
-
-    const created = await requestFn(backend, origin, 'POST', '/plans', {
-        slug: plan.slug,
-        title: plan.title,
-        description: plan.description,
-        author: plan.author,
-        place: plan.place,
-        city: plan.city,
-        proposalRowIds: expectedIds
-    });
-    if (created.status === 201) {
-        const verified = await requestFn(backend, origin, 'GET', `/plans/${encodeURIComponent(plan.slug)}`);
-        const ids = (verified.json?.proposalRowIds || []).map(String);
-        if (verified.status !== 200 || ids.length !== expectedIds.length || ids.some((id,index) => id !== expectedIds[index])) {
-            throw new Error(`Named plan ${plan.slug} failed membership readback verification.`);
-        }
-        return { skipped: false, slug: plan.slug, plan: verified.json };
-    }
-    if (created.status === 409) {
-        const raced = await requestFn(backend, origin, 'GET', `/plans/${encodeURIComponent(plan.slug)}`);
-        const actualIds = (raced.json?.proposalRowIds || []).map(String);
-        if (raced.status === 200 && actualIds.length === expectedIds.length && actualIds.every((id, index) => id === expectedIds[index])) {
-            return { skipped: true, slug: plan.slug };
-        }
-    }
-    throw new Error(`named plan creation failed (${created.status}): ${created.text.slice(0, 500)}`);
 }

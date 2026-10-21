@@ -107,13 +107,13 @@
         state.landing = true;
         log(`${input.explore ? 'explore' : 'open ' + input.cityId} at ${input.point.lat.toFixed(4)},${input.point.lon.toFixed(4)} -> `
             + `${decision.cityId} ${decision.inPlace ? 'in place' : 'by reload'} (${Model.formatAt(decision.view)}${decision.carryAt ? ', via ?at=' : ''})`);
-        // A city pick arrives on that city's latest proposal, in 3D (js/world/arrival.js); the lookup
-        // runs during the flight. No proposal, or a failed lookup, lands on the city as before. A pick
-        // of a particular spot lands on that spot (Model.arrivesAtLatest).
+        // A city pick arrives on that city's latest published design, in 3D (js/world/arrival.js); the
+        // lookup runs during the flight. No design, or a failed lookup, lands on the city as before. A
+        // pick of a particular spot lands on that spot (Model.arrivesAtLatest).
         const latest = !Model.arrivesAtLatest(decision) || !global.WorldArrival
             ? Promise.resolve(null)
-            : global.WorldArrival.fetchLatestProposalId(decision.cityId).catch(error => {
-                console.warn(`[${new Date().toISOString()}] [world-entry] latest proposal lookup failed`, error);
+            : global.WorldArrival.fetchLatestDesignCid(decision.cityId).catch(error => {
+                console.warn(`[${new Date().toISOString()}] [world-entry] latest design lookup failed`, error);
                 return null;
             });
         return global.WorldView.flyTo(input.point).then(async camera => {

@@ -1,66 +1,11 @@
-// Pure logic of frontend/js/proposals/bids-card.js: the "Offer my land" mode gate (an ownership
-// attestation for the connected wallet from a lens member) and the ranking of pledges and donations
-// shown as bids in Details.
+// Pure logic of frontend/js/proposals/bids-card.js: the ranking of pledges and donations shown as
+// bids in Details, the owner-offer role and explorer links. (The "Offer my land" mode gate went with
+// owner offers in M2, plan-design-agreement.md.)
 import { describe, it, expect } from 'vitest';
 import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
 const offer = require('../../frontend/js/proposals/bids-card.js');
-
-const MEMBER = 'Memb3r1111111111111111111111111111111111111';
-const OTHER_MEMBER = 'Other111111111111111111111111111111111111111';
-const OWNER = 'Owner11111111111111111111111111111111111111';
-const STRANGER = 'Strange1111111111111111111111111111111111111';
-const NOW = 1_800_000_000;
-
-const att = (parcelUid, overrides = {}) => ({ address: `att-${parcelUid}`, kind: 'ownership', authority: MEMBER, parcelUid, owner: OWNER, expiry: NOW + 3600, ...overrides });
-
-describe('ownerOfferEligibility', () => {
-    const base = { parcelIds: ['P1', 'P2'], owner: OWNER, lensKeys: [MEMBER], nowSeconds: NOW };
-
-    it('is eligible when a lens member attested the wallet for one selected parcel, submittable only when all are', () => {
-        const partial = offer.ownerOfferEligibility({ ...base, results: [
-            { memberKey: MEMBER, parcelUid: 'P1', attestations: [att('P1')] },
-            { memberKey: MEMBER, parcelUid: 'P2', attestations: [] }
-        ] });
-        expect(partial).toMatchObject({ eligible: true, submittable: false, attestedParcelIds: ['P1'], unattestedParcelIds: ['P2'] });
-        expect(partial.attestedBy).toEqual({ P1: [MEMBER] });
-
-        const full = offer.ownerOfferEligibility({ ...base, results: [
-            { memberKey: MEMBER, parcelUid: 'P1', attestations: [att('P1')] },
-            { memberKey: MEMBER, parcelUid: 'P2', attestations: [att('P2')] }
-        ] });
-        expect(full).toMatchObject({ eligible: true, submittable: true, unattestedParcelIds: [] });
-    });
-
-    it('is not eligible without a matching attestation', () => {
-        const cases = [
-            [], // nothing asked
-            [{ memberKey: MEMBER, parcelUid: 'P1', attestations: null }], // service unreachable proves nothing
-            [{ memberKey: MEMBER, parcelUid: 'P1', attestations: [att('P1', { owner: STRANGER })] }], // someone else's
-            [{ memberKey: MEMBER, parcelUid: 'P1', attestations: [att('P2')] }], // other parcel in payload
-            [{ memberKey: MEMBER, parcelUid: 'P1', attestations: [att('P1', { expiry: NOW - 1 })] }], // expired
-            [{ memberKey: MEMBER, parcelUid: 'P1', attestations: [att('P1', { authority: OTHER_MEMBER })] }], // not signed by the asked member
-            [{ memberKey: MEMBER, parcelUid: 'P1', attestations: [att('P1', { kind: 'verdict' })] }], // not an ownership fact
-            [{ memberKey: OTHER_MEMBER, parcelUid: 'P1', attestations: [att('P1', { authority: OTHER_MEMBER })] }], // member not in the lens
-            [{ memberKey: MEMBER, parcelUid: 'P9', attestations: [att('P9')] }] // parcel not selected
-        ];
-        for (const results of cases) {
-            const result = offer.ownerOfferEligibility({ ...base, results });
-            expect(result.eligible).toBe(false);
-            expect(result.submittable).toBe(false);
-        }
-        expect(offer.ownerOfferEligibility({ ...base, owner: null, results: [
-            { memberKey: MEMBER, parcelUid: 'P1', attestations: [att('P1')] }] }).eligible).toBe(false);
-        expect(offer.ownerOfferEligibility({ ...base, parcelIds: [], results: [] }).submittable).toBe(false);
-    });
-
-    it('treats an attestation without a stated expiry as unexpired', () => {
-        const result = offer.ownerOfferEligibility({ ...base, parcelIds: ['P1'], results: [
-            { memberKey: MEMBER, parcelUid: 'P1', attestations: [att('P1', { expiry: null })] }] });
-        expect(result.submittable).toBe(true);
-    });
-});
 
 describe('rankBids', () => {
     it('ranks active/fulfilled pledges and unrefunded donations by amount, earlier bid first on ties', () => {

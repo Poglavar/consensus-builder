@@ -49,36 +49,42 @@ function clickEvent(currentTarget, target = currentTarget) {
 }
 
 describe('proposal list navigation', () => {
-    it('qualifies local-copy lookups from server list clicks with the current publication API', async () => {
-        const apiBase = 'https://api.example.test';
-        const local = { proposalId: 'local-copy' };
+    it('looks up the local copy of a server row by the design CID the row lists', async () => {
+        const cid = 'bafkreibm6jg3ux5qumhcn2b3flc3tyu6dmlb4xa7u5bf44yegnrjhc4yeq';
+        const local = { proposalId: `design-${cid}` };
         const findLocal = vi.fn(() => local);
+        const DesignSync = { fetchDesign: vi.fn(), importDesign: vi.fn() };
         const row = {
-            getAttribute: name => ({ 'data-proposal-id': 'server-proposal', 'data-server-id': '42' })[name] || null,
+            getAttribute: name => ({ 'data-proposal-id': cid, 'data-cid': cid })[name] || null,
             classList: { add: vi.fn() },
             querySelectorAll: () => []
         };
         const { context } = loadListUi({
             modal: { querySelectorAll: () => [] },
+            window: { DesignSync },
             context: {
                 proposalListState: { source: 'server' },
-                resolveBackendBaseUrl: () => apiBase,
                 findLocalCopyOfServerProposal: findLocal,
                 getProposalKey: () => local.proposalId
             }
         });
 
         await context.handleProposalListItemClick(clickEvent(row));
-        expect(findLocal).toHaveBeenCalledWith({ serverProposalId: '42', publicationApiBase: apiBase });
+        expect(findLocal).toHaveBeenCalledWith({ cid });
+        expect(context.previewProposalOnMap).toHaveBeenCalledWith(local.proposalId, { center: true, blink: true });
 
         findLocal.mockClear();
         context.openListedProposal = vi.fn();
         const details = {
-            getAttribute: name => name === 'data-proposal-details' ? 'server-proposal' : null,
+            getAttribute: name => name === 'data-proposal-details' ? cid : null,
             closest: selector => selector === '.proposal-list-item' ? row : null
         };
         await context.handleProposalListDetailsClick(clickEvent(details));
-        expect(findLocal).toHaveBeenCalledWith({ serverProposalId: '42', publicationApiBase: apiBase });
+        expect(findLocal).toHaveBeenCalledWith({ cid });
+        expect(context.openListedProposal).toHaveBeenCalledWith(local, cid, 'details');
+        // A copy held here opens as it is; nothing is fetched.
+        expect(DesignSync.fetchDesign).not.toHaveBeenCalled();
+        expect(DesignSync.importDesign).not.toHaveBeenCalled();
     });
 
     it('replaces the temporary loading shell when mounting the proposal list', () => {

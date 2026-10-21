@@ -1,7 +1,8 @@
 // Compare how two proposals affect ONE parcel (the owner's view): which proposals touch the parcel at
 // all, and, per proposal, what it does to that parcel only — how much ground it takes, what stands
-// there afterwards (buildings, a park/square/lake, a road or track ribbon, readjustment plots), where
-// the ownership of the taken ground goes, what the owner is asked and how far consent has got.
+// there afterwards (buildings, a park/square/lake, a road or track ribbon, readjustment plots) and where
+// the ownership of the taken ground goes. A design asks nobody for consent (plan-design-agreement.md,
+// M2): owners decide on the agreement that includes it, so there is no consent here.
 //
 // A proposal touches the parcel when its declaration (binding) names it, or when its site reaches
 // into it without naming it (a sub-tolerance intrusion, an old record); the latter is reported with
@@ -45,9 +46,7 @@
     const siteBindingApi = () => dep('__siteBinding', './site-binding.js');
     const planYieldApi = () => dep('__planYield', './plan-yield.js');
     const ownershipFlowApi = () => dep('__ownershipFlow', './ownership-flow.js');
-    const publishTermsApi = () => dep('ProposalPublishTerms', './publish-terms.js');
     const displayStateApi = () => dep('__proposalDisplayState', './display-state.js');
-    const publicationApi = () => dep('SharedLinkCopies', './shared-link-copies.js');
 
     const finite = value => typeof value === 'number' && Number.isFinite(value);
     function num(value) {
@@ -402,29 +401,12 @@
         return { cededM2: round(ceded, 1), destination };
     }
 
-    function offerOf(record) {
-        return publishTermsApi().authoredOffer(record);
-    }
-
-    function consentOf(record, parcel, relation, options) {
-        const channel = typeof options.channel === 'string' ? options.channel : null;
-        const consent = options.consent || {};
-        return {
-            channel,
-            basis: consent.basis || null,
-            // Only a binding asks the owner; a site that merely reaches in has no consent channel.
-            needed: relation === 'intrudes' ? false : (channel ? channel === 'acceptance' : null),
-            parcelAccepted: relation === 'bound' ? consent.parcelAccepted ?? null : null,
-            owners: relation === 'bound' ? consent.owners || null : null,
-            parcels: consent.parcels || null
-        };
-    }
-
+    // The rung the details panel and the lists show (proposals/display-state.js): published means
+    // the design hashes to the CID it is published as at this index (DesignSync.publishedCid).
     function statusOf(record, options) {
         const state = displayStateApi().of(record, {
             lifecycleKey: options.lifecycleKey,
-            applied: options.applied,
-            serial: publicationApi().rowId(record.serverProposalId)
+            applied: options.applied
         });
         return {
             key: state.rung === 'draft' ? 'local' : state.rung,
@@ -437,9 +419,7 @@
      * What one record does to the parcel.
      * @param {object} record
      * @param {{ id, cadastreIds?: string[], feature, areaM2?: number }} parcel
-     * @param {{ turf?, channel?: string, lifecycleKey?: string, applied?: boolean,
-     *   isTrack?: Function, consent?: object }} options (consent = a current validated summary;
-     *   channel = the dossier's consent channel for this parcel)
+     * @param {{ turf?, lifecycleKey?: string, applied?: boolean, isTrack?: Function }} options
      */
     function parcelEffect(record, parcel, options) {
         const opts = options || {};
@@ -473,8 +453,6 @@
             corridor: corridorOn(record, clip, takenM2, opts),
             plots: plotsOn(t, record, parcelFeature),
             ownership: ownershipOn(record, parcel, hasGround),
-            offer: offerOf(record),
-            consent: consentOf(record, parcel, relation, opts),
             status: statusOf(record, opts),
             clip: clip ? clip.geometry : null
         };

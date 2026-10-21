@@ -2,20 +2,31 @@
 
 # Plan, design, agreement
 
-**Status (2026-10-21): M1 is built (a and b).** "Lay out parcels" replaces the land-readjustment
-drawing: a geometry-only parcel-layout design with Equal plots (count + sweep handle), Schelling plots
-(the plan layer's settings, street strips as plots), Keep existing borders and Draw freely, applied
-with ownership carried over. The **agreement** exists as a browser record with its Create-agreement
-dialog, agreement panel (current or stale against the map, before/after over its input land) and
-Agreements list, per the "M1 (b) build contract" at the end of this file; a layout's Share stays
-refused until M2 publishes agreements. Leftovers noted while building, to flatten when touched:
+**Status (2026-10-22): M1 and M2 built, tested and committed; the M3 program built.** "Lay out
+parcels" (M1 a) and the local agreement with its dialog, panel and list (M1 b) came first. M2 (the
+"M2 build contract" below) publishes designs and agreements as CIDv1 raw-leaf objects pinned
+through `POST /pins` and indexed in `consensus.design` / `consensus.agreement`; share links are
+`/designs/<cid,…>` and `/agreements/<cid>`; Propose on the agreement panel publishes designs and
+the agreement and shows the decision tally over receipts signed on the agreement CID; design
+dialogs have no terms or kind; the decide-later type, Walrus, prepare, the proposal write path, edit
+tokens, effect hashes, lineage by row id and named plans are gone. The M2 test pass (all tests in
+one pass, then fixes, per the user's rule) ended with the full headless unit suite at 893 of 897
+files passing and the full headless Playwright suite at 651 of 655 (three load flakes pass alone);
+the remaining failures (hackathon-operations, parcel-deep-link-city, qualified-city-release,
+cotonou-live-source, the "Use my location" spec) fail on the base branch too. The Solana
+`agreement` program builds (M3 notes at the end). Leftovers to flatten when touched:
 `readjustment-contributions.js` is loaded but unused; `subdivision.js planCreateVerdict` and
 `formation-edit.js clipPiecesByTaking` are used only by tests; `readjustmentPiece` keeps its name;
-the how-to guides still describe the old editor; the backend scripts and tests that read the old
-`reparcellization` record are untouched until the server work of M2; an output piece anchored to a
-parcel outside the inputs counts with its whole area in the ledger (land in and land out can differ);
-unowned output land is in no ledger row; the rights preview names local parties by agent id; the
-share panel's "Who decides" row and "Create named plan" block stay until M2 re-points them.
+the how-to guides still describe the old editor; an output piece anchored to a parcel outside the
+inputs counts with its whole area in the ledger; unowned output land is in no ledger row; the
+rights preview names local parties by agent id; hand-placed structure `decorations` are not part
+of the published design object; the bets sheet, `bet-entry.js`, `lens-card.js`, `bids-card.js`,
+`support-view.js` and `possibility-timeline.js` are loaded but unmounted and the agent simulation
+still pledges to proposals (all move to agreements in M3); the agents, MCP tools and the candlestick
+and Borovje restatement scripts still call the removed write routes (rewritten on agreements in M3);
+the `proposal` table and the `ens_plan`, `proposal_prepared`, `proposal_owner_decision` and
+`edit_token_hash` database objects are dropped at the end of M3 with a backup; the zagreb-isochrone
+walk and drive sims receive design CIDs now and must read `GET /designs/:cid`.
 
 A rework of what sits above a single authored change. Started 2026-10-21 on branch
 `plan-design-agreement` (off `colosseum-worlds-fair` at 3a62b4a7e, which includes the Schelling plan
@@ -375,7 +386,7 @@ had to be made are marked **(call)**.
   file pinned with `cidVersion: 1`; the courier compares its answer with the computed CID and refuses
   on a difference, so a wrong assumption fails loudly at the first pin, never silently.
 - **Design object** `design/v1`: `{ schema, goal, title, description, author, city, site, toleranceM,
-  roadProposal | buildingProposal | structureProposal | parcelLayout | decideLaterProposal (cleaned
+  roadProposal | buildingProposal | structureProposal | parcelLayout (cleaned
   as `proposalContentPayload` cleans them today), geometry, origin: { cid } | null, authoredAt }`.
   Nothing else: no cadastre ids, terms, kind, approval, lens, lifecycle, server ids, thumbnails.
   A local design's CID replaces `proposalContentFingerprint` (`c2-…`), `effectHash`, the consent
@@ -386,8 +397,10 @@ had to be made are marked **(call)**.
   snapshot) and `openGroundM2`; `outputs: [{ hash, areaM2, fromParcelIds, role, producedBy: cid | null }]`
   without geometry (the hash commits to it; a reader re-derives the pieces by applying the designs
   and checks the hashes); `allocations`, `money`, `rule` (with the rights snapshot and lens keys),
-  `deadline`, `title`, `author`, `city`, `createdAt`. Its CID commits to the design CIDs and so to
-  everything transitively; a counter-agreement reuses the design objects.
+  `deadline`, `title`, `author`, `sponsor` (the base58 wallet that will mint and fund it, null when
+  proposed without one; M3 derives the on-chain address from it), `city`, `createdAt`. Its CID
+  commits to the design CIDs and so to everything transitively; a counter-agreement reuses the
+  design objects.
 - Drafts stay local records with local ids; publishing computes the CIDs, pins the designs that have
   none, then the agreement.
 
@@ -448,3 +461,20 @@ had to be made are marked **(call)**.
   canonical objects, the decision statement; route tests for pins, designs and agreements;
   Playwright for sharing a design and proposing an agreement against the mocked API; the control
   contract regenerated; the named-plan, prepare, terms, kind and Walrus tests deleted with their code.
+
+## M3 notes (2026-10-21, program built, not deployed)
+
+- The Solana `agreement` program (`blockchain/solana/programs/agreement`) has `create(cid, lens,
+  deadline, open_ground, required_lamports, payout)`, `fund`, `attest`, `execute`, `cancel`,
+  `expire`; one account per agreement holding the escrow; the lens attests `AgreementDecision`
+  (`string agreementCid, string sponsor, string decision, string evidenceRef, int64 sourceObservedAt`;
+  the sponsor must equal the account's authority, so an attestation fits one account only), one
+  final decision per agreement; `execute` is permissionless and releases the escrow to `payout`.
+- **Decision:** the account address is `["agreement", sponsor, sha256(cid)]`, so a published CID
+  cannot be squatted by a stranger creating its account first; the agreement object carries the
+  sponsor wallet, and the index's `onchain` column records the account once minted.
+- **Decision:** funding is enforced on every agreement; `required_lamports: 0` means none, and
+  `open_ground` is recorded for readers only.
+- Pending for M3: the lens issues the attestation (`backend/oracle/lens-schemas.js`), the browser
+  mint and fund flow on the agreement panel, markets, oracle, parcel history and agents on
+  agreements, the `proposal` table drop, prod demo content recreated. EVM later.

@@ -96,12 +96,12 @@ describe('optional tools loader', () => {
     it('coalesces first calls and forwards their receiver and arguments to the editor', async () => {
         const h = harness(); const receiver = { id: 'caller' };
         const first = h.window.openSingleBuildingForParcels.call(receiver, { parcelIds: ['a'] });
-        const second = h.window.createSingleBuildingProposal.call(receiver, { parcelIds: ['b'] });
+        const second = h.window.createSingleBuildingFromUpload.call(receiver, { parcelIds: ['b'] });
         expect(h.scripts.map(script => script.src)).toEqual(['js/single-building.js?build=test-token']);
         const calls = [];
         h.succeed(h.scripts[0], win => {
             win.openSingleBuildingForParcels = function (value) { calls.push([this, 'open', value]); return 'opened'; };
-            win.createSingleBuildingProposal = function (value) { calls.push([this, 'create', value]); return 'created'; };
+            win.createSingleBuildingFromUpload = function (value) { calls.push([this, 'create', value]); return 'created'; };
         });
         await expect(first).resolves.toBe('opened'); await expect(second).resolves.toBe('created');
         expect(calls).toEqual([[receiver, 'open', { parcelIds: ['a'] }], [receiver, 'create', { parcelIds: ['b'] }]]);

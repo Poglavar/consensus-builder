@@ -58,79 +58,6 @@
     margin-left: var(--cb-space-2);
 }
 
-/* The offer (or boost) amount and its currency on one row. */
-.proposal-offer-row > input {
-    flex: 1 1 auto;
-    min-width: 0;
-}
-
-.proposal-offer-row > select {
-    flex: 0 0 112px;
-    width: 112px;
-}
-
-/* An option row: a checkbox and its label, then a helper text or the option's value. */
-.proposal-options-section .proposal-option-row + .proposal-option-row {
-    margin-top: var(--cb-space-2);
-}
-
-.proposal-option-row.proposal-option-row--split {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-}
-
-.proposal-option-row[data-disabled] {
-    opacity: 0.6;
-}
-
-.proposal-option-toggle {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    gap: var(--cb-space-2);
-}
-
-.proposal-option-row .proposal-option-toggle > label {
-    margin: 0;
-    cursor: pointer;
-}
-
-.proposal-option-helper {
-    flex: 1;
-    font-size: var(--cb-text-sm);
-    line-height: 1.3;
-    color: var(--cb-text-muted);
-}
-
-.proposal-option-value {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    gap: var(--cb-space-1);
-}
-
-.proposal-option-value--end {
-    justify-content: flex-end;
-}
-
-.proposal-option-value--indent {
-    padding-left: var(--cb-space-6);
-}
-
-.proposal-option-row .proposal-option-number {
-    width: 64px;
-    text-align: center;
-}
-
-.proposal-option-row .proposal-option-time {
-    width: 100%;
-    text-align: center;
-}
-
-.proposal-option-suffix {
-    color: var(--cb-text-muted);
-}
-
 /* The owner avatar beside a parcel in the summary list. */
 .proposal-parcel-item .parcel-owner-avatar {
     width: 20px;
@@ -161,8 +88,8 @@
     color: var(--cb-text-faint);
 }
 
-/* Upload before walking (showWalkUploadGateModal): the applied proposals the walk view still needs
-   on the server, one row each. */
+/* Publish before walking (showWalkUploadGateModal): the applied designs the walk view still needs
+   published, one row each (a parcel layout's row only says why it is left out). */
 .walk-upload-gate {
     display: flex;
     flex-direction: column;
@@ -250,7 +177,8 @@
     font-weight: 700;
 }
 
-/* "Based on <source>": the source is a script link (button.cb-link) into this panel. */
+/* The lineage lines under the description: "Based on <source>", a script link (button.cb-link) into
+   this panel, and "Forked from <cid>", a link (a.cb-link) to the published design it was forked from. */
 .proposal-based-on-row {
     font-size: var(--cb-text-sm);
     color: var(--cb-text-muted);
@@ -260,64 +188,6 @@
 .proposal-land-fork-relation {
     margin-top: 2px;
     color: var(--cb-text-muted);
-}
-
-/* Counterproposals and forks made from this proposal (proposals/lineage.js): a short list of
-   script links under the description, each opening that proposal in this panel. */
-.proposal-lineage {
-    margin-top: var(--cb-space-2);
-    font-size: var(--cb-text-sm);
-    color: var(--cb-text-muted);
-}
-
-.proposal-lineage__title {
-    margin: 0;
-}
-
-.proposal-lineage__list {
-    margin: var(--cb-space-1) 0 0;
-    padding-left: var(--cb-space-4);
-}
-
-.proposal-lineage__note {
-    color: var(--cb-text-faint);
-}
-
-/* Binding drift notice (binding-drift-panel.js): today's cadastre binds this published record's
-   site differently; offers Re-bind, which publishes a new derived record. */
-.proposal-binding-drift {
-    margin: 0 0 12px;
-    padding: 10px 12px;
-    border: 1px solid var(--cb-warning);
-    border-radius: 8px;
-    background-color: var(--cb-warning-soft);
-    color: #78350f;
-    font-size: 13px;
-    line-height: 1.4;
-}
-
-.proposal-binding-drift-title {
-    font-weight: 600;
-}
-
-.proposal-binding-drift-title i {
-    margin-right: 4px;
-    color: var(--cb-warning);
-}
-
-.proposal-binding-drift-list {
-    margin: 6px 0 0;
-    padding-left: 18px;
-    overflow-wrap: anywhere;
-}
-
-.proposal-binding-drift-note {
-    margin: 6px 0;
-    color: var(--cb-warning-soft-ink);
-}
-
-.proposal-binding-drift-rebind {
-    margin-top: 2px;
 }
 
 .proposal-id-row {
@@ -351,6 +221,19 @@
     line-height: 1.2;
     text-align: center;
     flex: 0 1 auto;
+}
+
+.share-plan-label[hidden],
+.share-plan-subtext[hidden],
+.share-plan-spinner[hidden] {
+    display: none;
+}
+
+/* While the share panel opens, the button's label gives way to this. */
+.share-plan-spinner {
+    display: inline-flex;
+    gap: var(--cb-space-2);
+    align-items: center;
 }
 
 .share-plan-subtext {
@@ -701,40 +584,6 @@
 }
 
 /* Thumbnail */
-/* Share modal header: name + type + screenshot of the proposal being shared. */
-.share-modal-identity {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 14px;
-    padding-bottom: 12px;
-    border-bottom: 1px solid var(--cb-line);
-}
-
-.share-modal-identity .proposal-thumb {
-    width: 64px;
-    height: 64px;
-}
-
-.share-modal-identity-text {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    min-width: 0;
-}
-
-.share-modal-identity-text strong {
-    font-size: 15px;
-    color: var(--cb-text);
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-.share-modal-identity-text span {
-    font-size: 12px;
-    color: var(--cb-text-muted);
-}
 
 .proposal-thumb {
     position: relative;
@@ -840,189 +689,10 @@ textarea.proposal-description-input {
     box-shadow: 0 5px 18px rgba(31, 78, 121, 0.08);
 }
 
-.proposal-market-card {
-    margin: 14px 0;
-    padding: 14px;
-    border: 1px solid #d9d7f3;
-    border-radius: 12px;
-    background: linear-gradient(145deg, #faf9ff, #ffffff);
-    box-shadow: 0 5px 18px rgba(69, 57, 143, 0.08);
-}
-
-.proposal-possibility-card {
-    margin: 14px 0;
-    padding: 14px;
-    border: 1px solid #d8ded7;
-    border-radius: 12px;
-    background: linear-gradient(145deg, #f5faf4, #ffffff);
-    box-shadow: 0 5px 18px rgba(48, 92, 61, 0.08);
-}
-
-/* auto-fit, not a fixed 4: the details panel is often ~350px wide on desktop, where four columns
-   left each step ~21px and broke text per character. Steps now stack vertically until the card is
-   wide enough for 200px columns (2 across, then 4). */
-.proposal-possibility-timeline {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 8px;
-    margin: 12px 0 0;
-    padding: 0;
-    list-style: none;
-}
-
-.proposal-possibility-timeline li {
-    display: grid;
-    grid-template-columns: auto minmax(0, 1fr);
-    gap: 8px;
-    min-width: 0;
-    padding: 9px;
-    border: 1px solid #dfe8df;
-    border-radius: 9px;
-    background: var(--cb-surface);
-}
-
-.proposal-possibility-timeline li.is-current { border-color: #d5ad42; background: #fffaf0; }
-.proposal-possibility-timeline li.is-pending { opacity: 0.62; }
-
-.proposal-possibility-marker {
-    display: grid;
-    place-items: center;
-    width: 25px;
-    height: 25px;
-    border-radius: 50%;
-    background: #dbe9df;
-    color: #24543d;
-    font-size: 10px;
-    font-weight: 800;
-}
-
-.proposal-possibility-timeline .is-current .proposal-possibility-marker { background: #f5d681; color: #624c12; }
-.proposal-possibility-timeline .is-pending .proposal-possibility-marker { background: #e7ebee; color: #687785; }
-.proposal-possibility-timeline strong { display: block; color: #24543d; font-size: 12px; }
-.proposal-possibility-timeline p { margin: 2px 0 5px; color: #52687b; font-size: 10px; line-height: 1.35; overflow-wrap: break-word; }
-.proposal-possibility-timeline small { display: block; color: #66788a; font-size: 9px; line-height: 1.35; overflow-wrap: anywhere; }
-.proposal-possibility-timeline .cb-link { display: inline-block; margin-top: 4px; }
-
-.proposal-market-grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 10px;
-    margin-top: 12px;
-}
-
-.proposal-market-grid > div {
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
-    min-width: 0;
-    padding: 10px;
-    border: 1px solid #e4e1f7;
-    border-radius: 9px;
-    background: var(--cb-surface);
-}
-
-.proposal-market-grid span,
-.proposal-market-grid small,
-.proposal-market-status,
-.proposal-market-muted {
+.proposal-market-status {
     color: #66788a;
     font-size: 11px;
 }
-
-.proposal-market-grid strong {
-    color: #302c5f;
-    font-size: 14px;
-}
-
-.proposal-market-you {
-    margin-top: 10px;
-    padding: 9px 10px;
-    border-radius: 8px;
-    background: #f2f1ff;
-    color: #403a78;
-    font-size: 12px;
-}
-
-.proposal-market-lifecycle {
-    display: grid;
-    gap: 7px;
-    margin-top: 10px;
-    padding: 10px;
-    border: 1px solid #e4e1f7;
-    border-radius: 9px;
-    background: var(--cb-surface);
-}
-
-.proposal-market-lifecycle > div {
-    display: grid;
-    grid-template-columns: 112px minmax(0, 1fr);
-    gap: 8px;
-    color: #52687b;
-    font-size: 11px;
-    line-height: 1.45;
-}
-
-.proposal-market-lifecycle strong { color: #302c5f; }
-
-.proposal-market-oracle {
-    display: grid;
-    gap: 5px;
-    margin-top: 10px;
-    padding: 10px;
-    border: 1px solid #d9e6df;
-    border-radius: 9px;
-    background: #f8fcfa;
-    color: #52687b;
-    font-size: 11px;
-    line-height: 1.45;
-}
-
-.proposal-market-oracle strong { color: #24543d; }
-.proposal-market-oracle > span { min-width: 0; overflow-wrap: anywhere; }
-
-/* A sha256 in oracle text: one ellipsized line (full value in the title) plus a copy button. */
-.proposal-hash-chip {
-    display: inline-flex;
-    align-items: center;
-    gap: 3px;
-    max-width: 100%;
-    min-width: 0;
-    vertical-align: bottom;
-}
-.proposal-hash-chip code {
-    min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    font-size: 10px;
-}
-/* Copy beside a hash: a square quiet icon button (btn btn-quiet btn-sm btn-icon). */
-.proposal-hash-copy {
-    flex: 0 0 auto;
-}
-.proposal-market-card[data-oracle-tone="success"] .proposal-market-oracle { border-color: #78b997; background: #f0fbf5; }
-.proposal-market-card[data-oracle-tone="error"] .proposal-market-oracle { border-color: #d89a98; background: #fff6f5; }
-
-/* Recent bets: one line each, the transaction a cb-link--external. */
-.proposal-market-history {
-    display: grid;
-    gap: 4px;
-    margin-top: 10px;
-    color: var(--cb-text-muted);
-    font-size: var(--cb-text-xs);
-}
-
-.proposal-market-history strong { color: var(--cb-text-strong); }
-
-/* The market's actions; the bet pair is btn btn-yes / btn btn-no (css/primitives.css). */
-.proposal-market-controls {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 7px;
-    margin-top: 10px;
-}
-
-.proposal-market-controls .btn { margin: 0; }
 
 .proposal-market-status {
     min-height: 18px;
@@ -1097,9 +767,7 @@ textarea.proposal-description-input {
     font-size: 16px;
 }
 
-.proposal-funding-eyebrow,
-.proposal-funding-grid span,
-.proposal-funding-grid small {
+.proposal-funding-eyebrow {
     color: #66788a;
     font-size: 11px;
 }
@@ -1117,70 +785,6 @@ textarea.proposal-description-input {
     color: #0a5ea8;
     font-size: 11px;
     font-weight: 700;
-}
-
-.proposal-funding-grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 10px;
-    margin-top: 12px;
-}
-
-.proposal-funding-grid > div {
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
-    min-width: 0;
-    padding: 10px;
-    border: 1px solid #e3eaf1;
-    border-radius: 9px;
-    background: var(--cb-surface);
-}
-
-.proposal-funding-grid strong {
-    color: #203246;
-    font-size: 14px;
-}
-
-.proposal-funding-you {
-    margin-top: 10px;
-    padding: 9px 10px;
-    border-radius: 8px;
-    background: #eef7ee;
-    color: #245b2a;
-    font-size: 12px;
-}
-
-.proposal-funding-explainer,
-.proposal-support-wallet-summary {
-    margin-top: 10px;
-    color: #52687b;
-    font-size: 12px;
-    line-height: 1.45;
-}
-
-.proposal-funding-explainer > div + div { margin-top: 5px; }
-
-.proposal-support-wallet-summary {
-    padding: 8px 10px;
-    border: 1px solid #dbe6ef;
-    border-radius: 8px;
-    background: #f7fbff;
-}
-
-.proposal-boost-send:disabled {
-    cursor: wait;
-    opacity: 0.58;
-}
-
-/* The explorer links under a funding or market card: a cb-link-row of external links. */
-.proposal-funding-links {
-    margin-top: 10px;
-}
-
-@media (max-width: 520px) {
-    .proposal-funding-grid,
-    .proposal-market-grid { grid-template-columns: 1fr; }
 }
 
 .proposal-list {
@@ -1223,252 +827,8 @@ textarea.proposal-description-input {
 }
 
 /* Active buttons for multi-select */
-/* Proposal Offer Bar - light green bar */
-.proposal-offer-bar {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    width: 100%;
-    background-color: #d4edda;
-    color: #155724;
-    min-height: 44px;
-    padding: 0 14px;
-    border-radius: 6px;
-    margin: 10px 0;
-    border: 1px solid #c3e6cb;
-    box-sizing: border-box;
-}
-
-.proposal-offer-bar .offer-label {
-    font-size: 13px;
-    font-weight: 500;
-}
-
-.proposal-offer-bar .offer-amount {
-    font-size: 14px;
-    font-weight: 700;
-}
-
-/* Proposal Offer Bar with Decay */
-.proposal-offer-bar.with-decay {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    padding: 0;
-    overflow: hidden;
-    background-color: transparent;
-    border: 1px solid #c3e6cb;
-}
-
-.proposal-offer-bar.with-decay .offer-bar-background {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    display: flex;
-    z-index: var(--cb-z-local-0);
-}
-
-.proposal-offer-bar.with-decay .offer-bar-remaining {
-    background-color: #d4edda;
-    height: 100%;
-    transition: width 0.5s ease;
-}
-
-.proposal-offer-bar.with-decay .offer-bar-decayed {
-    background-color: #f8d7da;
-    height: 100%;
-    transition: width 0.5s ease;
-}
-
-.proposal-offer-bar.with-decay .offer-bar-target-line {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    width: 2px;
-    background-color: var(--cb-text-strong);
-    z-index: var(--cb-z-local-1);
-}
-
-.proposal-offer-bar.with-decay .offer-bar-content {
-    position: relative;
-    z-index: var(--cb-z-local-2);
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    gap: 10px;
-    padding: 0 14px;
-    width: 100%;
-    box-sizing: border-box;
-    min-height: 44px;
-}
-
-.proposal-offer-bar.with-decay .offer-label {
-    font-size: 13px;
-    font-weight: 500;
-    color: #155724;
-}
-
-.proposal-offer-bar.with-decay .offer-amount {
-    font-size: 14px;
-    font-weight: 700;
-    color: #155724;
-    font-family: 'Courier New', Consolas, monospace;
-}
-
-.proposal-offer-bar.with-decay .offer-amount.decaying {
-    color: #856404;
-}
-
-.proposal-offer-bar.with-decay .offer-original {
-    font-size: 11px;
-    color: var(--cb-text-muted);
-    font-style: italic;
-    font-family: 'Courier New', Consolas, monospace;
-}
-
-/* Offer bar content wrapper for non-decay bars */
-.proposal-offer-bar .offer-bar-content-simple {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    gap: 10px;
-    padding: 0;
-    width: 100%;
-    box-sizing: border-box;
-    min-height: 44px;
-}
-
-.proposal-offer-bar .offer-bar-main {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    flex: 1 1 auto;
-    min-width: 0;
-}
-
-/* Seller offers expose funding availability without implying a payment or acceptance action. */
-.proposal-offer-funding-note {
-    margin: var(--cb-space-2) 0 0;
-    color: var(--cb-text-muted);
-    font-size: var(--cb-text-sm);
-    line-height: 1.45;
-}
-
-/* Deposit bars inside offer bar */
-.proposal-offer-bar .offer-bar-deposit-container {
-    width: 100%;
-    padding: 0 10px 6px 10px;
-    box-sizing: border-box;
-}
-
-.proposal-offer-bar .deposit-bar-row {
-    position: relative;
-    width: 100%;
-    height: 6px;
-    background-color: rgba(0, 0, 0, 0.1);
-    border-radius: 3px;
-    margin-top: 3px;
-    overflow: hidden;
-}
-
-.proposal-offer-bar .deposit-bar-fill {
-    position: absolute;
-    top: 0;
-    left: 0;
-    height: 100%;
-    background-color: #155724;
-    border-radius: 3px;
-    transition: width 0.3s ease;
-}
-
-.proposal-offer-bar .deposit-bar-fill.overflow {
-    background-color: #0d5c17;
-}
-
-/* Offer bar with deposit needs flex column layout */
-.proposal-offer-bar.with-deposit {
-    flex-direction: column;
-    padding: 0;
-}
-
-.proposal-offer-bar.with-deposit:not(.with-decay) {
-    display: flex;
-}
-
-/* No deposit warning - shown below offer bar */
-.proposal-no-deposit-warning {
-    width: 100%;
-    font-size: 11px;
-    color: #856404;
-    background-color: #fff3cd;
-    padding: 6px 10px;
-    border-radius: 4px;
-    margin-top: 4px;
-    text-align: center;
-    border: 1px solid #ffc107;
-    box-sizing: border-box;
-}
-
 .proposal-header {
     margin-bottom: 15px;
-}
-
-/* Hide spinner buttons on offer number input */
-.proposal-offer-row {
-    display: flex;
-    gap: 8px;
-    align-items: stretch;
-}
-
-/* 34px matches the natural height of the Name and Description inputs, so the three
-   create-proposal boxes read as one compact, uniform block. */
-#proposalOffer {
-    height: 34px;
-    min-height: 34px;
-    max-height: 34px;
-    padding: 0 12px;
-    box-sizing: border-box;
-    border: 1px solid var(--cb-line);
-    border-radius: 4px;
-    font-size: 14px;
-    line-height: 32px;
-}
-
-#proposalOffer::-webkit-outer-spin-button,
-#proposalOffer::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-}
-
-#proposalCurrency {
-    height: 34px;
-    min-height: 34px;
-    max-height: 34px;
-    padding: 0 12px;
-    box-sizing: border-box;
-    border: 1px solid var(--cb-line);
-    border-radius: 4px;
-    font-size: 14px;
-    background-color: var(--cb-surface);
-    cursor: pointer;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23333' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 12px center;
-    padding-right: 36px;
-}
-
-.proposal-offer-balance {
-    margin-top: 4px;
-    color: var(--cb-text-muted);
-    font-size: 12px;
-    line-height: 1.4;
 }
 
 .proposal-title-row {
@@ -2230,70 +1590,11 @@ textarea.proposal-description-input {
     border-color: var(--cb-primary);
 }
 
-/* ---- The boost dialog ----
-   CbDialog with the identity class .proposal-boost-modal in proposals/details-panel.js;
-   the chrome is the primitive's. */
-.proposal-boost-modal .cb-dialog__body {
-    display: flex;
-    flex-direction: column;
-    gap: var(--cb-space-3);
-}
-
+/* A line of copy in the bets dialog's body (bets/bets-dialog.js, the placed state). */
 .proposal-boost-copy {
     margin: 0;
     color: var(--cb-text-muted);
     line-height: 1.45;
-}
-
-.proposal-boost-actions {
-    display: flex;
-    justify-content: flex-end;
-    margin-top: 4px;
-}
-
-.proposal-boost-row input[type="text"] {
-    height: 44px;
-    min-height: 44px;
-    max-height: 44px;
-    padding: 0 12px;
-    box-sizing: border-box;
-    border: 1px solid var(--cb-line);
-    border-radius: 4px;
-    font-size: 14px;
-    line-height: 44px;
-}
-
-.proposal-boost-row input[type="text"]::-webkit-outer-spin-button,
-.proposal-boost-row input[type="text"]::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-}
-
-.proposal-boost-row select {
-    height: 44px;
-    min-height: 44px;
-    max-height: 44px;
-    padding: 0 12px;
-    box-sizing: border-box;
-    border: 1px solid var(--cb-line);
-    border-radius: 4px;
-    font-size: 14px;
-    background-color: var(--cb-surface);
-    cursor: pointer;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23333' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 12px center;
-    padding-right: 36px;
-}
-
-/* Under the amount: the status of the last attempt, on a line kept free so nothing jumps. */
-.proposal-boost-status {
-    min-height: 18px;
-    font-size: var(--cb-text-sm);
-    text-align: center;
 }
 
 /* ---- Owner acceptance rows (proposals/execution.js buildOwnerAcceptanceSectionHtml) ----
@@ -2307,23 +1608,9 @@ textarea.proposal-description-input {
     padding: var(--cb-space-1) 0;
 }
 
-.owner-acceptance-list > .owner-acceptance-recipient {
-    border-bottom: 1px dashed var(--cb-line-strong);
-}
-
 .owner-acceptance-row > .owner-identity {
     font-size: var(--cb-text-md);
     font-weight: var(--cb-weight-medium);
-}
-
-.owner-acceptance-recipient > .owner-identity {
-    font-weight: var(--cb-weight-semibold);
-}
-
-.owner-acceptance-recipient-tag {
-    font-size: var(--cb-text-xs);
-    font-weight: var(--cb-weight-normal);
-    color: var(--cb-text-muted);
 }
 
 .owner-acceptance-row > .owner-share {
@@ -2332,13 +1619,8 @@ textarea.proposal-description-input {
     text-align: right;
 }
 
-.owner-share > .owner-share,
-.owner-share > .owner-payout {
+.owner-share > .owner-share {
     font-size: 0.85em;
-}
-
-.owner-payout {
-    color: var(--cb-text);
 }
 
 .owner-acceptance-row > .owner-actions {
@@ -2347,11 +1629,6 @@ textarea.proposal-description-input {
 
 .owner-actions .btn {
     min-width: 60px;
-}
-
-.owner-acceptance-accepted {
-    font-size: var(--cb-text-sm);
-    color: var(--cb-success);
 }
 
 /* Acceptance progress (more than 65 parcels or owners): the fill's width is the accepted share. */
@@ -2434,20 +1711,6 @@ textarea.proposal-description-input {
     }
 }
 
-/* A local purchase simulation is separate from the proposal's shared lifecycle. */
-.proposal-purchase-simulation {
-    display: inline-block;
-    max-width: 100%;
-    white-space: normal;
-    font-size: 0.85em;
-}
-
-.proposal-purchase-hint {
-    flex-basis: 100%;
-    margin: 4px 0;
-    font-size: 0.85em;
-}
-
 /* Why a parcel layout has no Share yet: it leaves the device with its agreement (M2). */
 .proposal-publish-later {
     flex-basis: 100%;
@@ -2481,29 +1744,8 @@ textarea.proposal-description-input {
     to { transform: rotate(360deg); }
 }
 
-/* "Mints on <chain>" — minting follows whichever wallet is connected, or Canton mode, and the user
-   otherwise has no way to know where a proposal is about to go. */
-.proposal-mint-target {
-    display: flex;
-    align-items: center;
-    gap: 7px;
-    margin-bottom: 12px;
-    padding: 6px 10px;
-    border-radius: 4px;
-    font-size: 0.8rem;
-}
-
-.proposal-mint-target--onchain {
-    background: var(--cb-success-soft);
-    color: var(--cb-success-soft-ink);
-}
-
-.proposal-mint-target--offchain {
-    background: var(--cb-surface-2);
-    color: var(--cb-text-muted);
-}
-
-/* Offer flow: land-use and parcels are locked to "no change" — visibly inert, ownership stays live. */
+/* Editing an existing proposal: land use and parcels are locked to its preset — visibly inert,
+   ownership stays live. */
 .proposal-goal-section--locked {
     opacity: 0.5;
     pointer-events: none;
@@ -2568,8 +1810,22 @@ textarea.proposal-description-input {
     min-height: 0; /* lets the row list shrink and scroll instead of overflowing the panel */
 }
 
-/* Counted progress while the panel asks the server, one proposal at a time, which of them it
-   already has. Removed once the tally is done — a spinner that never stops reads as a hang. */
+/* How many designs the panel lists, and what the link is waiting for. */
+.share-plan-count {
+    margin: 0;
+    font-size: var(--cb-text-md);
+    color: var(--cb-text-muted);
+}
+
+.share-plan-status {
+    margin: 0;
+    min-height: 18px;
+    font-size: var(--cb-text-sm);
+    color: var(--cb-danger);
+}
+
+/* Counted progress while the panel lists its designs and checks which are published. Removed once
+   the tally is done — a spinner that never stops reads as a hang. */
 .share-plan-progress {
     display: flex;
     align-items: center;
@@ -2607,23 +1863,58 @@ textarea.proposal-description-input {
     background: var(--cb-surface-3);
 }
 
-/* The row's Upload button is un-hidden by setting display:inline-flex from JS, which turns the
-   <button> into a flex CONTAINER — and a flex container does not do the centring a button does for
-   itself. Its label lands at flex-start and stretches: top-left of a box that .btn gives a 40px
-   min-height. Say the centring here, so it holds whatever display value the state juggling picks.
-   (The modal's copy of this control already does it via .share-modal .share-plan-action.) */
+/* The row's Publish button keeps a button's centring whatever display it is given. */
 .share-plan-row .btn {
     align-items: center;
     justify-content: center;
     text-align: center;
 }
 
-/* Swatch matching the colour the proposal is painted with on the map: an empty cb-badge (the pill
-   shape) with the proposal's colour inline; its outline says uploaded (solid) or not (dashed), the
-   way the map draws them. */
+/* Checkbox, colour chip and the design's name and type: one label, so the whole of it toggles. */
+.share-plan-row__main {
+    display: flex;
+    align-items: center;
+    gap: var(--cb-space-2);
+    min-width: 0;
+    cursor: pointer;
+}
+
+.share-plan-row__text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.share-plan-row__title {
+    font-size: var(--cb-text-md);
+    font-weight: var(--cb-weight-semibold);
+    overflow-wrap: anywhere;
+}
+
+.share-plan-row__meta {
+    font-size: var(--cb-text-sm);
+    color: var(--cb-text-muted);
+}
+
+.share-plan-row__actions {
+    display: flex;
+    align-items: center;
+    gap: var(--cb-space-2);
+    flex: 0 0 auto;
+}
+
+.share-plan-row__published[hidden] {
+    display: none;
+}
+
+/* Swatch matching the colour the design is painted with on the map: an empty cb-badge (the pill
+   shape) in the colour the row sets as --share-plan-color; its outline says published (solid) or
+   not (dashed), the way the map draws them. */
 .share-plan-color-chip {
     flex: 0 0 auto;
     border: 1px solid var(--cb-line-strong);
+    background: var(--share-plan-color, var(--cb-line-strong));
 }
 
 /* A row that cannot be uploaded (a parcel layout) says why under its name. */
@@ -2651,15 +1942,15 @@ textarea.proposal-description-input {
     box-shadow: inset 3px 0 0 0 var(--cb-primary);
 }
 
-/* Uploaded, and the map agrees: solid there, solid here. Not-yet-uploaded rows are the DEFAULT
+/* Published, and the map agrees: solid there, solid here. Not-yet-published rows are the DEFAULT
    state rather than a modifier, because a plan starts out entirely local — styling the exception is
    what keeps a fresh panel from being a wall of warning colour. */
-.share-plan-row.is-uploaded .share-plan-color-chip {
+.share-plan-row.is-published .share-plan-color-chip {
     border-color: var(--cb-text-strong);
     border-width: 2px;
 }
 
-.share-plan-row:not(.is-uploaded) .share-plan-color-chip {
+.share-plan-row:not(.is-published) .share-plan-color-chip {
     border-style: dashed;
 }
 
@@ -2670,17 +1961,6 @@ textarea.proposal-description-input {
     display: flex;
     align-items: center;
     padding: 0 14px 10px;
-}
-
-/* Share entire plan: "Who decides?" once for the plan, on the panel's 14px gutter. */
-.share-plan-kind {
-    padding: 0 14px 10px;
-}
-
-.share-plan-kind__hint {
-    margin: var(--cb-space-1) 0 0;
-    color: var(--cb-text-muted);
-    font-size: var(--cb-text-sm);
 }
 
 /* A segmented control rather than a dropdown: three options that are switched between constantly
@@ -2705,12 +1985,51 @@ body.share-plan-highlighting .leaflet-shareplan-highlight-pane {
     opacity: 1;
 }
 
+/* The highlight's own Leaflet pane: above every fabric pane, below popups (700), never a click target. */
+.leaflet-shareplan-highlight-pane {
+    z-index: var(--cb-z-map-pane-share-highlight);
+    pointer-events: none;
+}
+
 .share-plan-share-area {
     display: flex;
     flex-direction: column;
-    gap: 8px;
-    border-top: 1px solid #e5e9f5;
+    gap: var(--cb-space-2);
+    border-top: 1px solid var(--cb-line);
     padding-top: 10px;
+}
+
+/* The link to the selection and its Copy button, once every selected design is published. */
+.share-plan-link {
+    display: flex;
+    align-items: center;
+    gap: var(--cb-space-2);
+}
+
+.share-plan-link[hidden] {
+    display: none;
+}
+
+/* The published design's link when the clipboard refused it: shown selected, to copy by hand. */
+.design-link {
+    display: flex;
+    flex-direction: column;
+    gap: var(--cb-space-2);
+}
+
+.share-plan-link__input,
+.design-link__input {
+    flex: 1;
+    min-width: 0;
+    width: 100%;
+    min-height: 38px;
+    padding: var(--cb-space-2) var(--cb-space-3);
+    border: 1px solid var(--cb-line-strong);
+    border-radius: var(--cb-radius-md);
+    background: var(--cb-bg);
+    color: var(--cb-text-strong);
+    font-size: var(--cb-text-md);
+    box-sizing: border-box;
 }
 
 /* Share-plan mode lockdown: while the panel is open the map is pan/zoom ONLY. The floating shell
@@ -2735,33 +2054,4 @@ body.share-plan-mode .leaflet-control-container .leaflet-control {
 body.share-plan-mode .leaflet-control-container .leaflet-control-zoom {
     pointer-events: auto;
     opacity: 1;
-}
-.proposal-support-actions {
-    display: contents;
-}
-.owner-acceptance-changed {
-    display: block;
-    color: var(--text-secondary, var(--cb-text-muted));
-    font-weight: normal;
-    line-height: 1.35;
-}
-
-/* The kind ("Who decides?", proposal-kinds.md) picks the terms: money for an owner deal, a voting
-   period for a vote. create.js applyProposalKindToDialog sets data-proposal-kind on the overlay. */
-.create-proposal-modal[data-proposal-kind="owner-vote"] .proposal-deal-term,
-.create-proposal-modal[data-proposal-kind="community-vote"] .proposal-deal-term,
-.create-proposal-modal[data-proposal-kind="owner-deal"] .proposal-vote-term {
-    display: none;
-}
-
-/* Terms for a record that already exists (create.js openPublishTermsDialog): its design, site and
-   parcel summary are done, so only the kind, details and terms show. */
-.create-proposal-modal[data-publish-in-place] .proposal-design-only {
-    display: none;
-}
-
-.proposal-kind-explain {
-    margin: var(--cb-space-1) 0 0;
-    color: var(--cb-text-muted);
-    font-size: var(--cb-text-sm);
 }

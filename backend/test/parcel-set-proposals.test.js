@@ -13,6 +13,8 @@ const proposals = {
 };
 const byParcel = { a: [proposals.park, proposals.road], b: [proposals.road], c: [proposals.road, proposals.block] };
 const forParcel = id => byParcel[id] || [];
+const PARK_CID = 'bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku';
+const NEW_CID = 'bafkreibm6jg3ux5qumhcn2b3flc3tyu6dmlb4xa7u5bf44yegnrjhc4yeq';
 const describe_ = proposal => ({ title: proposal.title, typeLabel: 'Type', statusText: 'Draft', statusClass: 'draft', thumbHtml: '' });
 
 describe('proposals on a set of parcels', () => {
@@ -40,24 +42,25 @@ describe('proposals on a set of parcels', () => {
         expect(single).not.toContain(' of 1 parcels');
     });
 
-    it('adds published proposals this browser does not hold, by the cadastral parcels they declare', () => {
+    it('adds published designs this browser does not hold, by the cadastral parcels the index bound them to', () => {
         const local = { a: [proposals.park] };
-        const held = { proposalId: 'p-park', serverProposalId: '7', cadastreParcelIds: ['HR-a'] };
-        const fresh = { proposalId: 'p-new', serverProposalId: '9', cadastreParcelIds: ['HR-b', 'HR-c'] };
+        // Index summaries (DesignSync.designSummary) are named by their CID.
+        const held = { proposalId: PARK_CID, cid: PARK_CID, cadastreParcelIds: ['HR-a'] };
+        const fresh = { proposalId: NEW_CID, cid: NEW_CID, cadastreParcelIds: ['HR-b', 'HR-c'] };
         const cadastral = { a: ['HR-a'], b: ['HR-b'], c: ['HR-c'], ground: [] };
-        const merged = SetProposals.withPublished(id => local[id] || [], [held, fresh], id => cadastral[id], s => s.proposalId === 'p-park');
+        const merged = SetProposals.withPublished(id => local[id] || [], [held, fresh], id => cadastral[id], s => s.cid === PARK_CID);
         expect([...merged.publishedOnly]).toEqual([fresh]);
         expect(merged.proposalsForParcel('a')).toEqual([proposals.park]);
         expect(merged.proposalsForParcel('b')).toEqual([fresh]);
         expect(merged.proposalsForParcel('ground')).toEqual([]);
         const entries = SetProposals.collect(['a', 'b', 'c'], merged.proposalsForParcel, p => p.proposalId);
-        expect(entries.map(entry => [entry.key, entry.parcelIds])).toEqual([['p-new', ['b', 'c']], ['p-park', ['a']]]);
+        expect(entries.map(entry => [entry.key, entry.parcelIds])).toEqual([[NEW_CID, ['b', 'c']], ['p-park', ['a']]]);
     });
 
-    it('marks published-only rows with the id to import them from, and shows the lookup state', () => {
-        const entry = { key: 'p-new', proposal: { title: 'New' }, parcelIds: ['b'], serverId: '9' };
+    it('marks published-only rows with the CID to import them from, and shows the lookup state', () => {
+        const entry = { key: NEW_CID, proposal: { title: 'New' }, parcelIds: ['b'], serverId: NEW_CID };
         const html = SetProposals.listHtml([entry], { parcelCount: 2, describe: describe_, published: { loading: true } });
-        expect(html).toContain('data-server-id="9"');
+        expect(html).toContain(`data-server-id="${NEW_CID}"`);
         expect(html).toContain('Checking published proposals…');
         expect(SetProposals.listHtml([], { parcelCount: 2, describe: describe_, emptyText: false, published: { error: 'HTTP 500' } }))
             .toBe('<p class="parcel-set-proposals-status">Published proposals could not be loaded: HTTP 500</p>');

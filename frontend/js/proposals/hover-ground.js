@@ -30,7 +30,7 @@
         const bodies = usable(bodyFeatures);
         const minTouch = Number.isFinite(options.minTouchM2) ? options.minTouchM2 : MIN_TOUCH_M2;
 
-        // Nothing to stand on — a decide-later formation, or a record with no authored geometry.
+        // Nothing to stand on — a record with no authored geometry.
         // Then every parcel it holds is the honest answer.
         if (!bodies.length || !ctx || typeof ctx.intersectionArea !== 'function') return parcels;
         if (!parcels.length) return parcels;

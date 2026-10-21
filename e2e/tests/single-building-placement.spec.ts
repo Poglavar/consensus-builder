@@ -250,6 +250,8 @@ test.describe('Single-building placement and immutable replacement @features', (
   });
 
   test('Done saves two one-building proposals with exact sites and parcels; only the first keeps surroundings', async ({ mockApi: page }) => {
+    // Two saves and a reload (or a second city load): longer than the default 30 s on a busy host.
+    test.setTimeout(90_000);
     await openSingleEditor(page);
     await page.locator(`${EDITOR} [data-placement="snap"]`).uncheck();
     await page.locator('#single-move-together').uncheck();
@@ -267,7 +269,7 @@ test.describe('Single-building placement and immutable replacement @features', (
     expect(moved.ground).not.toEqual(before.ground);
     const bindingBodies: any[] = [];
     page.on('request', req => {
-      if (req.method() === 'POST' && new URL(req.url()).pathname.endsWith('/proposals/binding')) {
+      if (req.method() === 'POST' && new URL(req.url()).pathname.endsWith('/designs/binding')) {
         bindingBodies.push(req.postDataJSON());
       }
     });
@@ -317,7 +319,7 @@ test.describe('Single-building placement and immutable replacement @features', (
     await dragActive(page, -190);
     const before = await editorDesign(page);
     const draftId = await page.evaluate(() => (window as any).getActiveProposalDesignDraft().id);
-    await page.route('**/proposals/binding', route => route.fulfill({ status: 503, json: { error: 'binding temporarily unavailable' } }));
+    await page.route('**/designs/binding', route => route.fulfill({ status: 503, json: { error: 'binding temporarily unavailable' } }));
     await page.locator('#single-building-confirm').click();
     await expect(page.locator(`${EDITOR} .on-map-editor__panel`)).toBeVisible({ timeout: 20000 });
     expect(await page.evaluate(id => !!(window as any).proposalDraftStore.getDraft(id), draftId)).toBe(true);
@@ -329,17 +331,20 @@ test.describe('Single-building placement and immutable replacement @features', (
   });
 
   test('a non-overlapping edit of a published source preserves it; a local edit saves in place', async ({ mockApi: page }) => {
+    // Two saves and a reload (or a second city load): longer than the default 30 s on a busy host.
+    test.setTimeout(90_000);
     const publishedId = await createAppliedSingle(page);
+    // Published here: the record carries the mark publishing gives it (DesignSync.markPublished) under
+    // the CID it hashes to, so the browser reads it as immutable.
+    const publishedCid = await page.evaluate(id => {
+      const w = window as any;
+      const source = w.proposalStorage.getProposal(id);
+      const cid = w.DesignRecord.cidOf(source);
+      w.DesignSync.markPublished(source, { cid, publishedAt: new Date().toISOString(), apiBase: w.DesignSync.apiBase() });
+      return cid;
+    }, publishedId);
+    expect(await page.evaluate(id => (window as any).DesignSync.publishedCid((window as any).proposalStorage.getProposal(id)), publishedId)).toBe(publishedCid);
     const publishedBefore = await proposalState(page, publishedId);
-    const publicationApiBase = await page.evaluate(() => (window as any).getBackendBase());
-    await page.evaluate(({ id, publicationApiBase }) => {
-      const storage = (window as any).proposalStorage;
-      const source = storage.getProposal(id);
-      source.serverProposalId = '741';
-      source.publicationApiBase = publicationApiBase;
-      storage.setProposalLifecycleStatus(id, 'Active');
-      storage.save();
-    }, { id: publishedId, publicationApiBase });
     await beginGeometryEdit(page, publishedId);
     await page.locator(`${EDITOR} [data-placement="snap"]`).uncheck();
     const moveTogether = page.locator('#single-move-together');
@@ -381,15 +386,20 @@ test.describe('Single-building placement and immutable replacement @features', (
     expect(overlapAreas.buildingAreas.flat().every(area => area < 0.01)).toBe(true);
     expect([overlapAreas.boundaryArea, overlapAreas.placementSiteArea, overlapAreas.greenArea].every(area => area < 0.01)).toBe(true);
     await finishSingle(page);
-    await expect.poll(() => page.evaluate(({ apiBase }) => (window as any).proposalStorage.getAllProposals()
-      .filter((p: any) => p.proposalOrigin?.relation === 'revision'
-        && p.proposalOrigin?.source?.kind === 'publication'
-        && p.proposalOrigin.source.apiBase === apiBase
-        && p.proposalOrigin.source.proposalRowId === '741'
-        && p.applied).length, { apiBase: publicationApiBase })).toBe(1);
+    // The edit is a new design revising the published one, which stays as it was (same CID); the
+    // revision links its published source by that CID (origin.cid, and its typed proposalOrigin, M2).
+    await expect.poll(() => page.evaluate(({ sourceId, sourceCid }) => (window as any).proposalStorage.getAllProposals()
+      .filter((p: any) => p.proposalId !== sourceId
+        && p.proposalOrigin?.relation === 'revision'
+        && p.proposalOrigin?.source?.kind === 'design'
+        && p.proposalOrigin.source.cid === sourceCid
+        && p.origin?.cid === sourceCid
+        && !p.published
+        && p.applied).length, { sourceId: publishedId, sourceCid: publishedCid })).toBe(1);
     const publishedAfter = await proposalState(page, publishedId);
     expect(publishedAfter.applied).toBe(true);
     expect(publishedAfter.geometry).toEqual(publishedBefore.geometry);
+    expect(await page.evaluate(id => (window as any).DesignSync.publishedCid((window as any).proposalStorage.getProposal(id)), publishedId)).toBe(publishedCid);
 
     // The published source and its applied fork may reserve the first parcel. Create the local
     // fixture on a separate parcel so this assertion does not depend on reopening it.

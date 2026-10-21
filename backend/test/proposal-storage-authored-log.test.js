@@ -11,6 +11,7 @@ const planOrder = require('../../frontend/js/proposals/plan-order.js');
 const chainRecord = require('../../frontend/js/proposals/chain-record.js');
 const { loadChainProposalFromRef } = require('../../frontend/js/proposals/chain-proposal-loader.js');
 const dataSource = readFileSync(new URL('../../frontend/js/proposals/data.js', import.meta.url), 'utf8');
+const DESIGN_CID = require('../../frontend/js/cid.js').cidOfObject({ schema: 'design/v1', title: 'Published park' });
 
 const saved = new Map();
 function install(name, value) {
@@ -67,54 +68,32 @@ function bootStore() {
 }
 
 describe('proposalStorage authored-log persistence', () => {
-    it('keeps local keys, qualified publication rows and chain aliases in separate namespaces', () => {
+    it('keeps local keys, design CIDs and chain aliases in separate namespaces', () => {
         const { storage } = bootStore();
-        const apiBase = 'https://api.example';
         const chain = { proposalId: 'qualified-chain-key', tokenId: '7', chainProposalId: 'old-chain-alias', onchain: { chainProposalId: 'nested-alias' } };
-        const server = { proposalId: 'local-server-copy', serverProposalId: '42', publicationApiBase: apiBase, id: '42' };
+        // A design read back from the index is kept under its own local key (DesignSync.importDesign);
+        // its CID names it at the index, never in this store (DesignSync.localCopyOf finds it by CID).
+        const publishedCopy = { proposalId: `design-${DESIGN_CID}`, published: { cid: DESIGN_CID, publishedAt: null, apiBase: 'https://api.example' } };
         const numericLocal = { proposalId: '42' };
-        [chain, server, numericLocal].forEach(record => storage.proposals.set(record.proposalId, record));
-        for (const alias of ['7', 'old-chain-alias', 'nested-alias']) {
+        [chain, publishedCopy, numericLocal].forEach(record => storage.proposals.set(record.proposalId, record));
+        for (const alias of ['7', 'old-chain-alias', 'nested-alias', DESIGN_CID]) {
             expect(storage.getProposal(alias)).toBeNull();
             expect(storage.removeProposal(alias)).toBeNull();
         }
         expect(storage.getProposal(chain.proposalId)).toBe(chain);
+        expect(storage.getProposal(publishedCopy.proposalId)).toBe(publishedCopy);
         expect(storage.getProposal('42')).toBe(numericLocal);
-        expect(storage.getProposalByServerRowId('42')).toBeNull();
-        expect(storage.getProposalByServerRowId('42', apiBase)).toBe(server);
-        const syncSource = readFileSync(new URL('../../frontend/js/proposals/server-sync.js', import.meta.url), 'utf8');
-        const findLocal = new Function('proposalStorage', `${syncSource}; return findLocalCopyOfServerProposal;`)(storage);
-        expect(findLocal({ serverProposalId: '42', publicationApiBase: apiBase })).toBe(server);
-        expect(findLocal({ serverProposalId: '42', publicationApiBase: 'https://other.example' })).toBeNull();
-        expect(findLocal({ proposalId: server.proposalId })).toBeNull();
         storage.proposals.delete('42');
         expect(storage.getProposal('42')).toBeNull();
-        expect(storage.getProposalByServerRowId('42', apiBase)).toBe(server);
-        storage.proposals.set('conflicting-copy', { proposalId: 'conflicting-copy', serverProposalId: '42', publicationApiBase: apiBase });
-        expect(() => storage.getProposalByServerRowId('42', apiBase)).toThrow(/Multiple local proposals/);
         expect(storage.removeProposal('42')).toBeNull();
-        expect(storage.proposals.size).toBe(3);
+        expect(storage.proposals.size).toBe(2);
     });
 
     it('does not infer publication from a numeric imported local key', () => {
         const { storage } = bootStore();
         const imported = storage.importProposal({ proposalId: '42', goal: 'as-is', cadastreParcelIds: ['source-a'] });
         expect(imported.proposalId).toBe('42');
-        expect(imported.serverProposalId).toBeUndefined();
-        expect(storage.getProposalByServerRowId('42')).toBeNull();
-    });
-
-    it('refreshes a published row under its original local key and rejects another publication at that key', () => {
-        const { storage } = bootStore();
-        const current = { proposalId: 'original-local', serverProposalId: '42', publicationApiBase: 'https://api.example', goal: 'as-is', cadastreParcelIds: ['source-a'] };
-        storage.addProposal(current);
-        const refreshed = storage.importProposal({ ...current, proposalId: 'published-authored', title: 'Updated metadata' });
-        expect(refreshed.proposalId).toBe('original-local');
-        expect([...storage.proposals.keys()]).toEqual(['original-local']);
-        expect(refreshed.title).toBe('Updated metadata');
-        expect(() => storage.importProposal({ ...current, serverProposalId: '43' })).toThrow(/different publication identity/);
-        expect(() => storage.importProposal({ ...current, publicationApiBase: 'https://other.example' })).toThrow(/different publication identity/);
-        expect(storage.getProposal('original-local')).toBe(refreshed);
+        expect(imported).not.toHaveProperty('published');
     });
 
     it('preserves this browser consent on reload but discards imported unsigned claims', () => {
@@ -166,25 +145,26 @@ describe('proposalStorage authored-log persistence', () => {
         install('getProposalGoalLabel', goal => goal);
         install('proposalStorage', storage);
         const site = { type: 'Polygon', coordinates: [[[0, 0], [0.001, 0], [0.001, 0.001], [0, 0.001], [0, 0]]] };
-        const source = chainRecord.authoredRecord({
+        // The portable record a minted proposal's metadata committed (chain-record.js FIELDS; the mint
+        // that wrote such records is gone, the chain still holds them until agreements mint in M3).
+        const source = {
             proposalId: 'minted-park', city: 'test-city', goal: 'park', type: 'structure',
             name: 'Committed park', title: 'Committed park', description: 'As minted', author: 'Park author',
-            createdAt: '2026-10-01T12:00:00Z', offer: 0, offerCurrency: 'ETH',
-            depositEnabled: true, depositPercent: 20, isConditional: true, lens: [],
+            createdAt: '2026-10-01T12:00:00Z', lens: [],
             cadastreParcelIds: ['HR-1'], site, binding: { parcels: [{ parcelId: 'HR-1' }], coverage: 'complete' },
             cadastreSnapshot: { protocol: 'cadastre-snapshot/1', regionHasCadastre: true, parcels: [{ id: 'HR-1', geometry: site }] },
             structureProposal: { kind: 'park', geometry: site }
-        });
+        };
         if (localDraft) storage.proposals.set(source.proposalId, {
-            ...source, title: 'A much longer locally edited draft title', author: 'Another author', offer: 999,
-            depositEnabled: false, buildingProposal: { parameters: { floors: 50 } }, preparation: { id: 'stale-server-signature' }
+            ...source, title: 'A much longer locally edited draft title', author: 'Another author',
+            buildingProposal: { parameters: { floors: 50 } }, preparation: { id: 'stale-server-signature' }
         });
         install('ChainDataLoader', { getProposalsByIds: vi.fn(async () => [{
             proposalId: '77', imageURI: 'ipfs://committed-metadata', cadastreParcelIds: ['HR-1'], isConditional: true, lens: []
         }]) });
         const fetch = vi.fn(async url => {
             expect(url).toBe('https://ipfs.io/ipfs/committed-metadata');
-            return { ok: true, json: async () => ({ properties: chainRecord.metadataProperties(source) }) };
+            return { ok: true, json: async () => ({ properties: { proposalProtocol: chainRecord.PROTOCOL, proposal: source } }) };
         });
         install('fetch', fetch);
         const result = await loadChainProposalFromRef({ chainType: 'evm', chainId: '84532', contract: '0xC', tokenId: '77' });
@@ -193,7 +173,7 @@ describe('proposalStorage authored-log persistence', () => {
         const localId = '84532-0xC-77';
         expect(result.proposal).toMatchObject({ ...source, proposalId: localId });
         expect(result.proposal.metadata.properties.proposal.proposalId).toBe(source.proposalId);
-        if (localDraft) expect(storage.getProposal(source.proposalId).offer).toBe(999);
+        if (localDraft) expect(storage.getProposal(source.proposalId).title).toBe('A much longer locally edited draft title');
         expect(result.proposal.onchain).toMatchObject({ proposalId: '77', metadataUri: 'ipfs://committed-metadata' });
         expect(result.proposal).not.toHaveProperty('preparation');
         expect(result.proposal).not.toHaveProperty('buildingProposal');
@@ -252,24 +232,16 @@ describe('proposalStorage authored-log persistence', () => {
         expect(imported).not.toHaveProperty('offerCurrency');
         expect(imported.ethBalance).toBe(balances.ethBalance);
         expect(imported.tokenBalance).toBe(balances.tokenBalance);
-        const zero = storage.importOnChainProposal({ ...raw, proposalId: '8', offer: 0, offerCurrency: 'EUR' });
-        expect(zero).toMatchObject({ offer: 0, offerCurrency: 'EUR' });
-        const refresh = storage.importOnChainProposal({ ...raw, proposalId: '8' });
-        expect(refresh).toMatchObject({ offer: 0, offerCurrency: 'EUR' });
     });
 
-    it('imports only explicit authored offer fields, without substituting budget or numeric strings', () => {
+    it('imports no terms from a chain record: a design carries none (terms live on agreements)', () => {
         const { storage } = bootStore();
         const raw = { proposalId: '7', chainId: '84532', contractAddress: '0xA', cadastreParcelIds: ['parcel-a'] };
-        const offered = storage.importOnChainProposal({ ...raw,
+        const offered = storage.importOnChainProposal({ ...raw, offer: 5, offerCurrency: 'EUR', isConditional: true,
             metadata: { properties: { offer: 12, offerCurrency: 'EUR', budget: 90, budgetCurrency: 'USD' } } });
-        expect(offered).toMatchObject({ offer: 12, offerCurrency: 'EUR' });
-        const budgetOnly = storage.importOnChainProposal({ ...raw, proposalId: '8',
-            metadata: { properties: { budget: { amount: 90, currency: 'USD' } } } });
-        expect(budgetOnly).not.toHaveProperty('offer');
-        expect(budgetOnly).not.toHaveProperty('offerCurrency');
-        const stringOffer = storage.importOnChainProposal({ ...raw, proposalId: '9', offer: '12' });
-        expect(stringOffer).not.toHaveProperty('offer');
+        for (const field of ['offer', 'offerCurrency', 'budget', 'budgetCurrency', 'isConditional']) {
+            expect(offered).not.toHaveProperty(field);
+        }
     });
 
     it('persists flat cadastral declarations and strips all materialization output without mutating runtime state', () => {

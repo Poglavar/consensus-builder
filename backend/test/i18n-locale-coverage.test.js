@@ -47,7 +47,6 @@ const DYNAMIC_KEY_PREFIXES = [
     'panel.proposal.acceptance.', // approval-text.js: signed/local consent labels
     'panel.parcel.ownershipType.',
     'panel.road.',                  // corridor-import.js: the import chooser's format labels and hints (corridor-import.test.js pins the six formats)
-    'panel.proposal.bindingDrift.coverageKinds.', // plot-crossings.test.js checks all four kinds, all locales
     'proposalApproval.schemes.',        // approval-regimes.js templates: proposal-approval-regimes.test.js words every scheme
     'proposalApproval.rules.of.',       // approval-text.js: one noun per test kind (measure × class × scope)
     'proposalApproval.rules.meter.',

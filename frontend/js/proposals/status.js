@@ -11,7 +11,7 @@
 //       the sole source of truth; nested status is never consulted.
 //
 // Both read only the canonical fields (proposal.lifecycleStatus and proposal.applied). Legacy rows
-// are converted once by migrate-tessellation.js; live code never guesses or heals their meaning.
+// are refused, not healed; live code never guesses their meaning.
 //
 // Dependency-light (no DOM, no proposalStorage) so the same file loads in the browser and in node
 // tests, exactly like corridor-carve.js.
@@ -20,8 +20,7 @@ const STATUS_SUB_KEYS = Object.freeze([
     'roadProposal',
     'buildingProposal',
     'structureProposal',
-    'parcelLayout',
-    'decideLaterProposal'
+    'parcelLayout'
 ]);
 
 function norm(value) {

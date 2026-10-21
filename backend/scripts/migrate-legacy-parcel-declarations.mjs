@@ -65,7 +65,7 @@ const SUB_COLUMNS = Object.freeze([
     ['structure_proposal', 'structureProposal'],
     ['reparcellization', 'reparcellization']
 ]);
-const SUB_KEYS = Object.freeze(['roadProposal', 'buildingProposal', 'structureProposal', 'reparcellization', 'decideLaterProposal']);
+const SUB_KEYS = Object.freeze(['roadProposal', 'buildingProposal', 'structureProposal', 'reparcellization']);
 const INELIGIBLE_ID_KEYS = Object.freeze(['parcelId', 'parcel_id', 'parentParcelId', 'parentParcelIds']);
 // Columns the migration may write. Everything else is read-only here.
 export const WRITABLE_COLUMNS = Object.freeze([

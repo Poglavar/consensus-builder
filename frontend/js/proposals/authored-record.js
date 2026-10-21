@@ -149,7 +149,7 @@
         });
         cleanParcelLayoutMetadata(out.parcelLayout);
         delete out.childFeatures;
-        ['roadProposal', 'buildingProposal', 'structureProposal', 'parcelLayout', 'decideLaterProposal']
+        ['roadProposal', 'buildingProposal', 'structureProposal', 'parcelLayout']
             .forEach(key => {
                 const sub = out[key];
                 if (sub && typeof sub === 'object' && !Array.isArray(sub)) delete sub.childFeatures;
@@ -171,7 +171,7 @@
         const out = clone(record);
         delete out.parentParcelIds;
         delete out.parcelIds;
-        ['roadProposal', 'buildingProposal', 'structureProposal', 'parcelLayout', 'decideLaterProposal']
+        ['roadProposal', 'buildingProposal', 'structureProposal', 'parcelLayout']
             .forEach(key => {
                 const sub = out[key];
                 if (!sub || typeof sub !== 'object' || Array.isArray(sub)) return;
@@ -191,7 +191,7 @@
         };
         add('parentParcelIds', proposal, 'parentParcelIds');
         add('parcelIds', proposal, 'parcelIds');
-        ['roadProposal', 'buildingProposal', 'structureProposal', 'parcelLayout', 'decideLaterProposal']
+        ['roadProposal', 'buildingProposal', 'structureProposal', 'parcelLayout']
             .forEach(key => add(`${key}.parentParcelIds`, proposal[key], 'parentParcelIds'));
         add('parcelLayout.parcelIds', proposal.parcelLayout, 'parcelIds');
         add('buildingProposal.blockParcelIds', proposal.buildingProposal, 'blockParcelIds');

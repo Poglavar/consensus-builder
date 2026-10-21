@@ -3,6 +3,7 @@
 // reachable and complete its real UI transition rather than merely exist in the rendered markup.
 import { test, expect } from '../helpers/fixtures';
 import { openCity, proposalState, showProposal, PARCEL_GEOMETRY, PARCEL_ID } from '../helpers/runtime';
+import { pageIndex } from '../helpers/mocks/shared-server';
 
 async function addLocalEditableProposal(page: import('@playwright/test').Page, key: string): Promise<string> {
   return page.evaluate(({ parcelId, geometry, key }) => {
@@ -14,8 +15,6 @@ async function addLocalEditableProposal(page: import('@playwright/test').Page, k
       author: 'E2E author',
       goal: 'park',
       lifecycleStatus: 'Active',
-      kind: 'community-vote',
-      termsConfirmed: true,
       applied: false,
       cadastreParcelIds: [parcelId],
       geometry,
@@ -32,6 +31,14 @@ async function establishLocalProfile(page: import('@playwright/test').Page, name
   await welcome.locator('#welcome-submit-btn').click();
   await expect(welcome).toBeHidden();
   await expect(page.locator('#username-text')).toHaveText(name);
+}
+
+// Share publishes the design into the page's index and copies its /designs/<cid> link.
+async function expectSharedAsDesign(page: import('@playwright/test').Page, proposalId: string): Promise<void> {
+  await expect.poll(() => pageIndex(page).designs.size, { timeout: 30_000 }).toBe(1);
+  const [cid] = [...pageIndex(page).designs.keys()];
+  expect(await page.evaluate(id => (window as any).DesignSync.publishedCid((window as any).proposalStorage.getProposal(id)), proposalId)).toBe(cid);
+  await expect.poll(() => page.evaluate(() => navigator.clipboard.readText())).toContain(`/designs/${cid}?`);
 }
 
 async function openCompactFromProposalList(page: import('@playwright/test').Page, proposalId: string): Promise<void> {
@@ -56,6 +63,7 @@ test.describe('compact proposal card actions @features', () => {
     await openCity(page);
     await establishLocalProfile(page, 'Compact action author');
     const proposalId = await addLocalEditableProposal(page, 'actions');
+    await page.context().grantPermissions(['clipboard-read', 'clipboard-write'], { origin: new URL(page.url()).origin });
     const sourceBefore = await proposalState(page, proposalId);
     await openCompactFromProposalList(page, proposalId);
 
@@ -80,10 +88,7 @@ test.describe('compact proposal card actions @features', () => {
     // exercising the next footer action.
     await openCompactFromProposalList(page, proposalId);
     await footer.locator('.btn-share-proposal').click();
-    const shareDialog = page.locator('.share-modal-overlay');
-    await expect(shareDialog).toBeVisible();
-    await shareDialog.locator('.share-modal .close-circle-btn').click();
-    await expect(shareDialog).toBeHidden();
+    await expectSharedAsDesign(page, proposalId);
 
     await footer.locator('.btn-edit-geometry').click();
     const editor = page.locator('#structure-geometry-editor');
@@ -123,10 +128,7 @@ test.describe('compact proposal card actions @features', () => {
     expect(dimensions.scrollWidth).toBeLessThanOrEqual(dimensions.clientWidth);
 
     await share.click();
-    const shareDialog = page.locator('.share-modal-overlay');
-    await expect(shareDialog).toBeVisible();
-    await shareDialog.locator('.share-modal .close-circle-btn').click();
-    await expect(shareDialog).toBeHidden();
+    await expectSharedAsDesign(page, proposalId);
 
     await details.click();
     await expect(panel).not.toHaveClass(/is-minimized/);

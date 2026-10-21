@@ -83,11 +83,6 @@ exactly those parcels in `cadastreParcelIds` — no more, no fewer. Ask the serv
 - A building, structure, road or readjustment may have an **empty** `cadastreParcelIds` when its
   site lies on no parcel. An offer, ownership transfer, vote or road designation acts on parcels and
   always needs them.
-- A published binding is fixed. When the cadastre changes later, `GET $(base)/proposals/<id>/binding-drift`
-  recomputes the binding of the stored site at its stored tolerance and returns
-  `{ checkable, reason?, stored, current, drift: { added, removed, coverageChanged } | null }`
-  (a read, free). The record is never edited: to follow the new cadastre, publish a new record with
-  the same site and the current binding (the app's "Re-bind" does exactly that and links the two).
 
 Other ways to find parcels:
 
@@ -351,9 +346,6 @@ source's own time (chain block, attestation or mirror-verification time, the rec
 | 400 `code: "footprint-outside-site"` | The proposal's geometry reaches outside its `site`. | no |
 | 400 `code: "invalid-site"` / `"invalid-tolerance"` / `"invalid-footprint"` | Malformed site, tolerance outside 0–1 m, or malformed geometry. | no |
 | 413 `code: "too-many-parcels"` | The site meets more than 5000 parcels (binding route and create). | no |
-| 422 `code: "preparation-required"` / `"preparation-unknown"` | A road or track drawn as a centre line must be prepared first (`POST /agent/prepare`) and published with the returned `preparation` and `preparedArtifact`. | no |
-| 422 `code: "preparation-invalid"` / `"preparation-mismatch"` / `"preparation-stale"` | The artifact is not the one this server signed, the record differs from what was prepared, or the land no longer re-derives: prepare again. | no |
-| 503 `code: "preparation-unavailable"` | The server has no signing key; nothing can be prepared. | no |
 | 503 before payment | The cadastre could not be asked; nothing was stored or charged. | no |
 | 402 with `PAYMENT-REQUIRED` | Pay and retry. | no |
 | 402 with body `error: "author_mismatch"` | `author` is not the paying wallet. | no |
@@ -396,9 +388,7 @@ market program will resolve from), `bettable` (Active on-chain with an open pool
 (minted and Active, no pool yet), `closesAt` (the market's own deadline as an ISO instant; `null` for
 a pool without one) and `market` (`address`, `yesPool`, `noPool` and `poolAtomic` in
 atomic USDC as decimal strings, `resolved`, `outcome`). Contests with no minted proposal are omitted.
-A named plan's older versions are not entries: they sit under the current version as `olderVersions`
-(`slug`, `supersededBy`, `state`, `proposalAccount`, `market`), never `bettable`, kept so bets already
-in their pools can be settled and claimed. Entries in play come first, the soonest `closesAt` leading,
+Entries in play come first, the soonest `closesAt` leading,
 then the bigger pool; settled ones follow.
 The answer is cached for 20 seconds; add `&fresh=1` right after your own transaction.
 

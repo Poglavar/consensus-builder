@@ -3,21 +3,15 @@
 // normalizeOwnerAcceptances and ensureOwnerAcceptanceEntry moved to
 // frontend/js/proposals/owner-acceptance.js (loaded first) so they are unit-tested. The globals
 // they define are used here and in proposals/core.js and data.js.
+//
+// A design has no consent of its own (plan-design-agreement.md, M2): owners decide on agreements
+// (proposals/approval-panel.js in the agreement panel). The local owner-acceptance records below
+// remain only for the agent simulation and the parcel panels that still read them.
 
 function getProposalOwnerAcceptanceState(proposal, parcelId, options = {}) {
     if (!proposal) {
         return { entries: [] };
     }
-    if (usesAbstractProposalApproval(proposal)) {
-        const state = window.ProposalApprovalRuntime?.state(proposal, parcelId,
-            typeof getCurrentUserAgent === 'function' ? getCurrentUserAgent() : null,
-            currentConsentBindingHash(proposal)) || { entries: [], ownershipResolved: false };
-        if (getLifecycleStatus(proposal) === 'Unknown') {
-            state.entries = state.entries.map(entry => ({ ...entry, canAccept: false }));
-        }
-        return state;
-    }
-
     const ownerSlots = getOwnerSlotsForParcel(parcelId);
     const entry = ensureOwnerAcceptanceEntry(proposal, parcelId, ownerSlots);
     refreshProposalAcceptanceValidity(proposal);
@@ -70,163 +64,6 @@ function getProposalOwnerAcceptanceState(proposal, parcelId, options = {}) {
     };
 }
 
-function buildOwnerAcceptanceSectionHtml(proposal, parcelId, options = {}) {
-    // In Canton mode the EVM owner-acceptance UI doesn't apply — Canton proposals
-    // are accepted (by the owner) from the dedicated "Canton proposals" section.
-    if (window.CantonMode && typeof window.CantonMode.isActive === 'function' && window.CantonMode.isActive()) {
-        return '';
-    }
-    // A community vote asks residents, through its organiser: owners have nothing to accept.
-    if (window.ProposalKind?.isCommunityVote(proposal)) return '';
-    // A parcel layout is a design: nobody decides on it until an agreement includes it.
-    if (proposal?.goal === 'parcel-layout') return '';
-    const proposalId = proposal && proposal.proposalId ? proposal.proposalId : '';
-    const acceptanceState = getProposalOwnerAcceptanceState(proposal, parcelId, options);
-    const entries = acceptanceState.entries || [];
-    if (!entries.length) {
-        return `<p class="proposal-owner-roster-unavailable">${getProposalI18nHelper()('panel.proposal.acceptance.noRoster', 'No owner roster is available for this parcel.')}</p>`;
-    }
-    const compact = options.compact ? 'owner-acceptance-list compact' : 'owner-acceptance-list';
-    const skipParcelPanelFocus = options && options.skipParcelPanelFocus === true;
-
-    // Check if proposal is expired - disable buttons if so
-    const proposalExpired = isProposalExpired(proposal);
-
-    // Vote proposals relabel the owner-row actions: Accept -> Vote yes, Undo -> Rescind.
-    // The onclick handlers are unchanged (handleUserAcceptProposal / handleUserRejectProposal
-    // detect the vote proposal and route to castVote / rescindVote on-chain).
-    const isVote = typeof isVoteProposal === 'function' && isVoteProposal(proposal);
-
-    // Minted Solana proposals (proposal_nft v2) have no owner Accept/Undo: an attested owner's
-    // wallet says yes in the Details Lens card, and a signed yes is final.
-    const solanaNft = !isVote && typeof getProposalNftInfo === 'function' ? getProposalNftInfo(proposal) : null;
-    const isSolanaConsent = !!(solanaNft && String(solanaNft.chain || '').startsWith('solana'));
-
-    // Compute parcel and owner payout shares
-    const offerAmount = Number.isFinite(Number(proposal.offer)) ? Number(proposal.offer) : 0;
-    const offerCurrency = proposal.offerCurrency || proposal.currency || '';
-    const { areaMap, totalArea } = options.areaContext || getProposalAreaMap(proposal);
-
-    const parcelKey = parcelId?.toString ? parcelId.toString() : String(parcelId || '');
-    const parcelArea = areaMap.get(parcelKey) || 0;
-    const parcelAreaShare = totalArea > 0 ? parcelArea / totalArea : 0;
-    const parcelPayout = offerAmount * parcelAreaShare;
-
-    // Amount then code in the offer's currency, else the city's display currency.
-    const payoutCurrency = offerCurrency || window.CityConfigManager?.getCurrentCityConfig?.()?.currency?.code || 'EUR';
-    const formatPayout = (value) => {
-        if (!Number.isFinite(value) || value <= 0) return '';
-        return CbFormat.formatMoney(value, payoutCurrency);
-    };
-
-    const rowsHtml = entries.map(entry => {
-        const safeName = typeof escapeHtml === 'function' ? escapeHtml(entry.displayName || '') : (entry.displayName || getProposalI18nHelper()('panel.proposal.metrics.ownerFallback', 'Owner'));
-        const safeShare = entry.shareText ? (typeof escapeHtml === 'function' ? escapeHtml(entry.shareText) : entry.shareText) : '';
-        const shareTitle = entry.shareDetail ? (typeof escapeHtml === 'function' ? escapeHtml(entry.shareDetail) : entry.shareDetail) : '';
-        const ownerFraction = parseOwnerShareFraction(entry.shareText);
-        const ownerPayoutText = formatPayout(parcelPayout * ownerFraction);
-        const payoutHtml = ownerPayoutText ? `<span class="owner-payout">· ${ownerPayoutText}</span>` : '';
-        const shareHtml = safeShare
-            ? `<span class="owner-share"${shareTitle ? ` title="${shareTitle}"` : ''}>${safeShare}</span>${payoutHtml}`
-            : (payoutHtml || '');
-
-        let buttonsHtml = '';
-        const tProposalUI = getProposalI18nHelper();
-        const changedHint = entry.termsChanged
-            ? `<small class="owner-acceptance-changed">${tProposalUI('panel.proposal.acceptance.termsChanged', 'Terms changed — review and accept again')}</small>`
-            : '';
-        if (isSolanaConsent) {
-            const hint = tProposalUI('panel.proposal.acceptance.solanaLensHint', 'Say yes in the Lens card');
-            buttonsHtml = entry.accepted
-                ? ''
-                : `<span class="owner-acceptance-lens-hint">${hint}</span>`;
-        } else if (proposalExpired) {
-            // Show disabled buttons for expired proposals
-            const expiredTitle = isVote
-                ? tProposalUI('panel.proposal.voting.concluded', 'Vote concluded')
-                : tProposalUI('panel.proposal.expiry.expired', 'Proposal Expired');
-            if (entry.accepted) {
-                const undoLabel = isVote
-                    ? tProposalUI('panel.proposal.voting.rescind', 'Rescind')
-                    : tProposalUI('panel.proposal.acceptance.undo', 'Undo');
-                buttonsHtml = `
-                    <button type="button" class="btn btn-sm" disabled title="${expiredTitle}">
-                        ${undoLabel}
-                    </button>`;
-            }
-            else {
-                const acceptLabel = isVote
-                    ? tProposalUI('panel.proposal.voting.voteYes', 'Vote yes')
-                    : tProposalUI('panel.proposal.acceptance.accept', 'Accept');
-                buttonsHtml = `
-                    <button type="button" class="btn btn-sm" disabled title="${expiredTitle}">
-                        ${acceptLabel}
-                    </button>`;
-            }
-        } else if (entry.accepted && entry.canUndo) {
-            const rejectCall = skipParcelPanelFocus
-                ? `rejectProposalFromParcelInfo('${proposalId}','${parcelId}','${entry.key}',{skipParcelPanelFocus:true})`
-                : `rejectProposalFromParcelInfo('${proposalId}','${parcelId}','${entry.key}')`;
-            const undoLabel = isVote
-                ? tProposalUI('panel.proposal.voting.rescind', 'Rescind')
-                : tProposalUI('panel.proposal.acceptance.undo', 'Undo');
-            buttonsHtml = `
-                <button type="button" class="btn btn-sm btn-danger" data-owner-key="${entry.key}" onclick="(function(e){e.stopPropagation();e.preventDefault();${rejectCall};return false;})(event)">
-                    ${undoLabel}
-                </button>`;
-        } else if (!entry.accepted && entry.canAccept) {
-            const acceptCall = skipParcelPanelFocus
-                ? `acceptProposalFromParcelInfo('${proposalId}','${parcelId}','${entry.key}',{skipParcelPanelFocus:true})`
-                : `acceptProposalFromParcelInfo('${proposalId}','${parcelId}','${entry.key}')`;
-            const acceptLabel = isVote
-                ? tProposalUI('panel.proposal.voting.voteYes', 'Vote yes')
-                : tProposalUI('panel.proposal.acceptance.accept', 'Accept');
-            buttonsHtml = `
-                <button type="button" class="btn btn-sm ${isVote ? 'btn-primary' : 'btn-success'}" data-owner-key="${entry.key}" onclick="(function(e){e.stopPropagation();e.preventDefault();${acceptCall};return false;})(event)">
-                    ${acceptLabel}
-                </button>`;
-        }
-
-        return `
-            <div class="owner-acceptance-row" data-owner-key="${entry.key}" onclick="event.stopPropagation(); event.preventDefault(); return false;">
-                <div class="owner-identity" onclick="event.stopPropagation(); event.preventDefault(); return false;">
-                    ${safeName}${changedHint}
-                </div>
-                <div class="owner-share" onclick="event.stopPropagation(); event.preventDefault(); return false;">
-                    ${shareHtml || '-'}
-                </div>
-                <div class="owner-actions" onclick="event.stopPropagation(); event.preventDefault(); return false;">
-                    ${buttonsHtml}
-                </div>
-            </div>`;
-    }).join('');
-
-    // Recipient consent line item (rendered once, on the first parcel): a directed external
-    // recipient (City / third-party) shown alongside the owners, with its own Accept.
-    let recipientRowHtml = '';
-    const consentRow = proposalRecipientConsentRow(proposal);
-    const firstParcel = Array.isArray(proposal.cadastreParcelIds) && proposal.cadastreParcelIds.length
-        ? String(proposal.cadastreParcelIds[0]) : null;
-    if (consentRow && (!firstParcel || firstParcel === parcelKey)) {
-        const tUI = getProposalI18nHelper();
-        const recipLabel = typeof escapeHtml === 'function' ? escapeHtml(consentRow.label) : consentRow.label;
-        const recipTag = tUI('panel.proposal.acceptance.recipient', 'recipient');
-        const actionHtml = consentRow.accepted
-            ? `<span class="owner-acceptance-accepted"><i class="fa-solid fa-check" aria-hidden="true"></i> ${tUI('panel.proposal.acceptance.accepted', 'Accepted')}</span>`
-            : (proposalExpired
-                ? `<button type="button" class="btn btn-sm" disabled>${tUI('panel.proposal.acceptance.accept', 'Accept')}</button>`
-                : `<button type="button" class="btn btn-sm btn-success" onclick="(function(e){e.stopPropagation();e.preventDefault();acceptAsRecipient('${proposalId}');return false;})(event)">${tUI('panel.proposal.acceptance.accept', 'Accept')}</button>`);
-        recipientRowHtml = `
-            <div class="owner-acceptance-row owner-acceptance-recipient">
-                <div class="owner-identity"><i class="fa-solid fa-building-columns" aria-hidden="true"></i> ${recipLabel} <span class="owner-acceptance-recipient-tag">(${recipTag})</span></div>
-                <div class="owner-share">-</div>
-                <div class="owner-actions">${actionHtml}</div>
-            </div>`;
-    }
-
-    return `<div class="${compact}">${recipientRowHtml}${rowsHtml}</div>`;
-}
-
 // Evaluate a copy against the current roster and terms before presenting or sorting a tally.
 // Opening the list must not rewrite stored consent. Count only unique declared references;
 // neither non-binding votes nor a stored aggregate alone can establish owner consent.
@@ -236,69 +73,16 @@ function getProposalConsentMetrics(proposal) {
     if (proposal?.goal === 'parcel-layout') {
         return { parcelCount: parcelIds.length, acceptedCount: 0, acceptanceRatio: 0, acceptancePercent: 0, consentBasis: null };
     }
-    const isVote = window.ProposalKind?.isNonBinding(proposal);
-    const signed = usesAbstractProposalApproval(proposal);
     const evaluated = { ...proposal, ownerAcceptances: normalizeOwnerAcceptances(proposal?.ownerAcceptances), acceptedParcelIds: [] };
-    const summary = isVote ? null : buildProposalOwnerAcceptanceSummaryFast(evaluated);
-    const accepted = new Set(isVote || (signed && summary.ownershipResolved !== true)
-        ? [] : normalizeParcelIdList(evaluated.acceptedParcelIds));
+    buildProposalOwnerAcceptanceSummaryFast(evaluated);
+    const accepted = new Set(normalizeParcelIdList(evaluated.acceptedParcelIds));
     const acceptedCount = parcelIds.filter(id => accepted.has(id)).length;
     const acceptanceRatio = parcelIds.length ? acceptedCount / parcelIds.length : 0;
     return { parcelCount: parcelIds.length, acceptedCount, acceptanceRatio,
-        acceptancePercent: acceptanceRatio * 100,
-        consentBasis: isVote ? null : signed ? 'signed-receipts' : 'local-records' };
-}
-
-function buildParcelAcceptanceStatusHtml(proposal) {
-    const metrics = getProposalConsentMetrics(proposal);
-    if (!metrics.consentBasis) return '';
-    const total = metrics.parcelCount;
-    if (!total) {
-        return '';
-    }
-
-    const acceptedCount = metrics.acceptedCount;
-    // Owner-consent records do not become a resident or on-chain vote count by changing kind.
-    const labels = window.ProposalApprovalText.consentLabels(metrics.consentBasis, getProposalI18nHelper());
-    const labelText = `${labels.parcelTitle} (${acceptedCount}/${total})`;
-    const evidenceAttrs = `data-consent-basis="${metrics.consentBasis}" title="${escapeHtml(labels.hint)}"`;
-
-    // If more than 65 parcels, show progress bar instead of circles
-    if (total > 65) {
-        const percentage = total > 0 ? (acceptedCount / total) * 100 : 0;
-        // The fill's width is the data; the bar's look is its class.
-        return `
-            <div class="proposal-acceptance-status" ${evidenceAttrs}>
-                <div class="acceptance-label">${labelText}</div>
-                <div class="acceptance-progress-bar">
-                    <div class="acceptance-progress-fill" style="width: ${percentage}%;"></div>
-                </div>
-            </div>`;
-    }
-
-    // For 65 or fewer parcels, show circles
-    let circlesHtml = '';
-    const acceptedTitle = escapeHtml(labels.accepted);
-    const pendingTitle = escapeHtml(labels.pending);
-    for (let i = 0; i < acceptedCount; i++) {
-        circlesHtml += `<div class="acceptance-circle accepted" title="${acceptedTitle}"></div>`;
-    }
-    for (let i = acceptedCount; i < total; i++) {
-        circlesHtml += `<div class="acceptance-circle pending" title="${pendingTitle}"></div>`;
-    }
-
-    return `
-        <div class="proposal-acceptance-status" ${evidenceAttrs}>
-            <div class="acceptance-label">${labelText}</div>
-            <div class="acceptance-circles">${circlesHtml}</div>
-        </div>`;
+        acceptancePercent: acceptanceRatio * 100, consentBasis: 'local-records' };
 }
 
 function buildProposalOwnerAcceptanceSummaryFast(proposal) {
-    if (usesAbstractProposalApproval(proposal)) {
-        return window.ProposalApprovalRuntime?.summary(proposal, currentConsentBindingHash(proposal))
-            || { entries: [], totalOwners: 0, acceptedOwners: 0, ownershipResolved: false };
-    }
     const summary = {
         entries: [],
         totalOwners: 0,
@@ -354,58 +138,7 @@ function buildProposalOwnerAcceptanceSummaryFast(proposal) {
     return summary;
 }
 
-function buildOwnerAcceptanceStatusHtml(proposal, summaryOverride) {
-    if (window.ProposalKind?.isNonBinding(proposal)) return '';
-    const tProposalUI = getProposalI18nHelper();
-    const ownerAcceptanceSummary = summaryOverride || buildProposalOwnerAcceptanceSummary(proposal);
-    if (!ownerAcceptanceSummary.totalOwners) {
-        return '';
-    }
-    try {
-        const total = ownerAcceptanceSummary.totalOwners;
-        const acceptedCount = ownerAcceptanceSummary.acceptedOwners || 0;
-        const basis = usesAbstractProposalApproval(proposal) ? 'signed-receipts' : 'local-records';
-        const labels = window.ProposalApprovalText.consentLabels(basis, tProposalUI);
-        const labelText = `${labels.ownerTitle} (${acceptedCount}/${total})`;
-        const evidenceAttrs = `data-consent-basis="${basis}" title="${escapeHtml(labels.hint)}"`;
-
-        // If more than 65 owners, show progress bar instead of circles
-        if (total > 65) {
-            const percentage = total > 0 ? (acceptedCount / total) * 100 : 0;
-            return `
-                <div class="proposal-acceptance-status owner" ${evidenceAttrs}>
-                    <div class="acceptance-label">${labelText}</div>
-                    <div class="acceptance-progress-bar">
-                        <div class="acceptance-progress-fill" style="width: ${percentage}%;"></div>
-                    </div>
-                </div>`;
-        }
-
-        // For 65 or fewer owners, show circles
-        const circlesHtml = ownerAcceptanceSummary.entries.map(entry => {
-            if (!entry) return '';
-            const parts = [];
-            if (entry.displayName) parts.push(entry.displayName);
-            if (entry.shareText) parts.push(entry.shareText);
-            if (entry.parcelId) parts.push(tProposalUI('panel.proposal.parcels.label', 'Parcel {{id}}', { id: entry.parcelId }));
-            parts.push(entry.accepted ? labels.accepted : labels.pending);
-            const title = parts.join(' • ');
-            const safeTitle = typeof escapeHtml === 'function' ? escapeHtml(title) : title;
-            return `<div class="acceptance-circle ${entry.accepted ? 'accepted' : 'pending'}" title="${safeTitle}"></div>`;
-        }).join('');
-        return `
-            <div class="proposal-acceptance-status owner" ${evidenceAttrs}>
-                <div class="acceptance-label">${labelText}</div>
-                <div class="acceptance-circles">${circlesHtml}</div>
-            </div>`;
-    } catch (error) {
-        console.warn('buildOwnerAcceptanceStatusHtml: failed to build summary', error);
-        return '';
-    }
-}
-
 function buildProposalOwnerAcceptanceSummary(proposal) {
-    if (usesAbstractProposalApproval(proposal)) return buildProposalOwnerAcceptanceSummaryFast(proposal);
     const summary = {
         entries: [],
         totalOwners: 0,
@@ -453,77 +186,6 @@ function buildProposalOwnerAcceptanceSummary(proposal) {
     summary.entries = entries;
     summary.acceptedOwners = Math.min(entries.filter(entry => entry.accepted).length, summary.totalOwners);
     return summary;
-}
-
-function recordRecipientConsent(proposalId) {
-    const all = (proposalStorage && proposalStorage.getAllProposals) ? (proposalStorage.getAllProposals() || []) : [];
-    const p = all.find(x => (x.proposalId || x.id) === proposalId);
-    if (!p) return false;
-    p.recipientConsented = true;
-    if (proposalStorage._indexProposal) proposalStorage._indexProposal(p);
-    proposalStorage.save();
-    return true;
-}
-
-function simulateSaleOfferPurchase(proposalId, buyerAgentId) {
-    const all = (proposalStorage && proposalStorage.getAllProposals) ? (proposalStorage.getAllProposals() || []) : [];
-    const proposal = all.find(p => (p.proposalId || p.id) === proposalId);
-    const buyer = buyerAgentId
-        || ((typeof getCurrentUserAgent === 'function' && getCurrentUserAgent()) ? getCurrentUserAgent().id : null);
-    if (!proposal || !buyer) return false;
-    if (!isProposalOpenSaleOffer(proposal) || typeof transferParcelOwnership !== 'function') return false;
-    const ids = Array.isArray(proposal.cadastreParcelIds) ? proposal.cadastreParcelIds : [];
-    ids.forEach(pid => {
-        const from = (typeof PersistentStorage !== 'undefined') ? PersistentStorage.getItem(`parcel_${pid}_owner`) : null;
-        transferParcelOwnership(pid, from, buyer);
-    });
-    // This event records a browser-local model change, never payment or shared execution.
-    proposal.localPurchaseSimulation = {
-        buyerAgentId: buyer, simulatedAt: new Date().toISOString(), cadastreParcelIds: ids.slice()
-    };
-    if (proposalStorage._indexProposal) proposalStorage._indexProposal(proposal);
-    proposalStorage.save();
-
-    // Refresh open views so this browser cannot repeat the same simulation. Other browsers
-    // still see the unchanged offer.
-    const msg = getProposalI18nHelper()('panel.proposal.purchaseSimulation.done',
-        'Purchase simulated in this browser. No payment was made.');
-    if (typeof showEphemeralMessage === 'function') showEphemeralMessage(msg, 4000, 'success');
-    else if (typeof updateStatus === 'function') updateStatus(msg);
-
-    try {
-        if (document.getElementById('proposal-details-content') && typeof showProposalInfo === 'function') {
-            showProposalInfo(proposal, null, true);
-        }
-    } catch (_) { }
-    try {
-        if (document.querySelector('.proposal-list-modal') && typeof renderProposalListModal === 'function') {
-            renderProposalListModal();
-        }
-    } catch (_) { }
-    try { if (typeof applyProposalHighlights === 'function') applyProposalHighlights(); } catch (_) { }
-    try { if (typeof updateShowProposalsButton === 'function') updateShowProposalsButton(); } catch (_) { }
-
-    return true;
-}
-
-function proposalRecipientConsentRow(proposal) {
-    const otp = (proposal && proposal.ownershipTransferProposal) || {};
-    const recipient = otp.recipient || ((proposal && proposal.facets) || {}).ownership;
-    if (recipient === 'to-city') return { label: 'City', accepted: proposal.recipientConsented === true };
-    if (recipient === 'third-party' && otp.recipientScope !== 'any') {
-        return { label: otp.recipientAddress || 'Third party', accepted: proposal.recipientConsented === true };
-    }
-    return null;
-}
-
-function acceptAsRecipient(proposalId) {
-    if (typeof recordRecipientConsent === 'function') recordRecipientConsent(proposalId);
-    try {
-        const all = (proposalStorage && proposalStorage.getAllProposals) ? (proposalStorage.getAllProposals() || []) : [];
-        const p = all.find(x => (x.proposalId || x.id) === proposalId);
-        if (p && typeof showProposalInfo === 'function') showProposalInfo(p, null, true);
-    } catch (_) { }
 }
 
 function proposalApplyFailureReason(proposalId, error = null) {
@@ -872,64 +534,11 @@ function setOwnershipTransferDirection(direction) {
     // Update screenshot icon
     updateProposalScreenshotGoalIcon('ownership-transfer');
 
-    // Update options section visibility - "from-me" only shows Expire after
-    updateOwnershipTransferOptions(direction);
-
     // No geometry for ownership transfer
     renderGeometrySection('ownership-transfer');
 
     // Update submit state
     updateCreateProposalSubmitState();
-}
-
-function updateOwnershipTransferOptions(direction) {
-    const isFromMe = direction === 'from-me';
-
-    // For "from-me", only show "Expire after" option
-    const conditionalRow = document.getElementById('proposalOptionConditional');
-    const decayRow = document.getElementById('proposalOptionDecay');
-    const decayInputsRow = document.getElementById('proposalOptionDecayInputs');
-    const depositRow = document.getElementById('proposalOptionDeposit');
-    const areaProportionalRow = document.getElementById('proposalOptionAreaProportional');
-
-    if (conditionalRow) conditionalRow.style.display = isFromMe ? 'none' : '';
-    if (decayRow) decayRow.style.display = isFromMe ? 'none' : '';
-    if (decayInputsRow) decayInputsRow.style.display = isFromMe ? 'none' : '';
-    if (depositRow) depositRow.style.display = isFromMe ? 'none' : '';
-    if (areaProportionalRow) areaProportionalRow.style.display = isFromMe ? 'none' : '';
-
-    // For "from-me", uncheck conditional (makes it unconditionally accepted)
-    const conditionalCheckbox = document.getElementById('proposalConditionalCheckbox');
-    if (conditionalCheckbox && isFromMe) {
-        conditionalCheckbox.checked = false;
-    }
-
-    // For "from-me", hide the lens button (no lens for ownership transfer from me)
-    const lensFooterRow = document.querySelector('#proposalModal .lens-footer-row');
-    if (lensFooterRow) {
-        lensFooterRow.style.display = isFromMe ? 'none' : '';
-    }
-}
-
-function resetOwnershipTransferOptions() {
-    // Reset all option rows to visible
-    const rows = ['proposalOptionConditional', 'proposalOptionDecay', 'proposalOptionDecayInputs', 'proposalOptionDeposit', 'proposalOptionAreaProportional'];
-    rows.forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.style.display = '';
-    });
-
-    // Reset conditional checkbox to checked
-    const conditionalCheckbox = document.getElementById('proposalConditionalCheckbox');
-    if (conditionalCheckbox) {
-        conditionalCheckbox.checked = true;
-    }
-
-    // Reset lens button visibility
-    const lensFooterRow = document.querySelector('#proposalModal .lens-footer-row');
-    if (lensFooterRow) {
-        lensFooterRow.style.display = '';
-    }
 }
 
 function getProposalRecipientAddress() {
@@ -992,12 +601,10 @@ function isProposalApplied(proposal) {
         || goalKey === 'square'
         || goalKey === 'lake'
         || goalKey === 'parcel-layout'
-        || goalKey === 'decide-later'
         || proposal.buildingProposal
         || proposal.buildingGeometry
         || structureData
         || proposal.parcelLayout
-        || proposal.decideLaterProposal
     );
 
     if (!hasSpatialComponent) return false;
@@ -1007,192 +614,19 @@ function isProposalApplied(proposal) {
     return isApplied(proposal);
 }
 
-function refreshProposalOwnerAcceptanceUI(proposal, parcelId) {
-    if (!proposal) return;
-    // The Owner acceptance card (approval-panel.js) carries the tally for approval-setup proposals.
-    if (usesAbstractProposalApproval(proposal)) window.ProposalApprovalPanel.renderCards();
-
-    const parcelStatusHtml = buildParcelAcceptanceStatusHtml(proposal);
-    const parcelStatusContainer = document.querySelector('.proposal-acceptance-status:not(.owner)');
-    if (parcelStatusContainer) {
-        if (parcelStatusHtml) {
-            const temp = document.createElement('div');
-            temp.innerHTML = parcelStatusHtml.trim();
-            parcelStatusContainer.replaceWith(temp.firstElementChild);
-        } else {
-            parcelStatusContainer.remove();
-        }
-    } else if (parcelStatusHtml) {
-        const ownerStatusContainer = document.querySelector('.proposal-acceptance-status.owner');
-        if (ownerStatusContainer && ownerStatusContainer.parentNode) {
-            const temp = document.createElement('div');
-            temp.innerHTML = parcelStatusHtml.trim();
-            ownerStatusContainer.parentNode.insertBefore(temp.firstElementChild, ownerStatusContainer);
-        }
-    }
-
-    // Update owner acceptance summary
-    const summaryHtml = buildOwnerAcceptanceStatusHtml(proposal);
-    const summaryContainer = document.querySelector('.proposal-acceptance-status.owner');
-    if (summaryContainer) {
-        if (summaryHtml) {
-            const temp = document.createElement('div');
-            temp.innerHTML = summaryHtml.trim();
-            summaryContainer.replaceWith(temp.firstElementChild);
-        } else {
-            summaryContainer.remove();
-        }
-    } else if (summaryHtml) {
-        const reference = document.querySelector('.proposal-acceptance-status');
-        if (reference && reference.parentNode) {
-            const temp = document.createElement('div');
-            temp.innerHTML = summaryHtml.trim();
-            reference.parentNode.insertBefore(temp.firstElementChild, reference.nextSibling);
-        }
-    }
-
-    const parcelIdStr = parcelId != null ? parcelId.toString() : '';
-    const parcelItem = document.querySelector(`.proposal-parcel-item[data-parcel-id="${parcelIdStr}"]`);
-    if (!parcelItem) {
-        return;
-    }
-
-    const hasAccepted = Array.isArray(proposal.acceptedParcelIds) &&
-        proposal.acceptedParcelIds.includes(parcelIdStr);
-
-    const statusSpan = parcelItem.querySelector('.parcel-status');
-    if (statusSpan) {
-        const t = getProposalI18nHelper();
-        statusSpan.textContent = hasAccepted
-            ? t('panel.proposal.acceptance.accepted', 'Accepted')
-            : t('panel.proposal.acceptance.pending', 'Pending');
-        // The look of each state (colour, the accepted check mark) is its class's
-        // (css/proposal-details.css, the parcel list in proposals/details-panel.js).
-        statusSpan.classList.toggle('parcel-status-accepted', hasAccepted);
-        statusSpan.classList.toggle('parcel-status-pending', !hasAccepted);
-    }
-    parcelItem.classList.toggle('is-accepted', hasAccepted);
-
-    const acceptanceHtml = buildOwnerAcceptanceSectionHtml(proposal, parcelId, { compact: true, skipParcelPanelFocus: true });
-    let acceptanceContainer = parcelItem.querySelector('.parcel-owner-acceptance');
-
-    if (acceptanceHtml) {
-        if (!acceptanceContainer) {
-            acceptanceContainer = document.createElement('div');
-            acceptanceContainer.className = 'parcel-owner-acceptance';
-            acceptanceContainer.setAttribute('onclick', 'event.stopPropagation(); event.preventDefault(); return false;');
-            parcelItem.appendChild(acceptanceContainer);
-        }
-        acceptanceContainer.innerHTML = acceptanceHtml;
-    } else if (acceptanceContainer) {
-        acceptanceContainer.remove();
-    }
-}
-
 function isProposalCurrentlyApplied(proposal) {
     return !!proposal && isApplied(proposal);
 }
 
-function createLeafletViewSettlePromise(beforeCenter, beforeZoom) {
-    return new Promise(resolve => {
-        try {
-            if (typeof map === 'undefined' || !map || typeof map.once !== 'function') {
-                resolve();
-                return;
-            }
-
-            let settled = false;
-            const timeoutId = setTimeout(() => {
-                // Safety net: if we missed moveend (e.g., listener attached too late), do not hang.
-                done();
-            }, 1200);
-            const done = () => {
-                if (settled) return;
-                settled = true;
-                try { map.off('moveend', done); } catch (_) { }
-                try { clearTimeout(timeoutId); } catch (_) { }
-                resolve();
-            };
-
-            // Subscribe before the view change so we don't miss immediate (non-animated) updates.
-            try { map.once('moveend', done); } catch (_) { /* ignore */ }
-
-            // If there's no actual view change, Leaflet may not emit moveend; settle on the next frame.
-            requestAnimationFrame(() => {
-                if (settled) return;
-                try {
-                    const afterCenter = map.getCenter();
-                    const afterZoom = map.getZoom();
-                    if (Number.isFinite(beforeZoom) && beforeCenter) {
-                        const unchanged = (afterZoom === beforeZoom) && roughlyEqualLatLng(afterCenter, beforeCenter);
-                        if (unchanged) done();
-                    }
-                } catch (_) {
-                    done();
-                }
-            });
-        } catch (_) {
-            resolve();
-        }
-    });
-}
-
 // ── Effect-hash consent binding (rethink-proposals.md §11/§12 step 4) ────────────────────────────
 // An acceptance binds to what the proposal DOES — footprint + per-parcel cession (the effect
-// fingerprint from ownership-flow.js) — falling back to the content fingerprint for content-only
-// proposals (an offer's "effect" is its terms). Both derive from STORED fields only, so the hash
-// is identical on every machine. An edit that changes the effect changes the hash and the stored
+// fingerprint from ownership-flow.js); a proposal with no effect has nothing to bind to, so it takes
+// no local acceptance. The fingerprint derives from STORED fields only, so the hash is identical on
+// every machine. An edit that changes the effect changes the hash and the stored
 // acceptances stop counting — automatically, with the records preserved (consent history is
 // immutable; an edit back to the accepted effect even revalidates them). Every counted record
 // requires its current terms hash.
-function usesAbstractProposalApproval(proposal) {
-    return !!proposal && proposal.approvalConfig != null;
-}
-
-// One abstract-owner decision covers all of that owner's interests in this proposal. This local
-// adapter consumes evidence from installed authority providers; uploaded metadata grants nothing.
-async function recordAbstractProposalDecision(proposal, parcelId, ownerId, actor, withdraw = false) {
-    const t = getProposalI18nHelper();
-    const hash = currentConsentBindingHash(proposal);
-    // A proposal minted on Solana is decided under its chain identity and anchored with memos
-    // (approval-anchor.js); other chains cannot carry signed owner decisions.
-    const minted = typeof getProposalNftInfo === 'function' ? getProposalNftInfo(proposal) : null;
-    const nft = minted && !window.ProposalApprovalAnchor?.chainRef(proposal) ? minted : null;
-    const status = typeof getLifecycleStatus === 'function' ? getLifecycleStatus(proposal) : proposal.lifecycleStatus;
-    if (nft || !hash || status === 'Unknown' || status === 'Cancelled' || status === 'Expired'
-        || (!withdraw && status === 'Executed')
-        || (typeof isProposalExpired === 'function' && isProposalExpired(proposal))) {
-        showProposalAlertMessage(nft ? 'abstract_approval_chain_unsupported' : 'proposal_terms_invalid',
-            nft ? t('proposalApproval.chainUnsupported', 'This approval setup is not supported by the current chain adapter.')
-                : t('proposalApproval.invalidTerms', 'Correct the proposal terms before accepting.'));
-        return null;
-    }
-    const result = await window.ProposalApprovalRuntime?.decide(proposal, parcelId, ownerId, actor, hash, withdraw,
-        () => (typeof isProposalExpired === 'function' && isProposalExpired(proposal)) ? null : currentConsentBindingHash(proposal));
-    if (!result || result.error) {
-        showProposalAlertMessage('abstract_approval_unavailable', t('proposalApproval.approvalUnavailable',
-            'The selected lens has not established these rights and your authority to act for this owner.'));
-        return null;
-    }
-    // A verified decision updates consent only. Chain execution, map application and payments
-    // require their own actions/evidence; a passed local tally cannot supply them.
-    proposalStorage._indexProposal?.(proposal);
-    proposalStorage.save();
-    // The signed decision goes to the relay so other browsers can verify and count it; it stays
-    // valid here either way, and the next sync of this proposal retries what did not arrive.
-    const signed = withdraw ? (proposal.ownerApprovalHistory || []).at(-1) : proposal.ownerApprovals?.[result.ownerId];
-    const shared = signed && window.ProposalApprovalRelay ? await window.ProposalApprovalRelay.push(proposal, signed) : { shared: false, code: 'not_published' };
-    if (!shared.shared) console.info(`[${new Date().toISOString()}] [ProposalApproval] decision for ${result.ownerId} kept in this browser: ${shared.code}`);
-    return { ownerKey: result.ownerId, ownerAccepted: !withdraw,
-        parcelAccepted: result.acceptedParcelIds.includes(String(parcelId)),
-        parcelNumber: String(parcelId), shared };
-}
-
 function currentProposalOwnerAcceptanceKeys(proposal, entry) {
-    if (usesAbstractProposalApproval(proposal)) {
-        const keys = window.ProposalApprovalRuntime?.validIds(proposal, currentConsentBindingHash(proposal)) || [];
-        return keys.filter(key => entry?.ownerOrder?.includes(key));
-    }
     const hash = currentConsentBindingHash(proposal);
     const api = window.__ownershipFlow;
     return (entry?.acceptedOwnerKeys || []).filter(key => (entry.ownerOrder || []).includes(key)
@@ -1201,25 +635,11 @@ function currentProposalOwnerAcceptanceKeys(proposal, entry) {
 }
 
 function currentConsentBindingHash(proposal) {
-    if (proposal.approvalConfig != null) {
-        try { return proposalConsentFingerprint(proposal); }
-        catch (_) { return null; }
-    }
     try {
         const flowApi = (typeof window !== 'undefined') ? window.__ownershipFlow : null;
-        const effect = flowApi ? flowApi.effectFingerprintOf(proposal) : null;
-        if (effect) return proposal.approvalConfig != null
-            ? window.ProposalApproval?.consentHash(proposal, effect) || null : effect;
-    } catch (_) { /* fall through to the content fingerprint */ }
-    try {
-        // For a content-only proposal the cadastral TARGETS are part of the terms an owner
-        // consented to — an offer retargeted to other ground must lapse.
-        if (typeof proposalConsentFingerprint === 'function') {
-            const fingerprint = proposalConsentFingerprint(proposal);
-            return proposal.approvalConfig != null ? window.ProposalApproval?.consentHash(proposal, fingerprint) || null : fingerprint;
-        }
-        return (typeof proposalContentFingerprint === 'function') ? proposalContentFingerprint(proposal) : null;
-    } catch (_) {
+        return (flowApi && flowApi.effectFingerprintOf(proposal)) || null;
+    } catch (error) {
+        console.warn(`[${new Date().toISOString()}] [currentConsentBindingHash] no effect fingerprint for ${proposal && proposal.proposalId}`, error);
         return null;
     }
 }
@@ -1230,11 +650,6 @@ function currentConsentBindingHash(proposal) {
 function refreshProposalAcceptanceValidity(proposal) {
     const flowApi = (typeof window !== 'undefined') ? window.__ownershipFlow : null;
     if (!proposal) return { lapsedOwners: 0 };
-    if (usesAbstractProposalApproval(proposal)) {
-        if (window.ProposalApprovalRuntime) return window.ProposalApprovalRuntime.refresh(proposal, currentConsentBindingHash(proposal));
-        proposal.acceptedParcelIds = [];
-        return { lapsedOwners: 0, ownershipResolved: false };
-    }
     if (!flowApi) {
         proposal.acceptedParcelIds = [];
         return { lapsedOwners: 0 };
@@ -1273,11 +688,6 @@ async function acceptProposal(proposalId, parcelId, ownerKey, metadata = {}) {
             notifyAcceptIssue('proposal_lifecycle_unknown', 'The proposal status is unknown. Reload it before accepting.');
             return null;
         }
-        if (usesAbstractProposalApproval(proposal)) {
-            return await recordAbstractProposalDecision(proposal, parcelId, ownerKey,
-                typeof getCurrentUserAgent === 'function' ? getCurrentUserAgent() : null);
-        }
-
         const normalizedParcelId = normalizeParcelId(parcelId);
         if (!normalizedParcelId) {
             notifyAcceptIssue('invalid_parcel_identifier', 'Invalid parcel identifier.');
@@ -1397,12 +807,6 @@ async function handleUserRejectProposal(proposalId, parcelId, ownerKey = null) {
         showProposalAlertMessage('proposal_not_found', 'Proposal not found.');
         return;
     }
-    if (usesAbstractProposalApproval(proposal)) {
-        const result = await rejectProposal(proposalId, parcelId, ownerKey);
-        if (result) refreshProposalOwnerAcceptanceUI(proposal, parcelId);
-        return;
-    }
-
     const acceptanceState = getProposalOwnerAcceptanceState(proposal, parcelId);
     if (!acceptanceState.entries.length) {
         showProposalAlertMessage('no_recorded_owner_acceptance_to_undo', 'No recorded owner acceptance to undo.');
@@ -1424,51 +828,41 @@ async function handleUserRejectProposal(proposalId, parcelId, ownerKey = null) {
         return;
     }
 
-    // A vote proposal rescinds its yes-vote (rescindVote) instead of withdrawing an acceptance;
-    // rescission is always allowed while voting is open, so the conditional/executed guards don't apply.
-    const isVote = typeof isVoteProposal === 'function' && isVoteProposal(proposal);
-
-    // Check if this proposal is minted on-chain — if so, withdraw/rescind on-chain first
+    // Check if this proposal is minted on-chain — if so, withdraw on-chain first
     const rejectNftInfo = typeof getProposalNftInfo === 'function' ? getProposalNftInfo(proposal) : null;
     const rejectBridge = window.ProposalChainBridge;
-    const rejectMethod = isVote ? 'rescindVote' : 'withdrawAcceptance';
-    const isOnChain = rejectNftInfo && rejectBridge && typeof rejectBridge[rejectMethod] === 'function';
+    const isOnChain = rejectNftInfo && rejectBridge && typeof rejectBridge.withdrawAcceptance === 'function';
     const normalizedParcelIdForChain = normalizeParcelId(parcelId);
 
-    if (isOnChain && !isVote && String(rejectNftInfo.chain || '').startsWith('solana')) {
+    if (isOnChain && String(rejectNftInfo.chain || '').startsWith('solana')) {
         showProposalAlertMessage('solana_acceptance_final', 'Acceptances on Solana are final: a signed yes cannot be withdrawn.');
         return;
     }
 
     if (isOnChain) {
-        if (!isVote) {
-            // Map application is a local preview, not execution. The chain enforces withdrawal
-            // eligibility; retain these lifecycle and conditional pre-checks independently of it.
-            if (getLifecycleStatus(proposal) === 'Executed') {
-                showProposalAlertMessage('cannot_withdraw_executed_proposal',
-                    'This acceptance cannot be withdrawn because the proposal has been executed.');
-                return;
-            }
-            if (!proposal.isConditional) {
-                showProposalAlertMessage('cannot_withdraw_non_conditional',
-                    'This acceptance cannot be withdrawn because the proposal is not conditional.');
-                return;
-            }
+        // Map application is a local preview, not execution. The chain enforces withdrawal
+        // eligibility; retain these lifecycle and conditional pre-checks independently of it.
+        if (getLifecycleStatus(proposal) === 'Executed') {
+            showProposalAlertMessage('cannot_withdraw_executed_proposal',
+                'This acceptance cannot be withdrawn because the proposal has been executed.');
+            return;
+        }
+        if (!proposal.isConditional) {
+            showProposalAlertMessage('cannot_withdraw_non_conditional',
+                'This acceptance cannot be withdrawn because the proposal is not conditional.');
+            return;
         }
         try {
-            if (typeof updateStatus === 'function') {
-                updateStatus(isVote ? 'Rescinding vote on chain...' : 'Withdrawing acceptance on chain...');
-            }
-            await rejectBridge[rejectMethod]({
+            if (typeof updateStatus === 'function') updateStatus(getProposalI18nHelper()('status.messages.withdrawing_acceptance_on_chain', 'Withdrawing acceptance on chain…'));
+            await rejectBridge.withdrawAcceptance({
                 proposalId: rejectNftInfo.tokenId,
                 parcelId: normalizedParcelIdForChain,
                 chainId: rejectNftInfo.chain,
                 contractAddress: rejectNftInfo.contract
             });
         } catch (onchainErr) {
-            console.warn(isVote ? 'On-chain vote rescind failed:' : 'On-chain withdrawal failed:', onchainErr);
-            const friendlyMessage = parseOnChainErrorMessage(onchainErr);
-            showProposalAlertMessage(isVote ? 'on_chain_vote_rescind_failed' : 'on_chain_withdrawal_failed', friendlyMessage);
+            console.warn('On-chain withdrawal failed:', onchainErr);
+            showProposalAlertMessage('on_chain_withdrawal_failed', parseOnChainErrorMessage(onchainErr));
             return;
         }
     }
@@ -1479,9 +873,7 @@ async function handleUserRejectProposal(proposalId, parcelId, ownerKey = null) {
         return;
     }
 
-    if (isOnChain && typeof updateStatus === 'function') {
-        updateStatus(isVote ? 'Vote rescinded on chain.' : 'Acceptance withdrawn on chain.');
-    }
+    if (isOnChain && typeof updateStatus === 'function') updateStatus(getProposalI18nHelper()('status.messages.acceptance_withdrawn_on_chain', 'Acceptance withdrawn on chain.'));
 
     const ownerLabel = targetEntry.shareText
         ? `${targetEntry.displayName} (${targetEntry.shareText})`
@@ -1490,47 +882,10 @@ async function handleUserRejectProposal(proposalId, parcelId, ownerKey = null) {
     if (typeof addUserActionToGameLog === 'function') {
         // The agent's name runs script (the game log binds .agent-link-clickable), so it is a cb-link button.
         const agentLink = `<button type="button" data-agent-id="${userAgent.id}" class="cb-link agent-link-clickable">${userAgent.name}</button>`;
-        const logMsg = isVote
-            ? `${agentLink} rescinded the yes-vote as ${ownerLabel} on proposal ${proposalId}.`
-            : `${agentLink} revoked acceptance recorded for ${ownerLabel} on parcel ${parcelId}.`;
-        addUserActionToGameLog(logMsg);
+        addUserActionToGameLog(`${agentLink} revoked acceptance recorded for ${ownerLabel} on parcel ${parcelId}.`);
     }
 
-    if (typeof updateStatus === 'function') {
-        updateStatus(isVote
-            ? `Rescinded vote for ${ownerLabel}.`
-            : `Revoked acceptance for ${ownerLabel} on parcel ${parcelId}.`);
-    }
-
-    // Preserve exact scroll/anchor position before update
-    const panel = document.getElementById('proposal-details-panel');
-    const panelBody = panel ? panel.querySelector('.panel-body') : null;
-    const scrollTop = panelBody ? panelBody.scrollTop : 0;
-    const anchorKey = targetEntry.key || ownerKey || null;
-    let anchorOffset = null;
-    if (panelBody && anchorKey) {
-        const ownerRow = panelBody.querySelector(`.owner-acceptance-row[data-owner-key="${anchorKey}"]`);
-        if (ownerRow) {
-            const bodyRect = panelBody.getBoundingClientRect();
-            const rowRect = ownerRow.getBoundingClientRect();
-            anchorOffset = rowRect.top - bodyRect.top;
-        }
-    }
-
-    const preserveState = {
-        scrollTop,
-        anchorKey,
-        anchorOffset,
-        parcelId: parcelId ? parcelId.toString() : null
-    };
-
-    setTimeout(() => {
-        const updatedProposal = proposalStorage.getProposal(proposalId);
-        if (updatedProposal) {
-            refreshProposalOwnerAcceptanceUI(updatedProposal, parcelId);
-            restoreProposalDetailsScroll(preserveState);
-        }
-    }, 0);
+    if (typeof updateStatus === 'function') updateStatus(`Revoked acceptance for ${ownerLabel} on parcel ${parcelId}.`);
 }
 
 async function rejectProposal(proposalId, parcelId, ownerKey = null) {
@@ -1540,11 +895,6 @@ async function rejectProposal(proposalId, parcelId, ownerKey = null) {
             showProposalAlertMessage('proposal_not_found', 'Proposal not found.');
             return null;
         }
-        if (usesAbstractProposalApproval(proposal)) {
-            return await recordAbstractProposalDecision(proposal, parcelId, ownerKey,
-                typeof getCurrentUserAgent === 'function' ? getCurrentUserAgent() : null, true);
-        }
-
         const normalizedParcelId = normalizeParcelId(parcelId);
         if (!normalizedParcelId) {
             showProposalAlertMessage('invalid_parcel_identifier', 'Invalid parcel identifier.');

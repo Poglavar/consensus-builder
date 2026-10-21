@@ -149,7 +149,7 @@ For `<slug>.parcels.urbangametheory.eth` the gateway returns:
 | `text("url")` | `https://urbangametheory.xyz/parcel/<parcelId>` (deep link, §4.5) | derived |
 | `text("description")` | `Parcel <parcelId> in <CityName>` + area | DB |
 | `text("geo")` | `lat,lon` of parcel centroid (ENSIP geo convention) | `ST_Centroid` |
-| `text("avatar")` | parcel image (existing IPFS/Walrus image URL, or rendered SVG) | DB/storage |
+| `text("avatar")` | parcel image (existing IPFS image URL, or rendered SVG) | DB/storage |
 | `addr(60)` (ETH) | `ParcelNFT.ownerOf(tokenId)` **if minted on this chain**, else omit (or contract addr) | chain read |
 | `contenthash` | *(optional)* IPFS metadata pointer if present | DB |
 

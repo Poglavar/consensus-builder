@@ -328,7 +328,6 @@ describe('agent quickstart docs', () => {
         expect(res.text).toContain('<title>Agent quickstart');
         expect(res.text).toContain('$0.05');
         expect(res.text).toContain('$0.01');
-        expect(res.text).toContain('https://api.example.test/agent/proposals');
         expect(res.text).toContain('https://api.example.test/agent/oracle/facts');
         expect(res.text).toContain('4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU');
         expect(res.text).not.toContain('$(base)');
@@ -385,7 +384,10 @@ describe('agent quickstart docs', () => {
             priceOracleFact: '$0.01',
             paymentFlow: 'upfront'
         });
-        expect(res.body.endpoints.submit).toBe('https://api.example.test/agent/proposals');
+        // The paid submit route and the binding and prepare helpers went with the server's proposal
+        // writes (plan-design-agreement.md M2).
+        for (const removed of ['submit', 'proposalBinding', 'proposalPrepare']) expect(res.body.endpoints).not.toHaveProperty(removed);
+        expect(JSON.stringify(res.body.endpoints)).not.toMatch(/\/agent\/(proposals|binding|prepare)\b/);
         expect(res.body.endpoints.oracleFactLatest).toBe('https://api.example.test/agent/oracle/facts');
         expect(res.body.endpoints.oracleFact).toContain('/agent/oracle/facts?subject=');
         expect(res.body.endpoints.oracleFactDiscovery).toContain('resource=oracle-facts');

@@ -7,7 +7,6 @@ import { createRequire } from 'node:module';
 import { createHash } from 'node:crypto';
 import { Connection } from '@solana/web3.js';
 import { buildContests, normalizeKnownParcelSource, proposalAccountOf } from '../markets/contests.js';
-import { PLAN_IN_CITY_SQL } from '../plans/plan-store.js';
 import { decodeProposalState } from '../agents/lifecycle-actions.js';
 import { EFFECTIVE_STATUS_SQL, normalizeCityCode } from './proposals.js';
 import { accountsPerRequest, getMultipleAccountsBatched } from '../solana/account-batching.js';
@@ -53,32 +52,6 @@ const PROPOSALS_SQL = `
     WHERE city = $1 AND LOWER(COALESCE(lifecycle_status, '')) <> 'draft'
     ORDER BY created_at DESC
     LIMIT $2`;
-
-// Named plans of the city (plans.md): members are proposal row ids; the plan's own account, if minted;
-// the version it supersedes, so older versions fold under the current one.
-const PLANS_SQL = `
-    SELECT slug, title, place, author, created_at, proposal_ids, onchain_data, supersedes,
-        thumbnail_url, thumbnail_before_url, thumbnail_pair_url
-    FROM ens_plan e
-    WHERE ${PLAN_IN_CITY_SQL('e', '$1')}
-    ORDER BY created_at DESC
-    LIMIT 500`;
-
-export function rowToPlan(row) {
-    return {
-        slug: row.slug,
-        title: row.title || null,
-        place: typeof row.place === 'string' && row.place.trim() ? row.place.trim() : null,
-        author: row.author || null,
-        createdAt: row.created_at instanceof Date ? row.created_at.toISOString() : row.created_at,
-        memberIds: Array.isArray(row.proposal_ids) ? row.proposal_ids.map(String) : [],
-        proposalAccount: proposalAccountOf(row.onchain_data),
-        screenshotUrl: row.thumbnail_url || null,
-        screenshotBeforeUrl: row.thumbnail_before_url || null,
-        screenshotPairUrl: row.thumbnail_pair_url || null,
-        supersedes: typeof row.supersedes === 'string' && row.supersedes.trim() ? row.supersedes.trim() : null
-    };
-}
 
 export function rowToProposal(row) {
     let binding = row.binding;
@@ -183,18 +156,14 @@ export function setupMarketsRoute(app, pool, options = {}) {
             return res.json(cached.payload);
         }
         try {
-            const [{ rows }, { rows: planRows }] = await Promise.all([
-                pool.query(PROPOSALS_SQL, [city, MAX_PROPOSALS]),
-                pool.query(PLANS_SQL, [city])
-            ]);
+            const { rows } = await pool.query(PROPOSALS_SQL, [city, MAX_PROPOSALS]);
             const proposals = rows.map(rowToProposal);
-            const plans = planRows.map(rowToPlan);
-            const accounts = Array.from(new Set([...proposals, ...plans].map(item => item.proposalAccount).filter(Boolean)));
+            const accounts = Array.from(new Set(proposals.map(item => item.proposalAccount).filter(Boolean)));
             const [markets, statuses] = accounts.length
                 ? await Promise.all([readMarkets(accounts), readProposalStatuses(accounts)])
                 : [new Map(), new Map()];
             const payload = {
-                ...buildContests({ city, proposals, plans, markets, statuses, now: now() }),
+                ...buildContests({ city, proposals, markets, statuses, now: now() }),
                 cluster: 'devnet',
                 marketProgram: marketClient.constants.PROGRAM_ID,
                 stakeMint: DEVNET_USDC_MINT,

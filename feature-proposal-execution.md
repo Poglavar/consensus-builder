@@ -52,7 +52,7 @@ Each is "call the primitive that already exists from the place that already runs
 |---|---|---|---|
 | 1.1 | **Directed transfer** (To me / To city / Third-party·Specific) — "buy this lot", "transfer/donate to city" | In the execute block, loop `parentParcelIds` → `transferParcelOwnership(id, current, resolveRecipient(proposal))`. **The single biggest win.** | `proposals.js:25275` + 0.2 |
 | 1.2 | **Public good → city-owned** (Park/Square/Lake/Road) | On execute, transfer the parcels (or the merged child) to the city agent. Reuses 1.1. | execute hook / `_applyStructureProposal` |
-| 1.3 | **Merge assigns the right owner** | `_applyDecideLaterProposal` currently hard-codes the merged child to the **author** (`proposal-manager.js:3245`). Assign to the resolved recipient instead. | `proposal-manager.js:3245` |
+| 1.3 | **Merge assigns the right owner** | The Decide later (merge) apply currently hard-codes the merged child to the **author** (`proposal-manager.js:3245`). Assign to the resolved recipient instead. | `proposal-manager.js:3245` |
 | 1.4 | **Readjust per-slice authoritative owners** | The applier already reads `slice.ownerKey`/`percent` into labels (`proposal-manager.js:3403-3437`); after child ids are assigned (`:3450`), also write `parcel_<id>_owner` per child. Data is already present — only the transfer call is missing. | `proposal-manager.js:3450` |
 
 **Smallest credible PR:** Tier 0 + 1.1 → directed transfers execute in the model. That alone
@@ -107,7 +107,7 @@ capturing more intent that also won't execute.
 - 1.1/1.2 chokepoint `applyProposalOwnershipTransfer(proposal)` (`proposals.js`), called from the
   execute block — transfers `parentParcelIds` to the resolved recipient for every goal except
   merge/readjust (covers directed transfers + public-good→city).
-- 1.3 merge: `_applyDecideLaterProposal` assigns the merged child to the recipient (`proposal-manager.js`).
+- 1.3 merge: the Decide later (merge) apply assigns the merged child to the recipient (`proposal-manager.js`).
 - 1.4 readjust: per-slice `transferParcelOwnership` from the plan's `ownerKey`/`displayName`.
 
 **Tier 2 (done):**

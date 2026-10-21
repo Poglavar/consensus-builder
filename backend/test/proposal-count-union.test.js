@@ -2,21 +2,47 @@
 // circled count of unsaved work. Read side by side they looked like one of them was wrong.
 //
 // Now it carries one — the UNION of the list's three tabs. They overlap: Blockchain is the minted
-// subset of Local, and an uploaded local proposal is also a server row, so adding the tabs counts a
-// proposal up to three times. And because half the number comes from the server, it is re-asked
-// whenever the sidebar section becomes visible, not only at boot.
+// subset of Local, and a published local design is also a row of the designs index, so adding the
+// tabs counts a proposal up to three times. And because half the number comes from the server, it is
+// re-asked whenever the sidebar section becomes visible, not only at boot. The server half is the
+// index's listing for the area (proposals/design-sync.js, GET /designs): the rows that came back.
 
 import { describe, it, expect, vi } from 'vitest';
 import { createRequire } from 'node:module';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
+import vm from 'node:vm';
 
 const require = createRequire(import.meta.url);
 const counts = require('../../frontend/js/proposals/counts.js');
+const Cid = require('../../frontend/js/cid.js');
 
 const read = rel => readFileSync(fileURLToPath(new URL(rel, import.meta.url)), 'utf8');
 const listUi = read('../../frontend/js/proposals/list-ui.js');
-const serverSync = read('../../frontend/js/proposals/server-sync.js');
+const designSyncSource = read('../../frontend/js/proposals/design-sync.js');
+
+const freshCache = (extra = {}) => ({
+    proposals: [], count: null, loading: false, error: null, lastCity: null, lastFetchedAt: 0,
+    lastQuery: null, countRefreshedAt: 0, countLoading: false, ...extra
+});
+// A row of GET /designs, as the index answers it.
+const designRow = n => ({ cid: Cid.cidOfObject({ schema: 'design/v1', n }), title: `Design ${n}`, goal: 'park', city: 'sibenik',
+    createdAt: '2026-10-21T10:00:00.000Z', binding: { parcels: [] } });
+
+// The list's globals of proposals/design-sync.js, run as the classic script the page loads: the
+// cache and the list size are the page globals of proposals/data.js, here the context's own.
+function serverList({ fetch, cache = freshCache(), area = () => null } = {}) {
+    const context = vm.createContext({
+        document: {}, console: { log() {}, info() {}, warn: vi.fn(), error() {} }, URLSearchParams, Cid,
+        serverProposalCache: cache, SERVER_PROPOSAL_SUMMARY_LIMIT: 250,
+        normalizeCityCodeForApi: city => city, resolveBackendBaseUrl: () => 'http://backend',
+        getProposalCountAreaContext: () => area(), renderProposalListModal: vi.fn(), updateShowProposalsButton: vi.fn(), fetch
+    });
+    context.window = context;
+    vm.runInContext(designSyncSource, context);
+    return context;
+}
+const answer = (designs, ok = true) => ({ ok, status: ok ? 200 : 503, json: async () => (ok ? { designs } : { error: 'Index unavailable' }) });
 
 /** Izvor između dvije oznake; kraj se traži OD početka, ne od nule. */
 function sliceBetween(src, from, to) {
@@ -114,134 +140,83 @@ describe('area proposal count and filtered summaries', () => {
 });
 
 describe('osvježavanje serverskog broja', () => {
-    const body = sliceBetween(serverSync, "// How long the sidebar's server count",
-        '// The sort keys the SERVER can order by');
+    const sibenik = { explore: false, city: 'sibenik', key: 'city:sibenik' };
 
-    function harness({ ok = true, count = 42, cache } = {}) {
-        const serverProposalCache = cache || {
-            proposals: [{ id: 1 }], count: null, loading: false, error: null,
-            lastCity: 'sibenik', lastFetchedAt: 0, lastQuery: null,
-            countRefreshedAt: 0, countLoading: false
-        };
-        const fetchSpy = vi.fn(async () => ({
-            ok,
-            status: ok ? 200 : 503,
-            json: async () => ({ count })
-        }));
-        const updateShowProposalsButton = vi.fn();
-        const run = new Function('normalizeCityCodeForApi', 'resolveCurrentCityCode', 'resolveBackendBaseUrl',
-            'serverProposalCache', 'resetServerProposalCache', 'window', 'fetch', 'console',
-            'updateShowProposalsButton', `${body} return refreshServerProposalCount;`)(
-            city => city, () => 'sibenik', () => 'http://backend',
-            serverProposalCache, vi.fn(), { __proposalCounts: counts }, fetchSpy,
-            { warn: vi.fn(), error: vi.fn() }, updateShowProposalsButton);
-        return { run, serverProposalCache, fetchSpy, updateShowProposalsButton };
-    }
-
-    it('pita jeftini /proposals/count za taj grad, ne 250 sažetaka', async () => {
-        const { run, fetchSpy, serverProposalCache } = harness();
-        await run('sibenik');
-        expect(fetchSpy).toHaveBeenCalledWith('http://backend/proposals/count?city=sibenik');
-        expect(serverProposalCache.count).toBe(42);
+    it('pita indeks /designs za taj grad i broji retke koji su stigli', async () => {
+        const fetch = vi.fn(async () => answer([designRow(1), designRow(2), designRow(3)]));
+        const list = serverList({ fetch, area: () => sibenik });
+        await expect(list.refreshServerProposalCount('sibenik')).resolves.toBe(3);
+        expect(fetch).toHaveBeenCalledTimes(1);
+        expect(fetch.mock.calls[0][0]).toBe('http://backend/designs?limit=250&city=sibenik');
+        expect(list.serverProposalCache.count).toBe(3);
+        expect(list.serverProposalCache.proposals.map(row => row.cid)).toEqual([1, 2, 3].map(n => designRow(n).cid));
     });
 
     it('records the count under the list\'s own key, so the next list render does not refetch', async () => {
         // ensureServerProposals compares lastCity with the area key; the bare city here made every
         // count refresh look like a move to another area, wiping and refetching the list
-        const context = { explore: false, city: 'sibenik', key: 'city:sibenik' };
-        const { serverProposalCache, fetchSpy } = harness();
-        const body = sliceBetween(serverSync, "// How long the sidebar's server count", '// The sort keys the SERVER can order by');
-        await new Function('normalizeCityCodeForApi', 'resolveCurrentCityCode', 'resolveBackendBaseUrl',
-            'serverProposalCache', 'resetServerProposalCache', 'window', 'fetch', 'console',
-            'updateShowProposalsButton', `${body} return refreshServerProposalCount;`)(
-            city => city, () => 'sibenik', () => 'http://backend', serverProposalCache, vi.fn(),
-            { __proposalCounts: counts, getProposalCountAreaContext: () => context }, fetchSpy,
-            { warn: vi.fn(), error: vi.fn() }, vi.fn())();
-        expect(serverProposalCache.count).toBe(42);
-        expect(serverProposalCache.lastCity).toBe('city:sibenik');
+        const fetch = vi.fn(async () => answer([designRow(1)]));
+        const list = serverList({ fetch, area: () => sibenik });
+        await list.refreshServerProposalCount();
+        expect(list.serverProposalCache).toMatchObject({ count: 1, lastCity: 'city:sibenik', countAreaKey: 'city:sibenik' });
+        list.ensureServerProposals('sibenik');
+        expect(fetch).toHaveBeenCalledTimes(1);
     });
 
     it('requests the active Explore viewport bounds instead of a city total', async () => {
-        const context = { explore: true, city: null, bbox: [15.9, 45.7, 16.1, 45.9], key: 'explore:15.9,45.7,16.1,45.9' };
-        const { run, fetchSpy, serverProposalCache } = harness();
-        // Rebuild the isolated function with the browser's current area context exposed.
-        const body = sliceBetween(serverSync, "// How long the sidebar's server count", '// The sort keys the SERVER can order by');
-        const contextualRun = new Function('normalizeCityCodeForApi', 'resolveCurrentCityCode', 'resolveBackendBaseUrl',
-            'serverProposalCache', 'resetServerProposalCache', 'window', 'fetch', 'console',
-            'updateShowProposalsButton', `${body} return refreshServerProposalCount;`)(
-            city => city, () => 'explore', () => 'http://backend', serverProposalCache, vi.fn(),
-            { __proposalCounts: counts, getProposalCountAreaContext: () => context }, fetchSpy,
-            { warn: vi.fn(), error: vi.fn() }, vi.fn());
-        await contextualRun();
-        expect(fetchSpy).toHaveBeenCalledWith('http://backend/proposals/count?bbox=15.9%2C45.7%2C16.1%2C45.9');
+        const fetch = vi.fn(async () => answer([]));
+        const list = serverList({ fetch, area: () => ({ explore: true, city: null, bbox: [15.9, 45.7, 16.1, 45.9], key: 'explore:15.9,45.7,16.1,45.9' }) });
+        await list.refreshServerProposalCount();
+        expect(fetch.mock.calls[0][0]).toBe('http://backend/designs?limit=250&bbox=15.9%2C45.7%2C16.1%2C45.9');
     });
 
-    it('does not apply a count response after the user has moved to another Explore viewport', async () => {
-        let context = { explore: true, city: null, bbox: [15.9, 45.7, 16.1, 45.9], key: 'explore:old' };
-        let resolveResponse;
-        const response = new Promise(resolve => { resolveResponse = resolve; });
-        const cache = {
-            proposals: [], count: null, loading: false, error: null,
-            lastCity: 'explore', lastFetchedAt: 0, lastQuery: null,
-            countRefreshedAt: 0, countLoading: false
-        };
-        const fetchSpy = vi.fn(() => response);
-        const refresh = new Function('normalizeCityCodeForApi', 'resolveCurrentCityCode', 'resolveBackendBaseUrl',
-            'serverProposalCache', 'resetServerProposalCache', 'window', 'fetch', 'console',
-            'updateShowProposalsButton', `${sliceBetween(serverSync, "// How long the sidebar's server count", '// The sort keys the SERVER can order by')} return refreshServerProposalCount;`)(
-            city => city, () => 'explore', () => 'http://backend', cache, vi.fn(),
-            { __proposalCounts: counts, getProposalCountAreaContext: () => context }, fetchSpy,
-            { warn: vi.fn(), error: vi.fn() }, vi.fn());
-        const pending = refresh();
-        context = { ...context, bbox: [16.3, 45.7, 16.5, 45.9], key: 'explore:new' };
-        resolveResponse({ ok: true, json: async () => ({ count: 99 }) });
-        await pending;
-        expect(cache.count).toBeNull();
-    });
-
-    it('NE dira lastFetchedAt ni keširane retke', async () => {
-        // lastFetchedAt znači "jesmo li tražili SAŽETKE"; kad bi ga ovo postavilo, lista bi mislila
-        // da već ima retke koje nikad nije dohvatila i server kartica bi ostala prazna.
-        const { run, serverProposalCache } = harness();
-        await run('sibenik');
-        expect(serverProposalCache.lastFetchedAt).toBe(0);
-        expect(serverProposalCache.proposals).toHaveLength(1);
-        expect(serverProposalCache.countRefreshedAt).toBeGreaterThan(0);
+    it('drops an answer for the previous Explore viewport once the next refresh has moved the area', async () => {
+        let area = { explore: true, city: null, bbox: [15.9, 45.7, 16.1, 45.9], key: 'explore:old' };
+        const replies = [];
+        const fetch = vi.fn(() => new Promise(resolve => replies.push(resolve)));
+        const list = serverList({ fetch, area: () => area });
+        const stale = list.refreshServerProposalCount();
+        area = { ...area, bbox: [16.3, 45.7, 16.5, 45.9], key: 'explore:new' };
+        const current = list.refreshServerProposalCount();
+        expect(fetch).toHaveBeenCalledTimes(2);
+        replies[0](answer([designRow(1), designRow(2)]));
+        await stale;
+        expect(list.serverProposalCache.count).toBeNull();
+        replies[1](answer([designRow(3)]));
+        await current;
+        expect(list.serverProposalCache).toMatchObject({ count: 1, countAreaKey: 'explore:new', loading: false });
     });
 
     it('drugi put unutar prozora ne ide na mrežu', async () => {
-        const { run, fetchSpy } = harness();
-        await run('sibenik');
-        await run('sibenik');
-        expect(fetchSpy).toHaveBeenCalledTimes(1);
+        const fetch = vi.fn(async () => answer([designRow(1)]));
+        const list = serverList({ fetch, area: () => sibenik });
+        await list.refreshServerProposalCount('sibenik');
+        await list.refreshServerProposalCount('sibenik');
+        expect(fetch).toHaveBeenCalledTimes(1);
     });
 
-    it('neuspjeh zadrži prethodni broj i ne ostavi zaključan countLoading', async () => {
-        const cache = {
-            proposals: [], count: 7, loading: false, error: null, lastCity: 'sibenik',
-            lastFetchedAt: 0, lastQuery: null, countRefreshedAt: 0, countLoading: false
-        };
-        const { run, updateShowProposalsButton } = harness({ ok: false, cache });
-        await run('sibenik');
+    it('neuspjeh zadrži prethodni broj, zapiše grešku i ne ostavi listu u učitavanju', async () => {
+        const cache = freshCache({ count: 7, lastCity: 'city:sibenik', countAreaKey: 'city:sibenik' });
+        const list = serverList({ fetch: vi.fn(async () => answer(null, false)), cache, area: () => sibenik });
+        await list.refreshServerProposalCount('sibenik');
         expect(cache.count).toBe(7);              // prazan gumb je gori od starog broja
-        expect(cache.countLoading).toBe(false);
-        expect(updateShowProposalsButton).toHaveBeenCalled();
+        expect(cache.error).toBe('Index unavailable');
+        expect(cache.loading).toBe(false);
+        expect(list.updateShowProposalsButton).toHaveBeenCalled();
     });
 
     it('osvježi gumb kad broj stigne', async () => {
-        const { run, updateShowProposalsButton } = harness();
-        await run('sibenik');
-        expect(updateShowProposalsButton).toHaveBeenCalled();
+        const list = serverList({ fetch: vi.fn(async () => answer([designRow(1)])), area: () => sibenik });
+        await list.refreshServerProposalCount('sibenik');
+        expect(list.updateShowProposalsButton).toHaveBeenCalled();
     });
 
     it('ne pita dok je dohvat sažetaka u tijeku — donijet će isti broj', async () => {
-        const cache = {
-            proposals: [], count: null, loading: true, error: null, lastCity: 'sibenik',
-            lastFetchedAt: 0, lastQuery: null, countRefreshedAt: 0, countLoading: false
-        };
-        const { run, fetchSpy } = harness({ cache });
-        await run('sibenik');
-        expect(fetchSpy).not.toHaveBeenCalled();
+        const cache = freshCache({ loading: true, lastCity: 'city:sibenik', countAreaKey: 'city:sibenik' });
+        const fetch = vi.fn(async () => answer([]));
+        const list = serverList({ fetch, cache, area: () => sibenik });
+        await list.refreshServerProposalCount('sibenik');
+        expect(fetch).not.toHaveBeenCalled();
     });
 });
 
@@ -256,12 +231,19 @@ describe('gumb u bočnoj traci', () => {
     });
 
     it('broji "na serveru" istim testom kojim kartica crta svoju značku', () => {
-        // Imported server rows carry explicit serverProposalId; a numeric local key remains local.
-        // Counting and badge presentation must use that same publication predicate.
-        const fn = sliceBetween(listUi, 'function proposalUnionCountNow() {', 'function markProposalCountAreaOpened');
-        expect(fn).toContain('getSerialProposalId(proposal)');
-        expect(fn).toContain('counts.unionProposalCount(local, serverCount)');
-        expect(fn).toContain('proposalIntersectsBounds');
+        // A local design is on the server while it still hashes to its published CID
+        // (DesignSync.publishedCid), the predicate the card's save state reads too.
+        const fn = sliceBetween(listUi, 'function getProposalCountAreaContext() {', 'function markProposalCountAreaOpened');
+        const records = [{ proposalId: 'published-a' }, { proposalId: 'published-b' }, { proposalId: 'draft' }];
+        const publishedCid = vi.fn(record => (record.proposalId.startsWith('published') ? designRow(record.proposalId).cid : null));
+        const unionNow = new Function('window', 'proposalStorage', 'serverProposalCache', 'getCurrentCityId',
+            `let _proposalCountArrivalCenter = null; ${fn} return proposalUnionCountNow;`)(
+            { __proposalCounts: counts, DesignSync: { publishedCid },
+                CityConfigManager: { getCurrentCityConfig: () => ({ id: 'sibenik' }), getCityCodeForCityId: id => id } },
+            { getAllProposals: () => records }, { count: 5, countAreaKey: 'city:sibenik' }, () => 'sibenik');
+        // Five on the server, two of them held here, plus the one draft never published.
+        expect(unionNow()).toMatchObject({ count: 6, ready: true });
+        expect(publishedCid).toHaveBeenCalledTimes(3);
     });
 
     it('starts a fresh city or Explore-area count after app arrival', () => {
@@ -335,8 +317,9 @@ describe('gumb u bočnoj traci', () => {
 
     it('keš zna za svoje novo polje, i briše ga pri promjeni grada', () => {
         expect(read('../../frontend/js/proposals/data.js')).toContain('countRefreshedAt: 0');
-        const reset = sliceBetween(serverSync, 'function resetServerProposalCache(cityCode) {',
-            "// How long the sidebar's server count");
-        expect(reset).toContain('serverProposalCache.countRefreshedAt = 0;');
+        const cache = freshCache({ proposals: [designRow(1)], count: 1, countRefreshedAt: 1234, lastFetchedAt: 1234,
+            lastCity: 'city:zadar', countAreaKey: 'city:zadar' });
+        serverList({ fetch: vi.fn(), cache }).resetServerProposalCache('city:sibenik');
+        expect(cache).toMatchObject({ proposals: [], count: null, countRefreshedAt: 0, lastFetchedAt: 0, lastCity: 'city:sibenik', countAreaKey: null });
     });
 });

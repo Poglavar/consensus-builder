@@ -169,13 +169,12 @@ describe('editor cadastral scope boundary', () => {
 describe('proposal editor adapter registry', () => {
     it('registers every creatable proposal goal', () => {
         expect(registry.completeness(CREATABLE_PROPOSAL_GOALS)).toEqual({ complete: true, missing: [] });
-        expect(CREATABLE_PROPOSAL_GOALS).not.toContain('decide-later');
     });
 
-    it('keeps stored Decide Later proposals readable but not editable into new proposals', () => {
-        const capability = registry.canEdit({ goal: 'decide-later', decideLaterProposal: {} });
-        expect(capability.editable).toBe(false);
-        expect(capability.reason).toContain('no longer');
+    it('has no editor for a goal it does not register', () => {
+        expect(registry.get('merge')).toBeNull();
+        expect(registry.canEdit({ goal: 'merge' })).toEqual({ editable: false, reason: 'No editor adapter is registered for this proposal type.' });
+        expect(registry.list().map(entry => entry.key)).toEqual(expect.arrayContaining(['road-track', 'parcel-layout', 'park']));
     });
 
     it('normalizes aliases to the same adapter', () => {
@@ -1126,13 +1125,16 @@ describe('site-first drafts', () => {
         }
     });
 
-    it('asks a material draft for a site and a parcel act for parcels', () => {
+    it('asks a draft without ground for a site, and never asks a site draft for parcels (M2: no parcel acts)', () => {
         const park = buildStructureAdapter('park');
         const noGround = park.validate(siteDraft(park, {}, {}));
         expect(noGround.errors.map(error => error.code)).toEqual(expect.arrayContaining(['missing-site']));
         const transfer = registry.get('ownership-transfer');
-        const act = transfer.validate({ ...siteDraft(transfer, { site: SITE }, {}), goal: 'ownership-transfer' });
-        expect(act.errors.map(error => error.code)).toContain('missing-parcels');
+        const onSite = transfer.validate({ ...siteDraft(transfer, { site: SITE }, {}), goal: 'ownership-transfer' });
+        expect(onSite.errors.map(error => error.code)).not.toContain('missing-parcels');
+        expect(onSite.errors.map(error => error.code)).not.toContain('missing-site');
+        const bare = transfer.validate({ ...siteDraft(transfer, {}, {}), goal: 'ownership-transfer' });
+        expect(bare.errors.map(error => error.code)).toContain('missing-site');
     });
 
     it('moves physical structures to a new site and stamps only fresh authoritative binding parcels', () => {
@@ -1140,8 +1142,8 @@ describe('site-first drafts', () => {
         const source = {
             proposalId: 'park-source', goal: 'park', title: 'Old park',
             site: SITE, cadastreParcelIds: ['old-parcel'],
-            serverProposalId: '41', publicationApiBase: 'https://example.test',
-            preparation: { id: 'stale-preparation' }, effectHash: 'old-effect',
+            published: { cid: 'bafkreibm6jg3ux5qumhcn2b3flc3tyu6dmlb4xa7u5bf44yegnrjhc4yeq', publishedAt: '2026-10-21T10:00:00.000Z', apiBase: 'https://example.test' },
+            chainProposalId: 'solana-devnet-Acc-7', isMinted: true, lifecycleStatus: 'Active',
             acceptedParcelIds: ['old-parcel'], ownerAcceptances: { 'old-parcel': true },
             structureProposal: { kind: 'park', geometry: POLYGON, decorations: { trees: [{ id: 'old-tree' }] } }
         };
@@ -1163,11 +1165,11 @@ describe('site-first drafts', () => {
         expect(moved.site).toEqual(relocated);
         expect(moved.cadastreParcelIds).toEqual(['new-parcel']);
         expect(moved.structureProposal.decorations).toEqual({ trees: [{ id: 'old-tree' }] });
-        expect(moved).not.toHaveProperty('preparation');
-        expect(moved).not.toHaveProperty('effectHash');
         expect(moved).not.toHaveProperty('acceptedParcelIds');
         expect(moved).not.toHaveProperty('ownerAcceptances');
-        expect(moved).not.toHaveProperty('serverProposalId');
+        // A moved design is a new design: it is published, when it is, under its own CID.
+        expect(moved).not.toHaveProperty('published');
+        expect(moved).not.toHaveProperty('chainProposalId');
         expect(moved).not.toHaveProperty('isMinted');
         expect(moved).not.toHaveProperty('onchainData');
         expect(moved).not.toHaveProperty('chainId');
@@ -1476,9 +1478,17 @@ describe('free-placement binding handoff', () => {
         };
     }
 
-    function loadRebind(store, bindingResponse) {
+    // The site is bound by POST /designs/binding (derived, nothing stored), read through the shell's
+    // own fetchPlacementBinding. `bindingResponse` is the binding the server answers with (or a
+    // promise of it); `respond` replaces the whole HTTP answer.
+    function loadRebind(store, bindingResponse, { respond } = {}) {
         const bindingRequest = vi.fn(async () => bindingResponse);
         const placementApi = require('../../frontend/js/proposal-editor-adapters.js');
+        const fetch = vi.fn(async (url, init) => {
+            if (respond) return respond(url, init);
+            const binding = await bindingRequest(JSON.parse(init.body));
+            return { ok: true, status: 200, json: async () => ({ binding }) };
+        });
         const global = {
             proposalDraftStore: store,
             proposalDraftPlacement: {
@@ -1486,14 +1496,37 @@ describe('free-placement binding handoff', () => {
                 freePlacementPatch: placementApi.freePlacementPatch,
                 markFreePlacementBound: placementApi.markFreePlacementBound
             },
-            __publishBinding: { createFetchBinding: () => bindingRequest },
-            resolveBackendBaseUrl: () => 'https://example.test/api',
-            fetch: vi.fn(),
+            DesignSync: {
+                parcelSourceIdOf: city => (city === 'zagreb' ? 'hr-katastar' : null),
+                refusalMessage: (status, body) => (body && body.error) || `HTTP ${status}`
+            },
+            resolveBackendBaseUrl: () => 'https://example.test/api/',
+            fetch,
             CityConfigManager: { getCurrentCityId: () => 'zagreb' }
         };
-        const prefix = `const placementBindingInFlight = new Map(); function currentCityId(){ return 'zagreb'; } function tDraft(_key, fallback){ return fallback; }`;
+        const fetchSource = shellFunctionSource('fetchPlacementBinding');
+        const prefix = `const placementBindingInFlight = new Map(); function currentCityId(){ return 'zagreb'; } function tDraft(_key, fallback){ return fallback; }\n${fetchSource}`;
         const fn = loadProposalEditorShellFunction('rebindFreePlacementDraft', { global }, prefix);
-        return { fn, bindingRequest };
+        return { fn, bindingRequest, fetch };
+    }
+
+    function shellFunctionSource(name) {
+        const ast = parse(proposalEditorShellSource, { sourceType: 'script' });
+        let found = null;
+        (function find(node) {
+            if (!node || typeof node !== 'object' || found) return;
+            if (node.type === 'FunctionDeclaration' && node.id?.name === name) {
+                found = node;
+                return;
+            }
+            Object.keys(node).forEach(key => {
+                if (['loc', 'start', 'end'].includes(key)) return;
+                const value = node[key];
+                if (Array.isArray(value)) value.forEach(find); else find(value);
+            });
+        })(ast);
+        expect(found, `${name} declaration exists`).toBeTruthy();
+        return proposalEditorShellSource.slice(found.start, found.end);
     }
 
     it('rebinds before use and preserves an authoritative empty destination result', async () => {
@@ -1508,13 +1541,16 @@ describe('free-placement binding handoff', () => {
             },
             validateDraft: () => structuredClone(draft)
         };
-        const { fn, bindingRequest } = loadRebind(store, {
+        const { fn, bindingRequest, fetch } = loadRebind(store, {
             source: 'server:live-cadastre', coverage: 'none', parcels: []
         });
 
         const rebound = await fn(draft.id);
 
-        expect(bindingRequest).toHaveBeenCalledWith(expect.objectContaining({ site: SITE, city: 'zagreb' }));
+        expect(fetch).toHaveBeenCalledOnce();
+        expect(fetch.mock.calls[0][0]).toBe('https://example.test/api/designs/binding');
+        expect(fetch.mock.calls[0][1].method).toBe('POST');
+        expect(bindingRequest).toHaveBeenCalledWith({ site: SITE, toleranceM: 0, city: 'zagreb', parcelSourceId: 'hr-katastar' });
         expect(rebound.editorPayload.placement.bindingStatus).toBe('bound');
         expect(rebound.fields.binding.source).toBe('server:live-cadastre');
         expect(rebound.fields.cadastreParcelIds).toEqual([]);
@@ -1542,18 +1578,31 @@ describe('free-placement binding handoff', () => {
     });
 
     it('keeps the draft unchanged when authoritative rebinding fails', async () => {
-        const draft = makeDraft();
-        const original = structuredClone(draft);
-        const store = {
-            getDraft: () => structuredClone(draft),
-            updateDraft: vi.fn(),
-            validateDraft: vi.fn(() => structuredClone(draft))
-        };
-        const { fn } = loadRebind(store, Promise.reject(new Error('cadastre unavailable')));
+        const failures = [
+            // The index refuses: its own message, under its own code.
+            [async () => ({ ok: false, status: 503, json: async () => ({ code: 'parcel-source-unavailable', error: 'cadastre unavailable' }) }),
+                { message: 'cadastre unavailable', code: 'parcel-source-unavailable' }],
+            // The server cannot be reached: the draft stays saved locally.
+            [async () => { throw new TypeError('Failed to fetch'); },
+                { message: expect.stringMatching(/binding service is unavailable/), code: 'binding-unavailable' }],
+            // A 200 without a binding is no binding.
+            [async () => ({ ok: true, status: 200, json: async () => ({}) }),
+                { message: expect.stringMatching(/binding service is unavailable/), code: 'binding-unavailable' }]
+        ];
+        for (const [respond, expected] of failures) {
+            const draft = makeDraft();
+            const original = structuredClone(draft);
+            const store = {
+                getDraft: () => structuredClone(draft),
+                updateDraft: vi.fn(),
+                validateDraft: vi.fn(() => structuredClone(draft))
+            };
+            const { fn } = loadRebind(store, null, { respond });
 
-        await expect(fn(draft.id)).rejects.toThrow(/cadastre unavailable/i);
-        expect(store.updateDraft).not.toHaveBeenCalled();
-        expect(draft).toEqual(original);
+            await expect(fn(draft.id)).rejects.toMatchObject(expected);
+            expect(store.updateDraft).not.toHaveBeenCalled();
+            expect(draft).toEqual(original);
+        }
     });
 
     it('refuses unknown or missing server coverage without stamping a false bound state', async () => {
@@ -1579,17 +1628,17 @@ describe('free-placement binding handoff', () => {
 });
 
 describe('published source identity classification', () => {
-    it('does not treat a generic hash as publication, but recognizes immutable published records', () => {
+    it('does not treat a generic hash or a server row as publication, but recognizes a published design', () => {
         expect(isPublishedProposalRecord({ proposalId: 'local-1', hash: 'content-hash' })).toBe(false);
-        expect(isPublishedProposalRecord({ serverProposalId: 51 })).toBe(false);
+        expect(isPublishedProposalRecord({ serverProposalId: '51', publicationApiBase: 'https://example.test' })).toBe(false);
         expect(isPublishedProposalRecord({
-            serverProposalId: '51', publicationApiBase: 'https://example.test'
+            published: { cid: require('../../frontend/js/cid.js').cidOfObject({ schema: 'design/v1' }), publishedAt: null, apiBase: 'https://example.test' }
         })).toBe(true);
     });
 });
 
 // A parcel layout is shared together with its agreement (plan-design-agreement.md, M1 (a)): the
-// create dialog that attaches terms for publishing never opens for one.
+// create dialog never opens for one; the refusal is publish-terms.js publishRefusal (M2).
 describe('parcel layouts are not staged for publishing', () => {
     it('refuses with the publish-later message and opens no create dialog', async () => {
         const shellPath = '../../frontend/js/proposal-editor-shell.js';
@@ -1625,7 +1674,7 @@ describe('parcel layouts are not staged for publishing', () => {
             await expect(globalThis.stageProposalDraftForPublishing(draft.id)).resolves.toBe(false);
             expect(opened).toBe(0);
             expect(prepared).toBe(0);
-            expect(alerts).toEqual(['Parcel layouts are shared together with their agreement. Coming soon.']);
+            expect(alerts).toEqual(['A parcel layout is published with its agreement. Propose an agreement that includes it.']);
         } finally {
             Object.entries({
                 proposalDraftStore: previous.proposalDraftStore,

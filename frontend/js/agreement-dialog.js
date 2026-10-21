@@ -262,7 +262,7 @@
     /**
      * The agreement the form describes (plan-design-agreement.md, M1 (b) record).
      * state: { id, createdAt?, updatedAt?, city?, designs (the chosen records, authored order),
-     *   fingerprints (Map proposalId → c2-…), land ({ inputs, outputs } from AgreementGround.derive),
+     *   fingerprints (Map proposalId → design CID), land ({ inputs, outputs } from AgreementGround.derive),
      *   approvalConfig, lens }
      * values: { allocations ({ outputHash: select value }), cash ({ ownerKey: typed euros }),
      *   electorate ('owners' | 'community'), binding, title, deadline (the date field's day) }
@@ -281,14 +281,16 @@
             schema: SCHEMA,
             id: idOf(state.id),
             title: title || null,
-            city: state.city || (records[0] && records[0].city) || null,
+            // The designs' city (the city id a published design carries), so an agreement and its
+            // designs name the city the same way; the view's short code only when there is no design.
+            city: (records[0] && records[0].city) || state.city || null,
             createdAt: state.createdAt || null,
             updatedAt: state.updatedAt || null,
             designs: records.map(record => ({
                 proposalId: idOf(record.proposalId),
                 title: designTitle(record),
                 goal: typeof record.goal === 'string' ? record.goal : null,
-                fingerprint: fingerprints.get(idOf(record.proposalId)) || null
+                cid: fingerprints.get(idOf(record.proposalId)) || null
             })),
             inputs: { parcels: Array.isArray(inputs.parcels) ? inputs.parcels : [], openGroundM2: isNumber(inputs.openGroundM2) ? inputs.openGroundM2 : 0 },
             outputs,
@@ -324,6 +326,7 @@
         'deadline-invalid': () => t('agreement.errors.deadlineInvalid', 'The deadline must be a date in the future.'),
         'secondary-tab': () => t('agreement.errors.secondaryTab', 'Another tab holds this city’s data; agreements can be edited there only.'),
         'rule-not-ready': reason => t('agreement.warnings.ruleNotReady', 'The rule cannot be evaluated yet: {{reason}}', { reason }),
+        'rule-lens-missing': () => t('agreement.warnings.ruleLensMissing', 'No lens member is named, so no owner decision can be verified.'),
         'open-ground': () => t('agreement.warnings.openGround', 'Part of the land is open ground with no recorded owner.')
     };
     const NEEDS_REASON = new Set(['rule-invalid', 'rule-not-ready']);
@@ -708,9 +711,10 @@
             });
         }
 
+        // A design's identity is its content CID (M2, js/design-record.js), the same the index knows it by.
         function fingerprintOf(record) {
-            if (typeof root.proposalContentFingerprint !== 'function') throw new Error('proposalContentFingerprint is unavailable.');
-            return root.proposalContentFingerprint(record);
+            if (!root.DesignRecord || typeof root.DesignRecord.cidOf !== 'function') throw new Error('DesignRecord (js/design-record.js) is not loaded.');
+            return root.DesignRecord.cidOf(record);
         }
 
         async function deriveLand() {

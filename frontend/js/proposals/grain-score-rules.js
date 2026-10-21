@@ -1,15 +1,14 @@
 // Pure rules for the Institut za zrnatost plan score.
 //
 // This file deliberately knows nothing about Leaflet or the DOM. The browser game and the node
-// tests use the same route parser, parcel measurement and scoring arithmetic, so a pretty card
-// cannot quietly disagree with the methodology it describes.
+// tests use the same parcel measurement and scoring arithmetic, so a pretty card cannot quietly
+// disagree with the methodology it describes.
 (function (global) {
     'use strict';
 
     const EARTH_RADIUS_M = 6378137;
     const FINE_GRAIN_LIMIT_M = 10;
     const HAPPY_SCORE = 60;
-    const PLAN_SLUG_PATTERN = '[a-z0-9][a-z0-9-]{1,61}[a-z0-9]';
 
     function finite(value) {
         return typeof value === 'number' && Number.isFinite(value);
@@ -21,77 +20,9 @@
         return finite(number) ? number : null;
     }
 
-    function normalizePlanSlug(value) {
-        const slug = value == null ? '' : String(value).trim().toLowerCase();
-        if (!new RegExp(`^${PLAN_SLUG_PATTERN}$`, 'i').test(slug)) return null;
-        if (/^[0-9]+(?:-[0-9]+)*$/.test(slug)) return null;
-        return slug;
-    }
-
-    function parsePlanScorePath(pathname) {
-        const match = String(pathname || '').match(new RegExp(`^/plans/(${PLAN_SLUG_PATTERN})/score/?$`, 'i'));
-        if (!match) return null;
-        const slug = normalizePlanSlug(match[1]);
-        return slug ? { slug } : null;
-    }
-
-    function buildPlanScorePath(slug) {
-        const normalized = normalizePlanSlug(slug);
-        if (!normalized) throw new TypeError('slug must be a valid named-plan slug');
-        return `/plans/${encodeURIComponent(normalized)}/score`;
-    }
-
-    // Only the plan detail endpoint supplies current commitment verification. A slug, list row,
-    // absent changed flag or partial member list cannot establish the named scoring scope.
-    function verifiedNamedPlanMembers(plan) {
-        const ids = plan && plan.proposalRowIds;
-        const members = plan && plan.members;
-        if (!Array.isArray(ids) || !ids.length || !Array.isArray(members)
-            || members.length !== ids.length) return null;
-        const rowIds = ids.map(String);
-        if (rowIds.some(id => !/^\d+$/.test(id)) || new Set(rowIds).size !== rowIds.length) return null;
-        const byRow = new Map();
-        for (const member of members) {
-            if (!member || member.missing === true || member.changed !== false
-                || typeof member.authoredProposalId !== 'string' || !member.authoredProposalId.trim()) return null;
-            const rowId = String(member.proposalRowId);
-            if (byRow.has(rowId)) return null;
-            byRow.set(rowId, member);
-        }
-        if (rowIds.some(id => !byRow.has(id))) return null;
-        return rowIds.map(id => byRow.get(id));
-    }
-
-    // Publication identity and lineage are separate relationships: even an unchanged fork is a
-    // different member. Never substitute an authored/local id or an ancestor for a row id.
-    function selectNamedPlanProposals(plan, applied) {
-        const members = verifiedNamedPlanMembers(plan);
-        if (!members || !Array.isArray(applied)) return null;
-        const selected = [];
-        for (const member of members) {
-            const matches = applied.filter(record => record
-                && String(record.serverProposalId) === String(member.proposalRowId));
-            // The author's browser retains its local proposalId when upload assigns a content
-            // fingerprint as the server's authored ID. Only serverProposalId joins those copies.
-            if (matches.length !== 1) return null;
-            selected.push(matches[0]);
-        }
-        return selected;
-    }
-
-    // Live fabric belongs to the whole applied composition. Until an isolated evaluator exists,
-    // exact member selection is safe to measure only when that composition contains no outsiders.
-    // Even distant proposals are excluded: cadastral overlap is not a proof of independence.
-    function namedPlanScoreScope(plan, applied) {
-        const proposals = selectNamedPlanProposals(plan, applied);
-        if (!proposals) return { error: 'members', proposals: null };
-        if (proposals.length !== applied.length) return { error: 'composition', proposals: null };
-        return { error: null, proposals };
-    }
-
     // Measure the supplied snapshot, never look a parcel up again in a changing live fabric.
-    // Cadastral fallback is explicit; named scores supply none because source ground does not
-    // prove that the corresponding materialized result is still an unchanged cadastral parcel.
+    // Cadastral features are the explicit fallback for a resulting parcel the fabric has not
+    // materialized.
     function measureParcelRows(resultingIds, materializedFeatures, cadastralFeatures = []) {
         const byId = new Map();
         [...cadastralFeatures, ...materializedFeatures].filter(Boolean).forEach(feature => {
@@ -302,12 +233,6 @@
     const api = {
         FINE_GRAIN_LIMIT_M,
         HAPPY_SCORE,
-        normalizePlanSlug,
-        parsePlanScorePath,
-        buildPlanScorePath,
-        verifiedNamedPlanMembers,
-        selectNamedPlanProposals,
-        namedPlanScoreScope,
         measureParcelRows,
         parcelDimensionsMeters,
         isFineGrainParcel,

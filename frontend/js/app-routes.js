@@ -12,8 +12,10 @@
     // Prefix-level on purpose: each router validates its own ids, this only knows which paths exist.
     const ROUTES = Object.freeze([
         /^\/(index\.html)?$/,     // the map
-        /^\/proposals(\/.*)?$/,   // list, ids, slugs, /proposals/<chain>/<id>/<contract>/<token> (js/proposals/)
-        /^\/plans\/.+$/,          // /plans/<slug>, /plans/<slug>/score (js/proposals/plan-view.js, grain-score)
+        /^\/proposals\/?$/,       // the proposal list (js/proposals/core.js)
+        /^\/proposals\/[a-z0-9-]+\/[^/]+\/[^/]+\/.+$/i, // /proposals/<chain>/<id>/<contract>/<token> (js/proposals/chain-ref.js)
+        /^\/designs\/.+$/,        // /designs/<cid>[,<cid>…] (js/proposals/sharing-routes.js)
+        /^\/agreements\/.+$/,     // /agreements/<cid> (js/agreement-sync.js)
         /^\/parcel\/.+$/,         // /parcel/<id> (js/parcels/route.js)
         /^\/bets\/.+$/            // /bets/<account> (js/bets/bets-link.js; nginx proxies it first)
     ]);

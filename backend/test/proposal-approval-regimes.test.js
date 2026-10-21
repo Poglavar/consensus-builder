@@ -8,7 +8,8 @@ import { createRequire } from 'node:module';
 import { Keypair } from '@solana/web3.js';
 import * as turf from '@turf/turf';
 import { createApprovalAttester, normalizeRegistry } from '../lens/approval.js';
-import { wallet, MEMBER, memberKeypair, NOW, TERMS, at } from './helpers/approval-decisions.js';
+import { wallet, MEMBER, memberKeypair, NOW, at } from './helpers/approval-decisions.js';
+import { cidOf } from '../cid.js';
 
 const require = createRequire(import.meta.url);
 const A = require('../../frontend/js/proposals/approval.js');
@@ -123,7 +124,6 @@ describe('the canonical policy', () => {
         expect(A.contextHash(item(null))).toBe('approval1-sha256:f45c7e58196fdbb0556357edb5e61726e93954ec9be7e2d9608dd492a52eaff3');
         expect(A.contextHash(item(config(rights, { type: 'unanimous' })))).toBe('approval1-sha256:b9e243a5a75acd6720e846dbd152969cb0efa724f44e34c9801538961ee39c7c');
         expect(A.contextHash(item(config(rights, threshold([1, 2], [7, 10, true]))))).toBe('approval1-sha256:6579c122b9d4a0350cc211ba44fb3d4bef56bf8b27e1f6406bc2a468af9345a4');
-        expect(A.consentHash(item(config(rights, threshold([1, 2], [7, 10, true]))), 'lr2-sha256:abc')).toBe('consent1-sha256:10bd3336b4f6fdae5fb3c80d02cea3fa3c1c3f40c176d447fa21bd591b3ad164');
         // A pinned scheme is part of the context: the same rules under a scheme hash differently.
         const scheme = { type: 'rules', tests: [test('area', 'owners', 'all', 1, 2, true)], authorities: [{ authorityId: 'x' }] };
         expect(A.contextHash(item(config(rights, scheme, pin('es-ct-basic'))))).not.toBe(A.contextHash(item(config(rights, scheme))));
@@ -265,8 +265,9 @@ describe('the lens member and the relay with authorities', () => {
             { ownerId: 'city', wallet: wallets.city.address }, { ownerId: 'planning-office', wallet: wallets.authority.address }]
     };
     const attester = () => createApprovalAttester({ keypair: memberKeypair, registry: normalizeRegistry(registryJson), clock: { nowSeconds: () => NOW } });
+    // The agreement-like subject of the decisions: a published agreement's CID, its input parcels and rule.
     const item = (policy = R.policyOf(R.latest('jp-association'), ['planning-office']), regime = pin('jp-association')) => ({
-        proposalId: 'lens-regime', serverProposalId: '77', lifecycleStatus: 'Active',
+        agreementCid: cidOf(Buffer.from('lens-regime agreement')), lifecycleStatus: 'Active',
         cadastreParcelIds: ['a', 'b', 'c', 'd'], approvalConfig: config(mixed, policy, regime), lens: [MEMBER]
     });
     const contextOf = p => ({ cadastreParcelIds: p.cadastreParcelIds, approvalConfig: p.approvalConfig, lens: p.lens });
@@ -305,8 +306,8 @@ describe('the lens member and the relay with authorities', () => {
         const p = item();
         const decision = (who, ownerId, offset = 0) => {
             const facts = factsFor(who, p);
-            const receipt = { ownerId, actorId: who.address, effectHash: TERMS, evidence: { rights: facts.rights, authority: facts.authority.find(fact => fact.ownerId === ownerId) },
-                acceptedAt: at(offset), decision: 'approve', providerId: relay.LENS_PROVIDER };
+            const receipt = { ownerId, actorId: who.address, evidence: { rights: facts.rights, authority: facts.authority.find(fact => fact.ownerId === ownerId) },
+                decidedAt: at(offset), decision: 'approve', providerId: relay.LENS_PROVIDER };
             return { ...receipt, decisionProof: { scheme: proof.DECISION_SCHEME, signature: who.signText(proof.decisionMessage(A.decisionContent(p, receipt))) } };
         };
         const stored = [];

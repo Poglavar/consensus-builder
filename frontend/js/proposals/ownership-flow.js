@@ -1,9 +1,8 @@
 // Ownership flow (rethink-proposals.md §9, §12 step 2): what a proposal's FORMATION takes from each
 // BASE cadastral parcel, and where the ownership of the taken ground goes. One declared word per
 // typology — road/park/square/lake/station form public ground, a freeform building forms the
-// proposer's parcel, a parcel layout redraws borders and carries ownership over, decide-later consumes
-// fabric but defers the ownership decision. Content-only typologies (rules, votes, transfers,
-// as-is) have no formation and therefore no flow.
+// proposer's parcel, a parcel layout redraws borders and carries ownership over. Content-only
+// typologies (rules, votes, transfers, as-is) have no formation and therefore no flow.
 //
 // Also home of the EFFECT fingerprint (§11): the hash of what a proposal DOES to the ground —
 // footprint + per-parcel cession — as opposed to proposalContentFingerprint, which hashes what the
@@ -33,8 +32,7 @@
         'station': 'public',
         'single': 'proposer',
         'buildings': 'proposer',
-        'parcel-layout': 'carry-over',
-        'decide-later': 'undecided'
+        'parcel-layout': 'carry-over'
     });
 
     function destinationForGoal(goal) {
@@ -71,8 +69,9 @@
         return '{' + keys.map(k => JSON.stringify(k) + ':' + stableStringifyLocal(value[k])).join(',') + '}';
     }
 
-    // Same ~64-bit two-variant djb2 rendered base36 as proposalContentHash in sharing.js; kept
-    // local so this module stays pure and namespaced (no bare globals).
+    // A ~64-bit two-variant djb2 rendered base36: a local fingerprint of the effect, not a published
+    // identity (a published design is named by its CID, js/cid.js). Kept local so this module stays
+    // pure and namespaced (no bare globals).
     function effectHashString(str) {
         let h1 = 5381;
         let h2 = 52711;
@@ -126,11 +125,6 @@
     const effectHashCache = new WeakMap();
     function effectFingerprintOf(proposal, options) {
         const opts = options || {};
-        // A published record carries the hash the server stamped at publish, and a published record
-        // never changes (an edit derives a new record, which binding-drift.js strips the stamp from).
-        // Reading the stamp spares the footprint union, which is what the hash costs: a plan of
-        // 1,105 buildings unions for seconds. A caller supplying its own flow is hashing a draft.
-        if (!opts.ownershipFlow && typeof proposal?.effectHash === 'string' && proposal.effectHash) return proposal.effectHash;
         const api = planOrder();
         if (!api || !proposal) return null;
         let footprint = null;

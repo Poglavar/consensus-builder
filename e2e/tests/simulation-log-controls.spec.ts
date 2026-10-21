@@ -1,6 +1,6 @@
 // Exercise activity links emitted by real simulation and user proposal actions.
 import { test, expect } from '../helpers/fixtures';
-import { openCity, openParcel, showProposal, chooseProposalKind, PARCEL_ID } from '../helpers/runtime';
+import { openCity, showProposal, PARCEL_ID } from '../helpers/runtime';
 import { sampleParcels } from '../helpers/mocks/parcel-data';
 
 const SECOND_PARCEL_ID = 'HR-335754-1235';
@@ -16,6 +16,8 @@ async function openActivityExplorer(page: import('@playwright/test').Page): Prom
 
 test.describe('simulation log links @features', () => {
   test('agent, proposal, and parcel links from real simulation actions open their targets', async ({ mockApi: page }) => {
+    // Every link of every logged action is opened in turn: on a loaded host that outlasts 30 s.
+    test.setTimeout(120_000);
     const owners = [
       { name: 'Fixture simulation owner A', ownership: '1/2', percentageShare: 50 },
       { name: 'Fixture simulation owner B', ownership: '1/2', percentageShare: 50 },
@@ -208,38 +210,15 @@ test.describe('simulation log links @features', () => {
     await expect.poll(() => page.evaluate(() => (window as any).ProposalSelection?.getKey?.())).toBe(fixture.proposalId);
   });
 
-  test('user create, acceptance, and withdrawal log links open their targets', async ({ mockApi: page }) => {
-    // Supply two owners at the parcel-data boundary so every repository refresh preserves the
-    // same ownership. One acceptance must leave another outstanding for the real Undo action.
-    const owners = [
-      { name: 'Fixture private owner A', ownership: '1/2', percentageShare: 50 },
-      { name: 'Fixture private owner B', ownership: '1/2', percentageShare: 50 },
-    ];
-    const parcels = structuredClone(sampleParcels);
-    const parcel = parcels.features.find(feature => feature.properties.parcelId === PARCEL_ID)!;
-    Object.assign(parcel.properties, {
-      owners,
-      ownershipList: owners.map(owner => ({ ...owner, percentage: owner.percentageShare })),
-      ownershipDetails: { owners },
-    });
-    await page.route(url => /\/parcels(?:\/parcelIds)?$/.test(url.pathname), route => route.fulfill({
-      contentType: 'application/json', body: JSON.stringify(parcels),
-    }));
+  test('a user-created design logs a link to itself and its author', async ({ mockApi: page }) => {
     await openCity(page);
     await page.evaluate(() => { if (!(window as any).gameState.isInitialized) (window as any).initializeGame(); });
     await page.locator('#username-display').click();
     await page.locator('#username-input').fill('Simulation log user');
     await page.locator('#welcome-submit-btn').click();
-    await openParcel(page, 'info');
-    await page.waitForFunction(parcelId => {
-      const slots = (window as any).getParcelOwnerSlots?.(parcelId);
-      return Array.isArray(slots) && slots.length === 2 && slots.every((slot: any) => !slot.placeholder);
-    }, PARCEL_ID);
-    await page.locator('#parcel-info-panel .close-button').click();
 
-    // Use the regular Fork and proposal form to produce the user-created action, then the
-    // same ownership acceptance controls used by the proposal actions UI. Owner data is fixture
-    // state; the create, accept, and withdrawal effects themselves run through production code.
+    // Fork design opens the regular proposal form on a copy of a stable source; saving it is the
+    // user-created action the log records, through production code.
     const sourceId = await page.evaluate(({ parcelId, suffix }) => {
       const w = window as any;
       const proposalId = `e2e-simulation-log-source-${suffix}`;
@@ -267,98 +246,36 @@ test.describe('simulation log links @features', () => {
     await expect(dialog).toBeVisible();
     const title = `Simulation log user action ${Date.now()}`;
     await dialog.locator('#proposalName').fill(title);
-    await chooseProposalKind(dialog, 'owner-deal');
-    const offer = dialog.locator('#proposalOffer');
-    if (!(await offer.isVisible())) await dialog.locator('#proposalOptionsSection > .collapsible-header').click();
-    await offer.fill('100');
     await dialog.locator('#createProposalSubmitButton').click();
     await expect(dialog).toBeHidden({ timeout: 10000 });
 
-    const fixture = await page.evaluate(({ title, parcelId }) => {
+    const fixture = await page.evaluate(title => {
       const w = window as any;
       const proposal = w.proposalStorage.getAllProposals().find((item: any) => item.title === title);
       if (!proposal) throw new Error('The user-created proposal was not saved');
-      const owners = w.getOwnerSlotsForParcel(parcelId);
-      if (!owners?.length) throw new Error('The parcel fixture returned no owner slots');
-      const ownerOrder = owners.map((slot: any) => slot.key);
-      // The fork/create flow authors abstract approval terms. For this local owner-control fixture,
-      // use the same legacy owner-acceptance contract as proposal-actions.spec.ts so the real
-      // Accept/Undo buttons do not require a wallet-backed rights attestation.
-      delete proposal.approvalConfig;
-      delete proposal.ownerApprovals;
-      proposal.lifecycleStatus = 'Active';
-      proposal.applied = false;
-      proposal.funded = true;
-      proposal.ownerAcceptances = {
-        [parcelId]: {
-          owners: Object.fromEntries(owners.map((slot: any) => [slot.key, slot])),
-          ownerOrder,
-          acceptedOwnerKeys: [],
-          acceptedBy: {},
-        },
-      };
-      w.proposalStorage._indexProposal(proposal);
-      w.proposalStorage.save();
       const userAgent = w.agentStorage.getAllAgents().find((agent: any) => agent.userControlled);
       if (!userAgent) throw new Error('The local user agent is unavailable');
-      return { proposalId: proposal.proposalId, userAgentId: userAgent.id, userAgentName: userAgent.name, ownerKey: ownerOrder[0] };
-    }, { title, parcelId: PARCEL_ID });
-
-    await showProposal(page, fixture.proposalId);
-    const expand = page.locator('#proposal-details-panel').getByRole('button', { name: 'Expand', exact: true });
-    if (await expand.isVisible()) await expand.click();
-    const land = page.locator('#proposal-details-panel details[data-proposal-section="land"]');
-    if (!(await land.evaluate((element: HTMLDetailsElement) => element.open))) await land.locator(':scope > summary').click();
-    const ownerRow = page.locator(`.owner-acceptance-row[data-owner-key="${fixture.ownerKey}"]`);
-    await expect(ownerRow.getByRole('button', { name: 'Accept' })).toBeVisible();
-    await ownerRow.getByRole('button', { name: 'Accept' }).click();
-    await expect(ownerRow.getByRole('button', { name: 'Undo' })).toBeVisible();
-    await expect.poll(() => page.evaluate(({ proposalId, parcelId }) => {
-      const proposal = (window as any).proposalStorage.getProposal(proposalId);
-      return proposal.ownerAcceptances[parcelId].acceptedOwnerKeys;
-    }, { proposalId: fixture.proposalId, parcelId: PARCEL_ID })).toContain(fixture.ownerKey);
-    expect(await page.evaluate(id => (window as any).proposalStorage.getProposal(id).lifecycleStatus, fixture.proposalId)).toBe('Active');
-    await ownerRow.getByRole('button', { name: 'Undo' }).click();
-    await expect(ownerRow.getByRole('button', { name: 'Accept' })).toBeVisible();
-    await expect.poll(() => page.evaluate(({ proposalId, parcelId }) => {
-      const proposal = (window as any).proposalStorage.getProposal(proposalId);
-      return proposal.ownerAcceptances[parcelId].acceptedOwnerKeys;
-    }, { proposalId: fixture.proposalId, parcelId: PARCEL_ID })).not.toContain(fixture.ownerKey);
-    expect(await page.evaluate(id => (window as any).proposalStorage.getProposal(id).lifecycleStatus, fixture.proposalId)).toBe('Active');
+      return { proposalId: proposal.proposalId, userAgentId: userAgent.id, userAgentName: userAgent.name };
+    }, title);
 
     await openActivityExplorer(page);
     const explorer = page.locator('.game-log-modal');
-    const openUserActor = async (row: import('@playwright/test').Locator) => {
-      const actor = row.locator('.activity-entry-main .agent-link-clickable');
-      await expect(actor).toHaveAttribute('data-agent-id', fixture.userAgentId);
-      await actor.click();
-      const profile = page.locator('.agent-dialog-modal');
-      await expect(profile).toBeVisible();
-      await expect(profile.locator('#agent-dialog-title')).toHaveText(fixture.userAgentName);
-      await profile.locator('.agent-dialog-modal-close').click();
-      await expect(profile).toHaveCount(0);
-    };
     const createdRow = explorer.locator('.activity-entry').filter({ hasText: / created a .* proposal/ })
       .filter({ has: page.locator(`.activity-entry-main .proposal-link-clickable[data-proposal-id="${fixture.proposalId}"]`) });
     const createdLink = createdRow.locator('.activity-entry-main .proposal-link-clickable');
     await expect(createdLink).toBeVisible();
     await expect(createdRow).toHaveAttribute('data-source', 'simulation');
-    await openUserActor(createdRow);
+    const actor = createdRow.locator('.activity-entry-main .agent-link-clickable');
+    await expect(actor).toHaveAttribute('data-agent-id', fixture.userAgentId);
+    await actor.click();
+    const profile = page.locator('.agent-dialog-modal');
+    await expect(profile).toBeVisible();
+    await expect(profile.locator('#agent-dialog-title')).toHaveText(fixture.userAgentName);
+    await profile.locator('.agent-dialog-modal-close').click();
+    await expect(profile).toHaveCount(0);
     await createdLink.click();
     const inspector = page.locator('#planning-inspector');
     await expect(inspector.getByRole('heading', { name: title, exact: true })).toBeVisible();
     await expect.poll(() => page.evaluate(() => (window as any).ProposalSelection?.getKey?.())).toBe(fixture.proposalId);
-
-    await openActivityExplorer(page);
-    const acceptedRow = explorer.locator('.activity-entry').filter({ hasText: 'recorded acceptance' }).first();
-    await expect(acceptedRow.locator('.activity-entry-main .proposal-link-clickable')).toHaveAttribute('data-proposal-id', fixture.proposalId);
-    await openUserActor(acceptedRow);
-    await acceptedRow.locator('.activity-entry-main .proposal-link-clickable').click();
-    await expect(inspector.getByRole('heading', { name: title, exact: true })).toBeVisible();
-    await expect.poll(() => page.evaluate(() => (window as any).ProposalSelection?.getKey?.())).toBe(fixture.proposalId);
-
-    await openActivityExplorer(page);
-    const withdrawnRow = explorer.locator('.activity-entry').filter({ hasText: 'revoked acceptance' }).first();
-    await openUserActor(withdrawnRow);
   });
 });

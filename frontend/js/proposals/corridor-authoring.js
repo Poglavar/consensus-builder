@@ -12,7 +12,7 @@
     'use strict';
 
     const PUBLISHED_IDENTITY_KEYS = [
-        'serverProposalId', 'chainProposalId', 'tokenId', 'onchain', 'nft', 'isMinted', 'hash'
+        'published', 'chainProposalId', 'tokenId', 'onchain', 'nft', 'isMinted', 'hash'
     ];
 
     function cloneValue(value) {

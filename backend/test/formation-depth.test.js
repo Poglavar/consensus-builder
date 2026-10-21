@@ -301,18 +301,21 @@ describe('site-first records', () => {
         expect(records.conformanceOf({ goal: 'park', structureProposal: { kind: 'park', geometry: SITE.coordinates[0] && { type: 'Polygon', coordinates: SITE.coordinates[0] } } }).flat).toBe(true);
     });
 
-    it('keeps refusing parcel acts and records about nothing', () => {
-        expect(records.conformanceOf({ goal: 'ownership-transfer', site: SITE, cadastreParcelIds: [] }).violations.map(v => v.code))
-            .toContain('missing-cadastral-provenance');
-        expect(records.conformanceOf({ goal: 'park', kind: 'owner-vote', site: SITE }).flat).toBe(false);
-        expect(records.conformanceOf({ goal: 'park', cadastreParcelIds: [] }).flat).toBe(false);
+    it('refuses only records about nothing: any goal or kind stands on its site', () => {
+        // A design is never an act on parcels (plan-design-agreement.md): goal and kind do not matter.
+        expect(records.conformanceOf({ goal: 'ownership-transfer', site: SITE, cadastreParcelIds: [] }).flat).toBe(true);
+        expect(records.conformanceOf({ goal: 'park', kind: 'owner-vote', site: SITE }).flat).toBe(true);
+        const nothing = records.conformanceOf({ goal: 'park', cadastreParcelIds: [] });
+        expect(nothing.flat).toBe(false);
+        expect(nothing.violations.map(v => v.code)).toContain('missing-cadastral-provenance');
     });
 
     it('lets the publish gate pass a site record with an empty declaration', () => {
         const gate = records.preparePublishRecord({ goal: 'park', site: SITE, cadastreParcelIds: [], structureProposal: { kind: 'park', geometry: { type: 'Polygon', coordinates: SITE.coordinates[0] } } });
         expect(gate.verdict.flat).toBe(true);
         expect(gate.proposal.site).toEqual(SITE);
-        const act = records.preparePublishRecord({ goal: 'offer', site: SITE, cadastreParcelIds: [] });
-        expect(act.verdict.violations.map(v => v.code)).toContain('geometric-parent-resolution-required');
+        expect(records.preparePublishRecord({ goal: 'parcel-layout', site: SITE, cadastreParcelIds: [] }).verdict.flat).toBe(true);
+        const nothing = records.preparePublishRecord({ goal: 'parcel-layout', cadastreParcelIds: [] });
+        expect(nothing.verdict.violations.map(v => v.code)).toContain('geometric-parent-resolution-required');
     });
 });

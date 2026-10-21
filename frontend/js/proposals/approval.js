@@ -22,6 +22,8 @@
     const RIGHTS_SCHEMA_V2 = 'parcel-rights/v2';
     const CONFIG_SCHEMA = 'proposal-approval/v1';
     const CONTEXT_SCHEMA = 'proposal-approval-context/v1';
+    // The statement a party signs for one decision on one agreement (plan-design-agreement.md, M2).
+    const DECISION_SCHEMA = 'agreement-decision/v1';
     const MAX_RECORDS = 10000;
     const MAX_TESTS = 8;
     const MAX_AUTHORITIES = 4;
@@ -32,6 +34,11 @@
         || (typeof require === 'function' ? require('../../vendor/noble-hashes-1.8.0/sha256.js') : null);
     const regimes = () => root.ProposalApprovalRegimes
         || (typeof require === 'function' ? require('./approval-regimes.js') : null);
+    const cid = () => {
+        const api = root.Cid || (typeof require === 'function' ? require('../cid.js') : null);
+        if (!api) throw new Error('Cid (js/cid.js) is not loaded.');
+        return api;
+    };
     const compare = (a, b) => a < b ? -1 : a > b ? 1 : 0;
     const unique = list => [...new Set(list)].sort(compare);
     function fail(message) {
@@ -236,10 +243,6 @@
     }
     const hash = (prefix, value) => prefix + crypto().sha256Hex(stableStringify(value));
     const contextHash = proposal => hash('approval1-sha256:', contextContent(proposal));
-    const consentHash = (proposal, designHash) => {
-        if (typeof designHash !== 'string' || !designHash) fail('Consent needs a design commitment.');
-        return hash('consent1-sha256:', { designHash, approval: contextContent(proposal) });
-    };
     function inspect(proposal) {
         const context = contextContent(proposal);
         const rules = policyRules(context.policy);
@@ -381,56 +384,59 @@
                 && (kind === 'rights' || (fact.ownerId === owner && fact.actorId === actorId));
         });
     }
-    // The identity an owner decision signs. A minted proposal is its chain account, so the server
-    // copy, a chain mirror and the minting browser all name it alike; otherwise its proposalId.
-    function subjectOf(proposal) {
-        const onchain = proposal?.onchain || {};
-        if (onchain.proposalId != null && String(onchain.proposalId)) {
-            const chainId = String(onchain.chainId || '');
-            if (!/^solana-[a-z-]+$/.test(chainId)) fail('Owner decisions are supported only for proposals minted on Solana.');
-            return `solana:${chainId.slice('solana-'.length)}:${onchain.proposalId}`;
-        }
-        if (proposal?.proposalId == null || !String(proposal.proposalId).trim()) fail('An owner decision needs a published proposal identity.');
-        return String(proposal.proposalId);
+    // Decisions are taken on an agreement (plan-design-agreement.md, M2). The functions below take an
+    // agreement-like object: the engine's subject { cadastreParcelIds, approvalConfig, lens } (the
+    // agreement's AgreementRecord.approvalSubject) plus `agreementCid`, its published CID, and the
+    // receipts `ownerApprovals` (ownerId → receipt) and `ownerApprovalHistory`. A receipt is
+    // { ownerId, actorId, evidence: { rights, authority }, decision: 'approve' | 'withdraw',
+    // decidedAt, decisionProof, providerId }; it carries no terms hash, because the CID it signs
+    // commits to the designs, land, allocations, money and rule.
+    // The identity a decision signs: the agreement's CID.
+    function subjectOf(agreement) {
+        const subject = agreement?.agreementCid;
+        if (!cid().isCid(subject)) fail('A decision needs a published agreement: its agreementCid is not a CID.');
+        return subject;
     }
-    function decisionContent(proposal, receipt) {
-        return { schema: 'owner-decision/v1', proposalId: subjectOf(proposal),
-            ownerId: receipt.ownerId, actorId: receipt.actorId, effectHash: receipt.effectHash,
-            decision: receipt.decision, acceptedAt: receipt.acceptedAt, contextHash: contextHash(proposal) };
+    function decisionContent(agreement, receipt) {
+        return { schema: DECISION_SCHEMA, agreementCid: subjectOf(agreement),
+            ownerId: receipt.ownerId, actorId: receipt.actorId, contextHash: contextHash(agreement),
+            decision: receipt.decision, decidedAt: receipt.decidedAt };
     }
-    // Every party (owner, leaseholder or authority) whose current approval verifies for these terms.
-    function validOwnerIds(proposal, designCommitment, verifyReceipt) {
-        const state = inspect(proposal);
-        if (!state.ready || !designCommitment || typeof verifyReceipt !== 'function') return [];
+    // Every party (owner, leaseholder or authority) whose current approval of this agreement verifies.
+    // An agreement without a CID (an unproposed draft) has none.
+    function validOwnerIds(agreement, verifyReceipt) {
+        const state = inspect(agreement);
+        if (!state.ready || !cid().isCid(agreement?.agreementCid) || typeof verifyReceipt !== 'function') return [];
         return state.partyIds.filter(id => {
-            const receipt = proposal.ownerApprovals?.[id];
-            return receipt?.effectHash === designCommitment && receipt?.ownerId === id
-                && receipt.decision === 'approve' && evidenceAllows(proposal, id, receipt.actorId, receipt.evidence)
-                && verifyReceipt(proposal, receipt) === true;
+            const receipt = agreement.ownerApprovals?.[id];
+            return receipt?.ownerId === id && receipt.decision === 'approve'
+                && evidenceAllows(agreement, id, receipt.actorId, receipt.evidence)
+                && verifyReceipt(agreement, receipt) === true;
         });
     }
-    function recordDecision(proposal, { ownerId: id, actorId, effectHash, evidence, acceptedAt, withdraw = false, decisionProof, providerId, verifyReceipt }) {
-        if (!evidenceAllows(proposal, id, actorId, evidence) || !effectHash) fail('The selected lens has not established these rights and this actor’s authority.');
-        const receipt = { ownerId: id, actorId, effectHash, evidence: JSON.parse(JSON.stringify(evidence)), acceptedAt,
+    function recordDecision(agreement, { ownerId: id, actorId, evidence, decidedAt, withdraw = false, decisionProof, providerId, verifyReceipt }) {
+        subjectOf(agreement);
+        if (!evidenceAllows(agreement, id, actorId, evidence)) fail('The selected lens has not established these rights and this actor’s authority.');
+        const receipt = { ownerId: id, actorId, evidence: JSON.parse(JSON.stringify(evidence)), decidedAt,
             decision: withdraw ? 'withdraw' : 'approve', decisionProof, providerId };
-        if (typeof acceptedAt !== 'string' || !Number.isFinite(Date.parse(acceptedAt))
-            || typeof verifyReceipt !== 'function' || verifyReceipt(proposal, receipt) !== true) fail('The owner decision has not been verified.');
-        const next = JSON.parse(JSON.stringify(proposal));
+        if (typeof decidedAt !== 'string' || !Number.isFinite(Date.parse(decidedAt))
+            || typeof verifyReceipt !== 'function' || verifyReceipt(agreement, receipt) !== true) fail('The owner decision has not been verified.');
+        const next = JSON.parse(JSON.stringify(agreement));
         const previous = next.ownerApprovals?.[id];
         if (withdraw && (!previous || previous.actorId !== actorId)) fail('Only the actor who recorded an approval may withdraw it.');
-        if (!withdraw && validOwnerIds(next, effectHash, verifyReceipt).includes(id)) fail('This owner has already approved these terms.');
+        if (!withdraw && validOwnerIds(next, verifyReceipt).includes(id)) fail('This owner has already approved this agreement.');
         next.ownerApprovals = next.ownerApprovals || {};
         if (previous) next.ownerApprovalHistory = [...(next.ownerApprovalHistory || []), previous];
         if (withdraw) {
             delete next.ownerApprovals[id];
             next.ownerApprovalHistory = [...(next.ownerApprovalHistory || []), receipt];
         } else next.ownerApprovals[id] = receipt;
-        const result = tally(next, validOwnerIds(next, effectHash, verifyReceipt));
+        const result = tally(next, validOwnerIds(next, verifyReceipt));
         next.acceptedParcelIds = result.acceptedParcelIds;
-        return { proposal: next, tally: result };
+        return { agreement: next, tally: result };
     }
-    return { RIGHTS_SCHEMA, RIGHTS_SCHEMA_V2, CONFIG_SCHEMA, CONTEXT_SCHEMA, MEASURES, CLASSES, SCOPES, MAX_TESTS, MAX_AUTHORITIES,
+    return { RIGHTS_SCHEMA, RIGHTS_SCHEMA_V2, CONFIG_SCHEMA, CONTEXT_SCHEMA, DECISION_SCHEMA, MEASURES, CLASSES, SCOPES, MAX_TESTS, MAX_AUTHORITIES,
         normalizeRights, normalizeConfig, normalizePolicy, policyRules, testOf,
-        lensKeys, contextContent, contextHash, consentHash, stableStringify, inspect, ownerLabel, partyOf, partyLabel, letters, createTemplate,
+        lensKeys, contextContent, contextHash, stableStringify, inspect, ownerLabel, partyOf, partyLabel, letters, createTemplate,
         tally, evidenceAllows, subjectOf, decisionContent, validOwnerIds, recordDecision };
 });

@@ -8,6 +8,8 @@
         { "source": "/vocabulary/1", "destination": "/vocabulary/1/index.html" },
         { "source": "/vocabulary/1/", "destination": "/vocabulary/1/index.html" },
         { "source": "/proposals/**", "destination": "/index.html" },
+        { "source": "/designs/**", "destination": "/index.html" },
+        { "source": "/agreements/**", "destination": "/index.html" },
         { "source": "/plans/**", "destination": "/index.html" },
         { "source": "/proposal/**", "destination": "/index.html" },
         { "source": "/parcel/**", "destination": "/index.html" },

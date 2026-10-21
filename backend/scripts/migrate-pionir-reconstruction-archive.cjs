@@ -96,16 +96,8 @@ function validateBundle(bundle) {
 
     const seenProposalIds = new Set();
     for (const project of bundle.projects) {
-        if (!project.plan || project.plan.slug !== `pionir-${project.key}`) {
-            throw new Error(`${project.key}: missing canonical named-plan slug.`);
-        }
-        if (project.plan.city !== 'zagreb') throw new Error(`${project.key}: expected Zagreb plan city.`);
         if (!Array.isArray(project.proposals) || !project.proposals.length) {
             throw new Error(`${project.key}: no proposals in bundle.`);
-        }
-        const proposalIds = project.proposals.map(proposal => proposal.proposalId);
-        if (JSON.stringify(proposalIds) !== JSON.stringify(project.plan.proposalIds)) {
-            throw new Error(`${project.key}: named-plan order differs from bundled proposal order.`);
         }
         const buildingCount = project.proposals.filter(proposal => proposal.buildingProposal).length;
         if (buildingCount !== 1) throw new Error(`${project.key}: expected exactly one building proposal.`);
@@ -124,7 +116,6 @@ function validateBundle(bundle) {
     return {
         projectCount: bundle.projects.length,
         proposalCount: seenProposalIds.size,
-        planCount: bundle.projects.length,
         checksum
     };
 }
@@ -177,12 +168,6 @@ async function buildArchiveBundle(archiveRoot = ARCHIVE_ROOT) {
         }
         projects.push({
             key: entry.name,
-            plan: {
-                slug: manifest.planSlug,
-                title: manifest.planTitle,
-                city: 'zagreb',
-                proposalIds: [...circulation.map(proposal => proposal.proposalId), building.proposalId]
-            },
             proposals: [...circulation, building]
         });
     }
@@ -218,11 +203,9 @@ async function resolveProposalTable(pool) {
 }
 
 async function inspectBundle(pool, proposalTable, bundle) {
-    const proposalIds = bundle.projects.flatMap(project => project.plan.proposalIds);
-    const slugs = bundle.projects.map(project => project.plan.slug);
-    const [proposalResult, planResult, targetResult] = await Promise.all([
+    const proposalIds = bundle.projects.flatMap(project => project.proposals.map(proposal => proposal.proposalId));
+    const [proposalResult, targetResult] = await Promise.all([
         pool.query(`SELECT proposal_id, id FROM ${proposalTable} WHERE proposal_id = ANY($1::text[])`, [proposalIds]),
-        pool.query('SELECT slug, proposal_ids FROM public.ens_plan WHERE slug = ANY($1::text[])', [slugs]),
         pool.query(`SELECT current_database() AS database, current_user AS role,
                            COALESCE(inet_server_addr()::text, 'local-socket') AS server_address`)
     ]);
@@ -233,11 +216,6 @@ async function inspectBundle(pool, proposalTable, bundle) {
             total: proposalIds.length,
             existing: proposalResult.rowCount,
             toInsert: proposalIds.length - proposalResult.rowCount
-        },
-        plans: {
-            total: slugs.length,
-            existing: planResult.rowCount,
-            toInsert: slugs.length - planResult.rowCount
         }
     };
 }
@@ -292,27 +270,6 @@ async function upsertProposal(client, proposalTable, proposal) {
     return rows[0];
 }
 
-async function upsertPlan(client, project, numericIds) {
-    const tokenHash = crypto.createHash('sha256')
-        .update(`reconstruction-archive:${project.plan.slug}`)
-        .digest('hex');
-    await client.query(`
-        INSERT INTO public.ens_plan (slug, proposal_ids, title, city, edit_token_hash)
-        VALUES ($1, $2::jsonb, $3, $4, $5)
-        ON CONFLICT (slug) DO UPDATE SET
-            proposal_ids = EXCLUDED.proposal_ids,
-            title = EXCLUDED.title,
-            city = EXCLUDED.city,
-            updated_at = NOW()
-    `, [
-        project.plan.slug,
-        JSON.stringify(numericIds.map(String)),
-        project.plan.title,
-        project.plan.city,
-        tokenHash
-    ]);
-}
-
 async function applyBundle(pool, proposalTable, bundle) {
     const client = await pool.connect();
     const projects = [];
@@ -324,10 +281,8 @@ async function applyBundle(pool, proposalTable, bundle) {
                 const row = await upsertProposal(client, proposalTable, proposal);
                 numericIds.push(Number(row.id));
             }
-            await upsertPlan(client, project, numericIds);
             projects.push({
                 key: project.key,
-                slug: project.plan.slug,
                 proposalIds: numericIds.map(String)
             });
         }
@@ -358,8 +313,8 @@ async function runDatabaseAction(args) {
         if (args.action === 'dry-run-bundle') return;
         const projects = await applyBundle(pool, proposalTable, bundle);
         const after = await inspectBundle(pool, proposalTable, bundle);
-        if (after.proposals.existing !== after.proposals.total || after.plans.existing !== after.plans.total) {
-            throw new Error('Post-import verification found missing proposals or plans.');
+        if (after.proposals.existing !== after.proposals.total) {
+            throw new Error('Post-import verification found missing proposals.');
         }
         console.log(JSON.stringify({ phase: 'applied', ...after, projects }));
     } finally {

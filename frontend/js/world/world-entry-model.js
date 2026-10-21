@@ -72,15 +72,17 @@
     }
 
     // Every link form that already says what to show. Mirrors the app's own route handlers:
-    // proposals/plans (handleProposalRouteFromUrl, isProposalDeepLinkPath), /parcel/<id> and
-    // ?parcel= (parcels/route.js), /monitors/<id> (area-monitor/routing.js), ?proposalShare= and
-    // ?shared= (proposals/sharing-routes.js), ?activity= (game.js), ?scene= (ai-scene-follow.js),
+    // /proposals, /proposals/<chain>/…, /designs/<cids> and /agreements/<cid>
+    // (handleProposalRouteFromUrl, isProposalDeepLinkPath), /parcel/<id> and
+    // ?parcel= (parcels/route.js), /monitors/<id> (area-monitor/routing.js), ?focusProposal=
+    // (world/proposal-entry.js), ?activity= (game.js), ?scene= (ai-scene-follow.js),
     // /bets/<account> and ?bets= (bets/bets-link.js) and the view-mode params (?model/?mode3d/?3d,
     // ?photo/?real/?rl/?rw: is3DModeRequestedFromUrl), or a valid shared map view (?at=).
-    const SHARED_PATHS = [/^\/proposals(?:\/|$)/i, /^\/plans\/./i, /^\/parcel\/./i, /^\/bets\/./i, /\/monitors\/\d+\/?$/];
-    const SHARED_PARAMS = ['parcel', 'proposalShare', 'focusProposal', 'shared', 'activity', 'scene', 'bets', 'model', 'mode3d', '3d', 'photo', 'real', 'rl', 'rw'];
+    const SHARED_PATHS = [/^\/proposals\/?$/i, /^\/proposals\/[a-z0-9-]+\/[^/]+\/[^/]+\/./i, /^\/designs\/./i, /^\/agreements\/./i,
+        /^\/parcel\/./i, /^\/bets\/./i, /\/monitors\/\d+\/?$/];
+    const SHARED_PARAMS = ['parcel', 'focusProposal', 'activity', 'scene', 'bets', 'model', 'mode3d', '3d', 'photo', 'real', 'rl', 'rw'];
     // The shared routes that open a stored record, which keeps the city it was made in.
-    const RECORD_PARAMS = ['parcel', 'proposalShare', 'focusProposal', 'shared', 'activity', 'scene', 'bets'];
+    const RECORD_PARAMS = ['parcel', 'focusProposal', 'activity', 'scene', 'bets'];
 
     // A user zooming out through the map scale opens the globe at the last map centre. Keep the
     // decision pure; the UI separately proves a native zoom gesture happened.

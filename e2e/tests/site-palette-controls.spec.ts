@@ -82,7 +82,7 @@ async function expectFreeformDraftSite(page: import('@playwright/test').Page, au
 
 test.describe('Site proposals already on its parcels @core', () => {
   test('the card counts them, Show opens the Proposals tab, and the tabs switch', async ({ mockApi: page }) => {
-    await publishOn(page, PARCEL_ID);
+    const publishedCid = await publishOn(page, PARCEL_ID);
     await openCity(page);
     await clickMapPoint(page, 15.9822, 45.80025);
     await page.locator('#parcel-menu [data-command="parcel.useAsSite"]').click();
@@ -92,7 +92,7 @@ test.describe('Site proposals already on its parcels @core', () => {
     const panel = page.locator('#site-info-panel');
     await expect(panel.locator('[data-site-tab="proposals"]')).toHaveAttribute('aria-selected', 'true');
     await expect(panel.locator('[data-site-tab="proposals"] .parcel-tab-count')).toHaveText('1');
-    await expect(panel.locator('[data-site-tab-panel="proposals"] [data-server-id="41"]')).toContainText('Published park');
+    await expect(panel.locator(`[data-site-tab-panel="proposals"] [data-server-id="${publishedCid}"]`)).toContainText('Published park');
     await panel.locator('[data-site-tab="info"]').click();
     await expect(panel.locator('[data-site-tab-panel="info"]')).toContainText('Bound parcels (1)');
     await panel.locator('[data-site-tab="propose"]').click();

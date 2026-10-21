@@ -808,80 +808,8 @@ body.site-intro-open { overflow: hidden; }
     white-space: nowrap;
 }
 
-/* "Share one proposal" (proposals/dialog-upload.js showUploadProposalModal): one row per step
-   (upload, mint, download, share via), each a main button or, once done, its link and Copy URL.
-   The state code shows and hides the parts. */
-.share-proposal-rows {
-    display: flex;
-    flex-direction: column;
-    gap: var(--cb-space-3);
-    margin-bottom: var(--cb-space-5);
-}
-
-.share-proposal-row {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: var(--cb-space-2);
-    width: 100%;
-}
-
-.share-proposal-row__main {
-    flex: 1 1 0;
-}
-
-.share-proposal-link-group {
-    flex: 1 1 auto;
-    align-items: center;
-    gap: var(--cb-space-2);
-    min-width: 0;
-    width: 100%;
-}
-
-/* A one-line link field (the shared .share-modal-link is the multi-line one). */
-.share-modal-link.share-proposal-link {
-    flex: 1 1 auto;
-    min-width: 0;
-    min-height: var(--cb-control-height);
-    padding: var(--cb-space-1) var(--cb-space-3);
-}
-
-.share-proposal-copy {
-    white-space: nowrap;
-}
-
-.share-modal-plan-btn {
-    margin-bottom: var(--cb-space-3);
-}
-
-.share-proposal-status {
-    margin-bottom: var(--cb-space-3);
-    font-size: var(--cb-text-sm);
-    line-height: var(--cb-leading);
-    color: var(--cb-text);
-}
-
-.share-proposal-status.is-error {
-    color: var(--cb-danger);
-}
-
-.share-proposal-status:empty {
-    display: none;
-}
-
-.share-modal-share-actions {
-    margin-top: var(--cb-space-4);
-    width: 100%;
-}
-
-.share-proposal-label {
-    margin-bottom: var(--cb-space-2);
-    font-weight: var(--cb-weight-semibold);
-}
-
-/* The mint prompts asked over the create dialog (proposals/chain.js, proposals/dialog-upload.js):
-   the failure reason and the missing parcels set apart from the message around them. */
-.onchain-mint-failed__reason,
+/* The missing-parcels prompt of a mint (proposals/create-preview.js): the missing parcels set apart
+   from the message around them. */
 .missing-parcels-list {
     margin: var(--cb-space-3) 0;
     padding: var(--cb-space-3);
@@ -892,12 +820,6 @@ body.site-intro-open { overflow: hidden; }
     font-size: var(--cb-text-sm);
     white-space: pre-wrap;
     overflow-wrap: anywhere;
-}
-
-.onchain-mint-failed__reason {
-    border: 1px solid var(--cb-warning);
-    background: var(--cb-warning-soft);
-    color: var(--cb-warning-soft-ink);
 }
 
 .missing-parcels-list {
@@ -1342,11 +1264,6 @@ body.site-intro-open { overflow: hidden; }
     display: none;
 }
 
-.owner-acceptance-lens-hint {
-    font-size: 11px;
-    color: var(--cb-text-muted);
-}
-
 /* Agent dialog (js/agents.js showAgentDialog). It wears the shared dialog: cb-dialog-overlay
    (--top when opened over another dialog) > cb-dialog cb-dialog--lg agent-dialog-modal with
    cb-dialog__header / __body / __footer and one close-circle-btn. Only the profile's own layout
@@ -1596,9 +1513,7 @@ body.site-intro-open { overflow: hidden; }
     min-width: 0;
 }
 
-.agent-dialog-proposal-meta .proposal-chain-label,
-.agent-dialog-proposal-meta .proposal-offer-amount,
-.agent-dialog-proposal-meta .proposal-offer-currency {
+.agent-dialog-proposal-meta .proposal-chain-label {
     overflow-wrap: anywhere;
     word-break: break-word;
 }
@@ -1832,44 +1747,6 @@ body.site-intro-open { overflow: hidden; }
     margin-bottom: 16px;
 }
 
-.share-modal-link {
-    width: 100%;
-    padding: 12px 14px;
-    background: var(--cb-surface-2);
-    border: 1px solid #d8ddf0;
-    border-radius: 8px;
-    font-family: 'SFMono-Regular', Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-    font-size: 13px;
-    color: #212744;
-    resize: none;
-    min-height: 82px;
-    box-sizing: border-box;
-    transition: border 0.2s ease;
-}
-
-.share-modal-link:focus {
-    outline: none;
-    border-color: var(--cb-primary);
-    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.2);
-}
-
-.share-modal .share-plan-action {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-}
-
-.share-modal .share-plan-uploaded {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    min-width: 130px;
-    padding: 6px 12px;
-    box-sizing: border-box;
-}
-
 .proposal-list-header {
     display: flex;
     align-items: center;
@@ -1933,11 +1810,6 @@ body.site-intro-open { overflow: hidden; }
     color: #444;
 }
 
-.proposal-list-meta .proposal-meta-number {
-    font-weight: 600;
-    color: var(--cb-text);
-}
-
 .proposal-list-description {
     margin-top: 8px;
     font-size: 13px;
@@ -1987,11 +1859,6 @@ body.site-intro-open { overflow: hidden; }
     margin-top: 2px;
 }
 
-.proposal-card-offer {
-    font-weight: 700;
-    color: var(--cb-text);
-}
-
 .proposal-card-dot {
     color: #cbd2dc;
 }
@@ -2015,13 +1882,6 @@ body.site-intro-open { overflow: hidden; }
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.4px;
-}
-
-.proposal-list-item--compact .proposal-meta-number {
-    font-size: 11px;
-    font-weight: 600;
-    color: #8a92a3;
-    flex-shrink: 0;
 }
 
 @keyframes proposalBlinkTwice {
@@ -2928,45 +2788,7 @@ path.geom-handle-edge.is-dragging { stroke-opacity: 0.35; }
     color: var(--cb-text-muted);
 }
 
-/* Owner offers: the list badge is a cb-badge; the "Offer my land" group in the create dialog and
-   the Details bids card follow. */
-
-.proposal-owner-offer[hidden],
-.proposal-owner-offer-explain[hidden] {
-    display: none;
-}
-
-.proposal-owner-offer-row {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    gap: 8px;
-}
-
-.proposal-owner-offer-toggle {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    margin: 0;
-    font-weight: 600;
-    cursor: pointer;
-}
-
-.proposal-owner-offer-status,
-.proposal-owner-offer-explain {
-    margin: 6px 0 0;
-    font-size: 12px;
-    color: var(--cb-text-muted);
-    overflow-wrap: anywhere;
-}
-
-.proposal-owner-offer-explain {
-    padding: 8px 10px;
-    border-left: 3px solid #22c55e;
-    background: var(--cb-success-soft);
-    color: var(--cb-success-soft-ink);
-}
+/* Owner offers: the Details bids card. */
 
 .proposal-bids-explainer {
     margin: 8px 0;

@@ -8,7 +8,7 @@
 //   'noop'         parcel / ownership-transfer / to-buyer — no map payload, apply is an idempotent
 //                  success (ownership moves at execute time, not here).
 //   'unsupported'  a goal with no apply path — a hard failure.
-//   'road-track' | 'parcel-layout' | 'decide-later' | 'building' | 'structure'
+//   'road-track' | 'parcel-layout' | 'building' | 'structure'
 //                  dispatch to the matching _apply<Type>Proposal method.
 //
 // Wrapped in a UMD factory so its functions are NOT top-level globals — the app already has a global
@@ -29,7 +29,6 @@
         if (!text) return '';
         const key = text.replace(/\s+/g, '-').replace(/\//g, '-');
         if (key === 'road-track' || key === 'road' || key === 'track') return 'road-track';
-        if (key === 'decide-later' || key === 'decide') return 'decide-later';
         if (key === 'parcel-layout') return 'parcel-layout';
         if (key === 'park' || key === 'square' || key === 'lake' || key === 'station' || key === 'transit-station') {
             return key === 'transit-station' ? 'station' : key;
@@ -62,7 +61,6 @@
 
         if (goalKey === 'road-track') return { route: 'road-track', goalKey };
         if (goalKey === 'parcel-layout') return { route: 'parcel-layout', goalKey };
-        if (goalKey === 'decide-later') return { route: 'decide-later', goalKey };
         if (isBuildingGoal(goalKey)) return { route: 'building', goalKey };
         if (goalKey === 'park' || goalKey === 'square' || goalKey === 'lake' || goalKey === 'station') {
             return { route: 'structure', goalKey };

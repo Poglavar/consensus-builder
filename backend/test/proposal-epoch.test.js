@@ -298,62 +298,38 @@ describe('serializer: epoch_year → epochYear', () => {
     });
 });
 
-// Raspodjela po epohama piše u svaki prijedlog. Poslano jedan po jedan, to je stotine zahtjeva i
-// ravno u write rate limiter: raspodjela preko 300 prijedloga pala je na 429 nakon prve stotine i
-// ostavila plan napola dodijeljen — što izgleda kao dodijeljen.
-describe('epohe idu na server u JEDNOM zahtjevu', () => {
-    // Kraj: prva funkcija IZA distributeEpochs. renderList je definiran prije njega, pa kao
-    // oznaka kraja ne postoji 'iza' i rez bi bio prazan.
-    const distribute = sliceBetween(epochSrc, 'async function distributeEpochs(', 'function findProposal(');
-    const writer = sliceBetween(epochSrc, 'async function writeEpochsToServer(', 'async function distributeEpochs(');
+// Epoha je lokalna postavka (plan-design-agreement.md, M2): objavljen dizajn je nepromjenjiv, a
+// indeks ne drži promjenjive metapodatke, pa ni kartica ni raspodjela ne šalju ništa serveru.
+describe('epoha se piše samo lokalno', () => {
+    const body = sliceBetween(epochSrc, 'async function setEpoch(proposal, year, options = {}) {', '/* ------------------------- raspodjela po epohama');
+    function setEpochWith({ storage }) {
+        const fetchSpy = vi.fn();
+        const renderList = vi.fn();
+        const remembered = [];
+        const setEpoch = new Function('parseEpochYear', 'proposalStorage', 'rememberEpoch', 'renderList', 'fetch',
+            `${body.replace(/^async function setEpoch\(proposal, year, options = \{\}\) \{/, 'return async function setEpoch(proposal, year, options = {}) {')}`
+        )(epoch.parseEpochYear, storage, year => remembered.push(year), renderList, fetchSpy);
+        return { setEpoch, fetchSpy, renderList, remembered };
+    }
 
-    it('šalje skupni PATCH umjesto jednog po prijedlogu', () => {
-        expect(writer).toContain("/proposals/epochs`");
-        expect(writer).toContain("method: 'PATCH'");
-        expect(writer).toContain('JSON.stringify({ epochs })');
+    it('sprema godinu na prijedlog i u lokalnu pohranu, bez ijednog zahtjeva', async () => {
+        const storage = { setProposalEpochYear: vi.fn() };
+        const { setEpoch, fetchSpy, renderList, remembered } = setEpochWith({ storage });
+        const proposal = { proposalId: 'local-1', id: 41, serverProposalId: '41' };
+        await expect(setEpoch(proposal, '2045')).resolves.toBe(2045);
+        expect(proposal.epochYear).toBe(2045);
+        expect(storage.setProposalEpochYear).toHaveBeenCalledWith('local-1', 2045);
+        expect(remembered).toEqual([2045]);
+        expect(renderList).toHaveBeenCalledOnce();
+        await setEpoch(proposal, null, { render: false });
+        expect(proposal.epochYear).toBeNull();
+        expect(renderList).toHaveBeenCalledOnce();
+        expect(fetchSpy).not.toHaveBeenCalled();
     });
 
-    it('lokalni upis preskače server, inače se svaka epoha piše dvaput', () => {
-        expect(distribute).toContain('skipServer: true');
-        expect(epochSrc).toContain('!options.skipServer');
-    });
-
-    it('imenuje prijedloge koje server nije našao umjesto da ih prešuti', () => {
-        expect(writer).toContain("reason: 'no such proposal on the server'");
-    });
-
-    it('lokalni zapisi se pišu i kad server odbije — karta i lista slijede ono što je traženo', () => {
-        expect(distribute).toContain('const serverFailure = await writeEpochsToServer(plan, failed);');
-        expect(distribute).toContain("console.warn('[epoch] server side did not take the plan:'");
-    });
-});
-
-// Ista provjera na serveru: jedan statement, pa cijeli plan sjedne ili ne sjedne nijedan.
-describe('PATCH /proposals/epochs', () => {
-    const routes = read('../routes/proposals.js');
-    const handler = sliceBetween(routes, "app.patch('/proposals/epochs'", "app.patch('/proposals/:id/epoch'");
-
-    it('je registriran prije rute s :id, pa ga ništa ne zasjenjuje', () => {
-        expect(routes.indexOf("app.patch('/proposals/epochs'"))
-            .toBeLessThan(routes.indexOf("app.patch('/proposals/:id/epoch'"));
-    });
-
-    it('piše sve odjednom, jednim UPDATE-om preko unnest', () => {
-        expect(handler).toContain('unnest($1::int[])');
-        expect(handler).toContain('unnest($2::int[])');
-        // Po primarnom ključu i provjerenom hashu tokena — ponašanje je u proposal-edit-auth.test.js.
-        expect(handler).toContain('WHERE p.id = v.id AND p.edit_token_hash = v.token_hash');
-    });
-
-    it('provjerava SVAKI unos, da jedan loš ne uđe s 299 dobrih', () => {
-        expect(handler).toContain('Number.isInteger(year)');
-        expect(handler).toContain('year < 2026 || year > 2966');
-        expect(handler).toContain('Every entry needs an id.');
-    });
-
-    it('ograničava veličinu zahtjeva i vraća što nije našao', () => {
-        expect(handler).toContain('entries.length > 2000');
-        expect(handler).toContain('missing.push(request.id)');
-        expect(handler).toContain('requested: requests.length, updated: updated.length, missing, forbidden');
+    it('nema više serverskog puta: ni PATCH, ni edit tokena, ni skupnog zapisa', () => {
+        for (const gone of ['fetch(', 'PATCH', '/epoch`', '/proposals/epochs', 'X-Proposal-Edit-Token', 'getProposalEditToken', 'writeEpochsToServer', 'skipServer']) {
+            expect(epochSrc, gone).not.toContain(gone);
+        }
     });
 });

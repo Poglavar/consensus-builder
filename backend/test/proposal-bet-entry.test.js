@@ -1,4 +1,5 @@
-// Exercise the panel's betting entry, prerequisite dialog and fresh proposal pool lookup.
+// Exercise the betting entry's prerequisite dialog and the fresh proposal pool lookup. (Design details
+// lost their Bet on outcome button in M2, plan-design-agreement.md: markets attach to agreements.)
 import { describe, expect, it, vi } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
@@ -6,7 +7,6 @@ import vm from 'node:vm';
 
 const require = createRequire(import.meta.url);
 const entrySource = readFileSync(new URL('../../frontend/js/proposals/bet-entry.js', import.meta.url), 'utf8');
-const detailsSource = readFileSync(new URL('../../frontend/js/proposals/details-panel.js', import.meta.url), 'utf8');
 const dialogSource = readFileSync(new URL('../../frontend/js/bets/bets-dialog.js', import.meta.url), 'utf8');
 const model = require('../../frontend/js/bets/bets-model.js');
 
@@ -53,24 +53,6 @@ describe('proposal panel betting entry', () => {
         expect(help.body.children[0].textContent).toContain(text);
         expect(help.actions.map(action => action.id)).toEqual(['close']);
         expect(root.BetsDialog.open).not.toHaveBeenCalled();
-    });
-
-    it('resolves the clicked proposal and hands its minting action to the existing share dialog', () => {
-        const proposal = { proposalId: 'p-1' };
-        const open = vi.fn();
-        const share = vi.fn();
-        const start = detailsSource.indexOf('function openProposalOutcomeBet(');
-        const end = detailsSource.indexOf('\nlet proposalSupportWalletRefreshBound', start);
-        const handler = vm.runInNewContext(`${detailsSource.slice(start, end)}; openProposalOutcomeBet`, {
-            window: { ProposalBetEntry: { open }, ProposalApprovalRuntime: { uses: () => false } },
-            getProposalByIdOrHash: id => id === 'p-1' ? proposal : null,
-            getProposalNftInfo: () => null, showUploadProposalModal: share
-        });
-        handler('p-1');
-        expect(open).toHaveBeenCalledWith(expect.objectContaining({ proposal, nftInfo: null, approvalSetup: false }));
-        open.mock.calls[0][0].onMint();
-        expect(share).toHaveBeenCalledWith(proposal);
-        expect(() => handler('missing')).toThrow('Proposal is unavailable');
     });
 });
 

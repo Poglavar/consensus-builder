@@ -16,7 +16,7 @@ async function parcelBox(page: import('@playwright/test').Page, id: string) {
 
 test.describe('Shift+drag box selection @core', () => {
   test('selects the parcels in the box without zooming, then a click deselects one', async ({ mockApi: page }) => {
-    await publishOn(page, PARCEL_ID);
+    const publishedCid = await publishOn(page, PARCEL_ID);
     await openCity(page);
     const box = await parcelBox(page, PARCEL_ID);
     const zoom = await page.evaluate(() => (window as any).map.getZoom());
@@ -36,7 +36,7 @@ test.describe('Shift+drag box selection @core', () => {
     await page.locator('#selection-tray [data-command="selection.propose"]').click();
     await expect(page.locator('#propose-tab')).toBeVisible();
     await page.locator('#parcel-info-panel [data-parcel-tab-id="proposals-tab"]').click();
-    await expect(page.locator('#proposals-content [data-server-id="41"]')).toContainText('Published park');
+    await expect(page.locator(`#proposals-content [data-server-id="${publishedCid}"]`)).toContainText('Published park');
 
     const center = await page.evaluate(id => (window as any).ParcelPresenter.getLayer(id).getBounds().getCenter(), PARCEL_ID);
     await clickMapPoint(page, center.lng, center.lat);

@@ -1,12 +1,10 @@
-// The rooster's score and share URL are pure rules. Keep them executable outside the map so the
-// 10 × 10 m threshold, rotated parcels and plan-route contract cannot drift with the animation.
+// The rooster's score is a pure rule. Keep it executable outside the map so the 10 × 10 m
+// threshold and rotated parcels cannot drift with the animation.
 import { describe, it, expect } from 'vitest';
 import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
 const {
-    parsePlanScorePath,
-    buildPlanScorePath,
     parcelDimensionsMeters,
     isFineGrainParcel,
     startingParcelIds,
@@ -37,21 +35,6 @@ function rotatedRectangle(widthM, depthM, angleDegrees, center = [15.98, 45.81])
         [-widthM / 2, depthM / 2]
     ], angleDegrees, center);
 }
-
-describe('the public score route', () => {
-    it('parses and builds a named-plan score URL', () => {
-        expect(parsePlanScorePath('/plans/badel-block/score')).toEqual({ slug: 'badel-block' });
-        expect(parsePlanScorePath('/plans/Badel-Block/score/')).toEqual({ slug: 'badel-block' });
-        expect(buildPlanScorePath('Badel-Block')).toBe('/plans/badel-block/score');
-    });
-
-    it('does not confuse the API plan path, numeric proposal ids or extra segments with a score', () => {
-        expect(parsePlanScorePath('/plans/badel-block')).toBeNull();
-        expect(parsePlanScorePath('/plans/419/score')).toBeNull();
-        expect(parsePlanScorePath('/proposals/badel-block')).toBeNull();
-        expect(parsePlanScorePath('/plans/badel-block/score/more')).toBeNull();
-    });
-});
 
 describe('parcel measurement', () => {
     it('is independent of map orientation', () => {

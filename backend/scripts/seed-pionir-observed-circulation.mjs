@@ -1,9 +1,8 @@
 // Adds defensible surface circulation to the completed Pionir/Paron reconstructions.
 //
 // Buildings remain their own canonical proposals. Every contiguous surface-road component is a
-// companion road proposal, and an ens_plan row groups those roads with the building proposal so a
-// single /proposals/<slug> link reconstructs the project. Planned/location-permit schemes are
-// deliberately ignored: today's OSM roads are not evidence of their accepted design state.
+// companion road proposal. Planned/location-permit schemes are deliberately ignored: today's OSM
+// roads are not evidence of their accepted design state.
 //
 // Geometry gates are intentionally conservative:
 //   * only OSM service roads, plus unnamed residential roads predominantly inside the site;
@@ -18,7 +17,6 @@
 //   node backend/scripts/seed-pionir-observed-circulation.mjs --apply --export
 
 import { createRequire } from 'node:module';
-import crypto from 'node:crypto';
 import dotenv from 'dotenv';
 import * as turf from '@turf/turf';
 import { mkdir, readdir, readFile, unlink, writeFile } from 'node:fs/promises';
@@ -53,7 +51,7 @@ function usage() {
     console.log(`Usage: node backend/scripts/seed-pionir-observed-circulation.mjs --dry-run|--apply [--export] [--only key,key]
 
   --dry-run  Analyse and validate without writing database rows.
-  --apply    Upsert companion road proposals and named project plans locally.
+  --apply    Upsert companion road proposals locally.
   --export   Write canonical corridor GeoJSON, plan manifests and the audit report.
   --only     Limit the run to comma-separated reconstruction directory names.`);
 }
@@ -753,42 +751,6 @@ async function upsertRoadProposal(pool, authored) {
     return rows[0];
 }
 
-async function buildingRow(pool, proposalId) {
-    const { rows } = await pool.query(
-        'SELECT id, proposal_id FROM public.proposal WHERE proposal_id = $1 LIMIT 1',
-        [proposalId]
-    );
-    return rows[0] || null;
-}
-
-async function upsertNamedPlan(pool, slug, title, proposalIds) {
-    const tokenHash = crypto.createHash('sha256').update(`local-reconstruction:${slug}`).digest('hex');
-    const { rows } = await pool.query(`
-        INSERT INTO public.ens_plan (slug, proposal_ids, title, city, edit_token_hash)
-        VALUES ($1, $2::jsonb, $3, 'zagreb', $4)
-        ON CONFLICT (slug) DO UPDATE SET
-            proposal_ids = EXCLUDED.proposal_ids,
-            title = EXCLUDED.title,
-            city = EXCLUDED.city,
-            updated_at = NOW()
-        RETURNING slug, proposal_ids
-    `, [slug, JSON.stringify(proposalIds.map(String)), title, tokenHash]);
-    return rows[0];
-}
-
-function planTitle(analysis) {
-    const hasRoads = analysis.proposals.some(item => item.kind === 'access-road');
-    const hasParking = analysis.proposals.some(item => item.kind === 'parking');
-    const contents = hasRoads && hasParking
-        ? 'zgrade, prometnice i parkirališta'
-        : (hasRoads ? 'zgrade i prometnice' : (hasParking ? 'zgrade i parkirališta' : 'zgrade'));
-    return `${analysis.project.proposal.title} – ${contents}`;
-}
-
-function planSlug(projectKey) {
-    return `pionir-${projectKey}`;
-}
-
 async function exportAnalysis(analysis) {
     const directory = `${ARCHIVE_ROOT}${analysis.project.key}`;
     await mkdir(directory, { recursive: true });
@@ -828,9 +790,6 @@ async function exportAnalysis(analysis) {
         status: analysis.status,
         reason: analysis.reason,
         generatedAt: RECONSTRUCTION_DATE,
-        planSlug: planSlug(analysis.project.key),
-        planTitle: planTitle(analysis),
-        localPath: `/proposals/${planSlug(analysis.project.key)}?city=zagreb`,
         building: {
             proposalId: analysis.project.proposal.proposalId,
             file: 'proposal.geojson'
@@ -903,26 +862,10 @@ async function main() {
     try {
         for (const archivedProject of selected) {
             const analysis = await analyseProject(pool, archivedProject);
-            const stored = { buildingId: null, roadIds: new Map() };
             if (args.apply) {
-                const building = await buildingRow(pool, analysis.project.proposal.proposalId);
-                if (!building) {
-                    throw new Error(`${analysis.project.key}: building proposal ${analysis.project.proposal.proposalId} is not stored locally.`);
-                }
-                stored.buildingId = Number(building.id);
-                const orderedIds = [];
                 for (const item of analysis.proposals) {
-                    const row = await upsertRoadProposal(pool, item.proposal);
-                    stored.roadIds.set(item.proposal.proposalId, Number(row.id));
-                    orderedIds.push(Number(row.id));
+                    await upsertRoadProposal(pool, item.proposal);
                 }
-                orderedIds.push(stored.buildingId);
-                await upsertNamedPlan(
-                    pool,
-                    planSlug(analysis.project.key),
-                    planTitle(analysis),
-                    orderedIds
-                );
             }
             const manifest = args.export ? await exportAnalysis(analysis) : null;
             const summary = {
@@ -930,8 +873,7 @@ async function main() {
                 status: analysis.status,
                 roadProposals: analysis.proposals.filter(item => item.kind === 'access-road').length,
                 parkingProposals: analysis.proposals.filter(item => item.kind === 'parking').length,
-                includedRoadLengthM: analysis.proposals.reduce((sum, item) => sum + (item.lengthM || 0), 0),
-                planSlug: planSlug(analysis.project.key)
+                includedRoadLengthM: analysis.proposals.reduce((sum, item) => sum + (item.lengthM || 0), 0)
             };
             console.log(JSON.stringify(summary));
             audit.projects.push({

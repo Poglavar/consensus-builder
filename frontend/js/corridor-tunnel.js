@@ -580,7 +580,7 @@
         } catch (_) { }
         try {
             return (global.proposalStorage?.getAllProposals?.() || []).find(proposal => {
-                const candidates = [proposal?.proposalId, proposal?.id, proposal?.serverProposalId];
+                const candidates = [proposal?.proposalId, proposal?.id];
                 if (typeof global.getProposalKey === 'function') candidates.push(global.getProposalKey(proposal));
                 return candidates.some(candidate => candidate !== undefined
                     && candidate !== null

@@ -5,7 +5,6 @@ import { createRequire } from 'node:module';
 const requireCjs = createRequire(import.meta.url);
 const proposalOrigin = requireCjs('../../frontend/js/proposals/origin.js');
 const authoredRecord = requireCjs('../../frontend/js/proposals/authored-record.js');
-const siteBinding = requireCjs('../../frontend/js/proposals/site-binding.js');
 const chainRecord = requireCjs('../../frontend/js/proposals/chain-record.js');
 const lifecycleEvidence = requireCjs('../../frontend/js/proposals/lifecycle-evidence.js');
 const sourceProposal = requireCjs('../../frontend/js/planning/source-proposal.js');
@@ -17,8 +16,7 @@ const LOCAL_STATE_SUB_KEYS = Object.freeze([
     'roadProposal',
     'buildingProposal',
     'structureProposal',
-    'reparcellization',
-    'decideLaterProposal'
+    'reparcellization'
 ]);
 
 const present = value => value !== undefined && value !== null;
@@ -86,7 +84,7 @@ export function assertCanonicalProposalRow(row) {
         // An empty declaration is valid only for a material proposal that carries its site (the
         // column, when the query selected it, or the record's own copy) — PARCEL-OPTIONAL.md.
         const hasSite = present(row.site) || isPolygonGeometry(raw.site);
-        if (!hasSite || siteBinding.isParcelAct(raw)) {
+        if (!hasSite) {
             throw invalidRecord('Invalid proposal record: cadastre_parcel_ids is required.');
         }
     }
@@ -152,12 +150,17 @@ export function stripLocalProposalState(proposal) {
         // decisions and authority workflow state are runtime claims from one client and never do.
         'ownerApprovals', 'ownerApprovalHistory', 'approvalState', 'approvalRuntimeState',
         'authorityApprovals', 'authorityApprovalHistory', 'authorityState', 'authorityRuntimeState',
-        'acceptedParcelIds', 'ownerAcceptances',
-        // the prepared artifact travels with a record to its publication, which stores it in
-        // consensus.proposal_prepared; it is never part of the record itself
-        'preparedArtifact'
+        'acceptedParcelIds', 'ownerAcceptances'
     ].forEach(key => delete sanitized[key]);
-    if (sanitized.proposalOrigin) sanitized.proposalOrigin = proposalOrigin.portable(sanitized.proposalOrigin);
+    // An origin names a local key or a design CID (proposals/origin.js); one naming a server row of
+    // this table predates M2, so the record refuses by name like any other older-version record.
+    if (sanitized.proposalOrigin) {
+        try {
+            sanitized.proposalOrigin = proposalOrigin.portable(sanitized.proposalOrigin);
+        } catch (error) {
+            throw invalidRecord(`Invalid proposal record: proposalOrigin: ${error.message}`);
+        }
+    }
     delete sanitized.childFeatures;
 
     if (sanitized.geometry && typeof sanitized.geometry === 'object') {

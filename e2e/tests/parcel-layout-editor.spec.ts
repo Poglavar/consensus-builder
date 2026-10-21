@@ -418,7 +418,7 @@ test('a plot laid across two owners\' parcels is held jointly by both, pro rata 
   }
 });
 
-test('a parcel layout\'s details offer no sharing, fork or bet: it is shared together with its agreement', async ({ mockApi: page }) => {
+test('a parcel layout\'s details offer no sharing or fork: it is published with its agreement', async ({ mockApi: page }) => {
   const editor = await openLayoutEditor(page);
   await editor.locator('[data-reparcel-commit]').click();
   await expect(editor).toHaveCount(0);
@@ -429,8 +429,8 @@ test('a parcel layout\'s details offer no sharing, fork or bet: it is shared tog
   await expect(share).toHaveCount(1);
   await expect(share).toBeDisabled();
   await expect(share).toHaveAttribute('aria-describedby', 'proposal-publish-later-note');
-  await expect(panel.locator('#proposal-publish-later-note')).toHaveText('Parcel layouts are shared together with their agreement. Coming soon.');
+  await expect(panel.locator('#proposal-publish-later-note')).toHaveText('A parcel layout is published with its agreement. Propose an agreement that includes it.');
   await expect(panel.locator('.btn-counterpropose-proposal')).toHaveCount(0);
-  await expect(panel.locator('.btn-bet-proposal')).toHaveCount(0);
-  await expect(panel.locator('.btn-edit-approval')).toHaveCount(0);
+  // What it offers instead: an agreement over it, the layout's main action.
+  await expect(panel.locator('.btn-create-agreement')).toHaveClass(/\bbtn-primary\b/);
 });

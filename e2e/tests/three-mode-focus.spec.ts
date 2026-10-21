@@ -30,7 +30,7 @@ function distanceM(a: { lat: number; lng: number }, b: { lat: number; lng: numbe
 const addProposal = (page: Page, title: string, id: string, geometry: any) => page.evaluate(({ title, id, geometry }) => {
   const w = window as any;
   const before = new Set(w.proposalStorage.getAllProposals().map((p: any) => p.proposalId));
-  w.proposalStorage.addProposal({ title, goal: 'decide-later', cadastreParcelIds: [id], geometry, applied: false });
+  w.proposalStorage.addProposal({ title, goal: 'park', cadastreParcelIds: [id], geometry, structureProposal: { kind: 'park', geometry }, applied: false });
   return w.proposalStorage.getAllProposals().map((p: any) => p.proposalId).find((k: string) => !before.has(k));
 }, { title, id, geometry });
 

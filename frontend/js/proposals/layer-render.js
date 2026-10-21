@@ -1182,59 +1182,6 @@ function findParcelLayerById(parcelId) {
     return window.ParcelPresenter?.getLayer?.(normalized) || null;
 }
 
-async function focusMapThenMaybeEnter3D(focusFn) {
-    const params = (() => {
-        try { return new URLSearchParams(window.location.search || ''); } catch (_) { return null; }
-    })();
-
-    // Always perform the focus action (unless caller passes a non-function).
-    const doFocus = () => {
-        try { typeof focusFn === 'function' && focusFn(); } catch (_) { }
-    };
-
-    const wants3D = is3DModeRequestedFromUrl(params);
-    if (!wants3D || url3DModeHandled) {
-        doFocus();
-        return false;
-    }
-
-    // A proposal-link load owns its own 3D entry (passing the link's proposalIds as camera
-    // focus). Entering here — mid-apply, with no focus ids — won the race, marked the URL as
-    // handled, and the route's focused entry was skipped: the camera framed EVERY applied
-    // proposal instead of the link's. Same rule handleStandalone3DModeFromUrl already applies.
-    const hasProposalParams = params && (params.has('proposalShare') || params.has('shared')
-        || window.location.pathname.startsWith('/proposals/')
-        || window.location.pathname.startsWith('/plans/'));
-    if (hasProposalParams) {
-        doFocus();
-        return false;
-    }
-
-    let beforeCenter = null;
-    let beforeZoom = null;
-    try {
-        if (typeof map !== 'undefined' && map && typeof map.getCenter === 'function') {
-            beforeCenter = map.getCenter();
-        }
-        if (typeof map !== 'undefined' && map && typeof map.getZoom === 'function') {
-            beforeZoom = map.getZoom();
-        }
-    } catch (_) { }
-
-    const settlePromise = (beforeCenter && Number.isFinite(beforeZoom))
-        ? createLeafletViewSettlePromise(beforeCenter, beforeZoom)
-        : Promise.resolve();
-
-    doFocus();
-    await settlePromise;
-
-    const entered = tryEnterThreeMode({ fromUrl: true });
-    if (entered) {
-        url3DModeHandled = true;
-    }
-    return entered;
-}
-
 async function waitForParcelLayersReady(parcelIds, options = {}) {
     const ids = ensureArrayOfStrings(parcelIds);
     if (!ids.length) return;

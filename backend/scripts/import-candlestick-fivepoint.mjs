@@ -1,9 +1,9 @@
 #!/usr/bin/env node
-// Recreates the approved FivePoint plan for Candlestick Point (2024 Modified Project Variant) as a
-// named plan of Freeform buildings: massing read off the plan's own height map and block plan — connected pieces per
+// Recreates the approved FivePoint plan for Candlestick Point (2024 Modified Project Variant) as
+// Freeform buildings: massing read off the plan's own height map and block plan — connected pieces per
 // height zone of each development block (40–180 ft), eleven tower boxes A–K at their encouraged
-// locations (220–420 ft), mid-block breaks kept open. Each footprint is its own Freeform proposal;
-// the proposals are grouped in one named plan. Published through the normal API.
+// locations (220–420 ft), mid-block breaks kept open. Each footprint is its own Freeform proposal,
+// published through the normal API.
 // Without --apply nothing is posted: the conversion is validated, summarized and written to --out.
 //
 //   node scripts/import-candlestick-fivepoint.mjs [--apply]
@@ -18,14 +18,13 @@ import { parseArgs } from 'node:util';
 import * as turf from '@turf/turf';
 import { canonicalSeedRecord } from './lib/canonical-seed-record.mjs';
 import { partitionBuildingFootprints, polygonBuildingParts } from './lib/building-import-geometry.mjs';
-import { DEFAULTS as COMMON, bboxOf, publish, publishNamedPlan } from './lib/candlestick-common.mjs';
+import { DEFAULTS as COMMON, bboxOf, publish } from './lib/candlestick-common.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const DEFAULTS = Object.freeze({
     ...COMMON,
     layers: path.join(HERE, 'data/candlestick/fivepoint'),
     proposalId: 'sf-candlestick-fivepoint-2024',
-    planSlug: 'candlestick-fivepoint-2024',
     out: path.join(HERE, '../../output/candlestick-fivepoint-proposal.json')
 });
 const FT = 0.3048;
@@ -50,10 +49,9 @@ function usage(code = 0) {
         `  --city <id>               City id (default ${DEFAULTS.city}).`,
         `  --proposal-id <id>        Stable proposal id (default ${DEFAULTS.proposalId}); an existing one is left alone.`,
         '  --source-proposal-id <id> Link replacement buildings to their published source proposal.',
-        `  --plan-slug <slug>        Immutable named plan (default ${DEFAULTS.planSlug}).`,
         `  --expires-in-days <n>     Expiry from now so a pool on it can auto-settle (default ${DEFAULTS.expiresInDays}; 0 = never).`,
         `  --out <path>              Where the converted record is written (default ${path.relative(process.cwd(), DEFAULTS.out)}).`,
-        '  --apply                   Bind and POST each building, then name their collection as a plan. Without it: convert, validate, summarize, write --out.',
+        '  --apply                   Bind and POST each building. Without it: convert, validate, summarize, write --out.',
         '  --help                    This text.'
     ].join('\n'));
     process.exit(code);
@@ -63,7 +61,7 @@ function parseCli() {
     const { values } = parseArgs({
         options: {
             layers: { type: 'string' }, backend: { type: 'string' }, origin: { type: 'string' },
-            city: { type: 'string' }, 'source-proposal-id': { type: 'string' }, 'proposal-id': { type: 'string' }, 'plan-slug': { type: 'string' }, 'expires-in-days': { type: 'string' }, out: { type: 'string' },
+            city: { type: 'string' }, 'source-proposal-id': { type: 'string' }, 'proposal-id': { type: 'string' }, 'expires-in-days': { type: 'string' }, out: { type: 'string' },
             apply: { type: 'boolean', default: false }, help: { type: 'boolean', default: false }
         },
         strict: true
@@ -78,7 +76,6 @@ function parseCli() {
         city: values.city || DEFAULTS.city,
         proposalId: values['proposal-id'] || DEFAULTS.proposalId,
         sourceProposalId: values['source-proposal-id'] || null,
-        planSlug: values['plan-slug'] || DEFAULTS.planSlug,
         expiresInDays,
         out: path.resolve(values.out || DEFAULTS.out),
         apply: values.apply
@@ -313,37 +310,20 @@ async function main() {
     const stats = convertPlan(layers);
     const records = buildRecords({ program, stats, city: cli.city, proposalId: cli.proposalId, expiresInDays: cli.expiresInDays, sourceProposalId: cli.sourceProposalId });
     records.forEach(canonicalSeedRecord);
-    const planDefinition = {
-        slug: cli.planSlug,
-        title: 'Candlestick Point as approved (FivePoint, 2024 plan)',
-        description: `The FivePoint approved-plan building collection: ${records.length} individual Freeform building proposals.`,
-        author: 'FivePoint (approved plan)',
-        place: 'Candlestick Point, San Francisco',
-        city: cli.city,
-        authoredProposalIds: records.map(record => record.proposalId)
-    };
     const heights = stats.features.map(feature => feature.properties.height);
     log(`converted ${stats.features.length} volumes from ${stats.blockCount} blocks (${stats.features.filter(f => f.properties.source === 'height zone').length} height zones + ${stats.features.filter(f => f.properties.source !== 'height zone').length} towers); skipped ${stats.skippedBlocks.length}${stats.skippedBlocks.length ? `: ${stats.skippedBlocks.join(', ')}` : ''}`);
     log(`heights (ft → count) ${JSON.stringify(stats.heightsFt)} · ${Math.min(...heights)}–${Math.max(...heights)} m · footprints ${stats.footprintM2} m²`);
     log(`bbox ${bboxOf(stats.features).join(', ')} · ${records.length} Freeform proposals · records ${(JSON.stringify(records).length / 1024).toFixed(0)} KB${records[0]?.expiresAt ? ` · expires ${records[0].expiresAt}` : ''}`);
     fs.mkdirSync(path.dirname(cli.out), { recursive: true });
-    fs.writeFileSync(cli.out, JSON.stringify({ plan: planDefinition, proposals: records }));
+    fs.writeFileSync(cli.out, JSON.stringify({ proposals: records }));
     log(`record written to ${cli.out}`);
     if (!cli.apply) { log('dry run: nothing posted (add --apply to publish)'); return; }
     let created = 0; let skipped = 0;
-    const proposalRowIds = [];
     for (const record of records) {
         const result = await publish(record, { backend: cli.backend, origin: cli.origin, city: cli.city });
         if (result.skipped) skipped++; else created++;
-        if (result.id === undefined || result.id === null) throw new Error(`Proposal ${record.proposalId} has no database row id; cannot name the plan.`);
-        proposalRowIds.push(String(result.id));
     }
     log(`done: ${created} created, ${skipped} existing`);
-    const plan = await publishNamedPlan({
-        ...planDefinition,
-        proposalRowIds
-    }, { backend: cli.backend, origin: cli.origin });
-    log(plan.skipped ? `named plan ${cli.planSlug} already matches this collection` : `named plan created: ${cli.planSlug}`);
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {

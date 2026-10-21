@@ -26,7 +26,7 @@ const baseFacts = (overrides = {}) => ({
 describe('parcel menu actions', () => {
     it('offers every action, in menu order, for an ordinary parcel', () => {
         expect(Model.availableActions(baseFacts()))
-            .toEqual(['propose', 'selectMore', 'details', 'proposals', 'history', 'tools', 'offer', 'detectBlock']);
+            .toEqual(['propose', 'selectMore', 'details', 'proposals', 'history', 'tools', 'detectBlock']);
     });
 
     it('offers nothing without a parcel', () => {
@@ -50,7 +50,7 @@ describe('parcel menu actions', () => {
 
     it('offers Compare proposals here only with two or more proposals on the parcel', () => {
         expect(Model.availableActions(baseFacts({ compareCount: 2 })))
-            .toEqual(['propose', 'selectMore', 'details', 'proposals', 'history', 'compare', 'tools', 'offer', 'detectBlock']);
+            .toEqual(['propose', 'selectMore', 'details', 'proposals', 'history', 'compare', 'tools', 'detectBlock']);
         expect(Model.availableActions(baseFacts({ compareCount: 1 }))).not.toContain('compare');
         expect(Model.availableActions(baseFacts({ compareCount: null }))).not.toContain('compare');
         // Open ground is no cadastral parcel: nothing to compare "on my parcel".
@@ -61,19 +61,19 @@ describe('parcel menu actions', () => {
         expect(Model.availableActions(baseFacts({ multiSelectActive: true, selectionCount: 3 }))).not.toContain('selectMore');
     });
 
-    it('offers the land exactly when the build palette (and its Offer tool) renders', () => {
+    it('has a build palette exactly when there is a parcel context, and no Offer action (M2: owner offers are gone)', () => {
         expect(Model.buildPaletteAvailable({ parcelContextId: 'HR-1' })).toBe(true);
         expect(Model.buildPaletteAvailable({ multiSelectActive: true, selectionCount: 2 })).toBe(true);
         expect(Model.buildPaletteAvailable({ multiSelectActive: true, selectionCount: 0 })).toBe(false);
         expect(Model.buildPaletteAvailable({ multiSelectActive: false, selectionCount: 4 })).toBe(false);
         expect(Model.buildPaletteAvailable({ parcelContextId: null })).toBe(false);
         expect(Model.buildPaletteAvailable(undefined)).toBe(false);
-        expect(Model.isActionAvailable('offer', baseFacts())).toBe(true);
-        expect(Model.isActionAvailable('offer', baseFacts({ parcelId: undefined }))).toBe(false);
+        expect(Model.ACTIONS).not.toContain('offer');
+        expect(Model.isActionAvailable('offer', baseFacts())).toBe(false);
         expect(Model.isActionAvailable('no-such-action', baseFacts())).toBe(false);
     });
 
-    it('renders the palette from the same predicate (no palette, no Offer)', () => {
+    it('renders the palette from the same predicate, with no Offer tile', () => {
         const source = readFileSync(new URL('../../frontend/js/parcels/ui/proposal-actions.js', import.meta.url), 'utf8');
         const render = (state) => {
             const container = { innerHTML: '' };
@@ -88,10 +88,15 @@ describe('parcel menu actions', () => {
             window.renderParcelProposalActions();
             return container.innerHTML;
         };
-        expect(render({ currentParcel: { id: 'HR-1' } })).toContain('parcel-build-btn--offer');
+        const single = render({ currentParcel: { id: 'HR-1' } });
+        expect(single).toContain('parcel-build-btn--park');
+        expect(single).toContain('parcel-build-btn--parcel-layout');
+        expect(single).not.toContain('parcel-build-btn--offer');
         expect(render({ currentParcel: null })).toBe('');
         expect(render({ multiParcelSelection: { isActive: true, selectedParcels: new Set() } })).toBe('');
-        expect(render({ multiParcelSelection: { isActive: true, selectedParcels: new Set(['a', 'b']) } })).toContain('parcel-build-btn--offer');
+        const multi = render({ multiParcelSelection: { isActive: true, selectedParcels: new Set(['a', 'b']) } });
+        expect(multi).toContain('parcel-build-btn--park');
+        expect(multi).not.toContain('parcel-build-btn--offer');
     });
 });
 
@@ -228,7 +233,7 @@ describe('parcel menu and selection tray commands', () => {
 
     it('lists the parcel menu in menu order, following the model', () => {
         expect(UiCommands.commandsFor('parcel-menu', ctx({ parcel: baseFacts({ isRoad: true, can3d: false }) })).map(c => c.id))
-            .toEqual(['parcel.propose', 'parcel.selectMore', 'parcel.details', 'parcel.proposals', 'parcel.history', 'parcel.tools', 'parcel.offer']);
+            .toEqual(['parcel.propose', 'parcel.selectMore', 'parcel.details', 'parcel.proposals', 'parcel.history', 'parcel.tools']);
         // The same commands appear in the palette once a parcel is in hand.
         expect(UiCommands.commandsFor('palette', ctx({ parcel: baseFacts() })).map(c => c.id)).not.toContain('parcel.view3d');
     });

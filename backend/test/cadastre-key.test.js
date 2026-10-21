@@ -87,7 +87,11 @@ describe('the search box moves in place only onto the same parcel data', () => {
 
 describe('city identity in links and storage', () => {
     it('a share link names every configured city so that the boot opens it', () => {
-        const { buildCityQueryParam } = require('../../frontend/js/proposals/server-sync.js');
+        // The link builder is a browser global of proposals/design-sync.js, installed on the window
+        // its browser part is given.
+        const win = { CityConfigManager: manager };
+        require('../../frontend/js/proposals/design-sync.js').browser(win);
+        const { buildCityQueryParam } = win;
         const wrong = cities.filter(city => {
             const value = new URLSearchParams(buildCityQueryParam(city.id)).get('city');
             return manager.resolveCityId(value) !== city.id;

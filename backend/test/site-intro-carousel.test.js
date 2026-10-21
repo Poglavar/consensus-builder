@@ -109,8 +109,6 @@ describe('site intro carousel', () => {
         { pathname: '/parcel/HR-335240-1323/2', search: '' },
         { pathname: '/bets/market-account', search: '' },
         { pathname: '/monitors/4', search: '' },
-        { pathname: '/', search: '?proposalShare=encoded' },
-        { pathname: '/', search: '?shared=encoded' },
         { pathname: '/', search: '?parcel=HR-1' },
         { pathname: '/', search: '?focusProposal=851&photo=1' },
         { pathname: '/', search: '?activity=proposal%3A851' },

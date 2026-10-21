@@ -1,6 +1,7 @@
 // The agreement as a browser record (plan-design-agreement.md, M1 (b)): its canonical form, the
 // content hash of an output piece, validation by dialog section, the per-party ledger, and the
-// subject and default rights snapshot the approval engine counts.
+// subject and default rights snapshot the approval engine counts; and its published agreement/v1
+// object with that object's CID (M2).
 (function (root, factory) {
     const api = factory(root);
     if (typeof module === 'object' && module.exports) module.exports = api;
@@ -8,6 +9,8 @@
 })(typeof window !== 'undefined' ? window : globalThis, function (root) {
     'use strict';
     const SCHEMA = 'agreement/v1';
+    // The published object (M2) names the same schema; it is what the local record publishes as.
+    const PUBLISHED_SCHEMA = 'agreement/v1';
     const OUTPUT_HASH_PREFIX = 'piece1-sha256:';
     const ROLES = ['plot', 'remainder', 'corridor', 'part', 'parcel'];
     const ELECTORATES = ['owners', 'community'];
@@ -21,6 +24,11 @@
         || (typeof require === 'function' ? require('./reparcellization-deal.js') : null);
     const allocation = () => root.ReparcellizationAllocation
         || (typeof require === 'function' ? require('./reparcellization-allocation.js') : null);
+    const cid = () => {
+        const api = root.Cid || (typeof require === 'function' ? require('./cid.js') : null);
+        if (!api) throw new Error('Cid (js/cid.js) is not loaded.');
+        return api;
+    };
 
     const compare = (a, b) => a < b ? -1 : a > b ? 1 : 0;
     const isObject = value => !!value && typeof value === 'object' && !Array.isArray(value);
@@ -83,6 +91,8 @@
     }
 
     // The content hash an allocation names an output piece by.
+    const isOutputHash = value => typeof value === 'string' && new RegExp(`^${OUTPUT_HASH_PREFIX}[0-9a-f]{64}$`).test(value);
+
     function outputHash(geometry) {
         return OUTPUT_HASH_PREFIX + sha256().sha256Hex(stableStringify(canonicalGeometry(geometry)));
     }
@@ -130,7 +140,7 @@
             const proposalId = idOf(design.proposalId, 'A design');
             if (seen.has(proposalId)) fail(`Design ${proposalId} is listed twice.`);
             seen.add(proposalId);
-            return { proposalId, title: textOf(design.title), goal: textOf(design.goal), fingerprint: textOf(design.fingerprint) };
+            return { proposalId, title: textOf(design.title), goal: textOf(design.goal), cid: textOf(design.cid) };
         });
     }
 
@@ -159,10 +169,18 @@
         return list.map(output => {
             if (!isObject(output)) fail('An output is invalid.');
             const pieceId = idOf(output.pieceId, 'An output');
-            let geometry;
-            try { geometry = canonicalGeometry(output.geometry); } catch (error) { fail(`Output ${pieceId}: ${error.message}`); }
-            const hash = OUTPUT_HASH_PREFIX + sha256().sha256Hex(stableStringify(geometry));
-            if (output.hash !== hash) fail(`Output ${pieceId} does not match its geometry.`);
+            // An agreement imported from its published object (M2) carries its outputs by hash
+            // alone until the ground here re-derives them; such an output keeps geometry null.
+            let geometry = null;
+            let hash;
+            if (output.geometry === null || output.geometry === undefined) {
+                if (!isOutputHash(output.hash)) fail(`Output ${pieceId} has neither geometry nor a hash.`);
+                hash = output.hash;
+            } else {
+                try { geometry = canonicalGeometry(output.geometry); } catch (error) { fail(`Output ${pieceId}: ${error.message}`); }
+                hash = OUTPUT_HASH_PREFIX + sha256().sha256Hex(stableStringify(geometry));
+                if (output.hash !== hash) fail(`Output ${pieceId} does not match its geometry.`);
+            }
             if (seen.has(hash)) fail(`Output ${pieceId} has the geometry of another output.`);
             seen.add(hash);
             if (!Array.isArray(output.fromParcelIds)) fail(`Output ${pieceId} needs the parcels it stands on.`);
@@ -239,6 +257,17 @@
     // The canonical record. Throws (code 'invalid-agreement') only when its shape is unusable:
     // wrong schema, missing ids, wrong types, duplicates that make a reference ambiguous, an output
     // hash that is not its geometry's. Everything the dialog can get wrong is left to validate.
+    // Where the agreement went when it was proposed (M2): its CID, when, and the index it was sent
+    // to. Absent until then; a published agreement is immutable, its CID is what decisions sign.
+    function publishedOf(raw) {
+        if (raw === undefined || raw === null) return null;
+        if (!isObject(raw)) fail('published must be an object.');
+        if (!cid().isCid(raw.cid)) fail('published.cid must be a CID.');
+        const apiBase = textOf(raw.apiBase);
+        if (!apiBase) fail('published.apiBase is required.');
+        return { cid: raw.cid, publishedAt: timestampOf(raw.publishedAt, 'published.publishedAt'), apiBase };
+    }
+
     function normalize(raw) {
         if (!isObject(raw) || raw.schema !== SCHEMA) fail(`Expected ${SCHEMA}.`);
         return {
@@ -254,7 +283,8 @@
             allocations: allocationsOf(raw.allocations),
             money: moneyOf(raw.money),
             rule: ruleOf(raw.rule),
-            deadline: deadlineOf(raw.deadline)
+            deadline: deadlineOf(raw.deadline),
+            published: publishedOf(raw.published)
         };
     }
 
@@ -368,6 +398,9 @@
                 add(errors, 'rule', 'rule-invalid', error.message);
             }
             if (state && !state.ready) add(warnings, 'rule', 'rule-not-ready', `The owners' decision cannot be counted yet (${state.reason}).`, { reason: state.reason });
+            // Owners decide through signed decisions that a lens member verifies (approval-providers):
+            // without a lens nobody can be verified, so the agreement can never be decided.
+            if (!Array.isArray(agreement.rule.lens) || !agreement.rule.lens.length) add(warnings, 'rule', 'rule-lens-missing', 'No lens member is named, so no owner decision can be verified.');
         }
 
         const { deadline } = agreement;
@@ -433,8 +466,72 @@
         return { parties: list, publicM2, money };
     }
 
+    /**
+     * The published agreement/v1 object (plan-design-agreement.md, M2): the designs linked by CID in
+     * stored order, the input land with its holders snapshot, the output pieces without geometry
+     * (each hash commits to it, and a reader re-derives the pieces by applying the designs), the
+     * allocations, money and rule as stored, and the details. No local id, update time, piece ids,
+     * output holders or fingerprints. Builds without judging: validate the record first.
+     * The record as stored (normalize) keeps neither an author nor a parcel source, so both are read
+     * from the object given: `{ ...stored, author }`, and a `parcelSourceId` on an input parcel.
+     * @param designCidOf (proposalId) → that design's CID (DesignRecord.cidOf of its local record);
+     *   asked for every design (refused unless it is a CID) and for every output's producedBy, where
+     *   null means the producer is a design outside this agreement: the piece is then committed by
+     *   its hash alone, and a reader whose ground lacks that design sees the agreement as stale.
+     */
+    function published(raw, designCidOf = null) {
+        const agreement = normalize(raw);
+        const stored = new Map(agreement.designs.map(design => [design.proposalId, design.cid]));
+        const lookup = typeof designCidOf === 'function' ? designCidOf : proposalId => (stored.has(proposalId) ? stored.get(proposalId) : null);
+        const cidOf = proposalId => {
+            const value = lookup(proposalId);
+            if (!cid().isCid(value)) fail(`Design ${proposalId} has no CID.`);
+            return value;
+        };
+        const producerCidOf = proposalId => {
+            const value = lookup(proposalId);
+            return value === null || value === undefined ? null : cidOf(proposalId);
+        };
+        // normalize keeps the input parcels in their order, one for one.
+        const sourceOf = index => keyOf(raw.inputs.parcels[index].parcelSourceId);
+        return {
+            schema: PUBLISHED_SCHEMA,
+            title: agreement.title,
+            author: textOf(raw.author),
+            // The wallet that will mint and fund it (M3): part of the on-chain address, so only the
+            // sponsor can create the agreement's account. Null when proposed without a wallet.
+            sponsor: textOf(raw.sponsor),
+            city: agreement.city,
+            createdAt: agreement.createdAt,
+            designs: agreement.designs.map(design => ({ cid: cidOf(design.proposalId), goal: design.goal, title: design.title })),
+            inputs: {
+                parcels: agreement.inputs.parcels.map((parcel, index) => {
+                    const parcelSourceId = sourceOf(index);
+                    return parcelSourceId
+                        ? { parcelId: parcel.parcelId, parcelSourceId, areaM2: parcel.areaM2, holders: parcel.holders }
+                        : { parcelId: parcel.parcelId, areaM2: parcel.areaM2, holders: parcel.holders };
+                }),
+                openGroundM2: agreement.inputs.openGroundM2
+            },
+            outputs: agreement.outputs.map(output => ({
+                hash: output.hash,
+                areaM2: output.areaM2,
+                fromParcelIds: output.fromParcelIds,
+                role: output.role,
+                producedBy: output.producedBy === null ? null : producerCidOf(output.producedBy)
+            })),
+            allocations: agreement.allocations,
+            money: agreement.money,
+            rule: agreement.rule,
+            deadline: agreement.deadline
+        };
+    }
+
+    // The published object's identity: what decisions sign, mints commit to and links name.
+    const publishedCid = (raw, designCidOf) => cid().cidOfObject(published(raw, designCidOf));
+
     return {
-        SCHEMA, OUTPUT_HASH_PREFIX, ROLES, newId, outputHash, normalize, validate, ledger,
-        rightsFromInputs, approvalSubject, stableStringify
+        SCHEMA, PUBLISHED_SCHEMA, OUTPUT_HASH_PREFIX, ROLES, newId, outputHash, normalize, validate, ledger,
+        rightsFromInputs, approvalSubject, stableStringify, published, publishedCid
     };
 });

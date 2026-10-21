@@ -78,8 +78,13 @@ describe('WorldEntryModel.resolveEntry', () => {
 
     it('keeps a record link in the city it names, ignoring ?at=', () => {
         expect(resolve('?focusProposal=12&city=split&at=40.7484,-73.9857,17')).toMatchObject({ cityId: 'split', view: null, source: 'record', dropCityParam: false });
-        expect(resolve('?proposalShare=abc', { storedCityId: 'zagreb' })).toMatchObject({ cityId: 'zagreb', source: 'record' });
-        expect(resolve('?city=ny', { pathname: '/proposals/7' })).toMatchObject({ cityId: 'new_york', source: 'record' });
+        // The ?proposalShare= and ?shared= payload links are gone (M2): they name no record any more.
+        expect(resolve('?proposalShare=abc', { storedCityId: 'zagreb' })).toMatchObject({ cityId: 'zagreb', source: 'stored' });
+        expect(resolve('?shared=abc&city=split', { storedCityId: 'zagreb' })).toMatchObject({ cityId: 'split', source: 'city' });
+        // Published designs and agreements are linked by CID (plan-design-agreement.md M2); a row id is no record link.
+        expect(resolve('?city=ny', { pathname: '/designs/bafkreibm6jg3ux5qumhcn2b3flc3tyu6dmlb4xa7u5bf44yegnrjhc4yeq' })).toMatchObject({ cityId: 'new_york', source: 'record' });
+        expect(resolve('?city=ny', { pathname: '/agreements/bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku' })).toMatchObject({ cityId: 'new_york', source: 'record' });
+        expect(resolve('?city=ny', { pathname: '/proposals/7' })).toMatchObject({ cityId: 'new_york', source: 'city' });
         expect(resolve('?at=40.7484,-73.9857,17', { pathname: '/parcel/HR-1-2' , storedCityId: 'zagreb' })).toMatchObject({ cityId: 'zagreb', source: 'record' });
     });
 
