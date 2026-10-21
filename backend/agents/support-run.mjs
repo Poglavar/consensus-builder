@@ -231,9 +231,9 @@ async function main() {
     }
 }
 
-if (isEntrypoint(import.meta.url)) main().catch(async error => {
+// A failure is reported once, in bot-monitor's 06:00 UTC message, not by every run.
+if (isEntrypoint(import.meta.url)) main().catch(error => {
     const diagnostic = safeFailureDiagnostic(error);
     console.error(`[${new Date().toISOString()}] SUPPORTER FAILED: ${diagnostic}`);
-    await sendTelegram(`Supporter agent FAILED: ${diagnostic}`, { alert: true });
     process.exit(1);
 });

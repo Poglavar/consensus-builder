@@ -28,13 +28,6 @@ function okFetch(calls) {
 }
 
 describe('sendTelegram', () => {
-    it('keeps explicit failures on the alert bot without a topic', async () => {
-        const calls = [];
-        expect(await sendTelegram('failed', { fetchImpl: okFetch(calls), env: ENV, alert: true })).toBe(true);
-        expect(calls[0].url).toBe('https://api.telegram.org/botalert-token/sendMessage');
-        expect(calls[0].body).toEqual({ chat_id: 'alert-chat', text: 'failed' });
-    });
-
     it('never falls back to alert credentials for activity', async () => {
         const calls = [];
         const env = { TELEGRAM_BOT_TOKEN: 'old-token', TELEGRAM_CHAT_ID: 'old-chat' };
@@ -83,5 +76,18 @@ describe('sendTelegram', () => {
         const calls = [];
         expect(await sendTelegram('   ', { fetchImpl: okFetch(calls), env: ENV })).toBe(false);
         expect(calls).toHaveLength(0);
+    });
+});
+
+// 2026-10-21: every failed agent run posted its own alert (~20 a day for one API fault), on top of
+// bot-monitor's daily message. Failures now go only through bot-monitor.
+describe('agent runners', () => {
+    it('never send failures to Telegram', async () => {
+        const { readFile } = await import('node:fs/promises');
+        for (const name of ['run.mjs', 'society-run.mjs', 'support-run.mjs']) {
+            const source = await readFile(new URL(`../agents/${name}`, import.meta.url), 'utf8');
+            const calls = source.match(/sendTelegram\([^;]*;/g) || [];
+            expect(calls.filter(call => /FAIL|alert/i.test(call)), name).toEqual([]);
+        }
     });
 });
