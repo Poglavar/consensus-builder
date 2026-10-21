@@ -147,7 +147,7 @@ function proposalContentPayload(proposal, includeCadastre = false) {
         roadProposal: cleanPayload(proposal.roadProposal),
         buildingProposal: cleanPayload(proposal.buildingProposal),
         structureProposal: cleanPayload(proposal.structureProposal),
-        reparcellization: cleanPayload(proposal.reparcellization),
+        parcelLayout: cleanPayload(proposal.parcelLayout),
         decideLaterProposal: cleanPayload(proposal.decideLaterProposal)
     };
     // The authored site is content (two designs on different drawn sites are different proposals).

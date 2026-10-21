@@ -339,36 +339,21 @@ function facetModeLabel(name, value) {
 }
 
 function setProposalParcelsMode(mode, { lock = false, unlock = false, reason = '' } = {}) {
-    // The active parcel model has two states: keep boundaries, or run land readjustment.
-    // Legacy callers asking for the removed merge mode safely resolve to no boundary change.
-    const normalized = mode === 'readjust' ? 'readjust' : 'as-is';
+    // The create dialog keeps parcel boundaries as they are: new borders are drawn with Lay out
+    // parcels (the parcel-layout design), never chosen here.
+    const normalized = 'as-is';
     proposalFacetState.parcels = normalized;
     applyFacetLockUI('proposalParcelsGroup', 'proposalParcelsStatic', 'proposalParcelsMode', normalized, lock, reason);
 }
 
-function showProposalPerSliceOption(show) {
-    const el = document.querySelector('.proposal-ownership-perslice');
-    if (el) el.style.display = show ? '' : 'none';
-}
-
 function onProposalParcelsChange() {
-    const sel = document.querySelector('input[name="proposalParcelsMode"]:checked');
-    proposalFacetState.parcels = sel ? sel.value : 'as-is';
-    if (proposalFacetState.parcels === 'readjust') {
-        showProposalPerSliceOption(true);
-        setProposalOwnershipMode('per-slice', { lock: true, reason: facetModeLabel('proposalParcelsMode', 'readjust') }); // slices carry their owners
-    } else {
-        showProposalPerSliceOption(false);
-        const next = (proposalFacetState.ownership === 'per-slice') ? 'no-change' : proposalFacetState.ownership;
-        setProposalOwnershipMode(next, { unlock: true });
-    }
+    proposalFacetState.parcels = 'as-is';
     syncProposalFacets();
 }
 
 function deriveProposalGoalKey() {
-    const { landUse, parcels, ownership } = proposalFacetState;
+    const { landUse, ownership } = proposalFacetState;
     if (landUse === 'urban-rule') return 'urban-rule';
-    if (parcels === 'readjust') return 'reparcellization';
     if (landUse && landUse !== 'as-is') return landUse; // park/square/lake/single/road-track
     if (ownership && ownership !== 'no-change') return 'ownership-transfer';
     return null; // as-is / as-is / no-change: nothing to propose yet
@@ -1233,11 +1218,7 @@ async function handleUserAcceptProposal(proposalId, parcelId, ownerKey = null) {
     // Validate the current terms before opening a wallet flow. The local receipt must bind to
     // exactly the reviewed terms; a malformed allocation must not reach a chain call first.
     if (!currentConsentBindingHash(proposal)) {
-        if (proposalRequiresDealConsent(proposal)) {
-            showProposalAlertMessage('readjustment_terms_invalid', 'Complete and correct the readjustment allocations and cash terms before accepting.');
-        } else {
-            showProposalAlertMessage('proposal_terms_unavailable', 'The current proposal terms could not be verified. Reload the proposal before accepting.');
-        }
+        showProposalAlertMessage('proposal_terms_unavailable', 'The current proposal terms could not be verified. Reload the proposal before accepting.');
         return;
     }
 

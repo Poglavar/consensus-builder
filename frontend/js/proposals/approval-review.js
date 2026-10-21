@@ -1,7 +1,6 @@
-// What one abstract party is asked to accept: the land (or lease) they contribute, what a land
-// readjustment gives them back, their cash, the conditions, and how far the proposal is from passing
-// before and after their decision. An authority sees the same terms and progress. Pure (no DOM);
-// proposals/approval-panel.js renders it.
+// What one abstract party is asked to accept: the land (or lease) they contribute, the conditions,
+// and how far the proposal is from passing before and after their decision. An authority sees the
+// same terms and progress. Pure (no DOM); proposals/approval-panel.js renders it.
 (function (root, factory) {
     const api = factory(root);
     if (typeof module === 'object' && module.exports) module.exports = api;
@@ -9,9 +8,6 @@
 })(typeof window !== 'undefined' ? window : globalThis, function (root) {
     'use strict';
     const approval = () => root.ProposalApproval || (typeof require === 'function' ? require('./approval.js') : null);
-    const deal = () => root.ReparcellizationDeal || (typeof require === 'function' ? require('../reparcellization-deal.js') : null);
-    const allocation = () => root.ReparcellizationAllocation
-        || (typeof require === 'function' ? require('../reparcellization-allocation.js') : null);
 
     const shareValue = share => {
         const [n, d] = String(share).split('/').map(Number);
@@ -52,39 +48,8 @@
         };
     }
 
-    // A readjustment's allocation for this owner, from its own ledger row and output plots. An owner
-    // with no ledger row has nothing assigned in this plan; that is shown, never guessed.
-    function readjustmentReceipt(proposal, ownerId, turf) {
-        const plan = proposal.reparcellization || {};
-        const row = (plan.ownerShares || []).find(owner => String(owner?.ownerKey || '').trim() === ownerId) || null;
-        const impact = allocation().ownerImpact({ ...(row || {}), ownerKey: ownerId, contributedArea: row?.contributedArea ?? null },
-            plan.polygons || [], turf);
-        return {
-            inLedger: !!row,
-            plots: impact.plots.map(plot => ({
-                ...plot,
-                coRecipientIds: (plan.polygons[plot.index].owners || []).map(owner => String(owner.ownerKey || '').trim())
-                    .filter(key => key && key !== ownerId)
-            })),
-            assignedAreaM2: impact.assignedAreaM2,
-            contributedAreaM2: impact.contributedAreaM2,
-            areaChangeM2: impact.areaChangeM2,
-            cashCents: impact.cashOfferCents,
-            payCents: impact.cashPaymentCents
-        };
-    }
-
     function conditions(proposal) {
         const context = approval().contextContent(proposal);
-        let totalCashCents = null;
-        let money = null;
-        if (deal().isReadjustment(proposal)) {
-            try {
-                const content = deal().content(proposal);
-                totalCashCents = content.terms.totalCashCents;
-                money = deal().schedule(content);
-            } catch (_) { totalCashCents = null; money = null; }
-        }
         const expires = proposal.expiresAt == null ? null : new Date(proposal.expiresAt);
         const offer = Number(proposal.offer);
         return {
@@ -94,11 +59,8 @@
             rightsSource: context.rights?.source || null,
             isConditional: proposal.isConditional === true,
             expiresAt: expires && Number.isFinite(expires.getTime()) ? expires.toISOString() : null,
-            totalCashCents,
-            // The balanced schedule (reparcellization-deal.js schedule): owners' nets and the sponsor.
-            money,
-            cashOffered: totalCashCents == null ? Number.isFinite(offer) && offer > 0 : totalCashCents > 0,
-            // An absent funding flag is not funding (reparcellization-validation.js says the same).
+            cashOffered: Number.isFinite(offer) && offer > 0,
+            // An absent funding flag is not funding.
             fundingConfirmed: proposal.funded === true,
             depositPercent: proposal.depositEnabled === true && Number.isFinite(proposal.depositPercent) ? proposal.depositPercent : null
         };
@@ -108,9 +70,9 @@
      * @param {object} proposal
      * @param {string} ownerId abstract party from the proposal's rights snapshot or rules: an owner,
      *   a leaseholder or a required authority
-     * @param {{ acceptedOwnerIds?: string[], turf?: object }} options turf measures readjustment plots
+     * @param {{ acceptedOwnerIds?: string[] }} options
      */
-    function ownerReview(proposal, ownerId, { acceptedOwnerIds = [], turf = null } = {}) {
+    function ownerReview(proposal, ownerId, { acceptedOwnerIds = [] } = {}) {
         const state = approval().inspect(proposal);
         if (!state.ready || !state.partyIds.includes(ownerId)) return null;
         const kind = approval().partyOf(ownerId, state).kind;
@@ -143,7 +105,6 @@
             contributes,
             leases,
             contributedAreaM2: knownAreas ? contributes.reduce((sum, row) => sum + row.shareAreaM2, 0) : null,
-            receives: kind === 'owner' && deal().isReadjustment(proposal) && turf ? readjustmentReceipt(proposal, ownerId, turf) : null,
             conditions: conditions(proposal),
             alreadyAccepted: acceptedOwnerIds.includes(ownerId),
             progressWithout: progress(proposal, accepted),

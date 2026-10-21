@@ -1,42 +1,38 @@
-// A fake browser world for frontend/js/reparcellization.js (the land readjustment editor): a DOM
-// (fake-dom.js), a Leaflet stand-in whose GeoJSON layers carry their plots' click handlers, an
-// OnMapEditor that mounts the editor's panels into the document, a live parcel fabric, and the real
-// pure modules (plan utils, topology, cut, edit check, slicing, validation, deal, shares, approval,
-// history). The shared node-handle layer is recorded instead of drawn, so a test can drive a node
-// move through the options the editor gave it. Each makeEditor() is a fresh editor with fresh state.
+// A fake browser world for frontend/js/parcel-layout.js (the parcel-layout editor): a DOM
+// (fake-dom.js), a Leaflet stand-in whose GeoJSON layers carry their plots' handlers, an OnMapEditor
+// that mounts the editor's panels into the document, a live parcel fabric, and the real pure modules
+// (layouts, validation, plan utils, topology, cut, edit check, slicing, Schelling grid, history). The
+// shared node-handle layer is recorded instead of drawn, so a test can drive a node move through the
+// options the editor gave it. Each makeEditor() is a fresh editor with fresh state.
 import { createRequire } from 'node:module';
 import { makeDocument, makeEvent } from './fake-dom.js';
 
 const require = createRequire(import.meta.url);
 const FRONTEND = '../../../frontend/js/';
-// REPARCELLIZATION_SOURCE loads another copy of the editor (a mutant, for checking that these tests can fail).
-const EDITOR_PATH = process.env.REPARCELLIZATION_SOURCE || require.resolve(`${FRONTEND}reparcellization.js`);
+// PARCEL_LAYOUT_SOURCE loads another copy of the editor (a mutant, for checking that these tests can fail).
+const EDITOR_PATH = process.env.PARCEL_LAYOUT_SOURCE || require.resolve(`${FRONTEND}parcel-layout.js`);
 
 const turf = require('@turf/turf');
-const priceModel = require(`${FRONTEND}financials.js`);
 const MODULES = {
     __reparcellizationUiState: 'reparcellization-ui-state.js',
-    ReparcellizationShares: 'reparcellization-shares.js',
     ReparcellizationPlanUtils: 'reparcellization-plan-utils.js',
     ReparcellizationSlice: 'reparcellization-slice.js',
-    ReparcellizationDeal: 'reparcellization-deal.js',
-    ReparcellizationAllocation: 'reparcellization-allocation.js',
-    ReparcellizationValidation: 'reparcellization-validation.js',
+    ParcelLayoutValidation: 'parcel-layout-validation.js',
+    ParcelLayoutLayouts: 'parcel-layout-layouts.js',
+    SchellingGrid: 'parcels/schelling-grid.js',
+    SchellingSettings: 'schelling/schelling-settings.js',
+    LocalFrame: 'local-frame.js',
     ReparcelLabelPoint: 'reparcel-label-point.js',
     __plotTopology: 'proposals/plot-topology.js',
     __plotCut: 'proposals/plot-cut.js',
     __plotEdit: 'proposals/plot-edit.js',
     __subdivision: 'proposals/subdivision.js',
-    __readjustmentContributions: 'proposals/readjustment-contributions.js',
     __planOrder: 'proposals/plan-order.js',
-    ProposalApproval: 'proposals/approval.js',
-    ProposalApprovalText: 'proposals/approval-text.js',
-    ProposalApprovalRegimes: 'proposals/approval-regimes.js',
     GeometryEditHistory: 'geometry-edit/history.js',
     CbFormat: 'format.js'
 };
 
-// The pool: Zagreb-ish metres from an origin, so turf areas are real square metres.
+// The pool: metres from an origin at 45.81 N, so turf areas are real square metres.
 export const LAT0 = 45.81;
 export const LNG0 = 15.97;
 const M_PER_DEG_LAT = 111132;
@@ -62,6 +58,7 @@ function spy(impl) {
 class FakeEvented {
     constructor() { this.handlers = new Map(); }
     on(type, fn) { String(type).split(/\s+/).forEach(t => { if (!this.handlers.has(t)) this.handlers.set(t, []); this.handlers.get(t).push(fn); }); return this; }
+    once(type, fn) { const wrapped = event => { this.off(type, wrapped); fn(event); }; return this.on(type, wrapped); }
     off(type, fn) { const list = this.handlers.get(type); if (list) this.handlers.set(type, fn ? list.filter(f => f !== fn) : []); return this; }
     fire(type, event = {}) { (this.handlers.get(type) || []).slice().forEach(fn => fn({ type, target: this, ...event })); return this; }
     listens(type) { return (this.handlers.get(type) || []).length > 0; }
@@ -208,9 +205,10 @@ function memoryStorage() {
 }
 
 // Installs the world and returns { editor, ... }. `options.parcels` = [{ id, geometry, properties }]
-// seeds the live fabric (and the cadastre repository); `options.owners` maps parcel id → owner slots
-// (what ensureParcelOwnerSlots answers); `options.selection` is the map selection the editor opens on;
-// `options.draft` the active design draft; `options.globals` overrides anything installed.
+// seeds the live fabric (and the cadastre repository); `options.selection` is the map selection the
+// editor opens on; `options.pendingLayout` the opener's seed (window.pendingParcelLayout);
+// `options.draft` the active design draft; `options.schelling` the Schelling plan layer's current
+// settings (no layer when absent); `options.globals` overrides anything installed.
 export function makeEditor(options = {}) {
     const g = globalThis;
     const before = new Map(Object.getOwnPropertyNames(g).map(name => [name, Object.getOwnPropertyDescriptor(g, name)]));
@@ -226,32 +224,18 @@ export function makeEditor(options = {}) {
     }]));
     const handleLayers = [];
     const sessions = [];
-    const draft = options.draft === undefined ? { id: 'draft-1', goal: 'reparcellization', fields: {} } : options.draft;
+    const draft = options.draft === undefined ? { id: 'draft-1', goal: 'parcel-layout', fields: {} } : options.draft;
 
     const installs = {
         window: g,
-        ParcelPriceModel: { buildEstimate: priceModel.buildParcelPriceEstimate, aggregate: priceModel.aggregateParcelPriceEstimates },
         document,
         map,
         L: leafletRef,
         turf,
         escapeHtml: require(`${FRONTEND}shared-utils.js`).escapeHtml,
         getComputedStyle: () => ({ getPropertyValue: () => '' }),
-        // new Option(text, value, defaultSelected, selected), as the DOM has it.
-        Option: function Option(text = '', value, defaultSelected = false, selected = false) {
-            const option = document.createElement('option');
-            option.textContent = text;
-            option.value = value === undefined ? text : value;
-            option.selected = !!(selected || defaultSelected);
-            return option;
-        },
         addEventListener: (type, fn) => { if (!windowListeners.has(type)) windowListeners.set(type, new Set()); windowListeners.get(type).add(fn); },
         removeEventListener: (type, fn) => { windowListeners.get(type)?.delete(fn); },
-        SQM_AVG_PRICE: 133,
-        ParcelPriceModel: (() => {
-            const model = require(`${FRONTEND}financials.js`);
-            return { buildEstimate: model.buildParcelPriceEstimate, aggregate: model.aggregateParcelPriceEstimates };
-        })(),
         LiveParcelFabric: {
             get: id => features.get(String(id)) || null,
             cadastreIdsForParcelIds: ids => ids.map(String),
@@ -261,8 +245,6 @@ export function makeEditor(options = {}) {
             get: id => features.get(String(id)) || null,
             ensureIds: spy(async () => {})
         },
-        ParcelPresenter: { getIdForLayer: () => null },
-        ensureParcelOwnerSlots: spy(async parcelId => (options.owners || {})[String(parcelId)] || []),
         getCurrentParcelSelectionContext: () => options.selection || null,
         buildGeometryFromParcels: ids => {
             const list = ids.map(id => features.get(String(id))).filter(Boolean);
@@ -276,7 +258,7 @@ export function makeEditor(options = {}) {
         CbDialog: { confirm: spy(async () => true) },
         showEphemeralMessage: spy(),
         updateStatus: spy(message => statuses.push(message)),
-        proposalStorage: { getAllProposals: () => [], getProposal: () => null },
+        proposalStorage: { getAllProposals: () => options.proposals || [], getProposal: () => null },
         GeometryEditHandles: {
             create: spy(handleOptions => {
                 const layer = {
@@ -303,17 +285,17 @@ export function makeEditor(options = {}) {
                 return session;
             })
         },
+        ...(options.schelling ? { SchellingLayer: { settings: () => ({ ...options.schelling }) } } : {}),
         ...Object.fromEntries(Object.entries(MODULES).map(([name, file]) => [name, require(`${FRONTEND}${file}`)])),
         ...(options.globals || {})
     };
-    installs.ProposalApprovalSetup = installs.ProposalApprovalSetup || null;
     Object.entries(installs).forEach(([name, value]) => { g[name] = value; });
     g.localStorage = memoryStorage();
-    g.pendingReparcellizationPlan = options.pendingPlan === undefined ? null : options.pendingPlan;
+    g.pendingParcelLayout = options.pendingLayout === undefined ? null : options.pendingLayout;
 
     delete require.cache[EDITOR_PATH];
-    const { createReparcellizationEditor } = require(EDITOR_PATH);
-    const editor = createReparcellizationEditor();
+    const { createParcelLayoutEditor } = require(EDITOR_PATH);
+    const editor = createParcelLayoutEditor();
 
     const env = {
         editor,
@@ -349,7 +331,7 @@ export function makeEditor(options = {}) {
             layer.fire('click', { latlng: { lat, lng }, originalEvent: {} });
         },
         popup: () => map._popup,
-        // A map click / dblclick at [east, north] metres (for the drawing tools).
+        // A map click at [east, north] metres (for the drawing tools).
         clickAt(east, north, extra = {}) {
             const [lng, lat] = lngLat(east, north);
             map.fire('click', { latlng: { lat, lng }, originalEvent: { ...extra } });

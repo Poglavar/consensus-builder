@@ -92,21 +92,23 @@ describe('lineage is not a ground conflict', () => {
             .map(record => record.proposalId)).toEqual(['overlap']);
     });
 
-    it('does not reinterpret a reparcellization as a building alternative', () => {
+    it('does not reinterpret a parcel layout as a building alternative', () => {
         const currentBuilding = building('building', 16.0, true);
-        const readjustment = {
+        const ground = currentBuilding.geometry.buildings[0].geometry;
+        const layout = {
             proposalId: 'plots',
             applied: false,
-            reparcellization: { polygons: [{ geometry: currentBuilding.geometry.buildings[0].geometry }] }
+            goal: 'parcel-layout',
+            parcelLayout: { pool: ground, plots: [{ geometry: ground, source: 'manual' }] }
         };
 
-        expect(collectAppliedProposalAlternatives(readjustment, [currentBuilding, readjustment])).toEqual([]);
+        expect(collectAppliedProposalAlternatives(layout, [currentBuilding, layout])).toEqual([]);
     });
 });
 
 // What "the ground is taken" means. Decided 2026-08-24 (the user): GEOMETRY, not parcel identity.
 //
-// A cadastral parcel is not the unit a proposal competes for. Roads and land readjustments cut one
+// A cadastral parcel is not the unit a proposal competes for. Roads and parcel layouts cut one
 // cadastral parcel into many plots, and a plan puts a different building on each — so two buildings
 // sharing a cadastral ancestor are usually neighbours, not rivals. Deciding by parcel identity made
 // them rivals: on the 299-member Sibenik plan it left 34 of 166 buildings applied, each new member
@@ -228,28 +230,6 @@ describe('a road across an applied structure', () => {
     });
 });
 
-// Parcel agreements split one saved layout by owner. Siblings are readjustments, which never
-// displace one another by apply (a reshaped fabric is not a rival design); the batch takes its
-// local source layout off the map itself (proposals/create.js finishReparcellizationAgreementBatch).
-describe('reparcellization agreement siblings', () => {
-    const plot = (west, east, south = 0, north = 1) => turf.polygon([[
-        [west, south], [east, south], [east, north], [west, north], [west, south]
-    ]]);
-    const agreement = (proposalId, geometry, applied, index) => ({
-        proposalId, sourceProposalId: 'source-plan', applied,
-        reparcellizationAgreement: { groupId: 'courtyard-group', index, count: 2 },
-        reparcellization: { polygons: [{ geometry, jointPool: false }] }
-    });
-
-    it('leaves disjoint and overlapping siblings, and their source, standing', () => {
-        const source = { proposalId: 'source-plan', applied: true, reparcellization: { polygons: [{ geometry: plot(0, 3).geometry }] } };
-        const first = agreement('agreement-1', plot(0, 2).geometry, true, 0);
-        const second = agreement('agreement-2', plot(1, 3).geometry, false, 1);
-        expect(collectAppliedProposalAlternatives(second, [source, first, second], { planOrder })).toEqual([]);
-        expect(collectAppliedProposalAlternatives(source, [source, first, second], { planOrder })).toEqual([]);
-    });
-});
-
 describe('appliedRivals reads the footprint lazily', () => {
     it('never unions the target when no applied rival is there to compare with', () => {
         const planOrder = require('../../frontend/js/proposals/plan-order.js');
@@ -276,10 +256,10 @@ describe('editDependents: who stands on ground an in-place edit changes', () => 
         type: 'Polygon',
         coordinates: [[[west, 45.8], [east, 45.8], [east, 45.8004], [west, 45.8004], [west, 45.8]]]
     });
-    const readjustment = (plots, createdAt = '2026-10-01T10:00:00.000Z') => ({
-        proposalId: 'readjustment', goal: 'reparcellization', applied: true, createdAt,
+    const layout = (plots, createdAt = '2026-10-01T10:00:00.000Z') => ({
+        proposalId: 'layout', goal: 'parcel-layout', applied: true, createdAt,
         cadastreParcelIds: ['HR-1', 'HR-2'],
-        reparcellization: { polygons: plots.map(geometry => ({ geometry })) }
+        parcelLayout: { pool: box(15.9000, 15.9020), plots: plots.map(geometry => ({ geometry, source: 'manual' })) }
     });
     const blockOnPlot = (proposalId, west, east, createdAt = '2026-10-02T10:00:00.000Z') => ({
         proposalId, goal: 'buildings', applied: true, createdAt,
@@ -293,31 +273,31 @@ describe('editDependents: who stands on ground an in-place edit changes', () => 
     const plotB = box(15.9010, 15.9020);
 
     it('finds a block on a child plot the edit reshaped', () => {
-        const before = readjustment([plotA, plotB]);
-        const after = readjustment([plotA, box(15.9010, 15.9016), box(15.9016, 15.9020)]);
+        const before = layout([plotA, plotB]);
+        const after = layout([plotA, box(15.9010, 15.9016), box(15.9016, 15.9020)]);
         const onB = blockOnPlot('block-on-b', 15.9012, 15.9014);
         expect(editDependents(before, after, [before, onB], options).map(record => record.proposalId)).toEqual(['block-on-b']);
     });
 
     it('leaves a block on a plot the edit did not touch, and a parked one', () => {
-        const before = readjustment([plotA, plotB]);
-        const after = readjustment([plotA, box(15.9010, 15.9016), box(15.9016, 15.9020)]);
+        const before = layout([plotA, plotB]);
+        const after = layout([plotA, box(15.9010, 15.9016), box(15.9016, 15.9020)]);
         const onA = blockOnPlot('block-on-a', 15.9002, 15.9004);
         const parked = { ...blockOnPlot('parked-on-b', 15.9012, 15.9014), applied: false };
         expect(editDependents(before, after, [before, onA, parked], options)).toEqual([]);
     });
 
     it('does not count what the edited record itself stands on (older records)', () => {
-        const before = readjustment([plotA, plotB], '2026-10-05T10:00:00.000Z');
-        const after = readjustment([plotA, box(15.9010, 15.9016), box(15.9016, 15.9020)], '2026-10-05T10:00:00.000Z');
+        const before = layout([plotA, plotB], '2026-10-05T10:00:00.000Z');
+        const after = layout([plotA, box(15.9010, 15.9016), box(15.9016, 15.9020)], '2026-10-05T10:00:00.000Z');
         const older = blockOnPlot('older-block', 15.9012, 15.9014, '2026-10-01T10:00:00.000Z');
         expect(editDependents(before, after, [before, older], options)).toEqual([]);
     });
 
     it('finds nothing when the edit changed no ground', () => {
-        const before = readjustment([plotA, plotB]);
+        const before = layout([plotA, plotB]);
         const onB = blockOnPlot('block-on-b', 15.9012, 15.9014);
-        expect(editDependents(before, readjustment([plotA, plotB]), [before, onB], options)).toEqual([]);
+        expect(editDependents(before, layout([plotA, plotB]), [before, onB], options)).toEqual([]);
     });
 });
 

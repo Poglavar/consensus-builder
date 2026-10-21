@@ -352,14 +352,14 @@
         };
     }
 
-    // Readjustment / subdivision plots that stand on the parcel (the plots it becomes), largest
-    // share first. Null for a record that is no readjustment.
+    // Parcel-layout / subdivision plots that stand on the parcel (the plots it becomes), largest
+    // share first. Null for a record that is no parcel layout.
     function plotsOn(t, record, parcelFeature) {
-        const plan = record && record.reparcellization;
-        if (!plan || !Array.isArray(plan.polygons)) return null;
+        const layout = record && record.parcelLayout;
+        if (!layout || !Array.isArray(layout.plots)) return null;
         if (!parcelFeature) return null;
         const plots = [];
-        plan.polygons.forEach((plot, index) => {
+        layout.plots.forEach((plot, index) => {
             const feature = plot && featureOf(plot.geometry);
             if (!feature) return;
             const clip = safeIntersect(t, feature, parcelFeature, 'plotsOn');
@@ -368,8 +368,7 @@
             plots.push({
                 number: index + 1,
                 areaM2: round(num(plot.area) !== null ? num(plot.area) : areaOf(t, feature), 1),
-                overlapM2: overlapM2 === null ? null : round(overlapM2, 1),
-                owner: typeof plot.displayName === 'string' && plot.displayName.trim() ? plot.displayName.trim() : null
+                overlapM2: overlapM2 === null ? null : round(overlapM2, 1)
             });
         });
         // Unmeasured plots last.

@@ -75,13 +75,13 @@
 
     // The Build palette: everything creatable on the current parcel(s), each button jumping
     // straight into that type's design tool (SimCity: draw first, propose later). Building
-    // typologies and reparcellization open their design tools; park/square/lake are one click.
+    // typologies and the parcel layout open their design tools; park/square/lake are one click.
     const PARCEL_BUILD_TOOLS = [
         { key: 'buildings', icon: 'fa-city', labelKey: 'panel.parcel.build.block', fallback: 'Block' },
         { key: 'row', icon: 'fa-grip-horizontal', labelKey: 'panel.parcel.build.row', fallback: 'Row houses' },
         { key: 'parcelBased', icon: 'fa-home', labelKey: 'panel.parcel.build.parcelBased', fallback: 'Detached' },
         { key: 'single', icon: 'fa-ruler-combined', labelKey: 'panel.parcel.build.single', fallback: 'Freeform' },
-        { key: 'reparcellization', icon: 'fa-vector-square', labelKey: 'panel.parcel.build.reparcel', fallback: 'Reparcel' },
+        { key: 'parcel-layout', icon: 'fa-vector-square', labelKey: 'panel.parcel.build.layOutParcels', fallback: 'Lay out parcels' },
         { key: 'park', icon: 'fa-tree', labelKey: 'panel.parcel.build.park', fallback: 'Park' },
         { key: 'square', icon: 'fa-chess-board', labelKey: 'panel.parcel.build.square', fallback: 'Square' },
         { key: 'lake', icon: 'fa-water', labelKey: 'panel.parcel.build.lake', fallback: 'Lake' }
@@ -156,7 +156,7 @@
     // One policy for every FRESH parcel-based design. Terms-only offers and corridors target the
     // exact parcel(s) selected, while these land/building tools commonly operate on a whole block.
     const WHOLE_BLOCK_FRESH_PROPOSAL_GOALS = new Set([
-        'buildings', 'block', 'row', 'parcelbased', 'single', 'reparcellization',
+        'buildings', 'block', 'row', 'parcelbased', 'single', 'parcel-layout',
         'park', 'square', 'lake', 'urban-rule'
     ]);
 
@@ -252,8 +252,8 @@
     //   buildHandler     — global called with the tool key (default startParcelBuildTool);
     //   includeOwnership — the Ownership group (Offer is an act on parcels: parcel palette only);
     //   disabled         — { toolKey: reason } shown disabled, the reason as its title and a note;
-    //   labels           — { toolKey: label } replaces a tool's label (the site tool names Land
-    //                      readjustment "Subdivide" on a site with open ground).
+    //   labels           — { toolKey: label } replaces a tool's label (the site tool names Lay out
+    //                      parcels "Subdivide" on a site with open ground).
     // The palette is the shared choice tiles (cb-tiles > cb-tile, css/primitives.css) under section
     // kickers. parcel-build-btn and its --<tool> / parcel-transport-btn--<tool> modifiers stay on each
     // tile as the hooks the specs and the site tool find them by; they paint nothing.
@@ -275,13 +275,13 @@
         `;
         };
         // The §15a taxonomy, drawn as labelled groups (rethink-proposals.md, decision 2026-08-05):
-        // Land readjustment stands alone first — the formation primitive; Block/Row/Detached are
+        // Lay out parcels stands alone first — the formation primitive; Block/Row/Detached are
         // RULES-based tools (form follows parameters → Urban rules); Freeform Building, Park,
         // Square and Lake all TAKE their parcel (→ Structures). The urban-rule park (use
         // restriction, no taking) joins the rules group when rules grow that vocabulary.
         const RULE_KEYS = ['buildings', 'row', 'parcelBased'];
         const STRUCTURE_KEYS = ['single', 'park', 'square', 'lake'];
-        const readjustmentButton = PARCEL_BUILD_TOOLS.filter(tool => tool.key === 'reparcellization').map(buttonHtml).join('');
+        const layoutButton = PARCEL_BUILD_TOOLS.filter(tool => tool.key === 'parcel-layout').map(buttonHtml).join('');
         const ruleButtons = PARCEL_BUILD_TOOLS.filter(tool => RULE_KEYS.includes(tool.key)).map(buttonHtml).join('');
         const structureButtons = PARCEL_BUILD_TOOLS.filter(tool => STRUCTURE_KEYS.includes(tool.key)).map(buttonHtml).join('');
         const ownershipButtons = PARCEL_OWNERSHIP_TOOLS.map(buttonHtml).join('');
@@ -307,7 +307,7 @@
         const ownershipTitle = tParcel('panel.parcel.build.ownershipCategory', {}, 'Ownership');
         return `
             <div class="parcel-build-palette">
-                <div class="cb-tiles parcel-build-grid">${readjustmentButton}</div>
+                <div class="cb-tiles parcel-build-grid">${layoutButton}</div>
                 <section class="parcel-rules-group">
                     <h4 class="cb-kicker">${rulesTitle}</h4>
                     <div class="cb-tiles parcel-rules-grid">${ruleButtons}</div>

@@ -345,12 +345,7 @@
             "title": "Proposed owner contributions and allocations",
             "dealOf": "{{owner}}’s deal",
             "contributes": "Proposed contribution from {{owner}}",
-            "receives": "Proposed allocation to {{owner}}",
             "share": "Share {{share}}",
-            "landBefore": "Contributed land area",
-            "landAfter": "Allocated land area",
-            "cashReceived": "Cash offered",
-            "cashPaid": "Proposed cash payment",
             "withOwner": "With {{owner}}’s acceptance: {{progress}}",
             "passesWithOwner": "{{owner}}’s acceptance would meet the configured approval rules.",
             "needsMoreThanOwner": "Further decisions besides {{owner}}’s acceptance would still be needed under the configured approval rules.",
@@ -374,6 +369,7 @@
         "atLeast": "at least {{fraction}}",
         "moreThan": "more than {{fraction}}",
         "meterOwners": "Owners",
+        "meterArea": "Area",
         "ownersCount": "{{accepted}} of {{total}} accepted",
         "ownersNeeded": "Needs {{count}}",
         "areaNeededAll": "Needs every parcel: {{area}}",
@@ -411,23 +407,12 @@
             "rightsSourceUnknown": "No rights source is specified in this record.",
             "acceptAs": "Accept as {{owner}}",
             "contributes": "Your proposed contribution",
-            "receives": "Your proposed allocation",
             "conditions": "Conditions",
             "progress": "Progress",
             "yourShare": "Your share {{share}}",
             "coOwnedWith": "co-owned with {{owners}}",
-            "noAllocation": "This plan assigns no plot or cash to this owner.",
-            "plot": "Plot {{number}}",
-            "plotShare": "{{share}} of {{area}} = {{yours}}",
-            "sharedWith": "shared with {{owners}}",
-            "landBefore": "Land you would contribute",
-            "landAfter": "Land allocated to you",
-            "landChange": "Change in land",
-            "cash": "Cash offered to you",
             "openUntil": "Open until {{date}}",
             "noDeadline": "No deadline",
-            "funded": "Funding is marked ready in this record; payment is not verified.",
-            "unfunded": "Funding is not marked ready in this record.",
             "signNote": "Your wallet signs these exact terms. If they change, your acceptance stops counting.",
             "progressOwners": "{{accepted}} of {{total}} owners",
             "progressBoth": "{{accepted}} of {{total}} owners, {{area}} of {{totalArea}}",
@@ -438,7 +423,6 @@
             "needsMore": "Further decisions would still be needed under the configured approval rules.",
             "verifyFirst": "To accept, first confirm with a lens member that your wallet may act for this owner.",
             "notSigned": "The wallet did not sign, so nothing was accepted.",
-            "cashYouPay": "Cash you would pay",
             "approveAs": "Approve as {{owner}}",
             "lease": "Lease {{lease}} on {{parcel}}",
             "heldWith": "held with {{owners}}",
@@ -468,12 +452,6 @@
             "anchoring": "Pinning the decisions and waiting for your wallet…",
             "anchoredNow": "Anchored {{count}} decisions.",
             "anchorFailed": "Nothing was anchored: {{reason}}"
-        },
-        "money": {
-            "summary": "Proposed owner cash: {{out}} to receive and {{in}} to pay.",
-            "sponsorPays": "The sponsor would pay {{amount}}.",
-            "sponsorReceives": "The sponsor would receive {{amount}}.",
-            "sponsorNothing": "Proposed owner payments cover all payouts; no sponsor payment is specified."
         }
     },
     "proposalGroundRebase": {
@@ -653,7 +631,6 @@
             "toMe": "To me",
             "toCity": "To city",
             "thirdParty": "Third party",
-            "perSlice": "Per replacement parcel",
             "notApplicable": "Not applicable",
             "anyone": "Anyone",
             "specific": "Specific recipient"
@@ -664,9 +641,15 @@
                 "one": "{{count}} building · {{typology}}",
                 "other": "{{count}} buildings · {{typology}}"
             },
-            "reparcelSummary": "{{count}} replacement parcel(s) · {{algorithm}}",
+            "parcelLayout": "Parcel layout",
+            "layoutSummary": "{{count}} plot(s) · {{layout}}",
+            "layouts": {
+                "equal": "Equal plots",
+                "schelling": "Schelling plots",
+                "amend": "Keep existing borders",
+                "manual": "Draw freely"
+            },
             "parcelSummary": "{{count}} affected parcel(s)",
-            "manual": "manual",
             "road": "Road",
             "track": "Track",
             "parcelOnly": "This proposal has no separate design geometry. Parcel highlighting remains live while you edit its other facets.",
@@ -722,12 +705,16 @@
                 "preview-pending": "The corridor footprint will be rebuilt when Design opens.",
                 "missing-building": "Create at least one building footprint.",
                 "invalid-building": "A building has an invalid footprint.",
-                "missing-polygons": "Add at least one replacement parcel.",
-                "invalid-polygon": "Every replacement parcel needs a valid polygon.",
-                "overlapping-polygons": "Replacement parcels overlap.",
-                "coverage-gap": "Replacement parcels leave required parent area uncovered.",
-                "coverage-excess": "Replacement parcel areas exceed required parent coverage.",
-                "missing-parent-coverage": "The plan is missing required parent parcels."
+                "missing-plots": "Add at least one plot.",
+                "too-many-plots": "Use at most 1,000 plots in one layout.",
+                "geometry-unavailable": "Geometry checks are unavailable. Try again after the map loads.",
+                "invalid-plot": "Every plot needs a valid polygon.",
+                "plot-too-small": "A plot is smaller than 1 m².",
+                "overlapping-plots": "Plots overlap. Adjust their borders.",
+                "missing-pool": "The layout has no pool outline.",
+                "invalid-pool": "The pool outline could not be checked.",
+                "coverage-gap": "The plots leave part of the pool uncovered.",
+                "coverage-excess": "The plots extend outside the pool."
             }
         },
         "autosave": {
@@ -776,7 +763,9 @@
             "parcelsNotContiguous": "The selected parcels must form one connected area.",
             "parcelsUnavailable": "The draft parcels are not available in the current city.",
             "readOnly": "This proposal is view-only.",
-            "sourceMissing": "Proposal source not found."
+            "sourceMissing": "Proposal source not found.",
+            "layoutWithoutPlots": "This parcel layout has no plots.",
+            "subdivisionWithoutSite": "This subdivision has no site."
         },
         "publish": {
             "alreadyCreated": "This draft already created proposal {{id}}.",
@@ -1423,8 +1412,8 @@
                 "estimated": "Estimated parcel {{number}}",
                 "plotPiece": "Plot piece {{number}}",
                 "remainder": "Ground remainder {{number}}",
-                "plotNote": "Ground derived from one authored readjustment plot. Several live pieces can refer to the same plot.",
-                "remainderNote": "Ground left outside the authored plots by this readjustment. It is kept separately from the plot outputs.",
+                "plotNote": "Ground derived from one authored parcel-layout plot. Several live pieces can refer to the same plot.",
+                "remainderNote": "Ground left outside the authored plots by this parcel layout. It is kept separately from the plot outputs.",
                 "source": "Source parcel {{number}}",
                 "sourcePart": "Source parcel part {{number}}",
                 "formed": "Formed ground piece {{number}}",
@@ -1449,7 +1438,7 @@
                 "row": "Row houses",
                 "parcelBased": "Detached",
                 "single": "Freeform building",
-                "reparcel": "Land readjustment",
+                "layOutParcels": "Lay out parcels",
                 "park": "Park",
                 "square": "Square",
                 "lake": "Lake",
@@ -1596,7 +1585,7 @@
                 "destination": {
                     "public": "public",
                     "proposer": "the proposer",
-                    "mapping": "per plan",
+                    "carryOver": "stays with its owners",
                     "undecided": "to be decided"
                 },
                 "takes": "Takes {{area}} m² of this parcel → {{destination}}",
@@ -1695,10 +1684,6 @@
                 "parcelTitle": "Parcel acceptance status:",
                 "noRoster": "No owner roster is available for this parcel.",
                 "ownerTitle": "Owner acceptance status:",
-                "cashOffers": "Readjustment cash offers",
-                "cashOffersScope": "Proposed compensation for each owner across the whole agreement.",
-                "cashTotal": "Total cash offer",
-                "invalidReadjustment": "Correct the readjustment allocations and cash terms before accepting.",
                 "termsChanged": "Terms changed — review and accept again",
                 "accept": "Accept",
                 "undo": "Undo",
@@ -1721,13 +1706,7 @@
                     "parcelSummary": "{{accepted}}/{{total}} parcels with verified receipts"
                 },
                 "recipient": "recipient",
-                "solanaLensHint": "Say yes in the Lens card",
-                "moneySchedule": "Money schedule",
-                "moneyScope": "What each owner receives or pays across the whole agreement, and what the sponsor covers. It always sums to zero.",
-                "moneyReceives": "receives {{amount}}",
-                "moneyPays": "pays in {{amount}}",
-                "moneySponsor": "Sponsor",
-                "moneySponsorNothing": "pays nothing"
+                "solanaLensHint": "Say yes in the Lens card"
             },
             "voting": {
                 "voteYes": "Vote yes",
@@ -2869,7 +2848,7 @@
                         "park": "Parks",
                         "square": "Squares",
                         "structure": "Other structures",
-                        "reparcellization": "Land readjustment",
+                        "parcel-layout": "Parcel layouts",
                         "parcel": "Parcel proposals",
                         "other": "Other"
                     },
@@ -2887,7 +2866,7 @@
                         "lake": "Lake",
                         "urbanRule": "Urban rule",
                         "urban-rule": "Urban rule",
-                        "reparcellization": "Reparcellization",
+                        "parcel-layout": "Parcel layout",
                         "row": "Row",
                         "other": "Other"
                     }
@@ -2932,7 +2911,7 @@
                     "square": "Square",
                     "lake": "Lake",
                     "urban-rule": "Urban rule",
-                    "reparcellization": "Reparcellization",
+                    "parcel-layout": "Parcel layout",
                     "decide-later": "Decide later",
                     "parcelBased": "Parcel-based",
                     "other": "Other"
@@ -2945,7 +2924,7 @@
                     "lake": "Lake",
                     "decide later": "Decide later",
                     "structure": "Structure",
-                    "reparcellization": "Land readjustment",
+                    "parcel-layout": "Parcel layout",
                     "parcel": "Parcel",
                     "other": "Other"
                 },
@@ -3345,7 +3324,6 @@
             "proposalTypeOptions": {
                 "purchase": "Purchase",
                 "urbanRule": "Urban rule",
-                "reparcellization": "Land readjustment",
                 "jointInvestment": "Joint investment"
             },
             "goalOptions": {
@@ -3358,7 +3336,6 @@
                 "roadTrack": "Road/Track",
                 "decideLater": "Merge",
                 "urbanRule": "Urban rule",
-                "reparcellization": "Subdivide",
                 "ownershipTransfer": "Ownership transfer"
             },
             "goalSections": {
@@ -3368,15 +3345,13 @@
             },
             "parcelsOptions": {
                 "asIs": "No change",
-                "merge": "Merge",
-                "readjust": "Readjust"
+                "merge": "Merge"
             },
             "ownershipRecipients": {
                 "noChange": "No change",
                 "toMe": "To me",
                 "toCity": "To city",
-                "thirdParty": "Third party",
-                "perSlice": "Per slice"
+                "thirdParty": "Third party"
             },
             "recipientPlaceholder": "Recipient name or 0x address",
             "recipientScope": {
@@ -3422,16 +3397,6 @@
                     "copiedEditable": "Geometry copied from \"{name}\" — press Edit to adjust it",
                     "drawing": "Geometry created by drawing"
                 }
-            },
-            "reparcellization": {
-                "label": "Algorithm",
-                "options": {
-                    "sweepLine": "Sweep line",
-                    "centroidalVoronoi": "Centroidal Voronoi",
-                    "wasserstein": "Wasserstein",
-                    "manual": "Manual"
-                },
-                "hint": "Additional algorithms are visible for planning purposes; Sweep line is currently available."
             },
             "descriptionLabel": "Description",
             "descriptionPlaceholder": "Describe your proposal…",
@@ -3544,7 +3509,7 @@
                 "mintsOn": "Mints on",
                 "noWalletTooltip": "No wallet connected; the proposal stays in this browser."
             },
-            "proposal_type_no_longer_available": "Merge / Decide Later is no longer available. Use Land readjustment.",
+            "proposal_type_no_longer_available": "Merge / Decide Later is no longer available. Use Lay out parcels.",
             "titleLake": "Create lake proposal",
             "typeLake": "Lake",
             "ownerOffer": {
@@ -3868,114 +3833,71 @@
             "generatedSummaryExcluded": "Generated {{buildings}} · {{excluded}}"
         }
     },
+    "parcelLayout": {
+        "publishLater": "Parcel layouts are shared together with their agreement. Coming soon.",
+        "editor": {
+            "title": "Lay out parcels",
+            "mapHint": "Draw the plots here. Who receives which plot is decided later, in the agreement.",
+            "algorithms": {
+                "equal": "Equal plots",
+                "schelling": "Schelling plots",
+                "amend": "Keep existing borders"
+            },
+            "schellingUnavailable": "The Schelling plan has not loaded.",
+            "plotCount": "Number of plots",
+            "courtyard": "Courtyard",
+            "courtyardHint": "Carves the inner courtyard of a planned building block out as a plot of its own.",
+            "saved": "Saved the parcel layout to this design.",
+            "discardMessage": "The edits you made here have not been saved to the design. Closing now discards them.",
+            "coverageComplete": "The plots cover the whole pool ({{area}}).",
+            "plotTooltip": "Plot {{n}} · {{area}}",
+            "takenGroundBlocked": "A parcel layout cannot redraw ground another design already holds. Deselect it, or unapply that design first.",
+            "selectParcels": "Select at least one parcel to lay out.",
+            "poolUnavailable": "The outline of these parcels could not be built.",
+            "oldPlotsMissing": "The input parcels could not be loaded, so the pool outline is taken from the layout itself.",
+            "edgeHint": "Drag it to move this segment. Erasing it joins the two plots into one.",
+            "nodeRemoveMerges": "Removing it merges {{joining}} into {{keeper}}, which gains {{moved}} m².",
+            "status": {
+                "preparing": "Preparing the layout…",
+                "cutSuccess": "Line drawn — {{plots}} new plot(s), {{nodes}} new node(s).",
+                "drawSuccess": "Plot added.",
+                "manualHint": "Draw plots on the map, or cut the pool with the line tool.",
+                "amendHint": "The existing parcels are the plots. Carve a courtyard or edit the boundaries.",
+                "courtyardCarved": "Courtyard carved out as a plot of its own.",
+                "schellingLaidOut": "Plots of Schelling plan {{code}}. The street strips between them are plots too.",
+                "schellingFailed": "Schelling plots could not be laid out here: {{reason}}",
+                "nodeOnPool": "That node sits on the pool outline: it belongs to the neighbours, not to this layout.",
+                "uploadUnavailable": "GeoJSON upload needs the geometry engine, which has not loaded."
+            },
+            "validation": {
+                "missing-plots": "Add at least one plot.",
+                "too-many-plots": "Use at most {{max}} plots in one layout.",
+                "geometry-unavailable": "Plot geometry cannot be checked until the map has loaded.",
+                "plot-too-small": "Plot {{plot}} is smaller than {{min}}.",
+                "invalid-plot": "Plot {{plot}} is not a valid polygon.",
+                "missing-pool": "The layout has no pool outline.",
+                "overlapping-plots": "Plot {{plot}} overlaps another plot.",
+                "coverage-gap": "The plots leave {{area}} of the pool uncovered.",
+                "coverage-excess": "The plots reach {{area}} beyond the pool.",
+                "invalid-pool": "The pool outline could not be checked."
+            }
+        }
+    },
     "reparcellization": {
         "modal": {
-            "mapHint": "Adjust plot boundaries on the map; review ownership and shares here.",
-            "savedRecipientUnresolved": "Saved output recipient has no matching current input contribution.",
-            "ownerReview": "Review one owner",
-            "allOwners": "All owners",
-            "unknownContribution": "Contribution unknown",
-            "contributedLand": "Land contributed",
-            "assignedLand": "Assigned land (by share)",
-            "landChange": "Net land change",
-            "ownerInputParcels": "Input parcels: {{parcels}}",
-            "ownerOutputShare": "Plot {{plot}} · {{share}} · {{area}}",
-            "ownerHighlightHint": "Dashed amber: input parcels. Solid blue: assigned plots. Use Before / After to compare.",
-            "ownerReviewInvalid": "Complete plot geometry, shares and cash offers to review this owner.",
-            "editShares": "Edit shares",
-            "applySharesFirst": "Apply the edited shares, or close the share editor to discard them.",
-            "sourceRightsNeeded": "Input parcel ownership rights are incomplete, so owner approval cannot be checked.",
-            "useProRataShares": "Use private-land proportions",
-            "proRataShares": "Shares follow private-land proportions.",
-            "customShares": "Custom shares stay fixed when boundaries change.",
-            "ownerSharePercent": "{{owner}} share (%)",
-            "applyShares": "Apply shares",
-            "sharesTotal": "Total: {{total}}%",
-            "sharesInvalid": "Each share must be positive and the total must be 100%.",
-            "title": "Land readjustment",
             "subtitle": "{{algorithm}} · {{parcels}}",
-            "subtitleWithOwners": "{{algorithm}} · {{parcels}} · {{owners}}",
-            "subtitleSingleOwner": "{{parcels}} · single owner",
             "algorithms": {
-                "borderPerpendicular": "Border perpendicular",
-                "sweepLine": "Automatic",
-                "centroidalVoronoi": "Centroidal Voronoi",
-                "wasserstein": "Wasserstein",
-                "manual": "Draw freely",
-                "amend": "Keep existing parcels"
+                "manual": "Draw freely"
             },
-            "algorithmTitle": "Land readjustment type",
             "layoutTitle": "Starting layout",
             "activeMode": "Active: {{mode}}",
-            "sharedCourtyard": "Shared courtyard",
             "courtyardFromBuilding": "From a building block",
-            "courtyardDraw": "Draw on map",
-            "jointOwnership": "Joint ownership",
-            "jointAssignButton": "Share among recipients",
             "choosePlanTitle": "Choose a building block",
-            "agreementTitle": "Agreements",
-            "agreementSingle": "One agreement",
-            "agreementIndividual": "Separate parcel agreements",
-            "agreementHint": "Each parcel keeps its remainder with its current owners and contributes its part of the shared courtyard.",
-            "agreementOfferHint": "Cash follows each owner’s compensation in the land readjustment ledger. Review each agreement separately before publishing it.",
-            "agreementRetry": "Retry remaining agreements",
-            "agreementCreate": "Create parcel agreements",
-            "agreementRequiresCourtyard": "Draw a shared courtyard before creating separate parcel agreements.",
-            "agreementPrivateTransfers": "Separate agreements must keep private land with its original owners. Use one agreement for this layout.",
-            "agreementCreated": "Created {{count}} parcel agreements.",
-            "agreementFailed": "Created {{created}} parcel agreements; {{failed}} need attention. Your draft is kept for retry.",
-            "perParcelProposalName": "{{name}} — parcel {{parcel}}",
-            "closeAria": "Close",
             "done": "Done",
-            "allPublic": "All public",
-            "ownerLegend": "Owner legend",
-            "legendMeta": {
-                "one": "{{percent}} · {{count}} parcel",
-                "few": "{{percent}} · {{count}} parcels",
-                "other": "{{percent}} · {{count}} parcels"
-            },
-            "selectedParcelsLabel": "selected parcels",
-            "defaultDescription": "Land readjustment proposal for {{label}}",
-            "syntheticOwner": "Owner of {{parcel}}",
-            "single": {
-                "parcelListTitle": "Selected parcels",
-                "superParcelLabel": "Superparcel area",
-                "lengthLabel": "Length",
-                "length": {
-                    "full": "Full",
-                    "split": "Split"
-                },
-                "parcelCountLabel": "Number of parcels",
-                "totalParcelsLabel": "Total number of parcels: {{count}}",
-                "distributionLabel": "Distribution",
-                "distribution": {
-                    "equal": "Equal",
-                    "random": "Random",
-                    "manual": "Manual"
-                },
-                "orientationHint": "Drag the line on the map to set the split direction.",
-                "parcelLabel": "Parcel",
-                "noParcels": "No parcels selected",
-                "lotLabel": "Parcel {{index}}",
-                "lotShareAria": "Share for parcel {{index}}"
-            },
-            "shuffle": "Shuffle ownership",
             "uploadGeojson": "Upload GeoJSON",
-            "assignOwners": "Assign owners",
-            "unassigned": "Unassigned",
             "publicLand": "Public land",
-            "originalOwners": "Original owners",
-            "owners": "Owners",
             "newPlots": "New plots",
-            "colOwner": "Owner",
-            "colOrigArea": "Original",
             "colPlot": "Plot",
-            "colOwners": "Owners",
-            "colContributed": "Contributed",
-            "colAssigned": "Assigned",
-            "colBalance": "Balance",
-            "colCashOffer": "Cash offer",
-            "totalCashOffer": "Total cash offers: {{amount}}",
             "sweepHandleHint": "Drag to rotate the parcel lines",
             "drawPlot": "Draw plot",
             "drawLine": "Draw a line",
@@ -3983,32 +3905,19 @@
             "drawFinishLine": "Finish line",
             "drawUndo": "Undo point",
             "drawCancel": "Cancel",
-            "coverageComplete": "All pooled land assigned ({{pct}}%).",
-            "coverageIncomplete": "{{count}} plot(s) unassigned · {{area}} not yet assigned ({{pct}}% covered).",
             "status": {
-                "preparingPreview": "Preparing repartition preview…",
-                "missingOwners": "Could not determine owners for reparcellization.",
-                "algorithmUnavailable": "Selected algorithm is not available yet.",
                 "splitFailed": "Failed to split the parcel geometry.",
-                "success": "Layout generated. Review and click Done to save.",
-                "manualHint": "Draw plots on the map, then assign each to an owner.",
                 "drawHint": "Click to add points, drag to adjust, then press Finish.",
                 "drawTooFew": "Add at least 3 points to make a plot.",
                 "drawInvalid": "Could not build a valid plot from those points.",
                 "drawNoOverlap": "The drawn plot is outside the pooled land.",
-                "drawSuccess": "Plot added. Click it to assign owners.",
                 "lineHint": "Click to place the line. It is drawn only between the places it meets an existing boundary or corner — at least two of them.",
                 "lineTooFew": "Add at least 2 points to make a split line.",
-                "lineNoSplit": "The line did not cross any plot to split.",
-                "lineSuccess": "Plot split. Click each part to assign owners.",
                 "uploadEmpty": "Uploaded file contains no polygon features.",
                 "uploadParseError": "Failed to parse GeoJSON file.",
                 "uploadNoOverlap": "Uploaded polygons do not overlap with selected parcels.",
                 "uploadSuccess": "Loaded {{count}} polygons from file.",
-                "editBlocked": "This edit displaces applied proposals and cannot be saved here.",
                 "nodeHint": "Drag a node, or grab a boundary segment and drag it. Pull a midpoint to bend a boundary. Click a node to remove it, or a boundary to erase it. The pooled outline is fixed.",
-                "ownersFromRights": "The owners now come from the rights file: {{count}} owner(s). Check each plot's owners.",
-                "approvalSaved": "Ownership and approval saved.",
                 "manualFromLayout": "Drawing freely from the current layout. Drag nodes or whole boundary segments, cut with the line tool, or click a boundary to erase it.",
                 "redone": "Redid the change.",
                 "edgeErased": "Boundary erased — the two plots are now one.",
@@ -4016,9 +3925,6 @@
                 "editFolds": "Not changed: that would fold a plot over itself or over a neighbour.",
                 "editBreaksTiling": "Not changed: that would leave land with no plot, or in two plots.",
                 "undone": "Undid the last change.",
-                "nodeOnPool": "That node sits on the pooled outline — it belongs to the neighbours, not to this plan.",
-                "assignHint": "Click a plot to choose its owners. Editing is paused while you assign.",
-                "cutSuccess": "Line drawn — {{plots}} new plot(s), {{nodes}} new node(s). Click each part to assign owners.",
                 "cutNoSplit": "That line ran between its anchors without dividing a plot — nothing changed.",
                 "cutOnNode": "Starts on an existing corner — that is one of the two anchors it needs.",
                 "cutFree": "Snapping off while Shift is held — the point lands exactly where you click.",
@@ -4028,10 +3934,7 @@
                 "lineOneAnchor": "One anchor so far. Cross another boundary, or finish on an existing corner.",
                 "lineNoAnchor": "No anchors yet. A line has to cross a boundary or meet an existing corner in two places to make one.",
                 "lineNoAnchors": "That line met the existing boundaries in fewer than two places, so there is nothing to draw between. Cross two boundaries, or start on a corner and cross one.",
-                "amendHint": "Keep the existing plots and owners. Carve a shared courtyard or edit the boundaries.",
                 "noBlockProposals": "No building block with an enclosed courtyard overlaps these parcels.",
-                "courtyardCarved": "Courtyard carved and assigned jointly.",
-                "courtyardDrawHint": "Draw the shared courtyard. Its ownership shares follow the private land assigned to each recipient.",
                 "courtyardError": "Could not carve the courtyard. The layout has been kept."
             },
             "parcelCount": {
@@ -4039,15 +3942,8 @@
                 "few": "{{count}} parcels",
                 "other": "{{count}} parcels"
             },
-            "ownerCount": {
-                "one": "{{count}} owner",
-                "few": "{{count}} owners",
-                "other": "{{count}} owners"
-            },
             "cancel": "Cancel",
-            "takenGroundBlocked": "A land readjustment cannot take ground another proposal already holds. Deselect it, or unapply that proposal first.",
             "discardTitle": "Discard these changes?",
-            "discardMessage": "The edits you made here have not been saved to the proposal. Closing now discards them.",
             "discardConfirm": "Discard changes",
             "discardCancel": "Keep editing",
             "editNodes": "Edit boundaries (nodes)",
@@ -4055,7 +3951,6 @@
             "redoEdit": "Redo",
             "redoNothing": "Nothing to redo",
             "edgeBetween": "Boundary between {{a}} and {{b}}",
-            "edgeHint": "Drag it to move this segment. Erasing it joins the two plots; the joined plot keeps the owners of the larger one.",
             "edgeOwn": "Boundary segment",
             "edgeOwnHint": "Drag it to move this segment.",
             "edgeErase": "Erase this boundary",
@@ -4073,38 +3968,15 @@
             "colParcel": "Parcel",
             "colArea": "Area",
             "unknownParcel": "Parcel",
-            "oldPlotsMissing": "The input parcels could not be loaded, so the pooled outline is derived from the plan itself.",
             "oldPlotsPartial": "{{shown}} of {{declared}} input parcels could be loaded.",
             "eraseEdge": "Erase a boundary",
             "eraseTooltip": "Erase this boundary — {{a}} and {{b}} become one plot",
-            "nodeRemoveMerges": "Removing it merges {{joining}} into {{keeper}} — {{moved}} m² changes hands.",
             "nodeRemoveStraightens": "Removing it straightens the boundary — about {{moved}} m² moves across it.",
             "plotLabel": "plot {{n}} ({{area}} m²)",
-            "noOwnerBalance": "Ownership is unknown. This draft calculates no balance or cash allocation for this ground.",
-            "openGroundOwner": "Open ground (ownership unknown)",
-            "subdivisionTitle": "Subdivision",
             "siteParcelsMissing": "The parcels under this site could not be loaded: {{ids}}.",
             "siteUnavailable": "This site cannot be subdivided here.",
             "poolClipFailed": "The ground of this plan could not be computed: {{reason}}",
-            "siteGroundTaken": "This site covers ground another proposal already formed: {{names}}. Draw the site off it, or unapply that proposal first.",
-            "cashTermsHint": "Total compensation from the owner ledger. Edit individual cash offers in the land readjustment editor.",
-            "jointShareHint": "Courtyard shares start from each owner’s remaining private land. Use Edit shares to set fixed percentages.",
-            "colCash": "Cash (+ receives, − pays)",
-            "ownerPays": "Cash the owner pays"
-        },
-        "validation": {
-            "missing-polygons": "Draw a replacement parcel before continuing.",
-            "too-many-polygons": "Use at most 1,000 replacement parcels.",
-            "geometry-unavailable": "Geometry checks are unavailable. Try again after the map loads.",
-            "invalid-polygon": "Review the replacement parcel geometry.",
-            "overlapping-polygons": "Replacement parcels overlap. Adjust their boundaries.",
-            "coverage-gap": "Replacement parcels leave part of the pooled land uncovered.",
-            "coverage-excess": "Replacement parcels extend beyond the pooled land.",
-            "disconnected-readjustment": "Create a separate readjustment for each disconnected land area.",
-            "invalid-pool": "Review the pooled land boundary.",
-            "invalid-allocation": "Review the owners and shares for each replacement parcel.",
-            "invalid-readjustment-deal": "Review the cash offers and land allocation details.",
-            "invalid-proposal-approval": "Review the approval policy and owner rights."
+            "siteGroundTaken": "This site covers ground another proposal already formed: {{names}}. Draw the site off it, or unapply that proposal first."
         }
     },
     "mapCompare": {
@@ -4281,7 +4153,6 @@
             "focused_on_block": "Focused on block {{name}}",
             "invalid_bounds_for_block": "Invalid bounds for block {{name}}",
             "invalid_block_bounds_for_block": "Invalid block bounds for {{name}}",
-            "loading_reparcellization_tools": "Loading reparcellization tools…",
             "map_is_not_ready_yet_please_wait": "Map is not ready yet. Please wait.",
             "measurement_cancelled_click_to_start_measuring": "Measurement cancelled. Click to start measuring.",
             "merging_parcel_data": "Merging parcel data…",
@@ -4354,7 +4225,6 @@
             "parcels_could_not_be_merged": "Could not merge the selected parcels into one site: {{reason}}",
             "select_a_parcel_before_attempting_to_claim_it": "Select a parcel before attempting to claim it.",
             "select_a_parcel_block_before_creating_a_proposal": "Select a parcel block before creating a proposal.",
-            "select_at_least_one_parcel_before_running_reparcellization": "Select at least one parcel before running reparcellization.",
             "select_at_least_one_parcel_to_create_a_proposal": "Select at least one parcel to create a proposal.",
             "select_parcels_before_applying_the_government_road_plan": "Select parcels before applying the government road plan.",
             "select_at_least_one_parcel_to_apply_the_government_road_plan": "Select at least one parcel to apply the government road plan.",
@@ -4377,7 +4247,6 @@
             "single_building_proposal_created_use_apply_when_ready": "Proposal \"{{title}}\" created. Use Apply to map from the proposal details when ready.",
             "single_building_tool_is_unavailable": "Single building tool is unavailable.",
             "structure_proposal_dialog_is_unavailable": "Structure proposal dialog is unavailable.",
-            "unable_to_build_geometry_for_reparcellization": "Unable to build geometry for reparcellization.",
             "unable_to_compute_bounds_for_this_block": "Unable to compute bounds for this block.",
             "unable_to_determine_map_bounds_for_analysis": "Unable to determine map bounds for analysis.",
             "unable_to_determine_map_bounds_for_government_plans": "Unable to determine map bounds for government plans.",
@@ -4390,7 +4259,6 @@
             "waiting_for_parcel_merge_to_complete_before_applying_the_government_road_plan": "Waiting for parcel merge to complete before applying the government road plan…",
             "parcel_data_still_merging_before_government_plan": "Parcel data is still merging. We will apply the government road plan as soon as the map finishes updating.",
             "zoom_in_further_to_apply_the_government_road_plan": "Zoom in further to apply the government road plan.",
-            "saved_reparcellization_layout_to_the_proposal": "Saved reparcellization layout for this proposal.",
             "loaded_cadastral_parcels": {
                 "one": "Loaded {{count}} cadastral parcel.",
                 "other": "Loaded {{count}} cadastral parcels."
@@ -6193,7 +6061,7 @@
             "proposal_lifecycle_unknown": "The proposal status is unknown. Reload it before accepting.",
             "proposal_terms_unavailable": "The current proposal terms could not be verified. Reload the proposal before accepting.",
             "acceptance_confirmed_status_unavailable": "Acceptance was confirmed on-chain, but the proposal status could not be refreshed. The previous status is still shown. Reload the proposal to check it.",
-            "readjustment_terms_invalid": "Complete and correct the readjustment allocations and cash terms before accepting.",
+            "proposal_terms_invalid": "Correct the proposal terms before accepting.",
             "error_accepting_proposal_please_try_again": "Error accepting proposal. Please try again.",
             "error_rejecting_proposal_please_try_again": "Error rejecting proposal. Please try again.",
             "failed_to_wipe_local_data": "Failed to wipe local data:",
@@ -6216,16 +6084,11 @@
             "please_provide_author_name_and_a_valid_offer": "Please provide author, name, and a valid offer.",
             "please_select_a_parcel_first": "Please select a parcel first",
             "please_specify_which_owner_acceptance_to_undo": "Please specify which owner acceptance to undo.",
-            "proposal_type_no_longer_available": "Merge / Decide Later is no longer available. Use Land readjustment.",
+            "proposal_type_no_longer_available": "Merge / Decide Later is no longer available. Use Lay out parcels.",
             "proposal_not_found": "Proposal not found.",
             "proposal_storage_is_unavailable": "Proposal storage is unavailable.",
-            "reparcellization_plan_is_missing_please_rerun_the_algorithm": "Reparcellization plan is missing. Please rerun the algorithm.",
-            "subdivision_site_missing": "This subdivision has no site. Reopen it from its draft and save again.",
-            "subdivision_site_changed": "The site changed after the plots were laid. Open the subdivision editor again and click Done.",
-            "run_the_reparcellization_algorithm_and_click_done_before_creating_this_proposal": "Run the reparcellization algorithm and click Done before creating this proposal.",
             "select_a_proposal_goal_before_creating_a_proposal": "Select a proposal goal before creating a proposal.",
             "select_which_owner_share_you_are_accepting_for": "Select which owner share you are accepting for.",
-            "selected_parcels_changed_after_running_reparcellization_please_rerun_the_algorithm": "Selected parcels changed after running reparcellization. Please rerun the algorithm.",
             "single_building_workflow_is_unavailable": "Single building workflow is unavailable.",
             "this_exact_proposal_already_exists": "This exact proposal already exists",
             "this_exact_proposal_already_exists_2": "This exact proposal already exists.",
@@ -6429,13 +6292,11 @@
             "failed_to_encode_shared_proposal_data": "Failed to encode shared proposal data.",
             "failed_to_generate_share_link": "Failed to generate share link.",
             "no_applied_proposals_to_share_yet": "No applied proposals to share yet.",
-            "reparcellization_tools_failed_to_load": "Reparcellization tools failed to load.",
             "road_proposal_already_exists_or_could_not_be_saved_review_proposals_for_details": "Road proposal already exists or could not be saved. Review proposals for details.",
             "onchain_proposal_mint_failed": "On-chain proposal mint failed.",
             "onchain_proposal_mint_failed_with_reason": "On-chain proposal mint failed: {{error}}.",
             "logged_out_ai_controls": "Logged out. AI will control your agent.",
             "logged_out_agent_inactive": "Logged out. Agent is now inactive.",
-            "saved_reparcellization_layout_to_the_proposal": "Saved reparcellization layout for this proposal.",
             "shared_proposal_loaded": "Shared proposal loaded.",
             "proposal_executed_all_parcels": "Proposal {{hash}} executed! All {{count}} parcels accepted.",
             "proposal_executed": "Proposal {{hash}} executed!",
@@ -7161,9 +7022,9 @@
             "partialAll": "partial — the whole site is open ground: no parcel here, though the cadastre covers the area"
         },
         "palette": {
-            "readjustNeedsParcels": "Land readjustment works on selected parcels: select them instead of drawing a site.",
+            "layoutNeedsParcels": "Lay out parcels works on selected parcels: select them instead of drawing a site.",
             "subdivide": "Subdivide",
-            "readjustUnknownCadastre": "Subdividing needs a cadastre the server holds: this place has none it knows."
+            "subdivideUnknownCadastre": "Subdividing needs a cadastre the server holds: this place has none it knows."
         },
         "plots": {
             "summary": "{{tool}}: plots {{count}}, along a {{length}} m frontage.",
@@ -7255,7 +7116,7 @@
             "width": "{{width}} m wide"
         },
         "plots": {
-            "line": "Plot {{number}} ({{area}}, {{who}}): {{overlap}} of this parcel"
+            "line": "Plot {{number}} ({{area}}): {{overlap}} of this parcel"
         },
         "ownership": {
             "ceded": "{{area}} → {{destination}}"

@@ -135,8 +135,8 @@ function proposalDraftGeometryFeatures(descriptor, draft) {
         }
     } else if (descriptor?.kind === 'buildings') {
         (descriptor.features || []).forEach(feature => pushGeometry(feature));
-    } else if (descriptor?.kind === 'reparcellization') {
-        (descriptor.polygons || []).forEach(polygon => pushGeometry(polygon.geometry || polygon));
+    } else if (descriptor?.kind === 'parcel-layout') {
+        (descriptor.plots || []).forEach(plot => pushGeometry(plot && plot.geometry));
     } else {
         pushGeometry(descriptor?.geometry || null);
     }
@@ -552,7 +552,7 @@ function renderAppliedProposalHighlight(proposal, { blink = false } = {}) {
         });
     } else {
         // Anything not standing on the map — a parked road, an unapplied building/park/square/lake,
-        // a reparcellization taken off — is drawn as a proposal: dashed lines and no fill. Only a
+        // a parcel layout taken off — is drawn as a proposal: dashed lines and no fill. Only a
         // proposal that IS on the map gets the solid, filled primary outline.
         const primaryStyle = (isRoadProposal || !standsOnMap) ? {
             color: '#2563EB',
@@ -697,7 +697,7 @@ function clearProposalOwnParcelInfo(expectedParcelIds = null) {
 
 // A proposal that produces exactly one live parcel shows that parcel's info alongside the proposal
 // card, collapsed to its header so the proposal stays the primary surface. Proposals that currently
-// produce no parcel and those that create many (reparcellization) open nothing here.
+// produce no parcel and those that create many (a parcel layout) open nothing here.
 function showOwnParcelInfoForProposal(proposal) {
     if (window.PlanningViews?.isInspecting()) return;
     // 3D is a viewing mode: the details card does not open there (showProposalInfo bails out), so

@@ -42,7 +42,7 @@ describe('flat drill stack', () => {
                 live: true
             }],
             proposals: [
-                { key: 'readjustment', proposal: { goal: 'reparcellization' }, footprint: rect(0, 0, 10, 10) },
+                { key: 'readjustment', proposal: { goal: 'parcel-layout' }, footprint: rect(0, 0, 10, 10) },
                 { key: 'building', proposal: { goal: 'buildings' }, footprint: rect(2, 2, 8, 8) }
             ]
         }));
@@ -105,7 +105,7 @@ describe('flat drill stack', () => {
             }],
             proposals: [
                 { key: 'road', proposal: { goal: 'road-track' }, footprint: rect(0, 0, 10, 10) },
-                { key: 'readjustment', proposal: { goal: 'reparcellization' }, footprint: rect(0, 0, 10, 10) }
+                { key: 'readjustment', proposal: { goal: 'parcel-layout' }, footprint: rect(0, 0, 10, 10) }
             ]
         }));
         expect(stack.map(entry => entry.kind === 'proposal' ? entry.key : entry.id))

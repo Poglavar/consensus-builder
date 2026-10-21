@@ -323,12 +323,12 @@ function deleteProposal(proposalId) {
             || goalKey === 'park'
             || goalKey === 'square'
             || goalKey === 'lake'
-            || goalKey === 'reparcellization'
+            || goalKey === 'parcel-layout'
             || goalKey === 'decide-later'
             || !!proposal.roadProposal
             || !!proposal.buildingProposal
             || !!proposal.structureProposal
-            || !!proposal.reparcellization
+            || !!proposal.parcelLayout
             || !!proposal.decideLaterProposal
         );
         if (managedByProposalManager && typeof ProposalManager !== 'undefined' && ProposalManager.deleteProposal) {

@@ -498,18 +498,13 @@ describe('road-drawing conflict markers (display; degrade, reported)', () => {
     });
 });
 
-describe('reparcellization editor (refuse)', () => {
-    const path = '../../frontend/js/reparcellization.js';
-    const load = t => runFunctions(path, ['reparcellizationClipFailure', 'safeIntersect', 'safeDifference', 'buildSuperParcelFromPlan'], {
+describe('parcel-layout editor (refuse)', () => {
+    const path = '../../frontend/js/parcel-layout.js';
+    const load = t => runFunctions(path, ['layoutClipFailure', 'buildPoolFromPlots'], {
         turf: t, window: { __parcelArrangement: A }
     });
 
-    it('safeIntersect / safeDifference throw instead of answering null', () => {
-        expectRefusal(() => load(failingTurf('intersect')).safeIntersect(WEST, EAST), 'reparcellization.safeIntersect');
-        expectRefusal(() => load(failingTurf('difference')).safeDifference(WEST, EAST), 'reparcellization.safeDifference');
-    });
-
-    it('buildSuperParcelFromPlan refuses instead of a pool with a plot left out', () => {
-        expectRefusal(() => load(failingTurf('union')).buildSuperParcelFromPlan([WEST, EAST], ['P1', 'P2']), 'reparcellization.buildSuperParcelFromPlan');
+    it('buildPoolFromPlots refuses instead of a pool with a plot left out', () => {
+        expectRefusal(() => load(failingTurf('union')).buildPoolFromPlots([WEST, EAST], ['P1', 'P2']), 'parcel-layout.buildPoolFromPlots');
     });
 });

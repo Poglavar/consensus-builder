@@ -90,7 +90,7 @@ function _getProposalApplyLabel(proposalId, proposalData) {
 // identical lines would.
 const _APPLY_KIND_WORDS = {
     'road-track': 'road',
-    reparcellization: 'land readjustment',
+    'parcel-layout': 'parcel layout',
     'decide-later': 'merge',
     park: 'park',
     square: 'square',
@@ -1598,7 +1598,7 @@ const ProposalManager = {
         const spansSeveralParcels = record => {
             const id = String(record?.proposalId || '');
             const route = applyRoute?.classifyApplyRoute?.(record)?.route || '';
-            if (route === 'reparcellization' || route === 'decide-later' || record?.reparcellization || record?.decideLaterProposal) return true;
+            if (route === 'parcel-layout' || route === 'decide-later' || record?.parcelLayout || record?.decideLaterProposal) return true;
             if (seedIds.has(id)) return true;
             if (!fabric || typeof fabric.producedBy !== 'function') return true;
             try {
@@ -2991,7 +2991,7 @@ const ProposalManager = {
         delete proposal.descendantParcelIds;
         delete proposal.parentFeatures;
         delete proposal.childFeatures;
-        ['roadProposal', 'reparcellization', 'decideLaterProposal', 'buildingProposal', 'structureProposal'].forEach(key => {
+        ['roadProposal', 'parcelLayout', 'decideLaterProposal', 'buildingProposal', 'structureProposal'].forEach(key => {
             const sub = proposal[key];
             if (!sub || typeof sub !== 'object' || Array.isArray(sub)) return;
             delete sub.childParcelIds;
@@ -3325,7 +3325,7 @@ const ProposalManager = {
         const { route, goalKey } = applyRoute.classifyApplyRoute(proposalData);
         const groundRecord = _groundRecord(proposalData);
         if (_withoutParcelsSelected() && (!groundRecord
-            || (route === 'reparcellization' && proposalClaims.cadastreParcelIdsOf(proposalData).length))) {
+            || (route === 'parcel-layout' && proposalClaims.cadastreParcelIdsOf(proposalData).length))) {
             this._setLastApplyFailure(safeId, _proposalApplyFailure('proposal-needs-parcels'));
             return false;
         }
@@ -3348,7 +3348,7 @@ const ProposalManager = {
             return false;
         }
 
-        // Open ground (PARCEL-OPTIONAL.md phases 3-4). A land readjustment over ground without
+        // Open ground (PARCEL-OPTIONAL.md phases 3-4). A parcel layout over ground without
         // parcels is a subdivision: its plots form on the open-ground host beside the bound
         // parcels' pieces (apply/parcels.js). A decide-later merge is an act on parcels and never
         // stands on open ground (hasOpenGround is false for parcel acts); refused by name should a
@@ -3389,8 +3389,8 @@ const ProposalManager = {
                 try { this._setLastApplyFailure(safeId, { code: 'corridor-footprint-missing', message }); } catch (_) { }
                 return false;
             }
-            if (route === 'reparcellization') {
-                return await this._applyReparcellizationProposal(safeId, proposalData, formationOptions);
+            if (route === 'parcel-layout') {
+                return await this._applyParcelLayoutProposal(safeId, proposalData, formationOptions);
             }
             if (route === 'decide-later') {
                 return await this._applyDecideLaterProposal(safeId, proposalData, applyOptions);
@@ -3568,7 +3568,7 @@ const ProposalManager = {
             proposalData.roadProposal
             || proposalData.buildingProposal
             || proposalData.structureProposal
-            || proposalData.reparcellization
+            || proposalData.parcelLayout
             || proposalData.decideLaterProposal
         );
         if (!supported) return false;
@@ -3640,10 +3640,6 @@ const ProposalManager = {
 
         if (refreshAll || route === 'building') {
             try { if (typeof updateProposedBuildingsLayer === 'function') updateProposedBuildingsLayer(); } catch (_) { }
-        }
-
-        if (refreshAll || route === 'reparcellization') {
-            try { if (typeof updateReparcellizationLayers === 'function') updateReparcellizationLayers(); } catch (_) { }
         }
 
         // Refresh the proposals modal if it's open

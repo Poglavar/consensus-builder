@@ -16,7 +16,6 @@
     const esc = value => escapeHtml(String(value === undefined || value === null ? '' : value));
     const format = () => root.CbFormat;
     const area = value => format().formatArea(value, { missing: '—' });
-    const money = cents => format().formatMoney(cents / 100, 'EUR', { minFractionDigits: 2, maxFractionDigits: 2 });
     const runtime = () => root.ProposalApprovalRuntime;
     const actor = () => (typeof getCurrentUserAgent === 'function' ? getCurrentUserAgent() : null) || null;
     const wallet = () => root.ProposalApprovalLensAuthority.browserWallet();
@@ -28,7 +27,7 @@
     const list = names => names.join(', ');
     // The cadastral number people know ("1236"), as the rest of the panel shows it.
     function parcelName(id) {
-        // A parcel a readjustment replaced is gone from the live fabric; the cadastre still has it.
+        // A parcel a parcel layout replaced is gone from the live fabric; the cadastre still has it.
         const properties = root.LiveParcelFabric?.get?.(id)?.properties || root.CadastralParcelRepository?.get?.(id)?.properties;
         const number = root.ProposalDisplayText.parcelLabel(getParcelDisplayNumberFromProperties(properties, id));
         return t('panel.proposal.parcels.label', 'Parcel {{id}}', { id: number });
@@ -167,7 +166,7 @@
         if (!counts('area', 'owners')) {
             html.push(progress.totalAreaM2 == null
                 ? `<p class="approval-card__note">${esc(t('proposalApproval.areaUnknown', 'Parcel areas are unresolved.'))}</p>`
-                : meter('area', t('reparcellization.modal.colArea', 'Area'),
+                : meter('area', t('proposalApproval.meterArea', 'Area'),
                     t('proposalApproval.amountOf', '{{amount}} of {{total}}', { amount: area(progress.acceptedAreaM2), total: area(progress.totalAreaM2) }),
                     progress.acceptedAreaM2, progress.totalAreaM2, unanimous
                         ? t('proposalApproval.areaNeededAll', 'Needs every parcel: {{area}}', { area: area(progress.totalAreaM2) }) : null));
@@ -563,12 +562,7 @@
                 title: kind === 'authority' ? t('proposalApproval.review.approveAs', 'Approve as {{owner}}', { owner })
                     : t('proposalApproval.review.acceptAs', 'Accept as {{owner}}', { owner }),
                 contributes: t('proposalApproval.review.contributes', 'Your proposed contribution'),
-                receives: t('proposalApproval.review.receives', 'Your proposed allocation'),
                 share: share => t('proposalApproval.review.yourShare', 'Your share {{share}}', { share }),
-                landBefore: t('proposalApproval.review.landBefore', 'Land you would contribute'),
-                landAfter: t('proposalApproval.review.landAfter', 'Land allocated to you'),
-                cash: t('proposalApproval.review.cash', 'Cash offered to you'),
-                cashPay: t('proposalApproval.review.cashYouPay', 'Cash you would pay'),
                 withAcceptance: progress => t('proposalApproval.review.withYou', 'With your acceptance: {{progress}}', { progress }),
                 passes: t('proposalApproval.review.passesWithYou', 'Your acceptance would meet the configured approval rules.'),
                 needsMore: t('proposalApproval.review.needsMore', 'Further decisions would still be needed under the configured approval rules.')
@@ -578,12 +572,7 @@
             inspect: true,
             title: t('proposalApproval.deals.dealOf', '{{owner}}’s deal', { owner }),
             contributes: t('proposalApproval.deals.contributes', 'Proposed contribution from {{owner}}', { owner }),
-            receives: t('proposalApproval.deals.receives', 'Proposed allocation to {{owner}}', { owner }),
             share: share => t('proposalApproval.deals.share', 'Share {{share}}', { share }),
-            landBefore: t('proposalApproval.deals.landBefore', 'Contributed land area'),
-            landAfter: t('proposalApproval.deals.landAfter', 'Allocated land area'),
-            cash: t('proposalApproval.deals.cashReceived', 'Cash offered'),
-            cashPay: t('proposalApproval.deals.cashPaid', 'Proposed cash payment'),
             withAcceptance: progress => t('proposalApproval.deals.withOwner', 'With {{owner}}’s acceptance: {{progress}}', { owner, progress }),
             passes: t('proposalApproval.deals.passesWithOwner', '{{owner}}’s acceptance would meet the configured approval rules.', { owner }),
             needsMore: t('proposalApproval.deals.needsMoreThanOwner', 'Further decisions besides {{owner}}’s acceptance would still be needed under the configured approval rules.', { owner })
@@ -609,51 +598,13 @@
     // What an authority decides on: the whole plan, not a share of it.
     function planHtml(proposal, review) {
         const state = runtime().inspect(proposal);
-        const plots = Array.isArray(proposal.reparcellization?.polygons) ? proposal.reparcellization.polygons.length : null;
         const facts = [
             [t('proposalDrafts.review.parcels', 'Parcels'), state.parcels.length],
             [t('proposalApproval.meterOwners', 'Owners'), state.ownerIds.length],
             ...(state.leaseholderIds.length ? [[t('proposalApproval.rules.meter.headcount-leaseholders-all', 'Leaseholders'), state.leaseholderIds.length]] : []),
-            ...(plots != null ? [[t('reparcellization.modal.newPlots', 'New plots'), plots]] : []),
-            ...(review.progressWithout.totalAreaM2 != null ? [[t('reparcellization.modal.colArea', 'Area'), area(review.progressWithout.totalAreaM2)]] : [])
+            ...(review.progressWithout.totalAreaM2 != null ? [[t('proposalApproval.meterArea', 'Area'), area(review.progressWithout.totalAreaM2)]] : [])
         ];
         return `<dl class="approval-review__facts" data-approval-plan>${facts.map(([name, value]) => `<div><dt>${esc(name)}</dt><dd>${esc(value)}</dd></div>`).join('')}</dl>`;
-    }
-
-    function receivesHtml(review, label, voice) {
-        const receives = review.receives;
-        if (!receives.inLedger && !receives.plots.length) {
-            return `<p class="approval-review__warning" data-approval-no-allocation>${esc(t('proposalApproval.review.noAllocation', 'This plan assigns no plot or cash to this owner.'))}</p>`;
-        }
-        const plots = receives.plots.map(plot => `<li data-approval-plot="${plot.index + 1}">
-            <span>${esc(t('proposalApproval.review.plot', 'Plot {{number}}', { number: plot.index + 1 }))}</span>
-            <span>${esc(t('proposalApproval.review.plotShare', '{{share}} of {{area}} = {{yours}}', {
-                share: format().formatPercent(plot.share, { maxFractionDigits: 2 }), area: area(plot.areaM2), yours: area(plot.assignedAreaM2)
-            }))}${plot.coRecipientIds.length ? ` · ${esc(t('proposalApproval.review.sharedWith', 'shared with {{owners}}', {
-                owners: list(plot.coRecipientIds.map(id => (review.ownerIds.includes(id) ? label(id) : id)))
-            }))}` : ''}</span>
-        </li>`).join('');
-        const change = receives.areaChangeM2 == null ? '—' : `${receives.areaChangeM2 > 0 ? '+' : ''}${area(receives.areaChangeM2)}`;
-        return `${plots ? `<ul class="approval-review__list">${plots}</ul>` : ''}
-            <dl class="approval-review__facts">
-                <div><dt>${esc(voice.landBefore)}</dt><dd>${esc(area(receives.contributedAreaM2 ?? review.contributedAreaM2))}</dd></div>
-                <div><dt>${esc(voice.landAfter)}</dt><dd>${esc(area(receives.assignedAreaM2))}</dd></div>
-                <div><dt>${esc(t('proposalApproval.review.landChange', 'Change in land'))}</dt><dd>${esc(change)}</dd></div>
-                ${receives.payCents > 0
-                    ? `<div data-approval-cash="pays"><dt>${esc(voice.cashPay)}</dt><dd>${esc(money(receives.payCents))}</dd></div>`
-                    : `<div data-approval-cash="receives"><dt>${esc(voice.cash)}</dt><dd>${esc(money(receives.cashCents))}</dd></div>`}
-            </dl>`;
-    }
-
-    // The whole money schedule, so an owner sees who else pays and who covers the rest.
-    function moneyLines(schedule) {
-        if (!schedule || (!schedule.payOutCents && !schedule.payInCents)) return [];
-        const lines = [t('proposalApproval.money.summary', 'Proposed owner cash: {{out}} to receive and {{in}} to pay.', {
-            out: money(schedule.payOutCents), in: money(schedule.payInCents) })];
-        if (schedule.sponsorCents < 0) lines.push(t('proposalApproval.money.sponsorPays', 'The sponsor would pay {{amount}}.', { amount: money(-schedule.sponsorCents) }));
-        else if (schedule.sponsorCents > 0) lines.push(t('proposalApproval.money.sponsorReceives', 'The sponsor would receive {{amount}}.', { amount: money(schedule.sponsorCents) }));
-        else lines.push(t('proposalApproval.money.sponsorNothing', 'Proposed owner payments cover all payouts; no sponsor payment is specified.'));
-        return lines;
     }
 
     function conditionsHtml(review, members, voice) {
@@ -662,8 +613,6 @@
         const lines = [ruleText(c.policy, c.regime)];
         if (template) {
             lines.push(`${words().regimeName(c.regime, t)} — ${words().stageText(template, t)}`, ...words().allocationLines(template, t));
-            const check = regimeCheck(review.proposal);
-            if (check) lines.push(...words().checkLines(check, t, id => labels(review.proposal)(id)));
         }
         const payoutMode = root.ProposalPublishTerms.payoutMode(review.proposal);
         if (payoutMode) {
@@ -671,17 +620,9 @@
                 ? t('panel.proposal.disbursement.conditionalHint', 'Authored terms require every owner to accept before payout. This does not confirm funding or payment.')
                 : t('panel.proposal.disbursement.partialHint', 'Authored terms allow partial payouts. Acceptance alone does not confirm payment.'));
         }
-        lines.push(...moneyLines(c.money));
         lines.push(c.expiresAt
             ? t('proposalApproval.review.openUntil', 'Open until {{date}}', { date: format().formatDateTime(c.expiresAt) })
             : t('proposalApproval.review.noDeadline', 'No deadline'));
-        // Only the sponsor's share is funded beforehand; owner payments settle with the payouts.
-        const sponsorFunding = c.money ? c.money.sponsorFundingCents : c.totalCashCents;
-        if (sponsorFunding > 0) {
-            lines.push(c.fundingConfirmed
-                ? t('proposalApproval.review.funded', 'Funding is marked ready in this record; payment is not verified.')
-                : t('proposalApproval.review.unfunded', 'Funding is not marked ready in this record.'));
-        }
         lines.push(...words().reviewBasisLines(c, t, key => root.LensCore.memberLabel(key, members)));
         return `<ul class="approval-review__conditions">${lines.map(line => `<li>${esc(line)}</li>`).join('')}</ul>
             ${voice.inspect ? '' : `<p class="approval-review__sign-note">${esc(t('proposalApproval.review.signNote', 'Your wallet signs these exact terms. If they change, your acceptance stops counting.'))}</p>`}`;
@@ -701,12 +642,6 @@
         const authority = (progress.authorities || []).length
             ? [progress.authorityMet ? t('proposalApproval.authority.given', 'authority approved') : t('proposalApproval.authority.awaited', 'authority pending')] : [];
         return [base, ...others, ...authority].join('; ');
-    }
-
-    // The plan against its scheme's distribution rules (reparcellization-validation.js), when it has both.
-    function regimeCheck(proposal) {
-        if (!proposal?.reparcellization || !root.ReparcellizationValidation) return null;
-        try { return root.ReparcellizationValidation.validate(proposal, { turf: root.turf }).regimeCheck || null; } catch (_) { return null; }
     }
 
     function reviewProgressHtml(review, voice) {
@@ -739,11 +674,11 @@
         if (!proposal) return;
         const hash = currentConsentBindingHash(proposal);
         if (!hash) {
-            showProposalAlertMessage('readjustment_terms_invalid', 'Complete and correct the readjustment allocations and cash terms before accepting.');
+            showProposalAlertMessage('proposal_terms_invalid', t('proposalApproval.invalidTerms', 'Correct the proposal terms before accepting.'));
             return;
         }
         const label = labels(proposal);
-        const review = root.ProposalApprovalReview.ownerReview(proposal, ownerId, { acceptedOwnerIds: acceptedIds(proposal, hash), turf: root.turf });
+        const review = root.ProposalApprovalReview.ownerReview(proposal, ownerId, { acceptedOwnerIds: acceptedIds(proposal, hash) });
         if (!review) {
             showProposalAlertMessage('abstract_approval_unavailable', t('proposalApproval.approvalUnavailable',
                 'The selected lens has not established these rights and your authority to act for this owner.'));
@@ -759,7 +694,6 @@
         parts.body.innerHTML = (review.kind === 'authority'
             ? section(t('proposalApproval.review.planTitle', 'The plan to decide on'), planHtml(proposal, review))
             : section(voice.contributes, contributesHtml(review, label, voice) + leaseNote))
-            + (review.receives ? section(voice.receives, receivesHtml(review, label, voice)) : '')
             + section(t('proposalApproval.review.conditions', 'Conditions'), conditionsHtml(review, members, voice))
             + section(t('proposalApproval.review.progress', 'Progress'), reviewProgressHtml(review, voice))
             + '<p class="approval-dialog__status" role="status" aria-live="polite" data-approval-review-status></p>';

@@ -1,7 +1,7 @@
 // Ownership flow (rethink-proposals.md §9, §12 step 2): what a proposal's FORMATION takes from each
 // BASE cadastral parcel, and where the ownership of the taken ground goes. One declared word per
 // typology — road/park/square/lake/station form public ground, a freeform building forms the
-// proposer's parcel, a reparcellization redistributes per its own mapping, decide-later consumes
+// proposer's parcel, a parcel layout redraws borders and carries ownership over, decide-later consumes
 // fabric but defers the ownership decision. Content-only typologies (rules, votes, transfers,
 // as-is) have no formation and therefore no flow.
 //
@@ -11,8 +11,8 @@
 // acceptances standing, a material change voids them (see execution.js). Inputs are STORED fields
 // only (geometry, goal, the stamped flow) — never live map state — so the hash is identical on
 // every machine and across sessions.
-// LR is an allocation agreement: its effect is the complete versioned deal in
-// reparcellization-deal.js, including internal borders, all recipients and their cash terms.
+// A parcel layout changes borders, never ownership (plan-design-agreement.md, M1 (a)): its effect
+// is its footprint like any other formation's; who ends up with which plot is its agreement's.
 //
 // Pure: plain objects in and out, no DOM, no map. `turf` resolves via plan-order.js.
 
@@ -33,7 +33,7 @@
         'station': 'public',
         'single': 'proposer',
         'buildings': 'proposer',
-        'reparcellization': 'mapping',
+        'parcel-layout': 'carry-over',
         'decide-later': 'undecided'
     });
 
@@ -125,9 +125,6 @@
     // cheap terms decide whether that hash still applies.
     const effectHashCache = new WeakMap();
     function effectFingerprintOf(proposal, options) {
-        const deal = global.ReparcellizationDeal
-            || (typeof require === 'function' ? require('../reparcellization-deal.js') : null);
-        if (deal?.isReadjustment(proposal)) return deal.fingerprint(proposal);
         const opts = options || {};
         // A published record carries the hash the server stamped at publish, and a published record
         // never changes (an edit derives a new record, which binding-drift.js strips the stamp from).

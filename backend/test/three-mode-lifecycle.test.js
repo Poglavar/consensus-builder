@@ -138,7 +138,7 @@ it('resolves a caller waiting on scene readiness as false when the pending scene
         squareGroundGroup: null,
         lakeGroundGroup: null,
         proposalGroundGroup: null,
-        reparcellizationGroup: null,
+        parcelLayoutGroup: null,
         buildingGroup: null,
         floorPlanGroup: null,
         parkGroup: null,

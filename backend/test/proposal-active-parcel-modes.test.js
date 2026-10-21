@@ -1,5 +1,6 @@
-// Creation-surface contract for the active parcel model: cadastral boundaries are either kept or
-// land-readjusted. Legacy Decide Later data stays readable elsewhere but cannot be newly created.
+// Creation-surface contract for the active parcel model: the create dialog keeps cadastral
+// boundaries as they are; new borders are drawn with Lay out parcels (a parcel-layout design).
+// Legacy Decide Later data stays readable elsewhere but cannot be newly created.
 import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
 
@@ -12,11 +13,14 @@ const dataSource = read('proposals/data.js');
 const editorShellSource = read('proposal-editor-shell.js');
 
 describe('active proposal parcel modes', () => {
-    it('offers only unchanged boundaries and land readjustment in the create dialog', () => {
+    it('offers only unchanged boundaries in the create dialog', () => {
         expect(dialogSource).toContain('name="proposalParcelsMode" value="as-is"');
-        expect(dialogSource).toContain('name="proposalParcelsMode" value="readjust"');
+        expect(dialogSource).not.toContain('name="proposalParcelsMode" value="readjust"');
+        expect(dialogSource).not.toContain('data-proposal-main-type="Reparcellization"');
+        expect(dialogSource).not.toContain('parcelsOptions.readjust');
         expect(dialogSource).not.toContain('name="proposalParcelsMode" value="merge"');
         expect(dialogSource).not.toContain('parcelsOptions.merge');
+        expect(coreSource).not.toContain("return 'reparcellization'");
     });
 
     it('cannot derive or serialize a new Decide Later proposal', () => {

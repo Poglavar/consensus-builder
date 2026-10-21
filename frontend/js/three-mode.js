@@ -209,7 +209,7 @@
     let squareGroundGroup = null;
     let lakeGroundGroup = null;
     let proposalGroundGroup = null;
-    let reparcellizationGroup = null;
+    let parcelLayoutGroup = null;
     let parcelGroundGeneration = 0;
     let buildingGroup = null; // buildings extrusion
     let existingBuildingsGroup = null;
@@ -1770,8 +1770,8 @@
             }
         } else if (descriptor?.kind === 'buildings') {
             (descriptor.features || []).forEach(push);
-        } else if (descriptor?.kind === 'reparcellization') {
-            (descriptor.polygons || []).forEach(polygon => push(polygon.geometry || polygon));
+        } else if (descriptor?.kind === 'parcel-layout') {
+            (descriptor.plots || []).forEach(plot => push(plot && plot.geometry));
         } else {
             push(descriptor?.geometry);
         }
@@ -1796,7 +1796,7 @@
         (proposal?.buildingProposal?.buildings || proposal?.geometry?.buildings || []).forEach(push);
         push(proposal?.buildingProposal?.buildingFeature);
         if (!features.length && proposal?.buildingGeometry) push({ type: 'Feature', properties: proposal.buildingProperties || {}, geometry: proposal.buildingGeometry });
-        (proposal?.reparcellization?.polygons || []).forEach(polygon => push(polygon.geometry || polygon));
+        (proposal?.parcelLayout?.plots || []).forEach(plot => push(plot && plot.geometry));
         push(proposal?.structureProposal?.geometry);
         return features;
     }
@@ -1964,7 +1964,7 @@
     function proposalApplied3D(proposal) {
         if (!proposal) return false;
         if (isApplied(proposal)) return true;
-        return ['roadProposal', 'buildingProposal', 'structureProposal', 'reparcellization', 'decideLaterProposal']
+        return ['roadProposal', 'buildingProposal', 'structureProposal', 'parcelLayout', 'decideLaterProposal']
             .some(k => proposal[k] && isApplied(proposal, proposal[k]));
     }
 
@@ -1990,10 +1990,10 @@
             try {
             const proposalId = proposalKey3D(proposal);
             if (!proposalId) return;
-            // Reparcellization is land-administration scaffolding under the whole plan: its
+            // A parcel layout is land-administration scaffolding under the whole plan: its
             // pick surface blanketed the area and intercepted clicks meant for the buildings
             // standing on it. It stays selectable from lists/panels, never from map clicks.
-            if (proposal.reparcellization && !proposal.buildingProposal && !proposal.structureProposal
+            if (proposal.parcelLayout && !proposal.buildingProposal && !proposal.structureProposal
                 && !proposal.roadProposal) return;
             // Parked (unapplied) ideas stay off the map entirely; they only render while
             // selected, as a preview of where they would land when applied.
@@ -2700,71 +2700,64 @@
     // (loaded first). It accepts a feature or props, so the call sites below pass unchanged. It
     // used to live here with a NUMBER-only height check that dropped string heights to the default.
 
-    // Reparcellization plans that have NOT been applied to the map. An applied plan has already
-    // replaced its parent parcels inside the live fabric, so buildParcels3D draws the new parcels and
-    // there is nothing to add here. An unapplied one exists only on the proposal — without this the
-    // 3D view showed the untouched original parcel and the proposed subdivision was invisible.
-    function getPlannedReparcellizationProposals() {
+    // Parcel layouts that have NOT been applied to the map. An applied layout has already replaced
+    // its parent parcels inside the live fabric, so buildParcels3D draws the new parcels and there
+    // is nothing to add here. An unapplied one exists only on the record — without this the 3D view
+    // showed the untouched original parcel and the proposed subdivision was invisible.
+    function getPlannedParcelLayoutProposals() {
         try {
             const storage = (typeof window !== 'undefined') ? window.proposalStorage : null;
             if (!storage || typeof storage.getAllProposals !== 'function') return [];
-            // Ruling 2026-08-07: an unapplied readjustment renders like any other parked
+            // Ruling 2026-08-07: an unapplied parcel layout renders like any other parked
             // proposal — ONLY while selected, as a preview of where it would land. It used to
             // render persistently, which (after §15d made severance and refusals permanent)
             // kept set-aside plans painted over ground other formations legitimately hold.
             const selectedKey = window.ProposalSelection?.getKey?.() || null;
             if (!selectedKey) return [];
             return storage.getAllProposals().filter(p => {
-                if (!p || !p.reparcellization) return false;
-                if (!Array.isArray(p.reparcellization.polygons) || !p.reparcellization.polygons.length) return false;
-                if (isApplied(p, p.reparcellization)) return false;
+                if (!p || !p.parcelLayout) return false;
+                if (!Array.isArray(p.parcelLayout.plots) || !p.parcelLayout.plots.length) return false;
+                if (isApplied(p, p.parcelLayout)) return false;
                 return proposalKey3D(p) === String(selectedKey);
             });
         } catch (error) {
-            console.warn('[3D] Failed to enumerate planned reparcellization proposals:', error);
+            console.warn('[3D] Failed to enumerate planned parcel layouts:', error);
             return [];
         }
     }
 
-    // Draw each planned plot as a flat slab just above the parcel plane, tinted with the owner
-    // colour the reparcellization editor assigned it, and outline it so the new boundaries read
-    // clearly against the parcel underneath.
-    function buildPlannedReparcellization3D(targetGroup) {
+    // Draw each planned plot as a flat slab just above the parcel plane, in one neutral tint (a
+    // layout carries no owners to colour by), and outline it so the new boundaries read clearly
+    // against the parcel underneath.
+    function buildPlannedParcelLayout3D(targetGroup) {
         if (!targetGroup) return;
-        const proposals = getPlannedReparcellizationProposals();
+        const proposals = getPlannedParcelLayoutProposals();
         if (!proposals.length) return;
 
         proposals.forEach(proposal => {
-            proposal.reparcellization.polygons.forEach(slice => {
-                if (!slice || !slice.geometry) return;
+            proposal.parcelLayout.plots.forEach(plot => {
+                if (!plot || !plot.geometry) return;
                 try {
-                    const feature = { type: 'Feature', geometry: slice.geometry, properties: {} };
-                    let color = 0xcccccc;
-                    try {
-                        if (typeof slice.color === 'string' && slice.color.startsWith('#')) {
-                            color = parseInt(slice.color.slice(1), 16);
-                        }
-                    } catch (_) { }
-
+                    const feature = { type: 'Feature', geometry: plot.geometry, properties: {} };
                     const fillMat = new THREE.MeshLambertMaterial({
-                        color,
+                        color: 0xcccccc,
                         transparent: true,
                         opacity: 0.75,
                         polygonOffset: true,
                         polygonOffsetFactor: -2,
                         polygonOffsetUnits: -2
                     });
-                    // A set-aside plan's slices can overlap ground OTHER formations hold now
+                    // A set-aside layout's plots can overlap ground OTHER formations hold now
                     // (that overlap is often exactly why it refuses to apply), so the preview
                     // must float clearly above the parcel/road/paving stack (z ≤ ~0.1) —
                     // at 0.08 it sat coplanar with road surfaces and shimmered.
                     const meshes = polygonFeatureToMeshes(feature, fillMat, 0.35, 0);
-                    meshes.forEach(m => { markOwnedMaterial(m, fillMat); m.userData.isPlannedReparcelPlot = true; m.renderOrder = 30; targetGroup.add(m); });
+                    meshes.forEach(m => { markOwnedMaterial(m, fillMat); m.userData.isPlannedLayoutPlot = true; m.renderOrder = 30; targetGroup.add(m); });
 
                     const borders = polygonFeatureToBorderLines(feature, materials.sliceEdges, 0.45);
-                    borders.forEach(line => { line.userData.isPlannedReparcelPlot = true; line.renderOrder = 31; targetGroup.add(line); });
+                    borders.forEach(line => { line.userData.isPlannedLayoutPlot = true; line.renderOrder = 31; targetGroup.add(line); });
                 } catch (error) {
-                    console.warn('[3D] Failed to draw a planned reparcellization plot:', error);
+                    console.warn('[3D] Failed to draw a planned parcel-layout plot:', error);
                 }
             });
         });
@@ -2772,16 +2765,16 @@
 
     // Selection drives the preview: clear the previous selection's slabs and draw the current
     // one's (same pattern as rebuildParcelGround3D).
-    function rebuildPlannedReparcellization3D() {
+    function rebuildPlannedParcelLayout3D() {
         if (!isActive || !plannedFlatGroup) return;
-        for (let index = reparcellizationGroup.children.length - 1; index >= 0; index--) {
-            const child = reparcellizationGroup.children[index];
-            if (child?.userData?.isPlannedReparcelPlot) {
+        for (let index = parcelLayoutGroup.children.length - 1; index >= 0; index--) {
+            const child = parcelLayoutGroup.children[index];
+            if (child?.userData?.isPlannedLayoutPlot) {
                 threeResources.disposeOwnedSubtree(child);
-                reparcellizationGroup.remove(child);
+                parcelLayoutGroup.remove(child);
             }
         }
-        buildPlannedReparcellization3D(reparcellizationGroup);
+        buildPlannedParcelLayout3D(parcelLayoutGroup);
         applyParcelEmphasis();
     }
 
@@ -4979,7 +4972,7 @@
                 extend(proposal.roadProposal?.definition?.polygon);
                 extend(proposal.structureProposal?.geometry);
                 (proposal.geometry?.buildings || []).forEach(feature => extend(feature?.geometry));
-                (proposal.reparcellization?.polygons || []).forEach(polygon => extend(polygon?.geometry));
+                (proposal.parcelLayout?.plots || []).forEach(plot => extend(plot?.geometry));
             });
             if (!found) return null;
             return {
@@ -7124,8 +7117,8 @@
         squareGroundGroup = new THREE.Group();
         lakeGroundGroup = new THREE.Group();
         proposalGroundGroup = new THREE.Group();
-        reparcellizationGroup = new THREE.Group();
-        plannedFlatGroup.add(parkGroundGroup, squareGroundGroup, lakeGroundGroup, proposalGroundGroup, reparcellizationGroup);
+        parcelLayoutGroup = new THREE.Group();
+        plannedFlatGroup.add(parkGroundGroup, squareGroundGroup, lakeGroundGroup, proposalGroundGroup, parcelLayoutGroup);
         buildingGroup = new THREE.Group();
         buildingGroup.name = 'Buildings';
         existingBuildingsGroup = new THREE.Group(); existingBuildingsGroup.name = 'ExistingBuildings';
@@ -7222,7 +7215,7 @@
             () => buildLakes3D(lakeGroundGroup, lakeGroup),
             () => buildProposalGrounds3D(proposalGroundGroup),
             () => buildTransitStations3D(stationGroup),
-            () => buildPlannedReparcellization3D(reparcellizationGroup)
+            () => buildPlannedParcelLayout3D(parcelLayoutGroup)
         ];
         for (const buildStructure of structureBuilds) {
             if (!isCurrent()) return false;
@@ -7370,7 +7363,7 @@
                     rebuildQueued = false;
                     if (!isActive) return;
                     rebuildProposalInteraction3D();
-                    rebuildPlannedReparcellization3D();
+                    rebuildPlannedParcelLayout3D();
                 });
             });
         }
@@ -7746,7 +7739,7 @@
         terrainCorridorGroup = null;
         corridorTerrainProfiles = [];
         plannedFlatGroup = null;
-        parkGroundGroup = squareGroundGroup = lakeGroundGroup = proposalGroundGroup = reparcellizationGroup = null;
+        parkGroundGroup = squareGroundGroup = lakeGroundGroup = proposalGroundGroup = parcelLayoutGroup = null;
         buildingGroup = null;
         existingBuildingsGroup = proposedBuildingsGroup = ineligibleBuildingsGroup = null;
         planningSourcesGroup = null;
@@ -8069,8 +8062,8 @@
             isActive: () => isActive,
             hasScene: () => !!scene,
             initScene,
-            groups: [parkGroundGroup, squareGroundGroup, lakeGroundGroup, proposalGroundGroup, reparcellizationGroup, parkGroup, squareGroup, lakeGroup, stationGroup],
-            reparcellizationGroup,
+            groups: [parkGroundGroup, squareGroundGroup, lakeGroundGroup, proposalGroundGroup, parcelLayoutGroup, parkGroup, squareGroup, lakeGroup, stationGroup],
+            parcelLayoutGroup,
             clearGroup: clearGroupChildren,
             rebuildParcelGround: rebuildParcelGround3D,
             layers: {
@@ -8080,7 +8073,7 @@
                 stations: { groups: [stationGroup], rebuildParcelGround: true, build: () => buildTransitStations3D(stationGroup) },
                 buildingGrounds: { groups: [proposalGroundGroup], build: () => buildProposalGrounds3D(proposalGroundGroup) }
             },
-            buildReparcellization: () => rebuildPlannedReparcellization3D(),
+            buildParcelLayouts: () => rebuildPlannedParcelLayout3D(),
             applyDisplay: applyModeVisibility,
             rebuildBuildings: rebuild3DBuildingsOnly,
             rebuildInteraction: rebuildProposalInteraction3D,
@@ -8124,7 +8117,7 @@
             return storage.getAllProposals().filter(p => {
                 if (!p) return false;
                 if (isApplied(p)) return true;
-                return ['roadProposal', 'buildingProposal', 'structureProposal', 'reparcellization', 'decideLaterProposal']
+                return ['roadProposal', 'buildingProposal', 'structureProposal', 'parcelLayout', 'decideLaterProposal']
                     .some(key => p[key] && isApplied(p, p[key]));
             });
         } catch (e) {

@@ -161,7 +161,7 @@ test.describe('Capture how-to screenshots', () => {
         click('#rowhouse-close');
         click('#single-building-close');
         click('#parcelbased-close');
-        click('.reparcel-close-btn');
+        click('.on-map-reparcellization [data-reparcel-cancel]');
         try { w.closeStructureGeometryEditor?.(); } catch (_) { }
         try { w.closeProposalDialog?.(); } catch (_) { }
         document.querySelectorAll('.constrained-corridor-overlay').forEach(el => el.remove());
@@ -389,7 +389,7 @@ test.describe('Capture how-to screenshots', () => {
     });
     await closeTools();
 
-    // ==================================================== REPARCELLIZATION
+    // ==================================================== PARCEL LAYOUT (the reparcelacija guide)
     await shot('reparcelacija-01-odabir', async () => {
       await showPanelWithSelection(blockIds);
       await saveView('reparcelacija-01-odabir');
@@ -397,10 +397,10 @@ test.describe('Capture how-to screenshots', () => {
 
     await shot('reparcelacija-02-alat', async () => {
       await showPanelWithSelection(blockIds);
-      await launchTool('reparcellization');
-      await page.locator('.reparcel-modal-overlay').waitFor({ state: 'visible', timeout: 20_000 });
-      await page.waitForTimeout(2500); // the plan renders asynchronously
-      await saveEl('.reparcel-modal', 'reparcelacija-02-alat');
+      await launchTool('parcel-layout');
+      await page.locator('.on-map-reparcellization .on-map-editor__panel').waitFor({ state: 'visible', timeout: 20_000 });
+      await page.waitForTimeout(2500); // the layout renders asynchronously
+      await saveEl('.on-map-reparcellization .on-map-editor__panel', 'reparcelacija-02-alat');
     });
     await closeTools();
 

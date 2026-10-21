@@ -115,7 +115,7 @@
             }
             (Array.isArray(selected.groups) ? selected.groups : []).forEach(group => clearGroup(group));
             callSafely(layer, selected.build, options.onError);
-            if (options.reparcellizationGroup) clearGroup(options.reparcellizationGroup);
+            if (options.parcelLayoutGroup) clearGroup(options.parcelLayoutGroup);
         } else {
             // Initial callers and unknown events retain the complete-build behavior.
             (Array.isArray(options.groups) ? options.groups : []).forEach(group => clearGroup(group));
@@ -125,7 +125,7 @@
             if (typeof options.rebuildParcelGround === 'function') options.rebuildParcelGround();
         }
 
-        callSafely('reparcellization', options.buildReparcellization, options.onError);
+        callSafely('parcelLayout', options.buildParcelLayouts, options.onError);
         callSafely('display', options.applyDisplay, options.onError);
 
         // This is the critical half of a structure refresh: demolition records change which

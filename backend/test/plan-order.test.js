@@ -225,11 +225,11 @@ describe('diagnostic cadastre coverage', () => {
         });
     });
 
-    it('uses authored readjustment plots and ignores a historical resolved-pool geometry', () => {
+    it('uses authored layout plots and ignores a historical resolved-pool geometry', () => {
         const plot = turf.polygon([[[15.96, 45.80], [15.961, 45.80], [15.961, 45.801], [15.96, 45.801], [15.96, 45.80]]]);
         const stalePool = turf.polygon([[[15.95, 45.79], [15.97, 45.79], [15.97, 45.81], [15.95, 45.81], [15.95, 45.79]]]);
         const footprint = planOrder.footprintOf({
-            reparcellization: { polygons: [{ geometry: plot.geometry }] },
+            parcelLayout: { pool: plot.geometry, plots: [{ geometry: plot.geometry, source: 'manual' }] },
             geometry: stalePool.geometry
         });
         expect(turf.area(footprint)).toBeCloseTo(turf.area(plot), 0);

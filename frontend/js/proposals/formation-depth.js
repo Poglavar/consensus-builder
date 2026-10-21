@@ -8,7 +8,7 @@
     // ownership-flow's DESTINATION_BY_GOAL; kept local so this module stays dependency-free.
     const FORMATION_GOALS = Object.freeze([
         'road-track', 'park', 'square', 'lake', 'station', 'single', 'buildings',
-        'reparcellization', 'decide-later'
+        'parcel-layout', 'decide-later'
     ]);
 
     function isFormationGoal(goal) {
@@ -127,7 +127,7 @@
         delete out.editSeq;
         delete out.revertSnapshot;
         delete out.childFeatures;
-        ['roadProposal', 'reparcellization', 'decideLaterProposal', 'buildingProposal', 'structureProposal'].forEach(key => {
+        ['roadProposal', 'parcelLayout', 'decideLaterProposal', 'buildingProposal', 'structureProposal'].forEach(key => {
             const sub = out[key];
             if (!sub || typeof sub !== 'object' || Array.isArray(sub)) return;
             const clean = { ...sub };

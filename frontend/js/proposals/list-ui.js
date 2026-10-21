@@ -356,21 +356,21 @@ function computeProposalCategoryFlags(proposal, options = {}) {
     const hasStructureProposal = !!structureProposal;
     const structureKind = ((structureProposal && structureProposal.kind) || (subject.structureProposal && subject.structureProposal.kind) || (fallback && fallback.structureProposal && fallback.structureProposal.kind) || '').toLowerCase();
     const isRoadProposal = goalKey === 'road-track';
-    const isReparcellizationProposal = goalKey === 'reparcellization' || !!subject.reparcellization || !!(fallback && fallback.reparcellization);
+    const isParcelLayoutProposal = goalKey === 'parcel-layout' || !!subject.parcelLayout || !!(fallback && fallback.parcelLayout);
     const isDecideLaterProposal = goalKey === 'decide-later' || !!subject.decideLaterProposal || !!(fallback && fallback.decideLaterProposal);
     const isBuildingGoal = ['buildings', 'building(s)', 'single-building', 'parcelBased'].includes(goalKey);
     const isStructureGoal = ['park', 'square', 'lake', 'station'].includes(goalKey) || ['park', 'square', 'lake', 'station'].includes(structureKind);
     const isBuildingProposal = (!isRoadProposal) && (isBuildingGoal || !!subject.buildingProposal || !!subject.buildingGeometry || !!(fallback && (fallback.buildingProposal || fallback.buildingGeometry)));
     const isStructureProposal = (!isRoadProposal) && (!isBuildingProposal) && (isStructureGoal || hasStructureProposal);
 
-    const supportsMapToggle = isRoadProposal || isBuildingProposal || isStructureProposal || isReparcellizationProposal || isDecideLaterProposal;
+    const supportsMapToggle = isRoadProposal || isBuildingProposal || isStructureProposal || isParcelLayoutProposal || isDecideLaterProposal;
 
     return {
         structureProposal: structureProposal || null,
         isRoadProposal,
         isBuildingProposal,
         isStructureProposal,
-        isReparcellizationProposal,
+        isParcelLayoutProposal,
         isDecideLaterProposal,
         supportsMapToggle
     };
@@ -393,8 +393,8 @@ function getProposalDisplayType(proposal) {
         return goalKey;
     }
 
-    if (goalKey === 'reparcellization') {
-        return 'reparcellization';
+    if (goalKey === 'parcel-layout') {
+        return 'parcel-layout';
     }
 
     if (goalKey === 'decide-later') {
@@ -933,7 +933,7 @@ async function handleProposalListItemClick(event) {
     // map exits browse mode through the guard in onParcelClick; closing the list clears its preview.
     //
     // "Select" is the word on purpose. In this codebase COMMIT means ending an editing session so a
-    // draft becomes a stored record (see reparcellization.js, building-blocks.js), and APPLY means
+    // draft becomes a stored record (see parcel-layout.js, building-blocks.js), and APPLY means
     // enacting a stored proposal on the map — two separate axes, two separate columns in the
     // database. Selection stores nothing and enacts nothing; it is only what the user is looking at.
     try {

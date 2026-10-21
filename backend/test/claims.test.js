@@ -22,7 +22,7 @@ describe('claim kinds and ranks', () => {
 
     it('classifies goals: fabric-changers vs content vs the null claim', () => {
         expect(claims.claimKindForGoal('road-track')).toBe('fabric');
-        expect(claims.claimKindForGoal('reparcellization')).toBe('fabric');
+        expect(claims.claimKindForGoal('parcel-layout')).toBe('fabric');
         expect(claims.claimKindForGoal('decide-later')).toBe('fabric');
         expect(claims.claimKindForGoal('park')).toBe('fabric');
         expect(claims.claimKindForGoal('single')).toBe('fabric');

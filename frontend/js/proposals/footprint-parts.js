@@ -82,9 +82,9 @@
             if (out.sources.indexOf(source) === -1) out.sources.push(source);
         };
 
-        const plan = proposal.reparcellization;
-        if (plan && Array.isArray(plan.polygons)) {
-            plan.polygons.forEach(polygon => add('reparcellization.polygons', polygon && polygon.geometry));
+        const layout = proposal.parcelLayout;
+        if (layout && Array.isArray(layout.plots)) {
+            layout.plots.forEach(plot => add('parcelLayout.plots', plot && plot.geometry));
         }
         const definition = proposal.roadProposal && proposal.roadProposal.definition;
         if (definition && definition.polygon) {
@@ -107,9 +107,9 @@
             }
         }
         if (proposal.structureProposal) add('structureProposal.geometry', proposal.structureProposal.geometry);
-        // A readjustment's authored polygons are its complete footprint; `proposal.geometry` on a
-        // readjustment was an apply-time union of whatever live pool it consumed.
-        if (!plan) add('geometry', proposal.geometry);
+        // A parcel layout's plots are its complete footprint; `proposal.geometry` on a layout would
+        // be an apply-time union of whatever live pool it consumed.
+        if (!layout) add('geometry', proposal.geometry);
         add('buildingGeometry', proposal.buildingGeometry);
         if (proposal.geometry && Array.isArray(proposal.geometry.buildings)) {
             proposal.geometry.buildings.forEach(building => add('geometry.buildings', building));

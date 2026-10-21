@@ -1,7 +1,7 @@
-// The before/after divider outside the land readjustment modal (dividers.md): an applied proposal
+// The before/after divider outside the parcel-layout editor (dividers.md): an applied proposal
 // in the details panel (M2), the bet dialog's two pictures (M3), the cross-section editor's chip
-// (M4), a replaced version's outline (M5) and one parcel of an applied readjustment (M6). The
-// modal's own divider is covered by land-readjustment-audit.spec.ts and designer-controls.spec.ts.
+// (M4), a replaced version's outline (M5) and one parcel of an applied parcel layout (M6). The
+// editor's own divider is covered by parcel-layout-audit.spec.ts and designer-controls.spec.ts.
 import { test, expect } from '../helpers/fixtures';
 import type { Page } from '@playwright/test';
 import { openCity, openParcel, createSpace, showProposal, drawCorridor, clickMapPoint, PARCEL_ID, PARCEL_GEOMETRY } from '../helpers/runtime';
@@ -149,16 +149,16 @@ test.describe('Before / after on the main map @features', () => {
     expect(layers.parcels).toBeGreaterThan(0);
   });
 
-  test('one parcel of an applied readjustment is outlined before, and the plots it became after', async ({ mockApi: page }) => {
+  test('one parcel of an applied parcel layout is outlined before, and the plots it became after', async ({ mockApi: page }) => {
     await openCity(page);
     await openParcel(page, 'proposals');
-    await page.locator('.parcel-build-btn--reparcellization').click();
+    await page.locator('.parcel-build-btn--parcel-layout').click();
     const modal = page.locator('.on-map-reparcellization');
     await expect(modal.locator('.on-map-editor__panel')).toBeVisible();
     await expect(modal.locator('[data-reparcel-commit]')).toBeEnabled({ timeout: 15_000 });
     await modal.locator('[data-reparcel-commit]').click();
-    await expect.poll(() => page.evaluate(() => (window as any).proposalStorage.getAllProposals().some((p: any) => p.applied && p.reparcellization))).toBe(true);
-    const id = await page.evaluate(() => (window as any).proposalStorage.getAllProposals().find((p: any) => p.applied && p.reparcellization).proposalId);
+    await expect.poll(() => page.evaluate(() => (window as any).proposalStorage.getAllProposals().some((p: any) => p.applied && p.goal === 'parcel-layout'))).toBe(true);
+    const id = await page.evaluate(() => (window as any).proposalStorage.getAllProposals().find((p: any) => p.applied && p.goal === 'parcel-layout').proposalId);
 
     await showProposal(page, id);
     await openParcelsSection(page);
@@ -173,7 +173,7 @@ test.describe('Before / after on the main map @features', () => {
     await expect(chip).toHaveAttribute('aria-pressed', 'true');
     await expect.poll(() => page.evaluate(() => (window as any).ProposalBeforeAfter.activeFocus())).toBe(parcelId);
     expect((await beforeLayers(page)).focus).toBe(1);
-    // The plots that came out of the parcel, outlined on the live map in the modal's blue.
+    // The plots that came out of the parcel, outlined on the live map in the editor's blue.
     await expect.poll(() => page.locator('#map .leaflet-overlay-pane path[stroke="#0369a1"]').count()).toBeGreaterThan(0);
 
     // The same chip again closes it and clears the outline.

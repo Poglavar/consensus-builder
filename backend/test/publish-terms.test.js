@@ -110,14 +110,25 @@ describe('publishFields', () => {
     it('gives a record an approval setup only where owners decide by one', () => {
         const { approvalSetupFor } = require('../../frontend/js/proposals/publish-terms.js');
         const set = { schema: 'proposal-approval/v1', rights: { parcels: [] }, policy: { type: 'unanimous' } };
-        const unset = { schema: 'proposal-approval/v1', rights: null, policy: { type: 'unanimous' } };
-        expect(approvalSetupFor({ kind: 'owner-deal', fromDraft: true })).toBe(null);
-        expect(approvalSetupFor({ kind: 'owner-deal', approvalConfig: set, fromDraft: true })).toBe(set);
+        expect(approvalSetupFor({ kind: 'owner-deal' })).toBe(null);
+        expect(approvalSetupFor({ kind: 'owner-deal', approvalConfig: set })).toBe(set);
         expect(approvalSetupFor({ kind: 'owner-vote', approvalConfig: set })).toBe(set);
-        expect(approvalSetupFor({ kind: 'community-vote', approvalConfig: set, fromDraft: true })).toBe(null);
-        expect(approvalSetupFor({ kind: 'community-vote', readjustment: true, fromDraft: true })).toEqual(unset);
-        expect(approvalSetupFor({ kind: 'owner-deal', readjustment: true, approvalConfig: set })).toBe(set);
-        expect(approvalSetupFor({ kind: 'owner-deal', readjustment: true })).toBe(null);
+        expect(approvalSetupFor({ kind: 'community-vote', approvalConfig: set })).toBe(null);
+        // No goal forces a default setup any more: a parcel layout carries none of its own.
+        expect(approvalSetupFor({ kind: null })).toBe(null);
+    });
+
+    it('refuses to publish a parcel layout, which leaves the device with its agreement', () => {
+        const { publishRefusal, assertPublishable } = require('../../frontend/js/proposals/publish-terms.js');
+        const layout = { goal: 'parcel-layout', parcelLayout: { plots: [] } };
+        expect(publishRefusal(layout)).toEqual({
+            code: 'parcel-layout-publish-later',
+            message: 'Parcel layouts are shared together with their agreement. Coming soon.'
+        });
+        expect(() => assertPublishable(layout)).toThrow(/shared together with their agreement/);
+        expect(publishRefusal({ goal: 'park' })).toBe(null);
+        expect(publishRefusal(null)).toBe(null);
+        expect(() => assertPublishable({ goal: 'road-track' })).not.toThrow();
     });
 
     it('appends terms to an existing record without touching its design', () => {

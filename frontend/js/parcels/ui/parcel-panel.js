@@ -284,10 +284,10 @@
         let identityNoteFallback = '';
         if (identityKind === 'plotPiece') {
             identityNoteKey = 'panel.parcel.identity.plotNote';
-            identityNoteFallback = 'Ground derived from one authored readjustment plot. Several live pieces can refer to the same plot.';
+            identityNoteFallback = 'Ground derived from one authored parcel-layout plot. Several live pieces can refer to the same plot.';
         } else if (identityKind === 'remainder') {
             identityNoteKey = 'panel.parcel.identity.remainderNote';
-            identityNoteFallback = 'Ground left outside the authored plots by this readjustment. It is kept separately from the plot outputs.';
+            identityNoteFallback = 'Ground left outside the authored plots by this parcel layout. It is kept separately from the plot outputs.';
         } else if (identityKind === 'formed') {
             identityNoteKey = 'panel.parcel.identity.formedNote';
             identityNoteFallback = 'Ground formed by the applied proposals. This reference identifies the current piece, not a registered parcel or an authored plot.';
@@ -568,7 +568,7 @@
                     const destinations = {
                         'public': tParcel('panel.parcel.dossier.destination.public', {}, 'public'),
                         'proposer': tParcel('panel.parcel.dossier.destination.proposer', {}, 'the proposer'),
-                        'mapping': tParcel('panel.parcel.dossier.destination.mapping', {}, 'per plan'),
+                        'carry-over': tParcel('panel.parcel.dossier.destination.carryOver', {}, 'stays with its owners'),
                         'undecided': tParcel('panel.parcel.dossier.destination.undecided', {}, 'to be decided')
                     };
                     const destination = destinations[dossierEntry.destination] || dossierEntry.destination || '';

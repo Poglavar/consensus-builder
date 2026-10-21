@@ -141,7 +141,7 @@
     }
 
     // These are the apply paths that clear proposed buildings under their authored footprint.
-    // Reparcellization is intentionally absent: reshaping parcel fabric is not, by itself, choosing
+    // A parcel layout is intentionally absent: reshaping parcel fabric is not, by itself, choosing
     // a different building design.
     function displacesBuildingContent(proposal) {
         return !!(proposal && (

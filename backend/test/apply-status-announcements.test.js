@@ -39,7 +39,7 @@ describe('what kind of thing is being applied', () => {
 
     it.each([
         ['road-track', 'road'],
-        ['reparcellization', 'land readjustment'],
+        ['parcel-layout', 'parcel layout'],
         ['decide-later', 'merge'],
         ['park', 'park'],
         ['square', 'square'],
@@ -104,7 +104,7 @@ describe('the per-type tails no longer duplicate it', () => {
     it.each([
         ['buildings.js', 'Applied building proposal'],
         ['structures.js', 'Applied ${kind} proposal'],
-        ['parcels.js', 'Applied reparcellization proposal'],
+        ['parcels.js', 'Applied parcel layout proposal'],
         ['parcels.js', 'Applied decide later proposal']
     ])('%s no longer writes "%s"', (file, message) => {
         expect(read(`../../frontend/js/proposals/apply/${file}`)).not.toContain(message);

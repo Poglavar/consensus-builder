@@ -59,40 +59,15 @@
         return feature;
     }
 
-    function cleanReparcellizationMetadata(plan) {
-        if (!plan || typeof plan !== 'object' || Array.isArray(plan)) return;
-        if (Array.isArray(plan.ownerShares)) {
-            plan.ownerShares = plan.ownerShares.map(entry => {
-                if (!entry || typeof entry !== 'object' || Array.isArray(entry)) return entry;
-                const clean = clone(entry);
-                // Contribution parcel membership is the proposal's root cadastreParcelIds. The
-                // per-owner accounting needs areas/values and owner identity, not a second list of
-                // whichever live pieces happened to be selected in the authoring browser.
-                delete clean.parcelIds;
-                if (typeof clean.ownerKey === 'string') {
-                    clean.ownerKey = stripGeneratedParcelTokens(clean.ownerKey);
-                }
-                return clean;
-            });
-        }
-        // Original-input snapshots use the same owner identities as their resulting plots.
-        for (const entries of [plan.polygons, plan.inputParcels]) {
-            if (!Array.isArray(entries)) continue;
-            entries.forEach(polygon => {
-                if (!polygon || typeof polygon !== 'object' || Array.isArray(polygon)) return;
-                if (typeof polygon.label === 'string') polygon.label = stripGeneratedParcelTokens(polygon.label);
-                if (typeof polygon.ownerKey === 'string') {
-                    polygon.ownerKey = stripGeneratedParcelTokens(polygon.ownerKey);
-                }
-                if (Array.isArray(polygon.owners)) {
-                    polygon.owners.forEach(owner => {
-                        if (owner && typeof owner === 'object' && typeof owner.ownerKey === 'string') {
-                            owner.ownerKey = stripGeneratedParcelTokens(owner.ownerKey);
-                        }
-                    });
-                }
-            });
-        }
+    // A layout's input parcels (Keep existing borders) carry display labels that may name a live
+    // piece; a label keeps only its cadastral part. Plots are geometry and carry no owners.
+    function cleanParcelLayoutMetadata(layout) {
+        if (!layout || typeof layout !== 'object' || Array.isArray(layout)) return;
+        (Array.isArray(layout.inputParcels) ? layout.inputParcels : []).forEach(input => {
+            if (input && typeof input === 'object' && typeof input.label === 'string') {
+                input.label = stripGeneratedParcelTokens(input.label);
+            }
+        });
     }
 
     function authoredBuildingFeatures(record) {
@@ -172,9 +147,9 @@
                 out[key].blockName = stripGeneratedParcelTokens(out[key].blockName);
             }
         });
-        cleanReparcellizationMetadata(out.reparcellization);
+        cleanParcelLayoutMetadata(out.parcelLayout);
         delete out.childFeatures;
-        ['roadProposal', 'buildingProposal', 'structureProposal', 'reparcellization', 'decideLaterProposal']
+        ['roadProposal', 'buildingProposal', 'structureProposal', 'parcelLayout', 'decideLaterProposal']
             .forEach(key => {
                 const sub = out[key];
                 if (sub && typeof sub === 'object' && !Array.isArray(sub)) delete sub.childFeatures;
@@ -196,12 +171,12 @@
         const out = clone(record);
         delete out.parentParcelIds;
         delete out.parcelIds;
-        ['roadProposal', 'buildingProposal', 'structureProposal', 'reparcellization', 'decideLaterProposal']
+        ['roadProposal', 'buildingProposal', 'structureProposal', 'parcelLayout', 'decideLaterProposal']
             .forEach(key => {
                 const sub = out[key];
                 if (!sub || typeof sub !== 'object' || Array.isArray(sub)) return;
                 delete sub.parentParcelIds;
-                if (key === 'reparcellization') delete sub.parcelIds;
+                if (key === 'parcelLayout') delete sub.parcelIds;
             });
         return out;
     }
@@ -216,9 +191,9 @@
         };
         add('parentParcelIds', proposal, 'parentParcelIds');
         add('parcelIds', proposal, 'parcelIds');
-        ['roadProposal', 'buildingProposal', 'structureProposal', 'reparcellization', 'decideLaterProposal']
+        ['roadProposal', 'buildingProposal', 'structureProposal', 'parcelLayout', 'decideLaterProposal']
             .forEach(key => add(`${key}.parentParcelIds`, proposal[key], 'parentParcelIds'));
-        add('reparcellization.parcelIds', proposal.reparcellization, 'parcelIds');
+        add('parcelLayout.parcelIds', proposal.parcelLayout, 'parcelIds');
         add('buildingProposal.blockParcelIds', proposal.buildingProposal, 'blockParcelIds');
         add('buildingProposal.parentParcelNumbers', proposal.buildingProposal, 'parentParcelNumbers');
         add('buildingProposal.ancestorKey', proposal.buildingProposal, 'ancestorKey');
@@ -231,11 +206,6 @@
                         value: entry.parcelId ?? entry.parcel_id
                     });
                 }
-            });
-        }
-        if (Array.isArray(proposal.reparcellization?.ownerShares)) {
-            proposal.reparcellization.ownerShares.forEach((entry, index) => {
-                add(`reparcellization.ownerShares[${index}].parcelIds`, entry, 'parcelIds');
             });
         }
         return found;

@@ -807,7 +807,14 @@ function showSharePlanPanel(options) {
         // proposals list makes when it opens.
         if (window.MapShell) window.MapShell.closeSheets();
 
-        const selected = new Set(proposalsByHash.keys());
+        // A parcel layout is shared only with its agreement (ProposalPublishTerms.publishRefusal):
+        // its row is listed, never selected or uploaded.
+        const publishRefusals = new Map();
+        proposalsByHash.forEach((proposal, key) => {
+            const refusal = window.ProposalPublishTerms.publishRefusal(proposal);
+            if (refusal) publishRefusals.set(key, refusal);
+        });
+        const selected = new Set([...proposalsByHash.keys()].filter(key => !publishRefusals.has(key)));
         const uploadState = new Map(); // key -> { uploaded, uploading, serverId }
         const rowControls = new Map();
 
@@ -1491,7 +1498,7 @@ function showSharePlanPanel(options) {
             } else {
                 controls.uploadedLabel.style.display = 'none';
                 controls.uploadBtn.style.display = 'inline-flex';
-                controls.uploadBtn.disabled = state.uploading;
+                controls.uploadBtn.disabled = state.uploading || publishRefusals.has(key);
                 controls.uploadBtn.textContent = state.uploading
                     ? tShare('plan.uploading', 'Uploading…')
                     : tShare('plan.upload', 'Upload');
@@ -1532,9 +1539,11 @@ function showSharePlanPanel(options) {
             left.style.alignItems = 'center';
             left.style.gap = '8px';
 
+            const refusal = publishRefusals.get(key) || null;
             const checkbox = document.createElement('input');
             checkbox.type = 'checkbox';
-            checkbox.checked = true;
+            checkbox.checked = !refusal;
+            checkbox.disabled = !!refusal;
             checkbox.addEventListener('change', () => onCheckboxChange(key, checkbox.checked));
             left.appendChild(checkbox);
 
@@ -1563,6 +1572,12 @@ function showSharePlanPanel(options) {
             const displayId = proposal.proposalId || getProposalKey(proposal) || 'local';
             meta.textContent = `${displayId} · ${(resolveProposalGoalKey(proposal) || 'proposal')}`;
             title.appendChild(meta);
+            if (refusal) {
+                const note = document.createElement('span');
+                note.className = 'share-plan-row__refusal';
+                note.textContent = refusal.message;
+                title.appendChild(note);
+            }
 
             left.appendChild(title);
 
@@ -1581,7 +1596,12 @@ function showSharePlanPanel(options) {
             uploadedLabel.style.color = '#0f766e';
             uploadedLabel.style.display = 'none';
 
+            if (refusal) {
+                uploadBtn.disabled = true;
+                uploadBtn.title = refusal.message;
+            }
             uploadBtn.addEventListener('click', async () => {
+                if (refusal) return;
                 uploadState.set(key, { uploaded: false, uploading: true, serverId: getProposalPublicationLookup(proposal) });
                 updateRowState(key);
                 try {

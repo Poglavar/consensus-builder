@@ -648,6 +648,10 @@ function adoptPreparedRecord(target, prepared) {
 }
 
 async function uploadProposalToServer(proposal) {
+    // A parcel layout is shared together with its agreement (ProposalPublishTerms.publishRefusal):
+    // refused before anything reaches the server.
+    const refusal = window.ProposalPublishTerms.publishRefusal(proposal);
+    if (refusal) return { ok: false, code: refusal.code, message: refusal.message };
     // Mirroring names a chain location only. Read the committed record even if this browser has
     // since edited it, lost its preparation, changed cities, or has no cadastral ground loaded.
     const chainRef = window.ChainProposalRef?.chainRefFromProposal(proposal);

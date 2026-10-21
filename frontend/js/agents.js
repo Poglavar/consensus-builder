@@ -373,8 +373,8 @@ function transferParcelOwnership(parcelId, fromAgentId, toAgentId, options = {})
     // Update PersistentStorage
     storage.setItem(`parcel_${parcelId}_owner`, toAgentId);
 
-    // Update both agents' owned parcels lists. skipAgentSync lets a bulk caller (e.g. a reparcellization
-    // applying dozens of children) defer this to one keyspace pass afterwards — each updateAgentOwnedParcels
+    // Update both agents' owned parcels lists. skipAgentSync lets a bulk caller (e.g. a parcel layout
+    // carrying owners over to dozens of pieces) defer this to one keyspace pass afterwards — each updateAgentOwnedParcels
     // scans the whole keyspace, so doing it per parcel is O(n²).
     if (!options.skipAgentSync) {
         if (fromAgentId) {
@@ -1758,7 +1758,7 @@ function getAgentProposalTypeLabel(proposal) {
         park: 'modal.roadWidth.proposalList.typeLabels.park',
         square: 'modal.roadWidth.proposalList.typeLabels.square',
         structure: 'modal.roadWidth.proposalList.typeLabels.structure',
-        reparcellization: 'modal.roadWidth.proposalList.typeLabels.reparcellization',
+        'parcel-layout': 'modal.roadWidth.proposalList.typeLabels.parcel-layout',
         parcel: 'modal.roadWidth.proposalList.typeLabels.parcel',
         other: 'modal.roadWidth.proposalList.typeLabels.other'
     };
@@ -1810,7 +1810,7 @@ function getAgentProposalTitle(proposal, fallbackId = '') {
 
     const typeLabels = (typeof PROPOSAL_TYPE_LABELS !== 'undefined' && PROPOSAL_TYPE_LABELS)
         ? Object.values(PROPOSAL_TYPE_LABELS).map(v => String(v).toLowerCase())
-        : ['road', 'building', 'park', 'square', 'structure', 'reparcellization', 'parcel', 'other'];
+        : ['road', 'building', 'park', 'square', 'structure', 'parcel layout', 'parcel', 'other'];
 
     let best = '';
     let bestScore = -Infinity;

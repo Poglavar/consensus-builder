@@ -157,12 +157,12 @@ function stripProposalCadastreAliases(record) {
     if (!record || typeof record !== 'object') return record;
     delete record.parentParcelIds;
     delete record.parcelIds;
-    ['roadProposal', 'reparcellization', 'decideLaterProposal', 'buildingProposal', 'structureProposal']
+    ['roadProposal', 'parcelLayout', 'decideLaterProposal', 'buildingProposal', 'structureProposal']
         .forEach(key => {
             const sub = record[key];
             if (!sub || typeof sub !== 'object' || Array.isArray(sub)) return;
             delete sub.parentParcelIds;
-            if (key === 'reparcellization') delete sub.parcelIds;
+            if (key === 'parcelLayout') delete sub.parcelIds;
             if (key === 'buildingProposal') {
                 delete sub.blockParcelIds;
                 delete sub.parentParcelNumbers;
@@ -750,8 +750,8 @@ const proposalStorage = {
             if (geometryPayload.structureProposal) {
                 merged.structureProposal = Object.assign({}, merged.structureProposal || {}, safeClone(geometryPayload.structureProposal));
             }
-            if (geometryPayload.reparcellization) {
-                merged.reparcellization = Object.assign({}, merged.reparcellization || {}, safeClone(geometryPayload.reparcellization));
+            if (geometryPayload.parcelLayout) {
+                merged.parcelLayout = Object.assign({}, merged.parcelLayout || {}, safeClone(geometryPayload.parcelLayout));
             }
         }
 
@@ -1425,8 +1425,8 @@ const proposalStorage = {
                 proposal.goal = 'decide-later';
             } else if (proposal.roadProposal) {
                 proposal.goal = 'road-track';
-            } else if (proposal.reparcellization) {
-                proposal.goal = 'reparcellization';
+            } else if (proposal.parcelLayout) {
+                proposal.goal = 'parcel-layout';
             } else if (proposal.structureProposal && proposal.structureProposal.kind) {
                 const kind = normalizeProposalGoalKey(proposal.structureProposal.kind);
                 proposal.goal = (kind === 'park' || kind === 'square' || kind === 'lake' || kind === 'station') ? kind : 'square';
@@ -1537,12 +1537,12 @@ const proposalStorage = {
             }
         }
 
-        // Reparcellization
-        if (proposal.reparcellization) {
-            const rep = proposal.reparcellization;
-            parts.push(`reparcAlg:${rep.algorithm || ''}`);
-            if (Array.isArray(rep.polygons)) {
-                try { parts.push(`reparcPolys:${JSON.stringify(rep.polygons)}`); } catch (_) { }
+        // Parcel layout: its plots are its geometry.
+        if (proposal.parcelLayout) {
+            const layout = proposal.parcelLayout;
+            parts.push(`layoutAlg:${layout.algorithm || ''}`);
+            if (Array.isArray(layout.plots)) {
+                try { parts.push(`layoutPlots:${JSON.stringify(layout.plots.map(plot => plot && plot.geometry))}`); } catch (_) { }
             }
         }
 
@@ -2258,7 +2258,7 @@ const PROPOSAL_GOAL_ICON_MAP = {
     'urban rule': { icon: '📜📐', label: 'Urban rule' },
     'decide-later': { icon: '🪡', label: 'Merge' },
     'decide later': { icon: '🪡', label: 'Merge' },
-    'reparcellization': { icon: '✂️', label: 'Subdivide' },
+    'parcel-layout': { icon: '✂️', label: 'Parcel layout' },
     'ownership-transfer': { icon: '🔄', label: 'Ownership transfer' },
     'ownership-transfer-to-me': { icon: '🔄', label: 'Ownership transfer to me' },
     'ownership-transfer-from-me': { icon: '🔄', label: 'Ownership transfer from me' }
@@ -2283,7 +2283,7 @@ const PROPOSAL_PUBLIC_GOOD_USES = new Set(['park', 'square', 'lake', 'station', 
 const PROPOSAL_GOAL_TYPE_LABELS = {
     'square': 'Square', 'park': 'Park', 'lake': 'Lake', 'station': 'Transit station', 'single': 'Building(s)',
     'road-track': 'Road/Track', 'urban-rule': 'Urban Rule',
-    'reparcellization': 'Reparcellization'
+    'parcel-layout': 'Parcel layout'
 };
 
 const LAKE_GRAPHICS_VERSION = 3;
@@ -2359,7 +2359,7 @@ const PROPOSAL_GOAL_FILTERS = [
     { value: 'lake', label: 'Lake' },
     { value: 'station', label: 'Transit station' },
     { value: 'urban-rule', label: 'Urban rule' },
-    { value: 'reparcellization', label: 'Reparcellization' },
+    { value: 'parcel-layout', label: 'Parcel layout' },
     { value: 'row', label: 'Row' },
     { value: 'other', label: 'Other' }
 ];
@@ -2374,7 +2374,7 @@ const PROPOSAL_GOAL_FILTER_I18N_KEYS = {
     lake: 'lake',
     station: 'station',
     'urban-rule': 'urbanRule',
-    reparcellization: 'reparcellization',
+    'parcel-layout': 'parcel-layout',
     row: 'row',
     other: 'other'
 };
@@ -2389,7 +2389,7 @@ const PROPOSAL_GOAL_LABELS = {
     lake: 'Lake',
     station: 'Transit station',
     'urban-rule': 'Urban rule',
-    reparcellization: 'Reparcellization',
+    'parcel-layout': 'Parcel layout',
     'decide-later': 'Decide later',
     parcelBased: 'Parcel-based',
     other: 'Other'

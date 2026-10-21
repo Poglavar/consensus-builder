@@ -103,15 +103,39 @@
 
     /**
      * The owner-approval setup a published record carries (land-readjustmend.md §16), or null
-     * for none. A land readjustment keeps its setup whatever the kind, since its rights snapshot
-     * also says who owns which plot, and one published from a draft gets the default (unanimous,
-     * rights unresolved) when none was set. Anything else carries only the setup its author set,
-     * and a community vote none at all: owners do not decide it.
+     * for none. A record carries only the setup its author set, and a community vote none at all:
+     * owners do not decide it.
      */
-    function approvalSetupFor({ kind = null, readjustment = false, approvalConfig = null, fromDraft = false } = {}) {
-        if (readjustment) return approvalConfig || (fromDraft ? { schema: 'proposal-approval/v1', rights: null, policy: { type: 'unanimous' } } : null);
+    function approvalSetupFor({ kind = null, approvalConfig = null } = {}) {
         if (kind === kinds().COMMUNITY_VOTE) return null;
         return approvalConfig || null;
+    }
+
+    function text(key, fallback) {
+        try {
+            const value = root.i18n?.t?.(key);
+            if (value && value !== key) return value;
+        } catch (_) { }
+        return fallback;
+    }
+
+    /**
+     * Why a record may not leave this device yet, or null. A parcel layout (plan-design-agreement.md,
+     * M1 (a)) is shared together with the agreement that includes it, which comes with M2: uploading,
+     * downloading and minting all refuse it here.
+     */
+    function publishRefusal(record) {
+        if (!record || record.goal !== 'parcel-layout') return null;
+        return {
+            code: 'parcel-layout-publish-later',
+            message: text('parcelLayout.publishLater', 'Parcel layouts are shared together with their agreement. Coming soon.')
+        };
+    }
+
+    /** Throws publishRefusal's message for a record that may not be published. */
+    function assertPublishable(record) {
+        const refusal = publishRefusal(record);
+        if (refusal) throw Object.assign(new Error(refusal.message), { code: refusal.code });
     }
 
     /**
@@ -124,7 +148,6 @@
         const fields = publishFields(saleOffer ? { ...terms, kind: kinds().OWNER_DEAL } : terms, { now, saleOffer });
         const approvalConfig = approvalSetupFor({
             kind: fields.kind ?? null,
-            readjustment: record.goal === 'reparcellization' || !!record.reparcellization,
             approvalConfig: record.approvalConfig || null
         });
         return { ...fields, title: name, name, proposalName: name, description, author, epochYear, approvalConfig, termsConfirmed: true };
@@ -139,5 +162,5 @@
         return { ...publishFields({ ...record, kind: saleOffer ? 'owner-deal' : kind }, { now, saleOffer }), termsConfirmed: true };
     }
 
-    return Object.freeze({ VOTE_MAX_DAYS, voteDays, publishFields, needsTerms, authoredOffer, payoutMode, chosenKind, approvalSetupFor, termsInPlace, confirmedRecordFields });
+    return Object.freeze({ VOTE_MAX_DAYS, voteDays, publishFields, needsTerms, authoredOffer, payoutMode, chosenKind, approvalSetupFor, publishRefusal, assertPublishable, termsInPlace, confirmedRecordFields });
 });

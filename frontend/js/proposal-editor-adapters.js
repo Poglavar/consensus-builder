@@ -10,7 +10,7 @@
     const CREATABLE_PROPOSAL_GOALS = designGoals.keys;
 
     // Physical, material drafts may be explicitly moved to a new site. Parcel acts and
-    // readjustments remain tied to their authored scope/deal, and the building rules (Block, Row,
+    // parcel layouts remain tied to their authored scope and pool, and the building rules (Block, Row,
     // Detached) to their parcels: leaving them is a conversion to a Freeform building or a re-run of
     // the rule on the parcels there (proposals/freeform-conversion.js), never a free placement.
     const FREE_PLACEMENT_GOALS = new Set([
@@ -18,13 +18,16 @@
     ]);
     const KNOWN_SITE_COVERAGE = new Set(['complete', 'partial', 'none']);
 
-    function placementMessage(key, fallback) {
+    function translate(key, fallback) {
         try {
-            const i18nKey = `proposalDrafts.placement.${key}`;
-            const value = global.i18n?.t?.(i18nKey);
-            if (value && value !== i18nKey) return value;
+            const value = global.i18n?.t?.(key);
+            if (value && value !== key) return value;
         } catch (_) { }
         return fallback;
+    }
+
+    function placementMessage(key, fallback) {
+        return translate(`proposalDrafts.placement.${key}`, fallback);
     }
 
     function clone(value) {
@@ -370,14 +373,6 @@
         } catch (_) { return false; }
     }
 
-    function planFeatures(plan) {
-        return (Array.isArray(plan?.polygons) ? plan.polygons : []).map((polygon, index) => ({
-            type: 'Feature',
-            properties: { index, ownerKey: polygon.ownerKey || null },
-            geometry: clone(polygon.geometry || polygon)
-        })).filter(feature => featureGeometryValid(feature));
-    }
-
     function geometryArea(value) {
         try {
             if (turfRef && typeof turfRef.area === 'function' && value) {
@@ -388,17 +383,17 @@
         return null;
     }
 
-    // `options.site`: a subdivision (plan.poolSource 'site', PARCEL-OPTIONAL.md phase 4) is
-    // checked against its SITE — the bound parcels' part and the open ground alike — so the plots
-    // must tile exactly the site's ground, whatever pool geometry the plan carries.
-    function reparcellizationTopologyValidation(plan, options = {}) {
-        const validator = global.ReparcellizationValidation
-            || (typeof require === 'function' ? require('./reparcellization-validation.js') : null);
-        if (!validator) throw new Error('Readjustment validation is unavailable.');
-        const result = validator.validatePlan(plan, options.fields || {}, { turf: turfRef, site: options.site });
+    // `site`: a subdivision (plan.poolSource 'site', PARCEL-OPTIONAL.md phase 4) is checked against
+    // its SITE, the bound parcels' part and the open ground alike, so the plots must tile exactly the
+    // site's ground, whatever pool geometry the layout carries.
+    function parcelLayoutGeometryValidation(plan, site) {
+        const validator = global.ParcelLayoutValidation
+            || (typeof require === 'function' ? require('./parcel-layout-validation.js') : null);
+        if (!validator || typeof validator.validate !== 'function') throw new Error('Parcel layout validation is unavailable.');
+        const result = validator.validate(plan, { turf: turfRef || global.turf, ...(site ? { site } : {}) });
         const shape = item => issue(item.code, item.message, 'editorPayload.plan',
-            item.plotIndex == null ? null : plan?.polygons?.[item.plotIndex]?.geometry);
-        return { ...result, errors: result.errors.map(shape), warnings: result.warnings.map(shape) };
+            item.plotIndex == null ? null : plan?.plots?.[item.plotIndex]?.geometry);
+        return { errors: (result.errors || []).map(shape), warnings: (result.warnings || []).map(shape) };
     }
 
     function stripImmutableProposalIdentity(proposal) {
@@ -467,9 +462,7 @@
         const approval = global.ProposalApproval;
         const approvalConfig = publishTerms.approvalSetupFor({
             kind: output.kind ?? null,
-            readjustment: output.goal === 'reparcellization' || !!output.reparcellization,
-            approvalConfig: fields.approvalConfig && typeof fields.approvalConfig === 'object' ? fields.approvalConfig : null,
-            fromDraft: true
+            approvalConfig: fields.approvalConfig && typeof fields.approvalConfig === 'object' ? fields.approvalConfig : null
         });
         if (!approvalConfig) delete output.approvalConfig;
         else output.approvalConfig = approval?.normalizeConfig ? approval.normalizeConfig(approvalConfig) : clone(approvalConfig);
@@ -509,10 +502,12 @@
         try { return stable(a) === stable(b); } catch (_) { return a === b; }
     }
 
-    function summarizeCommonChanges(source, draft) {
+    // `facetKeys` limits the compared fields to those the draft's editor offers (a parcel layout has
+    // only its name and description besides its geometry).
+    function summarizeCommonChanges(source, draft, { facetKeys = null } = {}) {
         const before = sourceFields(source || {});
         const after = draft.fields || {};
-        const facets = [
+        const allFacets = [
             ['name', 'Name'],
             ['description', 'Description'],
             ['offer', 'Offer'],
@@ -531,6 +526,7 @@
             ['approvalConfig', 'Approval rights and policy'],
             ['lens', 'Lens members']
         ];
+        const facets = Array.isArray(facetKeys) ? allFacets.filter(([key]) => facetKeys.includes(key)) : allFacets;
         const changedFacets = facets.filter(([key]) => !same(before[key], after[key])).map(([key, label]) => ({
             key,
             label,
@@ -772,7 +768,7 @@
             ? draft.fields?.site : null;
         const footprint = authoredBuildingSite || draft.editorPayload?.structureProposal?.geometry
             || draft.editorPayload?.definition?.polygon
-            || draft.editorPayload?.plan?.poolGeometry
+            || draft.editorPayload?.plan?.pool
             || draft.editorPayload?.geometry
             || draft.previewGeometry
             || null;
@@ -782,7 +778,7 @@
     function proposalTypeLabel(goal) {
         const labels = {
             'road-track': 'Road / Track', buildings: 'Block', row: 'Row houses', parcelBased: 'Detached houses',
-            single: 'Freeform building', reparcellization: 'Reparcellization', park: 'Park', square: 'Square', lake: 'Lake',
+            single: 'Freeform building', 'parcel-layout': 'Parcel layout', park: 'Park', square: 'Square', lake: 'Lake',
             station: 'Transit station',
             'urban-rule': 'Urban rule', 'decide-later': 'Merge parcels', 'ownership-transfer': 'Ownership transfer', 'as-is': 'Proposal'
         };
@@ -1303,116 +1299,125 @@
         };
     }
 
-    const reparcellizationAdapter = {
-        key: 'reparcellization',
-        label: 'Reparcellization',
-        sections: ['design', 'parcels', 'ownership', 'approval', 'terms', 'details'],
+    // The record fields a parcel layout never carries: it is geometry only, and its terms, owners and
+    // approval belong to the agreement that includes it (plan-design-agreement.md, M1 (a)).
+    const PARCEL_LAYOUT_DROPPED_FIELDS = Object.freeze([
+        'kind', 'offer', 'budget', 'offerCurrency', 'budgetCurrency', 'isConditional', 'disbursementMode',
+        'expiresAt', 'voteExpiryDays', 'decayEnabled', 'decayPercent', 'decayDurationMs', 'depositEnabled',
+        'depositPercent', 'acquisitionMode', 'boundaryAdjustment', 'approvalConfig', 'lens', 'facets',
+        'proposalFacets', 'recipientScope', 'recipientAddress'
+    ]);
+
+    // A layout's draft fields: its name, description and ground, never terms, owners or approval.
+    function parcelLayoutFields(proposal) {
+        const fields = sourceFields(proposal);
+        return Object.fromEntries(['name', 'titleOrigin', 'description', 'selectedParcelIds', 'cadastreParcelIds', 'binding', 'site', 'toleranceM']
+            .filter(key => key in fields).map(key => [key, fields[key]]));
+    }
+
+    function layoutPlotsArea(plots) {
+        return (Array.isArray(plots) ? plots : []).reduce((sum, plot) => sum + (geometryArea(plot?.geometry) || 0), 0);
+    }
+
+    const parcelLayoutAdapter = {
+        key: 'parcel-layout',
+        get label() { return translate('proposalDrafts.design.parcelLayout', 'Parcel layout'); },
+        sections: ['design', 'parcels', 'details'],
         hasDesign: true,
         canEdit(proposal) {
-            const plan = proposal?.reparcellization;
-            if (!plan || !Array.isArray(plan.polygons) || !plan.polygons.length) {
-                return { editable: false, reason: 'This reparcellization proposal does not contain valid replacement polygons.' };
+            const plots = proposal?.parcelLayout?.plots;
+            if (!Array.isArray(plots) || !plots.length) {
+                return { editable: false, reason: translate('proposalDrafts.errors.layoutWithoutPlots', 'This parcel layout has no plots.') };
             }
             return true;
         },
         draftFromProposal(proposal) {
-            const plan = clone(proposal.reparcellization || null);
+            const plan = clone(proposal.parcelLayout || null);
             return {
-                adapterKey: 'reparcellization',
-                proposalType: 'Reparcellization',
-                fields: sourceFields(proposal),
+                adapterKey: 'parcel-layout',
+                proposalType: 'ParcelLayout',
+                fields: parcelLayoutFields(proposal),
                 editorPayload: { plan },
-                previewGeometry: clone(plan?.polygons || null)
+                previewGeometry: clone(plan?.plots || null)
             };
         },
         validate(draft) {
             const common = commonValidation(draft);
             const plan = draft.editorPayload?.plan;
             const site = plan && plan.poolSource === 'site' ? siteDraftApi().draftSite(draft) : null;
-            const topology = reparcellizationTopologyValidation(plan, { site, fields: draft.fields });
+            const geometry = parcelLayoutGeometryValidation(plan, site);
             return {
-                valid: common.errors.length + topology.errors.length === 0,
-                errors: [...common.errors, ...topology.errors],
-                warnings: [...common.warnings, ...topology.warnings]
+                valid: common.errors.length + geometry.errors.length === 0,
+                errors: [...common.errors, ...geometry.errors],
+                warnings: [...common.warnings, ...geometry.warnings]
             };
         },
         renderPreview(draft, viewMode) {
-            return { kind: 'reparcellization', viewMode: viewMode || '2d', polygons: clone(draft.editorPayload?.plan?.polygons || []) };
+            return { kind: 'parcel-layout', viewMode: viewMode || '2d', plots: clone(draft.editorPayload?.plan?.plots || []) };
         },
         async openDesignEditor(draft) {
             const plan = clone(draft.editorPayload?.plan || {});
-            // A subdivision (PARCEL-OPTIONAL.md phase 4): the pool is the draft's site — the bound
-            // parcels' part (their owners contribute) and the open ground (no owner). The bound
-            // parcels are the site's binding, never a live selection.
+            let sitePool = null;
             if (plan.poolSource === 'site') {
+                // A subdivision (PARCEL-OPTIONAL.md phase 4): the pool is the draft's site, the bound
+                // parcels' part and the open ground alike. The bound parcels are the site's binding,
+                // never a live selection.
                 const site = siteDraftApi().draftSite(draft);
-                if (!site) throw new Error('This subdivision has no site.');
+                if (!site) throw new Error(translate('proposalDrafts.errors.subdivisionWithoutSite', 'This subdivision has no site.'));
                 const bound = boundParcelIds(draft.fields?.binding);
                 plan.parcelIds = bound.length ? bound
                     : [...new Set((draft.fields?.cadastreParcelIds || []).map(normalizeParcelId).filter(Boolean))];
-                plan.poolGeometry = site;
-                global.pendingReparcellizationPlan = plan;
-                if (typeof global.openReparcellizationModal !== 'function' && typeof global.ensureReparcellizationModuleLoaded === 'function') {
-                    await global.ensureReparcellizationModuleLoaded();
+                plan.pool = clone(site);
+                // The saved open-ground area guards a reopened subdivision against a changed cadastre.
+                sitePool = {
+                    site: clone(site),
+                    boundParcelIds: plan.parcelIds.slice(),
+                    expectedOpenGroundM2: typeof plan.openGroundM2 === 'number' && Number.isFinite(plan.openGroundM2) ? plan.openGroundM2 : null
+                };
+            } else {
+                const selection = await prepareProposalDraftParcelSelection(draft);
+                // Input land belongs to the draft fields and ultimately the record's single root
+                // cadastre declaration. The layout itself holds only its pool and plots.
+                plan.parcelIds = (draft.fields?.selectedParcelIds || selection.ids).filter(Boolean).map(String);
+                // A saved layout can be reopened without its parcels on the map: the editor fetches
+                // them by id. Only a layout with nothing to reopen on genuinely needs a live selection.
+                if (!selection.layers.length && !(Array.isArray(plan.plots) && plan.plots.length)) {
+                    throw new Error('The source parcels are not available in this city view.');
                 }
-                if (typeof global.openReparcellizationModal !== 'function') return false;
-                return global.openReparcellizationModal({
-                    algorithm: plan.algorithm || 'sweep-line',
-                    ownershipMode: 'multiple',
-                    initialPolygons: clone(plan.polygons || []),
-                    poolGeometry: clone(site),
-                    sitePool: { site: clone(site), boundParcelIds: plan.parcelIds.slice() },
-                    approvalConfig: clone(draft.fields?.approvalConfig || null)
-                });
             }
-            const selection = await prepareProposalDraftParcelSelection(draft);
-            // Input land belongs to the draft fields and ultimately the proposal's single root
-            // cadastre declaration. The reparcellization payload contains only its authored output.
-            plan.parcelIds = (draft.fields?.selectedParcelIds || selection.ids).filter(Boolean).map(String);
-            // A saved plan can be reopened without its parents on the map: the editor fetches them
-            // by id. Only a plan with nothing to reopen on genuinely needs a live selection.
-            if (!selection.layers.length && !(Array.isArray(plan.polygons) && plan.polygons.length)) {
-                throw new Error('The source parcels are not available in this city view.');
+            global.pendingParcelLayout = plan;
+            if (typeof global.openParcelLayoutEditor !== 'function' && typeof global.ensureParcelLayoutModuleLoaded === 'function') {
+                await global.ensureParcelLayoutModuleLoaded();
             }
-            global.pendingReparcellizationPlan = plan;
-            if (typeof global.openReparcellizationModal !== 'function' && typeof global.ensureReparcellizationModuleLoaded === 'function') {
-                await global.ensureReparcellizationModuleLoaded();
-            }
-            if (typeof global.openReparcellizationModal !== 'function') return false;
-            return global.openReparcellizationModal({
-                algorithm: plan.algorithm || 'sweep-line',
-                ownershipMode: plan.ownershipMode || 'multiple',
-                initialPolygons: clone(plan.polygons || []),
-                poolGeometry: clone(plan.poolGeometry || null),
-                approvalConfig: clone(draft.fields?.approvalConfig || null)
+            if (typeof global.openParcelLayoutEditor !== 'function') return false;
+            return global.openParcelLayoutEditor({
+                algorithm: plan.algorithm || 'equal',
+                initialPlots: clone(plan.plots || []),
+                pool: clone(plan.pool || null),
+                ...(sitePool ? { sitePool } : {}),
+                ...(Number.isFinite(plan.plotCount) ? { plotCount: plan.plotCount } : {})
             });
         },
         serializeProposal(draft) {
             const output = commonProposalFromDraft(draft);
             const plan = clone(draft.editorPayload?.plan || {});
             delete plan.parcelIds;
-            delete plan.agreementBatch;
-            output.goal = 'reparcellization';
-            output.primaryType = 'Reparcellization';
-            output.reparcellization = plan;
-            const agreements = global.ReparcellizationAgreements
-                || (typeof require === 'function' ? require('./reparcellization-agreements.js') : null);
-            output.offer = output.budget = agreements.cashOfferTotal(plan);
-            output.offerCurrency = output.budgetCurrency = 'EUR';
+            PARCEL_LAYOUT_DROPPED_FIELDS.forEach(key => delete output[key]);
+            output.goal = 'parcel-layout';
+            output.primaryType = 'ParcelLayout';
+            output.parcelLayout = plan;
             return finalizeAuthoredProposal(output);
         },
         summarizeChanges(source, draft) {
-            const summary = summarizeCommonChanges(source, draft);
-            const before = source?.reparcellization?.polygons || [];
-            const after = draft.editorPayload?.plan?.polygons || [];
-            const totalArea = polygons => planFeatures({ polygons }).reduce((sum, feature) => sum + (geometryArea(feature) || 0), 0);
+            const summary = summarizeCommonChanges(source, draft, { facetKeys: ['name', 'description'] });
+            const before = source?.parcelLayout?.plots || [];
+            const after = draft.editorPayload?.plan?.plots || [];
             summary.geometry = {
                 changed: !same(before, after),
-                polygonCountBefore: before.length,
-                polygonCountAfter: after.length,
-                beforeArea: totalArea(before),
-                afterArea: totalArea(after),
-                ownershipChanged: !same(before.map(p => p.ownerKey || p.owners), after.map(p => p.ownerKey || p.owners))
+                plotCountBefore: before.length,
+                plotCountAfter: after.length,
+                beforeArea: layoutPlotsArea(before),
+                afterArea: layoutPlotsArea(after)
             };
             summary.unchanged = summary.unchanged && !summary.geometry.changed;
             return summary;
@@ -1427,7 +1432,9 @@
         function register(key, adapter, options = {}) {
             const normalized = normalizeGoal(key);
             if (!normalized) throw new Error('Adapter key is required.');
-            const value = { ...adapter, key: adapter?.key || normalized };
+            // Accessors are copied as accessors, so a label read through i18n stays live.
+            const value = Object.defineProperties({}, Object.getOwnPropertyDescriptors(adapter || {}));
+            if (!value.key) value.key = normalized;
             adapters.set(normalized, value);
             (options.aliases || []).forEach(alias => aliases.set(normalizeGoal(alias), normalized));
             return value;
@@ -1485,7 +1492,7 @@
     registry.register('row', buildBuildingAdapter('row'));
     registry.register('parcelBased', buildBuildingAdapter('parcelBased'), { aliases: ['parcel-based', 'parcelbased'] });
     registry.register('single', buildBuildingAdapter('single'), { aliases: ['single-building'] });
-    registry.register('reparcellization', reparcellizationAdapter);
+    registry.register('parcel-layout', parcelLayoutAdapter);
     registry.register('urban-rule', buildGenericAdapter('urban-rule'));
     registry.register('as-is', buildGenericAdapter('as-is'));
     registry.register('park', buildStructureAdapter('park'));
@@ -1562,7 +1569,7 @@
             normalizeGoal,
             corridorAdapter,
             buildBuildingAdapter,
-            reparcellizationAdapter,
+            parcelLayoutAdapter,
             buildGenericAdapter,
             buildStructureAdapter,
             buildStationAdapter,

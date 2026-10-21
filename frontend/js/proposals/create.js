@@ -45,12 +45,6 @@ function updateCreateProposalSubmitState() {
     }
     // The kind's terms follow the relabel.
     applyProposalKindToDialog();
-    refreshReparcellizationAgreementSubmit();
-}
-
-function pendingReparcellizationAgreementBatch() {
-    const draft = window.pendingProposalDraftId && window.proposalDraftStore?.getDraft(window.pendingProposalDraftId);
-    return draft?.publish?.parcelAgreementBatch || window.pendingReparcellizationPlan?.agreementBatch || null;
 }
 
 function cloneProposalCreateValue(value) {
@@ -63,7 +57,7 @@ function cloneProposalCreateValue(value) {
 // records carry an approval setup at all: ProposalPublishTerms.approvalSetupFor.
 function applyPublishingDraftApproval(proposal, draftFields = {}) {
     const hasDraftLens = Object.prototype.hasOwnProperty.call(draftFields, 'lens') && Array.isArray(draftFields.lens);
-    const config = publishingApprovalSetup(proposal.kind ?? null, isReadjustmentRecord(proposal), draftFields);
+    const config = publishingApprovalSetup(proposal.kind ?? null, draftFields);
     if (config) {
         const approval = typeof window !== 'undefined' ? window.ProposalApproval : null;
         proposal.approvalConfig = approval?.normalizeConfig
@@ -74,7 +68,7 @@ function applyPublishingDraftApproval(proposal, draftFields = {}) {
     }
     if (hasDraftLens) proposal.lens = cloneProposalCreateValue(draftFields.lens);
 
-    const governed = proposal?.goal === 'reparcellization' || !!proposal?.reparcellization || proposal?.approvalConfig != null;
+    const governed = proposal?.approvalConfig != null;
     if (governed) {
         proposal.acceptedParcelIds = [];
         proposal.ownerAcceptances = {};
@@ -85,98 +79,17 @@ function applyPublishingDraftApproval(proposal, draftFields = {}) {
     return hasDraftLens;
 }
 
-function isReadjustmentRecord(proposal) {
-    return proposal?.goal === 'reparcellization' || !!proposal?.reparcellization;
-}
-
-function publishingApprovalSetup(kind, readjustment, draftFields = {}) {
+function publishingApprovalSetup(kind, draftFields = {}) {
     return window.ProposalPublishTerms.approvalSetupFor({
-        kind, readjustment,
-        approvalConfig: draftFields.approvalConfig || null,
-        fromDraft: Object.prototype.hasOwnProperty.call(draftFields, 'approvalConfig')
+        kind,
+        approvalConfig: draftFields.approvalConfig || null
     });
 }
 
-function shouldSkipUnsupportedApprovalMint({ selectedTool, proposalMainType, approvalConfig }, adapter) {
-    const requiresAbstractApproval = selectedTool === 'reparcellization'
-        || proposalMainType === 'Reparcellization' || approvalConfig != null;
-    if (!requiresAbstractApproval) return false;
+function shouldSkipUnsupportedApprovalMint({ approvalConfig }, adapter) {
+    if (approvalConfig == null) return false;
     return typeof adapter?.supportsProposalApproval !== 'function'
         || adapter.supportsProposalApproval('proposal-approval/v1') !== true;
-}
-
-function refreshReparcellizationAgreementSubmit() {
-    const t = getProposalI18nHelper();
-    const batch = pendingReparcellizationAgreementBatch();
-    const button = document.getElementById('createProposalSubmitButton');
-    if (!button) return;
-    if (batch) {
-        // A retry finishes the immutable proposals already saved, so terms cannot change midway.
-        document.querySelector('.create-proposal-modal')?.querySelectorAll('input, select, textarea, [data-geometry-action]').forEach(input => { input.disabled = true; });
-        button.disabled = false;
-        button.textContent = t('reparcellization.modal.agreementRetry', 'Retry remaining agreements');
-    } else if (window.pendingReparcellizationPlan?.agreementMode === 'individual') {
-        button.textContent = t('reparcellization.modal.agreementCreate', 'Create parcel agreements');
-    }
-}
-
-async function finishReparcellizationAgreementBatch(batch, draftId) {
-    const t = getProposalI18nHelper();
-    // The agreements are the draft's layout split by owner, on the same plots. When that layout is
-    // one's own local record (proposals/lineage.js editsInPlace), the split is its edit: the layout
-    // comes off the map once, before the first agreement applies. A published layout stays
-    // standing, as any counterproposal's source does.
-    const layoutId = draftId ? window.proposalDraftStore?.getDraft(draftId)?.sourceLocalProposalId : null;
-    let layoutReleased = !layoutId;
-    const releaseLocalLayout = async () => {
-        if (layoutReleased) return true;
-        const layout = proposalStorage.getProposal(String(layoutId));
-        if (!window.ProposalLineage.editsInPlace(layout) || !isProposalApplied(layout)) {
-            layoutReleased = true;
-            return true;
-        }
-        layoutReleased = await ProposalManager.unapplyProposal(layout.proposalId) === true;
-        return layoutReleased;
-    };
-    const result = await window.ReparcellizationAgreements.resumeBatch(batch, {
-        storage: proposalStorage,
-        persistBatch(next) {
-            if (window.pendingReparcellizationPlan) window.pendingReparcellizationPlan.agreementBatch = next;
-            if (draftId && window.proposalDraftStore?.getDraft(draftId)) {
-                window.proposalDraftStore.updateDraft(draftId, { publish: { parcelAgreementBatch: next } },
-                    { force: true, recordHistory: false, dirty: false });
-                window.proposalDraftStore.flush();
-            }
-        },
-        apply: async id => (await releaseLocalLayout()) && ProposalManager.applyProposal(id),
-        isApplied: proposal => typeof isProposalApplied === 'function' ? isProposalApplied(proposal) : proposal?.applied === true,
-        applyFailure: id => ProposalManager.getLastApplyFailure?.(id)?.message
-    });
-    updateShowProposalsButton();
-    updateProposalList();
-    if (!result.complete) {
-        const message = t('reparcellization.modal.agreementFailed',
-            'Created {{created}} parcel agreements; {{failed}} need attention. Your draft is kept for retry.',
-            { created: result.created, failed: result.failures.length });
-        const error = new Error(`${message}\n${result.failures[0]?.message || ''}`);
-        if (draftId) window.proposalDraftStore?.markPublishFailed(draftId, error);
-        console.error('[reparcellization] Agreement batch incomplete', result.failures);
-        updateStatus(error.message);
-        if (typeof window.showStyledAlert === 'function') window.showStyledAlert(error.message);
-        return false;
-    }
-    const ids = result.batch.items.map(item => item.proposalId);
-    if (draftId && window.proposalDraftStore?.getDraft(draftId)) window.proposalDraftStore.consumeAfterPublish(draftId, ids[0]);
-    const user = typeof getCurrentUserAgent === 'function' ? getCurrentUserAgent() : null;
-    if (user) agentStorage.updateAgent(user.id, { proposalsCreated: [...new Set([...(user.proposalsCreated || []), ...ids])] });
-    window.pendingReparcellizationPlan = null;
-    closeProposalDialog();
-    if (typeof window.releaseEditorSeededMultiSelection === 'function') window.releaseEditorSeededMultiSelection();
-    if (typeof selectAndHighlightProposal === 'function') selectAndHighlightProposal(ids[0], null, false, true);
-    const message = t('reparcellization.modal.agreementCreated', 'Created {{count}} parcel agreements.', { count: ids.length });
-    updateStatus(message);
-    if (typeof showEphemeralMessage === 'function') showEphemeralMessage(message, 5000, 'success');
-    return true;
 }
 
 // ---- Kind ("Who decides?", proposal-kinds.md) ----
@@ -275,11 +188,9 @@ function publishTermsInPlace(proposalId, afterSave) {
         return;
     }
     const kindTerms = readProposalKindTerms();
-    // A readjustment's cash is its owner ledger, already on the record.
-    const readjustment = isReadjustmentRecord(record);
     const offer = kindTerms.nonBinding ? 0
-        : (readjustment ? Number(record.offer) || 0 : window.parseProposalOfferValue(document.getElementById('proposalOffer')?.value));
-    if (!kindTerms.nonBinding && !readjustment && !(Number.isFinite(offer) && offer > 0)) {
+        : window.parseProposalOfferValue(document.getElementById('proposalOffer')?.value);
+    if (!kindTerms.nonBinding && !(Number.isFinite(offer) && offer > 0)) {
         showProposalAlertMessage('please_enter_a_valid_offer_amount', 'Please enter a valid offer amount.');
         return;
     }
@@ -577,7 +488,6 @@ const PROPOSAL_TYPE_TRANSLATION_KEYS = {
     'track': 'modal.roadWidth.proposalList.goalLabels.track',
     'road/track': 'modal.createProposal.goalOptions.roadTrack',
     'decide later': 'modal.createProposal.goalOptions.decideLater',
-    'reparcellization': 'modal.createProposal.goalOptions.reparcellization',
     'urban rule': 'modal.createProposal.proposalTypeOptions.urbanRule',
     'joint investment': 'modal.createProposal.proposalTypeOptions.jointInvestment',
     'purchase': 'modal.createProposal.proposalTypeOptions.purchase',
@@ -672,33 +582,12 @@ async function createProposal() {
     const publishingDraft = publishingDraftId ? window.proposalDraftStore?.getDraft?.(publishingDraftId) : null;
     // Set below when this save edits one's own local record in place (proposals/lineage.js).
     let inPlaceSourceId = null;
-    const draftOwnFields = publishingDraft?.fields && typeof publishingDraft.fields === 'object'
+    const publishingDraftFields = publishingDraft?.fields && typeof publishingDraft.fields === 'object'
         ? publishingDraft.fields : {};
-    // The dialog's own Ownership and approval row (dialog-create.js) is what the author chose last.
-    const dialogApproval = typeof window !== 'undefined' ? window.pendingProposalApprovalSetup : null;
-    const publishingDraftFields = dialogApproval
-        ? { ...draftOwnFields, approvalConfig: dialogApproval.approvalConfig, lens: dialogApproval.lens }
-        : draftOwnFields;
     const markDraftPublishFailed = (error) => {
         if (!publishingDraftId || !window.proposalDraftStore?.getDraft?.(publishingDraftId)) return;
         window.proposalDraftStore.markPublishFailed(publishingDraftId, error);
     };
-    const pendingAgreementBatch = pendingReparcellizationAgreementBatch();
-    if (pendingAgreementBatch) {
-        setProposalCreateButtonState(true);
-        setProposalModalInteractivity(false);
-        try { return await finishReparcellizationAgreementBatch(pendingAgreementBatch, publishingDraftId); }
-        catch (error) {
-            markDraftPublishFailed(error);
-            console.error('[reparcellization] Agreement retry failed', error);
-            updateStatus(error.message);
-        } finally {
-            setProposalModalInteractivity(true);
-            setProposalCreateButtonState(false);
-            refreshReparcellizationAgreementSubmit();
-        }
-        return;
-    }
     const selectedTool = getSelectedProposalTool();
     if (!selectedTool) {
         showProposalAlertMessage('select_a_proposal_goal_before_creating_a_proposal', 'Select a proposal goal before creating a proposal.');
@@ -707,7 +596,7 @@ async function createProposal() {
     if (selectedTool === 'decide-later') {
         showProposalAlertMessage(
             'proposal_type_no_longer_available',
-            'Merge / Decide Later is no longer available. Use Land readjustment.'
+            'Merge / Decide Later is no longer available. Use Lay out parcels.'
         );
         return;
     }
@@ -727,24 +616,14 @@ async function createProposal() {
     const proposalType = proposalTypeInput && proposalTypeInput.value ? proposalTypeInput.value : DEFAULT_PROPOSAL_TYPE;
     const proposalMainTypeInput = document.getElementById('proposalMainType');
     const proposalMainType = proposalMainTypeInput && proposalMainTypeInput.value ? proposalMainTypeInput.value : 'Purchase';
-    const pendingReparcelPlan = (typeof window !== 'undefined') ? window.pendingReparcellizationPlan : null;
-    const separateAgreements = proposalMainType === 'Reparcellization' && pendingReparcelPlan?.agreementMode === 'individual';
-    if (proposalMainType === 'Reparcellization') {
-        if (!pendingReparcelPlan || !Array.isArray(pendingReparcelPlan.polygons) || pendingReparcelPlan.polygons.length === 0) {
-            showProposalAlertMessage('run_the_reparcellization_algorithm_and_click_done_before_creating_this_proposal', 'Run the reparcellization algorithm and click Done before creating this proposal.');
-            return;
-        }
-    }
     const proposalName = (document.getElementById('proposalName') && document.getElementById('proposalName').value || '').trim();
     const titleOrigin = document.getElementById('proposalName')?.dataset?.titleOrigin === 'generated' ? 'generated' : 'user';
     const description = document.getElementById('proposalDescription').value.trim();
     const kindTerms = readProposalKindTerms();
-    const offer = kindTerms.nonBinding ? 0 : (proposalMainType === 'Reparcellization'
-        ? window.ReparcellizationAgreements.cashOfferTotal(pendingReparcelPlan)
-        : window.parseProposalOfferValue(document.getElementById('proposalOffer').value) || 0);
+    const offer = kindTerms.nonBinding ? 0
+        : window.parseProposalOfferValue(document.getElementById('proposalOffer').value) || 0;
     const offerCurrencySelect = document.getElementById('proposalCurrency');
-    const offerCurrency = proposalMainType === 'Reparcellization' ? 'EUR'
-        : (offerCurrencySelect && offerCurrencySelect.value ? offerCurrencySelect.value : 'USDT');
+    const offerCurrency = offerCurrencySelect && offerCurrencySelect.value ? offerCurrencySelect.value : 'USDT';
     const acquisitionInput = document.getElementById('proposalAcquisitionMode');
     const acquisitionMode = acquisitionInput && acquisitionInput.value ? acquisitionInput.value : null;
     const boundaryInput = document.getElementById('proposalBoundaryMode');
@@ -790,7 +669,7 @@ async function createProposal() {
         showProposalAlertMessage('please_enter_a_description', 'Please enter a description.');
         return;
     }
-    if (!kindTerms.nonBinding && (!Number.isFinite(offer) || offer < 0 || (offer === 0 && proposalMainType !== 'Reparcellization'))) {
+    if (!kindTerms.nonBinding && (!Number.isFinite(offer) || offer <= 0)) {
         showProposalAlertMessage('please_enter_a_valid_offer_amount', 'Please enter a valid offer amount.');
         return;
     }
@@ -873,13 +752,11 @@ async function createProposal() {
         const cantonActive = !!(window.CantonMode && typeof window.CantonMode.isActive === 'function' && window.CantonMode.isActive());
 
         console.debug('[createProposal] Blockchain supported:', blockchainSupported, 'Solana supported:', solanaBlockchainSupported, 'Wallet connected:', isWalletConnected, 'Canton:', cantonActive);
-        let shouldMintOnchain = !separateAgreements && ((((blockchainSupported || solanaBlockchainSupported) && isWalletConnected) || cantonActive) && (finalParcelIds.length > 0 || !!siteContext));
+        let shouldMintOnchain = (((blockchainSupported || solanaBlockchainSupported) && isWalletConnected) || cantonActive) && (finalParcelIds.length > 0 || !!siteContext);
         const approvalMintAdapter = cantonActive ? window.CantonProposalChainBridge
             : isSolanaWalletConnected ? window.SolanaProposalChainBridge : window.ProposalChainBridge;
         if (shouldMintOnchain && shouldSkipUnsupportedApprovalMint({
-            selectedTool, proposalMainType,
-            approvalConfig: publishingApprovalSetup(kindTerms.kind,
-                selectedTool === 'reparcellization' || proposalMainType === 'Reparcellization', publishingDraftFields)
+            approvalConfig: publishingApprovalSetup(kindTerms.kind, publishingDraftFields)
         }, approvalMintAdapter)) {
             shouldMintOnchain = false;
             const unsupportedMessage = t('proposalApproval.chainUnsupported', 'This approval setup is not supported by the current chain adapter.');
@@ -1326,32 +1203,6 @@ async function createProposal() {
 
         // Local authored records are distinct; publication deduplication uses the content fingerprint.
 
-        if (proposalMainType === 'Reparcellization') {
-            // A readjustment must still be on its selection; a subdivision (poolSource 'site') is
-            // pooled from its site, whose parcels are its binding (none on open ground), so only its
-            // site is compared (proposals/subdivision.js planCreateVerdict).
-            const planVerdict = window.__subdivision.planCreateVerdict(pendingReparcelPlan, {
-                selectedParcelIds: finalParcelIds.map(id => id && id.toString()),
-                site: siteContext ? siteContext.site : null
-            });
-            if (!planVerdict.ok) {
-                const refusals = {
-                    missing: ['reparcellization_plan_is_missing_please_rerun_the_algorithm', 'Reparcellization plan is missing. Please rerun the algorithm.'],
-                    'parcels-changed': ['selected_parcels_changed_after_running_reparcellization_please_rerun_the_algorithm', 'Selected parcels changed after running reparcellization. Please rerun the algorithm.'],
-                    'site-missing': ['subdivision_site_missing', 'This subdivision has no site. Reopen it from its draft and save again.'],
-                    'site-changed': ['subdivision_site_changed', 'The site changed after the plots were laid. Open the subdivision editor again and click Done.']
-                };
-                const [key, fallback] = refusals[planVerdict.reason];
-                console.warn(`[${new Date().toISOString()}] [createProposal] reparcellization plan refused: ${planVerdict.reason}`);
-                showProposalAlertMessage(key, fallback);
-                return;
-            }
-            proposal.goal = 'reparcellization';
-            proposal.reparcellization = JSON.parse(JSON.stringify(pendingReparcelPlan));
-            delete proposal.reparcellization.parcelIds;
-            delete proposal.reparcellization.agreementBatch;
-        }
-
         // Building/urban-rule proposals: consume pendingBuildingProposalContext
         const pendingBuildingContext = (typeof window !== 'undefined' ? window.pendingBuildingProposalContext : null)
             || (typeof pendingBuildingProposalContext !== 'undefined' ? pendingBuildingProposalContext : null);
@@ -1451,22 +1302,6 @@ async function createProposal() {
                 throw validationError;
             }
             window.proposalDraftStore.markPublishing(publishingDraftId);
-        }
-
-        if (separateAgreements) {
-            const parts = window.ReparcellizationPlanUtils.splitPlanPerParcel(proposal.reparcellization, turf);
-            await window.CadastralParcelRepository.ensureIds(authoredCadastreParcelIds);
-            const cadastralParcels = authoredCadastreParcelIds.map(id => {
-                const feature = window.CadastralParcelRepository.get(id);
-                if (!feature) throw new Error(`Cadastral parcel ${id} is unavailable.`);
-                return { id, feature };
-            });
-            const batch = window.ReparcellizationAgreements.buildBatch({
-                proposal, parts, cadastralParcels,
-                groupId: publishingDraftId || window.crypto.randomUUID(),
-                titleForParcel: (name, parcel) => t('reparcellization.modal.perParcelProposalName', '{{name}} — parcel {{parcel}}', { name, parcel })
-            }, turf);
-            return await finishReparcellizationAgreementBatch(batch, publishingDraftId);
         }
 
         // Try to mint on-chain if blockchain is available and parcels have NFTs
@@ -2056,10 +1891,6 @@ async function createProposal() {
             : `Proposal "${proposalType}" created successfully with ${proposal.cadastreParcelIds.length} parcels.`;
         updateStatus(statusMessage);
 
-        if (proposalMainType === 'Reparcellization' && typeof window !== 'undefined') {
-            window.pendingReparcellizationPlan = null;
-        }
-
         if (typeof multiParcelSelection !== 'undefined') {
             if (createdFromMultiSelect && multiParcelSelection.isActive) {
                 multiParcelSelection.toggle({ restoreSingleSelection: false });
@@ -2127,12 +1958,13 @@ async function createProposal() {
         hideWaitingPopupSafe();
         setProposalModalInteractivity(true);
         setProposalCreateButtonState(false);
-        refreshReparcellizationAgreementSubmit();
     }
 }
 
 function buildUploadReadyProposal(proposal) {
     if (!proposal) return null;
+    // A parcel layout leaves the device only with its agreement (ProposalPublishTerms.publishRefusal).
+    window.ProposalPublishTerms.assertPublishable(proposal);
     // The published record carries the profile's CURRENT name when it is this profile's draft
     // (GuestPolicy.outgoingAuthor): stamped here, before the device-local authorAgentId is dropped
     // below, because callers (the share dialog's Upload) project first and upload the projection.
@@ -2227,7 +2059,7 @@ function buildUploadReadyProposal(proposal) {
     // The author's local agent id only says which profile on THIS device owns the draft
     // (GuestPolicy.claimAuthorAgentId); the published record carries the author name.
     delete uploadProposal.authorAgentId;
-    ['roadProposal', 'buildingProposal', 'structureProposal', 'reparcellization', 'decideLaterProposal']
+    ['roadProposal', 'buildingProposal', 'structureProposal', 'decideLaterProposal']
         .forEach(key => {
             const nested = uploadProposal[key];
             if (!nested || typeof nested !== 'object') return;

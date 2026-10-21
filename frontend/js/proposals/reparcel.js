@@ -12,85 +12,27 @@ function proposalAwareParcelClickHandler(e) {
     }
 }
 
-function ensureReparcellizationModuleLoaded() {
-    if (typeof openReparcellizationModal === 'function') {
+// The parcel-layout editor (js/parcel-layout.js) normally loads with the page; this loads it on
+// demand when a design tool asks for it before it has arrived.
+function ensureParcelLayoutModuleLoaded() {
+    if (typeof openParcelLayoutEditor === 'function') {
         return Promise.resolve(true);
     }
-    if (reparcellizationModulePromise) {
-        return reparcellizationModulePromise;
+    if (parcelLayoutModulePromise) {
+        return parcelLayoutModulePromise;
     }
-    reparcellizationModulePromise = new Promise((resolve) => {
+    parcelLayoutModulePromise = new Promise((resolve) => {
         const script = document.createElement('script');
-        script.src = 'js/reparcellization.js';
+        script.src = typeof appendBuildToken === 'function' ? appendBuildToken('js/parcel-layout.js') : 'js/parcel-layout.js';
         script.async = true;
-        script.onload = () => resolve(typeof openReparcellizationModal === 'function');
-        script.onerror = () => resolve(false);
+        script.onload = () => resolve(typeof openParcelLayoutEditor === 'function');
+        script.onerror = () => {
+            parcelLayoutModulePromise = null;
+            resolve(false);
+        };
         document.head.appendChild(script);
     });
-    return reparcellizationModulePromise;
-}
-
-async function handleReparcellizationAlgorithmClick(algorithmKey = 'sweep-line') {
-    const normalizedKey = algorithmKey || 'sweep-line';
-    const initialSelection = (typeof getCurrentParcelSelectionContext === 'function')
-        ? getCurrentParcelSelectionContext()
-        : { ids: [] };
-    // Build-palette and classic-dialog creation share one goal-aware block-selection policy.
-    if (typeof shouldStopFreshProposalForWholeBlock === 'function'
-        && await shouldStopFreshProposalForWholeBlock('reparcellization', initialSelection)) return false;
-    const ownershipModeInput = document.getElementById('proposalBoundaryMode');
-    const ownershipMode = ownershipModeInput && ownershipModeInput.value ? ownershipModeInput.value : (currentOwnershipMode || 'multiple');
-
-    currentProposalTool = 'reparcellization';
-    const typeInput = document.getElementById('proposalType');
-    if (typeInput) {
-        typeInput.value = 'Reparcellization';
-    }
-
-    // Reopen on an existing plan (a copied proposal, or your own in-progress edits) when the
-    // pending plan matches this selection, rather than re-running the algorithm over it.
-    const buildOpenOptions = () => {
-        const selection = (typeof getCurrentParcelSelectionContext === 'function')
-            ? getCurrentParcelSelectionContext()
-            : { ids: [] };
-        const plan = (typeof getPendingReparcellizationSeedFor === 'function')
-            ? getPendingReparcellizationSeedFor(selection.ids)
-            : null;
-        return plan
-            ? { algorithm: plan.algorithm || normalizedKey, ownershipMode, initialPolygons: plan.polygons }
-            : { algorithm: normalizedKey, ownershipMode };
-    };
-
-    // One unified land-readjustment method for both single- and multiple-owner
-    // selections (ownershipMode is kept only as informational metadata).
-    const openModal = async () => {
-        if (typeof openReparcellizationModal === 'function') {
-            openReparcellizationModal(buildOpenOptions());
-            return true;
-        }
-        if (typeof updateStatus === 'function') {
-            const t = typeof getProposalI18nHelper === 'function' ? getProposalI18nHelper() : null;
-            updateStatus(t
-                ? t('status.messages.loading_reparcellization_tools', 'Loading reparcellization tools...')
-                : 'Loading reparcellization tools...');
-        }
-        const loaded = await ensureReparcellizationModuleLoaded();
-        if (loaded && typeof openReparcellizationModal === 'function') {
-            openReparcellizationModal(buildOpenOptions());
-            return true;
-        }
-        console.warn('Reparcellization modal is not yet available.');
-        if (typeof showEphemeralMessage === 'function') {
-            const t = typeof getProposalI18nHelper === 'function' ? getProposalI18nHelper() : null;
-            const message = t
-                ? t('ephemeral.messages.reparcellization_tools_failed_to_load', 'Reparcellization tools failed to load.')
-                : 'Reparcellization tools failed to load.';
-            showEphemeralMessage(message, 5000, 'error');
-        }
-        return false;
-    };
-
-    return openModal();
+    return parcelLayoutModulePromise;
 }
 
 function areParcelsContiguous(parcels = [], options = {}) {

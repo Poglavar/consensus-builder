@@ -1,55 +1,33 @@
-// The land readjustment (reparcellization) editor. createReparcellizationEditor() builds one editor
-// with its own state; its collaborators are the page's globals, read when they are used. The page
-// makes one and exposes it as window.openReparcellizationModal; node tests require() the factory and
-// make a fresh editor per test (backend/test/helpers/reparcellization-env.js).
-(function attachReparcellizationEditor(root, createReparcellizationEditor) {
+// The parcel-layout editor ("Lay out parcels"; over a drawn site, "Subdivide"): it redraws the parcel
+// borders of a pool of ground and nothing else. Who receives which plot, and on what terms, is decided
+// by the agreement that includes the layout (plan-design-agreement.md, "M1 (a) build contract").
+// createParcelLayoutEditor() builds one editor with its own state; its collaborators are the page's
+// globals, read when they are used. The page makes one and exposes it as window.openParcelLayoutEditor;
+// node tests require() the factory and make a fresh editor per test (backend/test/helpers/parcel-layout-env.js).
+(function attachParcelLayoutEditor(root, createParcelLayoutEditor) {
     if (typeof module !== 'undefined' && module.exports) {
-        module.exports = { createReparcellizationEditor };
+        module.exports = { createParcelLayoutEditor };
         return;
     }
-    const editor = createReparcellizationEditor();
+    const editor = createParcelLayoutEditor();
     if (!editor) return;
-    if (typeof root.pendingReparcellizationPlan === 'undefined') {
-        root.pendingReparcellizationPlan = null;
+    if (typeof root.pendingParcelLayout === 'undefined') {
+        root.pendingParcelLayout = null;
     }
-    root.openReparcellizationModal = editor.openReparcellizationModal;
-})(typeof window !== 'undefined' ? window : globalThis, function createReparcellizationEditor() {
-    const reparcellizationUiState = window.__reparcellizationUiState;
-    if (!reparcellizationUiState
-        || typeof reparcellizationUiState.resolveDrawShortcut !== 'function'
-        || typeof reparcellizationUiState.resolveOwnerLabel !== 'function'
-        || typeof reparcellizationUiState.normalizePlotOwners !== 'function'
-        || typeof reparcellizationUiState.plotIsAssigned !== 'function'
-        || typeof reparcellizationUiState.readjustmentInputFeatures !== 'function'
-        || typeof reparcellizationUiState.newPlotOwnerHtml !== 'function') {
-        console.error('[reparcellization] UI state helpers are unavailable.');
+    root.openParcelLayoutEditor = editor.openParcelLayoutEditor;
+})(typeof window !== 'undefined' ? window : globalThis, function createParcelLayoutEditor() {
+    const uiState = window.__reparcellizationUiState;
+    if (!uiState
+        || typeof uiState.resolveDrawShortcut !== 'function'
+        || typeof uiState.readjustmentInputFeatures !== 'function') {
+        console.error(`[${new Date().toISOString()}] [parcel-layout] UI state helpers are unavailable.`);
         return;
     }
-    const {
-        resolveDrawShortcut,
-        resolveOwnerLabel,
-        normalizePlotOwners,
-        plotIsAssigned,
-        readjustmentInputFeatures,
-        safePlanColor,
-        ownerLegendCellHtml,
-        cashOfferInputHtml,
-        newPlotOwnerHtml
-    } = reparcellizationUiState;
+    const { resolveDrawShortcut, readjustmentInputFeatures } = uiState;
 
-    function liveReparcellizationFeature(parcelOrId) {
-        let id = null;
-        if (typeof parcelOrId === 'string' || typeof parcelOrId === 'number') {
-            id = String(parcelOrId);
-        } else if (parcelOrId) {
-            id = window.ParcelPresenter?.getIdForLayer?.(parcelOrId) || null;
-        }
-        return id ? window.LiveParcelFabric?.get?.(String(id)) || null : null;
-    }
-
-    function ownerDisplayName(rawName, fallbackName) {
-        const fallback = fallbackName || t('reparcellization.modal.unassigned', 'Unassigned');
-        return resolveOwnerLabel(rawName, fallback, (key, value) => t(key, value)).displayName;
+    // Every console line of this editor: timestamped and tagged.
+    function log(level, message, ...details) {
+        console[level](`[${new Date().toISOString()}] [parcel-layout] ${message}`, ...details);
     }
 
     function liveSelectionFeatures(selection) {
@@ -60,11 +38,31 @@
         return missing.length ? [] : features;
     }
 
+    // Plots are told apart by colour and number only: plot n takes colour n, so the pieces of one cut,
+    // which sit next to each other in the list, always differ. Nothing here says who receives a plot.
     const COLOR_PALETTE = [
         '#2E86AB', '#F18F01', '#C73E1D', '#137547', '#7A1CAC',
         '#CC3363', '#3D5A80', '#EE6C4D', '#5C946E', '#8A508F',
         '#FF7F11', '#1B998B', '#ED254E', '#3772FF', '#78290F'
     ];
+
+    function plotColor(index) {
+        return COLOR_PALETTE[Math.abs(index) % COLOR_PALETTE.length];
+    }
+
+    // The layouts that are regenerated from their settings (the count and the sweep handle, the
+    // Schelling plan): the first hand edit turns either into a drawn layout (adoptLayoutForEditing).
+    const AUTOMATIC_ALGORITHMS = ['equal', 'schelling'];
+    // How a plot was made, as the record names it (plan-design-agreement.md, "M1 (a) build contract").
+    const PLOT_SOURCES = new Set(['equal', 'schelling', 'schelling-remainder', 'amend', 'manual', 'base', 'geojson', 'form']);
+    // Equal plots: how many the count field allows.
+    const PLOT_COUNT = Object.freeze({ min: 2, max: 64 });
+
+    function clampPlotCount(value) {
+        const count = Math.round(Number(value));
+        if (!Number.isFinite(count)) return PLOT_COUNT.min;
+        return Math.min(PLOT_COUNT.max, Math.max(PLOT_COUNT.min, count));
+    }
 
     const state = {
         modal: null,
@@ -72,67 +70,45 @@
         map: null,
         previewLayer: null,
         boundaryLayer: null,
-        legendListEl: null,
-        ownerReviewEl: null,
-        reviewOwnerKey: '',
-        ownerReviewLayers: [],
-        shareDraftPending: false,
         statusEl: null,
-        algorithm: 'sweep-line',
+        algorithm: 'equal',
+        // Equal plots: how many (PLOT_COUNT); the sweep handle sets the direction they run in.
+        plotCount: PLOT_COUNT.min,
+        countEl: null,
+        // Schelling plots: the code of the Schelling plan they were taken from (schelling-grid.js).
+        schellingCode: null,
         selection: null,
         superParcel: null,
         totalArea: 0,
-        ownerShares: [],
-        approvalConfig: null,
-        approvalLens: [],
-        savedOwnerShares: [],
-        savedLedgerMetadata: null,
-        parcelOwnerIndex: new Map(),
-        cadastreIdsByLiveParcel: new Map(),
+        // Keep existing borders: the input parcels, kept on the record so a reopened layout still
+        // knows the borders it started from.
         amendInputs: [],
         slices: [],
         hasFitBounds: false,
-        resizeHandler: null,
-        resizeTimer: null,
         escHandler: null,
         commitBtns: [],
         subtitleEl: null,
         subtitleData: null,
-        ownershipMode: 'multiple',
-        uploadedGeometry: null,
-        // A saved plan's polygons[] to restore instead of re-running the algorithm. Set by
-        // openReparcellizationModal({ initialPolygons }) — used by "Copy into new proposal" and by
-        // reopening the editor mid-draft. Consumed once by refreshPreview().
-        initialPolygons: null,
-        selectedSliceIndex: null,
-        ownerAssignmentPopup: null,
-        ownerPopupView: null,
+        // A saved layout's plots[] to restore instead of re-running its layout. Set by
+        // openParcelLayoutEditor({ initialPlots }), used when a design draft is reopened. Consumed once
+        // by refreshPreview().
+        initialPlots: null,
+        // Draw freely continues from the plots on the map (see the layout switch).
+        carrySlices: null,
+        // The building-block chooser of the courtyard tool, while it is open.
+        choicePopup: null,
         newPlotsListEl: null,
-        // Inputs vs outputs. 'new' edits the plan over a faint underlay of the parcels it replaces;
+        // Inputs vs outputs. 'new' edits the layout over a faint underlay of the parcels it replaces;
         // 'old' shows those parcels alone and read-only — the cadastre is a given here.
         oldPlotsListEl: null,
         plotsTabBtns: [],
         plotsTab: 'new',
-        // Assigning and editing are different jobs on the same map, and they were
-        // fighting: a click meant "give this plot an owner" AND "select this plot to
-        // reshape", so the owner popup interrupted every editing gesture. One mode at a
-        // time — editing by default, assigning when asked for.
-        assignMode: false,
         inputLayer: null,
         inputHighlightLayer: null,
         nodeEditWasActive: false,
-        // True when the input parcels could not all be resolved and the pooled outline had to be
-        // derived from the plan's own plots — a weaker guarantee, disclosed rather than hidden.
+        // True when the input parcels could not all be resolved and the pool outline had to be
+        // derived from the layout's own plots — a weaker guarantee, disclosed rather than hidden.
         poolFromOutputs: false,
-        // Land-readjustment accounting: contribution is measured by land value
-        // (estimatedMarketPrice, area fallback) so owners are entitled to plots
-        // of proportional value. contributionRatio reserves land for public uses
-        // (roads/parks); it stays 1 in P1 until the public-carve step lands.
-        contributionBasis: 'area',
-        valuationCurrency: null,
-        totalValue: 0,
-        poolUnitValue: 0,
-        contributionRatio: 1,
         coverageEl: null,
         // Manual plot drawing state. mode 'polygon' draws/carves a new plot;
         // mode 'line' splits the plots it crosses into separate plots.
@@ -144,7 +120,7 @@
             active: false, points: [], frozen: [], tempLayer: null, tempMarkers: [],
             mode: 'polygon', cursor: null, rawCursor: null, shift: false,
             context: null, ghostLayer: null, snapLayer: null, snap: null,
-            statusText: null, keyHandler: null, zoomHandler: null, joint: false
+            statusText: null, keyHandler: null, zoomHandler: null
         },
         drawBtn: null,
         lineBtn: null,
@@ -155,51 +131,29 @@
         // Sweep-line orientation: a draggable point the cut lines point toward.
         sweepHandle: null,
         sweepDirLayer: null,
-        cashTotalEl: null,
-        // Per-owner cash-offer overrides (ownerKey -> number) when the user edits
-        // the prefilled cash offer; unset owners use the computed default.
-        cashOfferOverrides: {},
         // Before/after swipe comparison (a second "before" map clipped by a slider).
         compareBtn: null,
         compare: { active: false, session: null, map2: null },
         // Footprints of applied building proposals overlapping the pool, shown as a
-        // guide layer so the readjustment can be aligned to planned buildings.
+        // guide layer so the layout can be aligned to planned buildings.
         buildingFootprintLayer: null,
         // Node/edge editing of the plot boundaries (plot-topology.js). `nodes` holds the current
         // topology so a drag knows which plots a handle belongs to.
         nodeEdit: { active: false, topology: null, layer: null, boundaryIndex: null, focusRemove: null },
-        // Undo stack for layout edits (Cmd/Ctrl+Z). Each entry is a snapshot of the plots and
-        // their ownership taken BEFORE a mutating action, so undo restores the state the user
-        // last saw rather than an intermediate drag frame.
+        // Undo stack for layout edits (Cmd/Ctrl+Z). Each entry is a snapshot of the plots taken
+        // BEFORE a mutating action, so undo restores the state the user last saw rather than an
+        // intermediate drag frame.
         historyCtl: null,
         // Set for the duration of an open, so a second click cannot start a second editor.
         opening: false,
         // A subdivision (PARCEL-OPTIONAL.md phase 4): the pool is a drawn site, partly or wholly
         // open ground. { site, boundParcelIds, pool } — pool is proposals/subdivision.js sitePool():
-        // the bound parcels' parts (modeled owners contribute) and open ground (ownership unknown).
+        // the bound parcels' parts and the open ground.
         sitePool: null
     };
 
     function subdivisionApi() {
         return window.__subdivision || null;
-    }
-
-    function isUnrepresentedGroundEntry(entry) {
-        const api = subdivisionApi();
-        return !!(entry && (entry.unrepresentedGround || (api && api.isOpenGroundOwnerKey(entry.ownerKey))));
-    }
-
-    // Pseudo-owner for land assigned to public use (roads, parks, etc.). Rendered
-    // white so it reads as "not an owner"; excluded from owner cash accounting.
-    const PUBLIC_LAND_KEY = 'public-land';
-    // Open ground (ownership unknown): a pale sand, distinct from public land's white.
-    const OPEN_GROUND_COLOR = '#e8dcc0';
-    function getPublicLandOwner() {
-        return {
-            ownerKey: PUBLIC_LAND_KEY,
-            displayName: t('reparcellization.modal.publicLand', 'Public land'),
-            color: '#ffffff'
-        };
     }
 
     const i18nApi = (typeof window !== 'undefined') ? window.i18n : null;
@@ -226,71 +180,47 @@
         } catch (_) { }
     }
 
-    function hashToColorIndex(value) {
-        if (!value) return 0;
-        let hash = 0;
-        for (let i = 0; i < value.length; i++) {
-            hash = ((hash << 5) - hash) + value.charCodeAt(i);
-            hash |= 0;
-        }
-        return Math.abs(hash) % COLOR_PALETTE.length;
-    }
-
-    function pickOwnerColor(ownerKey, index) {
-        if (COLOR_PALETTE.length === 0) return '#888';
-        const paletteIndex = ownerKey ? hashToColorIndex(ownerKey) : (index % COLOR_PALETTE.length);
-        return COLOR_PALETTE[paletteIndex];
-    }
-
-    function formatPercent(value) {
-        if (!isFinite(value) || value <= 0) {
-            return '0%';
-        }
-        return `${(value * 100).toFixed(1)}%`;
-    }
-
-    function updateSubtitleWithOwners(ownerCount = 0) {
+    // The subtitle names the layout and the ground it redraws ("Equal plots · 3 parcels"). The
+    // parcel count is a nested translation reference, so it picks its own plural form.
+    function updateSubtitle() {
         if (!state.subtitleEl || !state.subtitleData) return;
-
-        const parcelCount = state.subtitleData.parcelCount || 0;
-        const algorithmLabel = state.subtitleData.algorithmLabel || '';
-        // The counted nouns are nested translation references so each one picks its own plural form
-        // (Croatian/Serbian need 1 / 2-4 / 5+); the i18n runtime resolves them before interpolating.
         const params = {
-            algorithm: algorithmLabel,
-            parcels: { key: 'reparcellization.modal.parcelCount', count: parcelCount },
-            owners: { key: 'reparcellization.modal.ownerCount', count: ownerCount || 0 }
+            algorithm: state.subtitleData.algorithmLabel || '',
+            parcels: { key: 'reparcellization.modal.parcelCount', count: state.subtitleData.parcelCount || 0 }
         };
-        const subtitleText = t(
-            'reparcellization.modal.subtitleWithOwners',
-            '{{algorithm}} · {{parcels}} · {{owners}}',
-            params
-        );
-        state.subtitleEl.textContent = subtitleText;
+        state.subtitleEl.textContent = t('reparcellization.modal.subtitle', '{{algorithm}} · {{parcels}}', params);
         try {
-            state.subtitleEl.setAttribute('data-i18n-key', 'reparcellization.modal.subtitleWithOwners');
             state.subtitleEl.setAttribute('data-i18n-params', JSON.stringify(params));
         } catch (_) {
             state.subtitleEl.removeAttribute('data-i18n-params');
         }
     }
 
+    // The layouts a parcel layout can start from. Each one can be edited by hand afterwards.
     function getAlgorithmOptions() {
+        const schellingReady = !!(window.SchellingGrid && window.SchellingSettings);
         return [
             {
-                key: 'sweep-line',
-                label: t('reparcellization.modal.algorithms.sweepLine', 'Automatic'),
+                key: 'equal',
+                label: t('parcelLayout.editor.algorithms.equal', 'Equal plots'),
                 disabled: false
+            },
+            {
+                key: 'schelling',
+                label: t('parcelLayout.editor.algorithms.schelling', 'Schelling plots'),
+                disabled: !schellingReady,
+                title: schellingReady ? '' : t('parcelLayout.editor.schellingUnavailable', 'The Schelling plan has not loaded.')
+            },
+            {
+                key: 'amend',
+                label: t('parcelLayout.editor.algorithms.amend', 'Keep existing borders'),
+                // Open ground has no borders to keep.
+                disabled: !!state.sitePool
             },
             {
                 key: 'manual',
                 label: t('reparcellization.modal.algorithms.manual', 'Draw freely'),
                 disabled: false
-            },
-            {
-                key: 'amend',
-                label: t('reparcellization.modal.algorithms.amend', 'Keep existing parcels'),
-                disabled: !!state.sitePool
             }
         ];
     }
@@ -299,19 +229,36 @@
         return getAlgorithmOptions().find(option => option.key === key);
     }
 
-    function buildAlgorithmRadios(selectedKey = 'sweep-line') {
+    function buildAlgorithmRadios(selectedKey = 'equal') {
         const options = getAlgorithmOptions();
         return options.map(option => {
             const checked = option.key === selectedKey ? 'checked' : '';
             const disabled = option.disabled ? 'disabled' : '';
+            const title = option.title ? ` title="${escapeHtml(option.title)}"` : '';
             // A segmented control around native radios (css/primitives.css); reparcel-alg-option is
             // the hook the tests click.
             return `
-                <label class="cb-segmented__option reparcel-alg-option">
+                <label class="cb-segmented__option reparcel-alg-option"${title}>
                     <input type="radio" name="reparcel-algorithm" value="${option.key}" ${checked} ${disabled}>
                     <span>${option.label}</span>
                 </label>`;
         }).join('');
+    }
+
+    // The number of equal plots, beside the layouts. It belongs to Equal plots and is shown only
+    // while that is the layout (updateCountField).
+    function plotCountFieldHtml() {
+        return `
+                        <label class="reparcel-count-field" data-parcel-layout-count-field>
+                            <span>${t('parcelLayout.editor.plotCount', 'Number of plots')}</span>
+                            <input type="number" class="reparcel-count-input" data-parcel-layout-count min="${PLOT_COUNT.min}" max="${PLOT_COUNT.max}" step="1" inputmode="numeric" value="${state.plotCount}">
+                        </label>`;
+    }
+
+    function updateCountField() {
+        const field = state.modal && state.modal.querySelector('[data-parcel-layout-count-field]');
+        if (field) field.hidden = state.algorithm !== 'equal';
+        if (state.countEl) state.countEl.value = String(state.plotCount);
     }
 
     function setStatus(message, type = 'info', i18nKey = null, params = null) {
@@ -349,17 +296,14 @@
     // Keep the selected map mode visible when the settings group is collapsed.
     function updateActiveModeHint() {
         const mode = state.drawing.active
-            ? (state.drawing.joint ? t('reparcellization.modal.sharedCourtyard', 'Shared courtyard')
-                : state.drawing.mode === 'line'
-                    ? t('reparcellization.modal.drawLine', 'Draw a line')
-                    : t('reparcellization.modal.drawPlot', 'Draw plot'))
+            ? (state.drawing.mode === 'line'
+                ? t('reparcellization.modal.drawLine', 'Draw a line')
+                : t('reparcellization.modal.drawPlot', 'Draw plot'))
             : state.erase.active
                 ? t('reparcellization.modal.eraseEdge', 'Erase a boundary')
-                : state.assignMode
-                    ? t('reparcellization.modal.assignOwners', 'Assign owners')
-                    : state.nodeEdit.active
-                        ? t('reparcellization.modal.editNodes', 'Edit boundaries (nodes)')
-                        : '';
+                : state.nodeEdit.active
+                    ? t('reparcellization.modal.editNodes', 'Edit boundaries (nodes)')
+                    : '';
         const active = mode
             ? t('reparcellization.modal.activeMode', '{{mode}} active', { mode })
             : '';
@@ -370,12 +314,16 @@
         state.session?.setHint?.(active || null);
     }
 
+    function closeChoicePopup() {
+        if (!state.choicePopup) return;
+        const popup = state.choicePopup;
+        state.choicePopup = null;
+        try { state.map?.closePopup(popup); } catch (_) { }
+    }
+
     function destroyMap() {
-        clearTimeout(state.resizeTimer);
-        state.resizeTimer = null;
         exitCompare();
-        clearOwnerReviewHighlights();
-        state.ownerPopupView = null;
+        closeChoicePopup();
         destroySweepOrientation();
         if (state.previewLayer) {
             state.previewLayer.remove();
@@ -395,22 +343,17 @@
     }
 
     // What the layout looked like when the editor opened — the baseline "cancel" restores to, and
-    // what "has anything changed?" is measured against. Geometry + ownership, since both are edited
-    // here. Taken after the initial layout is generated, so merely opening is never "dirty".
+    // what "has anything changed?" is measured against. Geometry only: that is all this editor
+    // edits. Taken after the initial layout is generated, so merely opening is never "dirty".
     function layoutSignature() {
         try {
             return JSON.stringify({
                 algorithm: state.algorithm,
-                cash: state.cashOfferOverrides,
                 slices: (state.slices || []).map(s => ({
                     g: s?.geometry || null,
-                    o: s ? (s.ownerKey ?? null) : null,
-                    j: s?.jointPool === true,
-                    jm: s?.jointShareMode || null,
-                    d: s?.derivation || null,
-                    w: s && Array.isArray(s.owners) ? s.owners.map(o => `${o.ownerKey}:${o.share || 0}`).join('|') : ''
-                })),
-                shares: (state.ownerShares || []).map(o => ({ k: o.ownerKey, v: o.share ?? null }))
+                    s: s?.source || null,
+                    d: s?.derivation || null
+                }))
             });
         } catch (_) { return null; }
     }
@@ -435,8 +378,8 @@
 
     async function confirmDiscard() {
         const title = t('reparcellization.modal.discardTitle', 'Discard these changes?');
-        const message = t('reparcellization.modal.discardMessage',
-            'The edits you made here have not been saved to the proposal. Closing now discards them.');
+        const message = t('parcelLayout.editor.discardMessage',
+            'The edits you made here have not been saved to the design. Closing now discards them.');
         const discardLabel = t('reparcellization.modal.discardConfirm', 'Discard changes');
         const keepLabel = t('reparcellization.modal.discardCancel', 'Keep editing');
         // The app's confirm (js/ui/dialogs.js) on its top rung, over this editor; discarding is the
@@ -448,7 +391,7 @@
 
     function closeModal(options = {}) {
         if (options.skipPersist !== true && state.slices.length
-            && window.getActiveProposalDesignDraft?.()?.goal === 'reparcellization') {
+            && window.getActiveProposalDesignDraft?.()?.goal === 'parcel-layout') {
             // Only the Done path reaches this now; every dismissal passes skipPersist.
             persistResult();
         }
@@ -464,40 +407,24 @@
         }
         state.session = null;
         state.map = null;
-        if (state.resizeHandler) {
-            window.removeEventListener('resize', state.resizeHandler);
-            state.resizeHandler = null;
-        }
         if (state.escHandler) {
             window.removeEventListener('keydown', state.escHandler);
             state.escHandler = null;
         }
-        state.ownerShares = [];
-        state.ownerReviewEl = null;
-        state.reviewOwnerKey = '';
-        state.shareDraftPending = false;
-        state.approvalConfig = null;
-        state.approvalLens = [];
-        state.approvalRowEl = null;
-        state.savedOwnerShares = [];
-        state.savedLedgerMetadata = null;
-        state.parcelOwnerIndex = new Map();
-        state.cadastreIdsByLiveParcel = new Map();
         state.amendInputs = [];
         state.slices = [];
+        state.carrySlices = null;
         state.selection = null;
         state.superParcel = null;
         state.totalArea = 0;
         state.commitBtns = [];
-        state.uploadedGeometry = null;
-        state.selectedSliceIndex = null;
+        state.countEl = null;
+        state.schellingCode = null;
         state.openSignature = null;
         clearNodeHandles();
         clearInputHighlight();
         if (state.inputLayer) { try { state.inputLayer.remove(); } catch (_) { } state.inputLayer = null; }
         state.plotsTab = 'new';
-        state.assignMode = false;
-        state.assignBtn = null;
         state.plotsTabBtns = [];
         state.oldPlotsListEl = null;
         state.nodeEditWasActive = false;
@@ -507,7 +434,6 @@
         state.nodeEdit.topology = null;
         state.nodeEdit.boundaryIndex = null;
         if (state.historyCtl) { state.historyCtl.destroy(); state.historyCtl = null; }
-        dismissOwnerPopup();
         // Discard must DISCARD. finishProposalDraftDesignSession is the COMMIT path — it turns the
         // seeding draft into the object — so calling it alone meant closing the editor with Cancel
         // ran the create flow anyway, which then failed validation and reopened the drawing the
@@ -522,20 +448,18 @@
 
     function buildModalStructure() {
         const parcelCount = state.selection.ids.length;
-        const algorithmOption = getAlgorithmOptionByKey(state.algorithm) || getAlgorithmOptionByKey('sweep-line');
-        const algorithmLabel = algorithmOption ? algorithmOption.label : t('reparcellization.modal.algorithms.sweepLine', 'Sweep line algorithm');
+        const algorithmOption = getAlgorithmOptionByKey(state.algorithm) || getAlgorithmOptionByKey('equal');
         const subtitleParams = {
-            algorithm: algorithmLabel,
+            algorithm: algorithmOption.label,
             parcels: { key: 'reparcellization.modal.parcelCount', count: parcelCount }
         };
+        // A subdivision is titled with the site tool's own word for it.
         const titleText = state.sitePool
-            ? t('reparcellization.modal.subdivisionTitle', 'Subdivision')
-            : t('reparcellization.modal.title', 'Reparcellization');
+            ? t('siteTool.palette.subdivide', 'Subdivide')
+            : t('parcelLayout.editor.title', 'Lay out parcels');
         const subtitleText = t('reparcellization.modal.subtitle', '{{algorithm}} · {{parcels}}', subtitleParams);
         const doneLabel = t('reparcellization.modal.done', 'Done');
         const cancelLabel = t('reparcellization.modal.cancel', 'Cancel');
-        const allPublicLabel = t('reparcellization.modal.allPublic', 'All public');
-        const assignOwnersLabel = t('reparcellization.modal.assignOwners', 'Assign owners');
         // The drawing tools are icon buttons: the label is the accessible name and the tooltip.
         const tool = (attrs, key, fallback, icon) => {
             const label = t(key, fallback);
@@ -547,11 +471,11 @@
                     <div class="reparcel-controls" data-reparcel-alg-group>
                       <div class="reparcel-secondary-controls" data-reparcel-secondary-controls>
                         <div class="cb-segmented reparcel-alg-options" role="radiogroup" aria-label="${t('reparcellization.modal.layoutTitle', 'Starting layout')}">${buildAlgorithmRadios(state.algorithm)}</div>
+                        ${plotCountFieldHtml()}
                         <div class="reparcel-courtyard-tools" data-reparcel-courtyard-tools hidden>
-                            <span class="reparcel-courtyard-label">${t('reparcellization.modal.sharedCourtyard', 'Shared courtyard')}</span>
+                            <span class="reparcel-courtyard-label">${t('parcelLayout.editor.courtyard', 'Courtyard')}</span>
                             <button type="button" class="btn" data-reparcel-courtyard-building>${t('reparcellization.modal.courtyardFromBuilding', 'From a building block')}</button>
-                            <button type="button" class="btn" data-reparcel-courtyard-draw>${t('reparcellization.modal.courtyardDraw', 'Draw on map')}</button>
-                            <p class="reparcel-courtyard-hint">${t('reparcellization.modal.jointShareHint', 'Courtyard shares start from each owner’s remaining private land. Use Edit shares to set fixed percentages.')}</p>
+                            <p class="reparcel-courtyard-hint">${t('parcelLayout.editor.courtyardHint', 'Carves the inner courtyard of a planned building block out as a plot of its own.')}</p>
                         </div>
                         <div class="reparcel-edit-tools">
                             <div class="reparcel-legend-actions">
@@ -559,20 +483,16 @@
                                 ${tool('data-reparcel-line aria-pressed="false"', 'reparcellization.modal.drawLine', 'Draw a line', 'fa-slash')}
                                 ${tool('data-reparcel-erase aria-pressed="false"', 'reparcellization.modal.eraseEdge', 'Erase a boundary', 'fa-eraser')}
                                 ${tool('data-reparcel-nodes aria-pressed="false"', 'reparcellization.modal.editNodes', 'Edit boundaries (nodes)', 'fa-bezier-curve')}
-                                ${tool('data-reparcel-shuffle', 'reparcellization.modal.shuffle', 'Shuffle ownership', 'fa-shuffle')}
                                 <label class="btn btn-icon" title="${uploadLabel}">
                                     <i class="fa-solid fa-folder-open" aria-hidden="true"></i>
                                     <input type="file" accept=".geojson,.json,application/geo+json,application/json" data-reparcel-upload aria-label="${uploadLabel}" hidden>
                                 </label>
-                                <button type="button" class="btn btn-icon reparcel-assign-btn" data-reparcel-assign aria-pressed="false" data-i18n-key="reparcellization.modal.assignOwners" data-i18n-attr="title,aria-label" title="${assignOwnersLabel}" aria-label="${assignOwnersLabel}"><i class="fa-solid fa-user-tag" aria-hidden="true"></i></button>
-                                <span class="reparcel-tools-spacer"></span>
                             </div>
                         </div>
                       </div>
                       <div class="reparcel-persistent-controls">
                           ${tool('data-reparcel-undo-edit disabled', 'reparcellization.modal.undoEdit', 'Undo (Cmd/Ctrl+Z)', 'fa-rotate-left')}
                           ${tool('data-reparcel-redo-edit disabled', 'reparcellization.modal.redoEdit', 'Redo', 'fa-rotate-right')}
-                          <button type="button" class="btn btn-sm reparcel-allpublic-btn" data-reparcel-all-public hidden data-i18n-key="reparcellization.modal.allPublic" data-i18n-attr="text" title="${allPublicLabel}">${allPublicLabel}</button>
                       </div>
                       <div class="reparcel-draw-toolbar" data-reparcel-draw-toolbar hidden>
                           <button type="button" class="btn btn-sm" data-reparcel-undo>${t('reparcellization.modal.drawUndo', 'Undo point')} (U)</button>
@@ -581,9 +501,8 @@
                       </div>
                     </div>`;
 
-        // Inputs and outputs are the two halves of a readjustment, so the panel shows both: what
-        // went into the pool, and what the plan makes of it. Old plots is a READ-ONLY view — the
-        // cadastre is the given, not something this editor edits.
+        // The layout's output and its input: the plots it draws, and the parcels it redraws. Old plots
+        // is a READ-ONLY view — the cadastre is the given, not something this editor edits.
         const sidePanel = `<section class="reparcel-legend-panel">
                             <div class="cb-tabs reparcel-plots-tabs" role="tablist">
                                 <button type="button" role="tab" class="cb-tab" data-reparcel-plots-tab="new" aria-selected="true">${t('reparcellization.modal.newPlots', 'New plots')}</button>
@@ -591,18 +510,6 @@
                             </div>
                             <div class="reparcel-newplots-list" data-reparcel-newplots-table></div>
                             <div class="reparcel-oldplots-list" data-reparcel-oldplots-table hidden></div>
-                            <div class="reparcel-owner-review" data-reparcel-owner-review></div>
-                            <div class="reparcel-legend-header">
-                                <h3 class="cb-kicker">${t('reparcellization.modal.owners', 'Owners')}</h3>
-                            </div>
-                            <div class="reparcel-legend-list" data-reparcel-owners-table></div>
-                            <div class="reparcel-cashtotal" data-reparcel-cashtotal></div>
-                            <div class="reparcel-approval-setup" data-reparcel-approval>
-                                <h3 class="cb-kicker">${t('proposalDrafts.approval.title', 'Ownership and approval')}</h3>
-                                <p class="reparcel-approval-setup__summary" data-reparcel-approval-summary></p>
-                                <ul class="reparcel-approval-setup__checks" data-reparcel-regime-check hidden></ul>
-                                <button type="button" class="btn btn-sm" data-reparcel-approval-setup>${t('proposalDrafts.approval.setUp', 'Set up…')}</button>
-                            </div>
                             <div class="reparcel-coverage" data-reparcel-coverage></div>
                             <div class="reparcel-status" data-reparcel-status></div>
                         </section>`;
@@ -621,16 +528,16 @@
             <button type="button" class="btn" data-reparcel-cancel data-i18n-key="reparcellization.modal.cancel" data-i18n-attr="text">${cancelLabel}</button>
             <button type="button" class="btn btn-primary" data-reparcel-commit disabled data-i18n-key="reparcellization.modal.done" data-i18n-attr="text">${doneLabel}</button>`;
         const session = window.OnMapEditor?.open?.({
-            owner: 'reparcellization',
+            owner: 'parcel-layout',
             reserveToolsSpace: true,
-            id: window.getActiveProposalDesignDraft?.()?.id || 'reparcellization',
+            id: window.getActiveProposalDesignDraft?.()?.id || 'parcel-layout',
             title: titleText,
             content,
             footer,
             tools,
             modes: ['2d'],
             wide: true,
-            hints: { '2d': t('reparcellization.modal.mapHint', 'Edit plots and boundaries on the map; use the panel to review ownership and shares.') },
+            hints: { '2d': t('parcelLayout.editor.mapHint', 'Draw the plots here. Who receives which plot is decided later, in the agreement.') },
             handleEscape: false,
             onCancel: cancelModal
         });
@@ -642,31 +549,19 @@
         state.modal = session.root;
         state.map = session.map;
         const root = session.root;
-        state.legendListEl = root.querySelector('[data-reparcel-owners-table]');
-        state.ownerReviewEl = root.querySelector('[data-reparcel-owner-review]');
         state.newPlotsListEl = root.querySelector('[data-reparcel-newplots-table]');
         state.oldPlotsListEl = root.querySelector('[data-reparcel-oldplots-table]');
-        state.assignBtn = root.querySelector('[data-reparcel-assign]');
-        if (state.assignBtn) state.assignBtn.addEventListener('click', () => toggleAssignMode());
         state.plotsTabBtns = Array.from(root.querySelectorAll('[data-reparcel-plots-tab]'));
         state.plotsTabBtns.forEach(btn => {
             btn.addEventListener('click', () => setPlotsTab(btn.getAttribute('data-reparcel-plots-tab')));
         });
         state.coverageEl = root.querySelector('[data-reparcel-coverage]');
-        state.approvalRowEl = root.querySelector('[data-reparcel-approval]');
-        state.approvalRowEl?.querySelector('[data-reparcel-approval-setup]')?.addEventListener('click', openApprovalSetup);
-        state.cashTotalEl = root.querySelector('[data-reparcel-cashtotal]');
         state.nodesBtn = root.querySelector('[data-reparcel-nodes]');
         state.undoEditBtn = root.querySelector('[data-reparcel-undo-edit]');
         state.redoEditBtn = root.querySelector('[data-reparcel-redo-edit]');
         state.drawBtn = root.querySelector('[data-reparcel-draw]');
         state.courtyardToolsEl = root.querySelector('[data-reparcel-courtyard-tools]');
         root.querySelector('[data-reparcel-courtyard-building]').addEventListener('click', openBuiltFormPicker);
-        root.querySelector('[data-reparcel-courtyard-draw]').addEventListener('click', () => {
-            cancelDraw();
-            clearNodeHandles();
-            startDraw('polygon', { joint: true });
-        });
         state.lineBtn = root.querySelector('[data-reparcel-line]');
         state.eraseBtn = root.querySelector('[data-reparcel-erase]');
         state.compareBtn = root.querySelector('[data-reparcel-compare]');
@@ -678,6 +573,11 @@
         state.subtitleData = { algorithmLabel: subtitleParams.algorithm, parcelCount };
         state.statusEl = root.querySelector('[data-reparcel-status]');
         state.activeModeEl = root.querySelector('[data-reparcel-active-mode]');
+        state.countEl = root.querySelector('[data-parcel-layout-count]');
+        // A typed count takes effect when it is committed (Enter, leaving the field, the arrows),
+        // not on every keystroke: "12" must not lay out one plot first.
+        state.countEl.addEventListener('change', () => setPlotCount(state.countEl.value));
+        updateCountField();
 
         const commitBtns = Array.from(root.querySelectorAll('[data-reparcel-commit]'));
         state.commitBtns = commitBtns;
@@ -689,23 +589,11 @@
             btn.addEventListener('click', () => {
                 if (btn.disabled) return;
                 if (!persistResult()) return;
-                ensureProposalDefaults();
                 closeModal({ skipPersist: true });
                 if (typeof showEphemeralMessage === 'function') {
-                    let savedMessage = t(
-                        'status.messages.saved_reparcellization_layout_to_the_proposal',
-                        'Saved reparcellization layout for this proposal.'
-                    );
-                    if (savedMessage === 'status.messages.saved_reparcellization_layout_to_the_proposal') {
-                        savedMessage = 'Saved reparcellization layout for this proposal.';
-                    }
-                    showEphemeralMessage(savedMessage, 4000, 'success');
+                    showEphemeralMessage(t('parcelLayout.editor.saved', 'Saved the parcel layout to this design.'), 4000, 'success');
                 }
             });
-        });
-
-        Array.from(root.querySelectorAll('[data-reparcel-all-public]')).forEach((btn) => {
-            btn.addEventListener('click', assignPublicToAllSlices);
         });
 
         state.escHandler = (event) => {
@@ -768,17 +656,18 @@
                 if (!target || target.name !== 'reparcel-algorithm') return;
                 const option = getAlgorithmOptionByKey(target.value);
                 if (!option || option.disabled) return;
-                // Draw freely starts from what is on the map, owners included: switching used to
-                // wipe the layout down to one unassigned plot, so the first step of hand editing
-                // was redoing the automatic split by hand. Erase boundaries to start over.
+                // Draw freely starts from what is on the map: switching used to wipe the layout down
+                // to one plot, so the first step of hand editing was redoing the automatic split by
+                // hand. Erase boundaries to start over.
                 state.carrySlices = option.key === 'manual' && state.slices.length
                     ? JSON.parse(JSON.stringify(state.slices))
                     : null;
                 state.algorithm = option.key;
                 state.subtitleData.algorithmLabel = option.label;
-                updateSubtitleWithOwners(state.ownerShares.filter(entry => !isUnrepresentedGroundEntry(entry)).length);
-                // The sweep orientation point only belongs to sweep-line mode.
-                if (option.key !== 'sweep-line') {
+                updateSubtitle();
+                updateCountField();
+                // The sweep orientation point only belongs to equal plots.
+                if (option.key !== 'equal') {
                     destroySweepOrientation();
                 }
                 // Changing the starting layout replaces the canvas; abandon any unfinished stroke.
@@ -790,14 +679,9 @@
                 // tools inside this mode; the handles are the mode.
                 if (state.historyCtl) state.historyCtl.clear();
                 refreshPreview().then(() => {
-                    toggleNodeEditing(EDITABLE_ALGORITHMS.includes(option.key));
-                }).catch(() => { });
+                    toggleNodeEditing(true);
+                }).catch(error => log('error', `switching to the ${option.key} layout failed`, error));
             });
-        }
-
-        const shuffleBtn = root.querySelector('[data-reparcel-shuffle]');
-        if (shuffleBtn) {
-            shuffleBtn.addEventListener('click', shuffleOwnership);
         }
 
         if (state.nodesBtn) {
@@ -849,6 +733,38 @@
         return session;
     }
 
+    // A new number of equal plots. With Equal plots as the layout it re-slices the pool, as one undo
+    // step; otherwise it is remembered for when Equal plots is chosen.
+    function setPlotCount(value) {
+        const count = clampPlotCount(value);
+        if (state.countEl) state.countEl.value = String(count);
+        if (count === state.plotCount) return false;
+        if (state.algorithm !== 'equal') {
+            state.plotCount = count;
+            return false;
+        }
+        exitCompare(); // editing exits before/after
+        cancelDraw();
+        const next = computeEqualSlices(count);
+        if (!next.length) {
+            if (state.countEl) state.countEl.value = String(state.plotCount);
+            setStatus(t('reparcellization.modal.status.splitFailed', 'Failed to split the parcel geometry.'), 'error',
+                'reparcellization.modal.status.splitFailed');
+            return false;
+        }
+        pushHistory();   // the layout and the count before the change
+        state.plotCount = count;
+        state.slices = next;
+        updateLegend();
+        try {
+            drawPreview();
+        } finally {
+            renderNodeHandles();
+        }
+        if (state.erase.active) renderEraseLayer();
+        return true;
+    }
+
     function initMap() {
         const map = state.session?.map || window.map;
         if (!map) return false;
@@ -866,7 +782,7 @@
         ensurePane('reparcelTools', 675);
         state.map = map;
         map.whenReady(() => {
-            if (state.algorithm === 'sweep-line') {
+            if (state.algorithm === 'equal') {
                 initSweepOrientation();
                 updateSweepDirLine();
             }
@@ -878,113 +794,42 @@
         return CbFormat.formatArea(Number.isFinite(area) ? area : 0);
     }
 
-    // Ledger values are EUR: estimatedMarketPrice, else area × SQM_AVG_PRICE (EUR), and this editor
-    // sets the proposal currency to EUR.
-    function formatMoney(value) {
-        return CbFormat.formatMoney(Number.isFinite(value) ? value : 0, 'EUR');
+    // The cadastral parcel a live parcel came from, when the fabric knows it (several joined by '+'
+    // for a parcel formed from more than one); null for ground without cadastral provenance.
+    function cadastreIdOf(parcelId, selection) {
+        if (selection?.source === 'cadastre') return String(parcelId);
+        const fabric = window.LiveParcelFabric;
+        if (!fabric || typeof fabric.cadastreIdsForParcelIds !== 'function') return null;
+        const ids = fabric.cadastreIdsForParcelIds([parcelId]).map(String).filter(Boolean).sort();
+        return ids.length ? ids.join('+') : null;
     }
 
-    // True when we have meaningful land value to redistribute by; otherwise the
-    // ledger falls back to area (m²) as the contribution metric.
-    function ledgerUsesMoney() {
-        return state.contributionBasis === 'value' && state.valuationCurrency === 'EUR'
-            && Number.isFinite(state.poolUnitValue) && state.poolUnitValue > 0;
-    }
-
-    function formatLedgerMetric(value) {
-        if (!Number.isFinite(value)) return '—';
-        return ledgerUsesMoney() ? formatMoney(value) : formatArea(value);
-    }
-
-    // Per-owner readjustment ledger: what they pooled, what they're entitled to
-    // after the public-land contribution ratio, what they've been assigned, and
-    // the cash balance (+ owner pays for surplus land, − owner is compensated).
-    function computeOwnerLedger(entry) {
-        // No ownership party is represented for open ground (subdivision.js ledgerOf, balance null).
-        if (isUnrepresentedGroundEntry(entry) && subdivisionApi()) {
-            return subdivisionApi().ledgerOf(entry, {
-                basis: ledgerUsesMoney() ? 'value' : 'area',
-                poolUnitValue: state.poolUnitValue,
-                contributionRatio: state.contributionRatio,
-                assignedArea: assignedAreaOf(entry.ownerKey)
-            });
-        }
-        const useMoney = ledgerUsesMoney();
-        const unit = useMoney ? state.poolUnitValue : 1;
-        const contributed = entry.unresolvedContribution ? null : useMoney
-            ? (Number.isFinite(entry.value) ? entry.value : (Number.isFinite(entry.area) ? entry.area * unit : null))
-            : (Number.isFinite(entry.area) ? entry.area : null);
-        const entitled = contributed === null ? null : contributed * (state.contributionRatio ?? 1);
-        const assignedArea = assignedAreaOf(entry.ownerKey);
-        const assigned = assignedArea * unit;
-        return {
-            contributed,
-            entitled,
-            assigned,
-            assignedArea,
-            cashBalance: entitled === null ? null : assigned - entitled
-        };
-    }
-
-    function assignedAreaOf(ownerKey) {
-        let assignedArea = 0;
-        for (const slice of state.slices) {
-            if (!Array.isArray(slice.owners) || !slice.owners.length) continue;
-            const match = slice.owners.find(o => o.ownerKey === ownerKey);
-            if (!match) continue;
-            assignedArea += computeFeatureArea(sliceToFeature(slice)) * (match.share || 0);
-        }
-        return assignedArea;
-    }
-
-    function computeProRataJointOwners() {
-        return window.ReparcellizationPlanUtils.jointOwnersForLayout(
-            state.ownerShares.filter(owner => owner.ownerKey !== PUBLIC_LAND_KEY && !isUnrepresentedGroundEntry(owner)),
-            state.slices, turf, ledgerUsesMoney() ? state.poolUnitValue : 1
-        );
-    }
-
-    function applyJointOwnersToSlice(slice, owners) {
-        slice.owners = cloneOwners(owners);
-        slice.jointPool = true;
-        slice.jointShareMode = 'pro-rata';
-        slice.ownerKey = slice.owners[0]?.ownerKey || '';
-        slice.displayName = t('reparcellization.modal.jointOwnership', 'Joint ownership');
-        slice.color = blendOwnerColors(slice.owners);
-    }
-
-    function resyncJointSliceShares() {
-        if (!state.slices.some(slice => slice.jointPool && slice.jointShareMode !== 'manual')) return;
-        const owners = computeProRataJointOwners();
-        state.slices.filter(slice => slice.jointPool && slice.jointShareMode !== 'manual')
-            .forEach(slice => applyJointOwnersToSlice(slice, owners));
-    }
-
+    // Keep existing borders: every input parcel is a plot.
     function buildAmendSlices() {
         if (!state.amendInputs.length) {
-            const features = liveSelectionFeatures(state.selection);
-            const plots = window.ReparcellizationPlanUtils.existingParcelPlots(features, state.parcelOwnerIndex);
-            state.amendInputs = plots.map((plot, index) => ({
-                geometry: plot.geometry,
-                owners: cloneOwners(plot.owners),
-                label: features[index].properties.BROJ_CESTICE || features[index].properties.parcelId,
-                area: computeFeatureArea(features[index]),
-                parcelId: String(features[index].properties.parcelId),
-                ...(state.cadastreIdsByLiveParcel.has(String(features[index].properties.parcelId))
-                    ? { cadastreParcelId: state.cadastreIdsByLiveParcel.get(String(features[index].properties.parcelId)) } : {})
-            }));
+            state.amendInputs = liveSelectionFeatures(state.selection).map(feature => {
+                const parcelId = String(feature.properties.parcelId);
+                const cadastreParcelId = cadastreIdOf(parcelId, state.selection);
+                return {
+                    parcelId,
+                    ...(cadastreParcelId ? { cadastreParcelId } : {}),
+                    geometry: JSON.parse(JSON.stringify(feature.geometry)),
+                    label: String(feature.properties.BROJ_CESTICE || parcelId),
+                    area: computeFeatureArea(feature)
+                };
+            });
         }
-        return state.amendInputs.map(input => makePlotFromOwners(
-            JSON.parse(JSON.stringify(input.geometry)), input.owners, 'amend'
-        ));
+        return state.amendInputs.map(input => makePlot(JSON.parse(JSON.stringify(input.geometry)), 'amend'));
     }
 
+    // A building block's inner courtyard, carved out of the layout as a plot of its own. The plot
+    // keeps a `derivation` naming the block it came from; who shares it is the agreement's business.
     function applyCourtyard(courtyard, derivation) {
         cancelDraw();
         toggleEraseMode(false);
         pushHistory();
-        // Clip the building's courtyard to this selection; a building may span a larger block.
-        const carved = carvePlotIntoPlan(courtyard, computeProRataJointOwners(), 'form', { jointPool: true, derivation });
+        // Clip the building's courtyard to this pool; a building may span a larger block.
+        const carved = carvePlotIntoPlan(courtyard, 'form', { derivation });
         if (carved !== 'carved') {
             discardLastHistory();
             if (carved === 'outside') {
@@ -994,11 +839,10 @@
         }
         // Carving subtracts the courtyard from its neighbours; give them the corners it introduced.
         conformLayout();
-        updateLegend(state.ownerShares);
+        updateLegend();
         drawPreview();
-        updateCommitState();
         renderNodeHandles();
-        setStatus(t('reparcellization.modal.status.courtyardCarved', 'Courtyard carved and assigned jointly.'), 'info');
+        setStatus(t('parcelLayout.editor.status.courtyardCarved', 'Courtyard carved out as a plot of its own.'), 'info');
     }
 
     function openBuiltFormPicker() {
@@ -1008,7 +852,7 @@
             const proposals = typeof proposalStorage !== 'undefined' ? proposalStorage.getAllProposals() : [];
             candidates = window.ReparcellizationPlanUtils.buildingCourtyardCandidates(proposals, state.superParcel, turf);
         } catch (error) {
-            console.error('[reparcellization] Building courtyard lookup failed', error);
+            log('error', 'building courtyard lookup failed', error);
             setStatus(t('reparcellization.modal.status.courtyardError', 'Could not carve the courtyard. The layout has been kept.'), 'error');
             return;
         }
@@ -1021,7 +865,7 @@
             applyCourtyard(candidates[0].courtyard, candidates[0].derivation);
             return;
         }
-        dismissOwnerPopup();
+        closeChoicePopup();
         const container = document.createElement('div');
         container.className = 'reparcel-owner-popup';
         const title = document.createElement('div');
@@ -1034,276 +878,90 @@
             button.className = 'btn reparcel-owner-popup__joint';
             button.textContent = entry.proposal.title || entry.proposal.name || String(entry.proposal.proposalId);
             button.addEventListener('click', () => {
-                dismissOwnerPopup();
+                closeChoicePopup();
                 applyCourtyard(entry.courtyard, entry.derivation);
             });
             container.appendChild(button);
         }
-        state.ownerAssignmentPopup = L.popup({ maxWidth: 320 })
-            .setLatLng(state.map.getCenter()).setContent(container).openOn(state.map);
+        const popup = L.popup({ maxWidth: 320 })
+            .setLatLng(state.map.getCenter()).setContent(container);
+        popup.on('remove', () => { if (state.choicePopup === popup) state.choicePopup = null; });
+        state.choicePopup = popup.openOn(state.map);
     }
 
-    // Default cash for an owner (+ receives, − pays): with a unit value the balance is money, so
-    // a shortfall is compensated and a surplus is paid for. Without one the balance is in m² and
-    // says nothing about money, so the default is none.
-    function defaultCashOffer(ledger) {
-        if (ledger.unrepresentedGround) return null;
-        if (!ledgerUsesMoney() || !Number.isFinite(ledger.cashBalance)) return 0;
-        return -ledger.cashBalance;
+    // The layout against the geometry rules (parcel-layout-validation.js), the same ones the design
+    // draft checks: the plots tile the pool. A subdivision tiles its site.
+    function validateLayout(plan = currentPlan()) {
+        return window.ParcelLayoutValidation.validate(plan, {
+            turf, ...(state.sitePool ? { site: state.sitePool.site } : {})
+        });
     }
 
-    // Signed cash for an owner (+ receives, − pays): the user's edited override if any, else the default.
-    function getCashOffer(ownerKey, ledger) {
-        if (ledger && ledger.unrepresentedGround) return null;
-        if (Object.prototype.hasOwnProperty.call(state.cashOfferOverrides, ownerKey)) {
-            return Math.round(state.cashOfferOverrides[ownerKey] * 100) / 100;
-        }
-        const value = defaultCashOffer(ledger);
-        return value === null ? null : Math.round(value * 100) / 100;
+    // One validation error in the viewer's language; the module's English message is the fallback.
+    function validationText(error) {
+        return t(`parcelLayout.editor.validation.${error.code}`, error.message, {
+            plot: Number.isInteger(error.plotIndex) ? error.plotIndex + 1 : '',
+            area: Number.isFinite(error.areaM2) ? formatArea(error.areaM2) : '',
+            min: formatArea(window.ParcelLayoutValidation.MIN_PLOT_AREA_M2),
+            max: window.ParcelLayoutValidation.MAX_PLOTS
+        });
     }
 
-    // Ledger fields for a signed amount. An amount being typed (empty, too many decimals) is kept
-    // as an invalid offer, so validation names it instead of the editor throwing.
-    function storedCash(amount) {
-        if (amount === null) return { cashOffer: null };
-        return Number.isFinite(amount) ? window.ReparcellizationDeal.cashFields(amount) : { cashOffer: amount };
-    }
-
-    // Payouts to owners (the proposal's offer) and owner payments, or NaN when an amount is invalid.
-    function computeCashTotals() {
-        let payOut = 0, payIn = 0;
-        for (const entry of state.ownerShares) {
-            if (isUnrepresentedGroundEntry(entry)) continue;
-            const amount = getCashOffer(entry.ownerKey, computeOwnerLedger(entry));
-            if (!Number.isFinite(amount)) return { payOut: NaN, payIn: NaN };
-            if (amount > 0) payOut += amount; else payIn -= amount;
-        }
-        return { payOut: Math.round(payOut * 100) / 100, payIn: Math.round(payIn * 100) / 100 };
-    }
-
-    function computeTotalCashOffer() {
-        return computeCashTotals().payOut;
-    }
-
-    function updateCashTotalDisplay() {
-        if (!state.cashTotalEl) return;
-        // A pool consisting only of open ground has no represented party in this cash model.
-        if (!state.ownerShares.some(entry => !isUnrepresentedGroundEntry(entry))) {
-            state.cashTotalEl.textContent = '';
-            return;
-        }
-        const { payOut, payIn } = computeCashTotals();
-        if (!Number.isFinite(payOut)) {
-            state.cashTotalEl.textContent = t('reparcellization.validation.invalid-readjustment-deal', 'Review the owner cash offers and proposal total.');
-            return;
-        }
-        // The balanced schedule: owners' payouts and payments, and the sponsor line that zeroes it.
-        const eur = amount => CbFormat.formatMoney(amount, 'EUR', { minFractionDigits: 2, maxFractionDigits: 2 });
-        const sponsor = Math.round((payIn - payOut) * 100) / 100;
-        state.cashTotalEl.textContent = [
-            t('proposalApproval.money.summary', 'Owners receive {{out}} and pay {{in}} in total.', { out: eur(payOut), in: eur(payIn) }),
-            sponsor < 0 ? t('proposalApproval.money.sponsorPays', 'The sponsor pays {{amount}}.', { amount: eur(-sponsor) })
-                : sponsor > 0 ? t('proposalApproval.money.sponsorReceives', 'The sponsor receives {{amount}}.', { amount: eur(sponsor) })
-                    : t('proposalApproval.money.sponsorNothing', 'Owner payments cover every payout; the sponsor pays nothing.')
-        ].join(' ');
-    }
-
-    // The editor, publication and apply paths validate the same authored plan. Source rights
-    // readiness is reported separately: an abstract allocation can be designed before it is known.
-    function evaluatePlanCompleteness() {
-        const totalArea = state.totalArea || computeFeatureArea(state.superParcel) || 0;
-        let assignedArea = 0;
-        let unassignedArea = 0;
-        let unassignedCount = 0;
-        for (const slice of state.slices) {
-            const area = computeFeatureArea(sliceToFeature(slice));
-            // A REAL owner is required — an owner slot with an empty ownerKey (the "Unassigned"
-            // placeholder) does not count, so a plan with any unowned plot cannot be committed. Public
-            // land counts (its ownerKey is PUBLIC_LAND_KEY). Use "All public" for a quick break-up.
-            // Both owner shapes count: see normalizePlotOwners.
-            if (plotIsAssigned(slice)) {
-                assignedArea += area;
-            } else {
-                unassignedArea += area;
-                unassignedCount++;
-            }
-        }
-        const coverage = totalArea > 0 ? assignedArea / totalArea : 0;
-        const fields = window.getActiveProposalDesignDraft?.()?.fields || {};
-        const validation = window.ReparcellizationValidation.validatePlan(currentPlan(), {
-            ...fields, approvalConfig: state.approvalConfig
-        }, { turf });
-        const ok = validation.valid && !state.shareDraftPending;
-        return { totalArea, assignedArea, unassignedArea, unassignedCount, coverage, ok, validation };
-    }
-
+    // Done follows the geometry rules alone, and the coverage line says why when it is held back.
     function updateCommitState() {
-        resyncJointSliceShares();
-        const c = evaluatePlanCompleteness();
-        ensureCommitAvailability(c.ok);
-        renderRegimeCheck(c.validation.regimeCheck);
-        // NO auto-persist here. This used to write the plan to the draft on every state change —
-        // every drawn plot, every owner assignment — which made the editor a live writer rather
-        // than a workspace: Cancel had nothing left to discard, because the edits were already
-        // saved. Only the Done button persists now.
-        if (!state.coverageEl) return;
+        const validation = validateLayout();
+        ensureCommitAvailability(validation.valid);
+        // NO auto-persist here. This used to write the layout to the draft on every state change —
+        // every drawn plot, every edit — which made the editor a live writer rather than a
+        // workspace: Cancel had nothing left to discard, because the edits were already saved.
+        // Only the Done button persists now.
+        if (!state.coverageEl) return validation;
         if (!state.slices.length) {
             state.coverageEl.textContent = '';
             state.coverageEl.removeAttribute('data-state');
-            return;
+            return validation;
         }
-        if (state.shareDraftPending) {
-            state.coverageEl.setAttribute('data-state', 'warn');
-            state.coverageEl.textContent = t('reparcellization.modal.applySharesFirst', 'Apply the edited shares, or close the share editor to discard them.');
-        } else if (c.ok) {
+        if (validation.valid) {
             state.coverageEl.setAttribute('data-state', 'ok');
-            state.coverageEl.textContent = t(
-                'reparcellization.modal.coverageComplete',
-                'All pooled land assigned ({{pct}}%).',
-                { pct: CbFormat.formatNumber(c.coverage * 100, { maxFractionDigits: 1, minFractionDigits: 1 }) }
-            );
-            if (!c.validation.rightsReady) state.coverageEl.textContent += ' ' + t('reparcellization.modal.sourceRightsNeeded',
-                'Design ready. Approval needs complete source ownership and any required parcel areas.');
-        } else if (c.unassignedCount) {
-            state.coverageEl.setAttribute('data-state', 'warn');
-            state.coverageEl.textContent = t(
-                'reparcellization.modal.coverageIncomplete',
-                '{{count}} plot(s) unassigned · {{area}} not yet assigned ({{pct}}% covered).',
-                {
-                    count: c.unassignedCount,
-                    area: formatArea(c.unassignedArea),
-                    pct: CbFormat.formatNumber(c.coverage * 100, { maxFractionDigits: 1, minFractionDigits: 1 })
-                }
-            );
+            state.coverageEl.textContent = t('parcelLayout.editor.coverageComplete',
+                'The plots cover the whole pool ({{area}}).', { area: formatArea(validation.metrics.poolAreaM2) });
         } else {
             state.coverageEl.setAttribute('data-state', 'warn');
-            state.coverageEl.textContent = [...new Set(c.validation.errors.map(error => (error.code === 'regime-allocation' && window.ProposalApprovalText
-                ? window.ProposalApprovalText.checkLines({ rules: [error.rule] }, t, key => state.ownerShares.find(owner => owner.ownerKey === key)?.displayName || key)[0]
-                : t(`reparcellization.validation.${error.code}`, error.message))))].join(' ');
+            state.coverageEl.textContent = [...new Set(validation.errors.map(validationText))].join(' ');
         }
+        return validation;
     }
 
-    function updateLegend(ownerShares) {
-        resyncJointSliceShares();
-        // ── Original Owners table ──
-        if (state.legendListEl) {
-            state.legendListEl.innerHTML = '';
-            const table = document.createElement('table');
-            table.className = 'reparcel-owners-table reparcel-ledger-table';
-            const thead = document.createElement('thead');
-            thead.innerHTML = `<tr>
-                <th>${t('reparcellization.modal.colOwner', 'Owner')}</th>
-                <th class="reparcel-col--figure">${t('reparcellization.modal.colContributed', 'Pooled')}</th>
-                <th class="reparcel-col--figure">${t('reparcellization.modal.colAssigned', 'Assigned')}</th>
-                <th class="reparcel-col--figure">${t('reparcellization.modal.colBalance', 'Balance')}</th>
-                <th class="reparcel-col--cash">${t('reparcellization.modal.colCash', 'Cash (+ receives, − pays)')}</th>
-            </tr>`;
-            table.appendChild(thead);
-            const tbody = document.createElement('tbody');
-            ownerShares.forEach((entry, index) => {
-                const color = safePlanColor(entry.color, pickOwnerColor(entry.ownerKey, index));
-                entry.color = color;
-                const ledger = computeOwnerLedger(entry);
-                if (ledger.unrepresentedGround) {
-                    // Open ground: measured area, with no calculated balance or cash allocation.
-                    const tr = document.createElement('tr');
-                    tr.className = 'reparcel-ledger-row--no-owner';
-                    tr.innerHTML = `
-                    <td>${ownerLegendCellHtml({ ...entry, displayName: ownerDisplayName(entry.displayName) }, color)}</td>
-                    <td class="area-cell">${formatArea(ledger.contributed)}</td>
-                    <td class="area-cell">${formatArea(ledger.assignedArea)}</td>
-                    <td class="area-cell bal-even" title="${escapeHtml(t('reparcellization.modal.noOwnerBalance', 'Ownership is unknown. This draft calculates no balance or cash allocation for this ground.'))}">—</td>
-                    <td class="cash-offer-cell">—</td>`;
-                    tbody.appendChild(tr);
-                    return;
-                }
-                // Balance sign: + owner receives surplus land and pays, − owner is compensated.
-                const balClass = Math.abs(ledger.cashBalance) < Math.max(1, ledger.entitled * 0.005)
-                    ? 'bal-even'
-                    : (ledger.cashBalance > 0 ? 'bal-pays' : 'bal-due');
-                const balSign = ledger.cashBalance > 0 ? '+' : '';
-                const cashOffer = getCashOffer(entry.ownerKey, ledger);
-                const tr = document.createElement('tr');
-                if (entry.unresolvedContribution) tr.className = 'reparcel-ledger-row--unresolved';
-                const unresolvedNote = entry.unresolvedContribution
-                    ? `<small class="reparcel-ledger-unresolved-note">${escapeHtml(t('reparcellization.modal.savedRecipientUnresolved', 'Saved output recipient has no matching current input contribution.'))}</small>`
-                    : '';
-                tr.innerHTML = `
-                    <td>${ownerLegendCellHtml({ ...entry, displayName: ownerDisplayName(entry.displayName) }, color)}${unresolvedNote}</td>
-                    <td class="area-cell">${formatLedgerMetric(ledger.contributed)}</td>
-                    <td class="area-cell">${formatLedgerMetric(ledger.assigned)}</td>
-                    <td class="area-cell ${balClass}">${balSign}${formatLedgerMetric(ledger.cashBalance)}</td>
-                    <td class="cash-offer-cell">${cashOfferInputHtml(entry.ownerKey, cashOffer)}</td>`;
-                tbody.appendChild(tr);
-            });
-            const labels = Array.from(thead.querySelectorAll('th'), th => th.textContent);
-            tbody.querySelectorAll('tr').forEach(row => {
-                Array.from(row.cells).forEach((cell, index) => { cell.dataset.label = labels[index]; });
-                const input = row.querySelector('.cash-offer-input');
-                if (input) input.setAttribute('aria-label', `${labels[4]} — ${row.cells[0].textContent.trim()}`);
-            });
-            table.appendChild(tbody);
-            state.legendListEl.appendChild(table);
-
-            // Wire cash-offer inputs (prefilled to the shortfall for compensated owners).
-            state.legendListEl.querySelectorAll('.cash-offer-input').forEach(input => {
-                input.addEventListener('input', () => {
-                    const key = input.getAttribute('data-owner-key');
-                    state.cashOfferOverrides[key] = input.validity.valid ? input.valueAsNumber : NaN;
-                    updateCashTotalDisplay();
-                    updateOwnerReview();
-                    updateCommitState();
-                });
-            });
-            updateCashTotalDisplay();
-        }
-
-        // ── New Plots table ──
+    // The New plots list: each plot's number (the one drawn on it) and its area. Hovering a row
+    // lights the plot up on the map, which shows that one plot can be several disjoint pieces.
+    function updateLegend() {
         if (state.newPlotsListEl) {
             state.newPlotsListEl.innerHTML = '';
-            if (!state.slices.length) { updateCommitState(); return; }
-            const table = document.createElement('table');
-            table.className = 'reparcel-newplots-table';
-            const thead = document.createElement('thead');
-            thead.innerHTML = `<tr>
-                <th class="reparcel-col--plot">${t('reparcellization.modal.colPlot', 'Plot')}</th>
-                <th>${t('reparcellization.modal.colOwners', 'Owners')}</th>
-            </tr>`;
-            table.appendChild(thead);
-            const tbody = document.createElement('tbody');
-            state.slices.forEach((slice, idx) => {
-                const area = computeFeatureArea({ type: 'Feature', geometry: slice.geometry });
-                const owners = Array.isArray(slice.owners) && slice.owners.length
-                    ? slice.owners
-                    : [{ displayName: slice.displayName, color: slice.color }];
-                const unassignedLabel = t('reparcellization.modal.unassigned', 'Unassigned');
-                const ownerHtml = owners
-                    .map(o => newPlotOwnerHtml({ ...o, displayName: ownerDisplayName(o.displayName, unassignedLabel) + (owners.length > 1 ? ` (${formatPercent(o.share)})` : '') }, { publicKey: PUBLIC_LAND_KEY, unassignedLabel }))
-                    .join('');
-                const tr = document.createElement('tr');
-                tr.className = 'reparcel-newplot-row';
-                tr.innerHTML = `
-                    <td class="plot-cell"><strong>${idx + 1}</strong> <span class="area-cell">${formatArea(area)}</span></td>
-                    <td>${ownerHtml}<button type="button" class="btn btn-sm reparcel-edit-shares">${escapeHtml(t('reparcellization.modal.editShares', 'Edit shares'))}</button></td>`;
-                tr.querySelector('.reparcel-edit-shares').addEventListener('click', () => {
-                    exitCompare();
-                    setPlotsTab('new');
-                    toggleAssignMode(true);
-                    const center = L.geoJSON(sliceToFeature(slice)).getBounds().getCenter();
-                    onSliceClick(idx, center);
+            if (state.slices.length) {
+                const table = document.createElement('table');
+                table.className = 'reparcel-newplots-table';
+                const thead = document.createElement('thead');
+                thead.innerHTML = `<tr>
+                    <th class="reparcel-col--plot">${t('reparcellization.modal.colPlot', 'Plot')}</th>
+                    <th class="reparcel-col--figure">${t('reparcellization.modal.colArea', 'Area')}</th>
+                </tr>`;
+                table.appendChild(thead);
+                const tbody = document.createElement('tbody');
+                state.slices.forEach((slice, idx) => {
+                    const tr = document.createElement('tr');
+                    tr.className = 'reparcel-newplot-row';
+                    tr.innerHTML = `
+                        <td class="plot-cell"><strong>${idx + 1}</strong></td>
+                        <td class="area-cell">${formatArea(computeGeometryArea(slice.geometry))}</td>`;
+                    tr.addEventListener('mouseenter', () => highlightSlice(idx, true));
+                    tr.addEventListener('mouseleave', () => highlightSlice(idx, false));
+                    tbody.appendChild(tr);
                 });
-                // Hovering a row highlights that plot on the map — makes it clear that
-                // one plot can render as several disjoint pieces (carved MultiPolygon).
-                tr.addEventListener('mouseenter', () => highlightSlice(idx, true));
-                tr.addEventListener('mouseleave', () => highlightSlice(idx, false));
-                tbody.appendChild(tr);
-            });
-            table.appendChild(tbody);
-            state.newPlotsListEl.appendChild(table);
+                table.appendChild(tbody);
+                state.newPlotsListEl.appendChild(table);
+            }
         }
-
         updateOldPlotsList();
-        updateOwnerReview();
         updateCommitState();
     }
 
@@ -1314,107 +972,6 @@
 
     function inputParcelFeatures() {
         return liveSelectionFeatures(state.selection);
-    }
-
-    function reviewInputs(ownerKey) {
-        if (state.amendInputs.length) return state.amendInputs
-            .filter(input => input.owners?.some(owner => owner.ownerKey === ownerKey))
-            .map(input => ({ type: 'Feature', geometry: input.geometry, properties: { label: input.label || input.parcelId } }));
-        return inputParcelFeatures().filter(feature => {
-            const id = String(feature.properties?.parcelId || feature.properties?.parcel_id || feature.properties?.id || '');
-            return state.parcelOwnerIndex.get(id)?.some(owner => owner.ownerKey === ownerKey);
-        });
-    }
-
-    function clearOwnerReviewHighlights() {
-        state.ownerReviewLayers.forEach(layer => { try { layer.remove(); } catch (_) { } });
-        state.ownerReviewLayers = [];
-    }
-
-    function drawOwnerReviewHighlights() {
-        clearOwnerReviewHighlights();
-        if (!state.map || !state.reviewOwnerKey) return;
-        const inputs = reviewInputs(state.reviewOwnerKey);
-        const outputs = state.slices.filter(slice => slice.owners?.some(owner => owner.ownerKey === state.reviewOwnerKey)).map(sliceToFeature);
-        const add = (map, features, before) => {
-            if (!map || !features.length) return;
-            state.ownerReviewLayers.push(L.geoJSON({ type: 'FeatureCollection', features }, {
-                interactive: false,
-                style: { color: before ? '#b45309' : '#0369a1', weight: 4, fillOpacity: before ? 0.08 : 0.18,
-                    dashArray: before ? '7 5' : null, className: before ? 'reparcel-owner-input' : 'reparcel-owner-output' }
-            }).addTo(map));
-        };
-        if (state.compare.active) add(state.compare.map2, inputs, true);
-        else add(state.map, inputs, true);
-        if (state.plotsTab === 'new') add(state.map, outputs, false);
-    }
-
-    function updateOwnerReview() {
-        const host = state.ownerReviewEl;
-        if (!host) return;
-        const owners = state.ownerShares.filter(owner => !isUnrepresentedGroundEntry(owner));
-        if (!owners.some(owner => owner.ownerKey === state.reviewOwnerKey)) state.reviewOwnerKey = '';
-        host.replaceChildren();
-        const label = document.createElement('label');
-        label.textContent = t('reparcellization.modal.ownerReview', 'Review one owner');
-        const select = document.createElement('select');
-        select.setAttribute('data-reparcel-review-owner', '');
-        select.append(new Option(t('reparcellization.modal.allOwners', 'All owners'), ''));
-        owners.forEach(owner => select.append(new Option(ownerDisplayName(owner.displayName), owner.ownerKey)));
-        select.value = state.reviewOwnerKey;
-        label.append(select);
-        host.append(label);
-        select.addEventListener('change', () => {
-            state.reviewOwnerKey = select.value;
-            updateOwnerReview();
-        });
-        const owner = owners.find(entry => entry.ownerKey === state.reviewOwnerKey);
-        if (owner) {
-            try {
-                const impact = window.ReparcellizationAllocation.ownerImpact({ ...owner,
-                    ...storedCash(getCashOffer(owner.ownerKey, computeOwnerLedger(owner))) }, state.slices, turf);
-                const unknown = t('reparcellization.modal.unknownContribution', 'Unknown');
-                const entries = [
-                    ['contributed', t('reparcellization.modal.contributedLand', 'Contributed land'), impact.contributedAreaM2 === null ? unknown : formatArea(impact.contributedAreaM2)],
-                    ['assigned', t('reparcellization.modal.assignedLand', 'Assigned land (by share)'), formatArea(impact.assignedAreaM2)],
-                    ['change', t('reparcellization.modal.landChange', 'Land change'), impact.areaChangeM2 === null ? unknown : `${impact.areaChangeM2 > 0 ? '+' : ''}${formatArea(impact.areaChangeM2)}`],
-                    impact.cashPaymentCents > 0
-                        ? ['cash', t('reparcellization.modal.ownerPays', 'Cash the owner pays'), CbFormat.formatMoney(impact.cashPaymentCents / 100, 'EUR', { minFractionDigits: 2, maxFractionDigits: 2 })]
-                        : ['cash', t('reparcellization.modal.colCashOffer', 'Cash offer'), CbFormat.formatMoney(impact.cashOfferCents / 100, 'EUR', { minFractionDigits: 2, maxFractionDigits: 2 })]
-                ];
-                const details = document.createElement('dl');
-                entries.forEach(([key, title, value]) => {
-                    const dt = document.createElement('dt'); dt.textContent = title;
-                    const dd = document.createElement('dd'); dd.textContent = value; dd.dataset.impact = key;
-                    details.append(dt, dd);
-                });
-                host.append(details);
-                const source = document.createElement('p');
-                const inputs = reviewInputs(owner.ownerKey);
-                source.textContent = t('reparcellization.modal.ownerInputParcels', 'Input parcels: {{parcels}}', {
-                    parcels: inputs.length ? inputs.map(inputParcelLabel).join(', ') : unknown
-                });
-                host.append(source);
-                const list = document.createElement('ul');
-                impact.plots.forEach(plot => {
-                    const li = document.createElement('li');
-                    li.textContent = t('reparcellization.modal.ownerOutputShare', 'Plot {{plot}} · {{share}} · {{area}}', {
-                        plot: plot.index + 1, share: formatPercent(plot.share), area: formatArea(plot.assignedAreaM2)
-                    });
-                    list.append(li);
-                });
-                host.append(list);
-                const hint = document.createElement('p');
-                hint.className = 'reparcel-owner-review__hint';
-                hint.textContent = t('reparcellization.modal.ownerHighlightHint', 'Dashed amber: input parcels. Solid blue: assigned plots. Use Before / After to compare.');
-                host.append(hint);
-            } catch (_) {
-                const error = document.createElement('p');
-                error.textContent = t('reparcellization.modal.ownerReviewInvalid', 'Complete the plot geometry, shares and cash offers to review this owner.');
-                host.append(error);
-            }
-        }
-        drawOwnerReviewHighlights();
     }
 
     function inputParcelLabel(feature) {
@@ -1474,8 +1031,8 @@
         if (!features.length) {
             const empty = document.createElement('p');
             empty.className = 'reparcel-oldplots-empty';
-            empty.textContent = t('reparcellization.modal.oldPlotsMissing',
-                'The input parcels could not be loaded, so the pooled outline is derived from the plan itself.');
+            empty.textContent = t('parcelLayout.editor.oldPlotsMissing',
+                'The input parcels could not be loaded, so the pool outline is taken from the layout itself.');
             state.oldPlotsListEl.appendChild(empty);
             return;
         }
@@ -1615,7 +1172,7 @@
                     }
                 }
             } catch (err) {
-                console.warn('Failed to compute projected centroid; falling back to turf', err);
+                log('warn', 'failed to compute the projected centroid; falling back to turf', err);
             }
         }
 
@@ -1631,122 +1188,39 @@
         return null;
     }
 
-    function ensureProposalDefaults() {
-        if (typeof setProposalMainType === 'function') {
-            setProposalMainType('Reparcellization', { skipReparcelLaunch: true });
-        }
-        if (typeof setProposalType === 'function') {
-            setProposalType('Reparcellization');
-        }
-        if (typeof updateProposalDescription === 'function') {
-            updateProposalDescription('Reparcellization', true);
-        }
-        const descriptionInput = document.getElementById('proposalDescription');
-        if (descriptionInput) {
-            const label = (typeof formatParcelSelectionLabel === 'function' && state.selection?.ids)
-                ? formatParcelSelectionLabel(state.selection.ids)
-                : t('reparcellization.modal.selectedParcelsLabel', 'selected parcels');
-            descriptionInput.value = t('reparcellization.modal.defaultDescription', 'Reparcellization proposal for {{label}}', { label });
-        }
-
-        if (typeof refreshReparcellizationCashTerms === 'function') {
-            refreshReparcellizationCashTerms(document.querySelector('.create-proposal-modal'));
-        }
-    }
-
     // ── Plot partition helpers (non-overlap invariant) ───────────────────
     // Every piece of pooled land belongs to exactly one resultant plot. New
     // plots (drawn or imported) are clipped to the pool and subtracted from any
     // plot they overlap, so the plot set always stays a clean partition.
 
-    function sliceToFeature(slice) {
-        return { type: 'Feature', properties: {}, geometry: slice.geometry };
-    }
-
-    // Explode a geometry into one Polygon Feature per disjoint piece, so a split
-    // that leaves several separate parts becomes several separate plots.
-    function geometryToPolygonFeatures(geometry) {
-        if (!geometry) return [];
-        try {
-            if (geometry.type === 'Polygon') return [turf.polygon(geometry.coordinates)];
-            if (geometry.type === 'MultiPolygon') return geometry.coordinates.map(c => turf.polygon(c));
-        } catch (_) { /* ignore malformed */ }
-        return [];
-    }
-
-    function cloneOwners(owners) {
-        return (Array.isArray(owners) ? owners : []).map(o => ({
-            ownerKey: o.ownerKey, displayName: o.displayName, color: o.color, share: o.share
-        }));
-    }
-
-    function makePlotFromOwners(geometry, owners, source, flags = {}) {
-        const safeOwners = normalizePlotOwners({ owners });
-        const primary = safeOwners[0] || null;
+    // A plot of the layout: its geometry, how it was made (`source`, one of PLOT_SOURCES) and, for a
+    // carved courtyard, what it was derived from. Nothing about who receives it.
+    function makePlot(geometry, source, derivation) {
         return {
-            ownerKey: primary ? primary.ownerKey : '',
-            displayName: primary
-                ? (safeOwners.length > 1 ? safeOwners.map(o => o.displayName).join(' + ') : primary.displayName)
-                : t('reparcellization.modal.unassigned', 'Unassigned'),
-            percent: 0,
-            color: safeOwners.length ? blendOwnerColors(safeOwners) : '#cccccc',
             geometry,
-            owners: safeOwners,
-            source: source || 'manual',
-            jointPool: flags.jointPool === true,
-            ...(flags.jointPool ? { jointShareMode: flags.jointShareMode === 'manual' ? 'manual' : 'pro-rata' } : {}),
-            ...(flags.derivation ? { derivation: JSON.parse(JSON.stringify(flags.derivation)) } : {})
+            source: PLOT_SOURCES.has(source) ? source : 'manual',
+            ...(derivation ? { derivation: JSON.parse(JSON.stringify(derivation)) } : {})
         };
     }
 
-    function createUnassignedPlot(geometry, source) {
-        return makePlotFromOwners(geometry, [], source || 'base');
+    // Rebuild the editor's plots from a saved layout's plots[] — the inverse of currentPlan(). A
+    // shared layout is untrusted input: only the geometry, a known source and the derivation are read.
+    function hydratePlots(plots) {
+        if (!Array.isArray(plots)) return [];
+        return plots
+            .filter(plot => plot && plot.geometry)
+            .map(plot => makePlot(JSON.parse(JSON.stringify(plot.geometry)), plot.source, plot.derivation));
     }
 
-    // Rebuild plan slices from a saved plan's polygons[] — the exact inverse of persistResult().
-    // Fields are restored verbatim rather than re-derived, so owner assignments, blended colours
-    // and hand-drawn plots survive a copy untouched.
-    //
-    // A plot's owner is carried BOTH ways: the singular ownerKey/displayName (one owner) and the
-    // owners[] array (shares between several). Everywhere else in this module the two are kept in
-    // lockstep; hydration used to read only the array, so a single-owner plan — every plan an
-    // importer writes, and the Borovje UPU in particular — came back with all its plots reading
-    // "unassigned". That silently failed the completeness gate, and Done could never enable again.
-    function hydrateSlicesFromPolygons(polygons) {
-        if (!Array.isArray(polygons)) return [];
-        return polygons
-            .filter(polygon => polygon && polygon.geometry)
-            .map(polygon => {
-                // A shared plan is untrusted input: keys/names are coerced to strings (escaped at
-                // every render) and colours must be hex literals, since they land in style="".
-                const ownerKey = polygon.ownerKey ? String(polygon.ownerKey) : '';
-                const displayName = polygon.displayName ? String(polygon.displayName) : t('reparcellization.modal.unassigned', 'Unassigned');
-                const color = safePlanColor(polygon.color, '#cccccc');
-                return {
-                    ownerKey,
-                    displayName,
-                    percent: Number.isFinite(Number(polygon.percent)) ? Number(polygon.percent) : 0,
-                    color,
-                    geometry: JSON.parse(JSON.stringify(polygon.geometry)),
-                    owners: normalizePlotOwners({ ...polygon, ownerKey, displayName, color })
-                        .map(owner => ({ ...owner, color: safePlanColor(owner.color, color) })),
-                    source: polygon.source || 'manual',
-                    jointPool: polygon.jointPool === true,
-                    ...(polygon.jointPool ? { jointShareMode: polygon.jointShareMode === 'manual' ? 'manual' : 'pro-rata' } : {}),
-                    ...(polygon.derivation ? { derivation: JSON.parse(JSON.stringify(polygon.derivation)) } : {})
-                };
-            });
-    }
-
-    // Carve a polygon into the current plan: clip to the pool, subtract it from every overlapping
-    // plot, then add it as a new plot. Returns 'carved', 'outside' (it does not reach the pooled
-    // land) or 'refused' (the result would not tile the pool; the status says why). The layout is
-    // only replaced on 'carved'.
-    function carvePlotIntoPlan(polygonFeature, ownersForNew, source, flags = {}) {
+    // Carve a polygon into the current layout: clip to the pool, subtract it from every overlapping
+    // plot, then add it as a new plot. Returns 'carved', 'outside' (it does not reach the pool) or
+    // 'refused' (the result would not tile the pool; the status says why). The layout is only
+    // replaced on 'carved'.
+    function carvePlotIntoPlan(polygonFeature, source, flags = {}) {
         if (typeof turf === 'undefined' || !state.superParcel) return 'refused';
         const next = window.ReparcellizationPlanUtils.carveLayout({
             pool: state.superParcel, slices: state.slices, polygon: polygonFeature,
-            owners: ownersForNew, source, jointPool: flags.jointPool === true, derivation: flags.derivation
+            source, derivation: flags.derivation
         }, turf);
         if (!next) return 'outside';
         const problem = tilingProblem(null, next.map(slice => slice.geometry), { pool: state.superParcel });
@@ -1754,7 +1228,7 @@
             setStatus(refusalText(problem), 'error');
             return 'refused';
         }
-        state.slices = next.map(slice => makePlotFromOwners(slice.geometry, slice.owners, slice.source, slice));
+        state.slices = next.map(slice => makePlot(slice.geometry, slice.source, slice.derivation));
         return 'carved';
     }
 
@@ -1766,7 +1240,7 @@
         if (!edit || typeof turf === 'undefined') throw new Error('plot-edit.js and turf are required to check a plot edit');
         const check = edit.checkTiling(previous, next, { turf }, options);
         if (check.ok) return null;
-        console.error('[reparcellization] edit refused: the plots would not tile their land', {
+        log('error', 'edit refused: the plots would not tile their land', {
             folded: check.folded, overlaps: check.overlaps, gapM2: Math.round(check.gap),
             outsideM2: Math.round(check.outside), overlapM2: Math.round(check.overlap)
         });
@@ -1790,7 +1264,7 @@
         state.slices.forEach((slice, index) => {
             if (conformed[index]) slice.geometry = conformed[index];
         });
-        console.debug('[reparcellization] layout conformed', { verticesAdded: added, plots: state.slices.length });
+        log('debug', 'layout conformed', { verticesAdded: added, plots: state.slices.length });
         return added;
     }
 
@@ -1823,8 +1297,8 @@
         } catch (_) { return { x: 1, y: 1 }; }
     }
 
-    // Commit a cut. Pieces inherit the owners of the plot they were cut from; a plot the cut only
-    // NODED (a neighbour across a T-junction) keeps its identity and just gains the vertex.
+    // Commit a cut. Pieces inherit the source (and derivation) of the plot they were cut from; a plot
+    // the cut only NODED (a neighbour across a T-junction) keeps its identity and just gains the vertex.
     function applyCutResult(result) {
         const groups = new Map();
         (result.results || []).forEach(entry => {
@@ -1857,14 +1331,11 @@
         }
         state.slices = next.map(entry => {
             if (entry.slice) { entry.slice.geometry = entry.geometry; return entry.slice; }
-            return makePlotFromOwners(entry.geometry, cloneOwners(entry.parent.owners), entry.parent.source || 'manual', entry.parent);
+            return makePlot(entry.geometry, entry.parent.source, entry.parent.derivation);
         });
-        state.selectedSliceIndex = null;
-        recomputeSliceAreas();
-        updateLegend(state.ownerShares);
+        updateLegend();
         try {
             drawPreview();
-            updateCommitState();
         } finally {
             renderNodeHandles();
         }
@@ -1874,42 +1345,39 @@
 
     // ── Manual plot drawing ──────────────────────────────────────────────
 
-    // The two hand-edited starting layouts share the same drawing and boundary tools.
+    // Every layout shares the same drawing and boundary tools.
     // Point the starting-layout control (and the subtitle) at `key` without recomputing the
     // layout. Used when an edit or an undo changes which kind of layout is on the map.
     function setAlgorithmKey(key) {
         const option = getAlgorithmOptionByKey(key);
         if (!option) return;
         state.algorithm = option.key;
-        if (option.key === 'sweep-line') initSweepOrientation();
+        if (option.key === 'equal') initSweepOrientation();
         else destroySweepOrientation();
         const radio = state.modal && state.modal.querySelector(`input[name="reparcel-algorithm"][value="${option.key}"]`);
         if (radio) radio.checked = true;
         if (state.subtitleData) state.subtitleData.algorithmLabel = option.label;
-        updateSubtitleWithOwners(state.ownerShares.filter(entry => !isUnrepresentedGroundEntry(entry)).length);
+        updateSubtitle();
+        updateCountField();
         updateDrawToolButtons();
         updateActiveModeHint();
     }
 
-    // The automatic split is regenerated whenever the sweep handle moves, so a hand edit cannot
-    // live inside it. Instead of refusing the edit, the first one turns the automatic layout into
-    // a drawn one ("Draw freely") with the same plots and owners; undo turns it back.
+    // An automatic layout is regenerated from its settings (the count and the sweep handle, the
+    // Schelling plan), so a hand edit cannot live inside it. Instead of refusing the edit, the first
+    // one turns the automatic layout into a drawn one ("Draw freely") with the same plots; undo
+    // turns it back.
     function adoptLayoutForEditing() {
-        if (state.algorithm !== 'sweep-line') return false;
+        if (!AUTOMATIC_ALGORITHMS.includes(state.algorithm)) return false;
         setAlgorithmKey('manual');
-        console.debug('[reparcellization] automatic layout adopted for hand editing', { plots: state.slices.length });
+        log('debug', 'automatic layout adopted for hand editing', { plots: state.slices.length });
         return true;
     }
 
-    // Automatic layouts can be edited too: the first edit adopts the layout as a drawn one
-    // (adoptLayoutForEditing), so every tool is usable whatever the starting layout.
-    const EDITABLE_ALGORITHMS = ['manual', 'amend', 'sweep-line'];
-
+    // Every layout can be edited by hand (the first edit of an automatic one adopts it), so the
+    // tools are always available; only the courtyard tool belongs to Keep existing borders.
     function updateDrawToolButtons() {
-        const enabled = state.ownershipMode === 'multiple' && EDITABLE_ALGORITHMS.includes(state.algorithm);
-        [state.drawBtn, state.lineBtn, state.eraseBtn].forEach(btn => { if (btn) btn.disabled = !enabled; });
         if (state.courtyardToolsEl) state.courtyardToolsEl.hidden = state.algorithm !== 'amend' || state.plotsTab === 'old';
-        if (!enabled && state.erase.active) toggleEraseMode(false);
     }
 
     function setDrawButtonsActive() {
@@ -2237,15 +1705,15 @@
                 discardLastHistory();
                 return;
             }
-            console.debug('[reparcellization] cut', {
+            log('debug', 'cut', {
                 ends: (result.ends || []).map(end => end.kind),
                 crossings: (result.crossings || []).length,
                 nodesAdded: result.nodesAdded,
                 plotsAdded: result.added,
                 plotsNow: state.slices.length
             });
-            setStatus(t('reparcellization.modal.status.cutSuccess',
-                'Cut made — {{plots}} new plot(s), {{nodes}} new node(s). Click each part to assign owners.',
+            setStatus(t('parcelLayout.editor.status.cutSuccess',
+                'Line drawn — {{plots}} new plot(s), {{nodes}} new node(s).',
                 { plots: Math.max(result.added, 0), nodes: result.nodesAdded || 0 }), 'info');
             return;
         }
@@ -2264,8 +1732,7 @@
             cancelDraw();
             return;
         }
-        const joint = state.drawing.joint;
-        const carved = carvePlotIntoPlan(polygon, joint ? computeProRataJointOwners() : [], 'manual', { jointPool: joint });
+        const carved = carvePlotIntoPlan(polygon, 'manual');
         cancelDraw();
         if (carved !== 'carved') {
             if (carved === 'outside') {
@@ -2279,12 +1746,9 @@
         // without the corners it just introduced — the same non-conforming borders the line tool
         // is careful not to make. Node them; no land moves.
         conformLayout();
-        setStatus(joint
-            ? t('reparcellization.modal.status.courtyardCarved', 'Courtyard carved and assigned jointly.')
-            : t('reparcellization.modal.status.drawSuccess', 'Plot added. Click it to assign owners.'), 'info');
-        updateLegend(state.ownerShares);
+        setStatus(t('parcelLayout.editor.status.drawSuccess', 'Plot added.'), 'info');
+        updateLegend();
         drawPreview();
-        updateCommitState();
         renderNodeHandles();
     }
 
@@ -2305,14 +1769,13 @@
         return t('reparcellization.modal.status.drawInvalid', 'Could not build a valid plot from those points.');
     }
 
-    function startDraw(mode, options = {}) {
+    function startDraw(mode) {
         if (!state.map) return;
         exitCompare(); // editing and before/after are mutually exclusive
-        dismissOwnerPopup();
+        closeChoicePopup();
         toggleEraseMode(false);
         state.drawing.active = true;
         state.drawing.mode = mode === 'line' ? 'line' : 'polygon';
-        state.drawing.joint = options.joint === true;
         state.drawing.points = [];
         state.drawing.frozen = [];
         state.drawing.shift = false;
@@ -2356,9 +1819,7 @@
         setDrawButtonsActive();
         updateDrawToolbar();
         updateActiveModeHint();
-        setStatus(state.drawing.joint
-            ? t('reparcellization.modal.status.courtyardDrawHint', 'Draw the shared courtyard. Its ownership shares follow the private land assigned to each recipient.')
-            : state.drawing.mode === 'line'
+        setStatus(state.drawing.mode === 'line'
             ? t('reparcellization.modal.status.lineHint', 'Click to place the line. It is drawn only between the places it meets an existing boundary or corner — at least two of them.')
             : t('reparcellization.modal.status.drawHint', 'Click to add points, drag to adjust, then press Finish.'), 'info');
     }
@@ -2371,7 +1832,6 @@
             state.drawing.snapLayer = null;
         }
         state.drawing.active = false;
-        state.drawing.joint = false;
         state.drawing.points = [];
         state.drawing.frozen = [];
         state.drawing.cursor = null;
@@ -2431,8 +1891,7 @@
     // clicked; hovering one lights the whole boundary, so what will go matches what is shown.
 
     function eraseAvailable() {
-        return !!(window.__plotTopology && window.__plotCut && state.map && state.slices.length
-            && state.ownershipMode === 'multiple' && EDITABLE_ALGORITHMS.includes(state.algorithm));
+        return !!(window.__plotTopology && window.__plotCut && state.map && state.slices.length);
     }
 
     function toggleEraseMode(force) {
@@ -2444,7 +1903,7 @@
         if (state.eraseBtn) state.eraseBtn.setAttribute('aria-pressed', next ? 'true' : 'false');
         if (next) {
             exitCompare();
-            dismissOwnerPopup();
+            closeChoicePopup();
             if (state.drawing.active) cancelDraw();
             state.erase.nodeEditWasActive = state.nodeEdit.active;
             if (state.nodeEdit.active) toggleNodeEditing(false);
@@ -2528,7 +1987,7 @@
         if (!group || !Array.isArray(group.plots) || group.plots.length !== 2) return;
         const merged = mergePlots(group.plots);
         if (!merged) return;
-        console.debug('[reparcellization] boundary erased', { plots: group.plots, plotsNow: state.slices.length });
+        log('debug', 'boundary erased', { plots: group.plots, plotsNow: state.slices.length });
         // The graph has changed under the layer, so it is rebuilt rather than patched — which also
         // shows the merged plot's remaining boundaries immediately.
         renderEraseLayer();
@@ -2540,103 +1999,80 @@
         if (!file) return;
         const reader = new FileReader();
         reader.onload = function (evt) {
+            let geojson = null;
             try {
-                const geojson = JSON.parse(evt.target.result);
-                const features = geojson.type === 'FeatureCollection'
-                    ? geojson.features
-                    : geojson.type === 'Feature'
-                        ? [geojson]
-                        : (geojson.type === 'Polygon' || geojson.type === 'MultiPolygon')
-                            ? [{ type: 'Feature', properties: {}, geometry: geojson }]
-                            : [];
-                if (!features.length) {
-                    setStatus(
-                        t('reparcellization.modal.status.uploadEmpty', 'Uploaded file contains no polygon features.'),
-                        'error'
-                    );
-                    return;
-                }
-                applyUploadedGeometry(features);
+                geojson = JSON.parse(evt.target.result);
             } catch (err) {
-                console.warn('[reparcellization] GeoJSON parse error', err);
+                log('warn', 'GeoJSON parse error', err);
                 setStatus(
                     t('reparcellization.modal.status.uploadParseError', 'Failed to parse GeoJSON file.'),
                     'error'
                 );
+                return;
             }
+            const features = geojson?.type === 'FeatureCollection' && Array.isArray(geojson.features)
+                ? geojson.features
+                : geojson?.type === 'Feature'
+                    ? [geojson]
+                    : (geojson?.type === 'Polygon' || geojson?.type === 'MultiPolygon')
+                        ? [{ type: 'Feature', properties: {}, geometry: geojson }]
+                        : [];
+            if (!features.length) {
+                setStatus(
+                    t('reparcellization.modal.status.uploadEmpty', 'Uploaded file contains no polygon features.'),
+                    'error'
+                );
+                return;
+            }
+            applyUploadedGeometry(features);
         };
         reader.readAsText(file);
     }
 
+    // The file is a whole layout: the pool goes back to one base plot and each imported polygon is
+    // carved into it in order. carvePlotIntoPlan clips to the pool and subtracts overlaps, so the
+    // result is a clean partition even if the file's polygons overlap each other; land the import
+    // does not cover stays as one leftover plot. It is one undo step, and a file that misses the
+    // pool entirely leaves the layout as it was.
     function applyUploadedGeometry(features) {
         if (typeof turf === 'undefined') {
-            setStatus('turf.js is required for GeoJSON upload.', 'error');
+            setStatus(t('parcelLayout.editor.status.uploadUnavailable', 'GeoJSON upload needs the geometry engine, which has not loaded.'), 'error');
             return;
         }
         exitCompare(); // editing exits before/after
-        // Treat the file as a full layout: reset to one pool-wide base plot, then
-        // carve each imported polygon into it in order. carvePlotIntoPlan clips
-        // to the pool and subtracts overlaps, so the result is always a clean
-        // partition even if the file's polygons overlap each other. Any land the
-        // import doesn't cover stays as a single (unassigned) leftover plot.
-        state.slices = [createUnassignedPlot(state.superParcel.geometry, 'base')];
+        cancelDraw();
+        toggleEraseMode(false);
+        pushHistory();
+        const previous = state.slices;
+        state.slices = [makePlot(state.superParcel.geometry, 'base')];
         let added = 0;
-        features.forEach((feature, index) => {
-            if (!feature || !feature.geometry) return;
-            const geomType = feature.geometry.type;
+        features.forEach(feature => {
+            const geomType = feature && feature.geometry && feature.geometry.type;
             if (geomType !== 'Polygon' && geomType !== 'MultiPolygon') return;
-            const owner = state.ownerShares.length ? state.ownerShares[index % state.ownerShares.length] : null;
-            const owners = owner
-                ? [{ ownerKey: owner.ownerKey, displayName: owner.displayName, color: owner.color, share: 1 }]
-                : [];
-            if (carvePlotIntoPlan(feature, owners, 'geojson')) added++;
+            if (carvePlotIntoPlan(feature, 'geojson') === 'carved') added++;
         });
         if (!added) {
-            state.slices = [];
+            state.slices = previous;
+            discardLastHistory();
             setStatus(
                 t('reparcellization.modal.status.uploadNoOverlap', 'Uploaded polygons do not overlap with selected parcels.'),
                 'error'
             );
-            updateLegend(state.ownerShares);
-            drawPreview();
-            updateCommitState();
             return;
         }
-        state.uploadedGeometry = features;
-        updateLegend(state.ownerShares);
-        drawPreview();
-        updateCommitState();
+        // An imported layout is drawn, not generated: the sweep handle or the plan would replace it.
+        if (state.algorithm !== 'manual') setAlgorithmKey('manual');
+        conformLayout();
+        updateLegend();
+        try {
+            drawPreview();
+        } finally {
+            renderNodeHandles();
+        }
         setStatus(
             t('reparcellization.modal.status.uploadSuccess', 'Loaded {{count}} polygons from file.', { count: added }),
             'info'
         );
-    }
-
-    // ── Shuffle Ownership ────────────────────────────────────────────────
-
-    function shuffleOwnership() {
-        pushHistory();
-        if (!state.slices.length || !state.ownerShares.length) return;
-        exitCompare(); // editing exits before/after
-        // Fisher-Yates shuffle of owner assignments
-        const ownerPool = state.ownerShares.slice();
-        const assignments = [];
-        for (let i = 0; i < state.slices.length; i++) {
-            assignments.push(ownerPool[i % ownerPool.length]);
-        }
-        for (let i = assignments.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [assignments[i], assignments[j]] = [assignments[j], assignments[i]];
-        }
-        state.slices.forEach((slice, index) => {
-            const owner = assignments[index];
-            slice.ownerKey = owner.ownerKey;
-            slice.displayName = owner.displayName;
-            slice.color = owner.color;
-            slice.owners = [{ ownerKey: owner.ownerKey, displayName: owner.displayName, color: owner.color, share: 1 }];
-        });
-        updateLegend(state.ownerShares);
-        drawPreview();
     }
 
     // ── Node / edge editing ──────────────────────────────────────────────
@@ -2649,7 +2085,7 @@
     // ── Undo ────────────────────────────────────────────────────────────
     //
     // One stack for every layout edit — node drag, insert, remove, drawn plot, line split,
-    // ownership assignment. Snapshots are taken BEFORE the action, so Cmd/Ctrl+Z restores what
+    // courtyard, upload, a new number of equal plots. Snapshots are taken BEFORE the action, so Cmd/Ctrl+Z restores what
     // the user last saw. Deliberately not per-tool: "undo" means the last thing I did, whichever
     // tool did it.
     // The stack itself is GeometryEditHistory — the same module the building, road and structure
@@ -2664,26 +2100,27 @@
             redo: true,
             capture: () => ({
                 slices: JSON.parse(JSON.stringify(state.slices || [])),
-                ownerShares: JSON.parse(JSON.stringify(state.ownerShares || [])),
-                selectedSliceIndex: state.selectedSliceIndex,
                 // The first hand edit of an automatic layout turns it into a drawn one; undoing
-                // that edit has to give the automatic layout (and its sweep handle) back.
+                // that edit has to give the automatic layout (its count, its sweep handle, its
+                // Schelling plan) back.
                 algorithm: state.algorithm,
+                plotCount: state.plotCount,
+                schellingCode: state.schellingCode,
                 sweep: state.sweepHandle ? [state.sweepHandle.getLatLng().lat, state.sweepHandle.getLatLng().lng] : null
             }),
             restore: (snapshot, direction) => {
                 state.slices = snapshot.slices;
-                state.ownerShares = snapshot.ownerShares;
-                state.selectedSliceIndex = snapshot.selectedSliceIndex;
+                state.plotCount = snapshot.plotCount;
+                state.schellingCode = snapshot.schellingCode;
                 if (snapshot.algorithm && snapshot.algorithm !== state.algorithm) setAlgorithmKey(snapshot.algorithm);
+                updateCountField();
                 if (snapshot.sweep && state.sweepHandle) {
                     state.sweepHandle.setLatLng(snapshot.sweep);
                     updateSweepDirLine();
                 }
-                dismissOwnerPopup();
-                updateLegend(state.ownerShares);
+                closeChoicePopup();
+                updateLegend();
                 drawPreview();
-                updateCommitState();
                 if (state.nodeEdit.active) renderNodeHandles();
                 // The erasable network describes the plots too, so it has to follow them back.
                 if (state.erase.active) renderEraseLayer();
@@ -2722,11 +2159,6 @@
     function discardLastHistory() {
         const h = ensureHistory();
         if (h) h.discardLast();
-    }
-
-    function undoLastEdit() {
-        const h = ensureHistory();
-        return h ? h.undo() : false;
     }
 
     function updateUndoAffordance() {
@@ -2768,36 +2200,6 @@
         } else {
             clearNodeHandles();
             setStatus('', 'info');
-        }
-    }
-
-    // Assign-owners mode: the map is for choosing who gets which plot, and nothing else.
-    // Node handles come down, the drawing tools stand down, and a click on a plot opens the owner
-    // picker. Leaving it puts the editor back exactly as it was.
-    function toggleAssignMode(force) {
-        const next = typeof force === 'boolean' ? force : !state.assignMode;
-        if (next === state.assignMode) return;
-        state.assignMode = next;
-        updateActiveModeHint();
-        if (state.assignBtn) state.assignBtn.setAttribute('aria-pressed', next ? 'true' : 'false');
-        if (state.modal) state.modal.classList.toggle('reparcel-assign-mode', next);
-        const allPublicBtn = state.modal && state.modal.querySelector('[data-reparcel-all-public]');
-        if (allPublicBtn) allPublicBtn.hidden = !next;
-        if (next) {
-            state.nodeEditWasActive = state.nodeEdit.active;
-            if (state.nodeEdit.active) toggleNodeEditing(false);
-            if (state.drawing.active) cancelDraw();
-            state.erase.nodeEditWasActive = false;
-            toggleEraseMode(false);
-            setStatus(t('reparcellization.modal.status.assignHint',
-                'Click a plot to choose its owners. Editing is paused while you assign.'),
-                'info', 'reparcellization.modal.status.assignHint');
-        } else {
-            dismissOwnerPopup();
-            state.selectedSliceIndex = null;
-            if (state.nodeEditWasActive) { state.nodeEditWasActive = false; toggleNodeEditing(true); }
-            else setStatus('', 'info');
-            drawPreview();
         }
     }
 
@@ -2952,7 +2354,7 @@
         container.appendChild(hint);
 
         // What the button will actually do, before it is pressed. Removing a junction node moves
-        // thousands of square metres between owners; it used to do that with nothing on screen to
+        // thousands of square metres between plots; it used to do that with nothing on screen to
         // say so, and the only evidence was a number in the plot list that had quietly changed.
         const consequence = removalConsequenceText(describeNodeRemoval(node, topology));
         if (consequence) {
@@ -3004,8 +2406,8 @@
         if (plots.length === 2) {
             title.textContent = t('reparcellization.modal.edgeBetween', 'Boundary between {{a}} and {{b}}',
                 { a: plotLabel(plots[0]), b: plotLabel(plots[1]) });
-            hint.textContent = t('reparcellization.modal.edgeHint',
-                'Drag it to move this segment. Erasing it joins the two plots; the joined plot keeps the owners of the larger one.');
+            hint.textContent = t('parcelLayout.editor.edgeHint',
+                'Drag it to move this segment. Erasing it joins the two plots into one.');
         } else {
             title.textContent = t('reparcellization.modal.edgeOwn', 'Boundary segment');
             hint.textContent = t('reparcellization.modal.edgeOwnHint', 'Drag it to move this segment.');
@@ -3049,7 +2451,7 @@
         });
     }
 
-    // What removing this node would do, in the plan's own terms. Runs the removal on a COPY and
+    // What removing this node would do, in the layout's own terms. Runs the removal on a COPY and
     // measures it, so the popup cannot describe one thing while the button does another: both go
     // through classifyNodeRemoval, and the numbers come from the edit itself rather than an
     // estimate of it.
@@ -3098,11 +2500,11 @@
         const m2 = value => CbFormat.formatNumber(value, { maxFractionDigits: 0 });
         // By NUMBER and area, the way the plot list reads. Naming them by owner produced
         // "merges Prometna površina IS-1, Prometna površina IS-1 into Prometna površina IS-1" —
-        // every plot in this plan belongs to the same body, so the owner name identifies nothing.
+        // every plot in that plan belonged to the same body, so the owner name identified nothing.
         const nameOf = index => plotLabel(index);
         if (description.kind === 'merge') {
-            return t('reparcellization.modal.nodeRemoveMerges',
-                'Removing it merges {{joining}} into {{keeper}} — {{moved}} m² changes hands.',
+            return t('parcelLayout.editor.nodeRemoveMerges',
+                'Removing it merges {{joining}} into {{keeper}}, which gains {{moved}} m².',
                 {
                     joining: description.joining.map(entry => nameOf(entry.index)).join(', '),
                     keeper: nameOf(description.keeper.index),
@@ -3139,9 +2541,9 @@
         const description = describeNodeRemoval(node, topology);
 
         if (verdict.kind === 'outline') {
-            const text = t('reparcellization.modal.status.nodeOnPool',
-                'That node sits on the pooled outline — it belongs to the neighbours, not to this plan.');
-            setStatus(text, 'warning', 'reparcellization.modal.status.nodeOnPool');
+            const text = t('parcelLayout.editor.status.nodeOnPool',
+                'That node sits on the pool outline: it belongs to the neighbours, not to this layout.');
+            setStatus(text, 'warning', 'parcelLayout.editor.status.nodeOnPool');
             showNodeMessagePopup(node, text);
             return false;
         }
@@ -3162,7 +2564,7 @@
     function removeNodePerRing(node, topology) {
         const topo = window.__plotTopology;
         const result = topo.removeNode(state.slices, topology, node.id, { dissolveDegenerate: true });
-        console.debug('[reparcellization] straighten', {
+        log('debug', 'straighten', {
             node: node.coord, removed: result.removed, reason: result.reason, slices: state.slices.length
         });
         if (!result.removed) {
@@ -3189,7 +2591,7 @@
 
         const merged = mergePlots(Array.from(members));
         if (!merged) return false;
-        console.debug('[reparcellization] boundary dissolved', {
+        log('debug', 'boundary dissolved', {
             node: node.coord, mergedPlots: members.size, plotsNow: state.slices.length
         });
         return true;
@@ -3229,12 +2631,9 @@
         indices.filter(index => index !== keeper)
             .sort((a, b) => b - a)
             .forEach(index => state.slices.splice(index, 1));
-        state.selectedSliceIndex = null;
-        recomputeSliceAreas();
-        updateLegend(state.ownerShares);
+        updateLegend();
         try {
             drawPreview();
-            updateCommitState();
         } finally {
             renderNodeHandles();
         }
@@ -3280,31 +2679,17 @@
         // the list honest — a 0 m² row that cannot be seen on the map is not a parcel.
         if (dissolved.length) {
             for (let i = dissolved.length - 1; i >= 0; i--) state.slices.splice(dissolved[i], 1);
-            if (state.selectedSliceIndex !== null) state.selectedSliceIndex = null;
         }
-        recomputeSliceAreas();
-        updateLegend(state.ownerShares);
+        updateLegend();
         // The handles describe the plots. If a redraw throws halfway, the handles must not be left
         // floating over shapes that are no longer there — that is the "stars orphaned on the map,
         // node and warning left behind, lines gone" state. Rebuild them whatever happens.
         try {
             drawPreview();
-            updateCommitState();
         } finally {
             renderNodeHandles();
         }
         return true;
-    }
-
-    // Plot areas and percentages follow their geometry — without this the legend keeps the
-    // pre-drag numbers and the coverage check reads a layout that no longer exists.
-    function recomputeSliceAreas() {
-        const total = state.slices.reduce((sum, slice) => sum + (computeGeometryArea(slice.geometry) || 0), 0);
-        state.slices.forEach(slice => {
-            const area = computeGeometryArea(slice.geometry) || 0;
-            slice.area = area;
-            slice.percent = total > 0 ? (area / total) * 100 : 0;
-        });
     }
 
     function computeGeometryArea(geometry) {
@@ -3312,321 +2697,6 @@
         try {
             return turf.area({ type: 'Feature', properties: {}, geometry });
         } catch (_) { return 0; }
-    }
-
-    // ── Click-to-assign Owner ────────────────────────────────────────────
-
-    function dismissOwnerPopup() {
-        state.shareDraftPending = false;
-        if (state.ownerAssignmentPopup) {
-            try { state.map.closePopup(state.ownerAssignmentPopup); } catch (_) { }
-            state.ownerAssignmentPopup = null;
-        }
-        if (state.selectedSliceIndex !== null) {
-            // Deferred full redraw after popup closes so layers reflect final state
-            state.selectedSliceIndex = null;
-            updateLegend(state.ownerShares);
-            drawPreview();
-        }
-    }
-
-    function restoreOwnerPopupView() {
-        if (!state.ownerPopupView || !state.map) return;
-        const view = state.ownerPopupView;
-        state.ownerPopupView = null;
-        state.map.setView(view.center, view.zoom, { animate: false });
-    }
-
-    function onSliceClick(sliceIndex, latlng) {
-        if (state.drawing.active || state.compare.active) return; // not while drawing/comparing
-        // Only in assign mode. Otherwise a click on a plot while you are reshaping it popped the
-        // owner picker over the geometry you were working on.
-        if (!state.assignMode) return;
-        // If a popup is already open, close it (triggers redraw via dismissOwnerPopup)
-        if (state.ownerAssignmentPopup) {
-            try { state.map.closePopup(state.ownerAssignmentPopup); } catch (_) { }
-            state.ownerAssignmentPopup = null;
-            // If clicking the same slice, just toggle off
-            if (state.selectedSliceIndex === sliceIndex) {
-                state.selectedSliceIndex = null;
-                updateLegend(state.ownerShares);
-                drawPreview();
-                return;
-            }
-            state.selectedSliceIndex = null;
-        }
-        if (!state.ownerShares.length || sliceIndex < 0 || sliceIndex >= state.slices.length) return;
-        state.selectedSliceIndex = sliceIndex;
-        state.shareDraftPending = false;
-        state.ownerPopupView = { center: state.map.getCenter(), zoom: state.map.getZoom() };
-        const slice = state.slices[sliceIndex];
-        if (!slice.owners) {
-            slice.owners = [{ ownerKey: slice.ownerKey, displayName: slice.displayName, color: slice.color, share: 1 }];
-        }
-
-        const container = document.createElement('div');
-        container.className = 'reparcel-owner-popup';
-        container.style.setProperty('--reparcel-owner-editor-height', `${Math.max(100, state.map.getSize().y - 64)}px`);
-
-        const title = document.createElement('div');
-        title.className = 'reparcel-owner-popup__title';
-        title.textContent = t('reparcellization.modal.assignOwners', 'Assign owners');
-        container.appendChild(title);
-
-        const jointBtn = document.createElement('button');
-        jointBtn.type = 'button';
-        jointBtn.className = 'btn reparcel-owner-popup__joint';
-        jointBtn.textContent = t('reparcellization.modal.useProRataShares', 'Use private-land proportions');
-        jointBtn.addEventListener('click', () => {
-            pushHistory();
-            applyJointOwnersToSlice(slice, computeProRataJointOwners());
-            updateCommitState();
-            dismissOwnerPopup();
-        });
-        container.appendChild(jointBtn);
-
-        const ownerList = document.createElement('div');
-        ownerList.className = 'reparcel-owner-popup__list';
-
-        // Real owners plus the "Public land" option (land set aside for public use).
-        const assignableOwners = reparcellizationUiState.assignableOwnerChoices(state.ownerShares, getPublicLandOwner());
-        assignableOwners.forEach((owner) => {
-            const isAssigned = slice.owners.some(o => o.ownerKey === owner.ownerKey);
-            const row = document.createElement('label');
-            row.className = 'reparcel-owner-popup__row' + (isAssigned ? ' assigned' : '');
-
-            const checkbox = document.createElement('input');
-            checkbox.type = 'checkbox';
-            checkbox.checked = isAssigned;
-            checkbox.addEventListener('change', (evt) => {
-                evt.stopPropagation();
-                toggleOwnerOnSlice(sliceIndex, owner, checkbox.checked);
-                row.classList.toggle('assigned', checkbox.checked);
-                syncSlicePrimaryOwner(sliceIndex);
-                renderShareInputs();
-            });
-
-            const swatch = document.createElement('span');
-            swatch.className = owner.ownerKey === PUBLIC_LAND_KEY ? 'legend-color legend-color--public' : 'legend-color';
-            swatch.style.background = owner.color;
-
-            const nameSpan = document.createElement('span');
-            nameSpan.textContent = ownerDisplayName(owner.displayName);
-
-            row.appendChild(checkbox);
-            row.appendChild(swatch);
-            row.appendChild(nameSpan);
-            ownerList.appendChild(row);
-        });
-        container.appendChild(ownerList);
-
-        const shareEditor = document.createElement('div');
-        shareEditor.className = 'reparcel-share-editor';
-        container.appendChild(shareEditor);
-        function renderShareInputs() {
-            state.shareDraftPending = false;
-            shareEditor.replaceChildren();
-            const mode = document.createElement('p');
-            mode.className = 'reparcel-share-mode';
-            mode.textContent = slice.jointPool && slice.jointShareMode !== 'manual'
-                ? t('reparcellization.modal.proRataShares', 'Shares follow private-land proportions.')
-                : t('reparcellization.modal.customShares', 'Custom shares stay fixed when boundaries change.');
-            shareEditor.append(mode);
-            const inputs = slice.owners.map(owner => {
-                const row = document.createElement('label');
-                row.className = 'reparcel-share-row';
-                const name = document.createElement('span');
-                name.textContent = ownerDisplayName(owner.displayName);
-                const input = document.createElement('input');
-                input.type = 'number'; input.min = '0'; input.max = '100'; input.step = 'any';
-                input.value = String(Number((owner.share * 100).toFixed(12)));
-                input.setAttribute('aria-label', t('reparcellization.modal.ownerSharePercent', '{{owner}} share (%)', { owner: name.textContent }));
-                input.dataset.ownerKey = owner.ownerKey;
-                const percent = document.createElement('span'); percent.textContent = '%';
-                row.append(name, input, percent); shareEditor.append(row);
-                return { owner, input };
-            });
-            const status = document.createElement('p');
-            status.className = 'reparcel-share-total'; status.setAttribute('role', 'status');
-            const apply = document.createElement('button');
-            apply.type = 'button'; apply.className = 'btn reparcel-apply-shares';
-            apply.textContent = t('reparcellization.modal.applyShares', 'Apply shares');
-            const parse = () => window.ReparcellizationAllocation.parsePercentShares(inputs.map(({ owner, input }) => ({ ...owner, percent: input.value })));
-            const refresh = () => {
-                const total = inputs.reduce((sum, { input }) => sum + (input.value === '' ? NaN : Number(input.value)), 0);
-                try {
-                    parse(); apply.disabled = false;
-                    status.textContent = t('reparcellization.modal.sharesTotal', 'Total: {{total}}%', { total: CbFormat.formatNumber(total, { maxFractionDigits: 8 }) });
-                    status.dataset.state = 'ok';
-                } catch (_) {
-                    apply.disabled = true;
-                    status.textContent = t('reparcellization.modal.sharesInvalid', 'Each share must be positive and the total must be 100%.');
-                    status.dataset.state = 'warn';
-                }
-            };
-            inputs.forEach(({ input }) => input.addEventListener('input', () => {
-                state.shareDraftPending = true;
-                refresh(); updateCommitState();
-            }));
-            apply.addEventListener('click', () => {
-                if (apply.disabled) return;
-                const owners = parse();
-                pushHistory();
-                slice.owners = owners;
-                if (slice.jointPool) slice.jointShareMode = 'manual';
-                state.shareDraftPending = false;
-                syncSlicePrimaryOwner(sliceIndex);
-                dismissOwnerPopup();
-            });
-            shareEditor.append(status, apply);
-            refresh();
-            updateCommitState();
-        }
-        renderShareInputs();
-
-        const closeBtn = document.createElement('button');
-        closeBtn.type = 'button';
-        closeBtn.className = 'close-circle-btn reparcel-owner-popup__close';
-        closeBtn.setAttribute('aria-label', t('reparcellization.modal.closeAria', 'Close'));
-        closeBtn.textContent = '\u00d7';
-        closeBtn.addEventListener('click', (evt) => {
-            evt.stopPropagation();
-            dismissOwnerPopup();
-        });
-        container.appendChild(closeBtn);
-
-        const popup = L.popup({
-            closeButton: false,
-            className: 'reparcel-owner-leaflet-popup',
-            maxWidth: 280,
-            autoPan: true,
-            closeOnClick: false
-        })
-            .setLatLng(latlng)
-            .setContent(container);
-
-        popup.on('remove', () => {
-            if (state.ownerAssignmentPopup === popup) {
-                state.shareDraftPending = false;
-                state.ownerAssignmentPopup = null;
-                restoreOwnerPopupView();
-                if (state.selectedSliceIndex !== null) {
-                    state.selectedSliceIndex = null;
-                    updateLegend(state.ownerShares);
-                    drawPreview();
-                }
-            }
-        });
-
-        popup.openOn(state.map);
-        state.ownerAssignmentPopup = popup;
-        state.map.getContainer().scrollIntoView({ block: 'center', behavior: 'instant' });
-    }
-
-    // "All public": assign every plot to public ownership in one click, so a plain break-up → Done
-    // flow is possible without hand-assigning each plot. Public land is a valid owner (it commits to
-    // the City), which satisfies the completeness gate.
-    function assignPublicToAllSlices() {
-        pushHistory();
-        if (!Array.isArray(state.slices) || !state.slices.length) return;
-        const publicOwner = getPublicLandOwner();
-        state.slices.forEach((slice, i) => {
-            slice.jointPool = false;
-            delete slice.jointShareMode;
-            slice.owners = [{ ownerKey: publicOwner.ownerKey, displayName: publicOwner.displayName, color: publicOwner.color, share: 1 }];
-            syncSlicePrimaryOwner(i);
-        });
-        updateLegend(state.ownerShares);
-        drawPreview();
-        updateCommitState();
-    }
-
-    function toggleOwnerOnSlice(sliceIndex, owner, add) {
-        const slice = state.slices[sliceIndex];
-        pushHistory();
-        if (slice.jointPool) slice.jointShareMode = 'manual';
-        if (!slice.owners) {
-            slice.owners = [{ ownerKey: slice.ownerKey, displayName: slice.displayName, color: slice.color, share: 1 }];
-        }
-        if (add) {
-            if (!slice.owners.some(o => o.ownerKey === owner.ownerKey)) {
-                slice.owners.push({ ownerKey: owner.ownerKey, displayName: owner.displayName, color: owner.color, share: 0 });
-                const equalShare = 1 / slice.owners.length;
-                slice.owners.forEach(o => { o.share = equalShare; });
-            }
-        } else {
-            slice.owners = slice.owners.filter(o => o.ownerKey !== owner.ownerKey);
-            if (slice.owners.length) {
-                const equalShare = 1 / slice.owners.length;
-                slice.owners.forEach(o => { o.share = equalShare; });
-            }
-        }
-    }
-
-    function parseHexColor(hex) {
-        const h = hex.replace('#', '');
-        return [
-            parseInt(h.substring(0, 2), 16),
-            parseInt(h.substring(2, 4), 16),
-            parseInt(h.substring(4, 6), 16)
-        ];
-    }
-
-    function blendOwnerColors(owners) {
-        if (!owners || !owners.length) return '#888';
-        if (owners.length === 1) return owners[0].color || '#888';
-        let r = 0, g = 0, b = 0;
-        for (const o of owners) {
-            const [cr, cg, cb] = parseHexColor(o.color || '#888888');
-            r += cr;
-            g += cg;
-            b += cb;
-        }
-        const n = owners.length;
-        const toHex = (v) => Math.round(v / n).toString(16).padStart(2, '0');
-        return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
-    }
-
-    function syncSlicePrimaryOwner(sliceIndex) {
-        const slice = state.slices[sliceIndex];
-        if (!slice.owners || !slice.owners.length) {
-            slice.ownerKey = '';
-            slice.displayName = t('reparcellization.modal.unassigned', 'Unassigned');
-            slice.color = '#cccccc';
-        } else {
-            const primary = slice.owners[0];
-            slice.ownerKey = primary.ownerKey;
-            slice.displayName = slice.owners.length > 1
-                ? slice.owners.map(o => ownerDisplayName(o.displayName)).join(' + ')
-                : ownerDisplayName(primary.displayName);
-            slice.color = blendOwnerColors(slice.owners);
-        }
-
-        // Live-update the map layer for this slice without destroying the popup
-        if (state.previewLayer) {
-            let layerIndex = 0;
-            state.previewLayer.eachLayer((layer) => {
-                if (layerIndex === sliceIndex) {
-                    const isMulti = Array.isArray(slice.owners) && slice.owners.length > 1;
-                    layer.setStyle({
-                        fillColor: slice.color,
-                        color: isMulti ? '#000' : '#333',
-                        weight: isMulti ? 2 : 1,
-                        dashArray: isMulti ? '6 3' : null
-                    });
-                    // Update tooltip
-                    layer.unbindTooltip();
-                    const ownerNames = Array.isArray(slice.owners) && slice.owners.length
-                        ? slice.owners.map(o => ownerDisplayName(o.displayName)).join(', ')
-                        : ownerDisplayName(slice.displayName);
-                    layer.bindTooltip(escapeHtml(ownerNames), { sticky: true, className: 'reparcel-slice-tooltip' });
-                }
-                layerIndex++;
-            });
-        }
-
-        // Live-update the legend tables
-        updateLegend(state.ownerShares);
     }
 
     // ── Sweep-line orientation ───────────────────────────────────────────
@@ -3645,21 +2715,40 @@
         }
     }
 
-    // Slice value-proportional strips oriented toward the sweep point: rotate the
-    // pool so that direction becomes vertical, run the standard vertical sweep,
-    // then rotate the resulting slices back. The rotation is affine in the local
-    // metre frame (reparcellization-slice.js sliceAlongBearing), so the slices'
-    // outer edges land back on the pool's own edges instead of millimetres outside.
-    function computeSweepSlices() {
-        if (!state.superParcel || !state.ownerShares.length) return [];
-        const bearing = getSweepBearing();
+    // Equal plots: the pool cut into `count` strips of equal area, oriented toward the sweep point
+    // (parcel-layout-layouts.js equalPlots; the slicing itself is reparcellization-slice.js).
+    function computeEqualSlices(count = state.plotCount) {
+        if (!state.superParcel) return [];
         const pivot = getSuperParcelCentroidLngLat(state.superParcel);
-        if (!bearing || !pivot) return sliceWithSweepLine(state.superParcel, state.ownerShares);
-        return window.ReparcellizationSlice.sliceAlongBearing(state.superParcel, state.ownerShares, bearing, {
-            turf: (typeof turf !== 'undefined' ? turf : undefined),
-            computeFeatureArea,
-            pivot
+        return window.ParcelLayoutLayouts.equalPlots(state.superParcel, count, getSweepBearing(), pivot, {
+            turf, computeFeatureArea, ReparcellizationSlice: window.ReparcellizationSlice
+        }).map(plot => makePlot(plot.geometry, plot.source));
+    }
+
+    // The Schelling plan at the pool, with the plan layer's current settings: schelling-layer.js keeps
+    // them, remembered per viewer, whether the layer is shown or not.
+    function schellingPlanForPool() {
+        const settingsApi = window.SchellingSettings;
+        const current = window.SchellingLayer?.settings?.();
+        const settings = settingsApi.normalize(current && Object.keys(current).length ? current : settingsApi.DEFAULTS);
+        const centre = getSuperParcelCentroidLngLat(state.superParcel);
+        if (!centre) throw new RangeError('The pool has no centre to take the Schelling plan at.');
+        return { plan: window.SchellingGrid.planFor({ ...settings, lat: centre[1] }), level: settings.plotLevel };
+    }
+
+    // Schelling plots: the plan's plots clipped to the pool, and the pool ground they leave (the
+    // street strips) as plots too, so the layout tiles the pool (parcel-layout-layouts.js).
+    function computeSchellingSlices() {
+        const { plan, level } = schellingPlanForPool();
+        const result = window.ParcelLayoutLayouts.schellingPlots(state.superParcel, plan, level, {
+            turf, computeFeatureArea, SchellingGrid: window.SchellingGrid
         });
+        state.schellingCode = result.code;
+        log('debug', 'Schelling plots laid out', {
+            code: result.code, plots: result.plots.length,
+            remainders: result.plots.filter(plot => plot.source === 'schelling-remainder').length
+        });
+        return result.plots.map(plot => makePlot(plot.geometry, plot.source));
     }
 
     function getSweepIcon() {
@@ -3686,13 +2775,13 @@
     function onSweepDrag() {
         if (state.compare.active) exitCompare(); // editing exits before/after
         updateSweepDirLine();
-        state.slices = computeSweepSlices();
-        updateLegend(state.ownerShares);
+        state.slices = computeEqualSlices();
+        updateLegend();
         drawPreview();
     }
 
     function initSweepOrientation() {
-        if (!state.map || state.ownershipMode !== 'multiple' || state.algorithm !== 'sweep-line') return;
+        if (!state.map || state.algorithm !== 'equal') return;
         if (state.sweepHandle) return;
         const c = getSuperParcelCentroidLngLat(state.superParcel);
         if (!c) return;
@@ -3719,32 +2808,25 @@
     }
 
     // ── Before/After swipe comparison ────────────────────────────────────
-    // The main map shows the "after" plots (by owner). A second map showing the
-    // "before" original parcels (by owner) is stacked on top and clipped by a
-    // draggable divider. The main map is frozen while comparing so the two views
-    // stay aligned; exiting restores normal pan/zoom and editing.
+    // The main map shows the "after" plots. A second map showing the "before"
+    // original parcels is stacked on top and clipped by a draggable divider.
+    // The main map is frozen while comparing so the two views stay aligned;
+    // exiting restores normal pan/zoom and editing.
 
-    function parcelColorForBefore(parcelId) {
-        const matches = state.ownerShares.filter(o => Array.isArray(o.parcelIds) && o.parcelIds.includes(parcelId));
-        if (!matches.length) return '#cccccc';
-        return blendOwnerColors(matches.map(o => ({ color: o.color })));
-    }
-
+    // The input parcels, each in its own colour, for the before map.
     function buildBeforeFeatureCollection() {
-        const features = liveSelectionFeatures(state.selection).map(f => {
-            const props = f.properties || {};
-            const pid = props.parcelId || props.parcel_id || props.id;
-            return { type: 'Feature', properties: { color: parcelColorForBefore(pid) }, geometry: f.geometry };
-        });
+        const features = liveSelectionFeatures(state.selection).map((feature, index) => ({
+            type: 'Feature', properties: { color: plotColor(index) }, geometry: feature.geometry
+        }));
         return { type: 'FeatureCollection', features };
     }
 
-    // The before map (ui/map-before-after.js) shows the input parcels coloured by owner inside the
-    // super-parcel outline; the live modal map, with its plots, is "after".
+    // The before map (ui/map-before-after.js) shows the input parcels inside the pool outline; the
+    // live map, with its plots, is "after".
     function enterCompare() {
         if (!state.map || state.compare.active || !state.slices.length) return;
         cancelDraw();
-        dismissOwnerPopup();
+        closeChoicePopup();
         const session = window.__MapBeforeAfter.attach(state.map, {
             percent: 50,
             labels: { before: t('mapCompare.before', 'Before'), after: t('mapCompare.after', 'After') },
@@ -3759,7 +2841,6 @@
         state.compare.active = true;
         state.compare.session = session;
         state.compare.map2 = session.beforeMap;
-        drawOwnerReviewHighlights();
         if (state.compareBtn) state.compareBtn.setAttribute('aria-pressed', 'true');
     }
 
@@ -3769,7 +2850,6 @@
         state.compare.session = null;
         state.compare.map2 = null;
         state.compare.active = false;
-        drawOwnerReviewHighlights();
         if (state.compareBtn) state.compareBtn.setAttribute('aria-pressed', 'false');
     }
 
@@ -3781,37 +2861,18 @@
         }
     }
 
-    function sliceIsUnassigned(slice) {
-        return !!slice && !(Array.isArray(slice.owners) && slice.owners.length) && !slice.ownerKey;
-    }
-
-    // Plots nobody owns yet were all one grey, so a fresh cut looked like nothing happened. They
-    // cycle through a few neutral tints from the stylesheet (on-map-reparcellization.css); pieces
-    // of one cut sit next to each other in the list, so they always differ.
-    function unassignedFill(index) {
-        const n = (Math.abs(index) % 4) + 1;
-        try {
-            const value = getComputedStyle(document.documentElement)
-                .getPropertyValue(`--reparcel-unassigned-fill-${n}`).trim();
-            if (value) return value;
-        } catch (_) { }
-        return '#cccccc';
-    }
-
-    function sliceFillColor(slice, index) {
-        if (sliceIsUnassigned(slice)) return unassignedFill(index);
-        return slice.color || '#888';
-    }
-
-    // Base (un-highlighted) Leaflet style for a plot, matching drawPreview's style fn.
-    function sliceBaseStyle(slice, index) {
-        const isMulti = Array.isArray(slice.owners) && slice.owners.length > 1;
+    // A plot's Leaflet style: its own colour (plotColor), with the boundary carrying hover and the
+    // highlight of its row in the New plots list. A plot is a shape, not a box: the browser's focus
+    // ring is drawn around the path's bounding box and reads as a stray rectangle.
+    function plotStyle(index, mode = 'idle') {
+        const hovered = mode === 'hover';
+        const highlighted = mode === 'highlight';
         return {
-            color: isMulti ? '#000' : '#333',
-            weight: isMulti ? 2 : 1,
-            fillOpacity: 0.55,
-            fillColor: sliceFillColor(slice, index),
-            dashArray: isMulti ? '6 3' : null
+            color: highlighted ? '#111' : (hovered ? '#2563EB' : '#333'),
+            weight: highlighted ? 4 : (hovered ? 3 : 1),
+            fillOpacity: highlighted ? 0.8 : (hovered ? 0.65 : 0.55),
+            fillColor: plotColor(index),
+            dashArray: null
         };
     }
 
@@ -3865,10 +2926,10 @@
         state.previewLayer.eachLayer((layer) => {
             if (layerIndex === sliceIndex) {
                 if (on) {
-                    layer.setStyle({ color: '#111', weight: 4, fillOpacity: 0.8, dashArray: null });
+                    layer.setStyle(plotStyle(sliceIndex, 'highlight'));
                     if (typeof layer.bringToFront === 'function') layer.bringToFront();
                 } else {
-                    layer.setStyle(sliceBaseStyle(state.slices[sliceIndex] || {}, sliceIndex));
+                    layer.setStyle(plotStyle(sliceIndex));
                 }
             }
             layerIndex++;
@@ -3877,7 +2938,7 @@
 
     // Footprints of applied building proposals that overlap the pool. window.proposedBuildings
     // holds GeoJSON footprint Features (lng/lat) for applied/executed building proposals;
-    // we clip them to the super parcel so they can guide the readjustment layout.
+    // they are shown over the pool so they can guide the layout.
     function collectAppliedBuildingFootprints() {
         if (typeof turf === 'undefined' || !state.superParcel) return [];
         const all = (typeof window !== 'undefined' && Array.isArray(window.proposedBuildings))
@@ -3961,13 +3022,13 @@
         }
 
         // The parcels being replaced, under everything. In the new-plots view they are a faint
-        // reference — you are editing the plan, not them — and in the old-plots view they are the
+        // reference — you are editing the layout, not them — and in the old-plots view they are the
         // subject, so they carry the labels and the weight.
         drawInputParcels();
 
         if (state.slices.length && state.plotsTab === 'old') {
-            // Old-plots view: the plan is context only. Faint, non-interactive, no hover, no
-            // selection — nothing here is editable, and offering the affordance would lie.
+            // Old-plots view: the layout is context only. Faint, non-interactive, no hover — nothing
+            // here is editable, and offering the affordance would lie.
             state.previewLayer = L.geoJSON(
                 { type: 'FeatureCollection', features: state.slices.map(slice => ({ type: 'Feature', properties: {}, geometry: slice.geometry })) },
                 { style: { color: '#6b7280', weight: 1, opacity: 0.5, fillOpacity: 0.05, fillColor: '#6b7280' }, interactive: false, pane: 'reparcelPlots' }
@@ -3977,77 +3038,41 @@
                 type: 'FeatureCollection',
                 features: state.slices.map((slice, idx) => ({
                     type: 'Feature',
-                    properties: {
-                        ownerKey: slice.ownerKey,
-                        color: sliceFillColor(slice, idx),
-                        displayName: ownerDisplayName(slice.displayName),
-                        percent: slice.percent,
-                        sliceIndex: idx,
-                        isMultiOwner: Array.isArray(slice.owners) && slice.owners.length > 1,
-                        ownerNames: (Array.isArray(slice.owners) && slice.owners.length)
-                            ? slice.owners.map(o => ownerDisplayName(o.displayName)).join(', ')
-                            : ownerDisplayName(slice.displayName)
-                    },
+                    properties: { sliceIndex: idx },
                     geometry: slice.geometry
                 }))
             };
-            const plotStyle = (props, mode) => {
-                const selected = mode === 'selected';
-                const hovered = mode === 'hover';
-                return {
-                    // The boundary itself carries hover/selection — a plot is a shape, not a box,
-                    // and the only feedback before this was the browser's focus ring, which is
-                    // drawn around the path's bounding box and reads as a stray rectangle.
-                    color: selected ? '#1d4ed8' : (hovered ? '#2563EB' : (props.isMultiOwner ? '#000' : '#333')),
-                    weight: selected ? 4 : (hovered ? 3 : (props.isMultiOwner ? 2 : 1)),
-                    fillOpacity: selected ? 0.7 : (hovered ? 0.65 : 0.55),
-                    fillColor: props.color || '#888',
-                    dashArray: props.isMultiOwner ? '6 3' : null
-                };
-            };
             state.previewLayer = L.geoJSON(collection, {
                 pane: 'reparcelPlots',
-                style: feature => {
-                    const props = feature.properties || {};
-                    const selected = state.selectedSliceIndex === props.sliceIndex;
-                    return plotStyle(props, selected ? 'selected' : 'idle');
-                },
+                style: feature => plotStyle(feature.properties.sliceIndex),
                 onEachFeature: (feature, layer) => {
-                    const idx = feature.properties?.sliceIndex;
-                    if (typeof idx === 'number') {
-                        layer.__reparcelSliceIndex = idx;
-                        const owners = feature.properties.ownerNames || feature.properties.displayName;
-                        layer.bindTooltip(escapeHtml(owners), { sticky: true, className: 'reparcel-slice-tooltip' });
-                        layer.on('click', (e) => {
-                            // While drawing, let the click reach the map so vertices can be
-                            // placed over existing plots; don't swallow it for assignment. While
-                            // erasing, a plot is not the thing being clicked at all.
-                            if (state.drawing.active || state.erase.active) return;
-                            L.DomEvent.stopPropagation(e);
+                    const idx = feature.properties.sliceIndex;
+                    layer.__reparcelSliceIndex = idx;
+                    layer.bindTooltip(escapeHtml(t('parcelLayout.editor.plotTooltip', 'Plot {{n}} · {{area}}', {
+                        n: idx + 1, area: formatArea(computeGeometryArea(feature.geometry))
+                    })), { sticky: true, className: 'reparcel-slice-tooltip' });
+                    // A click on a plot belongs to this editor, not to the app's map below it (which
+                    // would select a parcel); while drawing it must reach the map, where vertices go.
+                    layer.on('click', (e) => {
+                        if (state.drawing.active || state.erase.active) return;
+                        L.DomEvent.stopPropagation(e);
+                    });
+                    layer.on('mouseover', () => {
+                        // No plot tooltip or hover while drawing, splitting, erasing or comparing:
+                        // the plot is not what is being pointed at.
+                        if (state.drawing.active || state.compare.active || state.erase.active) {
                             layer.closeTooltip();
-                            onSliceClick(idx, e.latlng);
-                        });
-                        layer.on('mouseover', () => {
-                            // Don't show the plot tooltip while drawing/splitting or comparing.
-                            if (state.ownerAssignmentPopup || state.drawing.active || state.compare.active
-                                || state.erase.active) {
-                                layer.closeTooltip();
-                            }
-                            if (state.drawing.active || state.compare.active || state.erase.active) return;
-                            if (state.selectedSliceIndex === idx) return;
-                            layer.setStyle(plotStyle(feature.properties || {}, 'hover'));
-                            if (typeof layer.bringToFront === 'function') layer.bringToFront();
-                        });
-                        layer.on('mouseout', () => {
-                            if (state.selectedSliceIndex === idx) return;
-                            layer.setStyle(plotStyle(feature.properties || {}, 'idle'));
-                        });
-                    }
+                            return;
+                        }
+                        layer.setStyle(plotStyle(idx, 'hover'));
+                        if (typeof layer.bringToFront === 'function') layer.bringToFront();
+                    });
+                    layer.on('mouseout', () => layer.setStyle(plotStyle(idx)));
                 }
             }).addTo(state.map);
         }
 
-        // The pooled outline, in red and heavy: it is the one line in this editor that cannot be
+        // The pool outline, in red and heavy: it is the one line in this editor that cannot be
         // moved, so it must not look like the plot boundaries that can. Drawn after the plots so it
         // is never buried under a fill.
         state.boundaryLayer = L.geoJSON(state.superParcel, {
@@ -4065,7 +3090,7 @@
             if (state.session?.fitFeature) state.session.fitFeature(state.superParcel, { maxZoom: 21 });
             else if (state.boundaryLayer) {
                 try { state.map.fitBounds(state.boundaryLayer.getBounds(), { padding: [20, 20] }); }
-                catch (err) { console.warn('Failed to fit bounds for reparcellization preview', err); }
+                catch (err) { log('warn', 'failed to fit the map to the pool', err); }
             }
             state.hasFitBounds = true;
         }
@@ -4074,22 +3099,22 @@
 
         // Building-footprint guide on top of the plots (outlines guide the layout).
         drawBuildingFootprints();
-        drawOwnerReviewHighlights();
 
         // Keep the sweep direction line visible above the freshly re-added slices.
         if (state.sweepHandle) updateSweepDirLine();
     }
 
+    // The parcel-layout record (plan-design-agreement.md, "M1 (a) build contract"): the pool and its
+    // plots, geometry only. Owners, shares, money and approval belong to the agreement.
     function currentPlan() {
         return {
             algorithm: state.algorithm,
             generatedAt: new Date().toISOString(),
-            parcelIds: state.selection?.ids?.slice() || [],
-            // The exact connected ground this readjustment subdivides. Parent cadastral parcels can
-            // be only partially involved (a road may already own the rest), so their whole union is
-            // not always the boundary. Persisting the pool prevents a later edit from resurrecting
-            // those outside remainders as thick-red-outline slivers.
-            poolGeometry: state.superParcel ? JSON.parse(JSON.stringify(state.superParcel.geometry)) : null,
+            // The exact ground this layout redraws. Parent cadastral parcels can be only partially
+            // involved (a road may already own the rest), so their whole union is not always the
+            // boundary. Persisting the pool prevents a later edit from resurrecting those outside
+            // remainders as thick-red-outline slivers.
+            pool: state.superParcel ? JSON.parse(JSON.stringify(state.superParcel.geometry)) : null,
             // A subdivision's pool is its site (bound parcels' part + open ground): the editor and
             // the coverage checks reopen it from the site, never from a parcel selection.
             ...(state.sitePool ? {
@@ -4097,157 +3122,38 @@
                 openGroundM2: Math.round(state.sitePool.pool.openGroundM2 * 100) / 100
             } : {}),
             totalArea: state.totalArea,
-            // Land-readjustment accounting metadata so downstream views/audits can
-            // reconstruct entitlements and cash balances without re-deriving them.
-            contributionBasis: state.contributionBasis,
-            valuationCurrency: state.valuationCurrency,
-            totalValue: state.totalValue,
-            poolUnitValue: state.poolUnitValue,
-            contributionRatio: state.contributionRatio,
-            isSingleOwner: false,
-            // Authored source shapes and ownership are needed later, after this layout has already
-            // replaced its inputs on the map, to create independent courtyard contributions.
-            inputParcels: state.algorithm === 'amend' ? JSON.parse(JSON.stringify(state.amendInputs)) : [],
-            // Cash offers (the compensation part of the proposal) and their total.
-            totalCashOffer: computeTotalCashOffer(),
-            ownerShares: state.ownerShares.map(entry => {
-                const ledger = computeOwnerLedger(entry);
-                return {
-                    ownerKey: entry.ownerKey,
-                    displayName: entry.displayName,
-                    ...(ledger.unrepresentedGround ? { unrepresentedGround: true } : {}),
-                    percent: entry.percent,
-                    color: entry.color,
-                    contributedArea: entry.area,
-                    contributedValue: entry.value,
-                    entitledValue: ledger.entitled,
-                    assignedArea: ledger.assignedArea,
-                    assignedValue: ledger.assigned,
-                    cashBalance: ledger.cashBalance,
-                    // Open ground keeps a null cash offer; owners store payouts and payments separately.
-                    ...storedCash(ledger.unrepresentedGround ? null : getCashOffer(entry.ownerKey, ledger))
-                };
-            }),
-            polygons: state.slices.map(slice => ({
-                ownerKey: slice.ownerKey,
-                displayName: slice.displayName,
-                percent: slice.percent,
-                color: slice.color,
+            ...(state.algorithm === 'equal' ? { plotCount: state.plotCount } : {}),
+            ...(state.algorithm === 'schelling' && state.schellingCode ? { schelling: { code: state.schellingCode } } : {}),
+            // The borders this layout keeps, so a reopened layout starts from the same ones after the
+            // layout has replaced them on the map.
+            ...(state.algorithm === 'amend' ? { inputParcels: JSON.parse(JSON.stringify(state.amendInputs)) } : {}),
+            plots: state.slices.map(slice => ({
+                geometry: JSON.parse(JSON.stringify(slice.geometry)),
+                area: computeGeometryArea(slice.geometry),
                 source: slice.source || 'manual',
-                jointPool: slice.jointPool === true,
-                ...(slice.jointPool ? { jointShareMode: slice.jointShareMode === 'manual' ? 'manual' : 'pro-rata' } : {}),
-                ...(slice.derivation ? { derivation: JSON.parse(JSON.stringify(slice.derivation)) } : {}),
-                area: computeFeatureArea(sliceToFeature(slice)),
-                geometry: slice.geometry,
-                owners: Array.isArray(slice.owners) && slice.owners.length
-                    ? slice.owners.map(o => ({ ownerKey: o.ownerKey, displayName: o.displayName, color: o.color, share: o.share }))
-                    : []
+                ...(slice.derivation ? { derivation: JSON.parse(JSON.stringify(slice.derivation)) } : {})
             }))
         };
     }
 
-    // ── Ownership and approval ───────────────────────────────────────────
-    // Who owns which parcel (an uploaded rights file), the rule that passes the proposal and the lens
-    // that attests owners. Set here while designing, so a readjustment is created ready for owners to
-    // accept. The form is the editor's Approval tab (proposals/approval-setup.js).
-
-    // The plan against its scheme's distribution rules, one line each, under the approval row.
-    function renderRegimeCheck(check) {
-        const list = state.approvalRowEl?.querySelector('[data-reparcel-regime-check]');
-        if (!list) return;
-        const lines = check && window.ProposalApprovalText
-            ? window.ProposalApprovalText.checkLines(check, t, key => state.ownerShares.find(owner => owner.ownerKey === key)?.displayName || key) : [];
-        list.hidden = !lines.length;
-        list.innerHTML = check ? check.rules.map((rule, index) => `<li data-regime-rule="${rule.kind}${rule.per ? `-${rule.per}` : ''}" data-state="${rule.ok ? 'ok' : 'warn'}">${escapeHtml(lines[index])}</li>`).join('') : '';
-    }
-
-    function updateApprovalRow() {
-        const row = state.approvalRowEl;
-        const setup = window.ProposalApprovalSetup;
-        if (!row || !setup) return;
-        row.hidden = !!state.sitePool;
-        row.querySelector('[data-reparcel-approval-summary]').textContent = setup.summaryText(state.approvalConfig, state.approvalLens);
-        row.querySelector('[data-reparcel-approval-setup]').textContent = state.approvalConfig?.rights
-            ? t('proposalDrafts.approval.change', 'Change…')
-            : t('proposalDrafts.approval.setUp', 'Set up…');
-    }
-
-    function createDialogBehind() {
-        return !!document.querySelector('.create-proposal-modal');
-    }
-
-    function approvalCadastreIds() {
-        const ids = (state.selection?.ids || []).map(String);
-        return [...new Set(ids.map(id => state.cadastreIdsByLiveParcel.get(id) || cadastralIdentityForLiveParcel(id, state.selection)).filter(Boolean).map(String))];
-    }
-
-    function openApprovalSetup() {
-        window.ProposalApprovalSetup?.openDialog({
-            approvalConfig: state.approvalConfig,
-            lens: state.approvalLens,
-            cadastreParcelIds: approvalCadastreIds(),
-            onApply: setup => { applyApprovalSetup(setup).catch(error => console.error('[reparcellization] approval setup failed', error)); }
-        });
-    }
-
-    // The rights file says who the owners are, so applying it re-derives them. An automatic layout
-    // is re-split for the new owners; hand-drawn plots keep their shape, and a plot whose owner is
-    // no longer one of them goes back to unassigned for the author to reassign.
-    async function applyApprovalSetup(setup) {
-        state.approvalConfig = setup.approvalConfig;
-        state.approvalLens = setup.lens;
-        // The create dialog (when one is behind this editor) and the design draft carry the same
-        // setup (dialog-create.js, create.js). Without a dialog nothing is left pending for the next.
-        if (createDialogBehind()) {
-            window.pendingProposalApprovalSetup = { approvalConfig: setup.approvalConfig, lens: setup.lens };
-            if (typeof mountReparcellizationApprovalRow === 'function') mountReparcellizationApprovalRow(document.querySelector('.create-proposal-modal'));
-        }
-        const draft = window.getActiveProposalDesignDraft?.();
-        if (draft && window.proposalDraftStore?.getDraft?.(draft.id)) {
-            window.proposalDraftStore.updateDraft(draft.id, { fields: { approvalConfig: setup.approvalConfig, lens: setup.lens } }, { coalesceKey: 'reparcel-approval' });
-        }
-        const keysOf = shares => shares.filter(entry => !isUnrepresentedGroundEntry(entry)).map(entry => entry.ownerKey).sort().join('|');
-        const before = keysOf(state.ownerShares);
-        state.ownerShares = await buildOwnerShares(state.selection);
-        const changed = keysOf(state.ownerShares) !== before;
-        if (changed) {
-            if (state.algorithm === 'sweep-line') {
-                state.slices = computeSweepSlices();
-            } else {
-                const known = new Set(state.ownerShares.map(entry => entry.ownerKey));
-                state.slices = state.slices.map(slice => {
-                    const owners = Array.isArray(slice.owners) ? slice.owners : [];
-                    if (!owners.length || owners.every(owner => known.has(owner.ownerKey))) return slice;
-                    return createUnassignedPlot(slice.geometry, slice.source);
-                });
-            }
-            // The undo history describes owners that no longer exist.
-            if (state.historyCtl) state.historyCtl.clear();
-        }
-        updateSubtitleWithOwners(state.ownerShares.filter(entry => !isUnrepresentedGroundEntry(entry)).length);
-        updateLegend(state.ownerShares);
-        drawPreview();
-        updateCommitState();
-        if (state.nodeEdit.active) renderNodeHandles();
-        updateApprovalRow();
-        setStatus(changed
-            ? t('reparcellization.modal.status.ownersFromRights', 'The owners now come from the rights file: {{count}} owner(s). Check each plot\'s owners.', {
-                count: state.ownerShares.filter(entry => !isUnrepresentedGroundEntry(entry)).length })
-            : t('reparcellization.modal.status.approvalSaved', 'Ownership and approval saved.'), 'info');
-    }
-
+    // Done: the record goes to window.pendingParcelLayout and to the active design draft
+    // (editorPayload.plan). The hand-off also carries the input parcels as `parcelIds`, the draft's
+    // selection; that is draft state, never part of the record (the adapter drops it on serialize).
     function persistResult() {
-        if (!state.slices.length || !evaluatePlanCompleteness().ok) { updateCommitState(); return false; }
-        const payload = currentPlan();
-        window.pendingReparcellizationPlan = payload;
+        const plan = currentPlan();
+        const validation = validateLayout(plan);
+        if (!state.slices.length || !validation.valid) {
+            updateCommitState();
+            return false;
+        }
+        const payload = { ...plan, parcelIds: (state.selection?.ids || []).map(String) };
+        window.pendingParcelLayout = payload;
         if (typeof window.syncActiveProposalDraftFromEditor === 'function') {
-            window.syncActiveProposalDraftFromEditor('reparcellization', payload, {
-                coalesceKey: 'reparcellization-design'
+            window.syncActiveProposalDraftFromEditor('parcel-layout', payload, {
+                coalesceKey: 'parcel-layout-design'
             });
         }
-        if (state.commitBtns && state.commitBtns.length) {
-            state.commitBtns.forEach(btn => { btn.disabled = false; });
-        }
+        ensureCommitAvailability(true);
         return true;
     }
 
@@ -4262,439 +3168,82 @@
         try {
             return turf.area(feature);
         } catch (error) {
-            console.warn('Failed to compute feature area', error);
+            log('warn', 'failed to compute a feature area', error);
             return 0;
         }
     }
 
-    // Share parsing / normalization lives in frontend/js/reparcellization-shares.js (loaded first)
-    // so it is unit-tested headless. It fixed the bare-"50" bug (see that file).
-    const { parseShareValue, normalizeOwnerSlots } = window.ReparcellizationShares;
-
-    // Readjustment currently models monetary entitlements in EUR. A source price in another
-    // currency (or without one) is unusable here; the whole pool then uses square metres.
-    function getParcelLandValue(feature, area) {
-        const avg = Number.isFinite(window.SQM_AVG_PRICE) ? window.SQM_AVG_PRICE
-            : (typeof SQM_AVG_PRICE !== 'undefined' ? SQM_AVG_PRICE : 133);
-        const estimate = window.ParcelPriceModel.buildEstimate(feature?.properties, area,
-            { areaPricePerSqm: avg, currency: 'EUR' });
-        return estimate.currency === 'EUR' ? estimate.amount : null;
-    }
-
-    // Explicit owner IDs alone join contributions across parcels. Without one, a slot stays a
-    // parcel-scoped draft participant; names and addresses never imply identity.
-    function ownerIdentityForSlot(slot, parcelId, fallbackName) {
-        return { ownerKey: slot?.ownerId || `draft-owner:${parcelId}:${slot?.draftOwnerIndex ?? 0}`,
-            displayName: t('proposalApproval.ownerLabel', 'Owner {{label}}', { label: 'A' }) };
-    }
-
-    function savedOutputRecipientIds() {
-        const ids = new Set();
-        for (const plot of state.initialPolygons || []) {
-            for (const owner of [plot, ...(Array.isArray(plot.owners) ? plot.owners : [])]) {
-                const id = owner?.ownerKey;
-                if (id && id !== PUBLIC_LAND_KEY && !owner.unrepresentedGround) ids.add(String(id));
-            }
-        }
-        return [...ids].sort();
-    }
-
-    function appendSavedOutputRecipients(entries) {
-        const known = new Set(entries.map(entry => String(entry.ownerKey || '')));
-        for (const ownerKey of savedOutputRecipientIds()) {
-            if (known.has(ownerKey)) continue;
-            entries.push({ ownerKey, displayName: '', parcelIds: [], area: 0, value: 0,
-                percent: 0, color: pickOwnerColor(ownerKey, entries.length), unresolvedContribution: true });
-            known.add(ownerKey);
-        }
-        return entries;
-    }
-
-    function restoreSavedLedgerMetadata(entries) {
-        const saved = state.savedLedgerMetadata || {};
-        const areas = entries.map(entry => Number(entry.contributedArea ?? entry.area)).filter(Number.isFinite);
-        const totalArea = areas.reduce((sum, area) => sum + area, 0);
-        const values = entries.map(entry => entry.contributedValue ?? entry.value);
-        const totalValue = values.length && values.every(value => value !== null && value !== undefined && Number.isFinite(Number(value)))
-            ? values.reduce((sum, value) => sum + Number(value), 0) : null;
-        state.totalValue = Object.prototype.hasOwnProperty.call(saved, 'totalValue')
-            ? saved.totalValue : totalValue;
-        state.poolUnitValue = Object.prototype.hasOwnProperty.call(saved, 'poolUnitValue')
-            ? saved.poolUnitValue
-            : (Number.isFinite(state.totalValue) && totalArea > 0 ? state.totalValue / totalArea : null);
-        state.contributionBasis = saved.contributionBasis || 'area';
-        state.valuationCurrency = saved.valuationCurrency || null;
-        if (state.contributionBasis !== 'value') {
-            state.totalValue = null;
-            state.poolUnitValue = null;
-            state.valuationCurrency = null;
-        }
-        if (state.contributionBasis === 'value' && state.valuationCurrency !== 'EUR') {
-            throw new Error('Saved readjustment needs an explicit EUR valuation basis; recreate this experimental record.');
-        }
-    }
-
-    function replaceSavedInputOwnersFromRights(inputs, liveToCadastreIds = new Map()) {
-        const records = new Map((state.approvalConfig?.rights?.parcels || []).map(parcel => [String(parcel.parcelId), parcel]));
-        for (const input of Array.isArray(inputs) ? inputs : []) {
-            const liveId = String(input.parcelId || input.id || '');
-            const candidate = liveToCadastreIds.has(liveId)
-                ? liveToCadastreIds.get(liveId)
-                : String(input.cadastreParcelId || input.parcelId || input.id || '');
-            // Composite provenance identifies more than one cadastral parcel. It cannot authorize
-            // replacing this saved input's owner vector with any one member's ownership.
-            if (!candidate || candidate.includes('+')) continue;
-            const record = records.get(candidate);
-            if (!record?.complete) continue;
-            input.cadastreParcelId = candidate;
-            input.owners = normalizeOwnerSlots(record.owners.map(owner => ({
-                ownerId: owner.ownerId, key: owner.ownerId, shareText: owner.share
-            }))).map(({ slot, fraction }, index) => ({
-                ownerKey: slot.ownerId,
-                displayName: '',
-                color: pickOwnerColor(slot.ownerId, index),
-                share: fraction
-            }));
-        }
-        return inputs;
-    }
-
-    function declaredOwnerSlots(parcelId) {
-        const record = state.approvalConfig?.rights?.parcels.find(parcel => parcel.parcelId === String(parcelId));
-        if (!record?.complete) return null;
-        return record.owners.map(owner => ({ key: owner.ownerId, ownerId: owner.ownerId, shareText: owner.share,
-            type: 'abstract', placeholder: false }));
-    }
-
-    function labelAbstractOwners(entries) {
-        const ids = [...new Set([
-            ...entries.filter(entry => !entry.unrepresentedGround && entry.ownerKey && entry.ownerKey !== PUBLIC_LAND_KEY).map(entry => entry.ownerKey),
-            ...savedOutputRecipientIds(),
-            ...(state.amendInputs || []).flatMap(input => (input.owners || []).map(owner => owner.ownerKey).filter(Boolean))
-        ])].sort();
-        const label = id => {
-            const english = window.ProposalApproval.ownerLabel(id, ids);
-            return t('proposalApproval.ownerLabel', 'Owner {{label}}', { label: english.replace(/^Owner\s*/, '') });
-        };
-        for (const entry of entries) if (ids.includes(entry.ownerKey)) entry.displayName = label(entry.ownerKey);
-        for (const owners of state.parcelOwnerIndex.values()) {
-            for (const owner of owners) if (ids.includes(owner.ownerKey)) owner.displayName = label(owner.ownerKey);
-        }
-        for (const plot of [...(state.initialPolygons || []), ...(state.amendInputs || [])]) {
-            if (ids.includes(plot.ownerKey)) plot.displayName = label(plot.ownerKey);
-            for (const owner of plot.owners || []) if (ids.includes(owner.ownerKey)) owner.displayName = label(owner.ownerKey);
-        }
-        return entries;
-    }
-
-    function cadastralIdentityForLiveParcel(parcelId, selection) {
-        if (selection?.source === 'cadastre') {
-            if (!window.CadastralParcelRepository?.get?.(parcelId)) {
-                throw new Error(`Saved readjustment input ${parcelId} is missing from the cadastre.`);
-            }
-            return String(parcelId);
-        }
-        const fabric = (typeof window !== 'undefined') ? window.LiveParcelFabric : null;
-        if (!fabric || typeof fabric.cadastreIdsForParcelIds !== 'function') {
-            throw new Error('Live parcel fabric provenance is unavailable while assigning readjustment owners.');
-        }
-        const ids = fabric.cadastreIdsForParcelIds([parcelId])
-            .map(String)
-            .filter(Boolean)
-            .sort();
-        if (!ids.length) {
-            throw new Error(`Live parcel ${parcelId} has no cadastral provenance.`);
-        }
-        return ids.join('+');
-    }
-
-    // Owner shares of a subdivision's site pool: each bound parcel's owners contribute the part of
-    // the parcel INSIDE the site (not the whole parcel), the open ground contributes its area with
-    // unknown ownership. Measured by area (subdivision.js poolShares: open ground has no known value).
-    async function buildSitePoolShares() {
-        const api = subdivisionApi();
-        const pool = state.sitePool && state.sitePool.pool;
-        if (!api || !pool) return [];
-        const byOwner = new Map();
-        for (const part of pool.parts) {
-            let slots = [];
-            const declared = declaredOwnerSlots(part.parcelId);
-            if (declared) slots = declared;
-            else if (typeof ensureParcelOwnerSlots === 'function') {
-                try { slots = await ensureParcelOwnerSlots(part.parcelId); } catch (error) {
-                    console.warn('[reparcellization] owner slots unavailable for', part.parcelId, error);
-                }
-            }
-            if (!Array.isArray(slots) || !slots.length) {
-                slots = [{ key: `parcel:${part.parcelId}:synthetic-owner`, displayName: t('reparcellization.modal.syntheticOwner', 'Owner of {{parcel}}', { parcel: part.parcelId }), shareText: '1/1' }];
-            }
-            normalizeOwnerSlots(slots).forEach(({ slot, fraction }, index) => {
-                slot = { ...slot, draftOwnerIndex: index };
-                const fallbackOwnerName = t('reparcellization.modal.syntheticOwner', 'Owner of {{parcel}}', { parcel: part.parcelId });
-                const { ownerKey, displayName } = ownerIdentityForSlot(slot, part.parcelId, fallbackOwnerName);
-                const entry = byOwner.get(ownerKey) || { ownerKey, displayName, area: 0, value: null, parcelIds: [] };
-                entry.area += part.areaM2 * fraction;
-                if (!entry.parcelIds.includes(part.parcelId)) entry.parcelIds.push(part.parcelId);
-                byOwner.set(ownerKey, entry);
-            });
-        }
-        const result = api.poolShares(Array.from(byOwner.values()), {
-            openGroundM2: pool.openGroundM2,
-            openGroundLabel: t('reparcellization.modal.openGroundOwner', 'Open ground (ownership unknown)')
-        });
-        state.contributionBasis = result.basis;
-        state.valuationCurrency = result.basis === 'value' ? 'EUR' : null;
-        state.totalValue = result.totalValue;
-        state.poolUnitValue = result.poolUnitValue;
-        return labelAbstractOwners(result.shares.map((entry, index) => ({
-            ...entry,
-            color: entry.unrepresentedGround ? OPEN_GROUND_COLOR : pickOwnerColor(entry.ownerKey, index)
-        })));
-    }
-
-    async function buildOwnerShares(selection) {
-        state.parcelOwnerIndex = new Map();
-        state.cadastreIdsByLiveParcel = new Map();
-        if (!state.approvalConfig?.rights && state.savedOwnerShares.length) {
-            const entries = appendSavedOutputRecipients(state.savedOwnerShares.map(entry => ({ ...entry,
-                area: entry.contributedArea ?? entry.area ?? 0,
-                value: entry.contributedValue ?? entry.value ?? 0,
-                parcelIds: entry.parcelIds || []
-            })));
-            restoreSavedLedgerMetadata(state.savedOwnerShares);
-            return labelAbstractOwners(entries);
-        }
-        if (state.sitePool) return buildSitePoolShares();
-        const result = new Map();
-        const parcelFeatures = liveSelectionFeatures(selection);
-        let totalArea = 0;
-        let totalValue = 0;
-        let allValuesKnown = true;
-
-        for (const feature of parcelFeatures) {
-            if (!feature || !feature.properties) continue;
-            const parcelId = feature.properties.parcelId;
-            const cadastralIdentity = cadastralIdentityForLiveParcel(parcelId, selection);
-            state.cadastreIdsByLiveParcel.set(String(parcelId), String(cadastralIdentity));
-            const area = Number(feature.properties.calculatedArea) || computeFeatureArea(feature);
-            if (!area || !Number.isFinite(area)) continue;
-
-            const value = getParcelLandValue(feature, area);
-            totalArea += area;
-            if (Number.isFinite(value)) totalValue += value;
-            else allValuesKnown = false;
-
-            let slots = [];
-            const declared = declaredOwnerSlots(cadastralIdentity);
-            if (declared) slots = declared;
-            else if (typeof ensureParcelOwnerSlots === 'function') {
-                try {
-                    slots = await ensureParcelOwnerSlots(parcelId);
-                } catch (error) {
-                    console.warn('Failed to fetch owner slots for parcel', parcelId, error);
-                }
-            }
-            if (!Array.isArray(slots) || !slots.length) {
-                slots = [{
-                    key: `parcel:${cadastralIdentity}:synthetic-owner`,
-                    displayName: t(
-                        'reparcellization.modal.syntheticOwner',
-                        'Owner of {{parcel}}',
-                        { parcel: feature.properties.BROJ_CESTICE || cadastralIdentity }
-                    ),
-                    shareText: '1/1'
-                }];
-            }
-
-            const normalizedSlots = normalizeOwnerSlots(slots);
-            const parcelOwners = [];
-            normalizedSlots.forEach(({ slot, fraction }, index) => {
-                slot = { ...slot, draftOwnerIndex: index };
-                const parcelLabel = feature.properties.BROJ_CESTICE || cadastralIdentity;
-                // “Unassigned” describes a PLOT with no owner. If an ownership source uses that
-                // same placeholder for a contributor, give the contributor a stable parcel-based
-                // name so a complete plan cannot still show an unassigned state.
-                const fallbackOwnerName = t(
-                    'reparcellization.modal.syntheticOwner',
-                    'Owner of {{parcel}}',
-                    { parcel: parcelLabel }
-                );
-                const { ownerKey, displayName } = ownerIdentityForSlot(slot, cadastralIdentity, fallbackOwnerName);
-                parcelOwners.push({ ownerKey, displayName, color: pickOwnerColor(ownerKey, 0), share: fraction });
-                const existing = result.get(ownerKey) || {
-                    ownerKey,
-                    displayName,
-                    parcelIds: new Set(),
-                    totalArea: 0,
-                    totalValue: 0
-                };
-                existing.totalArea += area * fraction;
-                if (Number.isFinite(value)) existing.totalValue += value * fraction;
-                if (parcelId) existing.parcelIds.add(parcelId);
-                result.set(ownerKey, existing);
-            });
-            state.parcelOwnerIndex.set(String(parcelId), parcelOwners);
-        }
-
-        if (!totalArea) {
-            state.totalValue = 0;
-            state.poolUnitValue = 0;
-            state.contributionBasis = 'area';
-            state.valuationCurrency = null;
-            return labelAbstractOwners(appendSavedOutputRecipients([]));
-        }
-
-        if (state.algorithm === 'amend' && state.approvalConfig?.rights) {
-            replaceSavedInputOwnersFromRights(state.amendInputs, state.cadastreIdsByLiveParcel);
-        }
-
-        // Contribution percent is by value when value data is meaningful,
-        // otherwise by area. poolUnitValue (€/m²) lets us value redrawn plots
-        // at the pool average, so owners who pooled pricier land get more area.
-        // A scheme that distributes by area (approval-regimes.js) keeps it by area. Looked up here,
-        // not through a helper: readjustment-owner-identity.test.js runs this function on its own.
-        const scheme = state.approvalConfig?.regime;
-        const schemeBasis = scheme ? window.ProposalApprovalRegimes?.get(scheme.id, scheme.version)?.allocation?.basis : null;
-        const useValue = allValuesKnown && totalValue > 0 && schemeBasis !== 'area';
-        state.totalValue = useValue ? totalValue : null;
-        state.poolUnitValue = useValue && totalArea > 0 ? totalValue / totalArea : 0;
-        state.contributionBasis = useValue ? 'value' : 'area';
-        state.valuationCurrency = useValue ? 'EUR' : null;
-
-        const entries = Array.from(result.values()).map((entry, index) => {
-            const percent = useValue
-                ? entry.totalValue / totalValue
-                : entry.totalArea / totalArea;
-            return {
-                ownerKey: entry.ownerKey,
-                displayName: entry.displayName,
-                parcelIds: Array.from(entry.parcelIds),
-                area: entry.totalArea,
-                value: useValue ? entry.totalValue : null,
-                percent,
-                color: pickOwnerColor(entry.ownerKey, index)
-            };
-        }).filter(entry => entry.percent > 0).sort((a, b) => b.percent - a.percent);
-        appendSavedOutputRecipients(entries);
-        return labelAbstractOwners(entries);
-    }
-
-    // A null for a clip that threw read as "no overlap" / "nothing left": a ClipFailure instead.
-    function safeIntersect(featureA, featureB) {
-        try {
-            return turf.intersect(featureA, featureB);
-        } catch (error) {
-            throw reparcellizationClipFailure('intersect', error, 'reparcellization.safeIntersect', [featureA, featureB]);
-        }
-    }
-
-    function safeDifference(featureA, featureB) {
-        try {
-            return turf.difference(featureA, featureB);
-        } catch (error) {
-            throw reparcellizationClipFailure('difference', error, 'reparcellization.safeDifference', [featureA, featureB]);
-        }
-    }
-
     // A polygon clip that cannot be done, typed and counted (parcel-arrangement.js ClipFailure).
-    function reparcellizationClipFailure(operation, error, site, operands) {
+    function layoutClipFailure(operation, error, site, operands) {
         const api = (typeof window !== 'undefined' && window.__parcelArrangement)
             || (typeof require === 'function' ? require('./proposals/parcel-arrangement.js') : null);
         return api ? api.clipFailure(operation, error, { site }, operands) : error;
     }
 
-    // Sweep-line subdivision lives in frontend/js/reparcellization-slice.js (loaded first) so it is
-    // unit-tested, and its 0%-owner land bug is fixed there. Inject this file's turf + area helper.
-    function sliceWithSweepLine(superParcel, owners) {
-        return window.ReparcellizationSlice.sliceWithSweepLine(superParcel, owners, {
-            turf: (typeof turf !== 'undefined' ? turf : undefined),
-            computeFeatureArea
-        });
-    }
-
     async function refreshPreview() {
         setStatus(
-            t('reparcellization.modal.status.preparingPreview', 'Preparing repartition preview...'),
+            t('parcelLayout.editor.status.preparing', 'Preparing the layout…'),
             'info',
-            'reparcellization.modal.status.preparingPreview'
+            'parcelLayout.editor.status.preparing'
         );
         ensureCommitAvailability(false);
-        state.ownerShares = await buildOwnerShares(state.selection);
-        const realOwnerCount = state.ownerShares.filter(entry => !isUnrepresentedGroundEntry(entry)).length;
-        // A single owner can still readjust: the implicit second party is PUBLIC LAND (the land
-        // the proposal cedes to public use, or plots the city would sell on later). Open with a
-        // half/half split — the sweep handle and plot editing take it from there. Contribution
-        // accounting is untouched: the owner contributed everything, public land nothing, so the
-        // balance column shows exactly what the ceded half is worth.
-        // A subdivision already has its second party (open ground; public land is assignable).
-        if (!state.sitePool && state.ownerShares.length === 1) {
-            state.ownerShares[0].percent = 0.5;
-            state.ownerShares.push({
-                ...getPublicLandOwner(),
-                parcelIds: [],
-                area: 0,
-                value: 0,
-                percent: 0.5
-            });
-        }
-        updateSubtitleWithOwners(realOwnerCount);
-        if (!state.ownerShares.length) {
-            setStatus(
-                t('reparcellization.modal.status.missingOwners', 'Could not determine owners for reparcellization.'),
-                'error',
-                'reparcellization.modal.status.missingOwners'
-            );
-            state.slices = [];
-            drawPreview();
-            return;
-        }
         if (!state.totalArea) {
             state.totalArea = computeFeatureArea(state.superParcel);
         }
 
-        // Restore a saved plan instead of re-running the algorithm, which would throw away its
-        // hand-drawn plots and owner assignments. Consumed once: switching algorithm inside the
-        // modal still recomputes from scratch, as it should.
-        const seededPolygons = state.initialPolygons;
-        state.initialPolygons = null;
-        if (seededPolygons && seededPolygons.length) {
-            // The sweep handle drives the orientation UI, so it still has to exist for a
-            // sweep-line plan the user may want to re-cut.
-            if (state.algorithm === 'sweep-line') initSweepOrientation();
-            state.slices = hydrateSlicesFromPolygons(seededPolygons);
+        // Restore a saved layout instead of re-running it, which would throw away its hand-drawn
+        // plots. Consumed once: switching the layout inside the editor still recomputes, as it should.
+        const seededPlots = state.initialPlots;
+        state.initialPlots = null;
+        if (seededPlots && seededPlots.length) {
+            // The sweep handle drives the orientation UI, so it still has to exist for an equal
+            // layout the user may want to re-cut.
+            if (state.algorithm === 'equal') initSweepOrientation();
+            state.slices = hydratePlots(seededPlots);
             if (state.slices.length) {
                 setStatus('', 'info');
-                updateLegend(state.ownerShares);
+                updateLegend();
                 drawPreview();
-                updateCommitState();
                 return;
             }
         }
 
-        if (state.algorithm === 'sweep-line') {
+        if (state.algorithm === 'equal') {
             initSweepOrientation();
-            state.slices = computeSweepSlices();
-            if (!state.slices.length) {
+            state.slices = computeEqualSlices();
+            if (state.slices.length) {
+                setStatus('', 'info');
+            } else {
                 setStatus(
                     t('reparcellization.modal.status.splitFailed', 'Failed to split the parcel geometry.'),
                     'error',
                     'reparcellization.modal.status.splitFailed'
                 );
-                updateLegend(state.ownerShares);
-                drawPreview();
-                updateCommitState();
-                return;
             }
-            setStatus('', 'info');
+        } else if (state.algorithm === 'schelling') {
+            try {
+                state.slices = computeSchellingSlices();
+                setStatus(t('parcelLayout.editor.status.schellingLaidOut',
+                    'Plots of Schelling plan {{code}}. The street strips between them are plots too.',
+                    { code: state.schellingCode }), 'info');
+            } catch (error) {
+                // The plan refuses ground it cannot lay out (too large a pool, streets wider than a
+                // block, beyond its latitudes): say so and leave Done off.
+                if (!(error instanceof RangeError)) throw error;
+                log('warn', 'Schelling plots could not be laid out', error.message);
+                state.slices = [];
+                setStatus(t('parcelLayout.editor.status.schellingFailed',
+                    'Schelling plots could not be laid out here: {{reason}}', { reason: error.message }), 'error');
+            }
         } else if (state.algorithm === 'amend') {
             state.slices = buildAmendSlices();
-            setStatus(t('reparcellization.modal.status.amendHint',
-                'Keep the existing plots and owners. Carve a shared courtyard or edit the boundaries.'), 'info');
-        } else if (state.algorithm === 'manual') {
+            setStatus(t('parcelLayout.editor.status.amendHint',
+                'The existing parcels are the plots. Carve a courtyard or edit the boundaries.'), 'info');
+        } else {
             const carried = state.carrySlices;
             state.carrySlices = null;
             if (Array.isArray(carried) && carried.length) {
-                // Continue from the layout that was on the map (see the algorithm switch).
+                // Continue from the layout that was on the map (see the layout switch).
                 state.slices = carried;
                 setStatus(
                     t('reparcellization.modal.status.manualFromLayout',
@@ -4703,25 +3252,17 @@
                     'reparcellization.modal.status.manualFromLayout'
                 );
             } else {
-                // Nothing to continue from: the undivided pool as one unassigned plot.
-                state.slices = [createUnassignedPlot(state.superParcel.geometry, 'base')];
+                // Nothing to continue from: the undivided pool as one plot.
+                state.slices = [makePlot(state.superParcel.geometry, 'base')];
                 setStatus(
-                    t('reparcellization.modal.status.manualHint', 'Draw plots on the map, then assign each to an owner.'),
+                    t('parcelLayout.editor.status.manualHint', 'Draw plots on the map, or cut the pool with the line tool.'),
                     'info',
-                    'reparcellization.modal.status.manualHint'
+                    'parcelLayout.editor.status.manualHint'
                 );
             }
-        } else {
-            setStatus(
-                t('reparcellization.modal.status.algorithmUnavailable', 'Selected algorithm is not available yet.'),
-                'warning',
-                'reparcellization.modal.status.algorithmUnavailable'
-            );
-            return;
         }
-        updateLegend(state.ownerShares);
+        updateLegend();
         drawPreview();
-        updateCommitState();
     }
 
     function validateSelection(selection) {
@@ -4747,26 +3288,26 @@
         };
     }
 
-    // A reparcellization is a GEOMETRICAL FACT: the ground it covers is the union of its own
-    // plots, and its cadastral parents follow from that geometry. So a saved plan can always be
-    // reopened, whatever the map is currently showing — its source parcels are routinely consumed
-    // and hidden under the applied plan, and requiring live layers made "Edit geometry" impossible
-    // on exactly the plans most worth editing.
-    function buildSuperParcelFromPlan(polygons, parcelIds) {
+    // A parcel layout is a GEOMETRICAL FACT: the ground it covers is the union of its own plots, and
+    // its cadastral parents follow from that geometry. So a saved layout can always be reopened,
+    // whatever the map is currently showing — its source parcels are routinely consumed and hidden
+    // under the applied layout, and requiring live layers made "Edit geometry" impossible on exactly
+    // the layouts most worth editing.
+    function buildPoolFromPlots(plots, parcelIds) {
         const t = (typeof turf !== 'undefined') ? turf : null;
-        if (!t || !Array.isArray(polygons) || !polygons.length) return null;
-        const features = polygons
+        if (!t || !Array.isArray(plots) || !plots.length) return null;
+        const features = plots
             .map(p => (p && p.geometry) ? { type: 'Feature', properties: {}, geometry: p.geometry } : null)
             .filter(Boolean);
         if (!features.length) return null;
-        // A pool with a plot silently left out of it is not the plan's ground: refuse instead.
+        // A pool with a plot silently left out of it is not the layout's ground: refuse instead.
         let union = features[0];
         for (let i = 1; i < features.length; i++) {
             let merged = null;
             try { merged = t.union(union, features[i]); } catch (error) {
-                throw reparcellizationClipFailure('union', error, 'reparcellization.buildSuperParcelFromPlan', [union, features[i]]);
+                throw layoutClipFailure('union', error, 'parcel-layout.buildPoolFromPlots', [union, features[i]]);
             }
-            if (!merged) throw reparcellizationClipFailure('union', new Error('union came back empty'), 'reparcellization.buildSuperParcelFromPlan', [union, features[i]]);
+            if (!merged) throw layoutClipFailure('union', new Error('union came back empty'), 'parcel-layout.buildPoolFromPlots', [union, features[i]]);
             union = merged;
         }
         if (!union || !union.geometry) return null;
@@ -4777,12 +3318,14 @@
         };
     }
 
-    // The parcels a saved plan says it was made from. The plan's own list is authoritative; the
-    // current map selection is not consulted, because "what happens to be selected" is not an input.
-    function declaredPlanParcelIds(fallbackSelection) {
-        const plan = window.pendingReparcellizationPlan;
-        if (plan && Array.isArray(plan.parcelIds) && plan.parcelIds.length) {
-            return plan.parcelIds.map(String);
+    // The parcels a saved layout was made from: the ids its opener declares with the seed
+    // (window.pendingParcelLayout.parcelIds, the design draft's selection). The current map
+    // selection is consulted only when nothing is declared — "what happens to be selected" is not
+    // an input.
+    function declaredLayoutParcelIds(fallbackSelection) {
+        const seed = window.pendingParcelLayout;
+        if (seed && Array.isArray(seed.parcelIds) && seed.parcelIds.length) {
+            return seed.parcelIds.map(String);
         }
         return (fallbackSelection && Array.isArray(fallbackSelection.ids))
             ? fallbackSelection.ids.map(String)
@@ -4798,7 +3341,7 @@
             try {
                 await window.CadastralParcelRepository.ensureIds(ids);
             } catch (error) {
-                console.warn('[reparcellization] loading the plan\'s cadastral ground failed', error);
+                log('warn', 'loading the layout\'s cadastral ground failed', error);
             }
         }
         return readjustmentInputFeatures({ ids, source: 'cadastre' }, {
@@ -4806,38 +3349,37 @@
         });
     }
 
-    // `initialPolygons` (optional) reopens the editor on a saved plan's polygons[] instead of
-    // re-running the algorithm — used by "Copy into new proposal" and by reopening a draft.
-    // One editor at a time.
+    // `options` = { algorithm?, initialPlots?, pool?, sitePool?, plotCount? }: initialPlots reopens
+    // the editor on a saved layout's plots instead of re-running its layout. One editor at a time.
     //
-    // A second modal opens directly over the first, and because the module keeps ONE state object
-    // the older modal's buttons stay wired to a torn-down editor: visible, enabled, and doing
+    // A second editor opens directly over the first, and because the module keeps ONE state object
+    // the older editor's buttons stay wired to a torn-down editor: visible, enabled, and doing
     // nothing when clicked. That is indistinguishable from a broken tool — a symptom this editor
     // has already been debugged for twice.
     //
     // The latch has to be set SYNCHRONOUSLY. Checking `state.modal` alone does not work: opening
     // awaits the input parcels before it builds anything, so two clicks in the same tick both sail
     // past a guard that only looks at what has been built.
-    async function openReparcellizationModal(options = {}) {
+    async function openParcelLayoutEditor(options = {}) {
         if (state.opening || (state.modal && document.contains(state.modal))) {
-            console.warn('[reparcellization] the editor is already open; ignoring a second request');
+            log('warn', 'the editor is already open; ignoring a second request');
             return false;
         }
         state.opening = true;
         try {
-            return await buildReparcellizationModal(options);
+            return await buildEditor(options);
         } finally {
             state.opening = false;
         }
     }
 
-    // A pending plan pooled from a site (plan.poolSource 'site'): its site is the saved pool, its
-    // bound parcels the plan's own list or else the design draft's binding/declaration. The plan's
-    // saved open-ground area guards the fallback (buildSitePool).
-    function sitePoolOfPendingPlan() {
-        const plan = window.pendingReparcellizationPlan;
-        if (!plan || plan.poolSource !== 'site' || !plan.poolGeometry) return null;
-        let ids = Array.isArray(plan.parcelIds) ? plan.parcelIds.map(String) : null;
+    // A pending layout pooled from a site (poolSource 'site'): its site is the saved pool, its bound
+    // parcels the seed's own list or else the design draft's binding/declaration. The layout's saved
+    // open-ground area guards the fallback (buildSitePool).
+    function sitePoolOfPendingLayout() {
+        const seed = window.pendingParcelLayout;
+        if (!seed || seed.poolSource !== 'site' || !seed.pool) return null;
+        let ids = Array.isArray(seed.parcelIds) ? seed.parcelIds.map(String) : null;
         if (!ids || !ids.length) {
             const draft = typeof window.getActiveProposalDesignDraft === 'function' ? window.getActiveProposalDesignDraft() : null;
             const fields = (draft && draft.fields) || {};
@@ -4846,16 +3388,16 @@
             ids = bound.length ? bound : (Array.isArray(fields.cadastreParcelIds) ? fields.cadastreParcelIds.map(String) : []);
         }
         return {
-            site: plan.poolGeometry,
+            site: seed.pool,
             boundParcelIds: Array.from(new Set(ids)),
-            expectedOpenGroundM2: Number.isFinite(Number(plan.openGroundM2)) ? Number(plan.openGroundM2) : null
+            expectedOpenGroundM2: Number.isFinite(Number(seed.openGroundM2)) ? Number(seed.openGroundM2) : null
         };
     }
 
     // A subdivision's pool (PARCEL-OPTIONAL.md phase 4): the drawn site, split into the bound
     // parcels' parts (cadastral geometry from the repository — the same source the open-ground
     // host is derived from at apply) and the open ground. Every bound parcel must resolve: a
-    // missing one would be counted as open ground, hiding a declared parcel's contribution.
+    // missing one would be counted as open ground, hiding a declared parcel.
     async function buildSitePool(sitePool) {
         const api = subdivisionApi();
         const site = sitePool && sitePool.site;
@@ -4863,14 +3405,14 @@
         const boundIds = (sitePool.boundParcelIds || []).map(String);
         const resolved = boundIds.length ? await resolveInputParcelFeatures(boundIds) : { features: [], missing: [] };
         if (resolved.missing.length) {
-            console.warn('[reparcellization] subdivision: bound parcels not available', resolved.missing);
+            log('warn', 'subdivision: bound parcels not available', resolved.missing);
             return { error: 'missing', missing: resolved.missing };
         }
         const parcels = resolved.features.map(feature => ({
             id: String(feature.properties && (feature.properties.parcelId || feature.properties.id) || ''),
             geometry: feature.geometry
         }));
-        // Authoring mirrors apply (apply/parcels.js): ground another proposal formed on open ground
+        // Authoring mirrors apply (apply/parcels.js): ground another design formed on open ground
         // is spoken for, so a subdivision over it would never apply.
         const fabric = window.LiveParcelFabric;
         const ground = window.__openGround;
@@ -4892,16 +3434,16 @@
             }
         }
         const pool = api.sitePool(site, parcels);
-        // The plan saved its open ground. Finding MORE now means bound parcels are missing from the
-        // inputs: their ground would be counted as open ground, so refuse rather than open on it.
+        // The layout saved its open ground. Finding MORE now means bound parcels are missing from
+        // the inputs: their ground would be counted as open ground, so refuse rather than open on it.
         const expected = sitePool.expectedOpenGroundM2;
         if (typeof expected === 'number' && Number.isFinite(expected)
             && pool.openGroundM2 > expected + Math.max(1, expected * 0.01)) {
-            console.warn('[reparcellization] subdivision: more open ground than the plan saved — bound parcels missing',
+            log('warn', 'subdivision: more open ground than the layout saved — bound parcels missing',
                 { saved: expected, now: Math.round(pool.openGroundM2), boundParcelIds: boundIds });
             return { error: 'unavailable' };
         }
-        console.debug(`[${new Date().toISOString()}] [reparcellization] subdivision pool`, {
+        log('debug', 'subdivision pool', {
             siteM2: Math.round(pool.totalAreaM2), boundParcels: pool.parts.length, openGroundM2: Math.round(pool.openGroundM2)
         });
         return {
@@ -4911,79 +3453,69 @@
         };
     }
 
-    async function buildReparcellizationModal(options = {}) {
+    // Tell the user why the editor did not open: in the status bar and as a notice.
+    function refuseOpen(message) {
+        if (typeof updateStatus === 'function') updateStatus(message);
+        try { if (typeof window.showEphemeralMessage === 'function') window.showEphemeralMessage(message, 8000, 'warning'); } catch (_) { }
+        return false;
+    }
+
+    async function buildEditor(options = {}) {
         let selection = (typeof getCurrentParcelSelectionContext === 'function')
             ? getCurrentParcelSelectionContext()
             : null;
         let planPool = null;
         state.sitePool = null;
-        const pendingSetup = createDialogBehind() ? window.pendingProposalApprovalSetup : null;
-        state.approvalConfig = options.approvalConfig || pendingSetup?.approvalConfig
-            || window.getActiveProposalDesignDraft?.()?.fields?.approvalConfig || null;
-        state.approvalLens = options.lens || pendingSetup?.lens
-            || window.getActiveProposalDesignDraft?.()?.fields?.lens || [];
-        const pendingPlan = window.pendingReparcellizationPlan || {};
-        state.savedOwnerShares = JSON.parse(JSON.stringify(pendingPlan.ownerShares || []));
-        state.savedLedgerMetadata = Object.fromEntries(['contributionBasis', 'valuationCurrency', 'totalValue', 'poolUnitValue']
-            .filter(key => Object.prototype.hasOwnProperty.call(pendingPlan, key))
-            .map(key => [key, pendingPlan[key]]));
+        // The opener's seed: a saved layout (pool, plots, inputParcels, poolSource, openGroundM2,
+        // plotCount, schelling) and the input parcels it declares (parcelIds).
+        const seed = window.pendingParcelLayout || {};
 
-        // Every opener of a subdivision lands here: the draft adapter passes `sitePool`; the create
-        // dialog's Edit only has the pending plan, whose pool IS the site.
-        const sitePoolRequest = options.sitePool || sitePoolOfPendingPlan();
+        // Every opener of a subdivision lands here: the draft adapter passes `sitePool`; a seed
+        // without one still carries its pool, which IS the site.
+        const sitePoolRequest = options.sitePool || sitePoolOfPendingLayout();
         if (sitePoolRequest) {
             const built = await buildSitePool(sitePoolRequest);
             if (!built || built.error) {
-                const message = built && built.error === 'missing'
+                return refuseOpen(built && built.error === 'missing'
                     ? t('reparcellization.modal.siteParcelsMissing', 'The parcels under this site could not be loaded: {{ids}}.', { ids: built.missing.join(', ') })
                     : (built && built.error === 'taken'
                         ? t('reparcellization.modal.siteGroundTaken', 'This site covers ground another proposal already formed: {{names}}. Draw the site off it, or unapply that proposal first.', { names: built.names.map(name => `"${name}"`).join(', ') })
-                        : t('reparcellization.modal.siteUnavailable', 'This site cannot be subdivided here.'));
-                if (typeof updateStatus === 'function') updateStatus(message);
-                try { if (typeof window.showEphemeralMessage === 'function') window.showEphemeralMessage(message, 8000, 'warning'); } catch (_) { }
-                return false;
+                        : t('reparcellization.modal.siteUnavailable', 'This site cannot be subdivided here.')));
             }
             state.sitePool = built;
             selection = { ids: built.boundParcelIds.slice(), source: 'cadastre' };
             planPool = { type: 'Feature', properties: { parcelIds: built.boundParcelIds.slice() }, geometry: built.pool.pool };
         }
 
-        // Reopening a SAVED plan: the inputs are the parcels the plan DECLARES, full stop.
+        // Reopening a SAVED layout: the inputs are the parcels the seed DECLARES, full stop.
         //
         // Two things used to go wrong here. A live map selection won, so opening the editor with
-        // anything selected pooled *that* instead of the plan's own parents — the subtitle would
-        // read "23 parcels" for a 29-parcel plan and coverage would climb past 100%. And when no
-        // selection existed the pool was unioned from the plan's OUTPUT polygons, which is circular:
+        // anything selected pooled *that* instead of the layout's own parents — the subtitle would
+        // read "23 parcels" for a 29-parcel layout and coverage would climb past 100%. And when no
+        // selection existed the pool was unioned from the layout's OUTPUT plots, which is circular:
         // the boundary became whatever the outputs currently are, so a plot dragged out into empty
         // space silently redefined the pool it was supposed to be constrained by.
         //
-        // The pool is the union of the INPUT parcels. They are only hidden under an applied plan,
-        // never gone, so they can be fetched back.
-        const savedPolygons = (Array.isArray(options.initialPolygons) && options.initialPolygons.length)
-            ? options.initialPolygons
-            : ((window.pendingReparcellizationPlan && Array.isArray(window.pendingReparcellizationPlan.polygons))
-                ? window.pendingReparcellizationPlan.polygons
-                : null);
-        state.amendInputs = savedPolygons?.length && Array.isArray(window.pendingReparcellizationPlan?.inputParcels)
-            ? JSON.parse(JSON.stringify(window.pendingReparcellizationPlan.inputParcels)) : [];
-        if (!state.sitePool && savedPolygons && savedPolygons.length) {
-            const planIds = declaredPlanParcelIds(selection);
+        // The pool is the saved pool, else the union of the INPUT parcels. They are only hidden
+        // under an applied layout, never gone, so they can be fetched back.
+        const savedPlots = (Array.isArray(options.initialPlots) && options.initialPlots.length)
+            ? options.initialPlots
+            : (Array.isArray(seed.plots) ? seed.plots : null);
+        state.amendInputs = savedPlots?.length && Array.isArray(seed.inputParcels)
+            ? JSON.parse(JSON.stringify(seed.inputParcels)) : [];
+        if (!state.sitePool && savedPlots && savedPlots.length) {
+            const planIds = declaredLayoutParcelIds(selection);
             const resolved = planIds.length ? await resolveInputParcelFeatures(planIds) : { features: [], missing: [] };
-            const savedPool = options.poolGeometry
-                || (window.pendingReparcellizationPlan && window.pendingReparcellizationPlan.poolGeometry)
-                || null;
+            const savedPool = options.pool || seed.pool || null;
             const explicitPool = savedPool && /Polygon/.test(String(savedPool.type || ''))
                 ? { type: 'Feature', properties: { parcelIds: planIds.slice() }, geometry: JSON.parse(JSON.stringify(savedPool)) }
                 : null;
-            // The pool of a saved plan that cannot be computed refuses the editor, saying why.
-            const poolOrRefuse = (polygons) => {
-                try { return buildSuperParcelFromPlan(polygons, planIds); } catch (error) {
+            // The pool of a saved layout that cannot be computed refuses the editor, saying why.
+            const poolOrRefuse = (plots) => {
+                try { return buildPoolFromPlots(plots, planIds); } catch (error) {
                     if (!error || error.code !== 'clip-failed') throw error;
-                    console.error(`[${new Date().toISOString()}] [reparcellization] the plan's pool could not be computed`, error);
-                    const message = t('reparcellization.modal.poolClipFailed', 'The ground of this plan could not be computed: {{reason}}', { reason: error.message });
-                    if (typeof updateStatus === 'function') updateStatus(message);
-                    try { if (typeof window.showEphemeralMessage === 'function') window.showEphemeralMessage(message, 8000, 'warning'); } catch (_) { }
-                    return false;
+                    log('error', 'the layout\'s pool could not be computed', error);
+                    return refuseOpen(t('reparcellization.modal.poolClipFailed', 'The ground of this plan could not be computed: {{reason}}', { reason: error.message }));
                 }
             };
             const inputPool = resolved.features.length && !resolved.missing.length
@@ -4991,32 +3523,30 @@
                 : null;
             if (inputPool === false) return false;
             if (explicitPool) {
-                console.debug('[reparcellization] pooled from the plan\'s saved connected extent',
-                    { inputs: planIds.length, plots: savedPolygons.length });
+                log('debug', 'pooled from the layout\'s saved pool', { inputs: planIds.length, plots: savedPlots.length });
                 planPool = explicitPool;
             } else if (inputPool) {
-                console.debug('[reparcellization] pooled from the plan\'s declared inputs',
-                    { inputs: planIds.length, plots: savedPolygons.length });
+                log('debug', 'pooled from the layout\'s declared inputs', { inputs: planIds.length, plots: savedPlots.length });
                 planPool = inputPool;
             } else if (planIds.length) {
                 // Not every input could be resolved. Falling back to the outputs' own outline keeps
-                // the plan editable, but the pool is then only as trustworthy as the outputs — say
+                // the layout editable, but the pool is then only as trustworthy as the outputs — say
                 // so rather than presenting a derived boundary as if it were the cadastre.
-                console.warn('[reparcellization] could not resolve every input parcel — pooling from the plan geometry instead',
+                log('warn', 'could not resolve every input parcel — pooling from the layout geometry instead',
                     { declared: planIds.length, resolved: resolved.features.length, missing: resolved.missing });
-                planPool = poolOrRefuse(savedPolygons);
+                planPool = poolOrRefuse(savedPlots);
                 if (planPool === false) return false;
                 state.poolFromOutputs = true;
             }
             if (planPool) selection = { ids: planIds.slice(), source: 'cadastre' };
         }
 
-        // A readjustment may be designed on any ground that is not already taken — the remainders a
-        // road left included, which is the whole point of forming blocks with roads and then
-        // redividing them (ruling 2026-08-10, replacing the whole-parcel rule of 2026-08-07).
+        // A layout may be drawn on any ground that is not already taken — the remainders a road
+        // left included, which is the whole point of forming blocks with roads and then redividing
+        // them (ruling 2026-08-10, replacing the whole-parcel rule of 2026-08-07).
         //
         // Being DERIVED is not the test; being SPOKEN FOR is. A corridor piece belongs to the road
-        // that took it, and plots designed over one mint a plan that can never apply. This mirrors
+        // that took it, and plots drawn over one make a layout that can never apply. This mirrors
         // the apply gate exactly — authoring must refuse what apply would refuse, and nothing more,
         // or the tool blocks work the model allows.
         if (!planPool) {
@@ -5030,71 +3560,52 @@
                 })
                 .filter(id => id !== null);
             if (takenInputs.length) {
-                const message = t('reparcellization.modal.takenGroundBlocked',
-                    'A land readjustment cannot take ground another proposal already holds. Deselect it, or unapply that proposal first.');
-                if (typeof updateStatus === 'function') updateStatus(message);
-                try {
-                    if (typeof window.showEphemeralMessage === 'function') {
-                        window.showEphemeralMessage(message, 8000, 'warning');
-                    }
-                } catch (_) { }
-                console.warn('[reparcellization] ground already taken in the selection —', takenInputs);
-                return false;
+                log('warn', 'ground already taken in the selection', takenInputs);
+                return refuseOpen(t('parcelLayout.editor.takenGroundBlocked',
+                    'A parcel layout cannot redraw ground another design already holds. Deselect it, or unapply that design first.'));
             }
         }
 
         if (!planPool && !validateSelection(selection)) {
             if (typeof updateStatus === 'function') {
-                const message = t(
-                    'status.messages.select_at_least_one_parcel_before_running_reparcellization',
-                    'Select at least one parcel before running reparcellization.'
-                );
-                updateStatus(message);
+                updateStatus(t('parcelLayout.editor.selectParcels', 'Select at least one parcel to lay out.'));
             }
             return false;
         }
-        // The plan-geometry pool built above wins; otherwise union the live selection.
+        // The saved or site pool built above wins; otherwise union the live selection.
         const superParcel = planPool || buildSuperParcel(selection);
         if (!superParcel) {
             if (typeof updateStatus === 'function') {
-                const message = t(
-                    'status.messages.unable_to_build_geometry_for_reparcellization',
-                    'Unable to build geometry for reparcellization.'
-                );
-                updateStatus(message);
+                updateStatus(t('parcelLayout.editor.poolUnavailable', 'The outline of these parcels could not be built.'));
             }
             return false;
         }
         state.selection = selection;
         state.superParcel = superParcel;
-        // One unified land-readjustment method for both single- and multiple-owner
-        // selections. ownershipMode is kept only as metadata on the saved plan.
-        state.ownershipMode = 'multiple';
-        state.cashOfferOverrides = Object.fromEntries((savedPolygons?.length
-            ? window.pendingReparcellizationPlan?.ownerShares || [] : [])
-            .filter(owner => !owner.unrepresentedGround && Number.isFinite(owner.cashOffer) && owner.cashOffer >= 0)
-            .map(owner => [owner.ownerKey, window.ReparcellizationDeal.netCash(owner)]));
-        state.algorithm = options.algorithm || 'sweep-line';
-        state.initialPolygons = (Array.isArray(options.initialPolygons) && options.initialPolygons.length)
-            ? JSON.parse(JSON.stringify(options.initialPolygons))
+        state.algorithm = options.algorithm || 'equal';
+        state.initialPlots = (Array.isArray(options.initialPlots) && options.initialPlots.length)
+            ? JSON.parse(JSON.stringify(options.initialPlots))
             : null;
-        // A subdivision reopened without explicit polygons (the create dialog's Edit) restores the
-        // pending plan's own plots and algorithm instead of re-running one over the site.
-        const pendingSitePlan = state.sitePool && !state.initialPolygons ? window.pendingReparcellizationPlan : null;
-        if (pendingSitePlan && Array.isArray(pendingSitePlan.polygons) && pendingSitePlan.polygons.length) {
-            state.initialPolygons = JSON.parse(JSON.stringify(pendingSitePlan.polygons));
-            if (pendingSitePlan.algorithm) state.algorithm = pendingSitePlan.algorithm;
+        // A subdivision reopened without explicit plots restores the seed's own plots and layout
+        // instead of re-running one over the site.
+        if (state.sitePool && !state.initialPlots && Array.isArray(seed.plots) && seed.plots.length) {
+            state.initialPlots = JSON.parse(JSON.stringify(seed.plots));
+            if (seed.algorithm) state.algorithm = seed.algorithm;
         }
-        // A saved plan whose algorithm this editor does not know is hand-authored ground, not an
-        // algorithm's output — an imported UPU carries its own provenance ('upu-plan'), and an
-        // unknown key left the chooser with NOTHING selected and no editable mode. Manual is what
-        // such a plan actually is: plots you edit by hand. Known algorithms keep their mode, so a
-        // sweep-line plan can still be re-cut from its handle.
-        if (state.initialPolygons && !getAlgorithmOptionByKey(state.algorithm)) {
-            console.debug('[reparcellization] unknown saved algorithm — opening the plan in manual',
-                { savedAlgorithm: state.algorithm, plots: state.initialPolygons.length });
-            state.algorithm = 'manual';
+        // A saved layout whose algorithm this editor does not know is hand-authored ground, not an
+        // algorithm's output (an imported plan carries its own provenance), and an unknown key left
+        // the chooser with NOTHING selected and no editable mode. Draw freely is what such a layout
+        // actually is. A layout that is not available here (Schelling plots without the plan, Keep
+        // existing borders on a site) starts as equal plots instead.
+        const option = getAlgorithmOptionByKey(state.algorithm);
+        if (!option || (option.disabled && !state.initialPlots)) {
+            const fallback = state.initialPlots ? 'manual' : 'equal';
+            log('debug', `unknown or unavailable layout — opening as ${fallback}`, { requested: state.algorithm });
+            state.algorithm = fallback;
         }
+        const inputCount = Array.isArray(selection?.ids) ? selection.ids.length : 0;
+        state.plotCount = clampPlotCount(options.plotCount ?? seed.plotCount ?? Math.max(PLOT_COUNT.min, inputCount));
+        state.schellingCode = state.initialPlots && seed.schelling?.code ? String(seed.schelling.code) : null;
         state.totalArea = computeFeatureArea(superParcel);
         const session = buildModalStructure();
         if (!session || !initMap()) {
@@ -5105,12 +3616,11 @@
             return false;
         }
         await refreshPreview();
-        updateApprovalRow();
         // Manual IS the node/edge system — there are not two manual modes, one with handles and
         // one without. Draw-plot and split-with-line are tools used inside it.
         // The handles are the editor: they are on from the start in every layout, so a boundary
         // can be grabbed without first finding the right tool.
-        if (EDITABLE_ALGORITHMS.includes(state.algorithm)) toggleNodeEditing(true);
+        toggleNodeEditing(true);
         // Baseline for "did anything change?" — taken AFTER the opening layout is generated, so
         // simply opening and closing is never treated as unsaved work.
         state.session?.fitFeature?.(state.superParcel, { maxZoom: 21 });
@@ -5121,52 +3631,37 @@
         return true;
     }
 
-    // The editor: openReparcellizationModal is what the page calls; `state` and every function above
+    // The editor: openParcelLayoutEditor is what the page calls; `state` and every function above
     // are listed so a test can drive this editor's own session and see what it did.
     return {
         state,
-        liveReparcellizationFeature, ownerDisplayName, liveSelectionFeatures, subdivisionApi,
-        isUnrepresentedGroundEntry, getPublicLandOwner, formatTemplate, t, applyTranslations, hashToColorIndex,
-        pickOwnerColor, formatPercent, updateSubtitleWithOwners, getAlgorithmOptions,
-        getAlgorithmOptionByKey, buildAlgorithmRadios, setStatus, updateActiveModeHint, destroyMap,
-        layoutSignature, isDirty, cancelModal, confirmDiscard, closeModal, buildModalStructure, initMap,
-        formatArea, formatMoney, ledgerUsesMoney, formatLedgerMetric, computeOwnerLedger,
-        assignedAreaOf, computeProRataJointOwners, applyJointOwnersToSlice, resyncJointSliceShares,
-        buildAmendSlices, applyCourtyard, openBuiltFormPicker, defaultCashOffer, getCashOffer,
-        storedCash, computeCashTotals, computeTotalCashOffer, updateCashTotalDisplay,
-        evaluatePlanCompleteness, updateCommitState, updateLegend, inputParcelFeatures, reviewInputs,
-        clearOwnerReviewHighlights, drawOwnerReviewHighlights, updateOwnerReview, inputParcelLabel,
-        setPlotsTab, clearInputHighlight, highlightInputParcel, updateOldPlotsList,
-        computeRingCentroidAndAreaXY, getSuperParcelCentroidLngLat, ensureProposalDefaults,
-        sliceToFeature, geometryToPolygonFeatures, cloneOwners, makePlotFromOwners,
-        createUnassignedPlot, hydrateSlicesFromPolygons, carvePlotIntoPlan, tilingProblem, refusalText,
-        conformLayout, cutContext, mapScale, applyCutResult, setAlgorithmKey, adoptLayoutForEditing,
-        updateDrawToolButtons, setDrawButtonsActive, clearDrawTemp, getVertexIcon, updateDrawShape,
-        renderDrawTemp, snapFor, renderDrawGhosts, clearDrawGhosts, renderSnapFeedback, snapStatusText,
-        previewLine, updateDrawCursor, onDrawClick, onDrawDblClick, onDrawMouseMove, undoLastPoint,
-        updateDrawToolbar, dedupeDrawPoints, onDrawFinish, cutFailureText, startDraw, cancelDraw,
-        toggleDrawMode, eraseAvailable, toggleEraseMode, clearEraseLayer, eraseTooltipFor,
-        renderEraseLayer, eraseBoundary, handleGeojsonUpload, applyUploadedGeometry, shuffleOwnership,
-        ensureHistory, pushHistory, discardLastHistory, undoLastEdit, updateUndoAffordance,
-        nodeEditingAvailable, toggleNodeEditing, toggleAssignMode, clearNodeHandles, anchorsACut,
-        poolBoundaryIndex, renderNodeHandles, showNodeMessagePopup, openNodePopup, openEdgePopup,
-        previewGeometries, describeNodeRemoval, plotLabel, removalConsequenceText, removeNodeFromLayout,
-        removeNodePerRing, dissolveBoundariesAt, mergePlots, applyGeometries, recomputeSliceAreas,
-        computeGeometryArea, dismissOwnerPopup, restoreOwnerPopupView, onSliceClick,
-        assignPublicToAllSlices, toggleOwnerOnSlice, parseHexColor, blendOwnerColors,
-        syncSlicePrimaryOwner, getSweepBearing, computeSweepSlices, getSweepIcon, updateSweepDirLine,
-        onSweepDrag, initSweepOrientation, destroySweepOrientation, parcelColorForBefore,
-        buildBeforeFeatureCollection, enterCompare, exitCompare, toggleCompare, sliceIsUnassigned,
-        unassignedFill, sliceFillColor, sliceBaseStyle, plotLabelRadiusM, clearPlotNumbers,
-        drawPlotNumbers, highlightSlice, collectAppliedBuildingFootprints, drawBuildingFootprints,
-        drawInputParcels, drawPreview, currentPlan, renderRegimeCheck, updateApprovalRow,
-        createDialogBehind, approvalCadastreIds, openApprovalSetup, applyApprovalSetup, persistResult,
-        ensureCommitAvailability, computeFeatureArea, getParcelLandValue, ownerIdentityForSlot,
-        savedOutputRecipientIds, appendSavedOutputRecipients, restoreSavedLedgerMetadata,
-        replaceSavedInputOwnersFromRights, declaredOwnerSlots, labelAbstractOwners,
-        cadastralIdentityForLiveParcel, buildSitePoolShares, buildOwnerShares, safeIntersect,
-        safeDifference, sliceWithSweepLine, refreshPreview, validateSelection, buildSuperParcel,
-        buildSuperParcelFromPlan, declaredPlanParcelIds, resolveInputParcelFeatures,
-        openReparcellizationModal, sitePoolOfPendingPlan, buildSitePool, buildReparcellizationModal
+        log, liveSelectionFeatures, plotColor, clampPlotCount, subdivisionApi, formatTemplate, t,
+        applyTranslations, updateSubtitle, getAlgorithmOptions, getAlgorithmOptionByKey, buildAlgorithmRadios,
+        plotCountFieldHtml, updateCountField, setStatus, updateActiveModeHint, closeChoicePopup, destroyMap,
+        layoutSignature, isDirty, cancelModal, confirmDiscard, closeModal, buildModalStructure, setPlotCount,
+        initMap, formatArea, cadastreIdOf, buildAmendSlices, applyCourtyard, openBuiltFormPicker,
+        validateLayout, validationText, updateCommitState, updateLegend, inputParcelFeatures,
+        inputParcelLabel, setPlotsTab, clearInputHighlight, highlightInputParcel, updateOldPlotsList,
+        computeRingCentroidAndAreaXY, getSuperParcelCentroidLngLat, makePlot, hydratePlots,
+        carvePlotIntoPlan, tilingProblem, refusalText, conformLayout, cutContext, mapScale, applyCutResult,
+        setAlgorithmKey, adoptLayoutForEditing, updateDrawToolButtons, setDrawButtonsActive, clearDrawTemp,
+        getVertexIcon, updateDrawShape, renderDrawTemp, snapFor, renderDrawGhosts, clearDrawGhosts,
+        renderSnapFeedback, snapStatusText, previewLine, updateDrawCursor, onDrawClick, onDrawDblClick,
+        onDrawMouseMove, undoLastPoint, updateDrawToolbar, dedupeDrawPoints, onDrawFinish, cutFailureText,
+        startDraw, cancelDraw, toggleDrawMode, eraseAvailable, toggleEraseMode, clearEraseLayer,
+        eraseTooltipFor, renderEraseLayer, eraseBoundary, handleGeojsonUpload, applyUploadedGeometry,
+        ensureHistory, pushHistory, discardLastHistory, updateUndoAffordance, nodeEditingAvailable,
+        toggleNodeEditing, clearNodeHandles, anchorsACut, poolBoundaryIndex, renderNodeHandles,
+        showNodeMessagePopup, openNodePopup, openEdgePopup, previewGeometries, describeNodeRemoval, plotLabel,
+        removalConsequenceText, removeNodeFromLayout, removeNodePerRing, dissolveBoundariesAt, mergePlots,
+        applyGeometries, computeGeometryArea, getSweepBearing, computeEqualSlices, schellingPlanForPool,
+        computeSchellingSlices, getSweepIcon, updateSweepDirLine, onSweepDrag, initSweepOrientation,
+        destroySweepOrientation, buildBeforeFeatureCollection, enterCompare, exitCompare, toggleCompare,
+        plotStyle, plotLabelRadiusM, clearPlotNumbers, drawPlotNumbers, highlightSlice,
+        collectAppliedBuildingFootprints, drawBuildingFootprints, drawInputParcels, drawPreview, currentPlan,
+        persistResult, ensureCommitAvailability, computeFeatureArea, layoutClipFailure, refreshPreview,
+        validateSelection, buildSuperParcel, buildPoolFromPlots, declaredLayoutParcelIds,
+        resolveInputParcelFeatures, openParcelLayoutEditor, sitePoolOfPendingLayout, buildSitePool,
+        refuseOpen, buildEditor
     };
 });

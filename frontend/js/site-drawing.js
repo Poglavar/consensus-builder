@@ -793,10 +793,10 @@
         return bindingSummaryHtml() + boundParcelsHtml();
     }
 
-    // A site with open ground is subdivided (PARCEL-OPTIONAL.md phase 4): the readjustment editor
-    // with the site as its pool, the bound parcels' owners contributing their part and the open
-    // ground contributing area with no owner. A site wholly over parcels stays a readjustment of
-    // selected parcels; a site where the server holds no cadastre cannot tell owned from open.
+    // A site with open ground is subdivided (PARCEL-OPTIONAL.md phase 4): the parcel-layout editor
+    // with the site as its pool, the bound parcels' part and the open ground alike. A site wholly
+    // over parcels is laid out from its selected parcels instead; a site where the server holds no
+    // cadastre cannot tell parcels from open ground.
     function subdividable() {
         const sum = summary();
         return !!(sum && sum.openGround && sum.coverage !== 'unknown');
@@ -807,9 +807,9 @@
         const sum = summary();
         if (subdividable()) return {};
         const reason = (sum && sum.coverage === 'unknown')
-            ? t('siteTool.palette.readjustUnknownCadastre', 'Subdividing needs a cadastre the server holds: this place has none it knows.')
-            : t('siteTool.palette.readjustNeedsParcels', 'Land readjustment works on selected parcels: select them instead of drawing a site.');
-        return { reparcellization: reason };
+            ? t('siteTool.palette.subdivideUnknownCadastre', 'Subdividing needs a cadastre the server holds: this place has none it knows.')
+            : t('siteTool.palette.layoutNeedsParcels', 'Lay out parcels works on selected parcels: select them instead of drawing a site.');
+        return { 'parcel-layout': reason };
     }
 
     function paletteHtml() {
@@ -819,7 +819,7 @@
             transportHandler: 'SiteTool.transport',
             includeOwnership: false,
             disabled: disabledTools(),
-            labels: subdividable() ? { reparcellization: t('siteTool.palette.subdivide', 'Subdivide') } : {}
+            labels: subdividable() ? { 'parcel-layout': t('siteTool.palette.subdivide', 'Subdivide') } : {}
         });
     }
 
@@ -1110,7 +1110,7 @@
             return;
         }
         if (toolKey === 'row' || toolKey === 'parcelBased') { enterPlots(toolKey); return; }
-        if (toolKey === 'reparcellization') {
+        if (toolKey === 'parcel-layout') {
             teardown({ keepSynthetic: false });
             Promise.resolve(win.startSiteSubdivision(context))
                 .catch(error => console.error('[SiteTool] subdivision editor failed to open', error));

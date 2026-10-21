@@ -67,22 +67,27 @@ test.describe('Proposal creation and map lifecycle @features', () => {
     });
   }
 
-  test('reparcellization: plots and ownership reach an applied plan', async ({ mockApi: page }) => {
+  test('parcel layout: its plots reach an applied layout that replaces the parcel on the map', async ({ mockApi: page }) => {
     await openCity(page);
     await page.evaluate(() => (window as any).i18n.setLanguage('en'));
     await openParcel(page, 'proposals');
-    await page.locator('.parcel-build-btn--reparcellization').click();
+    await page.locator('.parcel-build-btn--parcel-layout').click();
     const modal = page.locator('.on-map-reparcellization');
     await expect(modal.locator('.on-map-editor__panel')).toBeVisible();
-    await expect(modal.locator('[data-reparcel-newplots-table]')).not.toBeEmpty();
+    await expect(modal.locator('[data-reparcel-newplots-table] .reparcel-newplot-row')).toHaveCount(2);
     await modal.locator('[data-reparcel-plots-tab="old"]').click();
     await expect(modal.locator('[data-reparcel-oldplots-table]')).toContainText('1234');
     await modal.locator('[data-reparcel-plots-tab="new"]').click();
-    await expect(modal.locator('[data-reparcel-owners-table]')).toContainText('Owner A');
-    await expect(modal.locator('[data-reparcel-owners-table]')).not.toContainText('Privatni vlasnik');
     await expect(modal.locator('[data-reparcel-commit]')).toBeEnabled();
     await modal.locator('[data-reparcel-commit]').click();
     await expect(modal).toHaveCount(0);
-    await expect.poll(() => page.evaluate(() => (window as any).proposalStorage.getAllProposals().some((p: any) => p.applied && p.reparcellization?.polygons?.length))).toBe(true);
+    await expect.poll(() => page.evaluate(() => (window as any).proposalStorage.getAllProposals()
+      .some((p: any) => p.applied && p.goal === 'parcel-layout' && p.parcelLayout?.plots?.length === 2))).toBe(true);
+    const layout = await page.evaluate(() => JSON.parse(JSON.stringify((window as any).proposalStorage.getAllProposals()
+      .find((p: any) => p.applied && p.goal === 'parcel-layout'))));
+    expect(layout.cadastreParcelIds).toContain(PARCEL_ID);
+    expect(layout.parcelLayout.plots.every((plot: any) => /Polygon/.test(plot.geometry.type))).toBe(true);
+    await expect.poll(() => page.evaluate(id => (window as any).LiveParcelFabric.producedBy(id)
+      .filter((piece: any) => piece.properties.readjustmentPiece?.role === 'plot').length, layout.proposalId)).toBe(2);
   });
 });

@@ -200,11 +200,7 @@ test.describe('Proposal actions @features', () => {
         partial: w.proposalStorage.addProposal({ ...base, title: 'Partial payout terms', kind: 'owner-deal',
           offer: 100, isConditional: false, disbursementMode: 'partial' }),
         conditional: w.proposalStorage.addProposal({ ...base, title: 'All-owner payout terms', kind: 'owner-deal',
-          offer: 100, offerCurrency: 'EUR', isConditional: true, disbursementMode: 'conditional', funded: true, approvalConfig,
-          reparcellization: {
-            polygons: [{ geometry: w.CadastralParcelRepository.get(parcelId).geometry, owners: [{ ownerKey: 'owner-a', share: 1 }] }],
-            ownerShares: [{ ownerKey: 'owner-a', cashOffer: 100, contributedArea: 100 }]
-          } })
+          offer: 100, offerCurrency: 'EUR', isConditional: true, disbursementMode: 'conditional', funded: true, approvalConfig })
       };
     }, PARCEL_ID);
     const badge = page.locator('[data-proposal-payout-terms]');
@@ -218,7 +214,6 @@ test.describe('Proposal actions @features', () => {
     await page.evaluate(id => (window as any).ProposalApprovalPanel.openReview(id, 'owner-a', null, { inspect: true }), ids.conditional);
     const conditions = page.locator('.approval-review__conditions');
     await expect(conditions).toContainText('Authored terms require every owner to accept before payout. This does not confirm funding or payment.');
-    await expect(conditions).toContainText('Funding is marked ready in this record; payment is not verified.');
     await expect(conditions).not.toContainText('The cash is funded.');
     await expect(conditions).toContainText('Declared rights source: upload · payment-terms-fixture');
     await expect(conditions).toContainText('No verification lens is selected.');

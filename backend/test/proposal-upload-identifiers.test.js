@@ -24,6 +24,7 @@ function loadBuildUploadReadyProposal({ fingerprint }) {
     };
     context.window = context;
     context.ProposalOrigin = require('../../frontend/js/proposals/origin.js');
+    context.ProposalPublishTerms = require('../../frontend/js/proposals/publish-terms.js');
     context.__cadastreAncestry = {
         validateCadastreParcelIds: ({ cadastreParcelIds }) => cadastreParcelIds,
         publishDeclaration: proposal => proposal.cadastreParcelIds,

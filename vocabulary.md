@@ -101,10 +101,20 @@ them. Until a rename lands, the two columns name the same thing.
 | New term (UI, new code) | Existing name (code, API, storage) |
 | --- | --- |
 | design | `proposal`, `Proposal`, `/proposals`, `proposal` table |
-| parcel layout (design type `parcel-layout`, record `parcelLayout`) | land readjustment / reparcellization (`reparcellization` goal and record, `reparcellization*.js`) |
+| parcel layout (design type `parcel-layout`, record `parcelLayout`; landed in M1 (a)) | land readjustment / reparcellization: the `reparcellization*.js` modules kept for the agreement work, the `readjustmentPiece` runtime property, the backend `reparcellization` column and routes (server untouched until M2) |
 | decision rule (on the agreement) | decision kind (`proposal.kind`, `proposal-kinds.md`), "Agreement rules" (approval regimes) |
 | agreement | named plan (`ens_plan`, `/plans`), the readjustment deal (`reparcellization-deal.js`), proposal terms (offer, budget, deposit, decay, expiry) |
 | plan (informal: the applied composition, a share link) | applied composition `WorkingComposition`, "Share applied proposals" |
+
+## M1 (a) state: the parcel-layout design (2026-10-21)
+
+A **parcel layout** is a design whose record is geometry only: the pool outline and its output
+plots (`parcelLayout`, see [plan-design-agreement.md](plan-design-agreement.md), "M1 (a) build
+contract"). Applying it forms the plots and **carries ownership over** from the ground: a plot inside
+one source parcel keeps that owner, a plot straddling several is a joint holding with pro-rata
+shares, open ground stays unowned. A layout changes borders, never ownership. Until its agreement
+exists (M2) a layout is not published, shared, minted, forked or bet on; the refusal code is
+`parcel-layout-publish-later`.
 
 ## Central terms as implemented
 

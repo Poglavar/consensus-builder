@@ -15,7 +15,7 @@
         'depositPercent', 'disbursementMode', 'isConditional', 'kind', 'voteExpiryDays',
         'cadastreParcelIds', 'site', 'binding', 'toleranceM', 'cadastreSnapshot', 'ownershipFlow',
         'cadastreFrame', 'lens', 'bounds', 'geometry', 'roadProposal', 'buildingProposal',
-        'structureProposal', 'reparcellization', 'decideLaterProposal', 'ownershipTransfer',
+        'structureProposal', 'parcelLayout', 'decideLaterProposal', 'ownershipTransfer',
         'ownershipTransferDirection', 'ownershipTransferRecipient', 'ownershipTransferProposal',
         'acquisitionMode', 'boundaryAdjustment', 'primaryType', 'typologyType', 'tags', 'facets',
         'isCorridor', 'proposalOrigin', 'landFork', 'freePlacement', 'agent',

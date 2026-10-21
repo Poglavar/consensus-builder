@@ -4532,6 +4532,147 @@
       "controlType": "dynamic"
     },
     {
+      "id": "control-1abf708ca0a910-1",
+      "source": "js/parcel-layout.js",
+      "markup": "<input type=\"radio\" name=\"reparcel-algorithm\" value=\"${option.key}\" ${checked} ${disabled}>",
+      "interaction": "change",
+      "controlType": "radio"
+    },
+    {
+      "id": "control-3dfe21455c2a8d-1",
+      "source": "js/parcel-layout.js",
+      "markup": "<input type=\"number\" class=\"reparcel-count-input\" data-parcel-layout-count min=\"${PLOT_COUNT.min}\" max=\"${PLOT_COUNT.max}\" step=\"1\" inputmode=\"numeric\" value=\"${state.plotCount}\">",
+      "interaction": "change",
+      "controlType": "number"
+    },
+    {
+      "id": "control-59194fb1a1b1ee-1",
+      "source": "js/parcel-layout.js",
+      "markup": "<button type=\"button\" class=\"btn btn-icon\" ${attrs} title=\"${label}\" aria-label=\"${label}\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-6543e34ca63291-1",
+      "source": "js/parcel-layout.js",
+      "markup": "<button type=\"button\" class=\"btn\" data-reparcel-courtyard-building>",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-2fab90234fe0bf-1",
+      "source": "js/parcel-layout.js",
+      "markup": "<input type=\"file\" accept=\".geojson,.json,application/geo+json,application/json\" data-reparcel-upload aria-label=\"${uploadLabel}\" hidden>",
+      "interaction": "change",
+      "controlType": "file"
+    },
+    {
+      "id": "control-df22876ff3f0e7-1",
+      "source": "js/parcel-layout.js",
+      "markup": "<button type=\"button\" class=\"btn btn-sm\" data-reparcel-undo>",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-a74d80e45e2b47-1",
+      "source": "js/parcel-layout.js",
+      "markup": "<button type=\"button\" class=\"btn btn-sm btn-success\" data-reparcel-finish>",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-1cf657fe001ce3-1",
+      "source": "js/parcel-layout.js",
+      "markup": "<button type=\"button\" class=\"btn btn-sm\" data-reparcel-cancel-draw>",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-8bcb7feaae4ad9-1",
+      "source": "js/parcel-layout.js",
+      "markup": "<button type=\"button\" role=\"tab\" class=\"cb-tab\" data-reparcel-plots-tab=\"new\" aria-selected=\"true\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-a97a467884a93a-1",
+      "source": "js/parcel-layout.js",
+      "markup": "<button type=\"button\" role=\"tab\" class=\"cb-tab\" data-reparcel-plots-tab=\"old\" aria-selected=\"false\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-ca09700d052046-1",
+      "source": "js/parcel-layout.js",
+      "markup": "<button type=\"button\" class=\"btn btn-sm reparcel-compare-btn\" data-reparcel-compare aria-pressed=\"false\" hidden>",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-1778b4d2ea98bd-1",
+      "source": "js/parcel-layout.js",
+      "markup": "<button type=\"button\" class=\"btn\" data-reparcel-cancel data-i18n-key=\"reparcellization.modal.cancel\" data-i18n-attr=\"text\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-eb4653ad3d4e50-1",
+      "source": "js/parcel-layout.js",
+      "markup": "<button type=\"button\" class=\"btn btn-primary\" data-reparcel-commit disabled data-i18n-key=\"reparcellization.modal.done\" data-i18n-attr=\"text\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-e4967dab06f3e1-1",
+      "source": "js/parcel-layout.js",
+      "markup": "document.createElement('button')",
+      "interaction": "click",
+      "controlType": "button",
+      "variants": [
+        {
+          "name": "building courtyard candidate choice",
+          "classes": [
+            "reparcel-owner-popup__joint"
+          ],
+          "labelPattern": "Courtyard candidate"
+        }
+      ]
+    },
+    {
+      "id": "control-e4967dab06f3e1-2",
+      "source": "js/parcel-layout.js",
+      "markup": "document.createElement('button')",
+      "interaction": "click",
+      "controlType": "button",
+      "variants": [
+        {
+          "name": "remove geometry node",
+          "classes": [
+            "btn-danger",
+            "btn-sm"
+          ],
+          "label": "Remove node"
+        }
+      ]
+    },
+    {
+      "id": "control-e4967dab06f3e1-3",
+      "source": "js/parcel-layout.js",
+      "markup": "document.createElement('button')",
+      "interaction": "click",
+      "controlType": "button",
+      "variants": [
+        {
+          "name": "erase a boundary segment from its popup",
+          "classes": [
+            "btn-danger",
+            "btn-sm"
+          ],
+          "label": "Erase this boundary"
+        }
+      ]
+    },
+    {
       "id": "control-5fdd8d06255e29-1",
       "source": "js/parcel-source-settings.js",
       "markup": "global.document.createElement(tag)",
@@ -5786,6 +5927,21 @@
       "controlType": "button"
     },
     {
+      "id": "control-5de3175a08dc15-1",
+      "source": "js/proposals/details-panel.js",
+      "markup": "<button type=\"button\" class=\"btn btn-share-proposal\" disabled aria-disabled=\"true\" aria-describedby=\"proposal-publish-later-note\">",
+      "exempt": "A parcel layout's Share is rendered disabled: layouts are shared together with their agreement (plan-design-agreement.md, M2), and the reason is shown beside it.",
+      "mustRemainInactive": true,
+      "guards": [
+        {
+          "source": "js/proposals/details-panel.js",
+          "includes": "<button type=\"button\" class=\"btn btn-share-proposal\" disabled aria-disabled=\"true\" aria-describedby=\"proposal-publish-later-note\">"
+        }
+      ],
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
       "id": "control-7bb55dd22c94f1-1",
       "source": "js/proposals/details-panel.js",
       "markup": "<button type=\"button\" class=\"btn btn-bet-proposal\" onclick=\"openProposalOutcomeBet(${inlineJsArg(proposalKey)})\">",
@@ -6060,32 +6216,6 @@
       "controlType": "number"
     },
     {
-      "id": "control-42ab2cf72bee74-1",
-      "source": "js/proposals/dialog-create.js",
-      "markup": "document.createElement('input')",
-      "interaction": "change",
-      "controlType": "input",
-      "variants": [
-        {
-          "name": "single parcel agreement",
-          "attrs": {
-            "name": "reparcel-agreement",
-            "value": "single"
-          },
-          "interaction": "change"
-        },
-        {
-          "name": "individual parcel agreement",
-          "attrs": {
-            "name": "reparcel-agreement",
-            "value": "individual"
-          },
-          "interaction": "change"
-        }
-      ],
-      "exhaustiveVariants": true
-    },
-    {
       "id": "control-e3261ea7078417-1",
       "source": "js/proposals/dialog-create.js",
       "markup": "document.createElement('button')",
@@ -6143,27 +6273,6 @@
         {
           "source": "js/proposals/dialog-create.js",
           "pattern": "<button\\s+type=\"button\"\\s+class=\"cb-segmented__option\"\\s+aria-pressed=\"false\"\\s+data-proposal-main-type=\"Urban\\s+Rule\"\\s+onclick=\"handleUrbanRuleMainTypeClick\\(\\)\">",
-          "occurrences": 1
-        }
-      ],
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-a66e8c0acc4dbe-1",
-      "source": "js/proposals/dialog-create.js",
-      "markup": "<button type=\"button\" class=\"cb-segmented__option\" aria-pressed=\"false\" data-proposal-main-type=\"Reparcellization\" onclick=\"setProposalMainType('Reparcellization')\">",
-      "exempt": "The retired main-type chooser remains inside proposalMainTypeGroup with display:none. The current dialog uses Land use and Ownership inputs.",
-      "mustRemainInactive": true,
-      "guards": [
-        {
-          "source": "js/proposals/dialog-create.js",
-          "pattern": "<button\\s+type=\"button\"\\s+class=\"cb-segmented__option\"\\s+aria-pressed=\"false\"\\s+data-proposal-main-type=\"Reparcellization\"\\s+onclick=\"setProposalMainType\\('Reparcellization'\\)\">",
-          "occurrences": 1
-        },
-        {
-          "source": "js/proposals/dialog-create.js",
-          "pattern": "<button\\s+type=\"button\"\\s+class=\"cb-segmented__option\"\\s+aria-pressed=\"false\"\\s+data-proposal-main-type=\"Reparcellization\"\\s+onclick=\"setProposalMainType\\('Reparcellization'\\)\">",
           "occurrences": 1
         }
       ],
@@ -6242,13 +6351,6 @@
       "controlType": "radio"
     },
     {
-      "id": "control-087ed17340667e-1",
-      "source": "js/proposals/dialog-create.js",
-      "markup": "<input type=\"radio\" name=\"proposalParcelsMode\" value=\"readjust\" onchange=\"onProposalParcelsChange()\">",
-      "interaction": "change",
-      "controlType": "radio"
-    },
-    {
       "id": "control-63bc474cb90614-1",
       "source": "js/proposals/dialog-create.js",
       "markup": "<input type=\"radio\" name=\"proposalOwnership\" value=\"no-change\" checked onchange=\"onProposalOwnershipChange()\">",
@@ -6275,37 +6377,6 @@
       "markup": "<input type=\"radio\" name=\"proposalOwnership\" value=\"third-party\" onchange=\"onProposalOwnershipChange()\">",
       "interaction": "change",
       "controlType": "radio"
-    },
-    {
-      "id": "control-2071242f819cad-1",
-      "source": "js/proposals/dialog-create.js",
-      "markup": "<input type=\"radio\" name=\"proposalOwnership\" value=\"per-slice\" onchange=\"onProposalOwnershipChange()\">",
-      "interaction": "change",
-      "controlType": "radio",
-      "exempt": "Per-slice ownership is set automatically by readjustment and its entire radio group is synchronously hidden while locked.",
-      "mustRemainInactive": true,
-      "guards": [
-        {
-          "source": "js/proposals/dialog-create.js",
-          "includes": "class=\"cb-segmented__option proposal-radio proposal-ownership-perslice\" style=\"display:none;\""
-        },
-        {
-          "pattern": "showProposalPerSliceOption\\(true\\)",
-          "occurrences": 1
-        },
-        {
-          "source": "js/proposals/core.js",
-          "includes": "showProposalPerSliceOption(true);\n        setProposalOwnershipMode('per-slice', { lock: true,"
-        },
-        {
-          "source": "js/proposals/urban-rules.js",
-          "includes": "if (lock) {\n        if (group) group.style.display = 'none';"
-        },
-        {
-          "source": "js/proposals/execution.js",
-          "includes": "applyFacetLockUI('proposalOwnershipGroup', 'proposalOwnershipStatic', 'proposalOwnership', mode, lock, reason);"
-        }
-      ]
     },
     {
       "id": "control-25e466f91be739-1",
@@ -6599,13 +6670,6 @@
     },
     {
       "id": "control-e3261ea7078417-2",
-      "source": "js/proposals/dialog-create.js",
-      "markup": "document.createElement('button')",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-e3261ea7078417-3",
       "source": "js/proposals/dialog-create.js",
       "markup": "document.createElement('button')",
       "interaction": "click",
@@ -7397,250 +7461,6 @@
           "includes": "scratch.select();\n                                    document.execCommand('copy');\n                                    scratch.remove();"
         }
       ]
-    },
-    {
-      "id": "control-427a0143e32f72-1",
-      "source": "js/reparcellization-ui-state.js",
-      "markup": "<input type=\"number\" class=\"cash-offer-input\" step=\"0.01\" data-owner-key=\"${esc(ownerKey)}\" value=\"${amount}\">",
-      "interaction": "change",
-      "controlType": "number"
-    },
-    {
-      "id": "control-f42cd09de4177a-1",
-      "source": "js/reparcellization.js",
-      "markup": "<input type=\"radio\" name=\"reparcel-algorithm\" value=\"${option.key}\" ${checked} ${disabled}>",
-      "interaction": "change",
-      "controlType": "radio"
-    },
-    {
-      "id": "control-bac24f68595c9d-1",
-      "source": "js/reparcellization.js",
-      "markup": "<button type=\"button\" class=\"btn btn-icon\" ${attrs} title=\"${label}\" aria-label=\"${label}\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-fe4a71489537ab-1",
-      "source": "js/reparcellization.js",
-      "markup": "<button type=\"button\" class=\"btn\" data-reparcel-courtyard-building>",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-5e963a3a80181e-1",
-      "source": "js/reparcellization.js",
-      "markup": "<button type=\"button\" class=\"btn\" data-reparcel-courtyard-draw>",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-efed9f4024ce04-1",
-      "source": "js/reparcellization.js",
-      "markup": "<input type=\"file\" accept=\".geojson,.json,application/geo+json,application/json\" data-reparcel-upload aria-label=\"${uploadLabel}\" hidden>",
-      "interaction": "change",
-      "controlType": "file"
-    },
-    {
-      "id": "control-1e7bd7b88faf9b-1",
-      "source": "js/reparcellization.js",
-      "markup": "<button type=\"button\" class=\"btn btn-icon reparcel-assign-btn\" data-reparcel-assign aria-pressed=\"false\" data-i18n-key=\"reparcellization.modal.assignOwners\" data-i18n-attr=\"title,aria-label\" title=\"${assignOwnersLabel}\" aria-label=\"${assignOwnersLabel}\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-adec35a77ca8aa-1",
-      "source": "js/reparcellization.js",
-      "markup": "<button type=\"button\" class=\"btn btn-sm reparcel-allpublic-btn\" data-reparcel-all-public hidden data-i18n-key=\"reparcellization.modal.allPublic\" data-i18n-attr=\"text\" title=\"${allPublicLabel}\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-83e06609a83aba-1",
-      "source": "js/reparcellization.js",
-      "markup": "<button type=\"button\" class=\"btn btn-sm\" data-reparcel-undo>",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-0a677a9d253c63-1",
-      "source": "js/reparcellization.js",
-      "markup": "<button type=\"button\" class=\"btn btn-sm btn-success\" data-reparcel-finish>",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-96bb102075cbed-1",
-      "source": "js/reparcellization.js",
-      "markup": "<button type=\"button\" class=\"btn btn-sm\" data-reparcel-cancel-draw>",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-985e58e1edc70f-1",
-      "source": "js/reparcellization.js",
-      "markup": "<button type=\"button\" role=\"tab\" class=\"cb-tab\" data-reparcel-plots-tab=\"new\" aria-selected=\"true\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-0d0d5155ae910e-1",
-      "source": "js/reparcellization.js",
-      "markup": "<button type=\"button\" role=\"tab\" class=\"cb-tab\" data-reparcel-plots-tab=\"old\" aria-selected=\"false\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-a556d6246b9ace-1",
-      "source": "js/reparcellization.js",
-      "markup": "<button type=\"button\" class=\"btn btn-sm\" data-reparcel-approval-setup>",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-3835a4e355fac1-1",
-      "source": "js/reparcellization.js",
-      "markup": "<button type=\"button\" class=\"btn btn-sm reparcel-compare-btn\" data-reparcel-compare aria-pressed=\"false\" hidden>",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-66f88604887f1d-1",
-      "source": "js/reparcellization.js",
-      "markup": "<button type=\"button\" class=\"btn\" data-reparcel-cancel data-i18n-key=\"reparcellization.modal.cancel\" data-i18n-attr=\"text\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-19309809389c4a-1",
-      "source": "js/reparcellization.js",
-      "markup": "<button type=\"button\" class=\"btn btn-primary\" data-reparcel-commit disabled data-i18n-key=\"reparcellization.modal.done\" data-i18n-attr=\"text\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-927adb070f7da7-1",
-      "source": "js/reparcellization.js",
-      "markup": "document.createElement('button')",
-      "variants": [
-        {
-          "name": "building courtyard candidate choice",
-          "classes": [
-            "reparcel-owner-popup__joint"
-          ],
-          "labelPattern": "Courtyard candidate"
-        }
-      ],
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-7e87f3e42deb63-1",
-      "source": "js/reparcellization.js",
-      "markup": "<button type=\"button\" class=\"btn btn-sm reparcel-edit-shares\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-3dba584e9d90b8-1",
-      "source": "js/reparcellization.js",
-      "markup": "document.createElement('select')",
-      "interaction": "change",
-      "controlType": "select"
-    },
-    {
-      "id": "control-927adb070f7da7-2",
-      "source": "js/reparcellization.js",
-      "markup": "document.createElement('button')",
-      "variants": [
-        {
-          "name": "remove geometry node",
-          "classes": [
-            "btn-danger",
-            "btn-sm"
-          ],
-          "label": "Remove node"
-        }
-      ],
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-927adb070f7da7-3",
-      "source": "js/reparcellization.js",
-      "markup": "document.createElement('button')",
-      "variants": [
-        {
-          "name": "erase a boundary segment from its popup",
-          "classes": [
-            "btn-danger",
-            "btn-sm"
-          ],
-          "label": "Erase this boundary"
-        }
-      ],
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-927adb070f7da7-4",
-      "source": "js/reparcellization.js",
-      "markup": "document.createElement('button')",
-      "variants": [
-        {
-          "name": "Reset recipient shares to private-land proportions",
-          "classes": [
-            "reparcel-owner-popup__joint"
-          ]
-        }
-      ],
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-319ce3c86b9300-1",
-      "source": "js/reparcellization.js",
-      "markup": "document.createElement('input')",
-      "interaction": "change",
-      "controlType": "input"
-    },
-    {
-      "id": "control-319ce3c86b9300-2",
-      "source": "js/reparcellization.js",
-      "markup": "document.createElement('input')",
-      "interaction": "change",
-      "controlType": "input"
-    },
-    {
-      "id": "control-927adb070f7da7-5",
-      "source": "js/reparcellization.js",
-      "markup": "document.createElement('button')",
-      "variants": [
-        {
-          "name": "Apply recipient ownership shares",
-          "classes": [
-            "reparcel-apply-shares"
-          ],
-          "label": "Apply shares"
-        }
-      ],
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-927adb070f7da7-6",
-      "source": "js/reparcellization.js",
-      "markup": "document.createElement('button')",
-      "variants": [
-        {
-          "name": "Close owner assignment popup",
-          "classes": [
-            "reparcel-owner-popup__close"
-          ],
-          "labelPattern": "^(Close|Zatvori)$"
-        }
-      ],
-      "interaction": "click",
-      "controlType": "button"
     },
     {
       "id": "control-64e2e66db84232-1",

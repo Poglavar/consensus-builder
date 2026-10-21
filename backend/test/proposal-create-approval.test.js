@@ -74,25 +74,32 @@ describe('proposal create approval publication boundary', () => {
         expect(legacy.ownerAcceptances).toEqual({ a: { accepted: true } });
 
         // A draft whose author set no approval publishes without a setup, so any chain mints it;
-        // a readjustment from a draft always has one.
+        // no goal forces a default setup.
         const geometryOnly = { goal: 'park', kind: 'owner-deal' };
         context.applyPublishingDraftApproval(geometryOnly, { approvalConfig: null, lens: [] });
         expect(geometryOnly).not.toHaveProperty('approvalConfig');
-        const readjustment = { goal: 'reparcellization', kind: 'community-vote' };
-        context.applyPublishingDraftApproval(readjustment, { approvalConfig: null, lens: [] });
-        expect(readjustment.approvalConfig).toEqual({ schema: 'proposal-approval/v1', rights: null, policy: { type: 'unanimous' } });
-        expect(readjustment.ownerApprovals).toEqual({});
+        const layout = { goal: 'parcel-layout', kind: null };
+        context.applyPublishingDraftApproval(layout, { approvalConfig: null, lens: [] });
+        expect(layout).not.toHaveProperty('approvalConfig');
+        expect(layout).not.toHaveProperty('ownerApprovals');
         // Owners do not decide a community vote, so a setup carried from its source is dropped.
         const vote = { goal: 'park', kind: 'community-vote', approvalConfig: approvalConfig() };
         context.applyPublishingDraftApproval(vote, { approvalConfig: approvalConfig(), lens: [] });
         expect(vote).not.toHaveProperty('approvalConfig');
 
         const oldAdapter = {};
-        expect(context.shouldSkipUnsupportedApprovalMint({ selectedTool: 'reparcellization', proposalMainType: 'Reparcellization' }, oldAdapter)).toBe(true);
-        expect(context.shouldSkipUnsupportedApprovalMint({ selectedTool: 'park', proposalMainType: 'Park', approvalConfig: approvalConfig() }, oldAdapter)).toBe(true);
-        expect(context.shouldSkipUnsupportedApprovalMint({ selectedTool: 'park', proposalMainType: 'Park', approvalConfig: null }, oldAdapter)).toBe(false);
+        expect(context.shouldSkipUnsupportedApprovalMint({ approvalConfig: approvalConfig() }, oldAdapter)).toBe(true);
+        expect(context.shouldSkipUnsupportedApprovalMint({ approvalConfig: null }, oldAdapter)).toBe(false);
         const capableAdapter = { supportsProposalApproval: schema => schema === 'proposal-approval/v1' };
-        expect(context.shouldSkipUnsupportedApprovalMint({ selectedTool: 'reparcellization', proposalMainType: 'Reparcellization' }, capableAdapter)).toBe(false);
+        expect(context.shouldSkipUnsupportedApprovalMint({ approvalConfig: approvalConfig() }, capableAdapter)).toBe(false);
+    });
+
+    it('refuses to project a parcel layout for upload before anything leaves the device', () => {
+        const context = loadCreateHelpers();
+        const layout = { proposalId: 'layout-1', goal: 'parcel-layout', parcelLayout: { plots: [] } };
+        expect(() => context.buildUploadReadyProposal(layout))
+            .toThrow('Parcel layouts are shared together with their agreement. Coming soon.');
+        expect(layout).not.toHaveProperty('author');
     });
 
     it('runs create and upload mint guards before parcel-NFT and wallet side effects', () => {

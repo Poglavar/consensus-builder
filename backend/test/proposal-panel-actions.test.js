@@ -82,6 +82,7 @@ function render(proposal, { applied = false, connected = false, road = false, su
         ProposalSupportView: supportView,
         ProposalKind,
         ProposalPublishTerms: require('../../frontend/js/proposals/publish-terms.js'),
+        ProposalOrigin: require('../../frontend/js/proposals/origin.js'),
         solanaWalletManager: { getState: () => connected ? { status: 'connected', accounts: ['wallet'] } : { status: 'disconnected', accounts: [] } },
         SolanaPledgeBridge: { readSummary: vi.fn(() => Promise.resolve(summary || {})) },
         SolanaPledgeClient: { formatUsdc: value => String(value) },
@@ -115,7 +116,7 @@ function render(proposal, { applied = false, connected = false, road = false, su
         buildProposalNftExplorerUrl: () => null,
         isProposalMinted: item => !!item.nft, isProposalApplied: () => applied,
         ProposalMapAction: { presentation: isApplied => ({ label: isApplied ? 'Unapply' : 'Apply', iconClass: 'fa-check', className: 'btn-warning' }) },
-        computeProposalCategoryFlags: () => ({ isRoadProposal: road, isBuildingProposal: false, isStructureProposal: false, isReparcellizationProposal: false, supportsMapToggle: true }),
+        computeProposalCategoryFlags: () => ({ isRoadProposal: road, isBuildingProposal: false, isStructureProposal: false, isParcelLayoutProposal: false, supportsMapToggle: true }),
         resolveProposalActionTypeKey: () => 'building', getLifecycleStatus: () => lifecycle,
         isNonBindingProposal: proposal => ProposalKind.isNonBinding(proposal),
         proposalKindBadgeHtml: () => '',   // list-ui.js; the kind badge is not this test's subject
@@ -224,9 +225,9 @@ describe('proposal details action footer', () => {
         expect(card.text()).not.toContain('Overlapping land');
     });
 
-    it.each([false, true])('does not describe unloaded source geometry as removed or pooled (readjustment: %s)', readjustment => {
+    it.each([false, true])('does not describe unloaded source geometry as removed or pooled (parcel layout: %s)', layout => {
         const proposal = { proposalId: 'source-state', cadastreParcelIds: ['source-1'],
-            ...(readjustment ? { reparcellization: { polygons: [] } } : {}) };
+            ...(layout ? { goal: 'parcel-layout', parcelLayout: { plots: [] } } : {}) };
         const row = parse(render(proposal).content.innerHTML)('.proposal-parcel-row');
         expect(row.attr('data-reference-state')).toBe('unloaded');
         expect(row.attr('data-parcel-replaced')).toBeUndefined();
@@ -235,7 +236,7 @@ describe('proposal details action footer', () => {
     });
 
     it('shows replacement only from current map evidence and retains the source geometry for focus', () => {
-        const proposal = { proposalId: 'source-state', cadastreParcelIds: ['source-1'], reparcellization: { polygons: [] } };
+        const proposal = { proposalId: 'source-state', cadastreParcelIds: ['source-1'], goal: 'parcel-layout', parcelLayout: { plots: [] } };
         const geometry = { type: 'Polygon', coordinates: [[[0,0],[1,0],[1,1],[0,0]]] };
         const sourceFeature = { type: 'Feature', properties: { parcelId: 'source-1' }, geometry };
         const available = parse(render(proposal, { sourceFeature }).content.innerHTML)('.proposal-parcel-row');
@@ -303,6 +304,24 @@ describe('proposal details action footer', () => {
         expect(parse(result.content.innerHTML)('.btn-bet-proposal').length).toBe(0);
         const approval = render(proposal, { approvalSetup: true });
         expect(parse(approval.footer.innerHTML)('.btn-bet-proposal').length).toBe(1);
+    });
+
+    it('keeps a parcel layout local: Share disabled with its reason, no Fork, Bet or approval action', () => {
+        const proposal = { proposalId: 'layout-1', goal: 'parcel-layout', title: 'Layout', cadastreParcelIds: ['source-1'], parcelLayout: { plots: [] } };
+        const result = render(proposal, { applied: true, editable: true });
+        const footer = parse(result.footer.innerHTML);
+        const share = footer('.btn-share-proposal');
+        expect(share.length).toBe(1);
+        expect(share.attr('disabled')).toBeDefined();
+        expect(share.attr('onclick')).toBeUndefined();
+        expect(footer('.proposal-publish-later').text()).toBe('Parcel layouts are shared together with their agreement. Coming soon.');
+        expect(footer('.btn-counterpropose-proposal').length).toBe(0);
+        expect(footer('.btn-bet-proposal').length).toBe(0);
+        expect(parse(result.content.innerHTML)('.btn-edit-approval').length).toBe(0);
+
+        const park = parse(render({ proposalId: 'park-2', goal: 'park', cadastreParcelIds: [] }, { applied: true }).footer.innerHTML);
+        expect(park('.btn-share-proposal').attr('disabled')).toBeUndefined();
+        expect(park('.proposal-publish-later').length).toBe(0);
     });
 
     it('leaves out donations, pledges and the market for a minted approval setup the contract never executes', () => {

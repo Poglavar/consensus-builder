@@ -1,5 +1,5 @@
 // Phase 6b of PARCEL-OPTIONAL.md, end to end through the real ProposalManager, live fabric and
-// parcel-mutation transaction: a road applied after a subdivision (or land readjustment) takes its
+// parcel-mutation transaction: a road applied after a subdivision (or parcel layout) takes its
 // ribbon out of the plots it crosses — on open ground, on a mixed site and on cadastral parcels — so
 // no ground is covered twice; unapplying the road gives the plots back exactly, the boot replay is
 // stable, an EARLIER road still refuses a newer subdivision over it, and a building standing in the
@@ -24,7 +24,6 @@ const applyRoute = require('../../frontend/js/proposals/apply/route.js');
 const { createLiveParcelFabric } = require('../../frontend/js/parcels/live-fabric.js');
 const finalize = require('../../frontend/js/proposals/apply/finalize.js');
 const { ProposalManager } = require('../../frontend/js/proposal-manager.js');
-const subdivision = require('../../frontend/js/proposals/subdivision.js');
 const sitePlots = require('../../frontend/js/proposals/site-plots.js');
 
 // A small grid near Šibenik, in units of 1e-4 degree (≈ 8 m east, 11 m north).
@@ -179,54 +178,28 @@ const liveIds = fabric => fabric.list().map(feature => feature.properties.parcel
 const area = value => turf.area(value.type === 'Feature' ? value : turf.feature(value));
 const multi = polygon => ({ type: 'MultiPolygon', coordinates: [polygon.coordinates] });
 
-// The plan the editor saves for a subdivision: plots cut across the site, each given to the
-// contributor whose ground it stands on, and the last one assigned to public land by hand (the
-// way a public strip is made: a plot whose owner is set to the City).
-function subdivisionPlan(site, { pool, shares }) {
-    const cut = sitePlots.cutPlots(site, { frontageEdgeIndex: 0, plotWidthM: 20, turf }).map(feature => feature.geometry);
-    const plot = (geometry, ownerKey, displayName) => ({
-        ownerKey, displayName, percent: null, color: '#cccccc', source: 'sweep-line', area: area(geometry), geometry,
-        owners: [{ ownerKey, displayName, color: '#cccccc', share: 1 }]
-    });
-    const polygons = cut.slice(0, -1).map(geometry => {
-        const key = subdivision.ownerKeyByGround(geometry, pool, shares, { turf }) || subdivision.OPEN_GROUND_OWNER_KEY;
-        const share = shares.find(entry => entry.ownerKey === key);
-        return plot(geometry, key, share ? share.displayName : 'Open ground');
-    });
-    polygons.push(plot(cut[cut.length - 1], 'public-land', 'Public land'));
-    return { algorithm: 'sweep-line', poolSource: 'site', poolGeometry: site, openGroundM2: pool.openGroundM2, polygons };
+// The layout a subdivision saves: plots cut across the site, geometry only.
+function subdivisionLayout(site) {
+    const plots = sitePlots.cutPlots(site, { frontageEdgeIndex: 0, plotWidthM: 20, turf })
+        .map(feature => ({ geometry: feature.geometry, area: area(feature.geometry), source: 'equal' }));
+    return { algorithm: 'equal', pool: site, poolSource: 'site', totalArea: area(site), plotCount: plots.length, plots };
 }
 
-function subdivisionRecord(id, site, { declared = [], binding, parcels = [], applied = false } = {}) {
-    const pool = subdivision.sitePool(site, parcels, { turf });
-    const contributions = pool.parts.map(part => ({
-        ownerKey: `owner:${part.parcelId}`, displayName: `Owner ${part.parcelId}`, area: part.areaM2, value: null, parcelIds: [part.parcelId]
-    }));
-    const { shares } = subdivision.poolShares(contributions, { openGroundM2: pool.openGroundM2 });
+function subdivisionRecord(id, site, { declared = [], binding, applied = false } = {}) {
     return {
         proposalId: id,
         title: id,
-        goal: 'reparcellization',
+        goal: 'parcel-layout',
         applied,
         createdAt: '2026-10-01T00:00:05.000Z',
         cadastreParcelIds: declared,
         site: multi(site),
         binding,
-        reparcellization: subdivisionPlan(site, { pool, shares })
+        parcelLayout: subdivisionLayout(site)
     };
 }
 
-function installOwnershipSpies() {
-    const spies = {
-        transferParcelOwnership: vi.fn(),
-        getOrCreateCityAgent: vi.fn(() => 'city'),
-        getOrCreateAgentForRecipient: vi.fn(name => `agent:${name}`)
-    };
-    Object.entries(spies).forEach(([name, fn]) => install(name, fn));
-    return spies;
-}
-
-const BARE_SITE = rect(0, 0, 12, 6); // ≈ 97 m × 67 m: five plots, the last one public
+const BARE_SITE = rect(0, 0, 12, 6); // ≈ 97 m × 67 m: five plots
 const HR1 = parcel('HR-330264-1', rect(0, 0, 6, 6));
 const MIXED_SITE = rect(3, 0, 15, 6); // half over HR-1, half over the hole beside it
 // A road across the site, north–south through a plot (≈ 8 m wide).
@@ -265,7 +238,6 @@ describe('a road built through subdivision plots on open ground', () => {
         const record = subdivisionRecord('sub', BARE_SITE, { binding: { parcels: [], coverage: 'none', source: 'server' } });
         const road = roadRecord('road', CROSS_ROAD);
         const { manager, fabric } = await harness({ records: [record, road] });
-        installOwnershipSpies();
         await expect(manager.applyProposal('sub')).resolves.toBe(true);
         const before = snapshot(fabric);
         const plotCount = fabric.list().length;
@@ -285,7 +257,7 @@ describe('a road built through subdivision plots on open ground', () => {
             expect(piece.properties.groundIds).toEqual([`ground:${hash}`]);
         });
         // The authored plan is untouched.
-        expect(globalThis.proposalStorage.getProposal('sub').reparcellization.polygons).toHaveLength(plotCount);
+        expect(globalThis.proposalStorage.getProposal('sub').parcelLayout.plots).toHaveLength(plotCount);
         const withRoad = snapshot(fabric);
 
         // Reload: the boot replay derives the same carved plots under the same ids.
@@ -301,7 +273,6 @@ describe('a road built through subdivision plots on open ground', () => {
         const road = roadRecord('road-first', CROSS_ROAD, { createdAt: '2026-09-30T00:00:00.000Z' });
         const record = subdivisionRecord('sub-later', BARE_SITE, { binding: { parcels: [], coverage: 'none', source: 'server' } });
         const { manager, fabric } = await harness({ records: [road, record] });
-        installOwnershipSpies();
         await expect(manager.applyProposal('road-first')).resolves.toBe(true);
         await expect(manager.applyProposal('sub-later')).resolves.toBe(false);
         const failure = manager.getLastApplyFailureInfo('sub-later');
@@ -313,7 +284,6 @@ describe('a road built through subdivision plots on open ground', () => {
     it('refuses a road through a building standing on a plot, and cuts the plot beside it', async () => {
         const record = subdivisionRecord('sub-b', BARE_SITE, { binding: { parcels: [], coverage: 'none', source: 'server' } });
         const { manager, fabric } = await harness({ records: [record] });
-        installOwnershipSpies();
         await expect(manager.applyProposal('sub-b')).resolves.toBe(true);
         // A house in the west part of the corner plot.
         const plot = fabric.list().find(piece => turf.booleanPointInPolygon(turf.point([LON + 0.5 * U, LAT + 0.5 * U]), piece));
@@ -352,14 +322,11 @@ describe('a road built through subdivision plots on open ground', () => {
 describe('a road built through a subdivision of a site partly over parcels', () => {
     it('cuts the plots on the parcel and on open ground alike, and unapply restores them', async () => {
         const binding = { parcels: [{ parcelId: 'HR-330264-1' }], coverage: 'partial', unsurveyedM2: 3600, source: 'server' };
-        const record = subdivisionRecord('sub-mixed', MIXED_SITE, {
-            declared: ['HR-330264-1'], binding, parcels: [{ id: 'HR-330264-1', geometry: HR1.geometry }]
-        });
+        const record = subdivisionRecord('sub-mixed', MIXED_SITE, { declared: ['HR-330264-1'], binding });
         // Across the parcel edge (x = 6): half the ribbon over HR-1, half over the hole.
         const ROAD = rect(5.5, -3, 6.5, 9);
         const road = roadRecord('road-mixed', ROAD, { cadastreParcelIds: ['HR-330264-1'], binding });
         const { manager, fabric } = await harness({ facts: [HR1], records: [record, road] });
-        installOwnershipSpies();
         await expect(manager.applyProposal('sub-mixed')).resolves.toBe(true);
         const before = snapshot(fabric);
 
@@ -380,17 +347,13 @@ describe('a road built through a subdivision of a site partly over parcels', () 
     });
 });
 
-describe('a road built through a land readjustment on parcels', () => {
-    it('cuts the readjusted plots instead of refusing the road', async () => {
+describe('a road built through a parcel layout on parcels', () => {
+    it('cuts the layout\'s plots instead of refusing the road', async () => {
         const HR2 = parcel('HR-330264-2', rect(6, 0, 12, 6));
         const binding = { parcels: [{ parcelId: 'HR-330264-1' }, { parcelId: 'HR-330264-2' }], coverage: 'complete', source: 'server' };
-        const record = subdivisionRecord('readjust', BARE_SITE, {
-            declared: ['HR-330264-1', 'HR-330264-2'], binding,
-            parcels: [{ id: 'HR-330264-1', geometry: HR1.geometry }, { id: 'HR-330264-2', geometry: HR2.geometry }]
-        });
+        const record = subdivisionRecord('readjust', BARE_SITE, { declared: ['HR-330264-1', 'HR-330264-2'], binding });
         const road = roadRecord('road-cad', CROSS_ROAD, { cadastreParcelIds: ['HR-330264-2'], binding: { parcels: [{ parcelId: 'HR-330264-2' }], coverage: 'complete', source: 'server' } });
         const { manager, fabric } = await harness({ facts: [HR1, HR2], records: [record, road] });
-        installOwnershipSpies();
         await expect(manager.applyProposal('readjust')).resolves.toBe(true);
         const before = snapshot(fabric);
 
@@ -428,7 +391,6 @@ describe('a road through a block standing on a cadastral parcel (HR-339318-5848/
         road.roadProposal.definition.points = fixture.roadPoints;
         road.roadProposal.definition.width = 7.5;
         const { manager, store } = await harness({ facts, records: [block, road] });
-        installOwnershipSpies();
         await expect(manager.applyProposal('block')).resolves.toBe(true);
         // The road really does run through the building, not just across the parcel.
         expect(overlap(turf.feature(fixture.blockBuilding), fixture.roadPolygon)).toBeGreaterThan(10);

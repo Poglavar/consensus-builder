@@ -145,7 +145,16 @@ test.describe('Site build palette controls @core', () => {
     expect(Math.abs(structureArea - siteArea)).toBeLessThan(0.1);
   });
 
-  test('Subdivide opens a site-pool readjustment editor when the authored site includes open ground', async ({ mockApi: page }) => {
+  test('Lay out parcels waits for selected parcels on a site wholly over parcels, and says why', async ({ mockApi: page }) => {
+    const { panel } = await beginParcelSite(page);
+    const layout = panel.locator('.parcel-build-btn--parcel-layout');
+    const reason = 'Lay out parcels works on selected parcels: select them instead of drawing a site.';
+    await expect(layout).toBeDisabled();
+    await expect(layout).toHaveAttribute('title', reason);
+    await expect(panel.locator('.parcel-build-disabled-reason')).toHaveText(reason);
+  });
+
+  test('Subdivide opens the parcel-layout editor over the authored site, open ground included', async ({ mockApi: page }) => {
     await openCity(page);
     await page.evaluate(async id => { await (window as any).CadastralParcelRepository.ensureIds([id]); }, SECOND_PARCEL_ID);
     await expect.poll(() => page.evaluate(id => !!(window as any).LiveParcelFabric.get(id), SECOND_PARCEL_ID)).toBe(true);
@@ -166,20 +175,34 @@ test.describe('Site build palette controls @core', () => {
     expect(openGroundArea).toBeGreaterThan(0);
     await expect(panel.locator('.site-panel__note').filter({ hasText: 'ownership is unknown' })).toContainText('ground outside the supplied parcels');
     await panel.locator('[data-site-action="propose"]').click();
-    const subdivide = page.locator('#site-info-panel .parcel-build-btn--reparcellization');
+    const subdivide = page.locator('#site-info-panel .parcel-build-btn--parcel-layout');
     await expect(subdivide).toBeEnabled();
     await expect(subdivide).toHaveText(/Subdivide/i);
     await subdivide.click();
     const modal = page.locator('.on-map-reparcellization');
     await expect(modal.locator('.on-map-editor__panel')).toBeVisible();
-    const openGroundRow = modal.locator('.reparcel-ledger-row--no-owner');
-    await expect(openGroundRow).toContainText('Open ground (ownership unknown)');
-    await expect(openGroundRow.locator('.bal-even')).toHaveText('—');
-    await expect(openGroundRow.locator('.bal-even')).toHaveAttribute('title', 'Ownership is unknown. This draft calculates no balance or cash allocation for this ground.');
-    await expect(openGroundRow.locator('.cash-offer-cell')).toHaveText('—');
-    const plan = await page.evaluate(() => JSON.parse(JSON.stringify((window as any).pendingReparcellizationPlan)));
-    expect(plan.poolSource).toBe('site');
-    expect(plan.poolGeometry).toEqual(await page.evaluate(() => JSON.parse(JSON.stringify((window as any).proposalDraftStore.getActiveDraft().fields.site))));
+    await expect(modal.locator('.on-map-editor__heading h2')).toHaveText('Subdivide');
+    // Open ground has no borders to keep.
+    await expect(modal.locator('input[name="reparcel-algorithm"][value="amend"]')).toBeDisabled();
+    await expect(modal.locator('[data-reparcel-commit]')).toBeEnabled({ timeout: 15_000 });
+    const siteArea = await page.evaluate(() => {
+      const w = window as any;
+      return w.turf.area(w.proposalDraftStore.getActiveDraft().fields.site);
+    });
+    await modal.locator('[data-reparcel-commit]').click();
+    await expect(modal).toHaveCount(0);
+    // The saved layout is pooled from the site: its pool is the site, open ground and all.
+    const layout = await page.evaluate(() => JSON.parse(JSON.stringify((window as any).pendingParcelLayout)));
+    expect(layout.poolSource).toBe('site');
+    expect(Math.abs(layout.openGroundM2 - openGroundArea)).toBeLessThan(1);
+    const areas = await page.evaluate(plan => {
+      const turf = (window as any).turf;
+      return { pool: turf.area(plan.pool), plots: plan.plots.reduce((sum: number, plot: any) => sum + turf.area(plot.geometry), 0) };
+    }, layout);
+    expect(Math.abs(areas.pool - siteArea)).toBeLessThan(0.5);
+    expect(Math.abs(areas.plots - siteArea)).toBeLessThan(1);
+    await expect.poll(() => page.evaluate(() => (window as any).proposalStorage.getAllProposals()
+      .some((proposal: any) => proposal.applied && proposal.goal === 'parcel-layout' && proposal.parcelLayout?.poolSource === 'site'))).toBe(true);
   });
 
   for (const item of [

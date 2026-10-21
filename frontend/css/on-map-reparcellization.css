@@ -1,4 +1,4 @@
-/* Repartition tools stay fixed beside the shared map; plot ownership stays in the dock. */
+/* The parcel-layout editor (js/parcel-layout.js): its tools stay fixed beside the shared map; the plot lists stay in the dock. */
 .on-map-editor__tools.reparcel-tools-map {
     position: fixed;
     box-sizing: border-box;
@@ -80,6 +80,31 @@
     flex-wrap: wrap;
 }
 
+.reparcel-alg-option:has(input:disabled) {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* The number of equal plots, under the layouts; shown while Equal plots is the layout. */
+.reparcel-count-field {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+    color: var(--cb-text);
+    font-size: var(--cb-text-sm);
+}
+
+.reparcel-count-field[hidden] {
+    display: none;
+}
+
+.reparcel-count-input {
+    width: 5em;
+    min-height: 36px;
+    font-variant-numeric: tabular-nums;
+}
+
 .reparcel-courtyard-tools {
     display: flex;
     flex-wrap: wrap;
@@ -122,14 +147,6 @@
     gap: 6px;
 }
 
-.reparcel-tools-spacer {
-    flex: 1 1 auto;
-}
-
-.reparcel-legend-actions .reparcel-allpublic-btn {
-    white-space: nowrap;
-}
-
 .reparcel-draw-toolbar {
     display: flex;
     flex-wrap: wrap;
@@ -146,11 +163,10 @@
     white-space: nowrap;
 }
 
-.reparcel-assign-mode .reparcel-legend-actions > *:not([data-reparcel-assign]):not([data-reparcel-all-public]),
-.reparcel-assign-mode .reparcel-draw-toolbar,
-.reparcel-assign-mode .reparcel-alg-options,
+/* The old plots are read-only: the layout tools stand down while they are shown. */
 .reparcel-old-plots-view .reparcel-edit-tools,
-.reparcel-old-plots-view .reparcel-alg-options {
+.reparcel-old-plots-view .reparcel-alg-options,
+.reparcel-old-plots-view .reparcel-count-field {
     opacity: 0.4;
     pointer-events: none;
 }
@@ -165,11 +181,8 @@
     flex-direction: column;
     gap: 8px;
     min-width: 0;
-    /* The owners ledger turns into one card per owner when this is narrow (modals.css). */
-    container: reparcel-legend / inline-size;
 }
 
-.reparcel-legend-list,
 .reparcel-newplots-list {
     max-height: min(28vh, 240px);
     overflow: auto;
@@ -177,46 +190,24 @@
     padding-right: 4px;
 }
 
-.reparcel-owners-table,
 .reparcel-newplots-table {
     width: 100%;
     border-collapse: collapse;
     font-size: var(--cb-text-sm);
     /* Column widths come from the header, never from the figures, so the columns hold still while
-       a plan is edited (user rule 2026-10-17). */
+       a layout is edited (user rule 2026-10-17). */
     table-layout: fixed;
 }
 
-/* Sized to their widest figure in the 480 px panel ("176,958 EUR", a "-88544.59" cash input); the
-   owner's name takes what is left. */
-.reparcel-col--figure { width: 17%; }
-.reparcel-col--cash { width: 18.5%; }
-.reparcel-col--plot { width: 8.5em; }
-
-/* Four figure columns and the owner's name share the panel: headers keep whole words. */
-.reparcel-owners-table th {
-    padding-left: 4px;
-    padding-right: 4px;
-    letter-spacing: 0;
-}
-
-.reparcel-owners-table .cash-offer-cell input.cash-offer-input {
-    width: 100%;
-}
+/* Sized to the widest area ("123,456 m²"); the plot number or parcel label takes what is left. */
+.reparcel-col--figure { width: 7.5em; }
 
 /* Figures right-aligned under right-aligned headers: digits line up and a longer number grows leftwards. */
-.reparcel-owners-table th.reparcel-col--figure,
-.reparcel-owners-table td.area-cell,
-.reparcel-oldplots-table th.reparcel-col--figure,
-.reparcel-oldplots-table td.area-cell {
+.reparcel-newplots-table th.reparcel-col--figure,
+.reparcel-newplots-table td.area-cell {
     text-align: right;
 }
 
-.reparcel-owners-table td {
-    overflow-wrap: anywhere;
-}
-
-.reparcel-owners-table th,
 .reparcel-newplots-table th {
     padding: 4px 6px 6px;
     border-bottom: 1px solid var(--cb-line);
@@ -228,7 +219,6 @@
     text-transform: uppercase;
 }
 
-.reparcel-owners-table td,
 .reparcel-newplots-table td {
     padding: 5px 6px;
     border-bottom: 1px solid var(--cb-line);
@@ -236,37 +226,9 @@
     vertical-align: top;
 }
 
-/* Five columns share the panel: narrower gutters than the plots table. */
-.reparcel-owners-table td {
-    padding-left: 4px;
-    padding-right: 4px;
-}
-
-/* A long owner name wraps inside its column (td overflow-wrap above) instead of running under the figures. */
 .reparcel-newplots-table td:first-child,
 .plot-cell {
     white-space: nowrap;
-}
-
-.reparcel-owners-table td .legend-color,
-.reparcel-newplots-table td .legend-color {
-    display: inline-block;
-    width: 10px;
-    height: 10px;
-    margin-right: 5px;
-    border-radius: 3px;
-    vertical-align: middle;
-}
-
-.legend-color {
-    width: 14px;
-    height: 14px;
-    flex-shrink: 0;
-    border-radius: 4px;
-}
-
-.legend-color--public {
-    border: 1px solid var(--cb-text-faint);
 }
 
 .area-cell {
@@ -279,34 +241,9 @@
     margin-right: 4px;
 }
 
-.newplot-owner {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    margin-right: 8px;
-    white-space: nowrap;
-}
-
-.reparcel-newplots-header,
-.reparcel-legend-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-top: 8px;
-    padding-top: 8px;
-    border-top: 1px solid var(--cb-line);
-}
-
-.reparcel-legend-panel > .reparcel-newplots-header:first-child {
-    margin-top: 0;
-    padding-top: 0;
-    border-top: 0;
-}
-
 .reparcel-oldplots-empty,
 .reparcel-coverage,
-.reparcel-status,
-.reparcel-agreement-hint {
+.reparcel-status {
     margin: 6px 0 0;
     color: var(--cb-text-muted);
     font-size: var(--cb-text-sm);
@@ -318,83 +255,16 @@
     line-height: 1.35;
 }
 
-.reparcel-agreement-hint { line-height: 1.4; }
-
-.reparcel-cashtotal {
-    margin-top: 6px;
-    color: var(--cb-text-strong);
-    font-size: var(--cb-text-md);
-    font-weight: var(--cb-weight-semibold);
-}
-
-.reparcel-cashtotal:empty {
-    display: none;
-}
-
-.cash-offer-cell input.cash-offer-input {
-    width: 70px;
-    padding: 2px 4px;
-    font-size: var(--cb-text-sm);
-    font-variant-numeric: tabular-nums;
-    text-align: right;
-}
-
-.reparcel-newplot-row {
-    cursor: pointer;
-}
-
+/* Hovering a row lights its plot up on the map. */
 .reparcel-newplot-row:hover {
     background: var(--cb-success-soft);
 }
 
+/* The building blocks to take a courtyard from, one button each. */
 .reparcel-owner-popup__joint {
     width: 100%;
     min-height: 40px;
     margin-top: 8px;
-}
-
-.reparcel-agreement-options {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    margin: 0;
-    padding: 0;
-    border: 0;
-}
-
-.reparcel-agreement-options label {
-    display: flex;
-    align-items: flex-start;
-    gap: 8px;
-    box-sizing: border-box;
-    min-height: 44px;
-    padding: 9px 10px;
-    border: 1px solid var(--cb-line-strong);
-    border-radius: 8px;
-    background: var(--cb-surface);
-    color: var(--cb-text);
-    cursor: pointer;
-}
-
-.reparcel-agreement-options label:focus-within {
-    outline: 3px solid color-mix(in srgb, var(--cb-success) 35%, transparent);
-    outline-offset: 2px;
-}
-
-.reparcel-agreement-options input[type="radio"] {
-    flex: 0 0 auto;
-    margin-top: 3px;
-    accent-color: var(--cb-primary);
-}
-
-.reparcel-agreement-options span {
-    line-height: 1.3;
-}
-
-.reparcel-agreement-options label:has(input:disabled),
-.reparcel-alg-option:has(input:disabled) {
-    opacity: 0.5;
-    cursor: not-allowed;
 }
 
 .reparcel-oldplot-tip {
@@ -474,7 +344,6 @@
     .reparcel-legend-actions { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 3px; }
     .reparcel-legend-actions > * { flex-shrink: 0; }
 
-    .reparcel-legend-list,
     .reparcel-newplots-list {
         max-height: min(24vh, 190px);
     }
@@ -491,20 +360,13 @@
 }
 
 @media (max-width: 480px) {
-    .reparcel-owners-table,
     .reparcel-newplots-table {
         font-size: 11px;
     }
 
-    .reparcel-owners-table th,
-    .reparcel-owners-table td,
     .reparcel-newplots-table th,
     .reparcel-newplots-table td {
         padding: 4px 5px;
-    }
-
-    .cash-offer-cell input.cash-offer-input {
-        width: 54px;
     }
 }
 

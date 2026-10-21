@@ -227,19 +227,17 @@
     function plotsText(plots) {
         if (!plots) return [DASH];
         if (!plots.length) return [t('parcelCompare.none', 'None')];
-        return plots.map(p => {
-            const who = p.owner || DASH;
-            return t('parcelCompare.plots.line', 'Plot {{number}} ({{area}}, {{who}}): {{overlap}} of this parcel', {
-                number: p.number, area: m2(p.areaM2), who, overlap: m2(p.overlapM2)
-            });
-        });
+        // A layout's plots carry no owners: who holds a plot is its agreement's to say.
+        return plots.map(p => t('parcelCompare.plots.line', 'Plot {{number}} ({{area}}): {{overlap}} of this parcel', {
+            number: p.number, area: m2(p.areaM2), overlap: m2(p.overlapM2)
+        }));
     }
 
     function destinationText(destination) {
         const labels = {
             public: t('panel.parcel.dossier.destination.public', 'public'),
             proposer: t('panel.parcel.dossier.destination.proposer', 'the proposer'),
-            mapping: t('panel.parcel.dossier.destination.mapping', 'per plan'),
+            'carry-over': t('panel.parcel.dossier.destination.carryOver', 'stays with its owners'),
             undecided: t('panel.parcel.dossier.destination.undecided', 'to be decided')
         };
         return labels[destination] || destination || DASH;

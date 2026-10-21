@@ -23,7 +23,7 @@ const {
     registry,
     corridorAdapter,
     buildBuildingAdapter,
-    reparcellizationAdapter,
+    parcelLayoutAdapter,
     buildStructureAdapter,
     freePlacementPatch,
     isFreePlacementDraft,
@@ -841,109 +841,95 @@ describe('geometry draft starters respect an incumbent map editor', () => {
     });
 });
 
-describe('reparcellization adapter', () => {
-    const polygon = coordinates => ({
-        geometry: { type: 'Polygon', coordinates: [coordinates] },
-        ownerKey: 'owner-a',
-        owners: [{ ownerKey: 'owner-a', share: 1 }],
-        source: 'manual'
-    });
-    const polygons = [
-        polygon([[15.9, 45.8], [15.905, 45.8], [15.905, 45.81], [15.9, 45.81], [15.9, 45.8]]),
-        polygon([[15.905, 45.8], [15.91, 45.8], [15.91, 45.81], [15.905, 45.81], [15.905, 45.8]])
+describe('parcel-layout adapter', () => {
+    const square = (x0, x1) => ({ type: 'Polygon', coordinates: [[[x0, 45.8], [x1, 45.8], [x1, 45.81], [x0, 45.81], [x0, 45.8]]] });
+    const plots = [
+        { geometry: square(15.9, 15.905), area: 1, source: 'manual' },
+        { geometry: square(15.905, 15.91), area: 1, source: 'manual' }
     ];
+    const pool = square(15.9, 15.91);
     const proposal = {
-        proposalId: 'reparcel-1',
+        proposalId: 'layout-1',
         city: 'zagreb',
-        goal: 'reparcellization',
-        title: 'Readjust block',
+        goal: 'parcel-layout',
+        primaryType: 'ParcelLayout',
+        title: 'Lay out the block',
         cadastreParcelIds: ['p1', 'p2'],
-        reparcellization: {
-            algorithm: 'manual',
-            ownershipMode: 'multiple',
-            polygons
-        }
+        parcelLayout: { algorithm: 'manual', pool, totalArea: 2, plots }
     };
 
-    it('reopens and serializes saved manual polygons without rerunning an algorithm', () => {
-        const draft = draftFor(reparcellizationAdapter, proposal);
-        const replacement = reparcellizationAdapter.serializeProposal(draft);
-
-        expect(replacement.reparcellization.polygons).toEqual(polygons);
-        expect(replacement.reparcellization.algorithm).toBe('manual');
+    it('is registered under its own key with only the design, parcels and details sections', () => {
+        const adapter = registry.get('parcel-layout');
+        expect(adapter.key).toBe('parcel-layout');
+        expect(registry.get(proposal)).toBe(adapter);
+        expect(adapter.sections).toEqual(['design', 'parcels', 'details']);
+        expect(adapter.label).toBe('Parcel layout');
+        expect(registry.get('reparcellization')).toBeNull();
     });
 
-    it('rejects one readjustment record made of disconnected islands', () => {
-        const draft = draftFor(reparcellizationAdapter, proposal);
-        draft.editorPayload.plan.polygons = [
-            polygons[0],
-            polygon([[16.0, 45.8], [16.005, 45.8], [16.005, 45.81], [16.0, 45.81], [16.0, 45.8]])
-        ];
+    it('reopens and serializes saved plots as geometry only, without terms', () => {
+        const draft = draftFor(parcelLayoutAdapter, proposal);
+        expect(draft.fields).not.toHaveProperty('offer');
+        expect(draft.fields).not.toHaveProperty('approvalConfig');
+        draft.editorPayload.plan.parcelIds = ['live-1'];
+        draft.fields = { ...draft.fields, offer: 10, offerCurrency: 'EUR', approvalConfig: { schema: 'proposal-approval/v1' }, lens: ['k'] };
+        const record = parcelLayoutAdapter.serializeProposal(draft);
 
-        expect(reparcellizationAdapter.validate(draft)).toMatchObject({
+        expect(record.goal).toBe('parcel-layout');
+        expect(record.primaryType).toBe('ParcelLayout');
+        expect(record.parcelLayout.plots).toEqual(plots);
+        expect(record.parcelLayout.pool).toEqual(pool);
+        expect(record.parcelLayout).not.toHaveProperty('parcelIds');
+        ['offer', 'budget', 'offerCurrency', 'budgetCurrency', 'kind', 'approvalConfig', 'lens', 'isConditional', 'expiresAt']
+            .forEach(key => expect(record).not.toHaveProperty(key));
+        expect(record).not.toHaveProperty('reparcellization');
+    });
+
+    it('validates the geometry with the layout rules', () => {
+        const draft = draftFor(parcelLayoutAdapter, proposal);
+        expect(parcelLayoutAdapter.validate(draft)).toMatchObject({ valid: true, errors: [] });
+
+        const gap = draftFor(parcelLayoutAdapter, proposal);
+        gap.editorPayload.plan.plots = [plots[0]];
+        expect(parcelLayoutAdapter.validate(gap).errors.map(error => error.code)).toContain('coverage-gap');
+
+        const overlap = draftFor(parcelLayoutAdapter, proposal);
+        overlap.editorPayload.plan.plots = [plots[0], plots[1], { geometry: square(15.902, 15.907), source: 'manual' }];
+        expect(parcelLayoutAdapter.validate(overlap).errors.map(error => error.code)).toContain('overlapping-plots');
+
+        const malformed = draftFor(parcelLayoutAdapter, proposal);
+        malformed.editorPayload.plan.plots.push({ geometry: { type: 'Polygon', coordinates: [[]] } });
+        expect(parcelLayoutAdapter.validate(malformed)).toMatchObject({
             valid: false,
-            errors: expect.arrayContaining([expect.objectContaining({ code: 'disconnected-readjustment' })])
+            errors: expect.arrayContaining([expect.objectContaining({ code: 'invalid-plot', path: 'editorPayload.plan' })])
         });
+
+        const empty = draftFor(parcelLayoutAdapter, proposal);
+        empty.editorPayload.plan.plots = [];
+        expect(parcelLayoutAdapter.validate(empty).errors.map(error => error.code)).toContain('missing-plots');
     });
 
-    it('round-trips the saved partial-parcel pool geometry', () => {
-        const withPool = structuredClone(proposal);
-        withPool.reparcellization.poolGeometry = {
-            type: 'Polygon',
-            coordinates: [[[15.9, 45.8], [15.91, 45.8], [15.91, 45.81], [15.9, 45.81], [15.9, 45.8]]]
-        };
-        const draft = draftFor(reparcellizationAdapter, withPool);
-        const replacement = reparcellizationAdapter.serializeProposal(draft);
+    it('cannot be edited without plots, previews its plots and summarizes geometry only', () => {
+        expect(parcelLayoutAdapter.canEdit({ goal: 'parcel-layout', parcelLayout: { plots: [] } }).editable).toBe(false);
+        expect(parcelLayoutAdapter.canEdit(proposal)).toBe(true);
 
-        expect(replacement.reparcellization.poolGeometry).toEqual(withPool.reparcellization.poolGeometry);
-        expect(reparcellizationAdapter.validate(draft).valid).toBe(true);
-    });
+        const draft = draftFor(parcelLayoutAdapter, proposal);
+        expect(parcelLayoutAdapter.renderPreview(draft)).toEqual({ kind: 'parcel-layout', viewMode: '2d', plots });
 
-    it('rejects malformed replacement polygons', () => {
-        const draft = draftFor(reparcellizationAdapter, proposal);
-        draft.editorPayload.plan.polygons.push({ geometry: { type: 'Polygon', coordinates: [[]] } });
-
-        expect(reparcellizationAdapter.validate(draft)).toMatchObject({
-            valid: false,
-            errors: expect.arrayContaining([expect.objectContaining({ code: 'invalid-polygon' })])
-        });
-    });
-
-    it('rejects gaps against a declared take even when stale area metadata would suggest coverage', () => {
-        const draft = draftFor(reparcellizationAdapter, proposal);
-        draft.editorPayload.plan.poolGeometry = {
-            type: 'Polygon',
-            coordinates: [[[15.9, 45.8], [15.91, 45.8], [15.91, 45.81], [15.9, 45.81], [15.9, 45.8]]]
-        };
-        draft.editorPayload.plan.totalArea = 1;
-        draft.editorPayload.plan.polygons = [
-            { ...polygons[0], area: 999999 }
-        ];
-        expect(reparcellizationAdapter.validate(draft)).toMatchObject({
-            valid: false,
-            errors: expect.arrayContaining([
-                expect.objectContaining({ code: 'coverage-gap' })
-            ])
-        });
-    });
-
-    it('allows an abstract output owner when input rights have not been resolved', () => {
-        const draft = draftFor(reparcellizationAdapter, proposal);
-        draft.fields.approvalConfig = {
-            schema: 'proposal-approval/v1', rights: null, policy: { type: 'unanimous' }
-        };
-
-        expect(reparcellizationAdapter.validate(draft)).toMatchObject({
-            valid: true,
-            warnings: expect.arrayContaining([expect.objectContaining({ code: 'ownership-unresolved' })])
-        });
+        draft.editorPayload.plan.plots = [{ geometry: pool, source: 'manual' }];
+        draft.fields = { ...draft.fields, offer: 99 };
+        const summary = parcelLayoutAdapter.summarizeChanges(proposal, draft);
+        expect(summary.changedFacets).toEqual([]);
+        expect(summary.geometry).toMatchObject({ changed: true, plotCountBefore: 2, plotCountAfter: 1 });
+        expect(summary.geometry.afterArea).toBeCloseTo(summary.geometry.beforeArea, 0);
+        expect(summary.geometry).not.toHaveProperty('ownershipChanged');
     });
 });
 
-// A subdivision (PARCEL-OPTIONAL.md phase 4) is a readjustment whose pool is its SITE: the bound
-// parcels' part and the open ground. Its plots must tile the site, whatever pool the plan carries,
+// A subdivision (PARCEL-OPTIONAL.md phase 4) is a parcel layout whose pool is its SITE: the bound
+// parcels' part and the open ground. Its plots must tile the site, whatever pool the layout carries,
 // and its editor opens on the site with the binding's parcels, never on a live selection.
-describe('subdivision (readjustment pooled from a site)', () => {
+describe('subdivision (parcel layout pooled from a site)', () => {
     const sitePlots = require('../../frontend/js/proposals/site-plots.js');
     const rect = (x0, y0, x1, y1) => ({
         type: 'Polygon',
@@ -951,76 +937,93 @@ describe('subdivision (readjustment pooled from a site)', () => {
             [15.876 + x1 * 1e-4, 43.7537 + y1 * 1e-4], [15.876 + x0 * 1e-4, 43.7537 + y1 * 1e-4], [15.876 + x0 * 1e-4, 43.7537 + y0 * 1e-4]]]
     });
     const site = rect(0, 0, 12, 6);
-    const plot = geometry => ({ geometry, ownerKey: 'open-ground', owners: [{ ownerKey: 'open-ground', share: 1 }], source: 'sweep-line' });
+    const plot = geometry => ({ geometry, source: 'equal' });
     const plots = sitePlots.cutPlots(site, { plotWidthM: 20, turf: globalThis.turf }).map(feature => feature.geometry);
-    const record = (polygons, poolGeometry = site) => ({
+    const record = (layoutPlots, pool = site) => ({
         proposalId: 'sub-1',
         city: 'sibenik',
-        goal: 'reparcellization',
+        goal: 'parcel-layout',
         title: 'Subdivide the hole',
         cadastreParcelIds: ['HR-330264-1'],
         site: { type: 'MultiPolygon', coordinates: [site.coordinates] },
         binding: { parcels: [{ parcelId: 'HR-330264-1' }], coverage: 'partial', source: 'server' },
-        reparcellization: { algorithm: 'sweep-line', poolSource: 'site', poolGeometry, polygons }
+        parcelLayout: { algorithm: 'equal', poolSource: 'site', pool, plots: layoutPlots }
     });
 
     it('accepts plots that tile the site exactly', () => {
-        const draft = draftFor(reparcellizationAdapter, record(plots.map(plot)));
-        expect(reparcellizationAdapter.validate(draft)).toMatchObject({ valid: true, errors: [] });
+        const draft = draftFor(parcelLayoutAdapter, record(plots.map(plot)));
+        expect(parcelLayoutAdapter.validate(draft)).toMatchObject({ valid: true, errors: [] });
     });
 
-    it('refuses plots that leave the open part of the site uncovered, even when the plan\'s pool agrees with them', () => {
-        // Only the plots over the parcel half: the plan's own pool is that half, the site is not.
+    it('refuses plots that leave the open part of the site uncovered, even when the layout\'s pool agrees with them', () => {
+        // Only the plots over the parcel half: the layout's own pool is that half, the site is not.
         const parcelHalf = rect(0, 0, 6, 6);
         const halfPlots = plots
             .map(geometry => turf.intersect(turf.feature(geometry), turf.feature(parcelHalf)))
             .filter(Boolean).map(feature => plot(feature.geometry));
-        const draft = draftFor(reparcellizationAdapter, record(halfPlots, parcelHalf));
-        const result = reparcellizationAdapter.validate(draft);
+        const draft = draftFor(parcelLayoutAdapter, record(halfPlots, parcelHalf));
+        const result = parcelLayoutAdapter.validate(draft);
         expect(result.valid).toBe(false);
         expect(result.errors.map(error => error.code)).toContain('coverage-gap');
     });
 
-    it('opens the editor on the site with the binding\'s parcels as the owned pool', async () => {
+    it('opens the editor on the site with the binding\'s parcels', async () => {
         const calls = [];
-        globalThis.openReparcellizationModal = async options => { calls.push(options); return true; };
+        globalThis.openParcelLayoutEditor = async options => { calls.push(options); return true; };
         try {
-            const draft = draftFor(reparcellizationAdapter, record(plots.map(plot)));
+            const draft = draftFor(parcelLayoutAdapter, record(plots.map(plot)));
             draft.fields.binding = { parcels: [{ parcelId: 'HR-330264-1' }], coverage: 'partial' };
-            await expect(reparcellizationAdapter.openDesignEditor(draft)).resolves.toBe(true);
+            await expect(parcelLayoutAdapter.openDesignEditor(draft)).resolves.toBe(true);
             expect(calls).toHaveLength(1);
             expect(calls[0].sitePool.boundParcelIds).toEqual(['HR-330264-1']);
             expect(calls[0].sitePool.site).toEqual({ type: 'MultiPolygon', coordinates: [site.coordinates] });
-            expect(calls[0].algorithm).toBe('sweep-line');
-            expect(globalThis.pendingReparcellizationPlan.poolGeometry).toEqual(calls[0].sitePool.site);
+            expect(calls[0].algorithm).toBe('equal');
+            expect(calls[0].initialPlots).toHaveLength(plots.length);
+            expect(calls[0].pool).toEqual(calls[0].sitePool.site);
+            expect(globalThis.pendingParcelLayout.pool).toEqual(calls[0].sitePool.site);
         } finally {
-            delete globalThis.openReparcellizationModal;
-            delete globalThis.pendingReparcellizationPlan;
+            delete globalThis.openParcelLayoutEditor;
+            delete globalThis.pendingParcelLayout;
+        }
+    });
+
+    it('hands the editor the saved open-ground area, and null when the layout has none', async () => {
+        const calls = [];
+        globalThis.openParcelLayoutEditor = async options => { calls.push(options); return true; };
+        try {
+            const saved = record(plots.map(plot));
+            saved.parcelLayout.openGroundM2 = 42.5;
+            await parcelLayoutAdapter.openDesignEditor(draftFor(parcelLayoutAdapter, saved));
+            await parcelLayoutAdapter.openDesignEditor(draftFor(parcelLayoutAdapter, record(plots.map(plot))));
+            expect(calls.map(call => call.sitePool.expectedOpenGroundM2)).toEqual([42.5, null]);
+        } finally {
+            delete globalThis.openParcelLayoutEditor;
+            delete globalThis.pendingParcelLayout;
         }
     });
 });
 
-// A readjustment's inputs are the parcels it says it pooled. The editor opens on that record, and
-// what the map happens to have loaded or selected must never redefine it — when it did, an applied
-// plan handed the editor its own CHILD parcels as inputs, the pool became the outline of the
-// outputs, and the boundary that is supposed to contain the plan was defined by the plan.
-describe('reparcellization inputs survive the trip into the design editor', () => {
+// A layout's inputs are the parcels its record declares. The editor opens on that record, and what
+// the map happens to have loaded or selected must never redefine it: when it did, an applied layout
+// handed the editor its own CHILD parcels as inputs, the pool became the outline of the outputs,
+// and the boundary that is supposed to contain the layout was defined by the layout.
+describe('parcel-layout inputs survive the trip into the design editor', () => {
     const POOLED = ['HR-335550-1791/25', 'HR-335550-1791/30', 'HR-335550-1791/31'];
-    // What the applied plan minted — these are outputs, and must never be mistaken for inputs.
+    // What the applied layout minted — these are outputs, and must never be mistaken for inputs.
     const CHILDREN = POOLED.map((id, i) => `${id}#p-plan-${i + 1}`);
 
-    function proposal(planOverrides = {}) {
+    function proposal(layoutOverrides = {}) {
         return {
             proposalId: 'p-plan',
             city: 'zagreb',
-            goal: 'reparcellization',
+            goal: 'parcel-layout',
             cadastreParcelIds: POOLED.slice(),
-            reparcellization: {
+            parcelLayout: {
                 totalArea: 1000,
-                polygons: [
-                    { ownerKey: 'a', geometry: { type: 'Polygon', coordinates: [[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]] } }
+                plots: [
+                    { source: 'manual', geometry: { type: 'Polygon', coordinates: [[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]] } }
                 ],
-                ...planOverrides
+                ...layoutOverrides
             }
         };
     }
@@ -1029,49 +1032,43 @@ describe('reparcellization inputs survive the trip into the design editor', () =
     async function openWith(draft, selectionIds) {
         const saved = {
             prepare: globalThis.prepareProposalDraftParcelSelection,
-            open: globalThis.openReparcellizationModal,
-            pending: globalThis.pendingReparcellizationPlan
+            open: globalThis.openParcelLayoutEditor,
+            pending: globalThis.pendingParcelLayout
         };
         globalThis.prepareProposalDraftParcelSelection = async () => ({
             ids: selectionIds.slice(),
             layers: selectionIds.map(id => ({ feature: { properties: { parcel_id: id } } }))
         });
-        globalThis.openReparcellizationModal = async () => true;
+        globalThis.openParcelLayoutEditor = async () => true;
         try {
-            await reparcellizationAdapter.openDesignEditor(draft);
-            return globalThis.pendingReparcellizationPlan;
+            await parcelLayoutAdapter.openDesignEditor(draft);
+            return globalThis.pendingParcelLayout;
         } finally {
             globalThis.prepareProposalDraftParcelSelection = saved.prepare;
-            globalThis.openReparcellizationModal = saved.open;
-            globalThis.pendingReparcellizationPlan = saved.pending;
+            globalThis.openParcelLayoutEditor = saved.open;
+            globalThis.pendingParcelLayout = saved.pending;
         }
     }
 
-    it('keeps the pooled parcels the plan recorded, not the ones the map resolves', async () => {
-        const draft = draftFor(reparcellizationAdapter, proposal());
+    it('keeps the pooled parcels the record declared, not the ones the map resolves', async () => {
+        const draft = draftFor(parcelLayoutAdapter, proposal());
         const plan = await openWith(draft, CHILDREN);
         expect(plan.parcelIds).toEqual(POOLED);
         expect(plan.parcelIds.some(id => id.includes('#'))).toBe(false);
     });
 
-    it('falls back to the proposal parents when a plan has no record of its inputs', async () => {
-        const draft = draftFor(reparcellizationAdapter, proposal({ parcelIds: [] }));
-        const plan = await openWith(draft, CHILDREN);
-        expect(plan.parcelIds).toEqual(POOLED);
-    });
+    // The remaining branch — no declaration, so the live selection IS the input — is not reachable
+    // from here: prepareProposalDraftParcelSelection is module-local, so it cannot be stubbed and
+    // under node it resolves to nothing. Covered by the browser instead.
 
-    // The remaining branch — no record, no parents, so the live selection IS the input — is not
-    // reachable from here: prepareProposalDraftParcelSelection is module-local, so it cannot be
-    // stubbed and under node it resolves to nothing. Covered by the browser instead.
-
-    it('reopens a saved plan even when none of its parcels are on the map', async () => {
-        const draft = draftFor(reparcellizationAdapter, proposal());
+    it('reopens a saved layout even when none of its parcels are on the map', async () => {
+        const draft = draftFor(parcelLayoutAdapter, proposal());
         const plan = await openWith(draft, []);
         expect(plan.parcelIds).toEqual(POOLED);
     });
 
-    it('still refuses a plan that has neither polygons nor parcels to work from', async () => {
-        const draft = draftFor(reparcellizationAdapter, proposal({ polygons: [] }));
+    it('still refuses a layout that has neither plots nor parcels to work from', async () => {
+        const draft = draftFor(parcelLayoutAdapter, proposal({ plots: [] }));
         await expect(openWith(draft, [])).rejects.toThrow(/not available/i);
     });
 });
@@ -1527,135 +1524,54 @@ describe('published source identity classification', () => {
     });
 });
 
-describe('reparcellization publish handoff', () => {
-    it('restores transient parcel IDs when staging a saved plan for terms', async () => {
+// A parcel layout is shared together with its agreement (plan-design-agreement.md, M1 (a)): the
+// create dialog that attaches terms for publishing never opens for one.
+describe('parcel layouts are not staged for publishing', () => {
+    it('refuses with the publish-later message and opens no create dialog', async () => {
         const shellPath = '../../frontend/js/proposal-editor-shell.js';
+        require('../../frontend/js/proposals/publish-terms.js');
         const previous = {
             proposalDraftStore: globalThis.proposalDraftStore,
             prepare: globalThis.prepareProposalDraftParcelSelection,
             show: globalThis.showProposalDialog,
-            pending: globalThis.pendingReparcellizationPlan,
-            draftId: globalThis.pendingProposalDraftId,
-            source: globalThis.pendingProposalReplacementSource
-        };
-        const plan = {
-            algorithm: 'amend',
-            inputParcels: [{ label: 'A', geometry: { type: 'Polygon', coordinates: [[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]] } }],
-            polygons: [{ geometry: { type: 'Polygon', coordinates: [[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]] }, jointPool: true }]
+            alert: globalThis.showStyledAlert
         };
         const draft = {
-            id: 'draft-handoff', goal: 'reparcellization', adapterKey: 'reparcellization',
-            sourceLocalProposalId: null, sourceSnapshot: {}, revision: 4,
-            fields: { selectedParcelIds: ['live-piece-1', 'live-piece-2'], name: 'Block', description: 'Plan', offer: 10, offerCurrency: 'USDT' },
-            editorPayload: { plan }, validation: { valid: true }
+            id: 'draft-layout', goal: 'parcel-layout', adapterKey: 'parcel-layout',
+            sourceLocalProposalId: null, sourceSnapshot: {}, revision: 1,
+            fields: { selectedParcelIds: ['live-piece-1'], name: 'Block', description: 'Layout' },
+            editorPayload: { plan: { algorithm: 'equal', plots: [] } }, validation: { valid: true }
         };
-        let opened = null;
-        globalThis.proposalDraftStore = {
-            validateDraft: () => draft,
-            getPublishReceipt: () => null,
-            updateDraft: () => draft,
-            markPublishFailed: () => {}
-        };
-        globalThis.prepareProposalDraftParcelSelection = async () => ({
-            ids: draft.fields.selectedParcelIds.slice(),
-            layers: draft.fields.selectedParcelIds.map(id => ({ feature: { properties: { parcel_id: id } } }))
-        });
-        globalThis.showProposalDialog = overrides => { opened = overrides; };
-        delete globalThis.pendingReparcellizationPlan;
-        delete globalThis.pendingProposalDraftId;
-        delete globalThis.pendingProposalReplacementSource;
-        delete require.cache[require.resolve(shellPath)];
-        require(shellPath);
-        try {
-            await globalThis.stageProposalDraftForPublishing(draft.id);
-            expect(opened.geometryPreset.submitted).toBe(true);
-            expect(plan).not.toHaveProperty('parcelIds');
-            expect(globalThis.pendingReparcellizationPlan.parcelIds).toEqual(['live-piece-1', 'live-piece-2']);
-            expect(globalThis.pendingReparcellizationPlan.inputParcels).toEqual(plan.inputParcels);
-            expect(globalThis.pendingReparcellizationPlan.polygons[0].jointPool).toBe(true);
-        } finally {
-            if (previous.proposalDraftStore === undefined) delete globalThis.proposalDraftStore;
-            else globalThis.proposalDraftStore = previous.proposalDraftStore;
-            if (previous.prepare === undefined) delete globalThis.prepareProposalDraftParcelSelection;
-            else globalThis.prepareProposalDraftParcelSelection = previous.prepare;
-            if (previous.show === undefined) delete globalThis.showProposalDialog;
-            else globalThis.showProposalDialog = previous.show;
-            if (previous.pending === undefined) delete globalThis.pendingReparcellizationPlan;
-            else globalThis.pendingReparcellizationPlan = previous.pending;
-            if (previous.draftId === undefined) delete globalThis.pendingProposalDraftId;
-            else globalThis.pendingProposalDraftId = previous.draftId;
-            if (previous.source === undefined) delete globalThis.pendingProposalReplacementSource;
-            else globalThis.pendingProposalReplacementSource = previous.source;
-        }
-    });
-
-    it('resumes a persisted agreement batch without requiring replaced live pieces', async () => {
-        const shellPath = '../../frontend/js/proposal-editor-shell.js';
-        const previous = {
-            proposalDraftStore: globalThis.proposalDraftStore,
-            prepare: globalThis.prepareProposalDraftParcelSelection,
-            show: globalThis.showProposalDialog,
-            pending: globalThis.pendingReparcellizationPlan
-        };
-        const plan = {
-            algorithm: 'amend',
-            inputParcels: [{ label: 'A', geometry: { type: 'Polygon', coordinates: [[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]] } }],
-            polygons: [{ geometry: { type: 'Polygon', coordinates: [[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]] }, jointPool: true }]
-        };
-        const draft = {
-            id: 'draft-batch-retry', goal: 'reparcellization', adapterKey: 'reparcellization',
-            sourceSnapshot: {}, revision: 2,
-            fields: { selectedParcelIds: ['replaced-live-piece'], name: 'Block', description: 'Plan', offer: 10, offerCurrency: 'USDT' },
-            editorPayload: { plan }, publish: { parcelAgreementBatch: { groupId: 'group-1', items: [] } },
-            validation: { valid: true }
-        };
-        let prepareCalls = 0;
         let opened = 0;
+        let prepared = 0;
+        const alerts = [];
         globalThis.proposalDraftStore = {
+            getDraft: () => draft,
             validateDraft: () => draft,
             getPublishReceipt: () => null,
             updateDraft: () => draft,
             markPublishFailed: () => {}
         };
-        globalThis.prepareProposalDraftParcelSelection = async () => { prepareCalls += 1; throw new Error('must not resolve replaced pieces'); };
+        globalThis.prepareProposalDraftParcelSelection = async () => { prepared += 1; return { ids: [], layers: [] }; };
         globalThis.showProposalDialog = () => { opened += 1; };
-        delete globalThis.pendingReparcellizationPlan;
+        globalThis.showStyledAlert = message => { alerts.push(message); };
         delete require.cache[require.resolve(shellPath)];
         require(shellPath);
         try {
-            await globalThis.stageProposalDraftForPublishing(draft.id);
-            expect(prepareCalls).toBe(0);
-            expect(opened).toBe(1);
-            expect(globalThis.pendingReparcellizationPlan.parcelIds).toEqual(['replaced-live-piece']);
+            await expect(globalThis.stageProposalDraftForPublishing(draft.id)).resolves.toBe(false);
+            expect(opened).toBe(0);
+            expect(prepared).toBe(0);
+            expect(alerts).toEqual(['Parcel layouts are shared together with their agreement. Coming soon.']);
         } finally {
-            if (previous.proposalDraftStore === undefined) delete globalThis.proposalDraftStore;
-            else globalThis.proposalDraftStore = previous.proposalDraftStore;
-            if (previous.prepare === undefined) delete globalThis.prepareProposalDraftParcelSelection;
-            else globalThis.prepareProposalDraftParcelSelection = previous.prepare;
-            if (previous.show === undefined) delete globalThis.showProposalDialog;
-            else globalThis.showProposalDialog = previous.show;
-            if (previous.pending === undefined) delete globalThis.pendingReparcellizationPlan;
-            else globalThis.pendingReparcellizationPlan = previous.pending;
+            Object.entries({
+                proposalDraftStore: previous.proposalDraftStore,
+                prepareProposalDraftParcelSelection: previous.prepare,
+                showProposalDialog: previous.show,
+                showStyledAlert: previous.alert
+            }).forEach(([key, value]) => {
+                if (value === undefined) delete globalThis[key];
+                else globalThis[key] = value;
+            });
         }
     });
-});
-
-// Saving a local LR preview must use the same per-owner money as its later terms and child agreements.
-it('serializes LR compensation from owner cents, including a cash-free land exchange', () => {
-    const proposal = {
-        proposalId: 'ledger-source', goal: 'reparcellization', primaryType: 'Reparcellization',
-        cadastreParcelIds: ['cadastre-a'], offer: 9999, offerCurrency: 'USDT',
-        reparcellization: {
-            polygons: [{ ownerKey: 'a', owners: [{ ownerKey: 'a', share: 1 }],
-                geometry: turf.bboxPolygon([0, 0, 1, 1]).geometry }],
-            ownerShares: [{ ownerKey: 'a', cashOffer: 12.34 }, { ownerKey: 'b', cashOffer: 0.01 }]
-        }
-    };
-    const draft = draftFor(reparcellizationAdapter, proposal);
-    expect(reparcellizationAdapter.serializeProposal(draft)).toMatchObject({
-        offer: 12.35, budget: 12.35, offerCurrency: 'EUR', budgetCurrency: 'EUR'
-    });
-    draft.editorPayload.plan.ownerShares.forEach(owner => { owner.cashOffer = 0; });
-    expect(reparcellizationAdapter.serializeProposal(draft)).toMatchObject({ offer: 0, budget: 0 });
-    expect(proposal.offer).toBe(9999);
 });

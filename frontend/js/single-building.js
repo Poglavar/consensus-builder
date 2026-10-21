@@ -1562,8 +1562,7 @@
                 type: f.type || 'Feature',
                 geometry: f.geometry ? JSON.parse(JSON.stringify(f.geometry)) : null,
                 properties: f.properties ? { ...f.properties } : {}
-            })),
-            reparcellizationPolygons: null
+            }))
         };
 
         const proposal = {

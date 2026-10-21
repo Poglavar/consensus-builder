@@ -172,7 +172,17 @@
         return found === undefined ? null : String(found);
     }
 
+    // A parcel layout is geometry only (plan-design-agreement.md, M1 (a)): its draft holds its name,
+    // description and ground, never terms, owners or approval.
+    const PARCEL_LAYOUT_FIELDS = Object.freeze(['name', 'titleOrigin', 'description', 'selectedParcelIds', 'cadastreParcelIds', 'site', 'toleranceM']);
+
     function proposalFields(proposal) {
+        const fields = allProposalFields(proposal);
+        if (proposalGoal(proposal) !== 'parcel-layout') return fields;
+        return Object.fromEntries(PARCEL_LAYOUT_FIELDS.filter(key => key in fields).map(key => [key, fields[key]]));
+    }
+
+    function allProposalFields(proposal) {
         const cadastreParcelIds = Array.isArray(proposal?.cadastreParcelIds)
             ? proposal.cadastreParcelIds.map(String)
             : [];
@@ -220,8 +230,8 @@
                 definition: cloneDraftValue(definition)
             };
         }
-        if (goal === 'reparcellization') {
-            return { plan: cloneDraftValue(proposal?.reparcellization || null) };
+        if (goal === 'parcel-layout') {
+            return { plan: cloneDraftValue(proposal?.parcelLayout || null) };
         }
         if (['buildings', 'row', 'parcelBased', 'single'].includes(goal)) {
             const buildingProposal = proposal?.buildingProposal || {};
@@ -252,8 +262,8 @@
         if (goal === 'road-track') {
             return cloneDraftValue(payload.definition?.polygon || null);
         }
-        if (goal === 'reparcellization') {
-            return cloneDraftValue(payload.plan?.polygons || null);
+        if (goal === 'parcel-layout') {
+            return cloneDraftValue(payload.plan?.plots || null);
         }
         if (['buildings', 'row', 'parcelBased', 'single'].includes(goal)) {
             const context = payload.context || {};
@@ -814,7 +824,7 @@
             ['acceptedParcelIds', 'ownerAcceptances', 'ownerApprovals', 'ownerApprovalHistory', 'ownershipApprovals', 'localPurchaseSimulation']
                 .forEach(key => delete output[key]);
             // The share/upload link is the numeric serverProposalId. A proposal built from a draft is
-            // a NEW proposal (buildings, structures, reparcellization, station, road design-finalize
+            // a NEW proposal (buildings, structures, parcel layouts, station, road design-finalize
             // all commit through here); it must not inherit the source's server-upload identity, or an
             // edit would silently reuse the original's /proposals/:id instead of a fresh upload.
             delete output.serverProposalId;

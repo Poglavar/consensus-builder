@@ -215,12 +215,12 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
 
         const parcelNumberDisplay = window.ProposalDisplayText.parcelLabel(getParcelDisplayNumberFromProperties(feature?.properties, parcelId));
         const parcelLabelText = tProposal('panel.proposal.parcels.label', 'Parcel {{id}}', { id: parcelNumberDisplay || parcelId });
-        // An owner's review of an applied readjustment (dividers.md, M6): this parcel before, the
+        // An owner's review of an applied parcel layout (dividers.md, M6): this parcel before, the
         // plots that came out of it after. Same session as the panel's own "Before / after".
         const parcelCompare = (typeof window !== 'undefined') ? window.ProposalBeforeAfter : null;
         const proposalKeyForCompare = (typeof getProposalKey === 'function' ? getProposalKey(fullProposal || proposal) : null) || (fullProposal || proposal).proposalId;
-        // An applied readjustment can replace its inputs in the map model: that is the case to compare.
-        const parcelCompareHtml = ((fullProposal || proposal).reparcellization && parcelCompare && proposalKeyForCompare
+        // An applied parcel layout can replace its inputs in the map model: that is the case to compare.
+        const parcelCompareHtml = ((fullProposal || proposal).parcelLayout && parcelCompare && proposalKeyForCompare
             && isProposalApplied(fullProposal || proposal) && parcelCompare.canCompare(fullProposal || proposal))
             ? `<button type="button" class="btn btn-quiet btn-sm btn-compare-parcel" data-focus-parcel="${safeAgentText(String(parcelId))}" aria-pressed="${parcelCompare.isActive(proposalKeyForCompare) && parcelCompare.activeFocus() === String(parcelId) ? 'true' : 'false'}"
                     title="${tProposal('mapCompare.sliderLabel', 'Before and after comparison')}"
@@ -294,13 +294,13 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
             roadName = liveFeature.properties.roadName || null;
         }
 
-        // A plot this readjustment made is named as the plan names it (plot number, area, who gets
-        // it), not by its internal synthetic id ("2897/2#c2-…-1").
+        // A plot this parcel layout made is named as the layout names it (plot number, area, who
+        // holds it), not by its internal synthetic id ("2897/2#c2-…-1").
         const plotProps = liveFeature?.properties;
         const plotOwners = Array.isArray(plotProps?.owners) && plotProps.owners.length
             ? plotProps.owners.map(owner => owner?.displayName || owner?.ownerKey).filter(Boolean).join(', ')
             : (plotProps?.displayName || '');
-        if ((fullProposal || proposal).reparcellization && plotProps && Number.isFinite(plotProps.syntheticIndex)
+        if ((fullProposal || proposal).parcelLayout && plotProps && Number.isFinite(plotProps.syntheticIndex)
             && String(plotProps.producedByProposalId || '') === String((fullProposal || proposal).proposalId || '')) {
             const plotArea = Number.isFinite(plotProps.calculatedArea) ? CbFormat.formatArea(plotProps.calculatedArea) : '';
             const plotLabel = tProposal('panel.proposal.parcels.newPlot', 'New plot {{n}}', { n: plotProps.syntheticIndex });
@@ -376,7 +376,6 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         isRoadProposal,
         isBuildingProposal,
         isStructureProposal,
-        isReparcellizationProposal,
         supportsMapToggle
     } = computeProposalCategoryFlags(fullProposal, { fallbackProposal: proposal });
 
@@ -468,14 +467,24 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         `;
     }
 
+    // A parcel layout cannot be shared, minted, bet on or forked into terms yet: it leaves the
+    // device with the agreement that includes it (ProposalPublishTerms.publishRefusal).
+    const publishRefusal = window.ProposalPublishTerms.publishRefusal(fullProposal || proposal);
     // Share is the main action of an applied proposal; before it is applied, applying is.
-    const shareButtonHtml = `
+    const shareButtonHtml = publishRefusal
+        ? `
+        <button type="button" class="btn btn-share-proposal" disabled aria-disabled="true" aria-describedby="proposal-publish-later-note">
+            <i class="fas fa-share-alt"></i> ${tProposal('panel.proposal.actions.share', 'Share')}
+        </button>
+        <p class="proposal-publish-later" id="proposal-publish-later-note">${safeAgentText(publishRefusal.message)}</p>
+    `
+        : `
         <button class="btn ${appliedState ? 'btn-primary' : ''} btn-share-proposal" onclick="shareProposalFromDetails()">
             <i class="fas fa-share-alt"></i> ${tProposal('panel.proposal.actions.share', 'Share')}
         </button>
     `;
 
-    const betButtonHtml = proposalKey ? `
+    const betButtonHtml = proposalKey && !publishRefusal ? `
         <button type="button" class="btn btn-bet-proposal" onclick="openProposalOutcomeBet(${inlineJsArg(proposalKey)})">
             <i class="fas fa-coins" aria-hidden="true"></i> ${tProposal('panel.proposal.actions.betOutcome', 'Bet on outcome')}
         </button>
@@ -483,7 +492,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
 
     // Fork opens a cloned draft's proposal form. Edit geometry below opens its design tool
     // directly; both preserve the published source record.
-    const forkButtonHtml = proposalKey
+    const forkButtonHtml = proposalKey && !publishRefusal
         ? `
         <button class="btn btn-counterpropose-proposal"
             onclick="proposeExistingProposal(${inlineJsArg(proposalKey)})"
@@ -530,7 +539,9 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     // The editor's Approval tab (rights, rule, lens) for a proposal the editor can open. Saving there
     // updates one's own local record in place and forks a counterproposal of a published one
     // (proposals/lineage.js editsInPlace); either way the acceptances given so far do not carry over.
+    // A parcel layout has no owners or approval of its own: those belong to its agreement.
     const approvalEditable = proposalKey
+        && (fullProposal || proposal).goal !== 'parcel-layout'
         && typeof editProposalApproval === 'function'
         && typeof getProposalEditCapability === 'function'
         && getProposalEditCapability(fullProposal || proposal).editable === true;
@@ -1075,8 +1086,6 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
             ${parcelSetRelationsHtml}
             ${window.ProposalApprovalRuntime?.uses(fullProposal || proposal) === true ? '<div class="approval-card-slot" data-approval-card-slot></div>' : ''}
             ${editApprovalButtonHtml}
-            ${typeof proposalRequiresDealConsent === 'function' && proposalRequiresDealConsent(fullProposal || proposal)
-                ? buildReadjustmentCashReviewHtml(fullProposal || proposal) : ''}
             ${hasApprovalSetup || isNonBindingProposal(fullProposal) ? '' : parcelAcceptancePlaceholder}
             ${hasApprovalSetup || isNonBindingProposal(fullProposal) ? '' : ownerAcceptancePlaceholder}
 
@@ -2704,7 +2713,7 @@ function driveTrackProposalIn3DSim(proposalKey) {
         for (const p of all) {
             if (!p) continue;
             const applied = isApplied(p)
-                || ['roadProposal', 'buildingProposal', 'structureProposal', 'reparcellization', 'decideLaterProposal']
+                || ['roadProposal', 'buildingProposal', 'structureProposal', 'parcelLayout', 'decideLaterProposal']
                     .some(key => p[key] && isApplied(p, p[key]));
             if (!applied) continue;
             const sid = window.getSerialProposalId(p);

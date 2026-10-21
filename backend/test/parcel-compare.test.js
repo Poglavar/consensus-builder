@@ -107,20 +107,22 @@ describe('what a proposal does to this parcel', () => {
         expect(effect.consent.parcelAccepted).toBeNull();
     });
 
-    it('maps a readjustment onto the plots this parcel becomes, largest share first', () => {
-        const plan = { proposalId: 'readj', goal: 'reparcellization', cadastreParcelIds: [PARCEL_ID, 'HR-1-101'],
-            reparcellization: { polygons: [
-                { geometry: rect(-40, 0, 0, 25), area: 1000, displayName: 'Neighbour' },
-                { geometry: rect(0, 0, 10, 25), area: 250, displayName: 'Owner A' },
-                { geometry: rect(10, 0, 40, 25), area: 750, displayName: 'Public land' }
+    it('maps a parcel layout onto the plots this parcel becomes, largest share first, without owners', () => {
+        const layout = { proposalId: 'layout', goal: 'parcel-layout', cadastreParcelIds: [PARCEL_ID, 'HR-1-101'],
+            parcelLayout: { plots: [
+                { geometry: rect(-40, 0, 0, 25), area: 1000, source: 'manual' },
+                { geometry: rect(0, 0, 10, 25), area: 250, source: 'manual' },
+                { geometry: rect(10, 0, 40, 25), area: 750, source: 'manual' }
             ] } };
-        const effect = compare.parcelEffect(plan, PARCEL);
+        const effect = compare.parcelEffect(layout, PARCEL);
         expect(effect.plots.map(p => p.number)).toEqual([3, 2]);
-        expect(effect.plots[0]).toMatchObject({ number: 3, areaM2: 750, owner: 'Public land' });
+        expect(effect.plots[0]).toMatchObject({ number: 3, areaM2: 750 });
+        expect(effect.plots[0]).not.toHaveProperty('owner');
         expect(effect.plots[0].overlapM2).toBeCloseTo(750, -1);
-        expect(effect.plots[1]).toMatchObject({ number: 2, areaM2: 250, owner: 'Owner A' });
+        expect(effect.plots[1]).toMatchObject({ number: 2, areaM2: 250 });
         expect(effect.take.extent).toBe('whole');
-        expect(effect.ownership.destination).toBe('mapping');
+        // A layout changes borders, never ownership.
+        expect(effect.ownership.destination).toBe('carry-over');
     });
 
     it('measures buildings on the parcel only: count, footprint, floors, floor area', () => {

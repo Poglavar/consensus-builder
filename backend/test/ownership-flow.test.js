@@ -50,7 +50,8 @@ describe('destinationForGoal', () => {
         expect(flowApi.destinationForGoal('station')).toBe('public');
         expect(flowApi.destinationForGoal('single')).toBe('proposer');
         expect(flowApi.destinationForGoal('buildings')).toBe('proposer');
-        expect(flowApi.destinationForGoal('reparcellization')).toBe('mapping');
+        expect(flowApi.destinationForGoal('parcel-layout')).toBe('carry-over');
+        expect(flowApi.destinationForGoal('reparcellization')).toBeNull();
         expect(flowApi.destinationForGoal('decide-later')).toBe('undecided');
     });
 

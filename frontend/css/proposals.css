@@ -2448,6 +2448,15 @@ textarea.proposal-description-input {
     font-size: 0.85em;
 }
 
+/* Why a parcel layout has no Share yet: it leaves the device with its agreement (M2). */
+.proposal-publish-later {
+    flex-basis: 100%;
+    margin: 4px 0;
+    font-size: 0.85em;
+    color: var(--cb-text-muted);
+    overflow-wrap: anywhere;
+}
+
 /* The create dialog opens immediately; its map preview is built a tick later and lands here. The
    placeholder holds the dialog's height steady so the form does not jump when the preview arrives. */
 .proposal-screenshot-loading {
@@ -2617,6 +2626,13 @@ textarea.proposal-description-input {
     border: 1px solid var(--cb-line-strong);
 }
 
+/* A row that cannot be uploaded (a parcel layout) says why under its name. */
+.share-plan-row__refusal {
+    font-size: 12px;
+    color: var(--cb-text-muted);
+    overflow-wrap: anywhere;
+}
+
 /* Unchecked = out of the plan: the row dims and its chip fades with the map colouring. */
 .share-plan-row.is-excluded {
     opacity: 0.6;
@@ -2729,29 +2745,6 @@ body.share-plan-mode .leaflet-control-container .leaflet-control-zoom {
     font-weight: normal;
     line-height: 1.35;
 }
-
-.readjustment-cash-review {
-    margin: 8px 0 12px;
-    padding: 10px;
-    border: 1px solid var(--border-color, var(--cb-line));
-    border-radius: 8px;
-}
-
-.readjustment-cash-review h4 { margin: 0 0 4px; font-size: 13px; }
-.readjustment-cash-review p { margin: 0 0 8px; font-size: 12px; color: var(--text-secondary, var(--cb-text-muted)); }
-.readjustment-cash-review ul { margin: 0; padding: 0; list-style: none; }
-.readjustment-cash-review li,
-.readjustment-cash-review-total {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    gap: 12px;
-    padding: 4px 0;
-    font-size: 13px;
-}
-.readjustment-cash-review li span { overflow-wrap: anywhere; }
-.readjustment-cash-review strong { white-space: nowrap; }
-.readjustment-cash-review-total { border-top: 1px solid var(--border-color, var(--cb-line)); margin-top: 4px; }
-.readjustment-cash-review-invalid { color: var(--color-danger, var(--cb-danger)); font-size: 13px; }
 
 /* The kind ("Who decides?", proposal-kinds.md) picks the terms: money for an owner deal, a voting
    period for a vote. create.js applyProposalKindToDialog sets data-proposal-kind on the overlay. */

@@ -57,7 +57,7 @@
 
     function meterLabel(test, t) {
         if (test.of === 'owners' && test.scope === 'all') {
-            return test.measure === 'headcount' ? t('proposalApproval.meterOwners', 'Owners') : t('reparcellization.modal.colArea', 'Area');
+            return test.measure === 'headcount' ? t('proposalApproval.meterOwners', 'Owners') : t('proposalApproval.meterArea', 'Area');
         }
         return t(`proposalApproval.rules.meter.${slug(test)}`, METERS[keyOf(test)]);
     }

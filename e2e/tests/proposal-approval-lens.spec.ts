@@ -1,4 +1,4 @@
-// Purpose: four owners across three parcels accept a land readjustment only for themselves, through a
+// Purpose: four owners across three parcels accept an owner deal only for themselves, through a
 // real lens member process (backend/lens/run.mjs --rights) and wallet signatures, and their receipts
 // still count after a reload. Parcel C is co-owned, so its area counts only once both owners accept.
 // For a published proposal, two browsers share decisions through the relay's real handlers.
@@ -53,16 +53,14 @@ async function freePort(): Promise<number> {
   });
 }
 
-// One plot per owner; the third is jointly owned by C and D. The plots tile the readjustment pool.
-const strip = (x0: number, x1: number) => ({ type: 'Polygon', coordinates: [[[x0, 45.8], [x1, 45.8], [x1, 45.8002], [x0, 45.8002], [x0, 45.8]]] });
-const POOL = strip(15.9819, 15.9821);
-
-async function seedReadjustment(page: Page, memberKeys: string | string[], extra: Record<string, unknown> = {}): Promise<string> {
-  return page.evaluate(({ parcels, pool, plots, member, extra }) => {
+// An owner deal for three parcels: A and B have one owner each, C is co-owned by Owners C and D.
+// Every owner must accept before the payout.
+async function seedOwnerDeal(page: Page, memberKeys: string | string[], extra: Record<string, unknown> = {}): Promise<string> {
+  return page.evaluate(({ parcels, member, extra }) => {
     const w = window as any;
     return w.proposalStorage.addProposal({
-      title: 'Lens-backed readjustment',
-      goal: 'reparcellization',
+      title: 'Lens-backed owner deal',
+      goal: 'as-is',
       lifecycleStatus: 'Active',
       funded: false,
       cadastreParcelIds: [parcels.a, parcels.b, parcels.c],
@@ -80,27 +78,10 @@ async function seedReadjustment(page: Page, memberKeys: string | string[], extra
       offer: 25,
       offerCurrency: 'EUR',
       isConditional: true,
-      reparcellization: {
-        poolGeometry: pool,
-        poolSource: 'site',
-        contributionBasis: 'area',
-        polygons: [
-          { geometry: plots[0], jointPool: false, owners: [{ ownerKey: 'owner-a', share: 1 }] },
-          { geometry: plots[1], jointPool: false, owners: [{ ownerKey: 'owner-b', share: 1 }] },
-          { geometry: plots[2], jointPool: true, owners: [{ ownerKey: 'owner-c', share: 0.5 }, { ownerKey: 'owner-d', share: 0.5 }] }
-        ],
-        ownerShares: [
-          // Owner A pays for land beyond its entitlement; the sponsor covers the rest (20.00).
-          { ownerKey: 'owner-a', cashOffer: 0, cashPayment: 5, contributedArea: 100 },
-          { ownerKey: 'owner-b', cashOffer: 10, contributedArea: 50 },
-          { ownerKey: 'owner-c', cashOffer: 7.5, contributedArea: 12.5 },
-          { ownerKey: 'owner-d', cashOffer: 7.5, contributedArea: 12.5 }
-        ]
-      },
       // Last, so a scenario can replace the approval setup (a scheme with an authority).
       ...extra
     });
-  }, { parcels: PARCELS, pool: POOL, plots: [strip(15.9819, 15.98197), strip(15.98197, 15.98204), strip(15.98204, 15.9821)], member: memberKeys, extra });
+  }, { parcels: PARCELS, member: memberKeys, extra });
 }
 
 async function establishLocalProfile(page: Page): Promise<void> {
@@ -269,11 +250,11 @@ test('choosing the second approval member verifies and records an owner receipt 
   await openCity(page);
   await page.evaluate(() => (window as any).i18n.setLanguage('en'));
   await establishLocalProfile(page);
-  const proposalId = await seedReadjustment(page, [first.memberKey, second.memberKey]);
+  const proposalId = await seedOwnerDeal(page, [first.memberKey, second.memberKey]);
   expect(await page.evaluate(id => {
     const w = window as any;
     return !!w.currentConsentBindingHash(w.proposalStorage.getProposal(id));
-  }, proposalId), 'the seeded readjustment must be valid for both lens members').toBe(true);
+  }, proposalId), 'the seeded owner deal must be valid for both lens members').toBe(true);
 
   await useWallet(page, wallets.a.address);
   await openLand(page, proposalId);
@@ -357,11 +338,11 @@ test('four owners across three parcels accept only for themselves through a lens
   await openCity(page);
   await page.evaluate(() => (window as any).i18n.setLanguage('en'));
   await establishLocalProfile(page);
-  const proposalId = await seedReadjustment(page, memberKey);
+  const proposalId = await seedOwnerDeal(page, memberKey);
   expect(await page.evaluate(id => {
     const w = window as any;
     return !!w.currentConsentBindingHash(w.proposalStorage.getProposal(id));
-  }, proposalId), 'the seeded readjustment must be valid').toBe(true);
+  }, proposalId), 'the seeded owner deal must be valid').toBe(true);
 
   await openLand(page, proposalId);
   await expect(card(page)).toContainText('Configured approval rules not met');
@@ -386,11 +367,7 @@ test('four owners across three parcels accept only for themselves through a lens
   await rowA.getByRole('button', { name: 'Accept', exact: true }).click();
   await expect(dialog(page)).toHaveAttribute('data-approval-review', 'owner-a');
   await expect(dialog(page).locator(`[data-approval-contribution="${PARCELS.a}"]`)).toContainText('Your share 1/1');
-  await expect(dialog(page).locator('[data-approval-plot="1"]')).toContainText('100%');
-  await expect(dialog(page).locator('[data-approval-cash="pays"]')).toContainText('Cash you would pay');
-  await expect(dialog(page).locator('[data-approval-cash="pays"]')).toContainText('5.00');
-  await expect(dialog(page)).toContainText(/Proposed owner cash: 25\.00\sEUR to receive and 5\.00\sEUR to pay\./);
-  await expect(dialog(page)).toContainText(/The sponsor would pay 20\.00\sEUR\./);
+  await expect(dialog(page)).toContainText('Authored terms require every owner to accept before payout.');
   await screenshot(page, testInfo, 'review-owner-a');
   expect(await page.evaluate(() => (window as any).__e2eWallet.signed.filter((entry: any) =>
     entry.text.startsWith('Urban Game Theory owner decision')).length), 'nothing is signed before the review').toBe(0);
@@ -487,7 +464,7 @@ test('four owners across three parcels accept only for themselves through a lens
   await screenshot(page, testInfo, 'card-after-reload-390');
 });
 
-test('the review shows what an owner contributes, gets back and signs, on a phone', async ({ mockApi: page }, testInfo) => {
+test('the review shows what an owner contributes and signs, on a phone', async ({ mockApi: page }, testInfo) => {
   test.setTimeout(90_000);
   const wallets = { a: wallet(), b: wallet(), c: wallet(), d: wallet() };
   const { memberKey, serviceUrl } = await startMember(testInfo, [{ ownerId: 'owner-c', wallet: wallets.c.address }]);
@@ -499,7 +476,7 @@ test('the review shows what an owner contributes, gets back and signs, on a phon
   await openCity(page);
   await page.evaluate(() => (window as any).i18n.setLanguage('en'));
   await establishLocalProfile(page);
-  const proposalId = await seedReadjustment(page, memberKey);
+  const proposalId = await seedOwnerDeal(page, memberKey);
   await openLand(page, proposalId);
   await useWallet(page, wallets.c.address);
   await card(page).locator('[data-approval-action="verify"]').click();
@@ -509,11 +486,7 @@ test('the review shows what an owner contributes, gets back and signs, on a phon
   const review = dialog(page);
   await expect(review.locator(`[data-approval-contribution="${PARCELS.c}"]`)).toContainText('Your share 1/2');
   await expect(review.locator(`[data-approval-contribution="${PARCELS.c}"]`)).toContainText('co-owned with Owner D');
-  await expect(review.locator('[data-approval-plot="3"]')).toContainText('50%');
-  await expect(review.locator('[data-approval-plot="3"]')).toContainText('shared with Owner D');
-  await expect(review.locator('[data-approval-cash="receives"]')).toContainText('7.50');
   await expect(review).toContainText('Authored terms require every owner to accept before payout. This does not confirm funding or payment.');
-  await expect(review).toContainText('Funding is not marked ready in this record.');
   await expect(review).toContainText('Declared rights source: upload · register-2026-10');
   await expect(review).toContainText('Selected verification lens: Test notary');
   await expect(review.locator('[data-approval-progress-with]')).toContainText('1 of 4 owners');
@@ -565,7 +538,7 @@ test('a scheme with an authority: owner support by area, then the municipality a
   await page.evaluate(() => (window as any).i18n.setLanguage('en'));
   await establishLocalProfile(page);
   const version = await page.evaluate(() => (window as any).ProposalApprovalRegimes.latest('es-ct-basic').version);
-  const proposalId = await seedReadjustment(page, memberKey, {
+  const proposalId = await seedOwnerDeal(page, memberKey, {
     approvalConfig: {
       schema: 'proposal-approval/v1',
       rights: { schema: 'parcel-rights/v1', source: { provider: 'upload', reference: 'register-2026-10' }, parcels: [
@@ -632,7 +605,7 @@ test('each owner\'s deal is readable by anyone from the Owner acceptance card', 
   await openCity(page);
   await page.evaluate(() => (window as any).i18n.setLanguage('en'));
   await establishLocalProfile(page);
-  const proposalId = await seedReadjustment(page, member);
+  const proposalId = await seedOwnerDeal(page, member);
   await openLand(page, proposalId);
 
   const owners = card(page).locator('[data-approval-deals] [data-approval-action="inspect"]');
@@ -644,10 +617,6 @@ test('each owner\'s deal is readable by anyone from the Owner acceptance card', 
   await expect(deal).toContainText('Proposed contribution from Owner D');
   await expect(deal.locator(`[data-approval-contribution="${PARCELS.c}"]`)).toContainText('Share 1/2');
   await expect(deal.locator(`[data-approval-contribution="${PARCELS.c}"]`)).toContainText('co-owned with Owner C');
-  await expect(deal).toContainText('Proposed allocation to Owner D');
-  await expect(deal.locator('[data-approval-plot="3"]')).toContainText('shared with Owner C');
-  await expect(deal.locator('[data-approval-cash="receives"]')).toContainText('Cash offered');
-  await expect(deal.locator('[data-approval-cash="receives"]')).toContainText('7.50');
   await expect(deal.locator('[data-approval-progress-with]')).toContainText('With Owner D’s acceptance: 1 of 4 owners');
   await expect(deal).toContainText('Selected verification lens: Test notary');
   await expect(deal).toContainText('Declared rights source:');
@@ -660,16 +629,16 @@ test('each owner\'s deal is readable by anyone from the Owner acceptance card', 
   const review = dialog(page);
   await expect(review.locator('.cb-dialog__title')).toHaveText('Accept as Owner D');
   await expect(review).toContainText('Your share 1/2');
-  await expect(review).toContainText('Your proposed allocation');
+  await expect(review).toContainText('Your proposed contribution');
   await expect(review).toContainText('Selected verification lens: Test notary');
   await expect(review).not.toContainText('are attested by');
   await expect(review.locator('[data-approval-review-status]')).toContainText('first confirm with a lens member');
   expect((await proposalState(page, proposalId)).ownerApprovals || {}).toEqual({});
 });
 
-// Where the readjustment stands on the map, an owner's deal shows that owner's land on the
-// before/after divider: their parcels before, their plots after.
-test('an owner\'s deal on an applied readjustment shows that owner\'s land on the before/after divider', async ({ mockApi: page }) => {
+// Where the proposal stands on the map, an owner's deal shows that owner's land on the before/after
+// divider: their parcel before, what the proposal makes of it after.
+test('an owner\'s deal on an applied proposal shows that owner\'s land on the before/after divider', async ({ mockApi: page }) => {
   test.setTimeout(60_000);
   const member = wallet().address;
   await page.route('**/lenses/members', route => route.fulfill({ json: { members: [
@@ -678,18 +647,35 @@ test('an owner\'s deal on an applied readjustment shows that owner\'s land on th
   await openCity(page);
   await page.evaluate(() => (window as any).i18n.setLanguage('en'));
   await establishLocalProfile(page);
-  const proposalId = await seedReadjustment(page, member);
+  // A square on parcel A, which Owners A and B hold together.
+  const proposalId = await page.evaluate(({ parcelId, member }) => {
+    const w = window as any;
+    const geometry = JSON.parse(JSON.stringify(w.CadastralParcelRepository.get(parcelId).geometry));
+    return w.proposalStorage.addProposal({
+      title: 'Lens-backed square', goal: 'square', lifecycleStatus: 'Active', funded: false,
+      cadastreParcelIds: [parcelId], acceptedParcelIds: [],
+      structureProposal: { kind: 'square', geometry },
+      approvalConfig: {
+        schema: 'proposal-approval/v1',
+        rights: { schema: 'parcel-rights/v1', source: { provider: 'upload', reference: 'register-2026-10' }, parcels: [
+          { parcelId, complete: true, areaM2: 100, owners: [{ ownerId: 'owner-a', share: '1/2' }, { ownerId: 'owner-b', share: '1/2' }] }
+        ] },
+        policy: { type: 'unanimous' }
+      },
+      lens: [member]
+    });
+  }, { parcelId: PARCELS.a, member });
   await page.evaluate((id: string) => (window as any).ProposalManager.applyProposal(id), proposalId);
   await expect.poll(() => page.evaluate((id: string) => (window as any).isProposalCurrentlyApplied((window as any).getProposalByIdOrHash(id)), proposalId), { timeout: 30_000 }).toBe(true);
   await openLand(page, proposalId);
 
-  await card(page).locator('[data-approval-deals] [data-approval-action="inspect"]').filter({ hasText: 'Owner D' }).click();
+  await card(page).locator('[data-approval-deals] [data-approval-action="inspect"]').filter({ hasText: 'Owner B' }).click();
   const deal = dialog(page);
-  await expect(deal.locator('.cb-dialog__title')).toHaveText('Owner D’s deal');
-  await deal.locator('[data-approval-show-map="owner-d"]').click();
+  await expect(deal.locator('.cb-dialog__title')).toHaveText('Owner B’s deal');
+  await deal.locator('[data-approval-show-map="owner-b"]').click();
   await expect(deal).toHaveCount(0);
   await expect(page.locator('#map .map-compare__before')).toBeVisible({ timeout: 20_000 });
-  await expect.poll(() => page.evaluate(() => (window as any).ProposalBeforeAfter.activeFocus())).toBe('owner:owner-d');
+  await expect.poll(() => page.evaluate(() => (window as any).ProposalBeforeAfter.activeFocus())).toBe('owner:owner-b');
   expect(await page.evaluate(() => (window as any).ProposalBeforeAfter.activeKey())).toBe(proposalId);
 });
 
@@ -712,7 +698,7 @@ test('two browsers share owner decisions through the relay, and each verifies th
   const wallets = { a: wallet(), b: wallet(), c: wallet(), d: wallet() };
   const { memberKey, serviceUrl } = await startMember(testInfo, (['a', 'b', 'c', 'd'] as const).map(id => ({ ownerId: `owner-${id}`, wallet: wallets[id].address })));
   const relay = await startRelay(testInfo);
-  const published = { proposalId: 'lr-relay-e2e', serverProposalId: '41' };
+  const published = { proposalId: 'deal-relay-e2e', serverProposalId: '41' };
   const setup = async (target: Page) => {
     await target.route('**/lenses/members', route => route.fulfill({ json: { members: [
       { key: memberKey, kind: 'owner-consent', name: 'Test notary', serviceUrl }
@@ -725,7 +711,7 @@ test('two browsers share owner decisions through the relay, and each verifies th
     await openCity(target);
     await target.evaluate(() => (window as any).i18n.setLanguage('en'));
     await establishLocalProfile(target);
-    expect(await seedReadjustment(target, memberKey, published)).toBe(published.proposalId);
+    expect(await seedOwnerDeal(target, memberKey, published)).toBe(published.proposalId);
   };
   await setup(page);
   // What the server would serve for the published record.
@@ -802,7 +788,7 @@ test('a minted proposal anchors its owner decisions on chain, and a browser with
   const program = '3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg';
   const account = web3.Keypair.generate().publicKey.toBase58();
   const published = {
-    proposalId: 'lr-anchor-e2e', serverProposalId: '42',
+    proposalId: 'deal-anchor-e2e', serverProposalId: '42',
     onchain: { chainId: 'solana-devnet', proposalId: account, contractAddress: program },
     nft: { chain: 'solana-devnet', contract: program, tokenId: account }
   };
@@ -821,7 +807,7 @@ test('a minted proposal anchors its owner decisions on chain, and a browser with
     await openCity(target);
     await target.evaluate(() => (window as any).i18n.setLanguage('en'));
     await establishLocalProfile(target);
-    expect(await seedReadjustment(target, memberKey, published)).toBe(published.proposalId);
+    expect(await seedOwnerDeal(target, memberKey, published)).toBe(published.proposalId);
   };
   await setup(true)(page);
   const record = await proposalState(page, published.proposalId);
@@ -882,7 +868,7 @@ test('a mocked Solana anchor records signed owner decisions and recovers them wi
   const program = '3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg';
   const account = web3.Keypair.generate().publicKey.toBase58();
   const published = {
-    proposalId: 'lr-anchor-e2e', serverProposalId: '42',
+    proposalId: 'deal-anchor-e2e', serverProposalId: '42',
     onchain: { chainId: 'solana-devnet', proposalId: account, contractAddress: program },
     nft: { chain: 'solana-devnet', contract: program, tokenId: account }
   };
@@ -927,7 +913,7 @@ test('a mocked Solana anchor records signed owner decisions and recovers them wi
     });
     await target.evaluate(() => (window as any).i18n.setLanguage('en'));
     await establishLocalProfile(target);
-    expect(await seedReadjustment(target, memberKey, published)).toBe(published.proposalId);
+    expect(await seedOwnerDeal(target, memberKey, published)).toBe(published.proposalId);
   };
   await setup(true)(page);
   const record = await proposalState(page, published.proposalId);

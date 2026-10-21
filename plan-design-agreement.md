@@ -2,6 +2,17 @@
 
 # Plan, design, agreement
 
+**Status (2026-10-21): M1 (a) is built.** "Lay out parcels" replaces the land-readjustment drawing: a
+geometry-only parcel-layout design with Equal plots (count + sweep handle), Schelling plots (the plan
+layer's settings, street strips as plots), Keep existing borders and Draw freely, applied with
+ownership carried over. The old create-dialog path, separate agreements and the per-design terms of
+a layout are gone; a layout refuses to publish until its agreement exists (M2). Next: M1 (b), the
+agreement record and the Create-agreement dialog. Leftovers noted while building, to flatten when
+touched: `readjustment-contributions.js` is loaded but unused; `subdivision.js planCreateVerdict`
+and `formation-edit.js clipPiecesByTaking` are used only by tests; `readjustmentPiece` keeps its
+name; the how-to guides still describe the old editor; the backend scripts and tests that read the
+old `reparcellization` record are untouched until the server work of M2.
+
 A rework of what sits above a single authored change. Started 2026-10-21 on branch
 `plan-design-agreement` (off `colosseum-worlds-fair` at 3a62b4a7e, which includes the Schelling plan
 layer). Design discussion only so far; nothing below is implemented. This is the living plan:

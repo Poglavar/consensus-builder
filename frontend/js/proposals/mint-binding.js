@@ -90,6 +90,8 @@
     }
 
     async function prepareForMint(proposal, options = {}) {
+        // A parcel layout is minted only as part of its agreement (ProposalPublishTerms.publishRefusal).
+        dependency('ProposalPublishTerms', './publish-terms.js').assertPublishable(proposal);
         const city = proposal.city || options.city || null;
         const config = options.cityConfig || global.CityConfigManager?.getCityConfig?.(city);
         if (!city || !config?.parcels?.source) fail('The proposal must name its city and cadastral source before minting.');

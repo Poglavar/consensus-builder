@@ -78,6 +78,8 @@ function buildOwnerAcceptanceSectionHtml(proposal, parcelId, options = {}) {
     }
     // A community vote asks residents, through its organiser: owners have nothing to accept.
     if (window.ProposalKind?.isCommunityVote(proposal)) return '';
+    // A parcel layout is a design: nobody decides on it until an agreement includes it.
+    if (proposal?.goal === 'parcel-layout') return '';
     const proposalId = proposal && proposal.proposalId ? proposal.proposalId : '';
     const acceptanceState = getProposalOwnerAcceptanceState(proposal, parcelId, options);
     const entries = acceptanceState.entries || [];
@@ -122,8 +124,7 @@ function buildOwnerAcceptanceSectionHtml(proposal, parcelId, options = {}) {
         const safeShare = entry.shareText ? (typeof escapeHtml === 'function' ? escapeHtml(entry.shareText) : entry.shareText) : '';
         const shareTitle = entry.shareDetail ? (typeof escapeHtml === 'function' ? escapeHtml(entry.shareDetail) : entry.shareDetail) : '';
         const ownerFraction = parseOwnerShareFraction(entry.shareText);
-        // LR cash is explicitly assigned in its owner ledger, never inferred from parcel area.
-        const ownerPayoutText = proposalRequiresDealConsent(proposal) ? '' : formatPayout(parcelPayout * ownerFraction);
+        const ownerPayoutText = formatPayout(parcelPayout * ownerFraction);
         const payoutHtml = ownerPayoutText ? `<span class="owner-payout">· ${ownerPayoutText}</span>` : '';
         const shareHtml = safeShare
             ? `<span class="owner-share"${shareTitle ? ` title="${shareTitle}"` : ''}>${safeShare}</span>${payoutHtml}`
@@ -223,55 +224,7 @@ function buildOwnerAcceptanceSectionHtml(proposal, parcelId, options = {}) {
             </div>`;
     }
 
-    // A readjustment's money schedule covers the whole agreement, so the details panel shows it once
-    // under Land & ownership rather than inside the first parcel's owner rows.
     return `<div class="${compact}">${recipientRowHtml}${rowsHtml}</div>`;
-}
-
-function buildReadjustmentCashReviewHtml(proposal) {
-    const t = getProposalI18nHelper();
-    let deal;
-    try { deal = window.ReparcellizationDeal.content(proposal); }
-    catch (_) {
-        return `<p class="readjustment-cash-review-invalid">${t('panel.proposal.acceptance.invalidReadjustment', 'Correct the readjustment allocations and cash terms before accepting.')}</p>`;
-    }
-    if (!deal) return '';
-    const ids = [...new Set((proposal.reparcellization.ownerShares || []).filter(owner => !owner.unrepresentedGround && owner.ownerKey !== 'open-ground')
-        .map(owner => String(owner.ownerKey).trim()))].sort();
-    // With a complete rights snapshot, "Owner A" here is the same owner as in the owner rows, the
-    // Owner acceptance card and the Accept review; a ledger recipient outside it is named as such.
-    const rights = window.ProposalApprovalRuntime?.inspect(proposal);
-    const label = id => (!rights?.ready ? window.ProposalApprovalRuntime?.label(id, ids) || `Owner ${ids.indexOf(id) + 1}`
-        : rights.ownerIds.includes(id) ? window.ProposalApprovalRuntime.label(id, rights.ownerIds)
-            : t('proposalApproval.outsideSnapshot', 'Recipient outside the ownership snapshot'));
-    const labels = new Map(ids.map(id => [id, label(id)]));
-    const money = cents => CbFormat.formatMoney(cents / 100, 'EUR', { minFractionDigits: 2, maxFractionDigits: 2 });
-    // One balanced schedule: every owner's payout or payment and the sponsor's line, summing to zero.
-    const schedule = window.ReparcellizationDeal.schedule(deal);
-    const amountText = cents => (cents < 0
-        ? t('panel.proposal.acceptance.moneyPays', 'pays in {{amount}}', { amount: money(-cents) })
-        : t('panel.proposal.acceptance.moneyReceives', 'receives {{amount}}', { amount: money(cents) }));
-    // Owners in label order (A, B, C…), then any recipient outside the ownership snapshot.
-    const outside = id => (rights?.ready && !rights.ownerIds.includes(id) ? 1 : 0);
-    const rows = deal.ledger.filter(owner => !owner.unrepresentedGround)
-        .sort((a, b) => outside(a.ownerKey) - outside(b.ownerKey)
-            || String(labels.get(a.ownerKey) || a.ownerKey).localeCompare(String(labels.get(b.ownerKey) || b.ownerKey), undefined, { numeric: true }))
-        .map(owner => {
-        const net = owner.cashCents - (owner.payCents || 0);
-        return `<li data-money-owner="${escapeHtml(owner.ownerKey)}" data-money-direction="${net < 0 ? 'pays' : 'receives'}">
-        <span>${escapeHtml(String(labels.get(owner.ownerKey) || owner.ownerKey))}</span>
-        <strong>${escapeHtml(amountText(net))}</strong>
-    </li>`;
-    }).join('');
-    const sponsor = schedule.sponsorCents === 0
-        ? t('panel.proposal.acceptance.moneySponsorNothing', 'pays nothing')
-        : amountText(schedule.sponsorCents);
-    return `<section class="readjustment-cash-review" aria-label="${t('panel.proposal.acceptance.moneySchedule', 'Money schedule')}">
-        <h4>${t('panel.proposal.acceptance.moneySchedule', 'Money schedule')}</h4>
-        <p>${t('panel.proposal.acceptance.moneyScope', 'What each owner receives or pays across the whole agreement, and what the sponsor covers. It always sums to zero.')}</p>
-        <ul>${rows}<li data-money-sponsor data-money-direction="${schedule.sponsorCents < 0 ? 'pays' : 'receives'}"><span>${t('panel.proposal.acceptance.moneySponsor', 'Sponsor')}</span><strong>${escapeHtml(sponsor)}</strong></li></ul>
-        <div class="readjustment-cash-review-total"><span>${t('panel.proposal.acceptance.cashTotal', 'Total cash offer')}</span><strong>${money(deal.terms.totalCashCents)}</strong></div>
-    </section>`;
 }
 
 // Evaluate a copy against the current roster and terms before presenting or sorting a tally.
@@ -279,6 +232,10 @@ function buildReadjustmentCashReviewHtml(proposal) {
 // neither non-binding votes nor a stored aggregate alone can establish owner consent.
 function getProposalConsentMetrics(proposal) {
     const parcelIds = normalizeParcelIdList(proposal?.cadastreParcelIds);
+    // A parcel layout is a design, which nobody consents to: it has no tally.
+    if (proposal?.goal === 'parcel-layout') {
+        return { parcelCount: parcelIds.length, acceptedCount: 0, acceptanceRatio: 0, acceptancePercent: 0, consentBasis: null };
+    }
     const isVote = window.ProposalKind?.isNonBinding(proposal);
     const signed = usesAbstractProposalApproval(proposal);
     const evaluated = { ...proposal, ownerAcceptances: normalizeOwnerAcceptances(proposal?.ownerAcceptances), acceptedParcelIds: [] };
@@ -1034,12 +991,12 @@ function isProposalApplied(proposal) {
         || goalKey === 'park'
         || goalKey === 'square'
         || goalKey === 'lake'
-        || goalKey === 'reparcellization'
+        || goalKey === 'parcel-layout'
         || goalKey === 'decide-later'
         || proposal.buildingProposal
         || proposal.buildingGeometry
         || structureData
-        || proposal.reparcellization
+        || proposal.parcelLayout
         || proposal.decideLaterProposal
     );
 
@@ -1187,14 +1144,9 @@ function createLeafletViewSettlePromise(beforeCenter, beforeZoom) {
 // is identical on every machine. An edit that changes the effect changes the hash and the stored
 // acceptances stop counting — automatically, with the records preserved (consent history is
 // immutable; an edit back to the accepted effect even revalidates them). Every counted record
-// requires its current terms hash. LR uses the complete deal hash: a footprint-only approval
-// does not establish consent to the allocation and cash.
-function proposalRequiresDealConsent(proposal) {
-    return !!proposal && (proposal.goal === 'reparcellization' || !!proposal.reparcellization);
-}
-
+// requires its current terms hash.
 function usesAbstractProposalApproval(proposal) {
-    return !!proposal && (proposalRequiresDealConsent(proposal) || proposal.approvalConfig != null);
+    return !!proposal && proposal.approvalConfig != null;
 }
 
 // One abstract-owner decision covers all of that owner's interests in this proposal. This local
@@ -1210,7 +1162,7 @@ async function recordAbstractProposalDecision(proposal, parcelId, ownerId, actor
     if (nft || !hash || status === 'Unknown' || status === 'Cancelled' || status === 'Expired'
         || (!withdraw && status === 'Executed')
         || (typeof isProposalExpired === 'function' && isProposalExpired(proposal))) {
-        showProposalAlertMessage(nft ? 'abstract_approval_chain_unsupported' : 'readjustment_terms_invalid',
+        showProposalAlertMessage(nft ? 'abstract_approval_chain_unsupported' : 'proposal_terms_invalid',
             nft ? t('proposalApproval.chainUnsupported', 'This approval setup is not supported by the current chain adapter.')
                 : t('proposalApproval.invalidTerms', 'Correct the proposal terms before accepting.'));
         return null;
@@ -1249,13 +1201,6 @@ function currentProposalOwnerAcceptanceKeys(proposal, entry) {
 }
 
 function currentConsentBindingHash(proposal) {
-    if (proposalRequiresDealConsent(proposal)) {
-        try {
-            const validation = window.ReparcellizationValidation?.validate(proposal, { turf: window.turf });
-            return validation?.valid ? window.ReparcellizationDeal?.fingerprint(proposal) || null : null;
-        }
-        catch (_) { return null; } // Invalid LR terms must never fall back to a weaker footprint hash.
-    }
     if (proposal.approvalConfig != null) {
         try { return proposalConsentFingerprint(proposal); }
         catch (_) { return null; }

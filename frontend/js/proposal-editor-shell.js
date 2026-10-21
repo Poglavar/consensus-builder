@@ -130,7 +130,7 @@
 
         const message = tDraft(
             'modal.createProposal.proposal_type_no_longer_available',
-            'Merge / Decide Later is no longer available. Use Land readjustment.'
+            'Merge / Decide Later is no longer available. Use Lay out parcels.'
         );
         if (typeof global.showStyledAlert === 'function') global.showStyledAlert(message);
         else if (typeof global.updateStatus === 'function') global.updateStatus(message);
@@ -272,7 +272,6 @@
                         ${option('to-me', tDraft('proposalDrafts.ownership.toMe', 'To me'), fields.ownership)}
                         ${option('to-city', tDraft('proposalDrafts.ownership.toCity', 'To city'), fields.ownership)}
                         ${option('third-party', tDraft('proposalDrafts.ownership.thirdParty', 'Third party'), fields.ownership)}
-                        ${option('per-slice', tDraft('proposalDrafts.ownership.perSlice', 'Per replacement parcel'), fields.ownership)}
                     </select>
                 </label>
                 <label class="proposal-editor-field">
@@ -410,6 +409,14 @@
             </section>`;
     }
 
+    // The layouts the parcel-layout editor offers (plan-design-agreement.md, M1 (a)).
+    const PARCEL_LAYOUT_ALGORITHM_LABELS = {
+        equal: ['proposalDrafts.design.layouts.equal', 'Equal plots'],
+        schelling: ['proposalDrafts.design.layouts.schelling', 'Schelling plots'],
+        amend: ['proposalDrafts.design.layouts.amend', 'Keep existing borders'],
+        manual: ['proposalDrafts.design.layouts.manual', 'Draw freely']
+    };
+
     function designSummary(draft) {
         const payload = draft.editorPayload || {};
         if (draft.goal === 'road-track') {
@@ -425,10 +432,11 @@
             const count = context.buildings?.length || (context.buildingFeature ? 1 : 0);
             return tDraft('proposalDrafts.design.buildingSummary', 'Buildings: {{count}} · {{typology}}', { count, typology: payload.typology || draft.goal });
         }
-        if (draft.goal === 'reparcellization') {
-            return tDraft('proposalDrafts.design.reparcelSummary', '{{count}} replacement parcel(s) · {{algorithm}}', {
-                count: payload.plan?.polygons?.length || 0,
-                algorithm: payload.plan?.algorithm || tDraft('proposalDrafts.design.manual', 'manual')
+        if (draft.goal === 'parcel-layout') {
+            const algorithm = PARCEL_LAYOUT_ALGORITHM_LABELS[payload.plan?.algorithm] || PARCEL_LAYOUT_ALGORITHM_LABELS.manual;
+            return tDraft('proposalDrafts.design.layoutSummary', '{{count}} plot(s) · {{layout}}', {
+                count: payload.plan?.plots?.length || 0,
+                layout: tDraft(...algorithm)
             });
         }
         if (['park', 'square'].includes(draft.adapterKey || draft.goal)) {
@@ -544,7 +552,10 @@
             return;
         }
         const adapter = global.proposalEditorAdapterRegistry?.get(draft.adapterKey || draft.goal);
-        const sections = [...new Set([...(adapter?.sections || ['parcels', 'ownership', 'terms', 'details']), 'approval'])];
+        // Approval goes with ownership: a design whose editor sets no owners (a parcel layout) has
+        // no one to approve it until an agreement includes it.
+        const baseSections = adapter?.sections || ['parcels', 'ownership', 'terms', 'details'];
+        const sections = baseSections.includes('ownership') ? [...new Set([...baseSections, 'approval'])] : baseSections;
         if (!editorState.tab || !sections.includes(editorState.tab)) editorState.tab = sections.includes('design') ? 'design' : sections[0];
         const reviewing = draft.state === 'review';
         let body = '';
@@ -1071,7 +1082,7 @@
     // Esc discards the draft instead — the source object is left exactly as it was.
     let geometryEditCommitDraftId = null;
 
-    const GEOMETRY_EDITABLE_ADAPTERS = new Set(['buildings', 'row', 'parcelBased', 'single', 'reparcellization', 'park', 'square', 'lake', 'station']);
+    const GEOMETRY_EDITABLE_ADAPTERS = new Set(['buildings', 'row', 'parcelBased', 'single', 'parcel-layout', 'park', 'square', 'lake', 'station']);
 
     function canEditProposalGeometry(proposalOrId) {
         const proposal = typeof proposalOrId === 'object' ? proposalOrId : proposalById(proposalOrId);
@@ -1443,7 +1454,10 @@
             adapterKey,
             // The selection's union is the design's site (a block's superparcel): the binding at
             // publish is computed from it, so parcels the rule left without a building stay bound.
-            fields: { name: '', description: '', selectedParcelIds: ids, site: siteOfLiveSelection(ids), offer: 0, offerCurrency: 'USDT' },
+            // A parcel layout carries no terms at all (plan-design-agreement.md, M1 (a)).
+            fields: adapterKey === 'parcel-layout'
+                ? { name: '', description: '', selectedParcelIds: ids, site: siteOfLiveSelection(ids) }
+                : { name: '', description: '', selectedParcelIds: ids, site: siteOfLiveSelection(ids), offer: 0, offerCurrency: 'USDT' },
             editorPayload: {},
             previewGeometry: null
         });
@@ -1470,7 +1484,8 @@
     // ---- Site-first creation (js/site-drawing.js, PARCEL-OPTIONAL.md phase 2) ----
     // siteContext: { site (MultiPolygon), toleranceM, binding (preview or server), selectionIds? }. The draft carries the site; its declaration starts as the binding's parcels
     // and is replaced by the server binding at publish.
-    function siteDraftFields(siteContext, selectedParcelIds) {
+    // `terms: false` for a parcel layout, which carries no terms at all.
+    function siteDraftFields(siteContext, selectedParcelIds, { terms = true } = {}) {
         return {
             name: '',
             description: '',
@@ -1478,8 +1493,7 @@
             site: JSON.parse(JSON.stringify(siteContext.site)),
             toleranceM: Number(siteContext.toleranceM) || 0,
             binding: siteContext.binding ? JSON.parse(JSON.stringify(siteContext.binding)) : null,
-            offer: 0,
-            offerCurrency: 'USDT'
+            ...(terms ? { offer: 0, offerCurrency: 'USDT' } : {})
         };
     }
 
@@ -1635,9 +1649,9 @@
         return opened;
     }
 
-    // Subdivide a site (PARCEL-OPTIONAL.md phase 4): the readjustment editor opens with the site as
-    // its pool — the bound parcels' part with their owners, the open ground with none. No live
-    // selection: the declaration is the site's binding (replaced by the server's at publish).
+    // Subdivide a site (PARCEL-OPTIONAL.md phase 4): the parcel-layout editor opens with the site as
+    // its pool, the bound parcels' part and the open ground alike. No live selection: the
+    // declaration is the site's binding (replaced by the server's at publish).
     async function startSiteSubdivision(siteContext) {
         if (global.OnMapEditor?.isActive?.()) {
             return reportSiteDesignStartIssue('editorBusy', 'Another geometry editor is already using the map. Close it before starting this site design.');
@@ -1648,11 +1662,11 @@
         const site = JSON.parse(JSON.stringify(siteContext.site));
         const draft = global.proposalDraftStore.createDraft({
             cityId: currentCityId(),
-            goal: 'reparcellization',
-            proposalType: proposalLabel('reparcellization'),
-            adapterKey: 'reparcellization',
-            fields: siteDraftFields(siteContext, []),
-            editorPayload: { plan: { poolSource: 'site', poolGeometry: site, algorithm: 'sweep-line', polygons: [] } },
+            goal: 'parcel-layout',
+            proposalType: proposalLabel('parcel-layout'),
+            adapterKey: 'parcel-layout',
+            fields: siteDraftFields(siteContext, [], { terms: false }),
+            editorPayload: { plan: { poolSource: 'site', pool: site, algorithm: 'equal', plots: [] } },
             previewGeometry: null
         });
         if (!draft) return reportSiteDesignStartIssue('draftCreateFailed', 'Could not save a local draft for this site design. The site remains unchanged.');
@@ -1936,18 +1950,11 @@
             if (typeof global.setPendingBuildingProposalContext === 'function') global.setPendingBuildingProposalContext(global.pendingBuildingProposalContext, { fromDraft: true });
             return true;
         }
-        if (draft.goal === 'reparcellization') {
-            global.pendingReparcellizationPlan = JSON.parse(JSON.stringify(payload.plan || {}));
-            // Selection is transient dialog state; stored plans intentionally omit live parcel IDs.
-            global.pendingReparcellizationPlan.parcelIds = (draft.fields?.selectedParcelIds || []).map(String);
-            return true;
-        }
         return !!payload.geometry;
     }
 
     function applyDraftFacetsToProposalDialog(draft) {
         const fields = draft.fields || {};
-        const readjust = draft.goal === 'reparcellization' || fields.parcels === 'readjust';
         if (fields.acquisitionMode && typeof global.setProposalAcquisitionMode === 'function') {
             global.setProposalAcquisitionMode(fields.acquisitionMode);
         }
@@ -1955,8 +1962,7 @@
             global.setProposalBoundaryMode(fields.boundaryAdjustment, { unlock: true });
         }
         if (fields.ownership && typeof global.setProposalOwnershipMode === 'function') {
-            global.setProposalOwnershipMode(readjust ? 'per-slice' : fields.ownership,
-                readjust ? { lock: true } : { unlock: true });
+            global.setProposalOwnershipMode(fields.ownership, { unlock: true });
         }
         if (fields.recipientScope) {
             global.document?.querySelectorAll?.('input[name="proposalRecipientScope"]')?.forEach(input => {
@@ -1968,10 +1974,6 @@
             recipient.value = fields.recipientAddress;
         }
         if (typeof global.onProposalOwnershipChange === 'function') global.onProposalOwnershipChange();
-        if (readjust && typeof global.setProposalOwnershipMode === 'function') {
-            global.showProposalPerSliceOption?.(true);
-            global.setProposalOwnershipMode('per-slice', { lock: true });
-        }
         // Ownership initialization resets payment defaults; retain the draft's saved choice.
         const conditional = global.document?.getElementById('proposalConditionalCheckbox');
         if (conditional && typeof fields.isConditional === 'boolean') conditional.checked = fields.isConditional;
@@ -1987,6 +1989,14 @@
     async function stageProposalDraftForPublishing(draftId, options = {}) {
         const store = global.proposalDraftStore;
         let draft = store?.getDraft?.(draftId) || null;
+        // The create dialog attaches terms for publishing; a parcel layout has none and is shared
+        // only with its agreement (ProposalPublishTerms.publishRefusal).
+        const refusal = draft ? global.ProposalPublishTerms?.publishRefusal?.({ goal: draft.goal }) : null;
+        if (refusal) {
+            if (typeof global.showStyledAlert === 'function') global.showStyledAlert(refusal.message);
+            else if (typeof global.updateStatus === 'function') global.updateStatus(refusal.message);
+            return false;
+        }
         if (draft && global.proposalDraftPlacement?.isFreePlacementDraft?.(draft)) {
             try {
                 draft = await rebindFreePlacementDraft(draftId);
@@ -2029,12 +2039,10 @@
             binding: draft.fields?.binding || null,
             cadastreParcelIds: (draft.fields?.cadastreParcelIds || []).map(String)
         } : null;
-        // Batch retries use saved input snapshots after live inputs have been replaced.
-        const resumingAgreements = !!draft.publish?.parcelAgreementBatch;
-        const selection = (siteContext || resumingAgreements)
+        const selection = siteContext
             ? { ids: [], layers: [], complete: true }
             : await global.prepareProposalDraftParcelSelection?.(draft);
-        if (!siteContext && !resumingAgreements && !selection?.layers?.length) {
+        if (!siteContext && !selection?.layers?.length) {
             const message = tDraft('proposalDrafts.errors.parcelsUnavailable', 'The draft parcels are not available in the current city.');
             store.markPublishFailed(draftId, new Error(message));
             // The editor shell is dormant UI — say it out loud instead of rendering into the void.
@@ -2122,8 +2130,6 @@
                     : tDraft('proposalDrafts.actions.createProposal', 'Create proposal'));
             submit.dataset.proposalDraftId = draft.id;
         }
-        global.refreshReparcellizationCashTerms?.(global.document?.querySelector?.('.create-proposal-modal'));
-        global.refreshReparcellizationAgreementSubmit?.();
         closeProposalEditorShell();
         return true;
     }
@@ -2361,7 +2367,7 @@
                 profile.mark('record');
 
                 // NOTHING re-applies the whole plan. Only the ground whose take set actually changed is
-                // re-derived — the parcels under a corridor, the parcels a readjustment takes. Anything
+                // re-derived — the parcels under a corridor, the parcels a parcel layout takes. Anything
                 // that merely stands on the fabric changes no parcel at all, so only it is applied.
                 // It is applied by the one apply every proposal gets (ProposalManager.applyProposal):
                 // the applied records on its ground come off the map, as for an explicit Apply. A
@@ -2461,10 +2467,12 @@
             };
             const savedBuildingGeometryEdit = Boolean(draft.sourceLocalProposalId);
             if (!savedBuildingGeometryEdit && Array.isArray(payload.parcelIds)) fields.selectedParcelIds = payload.parcelIds.map(String);
-        } else if (kind === 'reparcellization') {
-            if (draft.goal !== 'reparcellization') return null;
-            patch = { editorPayload: { plan: JSON.parse(JSON.stringify(payload)) }, previewGeometry: JSON.parse(JSON.stringify(payload.polygons || [])) };
-            if (Array.isArray(payload.parcelIds)) fields.selectedParcelIds = payload.parcelIds.map(String);
+        } else if (kind === 'parcel-layout') {
+            if (draft.goal !== 'parcel-layout') return null;
+            // The editor's result (window.pendingParcelLayout) is the layout record whole.
+            const plan = JSON.parse(JSON.stringify(payload));
+            patch = { editorPayload: { plan }, previewGeometry: JSON.parse(JSON.stringify(plan.plots || [])) };
+            if (Array.isArray(plan.parcelIds)) fields.selectedParcelIds = plan.parcelIds.map(String);
         } else if (kind === 'structure') {
             if (!['park', 'square', 'lake'].includes(draft.adapterKey || draft.goal)) return null;
             const structureProposal = JSON.parse(JSON.stringify(payload.structureProposal || payload));
@@ -2541,7 +2549,7 @@
         if (!draft) return false;
         const raw = draft.previewGeometry
             || draft.editorPayload?.definition?.polygon
-            || draft.editorPayload?.plan?.polygons
+            || draft.editorPayload?.plan?.plots
             || draft.editorPayload?.geometry
             || null;
         if (!raw || !global.map || !global.L) {

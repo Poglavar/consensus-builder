@@ -1,4 +1,4 @@
-// The road tool's "Build through" prompt for subdivision/readjustment plots (PARCEL-OPTIONAL.md
+// The road tool's "Build through" prompt for subdivision/parcel-layout plots (PARCEL-OPTIONAL.md
 // phase 7b): which plots an edge would cut (count and area per proposal), which standing proposal
 // buildings it would run through — on a plot or on cadastral parcels, refused at apply either way, so
 // warned up front with no Build through — and the browser glue in corridor-structures.js (approvals
@@ -20,17 +20,17 @@ const rect = (x0, y0, x1, y1) => ({
 const piece = (id, producer, geometry) => ({ type: 'Feature', properties: { parcelId: id, producedByProposalId: producer }, geometry });
 const multi = polygon => ({ type: 'MultiPolygon', coordinates: [polygon.coordinates] });
 
-// A subdivision of a 12 × 6 site into four plots, a readjustment beside it, a park.
-const SUB = { proposalId: 'sub', title: 'Subdivide Tokyo', site: multi(rect(0, 0, 12, 6)), reparcellization: { poolSource: 'site', polygons: [] } };
-const READJ = { proposalId: 'readj', title: 'Readjust 12/3', reparcellization: { polygons: [{ type: 'Feature', properties: {}, geometry: rect(12, 0, 18, 6) }] } };
+// A subdivision of a 12 × 6 site into four plots, a parcel layout beside it, a park.
+const SUB = { proposalId: 'sub', title: 'Subdivide Tokyo', site: multi(rect(0, 0, 12, 6)), parcelLayout: { poolSource: 'site', pool: rect(0, 0, 12, 6), plots: [] } };
+const LAYOUT = { proposalId: 'layout', title: 'Lay out 12/3', parcelLayout: { pool: rect(12, 0, 18, 6), plots: [{ geometry: rect(12, 0, 18, 6), source: 'manual' }] } };
 const PARK = { proposalId: 'park', title: 'Park', structureProposal: {} };
 const HOUSE = { proposalId: 'house', title: 'House', buildingProposal: {} };
-const RECORDS = { sub: SUB, readj: READJ, park: PARK, house: HOUSE };
+const RECORDS = { sub: SUB, layout: LAYOUT, park: PARK, house: HOUSE };
 const lookup = id => RECORDS[id] || null;
 const PIECES = [
     piece('sub-1', 'sub', rect(0, 0, 6, 3)), piece('sub-2', 'sub', rect(6, 0, 12, 3)),
     piece('sub-3', 'sub', rect(0, 3, 6, 6)), piece('sub-4', 'sub', rect(6, 3, 12, 6)),
-    piece('readj-1', 'readj', rect(12, 0, 18, 6)),
+    piece('layout-1', 'layout', rect(12, 0, 18, 6)),
     piece('park-1', 'park', rect(0, 6, 12, 9)),
     piece('HR-1-1', null, rect(0, -3, 18, 0))
 ];
@@ -38,9 +38,9 @@ const houseOn = geometry => ({ type: 'Feature', properties: { proposalId: 'house
 
 describe('detectPlotCrossings (pure)', () => {
     it('counts the plots an edge cuts per proposal, with the area it takes', () => {
-        // North–south across sub-2/sub-4 and the park, not the readjustment.
+        // North–south across sub-2/sub-4 and the park, not the layout.
         const road = rect(8, -3, 9, 9);
-        const result = plots.detectPlotCrossings(road, { pieces: PIECES, buildings: [], lookupProposal: lookup, plotRecords: [SUB, READJ], turf });
+        const result = plots.detectPlotCrossings(road, { pieces: PIECES, buildings: [], lookupProposal: lookup, plotRecords: [SUB, LAYOUT], turf });
         expect(result.blocked).toEqual([]);
         expect(result.plots).toHaveLength(1);
         const [hit] = result.plots;
@@ -49,12 +49,12 @@ describe('detectPlotCrossings (pure)', () => {
         expect(hit.areaM2).toBeCloseTo(expected, -1);
     });
 
-    it('lists every plot proposal crossed, readjustments as such, and skips parks and cadastral parcels', () => {
-        const road = rect(-1, 1, 19, 2); // east–west through sub-1, sub-2 and the readjustment
-        const result = plots.detectPlotCrossings(road, { pieces: PIECES, buildings: [], lookupProposal: lookup, plotRecords: [SUB, READJ], turf });
+    it('lists every plot proposal crossed, layouts as such, and skips parks and cadastral parcels', () => {
+        const road = rect(-1, 1, 19, 2); // east–west through sub-1, sub-2 and the layout
+        const result = plots.detectPlotCrossings(road, { pieces: PIECES, buildings: [], lookupProposal: lookup, plotRecords: [SUB, LAYOUT], turf });
         expect(result.plots.map(entry => [entry.proposalId, entry.kind, entry.count])).toEqual([
             ['sub', 'subdivision', 2],
-            ['readj', 'readjustment', 1]
+            ['layout', 'parcel-layout', 1]
         ]);
     });
 
@@ -68,7 +68,7 @@ describe('detectPlotCrossings (pure)', () => {
     it('says a house on a plot is in the way, and a building off every plot too', () => {
         const road = rect(8, -3, 9, 9);
         const onPlot = houseOn(rect(7.5, 4, 10, 5.5));
-        const result = plots.detectPlotCrossings(road, { pieces: PIECES, buildings: [onPlot], lookupProposal: lookup, plotRecords: [SUB, READJ], turf });
+        const result = plots.detectPlotCrossings(road, { pieces: PIECES, buildings: [onPlot], lookupProposal: lookup, plotRecords: [SUB, LAYOUT], turf });
         expect(result.blocked).toEqual([expect.objectContaining({ proposalId: 'house', title: 'House', plotProposalId: 'sub', plotTitle: 'Subdivide Tokyo' })]);
         expect(result.blocked[0].areaM2).toBeGreaterThan(1);
         // Beside the house: the plot is cut, nothing is blocked.
@@ -77,9 +77,9 @@ describe('detectPlotCrossings (pure)', () => {
         expect(beside.plots[0].count).toBe(2);
         // A building outside every plot record refuses the road just the same: named, no plot.
         const offPlot = houseOn(rect(30, 0, 32, 2));
-        expect(plots.detectPlotCrossings(rect(30.5, -3, 31, 9), { pieces: PIECES, buildings: [offPlot], lookupProposal: lookup, plotRecords: [SUB, READJ], turf }).blocked)
+        expect(plots.detectPlotCrossings(rect(30.5, -3, 31, 9), { pieces: PIECES, buildings: [offPlot], lookupProposal: lookup, plotRecords: [SUB, LAYOUT], turf }).blocked)
             .toEqual([expect.objectContaining({ proposalId: 'house', title: 'House', plotProposalId: null, plotTitle: null })]);
-        expect(plots.detectPlotCrossings(rect(33, -3, 34, 9), { pieces: PIECES, buildings: [offPlot], lookupProposal: lookup, plotRecords: [SUB, READJ], turf }).blocked).toEqual([]);
+        expect(plots.detectPlotCrossings(rect(33, -3, 34, 9), { pieces: PIECES, buildings: [offPlot], lookupProposal: lookup, plotRecords: [SUB, LAYOUT], turf }).blocked).toEqual([]);
     });
 
     // Observed on HR-339318-5848/3: a road drawn along the parcel through the building of a Block
@@ -150,7 +150,7 @@ describe('road tool glue (corridor-structures.js)', () => {
             turf,
             __plotCrossings: plots,
             LiveParcelFabric: { queryBounds: () => PIECES },
-            proposalStorage: { getAllProposals: () => [SUB, READJ, PARK, HOUSE] },
+            proposalStorage: { getAllProposals: () => [SUB, LAYOUT, PARK, HOUSE] },
             getProposalByIdOrHash: lookup,
             isProposalApplied: () => true,
             // The road tool hands a lat/lng ring; the fake returns the feature it stands for.

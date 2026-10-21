@@ -47,7 +47,7 @@ const DYNAMIC_KEY_PREFIXES = [
     'proposalApproval.regime.basis.',
     'proposalDrafts.validation.issues.',
     'proposalDrafts.placement.',
-    'reparcellization.validation.',
+    'parcelLayout.editor.validation.', // parcel-layout.js: the layout checks' messages by error code
     'proposals.roadDesignation.',
     'rowHouses.modal.',
     'sidebar.proposals.grainScore.',

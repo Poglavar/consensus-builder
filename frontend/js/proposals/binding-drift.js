@@ -34,7 +34,7 @@
         'proposalOrigin', 'publicationApiBase',
         'landFork', 'rebind'
     ]);
-    const SUB_PROPOSAL_KEYS = Object.freeze(['roadProposal', 'buildingProposal', 'structureProposal', 'reparcellization', 'decideLaterProposal']);
+    const SUB_PROPOSAL_KEYS = Object.freeze(['roadProposal', 'buildingProposal', 'structureProposal', 'parcelLayout', 'decideLaterProposal']);
     const SUB_STATE_KEYS = Object.freeze(['applied', 'appliedAt', 'status', 'childParcelIds', 'parentFeatures', 'parentsToRemove', 'formation', 'childFeatures']);
 
     const isNumber = value => typeof value === 'number' && Number.isFinite(value);

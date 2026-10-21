@@ -190,7 +190,7 @@ describe('counting under each kind of rule', () => {
         expect(progress.outstanding.map(row => row.ownerId)).toEqual(['city', 'o-b', 'o-c', 'o-d']);
         expect(progress.authorities).toEqual([{ authorityId: 'council', approved: false }]);
         const asAuthority = review.ownerReview(item, 'council', { acceptedOwnerIds: ['o-a'] });
-        expect(asAuthority).toMatchObject({ kind: 'authority', contributes: [], leases: [], receives: null, alreadyAccepted: false });
+        expect(asAuthority).toMatchObject({ kind: 'authority', contributes: [], leases: [], alreadyAccepted: false });
         expect(asAuthority.progressWith.authorityMet).toBe(true);
         const asTenant = review.ownerReview(item, 't-1');
         expect(asTenant).toMatchObject({ kind: 'leaseholder', contributes: [], leases: [{ parcelId: 'a', leaseId: 'L1', share: '1/1', leaseAreaM2: 100, shareAreaM2: 100, coHolderIds: [] }] });

@@ -1,6 +1,5 @@
 import { test, expect } from '../helpers/fixtures';
-import { selectNativeOption } from '../helpers/controls';
-import { openCity, openParcel, createSpace, proposalState, showProposal, chooseProposalKind, PARCEL_GEOMETRY, PARCEL_ID } from '../helpers/runtime';
+import { openCity, createSpace, proposalState, showProposal, chooseProposalKind, PARCEL_GEOMETRY, PARCEL_ID } from '../helpers/runtime';
 
 test.describe('Proposal terms @features', () => {
   test('fork persists changed ownership recipient and advanced payment terms', async ({ mockApi: page }) => {
@@ -62,61 +61,5 @@ test.describe('Proposal terms @features', () => {
       recipientScope: 'specific', recipientAddress: '0x1234567890abcdef1234567890abcdef12345678',
     });
     expect((await proposalState(page, sourceId)).title).not.toBe(saved.title);
-  });
-
-  test('readjusting parcel boundaries locks ownership to per-replacement-parcel in the terms UI', async ({ mockApi: page }) => {
-    await openCity(page);
-    await openParcel(page, 'proposals');
-    await page.locator('.parcel-build-btn--reparcellization').click();
-    const reparcel = page.locator('.on-map-reparcellization');
-    await expect(reparcel.locator('.on-map-editor__panel')).toBeVisible();
-    await expect(reparcel.locator('[data-reparcel-newplots-table]')).not.toBeEmpty();
-    await reparcel.locator('[data-reparcel-commit]').click();
-    await expect(reparcel).toHaveCount(0);
-    const sourceId = await page.evaluate(() => {
-      const proposal = (window as any).proposalStorage.getAllProposals()
-        .find((item: any) => item.applied && item.reparcellization?.polygons?.length);
-      if (!proposal) throw new Error('The committed readjustment proposal was not saved');
-      return proposal.proposalId;
-    });
-    await showProposal(page, sourceId);
-    const expand = page.locator('#proposal-details-panel').getByRole('button', { name: 'Expand', exact: true });
-    if (await expand.isVisible()) await expand.click();
-    const moreActions = page.locator('#proposal-details-panel summary').filter({ hasText: 'More actions' });
-    if (await moreActions.isVisible()) await moreActions.click();
-    await page.locator('.btn-counterpropose-proposal').click();
-
-    const dialog = page.locator('.create-proposal-modal:visible');
-    await expect(dialog).toBeVisible();
-    const readjust = dialog.locator('input[name="proposalParcelsMode"][value="readjust"]');
-    await expect(readjust).toBeChecked();
-    await expect(readjust).toBeDisabled();
-    const perSlice = dialog.locator('input[name="proposalOwnership"][value="per-slice"]');
-    await expect(perSlice).toBeChecked();
-    await expect(dialog.locator('#proposalOwnershipGroup')).toBeHidden();
-    await expect(dialog.locator('#proposalOwnershipStatic')).toContainText(/Per slice/i);
-
-    // Its ownership and approval are set up from the dialog's own row, and the row reports them.
-    const approvalRow = dialog.locator('[data-reparcel-approval-row]');
-    const setUp = approvalRow.locator('[data-reparcel-approval-setup]');
-    await expect(setUp).toHaveText('Set up…');
-    await setUp.click();
-    const setup = page.locator('.approval-setup-dialog');
-    await expect(setup).toBeVisible();
-    const rights = {
-      schema: 'parcel-rights/v1',
-      source: { provider: 'upload', reference: 'e2e-terms-register' },
-      parcels: [{ parcelId: PARCEL_ID, complete: true, owners: [{ ownerId: 'owner-a', share: '1/2' }, { ownerId: 'owner-b', share: '1/2' }] }]
-    };
-    await setup.locator('[data-approval-file]').setInputFiles({ name: 'rights.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify(rights)) });
-    await setup.locator('[data-editor-action="approval-import"]').click();
-    await expect(setup.locator('.proposal-editor-approval-status')).toContainText('Ownership data is complete');
-    await selectNativeOption(setup.locator('[data-approval-regime]'), 'es-md-compensation');
-    await setup.locator('[data-action-id="apply"]').click();
-    await expect(setup).toHaveCount(0);
-    const summary = approvalRow.locator('[data-reparcel-approval-summary]');
-    await expect(summary).toContainText('Rights for 1 parcel(s), 2 owner(s)');
-    await expect(summary).toContainText('Madrid — compensation by the owners');
-    await expect(setUp).toHaveText('Change…');
   });
 });

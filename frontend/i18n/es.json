@@ -345,12 +345,7 @@
             "title": "Aportaciones y asignaciones propuestas a los propietarios",
             "dealOf": "Acuerdo de {{owner}}",
             "contributes": "Aportación propuesta de {{owner}}",
-            "receives": "Asignación propuesta a {{owner}}",
             "share": "Cuota {{share}}",
-            "landBefore": "Superficie de terreno aportado",
-            "landAfter": "Superficie de terreno asignado",
-            "cashReceived": "Efectivo ofrecido",
-            "cashPaid": "Pago en efectivo propuesto",
             "withOwner": "Con la aceptación de {{owner}}: {{progress}}",
             "passesWithOwner": "La aceptación de {{owner}} satisfaría las reglas de aprobación configuradas.",
             "needsMoreThanOwner": "Seguirían haciendo falta más decisiones, además de la aceptación de {{owner}}, según las reglas de aprobación configuradas.",
@@ -374,6 +369,7 @@
         "atLeast": "al menos {{fraction}}",
         "moreThan": "más de {{fraction}}",
         "meterOwners": "Propietarios",
+        "meterArea": "Superficie",
         "ownersCount": "{{accepted}} de {{total}} han aceptado",
         "ownersNeeded": "Necesita {{count}}",
         "areaNeededAll": "Necesita todas las parcelas: {{area}}",
@@ -411,23 +407,12 @@
             "rightsSourceUnknown": "Este registro no especifica una fuente de los derechos.",
             "acceptAs": "Aceptar como {{owner}}",
             "contributes": "Su aportación propuesta",
-            "receives": "Su asignación propuesta",
             "conditions": "Condiciones",
             "progress": "Progreso",
             "yourShare": "Tu cuota {{share}}",
             "coOwnedWith": "en copropiedad con {{owners}}",
-            "noAllocation": "Este plan no asigna ninguna parcela ni dinero a este propietario.",
-            "plot": "Parcela {{number}}",
-            "plotShare": "{{share}} de {{area}} = {{yours}}",
-            "sharedWith": "compartida con {{owners}}",
-            "landBefore": "Terreno que aportaría",
-            "landAfter": "Terreno asignado a usted",
-            "landChange": "Cambio de terreno",
-            "cash": "Dinero que se te ofrece",
             "openUntil": "Abierta hasta el {{date}}",
             "noDeadline": "Sin plazo",
-            "funded": "La financiación figura como lista en este registro; el pago no está verificado.",
-            "unfunded": "La financiación no figura como lista en este registro.",
             "signNote": "Tu billetera firma exactamente estas condiciones. Si cambian, tu aceptación deja de contar.",
             "progressOwners": "{{accepted}} de {{total}} propietarios",
             "progressBoth": "{{accepted}} de {{total}} propietarios, {{area}} de {{totalArea}}",
@@ -438,7 +423,6 @@
             "needsMore": "Seguirían haciendo falta más decisiones para cumplir las reglas de aprobación configuradas.",
             "verifyFirst": "Para aceptar, primero confirma con un miembro de la lente que tu billetera puede actuar por este propietario.",
             "notSigned": "La billetera no firmó, así que no se aceptó nada.",
-            "cashYouPay": "Efectivo que pagaría",
             "approveAs": "Aprobar como {{owner}}",
             "lease": "Arriendo {{lease}} sobre {{parcel}}",
             "heldWith": "compartido con {{owners}}",
@@ -468,12 +452,6 @@
             "anchoring": "Fijando las decisiones y esperando a tu billetera…",
             "anchoredNow": "Decisiones ancladas: {{count}}.",
             "anchorFailed": "No se ancló nada: {{reason}}"
-        },
-        "money": {
-            "summary": "Efectivo propuesto para los propietarios: {{out}} a recibir y {{in}} a pagar.",
-            "sponsorPays": "El patrocinador pagaría {{amount}}.",
-            "sponsorReceives": "El patrocinador recibiría {{amount}}.",
-            "sponsorNothing": "Los pagos propuestos de los propietarios cubren todos los desembolsos; no se prevé un pago del patrocinador."
         }
     },
     "proposalGroundRebase": {
@@ -653,7 +631,6 @@
             "toMe": "Para mí",
             "toCity": "Para la ciudad",
             "thirdParty": "Tercero",
-            "perSlice": "Por parcela de reemplazo",
             "notApplicable": "No aplicable",
             "anyone": "Cualquiera",
             "specific": "Destinatario específico"
@@ -664,9 +641,15 @@
                 "one": "{{count}} edificio · {{typology}}",
                 "other": "{{count}} edificios · {{typology}}"
             },
-            "reparcelSummary": "{{count}} parcela(s) de reemplazo · {{algorithm}}",
+            "parcelLayout": "Trazado de parcelas",
+            "layoutSummary": "{{count}} parcela(s) · {{layout}}",
+            "layouts": {
+                "equal": "Parcelas iguales",
+                "schelling": "Parcelas de Schelling",
+                "amend": "Mantener los linderos existentes",
+                "manual": "Dibujar libremente"
+            },
             "parcelSummary": "{{count}} parcela(s) afectadas",
-            "manual": "manual",
             "road": "Calle",
             "track": "Vía",
             "parcelOnly": "Esta propuesta no tiene una geometría de diseño independiente. El resaltado de parcelas sigue activo mientras editas las demás facetas.",
@@ -722,12 +705,16 @@
                 "preview-pending": "La huella del corredor se reconstruirá al abrir Diseño.",
                 "missing-building": "Crea al menos una huella de edificio.",
                 "invalid-building": "La huella de un edificio no es válida.",
-                "missing-polygons": "Añade al menos una parcela de reemplazo.",
-                "invalid-polygon": "Cada parcela de reemplazo necesita un polígono válido.",
-                "overlapping-polygons": "Las parcelas de reemplazo se superponen.",
-                "coverage-gap": "Las parcelas de reemplazo dejan superficie obligatoria sin cubrir.",
-                "coverage-excess": "Las parcelas de reemplazo exceden la cobertura obligatoria.",
-                "missing-parent-coverage": "Faltan parcelas de origen obligatorias en el plan."
+                "missing-plots": "Añade al menos una parcela.",
+                "too-many-plots": "Usa como máximo 1.000 parcelas en un trazado.",
+                "geometry-unavailable": "La geometría de las parcelas no se puede comprobar hasta que cargue el mapa.",
+                "invalid-plot": "Cada parcela necesita un polígono válido.",
+                "plot-too-small": "Una parcela mide menos de 1 m².",
+                "overlapping-plots": "Las parcelas se solapan. Ajusta sus linderos.",
+                "missing-pool": "El trazado no tiene contorno agrupado.",
+                "invalid-pool": "No se pudo comprobar el contorno agrupado.",
+                "coverage-gap": "Las parcelas dejan parte del terreno agrupado sin cubrir.",
+                "coverage-excess": "Las parcelas se extienden fuera del terreno agrupado."
             }
         },
         "autosave": {
@@ -776,7 +763,9 @@
             "parcelsNotContiguous": "Las parcelas seleccionadas deben formar una sola superficie continua.",
             "parcelsUnavailable": "Las parcelas del borrador no están disponibles en la ciudad actual.",
             "readOnly": "Esta propuesta es de solo lectura.",
-            "sourceMissing": "No se encontró la propuesta de origen."
+            "sourceMissing": "No se encontró la propuesta de origen.",
+            "layoutWithoutPlots": "Este trazado de parcelas no tiene parcelas.",
+            "subdivisionWithoutSite": "Esta parcelación no tiene sitio."
         },
         "publish": {
             "alreadyCreated": "Este borrador ya creó la propuesta {{id}}.",
@@ -1470,8 +1459,8 @@
                 "estimated": "Parcela estimada {{number}}",
                 "plotPiece": "Porción de parcela diseñada {{number}}",
                 "remainder": "Terreno remanente {{number}}",
-                "plotNote": "Terreno derivado de una parcela diseñada en una propuesta de reajuste de tierras. Varias porciones actuales pueden proceder de la misma parcela diseñada.",
-                "remainderNote": "Terreno que este reajuste dejó fuera de las parcelas diseñadas. Se mantiene separado de las porciones de esas parcelas.",
+                "plotNote": "Terreno derivado de una parcela diseñada en un trazado de parcelas. Varias porciones actuales pueden proceder de la misma parcela diseñada.",
+                "remainderNote": "Terreno que este trazado de parcelas dejó fuera de las parcelas diseñadas. Se mantiene separado de las porciones de esas parcelas.",
                 "source": "Parcela de origen {{number}}",
                 "sourcePart": "Parte de la parcela de origen {{number}}",
                 "formed": "Porción de terreno resultante {{number}}",
@@ -1496,7 +1485,7 @@
                 "row": "Casas en hilera",
                 "parcelBased": "Aislada",
                 "single": "Edificio libre",
-                "reparcel": "Reparcelación",
+                "layOutParcels": "Trazar parcelas",
                 "park": "Parque",
                 "square": "Plaza",
                 "lake": "Lago",
@@ -1643,7 +1632,7 @@
                 "destination": {
                     "public": "público",
                     "proposer": "el proponente",
-                    "mapping": "según el plan",
+                    "carryOver": "sigue con sus propietarios",
                     "undecided": "por decidir"
                 },
                 "takes": "Toma {{area}} m² de esta parcela → {{destination}}",
@@ -1742,10 +1731,6 @@
                 "parcelTitle": "Estado de aceptación de parcelas:",
                 "noRoster": "No hay una lista de propietarios disponible para esta parcela.",
                 "ownerTitle": "Estado de aceptación de propietarios:",
-                "cashOffers": "Ofertas monetarias de reparcelación",
-                "cashOffersScope": "Compensación propuesta para cada propietario por el acuerdo completo.",
-                "cashTotal": "Oferta monetaria total",
-                "invalidReadjustment": "Corrija las asignaciones de parcelas y las condiciones monetarias antes de aceptar.",
                 "termsChanged": "Las condiciones cambiaron — revíselas y acepte de nuevo",
                 "accept": "Aceptar",
                 "undo": "Deshacer",
@@ -1768,13 +1753,7 @@
                     "parcelSummary": "{{accepted}}/{{total}} parcelas con recibos verificados"
                 },
                 "recipient": "destinatario",
-                "solanaLensHint": "Di sí en la tarjeta Lente",
-                "moneySchedule": "Calendario de pagos",
-                "moneyScope": "Lo que cada propietario recibe o paga en todo el acuerdo y lo que cubre el patrocinador. Siempre suma cero.",
-                "moneyReceives": "recibe {{amount}}",
-                "moneyPays": "aporta {{amount}}",
-                "moneySponsor": "Patrocinador",
-                "moneySponsorNothing": "no paga nada"
+                "solanaLensHint": "Di sí en la tarjeta Lente"
             },
             "voting": {
                 "voteYes": "Votar sí",
@@ -2891,7 +2870,7 @@
                         "park": "Parques",
                         "square": "Plazas",
                         "structure": "Otras estructuras",
-                        "reparcellization": "Reparcelaciones",
+                        "parcel-layout": "Trazados de parcelas",
                         "parcel": "Propuestas de parcela",
                         "other": "Otros"
                     },
@@ -2909,7 +2888,7 @@
                         "lake": "Lago",
                         "urbanRule": "Regla urbana",
                         "urban-rule": "Regla urbana",
-                        "reparcellization": "Reparcelación",
+                        "parcel-layout": "Trazado de parcelas",
                         "row": "Hilera",
                         "other": "Otro"
                     }
@@ -2954,7 +2933,7 @@
                     "square": "Plaza",
                     "lake": "Lago",
                     "urban-rule": "Regla urbana",
-                    "reparcellization": "Reparcelación",
+                    "parcel-layout": "Trazado de parcelas",
                     "decide-later": "Decidir después",
                     "parcelBased": "Por parcela",
                     "other": "Otro"
@@ -2967,7 +2946,7 @@
                     "lake": "Lago",
                     "decide later": "Decidir después",
                     "structure": "Estructura",
-                    "reparcellization": "Reparcelación",
+                    "parcel-layout": "Trazado de parcelas",
                     "parcel": "Parcela",
                     "other": "Otro"
                 },
@@ -3396,7 +3375,6 @@
             "proposalTypeOptions": {
                 "purchase": "Compra",
                 "urbanRule": "Regla urbana",
-                "reparcellization": "Reparcelación",
                 "jointInvestment": "Inversión conjunta"
             },
             "goalOptions": {
@@ -3409,7 +3387,6 @@
                 "roadTrack": "Camino/Tramo",
                 "decideLater": "Fusionar",
                 "urbanRule": "Regla urbana",
-                "reparcellization": "Subdividir",
                 "ownershipTransfer": "Transferencia de propiedad"
             },
             "goalSections": {
@@ -3419,15 +3396,13 @@
             },
             "parcelsOptions": {
                 "asIs": "Sin cambios",
-                "merge": "Fusionar",
-                "readjust": "Reajustar"
+                "merge": "Fusionar"
             },
             "ownershipRecipients": {
                 "noChange": "Sin cambios",
                 "toMe": "Para mí",
                 "toCity": "A la ciudad",
-                "thirdParty": "Tercero",
-                "perSlice": "Por lote"
+                "thirdParty": "Tercero"
             },
             "recipientPlaceholder": "Nombre o dirección 0x del destinatario",
             "recipientScope": {
@@ -3473,16 +3448,6 @@
                     "copiedEditable": "Geometría copiada de \"{name}\": pulsa Editar para ajustarla",
                     "drawing": "Geometría creada dibujando"
                 }
-            },
-            "reparcellization": {
-                "label": "Algoritmo",
-                "options": {
-                    "sweepLine": "Barrido",
-                    "centroidalVoronoi": "Voronoi centroidal",
-                    "wasserstein": "Wasserstein",
-                    "manual": "Manual"
-                },
-                "hint": "Se muestran algoritmos adicionales con fines de planificación; actualmente solo está disponible Barrido."
             },
             "descriptionLabel": "Descripción",
             "descriptionPlaceholder": "Describe tu propuesta…",
@@ -3595,7 +3560,7 @@
                 "mintsOn": "Se acuña en",
                 "noWalletTooltip": "No hay ninguna cartera conectada; la propuesta se queda en este navegador."
             },
-            "proposal_type_no_longer_available": "Fusionar / Decidir después ya no está disponible. Usa la reparcelación.",
+            "proposal_type_no_longer_available": "Fusionar / Decidir después ya no está disponible. Usa la herramienta Trazar parcelas.",
             "titleLake": "Crear propuesta de lago",
             "typeLake": "Lago",
             "ownerOffer": {
@@ -3919,80 +3884,67 @@
             "generatedSummaryExcluded": "Generado: {{buildings}} · {{excluded}}"
         }
     },
+    "parcelLayout": {
+        "publishLater": "Los trazados de parcelas se comparten junto con su acuerdo. Próximamente.",
+        "editor": {
+            "title": "Trazar parcelas",
+            "mapHint": "Dibuja aquí las parcelas. Quién recibe cada parcela se decide después, en el acuerdo.",
+            "algorithms": {
+                "equal": "Parcelas iguales",
+                "schelling": "Parcelas de Schelling",
+                "amend": "Mantener los linderos existentes"
+            },
+            "schellingUnavailable": "El plan de Schelling no se ha cargado.",
+            "plotCount": "Número de parcelas",
+            "courtyard": "Patio",
+            "courtyardHint": "Separa el patio interior de un bloque de edificios planificado como una parcela propia.",
+            "saved": "El trazado de parcelas se guardó en este diseño.",
+            "discardMessage": "Los cambios que hiciste aquí no se han guardado en el diseño. Si cierras ahora, se descartan.",
+            "coverageComplete": "Las parcelas cubren todo el terreno agrupado ({{area}}).",
+            "plotTooltip": "Parcela {{n}} · {{area}}",
+            "takenGroundBlocked": "Un trazado de parcelas no puede redibujar terreno que ya ocupa otro diseño. Deselecciónalo o desaplica ese diseño primero.",
+            "selectParcels": "Selecciona al menos una parcela para trazar.",
+            "poolUnavailable": "No se pudo construir el contorno de estas parcelas.",
+            "oldPlotsMissing": "No se pudieron cargar las parcelas de entrada, así que el contorno agrupado se toma del propio trazado.",
+            "edgeHint": "Arrástralo para mover este tramo. Borrarlo une las dos parcelas en una.",
+            "nodeRemoveMerges": "Al quitarlo, {{joining}} se une a {{keeper}}, que gana {{moved}} m².",
+            "status": {
+                "preparing": "Preparando el trazado…",
+                "cutSuccess": "Línea trazada — {{plots}} parcela(s) nueva(s), {{nodes}} nodo(s) nuevo(s).",
+                "drawSuccess": "Parcela añadida.",
+                "manualHint": "Dibuja parcelas en el mapa o divide el terreno con la herramienta de línea.",
+                "amendHint": "Las parcelas existentes son las del trazado. Recorta un patio o edita los límites.",
+                "courtyardCarved": "Patio recortado como parcela propia.",
+                "schellingLaidOut": "Parcelas del plan de Schelling {{code}}. Las franjas de calle entre ellas también son parcelas.",
+                "schellingFailed": "Aquí no se pudieron trazar parcelas de Schelling: {{reason}}",
+                "nodeOnPool": "Ese nodo está en el contorno agrupado: pertenece a los vecinos, no a este trazado.",
+                "uploadUnavailable": "La subida de GeoJSON necesita el motor de geometría, que no se ha cargado."
+            },
+            "validation": {
+                "missing-plots": "Añade al menos una parcela.",
+                "too-many-plots": "Usa como máximo {{max}} parcelas en un trazado.",
+                "geometry-unavailable": "La geometría de las parcelas no se puede comprobar hasta que cargue el mapa.",
+                "plot-too-small": "La parcela {{plot}} mide menos de {{min}}.",
+                "invalid-plot": "La parcela {{plot}} no es un polígono válido.",
+                "missing-pool": "El trazado no tiene contorno agrupado.",
+                "overlapping-plots": "La parcela {{plot}} se solapa con otra parcela.",
+                "coverage-gap": "Las parcelas dejan sin cubrir {{area}} del terreno agrupado.",
+                "coverage-excess": "Las parcelas se extienden {{area}} más allá del terreno agrupado.",
+                "invalid-pool": "No se pudo comprobar el contorno agrupado."
+            }
+        }
+    },
     "reparcellization": {
         "modal": {
-            "mapHint": "Ajusta los límites de las parcelas en el mapa; revisa aquí la titularidad y las participaciones.",
-            "savedRecipientUnresolved": "El destinatario guardado de la parcela resultante no tiene una contribución coincidente en las entradas actuales.",
-            "ownerReview": "Revisar a un propietario",
-            "allOwners": "Todos los propietarios",
-            "unknownContribution": "Aportación desconocida",
-            "contributedLand": "Terreno aportado",
-            "assignedLand": "Terreno asignado (según participación)",
-            "landChange": "Cambio neto de terreno",
-            "ownerInputParcels": "Parcelas de origen: {{parcels}}",
-            "ownerOutputShare": "Parcela {{plot}} · {{share}} · {{area}}",
-            "ownerHighlightHint": "Línea ámbar discontinua: parcelas de origen. Línea azul continua: parcelas asignadas. Usa Antes / Después para comparar.",
-            "ownerReviewInvalid": "Completa la geometría, las participaciones y las ofertas en efectivo para revisar este propietario.",
-            "editShares": "Editar participaciones",
-            "applySharesFirst": "Aplica las participaciones editadas o cierra el editor para descartarlas.",
-            "sourceRightsNeeded": "Los derechos de propiedad de las parcelas de origen están incompletos; no se puede verificar la aprobación de los propietarios.",
-            "useProRataShares": "Usar proporciones del terreno privado",
-            "proRataShares": "Las participaciones siguen las proporciones del terreno privado.",
-            "customShares": "Las participaciones personalizadas se mantienen al cambiar los límites.",
-            "ownerSharePercent": "Participación de {{owner}} (%)",
-            "applyShares": "Aplicar participaciones",
-            "sharesTotal": "Total: {{total}}%",
-            "sharesInvalid": "Cada participación debe ser positiva y sumar 100%.",
-            "title": "Reparcelación",
             "subtitle": "{{algorithm}} · {{parcels}}",
-            "subtitleWithOwners": "{{algorithm}} · {{parcels}} · {{owners}}",
             "algorithms": {
-                "borderPerpendicular": "Perpendicular al borde",
-                "sweepLine": "Automático",
-                "centroidalVoronoi": "Voronoi centroidal",
-                "wasserstein": "Wasserstein",
-                "manual": "Dibujar libremente",
-                "amend": "Mantener las parcelas existentes"
+                "manual": "Dibujar libremente"
             },
-            "algorithmTitle": "Tipo de reparcelación",
             "layoutTitle": "Distribución inicial",
             "activeMode": "Activo: {{mode}}",
-            "sharedCourtyard": "Patio compartido",
             "courtyardFromBuilding": "De un bloque de edificios",
-            "courtyardDraw": "Dibujar en el mapa",
-            "jointOwnership": "Propiedad conjunta",
-            "jointAssignButton": "Compartir entre destinatarios",
             "choosePlanTitle": "Elegir un bloque de edificios",
-            "agreementTitle": "Acuerdos",
-            "agreementSingle": "Un acuerdo",
-            "agreementIndividual": "Acuerdos separados por parcela",
-            "agreementHint": "Cada parcela conserva su resto con sus propietarios actuales y aporta su parte del patio compartido.",
-            "agreementOfferHint": "Los importes siguen la compensación de cada propietario en el balance de reajuste de tierras. Revise cada acuerdo por separado antes de publicarlo.",
-            "agreementRetry": "Reintentar los acuerdos restantes",
-            "agreementCreate": "Crear acuerdos de parcela",
-            "agreementRequiresCourtyard": "Dibuja un patio compartido antes de crear acuerdos separados por parcela.",
-            "agreementPrivateTransfers": "Los acuerdos separados deben mantener el terreno privado con sus propietarios originales. Usa un acuerdo para esta distribución.",
-            "agreementCreated": "Se crearon {{count}} acuerdos de parcela.",
-            "agreementFailed": "Se crearon {{created}} acuerdos de parcela; {{failed}} requieren atención. El borrador se conserva para reintentarlo.",
-            "perParcelProposalName": "{{name}} — parcela {{parcel}}",
-            "closeAria": "Cerrar",
             "done": "Listo",
-            "allPublic": "Todo público",
-            "ownerLegend": "Leyenda de propietarios",
-            "legendMeta": {
-                "one": "{{percent}} · {{count}} parcela",
-                "few": "{{percent}} · {{count}} parcelas",
-                "other": "{{percent}} · {{count}} parcelas"
-            },
-            "selectedParcelsLabel": "parcelas seleccionadas",
-            "defaultDescription": "Propuesta de reparcelación para {{label}}",
-            "syntheticOwner": "Propietario de {{parcel}}",
-            "colContributed": "Aportado",
-            "colAssigned": "Asignado",
-            "colBalance": "Saldo",
-            "colCashOffer": "Oferta en efectivo",
-            "totalCashOffer": "Total de ofertas en efectivo: {{amount}}",
-            "owners": "Propietarios",
             "publicLand": "Suelo público",
             "sweepHandleHint": "Arrastra para rotar las líneas de parcelación",
             "drawPlot": "Dibujar parcela",
@@ -4001,32 +3953,19 @@
             "drawFinishLine": "Terminar línea",
             "drawUndo": "Deshacer punto",
             "drawCancel": "Cancelar",
-            "coverageComplete": "Toda la tierra mancomunada asignada ({{pct}}%).",
-            "coverageIncomplete": "{{count}} parcela(s) sin asignar · {{area}} aún sin asignar ({{pct}}% cubierto).",
             "status": {
-                "preparingPreview": "Preparando vista previa de reparcelación…",
-                "missingOwners": "No se pudieron determinar los propietarios para la reparcelación.",
-                "algorithmUnavailable": "El algoritmo seleccionado aún no está disponible.",
                 "splitFailed": "No se pudo dividir la geometría de la parcela.",
-                "success": "Diseño generado. Revisa y pulsa Listo para guardar.",
-                "manualHint": "Dibuja parcelas en el mapa y asigna cada una a un propietario.",
                 "drawHint": "Haz clic para añadir puntos, arrastra para ajustar y pulsa Terminar.",
                 "drawTooFew": "Añade al menos 3 puntos para crear una parcela.",
                 "drawInvalid": "No se pudo crear una parcela válida con esos puntos.",
                 "drawNoOverlap": "La parcela dibujada está fuera de la tierra mancomunada.",
-                "drawSuccess": "Parcela añadida. Haz clic para asignar propietarios.",
                 "lineHint": "Haz clic para trazar la línea. Solo se dibuja entre los sitios donde toca un lindero o una esquina existente — al menos dos.",
                 "lineTooFew": "Añade al menos 2 puntos para crear una línea de división.",
-                "lineNoSplit": "La línea no cruzó ninguna parcela para dividir.",
-                "lineSuccess": "Parcela dividida. Haz clic en cada parte para asignar propietarios.",
                 "uploadEmpty": "El archivo subido no contiene polígonos.",
                 "uploadNoOverlap": "Los polígonos subidos no se solapan con las parcelas seleccionadas.",
                 "uploadParseError": "No se pudo analizar el archivo GeoJSON.",
                 "uploadSuccess": "Se cargaron {{count}} polígonos del archivo.",
-                "editBlocked": "Esta edición desplaza propuestas aplicadas y no puede guardarse aquí.",
                 "nodeHint": "Arrastra un nodo, o agarra un tramo de lindero y arrástralo. Tira de un punto medio para curvar un lindero. Haz clic en un nodo para quitarlo, o en un lindero para borrarlo. El contorno agrupado es fijo.",
-                "ownersFromRights": "Los propietarios provienen ahora del archivo de derechos: {{count}} propietario(s). Revisa los propietarios de cada parcela.",
-                "approvalSaved": "Propiedad y aprobación guardadas.",
                 "manualFromLayout": "Dibujo libre a partir de la distribución actual. Arrastra nodos o tramos enteros de lindero, corta con la herramienta de línea o haz clic en un lindero para borrarlo.",
                 "redone": "Se rehízo el cambio.",
                 "edgeErased": "Lindero borrado: las dos parcelas son ahora una.",
@@ -4034,9 +3973,6 @@
                 "editFolds": "Sin cambios: eso doblaría una parcela sobre sí misma o sobre una vecina.",
                 "editBreaksTiling": "Sin cambios: eso dejaría terreno sin parcela, o en dos parcelas.",
                 "undone": "Se deshizo el último cambio.",
-                "nodeOnPool": "Ese nodo está en el contorno agrupado: pertenece a los vecinos, no a este plan.",
-                "assignHint": "Haz clic en una parcela para elegir sus propietarios. La edición se pausa mientras asignas.",
-                "cutSuccess": "Línea trazada — {{plots}} parcela(s) nueva(s), {{nodes}} nodo(s) nuevo(s). Haz clic en cada parte para asignar propietarios.",
                 "cutNoSplit": "La línea pasó entre sus anclajes sin dividir ninguna parcela — no cambió nada.",
                 "cutOnNode": "Empieza en una esquina existente — ese es uno de los dos anclajes que necesita.",
                 "cutFree": "Enganche desactivado mientras mantienes Shift — el punto cae exactamente donde haces clic.",
@@ -4046,59 +3982,19 @@
                 "lineOneAnchor": "Un anclaje por ahora. Cruza otro lindero, o termina en una esquina existente.",
                 "lineNoAnchor": "Aún sin anclajes. Una línea tiene que cruzar un lindero o tocar una esquina existente en dos sitios para crear uno.",
                 "lineNoAnchors": "La línea tocó los linderos existentes en menos de dos sitios, así que no hay nada entre lo que trazar. Cruza dos linderos, o empieza en una esquina y cruza uno.",
-                "amendHint": "Mantén las parcelas y los propietarios existentes. Recorta un patio compartido o edita los límites.",
                 "noBlockProposals": "Ningún bloque de edificios con patio cerrado se superpone a estas parcelas.",
-                "courtyardCarved": "Patio recortado y asignado conjuntamente.",
-                "courtyardDrawHint": "Dibuja el patio compartido. Sus participaciones de propiedad siguen el terreno privado asignado a cada destinatario.",
                 "courtyardError": "No se pudo recortar el patio. Se ha conservado la distribución."
             },
-            "assignOwners": "Asignar propietarios",
-            "colOrigArea": "Original",
-            "colOwner": "Propietario",
-            "colOwners": "Propietarios",
             "colPlot": "Lote",
             "newPlots": "Nuevos lotes",
-            "originalOwners": "Propietarios originales",
-            "shuffle": "Mezclar propiedad",
-            "single": {
-                "distribution": {
-                    "equal": "Igual",
-                    "manual": "Manual",
-                    "random": "Aleatorio"
-                },
-                "distributionLabel": "Distribución",
-                "length": {
-                    "full": "Completo",
-                    "split": "Dividir"
-                },
-                "lengthLabel": "Longitud",
-                "lotLabel": "Parcela {{index}}",
-                "lotShareAria": "Proporción para la parcela {{index}}",
-                "noParcels": "No se seleccionaron parcelas de entrada",
-                "orientationHint": "Arrastra la línea en el mapa para fijar la dirección de división.",
-                "parcelCountLabel": "Número de parcelas",
-                "parcelLabel": "Parcela",
-                "parcelListTitle": "Parcelas seleccionadas",
-                "superParcelLabel": "Área de la superparcela",
-                "totalParcelsLabel": "Número total de parcelas: {{count}}"
-            },
-            "subtitleSingleOwner": "{{parcels}} · un propietario",
-            "unassigned": "Sin asignar",
             "uploadGeojson": "Subir GeoJSON",
             "parcelCount": {
                 "one": "{{count}} parcela",
                 "few": "{{count}} parcelas",
                 "other": "{{count}} parcelas"
             },
-            "ownerCount": {
-                "one": "{{count}} propietario",
-                "few": "{{count}} propietarios",
-                "other": "{{count}} propietarios"
-            },
             "cancel": "Cancelar",
-            "takenGroundBlocked": "Una reparcelación no puede tomar terreno que ya ocupa otra propuesta. Deselecciónalo o desaplica esa propuesta primero.",
             "discardTitle": "¿Descartar estos cambios?",
-            "discardMessage": "Los cambios que hiciste aquí no se han guardado en la propuesta. Si cierras ahora, se descartan.",
             "discardConfirm": "Descartar cambios",
             "discardCancel": "Seguir editando",
             "editNodes": "Editar límites (nodos)",
@@ -4106,7 +4002,6 @@
             "redoEdit": "Rehacer",
             "redoNothing": "Nada que rehacer",
             "edgeBetween": "Lindero entre {{a}} y {{b}}",
-            "edgeHint": "Arrástralo para mover este tramo. Borrarlo une las dos parcelas; la parcela unida conserva los propietarios de la mayor.",
             "edgeOwn": "Tramo de lindero",
             "edgeOwnHint": "Arrástralo para mover este tramo.",
             "edgeErase": "Borrar este lindero",
@@ -4124,38 +4019,15 @@
             "colParcel": "Parcela",
             "colArea": "Superficie",
             "unknownParcel": "Parcela",
-            "oldPlotsMissing": "No se pudieron cargar las parcelas de entrada, así que el contorno agrupado se deriva del propio plan.",
             "oldPlotsPartial": "Se cargaron {{shown}} de {{declared}} parcelas de entrada.",
             "eraseEdge": "Borrar un lindero",
             "eraseTooltip": "Borrar este lindero — {{a}} y {{b}} pasan a ser una sola parcela",
-            "nodeRemoveMerges": "Al quitarlo, {{joining}} se une a {{keeper}} — {{moved}} m² cambian de manos.",
             "nodeRemoveStraightens": "Al quitarlo, el lindero se endereza — unos {{moved}} m² cruzan al otro lado.",
             "plotLabel": "parcela {{n}} ({{area}} m²)",
-            "noOwnerBalance": "La propiedad es desconocida. Este borrador no calcula un saldo ni una asignación de dinero para este terreno.",
-            "openGroundOwner": "Terreno abierto (propiedad desconocida)",
-            "subdivisionTitle": "Parcelación",
             "siteParcelsMissing": "No se pudieron cargar las parcelas bajo este sitio: {{ids}}.",
             "siteUnavailable": "Este sitio no se puede parcelar aquí.",
             "poolClipFailed": "No se pudo calcular el terreno de este plan: {{reason}}",
-            "siteGroundTaken": "Este sitio cubre terreno que otra propuesta ya formó: {{names}}. Dibuje el sitio fuera de él o retire primero esa propuesta.",
-            "cashTermsHint": "Compensación total del balance de propietarios. Edite las ofertas individuales en el editor de reajuste de tierras.",
-            "jointShareHint": "Las participaciones del patio parten del terreno privado restante de cada propietario. Usa Editar participaciones para fijar porcentajes.",
-            "colCash": "Dinero (+ recibe, − paga)",
-            "ownerPays": "Dinero que paga el propietario"
-        },
-        "validation": {
-            "missing-polygons": "Dibuja una parcela de reemplazo antes de continuar.",
-            "too-many-polygons": "Usa como máximo 1.000 parcelas de reemplazo.",
-            "geometry-unavailable": "No se puede comprobar la geometría. Inténtalo de nuevo cuando cargue el mapa.",
-            "invalid-polygon": "Revisa la geometría de la parcela de reemplazo.",
-            "overlapping-polygons": "Las parcelas de reemplazo se superponen. Ajusta sus límites.",
-            "coverage-gap": "Las parcelas de reemplazo dejan parte del terreno agrupado sin cubrir.",
-            "coverage-excess": "Las parcelas de reemplazo se extienden fuera del terreno agrupado.",
-            "disconnected-readjustment": "Crea un reajuste separado para cada área de terreno desconectada.",
-            "invalid-pool": "Revisa el límite del terreno agrupado.",
-            "invalid-allocation": "Revisa los propietarios y las participaciones de cada parcela de reemplazo.",
-            "invalid-readjustment-deal": "Revisa las ofertas en efectivo y la distribución del terreno.",
-            "invalid-proposal-approval": "Revisa la política de aprobación y los derechos de propiedad."
+            "siteGroundTaken": "Este sitio cubre terreno que otra propuesta ya formó: {{names}}. Dibuje el sitio fuera de él o retire primero esa propuesta."
         }
     },
     "mapCompare": {
@@ -4326,7 +4198,6 @@
             "focused_on_block": "Se enfocó en el bloque {{name}}",
             "invalid_bounds_for_block": "Límites inválidos para el bloque {{name}}",
             "invalid_block_bounds_for_block": "Límites de bloque inválidos para {{name}}",
-            "loading_reparcellization_tools": "Cargando herramientas de reparcelación…",
             "map_is_not_ready_yet_please_wait": "El mapa aún no está listo. Espera por favor.",
             "measurement_cancelled_click_to_start_measuring": "Medición cancelada. Haz clic para empezar a medir.",
             "merging_parcel_data": "Combinando datos de parcelas…",
@@ -4395,7 +4266,6 @@
             "parcels_could_not_be_merged": "No se pudieron unir las parcelas seleccionadas en un solo emplazamiento: {{reason}}",
             "select_a_parcel_before_attempting_to_claim_it": "Selecciona una parcela antes de intentar reclamarla.",
             "select_a_parcel_block_before_creating_a_proposal": "Selecciona un bloque de parcelas antes de crear una propuesta.",
-            "select_at_least_one_parcel_before_running_reparcellization": "Selecciona al menos una parcela antes de ejecutar la reparcelación.",
             "select_at_least_one_parcel_to_create_a_proposal": "Selecciona al menos una parcela para crear una propuesta.",
             "select_at_least_one_parcel_to_apply_the_government_road_plan": "Selecciona al menos una parcela para aplicar el plan vial gubernamental.",
             "select_parcels_before_applying_the_government_road_plan": "Selecciona parcelas antes de aplicar el plan vial gubernamental.",
@@ -4418,7 +4288,6 @@
             "single_building_proposal_created_use_apply_when_ready": "Propuesta \"{{title}}\" creada. Usa Aplicar al mapa desde los detalles de la propuesta cuando esté lista.",
             "single_building_tool_is_unavailable": "La herramienta de edificio único no está disponible.",
             "structure_proposal_dialog_is_unavailable": "El cuadro de diálogo de propuestas de estructuras no está disponible.",
-            "unable_to_build_geometry_for_reparcellization": "No se pudo construir la geometría para la reparcelación.",
             "unable_to_compute_bounds_for_this_block": "No se pudieron calcular los límites de este bloque.",
             "unable_to_determine_map_bounds_for_analysis": "No se pudieron determinar los límites del mapa para el análisis.",
             "unable_to_determine_map_bounds_for_government_plans": "No se pudieron determinar los límites del mapa para los planes gubernamentales.",
@@ -4441,7 +4310,6 @@
             "geometry_based_dgu_detection_complete": "Detección DGU basada en geometría completada. Se marcaron {{count}} parcelas como vías.",
             "gup_detection_complete": "Detección GUP completada. Se marcaron {{count}} parcelas como vías.",
             "road_detection_complete_with_names": "Detección de vías completada. Se encontraron {{count}} parcelas viales y se asignaron nombres.",
-            "saved_reparcellization_layout_to_the_proposal": "Diseño de reparcelación guardado para esta propuesta.",
             "loaded_cadastral_parcels": {
                 "one": "Se cargó {{count}} parcela catastral.",
                 "other": "Se cargaron {{count}} parcelas catastrales."
@@ -6244,7 +6112,7 @@
             "proposal_lifecycle_unknown": "Se desconoce el estado de la propuesta. Vuelve a cargarla antes de aceptarla.",
             "proposal_terms_unavailable": "No se pudieron verificar las condiciones actuales de la propuesta. Vuelva a cargarla antes de aceptarla.",
             "acceptance_confirmed_status_unavailable": "La aceptación se confirmó en la cadena, pero no se pudo actualizar el estado de la propuesta. Se sigue mostrando el estado anterior. Vuelve a cargar la propuesta para comprobarlo.",
-            "readjustment_terms_invalid": "Complete y corrija las asignaciones de parcelas y las condiciones monetarias de la reparcelación antes de aceptar.",
+            "proposal_terms_invalid": "Corrige las condiciones de la propuesta antes de aceptar.",
             "error_accepting_proposal_please_try_again": "Error al aceptar la propuesta. Inténtalo de nuevo.",
             "error_rejecting_proposal_please_try_again": "Error al rechazar la propuesta. Inténtalo de nuevo.",
             "failed_to_wipe_local_data": "No se pudieron borrar los datos locales:",
@@ -6267,16 +6135,11 @@
             "please_provide_author_name_and_a_valid_offer": "Indica autor, nombre y una oferta válida.",
             "please_select_a_parcel_first": "Selecciona primero una parcela",
             "please_specify_which_owner_acceptance_to_undo": "Especifica qué aceptación de propietario deseas deshacer.",
-            "proposal_type_no_longer_available": "Fusionar / Decidir más tarde ya no está disponible. Usa el reajuste del suelo.",
+            "proposal_type_no_longer_available": "Fusionar / Decidir más tarde ya no está disponible. Usa la herramienta Trazar parcelas.",
             "proposal_not_found": "Propuesta no encontrada.",
             "proposal_storage_is_unavailable": "El almacenamiento de propuestas no está disponible.",
-            "reparcellization_plan_is_missing_please_rerun_the_algorithm": "Falta el plan de reparcelación. Vuelve a ejecutar el algoritmo.",
-            "subdivision_site_missing": "Esta parcelación no tiene sitio. Vuelve a abrirla desde su borrador y guarda de nuevo.",
-            "subdivision_site_changed": "El sitio cambió después de trazar las parcelas. Abre de nuevo el editor de parcelación y pulsa Listo.",
-            "run_the_reparcellization_algorithm_and_click_done_before_creating_this_proposal": "Ejecuta el algoritmo de reparcelación y pulsa Hecho antes de crear esta propuesta.",
             "select_a_proposal_goal_before_creating_a_proposal": "Selecciona un objetivo de propuesta antes de crearla.",
             "select_which_owner_share_you_are_accepting_for": "Selecciona para qué participación de propietario aceptas.",
-            "selected_parcels_changed_after_running_reparcellization_please_rerun_the_algorithm": "Las parcelas seleccionadas cambiaron tras la reparcelación. Vuelve a ejecutar el algoritmo.",
             "single_building_workflow_is_unavailable": "El flujo del edificio único no está disponible.",
             "this_exact_proposal_already_exists": "Esta misma propuesta ya existe",
             "this_exact_proposal_already_exists_2": "Esta misma propuesta ya existe.",
@@ -6480,13 +6343,11 @@
             "failed_to_encode_shared_proposal_data": "No se pudieron codificar los datos de la propuesta compartida.",
             "failed_to_generate_share_link": "No se pudo generar el enlace para compartir.",
             "no_applied_proposals_to_share_yet": "Aún no hay propuestas aplicadas para compartir.",
-            "reparcellization_tools_failed_to_load": "Las herramientas de reparcelación no se pudieron cargar.",
             "road_proposal_already_exists_or_could_not_be_saved_review_proposals_for_details": "La propuesta vial ya existe o no se pudo guardar. Revisa las propuestas para más detalles.",
             "onchain_proposal_mint_failed": "La acuñación en cadena de la propuesta falló.",
             "onchain_proposal_mint_failed_with_reason": "Falló la acuñación en cadena de la propuesta: {{error}}.",
             "logged_out_ai_controls": "Sesión cerrada. La IA controlará tu agente.",
             "logged_out_agent_inactive": "Sesión cerrada. El agente quedará inactivo.",
-            "saved_reparcellization_layout_to_the_proposal": "Diseño de reparcelación guardado para esta propuesta.",
             "shared_proposal_loaded": "Propuesta compartida cargada.",
             "proposal_executed_all_parcels": "¡Propuesta {{hash}} ejecutada! Todas las {{count}} parcelas aceptadas.",
             "proposal_executed": "¡Propuesta {{hash}} ejecutada!",
@@ -7212,9 +7073,9 @@
             "partialAll": "parcial: todo el sitio es terreno abierto; aquí no hay parcela, aunque el catastro cubre la zona"
         },
         "palette": {
-            "readjustNeedsParcels": "La reparcelación trabaja sobre parcelas seleccionadas: selecciónalas en lugar de dibujar un sitio.",
+            "layoutNeedsParcels": "El trazado de parcelas trabaja sobre parcelas seleccionadas: selecciónalas en lugar de dibujar un sitio.",
             "subdivide": "Parcelar",
-            "readjustUnknownCadastre": "Parcelar requiere un catastro que el servidor tenga: no conoce ninguno para este lugar."
+            "subdivideUnknownCadastre": "Parcelar requiere un catastro que el servidor tenga: no conoce ninguno para este lugar."
         },
         "plots": {
             "summary": "{{tool}}: {{count}} lotes a lo largo de una fachada de {{length}} m.",
@@ -7306,7 +7167,7 @@
             "width": "{{width}} m de ancho"
         },
         "plots": {
-            "line": "Lote {{number}} ({{area}}, {{who}}): {{overlap}} de esta parcela"
+            "line": "Lote {{number}} ({{area}}): {{overlap}} de esta parcela"
         },
         "ownership": {
             "ceded": "{{area}} → {{destination}}"

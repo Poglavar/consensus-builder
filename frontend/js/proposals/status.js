@@ -20,7 +20,7 @@ const STATUS_SUB_KEYS = Object.freeze([
     'roadProposal',
     'buildingProposal',
     'structureProposal',
-    'reparcellization',
+    'parcelLayout',
     'decideLaterProposal'
 ]);
 

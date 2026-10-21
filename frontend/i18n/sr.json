@@ -345,12 +345,7 @@
             "title": "Predloženi doprinosi i dodele vlasnicima",
             "dealOf": "{{owner}}: šta unosi i dobija",
             "contributes": "Predloženi doprinos: {{owner}}",
-            "receives": "Predložena dodela: {{owner}}",
             "share": "Udeo {{share}}",
-            "landBefore": "Površina uloženog zemljišta",
-            "landAfter": "Površina dodeljenog zemljišta",
-            "cashReceived": "Ponuđeni novac",
-            "cashPaid": "Predložena novčana uplata",
             "withOwner": "Uz prihvatanje ({{owner}}): {{progress}}",
             "passesWithOwner": "Prihvatanje osobe {{owner}} zadovoljilo bi podešena pravila odobravanja.",
             "needsMoreThanOwner": "I dalje bi bile potrebne dodatne odluke pored prihvatanja osobe {{owner}} da bi se zadovoljila podešena pravila odobravanja.",
@@ -374,6 +369,7 @@
         "atLeast": "najmanje {{fraction}}",
         "moreThan": "više od {{fraction}}",
         "meterOwners": "Vlasnici",
+        "meterArea": "Površina",
         "ownersCount": "Prihvatilo je {{accepted}} od {{total}}",
         "ownersNeeded": "Potrebno: {{count}}",
         "areaNeededAll": "Potrebne su sve parcele: {{area}}",
@@ -411,23 +407,12 @@
             "rightsSourceUnknown": "U ovom zapisu nije naveden izvor prava.",
             "acceptAs": "Prihvati kao {{owner}}",
             "contributes": "Vaš predloženi doprinos",
-            "receives": "Vaša predložena dodela",
             "conditions": "Uslovi",
             "progress": "Napredak",
             "yourShare": "Vaš udeo {{share}}",
             "coOwnedWith": "u suvlasništvu sa: {{owners}}",
-            "noAllocation": "Ovaj plan ovom vlasniku ne dodeljuje ni parcelu ni novac.",
-            "plot": "Parcela {{number}}",
-            "plotShare": "{{share}} od {{area}} = {{yours}}",
-            "sharedWith": "delite sa: {{owners}}",
-            "landBefore": "Zemljište koje biste uneli",
-            "landAfter": "Zemljište dodeljeno vama",
-            "landChange": "Promena zemljišta",
-            "cash": "Novac koji vam se nudi",
             "openUntil": "Otvoreno do {{date}}",
             "noDeadline": "Bez roka",
-            "funded": "U ovom zapisu finansiranje je označeno kao spremno; plaćanje nije potvrđeno.",
-            "unfunded": "U ovom zapisu finansiranje nije označeno kao spremno.",
             "signNote": "Vaš novčanik potpisuje tačno ove uslove. Ako se promene, vaše prihvatanje prestaje da važi.",
             "progressOwners": "{{accepted}} od {{total}} vlasnika",
             "progressBoth": "{{accepted}} od {{total}} vlasnika, {{area}} od {{totalArea}}",
@@ -438,7 +423,6 @@
             "needsMore": "I dalje bi bile potrebne dodatne odluke da bi se zadovoljila podešena pravila odobravanja.",
             "verifyFirst": "Da biste prihvatili, prvo kod člana sočiva potvrdite da vaš novčanik sme da postupa u ime ovog vlasnika.",
             "notSigned": "Novčanik nije potpisao, pa ništa nije prihvaćeno.",
-            "cashYouPay": "Novac koji biste platili",
             "approveAs": "Odobri kao {{owner}}",
             "lease": "Zakup {{lease}} na {{parcel}}",
             "heldWith": "zajedno sa {{owners}}",
@@ -468,12 +452,6 @@
             "anchoring": "Čuvanje odluka i čekanje novčanika…",
             "anchoredNow": "Usidreno odluka: {{count}}.",
             "anchorFailed": "Ništa nije usidreno: {{reason}}"
-        },
-        "money": {
-            "summary": "Predloženi novčani tokovi vlasnika: {{out}} za prijem i {{in}} za uplatu.",
-            "sponsorPays": "Sponzor bi platio {{amount}}.",
-            "sponsorReceives": "Sponzor bi primio {{amount}}.",
-            "sponsorNothing": "Predložene uplate vlasnika pokrivaju sve isplate; uplata sponzora nije predviđena."
         }
     },
     "proposalGroundRebase": {
@@ -653,7 +631,6 @@
             "toMe": "Meni",
             "toCity": "Gradu",
             "thirdParty": "Trećoj strani",
-            "perSlice": "Po zamenskoj parceli",
             "notApplicable": "Nije primenljivo",
             "anyone": "Bilo ko",
             "specific": "Određeni primalac"
@@ -665,9 +642,15 @@
                 "few": "{{count}} zgrade · {{typology}}",
                 "other": "{{count}} zgrada · {{typology}}"
             },
-            "reparcelSummary": "{{count}} zamenskih parcela · {{algorithm}}",
+            "parcelLayout": "Raspored parcela",
+            "layoutSummary": "Parcela: {{count}} · {{layout}}",
+            "layouts": {
+                "equal": "Jednake parcele",
+                "schelling": "Šelingove parcele",
+                "amend": "Zadrži postojeće međe",
+                "manual": "Crtaj slobodno"
+            },
             "parcelSummary": "{{count}} obuhvaćenih parcela",
-            "manual": "ručno",
             "road": "Put",
             "track": "Pruga",
             "parcelOnly": "Ovaj predlog nema posebnu geometriju dizajna. Isticanje parcela ostaje aktivno dok uređujete ostale stavke.",
@@ -723,12 +706,16 @@
                 "preview-pending": "Obuhvat koridora će se obnoviti pri otvaranju Dizajna.",
                 "missing-building": "Napravite bar jednu osnovu zgrade.",
                 "invalid-building": "Osnova zgrade nije ispravna.",
-                "missing-polygons": "Dodajte bar jednu zamensku parcelu.",
-                "invalid-polygon": "Svaka zamenska parcela zahteva ispravan poligon.",
-                "overlapping-polygons": "Zamenske parcele se preklapaju.",
-                "coverage-gap": "Zamenske parcele ne pokrivaju celu potrebnu površinu.",
-                "coverage-excess": "Površina zamenskih parcela prelazi potrebnu pokrivenost.",
-                "missing-parent-coverage": "Planu nedostaju obavezne izvorne parcele."
+                "missing-plots": "Dodajte bar jednu parcelu.",
+                "too-many-plots": "Upotrebite najviše 1.000 parcela u jednom rasporedu.",
+                "geometry-unavailable": "Geometrija parcela ne može da se proveri dok se mapa ne učita.",
+                "invalid-plot": "Svaka parcela zahteva ispravan poligon.",
+                "plot-too-small": "Jedna parcela je manja od 1 m².",
+                "overlapping-plots": "Parcele se preklapaju. Prilagodite njihove međe.",
+                "missing-pool": "Raspored nema obod obuhvata.",
+                "invalid-pool": "Obod obuhvata nije moguće proveriti.",
+                "coverage-gap": "Parcele ne pokrivaju deo obuhvata.",
+                "coverage-excess": "Parcele zahvataju područje izvan obuhvata."
             }
         },
         "autosave": {
@@ -777,7 +764,9 @@
             "parcelsNotContiguous": "Izabrane parcele moraju činiti jednu povezanu površinu.",
             "parcelsUnavailable": "Parcele iz nacrta nisu dostupne u trenutnom gradu.",
             "readOnly": "Ovaj predlog se može samo pregledati.",
-            "sourceMissing": "Izvorni predlog nije pronađen."
+            "sourceMissing": "Izvorni predlog nije pronađen.",
+            "layoutWithoutPlots": "Ovaj raspored parcela nema nijednu parcelu.",
+            "subdivisionWithoutSite": "Ova parcelacija nema lokaciju."
         },
         "publish": {
             "alreadyCreated": "Ovaj nacrt je već napravio predlog {{id}}.",
@@ -1467,7 +1456,7 @@
                 "row": "Niz kuća",
                 "parcelBased": "Slobodnostojeće",
                 "single": "Slobodna zgrada",
-                "reparcel": "Reparcelacija",
+                "layOutParcels": "Rasporedi parcele",
                 "park": "Park",
                 "square": "Trg",
                 "lake": "Jezero",
@@ -1507,8 +1496,8 @@
                 "estimated": "Procenjena parcela {{number}}",
                 "plotPiece": "Deo projektovane parcele {{number}}",
                 "remainder": "Preostali deo tla {{number}}",
-                "plotNote": "Tlo izvedeno iz jedne projektovane parcele u predlogu preparcelacije. Više prikazanih delova može poticati iz iste projektovane parcele.",
-                "remainderNote": "Tlo koje je ovom preparcelacijom ostalo izvan projektovanih parcela. Vodi se odvojeno od delova tih parcela.",
+                "plotNote": "Tlo izvedeno iz jedne projektovane parcele u rasporedu parcela. Više prikazanih delova može poticati iz iste projektovane parcele.",
+                "remainderNote": "Tlo koje je ovim rasporedom parcela ostalo izvan projektovanih parcela. Vodi se odvojeno od delova tih parcela.",
                 "source": "Izvorna parcela {{number}}",
                 "sourcePart": "Deo izvorne parcele {{number}}",
                 "formed": "Oblikovani deo tla {{number}}",
@@ -1631,7 +1620,7 @@
                 "destination": {
                     "public": "javno",
                     "proposer": "predlagač",
-                    "mapping": "po planu",
+                    "carryOver": "ostaje njenim vlasnicima",
                     "undecided": "odlučiće se"
                 },
                 "takes": "Uzima {{area}} m² ove parcele → {{destination}}",
@@ -1730,10 +1719,6 @@
                 "parcelTitle": "Status prihvatanja parcele:",
                 "noRoster": "Za ovu parcelu nije dostupan spisak vlasnika.",
                 "ownerTitle": "Status prihvatanja vlasnika:",
-                "cashOffers": "Novčane ponude preparcelacije",
-                "cashOffersScope": "Predložena naknada svakom vlasniku za ceo sporazum.",
-                "cashTotal": "Ukupna novčana ponuda",
-                "invalidReadjustment": "Pre prihvatanja ispravite dodelu parcela i novčane uslove preparcelacije.",
                 "termsChanged": "Uslovi su promenjeni — pregledajte ih i ponovo prihvatite",
                 "accept": "Prihvati",
                 "undo": "Poništi",
@@ -1756,13 +1741,7 @@
                     "parcelSummary": "{{accepted}}/{{total}} parcela sa proverenim potvrdama"
                 },
                 "recipient": "primalac",
-                "solanaLensHint": "Recite da u kartici Sočivo",
-                "moneySchedule": "Raspored plaćanja",
-                "moneyScope": "Šta svaki vlasnik prima ili plaća u celom sporazumu i šta pokriva pokrovitelj. Zbir je uvek nula.",
-                "moneyReceives": "prima {{amount}}",
-                "moneyPays": "uplaćuje {{amount}}",
-                "moneySponsor": "Pokrovitelj",
-                "moneySponsorNothing": "ne plaća ništa"
+                "solanaLensHint": "Recite da u kartici Sočivo"
             },
             "voting": {
                 "voteYes": "Glasaj za",
@@ -2863,7 +2842,7 @@
                         "park": "Parkovi",
                         "square": "Trgovi",
                         "structure": "Ostale strukture",
-                        "reparcellization": "Reparcelacija",
+                        "parcel-layout": "Rasporedi parcela",
                         "parcel": "Predlozi parcela",
                         "other": "Ostalo"
                     },
@@ -2881,7 +2860,7 @@
                         "lake": "Jezero",
                         "urbanRule": "Urbano pravilo",
                         "urban-rule": "Urbano pravilo",
-                        "reparcellization": "Reparcelacija",
+                        "parcel-layout": "Raspored parcela",
                         "row": "Niz",
                         "other": "Ostalo"
                     }
@@ -2930,7 +2909,7 @@
                     "square": "Trg",
                     "lake": "Jezero",
                     "urban-rule": "Urbano pravilo",
-                    "reparcellization": "Reparcelacija",
+                    "parcel-layout": "Raspored parcela",
                     "decide-later": "Odluči kasnije",
                     "parcelBased": "Na nivou parcele",
                     "other": "Ostalo"
@@ -2943,7 +2922,7 @@
                     "lake": "Jezero",
                     "decide later": "Odluči kasnije",
                     "structure": "Struktura",
-                    "reparcellization": "Reparcelacija",
+                    "parcel-layout": "Raspored parcela",
                     "parcel": "Parcela",
                     "other": "Ostalo"
                 },
@@ -3368,7 +3347,6 @@
             "proposalTypeOptions": {
                 "purchase": "Kupovina",
                 "urbanRule": "Urbanističko pravilo",
-                "reparcellization": "Reparcelacija",
                 "jointInvestment": "Zajednička investicija"
             },
             "goalOptions": {
@@ -3381,7 +3359,6 @@
                 "roadTrack": "Put/Pruga",
                 "decideLater": "Spoji",
                 "urbanRule": "Urbano pravilo",
-                "reparcellization": "Razdeli",
                 "ownershipTransfer": "Prenos vlasništva"
             },
             "goalSections": {
@@ -3391,15 +3368,13 @@
             },
             "parcelsOptions": {
                 "asIs": "Bez promene",
-                "merge": "Spoji",
-                "readjust": "Preraspodeli"
+                "merge": "Spoji"
             },
             "ownershipRecipients": {
                 "noChange": "Bez promene",
                 "toMe": "Meni",
                 "toCity": "Gradu",
-                "thirdParty": "Treća strana",
-                "perSlice": "Po parceli"
+                "thirdParty": "Treća strana"
             },
             "recipientPlaceholder": "Ime ili 0x adresa primaoca",
             "recipientScope": {
@@ -3445,16 +3420,6 @@
                     "copiedEditable": "Geometrija kopirana iz \"{name}\" — pritisnite Uredi za prilagođavanje",
                     "drawing": "Geometrija nacrtana na mapi"
                 }
-            },
-            "reparcellization": {
-                "label": "Algoritam",
-                "options": {
-                    "sweepLine": "Sweep line",
-                    "centroidalVoronoi": "Centroidal Voronoi",
-                    "wasserstein": "Wasserstein",
-                    "manual": "Ručno"
-                },
-                "hint": "Dodatni algoritmi su vidljivi za planiranje; Sweep line je trenutno dostupan."
             },
             "descriptionLabel": "Opis",
             "descriptionPlaceholder": "Opiši svoj predlog…",
@@ -3567,7 +3532,7 @@
                 "mintsOn": "Kuje se na",
                 "noWalletTooltip": "Novčanik nije povezan; predlog ostaje u ovom pregledaču."
             },
-            "proposal_type_no_longer_available": "Spajanje / Odluči kasnije više nije dostupno. Koristi reparcelaciju.",
+            "proposal_type_no_longer_available": "Spajanje / Odluči kasnije više nije dostupno. Koristi alat Rasporedi parcele.",
             "titleLake": "Kreiraj predlog jezera",
             "typeLake": "Jezero",
             "ownerOffer": {
@@ -3922,82 +3887,63 @@
             "generatedSummaryExcluded": "Generisano: {{buildings}} · {{excluded}}"
         }
     },
+    "parcelLayout": {
+        "publishLater": "Rasporedi parcela dele se zajedno sa svojim sporazumom. Uskoro.",
+        "editor": {
+            "title": "Rasporedi parcele",
+            "mapHint": "Ovde nacrtajte parcele. Ko dobija koju parcelu odlučuje se kasnije, u sporazumu.",
+            "algorithms": {
+                "equal": "Jednake parcele",
+                "schelling": "Šelingove parcele",
+                "amend": "Zadrži postojeće međe"
+            },
+            "schellingUnavailable": "Šelingov plan nije učitan.",
+            "plotCount": "Broj parcela",
+            "courtyard": "Dvorište",
+            "courtyardHint": "Izdvaja unutrašnje dvorište planiranog građevinskog bloka kao zasebnu parcelu.",
+            "saved": "Raspored parcela je sačuvan u ovaj dizajn.",
+            "discardMessage": "Izmene koje ste ovde napravili nisu sačuvane u dizajn. Ako sada zatvorite, odbacuju se.",
+            "coverageComplete": "Parcele pokrivaju ceo obuhvat ({{area}}).",
+            "plotTooltip": "Parcela {{n}} · {{area}}",
+            "takenGroundBlocked": "Raspored parcela ne može da preoblikuje zemljište koje već drži drugi dizajn. Odznačite ga ili najpre poništite taj dizajn.",
+            "selectParcels": "Izaberite bar jednu parcelu za raspored.",
+            "poolUnavailable": "Obod ovih parcela nije bilo moguće izgraditi.",
+            "oldPlotsMissing": "Ulazne parcele nije bilo moguće učitati pa je obod obuhvata preuzet iz samog rasporeda.",
+            "edgeHint": "Prevucite je da pomerite ovaj odsečak. Brisanjem se dve parcele spajaju u jednu.",
+            "nodeRemoveMerges": "Uklanjanjem se {{joining}} spaja u {{keeper}}, koja dobija {{moved}} m².",
+            "status": {
+                "preparing": "Pripremam raspored…",
+                "cutSuccess": "Linija povučena — novih parcela: {{plots}}, novih čvorova: {{nodes}}.",
+                "drawSuccess": "Parcela dodata.",
+                "manualHint": "Nacrtaj parcele na mapi ili podeli obuhvat alatom za liniju.",
+                "amendHint": "Postojeće parcele su parcele rasporeda. Izdvoji dvorište ili uredi granice.",
+                "courtyardCarved": "Dvorište je izdvojeno kao zasebna parcela.",
+                "schellingLaidOut": "Parcele Šelingovog plana {{code}}. Ulični pojasevi između njih takođe su parcele.",
+                "schellingFailed": "Šelingove parcele ovde nisu mogle da se rasporede: {{reason}}",
+                "nodeOnPool": "Taj čvor je na obodu obuhvata: pripada susedima, ne ovom rasporedu.",
+                "uploadUnavailable": "Za otpremanje GeoJSON-a potreban je geometrijski modul, koji nije učitan."
+            },
+            "validation": {
+                "missing-plots": "Dodajte bar jednu parcelu.",
+                "too-many-plots": "Upotrebite najviše {{max}} parcela u jednom rasporedu.",
+                "geometry-unavailable": "Geometrija parcela ne može da se proveri dok se mapa ne učita.",
+                "plot-too-small": "Parcela {{plot}} je manja od {{min}}.",
+                "invalid-plot": "Parcela {{plot}} nije ispravan poligon.",
+                "missing-pool": "Raspored nema obod obuhvata.",
+                "overlapping-plots": "Parcela {{plot}} se preklapa sa drugom parcelom.",
+                "coverage-gap": "Parcele ne pokrivaju {{area}} obuhvata.",
+                "coverage-excess": "Parcele zahvataju {{area}} izvan obuhvata.",
+                "invalid-pool": "Obod obuhvata nije bilo moguće proveriti."
+            }
+        }
+    },
     "reparcellization": {
         "modal": {
-            "mapHint": "Uredite granice parcela na mapi; ovde pregledajte vlasništvo i udele.",
-            "savedRecipientUnresolved": "Sačuvani primalac izlazne parcele nema odgovarajući doprinos u trenutnim ulazima.",
-            "ownerReview": "Pregled vlasnika",
-            "allOwners": "Svi vlasnici",
-            "unknownContribution": "Doprinos nije poznat",
-            "contributedLand": "Uloženo zemljište",
-            "assignedLand": "Dodeljeno zemljište (prema udelu)",
-            "landChange": "Neto promena zemljišta",
-            "ownerInputParcels": "Ulazne parcele: {{parcels}}",
-            "ownerOutputShare": "Parcela {{plot}} · {{share}} · {{area}}",
-            "ownerHighlightHint": "Isprekidana ćilibarska linija: ulazne parcele. Puna plava linija: dodeljene parcele. Uporedite prikaz Pre / Posle.",
-            "ownerReviewInvalid": "Dovršite geometriju parcela, udele i novčane ponude za pregled raspodele ovog vlasnika.",
-            "editShares": "Uredi udele",
-            "applySharesFirst": "Primeni izmenjene udele ili zatvori uređivač da ih odbaciš.",
-            "sourceRightsNeeded": "Prava svojine nad ulaznim parcelama nisu potpuna, pa se odobrenje vlasnika ne može proveriti.",
-            "useProRataShares": "Koristi srazmere privatnog zemljišta",
-            "proRataShares": "Udeo prati srazmeru privatnog zemljišta.",
-            "customShares": "Prilagođeni udeli ostaju isti pri promeni granica.",
-            "ownerSharePercent": "Udeo vlasnika {{owner}} (%)",
-            "applyShares": "Primeni udele",
-            "sharesTotal": "Ukupno: {{total}}%",
-            "sharesInvalid": "Svaki udeo mora biti pozitivan, a zbir mora iznositi 100%.",
-            "title": "Reparcelacija",
             "subtitle": "{{algorithm}} · {{parcels}}",
-            "subtitleWithOwners": "{{algorithm}} · {{parcels}} · {{owners}}",
-            "subtitleSingleOwner": "{{parcels}} · jedan vlasnik",
             "algorithms": {
-                "sweepLine": "Automatski",
-                "borderPerpendicular": "Normalno na granicu",
-                "centroidalVoronoi": "Centroidalni Voronoi",
-                "manual": "Slobodno nacrtaj",
-                "amend": "Zadrži postojeće parcele",
-                "wasserstein": "Wasserstein"
+                "manual": "Slobodno nacrtaj"
             },
-            "closeAria": "Zatvori",
             "done": "Gotovo",
-            "allPublic": "Sve javno",
-            "ownerLegend": "Legenda vlasnika",
-            "legendMeta": {
-                "one": "{{percent}} · {{count}} parcela",
-                "few": "{{percent}} · {{count}} parcele",
-                "other": "{{percent}} · {{count}} parcela"
-            },
-            "selectedParcelsLabel": "izabranih parcela",
-            "defaultDescription": "Predlog reparcelacije za {{label}}",
-            "syntheticOwner": "Vlasnik {{parcel}}",
-            "single": {
-                "parcelListTitle": "Izabrane parcele",
-                "superParcelLabel": "Površina superparcele",
-                "lengthLabel": "Dužina",
-                "length": {
-                    "full": "Cela",
-                    "split": "Deljena"
-                },
-                "parcelCountLabel": "Broj parcela",
-                "totalParcelsLabel": "Ukupan broj parcela: {{count}}",
-                "distributionLabel": "Raspodela",
-                "distribution": {
-                    "equal": "Jednako",
-                    "random": "Nasumično",
-                    "manual": "Ručno"
-                },
-                "orientationHint": "Prevuci liniju na mapi da odrediš smer podele.",
-                "parcelLabel": "Parcela",
-                "noParcels": "Nisu izabrane ulazne parcele",
-                "lotLabel": "Parcela {{index}}",
-                "lotShareAria": "Udeo za parcelu {{index}}"
-            },
-            "colContributed": "Uloženo",
-            "colAssigned": "Dodeljeno",
-            "colBalance": "Saldo",
-            "colCashOffer": "Ponuda u gotovini",
-            "totalCashOffer": "Ukupne ponude u gotovini: {{amount}}",
-            "owners": "Vlasnici",
             "publicLand": "Javno zemljište",
             "sweepHandleHint": "Prevuci za rotaciju linija parcelacije",
             "drawPlot": "Nacrtaj parcelu",
@@ -4006,32 +3952,19 @@
             "drawFinishLine": "Završi liniju",
             "drawUndo": "Poništi tačku",
             "drawCancel": "Odustani",
-            "coverageComplete": "Sva udružena zemlja dodeljena ({{pct}}%).",
-            "coverageIncomplete": "{{count}} parcela bez vlasnika · {{area}} još nije dodeljeno ({{pct}}% pokriveno).",
             "status": {
-                "preparingPreview": "Pripremam pregled raspodele…",
-                "missingOwners": "Nije moguće utvrditi vlasnike za reparcelaciju.",
-                "algorithmUnavailable": "Izabrani algoritam nije još dostupan.",
                 "splitFailed": "Nije uspelo deljenje geometrije parcele.",
-                "success": "Sweep line uspešno primenjen. Pregledaj i klikni Gotovo da sačuvaš.",
-                "manualHint": "Nacrtaj parcele na mapi pa svaku dodeli vlasniku.",
                 "drawHint": "Klikni za dodavanje tačaka, prevuci za podešavanje, zatim pritisni Završi.",
                 "drawTooFew": "Dodaj bar 3 tačke za parcelu.",
                 "drawInvalid": "Nije moguće napraviti ispravnu parcelu iz tih tačaka.",
                 "drawNoOverlap": "Nacrtana parcela je izvan udružene zemlje.",
-                "drawSuccess": "Parcela dodata. Klikni je za dodelu vlasnika.",
                 "lineHint": "Klikni da postaviš liniju. Povlači se samo između mesta na kojima dodiruje postojeću među ili vrh — najmanje dva takva.",
                 "lineTooFew": "Dodaj bar 2 tačke za liniju podele.",
-                "lineNoSplit": "Linija nije presekla nijednu parcelu.",
-                "lineSuccess": "Parcela podeljena. Klikni svaki deo za dodelu vlasnika.",
                 "uploadEmpty": "Otpremljena datoteka ne sadrži poligone.",
                 "uploadNoOverlap": "Otpremljeni poligoni se ne preklapaju sa izabranim parcelama.",
                 "uploadParseError": "Neuspešno čitanje GeoJSON datoteke.",
                 "uploadSuccess": "Učitano {{count}} poligona iz datoteke.",
-                "editBlocked": "Ova izmena izmešta primenjene predloge i ovde se ne može sačuvati.",
                 "nodeHint": "Prevucite čvor ili uhvatite odsečak međe i prevucite ga. Povucite središnju tačku da savijete među. Kliknite čvor da ga uklonite ili među da je obrišete. Obris spojenog zemljišta je nepromenljiv.",
-                "ownersFromRights": "Vlasnici sada dolaze iz datoteke prava: {{count}} vlasnik(a). Proverite vlasnike svake parcele.",
-                "approvalSaved": "Vlasništvo i odobravanje sačuvani.",
                 "manualFromLayout": "Slobodno crtanje od trenutnog rasporeda. Prevucite čvorove ili cele odsečke međa, secite alatom za liniju ili kliknite među da je obrišete.",
                 "redone": "Promena je ponovljena.",
                 "edgeErased": "Međa je obrisana — dve parcele su sada jedna.",
@@ -4039,9 +3972,6 @@
                 "editFolds": "Nije promenjeno: to bi presavilo parcelu preko nje same ili preko susedne.",
                 "editBreaksTiling": "Nije promenjeno: to bi ostavilo zemljište bez parcele ili u dve parcele.",
                 "undone": "Poslednja promena je poništena.",
-                "nodeOnPool": "Taj čvor je na obodu obuhvata — pripada susedima, ne ovom planu.",
-                "assignHint": "Kliknite parcelu da izaberete njene vlasnike. Uređivanje je pauzirano dok dodeljujete.",
-                "cutSuccess": "Linija povučena — novih parcela: {{plots}}, novih čvorova: {{nodes}}. Klikni svaki deo da dodeliš vlasnike.",
                 "cutNoSplit": "Linija je prošla između svojih uporišta, ali nije podelila nijednu parcelu — ništa se nije promenilo.",
                 "cutOnNode": "Počinje na postojećem vrhu — to je jedno od dva potrebna uporišta.",
                 "cutFree": "Hvatanje je isključeno dok držiš Shift — tačka pada tačno gde klikneš.",
@@ -4051,37 +3981,19 @@
                 "lineOneAnchor": "Zasad jedno uporište. Pređi još jednu među ili završi na postojećem vrhu.",
                 "lineNoAnchor": "Još nema uporišta. Linija mora preći među ili dodirnuti postojeći vrh na dva mesta da bi nastala nova međa.",
                 "lineNoAnchors": "Linija je dodirnula postojeće međe na manje od dva mesta, pa nema između čega povući među. Pređi dve međe, ili počni na vrhu i pređi jednu.",
-                "amendHint": "Zadrži postojeće parcele i vlasnike. Izdvoji zajedničko dvorište ili uredi granice.",
                 "noBlockProposals": "Nijedan građevinski blok sa zatvorenim dvorištem ne preklapa ove parcele.",
-                "courtyardCarved": "Dvorište je izdvojeno i dodeljeno u zajedničko vlasništvo.",
-                "courtyardDrawHint": "Nacrtaj zajedničko dvorište. Vlasnički udeli prate privatno zemljište dodeljeno svakom primaocu.",
                 "courtyardError": "Nije moguće izdvojiti dvorište. Raspored je zadržan."
             },
-            "algorithmTitle": "Vrsta reparcelacije",
-            "assignOwners": "Dodeli vlasnike",
-            "colOrigArea": "Originalno",
-            "colOwner": "Vlasnik",
-            "colOwners": "Vlasnici",
             "colPlot": "Parcela",
             "newPlots": "Nove parcele",
-            "originalOwners": "Originalni vlasnici",
-            "shuffle": "Izmešaj vlasništvo",
-            "unassigned": "Nedodeljeno",
             "uploadGeojson": "Otpremi GeoJSON",
             "parcelCount": {
                 "one": "{{count}} parcela",
                 "few": "{{count}} parcele",
                 "other": "{{count}} parcela"
             },
-            "ownerCount": {
-                "one": "{{count}} vlasnik",
-                "few": "{{count}} vlasnika",
-                "other": "{{count}} vlasnika"
-            },
             "cancel": "Odustani",
-            "takenGroundBlocked": "Reparcelacija ne može da uzme zemljište koje već drži drugi predlog. Odznačite ga ili najpre poništite taj predlog.",
             "discardTitle": "Odbaciti ove promene?",
-            "discardMessage": "Izmene koje ste ovde napravili nisu sačuvane u predlog. Ako sada zatvorite, odbacuju se.",
             "discardConfirm": "Odbaci promene",
             "discardCancel": "Nastavi uređivanje",
             "editNodes": "Uređivanje granica (čvorovi)",
@@ -4089,7 +4001,6 @@
             "redoEdit": "Ponovi",
             "redoNothing": "Nema šta da se ponovi",
             "edgeBetween": "Međa između {{a}} i {{b}}",
-            "edgeHint": "Prevucite je da pomerite ovaj odsečak. Brisanjem se dve parcele spajaju; spojena parcela zadržava vlasnike veće.",
             "edgeOwn": "Odsečak međe",
             "edgeOwnHint": "Prevucite ga da pomerite ovaj odsečak.",
             "edgeErase": "Obriši ovu među",
@@ -4107,58 +4018,19 @@
             "colParcel": "Parcela",
             "colArea": "Površina",
             "unknownParcel": "Parcela",
-            "oldPlotsMissing": "Ulazne parcele nije bilo moguće učitati pa je obod obuhvata izveden iz samog plana.",
             "oldPlotsPartial": "Učitano je {{shown}} od {{declared}} ulaznih parcela.",
             "eraseEdge": "Obriši među",
             "eraseTooltip": "Obriši ovu među — {{a}} i {{b}} postaju jedna parcela",
-            "nodeRemoveMerges": "Uklanjanjem se {{joining}} spaja u {{keeper}} — menja vlasnika {{moved}} m².",
             "nodeRemoveStraightens": "Uklanjanjem se međa ispravlja — preko nje prelazi otprilike {{moved}} m².",
             "plotLabel": "parcela {{n}} ({{area}} m²)",
-            "noOwnerBalance": "Vlasništvo je nepoznato. U ovom nacrtu za to se tlo ne izračunava saldo ni novčana raspodela.",
-            "openGroundOwner": "Otvoreno tlo (vlasništvo nepoznato)",
-            "subdivisionTitle": "Parcelacija",
             "siteParcelsMissing": "Parcele ispod ove lokacije nije moguće učitati: {{ids}}.",
             "siteUnavailable": "Ovu lokaciju ovde nije moguće parcelisati.",
             "poolClipFailed": "Zemljište ovog plana nije bilo moguće izračunati: {{reason}}",
             "siteGroundTaken": "Lokacija pokriva tlo koje je već oblikovao drugi predlog: {{names}}. Nacrtajte lokaciju van njega ili najpre poništite primenu tog predloga.",
             "layoutTitle": "Početni raspored",
             "activeMode": "Aktivno: {{mode}}",
-            "sharedCourtyard": "Zajedničko dvorište",
             "courtyardFromBuilding": "Iz građevinskog bloka",
-            "courtyardDraw": "Nacrtaj na karti",
-            "jointOwnership": "Zajedničko vlasništvo",
-            "jointAssignButton": "Podeli među primaocima",
-            "choosePlanTitle": "Izaberi građevinski blok",
-            "agreementTitle": "Sporazumi",
-            "agreementSingle": "Jedan sporazum",
-            "agreementIndividual": "Zasebni sporazumi za parcele",
-            "agreementHint": "Svaka parcela zadržava svoj ostatak sa sadašnjim vlasnicima i doprinosi svojim delom zajedničkom dvorištu.",
-            "agreementOfferHint": "Novčani iznosi prate naknade svakog vlasnika u obračunu preparcelacije. Pre objavljivanja pregledajte svaki sporazum zasebno.",
-            "agreementRetry": "Ponovi preostale sporazume",
-            "agreementCreate": "Izradi sporazume za parcele",
-            "agreementRequiresCourtyard": "Nacrtaj zajedničko dvorište pre izrade zasebnih sporazuma za parcele.",
-            "agreementPrivateTransfers": "Zasebni sporazumi moraju zadržati privatno zemljište kod izvornih vlasnika. Za ovaj raspored koristi jedan sporazum.",
-            "agreementCreated": "Izrađeno je {{count}} sporazuma za parcele.",
-            "agreementFailed": "Izrađeno je {{created}} sporazuma za parcele; {{failed}} zahteva pažnju. Skica je sačuvana za ponovni pokušaj.",
-            "perParcelProposalName": "{{name}} — parcela {{parcel}}",
-            "cashTermsHint": "Ukupna naknada iz obračuna vlasnika. Pojedinačne novčane ponude uredite u uređivaču preparcelacije.",
-            "jointShareHint": "Udeli za dvorište polaze od preostalog privatnog zemljišta svakog vlasnika. Izaberite Uredi udele za fiksne procente.",
-            "colCash": "Novac (+ prima, − plaća)",
-            "ownerPays": "Novac koji vlasnik plaća"
-        },
-        "validation": {
-            "missing-polygons": "Nacrtajte zamensku parcelu pre nastavka.",
-            "too-many-polygons": "Koristite najviše 1.000 zamenskih parcela.",
-            "geometry-unavailable": "Provera geometrije nije dostupna. Pokušajte ponovo kada se mapa učita.",
-            "invalid-polygon": "Proverite geometriju zamenske parcele.",
-            "overlapping-polygons": "Zamenske parcele se preklapaju. Podesite njihove granice.",
-            "coverage-gap": "Zamenske parcele ne pokrivaju celo udruženo zemljište.",
-            "coverage-excess": "Zamenske parcele izlaze izvan granice udruženog zemljišta.",
-            "disconnected-readjustment": "Napravite posebnu reparcelaciju za svako odvojeno područje zemljišta.",
-            "invalid-pool": "Proverite granicu udruženog zemljišta.",
-            "invalid-allocation": "Proverite vlasnike i udele za svaku zamensku parcelu.",
-            "invalid-readjustment-deal": "Proverite novčane ponude i raspodelu zemljišta.",
-            "invalid-proposal-approval": "Proverite pravila odobravanja i prava vlasnika."
+            "choosePlanTitle": "Izaberi građevinski blok"
         }
     },
     "mapCompare": {
@@ -4335,7 +4207,6 @@
             "focused_on_block": "Fokusiran na blok {{name}}",
             "invalid_bounds_for_block": "Nevažeće granice za blok {{name}}",
             "invalid_block_bounds_for_block": "Nevažeće granice bloka za {{name}}",
-            "loading_reparcellization_tools": "Učitavanje alata za reparcelaciju…",
             "map_is_not_ready_yet_please_wait": "Mapa još nije spremna. Sačekaj.",
             "measurement_cancelled_click_to_start_measuring": "Merenje otkazano. Klikni da počneš novo merenje.",
             "merging_parcel_data": "Spajanje podataka o parcelama…",
@@ -4408,7 +4279,6 @@
             "parcels_could_not_be_merged": "Izabrane parcele nije bilo moguće spojiti u jednu lokaciju: {{reason}}",
             "select_a_parcel_before_attempting_to_claim_it": "Izaberi parcelu pre preuzimanja.",
             "select_a_parcel_block_before_creating_a_proposal": "Izaberi blok parcela pre kreiranja predloga.",
-            "select_at_least_one_parcel_before_running_reparcellization": "Izaberi bar jednu parcelu pre pokretanja reparcelacije.",
             "select_at_least_one_parcel_to_create_a_proposal": "Izaberi bar jednu parcelu da kreiraš predlog.",
             "select_parcels_before_applying_the_government_road_plan": "Izaberi parcele pre primene državnog plana puteva.",
             "select_at_least_one_parcel_to_apply_the_government_road_plan": "Izaberi bar jednu parcelu da primeniš državni plan puteva.",
@@ -4431,7 +4301,6 @@
             "single_building_proposal_created_use_apply_when_ready": "Predlog \"{{title}}\" kreiran. Koristi „Primeni na mapu\" kada budeš spreman.",
             "single_building_tool_is_unavailable": "Alat za jednu zgradu nije dostupan.",
             "structure_proposal_dialog_is_unavailable": "Dijalog predloga strukture nije dostupan.",
-            "unable_to_build_geometry_for_reparcellization": "Nije moguće izgraditi geometriju za reparcelaciju.",
             "unable_to_compute_bounds_for_this_block": "Nije moguće izračunati granice za ovaj blok.",
             "unable_to_determine_map_bounds_for_analysis": "Nije moguće odrediti granice mape za analizu.",
             "unable_to_determine_map_bounds_for_government_plans": "Nije moguće odrediti granice mape za državne planove.",
@@ -4444,7 +4313,6 @@
             "waiting_for_parcel_merge_to_complete_before_applying_the_government_road_plan": "Čekam da se spoje podaci o parcelama pre primene državnog plana puteva…",
             "parcel_data_still_merging_before_government_plan": "Podaci o parcelama se još spajaju. Primenićemo državni plan čim se mapa ažurira.",
             "zoom_in_further_to_apply_the_government_road_plan": "Zumiraj dodatno da primeniš državni plan puteva.",
-            "saved_reparcellization_layout_to_the_proposal": "Raspored reparcelacije sačuvan za ovaj predlog.",
             "loaded_cadastral_parcels": {
                 "one": "Učitana {{count}} katastarska parcela.",
                 "few": "Učitane {{count}} katastarske parcele.",
@@ -6248,7 +6116,7 @@
             "proposal_lifecycle_unknown": "Status predloga nije poznat. Ponovo ga učitajte pre prihvatanja.",
             "proposal_terms_unavailable": "Trenutni uslovi predloga nisu mogli da se provere. Ponovo učitajte predlog pre prihvatanja.",
             "acceptance_confirmed_status_unavailable": "Prihvatanje je potvrđeno na lancu, ali status predloga nije bilo moguće osvežiti. I dalje se prikazuje prethodni status. Ponovo učitajte predlog da biste ga proverili.",
-            "readjustment_terms_invalid": "Pre prihvatanja dovršite i ispravite dodelu parcela i novčane uslove preparcelacije.",
+            "proposal_terms_invalid": "Ispravite uslove predloga pre odobravanja.",
             "error_accepting_proposal_please_try_again": "Greška pri prihvatanju predloga. Pokušaj ponovo.",
             "error_rejecting_proposal_please_try_again": "Greška pri odbijanju predloga. Pokušaj ponovo.",
             "failed_to_wipe_local_data": "Brisanje lokalnih podataka nije uspelo:",
@@ -6271,16 +6139,11 @@
             "please_provide_author_name_and_a_valid_offer": "Unesi ime autora i validnu ponudu.",
             "please_select_a_parcel_first": "Prvo izaberi parcelu",
             "please_specify_which_owner_acceptance_to_undo": "Navedite koje prihvatanje vlasnika da se poništi.",
-            "proposal_type_no_longer_available": "Spajanje / Odluči kasnije više nije dostupno. Koristi preraspodelu zemljišta.",
+            "proposal_type_no_longer_available": "Spajanje / Odluči kasnije više nije dostupno. Koristi alat Rasporedi parcele.",
             "proposal_not_found": "Predlog nije pronađen.",
             "proposal_storage_is_unavailable": "Skladište predloga nije dostupno.",
-            "reparcellization_plan_is_missing_please_rerun_the_algorithm": "Nedostaje plan reparcelacije. Ponovo pokreni algoritam.",
-            "subdivision_site_missing": "Ova parcelacija nema lokaciju. Ponovo je otvori iz nacrta i sačuvaj.",
-            "subdivision_site_changed": "Lokacija se promenila nakon što su parcele raspoređene. Ponovo otvori uređivač parcelacije i klikni Gotovo.",
-            "run_the_reparcellization_algorithm_and_click_done_before_creating_this_proposal": "Pokreni algoritam reparcelacije i klikni Gotovo pre kreiranja ovog predloga.",
             "select_a_proposal_goal_before_creating_a_proposal": "Izaberi cilj predloga pre kreiranja.",
             "select_which_owner_share_you_are_accepting_for": "Izaberi za koji udeo vlasnika prihvataš.",
-            "selected_parcels_changed_after_running_reparcellization_please_rerun_the_algorithm": "Izabrane parcele su se promenile posle reparcelacije. Ponovo pokreni algoritam.",
             "single_building_workflow_is_unavailable": "Tok jedne zgrade nije dostupan.",
             "this_exact_proposal_already_exists": "Ovaj tačan predlog već postoji",
             "this_exact_proposal_already_exists_2": "Ovaj tačan predlog već postoji.",
@@ -6485,13 +6348,11 @@
             "failed_to_encode_shared_proposal_data": "Kodiranje podataka podeljenog predloga nije uspelo.",
             "failed_to_generate_share_link": "Generisanje linka za deljenje nije uspelo.",
             "no_applied_proposals_to_share_yet": "Još nema primenjenih predloga za deljenje.",
-            "reparcellization_tools_failed_to_load": "Alati za reparcelaciju nisu učitani.",
             "road_proposal_already_exists_or_could_not_be_saved_review_proposals_for_details": "Predlog puta već postoji ili nije mogao da se sačuva. Pregledaj predloge za detalje.",
             "onchain_proposal_mint_failed": "Mintovanje on-chain predloga nije uspelo.",
             "onchain_proposal_mint_failed_with_reason": "Mintovanje on-chain predloga nije uspelo: {{error}}.",
             "logged_out_ai_controls": "Odjavljen. AI kontroliše tvog agenta.",
             "logged_out_agent_inactive": "Odjavljen. Agent je sada neaktivan.",
-            "saved_reparcellization_layout_to_the_proposal": "Raspored reparcelacije sačuvan za ovaj predlog.",
             "shared_proposal_loaded": "Podeljeni predlog učitan.",
             "proposal_executed_all_parcels": "Predlog {{hash}} izvršen! Sve {{count}} parcele prihvatile.",
             "proposal_executed": "Predlog {{hash}} izvršen!",
@@ -7219,9 +7080,9 @@
             "partialAll": "delimična — cela lokacija je otvoreno tlo: ovde nema parcele, iako katastar pokriva područje"
         },
         "palette": {
-            "readjustNeedsParcels": "Komasacija radi na izabranim parcelama: izaberite ih umesto crtanja lokacije.",
+            "layoutNeedsParcels": "Raspored parcela radi na izabranim parcelama: izaberite ih umesto crtanja lokacije.",
             "subdivide": "Parceliši",
-            "readjustUnknownCadastre": "Za parcelaciju je potreban katastar koji server ima: za ovo mesto ga nema."
+            "subdivideUnknownCadastre": "Za parcelaciju je potreban katastar koji server ima: za ovo mesto ga nema."
         },
         "plots": {
             "summary": "{{tool}}: placeva {{count}}, duž fronta od {{length}} m.",
@@ -7315,7 +7176,7 @@
             "width": "širine {{width}} m"
         },
         "plots": {
-            "line": "Parcela {{number}} ({{area}}, {{who}}): {{overlap}} ove parcele"
+            "line": "Parcela {{number}} ({{area}}): {{overlap}} ove parcele"
         },
         "ownership": {
             "ceded": "{{area}} → {{destination}}"

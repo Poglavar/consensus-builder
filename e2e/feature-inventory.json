@@ -696,9 +696,12 @@
       ]
     },
     {
-      "feature": "building rules, exclusion volumes and readjustment design",
+      "feature": "building rules, exclusion volumes and parcel layouts",
       "specs": [
-        "tests/designer-controls.spec.ts"
+        "tests/designer-controls.spec.ts",
+        "tests/parcel-layout-editor.spec.ts",
+        "tests/parcel-layout-button-controls.spec.ts",
+        "tests/parcel-layout-audit.spec.ts"
       ]
     },
     {

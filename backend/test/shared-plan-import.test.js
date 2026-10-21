@@ -721,7 +721,7 @@ describe('shared-plan import boundary', () => {
         expect(refresh).toHaveBeenCalledWith(null);
     });
 
-    it('materialises package roads in one batch, then readjustment, buildings and public spaces', async () => {
+    it('materialises package roads in one batch, then parcel layouts, buildings and public spaces', async () => {
         const applyProposal = vi.fn(async () => true);
         const materializeCorridorBatch = vi.fn(async ids => ({
             ok: true,
@@ -729,7 +729,7 @@ describe('shared-plan import boundary', () => {
             failedIds: []
         }));
         const records = new Map([
-            ['plots', { goal: 'reparcellization' }],
+            ['plots', { goal: 'parcel-layout' }],
             ['park', { goal: 'park' }],
             ['building-a', { goal: 'single', buildingProposal: {} }],
             ['building-b', { goal: 'single', buildingProposal: {} }],
@@ -813,7 +813,7 @@ describe('shared-plan import boundary', () => {
         });
     });
 
-    it('uses the ordinary corridor-before-readjustment order regardless of legacy metadata', async () => {
+    it('uses the ordinary corridor-before-layout order regardless of legacy metadata', async () => {
         const events = [];
         const applyProposal = vi.fn(async id => { events.push(id); return true; });
         const materializeCorridorBatch = vi.fn(async ids => {
@@ -822,7 +822,7 @@ describe('shared-plan import boundary', () => {
         });
         const validateSharedProposalGround = vi.fn(() => ({ ok: true }));
         const records = new Map([
-            ['plots', { goal: 'reparcellization', coordinatedPlanId: 'legacy-plan' }],
+            ['plots', { goal: 'parcel-layout', coordinatedPlanId: 'legacy-plan' }],
             ['park', { goal: 'park', coordinatedPlanId: 'legacy-plan' }],
             ['building', { goal: 'single', buildingProposal: {}, coordinatedPlanId: 'legacy-plan' }],
             ['road-a', { goal: 'road-track', coordinatedPlanId: 'legacy-plan' }],

@@ -533,9 +533,9 @@ describe('parcel-compare: an unmeasurable overlap is null ("—"), never 0', () 
         expect(count('parcel-compare.buildingsOn')).toBe(before + 1);
     });
 
-    it('readjustment plots: listed with an unknown overlap, reported', () => {
-        const plan = { proposalId: 'readj', goal: 'reparcellization', cadastreParcelIds: [PARCEL_ID],
-            reparcellization: { polygons: [{ geometry: rect(0, 0, 10, 25), area: 250, displayName: 'Owner A' }] } };
+    it('parcel-layout plots: listed with an unknown overlap, reported', () => {
+        const plan = { proposalId: 'layout', goal: 'parcel-layout', cadastreParcelIds: [PARCEL_ID],
+            parcelLayout: { plots: [{ geometry: rect(0, 0, 10, 25), area: 250, source: 'manual' }] } };
         const before = count('parcel-compare.plotsOn');
         const effect = compare.parcelEffect(plan, PARCEL, { turf: parcelClipsFail() });
         expect(effect.plots).toEqual([expect.objectContaining({ number: 1, overlapM2: null })]);

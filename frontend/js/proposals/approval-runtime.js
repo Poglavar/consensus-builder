@@ -6,7 +6,7 @@
     const api = () => root.ProposalApproval;
     const verifyReceipt = (proposal, receipt) => root.ProposalApprovalAuthorities?.verifyReceipt(proposal, receipt) === true;
     const validIds = (proposal, hash) => api().validOwnerIds(proposal, hash, verifyReceipt);
-    const uses = proposal => !!proposal && (proposal.goal === 'reparcellization' || !!proposal.reparcellization || proposal.approvalConfig != null);
+    const uses = proposal => !!proposal && proposal.approvalConfig != null;
     function inspect(proposal) {
         try { return api().inspect(proposal); }
         catch (error) {

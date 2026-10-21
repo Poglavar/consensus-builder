@@ -5,7 +5,7 @@ import type { Page } from '@playwright/test';
 
 async function clickEditorMapPoint(page: Page, xRatio: number, yRatio: number) {
   const box = await page.locator('#map-container').boundingBox();
-  if (!box) throw new Error('The reparcellization map has no visible bounds');
+  if (!box) throw new Error('The editor map has no visible bounds');
   await page.mouse.click(box.x + box.width * xRatio, box.y + box.height * yRatio);
 }
 
@@ -76,10 +76,10 @@ test.describe('Leaflet runtime control effects @features', () => {
     await expect(page.locator('#proposal-details-panel')).toBeVisible();
   });
 
-  test('Leaflet Close popup dismisses the node detail popup in the editable real plan', async ({ mockApi: page }) => {
+  test('Leaflet Close popup dismisses the node detail popup in the editable parcel layout', async ({ mockApi: page }) => {
     await openCity(page);
     await openParcel(page, 'proposals');
-    await page.locator('.parcel-build-btn--reparcellization').click();
+    await page.locator('.parcel-build-btn--parcel-layout').click();
     const modal = page.locator('.on-map-reparcellization');
     await expect(modal.locator('.on-map-editor__panel')).toBeVisible();
     await expect(modal.locator('[data-reparcel-commit]')).toBeEnabled({ timeout: 15_000 });
@@ -92,7 +92,7 @@ test.describe('Leaflet runtime control effects @features', () => {
     await expect(modal.locator('[data-reparcel-draw-toolbar]')).toBeVisible();
     const map = page.locator('#map-container');
     const box = await map.boundingBox();
-    if (!box) throw new Error('Readjustment map has no visible bounds');
+    if (!box) throw new Error('Parcel-layout map has no visible bounds');
     await clickMapPoint(page, 15.98185, 45.80025);
     await clickMapPoint(page, 15.98255, 45.80025);
     await expect(modal.locator('[data-reparcel-finish]')).toBeEnabled();

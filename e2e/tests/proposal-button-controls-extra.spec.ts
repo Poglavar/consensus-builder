@@ -117,7 +117,7 @@ async function expectProposalMintRpc(page: import('@playwright/test').Page): Pro
 }
 
 test.describe('proposal button controls: modal and alternate states @features', () => {
-  test('fresh proposal land-use and parcel choices update the geometry and ownership requirements', async ({ mockApi: page }) => {
+  test('fresh proposal land-use choices update the geometry and ownership requirements, and parcels stay as they are', async ({ mockApi: page }) => {
     test.setTimeout(60_000);
     await installProposalBlockGround(page);
     await openCity(page);
@@ -131,10 +131,12 @@ test.describe('proposal button controls: modal and alternate states @features', 
       if (landUse === 'as-is') await expect(create.locator('#proposalParcelsStatic')).toBeHidden();
       else await expect(create.locator('#proposalParcelsStatic')).toBeVisible();
     }
-    await create.locator('.proposal-radio:has(input[name="proposalParcelsMode"][value="readjust"])').click();
-    await expect.poll(() => page.evaluate(() => (window as any).proposalFacets)).toMatchObject({ parcels: 'readjust', ownership: 'per-slice' });
-    await expect(create.locator('#proposalOwnershipStatic')).toContainText('Per slice');
+    // New borders are drawn with Lay out parcels: the form offers no readjustment and no per-slice owners.
+    await expect(create.locator('input[name="proposalParcelsMode"]')).toHaveCount(1);
+    await expect(create.locator('input[name="proposalOwnership"][value="per-slice"]')).toHaveCount(0);
+    await expect(create.locator('[data-proposal-main-type="Reparcellization"]')).toHaveCount(0);
     await create.locator('.proposal-radio:has(input[name="proposalParcelsMode"][value="as-is"])').click();
+    await expect(create.locator('input[name="proposalParcelsMode"][value="as-is"]')).toBeChecked();
     await expect.poll(() => page.evaluate(() => (window as any).proposalFacets)).toMatchObject({ parcels: 'as-is', ownership: 'no-change' });
     await expect(create.locator('#proposalOwnershipStatic')).toBeHidden();
     await expect(create.locator('#createProposalSubmitButton')).toBeDisabled();

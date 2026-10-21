@@ -415,7 +415,7 @@
     // ground is not a parcel). A structure designed on a parcel selection covers whole parcels by
     // construction, so the whole-parcel case is just the cut-nothing case. Refusals remain for
     // ground that is not there (uncovered footprint) and for cuts that cannot be computed.
-    // Ownership goes to the City agent at apply, the reparcellization pattern.
+    // Ownership goes to the City agent at apply.
     async _formStructureParcel(proposalId, proposalData, sp, geometry, declaredParentIds, idLabel, resolvedParentFeatures = null, options = {}) {
         const formationEdit = (typeof window !== 'undefined') ? window.__formationEdit : null;
         const turfRef = (typeof turf !== 'undefined') ? turf : null;

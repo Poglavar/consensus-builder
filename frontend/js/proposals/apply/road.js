@@ -29,16 +29,12 @@
     const MIN_REAL_OVERLAP_M2 = 0.25;
 
     return {
-    // §15b (decision 2026-08-06): one partition, latest wins — the taker AMENDS the taken.
-    // After a formation successfully takes ground, every OTHER applied formation whose plan
-    // still claims that ground is amended immediately: its authored plots are clipped by the
-    // taken footprint, loudly. V1 amends reparcellization victims (their polygons ARE their
-    // plan); corridor trimming of a road victim is the recorded follow-up. Amendment is
-    // idempotent — re-clipping an already-clipped plan reports no change — and permanent:
-    // un-applying the taker later frees the ground to base remainders, never back to the plan.
-    // The ground a formation TAKES, per type — and it must be the SAME geometry the CUT
-    // consumes, or the amend pass misses takings the fabric already performed. For roads that
-    // is the FULL corridor polygon: the resolver and the parcel cut consume via
+    // §15b (decision 2026-08-06): one partition, latest wins. A later taking never rewrites a
+    // formation's record; the pieces derived from it are carved instead (_groundAfterLaterCorridors
+    // below), so un-applying the taker gives the ground back.
+    // The ground a road TAKES — and it must be the SAME geometry the CUT consumes, or a check
+    // against it misses takings the fabric already performed. That is the FULL corridor polygon:
+    // the resolver and the parcel cut consume via
     // footprintOf → definition.polygon, tunnels included (Cibona's tunnelled roads consumed
     // the plots above them while the surface footprint overlapped those plots by 0 m², so
     // Subdivide 2042 was never amended and re-applied once per reload). The full corridor is
@@ -53,16 +49,6 @@
                     ? corridorSurfaceFootprintForDefinition(definition)
                     : null;
             }
-            if (proposalData.reparcellization && Array.isArray(proposalData.reparcellization.polygons)) {
-                const claimed = proposalData.reparcellization.polygons
-                    .map(slice => slice && slice.geometry)
-                    .filter(g => g && /Polygon/.test(g.type));
-                if (!claimed.length) return null;
-                return claimed.length === 1 ? claimed[0] : {
-                    type: 'MultiPolygon',
-                    coordinates: claimed.flatMap(g => g.type === 'MultiPolygon' ? g.coordinates : [g.coordinates])
-                };
-            }
         } catch (error) {
             // A taking that cannot be built takes nothing here, and says so (projections.md §3).
             console.error(`[${new Date().toISOString()}] [apply/road] the taking footprint of ${proposalData && (proposalData.proposalId || proposalData.id)} could not be built`, error);
@@ -72,7 +58,7 @@
 
     // The ground a formation keeps once the corridors applied AFTER it in the formation order have
     // taken theirs: one rule for every formed piece a road can cross — a park/square/lake body and
-    // each plot of a land readjustment or subdivision, on cadastral and on open ground alike (the
+    // each plot of a parcel layout or subdivision, on cadastral and on open ground alike (the
     // road tool's "Build through": the road cuts through and the rest stays as it is). On cadastral
     // ground the arrangement already cut the parcels under the road, so the formation would no
     // longer find its ground there; on open ground nothing is arranged, so without this the road

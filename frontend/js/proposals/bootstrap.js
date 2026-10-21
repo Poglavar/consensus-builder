@@ -62,7 +62,7 @@ if (typeof window !== 'undefined') {
     window.setProposalBoundaryMode = setProposalBoundaryMode;
     window.handleUrbanRuleMainTypeClick = handleUrbanRuleMainTypeClick;
     window.handleUrbanRuleTypologyClick = handleUrbanRuleTypologyClick;
-    window.handleReparcellizationAlgorithmClick = handleReparcellizationAlgorithmClick;
+    window.ensureParcelLayoutModuleLoaded = ensureParcelLayoutModuleLoaded;
     window.applyContiguityConstraints = applyContiguityConstraints;
     window.populateProposalAuthorUI = populateProposalAuthorUI;
     window.getProposalAuthorValue = getProposalAuthorValue;

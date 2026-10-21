@@ -60,13 +60,13 @@ describe('proposal area', () => {
         const context = vm.createContext({ window, normalizeParcelIdList, console,
             getProposalOwnerAcceptanceState: () => ({ entries: [{ key: 'owner', displayName: 'Owner', shareText: '1/1' }] }),
             isProposalExpired: () => false, parseOwnerShareFraction: () => 1,
-            proposalRequiresDealConsent: () => false, proposalRecipientConsentRow: () => null,
+            proposalRecipientConsentRow: () => null,
             getProposalI18nHelper: () => (_key, fallback) => fallback,
             CbFormat: { formatMoney: (value, currency) => `${value.toFixed(2)} ${currency}` }
         });
         vm.runInContext(code('core', 'function getProposalAreaMap(', '\nfunction resolveProposalIdKey(')
             + code('geometry', 'function computeProposalArea(', '\nfunction computeProposalMetrics(')
-            + code('execution', 'function buildOwnerAcceptanceSectionHtml(', '\nfunction buildReadjustmentCashReviewHtml('), context);
+            + code('execution', 'function buildOwnerAcceptanceSectionHtml(', '\nfunction getProposalConsentMetrics('), context);
         const proposal = { proposalId: 'p', cadastreParcelIds: ['a', 'b', 'a'], offer: 400, offerCurrency: 'EUR' };
         expect(context.getProposalAreaMap(proposal).totalArea).toBeNull();
         expect(context.computeProposalArea(proposal)).toBeNull();

@@ -95,10 +95,10 @@ function focusMapOnSharedProposal(proposal, payload) {
         if (proposal.structureProposal && proposal.structureProposal.geometry) {
             geometryFeatures.push({ type: 'Feature', geometry: proposal.structureProposal.geometry });
         }
-        if (proposal.reparcellization && Array.isArray(proposal.reparcellization.polygons)) {
-            proposal.reparcellization.polygons.forEach(polygon => {
-                if (polygon && polygon.geometry) {
-                    geometryFeatures.push({ type: 'Feature', geometry: polygon.geometry });
+        if (proposal.parcelLayout && Array.isArray(proposal.parcelLayout.plots)) {
+            proposal.parcelLayout.plots.forEach(plot => {
+                if (plot && plot.geometry) {
+                    geometryFeatures.push({ type: 'Feature', geometry: plot.geometry });
                 }
             });
         }
@@ -241,6 +241,13 @@ function shareSingleProposal(proposalIdOrProposal) {
             }
             return;
         }
+        // A parcel layout is shared together with its agreement (ProposalPublishTerms.publishRefusal).
+        const refusal = window.ProposalPublishTerms.publishRefusal(proposal);
+        if (refusal) {
+            if (typeof showEphemeralMessage === 'function') showEphemeralMessage(refusal.message, 5000, 'info');
+            else if (typeof updateStatus === 'function') updateStatus(refusal.message);
+            return;
+        }
 
         // Sharing publishes, and publishing has one step (proposal-kinds.md): a local proposal
         // whose terms were never chosen gets them first, appended to that same record in the create
@@ -303,6 +310,7 @@ function buildSharedProposalsPayload(appliedProposals) {
         if (feature?.type === 'Feature' && feature.geometry) featuresForBounds.push(deepClone(feature));
     };
     const sanitized = appliedProposals.map(proposal => {
+        window.ProposalPublishTerms.assertPublishable(proposal);
         // Sharing publishes the same authored record the local store owns. It never reconstructs
         // parcel parents or children from runtime output; those pieces belong to LiveParcelFabric.
         // A share link carries its author: this profile's own drafts carry its current name.
@@ -327,9 +335,8 @@ function buildSharedProposalsPayload(appliedProposals) {
             proposalId: candidate.proposalId,
             structureKind: candidate.structureProposal?.kind || null
         });
-        (candidate.reparcellization?.polygons || []).forEach(slice => addGeometry(slice?.geometry, {
-            proposalId: candidate.proposalId,
-            ownerKey: slice?.ownerKey || null
+        (candidate.parcelLayout?.plots || []).forEach(plot => addGeometry(plot?.geometry, {
+            proposalId: candidate.proposalId
         }));
 
         const gate = depthApi.preparePublishRecord(candidate);
@@ -377,8 +384,8 @@ function sharedMaterializationPhase(record) {
         ? applyRoute.normalizeGoalKey(rawGoal)
         : String(rawGoal || '');
     if (goal === 'road-track' || !!(record && record.roadProposal)) return 0;
-    if (goal === 'reparcellization' || goal === 'decide-later'
-        || !!(record && (record.reparcellization || record.decideLaterProposal))) return 1;
+    if (goal === 'parcel-layout' || goal === 'decide-later'
+        || !!(record && (record.parcelLayout || record.decideLaterProposal))) return 1;
     const building = !!(record && record.buildingProposal)
         || !!(typeof applyRoute !== 'undefined' && applyRoute
             && typeof applyRoute.isBuildingGoal === 'function' && applyRoute.isBuildingGoal(goal));
@@ -649,7 +656,7 @@ async function materializeExplicitProposalPlan(proposalIds) {
 
 async function materializeQueuedSharedProposals(proposalIds, options = {}) {
     // Package dependencies outrank URL and creation order: corridors form road-bounded blocks
-    // before readjustments partition them. Buildings and public spaces follow. Immutable input
+    // before parcel layouts partition them. Buildings and public spaces follow. Immutable input
     // order breaks ties within each phase.
     const orderedIds = orderQueuedSharedProposalIds(proposalIds);
     const appliedIds = [];

@@ -52,12 +52,12 @@ describe('footprintParts (shared by browser, API and migration)', () => {
         expect(footprintParts({ roadProposal: { definition: { polygon: PARK } } }).sources)
             .toEqual(['roadProposal.definition.polygon']);
         const plan = footprintParts({
-            reparcellization: { polygons: [{ geometry: PARK }, { geometry: box(15.971, 45.80, 15.972, 45.801) }] },
+            parcelLayout: { pool: box(15.97, 45.80, 15.972, 45.801), plots: [{ geometry: PARK, source: 'manual' }, { geometry: box(15.971, 45.80, 15.972, 45.801), source: 'manual' }] },
             geometry: box(0, 0, 1, 1)
         });
-        // A readjustment's polygons are its footprint; proposal.geometry on it is ignored.
+        // A parcel layout's plots are its footprint; proposal.geometry on it is ignored.
         expect(plan.polygons).toHaveLength(2);
-        expect(plan.sources).toEqual(['reparcellization.polygons']);
+        expect(plan.sources).toEqual(['parcelLayout.plots']);
         expect(plan.approximate).toBe(false);
     });
 

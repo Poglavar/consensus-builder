@@ -220,7 +220,7 @@
      * parcel selection must still be on the same selection. A subdivision (poolSource 'site') is
      * pooled from its SITE: its parcels are the site's binding (possibly none, on open ground), not
      * a selection, so the selection is never compared; the plan's pool must be the dialog's site.
-     * @param {object} plan window.pendingReparcellizationPlan
+     * @param {object} plan window.pendingParcelLayout
      * @param {{selectedParcelIds?: string[], site?: object}} context the create dialog's selection
      *   and site (the site context, null for a parcel-selection proposal).
      * @returns {{ok: boolean, reason: null|'missing'|'parcels-changed'|'site-missing'|'site-changed'}}

@@ -41,7 +41,7 @@ let pendingConstrainedCorridor = null;
 
 let constrainedCorridorState = null;
 
-let reparcellizationModulePromise = null;
+let parcelLayoutModulePromise = null;
 
 let teardownProposalBalanceWatcher = null;
 

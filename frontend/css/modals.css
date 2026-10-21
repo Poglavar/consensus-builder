@@ -953,85 +953,7 @@ body.site-intro-open { overflow: hidden; }
     color: var(--cb-warning-soft-ink);
 }
 
-/* Subdivision: the ownerless open-ground ledger row. */
-.reparcel-ledger-table tr.reparcel-ledger-row--no-owner td {
-    color: var(--cb-text-muted);
-    font-style: italic;
-}
-.reparcel-ledger-unresolved-note {
-    display: block;
-    margin-top: 3px;
-    color: var(--cb-text-muted);
-    font-size: var(--cb-text-xs);
-    font-weight: normal;
-    line-height: 1.35;
-}
-.reparcel-ledger-table tr.reparcel-ledger-row--unresolved td {
-    border-top-style: dashed;
-}
-
-/* Reparcellization: owner ledger balance cells */
-.reparcel-ledger-table td.bal-pays { color: var(--cb-danger); font-variant-numeric: tabular-nums; white-space: nowrap; }
-.reparcel-ledger-table td.bal-due { color: var(--cb-success-soft-ink); font-variant-numeric: tabular-nums; white-space: nowrap; }
-.reparcel-ledger-table td.bal-even { color: var(--cb-text-muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
-
-/* Keep every owner's figures and cash input visible in phones and narrow desktop sidebars. */
-@container reparcel-legend (max-width: 420px) {
-    .reparcel-legend-panel .reparcel-legend-list { max-height: none; overflow: visible; padding-right: 0; }
-    .reparcel-ledger-table thead {
-        position: absolute;
-        width: 1px;
-        height: 1px;
-        overflow: hidden;
-        clip-path: inset(50%);
-    }
-    .reparcel-ledger-table tbody { display: block; }
-    .reparcel-ledger-table tbody tr {
-        display: grid;
-        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-        gap: 8px;
-        padding: 10px 0;
-        border-bottom: 1px solid var(--cb-line);
-    }
-    .reparcel-ledger-table tbody td {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 4px;
-        border: 0;
-        padding: 0;
-        min-width: 0;
-        text-align: left;
-    }
-    .reparcel-ledger-table tbody td:first-child {
-        grid-column: 1 / -1;
-        display: block;
-        white-space: normal;
-        overflow-wrap: anywhere;
-        font-weight: var(--cb-weight-semibold);
-    }
-    .reparcel-ledger-unresolved-note { overflow-wrap: anywhere; }
-    .reparcel-ledger-table tbody td:not(:first-child)::before {
-        content: attr(data-label);
-        color: var(--cb-text-muted);
-        font-size: var(--cb-text-xs);
-        font-weight: normal;
-    }
-    .reparcel-ledger-table .cash-offer-cell input.cash-offer-input { width: 100%; max-width: 140px; min-height: 40px; box-sizing: border-box; }
-}
-
-/* Reparcellization: owner assignment popup */
-.reparcel-owner-leaflet-popup .leaflet-popup-content-wrapper {
-    border-radius: var(--cb-radius-lg);
-    padding: 0;
-    box-shadow: var(--cb-shadow-md);
-}
-
-.reparcel-owner-leaflet-popup .leaflet-popup-content {
-    margin: 0;
-    min-width: 200px;
-}
-
+/* Parcel layout: the building-block chooser popup. */
 .reparcel-owner-popup {
     position: relative;
     padding: 10px 12px;
@@ -1045,76 +967,10 @@ body.site-intro-open { overflow: hidden; }
     padding-right: var(--cb-space-8);
 }
 
-/* The popup's close-circle-btn, in its corner. */
-.reparcel-owner-popup__close {
-    position: absolute;
-    top: var(--cb-space-1);
-    right: var(--cb-space-1);
-}
-
-.reparcel-owner-popup__list {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    max-height: 240px;
-    overflow-y: auto;
-}
-
-.reparcel-owner-popup__row {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 6px 8px;
-    border-radius: var(--cb-radius-sm);
-    cursor: pointer;
-    font-size: var(--cb-text-md);
-    color: var(--cb-text);
-    transition: background 0.12s;
-}
-
-.reparcel-owner-popup__row:hover {
-    background: var(--cb-surface-2);
-}
-
-.reparcel-owner-popup__row.assigned {
-    background: var(--cb-primary-soft);
-    font-weight: var(--cb-weight-medium);
-}
-
-.reparcel-owner-popup__row input[type="checkbox"] {
-    margin: 0;
-    flex-shrink: 0;
-}
-
-.reparcel-owner-popup__row .legend-color {
-    width: 12px;
-    height: 12px;
-    border-radius: 3px;
-    flex-shrink: 0;
-}
-
 .reparcel-owner-popup {
     max-height: min(65vh, var(--reparcel-owner-editor-height, 420px));
     overflow-y: auto;
 }
-
-.reparcel-share-editor { border-top: 1px solid var(--cb-line); margin-top: 8px; padding-top: 8px; }
-.reparcel-share-mode, .reparcel-share-total { font-size: 12px; margin: 6px 0; }
-.reparcel-share-total[data-state="warn"] { color: var(--cb-warning-soft-ink); }
-.reparcel-share-row { display: flex; align-items: center; gap: 5px; margin: 5px 0; }
-.reparcel-share-row > span:first-child { flex: 1; min-width: 0; overflow-wrap: anywhere; }
-.reparcel-share-row input { width: 78px; min-height: 36px; padding: 4px; }
-.reparcel-apply-shares { width: 100%; min-height: 40px; }
-.reparcel-edit-shares { display: flex; width: fit-content; margin-top: var(--cb-space-1); }
-
-.reparcel-owner-review { border-top: 1px solid var(--cb-line); padding-top: 10px; font-size: 13px; }
-.reparcel-owner-review > label { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; font-weight: var(--cb-weight-semibold); }
-.reparcel-owner-review select { flex: 1; min-width: 100px; max-width: 100%; padding: 6px; min-height: 36px; }
-.reparcel-owner-review dl { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 5px 10px; margin: 12px 0; }
-.reparcel-owner-review dd { margin: 0; text-align: right; font-variant-numeric: tabular-nums; }
-.reparcel-owner-review p { margin: 8px 0; overflow-wrap: anywhere; }
-.reparcel-owner-review ul { padding-left: 18px; margin: 8px 0; }
-.reparcel-owner-review__hint { color: var(--cb-text-muted); font-size: 12px; }
 
 /* Reparcellization: slice tooltip */
 .reparcel-slice-tooltip {
