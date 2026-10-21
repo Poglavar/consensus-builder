@@ -171,3 +171,56 @@ demo content may all change, and affected records are recreated.
 9. The road and corridor import no longer declares parcels when a design is created (the
    `loadGroundUnder` step); the agreement derives them when it is created.
 10. Market contests group agreements by shared input land; no folding of proposals under plans.
+
+## M1 (a) build contract: the parcel-layout design (2026-10-21)
+
+The land-readjustment editor becomes a geometry-only design editor. This section is the contract the
+build follows; it changes only by a recorded decision.
+
+- **Design type** `parcel-layout` (goal), record field `proposal.parcelLayout`, adapter key
+  `parcel-layout`, `primaryType: 'ParcelLayout'`. UI name "Lay out parcels"; a site subdivision keeps
+  the name "Subdivide" and produces the same design.
+- **Record** `parcelLayout = { algorithm: 'equal' | 'schelling' | 'amend' | 'manual', generatedAt,
+  pool: Polygon | MultiPolygon, poolSource?: 'site', openGroundM2?, totalArea, plotCount?,
+  schelling?: { code }, inputParcels: [{ parcelId, cadastreParcelId?, geometry, label, area }] (amend
+  only), plots: [{ geometry, area, source, derivation? }] }`. Plot `source` is one of `equal`,
+  `schelling`, `schelling-remainder`, `amend`, `manual`, `base`, `geojson`, `form`. Nothing about
+  owners, shares, roles, colours, cash, valuation, approval or agreement modes is stored.
+- **Layouts offered:** Equal plots (a count, from 2; the sweep handle sets the direction), Schelling
+  plots (the plan layer's current settings at the pool; plan plots clipped to the pool, and the pool
+  ground they leave uncovered, the street strips, becomes plots too, so the layout always tiles the
+  pool), Keep existing borders (the input parcels as plots), Draw freely. Plot drawing, line cuts,
+  erase, node editing, undo/redo, GeoJSON upload, before/after compare, plot numbers, building
+  footprints and courtyard carving (as a plot with a `derivation`, no joint shares) stay. Owner
+  tables, cash, approval, assign owners, all public and shuffle go.
+- **Editor module** `frontend/js/parcel-layout.js` (moved from `reparcellization.js`, history kept),
+  factory `createParcelLayoutEditor`, browser entry `window.openParcelLayoutEditor(options)` with
+  `{ algorithm?, initialPlots?, pool?, sitePool?, plotCount? }`; the seed and the result travel in
+  `window.pendingParcelLayout` and `draft.editorPayload.plan`, as before under the old names. Pure
+  helpers: `parcel-layout-validation.js` (`ParcelLayoutValidation.validate(plan, { turf, site? })`
+  → `{ valid, errors, warnings }`, geometry rules only), `parcel-layout-layouts.js`
+  (`ParcelLayoutLayouts.equalPlots`, `schellingPlots`), `parcel-layout-record.js`
+  (`ParcelLayoutRecord.plotFingerprint(plot)`, `content(plan)`: geometry only),
+  `parcel-layout-ownership.js` (`ParcelLayoutOwnership.ownersOf(plot, sources, ownerOf)`).
+- **Apply** (`proposals/apply/parcels.js`, route `parcel-layout`): forms the plots as today, with the
+  geometry-only fingerprint on `readjustmentPiece` (property name kept for now), and **carries
+  ownership over instead of transferring it**: a plot inside one source parcel keeps that owner; a
+  plot straddling several gets a joint holding with pro-rata shares by overlapping area; open ground
+  stays unowned. A layout changes borders, never ownership; only an executed agreement does that.
+- **Entry points:** the Build palette tile `parcel-layout` ("Lay out parcels") and the site tool's
+  "Subdivide". The classic create dialog's Reparcellization type, "Readjust" facet, pending-plan
+  hand-off and separate-agreements UI are removed, as are `reparcellization-agreements.js`, the LR
+  approval forcing in publish-terms, the LR consent-hash special case and the LR "ownership and
+  approval" action in details. The draft editor has no Ownership, Approval or Terms section for a
+  layout.
+- **Publishing a layout is refused in M1** with a message that layouts are shared with their
+  agreement (M2); the server is untouched. Sharing and minting paths check this at their one choke
+  point.
+- **Tests:** the editor's characterization test and its fake-browser helper are rebuilt for the new
+  editor; apply, audit and subdivision tests adapt to ownership carry-over; pure tests for the
+  layouts, validation, record and ownership modules; Playwright specs for the editor (handles,
+  undo/redo, erase, upload, compare, Schelling plots, plot references surviving apply and reload)
+  replace the land-readjustment specs; specs of removed behaviour (cash consent, separate
+  agreements, owner shares, LR approval) are deleted. `e2e/control-contract.json` is regenerated.
+- **Kept for M1 (b):** `reparcellization-deal.js`, `-allocation.js`, `-ownership.js`, `-shares.js`,
+  `-validation.js` and the approval engine stay, unused by the layout, for the agreement dialog.
