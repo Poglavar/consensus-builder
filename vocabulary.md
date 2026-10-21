@@ -93,6 +93,19 @@ rule. "Plan" names no record: it is the applied composition or a share link. Nam
 and publish-time decision kinds are superseded. Design of record and open questions:
 [plan-design-agreement.md](plan-design-agreement.md).
 
+## Name mapping during the rework (2026-10-21)
+
+New code uses the new names; existing modules, routes and tables are renamed as the rework touches
+them. Until a rename lands, the two columns name the same thing.
+
+| New term (UI, new code) | Existing name (code, API, storage) |
+| --- | --- |
+| design | `proposal`, `Proposal`, `/proposals`, `proposal` table |
+| parcel layout (design type `parcel-layout`, record `parcelLayout`) | land readjustment / reparcellization (`reparcellization` goal and record, `reparcellization*.js`) |
+| decision rule (on the agreement) | decision kind (`proposal.kind`, `proposal-kinds.md`), "Agreement rules" (approval regimes) |
+| agreement | named plan (`ens_plan`, `/plans`), the readjustment deal (`reparcellization-deal.js`), proposal terms (offer, budget, deposit, decay, expiry) |
+| plan (informal: the applied composition, a share link) | applied composition `WorkingComposition`, "Share applied proposals" |
+
 ## Central terms as implemented
 
 ### Proposal — `Proposal`
