@@ -1306,13 +1306,19 @@ async function handleUserAcceptProposal(proposalId, parcelId, ownerKey = null) {
     });
 
     // Local consent cannot establish execution. The EVM bridge separately reads the exact
-    // confirmed block; update only lifecycle, and only while the record still names that NFT.
+    // confirmed block; preserve that observation only while the record still names that NFT.
     if (isOnChain && !isVote) {
         const current = proposalStorage.getProposal(proposalId);
         const lifecycle = window.ProposalChainStatus?.confirmedAcceptanceLifecycle(
             chainResult, nftInfo, getProposalNftInfo(current));
         if (current && lifecycle) {
-            current.lifecycleStatus = lifecycle;
+            Object.assign(current, window.ProposalLifecycleEvidence.projectLifecycleEvidence({
+                lifecycleStatus: lifecycle,
+                chainRead: { status: lifecycle, observedAt: chainResult.lifecycle.observedAt, chainRef: {
+                    chainType: 'evm', chainId: String(chainResult.chainId),
+                    contract: chainResult.contractAddress, tokenId: String(chainResult.proposalId)
+                } }
+            }));
             proposalStorage._indexProposal?.(current);
             proposalStorage.save();
             const detailsContent = document.getElementById('proposal-details-content');

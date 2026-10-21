@@ -226,8 +226,14 @@ test.describe('Designer controls persist their edits @features', () => {
     await expect(page.locator('#three-container canvas')).toBeVisible({ timeout: 15_000 });
     if (!(await page.locator('#model-layer-controls').isVisible())) await page.locator('#layers-button').click();
     await expect(page.locator('#model-layer-controls .three-mode-ui-panel')).toBeVisible();
-    await selectNativeOption(page.locator('#three-mode-built-display'), 'off');
-    await selectNativeOption(page.locator('#three-mode-planned-display'), 'off');
+    if (!(await page.locator('#planning-views').isVisible())) await page.locator('#planning-views-button').click();
+    await expect(page.locator('#planning-views')).toBeVisible();
+    await selectNativeOption(page.locator('[data-planning-setting="existing"]'), 'off');
+    await selectNativeOption(page.locator('[data-planning-setting="proposed"]'), 'off');
+    // Planning Views is its own sheet; the exclusion overlay toggle belongs to Layers.
+    await page.locator('#layers-button').click();
+    await expect(page.locator('#planning-views')).toBeHidden();
+    await expect(page.locator('#model-layer-controls .three-mode-ui-panel')).toBeVisible();
     const toggle = page.locator('#model-layer-controls label.three-mode-wide-toggle[aria-label*="current applied rule"] input[type="checkbox"]');
     const ineligibleVisibleMeshes = () => page.evaluate(() => {
       const scene = (window as any).getThreeModeInternals()?.scene;

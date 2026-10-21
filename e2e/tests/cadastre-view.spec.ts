@@ -46,5 +46,18 @@ test('consumed ground remains reachable through proposal breadcrumbs and the cad
   await expect(page.locator('body')).not.toHaveClass(/cadastre-view/);
   await expect.poll(paths).toBe(0);
   expect(await page.evaluate(id => JSON.stringify((window as any).CadastralParcelRepository.get(id)), PARCEL_ID)).toBe(original);
-  expect(await proposalState(page, id)).toEqual(proposal);
+  const after = await proposalState(page, id);
+  expect(after).toMatchObject({
+    proposalId: proposal.proposalId,
+    applied: proposal.applied,
+    cadastreParcelIds: proposal.cadastreParcelIds,
+    structureProposal: proposal.structureProposal,
+  });
+  // Reading parcels must preserve authored geometry and rights exactly.
+  for (const key of ['declaredRights', 'geometry', 'site', 'binding']) {
+    expect(after[key]).toEqual(proposal[key]);
+  }
+  // Reading owner state may materialize the current roster; it must not manufacture consent.
+  expect(after.acceptedParcelIds || []).toEqual([]);
+  expect(Object.values(after.ownerAcceptances || {}).every((entry: any) => !(entry.acceptedOwnerKeys || []).length)).toBe(true);
 });

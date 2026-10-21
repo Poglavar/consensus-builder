@@ -77,6 +77,7 @@ test('the expanded technical status buttons copy the log and follow a proposal e
   await context.grantPermissions(['clipboard-read', 'clipboard-write']);
   await openCity(page);
   const proposalId = await createSpace(page, 'park');
+  const proposalTitle = await page.evaluate(id => (window as any).proposalStorage.getProposal(id)?.title, proposalId);
   // Seed a real status record using the same boundary used by background proposal events.
   await page.evaluate(id => (window as any).updateStatus('Button coverage park event', { proposalId: id }), proposalId);
   await page.locator('#activity-button').click();
@@ -92,5 +93,7 @@ test('the expanded technical status buttons copy the log and follow a proposal e
   await dialog.getByRole('button', { name: 'Button coverage park event', exact: true }).click();
   await expect(dialog).toBeHidden();
   await expect.poll(() => page.evaluate(() => (window as any).currentlyHighlightedProposalId)).toBe(proposalId);
-  await expect(page.locator('#proposal-details-panel')).toBeVisible();
+  const inspector = page.locator('#planning-inspector');
+  await expect(inspector.getByRole('heading', { name: proposalTitle, exact: true })).toBeVisible();
+  await expect.poll(() => page.evaluate(() => (window as any).ProposalSelection?.getKey?.())).toBe(proposalId);
 });

@@ -303,7 +303,7 @@ it('repaints existing life simulation from changed building footprints on active
 
 function warmEnterFixture() {
     const center = { lat: 45.8, lng: 15.9 };
-    const calls = { init: 0, startLoop: 0, retained: 0, rebuild: 0, syncModeAvailability: 0 };
+    const calls = { init: 0, startLoop: 0, retained: 0, rebuild: 0, syncModeAvailability: 0, syncPlanningView: 0 };
     const context = loadInContext(threeModeDeclarations(['currentSceneKey', 'enter3D']), {
         map: { getCenter: () => center, getZoom: () => 12 },
         window: null,
@@ -340,6 +340,8 @@ function warmEnterFixture() {
         buildingWorkIncomplete: false,
         applyRetainedBuildingDisplay() { calls.retained += 1; return true; },
         rebuild3DBuildingsOnly: async () => { calls.rebuild += 1; },
+        // Shared display policy moved to PlanningViews; enter3D refreshes this view on resume.
+        syncPlanningView3D() { calls.syncPlanningView += 1; },
         activeProposalDraftComparison: null,
         console,
         clearTimeout() {},
@@ -363,6 +365,7 @@ it('reuses a warm renderer and camera only when the retained scene key still mat
     expect(same.calls.init).toBe(0);
     expect(same.calls.startLoop).toBe(1);
     expect(same.calls.syncModeAvailability).toBeGreaterThan(0);
+    expect(same.calls.syncPlanningView).toBeGreaterThan(0);
     expect(same.context.camera).toBe(camera);
     expect(same.context.renderer).toBe(renderer);
 

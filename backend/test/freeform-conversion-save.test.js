@@ -369,6 +369,50 @@ describe('stageActiveFreeformBuildings: fixed imported geometry uses ordinary Fr
         expect(globalThis.proposalStorage.addProposal.mock.calls.map(([record]) => record.geometry.buildings)).toEqual([[first],[second]]);
     });
 
+    it('restores every unsaved building and its surroundings before reopening a failed first save, then retries once per building', async () => {
+        const { store, drafts, ProposalManager } = loadShell(block());
+        const buildings = [
+            { type: 'Feature', properties: { height: 18 }, geometry: box(16, 45, 16 + D, 45 + D) },
+            { type: 'Feature', properties: { height: 9 }, geometry: box(16 + 3 * D, 45, 16 + 4 * D, 45 + D) }
+        ];
+        const site = box(16 - D, 45 - D, 16 + 5 * D, 45 + 2 * D);
+        const surroundings = { groundSurface: { treatment: 'green', polygon: site }, groundBoundary: site, takeWholeParcels: false };
+        const draft = store.createDraft({
+            goal: 'single', adapterKey: 'single', fields: { site },
+            editorPayload: { typology: 'single', context: { buildings, buildingFeature: buildings[0], ...surroundings } },
+            previewGeometry: buildings
+        });
+        globalThis.beginProposalDraftDesignSession(draft.id);
+        const original = JSON.parse(JSON.stringify(draft));
+        const reopened = [];
+        globalThis.openProposalDraftDesign.mockImplementation(async id => {
+            reopened.push(JSON.parse(JSON.stringify(store.getDraft(id))));
+            globalThis.beginProposalDraftDesignSession(id);
+            return true;
+        });
+        const entries = buildings.map((building, index) => ({ building, site: index === 0 ? site : building.geometry,
+            ...(index === 0 ? { surroundings } : {}) }));
+        globalThis.stageActiveFreeformBuildings({ buildings: entries });
+        store.buildProposalFromDraft.mockImplementationOnce(() => { throw new Error('Site binding unavailable'); });
+
+        globalThis.finishProposalDraftDesignSession();
+        await flushSaves(ProposalManager, store, 1);
+
+        expect(reopened).toHaveLength(1);
+        expect(reopened[0].editorPayload).toEqual(original.editorPayload);
+        expect(reopened[0].previewGeometry).toEqual(buildings);
+        expect(reopened[0].fields).toEqual(original.fields);
+        expect(drafts.size).toBe(1);
+        expect(globalThis.proposalStorage.addProposal).not.toHaveBeenCalled();
+
+        globalThis.stageActiveFreeformBuildings({ buildings: entries });
+        globalThis.finishProposalDraftDesignSession();
+        await flushSaves(ProposalManager, store, 3);
+
+        expect(globalThis.proposalStorage.addProposal.mock.calls.map(([record]) => record.geometry.buildings)).toEqual(buildings.map(building => [building]));
+        expect(reopened).toHaveLength(1);
+    });
+
     it('rejects non-Polygon building entries before replacing the active draft', async () => {
         const { drafts } = loadShell(block());
         await globalThis.editProposalGeometry('own-block');

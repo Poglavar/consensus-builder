@@ -15,11 +15,12 @@ export function parseAtlasSources(value = '[]') {
     const ids = new Set();
     return entries.map(entry => {
         if (!entry || Array.isArray(entry) || typeof entry !== 'object'
-            || Object.keys(entry).some(key => !['id', 'city', 'label', 'edition', 'url', 'default'].includes(key))
+            || Object.keys(entry).some(key => !['id', 'city', 'label', 'edition', 'url', 'default', 'parcelSourceId'].includes(key))
             || !text(entry.id, 100) || !/^[a-z0-9_-]+$/.test(entry.id) || ids.has(entry.id)
             || !text(entry.city, 80) || !/^[a-z][a-z0-9_-]*$/.test(entry.city)
             || !text(entry.label, 200) || !text(entry.edition, 100) || !text(entry.url, 2000)
-            || entry.default !== undefined && typeof entry.default !== 'boolean') invalid();
+            || entry.default !== undefined && typeof entry.default !== 'boolean'
+            || entry.parcelSourceId !== undefined && (!text(entry.parcelSourceId, 100) || !/^[a-z0-9_-]+$/.test(entry.parcelSourceId))) invalid();
         let url;
         try { url = validatePublicSourceUrl(entry.url).href; } catch { invalid(); }
         ids.add(entry.id);

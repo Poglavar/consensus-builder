@@ -5,7 +5,7 @@ import { buildParcelReport } from '../../scripts/build-parcel-coverage-report.mj
 import { reportMessages } from '../../frontend/js/parcel-coverage-report-i18n.mjs';
 import { readFileSync } from 'node:fs';
 
-function buildSmallReport({ registry, liveCities, enrichmentCities = [] }) {
+function buildSmallReport({ registry, liveCities, enrichmentCities = [], sourceCatalog = { sources: [] } }) {
     const statistics = { landAreaKm2: 10, builtUpAreaKm2: 2, population: 100 };
     return buildParcelReport({
         registry,
@@ -16,7 +16,7 @@ function buildSmallReport({ registry, liveCities, enrichmentCities = [] }) {
             world: statistics, sources: []
         },
         coverage: { liveCities },
-        sourceCatalog: { sources: [] }
+        sourceCatalog
     });
 }
 
@@ -170,6 +170,128 @@ describe('parcel coverage report', () => {
             liveCities: rows.map(city => ({ id: city.appCityId, sourceId: 'shared' }))
         });
         expect(report.cities.map(city => city.appCityIds)).toEqual([['app-one'], [], []]);
+    });
+
+    it('links a sole configured app city to its sole verified registry city through the matching source', () => {
+        const report = buildSmallReport({
+            registry: {
+                cities: [{ cityId: 'registry:one', name: 'One', countryCode: 'AA', sourceIds: ['provider-one'] }],
+                sources: [{ sourceId: 'provider-one', verifiedCityIds: ['registry:one'], liveIntegration: { status: 'enabled', cityIds: ['app-one'] } }]
+            },
+            liveCities: [{ id: 'app-one', name: 'One', cc: 'AA', lat: 1, lon: 2, sourceId: 'provider-one' }],
+            sourceCatalog: { sources: [{ id: 'provider-one', cityIds: ['app-one'] }] }
+        });
+
+        expect(report.cities.find(city => city.id === 'registry:one')).toMatchObject({
+            registryCityIds: ['registry:one'], appCityIds: ['app-one'], sourceIds: ['provider-one']
+        });
+        expect(report.cities.some(city => city.id === 'app:app-one')).toBe(false);
+    });
+
+    it('keeps a reviewed app-city crosswalk when another source has an incompatible singleton', () => {
+        const report = buildSmallReport({
+            registry: {
+                cities: [{ cityId: 'registry:one', name: 'One', countryCode: 'AA', appCityId: 'app-one', sourceIds: ['provider-one', 'provider-two'] }],
+                sources: [
+                    { sourceId: 'provider-one', verifiedCityIds: ['registry:one'], liveIntegration: { status: 'enabled', cityIds: ['app-one'] } },
+                    { sourceId: 'provider-two', verifiedCityIds: ['registry:one'], liveIntegration: { status: 'enabled', cityIds: ['app-two'] } }
+                ]
+            },
+            liveCities: [
+                { id: 'app-one', name: 'One', cc: 'AA', lat: 1, lon: 2, sourceId: 'provider-one' },
+                { id: 'app-two', name: 'Two', cc: 'AA', lat: 3, lon: 4, sourceId: 'provider-two' }
+            ],
+            sourceCatalog: { sources: [
+                { id: 'provider-one', cityIds: ['app-one'] },
+                { id: 'provider-two', cityIds: ['app-two'] }
+            ] }
+        });
+
+        expect(report.cities.find(city => city.id === 'registry:one')?.appCityIds).toEqual(['app-one']);
+        expect(report.cities.some(city => city.id === 'app:app-two')).toBe(false);
+    });
+
+    it('keeps genuinely conflicting inferred singleton links ambiguous', () => {
+        const report = buildSmallReport({
+            registry: {
+                cities: [{ cityId: 'registry:one', name: 'One', countryCode: 'AA' }],
+                sources: [
+                    { sourceId: 'provider-one', verifiedCityIds: ['registry:one'], liveIntegration: { status: 'enabled', cityIds: ['app-one'] } },
+                    { sourceId: 'provider-two', verifiedCityIds: ['registry:one'], liveIntegration: { status: 'enabled', cityIds: ['app-two'] } }
+                ]
+            },
+            liveCities: [
+                { id: 'app-one', name: 'One', cc: 'AA', lat: 1, lon: 2, sourceId: 'provider-one' },
+                { id: 'app-two', name: 'Two', cc: 'AA', lat: 3, lon: 4, sourceId: 'provider-two' }
+            ],
+            sourceCatalog: { sources: [
+                { id: 'provider-one', cityIds: ['app-one'] },
+                { id: 'provider-two', cityIds: ['app-two'] }
+            ] }
+        });
+
+        expect(report.cities.find(city => city.id === 'registry:one')?.appCityIds).toEqual([]);
+    });
+
+    it('keeps ambiguous provider cities in separate app-only rows without binding registry records', () => {
+        const report = buildSmallReport({
+            registry: {
+                cities: [
+                    { cityId: 'registry:one', name: 'One', countryCode: 'AA' },
+                    { cityId: 'registry:two', name: 'Two', countryCode: 'AA' }
+                ],
+                sources: [{ sourceId: 'provider-many', verifiedCityIds: ['registry:one', 'registry:two'],
+                    liveIntegration: { status: 'enabled', cityIds: ['app-one', 'app-two'] } }]
+            },
+            liveCities: [
+                { id: 'app-one', name: 'One', cc: 'AA', lat: 1, lon: 2, sourceId: 'provider-many' },
+                { id: 'app-two', name: 'Two', cc: 'AA', lat: 3, lon: 4, sourceId: 'provider-many' }
+            ],
+            sourceCatalog: { sources: [{ id: 'provider-many', cityIds: ['app-one', 'app-two'] }] }
+        });
+
+        for (const id of ['registry:one', 'registry:two']) {
+            expect(report.cities.find(city => city.id === id)).toMatchObject({ appCityIds: [], registryFound: null, population2025: null });
+        }
+        expect(report.cities.find(city => city.id === 'app:app-one')).toMatchObject({
+            registryCityIds: [], appCityIds: ['app-one'], registryFound: true, population2025: null
+        });
+        expect(report.cities.find(city => city.id === 'app:app-two')).toMatchObject({
+            registryCityIds: [], appCityIds: ['app-two'], registryFound: true, population2025: null
+        });
+    });
+
+    it('does not create app-only rows that bypass contradictory, mismatched or disabled crosswalks', () => {
+        const cases = [
+            {
+                name: 'contradictory reviewed source IDs',
+                city: { cityId: 'registry:one', name: 'One', countryCode: 'AA', appCityId: 'app-one', sourceIds: ['other-provider'] },
+                source: { sourceId: 'provider-one', verifiedCityIds: ['registry:one'], liveIntegration: { status: 'enabled', cityIds: ['app-one'] } },
+                liveCity: { id: 'app-one', name: 'One', cc: 'AA', lat: 1, lon: 2, sourceId: 'provider-one' }
+            },
+            {
+                name: 'mismatched runtime source',
+                city: { cityId: 'registry:one', name: 'One', countryCode: 'AA', appCityId: 'app-one', sourceIds: ['provider-one'] },
+                source: { sourceId: 'provider-one', verifiedCityIds: ['registry:one'], liveIntegration: { status: 'enabled', cityIds: ['app-one'] } },
+                liveCity: { id: 'app-one', name: 'One', cc: 'AA', lat: 1, lon: 2, sourceId: 'other-provider' }
+            },
+            {
+                name: 'disabled provider',
+                city: { cityId: 'registry:one', name: 'One', countryCode: 'AA', sourceIds: ['provider-one'] },
+                source: { sourceId: 'provider-one', verifiedCityIds: ['registry:one'], liveIntegration: { status: 'disabled', cityIds: ['app-one'] } },
+                liveCity: { id: 'app-one', name: 'One', cc: 'AA', lat: 1, lon: 2, sourceId: 'provider-one' }
+            }
+        ];
+
+        for (const scenario of cases) {
+            const report = buildSmallReport({
+                registry: { cities: [scenario.city], sources: [scenario.source] },
+                liveCities: [scenario.liveCity],
+                sourceCatalog: { sources: [{ id: 'provider-one', cityIds: ['app-one'] }] }
+            });
+            expect.soft(report.cities.find(city => city.id === 'registry:one')?.appCityIds, scenario.name).toEqual([]);
+            expect.soft(report.cities.some(city => city.id === 'app:app-one'), scenario.name).toBe(false);
+        }
     });
 
     it('keeps discovery categories separate from territorial completeness', () => {

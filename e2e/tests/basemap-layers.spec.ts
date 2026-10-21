@@ -126,6 +126,15 @@ test.describe('Basemap and layer controls @features', () => {
     // The building toggles are enabled only at parcel zoom (map-controls.js updateParcelsCheckboxByZoom).
     await zoomToParcelLevel(page);
 
+    await page.locator(selectors.layersButton).click();
+    const checkbox = page.locator(`${selectors.layersSheet} #showBuildings`);
+    await expect(checkbox).toBeVisible();
+    await expect(checkbox).toBeEnabled();
+    // The persisted map-layer preference may arrive enabled; establish an off baseline before
+    // spying so the first measured click always means "show buildings".
+    if (await checkbox.isChecked()) await checkbox.click();
+    await expect(checkbox).not.toBeChecked();
+
     await page.evaluate(() => {
       const w = window as any;
       w.__fetchBuildingsCalls = [];
@@ -134,12 +143,6 @@ test.describe('Basemap and layer controls @features', () => {
         return Promise.resolve();
       };
     });
-
-    await page.locator(selectors.layersButton).click();
-    const checkbox = page.locator(`${selectors.layersSheet} #showBuildings`);
-    await expect(checkbox).toBeVisible();
-    await expect(checkbox).toBeEnabled();
-    await expect(checkbox).not.toBeChecked();
 
     await checkbox.click();
     await expect(checkbox).toBeChecked();

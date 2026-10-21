@@ -1,4 +1,4 @@
-import { defineConfig } from 'vitest/config';
+import { configDefaults, defineConfig } from 'vitest/config';
 import { cpus } from 'node:os';
 
 // Worker cap. Vitest defaults to one worker per core, and each of ours boots a full express app,
@@ -23,6 +23,9 @@ const maxWorkers = Number(process.env.VITEST_MAX_WORKERS)
 export default defineConfig({
     test: {
         include: ['test/**/*.test.js'],
+        // Native node:test suites have their own runner in npm test; importing them here
+        // executes their callbacks outside Vitest and leaves an empty Vitest suite.
+        exclude: [...configDefaults.exclude, 'test/**/*.node.test.js'],
         maxWorkers,
         coverage: {
             provider: 'v8',

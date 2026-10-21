@@ -132,7 +132,10 @@ test(`named-plan grain-score route ${scenario} verifies its published membership
       expect(forkId).toBeTruthy();
       expect(forkId).not.toBe(plan.members[0].authoredProposalId);
       const fork = await receiver.page.evaluate(id => (window as any).proposalStorage.getProposal(id), forkId);
-      expect(fork.sourceProposalId).toBe(plan.members[0].authoredProposalId);
+      expect(fork.proposalOrigin).toMatchObject({
+        relation: 'revision',
+        source: { kind: 'publication', proposalRowId: serverId },
+      });
       expect(fork.serverProposalId).toBeFalsy();
       const appliedIds = () => receiver.page.evaluate(() => {
         const w = window as any;

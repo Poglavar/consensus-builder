@@ -97,11 +97,11 @@ test.describe('simulation log links @features', () => {
       if (!accepted.includes('parcel-link-clickable')) throw new Error(`Accept action did not emit a parcel link: ${accepted}`);
       const noOp = await dispatch({ type: 'nothing' });
       const noDonation = await dispatch({ type: 'donate', proposalId: 'missing-e2e-simulation-proposal', amount: 1 });
-      const failedDonation = await dispatch({ type: 'donate', proposalId, amount: 0 });
-      const donated = await dispatch({ type: 'donate', proposalId, amount: 1 });
+      const failedDonation = await dispatch({ type: 'donate', proposalId, amount: 0, currency: 'ETH', basis: 'simulated-agent-eth-balance' });
+      const donated = await dispatch({ type: 'donate', proposalId, amount: 1, currency: 'ETH', basis: 'simulated-agent-eth-balance' });
       const noPledge = await dispatch({ type: 'pledge', proposalId: 'missing-e2e-simulation-proposal', amount: 1 });
-      const failedPledge = await dispatch({ type: 'pledge', proposalId, amount: 0 });
-      const pledged = await dispatch({ type: 'pledge', proposalId, amount: 1 });
+      const failedPledge = await dispatch({ type: 'pledge', proposalId, amount: 0, currency: 'ETH', basis: 'simulated-agent-eth-balance' });
+      const pledged = await dispatch({ type: 'pledge', proposalId, amount: 1, currency: 'ETH', basis: 'simulated-agent-eth-balance' });
       const unknown = await dispatch({ type: 'e2e-unknown-action' });
 
       const userAgent = w.agentStorage.getAllAgents().find((candidate: any) => candidate.userControlled);
@@ -167,9 +167,9 @@ test.describe('simulation log links @features', () => {
       const targetTitle = await page.evaluate(id => (window as any).proposalStorage.getProposal(id)?.title, targetId);
       expect(targetTitle).toBeTruthy();
       await link.click();
-      await expect(page.locator('#proposal-details-panel')).toBeVisible();
-      await expect.poll(() => page.evaluate(() => (window as any).currentlyHighlightedProposalId)).toBe(targetId);
-      await expect(page.locator('#proposal-details-panel')).toContainText(targetTitle);
+      const inspector = page.locator('#planning-inspector');
+      await expect(inspector.getByRole('heading', { name: targetTitle, exact: true })).toBeVisible();
+      await expect.poll(() => page.evaluate(() => (window as any).ProposalSelection?.getKey?.())).toBe(targetId);
       if (index + 1 < proposalLinkCount) await openActivityExplorer(page);
     }
 
@@ -203,8 +203,9 @@ test.describe('simulation log links @features', () => {
     const footerProposalLink = page.locator(`.game-log-modal .activity-entry[data-source="simulation"] .activity-entry-links .proposal-link-clickable[data-proposal-id="${fixture.proposalId}"]`).first();
     await expect(footerProposalLink).toHaveAttribute('data-proposal-id', fixture.proposalId);
     await footerProposalLink.click();
-    await expect(page.locator('#proposal-details-panel')).toBeVisible();
-    await expect(page.locator('#proposal-details-panel')).toContainText(fixture.proposalTitle);
+    const inspector = page.locator('#planning-inspector');
+    await expect(inspector.getByRole('heading', { name: fixture.proposalTitle, exact: true })).toBeVisible();
+    await expect.poll(() => page.evaluate(() => (window as any).ProposalSelection?.getKey?.())).toBe(fixture.proposalId);
   });
 
   test('user create, acceptance, and withdrawal log links open their targets', async ({ mockApi: page }) => {
@@ -344,15 +345,17 @@ test.describe('simulation log links @features', () => {
     await expect(createdRow).toHaveAttribute('data-source', 'simulation');
     await openUserActor(createdRow);
     await createdLink.click();
-    await expect(page.locator('#proposal-details-panel')).toBeVisible();
-    await expect(page.locator('#proposal-details-panel')).toContainText(title);
+    const inspector = page.locator('#planning-inspector');
+    await expect(inspector.getByRole('heading', { name: title, exact: true })).toBeVisible();
+    await expect.poll(() => page.evaluate(() => (window as any).ProposalSelection?.getKey?.())).toBe(fixture.proposalId);
 
     await openActivityExplorer(page);
     const acceptedRow = explorer.locator('.activity-entry').filter({ hasText: 'recorded acceptance' }).first();
     await expect(acceptedRow.locator('.activity-entry-main .proposal-link-clickable')).toHaveAttribute('data-proposal-id', fixture.proposalId);
     await openUserActor(acceptedRow);
     await acceptedRow.locator('.activity-entry-main .proposal-link-clickable').click();
-    await expect(page.locator('#proposal-details-panel')).toBeVisible();
+    await expect(inspector.getByRole('heading', { name: title, exact: true })).toBeVisible();
+    await expect.poll(() => page.evaluate(() => (window as any).ProposalSelection?.getKey?.())).toBe(fixture.proposalId);
 
     await openActivityExplorer(page);
     const withdrawnRow = explorer.locator('.activity-entry').filter({ hasText: 'revoked acceptance' }).first();

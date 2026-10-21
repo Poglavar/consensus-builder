@@ -46,7 +46,8 @@ test('kind, epoch, voting period and parcel tolerance persist from the proposal 
   await expect(form).toBeHidden();
   const saved = await page.evaluate(() => (window as any).proposalStorage.getAllProposals()
     .find((proposal: any) => proposal.title === 'A thirty-day park vote for 2035'));
-  expect(saved).toMatchObject({ copiedFromProposalId: sourceId, epochYear: 2035, kind: 'owner-vote', offer: null, voteExpiryDays: 30, toleranceM: 0.12 });
+  expect(saved).toMatchObject({ epochYear: 2035, kind: 'owner-vote', offer: null, voteExpiryDays: 30, toleranceM: 0.12 });
+  expect(saved.proposalOrigin).toMatchObject({ relation: 'revision', source: { kind: 'local', localProposalId: sourceId } });
   expect(saved).not.toHaveProperty('isVote');
   expect(new Date(saved.expiresAt).getTime()).toBeGreaterThanOrEqual(earliestExpiry);
   expect(new Date(saved.expiresAt).getTime()).toBeLessThan(Date.now() + 30 * 86_400_000 + 1000);
@@ -95,7 +96,8 @@ test('lifecycle, applied-state and author filters narrow the actual proposal lis
     const rows = [
       { title: 'Applied active park', author: 'Alex', lifecycleStatus: 'Active', applied: true },
       { title: 'Unapplied active park', author: 'Blair', lifecycleStatus: 'Active', applied: false },
-      { title: 'Executed park', author: 'Alex', lifecycleStatus: 'Executed', applied: false },
+      { title: 'Executed park', author: 'Alex', lifecycleStatus: 'Executed', applied: false,
+        lifecycleEvidence: { protocol: 'proposal-lifecycle-evidence/1', state: 'observed', status: 'Executed', observedAt: '2026-10-01T00:00:00.000Z' } },
     ];
     rows.forEach(row => (window as any).proposalStorage.addProposal({ ...row, goal: 'park', cadastreParcelIds: [parcelId] }));
   }, PARCEL_ID);

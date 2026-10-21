@@ -24,7 +24,7 @@ import {
     requiresParcels,
     BINDING_CODES
 } from './binding.js';
-import { footprintParts } from './footprint.js';
+import { footprintParts, proposalGeometryView } from './footprint.js';
 import { stripLocalProposalState } from './serializer.js';
 
 const requireCjs = createRequire(import.meta.url);
@@ -204,7 +204,9 @@ export async function prepareProposal(db, record, { city = null, parcelSourceId 
     }
 
     const declared = Array.isArray(draft.cadastreParcelIds) ? draft.cadastreParcelIds.map(String) : [];
-    const bound = await checkProposalBinding(db, draft, declared, { site, toleranceM: tolerance.value, city, parcelSourceId, now, derive: true });
+    // Geometry consumers read the decoded view; the publishable record keeps its OSM document.
+    // Passing the record here makes its polygon look like a designation without a centreline.
+    const bound = await checkProposalBinding(db, proposalGeometryView({ proposal_data: draft }), declared, { site, toleranceM: tolerance.value, city, parcelSourceId, now, derive: true });
     if (!bound.ok) {
         const { ok: _ok, status, code, error, ...details } = bound;
         throw preparationError(code, error, status, details);

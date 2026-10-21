@@ -5,20 +5,20 @@
     "asOf": "2026-10-08",
     "demographicSnapshotDate": "2026-10-12",
     "statisticsYear": 2025,
-    "cityCount": 3116,
+    "cityCount": 3131,
     "countryCount": 255,
     "statisticalJurisdictions": 237,
-    "checkedCityCount": 2427,
-    "uncheckedCityCount": 689,
-    "cityRegistryFoundCount": 1712,
-    "verifiedCitySampleCount": 1696,
+    "checkedCityCount": 2445,
+    "uncheckedCityCount": 686,
+    "cityRegistryFoundCount": 1760,
+    "verifiedCitySampleCount": 1715,
     "nationalCadastreCount": 72,
     "countryTwoRegionCount": 50,
-    "populationMatchedCount": 2594,
+    "populationMatchedCount": 2610,
     "growthMatchedCount": 1617,
-    "checkedCitiesMissingDate": 2427,
+    "checkedCitiesMissingDate": 2445,
     "wikiCityCount": 275,
-    "configuredAppCityCount": 1742,
+    "configuredAppCityCount": 1761,
     "unmatchedStatisticalAmounts": {
       "landAreaKm2": 0,
       "builtUpAreaKm2": 0.003000000026077032,
@@ -6739,7 +6739,9 @@
       "registryCityIds": [
         "us-capital:MD"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "annapolis"
+      ],
       "cohorts": [
         "registry"
       ],
@@ -6756,14 +6758,18 @@
       "checked": false,
       "checkedDate": null,
       "checkedDateEvidence": null,
-      "registryFound": null,
-      "registryFindingBasis": null,
+      "registryFound": true,
+      "registryFindingBasis": "configured_source",
       "registryBasis": null,
       "verifiedSample": false,
       "impliedParcelsTried": null,
       "integrationAttempts": [],
-      "sourceIds": [],
-      "evidenceUrls": [],
+      "sourceIds": [
+        "us-md-annapolis-parcels"
+      ],
+      "evidenceUrls": [
+        "https://services.arcgis.com/7ww0md22RA7aTw3W/ArcGIS/rest/services/City_of_Annapolis_Parcels/FeatureServer/1"
+      ],
       "evidenceFiles": [],
       "osmUrl": "https://www.openstreetmap.org/?mlat=38.97840&mlon=-76.49220#map=12/38.97840/-76.49220",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=38.97840%2C-76.49220",
@@ -9317,9 +9323,7 @@
       "evidenceUrls": [
         "https://map.gov4c.kz/geoserver/wfs"
       ],
-      "evidenceFiles": [
-        "research/central-asia-capitals-2026-10-08/astana-acceptance.json"
-      ],
+      "evidenceFiles": [],
       "osmUrl": "https://www.openstreetmap.org/?mlat=51.12820&mlon=71.43040#map=12/51.12820/71.43040",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=51.12820%2C71.43040",
       "wikipediaUrl": null,
@@ -9995,7 +9999,9 @@
       "registryCityIds": [
         "us-capital:ME"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "augusta"
+      ],
       "cohorts": [
         "registry"
       ],
@@ -10012,14 +10018,18 @@
       "checked": false,
       "checkedDate": null,
       "checkedDateEvidence": null,
-      "registryFound": null,
-      "registryFindingBasis": null,
+      "registryFound": true,
+      "registryFindingBasis": "configured_source",
       "registryBasis": null,
       "verifiedSample": false,
       "impliedParcelsTried": null,
       "integrationAttempts": [],
-      "sourceIds": [],
-      "evidenceUrls": [],
+      "sourceIds": [
+        "us-me-augusta-parcels"
+      ],
+      "evidenceUrls": [
+        "https://services1.arcgis.com/RbMX0mRVOFNTdLzd/arcgis/rest/services/Maine_Parcels_Organized_Towns/FeatureServer/10"
+      ],
       "evidenceFiles": [],
       "osmUrl": "https://www.openstreetmap.org/?mlat=44.31060&mlon=-69.77950#map=12/44.31060/-69.77950",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=44.31060%2C-69.77950",
@@ -12652,9 +12662,7 @@
       "evidenceUrls": [
         "https://survey.gov.bn/server/rest/services/G1_GDBD/MapServer/3"
       ],
-      "evidenceFiles": [
-        "research/world-capitals-2026-10-08/bandar-seri-begawan-acceptance.json"
-      ],
+      "evidenceFiles": [],
       "osmUrl": "https://www.openstreetmap.org/?mlat=4.88333&mlon=114.93333#map=12/4.88333/114.93333",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=4.88333%2C114.93333",
       "wikipediaUrl": null,
@@ -16014,7 +16022,9 @@
       "registryCityIds": [
         "us-capital:LA"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "baton_rouge"
+      ],
       "cohorts": [
         "registry"
       ],
@@ -16031,14 +16041,18 @@
       "checked": false,
       "checkedDate": null,
       "checkedDateEvidence": null,
-      "registryFound": null,
-      "registryFindingBasis": null,
+      "registryFound": true,
+      "registryFindingBasis": "configured_source",
       "registryBasis": null,
       "verifiedSample": false,
       "impliedParcelsTried": null,
       "integrationAttempts": [],
-      "sourceIds": [],
-      "evidenceUrls": [],
+      "sourceIds": [
+        "us-la-ebr-baton-rouge-parcels"
+      ],
+      "evidenceUrls": [
+        "https://maps.brla.gov/gis/rest/services/Cadastral/Tax_Parcel/MapServer/0"
+      ],
       "evidenceFiles": [],
       "osmUrl": "https://www.openstreetmap.org/?mlat=30.45150&mlon=-91.18710#map=12/30.45150/-91.18710",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=30.45150%2C-91.18710",
@@ -16993,9 +17007,7 @@
       "evidenceUrls": [
         "https://services3.arcgis.com/tuNLpt6Wfhd22qmO/ArcGIS/rest/services/forDameg/FeatureServer/1"
       ],
-      "evidenceFiles": [
-        "research/world-capitals-2026-10-08/beirut-plots-acceptance.json"
-      ],
+      "evidenceFiles": [],
       "osmUrl": "https://www.openstreetmap.org/?mlat=33.86667&mlon=35.50000#map=12/33.86667/35.50000",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=33.86667%2C35.50000",
       "wikipediaUrl": null,
@@ -22116,8 +22128,7 @@
         "https://services2.arcgis.com/5K9ykSNwoxdIgeYH/arcgis/rest/services/Land_Registry_Inspire_20211022/FeatureServer/0"
       ],
       "evidenceFiles": [
-        "cities/3979/settings.json",
-        "research/birmingham-live.json"
+        "cities/3979/settings.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=52.50539&mlon=-1.95889#map=12/52.50539/-1.95889",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=52.50539%2C-1.95889",
@@ -22248,7 +22259,9 @@
       "registryCityIds": [
         "us-capital:ND"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "bismarck"
+      ],
       "cohorts": [
         "registry"
       ],
@@ -22265,14 +22278,18 @@
       "checked": false,
       "checkedDate": null,
       "checkedDateEvidence": null,
-      "registryFound": null,
-      "registryFindingBasis": null,
+      "registryFound": true,
+      "registryFindingBasis": "configured_source",
       "registryBasis": null,
       "verifiedSample": false,
       "impliedParcelsTried": null,
       "integrationAttempts": [],
-      "sourceIds": [],
-      "evidenceUrls": [],
+      "sourceIds": [
+        "us-nd-burleigh-bismarck-parcels"
+      ],
+      "evidenceUrls": [
+        "https://services1.arcgis.com/GOcSXpzwBHyk2nog/arcgis/rest/services/NDGISHUB_Parcels/FeatureServer/0"
+      ],
       "evidenceFiles": [],
       "osmUrl": "https://www.openstreetmap.org/?mlat=46.80830&mlon=-100.78370#map=12/46.80830/-100.78370",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=46.80830%2C-100.78370",
@@ -22558,11 +22575,59 @@
       "evidenceUrls": [
         "https://services6.arcgis.com/ho5ShYx4j27gPCg4/ArcGIS/rest/services/Map_For_Publishing_Internal_2_WFL1/FeatureServer/11"
       ],
-      "evidenceFiles": [
-        "research/africa-capitals-2026-10-08/bloemfontein-adapter-acceptance-initial.json"
-      ],
+      "evidenceFiles": [],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-29.11800&mlon=26.21400#map=12/-29.11800/26.21400",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-29.11800%2C26.21400",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
+      "id": "wup2025:2556",
+      "name": "Bloemfontein",
+      "country": "South Africa",
+      "countryCode": "ZA",
+      "latitude": -29.1652013339971,
+      "longitude": 26.2428621568224,
+      "registryCityIds": [
+        "wup2025:2556"
+      ],
+      "appCityIds": [
+        "bloemfontein_za"
+      ],
+      "cohorts": [
+        "app",
+        "registry"
+      ],
+      "wupCityCode": 2556,
+      "wupName": "Bloemfontein",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": 496295,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "A validated parcel source is configured for this city; citywide completeness remains unverified.",
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [],
+      "sourceIds": [
+        "za-csg-dffe-erven"
+      ],
+      "evidenceUrls": [
+        "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2"
+      ],
+      "evidenceFiles": [
+        "cities/2556/settings.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=-29.16520&mlon=26.24286#map=12/-29.16520/26.24286",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-29.16520%2C26.24286",
       "wikipediaUrl": null,
       "wikipediaEvidence": null
     },
@@ -27988,7 +28053,9 @@
       "registryCityIds": [
         "us-capital:NV"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "carson_city"
+      ],
       "cohorts": [
         "registry"
       ],
@@ -28005,14 +28072,18 @@
       "checked": false,
       "checkedDate": null,
       "checkedDateEvidence": null,
-      "registryFound": null,
-      "registryFindingBasis": null,
+      "registryFound": true,
+      "registryFindingBasis": "configured_source",
       "registryBasis": null,
       "verifiedSample": false,
       "impliedParcelsTried": null,
       "integrationAttempts": [],
-      "sourceIds": [],
-      "evidenceUrls": [],
+      "sourceIds": [
+        "us-nv-carson_city-parcels"
+      ],
+      "evidenceUrls": [
+        "https://arcgis.water.nv.gov/arcgis/rest/services/BaseLayers/County_Parcels_in_Nevada/MapServer/0"
+      ],
       "evidenceFiles": [],
       "osmUrl": "https://www.openstreetmap.org/?mlat=39.16380&mlon=-119.76740#map=12/39.16380/-119.76740",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=39.16380%2C-119.76740",
@@ -28513,9 +28584,7 @@
       "evidenceUrls": [
         "https://wis.gov.me/geoserver/wfs"
       ],
-      "evidenceFiles": [
-        "research/world-capitals-2026-10-08/cetinje-acceptance.json"
-      ],
+      "evidenceFiles": [],
       "osmUrl": "https://www.openstreetmap.org/?mlat=42.39310&mlon=18.91160#map=12/42.39310/18.91160",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=42.39310%2C18.91160",
       "wikipediaUrl": null,
@@ -30266,7 +30335,9 @@
       "registryCityIds": [
         "us-capital:WV"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "charleston"
+      ],
       "cohorts": [
         "registry"
       ],
@@ -30283,14 +30354,18 @@
       "checked": false,
       "checkedDate": null,
       "checkedDateEvidence": null,
-      "registryFound": null,
-      "registryFindingBasis": null,
+      "registryFound": true,
+      "registryFindingBasis": "configured_source",
       "registryBasis": null,
       "verifiedSample": false,
       "impliedParcelsTried": null,
       "integrationAttempts": [],
-      "sourceIds": [],
-      "evidenceUrls": [],
+      "sourceIds": [
+        "us-wv-charleston-parcels"
+      ],
+      "evidenceUrls": [
+        "https://services.wvgis.wvu.edu/arcgis/rest/services/Planning_Cadastre/WV_Parcels/MapServer/0"
+      ],
       "evidenceFiles": [],
       "osmUrl": "https://www.openstreetmap.org/?mlat=38.34980&mlon=-81.63260#map=12/38.34980/-81.63260",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=38.34980%2C-81.63260",
@@ -31457,7 +31532,9 @@
       "registryCityIds": [
         "us-capital:WY"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "cheyenne"
+      ],
       "cohorts": [
         "registry"
       ],
@@ -31474,14 +31551,18 @@
       "checked": false,
       "checkedDate": null,
       "checkedDateEvidence": null,
-      "registryFound": null,
-      "registryFindingBasis": null,
+      "registryFound": true,
+      "registryFindingBasis": "configured_source",
       "registryBasis": null,
       "verifiedSample": false,
       "impliedParcelsTried": null,
       "integrationAttempts": [],
-      "sourceIds": [],
-      "evidenceUrls": [],
+      "sourceIds": [
+        "us-wy-cheyenne-parcels"
+      ],
+      "evidenceUrls": [
+        "https://maps.laramiecounty.com/arcgis/rest/services/features/CountyBaseMapFeatures/FeatureServer/2"
+      ],
       "evidenceFiles": [],
       "osmUrl": "https://www.openstreetmap.org/?mlat=41.14000&mlon=-104.82020#map=12/41.14000/-104.82020",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=41.14000%2C-104.82020",
@@ -32204,7 +32285,8 @@
       "impliedParcelsTried": null,
       "integrationAttempts": [],
       "sourceIds": [
-        "za-csg-dffe-national-erven"
+        "za-csg-dffe-national-erven",
+        "za-csg-dffe-erven"
       ],
       "evidenceUrls": [
         "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2"
@@ -32603,31 +32685,45 @@
       "countryCode": "ZM",
       "latitude": -15.5418921428215,
       "longitude": 28.2573091534986,
-      "registryCityIds": [],
-      "appCityIds": [],
-      "cohorts": [],
+      "registryCityIds": [
+        "wup2025:1594"
+      ],
+      "appCityIds": [
+        "chilanga"
+      ],
+      "cohorts": [
+        "app",
+        "registry"
+      ],
       "wupCityCode": 1594,
       "wupName": "Chilanga",
       "growthRank": null,
       "researchFocusRegion": null,
       "researchPriority": null,
       "population2015": null,
-      "population2025": null,
+      "population2025": 133860,
       "annualGrowthPct2015To2025": null,
       "populationPlausibility2025": null,
       "populationMatch": null,
-      "checked": false,
+      "checked": true,
       "checkedDate": null,
       "checkedDateEvidence": null,
-      "registryFound": null,
-      "registryFindingBasis": null,
-      "registryBasis": null,
-      "verifiedSample": false,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "A validated parcel source is configured for this city; citywide completeness remains unverified.",
+      "verifiedSample": true,
       "impliedParcelsTried": null,
       "integrationAttempts": [],
-      "sourceIds": [],
-      "evidenceUrls": [],
-      "evidenceFiles": [],
+      "sourceIds": [
+        "zm-szi-zilmis-parcels-wfs"
+      ],
+      "evidenceUrls": [
+        "https://gis.szi.gov.zm/gn/ows"
+      ],
+      "evidenceFiles": [
+        "cities/1594/settings.json",
+        "cities/1594/failed-urls.json"
+      ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-15.54189&mlon=28.25731#map=12/-15.54189/28.25731",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-15.54189%2C28.25731",
       "wikipediaUrl": null,
@@ -33450,6 +33546,56 @@
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=17.82985&mlon=82.93566#map=12/17.82985/82.93566",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=17.82985%2C82.93566",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
+      "id": "wup2025:710",
+      "name": "Choma",
+      "country": "Zambia",
+      "countryCode": "ZM",
+      "latitude": -16.8095488756458,
+      "longitude": 26.9843616973629,
+      "registryCityIds": [
+        "wup2025:710"
+      ],
+      "appCityIds": [
+        "choma"
+      ],
+      "cohorts": [
+        "app",
+        "registry"
+      ],
+      "wupCityCode": 710,
+      "wupName": "Choma",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": 138447,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "A validated parcel source is configured for this city; citywide completeness remains unverified.",
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [],
+      "sourceIds": [
+        "zm-szi-zilmis-parcels-wfs"
+      ],
+      "evidenceUrls": [
+        "https://gis.szi.gov.zm/gn/ows"
+      ],
+      "evidenceFiles": [
+        "cities/710/settings.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=-16.80955&mlon=26.98436#map=12/-16.80955/26.98436",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-16.80955%2C26.98436",
       "wikipediaUrl": null,
       "wikipediaEvidence": null
     },
@@ -35230,7 +35376,9 @@
       "registryCityIds": [
         "us-capital:SC"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "columbia"
+      ],
       "cohorts": [
         "registry"
       ],
@@ -35247,14 +35395,18 @@
       "checked": false,
       "checkedDate": null,
       "checkedDateEvidence": null,
-      "registryFound": null,
-      "registryFindingBasis": null,
+      "registryFound": true,
+      "registryFindingBasis": "configured_source",
       "registryBasis": null,
       "verifiedSample": false,
       "impliedParcelsTried": null,
       "integrationAttempts": [],
-      "sourceIds": [],
-      "evidenceUrls": [],
+      "sourceIds": [
+        "us-sc-columbia-parcels"
+      ],
+      "evidenceUrls": [
+        "https://enterprise.woolpert.com/server/rest/services/Hosted/City_of_Columbia_Parcel/FeatureServer/8"
+      ],
       "evidenceFiles": [],
       "osmUrl": "https://www.openstreetmap.org/?mlat=34.00070&mlon=-81.03480#map=12/34.00070/-81.03480",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=34.00070%2C-81.03480",
@@ -35467,7 +35619,9 @@
       "registryCityIds": [
         "us-capital:NH"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "concord"
+      ],
       "cohorts": [
         "registry"
       ],
@@ -35484,14 +35638,18 @@
       "checked": false,
       "checkedDate": null,
       "checkedDateEvidence": null,
-      "registryFound": null,
-      "registryFindingBasis": null,
+      "registryFound": true,
+      "registryFindingBasis": "configured_source",
       "registryBasis": null,
       "verifiedSample": false,
       "impliedParcelsTried": null,
       "integrationAttempts": [],
-      "sourceIds": [],
-      "evidenceUrls": [],
+      "sourceIds": [
+        "us-nh-concord-parcels"
+      ],
+      "evidenceUrls": [
+        "https://gis.des.nh.gov/server/rest/services/Hosted/NH_Parcels_ExportFeatures/FeatureServer/0"
+      ],
       "evidenceFiles": [],
       "osmUrl": "https://www.openstreetmap.org/?mlat=43.20810&mlon=-71.53760#map=12/43.20810/-71.53760",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=43.20810%2C-71.53760",
@@ -39956,6 +40114,49 @@
       "wikipediaEvidence": null
     },
     {
+      "id": "app:des_moines",
+      "name": "Des Moines",
+      "country": "United States of America",
+      "countryCode": "US",
+      "latitude": 41.5868,
+      "longitude": -93.625,
+      "registryCityIds": [],
+      "appCityIds": [
+        "des_moines"
+      ],
+      "cohorts": [],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": false,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "configured_source",
+      "registryBasis": null,
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [],
+      "sourceIds": [
+        "us-ia-des-moines-parcels"
+      ],
+      "evidenceUrls": [
+        "https://services3.arcgis.com/kd9gaiUExYqUbnoq/arcgis/rest/services/Iowa_Parcels_2017/FeatureServer/0"
+      ],
+      "evidenceFiles": [],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=41.58680&mlon=-93.62500#map=12/41.58680/-93.62500",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=41.58680%2C-93.62500",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "us-capital:IA",
       "name": "Des Moines",
       "country": "United States of America",
@@ -43402,7 +43603,9 @@
       "registryCityIds": [
         "us-capital:DE"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "dover"
+      ],
       "cohorts": [
         "registry"
       ],
@@ -43419,14 +43622,18 @@
       "checked": false,
       "checkedDate": null,
       "checkedDateEvidence": null,
-      "registryFound": null,
-      "registryFindingBasis": null,
+      "registryFound": true,
+      "registryFindingBasis": "configured_source",
       "registryBasis": null,
       "verifiedSample": false,
       "impliedParcelsTried": null,
       "integrationAttempts": [],
-      "sourceIds": [],
-      "evidenceUrls": [],
+      "sourceIds": [
+        "us-de-kent-dover-parcels"
+      ],
+      "evidenceUrls": [
+        "https://enterprise.firstmap.delaware.gov/arcgis/rest/services/PlanningCadastre/DE_StateParcels/FeatureServer/0"
+      ],
       "evidenceFiles": [],
       "osmUrl": "https://www.openstreetmap.org/?mlat=39.15820&mlon=-75.52440#map=12/39.15820/-75.52440",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=39.15820%2C-75.52440",
@@ -44500,6 +44707,64 @@
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=52.03538&mlon=5.65323#map=12/52.03538/5.65323",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=52.03538%2C5.65323",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
+      "id": "wup2025:5008",
+      "name": "Edendale",
+      "country": "South Africa",
+      "countryCode": "ZA",
+      "latitude": -29.6564531242963,
+      "longitude": 30.3431977067269,
+      "registryCityIds": [
+        "wup2025:5008"
+      ],
+      "appCityIds": [
+        "edendale"
+      ],
+      "cohorts": [
+        "app",
+        "registry"
+      ],
+      "wupCityCode": 5008,
+      "wupName": "Edendale",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": 342930,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "A validated parcel source is configured for this city; citywide completeness remains unverified.",
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [],
+      "sourceIds": [
+        "za-csg-dffe-erven"
+      ],
+      "evidenceUrls": [
+        "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2",
+        "https://gis.kznpidh.gov.za/home/",
+        "https://gis.kznpidh.gov.za/portal/apps/dashboards/e51a0410b7dc46e09088c44d50ec1a46",
+        "https://www.etenders.gov.za/home/Download/?blobName=b43cfb81-5ba0-42e4-8276-cd3db231ba64.pdf&downloadedFileName=ETC+-+Cadastral.pdf",
+        "https://csg.dlrrd.gov.za/",
+        "https://gis.durban.gov.za/server/rest/services/WebViewers/EXT_Cadastral/MapServer",
+        "https://gis.durban.gov.za/server/rest/services/WebViewers/EXT_Cadastral/MapServer/17/query",
+        "https://csggis.drdlr.gov.za/portal/apps/mapviewer/index.html?webmap=8dc745dca75849b3be0952916253af22"
+      ],
+      "evidenceFiles": [
+        "cities/5008/settings.json",
+        "cities/5008/failed-urls.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=-29.65645&mlon=30.34320#map=12/-29.65645/30.34320",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-29.65645%2C30.34320",
       "wikipediaUrl": null,
       "wikipediaEvidence": null
     },
@@ -48355,7 +48620,9 @@
       "registryCityIds": [
         "us-capital:KY"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "frankfort"
+      ],
       "cohorts": [
         "registry"
       ],
@@ -48372,14 +48639,18 @@
       "checked": false,
       "checkedDate": null,
       "checkedDateEvidence": null,
-      "registryFound": null,
-      "registryFindingBasis": null,
+      "registryFound": true,
+      "registryFindingBasis": "configured_source",
       "registryBasis": null,
       "verifiedSample": false,
       "impliedParcelsTried": null,
       "integrationAttempts": [],
-      "sourceIds": [],
-      "evidenceUrls": [],
+      "sourceIds": [
+        "us-ky-frankfort-parcels"
+      ],
+      "evidenceUrls": [
+        "https://wfs.schneidercorp.com/arcgis/rest/services/FranklinCountyKY_WFS/MapServer/0"
+      ],
       "evidenceFiles": [],
       "osmUrl": "https://www.openstreetmap.org/?mlat=38.20090&mlon=-84.87330#map=12/38.20090/-84.87330",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=38.20090%2C-84.87330",
@@ -49034,9 +49305,7 @@
       "evidenceUrls": [
         "https://bofinetarcgisportal.bofinet.co.bw/server/rest/services/PUBLIC/GABORONE_PLOTS/MapServer/0"
       ],
-      "evidenceFiles": [
-        "research/africa-capitals-2026-10-08/gaborone-composite-complete-audit.json"
-      ],
+      "evidenceFiles": [],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-24.65810&mlon=25.91220#map=12/-24.65810/25.91220",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-24.65810%2C25.91220",
       "wikipediaUrl": null,
@@ -58412,6 +58681,49 @@
       }
     },
     {
+      "id": "app:helena",
+      "name": "Helena",
+      "country": "United States of America",
+      "countryCode": "US",
+      "latitude": 46.5891,
+      "longitude": -112.0391,
+      "registryCityIds": [],
+      "appCityIds": [
+        "helena"
+      ],
+      "cohorts": [],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": false,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "configured_source",
+      "registryBasis": null,
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [],
+      "sourceIds": [
+        "us-mt-helena-parcels"
+      ],
+      "evidenceUrls": [
+        "https://gisservice.mt.gov/ArcGIS/rest/services/msdi_cadastral_map_v1/MapServer/1"
+      ],
+      "evidenceFiles": [],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=46.58910&mlon=-112.03910#map=12/46.58910/-112.03910",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=46.58910%2C-112.03910",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "us-capital:MT",
       "name": "Helena",
       "country": "United States of America",
@@ -62164,10 +62476,13 @@
       "registryCityIds": [
         "wup2025:9913"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "hyderabad"
+      ],
       "cohorts": [
         "largest200",
-        "registry"
+        "registry",
+        "app"
       ],
       "wupCityCode": 9913,
       "wupName": "Hyderabad",
@@ -62187,14 +62502,17 @@
       "checked": true,
       "checkedDate": null,
       "checkedDateEvidence": null,
-      "registryFound": null,
-      "registryFindingBasis": null,
-      "registryBasis": null,
-      "verifiedSample": false,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "A validated parcel source is configured for this city; citywide completeness remains unverified.",
+      "verifiedSample": true,
       "impliedParcelsTried": null,
       "integrationAttempts": [],
-      "sourceIds": [],
+      "sourceIds": [
+        "in-tg-tgrac-hydra-fourth-window-cadastral-parcels"
+      ],
       "evidenceUrls": [
+        "https://tgrac.telangana.gov.in/arcgis/rest/services/Hydra_Folder/Fourth_Window/MapServer/0",
         "https://dharani.telangana.gov.in/",
         "https://data.telangana.gov.in/",
         "https://tsgis.telangana.gov.in/",
@@ -62202,6 +62520,7 @@
         "https://data.telangana.gov.in/%20;%20https://tsgis.telangana.gov.in/%20;%20https://bhunaksha.telangana.gov.in/%20;%20https://gis.ghmc.gov.in/%20;%20https://hmda.gov.in/%20;%20https://landrecords.gov.in/%20;%20https://bhoomi.telangana.gov.in/"
       ],
       "evidenceFiles": [
+        "cities/9913/settings.json",
         "cities/9913/failed-urls.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=17.41389&mlon=78.47569#map=12/17.41389/78.47569",
@@ -63510,9 +63829,7 @@
       "evidenceUrls": [
         "https://bhunaksha.entebhoomi.kerala.gov.in/bhunaksha_v5_emaps/core/v2/map/export/geojson/020301"
       ],
-      "evidenceFiles": [
-        "research/india-africa-followup-2026-10-08/kerala-assessment.json"
-      ],
+      "evidenceFiles": [],
       "osmUrl": "https://www.openstreetmap.org/?mlat=8.84755&mlon=76.62751#map=12/8.84755/76.62751",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=8.84755%2C76.62751",
       "wikipediaUrl": null,
@@ -64303,7 +64620,9 @@
       "registryCityIds": [
         "us-capital:MS"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "jackson"
+      ],
       "cohorts": [
         "registry"
       ],
@@ -64320,14 +64639,18 @@
       "checked": false,
       "checkedDate": null,
       "checkedDateEvidence": null,
-      "registryFound": null,
-      "registryFindingBasis": null,
+      "registryFound": true,
+      "registryFindingBasis": "configured_source",
       "registryBasis": null,
       "verifiedSample": false,
       "impliedParcelsTried": null,
       "integrationAttempts": [],
-      "sourceIds": [],
-      "evidenceUrls": [],
+      "sourceIds": [
+        "us-ms-jackson-parcels"
+      ],
+      "evidenceUrls": [
+        "https://opcgis.deq.state.ms.us/opcgis/rest/services/Government/HINDS_PARCELS/MapServer/0"
+      ],
       "evidenceFiles": [],
       "osmUrl": "https://www.openstreetmap.org/?mlat=32.29880&mlon=-90.18480#map=12/32.29880/-90.18480",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=32.29880%2C-90.18480",
@@ -64741,12 +65064,16 @@
       "latitude": -6.21462,
       "longitude": 106.84513,
       "registryCityIds": [
-        "geonames:1642911"
+        "geonames:1642911",
+        "wup2025:5590"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "jakarta"
+      ],
       "cohorts": [
         "largest200",
-        "registry"
+        "registry",
+        "app"
       ],
       "wupCityCode": 5590,
       "wupName": "Jakarta",
@@ -64763,18 +65090,28 @@
         "sourceName": "UN DESA WUP 2025",
         "confidence": "high"
       },
-      "checked": false,
+      "checked": true,
       "checkedDate": null,
       "checkedDateEvidence": null,
-      "registryFound": null,
-      "registryFindingBasis": null,
-      "registryBasis": null,
-      "verifiedSample": false,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "A validated parcel source is configured for this city; citywide completeness remains unverified.",
+      "verifiedSample": true,
       "impliedParcelsTried": null,
       "integrationAttempts": [],
-      "sourceIds": [],
-      "evidenceUrls": [],
-      "evidenceFiles": [],
+      "sourceIds": [
+        "id-jakarta-satu-bpn-persil-2021-map"
+      ],
+      "evidenceUrls": [
+        "https://jakartasatu.jakarta.go.id/server/rest/services/BPN/Persil_BPN_2021_map/MapServer",
+        "https://bhumi.atrbpn.go.id/geoserver/ows?service=WFS&request=GetCapabilities",
+        "https://bhumi.atrbpn.go.id/bhumigs/umum/ows?service=WFS&request=GetCapabilities",
+        "https://bhumi.atrbpn.go.id/bhumigs/umum/wfs?service=WFS&version=2.0.0&request=GetCapabilities"
+      ],
+      "evidenceFiles": [
+        "cities/5590/settings.json",
+        "cities/5590/failed-urls.json"
+      ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-6.21462&mlon=106.84513#map=12/-6.21462/106.84513",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-6.21462%2C106.84513",
       "wikipediaUrl": "https://en.wikipedia.org/wiki/Jakarta",
@@ -66455,7 +66792,9 @@
       "registryCityIds": [
         "us-capital:MO"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "jefferson_city"
+      ],
       "cohorts": [
         "registry"
       ],
@@ -66472,14 +66811,18 @@
       "checked": false,
       "checkedDate": null,
       "checkedDateEvidence": null,
-      "registryFound": null,
-      "registryFindingBasis": null,
+      "registryFound": true,
+      "registryFindingBasis": "configured_source",
       "registryBasis": null,
       "verifiedSample": false,
       "impliedParcelsTried": null,
       "integrationAttempts": [],
-      "sourceIds": [],
-      "evidenceUrls": [],
+      "sourceIds": [
+        "us-mo-jefferson_city-parcels"
+      ],
+      "evidenceUrls": [
+        "https://services6.arcgis.com/rXa0aMElf2BPjgBA/arcgis/rest/services/JCBaseMap/FeatureServer/15"
+      ],
       "evidenceFiles": [],
       "osmUrl": "https://www.openstreetmap.org/?mlat=38.57670&mlon=-92.17350#map=12/38.57670/-92.17350",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=38.57670%2C-92.17350",
@@ -68372,6 +68715,56 @@
       "wikipediaEvidence": null
     },
     {
+      "id": "wup2025:204",
+      "name": "João Teves",
+      "country": "Cabo Verde",
+      "countryCode": "CV",
+      "latitude": 15.0638094222344,
+      "longitude": -23.5950028346745,
+      "registryCityIds": [
+        "wup2025:204"
+      ],
+      "appCityIds": [
+        "joao_teves"
+      ],
+      "cohorts": [
+        "app",
+        "registry"
+      ],
+      "wupCityCode": 204,
+      "wupName": "João Teves",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": 135022,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "A validated parcel source is configured for this city; citywide completeness remains unverified.",
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [],
+      "sourceIds": [
+        "cv-ingt-planta-pre-cadastro"
+      ],
+      "evidenceUrls": [
+        "https://ingtgeo.gov.cv/arcgisingt/rest/services/PLANTA_PRE_CADASTRO/MapServer/0"
+      ],
+      "evidenceFiles": [
+        "cities/204/settings.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=15.06381&mlon=-23.59500#map=12/15.06381/-23.59500",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=15.06381%2C-23.59500",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:5536",
       "name": "Jodhpur",
       "country": "India",
@@ -69073,7 +69466,9 @@
       "registryCityIds": [
         "us-capital:AK"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "juneau"
+      ],
       "cohorts": [
         "registry"
       ],
@@ -69090,14 +69485,18 @@
       "checked": false,
       "checkedDate": null,
       "checkedDateEvidence": null,
-      "registryFound": null,
-      "registryFindingBasis": null,
+      "registryFound": true,
+      "registryFindingBasis": "configured_source",
       "registryBasis": null,
       "verifiedSample": false,
       "impliedParcelsTried": null,
       "integrationAttempts": [],
-      "sourceIds": [],
-      "evidenceUrls": [],
+      "sourceIds": [
+        "us-ak-cbj-parcels"
+      ],
+      "evidenceUrls": [
+        "https://epv.ci.juneau.ak.us/arcgis/rest/services/prod/property_layers_ipv/MapServer/3"
+      ],
       "evidenceFiles": [],
       "osmUrl": "https://www.openstreetmap.org/?mlat=58.30160&mlon=-134.42020#map=12/58.30160/-134.42020",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=58.30160%2C-134.42020",
@@ -72208,6 +72607,62 @@
       "wikipediaEvidence": null
     },
     {
+      "id": "wup2025:5368",
+      "name": "Kanyamazane",
+      "country": "South Africa",
+      "countryCode": "ZA",
+      "latitude": -25.3932903572785,
+      "longitude": 31.1640581037001,
+      "registryCityIds": [
+        "wup2025:5368"
+      ],
+      "appCityIds": [
+        "kanyamazane"
+      ],
+      "cohorts": [
+        "app",
+        "registry"
+      ],
+      "wupCityCode": 5368,
+      "wupName": "Kanyamazane",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": 292211,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "A validated parcel source is configured for this city; citywide completeness remains unverified.",
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [],
+      "sourceIds": [
+        "za-csg-dffe-erven"
+      ],
+      "evidenceUrls": [
+        "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2",
+        "https://portal.environment.gov.za/server/rest/services/ScreeningMaps/ScreeningSearch/MapServer/0?f=json",
+        "https://portal.environment.gov.za/server/rest/services/ScreeningMaps/ScreeningSearch/MapServer/0/query",
+        "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer",
+        "https://www.mbombela.gov.za/",
+        "https://www.mbombela.gov.za/organisational-structure/"
+      ],
+      "evidenceFiles": [
+        "cities/5368/settings.json",
+        "cities/5368/failed-urls.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=-25.39329&mlon=31.16406#map=12/-25.39329/31.16406",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-25.39329%2C31.16406",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:12135",
       "name": "Kaohsiung",
       "country": "Taiwan Province of China",
@@ -72355,6 +72810,56 @@
       "evidenceFiles": [],
       "osmUrl": "https://www.openstreetmap.org/?mlat=24.10881&mlon=90.56902#map=12/24.10881/90.56902",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=24.10881%2C90.56902",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
+      "id": "wup2025:2183",
+      "name": "Kapiri Mposhi",
+      "country": "Zambia",
+      "countryCode": "ZM",
+      "latitude": -13.9721581932875,
+      "longitude": 28.6836406822377,
+      "registryCityIds": [
+        "wup2025:2183"
+      ],
+      "appCityIds": [
+        "kapiri_mposhi"
+      ],
+      "cohorts": [
+        "app",
+        "registry"
+      ],
+      "wupCityCode": 2183,
+      "wupName": "Kapiri Mposhi",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": 141802,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "A validated parcel source is configured for this city; citywide completeness remains unverified.",
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [],
+      "sourceIds": [
+        "zm-szi-zilmis-parcels-wfs"
+      ],
+      "evidenceUrls": [
+        "https://gis.szi.gov.zm/gn/ows"
+      ],
+      "evidenceFiles": [
+        "cities/2183/settings.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=-13.97216&mlon=28.68364#map=12/-13.97216/28.68364",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-13.97216%2C28.68364",
       "wikipediaUrl": null,
       "wikipediaEvidence": null
     },
@@ -85938,7 +86443,9 @@
       "registryCityIds": [
         "us-capital:AR"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "little_rock"
+      ],
       "cohorts": [
         "registry"
       ],
@@ -85955,14 +86462,18 @@
       "checked": false,
       "checkedDate": null,
       "checkedDateEvidence": null,
-      "registryFound": null,
-      "registryFindingBasis": null,
+      "registryFound": true,
+      "registryFindingBasis": "configured_source",
       "registryBasis": null,
       "verifiedSample": false,
       "impliedParcelsTried": null,
       "integrationAttempts": [],
-      "sourceIds": [],
-      "evidenceUrls": [],
+      "sourceIds": [
+        "us-ar-ago-parcels-pulaski"
+      ],
+      "evidenceUrls": [
+        "https://gis.arkansas.gov/arcgis/rest/services/FEATURESERVICES/Planning_Cadastre/FeatureServer/6"
+      ],
       "evidenceFiles": [],
       "osmUrl": "https://www.openstreetmap.org/?mlat=34.74650&mlon=-92.28960#map=12/34.74650/-92.28960",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=34.74650%2C-92.28960",
@@ -86972,8 +87483,7 @@
       ],
       "evidenceFiles": [
         "cities/5938/settings.json",
-        "cities/5938/failed-urls.json",
-        "research/batch-seven-live-cities-2026-10-04.json"
+        "cities/5938/failed-urls.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=51.50979&mlon=-0.12630#map=12/51.50979/-0.12630",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=51.50979%2C-0.12630",
@@ -92956,8 +93466,7 @@
       ],
       "evidenceFiles": [
         "cities/3388/settings.json",
-        "cities/3388/failed-urls.json",
-        "research/batch-seven-live-cities-2026-10-04.json"
+        "cities/3388/failed-urls.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=53.49327&mlon=-2.25653#map=12/53.49327/-2.25653",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=53.49327%2C-2.25653",
@@ -99829,6 +100338,56 @@
       "wikipediaEvidence": null
     },
     {
+      "id": "wup2025:3184",
+      "name": "Mohadin",
+      "country": "South Africa",
+      "countryCode": "ZA",
+      "latitude": -26.7245308836029,
+      "longitude": 27.0331580659226,
+      "registryCityIds": [
+        "wup2025:3184"
+      ],
+      "appCityIds": [
+        "mohadin"
+      ],
+      "cohorts": [
+        "app",
+        "registry"
+      ],
+      "wupCityCode": 3184,
+      "wupName": "Mohadin",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": 140960,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "A validated parcel source is configured for this city; citywide completeness remains unverified.",
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [],
+      "sourceIds": [
+        "za-csg-csggis-property-viewer-erven"
+      ],
+      "evidenceUrls": [
+        "https://csggis.dlrrd.gov.za/server/rest/services/Property_Viewer/MapServer/2"
+      ],
+      "evidenceFiles": [
+        "cities/3184/settings.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=-26.72453&mlon=27.03316#map=12/-26.72453/27.03316",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-26.72453%2C27.03316",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:10689",
       "name": "Mohammadabad",
       "country": "India",
@@ -100262,7 +100821,9 @@
       "registryCityIds": [
         "us-capital:AL"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "montgomery"
+      ],
       "cohorts": [
         "registry"
       ],
@@ -100279,14 +100840,18 @@
       "checked": false,
       "checkedDate": null,
       "checkedDateEvidence": null,
-      "registryFound": null,
-      "registryFindingBasis": null,
+      "registryFound": true,
+      "registryFindingBasis": "configured_source",
       "registryBasis": null,
       "verifiedSample": false,
       "impliedParcelsTried": null,
       "integrationAttempts": [],
-      "sourceIds": [],
-      "evidenceUrls": [],
+      "sourceIds": [
+        "us-al-montgomery-city-parcels"
+      ],
+      "evidenceUrls": [
+        "https://gis.montgomeryal.gov/server/rest/services/Parcels/FeatureServer/0"
+      ],
       "evidenceFiles": [],
       "osmUrl": "https://www.openstreetmap.org/?mlat=32.36680&mlon=-86.30000#map=12/32.36680/-86.30000",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=32.36680%2C-86.30000",
@@ -100352,7 +100917,9 @@
       "registryCityIds": [
         "us-capital:VT"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "montpelier"
+      ],
       "cohorts": [
         "registry"
       ],
@@ -100369,14 +100936,18 @@
       "checked": false,
       "checkedDate": null,
       "checkedDateEvidence": null,
-      "registryFound": null,
-      "registryFindingBasis": null,
+      "registryFound": true,
+      "registryFindingBasis": "configured_source",
       "registryBasis": null,
       "verifiedSample": false,
       "impliedParcelsTried": null,
       "integrationAttempts": [],
-      "sourceIds": [],
-      "evidenceUrls": [],
+      "sourceIds": [
+        "us-vt-montpelier-parcels"
+      ],
+      "evidenceUrls": [
+        "https://services1.arcgis.com/BkFxaEFNwHqX3tAw/arcgis/rest/services/FS_VCGI_OPENDATA_Cadastral_VTPARCELS_poly_standardized_parcels_SP_v1/FeatureServer/0"
+      ],
       "evidenceFiles": [],
       "osmUrl": "https://www.openstreetmap.org/?mlat=44.26010&mlon=-72.57540#map=12/44.26010/-72.57540",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=44.26010%2C-72.57540",
@@ -105964,7 +106535,9 @@
       "registryCityIds": [
         "us-capital:TN"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "nashville"
+      ],
       "cohorts": [
         "registry"
       ],
@@ -105981,14 +106554,18 @@
       "checked": false,
       "checkedDate": null,
       "checkedDateEvidence": null,
-      "registryFound": null,
-      "registryFindingBasis": null,
+      "registryFound": true,
+      "registryFindingBasis": "configured_source",
       "registryBasis": null,
       "verifiedSample": false,
       "impliedParcelsTried": null,
       "integrationAttempts": [],
-      "sourceIds": [],
-      "evidenceUrls": [],
+      "sourceIds": [
+        "us-tn-nashville-parcels"
+      ],
+      "evidenceUrls": [
+        "https://maps.nashville.gov/arcgis/rest/services/Cadastral/Parcels/MapServer/0"
+      ],
       "evidenceFiles": [],
       "osmUrl": "https://www.openstreetmap.org/?mlat=36.16270&mlon=-86.78160#map=12/36.16270/-86.78160",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.16270%2C-86.78160",
@@ -110484,7 +111061,9 @@
       "registryCityIds": [
         "us-capital:OK"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "oklahoma_city"
+      ],
       "cohorts": [
         "registry"
       ],
@@ -110501,14 +111080,18 @@
       "checked": false,
       "checkedDate": null,
       "checkedDateEvidence": null,
-      "registryFound": null,
-      "registryFindingBasis": null,
+      "registryFound": true,
+      "registryFindingBasis": "configured_source",
       "registryBasis": null,
       "verifiedSample": false,
       "impliedParcelsTried": null,
       "integrationAttempts": [],
-      "sourceIds": [],
-      "evidenceUrls": [],
+      "sourceIds": [
+        "us-ok-oklahoma_city-parcels"
+      ],
+      "evidenceUrls": [
+        "https://services8.arcgis.com/euhkr1dAJeQBIjV0/arcgis/rest/services/TaxParcelsPublics_view/FeatureServer/0"
+      ],
       "evidenceFiles": [],
       "osmUrl": "https://www.openstreetmap.org/?mlat=35.46760&mlon=-97.51640#map=12/35.46760/-97.51640",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=35.46760%2C-97.51640",
@@ -110579,7 +111162,9 @@
       "registryCityIds": [
         "us-capital:WA"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "olympia"
+      ],
       "cohorts": [
         "registry"
       ],
@@ -110596,14 +111181,18 @@
       "checked": false,
       "checkedDate": null,
       "checkedDateEvidence": null,
-      "registryFound": null,
-      "registryFindingBasis": null,
+      "registryFound": true,
+      "registryFindingBasis": "configured_source",
       "registryBasis": null,
       "verifiedSample": false,
       "impliedParcelsTried": null,
       "integrationAttempts": [],
-      "sourceIds": [],
-      "evidenceUrls": [],
+      "sourceIds": [
+        "us-wa-olympia-parcels"
+      ],
+      "evidenceUrls": [
+        "https://tconline.co.thurston.wa.us/server/rest/services/Common_Layers/Parcels/FeatureServer/4"
+      ],
       "evidenceFiles": [],
       "osmUrl": "https://www.openstreetmap.org/?mlat=47.03790&mlon=-122.90070#map=12/47.03790/-122.90070",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=47.03790%2C-122.90070",
@@ -114517,6 +115106,59 @@
       "wikipediaEvidence": null
     },
     {
+      "id": "wup2025:2317",
+      "name": "Parakou",
+      "country": "Benin",
+      "countryCode": "BJ",
+      "latitude": 9.3503067221846,
+      "longitude": 2.62184184014862,
+      "registryCityIds": [
+        "wup2025:2317"
+      ],
+      "appCityIds": [
+        "parakou"
+      ],
+      "cohorts": [
+        "app",
+        "registry"
+      ],
+      "wupCityCode": 2317,
+      "wupName": "Parakou",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": 395528,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "A validated parcel source is configured for this city; citywide completeness remains unverified.",
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [],
+      "sourceIds": [
+        "bj-andf-efoncier-geoserver"
+      ],
+      "evidenceUrls": [
+        "https://geoserver.andf.bj/geoserver/efb/wfs",
+        "https://www.cadastre.bj/",
+        "https://andf.bj/"
+      ],
+      "evidenceFiles": [
+        "cities/2317/settings.json",
+        "cities/2317/failed-urls.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=9.35031&mlon=2.62184#map=12/9.35031/2.62184",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=9.35031%2C2.62184",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:11379",
       "name": "Paralakhemundi",
       "country": "India",
@@ -117329,7 +117971,9 @@
       "registryCityIds": [
         "us-capital:SD"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "pierre"
+      ],
       "cohorts": [
         "registry"
       ],
@@ -117346,14 +117990,18 @@
       "checked": false,
       "checkedDate": null,
       "checkedDateEvidence": null,
-      "registryFound": null,
-      "registryFindingBasis": null,
+      "registryFound": true,
+      "registryFindingBasis": "configured_source",
       "registryBasis": null,
       "verifiedSample": false,
       "impliedParcelsTried": null,
       "integrationAttempts": [],
-      "sourceIds": [],
-      "evidenceUrls": [],
+      "sourceIds": [
+        "us-sd-pierre-parcels"
+      ],
+      "evidenceUrls": [
+        "https://services6.arcgis.com/15GJI8WbC3n3DIUU/arcgis/rest/services/Hughes_County_Parcels_2023/FeatureServer/13"
+      ],
       "evidenceFiles": [],
       "osmUrl": "https://www.openstreetmap.org/?mlat=44.36830&mlon=-100.35100#map=12/44.36830/-100.35100",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=44.36830%2C-100.35100",
@@ -118341,6 +118989,56 @@
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=50.39142&mlon=-4.14533#map=12/50.39142/-4.14533",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=50.39142%2C-4.14533",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
+      "id": "wup2025:2542",
+      "name": "Pobè",
+      "country": "Benin",
+      "countryCode": "BJ",
+      "latitude": 6.9765206823812,
+      "longitude": 2.6571185386098,
+      "registryCityIds": [
+        "wup2025:2542"
+      ],
+      "appCityIds": [
+        "pobe"
+      ],
+      "cohorts": [
+        "app",
+        "registry"
+      ],
+      "wupCityCode": 2542,
+      "wupName": "Pobè",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": 123350,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "A validated parcel source is configured for this city; citywide completeness remains unverified.",
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [],
+      "sourceIds": [
+        "bj-andf-efoncier-geoserver"
+      ],
+      "evidenceUrls": [
+        "https://geoserver.andf.bj/geoserver/efb/wfs"
+      ],
+      "evidenceFiles": [
+        "cities/2542/settings.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=6.97652&mlon=2.65712#map=12/6.97652/2.65712",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=6.97652%2C2.65712",
       "wikipediaUrl": null,
       "wikipediaEvidence": null
     },
@@ -119738,31 +120436,45 @@
       "countryCode": "BJ",
       "latitude": 6.50766879735021,
       "longitude": 2.62222651952885,
-      "registryCityIds": [],
-      "appCityIds": [],
-      "cohorts": [],
+      "registryCityIds": [
+        "wup2025:2241"
+      ],
+      "appCityIds": [
+        "porto_novo"
+      ],
+      "cohorts": [
+        "app",
+        "registry"
+      ],
       "wupCityCode": 2241,
       "wupName": "Porto-Novo",
       "growthRank": null,
       "researchFocusRegion": null,
       "researchPriority": null,
       "population2015": null,
-      "population2025": null,
+      "population2025": 818617,
       "annualGrowthPct2015To2025": null,
       "populationPlausibility2025": null,
       "populationMatch": null,
-      "checked": false,
+      "checked": true,
       "checkedDate": null,
       "checkedDateEvidence": null,
-      "registryFound": null,
-      "registryFindingBasis": null,
-      "registryBasis": null,
-      "verifiedSample": false,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "A validated parcel source is configured for this city; citywide completeness remains unverified.",
+      "verifiedSample": true,
       "impliedParcelsTried": null,
       "integrationAttempts": [],
-      "sourceIds": [],
-      "evidenceUrls": [],
-      "evidenceFiles": [],
+      "sourceIds": [
+        "bj-andf-efoncier-geoserver"
+      ],
+      "evidenceUrls": [
+        "https://geoserver.andf.bj/geoserver/efb/wfs"
+      ],
+      "evidenceFiles": [
+        "cities/2241/settings.json",
+        "cities/2241/failed-urls.json"
+      ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=6.50767&mlon=2.62223#map=12/6.50767/2.62223",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=6.50767%2C2.62223",
       "wikipediaUrl": null,
@@ -120323,9 +121035,7 @@
       "evidenceUrls": [
         "https://e-gis003.tshwane.gov.za/server/rest/services/Other_WS/Land_Parcel/MapServer/1"
       ],
-      "evidenceFiles": [
-        "research/africa-capitals-2026-10-08/pretoria-equality-acceptance.json"
-      ],
+      "evidenceFiles": [],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-25.74790&mlon=28.22930#map=12/-25.74790/28.22930",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-25.74790%2C28.22930",
       "wikipediaUrl": null,
@@ -126538,31 +127248,45 @@
       "countryCode": "ZA",
       "latitude": -33.0021744275905,
       "longitude": 27.8660738634439,
-      "registryCityIds": [],
-      "appCityIds": [],
-      "cohorts": [],
+      "registryCityIds": [
+        "wup2025:3067"
+      ],
+      "appCityIds": [
+        "reeston"
+      ],
+      "cohorts": [
+        "app",
+        "registry"
+      ],
       "wupCityCode": 3067,
       "wupName": "Reeston",
       "growthRank": null,
       "researchFocusRegion": null,
       "researchPriority": null,
       "population2015": null,
-      "population2025": null,
+      "population2025": 244390,
       "annualGrowthPct2015To2025": null,
       "populationPlausibility2025": null,
       "populationMatch": null,
-      "checked": false,
+      "checked": true,
       "checkedDate": null,
       "checkedDateEvidence": null,
-      "registryFound": null,
-      "registryFindingBasis": null,
-      "registryBasis": null,
-      "verifiedSample": false,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "A validated parcel source is configured for this city; citywide completeness remains unverified.",
+      "verifiedSample": true,
       "impliedParcelsTried": null,
       "integrationAttempts": [],
-      "sourceIds": [],
-      "evidenceUrls": [],
-      "evidenceFiles": [],
+      "sourceIds": [
+        "za-csg-csggis-property-viewer-erven"
+      ],
+      "evidenceUrls": [
+        "https://csggis.dlrrd.gov.za/server/rest/services/Property_Viewer/MapServer/2"
+      ],
+      "evidenceFiles": [
+        "cities/3067/settings.json",
+        "cities/3067/failed-urls.json"
+      ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-33.00217&mlon=27.86607#map=12/-33.00217/27.86607",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-33.00217%2C27.86607",
       "wikipediaUrl": null,
@@ -127513,10 +128237,13 @@
       "registryCityIds": [
         "wup2025:7935"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "rio_de_janeiro"
+      ],
       "cohorts": [
         "largest200",
-        "registry"
+        "registry",
+        "app"
       ],
       "wupCityCode": 7935,
       "wupName": "Rio de Janeiro",
@@ -127533,18 +128260,24 @@
         "sourceName": "UN DESA WUP 2025",
         "confidence": "high"
       },
-      "checked": false,
+      "checked": true,
       "checkedDate": null,
       "checkedDateEvidence": null,
-      "registryFound": null,
-      "registryFindingBasis": null,
-      "registryBasis": null,
-      "verifiedSample": false,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "A validated parcel source is configured for this city; citywide completeness remains unverified.",
+      "verifiedSample": true,
       "impliedParcelsTried": null,
       "integrationAttempts": [],
-      "sourceIds": [],
-      "evidenceUrls": [],
-      "evidenceFiles": [],
+      "sourceIds": [
+        "br-rio-pgeo3-imoveis-territoriais"
+      ],
+      "evidenceUrls": [
+        "https://pgeo3.rio.rj.gov.br/arcgis/rest/services/CadParcel/IMOVEIS_TERRITORIAIS/FeatureServer/0"
+      ],
+      "evidenceFiles": [
+        "cities/7935/settings.json"
+      ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-22.84585&mlon=-43.36665#map=12/-22.84585/-43.36665",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-22.84585%2C-43.36665",
       "wikipediaUrl": "https://en.wikipedia.org/wiki/Rio_de_Janeiro",
@@ -130186,7 +130919,9 @@
       "registryCityIds": [
         "us-capital:MN"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "saint_paul"
+      ],
       "cohorts": [
         "registry"
       ],
@@ -130203,14 +130938,18 @@
       "checked": false,
       "checkedDate": null,
       "checkedDateEvidence": null,
-      "registryFound": null,
-      "registryFindingBasis": null,
+      "registryFound": true,
+      "registryFindingBasis": "configured_source",
       "registryBasis": null,
       "verifiedSample": false,
       "impliedParcelsTried": null,
       "integrationAttempts": [],
-      "sourceIds": [],
-      "evidenceUrls": [],
+      "sourceIds": [
+        "us-mn-ramsey-saint-paul-parcels"
+      ],
+      "evidenceUrls": [
+        "https://gis.ramseycountymn.gov/server/rest/services/MapRamsey/MapRamseyOperational_AttributedParcel/MapServer/4"
+      ],
       "evidenceFiles": [],
       "osmUrl": "https://www.openstreetmap.org/?mlat=44.95370&mlon=-93.09000#map=12/44.95370/-93.09000",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=44.95370%2C-93.09000",
@@ -130991,7 +131730,9 @@
       "registryCityIds": [
         "us-capital:OR"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "salem"
+      ],
       "cohorts": [
         "registry"
       ],
@@ -131008,14 +131749,18 @@
       "checked": false,
       "checkedDate": null,
       "checkedDateEvidence": null,
-      "registryFound": null,
-      "registryFindingBasis": null,
+      "registryFound": true,
+      "registryFindingBasis": "configured_source",
       "registryBasis": null,
       "verifiedSample": false,
       "impliedParcelsTried": null,
       "integrationAttempts": [],
-      "sourceIds": [],
-      "evidenceUrls": [],
+      "sourceIds": [
+        "us-or-marion-salem-parcels"
+      ],
+      "evidenceUrls": [
+        "https://gis.co.marion.or.us/arcgis/rest/services/Public/Parcels/MapServer/0"
+      ],
       "evidenceFiles": [],
       "osmUrl": "https://www.openstreetmap.org/?mlat=44.94290&mlon=-123.03510#map=12/44.94290/-123.03510",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=44.94290%2C-123.03510",
@@ -132348,9 +133093,7 @@
       "evidenceUrls": [
         "https://mappeonline.pa.sm/arcgis/rest/services/Cartografia/catasto_GR/MapServer/17"
       ],
-      "evidenceFiles": [
-        "research/world-capitals-2026-10-08/san-marino-acceptance.json"
-      ],
+      "evidenceFiles": [],
       "osmUrl": "https://www.openstreetmap.org/?mlat=43.93333&mlon=12.41667#map=12/43.93333/12.41667",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=43.93333%2C12.41667",
       "wikipediaUrl": null,
@@ -133317,7 +134060,9 @@
       "registryCityIds": [
         "us-capital:NM"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "santa_fe"
+      ],
       "cohorts": [
         "registry"
       ],
@@ -133334,14 +134079,18 @@
       "checked": false,
       "checkedDate": null,
       "checkedDateEvidence": null,
-      "registryFound": null,
-      "registryFindingBasis": null,
+      "registryFound": true,
+      "registryFindingBasis": "configured_source",
       "registryBasis": null,
       "verifiedSample": false,
       "impliedParcelsTried": null,
       "integrationAttempts": [],
-      "sourceIds": [],
-      "evidenceUrls": [],
+      "sourceIds": [
+        "us-nm-santa-fe-parcels"
+      ],
+      "evidenceUrls": [
+        "https://gis.santafenm.gov/server/rest/services/OpenGov_GIS_Service/MapServer/2"
+      ],
       "evidenceFiles": [],
       "osmUrl": "https://www.openstreetmap.org/?mlat=35.68700&mlon=-105.93780#map=12/35.68700/-105.93780",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=35.68700%2C-105.93780",
@@ -135378,6 +136127,56 @@
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=23.63560&mlon=58.19094#map=12/23.63560/58.19094",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=23.63560%2C58.19094",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
+      "id": "wup2025:1033",
+      "name": "Ségou",
+      "country": "Mali",
+      "countryCode": "ML",
+      "latitude": 13.4286099987787,
+      "longitude": -6.25080382642436,
+      "registryCityIds": [
+        "wup2025:1033"
+      ],
+      "appCityIds": [
+        "segou"
+      ],
+      "cohorts": [
+        "app",
+        "registry"
+      ],
+      "wupCityCode": 1033,
+      "wupName": "Ségou",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": 295589,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "A validated parcel source is configured for this city; citywide completeness remains unverified.",
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [],
+      "sourceIds": [
+        "ml-sprdf-ninacad-parcelle-wfs"
+      ],
+      "evidenceUrls": [
+        "https://geodata.sprdf.ml/geoserver/sifMali/ows"
+      ],
+      "evidenceFiles": [
+        "cities/1033/settings.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=13.42861&mlon=-6.25080#map=12/13.42861/-6.25080",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=13.42861%2C-6.25080",
       "wikipediaUrl": null,
       "wikipediaEvidence": null
     },
@@ -139421,6 +140220,49 @@
       "wikipediaEvidence": null
     },
     {
+      "id": "app:sibenik",
+      "name": "Šibenik",
+      "country": "Croatia",
+      "countryCode": "HR",
+      "latitude": 43.735,
+      "longitude": 15.8896,
+      "registryCityIds": [],
+      "appCityIds": [
+        "sibenik"
+      ],
+      "cohorts": [],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": false,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "configured_source",
+      "registryBasis": null,
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [],
+      "sourceIds": [
+        "hr-dgu-oss-dkp-cestice"
+      ],
+      "evidenceUrls": [
+        "https://oss.uredjenazemlja.hr/OssWebServices/wfs"
+      ],
+      "evidenceFiles": [],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=43.73500&mlon=15.88960#map=12/43.73500/15.88960",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=43.73500%2C15.88960",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:5866",
       "name": "Siddhpur",
       "country": "India",
@@ -139965,6 +140807,61 @@
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=27.61553&mlon=75.15183#map=12/27.61553/75.15183",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=27.61553%2C75.15183",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
+      "id": "wup2025:1363",
+      "name": "Sikasso",
+      "country": "Mali",
+      "countryCode": "ML",
+      "latitude": 11.3136054897523,
+      "longitude": -5.66973498556137,
+      "registryCityIds": [
+        "wup2025:1363"
+      ],
+      "appCityIds": [
+        "sikasso"
+      ],
+      "cohorts": [
+        "app",
+        "registry"
+      ],
+      "wupCityCode": 1363,
+      "wupName": "Sikasso",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": 389804,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "A validated parcel source is configured for this city; citywide completeness remains unverified.",
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [],
+      "sourceIds": [
+        "ml-sprdf-ninacad-parcelle-wfs"
+      ],
+      "evidenceUrls": [
+        "https://geodata.sprdf.ml/geoserver/sifMali/ows",
+        "https://dndc.gouv.ml/wp-json/dgdc/v1/cadastre/layers/aci2000/parcels?bbox=-5.68,11.30,-5.66,11.33&limit=3",
+        "https://dndc.gouv.ml/services-regionaux-et-subregionaux/",
+        "https://dndc.gouv.ml/cadastre/",
+        "https://dgi.gouv.ml/du-ninacad-adresse-bientot-disponible-au-mali/"
+      ],
+      "evidenceFiles": [
+        "cities/1363/settings.json",
+        "cities/1363/failed-urls.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=11.31361&mlon=-5.66973#map=12/11.31361/-5.66973",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=11.31361%2C-5.66973",
       "wikipediaUrl": null,
       "wikipediaEvidence": null
     },
@@ -141267,31 +142164,49 @@
       "countryCode": "ZA",
       "latitude": -32.9409772812421,
       "longitude": 27.7340419384007,
-      "registryCityIds": [],
-      "appCityIds": [],
-      "cohorts": [],
+      "registryCityIds": [
+        "wup2025:3008"
+      ],
+      "appCityIds": [
+        "sisulu_village"
+      ],
+      "cohorts": [
+        "app"
+      ],
       "wupCityCode": 3008,
       "wupName": "Sisulu Village",
       "growthRank": null,
       "researchFocusRegion": null,
       "researchPriority": null,
-      "population2015": null,
-      "population2025": null,
+      "population2015": 148229,
+      "population2025": 157462,
       "annualGrowthPct2015To2025": null,
       "populationPlausibility2025": null,
-      "populationMatch": null,
-      "checked": false,
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "checked": true,
       "checkedDate": null,
       "checkedDateEvidence": null,
-      "registryFound": null,
-      "registryFindingBasis": null,
-      "registryBasis": null,
-      "verifiedSample": false,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "A validated parcel source is configured for this city; citywide completeness remains unverified.",
+      "verifiedSample": true,
       "impliedParcelsTried": null,
       "integrationAttempts": [],
-      "sourceIds": [],
-      "evidenceUrls": [],
-      "evidenceFiles": [],
+      "sourceIds": [
+        "za-csg-property-viewer-erven"
+      ],
+      "evidenceUrls": [
+        "https://csggis.dlrrd.gov.za/server/rest/services/Property_Viewer/MapServer/2"
+      ],
+      "evidenceFiles": [
+        "cities/3008/settings.json",
+        "cities/3008/failed-urls.json"
+      ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-32.94098&mlon=27.73404#map=12/-32.94098/27.73404",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-32.94098%2C27.73404",
       "wikipediaUrl": null,
@@ -142558,7 +143473,9 @@
       "registryCityIds": [
         "us-capital:IL"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "springfield"
+      ],
       "cohorts": [
         "registry"
       ],
@@ -142575,14 +143492,18 @@
       "checked": false,
       "checkedDate": null,
       "checkedDateEvidence": null,
-      "registryFound": null,
-      "registryFindingBasis": null,
+      "registryFound": true,
+      "registryFindingBasis": "configured_source",
       "registryBasis": null,
       "verifiedSample": false,
       "impliedParcelsTried": null,
       "integrationAttempts": [],
-      "sourceIds": [],
-      "evidenceUrls": [],
+      "sourceIds": [
+        "us-il-springfield-parcels"
+      ],
+      "evidenceUrls": [
+        "https://maps.springfield.il.us/server/rest/services/PW_Zoning/parcelZonesView/MapServer/2"
+      ],
       "evidenceFiles": [],
       "osmUrl": "https://www.openstreetmap.org/?mlat=39.78170&mlon=-89.65010#map=12/39.78170/-89.65010",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=39.78170%2C-89.65010",
@@ -147937,9 +148858,7 @@
       "evidenceUrls": [
         "https://ms.gov.ge/core-api/v1/search/unified-search"
       ],
-      "evidenceFiles": [
-        "research/tbilisi-msda-2026-10-08.json"
-      ],
+      "evidenceFiles": [],
       "osmUrl": "https://www.openstreetmap.org/?mlat=41.70889&mlon=44.80673#map=12/41.70889/44.80673",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=41.70889%2C44.80673",
       "wikipediaUrl": null,
@@ -149384,9 +150303,7 @@
       "evidenceUrls": [
         "https://nsdi.systems.gov.bt/server/rest/services/Hosted/thimphu_thromde_1_view/FeatureServer/3"
       ],
-      "evidenceFiles": [
-        "research/world-capitals-2026-10-08/thimphu-taba-acceptance.json"
-      ],
+      "evidenceFiles": [],
       "osmUrl": "https://www.openstreetmap.org/?mlat=27.46667&mlon=89.63333#map=12/27.46667/89.63333",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=27.46667%2C89.63333",
       "wikipediaUrl": null,
@@ -151934,7 +152851,9 @@
       "registryCityIds": [
         "us-capital:KS"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "topeka"
+      ],
       "cohorts": [
         "registry"
       ],
@@ -151951,14 +152870,18 @@
       "checked": false,
       "checkedDate": null,
       "checkedDateEvidence": null,
-      "registryFound": null,
-      "registryFindingBasis": null,
+      "registryFound": true,
+      "registryFindingBasis": "configured_source",
       "registryBasis": null,
       "verifiedSample": false,
       "impliedParcelsTried": null,
       "integrationAttempts": [],
-      "sourceIds": [],
-      "evidenceUrls": [],
+      "sourceIds": [
+        "us-ks-topeka-parcels"
+      ],
+      "evidenceUrls": [
+        "https://gis.sncoapps.us/arcgis2/rest/services/Parcels/MapServer/0"
+      ],
       "evidenceFiles": [],
       "osmUrl": "https://www.openstreetmap.org/?mlat=39.04730&mlon=-95.67520#map=12/39.04730/-95.67520",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=39.04730%2C-95.67520",
@@ -157280,9 +158203,7 @@
       "evidenceUrls": [
         "https://kataster.bev.gv.at/tiles/kataster/{z}/{x}/{y}.pbf"
       ],
-      "evidenceFiles": [
-        "research/world-capitals-2026-10-08/vienna-acceptance.json"
-      ],
+      "evidenceFiles": [],
       "osmUrl": "https://www.openstreetmap.org/?mlat=48.20820&mlon=16.37380#map=12/48.20820/16.37380",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=48.20820%2C16.37380",
       "wikipediaUrl": null,
@@ -160242,6 +161163,56 @@
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=51.35080&mlon=-2.94648#map=12/51.35080/-2.94648",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=51.35080%2C-2.94648",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
+      "id": "wup2025:1370",
+      "name": "Whydah",
+      "country": "Benin",
+      "countryCode": "BJ",
+      "latitude": 6.36521247398017,
+      "longitude": 2.08072638707345,
+      "registryCityIds": [
+        "wup2025:1370"
+      ],
+      "appCityIds": [
+        "whydah"
+      ],
+      "cohorts": [
+        "app",
+        "registry"
+      ],
+      "wupCityCode": 1370,
+      "wupName": "Whydah",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": 134144,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "A validated parcel source is configured for this city; citywide completeness remains unverified.",
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [],
+      "sourceIds": [
+        "bj-andf-efoncier-geoserver"
+      ],
+      "evidenceUrls": [
+        "https://geoserver.andf.bj/geoserver/efb/wfs"
+      ],
+      "evidenceFiles": [
+        "cities/1370/settings.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=6.36521&mlon=2.08073#map=12/6.36521/2.08073",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=6.36521%2C2.08073",
       "wikipediaUrl": null,
       "wikipediaEvidence": null
     },
@@ -166843,8 +167814,8 @@
       "population": 14814459,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 1,
-      "citiesWithRegistry": 1,
+      "citiesChecked": 5,
+      "citiesWithRegistry": 5,
       "checked": true,
       "checkedDate": "2026-09-29",
       "nationalCadastreFound": true,
@@ -167069,8 +168040,8 @@
       "population": 212812405,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 30,
-      "citiesWithRegistry": 8,
+      "citiesChecked": 31,
+      "citiesWithRegistry": 9,
       "checked": true,
       "checkedDate": "2026-09-29",
       "nationalCadastreFound": null,
@@ -167464,8 +168435,8 @@
       "population": 527325,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 0,
-      "citiesWithRegistry": 0,
+      "citiesChecked": 1,
+      "citiesWithRegistry": 1,
       "checked": true,
       "checkedDate": "2026-09-29",
       "nationalCadastreFound": null,
@@ -168106,7 +169077,7 @@
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
       "citiesChecked": 2,
-      "citiesWithRegistry": 2,
+      "citiesWithRegistry": 3,
       "checked": true,
       "checkedDate": "2026-10-08",
       "nationalCadastreFound": true,
@@ -169638,7 +170609,7 @@
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
       "citiesChecked": 1149,
-      "citiesWithRegistry": 1061,
+      "citiesWithRegistry": 1062,
       "checked": true,
       "checkedDate": "2026-09-29",
       "nationalCadastreFound": false,
@@ -169666,8 +170637,8 @@
       "population": 285721235,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 32,
-      "citiesWithRegistry": 0,
+      "citiesChecked": 33,
+      "citiesWithRegistry": 1,
       "checked": true,
       "checkedDate": "2026-09-29",
       "nationalCadastreFound": null,
@@ -170930,8 +171901,8 @@
       "population": 25198822,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 1,
-      "citiesWithRegistry": 1,
+      "citiesChecked": 3,
+      "citiesWithRegistry": 3,
       "checked": true,
       "checkedDate": "2026-09-29",
       "nationalCadastreFound": null,
@@ -173432,8 +174403,8 @@
       "population": 64747320,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 34,
-      "citiesWithRegistry": 36,
+      "citiesChecked": 40,
+      "citiesWithRegistry": 42,
       "checked": true,
       "checkedDate": "2026-09-29",
       "nationalCadastreFound": null,
@@ -174563,7 +175534,7 @@
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
       "citiesChecked": 129,
-      "citiesWithRegistry": 127,
+      "citiesWithRegistry": 155,
       "checked": true,
       "checkedDate": "2026-09-29",
       "nationalCadastreFound": false,
@@ -175212,8 +176183,8 @@
       "population": 21913874,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 11,
-      "citiesWithRegistry": 10,
+      "citiesChecked": 14,
+      "citiesWithRegistry": 13,
       "checked": true,
       "checkedDate": "2026-09-29",
       "nationalCadastreFound": false,

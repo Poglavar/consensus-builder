@@ -73,6 +73,13 @@ test.describe('Parcel diagnostics @features', () => {
     const modal = page.locator('#animation-modal');
     await expect(modal).toBeVisible();
     await expect(modal.locator('#animation-map')).toHaveClass(/leaflet-container/);
+    const originalZoom = await page.evaluate<number>('animationMap.getZoom()');
+    const mainMapZoom = await page.evaluate(() => (window as any).map.getZoom());
+    await modal.locator('.leaflet-control-zoom-out').click();
+    await expect.poll(() => page.evaluate<number>('animationMap.getZoom()')).toBe(originalZoom - 1);
+    await modal.locator('.leaflet-control-zoom-in').click();
+    await expect.poll(() => page.evaluate<number>('animationMap.getZoom()')).toBe(originalZoom);
+    expect(await page.evaluate(() => (window as any).map.getZoom())).toBe(mainMapZoom);
     const initial = await modal.locator('#animation-step').innerText();
     await modal.locator('#btn-next').click();
     await expect(modal.locator('#animation-step')).not.toHaveText(initial);

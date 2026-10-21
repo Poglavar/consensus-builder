@@ -73,7 +73,7 @@ test('register recovery Close, parcel Refresh, and Retry dismiss, reopen, and re
   await expect.poll(() => page.evaluate(() => (window as any).parcelLayer.getLayers().length)).toBeGreaterThan(0);
 });
 
-test('register options navigate URL and satellite screens and Not now dismisses them', async ({ mockApi: page }) => {
+test('register URL recovery and imagery-estimate controls show their current outcomes', async ({ mockApi: page }) => {
   await unavailableRegister(page);
   const dialog = page.locator('.ground-fallback-dialog');
   await dialog.locator('[data-option="url"]').click();
@@ -83,8 +83,15 @@ test('register options navigate URL and satellite screens and Not now dismisses 
   await dialog.locator('.ground-fallback-back').click();
   await expect(dialog.locator('.ground-fallback-options')).toBeVisible();
   await dialog.locator('[data-option="ocr"]').click();
-  await expect(dialog.locator('.ground-fallback-help')).toContainText('not available from this screen yet');
-  await dialog.locator('.ground-fallback-back').click();
+  const estimates = page.getByRole('region', { name: 'Illustrative parcel estimates' });
+  await expect(estimates).toBeVisible();
+  await expect(estimates).toContainText('Estimated boundaries may be incomplete or wrong and do not establish legal boundaries.');
+  await expect(estimates.getByRole('button', { name: 'Generate estimates' })).toBeVisible();
+});
+
+test('Not now dismisses register recovery for this session and its warning can be reopened or dismissed', async ({ mockApi: page }) => {
+  await unavailableRegister(page);
+  const dialog = page.locator('.ground-fallback-dialog');
   await dialog.getByRole('button', { name: 'Not now', exact: true }).click();
   await expect(dialog).toHaveCount(0);
   await expect(page.locator('body')).not.toHaveClass(/ground-fallback-open/);
@@ -138,7 +145,9 @@ test('Explore banner requests its place, opens World view, and dismisses for thi
   await banner.locator('#explore-banner-ask').click();
   await expect(banner.locator('#explore-banner-ask')).toBeDisabled();
   await expect.poll(() => requests.length).toBe(1);
-  expect(requests[0]).toMatchObject({ name: 'Dhaka' });
+  // Explore requests preserve the exact map point (WorldCoverage.pointAt); the chip may
+  // separately name the nearest city, so the payload uses the canonical rounded coordinate.
+  expect(requests[0]).toMatchObject({ name: '23.71040, 90.40740', placeKey: 'point:23.71040,90.40740' });
   await banner.locator('#explore-banner-world').click();
   await expect(page.locator('#world-view')).toBeVisible();
   await page.locator('#world-view').getByRole('button', { name: 'Back to map' }).click();

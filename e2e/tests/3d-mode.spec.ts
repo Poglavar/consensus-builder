@@ -15,6 +15,10 @@ async function openModelLayers(page: Page) {
   if (!(await page.locator('#model-layer-controls').isVisible())) await page.locator('#layers-button').click();
   await expect(page.locator('#model-layer-controls .three-mode-ui-panel')).toBeVisible();
 }
+async function openPlanningViews(page: Page) {
+  if (!(await page.locator('#planning-views').isVisible())) await page.locator('#planning-views-button').click();
+  await expect(page.locator('#planning-views')).toBeVisible();
+}
 async function closeSheets(page: Page) {
   for (const close of await page.locator('.map-sheet:visible [data-sheet-close]').all()) await close.click();
   await expect(page.locator('.map-sheet:visible')).toHaveCount(0);
@@ -63,6 +67,77 @@ async function sceneBuildings(page: Page) {
     return meshes;
   });
 }
+// Project candidate points on the actual rendered surface and accept only points where the
+// nearest visible, selectable 3D hit resolves to the requested parcel/proposal. This mirrors the
+// renderer's priority rules so roofs and overlapping parcel fills cannot redirect the test click.
+async function rayVerifiedPickPoint(page: Page, target: 'parcel' | 'proposal', id: string) {
+  return page.evaluate(({ target, id }) => {
+    const w = window as any;
+    const { scene, camera, renderer } = w.getThreeModeInternals();
+    const candidates: any[] = [];
+    scene.traverse((object: any) => {
+      if (!object.isMesh || !object.geometry?.attributes?.position?.count) return;
+      if (target === 'parcel'
+        ? object.userData?.isParcel === true && String(object.userData?.parcelId || '') === id
+        : String(object.userData?.proposalId || '') === id) candidates.push(object);
+    });
+    if (!candidates.length) throw new Error(`No rendered ${target} pick surface for ${id}`);
+    const selectionRoots = new Set<any>();
+    scene.traverse((object: any) => {
+      const data = object.userData || {};
+      if (!(data.proposalId || data.parcelId || data.isParcel || data.planningRepresentationId
+        || data.planningBuiltFeature || data.stationType)) return;
+      let root = object;
+      while (root.parent && root.parent !== scene) root = root.parent;
+      selectionRoots.add(root);
+    });
+    const buildingRoot = scene.getObjectByName('Buildings');
+    if (buildingRoot) selectionRoots.add(buildingRoot);
+    // This is the same selectable scene inventory used by handleParcelClick: proposal surfaces,
+    // existing/proposed buildings, cadastral parcels, planning representations and stations.
+    const targets = [...selectionRoots];
+    const rect = renderer.domElement.getBoundingClientRect();
+    const raycaster = new w.THREE.Raycaster();
+    const fractions = [0.12, 0.28, 0.5, 0.72, 0.88];
+    for (const mesh of candidates) {
+      mesh.geometry.computeBoundingBox();
+      const bounds = mesh.geometry.boundingBox;
+      const size = bounds.getSize(new w.THREE.Vector3());
+      for (const fx of fractions) for (const fy of fractions) {
+        const point = bounds.min.clone().add(size.clone().multiply(new w.THREE.Vector3(fx, fy, 0.5)));
+        mesh.localToWorld(point);
+        const ndc = point.clone().project(camera);
+        if (ndc.z < -1 || ndc.z > 1 || Math.abs(ndc.x) > 1 || Math.abs(ndc.y) > 1) continue;
+        raycaster.setFromCamera(new w.THREE.Vector2(ndc.x, ndc.y), camera);
+        let picked: any = null;
+        for (const hit of raycaster.intersectObjects(targets, true)) {
+          let object = hit.object;
+          let visible = true;
+          let proposalId: string | null = null;
+          let parcelId: string | null = null;
+          let planningId = null;
+          let builtFeature = null;
+          while (object) {
+            if (object.visible === false) visible = false;
+            if (object.userData?.planningRepresentationId) planningId = object.userData.planningRepresentationId;
+            if (object.userData?.planningBuiltFeature) builtFeature = object.userData.planningBuiltFeature;
+            if (!proposalId && object.userData?.proposalId) proposalId = String(object.userData.proposalId);
+            if (!parcelId && object.userData?.parcelId) parcelId = String(object.userData.parcelId);
+            object = object.parent;
+          }
+          if (!visible) continue;
+          if (planningId || (builtFeature && !proposalId)) { picked = { other: true }; break; }
+          if (proposalId || parcelId) { picked = { proposalId, parcelId }; break; }
+        }
+        const matches = target === 'proposal'
+          ? picked?.proposalId === id
+          : picked?.proposalId == null && picked?.parcelId === id;
+        if (matches) return { x: rect.left + (ndc.x + 1) * rect.width / 2, y: rect.top + (1 - ndc.y) * rect.height / 2 };
+      }
+    }
+    throw new Error(`No ray-verified ${target} pick point for ${id}`);
+  }, { target, id });
+}
 
 test.describe('3D rendering and controls @features', () => {
   test('mode buttons stay lower left and parcel clicks preserve the camera while dimming context', async ({ mockApi: page }) => {
@@ -74,7 +149,8 @@ test.describe('3D rendering and controls @features', () => {
     const flat = await modeBoxes();
     await enter3D(page);
     await openModelLayers(page);
-    await selectNativeOption(page.locator('#three-mode-built-display'), 'solid');
+    await openPlanningViews(page);
+    await selectNativeOption(page.locator('[data-planning-setting="existing"]'), 'solid');
     await closeSheets(page);
     await expect.poll(async () => (await sceneBuildings(page)).length).toBe(2);
     const originalBuildings = await sceneBuildings(page);
@@ -87,17 +163,7 @@ test.describe('3D rendering and controls @features', () => {
       const { camera, controls } = (window as any).getThreeModeInternals();
       return { position: camera.position.toArray(), target: controls.target.toArray(), zoom: camera.zoom };
     });
-    const point = await page.evaluate(() => {
-      const w = window as any, { scene, camera, renderer } = w.getThreeModeInternals();
-      let mesh: any;
-      scene.traverse((o: any) => { if (o.isMesh && o.userData?.parcelId === 'HR-335754-1234') mesh = o; });
-      if (!mesh) throw new Error('No parcel mesh');
-      mesh.geometry.computeBoundingBox();
-      const p = mesh.geometry.boundingBox.getCenter(new w.THREE.Vector3());
-      mesh.localToWorld(p); p.project(camera);
-      const box = renderer.domElement.getBoundingClientRect();
-      return { x: box.left + (p.x + 1) * box.width / 2, y: box.top + (1 - p.y) * box.height / 2 };
-    });
+    const point = await rayVerifiedPickPoint(page, 'parcel', 'HR-335754-1234');
     const before = await camera();
     await page.mouse.click(point.x, point.y);
     await expect(page.locator('.three-mode-parcel-panel')).toBeVisible();
@@ -141,7 +207,8 @@ test.describe('3D rendering and controls @features', () => {
     await openCity(page);
     await enter3D(page);
     await openModelLayers(page);
-    await selectNativeOption(page.locator('#three-mode-built-display'), 'solid');
+    await openPlanningViews(page);
+    await selectNativeOption(page.locator('[data-planning-setting="existing"]'), 'solid');
     await closeSheets(page);
     await expect.poll(async () => (await sceneBuildings(page)).length).toBe(2);
     expect((await sceneBuildings(page))[0].vertices).toBeGreaterThan(12);
@@ -169,15 +236,19 @@ test.describe('3D rendering and controls @features', () => {
     await createSpace(page, 'park');
     await enter3D(page);
     await openModelLayers(page);
-    const display = page.locator('#three-mode-built-display');
+    await openPlanningViews(page);
+    const display = page.locator('[data-planning-setting="existing"]');
+    const scope = page.locator('[data-planning-setting="existingScope"]');
     for (const [state, count] of [['solid', 2], ['ghost', 2], ['surviving', 1], ['removed', 1], ['off', 0]] as const) {
-      await selectNativeOption(display, state);
+      if (state === 'surviving' || state === 'removed') await selectNativeOption(scope, state);
+      else await selectNativeOption(display, state);
       await expect.poll(async () => (await sceneBuildings(page)).length, { message: state }).toBe(count);
       if (state === 'ghost') {
         const meshes = await sceneBuildings(page);
         expect(meshes.every(m => m.opacity < 1)).toBe(true);
       }
     }
+    await selectNativeOption(scope, 'all');
     await selectNativeOption(display, 'solid');
     await expect.poll(async () => (await sceneBuildings(page)).length).toBe(2);
   });
@@ -216,7 +287,7 @@ test.describe('3D rendering and controls @features', () => {
     expect(keyboardValue).toBeGreaterThan(initialValue);
     await expect.poll(async () => (await modelRadiusPreview(page))?.radiusMeters).toBe(keyboardValue);
     await expect.poll(async () => (await modelRadiusPreview(page))?.ringRadius).toBeCloseTo(keyboardValue, -1);
-    await page.locator('#three-mode-built-display').focus();
+    await page.locator('#three-mode-facades').focus();
     await expect.poll(async () => (await modelRadiusPreview(page))?.visible ?? false).toBe(false);
     await expect.poll(() => requests.length).toBe(2);
     await expect(page.locator('.three-mode-radius-value')).toContainText(String(keyboardValue));
@@ -238,7 +309,7 @@ test.describe('3D rendering and controls @features', () => {
     expect(requests[2].geometry).toEqual(initial.geometry);
     const saved = await slider.inputValue();
     await page.mouse.move(box.x + box.width + 30, box.y + box.height / 2);
-    await page.locator('#three-mode-built-display').focus();
+    await page.locator('#three-mode-facades').focus();
     await expect.poll(async () => (await modelRadiusPreview(page))?.visible ?? false).toBe(false);
     await page.mouse.move(box.x + box.width * 0.45, box.y + box.height / 2);
     await expect.poll(async () => (await modelRadiusPreview(page))?.visible).toBe(true);
@@ -264,8 +335,8 @@ test.describe('3D rendering and controls @features', () => {
     const id = await createBuilding(page, 'max');
     const source = await proposalState(page, id);
     await enter3D(page);
-    await openModelLayers(page);
-    await selectNativeOption(page.locator('#three-mode-built-display'), 'off');
+    await openPlanningViews(page);
+    await selectNativeOption(page.locator('[data-planning-setting="existing"]'), 'off');
     const geometry = () => page.evaluate(() => {
       const meshes: any[] = [];
       (window as any).getThreeModeInternals().scene.traverseVisible((o: any) => {
@@ -277,37 +348,40 @@ test.describe('3D rendering and controls @features', () => {
       });
       return meshes;
     });
-    await selectNativeOption(page.locator('#three-mode-planned-display'), 'solid');
+    await selectNativeOption(page.locator('[data-planning-setting="proposed"]'), 'solid');
     await expect.poll(async () => (await geometry()).length).toBeGreaterThan(0);
     expect((await geometry()).every(m => m.opacity === 1)).toBe(true);
-    await selectNativeOption(page.locator('#three-mode-planned-display'), 'ghost');
+    await selectNativeOption(page.locator('[data-planning-setting="proposed"]'), 'ghost');
     await expect.poll(async () => (await geometry()).every(m => m.opacity < 1)).toBe(true);
-    await selectNativeOption(page.locator('#three-mode-planned-display'), 'off');
+    await selectNativeOption(page.locator('[data-planning-setting="proposed"]'), 'off');
     await expect.poll(async () => (await geometry()).length).toBe(0);
-    await selectNativeOption(page.locator('#three-mode-planned-display'), 'solid');
+    await selectNativeOption(page.locator('[data-planning-setting="proposed"]'), 'solid');
 
     const allMeshes = () => page.evaluate(() => {
       let count = 0;
       (window as any).getThreeModeInternals().scene.traverseVisible((o: any) => { if (o.isMesh && o.geometry?.attributes?.position?.count) count++; });
       return count;
     });
-    await selectNativeOption(page.locator('#three-mode-planned-representation'), 'massing');
+    await selectNativeOption(page.locator('[data-planning-setting="proposedForm"]'), 'massing');
     const massingCount = await allMeshes();
-    await selectNativeOption(page.locator('#three-mode-planned-representation'), 'buildout');
+    await selectNativeOption(page.locator('[data-planning-setting="proposedForm"]'), 'buildout');
     await expect.poll(async () => (await geometry()).length).toBeGreaterThan(0);
     const buildoutCount = await allMeshes();
     const beforeReroll = await geometry();
     // A valid realization can repeat; exercise up to five fresh samples of the height range.
     for (let attempt = 0; attempt < 5; attempt++) {
-      await page.locator('.three-mode-reroll-btn').click();
-      await expect(page.locator('.three-mode-reroll-btn')).toBeEnabled();
+      await page.locator('#planning-reroll').click();
+      await expect(page.locator('#planning-reroll')).toBeEnabled();
       if (JSON.stringify(await geometry()) !== JSON.stringify(beforeReroll)) break;
     }
     expect(await geometry()).not.toEqual(beforeReroll);
-    await selectNativeOption(page.locator('#three-mode-planned-representation'), 'both');
+    await selectNativeOption(page.locator('[data-planning-setting="proposedForm"]'), 'both');
     await expect.poll(allMeshes).toBeGreaterThan(Math.max(massingCount, buildoutCount));
     expect(await proposalState(page, id)).toEqual(source);
 
+    // The facade controls belong to the Layers sheet; switch back from Planning Views before
+    // querying or changing them. The two control sheets are mutually exclusive.
+    await openModelLayers(page);
     const uniforms = () => page.evaluate(() => {
       return (window as any).getThreeModeInternals().renderer.info.programs.map((program: any) => {
         const map = program.getUniforms().map;
@@ -444,13 +518,18 @@ test('3D trees use real instanced geometry, toggle off and restore their saved p
 test('3D selection isolates a proposal and Show all restores the surrounding scene', async ({ mockApi: page }) => {
   await mockBuildingScene(page);
   await openCity(page);
-  await createSpace(page, 'park');
+  const proposalId = await createSpace(page, 'park');
   await enter3D(page);
-  await page.locator('#three-container canvas').click();
+  // Aim the real canvas click at this proposal's rendered pick surface. A canvas-center click can
+  // land on an unrelated observed building, which selects that source instead of the authored park.
+  const point = await rayVerifiedPickPoint(page, 'proposal', proposalId);
+  await page.mouse.click(point.x, point.y);
   // Isolation is announced by a banner whose close button restores the scene (Show-all button removed in fbe3758d).
   const banner = page.locator('.three-mode-isolation-banner');
   const reset = banner.locator('.isolation-banner-close');
   await expect(banner).toBeVisible();
+  await expect.poll(() => page.evaluate(() => (window as any).ProposalSelection?.getKey?.())).toBe(proposalId);
+  await expect(banner.locator('.isolation-banner-label')).toContainText(/proposal/i);
   const visibleBuildings = () => page.evaluate(() => {
     let count = 0;
     (window as any).getThreeModeInternals().scene.traverse((o: any) => { if (o.userData?.isNearbyBuilding3D && o.visible) count++; });

@@ -10,7 +10,7 @@
 // is comfortably above that and small enough to keep test runtime sane.
 
 import { test, expect } from '../helpers/fixtures';
-import { openCity } from '../helpers/runtime';
+import { openCity, showProposal } from '../helpers/runtime';
 
 const MEGA_PARCEL_COUNT = 320;
 
@@ -96,10 +96,11 @@ test.describe('Mega proposal loading @features', () => {
 
       stop = true;
 
-      // showProposalInfo renders into #proposal-details-panel; assert the panel is present AND
-      // visible for this proposal. The list is lazy-rendered and fills as it is scrolled.
-      const panel = document.getElementById('proposal-details-panel');
-      const panelVisible = !!panel && panel.classList.contains('visible');
+      // The list action now selects the proposal in the Planning Inspector; the full details
+      // reader is a separate user action. Capture selection here, before opening that reader.
+      const inspector = document.getElementById('planning-inspector');
+      const inspectorVisible = !!inspector && inspector.getClientRects().length > 0 && getComputedStyle(inspector).visibility !== 'hidden';
+      const selectedProposalId = w.currentlyHighlightedProposalId || null;
 
       return {
         pid,
@@ -107,7 +108,8 @@ test.describe('Mega proposal loading @features', () => {
         totalMs: Math.round(totalMs),
         frameTicks,
         longestFrameGapMs: Math.round(longestFrameGapMs),
-        panelVisible,
+        inspectorVisible,
+        selectedProposalId,
       };
     }, MEGA_PARCEL_COUNT);
 
@@ -122,8 +124,11 @@ test.describe('Mega proposal loading @features', () => {
     // single sync block held the main thread for several seconds".
     expect(result.longestFrameGapMs, 'longest single-frame gap').toBeLessThan(3500);
 
-    // Details panel must actually be visible at the end and showing the ancestor list.
-    expect(result.panelVisible).toBe(true);
+    // The list action must select the intended record, then its full details can expose the
+    // ancestor list through the current Planning Inspector → Proposal actions flow.
+    expect(result.inspectorVisible).toBe(true);
+    expect(result.selectedProposalId).toBe('e2e-mega-proposal-load');
+    await showProposal(page, 'e2e-mega-proposal-load');
     const panel = page.locator('#proposal-details-panel');
     const minimizeButton = page.locator('#proposal-details-minimize');
     if (await panel.evaluate(element => element.classList.contains('is-minimized'))) {

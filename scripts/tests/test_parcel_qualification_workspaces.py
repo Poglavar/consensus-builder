@@ -86,6 +86,27 @@ class ParcelQualificationWorkspaceTests(unittest.TestCase):
                                             self.city, self.receipt, self.packet,
                                             base_revision=base_revision)
 
+    def test_published_new_runtime_helpers_reach_the_isolated_city_worker(self):
+        relative = "scripts/lib/city-integration-helper.py"
+        helper = self.parent / relative
+        helper.write_text("# published runtime helper\n")
+        (self.parent / "scripts/private-note.py").write_text("# unrelated untracked file\n")
+        applied = self.parent / "tmp/parcel-shared-runtime/applied.json"
+        applied.parent.mkdir(parents=True)
+        applied.write_text(json.dumps({"files": {relative: {"sha256": "fixture"}}}))
+        workspace = self.prepare()
+        self.assertEqual((workspace["root"] / relative).read_text(), helper.read_text())
+        self.assertFalse((workspace["root"] / "scripts/private-note.py").exists())
+
+    def test_admission_roster_is_copied_as_an_immutable_owned_input(self):
+        relative = "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz"
+        roster = self.parent / relative
+        roster.parent.mkdir(parents=True)
+        roster.write_bytes(b"public population roster")
+        workspace = self.prepare()
+        self.assertEqual((workspace["root"] / relative).read_bytes(), roster.read_bytes())
+        self.assertEqual(workspace["parentInputHashes"]["integrationInputs"][relative], hashlib.sha256(roster.read_bytes()).hexdigest())
+
     def test_two_slots_are_distinct_and_inputs_are_copied_and_remapped(self):
         city_mtime = self.city_path.stat().st_mtime_ns
         receipt_before = json.loads(json.dumps(self.receipt))

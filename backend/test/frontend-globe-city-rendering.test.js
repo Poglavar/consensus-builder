@@ -7,6 +7,7 @@ import { parse } from '@babel/parser';
 
 const require = createRequire(import.meta.url);
 const CityDisplay = require('../../frontend/js/world/globe-city-display.js');
+const WorldCoverage = require('../../frontend/js/world/world-coverage.js');
 const source = readFileSync(new URL('../../frontend/js/world/globe.js', import.meta.url), 'utf8');
 const ast = parse(source, { sourceType: 'script' });
 
@@ -89,6 +90,10 @@ function displayHarness(catalog, { altitudeKm = 1, width = 1200, height = 900, b
         height,
         altitudeKm
     };
+    state.coverage = WorldCoverage.create({
+        countries: [], cities: [],
+        liveCities: catalog.filter(entry => entry.live).map(entry => entry.city)
+    });
     const instrumentedCityDisplay = {
         ...CityDisplay,
         layout(candidates, viewport, options) {
@@ -119,7 +124,7 @@ function displayHarness(catalog, { altitudeKm = 1, width = 1200, height = 900, b
         let cityLayoutSignature = '';
         let visibleMarkers = [];
         let blockedCityAreas = [];
-        const coverage = { tierAt: (lat, lon) => ({ kind: 'live-city', lat, lon }) };
+        const coverage = state.coverage;
         const renderer = { domElement: { getBoundingClientRect: () => ({ left: 0, top: 0, width: viewport.w, height: viewport.h }) } };
         const obstacles = state.blocked;
         function cityObstacles() { return obstacles; }
@@ -295,7 +300,8 @@ describe('globe city renderer orchestration', () => {
         expect(visible.map(marker => marker.entry.key)).toEqual(['live:live-0000']);
 
         h.api.pickAt(603, 450);
-        expect(h.state.selections).toEqual([{ kind: 'live-city', lat: 41, lon: 29 }]);
+        expect(h.state.selections).toHaveLength(1);
+        expect(h.state.selections[0]).toMatchObject({ kind: 'live-city', lat: 41, lon: 29, cityId: 'live-0000' });
     });
 
     it('routes each shared-provider city marker to that city’s coordinates', () => {
@@ -314,8 +320,8 @@ describe('globe city renderer orchestration', () => {
 
         expect(h.api.state().visibleMarkers.map(marker => marker.entry.key)).toEqual(['live:london', 'live:manchester']);
         h.api.pickAt(700, 350);
-        expect(h.state.selections).toEqual([{ kind: 'live-city', lat: 53.4808, lon: -2.2426 }]);
+        expect(h.state.selections[0]).toMatchObject({ kind: 'live-city', lat: 53.4808, lon: -2.2426, cityId: 'manchester' });
         h.api.pickAt(300, 350);
-        expect(h.state.selections[1]).toEqual({ kind: 'live-city', lat: 51.515, lon: -0.09 });
+        expect(h.state.selections[1]).toMatchObject({ kind: 'live-city', lat: 51.515, lon: -0.09, cityId: 'london' });
     });
 });

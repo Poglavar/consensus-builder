@@ -46,8 +46,19 @@ const savedUploads = (page: any) => page.evaluate(() => (window as any).proposal
 for (const kind of ['single', 'buildings', 'row']) {
   test(`${kind} GeoJSON upload preserves all polygons and holes as ordinary editable Freeform proposals`, async ({ mockApi: page }) => {
     await openTool(page, kind);
-    const input = kind === 'single' ? '#single-building-geojson-input' : kind === 'row' ? '#rowhouse-geojson-input' : '#blockify-geojson-input';
-    await page.locator(input).setInputFiles({ name: 'buildings.geojson', mimeType: 'application/geo+json', buffer: Buffer.from(JSON.stringify(collection)) });
+    const file = { name: 'buildings.geojson', mimeType: 'application/geo+json', buffer: Buffer.from(JSON.stringify(collection)) };
+    if (kind === 'row') {
+      const button = page.locator('#rowhouse-geojson-upload');
+      if (!(await button.isVisible())) await page.locator('#rowhouse .on-map-editor__more-options > summary').click();
+      const chooserPromise = page.waitForEvent('filechooser');
+      await button.click();
+      const chooser = await chooserPromise;
+      expect(await chooser.element().evaluate(input => (input as HTMLInputElement).id)).toBe('rowhouse-geojson-input');
+      await chooser.setFiles(file);
+    } else {
+      const input = kind === 'single' ? '#single-building-geojson-input' : '#blockify-geojson-input';
+      await page.locator(input).setInputFiles(file);
+    }
     await expect(page.locator('#single-building-editor .on-map-editor__panel')).toBeVisible();
     await expect(page.locator('#single-building-selector option')).toHaveCount(3);
     // All four exterior and four courtyard vertices are handles on the selected first building.

@@ -19,7 +19,9 @@ function blockPanelContext() {
     context.window = context;
     context.addEventListener = () => {};
     vm.createContext(context);
-    for (const file of ['shared-utils.js', 'proposals/status.js', 'proposals/display-state.js', 'parcel-blocks.js']) {
+    // Load the same pure lifecycle collaborator used by display-state in the browser.
+    for (const file of ['shared-utils.js', 'proposals/status.js', 'proposals/lifecycle-evidence.js',
+        'proposals/display-state.js', 'parcel-blocks.js']) {
         vm.runInContext(readFileSync(new URL(`../../frontend/js/${file}`, import.meta.url), 'utf8'), context);
     }
     return context;

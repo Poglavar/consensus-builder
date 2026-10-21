@@ -12,12 +12,20 @@ test('published track opens the configured cab simulator with the actual uploade
   const id = await drawCorridor(page, 'track');
   await showProposal(page, id);
   await page.locator('.btn-share-proposal').click();
-  await chooseTermsForShare(page);
+  const confirmedId = await chooseTermsForShare(page);
   await page.locator('.share-modal-overlay').getByRole('button', { name: 'Upload', exact: true }).click();
   await expect(page.locator('.share-modal-link').first()).toHaveValue(/\/proposals\/\d+/);
   const uploaded = [...server.records.keys()][0];
   expect(uploaded).toBeTruthy();
+  await expect.poll(() => page.evaluate(id => {
+    const w = window as any;
+    const record = w.proposalStorage.getProposal(id);
+    return record?.publicationApiBase === w.getBackendBase() ? record.serverProposalId : null;
+  }, confirmedId)).toBe(uploaded);
   await page.locator('.share-modal-overlay .close-circle-btn').click();
+  await showProposal(page, confirmedId);
+  await expect.poll(() => page.evaluate(() => (window as any).ProposalSelection.getKey())).toBe(confirmedId);
+  await expect(page.locator('#proposal-details-panel')).toBeVisible();
   const base = await page.evaluate(() => (window as any).CityConfigManager.getDriveConfig().url);
   await page.context().route(`${base}**`, route => route.fulfill({ contentType: 'text/html', body: '<title>Cab simulator fixture</title>' }));
   const opened = page.context().waitForEvent('page');

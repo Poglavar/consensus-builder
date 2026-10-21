@@ -90,7 +90,7 @@ describe('single-building map editor lifecycle', () => {
         const union = vi.fn(() => childParcel);
         const boundary = extract('getSelectedBlockFeature', '', {
             getSingleBuildingContext: () => ({ site, parcels: [{ feature: childParcel }] }),
-            cloneSingleFeature: feature => JSON.parse(JSON.stringify(feature)),
+            cloneSingleFeature: feature => feature == null ? null : JSON.parse(JSON.stringify(feature)),
             robustUnion: union, turf, toSingleLargestPolygon: vi.fn(() => childParcel)
         });
         const editableBoundary = boundary();
@@ -156,12 +156,12 @@ describe('single-building map editor lifecycle', () => {
         expect(context.singleEditor).toBe(incumbent);
     });
 
-    it('opens uploaded model geometry for editing with its model metadata and does not auto-confirm', () => {
+    it.each(['parcels', 'site'])('opens uploaded model geometry on its %s boundary without auto-confirming', boundary => {
         const entry = { feature: { type: 'Feature', properties: {}, geometry: { type: 'Polygon', coordinates: [] } } };
         const addEntry = vi.fn(() => entry);
         const openEditor = vi.fn(() => true);
         const confirm = vi.fn();
-        const variables = `let singleEditor=null, singleBuildingOverrideContext=null, singleBlockFeature=null, buildingEntries=[], activeBuildingId=null, nextBuildingId=1, singleBuildingSeedBuildings=null, singleUploadOnConfirm=null; const DEFAULT_HEIGHT_M=12, DEFAULT_WIDTH_M=10; this.getSeed=()=>singleBuildingSeedBuildings;`;
+        const variables = `let singleEditor=null, singleBuildingOverrideContext=null, singleBlockFeature=null, buildingEntries=[], activeBuildingId=null, nextBuildingId=1, singleBuildingSeedBuildings=null, singleUploadOnConfirm=null; const DEFAULT_HEIGHT_M=12, DEFAULT_WIDTH_M=10; this.getSeed=()=>singleBuildingSeedBuildings; this.getContext=()=>singleBuildingOverrideContext;`;
         const stubs = {
             window: { OnMapEditor: { isActive: () => false } },
             singleBuildingParcelsForIds: ids => ids.map(id => ({ id })),
@@ -169,7 +169,7 @@ describe('single-building map editor lifecycle', () => {
             getSelectedBlockFeature: () => ({ type: 'Feature', geometry: { type: 'Polygon', coordinates: [] } }),
             computeInitialPlacement: () => ({ center: [15, 45], width: 20, length: 18 }),
             addNewBuildingEntry: addEntry,
-            cloneSingleFeature: feature => JSON.parse(JSON.stringify(feature)),
+            cloneSingleFeature: feature => feature == null ? null : JSON.parse(JSON.stringify(feature)),
             showSingleBuildingMapEditor: openEditor,
             setSingleBuildingStatus: vi.fn(),
             confirmSingleBuilding: confirm
@@ -177,14 +177,21 @@ describe('single-building map editor lifecycle', () => {
         const declared = new Set(['singleEditor', 'singleBuildingOverrideContext', 'singleBlockFeature', 'buildingEntries', 'activeBuildingId', 'nextBuildingId', 'singleBuildingSeedBuildings', 'singleUploadOnConfirm']);
         const bindings = Object.keys(stubs).filter(key => !declared.has(key)).map(key => `const ${key}=this.${key};`).join('\n');
         const context = { ...stubs };
-        vm.runInNewContext(`${variables}\n${bindings}\n${functions.get('createSingleBuildingFromUpload')}\nthis.create=createSingleBuildingFromUpload;`, context);
+        vm.runInNewContext(`${variables}\n${bindings}\n${functions.get('singleBuildingPlacementContext')}\n${functions.get('createSingleBuildingFromUpload')}\nthis.create=createSingleBuildingFromUpload;`, context);
         const callback = vi.fn();
 
+        const site = { type: 'Polygon', coordinates: [[[0, 0], [1, 0], [1, 1], [0, 0]]] };
         expect(context.create({
-            parcelIds: ['parcel-1'], blockName: 'Parcel block', width: 11, length: 13,
+            ...(boundary === 'site' ? { parcelIds: [], site } : { parcelIds: ['parcel-1'] }),
+            blockName: 'Parcel block', width: 11, length: 13,
             height: 17, modelName: 'museum.glb', modelUrl: '/models/museum.glb', onConfirm: callback
         })).toBe(true);
 
+        expect(context.getContext().parcelIds).toEqual(boundary === 'site' ? [] : ['parcel-1']);
+        if (boundary === 'site') {
+            expect(context.getContext().site).toEqual(site);
+            expect(context.getContext().parcels[0].feature.geometry).toEqual(site);
+        }
         expect(addEntry).toHaveBeenCalledWith([15, 45], { width: 11, length: 13, height: 17, rotation: 0 });
         expect(entry.feature.properties).toMatchObject({ source: 'upload', modelName: 'museum.glb', modelUrl: '/models/museum.glb', height: 17 });
         expect(context.getSeed()[0].properties).toMatchObject({ source: 'upload', modelName: 'museum.glb', modelUrl: '/models/museum.glb', height: 17 });
@@ -205,14 +212,14 @@ describe('single-building map editor lifecycle', () => {
             getSelectedBlockFeature: () => ({ type: 'Feature', geometry: { type: 'Polygon', coordinates: [] } }),
             computeInitialPlacement: () => ({ center: [15, 45], width: 20, length: 18 }),
             addNewBuildingEntry: () => entry,
-            cloneSingleFeature: feature => JSON.parse(JSON.stringify(feature)),
+            cloneSingleFeature: feature => feature == null ? null : JSON.parse(JSON.stringify(feature)),
             showSingleBuildingMapEditor: openEditor,
             setSingleBuildingStatus: vi.fn()
         };
         const declared = new Set(['singleEditor', 'singleBuildingOverrideContext', 'singleBlockFeature', 'buildingEntries', 'activeBuildingId', 'nextBuildingId', 'singleBuildingSeedBuildings', 'singleUploadOnConfirm']);
         const bindings = Object.keys(stubs).filter(key => !declared.has(key)).map(key => `const ${key}=this.${key};`).join('\n');
         const context = { ...stubs };
-        vm.runInNewContext(`${variables}\n${bindings}\n${functions.get('createSingleBuildingFromUpload')}\nthis.create=createSingleBuildingFromUpload;`, context);
+        vm.runInNewContext(`${variables}\n${bindings}\n${functions.get('singleBuildingPlacementContext')}\n${functions.get('createSingleBuildingFromUpload')}\nthis.create=createSingleBuildingFromUpload;`, context);
 
         expect(context.create({ parcelIds: ['parcel-1'], modelUrl: '/models/blocked.glb', onConfirm: callback })).toBe(false);
         expect(openEditor).not.toHaveBeenCalled();

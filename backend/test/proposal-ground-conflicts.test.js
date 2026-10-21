@@ -304,9 +304,11 @@ describe('editDependents: who stands on ground an in-place edit changes', () => 
 describe('lineage: what saving an edit does to its source', () => {
     it('edits one\'s own local record in place, forks a published or minted one, and forks on an explicit Fork', () => {
         expect(lineage.editsInPlace({ proposalId: 'own', applied: true })).toBe(true);
-        expect(lineage.editsInPlace({ proposalId: 'p', serverProposalId: '901' })).toBe(false);
+        expect(lineage.editsInPlace({ proposalId: 'p', serverProposalId: '901', publicationApiBase: 'https://api.example.test' })).toBe(false);
+        expect(lineage.editsInPlace({ proposalId: 'p', serverProposalId: '901' })).toBe(true);
         expect(lineage.editsInPlace({ proposalId: 'p', isMinted: true })).toBe(false);
-        expect(lineage.editsInPlace({ proposalId: 'p', lifecycleStatus: 'published' })).toBe(false);
+        expect(lineage.editsInPlace({ proposalId: 'p', lifecycleStatus: 'published' })).toBe(true);
+        expect(lineage.editsInPlace({ proposalId: 'p', lifecycleStatus: 'Active', serverProposalId: '902', publicationApiBase: 'https://api.example.test' })).toBe(false);
         expect(lineage.editsInPlace({ proposalId: 'own' }, { fork: true })).toBe(false);
         expect(lineage.editsInPlace(null)).toBe(false);
     });
@@ -314,15 +316,15 @@ describe('lineage: what saving an edit does to its source', () => {
     it('keeps the record\'s id, replay place and own lineage; the edit is not its own source', () => {
         const source = {
             proposalId: 'own', createdAt: '2026-10-01T10:00:00.000Z', lifecycleStatus: 'active',
-            sourceProposalId: 'published-original', title: 'Old'
+            proposalOrigin: { relation: 'revision', source: { kind: 'local', localProposalId: 'published-original' }, title: 'Published original' }, title: 'Old'
         };
         const edited = {
-            proposalId: undefined, title: 'New', sourceProposalId: 'own', replacementOfProposalId: 'own',
+            proposalId: undefined, title: 'New',
             proposalDraftId: 'draft-1', roadProposal: { definition: {} }
         };
         expect(lineage.inPlaceRecord(source, edited)).toEqual({
             proposalId: 'own', createdAt: '2026-10-01T10:00:00.000Z', lifecycleStatus: 'active',
-            sourceProposalId: 'published-original', title: 'New',
+            proposalOrigin: { relation: 'revision', source: { kind: 'local', localProposalId: 'published-original' }, title: 'Published original' }, title: 'New',
             roadProposal: { definition: {}, id: 'own', proposalId: 'own' }
         });
     });

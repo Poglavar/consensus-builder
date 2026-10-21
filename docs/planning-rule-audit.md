@@ -167,7 +167,7 @@ Atlas is an optional URL-configured Permitted provider. Set `PLANNING_ATLAS_SOUR
 export PLANNING_ATLAS_SOURCES='[{"id":"atlas-lafayette-sample","city":"colorado","label":"Atlas · Lafayette sample","edition":"public-sample","url":"https://www.landuselabs.com/s/lafayette_co_slices_sample.geojson"}]'
 ```
 
-Each entry requires a unique stable `id`, an existing app `city` key, a display `label`, an explicit `edition` and a public HTTPS `url` returning an Atlas Slices GeoJSON FeatureCollection. Multiple entries can cover different cities or editions; `default: false` keeps a source available for explicit selection without including it in a default multi-provider query. IDs must not collide with built-in providers. Changing a URL must preserve the source's meaning; use a distinct ID/edition for a different source edition. No Atlas source is enabled by default.
+Each entry requires a unique stable `id`, an existing app `city` key, a display `label`, an explicit `edition` and a public HTTPS `url` returning an Atlas Slices GeoJSON FeatureCollection. Multiple entries can cover different cities or editions; `default: false` keeps a source available for explicit selection without including it in a default multi-provider query. An optional `parcelSourceId` enables the bounded parcel study using that existing catalogue adapter. IDs must not collide with built-in providers. Changing a URL must preserve the source's meaning; use a distinct ID/edition for a different source edition. No Atlas source is enabled by default.
 
 The backend advertises configured sources through `/planning/sources` and loads a dataset on its first representation or record request. It shares concurrent downloads and retains a successful dataset for the process lifetime; restart the backend to read a changed URL or upstream dataset. There is no scheduled refresh or additional database cache. A failed download returns unavailable and a later request may retry. Geographic bounds become available in the descriptor after a successful load. An empty viewport is different from a failed load.
 
@@ -177,9 +177,62 @@ This replaces the local-file sample switch. The Lafayette example appears in the
 
 ## Demonstration and outreach readiness
 
+### Parcel-backed dimensional study, 2026-10-21
+
+Implemented a bounded study in the existing map/model inspector. Add `"parcelSourceId":"us-co-oit-statewide-parcels"` to the Lafayette configuration above. The Colorado city key remains routing context; the statewide provider's county-qualified identity is used for the actual Boulder County parcel, independently of Denver's default county-filtered parcel source.
+
+`GET /planning/study?city=…&source=…&scenario=…&parcel=…` reads an exact parcel; `point=longitude,latitude` instead requires a single unambiguous parcel at that point. The endpoint reads original zoning records rather than trusting viewport-clipped shapes. It checks complete provider responses, refuses multiple intersecting source areas and unsupported parcel topology, and retains any uncovered source area. It writes no database records. The source area's global `constraintEvaluation` capability remains false: the study advertises only `direct-dimensions.v1`, not complete zoning interpretation.
+
+The demonstration parcel is `US-COLORADO-STATEWIDE-Boulder~157503113003`, intersecting Lafayette slice `1275326`, one-family scenario. The supplied sample records direct side/rear setbacks of 5/10 ft, a 35 ft height cap, a 0.23 acre minimum lot area and 50% building coverage. Its 22.5 ft front setback is estimated, and its use treatment is `hearing`. These are values from the sample edition, not a certification of the current ordinance. The city separately reports a new code adopted in September 2026 taking effect February 1, 2027; applicability remains unresolved ([city announcement](https://www.lafayetteco.gov/m/newsflash/Home/Detail/10239)).
+
+The study displays a partial envelope from direct dimensions, clipped to the supplied zoning area, plus an editable test volume. Height, footprint scale, east/north translation and assumed front edge have independent checks. Raising height above 10.668 m produces a height breach; moving outside the parcel produces containment/setback breaches. Estimated values never become verified limits, and an unassessed front setback never becomes a recorded zero. The geometric outer bound may exceed an independent area budget; filling it is not a feasible-build-out claim.
+
+The draft saves locally with exact geometry and pinned zoning/parcel revisions. Reload reassesses the saved design; source or parcel changes require an explicit restart. It creates no authored proposal or live-fabric mutation. The map and model consume the same two study representations. This completes the bounded edit/revalidation demonstration for the supported dimensions; legal applicability, source coverage differences, assumed edge interpretation, terrain/height datum, legal measurement bases and other rule families remain visibly unresolved.
+
+#### Validation record
+
+All automated runs were targeted and headless; no full suite ran. Unit file names below are relative to `backend/test/`; the browser file is `e2e/tests/planning-parcel-study.spec.ts`.
+
+| Run | Scope | Result | Stopped? |
+| --- | --- | --- | --- |
+| Headless Node unit | `ogun-wfs-source.node.test.js` | 8 passed; catalogue boot regression covered | No |
+| Headless Vitest unit | 7 files: `planning-parcel-study`, `planning-atlas`, `planning-atlas-urls`, `planning-inspection`, `planning-representations`, `frontend-static-build`, `i18n-style` (all `.test.js`) | 140 passed, 1 translation duplicate-budget failure | No |
+| Headless Playwright | 2 parcel-study specs | Server readiness timed out in the restricted sandbox; 0 specs executed | No; startup exited |
+| Headless Playwright | 2 parcel-study specs, local-server access enabled | 1 failed because the test mock intercepted JavaScript modules; second interrupted after identifying the mock error | Yes; corrected the mock to intercept only fetch/XHR |
+| Headless Playwright | Same 2 specs with corrected mock | 2 passed | No |
+| Headless Vitest unit | 4 files: `planning-parcel-study`, `planning-atlas-urls`, `i18n-style`, `design-tokens` (all `.test.js`) | 231 passed, 1 pre-existing translation duplicate-budget failure | No |
+| Headless Vitest unit | 2 files: `planning-parcel-study.test.js`, `planning-atlas-urls.test.js` after final input/configuration changes | 54 passed | No |
+| Headless Playwright | Same 2 specs, including invalid-input transactions | 2 passed | No |
+
+The initial translation run found added duplicate labels; those were replaced with existing shared labels. The remaining English duplicate count is 350 against a budget of 348, also measured as 350 at the starting commit. This change does not raise the baseline or alter those unrelated translations. Browser coverage includes height/footprint independence, containment failure, save/reload, invalid inputs, narrow layout and explicit restart after a source revision changes.
+
+Manual verification in dedicated headed Chrome used the real public sample and parcel provider: the source inspector's start action resolved the intended parcel, the 12 m design visibly exceeded the 10.668 m bound in 3D, and the design remained visible with Permitted off after restoring model display. The controls fit a 390 × 844 viewport. No browser errors were reported, and the verification browsers were closed.
+
 A useful demonstration must show the same selected source proposal in 2D and 3D, source constraints alongside observed buildings and a design, explicit estimated/unsupported rules, and a design edit that either revalidates or reports what cannot be checked. It must survive save/reload and a second import without duplicate proposals or source-to-design identity confusion.
 
-The local follow-up demonstrates the Atlas public Lafayette sample through the shared adapter and inspector: housing-type changes, source estimates, URL selection/reload, 2D areas and ground-plane areas alongside observed buildings in 3D. This establishes source-data visualization; the broader design-edit/revalidation demonstration above remains incomplete. Do not pitch complete interpretation of all zoning rules. A bounded current claim is: **“We can visualize source zoning areas and recorded constraints in linked 2D and 3D views, with supported massing from other providers and explicit unresolved conditions.”**
+### Permitted viewport follow-up, 2026-10-21
+
+User verification exposed a gap: enabling Permitted still displayed flat Atlas zoning areas, while only an opened study had parcel massing. Permitted now loads `/planning/envelopes` for the visible parcels without creating a study. The same parcel volumes provide 2D footprints with height labels and 3D extrusions. A separate **Zoning source areas** control, off by default, displays the original ground polygons.
+
+This read is bounded to 0.5 km² and 400 complete parcel identities. It inspects zoning across full parcel outlines, not viewport-clipped shapes. Unknown street orientation is handled by the union of supported front-edge interpretations, labelled as a partial outer bound. A direct positive height is required. Prohibited uses, overlapping parcel identities, missing heights, unsupported shapes, multiple zoning areas and failed geometry operations are counted with explicit reasons. One invalid geometry cannot hide the remaining parcels, and a failed source read cannot masquerade as complete coverage. Parcel boundaries are never repaired or rewritten. Independent area budgets and legal applicability remain unresolved.
+
+Clicking a viewport envelope opens its evidence; **Test a parcel here** then uses the exact selected parcel. The study replaces only that parcel's viewport envelope. A live sample read over `[-105.0925,39.9975,-105.089,39.9995]` returned 25 volumes at 35 ft from 75 parcel identities, with 38 missing direct heights, 7 unsupported shapes, 4 parcels crossing zoning areas and 1 geometry failure.
+
+Targeted validation for this follow-up (none stopped; no full suites):
+
+| Type | Scope | Result |
+| --- | --- | --- |
+| Headless unit | 7 files: parcel envelopes, parcel study, representations, inspection, Atlas, i18n style, design tokens | 275 passed, 3 failed: exact floating-point assertion, new CSS `!important`, and the existing translation duplicate budget |
+| Headless unit | Parcel envelopes and design tokens after corrections | 181 passed |
+| Headless Playwright | 3 parcel-study specs | 2 passed; new spec failed on an incorrect accessible-name locator |
+| Headless Playwright | New viewport spec after correcting its locator | 1 passed |
+| Headless unit | Parcel envelopes and frontend static build after geometry-isolation coverage and script updates | 24 passed |
+
+The floating-point assertion uses a numeric tolerance and the CSS override was removed. English duplicate groups remain unchanged at 350 against the pre-existing 348 budget.
+
+Manual headed Chrome verification first loaded 18 live viewport envelopes and showed their 2D height labels without a study. Later wider-viewport reads from Colorado's public parcel service timed out, including one diagnostic request given 45 seconds. The 3D rendering and 390 px control layout were therefore checked by replaying the complete 25-envelope real-source response captured earlier in this run, solely inside the verification browser. All 25 height-bounded volumes rendered, and the separate source-area control fit the phone layout. The replay was removed and the browser closed; normal app requests still use the live provider and report its failures. This distinction is part of the validation result, not a production data fallback.
+
+The first local follow-up demonstrated the Atlas public Lafayette sample through the shared adapter and inspector: housing-type changes, source estimates, URL selection/reload, 2D areas and ground-plane areas alongside observed buildings in 3D. The parcel study above now adds bounded design-edit checks with explicit unresolved requirements. Complete interpretation of all zoning rules remains unfinished. A bounded current claim is: **“We can visualize source zoning areas and recorded constraints in linked 2D and 3D views, derive a partial parcel envelope, and recheck an edited test design against supported dimensions while retaining unresolved conditions.”**
 
 There is also a concrete distribution question for a partnership: the published Land Use Labs standard purchase license limits use to internal purposes and restricts public display/redistribution, including reconstructable derivatives. A public product integration needs appropriate display/reuse terms rather than assuming the map's public visibility grants them. This audit used public documentation and the public sample; no purchase/license acceptance was made. [License, updated September 10, 2026](https://www.landuselabs.com/license).
 

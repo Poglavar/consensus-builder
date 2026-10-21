@@ -155,8 +155,8 @@ live('prepare → publish on the real cadastre (rolled back)', () => {
 
         const { body } = await request(app).post('/proposals/prepare').send({ proposal: draft });
         const moved = JSON.parse(JSON.stringify(body.proposal));
-        moved.roadProposal.definition.points[2].lat += 0.00001;
-        moved.roadProposal.definition.segments[0][2].lat += 0.00001;
+        const nodes = moved.roadProposal.definition.osm.elements.filter(element => element.type === 'node');
+        nodes[2].lat += 0.00001;
         const refused = await request(app).post('/proposals').send(moved);
         expect(refused.status).toBe(422);
         expect(refused.body.code).toBe('preparation-mismatch');

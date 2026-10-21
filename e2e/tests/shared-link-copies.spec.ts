@@ -35,7 +35,8 @@ test('shared links ignore numeric local keys and fork ancestry, then reuse the e
 
   lifecycleStatus = 'Active';
   await page.evaluate(() => {
-    const p = (window as any).proposalStorage.getProposalByServerRowId('42');
+    const w = window as any;
+    const p = w.proposalStorage.getProposalByServerRowId('42', w.resolveBackendBaseUrl());
     p.lifecycleStatus = 'Active'; p.applied = true;
   });
   for (const reference of ['42', 'p-linked-publication']) {
@@ -43,5 +44,9 @@ test('shared links ignore numeric local keys and fork ancestry, then reuse the e
     expect(reopened.failed).toEqual([]);
     expect(reopened.skipped.map((item: any) => item.id)).toEqual(['p-linked-publication']);
   }
-  await expect(page.locator('#proposal-details-panel')).toContainText('Linked published park');
+  const inspector = page.locator('#planning-inspector');
+  await expect(inspector.getByRole('heading', { name: 'Linked published park', exact: true })).toBeVisible();
+  await expect(inspector).toContainText('Active');
+  await expect(inspector.getByRole('button', { name: 'Proposal actions', exact: true })).toBeVisible();
+  await expect.poll(() => page.evaluate(() => (window as any).ProposalSelection?.getKey?.())).toBe('p-linked-publication');
 });

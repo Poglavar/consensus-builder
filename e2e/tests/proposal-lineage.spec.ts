@@ -42,7 +42,7 @@ test('the original lists its counterproposals, each opens, and a missing source 
   const original = await seed(page, { proposalId: 'c2-original', serverProposalId: '879', title: 'Original plan',
     publicationApiBase: apiBase,
     proposalOrigin: { relation: 'copy', source: { kind: 'publication', apiBase, proposalRowId: '878' }, title: 'First sketch' } });
-  await seed(page, { proposalId: '901', title: 'Local counterproposal',
+  const localCounterId = await seed(page, { proposalId: '901', title: 'Local counterproposal',
     proposalOrigin: { relation: 'copy', source: { kind: 'local', localProposalId: original }, title: 'Original plan' } });
 
   await showProposal(page, original);
@@ -59,6 +59,9 @@ test('the original lists its counterproposals, each opens, and a missing source 
     .toContainText('First sketch (source not found in this publication store)');
 
   await lineage(page).getByRole('button', { name: 'Local counterproposal' }).click();
+  await expect(page.locator('#planning-inspector')).toBeVisible();
+  await expect.poll(() => page.evaluate(() => (window as any).currentlyHighlightedProposalId)).toBe(localCounterId);
+  await showProposal(page, localCounterId);
   await expect(page.locator('#proposal-details-panel')).toContainText('Local counterproposal');
   // The fork links back to the original it was made from.
   const localOriginLink = page.locator('#proposal-details-panel .proposal-based-on-link');
@@ -67,7 +70,12 @@ test('the original lists its counterproposals, each opens, and a missing source 
   await showProposal(page, original);
   if (await expand.isVisible()) await expand.click();
   await lineage(page).getByRole('button', { name: 'Published counterproposal' }).click();
-  await expect(page.locator('#proposal-details-title')).toHaveText('Published counterproposal');
+  await expect(page.locator('#planning-inspector')).toContainText('Published counterproposal');
+  await expect.poll(() => page.evaluate(base => {
+    const selected = (window as any).PlanningViews.getSelected();
+    const record = selected?.proposalId && (window as any).proposalStorage.getProposal(selected.proposalId);
+    return record?.serverProposalId === '901' && record?.publicationApiBase === base;
+  }, apiBase)).toBe(true);
   expect(await page.evaluate(() => (window as any).proposalStorage.getProposal('901').title)).toBe('Local counterproposal');
   expect(await page.evaluate(() => (window as any).proposalStorage.getProposalByServerRowId('901', (window as any).getBackendBase()).title)).toBe('Published counterproposal');
 });
@@ -109,6 +117,14 @@ test('a published source link selects its explicit row copy despite local key co
   await expect(link).toHaveAttribute('data-lineage-row-id', '880');
   await expect(link).toHaveAttribute('data-lineage-api-base', apiBase);
   await link.click();
+  const inspector = page.locator('#planning-inspector');
+  await expect(inspector).toContainText('Published source');
+  const selectedSourceId = await page.evaluate(() => (window as any).currentlyHighlightedProposalId);
+  expect(await page.evaluate(id => {
+    const source = (window as any).proposalStorage.getProposal(id);
+    return { rowId: source?.serverProposalId, apiBase: source?.publicationApiBase };
+  }, selectedSourceId)).toEqual({ rowId: '880', apiBase });
+  await showProposal(page, selectedSourceId);
   await expect(page.locator('#proposal-details-title')).toHaveText('Published source');
   expect(await page.evaluate(() => (window as any).proposalStorage.getProposal('880').title)).toBe('Unrelated numeric local record');
   expect(await page.evaluate(() => (window as any).proposalStorage.getProposal('c2-published-source').title)).toBe('Local authored-key collision');

@@ -43,14 +43,29 @@ describe('action funding wiring', () => {
         const events = [];
         const decision = { type, amount: '0.20', proposalId: 'proposal-id', proposalAccount: 'proposal' };
         const adapters = {
+            assertSupportEligibility: vi.fn(async () => { events.push('eligible'); }),
             fundBotAction: vi.fn(async args => { events.push('fund'); expect(args).toEqual({ action: decision, connection, pool, persona, runId }); }),
             ensureMarketAndStake: vi.fn(async () => { events.push('stake'); return { signature: 'stake-signature' }; }),
             ensureDonationEscrowAndDonate: vi.fn(async () => { events.push('donate'); return { signature: 'donation-signature' }; })
         };
         await executeSupport({ decision, connection, keypair, pool, persona, runId, adapters });
-        expect(events).toEqual(['fund', type]);
+        expect(events).toEqual(['eligible', 'fund', type]);
         const chain = type === 'stake' ? adapters.ensureMarketAndStake : adapters.ensureDonationEscrowAndDonate;
         expect(chain).toHaveBeenCalledWith(expect.objectContaining({ amountAtomic: 200_000n }));
+    });
+
+
+    it('refuses a target that became terminal before any funding or signing', async () => {
+        const fundBotAction = vi.fn(), ensureMarketAndStake = vi.fn();
+        await expect(executeSupport({
+            decision: { type: 'stake', amount: '0.10', proposalAccount: 'proposal' },
+            connection, keypair, pool, persona, runId, adapters: {
+                assertSupportEligibility: async () => { throw new Error('target is Expired on-chain'); },
+                fundBotAction, ensureMarketAndStake
+            }
+        })).rejects.toThrow('target is Expired on-chain');
+        expect(fundBotAction).not.toHaveBeenCalled();
+        expect(ensureMarketAndStake).not.toHaveBeenCalled();
     });
 
     it('rejects a support action above its USDC cap before funding', async () => {

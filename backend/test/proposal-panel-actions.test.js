@@ -16,6 +16,7 @@ const panelPresentation = require('../../frontend/js/proposals/panel-presentatio
 const referenceRelations = require('../../frontend/js/proposals/parcel-set-relations.js');
 const siteDraft = require('../../frontend/js/proposals/site-draft.js');
 const chainRef = require('../../frontend/js/proposals/chain-ref.js');
+const proposalOrigin = require('../../frontend/js/proposals/origin.js');
 const acceptanceClient = require('../../frontend/js/solana/acceptance-client.js');
 // A mint record as the mint paths write it (proposals/display-state.js hasMintRecord).
 const MINT_RECORD = Object.freeze({ chain: 'solana-devnet', contract: acceptanceClient.constants.PROPOSAL_NFT_PROGRAM_ID, tokenId: 'Token1111111111111111111111111111111111' });
@@ -81,6 +82,7 @@ function render(proposal, { applied = false, connected = false, road = false, su
         __siteDraft: { siteAreaM2: site => siteDraft.siteAreaM2(site, { turf }) },
         ProposalSupportView: supportView,
         ProposalKind,
+        ProposalOrigin: proposalOrigin,
         ProposalPublishTerms: require('../../frontend/js/proposals/publish-terms.js'),
         ProposalOrigin: require('../../frontend/js/proposals/origin.js'),
         solanaWalletManager: { getState: () => connected ? { status: 'connected', accounts: ['wallet'] } : { status: 'disconnected', accounts: [] } },
@@ -151,12 +153,41 @@ function render(proposal, { applied = false, connected = false, road = false, su
     vm.runInContext(`${renderSource}\nthis.renderProposal = showProposalInfo;`, context);
     context.renderProposal(proposal, null, null, { presentation: 'compact' });
     while (timers.length) timers.shift()();
-    return { footer, content, window };
+    return {
+        footer, content, window, panel, title: elements.get('proposal-details-title'),
+        rerender(nextProposal = proposal) {
+            context.renderProposal(nextProposal, null, true);
+            while (timers.length) timers.shift()();
+        }
+    };
 }
 
 const parse = html => load(`<main>${html}</main>`);
 
 describe('proposal details action footer', () => {
+    it('keeps an open action panel when the same proposal refreshes', () => {
+        const proposal = { proposalId: 'refresh-actions', title: 'Original terms', cadastreParcelIds: [] };
+        const result = render(proposal);
+        const inspectProposal = vi.fn();
+        result.window.PlanningViews = { isReady: () => true, inspectProposal };
+        proposal.title = 'Updated terms';
+        result.rerender();
+        expect(inspectProposal).not.toHaveBeenCalled();
+        expect(result.panel.classList.contains('visible')).toBe(true);
+        expect(result.title.textContent).toBe('Updated terms');
+    });
+
+    it.each(['closed', 'different'])('uses the shared inspector for a %s action context', context => {
+        const proposal = { proposalId: 'selected-actions', cadastreParcelIds: [] };
+        const result = render(proposal);
+        const inspectProposal = vi.fn();
+        result.window.PlanningViews = { isReady: () => true, inspectProposal };
+        if (context === 'closed') result.panel.classList.toggle('visible', false);
+        const nextProposal = context === 'different' ? { ...proposal, proposalId: 'another-proposal' } : proposal;
+        result.rerender(nextProposal);
+        expect(inspectProposal).toHaveBeenCalledExactlyOnceWith(nextProposal);
+    });
+
     it('does not show devnet funding for unqualified references or another deployment', () => {
         for (const change of [{ chain: 'solana' }, { chain: 'solana-mainnet-beta' }, { contract: 'another-program' }, { contract: null }]) {
             const result = render({ proposalId: 'wrong-deployment', cadastreParcelIds: [], nft: { ...MINT_RECORD, ...change } });
@@ -214,9 +245,11 @@ describe('proposal details action footer', () => {
     });
 
     it('counts all loaded reference matches before limiting the visible list', () => {
-        const proposal = { proposalId: 'target', cadastreParcelIds: ['source-1', 'source-2'] };
+        const parcelSet = { parcelSource: { sourceId: 'hr-cadastre', snapshotId: null } };
+        const proposal = { proposalId: 'target', cadastreParcelIds: ['source-1', 'source-2'], parcelSet };
         const relatedProposals = Array.from({ length: 15 }, (_, i) => ({
-            proposalId: `related-${i}`, title: `Reference match ${i}`, cadastreParcelIds: i < 13 ? ['source-1', 'source-2'] : ['source-2']
+            proposalId: `related-${i}`, title: `Reference match ${i}`, parcelSet,
+            cadastreParcelIds: i < 13 ? ['source-1', 'source-2'] : ['source-2']
         }));
         const card = parse(render(proposal, { relatedProposals }).content.innerHTML)('.proposal-parcel-set-card');
         expect(card.find('h3').text()).toBe('Proposals sharing references');
@@ -428,7 +461,8 @@ describe('proposal details action footer', () => {
     });
 
     it('presents execution as the recorded lifecycle with a separate map-state badge', () => {
-        const result = render({ proposalId: 'recorded-execution', lifecycleStatus: 'Executed', cadastreParcelIds: [] },
+        const result = render({ proposalId: 'recorded-execution', lifecycleStatus: 'Executed', cadastreParcelIds: [],
+            lifecycleEvidence: { protocol: 'proposal-lifecycle-evidence/1', state: 'observed', status: 'Executed', observedAt: '2026-10-20T10:00:00.000Z' } },
             { lifecycle: 'Executed', applied: true });
         const badges = parse(result.content.innerHTML)('.proposal-badges-row');
         expect(badges.find('.cb-badge--executed').text()).toBe('Execution recorded');

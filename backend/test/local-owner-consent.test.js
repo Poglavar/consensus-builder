@@ -36,6 +36,7 @@ function fixture() {
         proposalStorage: { getProposal: () => proposal, save: vi.fn() },
         showProposalAlertMessage: alert, ProposalChainBridge: bridge,
         ProposalChainStatus: chainStatus,
+        ProposalLifecycleEvidence: require('../../frontend/js/proposals/lifecycle-evidence.js'),
         getProposalNftInfo: () => ({ chain: 'evm', tokenId: '1', contract: 'fixture' }),
         ProposalManager: { applyProposal: vi.fn() }, transferParcelOwnership: vi.fn(),
         resolveProposalRecipientAgentId: () => 'recipient-a',
@@ -150,7 +151,7 @@ describe('local owner consent evidence', () => {
         const nft = { chain: '84532', contract: `0x${'a'.repeat(40)}`, tokenId: '5' };
         context.getProposalNftInfo = () => nft;
         bridge.acceptProposal.mockResolvedValue({ chainId: nft.chain, contractAddress: nft.contract, proposalId: '5',
-            blockNumber: 42, lifecycle: { statusCode: code, blockNumber: 42 } });
+            blockNumber: 42, lifecycle: { statusCode: code, blockNumber: 42, observedAt: '2026-10-21T00:00:00.000Z' } });
         return nft;
     }
 
@@ -162,6 +163,13 @@ describe('local owner consent evidence', () => {
         proposal.applied = true;
         await context.handleUserAcceptProposal(proposal.proposalId, 'base-a', 'owner-a');
         expect(proposal).toMatchObject({ lifecycleStatus, applied: true, acceptedParcelIds: ['base-a'] });
+        expect(proposal.lifecycleEvidence).toMatchObject({
+            protocol: 'proposal-lifecycle-evidence/1', state: 'observed', status: lifecycleStatus,
+            source: 'chain-state-read', observedAt: '2026-10-21T00:00:00.000Z',
+            observations: [{ status: lifecycleStatus, chainRef: {
+                chainType: 'evm', chainId: '84532', contract: `0x${'a'.repeat(40)}`, tokenId: '5'
+            } }]
+        });
         expect(proposal.executedAt).toBeUndefined();
         expect(agent.proposalsAccepted).toEqual([proposal.proposalId]);
         expect(agent.proposalsExecuted).toEqual([]);

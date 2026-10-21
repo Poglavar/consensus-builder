@@ -96,11 +96,13 @@ test('lens Attest signs the checked ownership challenge; Say yes and Submit verd
     provider.signTransaction = async () => { throw new Error('Invalid input must never ask for a transaction signature'); };
   });
   const id = await page.evaluate(({ parcelId, member, memberTwo, account }) => (window as any).proposalStorage.addProposal({
-    title: 'Ownership attestation controls', goal: 'park', lifecycleStatus: 'Active', cadastreParcelIds: [parcelId],
+    title: 'Ownership attestation controls', goal: 'park', kind: 'owner-deal', lifecycleStatus: 'Active', cadastreParcelIds: [parcelId],
     isMinted: true, nft: { chain: 'solana-devnet', contract: member, tokenId: account }, lens: [member, memberTwo]
   }), { parcelId: PARCEL_ID, member: MEMBER, memberTwo: MEMBER_TWO, account: ATTESTATION });
   await page.locator('#proposals-button').click();
   await page.locator(`#proposals-sheet [data-proposal-id="${id}"] .proposal-list-details-btn`).click();
+  const planningInspector = page.locator('#planning-inspector');
+  if (await planningInspector.isVisible()) await planningInspector.getByRole('button', { name: 'Proposal actions', exact: true }).click();
   const panel = page.locator('#proposal-details-panel');
   if (await panel.locator('#proposal-details-minimize').getAttribute('aria-expanded') === 'false') await panel.locator('#proposal-details-minimize').click();
   await panel.locator('[data-proposal-section="verification"] > summary').click();
@@ -160,6 +162,20 @@ test('owner offer Say yes to execute focuses and scrolls to the lens Say yes con
     const envelope = (item: any) => ({ jsonrpc: '2.0', id: item.id, result: resultFor(item) });
     return route.fulfill({ json: Array.isArray(input) ? input.map(envelope) : envelope(input) });
   });
+  // The shared RPC router intentionally covers account reads, but not getGenesisHash. Chain
+  // qualification calls it before bid decoding, so let that one method fall through to this
+  // deterministic devnet answer instead of leaking to the configured public RPC endpoint.
+  await page.route('**/*', async route => {
+    if (route.request().method() !== 'POST') return route.fallback();
+    let input: any;
+    try { input = route.request().postDataJSON(); } catch (_) { return route.fallback(); }
+    const requests = Array.isArray(input) ? input : [input];
+    if (!requests.length || !requests.every(item => item?.jsonrpc === '2.0' && item.method === 'getGenesisHash')) {
+      return route.fallback();
+    }
+    const result = (item: any) => ({ jsonrpc: '2.0', id: item.id, result: 'EtWTRABZaYq6iMfeYKouRu166VU2xqa1wcaWoxPkrZBG' });
+    return route.fulfill({ json: Array.isArray(input) ? input.map(result) : result(input) });
+  });
   await connectWalletByConnectorId(page, 'solana-phantom');
   const proposalId = await page.evaluate(({ parcelId, proposalAccount, proposalProgram, lensMember }) => (window as any).proposalStorage.addProposal({
     title: 'Owner offer Say yes navigation', goal: 'ownership-transfer-from-me', lifecycleStatus: 'Active',
@@ -168,6 +184,8 @@ test('owner offer Say yes to execute focuses and scrolls to the lens Say yes con
   }), { parcelId: PARCEL_ID, proposalAccount: PROPOSAL_ACCOUNT, proposalProgram, lensMember: MEMBER });
   await page.locator('#proposals-button').click();
   await page.locator(`#proposals-sheet [data-proposal-id="${proposalId}"] .proposal-list-details-btn`).click();
+  const planningInspector = page.locator('#planning-inspector');
+  if (await planningInspector.isVisible()) await planningInspector.getByRole('button', { name: 'Proposal actions', exact: true }).click();
   const panel = page.locator('#proposal-details-panel');
   await expect(panel).toBeVisible();
   const expand = panel.getByRole('button', { name: 'Expand', exact: true });

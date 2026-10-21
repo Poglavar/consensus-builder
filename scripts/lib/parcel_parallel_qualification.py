@@ -15,7 +15,9 @@ from types import SimpleNamespace
 
 import parcel_source_stage as stage
 from parcel_source_admission import admit_candidate
-from parcel_qualification_workspaces import prepare_workspace, finish_workspace, discard_workspace
+from parcel_city_knowledge import sync_failed_urls
+from parcel_city_integration import run_city_task, verify_in_app, verify_baseline, rebuild_browser_adapters as _rebuild_and_validate_browser_adapters
+from parcel_qualification_workspaces import prepare_workspace, finish_workspace, discard_workspace, reopen_workspace
 
 
 def now():
@@ -51,25 +53,14 @@ def _path_hashes(root, paths):
             for rel in paths}
 
 
-def _rebuild_and_validate_browser_adapters(root):
-    build = subprocess.run(["node", "backend/scripts/build-browser-parcels.mjs"], cwd=root,
-                           text=True, capture_output=True, timeout=300)
-    if build.returncode:
-        raise RuntimeError(f"browser parcel bundle build failed: {(build.stderr or build.stdout)[-1200:]}")
-    script = """import catalog from './backend/parcels/source-catalog.json' with {type:'json'};
-import {browserParcelFactories as factories} from './backend/parcels/browser-source-runtime.js';
-const missing=[...new Set(catalog.sources.map(row=>row.adapter))].filter(adapter=>!factories[adapter]);
-if(missing.length){console.error(missing.join(','));process.exit(1)}"""
-    checked = subprocess.run(["node", "--input-type=module", "-e", script], cwd=root,
-                             text=True, capture_output=True, timeout=60)
-    if checked.returncode:
-        raise RuntimeError(f"browser parcel adapter families are incomplete: {checked.stderr[-1200:]}")
-
-
 def _admit(runner, city, receipt, result, digest):
     entry = runner._city_entry(city)
-    before = runner._candidate_workspace_snapshot()
+    before = None
     try:
+        shared = getattr(runner.args, "shared_root", None)
+        if shared:
+            sync_failed_urls(shared, runner.root)
+        before = runner._candidate_workspace_snapshot()
         # A previously integrated stage has just passed the same hash checks;
         # admission expects the verified input status before it checks app bindings.
         admission = admit_candidate(runner, city, receipt, {**result, "status": "adapter-ready"})
@@ -77,9 +68,12 @@ def _admit(runner, city, receipt, result, digest):
         admission = {"status": "failed", "summary": f"Admission error: {type(exc).__name__}: {exc}"}
     entry["admission"] = admission
     entry["qualification"] = {**result, "status": admission["status"], "admission": admission,
+                              "summary": admission.get("summary") or result.get("summary"),
                               "receiptSha256": digest, "finishedAt": now()}
     if admission["status"] == "integrated":
         _rebuild_and_validate_browser_adapters(runner.root)
+        app = verify_in_app(runner.root, city, Path(result["artifactRoot"]), admission)
+        entry["qualification"]["appVerification"] = app
         runner.validated_stages.add((str(city["cityCode"]), digest))
     elif admission["status"] == "failed" and (before is None or runner._candidate_workspace_snapshot() != before):
         runner.state["adapterStageBlocked"] = {"cityCode": str(city["cityCode"]),
@@ -87,11 +81,12 @@ def _admit(runner, city, receipt, result, digest):
     runner.save_state()
 
 
-def _worker(child, workspace, result_path):
+def _worker(child, workspace, result_path, *, feedback=None, turns_used=0):
     try:
-        result = stage.run_candidate(child, workspace["city"], workspace["receipt"], workspace["packet"])
+        result = run_city_task(child, workspace, feedback=feedback, turns_used=turns_used)
     except Exception as exc:
-        result = {"status": "failed", "summary": f"Isolated workflow error: {type(exc).__name__}: {exc}"}
+        result = {"status": "failed", "summary": f"Isolated workflow error: {type(exc).__name__}: {exc}",
+                  "implementationTurns": turns_used + 1}
     finally:
         if child.stop_requested:
             child.stop_children()
@@ -115,7 +110,8 @@ def _import_result(runner, city, receipt, packet, isolation, document):
     source = Path(result.get("artifactRoot", ""))
     destination = Path(isolation["parentAttempt"])
     if not source.is_absolute() or not source.is_dir():
-        return {**result, "status": "failed", "summary": "isolated worker did not retain an artifact directory"}
+        return {**result, "status": result.get("status") if result.get("status") == "integration-blocked" else "failed",
+                "summary": result.get("summary") or "isolated worker did not retain an artifact directory"}
     source.resolve().relative_to(workspace["stateDir"] / "qualification/cities" / str(city["cityCode"]))
     destination.resolve().relative_to((runner.state_dir / "qualification/cities" / str(city["cityCode"])).resolve())
     if source.name != destination.name:
@@ -148,7 +144,7 @@ def _import_result(runner, city, receipt, packet, isolation, document):
         return result
     unexpected = [p for p in changed if not build.allowed_change(p) or p.endswith("source-catalog.json")]
     if unexpected:
-        return {**result, "status": "failed", "summary": "isolated worker changed files outside adapter/test scope",
+        return {**result, "status": "failed", "summary": "isolated worker changed files outside adapter/test scope: " + ", ".join(unexpected),
                 "unexpectedChangedFiles": unexpected}
     relevant = set(worker_hashes["backendAdapters"])
     parent_backend = _path_hashes(runner.root, relevant)
@@ -200,7 +196,7 @@ def _import_result(runner, city, receipt, packet, isolation, document):
     return result
 
 
-def _collect(runner, city, receipt, packet, digest, isolation, document):
+def _collect_once(runner, city, receipt, packet, digest, isolation, document):
     entry = runner._city_entry(city)
     runner.state.setdefault("usage", {}).update(document.get("usage", {}))
     before = None
@@ -244,10 +240,57 @@ def _collect(runner, city, receipt, packet, digest, isolation, document):
         historical.pop("isolation", None)
         entry.setdefault("qualificationHistory", []).append(historical)
         result = {"status": "pending", "receiptSha256": digest, "summary": result["summary"]}
-    if (not runner.stop_requested
-            and result.get("status") not in {"running", "ready-isolated"}):
+    entry["qualification"] = result
+    runner.save_state()
+
+
+def _collect(runner, city, receipt, packet, digest, isolation, document):
+    from parcel_city_integration import MAX_IMPLEMENTATION_TURNS
+    from parcel_source_admission import ADMISSION_FILES
+    workspace = _restore(isolation["workspace"])
+    while True:
+        _collect_once(runner, city, receipt, packet, digest, isolation, document)
+        result = runner._city_entry(city)["qualification"]
+        turns = document.get("result", {}).get("implementationTurns", 1)
+        if runner.stop_requested or result.get("status") not in {"failed", "integration-blocked"}:
+            break
+        if runner.state.get("adapterStageBlocked"):
+            result.update(status="pending", isolation=isolation)
+            runner.save_state()
+            return
+        if turns >= MAX_IMPLEMENTATION_TURNS:
+            result["status"] = "integration-blocked"
+            break
+        # The shared write was rolled back. Give the city worker the failure and
+        # current app context, outside the shared lock, instead of discarding it.
+        reopen_workspace(workspace)
+        for relative in ADMISSION_FILES:
+            origin, target = runner.root / relative, workspace["root"] / relative
+            if origin.is_file():
+                target.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copy2(origin, target)
+                workspace["baseSnapshot"][relative] = hashlib.sha256(target.read_bytes()).hexdigest()
+        isolation["workspace"] = stage._jsonable(workspace)
+        args = copy.copy(runner.args)
+        args.repo_root, args.state_dir = workspace["root"], workspace["stateDir"]
+        child = type(runner)(args)
+        child.models, child.codex_env = copy.deepcopy(runner.models), dict(runner.codex_env)
+        child.qualification_attempt_name = Path(isolation["parentAttempt"]).name
+        runner.qualification_runners = [child]
         try:
-            discard_workspace(_restore(isolation["workspace"]))
+            document = _worker(child, workspace, Path(isolation["resultPath"]),
+                               feedback=result.get("summary"), turns_used=turns)
+        finally:
+            runner.qualification_runners = []
+        # Previous import copies are owned temporary files, and the source copy
+        # remains intact in the worker. A repair replaces its own prior attempt.
+        target = Path(isolation["parentAttempt"])
+        target.resolve().relative_to((runner.state_dir / "qualification/cities" / str(city["cityCode"])).resolve())
+        if target.exists():
+            shutil.rmtree(target)
+    if not runner.stop_requested and result.get("status") not in {"running", "ready-isolated"}:
+        try:
+            discard_workspace(workspace)
         except Exception as exc:
             result = {**result, "status": "failed",
                       "summary": f"Qualification workspace discard error: {type(exc).__name__}: {exc}",
@@ -255,10 +298,10 @@ def _collect(runner, city, receipt, packet, digest, isolation, document):
                       "isolation": isolation}
         else:
             result.pop("isolation", None)
-    entry["qualification"] = result
+    runner._city_entry(city)["qualification"] = result
     runner.save_state()
     runner.log("isolated qualification checkpoint", cityCode=str(city["cityCode"]),
-               status=entry["qualification"]["status"], summary=entry["qualification"].get("summary"))
+               status=result["status"], summary=result.get("summary"))
 
 
 def _recover_interrupted(workspace):
@@ -336,13 +379,20 @@ def advance_candidates(runner, cities, cohort_dir):
             break
     if not selected or runner.stop_requested or runner.state.get("adapterStageBlocked"):
         return progressed
-    runner._model("review")
-    runner._subscription_environment()
     workspace_options = {}
     shared_root = getattr(runner.args, "shared_root", None)
     if shared_root:
+        try:
+            with _shared_write(runner):
+                verify_baseline(runner.root, shared_root)
+        except Exception as error:
+            runner.state["adapterStageBlocked"] = {"reason": f"Shared integration baseline failed: {error}", "at": now()}
+            runner.save_state()
+            return False
         workspace_options["base_revision"] = subprocess.check_output(
             ["git", "-C", str(shared_root), "rev-parse", "HEAD"], text=True).strip()
+    runner._model("review")
+    runner._subscription_environment()
     jobs = []
     prepared = []
     try:

@@ -12,6 +12,7 @@
     let store, items = [], payload = null, status = 'loading', layer, controller, request = 0, loadedKey = '';
     let panel, inspector, lastSettings = null, lastSelectedId = null, ready = false, selectionLayer;
     let progress = null;
+    let selectionPoint = null;
     let sourceOptions = [], sourceId = '', scenarioId = '', focusedRecord = null, sourceGeneration = 0, actionsOpen = false, referenceStatus = null;
     let restoreId = new URLSearchParams(location.search).get('planningSelection'), restoring = false, catalogReady = false, parcelPanel = null;
     const number = value => typeof value === 'number' && Number.isFinite(value)
@@ -28,20 +29,33 @@
         return getComputedStyle(document.documentElement).getPropertyValue(`--cb-planning-${role}`).trim();
     }
     function policy() { return core.displayPolicy(store?.get()); }
+    function sceneItems() {
+        const study = root.PlanningParcelStudy?.getItems() || [];
+        const reference = study[0]?.sourceEvidence?.parcelReference;
+        return [...items.filter(item => !item.parcelEnvelope || item.sourceEvidence.parcelReference.parcelId !== reference?.parcelId
+            || item.sourceEvidence.parcelReference.sourceId !== reference?.sourceId), ...study];
+    }
+    function appearance(item) { return core.itemAppearance(item, store?.get()); }
     function selected() { return (focusedRecord?.id === store?.get().selectedId ? focusedRecord : null)
-        || items.find(item => item.id === store?.get().selectedId) || null; }
+        || sceneItems().find(item => item.id === store?.get().selectedId) || null; }
     function notifyGeometry() { root.dispatchEvent(new CustomEvent('planninggeometrychange')); }
     function select(id) {
         if (!ready) return;
-        if (id && !items.some(item => item.id === id) && focusedRecord?.id !== id) return;
+        if (id && !sceneItems().some(item => item.id === id) && focusedRecord?.id !== id) return;
         if (id) {
-            const target = focusedRecord?.id === id ? focusedRecord : items.find(item => item.id === id);
-            if (target?.role !== 'proposed') root.ProposalSelection?.clear();
+            const target = focusedRecord?.id === id ? focusedRecord : sceneItems().find(item => item.id === id);
+            if (target?.role !== 'proposed' || target.study) root.ProposalSelection?.clear();
             root.Parcels?.uiParcelPanel?.hideParcelInfoPanel?.({ preserveProposalSelection: target?.role === 'proposed' });
-            root.hideProposalDetailsPanel?.();
+            root.hideProposalDetailsPanel?.(false, {
+                preserveCorridorSegment: target?.role === 'proposed'
+                    && root.corridorLastClickedSegment?.proposalKey === target.proposalId
+            });
             root.hideRoadInfoPanel?.();
         }
-        else if (selected()?.role === 'proposed') root.ProposalSelection?.clear();
+        else if (selected()?.role === 'proposed') {
+            root.ProposalSelection?.clear();
+            root.hideProposalDetailsPanel?.();
+        }
         actionsOpen = false;
         restoreId = null;
         store.select(id);
@@ -69,7 +83,7 @@
     }
     function inspectorBadgeKey(item) {
         if (item.role !== 'permitted') return item.role;
-        return ['public-screen', 'zoning-area'].includes(item.assessment?.meaning) ? 'sourceEvidenceBadge' : 'obligatory';
+        return ['public-screen', 'zoning-area', 'partial-envelope'].includes(item.assessment?.meaning) ? 'sourceEvidenceBadge' : 'obligatory';
     }
     async function parcelRecords(parcel, signal, context = {}) {
         const url = new URL(`${root.getBackendBase()}/planning/parcel`);
@@ -125,30 +139,46 @@
                 style: { color: color(selection.role), weight: 3, fill: false, opacity: 1 } }).addTo(selectionLayer);
         }
         layer.clearLayers();
-        if (policy().permitted === 'off') return;
-        for (const item of items) {
+        const studyParcel = root.PlanningParcelStudy?.getContext()?.parcel;
+        const frontEdge = root.PlanningParcelStudy?.getForm()?.frontEdge;
+        if (studyParcel && sceneItems().some(item => item.study && policy()[item.role] !== 'off')) {
+            root.L.geoJSON(studyParcel, { pane: 'planningSources', interactive: false,
+                style: { color: color('existing'), fill: false, weight: 2 } }).addTo(layer);
+            const ring = studyParcel.geometry.coordinates[0];
+            if (ring[frontEdge]) root.L.polyline([ring[frontEdge], ring[frontEdge + 1]].map(p => [p[1], p[0]]),
+                { pane: 'planningSources', color: color('proposed'), weight: 5 }).bindTooltip(root.i18n.t('planningStudy.frontEdge')).addTo(layer);
+        }
+        for (const item of sceneItems()) {
+            const display = appearance(item);
+            if (display === 'off') continue;
             let features;
             try { features = core.mapFeatures(item, store.get().permittedMap, root.turf); }
             catch (error) { console.error('[planning] Could not project massing', item.id, error); continue; }
             for (const feature of features) {
                 const active = item.id === store.get().selectedId;
                 const shape = root.L.geoJSON(feature, { pane: 'planningSources',
-                    style: { color: color('permitted'), weight: active ? 3 : 1.5,
-                        fillColor: color('permitted'), fillOpacity: policy().permitted === 'solid' ? 1 : 0.18,
+                    style: { color: color(item.role), weight: active ? 3 : 1.5,
+                        fillColor: color(item.role), fillOpacity: display === 'solid' ? 1 : 0.18,
                         opacity: 1 } });
                 const height = feature.properties.topM;
                 const label = item.source.parcel || item.title;
                 const tooltip = item.assessment.meaning === 'existing-stock-estimate' ? `${label} · ${t('stockBadge')}`
                     : height ? `${label} · ${root.CbFormat.formatLength(height)}` : label;
                 shape.bindTooltip(tooltip, { sticky: true, direction: 'top' });
+                if (item.parcelEnvelope && height && root.map.getZoom() >= 18) {
+                    const center = shape.getBounds().getCenter();
+                    root.L.marker(center, { pane: 'planningSources', interactive: false, keyboard: false,
+                        icon: root.L.divIcon({ className: 'planning-envelope-height', html: root.CbFormat.formatLength(height), iconSize: null }) }).addTo(layer);
+                }
                 const inspect = () => { if (!root.__mapEditLock?.isHeld()) select(item.id); };
-                shape.on('click', event => { root.L.DomEvent.stopPropagation(event); inspect(); });
+                shape.on('click', event => { root.L.DomEvent.stopPropagation(event); selectionPoint = { id: item.id, lat: event.latlng.lat, lng: event.latlng.lng }; inspect(); });
                 shape.addTo(layer);
                 shape.eachLayer(part => {
                     const node = part.getElement?.();
                     if (!node) return;
                     node.setAttribute('tabindex', '0'); node.setAttribute('role', 'button');
-                    node.setAttribute('aria-label', t(item.areas?.length ? 'inspectArea' : 'inspectMassing', { parcel: label }));
+                    node.setAttribute('aria-label', item.study ? `${root.i18n.t('planningStudy.title')}: ${label}`
+                        : t(item.areas?.length ? 'inspectArea' : 'inspectMassing', { parcel: label }));
                     node.addEventListener('keydown', event => {
                         if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); event.stopPropagation(); inspect(); }
                     });
@@ -159,10 +189,12 @@
     function isPhoto() { return root.__mapModeState?.desired === 'photo'; }
     function stateText() {
         if (isPhoto()) return t('photoNote');
-        if (policy().permitted === 'off') return t('permittedOff');
+        if (policy().permitted === 'off' && store.get().zoningAreas === 'off') return t('permittedOff');
         if (status === 'loading' && progress?.total) return t('loadingProgress', progress);
         if (status !== 'ready') return t(status);
         if (!payload?.sources?.length) return t('unavailable');
+        if (payload.envelopes) return t('envelopesLoaded', { count: items.filter(item => item.parcelEnvelope).length,
+            missing: payload.unavailable.length });
         if (!items.length) return t('empty');
         const text = t(payload.omitted ? 'partial' : payload.sources.some(source => source.capabilities.areas) ? 'areasLoaded' : 'loaded', { count: items.length });
         const pending = (payload.summaries || []).reduce((sum, entry) => sum + (entry.awaitingRefresh || 0), 0);
@@ -176,12 +208,18 @@
         const header = element('header', 'planning-inspector__header');
         const heading = element('div');
         const sourceResult = item.role === 'permitted';
-        heading.append(element('p', 'planning-eyebrow', t(item.areas?.length ? 'zoningArea' : sourceResult ? (item.volumes.length ? 'sourceProposal' : 'savedResult') : item.role === 'existing' ? 'builtRecord' : 'proposedRecord')), element('h2', '', item.title));
+        heading.append(element('p', 'planning-eyebrow', item.parcelEnvelope ? root.i18n.t('planningStudy.envelopeTitle')
+            : t(item.areas?.length ? 'zoningArea' : sourceResult ? (item.volumes.length ? 'sourceProposal' : 'savedResult') : item.role === 'existing' ? 'builtRecord' : 'proposedRecord')), element('h2', '', item.title));
         const close = element('button', 'close-circle-btn', '×');
         close.type = 'button'; close.setAttribute('aria-label', t('close'));
         close.addEventListener('click', () => { select(null); document.getElementById('planning-views-button').focus(); });
         header.append(heading, close);
         inspector.append(header);
+        if (item.study) {
+            heading.querySelector('.planning-eyebrow').textContent = root.i18n.t('planningStudy.title');
+            root.PlanningParcelStudy.renderInspector(inspector);
+            return;
+        }
         const badges = element('div', 'planning-inspector__badges');
         badges.append(element('span', 'cb-badge', t(inspectorBadgeKey(item))));
         if (sourceResult && item.volumes.length) badges.append(element('span', 'cb-badge cb-badge--warning',
@@ -191,6 +229,7 @@
             t(item.assessment.meaning === 'existing-stock-estimate' ? 'stockEstimate'
                 : item.assessment.meaning === 'public-screen' ? 'evidenceOnly'
                     : item.assessment.meaning === 'zoning-area' ? 'zoningAreaNote'
+                        : item.parcelEnvelope ? 'envelopeNote'
                         : sourceResult ? (item.volumes.length ? 'oneOption' : 'savedNoShape')
                         : item.role === 'existing' ? 'observedNote' : 'authoredNote')));
         if (item.role === 'proposed') {
@@ -200,7 +239,7 @@
             const state = root.__proposalDisplayState.of(proposal);
             const hint = root.__proposalDisplayState.rungHint(state.rung, (key, fallback) => root.i18n.t(key) || fallback);
             if (hint) inspector.append(element('p', 'planning-inspector__description', hint));
-        } else if (item.assessment.status) inspector.append(element('p', 'planning-inspector__description', resultLabel(item.assessment.status)));
+        } else if (item.assessment.status && !item.parcelEnvelope) inspector.append(element('p', 'planning-inspector__description', resultLabel(item.assessment.status)));
         if (item.assessment.reason) inspector.append(element('p', 'planning-cache-reason', item.assessment.reason));
         if (item.assessment.current === false) inspector.append(element('p', 'planning-inspector__description', t('savedWithdrawn')));
         if (referenceStatus && referenceStatus !== 'same') inspector.append(element('p', 'planning-assessment', t('referenceChanged')));
@@ -252,6 +291,7 @@
             evidence.append(element('p', '', t('sourceTerms')), terms);
         }
         inspector.append(evidence);
+        root.PlanningParcelStudy?.addSourceAction(inspector, item);
         for (const reference of item.sourceEvidence?.sourceReferences || []) {
             const button = element('button', 'btn btn-sm', t('referencedSource', { source: reference.providerId, revision: reference.revision.slice(0, 8) }));
             button.type = 'button'; button.addEventListener('click', async () => {
@@ -296,8 +336,10 @@
         sourceSelect.value = sourceId;
         sourceSelect.disabled = sourceOptions.length < 2;
         const descriptor = sourceOptions.find(source => source.id === sourceId);
-        panel.querySelector('.planning-source-note').textContent = descriptor?.capabilities.areas ? t('zoningAreaNote')
+        panel.querySelector('.planning-source-note').textContent = descriptor?.parcelStudy ? t('envelopeNote') : descriptor?.capabilities.areas ? t('zoningAreaNote')
             : descriptor?.capabilities.volumes === false ? t('evidenceOnly') : '';
+        panel.querySelector('.planning-zoning-label').textContent = t('zoningAreas');
+        panel.querySelector('.planning-zoning-field').hidden = !descriptor?.capabilities.areas;
         const scenario = panel.querySelector('.planning-scenario-select');
         scenario.value = scenarioId; scenario.setAttribute('aria-label', t('scenarioLabel'));
         panel.querySelector('.planning-scenario-label').textContent = t('scenarioLabel');
@@ -315,20 +357,21 @@
             select.value = store.get()[select.dataset.planningSetting];
             for (const option of select.options) option.textContent = t(option.value);
         });
-        for (const key of ['existingScope', 'proposedForm', 'permittedMap']) {
+        for (const key of ['existingScope', 'proposedForm', 'permittedMap', 'zoningAreas']) {
             panel.querySelector(`[data-planning-setting="${key}"]`).setAttribute('aria-label', t(key));
         }
-        panel.querySelector('[data-planning-setting="permittedMap"]').hidden = root.__mapModeState?.desired === 'model' || isPhoto() || descriptor?.capabilities.volumes === false;
+        panel.querySelector('[data-planning-setting="permittedMap"]').hidden = root.__mapModeState?.desired === 'model' || isPhoto()
+            || descriptor?.capabilities.volumes === false && !descriptor?.parcelStudy;
         panel.querySelector('.planning-view-status').textContent = stateText();
-        panel.querySelector('.planning-view-status').setAttribute('aria-busy', String(status === 'loading' && policy().permitted !== 'off'));
+        panel.querySelector('.planning-view-status').setAttribute('aria-busy', String(status === 'loading'));
         const retry = panel.querySelector('.planning-view-retry');
-        retry.hidden = status !== 'error' || policy().permitted === 'off'; retry.textContent = t('retry');
+        retry.hidden = status !== 'error' || policy().permitted === 'off' && store.get().zoningAreas === 'off'; retry.textContent = t('retry');
         panel.querySelector('.planning-coverage summary').textContent = t('coverageTitle');
-        panel.querySelector('.planning-coverage p').textContent = t('coverageNote');
+        panel.querySelector('.planning-coverage p').textContent = t(payload?.envelopes ? 'envelopeCoverage' : 'coverageNote');
         const summary = panel.querySelector('.planning-cache-summary');
         const summaries = payload?.summaries || [];
         summary.hidden = !summaries.length || policy().permitted === 'off';
-        summary.textContent = t('cacheSummary', { count: summaries.reduce((sum, entry) => sum + entry.cachedResults, 0),
+        summary.textContent = t(payload?.envelopes ? 'envelopeSummary' : 'cacheSummary', { count: summaries.reduce((sum, entry) => sum + entry.cachedResults, 0),
             shapes: summaries.reduce((sum, entry) => sum + entry.withGeometry, 0),
             missing: summaries.reduce((sum, entry) => sum + entry.withoutGeometry, 0) });
         const counts = panel.querySelector('.planning-result-counts');
@@ -337,6 +380,11 @@
             const key = `planningViews.resultStatus.${status}`;
             const label = root.i18n.t(key);
             counts.append(element('dt', '', label === key ? t('otherResult') : label), element('dd', '', number(count)));
+        }
+        const unavailable = {};
+        for (const entry of payload?.unavailable || []) unavailable[entry.reason] = (unavailable[entry.reason] || 0) + 1;
+        for (const [reason, count] of Object.entries(unavailable)) {
+            counts.append(element('dt', '', t(`envelopeUnavailable.${reason}`)), element('dd', '', number(count)));
         }
         panel.querySelector('.planning-inspect-hint').textContent = t('inspectHint');
         panel.querySelector('.planning-inspect-hint').hidden = policy().permitted === 'off' || !items.length || isPhoto();
@@ -380,10 +428,10 @@
             history.replaceState(history.state, '', url);
             root.dispatchEvent(new CustomEvent('planningselectionchange', { detail: { id: state.selectedId } }));
         }
-        if (settingsChanged && view.permitted !== 'off') refresh();
+        if (settingsChanged && (view.permitted !== 'off' || state.zoningAreas !== 'off')) refresh();
     }
     async function refresh({ force = false } = {}) {
-        if (!ready || !catalogReady || policy().permitted === 'off') return;
+        if (!ready || !catalogReady || policy().permitted === 'off' && store.get().zoningAreas === 'off') return;
         if (root.map.getZoom() < 16) {
             controller?.abort(); request++; loadedKey = ''; items = []; status = 'zoom'; payload = null;
             if (!selected()) store.select(null);
@@ -392,7 +440,10 @@
         const city = root.CityConfigManager.getCurrentCityId();
         const bounds = root.map.getBounds();
         const bbox = [bounds.getWest(), bounds.getSouth(), bounds.getEast(), bounds.getNorth()];
-        const key = `${sourceId}:${scenarioId}:${core.queryKey(city, bbox)}`;
+        const descriptor = sourceOptions.find(source => source.id === sourceId);
+        const massing = Boolean(descriptor?.parcelStudy && policy().permitted !== 'off');
+        const zoning = store.get().zoningAreas !== 'off';
+        const key = `${sourceId}:${scenarioId}:${massing}:${zoning}:${core.queryKey(city, bbox)}`;
         if (!force && key === loadedKey) return;
         loadedKey = key;
         controller?.abort(); controller = new AbortController();
@@ -403,8 +454,18 @@
             url.searchParams.set('city', city); url.searchParams.set('bbox', bbox.join(','));
             if (sourceId) url.searchParams.set('source', sourceId);
             if (scenarioId) url.searchParams.set('scenario', scenarioId);
-            const answer = await root.PlanningFeed.loadViewport(url, { city, signal: controller.signal,
-                onProgress(value) { if (generation === request) { progress = value; render(); } } });
+            const options = { city, signal: controller.signal,
+                onProgress(value) { if (generation === request) { progress = value; render(); } } };
+            const requests = [];
+            if (!descriptor?.capabilities.areas || zoning) requests.push(root.PlanningFeed.loadViewport(url, options));
+            if (massing) {
+                const envelopeUrl = new URL(url); envelopeUrl.pathname = '/planning/envelopes';
+                requests.push(root.PlanningFeed.loadViewport(envelopeUrl, options).then(answer => ({ ...answer, envelopes: true })));
+            }
+            const answers = await Promise.all(requests);
+            const answer = answers.find(answer => answer.envelopes) || answers[0]
+                || { sources: [descriptor], summaries: [], unavailable: [], omitted: 0, items: [] };
+            answer.items = answers.flatMap(answer => answer.items);
             if (generation !== request) return;
             payload = answer; items = answer.items; status = 'ready';
             if (!selected()) store.select(null);
@@ -497,14 +558,18 @@
         const scenarioInput = element('select', 'planning-layer-select planning-scenario-select');
         scenarioField.append(scenarioInput); body.append(scenarioField);
         scenarioInput.addEventListener('change', () => {
-            const previousId = selected()?.role === 'permitted' ? store.get().selectedId : null;
+            const wasStudy = selected()?.study;
+            const previousId = !wasStudy && selected()?.role === 'permitted' ? store.get().selectedId : null;
+            root.PlanningParcelStudy?.clear();
+            if (wasStudy) store.select(null);
             scenarioId = scenarioInput.value; controller?.abort(); request++; loadedKey = ''; items = []; payload = null;
             if (previousId) { focusedRecord = null; store.select(null); restoreId = previousId; }
             const url = new URL(location.href); url.searchParams.set('planningScenario', scenarioId); history.replaceState(history.state, '', url);
             drawMap(); notifyGeometry(); refresh({ force: true });
         });
         sourceInput.addEventListener('change', () => {
-            const clearSourceSelection = selected()?.role === 'permitted';
+            const clearSourceSelection = selected()?.role === 'permitted' || selected()?.study;
+            root.PlanningParcelStudy?.clear();
             sourceId = sourceInput.value; controller?.abort(); request++; loadedKey = ''; items = []; payload = null;
             populateScenarios();
             if (clearSourceSelection) { focusedRecord = null; store.select(null); }
@@ -528,6 +593,8 @@
             const name = element('div', 'planning-layer-name'); name.append(swatch, label);
             row.append(name, control(role), control(details[role])); controls.append(row);
         }
+        const zoningField = element('label', 'planning-source-field planning-zoning-field');
+        zoningField.append(element('span', 'planning-zoning-label'), control('zoningAreas')); body.append(zoningField);
         panel.querySelector('.planning-reroll').addEventListener('click', () => store.reroll());
         panel.querySelector('.planning-open-model').addEventListener('click', () => root.requestMapMode('model'));
         panel.querySelector('.planning-view-retry').addEventListener('click', () => refresh({ force: true }));
@@ -541,6 +608,7 @@
         root.map.on('moveend', () => refresh());
         root.map.on('click', () => select(null));
         root.addEventListener('cityChanged', () => {
+            root.PlanningParcelStudy?.clear(); selectionPoint = null;
             controller?.abort(); request++; loadedKey = ''; items = []; payload = null; status = 'loading';
             sourceOptions = []; sourceId = ''; scenarioId = ''; focusedRecord = null; restoreId = null; catalogReady = false; parcelPanel = null;
             store.select(null); drawMap(); render(); notifyGeometry(); loadSources();
@@ -562,7 +630,9 @@
         syncView();
         loadSources();
     }
-    root.PlanningViews = { getState: () => store?.get() || { ...core.defaults, variation: '' }, getPolicy: policy, getItems: () => items,
+    root.PlanningViews = { getState: () => store?.get() || { ...core.defaults, variation: '' }, getPolicy: policy, getItems: sceneItems,
+        getSelectionPoint: () => selectionPoint?.id === selected()?.id ? selectionPoint : null, getAppearance: appearance,
+        refreshStudy({ inspector: updateInspector = true } = {}) { drawMap(); if (updateInspector) renderInspector(); notifyGeometry(); },
         getSelected: selected, isReady: () => ready, isInspecting: () => ready && !inspector.hidden,
         select, selectRecord, inspectBuilding, inspectProposal, showParcelEvidence, color, refresh,
         configure: (key, value) => store?.configure(key, value), reroll: () => store?.reroll() };

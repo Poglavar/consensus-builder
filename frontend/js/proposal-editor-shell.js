@@ -1284,7 +1284,8 @@
 
     // Freeform drafts that save after the design session's own draft: a Detached rule converts to
     // one Freeform building per house, and the active draft holds only the first. Keyed by the
-    // active draft id; saved (or dropped) by finishProposalDraftDesignSession.
+    // active draft id, together with the complete pre-staging design. A failed first save restores
+    // that design before reopening its editor; abandoning the session discards it explicitly.
     const freeformSiblingDrafts = new Map();
 
     // Stage independent, already-authored Freeform buildings on their own sites. The caller owns
@@ -1313,7 +1314,9 @@
         }
         const source = draft.sourceLocalProposalId ? proposalById(draft.sourceLocalProposalId) : null;
         const published = !!source && global.ProposalLineage?.editsInPlace?.(source) !== true;
-        const previousSiblings = freeformSiblingDrafts.get(String(draft.id)) || [];
+        const previousStage = freeformSiblingDrafts.get(String(draft.id));
+        const previousSiblings = previousStage?.siblings || [];
+        const recoveryDraft = JSON.parse(JSON.stringify(draft));
         const siblings = [];
         try {
             list.slice(1).forEach((house, index) => {
@@ -1340,7 +1343,7 @@
             siblings.forEach(id => { try { store.deleteDraft(id); } catch (_) { } });
             return { ok: false, reason: error?.message || String(error) };
         }
-        freeformSiblingDrafts.set(String(draft.id), siblings);
+        freeformSiblingDrafts.set(String(draft.id), { siblings, draft: recoveryDraft });
         previousSiblings.forEach(id => { try { store.deleteDraft(id); } catch (_) { } });
         return { ok: true, count: list.length };
     }
@@ -1366,15 +1369,13 @@
     }
 
     // The further houses save one after another once the first has saved: they are cut into the
-    // ground after it, never alongside it. If the first cannot be saved, the others are dropped
-    // with it (its design is reopened for repair; converting again makes them anew).
+    // ground after it, never alongside it. A failed first save has already restored the complete
+    // drawing for repair, so none of the remaining houses may be saved independently.
     async function saveFreeformSiblings(firstResult, siblingIds) {
         if (!siblingIds?.length) return firstResult;
         const store = global.proposalDraftStore;
         if (!firstResult) {
             siblingIds.forEach(id => { try { store.deleteDraft(id); } catch (_) { } });
-            console.warn('[ProposalEditor] First Freeform house not saved; further houses dropped', siblingIds);
-            global.showEphemeralMessage?.(tDraft('proposalDrafts.freeform.siblingsDropped', 'The other houses were not converted, because the first one could not be saved.'), 7000, 'error');
             return firstResult;
         }
         for (const id of siblingIds) {
@@ -1384,9 +1385,16 @@
     }
 
     function dropFreeformSiblings(draftId) {
-        const siblings = freeformSiblingDrafts.get(String(draftId)) || [];
+        const siblings = freeformSiblingDrafts.get(String(draftId))?.siblings || [];
         freeformSiblingDrafts.delete(String(draftId));
         siblings.forEach(id => { try { global.proposalDraftStore?.deleteDraft?.(id); } catch (_) { } });
+    }
+
+    function restoreStagedFreeformDesign(draftId, store) {
+        const staged = freeformSiblingDrafts.get(String(draftId));
+        if (!staged || !store?.getDraft?.(draftId)) return;
+        store.updateDraft(draftId, () => JSON.parse(JSON.stringify(staged.draft)), { recordHistory: false });
+        dropFreeformSiblings(draftId);
     }
 
     // "Apply the same rule to the parcels here" moves the design's land: the rule now builds on
@@ -1577,6 +1585,7 @@
     function reopenFailedProposalDraftOnce(draftId, store = global.proposalDraftStore, options = {}) {
         const id = String(draftId || '');
         if (!id || failedDraftReopenInFlight.has(id)) return false;
+        restoreStagedFreeformDesign(draftId, store);
         let retained = null;
         try { retained = store?.getDraft?.(draftId) || null; } catch (_) { }
         if (!retained || typeof global.openProposalDraftDesign !== 'function') return false;
@@ -1846,16 +1855,20 @@
         // clears the commit id first, so tearing the tool down publishes nothing.
         // A collection uploaded from the form's Design tab also produces ordinary local objects
         // on Done. Leaving its siblings tied to the closed session would delete their geometry.
-        const stagedSiblings = freeformSiblingDrafts.get(String(activeId)) || [];
+        const stagedSiblings = freeformSiblingDrafts.get(String(activeId))?.siblings || [];
+        let saving = false;
         if ((geometryEditCommitDraftId && String(geometryEditCommitDraftId) === String(activeId)) || stagedSiblings.length) {
             const commitId = activeId;
             geometryEditCommitDraftId = null;
             const current = global.proposalDraftStore.getDraft(commitId);
-            const siblings = freeformSiblingDrafts.get(String(commitId)) || [];
-            freeformSiblingDrafts.delete(String(commitId));
+            const siblings = stagedSiblings;
             if (current && current.dirty) {
+                saving = true;
                 Promise.resolve(instantCreateProposalFromDraft(commitId, { commitOnFinish: true }))
-                    .then(result => saveFreeformSiblings(result, siblings)).catch(error => {
+                    .then(result => {
+                        if (result) freeformSiblingDrafts.delete(String(commitId));
+                        return saveFreeformSiblings(result, siblings);
+                    }).catch(error => {
                     console.warn('[ProposalEditor] Geometry edit commit failed; draft kept', error);
                     reportProposalDesignSaveFailure(error);
                     reopenFailedProposalDraftOnce(commitId, global.proposalDraftStore, { commitOnFinish: true });
@@ -1865,7 +1878,7 @@
                 global.proposalDraftStore.deleteDraft(commitId);
             }
         }
-        dropFreeformSiblings(activeId);
+        if (!saving) dropFreeformSiblings(activeId);
         if (editorState.draftId === activeId && ensureShell()?.classList.contains('is-open')) renderShell();
         return draft;
     }

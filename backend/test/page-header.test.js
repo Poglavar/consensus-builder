@@ -43,7 +43,11 @@ describe('satellite page header', () => {
         const header = headers.first();
         const brand = header.find('.cb-page-header__brand');
         expect(brand).toHaveLength(1);
-        expect(brand.find('img.cb-page-header__logo[src="images/consensus-builder-logo.png"]')).toHaveLength(1);
+        const logo = brand.find('img.cb-page-header__logo');
+        expect(logo).toHaveLength(1);
+        const logoPath = logo.attr('src');
+        expect(logoPath).toMatch(/^images\/consensus-builder-logo(?:-2)?\.png$/);
+        expect(readFileSync(path.join(FRONTEND, logoPath))).toBeTruthy();
         expect(textOf(brand.text())).toBe('Consensus Builder');
         const titles = header.find('.cb-page-header__title');
         expect(titles).toHaveLength(1);

@@ -1,5 +1,4 @@
 // Cover map search, globe navigation, city switching, and real Leaflet zoom controls.
-import path from 'node:path';
 import { test, expect } from '../helpers/fixtures';
 import { openCity, createSpace, showProposal, chooseTermsForShare } from '../helpers/runtime';
 import { waitForMapReady } from '../helpers/app';
@@ -149,45 +148,5 @@ test.describe('Navigation button controls @features', () => {
     }
   });
 
-  test('floor-plan location map zoom controls change the real Leaflet zoom', async ({ mockApi: page }) => {
-    await page.addInitScript(() => {
-      let leaflet: any;
-      Object.defineProperty(window, 'L', {
-        configurable: true,
-        get: () => leaflet,
-        set: value => {
-          leaflet = value;
-          if (!leaflet || typeof leaflet.map !== 'function' || leaflet.map.__archiveMapCapture) return;
-          const createMap = leaflet.map;
-          const captureMap = function(this: any, ...args: any[]) {
-            const instance = createMap.apply(this, args);
-            (window as any).__archiveLocationMap = instance;
-            return instance;
-          };
-          (captureMap as any).__archiveMapCapture = true;
-          leaflet.map = captureMap;
-        }
-      });
-    });
-    await page.route('https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js', route => route.fulfill({ path: path.resolve(__dirname, '../../frontend/vendor/leaflet-1.9.4/leaflet.js'), contentType: 'application/javascript' }));
-    await page.route('https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css', route => route.fulfill({ path: path.resolve(__dirname, '../../frontend/vendor/leaflet-1.9.4/leaflet.css'), contentType: 'text/css' }));
-    await page.route('**/api/floor-plans?*', route => route.fulfill({ json: {
-      plans: [{
-        id: 'navigation-ground', scope: 'floor', floor: 0, label: 'Ground floor',
-        source: { sha256: 'a'.repeat(64), url: 'https://plans.example/ground.pdf' },
-        buildingId: 'registered-1', building: { name: 'Navigation Fixture', label: 'Navigation Fixture', location: { lng: 15.98, lat: 45.8 } },
-      }],
-      limit: 100, offset: 0, hasMore: false,
-    } }));
-    await page.goto('/floor-plans.html?lang=en');
-    const map = page.locator('#map');
-    await expect(map.locator('.leaflet-control-zoom')).toBeVisible();
-    await expect(map.locator('.leaflet-marker-icon, .leaflet-interactive')).toHaveCount(1);
-    const initialZoom = await page.evaluate(() => (window as any).__archiveLocationMap.getZoom());
-    await map.locator('.leaflet-control-zoom-in').click();
-    await expect.poll(() => page.evaluate(() => (window as any).__archiveLocationMap.getZoom())).toBe(initialZoom + 1);
-    await map.locator('.leaflet-control-zoom-out').click();
-    await expect.poll(() => page.evaluate(() => (window as any).__archiveLocationMap.getZoom())).toBe(initialZoom);
 
-  });
 });

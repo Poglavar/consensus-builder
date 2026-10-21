@@ -599,10 +599,11 @@ async function handleGeometryAction(actionKey) {
                     if (typeof updateStatus === 'function') updateStatus('Upload tool is unavailable.');
                     break;
                 }
-                const selection = (typeof getCurrentParcelSelectionContext === 'function')
-                    ? getCurrentParcelSelectionContext()
-                    : { layers: [], ids: [] };
-                if (!selection.ids || !selection.ids.length) {
+                const site = window.pendingProposalSiteContext?.site || null;
+                const selection = site ? { layers: [], ids: [] }
+                    : (typeof getCurrentParcelSelectionContext === 'function')
+                        ? getCurrentParcelSelectionContext() : { layers: [], ids: [] };
+                if (!site && (!selection.ids || !selection.ids.length)) {
                     if (typeof updateStatus === 'function') updateStatus('Select parcels before uploading a building.');
                     break;
                 }
@@ -611,6 +612,7 @@ async function handleGeometryAction(actionKey) {
                 await window.BuildingUpload.open(
                     {
                         parcelIds: selection.ids,
+                        site,
                         blockName: (typeof formatParcelSelectionLabel === 'function')
                             ? formatParcelSelectionLabel(selection.ids)
                             : null

@@ -1,4 +1,69 @@
 {
+  "planningStudy": {
+    "exactStartHint": "Otvara ovu tačnu parcelu sa izmenjivim projektom i izborom prednje ivice.",
+    "title": "Studija parcele",
+    "envelopeTitle": "Delimični omotač",
+    "designTitle": "Provera oblikovanja",
+    "start": "Proveri parcelu ovde",
+    "startHint": "Koristi parcelu na odabranoj tački ili u centru karte. Zonska područja i parcele zadržavaju zasebne identitete.",
+    "loading": "Učitavanje parcele i izvora prostornih pravila…",
+    "scope": "Uredite probni volumen prema direktnim vrednostima Atlasa. Omotač prikazuje podržani deo dimenzijskih ograničenja, uz pretpostavljenu prednju ivicu i relativnu visinu tla.",
+    "heightM": "Visina oblikovanja (m)",
+    "scale": "Razmera osnove (%)",
+    "eastM": "Pomeranje na istok (m)",
+    "northM": "Pomeranje na sever (m)",
+    "frontEdge": "Pretpostavljena prednja ivica",
+    "edge": "Ivica {{number}}",
+    "breach": "Oblikovanje prelazi bar jedno provereno ograničenje. Ostali uslovi ostaju nerazrešeni.",
+    "unresolved": "Proverena ograničenja nisu prekoračena. Nerazrešeni uslovi ostaju.",
+    "measured": "Izmereno",
+    "limit": "Ograničenje",
+    "missingDirectValue": "Nije dostupna direktna vrednost izvora.",
+    "unresolvedTitle": "Nerazrešeni uslovi i pretpostavke",
+    "saved": "Nacrt je sačuvan u ovom pregledaču. Predlog nije primenjen ni objavljen.",
+    "saveError": "Nacrt nije mogao biti sačuvan u ovom pregledaču.",
+    "changed": "Izvor parcele ili prostornih pravila se promenio. Prethodni nacrt je sačuvan; njegova procena više nije aktuelna.",
+    "restart": "Počni ponovo sa aktuelnim izvorima",
+    "reset": "Vrati početno probno oblikovanje",
+    "references": "Fiksirane reference pravila i parcele",
+    "invalidInput": "Unesite dimenzije unutar prikazanih raspona. Karta i dalje prikazuje poslednje ispravno oblikovanje.",
+    "status": {
+      "pass": "Unutar proverenog ograničenja",
+      "fail": "Prekoračeno provereno ograničenje",
+      "unknown": "Nerazrešeno"
+    },
+    "checks": {
+      "parcelContainment": "Unutar izvorne parcele",
+      "zoningCoverage": "Deo oblikovanja izvan pokrivenosti izvora",
+      "frontSetback": "Prednje odstojanje",
+      "sideSetback": "Bočna odstojanja",
+      "rearSetback": "Zadnje odstojanje",
+      "buildingCoverage": "Izgrađenost",
+      "use": "Zabeleženi uslov stambene namene"
+    },
+    "unresolvedReasons": {
+      "applicability": "Aktuelna pravna primenljivost, preklopna pravila, izuzeci i potrebna rasprava nisu provereni.",
+      "edge-assumption": "Prednja, zadnja i bočne ivice proizlaze iz odabrane prednje ivice. Tumačenje nije provereno prema ulici ili pravnom obuhvatu građevinske parcele.",
+      "vertical-reference": "Visina koristi ravnu relativnu referencu tla. Izmereni teren, pravila krova i visinska referenca propisa nisu provereni.",
+      "measurement-basis": "Provera površina koristi ovu parcelu i probnu osnovu. Pravne definicije parcele, zgrade i etažne površine mogu se razlikovati.",
+      "other-rules": "Parkiranje, etažna površina, gustina stanovanja, uslovi stanovanja, infrastruktura i ostala nepodržana pravila nisu procenjeni. Sva polja izvora ostaju u inspektoru prostornih pravila.",
+      "partial-source-coverage": "{{area}} parcele leži izvan dostavljenog zonskog područja. Delimični omotač isključuje tu površinu; primenljivost ostaje nerazrešena."
+    },
+    "errors": {
+      "study-source-unavailable": "Izvor nije mogao biti učitan. Pokušajte ponovo kada bude dostupan.",
+      "study-unavailable": "Za ovaj izvor nije postavljena studija parcele.",
+      "study-parcel-source-unavailable": "Postavljeni izvor parcela nije dostupan.",
+      "study-parcel-missing": "Na ovoj tački nije pronađena parcela. Kliknite unutar parcele i pokušajte ponovo.",
+      "study-parcel-ambiguous": "Na ovoj tački preklapa se više identiteta parcela. Odaberite tačnu parcelu; identitet nije pretpostavljen.",
+      "study-parcel-incomplete": "Pokrivenost parcelama nije potpuna.",
+      "study-zoning-incomplete": "Izvor prostornih pravila vratio je nepotpunu pokrivenost.",
+      "study-multiple-zoning-areas": "Parcela prelazi više zonskih područja. Njihova pravila još nisu objedinjena.",
+      "study-zoning-missing": "Nijedno dostavljeno zonsko područje ne seče ovu parcelu.",
+      "unsupported-parcel-shape": "Demonstracija podržava male konveksne parcele bez rupa. Za ovu parcelu potreban je drugi geometrijski evaluator.",
+      "empty-supported-bound": "Podržana odstojanja ne ostavljaju omotač za prikaz.",
+      "invalid-front-edge": "Odaberite ispravnu ivicu parcele."
+    }
+  },
   "onMapEditor": {
     "missingSite": "Ova sačuvana zgrada nema važeću granicu izvorne lokacije pa nije moguće bezbedno uređivati njenu geometriju.",
     "cancel": "Odustani",
@@ -4343,6 +4408,25 @@
     },
     "city": {
         "labels": {
+            "porto_novo": "Porto-Novo, Бенин",
+            "bloemfontein_za": "Bloemfontein (2556), Južnoafrička Republika",
+            "parakou": "Parakou, Бенин",
+            "sikasso": "Sikasso, Мали",
+            "edendale": "Edendale, Južnoafrička Republika",
+            "segou": "Ségou, Мали",
+            "kanyamazane": "Kanyamazane, Južnoafrička Republika",
+            "reeston": "Reeston, Južnoafrička Republika",
+            "kapiri_mposhi": "Kapiri Mposhi, Zambija",
+            "mohadin": "Mohadin, Južnoafrička Republika",
+            "choma": "Choma, Zambija",
+            "joao_teves": "João Teves, Зеленортска Острва",
+            "whydah": "Whydah, Бенин",
+            "chilanga": "Chilanga, Zambija",
+            "pobe": "Pobè, Бенин",
+            "hyderabad": "Hyderabad, Indija",
+            "jakarta": "Jakarta, Индонезија",
+            "rio_de_janeiro": "Rio de Janeiro, Brazil",
+            "sisulu_village": "Sisulu Village, Južnoafrička Republika",
             "mandvi": "Mandvi, Indija",
             "bhuj": "Bhuj, Indija",
             "nahariyya": "Nahariyya, Израел",
@@ -7155,11 +7239,6 @@
             "short": "zadire"
         },
         "buildings": {
-            "count": {
-                "one": "{{count}} zgrada",
-                "few": "{{count}} zgrade",
-                "other": "{{count}} zgrada"
-            },
             "footprint": "osnova {{area}}",
             "floorArea": "BRGP {{area}}",
             "height": "spratova: {{floors}} · {{height}}"
@@ -7612,6 +7691,25 @@
         }
     },
   "planningViews": {
+    "zoningAreas": "Područja izvornog plana",
+    "envelopeCoverage": "Delimični omotači izvedeni su iz učitanih katastarskih i planskih zapisa. Parcele bez volumena prebrojane su prema razlogu; izostanak volumena ne dokazuje nulti kapacitet.",
+    "envelopeSummary": "Pregledano {{count}} katastarskih zapisa: {{shapes}} sa delimičnim omotačima, {{missing}} bez volumena.",
+    "envelopeNote": "Delimični omotači parcela iz direktnih vrednosti izvora. Prednja ivica nije utvrđena pa oblik uključuje alternativna tumačenja ivica. Ograničenja površine i nerazrešena pravila i dalje važe.",
+    "envelopesLoaded": {
+      "one": "{{count}} delimični omotač parcele · {{missing}} parcela bez volumena",
+      "few": "{{count}} delimična omotača parcela · {{missing}} parcela bez volumena",
+      "other": "{{count}} delimičnih omotača parcela · {{missing}} parcela bez volumena"
+    },
+    "envelopeUnavailable": {
+      "envelope-geometry-error": "Izvornu geometriju nije moguće proceniti",
+      "overlapping-parcel-identities": "Preklapanje identiteta parcela",
+      "use-prohibited": "Stambeni tip zabeležen kao zabranjen",
+      "missing-direct-height": "Nema direktnog ograničenja visine",
+      "empty-supported-bound": "Nema prostora unutar podržanih odstojanja",
+      "unsupported-parcel-shape": "Nepodržan oblik parcele",
+      "study-multiple-zoning-areas": "Više planskih područja na jednoj parceli",
+      "study-zoning-missing": "Nema planskog izvora za parcelu"
+    },
     "refreshPending": "Čeka osvežavanje",
     "refreshCount": {
       "one": "{{count}} rezultat čeka osvežavanje",

@@ -179,8 +179,16 @@ test.describe('proposal button controls: modal and alternate states @features', 
 
     await modal.locator('.minted-proposal-details-btn').click();
     await expect(modal).toBeHidden();
-    await expect(page.locator('#proposal-details-panel')).toBeVisible();
-    await expect(page.locator('#proposal-details-panel')).toContainText('Modal garden');
+    const inspector = page.locator('#planning-inspector');
+    await expect(inspector).toBeVisible();
+    await expect(inspector.getByRole('heading', { name: 'Modal garden', exact: true })).toBeVisible();
+    const selected = await page.evaluate(() => {
+      const item = (window as any).PlanningViews.getSelected();
+      return { id: item?.proposalId, title: item?.title, role: item?.role };
+    });
+    expect(selected).toMatchObject({ title: 'Modal garden', role: 'proposed' });
+    expect(await page.evaluate(id => (window as any).proposalStorage.getAllProposals()
+      .some((p: any) => (window as any).getProposalKey(p) === id && p.title === 'Modal garden'), selected.id)).toBe(true);
 
     await openMintedProposals(page);
     await expect(modal).toBeVisible();
@@ -218,8 +226,15 @@ test.describe('proposal button controls: modal and alternate states @features', 
 
     await success.getByRole('button', { name: 'OK', exact: true }).click();
     await expect(success).toBeHidden();
-    await expect(page.locator('#proposal-details-panel')).toContainText('Mint confirmation test');
-    await expect.poll(() => page.evaluate(() => (window as any).proposalStorage.getAllProposals().some((p: any) => p.title === 'Mint confirmation test' && p.nft?.tokenId === '77'))).toBe(true);
+    const inspector = page.locator('#planning-inspector');
+    await expect(inspector.getByRole('heading', { name: 'Mint confirmation test', exact: true })).toBeVisible();
+    const selected = await page.evaluate(() => {
+      const item = (window as any).PlanningViews.getSelected();
+      return { id: item?.proposalId, title: item?.title, role: item?.role };
+    });
+    expect(selected).toMatchObject({ title: 'Mint confirmation test', role: 'proposed' });
+    await expect.poll(() => page.evaluate(id => (window as any).proposalStorage.getAllProposals().some((p: any) =>
+      (window as any).getProposalKey(p) === id && p.title === 'Mint confirmation test' && p.nft?.tokenId === '77'), selected.id)).toBe(true);
   });
 
   test('proposal mint failure Cancel leaves the user in the editable dialog with a retryable status', async ({ mockApi: page }) => {
@@ -482,12 +497,16 @@ test.describe('proposal button controls: modal and alternate states @features', 
     await openCity(page);
     await establishLocalProfile(page);
     await page.evaluate(() => (window as any).i18n.setLanguage('en'));
-    const sourceId = await page.evaluate(parcelId => (window as any).proposalStorage.addProposal({
-      proposalId: 'published-source-741', title: 'Published source', goal: 'park', lifecycleStatus: 'Active',
-      city: 'zagreb', cadastreParcelIds: [parcelId],
-      serverProposalId: '741', geometry: { type: 'Polygon', coordinates: [[[15.98,45.8],[15.981,45.8],[15.981,45.801],[15.98,45.801],[15.98,45.8]]] },
-      binding: { coverage: 'full', parcels: [{ parcelId, overlapM2: 100, intrusionM: 0 }], unsurveyedM2: 0 }
-    }), PARCEL_ID);
+    const sourceId = await page.evaluate(parcelId => {
+      const w = window as any;
+      return w.proposalStorage.addProposal({
+        proposalId: 'published-source-741', title: 'Published source', goal: 'park', lifecycleStatus: 'Active',
+        city: 'zagreb', cadastreParcelIds: [parcelId],
+        serverProposalId: '741', publicationApiBase: w.resolveBackendBaseUrl(),
+        geometry: { type: 'Polygon', coordinates: [[[15.98,45.8],[15.981,45.8],[15.981,45.801],[15.98,45.801],[15.98,45.8]]] },
+        binding: { coverage: 'full', parcels: [{ parcelId, overlapM2: 100, intrusionM: 0 }], unsurveyedM2: 0 }
+      });
+    }, PARCEL_ID);
     const driftResponse = {
       stored: { computedAt: '2026-01-01T00:00:00.000Z', coverage: 'full', parcels: [{ parcelId: PARCEL_ID, overlapM2: 100, intrusionM: 0 }], unsurveyedM2: 0 },
       current: { computedAt: '2026-01-02T00:00:00.000Z', coverage: 'full', parcels: [{ parcelId: 'HR-335754-1235', overlapM2: 98, intrusionM: 0 }], unsurveyedM2: 0 },
@@ -511,11 +530,11 @@ test.describe('proposal button controls: modal and alternate states @features', 
     const confirm = page.locator('.cb-dialog-overlay--confirm');
     await expect(confirm).toContainText('Publish a new record with the same site and design');
     await confirm.getByRole('button', { name: 'Re-bind', exact: true }).click();
-    await expect.poll(() => page.evaluate(id => (window as any).proposalStorage.getAllProposals().some((p: any) => p.rebind?.sourceProposalId === id), sourceId)).toBe(true);
+    await expect.poll(() => page.evaluate(id => { const storage = (window as any).proposalStorage; const source = storage.getProposal(id); return storage.getAllProposals().some((p: any) => p.proposalOrigin?.relation === 'rebind' && p.proposalOrigin?.source?.kind === 'publication' && p.proposalOrigin.source.apiBase === source.publicationApiBase && p.proposalOrigin.source.proposalRowId === String(source.serverProposalId)); }, sourceId)).toBe(true);
     await expect.poll(() => server.records.size).toBe(1);
     await expect.poll(() => page.evaluate(id => (window as any).proposalStorage.getProposal(id)?.title, sourceId)).toBe('Published source');
 
-    const derivedId = await page.evaluate(id => (window as any).proposalStorage.getAllProposals().find((p: any) => p.rebind?.sourceProposalId === id)?.proposalId, sourceId);
+    const derivedId = await page.evaluate(id => { const storage = (window as any).proposalStorage; const source = storage.getProposal(id); return storage.getAllProposals().find((p: any) => p.proposalOrigin?.relation === 'rebind' && p.proposalOrigin?.source?.kind === 'publication' && p.proposalOrigin.source.apiBase === source.publicationApiBase && p.proposalOrigin.source.proposalRowId === String(source.serverProposalId))?.proposalId; }, sourceId);
     await page.route('**/proposals/741/binding-drift', route => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(driftResponse) }));
     await page.evaluate(({ id }) => {
       const storage = (window as any).proposalStorage;
@@ -529,6 +548,7 @@ test.describe('proposal button controls: modal and alternate states @features', 
     const openRebound = page.locator('.proposal-binding-drift [data-binding-drift-open]');
     await expect(openRebound).toBeVisible();
     await openRebound.click();
-    await expect(page.locator('#proposal-details-title')).toHaveText('Already rebound');
+    await expect.poll(() => page.evaluate(() => (window as any).PlanningViews.getSelected()?.proposalId)).toBe(derivedId);
+    await expect(page.locator('#planning-inspector').getByRole('heading', { name: 'Already rebound', exact: true })).toBeVisible();
   });
 });

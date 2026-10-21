@@ -189,7 +189,7 @@ class DiscoveryPipelineTests(unittest.TestCase):
         self.accept("rejected")
         self.assertEqual(self.instance.state["cities"]["42"]["status"], "reviewed-rejected")
         build = Mock()
-        with patch.dict(sys.modules, {"parcel_source_stage": SimpleNamespace(run_candidate=build, revalidate_stage=Mock(return_value=(True, "current"))), "parcel_source_admission": SimpleNamespace(admit_candidate=Mock())}):
+        with patch.dict(sys.modules, {"parcel_source_stage": SimpleNamespace(run_candidate=Mock(), revalidate_stage=Mock(return_value=(True, "current"))), "parcel_city_integration": SimpleNamespace(run_city_task=build), "parcel_source_admission": SimpleNamespace(admit_candidate=Mock())}):
             self.assertFalse(self.instance._advance_candidate([self.city], self.cohort))
         build.assert_not_called()
 
@@ -197,7 +197,7 @@ class DiscoveryPipelineTests(unittest.TestCase):
         self.accept("candidate")
         build = Mock(return_value={"status": "adapter-ready", "summary": "Nine gates passed", "artifactRoot": "state/qualification/42"})
         admit = Mock(return_value={"status": "integrated", "summary": "Configured in worktree"})
-        with patch.dict(sys.modules, {"parcel_source_stage": SimpleNamespace(run_candidate=build, revalidate_stage=Mock(return_value=(True, "current"))), "parcel_source_admission": SimpleNamespace(admit_candidate=admit)}), patch.object(self.instance, "_packet", return_value=self.packet):
+        with patch.dict(sys.modules, {"parcel_source_stage": SimpleNamespace(run_candidate=Mock(), revalidate_stage=Mock(return_value=(True, "current"))), "parcel_city_integration": SimpleNamespace(run_city_task=build), "parcel_source_admission": SimpleNamespace(admit_candidate=admit)}), patch.object(self.instance, "_packet", return_value=self.packet):
             self.assertTrue(self.instance._advance_candidate([self.city], self.cohort))
             self.assertFalse(self.instance._advance_candidate([self.city], self.cohort))
         self.assertEqual(build.call_count, 1)
@@ -222,27 +222,30 @@ class DiscoveryPipelineTests(unittest.TestCase):
         self.instance._city_entry(self.city)["qualification"] = {"status": "integrated", "receiptSha256": runner.sha256_file(self.path)}
         check = Mock(return_value=(False, "adapter bytes changed"))
         build, admit = Mock(return_value={"status": "blocked-source", "summary": "fresh source check"}), Mock()
-        with patch.dict(sys.modules, {"parcel_source_stage": SimpleNamespace(run_candidate=build, revalidate_stage=check), "parcel_source_admission": SimpleNamespace(admit_candidate=admit)}), patch.object(self.instance, "_packet", return_value=self.packet):
+        with patch.dict(sys.modules, {"parcel_source_stage": SimpleNamespace(run_candidate=Mock(), revalidate_stage=check), "parcel_city_integration": SimpleNamespace(run_city_task=build), "parcel_source_admission": SimpleNamespace(admit_candidate=admit)}), patch.object(self.instance, "_packet", return_value=self.packet), patch.object(self.instance, "log") as log:
             self.assertTrue(self.instance._advance_candidate([self.city], self.cohort))
         build.assert_called_once()
+        check.assert_called_once()
         admit.assert_not_called()
         self.assertEqual(self.instance._city_entry(self.city)["qualification"]["status"], "blocked-source")
-        self.assertEqual(self.instance._city_entry(self.city)["qualificationHistory"][0]["invalidationReason"], "adapter bytes changed")
+        log.assert_any_call("saved qualification changed; qualifying again from reviewed source", cityCode="42", reason="adapter bytes changed")
 
     def test_changed_review_reopens_previous_source_verdict(self):
         self.accept("candidate")
         self.instance._city_entry(self.city)["qualification"] = {"status": "blocked-source", "receiptSha256": "old"}
         build = Mock(return_value={"status": "blocked-source", "summary": "new source verdict"})
-        with patch.dict(sys.modules, {"parcel_source_stage": SimpleNamespace(run_candidate=build, revalidate_stage=Mock()), "parcel_source_admission": SimpleNamespace(admit_candidate=Mock())}), patch.object(self.instance, "_packet", return_value=self.packet):
+        with patch.dict(sys.modules, {"parcel_source_stage": SimpleNamespace(run_candidate=Mock(), revalidate_stage=Mock()), "parcel_city_integration": SimpleNamespace(run_city_task=build), "parcel_source_admission": SimpleNamespace(admit_candidate=Mock())}), patch.object(self.instance, "_packet", return_value=self.packet):
             self.assertTrue(self.instance._advance_candidate([self.city], self.cohort))
         build.assert_called_once()
-        self.assertEqual(len(self.instance._city_entry(self.city)["qualificationHistory"]), 1)
+        entry = self.instance._city_entry(self.city)
+        self.assertEqual(entry["qualification"]["summary"], "new source verdict")
+        self.assertEqual(entry["qualification"]["receiptSha256"], runner.sha256_file(self.path))
 
     def test_source_failure_never_calls_admission(self):
         self.accept("candidate")
         build = Mock(return_value={"status": "blocked-source", "summary": "Bounded service reads time out"})
         admit = Mock()
-        with patch.dict(sys.modules, {"parcel_source_stage": SimpleNamespace(run_candidate=build, revalidate_stage=Mock(return_value=(True, "current"))), "parcel_source_admission": SimpleNamespace(admit_candidate=admit)}), patch.object(self.instance, "_packet", return_value=self.packet):
+        with patch.dict(sys.modules, {"parcel_source_stage": SimpleNamespace(run_candidate=Mock(), revalidate_stage=Mock(return_value=(True, "current"))), "parcel_city_integration": SimpleNamespace(run_city_task=build), "parcel_source_admission": SimpleNamespace(admit_candidate=admit)}), patch.object(self.instance, "_packet", return_value=self.packet):
             self.assertTrue(self.instance._advance_candidate([self.city], self.cohort))
         admit.assert_not_called()
 
@@ -260,7 +263,7 @@ class DiscoveryPipelineTests(unittest.TestCase):
     def test_failed_city_with_unchanged_workspace_does_not_block_next_candidate(self):
         self.accept("candidate")
         build = Mock(return_value={"status": "failed", "summary": "Worker could not establish source evidence"})
-        with patch.dict(sys.modules, {"parcel_source_stage": SimpleNamespace(run_candidate=build, revalidate_stage=Mock()), "parcel_source_admission": SimpleNamespace(admit_candidate=Mock())}), patch.object(self.instance, "_packet", return_value=self.packet):
+        with patch.dict(sys.modules, {"parcel_source_stage": SimpleNamespace(run_candidate=Mock(), revalidate_stage=Mock()), "parcel_city_integration": SimpleNamespace(run_city_task=build), "parcel_source_admission": SimpleNamespace(admit_candidate=Mock())}), patch.object(self.instance, "_packet", return_value=self.packet):
             self.assertTrue(self.instance._advance_candidate([self.city], self.cohort))
             self.assertNotIn("adapterStageBlocked", self.instance.state)
             # A distinct candidate still starts, while the failed one remains recorded.
@@ -279,7 +282,7 @@ class DiscoveryPipelineTests(unittest.TestCase):
                 self.instance._city_entry(self.city).pop("qualification", None)
                 self.accept("candidate")
                 build = Mock(side_effect=RuntimeError("worker crashed"))
-                with patch.dict(sys.modules, {"parcel_source_stage": SimpleNamespace(run_candidate=build, revalidate_stage=Mock()), "parcel_source_admission": SimpleNamespace(admit_candidate=Mock())}), patch.object(self.instance, "_packet", return_value=self.packet), patch.object(self.instance, "_candidate_workspace_snapshot", side_effect=[{}, after]):
+                with patch.dict(sys.modules, {"parcel_source_stage": SimpleNamespace(run_candidate=Mock(), revalidate_stage=Mock()), "parcel_city_integration": SimpleNamespace(run_city_task=build), "parcel_source_admission": SimpleNamespace(admit_candidate=Mock())}), patch.object(self.instance, "_packet", return_value=self.packet), patch.object(self.instance, "_candidate_workspace_snapshot", side_effect=[{}, after]):
                     self.assertTrue(self.instance._advance_candidate([self.city], self.cohort))
                     self.assertFalse(self.instance._advance_candidate([self.city], self.cohort))
                 self.assertEqual(self.instance.state["adapterStageBlocked"]["cityCode"], "42")

@@ -241,6 +241,16 @@ describe('geocoded places', () => {
         expect(Model.classifyPlaceLocation(rijeka, CITIES, 'new_york', { liveCityId: 'zagreb' })).toMatchObject({ kind: 'other-city', city: { id: 'zagreb' } });
     });
 
+    it('keeps catalogue order when city centres are tied', () => {
+        const point = { lat: 45, lon: 15 };
+        const cities = [
+            { id: 'first', center: [45, 15], parcelSource: 'source-a' },
+            { id: 'second', center: [45, 15], parcelSource: 'source-b' }
+        ];
+        expect(Model.classifyPlaceLocation(point, cities, 'second')).toMatchObject({ kind: 'other-city', city: { id: 'first' }, distanceKm: 0 });
+        expect(Model.classifyPlaceLocation(point, cities.slice().reverse(), 'second')).toMatchObject({ kind: 'here', city: { id: 'second' }, distanceKm: 0 });
+    });
+
     it('calls a place far from every city a world place', () => {
         expect(Model.classifyPlaceLocation({ lat: 48.85, lon: 2.35 }, CITIES, 'zagreb').kind).toBe('world');
         expect(Model.classifyPlaceLocation({ lat: NaN, lon: 2 }, CITIES, 'zagreb').kind).toBe('world');

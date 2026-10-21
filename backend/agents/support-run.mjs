@@ -10,10 +10,11 @@ import path from 'node:path';
 import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
 import { createPool } from '../db/connection.cjs';
-import { Keypair, PublicKey } from '@solana/web3.js';
+import { Keypair } from '@solana/web3.js';
 import {
-    classifySupportExecution, eligibleSupportProposals, proposalAccount, selectSupportAction
+    classifySupportExecution, selectSupportAction
 } from './supporter-picker.js';
+import { assertSupportEligibility, readSupportEligibility } from './supporter-state.js';
 import { ensurePledgeBookAndSet } from './pledger.js';
 import { ensureDonationEscrowAndDonate } from './donor.js';
 import { ensureMarketAndStake, usdcToAtomic } from './bettor.js';
@@ -26,16 +27,11 @@ import { sendAndConfirmPolling } from './solana-send.js';
 import { sendTelegram } from './telegram.js';
 import { runKeyFor, slotLabel } from './area-plan.js';
 import { isEntrypoint } from './entrypoint.js';
-import { discoverProposalInputs, refreshNamedPlanStatuses } from './discovery.js';
+import { discoverProposalInputs, refreshProposalStatuses } from './discovery.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const require = createRequire(import.meta.url);
 const actionEngineApi = require('../../frontend/js/agent-action-engine.js');
-const web3 = require('@solana/web3.js');
-const supportClient = require('../../frontend/js/solana/pledge-client.js');
-const marketClient = require('../../frontend/js/solana/market-client.js');
-supportClient.configure({ web3 });
-marketClient.configure({ web3 });
 const USDC_DEVNET = '4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU';
 const SIDE_YES = 1;
 
@@ -100,34 +96,13 @@ async function discoverProposals(apiBase, persona) {
         log: message => console.log(`[${new Date().toISOString()}] ${message}`) });
 }
 
-// Reads this wallet's existing on-chain support so the picker never re-selects a proposal it already
-// backs: a replayed pledge signs nothing, and reporting it as a new action was a false success.
-async function alreadySupportedProposalIds({ connection, wallet, persona, proposals }) {
-    if (!wallet) return [];
-    const actions = (persona.support?.actions?.length ? persona.support.actions : ['pledge']).map(action => String(action).toLowerCase());
-    const owner = new PublicKey(wallet);
-    const candidates = eligibleSupportProposals(proposals, { wallet, personaName: persona.name });
-    const supported = await Promise.all(candidates.map(async proposal => {
-        const proposalPda = proposalAccount(proposal);
-        const checks = [];
-        if (actions.includes('pledge')) {
-            checks.push(supportClient.readPledgeCommitment(connection, proposalPda, owner).then(commitment => Boolean(commitment)
-                && [supportClient.constants.PLEDGE_ACTIVE, supportClient.constants.PLEDGE_FULFILLED].includes(commitment.status)));
-        }
-        if (actions.includes('stake')) {
-            checks.push(marketClient.readPosition(connection, proposalPda, owner, SIDE_YES).then(Boolean));
-        }
-        return (await Promise.all(checks)).some(Boolean) ? String(proposal.proposalId || proposal.id) : null;
-    }));
-    return supported.filter(Boolean);
-}
-
 export async function executeSupport({ decision, connection, keypair, runId, pool, persona, adapters = {} }) {
     const amountAtomic = usdcToAtomic(decision.amount);
     const capAtomic = usdcToAtomic(String(process.env.AGENT_SUPPORT_USDC_CAP || '0.25'));
     if (amountAtomic > capAtomic) {
         throw new Error(`support amount ${decision.amount} USDC exceeds AGENT_SUPPORT_USDC_CAP`);
     }
+    await (adapters.assertSupportEligibility || assertSupportEligibility)({ connection, decision, pool });
     await (adapters.fundBotAction || fundBotAction)({ action: decision, connection, pool, persona, runId });
     if (decision.type === 'pledge') {
         return (adapters.ensurePledgeBookAndSet || ensurePledgeBookAndSet)({
@@ -185,9 +160,13 @@ async function main() {
                     const funding = await ensureBotSolFunding({ connection, persona });
                     if (funding.status === 'funded') await updateRun(pool, runId, { summaryPatch: { funding } });
                 }
-                const proposals = await refreshNamedPlanStatuses(await discoverProposals(apiBase, persona), connection);
-                const excludeProposalIds = await alreadySupportedProposalIds({ connection, wallet, persona, proposals });
-                const choice = selectSupportAction({ day: runKey, persona, proposals, wallet, excludeProposalIds });
+                const proposals = await refreshProposalStatuses(await discoverProposals(apiBase, persona), connection, {
+                    pool: args.live ? pool : null, log: message => console.log(`[${new Date().toISOString()}] ${message}`)
+                });
+                const eligibility = await readSupportEligibility({ connection, wallet, persona, proposals });
+                if (eligibility.closedMarketIds.length) console.log(`[${new Date().toISOString()}] ${persona.name}: excluded ${eligibility.closedMarketIds.length} resolved market(s)`);
+                const choice = selectSupportAction({ day: runKey, persona, proposals: eligibility.proposals, wallet,
+                    excludeProposalIds: eligibility.alreadySupportedIds });
                 console.log(`[${new Date().toISOString()}] ${persona.name}: ${choice.reason}`);
                 if (args.dryRun) {
                     if (choice.selected) console.log(JSON.stringify(choice.selected, null, 2));
@@ -196,7 +175,8 @@ async function main() {
 
                 await updateRun(pool, runId, { stage: 'selected', status: choice.selected ? 'running' : 'done', summaryPatch: {
                     role: 'supporter', controller: 'algorithm', wallet,
-                    decisionInput: { controller: 'algorithm', day, eligibleProposalIds: choice.eligibleProposalIds },
+                    decisionInput: { controller: 'algorithm', day, eligibleProposalIds: choice.eligibleProposalIds,
+                        closedMarketIds: eligibility.closedMarketIds },
                     decisionResult: { controller: 'algorithm', costUsd: 0, rationale: choice.reason },
                     selection: choice.selected,
                     outcome: choice.selected ? 'selected' : 'no-eligible-proposal'

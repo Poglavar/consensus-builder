@@ -437,6 +437,11 @@
       "controlType": "button"
     },
     {
+      "id": "control-d63231416587f5-1",
+      "source": "how-to-use-road.html",
+      "markup": "<a class=\"btn btn-quiet\" href=\"#stations\">"
+    },
+    {
       "id": "control-020653104c584f-1",
       "source": "how-to-use-road.html",
       "markup": "<a class=\"btn btn-quiet\" href=\"#edit\">",
@@ -526,6 +531,11 @@
       "markup": "<a class=\"btn btn-quiet\" href=\"#alternatives\">",
       "interaction": "click",
       "controlType": "button"
+    },
+    {
+      "id": "control-b593d4b988aa5e-1",
+      "source": "how-to-use-views.html",
+      "markup": "<a class=\"btn btn-quiet\" href=\"#counterproposal\">"
     },
     {
       "id": "control-86ad3ff4dc1aa8-1",
@@ -754,6 +764,11 @@
       "controlType": "button"
     },
     {
+      "id": "control-3fa03fcb7c4be1-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" id=\"planning-views-button\" class=\"map-shell-button\" data-sheet-target=\"planning-views\" aria-controls=\"planning-views\" aria-expanded=\"false\" title=\"Buildings and massing\" aria-label=\"Buildings and massing\" data-i18n-key=\"planningViews.title\" data-i18n-attr=\"title,aria-label\" hidden>"
+    },
+    {
       "id": "control-63429b75a16e55-1",
       "source": "index.html",
       "markup": "<div id=\"username-display\" class=\"username-display\" role=\"button\" tabindex=\"0\">",
@@ -817,6 +832,28 @@
       "controlType": "button"
     },
     {
+      "id": "control-890d978deb8ea1-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" id=\"planning-reroll\" class=\"btn btn-icon planning-reroll\">"
+    },
+    {
+      "id": "control-dc7af30c67cb8d-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" class=\"map-sheet-close close-circle-btn close-circle-btn--lg\" data-sheet-close aria-label=\"Close\" title=\"Close\" data-i18n-key=\"common.close\" data-i18n-attr=\"aria-label,title\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-e3c4389c7e1336-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" id=\"planning-view-retry\" class=\"cb-link planning-view-retry\" hidden>"
+    },
+    {
+      "id": "control-04cbde91858531-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" id=\"planning-open-model\" class=\"cb-link planning-open-model\" hidden>"
+    },
+    {
       "id": "control-8be057f29ea7fe-1",
       "source": "index.html",
       "markup": "<button type=\"button\" id=\"area-monitor-drawing-undo\" class=\"btn\" data-i18n-key=\"siteTool.actions.undoCorner\">",
@@ -852,7 +889,7 @@
       "controlType": "button"
     },
     {
-      "id": "control-dc7af30c67cb8d-1",
+      "id": "control-dc7af30c67cb8d-2",
       "source": "index.html",
       "markup": "<button type=\"button\" class=\"map-sheet-close close-circle-btn close-circle-btn--lg\" data-sheet-close aria-label=\"Close\" title=\"Close\" data-i18n-key=\"common.close\" data-i18n-attr=\"aria-label,title\">",
       "interaction": "click",
@@ -1059,7 +1096,20 @@
       "source": "index.html",
       "markup": "<input type=\"checkbox\" id=\"showProposedBuildings\" onchange=\"toggleLayer('proposedBuildings')\">",
       "interaction": "change",
-      "controlType": "checkbox"
+      "controlType": "checkbox",
+      "exempt": "Hidden checkbox mirrors proposed-building visibility owned by the shared planning-view selector; users cannot operate this input directly.",
+      "mustRemainInactive": true,
+      "guards": [
+        {
+          "source": "index.html",
+          "includes": "<!-- The shared view selector owns proposed-building visibility. -->"
+        },
+        {
+          "source": "index.html",
+          "pattern": "<label hidden>\\s*<input type=\"checkbox\" id=\"showProposedBuildings\"\\s+onchange=\"toggleLayer\\('proposedBuildings'\\)\">",
+          "occurrences": 1
+        }
+      ]
     },
     {
       "id": "control-f181cd7b327aa2-1",
@@ -1297,6 +1347,11 @@
       "controlType": "select"
     },
     {
+      "id": "control-06eaf89958427f-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" id=\"imagery-source-settings-button\" class=\"btn\" onclick=\"openImagerySourceSettings()\" data-i18n-key=\"imagerySources.title\">"
+    },
+    {
       "id": "control-29ba361064b04a-1",
       "source": "index.html",
       "markup": "<input id=\"aerial-city-visible\" type=\"checkbox\" checked>",
@@ -1304,7 +1359,17 @@
       "controlType": "checkbox"
     },
     {
-      "id": "control-dc7af30c67cb8d-2",
+      "id": "control-9098061ffd8078-1",
+      "source": "index.html",
+      "markup": "<input id=\"photo-parcels-visible\" type=\"checkbox\" checked>"
+    },
+    {
+      "id": "control-5a1c5fdcf6d836-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" id=\"photo-parcel-close\" class=\"close-circle-btn\" aria-label=\"Close\" data-i18n-key=\"common.close\" data-i18n-attr=\"aria-label\">"
+    },
+    {
+      "id": "control-dc7af30c67cb8d-3",
       "source": "index.html",
       "markup": "<button type=\"button\" class=\"map-sheet-close close-circle-btn close-circle-btn--lg\" data-sheet-close aria-label=\"Close\" title=\"Close\" data-i18n-key=\"common.close\" data-i18n-attr=\"aria-label,title\">",
       "interaction": "click",
@@ -1332,7 +1397,7 @@
       "controlType": "button"
     },
     {
-      "id": "control-dc7af30c67cb8d-3",
+      "id": "control-dc7af30c67cb8d-4",
       "source": "index.html",
       "markup": "<button type=\"button\" class=\"map-sheet-close close-circle-btn close-circle-btn--lg\" data-sheet-close aria-label=\"Close\" title=\"Close\" data-i18n-key=\"common.close\" data-i18n-attr=\"aria-label,title\">",
       "interaction": "click",
@@ -1383,14 +1448,14 @@
       "controlType": "button"
     },
     {
-      "id": "control-dc7af30c67cb8d-4",
+      "id": "control-dc7af30c67cb8d-5",
       "source": "index.html",
       "markup": "<button type=\"button\" class=\"map-sheet-close close-circle-btn close-circle-btn--lg\" data-sheet-close aria-label=\"Close\" title=\"Close\" data-i18n-key=\"common.close\" data-i18n-attr=\"aria-label,title\">",
       "interaction": "click",
       "controlType": "button"
     },
     {
-      "id": "control-dc7af30c67cb8d-5",
+      "id": "control-dc7af30c67cb8d-6",
       "source": "index.html",
       "markup": "<button type=\"button\" class=\"map-sheet-close close-circle-btn close-circle-btn--lg\" data-sheet-close aria-label=\"Close\" title=\"Close\" data-i18n-key=\"common.close\" data-i18n-attr=\"aria-label,title\">",
       "interaction": "click",
@@ -1453,11 +1518,9 @@
       "controlType": "button"
     },
     {
-      "id": "control-dc7af30c67cb8d-6",
+      "id": "control-dc7af30c67cb8d-7",
       "source": "index.html",
-      "markup": "<button type=\"button\" class=\"map-sheet-close close-circle-btn close-circle-btn--lg\" data-sheet-close aria-label=\"Close\" title=\"Close\" data-i18n-key=\"common.close\" data-i18n-attr=\"aria-label,title\">",
-      "interaction": "click",
-      "controlType": "button"
+      "markup": "<button type=\"button\" class=\"map-sheet-close close-circle-btn close-circle-btn--lg\" data-sheet-close aria-label=\"Close\" title=\"Close\" data-i18n-key=\"common.close\" data-i18n-attr=\"aria-label,title\">"
     },
     {
       "id": "control-27ffcfac7a193c-1",
@@ -2233,7 +2296,7 @@
         },
         {
           "source": "index.html",
-          "pattern": "'js/proposals/execution.js'[\\s\\S]*?'js/agents.js'",
+          "pattern": "'js/proposals/execution\\.js(?:\\?[^']*)?'[\\s\\S]*?'js/agents\\.js(?:\\?[^']*)?'",
           "occurrences": 1
         }
       ],
@@ -2265,16 +2328,12 @@
       "id": "control-4a853482db54a9-8",
       "source": "js/agents.js",
       "markup": "<button type=\"button\" class=\"cb-link agent-link-clickable\" data-agent-id=\"${agent.id}\">",
-      "exempt": "This obsolete duplicate-result branch requires addProposal to return null for the object created immediately above it. The current store permits duplicate seeds and returns an ID for object input; null is reserved for non-object input.",
+      "exempt": "The simulation duplicate-result fallback is unreachable for the proposal object created immediately above it: addProposal returns an ID for object input and returns null only for non-object input.",
       "mustRemainInactive": true,
       "guards": [
         {
           "source": "js/agents.js",
           "includes": "const proposalId = proposalStorage.addProposal(proposal, {"
-        },
-        {
-          "source": "js/proposals/data.js",
-          "includes": "console.debug('[proposalStorage] Duplicate seed detected; allowing insert', { seed, existingId: duplicate.proposalId });\n        }"
         },
         {
           "source": "js/proposals/data.js",
@@ -2305,7 +2364,7 @@
         },
         {
           "source": "index.html",
-          "pattern": "'js/proposals/data.js[^']*'[\\s\\S]*?'js/agents.js'",
+          "pattern": "'js/proposals/data\\.js(?:\\?[^']*)?'[\\s\\S]*?'js/agents\\.js(?:\\?[^']*)?'",
           "occurrences": 1
         }
       ],
@@ -4702,6 +4761,13 @@
             "aria-label": "Height unit"
           },
           "interaction": "change"
+        },
+        {
+          "name": "Choose WMS layer",
+          "attrs": {
+            "aria-label": "WMS layer"
+          },
+          "interaction": "change"
         }
       ],
       "exhaustiveVariants": true,
@@ -4741,11 +4807,97 @@
         {
           "name": "Dismiss source warning",
           "label": "Dismiss source warning"
+        },
+        {
+          "name": "Retry imagery",
+          "label": "Retry imagery"
+        },
+        {
+          "name": "Choose an imagery source",
+          "label": "Choose an imagery source"
         }
       ],
       "exhaustiveVariants": true,
       "interaction": "click",
       "controlType": "button"
+    },
+    {
+      "id": "control-a9cb19f885f3e0-1",
+      "source": "js/parcels/estimated-layer.js",
+      "markup": "document.createElement(tag)",
+      "variants": [
+        {
+          "name": "Collapse estimate controls",
+          "classes": [
+            "btn"
+          ],
+          "label": "Collapse controls"
+        },
+        {
+          "name": "Expand estimate controls",
+          "classes": [
+            "btn"
+          ],
+          "label": "Show parcel controls"
+        },
+        {
+          "name": "Close estimated parcel controls",
+          "classes": [
+            "btn"
+          ],
+          "label": "Close estimates"
+        },
+        {
+          "name": "Choose estimated parcel size",
+          "attrs": {
+            "id": "parcel-estimate-size"
+          },
+          "interaction": "change"
+        },
+        {
+          "name": "Adjust parcel estimate sensitivity",
+          "interaction": "change",
+          "label": "Follow image edges"
+        },
+        {
+          "name": "Adjust parcel estimate rectangularity",
+          "interaction": "change",
+          "label": "Street alignment"
+        },
+        {
+          "name": "Generate or regenerate estimated parcels",
+          "classes": [
+            "btn",
+            "btn-primary"
+          ],
+          "label": "Generate estimates"
+        },
+        {
+          "name": "Cancel parcel estimate generation",
+          "classes": [
+            "btn"
+          ],
+          "label": "Cancel"
+        },
+        {
+          "name": "Export estimated parcels",
+          "classes": [
+            "btn"
+          ],
+          "label": "Export GeoJSON"
+        },
+        {
+          "name": "Toggle parcel removal mode",
+          "classes": [
+            "btn"
+          ],
+          "label": "Remove a plot"
+        }
+      ],
+      "exhaustiveVariants": true,
+      "dispatchEvidence": "The estimate panel factory creates its close/collapse controls, size and settings fields, and generate/cancel/export/remove actions; labels and stable ids separate every actionable element.",
+      "interaction": "auto",
+      "controlType": "dynamic"
     },
     {
       "id": "control-3ed297fb543ba1-1",
@@ -4799,6 +4951,12 @@
             "type": "url"
           },
           "interaction": "change"
+        },
+        {
+          "name": "Continue without parcels",
+          "attrs": {
+            "data-option": "without-parcels"
+          }
         }
       ],
       "exhaustiveVariants": true,
@@ -5170,6 +5328,210 @@
       "controlType": "button"
     },
     {
+      "id": "control-71f262b08206cf-1",
+      "source": "js/planning/parcel-study.js",
+      "markup": "document.createElement(tag)",
+      "variants": [
+        {
+          "name": "Start a parcel study",
+          "classes": [
+            "btn"
+          ],
+          "label": "Test a parcel here"
+        },
+        {
+          "name": "Restart a stale parcel study",
+          "classes": [
+            "btn"
+          ],
+          "label": "Start again with current sources"
+        },
+        {
+          "name": "Adjust study height",
+          "interaction": "change",
+          "label": "Design height (m)"
+        },
+        {
+          "name": "Adjust study scale",
+          "interaction": "change",
+          "label": "Footprint scale (%)"
+        },
+        {
+          "name": "Adjust study east offset",
+          "interaction": "change",
+          "label": "Move east (m)"
+        },
+        {
+          "name": "Adjust study north offset",
+          "interaction": "change",
+          "label": "Move north (m)"
+        },
+        {
+          "name": "Choose study front edge",
+          "attrs": {
+            "data-study-input": "frontEdge"
+          },
+          "interaction": "change"
+        },
+        {
+          "name": "Reset parcel study",
+          "classes": [
+            "btn",
+            "btn-sm"
+          ],
+          "label": "Reset test design"
+        }
+      ],
+      "exhaustiveVariants": true,
+      "dispatchEvidence": "The parcel-study factory creates start/restart/reset actions, four numeric design fields and the front-edge select; field data attributes and translated action labels identify each behavior.",
+      "interaction": "auto",
+      "controlType": "dynamic"
+    },
+    {
+      "id": "control-017d0ecb7cbc08-1",
+      "source": "js/planning/views.js",
+      "markup": "document.createElement(tag)",
+      "variants": [
+        {
+          "name": "Inspect a saved parcel result",
+          "classes": [
+            "btn"
+          ],
+          "label": "Inspect result"
+        },
+        {
+          "name": "Close the planning inspector",
+          "classes": [
+            "close-circle-btn"
+          ],
+          "labelPattern": "^(?:Close|Cerrar)$"
+        },
+        {
+          "name": "Open a referenced planning source",
+          "classes": [
+            "btn",
+            "btn-sm"
+          ],
+          "labelPattern": "^Source: .+ · .+$"
+        },
+        {
+          "name": "Show proposal actions",
+          "classes": [
+            "btn"
+          ],
+          "labelPattern": "^(?:Proposal actions|Acciones de la propuesta)$"
+        },
+        {
+          "name": "Select planning source",
+          "classes": [
+            "planning-layer-select",
+            "planning-source-select"
+          ],
+          "interaction": "change"
+        },
+        {
+          "name": "Select planning scenario",
+          "classes": [
+            "planning-layer-select",
+            "planning-scenario-select"
+          ],
+          "interaction": "change"
+        },
+        {
+          "name": "Change an existing/proposed planning layer display",
+          "classes": [
+            "planning-layer-select"
+          ],
+          "attrs": {
+            "data-planning-setting": "existing"
+          },
+          "interaction": "change"
+        },
+        {
+          "name": "Change a permitted layer display",
+          "classes": [
+            "planning-layer-select"
+          ],
+          "attrs": {
+            "data-planning-setting": "permitted"
+          },
+          "interaction": "change"
+        },
+        {
+          "name": "Change a proposed layer display",
+          "classes": [
+            "planning-layer-select"
+          ],
+          "attrs": {
+            "data-planning-setting": "proposed"
+          },
+          "interaction": "change"
+        },
+        {
+          "name": "Change planning layer details",
+          "classes": [
+            "planning-layer-select"
+          ],
+          "attrs": {
+            "data-planning-setting": "existingScope"
+          },
+          "interaction": "change"
+        },
+        {
+          "name": "Change permitted layer details",
+          "classes": [
+            "planning-layer-select"
+          ],
+          "attrs": {
+            "data-planning-setting": "permittedMap"
+          },
+          "interaction": "change"
+        },
+        {
+          "name": "Change proposed layer details",
+          "classes": [
+            "planning-layer-select"
+          ],
+          "attrs": {
+            "data-planning-setting": "proposedForm"
+          },
+          "interaction": "change"
+        },
+        {
+          "name": "Change zoning areas display",
+          "classes": [
+            "planning-layer-select"
+          ],
+          "attrs": {
+            "data-planning-setting": "zoningAreas"
+          },
+          "interaction": "change"
+        }
+      ],
+      "exhaustiveVariants": true,
+      "dispatchEvidence": "The planning view factory creates the inspector close, saved-result and referenced-source actions plus source/scenario and display-setting selects. Their stable classes and data attributes identify those actions.",
+      "interaction": "auto",
+      "controlType": "dynamic"
+    },
+    {
+      "id": "control-4989c4998ac1bb-1",
+      "source": "js/planning/views.js",
+      "markup": "node.setAttribute('role', 'button')",
+      "variants": [
+        {
+          "name": "Inspect planning geometry with keyboard",
+          "attrs": {
+            "role": "button"
+          },
+          "labelPattern": ".+"
+        }
+      ],
+      "exhaustiveVariants": true,
+      "dispatchEvidence": "Rendered planning map geometry is assigned role=button and an accessible item label; Enter/Space invokes the same inspector action as a map click.",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
       "id": "control-bceff47ae5b934-1",
       "source": "js/polygon-geometry-editor.js",
       "markup": "this.document.createElement('button')",
@@ -5241,11 +5603,11 @@
         },
         {
           "source": "js/proposal-editor-shell.js",
-          "includes": "const typeSelector = !draft.sourceProposalId"
+          "includes": "const typeSelector = !draft.sourceLocalProposalId"
         },
         {
           "source": "js/proposal-editor-shell.js",
-          "includes": "const corridorKind = !draft.sourceProposalId && draft.goal === 'road-track'"
+          "includes": "const corridorKind = !draft.sourceLocalProposalId && draft.goal === 'road-track'"
         }
       ]
     },
@@ -5376,11 +5738,11 @@
         },
         {
           "source": "js/proposal-editor-shell.js",
-          "includes": "const typeSelector = !draft.sourceProposalId"
+          "includes": "const typeSelector = !draft.sourceLocalProposalId"
         },
         {
           "source": "js/proposal-editor-shell.js",
-          "includes": "const corridorKind = !draft.sourceProposalId && draft.goal === 'road-track'"
+          "includes": "const corridorKind = !draft.sourceLocalProposalId && draft.goal === 'road-track'"
         }
       ]
     },
@@ -5909,10 +6271,21 @@
         },
         {
           "name": "Unapply proposal from map",
-          "label": "Unapply",
           "classes": [
             "btn-danger"
-          ]
+          ],
+          "labelPattern": "^(?:Unapply|Retirar del mapa)$"
+        },
+        {
+          "name": "Apply proposal to map (Spanish)",
+          "label": "Aplicar al mapa",
+          "classes": [
+            "btn-success",
+            "proposal-action-default"
+          ],
+          "attrs": {
+            "data-default-action": "true"
+          }
         }
       ],
       "exhaustiveVariants": true,
@@ -5984,11 +6357,9 @@
       "controlType": "button"
     },
     {
-      "id": "control-ded286887a9124-1",
+      "id": "control-8a24ebfca7f7de-1",
       "source": "js/proposals/details-panel.js",
-      "markup": "<button type=\"button\" class=\"btn btn-success proposal-buy-btn\" onclick=\"claimSaleOffer(${inlineJsArg(buyOfferProposal.proposalId || '')})\">",
-      "interaction": "click",
-      "controlType": "button"
+      "markup": "<button type=\"button\" class=\"btn btn-success proposal-buy-btn\" onclick=\"simulateSaleOfferPurchase(${inlineJsArg(buyOfferProposal.proposalId || '')})\">"
     },
     {
       "id": "control-dbe316f09d1072-1",
@@ -6068,11 +6439,9 @@
       "controlType": "button"
     },
     {
-      "id": "control-a4ff2440f95032-1",
+      "id": "control-246d3e927d4430-1",
       "source": "js/proposals/details-panel.js",
-      "markup": "<button type=\"button\" class=\"cb-link proposal-based-on-link\" onclick=\"focusProposalDetails(${inlineJsArg(copiedFromId)})\">",
-      "interaction": "click",
-      "controlType": "button"
+      "markup": "<button type=\"button\" class=\"cb-link proposal-based-on-link\" data-lineage-local-id=\"${safeAgentText(sourceProposal.proposalId)}\">"
     },
     {
       "id": "control-8a329ef184560d-1",
@@ -6099,13 +6468,6 @@
       "id": "control-1607676892e2c1-1",
       "source": "js/proposals/details-panel.js",
       "markup": "<button type=\"button\" class=\"cb-link activity-scope-link\" data-activity-scope=\"proposalId\" data-activity-value=\"${safeAgentText(relationApi.proposalKey(activeProposal))}\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-dd698bfdd375e9-1",
-      "source": "js/proposals/details-panel.js",
-      "markup": "<button type=\"button\" class=\"btn btn-sm btn-icon offer-boost-button\" title=\"${acceptTransferLabel}\" aria-label=\"${acceptTransferLabel}\" onclick=\"openAcceptOwnershipTransferDialog(${inlineJsArg(proposal.proposalId || '')})\">",
       "interaction": "click",
       "controlType": "button"
     },
@@ -6980,8 +7342,8 @@
       "markup": "document.createElement('button')",
       "variants": [
         {
-          "name": "Share the applied proposal plan",
-          "label": "Share the whole plan instead (all applied proposals)…",
+          "name": "Share applied proposals",
+          "label": "Share applied proposals",
           "classes": [
             "share-modal-plan-btn"
           ]
@@ -7086,7 +7448,7 @@
       "variants": [
         {
           "name": "Undo accepted ownership terms",
-          "label": "Undo"
+          "labelPattern": "^(?:Undo|Deshacer)$"
         },
         {
           "name": "Rescind accepted vote",
@@ -7114,6 +7476,13 @@
           "label": "Vote yes",
           "classes": [
             "btn-primary"
+          ]
+        },
+        {
+          "name": "Accept ownership terms (Spanish)",
+          "label": "Aceptar",
+          "classes": [
+            "btn-success"
           ]
         }
       ],
@@ -7248,11 +7617,9 @@
       "controlType": "button"
     },
     {
-      "id": "control-594478c86ef091-1",
+      "id": "control-5794f9406209be-1",
       "source": "js/proposals/lineage.js",
-      "markup": "<button type=\"button\" class=\"cb-link proposal-lineage__link\" data-lineage-open=\"${esc(entry.lookup)}\">",
-      "interaction": "click",
-      "controlType": "button"
+      "markup": "<button type=\"button\" class=\"cb-link proposal-lineage__link\" ${target}>"
     },
     {
       "id": "control-a746354019b928-1",
@@ -7271,11 +7638,9 @@
       "controlType": "button"
     },
     {
-      "id": "control-239cb5eb74b20c-1",
+      "id": "control-012d350369b80c-1",
       "source": "js/proposals/list-ui.js",
-      "markup": "<button type=\"button\" class=\"btn btn-success btn-sm proposal-buy-btn\" title=\"${buyLabel}\" onclick=\"event.stopPropagation(); claimSaleOffer('${pid}');\">",
-      "interaction": "click",
-      "controlType": "button"
+      "markup": "<button type=\"button\" class=\"btn btn-success btn-sm proposal-buy-btn\" title=\"${escapeHtml(hint)}\" onclick=\"event.stopPropagation(); simulateSaleOfferPurchase('${pid}');\">"
     },
     {
       "id": "control-c0efe8158d6628-1",
@@ -7342,7 +7707,7 @@
         {
           "name": "Close plan stats",
           "attrs": {
-            "aria-label": "Close plan stats"
+            "aria-label": "Close applied proposal stats"
           }
         },
         {
@@ -8051,6 +8416,13 @@
       "controlType": "input"
     },
     {
+      "id": "control-46b5da01d9d0cc-2",
+      "source": "js/three-mode.js",
+      "markup": "document.createElement('input')",
+      "interaction": "change",
+      "controlType": "input"
+    },
+    {
       "id": "control-6a112c1395ce50-1",
       "source": "js/three-mode.js",
       "markup": "document.createElement('select')",
@@ -8058,28 +8430,14 @@
       "controlType": "select",
       "variants": [
         {
-          "name": "built building display",
+          "name": "Choose facade style",
           "attrs": {
-            "id": "three-mode-built-display"
-          },
-          "interaction": "change"
-        },
-        {
-          "name": "planned building display",
-          "attrs": {
-            "id": "three-mode-planned-display"
+            "id": "three-mode-facade-style"
           },
           "interaction": "change"
         }
       ],
       "exhaustiveVariants": true
-    },
-    {
-      "id": "control-6a112c1395ce50-2",
-      "source": "js/three-mode.js",
-      "markup": "document.createElement('select')",
-      "interaction": "change",
-      "controlType": "select"
     },
     {
       "id": "control-0f72c2ba2aa79f-2",
@@ -8089,28 +8447,7 @@
       "controlType": "button"
     },
     {
-      "id": "control-46b5da01d9d0cc-2",
-      "source": "js/three-mode.js",
-      "markup": "document.createElement('input')",
-      "interaction": "change",
-      "controlType": "input"
-    },
-    {
-      "id": "control-6a112c1395ce50-3",
-      "source": "js/three-mode.js",
-      "markup": "document.createElement('select')",
-      "interaction": "change",
-      "controlType": "select"
-    },
-    {
       "id": "control-0f72c2ba2aa79f-3",
-      "source": "js/three-mode.js",
-      "markup": "document.createElement('button')",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-0f72c2ba2aa79f-4",
       "source": "js/three-mode.js",
       "markup": "document.createElement('button')",
       "interaction": "click",
@@ -8124,7 +8461,7 @@
       "controlType": "input"
     },
     {
-      "id": "control-6a112c1395ce50-4",
+      "id": "control-6a112c1395ce50-2",
       "source": "js/three-mode.js",
       "markup": "document.createElement('select')",
       "interaction": "change",
@@ -9054,6 +9391,11 @@
       "controlType": "button"
     },
     {
+      "id": "control-8811bce1fa8321-1",
+      "source": "kako-koristiti-cesta.html",
+      "markup": "<a class=\"btn btn-quiet\" href=\"#stations\">"
+    },
+    {
       "id": "control-c8ee1f31e53593-1",
       "source": "kako-koristiti-cesta.html",
       "markup": "<a class=\"btn btn-quiet\" href=\"#edit\">",
@@ -9220,6 +9562,11 @@
       "markup": "<a class=\"btn btn-quiet\" href=\"#alternatives\">",
       "interaction": "click",
       "controlType": "button"
+    },
+    {
+      "id": "control-4460e31b4f33f0-1",
+      "source": "kako-koristiti-prikazi.html",
+      "markup": "<a class=\"btn btn-quiet\" href=\"#counterproposal\">"
     },
     {
       "id": "control-ad3d6ac5bcc3b1-1",

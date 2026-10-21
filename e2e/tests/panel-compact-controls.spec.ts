@@ -31,7 +31,7 @@ async function openProposalFromList(page: import('@playwright/test').Page, propo
   const row = list.locator(`.proposal-list-item[data-proposal-id="${proposalId}"]`);
   await expect(row).toBeVisible();
   await row.locator('.proposal-list-details-btn').click();
-  await expect(page.locator('#proposal-details-panel')).toBeVisible();
+  await expect(page.locator('#planning-inspector')).toBeVisible();
 }
 
 for (const viewport of VIEWPORTS) {
@@ -80,10 +80,9 @@ for (const viewport of VIEWPORTS) {
     const proposalId = await addLocalProposal(page, viewport.name.replace(/\W+/g, '-'));
     await openProposalFromList(page, proposalId);
 
-    const panel = page.locator('#proposal-details-panel');
-    const close = panel.locator('#proposal-details-close');
-    await expect(close).toBeVisible();
-    await close.click();
-    await expect(panel).toBeHidden();
+    const inspector = page.locator('#planning-inspector');
+    await expect(inspector).toContainText(`Panel control ${viewport.name.replace(/\W+/g, '-')}`);
+    await inspector.locator('.planning-inspector__header .close-circle-btn').click();
+    await expect(inspector).toBeHidden();
   });
 }

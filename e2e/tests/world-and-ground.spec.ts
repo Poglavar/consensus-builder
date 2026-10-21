@@ -135,7 +135,6 @@ test.describe('World navigation and open ground @features', () => {
       expect(new URL(summaries[0]).searchParams.get('limit')).toBe('1');
       // The arrival caption card was removed (fbe3758d): the pick lands in 3D on the selected
       // proposal, and the 2D mode tile leads back to the map.
-      const details = page.locator('#proposal-details-panel');
       if (hasProposal) {
         await expect.poll(() => page.evaluate(() => (window as any).isThreeModeActive?.() ?? false), { timeout: 20000 }).toBe(true);
         await expect.poll(() => page.evaluate(id => (window as any).ProposalSelection.getKey() === id, id)).toBe(true);
@@ -146,8 +145,10 @@ test.describe('World navigation and open ground @features', () => {
         await expect.poll(() => page.evaluate(() => (window as any).isThreeModeActive())).toBe(false);
         await expect(page.locator('path.proposal-primary-outline').first()).toBeVisible();
         await clickMapPoint(page, 15.9822, 45.80025);
-        await expect(details).toBeVisible();
-        await expect(details).toContainText('Park · parcel 1234');
+        const inspector = page.locator('#planning-inspector');
+        await expect(inspector.getByRole('heading', { name: 'Park · parcel 1234', exact: true })).toBeVisible();
+        await expect.poll(() => page.evaluate(() => (window as any).ProposalSelection?.getKey?.())).toBe(id);
+        await expect(inspector.getByRole('button', { name: 'Proposal actions', exact: true })).toBeVisible();
       } else {
         await expect(page.locator('#mode-2d-toggle')).toHaveAttribute('aria-pressed', 'true');
         expect(await page.evaluate(() => (window as any).isThreeModeActive?.() ?? false)).toBe(false);
@@ -215,10 +216,12 @@ test.describe('World navigation and open ground @features', () => {
       await expect(outline).toBeVisible();
       if (applied) await expect(outline).not.toHaveAttribute('stroke-dasharray', '10 5');
       else await expect(outline).toHaveAttribute('stroke-dasharray', '10 5');
-      // 3D closes the 2D panels; the still-selected proposal reopens its details from the map.
+      // 3D closes the 2D panels; a map click selects the proposal in the Planning inspector.
       await clickMapPoint(page, 15.9822, 45.80025);
-      await expect(page.locator('#proposal-details-panel')).toBeVisible();
-      await expect(page.locator('#proposal-details-panel')).toContainText('Park · parcel 1234');
+      const inspector = page.locator('#planning-inspector');
+      await expect(inspector.getByRole('heading', { name: 'Park · parcel 1234', exact: true })).toBeVisible();
+      await expect.poll(() => page.evaluate(() => (window as any).ProposalSelection?.getKey?.())).toBe(id);
+      await expect(inspector.getByRole('button', { name: 'Proposal actions', exact: true })).toBeVisible();
       await expect(page.locator('#parcel-menu')).toBeHidden();
       expect(await page.evaluate(id => (window as any).getProposalByIdOrHash(id).applied === true, id)).toBe(applied);
       // A map click opens the proposal card. The global Activity control remains available even

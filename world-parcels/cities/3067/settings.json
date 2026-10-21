@@ -1,0 +1,124 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "3067",
+  "name": "Reeston, South Africa",
+  "point": [
+    -33.0021744275905,
+    27.8660738634439
+  ],
+  "bindings": [
+    {
+      "appCityId": "reeston",
+      "runtimeConfig": {
+        "id": "reeston",
+        "wupCityCode": "3067",
+        "label": "Reeston, South Africa",
+        "currency": {
+          "locale": "en-ZA",
+          "code": "ZAR"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            -33.0021744275905,
+            27.8660738634439
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            -33.0021744275905,
+            27.8660738634439
+          ],
+          "fallbackDataset": [
+            27.8660738634439,
+            -33.0021744275905
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "za-csg-csggis-property-viewer-erven",
+          "idPrefix": "ZA-CSG-CSGGIS-ERVEN-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Chief Surveyor-General · Property Viewer Erven · adapted"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "za-csg-csggis-property-viewer-erven",
+      "adapter": "arcgis",
+      "endpoint": "https://csggis.dlrrd.gov.za/server/rest/services/Property_Viewer/MapServer/2",
+      "name": "Chief Surveyor-General Property Viewer Erven",
+      "operator": "Chief Surveyor-General, South Africa",
+      "countryCode": "ZA",
+      "catalogueUrl": "https://csggis.dlrrd.gov.za/server/rest/services/Property_Viewer/MapServer/2",
+      "attribution": "Chief Surveyor-General · Property Viewer Erven · adapted",
+      "idPrefix": "ZA-CSG-CSGGIS-ERVEN-",
+      "idField": "PRCL_KEY",
+      "objectIdField": "OBJECTID",
+      "idType": "string",
+      "idPattern": "^[A-Z0-9]{26}$",
+      "identityKind": "native-key-geometry-sha256-v1",
+      "outFields": [
+        "OBJECTID",
+        "PRCL_KEY"
+      ],
+      "queryFormat": "geojson",
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "pageSize": 500,
+      "idBatchSize": 80,
+      "maxFeatures": 2000,
+      "maxBboxKm2": 2,
+      "metricSrid": 32735,
+      "cityIds": [
+        "reeston"
+      ],
+      "defaultForCity": true,
+      "scope": "Public surveyed and approved urban cadastral Erven. Bounded Centurion evidence only; citywide completeness, registration, legal title, survey accuracy and current-ground status are unestablished.",
+      "licenceNote": "Anonymous access is verified. Explicit geometry reuse and redistribution terms remain unestablished; attribution is Chief Surveyor-General.",
+      "nativeCrs": "EPSG:4148",
+      "responseCrs": "EPSG:4326",
+      "coordinateOrder": "longitude,latitude",
+      "capabilities": {
+        "areaEnumeration": true,
+        "exactIds": true
+      },
+      "cityScopes": {
+        "reeston": "Fresh initial qualification on 2026-10-20: 3 bounded public parcel polygons passed repeated exact native-ID reads with unchanged geometry. This is not citywide completeness, survey accuracy, legal title, verified coordinate alignment, currentness or reuse permission.",
+        "mohadin": "Fresh initial qualification on 2026-10-20: 1 bounded public parcel polygons passed repeated exact native-ID reads with unchanged geometry. This is not citywide completeness, survey accuracy, legal title, verified coordinate alignment, currentness or reuse permission."
+      }
+    }
+  ]
+}

@@ -86,8 +86,9 @@ test.describe('Bets shared button variants @features', () => {
     await dialog.getByRole('button', { name: 'Open proposal', exact: true }).click();
     await expect(dialog).toHaveCount(0);
     await expect(page.locator('#bets-sheet')).toBeHidden();
-    await expect(page.locator('#proposal-details-panel')).toBeVisible();
-    await expect(page.locator('#proposal-details-panel')).toContainText(title);
+    const inspector = page.getByRole('complementary', { name: 'Planning source details' });
+    await expect(inspector).toBeVisible();
+    await expect(inspector).toContainText(title);
   });
 
   test('Open the plan resolves its named-plan route and opens the plan on the map', async ({ mockApi: page }) => {
@@ -156,7 +157,10 @@ test.describe('Bets shared button variants @features', () => {
       let request: any = {};
       try { request = route.request().postDataJSON(); } catch (_) { }
       let result: unknown;
-      if (request.method === 'getTokenAccountBalance') {
+      if (request.method === 'getGenesisHash') {
+        // getVerifiedConnection refuses reads unless the endpoint identifies as Solana devnet.
+        result = 'EtWTRABZaYq6iMfeYKouRu166VU2xqa1wcaWoxPkrZBG';
+      } else if (request.method === 'getTokenAccountBalance') {
         mockedBalanceRequests += 1;
         result = { context: { slot: 1 }, value: { amount: '12500000', decimals: 6, uiAmount: 12.5, uiAmountString: '12.5' } };
       } else if (request.method === 'getAccountInfo') {

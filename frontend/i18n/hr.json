@@ -1,4 +1,69 @@
 {
+  "planningStudy": {
+    "exactStartHint": "Otvara ovu točnu česticu s izmjenjivim projektom i odabirom prednjeg ruba.",
+    "title": "Studija čestice",
+    "envelopeTitle": "Djelomična omotnica",
+    "designTitle": "Provjera oblikovanja",
+    "start": "Provjeri česticu ovdje",
+    "startHint": "Koristi česticu na odabranoj točki ili u središtu karte. Zonska područja i čestice zadržavaju zasebne identitete.",
+    "loading": "Učitavanje čestice i izvora prostornih pravila…",
+    "scope": "Uredite probni volumen prema izravnim vrijednostima Atlasa. Omotnica prikazuje podržani dio dimenzijskih ograničenja, uz pretpostavljeni prednji rub i relativnu visinu tla.",
+    "heightM": "Visina oblikovanja (m)",
+    "scale": "Mjerilo tlocrta (%)",
+    "eastM": "Pomak na istok (m)",
+    "northM": "Pomak na sjever (m)",
+    "frontEdge": "Pretpostavljeni prednji rub",
+    "edge": "Rub {{number}}",
+    "breach": "Oblikovanje prelazi barem jedno provjereno ograničenje. Ostali uvjeti ostaju nerazriješeni.",
+    "unresolved": "Provjerena ograničenja nisu prekoračena. Nerazriješeni uvjeti ostaju.",
+    "measured": "Izmjereno",
+    "limit": "Ograničenje",
+    "missingDirectValue": "Nije dostupna izravna vrijednost izvora.",
+    "unresolvedTitle": "Nerazriješeni uvjeti i pretpostavke",
+    "saved": "Nacrt je spremljen u ovom pregledniku. Prijedlog nije primijenjen ni objavljen.",
+    "saveError": "Nacrt se nije mogao spremiti u ovom pregledniku.",
+    "changed": "Izvor čestice ili prostornih pravila se promijenio. Prethodni nacrt je sačuvan; njegova procjena više nije aktualna.",
+    "restart": "Počni ponovno s aktualnim izvorima",
+    "reset": "Vrati početno probno oblikovanje",
+    "references": "Fiksirane reference pravila i čestice",
+    "invalidInput": "Unesite dimenzije unutar prikazanih raspona. Karta i dalje prikazuje posljednje valjano oblikovanje.",
+    "status": {
+      "pass": "Unutar provjerenog ograničenja",
+      "fail": "Prekoračeno provjereno ograničenje",
+      "unknown": "Nerazriješeno"
+    },
+    "checks": {
+      "parcelContainment": "Unutar izvorne čestice",
+      "zoningCoverage": "Dio oblikovanja izvan pokrivenosti izvora",
+      "frontSetback": "Prednji odmak",
+      "sideSetback": "Bočni odmaci",
+      "rearSetback": "Stražnji odmak",
+      "buildingCoverage": "Izgrađenost",
+      "use": "Zabilježeni uvjet stambene namjene"
+    },
+    "unresolvedReasons": {
+      "applicability": "Aktualna pravna primjenjivost, preklopna pravila, iznimke i potrebna rasprava nisu provjereni.",
+      "edge-assumption": "Prednji, stražnji i bočni rubovi proizlaze iz odabranog prednjeg ruba. Tumačenje nije provjereno prema ulici ili pravnom obuhvatu građevne čestice.",
+      "vertical-reference": "Visina koristi ravnu relativnu referencu tla. Izmjereni teren, pravila krova i visinska referenca propisa nisu provjereni.",
+      "measurement-basis": "Provjera površina koristi ovu česticu i probni tlocrt. Pravne definicije čestice, zgrade i etažne površine mogu se razlikovati.",
+      "other-rules": "Parkiranje, etažna površina, gustoća stanovanja, uvjeti stanovanja, infrastruktura i ostala nepodržana pravila nisu procijenjeni. Sva polja izvora ostaju u inspektoru prostornih pravila.",
+      "partial-source-coverage": "{{area}} čestice leži izvan dostavljenog zonskog područja. Djelomična omotnica isključuje tu površinu; primjenjivost ostaje nerazriješena."
+    },
+    "errors": {
+      "study-source-unavailable": "Izvor se nije mogao učitati. Pokušajte ponovno kada bude dostupan.",
+      "study-unavailable": "Za ovaj izvor nije postavljena studija čestice.",
+      "study-parcel-source-unavailable": "Postavljeni izvor čestica nije dostupan.",
+      "study-parcel-missing": "Na ovoj točki nije pronađena čestica. Kliknite unutar čestice i pokušajte ponovno.",
+      "study-parcel-ambiguous": "Na ovoj točki preklapa se više identiteta čestica. Odaberite točnu česticu; identitet nije pretpostavljen.",
+      "study-parcel-incomplete": "Pokrivenost česticama nije potpuna.",
+      "study-zoning-incomplete": "Izvor prostornih pravila vratio je nepotpunu pokrivenost.",
+      "study-multiple-zoning-areas": "Čestica prelazi više zonskih područja. Njihova pravila još nisu objedinjena.",
+      "study-zoning-missing": "Nijedno dostavljeno zonsko područje ne siječe ovu česticu.",
+      "unsupported-parcel-shape": "Demonstracija podržava male konveksne čestice bez rupa. Za ovu česticu potreban je drugi geometrijski evaluator.",
+      "empty-supported-bound": "Podržani odmaci ne ostavljaju omotnicu za prikaz.",
+      "invalid-front-edge": "Odaberite valjani rub čestice."
+    }
+  },
   "onMapEditor": {
     "missingSite": "Ova spremljena zgrada nema valjanu granicu izvorne lokacije pa nije moguće sigurno uređivati njezinu geometriju.",
     "cancel": "Odustani",
@@ -4343,6 +4408,25 @@
     },
     "city": {
         "labels": {
+            "porto_novo": "Porto-Novo, Benin",
+            "bloemfontein_za": "Bloemfontein (2556), Južnoafrička Republika",
+            "parakou": "Parakou, Benin",
+            "sikasso": "Sikasso, Mali",
+            "edendale": "Edendale, Južnoafrička Republika",
+            "segou": "Ségou, Mali",
+            "kanyamazane": "Kanyamazane, Južnoafrička Republika",
+            "reeston": "Reeston, Južnoafrička Republika",
+            "kapiri_mposhi": "Kapiri Mposhi, Zambija",
+            "mohadin": "Mohadin, Južnoafrička Republika",
+            "choma": "Choma, Zambija",
+            "joao_teves": "João Teves, Zelenortska Republika",
+            "whydah": "Whydah, Benin",
+            "chilanga": "Chilanga, Zambija",
+            "pobe": "Pobè, Benin",
+            "hyderabad": "Hyderabad, Indija",
+            "jakarta": "Jakarta, Indonezija",
+            "rio_de_janeiro": "Rio de Janeiro, Brazil",
+            "sisulu_village": "Sisulu Village, Južnoafrička Republika",
             "mandvi": "Mandvi, Indija",
             "bhuj": "Bhuj, Indija",
             "nahariyya": "Nahariyya, Izrael",
@@ -7066,14 +7150,14 @@
             "serverNoRecords": "Poslužitelj nema katastar za ovo mjesto, pa čestice i vlasništvo nisu utvrđeni. Čestice na karti samo su pregled.",
             "previewOnly": "Pregled prema česticama učitanima na karti.",
             "serverNoCadastre": "Poslužitelj potvrđuje: ovo mjesto ne pokriva nijedan katastar.",
-            "localEstimates": "Povezano s procijenjenim parcelama spremljenima u ovom pregledniku. Granice i vlasništvo nisu potvrđeni."
+            "localEstimates": "Povezano s procijenjenim česticama spremljenima u ovom pregledniku. Granice i vlasništvo nisu potvrđeni."
         },
         "coverage": {
             "complete": "potpuna — cijela lokacija leži na katastarskim česticama",
-            "estimatedComplete": "Lokalno procijenjene parcele pokrivaju cijelu lokaciju.",
-            "estimatedPartial": "Lokalno procijenjene parcele pokrivaju dio lokacije.",
-            "estimatedNone": "Nijedna spremljena procijenjena parcela ne pokriva ovu lokaciju.",
-            "estimatedUnknown": "Pokrivenost lokalno procijenjenim parcelama nije poznata.",
+            "estimatedComplete": "Lokalno procijenjene čestice pokrivaju cijelu lokaciju.",
+            "estimatedPartial": "Lokalno procijenjene čestice pokrivaju dio lokacije.",
+            "estimatedNone": "Nijedna spremljena procijenjena čestica ne pokriva ovu lokaciju.",
+            "estimatedUnknown": "Pokrivenost lokalno procijenjenim česticama nije poznata.",
             "partial": "djelomična — dio lokacije je otvoreno tlo (bez čestice)",
             "none": "nema — ovdje nema čestica; cijela lokacija je otvoreno tlo",
             "unknown": "nepoznata — ovdje nema upisanog katastra",
@@ -7155,11 +7239,6 @@
             "short": "zadire"
         },
         "buildings": {
-            "count": {
-                "one": "{{count}} zgrada",
-                "few": "{{count}} zgrade",
-                "other": "{{count}} zgrada"
-            },
             "footprint": "tlocrt {{area}}",
             "floorArea": "BRP {{area}}",
             "height": "katova: {{floors}} · {{height}}"
@@ -7366,7 +7445,7 @@
     },
     "parcelEstimate": {
         "collapse": "Sažmi kontrole",
-        "expand": "Prikaži kontrole parcela",
+        "expand": "Prikaži kontrole čestica",
         "title": "Ilustrativne procjene čestica",
         "disclaimer": "Procijenjene granice mogu biti nepotpune ili pogrešne i ne utvrđuju pravne granice.",
         "help": "Nove procjene pokreću se automatski i spremaju u ovaj preglednik. Odaberite česticu za uobičajene alate planiranja. Ponovna izrada zamjenjuje ovaj lokalni izvor.",
@@ -7612,6 +7691,25 @@
         }
     },
   "planningViews": {
+    "zoningAreas": "Područja izvornog plana",
+    "envelopeCoverage": "Djelomične ovojnice izvedene su iz učitanih katastarskih i planskih zapisa. Čestice bez volumena prebrojene su prema razlogu; izostanak volumena ne dokazuje nulti kapacitet.",
+    "envelopeSummary": "Pregledano {{count}} katastarskih zapisa: {{shapes}} s djelomičnim ovojnicama, {{missing}} bez volumena.",
+    "envelopeNote": "Djelomične ovojnice čestica iz izravnih vrijednosti izvora. Prednji rub nije utvrđen pa oblik uključuje alternativna tumačenja rubova. Ograničenja površine i nerazriješena pravila i dalje vrijede.",
+    "envelopesLoaded": {
+      "one": "{{count}} djelomična ovojnica čestice · {{missing}} čestica bez volumena",
+      "few": "{{count}} djelomične ovojnice čestica · {{missing}} čestica bez volumena",
+      "other": "{{count}} djelomičnih ovojnica čestica · {{missing}} čestica bez volumena"
+    },
+    "envelopeUnavailable": {
+      "envelope-geometry-error": "Izvornu geometriju nije moguće procijeniti",
+      "overlapping-parcel-identities": "Preklapanje identiteta čestica",
+      "use-prohibited": "Stambeni tip zabilježen kao zabranjen",
+      "missing-direct-height": "Nema izravnog ograničenja visine",
+      "empty-supported-bound": "Nema prostora unutar podržanih odmaka",
+      "unsupported-parcel-shape": "Nepodržan oblik čestice",
+      "study-multiple-zoning-areas": "Više planskih područja na jednoj čestici",
+      "study-zoning-missing": "Nema planskog izvora za česticu"
+    },
     "refreshPending": "Čeka osvježavanje",
     "refreshCount": {
       "one": "{{count}} rezultat čeka osvježavanje",

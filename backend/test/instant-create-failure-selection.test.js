@@ -34,7 +34,7 @@ function loadInstantCreate({ lands, reason = 'The live fabric could not be valid
         validation: { valid: true, errors: [] }
     };
     // An edit opened from an existing record (editProposalGeometry) names it as the draft's source.
-    if (editOf) draft.sourceProposalId = editOf.proposalId;
+    if (editOf) draft.sourceLocalProposalId = editOf.proposalId;
     const proposal = {
         proposalId: 'local-park',
         goal: 'park',
@@ -42,7 +42,9 @@ function loadInstantCreate({ lands, reason = 'The live fabric could not be valid
         cadastreParcelIds: draft.fields.selectedParcelIds.slice(),
         applied: false
     };
-    if (replacement) proposal.sourceProposalId = 'source-lake';
+    if (replacement) proposal.proposalOrigin = {
+        relation: 'revision', source: { kind: 'local', localProposalId: 'source-lake' }, title: 'Source lake'
+    };
     const selectAndHighlightProposal = vi.fn();
     const showStyledAlert = vi.fn();
     const showEphemeralMessage = vi.fn();
@@ -496,7 +498,7 @@ describe('saving an edit of an existing record', () => {
     });
 
     it('still forks a counterproposal of a published source, which stays standing', async () => {
-        const source = { ...localLake(), serverProposalId: '901' };
+        const source = { ...localLake(), serverProposalId: '901', publicationApiBase: 'https://api.example.test' };
         const { proposal, ProposalManager } = loadInstantCreate({ lands: true, editOf: source });
 
         const result = await globalThis.instantCreateProposalFromDraft('draft-park');

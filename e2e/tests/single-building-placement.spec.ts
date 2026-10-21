@@ -99,11 +99,14 @@ async function finishSingle(page: Page): Promise<void> {
 }
 
 async function createAppliedSingle(page: Page, parcelId = PARCEL_ID): Promise<string> {
-  await openCity(page);
+  await openCity(page, parcelId);
   const before = await page.evaluate(() => (window as any).proposalStorage.getAllProposals()
     .filter((p: any) => p.applied && p.buildingProposal?.typologyType === 'single')
     .map((p: any) => p.proposalId));
-  await openSingleEditor(page, true, parcelId);
+  // This helper is for single-proposal lineage checks; leave the two-house design to the
+  // dedicated import/save contract test below.
+  await openSingleEditor(page, true, parcelId, false);
+  await selectNativeOption(page.locator('#single-ground-treatment'), 'green');
   await finishSingle(page);
   await expect.poll(() => page.evaluate(previous => (window as any).proposalStorage.getAllProposals()
     .some((p: any) => p.applied && p.buildingProposal?.typologyType === 'single' && !previous.includes(p.proposalId)), before)).toBe(true);
@@ -246,38 +249,67 @@ test.describe('Single-building placement and immutable replacement @features', (
     expect(bounds.east).toBeLessThan(15.9825 - 0.000003);
   });
 
-  test('Done binds the moved site and reload restores the exact buildings and ground', async ({ mockApi: page }) => {
+  test('Done saves two one-building proposals with exact sites and parcels; only the first keeps surroundings', async ({ mockApi: page }) => {
     await openSingleEditor(page);
-    const before = await editorDesign(page);
     await page.locator(`${EDITOR} [data-placement="snap"]`).uncheck();
+    await page.locator('#single-move-together').uncheck();
+    // Duplicating initially overlaps the original. Separate their land before expecting both
+    // independent proposals to remain applied; overlapping proposals replace each other.
+    await dragActive(page, 190);
+    await page.locator('#single-move-together').check();
+    const before = await editorDesign(page);
+    expect(await page.evaluate(buildings => (window as any).turf.intersect(buildings[0], buildings[1]), before.buildings)).toBeNull();
+    const existingIds = await page.evaluate(() => (window as any).proposalStorage.getAllProposals()
+      .map((p: any) => p.proposalId));
     await dragActive(page, 190);
     const moved = await editorDesign(page);
     expect(moved.buildings.map(feature => feature.geometry)).not.toEqual(before.buildings.map(feature => feature.geometry));
     expect(moved.ground).not.toEqual(before.ground);
-    const requestPromise = page.waitForRequest(req => req.method() === 'POST' && new URL(req.url()).pathname.endsWith('/proposals/binding'));
+    const bindingBodies: any[] = [];
+    page.on('request', req => {
+      if (req.method() === 'POST' && new URL(req.url()).pathname.endsWith('/proposals/binding')) {
+        bindingBodies.push(req.postDataJSON());
+      }
+    });
     await finishSingle(page);
-    const request = await requestPromise;
-    const bindingBody = request.postDataJSON();
-    const saved = await page.evaluate(() => (window as any).proposalStorage.getAllProposals()
-      .find((p: any) => p.applied && p.buildingProposal?.typologyType === 'single'));
-    expect(saved.geometry.buildings).toHaveLength(2);
-    expect(saved.geometry.groundSurface.treatment).toBe('green');
-    expect(saved.geometry.groundBoundary).toBeTruthy();
-    expect(saved.freePlacement).toBe(true);
-    expect(saved.binding.source).toMatch(/^server:/);
-    expect(['complete', 'partial', 'none']).toContain(saved.binding.coverage);
-    expect(bindingBody.site).toEqual(saved.site);
-    const boundParcelIds = saved.binding.parcels.map((parcel: any) => parcel.parcelId);
-    expect(boundParcelIds.length).toBeGreaterThan(0);
+    await expect.poll(() => page.evaluate(previous => (window as any).proposalStorage.getAllProposals()
+      .filter((p: any) => p.applied && p.buildingProposal?.typologyType === 'single'
+        && !previous.includes(p.proposalId)).length, existingIds)).toBe(2);
+    const saved = await page.evaluate(previous => (window as any).proposalStorage.getAllProposals()
+      .filter((p: any) => p.applied && p.buildingProposal?.typologyType === 'single'
+        && !previous.includes(p.proposalId)), existingIds);
+    expect(saved).toHaveLength(2);
+    expect(bindingBodies).toHaveLength(2);
+    for (const proposal of saved) {
+      expect(proposal.geometry.buildings).toHaveLength(1);
+      expect(proposal.freePlacement).toBe(true);
+      expect(proposal.binding.source).toMatch(/^server:/);
+      expect(['complete', 'partial', 'none']).toContain(proposal.binding.coverage);
+      expect(proposal.binding.parcels.length).toBeGreaterThan(0);
+      expect(bindingBodies).toContainEqual(expect.objectContaining({ site: proposal.site }));
+    }
+    expect(saved.map((proposal: any) => proposal.geometry.buildings[0].geometry).sort((a: any, b: any) => JSON.stringify(a).localeCompare(JSON.stringify(b))))
+      .toEqual(moved.buildings.map(feature => feature.geometry).sort((a, b) => JSON.stringify(a).localeCompare(JSON.stringify(b))));
+    const first = saved[0];
+    const second = saved[1];
+    expect(first.geometry.groundSurface.treatment).toBe('green');
+    expect(first.geometry.groundSurface.polygon).toEqual(moved.ground);
+    expect(first.geometry.groundBoundary).toBeTruthy();
+    expect(second.geometry.groundSurface || null).toBeNull();
+    expect(second.geometry.groundBoundary || null).toBeNull();
+    const boundParcelIds = saved.flatMap((proposal: any) => proposal.binding.parcels.map((parcel: any) => parcel.parcelId));
     expect(boundParcelIds).toContain(DESTINATION_PARCEL_ID);
 
     await page.reload({ waitUntil: 'domcontentloaded' });
-    await page.waitForFunction(id => !!(window as any).proposalStorage?.getProposal(id), saved.proposalId);
-    const restored = await proposalState(page, saved.proposalId);
-    expect(restored.geometry.buildings).toEqual(saved.geometry.buildings);
-    expect(restored.geometry.groundSurface).toEqual(saved.geometry.groundSurface);
-    expect(restored.geometry.groundBoundary).toEqual(saved.geometry.groundBoundary);
-    expect(restored.site).toEqual(saved.site);
+    for (const proposal of saved) {
+      await page.waitForFunction(id => !!(window as any).proposalStorage?.getProposal(id), proposal.proposalId);
+      const restored = await proposalState(page, proposal.proposalId);
+      expect(restored.geometry.buildings).toEqual(proposal.geometry.buildings);
+      expect(restored.geometry.groundSurface || null).toEqual(proposal.geometry.groundSurface || null);
+      expect(restored.geometry.groundBoundary || null).toEqual(proposal.geometry.groundBoundary || null);
+      expect(restored.site).toEqual(proposal.site);
+      expect(restored.binding.parcels).toEqual(proposal.binding.parcels);
+    }
   });
 
   test('failed binding keeps the unsaved design and reopens it for repair', async ({ mockApi: page }) => {
@@ -299,13 +331,15 @@ test.describe('Single-building placement and immutable replacement @features', (
   test('a non-overlapping edit of a published source preserves it; a local edit saves in place', async ({ mockApi: page }) => {
     const publishedId = await createAppliedSingle(page);
     const publishedBefore = await proposalState(page, publishedId);
-    await page.evaluate(async id => {
+    const publicationApiBase = await page.evaluate(() => (window as any).getBackendBase());
+    await page.evaluate(({ id, publicationApiBase }) => {
       const storage = (window as any).proposalStorage;
       const source = storage.getProposal(id);
       source.serverProposalId = '741';
+      source.publicationApiBase = publicationApiBase;
       storage.setProposalLifecycleStatus(id, 'Active');
       storage.save();
-    }, publishedId);
+    }, { id: publishedId, publicationApiBase });
     await beginGeometryEdit(page, publishedId);
     await page.locator(`${EDITOR} [data-placement="snap"]`).uncheck();
     const moveTogether = page.locator('#single-move-together');
@@ -347,8 +381,12 @@ test.describe('Single-building placement and immutable replacement @features', (
     expect(overlapAreas.buildingAreas.flat().every(area => area < 0.01)).toBe(true);
     expect([overlapAreas.boundaryArea, overlapAreas.placementSiteArea, overlapAreas.greenArea].every(area => area < 0.01)).toBe(true);
     await finishSingle(page);
-    await expect.poll(() => page.evaluate(id => (window as any).proposalStorage.getAllProposals()
-      .filter((p: any) => p.sourceProposalId === id && p.applied).length, publishedId)).toBe(1);
+    await expect.poll(() => page.evaluate(({ apiBase }) => (window as any).proposalStorage.getAllProposals()
+      .filter((p: any) => p.proposalOrigin?.relation === 'revision'
+        && p.proposalOrigin?.source?.kind === 'publication'
+        && p.proposalOrigin.source.apiBase === apiBase
+        && p.proposalOrigin.source.proposalRowId === '741'
+        && p.applied).length, { apiBase: publicationApiBase })).toBe(1);
     const publishedAfter = await proposalState(page, publishedId);
     expect(publishedAfter.applied).toBe(true);
     expect(publishedAfter.geometry).toEqual(publishedBefore.geometry);
@@ -366,7 +404,6 @@ test.describe('Single-building placement and immutable replacement @features', (
       .not.toBe(JSON.stringify(localBefore.geometry));
     expect((await proposalState(page, localId)).applied).toBe(true);
     expect(await page.evaluate(() => (window as any).proposalStorage.getAllProposals().length)).toBe(countBefore);
-    expect(await page.evaluate(id => (window as any).proposalStorage.getAllProposals()
-      .some((p: any) => p.sourceProposalId === id), localId)).toBe(false);
+    expect((await proposalState(page, localId)).proposalOrigin).toEqual(localBefore.proposalOrigin);
   });
 });

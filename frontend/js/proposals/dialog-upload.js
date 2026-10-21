@@ -701,16 +701,15 @@ function showUploadProposalModal(proposal) {
         uploadButton.textContent = tShare('uploading', 'Uploading...');
 
         try {
-            const uploadProposal = window.ChainProposalRef?.chainRefFromProposal(proposal)
-                ? proposal : buildUploadReadyProposal(proposal);
-
             console.log('[showUploadProposalModal] Proposal before upload:', {
-                hasRoadProposal: !!uploadProposal?.roadProposal,
-                proposalId: uploadProposal?.proposalId,
-                city: uploadProposal?.city
+                hasRoadProposal: !!proposal?.roadProposal,
+                proposalId: proposal?.proposalId,
+                city: proposal?.city
             });
 
-            const uploadResult = await uploadProposalToServer(uploadProposal);
+            // The uploader builds the publication projection itself. Keep the stored local record
+            // as its input so publication identity is synced back under the browser-local key.
+            const uploadResult = await uploadProposalToServer(proposal);
 
             if (!uploadResult.ok) {
                 throw new Error(uploadResult.message || tShare('uploadError', 'Failed to upload proposal. Please try again.'));

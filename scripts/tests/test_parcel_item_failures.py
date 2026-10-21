@@ -1,10 +1,13 @@
 """Prove one incomplete city/review cannot prevent processing later cities or ranks."""
 import importlib.util
 import json
+import os
+import shutil
 import tempfile
 import unittest
 from pathlib import Path
 from types import SimpleNamespace
+from unittest.mock import patch
 
 SPEC = importlib.util.spec_from_file_location("runner", Path(__file__).resolve().parents[1] / "run-valhalla-parcel-research.py")
 runner = importlib.util.module_from_spec(SPEC)
@@ -14,6 +17,13 @@ SPEC.loader.exec_module(runner)
 class ItemFailureTests(unittest.TestCase):
     def make_runner(self, root, cities):
         root = root.resolve()
+        accounting = root / "scripts/lib/parcel-research-accounting.cjs"
+        accounting.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(Path(__file__).resolve().parents[1] / "lib/parcel-research-accounting.cjs", accounting)
+        shared = Path(__file__).resolve().parents[3] / "agents/lib/llm-cost"
+        self.env_patch = patch.dict(os.environ, {"AGENTS_LLM_COST_DIR": str(shared)})
+        self.env_patch.start()
+        self.addCleanup(self.env_patch.stop)
         queue = root / "cohort" / "pending-queue.json"
         queue.parent.mkdir(parents=True)
         queue.write_text("{}")

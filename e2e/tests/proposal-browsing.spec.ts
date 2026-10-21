@@ -217,6 +217,7 @@ test.describe('Proposal browsing @features', () => {
     const selectedId = await comparison.locator('.parcel-compare__picker--a select').inputValue();
     await comparison.locator('.parcel-compare__picker--a .parcel-compare__details').click();
     await expect(comparison).toBeHidden();
+    await showProposal(page, selectedId);
     await expect(page.locator('#proposal-details-panel')).toBeVisible();
     await expect.poll(() => page.evaluate(() => (window as any).currentlyHighlightedProposalId)).toBe(selectedId);
   });

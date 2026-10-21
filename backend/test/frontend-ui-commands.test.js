@@ -15,6 +15,9 @@ const MapShell = require('../../frontend/js/ui/map-shell.js');
 
 const FRONTEND = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../frontend');
 const indexHtml = fs.readFileSync(path.join(FRONTEND, 'index.html'), 'utf8');
+const photorealParcelsSource = fs.readFileSync(path.join(FRONTEND, 'js/photoreal-parcels.js'), 'utf8');
+const mapShellSource = fs.readFileSync(path.join(FRONTEND, 'js/ui/map-shell.js'), 'utf8');
+const parcelSourceSettingsSource = fs.readFileSync(path.join(FRONTEND, 'js/parcel-source-settings.js'), 'utf8');
 const LANGS = ['en', 'hr', 'es', 'sr'];
 const dictionaries = Object.fromEntries(LANGS.map(lang => [
     lang, JSON.parse(fs.readFileSync(path.join(FRONTEND, 'i18n', `${lang}.json`), 'utf8'))
@@ -53,6 +56,8 @@ const NOT_COMMANDS = {
     'urban-blocks-browse': 'permanently disabled (browse is not built)',
     showClaimsCounts: 'permanently disabled (claims counts not built)',
     'aerial-city-visible': 'aerial renderer control created by the world view',
+    'photo-parcels-visible': 'photo-view parcel boundary control handled by PhotorealParcels',
+    'photo-parcel-close': 'photo-view selection close control handled by PhotorealParcels',
     'area-monitor-drawing-undo': 'transient area drawing toolbar action',
     'area-monitor-drawing-cancel': 'transient area drawing toolbar action',
     'dev-badge': 'indicator, not an action',
@@ -64,6 +69,7 @@ const NOT_COMMANDS = {
 };
 // Inline handlers in the sheets that are not commands, and why.
 const NOT_COMMAND_HANDLERS = {
+    openImagerySourceSettings: 'opens imagery source settings directly from the Layers sheet',
     hideBlocksList: 'closes the block list inside the sheet',
     detectRoadsUsingAI: 'button permanently disabled; the function does not exist',
     algorithmicRoads: 'button permanently disabled; the function does not exist'
@@ -148,6 +154,14 @@ describe('rehoused sidebar controls', () => {
         }
         expect(UiCommands.SURFACES).not.toContain('tools');
         expect(UiCommands.SURFACES).toContain('measurement');
+    });
+
+    it('keeps direct imagery and photo-view controls wired to their view handlers', () => {
+        expect(parcelSourceSettingsSource).toContain("root.openImagerySourceSettings = () => api.open(root, 'imagery');");
+        expect(mapShellSource).toContain("doc.getElementById('aerial-city-visible')?.addEventListener('change'");
+        expect(mapShellSource).toContain('win.PhotorealMode?.setBuiltVisible(event.target.checked)');
+        expect(photorealParcelsSource).toContain("toggle?.addEventListener('change', onToggle)");
+        expect(photorealParcelsSource).toContain("close?.addEventListener('click', clearSelection)");
     });
 
     it('turns every interactive control in the sheets into a command, or says why not', () => {

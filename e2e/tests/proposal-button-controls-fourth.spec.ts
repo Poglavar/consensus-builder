@@ -1,6 +1,6 @@
 // Verify proposal download actions through their browser effects.
 import { test, expect } from '../helpers/fixtures';
-import { openCity, PARCEL_GEOMETRY, PARCEL_ID } from '../helpers/runtime';
+import { openCity, showProposal, PARCEL_GEOMETRY, PARCEL_ID } from '../helpers/runtime';
 
 test.describe('proposal button controls fourth pass @features', () => {
   test('map search Cancel declines a remote download and Download imports and opens it', async ({ mockApi: page }) => {
@@ -38,10 +38,12 @@ test.describe('proposal button controls fourth pass @features', () => {
     await expect(confirm).toBeVisible();
     await confirm.getByRole('button', { name: 'Download', exact: true }).click();
     await expect(confirm).toBeHidden();
+    const importedId = await page.evaluate(() => (window as any).proposalStorage.getAllProposals()
+      .find((proposal: any) => proposal.serverProposalId === '777')?.proposalId);
+    expect(importedId).toBeTruthy();
+    await showProposal(page, importedId);
     await expect(page.locator('#proposal-details-panel')).toBeVisible();
     await expect(page.locator('#proposal-details-title')).toHaveText('Remote proposal');
-    await expect.poll(() => page.evaluate(() => (window as any).proposalStorage.getAllProposals()
-      .some((proposal: any) => proposal.serverProposalId === '777'))).toBe(true);
     expect(detailRequests).toBe(1);
   });
 });

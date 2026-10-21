@@ -23,6 +23,15 @@ const DYNAMIC_KEY_PREFIXES = [
     'gameDialogs.log.actions.', // activity-action-vocabulary.test.js checks every action type, all four locales
     'gameDialogs.log.row.',
     'activityFeed.',              // the toolbar filter name is assembled from a runtime category
+    'imagerySources.',             // parcel-source-settings.js selects labels by source kind and preset
+    'planningStudy.',              // parcel-study.js local t() helper prefixes every study key
+    'planningStudy.checks.',       // study assessment keys select human-readable check names
+    'planningStudy.errors.',       // service failures arrive as runtime error codes
+    'planningStudy.status.',       // assessment status is passed through the local t() helper
+    'planningStudy.unresolvedReasons.', // assessment evidence emits these reason codes
+    'planningViews.constraint.',   // parcel-study.js chooses height and lot-area labels
+    'planningViews.resultStatus.', // source assessment outcomes are runtime values
+    'planningViews.scenario.',     // scenario ids come from the planning source catalog
     'modal.corridor.compass.',
     'modal.corridor.laneTypes.',
     'modal.corridor.presetWidths.',
@@ -58,7 +67,8 @@ const DYNAMIC_KEY_PREFIXES = [
 
 // Helpers that prepend a namespace to the key they are given, per file.
 const PREFIXING_HELPERS = {
-    'js/structure-geometry-editor.js': { fn: 't', prefix: 'structureEditor.' }
+    'js/structure-geometry-editor.js': { fn: 't', prefix: 'structureEditor.' },
+    'js/planning/parcel-study.js': { fn: 't', prefix: 'planningStudy.' }
 };
 
 // Call names that take a dotted string first but are not translation lookups.
@@ -126,8 +136,9 @@ function scanFrontend() {
         }
         for (const m of src.matchAll(attrRe)) record(literal, m[1], `${rel}:${lineOf(m.index)}`);
         for (const m of src.matchAll(templateRe)) {
-            const [, fn, prefix] = m;
+            const [, fn, rawPrefix] = m;
             if (NON_TRANSLATION_CALL.test(fn)) continue;
+            const prefix = prefixing && fn === prefixing.fn ? prefixing.prefix + rawPrefix : rawPrefix;
             if (!namespaces.has(prefix.split('.')[0])) continue;
             record(dynamic, prefix, `${rel}:${lineOf(m.index)}`);
         }
@@ -184,6 +195,32 @@ describe('i18n locale coverage', () => {
                 expect(value, `${lang}: proposalApplyFailures.${key}`).toEqual(expect.any(String));
                 expect(value.length).toBeGreaterThan(0);
             }
+        }
+    });
+
+    it('defines dynamically selected planning and imagery labels in every locale', () => {
+        const dynamicKeys = [
+            ...['pass', 'fail', 'unknown'].map(value => `planningStudy.status.${value}`),
+            ...['parcelContainment', 'zoningCoverage', 'frontSetback', 'sideSetback', 'rearSetback', 'buildingCoverage', 'use']
+                .map(value => `planningStudy.checks.${value}`),
+            ...['applicability', 'edge-assumption', 'vertical-reference', 'measurement-basis', 'other-rules',
+                'partial-source-coverage'].map(value => `planningStudy.unresolvedReasons.${value}`),
+            ...['height', 'lotArea'].map(value => `planningViews.constraint.${value}`),
+            ...['condition_failed', 'evidence_missing', 'existing_stock_estimate', 'geometry_failed', 'geometry_validated',
+                'instrument_handoff', 'no_validated_candidate', 'procedure_required', 'route', 'unresolved_context',
+                'unsupported_calculation', 'allowed', 'hearing', 'prohibited', 'overlay', 'nomention', 'clear', 'flagged']
+                .map(value => `planningViews.resultStatus.${value}`),
+            ...['family1', 'family2', 'family3', 'family4', 'accessory', 'plannedresidential', 'cached-calculation',
+                'new-attached-multifamily'].map(value => `planningViews.scenario.${value}`),
+            ...['study-source-unavailable', 'study-unavailable', 'study-parcel-source-unavailable', 'study-parcel-missing',
+                'study-parcel-ambiguous', 'study-parcel-incomplete', 'study-zoning-incomplete', 'study-multiple-zoning-areas',
+                'study-zoning-missing', 'unsupported-parcel-shape', 'empty-supported-bound', 'invalid-front-edge']
+                .map(value => `planningStudy.errors.${value}`),
+            ...['title', 'intro', 'url', 'matched', 'retry', 'default', 'noAdapter', 'standard', 'presets', 'dguCoverage',
+                'dgu2022', 'dgu2024', 'selectLayer', 'layer', 'unsupportedCrs'].map(value => `imagerySources.${value}`)
+        ];
+        for (const lang of LANGS) for (const key of dynamicKeys) {
+            expect(hasKey(locales[lang], key), `${lang}: ${key}`).toBe(true);
         }
     });
 

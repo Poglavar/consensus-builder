@@ -161,12 +161,14 @@ test.describe('proposal detail button controls @features', () => {
   test('parcel-set related proposal and activity links navigate to the selected scope', async ({ mockApi: page }) => {
     await openCity(page);
     await page.evaluate(() => (window as any).i18n.setLanguage('en'));
+    const parcelSource = { sourceId: 'hr-cadastre', snapshotId: null };
     const sourceId = await addProposal(page, {
       title: 'Source plan', goal: 'park', lifecycleStatus: 'Active', cadastreParcelIds: [PARCEL_ID],
-      parcelSet: { setHash: 'e2e-parcel-set-hash' },
+      parcelSet: { setHash: 'e2e-parcel-set-hash', parcelSource },
     });
     const relatedId = await addProposal(page, {
       title: 'Related plan', goal: 'square', lifecycleStatus: 'Active', cadastreParcelIds: [PARCEL_ID],
+      parcelSet: { parcelSource },
     });
 
     await showExpandedProposal(page, sourceId);
@@ -174,7 +176,8 @@ test.describe('proposal detail button controls @features', () => {
     const relatedButton = page.locator(`#proposal-details-content [data-related-proposal-id="${relatedId}"]`);
     await expect(relatedButton).toBeVisible();
     await relatedButton.click();
-    await expect(page.locator('#proposal-details-title')).toHaveText('Related plan');
+    await expect.poll(() => page.evaluate(() => (window as any).PlanningViews.getSelected()?.proposalId)).toBe(relatedId);
+    await expect(page.locator('#planning-inspector')).toContainText('Related plan');
     await showExpandedProposal(page, relatedId);
 
     await showExpandedProposal(page, sourceId);
@@ -217,6 +220,7 @@ test.describe('proposal detail button controls @features', () => {
       return { otp: p.ownershipTransferProposal, hash: w.proposalConsentFingerprint(p) };
     }, proposalId);
     await buy.click();
+    await expect.poll(() => page.evaluate(id => !!(window as any).proposalStorage.getProposal(id)?.localPurchaseSimulation, proposalId)).toBe(true);
     await expect(page.locator('#proposal-details-panel .proposal-purchase-simulation')).toHaveText('Purchase simulated in this browser');
     await expect(page.locator('#proposal-details-panel .proposal-buy-btn')).toHaveCount(0);
     await page.reload();
@@ -281,6 +285,8 @@ test.describe('proposal detail button controls @features', () => {
     const plan = page.locator('.share-plan-panel');
     await expect(plan).toBeVisible({ timeout: 30000 });
     await expect(plan.locator('.share-plan-row')).toContainText(/park/i);
+    // The originating share dialog closes only after the applied-plan panel is ready.
+    await expect(share).toBeHidden();
 
     const uploadedMode = plan.getByRole('button', { name: 'Uploaded', exact: true });
     await uploadedMode.click();

@@ -57,7 +57,7 @@ test.describe('Overture buildings in the browser', () => {
 
   test("Bogotá reads its cadastre's buildings, and Overture's where the cadastre has none", async ({ mockApi: page }) => {
     const tiles = await mockOvertureTiles(page, BUILDINGS);
-    let cadastre: Array<Record<string, unknown>> = [];
+    let cadastre: Array<Record<string, unknown>> = [{ id: 'CUSTOM-B-58c2275a9021877e969e-330327', geometry: { type: 'Polygon', coordinates: [square(-74.0823, 4.6104)] }, height_m: null, floors: 3 }];
     const asked: Array<Record<string, unknown>> = [];
     await page.route('**/buildings/footprints', route => {
       asked.push(route.request().postDataJSON());
@@ -66,7 +66,6 @@ test.describe('Overture buildings in the browser', () => {
     await page.goto(`/?city=bogota&${VIEW}`);
     await waitForMapReady(page);
 
-    cadastre = [{ id: 'CUSTOM-B-58c2275a9021877e969e-330327', geometry: { type: 'Polygon', coordinates: [square(-74.0823, 4.6104)] }, height_m: null, floors: 3 }];
     await page.evaluate(() => (window as any).ensureBuildingFootprintsForBounds((window as any).map.getBounds()));
     await expect.poll(() => poolIds(page)).toEqual(['CUSTOM-B-58c2275a9021877e969e-330327']);
     // Bogotá's own source for a request in Bogotá; the place tells the server where, no city is sent

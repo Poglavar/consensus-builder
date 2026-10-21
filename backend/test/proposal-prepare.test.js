@@ -152,6 +152,10 @@ describe('prepareProposal', () => {
         expect(stored.osm).toEqual(asRecord.roadProposal.definition.osm);
         osmForm.VIEW_FIELDS.forEach(field => expect(stored[field], field).toBeUndefined());
         expect(stored.polygon).toEqual(fromView.artifact.corridor.polygon);
+        const bindingRecord = checkProposalBinding.mock.calls.at(-1)[1];
+        expect(bindingRecord.roadProposal.definition.osm).toBeUndefined();
+        expect(bindingRecord.roadProposal.definition.segments[0]).toHaveLength(3);
+        expect((await import('../proposals/binding.js')).requiresParcels(bindingRecord)).toBe(false);
     });
 
     it('refuses a partial corridor: nothing is bound or stored', async () => {

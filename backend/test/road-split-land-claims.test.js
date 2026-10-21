@@ -55,13 +55,15 @@ const source = () => ({
 describe('split-off road stretch land claims', () => {
     it('keeps only claims on the land the stretch still reaches, so the record loads', () => {
         const stretch = loadSnapshot()(source(), { width: 19, points: [[]], polygon: STRETCH_LAND },
-            { sourceProposalId: 'upu-borovje-ulice' });
+            { sourceLocalProposalId: 'upu-borovje-ulice' });
 
         expect(stretch.cadastreParcelIds).toEqual([KEPT]);
         expect(stretch.acceptedParcelIds).toEqual([KEPT]);
         expect(Object.keys(stretch.ownerAcceptances)).toEqual([KEPT]);
         expect(stretch.ownershipFlow.map(entry => entry.parcelId)).toEqual([KEPT]);
-        expect(stretch.sourceProposalId).toBe('upu-borovje-ulice');
+        expect(stretch.proposalOrigin).toEqual({
+            relation: 'revision', source: { kind: 'local', localProposalId: 'upu-borovje-ulice' }, title: 'UPU Borovje – ulična mreža'
+        });
         expect(stretch.applied).toBe(false);
         // The exact check that rejected the split before.
         expect(authored.findNonCadastralReference(stretch)).toBeNull();

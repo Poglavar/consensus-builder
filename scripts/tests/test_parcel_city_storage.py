@@ -80,7 +80,8 @@ class CityStorageTests(unittest.TestCase):
 
         self.assertTrue(storage.finish_city(self.runner, self.city, self.cohort))
         saved = json.loads((self.root / "world-parcels/cities/123/failed-urls.json").read_text())
-        self.assertEqual(saved, [{"url": "https://example.test/parcel-service", "reason": refusal}])
+        self.assertEqual(saved, [])
+        self.assertEqual(self.row["lastError"], refusal)
         self.assertTrue(self.row["storageComplete"])
         self.assertFalse(self.packet.exists())
         self.assertFalse(self.review.exists())
@@ -103,7 +104,7 @@ class CityStorageTests(unittest.TestCase):
         catalog = json.loads((self.root / "backend/parcels/source-catalog.json").read_text())
         self.assertNotIn("evidenceFile", catalog["sources"][0])
 
-    def test_failed_candidate_with_null_packet_source_keeps_reviewed_url(self):
+    def test_interrupted_qualification_does_not_mark_the_reviewed_url_failed(self):
         self.packet.write_text(json.dumps({"source": None}))
         endpoint = "https://example.test/reviewed-parcels"
         self.receipt.write_text(json.dumps({"source": {"endpoint": endpoint}}))
@@ -112,7 +113,17 @@ class CityStorageTests(unittest.TestCase):
 
         self.assertTrue(storage.finish_city(self.runner, self.city, self.cohort))
         saved = json.loads((self.root / "world-parcels/cities/123/failed-urls.json").read_text())
-        self.assertEqual(saved, [{"url": endpoint, "reason": "qualification interrupted"}])
+        self.assertEqual(saved, [])
+        self.assertEqual(self.row["lastError"], "qualification interrupted")
+
+    def test_proven_source_limitation_keeps_the_reviewed_url(self):
+        endpoint = "https://example.test/reviewed-parcels"
+        self.packet.write_text(json.dumps({"source": None}))
+        self.receipt.write_text(json.dumps({"decision": "candidate", "source": {"endpoint": endpoint}}))
+        self.row.update(discoveryDecision="candidate", qualification={"status": "blocked-source", "summary": "login required"})
+        self.assertTrue(storage.finish_city(self.runner, self.city, self.cohort))
+        saved = json.loads((self.root / "world-parcels/cities/123/failed-urls.json").read_text())
+        self.assertEqual(saved, [{"url": endpoint, "reason": "login required"}])
         self.assertTrue(self.row["storageComplete"])
         self.assertFalse(self.packet.exists())
         self.assertFalse(self.receipt.exists())

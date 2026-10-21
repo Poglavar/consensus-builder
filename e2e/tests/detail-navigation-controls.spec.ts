@@ -3,7 +3,11 @@ import { test, expect } from '../helpers/fixtures';
 import { openCity, openParcel, showProposal, PARCEL_ID, PARCEL_GEOMETRY } from '../helpers/runtime';
 
 async function addProposal(page: import('@playwright/test').Page, record: Record<string, unknown>): Promise<string> {
-  return page.evaluate(value => (window as any).proposalStorage.addProposal(value), record);
+  const value = {
+    lifecycleEvidence: { protocol: 'proposal-lifecycle-evidence/1', state: 'unknown', claimedStatus: 'Active', reason: 'no-matching-observation' },
+    ...record,
+  };
+  return page.evaluate(proposal => (window as any).proposalStorage.addProposal(proposal), value);
 }
 
 test.describe('Detail navigation controls @features', () => {
@@ -32,9 +36,16 @@ test.describe('Detail navigation controls @features', () => {
     await expect(link).toBeVisible();
     await link.click();
     await expect(explorer).toBeHidden();
-    await expect(page.locator('#proposal-details-panel')).toBeVisible();
-    await expect.poll(() => page.evaluate(() => (window as any).currentlyHighlightedProposalId)).toBe(proposalId);
-    await expect(page.locator('#proposal-details-panel')).toContainText('Activity link destination');
+    const planningInspector = page.locator('#planning-inspector');
+    const proposalPanel = page.locator('#proposal-details-panel');
+    await expect.poll(async () => await planningInspector.isVisible() || await proposalPanel.isVisible()).toBe(true);
+    if (await planningInspector.isVisible()) {
+      await expect.poll(() => page.evaluate(() => (window as any).PlanningViews?.getSelected()?.proposalId)).toBe(proposalId);
+      await expect(planningInspector).toContainText('Activity link destination');
+    } else {
+      await expect.poll(() => page.evaluate(() => (window as any).currentlyHighlightedProposalId)).toBe(proposalId);
+      await expect(proposalPanel).toContainText('Activity link destination');
+    }
   });
 
   test('parcel block tag opens the matching block inspector', async ({ mockApi: page }) => {
@@ -80,12 +91,14 @@ test.describe('Detail navigation controls @features', () => {
     const childId = await addProposal(page, {
       proposalId: 'e2e-based-on-child', title: 'Based-on child source', goal: 'as-is', city: 'zagreb',
       lifecycleStatus: 'Active', author: author.name, cadastreParcelIds: [PARCEL_ID], geometry: PARCEL_GEOMETRY,
-      copiedFromProposalId: sourceId,
+      proposalOrigin: { relation: 'copy', source: { kind: 'local', localProposalId: sourceId }, title: 'Based-on source destination' },
     });
 
     await showProposal(page, childId);
     const panel = page.locator('#proposal-details-panel');
-    await panel.locator('#proposal-details-minimize').click();
+    if (await panel.evaluate(element => element.classList.contains('is-minimized'))) {
+      await panel.locator('#proposal-details-minimize').click();
+    }
     await expect(panel).not.toHaveClass(/is-minimized/);
     const basedOn = panel.locator('.proposal-based-on-link');
     await expect(basedOn).toHaveText('Based-on source destination');
@@ -94,7 +107,9 @@ test.describe('Detail navigation controls @features', () => {
     await expect(panel).toContainText('Based-on source destination');
 
     await showProposal(page, childId);
-    await panel.locator('#proposal-details-minimize').click();
+    if (await panel.evaluate(element => element.classList.contains('is-minimized'))) {
+      await panel.locator('#proposal-details-minimize').click();
+    }
     await expect(panel).not.toHaveClass(/is-minimized/);
     const authorLink = panel.locator('.proposal-author-row .agent-link-clickable');
     await expect(authorLink).toHaveAttribute('data-agent-id', author.id);
@@ -112,7 +127,9 @@ test.describe('Detail navigation controls @features', () => {
     });
     await showProposal(page, proposalId);
     const details = page.locator('#proposal-details-panel');
-    await details.locator('#proposal-details-minimize').click();
+    if (await details.evaluate(element => element.classList.contains('is-minimized'))) {
+      await details.locator('#proposal-details-minimize').click();
+    }
     await expect(details).not.toHaveClass(/is-minimized/);
     const ownership = details.locator('details[data-proposal-section="land"]');
     if (!(await ownership.evaluate((element: HTMLDetailsElement) => element.open))) {

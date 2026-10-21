@@ -189,15 +189,16 @@
         if (!repositionWired) {
             repositionWired = true;
             window.addEventListener('resize', positionPanel);
-            // The drill sits BETWEEN the proposal card and the parcel panel in the right dock —
-            // any size or visibility change of either neighbour moves and re-caps it.
+            // The drill sits between its neighbouring panels — any size or visibility change
+            // moves and re-caps it. The planning inspector uses [hidden], not .visible.
             // The parcel menu (ui/parcel-menu.js) stands in for the parcel panel after a click.
-            ['proposal-details-panel', 'parcel-info-panel', 'parcel-menu'].forEach(id => {
+            ['proposal-details-panel', 'parcel-info-panel', 'parcel-menu', 'planning-inspector'].forEach(id => {
                 const neighbour = document.getElementById(id);
                 if (!neighbour) return;
                 if (typeof ResizeObserver === 'function') new ResizeObserver(positionPanel).observe(neighbour);
                 if (typeof MutationObserver === 'function') {
-                    new MutationObserver(onNeighbourChanged).observe(neighbour, { attributes: true, attributeFilter: ['class'] });
+                    const attributeFilter = id === 'planning-inspector' ? ['class', 'hidden'] : ['class'];
+                    new MutationObserver(onNeighbourChanged).observe(neighbour, { attributes: true, attributeFilter });
                 }
             });
         }
@@ -213,9 +214,10 @@
         if (panelEl && panelEl.classList.contains('visible')) {
             const shown = id => {
                 const el = document.getElementById(id);
-                return !!(el && el.classList.contains('visible'));
+                if (!el) return false;
+                return id === 'planning-inspector' ? !el.hidden : el.classList.contains('visible');
             };
-            if (!shown('proposal-details-panel') && !shown('parcel-info-panel') && !shown('parcel-menu')) {
+            if (!shown('proposal-details-panel') && !shown('parcel-info-panel') && !shown('parcel-menu') && !shown('planning-inspector')) {
                 hidePanel();
                 return;
             }
@@ -227,14 +229,18 @@
         try { return !!(global.matchMedia && global.matchMedia('(max-width: 767.98px)').matches); } catch (_) { return false; }
     }
 
-    // Middle slot of the right dock: below the proposal card, above the parcel panel, one
-    // --right-dock-gap from each. A fully expanded card owns the whole column (it is opaque-ish
-    // and above us), and a slot too small to be usable hides the drill rather than squeezing it.
+    function isPlanningInspectorBottomDock() {
+        try { return !!(global.matchMedia && global.matchMedia('(max-width: 899.98px)').matches); } catch (_) { return false; }
+    }
+
+    // Keep the drill between visible neighbours. The planning inspector is above the stack on
+    // desktop and below it on phones; use its measured rectangle so neither panel overlaps.
     function positionPanel() {
         if (!panelEl) return;
         const gap = 10;
         // On a phone the top edge is the menu button + Guest pill row; the stack starts below it.
         const phone = isPhoneLayout();
+        const inspectorBottomDock = isPlanningInspectorBottomDock();
         let top = phone ? PHONE_TOP_CLEARANCE : DESKTOP_TOP_CLEARANCE;
         let bottomLimit = window.innerHeight - (phone ? gap : DESKTOP_BOTTOM_CLEARANCE);
         try {
@@ -247,6 +253,14 @@
             if (parcelPanel && parcelPanel.classList.contains('visible')) {
                 const rect = parcelPanel.getBoundingClientRect();
                 if (rect.height > 0 && rect.top > top) bottomLimit = rect.top - gap;
+            }
+            const inspector = document.getElementById('planning-inspector');
+            if (inspector && !inspector.hidden) {
+                const rect = inspector.getBoundingClientRect();
+                if (rect.height > 0) {
+                    if (inspectorBottomDock && rect.top < bottomLimit) bottomLimit = rect.top - gap;
+                    else if (!inspectorBottomDock && rect.bottom + gap > top) top = rect.bottom + gap;
+                }
             }
         } catch (_) { }
         const room = bottomLimit - top;
@@ -490,6 +504,8 @@
             if (global.selectedParcelId) return;
             const proposalPanel = global.document && global.document.getElementById('proposal-details-panel');
             if (proposalPanel && proposalPanel.classList.contains('visible')) return;
+            const planningInspector = global.document && global.document.getElementById('planning-inspector');
+            if (planningInspector && !planningInspector.hidden) return;
         } catch (_) { /* cannot tell — closing is the safe answer */ }
         hidePanel();
     }

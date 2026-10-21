@@ -64,7 +64,8 @@ test('global 3D mode opens from a selected parcel and retains parcel picking and
   await mockBuildingScene(page);
   await openCity(page);
   await page.evaluate(({ id, geometry }) => (window as any).proposalStorage.addProposal({
-    title: '3D parcel proposal', goal: 'decide-later', cadastreParcelIds: [id], geometry, applied: false,
+    title: '3D parcel proposal', goal: 'decide-later', kind: 'owner-deal', lifecycleStatus: 'Active',
+    cadastreParcelIds: [id], geometry, applied: false,
   }), { id: PARCEL_ID, geometry: PARCEL_GEOMETRY });
   await clickMapPoint(page, 15.9822, 45.80025);
   await page.locator('#mode-3d-toggle').click();
@@ -76,13 +77,16 @@ test('global 3D mode opens from a selected parcel and retains parcel picking and
     const w = window as any;
     const { scene, camera, renderer } = w.getThreeModeInternals();
     let mesh: any;
-    scene.traverse((object: any) => { if (object.isMesh && object.userData?.parcelId === id) mesh = object; });
+    scene.traverse((object: any) => { if (object.isMesh && object.userData?.isParcel === true && object.userData?.parcelId === id) mesh = object; });
     if (!mesh) throw new Error('Selected parcel mesh is missing');
     mesh.geometry.computeBoundingBox();
-    const center = mesh.geometry.boundingBox.getCenter(new w.THREE.Vector3());
-    mesh.localToWorld(center); center.project(camera);
+    // The center overlaps the fixture building roof, so ray picking selects that source instead
+    // of the parcel. Pick an interior corner away from the building footprint.
+    const bounds = mesh.geometry.boundingBox;
+    const point = bounds.min.clone().add(bounds.getSize(new w.THREE.Vector3()).multiply(new w.THREE.Vector3(0.88, 0.88, 0.5)));
+    mesh.localToWorld(point); point.project(camera);
     const box = renderer.domElement.getBoundingClientRect();
-    return { x: box.left + (center.x + 1) * box.width / 2, y: box.top + (1 - center.y) * box.height / 2 };
+    return { x: box.left + (point.x + 1) * box.width / 2, y: box.top + (1 - point.y) * box.height / 2 };
   }, PARCEL_ID);
   await page.mouse.click(point.x, point.y);
   await page.locator('.three-mode-parcel-panel [data-role="show-proposal"]').click();
@@ -94,7 +98,9 @@ test('global 3D mode opens from a selected parcel and retains parcel picking and
 test('parcel menu Compare opens both proposals and Details follows the chosen side', async ({ mockApi: page }) => {
   await openCity(page);
   await page.evaluate(({ id, geometry }) => {
-    for (const title of ['Unapplied park option', 'Unapplied square option']) (window as any).proposalStorage.addProposal({ title, goal: 'decide-later', geometry, cadastreParcelIds: [id], applied: false });
+    for (const title of ['Unapplied park option', 'Unapplied square option']) (window as any).proposalStorage.addProposal({
+      title, goal: 'decide-later', kind: 'owner-deal', lifecycleStatus: 'Active', geometry, cadastreParcelIds: [id], applied: false,
+    });
   }, { id: PARCEL_ID, geometry: PARCEL_GEOMETRY });
   await clickMapPoint(page, 15.9822, 45.80025);
   await page.locator('#parcel-menu [data-command="parcel.compare"]').click();
@@ -108,10 +114,19 @@ test('parcel menu Compare opens both proposals and Details follows the chosen si
   await page.locator('#parcel-menu [data-command="parcel.compare"]').click();
   await expect(comparison).toBeVisible();
   const selected = await comparison.locator('.parcel-compare__picker--b select').inputValue();
+  const title = await page.evaluate(id => (window as any).proposalStorage.getProposal(id).title, selected);
   await comparison.locator('.parcel-compare__picker--b .parcel-compare__details').click();
   await expect(comparison).toBeHidden();
-  await expect(page.locator('#proposal-details-panel')).toBeVisible();
-  await expect.poll(() => page.evaluate(() => (window as any).currentlyHighlightedProposalId)).toBe(selected);
+  const inspector = page.locator('#planning-inspector');
+  const details = page.locator('#proposal-details-panel');
+  await expect.poll(async () => await inspector.isVisible() || await details.isVisible()).toBe(true);
+  if (await inspector.isVisible()) {
+    await expect.poll(() => page.evaluate(() => (window as any).PlanningViews?.getSelected()?.proposalId)).toBe(selected);
+    await expect(inspector).toContainText(title || '');
+  } else {
+    await expect.poll(() => page.evaluate(() => (window as any).currentlyHighlightedProposalId)).toBe(selected);
+    await expect(details).toContainText(title || '');
+  }
 });
 
 test('ground menu Close dismisses its actions', async ({ mockApi: page }) => {

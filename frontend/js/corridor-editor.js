@@ -2539,6 +2539,13 @@ async function corridorEditorSave() {
     if (corridorEditorState !== state) return;
     if (updated) {
         corridorEditorClose();
+        // The map editor replaced the action panel. Restore it only after its session closes,
+        // using the saved identity (a published source may have produced a counterproposal).
+        if (typeof selectAndHighlightProposal === 'function') {
+            selectAndHighlightProposal(updated === true ? sourceKey : String(updated), null, false, true, false, {
+                planningActions: true, presentation: 'details'
+            });
+        }
         if (typeof updateStatus === 'function' && (updated === true || String(updated) === String(sourceKey))) updateStatus('Cross-section updated.');
         return;
     }

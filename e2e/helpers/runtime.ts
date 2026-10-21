@@ -13,7 +13,7 @@ export async function expectStatusLogged(page: Page, text: string): Promise<void
   await expect.poll(() => page.evaluate(t => (window as any).statusLogEntries().some((entry: any) => String(entry.message).includes(t)), text)).toBe(true);
 }
 
-export async function openCity(page: Page): Promise<void> {
+export async function openCity(page: Page, parcelId = PARCEL_ID): Promise<void> {
   // Readiness is the map/repository below; slow external basemap tiles must not hold navigation open.
   await page.goto('/?city=zg&reduceMotion=1', { waitUntil: 'domcontentloaded' });
   await waitForMapReady(page);
@@ -25,8 +25,8 @@ export async function openCity(page: Page): Promise<void> {
     const w = window as any;
     w.map.setView([45.80025, 15.9822], 18, { animate: false });
     await w.CadastralParcelRepository.ensureIds([id]);
-  }, PARCEL_ID);
-  await expect.poll(() => page.evaluate(id => !!(window as any).LiveParcelFabric.get(id), PARCEL_ID)).toBe(true);
+  }, parcelId);
+  await expect.poll(() => page.evaluate(id => !!(window as any).LiveParcelFabric.get(id), parcelId)).toBe(true);
 }
 
 export async function clickMapPoint(page: Page, lng: number, lat: number): Promise<void> {
@@ -104,6 +104,10 @@ export async function drawCorridor(page: Page, kind: 'road'|'track'): Promise<st
 export async function createBuilding(page: Page, rule: 'exact' | 'max' | 'range' = 'exact'): Promise<string> {
   await openParcel(page, 'proposals');
   await page.locator('.parcel-build-btn--buildings').click();
+  const scope = page.getByRole('alertdialog');
+  const ruleSelect = page.locator('#blockify-ruletype-select');
+  await expect.poll(async () => await scope.isVisible() || await ruleSelect.isVisible()).toBe(true);
+  if (await scope.isVisible()) await scope.getByRole('button', { name: 'No, just this parcel' }).click();
   await selectNativeOption(page.locator('#blockify-ruletype-select'), rule);
   if (rule !== 'exact') {
     await page.locator('#height-slider').focus();
@@ -117,8 +121,8 @@ export async function createBuilding(page: Page, rule: 'exact' | 'max' | 'range'
 
 /**
  * Share on a local proposal whose terms were never chosen opens the create dialog in its terms
- * mode first (proposal-kinds.md): pick who decides, save, and the share dialog opens for that same
- * record, whose id this returns.
+ * mode first (proposal-kinds.md): pick who decides, save, and the share dialog opens for the
+ * terms-confirmed record, whose current local identity this returns.
  */
 export async function chooseTermsForShare(page: Page, kind: 'owner-deal'|'owner-vote'|'community-vote' = 'community-vote'): Promise<string> {
   const form = page.locator('.create-proposal-modal:visible');

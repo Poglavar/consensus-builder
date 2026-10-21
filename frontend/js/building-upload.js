@@ -318,6 +318,7 @@
         const created = window.createSingleBuildingFromUpload({
             blockName: currentContext.blockName,
             parcelIds: currentContext.parcelIds,
+            site: currentContext.site,
             width: loadedDims.width,
             length: loadedDims.length,
             height: loadedDims.height,
@@ -355,7 +356,7 @@
         loadedFile = null;
     }
 
-    // context: { parcelIds: string[], blockName: string }
+    // context: { parcelIds: string[], site?: Polygon | MultiPolygon, blockName: string }
     function open(context, options = {}) {
         if (modalEl) close();
         currentContext = context || {};

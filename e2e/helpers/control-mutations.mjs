@@ -15,10 +15,10 @@ export const controlMutations = {
     error: /activity-agents-button/,
     css: '#activity-agents-button { display: none !important; }',
   },
-  'cover-road-modes': {
-    file: 'mobile-road-reachability.spec.ts', grep: '2D, model, and aerial mode buttons receive real clicks',
-    error: /mode-3d-toggle|receives/,
-    css: '@media (max-width: 767.98px) { body.corridor-drawing-active #road-info-panel { --info-panel-mobile-inset: 0px; } }',
+  'cover-road-actions': {
+    file: 'mobile-road-reachability.spec.ts', grep: 'road header and cross-section actions stay reachable at 320px',
+    error: /road-panel-minimize|receives/,
+    css: '@media (max-width: 767.98px) { #road-info-panel::after { content: ""; position: absolute; inset: 0; z-index: 999; pointer-events: auto; } }',
   },
   'bets-late-load': {
     file: 'bets-sheet.spec.ts', grep: 'finishing the initial page load preserves a stake form',

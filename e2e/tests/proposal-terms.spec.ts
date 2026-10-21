@@ -45,7 +45,7 @@ test.describe('Proposal terms @features', () => {
       return proposal ? JSON.parse(JSON.stringify(proposal)) : null;
     });
     expect(saved).toBeTruthy();
-    expect(saved.copiedFromProposalId).toBe(sourceId);
+    expect(saved.proposalOrigin).toMatchObject({ relation: 'revision', source: { kind: 'local', localProposalId: sourceId } });
     expect(saved.cadastreParcelIds).toContain(PARCEL_ID);
     expect(saved.isConditional).toBe(false);
     expect(saved.disbursementMode).toBe('partial');

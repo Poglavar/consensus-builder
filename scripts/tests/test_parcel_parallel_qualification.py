@@ -16,6 +16,7 @@ SCRIPTS = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(SCRIPTS / "lib"))
 import parcel_parallel_qualification as parallel
 import parcel_source_stage as stage
+import parcel_city_integration as integration
 
 spec = importlib.util.spec_from_file_location("stage_fixtures", SCRIPTS / "tests/test_parcel_source_stage.py")
 fixtures = importlib.util.module_from_spec(spec)
@@ -87,6 +88,15 @@ class ParallelTests(unittest.TestCase):
         self.addCleanup(self.support.stop)
         self.addCleanup(self.inputs.stop)
         self.addCleanup(self.browser.stop)
+        app = patch.object(parallel, "verify_in_app", return_value={"passed": True})
+        app.start()
+        self.addCleanup(app.stop)
+        private_check = patch.object(integration, "check_integration", return_value={"passed": True})
+        private_check.start()
+        self.addCleanup(private_check.stop)
+        turns = patch.object(integration, "MAX_IMPLEMENTATION_TURNS", 1)
+        turns.start()
+        self.addCleanup(turns.stop)
         self.addCleanup(self.discard.stop)
         self.addCleanup(self.temp.cleanup)
 
@@ -356,10 +366,42 @@ class ParallelTests(unittest.TestCase):
                              side_effect=RuntimeError("missing browser adapter family")):
             parallel._collect(self.runner, self.city, {}, {}, self.digest, isolation, document)
         qualification = self.runner._city_entry(self.city)["qualification"]
-        self.assertEqual(qualification["status"], "failed")
+        self.assertEqual(qualification["status"], "integration-blocked")
         self.assertTrue(qualification["workspaceUnchangedAfterFailure"])
         self.assertNotIn("adapterStageBlocked", self.runner.state)
         self.assertEqual(managed.read_text(), "before\n")
+
+    def test_parent_admission_failure_returns_to_worker_and_then_integrates(self):
+        ws, isolation, document = self.isolated()
+        feedback = []
+        def repair(child, workspace, *, feedback: str, turns_used):
+            self.assertIn("currency configuration", feedback)
+            self.assertEqual(turns_used, 1)
+            result = self.result(child, self.city)
+            result["implementationTurns"] = 2
+            return result
+        with patch.object(integration, "MAX_IMPLEMENTATION_TURNS", 3), \
+                patch.object(parallel, "run_city_task", side_effect=repair) as worker, \
+                patch.object(parallel, "reopen_workspace"), patch.object(parallel, "finish_workspace"), \
+                patch.object(parallel, "admit_candidate", side_effect=[
+                    {"status": "failed", "summary": "missing currency configuration"},
+                    {"status": "integrated", "summary": "repaired and admitted"}]) as admission:
+            parallel._collect(self.runner, self.city, {}, {}, self.digest, isolation, document)
+        self.assertEqual(worker.call_count, 1)
+        self.assertEqual(admission.call_count, 2)
+        self.assertEqual(self.runner._city_entry(self.city)["qualification"]["status"], "integrated")
+        self.discard_mock.assert_called_once()
+
+    def test_shared_baseline_failure_blocks_before_model_work(self):
+        self.runner.args.shared_root = self.base / "shared"
+        with patch.object(parallel, "verify_baseline", side_effect=RuntimeError("coverage gate is broken")), \
+                patch.object(self.runner, "_model") as model, \
+                patch.object(parallel, "prepare_workspace") as prepare:
+            self.assertFalse(parallel.advance_candidates(self.runner, [self.city], self.root))
+        model.assert_not_called()
+        prepare.assert_not_called()
+        self.assertIn("coverage gate is broken", self.runner.state["adapterStageBlocked"]["reason"])
+        self.assertNotEqual(self.runner._city_entry(self.city).get("qualification", {}).get("status"), "failed")
 
     def test_parent_test_failure_blocks_after_import(self):
         ws, isolation, document = self.isolated({"backend/parcels/adapter.js": "worker", "backend/test/source.test.cjs": "test"})

@@ -134,6 +134,9 @@ test.describe('Road editor complete controls @features', () => {
     await openCity(page);
     const id = await drawCorridor(page, 'road');
     await showProposal(page, id);
+    const initialInspector = page.locator('#planning-inspector');
+    const initialActions = initialInspector.getByRole('button', { name: 'Proposal actions', exact: true });
+    if (await initialActions.isVisible()) await initialActions.click();
     await page.locator('[data-road-edge-action="add"]').first().click();
     const nodes = page.locator('#map-container .road-node-handle');
     await expect(nodes).toHaveCount(3);
@@ -217,6 +220,9 @@ test.describe('Road editor complete controls @features', () => {
       const clicked = (window as any).corridorLastClickedSegment;
       return clicked?.proposalKey === proposalId && clicked?.segmentId === segmentId;
     }, { proposalId: id, segmentId })).toBe(true);
+    const inspector = page.locator('#planning-inspector');
+    const actions = inspector.getByRole('button', { name: 'Proposal actions', exact: true });
+    if (await actions.isVisible()) await actions.click();
     const details = page.locator('#proposal-details-panel');
     const expand = details.getByRole('button', { name: 'Expand', exact: true });
     if (await expand.isVisible()) await expand.click();
@@ -247,7 +253,6 @@ test.describe('Road editor complete controls @features', () => {
     await expect(editorPanel).toBeHidden();
     await expect.poll(async () => (await proposalState(page, id)).roadProposal.definition.segmentProfiles?.[segmentId]?.strips?.some((strip: any) => strip.type === 'sidewalk' && strip.paving === 'paved')).toBe(true);
 
-    await showProposal(page, id);
     await details.locator('.btn-cross-section').click();
     await expect(editorPanel).toBeVisible();
     const replaceOverrides = editor.locator('.corridor-editor-stretches-input');
@@ -262,7 +267,6 @@ test.describe('Road editor complete controls @features', () => {
     await expect.poll(async () => (await proposalState(page, id)).roadProposal.definition.profile.strips.some((strip: any) => strip.type === 'cycleway')).toBe(true);
     expect((await proposalState(page, id)).roadProposal.definition.segmentProfiles[segmentId].strips.some((strip: any) => strip.type === 'sidewalk' && strip.paving === 'paved')).toBe(true);
 
-    await showProposal(page, id);
     await details.locator('.btn-cross-section').click();
     await expect(editorPanel).toBeVisible();
     const replaceAgain = editor.locator('.corridor-editor-stretches-input');

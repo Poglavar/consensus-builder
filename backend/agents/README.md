@@ -39,6 +39,11 @@ the durable run checkpoint records them. This follows Solana's distinction betwe
 Society account reads use batches of five, matching the configured provider's limit, and reject
 truncated responses instead of assigning balances or markets to the wrong proposal.
 
+Proposer parcel reads (source fetch, candidate binding and mint preparation) get at most three
+attempts within 180 seconds, with 5/15-second backoff or a longer provider cooldown. Access blocks,
+quota limits and other deterministic client failures are not retried. Incomplete parcel sets stay
+unavailable; failures include their declared and received counts. This policy retries reads only.
+
 The server actor/lens configuration enables `AGENT_SOL_FUNDING_ENABLED=1`. The existing main bot
 wallet, `G4R6RCCcQHN9fLoExvTBBfhbw8BgvTEqhJezG3A1HvEg`, accepts devnet SOL for fee funding.
 Before a live actor run or lens attestation, a configured bot below 0.05 SOL receives only the
@@ -83,6 +88,14 @@ active minted proposals from the public summary endpoint, uses `supporter-picker
 daily `$0` choice, executes one pledge/donation/market action through the existing Solana adapters,
 and writes the same `consensus.agent_run` and activity envelope. The initial `supporter-01` policy
 uses a soft pledge, so it produces real signed evidence without requiring a funded USDC transfer.
+
+Supporter and society discovery verify every Solana proposal's current account status, including
+ordinary records, before policy selection. Supporter market and position reads are batched to the
+provider limit; resolved markets and existing support are excluded. The selected target is checked
+again before action funding or signing. Live reads and proposer retirement checkpoints reconcile
+confirmed terminal lifecycle states into the API immediately, instead of waiting for the daily
+oracle. Dry runs do not write this read model. The oracle still materializes transaction evidence
+and land events independently.
 
 ## A society of agents that disagree
 
