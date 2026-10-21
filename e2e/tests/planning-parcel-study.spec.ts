@@ -106,6 +106,7 @@ test('Permitted draws viewport parcel volumes without a study and zoning areas h
     volumes:[{id:'bound',geometry,baseM:0,topM:13.716}],
     configurations:[configuration('family1',10.668,'hearing'),configuration('family2',13.716),
       {id:'family4',treatment:'allowed',unavailableReason:'missing-direct-height',volumes:[],metrics:{footprintM2:null,heightM:null},constraints:[],edgeInterpretations:0}],
+    derivation:{parcel:geometry,covered:geometry,frontEdges:[0,1,2,3]},
     spatialReference:{horizontal:'OGC:CRS84',vertical:'relative-ground',unit:'m'},
     assessment:{meaning:'outer-bound',status:'unresolved'},metrics:{heightM:13.716,footprintM2:1000},constraints:[],
     sourceEvidence:{parcelReference:input.parcelReference,zoningRecordId:'slice-test',excludedConfigurations:{family3:'prohibited'}}};
@@ -159,6 +160,7 @@ test('Permitted draws viewport parcel volumes without a study and zoning areas h
   await inspector.locator('[data-configuration="family1"] button').click();
   await expect(inspector.locator('[data-configuration="family1"] button')).toHaveAttribute('aria-pressed','true');
   await expect(heightLabel).toHaveText('10.7 m');
+  await expect(inspector.getByText(/^Assumed street side: (north|east|south|west)\./)).toBeVisible();
   await inspector.getByRole('button',{name:'Test a parcel here',exact:true}).click();
   await expect(inspector.getByLabel('Design height (m)')).toBeVisible();
   expect(await page.evaluate(() => (window as any).PlanningViews.getItems().filter((item:any)=>item.parcelEnvelope).length)).toBe(0);

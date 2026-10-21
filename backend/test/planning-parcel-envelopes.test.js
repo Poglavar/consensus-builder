@@ -50,6 +50,8 @@ describe('viewport parcel envelopes', () => {
         expect(item.configurations[0].volumes[0].topM).toBeCloseTo(10.668,6);
         expect(item.configurations[1].volumes[0].topM).toBeCloseTo(13.716,6);
         expect(item.configurations[0].constraints.every(c => c.scenario === 'family1')).toBe(true);
+        expect(item.derivation).toEqual({ parcel: parcel().geometry, covered: expect.objectContaining({ type: 'Polygon' }), frontEdges: [0,1,2,3] });
+        expect(item.configurations[0]).not.toHaveProperty('frontEdges');
         expect(item.configurations[0].sourceReference.scenario).toBe('family1');
         // Every configuration sits inside the bound; the bound is the join of the drawable ones.
         for (const configuration of item.configurations.filter(c => c.volumes.length)) {
@@ -178,6 +180,31 @@ describe('configuration display logic', () => {
         const map = scene.mapFeatures(item(), 'footprint', turf, { permittedForm:'both' }, { scenario:'family2' });
         expect(map.map(f => f.properties.geometryRole)).toEqual(['bound','body']);
         expect(map[1].properties.topM).toBeCloseTo(13.716, 6);
+    });
+    it('rolls the assumed street side with the configuration and derives that side\'s body inside the parcel', () => {
+        const parcelGeometry = turf.bboxPolygon(bbox).geometry;
+        const constraints = [{quantity:'sideSetback',value:5,unit:'ft',evidence:'direct'},{quantity:'rearSetback',value:10,unit:'ft',evidence:'direct'},
+            {quantity:'height',value:35,unit:'ft',evidence:'direct'}];
+        const derived = { ...item(), derivation: { parcel: parcelGeometry, covered: parcelGeometry, frontEdges: [0,1,2,3] },
+            configurations: [{ id:'family1', treatment:'allowed', unavailableReason:null, constraints, volumes:[{id:'u',geometry:parcelGeometry,baseM:0,topM:10.668}] }] };
+        const deps = { geometry: turf, assessment: core };
+        const first = scene.permittedFeatures(derived, { permittedForm:'both' }, { variation:'' }, deps);
+        expect(first.body).toHaveLength(1);
+        expect([0,1,2,3]).toContain(first.frontEdge);
+        expect(first.body[0].properties).toMatchObject({ geometryRole:'body', configurationId:'family1', frontEdge:first.frontEdge, topM:expect.closeTo(10.668, 6) });
+        const footprint = turf.area(first.body[0]);
+        expect(footprint).toBeLessThan(turf.area(turf.feature(parcelGeometry)));
+        expect(turf.difference(first.body[0], turf.feature(parcelGeometry))).toBeNull();
+        const second = scene.permittedFeatures(derived, { permittedForm:'both' }, { variation:'1' }, deps);
+        expect(second.frontEdge).not.toBe(first.frontEdge);
+        expect(JSON.stringify(second.body[0].geometry)).not.toBe(JSON.stringify(first.body[0].geometry));
+        // Without the evaluator the configuration's own all-sides volume is drawn and no side is claimed.
+        const plain = scene.permittedFeatures(derived, { permittedForm:'both' }, { variation:'' });
+        expect(plain.frontEdge).toBeNull(); expect(plain.body[0].geometry).toEqual(parcelGeometry);
+        expect(scene.mapFeatures(derived, 'footprint', { union: turf.union, ...deps }, { permittedForm:'both' }, { variation:'' })
+            .map(f => [f.properties.geometryRole, f.properties.frontEdge])).toEqual([['bound', undefined], ['body', first.frontEdge]]);
+        expect([0,1,2,3].map(edge => scene.edgeSide(parcelGeometry, edge))).toEqual(['s','e','n','w']);
+        expect(scene.frontEdgeFor({ id:'x' }, {})).toBeNull();
     });
     it('rolling switches a bound-only layer to Both so the roll is visible, and re-seeds every roll', () => {
         const store = scene.createStore({ permittedForm:'bound', proposedForm:'massing' });

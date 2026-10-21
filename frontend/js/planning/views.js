@@ -20,7 +20,10 @@
     const displaySelection = () => ({ variation: store?.get().variation || '', scenario: scenarioId || core.ANY_CONFIGURATION, pins });
     const scenarioParam = () => scenarioId && scenarioId !== core.ANY_CONFIGURATION ? scenarioId : '';
     const scenarioLabel = id => id ? t(`scenario.${id}`) : '';
-    function permittedFeatures(item) { return core.permittedFeatures(item, store?.get(), displaySelection()); }
+    // Geometry helpers for client-side realization: turf for clipping, the shared evaluator for setbacks.
+    const geometryDeps = () => ({ union: root.turf.union, geometry: root.turf, assessment: root.PlanningParcelAssessment });
+    function permittedFeatures(item) { return core.permittedFeatures(item, store?.get(), displaySelection(), geometryDeps()); }
+    const sideWord = (item, edge) => root.i18n.t(`modal.corridor.compass.${core.edgeSide(item.derivation?.parcel, edge)}`);
     // The housing type a study of this item should use: the shown configuration, else the pinned type, else the source default.
     function studyScenarioFor(item) {
         return permittedFeatures(item).configuration?.id || scenarioParam() || item.source.scenario
@@ -167,7 +170,7 @@
             const display = appearance(item);
             if (display === 'off') continue;
             let features;
-            try { features = core.mapFeatures(item, store.get().permittedMap, root.turf, store.get(), displaySelection()); }
+            try { features = core.mapFeatures(item, store.get().permittedMap, geometryDeps(), store.get(), displaySelection()); }
             catch (error) { console.error('[planning] Could not project massing', item.id, error); continue; }
             const hasBody = features.some(feature => feature.properties.geometryRole !== 'bound');
             for (const feature of features) {
@@ -191,6 +194,12 @@
                         icon: root.L.divIcon({ className: 'planning-envelope-height', html: root.CbFormat.formatLength(height), iconSize: null }) }).addTo(layer);
                 }
                 shape.addTo(layer);
+                // The assumed street side of the shown configuration, so a roll reads as a choice, not a glitch.
+                if (feature.properties.frontEdge != null && item.derivation?.parcel) {
+                    const ring = item.derivation.parcel.coordinates[0], edge = feature.properties.frontEdge;
+                    root.L.polyline([ring[edge], ring[edge + 1]].map(p => [p[1], p[0]]), { pane: 'planningSources', interactive: false,
+                        color: color(item.role), weight: 4, opacity: 0.9 }).bindTooltip(t('assumedSide', { side: sideWord(item, edge) })).addTo(layer);
+                }
                 if (hull) continue;
                 const inspect = () => { if (!root.__mapEditLock?.isHeld()) select(item.id); };
                 shape.on('click', event => { root.L.DomEvent.stopPropagation(event); selectionPoint = { id: item.id, lat: event.latlng.lat, lng: event.latlng.lng }; inspect(); });
@@ -282,8 +291,10 @@
         if (displayedMetrics.length) inspector.append(metrics);
         const heights = [...new Set(item.volumes.map(volume => volume.topM))].sort((a, b) => a - b);
         if (heights.length > 1) inspector.append(element('p', 'planning-inspector__description', t('heightParts', { heights: heights.map(height => root.CbFormat.formatLength(height)).join(' · ') })));
-        const shown = permittedFeatures(item).configuration;
+        const realization = permittedFeatures(item), shown = realization.configuration;
         if (item.configurations?.length) inspector.append(renderConfigurations(item, shown));
+        if (realization.frontEdge != null) inspector.append(element('p', 'planning-inspector__description',
+            `${t('assumedSide', { side: sideWord(item, realization.frontEdge) })} ${t('sideOptions', { count: item.derivation.frontEdges.length })}`));
         const assessment = element('div', 'planning-assessment');
         assessment.append(element('strong', '', t('conditionsTitle')), element('p', '', t('conditionsNote')));
         if (item.role === 'proposed' || (sourceResult && item.volumes.length)) inspector.append(assessment);

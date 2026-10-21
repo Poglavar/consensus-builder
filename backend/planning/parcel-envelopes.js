@@ -48,10 +48,12 @@ export function parcelConfigurations(baseContext, scenarios, zonesByScenario, ge
         configurations.push({ id: scenario, treatment, unavailableReason,
             volumes: unavailableReason ? [] : [{ id: `${scenario}:bound`, geometry: bound.geometry, baseM: 0, topM: bound.heightM }],
             metrics: unavailableReason ? { footprintM2: null, heightM: null } : { footprintM2: bound.areaM2, heightM: bound.heightM },
-            edgeInterpretations: bound?.interpretations ?? 0, constraints: context.source.constraints,
+            edgeInterpretations: bound?.interpretations ?? 0, frontEdges: bound?.edges, constraints: context.source.constraints,
             sourceReference: context.sourceReference });
     }
-    return { configurations, excluded };
+    const frontEdges = configurations.find(configuration => configuration.frontEdges)?.frontEdges || [];
+    for (const configuration of configurations) delete configuration.frontEdges;
+    return { configurations, excluded, frontEdges };
 }
 
 // The outer bound is everything any configuration permits: joined footprints, tallest height.
@@ -92,7 +94,7 @@ export async function loadParcelEnvelopes(query, { sources, parcelProvider = des
         try {
             if (overlapProblems.has(parcel.id)) fail(overlapProblems.get(parcel.id));
             const context = assembleParcelStudy(parcel, descriptor, zonesByScenario[scenarios[0]]);
-            const { configurations, excluded } = parcelConfigurations(context, scenarios, zonesByScenario);
+            const { configurations, excluded, frontEdges } = parcelConfigurations(context, scenarios, zonesByScenario);
             const bound = outerBound(configurations);
             if (!bound) fail(omissionReason(configurations, excluded));
             const id = `envelope:${provider.descriptor.id}:${parcel.id}`;
@@ -102,6 +104,9 @@ export async function loadParcelEnvelopes(query, { sources, parcelProvider = des
                 volumes: [{ id: `${id}:bound`, geometry: bound.geometry, baseM: 0, topM: bound.heightM }],
                 configurations: configurations.map(configuration => ({ ...configuration,
                     volumes: configuration.volumes.map(volume => ({ ...volume, id: `${id}:${volume.id}` })) })),
+                // Enough for a client to redraw one configuration on one assumed street side with the
+                // shared evaluator: the original parcel, the zoning-covered part and the usable edges.
+                derivation: { parcel: parcel.geometry, covered: context.coveredGeometry, frontEdges },
                 spatialReference: { horizontal: 'OGC:CRS84', vertical: 'relative-ground', unit: 'm' },
                 authority: { effect: 'unknown', applicability: 'unresolved' },
                 assessment: { meaning: 'outer-bound', status: 'unresolved', geometry: 'derived-parcel', constraints: 'partial', current: true },
