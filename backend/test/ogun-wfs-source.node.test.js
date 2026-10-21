@@ -1,7 +1,16 @@
 // Exercise Ogun's guarded full-schema WFS reads, exact identity and unchanged geometry.
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import { createWfsParcelSource } from '../parcels/wfs-source.js';
+
+test('the registered Ogun descriptor can initialize without requesting upstream data', () => {
+    const catalog = JSON.parse(readFileSync(new URL('../parcels/source-catalog.json', import.meta.url), 'utf8'));
+    const registered = catalog.sources.find(source => source.id === 'ng-ogun-sdi-geonode-parcels');
+    assert.doesNotThrow(() => createWfsParcelSource(registered, {
+        fetchImpl: () => assert.fail('Initialization must not fetch upstream data')
+    }));
+});
 
 const descriptor = {
     id: 'ng-ogun-sdi-geonode-parcels', adapter: 'wfs',

@@ -13880,6 +13880,7 @@
       "version": "2.0.0",
       "featureType": "geonode:parcels",
       "geometryField": "geom",
+      "idField": null,
       "nativeIdMode": "feature-id",
       "featureIdParameter": "resourceId",
       "idType": "string",
