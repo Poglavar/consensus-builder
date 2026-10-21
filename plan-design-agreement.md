@@ -109,14 +109,11 @@ demo content may all change, and affected records are recreated.
 2. Consent and execution per design. **Decided above.**
 3. Decision kinds. **Resolved with 1**: the decision rule lives on the agreement.
 4. The two existing "agreement" meanings. **Decided above.**
-5. Pooled before/after is an agreement-level computation: contributions on the ground before any
-   covered design, allocations on the fabric after all of them. Per-design numbers lose the road
-   land from the pool and double count crossings.
-6. "No dependencies" holds only because piece and plot ids are content hashes: members replay in
-   authored order, and an agreement whose members cannot all apply in that order is refused.
-7. Illustrative parcel estimates cannot bind at publish (`PARCEL-OPTIONAL.md` rule 3). An agreement
-   over estimates is local exploration until estimates become a registered source, or it binds as
-   open ground.
+5. Pooled before/after. **Closed by simplification 1**: inputs versus outputs of the agreement.
+6. Replay order and content-hash ids. **Closed by simplification 1**: outputs are computed by
+   applying the designs in authored order; changed ground changes the hashes and refuses the agreement.
+7. Estimates. **Closed by simplification 1**: designs may be drawn over estimates; an estimate is
+   never an agreement input, so that flow is exploration or open ground.
 8. Naming of the individual object (design vs proposal), and which code, API and chain names keep
    `proposal`. A second opinion the Codex session requested was still pending when this was written.
 9. Sequencing. Sketch: M1, local only, split land readjustment into a parcel-layout design plus an
@@ -136,7 +133,7 @@ demo content may all change, and affected records are recreated.
    construction: pooled before/after is inputs versus outputs (5); replay order and content-hash ids
    are how outputs are computed, and changed ground changes the hashes and refuses the agreement
    (6); estimated parcels can be drawn over freely but can never be an agreement input, so they
-   are exploration or open ground (7). To confirm.
+   are exploration or open ground (7). **Confirmed by the user, 2026-10-21.**
 2. One CID scheme replaces the effect hash, the plan hash and the member hashes (decided).
 3. The named-plan record and its routes, hash, supersession, mint script, thumbnail backfill, plan
    view and "Part of plan" rows become the agreement's; one container type instead of two.
