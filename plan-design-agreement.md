@@ -31,6 +31,33 @@ decisions are appended as they are made and the open list shrinks.
 - Exclusivity is enforced only at execution, on the input land: two open agreements over the same
   land are both allowed and form one market contest; only one can execute.
 
+### Consent and execution move to the agreement (pitfall 2, user 2026-10-21)
+
+- Only agreements have a lifecycle (Active, Executed, Cancelled, Expired, a deadline). Designs are
+  content: draft, published, forked. No design-level consent, status or expiry.
+- Execution is one event: every allocation moves at once, obligations settle from one escrow per
+  agreement, parcel history gets one entry per affected parcel pointing at the agreement. Map
+  application stays a local preview. Funding is per agreement.
+- **What is minted:** the agreement, as one chain account committing to the agreement's content on
+  **IPFS**, never a server URL and not Walrus (deprecated, possibly dead). Reading stays independent
+  of our server, as `chain-proposal-loader.js` already is.
+- **Who counts:** the approval engine counts off-chain from published signed decisions, anyone can
+  re-run it, and the agreement's named lens attests "decision satisfied" on chain; the program
+  checks that attestation plus escrow (option b). Chain order stays Solana first, EVM later.
+- **Terms are a separate step for every design.** Drawing and publishing a design never asks for
+  terms; "Create agreement" is its own dialog over chosen designs, usable immediately after drawing.
+  Nothing is auto-coupled, not even a single road with cash.
+
+To confirm (recommended): a design is its own IPFS object and its content hash is its CID; an
+agreement is an object of links to design CIDs plus inputs, decision rule, allocations and money,
+so its CID commits to everything transitively and a counter-agreement reuses the design objects.
+That one scheme replaces the effect hash, the plan hash and the member hashes. Pinning goes
+through the backend relay as a courier only: the browser computes the CIDs, the relay pins, the
+browser verifies the pinned CID before minting; `POST /proposals/prepare` goes away, which settles
+the pending "mint must not need the server" decision. No unanimity carve-out: every decision rule,
+unanimity included, executes on the lens attestation, because the owner set is lens-backed anyway.
+An agreement may be drafted over local unpublished designs; publishing or minting it pins them first.
+
 ### Carried over from the Codex design session of 2026-10-21 (notes commits 0a5d0c9b0, ac30810b3)
 
 - Roads inside a readjustment are drawn as roads, ordinary road designs. The plots are their own
