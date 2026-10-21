@@ -232,6 +232,9 @@
     let lifeLayer = null; // __threeLife instance owning the instanced meshes of the current scene
     let lifeEnabled = true; // user toggle (default ON); real value loaded from storage on 3D init
     let lifeToggleEl = null;
+    let groundLayer = null; // __threeGround instance: OSM-derived asphalt roadbed + pavement plane under the scene
+    let groundEnabled = true; // user toggle (default ON); real value loaded from storage on 3D init
+    let groundToggleEl = null;
     // Plots an applied urban rule left out, drawn as see-through volumes. Default OFF: it answers
     // "why is there nothing on this plot", it is not part of the plan being looked at.
     let showIneligibleParcels = false;
@@ -1504,6 +1507,28 @@
         lifeRow.appendChild(lifeLabel);
         buildingModeControlsEl.appendChild(lifeRow);
         lifeToggleEl = lifeBox;
+
+        // Ground: the asphalt roadbed under every street and pavement everywhere else, derived
+        // from the same OSM streets the vehicles drive (three-ground.js). Same row shape again.
+        groundEnabled = loadGroundEnabledPref();
+        const groundRow = document.createElement('div');
+        groundRow.className = 'three-mode-trees-row three-mode-wide-row';
+        const groundLabel = document.createElement('label');
+        groundLabel.className = 'three-mode-trees-toggle three-mode-wide-toggle';
+        const groundBox = document.createElement('input');
+        groundBox.type = 'checkbox';
+        groundBox.checked = groundEnabled;
+        groundBox.addEventListener('change', () => setGroundEnabled(groundBox.checked));
+        const groundText = document.createElement('span');
+        groundText.className = 'three-mode-emphasis-label';
+        groundText.textContent = threeI18n('threeMode.controls.ground', 'Streets and pavement');
+        groundLabel.title = threeI18n('threeMode.controls.groundTooltip', 'Show or hide the asphalt roadbed and pavement derived from OpenStreetMap under the 3D view');
+        groundLabel.setAttribute('aria-label', groundLabel.title);
+        groundLabel.appendChild(groundBox);
+        groundLabel.appendChild(groundText);
+        groundRow.appendChild(groundLabel);
+        buildingModeControlsEl.appendChild(groundRow);
+        groundToggleEl = groundBox;
 
         // Where the context buildings came from, and how many heights are estimates (OSM).
         buildingsSourceNoteEl = document.createElement('p');
@@ -5316,6 +5341,92 @@
         return small ? { vehicles: 50, people: 32 } : { vehicles: 100, people: 64 };
     }
 
+    // --- Ground: OSM-derived roadbed and pavement (three-ground.js + life/ground-geometry.js) ---
+    // The asphalt is laid from the same carriageway list the life graph derives (centreline, lanes
+    // and width per street), so the surface the cars drive on is the surface that is drawn, and
+    // everything else inside the scene bounds is pavement up to the buildings. Two draw calls, no
+    // per-frame work; the layer has its own toggle and `?ground=0|1` override.
+    const GROUND_STORAGE_KEY = 'cb_3d_ground_enabled';
+
+    function loadGroundEnabledPref() {
+        try {
+            if (typeof PersistentStorage !== 'undefined' && PersistentStorage) {
+                const v = PersistentStorage.getItem(GROUND_STORAGE_KEY);
+                if (v === '0' || v === 'false') return false;
+                if (v === '1' || v === 'true') return true;
+            }
+        } catch (_) { }
+        return true; // default ON
+    }
+
+    function groundUrlOverride() {
+        try {
+            const v = new URLSearchParams(window.location.search || '').get('ground');
+            if (v === '0' || v === 'off' || v === 'false') return false;
+            if (v === '1' || v === 'on' || v === 'true') return true;
+        } catch (_) { }
+        return null;
+    }
+
+    function groundShouldRun() {
+        const override = groundUrlOverride();
+        return override === null ? groundEnabled : override;
+    }
+
+    function ensureGroundLayer() {
+        if (groundLayer || !scene || !window.__threeGround) return;
+        groundLayer = window.__threeGround.create({ THREE, k: lifeMercatorK() });
+        groundLayer.group.visible = false;
+        scene.add(groundLayer.group);
+    }
+
+    function syncGroundVisibility() {
+        if (!groundLayer) return;
+        groundLayer.group.visible = groundShouldRun() && !realisticLayerActive && groundLayer.stats().drawCalls > 0;
+    }
+
+    // Lay the ground from a life graph; builds its own when the life layer did not (layer off).
+    function rebuildGroundOnly(graph) {
+        if (!isActive || !scene) return;
+        ensureGroundLayer();
+        if (!groundLayer) return;
+        if (!groundShouldRun() || !window.__groundGeometry) {
+            groundLayer.setGeometry(null);
+            syncGroundVisibility();
+            return;
+        }
+        try {
+            const t0 = performance.now();
+            const source = graph || buildLifeGraph();
+            const bounds = lifeSurfaceBounds(lifeProjector());
+            const result = source ? window.__groundGeometry.buildGroundGeometry({ carriageways: source.surface.carriageways, bounds }) : null;
+            groundLayer.setGeometry(result);
+            if (result) {
+                const s = result.stats;
+                console.log(`[3D ground] ${s.ways} carriageways, ${s.junctions} junctions, ${s.triangles} triangles, ${s.roadAreaM2} m² asphalt`
+                    + (Array.isArray(lifeOsmFeatures) ? '' : ' (OSM streets pending)') + ` · built in ${(performance.now() - t0).toFixed(0)} ms`);
+            }
+        } catch (error) {
+            console.warn('[3D ground] build failed', error);
+            groundLayer.setGeometry(null);
+        }
+        syncGroundVisibility();
+    }
+
+    function setGroundEnabled(on) {
+        groundEnabled = !!on;
+        try { PersistentStorage.setItem(GROUND_STORAGE_KEY, groundEnabled ? '1' : '0'); } catch (_) { }
+        if (groundToggleEl && groundToggleEl.checked !== groundEnabled) groundToggleEl.checked = groundEnabled;
+        if (groundEnabled) ensureLifeOsmRoads(lifeQueryBounds);
+        rebuildGroundOnly(null);
+        invalidateThreeView();
+    }
+
+    function disposeGround() {
+        if (groundLayer) { try { groundLayer.dispose(); } catch (_) { } }
+        groundLayer = null;
+    }
+
     // Scene XY is EPSG:3857 metres, inflated by 1/cos(lat) against true metres while Z stays true.
     function lifeMercatorK() {
         if (!origin3857) return 1;
@@ -5457,27 +5568,31 @@
     function rebuildLifeOnly() {
         if (!isActive || !scene) return;
         ensureLifeLayer();
-        if (!lifeLayer) return;
-        setLifeHook(false);
-        lifeLayer.clear();
-        lifeSim = null;
-        if (lifeShouldRun() && window.__lifeAgents) {
-            const t0 = performance.now();
-            const graph = buildLifeGraph();
-            const surface = buildLifeSurfaceFrom(graph, lifeProjector());
-            if (graph && (graph.tracks.length || surface)) {
-                const caps = lifeCaps();
-                lifeSim = window.__lifeAgents.createSimulation(graph, surface, { seed: lifeSeed(), maxVehicles: caps.vehicles, maxPeople: caps.people });
-                lifeLayer.setSimulation(lifeSim);
-                const stats = lifeSim.stats();
-                const s = surface ? surface.stats : null;
-                console.log(`[3D life] ${stats.vehicles} vehicles on ${Math.round(stats.driveLength)} m of lanes, ${stats.people} people on `
-                    + (s ? `${Math.round(s.preferredAreaM2)} m² of preferred walking space (grid ${s.cellM} m, ${s.blocked} blocked cells)` : 'no surface')
-                    + (Array.isArray(lifeOsmFeatures) ? `, ${lifeOsmFeatures.length} OSM ways` : ', OSM streets pending')
-                    + ` · built in ${(performance.now() - t0).toFixed(0)} ms`);
+        let graph = null;
+        if (lifeLayer) {
+            setLifeHook(false);
+            lifeLayer.clear();
+            lifeSim = null;
+            if (lifeShouldRun() && window.__lifeAgents) {
+                const t0 = performance.now();
+                graph = buildLifeGraph();
+                const surface = buildLifeSurfaceFrom(graph, lifeProjector());
+                if (graph && (graph.tracks.length || surface)) {
+                    const caps = lifeCaps();
+                    lifeSim = window.__lifeAgents.createSimulation(graph, surface, { seed: lifeSeed(), maxVehicles: caps.vehicles, maxPeople: caps.people });
+                    lifeLayer.setSimulation(lifeSim);
+                    const stats = lifeSim.stats();
+                    const s = surface ? surface.stats : null;
+                    console.log(`[3D life] ${stats.vehicles} vehicles on ${Math.round(stats.driveLength)} m of lanes, ${stats.people} people on `
+                        + (s ? `${Math.round(s.preferredAreaM2)} m² of preferred walking space (grid ${s.cellM} m, ${s.blocked} blocked cells)` : 'no surface')
+                        + (Array.isArray(lifeOsmFeatures) ? `, ${lifeOsmFeatures.length} OSM ways` : ', OSM streets pending')
+                        + ` · built in ${(performance.now() - t0).toFixed(0)} ms`);
+                }
             }
+            syncLifeVisibility();
         }
-        syncLifeVisibility();
+        // The ground shares the graph: the streets the cars drive on are the asphalt it lays.
+        rebuildGroundOnly(graph);
         invalidateThreeView();
     }
 
@@ -5549,7 +5664,7 @@
     }
 
     function ensureLifeOsmRoads(bounds) {
-        if (!Array.isArray(bounds) || bounds.length !== 4 || !lifeShouldRun()) return;
+        if (!Array.isArray(bounds) || bounds.length !== 4 || !(lifeShouldRun() || groundShouldRun())) return;
         const key = bounds.map(v => Number(v).toFixed(5)).join(',');
         if (lifeOsmKey === key && (lifeOsmFeatures || lifeOsmFetching)) return;
         lifeOsmKey = key;
@@ -7702,6 +7817,7 @@
         corridorTerrainReferenceGeneration += 1;
         disposeTerrainCorridorGroup();
         disposeLife();
+        disposeGround();
         perfReadout = null;
         hideRenderingOverlay();
         isTransitioning3D = false;
@@ -8603,6 +8719,7 @@
         if (treesGroup) treesGroup.visible = treesEnabled && !realisticLayerActive;
         if (waterGroup) waterGroup.visible = waterEnabled && !realisticLayerActive;
         syncLifeVisibility();
+        syncGroundVisibility();
         // Photo mode is view-only: hide the model-mode building controls (radius / built / proposed)
         // and drop any isolation + the "Proposal info" panel, so the whole cut scene and all its
         // proposals are shown. Restored on return to model 3D.
@@ -8707,7 +8824,8 @@
         return {
             scene: scene, camera: camera, renderer: renderer, controls: controls,
             latLngToXY: latLngToXY, xyToLatLng: xyToLatLng,
-            originLatLng: function () { const ll = xyToLatLng(0, 0); return { lat: ll.lat, lng: ll.lng }; }
+            originLatLng: function () { const ll = xyToLatLng(0, 0); return { lat: ll.lat, lng: ll.lng }; },
+            groundStats: function () { return groundLayer ? groundLayer.stats() : null; }
         };
     };
     window.__threeModeDriver = { enter: enter3D, exit: exit3D };

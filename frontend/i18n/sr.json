@@ -6622,6 +6622,8 @@
             "trees": "Drveće",
             "life": "Ljudi i saobraćaj",
             "lifeTooltip": "Prikažite ili sakrijte shematske ljude i vozila koji se kreću kroz 3D prikaz",
+            "ground": "Ulice i trotoari",
+            "groundTooltip": "Prikažite ili sakrijte kolovoze i trotoare izvedene iz OpenStreetMapa u 3D prikazu",
             "water": "Voda",
             "facades": "Fasade",
             "facadeStyle": "Stil fasade",

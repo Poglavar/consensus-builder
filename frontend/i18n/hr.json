@@ -6622,6 +6622,8 @@
             "trees": "Stabla",
             "life": "Ljudi i promet",
             "lifeTooltip": "Prikažite ili sakrijte shematske ljude i vozila koji se kreću 3D prikazom",
+            "ground": "Ulice i pločnici",
+            "groundTooltip": "Prikažite ili sakrijte kolnike i pločnike izvedene iz OpenStreetMapa u 3D prikazu",
             "water": "Voda",
             "facades": "Pročelja",
             "facadeStyle": "Stil pročelja",
