@@ -7843,6 +7843,7 @@
     "envelopeSummary": "Pregledano {{count}} katastarskih zapisa: {{shapes}} sa delimičnim omotačima, {{missing}} bez volumena.",
     "envelopeNote": "Providna ljuska je spoljna granica svih zabeleženih tipova stanovanja i uličnih strana. Volumen unutra je jedna konfiguracija na jednoj pretpostavljenoj uličnoj strani: bacite kockicu ili izaberite ispod. Ograničenja površine i nerazrešena pravila i dalje važe.",
     "assumedSide": "Pretpostavljena ulična strana: {{side}}.",
+    "lotBelowMinimum": "Parcela je manja od minimuma od {{minimum}}",
     "sideOptions": {"one": "{{count}} upotrebljiva strana; bacite kockicu za drugi tip stanovanja ili otvorite studiju za izbor ivice.", "few": "{{count}} upotrebljive strane; bacite kockicu za drugu stranu i tip stanovanja ili otvorite studiju za izbor ivice.", "other": "{{count}} upotrebljivih strana; bacite kockicu za drugu stranu i tip stanovanja ili otvorite studiju za izbor ivice."},
     "envelopesLoaded": {
       "one": "{{count}} delimični omotač parcele · {{missing}} parcela bez volumena",

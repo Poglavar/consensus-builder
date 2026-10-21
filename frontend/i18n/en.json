@@ -7778,6 +7778,7 @@
     "envelopeSummary": "{{count}} parcel records inspected: {{shapes}} with partial envelopes, {{missing}} without massing.",
     "envelopeNote": "The translucent hull is the outer bound across every recorded housing type and street side. The volume inside is one configuration on one assumed street side: roll the dice or choose below. Area budgets and unresolved rules still apply.",
     "assumedSide": "Assumed street side: {{side}}.",
+    "lotBelowMinimum": "Lot below the {{minimum}} minimum",
     "sideOptions": {"one": "{{count}} usable side; roll the dice for another housing type, or open a study to choose the edge.", "other": "{{count}} usable sides; roll the dice for another side and housing type, or open a study to choose the edge."},
     "envelopesLoaded": {
       "one": "{{count}} partial parcel envelope · {{missing}} parcels without massing",

@@ -589,7 +589,7 @@
         }
         if (builtSelection) {
             const tint = window.PlanningViews.color('existing');
-            for (const feature of window.PlanningScene.volumeFeatures(inspected)) {
+            for (const feature of window.PlanningEnvelopes.volumeFeatures(inspected)) {
                 const material = new THREE.MeshBasicMaterial();
                 const meshes = polygonFeatureToMeshes(feature, material, feature.properties.baseM, feature.properties.height);
                 for (const mesh of meshes) {

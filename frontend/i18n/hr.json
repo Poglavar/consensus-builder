@@ -7843,6 +7843,7 @@
     "envelopeSummary": "Pregledano {{count}} katastarskih zapisa: {{shapes}} s djelomičnim ovojnicama, {{missing}} bez volumena.",
     "envelopeNote": "Prozirna ljuska je vanjska granica svih zabilježenih tipova stanovanja i uličnih strana. Volumen unutra je jedna konfiguracija na jednoj pretpostavljenoj uličnoj strani: bacite kocku ili odaberite dolje. Ograničenja površine i nerazriješena pravila i dalje vrijede.",
     "assumedSide": "Pretpostavljena ulična strana: {{side}}.",
+    "lotBelowMinimum": "Parcela je manja od minimuma od {{minimum}}",
     "sideOptions": {"one": "{{count}} upotrebljiva strana; bacite kocku za drugi tip stanovanja ili otvorite studiju za odabir ruba.", "few": "{{count}} upotrebljive strane; bacite kocku za drugu stranu i tip stanovanja ili otvorite studiju za odabir ruba.", "other": "{{count}} upotrebljivih strana; bacite kocku za drugu stranu i tip stanovanja ili otvorite studiju za odabir ruba."},
     "envelopesLoaded": {
       "one": "{{count}} djelomična ovojnica čestice · {{missing}} čestica bez volumena",

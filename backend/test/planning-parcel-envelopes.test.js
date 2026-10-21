@@ -3,13 +3,14 @@
 import { describe, it, expect, vi } from 'vitest';
 import { createRequire } from 'node:module';
 import * as turf from '@turf/turf';
-import { loadParcelEnvelopes, parcelOverlapProblems, parcelConfigurations, outerBound } from '../planning/parcel-envelopes.js';
+import { loadParcelEnvelopes, parcelOverlapProblems, parcelConfigurations, outerBound, lotAreaTest } from '../planning/parcel-envelopes.js';
 import { createAtlasProvider } from '../planning/providers/atlas.js';
 import { assembleParcelStudy } from '../planning/parcel-study.js';
 import { setupPlanningRoutes } from '../routes/planning.js';
 const require = createRequire(import.meta.url);
 const core = require('../../frontend/js/planning/parcel-assessment.js');
 const scene = require('../../frontend/js/planning/scene.js');
+const envelopes = require('../../frontend/js/planning/envelopes.js');
 const metadata = { id:'atlas-envelope-test',city:'colorado',label:'Synthetic Atlas source',edition:'test',
     url:'https://example.test/source',parcelSourceId:'us-co-oit-statewide-parcels' };
 const bbox = [-105.001,40,-105.0005,40.0004];
@@ -19,12 +20,14 @@ const properties = { slice_id:'one',jurisdiction:'Synthetic',family1_treatment:'
     family1_sidesetbackft:5,family1_sidesetbackft_method:'direct_number',
     family1_rearsetbackft:10,family1_rearsetbackft_method:'direct_number',
     family1_maxheightft:35,family1_maxheightft_method:'direct_number',
+    family1_minlotacres:0.25,family1_minlotacres_method:'direct_number',
     // A second usable type with tighter setbacks and a taller cap: the bound must take the
     // joined footprint and the tallest height, never one type's values.
     family2_treatment:'allowed',
     family2_sidesetbackft:10,family2_sidesetbackft_method:'direct_number',
     family2_rearsetbackft:20,family2_rearsetbackft_method:'direct_number',
     family2_maxheightft:45,family2_maxheightft_method:'direct_number',
+    family2_minlotacres:1,family2_minlotacres_method:'direct_number',
     family3_treatment:'prohibited', family4_treatment:'allowed' };
 const provider = (changes={}) => createAtlasProvider({type:'FeatureCollection',features:[{
     ...turf.bboxPolygon([-105.002,39.999,-105,40.001]),properties:{...properties,...changes}
@@ -53,6 +56,12 @@ describe('viewport parcel envelopes', () => {
         expect(item.derivation).toEqual({ parcel: parcel().geometry, covered: expect.objectContaining({ type: 'Polygon' }), frontEdges: [0,1,2,3] });
         expect(item.configurations[0]).not.toHaveProperty('frontEdges');
         expect(item.configurations[0].sourceReference.scenario).toBe('family1');
+        // The parcel (about 0.47 acres) reaches one-family's minimum lot, not two-family's; the
+        // below-minimum type is still drawn, flagged, and a type without a minimum is unknown.
+        expect(item.configurations.map(c => c.lotArea.status)).toEqual(['pass','fail','unknown']);
+        expect(item.configurations[1].lotArea).toMatchObject({ minimumM2: 4046.8564224, parcelM2: expect.closeTo(turf.area(parcel()), 3) });
+        expect(lotAreaTest(100, [{ quantity:'lotArea', value:0.02, unit:'acres', evidence:'estimated' }]).status).toBe('unknown');
+        expect(lotAreaTest(100, [{ quantity:'lotArea', value:100, unit:'m2', evidence:'direct' }]).status).toBe('pass');
         // Every configuration sits inside the bound; the bound is the join of the drawable ones.
         for (const configuration of item.configurations.filter(c => c.volumes.length)) {
             const outside = turf.difference(turf.feature(configuration.volumes[0].geometry),turf.feature(item.volumes[0].geometry));
@@ -149,35 +158,44 @@ describe('configuration display logic', () => {
             {id:'family4',treatment:'allowed',unavailableReason:'missing-direct-height',volumes:[]}],
         assessment:{meaning:'outer-bound'} });
     it('rolls deterministically over drawable configurations and changes with the dice', () => {
-        const first = scene.configurationFor(item(), { variation: '' });
-        expect(first).toEqual(scene.configurationFor(item(), { variation: '' }));
+        const first = envelopes.configurationFor(item(), { variation: '' });
+        expect(first).toEqual(envelopes.configurationFor(item(), { variation: '' }));
         expect(['family1','family2']).toContain(first.id);
-        expect(scene.configurationFor(item(), { variation: '1' }).id).not.toBe(first.id);
-        expect(scene.configurationFor(item(), { variation: '2' }).id).toBe(first.id);
+        expect(envelopes.configurationFor(item(), { variation: '1' }).id).not.toBe(first.id);
+        expect(envelopes.configurationFor(item(), { variation: '2' }).id).toBe(first.id);
         // Different parcels do not all land on the same configuration.
-        const picks = new Set(Array.from({length:12},(_,i) => scene.configurationFor(item(`envelope:test:p${i}`), {}).id));
+        const picks = new Set(Array.from({length:12},(_,i) => envelopes.configurationFor(item(`envelope:test:p${i}`), {}).id));
         expect(picks.size).toBe(2);
     });
+    it('prefers the housing types the parcel qualifies for by lot size, and rolls over all when none does', () => {
+        const flagged = (statuses) => { const entry = item(); entry.configurations.forEach((c, i) => { c.lotArea = { status: statuses[i] }; }); return entry; };
+        const rolls = (entry) => new Set(['', '1', '2', '3'].map(variation => envelopes.configurationFor(entry, { variation }).id));
+        expect(rolls(flagged(['fail','pass','unknown']))).toEqual(new Set(['family2']));
+        expect(rolls(flagged(['unknown','fail','pass']))).toEqual(new Set(['family1']));
+        expect(rolls(flagged(['fail','fail','fail']))).toEqual(new Set(['family1','family2']));
+        // An explicit pin still shows a below-minimum type.
+        expect(envelopes.configurationFor(flagged(['fail','pass','pass']), { scenario:'family1' }).id).toBe('family1');
+    });
     it('lets a housing-type pin and a per-parcel pin override the roll, including a type that cannot draw', () => {
-        expect(scene.configurationFor(item(), { scenario:'family2' }).id).toBe('family2');
-        expect(scene.configurationFor(item(), { scenario:'family4' })).toMatchObject({ id:'family4', volumes:[] });
-        expect(scene.configurationFor(item(), { scenario:'family2', pins:{ 'envelope:test:p1':'family1' } }).id).toBe('family1');
-        expect(scene.configurationFor({ ...item(), configurations: [] }, {})).toBeNull();
+        expect(envelopes.configurationFor(item(), { scenario:'family2' }).id).toBe('family2');
+        expect(envelopes.configurationFor(item(), { scenario:'family4' })).toMatchObject({ id:'family4', volumes:[] });
+        expect(envelopes.configurationFor(item(), { scenario:'family2', pins:{ 'envelope:test:p1':'family1' } }).id).toBe('family1');
+        expect(envelopes.configurationFor({ ...item(), configurations: [] }, {})).toBeNull();
     });
     it('draws the bound as a hull around the shown configuration, and alone when asked', () => {
-        const both = scene.permittedFeatures(item(), { permittedForm:'both' }, { scenario:'family1' });
+        const both = envelopes.realize(item(), { form:'both', selection:{ scenario:'family1' } });
         expect(both.bound.map(f => f.properties.geometryRole)).toEqual(['bound']);
         expect(both.body.map(f => [f.properties.geometryRole, f.properties.configurationId, f.properties.topM])).toEqual([['body','family1',10.668]]);
-        expect(scene.permittedFeatures(item(), { permittedForm:'bound' }, { scenario:'family1' }).body).toEqual([]);
-        const only = scene.permittedFeatures(item(), { permittedForm:'configuration' }, { scenario:'family1' });
+        expect(envelopes.realize(item(), { form:'bound', selection:{ scenario:'family1' } }).body).toEqual([]);
+        const only = envelopes.realize(item(), { form:'configuration', selection:{ scenario:'family1' } });
         expect(only.bound).toEqual([]); expect(only.body).toHaveLength(1);
         // A pinned type without a drawable volume falls back to showing the bound rather than nothing.
-        expect(scene.permittedFeatures(item(), { permittedForm:'configuration' }, { scenario:'family4' }).bound).toHaveLength(1);
+        expect(envelopes.realize(item(), { form:'configuration', selection:{ scenario:'family4' } }).bound).toHaveLength(1);
         // One-option sources (no configurations) keep drawing their volumes as the body.
         const zagreb = { ...item(), configurations: undefined };
-        expect(scene.permittedFeatures(zagreb, {}, {})).toMatchObject({ bound: [], configuration: null });
-        expect(scene.permittedFeatures(zagreb, {}, {}).body).toHaveLength(1);
-        const map = scene.mapFeatures(item(), 'footprint', turf, { permittedForm:'both' }, { scenario:'family2' });
+        expect(envelopes.realize(zagreb)).toMatchObject({ bound: [], configuration: null });
+        expect(envelopes.realize(zagreb).body).toHaveLength(1);
+        const map = envelopes.mapFeatures(item(), { detail:'footprint', form:'both', selection:{ scenario:'family2' }, deps:{ geometry: turf } });
         expect(map.map(f => f.properties.geometryRole)).toEqual(['bound','body']);
         expect(map[1].properties.topM).toBeCloseTo(13.716, 6);
     });
@@ -188,23 +206,23 @@ describe('configuration display logic', () => {
         const derived = { ...item(), derivation: { parcel: parcelGeometry, covered: parcelGeometry, frontEdges: [0,1,2,3] },
             configurations: [{ id:'family1', treatment:'allowed', unavailableReason:null, constraints, volumes:[{id:'u',geometry:parcelGeometry,baseM:0,topM:10.668}] }] };
         const deps = { geometry: turf, assessment: core };
-        const first = scene.permittedFeatures(derived, { permittedForm:'both' }, { variation:'' }, deps);
+        const first = envelopes.realize(derived, { form:'both', selection:{ variation:'' }, deps });
         expect(first.body).toHaveLength(1);
         expect([0,1,2,3]).toContain(first.frontEdge);
         expect(first.body[0].properties).toMatchObject({ geometryRole:'body', configurationId:'family1', frontEdge:first.frontEdge, topM:expect.closeTo(10.668, 6) });
         const footprint = turf.area(first.body[0]);
         expect(footprint).toBeLessThan(turf.area(turf.feature(parcelGeometry)));
         expect(turf.difference(first.body[0], turf.feature(parcelGeometry))).toBeNull();
-        const second = scene.permittedFeatures(derived, { permittedForm:'both' }, { variation:'1' }, deps);
+        const second = envelopes.realize(derived, { form:'both', selection:{ variation:'1' }, deps });
         expect(second.frontEdge).not.toBe(first.frontEdge);
         expect(JSON.stringify(second.body[0].geometry)).not.toBe(JSON.stringify(first.body[0].geometry));
         // Without the evaluator the configuration's own all-sides volume is drawn and no side is claimed.
-        const plain = scene.permittedFeatures(derived, { permittedForm:'both' }, { variation:'' });
+        const plain = envelopes.realize(derived, { form:'both', selection:{ variation:'' } });
         expect(plain.frontEdge).toBeNull(); expect(plain.body[0].geometry).toEqual(parcelGeometry);
-        expect(scene.mapFeatures(derived, 'footprint', { union: turf.union, ...deps }, { permittedForm:'both' }, { variation:'' })
+        expect(envelopes.mapFeatures(derived, { detail:'footprint', form:'both', selection:{ variation:'' }, deps })
             .map(f => [f.properties.geometryRole, f.properties.frontEdge])).toEqual([['bound', undefined], ['body', first.frontEdge]]);
-        expect([0,1,2,3].map(edge => scene.edgeSide(parcelGeometry, edge))).toEqual(['s','e','n','w']);
-        expect(scene.frontEdgeFor({ id:'x' }, {})).toBeNull();
+        expect([0,1,2,3].map(edge => envelopes.edgeSide(parcelGeometry, edge))).toEqual(['s','e','n','w']);
+        expect(envelopes.frontEdgeFor({ id:'x' }, {})).toBeNull();
     });
     it('rolling switches a bound-only layer to Both so the roll is visible, and re-seeds every roll', () => {
         const store = scene.createStore({ permittedForm:'bound', proposedForm:'massing' });

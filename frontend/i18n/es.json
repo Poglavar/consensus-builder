@@ -7829,6 +7829,7 @@
     "envelopeSummary": "{{count}} registros parcelarios examinados: {{shapes}} con envolventes parciales, {{missing}} sin volumen.",
     "envelopeNote": "El casco translúcido es el límite exterior de todos los tipos de vivienda registrados y lados de calle. El volumen interior es una configuración en un lado de calle supuesto: tira el dado o elige abajo. Siguen aplicándose los límites de superficie y las reglas pendientes.",
     "assumedSide": "Lado de calle supuesto: {{side}}.",
+    "lotBelowMinimum": "Parcela por debajo del mínimo de {{minimum}}",
     "sideOptions": {"one": "{{count}} lado utilizable; tira el dado para otro tipo de vivienda o abre un estudio para elegir el borde.", "other": "{{count}} lados utilizables; tira el dado para otro lado y tipo de vivienda, o abre un estudio para elegir el borde."},
     "envelopesLoaded": {
       "one": "{{count}} envolvente parcial de parcela · {{missing}} parcelas sin volumen",

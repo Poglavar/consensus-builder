@@ -32,10 +32,21 @@ export function parcelOverlapProblems(records, geometryOps = turf) {
     return problems;
 }
 
+const lotUnitsM2 = { acres: 4046.8564224, m2: 1, sqft: 0.09290304 };
+// Whether the parcel reaches a housing type's recorded minimum lot. A platted lot below it is
+// still drawn, flagged: the source records a minimum for new lots, not that this one is unbuildable.
+export function lotAreaTest(parcelM2, constraints = []) {
+    const lot = constraints.find(c => c.quantity === 'lotArea' && c.evidence === 'direct' && Number.isFinite(c.value) && lotUnitsM2[c.unit]);
+    const minimumM2 = lot ? lot.value * lotUnitsM2[lot.unit] : null;
+    return { status: minimumM2 === null ? 'unknown' : parcelM2 + 0.01 >= minimumM2 ? 'pass' : 'fail', minimumM2, parcelM2 };
+}
+
 // One configuration per usable housing type. A configuration without a direct height or
 // without space inside its supported setbacks is listed with its reason, never drawn.
 export function parcelConfigurations(baseContext, scenarios, zonesByScenario, geometryOps = turf) {
     const configurations = [], excluded = {};
+    let parcelM2 = null;
+    const parcelArea = () => parcelM2 ??= geometryOps.area(baseContext.parcel);
     for (const scenario of scenarios) {
         const context = withScenarioSource(baseContext, zonesByScenario[scenario]);
         const treatment = context?.source.assessment.status || null;
@@ -49,7 +60,7 @@ export function parcelConfigurations(baseContext, scenarios, zonesByScenario, ge
             volumes: unavailableReason ? [] : [{ id: `${scenario}:bound`, geometry: bound.geometry, baseM: 0, topM: bound.heightM }],
             metrics: unavailableReason ? { footprintM2: null, heightM: null } : { footprintM2: bound.areaM2, heightM: bound.heightM },
             edgeInterpretations: bound?.interpretations ?? 0, frontEdges: bound?.edges, constraints: context.source.constraints,
-            sourceReference: context.sourceReference });
+            lotArea: lotAreaTest(parcelArea(), context.source.constraints), sourceReference: context.sourceReference });
     }
     const frontEdges = configurations.find(configuration => configuration.frontEdges)?.frontEdges || [];
     for (const configuration of configurations) delete configuration.frontEdges;
