@@ -84,6 +84,15 @@ An **Atlas URL source** is an operator-configured provider with an explicit city
 
 User decision, 2026-10-21, not implemented as part of this discussion: urban-rule proposals remain spatially exclusive with one another. Applying an overlapping urban-rule proposal unapplies the conflicting urban-rule proposal(s); do not introduce rule stacking or per-field merging. An urban rule may coexist with a parcel-border change on the same ground. This records the intended relationship without asserting that every current apply path implements it. The proposed replacement of the term **Proposal** with **Change** remains undecided.
 
+## Accepted direction: plan, design, agreement (2026-10-21)
+
+User decisions, not implemented: above a single authored change there is exactly one record, the
+**agreement** (designs + decision rule + optional allocations and money), which is what is signed,
+minted, ENS-named, bet on and executed. A **design** is today's proposal without terms or a decision
+rule. "Plan" names no record: it is the applied composition or a share link. Named plans as records
+and publish-time decision kinds are superseded. Design of record and open questions:
+[plan-design-agreement.md](plan-design-agreement.md).
+
 ## Central terms as implemented
 
 ### Proposal — `Proposal`
