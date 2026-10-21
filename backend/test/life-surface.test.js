@@ -130,6 +130,10 @@ describe('graph → surface hand-off', () => {
         expect(graph.stats.blocked).toBe(1);
         const surface = buildWalkableSurface({ bounds: [-120, -120, 120, 120], ...graph.surface });
         expect(surface.classAt(0, 0)).toBe(CLASS.CARRIAGEWAY);
+        // Crossing the street means stepping down onto the sunk asphalt, by the same kerb the ground draws.
+        expect(surface.zAt(0, 0)).toBe(-lifeGraph.KERB_M);
+        expect(Z_LEVELS[surfaceApi.ZCODE.ROAD]).toBe(-lifeGraph.KERB_M);
+        expect(surface.zAt(0, 5.5)).toBe(0);
         expect(surface.classAt(0, 5.5)).toBe(CLASS.PREFERRED);    // sidewalk band beyond 3.5 m
         expect(surface.classAt(0, 55)).toBe(CLASS.PREFERRED);     // footway
         expect(surface.classAt(60, 50)).toBe(CLASS.PREFERRED);    // pedestrian area

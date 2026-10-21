@@ -16,7 +16,11 @@
     const SIDEWALK_DEPTH_M = 4.5;     // walking band beyond the carriageway edge of a street
     const LOOSE_END_SNAP_M = 8;       // a corridor end this close to an OSM node joins the network
     const MITRE_LIMIT = 4;            // offset joints sharper than this fall back to a bevel
-    const ZCODE = { GROUND: 0, PLAZA: 1, PATH: 2, KERB: 3 };
+    // An OSM street's carriageway is sunk this far below the pavement: the kerb height applied
+    // corridors use (corridor-profile.js, sidewalk 0.15). The ground, the vehicles and the walkers
+    // all read it from here (life-surface's Z_LEVELS[ZCODE.ROAD] is its negative).
+    const KERB_M = 0.15;
+    const ZCODE = { GROUND: 0, PLAZA: 1, PATH: 2, KERB: 3, ROAD: 4 };
 
     // Driveable OSM classes and a calm schematic cruise speed (m/s) for each. Station3D uses 8–22;
     // these are a little slower so a scene at 300 m reads as traffic, not as a race.
@@ -242,7 +246,12 @@
                             if (sides.left) bands.push({ offset: half + bandHalf, halfWidth: bandHalf, zcode: ZCODE.GROUND });
                             if (sides.right) bands.push({ offset: -(half + bandHalf), halfWidth: bandHalf, zcode: ZCODE.GROUND });
                         }
-                        addWay({ points, lanes, bands, carriageway: { offset: 0, halfWidth: half }, source: 'osm', id: 'osm:' + (props.osm_id || ways.length), highway });
+                        // Sunk below the pavement: the asphalt drops KERB_M, the lanes drive on it and the
+                        // walkable grid steps down to it where people cross.
+                        addWay({
+                            points, lanes, bands, carriageway: { offset: 0, halfWidth: half, drop: KERB_M, zcode: ZCODE.ROAD }, zLift: -KERB_M,
+                            source: 'osm', id: 'osm:' + (props.osm_id || ways.length), highway
+                        });
                     } else if (FOOT_CLASSES.has(highway)) {
                         if (isArea && isClosedRing(coords)) {
                             fills.push({ rings: [points], zcode: ZCODE.GROUND, kind: 'pedestrian-area' });
@@ -368,7 +377,7 @@
             ways.forEach(way => {
                 if (way.carriageway) {
                     const pts = offsetPolyline(way.points, way.carriageway.offset);
-                    if (pts) carriageways.push({ pts, halfWidth: way.carriageway.halfWidth });
+                    if (pts) carriageways.push({ pts, halfWidth: way.carriageway.halfWidth, drop: way.carriageway.drop || 0, zcode: way.carriageway.zcode || 0 });
                 }
                 way.bands.forEach(band => {
                     const pts = offsetPolyline(way.points, band.offset);
@@ -550,7 +559,7 @@
     }
 
     return {
-        NODE_SNAP_M, LANE_WIDTH_M, SIDEWALK_DEPTH_M, DRIVE_CLASSES, ZCODE,
+        NODE_SNAP_M, LANE_WIDTH_M, SIDEWALK_DEPTH_M, KERB_M, DRIVE_CLASSES, ZCODE,
         createGraphBuilder, offsetPolyline, nodeKey, sampleTrack, junctionCurve, curveHeading, pointInArea,
         parseOneway, sidewalkSides, ringArea, pointInRing
     };

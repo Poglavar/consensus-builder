@@ -5,7 +5,7 @@ import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
 const {
-    createGraphBuilder, offsetPolyline, nodeKey, sampleTrack, junctionCurve, curveHeading, pointInArea, parseOneway, LANE_WIDTH_M, DRIVE_CLASSES
+    createGraphBuilder, offsetPolyline, nodeKey, sampleTrack, junctionCurve, curveHeading, pointInArea, parseOneway, LANE_WIDTH_M, KERB_M, DRIVE_CLASSES, ZCODE
 } = require('../../frontend/js/life/life-graph.js');
 
 // Test coordinates are already local metres, so the projection is the identity.
@@ -93,7 +93,7 @@ describe('addOsmRoads: drive lanes', () => {
         });
         const [lane] = driveTracks(builder.build());
         expect(calls).toEqual([[1, 2], [51, 2]]);
-        expectPoint(first(lane), [2, 6, 0]);
+        expectPoint(first(lane), [2, 6, -KERB_M]); // lanes drive on the sunk asphalt
         expect(lane.len).toBeCloseTo(100, 9);
     });
 
@@ -117,6 +117,13 @@ describe('addOsmRoads: drive lanes', () => {
         expect(forward.len).toBeCloseTo(100, 9);
         expect(graph.nodes.get(start).out).toEqual([forward.id]);
         expect(graph.nodes.get(end).out).toEqual([backward.id]);
+    });
+
+    it('sinks an OSM carriageway a kerb below the pavement and drives its lanes down there', () => {
+        const graph = osmGraph([road({ highway: 'residential', lanes: '2' }, [[0, 0], [100, 0]])]);
+        expect(KERB_M).toBe(0.15);
+        expect(graph.surface.carriageways).toEqual([{ pts: [[0, 0, 0], [100, 0, 0]], halfWidth: LANE_WIDTH_M, drop: KERB_M, zcode: ZCODE.ROAD }]);
+        driveTracks(graph).forEach(track => track.pts.forEach(p => expect(p[2]).toBeCloseTo(-KERB_M, 9)));
     });
 
     it('reads oneway the way OSM writes it', () => {

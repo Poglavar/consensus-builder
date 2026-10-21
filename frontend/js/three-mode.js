@@ -5377,6 +5377,9 @@
         if (groundLayer || !scene || !window.__threeGround) return;
         groundLayer = window.__threeGround.create({ THREE, k: lifeMercatorK() });
         groundLayer.group.visible = false;
+        // The parcel slabs are pavement level too: they get the same holes over the sunk roadbed.
+        groundLayer.cutHoles(materials.parcels);
+        groundLayer.cutHoles(materials.roads);
         scene.add(groundLayer.group);
     }
 
@@ -5403,7 +5406,7 @@
             groundLayer.setGeometry(result);
             if (result) {
                 const s = result.stats;
-                console.log(`[3D ground] ${s.ways} carriageways, ${s.junctions} junctions, ${s.triangles} triangles, ${s.roadAreaM2} m² asphalt`
+                console.log(`[3D ground] ${s.ways} carriageways, ${s.junctions} junctions, ${s.triangles} triangles, ${s.roadAreaM2} m² asphalt, ${s.kerbM} m kerb (${s.kerbTriangles} triangles)`
                     + (Array.isArray(lifeOsmFeatures) ? '' : ' (OSM streets pending)') + ` · built in ${(performance.now() - t0).toFixed(0)} ms`);
             }
         } catch (error) {

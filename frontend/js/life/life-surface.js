@@ -11,9 +11,10 @@
     'use strict';
 
     const CLASS = Object.freeze({ BLOCKED: 0, OPEN: 1, PREFERRED: 2, CARRIAGEWAY: 3 });
-    // zcode → walking height: ground, park/plaza paving, park path, corridor sidewalk kerb.
-    const Z_LEVELS = Object.freeze([0, 0.06, 0.075, 0.2]);
-    const ZCODE = Object.freeze({ GROUND: 0, PLAZA: 1, PATH: 2, KERB: 3 });
+    // zcode → walking height: ground, park/plaza paving, park path, corridor sidewalk kerb, and the
+    // sunk OSM carriageway (the negative of life-graph's KERB_M; people step down to cross it).
+    const Z_LEVELS = Object.freeze([0, 0.06, 0.075, 0.2, -0.15]);
+    const ZCODE = Object.freeze({ GROUND: 0, PLAZA: 1, PATH: 2, KERB: 3, ROAD: 4 });
     const MAX_CELLS = 1.5e6;        // grid budget; the cell grows for a bigger scene
     const MAX_CROSS_M = 14;         // the longest run across carriageway a walking leg may take
     const TARGET_MIN_M = 6;         // never pick a destination closer than this
