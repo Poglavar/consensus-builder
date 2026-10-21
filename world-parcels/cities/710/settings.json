@@ -1,0 +1,122 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "710",
+  "name": "Choma, Zambia",
+  "point": [
+    -16.8095488756458,
+    26.9843616973629
+  ],
+  "bindings": [
+    {
+      "appCityId": "choma",
+      "runtimeConfig": {
+        "id": "choma",
+        "wupCityCode": "710",
+        "label": "Choma, Zambia",
+        "currency": {
+          "locale": "en-ZM",
+          "code": "ZMW"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            -16.8095488756458,
+            26.9843616973629
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            -16.8095488756458,
+            26.9843616973629
+          ],
+          "fallbackDataset": [
+            26.9843616973629,
+            -16.8095488756458
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "zm-szi-zilmis-parcels-wfs",
+          "idPrefix": "ZM-SZI-FID-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Zambia NSDI / Smart Zambia Institute; MLNR Land Cadastre."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "zm-szi-zilmis-parcels-wfs",
+      "name": "Zambia SZI GeoServer cadastral parcels (native feature IDs)",
+      "adapter": "wfs",
+      "endpoint": "https://gis.szi.gov.zm/gn/ows",
+      "featureType": "gn:Parcels",
+      "version": "2.0.0",
+      "geometryField": "the_geom",
+      "nativeIdMode": "feature-id",
+      "featureIdParameter": "resourceId",
+      "idField": null,
+      "idType": "string",
+      "idPrefix": "ZM-SZI-FID-",
+      "idPattern": "^Parcels\\.[0-9]+$",
+      "outFields": [],
+      "requestProperties": true,
+      "pageSize": 100,
+      "idBatchSize": 80,
+      "maxFeatures": 3000,
+      "maxBboxKm2": 1,
+      "maxResponseBytes": 8388608,
+      "countryCode": "ZM",
+      "metricSrid": 32735,
+      "cityIds": [
+        "choma"
+      ],
+      "defaultForCity": true,
+      "sourceCrs": "EPSG:32735",
+      "returnsWGS84": true,
+      "capabilities": {
+        "areaEnumeration": true,
+        "exactIds": true
+      },
+      "scope": "Bounded Choma observations; national service extent is not a municipal boundary. No citywide completeness claim.",
+      "licenceNote": "Official metadata states Copyright / otherRestictions. Open reuse licence and permission remain unverified; technical qualification does not authorize redistribution.",
+      "catalogueUrl": "https://znsdi.szi.gov.zm/srv/api/records/e6a52b47-0c0a-433b-9fd4-c1222dc3eec2",
+      "attribution": "Zambia NSDI / Smart Zambia Institute; MLNR Land Cadastre.",
+      "cityScopes": {
+        "choma": "Fresh initial qualification on 2026-10-20: 3 bounded public parcel polygons passed repeated exact native-ID reads with unchanged geometry. This is not citywide completeness, survey accuracy, legal title, verified coordinate alignment, currentness or reuse permission.",
+        "chilanga": "Fresh initial qualification on 2026-10-20: 3 bounded public parcel polygons passed repeated exact native-ID reads with unchanged geometry. This is not citywide completeness, survey accuracy, legal title, verified coordinate alignment, currentness or reuse permission.",
+        "kapiri_mposhi": "Fresh initial qualification on 2026-10-20: 1 bounded public parcel polygons passed repeated exact native-ID reads with unchanged geometry. This is not citywide completeness, survey accuracy, legal title, verified coordinate alignment, currentness or reuse permission."
+      }
+    }
+  ]
+}

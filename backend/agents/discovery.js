@@ -1,6 +1,9 @@
 // Read ordinary proposal summaries and minted named plans for society/supporter policies.
 // A named plan is a policy input identified in its own namespace; its row IDs remain member IDs.
 
+import { createHash } from 'node:crypto';
+import { effectiveLifecycleStatus } from '../proposals/lifecycle.js';
+import { isSolanaMinted } from './supporter-picker.js';
 import { PublicKey } from '@solana/web3.js';
 import { accountsPerRequest, getMultipleAccountsBatched } from '../solana/account-batching.js';
 import { decodeProposalState, PROPOSAL_PROGRAM_ID } from './lifecycle-actions.js';
@@ -10,6 +13,7 @@ export const SUMMARY_PAGE = 1000;
 export const MAX_DISCOVERED = 3000;
 export const BATCH_SIZE = 1000;
 const CHAIN_STATUS = ['Active', 'Executed', 'Cancelled', 'Expired'];
+const PROPOSAL_DISCRIMINATOR = createHash('sha256').update('account:Proposal').digest().subarray(0, 8);
 
 function key(proposal) {
     const id = typeof proposal?.proposalId === 'string' ? proposal.proposalId.trim() : '';
@@ -124,34 +128,72 @@ export async function discoverProposalInputs({ apiBase, cities, fetchJson, log =
     return Array.from(byId.values()).sort((a, b) => String(b.createdAt || '').localeCompare(String(a.createdAt || '')));
 }
 
-export function applyPlanStatuses(proposals, infos, { decodeState = decodeProposalState, programId = PROPOSAL_PROGRAM_ID } = {}) {
-    const plans = (proposals || []).filter(proposal => proposal.planSlug);
-    if (infos.length !== plans.length) throw new Error(`received ${infos.length} chain states for ${plans.length} named plans`);
+// API rows can lag the daily evidence materializer. Every Solana proposal, including ordinary
+// records, must be checked on chain before a policy acts on its reported lifecycle.
+export function applyProposalStatuses(proposals, infos, { decodeState = decodeProposalState, programId = PROPOSAL_PROGRAM_ID } = {}) {
+    const minted = (proposals || []).filter(isSolanaMinted);
+    if (infos.length !== minted.length) throw new Error(`received ${infos.length} chain states for ${minted.length} minted proposals`);
     const expectedOwner = new PublicKey(programId);
-    plans.forEach((plan, index) => {
+    // Validate the entire batch before changing any policy inputs or persisting a read model.
+    const statuses = minted.map((proposal, index) => {
+        const label = proposal.planSlug ? `named plan ${proposal.planSlug}` : `proposal ${key(proposal)}`;
         const info = infos[index];
-        if (!info?.data) throw new Error(`named plan ${plan.planSlug} chain account ${proposalAccount(plan)} is missing`);
+        if (!info?.data) throw new Error(`${label} chain account ${proposalAccount(proposal)} is missing`);
         if (!info.owner || !new PublicKey(info.owner).equals(expectedOwner)) {
-            throw new Error(`named plan ${plan.planSlug} chain account is not owned by the proposal program`);
+            throw new Error(`${label} chain account is not owned by the proposal program`);
+        }
+        if (!Buffer.from(info.data).subarray(0, 8).equals(PROPOSAL_DISCRIMINATOR)) {
+            throw new Error(`${label} chain account is not a Proposal account`);
         }
         const state = decodeState(info.data);
-        if (!plan.planHash || state.imageUri !== `ugt-plan:${plan.planSlug}@${plan.planHash}`) {
-            throw new Error(`named plan ${plan.planSlug} chain account does not commit to its current content`);
+        if (proposal.planSlug && (!proposal.planHash || state.imageUri !== `ugt-plan:${proposal.planSlug}@${proposal.planHash}`)) {
+            throw new Error(`${label} chain account does not commit to its current content`);
         }
         if (!Number.isInteger(state?.status) || state.status < 0 || state.status >= CHAIN_STATUS.length) {
-            throw new Error(`named plan ${plan.planSlug} has invalid on-chain status ${state?.status}`);
+            throw new Error(`${label} has invalid on-chain status ${state?.status}`);
         }
-        plan.lifecycleStatus = CHAIN_STATUS[state.status];
+        return CHAIN_STATUS[state.status];
+    });
+    minted.forEach((proposal, index) => {
+        proposal.onchainLifecycleStatus = statuses[index];
+        // A local expiry still excludes support while its terminal verdict waits to be submitted.
+        proposal.lifecycleStatus = effectiveLifecycleStatus(statuses[index], proposal.expiresAt);
     });
     return proposals;
 }
 
-export async function refreshNamedPlanStatuses(proposals, connection, env = process.env) {
-    const plans = (proposals || []).filter(proposal => proposal.planSlug);
-    if (!plans.length) return proposals;
-    const accounts = plans.map(plan => new PublicKey(proposalAccount(plan)));
+// This projects confirmed terminal account state into the API read model. The separate oracle
+// still records immutable transaction evidence and land events; no authored metadata is changed.
+async function reconcileTerminalStatuses(pool, proposals) {
+    const observations = proposals.filter(isSolanaMinted)
+        .filter(proposal => ['Executed', 'Cancelled', 'Expired'].includes(proposal.onchainLifecycleStatus))
+        .map(proposal => ({ account: proposalAccount(proposal), status: proposal.onchainLifecycleStatus }));
+    if (!observations.length) return 0;
+    const result = await pool.query(`
+        UPDATE proposal p
+        SET lifecycle_status = observed.status,
+            updated_at = now()
+        FROM jsonb_to_recordset($1::jsonb) AS observed(account text, status text)
+        WHERE p.onchain_data->>'proposalId' = observed.account
+          AND COALESCE(p.onchain_data->>'chainId', 'solana-devnet') = 'solana-devnet'
+          AND COALESCE(p.onchain_data->>'chainType', 'solana') = 'solana'
+          AND p.lifecycle_status IS DISTINCT FROM observed.status
+        RETURNING p.id
+    `, [JSON.stringify(observations)]);
+    return result.rowCount;
+}
+
+export async function refreshProposalStatuses(proposals, connection, { env = process.env, pool = null, log = () => {} } = {}) {
+    const minted = (proposals || []).filter(isSolanaMinted);
+    if (!minted.length) return proposals;
+    const accounts = minted.map(proposal => new PublicKey(proposalAccount(proposal)));
     const infos = await getMultipleAccountsBatched(connection, accounts, { batchSize: accountsPerRequest(env) });
-    return applyPlanStatuses(proposals, infos);
+    applyProposalStatuses(proposals, infos);
+    if (pool) {
+        const reconciled = await reconcileTerminalStatuses(pool, minted);
+        if (reconciled) log(`OK reconciled ${reconciled} proposal lifecycle(s) from confirmed on-chain state`);
+    }
+    return proposals;
 }
 
 // Load plan members in one bounded batch request per 1000 rows; ordinary records continue to use

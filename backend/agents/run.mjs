@@ -14,6 +14,8 @@
 //   node agents/run.mjs --dry-run [--controller algorithm|llm] [--persona NAME] [--day YYYY-MM-DD]
 //   node agents/run.mjs --live    [--controller algorithm|llm] [--persona NAME] [--until STAGE] [--lens KEY,KEY] [--slot auto|LABEL]
 //   --slot lets a persona run several times a day: run ids and proposal ids become <day>-<slot>-…
+//   Parcel reads get at most three attempts within 180 seconds, with 5s/15s backoff or the
+//   provider's longer cooldown. Persistent incomplete replies fail; signed actions are not retried by this policy.
 //   ("auto" = h + the UTC hour). Each run visits one of the persona's areas (a stable rotation) and a
 //   ~350 m window inside it, and never re-plans a parcel the persona already minted on. An area is
 //   { city, bbox } (Croatian cadastre in the database), { city, label, sourceId, bbox } (a live parcel
@@ -42,6 +44,9 @@ import * as turf from '@turf/turf';
 import { fetchCandidateParcels } from './parcel-source.js';
 import { chooseArea, contestParcels, parcelsFromSource, pickedParcelIds, runKeyFor, seedFor, slotLabel, windowIn, withPublishedParcelSources } from './area-plan.js';
 import { planCandidates } from './planner.js';
+import { chooseHousingArea, planHousingCandidates, housingOutreach } from './housing-policy.js';
+import { fetchHousingScreen } from './housing-screen.js';
+import { refreshProposalStatuses } from './discovery.js';
 import { prepareAgentPublication, verifyPublicationReadable, mirrorAgentPublication } from './chain-publication.js';
 import { markAgentRunFailed, safeFailureDiagnostic } from './run-failure.js';
 import { fetchSourceParcels } from './source-fetch.js';
@@ -275,6 +280,12 @@ async function retireStage({ pool, connection, entries, day, dryRun, controller,
                     checkpoint: async (record) => {
                         retirements[item.proposalPda] = record;
                         e.run = await updateRun(pool, e.runId, { summaryPatch: { retirements, retirePlan, activities } });
+                        // A later resolve/claim failure must not leave an already-terminal proposal
+                        // advertised as Active. Checkpoint first so recovery never repeats a signature.
+                        await refreshProposalStatuses([{
+                            proposalId: item.proposalId,
+                            onchain: { chainId: 'solana-devnet', contractAddress: PROPOSAL_NFT_PROGRAM, proposalId: item.proposalPda }
+                        }], connection, { pool, log });
                     }
                 });
                 retirements[item.proposalPda] = { ...retirements[item.proposalPda], completedAt: new Date().toISOString() };
@@ -303,6 +314,19 @@ async function parcelsForArea({ pool, apiBase, area, persona, runKey, day, runs,
         const cities = [...new Set(open.map(parcel => parcel.city).filter(Boolean))].sort();
         const city = cities.length ? cities[hash32(`${runKey}:${persona.name}`) % cities.length] : 'zagreb';
         return { parcels: open.filter(parcel => parcel.city === city).slice(0, limit), city, where: `contest (${city}, ${open.length} open parcels)` };
+    }
+    if (persona.housingResearch) {
+        for (let attempt=0; attempt<3; attempt++) {
+            const window=windowIn(area.bbox, `${runKey}:housing${attempt}`, persona.name, area.windowM ?? 850);
+            const collection=await fetchSourceParcels(apiBase,area.sourceId,window,{log});
+            if(collection?.complete!==true) throw new Error('Affordabot requires a complete parcel source response');
+            const parcels=fresh(parcelsFromSource(collection,{turf,place:area.label,minAreaM2:1200,maxAreaM2:20000}));
+            const screened=await fetchHousingScreen(parcels,turf.bbox(turf.buffer(turf.bboxPolygon(window),0.85,{units:'kilometers'})),{turf,area});
+            const eligible=screened.filter(p=>!p.housingScreen.excluded && p.housingScreen.transitDistanceM!==null && p.housingScreen.transitDistanceM<=800);
+            log(`affordabot ${area.city} window ${attempt+1}/3: ${collection.features.length} source parcels, ${parcels.length} sized, ${eligible.length} screened leads; exclusions ${JSON.stringify(screened.reduce((counts,p)=>{const key=p.housingScreen.excludedBy || 'clear';counts[key]=(counts[key]||0)+1;return counts;},{}))}`);
+            if(eligible.length) return {parcels:eligible.slice(0,limit),city:area.city,where:`${area.city} ${window.join(',')}`};
+        }
+        return {parcels:[],city:area.city,where:`${area.city} (3 bounded windows screened)`};
     }
     const window = windowIn(area.bbox, runKey, persona.name, area.windowM ?? 350);
     if (area.sourceId) {
@@ -339,9 +363,15 @@ async function main() {
     const failures = [];
     const report = [];
     const startedRuns = new Set();
+    let housingLock = null;
     try {
         // ---- stage 1: plan (every persona) ----------------------------------------------------
         const entries = [];
+        if (personas.some(p=>p.housingResearch) && args.live) {
+            housingLock = await pool.connect();
+            const {rows} = await housingLock.query('SELECT pg_try_advisory_lock(57401, hashtext($1)) AS locked', ['affordabot']);
+            if (!rows[0]?.locked) throw new Error('Affordabot is already running; refusing concurrent publication');
+        }
         const allRuns = await listRuns(pool);
         for (const [i, persona] of personas.entries()) {
             const runId = `${runKey}-${persona.name}`;
@@ -363,7 +393,7 @@ async function main() {
                         db: pool, rankedCandidates: candidates, limit: args.candidates,
                         scanLimit: args.candidates * 2, persona, runId,
                         city: existing.summary.city ?? 'zagreb', turf,
-                        checkBinding: checkProposalBinding
+                        checkBinding: checkProposalBinding, log
                     });
                     candidates = preflight.candidates;
                     logCandidatePreflight(persona.name, preflight);
@@ -375,16 +405,16 @@ async function main() {
                 entries.push({ persona, runId, run, candidates });
                 continue;
             }
-            const area = chooseArea(persona.areas, runKey, persona.name);
+            const area = persona.housingResearch ? chooseHousingArea(persona.areas, day) : chooseArea(persona.areas, runKey, persona.name);
             const { parcels, city, where } = await parcelsForArea({ pool, apiBase, area, persona, runKey, day, runs: allRuns, limit: args.candidates * 6 });
-            const planned = planCandidates(parcels, persona, { turf, limit: args.candidates * 2, seed: seedFor(runKey) });
+            const planned = (persona.housingResearch ? planHousingCandidates : planCandidates)(parcels, persona, { turf, limit: args.candidates * 2, seed: seedFor(runKey) });
             // The default envelope for a parcel without a stated rule (5 floors) is taller than anything
             // the 2025 GUP actually says in this bbox (3), so rule-backed candidates come first and the
             // default-rule ones are only used when nothing else is on offer.
             const preflight = await preflightCandidates({
                 db: pool, rankedCandidates: prioritizedPlannedCandidates(planned),
                 limit: args.candidates, scanLimit: args.candidates * 2,
-                persona, runId, city, turf, checkBinding: checkProposalBinding
+                persona, runId, city, turf, checkBinding: checkProposalBinding, log
             });
             const candidates = preflight.candidates;
             logCandidatePreflight(persona.name, preflight);
@@ -633,7 +663,7 @@ async function main() {
                 if (!posts[pick.candidateId]) {
                     const binding = await checkCandidateBinding({
                         db: pool, candidate, pick, persona: { ...persona, controller: runController },
-                        runId: e.runId, city, turf, checkBinding: checkProposalBinding
+                        runId: e.runId, city, turf, checkBinding: checkProposalBinding, log
                     });
                     if (!binding?.ok) {
                         const refusal = {
@@ -659,7 +689,7 @@ async function main() {
                             publications[pick.candidateId] = await prepareAgentPublication({
                                 pool, candidate, pick, persona: { ...persona, controller: runController },
                                 runId: e.runId, city, lens: lensChoice.lens
-                            });
+                            }, { log });
                             await updateRun(pool, e.runId, { status: 'running', summaryPatch: { publications } });
                         }
                         const publication = await verifyPublicationReadable(publications[pick.candidateId]);
@@ -726,6 +756,7 @@ async function main() {
                 status: personaFailed ? 'failed' : (done && untilStage === 'staked' ? 'done' : 'running'),
                 summaryPatch: {
                     mints, posts, stakes, activities,
+                    ...(persona.housingResearch ? {outreach: picks.filter(p=>posts[p.candidateId]).map(p=>housingOutreach({candidate:e.candidates.find(c=>c.candidateId===p.candidateId),post:posts[p.candidateId],publicBase:'https://urbangametheory.xyz'}))} : {}),
                     error: personaFailed ? failures.filter(value => value.startsWith(persona.name)).map(safeFailureDiagnostic).join('; ').slice(0, 500) : null,
                     outcome: personaFailed ? 'failed' : (done && untilStage === 'staked' ? 'completed' : 'partial')
                 }
@@ -739,6 +770,10 @@ async function main() {
         }
         throw error;
     } finally {
+        if (housingLock) {
+            try { await housingLock.query('SELECT pg_advisory_unlock(57401, hashtext($1))', ['affordabot']); }
+            finally { housingLock.release(); }
+        }
         await pool.end();
     }
 

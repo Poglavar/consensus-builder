@@ -3,7 +3,7 @@ import { SaxesParser } from 'saxes';
 import proj4 from 'proj4';
 import { ensureOstn15 } from './osgb36-grid-loader.js';
 import { toWgs84 } from './osgb36-projection.js';
-import { validateGeometry, upstreamError } from './source-contract.js';
+import { validateGeometry, upstreamError, parcelCountError } from './source-contract.js';
 import { CATASTRO_ATOM_GML_SCHEMA } from './catastro-atom-profile.js';
 
 const GML = new Set(['http://www.opengis.net/gml', 'http://www.opengis.net/gml/3.2']);
@@ -526,10 +526,10 @@ export async function parseGmlParcels(input, { idField = 'INSPIREID', maxBytes =
             numberReturned = featureCount;
             numberReturnedNormalized = true;
             numberReturnedProtocolException = 'kartverket-no-teig-zero-numberReturned-on-data-response';
-        } else fail('Parcel GML has incomplete or inconsistent feature counts.');
+        } else throw parcelCountError({ numberMatched, numberReturned, featureCount });
     }
     if (!collection || !closedCollection || current
-        || (numberMatched !== undefined && numberMatched < featureCount)) fail('Parcel GML has incomplete or inconsistent feature counts.');
+        || (numberMatched !== undefined && numberMatched < featureCount)) throw parcelCountError({ numberMatched, numberReturned, featureCount });
     if (isCatastroAtom && (numberMatched !== featureCount || numberReturned !== featureCount || duplicateNativeCount)) {
         fail('Spanish ATOM parcel archive is not a complete unique declared parcel set.');
     }

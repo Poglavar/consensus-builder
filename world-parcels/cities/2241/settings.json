@@ -1,0 +1,114 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "2241",
+  "name": "Porto-Novo, Benin",
+  "point": [
+    6.50766879735021,
+    2.62222651952885
+  ],
+  "bindings": [
+    {
+      "appCityId": "porto_novo",
+      "runtimeConfig": {
+        "id": "porto_novo",
+        "wupCityCode": "2241",
+        "label": "Porto-Novo, Benin",
+        "currency": {
+          "locale": "fr-BJ",
+          "code": "XOF"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            6.50766879735021,
+            2.62222651952885
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            6.50766879735021,
+            2.62222651952885
+          ],
+          "fallbackDataset": [
+            2.62222651952885,
+            6.50766879735021
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "bj-andf-efoncier-geoserver",
+          "idPrefix": "BJ-ANDF-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "ANDF (Agence Nationale du Domaine et du Foncier), e-Foncier cadastral parcels; adapted to WGS84. Verified Cotonou samples only."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "bj-andf-efoncier-geoserver",
+      "adapter": "wfs",
+      "endpoint": "https://geoserver.andf.bj/geoserver/efb/wfs",
+      "featureType": "efb:efb_parcel",
+      "idField": "nup",
+      "idType": "string",
+      "idPrefix": "BJ-ANDF-",
+      "outFields": [
+        "nup"
+      ],
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "metricSrid": 32631,
+      "name": "ANDF e-Foncier cadastral parcels — Cotonou",
+      "cityIds": [
+        "porto_novo"
+      ],
+      "countryCode": "BJ",
+      "idPattern": "^[0-9]+$",
+      "scope": "Verified bounded Cotonou cadastral parcel samples from the ANDF e-Foncier service. Only the configured Cotonou entry is enabled; coverage beyond the tested cells and national completeness are unverified.",
+      "licenceNote": "ANDF describes public consultation and duplication except personal or confidential information, with online/private access subject to conditions and fees. GeoServer Fees NONE / AccessConstraints NONE are service defaults, not a reuse licence. Publisher conditions remain informational.",
+      "licenceUrl": "https://andf.bj/cadastre/",
+      "catalogueUrl": "https://cadastre.andf.bj/",
+      "attribution": "ANDF (Agence Nationale du Domaine et du Foncier), e-Foncier cadastral parcels; adapted to WGS84. Verified Cotonou samples only.",
+      "geometryField": "boundary",
+      "requestProperties": true,
+      "cityScopes": {
+        "whydah": "Fresh initial qualification on 2026-10-20: 3 bounded public parcel polygons passed repeated exact native-ID reads with unchanged geometry. This is not citywide completeness, survey accuracy, legal title, verified coordinate alignment, currentness or reuse permission.",
+        "porto_novo": "Fresh initial qualification on 2026-10-20: 3 bounded public parcel polygons passed repeated exact native-ID reads with unchanged geometry. This is not citywide completeness, survey accuracy, legal title, verified coordinate alignment, currentness or reuse permission. Earlier broader Porto-Novo audit found one invalid polygon and nine material overlaps (largest 25095 square metres); these remain unresolved and no source geometry was repaired.",
+        "parakou": "Fresh initial qualification on 2026-10-20: 2 bounded public parcel polygons passed repeated exact native-ID reads with unchanged geometry. This is not citywide completeness, survey accuracy, legal title, verified coordinate alignment, currentness or reuse permission.",
+        "pobe": "Fresh initial qualification on 2026-10-20: 3 bounded public parcel polygons passed repeated exact native-ID reads with unchanged geometry. This is not citywide completeness, survey accuracy, legal title, verified coordinate alignment, currentness or reuse permission."
+      }
+    }
+  ]
+}

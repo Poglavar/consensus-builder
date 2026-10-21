@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
-import { applyPlanStatuses, discoverProposalInputs, loadPlanRecord, verifiedPlanMembership } from '../agents/discovery.js';
+import { applyProposalStatuses, discoverProposalInputs, loadPlanRecord, verifiedPlanMembership } from '../agents/discovery.js';
+import { proposalAccountBytes } from './fixtures/proposal-account.js';
 import { PublicKey } from '@solana/web3.js';
 import { PROPOSAL_PROGRAM_ID } from '../agents/lifecycle-actions.js';
 import { eligibleSupportProposals, selectSupportAction } from '../agents/supporter-picker.js';
@@ -105,23 +106,35 @@ describe('agent named-plan discovery', () => {
             .rejects.toThrow(/proposal identifier collision with named plan conflict/);
     });
 
-    it('applies decoded terminal chain states and refuses missing or wrongly owned accounts', () => {
+    it('applies decoded terminal chain states to named plans and ordinary minted proposals atomically', () => {
         const proposals = [
-            { planSlug: 'active', onchain: { chainId: 'solana-devnet', contractAddress: PROPOSAL_PROGRAM_ID, proposalId: accountFor(10) }, lifecycleStatus: 'Active' },
-            { planSlug: 'executed', onchain: { chainId: 'solana-devnet', contractAddress: PROPOSAL_PROGRAM_ID, proposalId: accountFor(11) }, lifecycleStatus: 'Active' },
-            { planSlug: 'expired', onchain: { chainId: 'solana-devnet', contractAddress: PROPOSAL_PROGRAM_ID, proposalId: accountFor(12) }, lifecycleStatus: 'Active' }
+            { planSlug: 'active', onchain: { chainId: 'solana-devnet', contractAddress: PROPOSAL_PROGRAM_ID, proposalId: accountFor(10) }, lifecycleStatus: 'Unknown', planHash: 'committed-hash' },
+            { planSlug: 'executed', onchain: { chainId: 'solana-devnet', contractAddress: PROPOSAL_PROGRAM_ID, proposalId: accountFor(11) }, lifecycleStatus: 'Active', planHash: 'committed-hash' },
+            { planSlug: 'expired', onchain: { chainId: 'solana-devnet', contractAddress: PROPOSAL_PROGRAM_ID, proposalId: accountFor(12) }, lifecycleStatus: 'Active', planHash: 'committed-hash' },
+            { proposalId: 'ordinary-minted', onchain: { chainId: 'solana-devnet', proposalId: accountFor(13) }, lifecycleStatus: 'Active' }
         ];
-        proposals.forEach(plan => { plan.planHash = 'committed-hash'; });
-        const infos = [0, 1, 3].map((status, index) => ({ owner: new PublicKey(PROPOSAL_PROGRAM_ID),
-            data: { status, imageUri: `ugt-plan:${proposals[index].planSlug}@committed-hash` } }));
-        expect(applyPlanStatuses(proposals, infos, { decodeState: data => data }).map(plan => plan.lifecycleStatus))
-            .toEqual(['Active', 'Executed', 'Expired']);
-        expect(() => applyPlanStatuses([proposals[0]], [{ owner: new PublicKey(PROPOSAL_PROGRAM_ID),
-            data: { status: 0, imageUri: 'ugt-plan:different@hash' } }], { decodeState: data => data }))
+        const infos = [0, 1, 3, 2].map((status, index) => ({ owner: new PublicKey(PROPOSAL_PROGRAM_ID),
+            data: proposalAccountBytes({ status, imageUri: index < 3
+                ? `ugt-plan:${proposals[index].planSlug}@committed-hash` : 'https://example.test/ordinary' }) }));
+        expect(applyProposalStatuses(proposals, infos).map(plan => plan.lifecycleStatus))
+            .toEqual(['Active', 'Executed', 'Expired', 'Cancelled']);
+        expect(proposals.map(plan => plan.onchainLifecycleStatus)).toEqual(['Active', 'Executed', 'Expired', 'Cancelled']);
+
+        expect(() => applyProposalStatuses([proposals[0]], [{ owner: new PublicKey(PROPOSAL_PROGRAM_ID),
+            data: proposalAccountBytes({ imageUri: 'ugt-plan:different@hash' }) }]))
             .toThrow(/does not commit to its current content/);
-        expect(() => applyPlanStatuses([proposals[0]], [null], { decodeState: data => data })).toThrow(/chain account .* is missing/);
-        expect(() => applyPlanStatuses([proposals[0]], [{ owner: PublicKey.default, data: { status: 0 } }], { decodeState: data => data }))
+        expect(() => applyProposalStatuses([proposals[0]], [null])).toThrow(/chain account .* is missing/);
+        expect(() => applyProposalStatuses([proposals[0]], [{ owner: PublicKey.default, data: proposalAccountBytes() }]))
             .toThrow(/not owned by the proposal program/);
+
+        const untouched = [
+            { ...proposals[0], lifecycleStatus: 'Unknown', onchainLifecycleStatus: undefined },
+            { ...proposals[1], lifecycleStatus: 'Active', onchainLifecycleStatus: undefined }
+        ];
+        expect(() => applyProposalStatuses(untouched, [infos[0], { ...infos[1], data: proposalAccountBytes({ imageUri: 'ugt-plan:wrong@hash' }) }]))
+            .toThrow(/does not commit to its current content/);
+        expect(untouched.map(plan => [plan.lifecycleStatus, plan.onchainLifecycleStatus]))
+            .toEqual([['Unknown', undefined], ['Active', undefined]]);
     });
 
     it('loads the same named plan once when it appears in more than one city result', async () => {

@@ -1,0 +1,118 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "204",
+  "name": "João Teves, Cape Verde",
+  "point": [
+    15.0638094222344,
+    -23.5950028346745
+  ],
+  "bindings": [
+    {
+      "appCityId": "joao_teves",
+      "runtimeConfig": {
+        "id": "joao_teves",
+        "wupCityCode": "204",
+        "label": "João Teves, Cape Verde",
+        "currency": {
+          "locale": "pt-CV",
+          "code": "CVE"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            15.0638094222344,
+            -23.5950028346745
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            15.0638094222344,
+            -23.5950028346745
+          ],
+          "fallbackDataset": [
+            -23.5950028346745,
+            15.0638094222344
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "cv-ingt-planta-pre-cadastro",
+          "idPrefix": "CV-INGT-PRE-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Instituto Nacional de Gestão do Território (INGT), Cabo Verde. Preliminary cadastre; source geometry retained."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "cv-ingt-planta-pre-cadastro",
+      "name": "INGT Cabo Verde preliminary cadastral parcels",
+      "adapter": "arcgis",
+      "endpoint": "https://ingtgeo.gov.cv/arcgisingt/rest/services/PLANTA_PRE_CADASTRO/MapServer/0",
+      "idField": "GLOBALID",
+      "idType": "string",
+      "idPattern": "^\\{[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}\\}$",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "CV-INGT-PRE-",
+      "outFields": [
+        "OBJECTID",
+        "GLOBALID"
+      ],
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "queryFormat": "geojson",
+      "pageSize": 1000,
+      "idBatchSize": 20,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "timeoutMs": 45000,
+      "countryCode": "CV",
+      "metricSrid": 32627,
+      "scope": "Preliminary cadastral records. Only three near-locator parcel polygons qualified initially; discovery observed additional bounded windows. No citywide or finalized-registry completeness established.",
+      "attribution": "Instituto Nacional de Gestão do Território (INGT), Cabo Verde. Preliminary cadastre; source geometry retained.",
+      "catalogueUrl": "https://ingtgeo.gov.cv/arcgisingt/rest/services/PLANTA_PRE_CADASTRO/MapServer/0?f=pjson",
+      "licenceNote": "No explicit reuse licence established in first-party service metadata; verify reuse terms and attribution before activation.",
+      "capabilities": {
+        "areaEnumeration": true
+      },
+      "cityIds": [
+        "joao_teves"
+      ],
+      "defaultForCity": true,
+      "cityScopes": {
+        "joao_teves": "Fresh initial qualification on 2026-10-20: 3 bounded public parcel polygons passed repeated exact native-ID reads with unchanged geometry. This is not citywide completeness, survey accuracy, legal title, verified coordinate alignment, currentness or reuse permission."
+      }
+    }
+  ]
+}

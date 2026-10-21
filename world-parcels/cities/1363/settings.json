@@ -1,0 +1,116 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "1363",
+  "name": "Sikasso, Mali",
+  "point": [
+    11.3136054897523,
+    -5.66973498556137
+  ],
+  "bindings": [
+    {
+      "appCityId": "sikasso",
+      "runtimeConfig": {
+        "id": "sikasso",
+        "wupCityCode": "1363",
+        "label": "Sikasso, Mali",
+        "currency": {
+          "locale": "fr-ML",
+          "code": "XOF"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            11.3136054897523,
+            -5.66973498556137
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            11.3136054897523,
+            -5.66973498556137
+          ],
+          "fallbackDataset": [
+            -5.66973498556137,
+            11.3136054897523
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "ml-sprdf-ninacad-parcelle-wfs",
+          "idPrefix": "ML-NINACAD-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "SPRDF / NINACAD cadastral parcels; adapted to WGS84. See publisher conditions."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "ml-sprdf-ninacad-parcelle-wfs",
+      "endpoint": "https://geodata.sprdf.ml/geoserver/sifMali/ows",
+      "featureType": "sifMali:parcelle",
+      "version": "1.1.0",
+      "idField": "ninacad",
+      "idType": "string",
+      "idPattern": "^[0-9]{11}$",
+      "idPrefix": "ML-NINACAD-",
+      "outFields": [
+        "ninacad"
+      ],
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "cityIds": [
+        "sikasso"
+      ],
+      "adapter": "wfs",
+      "name": "SPRDF / NINACAD cadastral parcels",
+      "countryCode": "ML",
+      "metricSrid": 32629,
+      "scope": "Bamako test neighbourhood and other NINACAD-mapped parcels only; sampled coverage is partial. The central city box was previously empty. No ownership or title certification supplied.",
+      "licenceNote": "No explicit geometry reuse licence established; source conditions remain informational under the user-selected passthrough policy.",
+      "licenceUrl": "https://ninacad.sprdf.ml/",
+      "catalogueUrl": "https://ninacad.sprdf.ml/",
+      "attribution": "SPRDF / NINACAD cadastral parcels; adapted to WGS84. See publisher conditions.",
+      "geometryField": "geom",
+      "requestProperties": true,
+      "metricSridByCity": {
+        "sikasso": 32630
+      },
+      "cityScopes": {
+        "segou": "Fresh initial qualification on 2026-10-20: 3 bounded public parcel polygons passed repeated exact native-ID reads with unchanged geometry. This is not citywide completeness, survey accuracy, legal title, verified coordinate alignment, currentness or reuse permission.",
+        "sikasso": "Fresh initial qualification on 2026-10-20: 3 bounded public parcel polygons passed repeated exact native-ID reads with unchanged geometry. This is not citywide completeness, survey accuracy, legal title, verified coordinate alignment, currentness or reuse permission."
+      }
+    }
+  ]
+}

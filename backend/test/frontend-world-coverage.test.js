@@ -355,6 +355,7 @@ describe('city and exact-point destinations', () => {
 describe('searchPlaces', () => {
     it('is diacritic-insensitive both ways', () => {
         expect(coverage.searchPlaces('sibenik')[0]).toMatchObject({ kind: 'live-city', cityId: 'sibenik', name: 'Šibenik' });
+        expect(coverage.searchPlaces('São')).toEqual(coverage.searchPlaces('sao'));
         const fixture = WorldCoverage.create({ countries: [], cities: [], liveCities: [
             { id: 'accented-city', name: 'São Paulo', cc: 'BR', lat: -23.5, lon: -46.6 },
             { id: 'plain-city', name: 'Sao Tome', cc: 'ST', lat: 0.3, lon: 6.7 },

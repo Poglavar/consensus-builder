@@ -3,6 +3,8 @@
 // this step applies a few explicit guardrails, then uses a day/persona hash to vary among only the
 // near-best candidates. A rerun for the same day always makes the same choice.
 
+import { housingPick } from './housing-policy.js';
+
 const COMPETITIVE_RATIO = 0.9;
 const MAX_COMPETITIVE_CANDIDATES = 3;
 const MAX_NAME_CHARS = 60;
@@ -90,6 +92,7 @@ function rationaleFor(candidate) {
 }
 
 function isEligible(candidate) {
+    if (candidate?.housing) return candidate.rule?.source === 'housing-research' && candidate.housing.screening?.complete === true && candidate.housing.screening?.excluded === false && candidate.housing.homes >= 10 && candidate.score > 0;
     const score = finite(candidate?.score);
     const gain = finite(candidate?.gainEur);
     const built = finite(candidate?.builtGfaM2);
@@ -127,8 +130,7 @@ export function selectAlgorithmicPicks({ day, persona, candidates } = {}) {
         .sort((left, right) => left.rank - right.rank || left.candidate.candidateId.localeCompare(right.candidate.candidateId));
     const selected = competitive.slice(0, maxPicksOf(persona)).map(({ candidate }) => ({
         candidateId: candidate.candidateId,
-        name: titleFor(candidate),
-        rationale: rationaleFor(candidate)
+        ...(candidate.housing ? housingPick(candidate) : { name: titleFor(candidate), rationale: rationaleFor(candidate) })
     }));
 
     return {

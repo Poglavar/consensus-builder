@@ -6,6 +6,7 @@ import { isDeepStrictEqual } from 'node:util';
 import * as turf from '@turf/turf';
 import { createRetryingFetch } from '../utils/retrying-fetch.js';
 import { buildProposalRecord } from './record-builder.js';
+import { retryParcelRead } from './parcel-read-retry.js';
 import { parcelSourceForCity, parcelSourceCatalog } from '../parcels/sources.js';
 import { checkProposalBinding } from '../proposals/binding.js';
 import { readChainMetadata } from '../proposals/chain-mirror.js';
@@ -68,19 +69,22 @@ export async function loadMintGround(pool, record, { areas = [], parcelSourceId 
 export async function prepareAgentPublication({ pool, candidate, pick, persona, runId, city, lens }, {
     loadGround = loadMintGround, checkBinding = checkProposalBinding,
     render = generateAndStoreProposalThumbnail, pinImage = uploadImageToPinata,
-    pinMetadata = uploadMetadataToPinata, now = () => new Date()
+    pinMetadata = uploadMetadataToPinata, now = () => new Date(), log, parcelRetryOptions
 } = {}) {
     if (!persona.wallet || !Array.isArray(lens) || !lens.length) throw new Error('A signer and resolving lens are required.');
     const draft = { ...buildProposalRecord({ candidate, pick, persona, runId, city, turf }),
         author: persona.wallet, createdAt: now().toISOString(), lens };
-    const ground = await loadGround(pool, draft, { areas: persona.areas || [], parcelSourceId: candidate.parcelSourceId || null });
+    const parcelReadOptions = { ...parcelRetryOptions, sourceId: candidate.parcelSourceId || city || 'cadastre', log };
+    const ground = await retryParcelRead(() => loadGround(pool, draft, {
+        areas: persona.areas || [], parcelSourceId: candidate.parcelSourceId || null
+    }), parcelReadOptions);
     if (!ground.parcels.length) throw new Error('No cadastral evidence covers the proposed building.');
     const record = await mintBinding.buildRecord(draft, { ...ground, regionHasCadastre: true, turf, now });
     // Independently recheck the full footprint before uploading, using the same public binding
     // rule as ordinary publication. This is a read, not /prepare or a server signature.
-    const bound = await checkBinding(pool, record, record.cadastreParcelIds, {
+    const bound = await retryParcelRead(() => checkBinding(pool, record, record.cadastreParcelIds, {
         site: record.site, city, parcelSourceId: ground.parcelSourceId || null, toleranceM: record.toleranceM
-    });
+    }), { ...parcelReadOptions, sourceId: ground.parcelSourceId || parcelReadOptions.sourceId });
     if (!bound.ok || bound.binding?.coverage !== 'complete' || !record.cadastreParcelIds.includes(candidate.parcelId)) {
         throw Object.assign(new Error(bound.error || bound.message || 'The complete candidate footprint could not be verified.'), {
             code: bound.code || 'agent-cadastre-incomplete'

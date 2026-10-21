@@ -52,6 +52,39 @@ function fixture() {
 
 
 describe('agent chain publication', () => {
+    it.each(['loadGround', 'checkBinding'])('retries the %s read before uploading each artifact exactly once', async method => {
+        const { args, deps, spies } = fixture();
+        spies[method].mockRejectedValueOnce(Object.assign(new Error('Parcel provider timed out.'), {
+            code: 'parcel-source-unavailable', status: 504
+        }));
+        const out = await prepareAgentPublication(args, { ...deps, parcelRetryOptions: { retryDelaysMs: [0, 0] } });
+        expect(out.metadataUri).toBe(PINNED_METADATA);
+        expect(spies[method]).toHaveBeenCalledTimes(2);
+        expect(spies.render).toHaveBeenCalledOnce();
+        expect(spies.pinImage).toHaveBeenCalledOnce();
+        expect(spies.pinMetadata).toHaveBeenCalledOnce();
+    });
+
+    it('exhausts incomplete ground reads without pinning or proceeding to binding', async () => {
+        const { args, deps, spies } = fixture();
+        spies.loadGround.mockRejectedValue(Object.assign(new Error('matched=190 returned=190 received=189'), {
+            code: 'parcel-source-unavailable', status: 502
+        }));
+        await expect(prepareAgentPublication(args, { ...deps, parcelRetryOptions: { retryDelaysMs: [0, 0] } }))
+            .rejects.toMatchObject({ attempts: 3 });
+        expect(spies.loadGround).toHaveBeenCalledTimes(3);
+        expect(spies.checkBinding).not.toHaveBeenCalled();
+        expect(spies.render).not.toHaveBeenCalled();
+        expect(spies.pinImage).not.toHaveBeenCalled();
+        expect(spies.pinMetadata).not.toHaveBeenCalled();
+    });
+
+    it('does not repeat parcel reads or artifact uploads after a pinning failure', async () => {
+        const { args, deps, spies } = fixture();
+        spies.pinMetadata.mockRejectedValueOnce(Object.assign(new Error('pin service failed'), { status: 504 }));
+        await expect(prepareAgentPublication(args, deps)).rejects.toThrow('pin service failed');
+        for (const spy of Object.values(spies)) expect(spy).toHaveBeenCalledOnce();
+    });
     it('keeps explicit NYC tax-lot identity even when that source is not the city default', () => {
         const source = agentParcelSource({ city: 'new_york', cadastreParcelIds: ['US-NYC-BBL-1001440001'] },
             [{ city: 'new_york', sourceId: 'us-nyc-dof-digital-tax-map' }]);

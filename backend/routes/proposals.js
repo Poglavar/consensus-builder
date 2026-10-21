@@ -366,7 +366,7 @@ export const proposalCreateBodyValidator = createJsonBodyValidator({
         city: { required: false, validate: validators.string({ maxLength: MAX_CITY_LENGTH, label: 'city', disallowControlChars: true }) },
         name: { required: false, validate: validators.optional(validators.string({ maxLength: MAX_TITLE_LENGTH, label: 'name', disallowControlChars: true })) },
         title: { required: false, validate: validators.optional(validators.string({ maxLength: MAX_TITLE_LENGTH, label: 'title', disallowControlChars: true })) },
-        description: { required: false, validate: validators.optional(validators.string({ label: 'description', disallowControlChars: true })) },
+        description: { required: false, validate: validators.optional(validators.string({ label: 'description', disallowControlChars: true, allowLineBreaks: true })) },
         author: { required: false, validate: validators.optional(validators.string({ maxLength: MAX_AUTHOR_LENGTH, label: 'author', disallowControlChars: true })) },
         type: { required: false, validate: validators.optional(validators.string({ maxLength: MAX_TYPE_LENGTH, label: 'type', disallowControlChars: true })) },
         status: { required: false, validate: validators.optional(validators.string({ maxLength: MAX_STATUS_LENGTH, label: 'status', disallowControlChars: true })) },

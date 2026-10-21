@@ -154,6 +154,149 @@
         "cities": ["*"],
         "amountUsdc": "0.02"
       }
+    },
+    {
+      "name": "affordabot",
+      "role": "proposer",
+      "wallet": "Hiv7iHiMk9Ybqf6KGqci1UZzvPDJVgRAWmDYysMa39Lt",
+      "keypairPath": "~/.config/solana/ugt-affordabot.json",
+      "housingResearch": true,
+      "weights": {
+        "density": 1,
+        "openSpace": 0,
+        "valueUplift": 0,
+        "heritage": 0
+      },
+      "areas": [
+        {
+          "city": "hong_kong",
+          "label": "Hong Kong",
+          "medianMultiple": 14.1,
+          "sourceId": "hk-landsd-lot-index-api",
+          "bbox": [
+            114.155,
+            22.28,
+            114.192,
+            22.298
+          ],
+          "windowM": 850,
+          "rankingUrl": "https://frontiercentre.org/wp-content/uploads/Demographia-International-Housing-Affordability-2026-Edition-1.pdf",
+          "authority": {
+            "name": "Hong Kong Planning Department",
+            "url": "https://www.pland.gov.hk/pland_en/public_enquiry_form.html",
+            "email": "enquire@pland.gov.hk",
+            "verifiedAt": "2026-10-20",
+            "jurisdiction": "Bounded municipal study area; review exact planning jurisdiction before sending"
+          }
+        },
+        {
+          "city": "sydney",
+          "label": "Sydney",
+          "medianMultiple": 14.0,
+          "sourceId": "au-nsw-six-cadastre-lot",
+          "bbox": [
+            151.19,
+            -33.91,
+            151.215,
+            -33.87
+          ],
+          "windowM": 850,
+          "rankingUrl": "https://frontiercentre.org/wp-content/uploads/Demographia-International-Housing-Affordability-2026-Edition-1.pdf",
+          "authority": {
+            "name": "City of Sydney planning team",
+            "url": "https://www.cityofsydney.nsw.gov.au/contact-us",
+            "email": null,
+            "verifiedAt": "2026-10-20",
+            "jurisdiction": "Bounded municipal study area; review exact planning jurisdiction before sending"
+          }
+        },
+        {
+          "city": "los_angeles",
+          "label": "Los Angeles",
+          "medianMultiple": 10.7,
+          "sourceId": "us-ca-lacounty-assessor-parcels",
+          "bbox": [
+            -118.265,
+            34.035,
+            -118.235,
+            34.065
+          ],
+          "windowM": 850,
+          "rankingUrl": "https://frontiercentre.org/wp-content/uploads/Demographia-International-Housing-Affordability-2026-Edition-1.pdf",
+          "authority": {
+            "name": "Los Angeles City Planning",
+            "url": "https://planning.lacity.gov/contact/public-counters",
+            "email": "planning.figcounter@lacity.org",
+            "verifiedAt": "2026-10-20",
+            "jurisdiction": "Bounded municipal study area; review exact planning jurisdiction before sending"
+          }
+        },
+        {
+          "city": "honolulu",
+          "label": "Honolulu",
+          "medianMultiple": 10.4,
+          "sourceId": "us-hi-honolulu-parcels",
+          "bbox": [
+            -157.865,
+            21.29,
+            -157.835,
+            21.315
+          ],
+          "windowM": 850,
+          "rankingUrl": "https://frontiercentre.org/wp-content/uploads/Demographia-International-Housing-Affordability-2026-Edition-1.pdf",
+          "authority": {
+            "name": "Honolulu Department of Planning and Permitting",
+            "url": "https://www.honolulu.gov/dpp/organization-and-contacts/",
+            "email": "dpp@honolulu.gov",
+            "verifiedAt": "2026-10-20",
+            "jurisdiction": "Bounded municipal study area; review exact planning jurisdiction before sending"
+          }
+        },
+        {
+          "city": "melbourne",
+          "label": "Melbourne",
+          "medianMultiple": 9.5,
+          "sourceId": "au-vic-vicmap-parcel",
+          "bbox": [
+            144.945,
+            -37.82,
+            144.97,
+            -37.8
+          ],
+          "windowM": 850,
+          "rankingUrl": "https://frontiercentre.org/wp-content/uploads/Demographia-International-Housing-Affordability-2026-Edition-1.pdf",
+          "authority": {
+            "name": "City of Melbourne planning team",
+            "url": "https://eservices.melbourne.vic.gov.au/epathway/production/web/CustomerService/ExternalRequestBroker.aspx?Class=ONLINE&Module=ECRREQT&Type=ERCO01",
+            "email": null,
+            "verifiedAt": "2026-10-20",
+            "jurisdiction": "Bounded municipal study area; review exact planning jurisdiction before sending"
+          }
+        },
+        {
+          "city": "san_francisco",
+          "label": "San Francisco",
+          "medianMultiple": 9.4,
+          "sourceId": "us-ca-sf-datasf-active-parcels",
+          "bbox": [
+            -122.422,
+            37.77,
+            -122.395,
+            37.795
+          ],
+          "windowM": 850,
+          "rankingUrl": "https://frontiercentre.org/wp-content/uploads/Demographia-International-Housing-Affordability-2026-Edition-1.pdf",
+          "authority": {
+            "name": "San Francisco Planning",
+            "url": "https://sfplanning.org/location",
+            "email": "pic@sfgov.org",
+            "verifiedAt": "2026-10-20",
+            "jurisdiction": "Bounded municipal study area; review exact planning jurisdiction before sending"
+          }
+        }
+      ],
+      "dailyProposals": 1,
+      "stakeUsdc": "0.01"
     }
   ]
 }

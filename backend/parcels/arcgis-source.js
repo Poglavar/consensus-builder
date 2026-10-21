@@ -31,11 +31,18 @@ export function createArcgisParcelSource(descriptor, { fetchImpl = globalThis.fe
     if (descriptor.publicTokenUrl !== undefined) fetchImpl = createAkwaGisPublicFetch(fetchImpl, descriptor);
     const { id, endpoint, idField, objectIdField, idPrefix, outFields } = descriptor;
     // Discovery receipts can bind the query operation itself rather than its parent layer.
-    const layerEndpoint = endpoint.replace(/\/$/, '');
+    const serviceEndpoint = endpoint.replace(/\/$/, '');
+    // Keep a discovery-bound service URL intact while selecting one explicit layer.
+    if (descriptor.layerId !== undefined && (!Number.isSafeInteger(descriptor.layerId)
+        || descriptor.layerId < 0 || !/\/(?:MapServer|FeatureServer)$/.test(serviceEndpoint))) {
+        throw new Error('Invalid ArcGIS parcel layer selector.');
+    }
+    const layerEndpoint = descriptor.layerId === undefined ? serviceEndpoint : `${serviceEndpoint}/${descriptor.layerId}`;
     const queryEndpoint = layerEndpoint.endsWith('/query') ? layerEndpoint : `${layerEndpoint}/query`;
     const pageSize = descriptor.pageSize || 2000;
     const maxFeatures = descriptor.maxFeatures || 10000;
     const maxBboxKm2 = descriptor.maxBboxKm2 || 25;
+    const timeoutMs = descriptor.timeoutMs ?? 15000;
     const idBatchSize = descriptor.idBatchSize ?? (descriptor.idsQueryMode === 'single-equality' ? 1 : 80);
     const idType = descriptor.idType || 'integer';
     const idPattern = descriptor.idPattern ? new RegExp(descriptor.idPattern) : null;
@@ -83,6 +90,8 @@ export function createArcgisParcelSource(descriptor, { fetchImpl = globalThis.fe
         || (descriptor.parcelNumberField && (!columnName(descriptor.parcelNumberField) || !outFields.includes(descriptor.parcelNumberField)))
         || !['integer', 'string'].includes(idType)
         || !Number.isInteger(idBatchSize) || idBatchSize < 1 || idBatchSize > 80
+        || (descriptor.timeoutMs !== undefined && (!Number.isSafeInteger(descriptor.timeoutMs)
+            || timeoutMs < 1000 || timeoutMs > 45000))
         || (descriptor.idQueryBraces !== undefined && typeof descriptor.idQueryBraces !== 'boolean')
         || (idQueryBraces && idType !== 'string')
         || ![undefined, 'offset', 'object-ids', 'distinct-ids'].includes(descriptor.boundsQueryMode)
@@ -195,7 +204,7 @@ export function createArcgisParcelSource(descriptor, { fetchImpl = globalThis.fe
     const baseWhere = attributeFilter.where || '1=1';
 
     async function request(search) {
-        const signal = AbortSignal.timeout(15000);
+        const signal = AbortSignal.timeout(timeoutMs);
         let payload;
         try {
             // ArcGIS supports form POST; avoid intermediary URL limits for long OID/GUID batches.

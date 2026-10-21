@@ -1352,3 +1352,11 @@ A private **floor registration** is a rigid horizontal transform from drawing co
 ## Novogradnje repository ownership (2026-10-20)
 
 Novogradnje collection and reconstruction producers, source archive, private Stanovanje.plus review and public catalogue now belong to the private [zagreb-novogradnje repository](https://github.com/Poglavar/zagreb-novogradnje). Earlier producer observations and unresolved audit findings above remain evidence; their implementation links now resolve to that owner. Consensus Builder retains generic floor architecture, registry/import, rendering and shared geodata publication consumers. The worldwide publication API remains owned by geodata. This repository no longer registers the archive producer routes or deploys its DDL. This intentional ownership break adds no legacy route or compatibility reader.
+
+## Accepted city source settings
+
+Newly accepted parcel-source configuration is stored in `world-parcels/cities/<WUP code>/settings.json`.
+The file binds the numeric WUP identity, explicit app-city identity and executable source descriptor;
+shared adapter code and focused fixtures preserve implementation knowledge. Research and qualification
+packets are temporary. An enabled city source establishes usable observed parcel geometry within its
+stated scope, not citywide completeness, cadastral title, ownership or survey accuracy.

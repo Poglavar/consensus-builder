@@ -8,6 +8,13 @@ export function upstreamError(message, status = 502, code = 'parcel-source-unava
     return error;
 }
 
+// Only numeric collection metadata crosses the gateway; no raw GML or parcel identity is logged.
+export function parcelCountError({ numberMatched, numberReturned, featureCount }, message = 'Parcel GML has incomplete or inconsistent feature counts.') {
+    const count = value => Number.isSafeInteger(value) && value >= 0 ? value : null;
+    const parcelCounts = { matched: count(numberMatched), returned: count(numberReturned), received: count(featureCount) };
+    return Object.assign(upstreamError(`${message} Declared matched=${parcelCounts.matched} returned=${parcelCounts.returned} received=${parcelCounts.received}.`), { parcelCounts });
+}
+
 const MAX_RETRY_AFTER_SECONDS = 60 * 60;
 
 function retryAfterSeconds(value) {
