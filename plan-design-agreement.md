@@ -77,9 +77,10 @@ decisions are appended as they are made and the open list shrinks.
 
 ### Carried over from the Codex design session of 2026-10-21 (notes commits 0a5d0c9b0, ac30810b3)
 
-- Roads inside a readjustment are drawn as roads, ordinary road designs. The plots are their own
-  design, a **parcel layout** (the standalone border redraw). The agreement pools the land across
-  all covered designs, so drawing steps never decide who bears the cost of a street.
+- Roads are roads, drawn with the road tool, never inside the parcel-layout editor (user,
+  2026-10-21: "roads are roads"). The one new drawing tool is the **parcel layout**, which only
+  redraws parcel borders. Roads, parks, rules and layouts are combined only in the agreement,
+  which pools the land across all of them, so drawing steps never decide who bears the cost of a street.
 - Designs never depend on other designs, only on the ground being available.
 - No temporal component: an agreement settles ownership, allocations, money and rules. What gets
   built when is out of scope.
@@ -114,13 +115,28 @@ demo content may all change, and affected records are recreated.
    applying the designs in authored order; changed ground changes the hashes and refuses the agreement.
 7. Estimates. **Closed by simplification 1**: designs may be drawn over estimates; an estimate is
    never an agreement input, so that flow is exploration or open ground.
-8. Naming of the individual object (design vs proposal), and which code, API and chain names keep
-   `proposal`. A second opinion the Codex session requested was still pending when this was written.
-9. Sequencing. Sketch: M1, local only, split land readjustment into a parcel-layout design plus an
-   agreement that holds today's terms engine, roads drawn as roads inside it, Schelling plots as an
-   automatic layout. M2, publish agreements with consent bound to the agreement hash. M3, mint
-   agreements and settle markets on them. The one-road-plus-cash flow keeps working throughout as an
-   agreement created in the same step as its design.
+8. Naming. **Decided**: the object is a **design** ("spatial design" in the glossary); every button
+   names the type (Draw road, Lay out parcels, Set urban rule); the umbrella appears only in
+   collection headings, generic actions and code; "propose" is the verb for putting an agreement to
+   its parties; "contract" and "deal" stay out of the UI. New code and tables use `design` and
+   `agreement`; existing `proposal*` modules, routes and tables are renamed as the rework touches
+   them, never in a bulk sweep, with vocabulary.md mapping the two until done. (The second opinion
+   Codex requested came back "agree with changes" along the same lines.)
+9. Sequencing. **Decided** (user, 2026-10-21, "proceed"):
+   - **M1, local only, no server or chain change.** (a) The parcel-layout design: the LR geometry
+     editor becomes "Lay out parcels", geometry only, with Schelling plots as an automatic layout;
+     the user tests this first. (b) The agreement as a browser record: chosen designs, inputs
+     derived by applying them to the current ground, outputs by content hash, decision rule from
+     the existing regimes, allocations and money from the existing LR ledger, before/after from the
+     dividers; a "Create agreement" dialog over applied designs. Existing design dialogs keep their
+     term fields until M2 reworks publishing, so nothing is left half-published.
+   - **M2, publish.** CIDs computed in the browser, pinned through the relay and verified; the
+     server mirrors designs and agreements as an index; owner decisions signed over the agreement
+     CID; the engine counts; the lens attests. Named plans and `prepare` removed; share links are
+     design CIDs; design dialogs lose their terms and kind.
+   - **M3, chain and markets.** The Solana agreement program; mint agreements; markets, oracle and
+     parcel history on agreements; prod demo content recreated. EVM later.
+   - Schelling: plots land in M1 (a); Move network and the free grid stay on `schelling-plan`.
 
 ## Simplifications the new design allows (candidates, flagged 2026-10-21)
 
