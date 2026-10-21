@@ -48,15 +48,17 @@ decisions are appended as they are made and the open list shrinks.
   terms; "Create agreement" is its own dialog over chosen designs, usable immediately after drawing.
   Nothing is auto-coupled, not even a single road with cash.
 
-To confirm (recommended): a design is its own IPFS object and its content hash is its CID; an
-agreement is an object of links to design CIDs plus inputs, decision rule, allocations and money,
-so its CID commits to everything transitively and a counter-agreement reuses the design objects.
-That one scheme replaces the effect hash, the plan hash and the member hashes. Pinning goes
-through the backend relay as a courier only: the browser computes the CIDs, the relay pins, the
-browser verifies the pinned CID before minting; `POST /proposals/prepare` goes away, which settles
-the pending "mint must not need the server" decision. No unanimity carve-out: every decision rule,
-unanimity included, executes on the lens attestation, because the owner set is lens-backed anyway.
-An agreement may be drafted over local unpublished designs; publishing or minting it pins them first.
+- **Content addressing (confirmed):** a design is its own IPFS object and its content hash is its
+  CID; an agreement is an object of links to design CIDs plus inputs, decision rule, allocations and
+  money, so its CID commits to everything transitively and a counter-agreement reuses the design
+  objects. This one scheme replaces the effect hash, the plan hash and the member hashes.
+- **Pinning (confirmed):** the browser computes the CIDs, the backend relay pins them as a courier
+  only, the browser verifies the pinned CID before minting. `POST /proposals/prepare` goes away,
+  which settles the pending "mint must not need the server" decision.
+- **No unanimity carve-out (confirmed):** every decision rule executes on the lens attestation,
+  because the owner set is lens-backed anyway.
+- **Draft agreements (confirmed):** an agreement may be drafted over local unpublished designs;
+  publishing or minting it pins them first.
 
 ### Carried over from the Codex design session of 2026-10-21 (notes commits 0a5d0c9b0, ac30810b3)
 
@@ -89,10 +91,7 @@ demo content may all change, and affected records are recreated.
 ## Open, in the order they are being worked through
 
 1. Plan vs agreement. **Decided above.**
-2. Consent and execution are per design today: effect hash at publish, signed owner decisions, lens
-   verdicts, `ProposalNFT.acceptProposal`, the Solana consent route, the oracle lifecycle and
-   parcel-history events are all keyed on one design. They must move to the agreement hash and one
-   execution event.
+2. Consent and execution per design. **Decided above.**
 3. Decision kinds. **Resolved with 1**: the decision rule lives on the agreement.
 4. "Agreement" already names the per-input-parcel sub-deals of the courtyard flow
    (`reparcellization-agreements.js`) and the Approval tab's "Agreement rules". Fold or drop.
