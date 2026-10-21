@@ -357,6 +357,39 @@ describe('proposal details action footer', () => {
         expect(park('.proposal-publish-later').length).toBe(0);
     });
 
+    it('offers Create agreement over an applied design: before the disabled Share for a parcel layout, after Share otherwise', () => {
+        // The primary row's buttons in order, by the action each one is.
+        const primaryRow = result => {
+            const $ = parse(result.footer.innerHTML);
+            return $('.proposal-primary-actions button').toArray().map(button => $(button));
+        };
+        const position = (row, className) => row.findIndex(button => button.hasClass(className));
+
+        const layout = { proposalId: 'layout-2', goal: 'parcel-layout', title: 'Layout', cadastreParcelIds: ['source-1'], parcelLayout: { plots: [] } };
+        const appliedLayout = render(layout, { applied: true });
+        const layoutRow = primaryRow(appliedLayout);
+        const layoutCreate = layoutRow[position(layoutRow, 'btn-create-agreement')];
+        expect(layoutCreate.hasClass('btn-primary')).toBe(true);
+        expect(layoutCreate.text()).toContain('Create agreement');
+        expect(position(layoutRow, 'btn-create-agreement')).toBeLessThan(position(layoutRow, 'btn-share-proposal'));
+        expect(layoutRow[position(layoutRow, 'btn-share-proposal')].attr('disabled')).toBeDefined();
+        expect(appliedLayout.footer.innerHTML).toContain('window.AgreementDialog.open({ designIds: ["layout-2"] })');
+
+        const park = { proposalId: 'park-3', goal: 'park', title: 'Park', cadastreParcelIds: [] };
+        const appliedPark = render(park, { applied: true });
+        const parkRow = primaryRow(appliedPark);
+        const parkCreate = parkRow[position(parkRow, 'btn-create-agreement')];
+        expect(parkCreate.hasClass('btn-primary')).toBe(false);
+        expect(position(parkRow, 'btn-create-agreement')).toBe(position(parkRow, 'btn-share-proposal') + 1);
+        expect(parkRow[position(parkRow, 'btn-share-proposal')].hasClass('btn-primary')).toBe(true);
+        expect(appliedPark.footer.innerHTML).toContain('window.AgreementDialog.open({ designIds: ["park-3"] })');
+
+        // An agreement bundles designs applied to the map; one that is not offers none.
+        for (const proposal of [layout, park]) {
+            expect(parse(render(proposal).footer.innerHTML)('.btn-create-agreement').length).toBe(0);
+        }
+    });
+
     it('leaves out donations, pledges and the market for a minted approval setup the contract never executes', () => {
         const proposal = { proposalId: 'approval-1', title: 'Readjustment', cadastreParcelIds: [], nft: MINT_RECORD };
         const plain = render(proposal, { connected: true });

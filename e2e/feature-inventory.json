@@ -356,6 +356,12 @@
       ]
     },
     {
+      "id": "proposals.agreements",
+      "specs": [
+        "tests/agreement-dialog.spec.ts"
+      ]
+    },
+    {
       "id": "proposals.clearLocal",
       "specs": [
         "tests/settings-maintenance.spec.ts"
@@ -702,6 +708,12 @@
         "tests/parcel-layout-editor.spec.ts",
         "tests/parcel-layout-button-controls.spec.ts",
         "tests/parcel-layout-audit.spec.ts"
+      ]
+    },
+    {
+      "feature": "agreements over applied designs: Create agreement from a design's details or the Agreements list, derived land, allocation, cash and decision rule, the agreement panel (matches the map or not, before/after, edit, delete)",
+      "specs": [
+        "tests/agreement-dialog.spec.ts"
       ]
     },
     {

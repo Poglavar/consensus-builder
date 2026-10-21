@@ -1448,6 +1448,13 @@
       "controlType": "button"
     },
     {
+      "id": "control-52edba7ede5172-1",
+      "source": "index.html",
+      "markup": "<button id=\"agreementsButton\" type=\"button\" class=\"btn btn-block agreements-button\" onclick=\"window.AgreementList.open()\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
       "id": "control-dc7af30c67cb8d-5",
       "source": "index.html",
       "markup": "<button type=\"button\" class=\"map-sheet-close close-circle-btn close-circle-btn--lg\" data-sheet-close aria-label=\"Close\" title=\"Close\" data-i18n-key=\"common.close\" data-i18n-attr=\"aria-label,title\">",
@@ -2452,6 +2459,104 @@
       "id": "control-f56349fbace9c9-1",
       "source": "js/agents.js",
       "markup": "<button type=\"button\" class=\"close-circle-btn agent-dialog-modal-close\" aria-label=\"Close agent dialog\" onclick=\"closeAgentDialog()\" data-readonly-allow=\"true\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-9d62d5684da658-1",
+      "source": "js/agreement-dialog.js",
+      "markup": "<input type=\"checkbox\" data-agreement-design=\"${esc(id)}\"${chosen.has(id) ? ' checked' : ''}>",
+      "interaction": "change",
+      "controlType": "checkbox"
+    },
+    {
+      "id": "control-35922d4500ab71-1",
+      "source": "js/agreement-dialog.js",
+      "markup": "<select data-agreement-allocation=\"${esc(output.hash)}\">",
+      "interaction": "change",
+      "controlType": "select"
+    },
+    {
+      "id": "control-5a374c1ec1825f-1",
+      "source": "js/agreement-dialog.js",
+      "markup": "<input type=\"number\" step=\"0.01\" data-agreement-cash=\"${esc(party.ownerKey)}\" value=\"${esc(shown(cash[party.ownerKey]))}\">",
+      "interaction": "change",
+      "controlType": "number"
+    },
+    {
+      "id": "control-d7f25321d05961-1",
+      "source": "js/agreement-dialog.js",
+      "markup": "<input type=\"radio\" name=\"agreement-electorate\" value=\"${value}\" data-agreement-electorate${(value === 'owners') === owners ? ' checked' : ''}>",
+      "interaction": "change",
+      "controlType": "radio"
+    },
+    {
+      "id": "control-9ef1c8d2f776c1-1",
+      "source": "js/agreement-dialog.js",
+      "markup": "<input type=\"checkbox\" data-agreement-binding${owners && binding ? ' checked' : ''}${owners ? '' : ' disabled'}>",
+      "interaction": "change",
+      "controlType": "checkbox"
+    },
+    {
+      "id": "control-3430aed69b45dd-1",
+      "source": "js/agreement-dialog.js",
+      "markup": "<input type=\"text\" data-agreement-title value=\"${esc(title)}\" autocomplete=\"off\">",
+      "interaction": "change",
+      "controlType": "text"
+    },
+    {
+      "id": "control-10565f8f2f7864-1",
+      "source": "js/agreement-dialog.js",
+      "markup": "<input type=\"date\" data-agreement-deadline value=\"${esc(deadline)}\"${today ? ` min=\"${esc(today)}\"` : ''}>",
+      "interaction": "change",
+      "controlType": "date"
+    },
+    {
+      "id": "control-0a64b72e8540f2-1",
+      "source": "js/agreement-list.js",
+      "markup": "<button type=\"button\" class=\"btn btn-quiet agreement-item\" data-agreement-id=\"${esc(agreement.id)}\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-e98071567cd733-1",
+      "source": "js/agreement-list.js",
+      "markup": "<button type=\"button\" class=\"btn btn-primary\" data-agreement-action=\"create\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-d19bdea98e8b8a-1",
+      "source": "js/agreement-panel.js",
+      "markup": "<button type=\"button\" class=\"btn btn-primary\" data-agreement-action=\"compare\" aria-pressed=\"${comparing ? 'true' : 'false'}\"${canCompare ? '' : ' disabled'}>",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-b0cd763a3a6218-1",
+      "source": "js/agreement-panel.js",
+      "markup": "<button type=\"button\" class=\"btn\" data-agreement-action=\"edit\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-1b72919688754d-1",
+      "source": "js/agreement-panel.js",
+      "markup": "<button type=\"button\" class=\"btn btn-danger\" data-agreement-action=\"delete\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-04b2f1fbf5a167-1",
+      "source": "js/agreement-panel.js",
+      "markup": "<button type=\"button\" class=\"btn btn-quiet agreement-panel-design\" data-agreement-design=\"${esc(row.proposalId)}\"${row.missing ? ' disabled' : ''}>",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-f1e142fd677d5b-1",
+      "source": "js/agreement-panel.js",
+      "markup": "<button type=\"button\" class=\"close-circle-btn close-circle-btn--lg close-button\" data-agreement-action=\"close\">",
       "interaction": "click",
       "controlType": "button"
     },
@@ -5062,12 +5167,12 @@
           }
         },
         {
-          "name": "parcel-build-btn--reparcellization",
+          "name": "parcel-build-btn--parcel-layout",
           "classes": [
-            "parcel-build-btn--reparcellization"
+            "parcel-build-btn--parcel-layout"
           ],
           "attrs": {
-            "onclick": "BusyControl.track(this, () => startParcelBuildTool('reparcellization'))"
+            "onclick": "BusyControl.track(this, () => startParcelBuildTool('parcel-layout'))"
           }
         },
         {
@@ -5150,10 +5255,10 @@
           "name": "Open Subdivide on a site with open ground",
           "classes": [
             "parcel-build-btn",
-            "parcel-build-btn--reparcellization"
+            "parcel-build-btn--parcel-layout"
           ],
           "attrs": {
-            "onclick": "BusyControl.track(this, () => SiteTool.build('reparcellization'))"
+            "onclick": "BusyControl.track(this, () => SiteTool.build('parcel-layout'))"
           }
         },
         {
@@ -6311,6 +6416,13 @@
           "includes": "<button type=\"button\" class=\"btn btn-share-proposal\" disabled aria-disabled=\"true\" aria-describedby=\"proposal-publish-later-note\">"
         }
       ],
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-d35a4f31a22d1a-1",
+      "source": "js/proposals/details-panel.js",
+      "markup": "<button type=\"button\" class=\"btn ${publishRefusal ? 'btn-primary ' : ''}btn-create-agreement\" onclick=\"window.AgreementDialog.open({ designIds: [${inlineJsArg(proposalKey)}] })\">",
       "interaction": "click",
       "controlType": "button"
     },

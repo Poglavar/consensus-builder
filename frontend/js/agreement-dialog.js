@@ -738,8 +738,11 @@
             state.landError = failure ? (failure.message || String(failure)) : null;
             state.fingerprints = fingerprints;
             if (!failure) {
-                // Terms whose piece or party still exists are kept; so are imported rights.
-                state.values = { ...state.values, ...keptTerms(state.values, state.land) };
+                // Terms whose piece or party still exists are kept; so are imported rights. With no
+                // design selected there is no land to prune against, so what was typed waits for
+                // the next selection instead of vanishing on an untick.
+                const hasLand = state.land.outputs.length > 0 || state.land.inputs.parcels.length > 0;
+                if (hasLand) state.values = { ...state.values, ...keptTerms(state.values, state.land) };
                 keepRule();
                 try {
                     state.approvalConfig = ruleConfigAfterDerive(state.approvalConfig, state.land.inputs, root.AgreementRecord.rightsFromInputs);
