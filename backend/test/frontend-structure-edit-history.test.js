@@ -11,6 +11,8 @@ const editorSource = readFileSync(fileURLToPath(new URL('../../frontend/js/struc
 const require = createRequire(import.meta.url);
 globalThis.proj4 ||= require('proj4');
 const SingleBuildingGeometry = require('../../frontend/js/single-building-geometry.js');
+// A stored park/square tree: its point and its look (park-planting.js).
+const tree = (lng, lat) => ({ coordinate: [lng, lat], kind: 'broadleaf', heightM: 10 });
 
 function makeClassList() {
     const classes = new Set();
@@ -222,6 +224,7 @@ function makeEditorHarness(decorations, options = {}) {
     const context = createContext({
         document, map, L, GeometryEditHistory: historyFactory,
         SingleBuildingGeometry,
+        __parkPlanting: require('../../frontend/js/park-planting.js'),
         turf: {
             booleanPointInPolygon(point) {
                 if (options.rejectOutsidePoints !== true) return true;
@@ -485,11 +488,11 @@ describe('structure geometry editor history wiring', () => {
 
     it.each([
         ['park', {
-            trees: [[15.0002, 45.8003]], flowerbeds: [[[15.00015, 45.80015], [15.00025, 45.80015], [15.00025, 45.80025], [15.00015, 45.80015]]],
+            trees: [tree(15.0002, 45.8003)], flowerbeds: [[[15.00015, 45.80015], [15.00025, 45.80015], [15.00025, 45.80025], [15.00015, 45.80015]]],
             ponds: [[[15.00055, 45.80015], [15.00065, 45.80015], [15.00065, 45.80025], [15.00055, 45.80015]]],
             paths: [[[15.0002, 45.8002], [15.0004, 45.8004]]], benches: [{ coordinate: [15.00045, 45.80025], bearing: 35 }]
         }],
-        ['square', { fountains: [[15.0003, 45.8003]], trees: [[15.0006, 45.8006]], benches: [{ coordinate: [15.0004, 45.8004], bearing: 15 }], stalls: [[15.0002, 45.8006]], statues: [[15.0007, 45.8003]] }]
+        ['square', { fountains: [[15.0003, 45.8003]], trees: [tree(15.0006, 45.8006)], benches: [{ coordinate: [15.0004, 45.8004], bearing: 15 }], stalls: [[15.0002, 45.8006]], statues: [[15.0007, 45.8003]] }]
     ])('moves the whole %s design in metric space as one undoable gesture', (kind, decorations) => {
         const geometry = { type: 'Polygon', coordinates: [[[15, 45.8], [15.001, 45.8], [15.001, 45.801], [15, 45.801], [15, 45.8]]] };
         const originalDecorations = JSON.parse(JSON.stringify(decorations));
@@ -500,17 +503,20 @@ describe('structure geometry editor history wiring', () => {
         const expectedGeometry = SingleBuildingGeometry.moveGeometry(geometry, from, to);
         const expectedDecorations = JSON.parse(JSON.stringify(originalDecorations));
         for (const [key, coordinates] of Object.entries(originalDecorations)) {
-            if (key !== 'benches' && Array.isArray(coordinates)) {
+            if (!['benches', 'trees'].includes(key) && Array.isArray(coordinates)) {
                 expectedDecorations[key] = SingleBuildingGeometry.moveCoordinateCollection(coordinates, from, to);
             }
         }
-        expectedDecorations.benches = originalDecorations.benches.map(bench => ({
-            ...bench,
-            coordinate: SingleBuildingGeometry.moveCoordinateCollection(bench.coordinate, from, to)
-        }));
+        for (const key of ['benches', 'trees']) {
+            expectedDecorations[key] = originalDecorations[key].map(record => ({
+                ...record,
+                coordinate: SingleBuildingGeometry.moveCoordinateCollection(record.coordinate, from, to)
+            }));
+        }
         expectedDecorations.version = kind === 'park' ? 3 : 2;
         const originalPoints = [
-            ...(decorations.trees || []), ...(decorations.fountains || []), ...(decorations.stalls || []), ...(decorations.statues || []),
+            ...(decorations.fountains || []), ...(decorations.stalls || []), ...(decorations.statues || []),
+            ...(decorations.trees || []).map(record => record.coordinate),
             ...(decorations.benches || []).map(bench => bench.coordinate)
         ].map(point => [point[0], point[1]]).sort((a, b) => a[0] - b[0] || a[1] - b[1]);
 
@@ -556,7 +562,7 @@ describe('structure geometry editor history wiring', () => {
     });
 
     it.each([
-        ['park', { trees: [[15.0003, 45.8003]], paths: [[[15.0002, 45.8002], [15.0004, 45.8004]]] }],
+        ['park', { trees: [tree(15.0003, 45.8003)], paths: [[[15.0002, 45.8002], [15.0004, 45.8004]]] }],
         ['square', { fountains: [[15.0003, 45.8003]], benches: [{ coordinate: [15.0004, 45.8004], bearing: 25 }] }]
     ])('routes %s decoration hits through the whole-boundary Move tool', (kind, decorations) => {
         const geometry = { type: 'Polygon', coordinates: [[[15, 45.8], [15.001, 45.8], [15.001, 45.801], [15, 45.801], [15, 45.8]]] };
@@ -593,14 +599,15 @@ describe('structure geometry editor history wiring', () => {
 
         const expectedDecorations = JSON.parse(JSON.stringify(originalDecorations));
         for (const [key, coordinates] of Object.entries(originalDecorations)) {
-            if (key !== 'benches' && Array.isArray(coordinates)) {
+            if (!['benches', 'trees'].includes(key) && Array.isArray(coordinates)) {
                 expectedDecorations[key] = SingleBuildingGeometry.moveCoordinateCollection(coordinates, from, to);
             }
         }
-        if (Array.isArray(originalDecorations.benches)) {
-            expectedDecorations.benches = originalDecorations.benches.map(bench => ({
-                ...bench,
-                coordinate: SingleBuildingGeometry.moveCoordinateCollection(bench.coordinate, from, to)
+        for (const key of ['benches', 'trees']) {
+            if (!Array.isArray(originalDecorations[key])) continue;
+            expectedDecorations[key] = originalDecorations[key].map(record => ({
+                ...record,
+                coordinate: SingleBuildingGeometry.moveCoordinateCollection(record.coordinate, from, to)
             }));
         }
         const visiblePoints = currentMarkers(harness).map(marker => {
@@ -609,8 +616,9 @@ describe('structure geometry editor history wiring', () => {
         }).sort((a, b) => a[0] - b[0] || a[1] - b[1]);
         const savedPointValues = [
             ...Object.entries(expectedDecorations)
-                .filter(([key, value]) => key !== 'benches' && Array.isArray(value) && value.every(point => Array.isArray(point) && Number.isFinite(point[0])))
+                .filter(([key, value]) => !['benches', 'trees'].includes(key) && Array.isArray(value) && value.every(point => Array.isArray(point) && Number.isFinite(point[0])))
                 .flatMap(([, value]) => value),
+            ...(expectedDecorations.trees || []).map(record => record.coordinate),
             ...(expectedDecorations.benches || []).map(bench => bench.coordinate)
         ].sort((a, b) => a[0] - b[0] || a[1] - b[1]);
         expect(visiblePoints).toEqual(savedPointValues);
@@ -622,7 +630,7 @@ describe('structure geometry editor history wiring', () => {
 
     it('keeps a locked structure in its starting site and saves a site-bound placement', () => {
         const geometry = { type: 'Polygon', coordinates: [[[15, 45.8], [15.001, 45.8], [15.001, 45.801], [15, 45.801], [15, 45.8]]] };
-        const harness = makeEditorHarness({ trees: [[15.0004, 45.8004]] }, { kind: 'park', geometry });
+        const harness = makeEditorHarness({ trees: [tree(15.0004, 45.8004)] }, { kind: 'park', geometry });
         expect(harness.open()).toBe(true);
         expect(harness.mapEditorSessions[0].placement.setLocked(true)).toBe(true);
         harness.panel.fireClick({ tool: 'move' });
@@ -631,7 +639,7 @@ describe('structure geometry editor history wiring', () => {
         harness.fireMap('mouseup');
         expect(harness.boundaryLayer().feature.geometry).toEqual(geometry);
         expect(harness.undoButton.disabled).toBe(true);
-        expect(harness.save()).toEqual({ trees: [[15.0004, 45.8004]], flowerbeds: [], ponds: [], paths: [], benches: [], version: 3 });
+        expect(harness.save()).toEqual({ trees: [tree(15.0004, 45.8004)], flowerbeds: [], ponds: [], paths: [], benches: [], version: 3 });
         expect(harness.syncOptions.placement).toEqual({ site: geometry, free: true });
     });
 
@@ -665,7 +673,7 @@ describe('structure geometry editor history wiring', () => {
     });
 
     it('restores an erased tree when the user undoes', () => {
-        const harness = makeEditorHarness({ trees: [[0.2, 0.2]], version: 3 });
+        const harness = makeEditorHarness({ trees: [tree(0.2, 0.2)], version: 3 });
         expect(harness.open()).toBe(true);
         harness.panel.fireClick({ tool: 'erase' });
         currentMarkers(harness)[0].fire('click', {});
@@ -675,7 +683,32 @@ describe('structure geometry editor history wiring', () => {
         harness.undoButton.fire();
         expect(currentMarkers(harness)).toHaveLength(1);
         expect(harness.undoButton.disabled).toBe(true);
-        expect(harness.save().trees).toEqual([[0.2, 0.2]]);
+        expect(harness.save().trees).toEqual([tree(0.2, 0.2)]);
+    });
+
+    // Clicking a planted tree with the Tree tool re-rolls its look in place instead of planting a
+    // second tree on top of it; undo brings the old look back.
+    it.each([['park'], ['square']])('re-rolls a %s tree clicked with the Tree tool, undoably', kind => {
+        const decorations = kind === 'park'
+            ? { trees: [tree(0.2, 0.2)], version: 3 }
+            : { fountains: [], trees: [tree(0.2, 0.2)], benches: [], stalls: [], statues: [] };
+        const clickTree = () => {
+            const harness = makeEditorHarness(JSON.parse(JSON.stringify(decorations)), { kind });
+            expect(harness.open()).toBe(true);
+            harness.panel.fireClick({ tool: 'tree' });
+            currentMarkers(harness)[0].fire('click', {});
+            expect(currentMarkers(harness)).toHaveLength(1);
+            return harness;
+        };
+
+        const trees = clickTree().save().trees;
+        expect(trees).toHaveLength(1);
+        expect(trees[0].coordinate).toEqual([0.2, 0.2]);
+        expect(trees[0].kind !== 'broadleaf' || Math.abs(trees[0].heightM - 10) >= 2).toBe(true);
+
+        const undone = clickTree();
+        undone.undoButton.fire();
+        expect(undone.save().trees).toEqual([tree(0.2, 0.2)]);
     });
 
     it.each([
@@ -736,7 +769,7 @@ describe('structure geometry editor history wiring', () => {
     });
 
     it('restores a tree coordinate after a marker drag is undone', () => {
-        const harness = makeEditorHarness({ trees: [[0.2, 0.2]], version: 3 });
+        const harness = makeEditorHarness({ trees: [tree(0.2, 0.2)], version: 3 });
         expect(harness.open()).toBe(true);
         const marker = currentMarkers(harness)[0];
         marker.fire('dragstart');
@@ -745,11 +778,11 @@ describe('structure geometry editor history wiring', () => {
         expect(marker.getLatLng()).toEqual({ lat: 0.35, lng: 0.4 });
 
         harness.undo();
-        expect(harness.save().trees).toEqual([[0.2, 0.2]]);
+        expect(harness.save().trees).toEqual([tree(0.2, 0.2)]);
     });
 
     it.each([
-        ['park tree', 'park', { trees: [[0.2, 0.2]] }, 'trees', [[0.4, 0.35]]],
+        ['park tree', 'park', { trees: [tree(0.2, 0.2)] }, 'trees', [tree(0.4, 0.35)]],
         ['park bench', 'park', { benches: [{ coordinate: [0.2, 0.2], bearing: 15 }] }, 'benches', [{ coordinate: [0.4, 0.35], bearing: 15 }]],
         ['square fountain', 'square', { fountains: [[0.2, 0.2]] }, 'fountains', [[0.4, 0.35]]]
     ])('keeps the latest valid %s coordinate after a later out-of-bound drag', (_label, kind, decorations, type, expected) => {
@@ -770,7 +803,7 @@ describe('structure geometry editor history wiring', () => {
     });
 
     it.each(['null', 'throw'])('keeps the park editor open after draft sync %s and preserves edits for retry', (syncBehavior) => {
-        const harness = makeEditorHarness({ trees: [[0.2, 0.2]], version: 3 }, { syncBehavior });
+        const harness = makeEditorHarness({ trees: [tree(0.2, 0.2)], version: 3 }, { syncBehavior });
         expect(harness.open()).toBe(true);
         const marker = currentMarkers(harness)[0];
         marker.setLatLng([0.35, 0.4]);
@@ -787,15 +820,15 @@ describe('structure geometry editor history wiring', () => {
 
         harness.setSyncBehavior('success');
         const saved = harness.save();
-        expect(saved.trees).toEqual([[0.4, 0.35]]);
-        expect(harness.savedPayload.structureProposal.decorations.trees).toEqual([[0.4, 0.35]]);
+        expect(saved.trees).toEqual([tree(0.4, 0.35)]);
+        expect(harness.savedPayload.structureProposal.decorations.trees).toEqual([tree(0.4, 0.35)]);
         expect(harness.context.isStructureGeometryEditorActive()).toBe(false);
         expect(harness.finishedDrafts).toEqual(['draft-1']);
         expect(harness.statusMessages).toContain('Structure design saved.');
     });
 
     it('keeps the editable design when its draft cannot be read at save time', () => {
-        const harness = makeEditorHarness({ trees: [[0.2, 0.2]] });
+        const harness = makeEditorHarness({ trees: [tree(0.2, 0.2)] });
         expect(harness.open()).toBe(true);
         harness.context.proposalDraftStore.getDraft = () => null;
 
@@ -807,7 +840,7 @@ describe('structure geometry editor history wiring', () => {
     });
 
     it('discards a retained commit-session draft on Cancel without publishing it', () => {
-        const harness = makeEditorHarness({ trees: [[0.2, 0.2]] }, { commitSession: true });
+        const harness = makeEditorHarness({ trees: [tree(0.2, 0.2)] }, { commitSession: true });
         let discarded = false;
         const published = [];
         harness.draft.dirty = true;
@@ -828,7 +861,7 @@ describe('structure geometry editor history wiring', () => {
     });
 
     it('does not overwrite a failed draft finish with a saved status', () => {
-        const harness = makeEditorHarness({ trees: [[0.2, 0.2]] }, { finishFailed: true });
+        const harness = makeEditorHarness({ trees: [tree(0.2, 0.2)] }, { finishFailed: true });
         expect(harness.open()).toBe(true);
 
         harness.save();
@@ -838,21 +871,21 @@ describe('structure geometry editor history wiring', () => {
     });
 
     it('does not report local success while saving a valid commit-session draft', () => {
-        const harness = makeEditorHarness({ trees: [[0.2, 0.2]], version: 3 }, { commitSession: true });
+        const harness = makeEditorHarness({ trees: [tree(0.2, 0.2)], version: 3 }, { commitSession: true });
         expect(harness.open()).toBe(true);
         const marker = currentMarkers(harness)[0];
         marker.setLatLng([0.35, 0.4]);
         marker.fire('dragend');
 
-        expect(harness.save().trees).toEqual([[0.4, 0.35]]);
+        expect(harness.save().trees).toEqual([tree(0.4, 0.35)]);
         expect(harness.finishedDrafts).toEqual(['draft-1']);
         expect(harness.statusMessages).not.toContain('Structure design saved.');
     });
 
     it.each([
-        ['park', { trees: [[0.2, 0.2]], paths: [[[0.1, 0.1], [0.4, 0.4]]] }, 'trees'],
-        ['square', { fountains: [[0.2, 0.2]] }, 'fountains']
-    ])('keeps %s point handles above SVG previews and saves dragged coordinates', (kind, decorations, type) => {
+        ['park', { trees: [tree(0.2, 0.2)], paths: [[[0.1, 0.1], [0.4, 0.4]]] }, 'trees', [tree(0.4, 0.35)]],
+        ['square', { fountains: [[0.2, 0.2]] }, 'fountains', [[0.4, 0.35]]]
+    ])('keeps %s point handles above SVG previews and saves dragged coordinates', (kind, decorations, type, expected) => {
         const harness = makeEditorHarness(decorations, { kind });
 
         expect(harness.open()).toBe(true);
@@ -865,7 +898,7 @@ describe('structure geometry editor history wiring', () => {
         marker.setLatLng([0.35, 0.4]); // Leaflet marker coordinates are [latitude, longitude].
         marker.fire('dragend');
 
-        expect(harness.save()[type]).toEqual([[0.4, 0.35]]);
+        expect(harness.save()[type]).toEqual(expected);
     });
 
     it.each([

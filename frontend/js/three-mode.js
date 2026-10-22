@@ -2191,7 +2191,6 @@
         if (!parks || parks.length === 0) return;
         // Use polygonOffset to float slightly over base to avoid z-fighting and flicker
         const grassMat = new THREE.MeshLambertMaterial({ color: 0x1b5e20, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 });
-        const flowerMat = new THREE.MeshLambertMaterial({ color: 0xf472b6, polygonOffset: true, polygonOffsetFactor: -3, polygonOffsetUnits: -3 });
         const waterMat = new THREE.MeshPhongMaterial({ color: 0x2b6cb0, specular: 0x1f3a60, shininess: 40, polygonOffset: true, polygonOffsetFactor: -3, polygonOffsetUnits: -3 });
         const pathLineMat = new THREE.LineBasicMaterial({ color: 0xdfe8d6, depthTest: true, depthWrite: false });
 
@@ -2238,14 +2237,13 @@
                     });
                 }
 
-                // Flowerbeds: pink patches slightly above the grass (mirrors the 2D rendering —
-                // they were previously not rendered in 3D at all).
+                // Flowerbeds: a raised bed of dark soil inside a stone edging, planted with leafy
+                // clumps in coloured rings (park-planting.js decides where every plant goes).
                 if (deco && Array.isArray(deco.flowerbeds)) {
                     deco.flowerbeds.forEach(ring => {
-                        try {
-                            const feature = { type: 'Feature', geometry: { type: 'Polygon', coordinates: [ring] }, properties: {} };
-                            polygonFeatureToMeshes(feature, flowerMat, 0.068, 0).forEach(m => { markOwnedMaterial(m, flowerMat); flatTarget.add(m); });
-                        } catch (_) { }
+                        try { addFlowerbed3D(flatTarget, decoTarget, ring); } catch (error) {
+                            console.warn('[3D] flowerbed failed; skipping one bed', error);
+                        }
                     });
                 }
 
@@ -2260,17 +2258,19 @@
                     });
                 }
 
-                const addTreeAt = (lng, lat) => addTree3D(decoTarget, lng, lat);
+                const addTreeAt = (lng, lat) => addTree3D(decoTarget, [lng, lat]);
 
-                // Trees: the STORED coordinates are the truth — auto-generated and user-placed
-                // alike (the old random sampling ignored edits, so a repositioned tree never
-                // moved in 3D). Random sampling remains only for legacy parks without tree data.
-                const storedTrees = (deco && Array.isArray(deco.trees)) ? deco.trees.filter(coord => {
-                    if (!Array.isArray(coord) || coord.length < 2) return false;
+                // Trees: the STORED trees are the truth — auto-generated and user-placed alike
+                // (the old random sampling ignored edits, so a repositioned tree never moved in
+                // 3D), each with its stored look. Random sampling remains only for legacy parks
+                // without tree data.
+                const storedTrees = (deco && Array.isArray(deco.trees)) ? deco.trees.filter(entry => {
+                    const coord = parkPlanting().treeCoordinate(entry);
+                    if (!coord) return false;
                     try { return turf.booleanPointInPolygon(turf.point(coord), p); } catch (_) { return true; }
                 }) : [];
                 if (storedTrees.length) {
-                    storedTrees.forEach(coord => addTreeAt(coord[0], coord[1]));
+                    storedTrees.forEach(entry => addTree3D(decoTarget, entry));
                 } else {
                     let area = 0; try { area = turf.area(p); } catch (_) { }
                     const count = Math.max(3, Math.min(60, Math.round(area / 2000)));
@@ -2316,27 +2316,131 @@
         return furnitureMats;
     }
 
-    // Trunk + cone crown, deterministic per position (the same park renders the same forest).
-    function addTree3D(target, lng, lat) {
+    function parkPlanting() {
+        const api = window.__parkPlanting;
+        if (!api) throw new Error('park-planting.js is not loaded');
+        return api;
+    }
+
+    // Crown colours per tree kind (park-planting.js treeShape palette).
+    const TREE_CROWN_COLORS = { broadleaf: 0x2e7d32, conifer: 0x1d4a2c, columnar: 0x4a7a2c, blossom: 0xf0a8c8 };
+    let treeCrownMats = null;
+    function treeCrownMaterial(palette) {
+        if (!treeCrownMats) {
+            treeCrownMats = {};
+            Object.entries(TREE_CROWN_COLORS).forEach(([key, color]) => { treeCrownMats[key] = new THREE.MeshLambertMaterial({ color }); });
+        }
+        return treeCrownMats[palette] || treeCrownMats.broadleaf;
+    }
+
+    // One tree as its stored look draws it: a trunk and crown pieces (park-planting.js treeShape).
+    // `entry` is a stored tree, { coordinate, kind, heightM } or a bare [lng, lat].
+    function addTree3D(target, entry) {
+        const shape = parkPlanting().treeShape(entry);
+        if (!shape) return;
+        const [lng, lat] = parkPlanting().treeCoordinate(entry);
         const [x, y] = latLngToXY(lat, lng);
-        const mats = furnitureMaterials();
-        const random = treeRng(lng, lat);
-        const trunkH = 3 + random * 2;
-        const crownH = 4 + random * 3;
-        const trunkR = 0.45 + random * 0.35;
-        const crownR = 1.8 + random * 1.2;
-        const trunkGeo = new THREE.CylinderGeometry(trunkR, trunkR, trunkH, 8);
+        const trunkGeo = new THREE.CylinderGeometry(shape.trunk.radiusM * 0.8, shape.trunk.radiusM, shape.trunk.heightM, 8);
         trunkGeo.rotateX(Math.PI / 2); // stand upright along Z
-        trunkGeo.translate(x, y, trunkH / 2);
-        const trunk = new THREE.Mesh(trunkGeo, mats.trunk);
+        trunkGeo.translate(x, y, shape.trunk.heightM / 2);
+        const trunk = new THREE.Mesh(trunkGeo, furnitureMaterials().trunk);
         markOwnedGeometry(trunk, trunkGeo);
         target.add(trunk);
-        const crownGeo = new THREE.ConeGeometry(crownR, crownH, 8);
-        crownGeo.rotateX(Math.PI / 2);
-        crownGeo.translate(x, y, trunkH + crownH / 2);
-        const crown = new THREE.Mesh(crownGeo, mats.crown);
-        markOwnedGeometry(crown, crownGeo);
-        target.add(crown);
+        const crownMat = treeCrownMaterial(shape.palette);
+        shape.crown.forEach(piece => {
+            let geo;
+            if (piece.shape === 'cone') {
+                geo = new THREE.ConeGeometry(piece.radiusM, piece.heightM, 10);
+                geo.rotateX(Math.PI / 2);
+            } else {
+                geo = new THREE.SphereGeometry(1, 12, 9);
+                geo.scale(piece.radiusM, piece.radiusM, piece.heightM / 2);
+            }
+            geo.translate(x, y, piece.baseM + piece.heightM / 2);
+            const crown = new THREE.Mesh(geo, crownMat);
+            markOwnedGeometry(crown, geo);
+            target.add(crown);
+        });
+    }
+
+    // Shared, never disposed: unit shapes the flowerbed instances scale (like the OSM tree assets).
+    let flowerbedAssets = null;
+    function ensureFlowerbedAssets() {
+        if (flowerbedAssets) return flowerbedAssets;
+        const kerb = new THREE.BoxGeometry(1, 1, 1);
+        kerb.translate(0.5, 0, 0.5); // runs from its start point along +X, standing on z = 0
+        flowerbedAssets = {
+            kerb,
+            clump: new THREE.SphereGeometry(1, 7, 5),
+            blossom: new THREE.IcosahedronGeometry(1, 0),
+            kerbMat: new THREE.MeshLambertMaterial({ color: 0xb8b2a3 }),
+            soilMat: new THREE.MeshLambertMaterial({ color: 0x4a3426, polygonOffset: true, polygonOffsetFactor: -3, polygonOffsetUnits: -3 }),
+            leafMat: new THREE.MeshLambertMaterial({ color: 0xffffff }),
+            blossomMat: new THREE.MeshLambertMaterial({ color: 0xffffff })
+        };
+        return flowerbedAssets;
+    }
+
+    // A flowerbed: raised soil, a low stone edging along its ring, and its plants as two instanced
+    // meshes (leafy clumps and blossoms) so a bed of hundreds of plants costs a handful of draws.
+    function addFlowerbed3D(flatTarget, decoTarget, ring) {
+        const FLOWERBED_GROUND_Z = 0.06, SOIL_DEPTH = 0.14, KERB_WIDTH = 0.14, KERB_HEIGHT = 0.24;
+        const assets = ensureFlowerbedAssets();
+        const feature = { type: 'Feature', geometry: { type: 'Polygon', coordinates: [ring] }, properties: {} };
+        polygonFeatureToMeshes(feature, assets.soilMat, FLOWERBED_GROUND_Z, SOIL_DEPTH).forEach(m => flatTarget.add(m));
+        const soilTop = FLOWERBED_GROUND_Z + SOIL_DEPTH;
+
+        const xy = ring.map(coordsToXY);
+        const dummy = new THREE.Object3D();
+        const edges = xy.length - 1;
+        if (edges > 0) {
+            const kerbs = new THREE.InstancedMesh(assets.kerb, assets.kerbMat, edges);
+            for (let i = 0; i < edges; i++) {
+                const [ax, ay] = xy[i], [bx, by] = xy[i + 1];
+                dummy.position.set(ax, ay, FLOWERBED_GROUND_Z);
+                dummy.rotation.set(0, 0, Math.atan2(by - ay, bx - ax));
+                // A touch longer than the edge so the corners of a curved ring close.
+                dummy.scale.set(Math.hypot(bx - ax, by - ay) + KERB_WIDTH * 0.5, KERB_WIDTH, KERB_HEIGHT);
+                dummy.updateMatrix();
+                kerbs.setMatrixAt(i, dummy.matrix);
+            }
+            kerbs.instanceMatrix.needsUpdate = true;
+            decoTarget.add(kerbs);
+        }
+
+        const plants = parkPlanting().flowerbedPlanting(xy, parkPlanting().ringSeed(ring));
+        if (!plants.length) return;
+        const clumps = new THREE.InstancedMesh(assets.clump, assets.leafMat, plants.length);
+        const blooming = plants.filter(plant => plant.color !== null);
+        const blossoms = blooming.length ? new THREE.InstancedMesh(assets.blossom, assets.blossomMat, blooming.length) : null;
+        const color = new THREE.Color();
+        let bloomIndex = 0;
+        plants.forEach((plant, index) => {
+            dummy.rotation.set(0, 0, (plant.x * 7.1 + plant.y * 3.3) % (Math.PI * 2));
+            dummy.position.set(plant.x, plant.y, soilTop + plant.heightM * 0.45);
+            dummy.scale.set(plant.radiusM, plant.radiusM, plant.heightM * 0.55);
+            dummy.updateMatrix();
+            clumps.setMatrixAt(index, dummy.matrix);
+            // Leaf greens vary a little from plant to plant.
+            color.setHSL(0.28 + ((index * 37) % 10) * 0.006, 0.55, 0.24 + ((index * 53) % 10) * 0.012);
+            clumps.setColorAt(index, color);
+            if (plant.color === null) return;
+            const bloomR = plant.radiusM * 0.62;
+            dummy.position.set(plant.x, plant.y, soilTop + plant.heightM + bloomR * 0.3);
+            dummy.scale.set(bloomR, bloomR, bloomR * 0.6);
+            dummy.updateMatrix();
+            blossoms.setMatrixAt(bloomIndex, dummy.matrix);
+            blossoms.setColorAt(bloomIndex, color.setHex(plant.color));
+            bloomIndex += 1;
+        });
+        clumps.instanceMatrix.needsUpdate = true;
+        if (clumps.instanceColor) clumps.instanceColor.needsUpdate = true;
+        decoTarget.add(clumps);
+        if (blossoms) {
+            blossoms.instanceMatrix.needsUpdate = true;
+            if (blossoms.instanceColor) blossoms.instanceColor.needsUpdate = true;
+            decoTarget.add(blossoms);
+        }
     }
 
     // A bench: seat slab + backrest + legs, rotated to `bearing` (degrees from north).
@@ -2453,8 +2557,8 @@
                 if (!dec) return;
 
                 // Furniture from the geometry editor (all first-class objects there).
-                (Array.isArray(dec.trees) ? dec.trees : []).forEach(coord => {
-                    try { if (Array.isArray(coord)) addTree3D(decoTarget, coord[0], coord[1]); } catch (_) { }
+                (Array.isArray(dec.trees) ? dec.trees : []).forEach(entry => {
+                    try { addTree3D(decoTarget, entry); } catch (_) { }
                 });
                 (Array.isArray(dec.benches) ? dec.benches : []).forEach(bench => {
                     try {

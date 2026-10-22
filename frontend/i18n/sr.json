@@ -5918,6 +5918,7 @@
         "save": "Sačuvaj dizajn",
         "hintErase": "Klikni element da ga ukloniš.",
         "hintPlace": "Klikni na mapu da postaviš izabrani element.",
+        "hintTree": "Klikni na mapu da posadiš drvo. Klikni na posađeno drvo da mu promeniš vrstu i visinu.",
         "hintPath": "Klikni za dodavanje tačaka staze, zatim izaberi „Završi stazu“.",
         "hintSelect": "Izaberi element za početak.",
         "statusOutside": "Elemente postavljaj unutar granice strukture.",

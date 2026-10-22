@@ -5884,6 +5884,7 @@
         "save": "Save design",
         "hintErase": "Click an item to remove it.",
         "hintPlace": "Click the map to place the selected item.",
+        "hintTree": "Click the map to plant a tree. Click a planted tree to change its kind and height.",
         "hintPath": "Click to add path points, then choose Finish path.",
         "hintSelect": "Select an item to begin.",
         "statusOutside": "Place items inside the structure boundary.",

@@ -52,6 +52,15 @@
         return Number.isFinite(lng) && Number.isFinite(lat) ? [lng, lat] : null;
     }
 
+    function parkPlanting() {
+        const api = global.__parkPlanting || (typeof require === 'function' ? require('./park-planting.js') : null);
+        if (!api) throw new Error('park-planting.js is not loaded');
+        return api;
+    }
+
+    // Records that carry metadata beside their point: a bench's bearing, a tree's look.
+    const POINT_RECORD_TYPES = ['benches', 'trees'];
+
     function translateCoordinateCollection(value, deltaLng, deltaLat) {
         if (!Array.isArray(value)) return value;
         if (value.length >= 2 && Number.isFinite(Number(value[0])) && Number.isFinite(Number(value[1]))) {
@@ -65,18 +74,19 @@
         if (typeof moveCoordinates !== 'function' || !value) return value;
         const moved = { ...clone(value) };
         for (const [key, coordinates] of Object.entries(value)) {
-            if (key !== 'benches' && Array.isArray(coordinates)) {
+            if (!POINT_RECORD_TYPES.includes(key) && Array.isArray(coordinates)) {
                 moved[key] = moveCoordinates(coordinates, from, to);
             }
         }
-        // Bench records carry metadata beside their point, so move the nested coordinate
-        // explicitly and preserve each bearing without mutating the drag's starting snapshot.
-        if (Array.isArray(value.benches)) {
-            moved.benches = value.benches.map(bench => ({
-                ...bench,
-                coordinate: moveCoordinates(bench.coordinate, from, to)
+        // Bench and tree records carry metadata beside their point, so move the nested coordinate
+        // explicitly and preserve each bearing and look without mutating the drag's starting snapshot.
+        POINT_RECORD_TYPES.forEach(key => {
+            if (!Array.isArray(value[key])) return;
+            moved[key] = value[key].map(record => ({
+                ...record,
+                coordinate: moveCoordinates(record.coordinate, from, to)
             }));
-        }
+        });
         return moved;
     }
 
@@ -84,7 +94,7 @@
         const value = clone(input || {});
         if (kind === 'park') {
             return {
-                trees: (Array.isArray(value.trees) ? value.trees : []).map(coordinate).filter(Boolean),
+                trees: (Array.isArray(value.trees) ? value.trees : []).map(entry => parkPlanting().treeOf(entry)).filter(Boolean),
                 flowerbeds: (Array.isArray(value.flowerbeds) ? value.flowerbeds : []).filter(Array.isArray),
                 ponds: (Array.isArray(value.ponds) ? value.ponds : []).filter(Array.isArray),
                 paths: (Array.isArray(value.paths) ? value.paths : []).map(path => (Array.isArray(path) ? path.map(coordinate).filter(Boolean) : [])).filter(path => path.length > 1),
@@ -101,7 +111,7 @@
             : (coordinate(value.fountain) ? [value.fountain] : []);
         return {
             fountains: fountains.map(coordinate).filter(Boolean),
-            trees: (Array.isArray(value.trees) ? value.trees : []).map(coordinate).filter(Boolean),
+            trees: (Array.isArray(value.trees) ? value.trees : []).map(entry => parkPlanting().treeOf(entry)).filter(Boolean),
             benches: (Array.isArray(value.benches) ? value.benches : []).map(bench => {
                 const point = coordinate(bench?.coordinate || bench?.position || bench);
                 return point ? { coordinate: point, bearing: ((Number(bench?.bearing) || 0) % 360 + 360) % 360 } : null;
@@ -191,6 +201,15 @@
 
     function rejectOutside() {
         if (typeof global.updateStatus === 'function') global.updateStatus(t('statusOutside', 'Place items inside the structure boundary.'));
+    }
+
+    // Clicking a placed tree with the Tree tool gives it a new random kind and height.
+    function rerollTree(index) {
+        const trees = state.decorations?.trees;
+        if (!Array.isArray(trees) || !trees[index]) return;
+        recordHistory();
+        trees[index] = parkPlanting().rerollTree(trees[index]);
+        render();
     }
 
     function removeDecoration(type, index) {
@@ -411,19 +430,20 @@
             const next = marker.getLatLng();
             const nextCoord = [next.lng, next.lat];
             if (!pointInside(nextCoord)) {
-                const previous = type === 'benches'
-                    ? state.decorations.benches[index].coordinate
+                const previous = POINT_RECORD_TYPES.includes(type)
+                    ? state.decorations[type][index].coordinate
                     : state.decorations[type][index];
                 marker.setLatLng([previous[1], previous[0]]);
                 rejectOutside();
                 return;
             }
-            if (type === 'benches') state.decorations.benches[index].coordinate = nextCoord;
+            if (POINT_RECORD_TYPES.includes(type)) state.decorations[type][index].coordinate = nextCoord;
             else state.decorations[type][index] = nextCoord;
         });
         marker.on('click', event => {
             global.L.DomEvent.stopPropagation(event);
             if (state.tool === 'erase') removeDecoration(type, index);
+            else if (state.tool === 'tree' && type === 'trees') rerollTree(index);
         });
     }
 
@@ -443,7 +463,7 @@
             interactive: state.tool !== 'move',
             className: 'structure-geometry-draggable'
         }).addTo(group), 'flowerbeds', index));
-        state.decorations.trees.forEach((coord, index) => addPointMarker(group, 'trees', coord, index, makeIcon('is-tree', '🌳')));
+        state.decorations.trees.forEach((tree, index) => addPointMarker(group, 'trees', tree.coordinate, index, makeIcon('is-tree', parkPlanting().treeGlyph(tree))));
         (state.decorations.benches || []).forEach((bench, index) => addPointMarker(group, 'benches', bench.coordinate, index, makeIcon('is-bench', '▰')));
         if (state.pathPoints.length) {
             global.L.polyline(state.pathPoints.map(([lng, lat]) => [lat, lng]), {
@@ -480,7 +500,7 @@
 
     function renderSquare(group) {
         state.decorations.fountains.forEach((coord, index) => addPointMarker(group, 'fountains', coord, index, makeIcon('is-fountain', '⛲', 30)));
-        state.decorations.trees.forEach((coord, index) => addPointMarker(group, 'trees', coord, index, makeIcon('is-tree', '🌳')));
+        state.decorations.trees.forEach((tree, index) => addPointMarker(group, 'trees', tree.coordinate, index, makeIcon('is-tree', parkPlanting().treeGlyph(tree))));
         state.decorations.benches.forEach((bench, index) => {
             const icon = makeIcon('is-bench', `<span style="transform:rotate(${bench.bearing || 0}deg)">▰</span>`);
             addPointMarker(group, 'benches', bench.coordinate, index, icon);
@@ -634,7 +654,7 @@
         if (state.kind === 'park') {
             if (state.tool === 'tree') {
                 recordHistory();
-                state.decorations.trees.push(coord);
+                state.decorations.trees.push(parkPlanting().treeOf(coord));
             }
             else if (state.tool === 'pond' || state.tool === 'flowerbed') {
                 const ring = circleRing(coord, footprintRadius());
@@ -655,7 +675,7 @@
             }
             else if (state.tool === 'tree') {
                 recordHistory();
-                state.decorations.trees.push(coord);
+                state.decorations.trees.push(parkPlanting().treeOf(coord));
             }
             else if (state.tool === 'bench') {
                 recordHistory();
@@ -814,7 +834,9 @@
                     ? t('hintErase', 'Click an item to remove it.')
                     : (state.tool === 'path'
                         ? t('hintPath', 'Click to add path points, then choose Finish path.')
-                        : t('hintPlace', 'Click the map to place the selected item.'));
+                        : (state.tool === 'tree'
+                            ? t('hintTree', 'Click the map to plant a tree. Click a planted tree to change its kind and height.')
+                            : t('hintPlace', 'Click the map to place the selected item.')));
                 state.session.setHint(`${toolLabels[state.tool] || ''}: ${instruction}`);
             }
         }

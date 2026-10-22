@@ -5918,6 +5918,7 @@
         "save": "Spremi dizajn",
         "hintErase": "Klikni element da ga ukloniš.",
         "hintPlace": "Klikni na kartu da postaviš odabrani element.",
+        "hintTree": "Klikni na kartu da posadiš stablo. Klikni na posađeno stablo da mu promijeniš vrstu i visinu.",
         "hintPath": "Klikni za dodavanje točaka staze, zatim odaberi „Završi stazu“.",
         "hintSelect": "Odaberi element za početak.",
         "statusOutside": "Elemente postavljaj unutar granice strukture.",

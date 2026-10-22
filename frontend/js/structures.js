@@ -326,17 +326,17 @@
         // Sprinkle tree emojis; avoid placing trees in ponds
         try {
             // Skip trees that fall outside the rendered geometry (e.g. on a road cut through the park)
-            const trees = treePoints.filter(coord => {
-                try { return pointInFeature(turf.point(coord), parkFeature); } catch (_) { return true; }
+            const trees = treePoints.map(entry => window.__parkPlanting.treeOf(entry)).filter(tree => {
+                try { return !!tree && pointInFeature(turf.point(tree.coordinate), parkFeature); } catch (_) { return true; }
             });
-            trees.forEach(coord => {
-                const [lng, lat] = coord;
+            trees.forEach(tree => {
+                const [lng, lat] = tree.coordinate;
                 // Skip if inside any pond
                 // Decorations already avoid ponds during generation
                 L.marker([lat, lng], {
                     icon: L.divIcon({
                         className: 'park-tree-emoji',
-                        html: '🌳',
+                        html: window.__parkPlanting.treeGlyph(tree),
                         iconSize: [20, 20],
                         iconAnchor: [10, 10]
                     }),
@@ -649,7 +649,7 @@
                 if (ponds.length) {
                     try { inPond = ponds.some(ring => turf.booleanPointInPolygon(c, turf.polygon([ring]))); } catch (_) { inPond = false; }
                 }
-                if (!inPond) trees.push(c.geometry.coordinates);
+                if (!inPond) trees.push(window.__parkPlanting.treeOf(c.geometry.coordinates));
             }
 
             // Fallback: if no paths created (complex shapes), create 2-3 interior wiggle paths across bbox
@@ -845,10 +845,12 @@
             }).addTo(group);
         });
         (Array.isArray(dec.trees) ? dec.trees : [])
-            .filter(coord => pointInFeature(turf.point(coord), squareFeature))
-            .forEach(([lng, lat]) => {
+            .map(entry => window.__parkPlanting.treeOf(entry))
+            .filter(tree => tree && pointInFeature(turf.point(tree.coordinate), squareFeature))
+            .forEach(tree => {
+                const [lng, lat] = tree.coordinate;
                 L.marker([lat, lng], {
-                    icon: L.divIcon({ className: 'square-tree-emoji', html: '🌳', iconSize: [20, 20], iconAnchor: [10, 10] }),
+                    icon: L.divIcon({ className: 'square-tree-emoji', html: window.__parkPlanting.treeGlyph(tree), iconSize: [20, 20], iconAnchor: [10, 10] }),
                     pane: SQUARES_ICON_PANE,
                     zIndexOffset: 1000,
                     interactive: false

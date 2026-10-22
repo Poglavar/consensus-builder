@@ -334,7 +334,7 @@
                     out.push({ x, y, r });
                 }
             };
-            (Array.isArray(deco.trees) ? deco.trees : []).forEach(c => push(c, 0.6));
+            (Array.isArray(deco.trees) ? deco.trees : []).forEach(t => push(Array.isArray(t && t.coordinate) ? t.coordinate : t, 0.6));
             (Array.isArray(deco.benches) ? deco.benches : []).forEach(b => push(Array.isArray(b && b.coordinate) ? b.coordinate : b, 1.0));
             (Array.isArray(deco.stalls) ? deco.stalls : []).forEach(s => push(Array.isArray(s && s.coordinate) ? s.coordinate : s, 2.0));
             (Array.isArray(deco.statues) ? deco.statues : []).forEach(s => push(Array.isArray(s && s.coordinate) ? s.coordinate : s, 1.5));

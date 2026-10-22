@@ -26,7 +26,8 @@ describe('structure geometry editor data normalization', () => {
             paths: [[[15.9, 45.8], [15.91, 45.81]], [[15.9, 45.8]]]
         });
 
-        expect(normalized.trees).toEqual([[15.9, 45.8]]);
+        // A bare position becomes a tree record with the look its position hashes to.
+        expect(normalized.trees).toEqual([{ coordinate: [15.9, 45.8], kind: expect.any(String), heightM: expect.any(Number) }]);
         expect(normalized.paths).toEqual([[[15.9, 45.8], [15.91, 45.81]]]);
     });
 

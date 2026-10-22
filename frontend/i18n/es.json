@@ -5911,6 +5911,7 @@
         "save": "Guardar diseño",
         "hintErase": "Haz clic en un elemento para eliminarlo.",
         "hintPlace": "Haz clic en el mapa para colocar el elemento seleccionado.",
+        "hintTree": "Haz clic en el mapa para plantar un árbol. Haz clic en un árbol plantado para cambiar su tipo y altura.",
         "hintPath": "Haz clic para añadir puntos al sendero y luego elige Terminar sendero.",
         "hintSelect": "Selecciona un elemento para empezar.",
         "statusOutside": "Coloca los elementos dentro del límite de la estructura.",
