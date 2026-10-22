@@ -25,7 +25,7 @@ export function buildLandOracleRunStats({ startedAt, endedAt, result = null, err
             reconciled: Number(result?.reconciled || 0),
             missingEvidence
         },
-        error: error ? String(error.message || error) : (missingEvidence ? `${missingEvidence} terminal proposal(s) lack source evidence` : null)
+        error: error ? String(error.message || error) : (missingEvidence ? `${missingEvidence} terminal agreement(s) lack source evidence` : null)
     };
 }
 

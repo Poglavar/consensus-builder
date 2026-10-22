@@ -1,11 +1,11 @@
 // Cover map search, globe navigation, city switching, and real Leaflet zoom controls.
 import { test, expect } from '../helpers/fixtures';
-import { openCity, createSpace, showProposal, chooseTermsForShare } from '../helpers/runtime';
+import { openCity, createSpace, showProposal } from '../helpers/runtime';
 import { waitForMapReady } from '../helpers/app';
 import { mockAllApiRoutes } from '../helpers/mocks/api-routes';
-import { attachSharedProposalServer, createSharedProposalServer, SharedProposalServer } from '../helpers/mocks/shared-server';
+import { attachSharedIndex, pageIndex, SharedIndex } from '../helpers/mocks/shared-server';
 
-async function cityDevice(browser: import('@playwright/test').Browser, server: SharedProposalServer, baseURL: string) {
+async function cityDevice(browser: import('@playwright/test').Browser, index: SharedIndex, baseURL: string) {
   const context = await browser.newContext({ baseURL });
   await context.addInitScript(() => {
     try {
@@ -15,11 +15,12 @@ async function cityDevice(browser: import('@playwright/test').Browser, server: S
   });
   const page = await context.newPage();
   await mockAllApiRoutes(page);
-  await attachSharedProposalServer(page, server);
+  await attachSharedIndex(page, index);
   return { context, page };
 }
 
-async function publishSharedPark(page: import('@playwright/test').Page, server: SharedProposalServer): Promise<Record<string, any>> {
+// A park published from Zagreb through Share (POST /pins, POST /designs); returns its CID.
+async function publishSharedPark(page: import('@playwright/test').Page): Promise<string> {
   await openCity(page);
   await page.locator('#username-display').click();
   await expect(page.locator('#welcome-modal')).toBeVisible();
@@ -28,16 +29,16 @@ async function publishSharedPark(page: import('@playwright/test').Page, server: 
   await expect(page.locator('#welcome-modal')).toBeHidden();
   await expect.poll(() => page.evaluate(() => {
     const w = window as any;
-    return w.GuestPolicy.check('share', { isGuest: w.getCurrentUserAgent?.()?.isGuest }).allowed;
+    return w.GuestPolicy.check('publish', { isGuest: w.getCurrentUserAgent?.()?.isGuest }).allowed;
   })).toBe(true);
   const proposalId = await createSpace(page, 'park');
   await showProposal(page, proposalId);
-  await page.locator('.btn-share-proposal').click();
-  await chooseTermsForShare(page);
-  await page.locator('.share-modal-overlay').getByRole('button', { name: 'Upload', exact: true }).click();
-  await expect(page.locator('.share-modal-overlay .share-modal-link').first()).toHaveValue(/\/proposals\/\d+\?/);
-  expect(server.records.size).toBe(1);
-  return server.records.values().next().value as Record<string, any>;
+  await page.locator('#proposal-details-panel .btn-share-proposal').click();
+  const index = pageIndex(page);
+  await expect.poll(() => index.designs.size, { timeout: 30_000 }).toBe(1);
+  const [row] = [...index.designs.values()];
+  expect(row.city).toBe('zagreb');
+  return String(row.cid);
 }
 
 test.describe('Navigation button controls @features', () => {
@@ -100,17 +101,16 @@ test.describe('Navigation button controls @features', () => {
     await expect(page.locator('.map-search__results [role="option"]').filter({ hasText: /^Belgrade/ })).toHaveCount(0);
   });
 
-  test('an incoming Explore-city proposal asks before switching; Stay strips its route and Open follows the proposal city', async ({ mockApi: author, browser }) => {
+  test('an incoming Explore-city design link asks before switching; Stay strips its route and Open follows the design city', async ({ mockApi: author, browser }) => {
     test.setTimeout(180_000);
-    const server = createSharedProposalServer();
-    await attachSharedProposalServer(author, server);
-    const record = await publishSharedPark(author, server);
-    const proposalId = String(record.proposalId);
+    const cid = await publishSharedPark(author);
+    const index = pageIndex(author);
+    const localId = `design-${cid}`;
     const baseURL = new URL(author.url()).origin;
 
-    const staying = await cityDevice(browser, server, baseURL);
+    const staying = await cityDevice(browser, index, baseURL);
     try {
-      await staying.page.goto(`/proposals/${record.id}?city=explore&reduceMotion=1`);
+      await staying.page.goto(`/designs/${cid}?city=explore&reduceMotion=1`);
       const prompt = staying.page.locator('.city-switch-dialog');
       await expect(prompt).toBeVisible({ timeout: 30_000 });
       await expect(prompt).toContainText('Zagreb');
@@ -121,32 +121,28 @@ test.describe('Navigation button controls @features', () => {
       const stayedUrl = new URL(staying.page.url());
       expect(stayedUrl.searchParams.get('city')).toBe('explore');
       expect(stayedUrl.searchParams.has('focusProposal')).toBe(false);
-      expect(stayedUrl.searchParams.has('proposalShare')).toBe(false);
-      expect(await staying.page.evaluate(id => (window as any).proposalStorage.getAllProposals().some((p: any) => String(p.proposalId) === id), proposalId)).toBe(false);
+      expect(await staying.page.evaluate(id => !!(window as any).proposalStorage.getProposal(id), localId)).toBe(false);
     } finally {
       await staying.context.close();
     }
 
-    const opening = await cityDevice(browser, server, baseURL);
+    const opening = await cityDevice(browser, index, baseURL);
     try {
-      await opening.page.goto(`/proposals/${record.id}?city=explore&reduceMotion=1`);
+      await opening.page.goto(`/designs/${cid}?city=explore&reduceMotion=1`);
       const prompt = opening.page.locator('.city-switch-dialog');
       await expect(prompt).toBeVisible({ timeout: 30_000 });
       const openInRequestedCity = prompt.locator('.cb-dialog__footer .btn-primary');
       await expect(openInRequestedCity).toContainText('Open in Zagreb');
       await Promise.all([
-        // This shared route is already on /proposals/<server-id>; following it changes the city
-        // query and reloads that proposal URL instead of rewriting it to ?focusProposal=.
-        opening.page.waitForURL(url => url.searchParams.get('city') === 'zagreb' && url.pathname === `/proposals/${record.id}`, { timeout: 30_000 }),
+        // Following the link reloads the same /designs/<cid> route in the design's own city.
+        opening.page.waitForURL(url => url.searchParams.get('city') === 'zagreb' && url.pathname === `/designs/${cid}`, { timeout: 30_000 }),
         openInRequestedCity.click(),
       ]);
       await waitForMapReady(opening.page);
       await expect.poll(() => opening.page.evaluate(() => (window as any).CityConfigManager.getCurrentCityId())).toBe('zagreb');
-      await expect.poll(() => opening.page.evaluate(id => (window as any).proposalStorage.getAllProposals().some((p: any) => String(p.proposalId) === id), proposalId), { timeout: 30_000 }).toBe(true);
+      await expect.poll(() => opening.page.evaluate(id => !!(window as any).proposalStorage?.getProposal(id), localId), { timeout: 60_000 }).toBe(true);
     } finally {
       await opening.context.close();
     }
   });
-
-
 });

@@ -14,24 +14,11 @@
 const COPY_BUILDING_GOALS = ['buildings', 'row', 'parcelBased', 'single'];
 // Goals whose editor can reopen on an existing design, so a copy stays fully editable.
 // road-track is not listed: a road's node and cross-section editors save it directly.
-const COPY_EDITABLE_GOALS = [...COPY_BUILDING_GOALS, 'reparcellization'];
+const COPY_EDITABLE_GOALS = [...COPY_BUILDING_GOALS];
 
 function copyDeepClone(value) {
     if (value === null || value === undefined) return value;
     try { return JSON.parse(JSON.stringify(value)); } catch (_) { return value; }
-}
-
-// createProposal() parses the expiry/decay inputs with parseExpiryTime(); this is its inverse,
-// so a copied proposal's stored durations round-trip back into those text fields.
-function formatCopyDuration(ms) {
-    const total = Number(ms);
-    if (!Number.isFinite(total) || total <= 0) return null;
-    const totalSeconds = Math.round(total / 1000);
-    const hours = Math.floor(totalSeconds / 3600);
-    const minutes = Math.floor((totalSeconds % 3600) / 60);
-    const seconds = totalSeconds % 60;
-    const pad = (n) => String(n).padStart(2, '0');
-    return `${pad(hours)}h:${pad(minutes)}m:${pad(seconds)}s`;
 }
 
 function resolveCopyParcelLayers(ids) {
@@ -150,56 +137,9 @@ function seedPendingGeometryFromProposal(source, goalKey, selectedLiveParcelIds 
         return true;
     }
 
-    if (goalKey === 'reparcellization') {
-        const plan = source.reparcellization;
-        if (!plan || !Array.isArray(plan.polygons) || !plan.polygons.length) return false;
-        window.pendingReparcellizationPlan = {
-            ...copyDeepClone(plan),
-            parcelIds: selectionIds.slice()
-        };
-        return true;
-    }
-
-    // park / square / lake / as-is / decide-later / ownership-transfer: geometry is derived
+    // park / square / lake / as-is / ownership-transfer: geometry is derived
     // from the parcel selection at create time, so re-selecting the parcels is enough.
     return false;
-}
-
-// Collect every parameter the create dialog can restore from the source proposal.
-function buildCopyPrefill(source) {
-    const prefill = {
-        name: source.title || source.name || source.proposalName || '',
-        description: source.description || '',
-        offerCurrency: source.offerCurrency || null
-    };
-    // A copy starts from its source's kind (proposal-kinds.md) and voting period.
-    const kind = window.ProposalPublishTerms.chosenKind(source, { isPublished: record => window.isPublishedProposalRecord?.(record) === true });
-    if (kind) prefill.kind = kind;
-    if (Number.isFinite(Number(source.voteExpiryDays)) && Number(source.voteExpiryDays) > 0) prefill.voteExpiryDays = Number(source.voteExpiryDays);
-    const offer = Number(source.offer);
-    if (Number.isFinite(offer) && offer > 0) prefill.offer = offer;
-
-    if (typeof source.isConditional === 'boolean') prefill.isConditional = source.isConditional;
-
-    // Expiry is stored as an absolute timestamp; re-express it as the remaining duration so the
-    // copy gets the same window rather than an already-elapsed deadline.
-    if (source.expiresAt && source.createdAt) {
-        const span = new Date(source.expiresAt).getTime() - new Date(source.createdAt).getTime();
-        const formatted = formatCopyDuration(span);
-        if (formatted) prefill.expiryTime = formatted;
-    }
-
-    if (source.decayEnabled) {
-        prefill.decayEnabled = true;
-        if (Number.isFinite(Number(source.decayPercent))) prefill.decayPercent = Number(source.decayPercent);
-        const decayTime = formatCopyDuration(source.decayDurationMs);
-        if (decayTime) prefill.decayTime = decayTime;
-    }
-    if (source.depositEnabled) {
-        prefill.depositEnabled = true;
-        if (Number.isFinite(Number(source.depositPercent))) prefill.depositPercent = Number(source.depositPercent);
-    }
-    return prefill;
 }
 
 // The land-use radio has no "buildings" option — block/row/parcelBased all live under the
@@ -213,7 +153,10 @@ function typologyForCopy(source, goalKey) {
     if (goalKey === 'row') return 'row';
     if (goalKey === 'parcelBased') return 'parcelBased';
     if (goalKey === 'buildings') {
-        const stored = source.typologyType ? String(source.typologyType) : '';
+        // A design read back from the index carries its typology in the payload only (design/v1 keeps
+        // one payload, design-record.js), as every other typology reader already allows for.
+        const typology = source.typologyType || (source.buildingProposal && source.buildingProposal.typologyType);
+        const stored = typology ? String(typology) : '';
         return ['block', 'row', 'parcelBased'].includes(stored) ? stored : 'block';
     }
     return null;
@@ -277,23 +220,11 @@ function buildBlockifySeed(context) {
     return seed;
 }
 
-// Same idea as getPendingBuildingSeedFor, for the reparcellization plan: the pending global is the
-// one place a plan lives before it becomes a proposal, so reading it back covers both a copied
-// proposal and reopening the editor mid-draft. Guarded on the parcel set.
-function getPendingReparcellizationSeedFor(parcelIds) {
-    const plan = (typeof window !== 'undefined') ? window.pendingReparcellizationPlan : null;
-    if (!plan || !Array.isArray(plan.polygons) || !plan.polygons.length) return null;
-    if (!Array.isArray(plan.parcelIds) || !plan.parcelIds.length) return null;
-    const key = (ids) => (ids || []).map(String).slice().sort().join('|');
-    if (key(plan.parcelIds) !== key(parcelIds)) return null;
-    return plan;
-}
-
 // An applied proposal has already rewritten the map: its parents are gone, its children are there.
 function isProposalAppliedToMap(proposal) {
     if (!proposal) return false;
     if (isApplied(proposal)) return true;
-    return ['roadProposal', 'buildingProposal', 'structureProposal', 'reparcellization', 'decideLaterProposal']
+    return ['roadProposal', 'buildingProposal', 'structureProposal', 'parcelLayout']
         .some(key => proposal[key] && isApplied(proposal, proposal[key]));
 }
 
@@ -317,5 +248,4 @@ if (typeof window !== 'undefined') {
     window.getPendingBuildingSeedFor = getPendingBuildingSeedFor;
     window.pendingBuildingSeedFeatures = pendingBuildingSeedFeatures;
     window.buildBlockifySeed = buildBlockifySeed;
-    window.getPendingReparcellizationSeedFor = getPendingReparcellizationSeedFor;
 }

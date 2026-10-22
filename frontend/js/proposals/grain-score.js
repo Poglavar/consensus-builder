@@ -1,4 +1,4 @@
-// Institut za zrnatost — parcel inspection for an applied composition or named-plan scope.
+// Institut za zrnatost — parcel inspection for the applied composition.
 //
 // The map already contains the authoritative derived parcel fabric. This module reads that fabric,
 // measures each resulting parcel, lets the rooster visit it, and only then reveals the scorecard.
@@ -26,12 +26,10 @@
     const state = {
         ui: null,
         prepared: null,
-        namedPlan: null,
         running: false,
         runToken: 0,
         priorMapView: null,
-        disabledMapControls: [],
-        routeRestorePath: null
+        disabledMapControls: []
     };
 
     function formatTemplate(template, values) {
@@ -69,13 +67,6 @@
         });
     }
 
-    function renderExactMembersRequired() {
-        renderError(t(
-            'sidebar.proposals.grainScore.exactMembersRequired',
-            'This named plan requires every original published proposal to be verified and applied. A local edit or fork cannot replace a member.'
-        ));
-    }
-
     function updateButtonState() {
         const button = document.getElementById('roosterScoreButton');
         if (!button) return;
@@ -84,20 +75,6 @@
         button.disabled = disabled;
         button.classList.toggle('grain-score-button--empty', count === 0);
         button.setAttribute('aria-disabled', String(disabled));
-    }
-
-    function currentNamedPlan() {
-        if (state.namedPlan && state.namedPlan.slug) return state.namedPlan;
-        if (global.__currentNamedPlan && rules.normalizePlanSlug(global.__currentNamedPlan.slug)) {
-            return global.__currentNamedPlan;
-        }
-        try {
-            const match = global.location.pathname.match(/^\/proposals\/([^/]+)\/?$/i);
-            const slug = match ? rules.normalizePlanSlug(decodeURIComponent(match[1])) : null;
-            return slug ? { slug, title: null } : null;
-        } catch (_) {
-            return null;
-        }
     }
 
     function setNodeText(root, role, value) {
@@ -183,12 +160,6 @@
                 <i class="fas fa-spinner fa-spin" aria-hidden="true"></i>
                 <span data-grain-role="loadingText"></span>
             </div>
-            <div class="grain-score-ready" data-grain-role="ready" hidden>
-                <p data-grain-role="readyText"></p>
-                <button type="button" class="btn btn-primary btn-block grain-score-start" data-grain-action="start">
-                    <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i><span data-grain-role="startLabel"></span>
-                </button>
-            </div>
             <div class="grain-score-error" data-grain-role="error" hidden></div>
             <div class="grain-score-result" data-grain-role="result" hidden>
                 <div class="grain-score-hero">
@@ -221,9 +192,6 @@
         host.append(overlay, panel);
         state.ui = { host, overlay, panel };
         panel.querySelector('[data-grain-action="close"]').addEventListener('click', closeExperience);
-        panel.querySelector('[data-grain-action="start"]').addEventListener('click', () => {
-            void runInspection({ soundPreparation: sound.prepare() });
-        });
         panel.querySelector('[data-grain-action="repeat"]').addEventListener('click', () => {
             void runInspection({ soundPreparation: sound.prepare() });
         });
@@ -314,45 +282,29 @@
 
     function showOnly(name) {
         const { panel } = ensureUi();
-        ['loading', 'ready', 'error', 'result'].forEach(role => {
+        ['loading', 'error', 'result'].forEach(role => {
             const node = panel.querySelector(`[data-grain-role="${role}"]`);
             if (node) node.hidden = role !== name;
         });
         panel.hidden = false;
     }
 
-    function renderPanelChrome(plan) {
+    function renderPanelChrome() {
         const { panel } = ensureUi();
-        const slug = plan && plan.slug ? plan.slug : null;
         setNodeText(panel, 'eyebrow', t('sidebar.proposals.grainScore.institute', 'Institut za zrnatost'));
         setNodeText(panel, 'title', t('sidebar.proposals.grainScore.title', 'Urban grain score'));
-        setNodeText(panel, 'planName', (plan && plan.title) || slug || t('sidebar.proposals.grainScore.appliedComposition', 'Applied composition'));
-        setNodeText(panel, 'route', slug
-            ? t('sidebar.proposals.grainScore.namedScope', 'Named plan · {{path}}', { path: rules.buildPlanScorePath(slug) })
-            : t('sidebar.proposals.grainScore.localScope', 'Local composition · score stays in this browser'));
+        setNodeText(panel, 'planName', t('sidebar.proposals.grainScore.appliedComposition', 'Applied composition'));
+        setNodeText(panel, 'route', t('sidebar.proposals.grainScore.localScope', 'Local composition · score stays in this browser'));
         const close = panel.querySelector('[data-grain-action="close"]');
         if (close) close.setAttribute('aria-label', t('sidebar.proposals.grainScore.closeAria', 'Close grain score'));
         renderSoundControl();
     }
 
-    function renderLoading(plan, message) {
-        renderPanelChrome(plan);
+    function renderLoading() {
+        renderPanelChrome();
         const { panel } = ensureUi();
         showOnly('loading');
-        setNodeText(panel, 'loadingText', message || t('sidebar.proposals.grainScore.loading', 'Preparing proposals for inspection…'));
-    }
-
-    function renderReady() {
-        const prepared = state.prepared;
-        renderPanelChrome(prepared && prepared.plan);
-        const { panel } = ensureUi();
-        showOnly('ready');
-        setNodeText(panel, 'readyText', t(
-            'sidebar.proposals.grainScore.ready',
-            'The rooster found {{count}} measurable resulting parcels. He will try them one by one.',
-            { count: prepared ? prepared.items.length : 0 }
-        ));
-        setNodeText(panel, 'startLabel', t('sidebar.proposals.grainScore.start', 'Start the inspection'));
+        setNodeText(panel, 'loadingText', t('sidebar.proposals.grainScore.loading', 'Preparing proposals for inspection…'));
     }
 
     function renderError(message) {
@@ -387,8 +339,8 @@
     function renderResult() {
         if (!state.prepared) return;
         const { panel } = ensureUi();
-        const { score, beforeCount, afterCount, plan } = state.prepared;
-        renderPanelChrome(plan);
+        const { score, beforeCount, afterCount } = state.prepared;
+        renderPanelChrome();
         showOnly('result');
 
         const total = score.totalScore;
@@ -459,30 +411,18 @@
         button.setAttribute('aria-pressed', String(sound.enabled));
     }
 
-    function proposalsForScore(plan) {
-        const applied = appliedProposals();
-        const scope = plan?.slug ? rules.namedPlanScoreScope(plan, applied) : { proposals: applied };
-        if (scope.error === 'members') {
-            renderExactMembersRequired();
-            return null;
-        }
-        if (scope.error === 'composition') {
-            renderError(t(
-                'sidebar.proposals.grainScore.otherApplied',
-                'Other proposals are applied on this map. Unapply them before scoring this named plan.'
-            ));
-            return null;
-        }
-        if (!scope.proposals.length) {
+    function proposalsForScore() {
+        const proposals = appliedProposals();
+        if (!proposals.length) {
             renderError(t('sidebar.proposals.grainScore.noApplied', 'Apply at least one proposal before summoning the rooster.'));
             return null;
         }
-        return scope.proposals;
+        return proposals;
     }
 
-    async function prepareExperience(plan) {
+    async function prepareExperience() {
         state.prepared = null;
-        const initialProposals = proposalsForScore(plan);
+        const initialProposals = proposalsForScore();
         if (!initialProposals) return null;
         const initialCadastreIds = Array.from(new Set(initialProposals.flatMap(yieldApi.cadastreIdsOf)));
         if (initialCadastreIds.length && global.CadastralParcelRepository?.ensureIds) {
@@ -490,10 +430,9 @@
             catch (error) { console.warn('[grain-score] could not load cadastral ground', error); }
         }
         // Loading ground can publish a new fabric revision or let another application complete.
-        // Recheck membership/composition after that await, then capture and measure synchronously.
-        const proposals = proposalsForScore(plan);
+        // Recheck the applied set after that await, then capture and measure synchronously.
+        const proposals = proposalsForScore();
         if (!proposals) return null;
-        const fabricRevision = global.LiveParcelFabric?.snapshot?.().revision;
         const cadastreIds = Array.from(new Set(proposals.flatMap(yieldApi.cadastreIdsOf)));
         const materializedFeatures = global.LiveParcelFabric?.entriesForCadastre
             ? global.LiveParcelFabric.entriesForCadastre(cadastreIds, { includeCorridors: false })
@@ -508,10 +447,10 @@
             renderError(t('groundStats.grainNoParcels', 'No parcels here: these proposals stand on open ground, so there are no resulting parcels to score.'));
             return null;
         }
-        const cadastralFeatures = plan?.slug ? [] : cadastreIds.map(id => global.CadastralParcelRepository?.get?.(id)).filter(Boolean);
+        const cadastralFeatures = cadastreIds.map(id => global.CadastralParcelRepository?.get?.(id)).filter(Boolean);
         const rows = rules.measureParcelRows(fabric.resulting, materializedFeatures, cadastralFeatures);
         const items = rows.filter(row => row.feature && Number.isFinite(row.widthMeters) && Number.isFinite(row.depthMeters));
-        if (!items.length || (plan?.slug && items.length !== rows.length)) {
+        if (!items.length) {
             renderError(t('sidebar.proposals.grainScore.noGeometry', 'The resulting parcel shapes could not be measured.'));
             return null;
         }
@@ -519,10 +458,8 @@
         const afterCount = (fabric.resulting || []).length;
         const score = rules.scorePlan({ beforeParcelCount: beforeCount, afterParcelCount: afterCount, parcels: rows, bound: fabric.bound });
         state.prepared = {
-            plan: plan || { slug: null, title: null },
             proposals,
             fabric,
-            fabricRevision,
             rows,
             items,
             beforeCount,
@@ -752,20 +689,6 @@
 
     async function runInspection({ soundPreparation } = {}) {
         if (state.running || !state.prepared) return;
-        if (state.prepared.plan.slug) {
-            if (!proposalsForScore(state.prepared.plan)) {
-                state.prepared = null;
-                return;
-            }
-            if (state.prepared.fabricRevision !== global.LiveParcelFabric?.snapshot?.().revision) {
-                state.prepared = null;
-                renderError(t(
-                    'sidebar.proposals.grainScore.fabricChanged',
-                    'The map changed after this inspection was prepared. Reopen the grain score to measure it again.'
-                ));
-                return;
-            }
-        }
         const token = ++state.runToken;
         state.running = true;
         updateButtonState();
@@ -842,85 +765,14 @@
         renderResult();
     }
 
-    function updateRouteForScore(plan) {
-        if (!plan || !plan.slug || !global.history || typeof global.history.replaceState !== 'function') return;
-        try {
-            state.routeRestorePath = `/proposals/${encodeURIComponent(plan.slug)}`;
-            global.history.replaceState({ grainScore: true }, '', `${rules.buildPlanScorePath(plan.slug)}${global.location.search || ''}`);
-        } catch (_) { }
-    }
-
     async function summonUrbanistRooster() {
         if (state.running) return;
-        const plan = currentNamedPlan() || { slug: null, title: null };
-        state.namedPlan = plan.slug ? plan : null;
         const soundPreparation = sound.prepare();
-        if (plan.slug) {
-            updateRouteForScore(plan);
-            const prepared = await openPlanGrainScoreRoute(plan.slug);
-            if (prepared) await runInspection({ soundPreparation });
-            return;
-        }
         saveAndSimplifyChrome();
-        renderLoading(plan);
-        const prepared = await prepareExperience(plan);
+        renderLoading();
+        const prepared = await prepareExperience();
         if (!prepared) return;
         await runInspection({ soundPreparation });
-    }
-
-    async function openPlanGrainScoreRoute(slug) {
-        state.prepared = null;
-        const normalized = rules.normalizePlanSlug(slug);
-        if (!normalized) {
-            renderError(t('sidebar.proposals.grainScore.planNotFound', 'This named plan could not be found.'));
-            return;
-        }
-        state.namedPlan = { slug: normalized, title: null };
-        state.routeRestorePath = `/proposals/${encodeURIComponent(normalized)}`;
-        saveAndSimplifyChrome();
-        renderLoading(state.namedPlan, t('sidebar.proposals.grainScore.loadingNamed', 'Loading named plan…'));
-        try {
-            const base = typeof resolveBackendBaseUrl === 'function' ? resolveBackendBaseUrl() : '';
-            const response = await global.fetch(`${base}/plans/${encodeURIComponent(normalized)}`);
-            if (!response.ok) {
-                renderError(response.status === 404
-                    ? t('sidebar.proposals.grainScore.planNotFound', 'This named plan could not be found.')
-                    : t('sidebar.proposals.grainScore.planLoadFailed', 'The named plan could not be loaded.'));
-                return;
-            }
-            const plan = await response.json();
-            if (!rules.verifiedNamedPlanMembers(plan)) {
-                renderExactMembersRequired();
-                return;
-            }
-            const ids = plan.proposalRowIds.map(String);
-            // In the plan's city first, as /proposals/<slug> does (proposals/core.js ensurePlanCity):
-            // parcel lookups go to the current city's cadastre.
-            if (typeof global.ensurePlanCity === 'function' && await global.ensurePlanCity(plan.city)) return;
-            state.namedPlan = { ...plan, slug: normalized };
-            global.__currentNamedPlan = state.namedPlan;
-            renderLoading(state.namedPlan, t('sidebar.proposals.grainScore.applyingNamedPlan', 'Applying named-plan proposals to the map…'));
-            if (typeof handleSharedPlanRoute !== 'function') throw new Error('Shared-plan loader unavailable');
-            const loadResult = await handleSharedPlanRoute(ids, 0, { suppressSummary: true, suppressDetails: true });
-            if (loadResult && (loadResult.blocked || (Array.isArray(loadResult.failed) && loadResult.failed.length))) {
-                renderError(t(
-                    'sidebar.proposals.grainScore.incompletePlan',
-                    'The named plan cannot be scored because not all of its proposals could be applied.'
-                ));
-                updateButtonState();
-                return;
-            }
-            const prepared = await prepareExperience(state.namedPlan);
-            if (prepared) renderReady();
-            updateButtonState();
-            return prepared;
-        } catch (error) {
-            console.error('[grain-score] named score route failed', error);
-            renderError(t('sidebar.proposals.grainScore.planLoadFailed', 'The named plan could not be loaded.'));
-        } finally {
-            // however the route ended, the map fetches its parcels again (proposals/core.js)
-            if (typeof global.releaseDeepLinkParcelFetch === 'function') global.releaseDeepLinkParcelFetch();
-        }
     }
 
     function closeExperience() {
@@ -939,13 +791,8 @@
         if (leafletMap && state.priorMapView) {
             try { leafletMap.setView(state.priorMapView.center, state.priorMapView.zoom, { animate: false }); } catch (_) { }
         }
-        if (state.routeRestorePath && global.location.pathname.startsWith('/plans/')
-            && global.history && typeof global.history.replaceState === 'function') {
-            try { global.history.replaceState(null, '', `${state.routeRestorePath}${global.location.search || ''}`); } catch (_) { }
-        }
         state.prepared = null;
         state.priorMapView = null;
-        state.routeRestorePath = null;
         updateButtonState();
     }
 
@@ -968,13 +815,11 @@
             if (!state.ui || state.ui.panel.hidden) return;
             if (state.running) return;
             if (state.prepared && !state.ui.panel.querySelector('[data-grain-role="result"]').hidden) renderResult();
-            else if (state.prepared) renderReady();
-            else renderPanelChrome(state.namedPlan);
+            else renderPanelChrome();
         });
     }
 
     global.updateGrainScoreButtonState = updateButtonState;
     global.summonUrbanistRooster = summonUrbanistRooster;
-    global.openPlanGrainScoreRoute = openPlanGrainScoreRoute;
     global.closeGrainScore = closeExperience;
 })(typeof window !== 'undefined' ? window : globalThis);

@@ -1,9 +1,13 @@
+// Headless checks of the judge-facing pitch pages: the deck's copy and structure, its live evidence
+// links, the shared X identity and that every judge page reaches the deck.
 import fs from 'node:fs';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 
 const frontend = path.resolve(import.meta.dirname, '../../frontend');
 const html = fs.readFileSync(path.join(frontend, 'deck2.html'), 'utf8');
+// Every pitch variant loads the one shared deck script (navigation and live metrics).
+const decks = ['deck.html', 'deck2.html', 'deck3.html'].map(name => fs.readFileSync(path.join(frontend, name), 'utf8'));
 const landing = fs.readFileSync(path.join(frontend, 'index.html'), 'utf8');
 const demo = fs.readFileSync(path.join(frontend, 'hackathon-demo.html'), 'utf8');
 const actors = fs.readFileSync(path.join(frontend, 'actor-explorer.html'), 'utf8');
@@ -19,7 +23,7 @@ describe('hackathon pitch deck page', () => {
         expect(html).toContain('a multitude of proposals can reference');
         expect(html).toContain('Belief is not the last stage. It is a force.');
         expect(html).toContain('Forecasting opens as soon as a proposal exists.');
-        expect(html).toContain('Stake YES or NO as soon as the proposal is published.');
+        expect(html).toContain('Stake YES or NO as soon as the agreement is minted.');
         expect(html).toContain('No donation or pledge is required first.');
         expect(html).toContain('Visible belief focuses attention');
         expect(html).toContain('belief ↔ action');
@@ -33,7 +37,10 @@ describe('hackathon pitch deck page', () => {
         expect(html).not.toContain('no shared market');
         expect(html).not.toContain('class="pitch-index"');
         expect(html).toContain('Scale the evidence market');
-        expect(html).toContain('js/hackathon-deck.js?v=2');
+        // One cache-busting token for the shared script on every deck, so a change to it reaches them all.
+        const tokens = decks.map(page => page.match(/<script src="js\/hackathon-deck\.js\?v=(\d+)" defer><\/script>/)?.[1]);
+        expect(tokens.every(Boolean)).toBe(true);
+        expect(new Set(tokens).size).toBe(1);
         expect(html).toContain('id="proof-attestation-count"');
         expect(html).not.toContain('<dt class="is-coral">92</dt>');
         expect(html).toContain('class="pitch-weather"');
@@ -53,6 +60,16 @@ describe('hackathon pitch deck page', () => {
         expect(html).toContain('shared MCP interface');
         expect(html).toContain('MCP action surface');
         expect(html).toContain('more cities and autonomous agent clients');
+    });
+
+    it('names the agreement as what is minted, bet on and supported, and facts as what agents pay for (M3)', () => {
+        expect(html).toContain('Prediction market and agreement support');
+        expect(html).toContain('On-chain agreement state or a source-hashed court record');
+        expect(html).toContain('Executed, cancelled or expired agreement account');
+        expect(html).toContain('Agents pay per verified fact.');
+        expect(html).not.toContain('ProposalNFT');
+        expect(html).not.toContain('proposal support');
+        expect(html).not.toContain('per proposal');
     });
 
     it('links directly to live judge evidence', () => {

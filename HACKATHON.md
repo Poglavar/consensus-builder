@@ -69,7 +69,6 @@ git diff 3ee1855...colosseum-worlds-fair
    and [voids its pledge](https://explorer.solana.com/tx/4yPScLbBHM1KzxsrYYBvSXnA4ZPfx3DuDTEoJwMFmudRJQhP89tghvyfk6qpXVsc2aej3ZSbq5mNGGedB7ZwDvbX?cluster=devnet);
    the executed path [releases its donation](https://explorer.solana.com/tx/3s1v1sGhPbdN2JzydhNDhLTY1M6mW5uFntXRkGbmx2cyPHGPeVuks93HWZtjTQfPFbRhFj4FhQR6vWahNMvawLn5?cluster=devnet)
    and [fulfils its pledge](https://explorer.solana.com/tx/5NUeperNd6wu3ZizQW7ASWZtfa2nFKjevnGeVtqAeFWhFyfDbcUBKw5enRwKcTRAyZ1yHNpeEqWC8Vs2dyp94UgA?cluster=devnet).
-   Run it with `cd blockchain/solana && node scripts/proposal-support-lifecycle.mjs --live`.
 9. **One agent/action/activity model** — browser algorithms and the server agent runner use the same
    controller/action/event contract, including confirmed human wallet actions. The Activity explorer
    combines live and simulated events, independently filters source/controller/action/result/search,

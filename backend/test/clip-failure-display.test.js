@@ -491,12 +491,20 @@ describe('dossier: an unmeasurable take is unknown, never smaller', () => {
     });
 });
 
-describe('dialog-share ground (display)', () => {
+describe('map-pick ground (display)', () => {
+    // The ground a design stands on, as the share panel's hover and every pick highlight measure it
+    // (js/map-pick.js groundIntersectionArea, MapPick.groundOf).
     it('an unknown overlap keeps the parcel, reported', () => {
-        const share = require('../../frontend/js/proposals/dialog-share.js');
+        const MapPick = require('../../frontend/js/map-pick.js');
         install('turf', failing(['intersect']));
-        const m2 = expectReported('dialog-share.groundUnderBody', () => share.shareGroundIntersectionArea(LEFT, RIGHT));
+        const m2 = expectReported('map-pick.groundUnderBody', () => MapPick.groundIntersectionArea(LEFT, RIGHT));
         expect(m2).toBe(Number.POSITIVE_INFINITY);
+        // So every parcel whose overlap is unknown stays under the body rather than silently dropping
+        // out of the highlight, each clip reported.
+        install('__hoverGround', require('../../frontend/js/proposals/hover-ground.js'));
+        const before = count('map-pick.groundUnderBody');
+        expect(MapPick.groundOf([LEFT, FAR], [RIGHT])).toEqual([LEFT, FAR]);
+        expect(count('map-pick.groundUnderBody')).toBe(before + 2);
     });
 });
 
@@ -533,9 +541,9 @@ describe('parcel-compare: an unmeasurable overlap is null ("—"), never 0', () 
         expect(count('parcel-compare.buildingsOn')).toBe(before + 1);
     });
 
-    it('readjustment plots: listed with an unknown overlap, reported', () => {
-        const plan = { proposalId: 'readj', goal: 'reparcellization', cadastreParcelIds: [PARCEL_ID],
-            reparcellization: { polygons: [{ geometry: rect(0, 0, 10, 25), area: 250, displayName: 'Owner A' }] } };
+    it('parcel-layout plots: listed with an unknown overlap, reported', () => {
+        const plan = { proposalId: 'layout', goal: 'parcel-layout', cadastreParcelIds: [PARCEL_ID],
+            parcelLayout: { plots: [{ geometry: rect(0, 0, 10, 25), area: 250, source: 'manual' }] } };
         const before = count('parcel-compare.plotsOn');
         const effect = compare.parcelEffect(plan, PARCEL, { turf: parcelClipsFail() });
         expect(effect.plots).toEqual([expect.objectContaining({ number: 1, overlapM2: null })]);

@@ -8,7 +8,7 @@
     // ownership-flow's DESTINATION_BY_GOAL; kept local so this module stays dependency-free.
     const FORMATION_GOALS = Object.freeze([
         'road-track', 'park', 'square', 'lake', 'station', 'single', 'buildings',
-        'reparcellization', 'decide-later'
+        'parcel-layout'
     ]);
 
     function isFormationGoal(goal) {
@@ -33,8 +33,8 @@
         return typeof require === 'function' ? require('./site-binding.js') : null;
     }
 
-    // Whether this record may stand with an empty declaration: a material proposal (not an act on
-    // parcels) with a site or a footprint of its own (PARCEL-OPTIONAL.md rule 4). Its binding is
+    // Whether this record may stand with an empty declaration: any design with a site or a footprint
+    // of its own (PARCEL-OPTIONAL.md rule 4; a design is never an act on parcels). Its binding is
     // computed from that site at publish; on bare ground it is empty.
     function mayHaveEmptyDeclaration(proposal) {
         const api = siteBindingApi();
@@ -116,12 +116,44 @@
         throw new Error('Cannot project authored proposal: the corridor record form is unavailable.');
     }
 
-    // `options.keepDemolition` keeps the apply-time demolition results (`demolishedBuildings`,
-    // `demolitionScanned`) on the sub-records: the proposal store's in-memory canonical form needs
-    // them, because the carve, the 2D building outcomes and the server carve read them from the
+    // The payloads a record draws with, and the apply-time state each picks up in one browser: the
+    // applied flag, the materialization (children, parents, formation) and the demolition scan
+    // (apply/buildings.js, apply/structures.js). Apply derives all of it again from the definition,
+    // so neither the authored record (stripDerivedRecordData) nor a published design
+    // (design-record.js) keeps it.
+    const PAYLOAD_KEYS = Object.freeze(['roadProposal', 'parcelLayout', 'buildingProposal', 'structureProposal']);
+    const PAYLOAD_DERIVED_KEYS = Object.freeze(['applied', 'appliedAt', 'status', 'childParcelIds', 'parentFeatures', 'parentsToRemove', 'formation', 'childFeatures']);
+    const DEMOLITION_SCAN_KEYS = Object.freeze(['demolishedBuildings', 'demolitionScanned', 'demolitionScanFailed']);
+
+    // One payload without its apply-time state: a copy, the input is left as it is.
+    // `keepDemolition` keeps the demolition scan: the proposal store's in-memory canonical form
+    // needs it, because the carve, the 2D building outcomes and the server carve read it from the
     // applied record there. The authored projections (local rows, publish, share, chain) never
-    // carry them; a replay re-derives them (2026-10-22: stripping them at index time had silently
+    // carry it; a replay re-derives it (2026-10-22: stripping it at index time had silently
     // emptied every demolition since 2026-09-03).
+    function stripDerivedPayloadData(key, payload, { keepDemolition = false } = {}) {
+        if (!payload || typeof payload !== 'object' || Array.isArray(payload)) return payload;
+        const clean = { ...payload };
+        PAYLOAD_DERIVED_KEYS.forEach(field => { delete clean[field]; });
+        // Demolition results are apply-time scans for every formation.
+        if ((key === 'structureProposal' || key === 'buildingProposal') && !keepDemolition) {
+            DEMOLITION_SCAN_KEYS.forEach(field => { delete clean[field]; });
+        }
+        if (key === 'roadProposal' && clean.definition && typeof clean.definition === 'object') {
+            clean.definition = { ...clean.definition };
+            delete clean.definition.surfaceFootprint;
+            if (!keepDemolition) DEMOLITION_SCAN_KEYS.forEach(field => { delete clean.definition[field]; });
+            // The road keeps its VIEW here (stretch fields): this projection runs in memory,
+            // between the draft and the store, where every reader expects the view. Only the
+            // two storage boundaries encode the record (encodeRoadRecord: the local store's
+            // row and the publish body); the store decodes on load (decodeRoadView).
+            // 2026-10-16: encoding here made the draft's road a record before the land check
+            // and the junction planner read it, and a drawn road failed at Finish.
+        }
+        return clean;
+    }
+
+    // `options.keepDemolition`: see stripDerivedPayloadData.
     function stripDerivedRecordData(record, options = {}) {
         if (!record || typeof record !== 'object') return record;
         const keepDemolition = !!(options && options.keepDemolition);
@@ -134,38 +166,10 @@
         delete out.editSeq;
         delete out.revertSnapshot;
         delete out.childFeatures;
-        ['roadProposal', 'reparcellization', 'decideLaterProposal', 'buildingProposal', 'structureProposal'].forEach(key => {
+        PAYLOAD_KEYS.forEach(key => {
             const sub = out[key];
             if (!sub || typeof sub !== 'object' || Array.isArray(sub)) return;
-            const clean = { ...sub };
-            delete clean.applied;
-            delete clean.appliedAt;
-            delete clean.status;
-            delete clean.childParcelIds;
-            delete clean.parentFeatures;
-            delete clean.parentsToRemove;
-            delete clean.formation;
-            // Demolition results are apply-time scans for every formation.
-            if ((key === 'structureProposal' || key === 'buildingProposal') && !keepDemolition) {
-                delete clean.demolishedBuildings;
-                delete clean.demolitionScanned;
-            }
-            if (key === 'roadProposal' && clean.definition && typeof clean.definition === 'object') {
-                clean.definition = { ...clean.definition };
-                delete clean.definition.surfaceFootprint;
-                if (!keepDemolition) {
-                    delete clean.definition.demolishedBuildings;
-                    delete clean.definition.demolitionScanned;
-                }
-                // The road keeps its VIEW here (stretch fields): this projection runs in memory,
-                // between the draft and the store, where every reader expects the view. Only the
-                // two storage boundaries encode the record (encodeRoadRecord: the local store's
-                // row and the publish body); the store decodes on load (decodeRoadView).
-                // 2026-10-16: encoding here made the draft's road a record before the land check
-                // and the junction planner read it, and a drawn road failed at Finish.
-            }
-            delete clean.childFeatures;
-            out[key] = clean;
+            out[key] = stripDerivedPayloadData(key, sub, { keepDemolition });
         });
         if (out.roadProposal) {
             delete out.definition;
@@ -249,10 +253,6 @@
         delete out.applied;
         delete out.appliedAt;
         delete out.localPurchaseSimulation;
-        // Unsigned consent bookkeeping belongs to this browser. Verified decisions travel through
-        // the signed receipt relay, separately from this authored definition.
-        delete out.acceptedParcelIds;
-        delete out.ownerAcceptances;
         // This unqualified client timestamp has no verified execution-event source.
         delete out.executedAt;
         return { proposal: out, verdict };
@@ -265,6 +265,7 @@
         mayHaveEmptyDeclaration,
         conformanceOf,
         findNonCadastralReference,
+        stripDerivedPayloadData,
         stripDerivedRecordData,
         encodeRoadRecord,
         decodeRoadView,

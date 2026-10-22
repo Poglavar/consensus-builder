@@ -1,6 +1,6 @@
 // Site-first authoring, the pure half (frontend/js/proposals/site-draft.js): a drawn ring becomes a
-// site, drafts need the ground their goal needs (parcel acts: parcels; material proposals: a site,
-// parcels or their own design), drawn corners snap to parcel corners/edges, and a binding is
+// site, every draft needs ground (a site, parcels or its own design, whatever its goal: a design is
+// never an act on parcels), drawn corners snap to parcel corners/edges, and a binding is
 // summarised into the binding preview's rows (small intrusions flagged with their width, sub-floor
 // touches hidden at tolerance 0, open ground). PARCEL-OPTIONAL.md, phase 2.
 import { beforeAll, describe, expect, it } from 'vitest';
@@ -74,10 +74,10 @@ describe('draftGroundIssue', () => {
         expect(siteDraft.draftGroundIssue({ goal: 'road-track', fields: {}, editorPayload: { definition: { points: [P(0, 0), P(50, 0)] } } })).toBeNull();
     });
 
-    it('a parcel act keeps needing parcels, a site does not stand in for them', () => {
-        expect(siteDraft.draftGroundIssue({ goal: 'ownership-transfer', fields: { site: rect(0, 0, 10, 10) }, editorPayload: {} }))
-            .toMatchObject({ code: 'missing-parcels' });
-        expect(siteDraft.draftGroundIssue({ goal: 'ownership-transfer', fields: { selectedParcelIds: ['HR-1-1'] }, editorPayload: {} })).toBeNull();
+    it('asks every goal for the same ground: a site stands in for parcels whatever the goal', () => {
+        expect(siteDraft.draftGroundIssue({ goal: 'urban-rule', fields: { site: rect(0, 0, 10, 10) }, editorPayload: {} })).toBeNull();
+        expect(siteDraft.draftGroundIssue({ goal: 'urban-rule', fields: { selectedParcelIds: ['HR-1-1'] }, editorPayload: {} })).toBeNull();
+        expect(siteDraft.draftGroundIssue({ goal: 'urban-rule', fields: {}, editorPayload: {} })).toMatchObject({ code: 'missing-site' });
     });
 });
 

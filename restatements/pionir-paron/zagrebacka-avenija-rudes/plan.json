@@ -5,9 +5,6 @@
   "status": "skipped-different-design-state",
   "reason": "The proposal is permit-derived rather than an observed completed site.",
   "generatedAt": "2026-08-13T00:00:00.000Z",
-  "planSlug": "pionir-zagrebacka-avenija-rudes",
-  "planTitle": "Zagrebačka avenija–Rudeš – sedam volumena iz lokacijske izmjene 2025. – zgrade",
-  "localPath": "/proposals/pionir-zagrebacka-avenija-rudes?city=zagreb",
   "building": {
     "proposalId": "paron-zagrebacka-avenija-rudes-location-permit-2025",
     "file": "proposal.geojson"

@@ -60,7 +60,7 @@ test.describe('Layers sheet behavior @features', () => {
     await expect.poll(mapHasParcels).toBe(true);
 
     const proposalId = await page.evaluate(id => (window as any).proposalStorage.addProposal({
-      title: 'Layer count fixture', goal: 'decide-later', lifecycleStatus: 'Active', cadastreParcelIds: [id],
+      title: 'Layer count fixture', goal: 'as-is', lifecycleStatus: 'Active', cadastreParcelIds: [id],
     }), PARCEL_ID);
     expect(proposalId).toBeTruthy();
 

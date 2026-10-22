@@ -1,6 +1,8 @@
 /**
  * Solana Chain Data Loader
- * Fetches parcels and proposals from Solana programs (PDA accounts)
+ * The shared Solana connections (per cluster, through rpc-routing.js), the deployed program addresses
+ * (contracts/addresses.json) and the ParcelNFT anchors: mint status per parcel and the parcels a
+ * wallet anchored. Agreements are read through agreement-bridge.js.
  */
 (function () {
     const globalScope = typeof window !== 'undefined' ? window : (typeof self !== 'undefined' ? self : null);
@@ -10,13 +12,6 @@
     const parcelMintStatusCache = new Map();
     const PARCEL_MINT_STATUS_CACHE_TTL_MS = 30 * 1000;
     const MAX_MULTIPLE_ACCOUNTS_BATCH = 100;
-
-    function proposalStatusFromCode(statusCode) {
-        const codec = globalScope.ProposalChainStatus;
-        return codec && typeof codec.decodeProposalStatus === 'function'
-            ? codec.decodeProposalStatus(statusCode)
-            : 'Unknown';
-    }
 
     function normalizeCluster(cluster) {
         const raw = typeof cluster === 'string' ? cluster.trim() : '';
@@ -91,7 +86,7 @@
     // Funding and markets name the configured devnet deployment. A wallet preference or an
     // endpoint's label cannot establish the network whose accounts are being displayed.
     async function getVerifiedConnection(cluster) {
-        if (cluster !== 'devnet') throw new Error('Proposal account reads support Solana devnet only.');
+        if (cluster !== 'devnet') throw new Error('Funding and market reads support Solana devnet only.');
         const connection = globalScope.SolanaChainDataLoader.getConnection(cluster);
         if (await connection.getGenesisHash() !== 'EtWTRABZaYq6iMfeYKouRu166VU2xqa1wcaWoxPkrZBG') {
             throw new Error('Solana RPC network does not match devnet.');
@@ -131,120 +126,6 @@
             const owner = ownerBytes.length >= 32 ? new globalScope.solanaWeb3.PublicKey(ownerBytes).toString() : null;
 
             return { parcelId, metadataUri, owner };
-        } catch (_) {
-            return null;
-        }
-    }
-
-    function parseProposalAccount(data, address) {
-        if (!data || data.length < 8) return null;
-        try {
-            const body = new Uint8Array(data);
-            let offset = 8;
-
-            const readU64 = () => {
-                if (offset + 8 > body.length) return 0n;
-                const val = new DataView(body.buffer, body.byteOffset + offset, 8).getBigUint64(0, true);
-                offset += 8;
-                return val;
-            };
-            const readPubkey = () => {
-                if (offset + 32 > body.length) return null;
-                const pk = new globalScope.solanaWeb3.PublicKey(body.slice(offset, offset + 32));
-                offset += 32;
-                return pk.toString();
-            };
-            const readVecString = () => {
-                if (offset + 4 > body.length) return [];
-                const len = new DataView(body.buffer, body.byteOffset + offset, 4).getUint32(0, true);
-                offset += 4;
-                const arr = [];
-                for (let i = 0; i < len && offset < body.length; i++) {
-                    const sLen = new DataView(body.buffer, body.byteOffset + offset, 4).getUint32(0, true);
-                    offset += 4;
-                    arr.push(new TextDecoder().decode(body.slice(offset, offset + sLen)));
-                    offset += sLen;
-                }
-                return arr;
-            };
-
-            const proposalId = readU64();
-            const owner = readPubkey();
-            const parcelIds = readVecString();
-            const isConditional = body[offset] !== 0;
-            offset += 1;
-            const imageUriLen = offset + 4 <= body.length ? new DataView(body.buffer, body.byteOffset + offset, 4).getUint32(0, true) : 0;
-            offset += 4;
-            const imageURI = imageUriLen > 0 ? new TextDecoder().decode(body.slice(offset, offset + imageUriLen)) : '';
-            offset += imageUriLen;
-            const acceptancePossible = body[offset] !== 0;
-            offset += 1;
-            const status = body[offset];
-            offset += 1;
-            const solBalance = offset + 8 <= body.length ? new DataView(body.buffer, body.byteOffset + offset, 8).getBigUint64(0, true) : 0n;
-            offset += 8;
-            const tokenBalance = offset + 8 <= body.length ? new DataView(body.buffer, body.byteOffset + offset, 8).getBigUint64(0, true) : 0n;
-            offset += 8;
-            const acceptanceCount = offset + 8 <= body.length ? new DataView(body.buffer, body.byteOffset + offset, 8).getBigUint64(0, true) : 0n;
-            offset += 8;
-            const acceptedParcels = readVecString();
-            // lens: Vec<Pubkey>, bump: u8, then v2's verdict_may_execute: bool, then v3's
-            // site_hash: [u8; 32], open_ground: bool, open_ground_cleared: bool, layout_version: u8.
-            // The fixed-size account is zero-padded, so v1/v2-era accounts read false, no site (null)
-            // and layoutVersion 0 there; every v3 mint writes layoutVersion 3.
-            // A malformed lens vector is reported, not replaced.
-            let lens = [];
-            let lensError = null;
-            let verdictMayExecute = false;
-            let siteHash = null;
-            let openGround = false;
-            let openGroundCleared = false;
-            let layoutVersion = 0;
-            try {
-                const tail = globalScope.LensCore.decodeProposalLensTail(body, offset);
-                lens = tail.lens;
-                verdictMayExecute = tail.bump !== null && tail.offset < body.length && body[tail.offset] === 1;
-                const siteStart = tail.offset + 1;
-                if (tail.bump !== null && siteStart + 34 <= body.length) {
-                    const hashBytes = body.slice(siteStart, siteStart + 32);
-                    // The zero hash means "no site" (every v1/v2 proposal).
-                    siteHash = hashBytes.some(byte => byte !== 0)
-                        ? Array.from(hashBytes, byte => byte.toString(16).padStart(2, '0')).join('')
-                        : null;
-                    openGround = body[siteStart + 32] === 1;
-                    openGroundCleared = body[siteStart + 33] === 1;
-                    if (siteStart + 34 < body.length) layoutVersion = body[siteStart + 34];
-                }
-            } catch (error) {
-                lensError = error && error.message ? error.message : String(error);
-                console.warn(`[${new Date().toISOString()}] [SolanaChainDataLoader] proposal ${address}: lens not decodable: ${lensError}`);
-            }
-
-            return {
-                proposalId: address,
-                proposalIdNum: proposalId.toString(),
-                cadastreParcelIds: parcelIds,
-                isConditional,
-                imageURI,
-                acceptancePossible,
-                status: proposalStatusFromCode(status),
-                statusCode: status,
-                solBalance: solBalance.toString(),
-                ethBalance: solBalance.toString(), // compat alias — shared proposal schema uses ethBalance
-                tokenBalance: tokenBalance.toString(),
-                acceptanceCount: acceptanceCount.toString(),
-                expiryTimestamp: '0',
-                expiringPercentage: '0',
-                owner,
-                acceptedParcels: acceptedParcels || [],
-                lens,
-                lensError,
-                verdictMayExecute,
-                siteHash,
-                openGround,
-                openGroundCleared,
-                layoutVersion
-            };
         } catch (_) {
             return null;
         }
@@ -331,51 +212,6 @@
         return parcels;
     }
 
-    async function getProposalsFromChain(walletAddress, cluster, proposalProgramId, opts = {}) {
-        const connection = getConnection(cluster);
-        const programId = new globalScope.solanaWeb3.PublicKey(proposalProgramId);
-        const allAccounts = await connection.getProgramAccounts(programId);
-        const proposals = [];
-        for (const { pubkey, account } of allAccounts) {
-            if (account.data.length < 20) continue;
-            const parsed = parseProposalAccount(account.data, pubkey.toString());
-            if (parsed && parsed.owner === walletAddress) {
-                proposals.push(parsed);
-            }
-        }
-        return proposals;
-    }
-
-    async function getProposalsByParcelFromChain(cluster, proposalProgramId, parcelId) {
-        const allProposals = await getAllProposals(cluster, proposalProgramId);
-        return allProposals
-            .filter(p => (p.cadastreParcelIds || []).includes(parcelId))
-            .map(p => p.proposalId);
-    }
-
-    async function getAllProposals(cluster, proposalProgramId) {
-        const connection = getConnection(cluster);
-        const programId = new globalScope.solanaWeb3.PublicKey(proposalProgramId);
-        const accounts = await connection.getProgramAccounts(programId);
-        const proposals = [];
-        for (const { pubkey, account } of accounts) {
-            if (account.data.length < 20) continue;
-            const parsed = parseProposalAccount(account.data, pubkey.toString());
-            if (parsed) proposals.push(parsed);
-        }
-        return proposals;
-    }
-
-    async function hasParcelAcceptedProposal(cluster, _proposalProgramId, proposalAddress, parcelId) {
-        const connection = getConnection(cluster);
-        const accountInfo = await connection.getAccountInfo(new globalScope.solanaWeb3.PublicKey(proposalAddress));
-        if (!accountInfo || !accountInfo.data) return false;
-        const parsed = parseProposalAccount(accountInfo.data, proposalAddress);
-        if (!parsed) return false;
-        const accepted = parsed.acceptedParcels || [];
-        return accepted.includes(parcelId);
-    }
-
     async function resolveProgramAddress(chainKey, contractName) {
         const normalizeChainKey = key => {
             const raw = typeof key === 'string' ? key.trim().toLowerCase() : '';
@@ -427,12 +263,7 @@
         clearParcelMintStatusCache,
         getParcelsFromChain,
         getAllMintedParcelIds,
-        getProposalsFromChain,
-        getProposalsByParcelFromChain,
-        getAllProposals,
-        hasParcelAcceptedProposal,
         resolveProgramAddress,
-        parseParcelAccount,
-        parseProposalAccount
+        parseParcelAccount
     };
 })();

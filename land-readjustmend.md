@@ -83,7 +83,7 @@ implemented (§17). See §13 for the earlier integration scope and verification.
 | Some owners receive land, others cash, others both | **Can describe part of the deal** | Allocation plus positive per-owner cash offers can be entered. Owner payments into the pool, funded settlement, arbitrary payees and chain reconciliation are not implemented as an LR settlement. |
 | Counterproposals / forks | **Present** | Shared drafts produce a new proposal without prior acceptances. The saved pool is checked through the newer site flow; zero-cash exchanges and exact cash cents are supported. |
 | Approval of the exact LR deal | **Local/server commitment implemented; chain signing pending** | Versioned SHA-256 covers internal plots, full ownership vectors, ledger and terms. Changed or unbound local approvals stop counting and can be renewed. Server publication recomputes the hash and rejects malformed ownership/cash declarations. The approval panel shows the explicit per-owner EUR offers. See §14. |
-| Named plan containing LR and buildings/zoning | **Present as a collection** | [Plans](plans.md) are immutable named member sets with hashes and optional plan markets. A plan market's execution verdict is not member-by-member owner consent or atomic settlement. |
+| Named plan containing LR and buildings/zoning | **Superseded (2026-10-21)** | Named plans were removed by the plan/design/agreement rework; the agreement is the container now ([plan-design-agreement.md](plan-design-agreement.md)). |
 | Binding “LR only if this zoning/building plan accompanies it” | **Missing** | No package manifest requiring all member conditions and the LR settlement to succeed together. |
 | Work backwards from built form | **Present, bounded courtyard derivation** | Preserve input parcels and carve closed footprint holes from stored building proposals, including unapplied ones. Source ID/title/exact footprint snapshot are saved. Party-wall, access and general zoning-to-parcels solvers remain future work. |
 | Country / jurisdiction schemes and custom thresholds | **Custom owner/area thresholds implemented locally; jurisdiction templates missing** | Approval tab supports unanimity or conjunctive owner-count/whole-parcel-area fractions, including strict versus inclusive comparisons. Rights snapshot and policy survive server publication. No country-specific or chain policy is claimed. See §16. |
@@ -109,7 +109,7 @@ implemented (§17). See §13 for the earlier integration scope and verification.
   [proposal contracts](frontend/js/proposal-contracts.js), [lens model](lens-model.md).
 - Composition: [ground conflicts](frontend/js/proposals/claims.js) (`appliedRivals`, `editDependents`),
   [edit in place or fork](frontend/js/proposals/lineage.js) (`editsInPlace`),
-  [plan hashes](backend/plans/plan-hash.js), [plans](plans.md).
+  named plans (removed 2026-10-21; see [plan-design-agreement.md](plan-design-agreement.md)).
 
 ## 3. Correctness findings and acceptance criteria
 
@@ -251,7 +251,7 @@ sum to one. Nor does it mean that no building, rule or alternative proposal may 
 | `rethink-proposals.md` §0, August 27/September 3 | Current authority boundary: immutable cadastral repository + authored flat records; mutable derived fabric; one `ParcelMutation` transaction boundary. Older experimental sections must be read through this current contract. |
 | [advanced-readjustment.md](advanced-readjustment.md) and `dacbf94e`, September 9 | Plan and separate implementation for courtyard/joint ownership/individual agreements. Selectively integrated on October 11, not cherry-picked wholesale. Retired sibling HEAD: `1550d96f`; its local branch/worktree are deleted and archived. §13 records current verification and remaining settlement/consent limits. |
 | September 28 prompt, session `01a0e7bd-91ab-7911-a99e-ca424b0a6fc2` | Prior request for worldwide LR schemes found. No completed legal comparison was found in the bounded local notes/history search. |
-| [plans.md](plans.md), October 10 | Immutable named plans now have member/content hashes and a market identity. This is newer infrastructure to reuse for composition. |
+| named plans (removed 2026-10-21), October 10 | Immutable named plans had member/content hashes and a market identity; the agreement record replaced them ([plan-design-agreement.md](plan-design-agreement.md)). |
 
 The old §10 suggestion that German Umlegung is simply a qualified-majority example is inaccurate
 for statutory Umlegung; §7 below corrects it using the legislation.

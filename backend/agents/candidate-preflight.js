@@ -1,28 +1,25 @@
-// Check the exact proposal body the runner intends to publish before choosing or minting it.
-// The checker is injected so this orchestration stays headless and testable; production passes the
-// same checkProposalBinding used by POST /agent/proposals.
-import { buildProposalRecord } from './record-builder.js';
+// Check the design a pick would publish before it is chosen or published: the server binds a design's
+// ground itself (routes/designs.js, POST /designs), and an autonomous agent publishes only a building
+// whose footprint binds exactly its candidate parcel with complete cadastral coverage, so the agreement
+// it proposes settles that one parcel and its output is that parcel as it stands. The checker is injected
+// (production passes proposals/binding.js checkProposalBinding, the function the index runs), so this
+// orchestration stays headless and testable.
+import { buildDesignRecord } from './record-builder.js';
+import { designObject } from './agreement-objects.js';
 import { retryParcelRead } from './parcel-read-retry.js';
 
-function neutralPick(candidate) {
-    return {
-        proposalId: `preflight-${candidate.candidateId}`,
-        name: `Preflight ${candidate.parcelId}`,
-        rationale: 'Candidate parcel binding preflight.'
-    };
-}
+// Content that does not reach the binding: only the footprint does.
+const PREFLIGHT_PICK = Object.freeze({ name: 'Binding preflight', rationale: null });
+const PREFLIGHT_TIME = '2000-01-01T00:00:00.000Z';
 
 export function bindingRejection(candidate, result) {
-    const missing = Array.isArray(result?.missing) ? result.missing.length : 0;
-    const extra = Array.isArray(result?.extra) ? result.extra.length : 0;
-    const reason = String(result?.error ?? result?.reason ?? 'Canonical parcel binding refused.')
+    const reason = String(result?.error ?? result?.reason ?? 'The design does not bind exactly its candidate parcel.')
         .replace(/\s+/g, ' ').trim().slice(0, 240);
     return {
         candidateId: String(candidate.candidateId),
         code: typeof result?.code === 'string' ? result.code : 'binding-refused',
         reason,
-        missing,
-        extra
+        bound: Array.isArray(result?.parcelIds) ? result.parcelIds.length : 0
     };
 }
 
@@ -32,39 +29,41 @@ export function prioritizedPlannedCandidates(planned) {
     return ruleBacked.length ? ruleBacked : planned;
 }
 
+/**
+ * The binding the index will give the candidate's design: { ok: true, binding, parcelIds } when it binds
+ * exactly the candidate parcel with complete coverage, else { ok: false, code, error, parcelIds }.
+ */
 export async function checkCandidateBinding({
-    db, candidate, pick, persona, runId, city, turf, checkBinding, log, retryOptions
+    db, candidate, persona, city, checkBinding, log, retryOptions
 }) {
     if (typeof checkBinding !== 'function') throw new TypeError('checkBinding must be injected');
-    const record = buildProposalRecord({
-        candidate, pick: pick ?? neutralPick(candidate), persona, runId, city, turf
-    });
-    // Keep the declaration exactly as the record builder authored it. Never infer or widen it from
-    // missing binding hits; the canonical checker must refuse a mismatching site as published.
-    // The posted agent record has no authored `site`; match the route's create precheck exactly and
-    // let checkProposalBinding derive its footprint from geometry.buildings.
-    const result = await retryParcelRead(() => checkBinding(db, record, record.cadastreParcelIds, {
-        city, parcelSourceId: candidate.parcelSourceId || null
+    const { content } = designObject(buildDesignRecord({ candidate, pick: PREFLIGHT_PICK, persona, city, authoredAt: PREFLIGHT_TIME }));
+    // The design as the index binds it (routes/designs.js bindingShape): its footprint and nothing else.
+    const shape = { geometry: content.geometry, buildingProposal: content.buildingProposal, roadProposal: null, structureProposal: null, parcelLayout: null };
+    const result = await retryParcelRead(() => checkBinding(db, shape, [], {
+        city, parcelSourceId: candidate.parcelSourceId || null, derive: true
     }), { ...retryOptions, sourceId: candidate.parcelSourceId || city || 'cadastre', log });
-    if (!result || typeof result.ok !== 'boolean') {
-        throw new Error(`binding checker returned no boolean result for ${candidate.candidateId}`);
-    }
-    if (result.ok && result.binding?.coverage !== 'complete') {
-        const coverage = typeof result.binding?.coverage === 'string' ? result.binding.coverage : 'missing';
+    if (!result || typeof result.ok !== 'boolean') throw new Error(`binding checker returned no boolean result for ${candidate.candidateId}`);
+    if (!result.ok) return { ...result, parcelIds: [] };
+    const parcelIds = (result.binding?.parcels || []).map(hit => String(hit.parcelId)).sort();
+    if (result.binding?.coverage !== 'complete') {
         return {
-            ...result,
-            ok: false,
-            status: 409,
-            code: 'agent-cadastre-incomplete',
-            error: `Autonomous proposals require complete cadastre binding; checker reported ${coverage} coverage.`
+            ok: false, code: 'agent-cadastre-incomplete', parcelIds,
+            error: `Autonomous agreements need complete cadastral coverage; the binding is ${result.binding?.coverage ?? 'missing'}.`
         };
     }
-    return result;
+    if (parcelIds.length !== 1 || parcelIds[0] !== String(candidate.parcelId)) {
+        return {
+            ok: false, code: 'agent-binding-not-candidate', parcelIds,
+            error: `The building binds ${parcelIds.join(', ') || 'no parcel'}, not exactly ${candidate.parcelId}.`
+        };
+    }
+    return { ok: true, binding: result.binding, parcelIds };
 }
 
 export async function preflightCandidates({
     db, rankedCandidates, limit, scanLimit = rankedCandidates?.length,
-    persona, runId, city, turf, checkBinding, log, retryOptions
+    persona, city, checkBinding, log, retryOptions
 }) {
     if (!Array.isArray(rankedCandidates)) throw new TypeError('rankedCandidates must be an array');
     if (!Number.isInteger(limit) || limit < 1) throw new RangeError('limit must be a positive integer');
@@ -74,9 +73,7 @@ export async function preflightCandidates({
     let scanned = 0;
     for (const candidate of rankedCandidates.slice(0, scanLimit)) {
         scanned += 1;
-        const result = await checkCandidateBinding({
-            db, candidate, persona, runId, city, turf, checkBinding, log, retryOptions
-        });
+        const result = await checkCandidateBinding({ db, candidate, persona, city, checkBinding, log, retryOptions });
         if (result.ok) candidates.push(candidate);
         else rejected.push(bindingRejection(candidate, result));
         if (candidates.length >= limit) break;

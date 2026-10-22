@@ -30,15 +30,8 @@
         },
         proposals: {
             focusOnProposal: global.focusOnProposal,
-            acceptProposalFromParcelInfo: global.acceptProposalFromParcelInfo,
-            rejectProposalFromParcelInfo: global.rejectProposalFromParcelInfo,
             showProposalDetails: global.showProposalDetails,
             switchParcelTab: global.switchParcelTab
-        },
-        ui: {
-            buildCompactAcceptanceRow: global.buildCompactAcceptanceRow,
-            buildParcelAcceptanceIndicators: global.buildParcelAcceptanceIndicators,
-            buildOwnerAcceptanceIndicators: global.buildOwnerAcceptanceIndicators
         },
         uiRoad: {
             measureAsRoad: global.measureAsRoad
@@ -51,8 +44,6 @@
             setParcelNumberLabelFilter: global.Parcels?.uiLabels?.setParcelNumberLabelFilter || global.setParcelNumberLabelFilter
         },
         uiProposals: {
-            createProposalFromSingleParcel: global.createProposalFromSingleParcel,
-            createProposalFromSelectedParcels: global.createProposalFromSelectedParcels,
             renderParcelProposalActions: global.renderParcelProposalActions
         },
         adParcels: uiAdParcels,

@@ -1,5 +1,5 @@
-// Pure execution limits for the live agent. Model spend is capped separately in ledger.js; this
-// policy bounds irreversible/signed work before the runner touches a wallet.
+// Pure execution limits for the live agents. Model spend is capped separately in ledger.js; this
+// policy bounds irreversible/signed work before a runner touches a wallet.
 
 function finiteNonNegative(value, fallback, label) {
     if (value === undefined || value === null || value === '') return fallback;
@@ -23,19 +23,20 @@ export function summarizeExecutionPlan(entries, policy = executionPolicy()) {
         for (const pick of picks) {
             plans.push({
                 persona: entry.persona.name,
-                proposalId: pick.proposalId,
-                // Worst case: proposal mint, market creation and YES stake. A
-                // pre-existing market removes one signature, but the pre-flight cap is conservative.
+                pickId: pick.pickId,
+                // Worst case: the agreement's create + fund (one transaction), the market creation and
+                // the YES stake. A pre-existing market removes one signature, but the pre-flight cap is
+                // conservative. Pinning and indexing sign nothing.
                 actions: 3,
                 usdc: stakeUsdc
             });
         }
     }
     return {
-        proposalCount: plans.length,
+        pickCount: plans.length,
         actionCount: plans.reduce((sum, plan) => sum + plan.actions, 0),
         maxUsdc: plans.reduce((sum, plan) => sum + plan.usdc, 0),
-        proposals: plans
+        picks: plans
     };
 }
 
@@ -54,42 +55,19 @@ export function decisionCompletion(picks) {
     return { noPicks, status: noPicks ? 'done' : 'running', outcome: noPicks ? 'no-picks' : null };
 }
 
-// ---- retire phase ------------------------------------------------------------------------------
-// The daily proposer mints real parcels nobody accepts, so each run first retires its own stale
-// proposals (cancel → resolve NO → claim the YES refund). These are pure limits and selection; the
-// chain reads and signing live in lifecycle-actions.js (inspectRetirement / executeRetirement).
+// ---- settlement phase --------------------------------------------------------------------------
+// Every agreement the proposer mints is a binding owners' agreement with a deadline (the persona's
+// agreement.deadlineDays). On its next runs the proposer settles its own agreements: one it owns alone it
+// decides itself (its approval, its lens member's decision, attest, execute; then the market resolves
+// YES and it claims), one past its deadline it expires (the market resolves NO and it claims any YES
+// refund). These are pure limits and selection; the chain reads and signing live in
+// lifecycle-actions.js (inspectSettlement / executeSettlement).
 
-export function retirePolicy(env = {}) {
-    return {
-        afterDays: Math.floor(finiteNonNegative(env.AGENT_RETIRE_AFTER_DAYS, 7, 'AGENT_RETIRE_AFTER_DAYS')),
-        maxPerRun: Math.floor(finiteNonNegative(env.AGENT_RETIRE_MAX_PER_RUN, 3, 'AGENT_RETIRE_MAX_PER_RUN'))
-    };
-}
+const SIGNED_STEPS = new Set(['attest', 'execute', 'expire', 'resolve', 'claim']);
+const signedCount = steps => (steps || []).filter(step => SIGNED_STEPS.has(step)).length;
 
-/**
- * The lifecycle lens member the retire phase asks for "expired" verdicts, or null (keep cancelling).
- * AGENT_LIFECYCLE_LENS_SERVICE_URL names the member's service; its operator route needs
- * AGENT_LIFECYCLE_LENS_OPERATOR_TOKEN, so a URL without a token is a configuration error, not a
- * silent fallback to cancel.
- */
-export function lifecycleLensConfig(env = {}) {
-    const serviceUrl = String(env.AGENT_LIFECYCLE_LENS_SERVICE_URL || '').trim();
-    if (!serviceUrl) return null;
-    const operatorToken = String(env.AGENT_LIFECYCLE_LENS_OPERATOR_TOKEN || '').trim();
-    if (!operatorToken) throw new Error('AGENT_LIFECYCLE_LENS_SERVICE_URL is set but AGENT_LIFECYCLE_LENS_OPERATOR_TOKEN is not; the expiry verdict route is operator-only');
-    return { serviceUrl: serviceUrl.replace(/\/+$/, ''), operatorToken };
-}
-
-/**
- * Source time of an expiry verdict: the UTC midnight of the proposal's run day plus `afterDays` —
- * the instant the retire policy made it stale. Deterministic, so the member's verdict nonce (and the
- * attestation address) is the same on every retry.
- */
-export function expiryObservedAt(sourceDay, afterDays) {
-    const day = dayString(sourceDay);
-    if (!day) throw new Error(`expiry needs the proposal's run day, got ${sourceDay}`);
-    if (!Number.isInteger(afterDays) || afterDays < 0) throw new Error('afterDays must be a non-negative integer');
-    return Math.floor(Date.parse(`${day}T00:00:00Z`) / 1000) + afterDays * 86400;
+export function settlementPolicy(env = {}) {
+    return { maxPerRun: Math.floor(finiteNonNegative(env.AGENT_SETTLE_MAX_PER_RUN, 3, 'AGENT_SETTLE_MAX_PER_RUN')) };
 }
 
 // pg hands a DATE column back as a Date at LOCAL midnight; read it back with local getters so the
@@ -104,58 +82,63 @@ export function dayString(value) {
     return null;
 }
 
-/** Whole UTC days from `sourceDay` to `runDay` (both YYYY-MM-DD), or null when either is missing. */
-export function ageInDays(sourceDay, runDay) {
-    const from = dayString(sourceDay);
-    const to = dayString(runDay);
-    if (!from || !to) return null;
-    return Math.round((Date.parse(`${to}T00:00:00Z`) - Date.parse(`${from}T00:00:00Z`)) / 86400000);
+// Whether `wallet` is the only owner of every input parcel in the agreement's rights snapshot: then its
+// own approval passes the unanimous rule and the proposer can get the agreement decided alone.
+function soleOwnerOf(content, wallet) {
+    const parcels = content?.rule?.approvalConfig?.rights?.parcels;
+    return Boolean(wallet) && content?.rule?.binding === true && Array.isArray(parcels) && parcels.length > 0
+        && parcels.every(parcel => parcel.owners?.length === 1 && parcel.owners[0].ownerId === wallet && parcel.owners[0].share === '1/1');
 }
 
 /**
- * This persona's minted proposals from its own consensus.agent_run rows. The age source is the
- * ledger row's `day` — the UTC run day the mint was made under — never a fetch time.
+ * This persona's minted agreements from its own consensus.agent_run rows (summary.mints and
+ * summary.agreements per pick), oldest run first, one entry per account, each with its published content,
+ * its lens and whether `wallet` owns all of its land alone (soleOwner). An account some run recorded as
+ * settled (summary.settlements[account].settled) is left out.
  */
-export function ownedProposalsFromRuns(runs, personaName, runDay) {
+export function ownedAgreementsFromRuns(runs, personaName, wallet = null) {
+    const mine = (runs || []).filter(run => run?.persona === personaName);
+    // Settled for good in some run (terminal, its market resolved and claimed): never read again.
+    const settled = new Set(mine.flatMap(run => Object.entries(run.summary?.settlements || {})
+        .filter(([, record]) => record?.settled === true).map(([account]) => account)));
     const owned = [];
-    const seen = new Set();
-    for (const run of runs || []) {
-        if (run?.persona !== personaName) continue;
-        const sourceDay = dayString(run.day);
-        if (!sourceDay || sourceDay >= runDay) continue;
+    const seen = new Set(settled);
+    for (const run of mine) {
         const summary = run.summary || {};
         for (const pick of summary.picks || []) {
-            const proposalPda = summary.mints?.[pick.candidateId]?.proposalPda;
-            if (!proposalPda || seen.has(proposalPda)) continue;
-            seen.add(proposalPda);
+            const mint = summary.mints?.[pick.candidateId];
+            const agreement = summary.agreements?.[pick.candidateId];
+            if (!mint?.account || !agreement?.cid || seen.has(mint.account)) continue;
+            seen.add(mint.account);
             owned.push({
-                proposalId: pick.proposalId, proposalPda, sourceRunId: run.run_id, sourceDay,
-                staked: Boolean(summary.stakes?.[pick.candidateId])
+                pickId: pick.pickId, cid: agreement.cid, account: mint.account, deadline: agreement.deadline ?? null,
+                content: agreement.content ?? null, lens: agreement.content?.rule?.lens?.[0] ?? null,
+                soleOwner: soleOwnerOf(agreement.content, wallet),
+                sourceRunId: run.run_id, sourceDay: dayString(run.day), staked: Boolean(summary.stakes?.[pick.candidateId])
             });
         }
     }
-    return owned.sort((a, b) => a.sourceDay.localeCompare(b.sourceDay) || a.proposalId.localeCompare(b.proposalId));
+    return owned.sort((a, b) => String(a.sourceDay).localeCompare(String(b.sourceDay)) || a.cid.localeCompare(b.cid));
 }
 
-/** Signed actions and retirements already spent today, read from today's run checkpoint. */
-export function retirementsSpent(retirements = {}) {
+/** Signed transactions and agreements already settled in this run's checkpoint (summary.settlements). */
+export function settlementsSpent(settlements = {}) {
     let actions = 0;
     let count = 0;
-    for (const record of Object.values(retirements || {})) {
-        const signed = [record?.cancel, record?.expiry, record?.resolution, record?.claim].filter(step => step?.signature).length;
+    for (const record of Object.values(settlements || {})) {
+        const signed = [record?.attest, record?.execution, record?.expiry, record?.resolution, record?.claim].filter(step => step?.signature).length;
         actions += signed;
-        if (signed) count += 1;
+        if (signed || record?.approval) count += 1;
     }
     return { actions, count };
 }
 
 /**
- * Pick which inspected proposals to retire this run. An Active proposal must have no acceptances
- * and be at least `afterDays` old; a proposal already cancelled with steps outstanding (a previous
- * run failed half-way, or the owner cancelled by hand) is finished regardless of age. Oldest first,
- * bounded by the per-run cap and by the signed actions the daily cap has left after proposing.
+ * Pick which inspected agreements to settle this run: those with outstanding steps, oldest first,
+ * bounded by the per-run cap and by the signed transactions the action cap has left after proposing
+ * (decide and lens sign no transaction of the proposer's, so they cost none).
  */
-export function planRetirements(inspections, { policy = retirePolicy(), runDay, actionBudget, spent = { actions: 0, count: 0 } } = {}) {
+export function planSettlements(inspections, { policy = settlementPolicy(), actionBudget, spent = { actions: 0, count: 0 } } = {}) {
     if (typeof actionBudget !== 'number' || !Number.isFinite(actionBudget)) throw new Error('actionBudget must be a finite number');
     const selected = [];
     const skipped = [];
@@ -163,36 +146,22 @@ export function planRetirements(inspections, { policy = retirePolicy(), runDay, 
     let slotsLeft = Math.max(0, policy.maxPerRun - spent.count);
     const ordered = [...(inspections || [])].sort((a, b) => String(a.sourceDay).localeCompare(String(b.sourceDay)));
     for (const item of ordered) {
-        const ageDays = ageInDays(item.sourceDay, runDay);
-        const base = { proposalId: item.proposalId, proposalPda: item.proposalPda, sourceDay: item.sourceDay, ageDays, state: item.state };
-        if (!item.steps?.length) { skipped.push({ ...base, reason: item.state === 'retired' ? 'already-retired' : item.state }); continue; }
-        if (item.state === 'active') {
-            if (item.acceptedParcels?.length) { skipped.push({ ...base, reason: 'has-acceptances' }); continue; }
-            if (ageDays === null) { skipped.push({ ...base, reason: 'no-age' }); continue; }
-            if (ageDays < policy.afterDays) { skipped.push({ ...base, reason: 'too-young' }); continue; }
-        }
-        if (slotsLeft <= 0) { skipped.push({ ...base, reason: 'retire-cap' }); continue; }
-        if (item.steps.length > actionsLeft) { skipped.push({ ...base, reason: 'action-cap' }); continue; }
-        selected.push({ ...item, ageDays });
+        const base = { pickId: item.pickId, cid: item.cid, account: item.account, sourceDay: item.sourceDay, state: item.state };
+        if (!item.steps?.length) { skipped.push({ ...base, reason: item.state }); continue; }
+        if (slotsLeft <= 0) { skipped.push({ ...base, reason: 'settle-cap' }); continue; }
+        const actions = signedCount(item.steps);
+        if (actions > actionsLeft) { skipped.push({ ...base, reason: 'action-cap' }); continue; }
+        selected.push(item);
         slotsLeft -= 1;
-        actionsLeft -= item.steps.length;
+        actionsLeft -= actions;
     }
     return {
         selected,
         skipped,
-        actions: selected.reduce((sum, item) => sum + item.steps.length, 0),
+        actions: selected.reduce((sum, item) => sum + signedCount(item.steps), 0),
         budget: Math.max(0, actionBudget - spent.actions),
-        limited: skipped.filter(item => item.reason === 'retire-cap' || item.reason === 'action-cap').length
+        limited: skipped.filter(item => item.reason === 'settle-cap' || item.reason === 'action-cap').length
     };
-}
-
-/**
- * The action-engine action for a mint. The lens rides inside the action so it lands in the activity
- * envelope as `action.lens` (the proof audit's no_self_lens check reads it from create events).
- */
-export function createAction({ proposalId, lens } = {}) {
-    if (!Array.isArray(lens) || !lens.length) throw new Error('a create action needs the lens it mints with');
-    return { type: 'create', ...(proposalId ? { proposalId } : {}), lens: [...lens] };
 }
 
 // ---- society roles (society-run.mjs) -----------------------------------------------------------

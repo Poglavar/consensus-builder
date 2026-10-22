@@ -1,7 +1,7 @@
 # robots.txt for the Urban Game Theory web app, served as a static file by nginx. Agents: see
 # /llms.txt. The JSON API at https://api.urbangametheory.xyz serves its own robots.txt and llms.txt.
 # Search and answer engines are welcome everywhere except the internal developer tools below.
-# Consoles (lens.html, tx-explorer.html, canton.html) stay crawlable so their noindex is seen.
+# Consoles (lens.html, tx-explorer.html) stay crawlable so their noindex is seen.
 User-agent: *
 Allow: /
 Disallow: /codechecker/

@@ -114,7 +114,6 @@ function normalizeProposalGoalKey(rawGoal) {
 
     // Canonical mappings (human labels -> goal keys)
     if (text === 'road/track' || text === 'road' || text === 'track') return 'road-track';
-    if (text === 'decide later' || text === 'decide-later') return 'decide-later';
     if (text === 'building(s)' || text === 'single building' || text === 'single') return 'single';
     if (text === 'buildings' || text === 'residences') return 'buildings';
 
@@ -122,8 +121,7 @@ function normalizeProposalGoalKey(rawGoal) {
     const key = dashed.replace(/\//g, '-');
 
     if (key === 'road-track') return 'road-track';
-    if (key === 'decide-later') return 'decide-later';
-    if (key === 'reparcellization') return 'reparcellization';
+    if (key === 'parcel-layout') return 'parcel-layout';
     if (key === 'park' || key === 'square' || key === 'lake' || key === 'station' || key === 'transit-station') {
         return key === 'transit-station' ? 'station' : key;
     }
@@ -215,7 +213,6 @@ function updateGoalDependentSections(toolKey) {
     const partialButton = document.querySelector('.proposal-acquisition-partial-label');
 
     const isUrbanRule = toolKey === 'urban-rule';
-    const isReparcellization = toolKey === 'reparcellization';
     const isRoad = toolKey === 'road-track';
     const isOwnershipTransfer = toolKey === 'ownership-transfer';
 
@@ -229,7 +226,7 @@ function updateGoalDependentSections(toolKey) {
         typologyGroup.style.display = isUrbanRule ? '' : 'none';
     }
     if (boundaryGroup) {
-        boundaryGroup.style.display = isReparcellization ? '' : 'none';
+        boundaryGroup.style.display = 'none';
     }
     if (ownershipTransferGroup) {
         // Replaced by the persistent Ownership radio group. The legacy direction
@@ -245,11 +242,6 @@ function updateGoalDependentSections(toolKey) {
     if (isUrbanRule) {
         setProposalMainType('Urban Rule');
         handleUrbanRuleTypologyClick('block', { skipLaunch: true });
-    } else if (isReparcellization) {
-        setProposalMainType('Reparcellization', { skipReparcelLaunch: true });
-        const selection = getCurrentParcelSelectionContext();
-        const ownershipStats = computeOwnershipStatsFromSelection(selection);
-        setProposalBoundaryMode(ownershipStats.mode, { lock: true });
     } else if (isOwnershipTransfer) {
         setProposalMainType('Purchase');
         // Reset to default 'to-me' direction when ownership-transfer is selected
@@ -259,8 +251,6 @@ function updateGoalDependentSections(toolKey) {
         const acquisitionMode = isRoad ? 'partial-preferred' : 'full';
         setProposalAcquisitionMode(acquisitionMode);
         setProposalBoundaryMode('multiple', { unlock: true });
-        // Reset options when switching away from ownership transfer
-        resetOwnershipTransferOptions();
     }
 
     renderGeometrySection(toolKey);
@@ -308,10 +298,6 @@ function onProposalLandUseChange() {
 }
 
 function selectLandUse(key, { skipChecks = false } = {}) {
-    if (key === 'decide-later') {
-        console.warn('[proposals] Merge / Decide Later is no longer a creatable goal.');
-        return false;
-    }
     if (!skipChecks && ['park', 'square', 'lake'].includes(key)) {
         const contiguity = proposalGroundContiguity();
         if (!contiguity.contiguous) {
@@ -320,7 +306,6 @@ function selectLandUse(key, { skipChecks = false } = {}) {
         }
     }
     setProposalLandUseMode(key);
-    showProposalPerSliceOption(false);
     const luLabel = facetModeLabel('proposalLandUse', key);
     if (key === 'urban-rule') {
         setProposalParcelsMode('as-is', { lock: true, reason: luLabel });   // a rule doesn't change parcels
@@ -400,12 +385,9 @@ function initProposalFacets(overrideGoal) {
     setProposalLandUseMode('as-is');
     setProposalParcelsMode('as-is', { unlock: true });
     setProposalOwnershipMode('no-change', { unlock: true });
-    showProposalPerSliceOption(false);
 
     const g = overrideGoal ? (typeof normalizeGoalKey === 'function' ? normalizeGoalKey(overrideGoal) : overrideGoal) : null;
     if (!g || g === 'as-is') { syncProposalFacets(); return; }
-    if (g === 'decide-later') { syncProposalFacets(); return; }
-    if (g === 'reparcellization') { setProposalParcelsMode('readjust'); onProposalParcelsChange(); return; }
     if (g === 'ownership-transfer' || g === 'ownership-transfer-to-me' || g === 'ownership-transfer-from-me') {
         setProposalOwnershipMode('to-me'); onProposalOwnershipChange(); return;
     }
@@ -430,8 +412,8 @@ function setProposalType(type) {
     });
     // Only adopt a tool actually resolved from the (legacy) type buttons. The facets-based dialog
     // has no such buttons, so resolvedTool is null there — in that case keep the tool the caller
-    // already set (e.g. setProposalMainType('Reparcellization') before setProposalType in the
-    // reparcellization "Done" path). Clobbering it to null nulled the goal and blocked Create with
+    // already set (e.g. setProposalMainType('Urban Rule') before setProposalType). Clobbering it to
+    // null nulled the goal and blocked Create with
     // "Select a proposal goal before creating a proposal."
     if (resolvedTool) {
         currentProposalTool = resolvedTool;
@@ -443,8 +425,7 @@ function setProposalType(type) {
     updateProposalDescription(effectiveType);
 }
 
-function setProposalMainType(type, options = {}) {
-    const skipReparcelLaunch = options.skipReparcelLaunch === true;
+function setProposalMainType(type) {
     const buttons = document.querySelectorAll('[data-proposal-main-type]');
     buttons.forEach(btn => {
         btn.setAttribute('aria-pressed', String(btn.getAttribute('data-proposal-main-type') === type));
@@ -455,24 +436,9 @@ function setProposalMainType(type, options = {}) {
         input.value = type || 'Purchase';
     }
 
-    const algorithmGroup = document.getElementById('reparcellizationAlgorithmGroup');
-    if (algorithmGroup) {
-        algorithmGroup.style.display = 'none';
-    }
-
-    const isReparcellization = type === 'Reparcellization';
     const isUrbanRule = type === 'Urban Rule';
 
-    if (isReparcellization) {
-        currentProposalTool = 'reparcellization';
-        const typeInput = document.getElementById('proposalType');
-        if (typeInput) {
-            typeInput.value = 'Reparcellization';
-        }
-        if (!skipReparcelLaunch) {
-            handleReparcellizationAlgorithmClick('sweep-line');
-        }
-    } else if (isUrbanRule) {
+    if (isUrbanRule) {
         currentProposalTool = 'urban-rule';
         setProposalType('Urban Rule');
     } else {
@@ -514,8 +480,6 @@ function handleProposalToolButton(toolKey) {
     // set the proposal goal programmatically — route every goal through the facet model
     // so the three persistent sections (Land use / Parcels / Ownership) stay in sync.
     const key = (typeof normalizeGoalKey === 'function' ? (normalizeGoalKey(toolKey) || toolKey) : toolKey);
-    if (key === 'decide-later') return false;
-    if (key === 'reparcellization') { setProposalParcelsMode('readjust'); onProposalParcelsChange(); return; }
     if (key === 'ownership-transfer' || key === 'ownership-transfer-to-me' || key === 'ownership-transfer-from-me') {
         setProposalOwnershipMode('to-me'); onProposalOwnershipChange(); return;
     }

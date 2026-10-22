@@ -10,7 +10,7 @@ describe('site intro opt-in policy', () => {
         expect(shouldShowSiteIntro(search)).toBe(false);
     });
 
-    it.each(['activity', 'focusProposal', 'bets', 'parcel', 'proposalShare', 'shared', 'scene', 'model', 'mode3d', 'photo'])('leaves %s links uninterrupted', name => {
+    it.each(['activity', 'focusProposal', 'bets', 'parcel', 'scene', 'model', 'mode3d', 'photo'])('leaves %s links uninterrupted', name => {
         expect(shouldShowSiteIntro(`?${name}=destination`)).toBe(false);
     });
 

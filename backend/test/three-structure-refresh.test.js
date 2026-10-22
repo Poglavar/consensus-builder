@@ -23,7 +23,7 @@ function sceneOptions(overrides = {}) {
         buildLakes: vi.fn(() => events.push('build:lakes')),
         buildStations: vi.fn(() => events.push('build:stations')),
         rebuildParcelGround: vi.fn(() => events.push('rebuild:parcelground')),
-        reparcellizationGroup: 'reparcel',
+        parcelLayoutGroup: 'parcel-layout',
         layers: {
             parks: { groups: ['park-flat', 'parks'], build: vi.fn(() => events.push('build:parks')) },
             squares: { groups: ['square-flat', 'squares'], build: vi.fn(() => events.push('build:squares')) },
@@ -31,7 +31,7 @@ function sceneOptions(overrides = {}) {
             stations: { groups: ['stations'], rebuildParcelGround: true, build: vi.fn(() => events.push('build:stations')) },
             buildingGrounds: { groups: ['building-grounds'], build: vi.fn(() => events.push('build:grounds')) }
         },
-        buildReparcellization: vi.fn(() => events.push('build:reparcellization')),
+        buildParcelLayouts: vi.fn(() => events.push('build:parcel-layouts')),
         applyDisplay: vi.fn(() => events.push('apply:display')),
         rebuildBuildings: vi.fn(() => events.push('rebuild:buildings')),
         rebuildInteraction: vi.fn(() => events.push('rebuild:interaction')),
@@ -69,15 +69,15 @@ describe('refreshStructureScene3D', () => {
         const { events, options } = sceneOptions();
 
         expect(refreshStructureScene3D(options, eventName)).toBe('rebuilt');
-        expect(options.clearGroup.mock.calls.map(call => call[0])).toEqual([...selectedGroups, 'reparcel']);
+        expect(options.clearGroup.mock.calls.map(call => call[0])).toEqual([...selectedGroups, 'parcel-layout']);
         expect(events).toContain(buildEvent);
-        expect(events).toContain('build:reparcellization');
+        expect(events).toContain('build:parcel-layouts');
         expect(events).toContain('apply:display');
         expect(events).toContain('rebuild:buildings');
         expect(events).toContain('rebuild:interaction');
         expect(options.rebuildParcelGround).toHaveBeenCalledTimes(parcelGround ? 1 : 0);
         const allBuilds = events.filter(event => event.startsWith('build:'));
-        expect(allBuilds).toEqual([buildEvent, 'build:reparcellization']);
+        expect(allBuilds).toEqual([buildEvent, 'build:parcel-layouts']);
     });
 
     it('still rebuilds buildings when one decoration renderer fails', () => {

@@ -1,4 +1,6 @@
-// Reconstructs three recent Zagreb neighbourhood plans from local authoritative spatial data.
+// Reconstructs three recent Zagreb neighbourhood plans from local authoritative spatial data and writes
+// them as canonical archives with their manifests (restatements/nova-naselja). It reads the local
+// database and writes no rows; backend/scripts/publish-restatement-archives.mjs publishes the archives.
 //
 // Buildings use current DGU footprints and matched GDI heights. Podbrežje additionally carries
 // seven explicitly marked plan-derived residential envelopes because only four of its eleven M1
@@ -8,11 +10,10 @@
 // spaces; the reconstruction does not carry a second, presentation-only application mode.
 //
 // Usage:
-//   node backend/scripts/seed-neighbourhood-reconstructions.mjs --dry-run --export
-//   node backend/scripts/seed-neighbourhood-reconstructions.mjs --apply --export
+//   node backend/scripts/seed-neighbourhood-reconstructions.mjs --dry-run
+//   node backend/scripts/seed-neighbourhood-reconstructions.mjs --export
 
 import { createRequire } from 'node:module';
-import crypto from 'node:crypto';
 import dotenv from 'dotenv';
 import * as turf from '@turf/turf';
 import { mkdir, writeFile } from 'node:fs/promises';
@@ -22,7 +23,6 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import { assertReconstructionGeoJSONRoundTrip } from '../proposals/reconstruction-geojson.js';
 import { assertCorridorReconstructionGeoJSONRoundTrip } from '../proposals/corridor-reconstruction-geojson.js';
 import { assertStructureReconstructionGeoJSONRoundTrip } from '../proposals/structure-reconstruction-geojson.js';
-import { canonicalSeedRecord } from './lib/canonical-seed-record.mjs';
 
 dotenv.config({ path: fileURLToPath(new URL('../.env', import.meta.url)), quiet: true });
 
@@ -59,7 +59,6 @@ export const NEIGHBOURHOODS = Object.freeze([
         key: 'novi-jelkovec',
         planName: 'DPU stambenog naselja na lokaciji Sopnica - Jelkovec',
         title: 'Novi Jelkovec – rekonstrukcija naselja',
-        planTitle: 'Novi Jelkovec – zgrade, parkovi, trgovi i prometnice',
         buildingTitle: 'Novi Jelkovec – rekonstrukcija izvedenih zgrada',
         buildingDescription: 'Rekonstrukcija glavnih izvedenih zgrada unutar DPU-a Sopnica–Jelkovec. Tlocrti su aktualna pravna DGU geometrija, a visine su iz najboljega lokalnog podudaranja s GDI snimkom. Terase, stubišta, nadstrešnice, trafostanice i drugi pomoćni poligoni nisu zasebni volumeni.',
         buildingMode: 'observed',
@@ -77,7 +76,6 @@ export const NEIGHBOURHOODS = Object.freeze([
         key: 'podbrezje',
         planName: 'UPU Podbrežje',
         title: 'Podbrežje – rekonstrukcija UPU-a',
-        planTitle: 'Podbrežje – izvedene i planirane zgrade, park i prometnice',
         buildingTitle: 'Podbrežje – jedanaest stambenih blokova UPU-a',
         buildingDescription: 'Četiri izvedena bloka imaju aktualne DGU tlocrte i podudarne GDI visine. Preostalih sedam prikazano je kao plan-derived envelope: položaj i os slijede jedanaest službenih polja M1 te pobjednički urbanistički koncept, a širina i završni odmaci kalibrirani su na četiri izvedena bloka. To nisu tlocrti iz budućih građevinskih dozvola niti sigurna veza s oznakama A1–A11.',
         buildingMode: 'podbrezje-plan',
@@ -97,7 +95,6 @@ export const NEIGHBOURHOODS = Object.freeze([
         key: 'vrbani-iii',
         planName: 'UPU Vrbani III',
         title: 'Vrbani III – rekonstrukcija naselja',
-        planTitle: 'Vrbani III – izvedene zgrade, parkovi i prometnice',
         buildingTitle: 'Vrbani III – rekonstrukcija izvedenih zgrada',
         buildingDescription: 'Rekonstrukcija glavnih izvedenih zgrada unutar UPU-a Vrbani III. Tlocrti su aktualna pravna DGU geometrija, a visine su iz najboljega lokalnog podudaranja s GDI snimkom. Uključene su i veće kuće koje službena granica UPU-a obuhvaća; pomoćni DGU poligoni nisu zasebni volumeni.',
         buildingMode: 'observed',
@@ -114,20 +111,19 @@ export const NEIGHBOURHOODS = Object.freeze([
 ]);
 
 function usage() {
-    console.log(`Usage: node backend/scripts/seed-neighbourhood-reconstructions.mjs --dry-run|--apply [--export] [--only key,key]
+    console.log(`Usage: node backend/scripts/seed-neighbourhood-reconstructions.mjs --dry-run|--export [--only key,key]
 
-  --dry-run  Build and validate all proposals without writing database rows.
-  --apply    Upsert proposals and named plans in the local database.
+  --dry-run  Build and validate all archives without writing a file.
   --export   Write canonical GeoJSON archives and plan manifests.
-  --only     Limit the run to comma-separated keys: novi-jelkovec,podbrezje,vrbani-iii.`);
+  --only     Limit the run to comma-separated keys: novi-jelkovec,podbrezje,vrbani-iii.
+Both read the local database. Publish the archives with backend/scripts/publish-restatement-archives.mjs.`);
 }
 
 export function parseArgs(argv) {
-    const args = { apply: false, dryRun: false, export: false, only: null, help: false };
+    const args = { dryRun: false, export: false, only: null, help: false };
     for (let index = 0; index < argv.length; index += 1) {
         const arg = argv[index];
         if (arg === '--help' || arg === '-h') args.help = true;
-        else if (arg === '--apply') args.apply = true;
         else if (arg === '--dry-run') args.dryRun = true;
         else if (arg === '--export') args.export = true;
         else if (arg === '--only') {
@@ -135,13 +131,13 @@ export function parseArgs(argv) {
             if (!args.only.size) throw new Error('--only requires at least one project key.');
         } else throw new Error(`Unknown argument: ${arg}`);
     }
-    if (!args.help && args.apply === args.dryRun) throw new Error('Choose exactly one of --dry-run or --apply.');
+    if (!args.help && args.export === args.dryRun) throw new Error('Choose exactly one of --dry-run or --export.');
     return args;
 }
 
 function assertLocalDatabase() {
     if (!isLocalDatabase()) {
-        throw new Error(`Refusing to seed non-local database host ${describeDatabase().host || '(empty)'}.`);
+        throw new Error(`Refusing to read the reconstruction sources from non-local database host ${describeDatabase().host || '(empty)'}.`);
     }
 }
 
@@ -843,80 +839,6 @@ async function buildNeighbourhood(pool, config) {
     };
 }
 
-async function upsertProposal(pool, authored) {
-    // Same projection as the API write path; throws before writing if the row would be unreadable.
-    const proposal = canonicalSeedRecord(authored);
-    const { rows } = await pool.query(`
-        INSERT INTO public.proposal (
-            proposal_id, city, name, title, description, author, type,
-            lifecycle_status, created_at, updated_at,
-            ancestor_parcel_ids, cadastre_parcel_ids,
-            road_proposal, building_proposal, structure_proposal,
-            bounds, proposal_data, applied
-        ) VALUES (
-            $1, $2, $3, $4, $5, $6, $7,
-            $8, $9, $10,
-            $11::jsonb, $12::jsonb,
-            $13::jsonb, $14::jsonb, $15::jsonb,
-            $16::jsonb, $17::jsonb, false
-        )
-        ON CONFLICT (proposal_id) DO UPDATE SET
-            city = EXCLUDED.city,
-            name = EXCLUDED.name,
-            title = EXCLUDED.title,
-            description = EXCLUDED.description,
-            author = EXCLUDED.author,
-            type = EXCLUDED.type,
-            lifecycle_status = EXCLUDED.lifecycle_status,
-            created_at = EXCLUDED.created_at,
-            updated_at = EXCLUDED.updated_at,
-            ancestor_parcel_ids = EXCLUDED.ancestor_parcel_ids,
-            cadastre_parcel_ids = EXCLUDED.cadastre_parcel_ids,
-            road_proposal = EXCLUDED.road_proposal,
-            building_proposal = EXCLUDED.building_proposal,
-            structure_proposal = EXCLUDED.structure_proposal,
-            bounds = EXCLUDED.bounds,
-            proposal_data = EXCLUDED.proposal_data,
-            applied = false
-        RETURNING id, proposal_id
-    `, [
-        proposal.proposalId,
-        proposal.city,
-        proposal.name,
-        proposal.title,
-        proposal.description,
-        proposal.author,
-        proposal.type,
-        proposal.lifecycleStatus,
-        proposal.createdAt,
-        proposal.updatedAt,
-        null, // ancestor_parcel_ids is retired; cadastre_parcel_ids is the declaration
-        JSON.stringify(proposal.cadastreParcelIds || []),
-        proposal.roadProposal ? JSON.stringify(proposal.roadProposal) : null,
-        proposal.buildingProposal ? JSON.stringify(proposal.buildingProposal) : null,
-        proposal.structureProposal ? JSON.stringify(proposal.structureProposal) : null,
-        JSON.stringify(proposal.bounds || null),
-        JSON.stringify(proposal)
-    ]);
-    return rows[0];
-}
-
-async function upsertNamedPlan(pool, config, proposalRows) {
-    const tokenHash = crypto.createHash('sha256').update(`local-reconstruction:${config.key}`).digest('hex');
-    const proposalIds = proposalRows.map(row => String(row.id));
-    const { rows } = await pool.query(`
-        INSERT INTO public.ens_plan (slug, proposal_ids, title, city, edit_token_hash)
-        VALUES ($1, $2::jsonb, $3, 'zagreb', $4)
-        ON CONFLICT (slug) DO UPDATE SET
-            proposal_ids = EXCLUDED.proposal_ids,
-            title = EXCLUDED.title,
-            city = EXCLUDED.city,
-            updated_at = NOW()
-        RETURNING slug, proposal_ids
-    `, [config.key, JSON.stringify(proposalIds), config.planTitle, tokenHash]);
-    return rows[0];
-}
-
 function archiveFilename(proposal) {
     if (proposal.roadProposal) return 'proposal-roads.geojson';
     if (proposal.buildingProposal) return 'proposal-buildings.geojson';
@@ -961,13 +883,10 @@ async function exportNeighbourhood(result) {
         schema: 'consensus-builder.reconstruction-plan.v1',
         project: result.config.key,
         title: result.config.title,
-        planTitle: result.config.planTitle,
         sourcePlan: result.config.planName,
         planYears: result.config.planYears,
         implementationStatus: result.config.status,
         generatedAt: RECONSTRUCTION_DATE,
-        planSlug: result.config.key,
-        localPath: `/proposals/${result.config.key}?city=zagreb`,
         sources: clone(result.config.sources),
         context: { file: 'plan-land-use.geojson', areaM2: result.context.areaM2 },
         proposals: entries,
@@ -1001,12 +920,12 @@ function summary(result) {
         squares: result.squares.length,
         roadCentrelines: result.road.roadProposal.definition.segmentIds.length,
         roadLengthM: Number(result.road.source.lengthM.toFixed(1)),
-        roadFootprintAreaM2: Number(result.road.source.footprintAreaM2.toFixed(1)),
-        localPath: `/proposals/${result.config.key}?city=zagreb`
+        roadFootprintAreaM2: Number(result.road.source.footprintAreaM2.toFixed(1))
     };
 }
 
 export async function main(argv = process.argv.slice(2)) {
+    if (!argv.length) { usage(); return; }
     const args = parseArgs(argv);
     if (args.help) { usage(); return; }
     assertLocalDatabase();
@@ -1024,24 +943,11 @@ export async function main(argv = process.argv.slice(2)) {
         for (const config of selected) {
             const result = await buildNeighbourhood(pool, config);
             console.log(JSON.stringify(summary(result), null, 2));
-            let manifest = null;
             if (args.export) {
-                manifest = await exportNeighbourhood(result);
+                const manifest = await exportNeighbourhood(result);
                 console.log(`Exported ${manifest.proposals.length} canonical proposal archives to ${ARCHIVE_ROOT}${config.key}/.`);
             }
-            if (args.apply) {
-                await pool.query('BEGIN');
-                try {
-                    const rows = [];
-                    for (const proposal of result.proposals) rows.push(await upsertProposal(pool, proposal));
-                    const plan = await upsertNamedPlan(pool, config, rows);
-                    await pool.query('COMMIT');
-                    console.log(`Stored ${rows.length} local proposals and /proposals/${plan.slug}?city=zagreb.`);
-                } catch (error) {
-                    await pool.query('ROLLBACK');
-                    throw error;
-                }
-            }
+            if (args.dryRun) console.log('Dry run complete; no archive was written.');
         }
     } finally {
         await pool.end();

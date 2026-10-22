@@ -56,7 +56,7 @@ describe('validateApply', () => {
     // must defer to the apply rather than refuse.
     describe('stays quiet when it cannot be sure', () => {
         it('passes kinds it has no record-level rule for', () => {
-            for (const goal of ['road-track', 'reparcellization', 'decide-later', 'park', 'square']) {
+            for (const goal of ['road-track', 'reparcellization', 'parcel-layout', 'park', 'square']) {
                 expect(validateApply({ proposalId: 'x', goal }, deps).ok, goal).toBe(true);
             }
         });

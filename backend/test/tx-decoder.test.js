@@ -5,6 +5,7 @@ import { describe, expect, it } from 'vitest';
 import { PublicKey } from '@solana/web3.js';
 import { buildAddressBook } from '../solana/address-book.js';
 import { loadIdls, decodeParsedTransaction, decodeBase58, encodeBase58 } from '../solana/tx-decoder.js';
+import { AGREEMENT_PROGRAM_ID, AgreementClient } from '../agreements/onchain.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -20,11 +21,13 @@ const USDC = '4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU';
 const TOKEN_PROGRAM = 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA';
 const SYSTEM_PROGRAM = '11111111111111111111111111111111';
 const MARKET_PROGRAM = 'GDYnzduynKhKgxDhvvKVarn2s23DtzA26s6hycuUYDRB';
+const PLEDGE_PROGRAM = '1jESRS3mJiPUJTtmQ5ncyBhGNmGeXTpUqPyJcTYrp6g';
 const PROPOSAL_PROGRAM = '3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg';
 
-// Deterministic PDAs standing in for market accounts that do not exist on devnet yet.
+// Deterministic PDAs standing in for market accounts that do not exist on devnet yet. SUBJECT is the
+// agreement account a market or pledge is about (the account their IDLs still call `proposal`).
 const MARKET = 'LU6ENfBJU9BJSgsFJMoBNcafSaMkoZHrjY4bZ61Aim9';
-const PROPOSAL = 'Gsvt9WiKUK7Jq3LMDZjrWZERKaaq4zy8UyjKRrCnQ6UT';
+const SUBJECT = 'Gsvt9WiKUK7Jq3LMDZjrWZERKaaq4zy8UyjKRrCnQ6UT';
 const POSITION = 'DDi6wgNuAR3GYu2Zirmys4HnB6Ee3DiHpY84bqauqQHH';
 const VAULT = 'EVFpL5JVXmsWpJieChQRhXxAHSNCVh8v3KwWdsoniiwB';
 
@@ -42,7 +45,7 @@ function decode(rpcTx) {
     return decodeParsedTransaction(rpcTx, { book, idls });
 }
 
-// `name` is a current IDL (`proposal_nft`) or a legacy one under idl/legacy (`legacy/proposal_nft.v1`).
+// `name` is a current IDL (`agreement`) or a legacy one under idl/legacy (`legacy/proposal_market.v1`).
 function rawIdl(name) {
     return JSON.parse(fs.readFileSync(path.join(IDL_DIR, `${name}.json`), 'utf8'));
 }
@@ -140,7 +143,7 @@ function marketTx(instruction, { values = {}, accounts, inner = [] }) {
         key(TREASURY, { signer: true, writable: true }),
         key(PERSONA_USDC, { writable: true }),
         key(MARKET, { writable: true }),
-        key(PROPOSAL, { writable: true }),
+        key(SUBJECT, { writable: true }),
         key(POSITION, { writable: true }),
         key(VAULT, { writable: true }),
         key(USDC),
@@ -187,11 +190,13 @@ describe('base58 helpers', () => {
 });
 
 describe('loadIdls', () => {
-    it('indexes the app programs by address and by name', () => {
-        expect([...idls.byName.keys()].sort()).toEqual(['parcel_nft', 'proposal_market', 'proposal_nft', 'proposal_pledge']);
-        expect(idls.byAddress.get(PROPOSAL_PROGRAM).name).toBe('proposal_nft');
+    it('indexes the app programs by address and by name: the agreement program, not proposal_nft (M3)', () => {
+        expect([...idls.byName.keys()].sort()).toEqual(['agreement', 'parcel_nft', 'proposal_market', 'proposal_pledge']);
+        expect(idls.byAddress.get(AGREEMENT_PROGRAM_ID).name).toBe('agreement');
         expect(idls.byAddress.get(MARKET_PROGRAM).name).toBe('proposal_market');
         expect(idls.byAddress.get('4zadC1FgWPQLv6qv66mjEBthBqTvrmxL5oDcHQzNtkV1').name).toBe('parcel_nft');
+        // Designs are not minted: the proposal program's instructions are no longer decoded.
+        expect(idls.byAddress.has(PROPOSAL_PROGRAM)).toBe(false);
     });
 
     it('indexes instructions by their discriminator hex with account names in order', () => {
@@ -323,164 +328,142 @@ describe('decodeParsedTransaction: USDC funding (recorded devnet tx)', () => {
     });
 });
 
-describe('decodeParsedTransaction: proposal_nft mint_and_fund (recorded devnet tx)', () => {
+describe('decodeParsedTransaction: a proposal_nft transaction from devnet history (recorded devnet tx)', () => {
+    // Since M3 the app no longer uses proposal_nft: the address book neither watches nor names it and
+    // the decoder has no IDL for it, so a stored transaction of it reads as one of an unknown program.
     const decoded = decode(fixture('proposal-nft-mint-and-fund'));
-    const anchor = decoded.instructions.find((instruction) => instruction.program.name === 'proposal_nft');
+    const ix = decoded.instructions.find((instruction) => instruction.program.address === PROPOSAL_PROGRAM);
 
-    it('maps the instruction data to the IDL discriminator', () => {
-        expect(anchor.discriminator).toBe(idlDiscriminatorHex('proposal_nft', 'mint_and_fund'));
-        expect(anchor.action).toBe('mint_and_fund');
+    it('lists the transaction under the bare program address, without an action or roles', () => {
+        expect(decoded.status).toBe('success');
+        expect(ix.program).toEqual({ address: PROPOSAL_PROGRAM, label: null, kind: null, short: '3WsV…fxbg', name: null });
+        expect(ix.action).toBeNull();
+        expect(ix.args).toBeNull();
+        expect(ix.accounts.map((account) => account.role)).toEqual([null, null, null, null]);
+        expect(ix.data).toMatch(/^[1-9A-HJ-NP-Za-km-z]+$/);
+        expect(decoded.programs).toEqual([]);
+        expect(decoded.summary).toBe('8ErK…UPyw sent a transaction to 3WsV…fxbg');
     });
+});
 
-    it('decodes it with the v1 interface: the v2 mint_and_fund shares the discriminator but reads a trailing bool v1 never sent', () => {
-        expect(anchor.idlVersion).toBe('v1');
+// --- agreement program (not deployed yet, so built with the codec the browser and agents sign with) --
+
+const AGREEMENT_CID = 'bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku';
+const SPONSOR = PERSONA_WALLET;
+const keyOf = (byte) => new PublicKey(Uint8Array.from({ length: 32 }, () => byte)).toBase58();
+const LENS = keyOf(19);
+const ATTESTATION = keyOf(21);
+const CREDENTIAL = keyOf(23);
+const AGREEMENT_ACCOUNT = AgreementClient.getAgreementPda(AGREEMENT_CID, SPONSOR)[0].toBase58();
+
+// A parsed transaction carrying one codec-built agreement instruction; `payer` signs first and pays the fee.
+function agreementTx(instruction, payer = SPONSOR) {
+    const keys = new Map([[payer, key(payer, { signer: true, writable: true })]]);
+    for (const meta of instruction.keys) {
+        const address = meta.pubkey.toBase58();
+        if (!keys.has(address)) keys.set(address, key(address, { signer: meta.isSigner, writable: meta.isWritable }));
+    }
+    keys.set(AGREEMENT_PROGRAM_ID, key(AGREEMENT_PROGRAM_ID));
+    return buildTx({
+        accountKeys: [...keys.values()],
+        instructions: [{
+            accounts: instruction.keys.map((meta) => meta.pubkey.toBase58()),
+            data: encodeBase58(Buffer.from(instruction.data)),
+            programId: instruction.programId.toBase58(),
+            stackHeight: 1
+        }]
     });
+}
 
-    it('decodes every arg type the instruction uses', () => {
-        expect(anchor.args).toEqual({
-            parcel_ids: ['HR-335649-507'],
-            is_conditional: false,
-            image_uri: 'ipfs://Qmf1jfw1qUwpncooxMezq6rDrtkmUVyJjBFn2jo541aGD4',
-            sol_amount: '0',
-            lens: ['8ErKUqcQR3bvuZx2Rt9ke7u38vQBwPPSXWrXJD8YUPyw']
+describe('decodeParsedTransaction: agreement instructions (built with the codec)', () => {
+    const roles = (decoded) => decoded.instructions[0].accounts.map((account) => [account.role, account.address, account.signer, account.writable]);
+
+    it('decodes create with every argument and the PDA of its sponsor and CID', () => {
+        const { agreement, instruction } = AgreementClient.buildCreateIx({
+            authority: SPONSOR, cid: AGREEMENT_CID, lens: LENS, deadline: 1795000000, openGround: true,
+            requiredLamports: 50_000_000n, payout: TREASURY
         });
-        expect(anchor.argsError).toBeUndefined();
-    });
-
-    it('names the accounts in IDL order with signer and writable flags', () => {
-        expect(anchor.accounts).toEqual([
-            { role: 'proposal', address: '6NPKGcQQ6yDzFLyPejeegsjrArHDQcAkHGvX8runxkjB', label: null, kind: null, short: '6NPK…xkjB', signer: false, writable: true },
-            { role: 'proposal_counter', address: '2kVqTDdSZG9sTzuvDRUmNgtzJyUmKFF4gytJiv2LmBog', label: null, kind: null, short: '2kVq…mBog', signer: false, writable: true },
-            { role: 'owner', address: '8ErKUqcQR3bvuZx2Rt9ke7u38vQBwPPSXWrXJD8YUPyw', label: null, kind: null, short: '8ErK…UPyw', signer: true, writable: true },
-            { role: 'system_program', address: SYSTEM_PROGRAM, label: 'System Program', kind: 'program', short: '1111…1111', signer: false, writable: false }
+        expect(agreement.toBase58()).toBe(AGREEMENT_ACCOUNT);
+        const decoded = decode(agreementTx(instruction));
+        const ix = decoded.instructions[0];
+        expect(ix.program).toMatchObject({ address: AGREEMENT_PROGRAM_ID, label: 'agreement program', name: 'agreement' });
+        expect(ix.discriminator).toBe(idlDiscriminatorHex('agreement', 'create'));
+        expect(ix).toMatchObject({ action: 'create', idlVersion: 'v1' });
+        expect(ix.args).toEqual({
+            cid: AGREEMENT_CID, lens: LENS, deadline: '1795000000', open_ground: true, required_lamports: '50000000', payout: TREASURY
+        });
+        expect(ix.argsError).toBeUndefined();
+        expect(ix.accountsWarning).toBeUndefined();
+        expect(roles(decoded)).toEqual([
+            ['agreement', AGREEMENT_ACCOUNT, false, true],
+            ['authority', SPONSOR, true, true],
+            ['system_program', SYSTEM_PROGRAM, false, false]
         ]);
-        expect(anchor.accountsWarning).toBeUndefined();
+        expect(decoded.programs).toEqual(['agreement']);
+        expect(decoded.actions).toEqual(['create']);
+        expect(decoded.summary).toBe('agent densifier-01 called create on agreement');
     });
 
-    it('writes the mint summary from the owner, parcels and funding', () => {
-        expect(decoded.summary).toBe('8ErK…UPyw minted proposal for parcels HR-335649-507 funded with 0 SOL');
-        expect(decoded.programs).toEqual(['proposal_nft']);
-        expect(decoded.actions).toEqual(['mint_and_fund']);
-    });
-});
-
-describe('decodeParsedTransaction: proposal_nft accept_proposal (recorded devnet tx)', () => {
-    const decoded = decode(fixture('proposal-nft-accept-proposal'));
-    const anchor = decoded.instructions.find((instruction) => instruction.program.name === 'proposal_nft');
-
-    it('maps the instruction data to the IDL discriminator and decodes the arg', () => {
-        expect(anchor.discriminator).toBe(idlDiscriminatorHex('legacy/proposal_nft.v1', 'accept_proposal'));
-        expect(anchor.action).toBe('accept_proposal');
-        expect(anchor.idlVersion).toBe('v1');
-        expect(anchor.args).toEqual({ parcel_id: 'HR-335649-507' });
+    it('decodes a create with no deadline and no escrow as zeros', () => {
+        const { instruction } = AgreementClient.buildCreateIx({ authority: SPONSOR, cid: AGREEMENT_CID, lens: LENS, payout: SPONSOR });
+        expect(decode(agreementTx(instruction)).instructions[0].args)
+            .toMatchObject({ deadline: '0', open_ground: false, required_lamports: '0', payout: SPONSOR });
     });
 
-    it('refuses to name accounts when the deployed program passed fewer than the IDL declares', () => {
-        expect(anchor.accountsWarning).toBe('IDL declares 4 accounts, instruction supplied 2 — roles not assigned');
-        expect(anchor.accounts.map((account) => account.role)).toEqual([null, null]);
+    it('decodes fund with its lamports, signed by the sponsor', () => {
+        const decoded = decode(agreementTx(AgreementClient.buildFundIx({ cid: AGREEMENT_CID, authority: SPONSOR, lamports: 25_000_000n })));
+        expect(decoded.instructions[0]).toMatchObject({ action: 'fund', idlVersion: 'v1', args: { lamports: '25000000' } });
+        expect(roles(decoded)).toEqual([
+            ['agreement', AGREEMENT_ACCOUNT, false, true],
+            ['authority', SPONSOR, true, true],
+            ['system_program', SYSTEM_PROGRAM, false, false]
+        ]);
     });
 
-    it('falls back to the instruction signer for the actor in the summary', () => {
-        expect(decoded.summary).toBe('8ErK…UPyw accepted parcel HR-335649-507');
-    });
-});
+    it('decodes the permissionless attest and execute with their accounts, whoever pays', () => {
+        const attest = decode(agreementTx(AgreementClient.buildAttestIx({ agreement: AGREEMENT_ACCOUNT, attestation: ATTESTATION, credential: CREDENTIAL }), TREASURY));
+        expect(attest.instructions[0]).toMatchObject({ action: 'attest', args: {} });
+        expect(roles(attest)).toEqual([
+            ['agreement', AGREEMENT_ACCOUNT, false, true],
+            ['attestation', ATTESTATION, false, false],
+            ['credential', CREDENTIAL, false, false]
+        ]);
+        expect(attest.summary).toBe('treasury wallet called attest on agreement');
 
-describe('decodeParsedTransaction: proposal_nft v2/v3 instructions (synthetic)', () => {
-    const OWNER = PERSONA_WALLET;
-    const PAYOUT = TREASURY;
-    const PARCEL = 'DDi6wgNuAR3GYu2Zirmys4HnB6Ee3DiHpY84bqauqQHH';
-    const ATTESTATION = 'EVFpL5JVXmsWpJieChQRhXxAHSNCVh8v3KwWdsoniiwB';
-    const CREDENTIAL = 'LU6ENfBJU9BJSgsFJMoBNcafSaMkoZHrjY4bZ61Aim9';
-    const TALLY = '6NPKGcQQ6yDzFLyPejeegsjrArHDQcAkHGvX8runxkjB';
-    const RECORD = '2kVqTDdSZG9sTzuvDRUmNgtzJyUmKFF4gytJiv2LmBog';
-    const accounts = [PROPOSAL, PARCEL, ATTESTATION, CREDENTIAL, TALLY, RECORD, OWNER, OWNER, SYSTEM_PROGRAM];
-    const tx = (values) => buildTx({
-        accountKeys: [
-            key(OWNER, { signer: true, writable: true }),
-            key(PROPOSAL, { writable: true }), key(PARCEL), key(ATTESTATION), key(CREDENTIAL),
-            key(TALLY, { writable: true }), key(RECORD, { writable: true }), key(SYSTEM_PROGRAM), key(PROPOSAL_PROGRAM)
-        ],
-        instructions: [{ accounts, data: anchorData('proposal_nft', 'accept_with_attestations', values), programId: PROPOSAL_PROGRAM, stackHeight: 1 }]
+        const execute = decode(agreementTx(AgreementClient.buildExecuteIx({ agreement: AGREEMENT_ACCOUNT, payout: SPONSOR }), TREASURY));
+        expect(execute.instructions[0]).toMatchObject({ action: 'execute', args: {} });
+        expect(roles(execute).map(([role, address]) => [role, address])).toEqual([['agreement', AGREEMENT_ACCOUNT], ['payout', SPONSOR]]);
     });
 
-    it('decodes accept_with_attestations (unchanged since v2, so read as current) with the payout option and the account roles', () => {
-        const decoded = decode(tx({ parcel_id: 'HR-335649-507', payout: PAYOUT }));
-        const anchor = decoded.instructions[0];
-        expect(anchor.action).toBe('accept_with_attestations');
-        expect(anchor.idlVersion).toBe('v3');
-        expect(anchor.args).toEqual({ parcel_id: 'HR-335649-507', payout: PAYOUT });
-        expect(anchor.argsError).toBeUndefined();
-        expect(anchor.accounts.map((account) => account.role)).toEqual(['proposal', 'parcel', 'ownership', 'ownership_credential', 'tally', 'record', 'owner', 'payer', 'system_program']);
-        expect(decoded.summary).toBe(`agent densifier-01 accepted parcel HR-335649-507 on proposal ${PROPOSAL.slice(0, 4)}…${PROPOSAL.slice(-4)} (ownership attestation ${ATTESTATION.slice(0, 4)}…${ATTESTATION.slice(-4)})`);
+    it('tells cancel (the sponsor signs) from expire (the sponsor is only refunded)', () => {
+        const cancel = decode(agreementTx(AgreementClient.buildCancelIx({ cid: AGREEMENT_CID, authority: SPONSOR })));
+        expect(cancel.instructions[0].action).toBe('cancel');
+        expect(roles(cancel)).toEqual([['agreement', AGREEMENT_ACCOUNT, false, true], ['authority', SPONSOR, true, true]]);
+
+        const expire = decode(agreementTx(AgreementClient.buildExpireIx({ cid: AGREEMENT_CID, authority: SPONSOR }), TREASURY));
+        expect(expire.instructions[0].action).toBe('expire');
+        expect(roles(expire)).toEqual([['agreement', AGREEMENT_ACCOUNT, false, true], ['authority', SPONSOR, false, true]]);
+        expect(expire.summary).toBe('treasury wallet called expire on agreement');
     });
 
-    it('reads an absent payout as null', () => {
-        expect(decode(tx({ parcel_id: 'HR-1', payout: null })).instructions[0].args).toEqual({ parcel_id: 'HR-1', payout: null });
-    });
-
-    const mintTx = (data) => decode(buildTx({
-        accountKeys: [key(OWNER, { signer: true, writable: true }), key(PROPOSAL, { writable: true }), key(TALLY, { writable: true }), key(SYSTEM_PROGRAM), key(PROPOSAL_PROGRAM)],
-        instructions: [{ accounts: [PROPOSAL, TALLY, OWNER, SYSTEM_PROGRAM], data, programId: PROPOSAL_PROGRAM, stackHeight: 1 }]
-    }));
-
-    it('decodes a v2 mint_and_fund (trailing verdict_may_execute) with the v2 interface', () => {
-        const data = anchorData('legacy/proposal_nft.v2', 'mint_and_fund', {
-            parcel_ids: ['HR-1'], is_conditional: false, image_uri: 'ipfs://x', sol_amount: '0', lens: [TREASURY], verdict_may_execute: true
-        });
-        const decoded = mintTx(data);
-        expect(decoded.instructions[0].idlVersion).toBe('v2');
-        expect(decoded.instructions[0].args.verdict_may_execute).toBe(true);
-        expect(decoded.instructions[0].args.lens).toEqual([TREASURY]);
-        expect(decoded.instructions[0].args.site_hash).toBeUndefined();
-    });
-
-    it('decodes a v3 mint_and_fund with an empty parcel list, its site hash and open ground', () => {
-        const siteHash = Buffer.alloc(32, 0xab);
-        const data = anchorData('proposal_nft', 'mint_and_fund', {
-            parcel_ids: [], is_conditional: false, image_uri: 'ipfs://x', sol_amount: '0', lens: [TREASURY],
-            verdict_may_execute: true, site_hash: siteHash, open_ground: true
-        });
-        const decoded = mintTx(data);
-        expect(decoded.instructions[0].idlVersion).toBe('v3');
-        expect(decoded.instructions[0].args).toMatchObject({ parcel_ids: [], site_hash: 'ab'.repeat(32), open_ground: true, verdict_may_execute: true });
-        expect(decoded.summary).toContain('minted proposal with no parcels on site abababababab… with open ground');
-        // A v1 mint (no trailing fields at all) still reads with the v1 interface.
-        const v1 = mintTx(anchorData('legacy/proposal_nft.v1', 'mint_and_fund', {
-            parcel_ids: ['HR-1'], is_conditional: false, image_uri: 'ipfs://x', sol_amount: '0', lens: [TREASURY]
-        }));
-        expect(v1.instructions[0].idlVersion).toBe('v1');
-    });
-
-    it('decodes settle_with_verdict (unchanged since v2) with its verdict record and names the record in the summary', () => {
-        const VERDICT_RECORD = PublicKey.findProgramAddressSync(
-            [Buffer.from('verdict'), new PublicKey(PROPOSAL).toBuffer(), new PublicKey(ATTESTATION).toBuffer()], new PublicKey(PROPOSAL_PROGRAM)
-        )[0].toBase58();
-        const decoded = decode(buildTx({
-            accountKeys: [
-                key(OWNER, { signer: true, writable: true }), key(PROPOSAL, { writable: true }), key(VERDICT_RECORD, { writable: true }),
-                key(ATTESTATION), key(CREDENTIAL), key(SYSTEM_PROGRAM), key(PROPOSAL_PROGRAM)
-            ],
-            instructions: [{
-                accounts: [PROPOSAL, ATTESTATION, CREDENTIAL, VERDICT_RECORD, OWNER, SYSTEM_PROGRAM],
-                data: anchorData('proposal_nft', 'settle_with_verdict', {}), programId: PROPOSAL_PROGRAM, stackHeight: 1
-            }]
-        }));
-        const anchor = decoded.instructions[0];
-        expect(anchor.action).toBe('settle_with_verdict');
-        expect(anchor.idlVersion).toBe('v3');
-        expect(anchor.accountsWarning).toBeUndefined();
-        expect(anchor.accounts.map((account) => account.role)).toEqual(['proposal', 'verdict', 'verdict_credential', 'verdict_record', 'submitter', 'system_program']);
-        expect(anchor.accounts[3].address).toBe(VERDICT_RECORD);
-        const short = (address) => `${address.slice(0, 4)}…${address.slice(-4)}`;
-        expect(decoded.summary).toBe(`agent densifier-01 settled on proposal ${short(PROPOSAL)} with verdict attestation ${short(ATTESTATION)}, recorded at ${short(VERDICT_RECORD)}`);
+    it('reports a create cut short as undecodable args, never half of them', () => {
+        const { instruction } = AgreementClient.buildCreateIx({ authority: SPONSOR, cid: AGREEMENT_CID, lens: LENS, payout: TREASURY });
+        const tx = agreementTx(instruction);
+        tx.transaction.message.instructions[0].data = encodeBase58(Buffer.from(instruction.data).subarray(0, 30));
+        const ix = decode(tx).instructions[0];
+        expect(ix.action).toBe('create');
+        expect(ix.args).toBeNull();
+        expect(ix.argsError).toBe('instruction data ended early');
     });
 });
 
 describe('loadIdls: legacy interfaces', () => {
-    it('lists the current proposal_nft IDL (v3) first, then the v2 and v1 interfaces', () => {
-        const versions = idls.byName.get('proposal_nft').versions.map((version) => version.idlVersion);
-        expect(versions).toEqual(['v3', 'v2', 'v1']);
-        expect(idls.byName.get('proposal_pledge').versions.map((version) => version.idlVersion)).toEqual(['v1']);
+    it('lists each current IDL first, then the legacy interfaces of the same program', () => {
+        const versions = (name) => idls.byName.get(name).versions.map((version) => version.idlVersion);
+        expect(versions('proposal_market')).toEqual(['v2', 'v1']);
+        expect(versions('parcel_nft')).toEqual(['v2', 'v1']);
+        expect(versions('agreement')).toEqual(['v1']);
+        expect(versions('proposal_pledge')).toEqual(['v1']);
     });
 });
 
@@ -522,7 +505,7 @@ describe('decodeParsedTransaction: proposal_market instructions', () => {
     it('summarises a stake with its side and the inner token transfer', () => {
         const decoded = decode(marketTx('stake', {
             values: { side: 1, amount: '300000' },
-            accounts: [MARKET, PROPOSAL, POSITION, VAULT, PERSONA_USDC, PERSONA_WALLET, TOKEN_PROGRAM, SYSTEM_PROGRAM],
+            accounts: [MARKET, SUBJECT, POSITION, VAULT, PERSONA_USDC, PERSONA_WALLET, TOKEN_PROGRAM, SYSTEM_PROGRAM],
             inner: [tokenTransferChecked({ source: PERSONA_USDC, destination: VAULT, authority: PERSONA_WALLET, atomic: '300000', ui: '0.3' })]
         }));
 
@@ -541,25 +524,25 @@ describe('decodeParsedTransaction: proposal_market instructions', () => {
     it('says NO for side 0 and falls back to the arg when there is no inner transfer', () => {
         const decoded = decode(marketTx('stake', {
             values: { side: 0, amount: '250000' },
-            accounts: [MARKET, PROPOSAL, POSITION, VAULT, PERSONA_USDC, PERSONA_WALLET, TOKEN_PROGRAM, SYSTEM_PROGRAM]
+            accounts: [MARKET, SUBJECT, POSITION, VAULT, PERSONA_USDC, PERSONA_WALLET, TOKEN_PROGRAM, SYSTEM_PROGRAM]
         }));
 
         expect(decoded.summary).toBe('agent densifier-01 staked 0.25 USDC on NO in market LU6E…Aim9');
         expect(decoded.amounts).toEqual([]);
     });
 
-    it('summarises create_market with the proposal and the vault', () => {
+    it('summarises create_market with its agreement and the vault', () => {
         const decoded = decode(marketTx('create_market', {
-            accounts: [MARKET, PROPOSAL, USDC, VAULT, TREASURY, TOKEN_PROGRAM, 'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL', SYSTEM_PROGRAM]
+            accounts: [MARKET, SUBJECT, USDC, VAULT, TREASURY, TOKEN_PROGRAM, 'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL', SYSTEM_PROGRAM]
         }));
 
         expect(decoded.instructions[0].action).toBe('create_market');
         expect(decoded.instructions[0].args).toEqual({});
-        expect(decoded.summary).toBe('treasury wallet opened a market on proposal Gsvt…Q6UT (vault EVFp…iiwB)');
+        expect(decoded.summary).toBe('treasury wallet opened a market on agreement Gsvt…Q6UT (vault EVFp…iiwB)');
     });
 
     it('summarises resolve', () => {
-        const decoded = decode(marketTx('resolve', { accounts: [MARKET, PROPOSAL] }));
+        const decoded = decode(marketTx('resolve', { accounts: [MARKET, SUBJECT] }));
 
         expect(decoded.instructions[0].action).toBe('resolve');
         expect(decoded.summary).toBe('market LU6E…Aim9 resolved');
@@ -572,6 +555,42 @@ describe('decodeParsedTransaction: proposal_market instructions', () => {
         }));
 
         expect(decoded.summary).toBe('agent densifier-01 claimed 0.9 USDC from market LU6E…Aim9');
+    });
+});
+
+// --- proposal_pledge instructions (built from the IDL) --------------------------------------------
+
+describe('decodeParsedTransaction: proposal_pledge instructions', () => {
+    const BOOK = keyOf(41);
+    const COMMITMENT = keyOf(43);
+    const ESCROW = keyOf(45);
+    const pledgeTx = (instruction, { values = {}, accounts, signer = PERSONA_WALLET }) => buildTx({
+        accountKeys: [
+            key(signer, { signer: true, writable: true }),
+            ...accounts.filter((address) => address !== signer).map((address) => key(address, { writable: true })),
+            key(PLEDGE_PROGRAM)
+        ],
+        instructions: [{ accounts, data: anchorData('proposal_pledge', instruction, values), programId: PLEDGE_PROGRAM, stackHeight: 1 }]
+    });
+
+    it('names the agreement a soft pledge is for', () => {
+        const decoded = decode(pledgeTx('set_pledge', {
+            values: { amount: '2500000' },
+            accounts: [BOOK, SUBJECT, COMMITMENT, PERSONA_WALLET, SYSTEM_PROGRAM]
+        }));
+
+        expect(decoded.instructions[0]).toMatchObject({ action: 'set_pledge', args: { amount: '2500000' } });
+        expect(decoded.instructions[0].accounts.map((account) => account.role)).toEqual(['book', 'proposal', 'commitment', 'pledger', 'system_program']);
+        expect(decoded.summary).toBe('agent densifier-01 pledged 2.5 USDC for agreement Gsvt…Q6UT without locking funds');
+    });
+
+    it('names the agreement a donation escrow is opened for', () => {
+        const decoded = decode(pledgeTx('create_donation_escrow', {
+            signer: TREASURY,
+            accounts: [ESCROW, SUBJECT, USDC, VAULT, TREASURY, TOKEN_PROGRAM, 'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL', SYSTEM_PROGRAM]
+        }));
+
+        expect(decoded.summary).toBe('treasury wallet opened a refundable USDC donation escrow for agreement Gsvt…Q6UT');
     });
 });
 
@@ -708,12 +727,14 @@ describe('decodeParsedTransaction: hydrated @solana/web3.js shape', () => {
     });
 
     it('still matches our anchor IDLs when the program id is a PublicKey', () => {
-        const hydrated = decode(hydrate(fixture('proposal-nft-mint-and-fund').result));
-        const anchor = hydrated.instructions.find((instruction) => instruction.program.name === 'proposal_nft');
+        const { instruction } = AgreementClient.buildCreateIx({ authority: SPONSOR, cid: AGREEMENT_CID, lens: LENS, payout: TREASURY });
+        const raw = decode(agreementTx(instruction));
+        const hydrated = decode(hydrate(agreementTx(instruction)));
 
-        expect(anchor.action).toBe('mint_and_fund');
-        expect(anchor.accounts.map((account) => account.role)).toEqual(['proposal', 'proposal_counter', 'owner', 'system_program']);
-        expect(hydrated.summary).toBe('8ErK…UPyw minted proposal for parcels HR-335649-507 funded with 0 SOL');
+        expect(hydrated.instructions[0].action).toBe('create');
+        expect(hydrated.instructions[0].accounts.map((account) => account.role)).toEqual(['agreement', 'authority', 'system_program']);
+        expect(hydrated.instructions).toEqual(raw.instructions);
+        expect(hydrated.summary).toBe('agent densifier-01 called create on agreement');
     });
 });
 

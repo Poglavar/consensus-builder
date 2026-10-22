@@ -1,6 +1,7 @@
 // Exercise editable fields on supporting pages and assert their real query and rendering effects.
 import { test, expect } from '../helpers/fixtures';
-import { fillNativeDateTime, selectNativeOption } from '../helpers/controls';
+import { selectNativeOption } from '../helpers/controls';
+import { cidOfObject } from '../helpers/mocks/shared-server';
 
 const json = (route: any, body: unknown) => route.fulfill({
   status: 200,
@@ -9,68 +10,28 @@ const json = (route: any, body: unknown) => route.fulfill({
 });
 
 test.describe('Supporting page form controls @core', () => {
-  test('Canton buyer, owner, and lens fields are submitted in the created proposal', async ({ mockApi: page }) => {
-    const created: any[] = [];
-    const contract = {
-      proposalContractId: 'form-contract-1', parcelId: 'PARCEL-NYC-2',
-      buyer: 'Buyer::form-test', owner: 'Owner::form-test', lens: 'Lens::form-test',
-    };
-    await page.route('**/*', async route => {
-      const request = route.request();
-      if (request.resourceType() !== 'fetch' && request.resourceType() !== 'xhr') return route.continue();
-      const url = new URL(request.url());
-      if (url.pathname.includes('/parcel-nyc')) return json(route, {
-        type: 'FeatureCollection',
-        features: [
-          { type: 'Feature', properties: { parcelId: 'PARCEL-NYC-1', estimatedMarketPrice: 125000 }, geometry: { type: 'Polygon', coordinates: [] } },
-          { type: 'Feature', properties: { parcelId: 'PARCEL-NYC-2', estimatedMarketPrice: 275000 }, geometry: { type: 'Polygon', coordinates: [] } },
-        ],
-      });
-      if (url.pathname.endsWith('/canton/proposals') && request.method() === 'POST') {
-        created.push(request.postDataJSON());
-        return json(route, contract);
-      }
-      if (url.pathname.endsWith('/canton/proposals') && request.method() === 'GET') return json(route, { proposals: [] });
-      if (url.pathname.endsWith('/canton/sales')) return json(route, { sales: [] });
-      return route.continue();
-    });
-
-    await page.goto('/canton.html');
-    await expect(page.locator('#create-parcel')).toHaveValue('PARCEL-NYC-1');
-    await selectNativeOption(page.locator('#create-parcel'), 'PARCEL-NYC-2');
-    await expect(page.locator('#create-price')).toHaveValue('275000.00');
-    await page.locator('#create-buyer').fill('Buyer::form-test');
-    await page.locator('#create-owner').fill('Owner::form-test');
-    await page.locator('#create-lens').fill('Lens::form-test');
-    await page.locator('#create-price').fill('125000');
-    await page.locator('#create-btn').click();
-
-    await expect(page.locator('#create-result')).toContainText('Created form-contract-1');
-    expect(created).toEqual([{
-      parcelId: 'PARCEL-NYC-2', price: '125000', buyer: 'Buyer::form-test',
-      owner: 'Owner::form-test', lens: 'Lens::form-test',
-    }]);
-    await expect(page.locator('#canton-party')).toHaveValue('Owner::form-test');
-    await expect(page.locator('.canton-party-id[title="Buyer::form-test"]')).toBeVisible();
-    await expect(page.locator('.canton-party-id[title="Lens::form-test"]')).toBeVisible();
-  });
-
-
-
-  test('Lens directory and verdict fields select a service and submit its recorded outcome', async ({ mockApi: page }) => {
-    const posted: any[] = [];
+  test('Lens directory and decision fields select a service, refuse a malformed CID and show the member\'s refusal', async ({ mockApi: page }) => {
+    const southKey = 'So11111111111111111111111111111111111111112';
+    const cid = cidOfObject({ schema: 'agreement/v1', title: 'Secondary form controls agreement' });
+    const posted: Array<{ path: string; token: string | undefined }> = [];
     await page.route('**/lenses/members', route => json(route, { members: [
       { key: '11111111111111111111111111111111', name: 'North member', serviceUrl: 'https://north-lens.example', coverage: {} },
-      { key: 'So11111111111111111111111111111111111111112', name: 'South member', serviceUrl: 'https://south-lens.example', coverage: {} },
+      { key: southKey, name: 'South member', serviceUrl: 'https://south-lens.example', coverage: {} },
     ] }));
     await page.route('**/lens/status', route => {
       const south = route.request().url().includes('south-lens.example');
-      return json(route, { key: south ? 'So11111111111111111111111111111111111111112' : '11111111111111111111111111111111', kind: 'permit', identity: 'verified', credential: 'fixture', counts: { ownership: 1 }, pricing: {} });
+      return json(route, { key: south ? southKey : '11111111111111111111111111111111', kind: 'permit', identity: 'verified', credential: 'fixture', counts: { ownership: 1 }, pricing: {} });
     });
     await page.route('**/lens/attestations*', route => json(route, { attestations: [] }));
-    await page.route('**/lens/verdict', async route => {
-      posted.push(route.request().postDataJSON());
-      return json(route, { accountHash: 'fixture-verdict-hash', address: '11111111111111111111111111111111' });
+    // The member counts the relayed owner decisions and refuses while the rule is not met, with the tally.
+    await page.route('https://south-lens.example/lens/agreements/**', route => {
+      const request = route.request();
+      if (request.method() !== 'POST') return route.fallback();
+      posted.push({ path: new URL(request.url()).pathname, token: request.headers()['x-lens-operator-token'] });
+      return route.fulfill({ status: 409, contentType: 'application/json', body: JSON.stringify({
+        error: 'rule_not_met', message: 'the decision rule is not met',
+        tally: { passed: false, ready: true, reason: null, acceptedOwners: 1, totalOwners: 2, acceptedAreaM2: 400, totalAreaM2: 812.5 },
+      }) });
     });
     await page.goto('/lens.html');
     await expect(page.locator('#lc-language')).toBeVisible();
@@ -80,19 +41,27 @@ test.describe('Supporting page form controls @core', () => {
     await expect(page.locator('#lc-service-url')).toHaveValue('https://south-lens.example');
     await expect(page.locator('#lc-status')).toContainText('verified');
 
-    await selectNativeOption(page.locator('#lc-verdict-kind'), 'expired');
-    await expect(page.locator('#lc-verdict-kind')).toHaveValue('expired');
-    await page.locator('#lc-verdict-proposal').fill('11111111111111111111111111111111');
-    await fillNativeDateTime(page.locator('#lc-verdict-observed'), '2026-10-15T12:34:56');
-    await page.locator('#lc-verdict-token').fill('fixture-operator-token');
-    await page.locator('#lc-verdict-submit').click();
-    await expect(page.locator('#lc-verdict-result')).toContainText('fixture-verdict-hash');
-    expect(posted).toHaveLength(1);
-    expect(posted[0]).toMatchObject({
-      proposalAccount: '11111111111111111111111111111111',
-      verdict: 'expired',
-      sourceObservedAt: Math.floor(Date.parse('2026-10-15T12:34:56') / 1000),
-    });
+    // Not a CID: refused before anything is sent, and the token stays for the corrected try.
+    const result = page.locator('#lc-decision-result');
+    await page.locator('#lc-decision-cid').fill('not-an-agreement-cid');
+    await page.locator('#lc-decision-token').fill('fixture-operator-token');
+    await page.locator('#lc-decision-submit').click();
+    await expect(result).toHaveAttribute('data-outcome', 'invalid');
+    await expect(result).toHaveAttribute('data-code', 'cid');
+    await expect(result).toContainText('Enter the CID of an agreement (bafkrei…).');
+    await expect(page.locator('#lc-decision-token')).toHaveValue('fixture-operator-token');
+    expect(posted).toEqual([]);
+
+    // The member refuses: its code and the tally it judged on are shown, and the token is gone.
+    await page.locator('#lc-decision-cid').fill(cid);
+    await page.locator('#lc-decision-submit').click();
+    await expect(result).toHaveAttribute('data-outcome', 'refused', { timeout: 15_000 });
+    await expect(result).toHaveAttribute('data-code', 'rule_not_met');
+    await expect(result).toContainText('The owner decisions relayed so far do not meet the agreement’s decision rule.');
+    await expect(result).toContainText('not met');
+    await expect(result).toContainText('1 of 2 accepted');
+    await expect(page.locator('#lc-decision-token')).toHaveValue('');
+    expect(posted).toEqual([{ path: `/lens/agreements/${cid}/decision`, token: 'fixture-operator-token' }]);
 
     await selectNativeOption(page.locator('#lc-language'), 'hr');
     await expect(page.locator('html')).toHaveAttribute('lang', 'hr');

@@ -32,11 +32,13 @@ Geometry-derived diagnostics are:
 
 The last two figures are `DGU footprint × six documented above-ground storeys`. They are useful for reproducing the visible massing, but they are not GBP values taken from a permit. The number of apartments and the exact completion date remain unresolved.
 
-Rebuild and store the local proposal with:
+Rebuild the canonical archive with:
 
 ```sh
-node backend/scripts/seed-selska-drniska-proposal.mjs --apply --export
+node backend/scripts/seed-selska-drniska-proposal.mjs --export
 ```
+
+Publish it as designs plus the project's agreement with `backend/scripts/publish-restatement-archives.mjs` ([collection README](../README.md#publishing-designs-and-agreements)).
 
 The export performs an export/import/export identity check before writing the canonical GeoJSON.
 

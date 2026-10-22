@@ -2,6 +2,7 @@
  * Solana Parcel Anchor
  * Creates parcel anchors on the Solana ParcelNFT program (v2, one at a time): an ownerless PDA
  * seeded by the parcel id. The connected wallet only pays rent; it does not become an owner.
+ * The instruction bytes are SolanaParcelClient's (parcel-client.js).
  */
 (function () {
     const g = typeof window !== 'undefined' ? window : (typeof self !== 'undefined' ? self : null);
@@ -50,7 +51,7 @@
 
         const connection = loader.getConnection(cluster);
         // v2 MintParcel accounts: parcel (PDA, mut), payer (signer, mut), system_program.
-        const { parcel: parcelPda, instruction } = g.SolanaAcceptanceClient.buildMintParcelIx({
+        const { parcel: parcelPda, instruction } = g.SolanaParcelClient.buildMintParcelIx({
             parcelId, metadataUri, payer: wallet, programId
         });
 
@@ -75,7 +76,7 @@
             loader.setParcelMintStatusCache(parcelId, programId, cluster, {
                 minted: true,
                 tokenId: parcelPda.toString(),
-                owner: g.SolanaAcceptanceClient.constants.DEFAULT_PUBKEY, // anchors are ownerless
+                owner: g.SolanaParcelClient.constants.DEFAULT_PUBKEY, // anchors are ownerless
                 metadataURI: metadataUri
             });
         }

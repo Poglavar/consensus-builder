@@ -1,6 +1,7 @@
-// Solana lens picker for the create dialog: choose lens members from the backend attester directory
-// (GET /lenses/members) or paste any base58 key, see which selected parcels each member has attested,
-// and keep the choice as the Solana lens that create.js snapshots into proposal.lens.
+// Solana lens picker (the Lens settings on the Solana path): choose lens members from the backend
+// attester directory (GET /lenses/members) or paste any base58 key, see which selected parcels each
+// member has attested, and keep the choice as the app's Solana lens; a community agreement's mint
+// names its first member (agreement-panel.js, M3).
 // Logic lives in lens-core.js / lens-service-client.js; this file is DOM wiring only.
 (function () {
     const root = typeof window !== 'undefined' ? window : null;
@@ -28,14 +29,12 @@
             .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
     }
 
-    // The Solana path is the one create.js mints on: a connected Solana wallet, Canton off.
+    // The Solana path: a connected Solana wallet (an agreement minted from it names the lens, M3).
     function isActive() {
         try {
             const state = root.solanaWalletManager && typeof root.solanaWalletManager.getState === 'function'
                 ? root.solanaWalletManager.getState() : null;
-            const connected = !!(state && state.status === 'connected' && Array.isArray(state.accounts) && state.accounts.length);
-            const canton = !!(root.CantonMode && typeof root.CantonMode.isActive === 'function' && root.CantonMode.isActive());
-            return connected && !canton;
+            return !!(state && state.status === 'connected' && Array.isArray(state.accounts) && state.accounts.length);
         } catch (_) {
             return false;
         }

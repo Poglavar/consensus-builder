@@ -5,6 +5,7 @@ members = [
     "programs/proposal_nft",
     "programs/proposal_market",
     "programs/proposal_pledge",
+    "programs/agreement",
 ]
 resolver = "2"
 

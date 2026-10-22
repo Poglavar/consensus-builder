@@ -1,4 +1,4 @@
-// Whole-source area is required for list comparison and proportional payout estimates.
+// Whole-source area is required for list comparison.
 import { describe, expect, it, vi } from 'vitest';
 import { createRequire } from 'node:module';
 import { readFileSync } from 'node:fs';
@@ -52,33 +52,6 @@ describe('proposal area', () => {
         expect(Area.primaryArea(Area.areaSummary({ sourceAreas: [500], declaredCount: 2 }))).toBeNull();
     });
 
-    it('uses retained cadastral sources and withholds a payout estimate until the denominator is complete', () => {
-        let features = [feature('a', 100)];
-        const peekMany = vi.fn(() => features);
-        const window = { ProposalArea: Area, CadastralParcelRepository: { peekMany },
-            LiveParcelFabric: { get: vi.fn(() => feature('b', 999)) } };
-        const context = vm.createContext({ window, normalizeParcelIdList, console,
-            getProposalOwnerAcceptanceState: () => ({ entries: [{ key: 'owner', displayName: 'Owner', shareText: '1/1' }] }),
-            isProposalExpired: () => false, parseOwnerShareFraction: () => 1,
-            proposalRequiresDealConsent: () => false, proposalRecipientConsentRow: () => null,
-            getProposalI18nHelper: () => (_key, fallback) => fallback,
-            CbFormat: { formatMoney: (value, currency) => `${value.toFixed(2)} ${currency}` }
-        });
-        vm.runInContext(code('core', 'function getProposalAreaMap(', '\nfunction resolveProposalIdKey(')
-            + code('geometry', 'function computeProposalArea(', '\nfunction computeProposalMetrics(')
-            + code('execution', 'function buildOwnerAcceptanceSectionHtml(', '\nfunction buildReadjustmentCashReviewHtml('), context);
-        const proposal = { proposalId: 'p', cadastreParcelIds: ['a', 'b', 'a'], offer: 400, offerCurrency: 'EUR' };
-        expect(context.getProposalAreaMap(proposal).totalArea).toBeNull();
-        expect(context.computeProposalArea(proposal)).toBeNull();
-        expect(context.buildOwnerAcceptanceSectionHtml(proposal, 'a')).not.toContain('owner-payout');
-        expect(window.LiveParcelFabric.get).not.toHaveBeenCalled();
-        features = [feature('a', 100), feature('b', 300)];
-        expect(context.computeProposalArea(proposal)).toBe(400);
-        expect(context.buildOwnerAcceptanceSectionHtml(proposal, 'a')).toContain('100.00 EUR');
-        expect(context.computeProposalArea({ site: {}, cadastreParcelIds: ['a'] })).toBeNull();
-        expect(context.computeProposalArea({ structureProposal: { geometry: {} } })).toBeNull();
-        expect(peekMany).toHaveBeenCalledWith(['a', 'b']);
-    });
 
     it('sorts unknown and partial areas last in both list directions', () => {
         const state = { sortKey: 'area-asc' };

@@ -1,6 +1,6 @@
 /* ========== Design tokens ==========
    The one place the app takes its colours, type, radii, shadows, spacing and stacking from. The
-   values are the map shell's (css/map-shell.css, parcel-menu.css, selection-tray.css), the dialect
+   values are the map shell's (css/map-shell.css, selection-tray.css), the dialect
    every other surface migrates to; the rules are in docs/design-language.md. Loaded first by
    index.html's CSS loader and by index.css. New CSS takes its values from here, never a literal;
    a surface that needs a value this file lacks adds the token here first
@@ -54,6 +54,7 @@
     --cb-photo-parcel-boundary: #fff3a6;
     --cb-photo-parcel-halo: #282418;
     --cb-photo-parcel-selected: #48e4f1;
+    --cb-map-pick-highlight: #00e5ff; /* a design picked on the map (js/map-pick.js): the agreement editor's designs */
 
     --cb-warning: #b45309;
     --cb-warning-soft: #fffbeb;
@@ -76,9 +77,6 @@
     --cb-info: #0369a1;
     --cb-info-soft: #f0f9ff;
     --cb-info-soft-ink: #075985;
-
-    /* A named plan hatched on the map (css/plans.css); drawn over the map tiles, so one value serves both themes. */
-    --cb-plan: #7c3aed;
 
     /* Spatial representation roles, shared by the map and model comparison. */
     --cb-planning-existing: #64748b;
@@ -193,8 +191,8 @@
     --cb-z-map-pane-estimate-imagery: 350; /* estimate satellite crop: above tiles, below parcel vectors */
     --cb-z-map-pane-parcel-preview: 390;   /* parcels previewed while a council imports: above tiles, below the real parcel vectors (400) */
     --cb-z-map-pane-plan: 620;      /* the Schelling plan layer: over parcels and blocks, under the site tool (640) */
-    --cb-z-map-pane-plan-view: 630; /* a named plan hatched on the map (css/plans.css): over the Schelling plan, under the site tool */
     --cb-z-map-pane-site: 640;      /* the site tool's Leaflet pane: over the markers (600), under tooltips (650) */
+    --cb-z-map-pane-pick-highlight: 690; /* the designs a surface picking on the map highlights (js/map-pick.js, css/proposals.css): over every fabric pane, under popups (700) */
     --cb-z-map-compare: 800;        /* before/after overlay inside a Leaflet container: above its panes (<= 700) */
     --cb-z-three: 900;              /* the 3D view over the 2D map's panes, under the map chrome */
     --cb-z-map-chrome: 1000;        /* floating buttons, search, tray */

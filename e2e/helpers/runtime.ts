@@ -1,5 +1,7 @@
-import { Locator, Page, expect } from '@playwright/test';
+import { Browser, BrowserContext, Page, expect } from '@playwright/test';
 import { sampleParcels } from './mocks/parcel-data';
+import { mockAllApiRoutes } from './mocks/api-routes';
+import { attachSharedIndex, ensurePageIndex, fileDesign, SharedIndex } from './mocks/shared-server';
 import { waitForMapReady } from './app';
 import { selectNativeOption } from './controls';
 
@@ -11,6 +13,33 @@ export const PARCEL_GEOMETRY = sampleParcels.features[0].geometry;
 // asserted from the session's status log instead.
 export async function expectStatusLogged(page: Page, text: string): Promise<void> {
   await expect.poll(() => page.evaluate(t => (window as any).statusLogEntries().some((entry: any) => String(entry.message).includes(t)), text)).toBe(true);
+}
+
+// Basemap tiles answered locally, so a spec never waits on the tile network.
+export async function stubBasemapTiles(page: Page): Promise<void> {
+  await page.route(/https:\/\/[^/]*tile\.openstreetmap\.org\//, route => route.fulfill({
+    contentType: 'image/svg+xml',
+    body: '<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256"><rect width="256" height="256" fill="#eee"/></svg>',
+  }));
+}
+
+// Another device opening `url`: its own browser context and storage, answered by the same index
+// (mocks/shared-server.ts) as the device that published.
+export async function openOnAnotherDevice(browser: Browser, url: string, index: SharedIndex, baseURL: string | undefined): Promise<{ context: BrowserContext; page: Page }> {
+  const context = await browser.newContext({ baseURL });
+  await context.addInitScript(() => {
+    try {
+      localStorage.setItem('cb_current_city', 'new_york');
+      localStorage.setItem('cb_site_intro_seen_v1', '1');
+    } catch (_) { /* opaque origin */ }
+  });
+  const page = await context.newPage();
+  await mockAllApiRoutes(page);
+  await attachSharedIndex(page, index);
+  await stubBasemapTiles(page);
+  await page.goto(url, { waitUntil: 'domcontentloaded' });
+  await waitForMapReady(page);
+  return { context, page };
 }
 
 export async function openCity(page: Page, parcelId = PARCEL_ID): Promise<void> {
@@ -39,6 +68,71 @@ export async function clickMapPoint(page: Page, lng: number, lat: number): Promi
   await page.mouse.click(point.x, point.y);
 }
 
+// A real mouse click on an applied design on the map: a point inside its shape (MapPick.outlineOf, the
+// shape a pick highlights) is brought to `at` (fractions of the map's size, clear of the dock or a
+// sheet) and clicked once nothing covers the map there (a notice can sit over it for a few seconds).
+export async function clickDesignOnMap(page: Page, id: string, at = { x: 0.3, y: 0.45 }): Promise<void> {
+  const point = await page.evaluate(({ id, at }) => {
+    const w = window as any;
+    const features = w.MapPick.outlineOf(w.proposalStorage.getProposal(id));
+    if (!features.length) throw new Error(`design ${id} has no shape on the map`);
+    const [lng, lat] = w.turf.pointOnFeature(features[0]).geometry.coordinates;
+    const size = w.map.getSize();
+    const here = w.map.latLngToContainerPoint([lat, lng]);
+    w.map.panBy([here.x - size.x * at.x, here.y - size.y * at.y], { animate: false });
+    return { lng, lat };
+  }, { id, at });
+  await expect.poll(() => page.evaluate(({ lng, lat }) => {
+    const w = window as any;
+    const onScreen = w.map.latLngToContainerPoint([lat, lng]);
+    const box = w.map.getContainer().getBoundingClientRect();
+    const target = document.elementFromPoint(box.left + onScreen.x, box.top + onScreen.y);
+    return target && target.closest('#map') ? 'map' : (target ? target.outerHTML.slice(0, 120) : 'nothing');
+  }, point), { timeout: 20_000, message: `the map at ${id}'s point` }).toBe('map');
+  await clickMapPoint(page, point.lng, point.lat);
+}
+
+// The click stack (click-stack.md): one right-docked panel for everything under a map click, a
+// section per kind of thing there. The parcel section hosts #parcel-info-panel and the parcel's
+// actions as [data-command="parcel.*"] buttons; bare ground's section carries [data-command="ground.*"].
+export const clickStack = (page: Page) => page.locator('#click-stack');
+export const stackSection = (page: Page, kind: string) => page.locator(`#click-stack .click-stack__section[data-kind="${kind}"]`);
+export const stackCommand = (page: Page, id: string) => page.locator(`#click-stack [data-command="${id}"]`);
+
+// Expands a section of the open stack unless it already is.
+export async function expandStackSection(page: Page, kind: string): Promise<void> {
+  const row = stackSection(page, kind).locator('.click-stack__row');
+  if (await row.getAttribute('aria-expanded') !== 'true') await row.click();
+  await expect(row).toHaveAttribute('aria-expanded', 'true');
+}
+
+// The hosted parcel panel's tab buttons (Info, Propose, Proposals, Tools). The parcel section shows
+// only the actions the panel does not offer (Compare, Use as site) as [data-command] buttons.
+export const parcelTab = (page: Page, tabId: string) => page.locator(`#parcel-info-panel [data-parcel-tab-id="${tabId}"]`);
+
+// A map click at a point whose stack holds a parcel, with the parcel section expanded.
+export async function openParcelAt(page: Page, lng: number, lat: number): Promise<void> {
+  await clickMapPoint(page, lng, lat);
+  await expect(clickStack(page)).toBeVisible();
+  await expandStackSection(page, 'parcels');
+  await expect(stackSection(page, 'parcels').locator('#parcel-info-panel')).toBeVisible();
+}
+
+// The parcel at a point, then one of the parcel section's actions.
+export async function runParcelCommand(page: Page, lng: number, lat: number, command: string): Promise<void> {
+  await openParcelAt(page, lng, lat);
+  await stackCommand(page, command).click();
+}
+
+// The parcel at a point, with its panel on one tab.
+export async function openParcelTabAt(page: Page, lng: number, lat: number, tabId: string): Promise<void> {
+  await openParcelAt(page, lng, lat);
+  await parcelTab(page, tabId).click();
+  await expect(page.locator(`#${tabId}`)).toBeVisible();
+}
+
+// Clicks the parcel's centre and brings up its section in the click stack, with the parcel panel on
+// `tab` (info is what the section shows; proposals opens its Propose tab, tools its Tools tab).
 export async function openParcel(page: Page, tab = 'info', id = PARCEL_ID): Promise<void> {
   const center = await page.evaluate(parcelId => {
     const w = window as any;
@@ -48,23 +142,47 @@ export async function openParcel(page: Page, tab = 'info', id = PARCEL_ID): Prom
     w.map.panTo(center, { animate: false });
     return { lng: center.lng, lat: center.lat };
   }, id);
+  // A second click on the same spot closes an open stack; start from a closed one.
+  if (await clickStack(page).isVisible()) {
+    await clickStack(page).locator('.click-stack__close').click();
+    await expect(clickStack(page)).toBeHidden();
+  }
   await clickMapPoint(page, center.lng, center.lat);
-  await expect(page.locator('#parcel-menu')).toBeVisible();
-  await page.locator('#parcel-menu').getByRole('menuitem', { name: tab === 'proposals' ? 'Propose here' : tab === 'tools' ? 'Tools' : 'Details', exact: true }).click();
+  await expect(clickStack(page)).toBeVisible();
+  await expandStackSection(page, 'parcels');
+  await expect(stackSection(page, 'parcels').locator('#parcel-info-panel')).toBeVisible();
+  if (tab === 'proposals') await parcelTab(page, 'propose-tab').click();
+  else if (tab === 'tools') await parcelTab(page, 'tools-tab').click();
   await expect(page.locator('#parcel-info-panel')).toBeVisible();
 }
 
-// A proposal published on the server that this browser has never loaded: the answer to the Proposals
-// tabs' GET /proposals/summary?parcel_ids=… (js/parcels/parcel-set-proposals.js).
-export async function publishOn(page: Page, parcelId: string): Promise<void> {
-  await page.route('**/proposals/summary**', route => {
-    const publicationApiBase = new URL(route.request().url()).origin;
-    return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({
-      proposals: [{ id: 41, proposalId: 'p-published', publicationApiBase, city: 'zagreb', title: 'Published park', type: 'park', goal: 'park',
-        lifecycleStatus: 'Active', createdAt: '2026-10-12T10:00:00.000Z', cadastreParcelIds: [parcelId], screenshotUrl: null }],
-      count: 1, limit: 200, offset: 0
-    }) });
+// A design published in the index that this browser has never loaded: a park on the parcel, found by
+// the Proposals tabs' GET /designs?bbox=… (js/parcels/parcel-set-proposals.js). Returns its CID, the
+// rows' data-server-id.
+export async function publishOn(page: Page, parcelId: string): Promise<string> {
+  const parcel = sampleParcels.features.find(feature => feature.properties.parcelId === parcelId);
+  if (!parcel) throw new Error(`publishOn: ${parcelId} is not a fixture parcel`);
+  const content = {
+    schema: 'design/v1', goal: 'park', title: 'Published park', description: null, author: 'Fixture author', city: 'zagreb',
+    site: parcel.geometry, toleranceM: null, geometry: null, origin: null, authoredAt: '2026-10-12T10:00:00.000Z',
+    structureProposal: { kind: 'park' },
+  };
+  // Bound to exactly this parcel, whichever fixture faces the page shows.
+  return fileDesign(await ensurePageIndex(page), content, {
+    binding: { parcels: [{ parcelId, overlapM2: 100, intrusionM: 10 }], touched: [], toleranceM: 0, coverage: 'complete', unsurveyedM2: 0, siteM2: 100, source: 'server:e2e-fixture-cadastre' },
+    createdAt: '2026-10-12T10:00:00.000Z',
   });
+}
+
+// A guest asked for a profile name before something leaves the device (GuestPolicy 'publish' opens
+// the welcome dialog) chooses one.
+export async function chooseProfileName(page: Page, name: string): Promise<void> {
+  const welcome = page.locator('#welcome-modal');
+  await expect(welcome).toBeVisible({ timeout: 15_000 });
+  await welcome.locator('#username-input').fill(name);
+  await welcome.locator('#welcome-submit-btn').click();
+  await expect(welcome).toBeHidden();
+  await expect(page.locator('#username-text')).toHaveText(name);
 }
 
 export async function createSpace(page: Page, kind: 'park'|'square'|'lake'): Promise<string> {
@@ -117,32 +235,4 @@ export async function createBuilding(page: Page, rule: 'exact' | 'max' | 'range'
   await page.locator('#btn-blockify-done').click();
   await expect.poll(() => page.evaluate(() => (window as any).proposalStorage.getAllProposals().some((p: any) => p.geometry?.buildings?.length && p.applied))).toBe(true);
   return page.evaluate(() => (window as any).proposalStorage.getAllProposals().find((p: any) => p.geometry?.buildings?.length && p.applied).proposalId);
-}
-
-/**
- * Share on a local proposal whose terms were never chosen opens the create dialog in its terms
- * mode first (proposal-kinds.md): pick who decides, save, and the share dialog opens for the
- * terms-confirmed record, whose current local identity this returns.
- */
-export async function chooseTermsForShare(page: Page, kind: 'owner-deal'|'owner-vote'|'community-vote' = 'community-vote'): Promise<string> {
-  const form = page.locator('.create-proposal-modal:visible');
-  await expect(form).toBeVisible();
-  await expect(form.locator('input[name="proposalKind"][value="community-vote"]')).toBeChecked();
-  await expect(form).toHaveAttribute('data-publish-in-place', '');
-  await expect(form.locator('#proposalGoalGroup')).toBeHidden();
-  await form.locator(`input[name="proposalKind"][value="${kind}"]`).locator('..').click();
-  await expect(form.locator('#createProposalSubmitButton')).toHaveText('Save terms');
-  await form.locator('#createProposalSubmitButton').click();
-  await expect(form).toBeHidden({ timeout: 30_000 });
-  await expect(page.locator('.share-modal-overlay')).toBeVisible({ timeout: 30_000 });
-  return page.evaluate(kind => {
-    const saved = (window as any).proposalStorage.getAllProposals().filter((p: any) => p.termsConfirmed && p.kind === kind);
-    return saved[saved.length - 1].proposalId;
-  }, kind);
-}
-
-/** Pick who decides in an open create dialog; only an owner deal shows the money terms. */
-export async function chooseProposalKind(dialog: Locator, kind: 'owner-deal'|'owner-vote'|'community-vote'): Promise<void> {
-  await dialog.locator(`input[name="proposalKind"][value="${kind}"]`).locator('..').click();
-  await expect(dialog).toHaveAttribute('data-proposal-kind', kind);
 }

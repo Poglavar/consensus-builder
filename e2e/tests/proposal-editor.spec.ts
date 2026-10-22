@@ -148,8 +148,9 @@ test.describe('SimCity proposal lifecycle @core', () => {
 
     const palette = page.locator('.parcel-build-palette');
     await expect(palette).toBeVisible();
-    // Rules, structures, transport, and ownership tools; no retired Create proposal button.
-    await expect(palette.locator('.parcel-build-btn')).toHaveCount(15);
+    // Rules, structures and transport tools; no retired Create proposal button, and no Offer tile
+    // since owner offers left (M2).
+    await expect(palette.locator('.parcel-build-btn')).toHaveCount(14);
     await expect(page.locator('#createProposalFromParcelButton')).toHaveCount(0);
 
     await palette.locator('.parcel-build-btn--park').click();
@@ -176,7 +177,7 @@ test.describe('SimCity proposal lifecycle @core', () => {
     expect(created.applied).toBe(true);
   });
 
-  test('"Create proposal" on an object opens the prefilled terms dialog', async ({ mockApi: page }) => {
+  test('Fork design on an object opens its prefilled design dialog', async ({ mockApi: page }) => {
     await page.goto('/?city=zg');
     await waitForMapReady(page);
     const source = await addEditableSquare(page, 'propose');

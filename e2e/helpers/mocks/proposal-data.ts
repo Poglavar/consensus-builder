@@ -68,24 +68,6 @@ export function makeBuildingProposal(overrides: Record<string, any> = {}) {
   };
 }
 
-export function makeReparcelizationProposal(overrides: Record<string, any> = {}) {
-  return {
-    id: nextServerId++,
-    proposal_id: `local-reparcel-${Date.now()}`,
-    name: 'Test Reparcelization',
-    type: 'reparcelization',
-    status: 'draft',
-    created_at: new Date().toISOString(),
-    proposal_data: {
-      type: 'reparcelization',
-      name: 'Test Reparcelization',
-      parcels: ['HR-335754-1234', 'HR-335754-1235', 'HR-335754-1236'],
-      ...overrides.proposal_data,
-    },
-    ...overrides,
-  };
-}
-
 export const sampleProposalsList = [
   makeRoadProposal({ id: 1, proposal_id: 'server-1' }),
   makeParkProposal({ id: 2, proposal_id: 'server-2' }),

@@ -20,8 +20,8 @@
 // server cannot see that region's cadastre, which is not the same as there being none — except for
 // a city configured with no cadastre at all (explore), which gets 'none'.
 //
-// Used by POST /proposals/binding, the create precheck (free and paid routes) and the site
-// migration.
+// Used by the design index (the parcels a published design's site takes), the agents' candidate
+// preflight and the site migration.
 
 import { createRequire } from 'node:module';
 import { INVALID_FOOTPRINT, footprintParts, footprintQueryParams, hasFootprint } from './footprint.js';
@@ -52,9 +52,7 @@ export const {
     DEFAULT_INTRUSION_TOLERANCE_M,
     INTRUSION_NOISE_M,
     MAX_INTRUSION_TOLERANCE_M,
-    PARCEL_ACT_GOALS,
     COVERAGE,
-    isParcelAct,
     requiresParcels,
     compareDeclaration
 } = siteBindingApi;
@@ -517,7 +515,7 @@ const describeMissing = hit => ({ id: hit.parcelId, overlapM2: round(hit.overlap
  *     its site (publicationCityOf); a parcel act is placed where its parcels are.
  * @returns {Promise<{ ok: true, site, binding, city, parcelSourceId } | { ok: false, status, code, error, missing?, extra?, parcels? }>}
  */
-// `derive: true` (POST /proposals/prepare): a material proposal's declaration is not compared but
+// `derive: true`: a material proposal's declaration is not compared but
 // DERIVED from the binding and returned as `cadastreParcelIds`; parcel acts still name their parcels.
 export async function checkProposalBinding(db, proposal, declaredIds, { site = null, toleranceM = DEFAULT_INTRUSION_TOLERANCE_M, city = null, parcelSourceId = null, now, derive = false } = {}) {
     const declared = (declaredIds || []).map(String);

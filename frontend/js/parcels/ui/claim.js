@@ -1779,30 +1779,12 @@
         return [{ parcelId, parcelName, feature: parcelFeature }];
     }
 
-    async function uploadParcelMetadataAsset({ imageData, metadata, fileName, chainId }) {
+    // The parcel image and its NFT metadata, pinned on IPFS (js/asset-upload.js).
+    async function uploadParcelMetadataAsset({ imageData, metadata, fileName }) {
         if (!global.AssetService || typeof global.AssetService.uploadProposalAssets !== 'function') {
             throw new Error('Asset upload service is not available.');
         }
-
-        try {
-            return await global.AssetService.uploadProposalAssets({
-                imageData,
-                metadata,
-                fileName,
-                chainId,
-                target: 'auto'
-            });
-        } catch (primaryError) {
-            console.warn('Primary parcel metadata upload failed, retrying with backend storage.', primaryError);
-        }
-
-        return await global.AssetService.uploadProposalAssets({
-            imageData,
-            metadata,
-            fileName,
-            chainId: null,
-            target: 'backend'
-        });
+        return global.AssetService.uploadProposalAssets({ imageData, metadata, fileName });
     }
 
     async function uploadParcelMetadataOnly({ metadata, fileName }) {
@@ -1935,7 +1917,7 @@
         }
     }
 
-    async function prepareParcelMintAssets(parcels, signerAddress, neighboursByParcelId = {}, chainId = null, statusEl = null) {
+    async function prepareParcelMintAssets(parcels, signerAddress, neighboursByParcelId = {}, statusEl = null) {
         const prepared = [];
         for (let idx = 0; idx < parcels.length; idx++) {
             const parcel = parcels[idx];
@@ -1970,8 +1952,7 @@
 
             try {
                 if (statusEl) {
-                    const storageLabel = (typeof global.getStorageProviderLabel === 'function') ? global.getStorageProviderLabel() : 'decentralized storage';
-                    const label = parcels.length > 1 ? `Uploading parcel ${idx + 1}/${parcels.length} to ${storageLabel}...` : `Uploading parcel metadata to ${storageLabel}...`;
+                    const label = parcels.length > 1 ? `Uploading parcel ${idx + 1}/${parcels.length} to IPFS...` : 'Uploading parcel metadata to IPFS...';
                     statusEl.textContent = label;
                 }
                 if (global.MapScreenshot && typeof global.MapScreenshot.capturePolygonImage === 'function' && global.AssetService && typeof global.AssetService.uploadProposalAssets === 'function') {
@@ -1993,8 +1974,7 @@
                         const uploadResult = await uploadParcelMetadataAsset({
                             imageData: screenshot,
                             metadata: metadataPayload,
-                            fileName: `parcel-${parcel.parcelId}.png`,
-                            chainId
+                            fileName: `parcel-${parcel.parcelId}.png`
                         });
                         metadataUri = uploadResult?.metadataUri || uploadResult?.metadataUrl || null;
                     }
@@ -2076,7 +2056,7 @@
                     ownerAddress,
                     onExit: typeof options.onExit === 'function' ? options.onExit : null,
                     onConfirm: async ({ parcels: selectedParcels, setBusy, statusEl, neighboursByParcelId }) => {
-                        const prepared = await prepareParcelMintAssets(selectedParcels, ownerAddress, neighboursByParcelId, chainSlug, statusEl);
+                        const prepared = await prepareParcelMintAssets(selectedParcels, ownerAddress, neighboursByParcelId, statusEl);
                         const mintedParcelIds = [];
                         const transactions = [];
                         for (let i = 0; i < prepared.length; i++) {
@@ -2173,7 +2153,7 @@
                 ownerAddress,
                 onExit: typeof options.onExit === 'function' ? options.onExit : null,
                 onConfirm: async ({ parcels: selectedParcels, setBusy, statusEl, neighboursByParcelId }) => {
-                    const prepared = await prepareParcelMintAssets(selectedParcels, ownerAddress, neighboursByParcelId, chainId, statusEl);
+                    const prepared = await prepareParcelMintAssets(selectedParcels, ownerAddress, neighboursByParcelId, statusEl);
                     const result = await executeParcelBatchMint({ parcels: prepared, signer, ownerAddress, contractAddress, chainSlug, statusEl });
                     const mintedParcelIds = prepared.map(p => p.parcelId).filter(Boolean);
                     const txHash = result?.txHash || null;

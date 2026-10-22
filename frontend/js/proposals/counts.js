@@ -45,7 +45,7 @@
         const geometries = [proposal.geometry, proposal.site, proposal.data?.geometry,
             proposal.siteProposal?.geometry, proposal.structureProposal?.geometry,
             proposal.roadProposal?.geometry, proposal.roadProposal?.definition?.polygon,
-            proposal.reparcellization?.polygons];
+            proposal.parcelLayout?.plots?.map(plot => plot && plot.geometry)];
         let minLon = Infinity, maxLon = -Infinity, minLat = Infinity, maxLat = -Infinity;
         const visit = value => {
             if (!value) return;

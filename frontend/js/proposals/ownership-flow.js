@@ -1,18 +1,13 @@
 // Ownership flow (rethink-proposals.md §9, §12 step 2): what a proposal's FORMATION takes from each
 // BASE cadastral parcel, and where the ownership of the taken ground goes. One declared word per
 // typology — road/park/square/lake/station form public ground, a freeform building forms the
-// proposer's parcel, a reparcellization redistributes per its own mapping, decide-later consumes
-// fabric but defers the ownership decision. Content-only typologies (rules, votes, transfers,
-// as-is) have no formation and therefore no flow.
+// proposer's parcel, a parcel layout redraws borders and carries ownership over. Content-only
+// typologies (rules, votes, transfers, as-is) have no formation and therefore no flow.
 //
-// Also home of the EFFECT fingerprint (§11): the hash of what a proposal DOES to the ground —
-// footprint + per-parcel cession — as opposed to proposalContentFingerprint, which hashes what the
-// proposal SAYS. Consent binds to the effect: an edit that leaves the effect unchanged keeps
-// acceptances standing, a material change voids them (see execution.js). Inputs are STORED fields
-// only (geometry, goal, the stamped flow) — never live map state — so the hash is identical on
-// every machine and across sessions.
-// LR is an allocation agreement: its effect is the complete versioned deal in
-// reparcellization-deal.js, including internal borders, all recipients and their cash terms.
+// Also compares a publish-time flow with the one re-derived here (replay fidelity, §11). Owners
+// decide on agreements, not on designs (plan-design-agreement.md, M2), so no per-design consent
+// binds to the flow. A parcel layout changes borders, never ownership (M1 (a)): its flow is its
+// footprint like any other formation's; who ends up with which plot is its agreement's.
 //
 // Pure: plain objects in and out, no DOM, no map. `turf` resolves via plan-order.js.
 
@@ -33,8 +28,7 @@
         'station': 'public',
         'single': 'proposer',
         'buildings': 'proposer',
-        'reparcellization': 'mapping',
-        'decide-later': 'undecided'
+        'parcel-layout': 'carry-over'
     });
 
     function destinationForGoal(goal) {
@@ -60,116 +54,6 @@
         if (!footprint) return [];
         return api.computeBaseAncestry(footprint, baseParcels, opts)
             .map(hit => ({ parcelId: hit.id, cededM2: hit.area, destination }));
-    }
-
-    // --- effect fingerprint -----------------------------------------------------------------
-
-    function stableStringifyLocal(value) {
-        if (value === null || typeof value !== 'object') return JSON.stringify(value);
-        if (Array.isArray(value)) return '[' + value.map(stableStringifyLocal).join(',') + ']';
-        const keys = Object.keys(value).sort();
-        return '{' + keys.map(k => JSON.stringify(k) + ':' + stableStringifyLocal(value[k])).join(',') + '}';
-    }
-
-    // Same ~64-bit two-variant djb2 rendered base36 as proposalContentHash in sharing.js; kept
-    // local so this module stays pure and namespaced (no bare globals).
-    function effectHashString(str) {
-        let h1 = 5381;
-        let h2 = 52711;
-        for (let i = 0; i < str.length; i += 1) {
-            const c = str.charCodeAt(i);
-            h1 = ((h1 << 5) + h1 + c) | 0;
-            h2 = (((h2 << 5) + h2) ^ c) | 0;
-        }
-        return (h1 >>> 0).toString(36) + (h2 >>> 0).toString(36);
-    }
-
-    // Sub-meter surveyor drift must not void consent, so coordinates are quantised to ~0.1 m
-    // (1e-6 deg ≈ 0.11 m at the equator, less at Zagreb's latitude) before hashing.
-    function roundCoords(node) {
-        if (Array.isArray(node)) {
-            if (node.length && typeof node[0] === 'number') {
-                return node.map(n => Math.round(n * 1e6) / 1e6);
-            }
-            return node.map(roundCoords);
-        }
-        return node;
-    }
-
-    // Authored tunnel choices are part of the effect. Demolition is derived from the footprint at
-    // apply time and must never make consent hashes browser-dependent.
-    function collectImpactModes(proposal) {
-        const tunnelled = [];
-        ['roadProposal', 'structureProposal', 'buildingProposal'].forEach(key => {
-            const sub = proposal && proposal[key];
-            if (!sub || typeof sub !== 'object') return;
-            const definition = sub.definition && typeof sub.definition === 'object' ? sub.definition : null;
-            const tunnels = definition && definition.tunnels;
-            (Array.isArray(tunnels) ? tunnels : []).forEach(record => {
-                (record && Array.isArray(record.buildingIds) ? record.buildingIds : [])
-                    .forEach(buildingId => tunnelled.push(String(buildingId)));
-            });
-        });
-        if (!tunnelled.length) return null;
-        return { tunnelled: Array.from(new Set(tunnelled)).sort() };
-    }
-
-    // The hash of the proposal's EFFECT: footprint + per-parcel cession + where ownership goes.
-    // Null when the proposal has no footprint (content-only) — callers fall back to the content
-    // fingerprint for those, since an offer's "effect" is its terms.
-    // The flow input is the STAMPED proposal.ownershipFlow when present (frozen at publish, stable
-    // everywhere); opts.ownershipFlow lets the accept path supply a freshly computed one for
-    // never-published local proposals.
-    // plan-order.js hands back the same footprint object while a record is unchanged, so the costly
-    // part (rounding and hashing a footprint of hundreds of parts) runs once per record and the
-    // cheap terms decide whether that hash still applies.
-    const effectHashCache = new WeakMap();
-    function effectFingerprintOf(proposal, options) {
-        const deal = global.ReparcellizationDeal
-            || (typeof require === 'function' ? require('../reparcellization-deal.js') : null);
-        if (deal?.isReadjustment(proposal)) return deal.fingerprint(proposal);
-        const opts = options || {};
-        // A published record carries the hash the server stamped at publish, and a published record
-        // never changes (an edit derives a new record, which binding-drift.js strips the stamp from).
-        // Reading the stamp spares the footprint union, which is what the hash costs: a plan of
-        // 1,105 buildings unions for seconds. A caller supplying its own flow is hashing a draft.
-        if (!opts.ownershipFlow && typeof proposal?.effectHash === 'string' && proposal.effectHash) return proposal.effectHash;
-        const api = planOrder();
-        if (!api || !proposal) return null;
-        let footprint = null;
-        try { footprint = api.footprintOf(proposal); } catch (_) { footprint = null; }
-        if (!footprint || !footprint.geometry) return null;
-
-        const flow = Array.isArray(proposal.ownershipFlow) ? proposal.ownershipFlow
-            : (Array.isArray(opts.ownershipFlow) ? opts.ownershipFlow : []);
-        const terms = {
-            goal: String(proposal.goal === undefined || proposal.goal === null ? '' : proposal.goal).trim(),
-            flow: flow
-                .filter(entry => entry && entry.parcelId)
-                .map(entry => ({
-                    parcelId: String(entry.parcelId),
-                    cededM2: Math.round(Number(entry.cededM2) || 0),
-                    destination: String(entry.destination || '')
-                }))
-                .sort((a, b) => a.parcelId.localeCompare(b.parcelId))
-        };
-        const modes = collectImpactModes(proposal);
-        if (modes) terms.modes = modes;
-        const termsKey = stableStringifyLocal(terms);
-        const cached = effectHashCache.get(footprint);
-        if (cached && cached.termsKey === termsKey) return cached.hash;
-        const effect = {
-            goal: terms.goal,
-            footprint: {
-                type: footprint.geometry.type,
-                coordinates: roundCoords(footprint.geometry.coordinates)
-            },
-            flow: terms.flow
-        };
-        if (modes) effect.modes = modes;
-        const hash = 'e-' + effectHashString(stableStringifyLocal(effect));
-        effectHashCache.set(footprint, { termsKey, hash });
-        return hash;
     }
 
     // --- replay fidelity (§11 first rung) ---------------------------------------------------
@@ -227,54 +111,12 @@
         return { same: !added.length && !removed.length && !changed.length, added, removed, changed };
     }
 
-    // --- consent validity against the current effect (§12 step 4) ---------------------------
-
-    // A local acceptance counts only for the terms it recorded. Missing commitments cannot
-    // establish consent; a matching hash still does not supply signed authority evidence.
-    function isAcceptanceRecordValid(record, currentHash) {
-        return typeof currentHash === 'string' && currentHash.length > 0
-            && record?.effectHash === currentHash;
-    }
-
-    // Recompute which owner acceptances still count against `currentHash`, and rebuild the
-    // proposal's acceptedParcelIds from them. Records are never deleted — consent history is
-    // immutable — they just stop (or resume) counting. The parcel tally is derived from scoped
-    // owner records and must never supply missing decisions in the opposite direction.
-    function refreshAcceptanceValidity(proposal, currentHash) {
-        if (!proposal || !proposal.ownerAcceptances || typeof proposal.ownerAcceptances !== 'object') {
-            if (proposal) proposal.acceptedParcelIds = [];
-            return { lapsedOwners: 0 };
-        }
-        let lapsedOwners = 0;
-        const validParcelIds = [];
-        const scopedParcelIds = new Set((proposal.cadastreParcelIds || []).map(String));
-        Object.entries(proposal.ownerAcceptances).forEach(([entryParcelId, entry]) => {
-            if (!entry) return;
-            const acceptedKeys = Array.isArray(entry.acceptedOwnerKeys) ? entry.acceptedOwnerKeys : [];
-            const validKeys = acceptedKeys.filter(key => {
-                const valid = isAcceptanceRecordValid(entry.acceptedBy && entry.acceptedBy[key], currentHash);
-                if (!valid) lapsedOwners += 1;
-                return valid;
-            });
-            const ownerOrder = Array.isArray(entry.ownerOrder) ? entry.ownerOrder : [];
-            const fullyAccepted = ownerOrder.length > 0
-                && ownerOrder.every(key => entry.owners?.[key]?.placeholder !== true && validKeys.includes(key));
-            const inScope = scopedParcelIds.has(String(entryParcelId));
-            if (fullyAccepted && inScope) validParcelIds.push(String(entryParcelId));
-        });
-        proposal.acceptedParcelIds = validParcelIds;
-        return { lapsedOwners };
-    }
-
     const api = {
         DESTINATION_BY_GOAL,
         destinationForGoal,
         hasFormation,
         computeOwnershipFlow,
-        effectFingerprintOf,
-        compareOwnershipFlows,
-        isAcceptanceRecordValid,
-        refreshAcceptanceValidity
+        compareOwnershipFlows
     };
 
     // Namespaced only — a bare global here could shadow a top-level function in the classic

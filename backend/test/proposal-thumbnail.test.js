@@ -1,7 +1,7 @@
 // Tests for the server-side proposal thumbnail renderer: the framing maths (which zoom, which tiles,
 // which bbox) and the geometry resolution that decides WHAT the picture is of. Deliberately covers
 // only the pure parts — no tiles are fetched, so these are deterministic and offline.
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import {
     computeStitchFrame,
     computeBestZoomForBbox,
@@ -19,8 +19,14 @@ import {
     resolveProposalGoalKey,
     shouldSkipProposalThumbnail,
     normalizeGoalKey,
-    getProposalCadastreParcelIds
+    getProposalCadastreParcelIds,
+    buildAgreementRenderOptions,
+    buildThumbnailRenderOptions,
+    designRenderSubject,
+    generateAndStoreContentThumbnail,
+    resolveDesignParts
 } from '../thumbnails/proposal-thumbnail.js';
+import { designContent, layoutContent, PARK, SITE, box } from './helpers/content-fixtures.js';
 
 // A small square in Zagreb (~40m across), in GeoJSON [lng, lat] order.
 const ZAGREB_SQUARE = [[
@@ -233,9 +239,12 @@ describe('resolveProposalPolygon', () => {
         expect(resolved.polygon).toEqual(ZAGREB_SQUARE);
     });
 
-    it('returns no polygon for a parcel-only proposal (the caller unions the parents instead)', () => {
-        const resolved = resolveProposalPolygon({ goal: 'decide-later', cadastreParcelIds: ['HR-1-2'] });
-        expect(resolved.polygon).toBeNull();
+    it('draws nothing for a record with parcels but no geometry of its own, and reads no parcels for it', async () => {
+        const record = { goal: 'parcel', cadastreParcelIds: ['HR-1-2'] };
+        expect(resolveProposalPolygon(record).polygon).toBeNull();
+        const pool = { query: vi.fn(async () => ({ rows: [{ geometry: { type: 'Polygon', coordinates: ZAGREB_SQUARE } }] })) };
+        expect(await buildThumbnailRenderOptions(pool, record, 'zagreb')).toBeNull();
+        expect(pool.query).not.toHaveBeenCalled();
     });
 });
 
@@ -369,5 +378,83 @@ describe('renderProposalThumbnailSet (dividers.md M3)', () => {
         const single = await renderProposalThumbnail(options);
         expect(single.buffer.equals(set.after.buffer)).toBe(true);
         expect(single.frame.zoom).toBe(frame.zoom);
+    });
+});
+
+// Indexed designs and agreements render here too, keyed by CID (plan-design-agreement.md M2): a design
+// as the proposal it was authored as, with the parcels its binding found as its parcels; an agreement as
+// every part of every design it links, in one frame over its input land.
+describe('design and agreement thumbnails', () => {
+    const ring = geometry => geometry.coordinates;
+    const binding = { parcels: [{ parcelId: 'HR-335649-100', overlapM2: 50, intrusionM: 1 }, { parcelId: 'HR-335649-101', overlapM2: 9, intrusionM: 0.4 }] };
+    // A pool that answers the Zagreb parcel query with one outline per requested parcel.
+    const parcelPool = () => {
+        const calls = [];
+        return { calls, query: async (sql, params) => {
+            calls.push({ sql, params });
+            return { rows: params[1].map(() => ({ geometry: PARK })) };
+        } };
+    };
+
+    it('draws a design as its content, with the parcels its binding found standing in for declared ones', async () => {
+        const content = designContent({ goal: 'buildings', structureProposal: undefined, buildingProposal: { parameters: { floors: 3 } },
+            geometry: { buildings: [{ type: 'Feature', properties: {}, geometry: PARK }] } });
+        const subject = designRenderSubject({ content, binding });
+        expect(subject.cadastreParcelIds).toEqual(['HR-335649-100', 'HR-335649-101']);
+        expect(subject.title).toBe(content.title);
+        expect(designRenderSubject({ content, binding: null }).cadastreParcelIds).toEqual([]);
+
+        // A building design frames the parcels it stands on.
+        const pool = parcelPool();
+        const options = await buildThumbnailRenderOptions(pool, subject, 'zagreb');
+        expect(pool.calls[0].params.slice(0, 2)).toEqual([[335649, 335649], ['100', '101']]);
+        expect(options.parcelPolygons).toHaveLength(2);
+        expect(options.polygon).toEqual(ring(PARK));
+    });
+
+    it('frames a parcel layout on every plot, each drawn as its own part', () => {
+        const layout = layoutContent();
+        const resolved = resolveProposalPolygon(layout);
+        expect(resolved.polygonParts).toEqual(layout.parcelLayout.plots.map(plot => ring(plot.geometry)));
+        expect(resolved.polygon).toEqual(resolved.polygonParts[0]);
+        expect(resolved.polygonOrder).toBe('lnglat');
+    });
+
+    it('takes one design\'s parts by the resolver\'s precedence, keeping every polygon of a MultiPolygon', () => {
+        const left = box(15.970, 45.800, 15.9705, 45.8005);
+        const right = box(15.9706, 45.800, 15.971, 45.8005);
+        const multi = { type: 'MultiPolygon', coordinates: [ring(left), ring(right)] };
+        expect(resolveDesignParts({ roadProposal: { definition: { polygon: multi } }, structureProposal: { geometry: PARK } }))
+            .toEqual([ring(left), ring(right)]);
+        expect(resolveDesignParts({ structureProposal: { geometry: PARK }, site: SITE })).toEqual([ring(PARK)]);
+        expect(resolveDesignParts(layoutContent())).toHaveLength(2);
+        expect(resolveDesignParts({ geometry: { buildings: [{ type: 'Feature', geometry: left }, right] } })).toEqual([ring(left), ring(right)]);
+        expect(resolveDesignParts({ site: SITE })).toEqual([ring(SITE)]);
+        expect(resolveDesignParts({})).toEqual([]);
+        expect(resolveDesignParts(null)).toEqual([]);
+    });
+
+    it('frames an agreement on all its designs\' parts over its input land', async () => {
+        const pool = parcelPool();
+        const designs = [{ content: designContent() }, { content: layoutContent() }];
+        const options = await buildAgreementRenderOptions(pool, { city: 'zagreb', designs, inputParcelIds: ['HR-335649-100', 'HR-335649-101'] });
+        expect(options.polygonParts).toEqual([ring(PARK), ...layoutContent().parcelLayout.plots.map(plot => ring(plot.geometry))]);
+        expect(options.polygon).toEqual(ring(PARK));
+        expect(options).toMatchObject({ polygonOrder: 'lnglat', parcelPolygonOrder: 'lnglat' });
+        expect(options.parcelPolygons).toHaveLength(2);
+        // The frame takes in the land as well as the designs.
+        const frame = computeStitchFrame(options);
+        expect(frame.polygons.map(poly => poly.role)).toEqual(['proposal', 'proposal', 'proposal', 'parcel', 'parcel']);
+    });
+
+    it('has nothing to draw for an agreement whose designs have no ground, and refuses an unknown subject', async () => {
+        const pool = parcelPool();
+        expect(await buildAgreementRenderOptions(pool, { city: 'zagreb', designs: [{ content: {} }], inputParcelIds: ['HR-335649-100'] })).toBeNull();
+        expect(pool.calls).toEqual([]);
+        await expect(generateAndStoreContentThumbnail(pool, { kind: 'agreement', cid: 'bafk', city: 'zagreb', designs: [], inputParcelIds: [] },
+            { baseUrl: 'https://api.example', dryRun: true })).resolves.toBeNull();
+        await expect(generateAndStoreContentThumbnail(pool, { kind: 'proposal', cid: 'bafk' }, { baseUrl: 'https://api.example' }))
+            .rejects.toThrow(/Unknown thumbnail subject proposal/);
+        await expect(generateAndStoreContentThumbnail(pool, null)).rejects.toThrow(/Unknown thumbnail subject/);
     });
 });

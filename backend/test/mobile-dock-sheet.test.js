@@ -11,6 +11,50 @@ const { limits, sheetHeight, draggedHeight, occupiedBottom, reportOccupancy, wir
 const sheetSource = readFileSync(fileURLToPath(new URL('../../frontend/js/mobile-dock-sheet.js', import.meta.url)), 'utf8');
 const panelsCss = readFileSync(fileURLToPath(new URL('../../frontend/css/panels.css', import.meta.url)), 'utf8');
 
+// Evaluates the dock's compound selector (classes plus :not(#id) / :not(.class)) against a fake
+// element's id and classes, so the test follows the real selector instead of comparing its text.
+function matchesCompound(el, selector) {
+    const negations = [...selector.matchAll(/:not\(([^)]+)\)/g)].map(m => m[1]);
+    const positive = selector.replace(/:not\([^)]+\)/g, '');
+    const one = part => (part.startsWith('#') ? el.id === part.slice(1) : el.classes.includes(part.slice(1)));
+    const required = positive.match(/[.#][\w-]+/g) || [];
+    return required.every(one) && !negations.some(one);
+}
+
+function dockPanel({ id = 'parcel-info-panel', classes = ['info-panel', 'right-dock-panel'] } = {}) {
+    return {
+        nodeType: 1,
+        id,
+        classes,
+        handle: null,
+        matches(selector) { return matchesCompound(this, selector); },
+        querySelector() { return this.handle; },
+        querySelectorAll() { return []; },
+        insertBefore(handle) { this.handle = handle; }
+    };
+}
+
+function installWithObserver() {
+    const mutationCallbacks = [];
+    const win = {
+        document: {
+            readyState: 'complete',
+            getElementById(id) { return id === 'map-container' ? {} : null; },
+            querySelectorAll() { return []; },
+            createElement() {
+                return { classList: { add() {}, remove() {} }, setAttribute() {}, addEventListener() {} };
+            }
+        },
+        MutationObserver: class {
+            constructor(callback) { mutationCallbacks.push(callback); }
+            observe() {}
+        },
+        addEventListener() {}
+    };
+    install(win);
+    return nodes => mutationCallbacks[0]([{ addedNodes: nodes }]);
+}
+
 describe('mobile dock sheet geometry', () => {
     it('makes map tools tall sheets with visible, touch-safe drag handles', () => {
         expect(panelsCss).toMatch(/\.info-panel\.right-dock-panel:not\(#proposal-details-panel\):not\(\.is-minimized\)\s*\{[\s\S]*?--mobile-dock-sheet-height:\s*66dvh/);
@@ -83,41 +127,24 @@ describe('mobile dock sheet geometry', () => {
     });
 
     it('wires a map tool sheet added after the initial page scan', () => {
-        const mutationCallbacks = [];
-        const panel = {
-            nodeType: 1,
-            handle: null,
-            matches(selector) { return selector === '.info-panel.right-dock-panel:not(#proposal-details-panel)'; },
-            querySelector() { return this.handle; },
-            querySelectorAll() { return []; },
-            insertBefore(handle) { this.handle = handle; }
-        };
-        const mapContainer = {};
-        const win = {
-            document: {
-                readyState: 'complete',
-                getElementById(id) { return id === 'map-container' ? mapContainer : null; },
-                querySelectorAll() { return []; },
-                createElement() {
-                    return {
-                        classList: { add() {}, remove() {} },
-                        setAttribute() {},
-                        addEventListener() {}
-                    };
-                }
-            },
-            MutationObserver: class {
-                constructor(callback) { mutationCallbacks.push(callback); }
-                observe(target, options) { this.target = target; this.options = options; }
-            },
-            addEventListener() {}
-        };
-        install(win);
-        mutationCallbacks[0]([{ addedNodes: [panel] }]);
+        const added = installWithObserver();
+        const panel = dockPanel();
+        added([panel]);
         expect(panel.handle).toBeTruthy();
         // A mutation from inserting the handle is harmless: it is not a dock panel itself.
-        mutationCallbacks[0]([{ addedNodes: [{ nodeType: 1, matches() { return false; }, querySelectorAll() { return []; } }] }]);
+        added([{ nodeType: 1, matches() { return false; }, querySelectorAll() { return []; } }]);
         expect(panel.handle).toBeTruthy();
+    });
+
+    it('makes the click stack a sheet but not a panel hosted inside it, nor the proposal reader', () => {
+        const added = installWithObserver();
+        const stack = dockPanel({ id: 'click-stack', classes: ['click-stack', 'info-panel', 'right-dock-panel'] });
+        const hosted = dockPanel({ classes: ['info-panel', 'right-dock-panel', 'is-hosted'] });
+        const reader = dockPanel({ id: 'proposal-details-panel' });
+        added([stack, hosted, reader]);
+        expect(stack.handle).toBeTruthy();
+        expect(hosted.handle).toBeNull();
+        expect(reader.handle).toBeNull();
     });
 
     it('reports what the open sheet occupies so the credits stay in the map', () => {

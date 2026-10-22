@@ -18,22 +18,38 @@ describe('Solana market bridge', () => {
             solanaWeb3: { Transaction: class Transaction {} },
             SolanaMarketClient: client,
             SolanaChainDataLoader: { getConnection: vi.fn(), getVerifiedConnection: vi.fn(async () => ({ rpc: 'devnet' })) },
-            SolanaAcceptanceClient: { fetchProposal: vi.fn(async () => ({ status: 'Active' })) },
+            // The market's subject is an agreement account (M3): its status and deadline (unix seconds)
+            // are read from the agreement program.
+            AgreementClient: { fetchAgreement: vi.fn(async () => ({ status: 'Active', deadline: 1795000000 })) },
             solanaWalletManager: { getCluster: vi.fn(() => 'mainnet-beta'), getProvider: vi.fn(() => ({ publicKey: wallet })) }
         };
         vm.runInNewContext(bridgeSource, { window });
 
         await expect(window.SolanaMarketBridge.readSummary('proposal-1')).resolves.toMatchObject({
-            market, marketAddress: 'market-pda-1', wallet: 'wallet-1', yes: { side: 1 }, no: { side: 0 }
+            market, marketAddress: 'market-pda-1', wallet: 'wallet-1', yes: { side: 1 }, no: { side: 0 },
+            chainStatus: 'Active', deadline: '2026-11-18T11:06:40.000Z'
         });
+        expect(window.AgreementClient.fetchAgreement).toHaveBeenCalledWith({ rpc: 'devnet' }, { address: 'proposal-1' });
         expect(client.readPosition).toHaveBeenCalledTimes(2);
         expect(window.SolanaChainDataLoader.getVerifiedConnection).toHaveBeenCalledWith('devnet');
         expect(window.SolanaChainDataLoader.getConnection).not.toHaveBeenCalled();
         market.stakeMint = 'another-mint';
         await expect(window.SolanaMarketBridge.readSummary('proposal-1')).rejects.toThrow('stake mint');
         market.stakeMint = window.SolanaMarketBridge.DEVNET_USDC_MINT;
-        window.SolanaAcceptanceClient.fetchProposal.mockResolvedValue(null);
-        await expect(window.SolanaMarketBridge.readSummary('proposal-1')).rejects.toThrow('status is unavailable');
+        // A stored deadline of 0 is none; a pool-less summary carries the agreement's state too.
+        window.AgreementClient.fetchAgreement.mockResolvedValue({ status: 'Active', deadline: 0 });
+        client.readMarket.mockResolvedValueOnce(null);
+        await expect(window.SolanaMarketBridge.readSummary('proposal-1')).resolves.toEqual({
+            market: null, marketAddress: 'market-pda-1', wallet: 'wallet-1', chainStatus: 'Active', deadline: null
+        });
+        // A deadline the read did not yield is not "no deadline": the summary fails.
+        window.AgreementClient.fetchAgreement.mockResolvedValue({ status: 'Active' });
+        await expect(window.SolanaMarketBridge.readSummary('proposal-1')).rejects.toThrow('Agreement account deadline is unavailable');
+        // A missing account, or a status byte the decoder does not know, fails the summary.
+        window.AgreementClient.fetchAgreement.mockResolvedValue(null);
+        await expect(window.SolanaMarketBridge.readSummary('proposal-1')).rejects.toThrow('Agreement account status is unavailable');
+        window.AgreementClient.fetchAgreement.mockResolvedValue({ status: 'Unknown(9)' });
+        await expect(window.SolanaMarketBridge.readSummary('proposal-1')).rejects.toThrow('Agreement account status is unavailable');
     });
 
     it('reads the connected wallet\'s positions for a whole list of proposals in one RPC call', async () => {

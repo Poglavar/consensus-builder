@@ -17,22 +17,6 @@ export function validProposalBody(overrides = {}) {
     };
 }
 
-export function insertResult(overrides = {}) {
-    return {
-        rows: [{
-            id: 1,
-            proposal_id: 'test-proposal-001',
-            created_at: now,
-            ...overrides,
-        }],
-        rowCount: 1,
-    };
-}
-
-export function updateResult() {
-    return { rows: [], rowCount: 1 };
-}
-
 export function proposalDbRow(overrides = {}) {
     return {
         id: 1,

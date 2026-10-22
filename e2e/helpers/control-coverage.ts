@@ -80,7 +80,7 @@ export async function recordControlCoverage(observeContexts: ObserveContexts, te
       const nativeSelect = event.type === 'change' && field.tagName === 'SELECT'
         && field.hasAttribute('data-ui-native-select-boundary')
         && field.getAttribute('data-ui-native-select-boundary') === field.value;
-      const nativeDateTime = event.type === 'change' && field.tagName === 'INPUT' && field.type === 'datetime-local'
+      const nativeDateTime = event.type === 'change' && field.tagName === 'INPUT' && ['date', 'datetime-local'].includes(field.type)
         && field.hasAttribute('data-ui-native-datetime-boundary')
         && field.getAttribute('data-ui-native-datetime-boundary') === field.value;
       // File selection is an operating-system boundary supplied by Playwright's file chooser.

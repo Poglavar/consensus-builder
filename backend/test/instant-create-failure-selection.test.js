@@ -498,7 +498,8 @@ describe('saving an edit of an existing record', () => {
     });
 
     it('still forks a counterproposal of a published source, which stays standing', async () => {
-        const source = { ...localLake(), serverProposalId: '901', publicationApiBase: 'https://api.example.test' };
+        const source = { ...localLake(), published: { cid: require('../../frontend/js/cid.js').cidOfObject({ schema: 'design/v1', title: 'Lake' }),
+            publishedAt: '2026-10-21T12:00:00.000Z', apiBase: 'https://api.example.test' } };
         const { proposal, ProposalManager } = loadInstantCreate({ lands: true, editOf: source });
 
         const result = await globalThis.instantCreateProposalFromDraft('draft-park');

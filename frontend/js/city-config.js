@@ -21561,8 +21561,8 @@
             if (options.clearRoute) {
                 // Every route the boot acts on: left in, a proposal focused before the switch reopened
                 // in the next city, and a monitor asked to switch back.
-                if (/^\/(proposals|plans|parcel|bets|monitors)\//.test(url.pathname)) url.pathname = '/';
-                ['proposalShare', 'shared', 'parcel', 'bets', 'focusProposal', 'arrive', 'activity', 'scene']
+                if (/^\/(proposals|designs|agreements|parcel|bets|monitors)\//.test(url.pathname)) url.pathname = '/';
+                ['parcel', 'bets', 'focusProposal', 'arrive', 'activity', 'scene']
                     .forEach(param => url.searchParams.delete(param));
             }
             // The page is leaving this city: work for it (the applied plan's replay) stops now

@@ -1,95 +1,53 @@
-// Lens choice for agent proposers: deterministic directory picks, refusals instead of a silent
-// self-lens, and the dry-run description the runners print.
-import fs from 'node:fs';
+// The attester directory as agents read it (agents/lens-directory-client.js): GET /agent/lenses/members
+// through the retrying fetch, and lens keys as they are typed or listed (canonical base58, unique, in
+// order). The proposer runner names the lens member it operates instead of choosing from the directory.
 import { describe, expect, it } from 'vitest';
 import { Keypair } from '@solana/web3.js';
-import {
-    chooseLens, describeLensChoice, fetchLensMembers, parseLensList, resolveLens
-} from '../agents/lens-directory-client.js';
+import { fetchLensMembers, normalizeLensKey, parseLensList } from '../agents/lens-directory-client.js';
 
 const key = () => Keypair.generate().publicKey.toBase58();
-const [A, B, C, D, SELF] = Array.from({ length: 5 }, key);
+const [A, B] = [key(), key()];
 const member = (k, kind, ownership = 0, name = null) => ({ key: k, kind, name, description: null, coverage: { ownership, parcels: ownership, executed: 0 } });
+const retryOptions = { wait: async () => {}, log: () => {} };
 
-function directoryFetch(members, status = 200) {
+function directoryFetch(body, status = 200) {
     const calls = [];
-    const fetchImpl = async (url) => {
-        calls.push(url);
-        return new Response(JSON.stringify({ members }), { status, headers: { 'content-type': 'application/json' } });
+    const fetchImpl = async (url, init) => {
+        calls.push({ url, method: init?.method });
+        return new Response(typeof body === 'string' ? body : JSON.stringify(body), { status, headers: { 'content-type': 'application/json' } });
     };
     return { fetchImpl, calls };
 }
 
-describe('chooseLens', () => {
-    it('ranks by ownership coverage, then key, independent of input order', () => {
-        const members = [member(A, 'owner-consent', 3), member(B, 'owner-consent', 7), member(C, 'owner-consent', 3), member(D, 'court', 99)];
-        const tieFirst = [A, C].sort()[0];
-        const forward = chooseLens(members, { min: 2 });
-        const reversed = chooseLens([...members].reverse(), { min: 2 });
-        expect(forward.map(m => m.key)).toEqual([B, tieFirst]);
-        expect(reversed.map(m => m.key)).toEqual(forward.map(m => m.key));
-        expect(chooseLens(members).map(m => m.key)).toEqual([B]);
+describe('fetchLensMembers', () => {
+    it('reads the members array from GET /agent/lenses/members under the API base', async () => {
+        const members = [member(A, 'owner-consent', 2, 'notary-01'), member(B, 'lifecycle')];
+        const { fetchImpl, calls } = directoryFetch({ members });
+        expect(await fetchLensMembers({ apiBase: 'https://api.example.test/', fetchImpl, retryOptions })).toEqual(members);
+        expect(calls).toEqual([{ url: 'https://api.example.test/agent/lenses/members', method: 'GET' }]);
     });
 
-    it('filters by kind and excludes the proposer', () => {
-        const members = [member(SELF, 'owner-consent', 50), member(A, 'owner-consent', 1), member(D, 'court', 99)];
-        expect(chooseLens(members, { exclude: [SELF] }).map(m => m.key)).toEqual([A]);
-        expect(chooseLens(members, { kinds: ['court'] }).map(m => m.key)).toEqual([D]);
-        expect(chooseLens(members, { kinds: [], exclude: [SELF] }).map(m => m.key)).toEqual([D]);
-    });
-
-    it('refuses an empty directory, too few qualifying members, and a directory of only the proposer', () => {
-        expect(() => chooseLens([])).toThrow(/no lens: 0 of 0 .*Refusing to mint with the proposer as its own lens/);
-        expect(() => chooseLens([member(A, 'owner-consent')], { min: 2 })).toThrow(/need 2/);
-        expect(() => chooseLens([member(SELF, 'owner-consent', 9)], { exclude: [SELF] })).toThrow(/no lens: 0 of 1/);
-        expect(() => chooseLens([member(D, 'court', 9)])).toThrow(/kinds owner-consent/);
-        expect(() => chooseLens([], { min: 0 })).toThrow(/min must be a positive integer/);
-    });
-});
-
-describe('resolveLens', () => {
-    it('uses explicit keys without touching the directory, and refuses the proposer alone', async () => {
-        const { fetchImpl, calls } = directoryFetch([]);
-        const choice = await resolveLens({ explicit: `${A}, ${B},${A}`, proposer: SELF, apiBase: 'http://x', fetchImpl });
-        expect(choice).toMatchObject({ lens: [A, B], source: 'explicit' });
-        expect(calls).toHaveLength(0);
-        await expect(resolveLens({ explicit: SELF, proposer: SELF, apiBase: 'http://x', fetchImpl })).rejects.toThrow(/only the proposer's own key/);
-        await expect(resolveLens({ explicit: 'not-a-key', proposer: SELF })).rejects.toThrow(/not a base58 public key/);
-        // the proposer next to another member is the proposer's choice, not a self-lens
-        expect((await resolveLens({ explicit: [SELF, A], proposer: SELF })).lens).toEqual([SELF, A]);
-    });
-
-    it('chooses from GET /agent/lenses/members and explains why in the plan line', async () => {
-        const { fetchImpl, calls } = directoryFetch([member(SELF, 'owner-consent', 40), member(A, 'owner-consent', 2, 'notary-01')]);
-        const choice = await resolveLens({ proposer: SELF, apiBase: 'https://api.example.test/', fetchImpl });
-        expect(calls).toEqual(['https://api.example.test/agent/lenses/members']);
-        expect(choice.lens).toEqual([A]);
-        expect(choice.source).toBe('directory');
-        const line = describeLensChoice(choice);
-        expect(line).toContain(`lens [${A}]`);
-        expect(line).toContain('proposer excluded');
-        expect(line).toContain('notary-01 (owner-consent, 2 ownership)');
-    });
-
-    it('refuses when the directory is empty or unavailable', async () => {
-        await expect(resolveLens({ proposer: SELF, apiBase: 'http://x', fetchImpl: directoryFetch([]).fetchImpl })).rejects.toThrow(/no lens/);
-        const retryOptions = { wait: async () => {}, log: () => {} };
-        await expect(fetchLensMembers({ apiBase: 'http://x', fetchImpl: directoryFetch([], 500).fetchImpl, retryOptions })).rejects.toThrow(/HTTP 500/);
+    it('refuses an unavailable directory and an answer that is not a members list', async () => {
+        await expect(fetchLensMembers({ apiBase: 'http://x', fetchImpl: directoryFetch({ members: [] }, 500).fetchImpl, retryOptions })).rejects.toThrow(/HTTP 500/);
         await expect(fetchLensMembers({ apiBase: 'http://x', fetchImpl: async () => { throw new TypeError('fetch failed'); }, retryOptions })).rejects.toThrow(/unreachable/);
-    });
-
-    it('parses CLI lists into unique canonical keys', () => {
-        expect(parseLensList(`${A},${B}, ${A}`)).toEqual([A, B]);
-        expect(parseLensList('')).toEqual([]);
+        await expect(fetchLensMembers({ apiBase: 'http://x', fetchImpl: directoryFetch('<html>').fetchImpl, retryOptions })).rejects.toThrow(/did not return JSON/);
+        await expect(fetchLensMembers({ apiBase: 'http://x', fetchImpl: directoryFetch({ lenses: [] }).fetchImpl, retryOptions })).rejects.toThrow(/no members array/);
+        await expect(fetchLensMembers({ fetchImpl: directoryFetch({ members: [] }).fetchImpl, retryOptions })).rejects.toThrow(/apiBase is required/);
     });
 });
 
-describe('proposer runners no longer name themselves as the lens', () => {
-    it('run.mjs and canonical-case-run.mjs mint with the resolved lens', () => {
-        for (const file of ['../agents/run.mjs', '../agents/canonical-case-run.mjs']) {
-            const source = fs.readFileSync(new URL(file, import.meta.url), 'utf8');
-            expect(source).toContain('resolveLens(');
-            expect(source).not.toMatch(/lens: \[(keypair\.publicKey|proposer\.wallet)/);
-        }
+describe('lens keys', () => {
+    it('parses CLI lists and arrays into unique canonical keys, in the given order', () => {
+        expect(parseLensList(`${B},${A}, ${B}`)).toEqual([B, A]);
+        expect(parseLensList([A, ` ${B} `, A])).toEqual([A, B]);
+        expect(parseLensList('')).toEqual([]);
+        expect(parseLensList(undefined)).toEqual([]);
+        expect(() => parseLensList(`${A},not-a-key`)).toThrow(/lens key "not-a-key" is not a base58 public key/);
+    });
+
+    it('normalizes one key or refuses it by its label', () => {
+        expect(normalizeLensKey(` ${A} `)).toBe(A);
+        expect(() => normalizeLensKey('nope', 'operated lens')).toThrow(/operated lens "nope" is not a base58 public key/);
+        expect(() => normalizeLensKey(7)).toThrow(/not a base58 public key/);
     });
 });

@@ -176,14 +176,14 @@ Inputs: the dependency map in this file's history (agent report, 2026-10-01), `u
   for → needs a `verdict_may_execute` verdict.
 - *Unknown coverage on create*: the declaration is accepted unverified and stored as the binding
   (`subject: 'declared-unverified'`, null overlaps) — the old check was equally blind there.
-- *Parcel acts without own geometry* (offer, transfer, vote, decide-later, generic parcel): site = union
+- *Parcel acts without own geometry* (offer, transfer, vote, generic parcel): site = union
   of the declared parcels; the binding IS the declaration (`subject: 'declared-parcels'`); the server
   only verifies each id is a current HR parcel (unknown ids → `unbound-parcels`). Recomputing it from
   the union would bind neighbours through cadastral overlap defects, which are not parties to a
   transfer of these titles. Parcel acts WITH geometry (designation, a vote with a park) use the normal
   site rule and must have a non-empty binding.
-- *Parcel act detection*: goal in `offer, ownership-transfer(-to-me/-from-me), parcel, as-is,
-  decide-later`, or `isVote === true`, or `proposalRole === 'owner-offer'`, or a road designation
+- *Parcel act detection*: goal in `offer, ownership-transfer(-to-me/-from-me), parcel, as-is`,
+  or `isVote === true`, or `proposalRole === 'owner-offer'`, or a road designation
   (`roadProposal.definition.polygon` with no centreline). `requiresParcels` = parcel act, or neither a
   site nor a footprint.
 - *Authored site vs footprint*: when `site` is sent, the footprint must lie inside it (components of
@@ -465,7 +465,7 @@ proposal-bridge.js/create.js and backend/agents/minter.js; decoders render the z
   proceed for seeds on open ground with no cadastral scope; `_resetDerivedFabric` skips an empty
   cadastral scope (an explore plan) and drops stale ground pieces (all on a full reset, by producer on a
   scoped one). Records with no cadastral ids are matched to the city by their authored `city`.
-  Readjustment/decide-later on open ground refuse with `readjustment-open-ground` (phase 4).
+  Readjustment on open ground refuses with `readjustment-open-ground` (phase 4).
 - **Pieces on open ground** carry `cadastreParcelIds: []` + `groundIds: ['ground:<hash>']` and rootless
   ids `<token>-<n>`; a piece over parcels and open ground carries both. The identity funnel
   (`_assignSyntheticChildIdentitiesImpl`), the live fabric (`normalizeFeature` accepts ground provenance
@@ -555,7 +555,7 @@ parcels (5 corridor pieces) applied as before. Page errors: only two from a buil
 empty-scope fix (boot replay of an explore plan threw "Cadastral replacement scope cannot be empty").
 
 **What phase 4 (subdivision on bare ground) must know**
-- Readjustment and decide-later refuse open ground by name (`readjustment-open-ground`) in
+- Readjustment refuses open ground by name (`readjustment-open-ground`) in
   `_applyProposalTransactionBody`; remove that when the slicer can form plots there.
 - Plots on open ground must carry `groundIds` and no cadastre ids (rootless `<token>-<n>`); the funnel,
   fabric, identity carry and allocator already accept them. The pool is `openGroundHost` (+ the bound
@@ -584,8 +584,7 @@ empty-scope fix (boot replay of an explore plan threw "Cadastral replacement sco
   both; on neither → refusal. The host leaves no remainder, is never consumed from the fabric, and the
   "no cadastral provenance" refusal applies only without a host. Plots assigned to `open-ground` get no
   agent, no ownership transfer and no `ownershipDetails`; a plot assigned to public land goes to the
-  City as before. A decide-later merge on open ground (cannot happen: parcel act) is refused as
-  `merge-open-ground`.
+  City as before.
 - **Authoring.** On a drawn site with open ground (coverage partial or none) the palette's Land
   readjustment is enabled and labelled **Subdivide** (`buildProposalPaletteHtml` `labels` option); a
   site wholly over parcels keeps "select parcels instead", coverage `unknown` says the server holds no
@@ -1021,8 +1020,9 @@ the two fields wrap under each other, no horizontal scroll.
   `proposals/storage.js`; local draft updated with `proposalStorage.setProposalAuthor`): the publish
   projection `buildUploadReadyProposal` (the share dialog projects before it uploads, so the stamp must
   sit there, before the device-local `authorAgentId` is dropped), `uploadProposalToServer`, the share-plan
-  payload and the share dialog's mint metadata. Published/minted records (`isProposalImmutable`), other
-  agents' records and records without `authorAgentId` keep their author.
+  payload and the share dialog's mint metadata. Published/minted records (then `isProposalImmutable`;
+  since M3 `ProposalLineage.isPublished`: a design published under its CID, designs being no longer
+  minted), other agents' records and records without `authorAgentId` keep their author.
 - **Forking a site-only subdivision** failed with "Reparcellization plan is missing": `createProposal`
   required `pendingReparcellizationPlan.parcelIds`, which a site-pooled plan (`poolSource 'site'`, record
   1348's shape) does not have, and it compared the plan's parcels with the (empty) selection — a Zagreb

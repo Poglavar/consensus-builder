@@ -1,5 +1,6 @@
 // ownership-flow.js — the declared ownership flow of a formation (per crossed base parcel: ceded
-// area + destination) and the effect fingerprint consent binds to (rethink-proposals.md §9, §11).
+// area + destination) and its replay comparison (rethink-proposals.md §9, §11). No per-design
+// consent binds to it: owners decide on agreements (plan-design-agreement.md, M2).
 
 import { describe, it, expect, beforeAll } from 'vitest';
 import { createRequire } from 'node:module';
@@ -7,7 +8,6 @@ import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
 
 let flowApi;
-let planOrder;
 let t;
 
 // A lon/lat square as a GeoJSON feature. Sizes are picked so areas are hundreds-to-thousands of
@@ -38,7 +38,6 @@ beforeAll(() => {
     globalThis.turf = require('@turf/turf');
     t = globalThis.turf;
     flowApi = require('../../frontend/js/proposals/ownership-flow.js');
-    planOrder = require('../../frontend/js/proposals/plan-order.js');
 });
 
 describe('destinationForGoal', () => {
@@ -50,8 +49,8 @@ describe('destinationForGoal', () => {
         expect(flowApi.destinationForGoal('station')).toBe('public');
         expect(flowApi.destinationForGoal('single')).toBe('proposer');
         expect(flowApi.destinationForGoal('buildings')).toBe('proposer');
-        expect(flowApi.destinationForGoal('reparcellization')).toBe('mapping');
-        expect(flowApi.destinationForGoal('decide-later')).toBe('undecided');
+        expect(flowApi.destinationForGoal('parcel-layout')).toBe('carry-over');
+        expect(flowApi.destinationForGoal('reparcellization')).toBeNull();
     });
 
     it('content-only typologies have no formation', () => {
@@ -91,80 +90,6 @@ describe('computeOwnershipFlow', () => {
         expect(flowApi.computeOwnershipFlow({ goal: 'urban-rule', geometry: STRIP.geometry }, baseParcels)).toEqual([]);
         expect(flowApi.computeOwnershipFlow({ goal: 'road-track' }, baseParcels)).toEqual([]);
         expect(flowApi.computeOwnershipFlow({ goal: 'road-track', geometry: STRIP.geometry }, [])).toEqual([]);
-    });
-});
-
-describe('effectFingerprintOf', () => {
-    const makeRoad = () => ({
-        goal: 'road-track',
-        geometry: JSON.parse(JSON.stringify(STRIP.geometry)),
-        ownershipFlow: [
-            { parcelId: 'HR-1-E', cededM2: 300, destination: 'public' },
-            { parcelId: 'HR-1-P', cededM2: 1700, destination: 'public' }
-        ]
-    });
-
-    it('is stable across identical proposals and flow ordering', () => {
-        const a = flowApi.effectFingerprintOf(makeRoad());
-        const reordered = makeRoad();
-        reordered.ownershipFlow.reverse();
-        expect(a).toMatch(/^e-/);
-        expect(flowApi.effectFingerprintOf(reordered)).toBe(a);
-    });
-
-    it('survives sub-meter coordinate jitter (surveyor drift must not void consent)', () => {
-        const jittered = makeRoad();
-        jittered.geometry.coordinates[0][0][0] += 1e-8;
-        expect(flowApi.effectFingerprintOf(jittered)).toBe(flowApi.effectFingerprintOf(makeRoad()));
-    });
-
-    it('changes when the footprint moves materially', () => {
-        const moved = makeRoad();
-        moved.geometry.coordinates[0] = moved.geometry.coordinates[0].map(([lng, lat]) => [lng + 0.0005, lat]);
-        expect(flowApi.effectFingerprintOf(moved)).not.toBe(flowApi.effectFingerprintOf(makeRoad()));
-    });
-
-    it('changes when a cession changes, even with the footprint untouched', () => {
-        const cheaper = makeRoad();
-        cheaper.ownershipFlow[1].cededM2 = 900;
-        expect(flowApi.effectFingerprintOf(cheaper)).not.toBe(flowApi.effectFingerprintOf(makeRoad()));
-    });
-
-    it('is null for content-only proposals (they bind to the content fingerprint instead)', () => {
-        expect(flowApi.effectFingerprintOf({ goal: 'urban-rule', parentParcelIds: ['HR-1-P'] })).toBeNull();
-    });
-
-    it('ignores derived demolition scans but includes authored tunnel choices', () => {
-        const bare = makeRoad();
-        const reference = flowApi.effectFingerprintOf(bare);
-
-        const withCut = makeRoad();
-        withCut.roadProposal = { definition: { demolishedBuildings: [{ id: 'b1', geometry: {}, remainder: { type: 'Polygon' } }] } };
-        const cutHash = flowApi.effectFingerprintOf(withCut);
-        expect(cutHash).toBe(reference);
-
-        const withDemolish = makeRoad();
-        withDemolish.roadProposal = { definition: { demolishedBuildings: [{ id: 'b1', geometry: {} }] } }; // no remainder = full
-        expect(flowApi.effectFingerprintOf(withDemolish)).toBe(reference);
-
-        const withTunnel = makeRoad();
-        withTunnel.roadProposal = { definition: { tunnels: [{ edgeKey: 'e1', buildingIds: ['b1'] }] } };
-        expect(flowApi.effectFingerprintOf(withTunnel)).not.toBe(reference);
-        expect(flowApi.effectFingerprintOf(withTunnel)).not.toBe(cutHash);
-
-        // Empty record arrays are the same effect as no records at all.
-        const withEmpty = makeRoad();
-        withEmpty.roadProposal = { definition: { demolishedBuildings: [], tunnels: [] } };
-        expect(flowApi.effectFingerprintOf(withEmpty)).toBe(reference);
-    });
-
-    it('accepts a computed flow for never-published proposals via options', () => {
-        const local = { goal: 'road-track', geometry: JSON.parse(JSON.stringify(STRIP.geometry)) };
-        const flow = flowApi.computeOwnershipFlow(local, [{ id: 'HR-1-P', feature: PARCEL }]);
-        const withFlow = flowApi.effectFingerprintOf(local, { ownershipFlow: flow });
-        const without = flowApi.effectFingerprintOf(local);
-        expect(withFlow).toMatch(/^e-/);
-        expect(withFlow).not.toBe(without);
     });
 });
 
@@ -215,137 +140,5 @@ describe('compareOwnershipFlows — replay fidelity (§11 first rung)', () => {
         const diff = flowApi.compareOwnershipFlows(stamped, live);
         expect(diff.same).toBe(false);
         expect(diff.changed[0].parcelId).toBe('HR-1-B');
-    });
-});
-
-describe('consent validity against the current effect (§12 step 4)', () => {
-    const HASH = 'e-abc123';
-    const OTHER = 'e-zzz999';
-
-    it('requires both the recorded and current terms, with an exact match', () => {
-        expect(flowApi.isAcceptanceRecordValid({ effectHash: HASH }, HASH)).toBe(true);
-        expect(flowApi.isAcceptanceRecordValid({ effectHash: HASH }, OTHER)).toBe(false);
-        expect(flowApi.isAcceptanceRecordValid({ acceptedAt: 'x' }, HASH)).toBe(false);
-        expect(flowApi.isAcceptanceRecordValid({ effectHash: HASH }, null)).toBe(false);
-        expect(flowApi.isAcceptanceRecordValid(null, HASH)).toBe(false);
-        expect(flowApi.isAcceptanceRecordValid({ effectHash: '' }, '')).toBe(false);
-    });
-
-    const makeProposal = (hash) => ({
-        proposalId: 'p1',
-        cadastreParcelIds: ['HR-1-A', 'HR-1-B', 'HR-1-LEGACY'],
-        acceptedParcelIds: ['HR-1-A', 'HR-1-B', 'HR-1-LEGACY'],
-        ownerAcceptances: {
-            'HR-1-A': {
-                owners: {}, ownerOrder: ['o1', 'o2'],
-                acceptedOwnerKeys: ['o1', 'o2'],
-                acceptedBy: { o1: { effectHash: hash }, o2: { effectHash: hash } }
-            },
-            'HR-1-B': {
-                owners: {}, ownerOrder: ['o3'],
-                acceptedOwnerKeys: ['o3'],
-                acceptedBy: { o3: { effectHash: OTHER } }
-            }
-        }
-    });
-
-    it('an edit lapses only the acceptances given to a different effect', () => {
-        const proposal = makeProposal(HASH);
-        const result = flowApi.refreshAcceptanceValidity(proposal, HASH);
-        expect(result.lapsedOwners).toBe(1); // o3 accepted a different effect
-        expect(proposal.acceptedParcelIds).toContain('HR-1-A');
-        expect(proposal.acceptedParcelIds).not.toContain('HR-1-B');
-        // A parcel-level flag supplies no missing owner decision.
-        expect(proposal.acceptedParcelIds).not.toContain('HR-1-LEGACY');
-        // The record itself is preserved: consent history is immutable.
-        expect(proposal.ownerAcceptances['HR-1-B'].acceptedBy.o3.effectHash).toBe(OTHER);
-    });
-
-    it('an edit back to the accepted effect revalidates automatically', () => {
-        const proposal = makeProposal(HASH);
-        flowApi.refreshAcceptanceValidity(proposal, HASH);
-        expect(proposal.acceptedParcelIds).not.toContain('HR-1-B');
-        const back = flowApi.refreshAcceptanceValidity(proposal, OTHER);
-        // Now o3's consent matches again — and o1/o2's lapses instead.
-        expect(back.lapsedOwners).toBe(2);
-        expect(proposal.acceptedParcelIds).toContain('HR-1-B');
-        expect(proposal.acceptedParcelIds).not.toContain('HR-1-A');
-    });
-
-    it('records without hashes no longer count and remain available for inspection', () => {
-        const proposal = makeProposal(HASH);
-        delete proposal.ownerAcceptances['HR-1-B'].acceptedBy.o3.effectHash;
-        delete proposal.ownerAcceptances['HR-1-A'].acceptedBy.o1.effectHash;
-        delete proposal.ownerAcceptances['HR-1-A'].acceptedBy.o2.effectHash;
-        const result = flowApi.refreshAcceptanceValidity(proposal, OTHER);
-        expect(result.lapsedOwners).toBe(3);
-        expect(proposal.acceptedParcelIds).toEqual([]);
-        expect(proposal.ownerAcceptances['HR-1-A'].acceptedOwnerKeys).toEqual(['o1', 'o2']);
-    });
-
-    it('requires a nonempty owner roster and current parcel membership', () => {
-        const proposal = makeProposal(HASH);
-        proposal.cadastreParcelIds = ['HR-1-A'];
-        proposal.ownerAcceptances['HR-1-A'].ownerOrder = [];
-        flowApi.refreshAcceptanceValidity(proposal, OTHER);
-        expect(proposal.acceptedParcelIds).toEqual([]);
-        proposal.ownerAcceptances['HR-1-A'].ownerOrder = ['o1', 'o2', 'new-owner'];
-        flowApi.refreshAcceptanceValidity(proposal, HASH);
-        expect(proposal.acceptedParcelIds).toEqual([]);
-    });
-
-    it('a placeholder roster cannot count even a matching local decision', () => {
-        const proposal = makeProposal(HASH);
-        proposal.ownerAcceptances['HR-1-A'].owners.o1 = { placeholder: true };
-        flowApi.refreshAcceptanceValidity(proposal, HASH);
-        expect(proposal.acceptedParcelIds).toEqual([]);
-    });
-
-    it('clears unsubstantiated parcel flags when no owner records exist', () => {
-        const proposal = { cadastreParcelIds: ['base-a'], acceptedParcelIds: ['base-a'] };
-        flowApi.refreshAcceptanceValidity(proposal, HASH);
-        expect(proposal.acceptedParcelIds).toEqual([]);
-    });
-});
-
-describe('effectFingerprintOf memo', () => {
-    // plan-order.js hands back one footprint object per unchanged record, so the hash is reused for
-    // that object instead of being rounded and hashed again; an edited record gets a new footprint
-    // object from plan-order.js and so a new hash. The override stands in for plan-order's cache.
-    const withFootprint = (footprint, run) => {
-        const previous = globalThis.__planOrder;
-        globalThis.__planOrder = { ...planOrder, footprintOf: () => footprint };
-        try { return run(); } finally { globalThis.__planOrder = previous; }
-    };
-
-    it('reuses the hash of a footprint object it has already hashed under the same terms', () => {
-        const footprint = t.feature(JSON.parse(JSON.stringify(STRIP.geometry)));
-        withFootprint(footprint, () => {
-            const proposal = { goal: 'road-track', ownershipFlow: [] };
-            const first = flowApi.effectFingerprintOf(proposal);
-            // A cached footprint is never mutated in the app; here it proves the hash was not recomputed.
-            footprint.geometry.coordinates[0][1][0] += 0.01;
-            expect(flowApi.effectFingerprintOf(proposal)).toBe(first);
-            // Different terms on the same footprint are hashed afresh.
-            expect(flowApi.effectFingerprintOf({ goal: 'park', ownershipFlow: [] })).not.toBe(first);
-        });
-    });
-});
-
-describe('effectFingerprintOf on a published record', () => {
-    it('returns the stamped hash without touching the footprint', () => {
-        let reads = 0;
-        const previous = globalThis.__planOrder;
-        globalThis.__planOrder = { ...planOrder, footprintOf: () => { reads += 1; return t.feature(STRIP.geometry); } };
-        try {
-            const published = { goal: 'road-track', ownershipFlow: [], effectHash: 'e-stamped' };
-            expect(flowApi.effectFingerprintOf(published)).toBe('e-stamped');
-            expect(reads).toBe(0);
-            // A draft hashed under a supplied flow is computed, stamp or not.
-            expect(flowApi.effectFingerprintOf(published, { ownershipFlow: [] })).not.toBe('e-stamped');
-            expect(reads).toBe(1);
-        } finally {
-            globalThis.__planOrder = previous;
-        }
     });
 });

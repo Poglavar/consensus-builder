@@ -14,15 +14,18 @@ export async function openAndClosePopup(page: Page, open: () => Promise<unknown>
   await Promise.all([open(), checked]);
 }
 
-/** Playwright fills the browser's date picker through a native-input boundary, like selectOption. */
+/**
+ * Playwright fills the browser's date picker through a native-input boundary, like selectOption.
+ * A date field takes the same boundary: typing into it follows the operating system's date order.
+ */
 export async function fillNativeDateTime(input: Locator, value: string): Promise<void> {
   const element = await input.elementHandle();
   if (!element) throw new Error('Native date/time input was not found');
   const marker = 'data-ui-native-datetime-boundary';
   try {
     const before = await element.evaluate((node, { marker, value }) => {
-      if (!(node instanceof HTMLInputElement) || node.type !== 'datetime-local') {
-        throw new Error('Expected a native datetime-local input');
+      if (!(node instanceof HTMLInputElement) || !['date', 'datetime-local'].includes(node.type)) {
+        throw new Error('Expected a native date or datetime-local input');
       }
       if (node.disabled || node.readOnly) throw new Error('Native date/time input is not editable');
       const before = node.value;

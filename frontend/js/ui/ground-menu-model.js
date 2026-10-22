@@ -1,7 +1,7 @@
-// ui/ground-menu-model.js — the pure half of the ground menu (the popover a map click opens where
-// there is no parcel): what kind of ground the click hit, and which actions apply there. No DOM, no
-// Leaflet; UMD so backend/test/frontend-ground-menu.test.js loads it headlessly. The DOM half is
-// ui/ground-menu.js; placement reuses ParcelMenuModel.placeMenuAtPoint.
+// ui/ground-menu-model.js — the pure half of the ground actions (the click stack's Ground section,
+// click-stack.md, where a map click finds no parcel): what kind of ground the click hit, and which
+// actions apply there. No DOM, no Leaflet; UMD so backend/test/frontend-ground-menu.test.js loads it
+// headlessly. The browser half is ui/ground-menu.js.
 (function (root, factory) {
     const api = factory();
     if (typeof module === 'object' && module.exports) module.exports = api;

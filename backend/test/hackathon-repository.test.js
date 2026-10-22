@@ -71,7 +71,9 @@ describe('hackathon repository documentation', () => {
         expect(route).toContain('declareDiscoveryExtension');
         expect(route).toMatch(/parseFactQuery,\s*loadVerifiedFact\(pool\),\s*gate,/);
         expect(read('backend/ecosystem.config.cjs')).toContain("X402_PRICE_ORACLE_FACT: '$0.01'");
-        expect(read('backend/routes/docs-agents.md')).toContain('/agent/discovery?resource=oracle-facts');
+        // The quickstart points at the hosted catalog record; its one resource is the oracle facts.
+        expect(read('backend/routes/docs-agents.md')).toMatch(/its hosted\s+catalog record is at \[`\$\(base\)\/agent\/discovery`\]/);
+        expect(read('backend/routes/agent-discovery.js')).toContain("const RESOURCE = 'oracle-facts';")
         expect(read('backend/scripts/oracle-fact-demo.mjs')).toContain('inspect → pay → verify → discover');
     });
 
@@ -102,9 +104,11 @@ describe('hackathon repository documentation', () => {
     it('ships one guarded MCP action surface over the existing agent adapters', () => {
         const server = read('backend/agents/mcp-server.mjs');
         const tools = read('backend/agents/ugt-agent-tools.js');
-        for (const name of ['ugt_submit_proposal', 'ugt_pledge', 'ugt_donate', 'ugt_forecast', 'ugt_buy_verified_fact']) {
-            expect(server).toContain(name);
+        for (const name of ['ugt_publish_design', 'ugt_propose_agreement', 'ugt_mint_agreement', 'ugt_bet_on_agreement', 'ugt_pledge', 'ugt_donate', 'ugt_buy_verified_fact']) {
+            expect(server).toContain(`registerTool('${name}'`);
         }
+        // The proposal tools went with the proposal write path (plan-design-agreement.md M2, M3).
+        for (const name of ['ugt_submit_proposal', 'ugt_forecast']) expect(server).not.toContain(name);
         expect(tools).toContain("live actions are disabled; set UGT_MCP_LIVE=1");
         expect(tools).toContain('UGT_MCP_MAX_USDC_PER_ACTION');
         expect(read('backend/routes/docs-agents.md')).toContain('npm run mcp');

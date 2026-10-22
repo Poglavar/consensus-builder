@@ -223,38 +223,24 @@
         return trimmed;
     }
 
+    // The id a parcel anchor is minted under: HR-<cadastral municipality>-<parcel number> from the
+    // Croatian cadastre's own fields, else the feature's parcelId, else the same HR form from the wider
+    // field names other sources use (parcel_number, cadastralMunicipality.id).
     function deriveParcelIdentifier(feature) {
         if (!feature || typeof feature !== 'object') return null;
-        const globalScope = typeof window !== 'undefined' ? window : (typeof self !== 'undefined' ? self : null);
-        if (globalScope && globalScope.ProposalChainBridge && typeof globalScope.ProposalChainBridge.deriveParcelIdFromFeature === 'function') {
-            try {
-                const derived = globalScope.ProposalChainBridge.deriveParcelIdFromFeature(feature);
-                if (derived) {
-                    return derived;
-                }
-            } catch (error) {
-                console.warn('Failed to derive parcel id using ProposalChainBridge', error);
-            }
-        }
         const props = feature.properties || {};
-        const brojCestice = props.BROJ_CESTICE ?? props.broj_cestice ?? props.parcel_number ?? props.parcelNumber;
-        const maticniBrojKo = props.MATICNI_BROJ_KO ?? props.maticni_broj_ko ?? (props.cadastralMunicipality && props.cadastralMunicipality.id);
-        if (brojCestice !== undefined && brojCestice !== null && maticniBrojKo !== undefined && maticniBrojKo !== null) {
-            const numberStr = String(brojCestice).trim();
-            const municipalityStr = String(maticniBrojKo).trim();
-            if (numberStr && municipalityStr) {
-                return `HR-${municipalityStr}-${numberStr}`;
-            }
+        const text = value => (value === undefined || value === null ? '' : String(value).trim());
+        const hrId = (municipality, number) => (text(municipality) && text(number) ? `HR-${text(municipality)}-${text(number)}` : null);
+        const parcelId = text(props.parcelId);
+        if (feature.properties) {
+            const canonical = hrId(props.MATICNI_BROJ_KO ?? props.maticni_broj_ko, props.BROJ_CESTICE ?? props.broj_cestice);
+            if (canonical) return canonical;
+            if (parcelId) return parcelId;
         }
-        const fallbacks = [
-            props.parcelId,
-        ];
-        for (const value of fallbacks) {
-            if (value === undefined || value === null) continue;
-            const str = String(value).trim();
-            if (str) return str;
-        }
-        return null;
+        return hrId(
+            props.MATICNI_BROJ_KO ?? props.maticni_broj_ko ?? (props.cadastralMunicipality && props.cadastralMunicipality.id),
+            props.BROJ_CESTICE ?? props.broj_cestice ?? props.parcel_number ?? props.parcelNumber
+        ) || parcelId || null;
     }
 
     function deriveParcelDisplayName(props, fallbackName) {

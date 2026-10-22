@@ -1,11 +1,10 @@
-// Client-side ENS name helpers: derive a parcel/proposal's ENS name (mirrors
-// backend/ens/slug.js) and render a compact, copy-on-click line for the panels.
-// Names resolve via parcels/proposals.urbangametheory.eth (see feature-ens.md).
+// Client-side ENS name helpers: derive a parcel's ENS name (mirrors backend/ens/slug.js) and
+// render a compact, copy-on-click line for the panels. Names resolve via
+// parcels.urbangametheory.eth (see feature-ens.md).
 (function (global) {
     'use strict';
 
     const PARCELS_PARENT = 'parcels.urbangametheory.eth';
-    const PROPOSALS_PARENT = 'proposals.urbangametheory.eth';
     const MAX_COMPACT_NAME_LENGTH = 36;
 
     function escapeHtml(value) {
@@ -41,27 +40,10 @@
         return slug ? `${slug}.${PARCELS_PARENT}` : '';
     }
 
-    // Legacy numeric proposal names remain supported. Chain mirrors use a short
-    // prefix of their canonical chain_<sha256(ref)> id; the gateway checks that
-    // the prefix identifies exactly one mirrored proposal before resolving it.
-    function proposalEnsName(proposal) {
-        const id = (proposal === undefined || proposal === null) ? '' : String(proposal).trim();
-        if (/^[0-9]+$/.test(id)) return `${id}.${PROPOSALS_PARENT}`;
-
-        const mirrorId = proposal && typeof proposal === 'object'
-            ? String(proposal.chainMirrorProposalId || proposal.proposalId || '').trim()
-            : id;
-        const match = mirrorId.match(/^chain_([0-9a-f]{64})$/i);
-        return match ? `chain-${match[1].slice(0, 48).toLowerCase()}.${PROPOSALS_PARENT}` : '';
-    }
-
     // Display-only shortening. The canonical name remains untouched for links and copying.
     function compactEnsName(name) {
         const full = (name === undefined || name === null) ? '' : String(name);
         if (full.length <= MAX_COMPACT_NAME_LENGTH) return full;
-        const chain = full.match(/^chain-([0-9a-f]{48})\.proposals\.urbangametheory\.eth$/i);
-        if (chain) return `chain-${chain[1].slice(0, 8).toLowerCase()}…proposals…eth`;
-
         const labels = full.split('.');
         if (labels.length < 2) return `${full.slice(0, MAX_COMPACT_NAME_LENGTH - 1)}…`;
         const suffixTail = labels.length >= 3
@@ -116,7 +98,6 @@
 
     global.parcelToSlug = parcelToSlug;
     global.parcelEnsName = parcelEnsName;
-    global.proposalEnsName = proposalEnsName;
     global.compactEnsName = compactEnsName;
     global.ensAppUrl = ensAppUrl;
     global.copyEnsName = copyEnsName;

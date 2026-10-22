@@ -7,8 +7,9 @@ import { describe, it, expect } from 'vitest';
 import { createRequire } from 'node:module';
 import { Keypair } from '@solana/web3.js';
 import * as turf from '@turf/turf';
-import { createApprovalAttester, normalizeRegistry } from '../lens/approval.js';
-import { wallet, MEMBER, memberKeypair, NOW, TERMS, at } from './helpers/approval-decisions.js';
+import { createApprovalAttester, fileRegistry, normalizeRegistry } from '../lens/approval.js';
+import { wallet, MEMBER, memberKeypair, NOW, at } from './helpers/approval-decisions.js';
+import { cidOf } from '../cid.js';
 
 const require = createRequire(import.meta.url);
 const A = require('../../frontend/js/proposals/approval.js');
@@ -123,7 +124,6 @@ describe('the canonical policy', () => {
         expect(A.contextHash(item(null))).toBe('approval1-sha256:f45c7e58196fdbb0556357edb5e61726e93954ec9be7e2d9608dd492a52eaff3');
         expect(A.contextHash(item(config(rights, { type: 'unanimous' })))).toBe('approval1-sha256:b9e243a5a75acd6720e846dbd152969cb0efa724f44e34c9801538961ee39c7c');
         expect(A.contextHash(item(config(rights, threshold([1, 2], [7, 10, true]))))).toBe('approval1-sha256:6579c122b9d4a0350cc211ba44fb3d4bef56bf8b27e1f6406bc2a468af9345a4');
-        expect(A.consentHash(item(config(rights, threshold([1, 2], [7, 10, true]))), 'lr2-sha256:abc')).toBe('consent1-sha256:10bd3336b4f6fdae5fb3c80d02cea3fa3c1c3f40c176d447fa21bd591b3ad164');
         // A pinned scheme is part of the context: the same rules under a scheme hash differently.
         const scheme = { type: 'rules', tests: [test('area', 'owners', 'all', 1, 2, true)], authorities: [{ authorityId: 'x' }] };
         expect(A.contextHash(item(config(rights, scheme, pin('es-ct-basic'))))).not.toBe(A.contextHash(item(config(rights, scheme))));
@@ -190,7 +190,7 @@ describe('counting under each kind of rule', () => {
         expect(progress.outstanding.map(row => row.ownerId)).toEqual(['city', 'o-b', 'o-c', 'o-d']);
         expect(progress.authorities).toEqual([{ authorityId: 'council', approved: false }]);
         const asAuthority = review.ownerReview(item, 'council', { acceptedOwnerIds: ['o-a'] });
-        expect(asAuthority).toMatchObject({ kind: 'authority', contributes: [], leases: [], receives: null, alreadyAccepted: false });
+        expect(asAuthority).toMatchObject({ kind: 'authority', contributes: [], leases: [], alreadyAccepted: false });
         expect(asAuthority.progressWith.authorityMet).toBe(true);
         const asTenant = review.ownerReview(item, 't-1');
         expect(asTenant).toMatchObject({ kind: 'leaseholder', contributes: [], leases: [{ parcelId: 'a', leaseId: 'L1', share: '1/1', leaseAreaM2: 100, shareAreaM2: 100, coHolderIds: [] }] });
@@ -264,59 +264,61 @@ describe('the lens member and the relay with authorities', () => {
         signers: [{ ownerId: 'o-a', wallet: wallets.a.address }, { ownerId: 'o-b', wallet: wallets.b.address }, { ownerId: 't-1', wallet: wallets.tenant.address },
             { ownerId: 'city', wallet: wallets.city.address }, { ownerId: 'planning-office', wallet: wallets.authority.address }]
     };
-    const attester = () => createApprovalAttester({ keypair: memberKeypair, registry: normalizeRegistry(registryJson), clock: { nowSeconds: () => NOW } });
+    // The member's --rights file (lens-rights-registry/v1), read per request (lens/approval.js fileRegistry).
+    const attester = () => createApprovalAttester({ keypair: memberKeypair, registry: fileRegistry(registryJson), clock: { nowSeconds: () => NOW } });
+    // The agreement-like subject of the decisions: a published agreement's CID, its input parcels and rule.
     const item = (policy = R.policyOf(R.latest('jp-association'), ['planning-office']), regime = pin('jp-association')) => ({
-        proposalId: 'lens-regime', serverProposalId: '77', lifecycleStatus: 'Active',
+        agreementCid: cidOf(Buffer.from('lens-regime agreement')), lifecycleStatus: 'Active',
         cadastreParcelIds: ['a', 'b', 'c', 'd'], approvalConfig: config(mixed, policy, regime), lens: [MEMBER]
     });
     const contextOf = p => ({ cadastreParcelIds: p.cadastreParcelIds, approvalConfig: p.approvalConfig, lens: p.lens });
-    const factsFor = (who, p, member = attester()) => {
+    const factsFor = async (who, p, member = attester()) => {
         const challenged = member.issueChallenge({ wallet: who.address, contextHash: A.contextHash(p) });
         return member.attestAuthority({ wallet: who.address, challenge: challenged.challenge, signature: who.signText(challenged.message), ...contextOf(p) });
     };
 
-    it('registers leases, public bodies and authorities, and names an authority wallet’s party', () => {
+    it('registers leases, public bodies and authorities, and names an authority wallet’s party', async () => {
         const registry = normalizeRegistry(registryJson);
         expect(registry.publicBodies.has('city')).toBe(true);
         expect(registry.authorities.get('planning-office')).toEqual(new Set(['a', 'b', 'c', 'd']));
         expect(() => normalizeRegistry({ ...registryJson, authorities: [{ authorityId: 'o-a', parcelIds: ['a'] }] })).toThrow(/not a rights holder/);
         expect(() => normalizeRegistry({ ...registryJson, authorities: [{ authorityId: 'z', parcelIds: ['nope'] }] })).toThrow(/registered parcels/);
-        const facts = factsFor(wallets.authority, item());
+        const facts = await factsFor(wallets.authority, item());
         expect(facts.authority.map(fact => fact.ownerId)).toEqual(['planning-office']);
-        expect(factsFor(wallets.tenant, item()).authority.map(fact => fact.ownerId)).toEqual(['t-1']);
-        expect(attester().status()).toMatchObject({ parcels: 4, owners: 6, authorities: 1, signers: 5 });
+        expect((await factsFor(wallets.tenant, item())).authority.map(fact => fact.ownerId)).toEqual(['t-1']);
+        expect(await attester().status()).toMatchObject({ enabled: true, source: 'file', parcels: 4, owners: 6, authorities: 1, signers: 5 });
     });
 
-    it('refuses a snapshot whose leases, public bodies or authority differ from its registry', () => {
+    it('refuses a snapshot whose leases, public bodies or authority differ from its registry', async () => {
         const member = attester();
-        const refuse = (p, code) => expect(() => member.attestRights(contextOf(p))).toThrow(expect.objectContaining({ code }));
+        const refuse = (p, code) => expect(member.attestRights(contextOf(p))).rejects.toMatchObject({ code });
         const withRights = rights => ({ ...item(), approvalConfig: config(rights, R.policyOf(R.latest('jp-association'), ['planning-office']), pin('jp-association')) });
-        refuse(withRights(v2(parcels.map(p => (p.parcelId === 'a' ? { ...p, leases: [] } : p)), { publicBodies: ['city'] })), 'leases_mismatch');
-        refuse(withRights(v2(parcels)), 'public_body_mismatch');
-        refuse(withRights(v2(parcels, { publicBodies: ['city', 'o-b'] })), 'public_body_mismatch');
-        refuse({ ...item(), approvalConfig: config(mixed, R.policyOf(R.latest('jp-association'), ['other-office']), pin('jp-association')) }, 'unknown_authority');
+        await refuse(withRights(v2(parcels.map(p => (p.parcelId === 'a' ? { ...p, leases: [] } : p)), { publicBodies: ['city'] })), 'leases_mismatch');
+        await refuse(withRights(v2(parcels)), 'public_body_mismatch');
+        await refuse(withRights(v2(parcels, { publicBodies: ['city', 'o-b'] })), 'public_body_mismatch');
+        await refuse({ ...item(), approvalConfig: config(mixed, R.policyOf(R.latest('jp-association'), ['other-office']), pin('jp-association')) }, 'unknown_authority');
         const narrow = createApprovalAttester({ keypair: memberKeypair, clock: { nowSeconds: () => NOW },
-            registry: normalizeRegistry({ ...registryJson, authorities: [{ authorityId: 'planning-office', parcelIds: ['a', 'b'] }] }) });
-        expect(() => narrow.attestRights(contextOf(item()))).toThrow(expect.objectContaining({ code: 'authority_out_of_scope' }));
-        expect(member.attestRights(contextOf(item())).schema).toBe(proof.RIGHTS_SCHEMA);
+            registry: fileRegistry({ ...registryJson, authorities: [{ authorityId: 'planning-office', parcelIds: ['a', 'b'] }] }) });
+        await expect(narrow.attestRights(contextOf(item()))).rejects.toMatchObject({ code: 'authority_out_of_scope' });
+        expect((await member.attestRights(contextOf(item()))).schema).toBe(proof.RIGHTS_SCHEMA);
     });
 
-    it('admits and counts an authority’s signed decision like an owner’s', () => {
+    it('admits and counts an authority’s signed decision like an owner’s', async () => {
         const p = item();
-        const decision = (who, ownerId, offset = 0) => {
-            const facts = factsFor(who, p);
-            const receipt = { ownerId, actorId: who.address, effectHash: TERMS, evidence: { rights: facts.rights, authority: facts.authority.find(fact => fact.ownerId === ownerId) },
-                acceptedAt: at(offset), decision: 'approve', providerId: relay.LENS_PROVIDER };
+        const decision = async (who, ownerId, offset = 0) => {
+            const facts = await factsFor(who, p);
+            const receipt = { ownerId, actorId: who.address, evidence: { rights: facts.rights, authority: facts.authority.find(fact => fact.ownerId === ownerId) },
+                decidedAt: at(offset), decision: 'approve', providerId: relay.LENS_PROVIDER };
             return { ...receipt, decisionProof: { scheme: proof.DECISION_SCHEME, signature: who.signText(proof.decisionMessage(A.decisionContent(p, receipt))) } };
         };
         const stored = [];
         for (const [who, id] of [[wallets.a, 'o-a'], [wallets.b, 'o-b'], [wallets.tenant, 't-1'], [wallets.authority, 'planning-office']]) {
-            const verdict = relay.admit(p, stored, decision(who, id, stored.length), { now: Date.now() });
+            const verdict = relay.admit(p, stored, await decision(who, id, stored.length), { now: Date.now() });
             expect(verdict).toEqual({ ok: true });
-            stored.push(decision(who, id, stored.length));
+            stored.push(await decision(who, id, stored.length));
         }
         // The city's wallet cannot sign for the authority, and vice versa.
-        expect(relay.admit(p, stored, { ...decision(wallets.city, 'city'), ownerId: 'planning-office' }, { now: Date.now() })).toMatchObject({ ok: false });
+        expect(relay.admit(p, stored, { ...(await decision(wallets.city, 'city')), ownerId: 'planning-office' }, { now: Date.now() })).toMatchObject({ ok: false });
         const verify = (q, receipt) => A.evidenceAllows(q, receipt.ownerId, receipt.actorId, receipt.evidence)
             && proof.verifySignature(receipt.actorId, proof.decisionMessage(A.decisionContent(q, receipt)), receipt.decisionProof.signature);
         const folded = relay.fold(p, stored, verify);

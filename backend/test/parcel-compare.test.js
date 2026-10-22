@@ -1,7 +1,8 @@
 // Compare two proposals on one parcel (frontend/js/proposals/parcel-compare.js): which proposals
 // touch the parcel (declared, or a site reaching in), and per proposal what it does to THIS parcel —
 // whole take, edge intrusion, open ground elsewhere, readjustment plots, buildings — with missing
-// measurements reported as null, never 0.
+// measurements reported as null, never 0. A design carries no offer and asks nobody for consent (M2,
+// plan-design-agreement.md): those are its agreement's.
 import { beforeAll, describe, expect, it } from 'vitest';
 import { createRequire } from 'node:module';
 
@@ -68,7 +69,7 @@ describe('what a proposal does to this parcel', () => {
     it('a park over the whole parcel takes it whole and cedes it to public ground', () => {
         const park = { proposalId: 'park', goal: 'park', cadastreParcelIds: [PARCEL_ID], binding: { parcelSource: PARCEL_SOURCE },
             structureProposal: { kind: 'park', geometry: rect(-5, -5, 45, 30) } };
-        const effect = compare.parcelEffect(park, PARCEL, { channel: 'acceptance' });
+        const effect = compare.parcelEffect(park, PARCEL);
         expect(effect.relation).toBe('bound');
         expect(effect.take.extent).toBe('whole');
         expect(effect.take.areaM2).toBeCloseTo(1000, -1);
@@ -78,13 +79,12 @@ describe('what a proposal does to this parcel', () => {
         expect(effect.buildings.count).toBe(0);
         expect(effect.ownership.destination).toBe('public');
         expect(effect.ownership.cededM2).toBeCloseTo(1000, -1);
-        expect(effect.consent.needed).toBe(true);
         expect(effect.status.key).toBe('local');
     });
 
     it('a road along one edge takes an edge strip, with its intrusion width and corridor', () => {
         // 6 m wide road whose centreline runs 1 m outside the parcel's south edge: 2 m reach in.
-        const road = { proposalId: 'road', goal: 'road-track', cadastreParcelIds: [PARCEL_ID], binding: { parcelSource: PARCEL_SOURCE }, serverProposalId: 17,
+        const road = { proposalId: 'road', goal: 'road-track', cadastreParcelIds: [PARCEL_ID], binding: { parcelSource: PARCEL_SOURCE },
             roadProposal: { definition: { width: 6, polygon: rect(-10, -4, 50, 2) } } };
         const effect = compare.parcelEffect(road, PARCEL);
         expect(effect.take.extent).toBe('edge');
@@ -93,9 +93,7 @@ describe('what a proposal does to this parcel', () => {
         expect(effect.take.intrusionM).toBeGreaterThan(1.95);
         expect(effect.take.intrusionM).toBeLessThan(2.05);
         expect(effect.corridor).toEqual({ kind: 'road', areaM2: effect.take.areaM2, widthM: 6 });
-        expect(effect.status.key).toBe('published');
-        // No dossier channel passed: whether consent is needed is unknown, not "no".
-        expect(effect.consent.needed).toBeNull();
+        expect(effect.status.key).toBe('local');
     });
 
     it('an open-ground proposal elsewhere does not touch the parcel at all', () => {
@@ -104,23 +102,24 @@ describe('what a proposal does to this parcel', () => {
         const effect = compare.parcelEffect(far, PARCEL);
         expect(effect.relation).toBe('none');
         expect(effect.take).toMatchObject({ areaM2: 0, extent: 'none' });
-        expect(effect.consent.parcelAccepted).toBeNull();
     });
 
-    it('maps a readjustment onto the plots this parcel becomes, largest share first', () => {
-        const plan = { proposalId: 'readj', goal: 'reparcellization', cadastreParcelIds: [PARCEL_ID, 'HR-1-101'],
-            reparcellization: { polygons: [
-                { geometry: rect(-40, 0, 0, 25), area: 1000, displayName: 'Neighbour' },
-                { geometry: rect(0, 0, 10, 25), area: 250, displayName: 'Owner A' },
-                { geometry: rect(10, 0, 40, 25), area: 750, displayName: 'Public land' }
+    it('maps a parcel layout onto the plots this parcel becomes, largest share first, without owners', () => {
+        const layout = { proposalId: 'layout', goal: 'parcel-layout', cadastreParcelIds: [PARCEL_ID, 'HR-1-101'],
+            parcelLayout: { plots: [
+                { geometry: rect(-40, 0, 0, 25), area: 1000, source: 'manual' },
+                { geometry: rect(0, 0, 10, 25), area: 250, source: 'manual' },
+                { geometry: rect(10, 0, 40, 25), area: 750, source: 'manual' }
             ] } };
-        const effect = compare.parcelEffect(plan, PARCEL);
+        const effect = compare.parcelEffect(layout, PARCEL);
         expect(effect.plots.map(p => p.number)).toEqual([3, 2]);
-        expect(effect.plots[0]).toMatchObject({ number: 3, areaM2: 750, owner: 'Public land' });
+        expect(effect.plots[0]).toMatchObject({ number: 3, areaM2: 750 });
+        expect(effect.plots[0]).not.toHaveProperty('owner');
         expect(effect.plots[0].overlapM2).toBeCloseTo(750, -1);
-        expect(effect.plots[1]).toMatchObject({ number: 2, areaM2: 250, owner: 'Owner A' });
+        expect(effect.plots[1]).toMatchObject({ number: 2, areaM2: 250 });
         expect(effect.take.extent).toBe('whole');
-        expect(effect.ownership.destination).toBe('mapping');
+        // A layout changes borders, never ownership.
+        expect(effect.ownership.destination).toBe('carry-over');
     });
 
     it('measures buildings on the parcel only: count, footprint, floors, floor area', () => {
@@ -145,9 +144,8 @@ describe('what a proposal does to this parcel', () => {
         expect(effect.take).toEqual({ areaM2: null, share: null, intrusionM: null, extent: null });
         expect(effect.buildings).toEqual({ count: null, footprintM2: null, floorAreaM2: null, heightM: null, floors: null });
         expect(effect.ownership).toEqual({ cededM2: null, destination: 'proposer' });
-        expect(effect.offer).toBeNull();
-        expect(effect.consent.owners).toBeNull();
-        expect(effect.consent.parcels).toBeNull();
+        // What a design does to the parcel, and nothing about terms or consent.
+        expect(Object.keys(effect).sort()).toEqual(['buildings', 'clip', 'corridor', 'ownership', 'plots', 'proposalId', 'relation', 'status', 'structure', 'take']);
 
         // A building without a height: counted, footprint measured, floor area unknown.
         const noHeight = { proposalId: 'nh', goal: 'single', cadastreParcelIds: [PARCEL_ID],
@@ -158,27 +156,19 @@ describe('what a proposal does to this parcel', () => {
         expect(measured.buildings.floors).toBeNull();
     });
 
-    it('reads offers and status, but refuses raw consent aggregates without a current summary', () => {
+    it('reads the status from the record and gives a declared design without a drawing an unknown take', () => {
         const record = { proposalId: 'offer', goal: 'as-is', cadastreParcelIds: [PARCEL_ID, 'HR-1-101'], binding: { parcelSource: PARCEL_SOURCE },
-            offer: 200000, offerCurrency: 'EUR', isMinted: true, acceptedParcelIds: [PARCEL_ID],
+            offer: 200000, offerCurrency: 'EUR', acceptedParcelIds: [PARCEL_ID],
             ownerAcceptances: { [PARCEL_ID]: { ownerOrder: ['a', 'b'], acceptedOwnerKeys: ['b'] } } };
-        const effect = compare.parcelEffect(record, PARCEL, { areaShare: 0.25, channel: 'offer' });
-        expect(effect.offer).toEqual({ amount: 200000, currency: 'EUR' });
-        expect(effect.consent).toMatchObject({ channel: 'offer', needed: false, parcelAccepted: null,
-            basis: null, owners: null, parcels: null });
-        const consent = require('../../frontend/js/proposals/consent-summary.js').local(record, [PARCEL_ID], {
-            currentHash: 'now', ownerSlotsByParcel: {
-                [PARCEL_ID]: [{ key: 'a' }, { key: 'b' }], 'HR-1-101': [{ key: 'a' }]
-            }
-        });
-        expect(compare.parcelEffect(record, PARCEL, { consent }).consent).toMatchObject({
-            basis: 'local-records', parcelAccepted: false,
-            owners: { accepted: 0, total: 2 }, parcels: { accepted: 0, total: 2 }
-        });
-        expect(effect.status.key).toBe('minted');
-        // A parcel act's site is the parcel itself: it covers the whole of it.
-        expect(effect.take.extent).toBe('whole');
+        const effect = compare.parcelEffect(record, PARCEL, { areaShare: 0.25, channel: 'offer', consent: { owners: { accepted: 1, total: 2 } } });
+        expect(effect.relation).toBe('bound');
+        // The record's own state, a local draft: nothing of the offer or consent it is compared under.
+        expect(effect.status).toEqual({ key: 'local', lifecycle: 'unknown', applied: false });
+        // Its site is never the union of its parcels (site-binding.js siteOf): the take is unknown.
+        expect(effect.take).toEqual({ areaM2: null, share: null, intrusionM: null, extent: null });
         expect(effect.ownership).toBeNull();
+        expect(effect).not.toHaveProperty('offer');
+        expect(effect).not.toHaveProperty('consent');
     });
 
     it('uses canonical lifecycle and publication evidence without legacy aliases or inferred execution', () => {
@@ -187,11 +177,20 @@ describe('what a proposal does to this parcel', () => {
         expect(status({ status: 'Executed', server_proposal_id: 17 })).toMatchObject({ key: 'local', lifecycle: 'unknown' });
         expect(status({ lifecycleStatus: 'Active', status: 'Executed' }, { lifecycleKey: 'executed' }))
             .toMatchObject({ key: 'local', lifecycle: 'active' });
-        for (const serverProposalId of [0, -1, 'x', true, '01']) {
+        // A server row id says nothing about publication (M2): a design is published by its CID.
+        for (const serverProposalId of [0, -1, 'x', true, '01', '17']) {
             expect(status({ serverProposalId }).key).toBe('local');
         }
-        expect(status({ serverProposalId: '17' }).key).toBe('published');
-        expect(status({ nft: { contract: 'program', tokenId: 'account' } }).key).toBe('minted');
+        const cid = 'bafkreibm6jg3ux5qumhcn2b3flc3tyu6dmlb4xa7u5bf44yegnrjhc4yeq';
+        const previous = globalThis.DesignSync;
+        globalThis.DesignSync = { publishedCid: record => (record.published && record.published.cid) || null };
+        try {
+            expect(status({ published: { cid, apiBase: 'https://api.example.test' } }).key).toBe('published');
+            expect(status({}).key).toBe('local');
+        } finally {
+            if (previous === undefined) delete globalThis.DesignSync;
+            else globalThis.DesignSync = previous;
+        }
         expect(status({ lifecycleStatus: 'Executed' })).toMatchObject({ key: 'execution-unverified', lifecycle: 'executed' });
         const evidence = require('../../frontend/js/proposals/lifecycle-evidence.js').projectLifecycleEvidence({
             lifecycleStatus: 'Executed',
@@ -203,26 +202,6 @@ describe('what a proposal does to this parcel', () => {
         expect(status(evidence)).toMatchObject({ key: 'executed', lifecycle: 'executed' });
         expect(status({ lifecycleStatus: 'Cancelled', applied: true }, { applied: true }))
             .toMatchObject({ key: 'local', lifecycle: 'cancelled', applied: false });
-    });
-
-    it('keeps the original full offer without inventing an area-proportional entitlement', () => {
-        const record = { proposalId: 'money', kind: 'owner-deal', goal: 'as-is', cadastreParcelIds: [PARCEL_ID],
-            offer: 125, offerCurrency: ' eur ', budget: 999, budgetCurrency: 'USD',
-            decayEnabled: true, decayPercent: 50, decayDurationMs: 1 };
-        expect(compare.parcelEffect(record, PARCEL, { areaShare: 0.25 }).offer).toEqual({ amount: 125, currency: 'EUR' });
-        expect(compare.parcelEffect({ ...record, offer: 0 }, PARCEL).offer).toEqual({ amount: 0, currency: 'EUR' });
-    });
-
-    it('leaves non-offer quantities, missing currency and nonbinding proposals without an offer', () => {
-        const record = { proposalId: 'unknown-money', goal: 'as-is', cadastreParcelIds: [PARCEL_ID] };
-        for (const fields of [
-            { offer: null, budget: 999, budgetCurrency: 'EUR' },
-            { offer: true, offerCurrency: 'EUR' },
-            { offer: '125', offerCurrency: 'EUR' },
-            { offer: 125, currency: 'EUR' },
-            { tokenBalance: 125000000, ethBalance: 1000000000 },
-            { kind: 'community-vote', offer: 125, offerCurrency: 'EUR' }
-        ]) expect(compare.parcelEffect({ ...record, ...fields }, PARCEL).offer).toBeNull();
     });
 });
 

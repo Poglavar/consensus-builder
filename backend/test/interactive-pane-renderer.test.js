@@ -188,6 +188,9 @@ describe('every decorative main-map canvas names a click-through pane', () => {
             'corridor-render.js:pane',
             'government-roads.js:GOVERNMENT_PLAN_PANE',
             'parcels/ingest.js:default',
+            // Parcels shown while a council still imports (HMLR): a non-interactive layer in its own
+            // pane, below the parcel layer, with pointer events off.
+            'parcels/preview-layer.js:PANE',
             // The before map of a before/after comparison (its own Leaflet map): parcels and
             // buildings on one canvas in that map's standard overlay pane.
             'proposals/before-after.js:overlayPane',

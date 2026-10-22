@@ -136,7 +136,7 @@ function forEachProposalParcelInViewport(proposalIdSet, callback) {
 
 // A proposal selection names the proposal's result, never the cadastral inputs from which it was
 // made. Most proposal kinds have their own body geometry (building footprints, a park polygon, a
-// corridor surface, reparcellization slices), so they need no parcel-layer styling at all. A
+// corridor surface, parcel-layout plots), so they need no parcel-layer styling at all. A
 // geometry-less parcel operation may still need a map shape: prefer the live parcels it produced,
 // and use its current live subject parcels only when it produced neither geometry nor parcels.
 //
@@ -172,7 +172,7 @@ function collectProposalSelectionParcelIds(proposal, primaryFeatures = []) {
         proposal.roadProposal
         || proposal.buildingProposal
         || proposal.structureProposal
-        || proposal.reparcellization
+        || proposal.parcelLayout
     );
     if (ownsBody) return outputIds;
 
@@ -248,30 +248,13 @@ function collectProposalFeatureSets(proposal, options = {}) {
         }
     }
 
-    if (Array.isArray(proposal?.reparcellization?.polygons)) {
-        proposal.reparcellization.polygons.forEach(slice => {
-            if (!slice || !slice.geometry) return;
-            const featureInput = {
-                type: 'Feature',
-                geometry: slice.geometry,
-                properties: {
-                    ownerKey: slice.ownerKey || null,
-                    displayName: slice.displayName || null,
-                    color: slice.color || null,
-                    percent: slice.percent || null
-                }
-            };
-            const reparcelFeature = normaliseToFeature(featureInput, { source: 'reparcellization-slice' });
-            if (reparcelFeature) {
-                reparcelFeature.properties = {
-                    ...(reparcelFeature.properties || {}),
-                    ownerKey: slice.ownerKey || null,
-                    displayName: slice.displayName || null,
-                    color: slice.color || null,
-                    percent: slice.percent || null
-                };
-                primaryFeatures.push(reparcelFeature);
-            }
+    // A parcel layout's body is its plots: geometry only, no owners (plan-design-agreement.md).
+    if (Array.isArray(proposal?.parcelLayout?.plots)) {
+        proposal.parcelLayout.plots.forEach((plot, plotIndex) => {
+            if (!plot || !plot.geometry) return;
+            const plotFeature = normaliseToFeature({ type: 'Feature', geometry: plot.geometry, properties: {} },
+                { source: 'parcel-layout-plot', plotIndex });
+            if (plotFeature) primaryFeatures.push(plotFeature);
         });
     }
 
@@ -390,10 +373,10 @@ function resolveStandaloneProposalFocusBounds(proposal) {
     if (proposal.structureProposal && proposal.structureProposal.geometry) {
         geometryFeatures.push({ type: 'Feature', geometry: proposal.structureProposal.geometry });
     }
-    if (proposal.reparcellization && Array.isArray(proposal.reparcellization.polygons)) {
-        proposal.reparcellization.polygons.forEach(polygon => {
-            if (polygon && polygon.geometry) {
-                geometryFeatures.push({ type: 'Feature', geometry: polygon.geometry });
+    if (proposal.parcelLayout && Array.isArray(proposal.parcelLayout.plots)) {
+        proposal.parcelLayout.plots.forEach(plot => {
+            if (plot && plot.geometry) {
+                geometryFeatures.push({ type: 'Feature', geometry: plot.geometry });
             }
         });
     }
@@ -476,8 +459,7 @@ function goalRequiresGeometry(goalKey) {
     const key = goalKey.toString().toLowerCase();
     return key === 'single'
         || key === 'road-track'
-        || key === 'urban-rule'
-        || key === 'reparcellization';
+        || key === 'urban-rule';
 }
 
 function renderGeometrySection(goalKey) {
@@ -536,7 +518,7 @@ function renderGeometrySection(goalKey) {
         if (labelEl) labelEl.textContent = label.geometry;
     };
 
-    if (goalKey === 'decide-later' || goalKey === 'ownership-transfer') {
+    if (goalKey === 'ownership-transfer') {
         updateCreateProposalSubmitState();
         return; // No geometry section shown
     }
@@ -568,15 +550,6 @@ function renderGeometrySection(goalKey) {
         return;
     }
 
-    if (goalKey === 'reparcellization') {
-        showGroup();
-        setGeometryStatus(keepSubmitted ? keepStatusText : label.noGeometry, { submitted: keepSubmitted });
-        buttonsRow.appendChild(makeButton('edit', label.edit, { selected: false }));
-        buttonsRow.appendChild(makeButton('upload', label.upload, { disabled: true }));
-        updateCreateProposalSubmitState();
-        return;
-    }
-
     if (goalKey === 'urban-rule') {
         showGroup();
         setGeometryStatus(keepSubmitted ? keepStatusText : label.noGeometry, { submitted: keepSubmitted });
@@ -599,9 +572,7 @@ async function handleGeometryAction(actionKey) {
     switch (actionKey) {
         case 'edit': {
             let opened = true;
-            if (currentGeometryGoal === 'reparcellization') {
-                opened = await handleReparcellizationAlgorithmClick('sweep-line');
-            } else if (currentGeometryGoal === 'single') {
+            if (currentGeometryGoal === 'single') {
                 opened = await launchSingleBuildingToolForSelection();
             } else if (currentGeometryGoal === 'road-track') {
                 // The road-track goal's geometry step DESIGNATES the selected parcels as road land.
@@ -666,7 +637,6 @@ function relocateProposalGeometryGroup(goalKey) {
     const geo = document.getElementById('proposalGeometryGroup');
     const typology = document.getElementById('proposalTypologyGroup');
     const landUse = document.querySelector('#proposalGoalGroup [data-goal-section="land-use"]');
-    const parcels = document.querySelector('#proposalGoalGroup [data-goal-section="parcels"]');
 
     if (goalKey === 'urban-rule') {
         // Typology (block/row/parcel-based) then the geometry Edit, both inline under Land use.
@@ -676,10 +646,6 @@ function relocateProposalGeometryGroup(goalKey) {
     }
     if (goalKey === 'single' || goalKey === 'road-track') {
         if (geo && landUse) landUse.insertAdjacentElement('afterend', geo);
-        return;
-    }
-    if (goalKey === 'reparcellization') {
-        if (geo && parcels) parcels.insertAdjacentElement('afterend', geo);
         return;
     }
 }
@@ -1073,15 +1039,12 @@ function calculateProposalGeometryBounds(proposal) {
         if (proposal.structureProposal && proposal.structureProposal.geometry) {
             addGeom(proposal.structureProposal.geometry);
         }
-        if (proposal.decideLaterProposal && proposal.decideLaterProposal.geometry) {
-            addGeom(proposal.decideLaterProposal.geometry);
-        }
-        // A readjustment's shape lives in its plot list, not in a single `geometry`. Without this
-        // it had NO geometry fallback: opening its link centred the map only if the plan's child
+        // A parcel layout's shape lives in its plot list, not in a single `geometry`. Without this
+        // it had NO geometry fallback: opening its link centred the map only if the layout's child
         // parcels already happened to be loaded, and on a fresh page load they are not — so the
-        // link applied the plan and then left the camera on the city centre.
-        if (proposal.reparcellization && Array.isArray(proposal.reparcellization.polygons)) {
-            proposal.reparcellization.polygons.forEach(polygon => addGeom(polygon && polygon.geometry));
+        // link applied the layout and then left the camera on the city centre.
+        if (proposal.parcelLayout && Array.isArray(proposal.parcelLayout.plots)) {
+            proposal.parcelLayout.plots.forEach(plot => addGeom(plot && plot.geometry));
         }
     } catch (_) { /* best-effort */ }
 
@@ -1188,8 +1151,7 @@ function computeProposalArea(proposal) {
 
 function computeProposalMetrics(proposal) {
     const createdAt = Date.parse(proposal.createdAt) || 0;
-    const consent = getProposalConsentMetrics(proposal);
-    const offerValue = Number.isFinite(Number(proposal.offer)) ? Number(proposal.offer) : (Number.isFinite(Number(proposal.budget)) ? Number(proposal.budget) : 0);
+    const parcelCount = normalizeParcelIdList(proposal.cadastreParcelIds).length;
     const area = computeProposalArea(proposal);
     const goalKey = window.ProposalDesignGoals?.keyOf(proposal) || 'other';
     const typeKey = goalKey;
@@ -1198,8 +1160,7 @@ function computeProposalMetrics(proposal) {
 
     return {
         createdAt,
-        ...consent,
-        offerValue,
+        parcelCount,
         area,
         goalKey,
         typeKey,
@@ -1223,7 +1184,6 @@ function buildProposalThumbHtml(proposal) {
         if (typeof proposalStorage !== 'undefined' && typeof proposalStorage.getProposal === 'function') {
             const candidates = [
                 proposal.proposalId,
-                proposal.serverProposalId,
                 proposal.id
             ].filter(Boolean);
             for (const key of candidates) {

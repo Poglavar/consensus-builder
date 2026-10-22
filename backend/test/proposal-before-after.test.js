@@ -217,27 +217,24 @@ describe('ProposalBeforeAfter session', () => {
     });
 });
 
-describe('owner focus (what one owner puts in and gets out)', () => {
-    const readjustment = () => ({
+describe('owner focus (what one owner puts in, and what stands on it now)', () => {
+    const withRights = () => ({
         approvalConfig: { rights: { parcels: [
             { parcelId: 'A', owners: [{ ownerId: 'owner-a', share: '1/1' }] },
             { parcelId: 'C', owners: [{ ownerId: 'owner-c', share: '1/2' }, { ownerId: 'owner-d', share: '1/2' }] }
-        ] } },
-        reparcellization: { polygons: [
-            { geometry: square(16, 45.8), owners: [{ ownerKey: 'owner-a', share: 1 }] },
-            { geometry: square(16.002, 45.8), owners: [{ ownerKey: 'owner-c', share: 0.5 }, { ownerKey: 'owner-d', share: 0.5 }] },
-            { geometry: square(16.004, 45.8), ownerKey: 'owner-d', owners: [] },
-            { owners: [{ ownerKey: 'owner-d', share: 1 }] }
-        ] }
+        ] } }
     });
 
-    it('takes the parcels from the rights snapshot and every plot the owner has any share of', () => {
-        const parts = BeforeAfter.ownerFocusParts(readjustment(), 'owner-d');
-        expect(parts.parcelIds).toEqual(['C']);
-        expect(parts.plots.map(f => f.properties.plot)).toEqual([2, 3]);
-        expect(BeforeAfter.ownerFocusParts(readjustment(), 'owner-a')).toMatchObject({ parcelIds: ['A'] });
-        expect(BeforeAfter.ownerFocusParts(readjustment(), 'nobody')).toEqual({ parcelIds: [], plots: [] });
-        expect(BeforeAfter.ownerFocusParts(null, 'owner-a')).toEqual({ parcelIds: [], plots: [] });
+    it('takes the parcels from the rights snapshot', () => {
+        expect(BeforeAfter.ownerFocusParts(withRights(), 'owner-d')).toEqual({ parcelIds: ['C'] });
+        expect(BeforeAfter.ownerFocusParts(withRights(), 'owner-a')).toEqual({ parcelIds: ['A'] });
+        expect(BeforeAfter.ownerFocusParts(withRights(), 'nobody')).toEqual({ parcelIds: [] });
+        expect(BeforeAfter.ownerFocusParts(null, 'owner-a')).toEqual({ parcelIds: [] });
+    });
+
+    it('finds no owner on a parcel layout: the layout names none', () => {
+        const layout = { goal: 'parcel-layout', parcelLayout: { pool: square(16, 45.8), plots: [{ geometry: square(16, 45.8), source: 'manual' }] } };
+        expect(BeforeAfter.ownerFocusParts(layout, 'owner-a')).toEqual({ parcelIds: [] });
     });
 
     it('outlines several parcels on the before side', () => {
@@ -250,7 +247,7 @@ describe('owner focus (what one owner puts in and gets out)', () => {
 
     it('frames the owner\'s land clear of the panel and starts the divider through it', async () => {
         const h = harness({ originals: [feature('A'), feature('C', square(16.002, 45.8))] });
-        Object.assign(h.proposal, readjustment(), { cadastreParcelIds: ['A', 'C'] });
+        Object.assign(h.proposal, withRights(), { cadastreParcelIds: ['A', 'C'] });
         const fits = [];
         Object.assign(h.deps.map, {
             fitBounds: (bounds, options) => fits.push({ bounds, options }),
@@ -260,7 +257,7 @@ describe('owner focus (what one owner puts in and gets out)', () => {
         });
         h.deps.fitPadding = () => ({ paddingTopLeft: [40, 40], paddingBottomRight: [520, 40] });
         await h.instance.toggle('p-1', { focusOwnerId: 'owner-c' });
-        // Owner C's old parcel C and new plot 2 both sit in [16.002, 16.003].
+        // Owner C's old parcel C sits in [16.002, 16.003]; nothing else stands on it.
         expect(fits).toHaveLength(1);
         fits[0].bounds.flat().forEach((value, i) => expect(value).toBeCloseTo([45.8, 16.002, 45.801, 16.003][i], 9));
         expect(fits[0].options).toMatchObject({ paddingBottomRight: [520, 40], animate: false });
@@ -282,20 +279,96 @@ describe('owner focus (what one owner puts in and gets out)', () => {
         expect(BeforeAfter.focusBounds([])).toBeNull();
     });
 
-    it('opens for one owner: their parcels before, their plots on the live map, and toggles by owner', async () => {
+    it('opens for one owner: their parcels before, the live pieces on them after, and toggles by owner', async () => {
         const h = harness({ originals: [feature('A'), feature('C')] });
-        Object.assign(h.proposal, readjustment(), { cadastreParcelIds: ['A', 'C'] });
-        expect(await h.instance.toggle('p-1', { focusOwnerId: 'owner-c' })).toBe(true);
-        expect(h.instance.activeFocus()).toBe('owner:owner-c');
+        Object.assign(h.proposal, withRights(), { cadastreParcelIds: ['A', 'C'] });
+        expect(await h.instance.toggle('p-1', { focusOwnerId: 'owner-a' })).toBe(true);
+        expect(h.instance.activeFocus()).toBe('owner:owner-a');
         const onHost = h.drawn.filter(d => d.target === h.deps.map);
         expect(onHost).toHaveLength(1);
-        expect(onHost[0].collection.features.map(f => f.properties.plot)).toEqual([2]);
+        expect(onHost[0].collection.features.map(f => f.properties.parcelId)).toEqual(['A:plot-1', 'A:plot-2']);
         expect(onHost[0].options.style()).toEqual(BeforeAfter.FOCUS_AFTER_STYLE);
         const focusBefore = h.drawn.filter(d => d.target === 'before-map').pop();
-        expect(focusBefore.collection.features.map(f => f.properties.parcelId)).toEqual(['C']);
-        await h.instance.toggle('p-1', { focusOwnerId: 'owner-a' });
-        expect(h.instance.activeFocus()).toBe('owner:owner-a');
-        await h.instance.toggle('p-1', { focusOwnerId: 'owner-a' });
+        expect(focusBefore.collection.features.map(f => f.properties.parcelId)).toEqual(['A']);
+        await h.instance.toggle('p-1', { focusOwnerId: 'owner-c' });
+        expect(h.instance.activeFocus()).toBe('owner:owner-c');
+        await h.instance.toggle('p-1', { focusOwnerId: 'owner-c' });
         expect(h.instance.isActive()).toBe(false);
+    });
+});
+
+describe('agreement comparison (plan-design-agreement.md, M1 b)', () => {
+    const stored = (overrides = {}) => ({
+        id: 'ag-1',
+        designs: [{ proposalId: 'p-1' }, { proposalId: 'p-2' }],
+        inputs: { parcels: [{ parcelId: 'A' }, { parcelId: 'B' }, { parcelId: 'A' }], openGroundM2: 0 },
+        ...overrides
+    });
+    // The single-proposal harness, with the agreement's designs held by this browser and the
+    // stored agreement it reads by id.
+    function agreementHarness({ applied = { 'p-1': true, 'p-2': true }, agreement = stored() } = {}) {
+        const h = harness({ originals: [feature('A', square(16, 45.8, 0.002)), feature('B', square(16.002, 45.8))] });
+        h.deps.recordOf = id => (Object.prototype.hasOwnProperty.call(applied, id) ? { proposalId: id, applied: applied[id] } : null);
+        h.deps.findAgreement = vi.fn(id => (agreement && id === agreement.id ? agreement : null));
+        return h;
+    }
+
+    it('takes its input parcels as the affected land: every piece standing on them gives way to the original', async () => {
+        const h = agreementHarness();
+        expect(await h.instance.toggleAgreement('ag-1')).toBe(true);
+        expect(h.deps.findAgreement).toHaveBeenCalledWith('ag-1');
+        expect(h.instance.activeKey()).toBe(BeforeAfter.agreementKey('ag-1'));
+        expect(h.instance.isActive('agreement:ag-1')).toBe(true);
+        expect(h.instance.isActive('ag-1')).toBe(false);
+        expect(h.repository.ensureIds).toHaveBeenCalledWith(['A', 'B'], { retainOnly: true });
+        // A:plot-1 (on A) and B are both input land: the before map holds the two originals only.
+        expect(h.drawn[0].target).toBe('before-map');
+        expect(h.drawn[0].collection.features.map(f => f.properties.parcelId)).toEqual(['A', 'B']);
+        expect(h.changes).toEqual([true]);
+
+        expect(await h.instance.toggleAgreement('ag-1')).toBe(false);
+        expect(h.instance.isActive()).toBe(false);
+        expect(h.sessions[0].disposed).toBe(1);
+    });
+
+    it('refuses while a design is unapplied or gone, without land, or when the agreement is not stored', async () => {
+        const unapplied = agreementHarness({ applied: { 'p-1': true, 'p-2': false } });
+        expect(await unapplied.instance.toggleAgreement('ag-1')).toBe(false);
+        expect(unapplied.sessions).toHaveLength(0);
+        expect(unapplied.repository.ensureIds).not.toHaveBeenCalled();
+
+        const gone = agreementHarness({ applied: { 'p-1': true } });
+        expect(await gone.instance.toggleAgreement('ag-1')).toBe(false);
+
+        const landless = agreementHarness({ agreement: stored({ inputs: { parcels: [], openGroundM2: 40 } }) });
+        expect(await landless.instance.toggleAgreement('ag-1')).toBe(false);
+
+        const missing = agreementHarness();
+        expect(await missing.instance.toggleAgreement('ag-2')).toBe(false);
+        expect(await missing.instance.toggleAgreement('')).toBe(false);
+        expect(missing.sessions).toHaveLength(0);
+    });
+
+    it('replaces a proposal comparison, and ends when the details panel shows a proposal', async () => {
+        const h = agreementHarness();
+        await h.instance.toggle('p-1');
+        expect(h.instance.isActive('p-1')).toBe(true);
+        expect(await h.instance.toggleAgreement('ag-1')).toBe(true);
+        expect(h.instance.isActive('agreement:ag-1')).toBe(true);
+        expect(h.sessions.map(s => s.disposed)).toEqual([1, 0]);
+        expect(h.instance.reconcile(h.proposal, 'p-1')).toBe(true);
+        expect(h.instance.isActive()).toBe(false);
+    });
+
+    it('canCompareAgreement needs designs, land and every design applied', () => {
+        const deps = { isApplied, recordOf: id => ({ proposalId: id, applied: id !== 'p-off' }) };
+        expect(BeforeAfter.canCompareAgreement(stored(), deps)).toBe(true);
+        expect(BeforeAfter.canCompareAgreement(stored({ designs: [{ proposalId: 'p-1' }, { proposalId: 'p-off' }] }), deps)).toBe(false);
+        expect(BeforeAfter.canCompareAgreement(stored({ designs: [] }), deps)).toBe(false);
+        expect(BeforeAfter.canCompareAgreement(stored(), { isApplied })).toBe(false);
+        expect(BeforeAfter.canCompareAgreement(null, deps)).toBe(false);
+        expect(BeforeAfter.agreementInputIds(stored())).toEqual(['A', 'B']);
+        expect(BeforeAfter.agreementKey('ag-1')).toBe('agreement:ag-1');
+        expect(BeforeAfter.agreementKey(null)).toBe('');
     });
 });

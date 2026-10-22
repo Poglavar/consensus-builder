@@ -1,14 +1,18 @@
 // HTTP face of the reference lens member: status, challenge, x402-priced ownership attestation,
-// operator-only verdicts and market evidence, the list of issued attestations and, with a rights
-// registry, the signed rights/authority facts for abstract proposal approval. Every refusal the member can make
-// (unknown parcel, wrong signature, missing source time) happens before the payment gate.
+// operator-only agreement decisions and market evidence, the list of issued attestations and, with a
+// rights registry, the signed rights/authority facts for abstract agreement approval. Every refusal the
+// member can make (unknown parcel, wrong signature, missing source time, a rule not met) happens before
+// anything is paid for or issued.
 
 import { timingSafeEqual, createHash } from 'node:crypto';
 import cors from 'cors';
 import express from 'express';
 import { PublicKey } from '@solana/web3.js';
+import { isCid } from '../cid.js';
 import { LENS_SCHEMA_KINDS } from '../oracle/lens-schemas.js';
+import { countAgreementDecisions, planAgreementDecision } from './agreement-decision.js';
 import { LensError, lensLog } from './errors.js';
+import { systemClock } from './member.js';
 import { LENS_OWNERSHIP_PATH, describePricing } from './pricing.js';
 
 export const OPERATOR_TOKEN_HEADER = 'x-lens-operator-token';
@@ -26,16 +30,6 @@ function requireString(body, name) {
     const value = body?.[name];
     if (typeof value !== 'string' || !value.trim()) throw new LensError(400, 'bad_request', `${name} is required`);
     return value.trim();
-}
-
-// Unix seconds or an ISO timestamp -> Unix seconds.
-function sourceTimeOf(value) {
-    if (Number.isSafeInteger(value)) return value;
-    if (typeof value === 'string' && value.trim()) {
-        const ms = Date.parse(value);
-        if (Number.isFinite(ms)) return Math.floor(ms / 1000);
-    }
-    throw new LensError(400, 'bad_request', 'sourceObservedAt is required (Unix seconds or ISO 8601)');
 }
 
 // Unix seconds only. An ISO date without a zone would be read as UTC midnight, the very shift the
@@ -73,12 +67,17 @@ const wrap = handler => (req, res, next) => Promise.resolve(handler(req, res, ne
 
 /**
  * @param {{ member: ReturnType<import('./member.js').createLensMember>, pricing: object, operatorToken?: string|null,
- *   approvalAttester?: ReturnType<import('./approval.js').createApprovalAttester>|null }} options
+ *   approvalAttester?: ReturnType<import('./approval.js').createApprovalAttester>|null,
+ *   agreements?: { load(cid: string): Promise<object|null>, decisions(cid: string): Promise<object[]> }|null,
+ *   clock?: { nowSeconds(): number } }} options
+ *   agreements reads the agreement index: an agreement as GET /agreements/:cid serves it, and the owner
+ *   decisions its relay admitted (lens/run.mjs builds it over DATABASE_URL); without it agreement
+ *   decisions answer 503.
  */
-export function createLensMemberApp({ member, pricing, operatorToken = null, corsOrigin = '*', approvalAttester = null }) {
+export function createLensMemberApp({ member, pricing, operatorToken = null, corsOrigin = '*', approvalAttester = null, agreements = null, clock = systemClock }) {
     if (!member) throw new Error('createLensMemberApp: member is required');
     if (!pricing) throw new Error('createLensMemberApp: pricing is required');
-    // One member, one key: approval facts must be signed by the key proposals list in their lens.
+    // One member, one key: approval facts must be signed by the key agreements list in their lens.
     if (approvalAttester && approvalAttester.member !== member.authority) {
         throw new Error(`createLensMemberApp: approval attester signs as ${approvalAttester.member} but the member key is ${member.authority}`);
     }
@@ -88,7 +87,7 @@ export function createLensMemberApp({ member, pricing, operatorToken = null, cor
     // anywhere, so CORS is open by default (no credentials). Response headers are exposed so an
     // x402 402 challenge and the attestation headers reach browser clients.
     app.use(cors({ origin: corsOrigin, methods: ['GET', 'POST', 'OPTIONS'], credentials: false, exposedHeaders: '*' }));
-    // An approval context carries the proposal's whole rights snapshot (the browser caps uploads at 1 MiB).
+    // An approval context carries the agreement's whole rights snapshot (the browser caps uploads at 1 MiB).
     const smallJson = express.json({ limit: '32kb' });
     const approvalJson = express.json({ limit: '2mb' });
     app.use((req, res, next) => (req.path.startsWith(APPROVAL_PATH_PREFIX) ? approvalJson : smallJson)(req, res, next));
@@ -102,7 +101,8 @@ export function createLensMemberApp({ member, pricing, operatorToken = null, cor
         res.json({
             ...(await member.status()),
             pricing: { ownership: describePricing(pricing) },
-            approval: approvalAttester ? approvalAttester.status() : null
+            approval: approvalAttester ? await approvalAttester.status() : null,
+            decisions: { operatorToken: Boolean(operatorToken), agreementIndex: Boolean(agreements) }
         });
     }));
 
@@ -149,18 +149,29 @@ export function createLensMemberApp({ member, pricing, operatorToken = null, cor
         res.status(record.reused ? 200 : 201).json({ ...publicRecord(record), reused: record.reused, pricing: describePricing(pricing) });
     }));
 
-    app.post('/lens/verdict', wrap(async (req, res) => {
-        requireOperator(req, operatorToken, 'verdicts require the operator token');
-        const proposalAccount = requireString(req.body, 'proposalAccount');
-        const verdict = requireString(req.body, 'verdict');
-        const evidenceRef = typeof req.body.evidenceRef === 'string' ? req.body.evidenceRef : '';
-        const sourceObservedAt = sourceTimeOf(req.body.sourceObservedAt);
-        const record = await member.attestVerdict({ proposalAccount, verdict, evidenceRef, sourceObservedAt });
-        res.status(record.reused ? 200 : 201).json({ ...publicRecord(record), reused: record.reused });
+    // AgreementDecision-v1 `satisfied` for an indexed agreement (programs/agreement/README.md).
+    // Operator-only, and the operator supplies nothing but the CID: whether the rule is met comes from
+    // the agreement and its relayed owner decisions (agreement-decision.js). A decision already issued
+    // for the agreement is final here as on chain: asked again it is answered as stored.
+    // → 201 issued, 200 already issued (`reused`), each with the tally.
+    app.post('/lens/agreements/:cid/decision', wrap(async (req, res) => {
+        requireOperator(req, operatorToken, 'agreement decisions require the operator token');
+        if (!agreements) throw new LensError(503, 'agreements_not_configured', 'this lens member has no agreement index (it reads it through DATABASE_URL)');
+        const cid = String(req.params.cid || '');
+        if (!isCid(cid)) throw new LensError(400, 'bad_request', 'cid must be an agreement CID (bafkrei…)');
+        const agreement = await agreements.load(cid);
+        if (!agreement) throw new LensError(404, 'agreement_not_found', `agreement ${cid} is not in the index`);
+        const count = countAgreementDecisions(agreement, await agreements.decisions(cid));
+        const sponsor = agreement.content?.sponsor;
+        const existing = typeof sponsor === 'string' ? await member.findDecision({ agreementCid: cid, sponsor }) : null;
+        if (existing) return res.status(200).json({ ...publicRecord(existing), reused: true, tally: count.tally, counted: count.counted.length });
+        const plan = planAgreementDecision({ agreement, count, lensKey: member.authority, nowSeconds: clock.nowSeconds() });
+        const record = await member.attestDecision(plan.fields);
+        res.status(record.reused ? 200 : 201).json({ ...publicRecord(record), reused: record.reused, tally: plan.tally, counted: plan.counted });
     }));
 
-    // Operator-only, like verdicts: the operator runs a source adapter (scripts/check-permit-evidence.mjs
-    // for the DBI permits dataset) and posts the fact it found for the recipe.
+    // Operator-only, like agreement decisions: the operator runs a source adapter
+    // (scripts/check-permit-evidence.mjs for the DBI permits dataset) and posts the fact it found for the recipe.
     app.post('/lens/market-evidence', wrap(async (req, res) => {
         requireOperator(req, operatorToken, 'market evidence requires the operator token');
         const recipe = { recipeHash: exactString(req.body, 'recipeHash'), subject: exactString(req.body, 'subject') };
@@ -174,19 +185,20 @@ export function createLensMemberApp({ member, pricing, operatorToken = null, cor
         res.status(record.reused ? 200 : 201).json({ ...publicRecord(record), reused: record.reused });
     }));
 
-    // Abstract proposal approval (backend/lens/approval.js): free, signed off-chain facts.
+    // Abstract agreement approval (backend/lens/approval.js): free, signed off-chain facts, checked
+    // against the member's registry as it reads at the request (approval.js registry sources).
     const attester = () => {
-        if (!approvalAttester) throw new LensError(503, 'approval_not_configured', 'this lens member has no rights registry for proposal approval');
+        if (!approvalAttester) throw new LensError(503, 'approval_not_configured', 'this lens member has no registry for agreement approval');
         return approvalAttester;
     };
     app.post(`${APPROVAL_PATH_PREFIX}rights`, wrap(async (req, res) => {
-        res.status(201).json({ rights: attester().attestRights(req.body) });
+        res.status(201).json({ rights: await attester().attestRights(req.body) });
     }));
     app.post(`${APPROVAL_PATH_PREFIX}challenge`, wrap(async (req, res) => {
-        res.status(201).json(attester().issueChallenge({ wallet: req.body?.wallet, contextHash: req.body?.contextHash }));
+        res.status(201).json(await attester().issueChallenge({ wallet: req.body?.wallet, contextHash: req.body?.contextHash }));
     }));
     app.post(`${APPROVAL_PATH_PREFIX}authority`, wrap(async (req, res) => {
-        res.status(201).json(attester().attestAuthority(req.body || {}));
+        res.status(201).json(await attester().attestAuthority(req.body || {}));
     }));
 
     app.get('/lens/attestations', wrap(async (req, res) => {
@@ -195,7 +207,7 @@ export function createLensMemberApp({ member, pricing, operatorToken = null, cor
         if (kind && !LENS_SCHEMA_KINDS.includes(kind)) throw new LensError(400, 'bad_request', `kind must be one of ${LENS_SCHEMA_KINDS.join(', ')}`);
         const limit = Math.min(Math.max(Number.parseInt(req.query.limit, 10) || 200, 1), 500);
         const attestations = await member.listAttestations({
-            parcelUid: text('parcelUid'), proposalAccount: text('proposalAccount'), owner: text('owner'), recipeHash: text('recipeHash'), kind, limit
+            parcelUid: text('parcelUid'), agreementCid: text('agreementCid'), owner: text('owner'), recipeHash: text('recipeHash'), kind, limit
         });
         res.json({ attestations: attestations.map(publicRecord) });
     }));
@@ -204,7 +216,7 @@ export function createLensMemberApp({ member, pricing, operatorToken = null, cor
     app.use((error, req, res, _next) => {
         if (error instanceof LensError) {
             lensLog(`${req.method} ${req.originalUrl} refused: ${error.code} ${error.message}`);
-            return res.status(error.status).json({ error: error.code, message: error.message });
+            return res.status(error.status).json({ ...(error.details || {}), error: error.code, message: error.message });
         }
         if (error?.type === 'entity.parse.failed') return res.status(400).json({ error: 'bad_request', message: 'body is not valid JSON' });
         if (error?.type === 'entity.too.large') return res.status(413).json({ error: 'payload_too_large', message: 'request body is too large' });

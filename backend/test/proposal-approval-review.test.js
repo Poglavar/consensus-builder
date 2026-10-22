@@ -1,8 +1,7 @@
-// What an abstract owner sees before accepting: contributed land, a readjustment's plots and cash,
-// the conditions, and the tally before and after their own acceptance.
+// What an abstract owner sees before accepting: contributed land, the conditions, and the tally
+// before and after their own acceptance.
 import { describe, it, expect } from 'vitest';
 import { createRequire } from 'node:module';
-import * as turf from '@turf/turf';
 
 const require = createRequire(import.meta.url);
 const review = require('../../frontend/js/proposals/approval-review.js');
@@ -10,13 +9,12 @@ const words = require('../../frontend/js/proposals/approval-text.js');
 const t = (_key, fallback, params = {}) => fallback.replace(/\{\{(\w+)\}\}/g, (match, key) => params[key] ?? match);
 
 const owner = (ownerId, share = '1/1') => ({ ownerId, share });
-const square = (x, y, size) => ({ type: 'Polygon', coordinates: [[[x, y], [x + size, y], [x + size, y + size], [x, y + size], [x, y]]] });
 const threshold = (owners, area, strict = false) => ({
     type: 'threshold',
     owners: { numerator: owners[0], denominator: owners[1], strict },
     area: { numerator: area[0], denominator: area[1], strict }
 });
-function proposal({ policy = { type: 'unanimous' }, reparcellization = null } = {}) {
+function proposal({ policy = { type: 'unanimous' }, offer = null } = {}) {
     return {
         proposalId: 'review-test',
         cadastreParcelIds: ['parcel-a', 'parcel-b', 'parcel-c'],
@@ -30,7 +28,7 @@ function proposal({ policy = { type: 'unanimous' }, reparcellization = null } = 
             policy
         },
         lens: ['member-a'],
-        ...(reparcellization ? { goal: 'reparcellization', reparcellization, offer: 30, offerCurrency: 'EUR', isConditional: true } : {})
+        ...(offer ? { offer, offerCurrency: 'EUR', isConditional: true } : {})
     };
 }
 
@@ -91,7 +89,6 @@ describe('owner review', () => {
         const item = review.ownerReview(proposal(), 'owner-c', { acceptedOwnerIds: ['owner-a', 'owner-b', 'owner-d'] });
         expect(item.contributes).toEqual([{ parcelId: 'parcel-c', share: '1/2', parcelAreaM2: 25, shareAreaM2: 12.5, coOwnerIds: ['owner-d'] }]);
         expect(item.contributedAreaM2).toBe(12.5);
-        expect(item.receives).toBeNull();
         expect(item.alreadyAccepted).toBe(false);
         expect(item.progressWithout).toMatchObject({ acceptedOwners: 3, acceptedAreaM2: 150, passed: false });
         expect(item.progressWith).toMatchObject({ acceptedOwners: 4, acceptedAreaM2: 175, passed: true });
@@ -99,32 +96,10 @@ describe('owner review', () => {
         expect(review.ownerReview(proposal(), 'stranger')).toBeNull();
     });
 
-    it('lists a readjustment owner’s plots, joint shares, land change and exact cash', () => {
-        const item = review.ownerReview(proposal({ reparcellization: {
-            polygons: [
-                { geometry: square(15.98, 45.8, 0.0005), owners: [{ ownerKey: 'owner-a', share: 1 }] },
-                { geometry: square(15.981, 45.8, 0.0002), owners: [{ ownerKey: 'owner-c', share: 0.5 }, { ownerKey: 'owner-d', share: 0.5 }], jointPool: true }
-            ],
-            ownerShares: [
-                { ownerKey: 'owner-a', cashOffer: 0, contributedArea: 100 },
-                { ownerKey: 'owner-c', cashOffer: 12.34, contributedArea: 12.5 },
-                { ownerKey: 'owner-d', cashOffer: 17.66, contributedArea: 12.5 }
-            ]
-        } }), 'owner-c', { turf });
-        expect(item.receives.inLedger).toBe(true);
-        expect(item.receives.cashCents).toBe(1234);
-        expect(item.receives.plots).toHaveLength(1);
-        expect(item.receives.plots[0]).toMatchObject({ index: 1, share: 0.5, jointPool: true, coRecipientIds: ['owner-d'] });
-        expect(item.receives.assignedAreaM2).toBeCloseTo(item.receives.plots[0].areaM2 / 2, 6);
-        expect(item.receives.areaChangeM2).toBeCloseTo(item.receives.assignedAreaM2 - 12.5, 6);
-        expect(item.conditions).toMatchObject({ isConditional: true, totalCashCents: 3000, cashOffered: true, fundingConfirmed: false });
-    });
-
-    it('says when a readjustment assigns nothing to an owner instead of guessing a match', () => {
-        const item = review.ownerReview(proposal({ reparcellization: {
-            polygons: [{ geometry: square(15.98, 45.8, 0.0005), owners: [{ ownerKey: 'Alice Example', share: 1 }] }],
-            ownerShares: [{ ownerKey: 'Alice Example', cashOffer: 30 }]
-        } }), 'owner-a', { turf });
-        expect(item.receives).toMatchObject({ inLedger: false, plots: [], assignedAreaM2: 0, cashCents: 0 });
+    it('states the authored conditions of an offer without claiming funding', () => {
+        const item = review.ownerReview(proposal({ offer: 30 }), 'owner-c');
+        expect(item).not.toHaveProperty('receives');
+        expect(item.conditions).toMatchObject({ isConditional: true, cashOffered: true, fundingConfirmed: false });
+        expect(item.conditions).not.toHaveProperty('money');
     });
 });

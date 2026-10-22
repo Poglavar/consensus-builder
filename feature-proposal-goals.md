@@ -6,7 +6,7 @@ Reorganizing the "Create Proposal" dialog so a proposal is described by a few
 ## Why
 
 The current dialog has a single **"Proposal Goal"** section with nine buttons
-(`square`, `park`, `lake`, `single`/Building(s), `road-track`, `decide-later`,
+(`square`, `park`, `lake`, `single`/Building(s), `road-track`, Decide later,
 `urban-rule`, `reparcellization`, `ownership-transfer`). That single list quietly
 mixes **three unrelated questions**:
 
@@ -17,16 +17,16 @@ mixes **three unrelated questions**:
 Because all three are crammed into one enum, several buttons are really the *same*
 operation wearing different costumes, and some combinations can't be expressed at all:
 
-- **`decide-later`** is not a goal — it's "acquire the parcels + **merge** them into one,
+- **Decide later** is not a goal — it's "acquire the parcels + **merge** them into one,
   decide the use later." It's named after *time* but its mechanic is *consolidation*.
-- **`reparcellization`** (subdivide, N→M) and **`decide-later`** (merge, N→1) are the
+- **`reparcellization`** (subdivide, N→M) and **Decide later** (merge, N→1) are the
   **same operation** at different input/output cardinality. They live in different code
   paths with asymmetric names.
 - **`ownership-transfer` to-me / from-me** and the implicit "purchase" baked into every
   build goal are all the **same primitive**: a transfer of ownership from A to B at price P.
   "to-me"/"from-me" only exist because the proposer is hardwired as one side.
 - "Buy three lots, merge them, build a tower" — acquire + merge + building — **can't be
-  expressed today**; you'd have to abuse `decide-later` or file multiple proposals.
+  expressed today**; you'd have to abuse Decide later or file multiple proposals.
 
 The taxonomy is also fragmented in code: there is **no single source-of-truth** for goals —
 three different normalizers (`normalizeProposalGoalKey`, `normalizeGoalKey`,
@@ -63,7 +63,7 @@ old nine buttons becomes a *combination*:
 | Ownership transfer *to me* | none | No change | **To me** | offer |
 | Ownership transfer *from me* (sale) | none | No change | **Third party · Anyone** | asking price |
 
-- **`decide-later` disappears** → it's just `Parcels: Merge` with no program. The awkward
+- **Decide later disappears** → it's just `Parcels: Merge` with no program. The awkward
   name goes; the consolidation operation stays.
 - **Merge + Subdivide unify** under Parcels as the two cardinalities of *reparcellization*
   (`Keep as-is` is the third — identity, 1:1).
@@ -120,7 +120,7 @@ The existing apply/mint mechanics are reused; the new facets route into them:
 
 | Facet value | Existing mechanic | Where |
 |---|---|---|
-| Parcels: **Merge** | merge selected parcels → one child, hide parents | `_applyDecideLaterProposal` / `_mergeParcelGeometries` (`proposal-manager.js`) |
+| Parcels: **Merge** | merge selected parcels → one child, hide parents | the Decide later apply / `_mergeParcelGeometries` (`proposal-manager.js`) |
 | Parcels: **Readjust** | split parents → N owner-share children | `_applyReparcellizationProposal` |
 | Parcels: **Keep as-is** | auto-geometry from parcels, or drawn geometry | `buildGeometryFromParcels` / draw tools |
 | Program: building / road / rule | structure / road / typology appliers | `_applyStructureProposal`, `_applyRoadProposal`, … |
@@ -171,7 +171,7 @@ chosen. Picking a Land use re-sets Parcels + Ownership per the matrix above.)
   bg) so they read as subordinate to the choice that opened them.
 - **Locked facets** render as a quiet static line (`🔒 <value> · <reason>`) instead of a row
   of dead/disabled pills.
-- The `decide-later`, standalone `ownership-transfer`, `reparcellization` buttons, and the
+- The Decide later, standalone `ownership-transfer`, `reparcellization` buttons, and the
   locked single/multiple-owner box are **gone**; the `ownership-transfer` direction machinery
   is kept hidden and driven from the Ownership facet.
 

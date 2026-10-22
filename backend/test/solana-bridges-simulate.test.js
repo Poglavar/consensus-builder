@@ -12,12 +12,16 @@ import { describe, expect, it, vi } from 'vitest';
 
 const require = createRequire(import.meta.url);
 const web3 = require('@solana/web3.js');
+const AgreementClient = require('../../frontend/js/solana/agreement-client.js');
+const AgreementBridge = require('../../frontend/js/solana/agreement-bridge.js');
 
 const WALLET = new web3.PublicKey('Cp886ML2Ja4FF3SMmyUeW16rRGsLrBcRW8kfWS1VfN7W');
 const PROGRAM = new web3.PublicKey('GDYnzduynKhKgxDhvvKVarn2s23DtzA26s6hycuUYDRB');
 const USDC = '4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU';
 const BLOCKHASH = 'EkSnNWid2cvwEVnVx9aBqpiCpY1QoUW63D2Hp31e4gwJ';
-const BRIDGES = ['market-bridge.js', 'pledge-bridge.js', 'acceptance-bridge.js', 'parcel-mint.js', 'proposal-bridge.js'];
+const BRIDGES = ['market-bridge.js', 'agreement-bridge.js', 'parcel-mint.js'];
+const LENS = new web3.PublicKey(Uint8Array.from({ length: 32 }, () => 11)).toBase58();
+const CID = 'bafkreibm6jg3ux5qumhcn2b3flc3tyu6dmlb4xa7u5bf44yegnrjhc4yeq';
 
 function source(name) {
     return fs.readFileSync(new URL(`../../frontend/js/solana/${name}`, import.meta.url), 'utf8');
@@ -82,29 +86,34 @@ describe('wallet bridges preflight through real web3 simulateTransaction', () =>
         expect(result.transactionHash).toBe('signature-1');
     });
 
-    it('pledge bridge pledges: simulate → sign → send → confirm', async () => {
+    it('agreement bridge mints: simulate → sign → send → confirm', async () => {
         const calls = [];
         const connection = realConnection(calls);
+        // The program is deployed and the agreement's account does not exist yet.
+        connection.getAccountInfo = vi.fn(async key => (key.toBase58() === AgreementClient.constants.AGREEMENT_PROGRAM_ID
+            ? { executable: true, owner: web3.SystemProgram.programId, lamports: 1, data: Buffer.alloc(0) }
+            : null));
         const signer = provider();
-        const window = {
-            solanaWeb3: web3,
-            SolanaPledgeClient: {
-                constants: { USDC_DEVNET_MINT: USDC, PLEDGE_ACTIVE: 1, PLEDGE_FULFILLED: 2 },
-                parseUsdc: vi.fn(() => 50_000n),
-                formatUsdc: vi.fn(() => '5'),
-                getAssociatedTokenAddress: vi.fn(() => WALLET),
-                readPledgeCommitment: vi.fn(async () => null),
-                readPledgeBook: vi.fn(async () => ({ exists: true })),
-                buildSetPledgeIx: vi.fn(() => instruction())
-            },
-            SolanaChainDataLoader: { getConnection: () => connection },
-            solanaWalletManager: { getCluster: () => 'devnet', getProvider: () => signer }
-        };
-        vm.runInNewContext(source('pledge-bridge.js'), { window });
-        const result = await window.SolanaPledgeBridge.pledge({ proposal: PROGRAM.toBase58(), amount: '0.05' });
-        expect(calls).toEqual(['simulateTransaction', 'sendRawTransaction', 'confirmTransaction']);
-        expect(signer.signTransaction).toHaveBeenCalledTimes(1);
-        expect(result.transactionHash).toBe('signature-1');
+        AgreementClient.configure({ web3 });
+        try {
+            const bridge = AgreementBridge.browser({
+                solanaWeb3: web3,
+                SolanaChainDataLoader: { getConnection: () => connection },
+                solanaWalletManager: { getCluster: () => 'devnet', getProvider: () => signer }
+            });
+            const agreement = {
+                deadline: null, inputs: { openGroundM2: 0 }, onchain: null,
+                published: { cid: CID, publishedAt: '2026-10-22T08:00:00.000Z', apiBase: 'https://api.example.test', sponsor: WALLET.toBase58() }
+            };
+            const statuses = [];
+            const result = await bridge.mint({ agreement, lens: LENS, payout: WALLET.toBase58(), onStatus: s => statuses.push(s.state) });
+            expect(calls).toEqual(['simulateTransaction', 'sendRawTransaction', 'confirmTransaction']);
+            expect(signer.signTransaction).toHaveBeenCalledTimes(1);
+            expect(statuses).toEqual(['preparing', 'awaiting_signature', 'submitted', 'confirmed']);
+            expect(result).toMatchObject({ signature: 'signature-1', account: AgreementClient.getAgreementPda(CID, WALLET)[0].toBase58() });
+        } finally {
+            AgreementClient.configure({ web3: null });
+        }
     });
 
     it('no bridge passes a config object to simulateTransaction (source ratchet)', () => {

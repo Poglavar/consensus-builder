@@ -11,8 +11,6 @@
     const designGoals = global.ProposalDesignGoals || (typeof require === 'function'
         ? require('./proposals/design-goals.js') : null);
 
-    const publishTerms = () => global.ProposalPublishTerms || require('./proposals/publish-terms.js');
-
     function cloneDraftValue(value) {
         if (value === undefined || value === null) return value;
         try {
@@ -38,6 +36,19 @@
         if (global.__siteDraft) return global.__siteDraft;
         if (typeof require === 'function') return require('./proposals/site-draft.js');
         throw new Error('Cannot validate a draft: proposals/site-draft.js is not loaded.');
+    }
+
+    function cidApi() {
+        const api = global.Cid || (typeof require === 'function' ? require('./cid.js') : null);
+        if (!api) throw new Error('Cannot build proposal: Cid (js/cid.js) is not loaded.');
+        return api;
+    }
+
+    // The keys of a published or minted identity (proposals/corridor-authoring.js).
+    function publishedIdentityKeys() {
+        const api = global.CorridorAuthoring || (typeof require === 'function' ? require('./proposals/corridor-authoring.js') : null);
+        if (!api) throw new Error('Cannot build proposal: proposals/corridor-authoring.js is not loaded.');
+        return api.PUBLISHED_IDENTITY_KEYS;
     }
 
     function isPlainObject(value) {
@@ -138,7 +149,7 @@
 
     function canonicalGoalKey(value) {
         if (typeof value !== 'string') return '';
-        return (designGoals?.get(value) || value === 'decide-later') ? value : '';
+        return designGoals?.get(value) ? value : '';
     }
 
     function requireCanonicalGoal(value) {
@@ -149,7 +160,7 @@
 
     function proposalGoal(proposal) {
         if (!proposal || typeof proposal !== 'object') return '';
-        return designGoals?.keyOf(proposal) || (proposal.goal === 'decide-later' ? 'decide-later' : '');
+        return designGoals?.keyOf(proposal) || '';
     }
 
     function proposalIdentity(proposal) {
@@ -160,19 +171,27 @@
                 if (key !== undefined && key !== null && String(key)) return String(key);
             }
         } catch (_) { }
+        // A record's local key. Designs are not minted (M3) and the server rows' ids and content hashes
+        // are gone (M2), so neither a chain token nor a row id nor a hash is a record's identity.
         const candidates = [
             proposal.proposalId,
-            proposal.proposal_id,
-            proposal.chainProposalId,
-            proposal.hash,
-            proposal.id,
-            proposal.onchain && proposal.onchain.proposalId
+            proposal.id
         ];
         const found = candidates.find(value => value !== undefined && value !== null && String(value));
         return found === undefined ? null : String(found);
     }
 
+    // A parcel layout is geometry only (plan-design-agreement.md, M1 (a)): its draft holds its name,
+    // description and ground, never terms, owners or approval.
+    const PARCEL_LAYOUT_FIELDS = Object.freeze(['name', 'titleOrigin', 'description', 'selectedParcelIds', 'cadastreParcelIds', 'site', 'toleranceM']);
+
     function proposalFields(proposal) {
+        const fields = allProposalFields(proposal);
+        if (proposalGoal(proposal) !== 'parcel-layout') return fields;
+        return Object.fromEntries(PARCEL_LAYOUT_FIELDS.filter(key => key in fields).map(key => [key, fields[key]]));
+    }
+
+    function allProposalFields(proposal) {
         const cadastreParcelIds = Array.isArray(proposal?.cadastreParcelIds)
             ? proposal.cadastreParcelIds.map(String)
             : [];
@@ -191,23 +210,9 @@
             ownership: cloneDraftValue(proposal?.ownership || proposal?.proposalFacets?.ownership || proposal?.facets?.ownership || null),
             recipientScope: proposal?.recipientScope || proposal?.proposalFacets?.recipientScope || proposal?.facets?.recipientScope || null,
             recipientAddress: proposal?.recipientAddress || proposal?.proposalFacets?.recipientAddress || proposal?.facets?.recipientAddress || null,
-            // Who decides carries over from the source (proposal-kinds.md); null when never chosen.
-            kind: publishTerms().chosenKind(proposal, { isPublished: record => global.isPublishedProposalRecord?.(record) === true }),
-            voteExpiryDays: Number(proposal?.voteExpiryDays) > 0 ? Number(proposal.voteExpiryDays) : null,
-            offer: Number.isFinite(Number(proposal?.offer)) ? Number(proposal.offer) : 0,
-            offerCurrency: proposal?.offerCurrency || proposal?.budgetCurrency || 'USDT',
             acquisitionMode: proposal?.acquisitionMode || null,
             boundaryAdjustment: proposal?.boundaryAdjustment || null,
-            isConditional: proposal?.isConditional === true,
-            expiresAt: proposal?.expiresAt || null,
-            decayEnabled: proposal?.decayEnabled === true,
-            decayPercent: Number.isFinite(Number(proposal?.decayPercent)) ? Number(proposal.decayPercent) : 0,
-            decayDurationMs: Number.isFinite(Number(proposal?.decayDurationMs)) ? Number(proposal.decayDurationMs) : 0,
-            depositEnabled: proposal?.depositEnabled === true,
-            depositPercent: Number.isFinite(Number(proposal?.depositPercent)) ? Number(proposal.depositPercent) : 0,
-            facets: cloneDraftValue(proposal?.proposalFacets || proposal?.facets || null),
-            approvalConfig: cloneDraftValue(proposal?.approvalConfig || null),
-            lens: cloneDraftValue(Array.isArray(proposal?.lens) ? proposal.lens : [])
+            facets: cloneDraftValue(proposal?.proposalFacets || proposal?.facets || null)
         };
     }
 
@@ -220,8 +225,8 @@
                 definition: cloneDraftValue(definition)
             };
         }
-        if (goal === 'reparcellization') {
-            return { plan: cloneDraftValue(proposal?.reparcellization || null) };
+        if (goal === 'parcel-layout') {
+            return { plan: cloneDraftValue(proposal?.parcelLayout || null) };
         }
         if (['buildings', 'row', 'parcelBased', 'single'].includes(goal)) {
             const buildingProposal = proposal?.buildingProposal || {};
@@ -252,8 +257,8 @@
         if (goal === 'road-track') {
             return cloneDraftValue(payload.definition?.polygon || null);
         }
-        if (goal === 'reparcellization') {
-            return cloneDraftValue(payload.plan?.polygons || null);
+        if (goal === 'parcel-layout') {
+            return cloneDraftValue(payload.plan?.plots || null);
         }
         if (['buildings', 'row', 'parcelBased', 'single'].includes(goal)) {
             const context = payload.context || {};
@@ -806,26 +811,23 @@
             let output = cloneDraftValue(proposal);
             delete output.id;
             delete output.proposalId;
-            delete output.proposal_id;
-            delete output.hash;
-            delete output.chainProposalId;
-            delete output.onchain;
-            delete output.nft;
-            ['acceptedParcelIds', 'ownerAcceptances', 'ownerApprovals', 'ownerApprovalHistory', 'ownershipApprovals', 'localPurchaseSimulation']
-                .forEach(key => delete output[key]);
-            // The share/upload link is the numeric serverProposalId. A proposal built from a draft is
-            // a NEW proposal (buildings, structures, reparcellization, station, road design-finalize
-            // all commit through here); it must not inherit the source's server-upload identity, or an
-            // edit would silently reuse the original's /proposals/:id instead of a fresh upload.
-            delete output.serverProposalId;
+            // A proposal built from a draft is a NEW design (buildings, structures, parcel layouts,
+            // station, road design-finalize all commit through here): it must not inherit the
+            // source's publication mark (`published`). That describes the source's publication; this
+            // record is published, when it is, under its own CID.
+            publishedIdentityKeys().forEach(key => delete output[key]);
+            delete output.localPurchaseSimulation;
             delete output.proposalOrigin;
             if (draft.sourceLocalProposalId) {
                 const origin = global.ProposalOrigin || require('./proposals/origin.js');
                 output.proposalOrigin = origin.fromRecord(draft.sourceSnapshot || {}, {
-                    relation: 'revision', localProposalId: draft.sourceLocalProposalId,
-                    backendBase: global.getBackendBase?.()
+                    relation: 'revision', localProposalId: draft.sourceLocalProposalId
                 });
             }
+            // A design built from a published one links it by its CID (plan-design-agreement.md, M2:
+            // "Fork design" records origin.cid). Built from a local draft, it keeps its source's link.
+            const sourcePublication = draft.sourceSnapshot && draft.sourceSnapshot.published;
+            if (sourcePublication && cidApi().isCid(sourcePublication.cid)) output.origin = { cid: sourcePublication.cid };
             output.proposalDraftId = draft.id;
             // A draft may temporarily refer to the currently selected live parcel pieces. The
             // serializer above must project that selection to cadastreParcelIds; this final

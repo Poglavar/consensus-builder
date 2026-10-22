@@ -1,13 +1,14 @@
-/* "Share the whole plan instead" used to close its dialog immediately and drop the user on a bare
-   map while the panel built behind it. Now the dialog is held open, with a spinner, until the panel
-   signals ready — which trades a cosmetic flicker for a much worse failure: an exit path that
-   forgets to signal leaves the user stuck behind a spinning dialog with no way forward.
+/* The share panel answers its opener with a promise that settles once the panel is worth looking at
+   (rows listed, map framed), so a caller can hold its own UI until then. That trades a cosmetic
+   flicker for a much worse failure: an exit path that forgets to signal leaves the caller waiting
+   forever with no way forward.
 
    So two things are pinned here. First the signal itself, executed: settle-once, idempotent, and
-   the promise really resolves. Second the wiring in the three browser files, read from source,
-   because the guarantee is structural — the settle lives in a `finally`, so any `return` added to
-   that function later is covered without anyone remembering to. If that structure is edited away,
-   this test says so. */
+   the promise really resolves. Second the wiring in the browser files, read from source, because
+   the guarantee is structural — the settle lives in a `finally`, so any `return` added to that
+   function later is covered without anyone remembering to. If that structure is edited away, this
+   test says so. (The upload modal that held itself open on this promise went with M2's design
+   publishing; the sidebar's Share button is the opener now.) */
 
 import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
@@ -20,7 +21,6 @@ const read = rel => readFileSync(fileURLToPath(new URL(rel, import.meta.url)), '
 const { createReadySignal } = require('../../frontend/js/proposals/ready-signal.js');
 const dialogShare = read('../../frontend/js/proposals/dialog-share.js');
 const sharingRoutes = read('../../frontend/js/proposals/sharing-routes.js');
-const dialogUpload = read('../../frontend/js/proposals/dialog-upload.js');
 const indexHtml = read('../../frontend/index.html');
 
 describe('the ready signal', () => {
@@ -69,9 +69,10 @@ describe('showSharePlanPanel can never leave a caller waiting', () => {
         expect(iife).toBeGreaterThan(started);
     });
 
-    it('settles on the happy path before the slow upload checks, not after', () => {
+    it('settles on the happy path before the publication check, not after', () => {
+        // Which rows are published is filled in after the panel is up, in plain sight.
         const settle = body.indexOf("readySignal.settle('ready')");
-        const checks = body.indexOf('await initializeUploadChecks()');
+        const checks = body.indexOf('window.DesignSync.publishedCid(proposal)');
         expect(settle).toBeGreaterThan(-1);
         expect(checks).toBeGreaterThan(settle);
     });
@@ -82,55 +83,6 @@ describe('showSharePlanPanel can never leave a caller waiting', () => {
 
     it('returns the promise', () => {
         expect(body).toContain('return readySignal.promise');
-    });
-});
-
-describe('the dialog holds itself open until the panel is ready', () => {
-    it('no longer closes before starting the work', () => {
-        // The old shape closed every share modal and THEN called shareAppliedProposals.
-        const close = dialogUpload.indexOf('closeThisDialog');
-        const call = dialogUpload.indexOf('shareAppliedProposals(');
-        expect(close).toBeGreaterThan(-1);
-        expect(call).toBeGreaterThan(-1);
-        // The close must be reachable only through the promise settling.
-        expect(dialogUpload).toMatch(/ready\.then\(closeThisDialog,\s*closeThisDialog\)/);
-    });
-
-    it('closes on failure too, so a stuck panel cannot trap the user', () => {
-        // Both arms of .then are the close — success and rejection alike.
-        const match = dialogUpload.match(/ready\.then\(([^)]*)\)/);
-        expect(match).not.toBeNull();
-        const [onOk, onFail] = match[1].split(',').map(s => s.trim());
-        expect(onOk).toBe('closeThisDialog');
-        expect(onFail).toBe('closeThisDialog');
-    });
-
-    it('falls back to closing when the panel returns nothing thenable', () => {
-        expect(dialogUpload).toMatch(/else\s+closeThisDialog\(\);/);
-    });
-
-    it('shows the panel progress on the button instead of a mute spinner', () => {
-        expect(dialogUpload).toContain('onProgress');
-        expect(dialogUpload).toMatch(/label\.textContent = text/);
-    });
-
-    it('closes only its own modal, never every share modal on the page', () => {
-        // The wait is now seconds rather than two frames, which is long enough for the user to
-        // dismiss this dialog and open another. Closing that one would look like a lost place.
-        const closer = dialogUpload.slice(
-            dialogUpload.indexOf('const closeThisDialog'),
-            dialogUpload.indexOf('const go =')
-        );
-        expect(closer).toContain('ownOverlay');
-        expect(closer).not.toMatch(/querySelectorAll\('\.share-modal-overlay/);
-    });
-
-    it('does nothing when its modal is already gone', () => {
-        const closer = dialogUpload.slice(
-            dialogUpload.indexOf('const closeThisDialog'),
-            dialogUpload.indexOf('const go =')
-        );
-        expect(closer).toMatch(/isConnected/);
     });
 });
 

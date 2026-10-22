@@ -1,10 +1,12 @@
-// Owner acceptance for proposals with an approval setup (abstract owners, pinned rights, a lens):
-// the "Owner acceptance" card in Details > Land & ownership, the "Act for an owner" dialog (a lens
-// member confirms which owners the connected wallet may act for) and the "Accept as Owner X" review
-// dialog, which shows exactly what that owner gives and gets before the wallet signs, then becomes
-// the receipt. The same review opens read-only for anyone from the card's owner row ("Owner X's
-// deal"), with the before/after divider focused on that owner's land. Rules and counting live in
-// approval.js / approval-review.js; this file only renders.
+// Owner decisions on a proposed agreement (plan-design-agreement.md, M2): the "Owner decisions" card
+// of the agreement panel (agreement-panel.js), the "Act for an owner" dialog (a lens member confirms
+// which owners the connected wallet may act for) and the "Accept as Owner X" review, which shows what
+// that owner puts in and how far the rule is from passing before the wallet signs the agreement's CID,
+// then becomes the receipt. The same review opens read-only for anyone from the card's owner row.
+// Decisions are taken on the agreement-like object approval-runtime.js takes, built here from the
+// stored agreement; receipts are relayed at /agreements/<cid>/decisions (approval-relay.js) and every
+// browser counts only those that verify. Rules and counting live in approval.js and
+// approval-review.js; this file only renders.
 (function () {
     const root = typeof window !== 'undefined' ? window : null;
     if (!root) return;
@@ -16,21 +18,47 @@
     const esc = value => escapeHtml(String(value === undefined || value === null ? '' : value));
     const format = () => root.CbFormat;
     const area = value => format().formatArea(value, { missing: '—' });
-    const money = (cents, currency) => format().formatMoney(cents / 100, currency, { minFractionDigits: 2, maxFractionDigits: 2 });
-    // A readjustment's cash is in its deal's currency (the city's money when it was authored).
-    const cashCurrency = review => review.conditions?.money?.currency || review.proposal?.offerCurrency || root.CityMoney.currentCurrency();
     const runtime = () => root.ProposalApprovalRuntime;
     const actor = () => (typeof getCurrentUserAgent === 'function' ? getCurrentUserAgent() : null) || null;
     const wallet = () => root.ProposalApprovalLensAuthority.browserWallet();
+    const log = (message, ...rest) => console.log(`[${new Date().toISOString()}] [ProposalApprovalPanel] ${message}`, ...rest);
 
-    function labels(proposal) {
-        const state = runtime().inspect(proposal);
-        return id => runtime().label(id, state);
+    // Per agreement CID: the object decisions are taken on. Its receipts live for the session; the
+    // relay keeps them for every browser.
+    const subjects = new Map();
+    const syncing = new Map();
+
+    // The agreement-like object of a proposed owner agreement: the engine's subject, its CID, its
+    // deadline (the review's "open until"), the server's status and the receipts known so far.
+    function subjectFor(agreementId) {
+        const agreement = root.AgreementStore.get(agreementId);
+        if (!agreement || !agreement.published || !agreement.rule || agreement.rule.electorate !== 'owners') return null;
+        const cid = agreement.published.cid;
+        let subject = subjects.get(cid);
+        if (!subject) {
+            subject = { agreementCid: cid, ownerApprovals: {}, ownerApprovalHistory: [] };
+            subjects.set(cid, subject);
+        }
+        Object.assign(subject, root.AgreementRecord.approvalSubject(agreement), { agreementId: agreement.id, expiresAt: agreement.deadline });
+        return subject;
+    }
+
+    // The server's status of the agreement ('active' | 'expired'): an expired one takes no decision.
+    function setStatus(agreementId, status) {
+        const subject = subjectFor(agreementId);
+        if (!subject) return;
+        if (status === 'expired') subject.lifecycleStatus = 'Expired';
+        else delete subject.lifecycleStatus;
+    }
+
+    function labels(subject) {
+        const rights = runtime().inspect(subject);
+        return id => runtime().label(id, rights);
     }
     const list = names => names.join(', ');
-    // The cadastral number people know ("1236"), as the rest of the panel shows it.
+    // The cadastral number people know ("1236"), as the rest of the app shows it.
     function parcelName(id) {
-        // A parcel a readjustment replaced is gone from the live fabric; the cadastre still has it.
+        // A parcel a parcel layout replaced is gone from the live fabric; the cadastre still has it.
         const properties = root.LiveParcelFabric?.get?.(id)?.properties || root.CadastralParcelRepository?.get?.(id)?.properties;
         const number = root.ProposalDisplayText.parcelLabel(getParcelDisplayNumberFromProperties(properties, id));
         return t('panel.proposal.parcels.label', 'Parcel {{id}}', { id: number });
@@ -39,93 +67,61 @@
     const ruleText = (policy, regime) => words().rulesText(policy, t, regime);
 
     // The signer the installed providers would use for this owner right now (a wallet, a profile).
-    function signerFor(proposal, ownerId) {
+    function signerFor(subject, ownerId) {
         const current = actor();
-        return current ? root.ProposalApprovalAuthorities.resolve(proposal, ownerId, current)?.actorId || null : null;
+        return current ? root.ProposalApprovalAuthorities.resolve(subject, ownerId, current)?.actorId || null : null;
     }
 
-    function acceptedIds(proposal, hash) {
-        return hash ? runtime().validIds(proposal, hash) : [];
-    }
+    const acceptedIds = subject => runtime().validIds(subject);
 
     // ---- relay --------------------------------------------------------------------------------
 
     // Any installed provider's receipt, checked from its own evidence and signatures.
-    const verifyAny = (proposal, receipt) => root.ProposalApproval.evidenceAllows(proposal, receipt?.ownerId, receipt?.actorId, receipt?.evidence)
-        && root.ProposalApprovalAuthorities.verifyReceipt(proposal, receipt);
-    const syncing = new Map();
-    // Per minted proposal: { status: 'reading'|'ready'|'error'|'anchoring', anchored: Set, transactions, message }.
-    const chainState = new Map();
-    const anchors = () => root.ProposalApprovalAnchor;
+    const verifyAny = (subject, receipt) => root.ProposalApproval.evidenceAllows(subject, receipt?.ownerId, receipt?.actorId, receipt?.evidence)
+        && root.ProposalApprovalAuthorities.verifyReceipt(subject, receipt);
 
-    async function solana(cluster) {
-        if (!root.solanaWeb3?.PublicKey && typeof root.ensureWalletVendors === 'function') await root.ensureWalletVendors();
-        if (!root.solanaWeb3?.PublicKey || !root.SolanaChainDataLoader?.getConnection) throw new Error('Solana web3.js is unavailable');
-        return { web3: root.solanaWeb3, connection: root.SolanaChainDataLoader.getConnection(cluster) };
-    }
-
-    async function fetchBundle(uri) {
-        for (const url of anchors().gatewayUrls(uri)) {
-            try {
-                const response = await root.fetch(url, { cache: 'no-store' });
-                if (response.ok) return await response.json();
-            } catch (_) { /* next gateway */ }
-        }
-        return null;
-    }
-
-    // Decisions anchored on chain for a minted proposal, folded in after this browser verifies them.
-    async function readChain(proposal) {
-        const id = String(proposal.proposalId);
-        const ref = anchors()?.chainRef(proposal);
-        if (!ref) return;
-        chainState.set(id, { ...(chainState.get(id) || {}), status: 'reading' });
-        try {
-            const read = await anchors().readAnchors(proposal, { ...(await solana(ref.cluster)), fetchJson: fetchBundle });
-            const { changed } = root.ProposalApprovalRelay.merge(proposal, read.decisions, verifyAny);
-            if (changed) {
-                refreshProposalAcceptanceValidity(proposal);
-                proposalStorage._indexProposal?.(proposal);
-                proposalStorage.save();
-            }
-            chainState.set(id, { ...(chainState.get(id) || {}), status: 'ready', anchored: anchors().anchoredSignatures(read), transactions: read.transactions, rejected: read.rejected });
-        } catch (error) {
-            console.warn(`[${new Date().toISOString()}] [ProposalApprovalPanel] chain read failed for ${id}`, error);
-            chainState.set(id, { ...(chainState.get(id) || {}), status: 'error', anchored: new Set(), transactions: [] });
-        }
-        refreshAll();
-    }
-
-    // Reads the relay's decisions for a published proposal (each re-verified here before it counts)
-    // and sends the ones only this browser holds. Runs each time a Details card mounts.
-    function sync(proposalId) {
-        const proposal = proposalStorage.getProposal(proposalId);
-        if (!proposal || !root.ProposalApprovalRelay || (!proposal.serverProposalId && !anchors()?.chainRef(proposal))) return Promise.resolve(null);
-        if (syncing.has(proposalId)) return syncing.get(proposalId);
-        const relayed = proposal.serverProposalId ? root.ProposalApprovalRelay.sync(proposal, { verify: verifyAny })
-            : Promise.resolve({ synced: false, changed: false, sent: 0 });
-        const run = relayed.then(async result => {
-            await readChain(proposal);
-            if (result.changed) {
-                refreshProposalAcceptanceValidity(proposal);
-                proposalStorage._indexProposal?.(proposal);
-                proposalStorage.save();
-            }
-            if (result.changed || result.sent) refreshAll();
+    // Reads the relay's decisions on the agreement (each re-verified here before it counts) and sends
+    // the ones only this browser holds. The agreement panel runs it when it opens the agreement.
+    function sync(agreementId) {
+        const subject = subjectFor(agreementId);
+        if (!subject || !root.ProposalApprovalRelay) return Promise.resolve(null);
+        const cid = subject.agreementCid;
+        if (syncing.has(cid)) return syncing.get(cid);
+        const run = root.ProposalApprovalRelay.sync(subject, { verify: verifyAny }).then(result => {
+            if (result.changed || result.sent) renderCards();
+            log(`${cid}: ${result.synced ? `synced (${result.sent || 0} sent)` : 'the relay is unreachable'}`);
             return result;
         }).catch(error => {
-            console.warn(`[${new Date().toISOString()}] [ProposalApprovalPanel] relay sync failed for ${proposalId}`, error);
+            console.warn(`[${new Date().toISOString()}] [ProposalApprovalPanel] relay sync failed for ${cid}`, error);
             return null;
-        }).finally(() => syncing.delete(proposalId));
-        syncing.set(proposalId, run);
+        }).finally(() => syncing.delete(cid));
+        syncing.set(cid, run);
         return run;
     }
 
     function sharedText(shared) {
-        if (shared?.shared) return t('proposalApproval.relay.shared', 'Shared: other browsers can verify and count this decision.');
-        return shared?.code === 'not_published'
-            ? t('proposalApproval.relay.unpublished', 'Saved in this browser only: the proposal is not published yet.')
-            : t('proposalApproval.relay.retry', 'Saved in this browser only for now; it is sent again the next time this proposal opens.');
+        return shared?.shared
+            ? t('proposalApproval.relay.shared', 'Shared: other browsers can verify and count this decision.')
+            : t('agreement.publish.decisionKept', 'Not shared yet: the server did not take the decision. It is sent again when this agreement’s decisions are next read in this session.');
+    }
+
+    // One signed decision on the agreement's CID, then sent to the relay. Null when nothing was signed.
+    async function decide(agreementId, parcelId, ownerId, withdraw) {
+        const subject = subjectFor(agreementId);
+        if (!subject) return null;
+        const result = await runtime().decide(subject, parcelId, ownerId, actor(), withdraw === true);
+        if (!result || result.error) {
+            const code = result && result.error;
+            console.warn(`[${new Date().toISOString()}] [ProposalApprovalPanel] decision on ${subject.agreementCid} refused: ${code}`);
+            showEphemeralMessage(code === 'agreement-closed'
+                ? t('agreement.publish.decisionClosed', 'This agreement no longer takes decisions.')
+                : t('proposalApproval.approvalUnavailable', 'The selected lens has not established these rights and your authority to act for this owner.'), 7000, 'error');
+            return null;
+        }
+        const receipt = withdraw ? (subject.ownerApprovalHistory || []).at(-1) : subject.ownerApprovals?.[result.ownerId];
+        const shared = receipt ? await root.ProposalApprovalRelay.push(subject, receipt) : { shared: false, code: 'no-receipt' };
+        if (!shared.shared) console.info(`[${new Date().toISOString()}] [ProposalApprovalPanel] decision for ${result.ownerId} kept in this browser: ${shared.code}`);
+        return { ...result, shared };
     }
 
     // ---- card ---------------------------------------------------------------------------------
@@ -169,7 +165,7 @@
         if (!counts('area', 'owners')) {
             html.push(progress.totalAreaM2 == null
                 ? `<p class="approval-card__note">${esc(t('proposalApproval.areaUnknown', 'Parcel areas are unresolved.'))}</p>`
-                : meter('area', t('reparcellization.modal.colArea', 'Area'),
+                : meter('area', t('proposalApproval.meterArea', 'Area'),
                     t('proposalApproval.amountOf', '{{amount}} of {{total}}', { amount: area(progress.acceptedAreaM2), total: area(progress.totalAreaM2) }),
                     progress.acceptedAreaM2, progress.totalAreaM2, unanimous
                         ? t('proposalApproval.areaNeededAll', 'Needs every parcel: {{area}}', { area: area(progress.totalAreaM2) }) : null));
@@ -187,7 +183,7 @@
                 : t('proposalApproval.authority.pending', 'pending: {{role}}', { role }))}</li>`).join('')}</ul>`;
     }
 
-    function progressHtml(proposal, progress, label) {
+    function progressHtml(progress, label) {
         const authorityLed = !progress.tests.length;
         const outstanding = authorityLed
             ? t('proposalApproval.rules.ownersHeard', 'Owners are heard; the authority decides.')
@@ -213,36 +209,40 @@
             <small>${esc(words().familyText(template, t))} · ${esc(words().stageText(template, t))}</small></p>`;
     }
 
-    function youHtml(proposal, hash, label, accepted) {
-        if (!hash) return `<p class="approval-card__note">${esc(t('proposalApproval.invalidTerms', 'Correct the proposal terms before accepting.'))}</p>`;
+    function youHtml(subject, label, accepted) {
         const current = actor();
-        const mine = current ? runtime().authorizedOwnerIds(proposal, current) : [];
+        const mine = current ? runtime().authorizedOwnerIds(subject, current) : [];
         const connected = wallet();
+        const closed = subject.lifecycleStatus === 'Expired';
         let html = '';
-        if (mine.length) {
+        if (mine.length && !closed) {
             const names = list(mine.map(label));
-            html += `<p class="approval-card__you-line" data-approval-you>${esc(connected && mine.some(id => signerFor(proposal, id) === connected.address)
+            html += `<p class="approval-card__you-line" data-approval-you>${esc(connected && mine.some(id => signerFor(subject, id) === connected.address)
                 ? t('proposalApproval.walletActsFor', 'Your wallet {{wallet}} can act for {{owners}}.', { wallet: root.LensCore.shortKey(connected.address), owners: names })
                 : t('proposalApproval.youActFor', 'You can act for {{owners}}.', { owners: names }))}</p>`;
             html += '<div class="approval-card__actions">' + mine.map(id => {
                 if (!accepted.includes(id)) {
                     return `<button type="button" class="btn btn-success btn-sm" data-approval-action="review" data-owner-id="${esc(id)}">${esc(t('proposalApproval.reviewAndAccept', 'Review and accept as {{owner}}', { owner: label(id) }))}</button>`;
                 }
-                const mayWithdraw = proposal.ownerApprovals?.[id]?.actorId === signerFor(proposal, id);
+                const mayWithdraw = subject.ownerApprovals?.[id]?.actorId === signerFor(subject, id);
                 return `<span class="approval-card__accepted" data-approval-accepted="${esc(id)}"><i class="fas fa-check" aria-hidden="true"></i> ${esc(t('proposalApproval.acceptedAs', 'Accepted as {{owner}}', { owner: label(id) }))}</span>`
                     + (mayWithdraw ? `<button type="button" class="btn btn-danger btn-sm" data-approval-action="withdraw" data-owner-id="${esc(id)}">${esc(t('proposalApproval.withdraw', 'Withdraw acceptance'))}</button>` : '');
             }).join('') + '</div>';
         }
-        html += `<div class="approval-card__verify">
+        if (closed) {
+            html += `<p class="approval-card__note" data-approval-closed>${esc(t('agreement.publish.decisionClosed', 'This agreement no longer takes decisions.'))}</p>`;
+        } else {
+            html += `<div class="approval-card__verify">
             <button type="button" class="btn btn-sm" data-approval-action="verify">${esc(t('proposalApproval.actForOwner', 'Act for an owner'))}</button>
-            <small>${esc(t('proposalApproval.actForOwnerHint', 'A member of this proposal’s lens confirms which owners your wallet may act for. Nothing is accepted until you review and sign.'))}</small>
+            <small>${esc(t('agreement.publish.actForOwnerHint', 'A member of this agreement’s lens confirms which owners your wallet may act for. Nothing is accepted until you review and sign.'))}</small>
         </div>`;
+        }
         return `<div class="approval-card__you">${html}</div>`;
     }
 
     // Every owner's position, for anyone: what they put in and what they get, without a wallet.
-    function dealsHtml(proposal, label, accepted) {
-        const state = runtime().inspect(proposal);
+    function dealsHtml(subject, label, accepted) {
+        const state = runtime().inspect(subject);
         const ids = [...state.ownerIds, ...state.leaseholderIds.filter(id => !state.ownerIds.includes(id))];
         if (!ids.length) return '';
         return `<div class="approval-card__deals" data-approval-deals>
@@ -251,151 +251,80 @@
         </div>`;
     }
 
-    // Minted on Solana: how many of the decisions this browser holds are anchored, and the action
-    // that anchors the rest. The chain records them; it does not count or pay this approval setup.
-    function chainHtml(proposal, hash) {
-        const ref = anchors()?.chainRef(proposal);
-        if (!ref) return '';
-        const id = String(proposal.proposalId);
-        const chain = chainState.get(id) || { status: 'reading' };
-        const known = root.ProposalApprovalRelay.fold(proposal, [...Object.values(proposal.ownerApprovals || {}),
-            ...(proposal.ownerApprovalHistory || [])], verifyAny).applied;
-        const anchored = known.filter(receipt => chain.anchored?.has(root.ProposalApprovalRelay.signatureOf(receipt))).length;
-        let line;
-        if (chain.status === 'reading') line = t('proposalApproval.chain.reading', 'Reading anchored decisions from the chain…');
-        else if (chain.status === 'error') line = t('proposalApproval.chain.readFailed', 'The chain could not be read; decisions shown are from this browser and the relay.');
-        else line = t('proposalApproval.chain.anchored', 'On chain: {{anchored}} of {{total}} decisions anchored.', { anchored, total: known.length });
-        const canAnchor = chain.status === 'ready' && anchored < known.length && !!proposal.serverProposalId && !!hash;
-        const last = chain.lastTransaction;
-        return `<div class="approval-card__chain" data-approval-chain="${esc(chain.status)}">
-            <p class="approval-card__chain-line" data-approval-chain-line>${esc(line)}</p>
-            ${chain.message ? `<p class="approval-card__note" data-approval-chain-status role="status">${esc(chain.message)}</p>` : ''}
-            ${last ? `<p class="approval-card__note"><a class="cb-link cb-link--external" href="${esc(explorerTx(last, ref.cluster))}" target="_blank" rel="noopener noreferrer" data-approval-chain-tx>${esc(t('proposalApproval.chain.lastAnchor', 'Latest anchor transaction'))}</a></p>` : ''}
-            ${canAnchor ? `<div class="approval-card__actions"><button type="button" class="btn btn-sm" data-approval-action="anchor">${esc(t('proposalApproval.chain.anchor', 'Anchor on chain'))}</button></div>` : ''}
-            <small class="approval-card__need">${esc(t('proposalApproval.chain.scope', 'The chain keeps the approval setup and the signed decisions so anyone can recount them; it does not count or pay them.'))}</small>
-        </div>`;
-    }
-
-    function explorerTx(signature, cluster) {
-        const suffix = cluster && cluster !== 'mainnet-beta' ? `?cluster=${encodeURIComponent(cluster)}` : '';
-        return `https://explorer.solana.com/tx/${encodeURIComponent(signature)}${suffix}`;
-    }
-
-    // Pins the decisions the relay holds as one bundle, then the connected wallet records it on chain.
-    async function anchorDecisions(proposalId) {
-        const proposal = proposalStorage.getProposal(proposalId);
-        const ref = proposal ? anchors()?.chainRef(proposal) : null;
-        if (!ref) return;
-        const id = String(proposal.proposalId);
-        const set = patch => { chainState.set(id, { ...(chainState.get(id) || {}), ...patch }); renderCards(); };
-        set({ status: 'anchoring', message: t('proposalApproval.chain.anchoring', 'Pinning the decisions and waiting for your wallet…') });
-        try {
-            await root.ProposalApprovalRelay.sync(proposal, { verify: verifyAny });
-            await root.ProposalApprovalLensAuthority.connectWallet();
-            const base = (typeof root.getBackendBase === 'function' ? root.getBackendBase() : '').replace(/\/$/, '');
-            const result = await anchors().anchor(proposal, {
-                ...(await solana(ref.cluster)),
-                provider: root.solanaWalletManager.getProvider(),
-                async publishBundle() {
-                    const response = await root.fetch(`${base}/proposals/${encodeURIComponent(proposal.serverProposalId)}/owner-decisions/bundle`, { method: 'POST' });
-                    const body = await response.json().catch(() => ({}));
-                    if (!response.ok) throw Object.assign(new Error(body.error || `Pinning failed (${response.status})`), { code: body.code || 'pin_failed' });
-                    return body;
-                }
-            });
-            console.info(`[${new Date().toISOString()}] [ProposalApprovalPanel] anchored ${result.uri} for ${id} in ${result.signature}`);
-            set({ message: t('proposalApproval.chain.anchoredNow', 'Anchored {{count}} decisions.', { count: result.count }), lastTransaction: result.signature });
-            await readChain(proposal);
-        } catch (error) {
-            console.warn(`[${new Date().toISOString()}] [ProposalApprovalPanel] anchoring failed for ${id}`, error);
-            set({ status: 'ready', message: t('proposalApproval.chain.anchorFailed', 'Nothing was anchored: {{reason}}', { reason: error?.message || String(error) }) });
-        }
-    }
-
-    function cardHtml(proposal) {
-        const hash = currentConsentBindingHash(proposal);
-        const accepted = acceptedIds(proposal, hash);
-        const progress = root.ProposalApprovalReview.progress(proposal, accepted);
-        const titleId = `approval-card-title-${String(proposal.proposalId || 'draft').replace(/[^A-Za-z0-9_-]/g, '_')}`;
+    // The tally of the agreement's owner decisions and what the current profile may do.
+    function cardHtml(subject) {
+        const accepted = acceptedIds(subject);
+        const progress = root.ProposalApprovalReview.progress(subject, accepted);
+        const titleId = `approval-card-title-${String(subject.agreementId || 'agreement').replace(/[^A-Za-z0-9_-]/g, '_')}`;
+        const heading = `<h4 id="${titleId}" class="approval-card__title">${esc(t('agreement.publish.tallyHeading', 'Owner decisions'))}</h4>`;
         if (!progress.ready) {
             return `<section class="approval-card" data-approval-card aria-labelledby="${titleId}">
-                <div class="approval-card__head"><h4 id="${titleId}" class="approval-card__title">${esc(t('panel.parcel.acceptance.ownerTitle', 'Owner acceptance'))}</h4>
+                <div class="approval-card__head">${heading}
                 <span class="cb-badge approval-card__status approval-card__status--unresolved">${esc(t('proposalApproval.status.unresolved', 'Ownership unresolved'))}</span></div>
-                <p class="approval-card__note">${esc(t('proposalApproval.ownershipUnresolved', 'Ownership unresolved. You can design and share this proposal; owner approval needs a complete rights snapshot.'))}</p>
+                <p class="approval-card__note">${esc(t('agreement.publish.ownershipUnresolved', 'Ownership unresolved: the owners’ decision needs a complete rights snapshot in the agreement’s rule.'))}</p>
             </section>`;
         }
-        const label = labels(proposal);
+        const label = labels(subject);
         const status = progress.passed
             ? `<span class="cb-badge approval-card__status approval-card__status--passed">${esc(t('proposalApproval.status.passed', 'Configured approval rules met'))}</span>`
             : progress.supportMet
                 ? `<span class="cb-badge approval-card__status approval-card__status--pending" data-approval-awaiting-authority>${esc(t('proposalApproval.status.authorityPending', 'Required authority decision pending'))}</span>`
                 : `<span class="cb-badge approval-card__status approval-card__status--pending">${esc(t('proposalApproval.status.pending', 'Configured approval rules not met'))}</span>`;
         return `<section class="approval-card" data-approval-card aria-labelledby="${titleId}">
-            <div class="approval-card__head"><h4 id="${titleId}" class="approval-card__title">${esc(t('panel.parcel.acceptance.ownerTitle', 'Owner acceptance'))}</h4>${status}</div>
+            <div class="approval-card__head">${heading}${status}</div>
             ${regimeHtml(progress)}
             <p class="approval-card__rule">${esc(ruleText(progress.policy, progress.regime))}</p>
-            ${progressHtml(proposal, progress, label)}
-            ${dealsHtml(proposal, label, accepted)}
-            ${chainHtml(proposal, hash)}
-            ${proposal.serverProposalId ? '' : `<p class="approval-card__note" data-approval-local-only>${esc(t('proposalApproval.relay.localOnly', 'Acceptances stay in this browser until the proposal is published.'))}</p>`}
-            ${youHtml(proposal, hash, label, accepted)}
+            ${progressHtml(progress, label)}
+            ${dealsHtml(subject, label, accepted)}
+            ${youHtml(subject, label, accepted)}
         </section>`;
     }
 
-    function render(slot, proposal) {
-        if (!slot || !proposal) return;
-        slot.dataset.proposalId = String(proposal.proposalId);
-        slot.innerHTML = cardHtml(proposal);
+    function render(slot, agreementId) {
+        const subject = subjectFor(agreementId);
+        if (!slot || !subject) return;
+        slot.dataset.agreementId = String(agreementId);
+        slot.innerHTML = cardHtml(subject);
         if (slot.dataset.approvalBound) return;
         slot.dataset.approvalBound = 'true';
-        sync(String(proposal.proposalId));
         slot.addEventListener('click', event => {
             const control = event.target.closest('[data-approval-action]');
             if (!control || !slot.contains(control)) return;
             event.preventDefault();
             event.stopPropagation();
-            const proposalId = slot.dataset.proposalId;
+            const id = slot.dataset.agreementId;
             const ownerId = control.dataset.ownerId || null;
-            if (control.dataset.approvalAction === 'verify') openVerify(proposalId);
-            else if (control.dataset.approvalAction === 'review') openReview(proposalId, ownerId);
-            else if (control.dataset.approvalAction === 'inspect') openReview(proposalId, ownerId, null, { inspect: true });
-            else if (control.dataset.approvalAction === 'withdraw') withdraw(proposalId, ownerId);
-            else if (control.dataset.approvalAction === 'anchor') anchorDecisions(proposalId);
+            if (control.dataset.approvalAction === 'verify') openVerify(id);
+            else if (control.dataset.approvalAction === 'review') openReview(id, ownerId);
+            else if (control.dataset.approvalAction === 'inspect') openReview(id, ownerId, null, { inspect: true });
+            else if (control.dataset.approvalAction === 'withdraw') withdraw(id, ownerId);
         });
     }
 
-    function mountedProposals() {
-        return [...doc.querySelectorAll('[data-approval-card-slot]')]
-            .map(slot => (slot.dataset.proposalId ? proposalStorage.getProposal(slot.dataset.proposalId) : null)).filter(Boolean);
-    }
-
-    // Every mounted card (execution.js calls this after it refreshes the owner rows).
+    // Every mounted card.
     function renderCards() {
         doc.querySelectorAll('[data-approval-card-slot]').forEach(slot => {
-            const proposal = slot.dataset.proposalId ? proposalStorage.getProposal(slot.dataset.proposalId) : null;
-            if (proposal) render(slot, proposal);
+            if (slot.dataset.agreementId) render(slot, slot.dataset.agreementId);
         });
     }
+    const refreshAll = renderCards;
 
-    // Cards and per-parcel owner rows: who may accept changes with the wallet and its evidence.
-    function refreshAll() {
-        mountedProposals().forEach(proposal => (proposal.cadastreParcelIds || [])
-            .forEach(parcelId => refreshProposalOwnerAcceptanceUI(proposal, parcelId)));
+    function firstParcelOf(subject, ownerId) {
+        return runtime().inspect(subject).parcels.find(parcel => parcel.owners.some(owner => owner.ownerId === ownerId))?.parcelId || null;
+    }
+
+    // An owner withdraws from one of their parcels; a leaseholder or an authority has none.
+    async function withdraw(agreementId, ownerId) {
+        const subject = subjectFor(agreementId);
+        if (!subject) return;
+        try {
+            const result = await decide(agreementId, firstParcelOf(subject, ownerId), ownerId, true);
+            if (result) showEphemeralMessage(sharedText(result.shared), 5000, result.shared?.shared ? 'success' : 'warning');
+        } catch (error) {
+            console.warn(`[${new Date().toISOString()}] [ProposalApprovalPanel] the withdrawal was not signed`, error);
+            showEphemeralMessage(t('proposalApproval.review.notSigned', 'The wallet did not sign, so nothing was accepted.'), 6000, 'error');
+        }
         renderCards();
-    }
-
-    function firstParcelOf(proposal, ownerId) {
-        return runtime().inspect(proposal).parcels.find(parcel => parcel.owners.some(owner => owner.ownerId === ownerId))?.parcelId || null;
-    }
-
-    async function withdraw(proposalId, ownerId) {
-        const proposal = proposalStorage.getProposal(proposalId);
-        if (!proposal) return;
-        const parcelId = firstParcelOf(proposal, ownerId);
-        // An owner withdraws from one of their parcels; a leaseholder or an authority has none.
-        if (parcelId) await handleUserRejectProposal(proposalId, parcelId, ownerId);
-        else await recordAbstractProposalDecision(proposal, null, ownerId, actor(), true);
-        refreshAll();
     }
 
     // ---- dialogs ------------------------------------------------------------------------------
@@ -468,9 +397,9 @@
         return t('proposalApproval.verify.failed', 'Verification failed: {{message}}', { message: (error && error.message) || String(error) });
     }
 
-    // Lens members of this proposal with the directory's names and service addresses.
-    async function lensMembers(proposal) {
-        const keys = root.ProposalApproval.lensKeys(proposal);
+    // Lens members of this agreement with the directory's names and service addresses.
+    async function lensMembers(subject) {
+        const keys = root.ProposalApproval.lensKeys(subject);
         const directory = await root.LensPicker.loadDirectory();
         const members = directory.members || [];
         return keys.map(key => {
@@ -479,9 +408,9 @@
         });
     }
 
-    async function openVerify(proposalId, { thenReviewOwnerId = null } = {}) {
-        const proposal = proposalStorage.getProposal(proposalId);
-        if (!proposal) return;
+    async function openVerify(agreementId, { thenReviewOwnerId = null } = {}) {
+        const subject = subjectFor(agreementId);
+        if (!subject) return;
         const parts = mount(t('proposalApproval.actForOwner', 'Act for an owner'), 'cb-dialog--sm');
         parts.body.append(el('p', 'approval-dialog__intro', t('proposalApproval.verify.intro',
             'Choose a lens member. Your wallet signs a one-time challenge so the member can tell you which owners you may act for.')));
@@ -500,7 +429,7 @@
         parts.footer.append(cancel, submit);
 
         submit.disabled = true;
-        const members = await lensMembers(proposal);
+        const members = await lensMembers(subject);
         if (state.overlay?.contains(select) !== true) return;
         members.forEach(member => {
             const option = el('option', null, member.serviceUrl ? member.label
@@ -525,21 +454,21 @@
             status.textContent = t('proposalApproval.verify.working', 'Waiting for your wallet…');
             try {
                 await root.ProposalApprovalLensAuthority.connectWallet();
-                const result = await root.ProposalApprovalLensAuthority.instance.verifyOwner(proposalStorage.getProposal(proposalId) || proposal,
+                const result = await root.ProposalApprovalLensAuthority.instance.verifyOwner(subjectFor(agreementId) || subject,
                     { memberKey: member.key, serviceUrl: member.serviceUrl });
-                const label = labels(proposal);
+                const label = labels(subject);
                 status.textContent = t('proposalApproval.walletActsFor', 'Your wallet {{wallet}} can act for {{owners}}.', {
                     wallet: root.LensCore.shortKey(result.wallet), owners: list(result.ownerIds.map(label))
                 });
                 status.setAttribute('data-approval-verified', result.ownerIds.join(' '));
-                refreshAll();
+                renderCards();
                 parts.footer.replaceChildren();
                 const next = thenReviewOwnerId && result.ownerIds.includes(thenReviewOwnerId) ? thenReviewOwnerId
                     : result.ownerIds.length === 1 ? result.ownerIds[0] : null;
-                if (next && !acceptedIds(proposal, currentConsentBindingHash(proposal)).includes(next)) {
+                if (next && !acceptedIds(subject).includes(next)) {
                     parts.footer.append(button('btn', t('common.close', 'Close'), close),
                         button('btn btn-success', t('proposalApproval.reviewAndAccept', 'Review and accept as {{owner}}', { owner: label(next) }),
-                            () => openReview(proposalId, next)));
+                            () => openReview(agreementId, next)));
                 } else {
                     parts.footer.append(button('btn btn-primary', t('proposalApproval.done', 'Done'), close));
                 }
@@ -565,12 +494,7 @@
                 title: kind === 'authority' ? t('proposalApproval.review.approveAs', 'Approve as {{owner}}', { owner })
                     : t('proposalApproval.review.acceptAs', 'Accept as {{owner}}', { owner }),
                 contributes: t('proposalApproval.review.contributes', 'Your proposed contribution'),
-                receives: t('proposalApproval.review.receives', 'Your proposed allocation'),
                 share: share => t('proposalApproval.review.yourShare', 'Your share {{share}}', { share }),
-                landBefore: t('proposalApproval.review.landBefore', 'Land you would contribute'),
-                landAfter: t('proposalApproval.review.landAfter', 'Land allocated to you'),
-                cash: t('proposalApproval.review.cash', 'Cash offered to you'),
-                cashPay: t('proposalApproval.review.cashYouPay', 'Cash you would pay'),
                 withAcceptance: progress => t('proposalApproval.review.withYou', 'With your acceptance: {{progress}}', { progress }),
                 passes: t('proposalApproval.review.passesWithYou', 'Your acceptance would meet the configured approval rules.'),
                 needsMore: t('proposalApproval.review.needsMore', 'Further decisions would still be needed under the configured approval rules.')
@@ -580,12 +504,7 @@
             inspect: true,
             title: t('proposalApproval.deals.dealOf', '{{owner}}’s deal', { owner }),
             contributes: t('proposalApproval.deals.contributes', 'Proposed contribution from {{owner}}', { owner }),
-            receives: t('proposalApproval.deals.receives', 'Proposed allocation to {{owner}}', { owner }),
             share: share => t('proposalApproval.deals.share', 'Share {{share}}', { share }),
-            landBefore: t('proposalApproval.deals.landBefore', 'Contributed land area'),
-            landAfter: t('proposalApproval.deals.landAfter', 'Allocated land area'),
-            cash: t('proposalApproval.deals.cashReceived', 'Cash offered'),
-            cashPay: t('proposalApproval.deals.cashPaid', 'Proposed cash payment'),
             withAcceptance: progress => t('proposalApproval.deals.withOwner', 'With {{owner}}’s acceptance: {{progress}}', { owner, progress }),
             passes: t('proposalApproval.deals.passesWithOwner', '{{owner}}’s acceptance would meet the configured approval rules.', { owner }),
             needsMore: t('proposalApproval.deals.needsMoreThanOwner', 'Further decisions besides {{owner}}’s acceptance would still be needed under the configured approval rules.', { owner })
@@ -609,53 +528,15 @@
     }
 
     // What an authority decides on: the whole plan, not a share of it.
-    function planHtml(proposal, review) {
-        const state = runtime().inspect(proposal);
-        const plots = Array.isArray(proposal.reparcellization?.polygons) ? proposal.reparcellization.polygons.length : null;
+    function planHtml(subject, review) {
+        const state = runtime().inspect(subject);
         const facts = [
             [t('proposalDrafts.review.parcels', 'Parcels'), state.parcels.length],
             [t('proposalApproval.meterOwners', 'Owners'), state.ownerIds.length],
             ...(state.leaseholderIds.length ? [[t('proposalApproval.rules.meter.headcount-leaseholders-all', 'Leaseholders'), state.leaseholderIds.length]] : []),
-            ...(plots != null ? [[t('reparcellization.modal.newPlots', 'New plots'), plots]] : []),
-            ...(review.progressWithout.totalAreaM2 != null ? [[t('reparcellization.modal.colArea', 'Area'), area(review.progressWithout.totalAreaM2)]] : [])
+            ...(review.progressWithout.totalAreaM2 != null ? [[t('proposalApproval.meterArea', 'Area'), area(review.progressWithout.totalAreaM2)]] : [])
         ];
         return `<dl class="approval-review__facts" data-approval-plan>${facts.map(([name, value]) => `<div><dt>${esc(name)}</dt><dd>${esc(value)}</dd></div>`).join('')}</dl>`;
-    }
-
-    function receivesHtml(review, label, voice) {
-        const receives = review.receives;
-        if (!receives.inLedger && !receives.plots.length) {
-            return `<p class="approval-review__warning" data-approval-no-allocation>${esc(t('proposalApproval.review.noAllocation', 'This plan assigns no plot or cash to this owner.'))}</p>`;
-        }
-        const plots = receives.plots.map(plot => `<li data-approval-plot="${plot.index + 1}">
-            <span>${esc(t('proposalApproval.review.plot', 'Plot {{number}}', { number: plot.index + 1 }))}</span>
-            <span>${esc(t('proposalApproval.review.plotShare', '{{share}} of {{area}} = {{yours}}', {
-                share: format().formatPercent(plot.share, { maxFractionDigits: 2 }), area: area(plot.areaM2), yours: area(plot.assignedAreaM2)
-            }))}${plot.coRecipientIds.length ? ` · ${esc(t('proposalApproval.review.sharedWith', 'shared with {{owners}}', {
-                owners: list(plot.coRecipientIds.map(id => (review.ownerIds.includes(id) ? label(id) : id)))
-            }))}` : ''}</span>
-        </li>`).join('');
-        const change = receives.areaChangeM2 == null ? '—' : `${receives.areaChangeM2 > 0 ? '+' : ''}${area(receives.areaChangeM2)}`;
-        return `${plots ? `<ul class="approval-review__list">${plots}</ul>` : ''}
-            <dl class="approval-review__facts">
-                <div><dt>${esc(voice.landBefore)}</dt><dd>${esc(area(receives.contributedAreaM2 ?? review.contributedAreaM2))}</dd></div>
-                <div><dt>${esc(voice.landAfter)}</dt><dd>${esc(area(receives.assignedAreaM2))}</dd></div>
-                <div><dt>${esc(t('proposalApproval.review.landChange', 'Change in land'))}</dt><dd>${esc(change)}</dd></div>
-                ${receives.payCents > 0
-                    ? `<div data-approval-cash="pays"><dt>${esc(voice.cashPay)}</dt><dd>${esc(money(receives.payCents, cashCurrency(review)))}</dd></div>`
-                    : `<div data-approval-cash="receives"><dt>${esc(voice.cash)}</dt><dd>${esc(money(receives.cashCents, cashCurrency(review)))}</dd></div>`}
-            </dl>`;
-    }
-
-    // The whole money schedule, so an owner sees who else pays and who covers the rest.
-    function moneyLines(schedule, currency) {
-        if (!schedule || (!schedule.payOutCents && !schedule.payInCents)) return [];
-        const lines = [t('proposalApproval.money.summary', 'Proposed owner cash: {{out}} to receive and {{in}} to pay.', {
-            out: money(schedule.payOutCents, currency), in: money(schedule.payInCents, currency) })];
-        if (schedule.sponsorCents < 0) lines.push(t('proposalApproval.money.sponsorPays', 'The sponsor would pay {{amount}}.', { amount: money(-schedule.sponsorCents, currency) }));
-        else if (schedule.sponsorCents > 0) lines.push(t('proposalApproval.money.sponsorReceives', 'The sponsor would receive {{amount}}.', { amount: money(schedule.sponsorCents, currency) }));
-        else lines.push(t('proposalApproval.money.sponsorNothing', 'Proposed owner payments cover all payouts; no sponsor payment is specified.'));
-        return lines;
     }
 
     function conditionsHtml(review, members, voice) {
@@ -664,29 +545,13 @@
         const lines = [ruleText(c.policy, c.regime)];
         if (template) {
             lines.push(`${words().regimeName(c.regime, t)} — ${words().stageText(template, t)}`, ...words().allocationLines(template, t));
-            const check = regimeCheck(review.proposal);
-            if (check) lines.push(...words().checkLines(check, t, id => labels(review.proposal)(id)));
         }
-        const payoutMode = root.ProposalPublishTerms.payoutMode(review.proposal);
-        if (payoutMode) {
-            lines.push(payoutMode === 'conditional'
-                ? t('panel.proposal.disbursement.conditionalHint', 'Authored terms require every owner to accept before payout. This does not confirm funding or payment.')
-                : t('panel.proposal.disbursement.partialHint', 'Authored terms allow partial payouts. Acceptance alone does not confirm payment.'));
-        }
-        lines.push(...moneyLines(c.money, cashCurrency(review)));
         lines.push(c.expiresAt
             ? t('proposalApproval.review.openUntil', 'Open until {{date}}', { date: format().formatDateTime(c.expiresAt) })
             : t('proposalApproval.review.noDeadline', 'No deadline'));
-        // Only the sponsor's share is funded beforehand; owner payments settle with the payouts.
-        const sponsorFunding = c.money ? c.money.sponsorFundingCents : c.totalCashCents;
-        if (sponsorFunding > 0) {
-            lines.push(c.fundingConfirmed
-                ? t('proposalApproval.review.funded', 'Funding is marked ready in this record; payment is not verified.')
-                : t('proposalApproval.review.unfunded', 'Funding is not marked ready in this record.'));
-        }
         lines.push(...words().reviewBasisLines(c, t, key => root.LensCore.memberLabel(key, members)));
         return `<ul class="approval-review__conditions">${lines.map(line => `<li>${esc(line)}</li>`).join('')}</ul>
-            ${voice.inspect ? '' : `<p class="approval-review__sign-note">${esc(t('proposalApproval.review.signNote', 'Your wallet signs these exact terms. If they change, your acceptance stops counting.'))}</p>`}`;
+            ${voice.inspect ? '' : `<p class="approval-review__sign-note">${esc(t('agreement.publish.signNote', 'Your wallet signs this agreement’s identity (its CID), which fixes its designs, land, allocations, money and rule.'))}</p>`}`;
     }
 
     // "2 of 4 owners, 100 m² of 175 m²", then any other test the rules count and the authority.
@@ -705,12 +570,6 @@
         return [base, ...others, ...authority].join('; ');
     }
 
-    // The plan against its scheme's distribution rules (reparcellization-validation.js), when it has both.
-    function regimeCheck(proposal) {
-        if (!proposal?.reparcellization || !root.ReparcellizationValidation) return null;
-        try { return root.ReparcellizationValidation.validate(proposal, { turf: root.turf }).regimeCheck || null; } catch (_) { return null; }
-    }
-
     function reviewProgressHtml(review, voice) {
         if (review.alreadyAccepted) {
             return `<p data-approval-progress-now>${esc(t('proposalApproval.review.alreadyAccepted', 'This owner has already accepted these terms.'))}</p>`;
@@ -720,38 +579,18 @@
             <p class="approval-review__verdict">${esc(review.progressWith.passed ? voice.passes : voice.needsMore)}</p>`;
     }
 
-    // The before/after divider, focused on this owner: their parcels outlined before, their plots
-    // after. Offered only where the proposal is applied on the map (there is an "after" to show).
-    function mapButton(proposal, ownerId) {
-        const compare = root.ProposalBeforeAfter;
-        if (!compare || typeof root.toggleProposalBeforeAfter !== 'function' || !compare.canCompare(proposal)) return null;
-        const node = button('btn', t('proposalApproval.deals.showOnMap', 'Show on map'), () => {
-            close();
-            root.toggleProposalBeforeAfter(proposal.proposalId, { focusOwnerId: ownerId });
-        });
-        node.setAttribute('data-approval-show-map', ownerId);
-        node.title = t('proposalApproval.deals.showOnMapHint', 'Before: the parcels this owner puts in. After: the plots they get.');
-        return node;
-    }
-
-    // Accepting always goes through this review: the owner sees what they give and get first.
+    // Accepting always goes through this review: the owner sees what they give first.
     // { inspect: true } opens the same review read-only for anyone (the card's owner row).
-    async function openReview(proposalId, ownerId, parcelId = null, { inspect = false } = {}) {
-        const proposal = proposalStorage.getProposal(proposalId);
-        if (!proposal) return;
-        const hash = currentConsentBindingHash(proposal);
-        if (!hash) {
-            showProposalAlertMessage('readjustment_terms_invalid', 'Complete and correct the readjustment allocations and cash terms before accepting.');
-            return;
-        }
-        const label = labels(proposal);
-        const review = root.ProposalApprovalReview.ownerReview(proposal, ownerId, { acceptedOwnerIds: acceptedIds(proposal, hash), turf: root.turf });
+    async function openReview(agreementId, ownerId, parcelId = null, { inspect = false } = {}) {
+        const subject = subjectFor(agreementId);
+        if (!subject) return;
+        const label = labels(subject);
+        const review = root.ProposalApprovalReview.ownerReview(subject, ownerId, { acceptedOwnerIds: acceptedIds(subject) });
         if (!review) {
             showProposalAlertMessage('abstract_approval_unavailable', t('proposalApproval.approvalUnavailable',
                 'The selected lens has not established these rights and your authority to act for this owner.'));
             return;
         }
-        review.proposal = proposal;
         const members = (await root.LensPicker.loadDirectory()).members || [];
         const voice = reviewVoice(inspect, label(ownerId), review.kind);
         const parts = mount(voice.title, 'cb-dialog--lg');
@@ -759,23 +598,19 @@
         const leaseNote = review.kind === 'leaseholder'
             ? `<p class="approval-card__note" data-approval-lease-note>${esc(t('proposalApproval.review.leaseNote', 'The plan reallocates ownership. A lease counts toward the approval rules but gets no plot from this plan’s ledger.'))}</p>` : '';
         parts.body.innerHTML = (review.kind === 'authority'
-            ? section(t('proposalApproval.review.planTitle', 'The plan to decide on'), planHtml(proposal, review))
+            ? section(t('proposalApproval.review.planTitle', 'The plan to decide on'), planHtml(subject, review))
             : section(voice.contributes, contributesHtml(review, label, voice) + leaseNote))
-            + (review.receives ? section(voice.receives, receivesHtml(review, label, voice)) : '')
             + section(t('proposalApproval.review.conditions', 'Conditions'), conditionsHtml(review, members, voice))
             + section(t('proposalApproval.review.progress', 'Progress'), reviewProgressHtml(review, voice))
             + '<p class="approval-dialog__status" role="status" aria-live="polite" data-approval-review-status></p>';
         const status = parts.body.querySelector('[data-approval-review-status]');
-        const authorized = !!signerFor(proposal, ownerId);
         const cancel = button('btn', t('common.cancel', 'Cancel'), close);
-        const showOnMap = mapButton(proposal, ownerId);
-        if (showOnMap) parts.footer.append(showOnMap);
         if (inspect) {
             // Read-only: the owner (or whoever acts for them) goes on to the signing review.
             parts.footer.append(button('btn', t('common.close', 'Close'), close));
-            if (!review.alreadyAccepted) {
+            if (!review.alreadyAccepted && subject.lifecycleStatus !== 'Expired') {
                 const acceptAs = button('btn btn-success', t('proposalApproval.deals.acceptAsOwner', 'I am {{owner}} — review and accept', { owner: label(ownerId) }),
-                    () => openReview(proposalId, ownerId));
+                    () => openReview(agreementId, ownerId));
                 acceptAs.setAttribute('data-approval-deal-accept', ownerId);
                 parts.footer.append(acceptAs);
             }
@@ -785,10 +620,10 @@
             parts.footer.append(button('btn btn-primary', t('common.close', 'Close'), close));
             return;
         }
-        if (!authorized) {
+        if (!signerFor(subject, ownerId)) {
             status.textContent = t('proposalApproval.review.verifyFirst', 'To accept, first confirm with a lens member that your wallet may act for this owner.');
             parts.footer.append(cancel, button('btn btn-primary', t('proposalApproval.actForOwner', 'Act for an owner'),
-                () => openVerify(proposalId, { thenReviewOwnerId: ownerId })));
+                () => openVerify(agreementId, { thenReviewOwnerId: ownerId })));
             return;
         }
         const accept = button('btn btn-success', voice.title, async () => {
@@ -796,10 +631,10 @@
             cancel.disabled = true;
             status.textContent = t('panel.proposal.lens.awaitingSignature', 'Waiting for your wallet signature…');
             // An owner decides from one of their parcels; a leaseholder or an authority from none.
-            const parcel = parcelId && review.contributes.some(row => row.parcelId === String(parcelId)) ? String(parcelId) : firstParcelOf(proposal, ownerId);
+            const parcel = parcelId && review.contributes.some(row => row.parcelId === String(parcelId)) ? String(parcelId) : firstParcelOf(subject, ownerId);
             let result = null;
             try {
-                result = await recordAbstractProposalDecision(proposal, parcel, ownerId, actor());
+                result = await decide(agreementId, parcel, ownerId, false);
             } catch (error) {
                 console.warn(`[${new Date().toISOString()}] [ProposalApprovalPanel] owner decision was not signed`, error);
                 status.textContent = t('proposalApproval.review.notSigned', 'The wallet did not sign, so nothing was accepted.');
@@ -813,32 +648,32 @@
                 cancel.disabled = false;
                 return;
             }
-            refreshAll();
-            showReceipt(parts, proposal, ownerId, label, result.shared);
+            renderCards();
+            showReceipt(parts, subject, ownerId, label, result.shared);
         });
         accept.setAttribute('data-approval-accept', ownerId);
         parts.footer.append(cancel, accept);
     }
 
     // After the wallet signs, the dialog is the receipt: what was signed, by whom, and the new tally.
-    function showReceipt(parts, proposal, ownerId, label, shared) {
-        const receipt = proposal.ownerApprovals?.[ownerId];
-        const progress = root.ProposalApprovalReview.progress(proposal, acceptedIds(proposal, currentConsentBindingHash(proposal)));
+    function showReceipt(parts, subject, ownerId, label, shared) {
+        const receipt = subject.ownerApprovals?.[ownerId];
+        const progress = root.ProposalApprovalReview.progress(subject, acceptedIds(subject));
         parts.heading.textContent = t('proposalApproval.acceptedAs', 'Accepted as {{owner}}', { owner: label(ownerId) });
         parts.dialog.setAttribute('data-approval-receipt', ownerId);
         parts.body.innerHTML = `<p data-approval-receipt-signer>${esc(t('proposalApproval.receipt.signed', 'Signed by {{signer}} on {{date}}.', {
             signer: root.LensCore.isBase58Pubkey(receipt?.actorId) ? root.LensCore.shortKey(receipt.actorId) : String(receipt?.actorId || ''),
-            date: format().formatDateTime(receipt?.acceptedAt)
+            date: format().formatDateTime(receipt?.decidedAt)
         }))}</p>
             <p data-approval-receipt-progress>${esc(t('proposalApproval.review.now', 'Now: {{progress}}', { progress: progressLine(progress) }))}</p>
             <p class="approval-review__verdict">${esc(progress.passed
-                ? t('proposalApproval.receipt.passed', 'The verified decisions meet this proposal’s configured approval rules.')
-                : t('proposalApproval.receipt.pending', 'Further decisions are needed to meet this proposal’s configured approval rules.'))}</p>
+                ? t('agreement.publish.receiptPassed', 'The verified decisions meet this agreement’s rule.')
+                : t('agreement.publish.receiptPending', 'Further decisions are needed to meet this agreement’s rule.'))}</p>
             <p class="approval-card__note" data-approval-receipt-shared="${shared?.shared ? 'yes' : 'no'}">${esc(sharedText(shared))}</p>`;
         parts.footer.replaceChildren(button('btn btn-primary', t('proposalApproval.done', 'Done'), close));
         parts.footer.querySelector('button').focus();
     }
 
-    root.solanaWalletManager.on('stateChanged', () => refreshAll());
-    root.ProposalApprovalPanel = { cardHtml, render, renderCards, refreshAll, openVerify, openReview, sync };
+    root.solanaWalletManager.on('stateChanged', () => renderCards());
+    root.ProposalApprovalPanel = { cardHtml, render, renderCards, refreshAll, openVerify, openReview, sync, setStatus };
 })();

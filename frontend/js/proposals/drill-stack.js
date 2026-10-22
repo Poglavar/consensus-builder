@@ -4,7 +4,7 @@
 (function (global) {
     'use strict';
 
-    const GROUND_AUTHORING_GOALS = ['reparcellization', 'decide-later'];
+    const GROUND_AUTHORING_GOALS = ['parcel-layout'];
 
     function isGroundAuthoring(proposal) {
         const goal = String(proposal?.goal ?? '').trim();

@@ -9,8 +9,7 @@ import dotenv from 'dotenv';
 import { createPool, isLocalDatabase } from '../db/connection.cjs';
 import { translateParcel, summarizeAudits, retainSourceQuantities, TRANSLATOR_VERSION, digest, REASONS } from '../gup-restatement/translate.js';
 import { serializeProposalRow } from '../proposals/serializer.js';
-import { createPlanStore } from '../plans/plan-store.js';
-import { memberHash, planHash, stableStringify } from '../plans/plan-hash.js';
+import { canonicalBytes } from '../cid.js';
 
 const root = fileURLToPath(new URL('../../', import.meta.url));
 const log = message => console.log(`[gup-restatement ${new Date().toISOString()}] ${message}`);
@@ -46,7 +45,7 @@ async function maybeJson(path) {
 
 export function verifyProposalReadBack(row, proposal) {
     const readBack = serializeProposalRow(row);
-    if (stableStringify(row.proposal_data) !== stableStringify(proposal) || !readBack.geometry?.buildings?.length) {
+    if (!canonicalBytes(row.proposal_data).equals(canonicalBytes(proposal)) || !readBack.geometry?.buildings?.length) {
         throw new Error(`Read-back differs for ${proposal.proposalId}`);
     }
     return readBack;
@@ -169,62 +168,10 @@ async function build(pool, options) {
     return manifest;
 }
 
-async function apply(pool, options) {
-    if (!isLocalDatabase()) throw new Error('Apply is restricted to the local database.');
-    log('Checking the completed export against current source inputs before local import.');
-    const manifest = await maybeJson(resolve(options.out, 'manifest.json'));
-    if (!manifest?.completed || manifest.version !== TRANSLATOR_VERSION) throw new Error('A complete compatible export is required.');
-    if (digest(await fingerprint(pool)) !== digest(manifest.inputs)) throw new Error('Current source no longer matches the export.');
-    const bundle = JSON.parse(await readFile(resolve(options.out, 'proposals.json'), 'utf8'));
-    if (!manifest.proposalBundleHash || digest(bundle) !== manifest.proposalBundleHash) throw new Error('Proposal bundle does not match the completed manifest.');
-    const { proposals } = bundle;
-    if (!proposals.length) { log('No representable proposals; flags remain in the export. Nothing written.'); return; }
-    log(`Importing ${proposals.length} native drafts with transactional read-back verification.`);
-    const client = await pool.connect();
-    try {
-        await client.query('BEGIN');
-        const ids = [];
-        let inserted = 0, existingCount = 0;
-        for (const proposal of proposals) {
-            const { rows } = await client.query(`INSERT INTO public.proposal
-                (proposal_id,city,name,title,description,author,type,lifecycle_status,cadastre_parcel_ids,building_proposal,bounds,proposal_data)
-                VALUES ($1,'zagreb',$2,$2,$3,$4,'building','draft',$5::jsonb,$6::jsonb,$7::jsonb,$8::jsonb)
-                ON CONFLICT (proposal_id) DO NOTHING RETURNING *`,
-            [proposal.proposalId, proposal.name, proposal.description, proposal.author, JSON.stringify(proposal.cadastreParcelIds),
-                JSON.stringify(proposal.buildingProposal), JSON.stringify(proposal.bounds), JSON.stringify(proposal)]);
-            if (rows.length) inserted++; else existingCount++;
-            const row = rows[0] || (await client.query('SELECT * FROM public.proposal WHERE proposal_id=$1', [proposal.proposalId])).rows[0];
-            verifyProposalReadBack(row, proposal);
-            ids.push(String(row.id));
-            if (ids.length % 250 === 0 || ids.length === proposals.length) log(`Verified ${ids.length}/${proposals.length} local draft records.`);
-        }
-        const store = createPlanStore(client);
-        const members = await store.members(ids);
-        const memberHashes = Object.fromEntries(members.map(row => [String(row.id), memberHash(row)]));
-        // Keep each native plan link under the existing route's 1800-character budget.
-        const chunks = [];
-        for (const id of ids) {
-            let chunk = chunks.at(-1);
-            if (!chunk || chunk.concat(id).join(',').length > 1600 || chunk.length >= 150) { chunk = []; chunks.push(chunk); }
-            chunk.push(id);
-        }
-        const plans = [];
-        for (let index = 0; index < chunks.length; index++) {
-            const proposalIds = chunks[index], slug = `gup25-${manifest.key.slice(0, 12)}-${index + 1}`;
-            const existing = await store.plan(slug);
-            if (existing && JSON.stringify(existing.proposal_ids) !== JSON.stringify(proposalIds)) throw new Error(`Plan collision ${slug}`);
-            if (!existing) await store.insert({ slug, proposalIds, title: `GUP 2025 · prostorni prijepis ${index + 1}/${chunks.length}`,
-                description: `${manifest.summary.represented} čestica prikazano; ${manifest.summary.skipped} preskočeno. Približne nadzemne omotnice; uvjeti nisu u cijelosti kodirani. Pregled zastavica: manifest.json i pages/*.ndjson.gz.`,
-                author: 'GUP 2025 · prostorni prijepis', place: 'Zagreb', city: 'zagreb', memberHashes: Object.fromEntries(proposalIds.map(id => [id, memberHashes[id]])),
-                planHash: planHash(proposalIds.map(id => ({ proposalId: members.find(row => String(row.id) === id).proposal_id, hash: memberHashes[id] }))),
-                supersedes: null, creatorIp: null, creatorFingerprint: null });
-            plans.push({ slug, path: `/proposals/${slug}`, proposals: proposalIds.length });
-        }
-        await client.query('COMMIT');
-        await jsonFile(resolve(options.out, 'local-plans.json'), { key: manifest.key, plans });
-        log(`Read back ${ids.length} native proposals in ${plans.length} local plans; inserted ${inserted}, verified existing ${existingCount}.`);
-    } catch (error) { await client.query('ROLLBACK'); throw error; }
-    finally { client.release(); }
+// The local import wrote proposal rows grouped into named plans; the design/agreement rework removed
+// both. Port it to scripts/lib/restatement-publish.mjs (designs + agreements) before running it.
+async function apply() {
+    throw new Error('The GUP import is not ported to the design/agreement rework: named plans and the proposal write path are gone. Publish through scripts/lib/restatement-publish.mjs (see gup-restatement/README.md).');
 }
 
 export async function main(args = process.argv.slice(2)) {

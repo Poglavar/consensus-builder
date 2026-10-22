@@ -1,7 +1,7 @@
 // The pure site → parcel binding rule shared by the browser preview and the server
 // (frontend/js/proposals/site-binding.js, PARCEL-OPTIONAL.md): linear intrusion, not area; a shared
 // edge never binds; tolerance is a parameter with default 0; coverage semantics; which records are
-// acts on parcels and so cannot have an empty binding.
+// about nothing (no site, no footprint of their own), since a design is never an act on parcels.
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { createRequire } from 'node:module';
 
@@ -15,7 +15,6 @@ const {
     bindingFromParcels,
     compareDeclaration,
     intrusionWidth,
-    isParcelAct,
     requiresParcels,
     siteOf
 } = siteBinding;
@@ -166,18 +165,18 @@ describe('coverage', () => {
     });
 });
 
-describe('which records act on parcels', () => {
+describe('which records need parcels', () => {
     const park = { goal: 'park', structureProposal: { kind: 'park', geometry: rect(0, 0, 10, 10) } };
 
-    it('requires parcels for offers, ownership transfers, votes, designations and merges', () => {
+    it('never asks a design with a site or a footprint for parcels, whatever its goal or kind', () => {
+        // The parcels a design touches are derived from its ground; only its agreement names parcels.
         const site = rect(0, 0, 10, 10);
-        expect(requiresParcels({ goal: 'ownership-transfer', site })).toBe(true);
-        expect(requiresParcels({ goal: 'Ownership-transfer-to-me', site })).toBe(true);
-        expect(requiresParcels({ proposalRole: 'owner-offer', goal: 'square', site })).toBe(true);
-        expect(requiresParcels({ ...park, kind: 'owner-vote' })).toBe(true);
-        expect(requiresParcels({ ...park, kind: 'community-vote' })).toBe(false);
-        expect(requiresParcels({ goal: 'decide-later', site })).toBe(true);
-        expect(requiresParcels({ goal: 'road-track', roadProposal: { definition: { polygon: site, centerline: [] } } })).toBe(true);
+        expect(requiresParcels({ goal: 'ownership-transfer', site })).toBe(false);
+        expect(requiresParcels({ goal: 'urban-rule', site })).toBe(false);
+        expect(requiresParcels({ proposalRole: 'owner-offer', goal: 'square', site })).toBe(false);
+        expect(requiresParcels({ ...park, kind: 'owner-vote' })).toBe(false);
+        // A road designation (a polygon and no centreline) is a footprint like any other.
+        expect(requiresParcels({ goal: 'road-track', roadProposal: { definition: { polygon: site, centerline: [] } } })).toBe(false);
     });
 
     it('lets material proposals stand on a site or their own geometry', () => {
@@ -186,17 +185,18 @@ describe('which records act on parcels', () => {
         // Drawn but not yet built (its land comes from preparation), and a flagged legacy record.
         expect(requiresParcels({ goal: 'road-track', roadProposal: { definition: { width: 8, points: [{ lat: 45.8, lng: 15.97 }, { lat: 45.801, lng: 15.97 }] } } })).toBe(false);
         expect(requiresParcels({ goal: 'road-track', roadProposal: { definition: { width: 8, points: [{ lat: 45.8, lng: 15.97 }, { lat: 45.801, lng: 15.97 }], constructionFrame: { kind: 'legacy-centreline' } } } })).toBe(false);
-        expect(isParcelAct({ goal: 'road-track', roadProposal: { definition: { polygon: rect(0, 0, 1, 1), points: [{ lat: 45.8, lng: 15.97 }, { lat: 45.801, lng: 15.97 }] } } })).toBe(false);
     });
 
-    it('requires parcels for a record that has no ground at all', () => {
+    it('requires parcels only for a record that has no ground at all', () => {
         expect(requiresParcels({ goal: 'park' })).toBe(true);
+        expect(requiresParcels({ goal: 'urban-rule', cadastreParcelIds: ['HR-1-A'] })).toBe(true);
+        expect(requiresParcels({ goal: 'ownership-transfer', site: { type: 'Point', coordinates: P(0, 0) } })).toBe(true);
         expect(requiresParcels(null)).toBe(true);
     });
 });
 
 describe('siteOf', () => {
-    it('prefers the authored site, then the footprint, then (parcel acts) the declared parcels', () => {
+    it('is the authored site, else the record\'s own footprint, and never a union of declared parcels', () => {
         const authored = rect(0, 0, 5, 5);
         expect(siteOf({ site: authored, structureProposal: { geometry: rect(50, 50, 60, 60) } })).toEqual({
             type: 'MultiPolygon', coordinates: [authored.coordinates]
@@ -204,10 +204,12 @@ describe('siteOf', () => {
         const fromFootprint = siteOf({ structureProposal: { geometry: rect(0, 0, 10, 10) } });
         expect(fromFootprint.type).toBe('MultiPolygon');
         expect(turf.area(fromFootprint)).toBeGreaterThan(99);
-        const act = siteOf({ goal: 'ownership-transfer', cadastreParcelIds: ['HR-1-A', 'HR-1-B'] }, { parcels: [A, B, { id: 'HR-1-C', geometry: rect(500, 0, 510, 10) }] });
-        expect(turf.area(act)).toBeGreaterThan(2390);
-        expect(turf.area(act)).toBeLessThan(2410);
-        expect(siteOf({ goal: 'park' }, { parcels: [A] })).toBeNull();
+        const designation = siteOf({ goal: 'road-track', roadProposal: { definition: { polygon: rect(0, 0, 10, 10), centerline: [] } } });
+        expect(designation.type).toBe('MultiPolygon');
+        expect(turf.area(designation)).toBeGreaterThan(99);
+        expect(turf.area(designation)).toBeLessThan(101);
+        expect(siteOf({ goal: 'ownership-transfer', cadastreParcelIds: ['HR-1-A', 'HR-1-B'] }, { parcels: [A, B] })).toBeNull();
+        expect(siteOf({ goal: 'park', cadastreParcelIds: ['HR-1-A'] }, { parcels: [A] })).toBeNull();
     });
 });
 

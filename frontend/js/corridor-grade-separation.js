@@ -45,7 +45,7 @@
             const key = typeof global.getProposalKey === 'function' ? global.getProposalKey(proposal) : null;
             if (key !== undefined && key !== null) return String(key);
         } catch (_) { }
-        const key = proposal?.proposalId ?? proposal?.id ?? proposal?.hash;
+        const key = proposal?.proposalId ?? proposal?.id;
         return key === undefined || key === null ? '' : String(key);
     }
 

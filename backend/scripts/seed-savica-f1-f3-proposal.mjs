@@ -9,7 +9,6 @@ import { dirname, resolve } from 'node:path';
 import { createPool, describeDatabase, isLocalDatabase } from '../db/connection.cjs';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { assertReconstructionGeoJSONRoundTrip } from '../proposals/reconstruction-geojson.js';
-import { canonicalSeedRecord } from './lib/canonical-seed-record.mjs';
 
 dotenv.config({ path: fileURLToPath(new URL('../.env', import.meta.url)), quiet: true });
 await import('../../frontend/js/building-density-stats.js');
@@ -37,16 +36,16 @@ const LABEL_PATTERNS = Object.freeze({
 });
 
 function usage() {
-    console.log(`Usage: node backend/scripts/seed-savica-f1-f3-proposal.mjs --dry-run|--apply [--export]
+    console.log(`Usage: node backend/scripts/seed-savica-f1-f3-proposal.mjs --dry-run|--export
 
-  --dry-run  Validate the built three-volume state without writing a row.
-  --apply    Upsert the proposal in the local Consensus Builder database.
-  --export   Write canonical proposal GeoJSON and observed context.`);
+  --dry-run  Validate the built three-volume state without writing a file.
+  --export   Write canonical proposal GeoJSON and observed context.
+Both read the local database. Publish the archives with backend/scripts/publish-restatement-archives.mjs.`);
 }
 
 function assertLocalDatabase() {
     if (!isLocalDatabase()) {
-        throw new Error(`Refusing to seed non-local database host ${describeDatabase().host || '(empty)'}.`);
+        throw new Error(`Refusing to read the reconstruction sources from non-local database host ${describeDatabase().host || '(empty)'}.`);
     }
 }
 
@@ -311,56 +310,6 @@ export async function constructSavicaProposal(pool) {
     return { proposal, stats, buildings, parcelFeature: built.parcelFeature, contextRows: built.allBuildings };
 }
 
-async function upsertProposal(pool, authored) {
-    // Same projection as the API write path; throws before writing if the row would be unreadable.
-    const proposal = canonicalSeedRecord(authored);
-    const result = await pool.query(`
-        INSERT INTO public.proposal (
-            proposal_id, city, name, title, description, author, type,
-            lifecycle_status, created_at, updated_at,
-            ancestor_parcel_ids, cadastre_parcel_ids,
-            building_proposal, bounds, proposal_data, applied
-        ) VALUES (
-            $1, $2, $3, $4, $5, $6, $7,
-            $8, $9, $9,
-            $10::jsonb, $11::jsonb,
-            $12::jsonb, $13::jsonb, $14::jsonb, false
-        )
-        ON CONFLICT (proposal_id) DO UPDATE SET
-            city = EXCLUDED.city,
-            name = EXCLUDED.name,
-            title = EXCLUDED.title,
-            description = EXCLUDED.description,
-            author = EXCLUDED.author,
-            type = EXCLUDED.type,
-            lifecycle_status = EXCLUDED.lifecycle_status,
-            updated_at = NOW(),
-            ancestor_parcel_ids = EXCLUDED.ancestor_parcel_ids,
-            cadastre_parcel_ids = EXCLUDED.cadastre_parcel_ids,
-            building_proposal = EXCLUDED.building_proposal,
-            bounds = EXCLUDED.bounds,
-            proposal_data = EXCLUDED.proposal_data,
-            applied = false
-        RETURNING id, proposal_id
-    `, [
-        proposal.proposalId,
-        proposal.city,
-        proposal.name,
-        proposal.title,
-        proposal.description,
-        proposal.author,
-        proposal.type,
-        proposal.lifecycleStatus,
-        proposal.createdAt,
-        null, // ancestor_parcel_ids is retired; cadastre_parcel_ids is the declaration
-        JSON.stringify(proposal.cadastreParcelIds),
-        JSON.stringify(proposal.buildingProposal),
-        JSON.stringify(proposal.bounds),
-        JSON.stringify(proposal)
-    ]);
-    return result.rows[0];
-}
-
 async function exportArtifacts(proposal, parcelFeature, contextRows) {
     // Keep authored interiors when exterior metadata is regenerated; changed footprints
     // require explicit registration review instead of silently discarding the models.
@@ -408,11 +357,11 @@ async function main() {
         usage();
         return;
     }
-    const allowed = new Set(['--dry-run', '--apply', '--export']);
+    const allowed = new Set(['--dry-run', '--export']);
     const unknown = args.filter(arg => !allowed.has(arg));
-    if (unknown.length || (args.includes('--dry-run') === args.includes('--apply'))) {
+    if (unknown.length || (args.includes('--dry-run') === args.includes('--export'))) {
         usage();
-        throw new Error('Choose exactly one of --dry-run or --apply.');
+        throw new Error('Choose exactly one of --dry-run or --export.');
     }
 
     assertLocalDatabase();
@@ -430,12 +379,7 @@ async function main() {
             displayHeightEquivalentAboveGroundGbpM2: Number(stats.aboveGroundGbpM2.toFixed(2)),
             displayHeightEquivalentKin: Number(stats.kin.toFixed(4))
         }, null, 2));
-        if (args.includes('--apply')) {
-            const stored = await upsertProposal(pool, proposal);
-            console.log(`Stored local proposal row ${stored.id} (${stored.proposal_id}).`);
-        } else {
-            console.log('Dry run complete; no database row was written.');
-        }
+        if (args.includes('--dry-run')) console.log('Dry run complete; no archive was written.');
         if (args.includes('--export')) await exportArtifacts(proposal, parcelFeature, contextRows);
     } finally {
         await pool.end();

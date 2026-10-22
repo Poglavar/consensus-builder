@@ -14,25 +14,42 @@ describe('judge demo model', () => {
             },
             prospective: { state: 'awaiting_evidence', marketUrl: 'https://explorer/market' }
         });
-        expect(demo).toMatchObject({ status: 'ready', marketState: 'awaiting_evidence' });
+        expect(demo).toMatchObject({ status: 'ready', marketState: 'awaiting_evidence', proofSummary: { pass: 9, warn: 0, fail: 0 } });
         expect(demo.steps).toContainEqual({ label: 'Prospective market · awaiting_evidence', url: 'https://explorer/market' });
     });
 
-    it('narrates the attested case and the lens member directory', () => {
+    it('narrates the agreement cases the manifest declares, then the lens member directory', () => {
         const demo = buildJudgeDemo({
-            manifest: { publicProof: { manifest: 'https://api.example/hackathon/proof.json', attestedCase: 'https://api.example/hackathon/cases/attested' } }
+            manifest: { publicProof: {
+                manifest: 'https://api.example/hackathon/proof.json',
+                canonicalCase: 'https://api.example/hackathon/cases/bafkreicanonical',
+                executedCase: 'https://api.example/hackathon/cases/bafkreiexecuted',
+                attestedCase: 'https://api.example/hackathon/cases/attested'
+            } }
         });
         const labels = demo.steps.map(step => step.label);
-        expect(labels.indexOf('Attested case (lens member attested ownership, owners signed)'))
-            .toBe(labels.indexOf('Executed case (market paid YES)') + 1);
-        expect(demo.steps).toContainEqual({ label: 'Attested case (lens member attested ownership, owners signed)', url: 'https://api.example/hackathon/cases/attested' });
+        expect(labels.slice(2, 6)).toEqual([
+            'Hackathon proof manifest', 'Canonical multi-parcel agreement',
+            'Executed agreement (lens attested, market paid YES)', 'Lens member directory (who may attest)'
+        ]);
+        expect(demo.steps[3].url).toBe('https://api.example/hackathon/cases/bafkreicanonical');
+        expect(demo.steps[4].url).toBe('https://api.example/hackathon/cases/bafkreiexecuted');
+        // The proposal-era attested case is gone: an attestation is the lens's decision on an agreement now.
+        expect(labels.some(label => /attested case/i.test(label))).toBe(false);
+        expect(demo.steps.map(step => step.url)).not.toContain('https://api.example/hackathon/cases/attested');
         expect(demo.steps).toContainEqual({ label: 'Lens member directory (who may attest)', url: 'https://api.example/lenses/members' });
         const named = buildJudgeDemo({ manifest: { publicProof: { manifest: 'https://api.example/p', lensMembers: 'https://x/lenses' } } });
         expect(named.steps.find(step => step.label.startsWith('Lens member directory')).url).toBe('https://x/lenses');
         expect(buildJudgeDemo({}).steps.find(step => step.label.startsWith('Lens member directory')).url).toBeNull();
+        // A manifest that declares no case leaves its step without a link rather than inventing one.
+        expect(named.steps.find(step => step.label === 'Canonical multi-parcel agreement').url).toBeNull();
     });
 
-    it('fails closed when proof is incomplete', () => {
+    it('fails closed when proof is incomplete or the prospective market is not visible', () => {
         expect(buildJudgeDemo({ audit: { status: 'incomplete' } }).status).toBe('incomplete');
+        const manifest = { hackathon: { branch: 'colosseum-worlds-fair' } };
+        expect(buildJudgeDemo({ audit: { status: 'verified' }, manifest, prospective: { state: 'unknown' } }).status).toBe('incomplete');
+        expect(buildJudgeDemo({ audit: { status: 'verified' }, manifest, prospective: { state: 'settled' } }).status).toBe('ready');
+        expect(buildJudgeDemo({}).proofSummary).toEqual({ pass: 0, warn: 0, fail: 1 });
     });
 });

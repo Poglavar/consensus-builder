@@ -1,8 +1,9 @@
 // Localnet suite for proposal_market's LMSR market (lmsr-market.md, "Test contract"): creation and
-// its seed, buy and sell with their slippage guards, late and insider trades, the position cap, both
-// resolution paths (proposal state, and MarketEvidence-v1 attestations including VOID on conflicting
-// evidence), claims on every outcome, the creator's reclaim, the vault invariant over a scripted
-// trade sequence, and the compute units of a buy and a sell.
+// its seed, buy and sell with their slippage guards, late and insider trades (the agreement's sponsor
+// and lens), the position cap, both resolution paths (the agreement account's status since M3:
+// Executed → YES, Cancelled → VOID, Expired → NO; and MarketEvidence-v1 attestations including VOID
+// on conflicting evidence), claims on every outcome, the creator's reclaim, the vault invariant over
+// a scripted trade sequence, and the compute units of a buy and a sell.
 
 import * as anchor from "@coral-xyz/anchor";
 import { Program } from "@coral-xyz/anchor";
@@ -18,23 +19,29 @@ import {
 } from "@solana/spl-token";
 import { expect } from "chai";
 import { createHash } from "crypto";
-import { airdrop, findProposalCounterPDA, findProposalPDA, initializeProposalCounter, NO_SITE } from "./helpers.ts";
+import { airdrop } from "./helpers.ts";
 import {
     LensMember,
     MARKET_EVIDENCE_SCHEMA,
-    attestAndAccept,
-    attestVerdict,
     attestationBytes,
     chainNow,
     createLensMember,
     credentialBytes,
-    ensureParcelAnchor,
     marketEvidencePayload,
     schemaBytes,
-    settleWithVerdict,
     waitForProgramsVisible,
     writeSasAccount,
 } from "./sas-mock.ts";
+import {
+    CreatedAgreement,
+    STATUS,
+    cancelAgreement,
+    createAgreement,
+    expireAgreement,
+    settleExecuted,
+    statusByte,
+    writeAgreementLookalike,
+} from "./agreement-helpers.ts";
 
 // The JavaScript reference module (frontend/js/bets/lmsr.js): every amount the program charges or
 // pays for a trade must equal its quote to the atomic unit.
@@ -60,34 +67,31 @@ describe("proposal_market LMSR", () => {
     anchor.setProvider(provider);
 
     const program = anchor.workspace.ProposalMarket as Program;
-    const proposalProgram = anchor.workspace.ProposalNft as Program;
-    const parcelProgram = anchor.workspace.ParcelNft as Program;
+    const agreementProgram = anchor.workspace.Agreement as Program;
 
     const payer = (provider.wallet as any).payer as Keypair;
 
     type Wallet = { keypair: Keypair; publicKey: PublicKey; tokenAccount: PublicKey };
 
-    let counterPDA: PublicKey;
     let stakeMint: PublicKey;
-    // The provider wallet: owner of every proposal below (an insider on their markets) and the
+    // The provider wallet: sponsor of every agreement below (an insider on their markets) and the
     // creator of every market.
     let creator: Wallet;
     let alice: Wallet;
     let bob: Wallet;
-    // The lens member every proposal lists; also the trusted attester of the recipe-bound markets.
+    // The lens every agreement names; also the trusted attester of the recipe-bound markets.
     let notary: LensMember;
     let notaryWallet: Wallet;
-    // A second lens member that is not the attester, for the bound recipe-market insider case.
+    // A lens member no agreement below names: an ordinary trader on every market here.
     let member: LensMember;
     let memberWallet: Wallet;
+    // The agreements below by address, for the steps that need their CID and sponsor.
+    const opened = new Map<string, CreatedAgreement>();
     let evidenceCredential: PublicKey;
     let evidenceSchema: PublicKey;
 
     before(async () => {
         await waitForProgramsVisible(provider.connection);
-        const [counter] = findProposalCounterPDA(proposalProgram.programId);
-        const existing = await proposalProgram.account.proposalCounter.fetchNullable(counter);
-        counterPDA = existing ? counter : await initializeProposalCounter(proposalProgram, payer);
 
         stakeMint = await createMint(provider.connection, payer, payer.publicKey, null, 6);
         creator = await fundWallet(payer, 10_000n * USDC);
@@ -119,40 +123,28 @@ describe("proposal_market LMSR", () => {
         return { keypair, publicKey: keypair.publicKey, tokenAccount: ata.address };
     }
 
-    async function mintProposal(parcelId: string, lens: PublicKey[] = [notary.publicKey]): Promise<PublicKey> {
-        await ensureParcelAnchor(parcelProgram, parcelId);
-        const counter = await proposalProgram.account.proposalCounter.fetch(counterPDA);
-        const [proposalPDA] = findProposalPDA(proposalProgram.programId, (counter.count as any).toNumber());
-        await proposalProgram.methods
-            .mintAndFund([parcelId], false, "ipfs://test-image", new anchor.BN(0), lens, false, NO_SITE, false)
-            .accounts({
-                proposal: proposalPDA,
-                proposalCounter: counterPDA,
-                owner: provider.wallet.publicKey,
-                systemProgram: SystemProgram.programId,
-            } as any)
-            .rpc();
-        return proposalPDA;
+    /** An Active agreement sponsored by the provider wallet (every market's creator), the notary its lens. */
+    async function openAgreement(deadline = 0): Promise<PublicKey> {
+        const created = await createAgreement(agreementProgram, { lens: notary.publicKey, deadline });
+        opened.set(created.agreement.toBase58(), created);
+        return created.agreement;
     }
 
-    /** The notary attests the provider wallet as sole owner of the only parcel and it accepts. */
-    async function executeProposal(proposal: PublicKey, parcelId: string) {
-        await attestAndAccept(proposalProgram, notary, { proposal, parcelId, owner: payer });
-        expect((await proposalProgram.account.proposal.fetch(proposal)).status).to.deep.equal({ executed: {} });
+    /** The notary's satisfied decision is recorded and the agreement executes. */
+    async function executeSubject(agreement: PublicKey) {
+        await settleExecuted(agreementProgram, notary, opened.get(agreement.toBase58())!);
+        expect(await statusByte(provider.connection, agreement)).to.equal(STATUS.executed);
     }
 
-    async function cancelProposal(proposal: PublicKey) {
-        await proposalProgram.methods
-            .cancelAndRefund()
-            .accounts({ proposal, owner: provider.wallet.publicKey } as any)
-            .rpc();
-        expect((await proposalProgram.account.proposal.fetch(proposal)).status).to.deep.equal({ cancelled: {} });
+    async function cancelSubject(agreement: PublicKey) {
+        await cancelAgreement(agreementProgram, agreement, payer);
+        expect(await statusByte(provider.connection, agreement)).to.equal(STATUS.cancelled);
     }
 
-    async function expireProposal(proposal: PublicKey) {
-        const verdict = await attestVerdict(provider, notary, { proposalAccount: proposal, verdict: "expired" });
-        await settleWithVerdict(proposalProgram, { proposal, verdict, credential: notary.credential });
-        expect((await proposalProgram.account.proposal.fetch(proposal)).status).to.deep.equal({ expired: {} });
+    /** Anyone expires an agreement whose deadline has passed. */
+    async function expireSubject(agreement: PublicKey) {
+        await expireAgreement(agreementProgram, agreement, payer.publicKey);
+        expect(await statusByte(provider.connection, agreement)).to.equal(STATUS.expired);
     }
 
     function marketPda(key: PublicKey | Buffer): PublicKey {
@@ -190,15 +182,15 @@ describe("proposal_market LMSR", () => {
 
     type MarketTerms = { b?: bigint; closesIn?: number; closesAt?: number; grace?: number; maxPosition?: bigint; wallet?: Wallet };
 
-    async function createProposalMarket(proposal: PublicKey, t: MarketTerms = {}): Promise<PublicKey> {
-        const market = marketPda(proposal);
+    async function createAgreementMarket(agreement: PublicKey, t: MarketTerms = {}): Promise<PublicKey> {
+        const market = marketPda(agreement);
         const wallet = t.wallet ?? creator;
         const closesAt = t.closesAt ?? (await chainNow(provider.connection)) + (t.closesIn ?? 3600);
         await program.methods
             .createLmsrMarket(bn(t.b ?? B), bn(closesAt), t.grace ?? 0, bn(t.maxPosition ?? 0n))
             .accountsStrict({
                 market,
-                proposal,
+                proposal: agreement,
                 stakeMint,
                 vault: vaultOf(market),
                 creatorTokenAccount: wallet.tokenAccount,
@@ -443,36 +435,36 @@ describe("proposal_market LMSR", () => {
     // ========================
 
     describe("create_lmsr_market", () => {
-        let proposal: PublicKey;
+        let agreement: PublicKey;
 
         before(async () => {
-            proposal = await mintProposal("HR-lmsr-create");
+            agreement = await openAgreement();
         });
 
         it("refuses a creator who cannot fund the seed, max_loss(b)", async () => {
             const poor = await fundWallet(Keypair.generate(), 1n * USDC);
-            await expectFailure(() => createProposalMarket(proposal, { wallet: poor }), "SeedTooSmall");
-            expect(await program.account.lmsrMarket.fetchNullable(marketPda(proposal))).to.be.null;
+            await expectFailure(() => createAgreementMarket(agreement, { wallet: poor }), "SeedTooSmall");
+            expect(await program.account.lmsrMarket.fetchNullable(marketPda(agreement))).to.be.null;
             expect(await balance(poor.tokenAccount)).to.equal(1n * USDC);
         });
 
         it("rejects zero liquidity and a close time that is not in the future", async () => {
-            await expectFailure(() => createProposalMarket(proposal, { b: 0n }), "ZeroLiquidity");
+            await expectFailure(() => createAgreementMarket(agreement, { b: 0n }), "ZeroLiquidity");
             const now = await chainNow(provider.connection);
-            await expectFailure(() => createProposalMarket(proposal, { closesAt: now - 1 }), "InvalidCloseTime");
-            expect(await program.account.lmsrMarket.fetchNullable(marketPda(proposal))).to.be.null;
+            await expectFailure(() => createAgreementMarket(agreement, { closesAt: now - 1 }), "InvalidCloseTime");
+            expect(await program.account.lmsrMarket.fetchNullable(marketPda(agreement))).to.be.null;
         });
 
         it("opens the market with the seed deposited and empty quantities", async () => {
             const before = await balance(creator.tokenAccount);
             const closesAt = (await chainNow(provider.connection)) + 3600;
-            const market = await createProposalMarket(proposal, { closesAt, grace: 600, maxPosition: 50n * USDC });
+            const market = await createAgreementMarket(agreement, { closesAt, grace: 600, maxPosition: 50n * USDC });
 
             const seed = BigInt(Lmsr.maxLoss(B));
             expect(seed).to.equal(69_314_720n);
             const m = await fetchMarket(market);
             expect(m.kind).to.equal(0);
-            expect(m.proposal.toBase58()).to.equal(proposal.toBase58());
+            expect(m.proposal.toBase58()).to.equal(agreement.toBase58());
             expect(m.creator.toBase58()).to.equal(creator.publicKey.toBase58());
             expect(m.stakeMint.toBase58()).to.equal(stakeMint.toBase58());
             expect(m.vault.toBase58()).to.equal(vaultOf(market).toBase58());
@@ -483,10 +475,13 @@ describe("proposal_market LMSR", () => {
             expect(before - (await balance(creator.tokenAccount))).to.equal(seed);
         });
 
-        it("rejects a proposal that is not Active", async () => {
-            const cancelled = await mintProposal("HR-lmsr-create-x");
-            await cancelProposal(cancelled);
-            await expectFailure(() => createProposalMarket(cancelled), "ProposalNotActive");
+        it("rejects an agreement that is not Active, and a subject that is not an agreement", async () => {
+            const cancelled = await openAgreement();
+            await cancelSubject(cancelled);
+            await expectFailure(() => createAgreementMarket(cancelled), "ProposalNotActive");
+            const lookalike = await writeAgreementLookalike(provider, { authority: creator.publicKey, lens: notary.publicKey });
+            await expectFailure(() => createAgreementMarket(lookalike), "InvalidProposalAccount");
+            expect(await program.account.lmsrMarket.fetchNullable(marketPda(lookalike))).to.be.null;
         });
     });
 
@@ -495,12 +490,10 @@ describe("proposal_market LMSR", () => {
     // ========================
 
     describe("buy and sell", () => {
-        let proposal: PublicKey;
         let market: PublicKey;
 
         before(async () => {
-            proposal = await mintProposal("HR-lmsr-trade");
-            market = await createProposalMarket(proposal);
+            market = await createAgreementMarket(await openAgreement());
         });
 
         it("buys at the reference quote under max_cost and records the shares", async () => {
@@ -559,7 +552,7 @@ describe("proposal_market LMSR", () => {
         let market: PublicKey;
 
         before(async () => {
-            market = await createProposalMarket(await mintProposal("HR-lmsr-cap"), { maxPosition: 10n * USDC });
+            market = await createAgreementMarket(await openAgreement(), { maxPosition: 10n * USDC });
         });
 
         it("caps each wallet's shares per side", async () => {
@@ -585,28 +578,30 @@ describe("proposal_market LMSR", () => {
     // ========================
 
     describe("insiders", () => {
-        it("bars the proposal owner and its lens members from a kind 0 market", async () => {
-            const market = await createProposalMarket(await mintProposal("HR-lmsr-ins0"));
+        it("bars the agreement's sponsor and its lens from a kind 0 market", async () => {
+            const market = await createAgreementMarket(await openAgreement());
             await expectFailure(() => sendBuy(market, creator, YES, 1n * USDC, 1n * USDC), "InsiderTrade");
             await expectFailure(() => sendBuy(market, notaryWallet, NO, 1n * USDC, 1n * USDC), "InsiderTrade");
             await buy(market, alice, YES, 1n * USDC);
+            // A lens member the agreement does not name is an ordinary trader.
+            await buy(market, memberWallet, NO, 1n * USDC);
         });
 
         it("bars the trusted attester of an unbound kind 1 market, and only the attester", async () => {
             const market = await createRecipeMarket(recipe("ins-unbound"));
             expect((await fetchMarket(market)).proposal.toBase58()).to.equal(PublicKey.default.toBase58());
             await expectFailure(() => sendBuy(market, notaryWallet, YES, 1n * USDC, 1n * USDC), "InsiderTrade");
-            // No proposal is bound, so its owner is just another trader here.
+            // No agreement is bound, so its sponsor is just another trader here.
             await buy(market, creator, YES, 1n * USDC);
         });
 
-        it("bars the bound proposal's owner, every lens member and the attester of a kind 1 market", async () => {
-            const bound = await mintProposal("HR-lmsr-ins1", [notary.publicKey, member.publicKey]);
+        it("bars the bound agreement's sponsor and its lens, the attester, from a kind 1 market", async () => {
+            const bound = await openAgreement();
             const market = await createRecipeMarket(recipe("ins-bound"), { bound });
             expect((await fetchMarket(market)).proposal.toBase58()).to.equal(bound.toBase58());
             await expectFailure(() => sendBuy(market, creator, YES, 1n * USDC, 1n * USDC), "InsiderTrade");
-            await expectFailure(() => sendBuy(market, memberWallet, NO, 1n * USDC, 1n * USDC), "InsiderTrade");
             await expectFailure(() => sendBuy(market, notaryWallet, NO, 1n * USDC, 1n * USDC), "InsiderTrade");
+            await buy(market, memberWallet, NO, 1n * USDC);
             await buy(market, bob, NO, 1n * USDC);
         });
     });
@@ -617,7 +612,7 @@ describe("proposal_market LMSR", () => {
 
     describe("vault invariant", () => {
         it("keeps vault ≥ max(q_yes, q_no) and a VOID payable after every trade of two traders", async () => {
-            const market = await createProposalMarket(await mintProposal("HR-lmsr-vault"), { b: 50n * USDC });
+            const market = await createAgreementMarket(await openAgreement(), { b: 50n * USDC });
             const script: [Wallet, "buy" | "sell", number, bigint][] = [
                 [alice, "buy", YES, 30n * USDC],
                 [bob, "buy", NO, 20n * USDC],
@@ -658,7 +653,7 @@ describe("proposal_market LMSR", () => {
         });
 
         it("never returns more on a sale than the same shares just cost", async () => {
-            const market = await createProposalMarket(await mintProposal("HR-lmsr-trip"));
+            const market = await createAgreementMarket(await openAgreement());
             await buy(market, alice, YES, 30n * USDC);
             for (const shares of [1n, 7n, 1n * USDC, 25n * USDC]) {
                 const { cost } = await buy(market, bob, NO, shares);
@@ -674,18 +669,17 @@ describe("proposal_market LMSR", () => {
     // ========================
 
     describe("kind 0: Executed → YES", () => {
-        const parcelId = "HR-lmsr-exec";
-        let proposal: PublicKey;
+        let agreement: PublicKey;
         let market: PublicKey;
 
         before(async () => {
-            proposal = await mintProposal(parcelId);
-            market = await createProposalMarket(proposal);
+            agreement = await openAgreement();
+            market = await createAgreementMarket(agreement);
             await buy(market, alice, YES, 20n * USDC);
             await buy(market, bob, NO, 30n * USDC);
         });
 
-        it("refuses to resolve an Active proposal before the deadline plus grace", async () => {
+        it("refuses to resolve an Active agreement before the deadline plus grace", async () => {
             await expectFailure(() => resolve(market), "GraceNotElapsed");
             expect((await fetchMarket(market)).resolved).to.be.false;
         });
@@ -694,13 +688,13 @@ describe("proposal_market LMSR", () => {
             await expectFailure(() => reclaim(market), "MarketNotResolved");
         });
 
-        it("stops trading once the proposal is no longer Active", async () => {
-            await executeProposal(proposal, parcelId);
+        it("stops trading once the agreement is no longer Active", async () => {
+            await executeSubject(agreement);
             await expectFailure(() => sendBuy(market, alice, YES, 1n * USDC, 1n * USDC), "ProposalNotActive");
             await expectFailure(() => sendSell(market, bob, NO, 1n * USDC, 0n), "ProposalNotActive");
         });
 
-        it("resolves YES once the proposal is executed, and trading stays closed", async () => {
+        it("resolves YES once the agreement is executed, and trading stays closed", async () => {
             await resolve(market);
             const m = await fetchMarket(market);
             expect([m.resolved, m.outcome]).to.deep.equal([true, YES]);
@@ -727,18 +721,17 @@ describe("proposal_market LMSR", () => {
     });
 
     describe("kind 0: Cancelled → VOID", () => {
-        let proposal: PublicKey;
         let market: PublicKey;
 
         before(async () => {
-            proposal = await mintProposal("HR-lmsr-cancel");
-            market = await createProposalMarket(proposal);
+            const agreement = await openAgreement();
+            market = await createAgreementMarket(agreement);
             await buy(market, alice, YES, 21n * USDC + 1n);
             await buy(market, bob, NO, 10n * USDC);
-            await cancelProposal(proposal);
+            await cancelSubject(agreement);
         });
 
-        it("voids the market when the proposal is cancelled", async () => {
+        it("voids the market when the agreement is cancelled", async () => {
             await resolve(market);
             const m = await fetchMarket(market);
             expect([m.resolved, m.outcome]).to.deep.equal([true, VOID]);
@@ -758,14 +751,23 @@ describe("proposal_market LMSR", () => {
     });
 
     describe("kind 0: Expired → NO", () => {
+        let agreement: PublicKey;
         let market: PublicKey;
+        let deadline: number;
 
         before(async () => {
-            const proposal = await mintProposal("HR-lmsr-expire");
-            market = await createProposalMarket(proposal);
+            deadline = (await chainNow(provider.connection)) + 15;
+            agreement = await openAgreement(deadline);
+            market = await createAgreementMarket(agreement);
             await buy(market, alice, YES, 5n * USDC);
             await buy(market, bob, NO, 8n * USDC);
-            await expireProposal(proposal);
+        });
+
+        it("does not settle on a passed agreement deadline alone; trading stops once anyone expires the agreement", async () => {
+            await waitForChainTime(deadline + 1);
+            await expectFailure(() => resolve(market), "GraceNotElapsed");
+            await expireSubject(agreement);
+            await expectFailure(() => sendBuy(market, alice, YES, 1n * USDC, 1n * USDC), "ProposalNotActive");
         });
 
         it("resolves NO and pays the NO side", async () => {
@@ -785,9 +787,9 @@ describe("proposal_market LMSR", () => {
         const grace = 6;
 
         before(async () => {
-            const proposal = await mintProposal("HR-lmsr-late");
+            const agreement = await openAgreement();
             closesAt = (await chainNow(provider.connection)) + 10;
-            market = await createProposalMarket(proposal, { closesAt, grace });
+            market = await createAgreementMarket(agreement, { closesAt, grace });
             await buy(market, alice, NO, 3n * USDC);
             await buy(market, bob, YES, 1n * USDC);
         });
@@ -798,7 +800,7 @@ describe("proposal_market LMSR", () => {
             await expectFailure(() => sendSell(market, alice, NO, 1n * USDC, 0n), "MarketClosed");
         });
 
-        it("settles NO for an Active proposal only after the deadline plus grace", async () => {
+        it("settles NO for an Active agreement only after the deadline plus grace", async () => {
             // Only while the grace end is safely ahead, so the transaction cannot land after it.
             if ((await chainNow(provider.connection)) + 2 < closesAt + grace) {
                 await expectFailure(() => resolve(market), "GraceNotElapsed");
@@ -833,8 +835,10 @@ describe("proposal_market LMSR", () => {
             expect(await balance(m.vault)).to.equal(BigInt(Lmsr.maxLoss(B)));
         });
 
-        it("rejects a bound proposal whose lens does not hold the attester", async () => {
-            const bound = await mintProposal("HR-lmsr-lens");
+        it("rejects a bound agreement whose lens is not the attester, and a bound account that is not an agreement", async () => {
+            const lookalike = await writeAgreementLookalike(provider, { authority: creator.publicKey, lens: notary.publicKey });
+            await expectFailure(() => createRecipeMarket(recipe("not-agreement"), { bound: lookalike }), "InvalidProposalAccount");
+            const bound = await openAgreement();
             await expectFailure(
                 () => createRecipeMarket(recipe("outside"), { bound, attester: Keypair.generate().publicKey }),
                 "AttesterNotInProposalLens"

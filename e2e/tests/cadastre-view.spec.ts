@@ -57,7 +57,4 @@ test('consumed ground remains reachable through proposal breadcrumbs and the cad
   for (const key of ['declaredRights', 'geometry', 'site', 'binding']) {
     expect(after[key]).toEqual(proposal[key]);
   }
-  // Reading owner state may materialize the current roster; it must not manufacture consent.
-  expect(after.acceptedParcelIds || []).toEqual([]);
-  expect(Object.values(after.ownerAcceptances || {}).every((entry: any) => !(entry.acceptedOwnerKeys || []).length)).toBe(true);
 });

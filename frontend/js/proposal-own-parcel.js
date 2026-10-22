@@ -1,6 +1,6 @@
 // Which parcel does a proposal itself become? A road is one corridor parcel however many parcels it
 // crosses (the rest of its children are the remainders it cut off), a merge is one merged parcel —
-// while a reparcellization is many, none of which is "the proposal's own". Selecting a proposal
+// while a parcel layout is many, none of which is "the proposal's own". Selecting a proposal
 // opens that parcel's info alongside the proposal, so pure lookup logic lives here, testable
 // without a map. Consumed by proposals/layer-render.js.
 
@@ -46,7 +46,7 @@
                 return String(properties.parcelId ?? properties.parcel_id ?? properties.id);
             }
         }
-        // Several children and none is a corridor: a reparcellization is its slices, not one parcel.
+        // Several children and none is a corridor: a parcel layout is its plots, not one parcel.
         return null;
     }
 

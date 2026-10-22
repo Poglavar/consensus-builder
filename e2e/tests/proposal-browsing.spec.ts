@@ -1,66 +1,17 @@
 import { selectNativeOption } from '../helpers/controls';
 import { test, expect } from '../helpers/fixtures';
-import { clickMapPoint, openCity, PARCEL_GEOMETRY, PARCEL_ID, proposalState, showProposal } from '../helpers/runtime';
-import { connectWalletByConnectorId, injectMockSolanaWallet, waitForBlockchainRuntime } from '../helpers/blockchain';
-import { installSolanaProposalAccount } from '../helpers/solana-proposal-account';
+import { clickMapPoint, openCity, openParcel, PARCEL_GEOMETRY, PARCEL_ID, proposalState, showProposal, expandStackSection, runParcelCommand, stackCommand, stackSection } from '../helpers/runtime';
 
 const SOLANA_WALLET = '7xKXtg2CWYcy6EH8d9xvPht4JyhV46Lxgq6vN6hS9wZT';
-const PROPOSAL_ACCOUNT = '3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg';
-const PROPOSAL_PROGRAM = '3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg';
-
-async function chooseInMemoryProposal(page: import('@playwright/test').Page): Promise<void> {
-  const confirm = page.locator('.cb-dialog-overlay--confirm');
-  await expect(confirm).toContainText('Proceed to create an in-memory proposal?');
-  const inMemoryButton = confirm.getByRole('button', { name: 'Create in memory', exact: true });
-  if (await inMemoryButton.count()) await inMemoryButton.click();
-  else await confirm.getByRole('button', { name: 'Create', exact: true }).click();
-}
-
-async function installMarketRpcFixture(page: import('@playwright/test').Page): Promise<void> {
-  await page.evaluate(({ proposal, wallet }) => {
-    const w = window as any;
-    const client = w.SolanaMarketClient;
-    const web3 = w.solanaWeb3;
-    const proposalKey = new web3.PublicKey(proposal);
-    const [marketPda] = client.getMarketPda(proposalKey);
-    const marketBytes = new Uint8Array(client.MARKET_SIZE);
-    let offset = 0;
-    const put = (bytes: Uint8Array) => { marketBytes.set(bytes, offset); offset += bytes.length; };
-    // Anchor discriminator for the real proposal_market::Market account layout.
-    put(Uint8Array.from([219, 190, 213, 55, 0, 227, 198, 154]));
-    put(proposalKey.toBytes()); put(new web3.PublicKey('4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU').toBytes()); put(new Uint8Array(32));
-    put(new Uint8Array(18));
-    const marketAddress = marketPda.toBase58();
-    const connection = {
-      getAccountInfo: async (key: any) => key.toBase58() === marketAddress ? { data: marketBytes, owner: new web3.PublicKey(client.constants.PROGRAM_ID) } : null,
-      getBalance: async () => 2_000_000_000,
-      getTokenAccountBalance: async () => ({ value: { amount: '50000000', decimals: 6 } }),
-      getLatestBlockhash: async () => ({ blockhash: 'EkSnNWid2cvwEVnVx9aBqpiCpY1QoUW63D2Hp31e4gwJ', lastValidBlockHeight: 99 }),
-      simulateTransaction: async (_tx: unknown, config?: unknown) => {
-        // Mirrors web3.js 1.x: a legacy Transaction takes signers here, never a config object.
-        if (config !== undefined && !Array.isArray(config)) throw new Error('Invalid arguments');
-        return { value: { err: null, logs: [] } };
-      },
-      sendRawTransaction: async () => '5N2o4X1mockSignature',
-      confirmTransaction: async () => ({ value: { err: null } }),
-    };
-    const provider = w.solanaWalletManager?.getProvider?.();
-    if (!provider) throw new Error('Connected Solana provider is unavailable');
-    provider.signTransaction = async (transaction: any) => { transaction.serialize = () => new Uint8Array([1, 2, 3]); return transaction; };
-    w.SolanaChainDataLoader.getConnection = () => connection;
-  }, { proposal: PROPOSAL_ACCOUNT, wallet: SOLANA_WALLET });
-  await installSolanaProposalAccount(page, { proposal: PROPOSAL_ACCOUNT, owner: SOLANA_WALLET });
-}
+const ANCHOR_ACCOUNT = '3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg';
+const AGREEMENT_ACCOUNT = 'Ekpt4qMsJWyyraDfPfq2zkT1JwMsJCKrSmkoNGgHreFR';
+const LENS_MEMBER = 'GmaDrppBC7P5ARKV8g3djiwP89vz1jLK23V2GBjuAEGB';
+const ATTESTATION = 'F25s3DdjXdCxYBhh2z8FBusVEMT4b9bGNFVKJi3wFoF4';
+const AGREEMENT_CID = `bafkrei${'a'.repeat(52)}`;
 
 async function expandProposalDetails(page: import('@playwright/test').Page): Promise<void> {
   const expand = page.locator('#proposal-details-panel').getByRole('button', { name: 'Expand', exact: true });
   if (await expand.isVisible()) await expand.click();
-}
-
-async function openProposalSection(page: import('@playwright/test').Page, section: 'verification'): Promise<void> {
-  const details = page.locator(`#proposal-details-panel details[data-proposal-section="${section}"]`);
-  await details.locator(':scope > summary').click();
-  await expect(details).toHaveJSProperty('open', true);
 }
 
 test.describe('Proposal browsing @features', () => {
@@ -97,10 +48,8 @@ test.describe('Proposal browsing @features', () => {
     await expect(list.locator('.proposal-list-item').first().locator('.proposal-list-title')).toHaveText('North park plan');
     await expect(list.locator('.proposal-list-item').last().locator('.proposal-list-title')).toHaveText('South park plan');
 
-    await list.locator('.proposal-source-btn[data-source="blockchain"]').click();
-    await expect(list.locator('.proposal-source-btn[data-source="blockchain"]')).toHaveAttribute('aria-pressed', 'true');
-    await list.locator('.proposal-source-btn[data-source="local"]').click();
-    await expect(list.locator('.proposal-list-item')).toHaveCount(2);
+    // Designs come from this device or from the server's index; none are read from a chain (M3).
+    await expect(list.locator('.proposal-source-btn')).toHaveCount(2);
     await list.locator('.proposal-source-btn[data-source="server"]').click();
     await expect(list.locator('.proposal-source-btn[data-source="server"]')).toHaveAttribute('aria-pressed', 'true');
     // Restore local source before deleting; deletion is offered only for locally held records.
@@ -116,79 +65,83 @@ test.describe('Proposal browsing @features', () => {
     await expect(list.locator('.proposal-list-item')).toHaveCount(2);
   });
 
-  test('proposal details fork into editable terms while retaining the source, and share can export JSON', async ({ mockApi: page }) => {
+  test('Fork design on the details opens an editable copy that saves as a new design and leaves the source as it was', async ({ mockApi: page }) => {
     await openCity(page);
     await page.locator('#username-display').click();
     await page.locator('#username-input').fill('Fork author');
     await page.locator('#welcome-submit-btn').click();
     const sourceId = await page.evaluate(({ parcelId, geometry }) => (window as any).proposalStorage.addProposal({
-      title: 'Original park terms', goal: 'park', author: 'Ada', lifecycleStatus: 'Active', kind: 'owner-deal', termsConfirmed: true, offer: 100, cadastreParcelIds: [parcelId],
+      title: 'Original park', goal: 'park', author: 'Ada', lifecycleStatus: 'Active', cadastreParcelIds: [parcelId],
       geometry, structureProposal: { kind: 'park', geometry, applied: true },
     }), { parcelId: PARCEL_ID, geometry: PARCEL_GEOMETRY });
+    const sourceBefore = await proposalState(page, sourceId);
     await showProposal(page, sourceId);
     await expandProposalDetails(page);
 
     await page.locator('.btn-counterpropose-proposal').click();
     const createDialog = page.locator('.create-proposal-modal:visible');
     await expect(createDialog).toBeVisible();
-    await expect(createDialog.locator('#proposalName')).toHaveValue('Original park terms');
-    await expect.poll(async () => (await proposalState(page, sourceId)).title).toBe('Original park terms');
-    await createDialog.locator('#proposalName').fill('Counterproposal with revised terms');
-    await createDialog.locator('#proposalDescription').fill('Revised proposal terms for the same parcel.');
+    await expect(createDialog.locator('#proposalName')).toHaveValue('Original park');
+    await createDialog.locator('#proposalName').fill('Counterproposal park');
+    await createDialog.locator('#proposalDescription').fill('A revised park for the same parcel.');
     await createDialog.locator('input[name="proposalLandUse"][value="park"]').check();
     await createDialog.locator('#createProposalSubmitButton').click();
     await expect(createDialog).toBeHidden({ timeout: 10000 });
-    await expect.poll(() => page.evaluate(() => (window as any).proposalStorage.getAllProposals()
-      .some((proposal: any) => proposal.title === 'Counterproposal with revised terms' && Number(proposal.offer) === 100))).toBe(true);
-    expect((await proposalState(page, sourceId)).title).toBe('Original park terms');
-
-    await showProposal(page, sourceId);
-    await page.locator('.btn-share-proposal').click();
-    const shareDialog = page.locator('.share-modal-overlay');
-    await expect(shareDialog).toBeVisible();
-    const downloadPromise = page.waitForEvent('download');
-    await shareDialog.getByRole('button', { name: 'Download', exact: true }).click();
-    const download = await downloadPromise;
-    expect(download.suggestedFilename()).toMatch(/\.json$/);
-    await expect.poll(async () => (await proposalState(page, sourceId)).title).toBe('Original park terms');
+    await expect.poll(() => page.evaluate(id => (window as any).proposalStorage.getAllProposals()
+      .filter((proposal: any) => proposal.title === 'Counterproposal park' && proposal.proposalId !== id
+        && proposal.description === 'A revised park for the same parcel.').length, sourceId)).toBe(1);
+    const source = await proposalState(page, sourceId);
+    expect(source.title).toBe('Original park');
+    expect(source.description).toBe(sourceBefore.description);
   });
 
-  test('minted proposal parcel history loads an ownership and consent timeline from the visible history row', async ({ mockApi: page }) => {
+  test('a parcel\'s History row loads the agreements over it, its ownership attestations and the executed agreement', async ({ mockApi: page }) => {
     await page.route(`**/parcels/${encodeURIComponent(PARCEL_ID)}/history`, route => route.fulfill({
       status: 200, contentType: 'application/json',
       body: JSON.stringify({
         parcelUid: PARCEL_ID,
-        anchor: { account: PROPOSAL_ACCOUNT, exists: null, source: 'unavailable' },
+        anchor: { account: ANCHOR_ACCOUNT, exists: null, source: 'unavailable' },
         events: [
-          { type: 'proposal_created', at: '2026-08-10T08:00:00Z', title: 'Parcel history proposal' },
-          { type: 'proposal_chain_observed', at: '2026-08-10T08:06:00Z', proposalId: 'proposal-42',
-            link: `https://explorer.solana.com/address/${PROPOSAL_ACCOUNT}?cluster=devnet` },
-          { type: 'proposal_acceptance', at: '2026-08-11T09:00:00Z', proposalId: 'proposal-42', owner: SOLANA_WALLET },
+          { type: 'agreement_published', at: '2026-08-10T08:00:00Z', agreementCid: AGREEMENT_CID, title: 'Block 1234 readjustment',
+            link: `/agreements/${AGREEMENT_CID}` },
+          { type: 'parcel_ownership', at: '2026-08-10T08:06:00Z', attestation: ATTESTATION, member: LENS_MEMBER, owner: SOLANA_WALLET,
+            ownerCount: 1, hash: `sha256:${'ab'.repeat(32)}`, link: `https://explorer.solana.com/address/${ATTESTATION}?cluster=devnet` },
+          { type: 'agreement_executed', at: '2026-08-11T09:00:00Z', outcome: 'executed', agreementCid: AGREEMENT_CID, account: AGREEMENT_ACCOUNT,
+            lens: LENS_MEMBER, transaction: 'tx-executed', link: 'https://explorer.solana.com/tx/tx-executed?cluster=devnet' },
         ],
       }),
     }));
-    await injectMockSolanaWallet(page, { publicKey: SOLANA_WALLET, providerName: 'phantom' });
     await openCity(page);
-    await connectWalletByConnectorId(page, 'solana-phantom');
-    await waitForBlockchainRuntime(page, ['SolanaMarketClient', 'SolanaMarketBridge', 'SolanaChainDataLoader', 'solanaWeb3']);
-    await installMarketRpcFixture(page);
-    const proposalId = await page.evaluate((data) => (window as any).proposalStorage.addProposal({
-      title: 'Parcel history proposal', goal: 'park', lifecycleStatus: 'Active', cadastreParcelIds: [data.parcelId],
-      isMinted: true, nft: { chain: 'solana-devnet', contract: data.program, tokenId: data.account },
-    }), { parcelId: PARCEL_ID, program: PROPOSAL_PROGRAM, account: PROPOSAL_ACCOUNT });
-    await showProposal(page, proposalId);
-    await expandProposalDetails(page);
-    await openProposalSection(page, 'verification');
-
-    const history = page.locator('.proposal-parcel-history-card');
+    await openParcel(page);
+    // The parcel's Info tab ends with its History, read when the row is opened.
+    const history = page.locator(`#parcel-history-section details[data-parcel-history="${PARCEL_ID}"]`);
     await expect(history).toBeVisible();
-    await history.locator(`[data-parcel-history="${PARCEL_ID}"] summary`).click();
-    const observation = history.locator('[data-history-type="proposal_chain_observed"]');
-    await expect(observation).toContainText('Proposal observed on Solana devnet');
-    await expect(observation).toContainText('this is not the mint time');
-    await expect(observation.locator('time')).toHaveAttribute('datetime', '2026-08-10T08:06:00Z');
-    await expect(observation.getByRole('link', { name: 'View' })).toHaveAttribute('href', /\/address\/.+cluster=devnet/);
-    await expect(history.locator('[data-history-type="proposal_acceptance"]')).toContainText('Owner said yes');
+    await history.locator('summary').click();
+    const events = history.locator('.parcel-history-event');
+    await expect(events).toHaveCount(3);
+    expect(await events.evaluateAll(items => items.map(item => item.getAttribute('data-history-type'))))
+      .toEqual(['agreement_published', 'parcel_ownership', 'agreement_executed']);
+    // The agreement proposed over the parcel, named by its title and CID, its link resolved on the API.
+    const published = history.locator('[data-history-type="agreement_published"]');
+    await expect(published).toContainText('Agreement proposed');
+    await expect(published).toContainText('Block 1234 readjustment');
+    await expect(published).toContainText(`Agreement ${AGREEMENT_CID.slice(0, 4)}…${AGREEMENT_CID.slice(-4)}`);
+    await expect(published.locator('time')).toHaveAttribute('datetime', '2026-08-10T08:00:00Z');
+    const backend = await page.evaluate(() => String((window as any).getBackendBase()).replace(/\/+$/, ''));
+    await expect(published.getByRole('link', { name: 'View' })).toHaveAttribute('href', `${backend}/agreements/${AGREEMENT_CID}`);
+    // The lens member's ownership attestation: who attested whom, and its account hash.
+    const ownership = history.locator('[data-history-type="parcel_ownership"]');
+    await expect(ownership).toContainText('Ownership attested');
+    await expect(ownership).toContainText(`Member ${LENS_MEMBER.slice(0, 4)}…${LENS_MEMBER.slice(-4)}`);
+    await expect(ownership).toContainText(`Owner ${SOLANA_WALLET.slice(0, 4)}…${SOLANA_WALLET.slice(-4)}`);
+    await expect(ownership).toContainText('1 attested owner(s)');
+    await expect(ownership.locator('.parcel-history-hash')).toHaveAttribute('title', `sha256:${'ab'.repeat(32)}`);
+    await expect(ownership.getByRole('link', { name: 'View' })).toHaveAttribute('href', /\/address\/.+cluster=devnet/);
+    // The executed agreement names the lens that attested its decision and links its transaction.
+    const executed = history.locator('[data-history-type="agreement_executed"]');
+    await expect(executed).toContainText('Agreement executed');
+    await expect(executed).toContainText(`Lens: ${LENS_MEMBER.slice(0, 4)}…${LENS_MEMBER.slice(-4)}`);
+    await expect(executed.getByRole('link', { name: 'View' })).toHaveAttribute('href', 'https://explorer.solana.com/tx/tx-executed?cluster=devnet');
     await expect(history.locator('.parcel-history-anchor')).toContainText('Parcel anchor status unavailable');
     await expect(history.locator('.parcel-history-anchor')).not.toContainText('No parcel anchor found');
   });
@@ -203,16 +156,21 @@ test.describe('Proposal browsing @features', () => {
     }, { parcelId: PARCEL_ID, geometry: PARCEL_GEOMETRY });
     await clickMapPoint(page, 15.9822, 45.80025);
 
-    const stack = page.locator('#drill-stack-panel');
-    await expect(stack.locator('.drill-stack-compare')).toBeVisible();
-    await stack.locator('.drill-stack-compare').click();
+    // The click stack lists both designs; the cadastral parcel's section offers the comparison.
+    await expect(stackSection(page, 'designs').locator('.click-stack__row-title')).toHaveText('Designs (2)');
+    await expandStackSection(page, 'parcels');
+    const compare = stackCommand(page, 'parcel.compare');
+    await expect(compare).toBeVisible();
+    await compare.click();
     const comparison = page.locator('#parcel-compare-dialog');
     await expect(comparison).toBeVisible();
+    // The comparison is a modal of its own: the stack steps aside.
+    await expect(page.locator('#click-stack')).toBeHidden();
     await expect(comparison).toContainText('Compare park plan');
     await expect(comparison).toContainText('Compare square plan');
     await comparison.getByRole('button', { name: 'Close', exact: true }).click();
     await expect(comparison).toBeHidden();
-    await stack.locator('.drill-stack-compare').click();
+    await runParcelCommand(page, 15.9822, 45.80025, 'parcel.compare');
     await expect(comparison).toBeVisible();
     const selectedId = await comparison.locator('.parcel-compare__picker--a select').inputValue();
     await comparison.locator('.parcel-compare__picker--a .parcel-compare__details').click();

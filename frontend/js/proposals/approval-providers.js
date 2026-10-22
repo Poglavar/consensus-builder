@@ -1,5 +1,8 @@
 // Pluggable rights imports and trusted-runtime authority resolvers. Uploaded JSON never installs
 // an authority resolver; providers verify their evidence before returning it to the consent layer.
+// Authorities act on an agreement: the agreement-like object ProposalApproval's decision functions
+// take ({ agreementCid, cadastreParcelIds, approvalConfig, lens, ownerApprovals? }), passed to each
+// provider as `agreement`.
 (function (root) {
     'use strict';
     const sources = new Map();
@@ -25,6 +28,8 @@
         if (typeof input !== 'string' || new TextEncoder().encode(input).length > 1024 * 1024) throw new Error('Upload a JSON rights file no larger than 1 MB.');
         return JSON.parse(input);
     } });
+    // M2: the browser flow (the agreement panel) passes { ...AgreementRecord.approvalSubject(agreement),
+    // agreementCid: the published CID, ownerApprovals, ownerApprovalHistory } as `agreement`.
     const authorityApi = {
         register(id, provider) {
             if (!id || authorities.has(id) || !['authorize', 'signDecision', 'verifyReceipt'].every(key => typeof provider?.[key] === 'function')) {
@@ -35,28 +40,29 @@
         },
         // A provider authenticates its own signer for the current profile (the profile itself, or a
         // wallet it controls); the evidence names that signer, and the receipt records it.
-        resolve(proposal, ownerId, actor) {
+        resolve(agreement, ownerId, actor) {
             if (!actor?.id) return null;
-            const contextHash = root.ProposalApproval.contextHash(proposal);
+            const contextHash = root.ProposalApproval.contextHash(agreement);
             for (const [providerId, provider] of authorities) {
-                const evidence = provider.authorize({ proposal, ownerId, actor, contextHash });
+                const evidence = provider.authorize({ agreement, ownerId, actor, contextHash });
                 if (evidence?.then) throw new Error('Authority resolvers must use already verified evidence; load it before accepting.');
                 const actorId = evidence?.authority?.actorId;
-                if (root.ProposalApproval.evidenceAllows(proposal, ownerId, actorId, evidence)) return { providerId, evidence, actorId };
+                if (root.ProposalApproval.evidenceAllows(agreement, ownerId, actorId, evidence)) return { providerId, evidence, actorId };
             }
             return null;
         },
-        async signDecision(proposal, receipt, actor) {
+        // The statement signed names the agreement's CID; an agreement without one cannot be decided.
+        async signDecision(agreement, receipt, actor) {
             const provider = authorities.get(receipt.providerId);
-            const current = actor?.id ? provider?.authorize({ proposal, ownerId: receipt.ownerId, actor,
-                contextHash: root.ProposalApproval.contextHash(proposal) }) : null;
+            const current = actor?.id ? provider?.authorize({ agreement, ownerId: receipt.ownerId, actor,
+                contextHash: root.ProposalApproval.contextHash(agreement) }) : null;
             if (!current || current.authority?.actorId !== receipt.actorId) throw new Error('No signer is available for this owner decision.');
-            return provider.signDecision({ proposal, actor, receipt, statement: root.ProposalApproval.decisionContent(proposal, receipt) });
+            return provider.signDecision({ agreement, actor, receipt, statement: root.ProposalApproval.decisionContent(agreement, receipt) });
         },
-        verifyReceipt(proposal, receipt) {
+        verifyReceipt(agreement, receipt) {
             const provider = authorities.get(receipt?.providerId);
-            return !!provider && provider.verifyReceipt({ proposal, receipt,
-                statement: root.ProposalApproval.decisionContent(proposal, receipt) }) === true;
+            return !!provider && provider.verifyReceipt({ agreement, receipt,
+                statement: root.ProposalApproval.decisionContent(agreement, receipt) }) === true;
         }
     };
     root.ProposalApprovalSources = sourceApi;

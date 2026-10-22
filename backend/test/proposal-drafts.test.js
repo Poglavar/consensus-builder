@@ -64,6 +64,20 @@ describe('ProposalDraftStore', () => {
         });
     });
 
+    it('takes a source\'s local key as its identity, never a chain token (designs are not minted, M3)', () => {
+        const { store } = harness();
+        expect(() => store.createDraftFromProposal({
+            city: 'zagreb', goal: 'park', title: 'Pocket park', cadastreParcelIds: ['a'],
+            chainProposalId: 'solana-devnet-7', onchain: { chainId: 'solana-devnet', proposalId: 'Acc' }
+        })).toThrow(/no stable ID/);
+        // Nor a server row's authored id or a content hash (M2): nothing writes them on a record.
+        expect(() => store.createDraftFromProposal({
+            city: 'zagreb', goal: 'park', title: 'Pocket park', cadastreParcelIds: ['a'],
+            proposal_id: 'authored-7', hash: 'content-hash'
+        })).toThrow(/no stable ID/);
+        expect(store.listDrafts()).toEqual([]);
+    });
+
     it('rejects source records without an explicit canonical goal', () => {
         const { store } = harness();
         expect(() => store.createDraftFromProposal({
@@ -81,12 +95,15 @@ describe('ProposalDraftStore', () => {
         expect(store.createDraft({ goal: 'park', type: 'road' })).toMatchObject({ goal: 'park', proposalType: 'park' });
     });
 
-    it('carries who decides from the source, and leaves it unchosen for a local drawing', () => {
+    it('carries no terms or decision kind from the source: those belong to an agreement (M2)', () => {
         const { store } = harness();
-        const vote = store.createDraftFromProposal({ proposalId: 'p-vote', city: 'zagreb', goal: 'park', kind: 'owner-vote', voteExpiryDays: 30, cadastreParcelIds: ['a'] });
-        expect(vote.fields).toMatchObject({ kind: 'owner-vote', voteExpiryDays: 30 });
-        const drawing = store.createDraftFromProposal({ proposalId: 'p-drawing', city: 'zagreb', goal: 'park', offer: 0, cadastreParcelIds: ['a'] });
-        expect(drawing.fields).toMatchObject({ kind: null, voteExpiryDays: null });
+        const draft = store.createDraftFromProposal({ proposalId: 'p-vote', city: 'zagreb', goal: 'park', kind: 'owner-vote', voteExpiryDays: 30,
+            offer: 900, offerCurrency: 'EUR', isConditional: true, expiresAt: '2027-01-01T00:00:00.000Z', depositEnabled: true,
+            approvalConfig: { schema: 'proposal-approval/v1' }, lens: ['member-a'], cadastreParcelIds: ['a'] });
+        for (const key of ['kind', 'voteExpiryDays', 'offer', 'offerCurrency', 'isConditional', 'expiresAt', 'decayEnabled', 'depositEnabled', 'approvalConfig', 'lens']) {
+            expect(draft.fields).not.toHaveProperty(key);
+        }
+        expect(draft.fields.name).toBe('');
     });
 
     it('persists multiple drafts across reload and filters them by city', () => {
@@ -277,22 +294,43 @@ describe('ProposalDraftStore', () => {
         expect(proposal.proposalId).toBeUndefined();
     });
 
-    it('strips the source proposal\'s serverProposalId — an edit must re-upload, not reuse the share link', () => {
+    it('strips the source\'s publication mark — an edit is a new design with its own CID, linked to its source', () => {
         // No adapter → the fallback merge copies sourceSnapshot wholesale, which carries the source's
-        // serverProposalId; without the explicit strip the "new" proposal would inherit the old
-        // /proposals/:id and Share would reuse it instead of offering a fresh upload.
+        // publication mark; without the explicit strip the "new" design would claim the source's CID
+        // (plan-design-agreement.md, M2) and Share would treat it as published. Designs are not minted
+        // (M3): the publication mark is the only published identity there is.
         const { store } = harness({ adapterRegistry: { get: () => null } });
+        const SOURCE_CID = 'bafkreibm6jg3ux5qumhcn2b3flc3tyu6dmlb4xa7u5bf44yegnrjhc4yeq';
         const draft = store.createDraftFromProposal({
             localPurchaseSimulation: { buyerAgentId: 'buyer' },
-            proposalId: 'source-x', serverProposalId: 95, city: 'zagreb', goal: 'park',
+            proposalId: 'source-x', city: 'zagreb', goal: 'park',
+            published: { cid: SOURCE_CID, publishedAt: '2026-10-21T10:00:00.000Z', apiBase: 'https://api.example.test' },
             title: 'Park', cadastreParcelIds: ['1'], geometry: { type: 'Polygon' }
         });
         const proposal = store.buildProposalFromDraft(draft.id, { allowInvalid: true });
         expect(proposal).toBeTruthy();
-        expect(proposal.serverProposalId).toBeUndefined();
+        expect(proposal.title).toBe('Park');
+        expect(proposal).not.toHaveProperty('published');
+        expect(proposal.origin).toEqual({ cid: SOURCE_CID });
         expect(draft.sourceSnapshot).not.toHaveProperty('localPurchaseSimulation');
         expect(proposal).not.toHaveProperty('localPurchaseSimulation');
         expect(proposal.proposalId).toBeUndefined();
+    });
+
+    it('links a design built from a published one by that design\'s CID, and keeps a local source\'s link', () => {
+        // Fork design records origin.cid (plan-design-agreement.md, M2): the design it came from,
+        // never the one its source came from.
+        const SOURCE_CID = 'bafkreibm6jg3ux5qumhcn2b3flc3tyu6dmlb4xa7u5bf44yegnrjhc4yeq';
+        const GRANDPARENT_CID = 'bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku';
+        const { store } = harness({ adapterRegistry: { get: () => null } });
+        const base = { city: 'zagreb', goal: 'park', title: 'Park', cadastreParcelIds: ['1'], geometry: { type: 'Polygon' }, origin: { cid: GRANDPARENT_CID } };
+        const fromPublished = store.createDraftFromProposal({ ...base, proposalId: 'source-published',
+            published: { cid: SOURCE_CID, publishedAt: '2026-10-21T10:00:00.000Z', apiBase: 'https://api.example.test' } });
+        const fork = store.buildProposalFromDraft(fromPublished.id, { allowInvalid: true });
+        expect(fork.origin).toEqual({ cid: SOURCE_CID });
+        expect(fork).not.toHaveProperty('published');
+        const fromLocal = store.createDraftFromProposal({ ...base, proposalId: 'source-local' });
+        expect(store.buildProposalFromDraft(fromLocal.id, { allowInvalid: true }).origin).toEqual({ cid: GRANDPARENT_CID });
     });
 
     it('wipeAll erases every draft and the unload flush cannot resurrect the storage key', () => {
@@ -400,20 +438,23 @@ describe('ProposalDraftStore', () => {
     });
 });
 
-// The store's own validator (no adapter): material goals need a site, parcel acts need parcels,
-// and a site draft builds a record with an empty declaration (PARCEL-OPTIONAL.md, phase 2).
+// The store's own validator (no adapter): a draft needs ground — a site, its own geometry or
+// selected parcels — and a site draft builds a record with an empty declaration (PARCEL-OPTIONAL.md,
+// phase 2). Since M2 no goal is an act on parcels, so a site places every goal.
 describe('site-first drafts in the store', () => {
     const SITE = {
         type: 'MultiPolygon',
         coordinates: [[[[15.97, 45.8], [15.9705, 45.8], [15.9705, 45.8004], [15.97, 45.8004], [15.97, 45.8]]]]
     };
 
-    it('reports missing-site for a material draft without ground, missing-parcels for a parcel act', () => {
+    it('reports missing-site for a draft without ground, and never asks a site draft for parcels', () => {
         const { store } = harness();
         const park = store.createDraft({ goal: 'park', fields: { name: 'Park', selectedParcelIds: [] } });
         expect(store.validateDraft(park.id).validation.errors.map(error => error.code)).toEqual(['missing-site']);
         const transfer = store.createDraft({ goal: 'ownership-transfer', fields: { name: 'Sell', selectedParcelIds: [], site: SITE } });
-        expect(store.validateDraft(transfer.id).validation.errors.map(error => error.code)).toEqual(['missing-parcels']);
+        expect(store.validateDraft(transfer.id).validation.errors.map(error => error.code)).toEqual([]);
+        const parcels = store.createDraft({ goal: 'ownership-transfer', fields: { name: 'Sell', selectedParcelIds: ['k9'] } });
+        expect(store.validateDraft(parcels.id).validation.errors.map(error => error.code)).toEqual([]);
     });
 
     it('builds a site draft into a record with its site and no declaration', () => {

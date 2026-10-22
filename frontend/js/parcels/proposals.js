@@ -35,76 +35,6 @@
         }
     }
 
-    const uiParcelPanel = (global.Parcels && global.Parcels.uiParcelPanel) ? global.Parcels.uiParcelPanel : (global.ParcelsUIParcelPanel || {});
-
-    function scheduleParcelPanelFocus(parcelId) {
-        if (!parcelId) return;
-        const parcelIdStr = parcelId.toString();
-        const focus = () => {
-            const parcel = global.LiveParcelFabric?.get?.(parcelIdStr)
-                ? global.ParcelPresenter?.getLayer?.(parcelIdStr)
-                : null;
-            const showParcelInfoPanel = uiParcelPanel.showParcelInfoPanel || global.showParcelInfoPanel;
-            if (parcel && typeof showParcelInfoPanel === 'function') {
-                const parcelId = global.ParcelPresenter?.getIdForLayer?.(parcel);
-                const feature = parcelId ? global.LiveParcelFabric?.get?.(parcelId) : null;
-                if (feature) showParcelInfoPanel(feature);
-            }
-        };
-        // Use rAF to wait for any UI updates instead of arbitrary timeouts.
-        if (typeof global.requestAnimationFrame === 'function') {
-            global.requestAnimationFrame(focus);
-        } else {
-            focus();
-        }
-    }
-
-    /**
-     * Handle user accepting a proposal from the parcel info panel
-     * @param {string} proposalId - The proposal id
-     * @param {string} parcelId - The parcel ID
-     */
-    async function acceptProposalFromParcelInfo(proposalId, parcelId, ownerKey = null, options = {}) {
-        const normalizedOptions = options && typeof options === 'object' ? options : {};
-        const skipParcelPanelFocus = normalizedOptions.skipParcelPanelFocus === true;
-        let effectiveOwnerKey = ownerKey;
-        if (!effectiveOwnerKey && typeof global.ensureParcelOwnerSlots === 'function') {
-            const slots = await global.ensureParcelOwnerSlots(parcelId);
-            if (Array.isArray(slots) && slots.length === 1) {
-                effectiveOwnerKey = slots[0].key;
-            }
-        }
-
-        if (typeof global.handleUserAcceptProposal === 'function') {
-            await global.handleUserAcceptProposal(proposalId, parcelId, effectiveOwnerKey);
-        }
-
-        if (!skipParcelPanelFocus) {
-            scheduleParcelPanelFocus(parcelId);
-        }
-    }
-
-    /**
-     * Handle user rejecting a proposal from the parcel info panel
-     * @param {string} proposalId - The proposal id
-     * @param {string} parcelId - The parcel ID
-     */
-    async function rejectProposalFromParcelInfo(proposalId, parcelId, ownerKey = null, options = {}) {
-        const normalizedOptions = options && typeof options === 'object' ? options : {};
-        const skipParcelPanelFocus = normalizedOptions.skipParcelPanelFocus === true;
-
-        if (typeof global.handleUserRejectProposal === 'function') {
-            await global.handleUserRejectProposal(proposalId, parcelId, ownerKey);
-        } else if (typeof global.rejectProposal === 'function') {
-            // Fallback to legacy behavior
-            await global.rejectProposal(proposalId, parcelId, ownerKey);
-        }
-
-        if (!skipParcelPanelFocus) {
-            scheduleParcelPanelFocus(parcelId);
-        }
-    }
-
     /**
      * Show proposal details panel when Details button is clicked
      * @param {string} proposalId - The proposal id
@@ -173,8 +103,6 @@
 
     // Make these functions globally available
     global.focusOnProposal = focusOnProposal;
-    global.acceptProposalFromParcelInfo = acceptProposalFromParcelInfo;
-    global.rejectProposalFromParcelInfo = rejectProposalFromParcelInfo;
     global.showProposalDetails = showProposalDetails;
     global.switchParcelTab = switchParcelTab;
 })(typeof window !== 'undefined' ? window : globalThis);

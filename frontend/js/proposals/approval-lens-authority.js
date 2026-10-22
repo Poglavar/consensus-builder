@@ -1,7 +1,10 @@
-// Lens-backed owner authority for abstract proposal approval. A member of the proposal's lens attests
-// the pinned rights snapshot and which owners the connected wallet may act for; the wallet then signs
-// each owner decision itself. Receipts verify from their signatures alone, so they survive reload and
-// count in any browser. Registered as the "lens-wallet" provider of ProposalApprovalAuthorities.
+// Lens-backed owner authority for abstract approval of an agreement. A member of the agreement's lens
+// attests the pinned rights snapshot and which owners the connected wallet may act for; the wallet then
+// signs each owner decision itself, over the agreement's CID. Receipts verify from their signatures
+// alone, so they survive reload and count in any browser. Registered as the "lens-wallet" provider of
+// ProposalApprovalAuthorities. Every function takes the agreement-like object of ProposalApproval's
+// decision functions ({ agreementCid, cadastreParcelIds, approvalConfig, lens, … }); the lens member
+// sees only its approval context.
 (function (root, factory) {
     const api = factory(root);
     if (typeof module === 'object' && module.exports) module.exports = api;
@@ -19,10 +22,10 @@
         if (outcome) error.outcome = outcome;
         return error;
     }
-    const contextInput = proposal => ({
-        cadastreParcelIds: proposal?.cadastreParcelIds || [],
-        approvalConfig: proposal?.approvalConfig ?? null,
-        lens: proposal?.lens || []
+    const contextInput = agreement => ({
+        cadastreParcelIds: agreement?.cadastreParcelIds || [],
+        approvalConfig: agreement?.approvalConfig ?? null,
+        lens: agreement?.lens || []
     });
     const refusal = outcome => failure(outcome.code || outcome.kind, outcome.message || `The lens member answered ${outcome.status}.`, outcome);
 
@@ -39,17 +42,17 @@
         const live = fact => now() <= Date.parse(fact.expiresAt);
 
         // Everything a member returned is checked before it is kept: signatures, the member, this
-        // proposal's context and parcels, the wallet as signer, and parties (owners, leaseholders,
-        // required authorities) of this proposal.
-        function keep(proposal, memberKey, address, body) {
+        // agreement's context and parcels, the wallet as signer, and parties (owners, leaseholders,
+        // required authorities) of this agreement.
+        function keep(agreement, memberKey, address, body) {
             const A = approval(), P = proof();
-            const contextHash = A.contextHash(proposal);
-            const parcelIds = A.contextContent(proposal).cadastreParcelIds;
-            const electorate = A.inspect(proposal).partyIds;
+            const contextHash = A.contextHash(agreement);
+            const parcelIds = A.contextContent(agreement).cadastreParcelIds;
+            const electorate = A.inspect(agreement).partyIds;
             const { rights, authority } = body || {};
             if (!P.verifyAttestation(rights, P.RIGHTS_SCHEMA) || rights.member !== memberKey || rights.contextHash !== contextHash
                 || A.stableStringify(rights.parcelIds) !== A.stableStringify(parcelIds) || !live(rights)) {
-                throw failure('bad-evidence', 'The lens member returned rights evidence that does not verify for this proposal.');
+                throw failure('bad-evidence', 'The lens member returned rights evidence that does not verify for this agreement.');
             }
             if (!Array.isArray(authority) || !authority.length) throw failure('bad-evidence', 'The lens member named no owner.');
             const facts = new Map();
@@ -65,14 +68,15 @@
         }
 
         // One wallet signature proves control to one lens member, which answers with its verdict on
-        // the rights and the owners this wallet may act for in this proposal's approval context.
-        async function verifyOwner(proposal, { memberKey, serviceUrl }) {
+        // the rights and the owners this wallet may act for in this agreement's approval context.
+        // M2: the browser flow (the agreement panel) passes the agreement-like object it decides on.
+        async function verifyOwner(agreement, { memberKey, serviceUrl }) {
             const current = wallet();
             if (!current) throw failure('wallet-required', 'Connect a wallet first.');
             const A = approval();
-            if (!A.inspect(proposal).ready) throw failure('ownership-unresolved', 'The proposal has no complete rights snapshot.');
-            if (!A.lensKeys(proposal).includes(memberKey)) throw failure('member-not-in-lens', 'That member is not in this proposal\'s lens.');
-            const contextHash = A.contextHash(proposal);
+            if (!A.inspect(agreement).ready) throw failure('ownership-unresolved', 'The agreement has no complete rights snapshot.');
+            if (!A.lensKeys(agreement).includes(memberKey)) throw failure('member-not-in-lens', 'That member is not in this agreement\'s lens.');
+            const contextHash = A.contextHash(agreement);
             const client = lensClient();
             const challenged = await client.requestApprovalChallenge({ serviceUrl, wallet: current.address, contextHash, fetchImpl });
             if (challenged.outcome.kind !== 'ok') throw refusal(challenged.outcome);
@@ -83,18 +87,18 @@
             }
             const signature = await current.signMessage(expected);
             const answered = await client.submitApprovalAuthority({
-                serviceUrl, wallet: current.address, challenge, signature, context: contextInput(proposal), fetchImpl
+                serviceUrl, wallet: current.address, challenge, signature, context: contextInput(agreement), fetchImpl
             });
             if (answered.outcome.kind !== 'ok') throw refusal(answered.outcome);
-            return { wallet: current.address, ownerIds: keep(proposal, memberKey, current.address, answered.body) };
+            return { wallet: current.address, ownerIds: keep(agreement, memberKey, current.address, answered.body) };
         }
 
-        // Owners the connected wallet may act for in this proposal, from evidence kept this session.
-        function ownerIds(proposal) {
+        // Owners the connected wallet may act for in this agreement, from evidence kept this session.
+        function ownerIds(agreement) {
             const current = wallet();
             if (!current) return [];
             let contextHash;
-            try { contextHash = approval().contextHash(proposal); } catch (_) { return []; }
+            try { contextHash = approval().contextHash(agreement); } catch (_) { return []; }
             const entry = evidence.get(key(contextHash, current.address));
             if (!entry || !live(entry.rights)) return [];
             return [...entry.authority.values()].filter(live).map(fact => fact.ownerId).sort();
@@ -115,8 +119,8 @@
                 }
                 return { scheme: proof().DECISION_SCHEME, signature: await current.signMessage(proof().decisionMessage(statement)) };
             },
-            verifyReceipt({ proposal, receipt, statement }) {
-                return proof().verifyReceipt({ receipt, statement, parcelIds: approval().contextContent(proposal).cadastreParcelIds });
+            verifyReceipt({ agreement, receipt, statement }) {
+                return proof().verifyReceipt({ receipt, statement, parcelIds: approval().contextContent(agreement).cadastreParcelIds });
             }
         };
         return { provider, verifyOwner, ownerIds, clear: () => evidence.clear() };

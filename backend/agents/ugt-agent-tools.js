@@ -1,31 +1,46 @@
-// Shared action surface for external agents. MCP, deterministic runners and future controllers
-// should delegate to these existing x402 and Solana adapters rather than inventing another agent
-// execution path.
+// Shared action surface for external agents (plan-design-agreement.md, M3). The stdio MCP server
+// (mcp-server.mjs) is one caller; tests or another controller can call the same functions. Designs and
+// agreements are pinned and indexed through publication-client.js, agreements minted and funded through
+// agreement-minter.js, and markets, pledges and donations take the agreement's chain account as their
+// subject (bettor.js, pledger.js, donor.js, lifecycle-actions.js): the adapters the deterministic
+// runners use, never a second execution path.
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { Keypair } from '@solana/web3.js';
+import { Keypair, PublicKey } from '@solana/web3.js';
 import { ensureDonationEscrowAndDonate } from './donor.js';
 import { ensureMarketAndStake, usdcToAtomic } from './bettor.js';
 import { buyOracleFact, createOracleFactClient, fetchOracleFactChallenge } from './oracle-fact-client.js';
 import { ensurePledgeBookAndSet } from './pledger.js';
 import { createRpcConnection } from '../solana/rpc.js';
 import { sendAndConfirmPolling } from './solana-send.js';
-import { createPaidClient, fetchChallenge, paymentIdForProposal, postAgentProposal } from './x402-client.js';
-import { mintProposal } from './minter.js';
+import { createPaidClient } from './x402-client.js';
 import { fetchLensMembers, parseLensList } from './lens-directory-client.js';
-import { fetchLensStatus, findOwnershipAttestation, requestOwnershipAttestation } from './lens-ownership-client.js';
+import { requestOwnershipAttestation } from './lens-ownership-client.js';
+import { createIndexClient } from './publication-client.js';
+import { AGREEMENT_SCHEMA, DESIGN_SCHEMA, agreementObject, cidOfObject, designObject, isParcelLayout } from './agreement-objects.js';
 import {
-    acceptWithAttestations, cancelProposal, claimExternalMarket, claimProposalMarket, DEFAULT_CREDENTIAL_NAME,
-    fulfillPledge, refundDonation, releaseDonations, resolveExternalMarket, resolveProposalMarket, revokePledge,
-    settleWithVerdict, voidPledge
+    AGREEMENT_PROGRAM_ID, AGREEMENT_STATUS, agreementAccountOf, fundAgreement, mintAgreement, readAgreementAccount
+} from './agreement-minter.js';
+import {
+    claimAgreementMarket, claimExternalMarket, fulfillPledge, refundDonation, releaseDonations, resolveAgreementMarket,
+    resolveExternalMarket, revokePledge, voidPledge
 } from './lifecycle-actions.js';
 
 const DEFAULT_API_BASE = 'https://api.urbangametheory.xyz';
+// The API's write guard admits only the app's origins; index writes are sent as the app's.
+const DEFAULT_APP_ORIGIN = 'https://urbangametheory.xyz';
 const DEFAULT_RPC_URL = 'https://api.devnet.solana.com';
 const USDC_DEVNET = '4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU';
-const PROPOSAL_NFT_PROGRAM = '3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg';
+// The cluster the index records a mint on (routes/agreements.js POST /agreements/:cid/onchain).
+const AGREEMENT_CLUSTER = 'devnet';
 const SIDE = Object.freeze({ no: 0, yes: 1 });
+// How many places a refused object lists where it differs from its published form.
+const MAX_DIFFERENCES = 5;
+
+// stdout carries the MCP transport, so everything this surface logs goes to stderr.
+const log = message => console.error(`[${new Date().toISOString()}] [ugt-tools] ${message}`);
+const isPlainObject = value => !!value && typeof value === 'object' && !Array.isArray(value);
 
 function enabled(value) {
     return /^(1|true|yes)$/i.test(String(value || '').trim());
@@ -43,8 +58,8 @@ function loadSecretKey(filePath) {
     return secretKey;
 }
 
-function cleanBase(value) {
-    return String(value || DEFAULT_API_BASE).replace(/\/+$/, '');
+function cleanBase(value, fallback = DEFAULT_API_BASE) {
+    return String(value || fallback).replace(/\/+$/, '');
 }
 
 function withQuery(base, pathname, query = {}) {
@@ -88,6 +103,88 @@ function assertChallengeUnderCap(challenge, maximum, label) {
     }
 }
 
+// A whole number of lamports as a decimal string (agreement-minter.js reads it as u64).
+function wholeLamports(value, label) {
+    const text = typeof value === 'bigint' ? String(value) : typeof value === 'string' ? value.trim() : '';
+    if (!/^\d+$/.test(text)) throw new Error(`${label} must be a whole number of lamports as a decimal string, for example "0"`);
+    return text;
+}
+
+// A base58 wallet in its one canonical spelling, or null.
+function walletOf(value) {
+    if (typeof value !== 'string' || !value) return null;
+    try {
+        return new PublicKey(value).toBase58() === value ? value : null;
+    } catch {
+        return null;
+    }
+}
+
+// Where an object differs from its published form: a few paths, each with the published value, so
+// the caller can correct it in one go.
+function differences(given, expected, at = '', found = []) {
+    if (found.length >= MAX_DIFFERENCES) return found;
+    if (isPlainObject(given) && isPlainObject(expected)) {
+        for (const key of [...new Set([...Object.keys(given), ...Object.keys(expected)])].sort()) {
+            differences(given[key], expected[key], at ? `${at}.${key}` : key, found);
+        }
+    } else if (Array.isArray(given) && Array.isArray(expected) && given.length === expected.length) {
+        given.forEach((item, index) => differences(item, expected[index], `${at}[${index}]`, found));
+    } else if (JSON.stringify(given) !== JSON.stringify(expected)) {
+        const shown = expected === undefined ? 'absent' : JSON.stringify(expected);
+        found.push(`${at || 'the object'} (published: ${shown.length > 80 ? `${shown.slice(0, 77)}...` : shown})`);
+    }
+    return found;
+}
+
+/**
+ * A design/v1 object exactly as the app publishes it, and its CID. It is published again from its
+ * local-design view (designObject: DesignRecord.published, then validate; authoredAt is a local record's
+ * createdAt), and refused unless that gives the same CID, so what is pinned is what the app would pin.
+ */
+function publishedDesign(content, label = 'design') {
+    if (!isPlainObject(content) || content.schema !== DESIGN_SCHEMA) throw new Error(`${label} must be a ${DESIGN_SCHEMA} object`);
+    const rebuilt = designObject({ ...content, createdAt: content.authoredAt });
+    const cid = cidOfObject(content);
+    if (rebuilt.cid !== cid) {
+        throw new Error(`${label} is not in its published ${DESIGN_SCHEMA} form; it differs at ${differences(content, rebuilt.content).join('; ')}`);
+    }
+    return { content, cid };
+}
+
+/**
+ * An agreement/v1 object exactly as the app publishes it, and its CID: rebuilt from its parts through
+ * agreementObject (AgreementRecord.validate, then published), which refuses what the agreement dialog
+ * would refuse, and refused unless the rebuilt object has the same CID.
+ */
+function publishedAgreement(content) {
+    if (!isPlainObject(content) || content.schema !== AGREEMENT_SCHEMA) throw new Error(`agreement must be an ${AGREEMENT_SCHEMA} object`);
+    if (content.sponsor != null && !walletOf(content.sponsor)) {
+        throw new Error('agreement.sponsor must be the base58 wallet that will mint it, or null');
+    }
+    const inputs = isPlainObject(content.inputs) ? content.inputs : {};
+    const rebuilt = agreementObject({
+        title: content.title ?? null,
+        author: content.author ?? null,
+        sponsor: content.sponsor ?? null,
+        city: content.city ?? null,
+        createdAt: content.createdAt ?? null,
+        designs: content.designs,
+        parcels: inputs.parcels,
+        openGroundM2: inputs.openGroundM2,
+        outputs: content.outputs,
+        allocations: content.allocations,
+        money: content.money,
+        rule: content.rule,
+        deadline: content.deadline ?? null
+    });
+    const cid = cidOfObject(content);
+    if (rebuilt.cid !== cid) {
+        throw new Error(`agreement is not in its published ${AGREEMENT_SCHEMA} form; it differs at ${differences(content, rebuilt.content).join('; ')}`);
+    }
+    return { content, cid };
+}
+
 /**
  * Build the common tool implementation. The returned functions are deliberately transport-free:
  * the stdio MCP server is one caller, and tests or another controller can call the same surface.
@@ -100,63 +197,77 @@ export function createUrbanGameTheoryTools({
 } = {}) {
     if (typeof fetchImpl !== 'function') throw new Error('a fetch implementation is required');
     const apiBase = cleanBase(env.UGT_API_BASE || env.AGENT_API_BASE);
+    const appOrigin = cleanBase(env.UGT_APP_ORIGIN, DEFAULT_APP_ORIGIN);
     const rpcUrl = env.SOLANA_RPC_URL || DEFAULT_RPC_URL;
     const live = enabled(env.UGT_MCP_LIVE);
     const maxUsdcPerAction = String(env.UGT_MCP_MAX_USDC_PER_ACTION || '0.25');
     const impl = {
         createPaidClient,
-        fetchChallenge,
-        postAgentProposal,
         createOracleFactClient,
         buyOracleFact,
         fetchOracleFactChallenge,
         ensurePledgeBookAndSet,
         ensureDonationEscrowAndDonate,
         ensureMarketAndStake,
-        acceptWithAttestations,
-        settleWithVerdict,
-        cancelProposal,
         refundDonation,
         revokePledge,
         voidPledge,
         releaseDonations,
         fulfillPledge,
-        resolveProposalMarket,
-        claimProposalMarket,
+        resolveAgreementMarket,
+        claimAgreementMarket,
         resolveExternalMarket,
         claimExternalMarket,
         sendAndConfirmPolling,
         fetchLensMembers,
         requestOwnershipAttestation,
-        findOwnershipAttestation,
-        fetchLensStatus,
-        mintProposal,
+        createIndexClient,
+        mintAgreement,
+        fundAgreement,
+        readAgreementAccount,
         ...dependencies
     };
+    let connection = null;
     let signing = null;
+    let indexClient = null;
 
     function requireLive(confirm) {
-        if (!live) throw new Error('live actions are disabled; set UGT_MCP_LIVE=1 to enable devnet writes');
-        if (confirm !== true) throw new Error('confirm must be true for a paid or signed devnet action');
+        if (!live) throw new Error('live actions are disabled; set UGT_MCP_LIVE=1 to enable index writes and devnet transactions');
+        if (confirm !== true) throw new Error('confirm must be true for a write, a paid or a signed action');
+    }
+
+    // Chain reads need no key; signing loads UGT_AGENT_KEYPAIR on first use.
+    function chain() {
+        connection ??= createConnection(rpcUrl);
+        return connection;
     }
 
     function signer() {
         if (!signing) {
             const secretKey = loadSecretKey(env.UGT_AGENT_KEYPAIR);
-            signing = {
-                secretKey,
-                keypair: Keypair.fromSecretKey(secretKey),
-                connection: createConnection(rpcUrl)
-            };
+            signing = { secretKey, keypair: Keypair.fromSecretKey(secretKey), connection: chain() };
         }
         return signing;
+    }
+
+    function index() {
+        indexClient ??= impl.createIndexClient({ apiBase, origin: appOrigin, fetchImpl, log });
+        return indexClient;
+    }
+
+    async function indexedAgreement(agreementCid) {
+        const agreement = await index().getAgreement(agreementCid);
+        if (!agreement) throw new Error(`agreement ${agreementCid} is not in the index; propose it first (ugt_propose_agreement)`);
+        return agreement;
     }
 
     return {
         config: {
             apiBase,
+            appOrigin,
             rpcUrl,
             cluster: 'solana-devnet',
+            agreementProgram: AGREEMENT_PROGRAM_ID,
             liveActionsEnabled: live,
             keypairConfigured: Boolean(env.UGT_AGENT_KEYPAIR),
             maxUsdcPerAction,
@@ -165,24 +276,31 @@ export function createUrbanGameTheoryTools({
 
         capabilities: () => readJson(fetchImpl, `${apiBase}/docs/agents.json`),
 
-        listProposals: ({ city = 'zagreb', lifecycle = 'Active', limit = 20, author } = {}) => readJson(
-            fetchImpl,
-            withQuery(apiBase, '/proposals/summary', { city, lifecycle, limit, author })
-        ),
-
         getActivity: ({ limit = 100, actor, source, action } = {}) => readJson(
             fetchImpl,
             withQuery(apiBase, '/agent/activity', { limit, actor, source, action })
         ),
 
-        getSupport: ({ proposalAccount } = {}) => readJson(
+        listAgreements: ({ city, design, parcel, limit = 20 } = {}) => index().listAgreements({ city, design, parcel, limit }),
+
+        // The index row, the chain account its sponsor and CID derive, and that account as the chain
+        // holds it now (null until the sponsor mints it).
+        async getAgreement({ agreementCid } = {}) {
+            const agreement = await indexedAgreement(agreementCid);
+            const sponsor = walletOf(agreement.content?.sponsor);
+            if (!sponsor) return { agreement, sponsor: null, account: null, minted: false, accountState: null };
+            const accountState = await impl.readAgreementAccount(chain(), { cid: agreementCid, sponsor });
+            return { agreement, sponsor, account: agreementAccountOf(agreementCid, sponsor), minted: Boolean(accountState), accountState };
+        },
+
+        getSupport: ({ agreementAccount } = {}) => readJson(
             fetchImpl,
-            `${apiBase}/agent/pledges/${encodeURIComponent(proposalAccount)}`
+            `${apiBase}/agent/pledges/${encodeURIComponent(agreementAccount)}`
         ),
 
-        getOracleEvents: ({ proposalAccount, limit = 20 } = {}) => readJson(
+        getOracleEvents: ({ agreementAccount, limit = 20 } = {}) => readJson(
             fetchImpl,
-            withQuery(apiBase, '/oracle/events', { subject: proposalAccount, limit })
+            withQuery(apiBase, '/oracle/events', { subject: agreementAccount, limit })
         ),
 
         async listAttesters({ kind } = {}) {
@@ -205,208 +323,204 @@ export function createUrbanGameTheoryTools({
             });
         },
 
-        // proposal_nft v3: `site` and its server `binding` set site_hash and open_ground (minter.js);
-        // an empty parcel list is allowed only with a site. The binding must be the server's answer
-        // (POST /proposals/binding), never assumed: without it open ground could not be declared.
-        async mintProposal({ parcelIds = [], site = null, binding = null, lens, imageUri = '', isConditional = true, confirm } = {}) {
+        // Pin and index one design/v1 object. The index derives its binding (the parcels its site takes)
+        // and answers the row. A parcel layout is indexed only with its agreement.
+        async publishDesign({ design, parcelSourceId = null, confirm } = {}) {
             requireLive(confirm);
-            if (!Array.isArray(parcelIds)) throw new Error('parcelIds must be an array of parcel ids');
-            if (!parcelIds.length && !site) throw new Error('parcelIds must contain at least one parcel id, or pass the proposal site');
-            if (site && !binding) throw new Error('a site needs its binding from POST /proposals/binding (it decides open_ground)');
-            const lensKeys = parseLensList(lens || []);
-            if (!lensKeys.length) throw new Error('lens must name at least one lens member key (see ugt_list_attesters)');
+            const { content, cid } = publishedDesign(design);
+            if (isParcelLayout(content)) {
+                throw new Error(`design ${cid} is a parcel layout: a layout is published only with the agreement that settles its land; pass it to ugt_propose_agreement in designs: [{ content }]`);
+            }
+            const published = await index().publishDesign(content, { parcelSourceId });
+            if (published.cid !== cid) throw new Error(`the index filed design ${published.cid}, not ${cid}`);
+            return { cid, created: published.created, row: published.row };
+        },
+
+        // Pin the carried designs and the agreement/v1 object, then index the agreement with them. The
+        // index requires its inputs to be exactly the union of its designs' bindings.
+        async proposeAgreement({ agreement, designs = [], confirm } = {}) {
+            requireLive(confirm);
+            const { content, cid } = publishedAgreement(agreement);
+            const linked = new Set(content.designs.map(entry => entry.cid));
+            const carried = (Array.isArray(designs) ? designs : []).map((entry, at) => publishedDesign(entry?.content, `designs[${at}].content`));
+            const stray = carried.find(entry => !linked.has(entry.cid));
+            if (stray) throw new Error(`design ${stray.cid} is carried, but the agreement does not link it`);
+            if (new Set(carried.map(entry => entry.cid)).size !== carried.length) throw new Error('a design is carried twice');
+            const client = index();
+            for (const entry of carried) await client.pin('design', entry.content);
+            const published = await client.publishAgreement(content, { designs: carried });
+            if (published.cid !== cid) throw new Error(`the index filed agreement ${published.cid}, not ${cid}`);
+            const sponsor = content.sponsor ?? null;
+            return {
+                cid,
+                created: published.created,
+                carried: carried.map(entry => entry.cid),
+                sponsor,
+                account: sponsor ? agreementAccountOf(cid, sponsor) : null,
+                row: published.row
+            };
+        },
+
+        // Create the agreement's account as its sponsor and fund the escrow to `lamports` (also the escrow
+        // execution requires), then record the account in the index. Repeating it creates nothing twice.
+        // Only a binding owners' agreement is minted: a community or owner vote is a poll in the index.
+        async mintAgreement({ agreementCid, lamports, confirm } = {}) {
+            requireLive(confirm);
+            const required = wholeLamports(lamports, 'lamports');
+            const { content } = await indexedAgreement(agreementCid);
+            if (content.rule?.electorate !== 'owners' || content.rule?.binding !== true) {
+                throw new Error(`agreement ${agreementCid} is a non-binding ${content.rule?.electorate ?? 'unknown'} vote: it is a poll in the index and is never minted`);
+            }
             const { keypair, connection } = signer();
             const self = keypair.publicKey.toBase58();
-            if (lensKeys.length === 1 && lensKeys[0] === self) {
-                throw new Error(`lens names only this agent's own key ${self}; a self-lens lets the proposer decide its own proposal`);
+            if (content.sponsor !== self) {
+                throw new Error(`agreement ${agreementCid} names sponsor ${content.sponsor ?? 'none'}, not this agent's wallet ${self}: only its sponsor can create its account`);
             }
-            return impl.mintProposal({
-                connection, programId: PROPOSAL_NFT_PROGRAM, ownerKeypair: keypair, parcelIds, site, binding,
-                isConditional, imageUri, lamports: 0n, lens: lensKeys,
+            const lens = parseLensList(content.rule?.lens || []);
+            if (lens.length !== 1) throw new Error(`the agreement program takes one lens key, but rule.lens holds ${lens.length}`);
+            if (lens[0] === self) throw new Error(`rule.lens names only this agent's own key ${self}: a sponsor cannot attest its own agreement`);
+            const minted = await impl.mintAgreement({
+                connection, sponsorKeypair: keypair, cid: agreementCid, lens: lens[0], deadline: content.deadline ?? null,
+                lamports: required, openGround: Number(content.inputs?.openGroundM2) > 0,
+                sendAndConfirm: impl.sendAndConfirmPolling
+            });
+            const recorded = await index().recordOnchain(agreementCid, {
+                chain: 'solana', cluster: AGREEMENT_CLUSTER, account: minted.account, signature: minted.createSignature
+            });
+            return { ...minted, onchain: recorded.onchain ?? null };
+        },
+
+        // Top the escrow up to `targetLamports` as the sponsor; a target already held signs nothing.
+        async fundAgreement({ agreementCid, targetLamports, confirm } = {}) {
+            requireLive(confirm);
+            const target = wholeLamports(targetLamports, 'targetLamports');
+            const { keypair, connection } = signer();
+            return impl.fundAgreement({
+                connection, sponsorKeypair: keypair, cid: agreementCid, targetLamports: target,
                 sendAndConfirm: impl.sendAndConfirmPolling
             });
         },
 
-        inspectVerifiedFact: ({ proposalAccount, marketAccount } = {}) => impl.fetchOracleFactChallenge({
-            baseUrl: apiBase, proposalAccount, marketAccount, fetchImpl
-        }),
-
-        async buyVerifiedFact({ proposalAccount, marketAccount, confirm } = {}) {
-            requireLive(confirm);
-            const challenge = await impl.fetchOracleFactChallenge({
-                baseUrl: apiBase, proposalAccount, marketAccount, fetchImpl
-            });
-            assertChallengeUnderCap(challenge, maxUsdcPerAction, 'verified fact');
-            const { secretKey } = signer();
-            const { payerAddress, paidFetch } = await impl.createOracleFactClient({ secretKey, rpcUrl, fetchImpl });
-            const result = await impl.buyOracleFact({ baseUrl: apiBase, proposalAccount, marketAccount, paidFetch });
-            return { payerAddress, ...result };
-        },
-
-        async submitProposal({ proposal, confirm } = {}) {
-            requireLive(confirm);
-            if (!proposal || typeof proposal !== 'object' || Array.isArray(proposal)) throw new Error('proposal must be an object');
-            if (!Array.isArray(proposal.cadastreParcelIds) || !proposal.cadastreParcelIds.length) {
-                throw new Error('proposal.cadastreParcelIds must contain at least one parcel id');
-            }
-            const proposalId = String(proposal.proposalId || '').trim();
-            if (!proposalId) throw new Error('proposal.proposalId is required for idempotent x402 payment');
-            const challenge = await impl.fetchChallenge({ baseUrl: apiBase, body: proposal, fetchImpl });
-            assertChallengeUnderCap(challenge, maxUsdcPerAction, 'proposal');
-            const { secretKey } = signer();
-            const { payerAddress, paidFetch } = await impl.createPaidClient({
-                secretKey, paymentId: paymentIdForProposal(proposalId), rpcUrl, fetchImpl
-            });
-            const result = await impl.postAgentProposal({ baseUrl: apiBase, paidFetch, body: proposal });
-            return { payerAddress, ...result };
-        },
-
-        async pledge({ proposalAccount, amountUsdc, confirm } = {}) {
-            requireLive(confirm);
-            const amountAtomic = positiveAmount(amountUsdc, maxUsdcPerAction);
-            const { keypair, connection } = signer();
-            return impl.ensurePledgeBookAndSet({
-                connection, pledgerKeypair: keypair, proposalPda: proposalAccount, amountAtomic,
-                sendAndConfirm: impl.sendAndConfirmPolling
-            });
-        },
-
-        async donate({ proposalAccount, amountUsdc, operationId, confirm } = {}) {
-            requireLive(confirm);
-            const amountAtomic = positiveAmount(amountUsdc, maxUsdcPerAction);
-            const { keypair, connection } = signer();
-            return impl.ensureDonationEscrowAndDonate({
-                connection, donorKeypair: keypair, proposalPda: proposalAccount, amountAtomic,
-                operationId, sendAndConfirm: impl.sendAndConfirmPolling
-            });
-        },
-
-        async forecast({ proposalAccount, side, amountUsdc, confirm } = {}) {
+        // Stake devnet USDC on whether the agreement executes: its market's subject is the agreement's
+        // account (PDA of its sponsor and CID), which must be minted, Active and before its deadline.
+        async betOnAgreement({ agreementCid, side, amountUsdc, confirm } = {}) {
             requireLive(confirm);
             const normalizedSide = String(side || '').toLowerCase();
             if (!(normalizedSide in SIDE)) throw new Error('side must be yes or no');
             const amountAtomic = positiveAmount(amountUsdc, maxUsdcPerAction);
+            const { content } = await indexedAgreement(agreementCid);
+            const sponsor = walletOf(content?.sponsor);
+            if (!sponsor) throw new Error(`agreement ${agreementCid} names no sponsor wallet, so it has no chain account to bet on`);
             const { keypair, connection } = signer();
-            return impl.ensureMarketAndStake({
-                connection, ownerKeypair: keypair, proposalPda: proposalAccount,
+            const state = await impl.readAgreementAccount(connection, { cid: agreementCid, sponsor });
+            if (!state) throw new Error(`agreement ${agreementCid} is not minted yet; its sponsor mints it first (ugt_mint_agreement)`);
+            if (state.status !== AGREEMENT_STATUS.active) throw new Error(`agreement ${state.address} is ${state.status}; its market takes no more stakes`);
+            if (state.deadline > 0 && state.deadline * 1000 <= Date.now()) {
+                throw new Error(`agreement ${state.address} is past its deadline; its market takes no more stakes`);
+            }
+            const result = await impl.ensureMarketAndStake({
+                connection, ownerKeypair: keypair, subject: state.address,
                 stakeMint: USDC_DEVNET, side: SIDE[normalizedSide], amountAtomic,
                 sendAndConfirm: impl.sendAndConfirmPolling
             });
+            return { agreementCid, agreementAccount: state.address, side: normalizedSide, amountUsdc, ...result };
         },
 
-        async cancel({ proposalAccount, confirm } = {}) {
+        inspectVerifiedFact: ({ agreementAccount, marketAccount } = {}) => impl.fetchOracleFactChallenge({
+            baseUrl: apiBase, subject: agreementAccount, marketAccount, fetchImpl
+        }),
+
+        async buyVerifiedFact({ agreementAccount, marketAccount, confirm } = {}) {
             requireLive(confirm);
+            const challenge = await impl.fetchOracleFactChallenge({
+                baseUrl: apiBase, subject: agreementAccount, marketAccount, fetchImpl
+            });
+            assertChallengeUnderCap(challenge, maxUsdcPerAction, 'verified fact');
+            const { secretKey } = signer();
+            const { payerAddress, paidFetch } = await impl.createOracleFactClient({ secretKey, rpcUrl, fetchImpl });
+            const result = await impl.buyOracleFact({ baseUrl: apiBase, subject: agreementAccount, marketAccount, paidFetch });
+            return { payerAddress, ...result };
+        },
+
+        async pledge({ agreementAccount, amountUsdc, confirm } = {}) {
+            requireLive(confirm);
+            const amountAtomic = positiveAmount(amountUsdc, maxUsdcPerAction);
             const { keypair, connection } = signer();
-            return impl.cancelProposal({
-                connection, ownerKeypair: keypair, proposalAccount,
+            return impl.ensurePledgeBookAndSet({
+                connection, pledgerKeypair: keypair, subject: agreementAccount, amountAtomic,
                 sendAndConfirm: impl.sendAndConfirmPolling
             });
         },
 
-        // The agent key says yes to one parcel as an attested owner (accept_with_attestations). Without
-        // an explicit attestation it is looked up on the member's own service (serviceUrl from the
-        // attester directory, GET /lens/attestations), and the credential name from its GET /lens/status.
-        async acceptParcel({ proposalAccount, parcelId, member, ownershipAttestation, payout, confirm } = {}) {
+        async donate({ agreementAccount, amountUsdc, operationId, confirm } = {}) {
             requireLive(confirm);
+            const amountAtomic = positiveAmount(amountUsdc, maxUsdcPerAction);
             const { keypair, connection } = signer();
-            const owner = keypair.publicKey.toBase58();
-            let attestation = ownershipAttestation || null;
-            let credentialName = DEFAULT_CREDENTIAL_NAME;
-            let lookedUp = null;
-            const members = await impl.fetchLensMembers({ apiBase, fetchImpl }).catch(error => {
-                if (attestation) return [];
-                throw error;
+            return impl.ensureDonationEscrowAndDonate({
+                connection, donorKeypair: keypair, subject: agreementAccount, amountAtomic,
+                operationId, sendAndConfirm: impl.sendAndConfirmPolling
             });
-            const serviceUrl = members.find(item => item.key === member)?.serviceUrl || null;
-            if (!attestation) {
-                if (!serviceUrl) throw new Error(`lens member ${member} publishes no serviceUrl in the attester directory; pass ownershipAttestation explicitly`);
-                lookedUp = await impl.findOwnershipAttestation({ serviceUrl, parcelUid: parcelId, owner, member, fetchImpl });
-                attestation = lookedUp.address;
-            }
-            if (serviceUrl) credentialName = (await impl.fetchLensStatus({ serviceUrl, fetchImpl })).credentialName || credentialName;
-            const result = await impl.acceptWithAttestations({
-                connection, ownerKeypair: keypair, proposalAccount, parcelId, ownershipAttestation: attestation,
-                member, credentialName, payout: payout || null, sendAndConfirm: impl.sendAndConfirmPolling
-            });
-            return { ...result, owner, member, ownershipAttestation: attestation, attestationSource: lookedUp ? `${serviceUrl}/lens/attestations` : 'argument' };
         },
 
-        // Permissionless: submit a lens member's ProposalVerdict-v1 (settle_with_verdict). `record` is the
-        // VerdictRecord PDA ["verdict", proposal, attestation]; null only when the proposal was already
-        // in the verdict's status through another settlement (no record exists for this attestation).
-        async submitVerdict({ proposalAccount, verdictAttestation, member, confirm } = {}) {
-            requireLive(confirm);
-            const { keypair, connection } = signer();
-            let credentialName = DEFAULT_CREDENTIAL_NAME;
-            const members = await impl.fetchLensMembers({ apiBase, fetchImpl }).catch(() => []);
-            const serviceUrl = members.find(item => item.key === member)?.serviceUrl || null;
-            if (serviceUrl) credentialName = (await impl.fetchLensStatus({ serviceUrl, fetchImpl })).credentialName || credentialName;
-            const result = await impl.settleWithVerdict({
-                connection, submitterKeypair: keypair, proposalAccount, verdictAttestation, member, credentialName,
-                sendAndConfirm: impl.sendAndConfirmPolling
-            });
-            return { ...result, record: result.record ?? null, verdictAttestation };
-        },
-
-        async refundDonation({ proposalAccount, operationId, confirm } = {}) {
+        async refundDonation({ agreementAccount, operationId, confirm } = {}) {
             requireLive(confirm);
             const { keypair, connection } = signer();
             return impl.refundDonation({
-                connection, donorKeypair: keypair, proposalAccount, operationId,
+                connection, donorKeypair: keypair, subject: agreementAccount, operationId,
                 sendAndConfirm: impl.sendAndConfirmPolling
             });
         },
 
-        async voidPledge({ proposalAccount, pledger, confirm } = {}) {
+        async voidPledge({ agreementAccount, pledger, confirm } = {}) {
             requireLive(confirm);
             const { keypair, connection } = signer();
             return impl.voidPledge({
-                connection, feePayerKeypair: keypair, proposalAccount, pledger,
+                connection, feePayerKeypair: keypair, subject: agreementAccount, pledger,
                 sendAndConfirm: impl.sendAndConfirmPolling
             });
         },
 
-        async revokePledge({ proposalAccount, confirm } = {}) {
+        async revokePledge({ agreementAccount, confirm } = {}) {
             requireLive(confirm);
             const { keypair, connection } = signer();
             return impl.revokePledge({
-                connection, pledgerKeypair: keypair, proposalAccount,
+                connection, pledgerKeypair: keypair, subject: agreementAccount,
                 sendAndConfirm: impl.sendAndConfirmPolling
             });
         },
 
-        async releaseDonations({ proposalAccount, confirm } = {}) {
+        async releaseDonations({ agreementAccount, confirm } = {}) {
             requireLive(confirm);
             const { keypair, connection } = signer();
             return impl.releaseDonations({
-                connection, releaserKeypair: keypair, proposalAccount,
+                connection, releaserKeypair: keypair, subject: agreementAccount,
                 sendAndConfirm: impl.sendAndConfirmPolling
             });
         },
 
-        async fulfillPledge({ proposalAccount, confirm } = {}) {
+        async fulfillPledge({ agreementAccount, confirm } = {}) {
             requireLive(confirm);
             const { keypair, connection } = signer();
             return impl.fulfillPledge({
-                connection, pledgerKeypair: keypair, proposalAccount,
+                connection, pledgerKeypair: keypair, subject: agreementAccount,
                 sendAndConfirm: impl.sendAndConfirmPolling
             });
         },
 
-        async resolve({ proposalAccount, confirm } = {}) {
+        async resolve({ agreementAccount, confirm } = {}) {
             requireLive(confirm);
             const { keypair, connection } = signer();
-            return impl.resolveProposalMarket({
-                connection, resolverKeypair: keypair, proposalAccount,
+            return impl.resolveAgreementMarket({
+                connection, resolverKeypair: keypair, subject: agreementAccount,
                 sendAndConfirm: impl.sendAndConfirmPolling
             });
         },
 
-        async claim({ proposalAccount, side, confirm } = {}) {
+        async claim({ agreementAccount, side, confirm } = {}) {
             requireLive(confirm);
             const { keypair, connection } = signer();
-            return impl.claimProposalMarket({
-                connection, claimerKeypair: keypair, proposalAccount, side,
+            return impl.claimAgreementMarket({
+                connection, claimerKeypair: keypair, subject: agreementAccount, side,
                 sendAndConfirm: impl.sendAndConfirmPolling
             });
         },

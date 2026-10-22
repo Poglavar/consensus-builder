@@ -1,6 +1,6 @@
 // The LMSR market of proposal_market (design of record: lmsr-market.md at the repository root):
 // dated yes/no markets priced by the fixed-point maker in lmsr.rs, seeded by their creator with the
-// maker's worst-case loss, settled from a proposal's on-chain state (kind 0) or from
+// maker's worst-case loss, settled from an agreement's on-chain state (kind 0) or from
 // MarketEvidence-v1 attestations against committed recipe hashes (kind 1). The instructions are
 // declared in lib.rs's #[program] module and delegate to the handlers here.
 
@@ -12,17 +12,17 @@ use sas_attestation::{PayloadReader, SasError};
 
 use crate::lmsr::{self, LmsrError};
 use crate::{
-    read_proposal_status, read_proposal_view, sas_error, validate_sas_schema, validate_sas_schema_data, MarketError,
-    Position, SAS_PROGRAM_ID, SIDE_NO, SIDE_YES, STATUS_ACTIVE, STATUS_CANCELLED, STATUS_EXECUTED, STATUS_EXPIRED,
+    read_subject, sas_error, validate_sas_schema, validate_sas_schema_data, MarketError, Position, SAS_PROGRAM_ID,
+    SIDE_NO, SIDE_YES, STATUS_ACTIVE, STATUS_CANCELLED, STATUS_EXECUTED, STATUS_EXPIRED,
 };
 
-/// LmsrMarket PDA: ["lmsr", proposal] for kind 0, ["lmsr", recipe_hash] for kind 1.
+/// LmsrMarket PDA: ["lmsr", agreement] for kind 0, ["lmsr", recipe_hash] for kind 1.
 pub const LMSR_SEED: &[u8] = b"lmsr";
 /// LMSR positions reuse the Position layout under their own prefix, so they can never collide
 /// with a parimutuel position: ["lmsr_position", market, owner, [side]].
 pub const LMSR_POSITION_SEED: &[u8] = b"lmsr_position";
 
-/// `LmsrMarket.kind`: settles from the status of the proposal account.
+/// `LmsrMarket.kind`: settles from the status of the agreement (the `proposal` account).
 pub const KIND_PROPOSAL: u8 = 0;
 /// `LmsrMarket.kind`: settles from MarketEvidence-v1 attestations against the committed recipe.
 pub const KIND_RECIPE: u8 = 1;
@@ -38,7 +38,7 @@ pub const MAX_EVIDENCE: usize = 2;
 pub struct LmsrMarket {
     /// KIND_PROPOSAL or KIND_RECIPE.
     pub kind: u8,
-    /// The proposal for kind 0; for kind 1 the optional bound proposal (default when unbound).
+    /// The agreement for kind 0; for kind 1 the optional bound agreement (default when unbound).
     pub proposal: Pubkey,
     /// Deposited the seed and reclaims what the payouts leave.
     pub creator: Pubkey,
@@ -79,7 +79,7 @@ pub struct LmsrMarket {
 }
 
 impl LmsrMarket {
-    /// The second PDA seed: the proposal for kind 0, the recipe hash for kind 1.
+    /// The second PDA seed: the agreement for kind 0, the recipe hash for kind 1.
     pub fn seed_key(&self) -> [u8; 32] {
         if self.kind == KIND_PROPOSAL {
             self.proposal.to_bytes()
@@ -195,22 +195,23 @@ fn pay_from_vault<'info>(
     )
 }
 
-/// The checks buy and sell share: the market is unresolved and before closes_at, `proposal` is the
-/// market's own (the System Program id for an unbound kind 1 market), and the trader is not an
-/// insider (streamline B3): the trusted attester of any kind 1 market, and the proposal's owner and
-/// lens members, read at trade time, for kind 0 and bound kind 1. Kind 0 also needs the proposal
-/// still Active: once it is terminal the outcome is known and a trade would only take the seed.
-fn check_trade(market: &LmsrMarket, proposal: &AccountInfo, trader: &Pubkey) -> Result<()> {
+/// The checks buy and sell share: the market is unresolved and before closes_at, `subject` is the
+/// market's own agreement (the System Program id for an unbound kind 1 market), and the trader is
+/// not an insider (streamline B3): the trusted attester of any kind 1 market, and the agreement's
+/// sponsor and lens, read at trade time, for kind 0 and bound kind 1. Kind 0 also needs the
+/// agreement still Active: once it is terminal the outcome is known and a trade would only take the
+/// seed.
+fn check_trade(market: &LmsrMarket, subject: &AccountInfo, trader: &Pubkey) -> Result<()> {
     require!(!market.resolved, MarketError::MarketResolved);
     require!(Clock::get()?.unix_timestamp < market.closes_at, MarketError::MarketClosed);
-    require_keys_eq!(proposal.key(), market.proposal, MarketError::InvalidProposalAccount);
+    require_keys_eq!(subject.key(), market.proposal, MarketError::InvalidProposalAccount);
     if market.kind == KIND_RECIPE {
         require_keys_neq!(*trader, market.trusted_attester, MarketError::InsiderTrade);
     }
     if market.kind == KIND_PROPOSAL || market.proposal != Pubkey::default() {
-        let view = read_proposal_view(proposal)?;
-        require_keys_neq!(*trader, view.owner, MarketError::InsiderTrade);
-        require!(!view.lens.contains(trader), MarketError::InsiderTrade);
+        let view = read_subject(subject, None)?;
+        require_keys_neq!(*trader, view.authority, MarketError::InsiderTrade);
+        require_keys_neq!(*trader, view.lens, MarketError::InsiderTrade);
         if market.kind == KIND_PROPOSAL {
             require!(view.status == STATUS_ACTIVE, MarketError::ProposalNotActive);
         }
@@ -226,7 +227,7 @@ pub(crate) fn handle_create_lmsr_market(
     max_position: u64,
 ) -> Result<()> {
     let seed = check_market_terms(b, closes_at, grace_seconds)?;
-    let status = read_proposal_status(&ctx.accounts.proposal, None)?;
+    let status = read_subject(&ctx.accounts.proposal, None)?.status;
     require!(status == STATUS_ACTIVE, MarketError::ProposalNotActive);
     deposit_seed(
         &ctx.accounts.creator_token_account,
@@ -286,14 +287,14 @@ pub(crate) fn handle_create_lmsr_external_market(
     require!(trusted_attester != Pubkey::default(), MarketError::EmptyCommitment);
     let seed = check_market_terms(b, closes_at, grace_seconds)?;
     validate_sas_schema(&ctx.accounts.credential, &ctx.accounts.schema)?;
-    // Optional remaining account 0, as in create_external_market: a proposal_nft Proposal whose lens
-    // must contain the attester. Unlike ExternalMarket the binding is stored, because buy and sell
-    // read the proposal's owner and lens from it to bar insiders.
+    // Optional remaining account 0, as in create_external_market: an agreement whose lens must be
+    // the attester. Unlike ExternalMarket the binding is stored, because buy and sell read the
+    // agreement's sponsor and lens from it to bar insiders.
     let proposal = match ctx.remaining_accounts.first() {
-        Some(proposal) => {
-            let view = read_proposal_view(proposal)?;
-            require!(view.lens.contains(&trusted_attester), MarketError::AttesterNotInProposalLens);
-            proposal.key()
+        Some(subject) => {
+            let view = read_subject(subject, None)?;
+            require_keys_eq!(view.lens, trusted_attester, MarketError::AttesterNotInProposalLens);
+            subject.key()
         }
         None => Pubkey::default(),
     };
@@ -422,7 +423,7 @@ struct Settlement {
 }
 
 impl Settlement {
-    /// Settled by the proposal's status or by absence: no attestation behind it.
+    /// Settled by the agreement's status or by absence: no attestation behind it.
     fn without_evidence(outcome: u8) -> Self {
         Self {
             outcome,
@@ -442,7 +443,7 @@ pub(crate) fn handle_resolve_lmsr(ctx: Context<ResolveLmsr>) -> Result<()> {
         require_keys_eq!(ctx.accounts.proposal.key(), market.proposal, MarketError::InvalidProposalAccount);
         require_keys_eq!(ctx.accounts.schema.key(), market.schema, MarketError::WrongEvidenceSchema);
         if market.kind == KIND_PROPOSAL {
-            let status = read_proposal_status(&ctx.accounts.proposal, Some(&market.proposal))?;
+            let status = read_subject(&ctx.accounts.proposal, Some(&market.proposal))?.status;
             match proposal_outcome(status) {
                 Some(outcome) => Settlement::without_evidence(outcome),
                 None => {
@@ -657,7 +658,8 @@ pub struct CreateLmsrMarket<'info> {
         bump
     )]
     pub market: Box<Account<'info, LmsrMarket>>,
-    /// CHECK: a proposal_nft Proposal; owner, discriminator and status are verified in the handler.
+    /// CHECK: the agreement (an agreement-program Agreement); owner, discriminator and status are
+    /// verified in the handler.
     pub proposal: UncheckedAccount<'info>,
     pub stake_mint: Box<Account<'info, Mint>>,
     // init_if_needed: the vault ATA's address is predictable, so anyone can create it first; `init`
@@ -720,8 +722,8 @@ pub struct CreateLmsrExternalMarket<'info> {
 pub struct Buy<'info> {
     #[account(mut)]
     pub market: Box<Account<'info, LmsrMarket>>,
-    /// CHECK: must equal market.proposal (the System Program id for an unbound kind 1 market); its
-    /// owner, discriminator and layout are verified in the handler when it is read.
+    /// CHECK: must equal market.proposal, the agreement (the System Program id for an unbound kind 1
+    /// market); its owner, discriminator and layout are verified in the handler when it is read.
     pub proposal: UncheckedAccount<'info>,
     #[account(
         init_if_needed,
@@ -769,7 +771,8 @@ pub struct Sell<'info> {
 pub struct ResolveLmsr<'info> {
     #[account(mut)]
     pub market: Box<Account<'info, LmsrMarket>>,
-    /// CHECK: must equal market.proposal; kind 0 reads its status (owner, discriminator, layout).
+    /// CHECK: must equal market.proposal, the agreement; kind 0 reads its status (owner,
+    /// discriminator, layout).
     pub proposal: UncheckedAccount<'info>,
     /// CHECK: must equal market.schema (the System Program id for kind 0); SAS owner, credential
     /// relation, layout and paused state are checked when evidence is passed.

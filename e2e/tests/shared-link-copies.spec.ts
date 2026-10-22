@@ -1,52 +1,76 @@
+// A design link (/designs/<cid>) matches local copies by content address only: a local record whose
+// key equals the CID, or a fork naming it as its origin, is not the published design; the link
+// imports it as design-<cid> once and then reuses that exact copy (plan-design-agreement.md M2).
 import { test, expect } from '../helpers/fixtures';
-import { openCity, PARCEL_ID, PARCEL_GEOMETRY } from '../helpers/runtime';
+import { waitForMapReady } from '../helpers/app';
+import { createSpace, openCity, showProposal, PARCEL_ID } from '../helpers/runtime';
+import { mockAllApiRoutes } from '../helpers/mocks/api-routes';
+import { attachSharedIndex, pageIndex } from '../helpers/mocks/shared-server';
 
-test('shared links ignore numeric local keys and fork ancestry, then reuse the exact published copy', async ({ mockApi: page }) => {
-  await openCity(page);
-  await page.waitForFunction(() => (window as any).ProposalManager._initialReapplyDone === true);
-  let lifecycleStatus = 'Cancelled';
-  const published = () => ({ id: 42, proposalId: 'p-linked-publication', title: 'Linked published park',
-    kind: 'owner-deal', goal: 'park', cadastreParcelIds: [PARCEL_ID], lifecycleStatus,
-    site: PARCEL_GEOMETRY, structureProposal: { kind: 'park', geometry: PARCEL_GEOMETRY } });
-  await page.route('**/proposals/batch', route => {
-    const ids = route.request().postDataJSON().ids;
-    return route.fulfill({ json: { items: ids.map((id: string) => ({ id, proposal: published() })) } });
-  });
-  await page.evaluate(parcelId => {
-    const w = window as any;
-    w.shouldSkipWelcomeForProposalLink = () => true;
-    w.proposalStorage.addProposal({ proposalId: '42', title: 'Unrelated numeric local key',
-      goal: 'as-is', cadastreParcelIds: [parcelId], lifecycleStatus: 'Active' });
-    w.proposalStorage.addProposal({ proposalId: 'p-local-fork', title: 'Separate local fork', goal: 'as-is',
-      sourceProposalId: '42', replacementOfProposalId: '42', cadastreParcelIds: [parcelId], lifecycleStatus: 'Active' });
-    for (const p of w.proposalStorage.peekAllProposals()) p.applied = true;
-  }, PARCEL_ID);
-  const result = await page.evaluate(() => (window as any).handleSharedPlanRoute(['42'], 0, { suppressSummary: true }));
-  expect(result.skipped).toEqual([]);
-  expect(result.failed).toEqual([]);
-  const records = await page.evaluate(() => (window as any).proposalStorage.peekAllProposals().map((p: any) => ({
-    key: p.proposalId, row: p.serverProposalId, title: p.title, lifecycle: p.lifecycleStatus, applied: p.applied
-  })));
-  expect(records).toEqual(expect.arrayContaining([
-    expect.objectContaining({ key: '42', title: 'Unrelated numeric local key', lifecycle: 'Active', applied: true }),
-    expect.objectContaining({ key: 'p-local-fork', lifecycle: 'Active', applied: true }),
-    expect.objectContaining({ key: 'p-linked-publication', row: '42', lifecycle: 'Cancelled', applied: false })
-  ]));
+test('design links ignore a local key equal to the CID and fork ancestry, then reuse the exact imported copy', async ({ mockApi: author, browser, baseURL }) => {
+  test.setTimeout(150_000);
+  await openCity(author);
+  await author.locator('#username-display').click();
+  await author.locator('#username-input').fill('Link copy author');
+  await author.locator('#welcome-submit-btn').click();
+  await expect(author.locator('#welcome-modal')).toBeHidden();
+  const authoredId = await createSpace(author, 'park');
+  await showProposal(author, authoredId);
+  await author.locator('#proposal-details-panel .btn-share-proposal').click();
+  const index = pageIndex(author);
+  await expect.poll(() => index.designs.size, { timeout: 30_000 }).toBe(1);
+  const [cid] = [...index.designs.keys()];
+  const title = String(index.designs.get(cid)!.title);
 
-  lifecycleStatus = 'Active';
-  await page.evaluate(() => {
-    const w = window as any;
-    const p = w.proposalStorage.getProposalByServerRowId('42', w.resolveBackendBaseUrl());
-    p.lifecycleStatus = 'Active'; p.applied = true;
+  const context = await browser.newContext({ baseURL });
+  await context.addInitScript(() => {
+    try {
+      localStorage.setItem('cb_current_city', 'zagreb');
+      localStorage.setItem('cb_site_intro_seen_v1', '1');
+    } catch (_) { /* opaque origin */ }
   });
-  for (const reference of ['42', 'p-linked-publication']) {
-    const reopened = await page.evaluate(ref => (window as any).handleSharedPlanRoute([ref], 0, { suppressSummary: true }), reference);
-    expect(reopened.failed).toEqual([]);
-    expect(reopened.skipped.map((item: any) => item.id)).toEqual(['p-linked-publication']);
+  const page = await context.newPage();
+  try {
+    await mockAllApiRoutes(page);
+    await attachSharedIndex(page, index);
+    await page.goto('/?city=zg&reduceMotion=1', { waitUntil: 'domcontentloaded' });
+    await waitForMapReady(page);
+    await page.waitForFunction(() => (window as any).ProposalManager?._initialReapplyDone === true);
+    await page.evaluate(({ cid, parcelId }) => {
+      const w = window as any;
+      w.proposalStorage.addProposal({ proposalId: cid, title: 'Unrelated local key equal to the CID',
+        goal: 'as-is', cadastreParcelIds: [parcelId], lifecycleStatus: 'Active' });
+      w.proposalStorage.addProposal({ proposalId: 'p-local-fork', title: 'Separate local fork', goal: 'as-is',
+        origin: { cid }, cadastreParcelIds: [parcelId], lifecycleStatus: 'Active' });
+    }, { cid, parcelId: PARCEL_ID });
+
+    const localId = `design-${cid}`;
+    const first = await page.evaluate(cid => (window as any).handleSharedDesignRoute([cid], { summary: false, openDetails: false, enter3D: false })
+      .then((result: any) => ({ applied: result.applied, skipped: result.skipped, failed: result.failed, localId: result.localIds.get(cid) })), cid);
+    expect(first).toEqual({ applied: [localId], skipped: [], failed: [], localId });
+    const records = await page.evaluate(() => {
+      const w = window as any;
+      return w.proposalStorage.peekAllProposals().map((p: any) => ({
+        key: p.proposalId, title: p.title, cid: w.DesignSync.publishedCid(p), applied: !!w.isProposalCurrentlyApplied(p)
+      }));
+    });
+    expect(records).toHaveLength(3);
+    expect(records).toEqual(expect.arrayContaining([
+      { key: cid, title: 'Unrelated local key equal to the CID', cid: null, applied: false },
+      { key: 'p-local-fork', title: 'Separate local fork', cid: null, applied: false },
+      { key: localId, title, cid, applied: true },
+    ]));
+
+    // Opened again, the link stands on the copy it imported: nothing is fetched into a second record.
+    const again = await page.evaluate(cid => (window as any).handleSharedDesignRoute([cid], { summary: false, enter3D: false })
+      .then((result: any) => ({ applied: result.applied, skipped: result.skipped, failed: result.failed })), cid);
+    expect(again).toEqual({ applied: [], skipped: [localId], failed: [] });
+    expect(await page.evaluate(() => (window as any).proposalStorage.peekAllProposals().length)).toBe(3);
+    const inspector = page.locator('#planning-inspector');
+    await expect(inspector.getByRole('heading', { name: title, exact: true })).toBeVisible({ timeout: 30_000 });
+    await expect(inspector.getByRole('button', { name: 'Proposal actions', exact: true })).toBeVisible();
+    await expect.poll(() => page.evaluate(() => (window as any).ProposalSelection?.getKey?.())).toBe(localId);
+  } finally {
+    await context.close();
   }
-  const inspector = page.locator('#planning-inspector');
-  await expect(inspector.getByRole('heading', { name: 'Linked published park', exact: true })).toBeVisible();
-  await expect(inspector).toContainText('Active');
-  await expect(inspector.getByRole('button', { name: 'Proposal actions', exact: true })).toBeVisible();
-  await expect.poll(() => page.evaluate(() => (window as any).ProposalSelection?.getKey?.())).toBe('p-linked-publication');
 });

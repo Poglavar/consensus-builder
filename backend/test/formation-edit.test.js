@@ -158,7 +158,7 @@ describe('wholeParcelTakePlan', () => {
     });
 });
 
-describe('clipPiecesByTaking / amendReparcellizationPlanByTaking (§15b: the taker amends the taken)', () => {
+describe('clipPiecesByTaking (§15b: a taking clips the pieces it crosses)', () => {
     // ~78 m × 111 m block; a ~16 m-wide "road" strip crosses its middle horizontally.
     const plot = (lonMin, latMin, lonMax, latMax, owner) =>
         ({ geometry: rect(lonMin, latMin, lonMax, latMax).geometry, ownerKey: owner, displayName: owner });
@@ -198,24 +198,6 @@ describe('clipPiecesByTaking / amendReparcellizationPlanByTaking (§15b: the tak
         const res = fe.clipPiecesByTaking([grazing], strip, ctx);
         expect(res.changed).toBe(false);
         expect(res.pieces[0]).toBe(grazing);
-    });
-
-    it('amends a whole readjustment plan: one plot split, one removed, one untouched', () => {
-        const plan = { polygons: [
-            plot(15.9600, 45.8000, 15.9610, 45.8010, 'split-me'),
-            plot(15.96005, 45.80047, 15.96015, 45.80057, 'take-me'),
-            plot(15.9700, 45.8000, 15.9710, 45.8010, 'leave-me')
-        ] };
-        const res = fe.amendReparcellizationPlanByTaking(plan, strip, ctx);
-        expect(res.changed).toBe(true);
-        expect(res.removedCount).toBe(1);
-        expect(res.splitCount).toBe(1);
-        expect(res.polygons.length).toBe(3); // 2 halves + the untouched one
-        expect(res.polygons.filter(p => p.ownerKey === 'split-me').length).toBe(2);
-        expect(res.polygons.filter(p => p.ownerKey === 'leave-me').length).toBe(1);
-        // The input plan object is untouched (pure).
-        expect(plan.polygons.length).toBe(3);
-        expect(plan.polygons[0].geometry.coordinates[0].length).toBe(5);
     });
 });
 
@@ -328,72 +310,7 @@ describe('formationIdentityOf', () => {
     });
 });
 
-describe('severanceVerdict (§15c)', () => {
-    // ctx with real turf, as the amend pass wires it.
-    const svCtx = {
-        area: f => turf.area(f),
-        intersectionArea: (a, b) => { const hit = turf.intersect(a, b); return hit ? turf.area(hit) : 0; },
-        difference: (a, b) => turf.difference(a, b)
-    };
-    // Pool: 100 m × 40 m block; three plots side by side inside it.
-    const pool = rect(16.0, 45.0, 16.0012, 45.00036).geometry;
-    const plots = { polygons: [
-        { geometry: rect(16.0, 45.0, 16.0004, 45.00036).geometry },
-        { geometry: rect(16.0004, 45.0, 16.0008, 45.00036).geometry },
-        { geometry: rect(16.0008, 45.0, 16.0012, 45.00036).geometry }
-    ] };
-
-    it('a taking that misses is unaffected', () => {
-        const taking = rect(16.002, 45.0, 16.003, 45.00036);
-        expect(fe.severanceVerdict(plots, pool, taking, svCtx).verdict).toBe('unaffected');
-    });
-
-    it('a strip across the middle severs (the POOL fragments)', () => {
-        // Vertical strip through the middle plot, full height — pool splits into two.
-        const taking = rect(16.00055, 44.9999, 16.00065, 45.0004);
-        const res = fe.severanceVerdict(plots, pool, taking, svCtx);
-        expect(res.verdict).toBe('severed');
-    });
-
-    it('a plot split with the pool still connected is a legal cut, not severance', () => {
-        // Pool extends a band north of the plots. A strip through the middle plot's FULL
-        // height splits that plot into two output parcels, while the pool stays one
-        // connected part (its northern band bridges the strip). Rule 3: reduced, one split.
-        const tallPool = rect(16.0, 45.0, 16.0012, 45.0005).geometry;
-        const taking = rect(16.00055, 44.9999, 16.00065, 45.00038);
-        const res = fe.severanceVerdict(plots, tallPool, taking, svCtx);
-        expect(res.verdict).toBe('reduced');
-        expect(res.splitPlots).toBe(1);
-    });
-
-    it('an edge trim only reduces', () => {
-        // Shave the northern 10 m off the whole block: every plot shrinks, nothing fragments.
-        const taking = rect(15.9999, 45.00027, 16.0013, 45.0005);
-        const res = fe.severanceVerdict(plots, pool, taking, svCtx);
-        expect(res.verdict).toBe('reduced');
-        expect(res.touchedPlots).toBe(3);
-        expect(res.destroyedPlots).toBe(0);
-    });
-
-    it('a whole-plot take that disconnects the pool severs (footprints stay contiguous)', () => {
-        // Swallow the whole middle plot: the pool comes apart into west and east islands.
-        // Ruling 2026-08-07: a readjustment never survives with a disconnected footprint —
-        // severed even though no individual output parcel fragments.
-        const taking = rect(16.00039, 44.9999, 16.00081, 45.0004);
-        const res = fe.severanceVerdict(plots, pool, taking, svCtx);
-        expect(res.verdict).toBe('severed');
-        expect(res.destroyedPlots).toBe(1);
-    });
-
-    it('a plot fully consumed while the pool stays connected is reduced, with the plot destroyed', () => {
-        // Swallow the WHOLE first plot (and nothing else meaningful): pool keeps one part
-        // (the remaining two plots' span), plot 1 is destroyed individually.
-        const taking = rect(15.9999, 44.9999, 16.0004, 45.0004);
-        const res = fe.severanceVerdict(plots, pool, taking, svCtx);
-        expect(res.verdict).toBe('reduced');
-        expect(res.destroyedPlots).toBe(1);
-    });
-
+describe('corridorComponents', () => {
     it('corridorComponents: a chain is one component, a gap makes two', () => {
         const a = [{ lat: 45.0, lng: 16.0 }, { lat: 45.0, lng: 16.001 }];
         const b = [{ lat: 45.0, lng: 16.001 }, { lat: 45.0, lng: 16.002 }];
@@ -409,14 +326,5 @@ describe('severanceVerdict (§15c)', () => {
         const through = [{ lat: 45.0, lng: 16.0 }, { lat: 45.0, lng: 16.001 }, { lat: 45.0, lng: 16.002 }];
         const branch = [{ lat: 45.0, lng: 16.001 }, { lat: 45.0005, lng: 16.001 }];
         expect(fe.corridorComponents([through, branch]).length).toBe(1);
-    });
-
-    it('a disconnected crumb below the part floor does not count as severance', () => {
-        // Strip across the middle stopping ~10 cm from the northern edge: the band left
-        // north of it is ~0.8 m² — under the 1 m² part floor, so pool and middle plot
-        // still count one meaningful part each. Reduced, not severed.
-        const taking = rect(16.00055, 44.9999, 16.00065, 45.0003591);
-        const res = fe.severanceVerdict(plots, pool, taking, svCtx);
-        expect(res.verdict).toBe('reduced');
     });
 });

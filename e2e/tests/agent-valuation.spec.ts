@@ -12,9 +12,8 @@ test('modeled totals require known land value and keep their ETH denomination', 
     w.agentStorage.addAgent(agent);
     w.PersistentStorage.setItem(`parcel_${parcelId}_owner`, agent.id);
     w.ethUsdEstimate = 4000;
-    // Exercise the dialog's handling of an unavailable calculation and a different active chain.
+    // Exercise the dialog's handling of an unavailable calculation.
     w.calculatePortfolioValue = async () => NaN;
-    w.getChainCurrencySymbol = () => 'SOL';
     await w.showAgentDialog(agent.id);
     return agent.id;
   }, PARCEL_ID);
@@ -34,7 +33,6 @@ test('modeled totals require known land value and keep their ETH denomination', 
   }, id);
   await expect(dialog.locator('[data-agent-portfolio-value]')).toContainText('17');
   await expect(dialog.locator('[data-agent-portfolio-value]')).toContainText('ETH');
-  await expect(dialog.locator('[data-agent-portfolio-value]')).not.toContainText('SOL');
   await expect(dialog.locator('[data-agent-total-wealth]')).toContainText('117');
   await expect(dialog.locator('[data-agent-total-wealth]')).toContainText('ETH');
 });
@@ -75,7 +73,6 @@ test('agent profiles keep connected-wallet observations out of other agents', as
   await expect(dialog.locator('[data-list-type="parcels"] .parcel-item')).toHaveCount(1);
   await expect(dialog.locator('[data-agent-parcels-basis]')).toHaveText('Parcels assigned to this agent in the local model.');
   await expect(dialog).toContainText('Linked parcels (1)');
-  await expect(dialog).toContainText('Recorded acceptances (0)');
   expect(await page.evaluate(() => (window as any).__profileWalletCalls)).toBe(0);
   await dialog.locator('.agent-dialog-modal-close').click();
   await page.evaluate(id => (window as any).showAgentDialog(id), ids.user);

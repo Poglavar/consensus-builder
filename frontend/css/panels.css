@@ -119,7 +119,7 @@
 body.map-edit-locked #proposal-details-panel,
 body.map-edit-locked #parcel-info-panel,
 body.map-edit-locked #road-info-panel,
-body.map-edit-locked #drill-stack-panel {
+body.map-edit-locked #click-stack {
     pointer-events: none;
     opacity: 0.45;
     filter: saturate(0.6);
@@ -184,6 +184,28 @@ from .right-dock-panel — do not re-declare one here.
     padding: 0; /* Override .info-panel padding since we use .panel-header and .panel-body */
     z-index: var(--cb-z-panel); /* the right dock's rung: over the map chrome, under sheets and dialogs */
     border-radius: var(--cb-radius-lg);
+}
+
+/* A long parcel id (a formed piece's provenance token) wraps to two lines at most, wherever a
+   parcel title shows it. */
+.parcel-id-text,
+#parcel-info-panel .parcel-title-id-value {
+    display: -webkit-box;
+    min-width: 0;
+    max-width: 100%;
+    overflow: hidden;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    word-break: break-all;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+}
+
+#parcel-info-panel .parcel-title-id {
+    flex: 0 1 auto;
+    min-width: 0;
+    max-width: 100%;
 }
 
 #parcel-info-panel.visible {
@@ -364,41 +386,6 @@ a phone it is the bottom sheet, up to half the screen (the phone block at the en
 
 .parcel-build-palette .cb-kicker {
     margin-bottom: var(--cb-space-1);
-}
-
-/* Acceptance mini-bar inside a proposal list row: grey track, green proportional fill,
-   the exact count centred over it. */
-.proposal-item-acceptbar {
-    position: relative;
-    flex: 1;
-    min-width: 42px;
-    max-width: 90px;
-    height: 12px;
-    margin-left: auto;
-    border-radius: var(--cb-radius-pill);
-    background: var(--cb-surface-3);
-    overflow: hidden;
-}
-
-.proposal-item-acceptbar-fill {
-    position: absolute;
-    inset: 0 auto 0 0;
-    background: var(--cb-success);
-    border-radius: var(--cb-radius-pill);
-}
-
-.proposal-item-acceptbar-text {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 9px;
-    font-weight: 700;
-    line-height: 1;
-    color: var(--cb-text);
-    text-shadow: var(--cb-text-halo);
-    pointer-events: none;
 }
 
 #road-info-panel .metric-label {

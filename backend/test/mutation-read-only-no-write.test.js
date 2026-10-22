@@ -34,7 +34,6 @@ function bootStore() {
     install('__formationDepth', formationDepth);
     install('__planOrder', planOrder);
     install('normalizeParcelIdList', values => Array.from(new Set((values || []).map(String))));
-    install('normalizeOwnerAcceptances', value => value || {});
     install('normalizeLensEntries', value => value || []);
     install('normalizeProposalStatusAxes', proposal => proposal);
     install('normalizeProposalGoalKey', value => String(value || '').trim().toLowerCase());

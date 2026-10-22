@@ -1,8 +1,14 @@
+// SOLANA_RPC_MAX_ACCOUNTS bounds every batched account read: the shared helper, the markets API's market
+// reader, the agreement index's chain reader (agreements/onchain.js) and the society runner, each over a
+// fake RPC; the market reader also checks the market program, subject and stake mint before exposing a pool.
+import { createRequire } from 'node:module';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { Keypair, PublicKey } from '@solana/web3.js';
 import { createHash } from 'node:crypto';
-import { DEVNET_GENESIS_HASH, PROPOSAL_PROGRAM_ID, MARKET_PROGRAM_ID } from '../oracle/proposal-lifecycle.js';
+import { DEVNET_GENESIS_HASH, AGREEMENT_PROGRAM_ID, createAgreementChain } from '../agreements/onchain.js';
 import { accountsPerRequest, getMultipleAccountsBatched } from '../solana/account-batching.js';
+
+const MARKET_PROGRAM_ID = createRequire(import.meta.url)('../../frontend/js/solana/market-client.js').constants.PROGRAM_ID;
 
 const { rpcCalls, rpcState } = vi.hoisted(() => ({ rpcCalls: [], rpcState: {} }));
 
@@ -23,21 +29,8 @@ vi.mock('@solana/web3.js', async (importOriginal) => {
     };
 });
 
-vi.mock('../agents/lifecycle-actions.js', () => ({
-    claimProposalMarket: vi.fn(),
-    decodeProposalState: vi.fn(),
-    resolveProposalMarket: vi.fn(),
-    revokePledge: vi.fn()
-}));
-vi.mock('../routes/proposals.js', () => ({ EFFECTIVE_STATUS_SQL: 'lifecycle_status', normalizeCityCode: value => value }));
-
-const { defaultMarketReader, defaultProposalStatusReader, DEVNET_USDC_MINT } = await import('../routes/markets.js');
-const { decodeProposalState } = await import('../agents/lifecycle-actions.js');
+const { defaultMarketReader, DEVNET_USDC_MINT } = await import('../routes/markets.js');
 const { readAccounts: readSocietyAccounts } = await import('../agents/society-run.mjs');
-const proposalInfo = () => ({
-    owner: new PublicKey(PROPOSAL_PROGRAM_ID),
-    data: createHash('sha256').update('account:Proposal').digest().subarray(0, 8)
-});
 
 function marketInfo(proposal, stakeMint = DEVNET_USDC_MINT) {
     const data = Buffer.alloc(123);
@@ -53,7 +46,6 @@ describe('Solana account batching', () => {
         rpcCalls.length = 0;
         rpcState.genesisHash = DEVNET_GENESIS_HASH;
         rpcState.accountInfo = null;
-        vi.mocked(decodeProposalState).mockReturnValue({ status: 0 });
     });
 
     it('defaults to 100 and validates configured limits from 1 through 100', () => {
@@ -97,51 +89,52 @@ describe('Solana account batching', () => {
         expect(result).toEqual(expected);
     });
 
-    it.each([
-        ['markets', defaultMarketReader],
-        ['proposal statuses', defaultProposalStatusReader]
-    ])('uses the configured bound in the markets API %s reader', async (_name, makeReader) => {
+    it('uses the configured bound in the markets API market reader', async () => {
         const accounts = Array.from({ length: 12 }, () => Keypair.generate().publicKey.toBase58());
-        const reader = makeReader({ SOLANA_RPC_MAX_ACCOUNTS: '5', SOLANA_RPC_URL: 'https://rpc.invalid' });
-        if (_name === 'proposal statuses') rpcState.accountInfo = proposalInfo();
+        const reader = defaultMarketReader({ SOLANA_RPC_MAX_ACCOUNTS: '5', SOLANA_RPC_URL: 'https://rpc.invalid' });
 
-        await reader(accounts);
+        const pools = await reader(accounts);
 
         expect(rpcCalls.map(({ addresses }) => addresses.length)).toEqual([5, 5, 2]);
         expect(rpcCalls.every(({ commitment }) => commitment === 'confirmed')).toBe(true);
+        expect([...pools.keys()]).toEqual(accounts);
+        expect([...pools.values()].every(entry => entry.market === null)).toBe(true);
     });
 
-    it.each([
-        ['markets', defaultMarketReader], ['proposal statuses', defaultProposalStatusReader]
-    ])('refuses a non-devnet RPC before reading %s', async (_name, makeReader) => {
+    it('refuses a non-devnet RPC before reading markets', async () => {
         rpcState.genesisHash = 'different-network';
-        await expect(makeReader({ SOLANA_RPC_URL: 'https://rpc.invalid' })([Keypair.generate().publicKey.toBase58()])).rejects.toThrow('require Solana devnet');
+        await expect(defaultMarketReader({ SOLANA_RPC_URL: 'https://rpc.invalid' })([Keypair.generate().publicKey.toBase58()])).rejects.toThrow('require Solana devnet');
         expect(rpcCalls).toEqual([]);
     });
 
-    it('accepts only a readable proposal owned by the configured program with the correct discriminator', async () => {
-        const account = Keypair.generate().publicKey.toBase58();
-        const read = defaultProposalStatusReader({ SOLANA_RPC_URL: 'https://rpc.invalid' });
-        for (const info of [null, { ...proposalInfo(), owner: new PublicKey(MARKET_PROGRAM_ID) }, { ...proposalInfo(), data: Buffer.alloc(8) }]) {
-            rpcState.accountInfo = info;
-            await expect(read([account])).rejects.toThrow(/missing|program|not a Proposal/);
-        }
-        rpcState.accountInfo = proposalInfo();
-        vi.mocked(decodeProposalState).mockReturnValueOnce({ status: 99 });
-        await expect(read([account])).rejects.toThrow('unknown lifecycle');
-        await expect(read([account])).resolves.toEqual(new Map([[account, 'Active']]));
+    it('uses the configured bound in the agreement index\'s chain reader', async () => {
+        const accounts = Array.from({ length: 12 }, () => Keypair.generate().publicKey.toBase58());
+        const calls = [];
+        const connection = {
+            async getGenesisHash() { return DEVNET_GENESIS_HASH; },
+            async getMultipleAccountsInfoAndContext(keys, commitment) {
+                calls.push({ addresses: keys.map(key => key.toBase58()), commitment });
+                return { context: { slot: 7 }, value: keys.map(() => null) };
+            }
+        };
+        const rows = await createAgreementChain({ connection, env: { SOLANA_RPC_MAX_ACCOUNTS: '5' } }).readAccounts(accounts);
+        expect(calls.map(({ addresses }) => addresses.length)).toEqual([5, 5, 2]);
+        expect(calls.flatMap(({ addresses }) => addresses)).toEqual(accounts);
+        expect(calls.every(({ commitment }) => commitment === 'confirmed')).toBe(true);
+        expect(rows.map(row => row.problem)).toEqual(accounts.map(() => 'missing'));
+        await expect(createAgreementChain({ connection, env: { SOLANA_RPC_MAX_ACCOUNTS: '101' } }).readAccounts(accounts)).rejects.toThrow(/SOLANA_RPC_MAX_ACCOUNTS/);
     });
 
-    it('verifies the market program, proposal and stake mint before exposing a pool', async () => {
+    it('verifies the market program, subject and stake mint before exposing a pool', async () => {
         const account = Keypair.generate().publicKey.toBase58();
         const other = Keypair.generate().publicKey.toBase58();
         const read = defaultMarketReader({ SOLANA_RPC_URL: 'https://rpc.invalid' });
         for (const info of [
-            { ...marketInfo(account), owner: new PublicKey(PROPOSAL_PROGRAM_ID) },
+            { ...marketInfo(account), owner: new PublicKey(AGREEMENT_PROGRAM_ID) },
             marketInfo(other), marketInfo(account, other)
         ]) {
             rpcState.accountInfo = info;
-            await expect(read([account])).rejects.toThrow(/program|proposal or stake mint/);
+            await expect(read([account])).rejects.toThrow(/Unexpected market account program|different subject or stake mint/);
         }
         rpcState.accountInfo = marketInfo(account);
         const accepted = await read([account]);

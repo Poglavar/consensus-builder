@@ -45,13 +45,16 @@ describe('public product guides', () => {
         expect(readFrontend(name)).toContain(statement);
     });
 
+    // Named plans are gone (plan-design-agreement.md, M2): the guides describe the shared
+    // composition and no longer contrast it with a named plan.
     it.each([
-        ['how-to-use.html', 'The shared composition preserves the applied set and its dependencies. It is distinct from a named plan, which records an ordered set of published proposal rows.', 'An execution status or source event is evidence of a recorded state; it does not prove payment, legal registration or physical construction.'],
-        ['kako-koristiti.html', 'Dijeljena kompozicija čuva skup primijenjenih prijedloga i njihove ovisnosti. Razlikuje se od imenovanog plana, koji bilježi uređeni skup objavljenih redaka prijedloga.', 'Status izvršenja ili izvorni događaj dokaz je zabilježenog stanja; ne dokazuje plaćanje, pravnu registraciju ni fizičku izgradnju.']
-    ])('%s distinguishes local sharing, named membership and execution evidence', (name, sharing, evidence) => {
+        ['how-to-use.html', 'The shared composition preserves the applied set and its dependencies.', 'An execution status or source event is evidence of a recorded state; it does not prove payment, legal registration or physical construction.'],
+        ['kako-koristiti.html', 'Dijeljena kompozicija čuva skup primijenjenih prijedloga i njihove ovisnosti.', 'Status izvršenja ili izvorni događaj dokaz je zabilježenog stanja; ne dokazuje plaćanje, pravnu registraciju ni fizičku izgradnju.']
+    ])('%s distinguishes local sharing and execution evidence', (name, sharing, evidence) => {
         const html = readFrontend(name);
         expect(html).toContain(sharing);
         expect(html).toContain(evidence);
+        expect(html).not.toMatch(/named plan|imenovan\w* plan/i);
     });
 
     it.each([

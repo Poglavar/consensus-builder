@@ -27,6 +27,10 @@ const CITIES = [
     { id: 'new_york', label: 'New York, USA', center: [40.7128, -74.006], parcelSource: 'nyc' }
 ];
 
+// Design CIDs as the index names them (cid.js vectors for the empty input and for "hello").
+const CID_701 = 'bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku';
+const CID_702 = 'bafkreibm6jg3ux5qumhcn2b3flc3tyu6dmlb4xa7u5bf44yegnrjhc4yeq';
+
 describe('query classification', () => {
     const kinds = q => Model.classifyQuery(q).kinds;
 
@@ -165,12 +169,21 @@ describe('ranking', () => {
             .toMatchObject({ proposalId: 'draft-42', localOnly: true });
     });
 
-    it('keeps a local copy once when the server search also finds its uploaded row', () => {
-        const local = [{ proposalId: 'draft-42', serverProposalId: '701', localOnly: true }];
+    it('finds a published local design by its CID, the id its link names', () => {
+        const local = Model.rankLocalProposals([
+            { proposalId: 'draft-42', title: 'Tokyo pocket park', published: { cid: CID_701, apiBase: 'https://api.example.test' } },
+            { proposalId: 'draft-99', title: 'River crossing' }
+        ], CID_701);
+        expect(local.map(proposal => proposal.proposalId)).toEqual(['draft-42']);
+        expect(local[0]).toMatchObject({ localOnly: true, searchRank: 0 });
+    });
+
+    it('keeps a local copy once when the index search also finds its published row', () => {
+        const local = [{ proposalId: 'draft-42', cid: CID_701, localOnly: true }, { proposalId: 'draft-43', cid: null, localOnly: true }];
         const merged = Model.mergeProposalSearchResults(local, [
-            { id: '701', cityId: 'zagreb' }, { id: '702', cityId: 'zagreb' }
+            { id: CID_701, cid: CID_701, cityId: 'zagreb' }, { id: CID_702, cid: CID_702, cityId: 'zagreb' }
         ], 'zagreb');
-        expect(merged.map(proposal => proposal.id || proposal.proposalId)).toEqual(['draft-42', '702']);
+        expect(merged.map(proposal => proposal.localOnly ? proposal.proposalId : proposal.cid)).toEqual(['draft-42', 'draft-43', CID_702]);
     });
 
     it('orders groups by their best match, drops empty ones and cuts each to its limit', () => {

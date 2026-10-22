@@ -1,8 +1,6 @@
-// Pure helpers for the x402 pay-to-post gate on /agent/* routes: config reading, atomic-to-decimal
-// amount formatting, and the `agent` stamp written onto a paid proposal. No express, no network,
-// so every branch is unit-testable; routes/agent-proposals.js does the wiring.
-
-import { createHash } from 'node:crypto';
+// Pure helpers for the x402-paid /agent/* routes: config reading and atomic-to-decimal amount
+// formatting. No express, no network, so every branch is unit-testable; routes/agent-oracle-facts.js
+// does the wiring.
 
 export const AGENT_ROUTE_PREFIX = '/agent/';
 export const CDP_FACILITATOR_URL = 'https://api.cdp.coinbase.com/platform/v2/x402';
@@ -77,44 +75,4 @@ export function formatAtomicAmount(atomic, decimals) {
     const whole = padded.slice(0, -decimals).replace(/^0+(?=\d)/, '');
     const frac = padded.slice(-decimals).replace(/0+$/, '');
     return frac ? `${whole}.${frac}` : whole;
-}
-
-// Hash the already-validated parsed request rather than its raw JSON text: object key order is
-// irrelevant, while array order remains significant. The hash is stored beside the payment id so
-// that an id can only replay the exact operation it originally paid for.
-export function hashAgentProposalRequest(body) {
-    return createHash('sha256').update(stableJson(body)).digest('hex');
-}
-
-// The `agent` object stored on a paid proposal (design §5.1). Whatever the agent sent under
-// `agent` (persona, rationale, run_id) is kept; `wallet` and the payment receipt are always
-// overwritten from the verified settlement, so the client never gets to claim either.
-export function buildAgentStamp(sentAgent, payment) {
-    const stamp = isPlainObject(sentAgent) ? { ...sentAgent } : {};
-    stamp.wallet = payment.payer;
-    stamp.paid = {
-        id: payment.id,
-        network: payment.network,
-        asset: payment.asset ?? null,
-        amount: payment.amount ?? null,
-        amountAtomic: payment.amountAtomic ?? null,
-        tx: payment.transaction
-    };
-    return stamp;
-}
-
-function stableJson(value) {
-    if (Array.isArray(value)) return `[${value.map(stableJson).join(',')}]`;
-    if (isPlainObject(value)) {
-        const entries = Object.keys(value)
-            .sort()
-            .filter(key => value[key] !== undefined)
-            .map(key => `${JSON.stringify(key)}:${stableJson(value[key])}`);
-        return `{${entries.join(',')}}`;
-    }
-    return JSON.stringify(value);
-}
-
-function isPlainObject(value) {
-    return value !== null && typeof value === 'object' && !Array.isArray(value);
 }

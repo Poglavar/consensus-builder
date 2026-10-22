@@ -62,8 +62,9 @@
      * `centerline` is set only for a road stored without its corridor polygon and flagged
      * `constructionFrame.kind: 'legacy-centreline'` by the legacy migration: the server buffers the
      * centreline by width/2, which is why such a footprint is `approximate`. An unflagged centre
-     * line without its polygon is `invalid` with `corridorUnprepared: true`: a material proposal
-     * whose land the server has not built yet.
+     * line without its polygon is `invalid` with `corridorUnprepared: true`: a road whose land the
+     * browser has not built yet (road-drawing.js builds it as the road is drawn; only the browser
+     * builds corridor land).
      */
     function footprintParts(proposal) {
         const out = { polygons: [], centerline: null, sources: [], approximate: false, vertexCount: 0, invalid: null };
@@ -82,9 +83,9 @@
             if (out.sources.indexOf(source) === -1) out.sources.push(source);
         };
 
-        const plan = proposal.reparcellization;
-        if (plan && Array.isArray(plan.polygons)) {
-            plan.polygons.forEach(polygon => add('reparcellization.polygons', polygon && polygon.geometry));
+        const layout = proposal.parcelLayout;
+        if (layout && Array.isArray(layout.plots)) {
+            layout.plots.forEach(plot => add('parcelLayout.plots', plot && plot.geometry));
         }
         const definition = proposal.roadProposal && proposal.roadProposal.definition;
         if (definition && definition.polygon) {
@@ -93,11 +94,12 @@
             const segments = centerlineSegments(definition);
             const width = Number(definition.width);
             // Only a record the legacy migration flagged is read from its centre line: a corridor
-            // built today carries its land, materialised by POST /proposals/prepare, so a centre
-            // line without land is an unprepared draft — never a footprint (projections.md §3).
+            // drawn today carries its land, built in the browser as the road is drawn
+            // (road-drawing.js), so a centre line without land is an unbuilt draft — never a
+            // footprint (projections.md §3).
             const legacy = !!definition.constructionFrame && definition.constructionFrame.kind === 'legacy-centreline';
             if (segments.length && !legacy) {
-                out.invalid = 'roadProposal.definition has a centre line but no corridor land; prepare the proposal (POST /proposals/prepare)';
+                out.invalid = 'roadProposal.definition has a centre line but no corridor land: its corridor polygon has not been built (road-drawing.js builds it as the road is drawn)';
                 out.corridorUnprepared = true;
             } else if (segments.length && Number.isFinite(width) && width > 0) {
                 out.centerline = { definition, segments, halfWidthM: width / 2 };
@@ -107,9 +109,9 @@
             }
         }
         if (proposal.structureProposal) add('structureProposal.geometry', proposal.structureProposal.geometry);
-        // A readjustment's authored polygons are its complete footprint; `proposal.geometry` on a
-        // readjustment was an apply-time union of whatever live pool it consumed.
-        if (!plan) add('geometry', proposal.geometry);
+        // A parcel layout's plots are its complete footprint; `proposal.geometry` on a layout would
+        // be an apply-time union of whatever live pool it consumed.
+        if (!layout) add('geometry', proposal.geometry);
         add('buildingGeometry', proposal.buildingGeometry);
         if (proposal.geometry && Array.isArray(proposal.geometry.buildings)) {
             proposal.geometry.buildings.forEach(building => add('geometry.buildings', building));

@@ -1,4 +1,5 @@
-// Free, read-only discovery surface for on-chain proposal donations and soft pledges. Writes go
+// Free, read-only discovery surface for the on-chain donations and soft pledges backing an agreement:
+// their subject is the agreement's chain account (PDA ["agreement", sponsor, sha256(cid)]). Writes go
 // directly to Solana; the API never takes custody or accepts client-reported balances as truth.
 import { createRequire } from 'node:module';
 
@@ -14,23 +15,23 @@ export function setupAgentPledgesRoute(app, { env = process.env, connection = nu
         return rpcConnection;
     };
 
-    app.get('/agent/pledges/:proposal', async (req, res) => {
-        let proposal;
+    app.get('/agent/pledges/:agreementAccount', async (req, res) => {
+        let account;
         try {
-            proposal = new web3.PublicKey(req.params.proposal);
+            account = new web3.PublicKey(req.params.agreementAccount);
         } catch {
-            return res.status(400).json({ error: 'proposal must be a Solana public key' });
+            return res.status(400).json({ error: 'the agreement account must be a Solana public key' });
         }
         try {
             const [donations, pledges] = await Promise.all([
-                pledgeClient.readDonationEscrow(getConnection(), proposal),
-                pledgeClient.readPledgeBook(getConnection(), proposal)
+                pledgeClient.readDonationEscrow(getConnection(), account),
+                pledgeClient.readPledgeBook(getConnection(), account)
             ]);
             return res.json({
                 exists: Boolean(donations || pledges),
-                proposal: proposal.toBase58(),
+                agreementAccount: account.toBase58(),
                 donations: donations ? {
-                    escrow: pledgeClient.getDonationEscrowPda(proposal)[0].toBase58(),
+                    escrow: pledgeClient.getDonationEscrowPda(account)[0].toBase58(),
                     beneficiary: donations.beneficiary,
                     vault: donations.vault,
                     totalAtomic: donations.totalDonated.toString(),
@@ -42,7 +43,7 @@ export function setupAgentPledgesRoute(app, { env = process.env, connection = nu
                     released: donations.released
                 } : null,
                 pledges: pledges ? {
-                    book: pledgeClient.getPledgeBookPda(proposal)[0].toBase58(),
+                    book: pledgeClient.getPledgeBookPda(account)[0].toBase58(),
                     beneficiary: pledges.beneficiary,
                     activeAtomic: pledges.activePledged.toString(),
                     activeUsdc: pledgeClient.formatUsdc(pledges.activePledged),
@@ -54,7 +55,7 @@ export function setupAgentPledgesRoute(app, { env = process.env, connection = nu
                 } : null
             });
         } catch (error) {
-            console.error('Failed to read proposal pledge escrow:', error);
+            console.error(`[${new Date().toISOString()}] Failed to read the support of agreement account ${account.toBase58()}:`, error);
             return res.status(502).json({ error: 'Solana pledge state is unavailable' });
         }
     });

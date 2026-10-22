@@ -9,6 +9,7 @@ import {
     DEVNET_USDC_MINT,
     DEFAULT_X402_FEE_PAYER
 } from '../solana/address-book.js';
+import { AGREEMENT_PROGRAM_ID } from '../agreements/onchain.js';
 
 const TREASURY = 'AMbsiP9F8YY2y8n9uFdqtw7yNZZHvTWFEWSQGHKtmkoQ';
 // Derived from the treasury / persona wallets on devnet — these exact accounts appear in the
@@ -43,7 +44,7 @@ describe('deriveAssociatedTokenAddress', () => {
 });
 
 describe('buildAddressBook', () => {
-    it('labels our four programs', () => {
+    it('labels our four programs, the agreement program by the id its codec carries', () => {
         const book = makeBook();
 
         expect(book.labelFor('4zadC1FgWPQLv6qv66mjEBthBqTvrmxL5oDcHQzNtkV1')).toEqual({
@@ -52,9 +53,12 @@ describe('buildAddressBook', () => {
             kind: 'program',
             short: '4zad…tkV1'
         });
-        expect(book.labelFor('3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg').label).toBe('proposal_nft program');
+        // The app no longer uses proposal_nft (M3): the book neither names nor watches it.
+        expect(book.entryFor('3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg')).toBeNull();
         expect(book.labelFor('GDYnzduynKhKgxDhvvKVarn2s23DtzA26s6hycuUYDRB').label).toBe('proposal_market program');
         expect(book.labelFor('1jESRS3mJiPUJTtmQ5ncyBhGNmGeXTpUqPyJcTYrp6g').label).toBe('proposal_pledge program');
+        expect(AGREEMENT_PROGRAM_ID).toBe('Agreement1111111111111111111111111111111111');
+        expect(book.labelFor(AGREEMENT_PROGRAM_ID)).toMatchObject({ label: 'agreement program', kind: 'program' });
     });
 
     it('labels the solana system programs', () => {
@@ -169,9 +173,9 @@ describe('watchedAddresses', () => {
         // strangers' payments into our history. It stays a label (see legendAddresses).
         expect(watchedAddresses(book)).toEqual([
             '4zadC1FgWPQLv6qv66mjEBthBqTvrmxL5oDcHQzNtkV1',
-            '3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg',
             'GDYnzduynKhKgxDhvvKVarn2s23DtzA26s6hycuUYDRB',
             '1jESRS3mJiPUJTtmQ5ncyBhGNmGeXTpUqPyJcTYrp6g',
+            AGREEMENT_PROGRAM_ID,
             TREASURY,
             TREASURY_USDC,
             PERSONA_WALLET,

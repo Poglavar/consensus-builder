@@ -1,10 +1,10 @@
-// Unit and wiring tests for land-readjustment draw shortcuts and the distinction between an
-// unassigned output plot and an unnamed original owner in the accounting ledger. The wiring is
-// checked on a real editor opened in helpers/reparcellization-env.js.
+// Unit and wiring tests for the parcel-layout editor's UI-state helpers: draw shortcuts, a layout's
+// input parcels, and owner labels (used by the ownership panel). The wiring is checked on a real
+// editor opened in helpers/parcel-layout-env.js.
 import { describe, expect, it, afterEach } from 'vitest';
 import { createRequire } from 'node:module';
 import { readFileSync } from 'node:fs';
-import { makeEditor, box } from './helpers/reparcellization-env.js';
+import { makeEditor, box } from './helpers/parcel-layout-env.js';
 
 const require = createRequire(import.meta.url);
 const {
@@ -12,14 +12,12 @@ const {
     resolveOwnerDisplayName,
     resolveOwnerLabel,
     genericOwnerKind,
-    normalizePlotOwners,
-    plotIsAssigned,
     readjustmentInputFeatures
 } = require('../../frontend/js/reparcellization-ui-state.js');
 const styles = readFileSync(new URL('../../frontend/css/on-map-reparcellization.css', import.meta.url), 'utf8');
 const locale = code => JSON.parse(readFileSync(new URL(`../../frontend/i18n/${code}.json`, import.meta.url), 'utf8'));
 
-describe('saved readjustment inputs', () => {
+describe('saved layout inputs', () => {
     const original = { type: 'Feature', properties: { parcelId: 'HR-335550-1791/69', owner: 'Original owner' } };
     const replacement = { type: 'Feature', properties: { parcelId: 'HR-335550-1791/69#plan-1', owner: 'New owner' } };
     const sources = { cadastre: new Map([[original.properties.parcelId, original]]), live: new Map([[replacement.properties.parcelId, replacement]]) };
@@ -37,7 +35,7 @@ describe('saved readjustment inputs', () => {
     });
 });
 
-describe('land-readjustment UI state', () => {
+describe('parcel-layout UI state', () => {
     it('uses F (or Enter), C, and U for finish, cancel, and undo while drawing', () => {
         expect(resolveDrawShortcut({ active: true, key: 'f' })).toBe('finish');
         expect(resolveDrawShortcut({ active: true, key: 'C' })).toBe('cancel');
@@ -90,16 +88,15 @@ describe('land-readjustment UI state', () => {
     afterEach(() => { env?.dispose(); env = null; });
     async function openEditor(beforeOpen = () => {}) {
         env = makeEditor({
-            parcels: [{ id: 'P1', geometry: box(0, 0, 40, 50), properties: { calculatedArea: 2000 } }],
-            owners: { P1: [{ key: 'o-ana', ownerId: 'ana', displayName: 'Ana', shareText: '1/1' }] },
+            parcels: [{ id: 'P1', geometry: box(0, 0, 40, 50) }],
             selection: { ids: ['P1'] }
         });
         beforeOpen();
-        expect(await env.editor.openReparcellizationModal()).toBe(true);
+        expect(await env.editor.openParcelLayoutEditor()).toBe(true);
         return env;
     }
 
-    it('wires the pure decisions into icon-free shortcut-labelled controls and the owner ledger', async () => {
+    it('wires the draw shortcuts into icon-free shortcut-labelled controls', async () => {
         const w = await openEditor();
         expect(w.$('[data-reparcel-undo]').textContent).toBe('Undo point (U)');
         expect(w.$('[data-reparcel-finish]').textContent).toBe('Finish plot (F)');
@@ -117,7 +114,7 @@ describe('land-readjustment UI state', () => {
             globalThis.L.map = () => { throw new Error('the editor made its own Leaflet map'); };
         });
         const [options] = globalThis.OnMapEditor.open.calls[0];
-        expect(options).toMatchObject({ owner: 'reparcellization', modes: ['2d'], handleEscape: false });
+        expect(options).toMatchObject({ owner: 'parcel-layout', modes: ['2d'], handleEscape: false });
         const session = w.session();
         expect(w.state.map).toBe(session.map);
         expect(w.state.map).toBe(globalThis.map);
@@ -141,7 +138,8 @@ describe('land-readjustment UI state', () => {
         expect(group.children.indexOf(persistent)).toBeGreaterThan(group.children.indexOf(w.$('[data-reparcel-secondary-controls]')));
         expect(group.children.indexOf(persistent)).toBeLessThan(group.children.indexOf(toolbar));
         expect(persistent.querySelector('[data-reparcel-undo-edit]').disabled).toBe(true);
-        expect(w.$('.reparcel-tools-spacer').parentNode.closest('[data-reparcel-secondary-controls]')).not.toBeNull();
+        // The layouts and their count fold away with the other secondary tools.
+        expect(w.$('[data-parcel-layout-count-field]').closest('[data-reparcel-secondary-controls]')).not.toBeNull();
         expect(toolbar.hidden).toBe(true);
         // The active mode is named in the panel and handed to the shared editor's hint.
         expect(w.$('[data-reparcel-active-mode]').textContent).toBe('Edit boundaries (nodes) active');
@@ -150,49 +148,5 @@ describe('land-readjustment UI state', () => {
         // Phones: edge to edge, the mode strip hangs from the top-left (css/map.css).
         expect(styles).toMatch(/\.on-map-editor__tools\.reparcel-tools-map \{[^}]*left: 12px;[^}]*width: calc\(100vw - 24px\);/);
         expect(styles).toMatch(/\.reparcel-actions \[data-reparcel-cancel\],[\s\S]*?min-width: 0;/);
-    });
-});
-
-// A plot's owner is stored twice — the singular ownerKey/displayName and owners[]. Reading only
-// one of them is what disabled Done forever on an imported plan.
-describe('plot owner normalisation', () => {
-    it('reads an owners[] array as given', () => {
-        const owners = normalizePlotOwners({
-            ownerKey: 'a',
-            owners: [{ ownerKey: 'a', displayName: 'Ada', share: 0.6 }, { ownerKey: 'b', displayName: 'Bo', share: 0.4 }]
-        });
-        expect(owners.map(o => o.ownerKey)).toEqual(['a', 'b']);
-        expect(owners[0].share).toBeCloseTo(0.6);
-    });
-
-    it('derives the array from a lone ownerKey when owners[] is absent', () => {
-        const owners = normalizePlotOwners({ ownerKey: 'is-1', displayName: 'Prometna površina IS-1', color: '#9aa0a6' });
-        expect(owners).toEqual([{ ownerKey: 'is-1', displayName: 'Prometna površina IS-1', color: '#9aa0a6', share: 1 }]);
-    });
-
-    it('splits shares evenly when none are recorded', () => {
-        const owners = normalizePlotOwners({ owners: [{ ownerKey: 'a' }, { ownerKey: 'b' }] });
-        expect(owners.map(o => o.share)).toEqual([0.5, 0.5]);
-    });
-
-    it('treats a plot with no owner at all as unassigned', () => {
-        expect(normalizePlotOwners({ displayName: 'Unassigned' })).toEqual([]);
-        expect(normalizePlotOwners({ ownerKey: '', owners: [{ share: 1 }] })).toEqual([]);
-        expect(plotIsAssigned({ displayName: 'Unassigned' })).toBe(false);
-    });
-
-    it('counts every plot of a saved plan that carries only ownerKey — the Borovje UPU shape', () => {
-        // Verbatim field set of a stored UPU polygon: ownerKey present, owners absent.
-        const savedPlan = [
-            { ownerKey: 'is-1', displayName: 'Prometna površina IS-1', color: '#9aa0a6', percent: 13.43, area: 13851 },
-            { ownerKey: 'r2-1', displayName: 'Rekreacija R2-1', color: '#5aa469', percent: 5.22, area: 5382 },
-            { ownerKey: 'm1-11', displayName: 'Građevna čestica M1-11', color: '#e8a33d', percent: 5.02, area: 5177 }
-        ];
-        expect(savedPlan.every(plotIsAssigned)).toBe(true);
-        expect(savedPlan.filter(p => !plotIsAssigned(p))).toHaveLength(0);
-    });
-
-    it('keeps public land assigned — it has a real owner key', () => {
-        expect(plotIsAssigned({ ownerKey: '__public__', displayName: 'Public land' })).toBe(true);
     });
 });

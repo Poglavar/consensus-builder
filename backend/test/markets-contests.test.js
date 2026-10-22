@@ -1,373 +1,210 @@
-// Contests group a city's proposals by shared land and put each proposal's market beside it;
-// these tests pin the grouping, the ordering and the public shape GET /markets serves.
+// Contests group a city's published agreements by the qualified input parcels they share and put each
+// minted agreement's market beside it (markets/contests.js); these tests pin the market subject (the
+// PDA of the agreement's sponsor and CID), the grouping, the entry states, the ordering and the public
+// shape GET /markets serves.
 import { describe, expect, it } from 'vitest';
-import { buildContests, closesAtOf, contestId, foldVersions, groupByLand, normalizeParcelIds, proposalAccountOf, siteNameOf } from '../markets/contests.js';
-import { PROPOSAL_PROGRAM_ID } from '../oracle/proposal-lifecycle.js';
+import {
+    HR_CADASTRE,
+    buildContests,
+    contestId,
+    groupByLand,
+    normalizeParcelIds,
+    parcelRefsOf,
+    parcelSourceOf,
+    subjectAccountOf
+} from '../markets/contests.js';
+import { agreementAccountOf } from '../agreements/onchain.js';
+import { cidOfObject } from '../cid.js';
 
-const ACCOUNT_A = 'Ekpt4qMsJWyyraDfPfq2zkT1JwMsJCKrSmkoNGgHreFR';
-const ACCOUNT_B = 'Fh3K8apDKKKjPUPLVV5Y327Hd5s2HY9Y7bqAvjidFcC5';
-const ACCOUNT_C = '5A9kzK2SzjP5nU2Dnz958wQcy96KkMnavoMNGxt7p1h3';
-// More stand-in accounts; buildContests keys markets by them and never decodes them.
-const account = n => `Acct${String(n).padStart(2, '1')}${'z'.repeat(36)}`;
+const SPONSOR = 'G4R6RCCcQHN9fLoExvTBBfhbw8BgvTEqhJezG3A1HvEg';
+const STRANGER = 'AMbsiP9F8YY2y8n9uFdqtw7yNZZHvTWFEWSQGHKtmkoQ';
+const CID = cidOfObject({ schema: 'agreement/v1', title: 'Riverside deal' });
+const NOW = new Date('2026-10-09T00:00:00Z');
+const SOON = '2026-10-20T00:00:00.000Z';
+const LATER = '2026-12-01T00:00:00.000Z';
+const PAST = '2026-10-01T00:00:00.000Z';
 
-const proposal = (overrides) => ({
-    id: 1, proposalId: 'p-1', title: 'One', goal: 'single', lifecycleStatus: 'Active',
-    createdAt: '2026-10-01T00:00:00Z', expiresAt: null, author: 'a', agent: false, proposalRole: null,
-    screenshotUrl: null, parcelIds: ['SF-1'], parcelSource: { sourceId: 'hr-cadastre', snapshotId: null }, proposalAccount: null, ...overrides
+// An agreement as routes/markets.js rowToAgreement hands it over; `account` set means minted.
+const agreement = (overrides = {}) => ({
+    cid: 'cid-1', city: 'zagreb', title: 'One', author: 'a', designTitles: [], inputParcelIds: ['P1'], parcelSourceId: null,
+    deadline: LATER, createdAt: '2026-10-01T00:00:00.000Z', screenshotUrl: null, screenshotBeforeUrl: null, screenshotPairUrl: null,
+    account: null, chainStatus: null, ...overrides
 });
-const market = (address, yesPool, noPool, resolved = false, outcome = 0) => ({
-    address, market: { yesPool, noPool, resolved, outcome }
+const minted = (cid, account, overrides = {}) => agreement({ cid, account, chainStatus: 'active', ...overrides });
+const market = (address, yesPool, noPool, resolved = false, outcome = 0) => ({ address, market: { yesPool, noPool, resolved, outcome } });
+const cidsOf = contest => contest.agreements.map(entry => entry.cid);
+
+describe('subjectAccountOf', () => {
+    const account = agreementAccountOf(CID, SPONSOR);
+    const pointer = { chain: 'solana', cluster: 'devnet', account };
+
+    it('is the indexed account only when it is the PDA of the agreement\'s sponsor and CID', () => {
+        expect(subjectAccountOf({ cid: CID, sponsor: SPONSOR, onchain: pointer })).toBe(account);
+        // Another wallet's account for the same CID can never record the lens decision.
+        const squatted = agreementAccountOf(CID, STRANGER);
+        expect(squatted).not.toBe(account);
+        expect(subjectAccountOf({ cid: CID, sponsor: SPONSOR, onchain: { ...pointer, account: squatted } })).toBeNull();
+        expect(subjectAccountOf({ cid: cidOfObject({ other: true }), sponsor: SPONSOR, onchain: pointer })).toBeNull();
+    });
+
+    it('needs a devnet Solana pointer and a sponsor wallet', () => {
+        for (const onchain of [null, undefined, 'x', { ...pointer, chain: 'evm' }, { ...pointer, cluster: 'mainnet-beta' }, { ...pointer, account: null }]) {
+            expect(subjectAccountOf({ cid: CID, sponsor: SPONSOR, onchain })).toBeNull();
+        }
+        for (const sponsor of [null, undefined, '', 'not-a-wallet']) expect(subjectAccountOf({ cid: CID, sponsor, onchain: pointer })).toBeNull();
+        expect(subjectAccountOf()).toBeNull();
+    });
 });
 
-describe('proposalAccountOf', () => {
-    it('requires the exact devnet program and canonical account field', () => {
-        const location = { chainId: 'solana-devnet', contractAddress: PROPOSAL_PROGRAM_ID, proposalId: ACCOUNT_A };
-        expect(proposalAccountOf(location)).toBe(ACCOUNT_A);
-        for (const change of [
-            { chainId: 'solana-mainnet' }, { chainId: 'solana' }, { chainId: 'solana-devnet-fake' },
-            { contractAddress: null }, { contractAddress: ACCOUNT_B },
-            { proposalId: undefined, proposalAccount: ACCOUNT_A }, { proposalId: undefined, tokenId: ACCOUNT_A },
-            { proposalId: 'not-base58-0OIl' }, { proposalId: 'z'.repeat(44) }, { proposalId: ` ${ACCOUNT_A}` }
-        ]) expect(proposalAccountOf({ ...location, ...change })).toBeNull();
-        expect(proposalAccountOf(null)).toBeNull();
+describe('parcelSourceOf and parcelRefsOf', () => {
+    it('takes the named source, else the city\'s default catalogue source, else the Croatian cadastre', () => {
+        expect(parcelSourceOf({ parcelSourceId: 'hr-cadastre' })).toEqual(HR_CADASTRE);
+        expect(parcelSourceOf({ city: 'san_francisco' })).toEqual({ sourceId: 'us-ca-sf-datasf-active-parcels', snapshotId: null });
+        expect(parcelSourceOf({ city: 'london' })).toEqual({ sourceId: 'gb-hmlr-browser-v1', snapshotId: expect.stringMatching(/^[0-9a-f]{64}$/) });
+        expect(parcelSourceOf({ city: 'zagreb' })).toEqual(HR_CADASTRE);
+        // An unknown named source qualifies nothing.
+        expect(parcelSourceOf({ city: 'zagreb', parcelSourceId: 'unknown-provider' })).toBeNull();
+    });
+
+    it('qualifies each normalized input parcel with that source', () => {
+        expect(parcelRefsOf(agreement({ inputParcelIds: [' P2 ', 'P1', 'P1', ''] }))).toEqual([
+            { ...HR_CADASTRE, parcelId: 'P1' }, { ...HR_CADASTRE, parcelId: 'P2' }
+        ]);
+        expect(parcelRefsOf(agreement({ parcelSourceId: 'unknown-provider' }))).toEqual([]);
+        expect(normalizeParcelIds([' P1 ', 'P1', '', null, 'P0'])).toEqual(['P0', 'P1']);
     });
 });
 
 describe('groupByLand', () => {
-    it('joins proposals transitively through shared parcels and keeps the rest apart', () => {
+    it('joins agreements transitively through shared parcels and keeps the rest apart', () => {
         const groups = groupByLand([
-            proposal({ proposalId: 'a', parcelIds: ['P1', 'P2'] }),
-            proposal({ proposalId: 'b', parcelIds: ['P2', 'P3'] }),
-            proposal({ proposalId: 'c', parcelIds: ['P3'] }),
-            proposal({ proposalId: 'd', parcelIds: ['P9'] }),
-            proposal({ proposalId: 'e', parcelIds: [] })
+            agreement({ cid: 'a', inputParcelIds: ['P1', 'P2'] }),
+            agreement({ cid: 'b', inputParcelIds: ['P2', 'P3'] }),
+            agreement({ cid: 'c', inputParcelIds: ['P3'] }),
+            agreement({ cid: 'd', inputParcelIds: ['P9'] }),
+            // Open ground only: its own contest.
+            agreement({ cid: 'e', inputParcelIds: [] })
         ]);
-        const ids = groups.map(group => group.map(entry => entry.proposalId).sort());
-        expect(ids).toEqual([['a', 'b', 'c'], ['d'], ['e']]);
+        expect(groups.map(group => group.map(entry => entry.cid).sort())).toEqual([['a', 'b', 'c'], ['d'], ['e']]);
     });
 
-    it('normalizes parcel ids before matching', () => {
-        expect(normalizeParcelIds([' P1 ', 'P1', '', null, 'P0'])).toEqual(['P0', 'P1']);
-        expect(groupByLand([proposal({ parcelIds: [' P1'] }), proposal({ parcelIds: ['P1 '] })])).toHaveLength(1);
-    });
-
-    it('qualifies parcel matches by recognized source and snapshot, leaving unknown sources isolated', () => {
+    it('matches only qualified references: the same raw id from another source or an unknown one stays apart', () => {
         const rows = [
-            proposal({ proposalId: 'hr', parcelIds: ['P1'] }),
-            proposal({ proposalId: 'other-source', parcelIds: ['P1'], parcelSource: { sourceId: 'us-ca-sf-datasf-active-parcels', snapshotId: null } }),
-            proposal({ proposalId: 'unknown', parcelIds: ['P1'], parcelSource: null }),
-            proposal({ proposalId: 'unknown-too', parcelIds: ['P1'], parcelSource: null })
+            agreement({ cid: 'hr', inputParcelIds: ['P1'] }),
+            agreement({ cid: 'hr-named', inputParcelIds: ['P1'], parcelSourceId: 'hr-cadastre' }),
+            agreement({ cid: 'sf', inputParcelIds: ['P1'], city: 'san_francisco' }),
+            agreement({ cid: 'unknown', inputParcelIds: ['P1'], parcelSourceId: 'unknown-provider' }),
+            agreement({ cid: 'unknown-too', inputParcelIds: ['P1'], parcelSourceId: 'unknown-provider' })
         ];
-        expect(groupByLand(rows).map(group => group.map(row => row.proposalId).sort()))
-            .toEqual([['hr'], ['other-source'], ['unknown'], ['unknown-too']]);
-    });
-
-    it('keeps same-source references together but distinguishes snapshots', () => {
-        const rows = [
-            proposal({ proposalId: 'captured', parcelIds: ['P1'], parcelSource: { sourceId: 'hr-cadastre', snapshotId: '2025' } }),
-            proposal({ proposalId: 'same', parcelIds: ['P1'], parcelSource: { sourceId: 'hr-cadastre', snapshotId: '2025' } }),
-            proposal({ proposalId: 'other-snapshot', parcelIds: ['P1'], parcelSource: { sourceId: 'hr-cadastre', snapshotId: '2026' } })
-        ];
-        expect(groupByLand(rows).map(group => group.map(row => row.proposalId).sort())).toEqual([['captured', 'same'], ['other-snapshot']]);
-    });
-
-    it('resolves explicit plan-member edges regardless of input ordering', () => {
-        const member = proposal({ id: 21, proposalId: 'member', parcelSource: null });
-        const namedPlan = { id: 'plan:p', proposalId: 'p', isPlan: true, memberIds: ['21'], parcelIds: [], parcelRefs: [] };
-        expect(groupByLand([namedPlan, member])).toHaveLength(1);
-    });
-});
-
-describe('siteNameOf', () => {
-    it('keeps an authored site name and ignores the generated parcel-selection labels', () => {
-        expect(siteNameOf([{ siteName: 'Candlestick Point' }, { siteName: 'Candlestick Point' }, { siteName: 'Hunters Point' }])).toBe('Candlestick Point');
-        expect(siteNameOf([{ siteName: 'Parcel HR-335614-2355' }, { siteName: 'Parcels 12, 13' }, { siteName: '  ' }, {}])).toBeNull();
+        expect(groupByLand(rows).map(group => group.map(row => row.cid).sort()))
+            .toEqual([['hr', 'hr-named'], ['sf'], ['unknown'], ['unknown-too']]);
     });
 });
 
 describe('contestId', () => {
-    it('depends on the land, not on which proposals happen to be in the contest', () => {
+    it('depends on the land, not on which agreements happen to be in the contest', () => {
         const p1 = { sourceId: 'hr-cadastre', snapshotId: null, parcelId: 'P1' };
         const p2 = { sourceId: 'hr-cadastre', snapshotId: null, parcelId: 'P2' };
         expect(contestId([p2, p1])).toBe(contestId([p1, p2]));
+        expect(contestId([p1, p1, p2])).toBe(contestId([p1, p2]));
         expect(contestId([p1])).not.toBe(contestId([p2]));
-        expect(contestId([p1])).not.toBe(contestId([{ ...p1, sourceId: 'dgu-wfs' }]));
-        expect(contestId([], 'p-1')).not.toBe(contestId([], 'p-2'));
-        expect(contestId(['P1'])).toMatch(/^c-[0-9a-f]{12}$/);
+        expect(contestId([p1])).not.toBe(contestId([{ ...p1, snapshotId: '2026' }]));
+        expect(contestId([p1])).toMatch(/^c-[0-9a-f]{12}$/);
+        // Without qualified land the id is scoped to an agreement CID.
+        expect(contestId([], 'cid-1')).not.toBe(contestId([], 'cid-2'));
+        expect(contestId([], 'cid-1')).toBe(contestId(['not a ref'], 'cid-1'));
     });
 });
 
 describe('buildContests', () => {
-    it('requires observed Active chain status to offer either opening a pool or placing a bet', () => {
-        for (const lifecycleStatus of [undefined, 'Unknown', 'Active', 'Expired']) {
-            for (const existingMarket of [null, market('MKT', 1n, 1n)]) {
-                const { contests } = buildContests({
-                    city: 'test-city', proposals: [proposal({ proposalAccount: ACCOUNT_A, lifecycleStatus })],
-                    markets: new Map(existingMarket ? [[ACCOUNT_A, existingMarket]] : []), statuses: new Map()
-                });
-                expect(contests[0].proposals[0]).toMatchObject({
-                    lifecycleStatus: lifecycleStatus || 'Unknown', chainStatus: null, bettable: false, canOpenMarket: false
-                });
-            }
-        }
+    it('keeps only contests with a minted agreement; an unminted rival stays beside it without a pool', () => {
+        const out = buildContests({
+            city: 'zagreb', now: NOW,
+            agreements: [
+                minted('minted', 'ACCT-A', { inputParcelIds: ['L1'], createdAt: '2026-10-03T00:00:00.000Z', designTitles: ['Six storeys'] }),
+                agreement({ cid: 'rival', inputParcelIds: ['L1'], createdAt: '2026-10-04T00:00:00.000Z' }),
+                agreement({ cid: 'nobody-minted', inputParcelIds: ['L4'] })
+            ],
+            markets: new Map([['ACCT-A', market('MKT-A', 250000n, 50000n)]])
+        });
+        expect(out).toMatchObject({ city: 'zagreb', generatedAt: '2026-10-09T00:00:00.000Z' });
+        expect(out.contests.map(cidsOf)).toEqual([['minted', 'rival']]);
+        expect(out.summary).toEqual({ contests: 1, agreements: 2, markets: 1, openMarkets: 1, poolAtomic: '300000' });
+        const [contest] = out.contests;
+        expect(contest).toMatchObject({
+            parcelIds: ['L1'], parcelRefs: [{ ...HR_CADASTRE, parcelId: 'L1' }], agreementCount: 2, mintedCount: 1, marketCount: 1,
+            openMarketCount: 1, poolAtomic: '300000', latestCreatedAt: '2026-10-04T00:00:00.000Z'
+        });
+        expect(contest.agreements[0]).toEqual({
+            kind: 'agreement', cid: 'minted', account: 'ACCT-A', title: 'One', author: 'a', city: 'zagreb',
+            status: 'active', chainStatus: 'active', deadline: LATER, createdAt: '2026-10-03T00:00:00.000Z',
+            designTitles: ['Six storeys'], screenshotUrl: null, screenshotBeforeUrl: null, screenshotPairUrl: null,
+            parcelIds: ['L1'], parcelRefs: [{ ...HR_CADASTRE, parcelId: 'L1' }],
+            market: { address: 'MKT-A', yesPool: '250000', noPool: '50000', poolAtomic: '300000', resolved: false, outcome: null },
+            bettable: true, canOpenMarket: false, contest: contest.id
+        });
+        expect(contest.agreements[1]).toMatchObject({ cid: 'rival', account: null, chainStatus: null, market: null, bettable: false, canOpenMarket: false, status: 'active' });
     });
 
-    it('keeps only contests someone can bet on, open pools first and settled ones after those still in play', () => {
-        const proposals = [
-            proposal({ id: 1, proposalId: 'minted-one-sided', parcelIds: ['L1'], proposalAccount: ACCOUNT_A, createdAt: '2026-10-03T00:00:00Z', siteName: 'Candlestick Point' }),
-            proposal({ id: 2, proposalId: 'rival-unminted', parcelIds: ['L1'], createdAt: '2026-10-04T00:00:00Z', siteName: 'Candlestick Point' }),
-            proposal({ id: 3, proposalId: 'minted-no-market', parcelIds: ['L2'], proposalAccount: ACCOUNT_B }),
-            proposal({ id: 4, proposalId: 'resolved', parcelIds: ['L3'], proposalAccount: ACCOUNT_C, lifecycleStatus: 'Executed' }),
-            proposal({ id: 5, proposalId: 'nobody-minted', parcelIds: ['L4'] })
-        ];
-        const markets = new Map([
-            [ACCOUNT_A, market('MKT-A', 250000n, 50000n)],
-            [ACCOUNT_B, { address: 'MKT-B', market: null }],
-            [ACCOUNT_C, market('MKT-C', 10000n, 10000n, true, 1)]
-        ]);
-        const out = buildContests({ city: 'san_francisco', proposals, markets,
-            statuses: new Map([[ACCOUNT_A, 'Active'], [ACCOUNT_B, 'Active'], [ACCOUNT_C, 'Executed']]),
-            now: new Date('2026-10-09T00:00:00Z') });
+    it('takes bets and opens pools only while the account is Active on chain and the deadline lies ahead', () => {
+        const entryOf = (input, markets = new Map()) => buildContests({ city: 'zagreb', now: NOW, agreements: [input], markets }).contests[0].agreements[0];
+        const pool = new Map([['ACCT', market('MKT', 1n, 1n)]]);
+        // Active and dated ahead: a pool takes bets, a missing one can be opened.
+        expect(entryOf(minted('a', 'ACCT'), pool)).toMatchObject({ bettable: true, canOpenMarket: false, status: 'active' });
+        expect(entryOf(minted('a', 'ACCT'))).toMatchObject({ bettable: false, canOpenMarket: true, market: null });
+        // No deadline: still live.
+        expect(entryOf(minted('a', 'ACCT', { deadline: null }), pool)).toMatchObject({ bettable: true, deadline: null });
+        // The deadline passed while the account is still Active: the agreement can no longer execute.
+        expect(entryOf(minted('a', 'ACCT', { deadline: PAST }), pool)).toMatchObject({ bettable: false, canOpenMarket: false, status: 'expired', chainStatus: 'active' });
+        expect(entryOf(minted('a', 'ACCT', { deadline: PAST }))).toMatchObject({ canOpenMarket: false });
+        // A status nobody observed is no evidence that a bet can still win.
+        expect(entryOf(minted('a', 'ACCT', { chainStatus: null }), pool)).toMatchObject({ bettable: false, canOpenMarket: false, status: 'active' });
+        // A terminal status is the word shown, whatever the deadline says.
+        for (const chainStatus of ['executed', 'cancelled', 'expired']) {
+            expect(entryOf(minted('a', 'ACCT', { chainStatus, deadline: LATER }), pool)).toMatchObject({ status: chainStatus, chainStatus, bettable: false, canOpenMarket: false });
+        }
+        // A resolved pool takes no bets.
+        expect(entryOf(minted('a', 'ACCT'), new Map([['ACCT', market('MKT', 1n, 1n, true, 1)]])))
+            .toMatchObject({ bettable: false, market: { resolved: true, outcome: 'yes' } });
+        expect(entryOf(minted('a', 'ACCT', { chainStatus: 'cancelled' }), new Map([['ACCT', market('MKT', 1n, 1n, true, 0)]])))
+            .toMatchObject({ market: { resolved: true, outcome: 'no' } });
+    });
 
-        expect(out.city).toBe('san_francisco');
-        expect(out.generatedAt).toBe('2026-10-09T00:00:00.000Z');
-        // A pool anyone can still open is in play; a settled pool, however big, comes after it (D6).
-        expect(out.contests.map(c => c.proposals.map(p => p.proposalId))).toEqual([
-            ['minted-one-sided', 'rival-unminted'], ['minted-no-market'], ['resolved']
-        ]);
-        expect(out.summary).toEqual({ contests: 3, proposals: 4, markets: 2, openMarkets: 1, poolAtomic: '320000' });
-
-        const [contest] = out.contests;
-        expect(contest).toMatchObject({ parcelIds: ['L1'], siteName: 'Candlestick Point', proposalCount: 2, mintedCount: 1, marketCount: 1, openMarketCount: 1, poolAtomic: '300000', latestCreatedAt: '2026-10-04T00:00:00Z' });
-        expect(out.contests[1].siteName).toBeNull();
-        expect(contest.proposals[0]).toMatchObject({
-            proposalAccount: ACCOUNT_A, bettable: true, canOpenMarket: false, closesAt: null,
-            market: { address: 'MKT-A', yesPool: '250000', noPool: '50000', poolAtomic: '300000', resolved: false, outcome: null }
+    it('never reports a chain status for an unminted agreement', () => {
+        const { contests } = buildContests({
+            city: 'zagreb', now: NOW,
+            agreements: [minted('m', 'ACCT', { inputParcelIds: ['X'] }), agreement({ cid: 'u', inputParcelIds: ['X'], chainStatus: 'executed' })]
         });
-        expect(contest.proposals[1]).toMatchObject({ proposalAccount: null, market: null, bettable: false, canOpenMarket: false, closesAt: null });
-
-        const noMarket = out.contests[1].proposals[0];
-        expect(noMarket).toMatchObject({ market: null, bettable: false, canOpenMarket: true });
-        const resolved = out.contests[2].proposals[0];
-        expect(resolved).toMatchObject({ bettable: false, canOpenMarket: false, market: { resolved: true, outcome: 'yes' } });
+        expect(contests[0].agreements.find(entry => entry.cid === 'u')).toMatchObject({ account: null, chainStatus: null, status: 'active' });
     });
 
     it('serializes pools as decimal strings so the JSON never loses a u64', () => {
         const big = (1n << 63n) + 7n;
-        const out = buildContests({
-            city: 'zagreb', markets: new Map([[ACCOUNT_A, market('MKT', big, 1n)]]),
-            proposals: [proposal({ proposalAccount: ACCOUNT_A })]
-        });
-        expect(out.contests[0].proposals[0].market.yesPool).toBe(big.toString());
+        const out = buildContests({ city: 'zagreb', now: NOW, agreements: [minted('a', 'ACCT')], markets: new Map([['ACCT', market('MKT', big, 1n)]]) });
+        expect(out.contests[0].agreements[0].market.yesPool).toBe(big.toString());
         expect(out.contests[0].poolAtomic).toBe((big + 1n).toString());
+        expect(out.summary.poolAtomic).toBe((big + 1n).toString());
         expect(() => JSON.stringify(out)).not.toThrow();
     });
 });
 
-describe('named plans in contests', () => {
-    const plan = (overrides) => ({ slug: 'p', title: 'Plan', place: null, author: 'a', createdAt: '2026-10-10T00:00:00Z',
-        memberIds: [], proposalAccount: null, ...overrides });
-
-    it('folds members under every plan that lists them and keeps other proposals as rows', () => {
-        const street = proposal({ id: 1, proposalId: 'street', parcelIds: ['P1', 'P2'] });
-        const slab = proposal({ id: 2, proposalId: 'slab', parcelIds: ['P2'] });
-        const block = proposal({ id: 3, proposalId: 'block', parcelIds: ['P2'] });
-        const rival = proposal({ id: 4, proposalId: 'rival', parcelIds: ['P1'], proposalAccount: ACCOUNT_C });
-        const { contests } = buildContests({
-            city: 'zagreb',
-            proposals: [street, slab, block, rival],
-            statuses: new Map([[ACCOUNT_A, 'Active'], [ACCOUNT_B, 'Active'], [ACCOUNT_C, 'Active']]),
-            plans: [
-                plan({ slug: 'official', place: 'Borovje', memberIds: ['1', '2'], proposalAccount: ACCOUNT_A }),
-                plan({ slug: 'blocks', place: 'Borovje', memberIds: ['1', '3'], proposalAccount: ACCOUNT_B })
-            ]
-        });
-        expect(contests).toHaveLength(1);
-        const [contest] = contests;
-        expect(contest.siteName).toBe('Borovje');
-        expect(contest.planCount).toBe(2);
-        expect(contest.foldedCount).toBe(3);
-        expect(contest.proposals.map(entry => entry.proposalId).sort()).toEqual(['blocks', 'official', 'rival']);
-        const official = contest.proposals.find(entry => entry.proposalId === 'official');
-        expect(official.members.map(member => member.proposalId)).toEqual(['street', 'slab']);
-        expect(official.canOpenMarket).toBe(true);
-    });
-
-    it('lets a plan name the contest over the pieces\' block names', () => {
-        expect(siteNameOf([
-            { siteName: 'UPU Borovje Z1-5' }, { siteName: 'UPU Borovje Z1-5' },
-            { kind: 'plan', siteName: 'Borovje' }
-        ])).toBe('Borovje');
-    });
-
-    it('folds explicit plan members even when their parcel source is unknown, without asserting land identity', () => {
-        const member = proposal({ id: 11, proposalId: 'unknown-member', parcelIds: ['P1'], parcelSource: null });
-        const unrelated = proposal({ id: 12, proposalId: 'unknown-unrelated', parcelIds: ['P1'], parcelSource: null });
-        const { contests } = buildContests({ city: 'zagreb', proposals: [member, unrelated], plans: [plan({ slug: 'named-plan', memberIds: ['11'], proposalAccount: ACCOUNT_A })],
-            markets: new Map([[ACCOUNT_A, { address: 'M', market: null }]]), statuses: new Map([[ACCOUNT_A, 'Active']]) });
-        expect(contests).toHaveLength(1);
-        expect(contests[0].proposals.map(entry => entry.proposalId)).toEqual(['named-plan']);
-        expect(contests[0].parcelRefs).toEqual([]);
-        expect(contests[0].parcelIds).toEqual(['P1']);
-    });
-
-    it('emits the named plan union of qualified refs from members across sources', () => {
-        const memberA = proposal({ id: 31, proposalId: 'member-a', parcelIds: ['P1'], parcelSource: { sourceId: 'hr-cadastre', snapshotId: '2025' } });
-        const memberB = proposal({ id: 32, proposalId: 'member-b', parcelIds: ['P1'], parcelSource: { sourceId: 'us-ca-sf-datasf-active-parcels', snapshotId: null } });
-        const { contests } = buildContests({ city: 'zagreb', proposals: [memberA, memberB],
-            plans: [plan({ slug: 'mixed-plan', memberIds: ['31', '32'], proposalAccount: ACCOUNT_A })],
-            markets: new Map([[ACCOUNT_A, { address: 'M', market: null }]]), statuses: new Map([[ACCOUNT_A, 'Active']]) });
-        const [entry] = contests[0].proposals;
-        expect(entry.kind).toBe('plan');
-        expect(entry.parcelRefs).toEqual([
-            { sourceId: 'hr-cadastre', snapshotId: '2025', parcelId: 'P1' },
-            { sourceId: 'us-ca-sf-datasf-active-parcels', snapshotId: null, parcelId: 'P1' }
-        ]);
-    });
-});
-
-describe('plan versions (F2)', () => {
-    const plan = (overrides) => ({ slug: 'p', title: 'Plan', place: 'Borovje', author: 'a', createdAt: '2026-10-10T00:00:00Z',
-        memberIds: [], proposalAccount: null, supersedes: null, ...overrides });
-    // Three versions of one plan, as the Borovje importer names them: v2 supersedes v1, v3 supersedes v2.
-    // v1's market is still open on-chain, v2's settled no, v3 is the current version.
-    const V1 = account(1);
-    const V2 = account(2);
-    const V3 = account(3);
-    const RIVAL = account(4);
+describe('row order inside a contest and of contests (the Bets sheet\'s order)', () => {
+    const accounts = Array.from({ length: 9 }, (_, index) => `ACCT-${index}`);
     const input = () => ({
-        city: 'zagreb',
-        proposals: [
-            proposal({ id: 1, proposalId: 'street', parcelIds: ['P1', 'P2'] }),
-            proposal({ id: 2, proposalId: 'slab', parcelIds: ['P2'] }),
-            proposal({ id: 3, proposalId: 'slab-v2', parcelIds: ['P2'] }),
-            proposal({ id: 4, proposalId: 'rival', parcelIds: ['P1'], proposalAccount: RIVAL })
-        ],
-        plans: [
-            plan({ slug: 'upu-borovje-v3', title: 'UPU Borovje', createdAt: '2026-10-10T19:02:23Z', memberIds: ['1', '3'], proposalAccount: V3, supersedes: 'upu-borovje-v2',
-                screenshotUrl: '/plans/v3-after.png', screenshotBeforeUrl: '/plans/v3-before.png', screenshotPairUrl: '/plans/v3-pair.png' }),
-            plan({ slug: 'upu-borovje-v2', title: 'UPU Borovje', createdAt: '2026-10-10T18:17:15Z', memberIds: ['1', '3'], proposalAccount: V2, supersedes: 'upu-borovje' }),
-            plan({ slug: 'upu-borovje', title: 'UPU Borovje', createdAt: '2026-10-10T14:08:54Z', memberIds: ['1', '2'], proposalAccount: V1 })
-        ],
-        markets: new Map([
-            [V1, market('MKT-1', 300000n, 100000n)],
-            [V2, market('MKT-2', 50000n, 150000n, true, 0)],
-            [V3, market('MKT-3', 100000n, 0n)],
-            [RIVAL, market('MKT-R', 10000n, 10000n)]
-        ]),
-        statuses: new Map([[V1, 'Active'], [V2, 'Cancelled'], [V3, 'Active'], [RIVAL, 'Active']])
-    });
-
-    it('lists one row per plan and folds the versions it replaced under it, newest first', () => {
-        const out = buildContests(input());
-        expect(out.contests).toHaveLength(1);
-        const [contest] = out.contests;
-        expect(contest.proposals.map(entry => [entry.kind, entry.proposalId])).toEqual([['plan', 'upu-borovje-v3'], ['proposal', 'rival']]);
-        const current = contest.proposals[0];
-        expect(current).toMatchObject({ planSlug: 'upu-borovje-v3', supersedes: 'upu-borovje-v2', bettable: true });
-        expect(current).toMatchObject({ screenshotUrl: '/plans/v3-after.png', screenshotBeforeUrl: '/plans/v3-before.png', screenshotPairUrl: '/plans/v3-pair.png' });
-        expect(current.olderVersions.map(old => [old.slug, old.supersededBy])).toEqual([
-            ['upu-borovje-v2', 'upu-borovje-v3'],
-            ['upu-borovje', 'upu-borovje-v2']
-        ]);
-        // A piece only the first version used folds away with it instead of resurfacing as a row.
-        expect(contest.proposals.some(entry => entry.proposalId === 'slab')).toBe(false);
-    });
-
-    it('keeps an older version reachable for its pool but never offers it', () => {
-        const [{ proposals: [current] }] = buildContests(input()).contests;
-        const [v2, v1] = current.olderVersions;
-        // Still open on-chain: reachable, its state says so, but it is not a bet the API offers.
-        expect(v1).toMatchObject({ slug: 'upu-borovje', title: 'UPU Borovje', createdAt: '2026-10-10T14:08:54Z', proposalAccount: V1,
-            state: 'open', bettable: false, canOpenMarket: false, market: { address: 'MKT-1', poolAtomic: '400000', resolved: false } });
-        // Settled: positions in it can be collected.
-        expect(v2).toMatchObject({ slug: 'upu-borovje-v2', proposalAccount: V2, state: 'resolved-no', bettable: false, canOpenMarket: false,
-            market: { resolved: true, outcome: 'no' } });
-        // The current version's members travel once, with the current version.
-        expect(v1.members).toBeUndefined();
-        expect(v1.memberCount).toBe(2);
-    });
-
-    it('counts current versions only, and the folded versions with the folded members', () => {
-        const out = buildContests(input());
-        expect(out.contests[0]).toMatchObject({
-            proposalCount: 2, planCount: 1, foldedCount: 3 + 2, mintedCount: 2, marketCount: 2, openMarketCount: 2,
-            // v3 (0.1) and the rival (0.02); the older versions' pools are theirs, reached through the fold.
-            poolAtomic: '120000'
-        });
-        expect(out.summary).toEqual({ contests: 1, proposals: 2, markets: 2, openMarkets: 2, poolAtomic: '120000' });
-    });
-
-    it('keeps a contest listed for an older version\'s pool when no current version is minted', () => {
-        const base = input();
-        const plans = base.plans.map(item => (item.slug === 'upu-borovje-v3' ? { ...item, proposalAccount: null } : item));
-        const proposals = base.proposals.filter(item => item.id !== 4);
-        const { contests } = buildContests({ ...base, plans, proposals });
-        expect(contests).toHaveLength(1);
-        expect(contests[0].mintedCount).toBe(0);
-        expect(contests[0].proposals[0].olderVersions.map(old => old.proposalAccount)).toEqual([V2, V1]);
-    });
-});
-
-describe('foldVersions', () => {
-    const slugs = ({ current, older }) => ({
-        current: current.map(plan => plan.slug),
-        older: Object.fromEntries(current.map(plan => [plan.slug, older.get(plan.slug).map(({ plan: old, supersededBy }) => `${old.slug}<${supersededBy}`)]))
-    });
-
-    it('walks a chain from its newest version', () => {
-        expect(slugs(foldVersions([{ slug: 'a' }, { slug: 'a-v2', supersedes: 'a' }, { slug: 'a-v3', supersedes: 'a-v2' }, { slug: 'b' }])))
-            .toEqual({ current: ['a-v3', 'b'], older: { 'a-v3': ['a-v2<a-v3', 'a<a-v2'], b: [] } });
-    });
-
-    it('lets a version whose predecessor is on other land stand', () => {
-        expect(slugs(foldVersions([{ slug: 'a-v2', supersedes: 'a' }]))).toEqual({ current: ['a-v2'], older: { 'a-v2': [] } });
-    });
-
-    it('folds a version two revisions replaced under one of them only', () => {
-        const out = slugs(foldVersions([{ slug: 'a' }, { slug: 'x', supersedes: 'a' }, { slug: 'y', supersedes: 'a' }]));
-        expect(out.current).toEqual(['x', 'y']);
-        expect([...out.older.x, ...out.older.y]).toEqual(['a<x']);
-    });
-
-    it('drops nothing when versions supersede each other in a loop', () => {
-        const out = slugs(foldVersions([{ slug: 'a', supersedes: 'b' }, { slug: 'b', supersedes: 'a' }]));
-        expect(out).toEqual({ current: ['a'], older: { a: ['b<a'] } });
-    });
-});
-
-describe('closesAtOf', () => {
-    it('reads the market deadline from i64 Unix seconds, and nothing from a legacy pool', () => {
-        expect(closesAtOf({ closesAt: 1795000000n })).toBe(new Date(1795000000 * 1000).toISOString());
-        expect(closesAtOf({ closesAt: 1795000000 })).toBe(new Date(1795000000 * 1000).toISOString());
-        expect(closesAtOf({ closesAt: '2026-12-31T00:00:00Z' })).toBe('2026-12-31T00:00:00.000Z');
-        expect(closesAtOf({ yesPool: 1n, noPool: 0n })).toBeNull();
-        expect(closesAtOf({ closesAt: 0n })).toBeNull();
-        expect(closesAtOf({ closesAt: 1n << 62n })).toBeNull();
-        expect(closesAtOf(null)).toBeNull();
-    });
-});
-
-describe('row order inside a contest (D6)', () => {
-    const SOON = 1795000000n;
-    const LATE = 1798000000n;
-    const dated = (address, yesPool, noPool, closesAt) => ({ address, market: { yesPool, noPool, resolved: false, outcome: 0, closesAt } });
-    const accounts = Array.from({ length: 9 }, (_, index) => account(10 + index));
-    const contestInput = () => ({
-        city: 'zagreb',
-        proposals: [
-            // Four settled bot bets with the biggest pools on the land.
-            proposal({ id: 1, proposalId: 'settled-big', parcelIds: ['R1'], proposalAccount: accounts[0], createdAt: '2026-10-01T00:00:00Z' }),
-            proposal({ id: 2, proposalId: 'settled-bigger', parcelIds: ['R1'], proposalAccount: accounts[1], createdAt: '2026-10-01T00:00:00Z' }),
-            proposal({ id: 3, proposalId: 'settled-mid', parcelIds: ['R1'], proposalAccount: accounts[2], createdAt: '2026-10-01T00:00:00Z' }),
-            proposal({ id: 4, proposalId: 'settled-small', parcelIds: ['R1'], proposalAccount: accounts[3], createdAt: '2026-10-01T00:00:00Z' }),
+        city: 'zagreb', now: NOW,
+        agreements: [
+            // Four settled pools, the biggest on the land.
+            minted('settled-big', accounts[0], { inputParcelIds: ['R1'], chainStatus: 'cancelled' }),
+            minted('settled-bigger', accounts[1], { inputParcelIds: ['R1'], chainStatus: 'executed' }),
+            minted('settled-mid', accounts[2], { inputParcelIds: ['R1'], chainStatus: 'expired' }),
+            minted('settled-small', accounts[3], { inputParcelIds: ['R1'], chainStatus: 'cancelled' }),
             // Rows still in play, with small pools or none.
-            proposal({ id: 5, proposalId: 'open-small', parcelIds: ['R1'], proposalAccount: accounts[4], createdAt: '2026-10-02T00:00:00Z' }),
-            proposal({ id: 6, proposalId: 'open-dated-late', parcelIds: ['R1'], proposalAccount: accounts[5], createdAt: '2026-10-02T00:00:00Z' }),
-            proposal({ id: 7, proposalId: 'open-dated-soon', parcelIds: ['R1'], proposalAccount: accounts[6], createdAt: '2026-10-02T00:00:00Z' }),
-            proposal({ id: 8, proposalId: 'needs-market', parcelIds: ['R1'], proposalAccount: accounts[7], createdAt: '2026-10-02T00:00:00Z' }),
-            proposal({ id: 9, proposalId: 'settling', parcelIds: ['R1'], proposalAccount: accounts[8], createdAt: '2026-10-02T00:00:00Z' }),
-            proposal({ id: 10, proposalId: 'not-minted', parcelIds: ['R1'], createdAt: '2026-10-03T00:00:00Z' })
+            minted('open-undated', accounts[4], { inputParcelIds: ['R1'], deadline: null }),
+            minted('open-late', accounts[5], { inputParcelIds: ['R1'], deadline: LATER }),
+            minted('open-soon', accounts[6], { inputParcelIds: ['R1'], deadline: SOON }),
+            minted('needs-market', accounts[7], { inputParcelIds: ['R1'], deadline: null }),
+            minted('settling', accounts[8], { inputParcelIds: ['R1'], chainStatus: 'cancelled', deadline: null }),
+            agreement({ cid: 'not-minted', inputParcelIds: ['R1'], createdAt: '2026-10-03T00:00:00.000Z' })
         ],
         markets: new Map([
             [accounts[0], market('M0', 0n, 5_000_000n, true, 0)],
@@ -375,51 +212,40 @@ describe('row order inside a contest (D6)', () => {
             [accounts[2], market('M2', 1_000_000n, 1_000_000n, true, 0)],
             [accounts[3], market('M3', 0n, 500_000n, true, 0)],
             [accounts[4], market('M4', 10_000n, 0n)],
-            [accounts[5], dated('M5', 1n, 0n, LATE)],
-            [accounts[6], dated('M6', 0n, 0n, SOON)],
+            [accounts[5], market('M5', 1n, 0n)],
+            [accounts[6], market('M6', 0n, 0n)],
             [accounts[7], { address: 'M7', market: null }],
             [accounts[8], market('M8', 25_000n, 25_000n)]
-        ]),
-        statuses: new Map(accounts.map((item, index) => [item, index === 8 ? 'Cancelled' : 'Active']))
+        ])
     });
 
-    it('puts rows in play first, dated ones by deadline, and settled pools after them however big', () => {
-        const [contest] = buildContests(contestInput()).contests;
-        expect(contest.proposals.map(entry => entry.proposalId)).toEqual([
-            'open-dated-soon', 'open-dated-late',          // in play, dated: soonest deadline first
-            'settling', 'open-small', 'needs-market',      // in play, no deadline (legacy): bigger pool first
+    it('puts rows in play first, the soonest deadline leading, and settled pools after them however big', () => {
+        const [contest] = buildContests(input()).contests;
+        expect(cidsOf(contest)).toEqual([
+            'open-soon', 'open-late',                          // in play, dated: soonest deadline first
+            'settling', 'open-undated', 'needs-market',        // in play, no deadline: bigger pool first
             'settled-bigger', 'settled-big', 'settled-mid', 'settled-small', // settled: bigger pool first
-            'not-minted'                                   // nothing to do
+            'not-minted'                                       // nothing to do
         ]);
-        expect(contest.proposals[0]).toMatchObject({ bettable: true, closesAt: new Date(Number(SOON) * 1000).toISOString() });
-        expect(contest.proposals.find(entry => entry.proposalId === 'open-small').closesAt).toBeNull();
+        expect(contest.agreements[0]).toMatchObject({ bettable: true, deadline: SOON });
+        expect(contest).toMatchObject({ agreementCount: 10, mintedCount: 9, marketCount: 8, openMarketCount: 3 });
+    });
+
+    it('comes out in the same order from any arrival order', () => {
+        const reversed = input();
+        reversed.agreements.reverse();
+        expect(cidsOf(buildContests(reversed).contests[0])).toEqual(cidsOf(buildContests(input()).contests[0]));
     });
 
     it('never lets a contest of settled pools lead one where a bet can go in', () => {
         const { contests } = buildContests({
-            city: 'zagreb',
-            proposals: [
-                proposal({ id: 1, proposalId: 'settled-huge', parcelIds: ['X1'], proposalAccount: ACCOUNT_A }),
-                proposal({ id: 2, proposalId: 'open-tiny', parcelIds: ['Y1'], proposalAccount: ACCOUNT_B })
+            city: 'zagreb', now: NOW,
+            agreements: [
+                minted('settled-huge', 'ACCT-X', { inputParcelIds: ['X1'], chainStatus: 'executed' }),
+                minted('open-tiny', 'ACCT-Y', { inputParcelIds: ['Y1'] })
             ],
-            markets: new Map([[ACCOUNT_A, market('MA', 90_000_000n, 1n, true, 1)], [ACCOUNT_B, market('MB', 1n, 0n)]]),
-            statuses: new Map([[ACCOUNT_A, 'Executed'], [ACCOUNT_B, 'Active']])
+            markets: new Map([['ACCT-X', market('MA', 90_000_000n, 1n, true, 1)], ['ACCT-Y', market('MB', 1n, 0n)]])
         });
-        expect(contests.map(contest => contest.proposals[0].proposalId)).toEqual(['open-tiny', 'settled-huge']);
-    });
-
-    it('breaks ties with the whole plan before its pieces, then the newest', () => {
-        const { contests } = buildContests({
-            city: 'zagreb',
-            proposals: [
-                proposal({ id: 1, proposalId: 'older-piece', parcelIds: ['T1'], proposalAccount: ACCOUNT_A, createdAt: '2026-10-01T00:00:00Z' }),
-                proposal({ id: 2, proposalId: 'newer-piece', parcelIds: ['T1'], proposalAccount: ACCOUNT_B, createdAt: '2026-10-05T00:00:00Z' }),
-                proposal({ id: 3, proposalId: 'member', parcelIds: ['T1'] })
-            ],
-            plans: [{ slug: 'whole', title: 'Whole', place: null, author: 'a', createdAt: '2026-09-01T00:00:00Z', memberIds: ['3'], proposalAccount: ACCOUNT_C }],
-            markets: new Map([[ACCOUNT_A, market('MA', 0n, 0n)], [ACCOUNT_B, market('MB', 0n, 0n)], [ACCOUNT_C, market('MC', 0n, 0n)]]),
-            statuses: new Map([[ACCOUNT_A, 'Active'], [ACCOUNT_B, 'Active'], [ACCOUNT_C, 'Active']])
-        });
-        expect(contests[0].proposals.map(entry => entry.proposalId)).toEqual(['whole', 'newer-piece', 'older-piece']);
+        expect(contests.map(contest => contest.agreements[0].cid)).toEqual(['open-tiny', 'settled-huge']);
     });
 });

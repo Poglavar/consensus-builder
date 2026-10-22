@@ -1,10 +1,11 @@
-// "Share entire plan" opens a panel that builds a row and a map overlay per applied proposal, then
-// asks the server about each one in turn. On a real plan that is seconds of nothing: the button
-// stayed put, the page froze, and the panel's rows filled in silently long after it appeared.
+// "Share applied designs" opens a panel that builds a row per applied design, then checks which of
+// them are published. On a real plan that is seconds of work: the button stayed put, the page froze,
+// and the panel's rows filled in silently long after it appeared.
 //
 // Two spinners, because there are two waits: the sidebar button covers the synchronous build (which
-// needs a yield, or the spinner never paints before the freeze), and the panel counts out the
-// per-proposal server checks that outlive it.
+// needs a yield, or the spinner never paints before the freeze), and the panel counts out its
+// listing and publication check, which outlive it. (Whether a design is published is its own CID,
+// DesignSync.publishedCid, since M2: the check asks no server.)
 
 import { describe, it, expect, vi } from 'vitest';
 import { readFileSync } from 'node:fs';
@@ -23,13 +24,12 @@ function sliceBetween(src, from, to) {
     return src.slice(start, end);
 }
 
-/** Gumb kakav funkcija očekuje: natpis, podnatpis i spinner. */
+/** Gumb kakav funkcija očekuje: natpis, podnatpis i spinner (skriven, kao u index.html). */
 function fakeButton() {
-    const make = () => ({ style: { display: '' } });
     const parts = {
-        '.share-plan-label': make(),
-        '.share-plan-subtext': make(),
-        '.share-plan-spinner': make()
+        '.share-plan-label': { hidden: false },
+        '.share-plan-subtext': { hidden: false },
+        '.share-plan-spinner': { hidden: true }
     };
     return {
         dataset: {},
@@ -49,9 +49,9 @@ describe('spinner na gumbu', () => {
         load(button)(true);
         expect(button.disabled).toBe(true);
         expect(button.dataset.sharePlanBusy).toBe('1');
-        expect(button.parts['.share-plan-label'].style.display).toBe('none');
-        expect(button.parts['.share-plan-subtext'].style.display).toBe('none');
-        expect(button.parts['.share-plan-spinner'].style.display).toBe('inline-flex');
+        expect(button.parts['.share-plan-label'].hidden).toBe(true);
+        expect(button.parts['.share-plan-subtext'].hidden).toBe(true);
+        expect(button.parts['.share-plan-spinner'].hidden).toBe(false);
     });
 
     it('gotovo: sve se vrati kako je bilo', () => {
@@ -61,8 +61,14 @@ describe('spinner na gumbu', () => {
         setBusy(false);
         expect(button.disabled).toBe(false);
         expect(button.dataset.sharePlanBusy).toBeUndefined();
-        expect(button.parts['.share-plan-label'].style.display).toBe('');
-        expect(button.parts['.share-plan-spinner'].style.display).toBe('none');
+        expect(button.parts['.share-plan-label'].hidden).toBe(false);
+        expect(button.parts['.share-plan-subtext'].hidden).toBe(false);
+        expect(button.parts['.share-plan-spinner'].hidden).toBe(true);
+    });
+
+    it('skriva atributom hidden, ne inline stilom: izgled ostaje u stilovima', () => {
+        expect(body).not.toContain('.style.display');
+        expect(read('../../frontend/css/proposals.css')).toMatch(/\.share-plan-spinner\[hidden\]\s*\{\s*display: none;/);
     });
 
     it('bez gumba ne puca — panel se otvara i iz drugih putanja', () => {
@@ -72,7 +78,7 @@ describe('spinner na gumbu', () => {
 });
 
 describe('otvaranje plana', () => {
-    const body = sliceBetween(routes, 'function shareAppliedProposals(', 'function shareSingleProposal(');
+    const body = sliceBetween(routes, 'function shareAppliedProposals(', 'function resolveDesignToShare(');
 
     // guestPolicyBlocks: the share link's name gate (guest-policy.js); null = allowed.
     function harness({ panel, nameGate = () => null } = {}) {
@@ -140,12 +146,13 @@ describe('otvaranje plana', () => {
 });
 
 describe('napredak u panelu', () => {
-    const checks = sliceBetween(dialog, 'const initializeUploadChecks = async () => {', '// The panel goes up EMPTY');
-
-    it('broji provjerene prijedloge, ne samo "radim nešto"', () => {
-        expect(checks).toContain('const total = proposalsByHash.size;');
-        expect(checks).toContain('done += 1;');
-        expect(checks).toContain("showProgress('checkingProposals'");
+    it('broji popisane i provjerene dizajne, ne samo "radim nešto"', () => {
+        const fill = sliceBetween(dialog, '(async () => {', "    } catch (error) {\n        console.error('showSharePlanPanel failed'");
+        expect(fill).toContain("'proposals.share.panel.listing', 'Listing {{done}}/{{total}} designs…'");
+        expect(fill).toContain("'proposals.share.panel.checking', 'Checking {{done}}/{{total}} designs…'");
+        // Each step reports its own position (executed below, in "punjenje panela u odsječcima").
+        expect(sliceBetween(dialog, 'const inChunks = async', 'document.body.appendChild(panelRoot);'))
+            .toContain('showProgress(phraseKey, fallback, i + 1, total);');
     });
 
     it('redak nestane kad je punjenje gotovo — i kad je puklo', () => {
@@ -192,10 +199,10 @@ describe('punjenje panela u odsječcima', () => {
     it('obradi svaku stavku i javi napredak za svaku', async () => {
         const h = harness();
         const seen = [];
-        const done = await h.inChunks(['a', 'b', 'c'], item => seen.push(item), 'listingProposals', 'x');
+        const done = await h.inChunks(['a', 'b', 'c'], item => seen.push(item), 'proposals.share.panel.listing', 'x');
         expect(done).toBe(true);
         expect(seen).toEqual(['a', 'b', 'c']);
-        expect(h.progress).toEqual(['listingProposals 1/3', 'listingProposals 2/3', 'listingProposals 3/3']);
+        expect(h.progress).toEqual(['proposals.share.panel.listing 1/3', 'proposals.share.panel.listing 2/3', 'proposals.share.panel.listing 3/3']);
     });
 
     it('ne pušta okvir dok je unutar proračuna', async () => {
@@ -223,64 +230,33 @@ describe('punjenje panela u odsječcima', () => {
         expect(seen).toEqual([1, 2]);
     });
 
-    it('redoslijed je bitan: svi redci, pa slojevi, pa provjere', () => {
+    it('redoslijed je bitan: svi redci, pa provjera objave', () => {
         const fill = sliceBetween(dialog, '(async () => {', "    } catch (error) {\n        console.error('showSharePlanPanel failed'");
-        const rows = fill.indexOf("'listingProposals'");
-        const uploads = fill.indexOf('await initializeUploadChecks();');
+        const rows = fill.indexOf("'proposals.share.panel.listing'");
+        const checks = fill.indexOf("'proposals.share.panel.checking'");
         expect(rows).toBeGreaterThan(-1);
-        expect(uploads).toBeGreaterThan(rows);
-        // Faze slojeva više nema: otvaranje popisa ne crta ništa po karti.
-        expect(fill).not.toContain("'drawingProposals'");
-        // Svaka faza staje ako se panel zatvorio.
-        expect(fill.match(/if \(!await inChunks\(/g) || []).toHaveLength(1);
+        expect(checks).toBeGreaterThan(rows);
+        // Faze slojeva nema: otvaranje popisa ne crta ništa po karti.
+        expect(fill).not.toContain("'proposals.share.panel.drawing'");
+        // Obje faze staju ako se panel zatvorio.
+        expect(fill.match(/if \(!await inChunks\(/g) || []).toHaveLength(2);
     });
 
-    it.each(['en', 'hr', 'sr', 'es'])('%s imenuje obje nove faze', locale => {
-        const share = JSON.parse(read(`../../frontend/i18n/${locale}.json`)).modal.roadWidth.share;
-        for (const key of ['listingProposals', 'preparingPlan']) {
-            expect(share[key], `${locale} nema ${key}`).toBeTruthy();
+    it.each(['en', 'hr', 'sr', 'es'])('%s imenuje obje faze, s brojačem', locale => {
+        const panel = JSON.parse(read(`../../frontend/i18n/${locale}.json`)).proposals.share.panel;
+        for (const key of ['listing', 'checking']) {
+            expect(panel[key], `${locale} nema ${key}`).toBeTruthy();
+            expect(panel[key]).toContain('{{done}}');
+            expect(panel[key]).toContain('{{total}}');
         }
     });
 });
 
-// The modal's "Share the whole plan instead" hands over to the same panel — and now HOLDS ITSELF
-// OPEN until that panel is ready, because closing first dropped the user on a bare map for as long
-// as the build took. The sidebar's own spinner is behind a folded sidebar, so the wait is shown on
-// the pressed control, which stays on screen until there is something worth revealing.
-describe('spinner na "podijeli cijeli plan"', () => {
-    const handler = sliceBetween(read('../../frontend/js/proposals/dialog-upload.js'),
-        'sharePlanButton.addEventListener(\'click\', () => {', 'fragment.appendChild(sharePlanButton);');
-
-    it('spinner ide na pritisnuti gumb, prije nego što se dijalog zatvori', () => {
-        expect(handler).toContain('sharePlanButton.disabled = true;');
-        expect(handler).toContain('fa-spinner fa-spin');
-        expect(handler).toContain("tShare('preparingPlan'");
-        const spin = handler.indexOf('fa-spinner');
-        // The share dialog's own close button: the shared dialog's header close (js/ui/dialogs.js).
-        const close = handler.indexOf('.cb-dialog__header .close-circle-btn');
-        expect(spin).toBeGreaterThan(-1);
-        expect(close).toBeGreaterThan(spin);
-    });
-
-    it('predaja čeka dva okvira, da spinner stigne na ekran', () => {
-        expect(handler).toContain('requestAnimationFrame(() => requestAnimationFrame(go));');
-        // Predaje se s opcijama (napredak se preslikava na gumb), pa poziv više nije gol.
-        expect(handler).toMatch(/shareAppliedProposals\(\{/);
-    });
-
-    it('dijalog se zatvara TEK kad panel javi da je spreman', () => {
-        // Prije se zatvarao odmah, pa je korisnik gledao praznu kartu dok se panel gradio.
-        const call = handler.indexOf('shareAppliedProposals({');
-        const close = handler.indexOf('ready.then(closeThisDialog');
-        expect(call).toBeGreaterThan(-1);
-        expect(close).toBeGreaterThan(call);
-    });
-});
-
-// Ne provjerava crtanje (za to treba preglednik), nego da pravilo postoji: JS gumbu postavlja
-// display:inline-flex da ga otkrije, čime <button> postaje flex KONTEJNER i gubi centriranje koje
-// inače radi sam — natpis padne u gornji lijevi kut kutije visoke 40px (.btn min-height).
-describe('natpis na gumbu za upload', () => {
+// Ne provjerava crtanje (za to treba preglednik), nego da pravilo postoji: gumb Objavi u retku zadrži
+// centriranje kakav god display dobio — <button> kao flex KONTEJNER gubi centriranje koje inače radi
+// sam, i natpis padne u gornji lijevi kut kutije visoke 40px (.btn min-height). JS ga samo skriva i
+// otkriva (atribut hidden), ne razmješta.
+describe('natpis na gumbu za objavu', () => {
     const css = read('../../frontend/css/proposals.css');
 
     it('centriran je u oba smjera, pa mu display ne može pobjeći', () => {
@@ -291,9 +267,11 @@ describe('natpis na gumbu za upload', () => {
     });
 
     it('JS i dalje samo pokazuje i skriva, ne razmješta', () => {
-        const state = sliceBetween(dialog, 'const updateRowState = (key) => {', 'const toggleCheckbox');
-        expect(state).toContain("controls.uploadBtn.style.display = 'inline-flex';");
+        const state = sliceBetween(dialog, 'const updateRowState = (key) => {', 'const onCheckboxChange');
+        expect(state).toContain('controls.publishBtn.hidden = !!state.cid;');
+        expect(state).toContain('controls.publishedLabel.hidden = !state.cid;');
         expect(state).not.toContain('alignItems');
+        expect(state).not.toContain('.style.');
     });
 });
 
@@ -315,7 +293,7 @@ describe('gumb ne smije pobjeći iz zauzetog stanja', () => {
     it.each(['en', 'hr', 'sr', 'es'])('%s zna reći oboje', locale => {
         const dict = JSON.parse(read(`../../frontend/i18n/${locale}.json`));
         expect(dict.sidebar.proposals.shareButtonPreparing).toBeTruthy();
-        const checking = dict.modal.roadWidth.share.checkingProposals;
+        const checking = dict.proposals.share.panel.checking;
         expect(checking).toBeTruthy();
         expect(checking).toContain('{{done}}');
         expect(checking).toContain('{{total}}');

@@ -1,36 +1,56 @@
-// Contests: a city's proposals and named plans grouped by their qualified land references, with each one's
-// prediction market beside it. This is the shape behind GET /markets and the Bets sheet. A named plan
-// (plans.md) is an entry of its own over its members' land; proposals that belong to a plan in the
-// contest fold under it instead of standing as separate rows, and so do the plan's older versions
-// (a revision records `supersedes`). Pure — the route feeds it rows and decoded market accounts;
-// nothing here touches the database or an RPC.
+// Contests: a city's published agreements grouped by the land they take, with each minted
+// agreement's prediction market beside it (plan-design-agreement.md, "Simplifications" 10). This is
+// the shape behind GET /markets and the Bets sheet. Pure: the route feeds it index rows and decoded
+// market accounts; nothing here touches the database or an RPC.
 import { createHash } from 'node:crypto';
 import { createRequire } from 'node:module';
-import { PublicKey } from '@solana/web3.js';
-import { PROPOSAL_PROGRAM_ID } from '../oracle/proposal-lifecycle.js';
-import { canonicalizeLifecycleStatus } from '../proposals/lifecycle.js';
-import { normalizeParcelSource } from '../proposals/parcel-set.js';
-import { resolveParcelSourceDescriptor } from '../parcels/sources.js';
+import { parcelSourceCatalog, resolveParcelSourceDescriptor } from '../parcels/sources.js';
+import { agreementAccountOf } from '../agreements/onchain.js';
+import { marketOutcome } from '../oracle/market-recipe.js';
 
 const require = createRequire(import.meta.url);
 // The sheet's own model (frontend/js/bets/bets-model.js): the same state words and the same order,
 // so the API and the Bets sheet cannot disagree about which row leads.
-const { compareContests, compareRows, rowState } = require('../../frontend/js/bets/bets-model.js');
+const { compareContests, compareRows } = require('../../frontend/js/bets/bets-model.js');
 
-export const DEVNET_PROPOSAL_LOCATION_SQL = `
-    onchain_data->>'chainId' = 'solana-devnet'
-    AND onchain_data->>'contractAddress' = '${PROPOSAL_PROGRAM_ID}'`;
+// The source the server binds a city's designs against when an agreement names none and the city
+// has no catalogue default (backend/proposals/binding.js computeBinding).
+export const HR_CADASTRE = Object.freeze({ sourceId: 'hr-cadastre', snapshotId: null });
 
-/** A declared account in the deployment this market serves; the RPC reader verifies the account. */
-export function proposalAccountOf(onchainData) {
-    const data = onchainData && typeof onchainData === 'object' ? onchainData : null;
-    if (!data) return null;
-    if (data.chainId !== 'solana-devnet' || data.contractAddress !== PROPOSAL_PROGRAM_ID) return null;
-    if (typeof data.proposalId !== 'string') return null;
+/**
+ * The market's subject: the agreement's chain account as the index's `onchain` records it
+ * ({ chain: 'solana', cluster: 'devnet', account, … }, agreements/onchain.js), kept only when it is
+ * the account this CID and sponsor derive (PDA ["agreement", sponsor, sha256(cid)]). Another
+ * wallet's account for the same CID can never record the lens decision, so it never selects a
+ * market; an agreement without a sponsor has no account.
+ */
+export function subjectAccountOf({ cid, sponsor, onchain } = {}) {
+    const pointer = onchain && typeof onchain === 'object' ? onchain : null;
+    if (!pointer || pointer.chain !== 'solana' || pointer.cluster !== 'devnet' || typeof pointer.account !== 'string') return null;
     try {
-        const account = new PublicKey(data.proposalId).toBase58();
-        return account === data.proposalId ? account : null;
-    } catch { return null; }
+        return agreementAccountOf(cid, sponsor) === pointer.account ? pointer.account : null;
+    } catch {
+        return null;
+    }
+}
+
+/**
+ * The parcel source an agreement's input ids are in: the one it names, else its city's default
+ * catalogue source, else the Croatian cadastre, the same choice the server's binding makes. An
+ * unknown named source qualifies nothing (null): raw ids from it never match another agreement's.
+ */
+export function parcelSourceOf({ city = null, parcelSourceId = null } = {}) {
+    if (parcelSourceId === HR_CADASTRE.sourceId) return HR_CADASTRE;
+    let descriptor = null;
+    try {
+        descriptor = parcelSourceId === null || parcelSourceId === undefined
+            ? parcelSourceCatalog.sources.find(source => source.defaultForCity !== false && Array.isArray(source.cityIds) && source.cityIds.includes(city)) || null
+            : resolveParcelSourceDescriptor(parcelSourceId);
+    } catch {
+        return null;
+    }
+    if (parcelSourceId !== null && parcelSourceId !== undefined && !descriptor) return null;
+    return descriptor ? { sourceId: descriptor.id, snapshotId: descriptor.snapshotId || null } : HR_CADASTRE;
 }
 
 export function normalizeParcelIds(value) {
@@ -38,74 +58,52 @@ export function normalizeParcelIds(value) {
     return Array.from(new Set(list.map(item => String(item ?? '').trim()).filter(Boolean))).sort();
 }
 
-export function normalizeKnownParcelSource(value) {
-    let normalized;
-    try { normalized = normalizeParcelSource(value); } catch { return null; }
-    if (!normalized) return null;
-    if (normalized.sourceId !== 'hr-cadastre') {
-        try { if (!resolveParcelSourceDescriptor(normalized.sourceId)) return null; } catch { return null; }
-    }
-    return normalized;
+/** The agreement's input land as qualified references (sourceId, snapshotId, parcelId). */
+export function parcelRefsOf(agreement) {
+    const source = parcelSourceOf(agreement || {});
+    if (!source) return [];
+    return normalizeParcelIds(agreement.inputParcelIds).map(parcelId => ({ ...source, parcelId }));
 }
 
-export function parcelRefsOf(proposal) {
-    const parcelSource = normalizeKnownParcelSource(proposal?.parcelSource);
-    if (!parcelSource) return [];
-    return normalizeParcelIds(proposal?.parcelIds).map(parcelId => ({ ...parcelSource, parcelId }));
-}
+const refKey = ref => JSON.stringify([ref.sourceId, ref.snapshotId, ref.parcelId]);
 
 export function normalizeParcelRefs(value) {
-    const refs = Array.isArray(value) ? value : [];
     const byKey = new Map();
-    for (const ref of refs) {
-        const source = normalizeKnownParcelSource({ sourceId: ref?.sourceId, snapshotId: ref?.snapshotId });
+    for (const ref of Array.isArray(value) ? value : []) {
         const parcelId = typeof ref?.parcelId === 'string' ? ref.parcelId.trim() : '';
-        if (!source || !parcelId) continue;
-        const normalized = { ...source, parcelId };
-        byKey.set(JSON.stringify([normalized.sourceId, normalized.snapshotId, normalized.parcelId]), normalized);
+        if (typeof ref?.sourceId !== 'string' || !ref.sourceId || !parcelId) continue;
+        const normalized = { sourceId: ref.sourceId, snapshotId: ref.snapshotId || null, parcelId };
+        byKey.set(refKey(normalized), normalized);
     }
-    return [...byKey.entries()].sort(([a], [b]) => a < b ? -1 : a > b ? 1 : 0).map(([, ref]) => ref);
+    return [...byKey.entries()].sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0)).map(([, ref]) => ref);
 }
 
-/** Stable contest id: the land, not the proposals, so a new proposal joins an existing contest. */
+/** Stable contest id: the land, not the agreements, so a new agreement joins an existing contest. */
 export function contestId(parcelRefs, fallback = '') {
     const refs = normalizeParcelRefs(parcelRefs);
-    const seed = refs.length ? `land:${JSON.stringify(refs)}` : `unqualified-proposal:${fallback}`;
+    const seed = refs.length ? `land:${JSON.stringify(refs)}` : `unqualified-agreement:${fallback}`;
     return `c-${createHash('sha256').update(seed).digest('hex').slice(0, 12)}`;
 }
 
-/** Union-find over shared qualified parcel references plus explicit named-plan membership. */
-export function groupByLand(proposals) {
-    const list = Array.isArray(proposals) ? proposals : [];
+/** Union-find over shared qualified input parcel references. */
+export function groupByLand(agreements) {
+    const list = Array.isArray(agreements) ? agreements : [];
     const parent = list.map((_, index) => index);
     const find = index => (parent[index] === index ? index : (parent[index] = find(parent[index])));
     const union = (a, b) => { parent[find(a)] = find(b); };
     const firstByParcel = new Map();
-    const firstById = new Map();
-    list.forEach((proposal, index) => {
-        if (!proposal.isPlan) {
-            const proposalId = String(proposal.id ?? '');
-            if (proposalId && !firstById.has(proposalId)) firstById.set(proposalId, index);
-        }
-    });
-    list.forEach((proposal, index) => {
-        if (proposal.isPlan) {
-            for (const memberId of proposal.memberIds || []) {
-                const memberIndex = firstById.get(String(memberId));
-                if (memberIndex !== undefined) union(index, memberIndex);
-            }
-        }
-        for (const ref of parcelRefsOf(proposal)) {
-            const key = JSON.stringify([ref.sourceId, ref.snapshotId, ref.parcelId]);
+    list.forEach((agreement, index) => {
+        for (const ref of parcelRefsOf(agreement)) {
+            const key = refKey(ref);
             if (firstByParcel.has(key)) union(index, firstByParcel.get(key));
             else firstByParcel.set(key, index);
         }
     });
     const groups = new Map();
-    list.forEach((proposal, index) => {
+    list.forEach((agreement, index) => {
         const root = find(index);
         if (!groups.has(root)) groups.set(root, []);
-        groups.get(root).push(proposal);
+        groups.get(root).push(agreement);
     });
     return Array.from(groups.values());
 }
@@ -117,18 +115,6 @@ function atomic(value) {
 function timeOf(value) {
     const ms = value instanceof Date ? value.getTime() : Date.parse(value || '');
     return Number.isFinite(ms) ? ms : 0;
-}
-
-// The market's own deadline as an ISO instant, or null. A decoded account carries it as i64 Unix
-// seconds (market-client.js reads i64 as BigInt); a legacy pool has none.
-export function closesAtOf(market) {
-    const value = market ? market.closesAt : null;
-    if (value === null || value === undefined || value === '') return null;
-    const unixSeconds = typeof value === 'bigint' || typeof value === 'number' || /^\d+$/.test(String(value));
-    // 0 is an unset deadline, not 1970.
-    if (unixSeconds && !(Number(value) > 0)) return null;
-    const date = unixSeconds ? new Date(Number(value) * 1000) : new Date(String(value));
-    return Number.isNaN(date.getTime()) ? null : date.toISOString();
 }
 
 function marketEntry(decoded) {
@@ -147,218 +133,83 @@ function marketEntry(decoded) {
     };
 }
 
-function proposalEntry(proposal, markets, statuses) {
-    const proposalAccount = proposal.proposalAccount || null;
-    const decoded = proposalAccount ? markets.get(proposalAccount) : null;
-    const market = marketEntry(decoded);
-    const lifecycleStatus = canonicalizeLifecycleStatus(proposal.lifecycleStatus) || 'Unknown';
-    // What the market program will see: the proposal account's own status when it was readable.
-    // The database's expiry-aware status is the display word; it can run ahead of the chain (an
-    // app deadline passed, no verdict settled yet), and the program only honours the chain.
-    const chainStatus = proposalAccount && statuses && statuses.get(proposalAccount) ? statuses.get(proposalAccount) : null;
-    const active = chainStatus === 'Active';
-    return {
-        id: proposal.id,
-        kind: 'proposal',
-        proposalId: proposal.proposalId,
-        title: proposal.title || null,
-        goal: proposal.goal || null,
-        lifecycleStatus,
-        chainStatus,
-        createdAt: proposal.createdAt || null,
-        expiresAt: proposal.expiresAt || null,
-        author: proposal.author || null,
-        agent: Boolean(proposal.agent),
-        proposalRole: proposal.proposalRole || null,
-        screenshotUrl: proposal.screenshotUrl || null,
-        screenshotBeforeUrl: proposal.screenshotBeforeUrl || null,
-        screenshotPairUrl: proposal.screenshotPairUrl || null,
-        parcelIds: normalizeParcelIds(proposal.parcelIds),
-        parcelRefs: parcelRefsOf(proposal),
-        siteName: proposal.siteName || null,
-        proposalAccount,
-        market,
-        // The market's deadline when it has one (dated markets); rows in play sort by it.
-        closesAt: market ? closesAtOf(decoded.market) : null,
-        // Bets are only possible on an open market of a proposal that is still Active on-chain.
-        bettable: Boolean(market && !market.resolved && active),
-        // A minted, Active proposal without a market: anyone can open the (single) market for it.
-        canOpenMarket: Boolean(proposalAccount && !market && active)
-    };
-}
-
-// A named plan as a contest entry: same market fields as a proposal, plus its members.
-function planEntry(plan, markets, statuses, proposalsById) {
-    const base = proposalEntry({
-        id: `plan:${plan.slug}`,
-        proposalId: plan.slug,
-        title: plan.title || plan.slug,
-        goal: 'plan',
-        lifecycleStatus: 'Unknown',
-        createdAt: plan.createdAt,
-        expiresAt: null,
-        author: plan.author,
-        screenshotUrl: plan.screenshotUrl,
-        screenshotBeforeUrl: plan.screenshotBeforeUrl,
-        screenshotPairUrl: plan.screenshotPairUrl,
-        parcelIds: plan.parcelIds,
-        parcelRefs: plan.parcelRefs,
-        siteName: plan.place,
-        proposalAccount: plan.proposalAccount
-    }, markets, statuses);
-    const members = (plan.memberIds || []).map(String).filter(id => proposalsById.has(id)).map(id => {
-        const member = proposalsById.get(id);
-        return { id: member.id, proposalId: member.proposalId, title: member.title || null, goal: member.goal || null };
-    });
-    return { ...base, parcelRefs: normalizeParcelRefs(plan.parcelRefs), kind: 'plan', planSlug: plan.slug,
-        supersedes: plan.supersedes || null, memberCount: members.length, members };
-}
-
-// A version a newer one in the same contest replaced. It stays reachable for the bets already in its
-// pool (to settle and collect) but is never offered: not bettable, and no new pool. `state` is where
-// its pool stands, read as if it were current (an open pool says 'open'); its members are the
-// current version's business, so only their count travels.
-function olderVersionEntry(plan, supersededBy, markets, statuses, proposalsById) {
-    const { members, ...entry } = planEntry(plan, markets, statuses, proposalsById);
-    return {
-        ...entry,
-        slug: plan.slug,
-        supersededBy,
-        state: rowState({ ...entry, canOpenMarket: false }),
-        bettable: false,
-        canOpenMarket: false
-    };
-}
-
 /**
- * The versions of named plans in one contest (plans.md: a revision is a new plan that records
- * `supersedes`). A plan another plan in the same list supersedes is not current; it folds under the
- * newest version of its chain, newest first, each with the slug that replaced it. A plan whose
- * predecessor is not in the list (another contest's land) simply stands. Returns
- * { current: [plan], older: Map(slug → [{ plan, supersededBy }]) }.
+ * One agreement as a contest entry. `status` is the word shown: the chain's terminal status when
+ * the lifecycle oracle observed one, else expired once the deadline passed, else active.
+ * `chainStatus` is what the market program resolves from (null when unminted or unobserved). A pool
+ * takes bets and can be opened only while the account is Active and the deadline, after which the
+ * agreement can no longer execute, lies ahead.
  */
-export function foldVersions(plans) {
-    const list = Array.isArray(plans) ? plans : [];
-    const bySlug = new Map(list.map(plan => [plan.slug, plan]));
-    const replaced = new Set(list.map(plan => plan.supersedes).filter(slug => slug && bySlug.has(slug)));
-    const claimed = new Set();
-    const older = new Map();
-    const walk = head => {
-        claimed.add(head.slug);
-        const chain = [];
-        let newer = head;
-        while (newer.supersedes && bySlug.has(newer.supersedes) && !claimed.has(newer.supersedes)) {
-            const plan = bySlug.get(newer.supersedes);
-            claimed.add(plan.slug);
-            chain.push({ plan, supersededBy: newer.slug });
-            newer = plan;
-        }
-        older.set(head.slug, chain);
+function agreementEntry(agreement, markets, nowMs) {
+    const account = agreement.account || null;
+    const market = marketEntry(account ? markets.get(account) : null);
+    const chainStatus = account ? agreement.chainStatus || null : null;
+    const deadlineMs = agreement.deadline ? Date.parse(agreement.deadline) : NaN;
+    const deadlinePassed = Number.isFinite(deadlineMs) && deadlineMs <= nowMs;
+    const live = chainStatus === 'active' && !deadlinePassed;
+    return {
+        kind: 'agreement',
+        cid: agreement.cid,
+        account,
+        title: agreement.title || null,
+        author: agreement.author || null,
+        city: agreement.city || null,
+        status: marketOutcome(chainStatus) ? chainStatus : deadlinePassed ? 'expired' : 'active',
+        chainStatus,
+        deadline: agreement.deadline || null,
+        createdAt: agreement.createdAt || null,
+        designTitles: Array.isArray(agreement.designTitles) ? agreement.designTitles : [],
+        screenshotUrl: agreement.screenshotUrl || null,
+        screenshotBeforeUrl: agreement.screenshotBeforeUrl || null,
+        screenshotPairUrl: agreement.screenshotPairUrl || null,
+        parcelIds: normalizeParcelIds(agreement.inputParcelIds),
+        parcelRefs: parcelRefsOf(agreement),
+        market,
+        bettable: Boolean(market && !market.resolved && live),
+        canOpenMarket: Boolean(account && !market && live)
     };
-    const current = list.filter(plan => !replaced.has(plan.slug));
-    current.forEach(walk);
-    // Plans that supersede each other in a loop have no newest version; the first of them stands, so
-    // nothing disappears from the list.
-    for (const plan of list) {
-        if (!claimed.has(plan.slug)) { current.push(plan); walk(plan); }
-    }
-    return { current, older };
-}
-
-// A blockName the app generated from a parcel selection ("Parcel HR-335614-2355", "Parcels 12, 13")
-// names nothing; only an authored site name counts.
-const GENERATED_SITE_NAME = /^parcels?\b/i;
-
-// The name the contest's proposals gave their land, when any did: the most common one wins.
-export function siteNameOf(entries) {
-    const counts = new Map();
-    for (const entry of entries) {
-        const name = typeof entry.siteName === 'string' ? entry.siteName.trim() : '';
-        if (name && !GENERATED_SITE_NAME.test(name)) counts.set(name, (counts.get(name) || 0) + 1);
-    }
-    // A named plan's place is an authored name for the whole site; it outranks pieces' block names.
-    for (const entry of entries) {
-        if (entry.kind === 'plan' && typeof entry.siteName === 'string' && entry.siteName.trim()) {
-            const name = entry.siteName.trim();
-            counts.set(name, (counts.get(name) || 0) + 1_000_000);
-        }
-    }
-    let best = null;
-    for (const [name, count] of counts) if (!best || count > best.count) best = { name, count };
-    return best ? best.name : null;
 }
 
 /**
  * Build the public contests payload for one city.
- *   plans: named plans { slug, title, place, author, createdAt, memberIds (proposal row ids),
- *   proposalAccount, supersedes } — their land is the union of their members' parcels. A plan another
- *   plan in its contest supersedes is no entry of its own: it folds under the newest version as
- *   `olderVersions`, and the contest counts (proposalCount, planCount, mintedCount, marketCount,
- *   openMarketCount, poolAtomic) are of current versions; foldedCount counts folded members and
- *   older versions together.
- * @param {{ city: string, proposals: Array<object>, markets: Map<string, { address: string, market: object|null }>, statuses?: Map<string, string>, now?: Date }} input
- *   statuses: proposal account → on-chain status name ('Active' | 'Executed' | 'Cancelled' | 'Expired').
- *   proposals: { id, proposalId, title, goal, lifecycleStatus, createdAt, expiresAt, author, agent,
- *   proposalRole, screenshotUrl, parcelIds, parcelSource, proposalAccount }. Only contests with at least one
- *   minted proposal are returned: a contest nobody can bet on is a proposals list, not a market.
- *   Entries and contests come in the Bets sheet's order (bets-model.js compareRows, compareContests).
+ * @param {{ city: string, agreements: Array<object>, markets?: Map<string, { address: string, market: object|null }>, now?: Date }} input
+ *   agreements: { cid, title, author, city, inputParcelIds, parcelSourceId, deadline, createdAt,
+ *   designTitles, screenshotUrl, screenshotBeforeUrl, screenshotPairUrl, account, chainStatus }
+ *   (routes/markets.js rowToAgreement); markets: agreement account → its decoded market account.
+ *   Only contests with at least one minted agreement are returned: a contest nobody can bet on is
+ *   a list of agreements, not a market. Unminted agreements stay in a contest beside minted ones,
+ *   without a pool. Entries and contests come in the Bets sheet's order (bets-model.js compareRows,
+ *   compareContests).
  */
-export function buildContests({ city, proposals, plans = [], markets = new Map(), statuses = new Map(), now = new Date() }) {
-    const proposalsById = new Map(proposals.map(proposal => [String(proposal.id), proposal]));
-    const planItems = plans.map(plan => ({
-        ...plan,
-        isPlan: true,
-        parcelIds: normalizeParcelIds((plan.memberIds || []).flatMap(id => proposalsById.get(String(id))?.parcelIds || [])),
-        parcelRefs: normalizeParcelRefs((plan.memberIds || []).flatMap(id => {
-            const member = proposalsById.get(String(id));
-            return member ? parcelRefsOf(member) : [];
-        }))
-    })).filter(plan => plan.memberIds?.length);
-    const contests = groupByLand([...proposals, ...planItems]).map(group => {
-        const groupPlans = group.filter(item => item.isPlan);
-        // Members of every version fold away, so a piece an older version used does not resurface as a row.
-        const folded = new Set(groupPlans.flatMap(plan => (plan.memberIds || []).map(String)));
-        const versions = foldVersions(groupPlans);
-        const entries = [
-            ...versions.current.map(plan => ({
-                ...planEntry(plan, markets, statuses, proposalsById),
-                olderVersions: versions.older.get(plan.slug)
-                    .map(({ plan: old, supersededBy }) => olderVersionEntry(old, supersededBy, markets, statuses, proposalsById))
-            })),
-            ...group.filter(item => !item.isPlan && !folded.has(String(item.id))).map(proposal => proposalEntry(proposal, markets, statuses))
-        ].sort(compareRows);
-        const olderCount = groupPlans.length - versions.current.length;
-        const parcelIds = normalizeParcelIds(group.flatMap(item => normalizeParcelIds(item.parcelIds)));
-        const parcelRefs = normalizeParcelRefs(group.flatMap(item => item.isPlan ? item.parcelRefs : parcelRefsOf(item)));
+export function buildContests({ city, agreements, markets = new Map(), now = new Date() }) {
+    const nowMs = now.getTime();
+    const contests = groupByLand(agreements).map(group => {
+        const parcelRefs = normalizeParcelRefs(group.flatMap(parcelRefsOf));
+        const id = contestId(parcelRefs, group.map(agreement => agreement.cid).sort()[0] || '');
+        const entries = group.map(agreement => ({ ...agreementEntry(agreement, markets, nowMs), contest: id })).sort(compareRows);
         const withMarket = entries.filter(entry => entry.market);
-        const pool = withMarket.reduce((sum, entry) => sum + atomic(entry.market.poolAtomic), 0n);
         return {
-            id: contestId(parcelRefs, entries.map(entry => entry.proposalId).sort()[0] || ''),
-            parcelIds,
+            id,
+            parcelIds: normalizeParcelIds(group.flatMap(agreement => normalizeParcelIds(agreement.inputParcelIds))),
             parcelRefs,
-            siteName: siteNameOf(entries),
-            proposalCount: entries.length,
-            planCount: versions.current.length,
-            foldedCount: folded.size + olderCount,
-            mintedCount: entries.filter(entry => entry.proposalAccount).length,
+            agreementCount: entries.length,
+            mintedCount: entries.filter(entry => entry.account).length,
             marketCount: withMarket.length,
             openMarketCount: entries.filter(entry => entry.bettable).length,
-            poolAtomic: pool.toString(),
+            poolAtomic: withMarket.reduce((sum, entry) => sum + atomic(entry.market.poolAtomic), 0n).toString(),
             latestCreatedAt: entries.reduce((latest, entry) => (timeOf(entry.createdAt) > timeOf(latest) ? entry.createdAt : latest), null),
-            proposals: entries
+            agreements: entries
         };
-    // An older version's pool keeps its contest listed even when no current version is minted yet,
-    // so the bets in it can still be settled and collected.
-    }).filter(contest => contest.mintedCount > 0 || contest.proposals.some(entry => (entry.olderVersions || []).some(old => old.proposalAccount)))
+    }).filter(contest => contest.mintedCount > 0)
         .sort(compareContests);
 
     const summary = contests.reduce((acc, contest) => ({
         contests: acc.contests + 1,
-        proposals: acc.proposals + contest.proposalCount,
+        agreements: acc.agreements + contest.agreementCount,
         markets: acc.markets + contest.marketCount,
         openMarkets: acc.openMarkets + contest.openMarketCount,
         poolAtomic: (atomic(acc.poolAtomic) + atomic(contest.poolAtomic)).toString()
-    }), { contests: 0, proposals: 0, markets: 0, openMarkets: 0, poolAtomic: '0' });
+    }), { contests: 0, agreements: 0, markets: 0, openMarkets: 0, poolAtomic: '0' });
 
     return { city, generatedAt: now.toISOString(), summary, contests };
 }

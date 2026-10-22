@@ -14,7 +14,6 @@
         ['Proj4js', 'https://proj4js.org/'],
         ['Turf', 'https://turfjs.org/'],
         ['Font Awesome Free', 'https://fontawesome.com/license/free'],
-        ['pako', 'https://github.com/nodeca/pako'],
         ['PMTiles', 'https://github.com/protomaps/PMTiles'],
         ['leaflet-image', 'https://github.com/mapbox/leaflet-image'],
         ['ethers', 'https://docs.ethers.org/'],

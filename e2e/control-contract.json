@@ -1,84 +1,7 @@
 {
   "version": 2,
-  "allowedSkips": [
-    {
-      "file": "proposal-approval-lens.spec.ts",
-      "projectName": "chromium",
-      "title": "a minted proposal anchors its owner decisions on chain, and a browser without the relay recovers them",
-      "skipReason": "set E2E_DEVNET=1 to send devnet transactions"
-    }
-  ],
+  "allowedSkips": [],
   "controls": [
-    {
-      "id": "control-fe70f0cadd88f5-1",
-      "source": "canton.html",
-      "markup": "<input id=\"canton-party\" type=\"text\" placeholder=\"party id (hint::fingerprint)\" autocomplete=\"off\" list=\"party-options\" />",
-      "interaction": "change",
-      "controlType": "text"
-    },
-    {
-      "id": "control-514c5946de1753-1",
-      "source": "canton.html",
-      "markup": "<button id=\"canton-load\" type=\"button\" class=\"btn btn-primary\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-0af062ad512950-1",
-      "source": "canton.html",
-      "markup": "<button id=\"gen-party-btn\" type=\"button\" class=\"btn btn-sm\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-23fa5e13addb4e-1",
-      "source": "canton.html",
-      "markup": "<button id=\"clear-parties-btn\" type=\"button\" class=\"btn btn-quiet btn-sm\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-43e3a583944cfe-1",
-      "source": "canton.html",
-      "markup": "<select id=\"create-parcel\">",
-      "interaction": "change",
-      "controlType": "select"
-    },
-    {
-      "id": "control-cf29f5c962feb5-1",
-      "source": "canton.html",
-      "markup": "<input id=\"create-price\" type=\"text\" value=\"100.0\" />",
-      "interaction": "change",
-      "controlType": "text"
-    },
-    {
-      "id": "control-6b76fbfae43155-1",
-      "source": "canton.html",
-      "markup": "<input id=\"create-buyer\" type=\"text\" placeholder=\"auto\" autocomplete=\"off\" list=\"party-options\" />",
-      "interaction": "change",
-      "controlType": "text"
-    },
-    {
-      "id": "control-91d637eebecb8a-1",
-      "source": "canton.html",
-      "markup": "<input id=\"create-owner\" type=\"text\" placeholder=\"auto\" autocomplete=\"off\" list=\"party-options\" />",
-      "interaction": "change",
-      "controlType": "text"
-    },
-    {
-      "id": "control-bb30aa54bd0208-1",
-      "source": "canton.html",
-      "markup": "<input id=\"create-lens\" type=\"text\" placeholder=\"auto\" autocomplete=\"off\" list=\"party-options\" />",
-      "interaction": "change",
-      "controlType": "text"
-    },
-    {
-      "id": "control-11b571e4920f61-1",
-      "source": "canton.html",
-      "markup": "<button id=\"create-btn\" type=\"button\" class=\"btn btn-primary\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
     {
       "id": "control-7c855b74f4e1c7-1",
       "source": "deck.html",
@@ -1434,18 +1357,23 @@
       "controlType": "button"
     },
     {
-      "id": "control-fc02c9898addf5-1",
-      "source": "index.html",
-      "markup": "<button id=\"mintedProposalsButton\" class=\"btn btn-block minted-proposals-button\" hidden onclick=\"openMintedProposalsModal()\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
       "id": "control-9e8a717ed5eed8-1",
       "source": "index.html",
       "markup": "<button id=\"shareAppliedProposalsButton\" class=\"btn btn-block share-plan-button\" disabled onclick=\"shareAppliedProposals()\">",
       "interaction": "click",
       "controlType": "button"
+    },
+    {
+      "id": "control-52edba7ede5172-1",
+      "source": "index.html",
+      "markup": "<button id=\"agreementsButton\" type=\"button\" class=\"btn btn-block agreements-button\" onclick=\"window.AgreementList.open()\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-a44832b5a56bdd-1",
+      "source": "index.html",
+      "markup": "<button id=\"mintedAgreementsButton\" type=\"button\" class=\"btn btn-block minted-agreements-button\" onclick=\"window.AgreementList.openMinted()\">"
     },
     {
       "id": "control-dc7af30c67cb8d-5",
@@ -1689,16 +1617,6 @@
       "markup": "<button type=\"button\" class=\"btn btn-primary btn-sm multi-select-detect-btn\" data-i18n-key=\"panel.parcel.detectBlock\" onclick=\"(window.animateFloodfillFromSelected || function(){})();\">",
       "interaction": "click",
       "controlType": "button"
-    },
-    {
-      "id": "control-237dc06e1f0b41-1",
-      "source": "index.html",
-      "markup": "<button type=\"button\" class=\"cb-segmented__option\" aria-pressed=\"true\" data-parcel-proposals-view=\"proposals\">"
-    },
-    {
-      "id": "control-60e67a557b3103-1",
-      "source": "index.html",
-      "markup": "<button type=\"button\" class=\"cb-segmented__option\" aria-pressed=\"false\" data-parcel-proposals-view=\"plans\">"
     },
     {
       "id": "control-3c526decb3664e-1",
@@ -2164,11 +2082,25 @@
       "controlType": "button"
     },
     {
-      "id": "control-06786c37089a47-1",
+      "id": "control-8118b70422ceff-1",
       "source": "js/actor-explorer.js",
-      "markup": "<button type=\"button\" data-proposal-id=\"${escapeHtml(event.entity.id)}\" class=\"cb-link proposal-link-clickable\">",
+      "markup": "<button type=\"button\" class=\"cb-link activity-entity-link\" data-entity-type=\"${escapeHtml(entityType)}\" data-entity-id=\"${escapeHtml(event.entity.id)}\">",
       "interaction": "click",
-      "controlType": "button"
+      "controlType": "button",
+      "variants": [
+        {
+          "name": "Open an activity row's agreement",
+          "attrs": {
+            "data-entity-type": "agreement"
+          }
+        },
+        {
+          "name": "Open an activity row's design",
+          "attrs": {
+            "data-entity-type": "design"
+          }
+        }
+      ]
     },
     {
       "id": "control-f096d5c3c224cb-1",
@@ -2183,15 +2115,9 @@
           }
         },
         {
-          "name": "proposalId",
+          "name": "agreementCid",
           "attrs": {
-            "data-activity-scope": "proposalId"
-          }
-        },
-        {
-          "name": "parcelSetOf",
-          "attrs": {
-            "data-activity-scope": "parcelSetOf"
+            "data-activity-scope": "agreementCid"
           }
         },
         {
@@ -2277,29 +2203,9 @@
       "controlType": "button"
     },
     {
-      "id": "control-99766528aa7ec5-1",
-      "source": "js/agents.js",
-      "markup": "<button type=\"button\" class=\"cb-link parcel-link-clickable\" data-parcel-id=\"${action.parcelId}\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
       "id": "control-4a853482db54a9-4",
       "source": "js/agents.js",
       "markup": "<button type=\"button\" class=\"cb-link agent-link-clickable\" data-agent-id=\"${agent.id}\">",
-      "exempt": "The simulation fallback requires acceptProposal to be absent, but the application unconditionally loads its declaration before agents.js. Normal acceptance and its rejected result are tested through the real dispatcher.",
-      "mustRemainInactive": true,
-      "guards": [
-        {
-          "source": "js/proposals/execution.js",
-          "includes": "async function acceptProposal(proposalId, parcelId, ownerKey, metadata = {}) {"
-        },
-        {
-          "source": "index.html",
-          "pattern": "'js/proposals/execution\\.js(?:\\?[^']*)?'[\\s\\S]*?'js/agents\\.js(?:\\?[^']*)?'",
-          "occurrences": 1
-        }
-      ],
       "interaction": "click",
       "controlType": "button"
     },
@@ -2308,7 +2214,20 @@
       "source": "js/agents.js",
       "markup": "<button type=\"button\" class=\"cb-link agent-link-clickable\" data-agent-id=\"${agent.id}\">",
       "interaction": "click",
-      "controlType": "button"
+      "controlType": "button",
+      "exempt": "The simulation duplicate-result fallback is unreachable for the proposal object created immediately above it: addProposal returns an ID for object input and returns null only for non-object input.",
+      "mustRemainInactive": true,
+      "guards": [
+        {
+          "source": "js/agents.js",
+          "includes": "const proposalId = proposalStorage.addProposal(proposal, {"
+        },
+        {
+          "source": "js/proposals/data.js",
+          "pattern": "addProposal\\(proposal, options = \\{\\}\\) \\{\\n        if \\(!proposal \\|\\| typeof proposal !== 'object'\\) return null;\\n(?:(?!\\breturn\\b)[\\s\\S])*?return normalized\\.proposalId;\\n    \\},",
+          "occurrences": 1
+        }
+      ]
     },
     {
       "id": "control-4a853482db54a9-6",
@@ -2322,7 +2241,20 @@
       "source": "js/agents.js",
       "markup": "<button type=\"button\" class=\"cb-link agent-link-clickable\" data-agent-id=\"${agent.id}\">",
       "interaction": "click",
-      "controlType": "button"
+      "controlType": "button",
+      "exempt": "The simulation missing-store fallback is unreachable in the loaded app: proposalStorage is unconditionally declared and loaded before agents.js.",
+      "mustRemainInactive": true,
+      "guards": [
+        {
+          "source": "js/proposals/data.js",
+          "includes": "const proposalStorage = {"
+        },
+        {
+          "source": "index.html",
+          "pattern": "'js/proposals/data\\.js(?:\\?[^']*)?'[\\s\\S]*?'js/agents\\.js(?:\\?[^']*)?'",
+          "occurrences": 1
+        }
+      ]
     },
     {
       "id": "control-4a853482db54a9-8",
@@ -2341,82 +2273,6 @@
           "occurrences": 1
         }
       ],
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-4a853482db54a9-9",
-      "source": "js/agents.js",
-      "markup": "<button type=\"button\" class=\"cb-link agent-link-clickable\" data-agent-id=\"${agent.id}\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-4a853482db54a9-10",
-      "source": "js/agents.js",
-      "markup": "<button type=\"button\" class=\"cb-link agent-link-clickable\" data-agent-id=\"${agent.id}\">",
-      "exempt": "The simulation missing-store fallback is unreachable in the loaded app: proposalStorage is unconditionally declared and loaded before agents.js.",
-      "mustRemainInactive": true,
-      "guards": [
-        {
-          "source": "js/proposals/data.js",
-          "includes": "const proposalStorage = {"
-        },
-        {
-          "source": "index.html",
-          "pattern": "'js/proposals/data\\.js(?:\\?[^']*)?'[\\s\\S]*?'js/agents\\.js(?:\\?[^']*)?'",
-          "occurrences": 1
-        }
-      ],
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-4a853482db54a9-11",
-      "source": "js/agents.js",
-      "markup": "<button type=\"button\" class=\"cb-link agent-link-clickable\" data-agent-id=\"${agent.id}\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-4a853482db54a9-12",
-      "source": "js/agents.js",
-      "markup": "<button type=\"button\" class=\"cb-link agent-link-clickable\" data-agent-id=\"${agent.id}\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-4a853482db54a9-13",
-      "source": "js/agents.js",
-      "markup": "<button type=\"button\" class=\"cb-link agent-link-clickable\" data-agent-id=\"${agent.id}\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-4a853482db54a9-14",
-      "source": "js/agents.js",
-      "markup": "<button type=\"button\" class=\"cb-link agent-link-clickable\" data-agent-id=\"${agent.id}\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-4a853482db54a9-15",
-      "source": "js/agents.js",
-      "markup": "<button type=\"button\" class=\"cb-link agent-link-clickable\" data-agent-id=\"${agent.id}\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-4a853482db54a9-16",
-      "source": "js/agents.js",
-      "markup": "<button type=\"button\" class=\"cb-link agent-link-clickable\" data-agent-id=\"${agent.id}\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-4a853482db54a9-17",
-      "source": "js/agents.js",
-      "markup": "<button type=\"button\" class=\"cb-link agent-link-clickable\" data-agent-id=\"${agent.id}\">",
       "interaction": "click",
       "controlType": "button"
     },
@@ -2454,6 +2310,188 @@
       "markup": "<button type=\"button\" class=\"close-circle-btn agent-dialog-modal-close\" aria-label=\"Close agent dialog\" onclick=\"closeAgentDialog()\" data-readonly-allow=\"true\">",
       "interaction": "click",
       "controlType": "button"
+    },
+    {
+      "id": "control-9d62d5684da658-1",
+      "source": "js/agreement-dialog.js",
+      "markup": "<input type=\"checkbox\" data-agreement-design=\"${esc(id)}\"${chosen.has(id) ? ' checked' : ''}>",
+      "interaction": "change",
+      "controlType": "checkbox"
+    },
+    {
+      "id": "control-35922d4500ab71-1",
+      "source": "js/agreement-dialog.js",
+      "markup": "<select data-agreement-allocation=\"${esc(output.hash)}\">",
+      "interaction": "change",
+      "controlType": "select"
+    },
+    {
+      "id": "control-5a374c1ec1825f-1",
+      "source": "js/agreement-dialog.js",
+      "markup": "<input type=\"number\" step=\"0.01\" data-agreement-cash=\"${esc(party.ownerKey)}\" value=\"${esc(shown(cash[party.ownerKey]))}\">",
+      "interaction": "change",
+      "controlType": "number"
+    },
+    {
+      "id": "control-d7f25321d05961-1",
+      "source": "js/agreement-dialog.js",
+      "markup": "<input type=\"radio\" name=\"agreement-electorate\" value=\"${value}\" data-agreement-electorate${(value === 'owners') === owners ? ' checked' : ''}>",
+      "interaction": "change",
+      "controlType": "radio"
+    },
+    {
+      "id": "control-9ef1c8d2f776c1-1",
+      "source": "js/agreement-dialog.js",
+      "markup": "<input type=\"checkbox\" data-agreement-binding${owners && binding ? ' checked' : ''}${owners ? '' : ' disabled'}>",
+      "interaction": "change",
+      "controlType": "checkbox"
+    },
+    {
+      "id": "control-3430aed69b45dd-1",
+      "source": "js/agreement-dialog.js",
+      "markup": "<input type=\"text\" data-agreement-title value=\"${esc(title)}\" autocomplete=\"off\">",
+      "interaction": "change",
+      "controlType": "text"
+    },
+    {
+      "id": "control-10565f8f2f7864-1",
+      "source": "js/agreement-dialog.js",
+      "markup": "<input type=\"date\" data-agreement-deadline value=\"${esc(deadline)}\"${today ? ` min=\"${esc(today)}\"` : ''}>",
+      "interaction": "change",
+      "controlType": "date"
+    },
+    {
+      "id": "control-cd7e81d4355a78-1",
+      "source": "js/agreement-dialog.js",
+      "markup": "<button type=\"button\" class=\"close-circle-btn close-circle-btn--lg close-button\" data-agreement-action=\"cancel\">"
+    },
+    {
+      "id": "control-984f35e8cab3cb-1",
+      "source": "js/agreement-dialog.js",
+      "markup": "<button type=\"button\" class=\"btn\" data-agreement-action=\"cancel\">"
+    },
+    {
+      "id": "control-49edf6b4a33df1-1",
+      "source": "js/agreement-dialog.js",
+      "markup": "<button type=\"submit\" class=\"btn btn-primary\" data-agreement-action=\"save\">"
+    },
+    {
+      "id": "control-0a64b72e8540f2-1",
+      "source": "js/agreement-list.js",
+      "markup": "<button type=\"button\" class=\"btn btn-quiet agreement-item\" data-agreement-id=\"${esc(agreement.id)}\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-62c0cebef898e6-1",
+      "source": "js/agreement-list.js",
+      "markup": "<button type=\"button\" class=\"btn btn-quiet agreement-item\" data-agreement-cid=\"${esc(row.cid)}\">"
+    },
+    {
+      "id": "control-e98071567cd733-1",
+      "source": "js/agreement-list.js",
+      "markup": "<button type=\"button\" class=\"btn btn-primary\" data-agreement-action=\"create\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-c071f79cfa3db8-1",
+      "source": "js/agreement-panel.js",
+      "markup": "<button type=\"button\" class=\"btn btn-primary\" data-agreement-action=\"propose\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-90b692e2bad213-1",
+      "source": "js/agreement-panel.js",
+      "markup": "<button type=\"button\" class=\"btn${canPropose ? '' : ' btn-primary'}\" data-agreement-action=\"compare\" aria-pressed=\"${comparing ? 'true' : 'false'}\"${canCompare ? '' : ' disabled'}>",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-f91e5db54a0384-1",
+      "source": "js/agreement-panel.js",
+      "markup": "<button type=\"button\" class=\"btn\" data-agreement-action=\"bet\">"
+    },
+    {
+      "id": "control-b0cd763a3a6218-1",
+      "source": "js/agreement-panel.js",
+      "markup": "<button type=\"button\" class=\"btn\" data-agreement-action=\"edit\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-1b72919688754d-1",
+      "source": "js/agreement-panel.js",
+      "markup": "<button type=\"button\" class=\"btn btn-danger\" data-agreement-action=\"delete\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-2178e35d035b73-1",
+      "source": "js/agreement-panel.js",
+      "markup": "<button type=\"button\" class=\"btn${tone ? ` btn-${tone}` : ''}\" data-agreement-action=\"${action}\"${disabled ? ' disabled' : ''}>",
+      "variants": [
+        {
+          "name": "Mint a proposed binding agreement (asks the mint terms)",
+          "label": "Mint",
+          "attrs": {
+            "data-agreement-action": "mint"
+          }
+        },
+        {
+          "name": "Propose a sponsorless agreement again with the connected wallet",
+          "label": "Propose again with this wallet",
+          "attrs": {
+            "data-agreement-action": "repropose"
+          }
+        },
+        {
+          "name": "Fund a minted agreement (asks the amount)",
+          "label": "Fund",
+          "attrs": {
+            "data-agreement-action": "fund"
+          }
+        },
+        {
+          "name": "Cancel a minted agreement (asks first)",
+          "label": "Cancel",
+          "attrs": {
+            "data-agreement-action": "cancel"
+          }
+        }
+      ]
+    },
+    {
+      "id": "control-337599a557e733-1",
+      "source": "js/agreement-panel.js",
+      "markup": "<button type=\"button\" class=\"btn btn-sm\" data-agreement-action=\"link\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-04b2f1fbf5a167-1",
+      "source": "js/agreement-panel.js",
+      "markup": "<button type=\"button\" class=\"btn btn-quiet agreement-panel-design\" data-agreement-design=\"${esc(row.proposalId)}\"${row.missing ? ' disabled' : ''}>",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-f1e142fd677d5b-1",
+      "source": "js/agreement-panel.js",
+      "markup": "<button type=\"button\" class=\"close-circle-btn close-circle-btn--lg close-button\" data-agreement-action=\"close\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-35e78e7eb2adc9-1",
+      "source": "js/agreement-panel.js",
+      "markup": "<input type=\"text\" inputmode=\"decimal\" autocomplete=\"off\" data-agreement-mint-required value=\"0\">"
+    },
+    {
+      "id": "control-dd37aae8f19585-1",
+      "source": "js/agreement-panel.js",
+      "markup": "<input type=\"text\" autocomplete=\"off\" spellcheck=\"false\" data-agreement-mint-payout value=\"${esc(sponsor)}\">"
     },
     {
       "id": "control-e6bb0c762ea941-1",
@@ -2722,21 +2760,14 @@
           }
         },
         {
-          "name": "Open the proposal from its bet dialog",
-          "label": "Open proposal",
+          "name": "Open the agreement from its bet dialog",
+          "label": "Open the agreement",
           "classes": [
             "btn"
           ]
         },
         {
-          "name": "Open the named plan from its bet dialog",
-          "label": "Open the plan",
-          "classes": [
-            "btn"
-          ]
-        },
-        {
-          "name": "Expand proposals contesting the same land",
+          "name": "Expand agreements contesting the same land",
           "labelPattern": ".+ on this land$",
           "classes": [
             "cb-link",
@@ -2889,7 +2920,7 @@
           }
         },
         {
-          "name": "Open a row's bet dialog or unminted proposal",
+          "name": "Open a row's bet dialog or its unminted agreement",
           "classes": [
             "btn",
             "btn-quiet",
@@ -3222,335 +3253,6 @@
       "controlType": "button"
     },
     {
-      "id": "control-01553c4168c729-1",
-      "source": "js/canton/canton-explorer.js",
-      "markup": "<button class=\"btn btn-sm btn-success canton-explorer-accept\" data-cid=\"${it.contractId}\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-babe1da60c1874-1",
-      "source": "js/canton/canton-explorer.js",
-      "markup": "<button type=\"button\" class=\"cb-segmented__option\" aria-pressed=\"${p.party === viewParty ? 'true' : 'false'}\" data-party=\"${p.party}\" title=\"${p.party}\">",
-      "variants": [
-        {
-          "name": "select Canton explorer party tab",
-          "classes": [
-            "cb-segmented__option"
-          ],
-          "labelPattern": ".+"
-        }
-      ],
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-9d9e622ab98b03-1",
-      "source": "js/canton/canton-explorer.js",
-      "markup": "<input id=\"canton-explorer-party\" type=\"text\" placeholder=\"party id (hint::fingerprint)\" aria-label=\"Party id\" autocomplete=\"off\" value=\"${cur}\" />",
-      "interaction": "change",
-      "controlType": "text"
-    },
-    {
-      "id": "control-2c9c57e7f36439-1",
-      "source": "js/canton/canton-explorer.js",
-      "markup": "<button type=\"button\" class=\"btn\" data-load>",
-      "variants": [
-        {
-          "name": "load Canton explorer records",
-          "attrs": {
-            "data-load": ""
-          },
-          "labelPattern": ".+"
-        }
-      ],
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-73f9bd9e6a6c34-1",
-      "source": "js/canton/canton-mode.js",
-      "markup": "<button type=\"button\" class=\"cb-option canton-id-pick\" data-party-select=\"${p.party}\" title=\"Use this identity\"${p.party === cur ? ' aria-current=\"true\"' : ''}>",
-      "variants": [
-        {
-          "name": "choose Canton owner identity",
-          "classes": [
-            "canton-id-pick"
-          ],
-          "attrs": {
-            "title": "Use this identity"
-          },
-          "labelPattern": "Owner owner"
-        },
-        {
-          "name": "choose Canton buyer identity",
-          "classes": [
-            "canton-id-pick"
-          ],
-          "attrs": {
-            "title": "Use this identity"
-          },
-          "labelPattern": "Buyer buyer"
-        },
-        {
-          "name": "choose Canton lens identity",
-          "classes": [
-            "canton-id-pick"
-          ],
-          "attrs": {
-            "title": "Use this identity"
-          },
-          "labelPattern": "Lens lens"
-        },
-        {
-          "name": "choose generated Canton identity",
-          "classes": [
-            "canton-id-pick"
-          ],
-          "attrs": {
-            "title": "Use this identity"
-          },
-          "labelPattern": "Generated identity"
-        }
-      ],
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-3981acabd66e95-1",
-      "source": "js/canton/canton-mode.js",
-      "markup": "<button type=\"button\" class=\"btn btn-sm\" data-copy=\"${p.party}\" title=\"Copy full party id\">",
-      "variants": [
-        {
-          "name": "copy Canton party id",
-          "attrs": {
-            "title": "Copy full party id"
-          },
-          "label": "Copy"
-        }
-      ],
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-f3db7ffba4ff86-1",
-      "source": "js/canton/canton-mode.js",
-      "markup": "<button type=\"button\" class=\"btn btn-sm\" data-ccview=\"${p.party}\" title=\"Canton Coin balance / explorer\">",
-      "variants": [
-        {
-          "name": "open CCView for Canton party",
-          "attrs": {
-            "title": "Canton Coin balance / explorer"
-          },
-          "label": "CCView"
-        }
-      ],
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-64963038e7de5a-1",
-      "source": "js/canton/canton-mode.js",
-      "markup": "<button type=\"button\" class=\"btn btn-sm btn-quiet btn-icon\" data-forget=\"${p.party}\" title=\"Forget\" aria-label=\"Forget\">",
-      "variants": [
-        {
-          "name": "forget Canton party",
-          "attrs": {
-            "title": "Forget",
-            "aria-label": "Forget"
-          },
-          "label": "Forget"
-        }
-      ],
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-82447f4d0586c5-1",
-      "source": "js/canton/canton-mode.js",
-      "markup": "<input type=\"text\" id=\"canton-id-paste\" placeholder=\"paste party id (hint::fingerprint)\" aria-label=\"Party id\" autocomplete=\"off\" />",
-      "interaction": "change",
-      "controlType": "text"
-    },
-    {
-      "id": "control-9caba6b1ac9e66-1",
-      "source": "js/canton/canton-mode.js",
-      "markup": "<button type=\"button\" class=\"btn btn-sm\" data-use-paste>",
-      "variants": [
-        {
-          "name": "use pasted Canton identity",
-          "attrs": {
-            "data-use-paste": ""
-          },
-          "label": "Use"
-        }
-      ],
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-0136195c2152b9-1",
-      "source": "js/canton/canton-mode.js",
-      "markup": "<button type=\"button\" class=\"btn btn-sm\" data-gen>",
-      "variants": [
-        {
-          "name": "generate Canton test identity",
-          "attrs": {
-            "data-gen": ""
-          },
-          "label": "New test party"
-        }
-      ],
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-4c7de2ed94471f-1",
-      "source": "js/canton/canton-mode.js",
-      "markup": "<button type=\"button\" class=\"btn btn-sm btn-quiet\" data-clear>",
-      "variants": [
-        {
-          "name": "clear saved Canton identities",
-          "classes": [
-            "btn",
-            "btn-sm"
-          ],
-          "attrs": {
-            "data-clear": ""
-          },
-          "label": "Clear"
-        }
-      ],
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-90429e32e00051-1",
-      "source": "js/canton/canton-mode.js",
-      "markup": "<button type=\"button\" class=\"btn btn-sm\" data-explorer>",
-      "variants": [
-        {
-          "name": "open Canton state explorer",
-          "classes": [
-            "btn",
-            "btn-sm"
-          ],
-          "attrs": {
-            "data-explorer": ""
-          },
-          "labelPattern": "Canton state explorer"
-        }
-      ],
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-01d009e4551622-1",
-      "source": "js/canton/canton-mode.js",
-      "markup": "<button type=\"button\" class=\"btn btn-sm\" data-switch>",
-      "variants": [
-        {
-          "name": "switch away from Canton",
-          "classes": [
-            "btn",
-            "btn-sm"
-          ],
-          "attrs": {
-            "data-switch": ""
-          },
-          "label": "Use a different network"
-        }
-      ],
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-88abcf6f031d95-1",
-      "source": "js/canton/canton-mode.js",
-      "markup": "<button type=\"button\" class=\"btn btn-sm\" data-leave>",
-      "variants": [
-        {
-          "name": "leave Canton mode",
-          "classes": [
-            "btn",
-            "btn-sm"
-          ],
-          "attrs": {
-            "data-leave": ""
-          },
-          "label": "Leave Canton"
-        }
-      ],
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-6e572998844e7b-1",
-      "source": "js/canton/canton-parcel.js",
-      "markup": "<button class=\"btn btn-sm btn-success canton-panel-accept\" data-canton-accept data-cid=\"${it.contractId}\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-3f417fb23e1220-1",
-      "source": "js/canton/canton-read.js",
-      "markup": "<button class=\"btn btn-sm\" data-copy=\"${p.party}\" type=\"button\" title=\"Copy full party id\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-8039d19593485d-1",
-      "source": "js/canton/canton-read.js",
-      "markup": "<button class=\"btn btn-sm\" data-ccview=\"${p.party}\" type=\"button\" title=\"Look up this party on the CCView explorer\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-a2a70738385589-1",
-      "source": "js/canton/canton-read.js",
-      "markup": "<button class=\"btn btn-sm\" data-view=\"${p.party}\" type=\"button\">",
-      "variants": [
-        {
-          "name": "view Canton party",
-          "classes": [
-            "btn",
-            "btn-sm"
-          ],
-          "label": "View"
-        }
-      ],
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-a3aec06b730d1b-1",
-      "source": "js/canton/canton-read.js",
-      "markup": "<button class=\"btn btn-quiet btn-sm btn-icon\" data-del=\"${p.party}\" type=\"button\" title=\"Forget\" aria-label=\"Forget\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-fc734a3903c18a-1",
-      "source": "js/canton/canton-read.js",
-      "markup": "<button type=\"button\" class=\"btn btn-success btn-sm canton-accept\" data-cid=\"${it.contractId}\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-119c85da97b81b-1",
-      "source": "js/canton/canton-read.js",
-      "markup": "<button type=\"button\" class=\"cb-segmented__option\" aria-pressed=\"${pressed(party)}\" ${party ? `data-party=\"${party}\"` : ''}>",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-50a493f36592c2-1",
-      "source": "js/canton/canton-read.js",
-      "markup": "<button type=\"button\" class=\"cb-segmented__option\" aria-pressed=\"${pressed(strangerParty)}\" data-stranger=\"1\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
       "id": "control-ce65a25c065f72-1",
       "source": "js/centerline-animation.js",
       "markup": "<button type=\"button\" class=\"btn\" id=\"btn-prev\" disabled>",
@@ -3568,6 +3270,148 @@
       "id": "control-4b9e57c9e22f83-1",
       "source": "js/centerline-animation.js",
       "markup": "<button type=\"button\" class=\"btn btn-primary\" id=\"btn-play\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-bda2b1e4843e6b-1",
+      "source": "js/click-stack/click-stack-panel.js",
+      "markup": "doc.createElement('button')",
+      "variants": [
+        {
+          "name": "close",
+          "attrs": {
+            "data-action": "close"
+          }
+        },
+        {
+          "name": "row",
+          "attrs": {
+            "data-action": "row"
+          }
+        },
+        {
+          "name": "instance",
+          "attrs": {
+            "data-action": "instance"
+          }
+        },
+        {
+          "name": "openAgreement",
+          "attrs": {
+            "data-action": "open-agreement"
+          }
+        },
+        {
+          "name": "agreementDesigns",
+          "attrs": {
+            "data-action": "agreement-designs"
+          }
+        },
+        {
+          "name": "agreementDetails",
+          "attrs": {
+            "data-action": "agreement-details"
+          }
+        },
+        {
+          "name": "coords",
+          "attrs": {
+            "data-action": "coords"
+          }
+        },
+        {
+          "name": "parcelPropose",
+          "attrs": {
+            "data-command": "parcel.propose"
+          }
+        },
+        {
+          "name": "parcelSelectMore",
+          "attrs": {
+            "data-command": "parcel.selectMore"
+          }
+        },
+        {
+          "name": "parcelHistory",
+          "attrs": {
+            "data-command": "parcel.history"
+          }
+        },
+        {
+          "name": "parcelProposals",
+          "attrs": {
+            "data-command": "parcel.proposals"
+          }
+        },
+        {
+          "name": "parcelCompare",
+          "attrs": {
+            "data-command": "parcel.compare"
+          }
+        },
+        {
+          "name": "parcelTools",
+          "attrs": {
+            "data-command": "parcel.tools"
+          }
+        },
+        {
+          "name": "parcelDetectBlock",
+          "attrs": {
+            "data-command": "parcel.detectBlock"
+          }
+        },
+        {
+          "name": "parcelUseAsSite",
+          "attrs": {
+            "data-command": "parcel.useAsSite"
+          }
+        },
+        {
+          "name": "groundDrawSite",
+          "attrs": {
+            "data-command": "ground.drawSite"
+          }
+        },
+        {
+          "name": "groundRoad",
+          "attrs": {
+            "data-command": "ground.road"
+          }
+        },
+        {
+          "name": "groundTrack",
+          "attrs": {
+            "data-command": "ground.track"
+          }
+        },
+        {
+          "name": "groundBusStation",
+          "attrs": {
+            "data-command": "ground.busStation"
+          }
+        },
+        {
+          "name": "groundTramStation",
+          "attrs": {
+            "data-command": "ground.tramStation"
+          }
+        },
+        {
+          "name": "groundUndergroundStation",
+          "attrs": {
+            "data-command": "ground.undergroundStation"
+          }
+        },
+        {
+          "name": "groundElevatedStation",
+          "attrs": {
+            "data-command": "ground.elevatedStation"
+          }
+        }
+      ],
+      "exhaustiveVariants": true,
       "interaction": "click",
       "controlType": "button"
     },
@@ -3952,9 +3796,9 @@
       "controlType": "button"
     },
     {
-      "id": "control-19df0121661df9-1",
+      "id": "control-05739ced4e842e-1",
       "source": "js/game.js",
-      "markup": "<input type=\"search\" data-activity-filter-field=\"query\" aria-label=\"${t('searchAria', 'Search activity')}\" placeholder=\"${t('searchPlaceholder', 'Actor, proposal or transaction')}\" oninput=\"setActivityFilter('query', this.value)\">",
+      "markup": "<input type=\"search\" data-activity-filter-field=\"query\" aria-label=\"${t('searchAria', 'Search activity')}\" placeholder=\"${t('searchPlaceholder', 'Actor, agreement or transaction')}\" oninput=\"setActivityFilter('query', this.value)\">",
       "interaction": "change",
       "controlType": "search"
     },
@@ -4118,27 +3962,6 @@
           "occurrences": 1
         }
       ],
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-caddab052de6b9-1",
-      "source": "js/minted-proposals.js",
-      "markup": "document.createElement('button')",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-caddab052de6b9-2",
-      "source": "js/minted-proposals.js",
-      "markup": "document.createElement('button')",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-cc065d481667d7-1",
-      "source": "js/minted-proposals.js",
-      "markup": "document.createElement('a')",
       "interaction": "click",
       "controlType": "button"
     },
@@ -4591,6 +4414,147 @@
       "controlType": "dynamic"
     },
     {
+      "id": "control-1abf708ca0a910-1",
+      "source": "js/parcel-layout.js",
+      "markup": "<input type=\"radio\" name=\"reparcel-algorithm\" value=\"${option.key}\" ${checked} ${disabled}>",
+      "interaction": "change",
+      "controlType": "radio"
+    },
+    {
+      "id": "control-3dfe21455c2a8d-1",
+      "source": "js/parcel-layout.js",
+      "markup": "<input type=\"number\" class=\"reparcel-count-input\" data-parcel-layout-count min=\"${PLOT_COUNT.min}\" max=\"${PLOT_COUNT.max}\" step=\"1\" inputmode=\"numeric\" value=\"${state.plotCount}\">",
+      "interaction": "change",
+      "controlType": "number"
+    },
+    {
+      "id": "control-59194fb1a1b1ee-1",
+      "source": "js/parcel-layout.js",
+      "markup": "<button type=\"button\" class=\"btn btn-icon\" ${attrs} title=\"${label}\" aria-label=\"${label}\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-6543e34ca63291-1",
+      "source": "js/parcel-layout.js",
+      "markup": "<button type=\"button\" class=\"btn\" data-reparcel-courtyard-building>",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-2fab90234fe0bf-1",
+      "source": "js/parcel-layout.js",
+      "markup": "<input type=\"file\" accept=\".geojson,.json,application/geo+json,application/json\" data-reparcel-upload aria-label=\"${uploadLabel}\" hidden>",
+      "interaction": "change",
+      "controlType": "file"
+    },
+    {
+      "id": "control-df22876ff3f0e7-1",
+      "source": "js/parcel-layout.js",
+      "markup": "<button type=\"button\" class=\"btn btn-sm\" data-reparcel-undo>",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-a74d80e45e2b47-1",
+      "source": "js/parcel-layout.js",
+      "markup": "<button type=\"button\" class=\"btn btn-sm btn-success\" data-reparcel-finish>",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-1cf657fe001ce3-1",
+      "source": "js/parcel-layout.js",
+      "markup": "<button type=\"button\" class=\"btn btn-sm\" data-reparcel-cancel-draw>",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-8bcb7feaae4ad9-1",
+      "source": "js/parcel-layout.js",
+      "markup": "<button type=\"button\" role=\"tab\" class=\"cb-tab\" data-reparcel-plots-tab=\"new\" aria-selected=\"true\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-a97a467884a93a-1",
+      "source": "js/parcel-layout.js",
+      "markup": "<button type=\"button\" role=\"tab\" class=\"cb-tab\" data-reparcel-plots-tab=\"old\" aria-selected=\"false\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-ca09700d052046-1",
+      "source": "js/parcel-layout.js",
+      "markup": "<button type=\"button\" class=\"btn btn-sm reparcel-compare-btn\" data-reparcel-compare aria-pressed=\"false\" hidden>",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-1778b4d2ea98bd-1",
+      "source": "js/parcel-layout.js",
+      "markup": "<button type=\"button\" class=\"btn\" data-reparcel-cancel data-i18n-key=\"reparcellization.modal.cancel\" data-i18n-attr=\"text\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-eb4653ad3d4e50-1",
+      "source": "js/parcel-layout.js",
+      "markup": "<button type=\"button\" class=\"btn btn-primary\" data-reparcel-commit disabled data-i18n-key=\"reparcellization.modal.done\" data-i18n-attr=\"text\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-e4967dab06f3e1-1",
+      "source": "js/parcel-layout.js",
+      "markup": "document.createElement('button')",
+      "interaction": "click",
+      "controlType": "button",
+      "variants": [
+        {
+          "name": "building courtyard candidate choice",
+          "classes": [
+            "reparcel-owner-popup__joint"
+          ],
+          "labelPattern": "Courtyard candidate"
+        }
+      ]
+    },
+    {
+      "id": "control-e4967dab06f3e1-2",
+      "source": "js/parcel-layout.js",
+      "markup": "document.createElement('button')",
+      "interaction": "click",
+      "controlType": "button",
+      "variants": [
+        {
+          "name": "remove geometry node",
+          "classes": [
+            "btn-danger",
+            "btn-sm"
+          ],
+          "label": "Remove node"
+        }
+      ]
+    },
+    {
+      "id": "control-e4967dab06f3e1-3",
+      "source": "js/parcel-layout.js",
+      "markup": "document.createElement('button')",
+      "interaction": "click",
+      "controlType": "button",
+      "variants": [
+        {
+          "name": "erase a boundary segment from its popup",
+          "classes": [
+            "btn-danger",
+            "btn-sm"
+          ],
+          "label": "Erase this boundary"
+        }
+      ]
+    },
+    {
       "id": "control-5fdd8d06255e29-1",
       "source": "js/parcel-source-settings.js",
       "markup": "global.document.createElement(tag)",
@@ -4921,12 +4885,12 @@
           }
         },
         {
-          "name": "parcel-build-btn--reparcellization",
+          "name": "parcel-build-btn--parcel-layout",
           "classes": [
-            "parcel-build-btn--reparcellization"
+            "parcel-build-btn--parcel-layout"
           ],
           "attrs": {
-            "onclick": "BusyControl.track(this, () => startParcelBuildTool('reparcellization'))"
+            "onclick": "BusyControl.track(this, () => startParcelBuildTool('parcel-layout'))"
           }
         },
         {
@@ -5009,10 +4973,10 @@
           "name": "Open Subdivide on a site with open ground",
           "classes": [
             "parcel-build-btn",
-            "parcel-build-btn--reparcellization"
+            "parcel-build-btn--parcel-layout"
           ],
           "attrs": {
-            "onclick": "BusyControl.track(this, () => SiteTool.build('reparcellization'))"
+            "onclick": "BusyControl.track(this, () => SiteTool.build('parcel-layout'))"
           }
         },
         {
@@ -5499,90 +5463,6 @@
       "controlType": "button"
     },
     {
-      "id": "control-39c42ddd9dd1fe-1",
-      "source": "js/proposal-editor-shell.js",
-      "markup": "<select data-draft-path=\"fields.ownership\">",
-      "interaction": "change",
-      "controlType": "select"
-    },
-    {
-      "id": "control-e4ce8ad847bc2b-1",
-      "source": "js/proposal-editor-shell.js",
-      "markup": "<select data-draft-path=\"fields.recipientScope\">",
-      "interaction": "change",
-      "controlType": "select"
-    },
-    {
-      "id": "control-ce0bf2fcf93e84-1",
-      "source": "js/proposal-editor-shell.js",
-      "markup": "<input type=\"text\" data-draft-path=\"fields.recipientAddress\" value=\"${escapeHtml(fields.recipientAddress || '')}\" autocomplete=\"off\">",
-      "interaction": "change",
-      "controlType": "text"
-    },
-    {
-      "id": "control-a7480327c2bd4c-1",
-      "source": "js/proposal-editor-shell.js",
-      "markup": "<input type=\"number\" min=\"0\" step=\"any\" data-draft-path=\"fields.offer\" data-draft-number=\"true\" value=\"${escapeHtml(fields.offer ?? 0)}\">",
-      "interaction": "change",
-      "controlType": "number"
-    },
-    {
-      "id": "control-f0360b33cdc18a-1",
-      "source": "js/proposal-editor-shell.js",
-      "markup": "<select data-draft-path=\"fields.offerCurrency\">",
-      "interaction": "change",
-      "controlType": "select"
-    },
-    {
-      "id": "control-153d4e49987577-1",
-      "source": "js/proposal-editor-shell.js",
-      "markup": "<input type=\"checkbox\" data-draft-path=\"fields.isConditional\"${fields.isConditional ? ' checked' : ''}>",
-      "interaction": "change",
-      "controlType": "checkbox"
-    },
-    {
-      "id": "control-64b23e30322dbd-1",
-      "source": "js/proposal-editor-shell.js",
-      "markup": "<input type=\"datetime-local\" data-draft-path=\"fields.expiresAt\" data-draft-date=\"true\" value=\"${escapeHtml(formatInputDate(fields.expiresAt))}\">",
-      "interaction": "change",
-      "controlType": "datetime-local"
-    },
-    {
-      "id": "control-da4b2c33ae84ba-1",
-      "source": "js/proposal-editor-shell.js",
-      "markup": "<input type=\"checkbox\" data-draft-path=\"fields.decayEnabled\"${fields.decayEnabled ? ' checked' : ''}>",
-      "interaction": "change",
-      "controlType": "checkbox"
-    },
-    {
-      "id": "control-1bd9ea100c3314-1",
-      "source": "js/proposal-editor-shell.js",
-      "markup": "<input type=\"number\" min=\"0\" max=\"100\" data-draft-path=\"fields.decayPercent\" data-draft-number=\"true\" value=\"${escapeHtml(fields.decayPercent ?? 0)}\">",
-      "interaction": "change",
-      "controlType": "number"
-    },
-    {
-      "id": "control-ab372ec9be8b33-1",
-      "source": "js/proposal-editor-shell.js",
-      "markup": "<input type=\"number\" min=\"0\" data-draft-path=\"fields.decayDurationMs\" data-draft-number=\"true\" value=\"${escapeHtml(fields.decayDurationMs ?? 0)}\">",
-      "interaction": "change",
-      "controlType": "number"
-    },
-    {
-      "id": "control-aeb12ef578de71-1",
-      "source": "js/proposal-editor-shell.js",
-      "markup": "<input type=\"checkbox\" data-draft-path=\"fields.depositEnabled\"${fields.depositEnabled ? ' checked' : ''}>",
-      "interaction": "change",
-      "controlType": "checkbox"
-    },
-    {
-      "id": "control-ea3eebaf036e14-1",
-      "source": "js/proposal-editor-shell.js",
-      "markup": "<input type=\"number\" min=\"0\" max=\"200\" data-draft-path=\"fields.depositPercent\" data-draft-number=\"true\" value=\"${escapeHtml(fields.depositPercent ?? 0)}\">",
-      "interaction": "change",
-      "controlType": "number"
-    },
-    {
       "id": "control-a7448dabc455b2-1",
       "source": "js/proposal-editor-shell.js",
       "markup": "<select data-draft-corridor-kind>",
@@ -5707,13 +5587,6 @@
       "id": "control-6ffbb02b779cd6-1",
       "source": "js/proposals/approval-panel.js",
       "markup": "<button type=\"button\" class=\"btn btn-sm\" data-approval-action=\"inspect\" data-owner-id=\"${esc(id)}\"${accepted.includes(id) ? ' data-approval-deal-accepted' : ''}>",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-7ce18c411ca8de-1",
-      "source": "js/proposals/approval-panel.js",
-      "markup": "<button type=\"button\" class=\"btn btn-sm\" data-approval-action=\"anchor\">",
       "interaction": "click",
       "controlType": "button"
     },
@@ -5965,122 +5838,9 @@
       "controlType": "select"
     },
     {
-      "id": "control-d8cac26345a649-1",
-      "source": "js/proposals/bet-entry.js",
-      "markup": "root.document.createElement(tag)",
-      "interaction": "auto",
-      "controlType": "dynamic",
-      "exempt": "This dynamic append helper creates only noninteractive paragraphs and list items. The betting actions are created by the separately covered CbDialog button factory.",
-      "guards": [
-        {
-          "source": "js/proposals/bet-entry.js",
-          "pattern": "append\\('(?!p'|li')",
-          "occurrences": 0
-        },
-        {
-          "source": "js/proposals/bet-entry.js",
-          "pattern": "append\\('(?:p|li)'",
-          "occurrences": 6
-        },
-        {
-          "source": "js/proposals/bet-entry.js",
-          "pattern": "\\bappend\\(",
-          "occurrences": 6
-        },
-        {
-          "source": "js/proposals/bet-entry.js",
-          "includes": "return root.CbDialog.open({ title: t('panel.proposal.actions.betOutcome', 'Bet on outcome'),"
-        },
-        {
-          "source": "js/proposals/bet-entry.js",
-          "includes": "className: 'proposal-bet-help', size: 'md', body, actions"
-        }
-      ]
-    },
-    {
-      "id": "control-0ddc982e9c0285-1",
-      "source": "js/proposals/bids-card.js",
-      "markup": "<button type=\"button\" class=\"btn btn-success btn-block proposal-bids-say-yes\" data-bids-say-yes>",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-6371b48b1bb334-1",
-      "source": "js/proposals/binding-drift-panel.js",
-      "markup": "<button type=\"button\" class=\"cb-link\" data-binding-drift-open=\"${escape(target)}\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-309b04ff28c998-1",
-      "source": "js/proposals/binding-drift-panel.js",
-      "markup": "<button type=\"button\" class=\"btn proposal-binding-drift-rebind\" data-binding-drift-rebind>",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-c738a0e1bb9bd6-1",
-      "source": "js/proposals/chain.js",
-      "markup": "document.createElement('input')",
-      "interaction": "change",
-      "controlType": "input",
-      "exempt": "The minted link is a read-only output; its copy action is covered separately.",
-      "mustRemainInactive": true,
-      "guards": [
-        {
-          "source": "js/proposals/chain.js",
-          "includes": "linkDisplay.readOnly = true;"
-        }
-      ]
-    },
-    {
-      "id": "control-b42b0a10a88d1b-1",
-      "source": "js/proposals/chain.js",
-      "markup": "document.createElement('button')",
-      "exempt": "The legacy wallet-required modal has no frontend caller; the live mint flow uses the wallet picker.",
-      "mustRemainInactive": true,
-      "guards": [
-        {
-          "pattern": "\\bshowWalletNotConnectedModal\\b",
-          "occurrences": 1
-        }
-      ],
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-b42b0a10a88d1b-2",
-      "source": "js/proposals/chain.js",
-      "markup": "document.createElement('button')",
-      "exempt": "The legacy wallet-required modal has no frontend caller; the live mint flow uses the wallet picker.",
-      "mustRemainInactive": true,
-      "guards": [
-        {
-          "pattern": "\\bshowWalletNotConnectedModal\\b",
-          "occurrences": 1
-        }
-      ],
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
       "id": "control-bf79701bd9dee2-1",
       "source": "js/proposals/claims-ui.js",
       "markup": "document.createElement('button')",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-3730de4983e436-1",
-      "source": "js/proposals/core.js",
-      "markup": "<button type=\"button\" data-proposal-id=\"${proposalIdAttr}\" class=\"cb-link proposal-link-clickable\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-73038473fd0796-1",
-      "source": "js/proposals/core.js",
-      "markup": "<button type=\"button\" data-agent-id=\"${userAgent.id}\" class=\"cb-link agent-link-clickable\">",
       "interaction": "click",
       "controlType": "button"
     },
@@ -6152,23 +5912,36 @@
       "controlType": "button"
     },
     {
-      "id": "control-308735652de22c-1",
+      "id": "control-5de3175a08dc15-1",
       "source": "js/proposals/details-panel.js",
-      "markup": "<button class=\"btn ${appliedState ? 'btn-primary' : ''} btn-share-proposal\" onclick=\"shareProposalFromDetails()\">",
+      "markup": "<button type=\"button\" class=\"btn btn-share-proposal\" disabled aria-disabled=\"true\" aria-describedby=\"proposal-publish-later-note\">",
+      "exempt": "A parcel layout's Share is rendered disabled: layouts are shared together with their agreement (plan-design-agreement.md, M2), and the reason is shown beside it.",
+      "mustRemainInactive": true,
+      "guards": [
+        {
+          "source": "js/proposals/details-panel.js",
+          "includes": "<button type=\"button\" class=\"btn btn-share-proposal\" disabled aria-disabled=\"true\" aria-describedby=\"proposal-publish-later-note\">"
+        }
+      ],
       "interaction": "click",
       "controlType": "button"
     },
     {
-      "id": "control-7bb55dd22c94f1-1",
+      "id": "control-14c3181e1e789d-1",
       "source": "js/proposals/details-panel.js",
-      "markup": "<button type=\"button\" class=\"btn btn-bet-proposal\" onclick=\"openProposalOutcomeBet(${inlineJsArg(proposalKey)})\">",
+      "markup": "<button type=\"button\" class=\"btn ${appliedState ? 'btn-primary' : ''} btn-share-proposal\" onclick=\"BusyControl.track(this, () =>",
       "interaction": "click",
       "controlType": "button"
     },
     {
-      "id": "control-645d8f14b07fdc-1",
+      "id": "control-d79bbd5437ed83-1",
       "source": "js/proposals/details-panel.js",
-      "markup": "<button class=\"btn btn-counterpropose-proposal\" onclick=\"proposeExistingProposal(${inlineJsArg(proposalKey)})\" title=\"${tProposal('panel.proposal.actions.counterproposeHint', 'Create an editable copy. The proposal you are viewing stays unchanged.')}\" aria-label=\"${tProposal('panel.proposal.actions.counterproposeHint', 'Create an editable copy. The proposal you are viewing stays unchanged.')}\">",
+      "markup": "<button type=\"button\" class=\"btn ${publishRefusal ? 'btn-primary ' : ''}btn-create-agreement\" onclick=\"window.AgreementDialog.addDesign(${inlineJsArg(proposalKey)})\">"
+    },
+    {
+      "id": "control-62640b5f07c483-1",
+      "source": "js/proposals/details-panel.js",
+      "markup": "<button class=\"btn btn-counterpropose-proposal\" onclick=\"proposeExistingProposal(${inlineJsArg(proposalKey)})\" title=\"${tProposal('panel.proposal.actions.forkDesignHint', 'Create an editable copy. The design you are viewing stays unchanged.')}\" aria-label=\"${tProposal('panel.proposal.actions.forkDesignHint', 'Create an editable copy. The design you are viewing stays unchanged.')}\">",
       "interaction": "click",
       "controlType": "button"
     },
@@ -6187,13 +5960,6 @@
       "controlType": "button"
     },
     {
-      "id": "control-165962494b5fcc-1",
-      "source": "js/proposals/details-panel.js",
-      "markup": "<button type=\"button\" class=\"btn btn-sm btn-edit-approval\" title=\"${safeAgentText(window.ProposalLineage?.editsInPlace?.(fullProposal || proposal) === true ? tProposal('panel.proposal.actions.editApprovalHint', 'Opens the editor on its Approval tab. Saving updates this proposal in place; acceptances given so far are cleared.') : tProposal('panel.proposal.actions.editApprovalHintCounterproposal', 'Opens the editor on its Approval tab. Saving creates a counterproposal; acceptances of this one do not carry over.'))}\" onclick=\"editProposalApproval(${inlineJsArg(proposalKey)})\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
       "id": "control-f23a3c9e1fc53a-1",
       "source": "js/proposals/details-panel.js",
       "markup": "<button type=\"button\" class=\"btn btn-compare-proposal\" aria-pressed=\"${beforeAfter.isActive(proposalKey) ? 'true' : 'false'}\" onclick=\"BusyControl.track(this, () =>",
@@ -6201,70 +5967,9 @@
       "controlType": "button"
     },
     {
-      "id": "control-8a24ebfca7f7de-1",
-      "source": "js/proposals/details-panel.js",
-      "markup": "<button type=\"button\" class=\"btn btn-success proposal-buy-btn\" onclick=\"simulateSaleOfferPurchase(${inlineJsArg(buyOfferProposal.proposalId || '')})\">"
-    },
-    {
       "id": "control-dbe316f09d1072-1",
       "source": "js/proposals/details-panel.js",
       "markup": "<button type=\"button\" class=\"btn btn-drive-proposal\" onclick=\"driveTrackProposalIn3DSim(${inlineJsArg(proposalKey)})\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-909b7a1a73f7ab-1",
-      "source": "js/proposals/details-panel.js",
-      "markup": "<button type=\"button\" class=\"btn btn-connect-proposal-support\" onclick=\"handleWalletButtonClick()\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-2ac63356a22a5e-1",
-      "source": "js/proposals/details-panel.js",
-      "markup": "<button type=\"button\" class=\"btn btn-donate-proposal\" onclick=\"openProposalBoostDialog(${inlineJsArg(proposalKey)}, 'donate')\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-a822de6e494206-1",
-      "source": "js/proposals/details-panel.js",
-      "markup": "<button type=\"button\" class=\"btn btn-pledge-proposal\" onclick=\"openProposalBoostDialog(${inlineJsArg(proposalKey)}, 'pledge')\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-a2de2b547ac069-1",
-      "source": "js/proposals/details-panel.js",
-      "markup": "<button type=\"button\" class=\"btn\" onclick=\"if (!BusyControl.isBusy(this)) BusyControl.track(this, () =>",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-a2de2b547ac069-2",
-      "source": "js/proposals/details-panel.js",
-      "markup": "<button type=\"button\" class=\"btn\" onclick=\"if (!BusyControl.isBusy(this)) BusyControl.track(this, () =>",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-a2de2b547ac069-3",
-      "source": "js/proposals/details-panel.js",
-      "markup": "<button type=\"button\" class=\"btn\" onclick=\"if (!BusyControl.isBusy(this)) BusyControl.track(this, () =>",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-a2de2b547ac069-4",
-      "source": "js/proposals/details-panel.js",
-      "markup": "<button type=\"button\" class=\"btn\" onclick=\"if (!BusyControl.isBusy(this)) BusyControl.track(this, () =>",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-a2de2b547ac069-5",
-      "source": "js/proposals/details-panel.js",
-      "markup": "<button type=\"button\" class=\"btn\" onclick=\"if (!BusyControl.isBusy(this)) BusyControl.track(this, () =>",
       "interaction": "click",
       "controlType": "button"
     },
@@ -6288,30 +5993,9 @@
       "markup": "<button type=\"button\" class=\"cb-link proposal-based-on-link\" data-lineage-local-id=\"${safeAgentText(sourceProposal.proposalId)}\">"
     },
     {
-      "id": "control-8a329ef184560d-1",
-      "source": "js/proposals/details-panel.js",
-      "markup": "<button type=\"button\" class=\"btn btn-icon btn-sm proposal-lens-button\" ${hasProposalLens ? `onclick=\"openProposalLens(${inlineJsArg(lensProposalId)})\"` : 'disabled'} title=\"${safeLensButtonLabel}\" aria-label=\"${safeLensButtonLabel}\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
       "id": "control-31f0fa8091a56b-1",
       "source": "js/proposals/details-panel.js",
       "markup": "<button type=\"button\" class=\"cb-option proposal-parcel-set-relation\" data-related-proposal-id=\"${candidateId}\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-054019673ecb37-1",
-      "source": "js/proposals/details-panel.js",
-      "markup": "<button type=\"button\" class=\"cb-link activity-scope-link\" data-activity-scope=\"parcelSet\" data-activity-value=\"${safeAgentText(setHash)}\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-1607676892e2c1-1",
-      "source": "js/proposals/details-panel.js",
-      "markup": "<button type=\"button\" class=\"cb-link activity-scope-link\" data-activity-scope=\"proposalId\" data-activity-value=\"${safeAgentText(relationApi.proposalKey(activeProposal))}\">",
       "interaction": "click",
       "controlType": "button"
     },
@@ -6326,131 +6010,6 @@
       "id": "control-96ac67cb1a1482-1",
       "source": "js/proposals/details-panel.js",
       "markup": "<button type=\"button\" class=\"btn btn-quiet btn-sm proposal-id-copy\" title=\"${escapedProposalDisplayId}\" onclick=\"copyProposalIdToClipboard(${inlineJsArg(String(fullProposal.proposalId || proposal.proposalId || ''))})\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-048738a8727adb-1",
-      "source": "js/proposals/details-panel.js",
-      "markup": "document.createElement('button')",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-0108ff22cd7553-1",
-      "source": "js/proposals/details-panel.js",
-      "markup": "<button type=\"button\" class=\"btn\" onclick=\"handleWalletButtonClick()\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-3442d7b09e7da1-1",
-      "source": "js/proposals/details-panel.js",
-      "markup": "<button type=\"button\" class=\"btn btn-quiet proposal-market-open\" onclick=\"openBetDialog({ proposalAccount: ${inlineJsArg(proposalAccount)}, title: ${inlineJsArg(currentProposalDetailsContext?.title || '')}, proposalId: ${inlineJsArg(currentProposalDetailsContext?.proposalId || '')} })\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-a2de2b547ac069-6",
-      "source": "js/proposals/details-panel.js",
-      "markup": "<button type=\"button\" class=\"btn\" onclick=\"if (!BusyControl.isBusy(this)) BusyControl.track(this, () =>",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-7cd58a403aa32e-1",
-      "source": "js/proposals/details-panel.js",
-      "markup": "<button type=\"button\" class=\"btn btn-success\" onclick=\"if (!BusyControl.isBusy(this)) BusyControl.track(this, () =>",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-a2de2b547ac069-7",
-      "source": "js/proposals/details-panel.js",
-      "markup": "<button type=\"button\" class=\"btn\" onclick=\"if (!BusyControl.isBusy(this)) BusyControl.track(this, () =>",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-9017d35740d721-1",
-      "source": "js/proposals/details-panel.js",
-      "markup": "<button type=\"button\" class=\"btn btn-yes btn-market-yes\" onclick=\"openProposalMarketStakeDialog(${inlineJsArg(proposalAccount)}, 1)\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-6291a49d93af34-1",
-      "source": "js/proposals/details-panel.js",
-      "markup": "<button type=\"button\" class=\"btn btn-no btn-market-no\" onclick=\"openProposalMarketStakeDialog(${inlineJsArg(proposalAccount)}, 0)\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-aae6147b505f59-1",
-      "source": "js/proposals/details-panel.js",
-      "markup": "<input type=\"text\" id=\"proposalBoostAmount\" placeholder=\"1.00\" inputmode=\"decimal\" autocomplete=\"off\" aria-label=\"${safeAgentText(amountLabel)}\">",
-      "interaction": "change",
-      "controlType": "text"
-    },
-    {
-      "id": "control-cd06fb3e94437b-1",
-      "source": "js/proposals/details-panel.js",
-      "markup": "<select id=\"proposalBoostCurrency\" aria-label=\"USDC\">",
-      "interaction": "change",
-      "controlType": "select",
-      "exempt": "Boost currency is fixed to USDC; the select has only one option and cannot change.",
-      "guards": [
-        {
-          "source": "js/proposals/details-panel.js",
-          "pattern": "<select id=\"proposalBoostCurrency\"[^>]*>\\s*<option value=\"USDC\">USDC</option>\\s*</select>",
-          "occurrences": 1
-        }
-      ]
-    },
-    {
-      "id": "control-0d942c64563e46-1",
-      "source": "js/proposals/dialog-create.js",
-      "markup": "<input type=\"radio\" name=\"proposalKind\" value=\"${kind}\"${kind === kinds.DEFAULT_PUBLISH_KIND ? ' checked' : ''} onchange=\"applyProposalKindToDialog(); updateCreateProposalSubmitState()\">",
-      "interaction": "change",
-      "controlType": "radio"
-    },
-    {
-      "id": "control-1d5b0b2dd2a8a0-1",
-      "source": "js/proposals/dialog-create.js",
-      "markup": "<input type=\"number\" id=\"proposalVoteExpiryDays\" class=\"proposal-option-number\" min=\"1\" max=\"365\" value=\"365\">",
-      "interaction": "change",
-      "controlType": "number"
-    },
-    {
-      "id": "control-42ab2cf72bee74-1",
-      "source": "js/proposals/dialog-create.js",
-      "markup": "document.createElement('input')",
-      "interaction": "change",
-      "controlType": "input",
-      "variants": [
-        {
-          "name": "single parcel agreement",
-          "attrs": {
-            "name": "reparcel-agreement",
-            "value": "single"
-          },
-          "interaction": "change"
-        },
-        {
-          "name": "individual parcel agreement",
-          "attrs": {
-            "name": "reparcel-agreement",
-            "value": "individual"
-          },
-          "interaction": "change"
-        }
-      ],
-      "exhaustiveVariants": true
-    },
-    {
-      "id": "control-e3261ea7078417-1",
-      "source": "js/proposals/dialog-create.js",
-      "markup": "document.createElement('button')",
       "interaction": "click",
       "controlType": "button"
     },
@@ -6505,27 +6064,6 @@
         {
           "source": "js/proposals/dialog-create.js",
           "pattern": "<button\\s+type=\"button\"\\s+class=\"cb-segmented__option\"\\s+aria-pressed=\"false\"\\s+data-proposal-main-type=\"Urban\\s+Rule\"\\s+onclick=\"handleUrbanRuleMainTypeClick\\(\\)\">",
-          "occurrences": 1
-        }
-      ],
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-a66e8c0acc4dbe-1",
-      "source": "js/proposals/dialog-create.js",
-      "markup": "<button type=\"button\" class=\"cb-segmented__option\" aria-pressed=\"false\" data-proposal-main-type=\"Reparcellization\" onclick=\"setProposalMainType('Reparcellization')\">",
-      "exempt": "The retired main-type chooser remains inside proposalMainTypeGroup with display:none. The current dialog uses Land use and Ownership inputs.",
-      "mustRemainInactive": true,
-      "guards": [
-        {
-          "source": "js/proposals/dialog-create.js",
-          "pattern": "<button\\s+type=\"button\"\\s+class=\"cb-segmented__option\"\\s+aria-pressed=\"false\"\\s+data-proposal-main-type=\"Reparcellization\"\\s+onclick=\"setProposalMainType\\('Reparcellization'\\)\">",
-          "occurrences": 1
-        },
-        {
-          "source": "js/proposals/dialog-create.js",
-          "pattern": "<button\\s+type=\"button\"\\s+class=\"cb-segmented__option\"\\s+aria-pressed=\"false\"\\s+data-proposal-main-type=\"Reparcellization\"\\s+onclick=\"setProposalMainType\\('Reparcellization'\\)\">",
           "occurrences": 1
         }
       ],
@@ -6604,13 +6142,6 @@
       "controlType": "radio"
     },
     {
-      "id": "control-087ed17340667e-1",
-      "source": "js/proposals/dialog-create.js",
-      "markup": "<input type=\"radio\" name=\"proposalParcelsMode\" value=\"readjust\" onchange=\"onProposalParcelsChange()\">",
-      "interaction": "change",
-      "controlType": "radio"
-    },
-    {
       "id": "control-63bc474cb90614-1",
       "source": "js/proposals/dialog-create.js",
       "markup": "<input type=\"radio\" name=\"proposalOwnership\" value=\"no-change\" checked onchange=\"onProposalOwnershipChange()\">",
@@ -6639,37 +6170,6 @@
       "controlType": "radio"
     },
     {
-      "id": "control-2071242f819cad-1",
-      "source": "js/proposals/dialog-create.js",
-      "markup": "<input type=\"radio\" name=\"proposalOwnership\" value=\"per-slice\" onchange=\"onProposalOwnershipChange()\">",
-      "interaction": "change",
-      "controlType": "radio",
-      "exempt": "Per-slice ownership is set automatically by readjustment and its entire radio group is synchronously hidden while locked.",
-      "mustRemainInactive": true,
-      "guards": [
-        {
-          "source": "js/proposals/dialog-create.js",
-          "includes": "class=\"cb-segmented__option proposal-radio proposal-ownership-perslice\" style=\"display:none;\""
-        },
-        {
-          "pattern": "showProposalPerSliceOption\\(true\\)",
-          "occurrences": 1
-        },
-        {
-          "source": "js/proposals/core.js",
-          "includes": "showProposalPerSliceOption(true);\n        setProposalOwnershipMode('per-slice', { lock: true,"
-        },
-        {
-          "source": "js/proposals/urban-rules.js",
-          "includes": "if (lock) {\n        if (group) group.style.display = 'none';"
-        },
-        {
-          "source": "js/proposals/execution.js",
-          "includes": "applyFacetLockUI('proposalOwnershipGroup', 'proposalOwnershipStatic', 'proposalOwnership', mode, lock, reason);"
-        }
-      ]
-    },
-    {
       "id": "control-25e466f91be739-1",
       "source": "js/proposals/dialog-create.js",
       "markup": "<input type=\"radio\" name=\"proposalRecipientScope\" value=\"any\" checked onchange=\"onProposalRecipientScopeChange()\">",
@@ -6689,20 +6189,6 @@
       "markup": "<input type=\"text\" id=\"proposalRecipientAddress\" class=\"proposal-recipient-input\" placeholder=\"${recipientPlaceholder}\" oninput=\"onProposalOwnershipChange()\">",
       "interaction": "change",
       "controlType": "text"
-    },
-    {
-      "id": "control-3b796325045d6e-1",
-      "source": "js/proposals/dialog-create.js",
-      "markup": "<input type=\"checkbox\" id=\"proposalOwnerOfferCheckbox\" disabled onchange=\"onProposalOwnerOfferChange()\">",
-      "interaction": "change",
-      "controlType": "checkbox"
-    },
-    {
-      "id": "control-6a7fc59ea42a19-1",
-      "source": "js/proposals/dialog-create.js",
-      "markup": "<button type=\"button\" class=\"btn btn-sm\" onclick=\"refreshOwnerOfferMode()\">",
-      "interaction": "click",
-      "controlType": "button"
     },
     {
       "id": "control-f1f67036193914-1",
@@ -6854,96 +6340,11 @@
       "controlType": "button"
     },
     {
-      "id": "control-ca3dbb0f5f5f48-1",
-      "source": "js/proposals/dialog-create.js",
-      "markup": "<input type=\"text\" id=\"proposalOffer\" placeholder=\"${offerPlaceholder}\" inputmode=\"decimal\" oninput=\"handleProposalOfferInput(this)\" onchange=\"formatProposalOfferInput(this)\">",
-      "interaction": "change",
-      "controlType": "text"
-    },
-    {
-      "id": "control-0695a3fc5b1d60-1",
-      "source": "js/proposals/dialog-create.js",
-      "markup": "<select id=\"proposalCurrency\">",
-      "interaction": "change",
-      "controlType": "select"
-    },
-    {
-      "id": "control-90370087e8df87-1",
-      "source": "js/proposals/dialog-create.js",
-      "markup": "<input type=\"checkbox\" id=\"proposalConditionalCheckbox\" checked>",
-      "interaction": "change",
-      "controlType": "checkbox"
-    },
-    {
-      "id": "control-c10ff5e56da939-1",
-      "source": "js/proposals/dialog-create.js",
-      "markup": "<input type=\"checkbox\" id=\"proposalExpireCheckbox\" onchange=\"toggleExpiryInput()\">",
-      "interaction": "change",
-      "controlType": "checkbox"
-    },
-    {
-      "id": "control-4f8211aeb31eaa-1",
-      "source": "js/proposals/dialog-create.js",
-      "markup": "<input type=\"text\" id=\"proposalExpiryTime\" class=\"proposal-option-time\" value=\"${expiryPlaceholder}\" placeholder=\"${expiryPlaceholder}\" disabled>",
-      "interaction": "change",
-      "controlType": "text"
-    },
-    {
-      "id": "control-89efe47e0b4d9e-1",
-      "source": "js/proposals/dialog-create.js",
-      "markup": "<input type=\"checkbox\" id=\"proposalDecayCheckbox\" onchange=\"toggleDecayInput()\">",
-      "interaction": "change",
-      "controlType": "checkbox"
-    },
-    {
-      "id": "control-1facd01946f175-1",
-      "source": "js/proposals/dialog-create.js",
-      "markup": "<input type=\"text\" id=\"proposalDecayPercent\" class=\"proposal-option-number\" value=\"50\" pattern=\"[0-9]*\" inputmode=\"numeric\" disabled>",
-      "interaction": "change",
-      "controlType": "text"
-    },
-    {
-      "id": "control-e69d728da7f0f4-1",
-      "source": "js/proposals/dialog-create.js",
-      "markup": "<input type=\"text\" id=\"proposalDecayTime\" class=\"proposal-option-time\" value=\"${decayTimePlaceholder}\" placeholder=\"${decayTimePlaceholder}\" disabled>",
-      "interaction": "change",
-      "controlType": "text"
-    },
-    {
-      "id": "control-fdb7dc13c4f932-1",
-      "source": "js/proposals/dialog-create.js",
-      "markup": "<input type=\"checkbox\" id=\"proposalDepositCheckbox\" onchange=\"toggleDepositInput()\">",
-      "interaction": "change",
-      "controlType": "checkbox"
-    },
-    {
-      "id": "control-349f093ffdc12d-1",
-      "source": "js/proposals/dialog-create.js",
-      "markup": "<input type=\"text\" id=\"proposalDepositPercent\" class=\"proposal-option-number\" value=\"100\" pattern=\"[0-9]*\" inputmode=\"numeric\" disabled>",
-      "interaction": "change",
-      "controlType": "text"
-    },
-    {
       "id": "control-7f7f8d7b49ea74-1",
       "source": "js/proposals/dialog-create.js",
       "markup": "<input type=\"number\" id=\"proposalToleranceM\" min=\"0\" max=\"1\" step=\"0.01\" value=\"${toleranceValue}\" inputmode=\"decimal\">",
       "interaction": "change",
       "controlType": "number"
-    },
-    {
-      "id": "control-6f3711a739125f-1",
-      "source": "js/proposals/dialog-create.js",
-      "markup": "<input type=\"checkbox\" id=\"proposalAreaProportionalCheckbox\" checked disabled>",
-      "interaction": "change",
-      "controlType": "checkbox",
-      "exempt": "Area-proportional distribution is a fixed checked property; this checkbox stays disabled.",
-      "mustRemainInactive": true,
-      "guards": [
-        {
-          "source": "js/proposals/dialog-create.js",
-          "includes": "<input type=\"checkbox\" id=\"proposalAreaProportionalCheckbox\" checked disabled>"
-        }
-      ]
     },
     {
       "id": "control-26a84734801c5e-1",
@@ -6960,23 +6361,16 @@
       "controlType": "button"
     },
     {
+      "id": "control-e3261ea7078417-1",
+      "source": "js/proposals/dialog-create.js",
+      "markup": "document.createElement('button')",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
       "id": "control-e3261ea7078417-2",
       "source": "js/proposals/dialog-create.js",
       "markup": "document.createElement('button')",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-e3261ea7078417-3",
-      "source": "js/proposals/dialog-create.js",
-      "markup": "document.createElement('button')",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-214fecd7b0a869-1",
-      "source": "js/proposals/dialog-share.js",
-      "markup": "<button id=\"sync-blockchain-proposals-btn\" class=\"btn btn-primary btn-block\" ${syncDisabled ? 'disabled' : ''} data-i18n-key=\"${!isWalletConnected ? 'modal.roadWidth.proposalList.syncBlockchainNoWallet' : 'modal.roadWidth.proposalList.syncBlockchain'}\" data-i18n-attr=\"title\" title=\"${escapeHtml(syncTitle)}\" onclick=\"handleBlockchainSyncClick(event)\">",
       "interaction": "click",
       "controlType": "button"
     },
@@ -7044,18 +6438,6 @@
       "controlType": "button"
     },
     {
-      "id": "control-8d406df2cba28e-1",
-      "source": "js/proposals/dialog-share.js",
-      "markup": "<button type=\"button\" class=\"cb-segmented__option proposal-source-btn\" aria-pressed=\"${source === 'blockchain' ? 'true' : 'false'}\" data-source=\"blockchain\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-9924466b50d199-1",
-      "source": "js/proposals/dialog-share.js",
-      "markup": "<button type=\"button\" class=\"cb-segmented__option proposal-source-btn\" aria-pressed=\"${source === 'plans' ? 'true' : 'false'}\" data-source=\"plans\">"
-    },
-    {
       "id": "control-996552fb4b2490-1",
       "source": "js/proposals/dialog-share.js",
       "markup": "<button class=\"proposal-server-retry\">",
@@ -7101,16 +6483,16 @@
       "markup": "document.createElement('button')",
       "variants": [
         {
-          "name": "Highlight all proposals",
+          "name": "Highlight all designs",
           "label": "All"
         },
         {
-          "name": "Highlight uploaded proposals",
-          "label": "Uploaded"
+          "name": "Highlight published designs",
+          "label": "Published"
         },
         {
-          "name": "Highlight proposals not uploaded yet",
-          "label": "Not uploaded yet"
+          "name": "Highlight designs not published yet",
+          "label": "Not published yet"
         }
       ],
       "exhaustiveVariants": true,
@@ -7122,15 +6504,8 @@
       "source": "js/proposals/dialog-share.js",
       "markup": "document.createElement(input)",
       "interaction": "change",
-      "controlType": "input"
-    },
-    {
-      "id": "control-a9e7f6ba35b5c1-2",
-      "source": "js/proposals/dialog-share.js",
-      "markup": "document.createElement('input')",
-      "interaction": "change",
       "controlType": "input",
-      "exempt": "The plan URL is a read-only output; its copy action is covered separately.",
+      "exempt": "The share panel link is a read-only output; its Copy URL action is covered separately.",
       "mustRemainInactive": true,
       "guards": [
         {
@@ -7147,7 +6522,7 @@
       "controlType": "button"
     },
     {
-      "id": "control-a9e7f6ba35b5c1-3",
+      "id": "control-a9e7f6ba35b5c1-2",
       "source": "js/proposals/dialog-share.js",
       "markup": "document.createElement('input')",
       "interaction": "change",
@@ -7156,177 +6531,6 @@
     {
       "id": "control-7cd07576118fe2-5",
       "source": "js/proposals/dialog-share.js",
-      "markup": "document.createElement('button')",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-a9e7f6ba35b5c1-4",
-      "source": "js/proposals/dialog-share.js",
-      "markup": "document.createElement('input')",
-      "interaction": "change",
-      "controlType": "input"
-    },
-    {
-      "id": "control-7cd07576118fe2-6",
-      "source": "js/proposals/dialog-share.js",
-      "markup": "document.createElement('button')",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-b9818cc0cd0aa1-1",
-      "source": "js/proposals/dialog-share.js",
-      "markup": "document.createElement('textarea')",
-      "interaction": "change",
-      "controlType": "textarea",
-      "exempt": "The shared-plan URL is a read-only output; its copy action is covered separately.",
-      "mustRemainInactive": true,
-      "guards": [
-        {
-          "source": "js/proposals/dialog-share.js",
-          "includes": "textarea.setAttribute('readonly', 'readonly');"
-        }
-      ]
-    },
-    {
-      "id": "control-a9e7f6ba35b5c1-5",
-      "source": "js/proposals/dialog-share.js",
-      "markup": "document.createElement('input')",
-      "interaction": "change",
-      "controlType": "input"
-    },
-    {
-      "id": "control-236ebfc7d11182-1",
-      "source": "js/proposals/dialog-upload.js",
-      "markup": "document.createElement('button')",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-63df334fd1eb23-1",
-      "source": "js/proposals/dialog-upload.js",
-      "markup": "document.createElement('input')",
-      "interaction": "change",
-      "controlType": "input",
-      "exempt": "The share URL is a read-only output; its copy action is covered separately.",
-      "mustRemainInactive": true,
-      "guards": [
-        {
-          "source": "js/proposals/dialog-upload.js",
-          "includes": "urlInput.readOnly = true;"
-        }
-      ]
-    },
-    {
-      "id": "control-236ebfc7d11182-2",
-      "source": "js/proposals/dialog-upload.js",
-      "markup": "document.createElement('button')",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-236ebfc7d11182-3",
-      "source": "js/proposals/dialog-upload.js",
-      "markup": "document.createElement('button')",
-      "variants": [
-        {
-          "name": "Connect wallet before minting",
-          "label": "Connect wallet"
-        },
-        {
-          "name": "Mint proposal on chain",
-          "label": "Mint"
-        }
-      ],
-      "exhaustiveVariants": true,
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-63df334fd1eb23-2",
-      "source": "js/proposals/dialog-upload.js",
-      "markup": "document.createElement('input')",
-      "interaction": "change",
-      "controlType": "input",
-      "exempt": "The minted URL is a read-only output; its copy action is covered separately.",
-      "mustRemainInactive": true,
-      "guards": [
-        {
-          "source": "js/proposals/dialog-upload.js",
-          "includes": "mintedLinkInput.readOnly = true;"
-        }
-      ]
-    },
-    {
-      "id": "control-236ebfc7d11182-4",
-      "source": "js/proposals/dialog-upload.js",
-      "markup": "document.createElement('button')",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-236ebfc7d11182-5",
-      "source": "js/proposals/dialog-upload.js",
-      "markup": "document.createElement('button')",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-236ebfc7d11182-6",
-      "source": "js/proposals/dialog-upload.js",
-      "markup": "document.createElement('button')",
-      "variants": [
-        {
-          "name": "Share applied proposals",
-          "label": "Share applied proposals",
-          "classes": [
-            "share-modal-plan-btn"
-          ]
-        }
-      ],
-      "exhaustiveVariants": true,
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-236ebfc7d11182-7",
-      "source": "js/proposals/dialog-upload.js",
-      "markup": "document.createElement('button')",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-236ebfc7d11182-8",
-      "source": "js/proposals/dialog-upload.js",
-      "markup": "document.createElement('button')",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-cd24de0ddeaec2-1",
-      "source": "js/proposals/drill-ui.js",
-      "markup": "document.createElement('button')",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-cd24de0ddeaec2-2",
-      "source": "js/proposals/drill-ui.js",
-      "markup": "document.createElement('button')",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-cd24de0ddeaec2-3",
-      "source": "js/proposals/drill-ui.js",
-      "markup": "document.createElement('button')",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-cd24de0ddeaec2-4",
-      "source": "js/proposals/drill-ui.js",
       "markup": "document.createElement('button')",
       "interaction": "click",
       "controlType": "button"
@@ -7342,116 +6546,6 @@
       "id": "control-60e49c69fe554c-1",
       "source": "js/proposals/epoch.js",
       "markup": "document.createElement('button')",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-8c451455a11593-1",
-      "source": "js/proposals/execution.js",
-      "markup": "<button type=\"button\" class=\"btn btn-sm\" disabled title=\"${expiredTitle}\">",
-      "exempt": "Expired proposals render the already-accepted owner's Undo/Rescind control disabled. This is a timed/lifecycle-ineligible state; the enabled acceptance/undo action states are exercised in proposal-actions.spec.ts.",
-      "mustRemainInactive": true,
-      "guards": [
-        {
-          "source": "js/proposals/execution.js",
-          "pattern": "<button\\s+type=\"button\"\\s+class=\"btn\\s+btn-sm\"\\s+disabled\\s+title=\"\\$\\{expiredTitle\\}\">",
-          "occurrences": 2
-        }
-      ],
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-8c451455a11593-2",
-      "source": "js/proposals/execution.js",
-      "markup": "<button type=\"button\" class=\"btn btn-sm\" disabled title=\"${expiredTitle}\">",
-      "exempt": "Expired proposals render the owner's Accept/Vote control disabled. This is a timed/lifecycle-ineligible state; the enabled acceptance action is exercised in proposal-actions.spec.ts.",
-      "mustRemainInactive": true,
-      "guards": [
-        {
-          "source": "js/proposals/execution.js",
-          "pattern": "<button\\s+type=\"button\"\\s+class=\"btn\\s+btn-sm\"\\s+disabled\\s+title=\"\\$\\{expiredTitle\\}\">",
-          "occurrences": 2
-        }
-      ],
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-09c0c523df90ef-1",
-      "source": "js/proposals/execution.js",
-      "markup": "<button type=\"button\" class=\"btn btn-sm btn-danger\" data-owner-key=\"${entry.key}\" onclick=\"(function(e){e.stopPropagation();e.preventDefault();${rejectCall};return false;})(event)\">",
-      "variants": [
-        {
-          "name": "Undo accepted ownership terms",
-          "labelPattern": "^(?:Undo|Deshacer)$"
-        },
-        {
-          "name": "Rescind accepted vote",
-          "label": "Rescind"
-        }
-      ],
-      "exhaustiveVariants": true,
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-d71ab649cdfff6-1",
-      "source": "js/proposals/execution.js",
-      "markup": "<button type=\"button\" class=\"btn btn-sm ${isVote ? 'btn-primary' : 'btn-success'}\" data-owner-key=\"${entry.key}\" onclick=\"(function(e){e.stopPropagation();e.preventDefault();${acceptCall};return false;})(event)\">",
-      "variants": [
-        {
-          "name": "Accept ownership terms",
-          "label": "Accept",
-          "classes": [
-            "btn-success"
-          ]
-        },
-        {
-          "name": "Vote yes on proposal",
-          "label": "Vote yes",
-          "classes": [
-            "btn-primary"
-          ]
-        },
-        {
-          "name": "Accept ownership terms (Spanish)",
-          "label": "Aceptar",
-          "classes": [
-            "btn-success"
-          ]
-        }
-      ],
-      "exhaustiveVariants": true,
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-3197f0070463a5-1",
-      "source": "js/proposals/execution.js",
-      "markup": "<button type=\"button\" class=\"btn btn-sm\" disabled>",
-      "exempt": "An expired proposal renders this recipient Accept control disabled. The enabled recipient action is a separate required source site.",
-      "mustRemainInactive": true,
-      "guards": [
-        {
-          "source": "js/proposals/execution.js",
-          "includes": ": (proposalExpired\n                ? `<button type=\"button\" class=\"btn btn-sm\" disabled>"
-        }
-      ],
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-b1ee755e815785-1",
-      "source": "js/proposals/execution.js",
-      "markup": "<button type=\"button\" class=\"btn btn-sm btn-success\" onclick=\"(function(e){e.stopPropagation();e.preventDefault();acceptAsRecipient('${proposalId}');return false;})(event)\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-a88fa5d22a87d9-1",
-      "source": "js/proposals/execution.js",
-      "markup": "<button type=\"button\" data-agent-id=\"${userAgent.id}\" class=\"cb-link agent-link-clickable\">",
       "interaction": "click",
       "controlType": "button"
     },
@@ -7485,13 +6579,6 @@
       "controlType": "button"
     },
     {
-      "id": "control-a56600e80bc554-1",
-      "source": "js/proposals/grain-score.js",
-      "markup": "<button type=\"button\" class=\"btn btn-primary btn-block grain-score-start\" data-grain-action=\"start\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
       "id": "control-cf3960ea281e5c-1",
       "source": "js/proposals/grain-score.js",
       "markup": "<button type=\"button\" class=\"btn\" data-grain-action=\"repeat\">",
@@ -7511,77 +6598,9 @@
       "markup": "<button type=\"button\" class=\"btn btn-ground-rebase\" data-ground-rebase=\"${escape(proposalId)}\" title=\"${escape(hint)}\">"
     },
     {
-      "id": "control-4d02348337a586-1",
-      "source": "js/proposals/lens-card.js",
-      "markup": "<select data-lens-parcel-member aria-label=\"${escapeText(t('panel.proposal.lens.memberSelect', 'Lens member'))}\">",
-      "interaction": "change",
-      "controlType": "select"
-    },
-    {
-      "id": "control-876daf0d52d01b-1",
-      "source": "js/proposals/lens-card.js",
-      "markup": "<button type=\"button\" class=\"btn\" data-lens-attest>",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-859995442406f7-1",
-      "source": "js/proposals/lens-card.js",
-      "markup": "<input type=\"text\" class=\"lens-input\" data-lens-payout autocomplete=\"off\" spellcheck=\"false\" placeholder=\"${escapeText(t('panel.proposal.lens.payoutPlaceholder', 'Payout address (optional)'))}\" aria-label=\"${escapeText(t('panel.proposal.lens.payoutLabel', 'Payout address for your share of the proposal funds (optional)'))}\">",
-      "interaction": "change",
-      "controlType": "text"
-    },
-    {
-      "id": "control-c5c824e547d57a-1",
-      "source": "js/proposals/lens-card.js",
-      "markup": "<button type=\"button\" class=\"btn btn-primary btn-block\" data-lens-say-yes>",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-ce8e4259bb6393-1",
-      "source": "js/proposals/lens-card.js",
-      "markup": "<input type=\"text\" class=\"lens-input\" data-lens-verdict-address autocomplete=\"off\" spellcheck=\"false\" placeholder=\"${escapeText(t('panel.proposal.lens.verdictPlaceholder', 'Verdict attestation address'))}\" aria-label=\"${escapeText(t('panel.proposal.lens.verdictPlaceholder', 'Verdict attestation address'))}\">",
-      "interaction": "change",
-      "controlType": "text"
-    },
-    {
-      "id": "control-80aa0c1f7380d8-1",
-      "source": "js/proposals/lens-card.js",
-      "markup": "<button type=\"button\" class=\"btn\" data-lens-submit-verdict>",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-5794f9406209be-1",
-      "source": "js/proposals/lineage.js",
-      "markup": "<button type=\"button\" class=\"cb-link proposal-lineage__link\" ${target}>"
-    },
-    {
-      "id": "control-a746354019b928-1",
-      "source": "js/proposals/lineage.js",
-      "markup": "root.document.createElement('button')",
-      "variants": [
-        {
-          "name": "open a published source from the Based on row",
-          "classes": [
-            "cb-link",
-            "proposal-based-on-link"
-          ]
-        }
-      ],
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-012d350369b80c-1",
+      "id": "control-048a1a427dd791-1",
       "source": "js/proposals/list-ui.js",
-      "markup": "<button type=\"button\" class=\"btn btn-success btn-sm proposal-buy-btn\" title=\"${escapeHtml(hint)}\" onclick=\"event.stopPropagation(); simulateSaleOfferPurchase('${pid}');\">"
-    },
-    {
-      "id": "control-c0efe8158d6628-1",
-      "source": "js/proposals/list-ui.js",
-      "markup": "<button type=\"button\" class=\"btn btn-sm proposal-download-btn\" data-proposal-id=\"${escapeHtml(proposalId)}\" data-server-id=\"${escapeHtml(proposal.serverProposalId || proposal.id || '')}\" ${isDownloaded ? 'disabled' : ''}>",
+      "markup": "<button type=\"button\" class=\"btn btn-sm proposal-download-btn\" data-proposal-id=\"${escapeHtml(proposalId)}\" data-cid=\"${escapeHtml(proposal.cid || '')}\" ${isDownloaded ? 'disabled' : ''}>",
       "interaction": "click",
       "controlType": "button"
     },
@@ -7699,313 +6718,19 @@
       "controlType": "dynamic"
     },
     {
-      "id": "control-7ea194939ea42e-1",
-      "source": "js/proposals/plan-view.js",
-      "markup": "<button type=\"button\" class=\"close-circle-btn close-circle-btn--lg close-button\" data-plan-action=\"close\">"
-    },
-    {
-      "id": "control-3ff3eba5460332-1",
-      "source": "js/proposals/plan-view.js",
-      "markup": "<button type=\"button\" class=\"btn btn-quiet plan-view-member\" data-plan-member=\"${escapeText(id)}\"${state.layers.has(id) ? '' : ' disabled'}>"
-    },
-    {
-      "id": "control-f2213b963dbc79-1",
-      "source": "js/proposals/plan-view.js",
-      "markup": "<button type=\"button\" class=\"btn\" data-plan-action=\"bet\">"
-    },
-    {
-      "id": "control-afcf46347ac510-1",
-      "source": "js/proposals/plan-view.js",
-      "markup": "<button type=\"button\" class=\"btn btn-primary\" data-plan-action=\"apply\"${ready ? '' : ' disabled'}>"
-    },
-    {
-      "id": "control-ca4ebc68ccd62f-1",
-      "source": "js/proposals/plan-view.js",
-      "markup": "<button type=\"button\" class=\"btn\" data-plan-action=\"share\">"
-    },
-    {
-      "id": "control-aaf4f34e8fe792-1",
-      "source": "js/proposals/plan-view.js",
-      "markup": "<button type=\"button\" class=\"cb-link\" data-plan-open=\"${escapeText(slug)}\">"
-    },
-    {
-      "id": "control-5f27dd2d3df5ba-1",
-      "source": "js/proposals/plans.js",
-      "markup": "<button type=\"button\" class=\"cb-link proposal-plan-link\" data-plan-slug=\"${escapeText(list[0].slug)}\">"
-    },
-    {
-      "id": "control-962f62a5e9bcb8-1",
-      "source": "js/proposals/plans.js",
-      "markup": "<button type=\"button\" class=\"cb-link proposal-plan-link\" data-plan-slug=\"${escapeText(plan.slug)}\">"
-    },
-    {
-      "id": "control-b399fedac7ac7d-1",
-      "source": "js/proposals/plans.js",
-      "markup": "<button type=\"button\" class=\"cb-link proposal-plan-toggle\" aria-expanded=\"false\">"
-    },
-    {
-      "id": "control-35393521d65046-1",
-      "source": "js/proposals/plans.js",
-      "markup": "<div class=\"proposal-item plan-item\" data-plan-slug=\"${escapeText(plan.slug)}\" role=\"button\" tabindex=\"0\">"
-    },
-    {
-      "id": "control-6754f50fd79224-1",
+      "id": "control-b8c93f4d8db5cb-1",
       "source": "js/proposals/sharing-routes.js",
-      "markup": "document.createElement('textarea')",
+      "markup": "document.createElement('input')",
       "interaction": "change",
-      "controlType": "textarea",
-      "exempt": "The clipboard scratch buffer is selected, copied and removed synchronously.",
+      "controlType": "input",
+      "exempt": "The design link shown when the clipboard refuses it is a read-only output for copying by hand.",
       "mustRemainInactive": true,
       "guards": [
         {
           "source": "js/proposals/sharing-routes.js",
-          "includes": "scratch.select();\n                                    document.execCommand('copy');\n                                    scratch.remove();"
+          "includes": "input.readOnly = true;"
         }
       ]
-    },
-    {
-      "id": "control-427a0143e32f72-1",
-      "source": "js/reparcellization-ui-state.js",
-      "markup": "<input type=\"number\" class=\"cash-offer-input\" step=\"0.01\" data-owner-key=\"${esc(ownerKey)}\" value=\"${amount}\">",
-      "interaction": "change",
-      "controlType": "number"
-    },
-    {
-      "id": "control-f42cd09de4177a-1",
-      "source": "js/reparcellization.js",
-      "markup": "<input type=\"radio\" name=\"reparcel-algorithm\" value=\"${option.key}\" ${checked} ${disabled}>",
-      "interaction": "change",
-      "controlType": "radio"
-    },
-    {
-      "id": "control-bac24f68595c9d-1",
-      "source": "js/reparcellization.js",
-      "markup": "<button type=\"button\" class=\"btn btn-icon\" ${attrs} title=\"${label}\" aria-label=\"${label}\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-fe4a71489537ab-1",
-      "source": "js/reparcellization.js",
-      "markup": "<button type=\"button\" class=\"btn\" data-reparcel-courtyard-building>",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-5e963a3a80181e-1",
-      "source": "js/reparcellization.js",
-      "markup": "<button type=\"button\" class=\"btn\" data-reparcel-courtyard-draw>",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-efed9f4024ce04-1",
-      "source": "js/reparcellization.js",
-      "markup": "<input type=\"file\" accept=\".geojson,.json,application/geo+json,application/json\" data-reparcel-upload aria-label=\"${uploadLabel}\" hidden>",
-      "interaction": "change",
-      "controlType": "file"
-    },
-    {
-      "id": "control-1e7bd7b88faf9b-1",
-      "source": "js/reparcellization.js",
-      "markup": "<button type=\"button\" class=\"btn btn-icon reparcel-assign-btn\" data-reparcel-assign aria-pressed=\"false\" data-i18n-key=\"reparcellization.modal.assignOwners\" data-i18n-attr=\"title,aria-label\" title=\"${assignOwnersLabel}\" aria-label=\"${assignOwnersLabel}\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-adec35a77ca8aa-1",
-      "source": "js/reparcellization.js",
-      "markup": "<button type=\"button\" class=\"btn btn-sm reparcel-allpublic-btn\" data-reparcel-all-public hidden data-i18n-key=\"reparcellization.modal.allPublic\" data-i18n-attr=\"text\" title=\"${allPublicLabel}\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-83e06609a83aba-1",
-      "source": "js/reparcellization.js",
-      "markup": "<button type=\"button\" class=\"btn btn-sm\" data-reparcel-undo>",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-0a677a9d253c63-1",
-      "source": "js/reparcellization.js",
-      "markup": "<button type=\"button\" class=\"btn btn-sm btn-success\" data-reparcel-finish>",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-96bb102075cbed-1",
-      "source": "js/reparcellization.js",
-      "markup": "<button type=\"button\" class=\"btn btn-sm\" data-reparcel-cancel-draw>",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-985e58e1edc70f-1",
-      "source": "js/reparcellization.js",
-      "markup": "<button type=\"button\" role=\"tab\" class=\"cb-tab\" data-reparcel-plots-tab=\"new\" aria-selected=\"true\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-0d0d5155ae910e-1",
-      "source": "js/reparcellization.js",
-      "markup": "<button type=\"button\" role=\"tab\" class=\"cb-tab\" data-reparcel-plots-tab=\"old\" aria-selected=\"false\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-a556d6246b9ace-1",
-      "source": "js/reparcellization.js",
-      "markup": "<button type=\"button\" class=\"btn btn-sm\" data-reparcel-approval-setup>",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-3835a4e355fac1-1",
-      "source": "js/reparcellization.js",
-      "markup": "<button type=\"button\" class=\"btn btn-sm reparcel-compare-btn\" data-reparcel-compare aria-pressed=\"false\" hidden>",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-66f88604887f1d-1",
-      "source": "js/reparcellization.js",
-      "markup": "<button type=\"button\" class=\"btn\" data-reparcel-cancel data-i18n-key=\"reparcellization.modal.cancel\" data-i18n-attr=\"text\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-19309809389c4a-1",
-      "source": "js/reparcellization.js",
-      "markup": "<button type=\"button\" class=\"btn btn-primary\" data-reparcel-commit disabled data-i18n-key=\"reparcellization.modal.done\" data-i18n-attr=\"text\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-927adb070f7da7-1",
-      "source": "js/reparcellization.js",
-      "markup": "document.createElement('button')",
-      "variants": [
-        {
-          "name": "building courtyard candidate choice",
-          "classes": [
-            "reparcel-owner-popup__joint"
-          ],
-          "labelPattern": "Courtyard candidate"
-        }
-      ],
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-7e87f3e42deb63-1",
-      "source": "js/reparcellization.js",
-      "markup": "<button type=\"button\" class=\"btn btn-sm reparcel-edit-shares\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-3dba584e9d90b8-1",
-      "source": "js/reparcellization.js",
-      "markup": "document.createElement('select')",
-      "interaction": "change",
-      "controlType": "select"
-    },
-    {
-      "id": "control-927adb070f7da7-2",
-      "source": "js/reparcellization.js",
-      "markup": "document.createElement('button')",
-      "variants": [
-        {
-          "name": "remove geometry node",
-          "classes": [
-            "btn-danger",
-            "btn-sm"
-          ],
-          "label": "Remove node"
-        }
-      ],
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-927adb070f7da7-3",
-      "source": "js/reparcellization.js",
-      "markup": "document.createElement('button')",
-      "variants": [
-        {
-          "name": "erase a boundary segment from its popup",
-          "classes": [
-            "btn-danger",
-            "btn-sm"
-          ],
-          "label": "Erase this boundary"
-        }
-      ],
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-927adb070f7da7-4",
-      "source": "js/reparcellization.js",
-      "markup": "document.createElement('button')",
-      "variants": [
-        {
-          "name": "Reset recipient shares to private-land proportions",
-          "classes": [
-            "reparcel-owner-popup__joint"
-          ]
-        }
-      ],
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-319ce3c86b9300-1",
-      "source": "js/reparcellization.js",
-      "markup": "document.createElement('input')",
-      "interaction": "change",
-      "controlType": "input"
-    },
-    {
-      "id": "control-319ce3c86b9300-2",
-      "source": "js/reparcellization.js",
-      "markup": "document.createElement('input')",
-      "interaction": "change",
-      "controlType": "input"
-    },
-    {
-      "id": "control-927adb070f7da7-5",
-      "source": "js/reparcellization.js",
-      "markup": "document.createElement('button')",
-      "variants": [
-        {
-          "name": "Apply recipient ownership shares",
-          "classes": [
-            "reparcel-apply-shares"
-          ],
-          "label": "Apply shares"
-        }
-      ],
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-927adb070f7da7-6",
-      "source": "js/reparcellization.js",
-      "markup": "document.createElement('button')",
-      "variants": [
-        {
-          "name": "Close owner assignment popup",
-          "classes": [
-            "reparcel-owner-popup__close"
-          ],
-          "labelPattern": "^(Close|Zatvori)$"
-        }
-      ],
-      "interaction": "click",
-      "controlType": "button"
     },
     {
       "id": "control-64e2e66db84232-1",
@@ -8861,20 +7586,6 @@
       "markup": "d.createElement('button')",
       "variants": [
         {
-          "name": "Mint prerequisite parcels on EVM",
-          "label": "Mint the prerequisites",
-          "attrs": {
-            "data-action-id": "mint"
-          }
-        },
-        {
-          "name": "Create prerequisite parcel anchors on Solana",
-          "labelPattern": "^Create the parcel anchors?$",
-          "attrs": {
-            "data-action-id": "mint"
-          }
-        },
-        {
           "name": "Rule drop: convert to one Freeform building kept here",
           "label": "Convert to Freeform and keep it here",
           "attrs": {
@@ -8915,6 +7626,31 @@
           "attrs": {
             "data-action-id": "cancel"
           }
+        },
+        {
+          "name": "Add to agreement: a new agreement",
+          "label": "New agreement",
+          "attrs": {
+            "data-action-id": "__new__"
+          }
+        },
+        {
+          "name": "Add to agreement: an agreement not proposed yet",
+          "labelPattern": " · \\d+ designs?$"
+        },
+        {
+          "name": "Mint terms: mint",
+          "label": "Mint",
+          "attrs": {
+            "data-action-id": "mint"
+          }
+        },
+        {
+          "name": "Keep an agreement on chain instead of cancelling it",
+          "label": "Keep it",
+          "attrs": {
+            "data-action-id": "cancel"
+          }
         }
       ],
       "interaction": "click",
@@ -8926,65 +7662,6 @@
       "markup": "doc().createElement('input')",
       "interaction": "change",
       "controlType": "input"
-    },
-    {
-      "id": "control-85b60b5d92e9ef-1",
-      "source": "js/ui/ground-menu.js",
-      "markup": "<button type=\"button\" class=\"parcel-menu__close close-circle-btn\" data-ground-menu-close>",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-483b17662ef892-1",
-      "source": "js/ui/ground-menu.js",
-      "markup": "doc.createElement('button')",
-      "variants": [
-        {
-          "name": "drawSite",
-          "attrs": {
-            "data-command": "ground.drawSite"
-          }
-        },
-        {
-          "name": "road",
-          "attrs": {
-            "data-command": "ground.road"
-          }
-        },
-        {
-          "name": "track",
-          "attrs": {
-            "data-command": "ground.track"
-          }
-        },
-        {
-          "name": "busStation",
-          "attrs": {
-            "data-command": "ground.busStation"
-          }
-        },
-        {
-          "name": "tramStation",
-          "attrs": {
-            "data-command": "ground.tramStation"
-          }
-        },
-        {
-          "name": "undergroundStation",
-          "attrs": {
-            "data-command": "ground.undergroundStation"
-          }
-        },
-        {
-          "name": "elevatedStation",
-          "attrs": {
-            "data-command": "ground.elevatedStation"
-          }
-        }
-      ],
-      "exhaustiveVariants": true,
-      "interaction": "click",
-      "controlType": "button"
     },
     {
       "id": "control-238f8889bfb66b-1",
@@ -9028,83 +7705,6 @@
       "dispatchEvidence": "The shared map-search button factory creates the current-city chip, Search opener, and Clear control; each dispatches to world view, search presentation, and query/results reset respectively.",
       "interaction": "auto",
       "controlType": "dynamic"
-    },
-    {
-      "id": "control-0608e4c65fd44f-1",
-      "source": "js/ui/parcel-menu.js",
-      "markup": "<button type=\"button\" class=\"parcel-menu__close close-circle-btn\" data-parcel-menu-close>",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-bd7c8c30fb095e-1",
-      "source": "js/ui/parcel-menu.js",
-      "markup": "doc.createElement('button')",
-      "variants": [
-        {
-          "name": "propose",
-          "attrs": {
-            "data-command": "parcel.propose"
-          }
-        },
-        {
-          "name": "selectMore",
-          "attrs": {
-            "data-command": "parcel.selectMore"
-          }
-        },
-        {
-          "name": "details",
-          "attrs": {
-            "data-command": "parcel.details"
-          }
-        },
-        {
-          "name": "history",
-          "attrs": {
-            "data-command": "parcel.history"
-          }
-        },
-        {
-          "name": "proposals",
-          "attrs": {
-            "data-command": "parcel.proposals"
-          }
-        },
-        {
-          "name": "compare",
-          "attrs": {
-            "data-command": "parcel.compare"
-          }
-        },
-        {
-          "name": "tools",
-          "attrs": {
-            "data-command": "parcel.tools"
-          }
-        },
-        {
-          "name": "offer",
-          "attrs": {
-            "data-command": "parcel.offer"
-          }
-        },
-        {
-          "name": "detectBlock",
-          "attrs": {
-            "data-command": "parcel.detectBlock"
-          }
-        },
-        {
-          "name": "useAsSite",
-          "attrs": {
-            "data-command": "parcel.useAsSite"
-          }
-        }
-      ],
-      "exhaustiveVariants": true,
-      "interaction": "click",
-      "controlType": "button"
     },
     {
       "id": "control-bb46d4f2373a89-1",
@@ -9402,16 +8002,6 @@
             "data-chain-id": "0xaa36a7"
           },
           "labelPattern": "Sepolia"
-        },
-        {
-          "name": "select Canton network",
-          "classes": [
-            "chain-option"
-          ],
-          "attrs": {
-            "data-chain-id": "canton"
-          },
-          "labelPattern": "Canton"
         }
       ],
       "interaction": "click",
@@ -10071,46 +8661,19 @@
       "controlType": "button"
     },
     {
-      "id": "control-2158c77fa9297e-1",
+      "id": "control-9869df8a4350b8-1",
       "source": "lens.html",
-      "markup": "<input id=\"lc-verdict-proposal\" class=\"lc-field\" type=\"text\" spellcheck=\"false\" required />",
-      "interaction": "change",
-      "controlType": "text"
+      "markup": "<input id=\"lc-decision-cid\" class=\"lc-field\" type=\"text\" spellcheck=\"false\" autocapitalize=\"off\" required />"
     },
     {
-      "id": "control-9aab83e8439ddc-1",
+      "id": "control-cdc6688f373cf0-1",
       "source": "lens.html",
-      "markup": "<select id=\"lc-verdict-kind\" class=\"lc-field\">",
-      "interaction": "change",
-      "controlType": "select"
+      "markup": "<input id=\"lc-decision-token\" class=\"lc-field\" type=\"password\" autocomplete=\"off\" required />"
     },
     {
-      "id": "control-5d19f4a02bb8c6-1",
+      "id": "control-eba49fb83bc0ad-1",
       "source": "lens.html",
-      "markup": "<input id=\"lc-verdict-evidence\" class=\"lc-field\" type=\"text\" spellcheck=\"false\" />",
-      "interaction": "change",
-      "controlType": "text"
-    },
-    {
-      "id": "control-241382328ae063-1",
-      "source": "lens.html",
-      "markup": "<input id=\"lc-verdict-observed\" class=\"lc-field\" type=\"datetime-local\" step=\"1\" required />",
-      "interaction": "change",
-      "controlType": "datetime-local"
-    },
-    {
-      "id": "control-3508848ce35e06-1",
-      "source": "lens.html",
-      "markup": "<input id=\"lc-verdict-token\" class=\"lc-field\" type=\"password\" autocomplete=\"off\" required />",
-      "interaction": "change",
-      "controlType": "password"
-    },
-    {
-      "id": "control-45493a96040ea4-1",
-      "source": "lens.html",
-      "markup": "<button id=\"lc-verdict-submit\" class=\"btn btn-primary lc-submit\" type=\"submit\" data-i18n-key=\"lensConsole.verdict.submit\">",
-      "interaction": "click",
-      "controlType": "button"
+      "markup": "<button id=\"lc-decision-submit\" class=\"btn btn-primary lc-submit\" type=\"submit\" data-i18n-key=\"lensConsole.decision.submit\">"
     },
     {
       "id": "control-18d9348af66042-1",
@@ -10302,38 +8865,7 @@
       "controlType": "button"
     }
   ],
-  "variantExclusions": [
-    {
-      "name": "showShareLinkModal",
-      "reason": "Orphan definition only. Its Save as JSON and Copy Link actions must remain excluded from the live simple-modal action set until the function gains a real caller.",
-      "guards": [
-        {
-          "pattern": "\\bshowShareLinkModal\\b",
-          "occurrences": 1
-        }
-      ]
-    },
-    {
-      "name": "showShareTooLargeModal",
-      "reason": "Orphan definition only. Its modal action must remain excluded from the live action set until the function gains a real caller.",
-      "guards": [
-        {
-          "pattern": "\\bshowShareTooLargeModal\\b",
-          "occurrences": 1
-        }
-      ]
-    },
-    {
-      "name": "promptMissingParentParcelsModal",
-      "reason": "Orphan definition only. Cancel load and Lose local work, refresh & apply are excluded until this prompt has an application caller.",
-      "guards": [
-        {
-          "pattern": "\\bpromptMissingParentParcelsModal\\b",
-          "occurrences": 1
-        }
-      ]
-    }
-  ],
+  "variantExclusions": [],
   "checkRuntimeControls": true,
   "runtimeControls": [
     {

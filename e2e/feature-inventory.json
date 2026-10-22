@@ -344,15 +344,22 @@
       ]
     },
     {
-      "id": "proposals.minted",
-      "specs": [
-        "tests/minted-proposals.spec.ts"
-      ]
-    },
-    {
       "id": "proposals.sharePlan",
       "specs": [
         "tests/proposals-sharing.spec.ts"
+      ]
+    },
+    {
+      "id": "proposals.agreements",
+      "specs": [
+        "tests/agreement-dialog.spec.ts",
+        "tests/agreement-editor-map.spec.ts"
+      ]
+    },
+    {
+      "id": "proposals.mintedAgreements",
+      "specs": [
+        "tests/agreement-chain.spec.ts"
       ]
     },
     {
@@ -406,13 +413,14 @@
     {
       "id": "parcel.propose",
       "specs": [
-        "tests/proposal-creation.spec.ts"
+        "tests/proposal-creation.spec.ts",
+        "tests/click-stack.spec.ts"
       ]
     },
     {
       "id": "parcel.selectMore",
       "specs": [
-        "tests/multi-parcel-selection.spec.ts"
+        "tests/menu-button-controls.spec.ts"
       ]
     },
     {
@@ -424,19 +432,21 @@
     {
       "id": "parcel.history",
       "specs": [
+        "tests/menu-button-controls.spec.ts",
         "tests/proposal-browsing.spec.ts"
       ]
     },
     {
       "id": "parcel.proposals",
       "specs": [
-        "tests/named-plans.spec.ts"
+        "tests/parcel-info-tabs.spec.ts"
       ]
     },
     {
       "id": "parcel.compare",
       "specs": [
-        "tests/proposal-browsing.spec.ts"
+        "tests/proposal-browsing.spec.ts",
+        "tests/menu-button-controls.spec.ts"
       ]
     },
     {
@@ -446,33 +456,30 @@
       ]
     },
     {
-      "id": "parcel.offer",
-      "specs": [
-        "tests/proposal-actions.spec.ts"
-      ]
-    },
-    {
       "id": "parcel.detectBlock",
       "specs": [
+        "tests/menu-button-controls.spec.ts",
         "tests/dataset-tools.spec.ts"
       ]
     },
     {
       "id": "parcel.useAsSite",
       "specs": [
-        "tests/site-drawing.spec.ts"
+        "tests/site-drawing.spec.ts",
+        "tests/editor-button-controls.spec.ts"
       ]
     },
     {
       "id": "ground.drawSite",
       "specs": [
-        "tests/context-actions.spec.ts"
+        "tests/world-and-ground.spec.ts",
+        "tests/site-palette-controls.spec.ts"
       ]
     },
     {
       "id": "ground.road",
       "specs": [
-        "tests/context-actions.spec.ts"
+        "tests/menu-button-controls.spec.ts"
       ]
     },
     {
@@ -490,19 +497,19 @@
     {
       "id": "ground.tramStation",
       "specs": [
-        "tests/context-actions.spec.ts"
+        "tests/menu-button-controls.spec.ts"
       ]
     },
     {
       "id": "ground.undergroundStation",
       "specs": [
-        "tests/context-actions.spec.ts"
+        "tests/menu-button-controls.spec.ts"
       ]
     },
     {
       "id": "ground.elevatedStation",
       "specs": [
-        "tests/context-actions.spec.ts"
+        "tests/menu-button-controls.spec.ts"
       ]
     },
     {
@@ -696,9 +703,50 @@
       ]
     },
     {
-      "feature": "building rules, exclusion volumes and readjustment design",
+      "feature": "building rules, exclusion volumes and parcel layouts",
       "specs": [
-        "tests/designer-controls.spec.ts"
+        "tests/designer-controls.spec.ts",
+        "tests/parcel-layout-editor.spec.ts",
+        "tests/parcel-layout-button-controls.spec.ts",
+        "tests/parcel-layout-audit.spec.ts"
+      ]
+    },
+    {
+      "feature": "agreements over applied designs: Add to agreement on a design's details (or Create agreement in the Agreements list) opens the agreement editor docked on the map, with the derived land, allocation, cash and decision rule; Enter or Save stores it and opens the agreement panel (matches the map or not, before/after, Edit in the editor in the panel's place, delete)",
+      "specs": [
+        "tests/agreement-dialog.spec.ts"
+      ]
+    },
+    {
+      "feature": "the agreement editor on the map: pick mode with the chosen designs highlighted, a map click removing and adding a design, a second layout joining from the map, Add to agreement offering the agreements not proposed yet (or saying a design is already in one), Edit in the panel's place with Cancel and Escape restoring it (Escape in a field kept), a proposed agreement refused, the bottom sheet on a phone picking above it",
+      "specs": [
+        "tests/agreement-editor-map.spec.ts"
+      ]
+    },
+    {
+      "feature": "agreements on chain: a binding owners' agreement's Mint (sponsor wallet, the rule's lens, the mint terms checked, refused while the program is not deployed), Propose again with a wallet for one proposed without a sponsor, a vote never minted, a minted agreement's account read back (status, decision, escrow; Fund and Cancel for the sponsor, Record decision once its lens lists the decision, Execute when satisfied and funded, Expire after the deadline), Bet on its pool, Minted agreements",
+      "specs": [
+        "tests/agreement-chain.spec.ts"
+      ]
+    },
+    {
+      "feature": "bets on minted agreements: the Bets sheet's contests of agreements over shared land (filters, rows without a pool folded, Try again), a bet's dialog (stake form, receipt, link and /bets/<account> deep link, before/after images), Open the agreement from a bet, the agreement panel's Bet, Open, Settle and Collect on the pool",
+      "specs": [
+        "tests/bets-sheet.spec.ts",
+        "tests/bets-button-controls.spec.ts",
+        "tests/before-after.spec.ts"
+      ]
+    },
+    {
+      "feature": "proposing an agreement: Propose (after a profile name) pins the parcel layout and the agreement/v1 object and indexes them, the panel shows it Proposed under its CID without Edit, Copy link, the owners’ decisions card reading the relay and closing once expired, /agreements/<cid> opening it on another device, and a hung agreement read giving up at the parcel-load deadline",
+      "specs": [
+        "tests/agreement-propose.spec.ts"
+      ]
+    },
+    {
+      "feature": "owner decisions on a proposed agreement: the decisions card, a second lens member, review on a phone, an authority in the scheme, each owner’s deal readable by anyone, decisions shared through the relay between two browsers",
+      "specs": [
+        "tests/proposal-approval-lens.spec.ts"
       ]
     },
     {
@@ -715,7 +763,7 @@
       ]
     },
     {
-      "feature": "consent, withdrawal, execution, support, owner offers, minting and markets",
+      "feature": "design area metrics, reference comparison, ownership estimates, unloaded source references, parcel claim tools and parcel minting",
       "specs": [
         "tests/proposal-actions.spec.ts"
       ]
@@ -727,7 +775,13 @@
       ]
     },
     {
-      "feature": "individual/whole-plan publication, fresh-device import and replay",
+      "feature": "publishing a design: Share (after a profile name) pins its design/v1 object and indexes it under the CID the browser computed, Published with that CID, the copied /designs/<cid> link applying it on another device, a second Share sending nothing",
+      "specs": [
+        "tests/design-share.spec.ts"
+      ]
+    },
+    {
+      "feature": "the share panel: picking designs on the map (the pick mode it shares with the agreement editor), publishing selected designs, the /designs/<cid>,<cid> link applied once on another device, a parcel layout refused, links to missing or invalid designs",
       "specs": [
         "tests/proposals-sharing.spec.ts"
       ]
@@ -759,7 +813,7 @@
       ]
     },
     {
-      "feature": "world navigation, exploration, city request retry and clickable recent activity",
+      "feature": "world navigation, exploration, city request retry, clickable recent activity (agreement and bet links opening the agreement panel or the bet) and agreement counts on the globe",
       "specs": [
         "tests/world-and-ground.spec.ts"
       ]
@@ -773,9 +827,7 @@
     {
       "feature": "wallet connect/disconnect, chain routing and transactions",
       "specs": [
-        "tests/wallet.spec.ts",
-        "tests/blockchain-sync.spec.ts",
-        "tests/proposal-chain-bridge.spec.ts"
+        "tests/wallet.spec.ts"
       ]
     },
     {
@@ -787,9 +839,11 @@
       ]
     },
     {
-      "feature": "simulation and in-app activity explorer",
+      "feature": "simulation (agents create designs only) and in-app activity explorer: agreement and design events, Open agreement, the agreement scope and the ?activity=agreement:<cid> link",
       "specs": [
-        "tests/activity-controls.spec.ts"
+        "tests/activity-controls.spec.ts",
+        "tests/simulation-log-controls.spec.ts",
+        "tests/supporting-secondary-controls.spec.ts"
       ]
     },
     {
@@ -806,21 +860,16 @@
       ]
     },
     {
-      "feature": "actor/transaction/Lens/Canton explorers, deck, roadmap and demo",
+      "feature": "actor/transaction/Lens explorers (the Lens console attesting an agreement's decision: issued, invalid, refused), deck, roadmap and demo",
       "specs": [
-        "tests/supporting-pages.spec.ts"
+        "tests/supporting-pages.spec.ts",
+        "tests/secondary-form-controls.spec.ts"
       ]
     },
     {
-      "feature": "Lens directory, pasted keys, coverage filtering and failed ownership-proof gates",
+      "feature": "Lens directory, pasted keys and coverage filtering",
       "specs": [
         "tests/lens-picker.spec.ts"
-      ]
-    },
-    {
-      "feature": "advanced proposal terms, recipient selection and per-slice ownership",
-      "specs": [
-        "tests/proposal-terms.spec.ts"
       ]
     },
     {
@@ -836,15 +885,9 @@
       ]
     },
     {
-      "feature": "published track cab-simulator handoff",
+      "feature": "published track cab-simulator handoff (the sim receives the track’s design CID once it is shared)",
       "specs": [
         "tests/track-drive.spec.ts"
-      ]
-    },
-    {
-      "feature": "pledge creation, revocation, fulfillment, expired settlement and donation release/refund",
-      "specs": [
-        "tests/proposal-support-actions.spec.ts"
       ]
     },
     {
@@ -854,7 +897,7 @@
       ]
     },
     {
-      "feature": "signed prepare-then-publish, a site filed in the city it lies in, proposals opening in their own city (city-less records by their parcels), address bar following the map, read-only second tab per city",
+      "feature": "a design published through the courier and the index with its city’s parcel source, proposals and agreements opening in their own city (a wrong-city link asks first), address bar following the map, read-only second tab per city",
       "specs": [
         "tests/world-city-publication.spec.ts"
       ]
@@ -878,7 +921,7 @@
       ]
     },
     {
-      "feature": "on-map editor dock and collapse, nested road mode locks, mobile sheet stacking, parcel menu placement and empty-plan stats",
+      "feature": "on-map editor dock and collapse, nested road mode locks, mobile sheet stacking, click stack placement and empty-plan stats",
       "specs": [
         "tests/on-map-editor-shell.spec.ts",
         "tests/structure-placement.spec.ts"
@@ -888,6 +931,14 @@
       "feature": "explicit and system appearance choices update rendering and persist across reload",
       "specs": [
         "tests/theme-controls.spec.ts"
+      ]
+    },
+    {
+      "feature": "the click stack: one right-docked panel for everything under a 2D map click (agreements, designs, built, permitted, formed and cadastral parcels, bare ground), the parcel section hosting the parcel panel and its actions, a second click on the same spot or Escape closing it, another spot switching it, one expanded section remembered across clicks, and instance strips switching the agreement, design or cadastral parcel",
+      "specs": [
+        "tests/click-stack.spec.ts",
+        "tests/proposal-button-controls-followup.spec.ts",
+        "tests/context-actions.spec.ts"
       ]
     }
   ],

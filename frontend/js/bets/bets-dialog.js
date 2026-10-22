@@ -1,10 +1,11 @@
-// One bet's own view: the dialog a bet link opens, a Bets row opens, and the Details card's
-// "Bet yes/no" opens straight into the stake form. Three states in one cb-dialog: the overview
-// (chance, pool, payouts, deadline, rule, your bets, links), the stake form (amount, quick stakes,
-// a live "to win") and the receipt after a confirmed bet. The numbers come from
-// js/bets/bets-model.js, the row from the Bets sheet (js/bets/bets-sheet.js), the chain reads and
-// transactions from js/solana/market-bridge.js. The overlay keeps the id the stake dialog always
-// had, so the sheet, the Details card and the specs find it where it was.
+// One agreement's bet: the dialog a bet link opens, a Bets row opens, and the agreement panel's Bet
+// action opens (window.AgreementBets in js/bets/bets-sheet.js). Three states in one cb-dialog: the
+// overview (the question, chance, pool, payouts, deadline, rule, your bets, links), the stake form
+// (amount, quick stakes, a live "to win") and the receipt after a confirmed bet. The numbers come
+// from js/bets/bets-model.js, the row from the Bets sheet (js/bets/bets-sheet.js), the chain reads
+// and transactions from js/solana/market-bridge.js, whose `proposal` option is the market's subject
+// account: here the agreement's. The overlay keeps the id the stake dialog always had, so the sheet
+// and the specs find it where it was.
 (function (root) {
     'use strict';
     if (!root || !root.document) return;
@@ -12,7 +13,7 @@
     const doc = root.document;
     const OVERLAY_ID = 'proposalMarketOverlay';
     const EXPLORER = 'https://explorer.solana.com';
-    const state = { overlay: null, proposalAccount: null, row: null, contest: null, positions: null, opener: null, unregisterEscape: null, compare: null };
+    const state = { overlay: null, account: null, row: null, contest: null, positions: null, opener: null, unregisterEscape: null, compare: null };
     const inFlight = new Set();
 
     function interpolate(text, params) {
@@ -82,21 +83,9 @@
         if (typeof root.handleWalletButtonClick === 'function') root.handleWalletButtonClick();
     }
 
-    function announceChange(proposalAccount) {
-        if (typeof root.notifyProposalMarketChanged === 'function') { root.notifyProposalMarketChanged(proposalAccount); return; }
-        try { doc.dispatchEvent(new root.CustomEvent('proposal-market:changed', { detail: { proposalAccount } })); } catch (_) { }
-    }
-
-    // The Details card, when it shows this proposal, re-reads its pool too.
-    function refreshCard(proposalAccount) {
-        if (typeof root.hydrateProposalMarketCard !== 'function') return;
-        let lifecycle = '';
-        try {
-            if (typeof currentProposalDetailsContext !== 'undefined' && currentProposalDetailsContext && typeof getLifecycleStatus === 'function') {
-                lifecycle = getLifecycleStatus(currentProposalDetailsContext);
-            }
-        } catch (_) { lifecycle = ''; }
-        root.hydrateProposalMarketCard(proposalAccount, lifecycle);
+    // A confirmed pool transaction: the Bets sheet re-reads its pools past the server's cache.
+    function announceChange(account) {
+        try { doc.dispatchEvent(new root.CustomEvent('bets:changed', { detail: { account } })); } catch (_) { }
     }
 
     async function recordSupport(entry) {
@@ -108,57 +97,62 @@
         return wallet ? `${wallet.slice(0, 4)}…${wallet.slice(-4)}` : 'Wallet user';
     }
 
+    // The row's name and the question its pool answers (js/bets/market-question.js, through the sheet).
+    function labelOf(row) {
+        const bets = sheet();
+        return bets && typeof bets.labelText === 'function' ? bets.labelText(row) : (row.label || t('bets.row.untitledAgreement', 'Untitled agreement'));
+    }
+    function questionOf(row) {
+        const bets = sheet();
+        return bets && typeof bets.agreementQuestionText === 'function'
+            ? bets.agreementQuestionText(row)
+            : t('bets.question.agreement', 'Will {{title}} execute on-chain?', { title: labelOf(row) });
+    }
+
     // ---- data ---------------------------------------------------------------------------------
 
-    // The row from the Bets sheet's city payload; without one (a proposal the city list does not
-    // carry yet, as the Details card can show), the pool straight from the chain.
-    async function loadRow(proposalAccount, options) {
+    // The row from the Bets sheet's city payload; without one (an agreement the city list does not
+    // carry yet, such as one just minted), the pool and the account's status and deadline straight
+    // from the chain, judged by GET /markets' rule (BetsModel.chainEntry).
+    async function loadRow(account, options) {
         const bets = sheet();
         let found = null;
         if (bets && typeof bets.ensureLoaded === 'function') {
             try { await bets.ensureLoaded(); } catch (_) { found = null; }
-            found = typeof bets.rowFor === 'function' ? bets.rowFor(proposalAccount) : null;
+            found = typeof bets.rowFor === 'function' ? bets.rowFor(account) : null;
         }
         if (found) return found;
         const fallback = { contest: null, row: {
-            proposalAccount, proposalId: options.proposalId || null, id: options.id || null, title: options.title || '', author: null, agent: false,
-            createdAt: null, screenshotUrl: null, parcelIds: [], lifecycleStatus: options.lifecycleStatus || 'Unknown', state: 'closed',
-            chanceYes: null, chanceNo: null, oneSided: null, pool: null, poolAtomic: 0n, yesPoolAtomic: 0n, noPoolAtomic: 0n, outcome: null,
-            paysYes: null, paysNo: null, closesAt: null, marketAddress: null, fromChain: true
+            kind: 'agreement', cid: null, account, contest: null, title: options.title || '', label: options.title || '', designTitles: [],
+            author: null, createdAt: null, deadline: null, status: null, chainStatus: null, screenshotUrl: null, screenshotBeforeUrl: null,
+            parcelIds: [], state: 'closed', chanceYes: null, chanceNo: null, oneSided: null, pool: null, poolAtomic: 0n, yesPoolAtomic: 0n,
+            noPoolAtomic: 0n, outcome: null, paysYes: null, paysNo: null, marketAddress: null, fromChain: true
         } };
         const chain = bridge();
         if (!chain || typeof chain.readSummary !== 'function' || !model()) return fallback;
         try {
-            const summary = await chain.readSummary(proposalAccount);
-            const market = summary && summary.market ? summary.market : null;
+            const summary = await chain.readSummary(account);
             if (summary) {
-                const chainStatus = summary.chainStatus || null;
-                const active = chainStatus === 'Active';
-                const entry = {
-                    proposalAccount, lifecycleStatus: fallback.row.lifecycleStatus, chainStatus, bettable: Boolean(market && !market.resolved && active),
-                    canOpenMarket: !market && active,
-                    market: market ? { address: summary.marketAddress, yesPool: market.yesPool, noPool: market.noPool, poolAtomic: BigInt(market.yesPool || 0) + BigInt(market.noPool || 0),
-                        resolved: Boolean(market.resolved), outcome: market.resolved ? (Number(market.outcome) === 1 ? 'yes' : 'no') : null } : null
-                };
-                fallback.row = { ...fallback.row, ...model().row(entry), title: fallback.row.title, proposalId: fallback.row.proposalId, id: fallback.row.id, fromChain: true };
+                const entry = model().chainEntry(account, summary);
+                fallback.row = { ...fallback.row, ...model().row({ ...entry, title: fallback.row.title }), fromChain: true };
             }
             if (summary && summary.wallet) state.positions = { yes: summary.yes || null, no: summary.no || null };
         } catch (error) {
-            console.warn(`[${new Date().toISOString()}] [bets] pool unreadable for ${proposalAccount}`, error);
+            console.warn(`[${new Date().toISOString()}] [bets] pool unreadable for ${account}`, error);
         }
         return fallback;
     }
 
-    async function loadPositions(proposalAccount) {
+    async function loadPositions(account) {
         const bets = sheet();
         if (bets && typeof bets.whenPositions === 'function') { try { await bets.whenPositions(); } catch (_) { /* read below */ } }
-        const known = bets && typeof bets.positionsFor === 'function' ? bets.positionsFor(proposalAccount) : null;
+        const known = bets && typeof bets.positionsFor === 'function' ? bets.positionsFor(account) : null;
         if (known) return known;
         const chain = bridge();
         if (!walletConnected() || !chain || typeof chain.readPositions !== 'function') return null;
         try {
-            const all = await chain.readPositions([proposalAccount]);
-            return all && all[proposalAccount] ? all[proposalAccount] : null;
+            const all = await chain.readPositions([account]);
+            return all && all[account] ? all[account] : null;
         } catch (error) {
             console.warn(`[${new Date().toISOString()}] [bets] positions unreadable`, error);
             return null;
@@ -172,9 +166,9 @@
         return value.startsWith('/') ? `${backendBase()}${value}` : null;
     }
 
-    function linkFor(proposalAccount) {
+    function linkFor(account) {
         const bets = sheet();
-        return bets && typeof bets.linkFor === 'function' ? bets.linkFor(proposalAccount) : null;
+        return bets && typeof bets.linkFor === 'function' ? bets.linkFor(account) : null;
     }
 
     // ---- frame --------------------------------------------------------------------------------
@@ -190,10 +184,10 @@
     // While a bet is open its own link stands in the address bar (/bets/<account>?city=…), so a
     // link copied from there unfurls with the bet's card like "Copy link" does; the other query
     // parameters stay. Closing puts the plain app address back.
-    function showBetAddress(proposalAccount) {
+    function showBetAddress(account) {
         try {
             const url = new URL(root.location.href);
-            url.pathname = `/bets/${proposalAccount}`;
+            url.pathname = `/bets/${account}`;
             url.searchParams.delete('bets');
             const manager = root.CityConfigManager;
             const city = manager && typeof manager.getCurrentCityId === 'function' ? manager.getCurrentCityId() : null;
@@ -228,7 +222,7 @@
         showAppAddress();
         const opener = state.opener;
         state.overlay = null; state.row = null; state.contest = null; state.positions = null; state.opener = null; state.unregisterEscape = null;
-        // Focus goes back where the dialog came from (a Bets row, the market card); the sheet or
+        // Focus goes back where the dialog came from (a Bets row, the agreement panel); the sheet or
         // panel behind stayed open the whole time, so the person lands on the pool, not the bare map.
         const target = opener && opener.isConnected ? opener : doc.querySelector('.map-sheet:not([hidden])');
         if (target && typeof target.focus === 'function') { try { target.focus({ preventScroll: true }); } catch (_) { } }
@@ -279,6 +273,7 @@
         if (row.state === 'resolved-no') return t('bets.row.resolvedNo', 'Settled no');
         if (row.state === 'not-minted') return t('bets.row.notMinted', 'Not minted yet, so no pool');
         if (row.state === 'needs-market') return t('panel.proposal.market.state.needsPool', 'No pool yet');
+        if (row.state === 'closed' && !row.marketAddress) return t('bets.row.closed', 'Not open for bets');
         if (row.oneSided === 'yes') return t('bets.row.onlyYes', 'Only yes bets so far');
         if (row.oneSided === 'no') return t('bets.row.onlyNo', 'Only no bets so far');
         if (row.chanceYes === null || row.chanceYes === undefined) return t('bets.row.noBets', 'No bets yet');
@@ -296,17 +291,19 @@
             : t('bets.contest.land', 'Parcel {{parcel}}', { parcel: label });
     }
 
+    // The pool's lifecycle words (js/proposals/market-view.js lifecycle), from the account's status;
+    // a row the model closed (its deadline passed while the account is still Active) reads as closed.
     function lifecycleWords(row) {
         const v = view();
         if (!v || typeof v.lifecycle !== 'function') return null;
         const marketModel = row.marketAddress ? {
             exists: true, resolved: row.outcome !== null, outcome: row.outcome, yesPool: row.yesPoolAtomic, noPool: row.noPoolAtomic
         } : { exists: false };
-        const words = v.lifecycle(row.chainStatus || 'Unknown', marketModel);
+        const words = v.lifecycle(row.state === 'closed' ? 'closed' : (row.chainStatus || 'unknown'), marketModel);
         return {
             state: t(`panel.proposal.market.state.${words.stateKey}`, words.state),
-            next: t(`panel.proposal.market.next.${words.nextKey}`, words.next),
-            rule: t('panel.proposal.market.rule', words.rule)
+            next: t(`bets.dialog.next.${words.nextKey}`, words.next),
+            rule: t('bets.dialog.rule', words.rule)
         };
     }
 
@@ -330,7 +327,7 @@
         const p = parts();
         const { row, contest, positions } = state;
         if (!p || !row) return;
-        p.title.textContent = row.title || t('bets.row.untitled', 'Untitled proposal');
+        p.title.textContent = questionOf(row);
         disposeCompare();
         p.body.replaceChildren();
         p.footer.replaceChildren();
@@ -342,10 +339,11 @@
         if (land) eyebrow.append(el('span', null, ` · ${land}`));
         p.body.append(eyebrow);
 
-        if (contest && contest.proposalCount > 1) {
+        // Rival agreements over the same land: back to the contest in the Bets sheet.
+        if (contest && contest.agreementCount > 1) {
             const counted = sheet() && typeof sheet().entriesText === 'function'
                 ? sheet().entriesText(contest).join(' · ')
-                : t('agentDialog.proposalCount', '{{count}} proposals', { count: contest.proposalCount });
+                : t('bets.contest.agreementCount', contest.agreementCount === 1 ? '{{count}} agreement' : '{{count}} agreements', { count: contest.agreementCount });
             const rivals = button('cb-link bets-dialog__contest', t('bets.dialog.onThisLandCount', '{{entries}} on this land', { entries: counted }), () => {
                 const id = contest.id;
                 close();
@@ -357,11 +355,11 @@
         const image = absoluteImage(row.screenshotUrl);
         const beforeImage = absoluteImage(row.screenshotBeforeUrl);
         if (image) {
-            const img = el('img', 'bets-dialog__thumb' + (row.kind === 'plan' ? ' bets-dialog__thumb--plan' : ''));
+            const img = el('img', 'bets-dialog__thumb');
             img.src = image; img.alt = ''; img.loading = 'lazy';
-            // The same ground without the proposal under a divider (dividers.md, M3), once rendered.
+            // The input land without the agreement's designs under a divider (dividers.md, M3), once rendered.
             if (beforeImage && root.__MapBeforeAfter && typeof root.__MapBeforeAfter.attachDivider === 'function') {
-                const compare = el('div', 'bets-dialog__compare' + (row.kind === 'plan' ? ' bets-dialog__compare--plan' : ''));
+                const compare = el('div', 'bets-dialog__compare');
                 const before = el('img', 'bets-dialog__thumb map-compare__before');
                 before.src = beforeImage; before.alt = ''; before.loading = 'lazy';
                 compare.append(img, before);
@@ -393,20 +391,19 @@
             fact(t('bets.dialog.paysLabel', 'Pays'), `${t('bets.dialog.yesPays', 'Yes {{multiple}}×', { multiple: row.paysYes.toFixed(2) })} · ${t('bets.dialog.noPays', 'No {{multiple}}×', { multiple: row.paysNo.toFixed(2) })}`);
         }
         if (row.outcome === null) {
-            // Closing a pool and an app-level proposal deadline do not promise a settlement time.
-            if (row.closesAt) fact(t('bets.dialog.marketDeadline', 'Pool closes'), dateText(row.closesAt));
-            else if (row.expiresAt) fact(t('bets.dialog.proposalDeadline', 'Proposal deadline'), dateText(row.expiresAt));
+            // The agreement's deadline ends its chance to execute; it is not a promised settlement time.
+            if (row.deadline) fact(t('bets.dialog.agreementDeadline', 'Agreement deadline'), dateText(row.deadline));
             else fact(t('bets.dialog.settlesLabel', 'Settlement'), t('bets.dialog.noDeadline', 'No deadline set; settlement follows a terminal on-chain status'));
         }
         const author = model() ? model().authorLabel(row.author) : row.author;
-        if (author) fact(t('bets.dialog.authorLabel', 'Proposed by'), row.agent ? `${author} · ${t('panel.proposal.agent.badge', 'Agent proposal')}` : author);
+        if (author) fact(t('bets.dialog.authorLabel', 'Proposed by'), author);
         if (row.createdAt) fact(t('gameDialogs.log.actions.create', 'Created'), dateText(row.createdAt, true));
         if (facts.childElementCount) p.body.append(facts);
 
         const mine = el('p', 'bets-dialog__mine');
         const lines = mineLines(row, positions);
         if (lines.length) mine.textContent = t('panel.proposal.market.yourBets', 'Your bets: {{lines}}', { lines: lines.join('; ') });
-        else if (walletConnected()) mine.textContent = t('panel.proposal.market.noBets', 'You have no bets on this proposal.');
+        else if (walletConnected()) mine.textContent = t('bets.dialog.noBets', 'You have no bets on this agreement.');
         else mine.textContent = t('panel.proposal.market.connectPosition', 'Connect a Solana wallet to see your bets.');
         p.body.append(mine);
 
@@ -417,24 +414,10 @@
             p.body.append(collect);
         }
 
-        // A plan says what it builds: its member proposals, folded so the bet stays the headline.
-        if (row.kind === 'plan' && row.members.length) {
-            const members = el('details', 'bets-dialog__members');
-            members.append(el('summary', null, t('bets.dialog.members', 'Plan membership: {{count}} proposals', { count: row.members.length })));
-            const list = el('ul');
-            row.members.forEach(member => list.append(el('li', null, member.title || member.proposalId)));
-            members.append(list);
-            p.body.append(members);
-        }
-
         const words = lifecycleWords(row);
         if (words) {
             const rule = el('div', 'bets-dialog__rule');
-            // An older plan version's pool can still be open on-chain, but the bet is on the current version.
-            const stateWord = row.superseded && row.state === 'open'
-                ? t('bets.dialog.superseded', 'Older version: new bets go to the current version')
-                : words.state;
-            rule.append(el('strong', null, stateWord), el('span', null, words.next), el('span', null, words.rule));
+            rule.append(el('strong', null, words.state), el('span', null, words.next), el('span', null, words.rule));
             p.body.append(rule);
         }
 
@@ -445,33 +428,31 @@
 
         const links = el('p', 'cb-link-row bets-dialog__links');
         if (row.marketAddress) links.append(explorerLink(t('panel.proposal.market.poolAccount', 'Pool account'), row.marketAddress));
-        links.append(explorerLink(t('panel.proposal.pledge.proposalExplorer', 'Proposal account'), row.proposalAccount));
+        links.append(explorerLink(t('bets.dialog.agreementAccount', 'Agreement account'), row.account));
         p.body.append(links);
 
-        // Footer: pass it on, go to the proposal, and the bet itself.
-        if (linkFor(row.proposalAccount)) {
-            p.footer.append(button('btn btn-quiet', t('bets.copyLink', 'Copy link'), () => sheet().copyLink(row.proposalAccount)));
+        // Footer: pass it on, go to the agreement, and the bet itself.
+        if (linkFor(row.account)) {
+            p.footer.append(button('btn btn-quiet', t('bets.copyLink', 'Copy link'), () => sheet().copyLink(row.account)));
             if (typeof root.navigator.share === 'function') {
                 p.footer.append(button('btn btn-quiet', t('panel.proposal.actions.share', 'Share'), async () => {
-                    try { await root.navigator.share({ title: row.title, url: linkFor(row.proposalAccount) }); } catch (_) { /* dismissed */ }
+                    try { await root.navigator.share({ title: questionOf(row), url: linkFor(row.account) }); } catch (_) { /* dismissed */ }
                 }));
             }
         }
-        if (row.proposalId || row.id) {
-            const openLabel = row.kind === 'plan' ? t('bets.dialog.openPlan', 'Open the plan') : t('gameDialogs.log.row.openProposal', 'Open proposal');
-            p.footer.append(button('btn', openLabel, () => {
+        if (row.cid && sheet() && typeof sheet().openAgreement === 'function') {
+            p.footer.append(button('btn', t('bets.dialog.openAgreement', 'Open the agreement'), () => {
                 const target = row;
                 close();
-                if (sheet() && typeof sheet().openProposal === 'function') sheet().openProposal(target);
+                sheet().openAgreement(target);
             }));
         }
-        // An older plan version is never offered for a new bet or a new pool; settling and collecting stay.
-        if (row.state === 'open' && !row.superseded) {
+        if (row.state === 'open') {
             // The pair takes a footer row of its own, so it never wraps apart from the quiet actions.
             const sides = el('div', 'bets-dialog__sides');
             sides.append(betButton(row, 1), betButton(row, 0));
             p.footer.append(sides);
-        } else if (row.state === 'needs-market' && !row.superseded) {
+        } else if (row.state === 'needs-market') {
             p.footer.append(button('btn btn-primary', t('bets.row.openMarket', 'Open the pool'), event => transact('createMarket', null, event.currentTarget)));
         } else if (row.state === 'settling') {
             p.footer.append(button('btn btn-primary', t('bets.row.settle', 'Settle the pool'), event => transact('resolve', null, event.currentTarget)));
@@ -489,7 +470,7 @@
         });
         node.append(el('strong', 'bets-bet__side', yes ? t('bets.row.yes', 'Yes') : t('bets.row.no', 'No')));
         if (multiple !== null && multiple !== undefined) node.append(el('span', 'bets-bet__pays', t('bets.row.pays', 'Pays {{multiple}}×', { multiple: multiple.toFixed(2) })));
-        node.title = yes ? t('bets.row.yesTitle', 'Bet that the proposal reaches Executed on-chain.') : t('bets.row.noTitle', 'Bet that the proposal reaches Cancelled or Expired on-chain.');
+        node.title = yes ? t('bets.row.yesExecutes', 'Bet that the agreement executes on-chain.') : t('bets.row.noExecutes', 'Bet that the agreement is cancelled or expires on-chain.');
         return node;
     }
 
@@ -499,22 +480,21 @@
         if (!walletConnected()) { askForWallet(); return; }
         const chain = bridge();
         const v = view();
-        const proposalAccount = state.proposalAccount;
+        const account = state.account;
         if (!chain || typeof chain[action] !== 'function') return;
-        const key = `${action}:${proposalAccount}:${side ?? ''}`;
+        const key = `${action}:${account}:${side ?? ''}`;
         if (inFlight.has(key)) return;
         inFlight.add(key);
         if (trigger) trigger.disabled = true;
         try {
-            const result = await chain[action]({ proposal: proposalAccount, ...(side === null ? {} : { side: sideValue(side) }), onStatus: item => setStatus(v ? v.statusText(item) : '', item.explorerUrl) });
+            const result = await chain[action]({ proposal: account, ...(side === null ? {} : { side: sideValue(side) }), onStatus: item => setStatus(v ? v.statusText(item) : '', item.explorerUrl) });
             setStatus(v ? v.confirmedText() : '', result.explorerUrl);
             const wallet = walletAddress();
             const message = action === 'claim' ? t('panel.proposal.market.collectedMessage', 'Collected {{side}} winnings.', { side: sideWord(side) })
                 : action === 'createMarket' ? t('panel.proposal.market.historyOpened', 'Opened the pool')
-                    : t('panel.proposal.market.settledMessage', "Settled from the proposal's on-chain status.");
-            await recordSupport({ wallet, action, proposalId: proposalAccount, result, message: `${actorName(wallet)}: ${message}` });
-            announceChange(proposalAccount);
-            refreshCard(proposalAccount);
+                    : t('bets.dialog.settledMessage', "Settled from the agreement's on-chain status.");
+            await recordSupport({ wallet, action, proposalId: account, result, message: `${actorName(wallet)}: ${message}` });
+            announceChange(account);
             await refresh();
             setStatus(message, result.explorerUrl);
         } catch (error) {
@@ -529,15 +509,15 @@
     // Re-read the row past the server's cache and draw the overview again (after a bet or a
     // collection, or when something else changed the pool while the dialog is open).
     async function refresh() {
-        const proposalAccount = state.proposalAccount;
+        const account = state.account;
         const bets = sheet();
         if (bets && typeof bets.load === 'function') { try { await bets.load({ force: true, fresh: true }); } catch (_) { /* the row below says so */ } }
-        if (state.proposalAccount !== proposalAccount || !state.overlay) return;
-        const found = await loadRow(proposalAccount, { title: state.row ? state.row.title : '' });
-        if (state.proposalAccount !== proposalAccount || !state.overlay) return;
+        if (state.account !== account || !state.overlay) return;
+        const found = await loadRow(account, { title: state.row ? state.row.title : '' });
+        if (state.account !== account || !state.overlay) return;
         state.row = found.row; state.contest = found.contest;
-        state.positions = await loadPositions(proposalAccount) || state.positions;
-        if (state.proposalAccount === proposalAccount && state.overlay && state.overlay.querySelector('.bets-dialog').dataset.state === 'overview') renderOverview();
+        state.positions = await loadPositions(account) || state.positions;
+        if (state.account === account && state.overlay && state.overlay.querySelector('.bets-dialog').dataset.state === 'overview') renderOverview();
     }
 
     // ---- stake form ---------------------------------------------------------------------------
@@ -554,8 +534,8 @@
         p.body.replaceChildren();
         p.footer.replaceChildren();
 
-        if (row.title) p.body.append(el('p', 'bets-dialog__lead', row.title));
-        p.body.append(el('p', 'bets-dialog__copy', yes ? t('bets.row.yesTitle', 'Bet that the proposal reaches Executed on-chain.') : t('bets.row.noTitle', 'Bet that the proposal reaches Cancelled or Expired on-chain.')));
+        p.body.append(el('p', 'bets-dialog__lead', questionOf(row)));
+        p.body.append(el('p', 'bets-dialog__copy', yes ? t('bets.row.yesExecutes', 'Bet that the agreement executes on-chain.') : t('bets.row.noExecutes', 'Bet that the agreement is cancelled or expires on-chain.')));
 
         const field = el('label', 'bets-dialog__amount');
         field.append(el('span', 'bets-dialog__amount-label', t('bets.dialog.amount', 'Amount')));
@@ -631,23 +611,22 @@
         const rawAmount = input ? input.value : '';
         let amount;
         try { amount = v.parseUsdc(rawAmount); } catch (error) { setStatus(error.message); return; }
-        const proposalAccount = state.proposalAccount;
+        const account = state.account;
         const wallet = walletAddress() || 'wallet';
-        const key = `stake:${proposalAccount}:${wallet}:${sideValue(side)}`;
+        const key = `stake:${account}:${wallet}:${sideValue(side)}`;
         if (inFlight.has(key)) return;
         inFlight.add(key);
         if (submit) submit.disabled = true;
         try {
-            const result = await bridge().stake({ proposal: proposalAccount, side: sideValue(side), amount, onStatus: item => setStatus(v.statusText(item), item.explorerUrl) });
+            const result = await bridge().stake({ proposal: account, side: sideValue(side), amount, onStatus: item => setStatus(v.statusText(item), item.explorerUrl) });
             setStatus(v.confirmedText(), result.explorerUrl);
             // The receipt first, then everything behind it: the Bets sheet re-reads its pools, the
-            // Details card re-reads this one, the status bar keeps the line, the activity feed gets the bet.
+            // status bar keeps the line, the activity feed gets the bet.
             renderPlaced(side, amount, v.confirmedText(), result.explorerUrl);
-            announceChange(proposalAccount);
-            refreshCard(proposalAccount);
+            announceChange(account);
             const placedLine = t('panel.proposal.market.placedLine', '{{amount}} on {{side}} is in the pool.', { amount: moneyAtomic(amount), side: sideWord(side) });
             if (typeof root.updateStatus === 'function') root.updateStatus(placedLine);
-            await recordSupport({ wallet, action: 'stake', proposalId: proposalAccount, amount: rawAmount, result, message: `${actorName(wallet)} bet ${rawAmount} USDC on ${sideWord(side)}.` });
+            await recordSupport({ wallet, action: 'stake', proposalId: account, amount: rawAmount, result, message: `${actorName(wallet)} bet ${rawAmount} USDC on ${sideWord(side)}.` });
         } catch (error) {
             setStatus(v.errorText(error), error && error.explorerUrl);
         } finally {
@@ -659,7 +638,7 @@
     // ---- receipt ------------------------------------------------------------------------------
 
     // After a confirmed bet the dialog becomes the receipt: what went in, the pool as it now stands
-    // (read back from the chain, not assumed), the wallet's bets on this proposal, the bet's link
+    // (read back from the chain, not assumed), the wallet's bets on this agreement, the bet's link
     // and Done. It stays until the person closes it; the surfaces behind it have already refreshed.
     function renderPlaced(side, amount, confirmedText, explorerUrl) {
         const p = parts();
@@ -682,8 +661,8 @@
         p.body.append(status);
         setStatus(confirmedText, explorerUrl);
 
-        if (linkFor(row.proposalAccount)) {
-            const share = button('btn', t('bets.copyLink', 'Copy link'), () => sheet().copyLink(row.proposalAccount));
+        if (linkFor(row.account)) {
+            const share = button('btn', t('bets.copyLink', 'Copy link'), () => sheet().copyLink(row.account));
             share.setAttribute('data-market-link', '');
             p.footer.append(share);
         }
@@ -692,7 +671,7 @@
         p.footer.append(done);
         done.focus();
 
-        Promise.resolve(bridge().readSummary(row.proposalAccount)).then(summary => {
+        Promise.resolve(bridge().readSummary(row.account)).then(summary => {
             if (!pool.isConnected) return;
             const marketModel = v.model(summary && summary.market, { yes: summary && summary.yes, no: summary && summary.no });
             if (!marketModel.exists) { pool.remove(); return; }
@@ -713,37 +692,37 @@
             const lines = mineLines(row, { yes: marketModel.yesPosition, no: marketModel.noPosition });
             if (lines.length) pool.append(el('p', 'proposal-market-placed__mine', t('panel.proposal.market.yourBets', 'Your bets: {{lines}}', { lines: lines.join('; ') })));
         }).catch(error => {
-            console.warn(`[${new Date().toISOString()}] [bets] pool unreadable after the bet on ${row.proposalAccount}:`, error);
+            console.warn(`[${new Date().toISOString()}] [bets] pool unreadable after the bet on ${row.account}:`, error);
             pool.remove();
         });
     }
 
     // ---- open ---------------------------------------------------------------------------------
 
-    // Open the bet's dialog; with `side` (1/0 or 'yes'/'no') straight into the stake form, as the
-    // Yes/No buttons on a row and the Details card do. `title`, `proposalId`, `id` describe a
-    // proposal the city list may not carry yet (the Details card's own proposal).
+    // Open the bet's dialog of an agreement account; with `side` (1/0 or 'yes'/'no') straight into the
+    // stake form, as the Yes/No buttons on a row do. `title` names an agreement the city list may not
+    // carry yet (one just minted, opened from its panel).
     async function openBetDialog(options = {}) {
-        const proposalAccount = options && options.proposalAccount ? String(options.proposalAccount) : null;
-        if (!proposalAccount) return null;
+        const account = options && options.account ? String(options.account) : null;
+        if (!account) return null;
         const side = options.side === undefined || options.side === null ? null : sideValue(options.side);
         if (side !== null && !walletConnected()) { askForWallet(); return null; }
         const overlay = mount(options.title || t('panel.proposal.market.historyBet', 'Bet'));
-        state.proposalAccount = proposalAccount;
+        state.account = account;
         state.row = null; state.contest = null; state.positions = null;
-        showBetAddress(proposalAccount);
+        showBetAddress(account);
         const p = parts();
         p.body.append(el('p', 'bets-status', t('bets.loading', 'Loading bets…')));
         try { p.dialog.focus({ preventScroll: true }); } catch (_) { }
-        const found = await loadRow(proposalAccount, options);
+        const found = await loadRow(account, options);
         if (state.overlay !== overlay) return overlay;
         state.row = found.row;
         state.contest = found.contest;
-        state.positions = await loadPositions(proposalAccount) || state.positions;
+        state.positions = await loadPositions(account) || state.positions;
         if (state.overlay !== overlay) return overlay;
-        // Only an open pool takes a new bet: a link with a side to an older plan version, or to a pool
-        // that is settling or settled, lands on its overview.
-        if (side !== null && !state.row.superseded && state.row.state === 'open') renderStake(side); else renderOverview();
+        // Only an open pool takes a new bet: a link with a side to a pool that is settling or settled
+        // lands on its overview.
+        if (side !== null && state.row.state === 'open') renderStake(side); else renderOverview();
         return overlay;
     }
 

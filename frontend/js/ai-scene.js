@@ -28,39 +28,40 @@
     }
 
     // --- Share plumbing -------------------------------------------------------------------------
-    // The shared link rides the existing /proposals/<ids> deep-link (which already applies those
-    // proposals); ?scene=<slug> only adds the AI image + camera restore on top. So sharing needs:
-    // the applied proposals' SERVER serial ids (for the path), the camera pose, and city/lang.
+    // The shared link rides the /designs/<cid>,<cid> link (which imports and applies those designs);
+    // ?scene=<slug> only adds the AI image + camera restore on top. So sharing needs: the applied
+    // designs' published CIDs (for the path), the camera pose, and city/lang.
 
     let currentShareUrl = null;
 
-    // The serial ids of every applied proposal, in the order storage returns them.
-    function collectAppliedProposals() {
+    // The published CID of every applied design, in the order storage returns them. A design that
+    // is not published (DesignSync.publishedCid is null for it) cannot be linked, so it is left out.
+    function collectAppliedDesigns() {
         const storage = window.proposalStorage;
         if (!storage || typeof storage.getAllProposals !== 'function') return [];
         const isApplied = window.isApplied;
-        const getSerial = window.getSerialProposalId;
+        const publishedCid = window.DesignSync && window.DesignSync.publishedCid;
         const seen = new Set();
         const out = [];
         (storage.getAllProposals() || []).forEach(p => {
             if (typeof isApplied === 'function' && !isApplied(p)) return;
-            const sid = (typeof getSerial === 'function') ? getSerial(p) : null;
-            if (sid == null) return;
-            const s = String(sid);
-            if (!seen.has(s)) { seen.add(s); out.push({ proposal: p, serialId: s }); }
+            const cid = (typeof publishedCid === 'function') ? publishedCid(p) : null;
+            if (!cid || seen.has(cid)) return;
+            seen.add(cid);
+            out.push({ proposal: p, cid });
         });
         return out;
     }
 
-    // Narrow the applied set to the proposals whose footprint was inside the capture camera's view —
+    // Narrow the applied set to the designs whose footprint was inside the capture camera's view —
     // the picture rarely shows the whole plan, so the link should not re-apply it. Returns the full
-    // applied id list unchanged whenever the frustum can't be built or the filter finds nothing (an
+    // applied CID list unchanged whenever the frustum can't be built or the filter finds nothing (an
     // empty share link would be worse than an over-broad one), so this only ever narrows on a
     // confident, non-empty result.
-    function collectAppliedSerialIds() {
+    function collectAppliedDesignCids() {
         try {
-            const applied = collectAppliedProposals();
-            const allIds = applied.map(a => a.serialId);
+            const applied = collectAppliedDesigns();
+            const allIds = applied.map(a => a.cid);
             const frustum = window.__aiSceneFrustum;
             const internals = (typeof window.getThreeModeInternals === 'function')
                 ? window.getThreeModeInternals() : null;
@@ -83,7 +84,7 @@
                     const sets = collectProposalFeatureSets(a.proposal) || {};
                     features = Array.isArray(sets.primaryFeatures) ? sets.primaryFeatures : [];
                 } catch (_) { features = []; }
-                return { id: a.serialId, features };
+                return { id: a.cid, features };
             });
             const inView = frustum.proposalsInView(proposalsWithFeatures, {
                 elements: viewProj.elements,
@@ -91,7 +92,7 @@
             });
             return (Array.isArray(inView) && inView.length) ? inView : allIds;
         } catch (_) {
-            try { return collectAppliedProposals().map(a => a.serialId); } catch (__) { return []; }
+            try { return collectAppliedDesigns().map(a => a.cid); } catch (__) { return []; }
         }
     }
 
@@ -122,9 +123,9 @@
         return window.CityConfigManager?.getCurrentCityId?.() || null;
     }
 
-    function buildShareUrl(slug, appliedSerialIds) {
+    function buildShareUrl(slug, appliedCids) {
         const base = frontendBaseUrl();
-        const path = (appliedSerialIds && appliedSerialIds.length) ? `/proposals/${appliedSerialIds.join(',')}` : '/';
+        const path = (appliedCids && appliedCids.length) ? window.DesignSync.designsPath(appliedCids) : '/';
         const cur = new URLSearchParams(window.location.search);
         const parts = [];
         const backend = cur.get('backend'); // preserve local-dev backend override so the link works locally
@@ -224,7 +225,7 @@
                 body: JSON.stringify({
                     image: renderDataUrl,
                     focusProposalId: cap.focusProposalId || null,
-                    proposalIds: cap.appliedSerialIds || [],
+                    proposalIds: cap.appliedCids || [],
                     view: cap.view || null,
                     city: currentCity(),
                     lang: currentLang(),
@@ -235,7 +236,7 @@
             const data = await resp.json().catch(() => ({}));
             if (!resp.ok) throw new Error(data.error || ('HTTP ' + resp.status));
 
-            currentShareUrl = buildShareUrl(data.slug, cap.appliedSerialIds || []);
+            currentShareUrl = buildShareUrl(data.slug, cap.appliedCids || []);
             tweetBtn.href = `https://twitter.com/intent/tweet?text=${encodeURIComponent(t('threeMode.ai.tweetText', 'Photorealistic view of my urban proposal'))}&url=${encodeURIComponent(currentShareUrl)}`;
             copyBtn.hidden = tweetBtn.hidden = false;
             shareBtn.hidden = !navigator.share; // native share only where supported
@@ -490,13 +491,13 @@
         const summary = (typeof window.getThreeSceneSummary === 'function') ? window.getThreeSceneSummary() : {};
         summary.hasHeightMap = !!(height && height.image);
         summary.maxHeightM = height ? height.maxHeightM : null;
-        // Camera + applied proposals captured HERE, in the same frame as the screenshot, so a
+        // Camera + applied designs captured HERE, in the same frame as the screenshot, so a
         // follower can be dropped into the exact same world and shot the render was made from.
         const view = (typeof window.getThree3DGeoView === 'function') ? window.getThree3DGeoView() : null;
-        const appliedSerialIds = collectAppliedSerialIds();
+        const appliedCids = collectAppliedDesignCids();
         lastCapture = {
             image, heightMap: height ? height.image : null, summary,
-            view, appliedSerialIds, focusProposalId: appliedSerialIds[0] || null
+            view, appliedCids, focusProposalId: appliedCids[0] || null
         };
 
         ensureOverlay();

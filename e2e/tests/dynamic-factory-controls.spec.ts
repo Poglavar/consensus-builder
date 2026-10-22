@@ -4,34 +4,26 @@ import { clickMapPoint, createBuilding, createSpace, drawCorridor, openCity, ope
 import { connectWalletByConnectorId, injectMockSolanaWallet, waitForBlockchainRuntime } from '../helpers/blockchain';
 import { selectNativeOption } from '../helpers/controls';
 import { surveyResponse } from '../helpers/mocks/survey-data';
-import { installSolanaProposalAccount } from '../helpers/solana-proposal-account';
+import { pageIndex } from '../helpers/mocks/shared-server';
+import { fileIndexedAgreement, MINTED_ACCOUNT, OPEN_POOL } from '../helpers/agreements';
+import { encodeAgreementAccount } from '../helpers/agreement-chain';
 
-const BET_ACCOUNT = 'Ekpt4qMsJWyyraDfPfq2zkT1JwMsJCKrSmkoNGgHreFR';
+const BET_ACCOUNT = MINTED_ACCOUNT;
 const BET_WALLET = 'Cp886ML2Ja4FF3SMmyUeW16rRGsLrBcRW8kfWS1VfN7W';
 
-function settledMarkets(outcome: 'yes' | 'no' = 'no') {
-  const chainStatus = outcome === 'yes' ? 'Executed' : 'Cancelled';
-  const market = {
-    address: 'HQqbGtviQr5KRs4x8CWSCVhnkrLKDiYqXmVSBY8GZdfw', yesPool: '250000', noPool: '50000',
-    poolAtomic: '300000', resolved: true, outcome,
-  };
-  const proposal = {
-    id: 789, proposalId: 'minted-one', title: 'Plan-led infill', goal: 'single', lifecycleStatus: chainStatus, chainStatus,
-    createdAt: '2026-10-01T09:30:00Z', expiresAt: null, author: 'densifier-01', agent: true,
-    proposalRole: null, screenshotUrl: null, parcelIds: ['HR-335614-2311'], proposalAccount: BET_ACCOUNT,
-    bettable: false, canOpenMarket: false, market,
-  };
-  return {
-    city: 'zagreb', generatedAt: '2026-10-09T07:00:00.000Z', cluster: 'devnet', stakeDecimals: 6,
-    marketProgram: 'GDYnzduynKhKgxDhvvKVarn2s23DtzA26s6hycuUYDRB', stakeMint: '4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU',
-    summary: { contests: 1, proposals: 1, markets: 1, openMarkets: 0, poolAtomic: '300000' },
-    contests: [{ id: 'c-settled', parcelIds: proposal.parcelIds, proposalCount: 1, mintedCount: 1,
-      marketCount: 1, openMarketCount: 0, poolAtomic: '300000', latestCreatedAt: '2026-10-02T00:00:00Z', proposals: [proposal] }],
-  };
+// A minted agreement whose pool settled: the index lists it under GET /markets (helpers/mocks/
+// shared-server.ts) with its chain status and the pool the chain holds, Executed for a yes outcome,
+// Cancelled for no.
+function fileSettledAgreement(page: import('@playwright/test').Page, outcome: 'yes' | 'no'): void {
+  fileIndexedAgreement(pageIndex(page), {
+    title: 'Plan-led infill', designTitles: ['Infill block'], areaM2: 500,
+    minted: { sponsor: BET_WALLET, status: outcome === 'yes' ? 'executed' : 'cancelled', decision: outcome === 'yes' ? 'satisfied' : 'pending' },
+    pool: { ...OPEN_POOL, resolved: true, outcome },
+  });
 }
 
 async function prepareWinningsPage(page: import('@playwright/test').Page, side: 'yes' | 'no' = 'no'): Promise<void> {
-  await page.route('**/markets?*', route => route.fulfill({ json: settledMarkets(side) }));
+  fileSettledAgreement(page, side);
   await injectMockSolanaWallet(page, { publicKey: BET_WALLET, providerName: 'phantom' });
   await openCity(page);
   await connectWalletByConnectorId(page, 'solana-phantom');
@@ -106,7 +98,31 @@ async function prepareWinningsPage(page: import('@playwright/test').Page, side: 
     w.__betClaimExpectedPosition = position.toBase58();
     w.SolanaChainDataLoader.getConnection = () => connection;
   }, { account: BET_ACCOUNT, wallet: BET_WALLET, side });
-  await installSolanaProposalAccount(page, { proposal: BET_ACCOUNT, owner: BET_WALLET, status: side === 'yes' ? 1 : 2 });
+  await installAgreementAccount(page, { account: BET_ACCOUNT, sponsor: BET_WALLET, status: side === 'yes' ? 1 : 2 });
+}
+
+// The market's subject on chain (market-bridge.js readChainStatus): the agreement account at
+// `account` (bytes from helpers/agreement-chain.ts), owned by the agreement program, in its status
+// (1 Executed, 2 Cancelled), added to the connection installed above, which also answers as devnet
+// (getVerifiedConnection checks the genesis).
+async function installAgreementAccount(page: import('@playwright/test').Page, options: { account: string; sponsor: string; status: number }): Promise<void> {
+  const bytes = encodeAgreementAccount({
+    cid: `bafkrei${'c'.repeat(52)}`, authority: options.sponsor, lens: options.sponsor, payout: options.sponsor,
+    status: options.status, decision: options.status === 1 ? 1 : 0,
+  });
+  await page.evaluate(({ account, status, bytes, genesisHash }) => {
+    const w = window as any;
+    const web3 = w.solanaWeb3;
+    const client = w.AgreementClient;
+    const connection = w.SolanaChainDataLoader.getConnection('devnet');
+    const data = Uint8Array.from(bytes);
+    if (data[client.AGREEMENT_OFFSETS.status] !== status) throw new Error('The agreement fixture does not put its status at the program offset.');
+    const owner = new web3.PublicKey(client.constants.AGREEMENT_PROGRAM_ID);
+    const getAccountInfo = connection.getAccountInfo.bind(connection);
+    connection.getGenesisHash = async () => genesisHash;
+    connection.getAccountInfo = async (address: any, ...args: any[]) => (address?.toBase58?.() === account
+      ? { data, owner } : getAccountInfo(address, ...args));
+  }, { account: options.account, status: options.status, bytes: Array.from(bytes), genesisHash: 'EtWTRABZaYq6iMfeYKouRu166VU2xqa1wcaWoxPkrZBG' });
 }
 
 const ADJACENT_PARCEL_ID = 'HR-335754-1235';

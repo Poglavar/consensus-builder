@@ -15,7 +15,6 @@
       "roadProposals": 0,
       "parkingProposals": 0,
       "includedRoadLengthM": 0,
-      "planSlug": "pionir-borongajska-caviceva",
       "reason": "The proposal is permit-derived rather than an observed completed site.",
       "manifest": "borongajska-caviceva/plan.json",
       "roadCandidates": [],
@@ -27,7 +26,6 @@
       "roadProposals": 1,
       "parkingProposals": 0,
       "includedRoadLengthM": 402.29891012820394,
-      "planSlug": "pionir-folnegoviceva-rapska",
       "reason": null,
       "manifest": "folnegoviceva-rapska/plan.json",
       "roadCandidates": [
@@ -115,7 +113,6 @@
       "roadProposals": 0,
       "parkingProposals": 0,
       "includedRoadLengthM": 0,
-      "planSlug": "pionir-lovinciceva-4090-1",
       "reason": "The proposal is permit-derived rather than an observed completed site.",
       "manifest": "lovinciceva-4090-1/plan.json",
       "roadCandidates": [],
@@ -127,7 +124,6 @@
       "roadProposals": 2,
       "parkingProposals": 0,
       "includedRoadLengthM": 199.4268678186653,
-      "planSlug": "pionir-lovinciceva-f1-f5",
       "reason": null,
       "manifest": "lovinciceva-f1-f5/plan.json",
       "roadCandidates": [
@@ -176,7 +172,6 @@
       "roadProposals": 0,
       "parkingProposals": 0,
       "includedRoadLengthM": 0,
-      "planSlug": "pionir-pergosiceva-a1-a4",
       "reason": "No OSM surface component passed the geometry and building-overlap gates.",
       "manifest": "pergosiceva-a1-a4/plan.json",
       "roadCandidates": [
@@ -213,7 +208,6 @@
       "roadProposals": 1,
       "parkingProposals": 0,
       "includedRoadLengthM": 36.50160549651738,
-      "planSlug": "pionir-savica-f1-f3",
       "reason": null,
       "manifest": "savica-f1-f3/plan.json",
       "roadCandidates": [
@@ -250,7 +244,6 @@
       "roadProposals": 2,
       "parkingProposals": 1,
       "includedRoadLengthM": 101.07282321466563,
-      "planSlug": "pionir-selska-bastijanova-viteziceva",
       "reason": null,
       "manifest": "selska-bastijanova-viteziceva/plan.json",
       "roadCandidates": [
@@ -582,7 +575,6 @@
       "roadProposals": 0,
       "parkingProposals": 0,
       "includedRoadLengthM": 0,
-      "planSlug": "pionir-selska-drniska",
       "reason": "No OSM surface component passed the geometry and building-overlap gates.",
       "manifest": "selska-drniska/plan.json",
       "roadCandidates": [
@@ -643,7 +635,6 @@
       "roadProposals": 3,
       "parkingProposals": 2,
       "includedRoadLengthM": 527.1158550135797,
-      "planSlug": "pionir-spansko-c-d",
       "reason": null,
       "manifest": "spansko-c-d/plan.json",
       "roadCandidates": [
@@ -841,7 +832,6 @@
       "roadProposals": 0,
       "parkingProposals": 0,
       "includedRoadLengthM": 0,
-      "planSlug": "pionir-spansko-sjever-a-f",
       "reason": "The proposal is permit-derived rather than an observed completed site.",
       "manifest": "spansko-sjever-a-f/plan.json",
       "roadCandidates": [],
@@ -853,7 +843,6 @@
       "roadProposals": 1,
       "parkingProposals": 0,
       "includedRoadLengthM": 427.80550245200897,
-      "planSlug": "pionir-spansko-stenjevecki-odvojak",
       "reason": null,
       "manifest": "spansko-stenjevecki-odvojak/plan.json",
       "roadCandidates": [
@@ -962,7 +951,6 @@
       "roadProposals": 0,
       "parkingProposals": 0,
       "includedRoadLengthM": 0,
-      "planSlug": "pionir-zagrebacka-avenija-rudes",
       "reason": "The proposal is permit-derived rather than an observed completed site.",
       "manifest": "zagrebacka-avenija-rudes/plan.json",
       "roadCandidates": [],

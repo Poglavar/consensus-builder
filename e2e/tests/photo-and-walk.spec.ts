@@ -3,6 +3,7 @@ import { openCity, createSpace } from '../helpers/runtime';
 import { mockPhotoTiles } from '../helpers/mocks/photo-data';
 import { mockBuildingScene } from '../helpers/mocks/building-data';
 import { openAndClosePopup } from '../helpers/controls';
+import { pageIndex } from '../helpers/mocks/shared-server';
 
 test('walk chooses a real 3D ground point, cancels with Escape, and opens the configured walking map', async ({ mockApi: page, context }) => {
   await mockBuildingScene(page);
@@ -36,12 +37,18 @@ test('walk requires publishing local applied proposals and cancelling preserves 
   await page.locator('#mode-3d-toggle').click();
   await expect(page.locator('#three-container canvas')).toBeVisible();
   await page.locator('#mode-walk-toggle').click();
-  await expect(page.locator('.share-modal-overlay')).toBeVisible();
-  await expect(page.locator('.share-modal-overlay')).toContainText(/upload|publish/i);
+  // The walk view loads published designs only: the gate offers to publish the applied park first.
+  const gate = page.locator('.share-modal-overlay');
+  await expect(gate).toBeVisible();
+  await expect(gate.locator('.cb-dialog__title')).toHaveText('Publish before walking');
+  await expect(gate.locator('.walk-upload-gate__row')).toHaveCount(1);
+  await expect(gate.getByRole('button', { name: 'Publish all', exact: true })).toBeVisible();
   await page.locator('.share-modal .close-circle-btn').click();
   await expect(page.locator('.share-modal-overlay')).toBeHidden();
   await expect(page.locator('#three-container canvas')).toBeVisible();
   expect(await page.evaluate(() => (window as any).proposalStorage.getAllProposals().filter((p: any) => p.applied).length)).toBe(1);
+  // Closing the gate published nothing.
+  expect(pageIndex(page).requests.filter(request => request.method === 'POST')).toEqual([]);
 });
 
 test('Photo view enters the actual tiles renderer and returning to 2D releases its scene', async ({ mockApi: page }) => {

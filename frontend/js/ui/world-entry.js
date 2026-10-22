@@ -107,13 +107,13 @@
         state.landing = true;
         log(`${input.explore ? 'explore' : 'open ' + input.cityId} at ${input.point.lat.toFixed(4)},${input.point.lon.toFixed(4)} -> `
             + `${decision.cityId} ${decision.inPlace ? 'in place' : 'by reload'} (${Model.formatAt(decision.view)}${decision.carryAt ? ', via ?at=' : ''})`);
-        // A city pick arrives on that city's latest proposal, in 3D (js/world/arrival.js); the lookup
-        // runs during the flight. No proposal, or a failed lookup, lands on the city as before. A pick
-        // of a particular spot lands on that spot (Model.arrivesAtLatest).
+        // A city pick arrives on that city's latest published design, in 3D (js/world/arrival.js); the
+        // lookup runs during the flight. No design, or a failed lookup, lands on the city as before. A
+        // pick of a particular spot lands on that spot (Model.arrivesAtLatest).
         const latest = !Model.arrivesAtLatest(decision) || !global.WorldArrival
             ? Promise.resolve(null)
-            : global.WorldArrival.fetchLatestProposalId(decision.cityId).catch(error => {
-                console.warn(`[${new Date().toISOString()}] [world-entry] latest proposal lookup failed`, error);
+            : global.WorldArrival.fetchLatestDesignCid(decision.cityId).catch(error => {
+                console.warn(`[${new Date().toISOString()}] [world-entry] latest design lookup failed`, error);
                 return null;
             });
         return global.WorldView.flyTo(input.point).then(async camera => {
@@ -187,7 +187,7 @@
         if (state.opening) return state.opening;
         state.focus = focus;
         try { if (global.MapShell && typeof global.MapShell.closeSheets === 'function') global.MapShell.closeSheets(); } catch (_) { /* no sheet open */ }
-        try { if (global.ParcelMenu && typeof global.ParcelMenu.close === 'function') global.ParcelMenu.close(); } catch (_) { /* no menu */ }
+        global.ClickStack?.close();
         const map = global.map;
         let initialView;
         if (focus) initialView = { lat: focus.lat, lon: focus.lon };
@@ -435,7 +435,7 @@
             const userInitiated = Date.now() <= state.userZoomIntentUntil;
             state.userZoomIntentUntil = 0;
             const blocked = !!(global.WorldView && (global.WorldView.isOpen() || state.opening))
-                || state.landing || state.bootOpen || global.roadDrawingMode === true || !!global.sharePlanMode
+                || state.landing || state.bootOpen || global.roadDrawingMode === true || !!global.MapPick?.active()
                 || !!global.suppressCameraMoves || !!(global.WorldProposalEntry && global.WorldProposalEntry.isOpening && global.WorldProposalEntry.isOpening())
                 || doc.body.classList.contains('three-mode-active') || doc.body.classList.contains('realistic-mode-active')
                 || !!(global.MapShell && global.MapShell.isBlockingDialogOpen && global.MapShell.isBlockingDialogOpen());

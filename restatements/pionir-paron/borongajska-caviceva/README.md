@@ -22,11 +22,13 @@ The other two source polygons are deliberately excluded: `.7190` is a small auxi
 
 [`observed-context.geojson`](observed-context.geojson) records the current DGU state inside that 2022 area: A1 and A2, the transformer and the shared underground garage. It is context only; current DGU data may lag construction.
 
-The local proposal row is `1089`, proposal id `pionir-borongajska-caviceva-location-permit-2022`, and remains unapplied. Rebuild it with:
+Rebuild the canonical archive (and the current DGU context) with:
 
 ```sh
-node backend/scripts/seed-borongaj-proposal.mjs --apply --export
+node backend/scripts/seed-borongaj-proposal.mjs --export
 ```
+
+Publish it as designs plus the project's agreement with `backend/scripts/publish-restatement-archives.mjs` ([collection README](../README.md#publishing-designs-and-agreements)).
 
 ## Legal/design chronology
 

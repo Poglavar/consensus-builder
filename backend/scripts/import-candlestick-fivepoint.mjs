@@ -1,12 +1,15 @@
 #!/usr/bin/env node
-// Recreates the approved FivePoint plan for Candlestick Point (2024 Modified Project Variant) as a
-// named plan of Freeform buildings: massing read off the plan's own height map and block plan — connected pieces per
-// height zone of each development block (40–180 ft), eleven tower boxes A–K at their encouraged
-// locations (220–420 ft), mid-block breaks kept open. Each footprint is its own Freeform proposal;
-// the proposals are grouped in one named plan. Published through the normal API.
-// Without --apply nothing is posted: the conversion is validated, summarized and written to --out.
+// Recreates the approved FivePoint plan for Candlestick Point (2024 Modified Project Variant) as building
+// designs: massing read off the plan's own height map and block plan — connected pieces per height zone of
+// each development block (40–180 ft), eleven tower boxes A–K at their encouraged locations (220–420 ft),
+// mid-block breaks kept open. Each footprint is its own Freeform design (goal and typology 'single', so it
+// forms its own parcel when applied); all of them are published with one agreement through
+// lib/restatement-publish.mjs. --dry-run builds and prints the design objects without network access.
 //
-//   node scripts/import-candlestick-fivepoint.mjs [--apply]
+//   node scripts/import-candlestick-fivepoint.mjs --dry-run
+//   node scripts/import-candlestick-fivepoint.mjs --designs --api <api> [--origin <app>] --apply
+//   node scripts/import-candlestick-fivepoint.mjs --capture --app <app> --api <api>
+//   node scripts/import-candlestick-fivepoint.mjs --agreement --api <api> [--origin <app>] [--app <app>] --apply
 //
 // Inputs and provenance: scripts/data/candlestick/README.md (the fivepoint/ layers).
 
@@ -14,20 +17,19 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { createHash } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
-import { parseArgs } from 'node:util';
 import * as turf from '@turf/turf';
-import { canonicalSeedRecord } from './lib/canonical-seed-record.mjs';
 import { partitionBuildingFootprints, polygonBuildingParts } from './lib/building-import-geometry.mjs';
-import { DEFAULTS as COMMON, bboxOf, publish, publishNamedPlan } from './lib/candlestick-common.mjs';
+import { CITY, PARCEL_SOURCE_ID, bboxOf, groundFile } from './lib/candlestick-common.mjs';
+import { log, runRestatementCli } from './lib/restatement-publish.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
-const DEFAULTS = Object.freeze({
-    ...COMMON,
-    layers: path.join(HERE, 'data/candlestick/fivepoint'),
-    proposalId: 'sf-candlestick-fivepoint-2024',
-    planSlug: 'candlestick-fivepoint-2024',
-    out: path.join(HERE, '../../output/candlestick-fivepoint-proposal.json')
-});
+const LAYERS = path.join(HERE, 'data/candlestick/fivepoint');
+export const PLAN_KEY = 'candlestick-fivepoint';
+export const PLAN_TITLE = 'Candlestick Point as approved (FivePoint, 2024 plan): 7,218 homes, 11 towers up to 420 ft';
+export const AUTHOR = 'FivePoint (approved plan)';
+// The figures give only a month (FEIR Addendum 7, August 2024), so the designs carry the day this massing
+// was digitized from them.
+export const AUTHORED_AT = '2026-10-09T00:00:00.000Z';
 const FT = 0.3048;
 const FLOOR_M = 3.2;            // storeys ≈ height / 3.2 m (residential floor-to-floor)
 const ZONE_INSET_M = 1.5;       // keeps neighbouring zones from sharing an edge in the massing
@@ -37,53 +39,6 @@ const SOURCE_LINKS = Object.freeze({
     ocii: 'https://sfocii.org/projects/hunters-point-shipyard-candlestick-point-2/overview',
     documents: 'https://sfocii.org/projects/hunters-point-shipyard-candlestick-point-2/document-library'
 });
-
-const log = (message) => console.log(`[${new Date().toISOString()}] ${message}`);
-
-function usage(code = 0) {
-    console.log([
-        'Usage: node scripts/import-candlestick-fivepoint.mjs [options]',
-        '',
-        `  --layers <dir>            The digitized plan layers (default ${path.relative(process.cwd(), DEFAULTS.layers)}).`,
-        `  --backend <url>           API to publish to (default ${DEFAULTS.backend}).`,
-        `  --origin <url>            Origin header for the write gate (default ${DEFAULTS.origin}; localhost only outside production).`,
-        `  --city <id>               City id (default ${DEFAULTS.city}).`,
-        `  --proposal-id <id>        Stable proposal id (default ${DEFAULTS.proposalId}); an existing one is left alone.`,
-        '  --source-proposal-id <id> Link replacement buildings to their published source proposal.',
-        `  --plan-slug <slug>        Immutable named plan (default ${DEFAULTS.planSlug}).`,
-        `  --expires-in-days <n>     Expiry from now so a pool on it can auto-settle (default ${DEFAULTS.expiresInDays}; 0 = never).`,
-        `  --out <path>              Where the converted record is written (default ${path.relative(process.cwd(), DEFAULTS.out)}).`,
-        '  --apply                   Bind and POST each building, then name their collection as a plan. Without it: convert, validate, summarize, write --out.',
-        '  --help                    This text.'
-    ].join('\n'));
-    process.exit(code);
-}
-
-function parseCli() {
-    const { values } = parseArgs({
-        options: {
-            layers: { type: 'string' }, backend: { type: 'string' }, origin: { type: 'string' },
-            city: { type: 'string' }, 'source-proposal-id': { type: 'string' }, 'proposal-id': { type: 'string' }, 'plan-slug': { type: 'string' }, 'expires-in-days': { type: 'string' }, out: { type: 'string' },
-            apply: { type: 'boolean', default: false }, help: { type: 'boolean', default: false }
-        },
-        strict: true
-    });
-    if (values.help) usage(0);
-    const expiresInDays = values['expires-in-days'] === undefined ? DEFAULTS.expiresInDays : Number(values['expires-in-days']);
-    if (!Number.isInteger(expiresInDays) || expiresInDays < 0) throw new Error('--expires-in-days must be a non-negative integer');
-    return {
-        layers: path.resolve(values.layers || DEFAULTS.layers),
-        backend: (values.backend || DEFAULTS.backend).replace(/\/+$/, ''),
-        origin: values.origin || DEFAULTS.origin,
-        city: values.city || DEFAULTS.city,
-        proposalId: values['proposal-id'] || DEFAULTS.proposalId,
-        sourceProposalId: values['source-proposal-id'] || null,
-        planSlug: values['plan-slug'] || DEFAULTS.planSlug,
-        expiresInDays,
-        out: path.resolve(values.out || DEFAULTS.out),
-        apply: values.apply
-    };
-}
 
 // ---- geometry -----------------------------------------------------------------------------
 
@@ -240,115 +195,86 @@ function describe(program, stats) {
     ].join(' ');
 }
 
-export function buildRecords({ program, stats, city, proposalId, expiresInDays, sourceProposalId = null }) {
-    const now = new Date();
-    const expiresAt = expiresInDays > 0 ? new Date(now.getTime() + expiresInDays * 86400000).toISOString() : null;
-    const planTitle = 'Candlestick Point as approved (FivePoint, 2024 plan): 7,218 homes, 11 towers up to 420 ft';
+/**
+ * The plan's design records, one Freeform design per connected footprint, in a stable order.
+ * @returns [{ key, record }]
+ */
+export function buildDesigns({ program, stats }) {
+    const description = describe(program, stats);
     return polygonBuildingParts(stats.features).map((building, index) => {
         const sourceId = String(building.properties.id || index + 1);
         const slug = sourceId.toLowerCase().replace(/[^a-z0-9-]+/g, '-').replace(/^-+|-+$/g, '') || 'building';
-        const idSuffix = `${slug}-${createHash('sha256').update(sourceId).digest('hex').slice(0, 8)}`;
-        const title = `${planTitle} — ${building.properties.name || sourceId}`;
-        const buildingProposal = {
-            typologyType: 'single',
-            createdFrom: 'blockify',
-            blockName: 'Candlestick Point',
-            parameters: {
-                typology: 'single',
-                height: building.properties.height,
-                rotation: 0,
-                footprintMode: 'polygon',
-                source: {
-                    plan: '2024 Modified Project Variant (FEIR Addendum 7, Aug 2024; 2024 Design for Development)',
-                    digitized: 'scripts/data/candlestick/fivepoint (vector figure content, similarity fit to the DataSF boundary)',
-                    links: SOURCE_LINKS,
-                    featureId: sourceId,
-                    sourceType: building.properties.source,
-                    blockId: building.properties.block || null
-                }
-            },
-            ineligibleParcels: []
-        };
+        const key = `${slug}-${createHash('sha256').update(sourceId).digest('hex').slice(0, 8)}`;
         return {
-            proposalId: `${proposalId}-${idSuffix}`,
-            city,
-            ...(sourceProposalId ? { sourceProposalId: String(sourceProposalId) } : {}),
-            type: 'building',
-            goal: 'single',
-            typologyType: 'single',
-            primaryType: 'Urban Rule',
-            name: title,
-            title,
-            description: describe(program, stats),
-            author: 'FivePoint (approved plan)',
-            lifecycleStatus: 'Active',
-            applied: false,
-            termsConfirmed: true,
-            createdAt: now.toISOString(),
-            ...(expiresAt ? { expiresAt } : {}),
-            site: building.geometry,
-            cadastreParcelIds: [],
-            geometry: { buildings: [building] },
-            buildingProposal,
-            tags: ['buildings', 'candlestick-point', 'approved-plan']
+            key,
+            record: {
+                goal: 'single',
+                title: `${PLAN_TITLE} — ${building.properties.name || sourceId}`,
+                description,
+                author: AUTHOR,
+                city: CITY,
+                createdAt: AUTHORED_AT,
+                site: building.geometry,
+                geometry: { buildings: [building] },
+                buildingProposal: {
+                    typologyType: 'single',
+                    createdFrom: 'blockify',
+                    blockName: 'Candlestick Point',
+                    parameters: {
+                        typology: 'single',
+                        height: building.properties.height,
+                        rotation: 0,
+                        footprintMode: 'polygon',
+                        source: {
+                            plan: '2024 Modified Project Variant (FEIR Addendum 7, Aug 2024; 2024 Design for Development)',
+                            digitized: 'scripts/data/candlestick/fivepoint (vector figure content, similarity fit to the DataSF boundary)',
+                            links: SOURCE_LINKS,
+                            featureId: sourceId,
+                            sourceType: building.properties.source,
+                            blockId: building.properties.block || null
+                        }
+                    },
+                    ineligibleParcels: []
+                }
+            }
         };
     });
 }
 
-// ---- main ---------------------------------------------------------------------------------
+// ---- main ---------------------------------------------------------------------------------------------
 
-function readLayer(dir, name) {
-    return JSON.parse(fs.readFileSync(path.join(dir, name), 'utf8'));
+function readLayer(name) {
+    return JSON.parse(fs.readFileSync(path.join(LAYERS, name), 'utf8'));
 }
 
-async function main() {
-    const cli = parseCli();
-    const layers = {
-        blocks: readLayer(cli.layers, 'blocks.geojson'),
-        zones: readLayer(cli.layers, 'height_zones.geojson'),
-        towers: readLayer(cli.layers, 'towers.geojson'),
-        breaks: readLayer(cli.layers, 'mid_block_breaks.geojson')
-    };
-    const program = readLayer(cli.layers, 'program.json');
-    const stats = convertPlan(layers);
-    const records = buildRecords({ program, stats, city: cli.city, proposalId: cli.proposalId, expiresInDays: cli.expiresInDays, sourceProposalId: cli.sourceProposalId });
-    records.forEach(canonicalSeedRecord);
-    const planDefinition = {
-        slug: cli.planSlug,
-        title: 'Candlestick Point as approved (FivePoint, 2024 plan)',
-        description: `The FivePoint approved-plan building collection: ${records.length} individual Freeform building proposals.`,
-        author: 'FivePoint (approved plan)',
-        place: 'Candlestick Point, San Francisco',
-        city: cli.city,
-        authoredProposalIds: records.map(record => record.proposalId)
-    };
+/** The FivePoint plan from the committed layers: its designs and where its ground file lives. */
+export function fivepointPlan() {
+    const stats = convertPlan({
+        blocks: readLayer('blocks.geojson'),
+        zones: readLayer('height_zones.geojson'),
+        towers: readLayer('towers.geojson'),
+        breaks: readLayer('mid_block_breaks.geojson')
+    });
+    const designs = buildDesigns({ program: readLayer('program.json'), stats });
     const heights = stats.features.map(feature => feature.properties.height);
     log(`converted ${stats.features.length} volumes from ${stats.blockCount} blocks (${stats.features.filter(f => f.properties.source === 'height zone').length} height zones + ${stats.features.filter(f => f.properties.source !== 'height zone').length} towers); skipped ${stats.skippedBlocks.length}${stats.skippedBlocks.length ? `: ${stats.skippedBlocks.join(', ')}` : ''}`);
-    log(`heights (ft → count) ${JSON.stringify(stats.heightsFt)} · ${Math.min(...heights)}–${Math.max(...heights)} m · footprints ${stats.footprintM2} m²`);
-    log(`bbox ${bboxOf(stats.features).join(', ')} · ${records.length} Freeform proposals · records ${(JSON.stringify(records).length / 1024).toFixed(0)} KB${records[0]?.expiresAt ? ` · expires ${records[0].expiresAt}` : ''}`);
-    fs.mkdirSync(path.dirname(cli.out), { recursive: true });
-    fs.writeFileSync(cli.out, JSON.stringify({ plan: planDefinition, proposals: records }));
-    log(`record written to ${cli.out}`);
-    if (!cli.apply) { log('dry run: nothing posted (add --apply to publish)'); return; }
-    let created = 0; let skipped = 0;
-    const proposalRowIds = [];
-    for (const record of records) {
-        const result = await publish(record, { backend: cli.backend, origin: cli.origin, city: cli.city });
-        if (result.skipped) skipped++; else created++;
-        if (result.id === undefined || result.id === null) throw new Error(`Proposal ${record.proposalId} has no database row id; cannot name the plan.`);
-        proposalRowIds.push(String(result.id));
-    }
-    log(`done: ${created} created, ${skipped} existing`);
-    const plan = await publishNamedPlan({
-        ...planDefinition,
-        proposalRowIds
-    }, { backend: cli.backend, origin: cli.origin });
-    log(plan.skipped ? `named plan ${cli.planSlug} already matches this collection` : `named plan created: ${cli.planSlug}`);
+    log(`heights (ft → count) ${JSON.stringify(stats.heightsFt)} · ${Math.min(...heights)}–${Math.max(...heights)} m · footprints ${stats.footprintM2} m² · bbox ${bboxOf(stats.features).join(', ')}`);
+    return {
+        key: PLAN_KEY,
+        title: PLAN_TITLE,
+        author: AUTHOR,
+        city: CITY,
+        parcelSourceId: PARCEL_SOURCE_ID,
+        groundFile: groundFile(PLAN_KEY),
+        designs
+    };
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
-    main().catch(error => {
-        console.error(`[${new Date().toISOString()}] import failed:`, error);
-        process.exit(1);
+    await runRestatementCli({
+        script: 'backend/scripts/import-candlestick-fivepoint.mjs',
+        describe: 'the approved FivePoint plan for Candlestick Point',
+        planKeys: [PLAN_KEY],
+        plans: async () => [fivepointPlan()]
     });
 }

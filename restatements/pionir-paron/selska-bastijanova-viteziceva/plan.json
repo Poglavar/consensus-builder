@@ -5,9 +5,6 @@
   "status": "ready",
   "reason": null,
   "generatedAt": "2026-08-13T00:00:00.000Z",
-  "planSlug": "pionir-selska-bastijanova-viteziceva",
-  "planTitle": "Selska–Baštijanova–Vitezićeva – rekonstrukcija izvedenog stanja – zgrade, prometnice i parkirališta",
-  "localPath": "/proposals/pionir-selska-bastijanova-viteziceva?city=zagreb",
   "building": {
     "proposalId": "pionir-selska-bastijanova-viteziceva-observed",
     "file": "proposal.geojson"

@@ -11,9 +11,10 @@
 })(typeof window !== 'undefined' ? window : globalThis, function corridorAuthoringFactory(global) {
     'use strict';
 
-    const PUBLISHED_IDENTITY_KEYS = [
-        'serverProposalId', 'chainProposalId', 'tokenId', 'onchain', 'nft', 'isMinted', 'hash'
-    ];
+    // A design's publication identity: its publication mark, `published: { cid, publishedAt, apiBase }`
+    // (proposals/design-sync.js). Designs are not minted (plan-design-agreement.md, M3), so a design
+    // carries no chain identity to detach.
+    const PUBLISHED_IDENTITY_KEYS = ['published'];
 
     function cloneValue(value) {
         if (value === null || value === undefined) return value;
@@ -24,7 +25,7 @@
     }
 
     function recordId(record) {
-        const value = record && (record.proposalId || record.id || record.hash || record.tokenId);
+        const value = record && (record.proposalId || record.id);
         return value === null || value === undefined || !String(value) ? null : String(value);
     }
 

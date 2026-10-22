@@ -1,5 +1,6 @@
 // The market question builder (streamline.md A1/K3): one tuple renders the question people bet on,
-// the sentence saying how it settles and the recipe body hashed on-chain, so the three cannot drift.
+// the sentence saying how it settles and the recipe body hashed on-chain, so the three cannot drift;
+// and the Bets sheet's undated questions of one agreement's pool and of a contest of agreements.
 import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { describe, expect, it } from 'vitest';
@@ -56,17 +57,17 @@ const CASES = [
         ruleFields: { anyNewConstruction: true, event: 'issued', notBefore: '2026-10-12T00:00:00-07:00', notBeforeAt: 1791788400 }
     },
     {
-        name: 'agreed: every owner signs the proposal',
-        tuple: { milestone: 'agreed', deadline: '2027-03-31T23:59:59+02:00', evidence: { source: 'proposal-nft-v3' },
-            subject: { ...ZAGREB, label: 'Borovje courtyard', proposalAccount: ACCOUNT,
+        name: 'agreed: the agreement executes on-chain',
+        tuple: { milestone: 'agreed', deadline: '2027-03-31T23:59:59+02:00', evidence: { source: 'agreement-v1' },
+            subject: { ...ZAGREB, label: 'Borovje courtyard', agreementAccount: ACCOUNT,
                 parcelIds: ['HR-335614-2313', 'HR-335614-2311', 'HR-335614-1754/1'] } },
-        question: 'Will all owners of the 3 parcels of Borovje courtyard sign by 31 March 2027?',
-        settles: "Yes if the proposal's account on Solana reaches Executed on or before 31 March 2027; no if the proposal is cancelled or expires first, or that date passes before it is executed. Anyone can settle it from the proposal account on Solana.",
-        eventType: 'proposal_executed', id: 'proposal-nft-agreed-v1',
+        question: 'Will Borovje courtyard execute on-chain by 31 March 2027?',
+        settles: "Yes if the agreement's account on Solana reaches Executed on or before 31 March 2027; no if the agreement is cancelled or expires first, or that date passes before it is executed. Anyone can settle it from the agreement account on Solana.",
+        eventType: 'agreement_executed', id: 'agreement-agreed-v1',
         subjectText: 'HR-ZAGREB|HR-335614-1754/1,HR-335614-2311,HR-335614-2313',
-        yesText: `proposal ${ACCOUNT} executed on or before 2027-03-31T23:59:59+02:00`,
-        noText: `proposal ${ACCOUNT} cancelled, expired or not executed on or before 2027-03-31T23:59:59+02:00`,
-        ruleFields: { proposalAccount: ACCOUNT }
+        yesText: `agreement ${ACCOUNT} executed on or before 2027-03-31T23:59:59+02:00`,
+        noText: `agreement ${ACCOUNT} cancelled, expired or not executed on or before 2027-03-31T23:59:59+02:00`,
+        ruleFields: { agreementAccount: ACCOUNT }
     },
     {
         name: 'adopted: the plan is published in the official gazette',
@@ -119,6 +120,7 @@ const CASES = [
     }
 ];
 const PERMIT = CASES[0].tuple;
+const FILED = CASES[1].tuple;
 const AGREED = CASES[3].tuple;
 
 // recipe.schema.json has no validator in this repo (no ajv in backend/test or backend/oracle), so
@@ -288,11 +290,11 @@ describe('MarketQuestion.build: parcels', () => {
         expect(shuffled.recipeBody.subject.parcelIds).toEqual(['4884039A', '4884040']);
     });
 
-    it('counts distinct parcels in the agreed question, singular for one', () => {
-        const three = MarketQuestion.build({ ...AGREED, subject: { ...AGREED.subject, parcelIds: ['A1', 'B2', 'C3', 'A1'] } });
-        expect(three.question).toBe('Will all owners of the 3 parcels of Borovje courtyard sign by 31 March 2027?');
-        const one = MarketQuestion.build({ ...AGREED, subject: { ...AGREED.subject, parcelIds: ['A1'] } });
-        expect(one.question).toBe('Will all owners of the 1 parcel of Borovje courtyard sign by 31 March 2027?');
+    it('counts distinct parcels in the settlement sentence, singular for one', () => {
+        const three = MarketQuestion.build({ ...FILED, subject: { ...SF, parcelIds: ['A1', 'B2', 'C3', 'A1'] } });
+        expect(three.settles).toContain('a new-construction building permit on Candlestick Point (3 parcels) with a filed date');
+        const one = MarketQuestion.build({ ...FILED, subject: { ...SF, parcelIds: ['A1'] } });
+        expect(one.settles).toContain('a new-construction building permit on Candlestick Point (1 parcel) with a filed date');
     });
 
     it('does not touch the tuple it was given and gives the same answer every time', () => {
@@ -327,7 +329,7 @@ describe('MarketQuestion.build: invalid tuples throw', () => {
         ['an unknown source', withEvidence({ source: 'sf-dbi-permits-v2', permitNumber: '1', event: 'issued' }), /unknown evidence source/],
         ['a gazette for a built market', { ...PERMIT, milestone: 'built', subject: { ...SF, ...ZAGREB }, evidence: { source: 'zagreb-gazette-v1', planId: 'UPU' } }, /does not settle built markets/],
         ['permits for an agreed market', { ...PERMIT, milestone: 'agreed' }, /does not settle agreed markets/],
-        ['the proposal account for a permitted market', withEvidence({ source: 'proposal-nft-v3' }), /does not settle permitted markets/],
+        ['the agreement account for a permitted market', withEvidence({ source: 'agreement-v1' }), /does not settle permitted markets/],
         ['legislation for a permitted market', withEvidence({ source: 'sf-legislation-v1', operation: TOWERS }), /does not settle permitted markets/],
         ['a completed date for a permitted market', withEvidence({ source: 'sf-dbi-permits-v1', anyNewConstruction: true, event: 'completed' }), /filed or issued/],
         ['an issued date for a built market', { ...PERMIT, milestone: 'built' }, /completed/],
@@ -341,7 +343,8 @@ describe('MarketQuestion.build: invalid tuples throw', () => {
         ['an empty plan id', { ...CASES[4].tuple, evidence: { source: 'zagreb-gazette-v1', planId: '  ' } }, /planId/],
         ['an empty operation', { ...CASES[5].tuple, evidence: { source: 'sf-legislation-v1' } }, /operation/],
         ['a San Francisco source for Zagreb land', withSubject(ZAGREB), /covers US-CA-SF, not HR-ZAGREB/],
-        ['an agreed market without its proposal account', { ...AGREED, subject: { ...AGREED.subject, proposalAccount: undefined } }, /proposalAccount/],
+        ['an agreed market without its agreement account', { ...AGREED, subject: { ...AGREED.subject, agreementAccount: undefined } }, /agreementAccount/],
+        ['an agreed market whose account is not base58', { ...AGREED, subject: { ...AGREED.subject, agreementAccount: 'agreement-0OIl' } }, /agreementAccount/],
         ['missing parcel ids', withSubject({ parcelIds: undefined }), /parcelIds/],
         ['no parcel ids', withSubject({ parcelIds: [] }), /parcelIds/],
         ['a parcel id with a comma', withSubject({ parcelIds: ['4884039A,4884040'] }), /parcel id/],
@@ -389,14 +392,14 @@ describe('MarketQuestion.build: templates', () => {
 
     it('picks the plural form of the parcel count by locale', () => {
         const templates = {
-            'question.agreed.proposal': 'Hoće li svi vlasnici {{parcels}} ({{label}}) potpisati do {{deadline}}?',
+            'question.agreed.agreement': 'Hoće li se sporazum vlasnika {{parcels}} ({{label}}) izvršiti na lancu do {{deadline}}?',
             'parcels.one': '{{count}} čestice',
             'parcels.few': '{{count}} čestice',
             'parcels.other': '{{count}} čestica'
         };
         const ids = count => Array.from({ length: count }, (_, index) => `P${index + 1}`);
         const at = count => MarketQuestion.build({ ...AGREED, subject: { ...AGREED.subject, parcelIds: ids(count) } }, { templates, locale: 'hr' });
-        expect(at(3).question).toBe('Hoće li svi vlasnici 3 čestice (Borovje courtyard) potpisati do 31 March 2027?');
+        expect(at(3).question).toBe('Hoće li se sporazum vlasnika 3 čestice (Borovje courtyard) izvršiti na lancu do 31 March 2027?');
         expect(at(5).question).toContain('5 čestica');
         // English has no 'few': the same three parcels fall back to 'other'.
         const english = MarketQuestion.build({ ...AGREED, subject: { ...AGREED.subject, parcelIds: ids(3) } }, { templates });
@@ -412,6 +415,33 @@ describe('MarketQuestion.build: templates', () => {
         ['templates that are not an object', 'Will it?', /options.templates must be an object/]
     ])('rejects %s', (_name, templates, message) => {
         expect(() => MarketQuestion.build(PERMIT, { templates })).toThrow(message);
+    });
+});
+
+describe('MarketQuestion.agreementQuestion and contestQuestion: the Bets sheet\'s undated questions', () => {
+    it('asks whether one agreement executes, and which of a contest\'s agreements does', () => {
+        expect(MarketQuestion.agreementQuestion('Borovje courtyard')).toBe('Will Borovje courtyard execute on-chain?');
+        expect(MarketQuestion.agreementQuestion('  Courtyard + Tower ')).toBe('Will Courtyard + Tower execute on-chain?');
+        expect(MarketQuestion.contestQuestion('Parcel 2311 and 2 more')).toBe('Which agreement over Parcel 2311 and 2 more will execute?');
+    });
+
+    it('applies a page\'s template override, as build does', () => {
+        const templates = {
+            'question.agreement': 'Hoće li se {{title}} izvršiti na lancu?',
+            'question.contest': 'Koji će se sporazum o {{place}} izvršiti?'
+        };
+        expect(MarketQuestion.agreementQuestion('Dvorište', { templates })).toBe('Hoće li se Dvorište izvršiti na lancu?');
+        expect(MarketQuestion.contestQuestion('čestici 2311', { templates })).toBe('Koji će se sporazum o čestici 2311 izvršiti?');
+    });
+
+    it.each([
+        ['an empty title', () => MarketQuestion.agreementQuestion('  '), /title must be a non-empty string/],
+        ['no title', () => MarketQuestion.agreementQuestion(null), /title must be a non-empty string/],
+        ['no place', () => MarketQuestion.contestQuestion(''), /place must be a non-empty string/],
+        ['a placeholder the question does not have', () => MarketQuestion.agreementQuestion('X', { templates: { 'question.agreement': 'Will {{label}} execute?' } }), /uses \{\{label\}\}/],
+        ['a template for designs, which are never bet on', () => MarketQuestion.contestQuestion('X', { templates: { 'question.design': 'Which design?' } }), /unknown template key question.design/]
+    ])('rejects %s', (_name, call, message) => {
+        expect(call).toThrow(message);
     });
 });
 
@@ -443,7 +473,7 @@ describe('MarketQuestion exports', () => {
 
     it('lists the sources with the milestones each may settle', () => {
         expect(Object.fromEntries(MarketQuestion.SOURCES.map(item => [item.id, item.milestones]))).toEqual({
-            'proposal-nft-v3': ['agreed'],
+            'agreement-v1': ['agreed'],
             'sf-legislation-v1': ['adopted'],
             'zagreb-gazette-v1': ['adopted'],
             'sf-dbi-permits-v1': ['permitted', 'built']

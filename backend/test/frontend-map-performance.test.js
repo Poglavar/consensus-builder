@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
 import { createRequire } from 'node:module';
 const planningScene = createRequire(import.meta.url)('../../frontend/js/planning/scene.js');
+const turf = createRequire(import.meta.url)('@turf/turf');
 import { parse } from '@babel/parser';
 import { describe, expect, it } from 'vitest';
 
@@ -26,13 +27,13 @@ function loadBuildingLayerRuntime() {
     const names = [
         'buildingPoolFeatureKey', 'currentBuildingOutcomeState', 'buildingOutcomeSignatures', 'buildingFeatureWithOutcome',
         'reconcileBuildingFeatureEntries', 'stableBuildingFeatureSignature', 'buildingStyleForFeature',
-        'applyBuildingFeatureLayerChanges', 'buildingLayerOptions', 'rebuildBuildingLayerFromPool'
+        'applyBuildingFeatureLayerChanges', 'buildingLayerOptions', 'rebuildBuildingLayerFromPool', 'buildingsAt'
     ];
     const ast = parse(mapCoreSource, { sourceType: 'script' });
     const declarations = ast.program.body.filter(node => node.type === 'FunctionDeclaration' && names.includes(node.id.name));
     expect(declarations.map(node => node.id.name).sort()).toEqual([...names].sort());
 
-    const fixture = { state: { demolishedById: new Map(), tunnelledIds: new Set(), affectedIds: new Set() }, inspections: [], stoppedEvents: [] };
+    const fixture = { state: { demolishedById: new Map(), tunnelledIds: new Set(), affectedIds: new Set() }, clicks: [], stoppedEvents: [] };
     const layersById = new Map();
     const allLayers = new Set();
     const mapLayers = new Set();
@@ -76,8 +77,9 @@ function loadBuildingLayerRuntime() {
     });
     context.window = context;
     context.PlanningScene = planningScene;
-    context.PlanningViews = { getState: () => ({ existingScope: fixture.existingScope || 'all' }),
-        inspectBuilding: (feature, id) => fixture.inspections.push({ feature, id }) };
+    context.PlanningViews = { getState: () => ({ existingScope: fixture.existingScope || 'all' }) };
+    // A building click is a map click: the click stack collects everything under the point.
+    context.ClickStack = { handleClick: latlng => fixture.clicks.push(latlng) };
     context.__mapEditLock = { isHeld: () => fixture.editLocked === true };
     context.collectTunnelledBuildingIds = () => fixture.state.tunnelledIds;
     context.buildingOutcomeStyle = outcome => ({ color: outcome || 'normal' });
@@ -227,13 +229,13 @@ describe('incremental building presentation model', () => {
         const bLayer = context.getRenderedLayers().get('b')[0];
         expect(mapLayers.has(group)).toBe(false);
         expect(allLayers.size).toBe(2);
-        const click = { type: 'click' };
+        const click = { type: 'click', latlng: { lat: 45.8, lng: 15.9 } };
         aLayer.fire('click', click);
-        expect(fixture.inspections).toEqual([{ feature: aLayer.feature, id: 'a' }]);
+        expect(fixture.clicks).toEqual([click.latlng]);
         expect(fixture.stoppedEvents).toEqual([click]);
         fixture.editLocked = true;
-        bLayer.fire('click', { type: 'click' });
-        expect(fixture.inspections).toHaveLength(1);
+        bLayer.fire('click', { type: 'click', latlng: { lat: 1, lng: 2 } });
+        expect(fixture.clicks).toHaveLength(1);
         expect(fixture.stoppedEvents).toHaveLength(1);
         fixture.editLocked = false;
 
@@ -260,6 +262,32 @@ describe('incremental building presentation model', () => {
         context.rebuildBuildingLayerFromPool();
         expect(context.getRenderedLayers().has('b')).toBe(false);
         expect(context.getRenderedLayerIds()).toEqual(['a']);
+    });
+});
+
+describe('buildings under a point (the click stack\'s Built section)', () => {
+    const square = (id, x) => ({ type: 'Feature', properties: { object_id: id },
+        geometry: { type: 'Polygon', coordinates: [[[x, 0], [x + 1, 0], [x + 1, 1], [x, 1], [x, 0]]] } });
+    const bboxOf = feature => {
+        const ring = feature.geometry.coordinates[0];
+        const lngs = ring.map(p => p[0]), lats = ring.map(p => p[1]);
+        return { contains: ll => ll.lng >= Math.min(...lngs) && ll.lng <= Math.max(...lngs) && ll.lat >= Math.min(...lats) && ll.lat <= Math.max(...lats) };
+    };
+
+    it('reports the drawn footprints covering the point, with what demolishes or tunnels them', () => {
+        const { context, fixture } = loadBuildingLayerRuntime();
+        context.turf = turf;
+        context.buildingFeaturePool = [square('a', 0), square('b', 0.5), square('c', 5)];
+        context.rebuildBuildingLayerFromPool();
+        context.getRenderedLayers().forEach(layers => layers.forEach(layer => { layer.getBounds = () => bboxOf(layer.feature); }));
+        fixture.state.demolishedById.set('a', { id: 'a', proposalId: 'road-1' });
+        fixture.state.tunnelledIds = new Set(['b']);
+
+        const hits = context.buildingsAt({ lat: 0.5, lng: 0.75 });
+        expect(hits.map(hit => [hit.id, hit.demolition?.proposalId || null, hit.tunnelled])).toEqual([['a', 'road-1', false], ['b', null, true]]);
+        expect(hits[0].feature.properties.object_id).toBe('a');
+        expect(context.buildingsAt({ lat: 0.5, lng: 3 })).toEqual([]);
+        expect(context.buildingsAt(null)).toEqual([]);
     });
 });
 

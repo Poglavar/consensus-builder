@@ -30,7 +30,7 @@ Earlier transaction proofs below and in `HACKATHON.md` remain historical evidenc
 they exercised; they do not verify the upgraded lens or parcel-optional instructions.
 The 2026-09-23 upgrades (commit `361cf41`) made every market and donation vault `init_if_needed`, so
 pre-creating a vault's predictable token account can no longer block a proposal's donations or market.
-Live proof (`blockchain/solana/scripts/vault-precreate-proof.mjs --live`): a second wallet
+Live proof: a second wallet
 [pre-created both vaults](https://explorer.solana.com/tx/4fHgCF6HrUseRUAcY4DKF6J3FAZprzzAA2oXkNZg3JmFcvQcsJHS8X9yjP3dZc1NzesaXYHiLuZCKZ5hwKNgaSUv?cluster=devnet)
 of a fresh proposal, then its owner still opened the
 [donation escrow](https://explorer.solana.com/tx/3zVdTx1PBAobY9YhpMLuQwAVNuyr37EcjJGDFFp6opx9xo1iBUVr4q95rMMwqCisvKhpLSDQTeamKYjfBmbdxKBX?cluster=devnet)

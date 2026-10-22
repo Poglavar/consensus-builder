@@ -1,9 +1,9 @@
-// The "Compare proposals here" dialog: two proposals side by side, for ONE parcel only — what each
-// takes of it, what stands on it afterwards, where the ownership goes, what the owner is asked and
-// how far support has got. Opened from the parcel panel's Proposals tab (two ticked), the parcel
-// menu / command palette, and the "At this spot" stack. All figures come from the pure
-// proposals/parcel-compare.js; this file only gathers the inputs, renders, and hydrates the chain
-// reads (pledges, donations, market odds) the details panel uses. window.ParcelCompare.
+// The "Compare proposals here" dialog: two designs side by side, for ONE parcel only — what each
+// takes of it, what stands on it afterwards and where the ownership goes. A design asks nobody for
+// consent and carries no terms or funding (plan-design-agreement.md, M2: those are its agreement's).
+// Opened from the parcel panel's Proposals tab (two ticked), the parcel menu / command palette, and
+// the "At this spot" stack. All figures come from the pure proposals/parcel-compare.js; this file
+// only gathers the inputs and renders. window.ParcelCompare.
 (function (global) {
     'use strict';
 
@@ -11,7 +11,7 @@
     const DIALOG_ID = 'parcel-compare-dialog';
     const SIDES = ['a', 'b'];
 
-    const state = { parcelId: null, parcel: null, candidates: [], picked: [null, null], hydration: 0 };
+    const state = { parcelId: null, parcel: null, candidates: [], picked: [null, null] };
 
     function t(key, fallback, params) {
         const i18n = global.i18n;
@@ -35,10 +35,7 @@
     function allRecords() {
         const store = storage();
         if (!store) return [];
-        const list = typeof store.peekAllProposals === 'function' ? store.peekAllProposals() : store.getAllProposals();
-        // Canton records live in their own section of the panel, as in the Proposals tab.
-        const canton = global.CantonMode && global.CantonMode.isCantonProposal;
-        return typeof canton === 'function' ? list.filter(p => !canton(p)) : list;
+        return typeof store.peekAllProposals === 'function' ? store.peekAllProposals() : store.getAllProposals();
     }
 
     // The parcel as the owner holds it: its cadastral ground (the repository's immutable geometry)
@@ -119,52 +116,9 @@
         return typeof global.getProposalDisplayTypeLabel === 'function' ? global.getProposalDisplayTypeLabel(proposal) : '';
     }
 
-    // The consent channel each declared proposal lands in for this parcel (dossier.js), computed
-    // over every declared proposal so earlier formations defer later takes as the Proposals tab does.
-    function channelsFor(parcel, candidates) {
-        const dossier = global.__dossier;
-        const declared = candidates.filter(c => c.relation === 'bound').map(c => c.proposal);
-        if (!dossier || !declared.length) return new Map();
-        try {
-            const result = dossier.buildDossier(parcel.id, declared, {
-                assumeMembership: true,
-                cadastreParcelIds: parcel.cadastreIds,
-                // Unstamped records compute their take from this; without it every formation would
-                // read "takes nothing" and triage as a disclosure.
-                baseParcels: parcel.feature ? parcel.cadastreIds.map(id => ({ id, feature: parcel.feature })) : [],
-                isVote: typeof global.isNonBindingProposal === 'function' ? global.isNonBindingProposal : undefined,
-                isApplied: typeof global.isProposalApplied === 'function' ? global.isProposalApplied : undefined,
-                parcelFeature: parcel.feature || undefined
-            });
-            return new Map((result.entries || []).map(entry => [String(entry.proposalId), entry.channel]));
-        } catch (error) {
-            console.warn(`[${new Date().toISOString()}] [ParcelCompare] dossier unavailable`, error);
-            return new Map();
-        }
-    }
-
-    function effectFor(entry, parcel, channels) {
+    function effectFor(entry, parcel) {
         const proposal = entry.proposal;
-        let consent = global.ProposalConsentSummary.unknown(null);
-        try {
-            const currentHash = global.currentConsentBindingHash(proposal);
-            if (global.ProposalApprovalRuntime.uses(proposal)) {
-                consent = global.ProposalConsentSummary.signed(proposal, parcel.cadastreIds, {
-                    currentHash,
-                    verifyReceipt: (record, receipt) => global.ProposalApprovalAuthorities.verifyReceipt(record, receipt) === true
-                });
-            } else {
-                const ownerSlotsByParcel = Object.fromEntries((proposal.cadastreParcelIds || [])
-                    .map(id => [String(id), global.getOwnerSlotsForParcel(id)]));
-                consent = global.ProposalConsentSummary.local(proposal, parcel.cadastreIds, { currentHash, ownerSlotsByParcel });
-            }
-        } catch (error) {
-            console.warn(`[${new Date().toISOString()}] [ParcelCompare] current consent unavailable`, error);
-        }
         return api().parcelEffect(proposal, parcel, {
-            consent,
-            channel: channels.get(String(proposal.proposalId)) || undefined,
-            lifecycleKey: typeof global.getProposalLifecycleKey === 'function' ? global.getProposalLifecycleKey(proposal) : undefined,
             applied: typeof global.isProposalApplied === 'function' ? !!global.isProposalApplied(proposal) : undefined,
             isTrack: typeof global.isTrackProposal === 'function' ? global.isTrackProposal : undefined
         });
@@ -227,20 +181,17 @@
     function plotsText(plots) {
         if (!plots) return [DASH];
         if (!plots.length) return [t('parcelCompare.none', 'None')];
-        return plots.map(p => {
-            const who = p.owner || DASH;
-            return t('parcelCompare.plots.line', 'Plot {{number}} ({{area}}, {{who}}): {{overlap}} of this parcel', {
-                number: p.number, area: m2(p.areaM2), who, overlap: m2(p.overlapM2)
-            });
-        });
+        // A layout's plots carry no owners: who holds a plot is its agreement's to say.
+        return plots.map(p => t('parcelCompare.plots.line', 'Plot {{number}} ({{area}}): {{overlap}} of this parcel', {
+            number: p.number, area: m2(p.areaM2), overlap: m2(p.overlapM2)
+        }));
     }
 
     function destinationText(destination) {
         const labels = {
             public: t('panel.parcel.dossier.destination.public', 'public'),
             proposer: t('panel.parcel.dossier.destination.proposer', 'the proposer'),
-            mapping: t('panel.parcel.dossier.destination.mapping', 'per plan'),
-            undecided: t('panel.parcel.dossier.destination.undecided', 'to be decided')
+            'carry-over': t('panel.parcel.dossier.destination.carryOver', 'stays with its owners')
         };
         return labels[destination] || destination || DASH;
     }
@@ -249,25 +200,6 @@
         if (!o) return [DASH];
         return [t('parcelCompare.ownership.ceded', '{{area}} → {{destination}}', { area: m2(o.cededM2), destination: destinationText(o.destination) })];
     }
-
-    function offerText(o) {
-        if (!o) return [DASH];
-        return [CbFormat.formatMoney(o.amount, o.currency)];
-    }
-
-    function consentText(c) {
-        const channels = {
-            acceptance: t('panel.parcel.dossier.channel.acceptance', 'Consent needed'),
-            offer: t('panel.parcel.dossier.channel.offer', 'Offer to you'),
-            vote: t('panel.parcel.dossier.channel.vote', 'Vote'),
-            disclosure: t('panel.parcel.dossier.channel.disclosure', 'Info')
-        };
-        const needed = c.needed === true ? t('parcelCompare.yes', 'Yes') : (c.needed === false ? t('parcelCompare.no', 'No') : DASH);
-        return c.channel ? [needed, channels[c.channel] || c.channel] : [needed];
-    }
-
-    const yesNo = value => (value === true ? t('parcelCompare.yes', 'Yes') : (value === false ? t('parcelCompare.no', 'No') : DASH));
-    const tally = value => (value ? `${value.accepted} / ${value.total}` : DASH);
 
     function statusText(e, proposal) {
         const display = global.__proposalDisplayState;
@@ -301,7 +233,6 @@
         dialog = el('dialog', 'cb-dialog cb-dialog--lg parcel-compare');
         dialog.id = DIALOG_ID;
         dialog.setAttribute('aria-labelledby', `${DIALOG_ID}-title`);
-        dialog.addEventListener('close', () => { state.hydration += 1; });
         // A click on the backdrop (the dialog box itself, outside its content) closes it.
         dialog.addEventListener('click', event => { if (event.target === dialog) dialog.close(); });
         doc.body.appendChild(dialog);
@@ -382,8 +313,7 @@
             content.appendChild(el('p', 'parcel-compare__empty', t('parcelCompare.needTwo', 'At least two proposals must touch this parcel to compare them.')));
             return;
         }
-        const channels = channelsFor(parcel, state.candidates);
-        const effects = picked.map(entry => effectFor(entry, parcel, channels));
+        const effects = picked.map(entry => effectFor(entry, parcel));
 
         // Pickers + preview.
         const top = el('div', 'parcel-compare__top');
@@ -441,87 +371,8 @@
         row(grid, t('parcelCompare.rows.plots', 'Plots it becomes'), both(e => plotsText(e.plots)));
         section(grid, t('parcelCompare.sections.ownership', 'Ownership'));
         row(grid, t('parcelCompare.rows.ceded', 'Ceded ground → to'), both(e => ownershipText(e.ownership)));
-        row(grid, t('parcelCompare.rows.offer', 'Original full-proposal offer'), both(e => offerText(e.offer)), { dataKey: 'offer' });
-        section(grid, t('parcelCompare.sections.consent', 'What you are asked'));
-        row(grid, t('parcelCompare.rows.consentNeeded', 'Your consent needed'), both(e => consentText(e.consent)));
-        row(grid, t('parcelCompare.rows.consentBasis', 'Consent evidence'), both(e => [e.consent.basis === 'signed-receipts'
-            ? t('parcelCompare.signedConsentBasis', 'Signed decisions verified for current terms and the declared approval context.')
-            : e.consent.basis === 'local-records'
-                ? t('parcelCompare.localConsentBasis', 'Unsigned browser records matched to current terms and owner entries.')
-                : t('parcelCompare.consentUnavailable', 'Current consent evidence unavailable.')]), { dataKey: 'consent-basis' });
-        row(grid, t('parcelCompare.rows.parcelAccepted', 'Consent covers selected references'), both(e => [yesNo(e.consent.parcelAccepted)]), { dataKey: 'parcel-consent' });
-        row(grid, t('parcelCompare.rows.owners', 'Owner consent for selected references'), both(e => [!e.consent.owners ? DASH
-            : e.consent.basis === 'signed-receipts'
-                ? t('parcelCompare.ownerParties', '{{accepted}}/{{total}} declared owner parties', e.consent.owners)
-                : t('parcelCompare.ownerEntries', '{{accepted}}/{{total}} local owner entries', e.consent.owners)]), { dataKey: 'owner-consent' });
-        row(grid, t('parcelCompare.rows.parcels', 'Source references with consent (whole proposal)'), both(e => [tally(e.consent.parcels)]), { dataKey: 'proposal-consent' });
-        section(grid, t('parcelCompare.sections.support', 'Support'));
-        row(grid, t('parcelCompare.rows.donations', 'Total donated (devnet USDC)'), both(() => [DASH]), { dataKey: 'donations' });
-        row(grid, t('parcelCompare.rows.pledges', 'Active pledges (devnet USDC)'), both(() => [DASH]), { dataKey: 'pledges' });
-        row(grid, t('parcelCompare.rows.market', 'YES pool share (devnet USDC)'), both(() => [DASH]), { dataKey: 'market' });
         row(grid, t('parcelCompare.rows.status', 'Status'), both(statusText), { dataKey: 'status' });
         content.appendChild(grid);
-
-        hydrateSupport(dialog, picked.map(p => p.proposal));
-    }
-
-    function setCell(dialog, key, side, text) {
-        const cell = dialog.querySelector(`[data-compare-cell="${key}-${side}"] .parcel-compare__value`);
-        if (cell) cell.textContent = text;
-    }
-
-    // Pledges, donations and market pool shares are chain state of minted Solana proposals (the same
-    // reads the details panel's funding and market cards make). Anything else shows "—".
-    function hydrateSupport(dialog, proposals) {
-        const token = ++state.hydration;
-        proposals.forEach((proposal, i) => {
-            const side = SIDES[i];
-            const minted = typeof global.isProposalMinted === 'function' && global.isProposalMinted(proposal);
-            const account = minted && global.ProposalApprovalRuntime?.uses(proposal) !== true
-                ? global.ChainProposalRef?.solanaAccountForDeployment(
-                    proposal,
-                    global.SolanaAcceptanceClient?.constants?.PROPOSAL_NFT_PROGRAM_ID
-                ) || null
-                : null;
-            if (!account) return;
-            const loading = t('panel.proposal.pledge.loading', 'Loading…');
-            const unavailable = t('panel.proposal.pledge.unavailable', 'Unavailable');
-            const pledge = global.SolanaPledgeBridge;
-            const format = global.SolanaPledgeClient && global.SolanaPledgeClient.formatUsdc;
-            if (pledge && typeof pledge.readSummary === 'function' && typeof format === 'function') {
-                setCell(dialog, 'donations', side, loading);
-                setCell(dialog, 'pledges', side, loading);
-                Promise.resolve(pledge.readSummary(account)).then(summary => {
-                    if (token !== state.hydration) return;
-                    const donated = summary && summary.donations ? summary.donations.totalDonated : null;
-                    const pledged = summary && summary.pledges ? summary.pledges.activePledged : null;
-                    setCell(dialog, 'donations', side, donated === null || donated === undefined ? DASH : CbFormat.formatMoney(Number(format(donated)), 'USDC'));
-                    setCell(dialog, 'pledges', side, pledged === null || pledged === undefined ? DASH : CbFormat.formatMoney(Number(format(pledged)), 'USDC'));
-                }).catch(error => {
-                    console.warn(`[${new Date().toISOString()}] [ParcelCompare] pledge summary unavailable`, error);
-                    if (token !== state.hydration) return;
-                    setCell(dialog, 'donations', side, unavailable);
-                    setCell(dialog, 'pledges', side, unavailable);
-                });
-            }
-            const market = global.SolanaMarketBridge;
-            const view = global.ProposalMarketView;
-            if (market && typeof market.readSummary === 'function' && view) {
-                setCell(dialog, 'market', side, loading);
-                Promise.resolve(market.readSummary(account)).then(summary => {
-                    if (token !== state.hydration) return;
-                    const m = view.model(summary && summary.market, { yes: summary && summary.yes, no: summary && summary.no });
-                    const text = !m.exists
-                        ? t('parcelCompare.market.none', 'No market')
-                        : (finite(m.yesOdds) ? `${t('bets.row.poolShare', '{{percent}} of pool', { percent: CbFormat.formatPercent(m.yesOdds, { ofHundred: true, maxFractionDigits: 1 }) })} · ${t('parcelCompare.market.totalStake', '{{amount}} total stake', { amount: CbFormat.formatMoney(Number(view.formatAtomic(m.total)), 'USDC') })}` : t('parcelCompare.market.noStakes', 'No stakes yet'));
-                    setCell(dialog, 'market', side, text);
-                }).catch(error => {
-                    console.warn(`[${new Date().toISOString()}] [ParcelCompare] market summary unavailable`, error);
-                    if (token !== state.hydration) return;
-                    setCell(dialog, 'market', side, unavailable);
-                });
-            }
-        });
     }
 
     // ── public ──────────────────────────────────────────────────────────────────────────────
@@ -546,7 +397,7 @@
         const defaults = state.candidates.map(c => keyOf(c.proposal)).filter(key => !wanted.includes(key));
         const picks = wanted.concat(defaults);
         state.picked = [picks[0] || null, picks.find(key => key !== picks[0]) || null];
-        if (global.ParcelMenu && typeof global.ParcelMenu.close === 'function') global.ParcelMenu.close();
+        global.ClickStack?.close();
         render();
         const dialog = ensureDialog();
         if (!dialog.open) dialog.showModal();

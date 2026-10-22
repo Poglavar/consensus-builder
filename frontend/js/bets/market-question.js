@@ -5,8 +5,14 @@
 // build(tuple, { templates, locale }) returns { question, settles, absence, closesAt, deadlineLabel,
 // eventType, subjectText, yesText, noText, recipeBody } and throws on an invalid tuple.
 //
+// agreementQuestion(title) and contestQuestion(place) are the undated questions of the Bets sheet:
+// one agreement's pool ("Will <title> execute on-chain?", settled by the agreement-execution-v1
+// recipe, backend/oracle/market-recipe.js) and a contest of agreements over the same land.
+//
 // Display templates. English defaults are TEMPLATES; options.templates overrides any of them so the
 // i18n layer can supply hr/es/sr. Placeholders are {{name}}, as in frontend/i18n.
+//   question.agreement the undated question of one agreement's pool, from {{title}}
+//   question.contest   the undated question of a contest, from {{place}}
 //   question.<rule>    the question, ending in '?'
 //   settles.<rule>     the yes/no sentence of how it settles
 //   settledBy.chain    closing sentence when the chain settles it (agreed)
@@ -15,7 +21,7 @@
 //                      ('few', ...) is picked with options.locale (default 'en')
 //   date               the deadline label, from {{day}} {{month}} {{year}}
 //   months             the twelve month names, an array
-// <rule>: agreed.proposal, adopted.operation, adopted.plan, permitted.permitIssued,
+// <rule>: agreed.agreement, adopted.operation, adopted.plan, permitted.permitIssued,
 //   permitted.anyFiled, permitted.anyIssued, built.permitCompleted, built.anyCompleted.
 // Placeholders: authority, label, deadline (the label), parcels, count, permitNumber, planId, operation.
 //
@@ -39,7 +45,7 @@
 
     // The ladder of public decisions a site climbs, in order.
     const MILESTONES = Object.freeze([
-        { id: 'agreed', description: 'Every owner of the parcels signs the proposal.' },
+        { id: 'agreed', description: 'The agreement over the parcels executes on-chain.' },
         { id: 'adopted', description: 'The city adopts the plan or plan amendment for the parcels.' },
         { id: 'permitted', description: 'A building permit for the parcels is filed or issued.' },
         { id: 'built', description: 'A building on the parcels is completed.' }
@@ -48,8 +54,8 @@
     // Evidence sources and the rungs each may settle. A source kept by one city settles only markets
     // in that jurisdiction; null means any.
     const SOURCES = Object.freeze([
-        { id: 'proposal-nft-v3', milestones: ['agreed'], jurisdiction: null,
-            description: 'The proposal account on Solana: Executed, Cancelled or Expired.' },
+        { id: 'agreement-v1', milestones: ['agreed'], jurisdiction: null,
+            description: 'The agreement account on Solana: Executed, Cancelled or Expired.' },
         { id: 'sf-legislation-v1', milestones: ['adopted'], jurisdiction: 'US-CA-SF',
             description: "San Francisco's legislation records: ordinances and resolutions." },
         { id: 'zagreb-gazette-v1', milestones: ['adopted'], jurisdiction: 'HR-ZAGREB',
@@ -59,7 +65,9 @@
     ].map(source => Object.freeze({ ...source, milestones: Object.freeze(source.milestones) })));
 
     const TEMPLATES = Object.freeze({
-        'question.agreed.proposal': 'Will all owners of the {{parcels}} of {{label}} sign by {{deadline}}?',
+        'question.agreement': 'Will {{title}} execute on-chain?',
+        'question.contest': 'Which agreement over {{place}} will execute?',
+        'question.agreed.agreement': 'Will {{label}} execute on-chain by {{deadline}}?',
         'question.adopted.operation': 'Will {{authority}} adopt {{operation}} by {{deadline}}?',
         'question.adopted.plan': 'Will {{authority}} adopt {{planId}} by {{deadline}}?',
         'question.permitted.permitIssued': 'Will {{authority}} issue building permit {{permitNumber}} for {{label}} by {{deadline}}?',
@@ -67,7 +75,7 @@
         'question.permitted.anyIssued': 'Will {{authority}} issue a new-construction building permit for {{label}} by {{deadline}}?',
         'question.built.permitCompleted': 'Will the work under building permit {{permitNumber}} at {{label}} be completed by {{deadline}}?',
         'question.built.anyCompleted': 'Will a building be completed at {{label}} by {{deadline}}?',
-        'settles.agreed.proposal': "Yes if the proposal's account on Solana reaches Executed on or before {{deadline}}; no if the proposal is cancelled or expires first, or that date passes before it is executed.",
+        'settles.agreed.agreement': "Yes if the agreement's account on Solana reaches Executed on or before {{deadline}}; no if the agreement is cancelled or expires first, or that date passes before it is executed.",
         'settles.adopted.operation': "Yes if a verifier named in the market confirms that San Francisco's legislation records hold an ordinance or resolution adopting {{operation}}, recorded on or before {{deadline}}; no if that date passes without such a record.",
         'settles.adopted.plan': 'Yes if the decision adopting {{planId}} is published in the official gazette of the City of Zagreb on or before {{deadline}}; no if that date passes without such a record.',
         'settles.permitted.permitIssued': 'Yes if the San Francisco Department of Building Inspection permits dataset shows permit {{permitNumber}} with an issued date on or before {{deadline}}; no if that date passes without such a record.',
@@ -75,7 +83,7 @@
         'settles.permitted.anyIssued': 'Yes if the San Francisco Department of Building Inspection permits dataset shows a new-construction building permit on {{label}} ({{parcels}}) with an issued date after {{since}} and on or before {{deadline}}; no if that date passes without such a record.',
         'settles.built.permitCompleted': 'Yes if the San Francisco Department of Building Inspection permits dataset shows permit {{permitNumber}} with a completed date on or before {{deadline}}; no if that date passes without such a record.',
         'settles.built.anyCompleted': 'Yes if the San Francisco Department of Building Inspection permits dataset shows a new-construction building permit on {{label}} ({{parcels}}) with a completed date after {{since}} and on or before {{deadline}}; no if that date passes without such a record.',
-        'settledBy.chain': 'Anyone can settle it from the proposal account on Solana.',
+        'settledBy.chain': 'Anyone can settle it from the agreement account on Solana.',
         'settledBy.record': 'Anyone can settle it from the public record.',
         'parcels.one': '{{count}} parcel',
         'parcels.other': '{{count}} parcels',
@@ -88,9 +96,9 @@
     // clause), the no text where the record itself can say no, and what absence at the deadline means.
     // These texts are hashed on-chain: changing one changes every market built from it.
     const RULES = {
-        'agreed.proposal': { eventType: 'proposal_executed', absence: 'no',
-            yes: fields => `proposal ${fields.proposalAccount} executed`,
-            no: fields => `proposal ${fields.proposalAccount} cancelled, expired or not executed` },
+        'agreed.agreement': { eventType: 'agreement_executed', absence: 'no',
+            yes: fields => `agreement ${fields.agreementAccount} executed`,
+            no: fields => `agreement ${fields.agreementAccount} cancelled, expired or not executed` },
         'adopted.operation': { eventType: 'plan_adopted', absence: 'no',
             yes: fields => `ordinance or resolution adopting ${fields.operation} recorded` },
         'adopted.plan': { eventType: 'plan_adopted', absence: 'no',
@@ -138,7 +146,7 @@
             label: text(subject.label, 'subject.label'),
             // Deduplicated and sorted by code unit, so any order of the same land is the same market.
             parcelIds: [...new Set(subject.parcelIds)].sort(),
-            proposalAccount: subject.proposalAccount
+            agreementAccount: subject.agreementAccount
         };
     }
 
@@ -220,12 +228,12 @@
         if (source.jurisdiction && source.jurisdiction !== subject.jurisdiction) {
             throw new Error(`${source.id} covers ${source.jurisdiction}, not ${subject.jurisdiction}`);
         }
-        if (source.id === 'proposal-nft-v3') {
+        if (source.id === 'agreement-v1') {
             // The rule reads this account's status, so an agreed market without it cannot settle.
-            if (typeof subject.proposalAccount !== 'string' || !SOLANA_ACCOUNT.test(subject.proposalAccount)) {
-                throw new Error('an agreed market needs subject.proposalAccount, the proposal account on Solana');
+            if (typeof subject.agreementAccount !== 'string' || !SOLANA_ACCOUNT.test(subject.agreementAccount)) {
+                throw new Error('an agreed market needs subject.agreementAccount, the agreement account on Solana');
             }
-            return { source, rule: 'agreed.proposal', fields: { proposalAccount: subject.proposalAccount } };
+            return { source, rule: 'agreed.agreement', fields: { agreementAccount: subject.agreementAccount } };
         }
         if (source.id === 'sf-legislation-v1') {
             return { source, rule: 'adopted.operation', fields: { operation: text(evidence.operation, 'evidence.operation') } };
@@ -285,7 +293,7 @@
             planId: fields.planId,
             operation: fields.operation
         };
-        const settledBy = rule === 'agreed.proposal' ? 'settledBy.chain' : 'settledBy.record';
+        const settledBy = rule === 'agreed.agreement' ? 'settledBy.chain' : 'settledBy.record';
         return {
             deadlineLabel,
             question: fill(templates[`question.${rule}`], vars, `question.${rule}`),
@@ -339,5 +347,18 @@
         };
     }
 
-    return { MILESTONES, SOURCES, TEMPLATES, build, parcelSetHash, subjectTextOf };
+    // The undated questions of the Bets sheet (options.templates overrides them, as for build): one
+    // agreement's pool, which settles from its account's terminal status, and a contest of several
+    // agreements over the same land, of which any number may execute.
+    function agreementQuestion(title, options = {}) {
+        const templates = readTemplates(options && options.templates);
+        return fill(templates['question.agreement'], { title: text(title, 'title') }, 'question.agreement');
+    }
+
+    function contestQuestion(place, options = {}) {
+        const templates = readTemplates(options && options.templates);
+        return fill(templates['question.contest'], { place: text(place, 'place') }, 'question.contest');
+    }
+
+    return { MILESTONES, SOURCES, TEMPLATES, build, agreementQuestion, contestQuestion, parcelSetHash, subjectTextOf };
 });

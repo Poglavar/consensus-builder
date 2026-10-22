@@ -66,7 +66,7 @@
     // footprint twice per listed parcel: 116 parcels froze the page for minutes (2026-10-12).
     // Keyed by the record object; the content key catches an in-place edit of its geometry. The
     // cached feature is shared by every caller and treated as immutable: no caller mutates a
-    // footprint, and ownership-flow.js relies on "same object = unchanged record".
+    // footprint.
     const footprintCache = new WeakMap();
     const footprintKeyOf = parts => JSON.stringify([parts.polygons, parts.centerline ? parts.centerline.definition : null]);
 
@@ -229,7 +229,7 @@
     }
 
     function numericRecordId(record) {
-        const candidates = record ? [record.serverProposalId, record.serverId, record.id] : [];
+        const candidates = record ? [record.id] : [];
         for (const value of candidates) {
             if (typeof value === 'number' && Number.isFinite(value)) return value;
             if (typeof value === 'string' && /^\d+$/.test(value)) return Number(value);

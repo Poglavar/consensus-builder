@@ -29,8 +29,10 @@ The final [archived project landing page](https://web.archive.org/web/2019011119
 ## Reproduction
 
 ```bash
-node backend/scripts/seed-pionir-observed-proposals.mjs --apply --export
+node backend/scripts/seed-pionir-observed-proposals.mjs --export
 ```
+
+Publish it as designs plus the project's agreement with `backend/scripts/publish-restatement-archives.mjs` ([collection README](../README.md#publishing-designs-and-agreements)).
 
 `proposal.geojson` uses `consensus-builder.reconstruction.v1` and must survive a lossless export/import/export round trip.
 

@@ -2,9 +2,9 @@
 //
 // Deleting a middle section of a road disconnects it, and the remainder becomes a fresh record via
 // makeFreshRoadSnapshot. That record's cadastreParcelIds shrink to the land its footprint reaches,
-// but ownerAcceptances / acceptedParcelIds / ownershipFlow were cloned whole from the source — so the
-// load boundary rejected it ("ownerAcceptances.HR-335550-1791/69 contains live parcel id …") and the
-// whole edit reverted: sections of an applied road could not be removed at all.
+// but its ownershipFlow was cloned whole from the source — so the load boundary rejected it
+// ("ownershipFlow[1].parcelId … contains live parcel id …") and the whole edit reverted: sections of
+// an applied road could not be removed at all. (A design carries no acceptance tally since M2.)
 //
 // Runs the real makeFreshRoadSnapshot of the loaded road-drawing.js (helpers/road-drawing-env.js)
 // over a live fabric holding both parcels and the real authored-record.js.
@@ -43,11 +43,7 @@ const source = () => ({
     title: 'UPU Borovje – ulična mreža',
     goal: 'road-track',
     cadastreParcelIds: [KEPT, DROPPED],
-    acceptedParcelIds: [KEPT, DROPPED],
-    ownerAcceptances: {
-        [KEPT]: { accepted: true, owner: 'agent_city' },
-        [DROPPED]: { accepted: true, owner: 'agent_city' }
-    },
+    published: { cid: 'bafkreibm6jg3ux5qumhcn2b3flc3tyu6dmlb4xa7u5bf44yegnrjhc4yeq', publishedAt: '2026-10-21T10:00:00.000Z', apiBase: 'https://api.example.test' },
     ownershipFlow: [{ parcelId: KEPT, to: 'agent_city' }, { parcelId: DROPPED, to: 'agent_city' }],
     roadProposal: { definition: { width: 19, points: [] } }
 });
@@ -58,11 +54,16 @@ describe('split-off road stretch land claims', () => {
             { sourceLocalProposalId: 'upu-borovje-ulice' });
 
         expect(stretch.cadastreParcelIds).toEqual([KEPT]);
-        expect(stretch.acceptedParcelIds).toEqual([KEPT]);
-        expect(Object.keys(stretch.ownerAcceptances)).toEqual([KEPT]);
         expect(stretch.ownershipFlow.map(entry => entry.parcelId)).toEqual([KEPT]);
+        // A new record: none of the source's identity, its publication mark included (the only
+        // published identity a design has, M3), and a CID link to the published source.
+        expect(stretch).not.toHaveProperty('proposalId');
+        expect(stretch).not.toHaveProperty('published');
+        expect(stretch.origin).toEqual({ cid: 'bafkreibm6jg3ux5qumhcn2b3flc3tyu6dmlb4xa7u5bf44yegnrjhc4yeq' });
+        // The published source is named by its CID, not by this browser's key for it.
         expect(stretch.proposalOrigin).toEqual({
-            relation: 'revision', source: { kind: 'local', localProposalId: 'upu-borovje-ulice' }, title: 'UPU Borovje – ulična mreža'
+            relation: 'revision', source: { kind: 'design', cid: 'bafkreibm6jg3ux5qumhcn2b3flc3tyu6dmlb4xa7u5bf44yegnrjhc4yeq' },
+            title: 'UPU Borovje – ulična mreža'
         });
         expect(stretch.applied).toBe(false);
         // The exact check that rejected the split before.
@@ -72,6 +73,7 @@ describe('split-off road stretch land claims', () => {
     it('leaves the source record untouched', () => {
         const original = source();
         loadSnapshot()(original, { width: 19, points: [[]], polygon: STRETCH_LAND }, {});
-        expect(Object.keys(original.ownerAcceptances)).toEqual([KEPT, DROPPED]);
+        expect(original.ownershipFlow.map(entry => entry.parcelId)).toEqual([KEPT, DROPPED]);
+        expect(original.published.cid).toBe('bafkreibm6jg3ux5qumhcn2b3flc3tyu6dmlb4xa7u5bf44yegnrjhc4yeq');
     });
 });

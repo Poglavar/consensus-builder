@@ -1,10 +1,6 @@
 /* proposals/bootstrap.js — final browser wiring for the proposal subsystem. */
 
 if (typeof window !== 'undefined') {
-    window.simulateSaleOfferPurchase = simulateSaleOfferPurchase;
-    window.recordRecipientConsent = recordRecipientConsent;
-    window.isProposalOpenSaleOffer = isProposalOpenSaleOffer;
-    window.acceptAsRecipient = acceptAsRecipient;
     window.proposalHighlightStyleOverride = proposalHighlightStyleOverride;
 
     window.currentlyHighlightedProposal = null;
@@ -62,7 +58,7 @@ if (typeof window !== 'undefined') {
     window.setProposalBoundaryMode = setProposalBoundaryMode;
     window.handleUrbanRuleMainTypeClick = handleUrbanRuleMainTypeClick;
     window.handleUrbanRuleTypologyClick = handleUrbanRuleTypologyClick;
-    window.handleReparcellizationAlgorithmClick = handleReparcellizationAlgorithmClick;
+    window.ensureParcelLayoutModuleLoaded = ensureParcelLayoutModuleLoaded;
     window.applyContiguityConstraints = applyContiguityConstraints;
     window.populateProposalAuthorUI = populateProposalAuthorUI;
     window.getProposalAuthorValue = getProposalAuthorValue;
@@ -91,14 +87,6 @@ if (typeof window !== 'undefined') {
     window.showProposalDetailsModal = showProposalDetailsModal;
     window.updateShowProposalsButton = updateShowProposalsButton;
     window.updateProposalLayer = updateProposalLayer;
-    window.toggleExpiryInput = toggleExpiryInput;
-    window.toggleDecayInput = toggleDecayInput;
-    window.calculateDecayedOffer = calculateDecayedOffer;
-    window.getDecayProgress = getDecayProgress;
-    window.initializeDecayCountdown = initializeDecayCountdown;
-    window.isProposalExpired = isProposalExpired;
-    window.checkAndUpdateProposalExpiry = checkAndUpdateProposalExpiry;
-    window.initializeExpiryCountdown = initializeExpiryCountdown;
     window.clearLocalProposalData = clearLocalProposalData;
     window.centerOnProposal = centerOnProposal;
     window.reapplyProposalHighlights = reapplyProposalHighlights;
@@ -150,8 +138,6 @@ if (typeof window !== 'undefined' && typeof window.whenAppBooted === 'function')
             }
         };
         run('proposal route', () => handleProposalRouteFromUrl());
-        run('single proposal share', () => handleSingleProposalShareFromUrl());
-        run('shared proposals', () => handleSharedProposalsFromUrl());
         run('standalone 3D mode', () => handleStandalone3DModeFromUrl());
     });
 } else if (typeof window !== 'undefined') {
@@ -182,13 +168,7 @@ if (typeof document !== 'undefined') {
 if (typeof window !== 'undefined') {
     window.proposalStorage = proposalStorage;
     window.multiParcelSelection = multiParcelSelection;
-    window.getProposalOwnerAcceptanceState = getProposalOwnerAcceptanceState;
-    window.buildOwnerAcceptanceSectionHtml = buildOwnerAcceptanceSectionHtml;
-    window.handleUserRejectProposal = handleUserRejectProposal;
     window.handleProposalParcelClick = handleProposalParcelClick;
-    window.openProposalBoostDialog = openProposalBoostDialog;
-    window.submitProposalBoost = submitProposalBoost;
-    window.closeProposalBoostDialog = closeProposalBoostDialog;
 
     window.addEventListener('parcelDataLoaded', (event) => {
         // Cadastral arrivals are already integrated — including road cuts — before this committed
@@ -212,9 +192,4 @@ if (typeof window !== 'undefined') {
         }
         layer.bringToFront();
     });
-
-    window.formatProposalOfferValue = formatProposalOfferValue;
-    window.handleProposalOfferInput = handleProposalOfferInput;
-    window.formatProposalOfferInput = formatProposalOfferInput;
-    window.parseProposalOfferValue = parseProposalOfferValue;
 }

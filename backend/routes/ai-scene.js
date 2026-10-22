@@ -20,7 +20,7 @@ const OPENAI_EDITS_ENDPOINT = 'https://api.openai.com/v1/images/edits';
 const XAI_EDITS_ENDPOINT = 'https://api.x.ai/v1/images/edits';
 const FAL_RUN_ENDPOINT = 'https://fal.run';
 
-// Short URL-safe slug for a shared render: /proposals/:id?scene=<slug>. Lowercase base36 on
+// Short URL-safe slug for a shared render: /designs/<cid>?scene=<slug>. Lowercase base36 on
 // purpose — saveImageBuffer lowercases the on-disk filename. The file is `scene-<slug>-<random>.<ext>`
 // (never overwritten); the DB stores the returned imagePath, so nothing derives the name from the slug.
 const SLUG_ALPHABET = 'abcdefghijklmnopqrstuvwxyz0123456789';

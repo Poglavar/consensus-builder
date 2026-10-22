@@ -10,7 +10,7 @@
     const CREATABLE_PROPOSAL_GOALS = designGoals.keys;
 
     // Physical, material drafts may be explicitly moved to a new site. Parcel acts and
-    // readjustments remain tied to their authored scope/deal, and the building rules (Block, Row,
+    // parcel layouts remain tied to their authored scope and pool, and the building rules (Block, Row,
     // Detached) to their parcels: leaving them is a conversion to a Freeform building or a re-run of
     // the rule on the parcels there (proposals/freeform-conversion.js), never a free placement.
     const FREE_PLACEMENT_GOALS = new Set([
@@ -18,13 +18,16 @@
     ]);
     const KNOWN_SITE_COVERAGE = new Set(['complete', 'partial', 'none']);
 
-    function placementMessage(key, fallback) {
+    function translate(key, fallback) {
         try {
-            const i18nKey = `proposalDrafts.placement.${key}`;
-            const value = global.i18n?.t?.(i18nKey);
-            if (value && value !== i18nKey) return value;
+            const value = global.i18n?.t?.(key);
+            if (value && value !== key) return value;
         } catch (_) { }
         return fallback;
+    }
+
+    function placementMessage(key, fallback) {
+        return translate(`proposalDrafts.placement.${key}`, fallback);
     }
 
     function clone(value) {
@@ -76,11 +79,11 @@
     }
 
     function sourceGoal(proposal) {
-        return designGoals.keyOf(proposal) || (proposal?.goal === 'decide-later' ? 'decide-later' : '');
+        return designGoals.keyOf(proposal) || '';
     }
 
     function sourceId(proposal) {
-        const candidates = [proposal?.proposalId, proposal?.proposal_id, proposal?.chainProposalId, proposal?.hash, proposal?.id];
+        const candidates = [proposal?.proposalId, proposal?.id];
         const value = candidates.find(item => item !== undefined && item !== null && String(item));
         return value === undefined ? null : String(value);
     }
@@ -112,23 +115,12 @@
             binding: clone(proposal?.binding || null),
             site: clone(proposal?.site || null),
             toleranceM: Number.isFinite(Number(proposal?.toleranceM)) ? Number(proposal.toleranceM) : 0,
-            offer: Number.isFinite(Number(proposal?.offer)) ? Number(proposal.offer) : 0,
-            offerCurrency: proposal?.offerCurrency || proposal?.budgetCurrency || 'USDT',
             acquisitionMode: proposal?.acquisitionMode || null,
             boundaryAdjustment: proposal?.boundaryAdjustment || null,
             ownership: proposal?.facets?.ownership || proposal?.proposalFacets?.ownership || null,
             recipientScope: proposal?.facets?.recipientScope || proposal?.proposalFacets?.recipientScope || proposal?.recipientScope || null,
             recipientAddress: proposal?.facets?.recipientAddress || proposal?.proposalFacets?.recipientAddress || proposal?.recipientAddress || null,
-            isConditional: proposal?.isConditional === true,
-            expiresAt: proposal?.expiresAt || null,
-            decayEnabled: proposal?.decayEnabled === true,
-            decayPercent: Number(proposal?.decayPercent) || 0,
-            decayDurationMs: Number(proposal?.decayDurationMs) || 0,
-            depositEnabled: proposal?.depositEnabled === true,
-            depositPercent: Number(proposal?.depositPercent) || 0,
-            facets: clone(proposal?.facets || proposal?.proposalFacets || null),
-            approvalConfig: clone(proposal?.approvalConfig || null),
-            lens: clone(Array.isArray(proposal?.lens) ? proposal.lens : [])
+            facets: clone(proposal?.facets || proposal?.proposalFacets || null)
         };
     }
 
@@ -210,6 +202,13 @@
         if (global.__siteDraft) return global.__siteDraft;
         if (typeof require === 'function') return require('./proposals/site-draft.js');
         throw new Error('Cannot validate a draft: proposals/site-draft.js is not loaded.');
+    }
+
+    // The keys of a published or minted identity (proposals/corridor-authoring.js).
+    function publishedIdentityKeys() {
+        const api = global.CorridorAuthoring || (typeof require === 'function' ? require('./proposals/corridor-authoring.js') : null);
+        if (!api) throw new Error('Cannot build proposal: proposals/corridor-authoring.js is not loaded.');
+        return api.PUBLISHED_IDENTITY_KEYS;
     }
 
     // Synthetic plots cut from a site on bare ground (proposals/site-plots.js) are design input,
@@ -382,14 +381,6 @@
         } catch (_) { return false; }
     }
 
-    function planFeatures(plan) {
-        return (Array.isArray(plan?.polygons) ? plan.polygons : []).map((polygon, index) => ({
-            type: 'Feature',
-            properties: { index, ownerKey: polygon.ownerKey || null },
-            geometry: clone(polygon.geometry || polygon)
-        })).filter(feature => featureGeometryValid(feature));
-    }
-
     function geometryArea(value) {
         try {
             if (turfRef && typeof turfRef.area === 'function' && value) {
@@ -400,27 +391,28 @@
         return null;
     }
 
-    // `options.site`: a subdivision (plan.poolSource 'site', PARCEL-OPTIONAL.md phase 4) is
-    // checked against its SITE — the bound parcels' part and the open ground alike — so the plots
-    // must tile exactly the site's ground, whatever pool geometry the plan carries.
-    function reparcellizationTopologyValidation(plan, options = {}) {
-        const validator = global.ReparcellizationValidation
-            || (typeof require === 'function' ? require('./reparcellization-validation.js') : null);
-        if (!validator) throw new Error('Readjustment validation is unavailable.');
-        const result = validator.validatePlan(plan, options.fields || {}, { turf: turfRef, site: options.site });
+    // `site`: a subdivision (plan.poolSource 'site', PARCEL-OPTIONAL.md phase 4) is checked against
+    // its SITE, the bound parcels' part and the open ground alike, so the plots must tile exactly the
+    // site's ground, whatever pool geometry the layout carries.
+    function parcelLayoutGeometryValidation(plan, site) {
+        const validator = global.ParcelLayoutValidation
+            || (typeof require === 'function' ? require('./parcel-layout-validation.js') : null);
+        if (!validator || typeof validator.validate !== 'function') throw new Error('Parcel layout validation is unavailable.');
+        const result = validator.validate(plan, { turf: turfRef || global.turf, ...(site ? { site } : {}) });
         const shape = item => issue(item.code, item.message, 'editorPayload.plan',
-            item.plotIndex == null ? null : plan?.polygons?.[item.plotIndex]?.geometry);
-        return { ...result, errors: result.errors.map(shape), warnings: result.warnings.map(shape) };
+            item.plotIndex == null ? null : plan?.plots?.[item.plotIndex]?.geometry);
+        return { errors: (result.errors || []).map(shape), warnings: (result.warnings || []).map(shape) };
     }
 
+    // A draft's source as a new design: none of the source's local or published (`published`)
+    // identity, lifecycle or consent carries over.
     function stripImmutableProposalIdentity(proposal) {
         const output = clone(proposal || {});
         [
-            'proposalId', 'proposal_id', 'id', 'hash', 'chainProposalId', 'tokenId', 'onchain', 'nft',
-            'onchainData', 'serverProposalId', 'isMinted', 'chainId', 'contractAddress', 'metadataUri',
-            'imageURI', 'chainRef', 'lifecycleStatus', 'effectiveStatus', 'effective_status', 'mintedAt', 'publishedAt',
-            'createdAt', 'updatedAt', 'acceptedParcelIds', 'ownerAcceptances', 'ownerApprovals',
-            'ownerApprovalHistory', 'ownershipApprovals', 'executedAt', 'appliedAt', 'localPurchaseSimulation'
+            ...publishedIdentityKeys(),
+            'proposalId', 'id',
+            'lifecycleStatus', 'effectiveStatus', 'effective_status',
+            'createdAt', 'updatedAt', 'executedAt', 'appliedAt', 'localPurchaseSimulation'
         ].forEach(key => delete output[key]);
         return output;
     }
@@ -453,13 +445,9 @@
             output.site = clone(draft.editorPayload.placement.site);
             output.binding = clone(fields.binding);
             output.freePlacement = true;
-            // A moved draft is a new authored effect. Never inherit a prior server preparation,
-            // approval stamp or effect/cadastre snapshot from its source record.
-            [
-                'preparation', 'preparedArtifact', 'preparedAt', 'preparationId', 'effectHash',
-                'ownershipFlow', 'cadastreFrame', 'acceptedParcelIds', 'ownerAcceptances',
-                'ownerApprovals', 'ownerApprovalHistory', 'ownershipApprovals'
-            ].forEach(key => delete output[key]);
+            // A moved draft is a new authored effect. Never inherit the ownership flow or cadastre
+            // snapshot from its source record.
+            ['ownershipFlow', 'cadastreFrame'].forEach(key => delete output[key]);
         } else if (fields.binding && typeof fields.binding === 'object') output.binding = clone(fields.binding);
         output.title = fields.name || output.title || output.name || '';
         if (fields.titleOrigin === 'generated' || fields.titleOrigin === 'user') output.titleOrigin = fields.titleOrigin;
@@ -468,28 +456,8 @@
         output.proposalName = output.title;
         output.description = fields.description || '';
         output.cadastreParcelIds = cadastreParcelIds.slice();
-        // The kind and its terms through the one builder every publish path uses
-        // (proposals/publish-terms.js). A local draft has no kind and no invented offer.
-        const publishTerms = global.ProposalPublishTerms || require('./proposals/publish-terms.js');
-        Object.assign(output, publishTerms.publishFields(fields, {
-            saleOffer: global.ProposalKind?.isOwnerSaleOffer?.(output) === true
-        }));
         output.acquisitionMode = fields.acquisitionMode || output.acquisitionMode || null;
         output.boundaryAdjustment = fields.boundaryAdjustment || output.boundaryAdjustment || null;
-        const approval = global.ProposalApproval;
-        const approvalConfig = publishTerms.approvalSetupFor({
-            kind: output.kind ?? null,
-            readjustment: output.goal === 'reparcellization' || !!output.reparcellization,
-            approvalConfig: fields.approvalConfig && typeof fields.approvalConfig === 'object' ? fields.approvalConfig : null,
-            fromDraft: true
-        });
-        if (!approvalConfig) delete output.approvalConfig;
-        else output.approvalConfig = approval?.normalizeConfig ? approval.normalizeConfig(approvalConfig) : clone(approvalConfig);
-        if (Array.isArray(fields.lens)) {
-            output.lens = clone(fields.lens);
-        } else {
-            delete output.lens;
-        }
         const facets = clone(fields.facets || output.facets || output.proposalFacets || {}) || {};
         if (fields.ownership !== undefined && fields.ownership !== null && fields.ownership !== '') facets.ownership = fields.ownership;
         if (fields.recipientScope !== undefined && fields.recipientScope !== null && fields.recipientScope !== '') facets.recipientScope = fields.recipientScope;
@@ -521,28 +489,20 @@
         try { return stable(a) === stable(b); } catch (_) { return a === b; }
     }
 
-    function summarizeCommonChanges(source, draft) {
+    // `facetKeys` limits the compared fields to those the draft's editor offers (a parcel layout has
+    // only its name and description besides its geometry).
+    function summarizeCommonChanges(source, draft, { facetKeys = null } = {}) {
         const before = sourceFields(source || {});
         const after = draft.fields || {};
-        const facets = [
+        const allFacets = [
             ['name', 'Name'],
             ['description', 'Description'],
-            ['offer', 'Offer'],
-            ['offerCurrency', 'Currency'],
             ['ownership', 'Ownership'],
             ['recipientScope', 'Recipient'],
             ['recipientAddress', 'Recipient address'],
-            ['acquisitionMode', 'Acquisition'],
-            ['isConditional', 'Conditional terms'],
-            ['expiresAt', 'Expiry'],
-            ['decayEnabled', 'Decay'],
-            ['decayPercent', 'Decay percent'],
-            ['decayDurationMs', 'Decay duration'],
-            ['depositEnabled', 'Deposit'],
-            ['depositPercent', 'Deposit percent'],
-            ['approvalConfig', 'Approval rights and policy'],
-            ['lens', 'Lens members']
+            ['acquisitionMode', 'Acquisition']
         ];
+        const facets = Array.isArray(facetKeys) ? allFacets.filter(([key]) => facetKeys.includes(key)) : allFacets;
         const changedFacets = facets.filter(([key]) => !same(before[key], after[key])).map(([key, label]) => ({
             key,
             label,
@@ -784,7 +744,7 @@
             ? draft.fields?.site : null;
         const footprint = authoredBuildingSite || draft.editorPayload?.structureProposal?.geometry
             || draft.editorPayload?.definition?.polygon
-            || draft.editorPayload?.plan?.poolGeometry
+            || draft.editorPayload?.plan?.pool
             || draft.editorPayload?.geometry
             || draft.previewGeometry
             || null;
@@ -794,9 +754,9 @@
     function proposalTypeLabel(goal) {
         const labels = {
             'road-track': 'Road / Track', buildings: 'Block', row: 'Row houses', parcelBased: 'Detached houses',
-            single: 'Freeform building', reparcellization: 'Reparcellization', park: 'Park', square: 'Square', lake: 'Lake',
+            single: 'Freeform building', 'parcel-layout': 'Parcel layout', park: 'Park', square: 'Square', lake: 'Lake',
             station: 'Transit station',
-            'urban-rule': 'Urban rule', 'decide-later': 'Merge parcels', 'ownership-transfer': 'Ownership transfer', 'as-is': 'Proposal'
+            'urban-rule': 'Urban rule', 'ownership-transfer': 'Ownership transfer', 'as-is': 'Proposal'
         };
         return labels[goal] || String(goal || 'Proposal').replace(/-/g, ' ');
     }
@@ -805,7 +765,7 @@
         return {
             key,
             label: options.label || proposalTypeLabel(key),
-            sections: options.sections || ['parcels', 'ownership', 'approval', 'terms', 'details'],
+            sections: options.sections || ['parcels', 'details'],
             hasDesign: options.hasDesign === true,
             canEdit() { return true; },
             draftFromProposal(proposal) {
@@ -865,7 +825,7 @@
     function buildStructureAdapter(key) {
         const adapter = buildGenericAdapter(key, {
             hasDesign: true,
-            sections: ['design', 'parcels', 'ownership', 'approval', 'terms', 'details']
+            sections: ['design', 'parcels', 'details']
         });
         adapter.draftFromProposal = function draftStructureFromProposal(proposal) {
             const geometry = structureGeometry(proposal);
@@ -929,7 +889,7 @@
     function buildStationAdapter() {
         const adapter = buildGenericAdapter('station', {
             label: 'Transit station',
-            sections: ['design', 'parcels', 'ownership', 'approval', 'terms', 'details'],
+            sections: ['design', 'parcels', 'details'],
             hasDesign: true
         });
         adapter.draftFromProposal = function draftStationFromProposal(proposal) {
@@ -1012,7 +972,7 @@
     const corridorAdapter = {
         key: 'road-track',
         label: 'Road / Track',
-        sections: ['design', 'parcels', 'ownership', 'approval', 'terms', 'details'],
+        sections: ['design', 'parcels', 'details'],
         hasDesign: true,
         canEdit(proposal) {
             const definition = corridorDefinition(proposal);
@@ -1130,7 +1090,7 @@
         return {
             key,
             label: proposalTypeLabel(key),
-            sections: ['design', 'parcels', 'ownership', 'approval', 'terms', 'details'],
+            sections: ['design', 'parcels', 'details'],
             hasDesign: true,
             canEdit(proposal) {
                 const context = proposalBuildingContext(proposal);
@@ -1315,120 +1275,122 @@
         };
     }
 
-    const reparcellizationAdapter = {
-        key: 'reparcellization',
-        label: 'Reparcellization',
-        sections: ['design', 'parcels', 'ownership', 'approval', 'terms', 'details'],
+    // The record fields a parcel layout never carries: it is geometry only, and its owners belong to
+    // the agreement that includes it (plan-design-agreement.md, M1 (a)).
+    const PARCEL_LAYOUT_DROPPED_FIELDS = Object.freeze([
+        'acquisitionMode', 'boundaryAdjustment', 'facets', 'proposalFacets', 'recipientScope', 'recipientAddress'
+    ]);
+
+    // A layout's draft fields: its name, description and ground, never owners.
+    function parcelLayoutFields(proposal) {
+        const fields = sourceFields(proposal);
+        return Object.fromEntries(['name', 'titleOrigin', 'description', 'selectedParcelIds', 'cadastreParcelIds', 'binding', 'site', 'toleranceM']
+            .filter(key => key in fields).map(key => [key, fields[key]]));
+    }
+
+    function layoutPlotsArea(plots) {
+        return (Array.isArray(plots) ? plots : []).reduce((sum, plot) => sum + (geometryArea(plot?.geometry) || 0), 0);
+    }
+
+    const parcelLayoutAdapter = {
+        key: 'parcel-layout',
+        get label() { return translate('proposalDrafts.design.parcelLayout', 'Parcel layout'); },
+        sections: ['design', 'parcels', 'details'],
         hasDesign: true,
         canEdit(proposal) {
-            const plan = proposal?.reparcellization;
-            if (!plan || !Array.isArray(plan.polygons) || !plan.polygons.length) {
-                return { editable: false, reason: 'This reparcellization proposal does not contain valid replacement polygons.' };
+            const plots = proposal?.parcelLayout?.plots;
+            if (!Array.isArray(plots) || !plots.length) {
+                return { editable: false, reason: translate('proposalDrafts.errors.layoutWithoutPlots', 'This parcel layout has no plots.') };
             }
             return true;
         },
         draftFromProposal(proposal) {
-            const plan = clone(proposal.reparcellization || null);
+            const plan = clone(proposal.parcelLayout || null);
             return {
-                adapterKey: 'reparcellization',
-                proposalType: 'Reparcellization',
-                fields: sourceFields(proposal),
+                adapterKey: 'parcel-layout',
+                proposalType: 'ParcelLayout',
+                fields: parcelLayoutFields(proposal),
                 editorPayload: { plan },
-                previewGeometry: clone(plan?.polygons || null)
+                previewGeometry: clone(plan?.plots || null)
             };
         },
         validate(draft) {
             const common = commonValidation(draft);
             const plan = draft.editorPayload?.plan;
             const site = plan && plan.poolSource === 'site' ? siteDraftApi().draftSite(draft) : null;
-            const topology = reparcellizationTopologyValidation(plan, { site, fields: draft.fields });
+            const geometry = parcelLayoutGeometryValidation(plan, site);
             return {
-                valid: common.errors.length + topology.errors.length === 0,
-                errors: [...common.errors, ...topology.errors],
-                warnings: [...common.warnings, ...topology.warnings]
+                valid: common.errors.length + geometry.errors.length === 0,
+                errors: [...common.errors, ...geometry.errors],
+                warnings: [...common.warnings, ...geometry.warnings]
             };
         },
         renderPreview(draft, viewMode) {
-            return { kind: 'reparcellization', viewMode: viewMode || '2d', polygons: clone(draft.editorPayload?.plan?.polygons || []) };
+            return { kind: 'parcel-layout', viewMode: viewMode || '2d', plots: clone(draft.editorPayload?.plan?.plots || []) };
         },
         async openDesignEditor(draft) {
             const plan = clone(draft.editorPayload?.plan || {});
-            // A subdivision (PARCEL-OPTIONAL.md phase 4): the pool is the draft's site — the bound
-            // parcels' part (their owners contribute) and the open ground (no owner). The bound
-            // parcels are the site's binding, never a live selection.
+            let sitePool = null;
             if (plan.poolSource === 'site') {
+                // A subdivision (PARCEL-OPTIONAL.md phase 4): the pool is the draft's site, the bound
+                // parcels' part and the open ground alike. The bound parcels are the site's binding,
+                // never a live selection.
                 const site = siteDraftApi().draftSite(draft);
-                if (!site) throw new Error('This subdivision has no site.');
+                if (!site) throw new Error(translate('proposalDrafts.errors.subdivisionWithoutSite', 'This subdivision has no site.'));
                 const bound = boundParcelIds(draft.fields?.binding);
                 plan.parcelIds = bound.length ? bound
                     : [...new Set((draft.fields?.cadastreParcelIds || []).map(normalizeParcelId).filter(Boolean))];
-                plan.poolGeometry = site;
-                global.pendingReparcellizationPlan = plan;
-                if (typeof global.openReparcellizationModal !== 'function' && typeof global.ensureReparcellizationModuleLoaded === 'function') {
-                    await global.ensureReparcellizationModuleLoaded();
+                plan.pool = clone(site);
+                // The saved open-ground area guards a reopened subdivision against a changed cadastre.
+                sitePool = {
+                    site: clone(site),
+                    boundParcelIds: plan.parcelIds.slice(),
+                    expectedOpenGroundM2: typeof plan.openGroundM2 === 'number' && Number.isFinite(plan.openGroundM2) ? plan.openGroundM2 : null
+                };
+            } else {
+                const selection = await prepareProposalDraftParcelSelection(draft);
+                // Input land belongs to the draft fields and ultimately the record's single root
+                // cadastre declaration. The layout itself holds only its pool and plots.
+                plan.parcelIds = (draft.fields?.selectedParcelIds || selection.ids).filter(Boolean).map(String);
+                // A saved layout can be reopened without its parcels on the map: the editor fetches
+                // them by id. Only a layout with nothing to reopen on genuinely needs a live selection.
+                if (!selection.layers.length && !(Array.isArray(plan.plots) && plan.plots.length)) {
+                    throw new Error('The source parcels are not available in this city view.');
                 }
-                if (typeof global.openReparcellizationModal !== 'function') return false;
-                return global.openReparcellizationModal({
-                    algorithm: plan.algorithm || 'sweep-line',
-                    ownershipMode: 'multiple',
-                    initialPolygons: clone(plan.polygons || []),
-                    poolGeometry: clone(site),
-                    sitePool: { site: clone(site), boundParcelIds: plan.parcelIds.slice() },
-                    approvalConfig: clone(draft.fields?.approvalConfig || null)
-                });
             }
-            const selection = await prepareProposalDraftParcelSelection(draft);
-            // Input land belongs to the draft fields and ultimately the proposal's single root
-            // cadastre declaration. The reparcellization payload contains only its authored output.
-            plan.parcelIds = (draft.fields?.selectedParcelIds || selection.ids).filter(Boolean).map(String);
-            // A saved plan can be reopened without its parents on the map: the editor fetches them
-            // by id. Only a plan with nothing to reopen on genuinely needs a live selection.
-            if (!selection.layers.length && !(Array.isArray(plan.polygons) && plan.polygons.length)) {
-                throw new Error('The source parcels are not available in this city view.');
+            global.pendingParcelLayout = plan;
+            if (typeof global.openParcelLayoutEditor !== 'function' && typeof global.ensureParcelLayoutModuleLoaded === 'function') {
+                await global.ensureParcelLayoutModuleLoaded();
             }
-            global.pendingReparcellizationPlan = plan;
-            if (typeof global.openReparcellizationModal !== 'function' && typeof global.ensureReparcellizationModuleLoaded === 'function') {
-                await global.ensureReparcellizationModuleLoaded();
-            }
-            if (typeof global.openReparcellizationModal !== 'function') return false;
-            return global.openReparcellizationModal({
-                algorithm: plan.algorithm || 'sweep-line',
-                ownershipMode: plan.ownershipMode || 'multiple',
-                initialPolygons: clone(plan.polygons || []),
-                poolGeometry: clone(plan.poolGeometry || null),
-                approvalConfig: clone(draft.fields?.approvalConfig || null)
+            if (typeof global.openParcelLayoutEditor !== 'function') return false;
+            return global.openParcelLayoutEditor({
+                algorithm: plan.algorithm || 'equal',
+                initialPlots: clone(plan.plots || []),
+                pool: clone(plan.pool || null),
+                ...(sitePool ? { sitePool } : {}),
+                ...(Number.isFinite(plan.plotCount) ? { plotCount: plan.plotCount } : {})
             });
         },
         serializeProposal(draft) {
             const output = commonProposalFromDraft(draft);
             const plan = clone(draft.editorPayload?.plan || {});
             delete plan.parcelIds;
-            delete plan.agreementBatch;
-            output.goal = 'reparcellization';
-            output.primaryType = 'Reparcellization';
-            output.reparcellization = plan;
-            const agreements = global.ReparcellizationAgreements
-                || (typeof require === 'function' ? require('./reparcellization-agreements.js') : null);
-            output.offer = output.budget = agreements.cashOfferTotal(plan);
-            // The cash is in its valuation's currency, else the city's (city-money.js): a readjustment
-            // is edited in its own city. Not the stored offerCurrency, which a column default stamped
-            // USD on cash-free records.
-            const cityMoney = global.CityMoney || (typeof require === 'function' ? require('./city-money.js') : null);
-            output.offerCurrency = output.budgetCurrency = plan.valuationCurrency || cityMoney.currentCurrency();
+            PARCEL_LAYOUT_DROPPED_FIELDS.forEach(key => delete output[key]);
+            output.goal = 'parcel-layout';
+            output.primaryType = 'ParcelLayout';
+            output.parcelLayout = plan;
             return finalizeAuthoredProposal(output);
         },
         summarizeChanges(source, draft) {
-            const summary = summarizeCommonChanges(source, draft);
-            const before = source?.reparcellization?.polygons || [];
-            const after = draft.editorPayload?.plan?.polygons || [];
-            const totalArea = polygons => planFeatures({ polygons }).reduce((sum, feature) => sum + (geometryArea(feature) || 0), 0);
+            const summary = summarizeCommonChanges(source, draft, { facetKeys: ['name', 'description'] });
+            const before = source?.parcelLayout?.plots || [];
+            const after = draft.editorPayload?.plan?.plots || [];
             summary.geometry = {
                 changed: !same(before, after),
-                polygonCountBefore: before.length,
-                polygonCountAfter: after.length,
-                beforeArea: totalArea(before),
-                afterArea: totalArea(after),
-                ownershipChanged: !same(before.map(p => p.ownerKey || p.owners), after.map(p => p.ownerKey || p.owners))
+                plotCountBefore: before.length,
+                plotCountAfter: after.length,
+                beforeArea: layoutPlotsArea(before),
+                afterArea: layoutPlotsArea(after)
             };
             summary.unchanged = summary.unchanged && !summary.geometry.changed;
             return summary;
@@ -1438,20 +1400,16 @@
     function createRegistry() {
         const adapters = new Map();
         const aliases = new Map();
-        const readOnly = new Map();
 
         function register(key, adapter, options = {}) {
             const normalized = normalizeGoal(key);
             if (!normalized) throw new Error('Adapter key is required.');
-            const value = { ...adapter, key: adapter?.key || normalized };
+            // Accessors are copied as accessors, so a label read through i18n stays live.
+            const value = Object.defineProperties({}, Object.getOwnPropertyDescriptors(adapter || {}));
+            if (!value.key) value.key = normalized;
             adapters.set(normalized, value);
             (options.aliases || []).forEach(alias => aliases.set(normalizeGoal(alias), normalized));
             return value;
-        }
-
-        function declareReadOnly(key, reason) {
-            const normalized = normalizeGoal(key);
-            readOnly.set(normalized, reason || 'This proposal type is read-only.');
         }
 
         function get(keyOrProposal) {
@@ -1460,17 +1418,7 @@
             // (The generic 'building(s)' label normalizes to 'single' — an alias registered under
             // that name would shadow the Detached adapter and open the wrong design editor.)
             const key = adapters.has(rawKey) ? rawKey : (aliases.get(rawKey) || rawKey);
-            if (adapters.has(key)) return adapters.get(key);
-            if (readOnly.has(key)) {
-                return {
-                    key,
-                    label: proposalTypeLabel(key),
-                    sections: ['details'],
-                    hasDesign: false,
-                    canEdit: () => ({ editable: false, reason: readOnly.get(key) })
-                };
-            }
-            return null;
+            return adapters.get(key) || null;
         }
 
         function canEdit(proposal) {
@@ -1483,16 +1431,15 @@
         }
 
         function completeness(goals = CREATABLE_PROPOSAL_GOALS) {
-            const missing = goals.map(normalizeGoal).filter(key => !adapters.has(key) && !readOnly.has(key));
+            const missing = goals.map(normalizeGoal).filter(key => !adapters.has(key));
             return { complete: missing.length === 0, missing };
         }
 
         function list() {
-            return [...adapters.entries()].map(([key, adapter]) => ({ key, label: adapter.label || proposalTypeLabel(key), readOnly: false }))
-                .concat([...readOnly.entries()].map(([key, reason]) => ({ key, label: proposalTypeLabel(key), readOnly: true, reason })));
+            return [...adapters.entries()].map(([key, adapter]) => ({ key, label: adapter.label || proposalTypeLabel(key) }));
         }
 
-        return { register, declareReadOnly, get, getAdapter: get, canEdit, completeness, list, normalizeGoal };
+        return { register, get, getAdapter: get, canEdit, completeness, list, normalizeGoal };
     }
 
     const registry = createRegistry();
@@ -1501,16 +1448,13 @@
     registry.register('row', buildBuildingAdapter('row'));
     registry.register('parcelBased', buildBuildingAdapter('parcelBased'), { aliases: ['parcel-based', 'parcelbased'] });
     registry.register('single', buildBuildingAdapter('single'), { aliases: ['single-building'] });
-    registry.register('reparcellization', reparcellizationAdapter);
+    registry.register('parcel-layout', parcelLayoutAdapter);
     registry.register('urban-rule', buildGenericAdapter('urban-rule'));
     registry.register('as-is', buildGenericAdapter('as-is'));
     registry.register('park', buildStructureAdapter('park'));
     registry.register('square', buildStructureAdapter('square'));
     registry.register('lake', buildStructureAdapter('lake'));
     registry.register('station', buildStationAdapter(), { aliases: ['transit-station'] });
-    // Existing stored merge proposals remain readable/applicable, but this removed goal cannot be
-    // used as the source of a new or replacement draft.
-    registry.declareReadOnly('decide-later', 'Merge / Decide Later is no longer a creatable proposal type.');
     registry.register('ownership-transfer', buildGenericAdapter('ownership-transfer'), {
         aliases: ['ownership-transfer-to-me', 'ownership-transfer-from-me']
     });
@@ -1578,7 +1522,7 @@
             normalizeGoal,
             corridorAdapter,
             buildBuildingAdapter,
-            reparcellizationAdapter,
+            parcelLayoutAdapter,
             buildGenericAdapter,
             buildStructureAdapter,
             buildStationAdapter,

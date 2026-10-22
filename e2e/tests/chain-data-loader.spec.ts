@@ -1,3 +1,5 @@
+// The chain loaders' reads of parcel NFTs: the Solana program address per cluster and the parcels a
+// wallet holds on EVM and on Solana. Designs are not minted (plan-design-agreement.md, M3).
 import { test, expect } from '../helpers/fixtures';
 import { waitForMapReady } from '../helpers/app';
 import {
@@ -9,6 +11,8 @@ import {
 } from '../helpers/blockchain';
 
 test.describe('Chain data loaders @features', () => {
+  // The loader resolves the ParcelNFT program, the one program it reads (agreements are read through
+  // agreement-bridge.js): a cluster without an address of its own resolves none, never devnet's.
   test('SolanaChainDataLoader does not fall back to devnet program IDs on mainnet', async ({ mockApi: page }) => {
     await page.route('**/contracts/addresses.json', (route) => {
       route.fulfill({
@@ -17,11 +21,9 @@ test.describe('Chain data loaders @features', () => {
         body: JSON.stringify({
           solana: {
             ParcelNFT: '4zadC1FgWPQLv6qv66mjEBthBqTvrmxL5oDcHQzNtkV1',
-            ProposalNFT: '3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg',
           },
           'solana-devnet': {
             ParcelNFT: '4zadC1FgWPQLv6qv66mjEBthBqTvrmxL5oDcHQzNtkV1',
-            ProposalNFT: '3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg',
           },
           'solana-mainnet-beta': {},
         }),
@@ -43,14 +45,14 @@ test.describe('Chain data loaders @features', () => {
       }
 
       return {
-        devnetProposal: await loader.resolveProgramAddress('solana-devnet', 'ProposalNFT'),
-        mainnetProposal: await loader.resolveProgramAddress('solana-mainnet-beta', 'ProposalNFT'),
+        devnetParcel: await loader.resolveProgramAddress('solana-devnet', 'ParcelNFT'),
+        mainnetParcel: await loader.resolveProgramAddress('solana-mainnet-beta', 'ParcelNFT'),
         mainnetAliasParcel: await loader.resolveProgramAddress('mainnet', 'ParcelNFT'),
       };
     });
 
-    expect(addresses.devnetProposal).toBe('3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg');
-    expect(addresses.mainnetProposal).toBeNull();
+    expect(addresses.devnetParcel).toBe('4zadC1FgWPQLv6qv66mjEBthBqTvrmxL5oDcHQzNtkV1');
+    expect(addresses.mainnetParcel).toBeNull();
     expect(addresses.mainnetAliasParcel).toBeNull();
   });
 
@@ -93,71 +95,6 @@ test.describe('Chain data loaders @features', () => {
         tokenId: '2',
         parcelId: 'HR-335754-1235',
         metadataURI: null,
-      },
-    ]);
-  });
-
-  test('ChainDataLoader.getProposalsFromChain returns proposal summaries with owner and lens data', async ({ mockApi: page }) => {
-    await injectMockEvmWallet(page, {
-      account: '0x1234567890abcdef1234567890abcdef12345678',
-      chainIdHex: '0x7a69',
-      walletKind: 'metamask',
-    });
-
-    await page.goto('/');
-    await waitForMapReady(page);
-    await connectWalletByConnectorId(page, 'metamask');
-    await waitForBlockchainRuntime(page, ['ChainDataLoader', 'ethers']);
-    await stubEvmChainDataReads(page);
-
-    const proposals = await page.evaluate(async () => {
-      const loader = (window as typeof window & {
-        ChainDataLoader?: { getProposalsFromChain?: (walletAddress: string, chainId: string, contractAddress: string) => Promise<unknown> };
-      }).ChainDataLoader;
-
-      if (!loader || typeof loader.getProposalsFromChain !== 'function') {
-        throw new Error('ChainDataLoader.getProposalsFromChain is not available');
-      }
-
-      return loader.getProposalsFromChain(
-        '0x1234567890abcdef1234567890abcdef12345678',
-        '31337',
-        '0x8A791620dd6260079BF849Dc5567aDC3F2FdC318'
-      );
-    });
-
-    expect(proposals).toEqual([
-      {
-        proposalId: '11',
-        cadastreParcelIds: ['HR-335754-1234'],
-        isConditional: false,
-        imageURI: 'ipfs://proposal-1',
-        acceptancePossible: true,
-        status: 'Active',
-        statusCode: 0,
-        ethBalance: '0',
-        tokenBalance: '100',
-        acceptanceCount: '1',
-        expiryTimestamp: '1000',
-        expiringPercentage: '5',
-        owner: '0x1234567890abcdef1234567890abcdef12345678',
-        lens: ['0x1234567890abcdef1234567890abcdef12345678'],
-      },
-      {
-        proposalId: '12',
-        cadastreParcelIds: ['HR-335754-1235'],
-        isConditional: true,
-        imageURI: 'ipfs://proposal-2',
-        acceptancePossible: false,
-        status: 'Executed',
-        statusCode: 1,
-        ethBalance: '10',
-        tokenBalance: '200',
-        acceptanceCount: '2',
-        expiryTimestamp: '2000',
-        expiringPercentage: '10',
-        owner: '0xabcdefabcdefabcdefabcdefabcdefabcdefabcd',
-        lens: ['0xabcdefabcdefabcdefabcdefabcdefabcdefabcd'],
       },
     ]);
   });
@@ -241,128 +178,6 @@ test.describe('Chain data loaders @features', () => {
         tokenId: '4zadC1FgWPQLv6qv66mjEBthBqTvrmxL5oDcHQzNtkV1',
         parcelId: 'HR-335754-1234',
         metadataURI: 'ipfs://parcel-1234',
-      },
-    ]);
-  });
-
-  test('SolanaChainDataLoader.getProposalsFromChain parses owned proposal accounts', async ({ mockApi: page }) => {
-    await injectMockSolanaWallet(page, {
-      publicKey: '7xKXtg2CWYcy6EH8d9xvPht4JyhV46Lxgq6vN6hS9wZT',
-      providerName: 'phantom',
-    });
-
-    await page.goto('/');
-    await waitForMapReady(page);
-    await waitForBlockchainRuntime(page, ['SolanaChainDataLoader', 'solanaWeb3']);
-
-    const proposals = await page.evaluate(async () => {
-      const globalWindow = window as typeof window & {
-        solanaWeb3?: {
-          Connection?: { prototype: { getProgramAccounts?: (programId: unknown) => Promise<unknown> } };
-          PublicKey?: new (value: string | Uint8Array) => { toBytes: () => Uint8Array; toString: () => string };
-        };
-        SolanaChainDataLoader?: {
-          getProposalsFromChain?: (walletAddress: string, cluster: string, programId: string) => Promise<unknown>;
-        };
-      };
-
-      if (!globalWindow.solanaWeb3 || !globalWindow.solanaWeb3.Connection || !globalWindow.solanaWeb3.PublicKey || !globalWindow.SolanaChainDataLoader || !globalWindow.SolanaChainDataLoader.getProposalsFromChain) {
-        throw new Error('Solana loader dependencies are not available');
-      }
-
-      const owner = new globalWindow.solanaWeb3.PublicKey('7xKXtg2CWYcy6EH8d9xvPht4JyhV46Lxgq6vN6hS9wZT');
-      const otherOwner = new globalWindow.solanaWeb3.PublicKey('4zadC1FgWPQLv6qv66mjEBthBqTvrmxL5oDcHQzNtkV1');
-      const encoder = new TextEncoder();
-
-      const encodeString = (value: string) => {
-        const bytes = encoder.encode(value);
-        const len = new Uint8Array(4);
-        new DataView(len.buffer).setUint32(0, bytes.length, true);
-        return Array.from(len).concat(Array.from(bytes));
-      };
-
-      const encodeVecString = (values: string[]) => {
-        const len = new Uint8Array(4);
-        new DataView(len.buffer).setUint32(0, values.length, true);
-        return Array.from(len).concat(values.flatMap((value) => encodeString(value)));
-      };
-
-      const encodeU64 = (value: bigint) => {
-        const bytes = new Uint8Array(8);
-        new DataView(bytes.buffer).setBigUint64(0, value, true);
-        return Array.from(bytes);
-      };
-
-      const buildProposalData = (proposalIdNum: bigint, ownerKey: { toBytes: () => Uint8Array }, parcelIds: string[]) => {
-        const bytes = [
-          ...new Uint8Array(8),
-          ...encodeU64(proposalIdNum),
-          ...ownerKey.toBytes(),
-          ...encodeVecString(parcelIds),
-          0,
-          ...encodeString('ipfs://proposal-image'),
-          1,
-          0,
-          ...encodeU64(5n),
-          ...encodeU64(10n),
-          ...encodeU64(2n),
-          ...encodeVecString([]),
-          // The current account layout appends LensCore's Vec<Pubkey> and bump after accepted parcels.
-          ...new Uint8Array(5),
-        ];
-        return new Uint8Array(bytes);
-      };
-
-      const original = globalWindow.solanaWeb3.Connection.prototype.getProgramAccounts;
-      globalWindow.solanaWeb3.Connection.prototype.getProgramAccounts = async () => ([
-        {
-          pubkey: new globalWindow.solanaWeb3.PublicKey('3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg'),
-          account: { data: buildProposalData(1n, owner, ['HR-335754-1234']) },
-        },
-        {
-          pubkey: new globalWindow.solanaWeb3.PublicKey('4zadC1FgWPQLv6qv66mjEBthBqTvrmxL5oDcHQzNtkV1'),
-          account: { data: buildProposalData(2n, otherOwner, ['HR-335754-9999']) },
-        },
-      ]);
-
-      try {
-        return await globalWindow.SolanaChainDataLoader.getProposalsFromChain(
-          '7xKXtg2CWYcy6EH8d9xvPht4JyhV46Lxgq6vN6hS9wZT',
-          'devnet',
-          '3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg'
-        );
-      } finally {
-        if (original) {
-          globalWindow.solanaWeb3.Connection.prototype.getProgramAccounts = original;
-        }
-      }
-    });
-
-    expect(proposals).toEqual([
-      {
-        proposalId: '3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg',
-        proposalIdNum: '1',
-        cadastreParcelIds: ['HR-335754-1234'],
-        isConditional: false,
-        imageURI: 'ipfs://proposal-image',
-        acceptancePossible: true,
-        status: 'Active',
-        statusCode: 0,
-        solBalance: '5',
-        ethBalance: '5',
-        tokenBalance: '10',
-        acceptanceCount: '2',
-        expiryTimestamp: '0',
-        expiringPercentage: '0',
-        owner: '7xKXtg2CWYcy6EH8d9xvPht4JyhV46Lxgq6vN6hS9wZT',
-        acceptedParcels: [],
-        lens: [],
-        lensError: null,
-        verdictMayExecute: false,
-        siteHash: null,
-        openGround: false,
-        openGroundCleared: false,
-        layoutVersion: 0,
       },
     ]);
   });

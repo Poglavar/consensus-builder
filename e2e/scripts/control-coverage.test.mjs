@@ -243,6 +243,17 @@ test('native date/time picker boundary requires the exact marked datetime input 
   assert.equal(changes[0].attrs['data-ui-native-datetime-boundary'], undefined);
 });
 
+test('the native date/time picker boundary also covers a date input', async () => {
+  const picker = new FakeElement('input', { 'data-ui-control': 'deadline', 'data-ui-native-datetime-boundary': '2035-06-15', type: 'date' });
+  const recorder = await instrumentedRecorder([picker]);
+  picker.value = '2035-06-15';
+  recorder.dispatch('change', picker, { isTrusted: false });
+  const changes = recorder.events.filter(event => event.kind === 'changed');
+  assert.equal(changes.length, 1);
+  assert.equal(changes[0].method, 'native-datetime-boundary');
+  assert.equal(changes[0].value, '2035-06-15');
+});
+
 test('custom sliders require a changed ARIA value after trusted keyboard or pointer input', async () => {
   const slider = new FakeElement('div', { 'data-ui-control': 'divider', role: 'slider', 'aria-valuenow': '50' });
   const recorder = await instrumentedRecorder([slider]);

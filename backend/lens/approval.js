@@ -1,8 +1,12 @@
-// Lens-member side of abstract proposal approval: compares a proposal's pinned parcel-rights snapshot
-// (and any authority its rules require) with this member's own registry, then signs two separate
-// facts with the member key: "these rights are correct" and "this wallet, which proved control, may
-// act for party X" (an owner, a leaseholder or an authority).
-// Members state facts; they never accept proposals. Statement formats: frontend/js/proposals/approval-proof.js.
+// Lens-member side of abstract agreement approval: compares an agreement's pinned parcel-rights
+// snapshot (and any authority its rules require) with this member's own registry, then signs two
+// separate facts with the member key: "these rights are correct" and "this wallet, which proved
+// control, may act for party X" (an owner, a leaseholder or an authority). The registry is read per
+// request from a source: by default the member's devnet owner registry (consensus.lens_devnet_owner,
+// through its identity adapter and database pool: each recorded wallet owns its parcel in equal shares
+// and acts for itself), or a static lens-rights-registry/v1 file (--rights) with abstract parties,
+// exact shares, areas, leases, public bodies and authorities.
+// Members state facts; they never accept agreements. Statement formats: frontend/js/proposals/approval-proof.js.
 
 import { createHash, createPrivateKey, randomBytes, sign } from 'node:crypto';
 import { createRequire } from 'node:module';
@@ -74,13 +78,61 @@ export function normalizeRegistry(raw) {
     };
 }
 
+// A registry source: load(parcelIds) → the normalized registry (normalizeRegistry) covering at least
+// those parcels, and status() → what /lens/status reports about it.
+
+/** A static lens-rights-registry/v1 (--rights): the same registry for every request. */
+export function fileRegistry(raw) {
+    const registry = normalizeRegistry(raw);
+    return {
+        kind: 'file',
+        async load() {
+            return registry;
+        },
+        async status() {
+            return { source: 'file', parcels: registry.parcels.size, owners: registry.owners, authorities: registry.authorities.size, signers: registry.signers.size };
+        }
+    };
+}
+
 /**
- * @param {{ keypair: import('@solana/web3.js').Keypair, registry: ReturnType<typeof normalizeRegistry>,
+ * The member's devnet owner registry as a rights registry, read on every request through the identity
+ * adapter's batch read (identity/devnet-registry.js ownerSets: consensus.lens_devnet_owner over the
+ * member's pool, or its --owners rows): every parcel with recorded wallets is complete, has no area,
+ * and is owned by those wallets in equal shares (1/<rows>); each wallet acts for itself. It names no
+ * leases, public bodies or authorities. A parcel without rows is not in the registry.
+ */
+export function devnetOwnerRegistry(identity) {
+    if (typeof identity?.ownerSets !== 'function') throw new Error('devnetOwnerRegistry: an identity adapter with ownerSets is required');
+    return {
+        kind: 'devnet-owners',
+        async load(parcelIds) {
+            const sets = await identity.ownerSets(parcelIds);
+            const parcels = [];
+            const wallets = new Set();
+            for (const [parcelId, rows] of sets) {
+                if (!rows.length) continue;
+                parcels.push({ parcelId, areaM2: null, owners: rows.map(row => ({ ownerId: row.owner, share: `1/${rows.length}` })) });
+                rows.forEach(row => wallets.add(row.owner));
+            }
+            return normalizeRegistry({ schema: REGISTRY_SCHEMA, parcels, signers: [...wallets].map(wallet => ({ ownerId: wallet, wallet })) });
+        },
+        async status() {
+            return { source: 'devnet-owners', identity: identity.kind };
+        }
+    };
+}
+
+/**
+ * @param {{ keypair: import('@solana/web3.js').Keypair, registry: ReturnType<typeof fileRegistry> | ReturnType<typeof devnetOwnerRegistry>,
  *   clock: { nowSeconds(): number }, validitySeconds?: number, ttlSeconds?: number }} options
  */
 export function createApprovalAttester({ keypair, registry, clock, validitySeconds = DEFAULT_VALIDITY_SECONDS, ttlSeconds = CHALLENGE_TTL_SECONDS }) {
     if (!keypair?.secretKey || keypair.secretKey.length !== 64) throw new Error('createApprovalAttester: a signing keypair is required');
-    if (!registry?.parcels || !registry?.signers) throw new Error('createApprovalAttester: a normalized registry is required');
+    if (typeof registry?.load !== 'function' || typeof registry?.status !== 'function') {
+        throw new Error('createApprovalAttester: a registry source (fileRegistry or devnetOwnerRegistry) is required');
+    }
+    const registrySource = registry;
     if (!clock) throw new Error('createApprovalAttester: clock is required');
     if (!(validitySeconds > 0)) throw new Error('createApprovalAttester: validitySeconds must be positive');
     const member = keypair.publicKey.toBase58();
@@ -89,9 +141,10 @@ export function createApprovalAttester({ keypair, registry, clock, validitySecon
     });
     const challenges = new Map();
 
-    // The proposal's own approval context, recomputed here, and the member's verdict on its rights.
-    // Only in-scope parcels (the proposal's cadastral parcels) count; others in the snapshot do not.
-    function checkContext(body) {
+    // The agreement's own approval context, recomputed here, and the member's verdict on its rights
+    // against the registry as it reads now. Only in-scope parcels (the agreement's input parcels)
+    // count; others in the snapshot do not. Returns the registry it compared with.
+    async function checkContext(body) {
         const input = { cadastreParcelIds: body?.cadastreParcelIds, approvalConfig: body?.approvalConfig, lens: body?.lens };
         let content, contextHash, state;
         try {
@@ -102,9 +155,10 @@ export function createApprovalAttester({ keypair, registry, clock, validitySecon
             throw new LensError(400, 'bad_request', error.message);
         }
         if (!content.lens.includes(member)) {
-            throw new LensError(409, 'not_in_lens', 'this lens member is not in the proposal lens, so its attestations would not count');
+            throw new LensError(409, 'not_in_lens', 'this lens member is not in the agreement\'s lens, so its attestations would not count');
         }
         if (!state.ready) throw new LensError(422, 'rights_incomplete', `the approval context cannot be attested: ${state.reason}`);
+        const registry = await registrySource.load(content.cadastreParcelIds);
         for (const parcel of state.parcels) {
             const known = registry.parcels.get(parcel.parcelId);
             if (!known) throw new LensError(404, 'unknown_parcel', `parcel ${parcel.parcelId} is not in this member's registry`);
@@ -128,7 +182,7 @@ export function createApprovalAttester({ keypair, registry, clock, validitySecon
             const outside = state.parcels.find(parcel => !scope.has(parcel.parcelId));
             if (outside) throw new LensError(409, 'authority_out_of_scope', `authority ${id} is not competent for parcel ${outside.parcelId} in this member's registry`);
         }
-        return { content, contextHash, state };
+        return { content, contextHash, state, registry };
     }
 
     function signFact(fields) {
@@ -158,13 +212,13 @@ export function createApprovalAttester({ keypair, registry, clock, validitySecon
     return {
         member,
 
-        status() {
-            return { enabled: true, parcels: registry.parcels.size, owners: registry.owners, authorities: registry.authorities.size, signers: registry.signers.size, validitySeconds };
+        async status() {
+            return { enabled: true, ...(await registrySource.status()), validitySeconds };
         },
 
         // Anyone may ask whether a snapshot is right; the answer names no wallet.
-        attestRights(body) {
-            const context = checkContext(body);
+        async attestRights(body) {
+            const context = await checkContext(body);
             const fact = rightsFact(context);
             lensLog(`attested rights for approval context ${context.contextHash} (${context.state.parcels.length} parcel(s))`);
             return fact;
@@ -185,7 +239,7 @@ export function createApprovalAttester({ keypair, registry, clock, validitySecon
         },
 
         // The wallet proved control by signing the challenge; it learns only the owners it may act for.
-        attestAuthority({ wallet, challenge, signature, ...body }) {
+        async attestAuthority({ wallet, challenge, signature, ...body }) {
             const now = clock.nowSeconds();
             prune(now);
             const entry = typeof challenge === 'string' ? challenges.get(challenge) : null;
@@ -194,16 +248,25 @@ export function createApprovalAttester({ keypair, registry, clock, validitySecon
             if (!verifyWalletSignature({ owner: wallet, message: entry.message, signature })) {
                 throw new LensError(401, 'bad_signature', 'signature does not verify for this wallet and challenge');
             }
-            const context = checkContext(body);
-            if (context.contextHash !== entry.contextHash) {
-                throw new LensError(409, 'context_mismatch', 'the challenge was issued for another approval context');
-            }
-            // Any party of this context: an owner, a leaseholder or an authority the rules require.
-            const ownerIds = context.state.partyIds.filter(ownerId => registry.signers.get(wallet)?.has(ownerId));
-            if (!ownerIds.length) {
-                throw new LensError(403, 'not_authorized', 'this wallet may not act for any party in this approval context');
-            }
+            // Taken before the registry read, so two concurrent requests cannot both spend it; put back
+            // when this one is refused, so the wallet may try again until it expires.
             challenges.delete(challenge);
+            let context;
+            let ownerIds;
+            try {
+                context = await checkContext(body);
+                if (context.contextHash !== entry.contextHash) {
+                    throw new LensError(409, 'context_mismatch', 'the challenge was issued for another approval context');
+                }
+                // Any party of this context: an owner, a leaseholder or an authority the rules require.
+                ownerIds = context.state.partyIds.filter(ownerId => context.registry.signers.get(wallet)?.has(ownerId));
+                if (!ownerIds.length) {
+                    throw new LensError(403, 'not_authorized', 'this wallet may not act for any party in this approval context');
+                }
+            } catch (error) {
+                challenges.set(challenge, entry);
+                throw error;
+            }
             const rights = rightsFact(context);
             const authority = ownerIds.map(ownerId => signFact({
                 schema: proof.AUTHORITY_SCHEMA, member, contextHash: context.contextHash, ownerId, actorId: wallet,

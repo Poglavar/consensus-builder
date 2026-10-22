@@ -1,6 +1,6 @@
 // Unit tests for the server-authoritative corridor acquisition stats. The pure aggregator and the
-// footprint resolver are tested directly; the endpoint + POST /proposals recompute are tested with a
-// mock pool. The PostGIS query itself (against the real parcel layer) needs verification on prod data.
+// footprint resolver are tested directly; the endpoint is tested with a mock pool. The PostGIS
+// query itself (against the real parcel layer) needs verification on prod data.
 import { describe, it, expect } from 'vitest';
 import express from 'express';
 import { createMockPool } from './helpers/mock-pool.js';
@@ -8,7 +8,6 @@ import {
     computeCorridorAcquisitionStats,
     normalizeCorridorOwnershipType,
     resolveRoadFootprintGeometry,
-    recomputeCorridorStats,
     setupRoadCorridorRoute
 } from '../routes/road-corridor.js';
 
@@ -156,35 +155,5 @@ describe('POST /road-corridor/stats', () => {
         pool.query = async () => { throw new Error('boom'); };
         const res = await postStats(makeApp(pool), { geometry: SQUARE });
         expect(res.status).toBe(500);
-    });
-});
-
-describe('recomputeCorridorStats (POST /proposals path)', () => {
-    const roadProposal = { roadProposal: { definition: { polygon: SQUARE } } };
-
-    it('returns server stats when the corridor touches parcels', async () => {
-        const pool = createMockPool();
-        pool.setResult({ rows: [{ parcel_id: 'HR-1', full_area_m2: '100', taken_area_m2: '40', ownership_details: null }] });
-        const stats = await recomputeCorridorStats(pool, roadProposal);
-        expect(stats).not.toBeNull();
-        expect(stats.source).toBe('server');
-        expect(stats.parcelIds).toEqual(['HR-1']);
-    });
-
-    it('returns null (keeps client value) for a non-road proposal', async () => {
-        const pool = createMockPool();
-        expect(await recomputeCorridorStats(pool, { buildingProposal: {} })).toBeNull();
-    });
-
-    it('returns null when the corridor touches no parcels (e.g. non-Zagreb)', async () => {
-        const pool = createMockPool();
-        pool.setResult({ rows: [] });
-        expect(await recomputeCorridorStats(pool, roadProposal)).toBeNull();
-    });
-
-    it('returns null (never throws) when the query fails, so creation is not blocked', async () => {
-        const pool = createMockPool();
-        pool.query = async () => { throw new Error('db down'); };
-        expect(await recomputeCorridorStats(pool, roadProposal)).toBeNull();
     });
 });

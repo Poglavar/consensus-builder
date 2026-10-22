@@ -17,43 +17,6 @@ async function resolveParcelScopePrompt(page: any, target: any, chooseWholeBlock
   await expect(target).toBeVisible();
 }
 
-async function visiblePlanPlotPoint(page: any) {
-  const point = await page.evaluate(() => {
-    const w = window as any;
-    const map = w.map;
-    const plots: any[] = [];
-    map?.eachLayer((layer: any) => {
-      if (layer.options?.pane === 'reparcelPlots' && layer._path?.isConnected
-        && Number.isInteger(layer.feature?.properties?.sliceIndex)) plots.push(layer.feature);
-    });
-    if (!plots.length || !w.turf) throw new Error('Readjustment has no rendered plot geometry');
-    const mapRect = map.getContainer().getBoundingClientRect();
-    const obstacles = [...document.querySelectorAll('.on-map-reparcellization .on-map-editor__panel, .reparcel-tools')]
-      .map((element: any) => element.getBoundingClientRect());
-    const visible = (screen: { x: number; y: number }) => screen.x >= mapRect.left && screen.x <= mapRect.right
-      && screen.y >= mapRect.top && screen.y <= mapRect.bottom
-      && screen.x >= 8 && screen.x <= w.innerWidth - 8 && screen.y >= 8 && screen.y <= w.innerHeight - 8
-      && map.getContainer().contains(document.elementFromPoint(screen.x, screen.y))
-      && !obstacles.some(rect => screen.x >= rect.left && screen.x <= rect.right && screen.y >= rect.top && screen.y <= rect.bottom);
-    for (const plot of plots) {
-      if (!plot?.geometry) continue;
-      const feature = { type: 'Feature', properties: {}, geometry: plot.geometry };
-      const [minLng, minLat, maxLng, maxLat] = w.turf.bbox(feature);
-      for (const xRatio of [0.3, 0.5, 0.7]) {
-        for (const yRatio of [0.3, 0.5, 0.7]) {
-          const coordinate = [minLng + (maxLng - minLng) * xRatio, minLat + (maxLat - minLat) * yRatio];
-          if (!w.turf.booleanPointInPolygon(w.turf.point(coordinate), feature)) continue;
-          const projected = map.latLngToContainerPoint([coordinate[1], coordinate[0]]);
-          const screen = { x: mapRect.left + projected.x, y: mapRect.top + projected.y };
-          if (visible(screen)) return screen;
-        }
-      }
-    }
-    throw new Error('No live readjustment plot has an unobstructed map point');
-  });
-  return point;
-}
-
 async function visibleCutLineEndpoints(page: any) {
   const endpoints = await page.evaluate(() => {
     const w = window as any;
@@ -63,7 +26,7 @@ async function visibleCutLineEndpoints(page: any) {
       if (layer.options?.pane === 'reparcelTools' && layer.options.color === '#dc2626'
         && layer._path?.isConnected && layer.feature?.geometry) geometry = layer.feature.geometry;
     });
-    if (!geometry || !w.turf) throw new Error('Readjustment has no rendered pool boundary');
+    if (!geometry || !w.turf) throw new Error('The parcel layout has no rendered pool boundary');
     const mapRect = map.getContainer().getBoundingClientRect();
     const obstacles = [...document.querySelectorAll('.on-map-reparcellization .on-map-editor__panel, .reparcel-tools')]
       .map((element: any) => element.getBoundingClientRect());
@@ -91,7 +54,7 @@ async function visibleCutLineEndpoints(page: any) {
       });
       if (screens.every(visible)) return screens;
     }
-    throw new Error('No boundary-crossing readjustment line fits the unobstructed map area');
+    throw new Error('No boundary-crossing line fits the unobstructed map area');
   });
   return endpoints as Array<{ x: number; y: number }>;
 }
@@ -492,13 +455,13 @@ test.describe('Designer controls persist their edits @features', () => {
     expect(track.metadata.trackSpeed).toBeGreaterThan(0);
   });
 
-  test('readjustment algorithm, ownership assignment, old/new tabs and commit reflect actual edits', async ({ mockApi: page }) => {
+  test('parcel-layout starting layouts, old/new tabs and commit reflect actual edits', async ({ mockApi: page }) => {
     await installLayerDatasets(page);
     await openCity(page);
     await page.evaluate(() => (window as any).i18n.setLanguage('en'));
     await page.evaluate(async ids => { await (window as any).CadastralParcelRepository.ensureIds(ids); }, BLOCK_PARCEL_IDS);
     await openParcel(page, 'proposals', BLOCK_PARCEL_IDS[0]);
-    await page.locator('.parcel-build-btn--reparcellization').click();
+    await page.locator('.parcel-build-btn--parcel-layout').click();
     const modal = page.locator('.on-map-reparcellization');
     const scopePrompt = page.getByRole('alertdialog');
     await expect.poll(async () => (await modal.isVisible()) || (await scopePrompt.isVisible())).toBe(true);
@@ -506,7 +469,7 @@ test.describe('Designer controls persist their edits @features', () => {
       await scopePrompt.getByRole('button', { name: 'Yes, select the block' }).click();
       await expect(page.locator('#selection-tray [data-command="selection.propose"]')).toBeVisible();
       await page.locator('#selection-tray [data-command="selection.propose"]').click();
-      await page.locator('.parcel-build-btn--reparcellization').click();
+      await page.locator('.parcel-build-btn--parcel-layout').click();
     }
     await expect(modal.locator('.on-map-editor__panel')).toBeVisible();
     await expect(modal.locator('[data-reparcel-commit]')).toBeEnabled({ timeout: 15_000 });
@@ -514,45 +477,34 @@ test.describe('Designer controls persist their edits @features', () => {
     await expect(modal.locator('[data-reparcel-oldplots-table]')).toContainText('1234');
     await modal.locator('[data-reparcel-plots-tab="new"]').click();
     await expect(modal.locator('[data-reparcel-newplots-table]')).not.toBeEmpty();
-    const automaticPlots = ((await modal.locator('[data-reparcel-newplots-table]').textContent()) || '').replace(/\s+/g, ' ').trim();
+    const plotRows = modal.locator('[data-reparcel-newplots-table] .reparcel-newplot-row');
+    const plotCount = await plotRows.count();
+    expect(plotCount).toBeGreaterThanOrEqual(2);
+    const equalPlots = ((await modal.locator('[data-reparcel-newplots-table]').textContent()) || '').replace(/\s+/g, ' ').trim();
 
-    // Draw freely starts from the current plots and their owners, not from a blank plot.
+    // Draw freely starts from the current plots, not from a blank plot.
     await modal.locator('label.reparcel-alg-option:has(input[value="manual"])').click();
     await expect(modal.locator('[data-reparcel-nodes]')).toHaveAttribute('aria-pressed', 'true');
     await expect(modal.locator('.reparcel-subtitle')).toContainText('Draw freely');
-    await expect(modal.locator('[data-reparcel-newplots-table]')).toHaveText(automaticPlots);
-    await expect(modal.locator('[data-reparcel-newplots-table]')).not.toContainText('Unassigned');
-    await modal.locator('label.reparcel-alg-option:has(input[value="sweep-line"])').click();
-    await expect(modal.locator('.reparcel-subtitle')).toContainText('Automatic');
-
-    await modal.locator('[data-reparcel-assign]').click();
-    await expect(modal.locator('[data-reparcel-assign]')).toHaveAttribute('aria-pressed', 'true');
-    const target = await visiblePlanPlotPoint(page);
-    await page.mouse.click(target.x, target.y);
-    await expect(page.locator('.reparcel-owner-popup')).toBeVisible();
-    const publicOwner = page.locator('.reparcel-owner-popup__row').filter({ hasText: /^Public land$/ });
-    await expect(publicOwner).toBeVisible();
-    await publicOwner.locator('input[type="checkbox"]').check();
-    await page.locator('.reparcel-owner-popup__close').click();
-    await page.evaluate(() => (window as any).i18n.setLanguage('hr'));
-    await page.mouse.click(target.x, target.y);
-    await expect(page.locator('.reparcel-owner-popup')).toContainText('Javno zemljište');
-    await expect(page.locator('.reparcel-owner-popup')).not.toContainText('Public land');
-    await page.locator('.reparcel-owner-popup__close').click();
-    await page.evaluate(() => (window as any).i18n.setLanguage('en'));
+    await expect(modal.locator('[data-reparcel-newplots-table]')).toHaveText(equalPlots);
+    await modal.locator('label.reparcel-alg-option:has(input[value="equal"])').click();
+    await expect(modal.locator('.reparcel-subtitle')).toContainText('Equal plots');
+    await expect(plotRows).toHaveCount(plotCount);
 
     await modal.locator('[data-reparcel-commit]').click();
     await expect(modal).toHaveCount(0);
-    const saved = await page.evaluate(() => (window as any).proposalStorage.getAllProposals().find((proposal: any) => proposal.applied && proposal.reparcellization)?.reparcellization);
-    expect(saved.polygons.length).toBeGreaterThan(0);
-    expect(saved.algorithm).toBe('sweep-line');
-    expect(saved.polygons.some((plot: any) => plot.owners?.some((owner: any) => owner.ownerKey === 'public-land'))).toBe(true);
+    await expect.poll(() => page.evaluate(() => (window as any).proposalStorage.getAllProposals()
+      .some((proposal: any) => proposal.applied && proposal.goal === 'parcel-layout'))).toBe(true);
+    const saved = await page.evaluate(() => (window as any).proposalStorage.getAllProposals().find((proposal: any) => proposal.applied && proposal.goal === 'parcel-layout')?.parcelLayout);
+    expect(saved.algorithm).toBe('equal');
+    expect(saved.plotCount).toBe(plotCount);
+    expect(saved.plots).toHaveLength(plotCount);
   });
 
-  test('manual readjustment draws a split, edits a node, shuffles ownership, compares, and imports GeoJSON', async ({ mockApi: page }) => {
+  test('a drawn parcel layout takes a split, a node edit, a comparison and a GeoJSON import', async ({ mockApi: page }) => {
     await openCity(page);
     await openParcel(page, 'proposals');
-    await page.locator('.parcel-build-btn--reparcellization').click();
+    await page.locator('.parcel-build-btn--parcel-layout').click();
     const modal = page.locator('.on-map-reparcellization');
     await expect(modal.locator('[data-reparcel-commit]')).toBeEnabled({ timeout: 15_000 });
     await modal.locator('label.reparcel-alg-option:has(input[value="manual"])').click();
@@ -564,7 +516,7 @@ test.describe('Designer controls persist their edits @features', () => {
     const map = page.locator('#map-container');
     await expect(modal.locator('[data-reparcel-draw-toolbar]')).toBeVisible();
     const box = await map.boundingBox();
-    if (!box) throw new Error('Readjustment map has no visible bounds');
+    if (!box) throw new Error('Parcel-layout map has no visible bounds');
     const [start, end] = await visibleCutLineEndpoints(page);
     await page.mouse.click(start.x, start.y);
     await page.mouse.click(end.x, end.y);
@@ -576,7 +528,7 @@ test.describe('Designer controls persist their edits @features', () => {
     await expect(movableNode).toBeVisible();
     const beforeEdit = await modal.locator('[data-reparcel-newplots-table]').innerText();
     const nodeBox = await movableNode.boundingBox();
-    if (!nodeBox) throw new Error('Readjustment node handle has no visible bounds');
+    if (!nodeBox) throw new Error('Parcel-layout node handle has no visible bounds');
     await page.mouse.move(nodeBox.x + nodeBox.width / 2, nodeBox.y + nodeBox.height / 2);
     await page.mouse.down();
     await page.mouse.move(nodeBox.x + nodeBox.width / 2 + 14, nodeBox.y + nodeBox.height / 2 + 3, { steps: 4 });
@@ -606,18 +558,13 @@ test.describe('Designer controls persist their edits @features', () => {
     await expect(modal.locator('[data-reparcel-status]')).toContainText(/Loaded 2 polygons/);
     await expect(rows).toHaveCount(2);
 
-    const ownershipBeforeShuffle = await rows.allInnerTexts();
-    for (let attempt = 0; attempt < 20; attempt++) {
-      await modal.locator('[data-reparcel-shuffle]').click();
-      const current = await rows.allInnerTexts();
-      if (JSON.stringify(current) !== JSON.stringify(ownershipBeforeShuffle)) break;
-    }
-    await expect.poll(async () => JSON.stringify(await rows.allInnerTexts())).not.toBe(JSON.stringify(ownershipBeforeShuffle));
     await modal.locator('[data-reparcel-commit]').click();
     await expect(modal).toHaveCount(0);
-    const saved = await page.evaluate(() => (window as any).proposalStorage.getAllProposals().find((proposal: any) => proposal.applied && proposal.reparcellization)?.reparcellization);
+    await expect.poll(() => page.evaluate(() => (window as any).proposalStorage.getAllProposals()
+      .some((proposal: any) => proposal.applied && proposal.goal === 'parcel-layout'))).toBe(true);
+    const saved = await page.evaluate(() => (window as any).proposalStorage.getAllProposals().find((proposal: any) => proposal.applied && proposal.goal === 'parcel-layout')?.parcelLayout);
     expect(saved.algorithm).toBe('manual');
-    expect(saved.polygons).toHaveLength(2);
-    expect(saved.polygons.every((plot: any) => plot.geometry?.type === 'Polygon')).toBe(true);
+    expect(saved.plots).toHaveLength(2);
+    expect(saved.plots.every((plot: any) => plot.geometry?.type === 'Polygon' && plot.source === 'geojson')).toBe(true);
   });
 });

@@ -29,34 +29,41 @@ async function saveFreeformBuilding({ boundParcels }) {
     c.proposalDraftStore = store;
     store.createDraft({
         goal: 'single', adapterKey: 'single', proposalType: 'Freeform building',
-        fields: { name: '', description: '', selectedParcelIds: ['HR-339164-2951', 'HR-339164-2972'], site, offer: 0 },
+        fields: { name: '', description: '', selectedParcelIds: ['HR-339164-2951', 'HR-339164-2972'], site },
         editorPayload: { placement: { free: true, site, bindingStatus: 'pending' } }
     });
     c.resolveBackendBaseUrl = () => 'https://example.invalid';
-    c.fetch = () => {};
-    c.__publishBinding = { createFetchBinding: () => async () => ({ coverage: 'complete', source: 'server:test', parcels: boundParcels.map(parcelId => ({ parcelId })) }) };
+    // The site's binding comes from the design index (POST /designs/binding, nothing stored).
+    const requests = [];
+    c.fetch = async (url, init) => {
+        requests.push({ url, body: JSON.parse(init.body) });
+        return { ok: true, status: 200, json: async () => ({ binding: { coverage: 'complete', source: 'server:test', parcels: boundParcels.map(parcelId => ({ parcelId })) } }) };
+    };
+    c.DesignSync = { parcelSourceIdOf: () => null, refusalMessage: (status, body) => (body && body.error) || `HTTP ${status}` };
     c.getProposalI18nHelper = () => (_key, fallback, values = {}) => fallback.replace(/\{\{(\w+)\}\}/g, (_, key) => values[key]);
     let saved;
     c.generateDefaultProposalDescription = (type, name) => `${type}: ${name}`;
     store.buildProposalFromDraft = id => {
         const d = store.getDraft(id);
-        return { title: d.fields.name, description: d.fields.description, offer: d.fields.offer, offerCurrency: 'EUR', site };
+        return { title: d.fields.name, description: d.fields.description, site };
     };
     c.proposalStorage = { addProposal: p => { saved = { ...p, proposalId: 'single-saved' }; return 'single-saved'; }, getProposal: () => saved };
     c.ProposalManager = { applyProposal: async () => { saved.applied = true; return true; } };
     c.isProposalApplied = p => p.applied;
     const id = await c.instantCreateProposalFromDraft('single-draft');
-    return { id, saved };
+    return { id, saved, requests };
 }
 
 describe('free-placement naming', () => {
     it('names the saved object after the parcel it was finally bound to', async () => {
-        const { id, saved } = await saveFreeformBuilding({ boundParcels: ['HR-339164-2972'] });
+        const { id, saved, requests } = await saveFreeformBuilding({ boundParcels: ['HR-339164-2972'] });
         expect(id).toBe('single-saved');
+        expect(requests.map(request => request.url)).toEqual(['https://example.invalid/designs/binding']);
+        expect(requests[0].body.site).toEqual(site);
         expect(saved.title).toBe('Freeform building · parcel 2972');
         expect(saved.description).toBe('Freeform building: Freeform building · parcel 2972');
-        // No placeholder offer: terms are chosen when the proposal is published (proposal-kinds.md).
-        expect(saved.offer).toBe(0);
+        // A design carries no terms (plan-design-agreement.md, M2).
+        expect(saved).not.toHaveProperty('offer');
     });
 
     it('keeps the generated name when the binding names no parcel', async () => {

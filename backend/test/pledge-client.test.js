@@ -1,4 +1,6 @@
-// Covers the shared proposal donation/pledge instruction and account codec.
+// Covers the donation/pledge instruction and account codec (frontend/js/solana/pledge-client.js) on
+// agreements: its `proposal` option, argument and decoded field are the agreement account, the subject
+// the proposal_pledge program checks (the program keeps its proposal names until a deploy renames it).
 import { afterEach, describe, expect, it } from 'vitest';
 import { createHash } from 'node:crypto';
 import { createRequire } from 'node:module';
@@ -12,6 +14,7 @@ const support = require('../../frontend/js/solana/pledge-client.js');
 support.configure({ web3 });
 const REPO = path.resolve(fileURLToPath(new URL('.', import.meta.url)), '../..');
 const IDL = JSON.parse(readFileSync(path.join(REPO, 'blockchain/solana/idl/proposal_pledge.json'), 'utf8'));
+// The subject: an agreement account, which the codec takes as `proposal`.
 const proposal = web3.Keypair.generate().publicKey;
 const wallet = web3.Keypair.generate().publicKey;
 const beneficiary = web3.Keypair.generate().publicKey;
@@ -57,7 +60,7 @@ function accountInfo(data, owner = program) { return { data, owner }; }
 
 afterEach(() => support.configure({ web3, programId: null }));
 
-describe('proposal support codec', () => {
+describe('agreement support codec (proposal_pledge)', () => {
     it('pins every discriminator and program id to the generated IDL', () => {
         expect(support.constants.PROGRAM_ID).toBe(IDL.address);
         for (const ix of IDL.instructions) {

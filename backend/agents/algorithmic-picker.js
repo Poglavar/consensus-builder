@@ -83,10 +83,10 @@ function rationaleFor(candidate) {
     const ceiling = candidate.rule?.source === 'urban-rule'
         ? `The mapped urban rule allows ${allowed} floors on parcel ${parcelLabel}`
         : `No zoning rule is mapped for parcel ${parcelLabel}, so the platform's default envelope applies (${allowed} floors, setbacks from every boundary)`;
-    const builds = planned < allowed ? `; this proposal builds ${planned}.` : '.';
+    const builds = planned < allowed ? `; this design builds ${planned}.` : '.';
     const existing = candidate.builtKnown === false
-        ? `Existing buildings are not measured in this city's data, so the build-out of ${formatInteger(candidate.proposedGfaM2)} m² is counted against an empty plot, with a calculated owner offer of €${formatInteger(candidate.offerEur)}.`
-        : `The measured build-out increases floor area from ${formatInteger(candidate.builtGfaM2)} m² to ${formatInteger(candidate.proposedGfaM2)} m², with a calculated owner offer of €${formatInteger(candidate.offerEur)}.`;
+        ? `Existing buildings are not measured in this city's data, so the build-out of ${formatInteger(candidate.proposedGfaM2)} m² is counted against an empty plot.`
+        : `The measured build-out increases floor area from ${formatInteger(candidate.builtGfaM2)} m² to ${formatInteger(candidate.proposedGfaM2)} m².`;
     const rival = candidate.rival ? ` It answers "${candidate.rival.name}" by ${candidate.rival.persona} on the same land, so the two compete in one contest.` : '';
     return `${ceiling}${builds} ${existing}${rival}`;
 }

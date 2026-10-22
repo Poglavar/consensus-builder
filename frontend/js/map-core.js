@@ -11,15 +11,11 @@ const IS_PROPOSAL_DEEP_LINK = (() => {
     if (typeof window === 'undefined' || !window.location) return false;
     try {
         const path = window.location.pathname || '';
-        // Mirrors handleProposalRouteFromUrl (js/proposals/core.js): numeric id,
-        // comma-separated ids, a named-plan slug, or its grain-score view. All of them load their own
-        // ground via the share flow, so the boot viewport parcel fetch must stay
-        // suppressed. Before the slug/comma forms were covered, opening a named
-        // plan link fetched the DEFAULT city's viewport parcels (Manhattan)
-        // while a Zagreb plan was loading.
-        if (/^\/proposals\/[0-9,]+\/?$/i.test(path)) return true;
-        if (/^\/proposals\/[a-z0-9][a-z0-9-]{1,61}[a-z0-9]\/?$/i.test(path)) return true;
-        if (/^\/plans\/[a-z0-9][a-z0-9-]{1,61}[a-z0-9]\/score\/?$/i.test(path)) return true;
+        // Mirrors handleProposalRouteFromUrl (js/proposals/core.js): a design link
+        // (/designs/<cid>[,<cid>…]) or an agreement link (/agreements/<cid>). Both load their own
+        // ground, so the boot viewport parcel fetch must stay suppressed: a link left out
+        // fetched the DEFAULT city's viewport parcels (Manhattan) while a Zagreb one was loading.
+        if (/^\/(designs|agreements)\/[^/]+\/?$/.test(path)) return true;
         if (typeof window.shouldSkipWelcomeForProposalLink === 'function') {
             return window.shouldSkipWelcomeForProposalLink();
         }
@@ -680,6 +676,26 @@ function hideOsmBuildingLayer() {
 }
 window.hideOsmBuildingLayer = hideOsmBuildingLayer;
 
+// Existing buildings drawn on the map whose footprint covers a point, with what demolishes them
+// (the click stack's Built section). Footprints come from the rendered layers, so only what the
+// person can see is reported.
+function buildingsAt(latlng) {
+    if (!latlng || !window.turf) return [];
+    const point = window.turf.point([latlng.lng, latlng.lat]);
+    const hits = [];
+    buildingRenderedLayersById.forEach((layers, id) => {
+        const layer = layers[0], feature = buildingFeatureById.get(id);
+        if (!feature?.geometry || typeof layer?.getBounds !== 'function' || !layer.getBounds().contains(latlng)) return;
+        if (!window.turf.booleanPointInPolygon(point, feature)) return;
+        hits.push({ id, feature });
+    });
+    if (!hits.length) return hits;
+    const outcomes = currentBuildingOutcomeState();
+    return hits.map(hit => ({ ...hit, demolition: outcomes.demolishedById.get(hit.id) || null,
+        tunnelled: outcomes.tunnelledIds.has(hit.id) }));
+}
+window.buildingsAt = buildingsAt;
+
 function buildingPoolFeatureKey(feature) {
     if (typeof window.corridorBuildingKey === 'function') return window.corridorBuildingKey(feature);
     const props = feature?.properties || {};
@@ -822,10 +838,12 @@ function buildingLayerOptions() {
             const layers = buildingRenderedLayersById.get(id) || [];
             layers.push(layer);
             buildingRenderedLayersById.set(id, layers);
+            // A building click is a map click like any other: the click stack collects everything
+            // under the point (click-stack.md), the building being one of its sections.
             layer.on('click', event => {
                 if (window.__mapEditLock?.isHeld()) return;
                 L.DomEvent.stopPropagation(event);
-                window.PlanningViews?.inspectBuilding(feature, id);
+                window.ClickStack.handleClick(event.latlng);
             });
         }
     };
@@ -1005,7 +1023,7 @@ function setupMapEventHandlers() {
         }
         const selected = window.currentlyHighlightedProposal;
         if (selected && typeof isProposalApplied === 'function' && !isProposalApplied(selected)
-            && !window.sharePlanMode && !window.__mapEditLock?.isHeld()
+            && !window.MapPick?.active() && !window.__mapEditLock?.isHeld()
             && !(typeof isParcelDrawingModeActive === 'function' && isParcelDrawingModeActive())) {
             hideProposalDetailsPanel(true);
         }

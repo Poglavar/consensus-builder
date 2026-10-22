@@ -11,6 +11,9 @@ import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
 const shellPath = require.resolve('../../frontend/js/proposal-editor-shell.js');
 const variation = require('../../frontend/js/urban-rule-variation.js');
+// A design published at the index: the CID mark proposals/lineage.js reads as immutable.
+const publishedAs = title => ({ published: { cid: require('../../frontend/js/cid.js').cidOfObject({ schema: 'design/v1', title }),
+    publishedAt: '2026-10-21T12:00:00.000Z', apiBase: 'https://api.example.test' } });
 const saved = new Map();
 
 function install(name, value) {
@@ -167,7 +170,7 @@ describe('convertProposalToFreeform', () => {
     });
 
     it('makes a Freeform counterproposal of a published Block, which stays as it is', async () => {
-        const source = block({ serverProposalId: '901', publicationApiBase: 'https://api.example.test' });
+        const source = block(publishedAs('Published block'));
         const before = JSON.parse(JSON.stringify(source));
         const { ProposalManager } = loadShell(source);
 
@@ -269,7 +272,7 @@ describe('convertActiveDesignToFreeformBuildings: a dropped Detached becomes one
     });
 
     it('a published Detached: every house becomes a counterproposal and the source stays as it is', async () => {
-        const source = detached({ serverProposalId: '902', publicationApiBase: 'https://api.example.test' });
+        const source = detached(publishedAs('Published detached'));
         const before = JSON.parse(JSON.stringify(source));
         const { store, ProposalManager } = loadShell(source);
         await globalThis.editProposalGeometry('own-detached');

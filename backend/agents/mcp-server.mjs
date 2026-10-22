@@ -1,14 +1,29 @@
 #!/usr/bin/env node
+// The Urban Game Theory MCP server over stdio: registers the ugt_* tools with their inputs and
+// annotations and delegates every call to ugt-agent-tools.js. Reads are free; index writes and every
+// signed or paid tool need UGT_MCP_LIVE=1 in the environment and confirm=true in the call.
 import { McpServer } from '@modelcontextprotocol/server';
 import { serveStdio } from '@modelcontextprotocol/server/stdio';
 import * as z from 'zod/v4';
 import { createUrbanGameTheoryTools } from './ugt-agent-tools.js';
 
-const proposalAccount = z.string().min(32).describe('Solana ProposalNFT account address');
+const BASE58_KEY = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/;
+// CIDv1, raw codec, sha2-256, base32 lower case (backend/cid.js).
+const CID = /^bafkrei[a-z2-7]{52}$/;
+
+const agreementAccount = z.string().regex(BASE58_KEY)
+    .describe('Chain account of a minted (binding owners\') agreement: the PDA ["agreement", sponsor, sha256(cid)] under the agreement program (ugt_get_agreement answers it)');
+const agreementCid = z.string().regex(CID).describe('Agreement CID (bafkrei…), as ugt_propose_agreement or ugt_list_agreements answers it');
+const designCid = z.string().regex(CID).describe('Design CID (bafkrei…)');
+const lamports = z.string().regex(/^\d+$/).describe('Whole lamports as a decimal string, for example "0" or "10000000" (0.01 SOL)');
 const amountUsdc = z.string().regex(/^\d+(\.\d{1,6})?$/).describe('Exact devnet USDC decimal string, for example "0.05"');
-const confirmation = z.literal(true).describe('Explicitly authorize this paid or signed devnet action');
-const pubkey = z.string().regex(/^[1-9A-HJ-NP-Za-km-z]{32,44}$/).describe('base58 Solana public key');
+const confirmation = z.literal(true).describe('Explicitly authorize this write, paid or signed devnet action');
+const pubkey = z.string().regex(BASE58_KEY).describe('base58 Solana public key');
 const recipeHash = z.string().regex(/^(sha256:)?[0-9a-fA-F]{64}$/).describe('Committed 32-byte external-market recipe hash');
+const design = z.object({ schema: z.literal('design/v1') }).passthrough()
+    .describe('A design/v1 object exactly as the app publishes it: schema, goal, title, description, author, city, site, toleranceM, geometry, origin, authoredAt (each present, null when empty) and one payload (roadProposal, buildingProposal, structureProposal or parcelLayout). JSON Schema: ugt_capabilities → schema.$defs.design');
+const agreement = z.object({ schema: z.literal('agreement/v1') }).passthrough()
+    .describe('An agreement/v1 object exactly as the app publishes it: schema, title, author, sponsor, city, createdAt, designs [{ cid, goal, title }], inputs { parcels, openGroundM2 }, outputs, allocations, money, rule, deadline. JSON Schema: ugt_capabilities → schema.$defs.agreement');
 
 function jsonSafe(value) {
     return JSON.parse(JSON.stringify(value, (_key, item) => typeof item === 'bigint' ? item.toString() : item));
@@ -33,32 +48,31 @@ function handler(fn) {
 }
 
 const READ_ONLY = { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true };
+// Pinning and indexing a content-addressed object only adds it: the same object is the same CID.
+const PUBLISH = { readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: true };
 const PAID_IDEMPOTENT = { readOnlyHint: false, destructiveHint: true, idempotentHint: true, openWorldHint: true };
 const PAID_NON_IDEMPOTENT = { readOnlyHint: false, destructiveHint: true, idempotentHint: false, openWorldHint: true };
 
 export function createUrbanGameTheoryMcpServer({ env = process.env, fetchImpl, tools } = {}) {
     const actions = tools || createUrbanGameTheoryTools({ env, fetchImpl });
     const server = new McpServer(
-        { name: 'urban-game-theory', version: '0.1.0' },
-        { instructions: 'Inspect capabilities first. Read tools are free. Paid and signed tools operate only on Solana devnet, require confirm=true, and are disabled unless UGT_MCP_LIVE=1.' }
+        { name: 'urban-game-theory', version: '0.2.0' },
+        {
+            instructions: 'Inspect ugt_capabilities first. Read tools are free. Index writes and every paid or signed tool require confirm=true '
+                + 'and are disabled unless UGT_MCP_LIVE=1; chain actions use Solana devnet only. The flow: ugt_publish_design for each design, '
+                + 'then ugt_propose_agreement over them (a parcel layout travels in its designs). A non-binding agreement (a community or owner '
+                + 'vote) is a poll in the index: it is never minted and has no market. A binding owners\' agreement (rule electorate owners, '
+                + 'binding true, the owners\' rights and policy, one lens key) is minted and funded by its sponsor (ugt_mint_agreement, '
+                + 'ugt_fund_agreement); its owners decide through receipts its lens member verifies, the lens attests the decision and anyone '
+                + 'executes it; meanwhile anyone may bet, pledge or donate on its chain account.'
+        }
     );
 
     server.registerTool('ugt_capabilities', {
         title: 'Inspect Urban Game Theory capabilities',
-        description: 'Read the live machine manifest: x402 prices, endpoints, program IDs, recipes and support semantics.',
+        description: 'Read the live machine manifest (/docs/agents.json): the design and agreement JSON Schemas, endpoints, program ids, the oracle-fact x402 price and the tool list.',
         inputSchema: z.object({}), annotations: READ_ONLY
     }, handler(() => actions.capabilities()));
-
-    server.registerTool('ugt_list_proposals', {
-        title: 'List land-change proposals',
-        description: 'Find real-parcel proposals that an agent may inspect, support or forecast.',
-        inputSchema: z.object({
-            city: z.string().default('zagreb'),
-            lifecycle: z.string().default('Active'),
-            limit: z.number().int().min(1).max(100).default(20),
-            author: z.string().optional()
-        }), annotations: READ_ONLY
-    }, handler(args => actions.listProposals(args)));
 
     server.registerTool('ugt_activity', {
         title: 'Read unified human and agent activity',
@@ -69,24 +83,98 @@ export function createUrbanGameTheoryMcpServer({ env = process.env, fetchImpl, t
         }), annotations: READ_ONLY
     }, handler(args => actions.getActivity(args)));
 
+    server.registerTool('ugt_list_agreements', {
+        title: 'List published agreements',
+        description: 'Read the agreement index (GET /agreements), newest first: each row has the agreement/v1 content, its design CIDs, input parcel ids, deadline, status and, once minted, its chain account (onchain).',
+        inputSchema: z.object({
+            city: z.string().max(100).optional(),
+            design: designCid.optional().describe('Only agreements linking this design CID'),
+            parcel: z.string().min(1).max(256).optional().describe('Only agreements taking this input parcel id'),
+            limit: z.number().int().min(1).max(1000).default(20)
+        }), annotations: READ_ONLY
+    }, handler(args => actions.listAgreements(args)));
+
+    server.registerTool('ugt_get_agreement', {
+        title: 'Read one agreement and its chain account',
+        description: 'Read an agreement from the index (GET /agreements/:cid) plus, when its content names a sponsor, its chain account (PDA of sponsor and CID) and that account as the chain holds it now (accountState: status, lens, deadline, required and escrowed lamports, decision); minted is false until the sponsor creates it.',
+        inputSchema: z.object({ agreementCid }), annotations: READ_ONLY
+    }, handler(args => actions.getAgreement(args)));
+
+    server.registerTool('ugt_list_attesters', {
+        title: 'List lens members (attesters)',
+        description: 'Read the attester directory: lens members with kind and coverage. Pick a binding owners\' agreement\'s lens from it (rule.lens, one key): the member verifies the owners\' receipts and attests their decision, and the agreement program accepts the decision only from the lens key its account names.',
+        inputSchema: z.object({ kind: z.string().optional().describe('Only members of this kind, for example owner-consent') }),
+        annotations: READ_ONLY
+    }, handler(args => actions.listAttesters(args)));
+
     server.registerTool('ugt_support_status', {
-        title: 'Read proposal support',
-        description: 'Read on-chain donation escrow and soft-pledge totals for a proposal.',
-        inputSchema: z.object({ proposalAccount }), annotations: READ_ONLY
+        title: 'Read agreement support',
+        description: 'Read on-chain donation escrow and soft-pledge totals for an agreement account (GET /agent/pledges/:account).',
+        inputSchema: z.object({ agreementAccount }), annotations: READ_ONLY
     }, handler(args => actions.getSupport(args)));
 
     server.registerTool('ugt_oracle_events', {
         title: 'Read public land events',
-        description: 'Read source-hashed proposal lifecycle events used by the resolution recipe.',
-        inputSchema: z.object({ proposalAccount, limit: z.number().int().min(1).max(100).default(20) }), annotations: READ_ONLY
+        description: 'Read the source-hashed agreement_lifecycle events of an agreement account (executed, cancelled or expired), which its market settles on.',
+        inputSchema: z.object({ agreementAccount, limit: z.number().int().min(1).max(100).default(20) }), annotations: READ_ONLY
     }, handler(args => actions.getOracleEvents(args)));
 
-    server.registerTool('ugt_list_attesters', {
-        title: 'List lens members (attesters)',
-        description: 'Read the attester directory: lens members with kind and coverage. Pick a proposal lens from it; the contract trusts only keys in a proposal\'s lens.',
-        inputSchema: z.object({ kind: z.string().optional().describe('Only members of this kind, for example owner-consent') }),
-        annotations: READ_ONLY
-    }, handler(args => actions.listAttesters(args)));
+    server.registerTool('ugt_inspect_verified_fact', {
+        title: 'Inspect a verified-fact payment',
+        description: 'Fetch and decode the x402 challenge for an agreement\'s recipe-bound terminal fact without paying.',
+        inputSchema: z.object({ agreementAccount, marketAccount: z.string().optional() }), annotations: READ_ONLY
+    }, handler(args => actions.inspectVerifiedFact(args)));
+
+    server.registerTool('ugt_publish_design', {
+        title: 'Publish a design',
+        description: 'Pin (POST /pins) and index (POST /designs) one design/v1 object. Its CID is computed and the object checked locally first: it must be exactly the published form. Returns the CID and the index row, whose binding lists the parcels its site takes (an agreement\'s inputs are the union of its designs\' bindings). A parcel layout is refused here: send it in ugt_propose_agreement\'s designs.',
+        inputSchema: z.object({
+            design,
+            parcelSourceId: z.string().min(1).max(100).optional().describe('Parcel source to bind with; the city\'s default when absent'),
+            confirm: confirmation
+        }),
+        annotations: PUBLISH
+    }, handler(args => actions.publishDesign(args)));
+
+    server.registerTool('ugt_propose_agreement', {
+        title: 'Propose an agreement',
+        description: 'Pin and index one agreement/v1 object (POST /pins, POST /agreements). Its CID is computed and the object checked locally first: it must be exactly the published form, and sponsor must be the wallet that will mint it. designs carries linked designs the index does not hold yet (a parcel layout is published only this way). The index refuses inputs that differ from the union of the designs\' bindings. A community vote (rule electorate community, binding false, no approvalConfig) stays a poll in the index; a binding owners\' agreement (electorate owners, binding true, an approvalConfig with the owners\' parcel-rights and policy, rule.lens one lens key) can be minted. Returns the CID and, with a sponsor, the chain account a binding agreement will be minted as.',
+        inputSchema: z.object({
+            agreement,
+            designs: z.array(z.object({ content: design })).max(200).default([])
+                .describe('Linked designs to index with the agreement, such as its parcel layouts'),
+            confirm: confirmation
+        }),
+        annotations: PUBLISH
+    }, handler(args => actions.proposeAgreement(args)));
+
+    server.registerTool('ugt_mint_agreement', {
+        title: 'Mint a binding owners\' agreement as its sponsor',
+        description: 'Create the agreement\'s account on devnet with UGT_AGENT_KEYPAIR, which must be the agreement\'s sponsor: create(cid, lens, deadline, open_ground, required_lamports, payout) plus fund in one transaction, with the lens (rule.lens must hold exactly one key, not this agent\'s), the deadline and open ground from the agreement, lamports as both the escrow funded now and the escrow execution requires, payout the sponsor. Only a binding owners\' agreement is minted: a community or owner vote is refused, it is a poll in the index. Then records the account in the index (POST /agreements/:cid/onchain). Repeating it signs nothing new.',
+        inputSchema: z.object({ agreementCid, lamports, confirm: confirmation }),
+        annotations: PAID_IDEMPOTENT
+    }, handler(args => actions.mintAgreement(args)));
+
+    server.registerTool('ugt_fund_agreement', {
+        title: 'Fund a minted agreement',
+        description: 'Top the escrow of an Active agreement up to targetLamports as its sponsor (only the sponsor may fund). A target the escrow already holds signs nothing.',
+        inputSchema: z.object({ agreementCid, targetLamports: lamports, confirm: confirmation }),
+        annotations: PAID_IDEMPOTENT
+    }, handler(args => actions.fundAgreement(args)));
+
+    server.registerTool('ugt_bet_on_agreement', {
+        title: 'Bet on whether an agreement executes',
+        description: 'Create the agreement\'s market if needed and stake devnet USDC on YES (its account ends Executed) or NO (Cancelled or Expired). Only a minted, binding owners\' agreement has a market: its subject is the agreement account, which must be Active and before its deadline.',
+        inputSchema: z.object({ agreementCid, side: z.enum(['yes', 'no']), amountUsdc, confirm: confirmation }),
+        annotations: PAID_NON_IDEMPOTENT
+    }, handler(args => actions.betOnAgreement(args)));
+
+    server.registerTool('ugt_buy_verified_fact', {
+        title: 'Buy a verified land-change fact',
+        description: 'Pay the advertised x402 price in devnet USDC and return an agreement\'s recipe-bound terminal fact plus settlement receipt.',
+        inputSchema: z.object({ agreementAccount, marketAccount: z.string().optional(), confirm: confirmation }),
+        annotations: PAID_NON_IDEMPOTENT
+    }, handler(args => actions.buyVerifiedFact(args)));
 
     server.registerTool('ugt_request_ownership', {
         title: 'Request a parcel-ownership attestation',
@@ -99,158 +187,60 @@ export function createUrbanGameTheoryMcpServer({ env = process.env, fetchImpl, t
         annotations: PAID_IDEMPOTENT
     }, handler(args => actions.requestOwnership(args)));
 
-    server.registerTool('ugt_mint_proposal', {
-        title: 'Mint a proposal with a chosen lens',
-        description: 'Sign mint_and_fund on devnet with UGT_AGENT_KEYPAIR: the parcels (the site\'s binding; may be empty when a site is given), the site and its binding from POST /proposals/binding (they set site_hash and open_ground; open ground executes only through a lens member\'s executed verdict), the lens (lens member keys whose attestations decide this proposal; not only your own key), the image URI and the conditional flag.',
-        inputSchema: z.object({
-            parcelIds: z.array(z.string().min(1)).default([]),
-            site: z.object({
-                type: z.enum(['Polygon', 'MultiPolygon']),
-                coordinates: z.array(z.any())
-            }).optional().describe('The proposal site, GeoJSON EPSG:4326; required when parcelIds is empty'),
-            binding: z.object({
-                coverage: z.enum(['complete', 'partial', 'none', 'unknown'])
-            }).passthrough().optional().describe('The server binding of the site (POST /proposals/binding); required with a site'),
-            lens: z.array(pubkey).min(1).describe('Lens member keys, for example from ugt_list_attesters'),
-            imageUri: z.string().default(''),
-            isConditional: z.boolean().default(true),
-            confirm: confirmation
-        }),
-        annotations: PAID_NON_IDEMPOTENT
-    }, handler(args => actions.mintProposal(args)));
-
-    server.registerTool('ugt_inspect_verified_fact', {
-        title: 'Inspect a verified-fact payment',
-        description: 'Fetch and decode the x402 challenge for a recipe-bound fact without paying.',
-        inputSchema: z.object({ proposalAccount, marketAccount: z.string().optional() }), annotations: READ_ONLY
-    }, handler(args => actions.inspectVerifiedFact(args)));
-
-    server.registerTool('ugt_buy_verified_fact', {
-        title: 'Buy a verified land-change fact',
-        description: 'Pay the advertised x402 price in devnet USDC and return the recipe-bound fact plus settlement receipt.',
-        inputSchema: z.object({ proposalAccount, marketAccount: z.string().optional(), confirm: confirmation }),
-        annotations: PAID_NON_IDEMPOTENT
-    }, handler(args => actions.buyVerifiedFact(args)));
-
-    server.registerTool('ugt_submit_proposal', {
-        title: 'Submit a paid land-change proposal',
-        description: 'Pay x402 in devnet USDC and submit a proposal to the shared API. Retries use proposalId as the payment id.',
-        inputSchema: z.object({
-            proposal: z.object({
-                proposalId: z.string().min(1),
-                // Equal to the site's binding (POST /agent/binding answers it). Empty only
-                // for a material proposal that carries a site; the server enforces the rest.
-                cadastreParcelIds: z.array(z.string().min(1)).default([]),
-                site: z.object({
-                    type: z.enum(['Polygon', 'MultiPolygon']),
-                    coordinates: z.array(z.any())
-                }).passthrough().optional().describe('The ground the proposal occupies (GeoJSON, EPSG:4326)'),
-                toleranceM: z.number().min(0).max(1).optional().describe('Linear intrusion tolerance in metres (default 0)'),
-                city: z.string().optional(), type: z.string().optional(), name: z.string().optional(),
-                description: z.string().optional(), offer: z.number().optional(), offerCurrency: z.string().optional(),
-                lens: z.array(pubkey).optional().describe('The lens the proposal was minted with (ugt_mint_proposal)'),
-                agent: z.object({ persona: z.string().optional(), rationale: z.string().optional(), run_id: z.string().optional() }).optional()
-            }).passthrough().refine(p => p.cadastreParcelIds.length > 0 || !!p.site, {
-                message: 'Declare cadastreParcelIds, or give a site for a proposal on ground with no cadastral parcel.',
-                path: ['cadastreParcelIds']
-            }),
-            confirm: confirmation
-        }), annotations: PAID_IDEMPOTENT
-    }, handler(args => actions.submitProposal(args)));
-
     server.registerTool('ugt_pledge', {
         title: 'Pledge support',
-        description: 'Sign an unfunded, revocable on-chain devnet-USDC commitment to a proposal.',
-        inputSchema: z.object({ proposalAccount, amountUsdc, confirm: confirmation }), annotations: PAID_IDEMPOTENT
+        description: 'Sign an unfunded, revocable on-chain devnet-USDC commitment to the account of a minted, binding owners\' agreement.',
+        inputSchema: z.object({ agreementAccount, amountUsdc, confirm: confirmation }), annotations: PAID_IDEMPOTENT
     }, handler(args => actions.pledge(args)));
 
     server.registerTool('ugt_donate', {
-        title: 'Donate to a proposal',
-        description: 'Move devnet USDC into the proposal escrow. operationId makes retries idempotent.',
-        inputSchema: z.object({ proposalAccount, amountUsdc, operationId: z.string().min(1), confirm: confirmation }), annotations: PAID_IDEMPOTENT
+        title: 'Donate to an agreement',
+        description: 'Move devnet USDC into the donation escrow of a minted, binding owners\' agreement (its account). operationId makes retries idempotent.',
+        inputSchema: z.object({ agreementAccount, amountUsdc, operationId: z.string().min(1), confirm: confirmation }), annotations: PAID_IDEMPOTENT
     }, handler(args => actions.donate(args)));
-
-    server.registerTool('ugt_forecast', {
-        title: 'Forecast a proposal outcome',
-        description: 'Create the proposal market if needed and stake devnet USDC on YES or NO.',
-        inputSchema: z.object({ proposalAccount, side: z.enum(['yes', 'no']), amountUsdc, confirm: confirmation }),
-        annotations: PAID_NON_IDEMPOTENT
-    }, handler(args => actions.forecast(args)));
-
-    server.registerTool('ugt_cancel_proposal', {
-        title: 'Cancel an owned proposal',
-        description: 'Cancel an active proposal as its on-chain owner. Safe retries read the terminal state first.',
-        inputSchema: z.object({ proposalAccount, confirm: confirmation }), annotations: PAID_IDEMPOTENT
-    }, handler(args => actions.cancel(args)));
-
-    server.registerTool('ugt_accept_parcel', {
-        title: 'Accept one parcel as its attested owner',
-        description: 'Sign accept_with_attestations with UGT_AGENT_KEYPAIR as an owner a lens member has attested (ParcelOwnership-v1). member must be in the proposal\'s lens. Without ownershipAttestation the attestation is looked up on the member\'s service (serviceUrl from ugt_list_attesters, GET /lens/attestations); request one first with ugt_request_ownership. A repeat returns the existing acceptance record. The last owner of the last parcel executes the proposal.',
-        inputSchema: z.object({
-            proposalAccount,
-            parcelId: z.string().min(1).describe('Cadastral parcel id in the proposal, for example HR-335550-1813/6'),
-            member: pubkey.describe('Lens member key that attested the ownership'),
-            ownershipAttestation: pubkey.optional().describe('SAS ParcelOwnership-v1 attestation address; looked up on the member service when absent'),
-            payout: pubkey.optional().describe('Where this owner\'s share of escrowed SOL goes on distribution; absent = none'),
-            confirm: confirmation
-        }),
-        annotations: PAID_IDEMPOTENT
-    }, handler(args => actions.acceptParcel(args)));
-
-    server.registerTool('ugt_submit_verdict', {
-        title: 'Submit a lens member verdict',
-        description: 'Permissionlessly submit a lens member\'s ProposalVerdict-v1 attestation with settle_with_verdict: "expired" sets the proposal Expired (its market resolves NO); "executed" only for proposals minted with verdict_may_execute. member must be in the proposal\'s lens. Returns record, the VerdictRecord PDA ["verdict", proposal, verdictAttestation] the settlement creates. Replays (no send) when that record already exists or the proposal already has that status.',
-        inputSchema: z.object({
-            proposalAccount,
-            verdictAttestation: pubkey.describe('SAS ProposalVerdict-v1 attestation address'),
-            member: pubkey.describe('Lens member key that signed the verdict'),
-            confirm: confirmation
-        }),
-        annotations: PAID_IDEMPOTENT
-    }, handler(args => actions.submitVerdict(args)));
 
     server.registerTool('ugt_refund_donation', {
         title: 'Refund a donation',
-        description: 'Refund this wallet’s identified donation after proposal cancellation or expiry.',
-        inputSchema: z.object({ proposalAccount, operationId: z.string().min(1), confirm: confirmation }),
+        description: 'Refund this wallet’s identified donation after the agreement is cancelled or expired.',
+        inputSchema: z.object({ agreementAccount, operationId: z.string().min(1), confirm: confirmation }),
         annotations: PAID_IDEMPOTENT
     }, handler(args => actions.refundDonation(args)));
 
     server.registerTool('ugt_void_pledge', {
         title: 'Void a terminal pledge',
-        description: 'Permissionlessly void an active soft pledge after proposal cancellation or expiry.',
-        inputSchema: z.object({ proposalAccount, pledger: z.string().min(32).optional(), confirm: confirmation }),
+        description: 'Permissionlessly void an active soft pledge after the agreement is cancelled or expired.',
+        inputSchema: z.object({ agreementAccount, pledger: pubkey.optional(), confirm: confirmation }),
         annotations: PAID_IDEMPOTENT
     }, handler(args => actions.voidPledge(args)));
 
     server.registerTool('ugt_revoke_pledge', {
         title: 'Revoke an active pledge',
-        description: 'Revoke this wallet’s unfunded soft pledge while the proposal remains active.',
-        inputSchema: z.object({ proposalAccount, confirm: confirmation }), annotations: PAID_IDEMPOTENT
+        description: 'Revoke this wallet’s unfunded soft pledge while the agreement remains active.',
+        inputSchema: z.object({ agreementAccount, confirm: confirmation }), annotations: PAID_IDEMPOTENT
     }, handler(args => actions.revokePledge(args)));
 
     server.registerTool('ugt_release_donations', {
-        title: 'Release executed-proposal donations',
-        description: 'Permissionlessly release escrowed donations to the captured beneficiary after execution.',
-        inputSchema: z.object({ proposalAccount, confirm: confirmation }), annotations: PAID_IDEMPOTENT
+        title: 'Release an executed agreement’s donations',
+        description: 'Permissionlessly release escrowed donations to the captured beneficiary after the agreement executed.',
+        inputSchema: z.object({ agreementAccount, confirm: confirmation }), annotations: PAID_IDEMPOTENT
     }, handler(args => actions.releaseDonations(args)));
 
     server.registerTool('ugt_fulfill_pledge', {
-        title: 'Fulfill an executed-proposal pledge',
-        description: 'Transfer this wallet’s pledged devnet USDC to the captured beneficiary after execution.',
-        inputSchema: z.object({ proposalAccount, confirm: confirmation }), annotations: PAID_IDEMPOTENT
+        title: 'Fulfill an executed agreement’s pledge',
+        description: 'Transfer this wallet’s pledged devnet USDC to the captured beneficiary after the agreement executed.',
+        inputSchema: z.object({ agreementAccount, confirm: confirmation }), annotations: PAID_IDEMPOTENT
     }, handler(args => actions.fulfillPledge(args)));
 
     server.registerTool('ugt_resolve_market', {
-        title: 'Resolve a proposal market',
-        description: 'Permissionlessly resolve a market from the proposal account’s terminal state.',
-        inputSchema: z.object({ proposalAccount, confirm: confirmation }), annotations: PAID_IDEMPOTENT
+        title: 'Resolve an agreement market',
+        description: 'Permissionlessly resolve an agreement\'s market from its account’s terminal state: Executed YES, Cancelled or Expired NO.',
+        inputSchema: z.object({ agreementAccount, confirm: confirmation }), annotations: PAID_IDEMPOTENT
     }, handler(args => actions.resolve(args)));
 
     server.registerTool('ugt_claim_market', {
         title: 'Claim market winnings',
-        description: 'Claim this wallet’s winning position or empty-winning-pool refund.',
-        inputSchema: z.object({ proposalAccount, side: z.enum(['yes', 'no']), confirm: confirmation }),
+        description: 'Claim this wallet’s winning position or empty-winning-pool refund on an agreement\'s market.',
+        inputSchema: z.object({ agreementAccount, side: z.enum(['yes', 'no']), confirm: confirmation }),
         annotations: PAID_IDEMPOTENT
     }, handler(args => actions.claim(args)));
 

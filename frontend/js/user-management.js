@@ -16,11 +16,9 @@ const ATTESTIFY_BASE_URLS = Object.freeze({
 function isProposalDeepLinkPath() {
     try {
         const path = (typeof window !== 'undefined' && window.location && window.location.pathname) ? window.location.pathname : '';
-        // Numeric id, comma-separated ids, a named-plan slug, or the named plan's score view — the
+        // A design link (/designs/<cid>[,<cid>…]) or an agreement link (/agreements/<cid>) — the
         // same forms handleProposalRouteFromUrl (js/proposals/core.js) routes.
-        return /^\/proposals\/[0-9,]+\/?$/.test(path)
-            || /^\/proposals\/[a-z0-9][a-z0-9-]{1,61}[a-z0-9]\/?$/i.test(path)
-            || /^\/plans\/[a-z0-9][a-z0-9-]{1,61}[a-z0-9]\/score\/?$/i.test(path);
+        return /^\/(designs|agreements)\/[^/]+\/?$/.test(path);
     } catch (_) {
         return false;
     }
@@ -160,19 +158,8 @@ const NETWORK_LABELS = {
     '0x2105': { label: 'Base', shortLabel: 'Base' },
     '0x14a34': { label: 'Base Sepolia', shortLabel: 'Base Sepolia' },
     'solana-devnet': { label: 'Solana Devnet', shortLabel: 'Solana Devnet' },
-    'solana-mainnet-beta': { label: 'Solana Mainnet', shortLabel: 'Solana Mainnet' },
-    'canton': { label: 'Canton (DevNet)', shortLabel: 'Canton' }
+    'solana-mainnet-beta': { label: 'Solana Mainnet', shortLabel: 'Solana Mainnet' }
 };
-
-// Canton has no browser wallet — it's a custodial network switch (see canton-mode.js).
-function isCantonModeActive() {
-    return !!(window.CantonMode && typeof window.CantonMode.isActive === 'function' && window.CantonMode.isActive());
-}
-const CANTON_CHAIN_OPTION = { chainIdHex: 'canton', chainIdDec: null, label: 'Canton (DevNet)', tooltip: 'Canton DevNet — custodial, no wallet needed', isKnownNetwork: true };
-// The Canton network option is offered only while the feature is on (environment.js CANTON_ENABLED).
-function cantonChainOptions() {
-    return (window.CANTON_ENABLED === true && window.CantonMode) ? [CANTON_CHAIN_OPTION] : [];
-}
 
 function getNoNetworkChainOption() {
     return {
@@ -1685,25 +1672,6 @@ function updateAgentDialogChainInfo() {
     const existingAttestLink = chainInfoParent ? chainInfoParent.querySelector('.wallet-attest-link') : null;
     const existingCityTokenButton = chainInfoParent ? chainInfoParent.querySelector('.wallet-city-token-button') : null;
 
-    // Canton takes precedence — custodial, no wallet. The pill shows the acting
-    // party and opens the identity picker (the wallet stand-in).
-    if (isCantonModeActive()) {
-        if (existingAttestLink && chainInfoParent) chainInfoParent.removeChild(existingAttestLink);
-        if (existingCityTokenButton && chainInfoParent) chainInfoParent.removeChild(existingCityTokenButton);
-        const party = window.CantonMode.getParty && window.CantonMode.getParty();
-        const who = party ? (window.CantonMode.hint ? window.CantonMode.hint(party) : party) : 'pick identity';
-        chainInfoContainer.innerHTML = `
-            <span class="wallet-chain-label">
-                <i class="fa-solid fa-circle-nodes" aria-hidden="true"></i>
-                <span>Canton · ${escapeHtml(who)}</span>
-                <i class="fas fa-chevron-down wallet-chain-caret" aria-hidden="true"></i>
-            </span>`;
-        chainInfoContainer.title = 'Canton (DevNet) — click to choose identity or switch network';
-        chainInfoContainer.dataset.chainId = 'canton';
-        chainInfoContainer.onclick = () => window.CantonMode.openIdentityPicker();
-        return;
-    }
-
     const solanaActive = isSolanaWalletActive();
     const evmState = window.walletManager ? window.walletManager.getState() : null;
     const evmConnected = evmState && evmState.status === 'connected';
@@ -1780,8 +1748,8 @@ function updateAgentDialogChainInfo() {
         chainInfoContainer.dataset.chainId = normalizeChainId(chainId) || '';
         chainInfoContainer.onclick = openChainSelectionModal;
     } else {
-        // No wallet connected — still offer a network selector so Canton (which
-        // needs no wallet) is reachable from the same place.
+        // No wallet connected — still offer the network selector, where "No network" and the
+        // configured networks are chosen from the same place.
         if (existingAttestLink && chainInfoParent) chainInfoParent.removeChild(existingAttestLink);
         if (existingCityTokenButton && chainInfoParent) chainInfoParent.removeChild(existingCityTokenButton);
         chainInfoContainer.innerHTML = `
@@ -1847,7 +1815,7 @@ async function getAvailableChainOptions() {
             { chainIdHex: 'solana-devnet', chainIdDec: null, label: 'Solana Devnet', tooltip: 'Solana Devnet', isKnownNetwork: true },
             { chainIdHex: 'solana-mainnet-beta', chainIdDec: null, label: 'Solana Mainnet', tooltip: 'Solana Mainnet', isKnownNetwork: true }
         ];
-        return [getNoNetworkChainOption(), ...solanaOptions, ...cantonChainOptions()];
+        return [getNoNetworkChainOption(), ...solanaOptions];
     }
 
     const options = new Map();
@@ -1907,7 +1875,6 @@ async function getAvailableChainOptions() {
 
     const sorted = Array.from(options.values()).sort((a, b) => a.label.localeCompare(b.label));
     sorted.unshift(getNoNetworkChainOption()); // Leaving every network must always be possible.
-    sorted.push(...cantonChainOptions()); // Canton needs no wallet, so it is listed whenever enabled
     return sorted;
 }
 
@@ -1931,9 +1898,8 @@ async function requestChainSwitch(chainIdHex, container) {
     }
 
     // "No network" is app-level escape from every connector. It never asks an EVM wallet to switch,
-    // so it also works while Canton is active and there is no browser wallet/provider at all.
+    // so it also works when there is no browser wallet/provider at all.
     if (chainIdHex === 'none') {
-        if (window.CantonMode && window.CantonMode.isActive()) window.CantonMode.deactivate();
         const disconnects = [];
         if (window.solanaWalletManager && typeof window.solanaWalletManager.disconnect === 'function') {
             disconnects.push(Promise.resolve().then(() => window.solanaWalletManager.disconnect()));
@@ -1947,18 +1913,6 @@ async function requestChainSwitch(chainIdHex, container) {
         updateUsernameDisplay();
         return;
     }
-
-    // Canton: a custodial network switch — no wallet, just flip the mode and pick
-    // an acting party. Checked first.
-    if (chainIdHex === 'canton') {
-        if (window.CantonMode) window.CantonMode.activate();
-        closeChainSelectionModal();
-        updateWalletButtonDisplay();
-        if (window.CantonMode) window.CantonMode.openIdentityPicker();
-        return;
-    }
-    // Any other (real) network deactivates Canton mode.
-    if (window.CantonMode && window.CantonMode.isActive()) window.CantonMode.deactivate();
 
     // Handle Solana cluster switching
     if (typeof chainIdHex === 'string' && chainIdHex.startsWith('solana-')) {
@@ -2007,7 +1961,7 @@ async function requestChainSwitch(chainIdHex, container) {
 async function openChainSelectionModal() {
     const hasEvmWallet = window.walletManager && typeof window.walletManager.getState === 'function';
     const hasSolanaWallet = isSolanaWalletActive();
-    // No wallet guard: Canton needs none, and it's always an option below.
+    // No wallet guard: "No network" is always an option below.
 
     const chainOptions = await getAvailableChainOptions();
     if (!chainOptions.length) {
@@ -2019,11 +1973,9 @@ async function openChainSelectionModal() {
 
     closeChainSelectionModal();
 
-    const currentChainHex = isCantonModeActive()
-        ? 'canton'
-        : (hasSolanaWallet
-            ? getSolanaChainId()
-            : (normalizeChainId(hasEvmWallet ? window.walletManager.getState().chainId : null) || 'none'));
+    const currentChainHex = hasSolanaWallet
+        ? getSolanaChainId()
+        : (normalizeChainId(hasEvmWallet ? window.walletManager.getState().chainId : null) || 'none');
 
     // The shared dialog with one cb-option row per network; the current one is aria-current (the
     // option's selected look) with a "Current" badge. Opened from the agent dialog, so it takes the
@@ -2309,44 +2261,3 @@ window.bindLanguageSegmented = bindLanguageSegmented;
 window.isProposalDeepLink = isProposalDeepLinkPath;
 window.ensureGuestUserAgentForDeepLink = ensureGuestUserAgentForDeepLink;
 window.shouldSkipWelcomeForProposalLink = isProposalDeepLinkPath;
-// Where a proposal created right now would be minted.
-//
-// createProposal() decides this implicitly, from three independent globals checked in a fixed order
-// (Canton mode, then a Solana wallet, then an EVM wallet). Nothing told the user, so a proposal could
-// go to a chain they had forgotten they selected. This is that same decision, named once, so the create
-// dialog and the mint dispatch cannot disagree — keep the order in step with createProposal().
-function getActiveMintTarget() {
-    try {
-        if (window.CantonMode && typeof window.CantonMode.isActive === 'function' && window.CantonMode.isActive()) {
-            const party = (typeof window.CantonMode.getParty === 'function') ? window.CantonMode.getParty() : '';
-            return { chain: 'canton', label: 'Canton (DevNet)', onchain: true, identity: party || null };
-        }
-    } catch (_) { }
-
-    try {
-        const solana = window.solanaWalletManager;
-        const state = solana && typeof solana.getState === 'function' ? solana.getState() : null;
-        if (state && state.status === 'connected' && Array.isArray(state.accounts) && state.accounts.length) {
-            const cluster = (typeof window.getSolanaChainId === 'function') ? window.getSolanaChainId() : 'solana';
-            const info = NETWORK_LABELS[cluster];
-            return { chain: cluster, label: (info && info.label) || 'Solana', onchain: true, identity: state.accounts[0] };
-        }
-    } catch (_) { }
-
-    try {
-        const wallet = window.walletManager;
-        const state = wallet && typeof wallet.getState === 'function' ? wallet.getState() : null;
-        if (state && state.status === 'connected' && state.chainId) {
-            const info = getNetworkDisplayInfo(state.chainId, state.status);
-            return { chain: info.chainId, label: info.text, onchain: true, identity: (state.accounts && state.accounts[0]) || null };
-        }
-    } catch (_) { }
-
-    // Chain names above are proper nouns; the off-chain label is prose, so it is translated.
-    const offchainLabel = (window.i18n && typeof window.i18n.t === 'function')
-        ? window.i18n.t('modal.createProposal.mintTarget.offchain')
-        : 'Off-chain (this browser only)';
-    return { chain: null, label: offchainLabel, onchain: false, identity: null };
-}
-
-window.getActiveMintTarget = getActiveMintTarget;

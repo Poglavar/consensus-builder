@@ -8,7 +8,6 @@ import { dirname, resolve } from 'node:path';
 import { createPool, describeDatabase, isLocalDatabase } from '../db/connection.cjs';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { assertReconstructionGeoJSONRoundTrip } from '../proposals/reconstruction-geojson.js';
-import { canonicalSeedRecord } from './lib/canonical-seed-record.mjs';
 
 dotenv.config({ path: fileURLToPath(new URL('../.env', import.meta.url)), quiet: true });
 await import('../../frontend/js/building-density-stats.js');
@@ -193,17 +192,17 @@ export const PROJECTS = Object.freeze([
 ]);
 
 function usage() {
-    console.log(`Usage: node backend/scripts/seed-pionir-observed-proposals.mjs --dry-run|--apply [--export] [--only key,key]
+    console.log(`Usage: node backend/scripts/seed-pionir-observed-proposals.mjs --dry-run|--export [--only key,key]
 
-  --dry-run  Build and validate proposals without writing database rows.
-  --apply    Upsert all configured proposals in the local Consensus Builder database.
+  --dry-run  Build and validate proposals without writing a file.
   --export   Write canonical proposal GeoJSON files and, on a full run, the Rudeš existing-site context.
-  --only     Limit the run to comma-separated project keys.`);
+  --only     Limit the run to comma-separated project keys.
+Both read the local database. Publish the archives with backend/scripts/publish-restatement-archives.mjs.`);
 }
 
 function assertLocalDatabase() {
     if (!isLocalDatabase()) {
-        throw new Error(`Refusing to seed non-local database host ${describeDatabase().host || '(empty)'}.`);
+        throw new Error(`Refusing to read the reconstruction sources from non-local database host ${describeDatabase().host || '(empty)'}.`);
     }
 }
 
@@ -485,56 +484,6 @@ export async function constructObservedProposal(pool, config) {
     return { proposal, stats };
 }
 
-async function upsertProposal(pool, authored) {
-    // Same projection as the API write path; throws before writing if the row would be unreadable.
-    const proposal = canonicalSeedRecord(authored);
-    const result = await pool.query(`
-        INSERT INTO public.proposal (
-            proposal_id, city, name, title, description, author, type,
-            lifecycle_status, created_at, updated_at,
-            ancestor_parcel_ids, cadastre_parcel_ids,
-            building_proposal, bounds, proposal_data, applied
-        ) VALUES (
-            $1, $2, $3, $4, $5, $6, $7,
-            $8, $9, $9,
-            $10::jsonb, $11::jsonb,
-            $12::jsonb, $13::jsonb, $14::jsonb, false
-        )
-        ON CONFLICT (proposal_id) DO UPDATE SET
-            city = EXCLUDED.city,
-            name = EXCLUDED.name,
-            title = EXCLUDED.title,
-            description = EXCLUDED.description,
-            author = EXCLUDED.author,
-            type = EXCLUDED.type,
-            lifecycle_status = EXCLUDED.lifecycle_status,
-            updated_at = NOW(),
-            ancestor_parcel_ids = EXCLUDED.ancestor_parcel_ids,
-            cadastre_parcel_ids = EXCLUDED.cadastre_parcel_ids,
-            building_proposal = EXCLUDED.building_proposal,
-            bounds = EXCLUDED.bounds,
-            proposal_data = EXCLUDED.proposal_data,
-            applied = false
-        RETURNING id, proposal_id
-    `, [
-        proposal.proposalId,
-        proposal.city,
-        proposal.name,
-        proposal.title,
-        proposal.description,
-        proposal.author,
-        proposal.type,
-        proposal.lifecycleStatus,
-        proposal.createdAt,
-        null, // ancestor_parcel_ids is retired; cadastre_parcel_ids is the declaration
-        JSON.stringify(proposal.cadastreParcelIds),
-        JSON.stringify(proposal.buildingProposal),
-        JSON.stringify(proposal.bounds),
-        JSON.stringify(proposal)
-    ]);
-    return result.rows[0];
-}
-
 async function exportProposal(config, proposal) {
     const { collection, buildingCount } = assertReconstructionGeoJSONRoundTrip(proposal);
     const outputPath = `${ARCHIVE_ROOT}${config.key}/proposal.geojson`;
@@ -620,11 +569,11 @@ async function main() {
         usage();
         return;
     }
-    const allowed = new Set(['--dry-run', '--apply', '--export', '--only']);
+    const allowed = new Set(['--dry-run', '--export', '--only']);
     const unknown = args.filter((arg, index) => !allowed.has(arg) && args[index - 1] !== '--only');
-    if (unknown.length || (args.includes('--dry-run') === args.includes('--apply'))) {
+    if (unknown.length || (args.includes('--dry-run') === args.includes('--export'))) {
         usage();
-        throw new Error('Choose exactly one of --dry-run or --apply.');
+        throw new Error('Choose exactly one of --dry-run or --export.');
     }
     const onlyIndex = args.indexOf('--only');
     const onlyKeys = onlyIndex >= 0
@@ -652,14 +601,10 @@ async function main() {
                 heightEquivalentAboveGroundGbpM2: Number(stats.aboveGroundGbpM2.toFixed(2)),
                 heightEquivalentKin: Number(stats.kin.toFixed(4))
             }, null, 2));
-            if (args.includes('--apply')) {
-                const stored = await upsertProposal(pool, proposal);
-                console.log(`Stored local proposal row ${stored.id} (${stored.proposal_id}).`);
-            }
             if (args.includes('--export')) await exportProposal(config, proposal);
         }
         if (args.includes('--export') && !onlyKeys) await exportRudesContext(pool);
-        if (args.includes('--dry-run')) console.log('Dry run complete; no database row was written.');
+        if (args.includes('--dry-run')) console.log('Dry run complete; no archive was written.');
     } finally {
         await pool.end();
     }

@@ -325,8 +325,7 @@
         if (toolbar) toolbar.hidden = !active;
         if (active) {
             closeSheets();
-            win.ParcelMenu?.close();
-            win.GroundMenu?.close();
+            win.ClickStack?.close();
             win.hideParcelInfoPanel?.();
             win.hideProposalDetailsPanel?.();
         }

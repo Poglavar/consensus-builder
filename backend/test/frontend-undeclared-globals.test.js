@@ -30,7 +30,7 @@ const BROWSER_GLOBALS = [
     'CanvasRenderingContext2D', 'OffscreenCanvas', 'ImageData', 'Path2D', 'DOMRect', 'DOMMatrix', 'Notification',
     'caches', 'visualViewport', 'customElements', 'print', 'self', 'importScripts', 'requestIdleCallback',
     'cancelIdleCallback', 'FileReader', 'File',
-    'L', 'turf', 'proj4', 'THREE', 'ethers', 'solanaWeb3', 'pako', 'module', 'exports', 'require', 'define'
+    'L', 'turf', 'proj4', 'THREE', 'ethers', 'solanaWeb3', 'module', 'exports', 'require', 'define'
 ];
 const BUILTINS = new Set([...Object.getOwnPropertyNames(globalThis), ...BROWSER_GLOBALS, 'arguments', 'undefined']);
 

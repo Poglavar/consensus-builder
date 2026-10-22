@@ -1,6 +1,10 @@
-// proposal_pledge: funded refundable donations plus revocable, unfunded commitments for
-// proposal_nft proposals. The proposal lifecycle is authoritative and its owner is captured as
-// the beneficiary, so callers cannot redirect settlement.
+// proposal_pledge: funded refundable donations plus revocable, unfunded commitments for agreements
+// (Agreement accounts of the agreement program, read by agreement::read_agreement_view: owner,
+// discriminator, status at offset 136; proposal_nft is not read at all). The agreement's lifecycle
+// is authoritative and its authority (the sponsor) is captured as the beneficiary, so callers
+// cannot redirect settlement. The program keeps its name and id, and its accounts and fields keep
+// the word `proposal` (the IDL interface is unchanged), which now names the agreement account:
+// renaming is a deploy-time matter.
 
 use anchor_lang::prelude::*;
 use anchor_spl::associated_token::AssociatedToken;
@@ -8,14 +12,12 @@ use anchor_spl::token::{self, Mint, Token, TokenAccount, Transfer};
 
 declare_id!("1jESRS3mJiPUJTtmQ5ncyBhGNmGeXTpUqPyJcTYrp6g");
 
-pub const PROPOSAL_NFT_PROGRAM_ID: Pubkey = pubkey!("3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg");
 pub const DEVNET_USDC_MINT: Pubkey = pubkey!("4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU");
-pub const PROPOSAL_DISCRIMINATOR: [u8; 8] = [26, 94, 189, 187, 116, 136, 53, 33];
-
-pub const STATUS_ACTIVE: u8 = 0;
-pub const STATUS_EXECUTED: u8 = 1;
-pub const STATUS_CANCELLED: u8 = 2;
-pub const STATUS_EXPIRED: u8 = 3;
+/// agreement::AgreementStatus codes, the status byte donations and pledges read.
+pub const STATUS_ACTIVE: u8 = agreement::AgreementStatus::Active as u8;
+pub const STATUS_EXECUTED: u8 = agreement::AgreementStatus::Executed as u8;
+pub const STATUS_CANCELLED: u8 = agreement::AgreementStatus::Cancelled as u8;
+pub const STATUS_EXPIRED: u8 = agreement::AgreementStatus::Expired as u8;
 pub const COMMITMENT_ACTIVE: u8 = 0;
 pub const COMMITMENT_FULFILLED: u8 = 1;
 pub const COMMITMENT_REVOKED: u8 = 2;
@@ -32,7 +34,7 @@ pub mod proposal_pledge {
     use super::*;
 
     pub fn create_donation_escrow(ctx: Context<CreateDonationEscrow>) -> Result<()> {
-        let (beneficiary, status) = read_proposal(&ctx.accounts.proposal, None)?;
+        let (beneficiary, status) = read_subject(&ctx.accounts.proposal, None)?;
         require!(status == STATUS_ACTIVE, SupportError::ProposalNotActive);
         let escrow = &mut ctx.accounts.escrow;
         escrow.proposal = ctx.accounts.proposal.key();
@@ -53,7 +55,7 @@ pub mod proposal_pledge {
     pub fn donate(ctx: Context<Donate>, donation_id: [u8; 32], amount: u64) -> Result<()> {
         require!(amount > 0, SupportError::ZeroAmount);
         require!(!ctx.accounts.escrow.released, SupportError::DonationsReleased);
-        let (_, status) = read_proposal(&ctx.accounts.proposal, Some(&ctx.accounts.escrow.proposal))?;
+        let (_, status) = read_subject(&ctx.accounts.proposal, Some(&ctx.accounts.escrow.proposal))?;
         require!(status == STATUS_ACTIVE, SupportError::ProposalNotActive);
         token::transfer(CpiContext::new(
             ctx.accounts.token_program.to_account_info(),
@@ -90,7 +92,7 @@ pub mod proposal_pledge {
     /// Permissionless settlement after execution to the captured proposal owner.
     pub fn release_donations(ctx: Context<ReleaseDonations>) -> Result<()> {
         require!(!ctx.accounts.escrow.released, SupportError::DonationsReleased);
-        let (_, status) = read_proposal(&ctx.accounts.proposal, Some(&ctx.accounts.escrow.proposal))?;
+        let (_, status) = read_subject(&ctx.accounts.proposal, Some(&ctx.accounts.escrow.proposal))?;
         require!(status == STATUS_EXECUTED, SupportError::ProposalNotExecuted);
         let amount = ctx.accounts.vault.amount;
         require!(amount > 0, SupportError::NothingToRelease);
@@ -114,7 +116,7 @@ pub mod proposal_pledge {
     pub fn refund_donation(ctx: Context<RefundDonation>) -> Result<()> {
         require!(!ctx.accounts.escrow.released, SupportError::DonationsReleased);
         require!(!ctx.accounts.position.refunded, SupportError::AlreadyRefunded);
-        let (_, status) = read_proposal(&ctx.accounts.proposal, Some(&ctx.accounts.escrow.proposal))?;
+        let (_, status) = read_subject(&ctx.accounts.proposal, Some(&ctx.accounts.escrow.proposal))?;
         require!(is_refundable_status(status), SupportError::ProposalNotRefundable);
         let amount = ctx.accounts.position.amount;
         require!(amount > 0, SupportError::NothingToRefund);
@@ -135,7 +137,7 @@ pub mod proposal_pledge {
     }
 
     pub fn create_pledge_book(ctx: Context<CreatePledgeBook>) -> Result<()> {
-        let (beneficiary, status) = read_proposal(&ctx.accounts.proposal, None)?;
+        let (beneficiary, status) = read_subject(&ctx.accounts.proposal, None)?;
         require!(status == STATUS_ACTIVE, SupportError::ProposalNotActive);
         let book = &mut ctx.accounts.book;
         book.proposal = ctx.accounts.proposal.key();
@@ -154,7 +156,7 @@ pub mod proposal_pledge {
     /// Create or replace this wallet's soft commitment. No USDC moves at pledge time.
     pub fn set_pledge(ctx: Context<SetPledge>, amount: u64) -> Result<()> {
         require!(amount > 0, SupportError::ZeroAmount);
-        let (_, status) = read_proposal(&ctx.accounts.proposal, Some(&ctx.accounts.book.proposal))?;
+        let (_, status) = read_subject(&ctx.accounts.proposal, Some(&ctx.accounts.book.proposal))?;
         require!(status == STATUS_ACTIVE, SupportError::ProposalNotActive);
         let commitment = &mut ctx.accounts.commitment;
         if commitment.initialized {
@@ -180,7 +182,7 @@ pub mod proposal_pledge {
     }
 
     pub fn revoke_pledge(ctx: Context<RevokePledge>) -> Result<()> {
-        let (_, status) = read_proposal(&ctx.accounts.proposal, Some(&ctx.accounts.book.proposal))?;
+        let (_, status) = read_subject(&ctx.accounts.proposal, Some(&ctx.accounts.book.proposal))?;
         require!(status == STATUS_ACTIVE, SupportError::ProposalNotActive);
         require!(ctx.accounts.commitment.status == COMMITMENT_ACTIVE, SupportError::PledgeNotActive);
         let amount = ctx.accounts.commitment.amount;
@@ -193,7 +195,7 @@ pub mod proposal_pledge {
 
     /// Move the pledged USDC only after execution, with the pledger signing.
     pub fn fulfill_pledge(ctx: Context<FulfillPledge>) -> Result<()> {
-        let (_, status) = read_proposal(&ctx.accounts.proposal, Some(&ctx.accounts.book.proposal))?;
+        let (_, status) = read_subject(&ctx.accounts.proposal, Some(&ctx.accounts.book.proposal))?;
         require!(status == STATUS_EXECUTED, SupportError::ProposalNotExecuted);
         require!(ctx.accounts.commitment.status == COMMITMENT_ACTIVE, SupportError::PledgeNotActive);
         let amount = ctx.accounts.commitment.amount;
@@ -215,7 +217,7 @@ pub mod proposal_pledge {
 
     /// Clear an unfunded commitment once a proposal is cancelled or expires.
     pub fn void_pledge(ctx: Context<VoidPledge>) -> Result<()> {
-        let (_, status) = read_proposal(&ctx.accounts.proposal, Some(&ctx.accounts.book.proposal))?;
+        let (_, status) = read_subject(&ctx.accounts.proposal, Some(&ctx.accounts.book.proposal))?;
         require!(is_refundable_status(status), SupportError::ProposalNotRefundable);
         require!(ctx.accounts.commitment.status == COMMITMENT_ACTIVE, SupportError::PledgeNotActive);
         let amount = ctx.accounts.commitment.amount;
@@ -236,30 +238,15 @@ fn sub(left: u64, right: u64) -> Result<u64> {
     left.checked_sub(right).ok_or_else(|| error!(SupportError::MathOverflow))
 }
 
-// Only `owner` and `status` are read; the leading fields exist to advance the Borsh
-// cursor and keep their real names so the backend layout tests can pin them to proposal_nft.
-#[allow(dead_code)]
-#[derive(AnchorDeserialize)]
-struct ProposalHead {
-    pub proposal_id: u64,
-    pub owner: Pubkey,
-    pub parcel_ids: Vec<String>,
-    pub is_conditional: bool,
-    pub image_uri: String,
-    pub acceptance_possible: bool,
-    pub status: u8,
-}
-
-fn read_proposal(proposal: &AccountInfo, expected: Option<&Pubkey>) -> Result<(Pubkey, u8)> {
+/// Read `subject` as an Agreement of the agreement program (agreement::read_agreement_view checks
+/// owner, discriminator and layout) and, when `expected` is given, require it to be the escrow's or
+/// book's own. Returns the beneficiary (the agreement's authority, the sponsor) and the status byte.
+fn read_subject(subject: &AccountInfo, expected: Option<&Pubkey>) -> Result<(Pubkey, u8)> {
     if let Some(expected_key) = expected {
-        require_keys_eq!(proposal.key(), *expected_key, SupportError::InvalidProposalAccount);
+        require_keys_eq!(subject.key(), *expected_key, SupportError::InvalidProposalAccount);
     }
-    require_keys_eq!(*proposal.owner, PROPOSAL_NFT_PROGRAM_ID, SupportError::InvalidProposalAccount);
-    let data = proposal.try_borrow_data()?;
-    require!(data.len() > 8 && data[..8] == PROPOSAL_DISCRIMINATOR, SupportError::InvalidProposalAccount);
-    let mut body: &[u8] = &data[8..];
-    let head = ProposalHead::deserialize(&mut body).map_err(|_| error!(SupportError::InvalidProposalAccount))?;
-    Ok((head.owner, head.status))
+    let view = agreement::read_agreement_view(subject).ok_or_else(|| error!(SupportError::InvalidProposalAccount))?;
+    Ok((view.authority, view.status))
 }
 
 #[account]
@@ -298,7 +285,7 @@ pub struct PledgeCommitment {
 pub struct CreateDonationEscrow<'info> {
     #[account(init, payer = creator, space = 8 + DonationEscrow::INIT_SPACE, seeds = [DONATION_ESCROW_SEED, proposal.key().as_ref()], bump)]
     pub escrow: Box<Account<'info, DonationEscrow>>,
-    /// CHECK: verified by read_proposal.
+    /// CHECK: the agreement; verified by read_subject.
     pub proposal: UncheckedAccount<'info>,
     #[account(address = DEVNET_USDC_MINT @ SupportError::InvalidMint)] pub mint: Box<Account<'info, Mint>>,
     // init_if_needed: the vault ATA's address is predictable, so anyone can create it first; `init`
@@ -358,7 +345,7 @@ pub struct RefundDonation<'info> {
 pub struct CreatePledgeBook<'info> {
     #[account(init, payer = creator, space = 8 + PledgeBook::INIT_SPACE, seeds = [PLEDGE_BOOK_SEED, proposal.key().as_ref()], bump)]
     pub book: Box<Account<'info, PledgeBook>>,
-    /// CHECK: verified by read_proposal.
+    /// CHECK: the agreement; verified by read_subject.
     pub proposal: UncheckedAccount<'info>,
     #[account(address = DEVNET_USDC_MINT @ SupportError::InvalidMint)] pub mint: Box<Account<'info, Mint>>,
     #[account(mut)] pub creator: Signer<'info>, pub system_program: Program<'info, System>,
@@ -411,11 +398,11 @@ pub struct VoidPledge<'info> {
 
 #[error_code]
 pub enum SupportError {
-    #[msg("Invalid proposal account")] InvalidProposalAccount,
+    #[msg("The proposal account is not an agreement-program Agreement (or not this escrow's or book's)")] InvalidProposalAccount,
     #[msg("Support token must be devnet USDC")] InvalidMint,
-    #[msg("Proposal is not Active")] ProposalNotActive,
-    #[msg("Proposal has not Executed")] ProposalNotExecuted,
-    #[msg("Proposal is not Cancelled or Expired")] ProposalNotRefundable,
+    #[msg("Agreement is not Active")] ProposalNotActive,
+    #[msg("Agreement has not Executed")] ProposalNotExecuted,
+    #[msg("Agreement is not Cancelled or Expired")] ProposalNotRefundable,
     #[msg("Support amount must be positive")] ZeroAmount,
     #[msg("Donations already released")] DonationsReleased,
     #[msg("Donation already refunded")] AlreadyRefunded,

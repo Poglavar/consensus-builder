@@ -1,7 +1,8 @@
-// Staking side of the agent runner: makes sure a proposal has a parimutuel market and puts the
-// persona's devnet-USDC stake on one side of it. All encoding and PDA derivation come from the
-// shared UMD client frontend/js/solana/market-client.js (the same bytes the browser sends); this
-// file only wires it to a node keypair and a connection.
+// Staking side of the agents: makes sure an agreement has a parimutuel market and puts the persona's
+// devnet-USDC stake on one side of it. The market's subject is the agreement's chain account
+// (PDA(sponsor, CID), agreement-minter.js). All encoding and PDA derivation come from the shared UMD
+// client frontend/js/solana/market-client.js (the same bytes the browser sends); this file only wires
+// it to a node keypair and a connection.
 
 import { createRequire } from 'node:module';
 
@@ -44,9 +45,9 @@ async function send(connection, instruction, signer, sendAndConfirm) {
 }
 
 /**
- * Create the proposal's market if it does not exist yet, then stake on it.
+ * Create the agreement's market if it does not exist yet, then stake on it.
  *
- * @param {{ connection: object, ownerKeypair: object, proposalPda: string, stakeMint: string,
+ * @param {{ connection: object, ownerKeypair: object, subject: string, stakeMint: string,
  *           side: number, amountAtomic: bigint, targetAmount?: boolean,
  *           programId?: string, sendAndConfirm?: Function }} options
  * @returns {Promise<{ marketPda: string, created: boolean, createSignature: string|null,
@@ -55,7 +56,7 @@ async function send(connection, instruction, signer, sendAndConfirm) {
 export async function ensureMarketAndStake({
     connection,
     ownerKeypair,
-    proposalPda,
+    subject,
     stakeMint,
     side,
     amountAtomic,
@@ -65,27 +66,27 @@ export async function ensureMarketAndStake({
 } = {}) {
     if (!connection || typeof connection.getAccountInfo !== 'function') throw new Error('a solana connection is required');
     if (!ownerKeypair || !ownerKeypair.publicKey) throw new Error('ownerKeypair (a web3 Keypair) is required');
-    if (!proposalPda) throw new Error('proposalPda is required');
+    if (!subject) throw new Error('subject (the agreement account) is required');
     if (!stakeMint) throw new Error('stakeMint is required');
     if (typeof amountAtomic !== 'bigint') throw new Error('amountAtomic must be a bigint of atomic units');
     if (amountAtomic <= 0n) throw new Error('amountAtomic must be positive');
 
     const owner = ownerKeypair.publicKey;
-    const [marketPda] = marketClient.getMarketPda(proposalPda, programId);
+    const [marketPda] = marketClient.getMarketPda(subject, programId);
     const [positionPda] = marketClient.getPositionPda(marketPda, owner, side, programId);
 
-    const existing = await marketClient.readMarket(connection, proposalPda, programId);
+    const existing = await marketClient.readMarket(connection, subject, programId);
     let created = false;
     let createSignature = null;
     if (!existing) {
-        const createIx = marketClient.buildCreateMarketIx({ proposal: proposalPda, stakeMint, creator: owner, programId });
+        const createIx = marketClient.buildCreateMarketIx({ proposal: subject, stakeMint, creator: owner, programId });
         createSignature = await send(connection, createIx, ownerKeypair, sendAndConfirm);
         created = true;
     }
 
     let stakeAmount = amountAtomic;
     if (targetAmount && existing) {
-        const position = await marketClient.readPosition(connection, proposalPda, owner, side, programId);
+        const position = await marketClient.readPosition(connection, subject, owner, side, programId);
         const current = position?.amount || 0n;
         if (current >= amountAtomic) {
             return {
@@ -96,7 +97,7 @@ export async function ensureMarketAndStake({
         stakeAmount = amountAtomic - current;
     }
 
-    const stakeIx = marketClient.buildStakeIx({ proposal: proposalPda, stakeMint, staker: owner, side, amount: stakeAmount, programId });
+    const stakeIx = marketClient.buildStakeIx({ proposal: subject, stakeMint, staker: owner, side, amount: stakeAmount, programId });
     const stakeSignature = await send(connection, stakeIx, ownerKeypair, sendAndConfirm);
 
     return {

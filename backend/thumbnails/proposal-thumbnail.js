@@ -5,6 +5,10 @@
 // The geometry resolution mirrors reconstructProposalScreenshotDataUrl, the browser-side function
 // this replaces (deleted from frontend/js/proposals/dialog-upload.js in the same change), so a
 // server-rendered thumbnail frames a proposal the way the client-side one did.
+//
+// Indexed designs and agreements (plan-design-agreement.md, M2) render here too, keyed by CID: a
+// design as the proposal it was authored as, with the parcels its binding found as its parcels; an
+// agreement as every part of every design it links, in one frame over its input land.
 import * as turf from '@turf/turf';
 import { renderProposalThumbnailSet } from './tile-stitch.js';
 import { fetchParcelPolygonsByIds } from './parcel-geometry.js';
@@ -23,9 +27,8 @@ const PROPOSAL_GOAL_ICON_MAP = {
     'road/track': '🛣️🛤️',
     'urban-rule': '📜📐',
     'urban rule': '📜📐',
-    'decide-later': '🪡',
-    'decide later': '🪡',
     'reparcellization': '✂️',
+    'parcel-layout': '✂️',
     'ownership-transfer': '🔄',
     'ownership-transfer-to-me': '🔄',
     'ownership-transfer-from-me': '🔄'
@@ -84,10 +87,25 @@ function fromGeometry(geom) {
     return null;
 }
 
+// Every polygon of a geometry (or Feature) as its own coordinate array, holes kept with their polygon.
+function polygonCoordinates(geometry) {
+    const g = geometry && geometry.type === 'Feature' ? geometry.geometry : geometry;
+    if (!g || !Array.isArray(g.coordinates)) return [];
+    if (g.type === 'Polygon') return [g.coordinates];
+    if (g.type === 'MultiPolygon') return g.coordinates;
+    return [];
+}
+
+// A parcel layout's plots, each drawn as its own part so the borders it draws stay visible.
+function layoutPlotParts(layout) {
+    return Array.isArray(layout?.plots) ? layout.plots.flatMap(plot => polygonCoordinates(plot?.geometry)) : [];
+}
+
 /**
  * Pull the coordinate ring the thumbnail should highlight out of whatever the proposal stored.
  * Port of the browser's resolveProposalPolygonForScreenshot, which this replaces.
- * @returns {{ polygon: Array|null, polygonOrder?: string, fitToPolygonOnly?: boolean }}
+ * @returns {{ polygon: Array|null, polygonParts?: Array, polygonOrder?: string, fitToPolygonOnly?: boolean }}
+ *   polygonParts: independent polygons drawn in one frame (a parcel layout's plots)
  */
 export function resolveProposalPolygon(proposal) {
     if (!proposal) return { polygon: null };
@@ -106,6 +124,9 @@ export function resolveProposalPolygon(proposal) {
         const resolved = fromGeometry(proposal.structureProposal.geometry);
         if (resolved) return resolved;
     }
+
+    const plots = layoutPlotParts(proposal.parcelLayout);
+    if (plots.length) return { polygon: plots[0], polygonParts: plots, polygonOrder: 'lnglat' };
 
     // Reparcellization: union the slice geometries so the thumbnail frames the whole carve-up.
     if (proposal.reparcellization && Array.isArray(proposal.reparcellization.polygons) && proposal.reparcellization.polygons.length) {
@@ -170,10 +191,6 @@ function unionGeometries(geometries) {
     }
 }
 
-function ringsToPolygonGeometries(rings) {
-    return rings.map(coords => ({ type: 'Polygon', coordinates: coords }));
-}
-
 export function getProposalCadastreParcelIds(proposal) {
     const ids = Array.isArray(proposal?.cadastreParcelIds) ? proposal.cadastreParcelIds : [];
     return ids.map(id => (id === null || id === undefined ? null : String(id))).filter(Boolean);
@@ -187,34 +204,18 @@ export function getProposalCadastreParcelIds(proposal) {
 export async function buildThumbnailRenderOptions(pool, proposal, city) {
     if (!proposal || shouldSkipProposalThumbnail(proposal)) return null;
 
-    const cadastreParcelIds = getProposalCadastreParcelIds(proposal);
-    const cadastrePolygons = cadastreParcelIds.length
-        ? await fetchParcelPolygonsByIds(pool, city, cadastreParcelIds)
-        : [];
-
-    let { polygon, polygonOrder, fitToPolygonOnly } = resolveProposalPolygon(proposal);
-
-    // Parcel-only proposals (merge / decide-later) have no geometry of their own: the picture is the
-    // union of the cadastral parcels.
-    if (!polygon && cadastrePolygons.length) {
-        if (cadastrePolygons.length === 1) {
-            polygon = cadastrePolygons[0];
-            polygonOrder = 'lnglat';
-        } else {
-            const merged = unionGeometries(ringsToPolygonGeometries(cadastrePolygons));
-            const resolved = merged ? fromGeometry(merged) : null;
-            polygon = resolved ? resolved.polygon : cadastrePolygons[0];
-            polygonOrder = 'lnglat';
-        }
-    }
-
+    // A record draws its own geometry; one with parcels and nothing of its own has no picture.
+    const { polygon, polygonParts, polygonOrder, fitToPolygonOnly } = resolveProposalPolygon(proposal);
     if (!polygon) return null;
 
     // Building proposals frame the cadastral parcel too (the building sits inside it, and the dashed
-    // outline is what shows that); for other goals those parcels either already ARE the polygon
-    // (merge) or are irrelevant to the picture (a road corridor cuts across many of them).
+    // outline is what shows that); for other goals those parcels are irrelevant to the picture (a
+    // road corridor cuts across many of them), so they are not read.
     const isBuildingProposal = !!(proposal.buildingGeometry || proposal.buildingProposal);
-    const parcelPolygons = isBuildingProposal ? cadastrePolygons : [];
+    const cadastreParcelIds = isBuildingProposal ? getProposalCadastreParcelIds(proposal) : [];
+    const parcelPolygons = cadastreParcelIds.length
+        ? await fetchParcelPolygonsByIds(pool, city, cadastreParcelIds)
+        : [];
 
     // Older road proposals have no goal key at all, so fall back to the road badge for them.
     const badge = goalBadge(resolveProposalGoalKey(proposal))
@@ -222,6 +223,7 @@ export async function buildThumbnailRenderOptions(pool, proposal, city) {
 
     return {
         polygon,
+        ...(polygonParts ? { polygonParts } : {}),
         parcelPolygons,
         padding: THUMBNAIL_PADDING,
         zoom: THUMBNAIL_ZOOM,
@@ -229,6 +231,90 @@ export async function buildThumbnailRenderOptions(pool, proposal, city) {
         polygonOrder: polygonOrder || 'auto',
         parcelPolygonOrder: 'lnglat',
         fitToPolygonOnly: !!fitToPolygonOnly
+    };
+}
+
+// The parcels a design's binding found (proposals/binding.js): what a proposal declared, for a design.
+function boundParcelIds(binding) {
+    return (Array.isArray(binding?.parcels) ? binding.parcels : []).map(hit => String(hit.parcelId));
+}
+
+// A design is drawn as the proposal it was authored as: its design/v1 content, with the parcels its
+// binding found standing in for a proposal's declared ones (a building design frames them).
+export function designRenderSubject({ content, binding }) {
+    return { ...content, cadastreParcelIds: boundParcelIds(binding) };
+}
+
+/**
+ * The polygon parts of one design, by the thumbnail resolver's precedence: the road's land, the
+ * structure, the layout's plots, the geometry, its buildings, else the site. Every MultiPolygon part
+ * is kept; nothing is unioned, so overlapping designs and their holes survive in a shared frame.
+ */
+export function resolveDesignParts(content) {
+    const road = polygonCoordinates(content?.roadProposal?.definition?.polygon);
+    if (road.length) return road;
+    const structure = polygonCoordinates(content?.structureProposal?.geometry);
+    if (structure.length) return structure;
+    const plots = layoutPlotParts(content?.parcelLayout);
+    if (plots.length) return plots;
+    const geometry = content?.geometry;
+    const direct = polygonCoordinates(geometry);
+    if (direct.length) return direct;
+    if (Array.isArray(geometry?.buildings)) {
+        const buildings = geometry.buildings.flatMap(polygonCoordinates);
+        if (buildings.length) return buildings;
+    }
+    return polygonCoordinates(content?.site);
+}
+
+/**
+ * An agreement's picture: every design it links, each part separate, over the outlines of its input
+ * land (which the frame always includes: the agreement settles all of it).
+ * @param {{ city: string|null, designs: { content: object }[], inputParcelIds: string[] }} agreement
+ * @returns {Promise<Object|null>} renderer options, or null when no design has geometry to draw
+ */
+export async function buildAgreementRenderOptions(pool, { city, designs, inputParcelIds }) {
+    const parts = (Array.isArray(designs) ? designs : []).flatMap(design => resolveDesignParts(design?.content));
+    if (!parts.length) return null;
+    const parcelPolygons = await fetchParcelPolygonsByIds(pool, city, inputParcelIds || []);
+    return {
+        polygon: parts[0],
+        polygonParts: parts,
+        polygonOrder: 'lnglat',
+        parcelPolygons,
+        parcelPolygonOrder: 'lnglat',
+        padding: THUMBNAIL_PADDING,
+        zoom: THUMBNAIL_ZOOM
+    };
+}
+
+// One tile fetch, three pictures: the thumbnail, the same ground without the subject, and the two
+// side by side (dividers.md, M3), stored as <kind>-thumb|before|pair-<key>-<stamp>.
+async function renderAndStore(renderOptions, { kind, key, baseUrl, dryRun }) {
+    const set = await renderProposalThumbnailSet(renderOptions);
+    const { frame, tiles } = set;
+    const buffer = set.after.buffer;
+    const beforeBuffer = set.before.buffer;
+    const pairBuffer = set.pair.buffer;
+
+    // A thumbnail whose tiles all failed is a grey rectangle — worse than no thumbnail, because it
+    // would be indistinguishable from a real one and never regenerated.
+    if (tiles.total > 0 && tiles.loaded === 0) {
+        throw new Error(`All ${tiles.total} basemap tiles failed to load`);
+    }
+
+    if (dryRun) {
+        return { url: null, beforeUrl: null, pairUrl: null, fileName: null, buffer, beforeBuffer, pairBuffer, frame, tiles, bytes: buffer.length };
+    }
+
+    const stamp = Date.now();
+    const origin = String(baseUrl).replace(/\/$/, '');
+    const { fileName, imagePath } = saveImageBuffer(buffer, `${kind}-thumb-${key}-${stamp}`);
+    const before = saveImageBuffer(beforeBuffer, `${kind}-before-${key}-${stamp}`);
+    const pair = saveImageBuffer(pairBuffer, `${kind}-pair-${key}-${stamp}`);
+    return {
+        url: `${origin}${imagePath}`, beforeUrl: `${origin}${before.imagePath}`, pairUrl: `${origin}${pair.imagePath}`,
+        fileName, imagePath, buffer, beforeBuffer, pairBuffer, frame, tiles, bytes: buffer.length
     };
 }
 
@@ -248,34 +334,24 @@ export async function buildThumbnailRenderOptions(pool, proposal, city) {
 export async function generateAndStoreProposalThumbnail(pool, proposal, { city, proposalId, baseUrl, dryRun = false }) {
     const renderOptions = await buildThumbnailRenderOptions(pool, proposal, city);
     if (!renderOptions) return null;
+    return renderAndStore(renderOptions, { kind: 'proposal', key: proposalId, baseUrl, dryRun });
+}
 
-    // One tile fetch, three pictures: the thumbnail, the same ground without the proposal, and the
-    // two side by side (dividers.md, M3).
-    const set = await renderProposalThumbnailSet(renderOptions);
-    const { frame, tiles } = set;
-    const buffer = set.after.buffer;
-    const beforeBuffer = set.before.buffer;
-    const pairBuffer = set.pair.buffer;
-
-    // A thumbnail whose tiles all failed is a grey rectangle — worse than no thumbnail, because it
-    // would be indistinguishable from a real one and never regenerated.
-    if (tiles.total > 0 && tiles.loaded === 0) {
-        throw new Error(`All ${tiles.total} basemap tiles failed to load`);
-    }
-
-    if (dryRun) {
-        return { url: null, beforeUrl: null, pairUrl: null, fileName: null, buffer, beforeBuffer, pairBuffer, frame, tiles, bytes: buffer.length };
-    }
-
-    const stamp = Date.now();
-    const origin = String(baseUrl).replace(/\/$/, '');
-    const { fileName, imagePath } = saveImageBuffer(buffer, `proposal-thumb-${proposalId}-${stamp}`);
-    const before = saveImageBuffer(beforeBuffer, `proposal-before-${proposalId}-${stamp}`);
-    const pair = saveImageBuffer(pairBuffer, `proposal-pair-${proposalId}-${stamp}`);
-    return {
-        url: `${origin}${imagePath}`, beforeUrl: `${origin}${before.imagePath}`, pairUrl: `${origin}${pair.imagePath}`,
-        fileName, imagePath, buffer, beforeBuffer, pairBuffer, frame, tiles, bytes: buffer.length
-    };
+/**
+ * Render and store the thumbnail set of an indexed design or agreement, named by its CID.
+ * @param {Object} pool - pg pool (parcel context; may be null)
+ * @param {{ kind: 'design', cid: string, city: string|null, content: object, binding: object }
+ *       | { kind: 'agreement', cid: string, city: string|null, designs: { content: object }[], inputParcelIds: string[] }} subject
+ * @param {{ baseUrl: string, dryRun?: boolean }} options - as generateAndStoreProposalThumbnail
+ * @returns {Promise<Object|null>} as generateAndStoreProposalThumbnail; null when there is nothing to draw
+ */
+export async function generateAndStoreContentThumbnail(pool, subject, { baseUrl, dryRun = false } = {}) {
+    if (!subject || !['design', 'agreement'].includes(subject.kind)) throw new Error(`Unknown thumbnail subject ${subject?.kind}.`);
+    const renderOptions = subject.kind === 'agreement'
+        ? await buildAgreementRenderOptions(pool, subject)
+        : await buildThumbnailRenderOptions(pool, designRenderSubject(subject), subject.city);
+    if (!renderOptions) return null;
+    return renderAndStore(renderOptions, { kind: subject.kind, key: subject.cid, baseUrl, dryRun });
 }
 
 export { PROPOSAL_SCREENSHOT_SKIP_GOALS, PROPOSAL_GOAL_ICON_MAP };

@@ -315,6 +315,7 @@ export function loadRoadDrawing(options = {}) {
         CbFormat: cbFormat,
         RoadOwnershipModel: require(`${FRONTEND}road-ownership-model.js`),
         ProposalOrigin: require(`${FRONTEND}proposals/origin.js`),
+        Cid: require(`${FRONTEND}cid.js`),
         getBackendBase: () => 'https://api.example.test',
         PersistentStorage: memoryStorage(),
         __formationEdit: formationEdit,
@@ -351,7 +352,8 @@ export function loadRoadDrawing(options = {}) {
             createCorridorProposalAtomically: spy(async () => ({ ok: true, proposalId: 'fork-1' })),
             _refreshUIAfterProposalChange: spy()
         },
-        ProposalLineage: { isPublished: proposal => proposal?.published === true },
+        // Published = a design CID mark, as proposals/lineage.js reads it (`published.cid`).
+        ProposalLineage: { isPublished: proposal => !!(proposal?.published && require(`${FRONTEND}cid.js`).isCid(proposal.published.cid)) },
         ProposalAuthoredRecord: { restrictLandClaimsToAnchors: spy() },
         ProposalSelection: { is: () => false, has: () => false, clear: spy() },
         selectAndHighlightProposal: spy(),

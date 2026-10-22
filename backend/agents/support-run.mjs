@@ -1,6 +1,7 @@
 #!/usr/bin/env node
-// Daily supporter persona: discover active minted proposals, choose one with the deterministic
-// controller, and perform one real Solana pledge/donation/market stake. It shares personas.json,
+// Supporter persona: discover open minted agreements (the index's newest per city, their accounts read
+// on chain), choose one with the deterministic controller, and perform one real Solana pledge,
+// donation or market stake on it (the agreement's account is the subject). It shares personas.json,
 // consensus.agent_run, AgentActionEngine and the Activity Explorer with proposer agents.
 
 import 'dotenv/config';
@@ -22,12 +23,12 @@ import { getRun, startRun, updateRun } from './ledger.js';
 import { markAgentRunFailed, safeFailureDiagnostic } from './run-failure.js';
 import { createRpcConnection } from '../solana/rpc.js';
 import { ensureBotSolFunding, fundBotAction } from './funding.js';
-import { createRetryingFetch } from '../utils/retrying-fetch.js';
 import { sendAndConfirmPolling } from './solana-send.js';
 import { sendTelegram } from './telegram.js';
 import { runKeyFor, slotLabel } from './area-plan.js';
 import { isEntrypoint } from './entrypoint.js';
-import { discoverProposalInputs, refreshProposalStatuses } from './discovery.js';
+import { discoverAgreements, readAgreementStatuses } from './discovery.js';
+import { createIndexClient } from './publication-client.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const require = createRequire(import.meta.url);
@@ -37,7 +38,7 @@ const SIDE_YES = 1;
 
 function usage(code) {
     console.log([
-        'Supporter agent: discover → deterministic choice → one signed support action.', '',
+        'Supporter agent: discover open agreements → deterministic choice → one signed support action.', '',
         '  --dry-run            Choose and print; no database or Solana writes',
         '  --live               Checkpoint and submit one real devnet action',
         '  --persona NAME       One supporter persona (default: every role=supporter persona)',
@@ -50,6 +51,7 @@ function usage(code) {
 }
 
 function parseArgs(argv) {
+    if (!argv.length) usage(0);
     const args = {};
     for (let index = 0; index < argv.length; index += 1) {
         const token = argv[index];
@@ -84,16 +86,12 @@ function loadKeypair(persona) {
     return keypair;
 }
 
-async function fetchJson(url, options = {}) {
-    const response = await createRetryingFetch({ requestLabel: () => 'proposal-read' })(url, { headers: { accept: 'application/json' }, ...options });
-    if (!response.ok) throw new Error(`${url} returned HTTP ${response.status}`);
-    return response.json();
-}
+const log = message => console.log(`[${new Date().toISOString()}] ${message}`);
 
-async function discoverProposals(apiBase, persona) {
+async function discoverOpenAgreements(index, persona, connection) {
     const cities = persona.support?.cities?.length ? persona.support.cities : ['zagreb'];
-    return discoverProposalInputs({ apiBase, cities: cities.includes('*') ? [null] : Array.from(new Set(cities)), fetchJson,
-        log: message => console.log(`[${new Date().toISOString()}] ${message}`) });
+    const agreements = await discoverAgreements({ index, cities: cities.includes('*') ? [null] : Array.from(new Set(cities)), log });
+    return readAgreementStatuses(agreements, connection);
 }
 
 export async function executeSupport({ decision, connection, keypair, runId, pool, persona, adapters = {} }) {
@@ -106,19 +104,19 @@ export async function executeSupport({ decision, connection, keypair, runId, poo
     await (adapters.fundBotAction || fundBotAction)({ action: decision, connection, pool, persona, runId });
     if (decision.type === 'pledge') {
         return (adapters.ensurePledgeBookAndSet || ensurePledgeBookAndSet)({
-            connection, pledgerKeypair: keypair, proposalPda: decision.proposalAccount,
+            connection, pledgerKeypair: keypair, subject: decision.account,
             amountAtomic, sendAndConfirm: sendAndConfirmPolling
         });
     }
     if (decision.type === 'donate') {
         return (adapters.ensureDonationEscrowAndDonate || ensureDonationEscrowAndDonate)({
-            connection, donorKeypair: keypair, proposalPda: decision.proposalAccount, amountAtomic,
-            operationId: `${runId}:${decision.proposalId}:donate`, sendAndConfirm: sendAndConfirmPolling
+            connection, donorKeypair: keypair, subject: decision.account, amountAtomic,
+            operationId: `${runId}:${decision.agreementCid}:donate`, sendAndConfirm: sendAndConfirmPolling
         });
     }
     if (decision.type === 'stake') {
         return (adapters.ensureMarketAndStake || ensureMarketAndStake)({
-            connection, ownerKeypair: keypair, proposalPda: decision.proposalAccount,
+            connection, ownerKeypair: keypair, subject: decision.account,
             stakeMint: USDC_DEVNET, side: SIDE_YES, amountAtomic, sendAndConfirm: sendAndConfirmPolling
         });
     }
@@ -132,6 +130,7 @@ async function main() {
     const apiBase = (args.api || process.env.AGENT_API_BASE || `http://localhost:${process.env.API_PORT || 3000}`).replace(/\/$/, '');
     const rpcUrl = process.env.SOLANA_RPC_URL || 'https://api.devnet.solana.com';
     const personas = loadPersonas(args.persona);
+    const index = createIndexClient({ apiBase, log });
     const pool = args.live ? createPool() : null;
     // Reads (existing support) happen in dry-run too; only --live signs anything.
     const connection = createRpcConnection(rpcUrl, 'confirmed');
@@ -160,14 +159,12 @@ async function main() {
                     const funding = await ensureBotSolFunding({ connection, persona });
                     if (funding.status === 'funded') await updateRun(pool, runId, { summaryPatch: { funding } });
                 }
-                const proposals = await refreshProposalStatuses(await discoverProposals(apiBase, persona), connection, {
-                    pool: args.live ? pool : null, log: message => console.log(`[${new Date().toISOString()}] ${message}`)
-                });
-                const eligibility = await readSupportEligibility({ connection, wallet, persona, proposals });
-                if (eligibility.closedMarketIds.length) console.log(`[${new Date().toISOString()}] ${persona.name}: excluded ${eligibility.closedMarketIds.length} resolved market(s)`);
-                const choice = selectSupportAction({ day: runKey, persona, proposals: eligibility.proposals, wallet,
-                    excludeProposalIds: eligibility.alreadySupportedIds });
-                console.log(`[${new Date().toISOString()}] ${persona.name}: ${choice.reason}`);
+                const agreements = await discoverOpenAgreements(index, persona, connection);
+                const eligibility = await readSupportEligibility({ connection, wallet, persona, agreements });
+                if (eligibility.closedMarketCids.length) log(`${persona.name}: excluded ${eligibility.closedMarketCids.length} resolved market(s)`);
+                const choice = selectSupportAction({ day: runKey, persona, agreements: eligibility.agreements, wallet,
+                    excludeCids: eligibility.alreadySupportedCids });
+                log(`${persona.name}: ${choice.reason}`);
                 if (args.dryRun) {
                     if (choice.selected) console.log(JSON.stringify(choice.selected, null, 2));
                     continue;
@@ -175,14 +172,14 @@ async function main() {
 
                 await updateRun(pool, runId, { stage: 'selected', status: choice.selected ? 'running' : 'done', summaryPatch: {
                     role: 'supporter', controller: 'algorithm', wallet,
-                    decisionInput: { controller: 'algorithm', day, eligibleProposalIds: choice.eligibleProposalIds,
-                        closedMarketIds: eligibility.closedMarketIds },
+                    decisionInput: { controller: 'algorithm', day, eligibleCids: choice.eligibleCids,
+                        closedMarketCids: eligibility.closedMarketCids },
                     decisionResult: { controller: 'algorithm', costUsd: 0, rationale: choice.reason },
                     selection: choice.selected,
-                    outcome: choice.selected ? 'selected' : 'no-eligible-proposal'
+                    outcome: choice.selected ? 'selected' : 'no-eligible-agreement'
                 } });
                 if (!choice.selected) {
-                    report.push(`${persona.name}: no eligible proposal`);
+                    report.push(`${persona.name}: no eligible agreement`);
                     continue;
                 }
 
@@ -192,23 +189,30 @@ async function main() {
                     onActivity: activity => activities.push({ ...activity, runId, rationale: choice.selected.rationale })
                 });
                 const actor = { id: persona.name, name: persona.name, controller: 'algorithm', wallet };
+                const selected = choice.selected;
+                const verb = selected.type === 'stake' ? `staked ${selected.amount} USDC YES on` : selected.type === 'donate' ? `donated ${selected.amount} USDC to` : `pledged ${selected.amount} USDC to`;
                 const execution = await runtime.run(actor, {
                     source: 'live',
                     action: {
-                        type: choice.selected.type, proposalId: choice.selected.proposalId,
-                        amount: choice.selected.amount, side: choice.selected.side
+                        type: selected.type, agreementCid: selected.agreementCid, account: selected.account,
+                        amount: selected.amount, side: selected.side
                     },
-                    execute: () => executeSupport({ decision: choice.selected, connection, keypair, runId, pool, persona })
+                    execute: async () => ({
+                        ...(await executeSupport({ decision: selected, connection, keypair, runId, pool, persona })),
+                        entity: { type: 'agreement', id: selected.agreementCid },
+                        message: `${persona.name} ${verb} "${selected.agreementName}".`
+                    })
                 });
+                const { entity: _entity, message: _message, ...outcome } = execution.outcome;
                 // A replayed adapter result found the support already on-chain: record a no-op, not an action.
-                const verdict = classifySupportExecution(execution.outcome);
+                const verdict = classifySupportExecution(outcome);
                 await updateRun(pool, runId, { stage: verdict.acted ? 'supported' : 'selected', status: 'done', summaryPatch: {
-                    support: { type: choice.selected.type, proposalId: choice.selected.proposalId, proposalAccount: choice.selected.proposalAccount, ...execution.outcome },
+                    support: { type: selected.type, agreementCid: selected.agreementCid, account: selected.account, ...outcome },
                     activities: verdict.acted ? activities : [], outcome: verdict.runOutcome
                 } });
                 report.push(verdict.acted
-                    ? `${persona.name}: ${choice.selected.type} ${choice.selected.amount} USDC on ${choice.selected.proposalId}`
-                    : `${persona.name}: ${choice.selected.proposalId} was already supported; no new transaction`);
+                    ? `${persona.name}: ${selected.type} ${selected.amount} USDC on ${selected.agreementCid}`
+                    : `${persona.name}: ${selected.agreementCid} was already supported; no new transaction`);
             } catch (error) {
                 if (runStarted) {
                     try {

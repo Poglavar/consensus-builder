@@ -239,7 +239,7 @@ describe('globe city renderer orchestration', () => {
         expect(h.api.state().visibleMarkers.length).toBeLessThanOrEqual(CityDisplay.MAX_MARKERS);
     });
 
-    it('fills a labelled city with its proposal count and paints its dot once the counts arrive', () => {
+    it('fills a labelled city with its agreement count and paints its dot once the counts arrive', () => {
         const catalog = catalogOf({ live: 6, position: (_, index) => [150 + index * 180, 300] });
         const h = displayHarness(catalog, { altitudeKm: 20_000 });
         h.api.updateCityDisplay(1000);
@@ -247,9 +247,9 @@ describe('globe city renderer orchestration', () => {
         expect(Array.from(h.attributes.painted.array.slice(0, silent.drawRange.count))).toEqual(new Array(silent.drawRange.count).fill(0));
         expect(h.labels.filter(item => item.entry).map(item => item.entry.key)).toContain('live:live-0000');
 
-        // The least populous city gains proposals: it leads the catalog, its label shows the count
+        // The least populous city gains agreements: it leads the catalog, its label shows the count
         // in words for assistive technology, and its dot is marked for painting.
-        CityDisplay.applyCounts(catalog, [{ id: 'live-0005', proposals: 1105 }]);
+        CityDisplay.applyCounts(catalog, [{ id: 'live-0005', agreements: 1105 }]);
         h.api.forceLayout();
         h.api.updateCityDisplay(1200);
         const painted = h.api.state();
@@ -258,12 +258,21 @@ describe('globe city renderer orchestration', () => {
         expect(last.name.textContent).toBe('Live 5');
         expect(last.count.textContent).toBe('1,105');
         expect(last.count.hidden).toBe(false);
-        expect(last.node.attributes['aria-label']).toBe('Live 5, 1105 proposals');
+        expect(last.node.attributes['aria-label']).toBe('Live 5, 1105 agreements');
         expect(painted.visibleMarkers[0].entry.key).toBe('live:live-0005');
         expect(h.attributes.painted.array[0]).toBe(1);
         expect(Array.from(h.attributes.painted.array.slice(1, painted.drawRange.count))).toEqual(new Array(painted.drawRange.count - 1).fill(0));
         const first = h.labels.find(item => item.entry?.key === 'live:live-0000');
         expect(first.count.hidden).toBe(true);
+
+        // One agreement reads in the singular.
+        const single = catalogOf({ live: 6, position: (_, index) => [150 + index * 180, 300] });
+        CityDisplay.applyCounts(single, [{ id: 'live-0005', agreements: 1 }]);
+        const one = displayHarness(single, { altitudeKm: 20_000 });
+        one.api.updateCityDisplay(1000);
+        const label = one.labels.find(item => item.entry?.key === 'live:live-0005');
+        expect(label.count.textContent).toBe('1');
+        expect(label.node.attributes['aria-label']).toBe('Live 5, 1 agreement');
     });
 
     it('throttles ordinary projection to 100ms but lets forced layout changes through immediately', () => {

@@ -7,8 +7,7 @@ const {
     classifyParcelSetRelation,
     findParcelSetRelations,
     normalizeParcelIds,
-    parcelSourceOf,
-    proposalIdsForParcelSet
+    parcelSourceOf
 } = require('../../frontend/js/proposals/parcel-set-relations.js');
 
 const proposal = (proposalId, parcelIds, setHash = null) => ({
@@ -18,14 +17,6 @@ const proposal = (proposalId, parcelIds, setHash = null) => ({
 });
 
 describe('proposal parcel-set relations', () => {
-    it('lists every proposal over one canonical set hash and nothing for a missing hash', () => {
-        const proposals = [proposal('a', ['1', '2'], 'sha256:x'), proposal('b', ['2', '1'], 'sha256:x'), proposal('c', ['1'], 'sha256:y'), proposal('d', ['1', '2'])];
-        proposals.push({ proposalId: 'unknown', cadastreParcelIds: ['1', '2'], parcelSet: { setHash: 'sha256:x', parcelSource: null } });
-        expect(proposalIdsForParcelSet(proposals, 'sha256:x')).toEqual(['a', 'b']);
-        expect(proposalIdsForParcelSet(proposals, '')).toEqual([]);
-        expect(proposalIdsForParcelSet(null, 'sha256:x')).toEqual([]);
-    });
-
     it('normalizes the current cadastral declaration without mutating the proposal', () => {
         const source = proposal('a', ['HR-3', 'HR-1', 'HR-3']);
         expect(normalizeParcelIds(source)).toEqual(['HR-1', 'HR-3']);
@@ -79,11 +70,9 @@ describe('proposal parcel-set relations', () => {
 
     it('rejects conflicting parcel-set and binding source evidence', () => {
         const conflicted = proposal('conflicted', ['1']);
-        conflicted.parcelSet.setHash = 'sha256:x';
         conflicted.binding = { parcelSource: { sourceId: 'register-b', snapshotId: null } };
         expect(parcelSourceOf(conflicted)).toBeNull();
         expect(classifyParcelSetRelation(conflicted, proposal('same-id', ['1']))).toBeNull();
-        expect(proposalIdsForParcelSet([conflicted], 'sha256:x')).toEqual([]);
     });
 
     it('distinguishes containing, contained and partial overlaps', () => {

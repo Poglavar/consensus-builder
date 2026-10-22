@@ -1,14 +1,13 @@
-// Worldwide publication and city routing (projections.md §3, §10 M8, location-first.md phase 4): a
-// publish presents the server's signed preparation and its artifact, a site the server places in
-// another city is filed there with the source that bound it,
-// every proposal opens in its own city's store (a record without a city by its parcels), the address
-// bar follows the map, and the read-only guard for a second tab applies per city.
+// Worldwide publication and city routing (projections.md §3, §10 M8, location-first.md phase 4;
+// plan-design-agreement.md M2, M3): a publish sends the design with the parcel source its city binds
+// with, a design or an agreement opened from another city asks and then opens in its own city's
+// store, the address bar follows the map, and the read-only guard for a second tab applies per city.
 import { Browser, BrowserContext, Page } from '@playwright/test';
 import { test, expect } from '../helpers/fixtures';
 import { waitForMapReady, panMap } from '../helpers/app';
-import { openCity, createSpace, showProposal, chooseTermsForShare } from '../helpers/runtime';
+import { openCity, createSpace, showProposal } from '../helpers/runtime';
 import { mockAllApiRoutes } from '../helpers/mocks/api-routes';
-import { attachSharedProposalServer, createSharedProposalServer, SharedProposalServer } from '../helpers/mocks/shared-server';
+import { attachSharedIndex, fileAgreement, pageIndex, SharedIndex } from '../helpers/mocks/shared-server';
 
 async function personalizeProfile(page: Page, name: string): Promise<void> {
   await page.locator('#username-display').click();
@@ -18,26 +17,24 @@ async function personalizeProfile(page: Page, name: string): Promise<void> {
   await expect(page.locator('#welcome-modal')).toBeHidden();
   await expect.poll(() => page.evaluate(() => {
     const w = window as any;
-    return w.GuestPolicy.check('share', { isGuest: w.getCurrentUserAgent?.()?.isGuest }).allowed;
+    return w.GuestPolicy.check('publish', { isGuest: w.getCurrentUserAgent?.()?.isGuest }).allowed;
   })).toBe(true);
 }
 
-// A park authored in Zagreb through the real share dialog's Upload. Resolves the published record.
-async function publishPark(page: Page, server: SharedProposalServer): Promise<Record<string, any>> {
+// A park authored in Zagreb and published through its details' Share. Resolves its CID.
+async function publishPark(page: Page): Promise<string> {
   await openCity(page);
   await personalizeProfile(page, 'City author');
   const proposalId = await createSpace(page, 'park');
   await showProposal(page, proposalId);
-  await page.locator('.btn-share-proposal').click();
-  await chooseTermsForShare(page);
-  await page.locator('.share-modal-overlay').getByRole('button', { name: 'Upload', exact: true }).click();
-  await expect(page.locator('.share-modal-overlay .share-modal-link').first()).toHaveValue(/\/proposals\/\d+\?/);
-  expect(server.records.size).toBe(1);
-  return server.records.values().next().value as Record<string, any>;
+  await page.locator('#proposal-details-panel .btn-share-proposal').click();
+  const index = pageIndex(page);
+  await expect.poll(() => index.designs.size, { timeout: 30_000 }).toBe(1);
+  return [...index.designs.keys()][0];
 }
 
-// Another device whose stored city is New York, sharing the same proposal server.
-async function deviceIn(browser: Browser, server: SharedProposalServer, cityId: string, baseURL: string): Promise<{ context: BrowserContext; page: Page; errors: string[] }> {
+// Another device whose stored city is `cityId`, reading the same index.
+async function deviceIn(browser: Browser, index: SharedIndex, cityId: string, baseURL: string): Promise<{ context: BrowserContext; page: Page; errors: string[] }> {
   const context = await browser.newContext({ baseURL });
   await context.addInitScript((id) => {
     try {
@@ -47,7 +44,7 @@ async function deviceIn(browser: Browser, server: SharedProposalServer, cityId: 
   }, cityId);
   const page = await context.newPage();
   await mockAllApiRoutes(page);
-  await attachSharedProposalServer(page, server);
+  await attachSharedIndex(page, index);
   const errors: string[] = [];
   page.on('pageerror', error => errors.push(error.message));
   return { context, page, errors };
@@ -82,75 +79,79 @@ async function storedIn(page: Page, proposalId: string): Promise<{ city: string;
 }
 
 test.describe('Worldwide publication and city routing @core', () => {
-  test('a publish presents the signed preparation and the server keeps the artifact beside the record', async ({ mockApi: page }) => {
-    const server = createSharedProposalServer();
-    await attachSharedProposalServer(page, server);
-    const record = await publishPark(page, server);
-
-    // prepared first, then published with what was prepared
-    const posts = server.requests.filter(request => request.method === 'POST').map(request => request.path.replace(/.*\/proposals/, '/proposals'));
-    expect(posts).toEqual(['/proposals/prepare', '/proposals']);
-    expect(record.preparation).toMatchObject({ id: expect.stringMatching(/^prep_[0-9a-f]{32}$/), digest: expect.stringMatching(/^[0-9a-f]{64}$/) });
-    expect(record.preparation.signature).toMatch(/^[0-9a-f]{64}$/);
-    expect(Date.parse(record.preparation.preparedAt)).not.toBeNaN();
-    // the artifact travels with the publish and is stored beside the record, never inside it
-    expect(record).not.toHaveProperty('preparedArtifact');
-    const issued = server.issued.get(record.preparation.id);
-    expect(server.prepared.get(record.preparation.id)).toEqual(issued?.artifact);
-    expect(record.city).toBe('zagreb');
+  test('a publish pins the design and indexes it with the parcel source of its city', async ({ mockApi: page }) => {
+    const cid = await publishPark(page);
+    const posts = pageIndex(page).requests.filter(request => request.method === 'POST');
+    expect(posts.map(request => request.path)).toEqual(['/pins', '/designs']);
+    const indexed = posts[1].body;
+    expect(indexed.cid).toBe(cid);
+    expect(indexed.content.city).toBe('zagreb');
+    // The parcel source is a binding parameter (the city's catalogue source, null for its default),
+    // never part of the design: the CID commits to the drawing only.
+    const citySource = await page.evaluate(() => (window as any).CityConfigManager.getCityConfig('zagreb')?.parcels?.sourceId || null);
+    expect(indexed).toHaveProperty('parcelSourceId', citySource);
+    expect(indexed.content).not.toHaveProperty('parcelSourceId');
   });
 
-  test('a site the server places in another city is published there, with the source that bound it', async ({ mockApi: page }) => {
-    const server = createSharedProposalServer();
-    server.placeIn = { city: 'split', parcelSourceId: 'hr-dgu-oss-dkp-cestice' };
-    await attachSharedProposalServer(page, server);
-    const record = await publishPark(page, server);
-    // nothing refused for where it was drawn from: filed in the city its site lies in, and the publish
-    // names the artifact's source (the mock refuses any other, as the API does)
-    expect(record.city).toBe('split');
-    expect(record.parcelSourceId).toBe('hr-dgu-oss-dkp-cestice');
-    expect(server.records.size).toBe(1);
-  });
-
-  test('a proposal opened in the wrong city asks, then opens in its own city; a record without a city goes by its parcels', async ({ mockApi: author, browser }) => {
-    // one publish and two devices, each booting twice (the wrong city, then the right one)
+  test('a design opened from another city asks, then opens in its own city', async ({ mockApi: author, browser }) => {
+    // one publish and a device booting twice (the wrong city, then the right one)
     test.setTimeout(180_000);
-    const server = createSharedProposalServer();
-    await attachSharedProposalServer(author, server);
-    const record = await publishPark(author, server);
-    const publishedId = String(record.proposalId);
+    const cid = await publishPark(author);
     const baseURL = new URL(author.url()).origin;
 
-    // the feed/search route: ?focusProposal= in New York for a Zagreb proposal
-    const first = await deviceIn(browser, server, 'new_york', baseURL);
+    // the feed/search route: ?focusProposal=<cid> in New York for a Zagreb design
+    const device = await deviceIn(browser, pageIndex(author), 'new_york', baseURL);
     try {
-      await first.page.goto(`/?city=new_york&reduceMotion=1&focusProposal=${record.id}`);
-      await followToCity(first.page, 'zagreb', 'Zagreb');
-      expect(new URL(first.page.url()).searchParams.get('focusProposal')).toBe(String(record.id));
-      await expect.poll(() => storedIn(first.page, publishedId), { timeout: 30_000 }).toEqual({ city: 'zagreb', stored: true });
-      expect(first.errors).toEqual([]);
+      await device.page.goto(`/?city=new_york&reduceMotion=1&focusProposal=${cid}`);
+      await followToCity(device.page, 'zagreb', 'Zagreb');
+      expect(new URL(device.page.url()).searchParams.get('focusProposal')).toBe(cid);
+      await expect.poll(() => storedIn(device.page, `design-${cid}`), { timeout: 30_000 }).toEqual({ city: 'zagreb', stored: true });
+      expect(device.errors).toEqual([]);
     } finally {
-      await first.context.close();
+      await device.context.close();
     }
+  });
 
-    // an old record that names no city: its Croatian parcels place it in a Croatian city
-    const cityless: Record<string, any> = { ...record, id: 7101, proposalId: `${publishedId}-old` };
-    delete cityless.city;
-    server.records.set('7101', cityless);
-    const second = await deviceIn(browser, server, 'new_york', baseURL);
+  test('an agreement opened from another city asks, then opens in its own city', async ({ mockApi: author, browser }) => {
+    test.setTimeout(180_000);
+    // A community agreement over the published park, proposed in Zagreb.
+    const designCid = await publishPark(author);
+    const index = pageIndex(author);
+    const design = index.designs.get(designCid)!;
+    const title = 'Zagreb park agreement';
+    const cid = fileAgreement(index, {
+      schema: 'agreement/v1', title, author: 'City author', sponsor: null, city: 'zagreb', createdAt: '2026-10-21T08:00:00.000Z',
+      designs: [{ cid: designCid, goal: design.goal, title: design.title }],
+      inputs: { parcels: [{ parcelId: 'HR-335754-1234', areaM2: 100, holders: [] }], openGroundM2: 0 },
+      outputs: [], allocations: [], money: { currency: 'EUR', lines: [] },
+      rule: { electorate: 'community', binding: false, approvalConfig: null, lens: [] }, deadline: null,
+    });
+    expect(index.agreements.get(cid)!.city).toBe('zagreb');
+    const baseURL = new URL(author.url()).origin;
+
+    // Its link opened on a device whose city is New York.
+    const device = await deviceIn(browser, index, 'new_york', baseURL);
     try {
-      await second.page.goto('/proposals/7101?reduceMotion=1');
-      const croatian = await second.page.evaluate(() => {
-        const manager = (window as any).CityConfigManager;
-        const id = manager.getCitiesByParcelSource('oss-wfs')[0].id;
-        return { id, label: manager.getCityLabel(id) };
-      });
-      await followToCity(second.page, croatian.id, croatian.label);
-      expect(new URL(second.page.url()).pathname).toBe('/proposals/7101');
-      await expect.poll(() => storedIn(second.page, cityless.proposalId), { timeout: 30_000 }).toEqual({ city: croatian.id, stored: true });
-      expect(second.errors).toEqual([]);
+      await device.page.goto(`/agreements/${cid}?city=new_york&reduceMotion=1`);
+      await followToCity(device.page, 'zagreb', 'Zagreb');
+      expect(new URL(device.page.url()).pathname).toBe(`/agreements/${cid}`);
+      const panel = device.page.locator('section#agreement-panel');
+      await expect(panel).toBeVisible({ timeout: 60_000 });
+      await expect(device.page.locator('#agreement-panel-title')).toHaveText(title);
+      await expect(panel.locator('code.agreement-panel-cid')).toHaveAttribute('title', cid);
+      // Kept in Zagreb's store, with its design applied there.
+      expect(await device.page.evaluate(cid => {
+        const w = window as any;
+        const agreement = w.AgreementStore.list().find((item: any) => item.published && item.published.cid === cid);
+        return {
+          city: w.CityConfigManager.getCurrentCityId(),
+          designs: agreement ? agreement.designs.map((entry: any) => entry.proposalId) : null,
+          applied: agreement ? agreement.designs.every((entry: any) => !!w.isApplied(w.proposalStorage.getProposal(entry.proposalId))) : false,
+        };
+      }, cid)).toEqual({ city: 'zagreb', designs: [`design-${designCid}`], applied: true });
+      expect(device.errors).toEqual([]);
     } finally {
-      await second.context.close();
+      await device.context.close();
     }
   });
 

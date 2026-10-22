@@ -1,122 +1,46 @@
-// The land-oracle job body behind scripts/sync-land-events.mjs: first top up the transaction store
-// (terminal proposals are matched to their executing transaction from that store, so a stale store
-// means "missing evidence"), then materialize proposal lifecycle events, then the lens-model v2
-// evidence log (acceptance and verdict events, attester directory; a no-op until v2 is deployed).
-// Every step is injectable so the ordering and failure verdicts are unit-testable without RPC or
-// PostgreSQL.
+// The land-event oracle's job body behind oracle/agreement-lifecycle-job.mjs: checks that the RPC is
+// the cluster the index records agreements on, runs one agreement lifecycle pass
+// (agreement-lifecycle.js: `onchain` refreshes, `agreement_lifecycle` and per-parcel
+// `agreement_executed` land events) and turns its result into the run verdict. Every step is
+// injectable, so the ordering and the verdict are testable without RPC or PostgreSQL.
 
-import { IDL_DIR, assertLifecycleNetwork, syncProposalLifecycleEvents } from './proposal-lifecycle.js';
-import { syncProposalConsentEvents } from './proposal-consent.js';
-import { decodeParsedTransaction, loadIdls } from '../solana/tx-decoder.js';
-import { runTransactionSync, timestampedLog } from '../solana/transaction-sync-job.js';
+import { syncAgreementLifecycle } from './agreement-lifecycle.js';
 
-function defaultSyncConsent(options) {
-    const idls = loadIdls(IDL_DIR);
-    return syncProposalConsentEvents({ ...options, decode: raw => decodeParsedTransaction(raw, { idls }) });
-}
+export const timestampedLog = message => console.log(`[${new Date().toISOString()}] [agreement-lifecycle] ${message}`);
 
-const EMPTY_TRANSACTION_SYNC = Object.freeze({ scanned: 0, newSignatures: 0, fetched: 0, failed: 0, error: null });
-
-/** Why a transaction sync must fail the run, or null. Unfetched signatures are per-item failures. */
-export function transactionSyncProblem(sync) {
-    if (!sync || sync.skipped) return null;
-    if (sync.error) return `transaction sync incomplete: ${sync.error}`;
-    if (sync.failed > 0) return `transaction sync incomplete: ${sync.failed} signature(s) could not be fetched`;
-    return null;
+/** Why a finished pass must fail the run, or null: accounts that are not the agreement's, terminal
+ * accounts whose transaction was not found and agreements whose step threw are per-item failures
+ * that poison the verdict. */
+export function landEventProblem(result) {
+    const problems = [];
+    if (result.invalidAccounts.length) problems.push(`${result.invalidAccounts.length} agreement account(s) missing or not the agreement's`);
+    if (result.missingEvidence.length) problems.push(`${result.missingEvidence.length} terminal agreement(s) lack their transaction`);
+    if (result.failed.length) problems.push(`${result.failed.length} agreement(s) failed: ${result.failed.slice(0, 3).map(item => `${item.cid} (${item.error})`).join(', ')}`);
+    return problems.length ? problems.join('; ') : null;
 }
 
 /**
- * @returns {Promise<{result: object|null, error: Error|null, exitCode: 0|1}>}
- *   `result` is the lifecycle result plus `transactionSync` (its counters, `error`, `skipped`);
- *   null only when the lifecycle scan itself threw (`error`).
+ * @param {{ pool, chain, apply?: boolean, now?: () => number, log?: (message: string) => void,
+ *   sync?: typeof syncAgreementLifecycle }} options  chain: agreements/onchain.js createAgreementChain
+ * @returns {Promise<{ result: object|null, error: Error|null, exitCode: 0|1 }>}  result null only when
+ *   the network check or the pass itself threw
  */
-export async function runLandEventJob({
-    pool,
-    connection,
-    rpcCounter,
-    dryRun = false,
-    syncTransactionsFirst = true,
-    transactionSync = options => runTransactionSync(options),
-    syncLifecycle = syncProposalLifecycleEvents,
-    syncConsent = defaultSyncConsent,
-    log = timestampedLog
-} = {}) {
-    // All following stages label their evidence devnet, including the transaction top-up.
-    // Check before any stage may write; the lifecycle entrypoint also guards direct callers.
+export async function runLandEventJob({ pool, chain, apply = false, now = () => Date.now(), log = timestampedLog, sync = syncAgreementLifecycle } = {}) {
+    // Every event is labelled with the cluster: check the RPC really is it before anything is written.
     try {
-        await assertLifecycleNetwork(connection);
+        await chain.connection();
     } catch (error) {
-        log(`land-event network check failed: ${error.message}`);
-        return { result: null, error, exitCode: 1,
-            transactionSync: { ...EMPTY_TRANSACTION_SYNC, skipped: true } };
+        log(`network check failed: ${error.message}`);
+        return { result: null, error, exitCode: 1 };
     }
-    let transactionSyncSummary;
-    if (!syncTransactionsFirst) {
-        transactionSyncSummary = { ...EMPTY_TRANSACTION_SYNC, skipped: true };
-        log('transaction sync skipped (--skip-transaction-sync); terminal proposals are matched against the store as it is');
-    } else {
-        log('transaction sync: topping up consensus.solana_transaction before the land-event scan (writes the store even in a land-event dry run)');
-        try {
-            const synced = await transactionSync({ pool, connection, rpcCounter, jobName: 'land-oracle', log });
-            transactionSyncSummary = {
-                scanned: Number(synced?.scanned || 0),
-                newSignatures: Number(synced?.newSignatures || 0),
-                fetched: Number(synced?.fetched || 0),
-                failed: Number(synced?.failed || 0),
-                error: synced?.error || null,
-                skipped: Boolean(synced?.skipped)
-            };
-        } catch (error) {
-            // A database or personas failure here must not stop the scan: the store may already
-            // hold the evidence. The failure still fails the run below.
-            transactionSyncSummary = { ...EMPTY_TRANSACTION_SYNC, error: error.message, skipped: false };
-        }
-        const t = transactionSyncSummary;
-        log(`transaction sync: scanned ${t.scanned} · new ${t.newSignatures} · fetched ${t.fetched} · failed ${t.failed}${t.error ? ` · ERROR ${t.error}` : ''}`);
-    }
-
-    let lifecycle;
+    let result;
     try {
-        lifecycle = await syncLifecycle({
-            pool,
-            connection,
-            dryRun,
-            onProgress: progress => log(`${progress.phase} ${progress.done}/${progress.total}`)
-        });
+        result = await sync({ pool, chain, apply, now, log });
     } catch (error) {
-        log(`land-event sync failed: ${error.stack || error.message}`);
-        return { result: null, error, exitCode: 1, transactionSync: transactionSyncSummary };
+        log(`agreement lifecycle pass failed: ${error.stack || error.message}`);
+        return { result: null, error, exitCode: 1 };
     }
-
-    // The consent step runs after the lifecycle so a failure here never hides lifecycle results;
-    // it still fails the run.
-    let consent;
-    let consentError = null;
-    try {
-        consent = await syncConsent({
-            pool,
-            connection,
-            dryRun,
-            onProgress: progress => log(`${progress.phase} ${progress.done}/${progress.total}`)
-        });
-    } catch (error) {
-        consentError = error;
-        consent = null;
-        log(`consent evidence sync failed: ${error.stack || error.message}`);
-    }
-
-    const result = { ...lifecycle, consent, transactionSync: transactionSyncSummary };
-    log(`land events: scanned ${result.scanned} · terminal ${result.terminal} · events ${result.events.length} · inserted ${result.inserted} · reconciled ${result.reconciled} · missingEvidence ${result.missingEvidence.length}${dryRun ? ' (dry run, nothing inserted)' : ''}`);
-    if (consent) {
-        log(`consent evidence: records ${consent.records} · acceptance events ${consent.acceptanceEvents} · verdict events ${consent.verdictEvents} · inserted ${consent.inserted} · members ${consent.members} · missingEvidence ${consent.missingEvidence.length} · invalidRecords ${consent.invalidRecords.length}${dryRun ? ' (dry run, nothing written)' : ''}`);
-    }
-    const problem = transactionSyncProblem(transactionSyncSummary)
-        ?? (consentError ? `consent evidence sync failed: ${consentError.message}` : null);
-    const consentIncomplete = Boolean(consent && (consent.missingEvidence.length || consent.invalidRecords.length));
-    return {
-        result,
-        error: problem ? new Error(problem) : null,
-        exitCode: problem || result.missingEvidence.length || consentIncomplete ? 1 : 0,
-        transactionSync: transactionSyncSummary
-    };
+    log(`pass done: scanned ${result.scanned} · onchain written ${result.reconciled} · moved ${result.moved} · terminal ${result.terminal} · events ${result.events.length} · inserted ${result.inserted} · invalid ${result.invalidAccounts.length} · missing evidence ${result.missingEvidence.length} · failed ${result.failed.length}${apply ? '' : ' (dry run, nothing written)'}`);
+    const problem = landEventProblem(result);
+    return { result, error: problem ? new Error(problem) : null, exitCode: problem ? 1 : 0 };
 }

@@ -1,6 +1,9 @@
 // Read-only audit of the public hackathon proof surface. This deliberately consumes the same HTTP
 // contracts a judge or outside agent sees; it does not query the database or trust local fixtures.
 
+// The land event an agreement account's terminal status is recorded as (oracle/agreement-lifecycle.js).
+const AGREEMENT_LIFECYCLE_EVENT_TYPE = 'agreement_lifecycle';
+
 function cleanBase(value) {
     const url = new URL(value);
     url.pathname = url.pathname.replace(/\/+$/, '') || '/';
@@ -76,92 +79,14 @@ function validateProspectiveSettlement(status) {
     return { valid, pending: false, settlement };
 }
 
-// Lens entries arrive as base58 strings or `{ address, name }` objects (the frontend's stored shape).
-function lensAddresses(lens) {
-    if (!Array.isArray(lens)) return null;
-    const addresses = lens.map(entry => typeof entry === 'string' ? entry : entry?.address || entry?.key || null)
-        .filter(Boolean).map(String);
-    return addresses.length ? addresses : null;
+// Whether a case's activity holds an action of this type (and side) with a transaction behind it.
+function caseAction(caseGraph, type, side = null) {
+    return (caseGraph?.activity || []).some(event => event.action?.type === type
+        && (side === null || String(event.action?.side || '').toLowerCase() === side)
+        && Boolean(event.transaction));
 }
 
-// The lens a create event carries, if the activity/run payload exposes it at all.
-function eventLens(event) {
-    return lensAddresses(event?.action?.lens) || lensAddresses(event?.lens) || null;
-}
-
-// The lens a public proposal record carries: the stored lens column first, then the on-chain copy.
-function recordLens(record) {
-    return lensAddresses(record?.lens) || lensAddresses(record?.onchain?.lens)
-        || lensAddresses(record?.onchainData?.lens) || null;
-}
-
-const eventParcel = event => event?.action?.parcelId || event?.action?.parcelUid || event?.parcelId || null;
-const eventOwner = event => event?.action?.owner || event?.action?.signer || event?.actor?.wallet || null;
-
-/**
- * Attested execution (lens model v3 case): every parcel carries a lens member's ownership attestation,
- * every attested owner signed its acceptance, the proposal is Executed, and the YES side was resolved
- * and claimed. The v1 certificate-holder `accept` path must not appear at all.
- */
-function evaluateAttestedCase(attested) {
-    if (!attested) return { ok: false, evidence: null };
-    const activity = attested.activity || [];
-    const withTx = type => activity.filter(event => event.action?.type === type && Boolean(event.transaction));
-    const parcelCount = Number(attested.parcelSet?.parcelCount || 0);
-    const attestations = withTx('attestOwnership');
-    const acceptances = withTx('acceptance');
-    const attestedParcels = new Set(attestations.map(eventParcel).filter(Boolean));
-    // Parcels with attestations are proven per parcel when events name them, else by count.
-    const parcelsAttested = attestedParcels.size > 0 ? attestedParcels.size : attestations.length;
-    // Required signatures: sum of each parcel's ownerCount when exposed, else one per parcel.
-    const ownerCounts = new Map();
-    for (const event of attestations) {
-        const count = Number(event.action?.ownerCount);
-        const parcel = eventParcel(event);
-        if (parcel && Number.isInteger(count) && count >= 1) ownerCounts.set(parcel, Math.max(ownerCounts.get(parcel) || 0, count));
-    }
-    const declared = attested.parcelSet?.ownerCounts;
-    if (ownerCounts.size === 0 && declared && typeof declared === 'object') {
-        Object.entries(declared).forEach(([parcel, count]) => {
-            if (Number.isInteger(Number(count)) && Number(count) >= 1) ownerCounts.set(parcel, Number(count));
-        });
-    }
-    const exposedCounts = ownerCounts.size > 0 && ownerCounts.size >= parcelCount;
-    const requiredAcceptances = exposedCounts ? [...ownerCounts.values()].reduce((sum, count) => sum + count, 0) : parcelCount;
-    // One acceptance per attested owner: distinct (parcel, owner) pairs when events name them.
-    const pairs = new Set(acceptances.map(event => {
-        const parcel = eventParcel(event);
-        const owner = eventOwner(event);
-        return parcel && owner ? `${parcel}\u0000${owner}` : null;
-    }).filter(Boolean));
-    const acceptanceCount = pairs.size > 0 ? pairs.size : acceptances.length;
-    const legacyAccepts = withTx('accept').length;
-    const has = (type, side = null) => activity.some(event => event.action?.type === type
-        && (side === null || String(event.action?.side || '').toLowerCase() === side) && Boolean(event.transaction));
-    const stagesComplete = ['decision', 'evidence', 'resolution', 'settlement']
-        .every(id => attested.stages?.find(item => item.id === id)?.state === 'complete');
-    const ok = Boolean(
-        parcelCount >= 1
-        && String(attested.proposal?.lifecycleStatus || '').toLowerCase() === 'executed'
-        && parcelsAttested >= parcelCount
-        && acceptanceCount >= requiredAcceptances
-        && legacyAccepts === 0
-        && attested.branches?.forecast?.resolved === true
-        && String(attested.branches?.forecast?.outcome || '').toUpperCase() === 'YES'
-        && has('resolve') && has('claim', 'yes')
-        && stagesComplete
-    );
-    return {
-        ok,
-        evidence: {
-            id: attested.id || null, lifecycleStatus: attested.proposal?.lifecycleStatus || null,
-            parcelCount, parcelsAttested, attestations: attestations.length,
-            acceptances: acceptanceCount, requiredAcceptances,
-            requiredFrom: exposedCounts ? 'ownerCount' : 'parcelCount',
-            legacyAccepts, outcome: attested.branches?.forecast?.outcome || null
-        }
-    };
-}
+const stagesComplete = (caseGraph, ids) => ids.every(id => caseGraph?.stages?.find(item => item.id === id)?.state === 'complete');
 
 async function readJson(fetchImpl, url) {
     const response = await fetchImpl(url, { headers: { accept: 'application/json' } });
@@ -178,23 +103,16 @@ export async function auditHackathonProof({
     baseUrl = 'https://api.urbangametheory.xyz',
     fetchImpl = globalThis.fetch,
     now = Date.now(),
-    maxRunAgeHours = 48,
-    lensWindowDays = 30,
-    maxLensLookups = 50,
-    // Optional: () => Promise<report> from oracle/open-ground-audit.js runOpenGroundAudit. It needs the
-    // database and an RPC, which this HTTP-only audit never touches, so the operator opts in
-    // (scripts/hackathon-proof-audit.mjs --open-ground); without it the check is not listed.
-    openGroundAudit = null
+    maxRunAgeHours = 48
 } = {}) {
     if (typeof fetchImpl !== 'function') throw new Error('no fetch implementation available');
     const base = cleanBase(baseUrl);
     const paths = {
         docs: '/docs/agents.json',
-        proposalDiscovery: '/agent/discovery',
         oracleDiscovery: '/agent/discovery?resource=oracle-facts',
         runs: '/agent/runs?limit=50',
         activity: '/agent/activity?limit=200',
-        oracleEvents: '/oracle/events?limit=25',
+        oracleEvents: `/oracle/events?type=${AGREEMENT_LIFECYCLE_EVENT_TYPE}&limit=25`,
         publicRecords: '/oracle/public-records/summary',
         proofManifest: '/hackathon/proof.json',
         prospectiveStatus: '/oracle/markets/prospective/status',
@@ -210,39 +128,17 @@ export async function auditHackathonProof({
         if (result.status === 'fulfilled') values[key] = result.value;
         else errors[key] = result.reason instanceof Error ? result.reason.message : String(result.reason);
     });
-    const canonicalCaseUrl = values.proofManifest?.publicProof?.canonicalCase;
-    if (canonicalCaseUrl) {
+    // The agreement cases the proof manifest declares (GET /hackathon/cases/:cid); each is checked only
+    // when declared.
+    const declaredCases = ['canonicalCase', 'executedCase'].filter(key => values.proofManifest?.publicProof?.[key]);
+    await Promise.all(declaredCases.map(async key => {
         try {
-            values.canonicalCase = await readJson(fetchImpl, canonicalCaseUrl);
+            values[key] = await readJson(fetchImpl, values.proofManifest.publicProof[key]);
         } catch (error) {
-            errors.canonicalCase = error instanceof Error ? error.message : String(error);
+            errors[key] = error instanceof Error ? error.message : String(error);
         }
-    } else {
-        errors.canonicalCase = 'proof manifest does not declare publicProof.canonicalCase';
-    }
-    const executedCaseUrl = values.proofManifest?.publicProof?.executedCase;
-    if (executedCaseUrl) {
-        try {
-            values.executedCase = await readJson(fetchImpl, executedCaseUrl);
-        } catch (error) {
-            errors.executedCase = error instanceof Error ? error.message : String(error);
-        }
-    } else {
-        errors.executedCase = 'proof manifest does not declare publicProof.executedCase';
-    }
+    }));
 
-    const attestedCaseUrl = values.proofManifest?.publicProof?.attestedCase;
-    if (attestedCaseUrl) {
-        try {
-            values.attestedCase = await readJson(fetchImpl, attestedCaseUrl);
-        } catch (error) {
-            errors.attestedCase = error instanceof Error ? error.message : String(error);
-        }
-    } else {
-        errors.attestedCase = 'proof manifest does not declare publicProof.attestedCase';
-    }
-
-    const expectedProposal = `${base}/agent/proposals`;
     const expectedFact = `${base}/agent/oracle/facts`;
     const runs = values.runs?.runs || [];
     const events = values.activity?.events || [];
@@ -271,118 +167,67 @@ export async function auditHackathonProof({
     };
     const external = values.docs?.oracle?.externalMarket;
     const externalProof = external?.proof || {};
-    const lifecycle = newest(values.oracleEvents?.events, event => event.eventType === 'proposal_lifecycle'
+    const lifecycle = newest(values.oracleEvents?.events, event => event.eventType === AGREEMENT_LIFECYCLE_EVENT_TYPE
         && /^sha256:[a-f0-9]{64}$/.test(event.source?.hash || '') && Boolean(event.source?.transaction));
     const records = values.publicRecords;
     const chronology = externalProof.chronology;
     const prospectiveSettlement = validateProspectiveSettlement(values.prospectiveStatus);
+
+    // The canonical case: one minted multi-parcel agreement with a donation, a pledge and both forecast
+    // sides, then its decision, public evidence, resolution and settlement.
     const canonical = values.canonicalCase;
-    const canonicalActivities = canonical?.activity || [];
-    const canonicalAction = (type, side = null) => canonicalActivities.some(event => event.action?.type === type
-        && (side === null || String(event.action?.side || '').toLowerCase() === side)
-        && Boolean(event.transaction));
-    const canonicalSupport = canonical?.branches?.support || {};
-    const canonicalForecast = canonical?.branches?.forecast || {};
     const canonicalSetup = Boolean(
         canonical?.parcelSet?.parcelCount >= 2
-        && canonical?.proposal?.account
-        && Number(canonicalSupport.donations?.totalUsdc) > 0
-        && (Number(canonicalSupport.pledges?.pledgeCount) > 0 || canonicalAction('pledge'))
-        && Number(canonicalForecast.yesUsdc) > 0
-        && Number(canonicalForecast.noUsdc) > 0
-        && canonicalAction('create') && canonicalAction('publish')
-        && canonicalAction('donate') && canonicalAction('pledge')
-        && canonicalAction('stake', 'yes') && canonicalAction('stake', 'no')
+        && canonical?.agreement?.account
+        && Number(canonical.branches?.support?.donations?.totalUsdc) > 0
+        && (Number(canonical.branches?.support?.pledges?.pledgeCount) > 0 || caseAction(canonical, 'pledge'))
+        && Number(canonical.branches?.forecast?.yesUsdc) > 0
+        && Number(canonical.branches?.forecast?.noUsdc) > 0
+        && (canonical.activity || []).some(event => event.action?.type === 'propose')
+        && caseAction(canonical, 'mint') && caseAction(canonical, 'donate') && caseAction(canonical, 'pledge')
+        && caseAction(canonical, 'stake', 'yes') && caseAction(canonical, 'stake', 'no')
     );
-    const canonicalTerminal = ['decision', 'evidence', 'resolution', 'settlement']
-        .every(id => canonical?.stages?.find(item => item.id === id)?.state === 'complete');
-    // The executed case is the YES side of the same loop: every listed parcel accepted on-chain, the
-    // proposal Executed, the market resolved YES, escrow released, pledge fulfilled and the YES claimed.
+    const terminalStages = ['decision', 'evidence', 'resolution', 'settlement'];
+    // The executed case is the YES side: the lens's decision recorded (attest), the agreement executed,
+    // its market resolved YES, the escrowed donations released, the pledge fulfilled and the YES claimed.
     const executed = values.executedCase;
-    const executedActivities = executed?.activity || [];
-    const executedAction = (type, side = null) => executedActivities.some(event => event.action?.type === type
-        && (side === null || String(event.action?.side || '').toLowerCase() === side) && Boolean(event.transaction));
-    const executedAccepts = executedActivities.filter(event => event.action?.type === 'accept' && Boolean(event.transaction)).length;
-    const executedParcels = Number(executed?.parcelSet?.parcelCount || 0);
     const executedYes = Boolean(
-        executed && executedParcels >= 2
-        && String(executed.proposal?.lifecycleStatus || '').toLowerCase() === 'executed'
-        && executedAccepts >= executedParcels
+        executed?.agreement?.account
+        && String(executed.agreement.status || '').toLowerCase() === 'executed'
+        && caseAction(executed, 'attest') && caseAction(executed, 'execute')
         && executed.branches?.forecast?.resolved === true
         && String(executed.branches?.forecast?.outcome || '').toUpperCase() === 'YES'
-        && executedAction('resolve') && executedAction('releaseDonations') && executedAction('fulfillPledge')
-        && executedAction('claim', 'yes')
-        && ['decision', 'evidence', 'resolution', 'settlement']
-            .every(id => executed.stages?.find(item => item.id === id)?.state === 'complete')
+        && caseAction(executed, 'resolve') && caseAction(executed, 'releaseDonations') && caseAction(executed, 'fulfillPledge')
+        && caseAction(executed, 'claim', 'yes')
+        && stagesComplete(executed, terminalStages)
     );
-
-    const attestedExecution = evaluateAttestedCase(values.attestedCase);
-
-    // No self-lens: an agent proposal whose lens is only its creator's wallet is creator-decidable.
-    // The lens comes from the create event when the feed exposes it, else from the public record.
-    const lensWindowStart = Number(now) - lensWindowDays * 86_400_000;
-    const creates = events.filter(event => event.action?.type === 'create'
-        && time(event.recordedAt || event.occurredAt) >= lensWindowStart
-        && Boolean(event.action?.proposalId || event.entity?.id));
-    const createProposalId = event => String(event.action?.proposalId || event.entity?.id);
-    const lookupIds = [...new Set(creates.filter(event => !eventLens(event)).map(createProposalId))].slice(0, maxLensLookups);
-    const proposalRecords = new Map();
-    await Promise.all(lookupIds.map(async id => {
-        try {
-            proposalRecords.set(id, await readJson(fetchImpl, `${base}/proposals/${encodeURIComponent(id)}`));
-        } catch (error) {
-            proposalRecords.set(id, { error: error instanceof Error ? error.message : String(error) });
-        }
-    }));
-    const lensReport = creates.map(event => {
-        const proposalId = createProposalId(event);
-        const record = proposalRecords.get(proposalId);
-        const lens = eventLens(event) || recordLens(record);
-        const creator = event.actor?.wallet || null;
-        return {
-            proposalId, creator, lens,
-            lensFrom: eventLens(event) ? 'activity' : lens ? 'proposal_record' : null,
-            self: Boolean(lens && creator && lens.every(address => address === creator))
-        };
-    });
-    const selfLens = lensReport.filter(item => item.self);
-    const undecided = lensReport.filter(item => !item.lens || !item.creator);
-    const lensInsufficient = creates.length === 0 || undecided.length > 0;
-    const noSelfLens = selfLens.length === 0 && !lensInsufficient;
-    const noSelfLensEvidence = errors.activity || {
-        windowDays: lensWindowDays, creates: creates.length,
-        decided: lensReport.length - undecided.length,
-        selfLens: selfLens.map(({ proposalId, creator }) => ({ proposalId, creator })),
-        ...(lensInsufficient ? {
-            insufficientData: creates.length === 0
-                ? `no create events in the last ${lensWindowDays} days`
-                : `${undecided.length} create event(s) expose neither a lens nor a creator wallet`,
-            undecided: undecided.slice(0, 10).map(({ proposalId, creator, lens }) => ({
-                proposalId, missing: [!lens && 'lens', !creator && 'creator'].filter(Boolean)
-            }))
-        } : {})
-    };
+    const caseChecks = [
+        ...(declaredCases.includes('canonicalCase') ? [
+            check('canonical_case_setup', canonicalSetup,
+                'One multi-parcel agreement proves its mint, a donation, a pledge and both forecast sides',
+                canonical ? {
+                    id: canonical.id, parcelCount: canonical.parcelSet?.parcelCount || 0,
+                    progress: canonical.progress, transactions: canonical.transactions?.length || 0
+                } : errors.canonicalCase || null),
+            check('canonical_case_terminal', stagesComplete(canonical, terminalStages),
+                'The canonical agreement also proves decision, evidence, resolution and settlement',
+                canonical ? { id: canonical.id, state: canonical.state, stages: canonical.stages } : errors.canonicalCase || null)
+        ] : []),
+        ...(declaredCases.includes('executedCase') ? [
+            check('executed_case_yes', executedYes,
+                'An agreement executed on its lens attestation and its market resolved YES and paid the winner',
+                executed ? {
+                    id: executed.id, status: executed.agreement?.status || null,
+                    outcome: executed.branches?.forecast?.outcome || null, stages: executed.stages
+                } : errors.executedCase || null)
+        ] : [])
+    ];
 
     // Attester diversity: ownership attestations from at least two distinct lens members.
     const lensMembers = Array.isArray(values.lensMembers?.members) ? values.lensMembers.members : [];
     const attesters = lensMembers.filter(member => member?.key && Number(member.coverage?.ownership) > 0);
 
-    // Open-ground audit: v3 accounts' site_hash/open_ground/parcel_ids against the published record.
-    // Advisory: a chain with no v3 accounts (devnet is v1; layout_version 0 reads as legacy) checks
-    // nothing and passes with its counts.
-    let openGround = null;
-    if (typeof openGroundAudit === 'function') {
-        try {
-            openGround = await openGroundAudit();
-        } catch (error) {
-            errors.openGroundAudit = error instanceof Error ? error.message : String(error);
-        }
-    }
-
     const checks = [
-        check('proposal_bazaar', exactResource(values.proposalDiscovery, expectedProposal),
-            'Paid proposal endpoint has an exact hosted Bazaar listing',
-            errors.proposalDiscovery || values.proposalDiscovery?.listing?.resource || values.proposalDiscovery?.state || null),
         check('oracle_fact_bazaar', exactResource(values.oracleDiscovery, expectedFact),
             'Paid verified-fact endpoint has its own exact Bazaar listing',
             errors.oracleDiscovery || values.oracleDiscovery?.listing?.resource || values.oracleDiscovery?.state || null),
@@ -390,14 +235,17 @@ export async function auditHackathonProof({
             `A deterministic proposer completed within ${maxRunAgeHours} hours and produced an on-chain action`,
             proposer ? { runId: proposer.id, ageHours: Number(proposerAge.toFixed(2)), transaction: proposerAction?.transaction || null } : errors.runs || null),
         check('deterministic_supporter', Boolean(supporter && supporterAge <= maxRunAgeHours && supporterSignature && supporterAction?.transaction === supporterSignature),
-            'A separate deterministic supporter backed another proposal on-chain',
+            'A separate deterministic supporter backed another agreement on-chain',
             supporter ? {
-                runId: supporter.id, type: supporter.support?.type || null, proposalId: supporter.support?.proposalId || null,
+                runId: supporter.id, type: supporter.support?.type || null,
+                agreementCid: supporter.support?.agreementCid || null, account: supporter.support?.account || null,
                 transaction: supporterSignature, ageHours: Math.round(supporterAge * 10) / 10, maxAgeHours: maxRunAgeHours
             } : errors.runs || 'no completed supporter run carries a transaction'),
-        check('proposal_lifecycle_oracle', Boolean(lifecycle),
-            'A source-hashed terminal proposal event is publicly auditable',
-            lifecycle ? { eventId: lifecycle.id, outcome: lifecycle.outcome, transaction: lifecycle.source.transaction } : errors.oracleEvents || null),
+        // Advisory until the agreement program is deployed on devnet and an agreement reaches a terminal state.
+        check('agreement_lifecycle_oracle', Boolean(lifecycle),
+            'A source-hashed terminal agreement event is publicly auditable',
+            lifecycle ? { eventId: lifecycle.id, outcome: lifecycle.outcome, transaction: lifecycle.source.transaction } : errors.oracleEvents || null,
+            'advisory'),
         check('court_attestations', Boolean(records?.attestations > 0 && records?.schemaId
             && records?.v2?.status === 'live_devnet' && records?.v2?.attestations > 0),
             'The Croatian court bridge reports public devnet attestations and live source-timed V2 evidence',
@@ -421,8 +269,7 @@ export async function auditHackathonProof({
         } : errors.docs || null),
         check('public_proof_manifest', Boolean(values.proofManifest?.hackathon?.branch === 'colosseum-worlds-fair'
             && values.proofManifest?.publicProof?.prospectiveMarket === `${base}/oracle/markets/prospective/status`
-            && values.proofManifest?.publicProof?.operations === `${base}/hackathon/operations.json`
-            && Boolean(values.proofManifest?.publicProof?.canonicalCase)),
+            && values.proofManifest?.publicProof?.operations === `${base}/hackathon/operations.json`),
         'Hackathon scope and public evidence links are machine-readable',
         values.proofManifest?.hackathon || errors.proofManifest || null),
         check('release_artifact_identity', Boolean(
@@ -437,22 +284,7 @@ export async function auditHackathonProof({
         ),
         'Backend, frontend build and mutable Solana deployments have distinct public identities',
         values.proofManifest?.releaseArtifacts || errors.proofManifest || null),
-        check('canonical_case_setup', canonicalSetup,
-            'One plural parcel case proves paid proposal, donation, pledge and both forecast sides',
-            canonical ? {
-                id: canonical.id, parcelCount: canonical.parcelSet?.parcelCount || 0,
-                progress: canonical.progress, transactions: canonical.transactions?.length || 0
-            } : errors.canonicalCase || null),
-        check('canonical_case_terminal', canonicalTerminal,
-            'The canonical case also proves decision, evidence, resolution and settlement',
-            canonical ? { id: canonical.id, state: canonical.state, stages: canonical.stages } : errors.canonicalCase || null),
-        check('executed_case_yes', executedYes,
-            'A second real-parcel case executed on-chain and its market resolved YES and paid the winner',
-            executed ? {
-                id: executed.id, lifecycleStatus: executed.proposal?.lifecycleStatus || null,
-                outcome: executed.branches?.forecast?.outcome || null, acceptances: executedAccepts,
-                parcelCount: executedParcels, stages: executed.stages
-            } : errors.executedCase || null),
+        ...caseChecks,
         check('human_agent_activity_matrix', Object.values(activityMatrix).every(Boolean),
             'Humans, deterministic and LLM agents, and a resolver share one transaction-backed activity stream',
             activityMatrix, 'advisory'),
@@ -481,31 +313,12 @@ export async function auditHackathonProof({
         check('chronology_label', Boolean(chronology?.classification),
             'The external-market proof publishes its evidence chronology classification',
             chronology?.classification || errors.docs || null, 'advisory'),
-        // Lens-model checks: advisory until the v2 programs are deployed and the attested case has
-        // run. Flipping one to required is deleting its trailing 'advisory'.
-        check('attested_execution', attestedExecution.ok,
-            'A case executed only through lens-member ownership attestations and owner signatures, and paid YES',
-            attestedExecution.evidence || errors.attestedCase || null, 'advisory'),
-        check('no_self_lens', noSelfLens,
-            `No agent proposal created in the last ${lensWindowDays} days lists only its creator in its lens`,
-            noSelfLensEvidence, 'advisory'),
         check('attester_diversity', attesters.length >= 2,
             'At least two distinct lens members have issued ownership attestations',
             values.lensMembers ? {
                 members: lensMembers.length,
                 attesters: attesters.map(member => ({ key: member.key, name: member.name || null, ownership: Number(member.coverage.ownership) }))
-            } : errors.lensMembers || null, 'advisory'),
-        ...(typeof openGroundAudit === 'function' ? [check('open_ground_audit',
-            Boolean(openGround && Array.isArray(openGround.mismatches) && openGround.mismatches.length === 0
-                && !(openGround.undecodable?.length > 0)),
-            'Every v3 proposal account declares the site hash, open ground and parcels of its published record',
-            openGround ? {
-                accounts: openGround.accounts, records: openGround.records ?? null, checked: openGround.checked,
-                mismatches: openGround.mismatches.length, byKind: openGround.byKind,
-                skipped: openGround.skipped.length, skippedByReason: openGround.skippedByReason,
-                undecodable: openGround.undecodable?.length ?? 0,
-                examples: openGround.mismatches.slice(0, 10)
-            } : errors.openGroundAudit || null, 'advisory')] : [])
+            } : errors.lensMembers || null, 'advisory')
     ];
     const summary = checks.reduce((counts, item) => {
         counts[item.status] += 1;
@@ -522,4 +335,4 @@ export async function auditHackathonProof({
     };
 }
 
-export { cleanBase, evaluateAttestedCase, exactResource, lensAddresses, validateProspectiveSettlement };
+export { cleanBase, exactResource, validateProspectiveSettlement };

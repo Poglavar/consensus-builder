@@ -257,7 +257,7 @@ describe('reproduces what the browser built', () => {
     const captured = JSON.parse(readFileSync(new URL('../../restatements/upu-borovje/data/street-footprints.json', import.meta.url), 'utf8')).footprints;
 
     it('rebuilds the Borovje collector within millimetres of the browser\'s footprint', () => {
-        const street = snap.members['upu-borovje-ulice'];
+        const street = snap.members.ulice;
         const definition = { width: 19, kind: 'road', points: street.segments, segments: street.segments, segmentIds: street.segmentIds, segmentProfiles: street.segmentProfiles, tunnels: [] };
         // The capture was built with corridor-footprint/2. Recipe /3 adds the land every junction
         // corner needs (and the bend wedges between stretches) and tapers the land at every change
@@ -266,7 +266,7 @@ describe('reproduces what the browser built', () => {
         // only the corners: well under one per cent of a 19 m collector network.
         const stepped = footprint.materialize(definition, { transitions: false });
         const ours = turf.feature(stepped.polygon);
-        const theirs = turf.feature(captured['upu-borovje-ulice-v2']);
+        const theirs = turf.feature(captured.ulice);
         const area = turf.area(ours);
         const lost = turf.difference(theirs, ours);
         const added = turf.difference(ours, theirs);

@@ -1,6 +1,8 @@
-// Localnet suite for the proposal_pledge program: funded USDC donations (donate → release on
-// Executed / refund on Cancelled or Expired) and soft pledges (set → revoke / fulfil / void), plus
-// the signer, mint, re-init and account-substitution attacks each instruction must reject.
+// Localnet suite for the proposal_pledge program on agreements (Agreement accounts of the agreement
+// program, plan-design-agreement.md M3): funded USDC donations (donate → release on Executed / refund
+// on Cancelled or Expired) and soft pledges (set → revoke / fulfil / void), the sponsor captured as
+// beneficiary, plus the signer, mint, re-init and account-substitution attacks each instruction must
+// reject. Expiry is the agreement program's own `expire` after the deadline.
 
 import * as anchor from "@coral-xyz/anchor";
 import { Program } from "@coral-xyz/anchor";
@@ -18,15 +20,19 @@ import { createHash } from "crypto";
 import { readFileSync } from "fs";
 import path from "path";
 import { expect } from "chai";
+import { LensMember, chainNow, createLensMember, waitForProgramsVisible } from "./sas-mock.ts";
 import {
-    findProposalCounterPDA,
-    findProposalPDA,
-    findParcelPDA,
-    initializeProposalCounter,
-    NO_SITE,
-    testSiteHash,
-} from "./helpers.ts";
-import { LensMember, attestAndAccept, attestVerdict, createLensMember, ensureParcelAnchor, settleWithVerdict } from "./sas-mock.ts";
+    CreatedAgreement,
+    STATUS,
+    cancelAgreement,
+    createAgreement,
+    expireAgreement,
+    settleExecuted,
+    statusByte,
+    testCid,
+    waitForChainTime,
+    writeAgreementLookalike,
+} from "./agreement-helpers.ts";
 
 const COMMITMENT_ACTIVE = 0;
 const COMMITMENT_FULFILLED = 1;
@@ -46,8 +52,7 @@ describe("proposal_pledge", () => {
     anchor.setProvider(provider);
 
     const program = anchor.workspace.ProposalPledge as Program;
-    const proposalProgram = anchor.workspace.ProposalNft as Program;
-    const parcelProgram = anchor.workspace.ParcelNft as Program;
+    const agreementProgram = anchor.workspace.Agreement as Program;
     const connection = provider.connection;
     const payer = (provider.wallet as any).payer as Keypair;
 
@@ -57,21 +62,20 @@ describe("proposal_pledge", () => {
     const usdcAuthority = loadKeypair("local-usdc-mint-authority");
 
     type Party = { kp: Keypair; pk: PublicKey; usdc: PublicKey; fake: PublicKey };
-    type Prop = { proposal: PublicKey; parcelId: string };
+    // `proposal` is the program's name for its subject account: the agreement.
+    type Subject = { proposal: PublicKey; created: CreatedAgreement };
 
-    let counterPDA: PublicKey;
     let fakeMint: PublicKey;
-    const creator = Keypair.generate(); // owns every proposal below, so it is the captured beneficiary
-    let creatorLens: LensMember; // creator is also the (self-)lens of every proposal below
+    const creator = Keypair.generate(); // sponsors every agreement below, so it is the captured beneficiary
+    let lens: LensMember; // the lens of every agreement below, whose decision executes them
     let beneficiaryUsdc: PublicKey;
     let donorA: Party, donorB: Party, pledgerA: Party, pledgerB: Party, pledgerC: Party, attacker: Party;
+    // Two agreements whose deadline passes while the suite runs; each is expired by the suite.
+    let deadline: number;
+    let expiringDonations: Subject, expiringPledges: Subject;
 
     before(async () => {
-        // Earlier files may already have initialized the shared proposal counter on this validator.
-        const [counter] = findProposalCounterPDA(proposalProgram.programId);
-        const existing = await proposalProgram.account.proposalCounter.fetchNullable(counter);
-        counterPDA = existing ? counter : await initializeProposalCounter(proposalProgram, payer);
-
+        await waitForProgramsVisible(connection);
         const mintInfo = await connection.getParsedAccountInfo(USDC);
         expect((mintInfo.value?.data as any)?.parsed?.info?.mintAuthority,
             "devnet USDC fixture missing: run `anchor test` so Anchor.toml loads tests/fixtures").to.equal(usdcAuthority.publicKey.toBase58());
@@ -97,11 +101,15 @@ describe("proposal_pledge", () => {
         [donorA, donorB, pledgerA, pledgerB, attacker] = await Promise.all(keypairs.slice(0, 5).map(kp => party(kp)));
         pledgerC = await party(keypairs[5], false); // pledges but never holds USDC
         beneficiaryUsdc = getAssociatedTokenAddressSync(USDC, creator.publicKey);
-        creatorLens = await createLensMember(provider, creator);
+        lens = await createLensMember(provider);
+
+        deadline = (await chainNow(connection)) + 30;
+        expiringDonations = await newAgreement("don-expire", deadline);
+        expiringPledges = await newAgreement("plg-expire", deadline);
     });
 
     // ========================
-    // PDAs and proposal lifecycle helpers
+    // PDAs and agreement lifecycle helpers
     // ========================
 
     const pda = (seeds: (Buffer | Uint8Array)[]) => PublicKey.findProgramAddressSync(seeds, program.programId)[0];
@@ -114,31 +122,30 @@ describe("proposal_pledge", () => {
     const commitmentOf = (book: PublicKey, owner: PublicKey) => pda([Buffer.from("pledge"), book.toBuffer(), owner.toBuffer()]);
     const donationId = (label: string) => createHash("sha256").update(`plg-${label}`).digest();
 
-    async function newProposal(tag: string): Promise<Prop> {
-        const parcelId = `HR-plg-${tag}`;
-        await ensureParcelAnchor(parcelProgram, parcelId);
-        const count = (await proposalProgram.account.proposalCounter.fetch(counterPDA)).count as any;
-        const [proposal] = findProposalPDA(proposalProgram.programId, count.toNumber());
-        await proposalProgram.methods
-            .mintAndFund([parcelId], false, "ipfs://pledge-test", new anchor.BN(0), [creator.publicKey], false, NO_SITE, false)
-            .accounts({ proposal, proposalCounter: counterPDA, owner: creator.publicKey, systemProgram: SystemProgram.programId } as any)
-            .signers([creator])
-            .rpc();
-        return { proposal, parcelId };
+    /** An Active agreement sponsored by `creator`, the lens deciding it, payout the creator. */
+    async function newAgreement(tag: string, agreementDeadline = 0): Promise<Subject> {
+        const created = await createAgreement(agreementProgram, {
+            sponsor: creator, cid: testCid(`plg-${tag}`), lens: lens.publicKey, deadline: agreementDeadline,
+        });
+        return { proposal: created.agreement, created };
     }
 
-    /** The creator (the proposal's lens) attests the provider wallet as sole owner of the single
-     * parcel, and that wallet's acceptance executes the proposal. */
-    async function execute(p: Prop) {
-        await attestAndAccept(proposalProgram, creatorLens, { proposal: p.proposal, parcelId: p.parcelId, owner: payer });
-        expect((await proposalProgram.account.proposal.fetch(p.proposal)).status).to.deep.equal({ executed: {} });
+    /** The lens's satisfied decision is recorded and the agreement executes. */
+    async function execute(p: Subject) {
+        await settleExecuted(agreementProgram, lens, p.created);
+        expect(await statusByte(connection, p.proposal)).to.equal(STATUS.executed);
     }
 
-    async function cancel(p: Prop) {
-        await proposalProgram.methods.cancelAndRefund()
-            .accounts({ proposal: p.proposal, owner: creator.publicKey } as any)
-            .signers([creator]).rpc();
-        expect((await proposalProgram.account.proposal.fetch(p.proposal)).status).to.deep.equal({ cancelled: {} });
+    async function cancel(p: Subject) {
+        await cancelAgreement(agreementProgram, p.proposal, creator);
+        expect(await statusByte(connection, p.proposal)).to.equal(STATUS.cancelled);
+    }
+
+    /** Anyone expires an agreement once its deadline has passed. */
+    async function expire(p: Subject) {
+        await waitForChainTime(connection, deadline + 1);
+        await expireAgreement(agreementProgram, p.proposal, creator.publicKey);
+        expect(await statusByte(connection, p.proposal)).to.equal(STATUS.expired);
     }
 
     // ========================
@@ -265,21 +272,21 @@ describe("proposal_pledge", () => {
     // ========================
 
     describe("donations", () => {
-        let executed: Prop, cancelled: Prop, other: Prop, dead: Prop;
+        let executed: Subject, cancelled: Subject, other: Subject, dead: Subject;
         let executedEscrow: PublicKey, otherEscrow: PublicKey;
 
         before(async () => {
-            executed = await newProposal("don-exec");
-            cancelled = await newProposal("don-cancel");
-            other = await newProposal("don-other");
-            dead = await newProposal("don-dead");
+            executed = await newAgreement("don-exec");
+            cancelled = await newAgreement("don-cancel");
+            other = await newAgreement("don-other");
+            dead = await newAgreement("don-dead");
             await cancel(dead);
             executedEscrow = escrowOf(executed.proposal);
             otherEscrow = escrowOf(other.proposal);
         });
 
         describe("create_donation_escrow", () => {
-            it("captures the proposal owner as beneficiary and opens an escrow-owned USDC vault", async () => {
+            it("captures the agreement's sponsor as beneficiary and opens an escrow-owned USDC vault", async () => {
                 await createEscrow(executed.proposal);
                 const escrow = await program.account.donationEscrow.fetch(executedEscrow);
                 expect(escrow.proposal.toBase58()).to.equal(executed.proposal.toBase58());
@@ -294,7 +301,7 @@ describe("proposal_pledge", () => {
                 expect(Number(vault.amount)).to.equal(0);
             });
 
-            it("rejects a second escrow for the same proposal (re-init)", async () => {
+            it("rejects a second escrow for the same agreement (re-init)", async () => {
                 await expectFailure(() => createEscrow(executed.proposal), ALREADY_IN_USE);
             });
 
@@ -305,17 +312,14 @@ describe("proposal_pledge", () => {
                 }), "InvalidMint");
             });
 
-            it("rejects a proposal account not owned by proposal_nft (parcel, wallet)", async () => {
-                const parcel = findParcelPDA(parcelProgram.programId, executed.parcelId)[0];
-                await expectFailure(() => createEscrow(parcel), "InvalidProposalAccount");
+            it("rejects a subject that is not an agreement: a wallet, an Agreement look-alike another program owns", async () => {
+                const lookalike = await writeAgreementLookalike(provider, { authority: creator.publicKey, lens: lens.publicKey });
                 await expectFailure(() => createEscrow(creator.publicKey), "InvalidProposalAccount");
+                await expectFailure(() => createEscrow(lookalike), "InvalidProposalAccount");
+                expect(await program.account.donationEscrow.fetchNullable(escrowOf(lookalike))).to.be.null;
             });
 
-            it("rejects a proposal_nft account that is not a Proposal (the counter)", async () => {
-                await expectFailure(() => createEscrow(counterPDA), "InvalidProposalAccount");
-            });
-
-            it("rejects a proposal that is no longer Active", async () => {
+            it("rejects an agreement that is no longer Active", async () => {
                 await expectFailure(() => createEscrow(dead.proposal), "ProposalNotActive");
             });
 
@@ -373,7 +377,7 @@ describe("proposal_pledge", () => {
                     "ConstraintTokenMint");
             });
 
-            it("rejects another proposal passed alongside the escrow", async () => {
+            it("rejects another agreement passed alongside the escrow", async () => {
                 await expectFailure(() => donate(donorA, other.proposal, "swap-prop", 1_000_000, { escrow: executedEscrow }),
                     "InvalidProposalAccount");
             });
@@ -390,7 +394,7 @@ describe("proposal_pledge", () => {
                 }), "AccountDiscriminatorMismatch");
             });
 
-            it("rejects release and refund while the proposal is Active", async () => {
+            it("rejects release and refund while the agreement is Active", async () => {
                 await expectFailure(() => release(executed.proposal, attacker), "ProposalNotExecuted");
                 await expectFailure(() => refund(donorA, executed.proposal, "a1"), "ProposalNotRefundable");
             });
@@ -418,11 +422,11 @@ describe("proposal_pledge", () => {
                 await expectFailure(() => release(executed.proposal, attacker, { vault: vaultOf(otherEscrow) }), "ConstraintAddress");
             });
 
-            it("rejects another proposal passed alongside the escrow", async () => {
+            it("rejects another agreement passed alongside the escrow", async () => {
                 await expectFailure(() => release(other.proposal, attacker, { escrow: executedEscrow }), "InvalidProposalAccount");
             });
 
-            it("lets anyone release the whole vault to the captured beneficiary", async () => {
+            it("lets anyone release the whole vault to the captured beneficiary, the sponsor", async () => {
                 await release(executed.proposal, attacker);
                 expect(await balance(beneficiaryUsdc)).to.equal(10_000_000);
                 expect(await balance(vaultOf(executedEscrow))).to.equal(0);
@@ -439,7 +443,7 @@ describe("proposal_pledge", () => {
             });
 
             it("rejects releasing an empty vault", async () => {
-                const empty = await newProposal("don-empty");
+                const empty = await newAgreement("don-empty");
                 await createEscrow(empty.proposal);
                 await execute(empty);
                 await expectFailure(() => release(empty.proposal, attacker), "NothingToRelease");
@@ -506,78 +510,25 @@ describe("proposal_pledge", () => {
             });
         });
 
-        describe("refund_donation (Expired fixture)", () => {
-            const expiredProposal = new PublicKey(fixtures.expiredProposal);
-            const expiredDonorKp = loadKeypair("expired-donor");
-            let expiredDonor: Party;
-            const fixtureId = Buffer.from(fixtures.expiredDonationId, "hex");
-            const expiredRefund = () => program.methods.refundDonation().accountsStrict({
-                escrow: new PublicKey(fixtures.expiredEscrow), proposal: expiredProposal,
-                position: new PublicKey(fixtures.expiredPosition), vault: new PublicKey(fixtures.expiredVault),
-                donorTokenAccount: expiredDonor.usdc, donor: expiredDonor.pk, tokenProgram: TOKEN_PROGRAM_ID,
-            } as any).signers([expiredDonor.kp]).rpc();
-
+        describe("refund_donation (Expired)", () => {
             before(async () => {
-                const usdc = await createAssociatedTokenAccountIdempotent(connection, payer, USDC, expiredDonorKp.publicKey);
-                expiredDonor = { kp: expiredDonorKp, pk: expiredDonorKp.publicKey, usdc, fake: usdc };
-                // Guard against a stale fixture: the program must derive the same position address.
-                expect(positionOf(new PublicKey(fixtures.expiredEscrow), expiredDonor.pk, fixtureId).toBase58()).to.equal(fixtures.expiredPosition);
+                await createEscrow(expiringDonations.proposal);
+                await donate(donorB, expiringDonations.proposal, "e1", 4_000_000);
+                await expire(expiringDonations);
             });
 
-            it("rejects donations and release on an Expired proposal", async () => {
-                await expectFailure(() => donate(donorA, expiredProposal, "expired", 1_000_000), "ProposalNotActive");
-                await expectFailure(() => release(expiredProposal, attacker, { beneficiary: new PublicKey(fixtures.expiredBeneficiary) }),
-                    "ProposalNotExecuted");
+            it("rejects donations and release on an Expired agreement", async () => {
+                await expectFailure(() => donate(donorA, expiringDonations.proposal, "expired", 1_000_000), "ProposalNotActive");
+                await expectFailure(() => release(expiringDonations.proposal, attacker), "ProposalNotExecuted");
             });
 
             it("refunds the funded donation once after expiry", async () => {
-                await expiredRefund();
-                expect(await balance(expiredDonor.usdc)).to.equal(Number(fixtures.expiredDonation));
-                expect(await balance(new PublicKey(fixtures.expiredVault))).to.equal(0);
-                await expectFailure(expiredRefund, "AlreadyRefunded");
-            });
-        });
-
-        // v3: a proposal with no parcels (a site on open ground) settles only by verdict; the escrow
-        // follows the status exactly as for a parcel proposal.
-        describe("v3 empty-binding proposals", () => {
-            async function emptyBinding(label: string, verdictMayExecute: boolean): Promise<PublicKey> {
-                const count = (await proposalProgram.account.proposalCounter.fetch(counterPDA)).count as any;
-                const [proposal] = findProposalPDA(proposalProgram.programId, count.toNumber());
-                await proposalProgram.methods
-                    .mintAndFund([], false, "ipfs://pledge-test", new anchor.BN(0), [creator.publicKey], verdictMayExecute, testSiteHash(label), true)
-                    .accounts({ proposal, proposalCounter: counterPDA, owner: creator.publicKey, systemProgram: SystemProgram.programId } as any)
-                    .signers([creator])
-                    .rpc();
-                return proposal;
-            }
-
-            async function submitVerdict(proposal: PublicKey, verdict: "executed" | "expired") {
-                const attestation = await attestVerdict(provider, creatorLens, { proposalAccount: proposal, verdict });
-                return settleWithVerdict(proposalProgram, { proposal, verdict: attestation, credential: creatorLens.credential });
-            }
-
-            it("releases donations only after an executed verdict on a proposal minted with verdict_may_execute", async () => {
-                const proposal = await emptyBinding("plg-empty-yes", true);
-                await createEscrow(proposal);
-                await donate(donorA, proposal, "v3-yes", 1_000_000);
-                await expectFailure(() => release(proposal, attacker), "ProposalNotExecuted");
-                await submitVerdict(proposal, "executed");
-                const before = await balance(beneficiaryUsdc);
-                await release(proposal, attacker);
-                expect((await balance(beneficiaryUsdc)) - before).to.equal(1_000_000);
-            });
-
-            it("refuses the executed verdict without verdict_may_execute; expiry refunds the donor", async () => {
-                const proposal = await emptyBinding("plg-empty-no", false);
-                await createEscrow(proposal);
-                await donate(donorB, proposal, "v3-no", 1_000_000);
-                await expectFailure(() => submitVerdict(proposal, "executed"), "VerdictCannotSkipConsent");
-                await expectFailure(() => release(proposal, attacker), "ProposalNotExecuted");
-                await submitVerdict(proposal, "expired");
                 const before = await balance(donorB.usdc);
-                await refund(donorB, proposal, "v3-no");
-                expect((await balance(donorB.usdc)) - before).to.equal(1_000_000);
+                await refund(donorB, expiringDonations.proposal, "e1");
+                expect((await balance(donorB.usdc)) - before).to.equal(4_000_000);
+                expect(await balance(vaultOf(escrowOf(expiringDonations.proposal)))).to.equal(0);
+                await expectFailure(() => refund(donorB, expiringDonations.proposal, "e1"), "AlreadyRefunded");
+                expect((await balance(donorB.usdc)) - before).to.equal(4_000_000);
             });
         });
 
@@ -585,7 +536,7 @@ describe("proposal_pledge", () => {
         // an ATA for any owner, PDAs included. With `init` that pre-creation made create_donation_escrow
         // fail forever ("Provided owner is not allowed"), blocking donations; `init_if_needed` fixes it.
         it("still opens the escrow when someone pre-created its vault ATA", async () => {
-            const griefed = await newProposal("don-grief");
+            const griefed = await newAgreement("don-grief");
             await createAssociatedTokenAccountIdempotent(connection, attacker.kp, USDC, escrowOf(griefed.proposal), {}, TOKEN_PROGRAM_ID, ASSOCIATED_TOKEN_PROGRAM_ID, true);
             await createEscrow(griefed.proposal);
             expect((await program.account.donationEscrow.fetch(escrowOf(griefed.proposal))).beneficiary.toBase58())
@@ -598,7 +549,7 @@ describe("proposal_pledge", () => {
     // ========================
 
     describe("pledges", () => {
-        let executed: Prop, cancelled: Prop, other: Prop;
+        let executed: Subject, cancelled: Subject, other: Subject;
         let book: PublicKey, otherBook: PublicKey;
 
         const commitment = (proposal: PublicKey, owner: Party) =>
@@ -612,15 +563,15 @@ describe("proposal_pledge", () => {
         };
 
         before(async () => {
-            executed = await newProposal("plg-exec");
-            cancelled = await newProposal("plg-cancel");
-            other = await newProposal("plg-other");
+            executed = await newAgreement("plg-exec");
+            cancelled = await newAgreement("plg-cancel");
+            other = await newAgreement("plg-other");
             book = bookOf(executed.proposal);
             otherBook = bookOf(other.proposal);
         });
 
         describe("create_pledge_book", () => {
-            it("captures the proposal owner as beneficiary with empty aggregates", async () => {
+            it("captures the agreement's sponsor as beneficiary with empty aggregates", async () => {
                 await createBook(executed.proposal);
                 const b = await program.account.pledgeBook.fetch(book);
                 expect(b.proposal.toBase58()).to.equal(executed.proposal.toBase58());
@@ -631,7 +582,7 @@ describe("proposal_pledge", () => {
                 });
             });
 
-            it("rejects a second book for the same proposal (re-init)", async () => {
+            it("rejects a second book for the same agreement (re-init)", async () => {
                 await expectFailure(() => createBook(executed.proposal), ALREADY_IN_USE);
             });
 
@@ -639,13 +590,14 @@ describe("proposal_pledge", () => {
                 await expectFailure(() => createBook(other.proposal, { mint: fakeMint }), "InvalidMint");
             });
 
-            it("rejects a non-Proposal account", async () => {
-                await expectFailure(() => createBook(counterPDA), "InvalidProposalAccount");
+            it("rejects a subject that is not an agreement", async () => {
+                const lookalike = await writeAgreementLookalike(provider, { authority: creator.publicKey, lens: lens.publicKey });
+                await expectFailure(() => createBook(lookalike), "InvalidProposalAccount");
                 await expectFailure(() => createBook(creator.publicKey), "InvalidProposalAccount");
             });
 
-            it("rejects a proposal that is no longer Active", async () => {
-                const dead = await newProposal("plg-dead");
+            it("rejects an agreement that is no longer Active", async () => {
+                const dead = await newAgreement("plg-dead");
                 await cancel(dead);
                 await expectFailure(() => createBook(dead.proposal), "ProposalNotActive");
             });
@@ -687,7 +639,7 @@ describe("proposal_pledge", () => {
                 await expectFailure(() => setPledge(pledgerA, executed.proposal, 0), "ZeroAmount");
             });
 
-            it("rejects another proposal passed alongside the book", async () => {
+            it("rejects another agreement passed alongside the book", async () => {
                 await expectFailure(() => setPledge(pledgerA, other.proposal, 1_000_000, { book }), "InvalidProposalAccount");
             });
 
@@ -719,7 +671,7 @@ describe("proposal_pledge", () => {
                 expect(await bookState(executed.proposal)).to.include({ activePledged: 6_000_000, pledgeCount: 3, activeCount: 3 });
             });
 
-            it("rejects fulfil and void while the proposal is Active", async () => {
+            it("rejects fulfil and void while the agreement is Active", async () => {
                 await expectFailure(() => fulfill(pledgerA, executed.proposal), "ProposalNotExecuted");
                 await expectFailure(() => voidPledge(pledgerA.pk, executed.proposal), "ProposalNotRefundable");
             });
@@ -756,11 +708,11 @@ describe("proposal_pledge", () => {
                     "ConstraintAddress");
             });
 
-            it("rejects another proposal passed alongside the book", async () => {
+            it("rejects another agreement passed alongside the book", async () => {
                 await expectFailure(() => fulfill(pledgerB, other.proposal, { book }), "InvalidProposalAccount");
             });
 
-            it("moves exactly the pledged amount from pledger to beneficiary once", async () => {
+            it("moves exactly the pledged amount from pledger to the beneficiary, the sponsor, once", async () => {
                 const beneficiaryBefore = await balance(beneficiaryUsdc);
                 await fulfill(pledgerB, executed.proposal);
                 expect(await balance(pledgerB.usdc)).to.equal(USDC_FUNDING - 3_000_000);
@@ -778,7 +730,7 @@ describe("proposal_pledge", () => {
                 expect((await commitment(executed.proposal, pledgerC)).status).to.equal(COMMITMENT_ACTIVE);
             });
 
-            it("rejects voiding on an Executed proposal", async () => {
+            it("rejects voiding on an Executed agreement", async () => {
                 await expectFailure(() => voidPledge(pledgerA.pk, executed.proposal), "ProposalNotRefundable");
             });
         });
@@ -810,36 +762,24 @@ describe("proposal_pledge", () => {
             });
         });
 
-        describe("void_pledge (Expired fixture)", () => {
-            const expiredProposal = new PublicKey(fixtures.expiredProposal);
-            const expiredPledgerKp = loadKeypair("expired-pledger");
-            const expiredPledger = expiredPledgerKp.publicKey;
-            const expiredBeneficiary = new PublicKey(fixtures.expiredBeneficiary);
-            let fixturePledger: Party;
-
+        describe("void_pledge (Expired)", () => {
             before(async () => {
-                // Pre-create both ATAs so the unfunded fixture wallet only has to sign.
-                const usdc = await createAssociatedTokenAccountIdempotent(connection, payer, USDC, expiredPledger);
-                await createAssociatedTokenAccountIdempotent(connection, payer, USDC, expiredBeneficiary);
-                fixturePledger = { kp: expiredPledgerKp, pk: expiredPledger, usdc, fake: usdc };
+                await createBook(expiringPledges.proposal);
+                await setPledge(pledgerA, expiringPledges.proposal, 6_000_000);
+                await expire(expiringPledges);
             });
 
-            it("derives the fixture commitment the program expects", () => {
-                expect(bookOf(expiredProposal).toBase58()).to.equal(fixtures.expiredBook);
-                expect(commitmentOf(bookOf(expiredProposal), expiredPledger).toBase58()).to.equal(fixtures.expiredCommitment);
+            it("rejects new pledges and fulfilment on an Expired agreement", async () => {
+                await expectFailure(() => setPledge(pledgerB, expiringPledges.proposal, 1_000_000), "ProposalNotActive");
+                await expectFailure(() => fulfill(pledgerA, expiringPledges.proposal), "ProposalNotExecuted");
             });
 
-            it("rejects new pledges and fulfilment on an Expired proposal", async () => {
-                await expectFailure(() => setPledge(pledgerA, expiredProposal, 1_000_000), "ProposalNotActive");
-                await expectFailure(() => fulfill(fixturePledger, expiredProposal, { beneficiary: expiredBeneficiary }), "ProposalNotExecuted");
-            });
-
-            it("voids the active commitment once after expiry", async () => {
-                await voidPledge(expiredPledger, expiredProposal);
-                const c = await program.account.pledgeCommitment.fetch(new PublicKey(fixtures.expiredCommitment));
-                expect(c.status).to.equal(COMMITMENT_VOIDED);
-                expect(await bookState(expiredProposal)).to.include({ activePledged: 0, activeCount: 0 });
-                await expectFailure(() => voidPledge(expiredPledger, expiredProposal), "PledgeNotActive");
+            it("voids the active commitment once after expiry, moving no USDC", async () => {
+                await voidPledge(pledgerA.pk, expiringPledges.proposal);
+                expect((await commitment(expiringPledges.proposal, pledgerA)).status).to.equal(COMMITMENT_VOIDED);
+                expect(await bookState(expiringPledges.proposal)).to.include({ activePledged: 0, activeCount: 0, totalRevoked: 0 });
+                await expectFailure(() => voidPledge(pledgerA.pk, expiringPledges.proposal), "PledgeNotActive");
+                expect(await balance(pledgerA.usdc)).to.equal(USDC_FUNDING);
             });
         });
     });

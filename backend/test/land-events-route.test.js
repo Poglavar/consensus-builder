@@ -1,22 +1,22 @@
-// API contract tests for public oracle event reads and per-market recipe declarations.
-
+// API contract of the public oracle reads (routes/land-events.js): the recipe schema, the land_event DDL,
+// the court recipes and their external-market addresses, GET /oracle/events over the agreement lifecycle
+// oracle's events (agreement_lifecycle by default, agreement_executed; ?subject=, ?agreement=,
+// ?parcelUid=, ?limit=) and the privacy-preserving public-record summary.
 import fs from 'node:fs';
 import express from 'express';
 import request from 'supertest';
 import { describe, expect, it, vi } from 'vitest';
 import { setupLandEventsRoute } from '../routes/land-events.js';
 import { COURT_SCHEMA_V2 } from '../oracle/court-parcel-operation.js';
-import { PROPOSAL_PROGRAM_ID } from '../oracle/proposal-lifecycle.js';
-import { proposalAccountBytes } from './fixtures/proposal-account.js';
+import { AGREEMENT_PROGRAM_ID } from '../agreements/onchain.js';
+import { cidOf } from './helpers/content-fixtures.js';
 
-const PROPOSAL = 'Gsvt6nMhsvfrEDgvcqZDzPKZhhqACFEi3mueMxQNQ6UT';
-const MARKET = 'GDYnzduynKhKgxDhvvKVarn2s23DtzA26s6hycuUYDRB';
-const NOTARY = 'AMbsiP9F8YY2y8n9uFdqtw7yNZZHvTWFEWSQGHKtmkoQ';
+const ACCOUNT = 'Gsvt6nMhsvfrEDgvcqZDzPKZhhqACFEi3mueMxQNQ6UT';
+const CID = cidOf({ schema: 'agreement/v1', title: 'Corner lot' });
 
-// No test reaches devnet: the proposal account comes from this reader.
-function appFor(pool, readProposalAccount = async () => proposalAccountBytes({ lens: [NOTARY] })) {
+function appFor(pool) {
     const app = express();
-    setupLandEventsRoute(app, pool, { readProposalAccount });
+    setupLandEventsRoute(app, pool);
     return app;
 }
 
@@ -36,73 +36,28 @@ describe('land-event routes', () => {
         });
     });
 
-    it('ships an idempotent, source-timestamped event table owned by geo_user', () => {
+    it('ships an idempotent, source-timestamped event table owned by geo_user, one terminal event per agreement account', () => {
         const ddl = fs.readFileSync(new URL('../routes/land-events-ddl.sql', import.meta.url), 'utf8');
         expect(ddl).toMatch(/CREATE TABLE IF NOT EXISTS consensus\.land_event/);
         expect(ddl).toMatch(/source_observed_at\s+timestamptz NOT NULL/i);
         expect(ddl).toMatch(/source_hash\s+text NOT NULL/i);
-        expect(ddl).toMatch(/ALTER TABLE consensus\.land_event OWNER TO geo_user/);
-        // One lifecycle outcome per proposal; acceptances are many per proposal, keyed by event_id.
-        expect(ddl).toMatch(/CREATE UNIQUE INDEX IF NOT EXISTS land_event_lifecycle_outcome_uidx[\s\S]*WHERE event_type = 'proposal_lifecycle'/);
-        expect(ddl).toMatch(/DROP CONSTRAINT IF EXISTS land_event_event_type_subject_id_outcome_key/);
         expect(ddl).toMatch(/event_id\s+text PRIMARY KEY/);
+        expect(ddl).toMatch(/ALTER TABLE consensus\.land_event OWNER TO geo_user/);
+        expect(ddl).toMatch(/CREATE UNIQUE INDEX IF NOT EXISTS land_event_agreement_lifecycle_uidx\s+ON consensus\.land_event \(subject_id\)\s+WHERE event_type = 'agreement_lifecycle'/);
+        // The proposal rows written before stay; their index is kept and nothing writes them.
+        expect(ddl).toMatch(/CREATE UNIQUE INDEX IF NOT EXISTS land_event_lifecycle_outcome_uidx[\s\S]*WHERE event_type = 'proposal_lifecycle'/);
     });
 
-    it('returns the precommitted v1 recipe unchanged, without reading Solana', async () => {
-        const reader = vi.fn();
-        const res = await request(appFor({ query: vi.fn() }, reader))
-            .get(`/oracle/recipes/proposal-lifecycle-v1?proposal=${PROPOSAL}&market=${MARKET}`);
-        expect(res.status).toBe(200);
-        expect(res.body.recipe).toMatchObject({
-            id: 'proposal-lifecycle-v1', eventType: 'proposal_lifecycle',
-            subject: { proposalAccount: PROPOSAL, marketAccount: MARKET },
-            trustedAttesters: [{ kind: 'solana_program', address: PROPOSAL_PROGRAM_ID }],
-            outcomes: { executed: 'YES', cancelled: 'NO' }
-        });
-        expect(res.body.recipe.hash).toBe('sha256:4ee703c741d7d49844bf830dd550610be0b2aa0155ba9c694059b7914538e48d');
-        expect(reader).not.toHaveBeenCalled();
-    });
-
-    it('returns the v2 recipe with the proposal lens as trusted attesters', async () => {
-        const res = await request(appFor({ query: vi.fn() }))
-            .get(`/oracle/recipes/proposal-lifecycle-v2?proposal=${PROPOSAL}&market=${MARKET}`);
-        expect(res.status).toBe(200);
-        expect(res.body.recipe).toMatchObject({
-            id: 'proposal-lifecycle-v2', version: 2, eventType: 'proposal_lifecycle',
-            subject: { proposalAccount: PROPOSAL, marketAccount: MARKET },
-            outcomes: { executed: 'YES', cancelled: 'NO', expired: 'NO' }
-        });
-        expect(res.body.recipe.trustedAttesters).toEqual([
-            { kind: 'solana_program', address: PROPOSAL_PROGRAM_ID, role: 'enforces the proposal lens on chain' },
-            { kind: 'solana_sas_issuer', address: NOTARY, role: 'lens member' }
-        ]);
-        expect(res.body.recipe.hash).toMatch(/^sha256:[a-f0-9]{64}$/);
-    });
-
-    it('commits the v2 recipe hash to the proposal lens', async () => {
-        const url = `/oracle/recipes/proposal-lifecycle-v2?proposal=${PROPOSAL}`;
-        const notary = await request(appFor({ query: vi.fn() })).get(url);
-        const self = await request(appFor({ query: vi.fn() }, async () => proposalAccountBytes({ lens: [PROPOSAL_PROGRAM_ID] }))).get(url);
-        expect(notary.body.recipe.hash).not.toBe(self.body.recipe.hash);
-    });
-
-    it('answers 404 / 502 / 422 for a v2 recipe whose proposal account is missing, unreadable or lensless', async () => {
-        const url = `/oracle/recipes/proposal-lifecycle-v2?proposal=${PROPOSAL}`;
-        expect((await request(appFor({ query: vi.fn() }, async () => null)).get(url)).status).toBe(404);
-        expect((await request(appFor({ query: vi.fn() }, async () => { throw new Error('429'); })).get(url)).status).toBe(502);
-        expect((await request(appFor({ query: vi.fn() }, async () => Buffer.alloc(60))).get(url)).status).toBe(422);
-        expect((await request(appFor({ query: vi.fn() }, async () => proposalAccountBytes({ lens: [] }))).get(url)).status).toBe(422);
+    it('serves no proposal-lifecycle recipe any more', async () => {
+        const app = appFor({ query: vi.fn() });
+        for (const id of ['proposal-lifecycle-v1', 'proposal-lifecycle-v2']) {
+            expect((await request(app).get(`/oracle/recipes/${id}?proposal=${ACCOUNT}`)).status).toBe(404);
+        }
     });
 
     it('returns a court recipe and deterministic external-market address', async () => {
-        const res = await request(appFor({ query: vi.fn() }))
-            .get('/oracle/recipes/court-parcel-operation-v1')
-            .query({
-                parcelUid: 'HR-335347-1208/3',
-                yesOperation: 'transfer',
-                noOperation: 'no_event',
-                closesAt: '1790000000'
-            });
+        const query = { parcelUid: 'HR-335347-1208/3', yesOperation: 'transfer', noOperation: 'no_event', closesAt: '1790000000' };
+        const res = await request(appFor({ query: vi.fn() })).get('/oracle/recipes/court-parcel-operation-v1').query(query);
         expect(res.status).toBe(200);
         expect(res.body.recipe).toMatchObject({
             id: 'court-parcel-operation-v1',
@@ -112,14 +67,14 @@ describe('land-event routes', () => {
         });
         expect(res.body.recipe.hash).toMatch(/^sha256:[a-f0-9]{64}$/);
         expect(res.body.marketAccount).toMatch(/^[1-9A-HJ-NP-Za-km-z]{32,44}$/);
+        const again = await request(appFor({ query: vi.fn() })).get('/oracle/recipes/court-parcel-operation-v1').query(query);
+        expect(again.body).toEqual(res.body);
     });
 
     it('rejects incomplete or ambiguous court recipes', async () => {
-        const missing = await request(appFor({ query: vi.fn() }))
-            .get('/oracle/recipes/court-parcel-operation-v1');
+        const missing = await request(appFor({ query: vi.fn() })).get('/oracle/recipes/court-parcel-operation-v1');
         expect(missing.status).toBe(400);
         expect(missing.body.error).toMatch(/parcelUid/);
-
         const ambiguous = await request(appFor({ query: vi.fn() }))
             .get('/oracle/recipes/court-parcel-operation-v1')
             .query({ parcelUid: 'HR-x', yesOperation: 'same', noOperation: 'same', closesAt: '1790000000' });
@@ -130,12 +85,7 @@ describe('land-event routes', () => {
     it('declares a V2 court recipe with an on-chain source-time policy', async () => {
         const res = await request(appFor({ query: vi.fn() }))
             .get('/oracle/recipes/court-parcel-operation-v2')
-            .query({
-                parcelUid: 'HR-335347-1208/3',
-                yesOperation: 'transfer',
-                noOperation: 'no_event',
-                closesAt: '1790000000'
-            });
+            .query({ parcelUid: 'HR-335347-1208/3', yesOperation: 'transfer', noOperation: 'no_event', closesAt: '1790000000' });
         expect(res.status).toBe(200);
         expect(res.body.recipe).toMatchObject({
             id: 'court-parcel-operation-v2',
@@ -143,49 +93,10 @@ describe('land-event routes', () => {
             verification: {
                 schema: COURT_SCHEMA_V2,
                 kind: 'sas_court_parcel_operation_v2',
-                temporalIntegrity: {
-                    minimum: 'market_closes_at',
-                    maximum: 'resolution_time',
-                    enforcedBy: 'proposal_market'
-                }
+                temporalIntegrity: { minimum: 'market_closes_at', maximum: 'resolution_time', enforcedBy: 'proposal_market' }
             }
         });
         expect(res.body.marketAccount).toMatch(/^[1-9A-HJ-NP-Za-km-z]{32,44}$/);
-    });
-
-    it('reads bounded events and preserves source timestamps and hashes', async () => {
-        const pool = { query: vi.fn().mockResolvedValue({ rows: [{
-            event_id: 'event-1', event_type: 'proposal_lifecycle', subject_type: 'proposal',
-            subject_id: PROPOSAL, outcome: 'cancelled', source_url: 'https://explorer/address',
-            source_hash: 'sha256:abc', source_observed_at: '2026-09-20T01:00:00Z',
-            attester: 'program-1', transaction_signature: 'tx-1',
-            evidence: { source: { transactionUrl: 'https://explorer/tx' }, proposalStatusByte: 2 },
-            created_at: '2026-09-20T01:01:00Z'
-        }] }) };
-        const res = await request(appFor(pool)).get(`/oracle/events?subject=${PROPOSAL}&limit=500`);
-        expect(res.status).toBe(200);
-        expect(res.body.events[0]).toMatchObject({
-            outcome: 'cancelled', observedAt: '2026-09-20T01:00:00Z',
-            source: { hash: 'sha256:abc', transaction: 'tx-1', transactionUrl: 'https://explorer/tx' }
-        });
-        expect(pool.query.mock.calls[0][1]).toEqual(['proposal_lifecycle', PROPOSAL, 100]);
-    });
-
-    it('filters by the lens-model event types and rejects unknown ones', async () => {
-        const pool = { query: vi.fn().mockResolvedValue({ rows: [] }) };
-        const res = await request(appFor(pool)).get(`/oracle/events?type=proposal_acceptance&subject=${PROPOSAL}`);
-        expect(res.status).toBe(200);
-        expect(res.body.eventType).toBe('proposal_acceptance');
-        expect(pool.query.mock.calls[0][1]).toEqual(['proposal_acceptance', PROPOSAL, 25]);
-        const bad = await request(appFor(pool)).get('/oracle/events?type=anything');
-        expect(bad.status).toBe(400);
-    });
-
-    it('rejects malformed public keys before querying', async () => {
-        const pool = { query: vi.fn() };
-        const res = await request(appFor(pool)).get('/oracle/events?subject=not-a-key');
-        expect(res.status).toBe(400);
-        expect(pool.query).not.toHaveBeenCalled();
     });
 
     it('exposes privacy-preserving public-record oracle health and the public SAS schema', async () => {
@@ -204,9 +115,74 @@ describe('land-event routes', () => {
             marketIntegration: expect.stringContaining('live on devnet')
         });
         expect(res.body.schemaUrl).toContain('/address/schema-account?cluster=devnet');
-        expect(res.body.v2.schemaUrl).toContain('/address/G747jAqNr6ZwBiNAdeW1Bc4PWQH7arfvq5cjDXDcSoMG?cluster=devnet');
         expect(res.body).not.toHaveProperty('events');
-        expect(res.body).not.toHaveProperty('decisionUuid');
         expect(pool.query.mock.calls[0][0]).toMatch(/FROM court\.attestation/);
+    });
+});
+
+describe('GET /oracle/events', () => {
+    const lifecycleRow = {
+        event_id: `solana:devnet:agreement_lifecycle:${ACCOUNT}:executed`, event_type: 'agreement_lifecycle', subject_type: 'agreement',
+        subject_id: ACCOUNT, outcome: 'executed', source_url: `https://explorer.solana.com/address/${ACCOUNT}?cluster=devnet`,
+        source_hash: `sha256:${'ab'.repeat(32)}`, source_observed_at: '2026-10-22T07:30:00.000Z',
+        attester: AGREEMENT_PROGRAM_ID, transaction_signature: 'exec-tx',
+        evidence: { source: { chain: 'solana:devnet', transactionUrl: 'https://explorer.solana.com/tx/exec-tx?cluster=devnet', slot: 880 }, agreementCid: CID, account: ACCOUNT },
+        created_at: '2026-10-22T07:35:00.000Z'
+    };
+    const recording = (rows = [lifecycleRow]) => ({ query: vi.fn().mockResolvedValue({ rows }) });
+
+    it('reads the agreement lifecycle events by default, newest first, bounded, with the source\'s own time and hash', async () => {
+        const pool = recording();
+        const res = await request(appFor(pool)).get(`/oracle/events?subject=${ACCOUNT}&limit=500`);
+        expect(res.status).toBe(200);
+        expect(res.body).toEqual({
+            eventType: 'agreement_lifecycle', count: 1,
+            events: [{
+                id: lifecycleRow.event_id, eventType: 'agreement_lifecycle', subject: { type: 'agreement', id: ACCOUNT },
+                outcome: 'executed', observedAt: '2026-10-22T07:30:00.000Z', recordedAt: '2026-10-22T07:35:00.000Z',
+                attester: { kind: 'solana_program', address: AGREEMENT_PROGRAM_ID },
+                source: { url: lifecycleRow.source_url, hash: lifecycleRow.source_hash, transaction: 'exec-tx', ...lifecycleRow.evidence.source },
+                evidence: lifecycleRow.evidence
+            }]
+        });
+        const [sql, params] = pool.query.mock.calls[0];
+        expect(params).toEqual(['agreement_lifecycle', ACCOUNT, 100]);
+        expect(sql).toMatch(/WHERE event_type = \$1 AND subject_id = \$2\s+ORDER BY source_observed_at DESC\s+LIMIT \$3/);
+    });
+
+    it('serves the per-parcel execution entries and refuses any other type, the proposal ones included', async () => {
+        const pool = recording([]);
+        const res = await request(appFor(pool)).get('/oracle/events?type=agreement_executed');
+        expect([res.status, res.body.eventType]).toEqual([200, 'agreement_executed']);
+        expect(pool.query.mock.calls[0][1]).toEqual(['agreement_executed', 25]);
+        for (const type of ['proposal_lifecycle', 'proposal_acceptance', 'anything']) {
+            expect((await request(appFor(pool)).get(`/oracle/events?type=${type}`)).status, type).toBe(400);
+        }
+        expect(pool.query).toHaveBeenCalledTimes(1);
+    });
+
+    it('narrows to one agreement by its CID, and refuses what is not one before querying', async () => {
+        const pool = recording();
+        const res = await request(appFor(pool)).get(`/oracle/events?agreement=${CID}`);
+        expect(res.body.agreement).toBe(CID);
+        const [sql, params] = pool.query.mock.calls[0];
+        expect(sql).toMatch(/event_type = \$1 AND evidence->>'agreementCid' = \$2/);
+        expect(params).toEqual(['agreement_lifecycle', CID, 25]);
+        for (const query of ['?agreement=ag-1', '?agreement=', `?subject=not-a-key`, '?parcelUid=']) {
+            expect((await request(appFor(pool)).get(`/oracle/events${query}`)).status, query).toBe(400);
+        }
+        expect(pool.query).toHaveBeenCalledTimes(1);
+    });
+
+    it('filters to a parcel through the agreement program\'s events only, numbering every parameter', async () => {
+        const pool = recording([]);
+        const res = await request(appFor(pool)).get(`/oracle/events?type=agreement_executed&subject=${ACCOUNT}&agreement=${CID}&parcelUid=${encodeURIComponent('HR-1/1')}&limit=7`);
+        expect(res.status).toBe(200);
+        expect(res.body).toMatchObject({ count: 0, eventType: 'agreement_executed', agreement: CID, parcelUid: 'HR-1/1' });
+        const [sql, params] = pool.query.mock.calls[0];
+        expect(params).toEqual(['agreement_executed', ACCOUNT, CID, 'HR-1/1', 7]);
+        expect(sql).toContain(`attester = '${AGREEMENT_PROGRAM_ID}'`);
+        expect(sql).toMatch(/THEN subject_type = 'parcel' AND subject_id = \$4::text\s+ELSE evidence->'inputParcelIds' @> jsonb_build_array\(\$4::text\)/);
+        expect(sql).toMatch(/LIMIT \$5/);
     });
 });

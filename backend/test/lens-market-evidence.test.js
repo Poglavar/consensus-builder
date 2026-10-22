@@ -173,7 +173,7 @@ describe('lens member issueMarketEvidence', () => {
         const record = await member.issueMarketEvidence({ recipe: recipeOf(EVIDENCE), fact: factOf(EVIDENCE) });
         expect(record).toMatchObject({
             kind: 'evidence', authority: AUTHORITY, credential: member.credential, schema: member.schemas.evidence,
-            parcelUid: null, proposalAccount: null, owner: null, payload: EVIDENCE, reused: false,
+            parcelUid: null, owner: null, payload: EVIDENCE, reused: false,
             issuedAt: new Date(NOW * 1000).toISOString()
         });
         const bytes = issuer.accounts.get(record.address);
@@ -208,7 +208,7 @@ describe('lens member issueMarketEvidence', () => {
 });
 
 describe('POST /lens/market-evidence', () => {
-    it('is operator-only, like verdicts', async () => {
+    it('is operator-only, like agreement decisions', async () => {
         const { app, issuer } = setup();
         const anonymous = await request(app).post('/lens/market-evidence').send(EVIDENCE);
         expect(anonymous.status).toBe(401);
@@ -234,10 +234,10 @@ describe('POST /lens/market-evidence', () => {
         expect(listed.body.attestations.map(a => a.address)).toEqual([created.body.address]);
         const otherRecipe = await request(app).get('/lens/attestations').query({ recipeHash: `sha256:${'cd'.repeat(32)}` });
         expect(otherRecipe.body.attestations).toEqual([]);
-        expect((await request(app).get('/lens/attestations').query({ kind: 'verdict' })).body.attestations).toEqual([]);
+        expect((await request(app).get('/lens/attestations').query({ kind: 'decision' })).body.attestations).toEqual([]);
         expect((await request(app).get('/lens/attestations').query({ kind: 'court' })).status).toBe(400);
         const status = await request(app).get('/lens/status');
-        expect(status.body).toMatchObject({ kind: 'permit', counts: { evidence: 1, ownership: 0, verdict: 0 } });
+        expect(status.body).toMatchObject({ kind: 'permit', counts: { evidence: 1, ownership: 0, decision: 0, agreements: 0 } });
         expect(status.body.schemas.evidence).toBe('C9Cyyr5HcjUdbBBjsY84Tm1gvPsCrsprc2SPk2EoVjTD');
     });
 
@@ -261,12 +261,14 @@ describe('POST /lens/market-evidence', () => {
 describe('postgres store', () => {
     it('filters by recipe hash in the payload and counts evidence', async () => {
         const queries = [];
-        const pool = { query: async (sql, params) => { queries.push({ sql, params }); return { rows: [{ ownership: 0, verdict: 0, evidence: 2, parcels: 0, proposals: 0 }], rowCount: 0 }; } };
+        const pool = { query: async (sql, params) => { queries.push({ sql, params }); return { rows: [{ ownership: 0, decision: 1, evidence: 2, parcels: 0, agreements: 1 }], rowCount: 0 }; } };
         const store = createPgStore(pool);
         await store.list({ kind: 'evidence', recipeHash: RECIPE_HASH });
         expect(queries[0].sql).toContain("payload->>'recipeHash' = $5");
         expect(queries[0].params).toEqual([null, null, null, 'evidence', RECIPE_HASH, 200]);
-        expect(await store.counts()).toMatchObject({ evidence: 2 });
+        expect(await store.counts()).toEqual({ ownership: 0, decision: 1, evidence: 2, parcels: 0, agreements: 1 });
         expect(queries[1].sql).toContain("count(*) FILTER (WHERE kind = 'evidence')::int AS evidence");
+        // Agreements are counted by the CID their decisions name in the payload.
+        expect(queries[1].sql).toContain("count(DISTINCT payload->>'agreementCid') FILTER (WHERE kind = 'decision')::int AS agreements");
     });
 });

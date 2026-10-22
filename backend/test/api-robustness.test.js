@@ -3,13 +3,13 @@
 // Express 4 ignores the promise an async handler returns, so on Node 15+ a rejection outside a
 // try/catch exited the whole process: `GET /city-stats/snapshots?city=a&city=b` did it with
 // `.trim is not a function`. These tests drive the REAL app (createApp) so they exercise the
-// forwarding wrapper, the global error handler, the input caps and the Canton flag together.
+// forwarding wrapper, the global error handler, the input caps and the write gate together.
 
 import { EventEmitter } from 'node:events';
 import express from 'express';
 import request from 'supertest';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { createApp, installUnhandledRejectionLogger, isCantonEnabled, READ_ONLY_POST_PATHS } from '../index.js';
+import { createApp, installUnhandledRejectionLogger, READ_ONLY_POST_PATHS } from '../index.js';
 import { forwardAsyncErrors } from '../utils/async-routes.js';
 import { MAX_UNDER_VERTICES } from '../routes/parcels.js';
 import { setupParcelBgRoute } from '../routes/parcel-bg.js';
@@ -52,9 +52,12 @@ describe('async handler rejections reach the error handler', () => {
         expect(res.status).toBe(400);
     });
 
-    it('turns a rejecting handler into a 500 and keeps serving', async () => {
+    it('turns a failing query into a 500 and keeps serving', async () => {
         vi.spyOn(console, 'error').mockImplementation(() => { });
-        // GET /plans/:slug awaits pool.query with no try/catch of its own.
+        // Every route now catches its own query failures (the last one that did not, GET /plans/:slug,
+        // went with the named plans); a rejection that escapes a handler is checked on a bare wrapped
+        // app below.
+        const designPath = '/designs/bafkreibm6jg3ux5qumhcn2b3flc3tyu6dmlb4xa7u5bf44yegnrjhc4yeq';
         let fail = true;
         const pool = recordingPool(async () => {
             if (fail) throw new Error('database offline');
@@ -62,12 +65,12 @@ describe('async handler rejections reach the error handler', () => {
         });
         const server = app(pool);
 
-        const failed = await request(server).get('/plans/some-plan');
+        const failed = await request(server).get(designPath);
         expect(failed.status).toBe(500);
         expect(failed.body).toEqual({ error: 'Internal server error' });
 
         fail = false;
-        const next = await request(server).get('/plans/some-plan');
+        const next = await request(server).get(designPath);
         expect(next.status).toBe(404);
         const health = await request(server).get('/health');
         expect(health.status).toBe(200);
@@ -234,32 +237,65 @@ describe('the Origin gate lets read-only POSTs through and still stops writes', 
 
     it('still refuses a write without an Origin, before any SQL', async () => {
         const pool = recordingPool();
-        const res = await request(app(pool)).post('/proposals').send({ cadastreParcelIds: ['HR-335240-2379'] });
-
-        expect(res.status).toBe(403);
-        expect(res.body).toEqual({ error: 'Forbidden' });
+        const server = app(pool);
+        // The publish routes write (the index) or spend our pinning quota: none is a read.
+        for (const path of ['/designs', '/agreements', '/pins']) {
+            const res = await request(server).post(path).send({ cid: 'bafkreibm6jg3ux5qumhcn2b3flc3tyu6dmlb4xa7u5bf44yegnrjhc4yeq', content: {} });
+            expect(res.status, path).toBe(403);
+            expect(res.body, path).toEqual({ error: 'Forbidden' });
+        }
         expect(pool.calls).toHaveLength(0);
     });
 });
 
-describe('Canton flag', () => {
-    it('is off unless CANTON_ENABLED is exactly true', () => {
-        expect(isCantonEnabled({})).toBe(false);
-        expect(isCantonEnabled({ CANTON_ENABLED: 'false' })).toBe(false);
-        expect(isCantonEnabled({ CANTON_ENABLED: 'TRUE' })).toBe(true);
+// M2 (plan-design-agreement.md) removed every write into the proposal table and the named plans: the
+// routes are not registered at all, so each answers the app's 404, even with an allowed Origin.
+describe('removed publication routes', () => {
+    it.each([
+        ['post', '/proposals'], ['post', '/proposals/mirror'], ['post', '/proposals/prepare'], ['post', '/proposals/binding'],
+        ['post', '/agent/proposals'], ['post', '/agent/binding'], ['post', '/agent/prepare'],
+        ['patch', '/proposals/41/screenshot'], ['patch', '/proposals/41/epoch'], ['patch', '/proposals/epochs'], ['patch', '/proposals/41/name'],
+        ['get', '/proposals/41/binding-drift'], ['get', '/proposals/41/owner-decisions'], ['post', '/proposals/41/owner-decisions'],
+        ['post', '/proposals/41/owner-decisions/bundle'],
+        ['get', '/plans'], ['get', '/plans/borovje'], ['post', '/plans'], ['post', '/walrus/upload'], ['post', '/reparcellization/validate']
+    ])('%s %s is gone', async (method, path) => {
+        const pool = recordingPool();
+        const res = await request(app(pool))[method](path).set('Origin', 'http://localhost:5173').send({});
+        expect(res.status).toBe(404);
+        expect(pool.calls).toHaveLength(0);
     });
 
-    it('does not register /canton/* when disabled', async () => {
-        vi.spyOn(console, 'log').mockImplementation(() => { });
-        const server = app(recordingPool(), { CANTON_ENABLED: 'false' });
-
-        expect((await request(server).get('/canton/ledger-end')).status).toBe(404);
-        expect((await request(server).get('/canton/proposals?party=x')).status).toBe(404);
-        expect(console.log).toHaveBeenCalledWith(expect.stringMatching(/Canton disabled/));
+    it('lists the design reads, and no write, among the read-only POSTs', () => {
+        expect(READ_ONLY_POST_PATHS).toContain('/designs/batch');
+        expect(READ_ONLY_POST_PATHS).toContain('/designs/binding');
+        for (const write of ['/designs', '/agreements', '/pins', '/proposals', '/proposals/binding']) expect(READ_ONLY_POST_PATHS.has(write), write).toBe(false);
     });
+});
 
-    it('registers them again when enabled (validation answers without touching the ledger)', async () => {
+describe('removed routes', () => {
+    // The Canton routes were deleted in M3 (plan-design-agreement.md): no flag brings them back.
+    it('serves no /canton/* route, whatever CANTON_ENABLED says', async () => {
         const server = app(recordingPool(), { CANTON_ENABLED: 'true' });
-        expect((await request(server).get('/canton/proposals')).status).toBe(400);
+        expect((await request(server).get('/canton/ledger-end')).status).toBe(404);
+        expect((await request(server).get('/canton/proposals')).status).toBe(404);
+    });
+});
+
+describe('POST /agreements/:cid/onchain through the real app', () => {
+    const CID = 'bafkreibm6jg3ux5qumhcn2b3flc3tyu6dmlb4xa7u5bf44yegnrjhc4yeq';
+    const body = { chain: 'solana', cluster: 'devnet', account: '9C6hybhQ6Aycep9jaUnP6uL9ZYvDjUp1aSkFWPUFJtpj' };
+
+    it('is a write: refused without an allowed Origin before the route runs', async () => {
+        const pool = recordingPool();
+        const res = await request(app(pool, { NODE_ENV: 'production' })).post(`/agreements/${CID}/onchain`).send(body);
+        expect(res.status).toBe(403);
+        expect(pool.calls).toHaveLength(0);
+    });
+
+    it('reaches the route with an allowed Origin, which reads the index (an unknown agreement is 404)', async () => {
+        const pool = recordingPool();
+        const res = await request(app(pool)).post(`/agreements/${CID}/onchain`).set('Origin', 'https://urbangametheory.xyz').send(body);
+        expect([res.status, res.body.code]).toEqual([404, 'agreement-not-found']);
+        expect(pool.calls.map(call => call.params)).toEqual([[CID]]);
     });
 });

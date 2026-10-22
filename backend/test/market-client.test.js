@@ -1,7 +1,9 @@
-// Unit tests for frontend/js/solana/market-client.js — the pure client codec for the
-// proposal_market Anchor program. Everything here is byte-level: discriminators are re-derived from
-// sha256 and cross-checked against the generated IDL, account metas are compared against the IDL's
-// own writable/signer flags, and the payout math is run against the Rust unit tests' cases.
+// Unit tests for frontend/js/solana/market-client.js — the pure client codec for the parimutuel and
+// external markets of the proposal_market Anchor program, whose subject is now an agreement account
+// (plan-design-agreement.md, M3; the `proposal` option and field name it). Everything here is
+// byte-level: discriminators are re-derived from sha256 and cross-checked against the generated IDL
+// (which also lists the program's LMSR market, encoded elsewhere), account metas are compared against
+// the IDL's own writable/signer flags, and the payout math is run against the Rust unit tests' cases.
 import { describe, it, expect, afterEach } from 'vitest';
 import { createRequire } from 'node:module';
 import { createHash } from 'node:crypto';
@@ -29,6 +31,7 @@ const { SIDE_NO, SIDE_YES, TOKEN_PROGRAM_ID, ASSOCIATED_TOKEN_PROGRAM_ID } = mar
 function keyOf(byte) {
     return new PublicKey(Uint8Array.from({ length: 32 }, () => byte)).toBase58();
 }
+// The market's subject: an agreement account of the agreement program.
 const PROPOSAL = keyOf(7);
 const STAKE_MINT = keyOf(11);
 const WALLET = keyOf(23);
@@ -87,13 +90,23 @@ describe('discriminators', () => {
         }
     });
 
+    // The program also hosts the LMSR market (lmsr-market.md), whose instructions and account this
+    // client does not encode; anything else the IDL lists, it must.
+    const LMSR_INSTRUCTIONS = ['buy', 'claim_lmsr', 'create_lmsr_external_market', 'create_lmsr_market', 'reclaim_seed', 'resolve_lmsr', 'sell'];
+    const LMSR_ACCOUNTS = ['LmsrMarket'];
+
     it('matches the generated IDL file', () => {
-        for (const ix of IDL.instructions) {
-            expect(bytesOf(market.IX_DISCRIMINATORS[ix.name]), ix.name).toEqual(ix.discriminator);
+        const idlIx = new Map(IDL.instructions.map(ix => [ix.name, ix.discriminator]));
+        for (const [name, bytes] of Object.entries(market.IX_DISCRIMINATORS)) {
+            expect(idlIx.has(name), `${name} is not in the IDL`).toBe(true);
+            expect(bytesOf(bytes), name).toEqual(idlIx.get(name));
         }
-        for (const account of IDL.accounts) {
-            expect(bytesOf(market.ACCOUNT_DISCRIMINATORS[account.name]), account.name).toEqual(account.discriminator);
+        const idlAccounts = new Map(IDL.accounts.map(account => [account.name, account.discriminator]));
+        for (const [name, bytes] of Object.entries(market.ACCOUNT_DISCRIMINATORS)) {
+            expect(bytesOf(bytes), name).toEqual(idlAccounts.get(name));
         }
+        expect([...idlIx.keys()].filter(name => !market.IX_DISCRIMINATORS[name]).sort()).toEqual(LMSR_INSTRUCTIONS);
+        expect([...idlAccounts.keys()].filter(name => !market.ACCOUNT_DISCRIMINATORS[name])).toEqual(LMSR_ACCOUNTS);
     });
 
     it('exposes the IDL program address and the well-known program ids', () => {
@@ -106,7 +119,7 @@ describe('discriminators', () => {
 });
 
 describe('PDA derivation', () => {
-    it('derives the market PDA from ["market", proposal] and is deterministic', () => {
+    it('derives the market PDA from ["market", agreement account] and is deterministic', () => {
         const [pda, bump] = market.getMarketPda(PROPOSAL);
         const [expected, expectedBump] = PublicKey.findProgramAddressSync(
             [Buffer.from('market'), new PublicKey(PROPOSAL).toBytes()],
@@ -354,7 +367,7 @@ describe('external market instruction builders', () => {
 });
 
 describe('buildResolveIx', () => {
-    it('carries market(w) and proposal in IDL order with no args', () => {
+    it('carries market(w) and the agreement account in IDL order with no args', () => {
         const ix = market.buildResolveIx({ proposal: PROPOSAL });
         const names = idlFlags('resolve').map(a => a.name);
         expect(actualFlags(ix, names)).toEqual(idlFlags('resolve'));
@@ -600,14 +613,14 @@ describe('readMarket / readPosition', () => {
         await expect(market.readMarket(null, PROPOSAL)).rejects.toThrow(/connection/);
     });
 
-    it('rejects market accounts owned by another program or naming another proposal', async () => {
+    it('rejects market accounts owned by another program or naming another agreement', async () => {
         const data = encodeMarketAccount({ proposal: PROPOSAL, stakeMint: STAKE_MINT, vault: WALLET,
             yesPool: 10n, noPool: 20n, resolved: false, outcome: 0, bump: 250 });
         const connection = { getAccountInfo: async () => ({ data, owner: new PublicKey(WALLET) }) };
         await expect(market.readMarket(connection, PROPOSAL)).rejects.toThrow('another program');
         new PublicKey(WALLET).toBuffer().copy(data, 8);
         connection.getAccountInfo = async () => ({ data, owner: new PublicKey(market.constants.PROGRAM_ID) });
-        await expect(market.readMarket(connection, PROPOSAL)).rejects.toThrow('another proposal');
+        await expect(market.readMarket(connection, PROPOSAL)).rejects.toThrow('names another agreement');
     });
 
     it('validates position program, market, owner and side in single and batched reads', async () => {

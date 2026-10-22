@@ -1,6 +1,8 @@
 // The reference lens member (lens-model.md, "Reference lens member") as a library: one key, one SAS
-// credential, issuing ParcelOwnership-v1, ProposalVerdict-v1 and MarketEvidence-v1 attestations. Identity proof, the
-// SAS issuer, the attestation store and the clock are injected, so every rule here runs headless.
+// credential, issuing ParcelOwnership-v1, AgreementDecision-v1 and MarketEvidence-v1 attestations.
+// Identity proof, the SAS issuer, the attestation store and the clock are injected, so every rule here
+// runs headless. Which decision an agreement gets is decided before this (agreement-decision.js); the
+// member only issues it, at most one decision per agreement.
 
 import { createHash } from 'node:crypto';
 import { Keypair, PublicKey } from '@solana/web3.js';
@@ -13,9 +15,9 @@ import {
     encodeLensPayload,
     parseLensAttestation,
     sha256Hex,
+    validateDecision,
     validateMarketEvidence,
-    validateOwnership,
-    validateVerdict
+    validateOwnership
 } from '../oracle/lens-schemas.js';
 import { LensError, lensLog } from './errors.js';
 
@@ -71,13 +73,13 @@ export function ownershipFromOwnerSet(rows, { parcelUid, owner }) {
 
 function schemaAddresses(credential) {
     const derive = kind => deriveSchemaPda({ credential, name: LENS_SCHEMAS[kind].name, version: LENS_SCHEMAS[kind].version });
-    return { ownership: derive('ownership'), verdict: derive('verdict'), evidence: derive('evidence') };
+    return { ownership: derive('ownership'), decision: derive('decision'), evidence: derive('evidence') };
 }
 
 // What an issued attestation states, for its log line.
 function describeFact(kind, fields) {
     if (kind === 'ownership') return `parcel ${fields.parcelUid}, owner ${fields.owner}`;
-    if (kind === 'verdict') return `proposal ${fields.proposalAccount}, ${fields.verdict}`;
+    if (kind === 'decision') return `agreement ${fields.agreementCid} of ${fields.sponsor}, ${fields.decision}`;
     return `recipe ${fields.recipeHash}, "${fields.value}", event ${new Date(fields.eventTime * 1000).toISOString()}`;
 }
 
@@ -138,7 +140,6 @@ export function createLensMember({
             schema,
             authority,
             parcelUid: fields.parcelUid ?? null,
-            proposalAccount: fields.proposalAccount ?? null,
             owner: fields.owner ?? null,
             payload: decodeLensPayload(schemaKind, account.payload),
             accountHash: sha256Hex(result.accountBytes),
@@ -237,15 +238,25 @@ export function createLensMember({
             return issue('ownership', plan.fields, plan.nonce, { payment });
         },
 
-        async attestVerdict({ proposalAccount, verdict, evidenceRef, sourceObservedAt }) {
-            const fields = { proposalAccount, verdict, evidenceRef, sourceObservedAt };
+        // The AgreementDecision this member already issued for the agreement (agreementCid, sponsor),
+        // whatever its decision and source time, or null. The program records only the first decision
+        // an account receives, so the member issues at most one per agreement.
+        async findDecision({ agreementCid, sponsor }) {
+            const records = await store.list({ kind: 'decision', agreementCid, limit: 50 });
+            return records.find(record => record.authority === authority && record.payload?.sponsor === sponsor) ?? null;
+        },
+
+        // Issues AgreementDecision-v1 (programs/agreement/README.md). The nonce is deterministic per
+        // (agreement, sponsor, decision, source time), so a retry lands on the same attestation address.
+        async attestDecision({ agreementCid, sponsor, decision, evidenceRef, sourceObservedAt }) {
+            const fields = { agreementCid, sponsor, decision, evidenceRef, sourceObservedAt };
             try {
-                validateVerdict(fields, { nowSeconds: clock.nowSeconds() });
+                validateDecision(fields, { nowSeconds: clock.nowSeconds() });
             } catch (error) {
-                throw new LensError(422, 'invalid_verdict', error.message);
+                throw new LensError(422, 'invalid_decision', error.message);
             }
-            const nonce = factNonce([LENS_SCHEMAS.verdict.id, proposalAccount, verdict, sourceObservedAt]);
-            return issue('verdict', fields, nonce, {});
+            const nonce = factNonce([LENS_SCHEMAS.decision.id, agreementCid, sponsor, decision, sourceObservedAt]);
+            return issue('decision', fields, nonce, {});
         },
 
         async issueMarketEvidence({ recipe, fact } = {}) {

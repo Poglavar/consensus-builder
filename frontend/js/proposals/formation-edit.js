@@ -315,89 +315,6 @@
         }
     }
 
-    // §15c severance test (drawing-board rules 2/3; footprint ruling 2026-08-07): a proposal's
-    // footprint must stay ONE connected piece through any amendment. A taking that fully
-    // consumes the pool, or leaves it in more than one meaningful part, SEVERS the
-    // readjustment — it is destroyed and the taker applies against the cadastre beneath.
-    // Anything less is rule 3: the cut REDUCES output parcels, SPLITS one into two output
-    // parcels, or destroys those fully under it, without touching the readjustment's life.
-    // Sub-sliver crumbs below minPartM2 never count as parts.
-    // Returns { verdict: 'unaffected' | 'reduced' | 'severed', touchedPlots, destroyedPlots }.
-    function severanceVerdict(plan, poolGeometry, takenFootprint, ctx, options) {
-        const opts = options || {};
-        const minPartM2 = Number.isFinite(opts.minPartM2) ? opts.minPartM2 : 1;
-        const taken = asFeature(takenFootprint);
-        const out = { verdict: 'unaffected', touchedPlots: 0, destroyedPlots: 0, splitPlots: 0 };
-        if (!taken || !ctx || typeof ctx.difference !== 'function') return out;
-
-        const meaningfulParts = geometry => {
-            if (!geometry) return 0;
-            const polys = geometry.type === 'MultiPolygon'
-                ? geometry.coordinates.map(coords => ({ type: 'Polygon', coordinates: coords }))
-                : [geometry];
-            return polys.filter(poly => safeArea(ctx, { type: 'Feature', properties: {}, geometry: poly }) >= minPartM2).length;
-        };
-        const clipParts = geometry => {
-            const feature = asFeature(geometry);
-            if (!feature) return null;
-            const overlap = safeIntersectionArea(ctx, feature, taken);
-            if (overlap < MIN_DELTA_PIECE_M2) return { touched: false, parts: meaningfulParts(feature.geometry) };
-            let diff = null;
-            // A difference that throws is not "consumed": the severance verdict would be invented.
-            try { diff = ctx.difference(feature, taken); } catch (error) {
-                throw clipFailureApi().clipFailure('difference', error, { site: 'formation-edit.severanceVerdict' }, [feature, taken]);
-            }
-            return { touched: true, parts: diff && diff.geometry ? meaningfulParts(diff.geometry) : 0 };
-        };
-
-        let touched = false;
-        let poolFragmented = false;
-        let poolConsumed = false;
-
-        const pool = clipParts(poolGeometry);
-        if (pool && pool.touched) {
-            touched = true;
-            if (pool.parts > 1) poolFragmented = true;
-            if (pool.parts === 0) poolConsumed = true; // the whole domain taken
-        }
-
-        const polygons = plan && Array.isArray(plan.polygons) ? plan.polygons : [];
-        polygons.forEach(slice => {
-            const result = clipParts(slice && slice.geometry);
-            if (!result || !result.touched) return;
-            touched = true;
-            out.touchedPlots += 1;
-            if (result.parts === 0) out.destroyedPlots += 1;      // fully under the cut — rule 3
-            else if (result.parts > 1) out.splitPlots += 1;        // an output parcel cut in two
-        });
-
-        // Severance is purely geometric (ruling 2026-08-07): the footprint may shrink but never
-        // disconnect. A fragmented or consumed pool severs regardless of what happened to
-        // individual plots; a plot split while the domain holds together stays rule 3 (the plot
-        // becomes two contiguous output parcels).
-        const severed = poolConsumed || poolFragmented;
-        out.verdict = severed ? 'severed' : (touched ? 'reduced' : 'unaffected');
-        return out;
-    }
-
-    // The reparcellization form of the §15b amendment: the plan's authored plots lose the taken
-    // ground. The plots ARE the plan (the §14.2 pool and remainders re-derive from them at
-    // apply), so amending the polygons amends the readjustment.
-    function amendReparcellizationPlanByTaking(plan, takenFootprint, ctx, options) {
-        const polygons = plan && Array.isArray(plan.polygons) ? plan.polygons : null;
-        if (!polygons || !polygons.length) {
-            return { changed: false, polygons: polygons || [], takenAreaM2: 0, removedCount: 0, splitCount: 0 };
-        }
-        const result = clipPiecesByTaking(polygons, takenFootprint, ctx, options);
-        return {
-            changed: result.changed,
-            polygons: result.pieces,
-            takenAreaM2: result.takenAreaM2,
-            removedCount: result.removedCount,
-            splitCount: result.splitCount
-        };
-    }
-
     // Unique base cadastral ids under a set of features — the flat declaration a formation writes
     // (`cadastreParcelIds`). A synthetic feature can span several original parcels, so its complete
     // `cadastreParcelIds` is authoritative; a raw cadastral feature may identify itself directly.
@@ -507,8 +424,6 @@
         overlappingBaseIds,
         applyCarriedIdentity,
         clipPiecesByTaking,
-        amendReparcellizationPlanByTaking,
-        severanceVerdict,
         trimCenterlineByTaking,
         corridorComponents,
         corridorWidthMeters,

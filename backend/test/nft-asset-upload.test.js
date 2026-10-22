@@ -1,11 +1,10 @@
-// /ipfs/upload and /walrus/upload pin content on OUR paid storage accounts. They used to be open
-// relays (origin check only, 15 MB of anything); these lock them to what the mint flows send: a
-// sniffed PNG/JPEG/WEBP within a size cap, ERC-721-style metadata, and a per-IP rate limit.
+// /ipfs/upload pins content on OUR paid storage account. It used to be an open relay (origin
+// check only, 15 MB of anything); these lock it to what the mint flows send: a sniffed
+// PNG/JPEG/WEBP within a size cap, ERC-721-style metadata, and a per-IP rate limit.
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import request from 'supertest';
 import { setupIpfsRoute } from '../routes/ipfs.js';
-import { setupWalrusRoute } from '../routes/walrus.js';
 import { createRouteApp } from './helpers/create-route-app.js';
 import { MAX_UPLOAD_IMAGE_BYTES, UPLOAD_RATE_MAX, validateNftMetadata } from '../utils/nft-asset-upload.js';
 
@@ -35,8 +34,7 @@ const proposalMetadata = () => ({
 });
 
 const ROUTES = [
-    ['ipfs', setupIpfsRoute, '/ipfs/upload'],
-    ['walrus', setupWalrusRoute, '/walrus/upload']
+    ['ipfs', setupIpfsRoute, '/ipfs/upload']
 ];
 
 afterEach(() => {
@@ -52,7 +50,7 @@ describe.each(ROUTES)('%s relay guard', (_name, setup, path) => {
         process.env.PINATA_API_SECRET = 's';
         app = createRouteApp(setup);
         app.set('trust proxy', true); // req.ip from X-Forwarded-For, as behind prod's one trusted hop
-        fetchMock = vi.fn(async () => ({ ok: true, json: async () => ({ IpfsHash: 'h', newlyCreated: { blobObject: { id: 'o', blobId: 'b', storage: { endEpoch: 1 } }, cost: 1 } }) }));
+        fetchMock = vi.fn(async () => ({ ok: true, json: async () => ({ IpfsHash: 'h' }) }));
         vi.stubGlobal('fetch', fetchMock);
     });
 

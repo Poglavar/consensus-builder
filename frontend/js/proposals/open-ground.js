@@ -101,13 +101,12 @@
      * declaration is empty, or whose binding says part of the site is on no parcel (coverage
      * partial/none). A declared record with coverage complete/unknown or no binding at all keeps
      * the cadastre-only behaviour: `unknown` is a city whose cadastre the server does not hold, and
-     * its declaration is all we know. Parcel acts never stand on open ground.
+     * its declaration is all we know. A record with neither a site nor a footprint stands on no ground.
      */
     function hasOpenGround(record, options) {
         if (!record || typeof record !== 'object') return false;
         const sb = siteBindingApi(options);
         if (!sb) return false;
-        if (typeof sb.isParcelAct === 'function' && sb.isParcelAct(record)) return false;
         if (declaredIdsOf(record).length) {
             const coverage = record.binding && typeof record.binding === 'object' ? record.binding.coverage : null;
             if (coverage !== 'partial' && coverage !== 'none') return false;
@@ -118,8 +117,8 @@
 
     // A browser visitor may explicitly explore without a parcel source. This view is used only
     // while deriving local geometry; the authored record and its cadastral declaration stay in
-    // storage unchanged. A parcel act (or a record with no site of its own) has no honest ground
-    // to project and must still refuse application.
+    // storage unchanged. A record with no site or footprint of its own has no honest ground to
+    // project and must still refuse application.
     function geometryOnlyGroundRecord(record, options) {
         const sb = siteBindingApi(options);
         if (!record || !sb || typeof sb.requiresParcels !== 'function'

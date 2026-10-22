@@ -54,9 +54,11 @@ describe('hasOpenGround', () => {
         expect(openGround.hasOpenGround(park({ cadastreParcelIds: ['HR-1'] }))).toBe(false);
     });
 
-    it('is never true for a parcel act', () => {
-        expect(openGround.hasOpenGround({ proposalId: 'o', goal: 'offer', cadastreParcelIds: [] })).toBe(false);
-        expect(openGround.hasOpenGround(park({ kind: 'owner-vote' }))).toBe(false);
+    it('follows the ground alone, never the goal or the kind: a design is not an act on parcels', () => {
+        expect(openGround.hasOpenGround(park({ kind: 'owner-vote' }))).toBe(true);
+        expect(openGround.hasOpenGround(park({ goal: 'urban-rule' }))).toBe(true);
+        // A record with neither a site nor a footprint stands on no ground at all.
+        expect(openGround.hasOpenGround({ proposalId: 'o', goal: 'urban-rule', cadastreParcelIds: [] })).toBe(false);
     });
 });
 
@@ -166,7 +168,7 @@ describe('a ground piece is never a cadastral parcel', () => {
         const facts = { parcelId: 'p-1', isGround: true, historyIds: [], siteToolAvailable: true, can3d: true, blocksEnabled: true };
         expect(menuModel.availableActions(facts)).toEqual(['details', 'useAsSite']);
         expect(menuModel.availableActions({ ...facts, isGround: false, historyIds: ['HR-1'] }))
-            .toEqual(expect.arrayContaining(['offer', 'history', 'propose', 'detectBlock']));
+            .toEqual(expect.arrayContaining(['history', 'propose', 'detectBlock']));
     });
 });
 

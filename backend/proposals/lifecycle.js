@@ -12,22 +12,6 @@ export function canonicalizeLifecycleStatus(value, options = {}) {
     return CANONICAL_BY_NORMALIZED.get(normalized) || null;
 }
 
-export function resolveIncomingLifecycleStatus(payload = {}) {
-    const hasExplicit = payload.lifecycleStatus !== undefined && payload.lifecycleStatus !== null;
-    const raw = hasExplicit ? payload.lifecycleStatus : payload.status;
-    const status = canonicalizeLifecycleStatus(raw, {
-        allowLegacyApplicationWords: !hasExplicit,
-        fallback: 'Active'
-    });
-    if (!status) {
-        return {
-            ok: false,
-            error: `lifecycleStatus must be one of: ${LIFECYCLE_STATUSES.join(', ')}.`
-        };
-    }
-    return { ok: true, value: status };
-}
-
 export function effectiveLifecycleStatus(value, expiresAt, now = new Date()) {
     const canonical = canonicalizeLifecycleStatus(value);
     // Unknown is a read result, not a lifecycle that clients may assign to a new proposal.

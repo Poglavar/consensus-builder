@@ -1,6 +1,6 @@
-// Headless checks for three frontend audit fixes: an explicit ?lang= survives the profile modal,
-// the phone proposal list folds its filters (and never autofocuses search on touch), and a
-// disabled Canton makes no /canton requests and offers no Canton network option.
+// Headless checks for two frontend audit fixes: an explicit ?lang= survives the profile modal, and
+// the phone proposal list folds its filters (and never autofocuses search on touch). The third, a
+// disabled Canton making no requests, went with the Canton mode itself (plan-design-agreement.md, M3).
 import { describe, expect, it, vi } from 'vitest';
 import { createRequire } from 'node:module';
 import { readFileSync } from 'node:fs';
@@ -103,37 +103,5 @@ describe('phone proposal list', () => {
         expect(block).not.toBeNull();
         expect(block[1]).toMatch(/\.proposal-filters-toggle-row\s*{\s*display: flex/);
         expect(block[1]).toMatch(/\.proposal-list-controls\.is-collapsed\s*{\s*display: none;/);
-    });
-});
-
-describe('Canton disabled', () => {
-    const modules = ['canton-mode.js', 'canton-counts.js', 'canton-parcel.js', 'canton-explorer.js'];
-
-    it('environment.js defaults CANTON_ENABLED to false', () => {
-        expect(read('../../frontend/js/environment.js')).toMatch(/window\.CANTON_ENABLED = false;/);
-    });
-
-    it.each(modules)('%s defines no global and makes no request when disabled', (file) => {
-        const fetch = vi.fn();
-        const warn = vi.spyOn(console, 'warn').mockImplementation(() => { });
-        const win = {
-            CANTON_ENABLED: false,
-            fetch,
-            location: { search: '' },
-            addEventListener: vi.fn(),
-            document: { readyState: 'complete', addEventListener: vi.fn(), querySelector: () => null, getElementById: () => null }
-        };
-        const before = new Set(Object.keys(win));
-        runClassicScript(`../../frontend/js/canton/${file}`, win);
-        expect(Object.keys(win).filter(k => !before.has(k))).toEqual([]);
-        expect(fetch).not.toHaveBeenCalled();
-        expect(warn).not.toHaveBeenCalled();
-        warn.mockRestore();
-    });
-
-    it('the network picker offers Canton only when enabled', () => {
-        const um = read('../../frontend/js/user-management.js');
-        expect(um).toMatch(/function cantonChainOptions\(\)\s*{\s*return \(window\.CANTON_ENABLED === true && window\.CantonMode\)/);
-        expect(um).not.toMatch(/push\(CANTON_CHAIN_OPTION\)|, CANTON_CHAIN_OPTION\]/);
     });
 });

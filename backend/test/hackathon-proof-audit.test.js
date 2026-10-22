@@ -1,137 +1,99 @@
+// The read-only public hackathon proof audit (agents/hackathon-proof-audit.js) over the HTTP contracts a
+// judge sees, served here by a fetch double: oracle-fact discovery, scheduled runs and their on-chain
+// actions, the agreement lifecycle oracle, the court and prospective markets, the release manifest, the
+// declared agreement cases (GET /hackathon/cases/:cid) and attester diversity.
 import { describe, expect, it, vi } from 'vitest';
-import { auditHackathonProof, exactResource } from '../agents/hackathon-proof-audit.js';
-import { runOpenGroundAudit } from '../oracle/open-ground-audit.js';
-import { proposalAccountBytes } from './fixtures/proposal-account.js';
-import { createMockPool } from './helpers/mock-pool.js';
+import { auditHackathonProof, exactResource, validateProspectiveSettlement } from '../agents/hackathon-proof-audit.js';
+import { cidOfObject } from '../cid.js';
 
 const BASE = 'https://api.example.test';
+const NOW = Date.parse('2026-09-21T12:00:00Z');
+const CANONICAL = cidOfObject({ schema: 'agreement/v1', title: 'Canonical case' });
+const EXECUTED = cidOfObject({ schema: 'agreement/v1', title: 'Executed case' });
+const stagesAll = state => ['agreement', 'support', 'forecast', 'decision', 'evidence', 'resolution', 'settlement'].map(id => ({ id, state }));
 
 function fixtures(overrides = {}) {
-    const proposerTx = 'proposer-transaction';
-    const supporterTx = 'supporter-transaction';
     return {
         '/docs/agents.json': {
             oracle: { externalMarket: {
                 status: 'live_devnet', proofMarket: 'market', proofResolution: 'resolution', proofClaim: 'claim',
-                proof: {
-                    create: 'create', yesStake: 'yes', noStake: 'no',
-                    chronology: { classification: 'retrospective_integration' }
-                },
+                proof: { create: 'create', yesStake: 'yes', noStake: 'no', chronology: { classification: 'retrospective_integration' } },
                 prospectiveProof: {
                     status: 'market_open_awaiting_post_close_evidence', market: 'prospective-market',
-                    closesAt: '2026-09-22T21:00:00.000Z',
-                    transactions: { create: 'pc', yesStake: 'py', noStake: 'pn' }
+                    closesAt: '2026-09-22T21:00:00.000Z', transactions: { create: 'pc', yesStake: 'py', noStake: 'pn' }
                 }
             } }
         },
-        '/agent/discovery': { state: 'listed', listing: { resource: `${BASE}/agent/proposals` } },
         '/agent/discovery?resource=oracle-facts': { state: 'listed', listing: { resource: `${BASE}/agent/oracle/facts` } },
         '/agent/runs?limit=50': { runs: [
             { id: 'proposer', controller: 'algorithm', role: 'proposer', status: 'done', updatedAt: '2026-09-21T10:00:00Z' },
-            { id: 'supporter', controller: 'algorithm', role: 'supporter', status: 'done', updatedAt: '2026-09-21T11:00:00Z', support: { type: 'pledge', proposalId: 'p1', signature: supporterTx } }
+            { id: 'supporter', controller: 'algorithm', role: 'supporter', status: 'done', updatedAt: '2026-09-21T11:00:00Z',
+                support: { type: 'pledge', agreementCid: CANONICAL, account: 'canonical-account', signature: 'supporter-transaction' } }
         ] },
         '/agent/activity?limit=200': { events: [
-            { runId: 'proposer', transaction: proposerTx, recordedAt: '2026-09-21T10:00:00Z', action: { type: 'stake' } },
-            { runId: 'supporter', transaction: supporterTx, recordedAt: '2026-09-21T11:00:00Z', action: { type: 'pledge' } },
-            { runId: 'proposer-mint', transaction: 'mint-tx', recordedAt: '2026-09-20T10:00:00Z',
-                actor: { wallet: 'proposer-wallet' }, action: { type: 'create', proposalId: 'p2' } }
+            { runId: 'proposer', transaction: 'proposer-transaction', recordedAt: '2026-09-21T10:00:00Z', action: { type: 'mint' },
+                actor: { controller: 'algorithm' } },
+            { runId: 'supporter', transaction: 'supporter-transaction', recordedAt: '2026-09-21T11:00:00Z', action: { type: 'pledge' } },
+            { actor: { kind: 'human' }, action: { type: 'donate' }, transaction: 'human-donation' },
+            { actor: { kind: 'human' }, action: { type: 'stake', side: 'YES' }, transaction: 'human-stake' },
+            { actor: { controller: 'llm' }, action: { type: 'stake', side: 'no' }, transaction: 'llm-stake' },
+            { action: { type: 'resolve' }, transaction: 'resolve-tx' }
         ] },
-        '/proposals/p2': { proposalId: 'p2', lens: [{ address: 'notary-key', name: 'notary-01' }], onchain: {} },
-        '/lenses/members': { members: [
-            { key: 'notary-key', kind: 'notary', name: 'notary-01', coverage: { ownership: 3, parcels: 2, executed: 1 } },
-            { key: 'cadastre-key', kind: 'cadastre', name: 'cadastre', coverage: { ownership: 1, parcels: 1, executed: 0 } },
-            { key: 'idle-key', kind: 'court', name: 'idle', coverage: { ownership: 0, parcels: 0, executed: 0 } }
-        ] },
-        '/oracle/events?limit=25': { events: [{
-            id: 'event-1', eventType: 'proposal_lifecycle', outcome: 'cancelled', recordedAt: '2026-09-21T11:30:00Z',
+        '/oracle/events?type=agreement_lifecycle&limit=25': { events: [{
+            id: 'event-1', eventType: 'agreement_lifecycle', outcome: 'executed', recordedAt: '2026-09-21T11:30:00Z',
             source: { hash: `sha256:${'a'.repeat(64)}`, transaction: 'oracle-transaction' }
         }] },
-        '/oracle/public-records/summary': {
-            attestations: 62, decisions: 29, schemaId: 'schema',
-            v2: { status: 'live_devnet', attestations: 5 }
-        },
+        '/oracle/public-records/summary': { attestations: 62, decisions: 29, schemaId: 'schema', v2: { status: 'live_devnet', attestations: 5 } },
         '/hackathon/proof.json': {
             hackathon: { branch: 'colosseum-worlds-fair' },
             releaseArtifacts: {
                 backend: { commit: 'release-sha' },
                 frontend: { manifest: 'https://urbangametheory.xyz/release.json' },
                 programs: ['pledge', 'market'].map((name, index) => ({
-                    name, programDataAddress: `program-data-${index}`,
-                    lastDeployedSlot: 500000000 + index, binarySha256: `${index + 1}`.repeat(64)
+                    name, programDataAddress: `program-data-${index}`, lastDeployedSlot: 500000000 + index, binarySha256: `${index + 1}`.repeat(64)
                 }))
             },
             publicProof: {
                 prospectiveMarket: `${BASE}/oracle/markets/prospective/status`,
                 operations: `${BASE}/hackathon/operations.json`,
-                canonicalCase: `${BASE}/hackathon/cases/golden-case`,
-                executedCase: `${BASE}/hackathon/cases/executed-case`,
-                attestedCase: `${BASE}/hackathon/cases/attested-case`
+                canonicalCase: `${BASE}/hackathon/cases/${CANONICAL}`,
+                executedCase: `${BASE}/hackathon/cases/${EXECUTED}`
             }
         },
-        '/hackathon/cases/golden-case': {
-            id: 'golden-case', state: 'complete',
-            proposal: { account: 'proposal-account' }, parcelSet: { parcelCount: 3 },
+        [`/hackathon/cases/${CANONICAL}`]: {
+            id: CANONICAL, state: 'complete',
+            agreement: { cid: CANONICAL, account: 'canonical-account', status: 'cancelled' }, parcelSet: { parcelCount: 3 },
             branches: {
                 support: { donations: { totalUsdc: '0.05' }, pledges: { activeUsdc: '0.10', pledgeCount: '1' } },
                 forecast: { yesUsdc: '0.01', noUsdc: '0.01' }
             },
             activity: [
-                { action: { type: 'create' }, transaction: 'create' },
-                { action: { type: 'publish' }, transaction: 'publish' },
+                { action: { type: 'propose' }, transaction: null },
+                { action: { type: 'mint' }, transaction: 'mint' },
                 { action: { type: 'donate' }, transaction: 'donate' },
                 { action: { type: 'pledge' }, transaction: 'pledge' },
                 { action: { type: 'stake', side: 'yes' }, transaction: 'yes' },
                 { action: { type: 'stake', side: 'no' }, transaction: 'no' }
             ],
-            stages: ['proposal', 'support', 'forecast', 'decision', 'evidence', 'resolution', 'settlement']
-                .map(id => ({ id, state: 'complete' })),
-            progress: { complete: 7, total: 7 }, transactions: [{}, {}, {}, {}, {}, {}]
+            stages: stagesAll('complete'), progress: { complete: 7, total: 7 }, transactions: [{}, {}, {}, {}, {}]
         },
-        '/hackathon/cases/executed-case': {
-            id: 'executed-case', state: 'complete',
-            proposal: { account: 'executed-account', lifecycleStatus: 'Executed' }, parcelSet: { parcelCount: 2 },
+        [`/hackathon/cases/${EXECUTED}`]: {
+            id: EXECUTED, state: 'complete',
+            agreement: { cid: EXECUTED, account: 'executed-account', status: 'executed' }, parcelSet: { parcelCount: 2 },
             branches: {
                 support: { donations: { totalUsdc: '0.05' }, pledges: { fulfilledUsdc: '0.10', pledgeCount: '1' } },
                 forecast: { yesUsdc: '0.01', noUsdc: '0.01', resolved: true, outcome: 'YES' }
             },
             activity: [
-                { action: { type: 'create' }, transaction: 'create' },
-                { action: { type: 'publish' }, transaction: 'publish' },
-                { action: { type: 'donate' }, transaction: 'donate' },
-                { action: { type: 'pledge' }, transaction: 'pledge' },
-                { action: { type: 'stake', side: 'yes' }, transaction: 'yes' },
-                { action: { type: 'stake', side: 'no' }, transaction: 'no' },
-                { action: { type: 'certifyParcel', parcelId: 'a' }, transaction: 'cert-a' },
-                { action: { type: 'certifyParcel', parcelId: 'b' }, transaction: 'cert-b' },
-                { action: { type: 'accept', parcelId: 'a' }, transaction: 'accept-a' },
-                { action: { type: 'accept', parcelId: 'b' }, transaction: 'accept-b' },
+                { action: { type: 'mint' }, transaction: 'mint' },
+                { action: { type: 'attest' }, transaction: 'attest' },
+                { action: { type: 'execute' }, transaction: 'execute' },
                 { action: { type: 'resolve' }, transaction: 'resolve' },
                 { action: { type: 'releaseDonations' }, transaction: 'release' },
                 { action: { type: 'fulfillPledge' }, transaction: 'fulfil' },
                 { action: { type: 'claim', side: 'yes' }, transaction: 'claim' }
             ],
-            stages: ['proposal', 'support', 'forecast', 'decision', 'evidence', 'resolution', 'settlement']
-                .map(id => ({ id, state: 'complete' })),
-            progress: { complete: 7, total: 7 }
-        },
-        '/hackathon/cases/attested-case': {
-            id: 'attested-case', state: 'complete',
-            proposal: { account: 'attested-account', lifecycleStatus: 'Executed' }, parcelSet: { parcelCount: 2 },
-            branches: { forecast: { yesUsdc: '0.01', noUsdc: '0.01', resolved: true, outcome: 'YES' } },
-            activity: [
-                { action: { type: 'create' }, transaction: 'create' },
-                // Parcel a is co-owned (ownerCount 2), parcel b has one owner: three signatures in all.
-                { action: { type: 'attestOwnership', parcelId: 'a', owner: 'w1', ownerCount: 2 }, transaction: 'att-a1' },
-                { action: { type: 'attestOwnership', parcelId: 'a', owner: 'w2', ownerCount: 2 }, transaction: 'att-a2' },
-                { action: { type: 'attestOwnership', parcelId: 'b', owner: 'w3', ownerCount: 1 }, transaction: 'att-b' },
-                { action: { type: 'acceptance', parcelId: 'a', owner: 'w1' }, transaction: 'acc-a1' },
-                { action: { type: 'acceptance', parcelId: 'a', owner: 'w2' }, transaction: 'acc-a2' },
-                { action: { type: 'acceptance', parcelId: 'b', owner: 'w3' }, transaction: 'acc-b' },
-                { action: { type: 'resolve' }, transaction: 'resolve' },
-                { action: { type: 'claim', side: 'yes' }, transaction: 'claim' }
-            ],
-            stages: ['proposal', 'support', 'forecast', 'decision', 'evidence', 'resolution', 'settlement']
-                .map(id => ({ id, state: 'complete' }))
+            stages: stagesAll('complete'), progress: { complete: 7, total: 7 }
         },
         '/oracle/markets/prospective/status': {
             state: 'open', market: 'prospective-market', resolver: { lastRun: { endedAt: '2026-09-21T11:45:00Z' } }
@@ -141,6 +103,11 @@ function fixtures(overrides = {}) {
                 role, status: 'completed', freshness: { state: 'fresh' }
             }))
         },
+        '/lenses/members': { members: [
+            { key: 'notary-key', kind: 'owner-consent', name: 'notary-01', coverage: { ownership: 3, parcels: 2, executed: 1 } },
+            { key: 'cadastre-key', kind: 'lifecycle', name: 'lifecycle-01', coverage: { ownership: 1, parcels: 1, executed: 0 } },
+            { key: 'idle-key', kind: 'court', name: 'idle', coverage: { ownership: 0, parcels: 0, executed: 0 } }
+        ] },
         ...overrides
     };
 }
@@ -153,113 +120,142 @@ function fetchFor(data) {
         return new Response(JSON.stringify(data[key]), { status: 200 });
     });
 }
+const audit = (data = fixtures(), now = NOW) => auditHackathonProof({ baseUrl: BASE, fetchImpl: fetchFor(data), now });
+const checkOf = (result, id) => result.checks.find(item => item.id === id);
 
 describe('public hackathon proof audit', () => {
-    it('verifies the complete public proof without private state', async () => {
+    it('verifies the complete public proof over the agreement cases the manifest declares', async () => {
         const fetchImpl = fetchFor(fixtures());
-        const result = await auditHackathonProof({
-            baseUrl: BASE, fetchImpl, now: Date.parse('2026-09-21T12:00:00Z')
+        const result = await auditHackathonProof({ baseUrl: `${BASE}/`, fetchImpl, now: NOW });
+        expect(result).toMatchObject({ status: 'verified', baseUrl: BASE, auditedAt: '2026-09-21T12:00:00.000Z', sourceErrors: {} });
+        expect(result.summary).toEqual({ pass: 18, warn: 0, fail: 0 });
+        // Ten public documents, then the two declared cases.
+        expect(fetchImpl).toHaveBeenCalledTimes(12);
+        expect(fetchImpl.mock.calls.map(([url]) => url)).toEqual(expect.arrayContaining([
+            `${BASE}/oracle/events?type=agreement_lifecycle&limit=25`, `${BASE}/hackathon/cases/${CANONICAL}`, `${BASE}/hackathon/cases/${EXECUTED}`
+        ]));
+        expect(result.checks.map(item => item.id)).toEqual([
+            'oracle_fact_bazaar', 'deterministic_proposer', 'deterministic_supporter', 'agreement_lifecycle_oracle',
+            'court_attestations', 'external_market_lifecycle', 'prospective_market_open', 'public_proof_manifest',
+            'release_artifact_identity', 'canonical_case_setup', 'canonical_case_terminal', 'executed_case_yes',
+            'human_agent_activity_matrix', 'prospective_resolver_status', 'scheduled_operations_freshness',
+            'prospective_settlement_proof', 'chronology_label', 'attester_diversity'
+        ]);
+        expect(checkOf(result, 'deterministic_supporter')).toMatchObject({
+            status: 'pass', evidence: { runId: 'supporter', agreementCid: CANONICAL, account: 'canonical-account', transaction: 'supporter-transaction' }
         });
-        expect(result.status).toBe('verified');
-        expect(result.summary).toEqual({ pass: 20, warn: 1, fail: 0 });
-        expect(fetchImpl).toHaveBeenCalledTimes(15);
-        expect(result.checks.find(item => item.id === 'attested_execution')).toMatchObject({
-            status: 'pass', evidence: { acceptances: 3, requiredAcceptances: 3, requiredFrom: 'ownerCount', parcelsAttested: 2 }
+        expect(checkOf(result, 'agreement_lifecycle_oracle')).toMatchObject({
+            status: 'pass', evidence: { eventId: 'event-1', outcome: 'executed', transaction: 'oracle-transaction' }
         });
-        expect(result.checks.find(item => item.id === 'no_self_lens')).toMatchObject({
-            status: 'pass', evidence: { creates: 1, decided: 1, selfLens: [] }
-        });
-        expect(result.checks.find(item => item.id === 'attester_diversity').evidence.attesters.map(a => a.key))
-            .toEqual(['notary-key', 'cadastre-key']);
-        expect(result.checks.find(item => item.id === 'executed_case_yes')).toMatchObject({
-            status: 'pass', evidence: { id: 'executed-case', outcome: 'YES', acceptances: 2, parcelCount: 2 }
-        });
-        expect(result.checks.find(item => item.id === 'deterministic_supporter')).toMatchObject({
-            status: 'pass', evidence: { proposalId: 'p1', transaction: 'supporter-transaction' }
-        });
+        expect(checkOf(result, 'executed_case_yes')).toMatchObject({ status: 'pass', evidence: { id: EXECUTED, status: 'executed', outcome: 'YES' } });
+        expect(checkOf(result, 'canonical_case_setup')).toMatchObject({ status: 'pass', evidence: { id: CANONICAL, parcelCount: 3 } });
+        expect(checkOf(result, 'attester_diversity').evidence.attesters.map(a => a.key)).toEqual(['notary-key', 'cadastre-key']);
     });
 
-    it('does not accept the proposal listing as proof of oracle-fact discovery', async () => {
-        const data = fixtures({
+    it('does not accept another resource\'s listing as proof of oracle-fact discovery', async () => {
+        const result = await audit(fixtures({
             '/agent/discovery?resource=oracle-facts': { state: 'listed', listing: { resource: `${BASE}/agent/proposals` } }
-        });
-        const result = await auditHackathonProof({
-            baseUrl: BASE, fetchImpl: fetchFor(data), now: Date.parse('2026-09-21T12:00:00Z')
-        });
+        }));
         expect(result.status).toBe('incomplete');
-        expect(result.checks.find(item => item.id === 'oracle_fact_bazaar').status).toBe('fail');
+        expect(checkOf(result, 'oracle_fact_bazaar').status).toBe('fail');
     });
 
     it('fails the proof when a deployed release, terminal case or scheduled job regresses', async () => {
-        const staleJobs = fixtures()['/hackathon/operations.json'].jobs.map((job, index) => index === 2
-            ? { ...job, freshness: { state: 'stale' } } : job);
-        const openCase = { ...fixtures()['/hackathon/cases/golden-case'], stages: [{ id: 'decision', state: 'pending' }] };
+        const staleJobs = fixtures()['/hackathon/operations.json'].jobs.map((job, index) => index === 2 ? { ...job, freshness: { state: 'stale' } } : job);
+        const openCase = { ...fixtures()[`/hackathon/cases/${CANONICAL}`], stages: [{ id: 'decision', state: 'pending' }] };
         const cases = [
             ['scheduled_operations_freshness', { '/hackathon/operations.json': { status: 'degraded', jobs: staleJobs } }],
-            ['canonical_case_terminal', { '/hackathon/cases/golden-case': openCase }],
+            ['canonical_case_terminal', { [`/hackathon/cases/${CANONICAL}`]: openCase }],
             ['release_artifact_identity', { '/hackathon/proof.json': { ...fixtures()['/hackathon/proof.json'], releaseArtifacts: null } }]
         ];
         for (const [id, override] of cases) {
-            const result = await auditHackathonProof({
-                baseUrl: BASE, fetchImpl: fetchFor(fixtures(override)), now: Date.parse('2026-09-21T12:00:00Z')
-            });
+            const result = await audit(fixtures(override));
             expect(result.status, id).toBe('incomplete');
-            expect(result.checks.find(item => item.id === id).status, id).toBe('fail');
+            expect(checkOf(result, id).status, id).toBe('fail');
         }
     });
 
-    it('requires the executed case to prove acceptance of every parcel, YES resolution and payout', async () => {
-        const executed = fixtures()['/hackathon/cases/executed-case'];
+    it('requires the canonical case to prove a minted multi-parcel agreement, a donation, a pledge and both forecast sides', async () => {
+        const canonical = fixtures()[`/hackathon/cases/${CANONICAL}`];
+        const without = type => ({ ...canonical, activity: canonical.activity.filter(event => event.action.type !== type) });
+        const cases = [
+            ['one parcel', { ...canonical, parcelSet: { parcelCount: 1 } }],
+            ['no account', { ...canonical, agreement: { cid: CANONICAL, account: null } }],
+            ['a proposal-era case', { ...canonical, agreement: undefined, proposal: { account: 'proposal-account' } }],
+            ['never proposed', without('propose')],
+            ['never minted', without('mint')],
+            ['no NO stake', { ...canonical, activity: canonical.activity.filter(event => event.action.side !== 'no') }],
+            ['nothing donated', { ...canonical, branches: { ...canonical.branches, support: { ...canonical.branches.support, donations: { totalUsdc: '0' } } } }]
+        ];
+        for (const [label, override] of cases) {
+            const result = await audit(fixtures({ [`/hackathon/cases/${CANONICAL}`]: override }));
+            expect(result.status, label).toBe('incomplete');
+            expect(checkOf(result, 'canonical_case_setup').status, label).toBe('fail');
+        }
+    });
+
+    it('requires the executed case to be executed on its lens attestation, resolved YES and paid out', async () => {
+        const executed = fixtures()[`/hackathon/cases/${EXECUTED}`];
+        const without = predicate => ({ ...executed, activity: executed.activity.filter(event => !predicate(event)) });
         const cases = [
             ['resolved NO', { ...executed, branches: { ...executed.branches, forecast: { ...executed.branches.forecast, outcome: 'NO' } } }],
-            ['one parcel never accepted', { ...executed, activity: executed.activity.filter(event => event.transaction !== 'accept-b') }],
-            ['lifecycle still active', { ...executed, proposal: { ...executed.proposal, lifecycleStatus: 'Active' } }],
-            ['YES never claimed', { ...executed, activity: executed.activity.filter(event => event.action.type !== 'claim') }],
+            ['still active', { ...executed, agreement: { ...executed.agreement, status: 'active' } }],
+            ['decision never recorded', without(event => event.action.type === 'attest')],
+            ['never executed', without(event => event.action.type === 'execute')],
+            ['donations never released', without(event => event.action.type === 'releaseDonations')],
+            ['YES never claimed', without(event => event.action.type === 'claim')],
             ['evidence pending', { ...executed, stages: executed.stages.map(item => item.id === 'evidence' ? { ...item, state: 'pending' } : item) }]
         ];
         for (const [label, override] of cases) {
-            const result = await auditHackathonProof({
-                baseUrl: BASE, fetchImpl: fetchFor(fixtures({ '/hackathon/cases/executed-case': override })),
-                now: Date.parse('2026-09-21T12:00:00Z')
-            });
+            const result = await audit(fixtures({ [`/hackathon/cases/${EXECUTED}`]: override }));
             expect(result.status, label).toBe('incomplete');
-            expect(result.checks.find(item => item.id === 'executed_case_yes').status, label).toBe('fail');
+            expect(checkOf(result, 'executed_case_yes').status, label).toBe('fail');
         }
+    });
+
+    it('checks only the cases the manifest declares, and reports one it cannot read', async () => {
         const undeclared = fixtures();
         delete undeclared['/hackathon/proof.json'].publicProof.executedCase;
-        const result = await auditHackathonProof({ baseUrl: BASE, fetchImpl: fetchFor(undeclared), now: Date.parse('2026-09-21T12:00:00Z') });
-        expect(result.checks.find(item => item.id === 'executed_case_yes')).toMatchObject({
-            status: 'fail', evidence: 'proof manifest does not declare publicProof.executedCase'
-        });
+        const fetchImpl = fetchFor(undeclared);
+        const result = await auditHackathonProof({ baseUrl: BASE, fetchImpl, now: NOW });
+        expect(checkOf(result, 'executed_case_yes')).toBeUndefined();
+        expect(fetchImpl.mock.calls.some(([url]) => url.includes(EXECUTED))).toBe(false);
+        expect(result.status).toBe('verified');
+
+        const missing = fixtures();
+        delete missing[`/hackathon/cases/${CANONICAL}`];
+        const unreadable = await audit(missing);
+        expect(checkOf(unreadable, 'canonical_case_setup')).toMatchObject({ status: 'fail', evidence: `${BASE}/hackathon/cases/${CANONICAL} returned 404` });
+        expect(unreadable.sourceErrors.canonicalCase).toMatch(/404/);
     });
 
     it('ignores a newer supporter no-op and requires the last signed support to be recent', async () => {
         const runs = fixtures()['/agent/runs?limit=50'].runs;
         const noop = {
             id: 'supporter-noop', controller: 'algorithm', role: 'supporter', status: 'done', updatedAt: '2026-09-21T11:30:00Z',
-            support: { type: 'pledge', proposalId: 'p1', replayed: true, signature: null }
+            support: { type: 'pledge', agreementCid: CANONICAL, replayed: true, signature: null }
         };
-        const withNoop = await auditHackathonProof({
-            baseUrl: BASE, fetchImpl: fetchFor(fixtures({ '/agent/runs?limit=50': { runs: [...runs, noop] } })),
-            now: Date.parse('2026-09-21T12:00:00Z')
-        });
-        expect(withNoop.checks.find(item => item.id === 'deterministic_supporter')).toMatchObject({
-            status: 'pass', evidence: { runId: 'supporter', transaction: 'supporter-transaction' }
-        });
-        const stale = await auditHackathonProof({
-            baseUrl: BASE, fetchImpl: fetchFor(fixtures()), now: Date.parse('2026-09-24T12:00:00Z')
-        });
-        expect(stale.checks.find(item => item.id === 'deterministic_supporter').status).toBe('fail');
+        const withNoop = await audit(fixtures({ '/agent/runs?limit=50': { runs: [...runs, noop] } }));
+        expect(checkOf(withNoop, 'deterministic_supporter')).toMatchObject({ status: 'pass', evidence: { runId: 'supporter', transaction: 'supporter-transaction' } });
+        const stale = await audit(fixtures(), Date.parse('2026-09-24T12:00:00Z'));
+        expect(checkOf(stale, 'deterministic_supporter').status).toBe('fail');
+        expect(checkOf(stale, 'deterministic_proposer').status).toBe('fail');
     });
 
-    it('reports chronology metadata as advisory while preserving the proven lifecycle', async () => {
-        const data = fixtures();
-        delete data['/docs/agents.json'].oracle.externalMarket.proof.chronology;
-        const result = await auditHackathonProof({
-            baseUrl: BASE, fetchImpl: fetchFor(data), now: Date.parse('2026-09-21T12:00:00Z')
+    it('treats the agreement lifecycle oracle, chronology, activity matrix and attester diversity as advisory', async () => {
+        const data = fixtures({
+            '/oracle/events?type=agreement_lifecycle&limit=25': { events: [{ id: 'unhashed', eventType: 'agreement_lifecycle', source: { hash: 'md5:x', transaction: 't' } }] },
+            '/agent/activity?limit=200': { events: fixtures()['/agent/activity?limit=200'].events.filter(event => event.actor?.controller !== 'llm') }
         });
+        delete data['/docs/agents.json'].oracle.externalMarket.proof.chronology;
+        data['/lenses/members'] = { members: data['/lenses/members'].members.slice(0, 1) };
+        const result = await audit(data);
         expect(result.status).toBe('verified');
-        expect(result.summary).toEqual({ pass: 19, warn: 2, fail: 0 });
+        expect(result.summary).toEqual({ pass: 14, warn: 4, fail: 0 });
+        for (const id of ['agreement_lifecycle_oracle', 'chronology_label', 'human_agent_activity_matrix', 'attester_diversity']) {
+            expect(checkOf(result, id).status, id).toBe('warn');
+        }
+        expect(checkOf(result, 'human_agent_activity_matrix').evidence).toMatchObject({ humanSupport: true, humanForecast: true, llm: false });
     });
 
     it('requires a payout and strictly ordered public proof once the prospective market settles', async () => {
@@ -268,180 +264,48 @@ describe('public hackathon proof audit', () => {
             evidence: { address: 'evidence-account', hash: `sha256:${'b'.repeat(64)}` },
             transactions: { evidenceFirstSeen: 'first-seen-tx', resolution: 'resolve-tx', claim: 'claim-tx' },
             chronology: {
-                classification: 'prospective', prospective: true, marketOrderValid: true,
-                sourceTimeVerified: true, sourceAfterClose: true,
+                classification: 'prospective', prospective: true, marketOrderValid: true, sourceTimeVerified: true, sourceAfterClose: true,
                 timestamps: {
-                    marketCreatedAt: '2026-09-22T19:00:00Z', yesStakeAt: '2026-09-22T19:01:00Z',
-                    noStakeAt: '2026-09-22T19:02:00Z', marketClosesAt: '2026-09-22T21:00:00Z',
-                    sourceObservedAt: '2026-09-22T21:10:00Z', evidenceCreatedAt: '2026-09-22T21:20:00Z',
+                    marketCreatedAt: '2026-09-22T19:00:00Z', yesStakeAt: '2026-09-22T19:01:00Z', noStakeAt: '2026-09-22T19:02:00Z',
+                    marketClosesAt: '2026-09-22T21:00:00Z', sourceObservedAt: '2026-09-22T21:10:00Z', evidenceCreatedAt: '2026-09-22T21:20:00Z',
                     resolvedAt: '2026-09-22T21:30:00Z', claimedAt: '2026-09-22T21:31:00Z'
                 },
                 transactionSlots: { evidenceFirstSeen: 100, resolution: 110, claim: 111 }
             }
         };
-        const complete = fixtures({
-            '/oracle/markets/prospective/status': {
-                state: 'settled', market: 'prospective-market', closesAt: '2026-09-22T21:00:00Z',
-                transactions: { create: 'create-tx', yesStake: 'yes-tx', noStake: 'no-tx' }, settlement
-            }
-        });
-        const result = await auditHackathonProof({ baseUrl: BASE, fetchImpl: fetchFor(complete), now: Date.parse('2026-09-22T22:00:00Z') });
-        expect(result.status).toBe('verified');
-        expect(result.checks.find(item => item.id === 'prospective_settlement_proof')).toMatchObject({ status: 'pass' });
+        const status = {
+            state: 'settled', market: 'prospective-market', closesAt: '2026-09-22T21:00:00Z',
+            transactions: { create: 'create-tx', yesStake: 'yes-tx', noStake: 'no-tx' }, settlement
+        };
+        const later = Date.parse('2026-09-22T22:00:00Z');
+        const complete = await audit(fixtures({ '/oracle/markets/prospective/status': status }), later);
+        expect(checkOf(complete, 'prospective_settlement_proof')).toMatchObject({ status: 'pass' });
 
-        const missingPayout = structuredClone(complete);
-        missingPayout['/oracle/markets/prospective/status'].settlement.transactions.claim = null;
-        const incomplete = await auditHackathonProof({ baseUrl: BASE, fetchImpl: fetchFor(missingPayout), now: Date.parse('2026-09-22T22:00:00Z') });
-        expect(incomplete.status).toBe('incomplete');
-        expect(incomplete.checks.find(item => item.id === 'prospective_settlement_proof')).toMatchObject({ status: 'fail' });
+        const missingPayout = structuredClone(status);
+        missingPayout.settlement.transactions.claim = null;
+        expect(checkOf(await audit(fixtures({ '/oracle/markets/prospective/status': missingPayout }), later), 'prospective_settlement_proof').status).toBe('fail');
 
-        const sameSecond = structuredClone(complete);
-        sameSecond['/oracle/markets/prospective/status'].settlement.chronology.timestamps.claimedAt = '2026-09-22T21:30:00Z';
-        const slotOrdered = await auditHackathonProof({ baseUrl: BASE, fetchImpl: fetchFor(sameSecond), now: Date.parse('2026-09-22T22:00:00Z') });
-        expect(slotOrdered.checks.find(item => item.id === 'prospective_settlement_proof')).toMatchObject({ status: 'pass' });
+        const sameSecond = structuredClone(status);
+        sameSecond.settlement.chronology.timestamps.claimedAt = '2026-09-22T21:30:00Z';
+        expect(validateProspectiveSettlement(sameSecond).valid).toBe(true);
+        sameSecond.settlement.chronology.transactionSlots.claim = 105;
+        expect(validateProspectiveSettlement(sameSecond).valid).toBe(false);
+        expect(validateProspectiveSettlement({ state: 'open' })).toEqual({ valid: true, pending: true });
     });
 
-    const NOW = Date.parse('2026-09-21T12:00:00Z');
-    const lensCheck = async (overrides, id) => {
-        const fetchImpl = fetchFor(fixtures(overrides));
-        const result = await auditHackathonProof({ baseUrl: BASE, fetchImpl, now: NOW });
-        return { result, fetchImpl, item: result.checks.find(entry => entry.id === id) };
-    };
-
-    it('requires the attested case to carry an attestation per parcel and a signature per attested owner (advisory)', async () => {
-        const attested = fixtures()['/hackathon/cases/attested-case'];
-        const without = predicate => ({ ...attested, activity: attested.activity.filter(event => !predicate(event)) });
-        const cases = [
-            ['one co-owner never signed', without(event => event.transaction === 'acc-a2')],
-            ['parcel b never attested', without(event => event.transaction === 'att-b')],
-            ['lifecycle still active', { ...attested, proposal: { ...attested.proposal, lifecycleStatus: 'Active' } }],
-            ['never resolved', without(event => event.action.type === 'resolve')],
-            ['YES never claimed', without(event => event.action.type === 'claim')],
-            ['executed through the v1 certificate path', { ...attested, activity: [...attested.activity,
-                { action: { type: 'accept', parcelId: 'a' }, transaction: 'v1-accept' }] }],
-            ['settlement pending', { ...attested, stages: attested.stages.map(item => item.id === 'settlement' ? { ...item, state: 'pending' } : item) }]
-        ];
-        for (const [label, override] of cases) {
-            const { result, item } = await lensCheck({ '/hackathon/cases/attested-case': override }, 'attested_execution');
-            expect(item.status, label).toBe('warn');
-            expect(result.status, label).toBe('verified');
-        }
-        const undeclared = fixtures();
-        delete undeclared['/hackathon/proof.json'].publicProof.attestedCase;
-        const result = await auditHackathonProof({ baseUrl: BASE, fetchImpl: fetchFor(undeclared), now: NOW });
-        expect(result.checks.find(item => item.id === 'attested_execution')).toMatchObject({
-            status: 'warn', evidence: 'proof manifest does not declare publicProof.attestedCase'
-        });
-    });
-
-    it('falls back to one acceptance per parcel when owner counts are not exposed', async () => {
-        const attested = fixtures()['/hackathon/cases/attested-case'];
-        const bare = { ...attested, activity: attested.activity
-            .filter(event => !['att-a2', 'acc-a2'].includes(event.transaction))
-            .map(event => ({ ...event, action: { type: event.action.type, side: event.action.side, parcelId: event.action.parcelId } })) };
-        const { item } = await lensCheck({ '/hackathon/cases/attested-case': bare }, 'attested_execution');
-        expect(item).toMatchObject({ status: 'pass', evidence: { requiredFrom: 'parcelCount', requiredAcceptances: 2, acceptances: 2 } });
-    });
-
-    it('flags an agent proposal whose lens is only its creator, from the record or the event', async () => {
-        const events = fixtures()['/agent/activity?limit=200'].events;
-        const fromRecord = await lensCheck({ '/proposals/p2': { proposalId: 'p2', lens: ['proposer-wallet'] } }, 'no_self_lens');
-        expect(fromRecord.item).toMatchObject({ status: 'warn', evidence: { selfLens: [{ proposalId: 'p2', creator: 'proposer-wallet' }] } });
-        expect(fromRecord.result.status).toBe('verified');
-
-        const onChainCopy = await lensCheck({ '/proposals/p2': { proposalId: 'p2', lens: null, onchain: { lens: ['proposer-wallet'] } } }, 'no_self_lens');
-        expect(onChainCopy.item.status).toBe('warn');
-        expect(onChainCopy.item.evidence.selfLens).toHaveLength(1);
-
-        const carried = events.map(event => event.action.type === 'create'
-            ? { ...event, action: { ...event.action, lens: ['proposer-wallet'] } } : event);
-        const fromEvent = await lensCheck({ '/agent/activity?limit=200': { events: carried } }, 'no_self_lens');
-        expect(fromEvent.item.status).toBe('warn');
-        expect(fromEvent.fetchImpl.mock.calls.some(([url]) => url.includes('/proposals/'))).toBe(false);
-
-        const mixed = await lensCheck({ '/proposals/p2': { proposalId: 'p2', lens: ['proposer-wallet', 'notary-key'] } }, 'no_self_lens');
-        expect(mixed.item.status).toBe('pass');
-    });
-
-    it('reports insufficient data instead of passing when no lens is exposed or nothing was created', async () => {
-        const missing = await lensCheck({ '/proposals/p2': { proposalId: 'p2', lens: null, onchain: {} } }, 'no_self_lens');
-        expect(missing.item).toMatchObject({
-            status: 'warn',
-            evidence: { creates: 1, decided: 0, undecided: [{ proposalId: 'p2', missing: ['lens'] }] }
-        });
-        expect(missing.item.evidence.insufficientData).toMatch(/neither a lens nor a creator/);
-
-        const events = fixtures()['/agent/activity?limit=200'].events.map(event => event.action.type === 'create'
-            ? { ...event, recordedAt: '2026-08-01T10:00:00Z' } : event);
-        const stale = await lensCheck({ '/agent/activity?limit=200': { events } }, 'no_self_lens');
-        expect(stale.item.status).toBe('warn');
-        expect(stale.item.evidence.insufficientData).toBe('no create events in the last 30 days');
-    });
-
-    it('requires ownership attestations from at least two distinct lens members', async () => {
-        const members = fixtures()['/lenses/members'].members.map(member => member.key === 'cadastre-key'
-            ? { ...member, coverage: { ...member.coverage, ownership: 0 } } : member);
-        const one = await lensCheck({ '/lenses/members': { members } }, 'attester_diversity');
-        expect(one.item.status).toBe('warn');
-        expect(one.item.evidence.attesters).toHaveLength(1);
-        expect(one.result.status).toBe('verified');
-
+    it('reports a missing member directory without failing the proof', async () => {
         const absent = fixtures();
         delete absent['/lenses/members'];
-        const result = await auditHackathonProof({ baseUrl: BASE, fetchImpl: fetchFor(absent), now: NOW });
-        expect(result.checks.find(item => item.id === 'attester_diversity')).toMatchObject({ status: 'warn' });
-        expect(result.checks.find(item => item.id === 'attester_diversity').evidence).toMatch(/404/);
+        const result = await audit(absent);
+        expect(checkOf(result, 'attester_diversity')).toMatchObject({ status: 'warn' });
+        expect(checkOf(result, 'attester_diversity').evidence).toMatch(/404/);
+        expect(result.status).toBe('verified');
     });
 
     it('requires an exact normalized resource URL', () => {
-        expect(exactResource({ state: 'listed', listing: { resource: `${BASE}/agent/proposals/` } }, `${BASE}/agent/proposals`)).toBe(true);
-        expect(exactResource({ state: 'listed', listing: { resource: `${BASE}/other` } }, `${BASE}/agent/proposals`)).toBe(false);
-    });
-});
-
-describe('open-ground audit wiring (advisory)', () => {
-    const AT = Date.parse('2026-09-21T12:00:00Z');
-    const run = openGroundAudit => auditHackathonProof({ baseUrl: BASE, fetchImpl: fetchFor(fixtures()), now: AT, openGroundAudit });
-    const item = result => result.checks.find(entry => entry.id === 'open_ground_audit');
-
-    it('is not listed when the operator did not ask for it (the public audit is HTTP-only)', async () => {
-        const result = await run(null);
-        expect(item(result)).toBeUndefined();
-        expect(result.summary).toEqual({ pass: 20, warn: 1, fail: 0 });
-    });
-
-    it('passes with counts on a v1-only chain: legacy accounts are skipped, nothing fails', async () => {
-        const owner = { toBase58: () => '11111111111111111111111111111111' };
-        const connection = {
-            getProgramAccounts: async () => [1, 2].map(seed => ({
-                pubkey: { toBase58: () => `legacy-${seed}` },
-                account: { owner, data: proposalAccountBytes({ parcelIds: ['HR-1'], layoutVersion: 0 }) }
-            }))
-        };
-        const pool = createMockPool();
-        pool.setResult({ rows: [{ id: 1, proposal_id: 'p1', proposal_account: 'legacy-1', cadastre_parcel_ids: ['HR-1'], proposal_data: {}, binding: null, site_geojson: null }] });
-        const result = await run(() => runOpenGroundAudit({ pool, connection }));
-        expect(result.status).toBe('verified');
-        expect(result.summary).toEqual({ pass: 21, warn: 1, fail: 0 });
-        expect(item(result)).toMatchObject({
-            status: 'pass',
-            evidence: { accounts: 2, records: 1, checked: 0, mismatches: 0, skipped: 2,
-                skippedByReason: { 'legacy-layout': 2 } }
-        });
-    });
-
-    it('warns, but never fails the audit, on mismatches or a loader error', async () => {
-        const mismatch = { kind: 'open-ground-understated', proposal: { account: 'A', recordId: 1, proposalId: 'p1' }, coverage: 'partial' };
-        const flagged = await run(async () => ({
-            accounts: 1, records: 1, checked: 1, mismatches: [mismatch], skipped: [],
-            byKind: { 'open-ground-understated': 1 }, skippedByReason: {}, undecodable: []
-        }));
-        expect(flagged.status).toBe('verified');
-        expect(item(flagged)).toMatchObject({ status: 'warn', evidence: { mismatches: 1, byKind: { 'open-ground-understated': 1 }, examples: [mismatch] } });
-
-        const broken = await run(async () => { throw new Error('rpc 429'); });
-        expect(broken.status).toBe('verified');
-        expect(item(broken)).toMatchObject({ status: 'warn', evidence: 'rpc 429' });
-        expect(broken.sourceErrors.openGroundAudit).toBe('rpc 429');
+        expect(exactResource({ state: 'listed', listing: { resource: `${BASE}/agent/oracle/facts/` } }, `${BASE}/agent/oracle/facts`)).toBe(true);
+        expect(exactResource({ state: 'listed', listing: { resource: `${BASE}/agent/oracle/facts?x=1` } }, `${BASE}/agent/oracle/facts`)).toBe(true);
+        expect(exactResource({ state: 'listed', listing: { resource: `${BASE}/other` } }, `${BASE}/agent/oracle/facts`)).toBe(false);
+        expect(exactResource({ state: 'not-listed', listing: { resource: `${BASE}/agent/oracle/facts` } }, `${BASE}/agent/oracle/facts`)).toBe(false);
     });
 });

@@ -147,9 +147,7 @@
                 fields: {
                     name: draft.copySource?.prefill?.name || draft.copySource?.name || '',
                     description: draft.copySource?.prefill?.description || '',
-                    selectedParcelIds: cloneDraftValue(draft.parcelIds || []),
-                    offer: Number(draft.copySource?.prefill?.offer) || 0,
-                    offerCurrency: draft.copySource?.prefill?.offerCurrency || 'USDT'
+                    selectedParcelIds: cloneDraftValue(draft.parcelIds || [])
                 },
                 editorPayload: { kind: draft.kind, definition },
                 previewGeometry: cloneDraftValue(definition.polygon || null),

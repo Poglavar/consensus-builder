@@ -1,10 +1,13 @@
+// The bet dialog's pure presentation of an agreement's pool (frontend/js/proposals/market-view.js):
+// exact USDC amounts, odds and claims, the signing copy, and the lifecycle words read from the
+// agreement account's chain status (executed settles yes; cancelled or expired settles no).
 import { createRequire } from 'node:module';
 import { describe, expect, it } from 'vitest';
 
 const require = createRequire(import.meta.url);
 const view = require('../../frontend/js/proposals/market-view.js');
 
-describe('proposal market presentation', () => {
+describe('agreement pool presentation', () => {
     it('renders exact USDC amounts and rejects lossy stake input', () => {
         expect(view.formatAtomic(1_250_000n)).toBe('1.25');
         expect(view.parseUsdc('0.000001')).toBe(1n);
@@ -31,25 +34,27 @@ describe('proposal market presentation', () => {
         expect(view.errorText({ code: 'CONFIRMATION_UNKNOWN' })).toMatch(/Check the transaction/);
     });
 
-    it('states the exact on-chain resolution lifecycle, with Expired terminal since market v2', () => {
+    it('settles from the agreement account: executed yes, cancelled or expired no', () => {
         const open = view.model({ yesPool: 2n, noPool: 1n, resolved: false });
-        expect(view.lifecycle('Active', open)).toMatchObject({ state: 'Open for bets', stateKey: 'open', canStake: true, canResolve: false });
-        expect(view.lifecycle('Active', { exists: false })).toMatchObject({ state: 'No pool yet', stateKey: 'needsPool', canOpen: true });
-        expect(view.lifecycle('Executed', open)).toMatchObject({ state: 'Ready to settle yes', stateKey: 'settleYes', canStake: false, canResolve: true, expectedOutcome: 'yes' });
-        expect(view.lifecycle('Cancelled', open)).toMatchObject({ state: 'Ready to settle no', stateKey: 'settleNo', canStake: false, canResolve: true, expectedOutcome: 'no' });
-        // Market v2: a lens member's expired verdict makes Expired terminal and the market resolves NO.
-        expect(view.lifecycle('Expired', open)).toMatchObject({ state: 'Ready to settle no', canStake: false, canResolve: true, expectedOutcome: 'no' });
-        expect(view.lifecycle('Expired', open).rule).toMatch(/cancelled or expired settles no/);
+        expect(view.lifecycle('active', open)).toMatchObject({ state: 'Open for bets', stateKey: 'open', canStake: true, canResolve: false });
+        expect(view.lifecycle('active', { exists: false })).toMatchObject({ state: 'No pool yet', stateKey: 'needsPool', canOpen: true });
+        expect(view.lifecycle('executed', open)).toMatchObject({ state: 'Ready to settle yes', stateKey: 'settleYes', canStake: false, canResolve: true, expectedOutcome: 'yes' });
+        expect(view.lifecycle('cancelled', open)).toMatchObject({ state: 'Ready to settle no', stateKey: 'settleNo', canStake: false, canResolve: true, expectedOutcome: 'no' });
+        // An agreement whose rule was not met by its deadline is expired on chain; its pool settles no.
+        expect(view.lifecycle('expired', open)).toMatchObject({ state: 'Ready to settle no', canStake: false, canResolve: true, expectedOutcome: 'no' });
+        expect(view.lifecycle('expired', open).rule).toMatch(/agreement account on Solana: executed settles yes; cancelled or expired settles no/);
+        // The index spells the status in lower case; any case reads the same.
+        expect(view.lifecycle('Executed', open)).toEqual(view.lifecycle('executed', open));
         expect(view.confirmedText()).toBe('Confirmed on Solana.');
     });
 
     it('explains both parimutuel winnings and empty-winning-pool refunds', () => {
         const normal = view.model({ yesPool: 2n, noPool: 1n, resolved: true, outcome: 1 });
-        expect(view.lifecycle('Executed', normal)).toMatchObject({ stateKey: 'settledYes', nextKey: 'settledSplit' });
-        expect(view.lifecycle('Executed', normal).next).toMatch(/shares the whole pool/);
+        expect(view.lifecycle('executed', normal)).toMatchObject({ stateKey: 'settledYes', nextKey: 'settledSplit' });
+        expect(view.lifecycle('executed', normal).next).toMatch(/shares the whole pool/);
         const refunded = view.model({ yesPool: 0n, noPool: 1n, resolved: true, outcome: 1 });
-        expect(view.lifecycle('Executed', refunded)).toMatchObject({ nextKey: 'settledRefund' });
-        expect(view.lifecycle('Executed', refunded).next).toMatch(/collected back in full/);
+        expect(view.lifecycle('executed', refunded)).toMatchObject({ nextKey: 'settledRefund' });
+        expect(view.lifecycle('executed', refunded).next).toMatch(/collected back in full/);
     });
 
     it('allows no new market action without a known chain status', () => {
@@ -60,33 +65,6 @@ describe('proposal market presentation', () => {
                 });
             }
         }
-    });
-
-    it('builds a deduplicated newest-first transaction history for this market only', () => {
-        const matching = { action: { type: 'stake', proposalId: 'p1' }, transaction: 'tx1', recordedAt: '2026-09-20T02:00:00Z' };
-        const history = view.marketHistory([
-            matching,
-            { ...matching },
-            { action: { type: 'resolve', proposalId: 'p1' }, transaction: 'tx2', recordedAt: '2026-09-20T03:00:00Z' },
-            { action: { type: 'pledge', proposalId: 'p1' }, transaction: 'tx-pledge', recordedAt: '2026-09-20T04:00:00Z' },
-            { action: { type: 'stake', proposalId: 'other' }, transaction: 'tx-other', recordedAt: '2026-09-20T05:00:00Z' }
-        ], ['p1']);
-        expect(history.map(event => event.transaction)).toEqual(['tx2', 'tx1']);
-    });
-
-    it('requires oracle evidence to match the declared recipe subject and outcome', () => {
-        const recipe = {
-            id: 'proposal-lifecycle-v1', hash: 'sha256:recipe',
-            subject: { proposalAccount: 'p1' }, outcomes: { executed: 'YES', cancelled: 'NO' }
-        };
-        expect(view.oracleEvidence(recipe, null)).toMatchObject({ tone: 'waiting', label: 'Recipe declared; terminal event pending' });
-        expect(view.oracleEvidence(recipe, {
-            eventType: 'proposal_lifecycle', outcome: 'executed', subject: { id: 'p1' },
-            observedAt: '2026-09-20T01:00:00Z', source: { hash: 'sha256:evidence' }
-        })).toMatchObject({ tone: 'success', label: 'YES evidence recorded' });
-        expect(view.oracleEvidence(recipe, {
-            outcome: 'cancelled', subject: { id: 'other' }, source: { hash: 'sha256:evidence' }
-        })).toMatchObject({ tone: 'error' });
-        expect(view.oracleEvidence(null, null, 'offline')).toMatchObject({ tone: 'error', detail: 'offline' });
+        expect(view.lifecycle(null).next).toMatch(/agreement must be active on-chain, before its deadline/);
     });
 });

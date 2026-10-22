@@ -1,185 +1,144 @@
+// What the support and society agents read (agents/discovery.js): the index's agreements per city,
+// de-duplicated by CID and newest first, each with the chain account its sponsor and CID derive, and the
+// accounts' statuses read from the chain in batches. Only the chain's word counts: an account owned by
+// another program, holding another CID or another sponsor fails the whole read and changes nothing.
 import { describe, expect, it, vi } from 'vitest';
-import { applyProposalStatuses, discoverProposalInputs, loadPlanRecord, verifiedPlanMembership } from '../agents/discovery.js';
-import { proposalAccountBytes } from './fixtures/proposal-account.js';
-import { PublicKey } from '@solana/web3.js';
-import { PROPOSAL_PROGRAM_ID } from '../agents/lifecycle-actions.js';
-import { eligibleSupportProposals, selectSupportAction } from '../agents/supporter-picker.js';
-import { decide as decideContrarian } from '../agents/policies/contrarian.js';
+import { Keypair, PublicKey } from '@solana/web3.js';
+import { cidOfObject } from '../cid.js';
+import { AGREEMENT_PAGE, agreementSummary, discoverAgreements, isMinted, isOpen, readAgreementStatuses } from '../agents/discovery.js';
+import { agreementAccountOf } from '../agents/agreement-minter.js';
+import { selectSupportAction } from '../agents/supporter-picker.js';
+import { agreementAccountBytes, agreementAccountInfo } from './fixtures/agreement-account.js';
 
-const accountFor = value => new PublicKey(Buffer.alloc(32, value)).toBase58();
-const planRecord = ({ slug, account, proposalRowIds, ...rest }) => ({
-    slug, proposalRowIds, planHash: 'a'.repeat(64),
-    onchain: { chainId: 'solana-devnet', contractAddress: PROPOSAL_PROGRAM_ID, proposalId: account }, ...rest
-});
+const NOW = Date.parse('2026-10-22T12:00:00Z');
+const sponsors = [0, 1, 2, 3].map(() => Keypair.generate().publicKey.toBase58());
+const cidOf = n => cidOfObject({ schema: 'agreement/v1', title: `Agreement ${n}` });
 
-function apiFetch({ proposals = [], plans = [], details = {} } = {}) {
-    return vi.fn(async (url, options = {}) => {
-        const parsed = new URL(url);
-        if (parsed.pathname === '/proposals/summary') {
-            const offset = Number(parsed.searchParams.get('offset') || 0);
-            const limit = Number(parsed.searchParams.get('limit') || 1000);
-            return { proposals: proposals.slice(offset, offset + limit), count: proposals.length };
-        }
-        if (parsed.pathname === '/plans') return { plans };
-        if (parsed.pathname.startsWith('/plans/')) {
-            const slug = decodeURIComponent(parsed.pathname.split('/').at(-1));
-            if (!details[slug]) throw new Error('404');
-            return details[slug];
-        }
-        if (parsed.pathname === '/proposals/batch') {
-            const ids = JSON.parse(options.body).ids;
-            return { items: ids.map(id => ({ id, proposal: { id, geometry: { buildings: [{ id: `building-${id}` }] } } })) };
-        }
-        throw new Error(`unexpected request ${url}`);
-    });
+// One GET /agreements row (routes/agreements.js serializeAgreementRow).
+function row(n, { sponsor = sponsors[n % sponsors.length], createdAt = `2026-10-${String(10 + n).padStart(2, '0')}T08:00:00.000Z`, ...extra } = {}) {
+    const designCid = cidOfObject({ schema: 'design/v1', title: `Design ${n}` });
+    return {
+        cid: cidOf(n), city: 'zagreb', title: `Agreement ${n}`, author: `author-${n}`,
+        designCids: [designCid], inputParcelIds: [`HR-1-${n}`], parcelSourceId: null,
+        deadline: '2026-11-01T00:00:00.000Z', status: 'active', onchain: null, createdAt,
+        content: {
+            schema: 'agreement/v1', title: `Agreement ${n}`, author: `author-${n}`, sponsor, createdAt,
+            designs: [{ cid: designCid, goal: 'buildings', title: `Design ${n}` }],
+            rule: { electorate: 'owners', binding: true, approvalConfig: null, lens: [] }
+        },
+        ...extra
+    };
 }
 
-describe('agent named-plan discovery', () => {
-    it('accepts only a complete current membership and matching chain account commitment', () => {
-        const listed = planRecord({ slug: 'plan', account: accountFor(8), proposalRowIds: ['31'] });
-        const detail = { ...listed, members: [{ proposalRowId: '31', changed: false }] };
-        expect(verifiedPlanMembership(listed, detail)).toBeNull();
-        expect(verifiedPlanMembership(listed, { ...detail, planHash: 'bad' })).toBe('commitment unavailable');
-        expect(verifiedPlanMembership(listed, { ...detail, proposalRowIds: ['31', '32'] })).toBe('membership changed');
-        expect(verifiedPlanMembership(listed, { ...detail, onchain: { ...listed.onchain, proposalId: accountFor(9) } }))
-            .toBe('chain account changed');
-    });
-
-    it('paginates ordinary proposals independently, includes minted plans for all cities, and namespaces plan ids', async () => {
-        const ordinary = Array.from({ length: 1001 }, (_, index) => ({ id: String(index + 1), proposalId: `authored-${index + 1}` }));
-        const fetchJson = apiFetch({
-            proposals: ordinary,
-            plans: [
-                planRecord({ slug: 'minted-plan', account: accountFor(1), proposalRowIds: ['11'], createdAt: '2026-01-01' }),
-                { slug: 'unminted-plan', proposalAccount: null, proposalRowIds: ['12'] }
-            ],
-            details: { 'minted-plan': { slug: 'minted-plan', proposalRowIds: ['11'], planHash: 'a'.repeat(64),
-                onchain: { chainId: 'solana-devnet', contractAddress: PROPOSAL_PROGRAM_ID, proposalId: accountFor(1) },
-                members: [{ proposalRowId: '11', changed: false }] } }
+describe('agreementSummary', () => {
+    it('keys an agreement by its CID and derives its chain account from sponsor and CID', () => {
+        const summary = agreementSummary(row(1));
+        expect(summary).toMatchObject({
+            cid: cidOf(1), name: 'Agreement 1', city: 'zagreb', author: 'author-1', sponsor: sponsors[1],
+            account: agreementAccountOf(cidOf(1), sponsors[1]), deadline: '2026-11-01T00:00:00.000Z',
+            designCids: row(1).designCids, inputParcelIds: ['HR-1-1'], chainStatus: null
         });
-        const result = await discoverProposalInputs({ apiBase: 'http://api', cities: [null], fetchJson });
-        expect(fetchJson.mock.calls.filter(([url]) => url.includes('/proposals/summary')).map(([url]) => new URL(url).searchParams.get('offset'))).toEqual(['0', '1000']);
-        expect(fetchJson).toHaveBeenCalledWith('http://api/plans');
-        expect(fetchJson).toHaveBeenCalledWith('http://api/plans/minted-plan');
-        expect(fetchJson).not.toHaveBeenCalledWith('http://api/plans/unminted-plan');
-        expect(result).toHaveLength(1002);
-        expect(result.find(item => item.planSlug)).toMatchObject({
-            id: 'plan:minted-plan', proposalId: 'plan:minted-plan', planSlug: 'minted-plan', goal: 'plan',
-            lifecycleStatus: 'Unknown', onchain: { proposalId: accountFor(1) }
-        });
+        // The same CID under another sponsor is another account: the PDA commits to both.
+        expect(agreementSummary(row(1, { content: { ...row(1).content, sponsor: sponsors[2] } })).account)
+            .not.toBe(summary.account);
     });
 
-    it('excludes missing, changed, and account-colliding plans with a reason', async () => {
-        const logs = [];
-        const fetchJson = apiFetch({
-            proposals: [{ id: '7', proposalId: 'ordinary', onchain: { chainId: 'solana-devnet', contractAddress: PROPOSAL_PROGRAM_ID, proposalId: accountFor(2) } }],
-            plans: ['missing', 'changed', 'duplicate'].map((slug, index) => planRecord({ slug, account: slug === 'duplicate' ? accountFor(2) : accountFor(3 + index), proposalRowIds: ['7'] })),
-            details: {
-                missing: { slug: 'missing', proposalRowIds: ['7'], planHash: 'a'.repeat(64), onchain: { chainId: 'solana-devnet', contractAddress: PROPOSAL_PROGRAM_ID, proposalId: accountFor(3) }, members: [{ proposalRowId: '7', missing: true }] },
-                changed: { slug: 'changed', proposalRowIds: ['7'], planHash: 'a'.repeat(64), onchain: { chainId: 'solana-devnet', contractAddress: PROPOSAL_PROGRAM_ID, proposalId: accountFor(4) }, members: [{ proposalRowId: '7', changed: true }] },
-                duplicate: { slug: 'duplicate', proposalRowIds: ['7'], planHash: 'a'.repeat(64), onchain: { chainId: 'solana-devnet', contractAddress: PROPOSAL_PROGRAM_ID, proposalId: accountFor(2) }, members: [{ proposalRowId: '7', changed: false }] }
-            }
-        });
-        const result = await discoverProposalInputs({ apiBase: 'http://api', cities: ['zagreb'], fetchJson, log: message => logs.push(message) });
-        expect(result.map(item => item.id)).toEqual(['7']);
-        expect(logs).toEqual(expect.arrayContaining([
-            expect.stringContaining('missing: excluded (member missing)'),
-            expect.stringContaining('changed: excluded (member changed)'),
-            expect.stringContaining('duplicate: excluded (Solana account already represented)')
-        ]));
-        expect(fetchJson).toHaveBeenCalledWith('http://api/plans?city=zagreb');
+    it('has no account without a usable sponsor, and refuses a row without its CID', () => {
+        expect(agreementSummary(row(1, { content: { ...row(1).content, sponsor: null } }))).toMatchObject({ sponsor: null, account: null });
+        expect(agreementSummary(row(1, { content: { ...row(1).content, sponsor: 'not-a-wallet' } })).account).toBeNull();
+        expect(() => agreementSummary({ ...row(1), cid: null })).toThrow(/missing its CID/);
+        // Design CIDs come from the content when the row does not list them.
+        expect(agreementSummary({ ...row(2), designCids: undefined }).designCids).toEqual(row(2).designCids);
     });
+});
 
-    it('propagates plan-detail read errors and refuses an authored-id collision', async () => {
-        const failingFetch = apiFetch({ plans: [planRecord({ slug: 'unavailable', account: accountFor(5), proposalRowIds: ['1'] })] });
-        await expect(discoverProposalInputs({ apiBase: 'http://api', cities: [null], fetchJson: failingFetch }))
-            .rejects.toThrow(/named plan unavailable detail request failed/);
-
-        const collisionFetch = apiFetch({
-            proposals: [{ id: '2', proposalId: 'plan:conflict' }],
-            plans: [planRecord({ slug: 'conflict', account: accountFor(6), proposalRowIds: ['1'] })],
-            details: { conflict: { slug: 'conflict', proposalRowIds: ['1'], planHash: 'a'.repeat(64),
-                onchain: { chainId: 'solana-devnet', contractAddress: PROPOSAL_PROGRAM_ID, proposalId: accountFor(6) },
-                members: [{ proposalRowId: '1', changed: false }] } }
-        });
-        await expect(discoverProposalInputs({ apiBase: 'http://api', cities: [null], fetchJson: collisionFetch }))
-            .rejects.toThrow(/proposal identifier collision with named plan conflict/);
-    });
-
-    it('applies decoded terminal chain states to named plans and ordinary minted proposals atomically', () => {
-        const proposals = [
-            { planSlug: 'active', onchain: { chainId: 'solana-devnet', contractAddress: PROPOSAL_PROGRAM_ID, proposalId: accountFor(10) }, lifecycleStatus: 'Unknown', planHash: 'committed-hash' },
-            { planSlug: 'executed', onchain: { chainId: 'solana-devnet', contractAddress: PROPOSAL_PROGRAM_ID, proposalId: accountFor(11) }, lifecycleStatus: 'Active', planHash: 'committed-hash' },
-            { planSlug: 'expired', onchain: { chainId: 'solana-devnet', contractAddress: PROPOSAL_PROGRAM_ID, proposalId: accountFor(12) }, lifecycleStatus: 'Active', planHash: 'committed-hash' },
-            { proposalId: 'ordinary-minted', onchain: { chainId: 'solana-devnet', proposalId: accountFor(13) }, lifecycleStatus: 'Active' }
-        ];
-        const infos = [0, 1, 3, 2].map((status, index) => ({ owner: new PublicKey(PROPOSAL_PROGRAM_ID),
-            data: proposalAccountBytes({ status, imageUri: index < 3
-                ? `ugt-plan:${proposals[index].planSlug}@committed-hash` : 'https://example.test/ordinary' }) }));
-        expect(applyProposalStatuses(proposals, infos).map(plan => plan.lifecycleStatus))
-            .toEqual(['Active', 'Executed', 'Expired', 'Cancelled']);
-        expect(proposals.map(plan => plan.onchainLifecycleStatus)).toEqual(['Active', 'Executed', 'Expired', 'Cancelled']);
-
-        expect(() => applyProposalStatuses([proposals[0]], [{ owner: new PublicKey(PROPOSAL_PROGRAM_ID),
-            data: proposalAccountBytes({ imageUri: 'ugt-plan:different@hash' }) }]))
-            .toThrow(/does not commit to its current content/);
-        expect(() => applyProposalStatuses([proposals[0]], [null])).toThrow(/chain account .* is missing/);
-        expect(() => applyProposalStatuses([proposals[0]], [{ owner: PublicKey.default, data: proposalAccountBytes() }]))
-            .toThrow(/not owned by the proposal program/);
-
-        const untouched = [
-            { ...proposals[0], lifecycleStatus: 'Unknown', onchainLifecycleStatus: undefined },
-            { ...proposals[1], lifecycleStatus: 'Active', onchainLifecycleStatus: undefined }
-        ];
-        expect(() => applyProposalStatuses(untouched, [infos[0], { ...infos[1], data: proposalAccountBytes({ imageUri: 'ugt-plan:wrong@hash' }) }]))
-            .toThrow(/does not commit to its current content/);
-        expect(untouched.map(plan => [plan.lifecycleStatus, plan.onchainLifecycleStatus]))
-            .toEqual([['Unknown', undefined], ['Active', undefined]]);
-    });
-
-    it('loads the same named plan once when it appears in more than one city result', async () => {
-        const plan = planRecord({ slug: 'same-plan', account: accountFor(7), proposalRowIds: ['8'] });
-        const fetchJson = apiFetch({
-            plans: [plan],
-            details: { 'same-plan': { slug: 'same-plan', proposalRowIds: ['8'], planHash: 'a'.repeat(64), onchain: plan.onchain,
-                members: [{ proposalRowId: '8', changed: false }] } }
-        });
-        const result = await discoverProposalInputs({ apiBase: 'http://api', cities: ['zagreb', 'sibenik'], fetchJson });
-        expect(result.filter(proposal => proposal.planSlug)).toHaveLength(1);
-        expect(fetchJson.mock.calls.filter(([url]) => url.endsWith('/plans/same-plan'))).toHaveLength(1);
-    });
-
-    it('loads 1001 member rows in bounded batch calls and carries each building source row ID', async () => {
-        const ids = Array.from({ length: 1001 }, (_, index) => String(index + 1));
-        const fetchJson = apiFetch();
-        const record = await loadPlanRecord({
-            apiBase: 'http://api', fetchJson,
-            plan: { id: 'plan:large', proposalId: 'plan:large', planSlug: 'large', title: 'Large', proposalRowIds: ids }
-        });
-        const calls = fetchJson.mock.calls.filter(([url]) => url.endsWith('/proposals/batch'));
-        expect(calls.map(([, options]) => JSON.parse(options.body).ids.length)).toEqual([1000, 1]);
-        expect(record.evidence).toEqual({ sourceProposalRowIds: ids, buildingCount: 1001 });
-        expect(record.geometry.buildings[1000]).toMatchObject({ id: 'building-1001', sourceProposalRowId: '1001' });
-    });
-
-    it('lets the existing support policy select a named plan by its real chain account', async () => {
-        const plan = { id: 'plan:park', proposalId: 'plan:park', title: 'Pocket park', lifecycleStatus: 'Active', author: 'other', onchain: { proposalId: 'real-plan-account' } };
-        expect(eligibleSupportProposals([plan], { wallet: 'supporter' })).toEqual([plan]);
-        expect(selectSupportAction({ day: '2026-10-19', persona: { name: 'supporter', support: { actions: ['pledge'] } }, proposals: [plan], wallet: 'supporter' }).selected)
-            .toMatchObject({ proposalId: 'plan:park', proposalAccount: 'real-plan-account', proposalName: 'Pocket park' });
-    });
-
-    it('lets the society density policy score plan member geometry as record evidence', () => {
-        const plan = {
-            id: 'plan:tower-plan', proposalId: 'plan:tower-plan', planSlug: 'tower-plan', goal: 'plan',
-            title: 'Tower plan', lifecycleStatus: 'Active', author: 'other', onchain: { proposalId: 'real-plan-account' },
-            record: { geometry: { buildings: [{
-                geometry: { type: 'Polygon', coordinates: [[[15, 45], [15.001, 45], [15.001, 45.001], [15, 45.001], [15, 45]]] },
-                properties: { floors: 8, sourceProposalRowId: '51' }
-            }] } }
+describe('discoverAgreements', () => {
+    it('reads each city once, merges by CID and orders newest first', async () => {
+        const shared = row(5);
+        const index = {
+            listAgreements: vi.fn(async ({ city }) => ({
+                agreements: city === 'zagreb' ? [shared, row(1)] : [row(3), { ...shared, title: 'second copy' }],
+                count: 2
+            }))
         };
-        const result = decideContrarian({ persona: { name: 'preservationist-01' }, seed: 'day', wallet: 'self', proposals: [plan] });
-        expect(result.options[0]).toMatchObject({ proposalId: 'plan:tower-plan', action: { proposalAccount: 'real-plan-account', side: 'no' } });
-        expect(result.options[0].evidence).toMatchObject({ source: 'record', score: expect.any(Number) });
+        const log = vi.fn();
+        const result = await discoverAgreements({ index, cities: ['zagreb', null], log });
+        expect(index.listAgreements.mock.calls.map(([args]) => args)).toEqual([
+            { city: 'zagreb', limit: AGREEMENT_PAGE }, { city: null, limit: AGREEMENT_PAGE }
+        ]);
+        expect(result.map(item => item.cid)).toEqual([cidOf(5), cidOf(3), cidOf(1)]);
+        // The first copy of a CID is the one kept.
+        expect(result[0].name).toBe('Agreement 5');
+        expect(log).not.toHaveBeenCalled();
+    });
+
+    it('says so when a page is cut at the index limit, never silently', async () => {
+        const rows = Array.from({ length: AGREEMENT_PAGE }, (_, n) => row(n, { content: { ...row(n).content, sponsor: null } }));
+        const log = vi.fn();
+        const result = await discoverAgreements({ index: { listAgreements: async () => ({ agreements: rows }) }, cities: [null], log });
+        expect(result).toHaveLength(AGREEMENT_PAGE);
+        expect(log).toHaveBeenCalledWith(`all cities: read the newest ${AGREEMENT_PAGE} agreements (the index answers at most that many)`);
+    });
+});
+
+describe('readAgreementStatuses', () => {
+    const summaries = () => [row(0), row(1), row(2), row(3, { content: { ...row(3).content, sponsor: null } })].map(agreementSummary);
+    const info = (summary, status, extra = {}) => agreementAccountInfo({ cid: summary.cid, authority: summary.sponsor, status, ...extra });
+    function chain(byAccount) {
+        return { getMultipleAccountsInfo: vi.fn(async keys => keys.map(key => byAccount.get(key.toBase58()) ?? null)) };
+    }
+
+    it('reads the minted accounts in batches and takes the status from the chain, not the index', async () => {
+        const agreements = summaries();
+        const connection = chain(new Map([
+            [agreements[0].account, info(agreements[0], 1)],
+            [agreements[1].account, info(agreements[1], 0)]
+        ]));
+        const out = await readAgreementStatuses(agreements, connection, { env: { SOLANA_RPC_MAX_ACCOUNTS: '2' } });
+        expect(out).toBe(agreements);
+        // Three accounts in batches of two; the agreement without a sponsor has none to read.
+        expect(connection.getMultipleAccountsInfo.mock.calls.map(([keys]) => keys.length)).toEqual([2, 1]);
+        expect(connection.getMultipleAccountsInfo.mock.calls.flatMap(([keys]) => keys.map(key => key.toBase58())))
+            .toEqual(agreements.slice(0, 3).map(item => item.account));
+        expect(agreements.map(item => item.chainStatus)).toEqual(['executed', 'active', null, null]);
+        expect(agreements.map(isMinted)).toEqual([true, true, false, false]);
+        // The index still said active for the executed one: a supporter never picks it.
+        const choice = selectSupportAction({ day: '2026-10-22', persona: { name: 'supporter-01' }, agreements: [agreements[0]], now: NOW });
+        expect(choice.selected).toBeNull();
+    });
+
+    it.each([
+        ['owned by another program', summary => ({ ...agreementAccountInfo({ cid: summary.cid, authority: summary.sponsor }), owner: PublicKey.default }), /not owned by the agreement program/],
+        ['not an Agreement account', summary => ({ ...agreementAccountInfo({ cid: summary.cid, authority: summary.sponsor }), data: Buffer.alloc(296) }), /is not an Agreement account/],
+        ['holding another CID', summary => agreementAccountInfo({ cid: cidOf(99), authority: summary.sponsor }), /holds bafkrei/],
+        ['holding another sponsor', summary => agreementAccountInfo({ cid: summary.cid, authority: sponsors[3] }), new RegExp(`holds .* of ${sponsors[3]}`)],
+        ['truncated', summary => ({ ...agreementAccountInfo({ cid: summary.cid, authority: summary.sponsor }), data: agreementAccountBytes({ cid: summary.cid, authority: summary.sponsor }).subarray(0, 140) }), /truncated/]
+    ])('fails the whole read on an account %s and changes nothing', async (_label, bad, message) => {
+        const agreements = summaries();
+        const connection = chain(new Map([
+            [agreements[0].account, info(agreements[0], 0)],
+            [agreements[1].account, bad(agreements[1])]
+        ]));
+        await expect(readAgreementStatuses(agreements, connection)).rejects.toThrow(message);
+        expect(agreements.map(item => item.chainStatus)).toEqual([null, null, null, null]);
+    });
+
+    it('propagates an RPC failure and calls nothing for agreements without accounts', async () => {
+        await expect(readAgreementStatuses(summaries(), { getMultipleAccountsInfo: async () => { throw new Error('RPC offline'); } }))
+            .rejects.toThrow('RPC offline');
+        const connection = { getMultipleAccountsInfo: vi.fn() };
+        const unminted = [agreementSummary(row(3, { content: { ...row(3).content, sponsor: null } }))];
+        expect(await readAgreementStatuses(unminted, connection)).toBe(unminted);
+        expect(connection.getMultipleAccountsInfo).not.toHaveBeenCalled();
+    });
+});
+
+describe('isOpen', () => {
+    it('is Active on chain and before the deadline (or with none)', () => {
+        const base = { account: 'account', chainStatus: 'active', deadline: '2026-10-22T12:00:01Z' };
+        expect(isOpen(base, NOW)).toBe(true);
+        expect(isOpen({ ...base, deadline: null }, NOW)).toBe(true);
+        expect(isOpen({ ...base, deadline: '2026-10-22T12:00:00Z' }, NOW)).toBe(false);
+        for (const chainStatus of ['executed', 'cancelled', 'expired', null]) expect(isOpen({ ...base, chainStatus }, NOW)).toBe(false);
     });
 });

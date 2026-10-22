@@ -1,11 +1,10 @@
-// Route tests for the lens attester directory and schema endpoints, plus upsertLensMember's SQL
-// parameters, with a stubbed pool.
+// Route tests for the lens attester directory and schema endpoints, with a stubbed pool. Members list
+// themselves through a verified registration (lens-registration.test.js); the directory serves them.
 
 import express from 'express';
 import request from 'supertest';
 import { describe, expect, it, vi } from 'vitest';
 import { setupLensesRoute } from '../routes/lenses.js';
-import { upsertLensMember } from '../oracle/lens-directory.js';
 
 const KEY = 'AMbsiP9F8YY2y8n9uFdqtw7yNZZHvTWFEWSQGHKtmkoQ';
 
@@ -57,32 +56,15 @@ describe('GET /lenses/schemas', () => {
         expect(res.body.sasProgram).toBe('22zoJMtdu4tQc2PzL74ZUT7FrwgB1Udec8DdW4yw4BdG');
         expect(res.body.schemas.map(s => [s.id, s.name, s.version])).toEqual([
             ['ParcelOwnership-v1', 'ParcelOwnership', 1],
-            ['ProposalVerdict-v1', 'ProposalVerdict', 1],
+            ['AgreementDecision-v1', 'AgreementDecision', 1],
             ['MarketEvidence-v1', 'MarketEvidence', 1]
         ]);
         expect(res.body.schemas[0].fields).toContainEqual({ name: 'ownerCount', type: 'uint8' });
-        expect(res.body.schemas[1].layout).toBe('string proposalAccount, string verdict, string evidenceRef, int64 sourceObservedAt');
-    });
-});
-
-describe('upsertLensMember', () => {
-    it('passes the source time and normalised coverage, returning the directory shape', async () => {
-        const url = 'https://attester.example.test/requests';
-        const pool = { query: vi.fn(async () => ({ rows: [{ key: KEY, kind: 'owner-consent', name: null, description: null, service_url: url, coverage: { ownership: 1, parcels: 1, executed: 0 } }] })) };
-        const member = await upsertLensMember(pool, { key: KEY, kind: 'owner-consent', serviceUrl: url, coverage: { ownership: 1, parcels: 1 }, seenAt: 1790000000 });
-        const [sql, params] = pool.query.mock.calls[0];
-        expect(sql).toContain('ON CONFLICT (key) DO UPDATE');
-        expect(sql).toContain('service_url = COALESCE(EXCLUDED.service_url, lens_member.service_url)');
-        expect(params).toEqual([KEY, 'owner-consent', null, null, null, url, '{"ownership":1,"parcels":1,"executed":0}', '2026-09-21T14:13:20.000Z']);
-        expect(member).toEqual({ key: KEY, kind: 'owner-consent', name: null, description: null, serviceUrl: url, registeredAt: null, coverage: { ownership: 1, parcels: 1, executed: 0 } });
-    });
-
-    it('never invents a seen time and refuses a bad key', async () => {
-        const pool = { query: vi.fn(async () => ({ rows: [{ key: KEY, coverage: {} }] })) };
-        await upsertLensMember(pool, { key: KEY, name: 'Curated' });
-        expect(pool.query.mock.calls[0][1].at(-1)).toBeNull();
-        expect(pool.query.mock.calls[0][1][5]).toBeNull(); // service_url: null keeps the stored value
-        expect(pool.query.mock.calls[0][1][6]).toBeNull(); // coverage
-        await expect(upsertLensMember(pool, { key: 'nope' })).rejects.toThrow(/base58/);
+        // The agreement program's attest reads exactly this layout (programs/agreement/README.md).
+        expect(res.body.schemas[1]).toMatchObject({
+            kind: 'decision',
+            layout: 'string agreementCid, string sponsor, string decision, string evidenceRef, int64 sourceObservedAt',
+            sasLayout: [12, 12, 12, 12, 8]
+        });
     });
 });

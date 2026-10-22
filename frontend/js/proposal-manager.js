@@ -90,8 +90,7 @@ function _getProposalApplyLabel(proposalId, proposalData) {
 // identical lines would.
 const _APPLY_KIND_WORDS = {
     'road-track': 'road',
-    reparcellization: 'land readjustment',
-    'decide-later': 'merge',
+    'parcel-layout': 'parcel layout',
     park: 'park',
     square: 'square',
     lake: 'lake',
@@ -847,92 +846,6 @@ const ProposalManager = {
             return null;
         }
     },
-    createProposal(options) {
-        const input = options || {};
-        const nextLocalId = (typeof proposalStorage !== 'undefined' && Number.isFinite(proposalStorage.nextProposalId))
-            ? proposalStorage.nextProposalId
-            : Date.now();
-        const initialProposalId = input.onchainProposal?.proposalId != null
-            ? String(input.onchainProposal.proposalId)
-            : `local-${nextLocalId}`;
-        const name = String(input.name || 'Road');
-        const normalizedAuthor = (input.author && String(input.author).trim()) || 'User';
-        const normalizedDescription = (input.description && String(input.description).trim()) || `Road: ${name}`;
-        const offerValue = Number.isFinite(Number(input.offer)) ? Number(input.offer) : null;
-        const budgetValue = Number.isFinite(Number(input.budget)) ? Number(input.budget) : offerValue;
-        const selectedParcelIds = Array.from(new Set((Array.isArray(input.parcelIds)
-            ? input.parcelIds.map(String).filter(Boolean)
-            : [])));
-        const fabric = _committedFabric();
-        if (!fabric || typeof fabric.cadastreIdsForParcelIds !== 'function') {
-            throw new Error('Live parcel fabric provenance is unavailable while creating the corridor.');
-        }
-        const cadastreParcelIds = fabric.cadastreIdsForParcelIds(selectedParcelIds);
-        let definition = input.definition || {};
-        try { definition = JSON.parse(JSON.stringify(definition)); } catch (_) { definition = { ...definition }; }
-
-        const proposalData = {
-            type: 'road',
-            title: name,
-            author: normalizedAuthor,
-            description: normalizedDescription,
-            proposalId: initialProposalId,
-            cadastreParcelIds,
-            roadProposal: {
-                id: initialProposalId,
-                proposalId: initialProposalId,
-                definition
-            },
-            applied: false,
-            createdAt: new Date().toISOString()
-        };
-        if (input.onchainProposal) {
-            proposalData.onchain = { ...input.onchainProposal };
-        }
-
-        if (Number.isFinite(offerValue)) {
-            proposalData.offer = offerValue;
-            proposalData.budget = Number.isFinite(budgetValue) ? budgetValue : offerValue;
-        }
-
-        // Include lens from options or proposal object
-        const lensToUse = input.lens;
-
-        // Process lens if it exists and is not empty
-        if (lensToUse !== undefined && lensToUse !== null) {
-            let normalizedLens = null;
-            if (typeof normalizeLensEntries === 'function') {
-                normalizedLens = normalizeLensEntries(lensToUse);
-            } else if (Array.isArray(lensToUse)) {
-                normalizedLens = lensToUse;
-            }
-
-            // Only set lens if we have valid entries after normalization
-            if (normalizedLens && Array.isArray(normalizedLens) && normalizedLens.length > 0) {
-                proposalData.lens = normalizedLens;
-                console.log('[createProposal] Lens included in proposalData:', normalizedLens.length, 'entries');
-            }
-        }
-
-        if (typeof proposalStorage !== 'undefined') {
-            const proposalId = proposalStorage.addProposal(proposalData);
-            if (!proposalId) {
-                // Duplicate proposal or invalid data - return null to indicate failure
-                console.warn('[createProposal] Failed to add proposal to storage - duplicate or invalid data', { proposalData });
-                return null;
-            }
-            proposalData.proposalId = String(proposalId);
-            proposalData.roadProposal.id = String(proposalId);
-            proposalData.roadProposal.proposalId = String(proposalId);
-
-            // Update show proposals button
-            if (typeof updateShowProposalsButton === 'function') {
-                updateShowProposalsButton();
-            }
-        }
-
-        return proposalData;
-    },
 
     // Finish a newly drawn corridor as one authored transaction. A T/X junction changes both the
     // new definition and the already-applied road it meets; those records, the applied-state flip,
@@ -1019,8 +932,7 @@ const ProposalManager = {
         const authoring = browserRoot.CorridorAuthoring;
         const allRecords = store ? _peekProposals(store) : [];
         const originApi = browserRoot.ProposalOrigin || require('./proposals/origin.js');
-        const source = originApi.resolveLocal(proposal.proposalOrigin, allRecords,
-            typeof browserRoot.getBackendBase === 'function' ? browserRoot.getBackendBase() : null);
+        const source = originApi.resolveLocal(proposal.proposalOrigin, allRecords);
         const excludedIds = source ? [String(source.proposalId)] : [];
 
         _announceApply('Planning the new corridor junctions…');
@@ -1588,8 +1500,8 @@ const ProposalManager = {
                 return goalKey !== 'road-track' && (appliedOf(record) || seedIds.has(String(record.proposalId || '')));
             })
             : seeds.slice();
-        // A formation whose output CONSUMES ground (a readjustment, a merge-take that mints one
-        // parcel over several) binds every anchor it spans: the fabric refuses a replacement scope
+        // A formation whose output CONSUMES ground (a parcel layout, which re-forms the parcels
+        // under it) binds every anchor it spans: the fabric refuses a replacement scope
         // that cuts through such a piece, so those anchors must join. A formation that only adopts
         // ground parcel by parcel is replayed when it touches the scope but does not widen it:
         // its pieces elsewhere are re-minted unchanged. Widening through every shared anchor made
@@ -1598,7 +1510,7 @@ const ProposalManager = {
         const spansSeveralParcels = record => {
             const id = String(record?.proposalId || '');
             const route = applyRoute?.classifyApplyRoute?.(record)?.route || '';
-            if (route === 'reparcellization' || route === 'decide-later' || record?.reparcellization || record?.decideLaterProposal) return true;
+            if (route === 'parcel-layout' || record?.parcelLayout) return true;
             if (seedIds.has(id)) return true;
             if (!fabric || typeof fabric.producedBy !== 'function') return true;
             try {
@@ -3003,7 +2915,7 @@ const ProposalManager = {
         delete proposal.descendantParcelIds;
         delete proposal.parentFeatures;
         delete proposal.childFeatures;
-        ['roadProposal', 'reparcellization', 'decideLaterProposal', 'buildingProposal', 'structureProposal'].forEach(key => {
+        ['roadProposal', 'parcelLayout', 'buildingProposal', 'structureProposal'].forEach(key => {
             const sub = proposal[key];
             if (!sub || typeof sub !== 'object' || Array.isArray(sub)) return;
             delete sub.childParcelIds;
@@ -3337,7 +3249,7 @@ const ProposalManager = {
         const { route, goalKey } = applyRoute.classifyApplyRoute(proposalData);
         const groundRecord = _groundRecord(proposalData);
         if (_withoutParcelsSelected() && (!groundRecord
-            || (route === 'reparcellization' && proposalClaims.cadastreParcelIdsOf(proposalData).length))) {
+            || (route === 'parcel-layout' && proposalClaims.cadastreParcelIdsOf(proposalData).length))) {
             this._setLastApplyFailure(safeId, _proposalApplyFailure('proposal-needs-parcels'));
             return false;
         }
@@ -3360,18 +3272,10 @@ const ProposalManager = {
             return false;
         }
 
-        // Open ground (PARCEL-OPTIONAL.md phases 3-4). A land readjustment over ground without
+        // Open ground (PARCEL-OPTIONAL.md phases 3-4). A parcel layout over ground without
         // parcels is a subdivision: its plots form on the open-ground host beside the bound
-        // parcels' pieces (apply/parcels.js). A decide-later merge is an act on parcels and never
-        // stands on open ground (hasOpenGround is false for parcel acts); refused by name should a
-        // record ever claim otherwise.
+        // parcels' pieces (apply/parcels.js).
         const onOpenGround = route !== 'road-track' && openGroundApi.hasOpenGround(groundRecord);
-        if (onOpenGround && route === 'decide-later') {
-            const message = 'A merge of parcels cannot stand on ground without parcels.';
-            this._setLastApplyFailure(safeId, { code: 'merge-open-ground', message });
-            console.warn(`[${new Date().toISOString()}] [ProposalManager.applyProposal] ${safeId}: ${message}`);
-            return false;
-        }
         let formationOptions = _withoutParcelsSelected()
             ? { ...applyOptions, groundRecord }
             : applyOptions;
@@ -3401,11 +3305,8 @@ const ProposalManager = {
                 try { this._setLastApplyFailure(safeId, { code: 'corridor-footprint-missing', message }); } catch (_) { }
                 return false;
             }
-            if (route === 'reparcellization') {
-                return await this._applyReparcellizationProposal(safeId, proposalData, formationOptions);
-            }
-            if (route === 'decide-later') {
-                return await this._applyDecideLaterProposal(safeId, proposalData, applyOptions);
+            if (route === 'parcel-layout') {
+                return await this._applyParcelLayoutProposal(safeId, proposalData, formationOptions);
             }
             if (route === 'building') {
                 return await this._applyBuildingProposal(safeId, proposalData, formationOptions);
@@ -3488,12 +3389,6 @@ const ProposalManager = {
     _isBuildingProposal(proposalData) {
         if (!proposalData) return false;
         return applyRoute.isBuildingGoal(this._normalizeGoalKey(proposalData.goal));
-    },
-
-    _isDecideLaterProposal(proposalData) {
-        if (!proposalData) return false;
-        const goalKey = this._normalizeGoalKey(proposalData.goal);
-        return goalKey === 'decide-later';
     },
 
     _normalizeGoalKey(rawGoal) {
@@ -3580,8 +3475,7 @@ const ProposalManager = {
             proposalData.roadProposal
             || proposalData.buildingProposal
             || proposalData.structureProposal
-            || proposalData.reparcellization
-            || proposalData.decideLaterProposal
+            || proposalData.parcelLayout
         );
         if (!supported) return false;
         if (!appliedOf(proposalData)) return true;
@@ -3652,10 +3546,6 @@ const ProposalManager = {
 
         if (refreshAll || route === 'building') {
             try { if (typeof updateProposedBuildingsLayer === 'function') updateProposedBuildingsLayer(); } catch (_) { }
-        }
-
-        if (refreshAll || route === 'reparcellization') {
-            try { if (typeof updateReparcellizationLayers === 'function') updateReparcellizationLayers(); } catch (_) { }
         }
 
         // Refresh the proposals modal if it's open

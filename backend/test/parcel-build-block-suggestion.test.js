@@ -18,10 +18,6 @@ const listUiSource = fs.readFileSync(
     path.resolve(here, '../../frontend/js/proposals/list-ui.js'),
     'utf8'
 );
-const reparcelSource = fs.readFileSync(
-    path.resolve(here, '../../frontend/js/proposals/reparcel.js'),
-    'utf8'
-);
 const urbanRulesSource = fs.readFileSync(
     path.resolve(here, '../../frontend/js/proposals/urban-rules.js'),
     'utf8'
@@ -49,7 +45,7 @@ function loadActions(overrides = {}) {
 }
 
 describe('whole-block fresh-proposal suggestion', () => {
-    it('renders transport icons with full station labels, followed by a separate Ownership group', () => {
+    it('renders transport icons with full station labels, and no Ownership group (M2: owner offers are gone)', () => {
         const container = { innerHTML: '' };
         const document = {
             querySelector: vi.fn(() => null),
@@ -77,9 +73,31 @@ describe('whole-block fresh-proposal suggestion', () => {
         expect(html).toContain('Tram station');
         expect(html).toContain('Metro station');
         expect(html).toContain('Elevated station');
-        expect(html).toContain('parcel-ownership-group');
-        expect(html.indexOf('parcel-transport-group')).toBeLessThan(html.indexOf('parcel-ownership-group'));
-        expect(html.indexOf('parcel-ownership-group')).toBeLessThan(html.indexOf('parcel-build-btn--offer'));
+        expect(html).not.toContain('parcel-ownership-group');
+        expect(html).not.toContain('parcel-build-btn--offer');
+        // The transport group closes the palette, after the construction tools.
+        expect(html.indexOf('parcel-build-btn--park')).toBeGreaterThan(-1);
+        expect(html.indexOf('parcel-build-btn--park')).toBeLessThan(html.indexOf('parcel-transport-group'));
+    });
+
+    it('offers Lay out parcels first and opens the parcel-layout design tool on the selection', async () => {
+        const container = { innerHTML: '' };
+        const document = {
+            querySelector: vi.fn(() => null),
+            getElementById: vi.fn(id => id === 'parcel-proposal-primary-actions' ? container : null)
+        };
+        const startInstantProposalDesign = vi.fn(async () => true);
+        const window = loadActions({ document, currentParcel: { id: 'parcel-1' }, startInstantProposalDesign });
+
+        window.renderParcelProposalActions();
+        const html = container.innerHTML;
+        expect(html).toContain('parcel-build-btn--parcel-layout');
+        expect(html).toContain('Lay out parcels');
+        expect(html).not.toContain('parcel-build-btn--reparcellization');
+        expect(html.indexOf('parcel-build-btn--parcel-layout')).toBeLessThan(html.indexOf('parcel-rules-group'));
+
+        await window.startParcelBuildTool('parcel-layout');
+        expect(startInstantProposalDesign).toHaveBeenCalledWith('parcel-layout', ['parcel-1']);
     });
 
     it('routes transport palette icons to the existing corridor and station tools', () => {
@@ -109,9 +127,9 @@ describe('whole-block fresh-proposal suggestion', () => {
     it('defines one goal policy for block-scale creation and excludes exact-parcel proposals', () => {
         const window = loadActions();
 
-        ['buildings', 'row', 'parcelBased', 'single', 'reparcellization', 'park', 'square', 'lake', 'urban-rule']
+        ['buildings', 'row', 'parcelBased', 'single', 'parcel-layout', 'park', 'square', 'lake', 'urban-rule']
             .forEach(goal => expect(window.shouldSuggestWholeBlockForFreshProposal(goal)).toBe(true));
-        ['offer', 'road-track', 'ownership-transfer', 'as-is', 'decide-later']
+        ['offer', 'road-track', 'ownership-transfer', 'as-is']
             .forEach(goal => expect(window.shouldSuggestWholeBlockForFreshProposal(goal)).toBe(false));
     });
 
@@ -286,27 +304,5 @@ describe('whole-block fresh-proposal suggestion', () => {
 
         expect(context.launchSingleBuildingToolForSelection).toHaveBeenCalledOnce();
         expect(setGeometryStatus).not.toHaveBeenCalled();
-    });
-
-    it('runs the same preflight when land readjustment is launched from the classic proposal dialog', async () => {
-        const shouldStopFreshProposalForWholeBlock = vi.fn(async () => true);
-        const context = {
-            console,
-            window: null,
-            document: { getElementById: vi.fn(() => null) },
-            currentOwnershipMode: 'multiple',
-            currentProposalTool: null,
-            getCurrentParcelSelectionContext: vi.fn(() => ({ ids: ['parcel-1'], layers: [{}] })),
-            shouldStopFreshProposalForWholeBlock
-        };
-        context.window = context;
-        vm.runInNewContext(reparcelSource, context);
-
-        await expect(context.handleReparcellizationAlgorithmClick('sweep-line')).resolves.toBe(false);
-
-        expect(shouldStopFreshProposalForWholeBlock).toHaveBeenCalledWith(
-            'reparcellization', { ids: ['parcel-1'], layers: [{}] }
-        );
-        expect(context.currentProposalTool).toBeNull();
     });
 });

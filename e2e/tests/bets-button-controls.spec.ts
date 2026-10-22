@@ -1,36 +1,49 @@
-// Exercise the Bets sheet and dialog actions through their real navigation and wallet boundaries.
+// Exercise the Bets sheet and dialog actions through their real navigation and wallet boundaries
+// (plan-design-agreement.md, M3: a bet is on a minted agreement, its row and dialog lead to the
+// agreement's panel). The city's contests come from the page's index (mocks/shared-server.ts).
 import { test, expect } from '../helpers/fixtures';
-import { createSpace, openCity, showProposal, chooseTermsForShare } from '../helpers/runtime';
+import type { Page } from '@playwright/test';
+import { openCity } from '../helpers/runtime';
 import { connectWalletByConnectorId, injectMockSolanaWallet } from '../helpers/blockchain';
-import { attachSharedProposalServer, createSharedProposalServer } from '../helpers/mocks/shared-server';
+import { pageIndex, MarketPool } from '../helpers/mocks/shared-server';
+import { fileIndexedAgreement, proposeOverPark, storedAgreements, MINTED_ACCOUNT, OPEN_POOL } from '../helpers/agreements';
 
-const ACCOUNT = 'Ekpt4qMsJWyyraDfPfq2zkT1JwMsJCKrSmkoNGgHreFR';
+const ACCOUNT = MINTED_ACCOUNT;
 const WALLET = 'Cp886ML2Ja4FF3SMmyUeW16rRGsLrBcRW8kfWS1VfN7W';
+const TITLE = 'Plan-led infill';
 
-function payload(entry: Record<string, unknown> = {}) {
-  const proposal = {
-    id: 789, proposalId: 'minted-one', title: 'Plan-led infill', goal: 'single', lifecycleStatus: 'Active', chainStatus: 'Active',
-    createdAt: '2026-10-01T09:30:00Z', expiresAt: null, author: 'densifier-01', agent: true,
-    proposalRole: null, screenshotUrl: null, parcelIds: ['HR-335614-2311'], proposalAccount: ACCOUNT,
-    bettable: true, canOpenMarket: false,
-    market: { address: 'HQqbGtviQr5KRs4x8CWSCVhnkrLKDiYqXmVSBY8GZdfw', yesPool: '250000', noPool: '50000', poolAtomic: '300000', resolved: false, outcome: null },
-    ...entry,
-  };
-  return {
-    city: 'zagreb', generatedAt: '2026-10-09T07:00:00.000Z', cluster: 'devnet', stakeDecimals: 6,
-    marketProgram: 'GDYnzduynKhKgxDhvvKVarn2s23DtzA26s6hycuUYDRB', stakeMint: '4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU',
-    summary: { contests: 1, proposals: 1, markets: proposal.market ? 1 : 0, openMarkets: proposal.bettable ? 1 : 0, poolAtomic: '300000' },
-    contests: [{ id: 'c-test', parcelIds: ['HR-335614-2311'], proposalCount: 1, mintedCount: 1,
-      marketCount: proposal.market ? 1 : 0, openMarketCount: proposal.bettable ? 1 : 0,
-      poolAtomic: '300000', latestCreatedAt: '2026-10-02T00:00:00Z', proposals: [proposal] }],
-  };
+// A binding agreement over parcel 2311 proposed in Zagreb, minted at ACCOUNT, as the index holds it:
+// `status` is the account's status the index recorded, `pool` its market (none: no pool opened yet).
+const fileMinted = (page: Page, { status = 'active', pool = OPEN_POOL }: { status?: string; pool?: MarketPool | null } = {}) =>
+  fileIndexedAgreement(pageIndex(page), { title: TITLE, designTitles: ['Infill park'], minted: { status }, pool }).cid;
+
+// Solana reads answered locally: devnet's genesis, no accounts, and an optional stake balance.
+async function routeSolanaReads(page: Page, onBalance?: () => void): Promise<void> {
+  await page.route('**/*', async route => {
+    if (route.request().method() !== 'POST') return route.fallback();
+    let request: any = {};
+    try { request = route.request().postDataJSON(); } catch (_) { }
+    let result: unknown;
+    if (request?.method === 'getGenesisHash') {
+      // getVerifiedConnection refuses reads unless the endpoint identifies as Solana devnet.
+      result = 'EtWTRABZaYq6iMfeYKouRu166VU2xqa1wcaWoxPkrZBG';
+    } else if (request?.method === 'getTokenAccountBalance' && onBalance) {
+      onBalance();
+      result = { context: { slot: 1 }, value: { amount: '12500000', decimals: 6, uiAmount: 12.5, uiAmountString: '12.5' } };
+    } else if (request?.method === 'getAccountInfo') {
+      result = { context: { slot: 1 }, value: null };
+    } else if (request?.method === 'getMultipleAccounts') {
+      const pubkeys = Array.isArray(request.params?.[0]) ? request.params[0] : [];
+      result = { context: { slot: 1 }, value: pubkeys.map(() => null) };
+    }
+    if (result === undefined) return route.fallback();
+    return route.fulfill({ status: 200, contentType: 'application/json', headers: { 'access-control-allow-origin': '*' }, body: JSON.stringify({
+      jsonrpc: '2.0', id: request.id, result,
+    }) });
+  });
 }
 
-async function routeMarkets(page: import('@playwright/test').Page, data = payload()): Promise<void> {
-  await page.route('**/markets?*', route => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(data) }));
-}
-
-async function captureShareAndClipboard(page: import('@playwright/test').Page): Promise<void> {
+async function captureShareAndClipboard(page: Page): Promise<void> {
   await page.addInitScript(() => {
     (window as any).__betsShare = null;
     (window as any).__betsClipboard = [];
@@ -41,28 +54,30 @@ async function captureShareAndClipboard(page: import('@playwright/test').Page): 
 
 test.describe('Bets shared button variants @features', () => {
   test('Try again reloads a failed Bets request and renders the recovered contest', async ({ mockApi: page }) => {
+    fileMinted(page);
     let attempts = 0;
+    // The first read fails; the next ones reach the index.
     await page.route('**/markets?*', route => {
       attempts += 1;
       return attempts === 1
         ? route.fulfill({ status: 503, contentType: 'application/json', body: '{"error":"temporary"}' })
-        : route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(payload()) });
+        : route.fallback();
     });
     await openCity(page);
     await page.locator('#bets-button').click();
     const content = page.locator('#bets-sheet-content');
-    await expect(content).toContainText('Bets could not be loaded.');
+    await expect(content).toContainText('Bets could not be loaded.', { timeout: 30_000 });
     await content.getByRole('button', { name: 'Try again' }).click();
-    await expect(content.locator('.bets-row__title')).toHaveText('Plan-led infill');
+    await expect(content.locator('.bets-row__title')).toHaveText(TITLE, { timeout: 30_000 });
     expect(attempts).toBe(2);
   });
 
   test('Share and Copy link use the bet URL from the overview and the sheet row', async ({ mockApi: page }) => {
-    await routeMarkets(page);
+    fileMinted(page);
     await captureShareAndClipboard(page);
     await page.goto(`/?city=zg&bets=${ACCOUNT}&reduceMotion=1`);
     const dialog = page.locator('#proposalMarketOverlay');
-    await expect(dialog.locator('.cb-dialog__title')).toHaveText('Plan-led infill');
+    await expect(dialog.locator('.cb-dialog__title')).toHaveText(`Will ${TITLE} execute on-chain?`, { timeout: 30_000 });
     const expected = await page.evaluate(account => `${location.origin}/bets/${account}?city=zagreb`, ACCOUNT);
     await dialog.getByRole('button', { name: 'Share', exact: true }).click();
     await expect.poll(() => page.evaluate(() => (window as any).__betsShare?.url)).toBe(expected);
@@ -74,113 +89,62 @@ test.describe('Bets shared button variants @features', () => {
     await expect.poll(() => page.evaluate(() => (window as any).__betsClipboard)).toEqual([expected, expected]);
   });
 
-  test('Open proposal closes Bets and shows the proposal details', async ({ mockApi: page }) => {
+  test('Open the agreement closes Bets and opens the agreement panel, from this device or from the index', async ({ mockApi: page }) => {
+    test.setTimeout(150_000);
+    // The panel reads the minted account from the chain: no account answers here.
+    await routeSolanaReads(page);
     await openCity(page);
-    const proposalId = await createSpace(page, 'park');
-    const title = await page.evaluate(id => (window as any).proposalStorage.getProposal(id)?.title, proposalId);
-    await routeMarkets(page, payload({ id: proposalId, proposalId, title }));
-    await page.locator('#bets-button').click();
-    await page.locator('#bets-sheet .bets-row__title').click();
+    const title = 'Park agreement on bets';
+    // A binding owners' agreement over a park applied here, proposed from this device and minted at
+    // ACCOUNT with an open pool: what the Bets row and the agreement panel both stand for.
+    const { id, cid } = await proposeOverPark(page, { title, author: 'Bets fixture', minted: {}, pool: OPEN_POOL });
     const dialog = page.locator('#proposalMarketOverlay');
-    await expect(dialog).toBeVisible();
-    await dialog.getByRole('button', { name: 'Open proposal', exact: true }).click();
+    const panel = page.locator('section#agreement-panel');
+    const openFromBets = async () => {
+      await page.locator('#bets-button').click();
+      await page.locator(`#bets-sheet .bets-row[data-cid="${cid}"] .bets-row__title`).click({ timeout: 30_000 });
+      await expect(dialog.locator('.cb-dialog__title')).toHaveText(`Will ${title} execute on-chain?`);
+      await dialog.getByRole('button', { name: 'Open the agreement', exact: true }).click();
+      await expect(dialog).toHaveCount(0);
+      await expect(page.locator('#bets-sheet')).toBeHidden();
+      await expect(panel).toBeVisible({ timeout: 30_000 });
+      await expect(page.locator('#agreement-panel-title')).toHaveText(title);
+      await expect(panel.locator('code.agreement-panel-cid')).toHaveAttribute('title', cid);
+    };
+
+    // This device proposed it: its own record opens.
+    await openFromBets();
+    let stored = await storedAgreements(page);
+    expect(stored.map((agreement: any) => agreement.id)).toEqual([id]);
+    // A minted agreement with a pool offers its bet on the panel, back into the same dialog.
+    await panel.locator('[data-agreement-action="bet"]').click();
+    await expect(dialog.locator('.cb-dialog__title')).toHaveText(`Will ${title} execute on-chain?`);
+    await dialog.locator('.close-circle-btn').click();
     await expect(dialog).toHaveCount(0);
-    await expect(page.locator('#bets-sheet')).toBeHidden();
-    const inspector = page.getByRole('complementary', { name: 'Planning source details' });
-    await expect(inspector).toBeVisible();
-    await expect(inspector).toContainText(title);
-  });
+    await panel.locator('[data-agreement-action="close"]').click();
+    await expect(panel).toBeHidden();
 
-  test('Open the plan resolves its named-plan route and opens the plan on the map', async ({ mockApi: page }) => {
-    const server = createSharedProposalServer();
-    const slug = 'bets-open-plan-test';
-    await attachSharedProposalServer(page, server);
-    await page.route(`**/plans/${slug}`, route => route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify({ slug, title: 'Bets named plan', city: 'zagreb', proposalRowIds: [...server.records.keys()], proposalAccount: ACCOUNT }),
-    }));
-    await openCity(page);
-    await page.locator('#username-display').click();
-    await expect(page.locator('#welcome-modal')).toBeVisible();
-    await page.locator('#username-input').fill('Bets named-plan tester');
-    await page.locator('#welcome-submit-btn').click();
-    await expect(page.locator('#welcome-modal')).toBeHidden();
-
-    const drawingId = await createSpace(page, 'park');
-    await showProposal(page, drawingId);
-    await page.locator('#proposal-details-panel .btn-share-proposal').click();
-    const localId = await chooseTermsForShare(page);
-    const title = await page.evaluate(id => (window as any).proposalStorage.getProposal(id)?.title, localId);
-    const share = page.locator('.share-modal-overlay');
-    await expect(share).toBeVisible();
-    await share.getByRole('button', { name: 'Upload', exact: true }).click();
-    await expect(share.locator('.share-modal-link').first()).toHaveValue(/\/proposals\/\d+\?/);
-    const serverId = [...server.records.keys()][0];
-    expect(serverId).toBeTruthy();
-    // Upload leaves its success screen open. Dismiss that real share dialog before opening Bets,
-    // otherwise its full-screen overlay intercepts the shell button click.
-    await share.locator('.share-modal .close-circle-btn').click();
-    await expect(share).toBeHidden();
-
-    await routeMarkets(page, payload({
-      id: `plan:${slug}`, kind: 'plan', planSlug: slug, proposalId: slug,
-      title: 'Bets named plan', memberCount: 1,
-      members: [{ id: serverId, proposalId: title, title: String(title), goal: 'park' }],
-      proposalAccount: ACCOUNT, bettable: true,
-    }));
-    await page.locator('#bets-button').click();
-    await page.locator('#bets-sheet .bets-row__title').click();
-    const dialog = page.locator('#proposalMarketOverlay');
-    await expect(dialog).toBeVisible();
-    await dialog.getByRole('button', { name: 'Open the plan', exact: true }).click();
-    await expect(dialog).toHaveCount(0);
-    await expect(page.locator('#bets-sheet')).toBeHidden();
-    await expect.poll(() => page.evaluate(() => (window as any).__currentNamedPlan?.slug), { timeout: 30_000 }).toBe(slug);
-    await expect.poll(() => page.evaluate(() => new URL(location.href).pathname)).toBe(`/proposals/${slug}`);
-    // The plan is previewed, not applied: its panel offers Apply plan.
-    await expect(page.locator('#plan-view-panel')).toBeVisible();
-    await expect(page.locator('#plan-view-panel [data-plan-action="apply"]')).toBeVisible();
-    // The plan's panel leads back to the same bet.
-    await page.locator('#plan-view-panel [data-plan-action="bet"]').click();
-    await expect(dialog).toBeVisible();
-    await expect(dialog.locator('.cb-dialog__title')).toHaveText('Bets named plan');
-    await expect(dialog.getByRole('button', { name: 'Open the plan', exact: true })).toBeVisible();
+    // Without a copy here, the agreement is read from the index and kept, and its panel opens.
+    await page.evaluate(id => (window as any).AgreementStore.remove(id), id);
+    expect(await storedAgreements(page)).toEqual([]);
+    await openFromBets();
+    stored = await storedAgreements(page);
+    expect(stored).toHaveLength(1);
+    expect(stored[0]).toMatchObject({ title, published: { cid } });
+    // A new record on this device, made from the index's row.
+    expect(stored[0].id).not.toBe(id);
   });
 
   test('the dialog Yes button opens a Yes stake form, and quick stakes set the entered amount', async ({ mockApi: page }) => {
-    await routeMarkets(page);
+    fileMinted(page);
     await injectMockSolanaWallet(page, { publicKey: WALLET, providerName: 'phantom' });
     let mockedBalanceRequests = 0;
-    await page.route('**/*', async route => {
-      if (route.request().method() !== 'POST') return route.fallback();
-      let request: any = {};
-      try { request = route.request().postDataJSON(); } catch (_) { }
-      let result: unknown;
-      if (request.method === 'getGenesisHash') {
-        // getVerifiedConnection refuses reads unless the endpoint identifies as Solana devnet.
-        result = 'EtWTRABZaYq6iMfeYKouRu166VU2xqa1wcaWoxPkrZBG';
-      } else if (request.method === 'getTokenAccountBalance') {
-        mockedBalanceRequests += 1;
-        result = { context: { slot: 1 }, value: { amount: '12500000', decimals: 6, uiAmount: 12.5, uiAmountString: '12.5' } };
-      } else if (request.method === 'getAccountInfo') {
-        result = { context: { slot: 1 }, value: null };
-      } else if (request.method === 'getMultipleAccounts') {
-        const pubkeys = Array.isArray(request.params?.[0]) ? request.params[0] : [];
-        result = { context: { slot: 1 }, value: pubkeys.map(() => null) };
-      }
-      if (result !== undefined) {
-        return route.fulfill({ status: 200, contentType: 'application/json', headers: { 'access-control-allow-origin': '*' }, body: JSON.stringify({
-          jsonrpc: '2.0', id: request.id, result,
-        }) });
-      }
-      return route.fallback();
-    });
+    await routeSolanaReads(page, () => { mockedBalanceRequests += 1; });
     await openCity(page);
     await connectWalletByConnectorId(page, 'solana-phantom');
     await page.goto(`/?city=zg&bets=${ACCOUNT}&reduceMotion=1`);
     const dialog = page.locator('#proposalMarketOverlay');
-    await dialog.locator('.bets-dialog__footer .btn-market-yes').click();
+    await dialog.locator('.bets-dialog__footer .btn-market-yes').click({ timeout: 30_000 });
     await expect(dialog.locator('.cb-dialog__title')).toHaveText('Bet yes');
     for (const amount of ['0.1', '1', '5']) {
       await dialog.locator('.bets-dialog__chip').filter({ hasText: new RegExp(`^${amount}$`) }).click();
@@ -194,15 +158,17 @@ test.describe('Bets shared button variants @features', () => {
   });
 
   for (const action of [
-    { name: 'Open the pool', row: { bettable: false, canOpenMarket: true, market: null, lifecycleStatus: 'Active' } },
-    { name: 'Settle the pool', row: { bettable: false, canOpenMarket: false, lifecycleStatus: 'Executed', chainStatus: 'Executed', market: { address: 'HQqbGtviQr5KRs4x8CWSCVhnkrLKDiYqXmVSBY8GZdfw', yesPool: '250000', noPool: '50000', poolAtomic: '300000', resolved: false, outcome: null } } },
+    // Minted and Active, with no pool yet: anyone can open the one pool.
+    { name: 'Open the pool', status: 'active', pool: null },
+    // Executed on-chain while its pool is still open: anyone can settle it.
+    { name: 'Settle the pool', status: 'executed', pool: OPEN_POOL },
   ]) {
     test(`${action.name} requests a wallet before the pool transaction`, async ({ mockApi: page }) => {
-      await routeMarkets(page, payload(action.row));
+      fileMinted(page, { status: action.status, pool: action.pool });
       await openCity(page);
       await page.locator('#bets-button').click();
       const rowButton = page.locator('#bets-sheet .bets-row__actions').getByRole('button', { name: action.name, exact: true });
-      await expect(rowButton).toBeVisible();
+      await expect(rowButton).toBeVisible({ timeout: 30_000 });
       await rowButton.click();
       await expect(page.locator('.wallet-modal-overlay')).toBeVisible();
       await expect(page.locator('.wallet-modal')).toContainText('Select one of the detected wallets to continue.');

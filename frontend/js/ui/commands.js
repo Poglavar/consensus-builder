@@ -28,8 +28,8 @@
         'gameCheckbox', 'game-datetime', 'game-turns', 'turn-interval-slider', 'turn-interval-value',
         'turn-progress-fill', 'turn-progress-time', 'game-play-pause-btn',
         // Proposals sheet
-        'showProposalsButton', 'planStatsButton', 'roosterScoreButton', 'mintedProposalsButton',
-        'shareAppliedProposalsButton',
+        'showProposalsButton', 'planStatsButton', 'roosterScoreButton',
+        'shareAppliedProposalsButton', 'agreementsButton', 'mintedAgreementsButton',
         // Layers sheet: parcels
         'parcelsCheckbox', 'showAdParcelsCheckbox', 'showParcelNumbers', 'showOwnerCounts',
         'showProposalCounts', 'markMintedCheckbox',
@@ -392,10 +392,12 @@
             labelKey: 'sidebar.proposals.planStats.buttonLabel', fallbackLabel: 'Applied proposal stats', icon: 'fas fa-chart-pie' }),
         control('roosterScoreButton', { id: 'proposals.grainScore', group: 'proposals', surfaces: ['proposals'],
             labelKey: 'sidebar.proposals.grainScore.buttonLabel', fallbackLabel: 'Summon the urbanist rooster', icon: 'fas fa-crow' }),
-        control('mintedProposalsButton', { id: 'proposals.minted', group: 'proposals', surfaces: ['proposals'],
-            labelKey: 'sidebar.proposals.mintedButton', fallbackLabel: 'Minted Proposals', icon: 'fas fa-certificate' }),
         control('shareAppliedProposalsButton', { id: 'proposals.sharePlan', group: 'proposals', surfaces: ['proposals'],
             labelKey: 'sidebar.proposals.shareButton', fallbackLabel: 'Share applied proposals', icon: 'fas fa-share-alt' }),
+        control('agreementsButton', { id: 'proposals.agreements', group: 'proposals', surfaces: ['proposals'],
+            labelKey: 'sidebar.proposals.agreementsButton', fallbackLabel: 'Agreements', icon: 'fas fa-handshake' }),
+        control('mintedAgreementsButton', { id: 'proposals.mintedAgreements', group: 'proposals', surfaces: ['proposals'],
+            labelKey: 'sidebar.proposals.mintedAgreementsButton', fallbackLabel: 'Minted agreements', icon: 'fas fa-certificate' }),
         { id: 'proposals.clearLocal', group: 'proposals', surfaces: ['settings'], debugOnly: true, run: callGlobal('clearLocalProposalData'),
             labelKey: 'sidebar.proposals.clearButton', fallbackLabel: 'Clear Proposals From Local Storage', icon: 'fas fa-trash' },
 
@@ -423,16 +425,19 @@
         { id: 'bets.open', group: 'bets', surfaces: ['palette'], run: callGlobal('openBetsSheet'),
             labelKey: 'mapShell.commands.openBets', fallbackLabel: 'Open bets', icon: 'fas fa-coins' },
 
-        // ---- Parcel menu (ui/parcel-menu.js), in menu order ----
-        parcelCommand('propose', { modes: ['2d'], labelKey: 'parcelMenu.actions.propose', fallbackLabel: 'Propose here', icon: 'fas fa-pen-ruler' }),
-        parcelCommand('selectMore', { labelKey: 'parcelMenu.actions.selectMore', fallbackLabel: 'Select more', icon: 'fas fa-object-group' }),
-        parcelCommand('details', { labelKey: 'parcelMenu.actions.details', fallbackLabel: 'Details', icon: 'fas fa-circle-info' }),
-        parcelCommand('proposals', { labelKey: 'panel.parcel.tabProposals', fallbackLabel: 'Proposals', icon: 'fas fa-layer-group' }),
-        parcelCommand('history', { labelKey: 'parcelMenu.actions.history', fallbackLabel: 'History', icon: 'fas fa-clock-rotate-left' }),
+        // ---- Parcel actions (ui/parcel-menu.js), in menu order ----
+        // The click stack's parcel section hosts the parcel panel, whose tabs (Info, Propose,
+        // Proposals, Tools) and Info-tab controls (Select multiple, Detect block, History) already
+        // offer these; they stay in the palette only (surfaces: []).
+        parcelCommand('propose', { surfaces: [], modes: ['2d'], labelKey: 'parcelMenu.actions.propose', fallbackLabel: 'Propose here', icon: 'fas fa-pen-ruler' }),
+        parcelCommand('selectMore', { surfaces: [], labelKey: 'parcelMenu.actions.selectMore', fallbackLabel: 'Select more', icon: 'fas fa-object-group' }),
+        parcelCommand('details', { surfaces: [], labelKey: 'parcelMenu.actions.details', fallbackLabel: 'Details', icon: 'fas fa-circle-info' }),
+        parcelCommand('proposals', { surfaces: [], labelKey: 'panel.parcel.tabProposals', fallbackLabel: 'Proposals', icon: 'fas fa-layer-group' }),
+        parcelCommand('history', { surfaces: [], labelKey: 'parcelMenu.actions.history', fallbackLabel: 'History', icon: 'fas fa-clock-rotate-left' }),
+        parcelCommand('tools', { surfaces: [], labelKey: 'parcelMenu.actions.tools', fallbackLabel: 'Tools', icon: 'fas fa-screwdriver-wrench' }),
+        parcelCommand('detectBlock', { surfaces: [], modes: ['2d'], labelKey: 'parcelMenu.actions.detectBlock', fallbackLabel: 'Detect block', icon: 'fas fa-fill-drip' }),
+        // What the panel does not offer: shown as the parcel section's buttons.
         parcelCommand('compare', { labelKey: 'parcelMenu.actions.compare', fallbackLabel: 'Compare proposals here', icon: 'fas fa-code-compare' }),
-        parcelCommand('tools', { labelKey: 'parcelMenu.actions.tools', fallbackLabel: 'Tools', icon: 'fas fa-screwdriver-wrench' }),
-        parcelCommand('offer', { modes: ['2d'], labelKey: 'parcelMenu.actions.offer', fallbackLabel: 'Offer my land', icon: 'fas fa-handshake' }),
-        parcelCommand('detectBlock', { modes: ['2d'], labelKey: 'parcelMenu.actions.detectBlock', fallbackLabel: 'Detect block', icon: 'fas fa-fill-drip' }),
         parcelCommand('useAsSite', { modes: ['2d'], labelKey: 'parcelMenu.actions.useAsSite', fallbackLabel: 'Use as site', icon: 'fas fa-draw-polygon' }),
 
         // ---- Ground menu (a click where there is no parcel), in menu order ----

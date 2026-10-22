@@ -79,14 +79,3 @@ describe('projected areas are only ever used as ratios', () => {
         expect(offenders, `projected ST_Area not used as a ratio in ${path}`).toEqual([]);
     });
 });
-
-describe('the stamp the fidelity check compares against', () => {
-    it('takes its areas from turf, not from SQL', () => {
-        // The backfill narrows candidates with PostGIS but must MEASURE with the same module the
-        // browser uses, or the stamp and the live computation are two different rulers again.
-        const source = read('scripts/backfill-ownership-flow.js');
-        expect(source).toContain("frontend/js/proposals/ownership-flow.js");
-        const candidateSql = source.slice(source.indexOf('CANDIDATE_SQL'), source.indexOf('function totalCededM2'));
-        expect(candidateSql).not.toMatch(/ST_Area/);
-    });
-});

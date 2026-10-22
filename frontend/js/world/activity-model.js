@@ -1,33 +1,37 @@
-// Public landing activity: normalization and links shared by the browser and fast tests.
+// Public landing activity: normalization and links shared by the browser and fast tests. Every event
+// of GET /activity/recent is about an agreement, named by its CID (plan-design-agreement.md, M3).
 (function (root, factory) {
     const api = factory();
     if (typeof module === 'object' && module.exports) module.exports = api;
     else root.WorldActivityModel = api;
 })(typeof window !== 'undefined' ? window : globalThis, function () {
     'use strict';
-    const TYPES = ['create', 'execute', 'accept', 'cancel', 'createMarket', 'stake', 'resolve', 'donate', 'pledge', 'fulfillPledge', 'claim'];
-    // A bet's own actions open that bet (its dialog, at /bets/<proposal account>), not the proposal.
+    // What the landing feed shows: agreements proposed to the index, their outcomes on chain, and the
+    // bets and support on them (backend/routes/agent-activity.js RECENT_CHAIN_ACTIONS).
+    const TYPES = ['propose', 'execute', 'cancel', 'expire', 'createMarket', 'stake', 'resolve', 'claim', 'donate', 'pledge', 'fulfillPledge'];
+    // A bet's own actions open that bet (its dialog, at /bets/<agreement account>), not the agreement.
     const BET_TYPES = ['createMarket', 'stake', 'resolve', 'claim'];
     const ACCOUNT = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/;
-    function proposalTypeKey(event = {}) {
-        const goal = typeof event.proposalType === 'string' ? event.proposalType.trim() : '';
-        const primary = typeof event.proposalPrimaryType === 'string' ? event.proposalPrimaryType.trim() : '';
-        if (goal.toLowerCase() === 'road-track' && ['road', 'track'].includes(primary.toLowerCase())) return primary.toLowerCase();
-        const key = goal || primary || 'other';
-        if (key === 'parcelBased') return key;
-        return key.toLowerCase().replace(/[\s_]+/g, '-');
+    const CID = /^bafkrei[a-z2-7]{52}$/;
+    // The design type of the agreement's first design (its goal), the key of its label.
+    function goalKey(event = {}) {
+        const goal = typeof event.designGoal === 'string' ? event.designGoal.trim() : '';
+        if (!goal) return 'other';
+        if (goal === 'parcelBased') return goal;
+        return goal.toLowerCase().replace(/[\s_]+/g, '-');
     }
+    const shortCid = cid => `${cid.slice(0, 12)}…${cid.slice(-6)}`;
     function prepare(events, limit = 12) {
         const seen = new Set();
         return (Array.isArray(events) ? events : []).flatMap(event => {
             if (!event || event.ok === false || event.source === 'simulation' || !TYPES.includes(event.action?.type)) return [];
-            const proposalId = event.action.proposalId || (event.entity?.type === 'proposal' && event.entity.id);
+            const agreementCid = event.entity?.type === 'agreement' ? event.entity.id : event.action.agreementCid;
             const date = Date.parse(event.occurredAt);
-            if (!proposalId || !Number.isFinite(date) || !event.id || seen.has(event.id)) return [];
+            if (!CID.test(agreementCid || '') || !Number.isFinite(date) || !event.id || seen.has(event.id)) return [];
             seen.add(event.id);
-            const proposalAccount = BET_TYPES.includes(event.action.type) && ACCOUNT.test(event.proposalAccount || '')
-                ? event.proposalAccount : null;
-            const query = proposalAccount ? new URLSearchParams() : new URLSearchParams({ focusProposal: String(proposalId) });
+            const agreementAccount = BET_TYPES.includes(event.action.type) && ACCOUNT.test(event.agreementAccount || '')
+                ? event.agreementAccount : null;
+            const query = new URLSearchParams();
             if (event.cityId) query.set('city', event.cityId);
             const side = event.action.type === 'stake' && ['yes', 'no'].includes(event.action.side) ? event.action.side : null;
             const amount = typeof event.action.amount === 'string' && Number.isFinite(Number(event.action.amount)) ? event.action.amount : null;
@@ -35,11 +39,13 @@
             const point = location && typeof location.lat === 'number' && typeof location.lon === 'number'
                 && Number.isFinite(location.lat) && Number.isFinite(location.lon)
                 && Math.abs(location.lat) <= 90 && Math.abs(location.lon) <= 180 ? { lat: location.lat, lon: location.lon } : null;
-            return [{ cityId: event.cityId || null, location: point, id: String(event.id), type: event.action.type, proposalId: String(proposalId),
-                proposalType: typeof event.proposalType === 'string' && event.proposalType.trim() ? event.proposalType.trim() : null,
-                proposalPrimaryType: typeof event.proposalPrimaryType === 'string' && event.proposalPrimaryType.trim() ? event.proposalPrimaryType.trim() : null,
-                subject: event.proposalName || String(proposalId), date, proposalAccount, side, amount,
-                href: (proposalAccount ? '/bets/' + proposalAccount : '/') + '?' + query }];
+            const path = agreementAccount ? '/bets/' + agreementAccount : '/agreements/' + agreementCid;
+            const search = query.toString();
+            return [{ cityId: event.cityId || null, location: point, id: String(event.id), type: event.action.type, agreementCid,
+                designGoal: typeof event.designGoal === 'string' && event.designGoal.trim() ? event.designGoal.trim() : null,
+                subject: typeof event.agreementName === 'string' && event.agreementName.trim() ? event.agreementName.trim() : shortCid(agreementCid),
+                date, agreementAccount, side, amount,
+                href: path + (search ? '?' + search : '') }];
         }).sort((a, b) => b.date - a.date).slice(0, Math.max(0, Math.min(30, limit)));
     }
     function locationOf(event, { city, coverage } = {}) {
@@ -58,5 +64,5 @@
             + Math.cos(a.lat * rad) * Math.cos(b.lat * rad) * Math.sin((b.lon - a.lon) * rad / 2) ** 2;
         return 12742 * Math.asin(Math.min(1, Math.sqrt(h)));
     }
-    return { TYPES, prepare, locationOf, proposalTypeKey };
+    return { TYPES, prepare, locationOf, goalKey };
 });

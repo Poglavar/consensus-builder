@@ -1,12 +1,21 @@
-// Focused model and DOM tests for public world activity filtering, labels, cycling, and scroll handoff.
+// Focused model and DOM tests for the public world activity (GET /activity/recent): agreements proposed,
+// their outcomes and the bets and support on them, each linked by the agreement's CID; filtering, links,
+// labels, cycling, and scroll handoff.
 import { describe, it, expect } from 'vitest';
 import { createRequire } from 'node:module';
 import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
 const require = createRequire(import.meta.url);
-const { prepare, TYPES, locationOf, proposalTypeKey } = require('../../frontend/js/world/activity-model.js');
+const { prepare, TYPES, locationOf, goalKey } = require('../../frontend/js/world/activity-model.js');
 const activitySource = readFileSync(new URL('../../frontend/js/world/activity.js', import.meta.url), 'utf8');
-const event = (id, type = 'create', occurredAt = '2026-10-01T12:00:00Z', extra = {}) => ({ id, source: 'live', ok: true, action: { type, proposalId: 'proposal-42' }, occurredAt, ...extra });
+const activityRoute = readFileSync(new URL('../routes/agent-activity.js', import.meta.url), 'utf8');
+const AGREEMENT = 'bafkreiftzbz2gpufkdckedn2fgb6jiq3qxd6zeohfzmgm42rysek3kuf7y';
+const DESIGN = 'bafkreiehkrtqnkc7fjuviaz4oyqis7wexv3zsq3vfzknyf43rc5qvygce4';
+const ACCOUNT = 'E323eSpdyobhdFKPCi2wcMj12ryFcJjhjKfZjpH8pxBh';
+// One /activity/recent event as the route sends it: about an agreement, by its CID.
+const event = (id, type = 'propose', occurredAt = '2026-10-01T12:00:00Z', extra = {}) => ({
+    id, source: 'live', ok: true, action: { type, agreementCid: AGREEMENT }, entity: { type: 'agreement', id: AGREEMENT }, occurredAt, ...extra
+});
 
 class FakeClassList {
     constructor(element) { this.element = element; this.values = new Set(); }
@@ -73,7 +82,7 @@ function mountActivity({ events, mobile = true, reducedMotion = false, transform
         removeEventListener: (_type, listener) => mediaListeners.delete(listener), change: () => mediaListeners.forEach(listener => listener()) };
     const window = {
         WorldActivityModel: require('../../frontend/js/world/activity-model.js'),
-        WorldProposalEntry: { href: row => row.href, open: async () => {}, openBet: async () => {}, ...entry },
+        WorldProposalEntry: { href: row => row.href, open: async () => {}, openAgreement: async () => {}, openBet: async () => {}, ...entry },
         CityConfigManager: { getCityConfig: id => id === 'tbilisi' ? { label: 'Tbilisi' } : null, getCityCenter: () => [41.7, 44.8] },
         getBackendBase: () => 'https://api.example.test', matchMedia: () => media,
         getComputedStyle: () => ({ transform }),
@@ -98,14 +107,27 @@ function mountActivity({ events, mobile = true, reducedMotion = false, transform
     return new Promise(resolve => setTimeout(() => resolve({ root, panel: root.firstElementChild, media, mounted }), 0));
 }
 
-const activityEvents = (count, extra = {}) => Array.from({ length: count }, (_, index) => event(`event-${index}`, 'create', `2026-10-0${index + 1}T12:00:00Z`, {
-    cityId: 'tbilisi', proposalType: 'road-track', proposalPrimaryType: 'Road', ...extra
+const activityEvents = (count, extra = {}) => Array.from({ length: count }, (_, index) => event(`event-${index}`, 'propose', `2026-10-0${index + 1}T12:00:00Z`, {
+    cityId: 'tbilisi', designGoal: 'road-track', ...extra
 }));
 
 describe('world recent activity', () => {
-    it('shows only successful, linkable, dated public milestones', () => {
-        const rows = [event('good'), event('fail', 'resolve', undefined, { ok: false }), event('sim', 'create', undefined, { source: 'simulation' }), event('noise', 'run_status'), event('bad-date', 'execute', 'garbage'), event('no-proposal', 'accept', undefined, { action: { type: 'accept' } })];
+    it('shows only successful, linkable, dated public milestones about an agreement', () => {
+        const rows = [event('good'), event('fail', 'resolve', undefined, { ok: false }), event('sim', 'propose', undefined, { source: 'simulation' }),
+            event('noise', 'run_status'), event('bad-date', 'execute', 'garbage'),
+            // a mint, a fund or a published design is explorer detail, not a landing milestone
+            event('mint', 'mint'), event('design', 'design', undefined, { action: { type: 'design', designCid: DESIGN }, entity: { type: 'design', id: DESIGN } }),
+            // no agreement, or something that is not an agreement CID, cannot be linked
+            event('no-agreement', 'cancel', undefined, { action: { type: 'cancel' }, entity: null }),
+            event('not-a-cid', 'execute', undefined, { action: { type: 'execute', agreementCid: 'proposal-42' }, entity: { type: 'agreement', id: 'proposal-42' } })];
         expect(prepare(rows).map(e => e.id)).toEqual(['good']);
+    });
+    it('shows what /activity/recent sends: the agreements proposed and the chain actions it keeps', () => {
+        const recent = activityRoute.match(/const RECENT_CHAIN_ACTIONS = new Set\(\[([^\]]*)\]\);/);
+        expect(recent).not.toBeNull();
+        const chainActions = [...recent[1].matchAll(/'([A-Za-z]+)'/g)].map(match => match[1]);
+        expect(chainActions).toEqual(expect.arrayContaining(['execute', 'expire', 'stake']));
+        expect([...TYPES].sort()).toEqual(['propose', ...chainActions].sort());
     });
     it('orders newest first, removes repeated IDs and caps the list', () => {
         const old = event('old'); const fresh = event('new', 'resolve', '2026-10-02T12:00:00Z');
@@ -113,25 +135,31 @@ describe('world recent activity', () => {
         expect(prepare(Array.from({ length: 40 }, (_, i) => event(String(i))), 100)).toHaveLength(30);
         expect(prepare(null)).toEqual([]);
     });
-    it('preserves the proposal and city scope without injected URL parameters', () => {
-        const row = event('x', 'execute', undefined, { action: { type: 'execute', proposalId: 'abc&world=1' }, cityId: 'new_york', proposalName: '<script>title</script>' });
+    it('links an agreement to its own page in its city without injected URL parameters', () => {
+        const row = event('x', 'execute', undefined, { cityId: 'new_york&world=1', agreementName: '<script>title</script>' });
         const prepared = prepare([row])[0]; const url = new URL(prepared.href, 'https://example.com');
-        expect(url.searchParams.get('focusProposal')).toBe('abc&world=1');
-        expect(url.searchParams.get('city')).toBe('new_york');
+        expect(url.pathname).toBe(`/agreements/${AGREEMENT}`);
+        expect(url.searchParams.get('city')).toBe('new_york&world=1');
         expect(url.searchParams.has('world')).toBe(false);
-        expect(prepared.subject).toBe('<script>title</script>');
+        expect(prepared).toMatchObject({ agreementCid: AGREEMENT, subject: '<script>title</script>' });
+        // Without a name the subject is the agreement's short CID; without a city there is no query.
+        expect(prepare([event('y', 'cancel')])[0]).toMatchObject({ subject: 'bafkreiftzbz…3kuf7y', href: `/agreements/${AGREEMENT}` });
+        // An event whose entity is something else still links the agreement its action names.
+        expect(prepare([event('z', 'donate', undefined, { entity: null })])[0].agreementCid).toBe(AGREEMENT);
     });
-    it('preserves durable proposal type separately from the activity action and never guesses it', () => {
-        const row = event('x', 'create', undefined, { proposalType: 'park', proposalPrimaryType: 'Purchase' });
-        expect(prepare([row])[0]).toMatchObject({ type: 'create', proposalType: 'park', proposalPrimaryType: 'Purchase' });
-        expect(prepare([event('unknown-type', 'execute')])[0]).toMatchObject({ type: 'execute', proposalType: null, proposalPrimaryType: null });
+    it('keeps the design goal separately from the activity action and never guesses it', () => {
+        expect(prepare([event('x', 'propose', undefined, { designGoal: ' park ' })])[0]).toMatchObject({ type: 'propose', designGoal: 'park' });
+        expect(prepare([event('unknown-goal', 'execute', undefined, { designGoal: '  ' })])[0]).toMatchObject({ type: 'execute', designGoal: null });
+        expect(prepare([event('no-goal', 'execute')])[0].designGoal).toBeNull();
     });
-    it('selects a localized type key from durable goal and canonical primary type', () => {
-        expect(proposalTypeKey({ proposalType: 'road-track', proposalPrimaryType: 'Track' })).toBe('track');
-        expect(proposalTypeKey({ proposalType: 'urban_rule' })).toBe('urban-rule');
-        expect(proposalTypeKey({ proposalType: 'parcelBased' })).toBe('parcelBased');
-        expect(proposalTypeKey({ proposalPrimaryType: 'Road' })).toBe('road');
-        expect(proposalTypeKey({ type: 'execute' })).toBe('other');
+    it("selects a localized goal key from the first design's goal", () => {
+        expect(goalKey({ designGoal: 'road-track' })).toBe('road-track');
+        expect(goalKey({ designGoal: 'urban_rule' })).toBe('urban-rule');
+        expect(goalKey({ designGoal: 'Parcel Layout' })).toBe('parcel-layout');
+        expect(goalKey({ designGoal: 'parcelBased' })).toBe('parcelBased');
+        expect(goalKey({ designGoal: ' ' })).toBe('other');
+        expect(goalKey({ type: 'execute' })).toBe('other');
+        expect(goalKey()).toBe('other');
     });
     it('labels known cities precisely and distinguishes approximate countries and nearby cities', () => {
         const city = id => id === 'zagreb' ? { name: 'Zagreb', lat: 45.8, lon: 16 } : null;
@@ -140,53 +168,73 @@ describe('world recent activity', () => {
         expect(locationOf({ cityId: 'zagreb', location: { lat: 44, lon: 16 } }, { city, coverage })).toEqual({ kind: 'country', name: 'Croatia', cc: 'HR' });
         expect(locationOf({ cityId: 'explore', location: { lat: 45.8, lon: 16 } }, { city, coverage: { nameAt: () => ({ kind: 'city', name: 'Zagreb' }) } })).toMatchObject({ kind: 'near', name: 'Zagreb' });
         expect(locationOf({ cityId: 'explore', location: null }, { city, coverage })).toEqual({ kind: 'unknown', name: '' });
-        expect(prepare([event('bad', 'create', undefined, { location: { lat: null, lon: 16 } })])[0].location).toBeNull();
+        expect(prepare([event('bad', 'propose', undefined, { location: { lat: null, lon: 16 } })])[0].location).toBeNull();
+        expect(prepare([event('good', 'propose', undefined, { location: { lat: 45.81, lon: 15.98 } })])[0].location).toEqual({ lat: 45.81, lon: 15.98 });
     });
-    it('links every supported milestone including execution and market resolution', () => {
-        for (const type of TYPES) expect(prepare([event(type, type)])[0]).toMatchObject({ type, proposalId: 'proposal-42' });
-        expect(prepare([event('entity', 'claim', undefined, { action: { type: 'claim' }, entity: { type: 'proposal', id: 'entity-1' } })])[0].href).toContain('entity-1');
+    it('links every supported milestone, including execution, expiry and market resolution, to its agreement', () => {
+        expect(TYPES).toEqual(expect.arrayContaining(['propose', 'execute', 'cancel', 'expire', 'resolve']));
+        for (const type of TYPES) expect(prepare([event(type, type)])[0]).toMatchObject({ type, agreementCid: AGREEMENT, href: `/agreements/${AGREEMENT}` });
     });
-    it('links a bet to the bet itself, with its side and amount, and keeps proposal links for the rest', () => {
-        const account = 'E323eSpdyobhdFKPCi2wcMj12ryFcJjhjKfZjpH8pxBh';
-        const [stake] = prepare([event('s', 'stake', undefined, { action: { type: 'stake', proposalId: 'p1', side: 'yes', amount: '0.25' }, proposalAccount: account, cityId: 'zagreb' })]);
-        expect(stake).toMatchObject({ type: 'stake', proposalAccount: account, side: 'yes', amount: '0.25', href: `/bets/${account}?city=zagreb` });
-        const [claim] = prepare([event('c', 'claim', undefined, { proposalAccount: account })]);
-        expect(claim.href).toBe(`/bets/${account}?`);
-        // A proposal action never becomes a bet link, and a malformed account is not linked.
-        expect(prepare([event('a', 'accept', undefined, { proposalAccount: account })])[0]).toMatchObject({ proposalAccount: null, href: '/?focusProposal=proposal-42' });
-        expect(prepare([event('x', 'stake', undefined, { proposalAccount: '../../evil' })])[0]).toMatchObject({ proposalAccount: null, side: null, amount: null });
+    it('colours only the milestones it shows, the expiry with a colour of its own (world.css)', () => {
+        const css = readFileSync(new URL('../../frontend/css/world.css', import.meta.url), 'utf8');
+        const styled = [...css.matchAll(/\.world-activity__event\[data-event-type="([^"]+)"\]/g)].map(match => match[1]);
+        // No rule for a type the feed never shows (a per-parcel accept went with designs' consent, M2).
+        expect(styled.filter(type => !TYPES.includes(type))).toEqual([]);
+        expect(styled).toEqual(expect.arrayContaining(['execute', 'cancel', 'expire']));
     });
-    it('words a bet with its amount and side, and opens the bet rather than the proposal', async () => {
-        const account = 'E323eSpdyobhdFKPCi2wcMj12ryFcJjhjKfZjpH8pxBh';
-        const events = [event('s', 'stake', '2026-10-02T12:00:00Z', { action: { type: 'stake', proposalId: 'p1', side: 'no', amount: '1' }, proposalAccount: account, cityId: 'tbilisi' }),
-            event('c', 'create', '2026-10-01T12:00:00Z', { cityId: 'tbilisi', proposalType: 'park' })];
+
+    it('links a bet to the bet itself, with its side and amount, and keeps agreement links for the rest', () => {
+        const [stake] = prepare([event('s', 'stake', undefined, { action: { type: 'stake', agreementCid: AGREEMENT, side: 'yes', amount: '0.25' }, agreementAccount: ACCOUNT, cityId: 'zagreb' })]);
+        expect(stake).toMatchObject({ type: 'stake', agreementAccount: ACCOUNT, side: 'yes', amount: '0.25', href: `/bets/${ACCOUNT}?city=zagreb` });
+        for (const type of ['createMarket', 'resolve', 'claim']) expect(prepare([event(type, type, undefined, { agreementAccount: ACCOUNT })])[0].href).toBe(`/bets/${ACCOUNT}`);
+        // Every chain event carries its agreement's account; only a bet's own actions link the bet,
+        // and a malformed account is not linked.
+        expect(prepare([event('a', 'execute', undefined, { agreementAccount: ACCOUNT })])[0]).toMatchObject({ agreementAccount: null, href: `/agreements/${AGREEMENT}` });
+        expect(prepare([event('d', 'donate', undefined, { agreementAccount: ACCOUNT })])[0]).toMatchObject({ agreementAccount: null, href: `/agreements/${AGREEMENT}` });
+        expect(prepare([event('x', 'stake', undefined, { agreementAccount: '../../evil' })])[0]).toMatchObject({ agreementAccount: null, side: null, amount: null, href: `/agreements/${AGREEMENT}` });
+    });
+    it('words a bet with its amount and side, and opens the bet rather than the agreement', async () => {
+        const events = [event('s', 'stake', '2026-10-02T12:00:00Z', { action: { type: 'stake', agreementCid: AGREEMENT, side: 'no', amount: '1' }, agreementAccount: ACCOUNT, cityId: 'tbilisi' }),
+            event('p', 'propose', '2026-10-01T12:00:00Z', { cityId: 'tbilisi', designGoal: 'park' })];
         const opened = [];
         const { panel, mounted } = await mountActivity({ events, mobile: false, entry: {
-            openBet: async row => opened.push(['bet', row.proposalAccount]), open: async row => opened.push(['proposal', row.proposalId])
+            openBet: async row => opened.push(['bet', row.agreementAccount]), openAgreement: async row => opened.push(['agreement', row.agreementCid])
         } });
-        const [bet, create] = panel.querySelectorAll('a');
+        const [bet, propose] = panel.querySelectorAll('a');
         expect(bet.dataset.eventType).toBe('stake');
         expect(bet.querySelector('.world-activity__action').textContent).toBe('Bet 1.00 USDC on no');
         expect(bet.querySelector('.world-activity__compact-type').textContent).toBe('Bet 1.00 USDC on no');
-        expect(create.querySelector('.world-activity__action').textContent).toBe('create');
+        expect(propose.querySelector('.world-activity__action').textContent).toBe('Agreement proposed');
+        expect(propose.querySelector('.world-activity__compact-type').textContent).toBe('label:park');
         await bet.listeners.get('click')[0]({ button: 0, preventDefault() {} });
-        await create.listeners.get('click')[0]({ button: 0, preventDefault() {} });
-        expect(opened).toEqual([['bet', account], ['proposal', 'proposal-42']]);
+        await propose.listeners.get('click')[0]({ button: 0, preventDefault() {} });
+        expect(opened).toEqual([['bet', ACCOUNT], ['agreement', AGREEMENT]]);
         mounted.destroy();
     });
-    it('shows compact city and proposal type, with one accessible link per event', async () => {
+    it('says so when an agreement could not open, and releases the busy state', async () => {
+        const { panel, mounted } = await mountActivity({ events: activityEvents(1), mobile: false, entry: {
+            openAgreement: async () => { throw new Error('offline'); }
+        } });
+        await panel.querySelector('a').listeners.get('click')[0]({ button: 0, preventDefault() {} });
+        const status = panel.querySelector('.world-activity__status');
+        expect(status.textContent).toBe('Could not open this agreement. Please try again.');
+        expect(status.hidden).toBe(false);
+        expect(panel.getAttribute('aria-busy')).toBeNull();
+        mounted.destroy();
+    });
+    it("shows compact city and the first design's goal, with one accessible link per event", async () => {
         const { panel, mounted } = await mountActivity({ events: activityEvents(2) });
         const links = panel.querySelectorAll('a');
         expect(panel.classList.contains('world-activity--cycling')).toBe(true);
         expect(links).toHaveLength(4);
         expect(links.slice(0, 2).map(link => link.querySelector('.world-activity__compact').textContent)).toEqual([
-            'Tbilisilabel:road', 'Tbilisilabel:road'
+            'Tbilisilabel:road-track', 'Tbilisilabel:road-track'
         ]);
         expect(links.slice(2).every(link => link.tabIndex === -1 && link.parentElement.parentElement.getAttribute('aria-hidden') === 'true')).toBe(true);
         mounted.destroy();
     });
-    it('shortens an urban-rule proposal to the zoning type in the compact row', async () => {
-        const { panel, mounted } = await mountActivity({ events: activityEvents(1, { proposalType: 'urban-rule' }) });
+    it('shortens an urban-rule design to the zoning type in the compact row', async () => {
+        const { panel, mounted } = await mountActivity({ events: activityEvents(1, { designGoal: 'urban-rule' }) });
         expect(panel.querySelector('.world-activity__compact-type').textContent).toBe('Zoning');
         mounted.destroy();
     });

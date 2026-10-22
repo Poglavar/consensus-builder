@@ -5,9 +5,9 @@
 
 CREATE TABLE IF NOT EXISTS ai_scene (
     id SERIAL PRIMARY KEY,
-    slug VARCHAR(32) NOT NULL UNIQUE,        -- short URL id, e.g. /proposals/662?scene=<slug>
+    slug VARCHAR(32) NOT NULL UNIQUE,        -- short URL id, e.g. /designs/<cid>?scene=<slug>
     image_url VARCHAR(2000) NOT NULL,        -- hosted PNG (uploads/images/...), used in-app and as og:image
-    focus_proposal_id VARCHAR(255),          -- the proposal the render is "about" (drives the /proposals/:id path)
+    focus_proposal_id VARCHAR(255),          -- the design CID the render is "about" (drives the /designs/<cid> path)
     proposal_ids JSONB NOT NULL DEFAULT '[]'::jsonb, -- all proposals to apply to reconstruct the world
     view JSONB,                              -- orbit camera: { targetLat, targetLng, headingDeg, pitchRad, range }
     city VARCHAR(100),

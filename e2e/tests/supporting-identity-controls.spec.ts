@@ -1,7 +1,7 @@
 // Cover wallet, chain, profile identity, and canonical parcel-name controls.
 import { test, expect } from '../helpers/fixtures';
 import { openCity, openParcel, PARCEL_ID } from '../helpers/runtime';
-import { getWalletStates, injectMockEvmWallet, injectMockSolanaWallet } from '../helpers/blockchain';
+import { getWalletStates, injectMockEvmWallet, injectMockSolanaWallet, waitForBlockchainRuntime } from '../helpers/blockchain';
 import { openAndClosePopup } from '../helpers/controls';
 
 async function openProfile(page: import('@playwright/test').Page, username: string) {
@@ -19,6 +19,7 @@ async function openProfile(page: import('@playwright/test').Page, username: stri
 
 test.describe('Supporting identity controls @core', () => {
   test('the disconnected profile network selector can close or select No network', async ({ mockApi: page }) => {
+    await page.addInitScript(() => { (window as any).CANTON_ENABLED = true; });
     await openCity(page);
     const profile = await openProfile(page, 'Network chooser actor');
     const network = profile.locator('.wallet-chain-info');
@@ -28,6 +29,10 @@ test.describe('Supporting identity controls @core', () => {
     await network.click();
     const chainModal = page.locator('.chain-modal-overlay');
     await expect(chainModal).toBeVisible();
+    // Without a wallet the networks are "No network" and the configured EVM networks; the in-app
+    // Canton mode is gone (plan-design-agreement.md, M3), even where a page still sets its old flag.
+    await expect(chainModal.locator('[data-chain-id]')).not.toHaveCount(0);
+    await expect(chainModal.locator('[data-chain-id="canton"]')).toHaveCount(0);
     await chainModal.getByRole('button', { name: /No network/ }).click();
     await expect(chainModal).toHaveCount(0);
     await expect(profile).toBeVisible();
@@ -89,6 +94,9 @@ test.describe('Supporting identity controls @core', () => {
     await expect.poll(async () => (await getWalletStates(page)).evm?.chainId).toBe('0x14a34');
     await expect(chainModal).toHaveCount(0);
 
+    // ethers loads on demand (the EVM connection starts it, the city token awaits it); the token
+    // contract is replaced only once it is there.
+    await waitForBlockchainRuntime(page, ['ethers']);
     await page.evaluate(() => {
       const w = window as any;
       let registered = false;
@@ -160,63 +168,6 @@ test.describe('Supporting identity controls @core', () => {
     await chainModal.locator('[data-chain-id="0x539"]').click();
     await expect.poll(async () => (await getWalletStates(page)).evm?.chainId).toBe('0x539');
     await expect(network).toContainText('Localhost');
-  });
-
-  test('the Canton profile identity control activates and leaves Canton through real chain selections', async ({ mockApi: page }) => {
-    await page.addInitScript(() => {
-      (window as any).CANTON_ENABLED = true;
-      localStorage.setItem('canton.parties', JSON.stringify([
-        { party: 'Owner::identity-controls', role: 'owner', parcelId: '', ts: 1 },
-        { party: 'Buyer::identity-controls', role: 'buyer', parcelId: '', ts: 2 },
-        { party: 'Lens::identity-controls', role: 'lens', parcelId: '', ts: 3 },
-        { party: 'Generated::identity-controls', role: 'identity', parcelId: '', ts: 4 },
-      ]));
-    });
-    await openCity(page);
-    const profile = await openProfile(page, 'Canton identity controls actor');
-    const network = profile.locator('.wallet-chain-info');
-
-    await network.click();
-    const chainModal = page.locator('.chain-modal-overlay');
-    await expect(chainModal).toBeVisible();
-    await chainModal.locator('[data-chain-id="canton"]').click();
-    const picker = page.locator('.canton-id-overlay');
-    await expect(picker).toBeVisible();
-    await picker.locator('[data-party-select="Owner::identity-controls"]').click();
-    await expect(network).toContainText('Canton · Owner');
-    expect(await page.evaluate(() => (window as any).CantonMode.isActive())).toBe(true);
-    expect(await page.evaluate(() => (window as any).CantonMode.getParty())).toBe('Owner::identity-controls');
-
-    await network.click();
-    await picker.locator('[data-party-select="Buyer::identity-controls"]').click();
-    await expect(network).toContainText('Canton · Buyer');
-    expect(await page.evaluate(() => (window as any).CantonMode.getParty())).toBe('Buyer::identity-controls');
-
-    await network.click();
-    await picker.locator('[data-party-select="Lens::identity-controls"]').click();
-    await expect(network).toContainText('Canton · Lens');
-    expect(await page.evaluate(() => (window as any).CantonMode.getParty())).toBe('Lens::identity-controls');
-
-    await network.click();
-    await picker.locator('[data-party-select="Generated::identity-controls"]').click();
-    await expect(network).toContainText('Canton · Generated');
-    expect(await page.evaluate(() => (window as any).CantonMode.getParty())).toBe('Generated::identity-controls');
-
-    await network.click();
-    await expect(picker).toBeVisible();
-    await picker.locator('[data-close]').click();
-    await expect(picker).toHaveCount(0);
-    await expect(network).toContainText('Canton · Generated');
-
-    await network.click();
-    await expect(picker).toBeVisible();
-    await picker.locator('[data-switch]').click();
-    await expect(picker).toHaveCount(0);
-    await expect(chainModal).toBeVisible();
-    await chainModal.locator('[data-chain-id="none"]').click();
-    await expect(chainModal).toHaveCount(0);
-    await expect(network).toContainText('Select network');
-    expect(await page.evaluate(() => (window as any).CantonMode.isActive())).toBe(false);
   });
 
   test('the parcel ENS value button copies its full canonical name', async ({ mockApi: page }) => {

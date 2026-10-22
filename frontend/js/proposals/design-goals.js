@@ -19,7 +19,7 @@
         ['parcelBased', 'Detached building rule', 'Buildings generated separately on selected parcels from authored detached-building rules.'],
         ['urban-rule', 'Urban rule', 'An authored urban-rule proposal handled by the generic record editor.'],
         ['road-track', 'Road or track', 'An authored corridor design with route, profile and segment parameters.'],
-        ['reparcellization', 'Land readjustment', 'An authored subdivision and allocation arrangement over declared cadastral land.'],
+        ['parcel-layout', 'Parcel layout', 'Authored parcel borders over a pool: the pool outline and the output plots, geometry only.'],
         ['ownership-transfer', 'Ownership transfer', 'Proposed changes to rights or recipients; transfer direction is a separate term.']
     ].map(([key, label, definition, structure = false]) => Object.freeze({ key, label, definition, structure }));
     const byKey = new Map(definitions.map(concept => [concept.key, concept]));

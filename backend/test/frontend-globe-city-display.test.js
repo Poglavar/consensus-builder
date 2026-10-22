@@ -1,6 +1,8 @@
-// Exercise the globe's population ranking and viewport-bounded city display without WebGL/DOM.
+// Exercise the globe's population ranking and viewport-bounded city display without WebGL/DOM. A city's
+// count is its proposed agreements (GET /activity/cities: [{ id, agreements }]).
 import { describe, expect, it } from 'vitest';
 import { createRequire } from 'node:module';
+import { cityAgreementCounts } from '../routes/agent-activity.js';
 
 const require = createRequire(import.meta.url);
 const CityDisplay = require('../../frontend/js/world/globe-city-display.js');
@@ -83,7 +85,7 @@ describe('globe city detail selection', () => {
         expect(coverage.liveCities[2].population2025).toBeUndefined();
     });
 
-    it('ranks a city with proposals above bigger silent ones and paints its dot with the count on its label at every scale', () => {
+    it('ranks a city with agreements above bigger silent ones and paints its dot with the count on its label at every scale', () => {
         const coverage = freezeDeep({
             liveCities: [
                 { id: 'major', name: 'Major', population2025: 8_000_000 },
@@ -97,8 +99,8 @@ describe('globe city detail selection', () => {
 
         const sameEntries = ranked.slice();
         const reranked = CityDisplay.applyCounts(ranked, [
-            { id: 'sibenik', proposals: 275 }, { id: 'unknown', proposals: 2.9 }, { id: 'research', proposals: 9 },
-            { id: 'major', proposals: -3 }, { id: 'ghost', proposals: 4 }, { proposals: 1 }, null
+            { id: 'sibenik', agreements: 275 }, { id: 'unknown', agreements: 2.9 }, { id: 'research', agreements: 9 },
+            { id: 'major', agreements: -3 }, { id: 'ghost', agreements: 4 }, { agreements: 1 }, null
         ]);
         expect(reranked).toBe(ranked);
         expect(ranked.map(entry => entry.key)).toEqual(['live:sibenik', 'live:unknown', 'live:major', 'research:research']);
@@ -110,7 +112,7 @@ describe('globe city detail selection', () => {
             'live:sibenik': [180, 300], 'live:unknown': [470, 300], 'live:major': [760, 300], 'research:research': [1040, 300]
         }[entry.key]));
         const world = CityDisplay.layout(candidates, { width: 1200, height: 800, altitudeKm: 20_000 });
-        // At world scale a 40,000-person city is far under the population gate; its proposals
+        // At world scale a 40,000-person city is far under the population gate; its agreements
         // earn it a label anyway, and an unknown population is no longer held back either.
         expect(world.labels.map(label => label.entry.key)).toEqual(['live:sibenik', 'live:unknown', 'live:major']);
         const sibenik = world.markers.find(marker => marker.entry.key === 'live:sibenik');
@@ -118,7 +120,7 @@ describe('globe city detail selection', () => {
         expect(sibenik).toMatchObject({ painted: true, glow: true, size: 11, opacity: 1 });
         expect(major).toMatchObject({ painted: false, glow: true, size: 11, opacity: 1 });
 
-        // With no room for its label, the city with proposals is still a painted dot, not a plain one.
+        // With no room for its label, the city with agreements is still a painted dot, not a plain one.
         const blocked = [{ x: 0, y: 250, w: 600, h: 100 }];
         const crowded = CityDisplay.layout(candidatesFor(ranked, entry => ({
             'live:sibenik': [700, 300], 'live:unknown': [470, 500], 'live:major': [760, 300], 'research:research': [1040, 300]
@@ -148,7 +150,7 @@ describe('globe city detail selection', () => {
             cities: []
         });
         const ranked = CityDisplay.applyCounts(CityDisplay.rankCities(coverage),
-            [{ id: 'a', proposals: 10 }, { id: 'b', proposals: 1 }, { id: 'd', proposals: 1 }, { id: 'e', proposals: 1 }]);
+            [{ id: 'a', agreements: 10 }, { id: 'b', agreements: 1 }, { id: 'd', agreements: 1 }, { id: 'e', agreements: 1 }]);
         expect(ranked.map(entry => entry.key)).toEqual(['live:a', 'live:b', 'live:d', 'live:e', 'live:c']);
         const points = { 'live:a': [400, 300], 'live:b': [470, 300], 'live:c': [700, 300], 'live:d': [770, 300], 'live:e': [630, 300] };
         const candidates = candidatesFor(ranked, entry => points[entry.key]);
@@ -171,6 +173,21 @@ describe('globe city detail selection', () => {
         expect(labelOf(hemmed, 'live:a').offsetX).toBeGreaterThan(0);
         expect(labelOf(hemmed, 'live:b')).toBeUndefined();
         expect(hemmed.markers.find(marker => marker.entry.key === 'live:b')).toMatchObject({ painted: true, size: 9, glow: false });
+    });
+
+    it('counts what GET /activity/cities sends for each city', () => {
+        const coverage = freezeDeep({
+            liveCities: [
+                { id: 'zagreb', name: 'Zagreb', population2025: 800_000 },
+                { id: 'split', name: 'Split', population2025: 160_000 },
+                { id: 'rijeka', name: 'Rijeka', population2025: 110_000 }
+            ],
+            cities: []
+        });
+        // The route's own fold of its GROUP BY rows (routes/agent-activity.js).
+        const payload = cityAgreementCounts([{ city: 'split', agreements: 7 }, { city: 'zagreb', agreements: 3 }, { city: null, agreements: 4 }]);
+        const ranked = CityDisplay.applyCounts(CityDisplay.rankCities(coverage), payload);
+        expect(ranked.map(entry => [entry.key, entry.count])).toEqual([['live:split', 7], ['live:zagreb', 3], ['live:rijeka', 0]]);
     });
 
     it('ranks regional-provider cities by their own populations and resolves zoom collisions per city', () => {

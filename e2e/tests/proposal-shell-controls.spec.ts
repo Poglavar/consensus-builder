@@ -1,8 +1,6 @@
-// Exercise the proposal shell through selection, design, approval, and publication controls.
+// Exercise the proposal shell through selection, design, validation, and save controls.
 import { test, expect } from '../helpers/fixtures';
 import { clickMapPoint, openCity, openParcel, showProposal, PARCEL_GEOMETRY, PARCEL_ID } from '../helpers/runtime';
-import { readFile } from 'node:fs/promises';
-import { fillNativeDateTime, selectNativeOption } from '../helpers/controls';
 
 async function addParkSource(
   page: import('@playwright/test').Page,
@@ -17,8 +15,6 @@ async function addParkSource(
       title: `Proposal shell source ${suffix}`,
       description: 'Original source description.',
       author: w.getCurrentUserAgent?.()?.name || 'Proposal shell fixture',
-      offer: 100,
-      offerCurrency: 'EUR',
       city: w.CityConfigManager.getCurrentCityId(),
       goal: 'park',
       lifecycleStatus: 'Active',
@@ -48,48 +44,25 @@ async function editSource(
 }
 
 test.describe('Shared proposal editor shell controls @core', () => {
-  test('parcel, ownership and financing fields autosave and survive a reload without changing the source', async ({ mockApi: page }) => {
+  test('parcel fields autosave and survive a reload without changing the source', async ({ mockApi: page }) => {
     test.setTimeout(60_000);
     await openCity(page);
     const sourceId = await addParkSource(page, 'complete-fields');
     const draftId = await editSource(page, sourceId, 'parcels');
+    // A design has no terms, ownership or approval to edit: who decides is its agreement's (M2).
+    expect(await page.locator('[data-editor-action="tab"]').evaluateAll(tabs => tabs.map(tab => tab.getAttribute('data-editor-tab'))))
+      .toEqual(['design', 'parcels', 'details']);
     await page.locator('[data-draft-path="fields.selectedParcelIds"]').fill(`${PARCEL_ID}\nHR-335754-1235`);
-    await page.locator('[data-editor-action="tab"][data-editor-tab="ownership"]').click();
-    await selectNativeOption(page.locator('[data-draft-path="fields.ownership"]'), 'third-party');
-    await selectNativeOption(page.locator('[data-draft-path="fields.recipientScope"]'), 'specific');
-    await page.locator('[data-draft-path="fields.recipientAddress"]').fill('0x1234567890abcdef1234567890abcdef12345678');
-    await page.locator('[data-editor-action="tab"][data-editor-tab="terms"]').click();
-    await page.locator('[data-draft-path="fields.offer"]').fill('1250');
-    await selectNativeOption(page.locator('[data-draft-path="fields.offerCurrency"]'), 'USD');
-    // Change the conditional choice in both directions, irrespective of the source default.
-    const conditional = page.locator('[data-draft-path="fields.isConditional"]');
-    await conditional.setChecked(!await conditional.isChecked());
-    await conditional.check();
-    await fillNativeDateTime(page.locator('[data-draft-path="fields.expiresAt"]'), '2035-06-15T14:30');
-    await page.locator('[data-draft-path="fields.decayEnabled"]').check();
-    await page.locator('[data-draft-path="fields.decayPercent"]').fill('35');
-    await page.locator('[data-draft-path="fields.decayDurationMs"]').fill('7200000');
-    await page.locator('[data-draft-path="fields.depositEnabled"]').check();
-    await page.locator('[data-draft-path="fields.depositPercent"]').fill('45');
-    await page.locator('[data-draft-path="fields.depositPercent"]').press('Tab');
-    const expected = {
-      selectedParcelIds: [PARCEL_ID, 'HR-335754-1235'], ownership: 'third-party',
-      recipientScope: 'specific', recipientAddress: '0x1234567890abcdef1234567890abcdef12345678',
-      offer: 1250, offerCurrency: 'USD', isConditional: true,
-      decayEnabled: true, decayPercent: 35, decayDurationMs: 7200000,
-      depositEnabled: true, depositPercent: 45,
-    };
+    await page.locator('[data-draft-path="fields.selectedParcelIds"]').press('Tab');
+    const expected = { selectedParcelIds: [PARCEL_ID, 'HR-335754-1235'] };
     const fields = () => page.evaluate(id => (window as any).proposalDraftStore.getDraft(id)?.fields, draftId);
     await expect.poll(fields).toMatchObject(expected);
-    const expiry = await page.locator('[data-draft-path="fields.expiresAt"]').evaluate((input: HTMLInputElement) => new Date(input.value).toISOString());
-    expect((await fields()).expiresAt).toBe(expiry);
     await page.locator('[data-editor-action="close"]').click();
     await page.reload({ waitUntil: 'domcontentloaded' });
-    await expect.poll(() => page.evaluate(id => (window as any).proposalDraftStore?.getDraft(id)?.fields, draftId)).toMatchObject({ ...expected, expiresAt: expiry });
-    expect(await page.evaluate(id => (window as any).proposalStorage.getProposal(id), sourceId)).toMatchObject({ offer: 100, offerCurrency: 'EUR', cadastreParcelIds: [PARCEL_ID] });
-    await editSource(page, sourceId, 'terms');
-    await expect(page.locator('[data-draft-path="fields.offer"]')).toHaveValue('1250');
-    await expect(page.locator('[data-draft-path="fields.depositEnabled"]')).toBeChecked();
+    await expect.poll(() => page.evaluate(id => (window as any).proposalDraftStore?.getDraft(id)?.fields, draftId)).toMatchObject(expected);
+    expect(await page.evaluate(id => (window as any).proposalStorage.getProposal(id), sourceId)).toMatchObject({ cadastreParcelIds: [PARCEL_ID] });
+    await editSource(page, sourceId, 'parcels');
+    await expect(page.locator('[data-draft-path="fields.selectedParcelIds"]')).toHaveValue(`${PARCEL_ID}\nHR-335754-1235`);
   });
 
   test('map selection, comparison modes, and draft undo/redo update the active draft', async ({ mockApi: page }) => {
@@ -126,31 +99,18 @@ test.describe('Shared proposal editor shell controls @core', () => {
       .toEqual([PARCEL_ID]);
   });
 
-  test('approval template downloads the selected parcel and validation focus opens the right field', async ({ mockApi: page }) => {
+  test('validation focus opens the tab and field that need fixing', async ({ mockApi: page }) => {
     await openCity(page);
-    const sourceId = await addParkSource(page, 'approval');
-    const draftId = await editSource(page, sourceId, 'approval');
+    const sourceId = await addParkSource(page, 'validation');
+    const draftId = await editSource(page, sourceId, 'details');
 
-    const downloadPromise = page.waitForEvent('download');
-    await page.locator('[data-editor-action="approval-template"]').click();
-    const download = await downloadPromise;
-    expect(download.suggestedFilename()).toBe('parcel-rights-template.json');
-    const filePath = await download.path();
-    expect(filePath).toBeTruthy();
-    const template = JSON.parse(await readFile(filePath!, 'utf8'));
-    expect(template).toMatchObject({
-      schema: 'parcel-rights/v1',
-      source: { provider: 'upload' },
-      parcels: [{ parcelId: PARCEL_ID, complete: false, owners: [] }],
-    });
-
-    await page.locator('[data-editor-action="tab"][data-editor-tab="details"]').click();
     const name = page.locator('[data-draft-path="fields.name"]');
     await name.fill('');
     // The shell validates field changes on `change`; typing alone only updates the draft.
     await name.press('Tab');
     await expect(page.locator('[data-editor-action="focus-issue"]')).toBeVisible();
-    await page.locator('[data-editor-action="tab"][data-editor-tab="terms"]').click();
+    await page.locator('[data-editor-action="tab"][data-editor-tab="parcels"]').click();
+    await expect(page.locator('[data-editor-section="parcels"]')).toBeVisible();
     await page.locator('[data-editor-action="focus-issue"]').first().click();
     await expect(page.locator('[data-editor-section="details"]')).toBeVisible();
     await expect(page.locator('[data-draft-path="fields.name"]')).toBeFocused();
@@ -236,14 +196,16 @@ test.describe('Shared proposal editor shell controls @core', () => {
     await openCity(page);
     await page.evaluate(() => (window as any).i18n.setLanguage('en'));
     const sourceId = await addParkSource(page, 'published-copy');
+    // Published: marked with the CID it still hashes to at this index (proposals/design-sync.js).
     await page.evaluate(id => {
-      const storage = (window as any).proposalStorage;
+      const w = window as any;
+      const storage = w.proposalStorage;
       const source = storage.getProposal(id);
-      source.serverProposalId = '7412';
-      source.publicationApiBase = (window as any).getBackendBase();
+      source.published = { cid: w.DesignRecord.cidOf(source), publishedAt: new Date().toISOString(), apiBase: w.DesignSync.apiBase() };
       storage._indexProposal(source);
       storage.save();
     }, sourceId);
+    expect(await page.evaluate(id => !!(window as any).DesignSync.publishedCid((window as any).proposalStorage.getProposal(id)), sourceId)).toBe(true);
     await editSource(page, sourceId, 'details');
     await expect(page.locator('[data-editor-section="details"] .proposal-editor-section-copy'))
       .toHaveText('Describe how this counterproposal differs. The published proposal stays as it is.');

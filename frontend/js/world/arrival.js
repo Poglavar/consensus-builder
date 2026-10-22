@@ -1,5 +1,5 @@
 // Globe arrival: a city or proposal picked on the globe lands in 3D, orbiting the proposal among the
-// real city. The decision and the summary parsing are pure (unit-tested in backend/test/world-arrival.test.js);
+// real city. The decision and the index answer's parsing are pure (unit-tested in backend/test/world-arrival.test.js);
 // the rest is thin wiring onto three-mode's existing focused entry (enterThreeMode({ focusProposalIds, fromUrl })).
 (function (root) {
     'use strict';
@@ -14,29 +14,28 @@
         return { dive3D: hasProposal && hasBuildings };
     }
 
-    // GET /proposals/summary is newest first; the activity feed and focusProposal use proposalId.
-    function latestProposalId(payload) {
-        const row = payload && Array.isArray(payload.proposals) ? payload.proposals[0] : null;
-        if (!row) return null;
-        const id = row.proposalId ?? row.id;
-        return id === null || id === undefined || id === '' ? null : String(id);
+    // GET /designs is newest first; the arrival opens the first one by its CID (?focusProposal=<cid>).
+    function latestDesignCid(payload) {
+        const row = payload && Array.isArray(payload.designs) ? payload.designs[0] : null;
+        return row && typeof row.cid === 'string' && row.cid ? row.cid : null;
     }
 
-    const api = { plan, latestProposalId };
+    const api = { plan, latestDesignCid };
     if (typeof module === 'object' && module.exports) module.exports = api;
     if (!root || !root.document) return;
     const global = root;
 
     const log = (...args) => console.log(`[${new Date().toISOString()}] [world-arrival]`, ...args);
 
-    async function fetchLatestProposalId(cityId) {
+    // The CID of the city's newest published design, or null when it has none.
+    async function fetchLatestDesignCid(cityId) {
         const code = typeof global.normalizeCityCodeForApi === 'function' ? global.normalizeCityCodeForApi(cityId) : cityId;
-        const url = `${global.getBackendBase()}/proposals/summary?city=${encodeURIComponent(code)}&limit=1`;
+        const url = `${global.getBackendBase()}/designs?city=${encodeURIComponent(code)}&limit=1`;
         const response = await fetch(url);
         if (!response.ok) throw new Error(`${url} -> HTTP ${response.status}`);
-        const id = api.latestProposalId(await response.json());
-        log(`latest proposal for ${cityId}: ${id || '(none)'}`);
-        return id;
+        const cid = api.latestDesignCid(await response.json());
+        log(`latest design for ${cityId}: ${cid || '(none)'}`);
+        return cid;
     }
 
     function buildingsSource() {
@@ -59,5 +58,5 @@
         return true;
     }
 
-    root.WorldArrival = Object.assign({}, api, { fetchLatestProposalId, enter3D });
+    root.WorldArrival = Object.assign({}, api, { fetchLatestDesignCid, enter3D });
 })(typeof window !== 'undefined' ? window : null);

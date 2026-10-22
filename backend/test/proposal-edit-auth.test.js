@@ -1,24 +1,16 @@
-// Security contract of the proposal API (audit 2026-09): edit tokens on every PATCH, unprovable
-// client claims dropped on the free upload, disjoint row/authored identifier namespaces, and
-// capped list limits. Route-level, against a mock pool; the id-collision tests use a tiny
-// table-backed fake that applies the route's WHERE/LIMIT, including the ambiguous query this
-// contract replaces, so crossing identifier namespaces fails the regression checks.
-import { describe, it, expect, beforeEach, afterAll, vi } from 'vitest';
-import fs from 'node:fs';
+// Security contract of the proposal API (audit 2026-09): disjoint row/authored identifier
+// namespaces, the paid-agent stamp served only for paid rows, and capped list limits. The edit-token
+// PATCH routes this file was named for went with the server's proposal writes (plan-design-agreement.md
+// M2); the API is read-only. Route-level,
+// against a mock pool; the id-collision tests use a tiny table-backed fake that applies the route's
+// WHERE/LIMIT, including the ambiguous query this contract replaces, so crossing identifier
+// namespaces fails the regression checks.
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import request from 'supertest';
-import { saveImageBuffer } from '../utils/image-store.js';
 import { createMockPool } from './helpers/mock-pool.js';
 import { createTestApp } from './helpers/create-app.js';
-import { validProposalBody, insertResult, updateResult, proposalDbRow, summaryDbRow } from './helpers/fixtures.js';
-import { hashEditToken, MAX_SUMMARY_LIMIT, MAX_PARCEL_PROPOSALS_LIMIT } from '../routes/proposals.js';
-
-vi.mock('../thumbnails/proposal-thumbnail.js', () => ({
-    generateAndStoreProposalThumbnail: vi.fn(async () => null)
-}));
-
-const TOKEN = 'the-uploaders-token';
-const HASH = hashEditToken(TOKEN);
-const HEADER = 'X-Proposal-Edit-Token';
+import { proposalDbRow, summaryDbRow } from './helpers/fixtures.js';
+import { MAX_SUMMARY_LIMIT, MAX_PARCEL_PROPOSALS_LIMIT } from '../routes/proposals.js';
 
 let pool;
 let app;
@@ -29,231 +21,9 @@ beforeEach(() => {
     vi.spyOn(console, 'warn').mockImplementation(() => {});
 });
 
-const updates = () => pool.getCalls().filter(call => /^\s*UPDATE proposal/.test(call.sql));
-
-describe('POST /proposals issues an edit token', () => {
-    it('returns a random token once and stores only its sha256', async () => {
-        pool.setResults([insertResult(), updateResult(), insertResult(), updateResult()]);
-
-        const first = await request(app).post('/proposals').send(validProposalBody());
-        const second = await request(app).post('/proposals').send(validProposalBody({ proposalId: 'another' }));
-
-        expect(first.status).toBe(201);
-        expect(first.body.editToken).toMatch(/^[A-Za-z0-9_-]{43}$/); // 32 bytes, base64url
-        expect(second.body.editToken).not.toBe(first.body.editToken);
-
-        const insert = pool.getCalls()[0];
-        expect(insert.sql).toContain('edit_token_hash');
-        expect(insert.params[38]).toBe(hashEditToken(first.body.editToken));
-        // The token itself is never written anywhere.
-        expect(JSON.stringify(insert.params)).not.toContain(first.body.editToken);
-    });
-});
-
-describe('POST /proposals drops claims the free route cannot prove', () => {
-    const forgedAgent = {
-        persona: 'densifier-01',
-        wallet: 'AgentWallet111111111111111111111111111111111',
-        paid: { id: 'x', amount: '0.05', tx: 'ForgedSettlementSignature' }
-    };
-
-    it('ignores a client-supplied paid-agent stamp', async () => {
-        pool.setResults([insertResult(), updateResult()]);
-
-        const res = await request(app).post('/proposals').send(validProposalBody({ agent: forgedAgent }));
-
-        expect(res.status).toBe(201);
-        const params = pool.getCalls()[0].params;
-        expect(JSON.parse(params[32])).not.toHaveProperty('agent');
-        expect(params[36]).toBeNull(); // agent_payment_id — only the x402 route sets it
-    });
-
-    it('stamps the server clock as created_at; the client value is kept only as authoredAt', async () => {
-        pool.setResults([insertResult(), updateResult()]);
-        const before = Date.now();
-
-        const res = await request(app).post('/proposals').send(validProposalBody({ createdAt: '2001-01-01T00:00:00.000Z' }));
-
-        expect(res.status).toBe(201);
-        const params = pool.getCalls()[0].params;
-        const createdAt = params[12];
-        expect(createdAt).toBeInstanceOf(Date);
-        expect(createdAt.getTime()).toBeGreaterThanOrEqual(before);
-        const stored = JSON.parse(params[32]);
-        expect(stored.createdAt).toBe(createdAt.toISOString());
-        expect(stored.authoredAt).toBe('2001-01-01T00:00:00.000Z');
-    });
-
-    it('does not keep a future "authored" time', async () => {
-        pool.setResults([insertResult(), updateResult()]);
-
-        await request(app).post('/proposals').send(validProposalBody({ createdAt: '2999-01-01T00:00:00.000Z', authoredAt: 'x' }));
-
-        expect(JSON.parse(pool.getCalls()[0].params[32])).not.toHaveProperty('authoredAt');
-    });
-
-    it('resets an Executed lifecycle to Active and drops owner acceptances', async () => {
-        pool.setResults([insertResult(), updateResult()]);
-
-        const res = await request(app).post('/proposals').send(validProposalBody({
-            lifecycleStatus: 'Executed',
-            executedAt: '2026-09-01T00:00:00.000Z',
-            acceptedParcelIds: ['HR-1234-5678', 'HR-1234-5679'],
-            ownerAcceptances: { 'HR-1234-5678': { accepted: true } }
-        }));
-
-        expect(res.status).toBe(201);
-        const params = pool.getCalls()[0].params;
-        expect(params[7]).toBe('Active');
-        expect(params[22]).toBeNull();
-        expect(params[23]).toBeNull();
-        const stored = JSON.parse(params[32]);
-        expect(stored.lifecycleStatus).toBe('Active');
-        expect(stored).not.toHaveProperty('executedAt');
-        expect(stored).not.toHaveProperty('acceptedParcelIds');
-        expect(stored).not.toHaveProperty('ownerAcceptances');
-    });
-
-    it.each(['Active', 'Cancelled', 'Expired', 'draft'])(
-        'drops a client execution timestamp from a %s upload', async lifecycleStatus => {
-            pool.setResults([insertResult(), updateResult()]);
-            const response = await request(app).post('/proposals').send(validProposalBody({
-                lifecycleStatus, executedAt: '2026-10-01T10:00:00.000Z'
-            }));
-            expect(response.status).toBe(201);
-            const params = pool.getCalls()[0].params;
-            expect(params[7]).toBe(lifecycleStatus);
-            expect(JSON.parse(params[32])).not.toHaveProperty('executedAt');
-        });
-
-    it('keeps author-controlled lifecycle states on ordinary server uploads', async () => {
-        pool.setResults([insertResult(), updateResult()]);
-        const response = await request(app).post('/proposals').send(validProposalBody({ lifecycleStatus: 'Cancelled' }));
-
-        expect(response.status).toBe(201);
-        const params = pool.getCalls()[0].params;
-        expect(params[7]).toBe('Cancelled');
-        expect(params[30]).toBeNull();
-    });
-});
-
-describe('PATCH routes require the edit token', () => {
-    // A screenshot PATCH must name an image in our own store (routes/proposals.js isOwnStoreImageUrl),
-    // so the fixture is a real file there, as /assets/upload would have written it.
-    const ownImage = saveImageBuffer(Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0, 0, 0, 13]), 'edit-auth-test');
-    afterAll(() => fs.rmSync(ownImage.absolutePath, { force: true }));
-    const routes = [
-        ['name', '/proposals/7/name', { name: 'New name' }],
-        ['screenshot', '/proposals/7/screenshot', { screenshotUrl: ownImage.imagePath }],
-        ['epoch', '/proposals/7/epoch', { epochYear: 2045 }]
-    ];
-
-    it('screenshot: a URL outside our store → 400 without touching the database, even with the right token', async () => {
-        const res = await request(app).patch('/proposals/7/screenshot').set(HEADER, TOKEN)
-            .send({ screenshotUrl: 'https://evil.example/x.png' });
-
-        expect(res.status).toBe(400);
-        expect(pool.getCalls()).toHaveLength(0);
-    });
-
-    it.each(routes)('%s: no token → 403 without touching the database', async (_label, path, body) => {
-        const res = await request(app).patch(path).send(body);
-
-        expect(res.status).toBe(403);
-        expect(pool.getCalls()).toHaveLength(0);
-    });
-
-    it.each(routes)('%s: wrong token → 403 and nothing is updated', async (_label, path, body) => {
-        pool.setResults([{ rows: [{ id: 7, edit_token_hash: HASH }], rowCount: 1 }]);
-
-        const res = await request(app).patch(path).set(HEADER, 'not-the-token').send(body);
-
-        expect(res.status).toBe(403);
-        expect(updates()).toHaveLength(0);
-    });
-
-    it.each(routes)('%s: legacy row without a token hash → 403, whatever token is sent', async (_label, path, body) => {
-        pool.setResults([{ rows: [{ id: 7, edit_token_hash: null }], rowCount: 1 }]);
-
-        const res = await request(app).patch(path).set(HEADER, TOKEN).send(body);
-
-        expect(res.status).toBe(403);
-        expect(updates()).toHaveLength(0);
-    });
-
-    it.each(routes)('%s: right token → 200, written to that one row by primary key', async (_label, path, body) => {
-        pool.setResults([
-            { rows: [{ id: 7, edit_token_hash: HASH }], rowCount: 1 },
-            { rows: [{ id: 7, proposal_id: 'c2-abc', name: 'New name', title: 'New name', screenshot_url: 'u', epoch_year: 2045 }], rowCount: 1 }
-        ]);
-
-        const res = await request(app).patch(path).set(HEADER, TOKEN).send(body);
-
-        expect(res.status).toBe(200);
-        expect(updates()).toHaveLength(1);
-        expect(updates()[0].sql).toContain('WHERE id = $2 AND edit_token_hash = $3');
-        expect(updates()[0].params.slice(1)).toEqual([7, HASH]);
-    });
-});
-
-describe('PATCH /proposals/epochs writes only entries with a matching token', () => {
-    it('updates the authorized rows and names the forbidden and missing ones', async () => {
-        pool.setResults([
-            {
-                rows: [
-                    { id: 1, proposal_id: 'c2-mine', edit_token_hash: HASH },
-                    { id: 2, proposal_id: 'c2-theirs', edit_token_hash: hashEditToken('someone-else') },
-                    { id: 3, proposal_id: 'c2-legacy', edit_token_hash: null }
-                ],
-                rowCount: 3
-            },
-            { rows: [{ id: 1, proposal_id: 'c2-mine', epoch_year: 2045 }], rowCount: 1 }
-        ]);
-
-        const res = await request(app).patch('/proposals/epochs').send({
-            epochs: [
-                { id: '1', epochYear: 2045, editToken: TOKEN },
-                { id: 'c2-theirs', epochYear: 2055, editToken: TOKEN },
-                { id: '3', epochYear: 2035 },
-                { id: 'nope', epochYear: 2035, editToken: TOKEN }
-            ]
-        });
-
-        expect(res.status).toBe(200);
-        expect(res.body).toMatchObject({ requested: 4, updated: 1, missing: ['nope'], forbidden: ['c2-theirs', '3'] });
-        expect(pool.getCalls()[0].params).toEqual([['1', '3'], ['c2-theirs', 'nope']]);
-        const write = updates()[0];
-        expect(write.params).toEqual([[1], [2045], [HASH]]);
-        expect(write.sql).toContain('WHERE p.id = v.id AND p.edit_token_hash = v.token_hash');
-    });
-
-    it('answers 403 and writes nothing when no entry is authorized', async () => {
-        pool.setResults([{ rows: [{ id: 2, proposal_id: 'c2-theirs', edit_token_hash: HASH }], rowCount: 1 }]);
-
-        const res = await request(app).patch('/proposals/epochs').send({ epochs: [{ id: '2', epochYear: 2045 }] });
-
-        expect(res.status).toBe(403);
-        expect(res.body.forbidden).toEqual(['2']);
-        expect(updates()).toHaveLength(0);
-    });
-
-    it('does not edit an authored numeric alias when its addressed row is missing', async () => {
-        pool.setResult({ rows: [{ id: 45, proposal_id: '51', edit_token_hash: HASH }], rowCount: 1 });
-        const res = await request(app).patch('/proposals/epochs').send({
-            epochs: [{ id: '51', epochYear: 2045, editToken: TOKEN }]
-        });
-        expect(res.status).toBe(200);
-        expect(res.body).toMatchObject({ updated: 0, missing: ['51'], forbidden: [] });
-        expect(pool.getCalls()[0].params).toEqual([['51'], []]);
-        expect(updates()).toHaveLength(0);
-    });
-});
-
-// prod: row 45 carries the legacy proposal_id "51"; row 51 is a different proposal, which the list
-// labels "#51" and whose share link is /proposals/51.
 describe('an id that is both a row id and another row\'s proposal_id', () => {
-    const row45 = proposalDbRow({ id: 45, proposal_id: '51', name: 'Row 45', edit_token_hash: hashEditToken('token-45') });
-    const row51 = proposalDbRow({ id: 51, proposal_id: 'c2-row51', name: 'Row 51', edit_token_hash: hashEditToken('token-51') });
+    const row45 = proposalDbRow({ id: 45, proposal_id: '51', name: 'Row 45' });
+    const row51 = proposalDbRow({ id: 51, proposal_id: 'c2-row51', name: 'Row 51' });
 
     function tablePool(table) {
         const calls = [];
@@ -263,10 +33,6 @@ describe('an id that is both a row id and another row\'s proposal_id', () => {
             async query(sql, params) {
                 calls.push({ sql, params });
                 const key = String(params[0]);
-                if (/^\s*UPDATE proposal/.test(sql)) {
-                    const target = table.find(row => row.id === params[1] && row.edit_token_hash === params[2]);
-                    return { rows: target ? [{ ...target, name: params[0], title: params[0] }] : [], rowCount: target ? 1 : 0 };
-                }
                 let rows;
                 if (/WHERE id::text = \$1 LIMIT 1/.test(sql)) {
                     rows = table.filter(row => String(row.id) === key);
@@ -311,27 +77,14 @@ describe('an id that is both a row id and another row\'s proposal_id', () => {
         expect((await request(tableApp).get('/proposals/c2-row51')).body).toMatchObject({ id: 51 });
     });
 
-    it('returns missing for numeric reads and edits instead of finding an authored numeric alias', async () => {
+    it('returns missing for numeric reads instead of finding an authored numeric alias', async () => {
         const backing = tablePool([row45]);
         const tableApp = createTestApp(backing);
         expect((await request(tableApp).get('/proposals/51')).status).toBe(404);
         expect((await request(tableApp).head('/proposals/51')).status).toBe(404);
-        const edited = await request(tableApp).patch('/proposals/51/name')
-            .set(HEADER, 'token-45').send({ name: 'Wrong row' });
-        expect(edited.status).toBe(404);
-        expect(backing.calls.some(call => /^\s*UPDATE proposal/.test(call.sql))).toBe(false);
-    });
-
-    it('PATCH /proposals/51/name authorizes against row 51 and can only ever write that row', async () => {
-        const table = [row45, row51];
-        const tableApp = createTestApp(tablePool(table));
-
-        const wrongRowToken = await request(tableApp).patch('/proposals/51/name').set(HEADER, 'token-45').send({ name: 'Hijack' });
-        expect(wrongRowToken.status).toBe(403);
-
-        const ok = await request(tableApp).patch('/proposals/51/name').set(HEADER, 'token-51').send({ name: 'Renamed' });
-        expect(ok.status).toBe(200);
-        expect(ok.body).toMatchObject({ id: 51, name: 'Renamed' });
+        // Nothing writes a proposal any more: the rename route is gone.
+        expect((await request(tableApp).patch('/proposals/45/name').send({ name: 'Renamed' })).status).toBe(404);
+        expect(backing.calls.some(call => /^\s*UPDATE/.test(call.sql))).toBe(false);
     });
 });
 

@@ -295,7 +295,7 @@
             && !win.roadDrawingMode && !win.isParcelDrawingModeActive?.()
             && !win.isStructureGeometryEditorActive?.() && !win.isTransitStationGeometryEditorActive?.()
             && !win.isTransitStationPlacementActive?.() && !win.AreaMonitorPaint?.isActive()
-            && !win.sharePlanMode && !win.pinpointToolIsActive?.();
+            && !win.MapPick?.active() && !win.pinpointToolIsActive?.();
     }
 
     function fitSelected() {
@@ -432,8 +432,7 @@
 
     function closeOtherPanels() {
         win.MapShell?.closeSheets?.();
-        win.ParcelMenu?.close?.(); win.GroundMenu?.close?.();
-        win.hideParcelInfoPanel?.(); win.__drillUi?.hidePanel?.();
+        win.hideParcelInfoPanel?.(); win.ClickStack?.close();
     }
 
     function showBlock(feature) {

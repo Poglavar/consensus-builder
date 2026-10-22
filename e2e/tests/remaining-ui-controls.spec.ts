@@ -1,6 +1,6 @@
 // Cover reachable controls left outside the focused feature suites.
 import { test, expect } from '../helpers/fixtures';
-import { openCity, openParcel, clickMapPoint, showProposal, PARCEL_ID, PARCEL_GEOMETRY } from '../helpers/runtime';
+import { openCity, openParcel, clickMapPoint, showProposal, PARCEL_ID, PARCEL_GEOMETRY, runParcelCommand } from '../helpers/runtime';
 import { installLayerDatasets } from '../helpers/mocks/layer-datasets';
 import { installAreaMonitorSpaFallback } from '../helpers/mocks/area-monitor-server';
 import { selectNativeOption } from '../helpers/controls';
@@ -68,8 +68,7 @@ test.describe('Remaining UI controls @features', () => {
 
   test('site card and proposal panel minimize, switch tabs, and close independently', async ({ mockApi: page }) => {
     await openCity(page);
-    await clickMapPoint(page, 15.9822, 45.80025);
-    await page.locator('#parcel-menu [data-command="parcel.useAsSite"]').click();
+    await runParcelCommand(page, 15.9822, 45.80025, 'parcel.useAsSite');
     const card = page.locator('#site-panel');
     await expect(card).toBeVisible();
     const cardMinimize = card.locator('[data-site-action="minimize"]');
@@ -186,22 +185,22 @@ test.describe('Remaining UI controls @features', () => {
   test('activity explorer source, actor, controller, action, and result fields filter events', async ({ mockApi: page }) => {
     await page.route('**/agent/activity**', route => route.fulfill({ json: { events: [
       {
-        id: 'filter-human-publish', occurredAt: '2026-10-01T12:00:00Z', recordedAt: '2026-10-01T12:00:00Z',
+        id: 'filter-human-propose', occurredAt: '2026-10-01T12:00:00Z', recordedAt: '2026-10-01T12:00:00Z',
         actor: { id: 'human-1', name: 'Filter Human', kind: 'human', controller: 'human' },
-        action: { type: 'publish' }, entity: { type: 'proposal', id: 'filter-proposal-1' },
-        source: 'live', message: 'Published filter test proposal', ok: true,
+        action: { type: 'propose' }, entity: { type: 'agreement', id: 'filter-agreement-1' },
+        source: 'live', message: 'Proposed filter test agreement', ok: true,
       },
       {
         id: 'filter-agent-create', occurredAt: '2026-10-01T11:00:00Z', recordedAt: '2026-10-01T11:00:00Z',
         actor: { id: 'agent-1', name: 'Filter Algorithm', kind: 'agent', controller: 'algorithm' },
-        action: { type: 'create' }, entity: { type: 'proposal', id: 'filter-proposal-2' },
-        source: 'live', message: 'Created filter test proposal', ok: true,
+        action: { type: 'create' }, entity: { type: 'design', id: 'filter-design-2' },
+        source: 'live', message: 'Created filter test design', ok: true,
       },
       {
         id: 'filter-agent-failure', occurredAt: '2026-10-01T10:00:00Z', recordedAt: '2026-10-01T10:00:00Z',
         actor: { id: 'agent-2', name: 'Filter LLM', kind: 'agent', controller: 'llm' },
-        action: { type: 'publish' }, entity: { type: 'proposal', id: 'filter-proposal-3' },
-        source: 'live', message: 'Failed filter test proposal', ok: false,
+        action: { type: 'propose' }, entity: { type: 'agreement', id: 'filter-agreement-3' },
+        source: 'live', message: 'Failed filter test agreement', ok: false,
       },
     ] } }));
 
@@ -211,45 +210,45 @@ test.describe('Remaining UI controls @features', () => {
     const modal = page.locator('.game-log-modal');
     await expect(modal).toBeVisible();
     const content = modal.locator('#game-log-content');
-    await expect(content).toContainText('Published filter test proposal');
-    await expect(content).toContainText('Created filter test proposal');
-    await expect(content).toContainText('Failed filter test proposal');
+    await expect(content).toContainText('Proposed filter test agreement');
+    await expect(content).toContainText('Created filter test design');
+    await expect(content).toContainText('Failed filter test agreement');
 
     const field = (name: string) => modal.locator(`[data-activity-filter-field="${name}"]`);
     await selectNativeOption(field('source'), 'simulation');
-    await expect(content).not.toContainText('Published filter test proposal');
+    await expect(content).not.toContainText('Proposed filter test agreement');
     await selectNativeOption(field('source'), 'live');
-    await expect(content).toContainText('Published filter test proposal');
+    await expect(content).toContainText('Proposed filter test agreement');
 
     await selectNativeOption(field('kind'), 'human');
-    await expect(content).toContainText('Published filter test proposal');
-    await expect(content).not.toContainText('Created filter test proposal');
+    await expect(content).toContainText('Proposed filter test agreement');
+    await expect(content).not.toContainText('Created filter test design');
     await selectNativeOption(field('kind'), 'agent');
-    await expect(content).toContainText('Created filter test proposal');
-    await expect(content).not.toContainText('Published filter test proposal');
+    await expect(content).toContainText('Created filter test design');
+    await expect(content).not.toContainText('Proposed filter test agreement');
 
     await selectNativeOption(field('controller'), 'llm');
-    await expect(content).toContainText('Failed filter test proposal');
-    await expect(content).not.toContainText('Created filter test proposal');
+    await expect(content).toContainText('Failed filter test agreement');
+    await expect(content).not.toContainText('Created filter test design');
 
     await selectNativeOption(field('controller'), 'algorithm');
     await selectNativeOption(field('action'), 'create');
-    await expect(content).not.toContainText('Failed filter test proposal');
-    await expect(content).toContainText('Created filter test proposal');
+    await expect(content).not.toContainText('Failed filter test agreement');
+    await expect(content).toContainText('Created filter test design');
 
     await selectNativeOption(field('status'), 'failed');
     await expect(content).toContainText(/No matching activity/i);
     await selectNativeOption(field('status'), 'success');
-    await expect(content).toContainText('Created filter test proposal');
+    await expect(content).toContainText('Created filter test design');
     await selectNativeOption(field('controller'), 'all');
     await selectNativeOption(field('kind'), 'all');
-    await selectNativeOption(field('action'), 'publish');
+    await selectNativeOption(field('action'), 'propose');
     await selectNativeOption(field('status'), 'failed');
-    await expect(content).toContainText('Failed filter test proposal');
-    await expect(content).not.toContainText('Published filter test proposal');
+    await expect(content).toContainText('Failed filter test agreement');
+    await expect(content).not.toContainText('Proposed filter test agreement');
     await selectNativeOption(field('status'), 'success');
-    await expect(content).toContainText('Published filter test proposal');
-    await expect(content).not.toContainText('Failed filter test proposal');
+    await expect(content).toContainText('Proposed filter test agreement');
+    await expect(content).not.toContainText('Failed filter test agreement');
   });
 
   test('actor explorer search narrows profiles and activity, then restores the list', async ({ mockApi: page }) => {
@@ -257,26 +256,26 @@ test.describe('Remaining UI controls @features', () => {
       {
         id: 'search-ari', occurredAt: '2026-10-01T12:00:00Z', recordedAt: '2026-10-01T12:00:00Z',
         actor: { id: 'search-human', name: 'Ari Steward', kind: 'human', controller: 'human' },
-        action: { type: 'publish' }, entity: { type: 'proposal', id: 'search-park' },
-        source: 'proposal', message: 'Published a river park', ok: true,
+        action: { type: 'propose' }, entity: { type: 'agreement', id: 'search-park' },
+        source: 'live', message: 'Proposed a river park', ok: true,
       },
       {
         id: 'search-agent', occurredAt: '2026-10-01T11:00:00Z', recordedAt: '2026-10-01T11:00:00Z',
         actor: { id: 'search-agent', name: 'Block Planner', kind: 'agent', controller: 'algorithm' },
-        action: { type: 'create' }, entity: { type: 'proposal', id: 'search-square' },
-        source: 'agent', message: 'Created a square proposal', ok: true,
+        action: { type: 'create' }, entity: { type: 'design', id: 'search-square' },
+        source: 'live', message: 'Created a square design', ok: true,
       },
     ] } }));
     await page.goto('/actor-explorer.html');
     await expect(page.locator('.ae-event')).toHaveCount(2);
-    const search = page.getByRole('searchbox', { name: 'Search actor, proposal, run or transaction' });
+    const search = page.getByRole('searchbox', { name: 'Search actor, agreement, run or transaction' });
     await search.fill('Ari');
     await expect(page.locator('.ae-event')).toHaveCount(1);
-    await expect(page.locator('.ae-event')).toContainText('Published a river park');
+    await expect(page.locator('.ae-event')).toContainText('Proposed a river park');
     await expect(page.locator('.ae-profile-grid')).toContainText('Ari Steward');
     await search.fill('search-square');
     await expect(page.locator('.ae-event')).toHaveCount(1);
-    await expect(page.locator('.ae-event')).toContainText('Created a square proposal');
+    await expect(page.locator('.ae-event')).toContainText('Created a square design');
     await search.fill('');
     await expect(page.locator('.ae-event')).toHaveCount(2);
   });

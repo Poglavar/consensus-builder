@@ -1,5 +1,5 @@
-// Shared guard for the decentralized-storage relays (/ipfs/upload, /walrus/upload). Both pin
-// content on OUR paid accounts, so they accept exactly what the mint flows send — one PNG/JPEG/WEBP
+// Guard for the decentralized-storage relay (/ipfs/upload). It pins content on OUR paid account,
+// so it accepts exactly what the mint flows send — one PNG/JPEG/WEBP
 // screenshot plus ERC-721-style NFT metadata (see frontend/js/proposals/create.js,
 // proposals/dialog-upload.js, parcels/ui/claim.js) — within tight size caps and a per-IP rate limit.
 
@@ -113,7 +113,11 @@ function uploadClientKey(req) {
     return address ? ipKeyGenerator(address) : 'unknown';
 }
 
-/** A fresh per-IP limiter for one relay route (each route gets its own budget). */
+/**
+ * A fresh per-IP limiter for one relay route (each route gets its own budget). A refusal says when
+ * the client's window resets (`retryAfterSeconds`, as the Retry-After header does), so the browser
+ * can tell the user how long to wait (proposals/design-sync.js refusalMessage).
+ */
 export function createUploadRateLimiter({ windowMs = UPLOAD_RATE_WINDOW_MS, limit = UPLOAD_RATE_MAX } = {}) {
     return rateLimit({
         windowMs,
@@ -121,6 +125,12 @@ export function createUploadRateLimiter({ windowMs = UPLOAD_RATE_WINDOW_MS, limi
         standardHeaders: true,
         legacyHeaders: false,
         keyGenerator: uploadClientKey,
-        handler: (req, res) => res.status(429).json({ error: 'Too many uploads, please try again later.' })
+        handler: (req, res) => {
+            const resetAt = req.rateLimit?.resetTime;
+            const retryAfterSeconds = resetAt instanceof Date
+                ? Math.max(1, Math.ceil((resetAt.getTime() - Date.now()) / 1000))
+                : Math.ceil(windowMs / 1000);
+            res.status(429).json({ error: 'Too many uploads, please try again later.', code: 'upload-rate-limited', retryAfterSeconds });
+        }
     });
 }

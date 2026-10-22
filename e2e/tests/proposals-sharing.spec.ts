@@ -1,129 +1,41 @@
-import { Browser, BrowserContext, Page } from '@playwright/test';
+// Purpose: sharing the applied plan from the share panel (plan-design-agreement.md, M2 "Browser"):
+// the panel picks on the map (js/map-pick.js, M3), so a click on an applied design finds its row;
+// each selected design is published (POST /pins + POST /designs) from its row, the panel links the
+// selection as /designs/<cid>,<cid> once all of it is published, and another device applies that link
+// once; a parcel layout's row is refused (it is published with its agreement); a link naming a design
+// the index does not hold, or something that is not a CID, says so.
+import { Page } from '@playwright/test';
 import { test, expect } from '../helpers/fixtures';
 import { waitForMapReady } from '../helpers/app';
-import { openCity, openParcel, createSpace, proposalState, showProposal, chooseTermsForShare, PARCEL_ID } from '../helpers/runtime';
+import { openCity, openParcel, createSpace, chooseProfileName, stubBasemapTiles, openOnAnotherDevice, clickDesignOnMap } from '../helpers/runtime';
+import { applyLayout } from '../helpers/agreements';
 import { sampleParcels } from '../helpers/mocks/parcel-data';
-import { mockAllApiRoutes } from '../helpers/mocks/api-routes';
-import { attachSharedProposalServer, createSharedProposalServer } from '../helpers/mocks/shared-server';
+import { cidOfObject, createSharedIndex, pageIndex } from '../helpers/mocks/shared-server';
 
-async function personalizeProfile(page: Page, name: string): Promise<void> {
-  await page.locator('#username-display').click();
-  await expect(page.locator('#welcome-modal')).toBeVisible();
-  await page.locator('#username-input').fill(name);
-  await page.locator('#welcome-submit-btn').click();
-  await expect(page.locator('#welcome-modal')).toBeHidden();
-  await expect(page.locator('#username-text')).toHaveText(name);
-  await expect.poll(() => page.evaluate(() => {
-    const w = window as any;
-    return w.GuestPolicy.check('share', { isGuest: w.getCurrentUserAgent?.()?.isGuest }).allowed;
-  })).toBe(true);
+test.beforeEach(async ({ mockApi: page }) => {
+  await stubBasemapTiles(page);
+});
+
+// The design-<cid> records applied on this device.
+const appliedImports = (page: Page, cids: string[]) => page.evaluate(ids => ids.map(cid => (window as any).proposalStorage.getAllProposals()
+  .filter((proposal: any) => proposal.proposalId === `design-${cid}` && (window as any).isApplied(proposal)).length), cids);
+
+// The share panel of the applied plan: Proposals sheet → Proposal tools → Share applied designs.
+async function openSharePanel(page: Page): Promise<void> {
+  if (!(await page.locator('#proposals-sheet').isVisible())) await page.locator('#proposals-button').click();
+  await expect(page.locator('#proposals-sheet')).toBeVisible();
+  const tools = page.locator('#proposal-list-actions');
+  if (!(await tools.evaluate(element => (element as HTMLDetailsElement).open))) await tools.locator('summary').click();
+  await expect(page.locator('#shareAppliedProposalsButton')).toBeEnabled();
+  await page.locator('#shareAppliedProposalsButton').click();
 }
 
-async function receivingDevice(
-  browser: Browser,
-  shareUrl: string,
-  server: ReturnType<typeof createSharedProposalServer>,
-  baseURL: string | undefined
-): Promise<{ context: BrowserContext; page: Page; errors: string[] }> {
-  const context = await browser.newContext({ baseURL });
-  await context.addInitScript(() => {
-    try {
-      localStorage.setItem('cb_current_city', 'new_york');
-      localStorage.setItem('cb_site_intro_seen_v1', '1');
-    } catch (_) { /* opaque origin */ }
-  });
-  const page = await context.newPage();
-  await mockAllApiRoutes(page);
-  await attachSharedProposalServer(page, server);
-  const errors: string[] = [];
-  page.on('pageerror', error => errors.push(error.message));
-  await page.goto(shareUrl, { waitUntil: 'domcontentloaded' });
-  await waitForMapReady(page);
-  return { context, page, errors };
-}
-
-async function expectAppliedOnFabric(page: Page, proposalId: string): Promise<void> {
-  await expect.poll(async () => {
-    const state = await proposalState(page, proposalId);
-    return !!state?.applied;
-  }, { timeout: 60_000 }).toBe(true);
-  await expect.poll(() => page.evaluate((id) => {
-    const w = window as any;
-    const proposal = w.getProposalByIdOrHash(id);
-    const fabric = w.LiveParcelFabric;
-    if (!proposal || !fabric?.producedBy || !fabric?.featureId || !w.ParcelPresenter?.getLayer) return false;
-    const produced = fabric.producedBy(String(proposal.proposalId));
-    return produced.length > 0 && produced.some((feature: any) => {
-      const featureId = fabric.featureId(feature);
-      return !!featureId && !!w.ParcelPresenter.getLayer(String(featureId));
-    });
-  }, proposalId), { timeout: 30_000 }).toBe(true);
-}
-
-test.describe('Proposal sharing @core', () => {
-  test('individual share UI publishes an applied proposal that imports and replays on another device', async ({ mockApi: sender, browser, baseURL }) => {
-    // Two devices, and a quick drawing passes through the create dialog before it is shared.
-    test.setTimeout(90_000);
-    const server = createSharedProposalServer();
-    await attachSharedProposalServer(sender, server);
+test.describe('Sharing the applied plan @core', () => {
+  test('the share panel publishes each selected design and its link applies them once on another device', async ({ mockApi: sender, browser, baseURL }) => {
+    test.setTimeout(240_000);
     await openCity(sender);
-    await personalizeProfile(sender, 'Share author');
-    const proposalId = await createSpace(sender, 'park');
-    const beforeShare = await proposalState(sender, proposalId);
-    expect(beforeShare.applied).toBe(true);
-
-    await showProposal(sender, proposalId);
-    await sender.locator('.btn-share-proposal').click();
-    // A quick drawing has no terms yet: Share asks for them, appends them to the drawing itself
-    // and shares it; nothing is re-created.
-    const savedId = await chooseTermsForShare(sender, 'community-vote');
-    expect(savedId).toBe(proposalId);
-    expect(await sender.evaluate(() => (window as any).proposalStorage.getAllProposals().length)).toBe(1);
-    const downloadPromise = sender.waitForEvent('download');
-    await sender.locator('.share-modal-overlay').getByRole('button', { name: 'Download', exact: true }).click();
-    const download = await downloadPromise;
-    expect(download.suggestedFilename()).toMatch(/^proposal-.*\.json$/);
-    await sender.locator('.share-modal-overlay').getByRole('button', { name: 'Upload', exact: true }).click();
-    const shareLink = sender.locator('.share-modal-overlay .share-modal-link').first();
-    await expect(shareLink).toHaveValue(/\/proposals\/\d+\?/);
-    const shareUrl = await shareLink.inputValue();
-    expect(server.records.size).toBe(1);
-    const publishedRecord = server.records.values().next().value;
-    if (!publishedRecord) throw new Error('The publish API did not persist a proposal record.');
-    expect(publishedRecord).toMatchObject({ goal: 'park', kind: 'community-vote', offer: null, voteExpiryDays: 365 });
-    expect(String(publishedRecord.proposalId)).toMatch(/^c2-/);
-    expect(publishedRecord.proposalId).not.toBe(proposalId);
-    expect(publishedRecord).not.toHaveProperty('applied');
-    const publishedProposalId = String(publishedRecord.proposalId);
-
-    const receiver = await receivingDevice(browser, shareUrl, server, baseURL);
-    try {
-      await expectAppliedOnFabric(receiver.page, publishedProposalId);
-      const state = await proposalState(receiver.page, publishedProposalId);
-      expect(state.applied).toBe(true);
-      await receiver.page.reload({ waitUntil: 'domcontentloaded' });
-      await waitForMapReady(receiver.page);
-      await expectAppliedOnFabric(receiver.page, publishedProposalId);
-      const afterReload = await receiver.page.evaluate((id) => {
-        const w = window as any;
-        return w.proposalStorage.getAllProposals().filter((p: any) => p.proposalId === id && p.applied).length;
-      }, publishedProposalId);
-      expect(afterReload).toBe(1);
-      expect(receiver.errors).toEqual([]);
-      expect(server.requests.some(request => request.path.endsWith('/proposals/batch'))).toBe(true);
-    } finally {
-      await receiver.context.close();
-    }
-  });
-
-  test('whole applied plan UI publishes selected members and a fresh device applies the plan once', async ({ mockApi: sender, browser, baseURL }) => {
-    // Two devices, and a quick drawing passes through the create dialog before it is shared.
-    test.setTimeout(90_000);
-    const server = createSharedProposalServer();
-    await attachSharedProposalServer(sender, server);
-    await openCity(sender);
-    await personalizeProfile(sender, 'Plan author');
-    const proposalId = await createSpace(sender, 'park');
+    await sender.evaluate(() => (window as any).i18n.setLanguage('en'));
+    await createSpace(sender, 'park');
     const secondParcelId = sampleParcels.features[1].properties.parcelId;
     await sender.evaluate(async (id) => {
       await (window as any).CadastralParcelRepository.ensureIds([id]);
@@ -133,79 +45,120 @@ test.describe('Proposal sharing @core', () => {
     await sender.locator('.parcel-build-btn--square').click();
     await expect.poll(() => sender.evaluate(() => (window as any).proposalStorage.getAllProposals()
       .some((proposal: any) => proposal.structureProposal?.kind === 'square' && proposal.applied))).toBe(true);
-    const secondProposalId = await sender.evaluate(() => (window as any).proposalStorage.getAllProposals()
-      .find((proposal: any) => proposal.structureProposal?.kind === 'square' && proposal.applied).proposalId);
+    const index = pageIndex(sender);
 
-    await sender.locator('#proposals-button').click();
-    await expect(sender.locator('#proposals-sheet')).toBeVisible();
-    // plan-wide actions sit in the sheet's collapsed "Plan actions" section
-    await sender.locator('#proposal-list-actions > summary').click();
-    await expect(sender.locator('#proposal-list-actions')).toHaveAttribute('open', '');
-    await expect(sender.locator('#shareAppliedProposalsButton')).toBeEnabled();
-    await sender.locator('#shareAppliedProposalsButton').click();
-    // Who decides is asked once for the whole plan; community vote is preselected.
-    const planKind = sender.locator('.share-plan-panel input[name="sharePlanKind"]');
-    await expect(planKind.and(sender.locator('[value="community-vote"]'))).toBeChecked();
-    await planKind.and(sender.locator('[value="owner-vote"]')).locator('..').click();
-    // The local proposal key in the row metadata is replaced by the canonical c2 identity when
-    // the first publish binds it. Goal labels remain stable across that identity rewrite.
-    const row = sender.locator('.share-plan-row').filter({ hasText: /·\s*park/i });
-    await expect(row).toBeVisible();
-    const secondRow = sender.locator('.share-plan-row').filter({ hasText: /·\s*square/i });
-    await expect(secondRow).toBeVisible();
-    await row.getByRole('button', { name: 'Upload', exact: true }).click();
-    await expect(row.locator('span').filter({ hasText: 'Uploaded' })).toBeVisible();
-    await secondRow.getByRole('button', { name: 'Upload', exact: true }).click();
-    await expect(secondRow.locator('span').filter({ hasText: 'Uploaded' })).toBeVisible();
-    const planLink = sender.locator('.share-plan-panel .share-modal-link');
-    await expect(planLink).toHaveValue(new RegExp(`/proposals/\\d+,\\d+\\?.*city=zg`));
-    const shareUrl = await planLink.inputValue();
-    expect(server.records.size).toBe(2);
-    const publishedByGoal = new Map<string, string>([...server.records.values()]
-      .map(record => [String(record.goal), String(record.proposalId)] as [string, string]));
-    const publishedParkId = publishedByGoal.get('park');
-    const publishedSquareId = publishedByGoal.get('square');
-    for (const record of server.records.values()) {
-      expect(record).toMatchObject({ kind: 'owner-vote', offer: null, voteExpiryDays: 365 });
-    }
-    expect(publishedParkId).toMatch(/^c2-/);
-    expect(publishedSquareId).toMatch(/^c2-/);
+    // A share link carries its author: a guest chooses a profile name first.
+    await openSharePanel(sender);
+    await chooseProfileName(sender, 'Plan author');
+    await expect(sender.locator('.share-plan-panel')).toHaveCount(0);
+    await openSharePanel(sender);
+    const panel = sender.locator('.share-plan-panel');
+    await expect(panel.locator('.share-plan-count')).toHaveText('2 designs applied on this map');
+    const park = panel.locator('.share-plan-row').filter({ hasText: /park/i });
+    const square = panel.locator('.share-plan-row').filter({ hasText: /square/i });
+    await expect(park).toBeVisible();
+    await expect(square).toBeVisible();
+    // Both rows are selected and unpublished, so there is no link yet.
+    const linkRow = panel.locator('.share-plan-link');
+    await expect(linkRow).toBeHidden();
+    await expect(panel.locator('.share-plan-status')).toHaveText('Publish at least one design to get a link.');
+    // The panel picks on the map through the one pick mode it shares with the agreement editor
+    // (js/map-pick.js): a click on an applied design there finds its row.
+    await expect(sender.locator('body')).toHaveClass(/\bmap-pick-mode\b/);
+    await expect(sender.locator('body')).toHaveAttribute('data-map-pick', 'share');
+    await expect(sender.locator('body')).not.toHaveClass(/\bshare-plan-mode\b/);
+    expect(await sender.evaluate(() => (window as any).MapPick.active())).toBe('share');
+    const parkId = await sender.evaluate(() => String((window as any).proposalStorage.getAllProposals()
+      .find((proposal: any) => proposal.structureProposal?.kind === 'park').proposalId));
+    await clickDesignOnMap(sender, parkId);
+    await expect(park).toHaveClass(/\bis-picked\b/);
+    await expect(square).not.toHaveClass(/\bis-picked\b/);
+    await expect(panel.locator('.share-plan-status')).toHaveText(/^Selected .*park/i);
 
-    const receiver = await receivingDevice(browser, shareUrl, server, baseURL);
+    await park.getByRole('button', { name: 'Publish', exact: true }).click();
+    await expect(park.locator('.share-plan-row__published')).toBeVisible({ timeout: 30_000 });
+    await expect(panel.locator('.share-plan-status')).toHaveText('Publish every selected design to get the link, or deselect some.');
+    await square.getByRole('button', { name: 'Publish', exact: true }).click();
+    await expect(square.locator('.share-plan-row__published')).toBeVisible({ timeout: 30_000 });
+
+    // Two designs pinned and indexed, each under the CID of its object; the link names both, sorted.
+    expect(index.requests.filter(request => request.method === 'POST').map(request => request.path))
+      .toEqual(['/pins', '/designs', '/pins', '/designs']);
+    const rows = [...index.designs.values()];
+    expect(rows.map(row => row.goal).sort()).toEqual(['park', 'square']);
+    rows.forEach(row => expect(cidOfObject(row.content)).toBe(row.cid));
+    const cids = rows.map(row => row.cid).sort();
+    const link = panel.locator('.share-plan-link__input');
+    await expect(linkRow).toBeVisible();
+    await expect(link).toHaveValue(`${new URL(sender.url()).origin}/designs/${cids.join(',')}?city=zg&3d&lang=en`);
+
+    // Deselecting a row narrows the link to the rest.
+    await park.locator('input[type="checkbox"]').uncheck();
+    const squareCid = rows.find(row => row.goal === 'square')!.cid;
+    await expect(link).toHaveValue(new RegExp(`/designs/${squareCid}\\?`));
+    await park.locator('input[type="checkbox"]').check();
+    await expect(link).toHaveValue(new RegExp(`/designs/${cids.join(',')}\\?`));
+
+    // Closing the panel ends its pick mode: the map selects again.
+    await panel.locator('.close-circle-btn').first().click();
+    await expect(panel).toHaveCount(0);
+    await expect(sender.locator('body')).not.toHaveClass(/\bmap-pick-mode\b/);
+    expect(await sender.evaluate(() => (window as any).MapPick.active())).toBeNull();
+
+    // Another device applies the link's designs once, and again once after a reload.
+    const receiver = await openOnAnotherDevice(browser, `/designs/${cids.join(',')}?city=zg&reduceMotion=1`, index, baseURL);
     try {
-      await expectAppliedOnFabric(receiver.page, publishedParkId!);
-      await expectAppliedOnFabric(receiver.page, publishedSquareId!);
+      await expect.poll(() => appliedImports(receiver.page, cids), { timeout: 90_000 }).toEqual([1, 1]);
       await receiver.page.reload({ waitUntil: 'domcontentloaded' });
       await waitForMapReady(receiver.page);
-      await expectAppliedOnFabric(receiver.page, publishedParkId!);
-      await expectAppliedOnFabric(receiver.page, publishedSquareId!);
-      const appliedCopies = await receiver.page.evaluate(ids => ids.map(id => (window as any).proposalStorage.getAllProposals()
-        .filter((proposal: any) => proposal.proposalId === id && proposal.applied).length), [publishedParkId, publishedSquareId]);
-      expect(appliedCopies).toEqual([1, 1]);
-      expect(receiver.errors).toEqual([]);
-      expect(server.requests.filter(request => request.path.endsWith('/proposals/batch'))).toHaveLength(2);
+      await expect.poll(() => appliedImports(receiver.page, cids), { timeout: 90_000 }).toEqual([1, 1]);
+      expect(await receiver.page.evaluate(() => (window as any).proposalStorage.getAllProposals().length)).toBe(2);
+      expect(index.requests.filter(request => request.path === '/designs/batch')).toHaveLength(2);
     } finally {
       await receiver.context.close();
     }
   });
 
-  test('invalid and missing share links show recoverable errors', async ({ browser, baseURL }) => {
-    const server = createSharedProposalServer();
-    const invalid = await receivingDevice(browser, '/?city=zg&proposalShare=not-valid-base64!!!', server, baseURL);
-    try {
-      await expect(invalid.page.locator('.share-modal-overlay')).toContainText(/Invalid Share Link/i);
-      expect(invalid.errors).toEqual([]);
-    } finally {
-      await invalid.context.close();
-    }
+  test('a parcel layout is not shared on its own: its row is refused and the panel offers no link', async ({ mockApi: page }) => {
+    test.setTimeout(180_000);
+    await applyLayout(page);
+    await openSharePanel(page);
+    await chooseProfileName(page, 'Layout author');
+    await openSharePanel(page);
+    const row = page.locator('.share-plan-panel .share-plan-row');
+    await expect(row).toHaveCount(1);
+    await expect(row.locator('.share-plan-row__refusal')).toHaveText('A parcel layout is published with its agreement. Propose an agreement that includes it.');
+    await expect(row.locator('input[type="checkbox"]')).toBeDisabled();
+    await expect(row.locator('input[type="checkbox"]')).not.toBeChecked();
+    await expect(row.getByRole('button', { name: 'Publish', exact: true })).toBeDisabled();
+    await expect(page.locator('.share-plan-panel .share-plan-link')).toBeHidden();
+    await expect(page.locator('.share-plan-panel .share-plan-status')).toHaveText('Select at least one design to share.');
+    expect(pageIndex(page).requests.filter(request => request.method === 'POST')).toEqual([]);
+  });
 
-    const missing = await receivingDevice(browser, '/proposals/7999?city=zg', server, baseURL);
+  test('a link to a design the index does not hold, or to something that is not a CID, says so', async ({ browser, baseURL }) => {
+    test.setTimeout(150_000);
+    const index = createSharedIndex();
+    const missingCid = cidOfObject({ schema: 'design/v1', goal: 'park', note: 'never published' });
+    const missing = await openOnAnotherDevice(browser, `/designs/${missingCid}?city=zg&reduceMotion=1`, index, baseURL);
     try {
-      await expect(missing.page.locator('.share-modal-overlay')).toContainText(/not found on server/i, { timeout: 30_000 });
-      expect(missing.errors).toEqual([]);
-      expect(server.requests.some(request => request.path.endsWith('/proposals/batch'))).toBe(true);
+      const summary = missing.page.locator('.share-modal-overlay');
+      await expect(summary).toContainText('Shared designs', { timeout: 60_000 });
+      await expect(summary.locator('.shared-plan-failures li')).toHaveText(`${missingCid} · This design is not on the server.`);
+      expect(index.requests.filter(request => request.path === '/designs/batch')).toHaveLength(1);
     } finally {
       await missing.context.close();
+    }
+
+    const invalid = await openOnAnotherDevice(browser, '/designs/not-a-design-cid?city=zg&reduceMotion=1', index, baseURL);
+    try {
+      const summary = invalid.page.locator('.share-modal-overlay');
+      await expect(summary).toContainText('Shared designs', { timeout: 60_000 });
+      await expect(summary.locator('.shared-plan-failures li')).toHaveText('not-a-design-cid · This is not a design link.');
+      // Nothing was asked of the index for it.
+      expect(index.requests.filter(request => request.path === '/designs/batch')).toHaveLength(1);
+    } finally {
+      await invalid.context.close();
     }
   });
 });

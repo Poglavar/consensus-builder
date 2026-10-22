@@ -1,6 +1,6 @@
 /* ========== Bets sheet ==========
-   Contests (proposals on the same land) with each proposal's yes/no pool, listed the way a
-   prediction market lists an event's outcomes: a chance, a pool and a yes/no pair per row. Tokens
+   Contests (agreements over the same land) with each minted agreement's yes/no pool, listed the way
+   a prediction market lists an event's outcomes: a chance, a pool and a yes/no pair per row. Tokens
    only (docs/design-language.md); the sheet frame itself is css/map-shell.css. */
 
 .bets-sheet-body {
@@ -80,7 +80,7 @@
     gap: var(--cb-space-2);
 }
 
-/* The proposal name is the way into its bet; a quiet button (btn btn-quiet), left-aligned like a
+/* The agreement's name is the way into its bet; a quiet button (btn btn-quiet), left-aligned like a
    row title. Only its place in the row is set here; the look is the button's. */
 .bets-row__title {
     flex: 1 1 auto;
@@ -163,7 +163,7 @@
     color: var(--cb-text-muted);
 }
 
-/* The connected wallet's own bets on this proposal ("Your bets: yes 0.05 USDC"). */
+/* The connected wallet's own bets on this agreement ("Your bets: yes 0.05 USDC"). */
 .bets-row__mine {
     margin: var(--cb-space-1) 0 0;
     font-size: var(--cb-text-sm);
@@ -235,34 +235,28 @@
 /* The filter row above the contests (All · Open · Settled · Mine) is the shared cb-segmented
    control (css/primitives.css). */
 
-/* The row's second line: who proposed it and when, which tells twins of one title apart. */
+/* The row's second line: who proposed the agreement and when, which tells twins of one title apart. */
 .bets-row__who {
     margin: var(--cb-space-1) 0 0;
     font-size: var(--cb-text-sm);
     color: var(--cb-text-muted);
 }
 
-/* Rows nothing can be done with fold away under a count; a plan's older versions fold the same way
-   under its row (.bets-versions). */
-.bets-more,
-.bets-versions {
+/* Rows nothing can be done with fold away under a count. */
+.bets-more {
     margin-top: var(--cb-space-2);
     font-size: var(--cb-text-sm);
     color: var(--cb-text-muted);
 }
 
-.bets-more > summary,
-.bets-versions > summary {
+.bets-more > summary {
     cursor: pointer;
     padding: var(--cb-space-1) 0;
 }
 
-.bets-more > .bets-rows,
-.bets-versions > .bets-rows {
+.bets-more > .bets-rows {
     margin-top: var(--cb-space-1);
 }
-
-/* A named plan's row: "Plan of N proposals" is a cb-badge, the row's kind ahead of its pool. */
 
 /* The row of a settled pool the wallet can still collect from. */
 .bets-row__collect {
@@ -307,7 +301,7 @@
     border: 1px solid var(--cb-line);
 }
 
-/* The thumbnail and the same ground without the proposal under one divider
+/* The thumbnail and the same input land without the agreement's designs under one divider
    (js/ui/map-before-after.js attachDivider; dividers.md M3). The frame carries the border. */
 .bets-dialog__compare {
     position: relative;
@@ -320,13 +314,6 @@
 .bets-dialog__compare .bets-dialog__thumb {
     border: 0;
     border-radius: 0;
-}
-
-/* Whole plans can be tall: keep every member in view and the two images aligned. */
-.bets-dialog__thumb--plan,
-.bets-dialog__compare--plan .bets-dialog__thumb {
-    max-height: 320px;
-    object-fit: contain;
 }
 
 .bets-dialog__compare .map-compare__before {
@@ -380,24 +367,6 @@
     display: flex;
     flex-wrap: wrap;
     gap: var(--cb-space-2);
-}
-
-/* What a plan builds: its member proposals, folded under the bet. */
-.bets-dialog__members {
-    font-size: var(--cb-text-sm);
-    color: var(--cb-text-muted);
-}
-
-.bets-dialog__members > summary {
-    cursor: pointer;
-    padding: var(--cb-space-1) 0;
-}
-
-.bets-dialog__members ul {
-    margin: var(--cb-space-1) 0 0;
-    padding-left: var(--cb-space-4);
-    max-height: 12rem;
-    overflow-y: auto;
 }
 
 .bets-dialog__rule {

@@ -20,8 +20,7 @@ function presentationSpies() {
         'scheduleCorridorStripRefresh', 'refreshParcelStylesForAppliedProposals',
         'updateProposalLayer', 'updateProposalList', 'updateShowProposalsButton',
         'updateParksLayer', 'updateLakesLayer',
-        'updateSquaresLayer', 'updateTransitStationsLayer', 'updateProposedBuildingsLayer',
-        'updateReparcellizationLayers'
+        'updateSquaresLayer', 'updateTransitStationsLayer', 'updateProposedBuildingsLayer'
     ];
     const spies = Object.fromEntries(names.map(name => [name, vi.fn()]));
     Object.entries(spies).forEach(([name, fn]) => install(name, fn));
@@ -48,8 +47,7 @@ describe('proposal presentation refresh scope', () => {
         expect(spies.updateProposedBuildingsLayer).toHaveBeenCalledOnce();
         expect(spies.scheduleCorridorStripRefresh).not.toHaveBeenCalled();
         expect(spies.updateParksLayer).not.toHaveBeenCalled();
-        expect(spies.updateReparcellizationLayers).not.toHaveBeenCalled();
-    });
+        });
 
     it('refreshes only the changed structure kind', () => {
         const spies = presentationSpies();

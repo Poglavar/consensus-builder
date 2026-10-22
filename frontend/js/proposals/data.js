@@ -157,12 +157,12 @@ function stripProposalCadastreAliases(record) {
     if (!record || typeof record !== 'object') return record;
     delete record.parentParcelIds;
     delete record.parcelIds;
-    ['roadProposal', 'reparcellization', 'decideLaterProposal', 'buildingProposal', 'structureProposal']
+    ['roadProposal', 'parcelLayout', 'buildingProposal', 'structureProposal']
         .forEach(key => {
             const sub = record[key];
             if (!sub || typeof sub !== 'object' || Array.isArray(sub)) return;
             delete sub.parentParcelIds;
-            if (key === 'reparcellization') delete sub.parcelIds;
+            if (key === 'parcelLayout') delete sub.parcelIds;
             if (key === 'buildingProposal') {
                 delete sub.blockParcelIds;
                 delete sub.parentParcelNumbers;
@@ -182,8 +182,6 @@ function stripProposalCadastreAliases(record) {
         });
     return record;
 }
-
-const proposalMetadataFetchPromises = new Map();
 
 const proposalListTranslationsHydrated = new Set();
 
@@ -452,28 +450,9 @@ const proposalStorage = {
         if (this.proposals.has(key)) {
             return key;
         }
-        // This method is exclusively a browser-local key lookup. Publication rows require an API
-        // scope at getProposalByServerRowId; chain locations require ChainProposalRef.
+        // This method is exclusively a browser-local key lookup. A published design is found by its
+        // CID (DesignSync.localCopyOf).
         return null;
-    },
-
-    getProposalByServerRowId(rowId, publicationApiBase) {
-        this._ensureIndexes();
-        if (!/^[1-9]\d*$/.test(String(rowId ?? ''))) return null;
-        const key = String(rowId);
-        const originApi = (typeof window !== 'undefined' && window.ProposalOrigin)
-            || (typeof require === 'function' ? require('./origin.js') : null);
-        const requestedBase = originApi?.apiBase(publicationApiBase);
-        let found = null;
-        for (const proposal of this.proposals.values()) {
-            if (!proposal || String(proposal.serverProposalId ?? '') !== key) continue;
-            if (!requestedBase || originApi?.apiBase(proposal.publicationApiBase) !== requestedBase) continue;
-            if (found && found !== proposal) {
-                throw new Error(`Multiple local proposals refer to server row ${key}.`);
-            }
-            found = proposal;
-        }
-        return found;
     },
 
     findProposalByIdOrHash(idOrHash) {
@@ -502,334 +481,6 @@ const proposalStorage = {
             }
         }
         return matches;
-    },
-
-    importOnChainProposal(raw) {
-        if (!raw) return null;
-
-        const metadataProperties = raw.metadata && raw.metadata.properties ? raw.metadata.properties : {};
-        const portableApi = (typeof window !== 'undefined' ? window : globalThis).__chainRecord;
-        const portable = metadataProperties.proposalProtocol
-            ? portableApi.fromMetadata(raw.metadata) : null;
-        const metaProps = portable || metadataProperties;
-        const owns = (value, key) => value && typeof value === 'object'
-            && Object.prototype.hasOwnProperty.call(value, key);
-        if (owns(raw, 'parentParcelIds') || owns(metaProps, 'parcelIds')) {
-            throw new Error('Cannot import chain proposal: cadastreParcelIds is the only parcel declaration.');
-        }
-        const declaredCadastreIds = owns(raw, 'cadastreParcelIds')
-            ? raw.cadastreParcelIds
-            : metaProps.cadastreParcelIds;
-        // An empty list is a site-first proposal on ground without parcels; it must carry its site.
-        const declaresSite = !!(raw.site || metaProps.site);
-        if (!Array.isArray(declaredCadastreIds) || (!declaredCadastreIds.length && !declaresSite)) {
-            throw new Error('Cannot import chain proposal: cadastreParcelIds is required.');
-        }
-        const chainTokenId = raw.proposalId ?? raw.tokenId ?? (raw.onchain && raw.onchain.proposalId) ?? metaProps.tokenId ?? null;
-        const rawProposalId = chainTokenId !== undefined && chainTokenId !== null ? String(chainTokenId) : null;
-        const cadastreParcelIds = normalizeParcelIdList(
-            declaredCadastreIds
-        );
-        if (portable && JSON.stringify(cadastreParcelIds.slice().sort()) !== JSON.stringify(portable.cadastreParcelIds.slice().sort())) {
-            throw new Error('Cannot import chain proposal: NFT metadata and the on-chain consent list disagree.');
-        }
-        const authoredApi = (typeof window !== 'undefined' ? window : globalThis).ProposalAuthoredRecord;
-        if (!authoredApi || typeof authoredApi.isDerivedParcelId !== 'function') {
-            throw new Error('Cannot import chain proposal: authored proposal validation is unavailable.');
-        }
-        const generatedId = cadastreParcelIds.find(id => authoredApi.isDerivedParcelId(id));
-        if (generatedId) {
-            throw new Error(`Cannot import chain proposal: ${generatedId} is a generated parcel id.`);
-        }
-        // The city the chain record belongs to — its metadata's (mints carry it), else the one its
-        // parcels name — and, like importProposal, not into another city's store.
-        const chainCity = proposalCityOf({ city: raw.city ?? metaProps.city, cadastreParcelIds });
-        refuseForeignProposal(chainCity);
-        const normalizedChainId = typeof normalizeChainId === 'function'
-            ? normalizeChainId(raw.chainId || (raw.onchain && raw.onchain.chainId))
-            : (raw.chainId || (raw.onchain && raw.onchain.chainId) || null);
-        const contractAddress = raw.contractAddress || (raw.onchain && raw.onchain.contractAddress) || metaProps.contractAddress || null;
-        const chainProposalId = buildChainProposalId(normalizedChainId, contractAddress, rawProposalId);
-
-        // A token/account is identified only within its full chain location. Neither a bare token
-        // number, an authored metadata ID nor the same parcel set identifies that chain record.
-        const references = (typeof window !== 'undefined' ? window : globalThis).ChainProposalRef;
-        if (!references) throw new Error('Chain proposal identity is unavailable.');
-        const incomingRef = references.chainRefFromProposal({ onchain: {
-            chainType: raw.onchain?.chainType || raw.chainType,
-            chainId: normalizedChainId, contractAddress, proposalId: rawProposalId
-        } });
-        const existing = references.findByReference(Array.from(this.proposals.values()), incomingRef);
-        if (!chainProposalId) throw new Error('A complete chain proposal reference is required.');
-
-        // Prefer any already known human-friendly title/name before falling back to raw chain data
-        const pickPreferredString = (...candidates) => {
-            const typeLabels = Object.values(PROPOSAL_GOAL_LABELS || {}).map(v => String(v).toLowerCase());
-            try {
-                Object.keys(PROPOSAL_GOAL_LABELS || {}).forEach(key => {
-                    const localized = getProposalGoalLabel(key);
-                    if (localized) {
-                        typeLabels.push(String(localized).toLowerCase());
-                    }
-                });
-            } catch (_) { }
-            let best = '';
-            let bestScore = -Infinity;
-            const seen = new Set();
-            candidates.forEach(c => {
-                const trimmed = typeof c === 'string' ? c.trim() : '';
-                if (!trimmed || seen.has(trimmed)) return;
-                seen.add(trimmed);
-                const lower = trimmed.toLowerCase();
-                let score = trimmed.length;
-                if (typeLabels.includes(lower)) {
-                    score -= 100; // heavily de-prioritise pure type labels like "Square"
-                }
-                if (score > bestScore) {
-                    bestScore = score;
-                    best = trimmed;
-                }
-            });
-            return best;
-        };
-
-        const proposalId = existing?.proposalId || chainProposalId;
-        if (!existing && this.proposals.has(proposalId)) {
-            throw new Error('The chain proposal key is already occupied by a different local record.');
-        }
-
-        const rawGoal = raw.goal
-            || metaProps.goal
-            || (raw.metadata && raw.metadata.attributes && raw.metadata.attributes.find && (() => {
-                const goalAttr = raw.metadata.attributes.find(a => a && a.trait_type && String(a.trait_type).toLowerCase() === 'goal');
-                return goalAttr && goalAttr.value;
-            })());
-        const normalizedGoal = normalizeProposalGoalKey(rawGoal || (existing && existing.goal) || '');
-        const fallbackTitle = normalizedGoal
-            ? getProposalGoalLabel(normalizedGoal)
-            : `Proposal ${proposalId}`;
-
-        const titleCandidates = [
-            existing && existing.title,
-            existing && existing.name,
-            existing && existing.proposalName,
-            existing && existing.blockName,
-            existing && existing.structureProposal && existing.structureProposal.blockName,
-            existing && existing.metadata && existing.metadata.name,
-            existing && existing.metadata && existing.metadata.title,
-            existing && existing.onchain && existing.onchain.metadata && existing.onchain.metadata.name,
-            existing && existing.onchain && existing.onchain.metadata && existing.onchain.metadata.title,
-            raw.title,
-            raw.name,
-            raw.proposalName,
-            raw.blockName,
-            raw.structureProposal && raw.structureProposal.blockName,
-            raw.metadata && raw.metadata.name,
-            raw.metadata && raw.metadata.title,
-            raw.onchain && raw.onchain.metadata && raw.onchain.metadata.name,
-            raw.onchain && raw.onchain.metadata && raw.onchain.metadata.title
-        ];
-        // Generated labels are fallbacks, even when a prior chain scan saved one before metadata
-        // arrived. Their longer qualified ID must not outrank the author's actual title.
-        const generatedTitles = new Set([fallbackTitle, `Proposal ${proposalId}`]);
-        const title = pickPreferredString(...titleCandidates.filter(value =>
-            !generatedTitles.has(typeof value === 'string' ? value.trim() : value)
-        )) || fallbackTitle;
-
-        const description = pickPreferredString(
-            raw.description,
-            existing && existing.description,
-            raw.metadata && raw.metadata.description,
-            existing && existing.metadata && existing.metadata.description,
-            raw.onchain && raw.onchain.metadata && raw.onchain.metadata.description,
-            existing && existing.onchain && existing.onchain.metadata && existing.onchain.metadata.description
-        );
-        const author = raw.author || raw.owner || raw.creator || (existing && existing.author) || '';
-        const lensEntries = normalizeLensEntries(
-            raw.lens
-            || raw.lensAddresses
-            || (raw.onchain && raw.onchain.lens)
-            || (existing && existing.lens)
-        );
-
-        const normalized = {
-            proposalId,
-            ...(chainCity ? { city: chainCity } : {}),
-            tokenId: rawProposalId || (existing && existing.tokenId) || null,
-            chainProposalId: chainProposalId || (existing && existing.chainProposalId) || null,
-            cadastreParcelIds,
-            title,
-            description,
-            name: title,
-            proposalName: title,
-            author,
-            chainId: normalizedChainId || (existing && existing.chainId) || null,
-            isConditional: !!raw.isConditional,
-            imageURI: raw.imageURI || '',
-            acceptancePossible: raw.acceptancePossible !== false,
-            lifecycleStatus: getLifecycleStatus({ lifecycleStatus: raw.lifecycleStatus ?? raw.status }),
-            ...(raw.lifecycleEvidence?.protocol === 'proposal-lifecycle-evidence/1'
-                && raw.lifecycleEvidence.state === 'observed'
-                && String(raw.lifecycleEvidence.status || '').toLowerCase()
-                    === String(raw.lifecycleStatus ?? raw.status ?? '').toLowerCase()
-                && Number.isFinite(Date.parse(raw.lifecycleEvidence.observedAt))
-                && raw.lifecycleEvidence.observations?.some(observation => observation.source === 'chain-state-read'
-                    && observation.status === raw.lifecycleEvidence.status
-                    && observation.chainRef?.chainType === incomingRef.chainType
-                    && observation.chainRef?.chainId === incomingRef.chainId
-                    && observation.chainRef?.contract === incomingRef.contract
-                    && observation.chainRef?.tokenId === incomingRef.tokenId)
-                ? { lifecycleEvidence: raw.lifecycleEvidence }
-                : existing?.lifecycleEvidence ? { lifecycleEvidence: existing.lifecycleEvidence } : {}),
-            ethBalance: raw.ethBalance || '0',
-            tokenBalance: raw.tokenBalance || '0',
-            acceptanceCount: raw.acceptanceCount || '0',
-            expiryTimestamp: raw.expiryTimestamp || '0',
-            expiringPercentage: raw.expiringPercentage || '0',
-            createdAt: raw.createdAt || metaProps.createdAt || new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-            acceptedParcels: Array.isArray(raw.acceptedParcels) ? raw.acceptedParcels : [],
-            isMinted: true,
-            metadata: raw.metadata || (existing && existing.metadata) || null,
-            lens: lensEntries.length ? lensEntries : (existing && existing.lens ? existing.lens : undefined),
-            goal: normalizedGoal || (existing && existing.goal) || null,
-            onchain: {
-                ...(existing && existing.onchain ? existing.onchain : {}),
-                ...(raw.onchain ? raw.onchain : {})
-            }
-        };
-
-        const incomingOnchain = raw.onchain || {};
-        const existingOnchain = (existing && existing.onchain) || {};
-        const mergedOnchain = {
-            ...existingOnchain,
-            ...incomingOnchain,
-            chainId: normalizedChainId,
-            proposalId: rawProposalId || proposalId,
-            chainProposalId: chainProposalId || existingOnchain.chainProposalId || incomingOnchain.chainProposalId || null,
-            transactionHash: incomingOnchain.transactionHash || existingOnchain.transactionHash || raw.transactionHash || null,
-            contractAddress,
-            metadataUri: incomingOnchain.metadataUri || existingOnchain.metadataUri || raw.metadataUri || raw.metadataUrl || raw.imageURI || null
-        };
-        if (mergedOnchain.chainId || mergedOnchain.transactionHash || mergedOnchain.contractAddress) {
-            normalized.onchain = mergedOnchain;
-        }
-
-        // Merge with existing (preserve local extras if any)
-        const merged = existing ? { ...existing, ...normalized } : normalized;
-        merged.isMinted = true; // ensure minted flag stays true
-
-        const safeClone = (value) => {
-            try { return JSON.parse(JSON.stringify(value)); } catch (_) { return null; }
-        };
-
-        // Map metadata-driven offer details and geometry
-        if (typeof metaProps.offer === 'number' && Number.isFinite(metaProps.offer) && metaProps.offer >= 0) {
-            merged.offer = metaProps.offer;
-        }
-        if (typeof metaProps.offerCurrency === 'string' && metaProps.offerCurrency.trim()) {
-            merged.offerCurrency = metaProps.offerCurrency;
-        }
-
-        const geometryPayload = metaProps.geometry;
-        if (geometryPayload) {
-            if (geometryPayload.hash && !merged.geometryHash) {
-                merged.geometryHash = geometryPayload.hash;
-            }
-            if (geometryPayload.geometry) {
-                merged.geometry = merged.geometry || safeClone(geometryPayload.geometry);
-            } else if (!merged.geometry) {
-                merged.geometry = safeClone(geometryPayload);
-            }
-            if (geometryPayload.roadProposal) {
-                merged.roadProposal = Object.assign({}, merged.roadProposal || {}, safeClone(geometryPayload.roadProposal));
-            }
-            if (geometryPayload.buildingProposal) {
-                merged.buildingProposal = Object.assign({}, merged.buildingProposal || {}, safeClone(geometryPayload.buildingProposal));
-            }
-            if (geometryPayload.structureProposal) {
-                merged.structureProposal = Object.assign({}, merged.structureProposal || {}, safeClone(geometryPayload.structureProposal));
-            }
-            if (geometryPayload.reparcellization) {
-                merged.reparcellization = Object.assign({}, merged.reparcellization || {}, safeClone(geometryPayload.reparcellization));
-            }
-        }
-
-        // Ensure we preserve chain-specific identifiers
-        if (chainProposalId && !merged.chainProposalId) {
-            merged.chainProposalId = chainProposalId;
-        }
-        if (rawProposalId && !merged.tokenId) {
-            merged.tokenId = rawProposalId;
-        }
-
-        // Preserve offer-related fields from existing proposal or raw input
-        // These fields are not returned by the smart contract, so we must preserve them
-        if (existing) {
-            // Preserve offer fields from existing proposal (only if they exist)
-            if (typeof existing.offer === 'number' && Number.isFinite(existing.offer) && existing.offer >= 0) {
-                merged.offer = existing.offer;
-            }
-            if (existing.offerCurrency) {
-                merged.offerCurrency = existing.offerCurrency;
-            }
-            if (typeof existing.decayEnabled === 'boolean') {
-                merged.decayEnabled = existing.decayEnabled;
-            }
-            if (typeof existing.decayPercent === 'number') {
-                merged.decayPercent = existing.decayPercent;
-            }
-            if (typeof existing.decayDurationMs === 'number') {
-                merged.decayDurationMs = existing.decayDurationMs;
-            }
-            if (typeof existing.depositEnabled === 'boolean') {
-                merged.depositEnabled = existing.depositEnabled;
-            }
-            if (typeof existing.depositPercent === 'number') {
-                merged.depositPercent = existing.depositPercent;
-            }
-        } else if (raw) {
-            // If no existing proposal, try to get offer fields from raw input
-            if (typeof raw.offer === 'number' && Number.isFinite(raw.offer) && raw.offer >= 0) {
-                merged.offer = raw.offer;
-            }
-            if (raw.offerCurrency) {
-                merged.offerCurrency = raw.offerCurrency;
-            }
-            if (typeof raw.decayEnabled === 'boolean') {
-                merged.decayEnabled = raw.decayEnabled;
-            }
-            if (typeof raw.decayPercent === 'number') {
-                merged.decayPercent = raw.decayPercent;
-            }
-            if (typeof raw.decayDurationMs === 'number') {
-                merged.decayDurationMs = raw.decayDurationMs;
-            }
-            if (typeof raw.depositEnabled === 'boolean') {
-                merged.depositEnabled = raw.depositEnabled;
-            }
-            if (typeof raw.depositPercent === 'number') {
-                merged.depositPercent = raw.depositPercent;
-            }
-        }
-
-        // Escrow balances are observations in atomic units. They do not establish an authored
-        // offer, its currency, a token's decimals or consideration actually paid.
-
-        if (portable) {
-            // New chain metadata owns every authored field. Local drafts or a similar parcel set
-            // cannot contribute a different name, geometry, offer or site to the minted proposal.
-            const localId = merged.proposalId;
-            for (const key of portableApi.FIELDS) delete merged[key];
-            Object.assign(merged, portable, { proposalId: localId });
-            delete merged.preparation;
-            delete merged.preparedArtifact;
-        }
-        merged.proposalId = this._coerceProposalId(merged.proposalId);
-        const authored = this._normalizeProposal(merged);
-        this._indexProposal(authored);
-        this.save();
-        return authored;
     },
 
     load() {
@@ -1021,36 +672,6 @@ const proposalStorage = {
             : Array.from(this.proposals.values());
     },
 
-    /**
-     * Remove minted proposals that are not on the provided chain (or have unknown chain)
-     * Used when the active chain changes to prevent cross-chain mixing in UI caches.
-     * @param {string|number|null} chainId - normalized chain id to keep
-     * @returns {number} removed count
-     */
-    purgeMintedProposalsNotOnChain(chainId) {
-        const normalizedTarget = typeof normalizeChainId === 'function'
-            ? normalizeChainId(chainId)
-            : (chainId !== undefined && chainId !== null ? String(chainId) : null);
-
-        let removed = 0;
-        for (const [id, proposal] of this.proposals.entries()) {
-            if (!proposal || proposal.isMinted !== true) continue;
-            const proposalChain = typeof normalizeChainId === 'function'
-                ? normalizeChainId(proposal.chainId || (proposal.onchain && proposal.onchain.chainId))
-                : (proposal.chainId || (proposal.onchain && proposal.onchain.chainId) || null);
-
-            const keep = normalizedTarget && proposalChain === normalizedTarget;
-            if (!keep) {
-                this.removeProposal(id);
-                removed += 1;
-            }
-        }
-        if (removed > 0 && typeof this.save === 'function') {
-            this.save();
-        }
-        return removed;
-    },
-
     getProposal(idOrHash) {
         const resolvedId = this._resolveProposalId(idOrHash);
         return resolvedId ? this.proposals.get(resolvedId) || null : null;
@@ -1122,11 +743,6 @@ const proposalStorage = {
             normalized.proposalId = this._buildDeterministicId(normalized);
         }
 
-        // Local proposals default to not minted
-        if (normalized.isMinted === undefined || normalized.isMinted === null) {
-            normalized.isMinted = false;
-        }
-
         // Ensure legacy hash fields are removed
 
         normalized.proposalId = this._coerceProposalId(normalized.proposalId);
@@ -1182,19 +798,20 @@ const proposalStorage = {
         // uploader's ids.
 
         // Importing only stores a definition. Even an Executed proposal has not been materialised
-        // in this browser yet; an explicit single-proposal or shared-plan flow applies it afterward.
+        // in this browser yet; an explicit apply (the design's own, or an agreement's) applies it
+        // afterward.
         parkProposalForImport(normalized);
 
-        normalized.createdAt = normalized.createdAt || new Date().toISOString();
+        // createdAt is the published design's authoredAt (DesignSync.localDesignFromRow), null when
+        // it has none: the design object hashes it, so a clock value here would move the CID and an
+        // agreement would read the design as changed.
         normalized.updatedAt = new Date().toISOString();
 
-        // The incoming proposalId is a local key. Publication is declared separately by
-        // serverProposalId; a numeric local key alone cannot establish that relationship.
+        // The incoming proposalId is a local key. Publication is declared separately (a published
+        // design's `published.cid`); a local key alone cannot establish that relationship.
         const incomingId = this._coerceProposalId(normalized.proposalId);
 
-        const publishedCopy = normalized.serverProposalId
-            ? this.getProposalByServerRowId(normalized.serverProposalId, normalized.publicationApiBase) : null;
-        let idKey = publishedCopy?.proposalId || incomingId;
+        let idKey = incomingId;
         if (!idKey || isLocalProposalId(idKey)) {
             idKey = this._buildDeterministicId(normalized);
         }
@@ -1202,21 +819,6 @@ const proposalStorage = {
 
         if (!overwrite && idKey && this.proposals.has(idKey)) {
             return null;
-        }
-
-        // Refreshing the same local record must not replace this browser's consent history with
-        // another browser's claims (or erase it when the portable record correctly omits them).
-        // The tally starts empty and is recomputed against the incoming terms, never copied.
-        const existing = this.proposals.get(idKey);
-        if (existing && (String(existing.serverProposalId || '') !== String(normalized.serverProposalId || '')
-            || (existing.publicationApiBase || null) !== (normalized.publicationApiBase || null))) {
-            throw new Error('Cannot import proposal: its local key belongs to a different publication identity.');
-        }
-        if (existing?.ownerAcceptances && typeof existing.ownerAcceptances === 'object') {
-            normalized.ownerAcceptances = JSON.parse(JSON.stringify(existing.ownerAcceptances));
-            if (typeof refreshProposalAcceptanceValidity === 'function') {
-                refreshProposalAcceptanceValidity(normalized);
-            }
         }
 
         this._indexProposal(normalized);
@@ -1265,7 +867,7 @@ const proposalStorage = {
         return true;
     },
 
-    // Epoch bucket ("Kumulativno do godine" timeline) — shared plan metadata, ne lokalna vidljivost.
+    // Epoch bucket ("Kumulativno do godine" timeline) — authored record metadata, ne lokalna vidljivost.
     setProposalEpochYear(proposalId, epochYear) {
         const proposal = this.getProposal(proposalId);
         if (!proposal) return false;
@@ -1306,14 +908,13 @@ const proposalStorage = {
     },
 
     // A local draft's parcels re-derived from its geometry on today's ground (proposals/ground-rebase.js).
-    // Published records are never changed: they fork instead. The stamped effect fingerprint and
-    // ownership flow described the old parcels, so they go; publishing stamps them afresh.
+    // Published records are never changed: they fork instead. The ownership flow described the old
+    // parcels, so it goes.
     setDraftCadastreParcelIds(proposalId, ids) {
         const proposal = this.getProposal(proposalId);
         if (!proposal || !Array.isArray(ids) || !ids.length) return false;
         if (typeof isPublishedProposalRecord === 'function' && isPublishedProposalRecord(proposal)) return false;
         proposal.cadastreParcelIds = ids.map(String);
-        delete proposal.effectHash;
         delete proposal.ownershipFlow;
         proposal.updatedAt = new Date().toISOString();
         this._indexProposal(proposal);
@@ -1386,10 +987,10 @@ const proposalStorage = {
         }
         const normalizedCadastreParcelIds = normalizeParcelIdList(proposal.cadastreParcelIds || []);
         proposal.cadastreParcelIds = normalizedCadastreParcelIds;
-        proposal.acceptedParcelIds = normalizeParcelIdList(proposal.acceptedParcelIds || []);
-        proposal.ownerAcceptances = normalizeOwnerAcceptances(proposal.ownerAcceptances || {});
+        // A design has no consent of its own: owners decide on agreements (plan-design-agreement.md,
+        // M2), so the store keeps no per-design acceptance tally.
         // Canonical current-record shape. Missing application state means locally unapplied;
-        // legacy interpretation belongs exclusively to migrate-tessellation.js.
+        // legacy interpretation is not read here: records are current or refused.
         normalizeProposalStatusAxes(proposal);
         delete proposal.similarityHash;
         proposal.lens = normalizeLensEntries(
@@ -1403,15 +1004,8 @@ const proposalStorage = {
         // Normalize identity to proposalId and drop legacy hash fields
         this._normalizeProposalIdentity(proposal);
 
-        // Minted flag default (keep local-only proposals as not minted)
-        if (proposal.isMinted === undefined || proposal.isMinted === null) {
-            proposal.isMinted = !!(proposal.onchain && proposal.onchain.transactionHash);
-        } else {
-            proposal.isMinted = !!proposal.isMinted;
-        }
-
-        // Preserve the explicit browser key. Publication rows and chain tokens are separate
-        // namespaces; an absent browser key is allocated from authored content below.
+        // Preserve the explicit browser key. Publication (a published design's CID) is a separate
+        // namespace; an absent browser key is allocated from authored content below.
         const derivedId = proposal.proposalId;
         if (derivedId !== undefined && derivedId !== null && String(derivedId).trim().length > 0) {
             proposal.proposalId = String(derivedId);
@@ -1425,12 +1019,10 @@ const proposalStorage = {
         }
         proposal.goal = normalizeProposalGoalKey(proposal.goal);
         if (!proposal.goal) {
-            if (proposal.decideLaterProposal) {
-                proposal.goal = 'decide-later';
-            } else if (proposal.roadProposal) {
+            if (proposal.roadProposal) {
                 proposal.goal = 'road-track';
-            } else if (proposal.reparcellization) {
-                proposal.goal = 'reparcellization';
+            } else if (proposal.parcelLayout) {
+                proposal.goal = 'parcel-layout';
             } else if (proposal.structureProposal && proposal.structureProposal.kind) {
                 const kind = normalizeProposalGoalKey(proposal.structureProposal.kind);
                 proposal.goal = (kind === 'park' || kind === 'square' || kind === 'lake' || kind === 'station') ? kind : 'square';
@@ -1451,16 +1043,19 @@ const proposalStorage = {
             proposal.roadProposal = rp;
         }
 
+        // A published design must hash back to its CID after import (proposals/design-sync.js
+        // importDesign): a record that carries its payload is cleaned, never filled in, so a key it
+        // lacks (a building's parameters or geometry, a structure's blockName) stays absent.
         if (proposal.buildingProposal) {
             const bp = { ...proposal.buildingProposal };
-            bp.parameters = bp.parameters && typeof bp.parameters === 'object' ? { ...bp.parameters } : {};
-            Object.keys(bp.parameters).forEach(key => {
-                if (bp.parameters[key] === undefined || bp.parameters[key] === null) {
-                    delete bp.parameters[key];
-                }
-            });
-
-            if (!proposal.geometry) proposal.geometry = {};
+            if (bp.parameters !== undefined) {
+                bp.parameters = bp.parameters && typeof bp.parameters === 'object' ? { ...bp.parameters } : {};
+                Object.keys(bp.parameters).forEach(key => {
+                    if (bp.parameters[key] === undefined || bp.parameters[key] === null) {
+                        delete bp.parameters[key];
+                    }
+                });
+            }
 
             proposal.buildingProposal = bp;
         } else if (['buildings', 'building(s)', 'single-building', 'parcelBased'].includes(normalizeProposalGoalKey(proposal.goal) || '')) {
@@ -1476,9 +1071,6 @@ const proposalStorage = {
             sp.kind = (sp.kind === 'park' || sp.kind === 'square' || sp.kind === 'lake' || sp.kind === 'station') ? sp.kind : 'square';
             if (sp.geometry) {
                 try { sp.geometry = JSON.parse(JSON.stringify(sp.geometry)); } catch (_) { }
-            }
-            if (sp.blockName === undefined) {
-                sp.blockName = null;
             }
             proposal.structureProposal = sp;
             proposal.goal = normalizeProposalGoalKey(sp.kind) || proposal.goal;
@@ -1541,12 +1133,12 @@ const proposalStorage = {
             }
         }
 
-        // Reparcellization
-        if (proposal.reparcellization) {
-            const rep = proposal.reparcellization;
-            parts.push(`reparcAlg:${rep.algorithm || ''}`);
-            if (Array.isArray(rep.polygons)) {
-                try { parts.push(`reparcPolys:${JSON.stringify(rep.polygons)}`); } catch (_) { }
+        // Parcel layout: its plots are its geometry.
+        if (proposal.parcelLayout) {
+            const layout = proposal.parcelLayout;
+            parts.push(`layoutAlg:${layout.algorithm || ''}`);
+            if (Array.isArray(layout.plots)) {
+                try { parts.push(`layoutPlots:${JSON.stringify(layout.plots.map(plot => plot && plot.geometry))}`); } catch (_) { }
             }
         }
 
@@ -2260,9 +1852,7 @@ const PROPOSAL_GOAL_ICON_MAP = {
     'road/track': { icon: '🛣️🛤️', label: 'Road/Track' },
     'urban-rule': { icon: '📜📐', label: 'Urban rule' },
     'urban rule': { icon: '📜📐', label: 'Urban rule' },
-    'decide-later': { icon: '🪡', label: 'Merge' },
-    'decide later': { icon: '🪡', label: 'Merge' },
-    'reparcellization': { icon: '✂️', label: 'Subdivide' },
+    'parcel-layout': { icon: '✂️', label: 'Parcel layout' },
     'ownership-transfer': { icon: '🔄', label: 'Ownership transfer' },
     'ownership-transfer-to-me': { icon: '🔄', label: 'Ownership transfer to me' },
     'ownership-transfer-from-me': { icon: '🔄', label: 'Ownership transfer from me' }
@@ -2287,7 +1877,7 @@ const PROPOSAL_PUBLIC_GOOD_USES = new Set(['park', 'square', 'lake', 'station', 
 const PROPOSAL_GOAL_TYPE_LABELS = {
     'square': 'Square', 'park': 'Park', 'lake': 'Lake', 'station': 'Transit station', 'single': 'Building(s)',
     'road-track': 'Road/Track', 'urban-rule': 'Urban Rule',
-    'reparcellization': 'Reparcellization'
+    'parcel-layout': 'Parcel layout'
 };
 
 const LAKE_GRAPHICS_VERSION = 3;
@@ -2314,11 +1904,12 @@ const serverProposalCache = {
     error: null,
     lastCity: null,
     lastFetchedAt: 0,
-    // Signature of the search/sort the cached rows answer; a change re-queries the server.
+    // Reset with the cache (proposals/design-sync.js) but read by nothing since the list reads the
+    // designs index, which takes no search or sort.
     lastQuery: null,
-    // The sidebar count is refreshed on its own, from the cheap /proposals/count. Kept apart from
-    // lastFetchedAt on purpose: that one means "have we asked for the SUMMARIES yet", and stamping
-    // it here would convince the list it already had rows it has never fetched.
+    // When the area's listing last gave the sidebar its count (design-sync.js
+    // refreshServerProposalCount asks again after 15 s). The index has no count route, so the count
+    // is the rows the listing returned and one answer sets this and lastFetchedAt together.
     countRefreshedAt: 0,
     countLoading: false
 };
@@ -2326,10 +1917,6 @@ const serverProposalCache = {
 const PROPOSAL_SORT_OPTIONS = [
     { value: 'created-desc', label: 'Created (newest first)' },
     { value: 'created-asc', label: 'Created (oldest first)' },
-    { value: 'acceptance-desc', label: 'Acceptance (high to low)' },
-    { value: 'acceptance-asc', label: 'Acceptance (low to high)' },
-    { value: 'value-desc', label: 'Offer (high to low)' },
-    { value: 'value-asc', label: 'Offer (low to high)' },
     { value: 'parcels-desc', label: 'Parcels (many to few)' },
     { value: 'parcels-asc', label: 'Parcels (few to many)' },
     { value: 'area-desc', label: 'Area (large to small)' },
@@ -2341,10 +1928,6 @@ const PROPOSAL_SORT_OPTIONS = [
 const PROPOSAL_SORT_I18N_KEYS = {
     'created-desc': 'createdDesc',
     'created-asc': 'createdAsc',
-    'acceptance-desc': 'acceptanceDesc',
-    'acceptance-asc': 'acceptanceAsc',
-    'value-desc': 'valueDesc',
-    'value-asc': 'valueAsc',
     'parcels-desc': 'parcelsDesc',
     'parcels-asc': 'parcelsAsc',
     'area-desc': 'areaDesc',
@@ -2363,7 +1946,7 @@ const PROPOSAL_GOAL_FILTERS = [
     { value: 'lake', label: 'Lake' },
     { value: 'station', label: 'Transit station' },
     { value: 'urban-rule', label: 'Urban rule' },
-    { value: 'reparcellization', label: 'Reparcellization' },
+    { value: 'parcel-layout', label: 'Parcel layout' },
     { value: 'row', label: 'Row' },
     { value: 'other', label: 'Other' }
 ];
@@ -2378,7 +1961,7 @@ const PROPOSAL_GOAL_FILTER_I18N_KEYS = {
     lake: 'lake',
     station: 'station',
     'urban-rule': 'urbanRule',
-    reparcellization: 'reparcellization',
+    'parcel-layout': 'parcel-layout',
     row: 'row',
     other: 'other'
 };
@@ -2393,8 +1976,7 @@ const PROPOSAL_GOAL_LABELS = {
     lake: 'Lake',
     station: 'Transit station',
     'urban-rule': 'Urban rule',
-    reparcellization: 'Reparcellization',
-    'decide-later': 'Decide later',
+    'parcel-layout': 'Parcel layout',
     parcelBased: 'Parcel-based',
     other: 'Other'
 };

@@ -1,20 +1,12 @@
-// Deterministic, zero-model-spend policy for a supporter persona. It only considers active,
-// minted proposals by somebody else that this wallet has not already supported, then uses a stable
-// daily hash to avoid always supporting the first API row. The returned rationale is stored beside
-// the signed activity.
+// Deterministic, zero-model-spend policy for a supporter persona. It only considers agreements that are
+// open on chain (Active and before their deadline), sponsored and authored by somebody else, that this
+// wallet has not already supported, then uses a stable daily hash to avoid always supporting the
+// newest row. The returned rationale is stored beside the signed activity.
 import { createHash } from 'node:crypto';
+import { isOpen } from './discovery.js';
 
 function stableNumber(value) {
     return createHash('sha256').update(String(value)).digest().readUInt32BE(0);
-}
-
-function proposalAccount(proposal = {}) {
-    return proposal.onchain?.proposalId || proposal.onchain?.proposalAccount
-        || proposal.proposalAccount || proposal.onchainData?.proposalId || null;
-}
-
-function proposalKey(proposal = {}) {
-    return String(proposal.proposalId || proposal.id);
 }
 
 function normalizedActions(persona = {}) {
@@ -26,51 +18,39 @@ function normalizedActions(persona = {}) {
     return allowed;
 }
 
-/**
- * Minted on Solana: an on-chain id that is a Solana account and whose record does not name another
- * chain. Proposals minted on an EVM chain (`chainId: '0xaa36a7'` beside a numeric or hex id) also
- * fill onchain.proposalId but have no Solana market, and their id must never reach a PublicKey;
- * Solana records say `solana-devnet` or, in older rows, nothing. Shared with policies/common.js.
- */
-function isSolanaMinted(proposal) {
-    const account = proposalAccount(proposal);
-    if (!account || /^0x/i.test(String(account))) return false;
-    const chainId = proposal.onchain?.chainId ?? proposal.onchainData?.chainId;
-    return chainId === undefined || chainId === null || /^solana/i.test(String(chainId));
+/** Open on chain and neither sponsored by this wallet nor authored by this persona. */
+export function isOthersOpen(agreement, { wallet = null, personaName = null, now = Date.now() } = {}) {
+    if (!isOpen(agreement, now)) return false;
+    if (wallet && String(agreement.sponsor || '') === String(wallet)) return false;
+    if (personaName && String(agreement.author || '') === String(personaName)) return false;
+    return true;
 }
 
-export function eligibleSupportProposals(proposals, { wallet = null, personaName = null, excludeProposalIds = [] } = {}) {
-    const excluded = new Set((excludeProposalIds || []).map(String));
-    return (proposals || []).filter(proposal => {
-        if (String(proposal?.lifecycleStatus || '').toLowerCase() !== 'active') return false;
-        if (!isSolanaMinted(proposal)) return false;
-        if (wallet && String(proposal.author || '') === String(wallet)) return false;
-        if (personaName && String(proposal.agent?.persona || '') === String(personaName)) return false;
-        if (excluded.has(proposalKey(proposal))) return false;
-        return true;
-    });
+export function eligibleSupportAgreements(agreements, { wallet = null, personaName = null, excludeCids = [], now = Date.now() } = {}) {
+    const excluded = new Set((excludeCids || []).map(String));
+    return (agreements || []).filter(agreement => isOthersOpen(agreement, { wallet, personaName, now }) && !excluded.has(agreement.cid));
 }
 
-export function selectSupportAction({ day, persona, proposals, wallet = null, excludeProposalIds = [] } = {}) {
+export function selectSupportAction({ day, persona, agreements, wallet = null, excludeCids = [], now = Date.now() } = {}) {
     if (!day) throw new Error('day is required');
     if (!persona?.name) throw new Error('persona.name is required');
-    const excluded = Array.from(new Set((excludeProposalIds || []).map(String)));
-    const eligible = eligibleSupportProposals(proposals, { wallet, personaName: persona.name, excludeProposalIds: excluded });
+    const excluded = Array.from(new Set((excludeCids || []).map(String)));
+    const eligible = eligibleSupportAgreements(agreements, { wallet, personaName: persona.name, excludeCids: excluded, now });
     if (!eligible.length) {
         return {
             selected: null,
-            eligibleProposalIds: [],
-            excludedProposalIds: excluded,
+            eligibleCids: [],
+            excludedCids: excluded,
             reason: excluded.length
-                ? `No active minted proposal by another actor remains unsupported (${excluded.length} already supported).`
-                : 'No active minted proposal by another actor was available.'
+                ? `No open agreement by another actor remains unsupported (${excluded.length} already supported).`
+                : 'No open agreement by another actor was available.'
         };
     }
-    const ranked = eligible.map(proposal => ({
-        proposal,
-        rank: stableNumber(`${day}:${persona.name}:${proposalKey(proposal)}`)
+    const ranked = eligible.map(agreement => ({
+        agreement,
+        rank: stableNumber(`${day}:${persona.name}:${agreement.cid}`)
     })).sort((left, right) => left.rank - right.rank);
-    const proposal = ranked[0].proposal;
+    const agreement = ranked[0].agreement;
     const actions = normalizedActions(persona);
     const type = actions[stableNumber(`${day}:${persona.name}:action`) % actions.length];
     const amount = String(persona.support?.amountUsdc || '0.10');
@@ -79,15 +59,15 @@ export function selectSupportAction({ day, persona, proposals, wallet = null, ex
         type,
         amount,
         side: type === 'stake' ? 'yes' : null,
-        proposalId: proposalKey(proposal),
-        proposalAccount: proposalAccount(proposal),
-        proposalName: proposal.name || proposal.title || proposalKey(proposal),
-        rationale: `Selected deterministically from ${eligible.length} active minted proposal${eligible.length === 1 ? '' : 's'} by other actors${skipped}; ${type} records visible support without using an LLM.`
+        agreementCid: agreement.cid,
+        account: agreement.account,
+        agreementName: agreement.name,
+        rationale: `Selected deterministically from ${eligible.length} open agreement${eligible.length === 1 ? '' : 's'} by other actors${skipped}; ${type} records visible support without using an LLM.`
     };
     return {
         selected,
-        eligibleProposalIds: eligible.map(proposalKey),
-        excludedProposalIds: excluded,
+        eligibleCids: eligible.map(item => item.cid),
+        excludedCids: excluded,
         reason: selected.rationale
     };
 }
@@ -95,8 +75,8 @@ export function selectSupportAction({ day, persona, proposals, wallet = null, ex
 // A signer adapter that finds the support already on-chain returns replayed:true with no signature.
 // That is not a new action: the run must record it as a no-op instead of a completed support.
 export function classifySupportExecution(outcome) {
-    const acted = Boolean(outcome?.signature) && outcome?.replayed !== true;
+    const acted = Boolean(outcome?.signature || outcome?.stakeSignature) && outcome?.replayed !== true;
     return { acted, runOutcome: acted ? 'completed' : 'already-supported' };
 }
 
-export { isSolanaMinted, proposalAccount, stableNumber };
+export { stableNumber };

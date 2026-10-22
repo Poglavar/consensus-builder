@@ -1,9 +1,14 @@
-// One read-only graph for a judge to inspect a proposal across parcel identity, activity, support,
-// forecasting, public evidence and settlement. GET never manufactures a completed stage.
+// One read-only graph for a judge to inspect an agreement across parcel identity, activity, support,
+// forecasting, public evidence and settlement. A case is an agreement by its CID; its chain account
+// (the recorded onchain account, else PDA(sponsor, CID)) is the subject of its market, pledges and
+// lifecycle events. GET never manufactures a completed stage.
 import { createRequire } from 'node:module';
 import { buildHackathonCase } from '../hackathon/case-model.js';
 import { eventFromRow } from './land-events.js';
-import { mergeEvents, proposalEvents, runEvents } from './agent-activity.js';
+import { agreementEvents, mergeEvents, runEvents } from './agent-activity.js';
+import { loadAgreement } from './agreements.js';
+import { agreementAccountOf } from '../agreements/onchain.js';
+import { isCid } from '../cid.js';
 
 const require = createRequire(import.meta.url);
 const web3 = require('@solana/web3.js');
@@ -22,93 +27,67 @@ function siteUrl(env) {
     return String(env.PUBLIC_SITE_BASE_URL || 'https://urbangametheory.xyz').replace(/\/$/, '');
 }
 
-async function loadProposal(pool, id) {
-    const { rows } = await pool.query(`
-        SELECT id, proposal_id, city,
-               COALESCE(name, title, proposal_data->>'name', proposal_data->>'title') AS name,
-               COALESCE(title, name, proposal_data->>'title', proposal_data->>'name') AS title,
-               COALESCE(author, proposal_data->>'author') AS author,
-               CASE
-                   WHEN LOWER(COALESCE(lifecycle_status, '')) NOT IN ('executed', 'cancelled', 'expired')
-                        AND expires_at IS NOT NULL AND expires_at <= now() THEN 'Expired'
-                   WHEN LOWER(COALESCE(lifecycle_status, '')) = 'executed' THEN 'Executed'
-                   WHEN LOWER(COALESCE(lifecycle_status, '')) = 'cancelled' THEN 'Cancelled'
-                   WHEN LOWER(COALESCE(lifecycle_status, '')) = 'expired' THEN 'Expired'
-                   ELSE 'Active'
-               END AS lifecycle_status,
-               created_at, expires_at, cadastre_parcel_ids, onchain_data,
-               CASE WHEN agent_payment_id IS NOT NULL THEN proposal_data->'agent' END AS agent
-          FROM proposal
-         WHERE proposal_id = $1 OR id::text = $1
-         -- Row id wins over a colliding frontend proposal_id (same precedence as GET /proposals/:id).
-         ORDER BY (id::text = $1) DESC
-         LIMIT 1
-    `, [id]);
-    const row = rows[0];
+// The case's agreement from the index, with its chain account, or null.
+async function loadCaseAgreement(pool, cid) {
+    const row = await loadAgreement(pool, cid);
     if (!row) return null;
+    const sponsor = row.content?.sponsor ?? null;
     return {
-        id: row.id,
-        proposalId: row.proposal_id,
+        cid: row.cid,
         city: row.city,
-        name: row.name,
         title: row.title,
         author: row.author,
-        lifecycleStatus: row.lifecycle_status,
-        createdAt: row.created_at,
-        expiresAt: row.expires_at,
-        cadastreParcelIds: Array.isArray(row.cadastre_parcel_ids) ? row.cadastre_parcel_ids : [],
-        onchain: row.onchain_data && typeof row.onchain_data === 'object' ? row.onchain_data : null,
-        agent: row.agent && typeof row.agent === 'object' ? row.agent : null
+        sponsor,
+        status: row.status,
+        createdAt: row.createdAt,
+        deadline: row.deadline,
+        inputParcelIds: Array.isArray(row.inputParcelIds) ? row.inputParcelIds : [],
+        onchain: row.onchain ?? null,
+        account: row.onchain?.account ?? (sponsor ? agreementAccountOf(row.cid, sponsor) : null)
     };
 }
 
-async function loadActivity(pool, proposalId) {
-    const [runs, proposals] = await Promise.all([
+async function loadActivity(pool, cid) {
+    const [runs, agreements] = await Promise.all([
         pool.query(`
             SELECT run_id, persona, mode, status, stage, summary, started_at, updated_at
               FROM consensus.agent_run
              ORDER BY updated_at DESC
              LIMIT 250
         `),
-        pool.query(`
-            SELECT proposal_id,
-                   COALESCE(name, title, proposal_data->>'name', proposal_data->>'title') AS display_name,
-                   proposal_data->'agent' AS agent, created_at, updated_at
-              FROM proposal
-             WHERE proposal_id = $1 AND proposal_data ? 'agent' AND agent_payment_id IS NOT NULL
-             LIMIT 1
-        `, [proposalId])
+        pool.query('SELECT cid, title, created_at FROM consensus.agreement WHERE cid = $1', [cid])
     ]);
     return mergeEvents(
         runs.rows.flatMap(runEvents),
-        proposals.rows.flatMap(proposalEvents)
-    ).filter(event => String(event.entity?.id || event.action?.proposalId || '') === proposalId);
+        agreementEvents(agreements.rows)
+    ).filter(event => String(event.entity?.id || event.action?.agreementCid || '') === cid);
 }
 
-async function loadOracleEvents(pool, proposalAccount) {
-    if (!proposalAccount) return [];
+// The agreement's land events: its terminal lifecycle event (subject its account) and the per-parcel
+// executed events, which name the agreement in their evidence.
+async function loadOracleEvents(pool, { account, cid }) {
     const { rows } = await pool.query(`
         SELECT event_id, event_type, subject_type, subject_id, outcome, source_url,
                source_hash, source_observed_at, attester, transaction_signature,
                evidence, created_at
           FROM consensus.land_event
-         WHERE subject_id = $1
+         WHERE ($1::text IS NOT NULL AND subject_id = $1) OR evidence->>'agreementCid' = $2
          ORDER BY source_observed_at DESC
          LIMIT 25
-    `, [proposalAccount]);
+    `, [account, cid]);
     return rows.map(eventFromRow);
 }
 
-async function readSupport(connection, proposalAccount) {
-    const proposal = new web3.PublicKey(proposalAccount);
+async function readSupport(connection, agreementAccount) {
+    const subject = new web3.PublicKey(agreementAccount);
     const [donations, pledges] = await Promise.all([
-        pledgeClient.readDonationEscrow(connection, proposal),
-        pledgeClient.readPledgeBook(connection, proposal)
+        pledgeClient.readDonationEscrow(connection, subject),
+        pledgeClient.readPledgeBook(connection, subject)
     ]);
     return {
         state: 'available',
         donations: donations ? {
-            escrow: pledgeClient.getDonationEscrowPda(proposal)[0].toBase58(),
+            escrow: pledgeClient.getDonationEscrowPda(subject)[0].toBase58(),
             totalUsdc: pledgeClient.formatUsdc(donations.totalDonated),
             releasedUsdc: pledgeClient.formatUsdc(donations.totalReleased),
             refundedUsdc: pledgeClient.formatUsdc(donations.totalRefunded),
@@ -117,7 +96,7 @@ async function readSupport(connection, proposalAccount) {
             released: donations.released
         } : null,
         pledges: pledges ? {
-            book: pledgeClient.getPledgeBookPda(proposal)[0].toBase58(),
+            book: pledgeClient.getPledgeBookPda(subject)[0].toBase58(),
             activeUsdc: pledgeClient.formatUsdc(pledges.activePledged),
             fulfilledUsdc: pledgeClient.formatUsdc(pledges.totalFulfilled),
             revokedUsdc: pledgeClient.formatUsdc(pledges.totalRevoked),
@@ -128,10 +107,10 @@ async function readSupport(connection, proposalAccount) {
     };
 }
 
-async function readMarket(connection, proposalAccount) {
-    const proposal = new web3.PublicKey(proposalAccount);
-    const [account] = marketClient.getMarketPda(proposal);
-    const market = await marketClient.readMarket(connection, proposal);
+async function readMarket(connection, agreementAccount) {
+    const subject = new web3.PublicKey(agreementAccount);
+    const [account] = marketClient.getMarketPda(subject);
+    const market = await marketClient.readMarket(connection, subject);
     if (!market) return { state: 'available', exists: false, account: account.toBase58() };
     const probability = marketClient.impliedProbability(market.yesPool, market.noPool);
     return {
@@ -154,7 +133,7 @@ function unavailable(error) {
 
 export function setupHackathonCasesRoute(app, pool, {
     env = process.env,
-    proposalReader = loadProposal,
+    agreementReader = loadCaseAgreement,
     activityReader = loadActivity,
     oracleReader = loadOracleEvents,
     supportReader = readSupport,
@@ -166,18 +145,18 @@ export function setupHackathonCasesRoute(app, pool, {
         if (!rpcConnection) rpcConnection = new web3.Connection(env.SOLANA_RPC_URL || 'https://api.devnet.solana.com', 'confirmed');
         return rpcConnection;
     };
-    app.get('/hackathon/cases/:id', async (req, res) => {
+    app.get('/hackathon/cases/:cid', async (req, res) => {
         try {
-            const requestedId = String(req.params.id || '').trim();
-            if (!requestedId) return res.status(400).json({ error: 'case id is required' });
-            const proposal = await proposalReader(pool, requestedId);
-            if (!proposal) return res.status(404).json({ error: 'Hackathon case proposal not found' });
-            const proposalAccount = proposal.onchain?.proposalId || null;
+            const cid = String(req.params.cid || '').trim();
+            if (!isCid(cid)) return res.status(400).json({ error: 'a case is an agreement CID' });
+            const agreement = await agreementReader(pool, cid);
+            if (!agreement) return res.status(404).json({ error: 'Hackathon case agreement not found' });
+            const account = agreement.account;
             const [activityResult, oracleResult, supportResult, marketResult] = await Promise.allSettled([
-                activityReader(pool, proposal.proposalId),
-                oracleReader(pool, proposalAccount),
-                proposalAccount ? supportReader(getConnection(), proposalAccount) : Promise.resolve(null),
-                proposalAccount ? marketReader(getConnection(), proposalAccount) : Promise.resolve(null)
+                activityReader(pool, agreement.cid),
+                oracleReader(pool, { account, cid: agreement.cid }),
+                account ? supportReader(getConnection(), account) : Promise.resolve(null),
+                account ? marketReader(getConnection(), account) : Promise.resolve(null)
             ]);
             const activity = activityResult.status === 'fulfilled' ? activityResult.value : [];
             const oracleEvents = oracleResult.status === 'fulfilled' ? oracleResult.value : null;
@@ -185,22 +164,23 @@ export function setupHackathonCasesRoute(app, pool, {
             const market = marketResult.status === 'fulfilled' ? marketResult.value : unavailable(marketResult.reason);
             const api = baseUrl(req, env);
             const site = siteUrl(env);
+            const city = agreement.city ? `?city=${encodeURIComponent(agreement.city)}` : '';
             return res.json(buildHackathonCase({
-                proposal, activity, support, market, oracleEvents,
+                agreement, activity, support, market, oracleEvents,
                 links: {
-                    self: `${api}/hackathon/cases/${encodeURIComponent(proposal.proposalId)}`,
-                    proposal: `${api}/proposals/${encodeURIComponent(proposal.proposalId)}`,
-                    map: `${site}/proposals/${encodeURIComponent(proposal.proposalId)}`,
-                    activity: `${api}/agent/activity?limit=200`,
-                    support: proposalAccount ? `${api}/agent/pledges/${encodeURIComponent(proposalAccount)}` : null,
-                    recipe: proposalAccount ? `${api}/oracle/recipes/proposal-lifecycle-v1?proposal=${encodeURIComponent(proposalAccount)}` : null
+                    self: `${api}/hackathon/cases/${encodeURIComponent(agreement.cid)}`,
+                    agreement: `${api}/agreements/${encodeURIComponent(agreement.cid)}`,
+                    map: `${site}/agreements/${encodeURIComponent(agreement.cid)}${city}`,
+                    activity: `${api}/agent/activity?agreement=${encodeURIComponent(agreement.cid)}&limit=200`,
+                    support: account ? `${api}/agent/pledges/${encodeURIComponent(account)}` : null,
+                    events: `${api}/oracle/events?agreement=${encodeURIComponent(agreement.cid)}`
                 }
             }));
         } catch (error) {
-            console.error('GET /hackathon/cases/:id failed', error);
+            console.error('GET /hackathon/cases/:cid failed', error);
             return res.status(500).json({ error: 'Failed to build hackathon case' });
         }
     });
 }
 
-export { loadActivity, loadOracleEvents, loadProposal, readMarket, readSupport };
+export { loadActivity, loadCaseAgreement, loadOracleEvents, readMarket, readSupport };

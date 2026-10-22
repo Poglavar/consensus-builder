@@ -187,11 +187,6 @@ describe('readjustment-contributions', () => {
 describe('site-binding', () => {
     const parcels = [{ id: 'HR-1', geometry: rect(0, 0, 5, 10) }, { id: 'HR-2', geometry: rect(5, 0, 10, 10) }];
 
-    it('siteOf refuses instead of leaving a declared parcel out of the site', () => {
-        const record = { goal: 'parcel', cadastreParcelIds: ['HR-1', 'HR-2'] };
-        expectClipFailure(() => siteBinding.siteOf(record, { parcels, turf: failingTurf(['union']) }), 'site-binding.unionAll');
-    });
-
     it('bindingFromParcels refuses instead of leaving a parcel the site reaches into unbound', () => {
         const failure = expectClipFailure(() => siteBinding.bindingFromParcels(rect(1, 1, 9, 9), parcels,
             { turf: failingTurf(['intersect']) }), 'site-binding.bindingFromParcels');
@@ -243,7 +238,7 @@ describe('site-plots.cutPlots', () => {
 
 describe('plot-crossings.detectPlotCrossings', () => {
     it('refuses instead of leaving a crossed plot out of "Build through?"', () => {
-        const record = { proposalId: 'sub', reparcellization: { polygons: [] } };
+        const record = { proposalId: 'sub', parcelLayout: { plots: [] } };
         expectClipFailure(() => plotCrossings.detectPlotCrossings(rect(0, 4, 20, 6), {
             turf: failingTurf(['intersect']),
             pieces: [feature(rect(0, 0, 10, 10), { parcelId: 'sub-1', producedByProposalId: 'sub' })],
@@ -267,11 +262,6 @@ describe('formation-edit', () => {
     it('clipPiecesByTaking refuses instead of treating a failed difference as "fully taken"', () => {
         expectClipFailure(() => formationEdit.clipPiecesByTaking([{ geometry: rect(0, 0, 10, 10) }], rect(5, 0, 15, 10),
             ctx(failingTurf(['difference']))), 'formation-edit.clipPiecesByTaking');
-    });
-
-    it('severanceVerdict refuses instead of inventing a verdict', () => {
-        expectClipFailure(() => formationEdit.severanceVerdict({ polygons: [] }, rect(0, 0, 10, 10), rect(4, -5, 6, 15),
-            ctx(failingTurf(['difference']))), 'formation-edit.severanceVerdict');
     });
 });
 
@@ -424,23 +414,25 @@ describe('apply/buildings.js _formBuildingParcel', () => {
     });
 });
 
-describe('apply/parcels.js _applyReparcellizationProposal', () => {
-    // Two pooled parcels (x 0..20 and 20..40); the plots leave HR-B's east end (30..40) to its owner.
+describe('apply/parcels.js _applyParcelLayoutProposal', () => {
+    // Two pooled parcels (x 0..20 and 20..40); the layout's pool leaves HR-B's east end (30..40) to its owner.
     const parents = () => [parcelFeature('HR-A', rect(0, 0, 20, 20)), parcelFeature('HR-B', rect(20, 0, 40, 20))];
     const self = () => {
         const features = parents();
         return mixinThis({
-            _applyReparcellizationProposal: parcelsApply._applyReparcellizationProposal,
+            _applyParcelLayoutProposal: parcelsApply._applyParcelLayoutProposal,
             _resolveLiveFormationParents: () => ({ ok: true, ids: ['HR-A', 'HR-B'], cadastreIds: ['HR-A', 'HR-B'], features })
         }, features);
     };
     const data = () => ({
-        coordinatedPlanId: 'legacy-plan',
+        goal: 'parcel-layout',
         cadastreParcelIds: ['HR-A', 'HR-B'],
-        reparcellization: {
-            polygons: [
-                { geometry: rect(0, 0, 10, 20), ownerKey: 'owner-a', displayName: 'One' },
-                { geometry: rect(10, 0, 30, 20), ownerKey: 'owner-a', displayName: 'Two' }
+        parcelLayout: {
+            algorithm: 'manual',
+            pool: rect(0, 0, 30, 20),
+            plots: [
+                { geometry: rect(0, 0, 10, 20), source: 'manual' },
+                { geometry: rect(10, 0, 30, 20), source: 'manual' }
             ]
         }
     });
@@ -448,26 +440,26 @@ describe('apply/parcels.js _applyReparcellizationProposal', () => {
     it('applies with the remainder minted when the clipper works (control)', async () => {
         installApplyGlobals();
         const manager = self();
-        await expect(manager._applyReparcellizationProposal('p-rep', data(), {})).resolves.toBe(true);
+        await expect(manager._applyParcelLayoutProposal('p-layout', data(), {})).resolves.toBe(true);
         expect(manager.added.length).toBe(3);
     });
 
     it('plot provenance refuses instead of dropping a parcel whose overlap cannot be computed', async () => {
         installApplyGlobals();
         globalThis.turf = failingTurf(['intersect'], calledFrom('apply/parcels.js'));
-        await expectClipRejection(self()._applyReparcellizationProposal('p-rep', data(), {}), 'apply-parcels.intersectionArea');
+        await expectClipRejection(self()._applyParcelLayoutProposal('p-layout', data(), {}), 'apply-parcels.intersectionArea');
     });
 
     it('the plots\' union refuses instead of minting a plot back as a remainder', async () => {
         installApplyGlobals();
         globalThis.turf = failingTurf(['union'], calledFrom('apply/parcels.js'));
-        await expectClipRejection(self()._applyReparcellizationProposal('p-rep', data(), {}), 'apply-parcels.plotsUnion');
+        await expectClipRejection(self()._applyParcelLayoutProposal('p-layout', data(), {}), 'apply-parcels.plotsUnion');
     });
 
     it('a remainder that cannot be computed refuses instead of orphaning the owner\'s leftover', async () => {
         installApplyGlobals();
         globalThis.turf = failingTurf(['difference'], calledFrom('apply/parcels.js'));
-        const failure = await expectClipRejection(self()._applyReparcellizationProposal('p-rep', data(), {}), 'apply-parcels.remainder');
+        const failure = await expectClipRejection(self()._applyParcelLayoutProposal('p-layout', data(), {}), 'apply-parcels.remainder');
         expect(failure.parcelId).toBe('HR-A');
     });
 });
@@ -532,14 +524,5 @@ describe('proposals/geometry.js', () => {
         ctx.turf = failingTurf(['union']);
         const lake = { type: 'MultiPolygon', coordinates: [rect(0, 0, 50, 50).coordinates, rect(50, 0, 100, 50).coordinates] };
         expectReported(() => ctx.buildLakeGraphicsFromGeometry(lake, {}), 'proposals-geometry.lakeUnion');
-    });
-});
-
-describe('proposal-road-geometry.js _mergeParcelGeometries', () => {
-    it('throws the clipper\'s error instead of a null the caller can only call "failed to merge"', () => {
-        const ctx = classicContext('../../frontend/js/proposal-road-geometry.js');
-        ctx.turf = failingTurf(['union']);
-        expectClipFailure(() => ctx._mergeParcelGeometries([feature(rect(0, 0, 5, 10)), feature(rect(5, 0, 10, 10))]),
-            'proposal-road-geometry.mergeParcelGeometries');
     });
 });

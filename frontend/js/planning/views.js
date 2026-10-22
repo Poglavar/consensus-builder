@@ -16,6 +16,8 @@
     // The parcel the 3D view has in view (focusParcel). The sheet refers to that parcel, or else
     // to the parcel of the selected permitted massing (focusedParcel).
     let viewedParcelId = null, viewWantsMassing = false;
+    // The massing shapes drawn on the map, for "what is under this point" (click-stack.md).
+    let hitShapes = [];
     let sourceOptions = [], sourceId = '', scenarioId = '', focusedRecord = null, sourceGeneration = 0, actionsOpen = false, referenceStatus = null;
     let restoreId = new URLSearchParams(location.search).get('planningSelection'), restoring = false, catalogReady = false, parcelPanel = null;
     // Per-item configuration pins chosen in the inspector; cleared with the source, housing type or city.
@@ -200,6 +202,7 @@
                 style: { color: color(selection.role), weight: 3, fill: false, opacity: 1 } }).addTo(selectionLayer);
         }
         layer.clearLayers();
+        hitShapes = [];
         const studyParcel = root.PlanningParcelStudy?.getContext()?.parcel;
         const frontEdge = root.PlanningParcelStudy?.getForm()?.frontEdge;
         if (studyParcel && sceneItems().some(item => item.study && policy()[item.role] !== 'off')) {
@@ -246,7 +249,13 @@
                 }
                 if (hull) continue;
                 const inspect = () => { if (!root.__mapEditLock?.isHeld()) select(item.id); };
-                shape.on('click', event => { root.L.DomEvent.stopPropagation(event); selectionPoint = { id: item.id, lat: event.latlng.lat, lng: event.latlng.lng }; inspect(); });
+                // A massing click is a map click: the click stack shows it with everything else
+                // under the point (click-stack.md) and selects it when its section expands.
+                shape.on('click', event => {
+                    root.L.DomEvent.stopPropagation(event);
+                    if (!root.__mapEditLock?.isHeld()) root.ClickStack.handleClick(event.latlng);
+                });
+                hitShapes.push({ item, feature });
                 shape.eachLayer(part => {
                     const node = part.getElement?.();
                     if (!node) return;
@@ -824,6 +833,20 @@
         getSelected: selected, isReady: () => ready, isInspecting: () => ready && !inspector.hidden,
         select, selectRecord, inspectBuilding, inspectProposal, showParcelEvidence, focusParcel, color, refresh,
         permittedFeatures, studyScenarioFor, pinConfiguration, getScenario: () => scenarioId,
+        // Drawn records covering a point, each once, in drawing order; selectAt also remembers the
+        // point the way a direct click on the shape did.
+        itemsAt(latlng) {
+            const point = root.turf.point([latlng.lng, latlng.lat]), seen = new Set();
+            return hitShapes.filter(({ item, feature }) => {
+                if (seen.has(item.id)) return false;
+                try { if (!root.turf.booleanPointInPolygon(point, feature)) return false; } catch (_) { return false; }
+                seen.add(item.id); return true;
+            }).map(({ item }) => item);
+        },
+        selectAt(id, latlng) {
+            if (latlng) selectionPoint = { id, lat: latlng.lat, lng: latlng.lng };
+            select(id);
+        },
         configure: (key, value) => store?.configure(key, value), reroll: () => store?.reroll() };
     root.whenMapCoreReady().then(init);
 })(window);

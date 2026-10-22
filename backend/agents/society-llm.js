@@ -17,16 +17,16 @@ export const CHOICE_SCHEMA = {
 };
 
 const STANCES = {
-    contrarian: 'You are a preservationist. You bet NO on proposals that add the most floor area, to put a price on density nobody has argued against.',
-    speculator: 'You are a speculator. You pledge early behind proposals the market favours and withdraw when the market turns or the proposal goes stale.'
+    contrarian: 'You are a preservationist. You bet NO on agreements whose designs add the most floor area, to put a price on density nobody has argued against.',
+    speculator: 'You are a speculator. You pledge early behind agreements the market favours and withdraw when the market turns or the agreement goes stale.'
 };
 
 function optionDigest(option) {
     const { action } = option;
     return {
-        optionId: `${action.type}:${action.proposalId}`,
+        optionId: `${action.type}:${action.agreementCid}`,
         type: action.type, side: action.side || null, amountUsdc: action.amount,
-        proposalId: action.proposalId, proposalName: action.proposalName,
+        agreementCid: action.agreementCid, agreementName: action.agreementName,
         evidence: option.evidence?.detail || null,
         impliedYesProbability: option.probability ?? null,
         ageDays: typeof option.ageDays === 'number' ? Number(option.ageDays.toFixed(2)) : null,
@@ -35,7 +35,7 @@ function optionDigest(option) {
 }
 
 export function optionId(option) {
-    return `${option.action.type}:${option.action.proposalId}`;
+    return `${option.action.type}:${option.action.agreementCid}`;
 }
 
 /**

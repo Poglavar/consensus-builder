@@ -25,10 +25,15 @@ const parking = (overrides = {}) => ({
 });
 
 describe('Pionir observed circulation importer', () => {
-    it('requires an explicit dry-run or apply mode', () => {
-        expect(() => parseArgs([])).toThrow('Choose exactly one');
-        expect(parseArgs(['--dry-run', '--export'])).toMatchObject({ dryRun: true, apply: false, export: true });
-        expect(parseArgs(['--apply', '--only', 'a,b']).only).toEqual(new Set(['a', 'b']));
+    it('runs exactly one of --dry-run or --export; it has no database write mode', () => {
+        expect(() => parseArgs([])).toThrow('Choose exactly one of --dry-run or --export');
+        expect(() => parseArgs(['--dry-run', '--export'])).toThrow('Choose exactly one');
+        expect(parseArgs(['--dry-run'])).toEqual({ dryRun: true, export: false, only: null, help: false });
+        expect(parseArgs(['--export', '--only', 'a,b']).only).toEqual(new Set(['a', 'b']));
+        expect(parseArgs(['--help'])).toMatchObject({ help: true, dryRun: false, export: false });
+        // The retired upsert into the proposal table: publish-restatement-archives.mjs publishes the archives.
+        expect(() => parseArgs(['--apply'])).toThrow('Unknown argument: --apply');
+        expect(() => parseArgs(['--dry-run', '--only'])).toThrow('--only requires at least one project key');
     });
 
     it('accepts a paired aisle only when the parking polygon supports a credible cross-section', () => {

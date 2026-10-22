@@ -1,27 +1,17 @@
-// Shared pure helpers for the society policies (agents/policies/<role>.js): proposal identity,
-// eligibility, market-implied probability, age and the per-invocation budget check. No I/O here;
+// Shared pure helpers for the society policies (agents/policies/<role>.js): agreement identity,
+// eligibility, market-implied probability, age and the per-invocation budget check. An agreement here is
+// discovery.js's summary: { cid, name, author, sponsor, account, createdAt, deadline, chainStatus, … };
+// its CID is its key and its chain account the subject of its market and pledges. No I/O here;
 // society-run.mjs gathers the inputs and executes whatever a policy returns.
-import { isSolanaMinted, proposalAccount, stableNumber } from '../supporter-picker.js';
+import { stableNumber, isOthersOpen } from '../supporter-picker.js';
+import { isOpen } from '../discovery.js';
 
-export { isSolanaMinted, proposalAccount, stableNumber };
+export { stableNumber, isOthersOpen, isOpen };
 
 const DAY_MS = 86_400_000;
 
-export function proposalKey(proposal = {}) {
-    return String(proposal.proposalId || proposal.id);
-}
-
-export function proposalName(proposal = {}) {
-    return proposal.name || proposal.title || proposalKey(proposal);
-}
-
-/** Active, minted on Solana and authored by somebody else (neither this wallet nor this persona). */
-export function isOthersActiveMinted(proposal, { wallet = null, personaName = null } = {}) {
-    if (String(proposal?.lifecycleStatus || '').toLowerCase() !== 'active') return false;
-    if (!isSolanaMinted(proposal)) return false;
-    if (wallet && String(proposal.author || '') === String(wallet)) return false;
-    if (personaName && String(proposal.agent?.persona || '') === String(personaName)) return false;
-    return true;
+export function agreementName(agreement = {}) {
+    return agreement.name || agreement.cid;
 }
 
 /** Atomic USDC units (bigint) from a bigint, safe integer or digit string; null when unreadable. */
@@ -52,9 +42,9 @@ export function totalPool(market) {
     return yes === null || no === null ? 0 : Number(yes + no);
 }
 
-/** Days from the proposal's own createdAt to `now` (ms), or null when the record has no creation time. */
-export function proposalAgeDays(proposal, now) {
-    const created = Date.parse(proposal?.createdAt || '');
+/** Days from the agreement's own createdAt to `now` (ms), or null when it has no creation time. */
+export function agreementAgeDays(agreement, now) {
+    const created = Date.parse(agreement?.createdAt || '');
     if (!Number.isFinite(created) || typeof now !== 'number' || !Number.isFinite(now)) return null;
     return Math.max(0, (now - created) / DAY_MS);
 }

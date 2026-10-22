@@ -339,36 +339,21 @@ function facetModeLabel(name, value) {
 }
 
 function setProposalParcelsMode(mode, { lock = false, unlock = false, reason = '' } = {}) {
-    // The active parcel model has two states: keep boundaries, or run land readjustment.
-    // Legacy callers asking for the removed merge mode safely resolve to no boundary change.
-    const normalized = mode === 'readjust' ? 'readjust' : 'as-is';
+    // The create dialog keeps parcel boundaries as they are: new borders are drawn with Lay out
+    // parcels (the parcel-layout design), never chosen here.
+    const normalized = 'as-is';
     proposalFacetState.parcels = normalized;
     applyFacetLockUI('proposalParcelsGroup', 'proposalParcelsStatic', 'proposalParcelsMode', normalized, lock, reason);
 }
 
-function showProposalPerSliceOption(show) {
-    const el = document.querySelector('.proposal-ownership-perslice');
-    if (el) el.style.display = show ? '' : 'none';
-}
-
 function onProposalParcelsChange() {
-    const sel = document.querySelector('input[name="proposalParcelsMode"]:checked');
-    proposalFacetState.parcels = sel ? sel.value : 'as-is';
-    if (proposalFacetState.parcels === 'readjust') {
-        showProposalPerSliceOption(true);
-        setProposalOwnershipMode('per-slice', { lock: true, reason: facetModeLabel('proposalParcelsMode', 'readjust') }); // slices carry their owners
-    } else {
-        showProposalPerSliceOption(false);
-        const next = (proposalFacetState.ownership === 'per-slice') ? 'no-change' : proposalFacetState.ownership;
-        setProposalOwnershipMode(next, { unlock: true });
-    }
+    proposalFacetState.parcels = 'as-is';
     syncProposalFacets();
 }
 
 function deriveProposalGoalKey() {
-    const { landUse, parcels, ownership } = proposalFacetState;
+    const { landUse, ownership } = proposalFacetState;
     if (landUse === 'urban-rule') return 'urban-rule';
-    if (parcels === 'readjust') return 'reparcellization';
     if (landUse && landUse !== 'as-is') return landUse; // park/square/lake/single/road-track
     if (ownership && ownership !== 'no-change') return 'ownership-transfer';
     return null; // as-is / as-is / no-change: nothing to propose yet
@@ -469,7 +454,7 @@ function markProposalCardDownloaded(cardKey, imported) {
     if (key) {
         const button = Array.from(document.querySelectorAll('.proposal-download-btn'))
             .find(candidate => candidate.getAttribute('data-proposal-id') === key
-                || candidate.getAttribute('data-server-id') === key);
+                || candidate.getAttribute('data-cid') === key);
         if (button) {
             button.textContent = t('modal.roadWidth.proposalList.actions.downloaded', 'Downloaded');
             button.disabled = true;
@@ -512,10 +497,10 @@ async function handleProposalDownloadClick(event) {
     const button = event.currentTarget;
     if (!button) return;
 
-    const proposalId = button.getAttribute('data-server-id') || button.getAttribute('data-proposal-id');
-    if (!proposalId) return;
+    const cid = button.getAttribute('data-cid');
+    if (!cid) return;
 
-    const cardKey = button.getAttribute('data-proposal-id') || proposalId;
+    const cardKey = button.getAttribute('data-proposal-id') || cid;
 
     const t = getProposalI18nHelper();
     const originalLabel = button.textContent || '';
@@ -523,17 +508,13 @@ async function handleProposalDownloadClick(event) {
     button.textContent = `${originalLabel}…`;
 
     try {
-        const proposal = await fetchServerProposalById(proposalId, resolveCurrentCityCode());
-        // Import parks the record (applied: false) and keeps its lifecycle. Parking prevents the
-        // parcelDataLoaded auto-apply from immediately re-applying a freshly downloaded proposal.
-        const imported = proposalStorage.importProposal(proposal, { overwrite: true });
-        if (!imported) {
-            throw new Error('Unable to store proposal locally');
-        }
-        updateShowProposalsButton();
+        // The design is imported by its CID and parked (applied: false; list-ui.js
+        // importServerProposal). Parking prevents the parcelDataLoaded auto-apply from immediately
+        // re-applying a freshly downloaded design.
+        const imported = await importServerProposal(cid);
         markProposalCardDownloaded(cardKey, imported);
     } catch (error) {
-        console.error('Failed to download proposal', proposalId, error);
+        console.error('Failed to download proposal', cid, error);
         button.disabled = false;
         button.textContent = originalLabel;
         // another city's proposal is not stored here: say where it belongs
@@ -586,13 +567,10 @@ function formatProposalTypeLabel(typeKey) {
     return getProposalTypeLabel(typeKey);
 }
 
+// A title that names no particular record: empty, or "Proposal" with at most an id after it.
 function isGenericProposalDisplayText(value) {
     const text = typeof value === 'string' ? value.trim() : '';
     if (!text) return true;
-    const lower = text.toLowerCase();
-    if (lower === 'proposal' || lower === 'minted proposal from blockchain' || lower === 'minted proposal from solana') {
-        return true;
-    }
     return /^proposal(?:\s+#?[a-z0-9._:-]+)?$/i.test(text);
 }
 
@@ -752,15 +730,6 @@ function enterUrlDrivenView(focusProposalIds) {
     const restoreView = (typeof window.getAiSceneRestoreView === 'function') ? window.getAiSceneRestoreView() : null;
     const options = { fromUrl: true, focusProposalIds, restoreView, frameProposal: true };
     return isRealisticModeRequestedFromUrl() ? tryEnterRealisticMode(options) : tryEnterThreeMode(options);
-}
-
-function roughlyEqualLatLng(a, b, eps = 1e-12) {
-    try {
-        if (!a || !b) return false;
-        return Math.abs(a.lat - b.lat) <= eps && Math.abs(a.lng - b.lng) <= eps;
-    } catch (_) {
-        return false;
-    }
 }
 
 function tryEnterThreeMode(options = {}) {
@@ -988,10 +957,10 @@ function formatSharedProposalTypeLabel(proposal) {
     }
 }
 
-// A proposal link suppresses the boot's viewport parcel fetch while it loads its own ground
-// (map-core.js IS_PROPOSAL_DEEP_LINK). Every way such a route ends gives it back — a plan that does
-// not resolve, a stay in the wrong city, an applied plan — and fetches the view once; a route that
-// ended without it left the map without parcels until a reload.
+// A design or agreement link suppresses the boot's viewport parcel fetch while it loads its own
+// ground (map-core.js IS_PROPOSAL_DEEP_LINK). Every way such a route ends gives it back — a link that
+// does not resolve, a stay in the wrong city, an applied link — and fetches the view once; a route
+// that ended without it left the map without parcels until a reload.
 function releaseDeepLinkParcelFetch() {
     if (typeof window === 'undefined' || !window.skipParcelFetchUntilProposalLoaded) return;
     window.skipParcelFetchUntilProposalLoaded = false;
@@ -1002,60 +971,33 @@ function releaseDeepLinkParcelFetch() {
     }
 }
 
-// Puts the app in the plan's city before its route runs. Returns true when it navigated away,
-// meaning the caller must stop: the reload re-enters this route with the city already correct.
-//
-// Silent when the visitor is merely sitting on the default and has never chosen a city — following
-// the link is doing what they asked. When they HAVE chosen one, this defers to the existing prompt
-// rather than overriding a deliberate choice. A plan city the app does not configure (free text on
-// the plan record) is no city to go to: the plan opens here instead of reloading forever.
-async function ensurePlanCity(rawPlanCityId) {
-    const manager = (typeof window !== 'undefined') ? window.CityConfigManager : null;
-    if (!manager || !rawPlanCityId) return false;
-    try {
-        const planCityId = manager.resolveCityId(rawPlanCityId);
-        const current = manager.getCurrentCityId();
-        if (!planCityId) {
-            console.warn('[handleProposalRouteFromUrl] Plan city', rawPlanCityId, 'is not a configured city; opening it in', current);
-            return false;
-        }
-        if (planCityId === current) return false;
-
-        const chosen = (typeof manager.hasStoredCityId === 'function') ? manager.hasStoredCityId() : true;
-        if (!chosen && typeof manager.navigateToCity === 'function') {
-            console.log('[handleProposalRouteFromUrl] Plan is in', planCityId,
-                '— switching from the default', current, 'before loading');
-            manager.navigateToCity(String(planCityId));
-            return true;
-        }
-        if (typeof promptCityMismatchForProposal === 'function') {
-            return await promptCityMismatchForProposal(String(planCityId));
-        }
-    } catch (error) {
-        console.warn('[handleProposalRouteFromUrl] Could not settle the plan city:', error);
-    }
-    return false;
-}
-
-async function handleProposalRouteFromUrl(attempt = 0) {
+// The app's record routes: /designs/<cid>[,<cid>…] opens shared designs (sharing-routes.js
+// handleSharedDesignRoute), /agreements/<cid> a proposed agreement (agreement-sync.js) and /proposals
+// the proposal list. Each handler validates its own ids; js/app-routes.js lists the same paths.
+async function handleProposalRouteFromUrl() {
     try {
         const pathname = (window.location.pathname || '').replace(/\/$/, '');
-        const planScoreRoute = window.GrainScoreRules
-            && typeof window.GrainScoreRules.parsePlanScorePath === 'function'
-            ? window.GrainScoreRules.parsePlanScorePath(pathname)
-            : null;
 
-        // A score URL is a plan deep-link first: resolve and apply the named plan through the same
-        // loader as /proposals/<slug>, then let the grain inspector take over the map. It lives on
-        // the public frontend origin; GET /plans/:slug on the API remains only the name resolver.
-        if (planScoreRoute) {
-            if (typeof window.openPlanGrainScoreRoute === 'function') {
-                await window.openPlanGrainScoreRoute(planScoreRoute.slug);
-            } else if (attempt < 10) {
-                setTimeout(() => handleProposalRouteFromUrl(attempt + 1), 100);
+        // Design and agreement links load their own ground, so the boot's parcel fetch is given
+        // back however their route ends.
+        const designMatch = pathname.match(/^\/designs\/([^/]+)$/);
+        const agreementMatch = pathname.match(/^\/agreements\/([^/]+)$/);
+        if (designMatch || agreementMatch) {
+            try {
+                if (designMatch) {
+                    const cids = designMatch[1].split(',').map(cid => cid.trim()).filter(Boolean);
+                    console.log(`[${new Date().toISOString()}] [handleProposalRouteFromUrl] design link: ${cids.length} design(s)`, cids);
+                    await handleSharedDesignRoute(cids);
+                } else {
+                    console.log(`[${new Date().toISOString()}] [handleProposalRouteFromUrl] agreement link`, agreementMatch[1]);
+                    await window.AgreementSync.handleAgreementRoute(agreementMatch[1]);
+                }
+            } finally {
+                releaseDeepLinkParcelFetch();
             }
             return;
         }
+
         const isProposalPath = pathname === '/proposals' || pathname.startsWith('/proposals/');
 
         // Ignore non-proposal routes entirely
@@ -1063,95 +1005,19 @@ async function handleProposalRouteFromUrl(attempt = 0) {
             return;
         }
 
-        // Handle bare /proposals/ route (no ids) by opening the appropriate dialog
+        // The bare /proposals/ route (no ids) opens the proposal list.
         const isBareProposalsRoute = /^\/proposals\/?$/.test(pathname);
         if (isBareProposalsRoute) {
-            const wm = typeof window !== 'undefined' ? window.walletManager : null;
-            const walletState = wm && typeof wm.getState === 'function' ? wm.getState() : null;
-            const walletConnected = Boolean(
-                walletState &&
-                walletState.status === 'connected' &&
-                Array.isArray(walletState.accounts) &&
-                walletState.accounts.length > 0
-            );
-
-            if (walletConnected && typeof window.openMintedProposalsModal === 'function') {
-                console.debug('[handleProposalRouteFromUrl] Opening minted proposals modal for /proposals/');
-                window.openMintedProposalsModal();
-            } else if (typeof showAllProposalsModal === 'function') {
+            if (typeof showAllProposalsModal === 'function') {
                 console.debug('[handleProposalRouteFromUrl] Opening local proposals list for /proposals/');
                 showAllProposalsModal();
             }
             return;
         }
 
-        // On-chain proposal location: /proposals/<chainType>/<chainId>:<contract>:<tokenId>.
-        // Only the LOCATION is in the URL — reconstruct the proposal from the NFT + its metadata.
-        const chainRef = (window.ChainProposalRef && typeof window.ChainProposalRef.parseChainProposalRef === 'function')
-            ? window.ChainProposalRef.parseChainProposalRef(pathname)
-            : null;
-        if (chainRef) {
-            await handleChainProposalRoute(chainRef);
-            return;
-        }
-
-        // Check if URL matches /proposals/:id or comma-separated ids
-        const pathMatch = pathname.match(/^\/proposals\/([0-9,]+)$/);
-        if (!pathMatch) {
-            // NAMED PLAN route: /proposals/<slug> resolves the slug through
-            // GET /plans/<slug> and opens the ids it lists. No ambiguity with
-            // the numeric form — the backend refuses digit-only slugs exactly
-            // so the two can share this namespace. This is what lets a report
-            // link a plan by NAME instead of enumerating ids that differ
-            // between environments.
-            const slugMatch = pathname.match(/^\/proposals\/([a-z0-9][a-z0-9-]{1,61}[a-z0-9])$/i);
-            if (slugMatch && !/^[0-9]+(-[0-9]+)*$/.test(slugMatch[1])) {
-                const slug = slugMatch[1].toLowerCase();
-                const base = (typeof resolveBackendBaseUrl === 'function') ? resolveBackendBaseUrl() : '';
-                if (typeof updateStatus === 'function') updateStatus(getShareI18nHelper()('plan.fetchingPlan', 'Fetching plan…'));
-                const resp = await fetchSharedProposalResponse(`${base}/plans/${encodeURIComponent(slug)}`);
-                if (resp.ok) {
-                    const plan = resp.data;
-                    const ids = Array.isArray(plan.proposalRowIds) ? plan.proposalRowIds.map(String).filter(Boolean) : [];
-                    if (ids.length > 0) {
-                        window.__currentNamedPlan = { ...plan, slug };
-                        console.log('[handleProposalRouteFromUrl] Named plan resolved:', slug, `${ids.length} proposals`);
-                        // The city has to be right BEFORE anything is fetched. Parcel requests are
-                        // routed by the current city, and the default is New York: a Sibenik plan
-                        // opened on an untouched default sent every parcel lookup to /parcel-nyc,
-                        // which rejects HR- ids outright. Measured on one open: 2,985 requests,
-                        // all HTTP 400, and no prompt — the per-proposal city check reads
-                        // payload.city, which is null on a proposal record. The PLAN record is
-                        // where the city actually lives, and by here it is already in hand.
-                        if (await ensurePlanCity(plan.city)) {   // switching navigates away, or the visitor stayed
-                            releaseDeepLinkParcelFetch();
-                            return;
-                        }
-                        // A plan link opens the plan hatched on the map with its panel; Apply plan
-                        // there applies it (handleSharedPlanRoute), the same as opening it in the app.
-                        releaseDeepLinkParcelFetch();
-                        await window.PlanView.open(slug, { plan, publicationApiBase: base });
-                        return;
-                    }
-                }
-                console.warn('[handleProposalRouteFromUrl] named plan did not resolve:', slug, resp.status);
-                releaseDeepLinkParcelFetch();
-            }
-            console.debug('[handleProposalRouteFromUrl] Proposal path did not match expected pattern:', pathname);
-            return;
-        }
-        console.log('[handleProposalRouteFromUrl] Matched path:', pathMatch[1], 'attempt:', attempt);
-
-        const idSegment = pathMatch[1];
-        const idParts = idSegment.split(',').map(v => v.trim()).filter(Boolean);
-        if (idParts.length === 0) {
-            console.log('[handleProposalRouteFromUrl] No valid ID parts found');
-            return;
-        }
-
-        // Single proposal is just an array of one - use the same handler
-        console.log('[handleProposalRouteFromUrl] Delegating to handleSharedPlanRoute:', idParts);
-        await handleSharedPlanRoute(idParts);
+        // Any other /proposals/… path is no route; js/app-routes.js marks it unknown. (Designs are
+        // not minted: an agreement is, and its link is /agreements/<cid>.)
+        console.warn(`[${new Date().toISOString()}] [handleProposalRouteFromUrl] no proposal route matches ${pathname}`);
     } catch (error) {
         console.error('handleProposalRouteFromUrl failed:', error);
         releaseDeepLinkParcelFetch();
@@ -1162,39 +1028,6 @@ async function handleProposalRouteFromUrl(attempt = 0) {
     }
 }
 
-// Open a proposal from its on-chain location: reconstruct it from the NFT (wallet-gated read via the
-// connected wallet's provider), add it to local storage, and focus it. Never touches the server.
-async function handleChainProposalRoute(ref) {
-    // On-chain deep links read the chain without any gesture; the wallet
-    // vendors are injected on demand (index.html ensureWalletVendors).
-    if (typeof window.ensureWalletVendors === 'function') await window.ensureWalletVendors();
-    const loader = window.ChainProposalLoader;
-    if (!loader || typeof loader.loadChainProposalFromRef !== 'function') {
-        if (typeof updateStatus === 'function') updateStatus('On-chain proposals are unavailable.');
-        return;
-    }
-    const result = await loader.loadChainProposalFromRef(ref);
-    if (result && result.ok && result.proposal) {
-        const key = (typeof getProposalKey === 'function' && getProposalKey(result.proposal)) || result.proposal.proposalId;
-        if (key && typeof selectAndHighlightProposal === 'function') {
-            selectAndHighlightProposal(key, null, true);
-        }
-        return;
-    }
-    // Canton proposals are private to their parties: a non-party (or no identity) can't see them.
-    if (result && result.reason === 'canton-private') {
-        if (typeof updateStatus === 'function') {
-            updateStatus('This is a private Canton proposal — you can only see it if you are logged in as a party to it.');
-        }
-        return;
-    }
-    // No wallet connected → the read can't run; prompt to connect. Other failures get a generic note.
-    if (result && result.reason === 'chain-unavailable') {
-        if (typeof updateStatus === 'function') updateStatus('Connect a wallet to open this on-chain proposal.');
-    } else if (typeof updateStatus === 'function') {
-        updateStatus('Could not load the on-chain proposal.');
-    }
-}
 
 function selectProposalFromList(proposalIdOrHash, parcelId) {
     const proposal = getProposalByIdOrHash(proposalIdOrHash);
@@ -1206,225 +1039,6 @@ function selectProposalFromList(proposalIdOrHash, parcelId) {
     }
 
     selectAndHighlightProposal(getProposalKey(proposal) || proposalIdOrHash, parcelId, true);
-}
-
-async function handleUserAcceptProposal(proposalId, parcelId, ownerKey = null) {
-    const userAgent = typeof getCurrentUserAgent === 'function' ? getCurrentUserAgent() : null;
-    if (!userAgent) {
-        showProposalAlertMessage('you_must_be_logged_in_to_accept_proposals', 'You must be logged in to accept proposals.');
-        return;
-    }
-
-    // Get the proposal to check stored owner acceptance data
-    const proposal = proposalStorage.getProposal(proposalId);
-    if (!proposal) {
-        showProposalAlertMessage('proposal_not_found', 'Proposal not found.');
-        return;
-    }
-    if (window.ProposalKind?.isCommunityVote(proposal)) {
-        showProposalAlertMessage('community_vote_has_no_owner_action', 'A community vote is decided by residents through its organiser; owners have nothing to accept.');
-        return;
-    }
-    if (getLifecycleStatus(proposal) === 'Unknown') {
-        showProposalAlertMessage('proposal_lifecycle_unknown', 'The proposal status is unknown. Reload it before accepting.');
-        return;
-    }
-
-    // Validate the current terms before opening a wallet flow. The local receipt must bind to
-    // exactly the reviewed terms; a malformed allocation must not reach a chain call first.
-    if (!currentConsentBindingHash(proposal)) {
-        if (proposalRequiresDealConsent(proposal)) {
-            showProposalAlertMessage('readjustment_terms_invalid', 'Complete and correct the readjustment allocations and cash terms before accepting.');
-        } else {
-            showProposalAlertMessage('proposal_terms_unavailable', 'The current proposal terms could not be verified. Reload the proposal before accepting.');
-        }
-        return;
-    }
-
-    // Owners accept approval-setup proposals only after reviewing what they give and get;
-    // the review dialog asks the wallet to sign (proposals/approval-panel.js).
-    if (usesAbstractProposalApproval(proposal)) {
-        await window.ProposalApprovalPanel.openReview(proposalId, ownerKey, parcelId);
-        return;
-    }
-
-    const normalizedParcelId = normalizeParcelId(parcelId);
-    if (!normalizedParcelId) {
-        showProposalAlertMessage('invalid_parcel_identifier', 'Invalid parcel identifier.');
-        return;
-    }
-
-    // Ensure owner acceptance entry exists and get owner slots
-    const ownerSlots = getOwnerSlotsForParcel(parcelId);
-    const entry = ensureOwnerAcceptanceEntry(proposal, normalizedParcelId, ownerSlots);
-    if (!entry?.ownerOrder.length) {
-        showProposalAlertMessage('unable_to_determine_owner_shares_for_this_parcel', 'Unable to determine owner shares for this parcel.');
-        return;
-    }
-
-    // Determine the effective owner key from the current roster only. A stored decision or an
-    // old ownerOrder entry is not a fallback owner; a single current slot can select itself.
-    const effectiveOwnerKey = ownerKey || (ownerSlots.length === 1 ? ownerSlots[0].key : null);
-    const targetSlot = ownerSlots.find(slot => slot.key === effectiveOwnerKey);
-
-    if (!targetSlot || !effectiveOwnerKey) {
-        showProposalAlertMessage('please_choose_which_owner_share_you_are_accepting_for', 'Please choose which owner share you are accepting for.');
-        return;
-    }
-
-    // Validate ownership for agent-type slots
-    if (targetSlot.type === 'agent' && targetSlot.agentId && targetSlot.agentId !== userAgent.id) {
-        showProposalAlertMessage('you_can_only_accept_proposals_for_parcels_you_own', 'You can only accept proposals for parcels you own.');
-        return;
-    }
-
-    // A vote proposal (no ownership/parcel change) collects non-binding yes-votes instead of
-    // binding acceptances: on-chain it calls castVote, and it never executes or transfers.
-    const isVote = typeof isVoteProposal === 'function' && isVoteProposal(proposal);
-
-    // Check if this proposal is minted on-chain — if so, submit on-chain first
-    const nftInfo = typeof getProposalNftInfo === 'function' ? getProposalNftInfo(proposal) : null;
-    const bridge = window.ProposalChainBridge;
-    const bridgeMethod = isVote ? 'castVote' : 'acceptProposal';
-    const isOnChain = nftInfo && bridge && typeof bridge[bridgeMethod] === 'function';
-
-    // Solana proposals (proposal_nft v2) take no owner-accept call: an attested owner's wallet
-    // says yes in the Lens card of Details (accept_with_attestations), never from here.
-    if (nftInfo && !isVote && String(nftInfo.chain || '').startsWith('solana')) {
-        showProposalAlertMessage('solana_accept_in_lens_card', 'On Solana, owners say yes in the proposal\'s Lens card: a lens member attests your ownership, then your wallet signs.');
-        return;
-    }
-
-    let chainResult = null;
-    if (isOnChain) {
-        try {
-            if (typeof updateStatus === 'function') {
-                updateStatus(isVote ? 'Submitting vote on chain...' : 'Submitting acceptance on chain...');
-            }
-            chainResult = await bridge[bridgeMethod]({
-                proposalId: nftInfo.tokenId,
-                parcelId: normalizedParcelId,
-                chainId: nftInfo.chain,
-                contractAddress: nftInfo.contract
-            });
-            if (typeof updateStatus === 'function') {
-                updateStatus(isVote ? 'Vote recorded on chain.' : 'Acceptance recorded on chain.');
-            }
-        } catch (onchainErr) {
-            console.warn(isVote ? 'On-chain vote failed:' : 'On-chain acceptance failed:', onchainErr);
-            const friendlyMessage = parseOnChainErrorMessage(onchainErr);
-            showProposalAlertMessage(isVote ? 'on_chain_vote_failed' : 'on_chain_acceptance_failed', friendlyMessage);
-            return;
-        }
-    }
-
-    // On-chain succeeded (or not on-chain) — now record locally
-    const result = await acceptProposal(proposalId, parcelId, effectiveOwnerKey, {
-        acceptedByAgentId: userAgent.id,
-        acceptedByName: userAgent.name
-    });
-
-    // Local consent cannot establish execution. The EVM bridge separately reads the exact
-    // confirmed block; preserve that observation only while the record still names that NFT.
-    if (isOnChain && !isVote) {
-        const current = proposalStorage.getProposal(proposalId);
-        const lifecycle = window.ProposalChainStatus?.confirmedAcceptanceLifecycle(
-            chainResult, nftInfo, getProposalNftInfo(current));
-        if (current && lifecycle) {
-            Object.assign(current, window.ProposalLifecycleEvidence.projectLifecycleEvidence({
-                lifecycleStatus: lifecycle,
-                chainRead: { status: lifecycle, observedAt: chainResult.lifecycle.observedAt, chainRef: {
-                    chainType: 'evm', chainId: String(chainResult.chainId),
-                    contract: chainResult.contractAddress, tokenId: String(chainResult.proposalId)
-                } }
-            }));
-            proposalStorage._indexProposal?.(current);
-            proposalStorage.save();
-            const detailsContent = document.getElementById('proposal-details-content');
-            if (detailsContent?.dataset.proposalId === String(current.proposalId)) {
-                showProposalInfo(current, parcelId, true);
-            }
-        } else {
-            showProposalAlertMessage('acceptance_confirmed_status_unavailable',
-                'Acceptance was confirmed on-chain, but the proposal status could not be refreshed. The previous status is still shown. Reload the proposal to check it.');
-        }
-    }
-
-    if (!result) return;
-
-    const ownerLabel = targetSlot.shareText
-        ? `${targetSlot.displayName} (${targetSlot.shareText})`
-        : targetSlot.displayName;
-
-    const storedProposal = typeof proposalStorage !== 'undefined' && typeof proposalStorage.getProposal === 'function'
-        ? proposalStorage.getProposal(proposalId)
-        : null;
-    const proposalIdForLog = storedProposal && storedProposal.proposalId !== undefined && storedProposal.proposalId !== null
-        ? String(storedProposal.proposalId)
-        : String(proposalId);
-    const proposalIdAttr = storedProposal && storedProposal.proposalId !== undefined && storedProposal.proposalId !== null
-        ? String(storedProposal.proposalId)
-        : String(proposalId);
-    // The log's links run script (game.js binds the -clickable hooks), so they are cb-link buttons.
-    const proposalLinkHtml = `<button type="button" data-proposal-id="${proposalIdAttr}" class="cb-link proposal-link-clickable">${proposalIdForLog}</button>`;
-    const agentLinkHtml = `<button type="button" data-agent-id="${userAgent.id}" class="cb-link agent-link-clickable">${userAgent.name}</button>`;
-
-    if (typeof addUserActionToGameLog === 'function') {
-        const logMsg = isVote
-            ? `${agentLinkHtml} voted yes as ${ownerLabel} on proposal ${proposalLinkHtml}.`
-            : `${agentLinkHtml} recorded acceptance from ${ownerLabel} for parcel ${result.parcelNumber || parcelId} (${proposalLinkHtml}).`;
-        addUserActionToGameLog(logMsg);
-    }
-    if (!userAgent.proposalsAccepted) {
-        userAgent.proposalsAccepted = [];
-    }
-    if (!userAgent.proposalsAccepted.includes(proposalId)) {
-        userAgent.proposalsAccepted.push(proposalId);
-        agentStorage.updateAgent(userAgent.id, { proposalsAccepted: userAgent.proposalsAccepted });
-    }
-
-    // Preserve exact scroll/anchor position BEFORE any updates
-    const panel = document.getElementById('proposal-details-panel');
-    const panelBody = panel ? panel.querySelector('.panel-body') : null;
-    const scrollTop = panelBody ? panelBody.scrollTop : 0;
-    const anchorKey = effectiveOwnerKey || targetSlot.key || ownerKey || null;
-    let anchorOffset = null;
-    if (panelBody && anchorKey) {
-        const ownerRow = panelBody.querySelector(`.owner-acceptance-row[data-owner-key="${anchorKey}"]`);
-        if (ownerRow) {
-            const bodyRect = panelBody.getBoundingClientRect();
-            const rowRect = ownerRow.getBoundingClientRect();
-            anchorOffset = rowRect.top - bodyRect.top;
-        }
-    }
-
-    const updatedProposal = proposalStorage.getProposal(proposalId);
-    if (updatedProposal) {
-        const preserveState = {
-            scrollTop,
-            anchorKey,
-            anchorOffset,
-            parcelId: normalizedParcelId
-        };
-
-        if (typeof updateAgentDialogAfterAcceptance === 'function') {
-            updateAgentDialogAfterAcceptance(proposalId);
-        }
-
-        refreshProposalOwnerAcceptanceUI(updatedProposal, parcelId);
-        restoreProposalDetailsScroll(preserveState);
-
-        if (typeof renderProposalListModal === 'function') {
-            const modal = document.querySelector('.proposal-list-modal');
-            if (modal && modal.style.display === 'block') {
-                renderProposalListModal();
-            }
-        }
-
-        if (typeof refreshProposalsLayer === 'function') {
-            refreshProposalsLayer();
-        }
-    }
 }
 
 function isEditableElement(target) {

@@ -35,8 +35,8 @@
     const parcelFeature = parcelId => parcelId && global.LiveParcelFabric?.get?.(parcelId) || null;
 
     // Per-parcel counts from the server (GET /proposals/counts) — shared across all users, unlike the
-    // browser-local proposalStorage. Mirrors the CantonCounts pattern: fetch for the visible parcels,
-    // cache, redraw on update. A parcel present in this map has an authoritative server count; absent
+    // browser-local proposalStorage: fetch for the visible parcels, cache, redraw on update. A parcel
+    // present in this map has an authoritative server count; absent
     // means "not fetched" and the badge falls back to the local count (so an unreachable backend or a
     // parcel-id mismatch degrades to today's behaviour, never worse).
     const serverProposalCounts = new Map(); // parcelId -> count
@@ -97,22 +97,16 @@
             // Get all proposals for this parcel
             const proposals = global.proposalStorage.getProposalsForParcel(normalizedId);
 
-            // Exclude Canton proposals — they're surfaced by the separate purple
-            // Canton badge (from the ledger), so counting their local copy here too
-            // would double-count the same proposal.
-            const isCanton = global.CantonMode && global.CantonMode.isCantonProposal;
-            const evm = isCanton ? proposals.filter((p) => !global.CantonMode.isCantonProposal(p)) : proposals;
-
-            // If the server has authoritative counts for this parcel, use them (everyone agrees) and
-            // add only the browser-local proposals never uploaded (drafts + minted-not-uploaded), so
-            // they aren't double-counted against the server's copy. Otherwise fall back to local.
+            // If the server has counts for this parcel, use them (everyone agrees) and add this
+            // browser's proposals. A local record names no server row since M2 (a design published
+            // from here is indexed by CID, never written to the proposal table these counts come
+            // from), so none is taken off as the server's copy. Otherwise fall back to local.
             const key = parcelId.toString();
             if (serverProposalCounts.has(key)) {
                 const serverCount = serverProposalCounts.get(key) || 0;
-                const localOnly = evm.filter(p => p && !p.serverProposalId).length;
-                return serverCount + localOnly;
+                return serverCount + proposals.length;
             }
-            return evm.length;
+            return proposals.length;
         } catch (error) {
             console.warn('Failed to get proposal count for parcel', parcelId, error);
             return 0;
@@ -143,10 +137,6 @@
     function drawProposalCountLabels() {
         clearProposalCountLabels();
         if (!global.parcelLayer) return;
-        // Refresh the Canton public counts in the background (redraws on update).
-        if (global.CantonCounts && typeof global.CantonCounts.ensureFresh === 'function') {
-            global.CantonCounts.ensureFresh();
-        }
 
         const bounds = (global.map && typeof global.map.getBounds === 'function')
             ? global.map.getBounds()
@@ -186,12 +176,9 @@
         }
 
         const proposalCount = getProposalCountFromFeature(feature);
-        // Canton proposals are private — we only know a public count (existence
-        // signal), not terms. Shown as a separate, distinctly-styled badge.
-        const cantonCount = (global.CantonCounts && parcelId) ? global.CantonCounts.getCount(parcelId) : 0;
 
-        // Don't show anything if there are no proposals of either kind.
-        if (proposalCount === 0 && cantonCount === 0) return;
+        // Don't show anything if there are no proposals.
+        if (proposalCount === 0) return;
 
         let labelLatLng = null;
         const geometry = feature.geometry;
@@ -228,33 +215,16 @@
             return;
         }
 
-        if (proposalCount > 0) {
-            const label = L.marker(labelLatLng, {
-                icon: L.divIcon({
-                    className: 'parcel-proposal-count-label',
-                    html: `${proposalCount}`,
-                    iconSize: [20, 20],
-                    // Shift left when a Canton badge will sit beside it.
-                    iconAnchor: cantonCount > 0 ? [22, 10] : [10, 10]
-                }),
-                interactive: false
-            }).addTo(global.map);
-            proposalCountLabels.push(label);
-        }
-
-        if (cantonCount > 0) {
-            const cantonLabel = L.marker(labelLatLng, {
-                icon: L.divIcon({
-                    className: 'parcel-proposal-count-label parcel-canton-count-label',
-                    html: `${cantonCount}`,
-                    iconSize: [20, 20],
-                    iconAnchor: proposalCount > 0 ? [-2, 10] : [10, 10]
-                }),
-                title: 'Canton proposal(s) — terms private',
-                interactive: false
-            }).addTo(global.map);
-            proposalCountLabels.push(cantonLabel);
-        }
+        const label = L.marker(labelLatLng, {
+            icon: L.divIcon({
+                className: 'parcel-proposal-count-label',
+                html: `${proposalCount}`,
+                iconSize: [20, 20],
+                iconAnchor: [10, 10]
+            }),
+            interactive: false
+        }).addTo(global.map);
+        proposalCountLabels.push(label);
     }
 
     function clearProposalCountLabels() {
@@ -388,9 +358,6 @@
     global.clearProposalCountLabels = clearProposalCountLabels;
     global.refreshProposalCountLabelsIfVisible = refreshProposalCountLabelsIfVisible;
     global.setProposalCountLabelFilter = setProposalCountLabelFilter;
-
-    // Redraw labels when the Canton public counts update.
-    global.addEventListener('canton-counts-updated', refreshProposalCountLabelsIfVisible);
 
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', () => {

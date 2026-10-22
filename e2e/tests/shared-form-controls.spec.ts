@@ -1,7 +1,7 @@
-// Verify proposal comparison pickers and the unminted betting action through their visible effects.
+// Verify the proposal comparison pickers through their visible effects.
 import { selectNativeOption } from '../helpers/controls';
 import { test, expect } from '../helpers/fixtures';
-import { clickMapPoint, openCity, PARCEL_GEOMETRY, PARCEL_ID, showProposal } from '../helpers/runtime';
+import { clickMapPoint, openCity, PARCEL_GEOMETRY, PARCEL_ID, runParcelCommand } from '../helpers/runtime';
 
 test('comparison pickers update both proposal geometries and their side-by-side details', async ({ mockApi: page }) => {
   await openCity(page);
@@ -19,9 +19,7 @@ test('comparison pickers update both proposal geometries and their side-by-side 
     ];
   }, { parcelId: PARCEL_ID, geometry: PARCEL_GEOMETRY });
 
-  await clickMapPoint(page, 15.9822, 45.80025);
-  await expect(page.locator('#parcel-menu')).toBeVisible();
-  await page.locator('#parcel-menu [data-command="parcel.compare"]').click();
+  await runParcelCommand(page, 15.9822, 45.80025, 'parcel.compare');
   const compare = page.locator('#parcel-compare-dialog');
   const pickerA = compare.locator('.parcel-compare__picker--a select');
   const pickerB = compare.locator('.parcel-compare__picker--b select');
@@ -42,26 +40,4 @@ test('comparison pickers update both proposal geometries and their side-by-side 
   await expect(structureRow.locator('.parcel-compare__cell--b')).toContainText('Park');
   await expect(compare).toContainText('Small park plan');
   await expect(compare).toContainText('Full park plan');
-});
-
-test('unminted proposal Bet on outcome explains the prerequisite and opens that proposal’s minting options', async ({ mockApi: page }) => {
-  await openCity(page);
-  const proposalId = await page.evaluate(({ parcelId, geometry }) => (window as any).proposalStorage.addProposal({
-    title: 'Bet entry prerequisite plan', goal: 'park', lifecycleStatus: 'Active', cadastreParcelIds: [parcelId], geometry,
-  }), { parcelId: PARCEL_ID, geometry: PARCEL_GEOMETRY });
-  await showProposal(page, proposalId);
-
-  const details = page.locator('#proposal-details-panel');
-  const expand = details.getByRole('button', { name: 'Expand', exact: true });
-  if (await expand.isVisible()) await expand.click();
-  await details.getByRole('button', { name: 'Bet on outcome' }).click();
-  const guidance = page.locator('.proposal-bet-help');
-  await expect(guidance).toBeVisible();
-  await expect(guidance).toContainText('needs to be minted on Solana before anyone can bet on its outcome');
-  await expect(guidance).toContainText('Connect your Solana wallet before minting this proposal');
-  await guidance.getByRole('button', { name: 'Open minting options' }).click();
-
-  const share = page.locator('.share-modal-overlay');
-  await expect(share).toBeVisible();
-  await expect(share.locator('.share-modal-identity')).toContainText('Bet entry prerequisite plan');
 });

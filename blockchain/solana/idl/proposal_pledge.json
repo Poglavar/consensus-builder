@@ -1185,7 +1185,7 @@
     {
       "code": 6000,
       "name": "InvalidProposalAccount",
-      "msg": "Invalid proposal account"
+      "msg": "The proposal account is not an agreement-program Agreement (or not this escrow's or book's)"
     },
     {
       "code": 6001,
@@ -1195,17 +1195,17 @@
     {
       "code": 6002,
       "name": "ProposalNotActive",
-      "msg": "Proposal is not Active"
+      "msg": "Agreement is not Active"
     },
     {
       "code": 6003,
       "name": "ProposalNotExecuted",
-      "msg": "Proposal has not Executed"
+      "msg": "Agreement has not Executed"
     },
     {
       "code": 6004,
       "name": "ProposalNotRefundable",
-      "msg": "Proposal is not Cancelled or Expired"
+      "msg": "Agreement is not Cancelled or Expired"
     },
     {
       "code": 6005,

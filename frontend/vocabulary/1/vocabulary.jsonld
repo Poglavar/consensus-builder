@@ -11,10 +11,10 @@
   },
   "@graph": [
     {
-      "@id": "cb:Proposal",
+      "@id": "cb:Design",
       "@type": "rdfs:Class",
-      "rdfs:label": "Published proposal",
-      "rdfs:comment": "An authored proposal record in a publication store. Its existence does not assert construction, ownership or legal approval.",
+      "rdfs:label": "Published design",
+      "rdfs:comment": "One authored change (a road, a park, a parcel layout, an urban rule, a building), identified by the CID of its canonical content. Its existence does not assert construction, ownership or legal approval.",
       "rdfs:subClassOf": [
         {
           "@id": "schema:CreativeWork"
@@ -25,13 +25,13 @@
       ]
     },
     {
-      "@id": "cb:NamedPlan",
+      "@id": "cb:Agreement",
       "@type": "rdfs:Class",
-      "rdfs:label": "Named plan",
-      "rdfs:comment": "An immutable named commitment to an ordered set of proposal members and their saved content hashes.",
+      "rdfs:label": "Published agreement",
+      "rdfs:comment": "A set of designs plus a decision rule, with optional allocations and money, identified by the CID of its canonical content, which names its designs by their CIDs. Its existence does not assert consent, execution or legal approval.",
       "rdfs:subClassOf": [
         {
-          "@id": "schema:Collection"
+          "@id": "schema:CreativeWork"
         },
         {
           "@id": "prov:Entity"
@@ -39,21 +39,10 @@
       ]
     },
     {
-      "@id": "cb:PlanMembership",
+      "@id": "cb:DesignSite",
       "@type": "rdfs:Class",
-      "rdfs:label": "Plan membership commitment",
-      "rdfs:comment": "A position in a named plan, identifying a published proposal and the member content hash saved when the plan was named.",
-      "rdfs:subClassOf": [
-        {
-          "@id": "prov:Entity"
-        }
-      ]
-    },
-    {
-      "@id": "cb:ProposalSite",
-      "@type": "rdfs:Class",
-      "rdfs:label": "Proposal site",
-      "rdfs:comment": "The geographic extent authored as the proposal site. It is not a legal cadastral parcel or an assertion of a constructed project.",
+      "rdfs:label": "Design site",
+      "rdfs:comment": "The geographic extent authored as the design site. It is not a legal cadastral parcel or an assertion of a constructed project.",
       "rdfs:subClassOf": [
         {
           "@id": "geo:Feature"
@@ -64,7 +53,7 @@
       "@id": "cb:CadastreReference",
       "@type": "rdfs:Class",
       "rdfs:label": "Declared cadastral reference",
-      "rdfs:comment": "A cadastral identifier declared by this proposal. This node is scoped to the proposal; it does not establish cross-provider parcel identity.",
+      "rdfs:comment": "A cadastral identifier an agreement names as its input land. This node is scoped to the agreement; it does not establish cross-provider parcel identity.",
       "rdfs:subClassOf": [
         {
           "@id": "prov:Entity"
@@ -72,30 +61,10 @@
       ]
     },
     {
-      "@id": "cb:ChainReference",
-      "@type": "rdfs:Class",
-      "rdfs:label": "Declared chain reference",
-      "rdfs:comment": "A complete chain family, network, contract or program, and token or account location declared by the server-owned attachment. This alone is not verified execution evidence.",
-      "rdfs:subClassOf": [
-        {
-          "@id": "prov:Entity"
-        }
-      ]
-    },
-    {
-      "@id": "cb:proposalRowId",
+      "@id": "cb:cid",
       "@type": "rdf:Property",
-      "rdfs:label": "Publication row ID",
-      "rdfs:comment": "Decimal database row key within the canonical publication API.",
-      "rdfs:range": {
-        "@id": "xsd:string"
-      }
-    },
-    {
-      "@id": "cb:authoredProposalId",
-      "@type": "rdf:Property",
-      "rdfs:label": "Authored proposal ID",
-      "rdfs:comment": "Authored identifier carried by the published record, separate from a database row key or chain account.",
+      "rdfs:label": "Content identifier",
+      "rdfs:comment": "The CIDv1 (raw codec, sha2-256, base32) of the record's canonical bytes: its identity. Changed content is a different record.",
       "rdfs:range": {
         "@id": "xsd:string"
       }
@@ -113,7 +82,7 @@
       "@id": "cb:declaredGoal",
       "@type": "rdf:Property",
       "rdfs:label": "Declared design goal",
-      "rdfs:comment": "The exact design-goal string carried by the record, including unclassified values.",
+      "rdfs:comment": "The exact design-goal string carried by the design, including unclassified values.",
       "rdfs:range": {
         "@id": "xsd:string"
       }
@@ -128,46 +97,46 @@
       }
     },
     {
-      "@id": "cb:decisionKind",
-      "@type": "rdf:Property",
-      "rdfs:label": "Decision kind",
-      "rdfs:comment": "The decision kind interpreted by the current application contract. A missing historical kind is interpreted as owner-deal.",
-      "rdfs:range": {
-        "@id": "skos:Concept"
-      }
-    },
-    {
-      "@id": "cb:recordedLifecycle",
-      "@type": "rdf:Property",
-      "rdfs:label": "Recorded lifecycle",
-      "rdfs:comment": "The API record lifecycle, including its Active-only deadline rule. This is not an independently observed chain or construction state.",
-      "rdfs:range": {
-        "@id": "skos:Concept"
-      }
-    },
-    {
-      "@id": "cb:proposalDeadline",
-      "@type": "rdf:Property",
-      "rdfs:label": "Proposal deadline",
-      "rdfs:comment": "The deadline carried by the proposal. It does not promise a settlement or construction time.",
-      "rdfs:range": {
-        "@id": "xsd:dateTime"
-      }
-    },
-    {
       "@id": "cb:site",
       "@type": "rdf:Property",
       "rdfs:label": "Authored site",
-      "rdfs:comment": "The geographic site declared by this proposal.",
+      "rdfs:comment": "The geographic site declared by this design.",
       "rdfs:range": {
-        "@id": "cb:ProposalSite"
+        "@id": "cb:DesignSite"
+      }
+    },
+    {
+      "@id": "cb:designs",
+      "@type": "rdf:Property",
+      "rdfs:label": "Designs",
+      "rdfs:comment": "An RDF list of the designs the agreement includes, by CID, in authored order.",
+      "rdfs:range": {
+        "@id": "rdf:List"
+      }
+    },
+    {
+      "@id": "cb:decisionRule",
+      "@type": "rdf:Property",
+      "rdfs:label": "Decision rule",
+      "rdfs:comment": "Who decides the agreement and whether the decision binds, as its content states it.",
+      "rdfs:range": {
+        "@id": "skos:Concept"
+      }
+    },
+    {
+      "@id": "cb:agreementDeadline",
+      "@type": "rdf:Property",
+      "rdfs:label": "Agreement deadline",
+      "rdfs:comment": "The deadline carried by the agreement. It does not promise a settlement or construction time.",
+      "rdfs:range": {
+        "@id": "xsd:dateTime"
       }
     },
     {
       "@id": "cb:cadastreReference",
       "@type": "rdf:Property",
       "rdfs:label": "Declared cadastral reference",
-      "rdfs:comment": "A proposal-scoped declaration of a cadastral identifier.",
+      "rdfs:comment": "An agreement-scoped declaration of a cadastral identifier of its input land.",
       "rdfs:range": {
         "@id": "cb:CadastreReference"
       }
@@ -182,172 +151,14 @@
       }
     },
     {
-      "@id": "cb:declaredChainReference",
-      "@type": "rdf:Property",
-      "rdfs:label": "Declared chain location",
-      "rdfs:comment": "A complete location from the server-owned chain attachment; not proof of current chain state.",
-      "rdfs:range": {
-        "@id": "cb:ChainReference"
-      }
-    },
-    {
-      "@id": "cb:chainType",
-      "@type": "rdf:Property",
-      "rdfs:label": "Chain family",
-      "rdfs:comment": "Declared blockchain family, such as evm or solana.",
-      "rdfs:range": {
-        "@id": "xsd:string"
-      }
-    },
-    {
-      "@id": "cb:chainId",
-      "@type": "rdf:Property",
-      "rdfs:label": "Chain network",
-      "rdfs:comment": "Declared network identifier in the chain family.",
-      "rdfs:range": {
-        "@id": "xsd:string"
-      }
-    },
-    {
-      "@id": "cb:contract",
-      "@type": "rdf:Property",
-      "rdfs:label": "Contract or program",
-      "rdfs:comment": "Declared contract or program identifier. Case is retained.",
-      "rdfs:range": {
-        "@id": "xsd:string"
-      }
-    },
-    {
-      "@id": "cb:tokenId",
-      "@type": "rdf:Property",
-      "rdfs:label": "Token or account",
-      "rdfs:comment": "Declared proposal token or account identifier. Case is retained.",
-      "rdfs:range": {
-        "@id": "xsd:string"
-      }
-    },
-    {
-      "@id": "cb:offeredConsideration",
-      "@type": "rdf:Property",
-      "rdfs:label": "Offered consideration",
-      "rdfs:comment": "An explicit authored offer amount and currency. It is not a balance, paid amount or escrow observation.",
-      "rdfs:range": {
-        "@id": "schema:MonetaryAmount"
-      }
-    },
-    {
-      "@id": "cb:budget",
-      "@type": "rdf:Property",
-      "rdfs:label": "Authored budget",
-      "rdfs:comment": "An explicit authored budget amount and currency, distinct from offered consideration.",
-      "rdfs:range": {
-        "@id": "schema:MonetaryAmount"
-      }
-    },
-    {
-      "@id": "cb:memberships",
-      "@type": "rdf:Property",
-      "rdfs:label": "Ordered memberships",
-      "rdfs:comment": "An RDF list of the plan membership commitments, preserving their saved order.",
-      "rdfs:range": {
-        "@id": "rdf:List"
-      }
-    },
-    {
-      "@id": "cb:member",
-      "@type": "rdf:Property",
-      "rdfs:label": "Member proposal",
-      "rdfs:comment": "The published proposal record named by a membership commitment.",
-      "rdfs:range": {
-        "@id": "cb:Proposal"
-      }
-    },
-    {
-      "@id": "cb:committedMemberHash",
-      "@type": "rdf:Property",
-      "rdfs:label": "Committed member hash",
-      "rdfs:comment": "Saved SHA-256 memberContent digest, under the application commitment contract; not a digest of this JSON-LD document.",
-      "rdfs:range": {
-        "@id": "xsd:string"
-      }
-    },
-    {
-      "@id": "cb:currentMemberHash",
-      "@type": "rdf:Property",
-      "rdfs:label": "Current member hash",
-      "rdfs:comment": "The current memberContent digest calculated during this read, when the member exists.",
-      "rdfs:range": {
-        "@id": "xsd:string"
-      }
-    },
-    {
-      "@id": "cb:memberChanged",
-      "@type": "rdf:Property",
-      "rdfs:label": "Member changed",
-      "rdfs:comment": "True when the current member is missing, has invalid commitment content, or its memberContent digest differs from the saved commitment.",
-      "rdfs:range": {
-        "@id": "xsd:boolean"
-      }
-    },
-    {
-      "@id": "cb:memberMissing",
-      "@type": "rdf:Property",
-      "rdfs:label": "Member missing",
-      "rdfs:comment": "True when the referenced member could not be found during this read.",
-      "rdfs:range": {
-        "@id": "xsd:boolean"
-      }
-    },
-    {
-      "@id": "cb:memberInvalid",
-      "@type": "rdf:Property",
-      "rdfs:label": "Member content invalid",
-      "rdfs:comment": "True when the current member exists but cannot be hashed under the current readjustment commitment contract.",
-      "rdfs:range": {
-        "@id": "xsd:boolean"
-      }
-    },
-    {
-      "@id": "cb:planHash",
-      "@type": "rdf:Property",
-      "rdfs:label": "Saved plan hash",
-      "rdfs:comment": "Saved aggregate commitment over ordered authored proposal identifiers and member hashes. It does not identify every field in this export.",
-      "rdfs:range": {
-        "@id": "xsd:string"
-      }
-    },
-    {
-      "@id": "cb:supersedes",
-      "@type": "rdf:Property",
-      "rdfs:label": "Supersedes named plan",
-      "rdfs:comment": "An explicit link to the previous named plan revision.",
-      "rdfs:range": {
-        "@id": "cb:NamedPlan"
-      }
-    },
-    {
-      "@id": "cb:supersededBy",
-      "@type": "rdf:Property",
-      "rdfs:label": "Superseded by named plan",
-      "rdfs:comment": "A named plan that explicitly declares this plan as its previous revision.",
-      "rdfs:range": {
-        "@id": "cb:NamedPlan"
-      }
-    },
-    {
       "@id": "cb:DesignGoals",
       "@type": "skos:ConceptScheme",
       "rdfs:label": "DesignGoals"
     },
     {
-      "@id": "cb:DecisionKinds",
+      "@id": "cb:DecisionRules",
       "@type": "skos:ConceptScheme",
-      "rdfs:label": "DecisionKinds"
-    },
-    {
-      "@id": "cb:RecordLifecycles",
-      "@type": "skos:ConceptScheme",
-      "rdfs:label": "RecordLifecycles"
+      "rdfs:label": "DecisionRules"
     },
     {
       "@id": "cb:goal-as-is",
@@ -449,10 +260,10 @@
       }
     },
     {
-      "@id": "cb:goal-reparcellization",
+      "@id": "cb:goal-parcel-layout",
       "@type": "skos:Concept",
-      "skos:prefLabel": "Land readjustment",
-      "skos:definition": "An authored subdivision and allocation arrangement over declared cadastral land.",
+      "skos:prefLabel": "Parcel layout",
+      "skos:definition": "Authored parcel borders over a pool: the pool outline and the output plots, geometry only.",
       "skos:inScheme": {
         "@id": "cb:DesignGoals"
       }
@@ -467,84 +278,30 @@
       }
     },
     {
-      "@id": "cb:kind-owner-deal",
+      "@id": "cb:rule-owner-deal",
       "@type": "skos:Concept",
       "skos:prefLabel": "Owner deal",
-      "skos:definition": "Binding proposal path, subject to its applicable terms and approvals; the classification does not prove title or consent.",
+      "skos:definition": "The owners of the input land decide, and the decision binds: the agreement may execute once its rule is satisfied. The classification does not prove title or consent.",
       "skos:inScheme": {
-        "@id": "cb:DecisionKinds"
+        "@id": "cb:DecisionRules"
       }
     },
     {
-      "@id": "cb:kind-owner-vote",
+      "@id": "cb:rule-owner-vote",
       "@type": "skos:Concept",
       "skos:prefLabel": "Owner vote",
-      "skos:definition": "Nonbinding vote addressed to the proposal owner electorate; no money or execution.",
+      "skos:definition": "Nonbinding vote of the owners of the input land; no execution.",
       "skos:inScheme": {
-        "@id": "cb:DecisionKinds"
+        "@id": "cb:DecisionRules"
       }
     },
     {
-      "@id": "cb:kind-community-vote",
+      "@id": "cb:rule-community-vote",
       "@type": "skos:Concept",
       "skos:prefLabel": "Community vote",
-      "skos:definition": "Nonbinding community vote; no money or execution.",
+      "skos:definition": "Nonbinding community vote; no execution.",
       "skos:inScheme": {
-        "@id": "cb:DecisionKinds"
-      }
-    },
-    {
-      "@id": "cb:lifecycle-draft",
-      "@type": "skos:Concept",
-      "skos:prefLabel": "Draft",
-      "skos:definition": "Stored draft state.",
-      "skos:inScheme": {
-        "@id": "cb:RecordLifecycles"
-      }
-    },
-    {
-      "@id": "cb:lifecycle-Active",
-      "@type": "skos:Concept",
-      "skos:prefLabel": "Active",
-      "skos:definition": "Stored active state with no elapsed recorded deadline.",
-      "skos:inScheme": {
-        "@id": "cb:RecordLifecycles"
-      }
-    },
-    {
-      "@id": "cb:lifecycle-Executed",
-      "@type": "skos:Concept",
-      "skos:prefLabel": "Executed",
-      "skos:definition": "Stored execution state; physical realization and independent chain proof are separate.",
-      "skos:inScheme": {
-        "@id": "cb:RecordLifecycles"
-      }
-    },
-    {
-      "@id": "cb:lifecycle-Cancelled",
-      "@type": "skos:Concept",
-      "skos:prefLabel": "Cancelled",
-      "skos:definition": "Stored cancellation state.",
-      "skos:inScheme": {
-        "@id": "cb:RecordLifecycles"
-      }
-    },
-    {
-      "@id": "cb:lifecycle-Expired",
-      "@type": "skos:Concept",
-      "skos:prefLabel": "Expired",
-      "skos:definition": "Stored expiry state or an Active record whose recorded deadline elapsed.",
-      "skos:inScheme": {
-        "@id": "cb:RecordLifecycles"
-      }
-    },
-    {
-      "@id": "cb:lifecycle-Unknown",
-      "@type": "skos:Concept",
-      "skos:prefLabel": "Unknown",
-      "skos:definition": "Missing or unrecognized stored lifecycle; no Active or terminal state is inferred.",
-      "skos:inScheme": {
-        "@id": "cb:RecordLifecycles"
+        "@id": "cb:DecisionRules"
       }
     }
   ]

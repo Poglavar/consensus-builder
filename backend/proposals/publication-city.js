@@ -34,7 +34,7 @@ export function citiesCovering({ lon, lat }) {
 /**
  * Where a new publication of a site anchored at (lon, lat) is filed, and which source binds it.
  * @param {{ city?: string|null, parcelSourceId?: string|null, lon: number, lat: number }} input
- *   `city` normalised (routes/proposals.js normalizeCityCode), used only where no city covers the site.
+ *   `city` normalised (utils/city-code.js normalizeCityCode), used only where no city covers the site.
  * @returns {{ city: string, parcelSourceId: string|null }}
  */
 export function resolvePublicationCity({ city = null, parcelSourceId = null, lon, lat }) {

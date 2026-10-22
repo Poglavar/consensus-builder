@@ -127,24 +127,6 @@ export async function queryCorridorAcquisitionStats(pool, footprintGeoJSON) {
     return computeCorridorAcquisitionStats(rows, { classify: buildOwnershipType });
 }
 
-// Used by POST /proposals: recompute the stats for a road proposal and OVERWRITE the client's copy.
-// Best-effort — returns null (leaving the client value in place) on any failure or non-road input,
-// so it can never fail proposal creation.
-export async function recomputeCorridorStats(pool, proposal) {
-    try {
-        if (!pool || !proposal || !proposal.roadProposal) return null;
-        const footprint = resolveRoadFootprintGeometry(proposal);
-        if (!footprint) return null;
-        const stats = await queryCorridorAcquisitionStats(pool, footprint);
-        // No parcels touched (e.g. a non-Zagreb corridor) → don't clobber the client value.
-        if (!stats.parcelIds.length) return null;
-        return stats;
-    } catch (err) {
-        console.warn('[road-corridor] recompute failed, keeping client stats:', err.message);
-        return null;
-    }
-}
-
 export function setupRoadCorridorRoute(app, pool) {
     // POST /road-corridor/stats { geometry } or { points:[[lng,lat]], width } → acquisition stats.
     app.post('/road-corridor/stats', async (req, res) => {

@@ -87,7 +87,11 @@ describe('the search box moves in place only onto the same parcel data', () => {
 
 describe('city identity in links and storage', () => {
     it('a share link names every configured city so that the boot opens it', () => {
-        const { buildCityQueryParam } = require('../../frontend/js/proposals/server-sync.js');
+        // The link builder is a browser global of proposals/design-sync.js, installed on the window
+        // its browser part is given.
+        const win = { CityConfigManager: manager };
+        require('../../frontend/js/proposals/design-sync.js').browser(win);
+        const { buildCityQueryParam } = win;
         const wrong = cities.filter(city => {
             const value = new URLSearchParams(buildCityQueryParam(city.id)).get('city');
             return manager.resolveCityId(value) !== city.id;
@@ -116,21 +120,5 @@ describe('city identity in links and storage', () => {
         expect(manager.foreignCityFor(null)).toBe(null);
         // explore has no cadastre: a city's record is never explore's, nor explore's a city's
         expect(manager.foreignCityFor('explore')).toBe(current === 'explore' ? null : 'explore');
-    });
-});
-
-describe('minted proposals found on chain', () => {
-    // one contract serves every city and the chain record names no city: a sync adds only this
-    // city's (proposals/storage.js chainProposalBelongsHere)
-    it('belong here only when every parcel is this city\'s, and never without parcels', () => {
-        (0, eval)(readFileSync(new URL('../../frontend/js/proposals/storage.js', import.meta.url), 'utf8'));
-        const belongs = globalThis.chainProposalBelongsHere;
-        const current = manager.getCurrentCityId();
-        const prefix = manager.getCityConfig(current).parcels.idPrefix || (current === 'new_york' ? 'US-NY-' : 'HR-');
-        expect(belongs([`${prefix}1`, `${prefix}2`])).toBe(true);
-        expect(belongs([`${prefix}1`, 'XX-OTHER-9'])).toBe(false);
-        expect(belongs(['XX-OTHER-9'])).toBe(false);
-        expect(belongs([])).toBe(false);
-        expect(belongs(null)).toBe(false);
     });
 });

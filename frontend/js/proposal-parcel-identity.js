@@ -1,4 +1,4 @@
-// Parcel-identity + ownership helpers extracted from proposal-manager.js. Still browser globals
+// Parcel-identity helpers extracted from proposal-manager.js. Still browser globals
 // (classic script — top-level `function` declarations), required directly in node tests.
 
 function _buildSyntheticToken(value, fallback = 'proposal') {
@@ -71,122 +71,6 @@ function _ensureParcelIdOnProperties(props, parcelId) {
     return resolved;
 }
 
-function _normalizeOwnerRecord(owner, index, fallbackName) {
-    const baseName = owner?.ownerLabel || owner?.name || owner?.possessorName || fallbackName || `Owner ${index + 1}`;
-    const pct = Number.isFinite(owner?.percentageShare)
-        ? owner.percentageShare
-        : (Number.isFinite(owner?.percentage) ? owner.percentage : null);
-    const shareText = owner?.actualShareText
-        || owner?.ownership
-        || owner?.shareText
-        || (pct !== null ? `${pct}%` : '100%');
-
-    return {
-        name: baseName,
-        ownerLabel: baseName,
-        percentageShare: pct !== null ? pct : undefined,
-        actualShareText: shareText,
-        shareDetail: owner?.shareDetail || owner?.detail || ''
-    };
-}
-
-function _extractOwnersFromProperties(props) {
-    if (!props) return null;
-    if (Array.isArray(props?.ownershipDetails?.owners) && props.ownershipDetails.owners.length) {
-        return props.ownershipDetails.owners;
-    }
-    if (Array.isArray(props?.ownershipList) && props.ownershipList.length) {
-        return props.ownershipList;
-    }
-    return null;
-}
-
-function _readOwnersFromCache(parcelId) {
-    if (!parcelId) return null;
-    try {
-        const cache = (typeof window !== 'undefined' && window.ParcelsOwnershipUi && window.ParcelsOwnershipUi.parcelOwnerDataCache)
-            ? window.ParcelsOwnershipUi.parcelOwnerDataCache
-            : null;
-        if (cache && typeof cache.get === 'function') {
-            const owners = cache.get(parcelId);
-            return Array.isArray(owners) && owners.length ? owners : null;
-        }
-    } catch (_) { /* ignore */ }
-    return null;
-}
-
-function _getOwnershipTypeForOwners(owners) {
-    if (!Array.isArray(owners) || owners.length === 0) return undefined;
-    const classify = (typeof getOwnershipType === 'function')
-        ? getOwnershipType
-        : (typeof window !== 'undefined' && typeof window.getOwnershipType === 'function'
-            ? window.getOwnershipType
-            : null);
-    if (!classify) return undefined;
-    const types = owners.map(owner => classify(owner)).filter(Boolean);
-    if (!types.length) return undefined;
-    const unique = Array.from(new Set(types));
-    return unique.length === 1 ? unique[0] : 'mixed';
-}
-
-function _assignOwnershipDetails(targetFeature, options = {}) {
-    if (!targetFeature || typeof targetFeature !== 'object') return;
-    const props = targetFeature.properties || (targetFeature.properties = {});
-    const {
-        parentFeature = null,
-        defaultOwnerName = null,
-        forceDefaultOwner = false,
-        overwriteExisting = false
-    } = options;
-
-    const existingOwners = Array.isArray(props?.ownershipDetails?.owners) ? props.ownershipDetails.owners : null;
-    const hasExisting = existingOwners && existingOwners.length > 0;
-    if (hasExisting && !overwriteExisting && !forceDefaultOwner) {
-        const normalizedOwners = existingOwners.map((owner, index) => _normalizeOwnerRecord(owner, index, defaultOwnerName));
-        props.ownershipDetails = Object.assign({}, props.ownershipDetails, { owners: normalizedOwners });
-        const existingType = _getOwnershipTypeForOwners(normalizedOwners);
-        if (existingType && !props.ownershipType) {
-            props.ownershipType = existingType;
-        }
-        return;
-    }
-
-    let ownersSource = null;
-
-    if (!forceDefaultOwner) {
-        ownersSource = _extractOwnersFromProperties(props);
-        if ((!ownersSource || ownersSource.length === 0) && parentFeature) {
-            const parentProps = parentFeature.properties || parentFeature;
-            ownersSource = _extractOwnersFromProperties(parentProps);
-            if (!ownersSource || ownersSource.length === 0) {
-                const inputParcelId = _getParcelIdFromFeature(parentFeature) || _getParcelIdFromProperties(parentProps);
-                ownersSource = _readOwnersFromCache(inputParcelId);
-            }
-        }
-    }
-
-    let owners = ownersSource;
-
-    if ((!owners || owners.length === 0) && defaultOwnerName) {
-        owners = [{
-            name: defaultOwnerName,
-            ownerLabel: defaultOwnerName,
-            percentageShare: 100,
-            actualShareText: '100%'
-        }];
-    }
-
-    if (!owners || owners.length === 0) return;
-
-    const normalizedOwners = owners.map((owner, index) => _normalizeOwnerRecord(owner, index, defaultOwnerName));
-    props.ownershipDetails = Object.assign({}, props.ownershipDetails, { owners: normalizedOwners });
-
-    const ownershipType = _getOwnershipTypeForOwners(normalizedOwners);
-    if (ownershipType && !props.ownershipType) {
-        props.ownershipType = ownershipType;
-    }
-}
-
 // In the browser these are top-level globals resolved by sibling classic scripts. Under node they
 // are only module-scoped, so publish them onto globalThis to mirror the browser — this is how the
 // still-in-proposal-manager.js ProposalManager literal and methods see them by their bare names.
@@ -198,12 +82,7 @@ if (typeof module !== 'undefined' && module.exports) {
         _normalizeParcelId,
         _getParcelIdFromProperties,
         _getParcelIdFromFeature,
-        _ensureParcelIdOnProperties,
-        _normalizeOwnerRecord,
-        _extractOwnersFromProperties,
-        _readOwnersFromCache,
-        _getOwnershipTypeForOwners,
-        _assignOwnershipDetails
+        _ensureParcelIdOnProperties
     });
     module.exports = { _buildSyntheticToken, _composeSyntheticParcelId, _composeSyntheticParcelNumber };
 }

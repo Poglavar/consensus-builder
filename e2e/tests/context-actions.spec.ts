@@ -55,22 +55,22 @@ test.describe('Map context actions @features', () => {
     await expect(page.locator('#site-panel')).toBeHidden();
   });
 
-  test('the parcel menu and the ground menu are never open together', async ({ mockApi: page }) => {
+  test('the click stack shows either the parcel or the bare ground, never both', async ({ mockApi: page }) => {
     await openCity(page);
     await ensureSecondParcel(page);
-    const parcelMenu = page.locator('#parcel-menu');
-    const groundMenu = page.locator('#ground-menu');
+    const parcelMenu = page.locator('#click-stack .click-stack__section[data-kind="parcels"]');
+    const groundMenu = page.locator('#click-stack .click-stack__section[data-kind="ground"]');
     await clickMapPoint(page, 15.9829, 45.80025);
     await expect(parcelMenu).toBeVisible();
-    // Bare ground next to it: the ground menu replaces the parcel menu, which deselects as on Esc.
+    // Bare ground next to it: the stack shows that spot, the ground section instead of the parcel.
     await clickMapPoint(page, 15.98255, 45.80025);
     await expect(groundMenu).toBeVisible();
-    await expect(parcelMenu).toBeHidden();
-    // And back: a parcel click replaces the ground menu. The menu opens over the first parcel, so
-    // click the centre of a loaded parcel it leaves uncovered.
+    await expect(parcelMenu).toHaveCount(0);
+    // And back: a parcel click replaces the ground section. Click the centre of a loaded parcel
+    // the docked stack leaves uncovered.
     const free = await page.evaluate(() => {
       const w = window as any;
-      const menu = document.getElementById('ground-menu')!.getBoundingClientRect();
+      const menu = document.getElementById('click-stack')!.getBoundingClientRect();
       const box = w.map.getContainer().getBoundingClientRect();
       for (const feature of w.LiveParcelFabric.queryBounds(w.map.getBounds())) {
         const centre = w.turf.centerOfMass(feature).geometry.coordinates;
@@ -81,19 +81,19 @@ test.describe('Map context actions @features', () => {
       }
       return null;
     });
-    expect(free, 'a loaded parcel outside the ground menu').toBeTruthy();
+    expect(free, 'a loaded parcel outside the click stack').toBeTruthy();
     await page.mouse.click(free!.x, free!.y);
     await expect(parcelMenu).toBeVisible();
-    await expect(groundMenu).toBeHidden();
+    await expect(groundMenu).toHaveCount(0);
   });
 
-  test('bare-ground menu exposes transport actions and real station placement can be cancelled', async ({ mockApi: page }) => {
+  test('the bare-ground section exposes transport actions and real station placement can be cancelled', async ({ mockApi: page }) => {
     await openCity(page);
     await ensureSecondParcel(page);
     // The sample parcels leave a narrow, loaded unsurveyed gap between their boundaries.
     await clickMapPoint(page, 15.98255, 45.80025);
-    const menu = page.locator('#ground-menu');
-    await expect(menu).toBeVisible();
+    const menu = page.locator('#click-stack');
+    await expect(menu.locator('.click-stack__section[data-kind="ground"]')).toBeVisible();
     for (const command of ['ground.road', 'ground.track', 'ground.busStation', 'ground.tramStation']) {
       await expect(menu.locator(`[data-command="${command}"]`)).toBeVisible();
     }
@@ -105,9 +105,9 @@ test.describe('Map context actions @features', () => {
     await expect(page.locator('#road-info-panel')).toBeHidden();
 
     // The Tools sheet's station buttons went with the sheet (fbe3758d); station placement starts
-    // from the same bare-ground menu, and its own editor toolbar carries the Cancel.
+    // from the same bare-ground section, and its own editor toolbar carries the Cancel.
     await clickMapPoint(page, 15.98255, 45.80025);
-    await expect(menu).toBeVisible();
+    await expect(menu.locator('.click-stack__section[data-kind="ground"]')).toBeVisible();
     await menu.locator('[data-command="ground.busStation"]').click();
     const toolbar = page.locator('#station-placement-toolbar');
     await expect(toolbar).toBeVisible();

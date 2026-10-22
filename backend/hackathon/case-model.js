@@ -1,3 +1,6 @@
+// The judge's case graph of one agreement (routes/hackathon-cases.js): its parcel set, the stages from
+// minting through support, forecast, decision, public evidence, resolution and settlement, and the
+// activity, actors and transactions behind them. Pure.
 import { buildParcelSet } from '../proposals/parcel-set.js';
 
 const TERMINAL_LIFECYCLES = new Set(['executed', 'cancelled', 'expired']);
@@ -23,10 +26,10 @@ function accountLink(address) {
     return address ? `https://explorer.solana.com/address/${encodeURIComponent(address)}?cluster=devnet` : null;
 }
 
-export function parcelSetIdentity(proposal = {}) {
+export function parcelSetIdentity(agreement = {}) {
     return buildParcelSet({
-        parcelIds: proposal.cadastreParcelIds || [],
-        jurisdiction: proposal.city || null
+        parcelIds: agreement.inputParcelIds || [],
+        jurisdiction: agreement.city || null
     });
 }
 
@@ -61,27 +64,27 @@ function forecastStage(market) {
     if (!market || market.state === 'unavailable') {
         return stage('forecast', 'Forecast', 'unavailable', market?.error || 'On-chain market state is unavailable.');
     }
-    if (!market.exists) return stage('forecast', 'Forecast', 'pending', 'No proposal market exists yet.');
+    if (!market.exists) return stage('forecast', 'Forecast', 'pending', 'No market exists for this agreement yet.');
     const yes = number(market.yesUsdc);
     const no = number(market.noUsdc);
     const detail = `${yes} devnet USDC YES; ${no} devnet USDC NO.`;
     return stage('forecast', 'Forecast', yes > 0 && no > 0 ? 'complete' : yes > 0 || no > 0 ? 'partial' : 'pending', detail, [accountLink(market.account)]);
 }
 
-function decisionStage(proposal, activity) {
-    const lifecycle = String(proposal.lifecycleStatus || 'Active');
-    const terminal = TERMINAL_LIFECYCLES.has(lifecycle.toLowerCase());
+function decisionStage(agreement, activity) {
+    const status = String(agreement.status || 'active');
+    const terminal = TERMINAL_LIFECYCLES.has(status.toLowerCase());
     const evidence = activity
-        .filter(event => ['accept', 'execute', 'cancel', 'expire'].includes(event.action?.type))
+        .filter(event => ['attest', 'execute', 'cancel', 'expire'].includes(event.action?.type))
         .map(event => transactionLink(event.transaction));
-    return stage('decision', 'Owner or lifecycle decision', terminal ? 'complete' : 'pending',
-        terminal ? `Proposal lifecycle is ${lifecycle}.` : `Proposal lifecycle is ${lifecycle}; no terminal decision has been recorded.`, evidence);
+    return stage('decision', 'Decision and lifecycle', terminal ? 'complete' : 'pending',
+        terminal ? `The agreement is ${status}.` : `The agreement is ${status}; no terminal decision has been recorded.`, evidence);
 }
 
 function evidenceStage(oracleEvents) {
     if (!Array.isArray(oracleEvents)) return stage('evidence', 'Public evidence', 'unavailable', 'Oracle event state is unavailable.');
     const event = oracleEvents[0];
-    if (!event) return stage('evidence', 'Public evidence', 'pending', 'No source-hashed terminal event exists for this proposal yet.');
+    if (!event) return stage('evidence', 'Public evidence', 'pending', 'No source-hashed terminal event exists for this agreement yet.');
     return stage('evidence', 'Public evidence', 'complete', `${event.eventType} recorded outcome ${event.outcome}.`, [
         event.source?.transactionUrl || transactionLink(event.source?.transaction),
         event.source?.url
@@ -109,21 +112,21 @@ function settlementStage(market, activity) {
     return stage('settlement', 'Payout or refund', 'pending', 'The market is resolved, but no claim or refund activity is recorded yet.');
 }
 
-export function buildHackathonCase({ proposal, activity = [], support = null, market = null, oracleEvents = [], links = {}, generatedAt } = {}) {
-    if (!proposal?.proposalId) throw new Error('proposal with proposalId is required');
-    const parcelSet = parcelSetIdentity(proposal);
-    const proposalAccount = proposal.onchain?.proposalId || null;
-    const proposalEvidence = unique([
-        proposal.onchain?.transactionHash,
-        ...activity.filter(event => ['create', 'publish'].includes(event.action?.type)).map(event => event.transaction)
+export function buildHackathonCase({ agreement, activity = [], support = null, market = null, oracleEvents = [], links = {}, generatedAt } = {}) {
+    if (!agreement?.cid) throw new Error('an agreement with its cid is required');
+    const parcelSet = parcelSetIdentity(agreement);
+    const minted = Boolean(agreement.onchain?.account);
+    const mintEvidence = unique([
+        agreement.onchain?.signature,
+        ...activity.filter(event => ['mint', 'fund'].includes(event.action?.type)).map(event => event.transaction)
     ]).map(transactionLink);
     const stages = [
-        stage('proposal', 'Paid proposal', proposalAccount ? 'complete' : 'partial', proposalAccount
-            ? `Proposal anchors ${parcelSet.parcelCount} cadastral parcel${parcelSet.parcelCount === 1 ? '' : 's'} to a Solana account.`
-            : 'The public proposal exists, but no Solana proposal account is attached.', proposalEvidence),
+        stage('agreement', 'Minted agreement', minted ? 'complete' : 'partial', minted
+            ? `The agreement settles ${parcelSet.parcelCount} cadastral parcel${parcelSet.parcelCount === 1 ? '' : 's'} and is minted as Solana account ${agreement.onchain.account}.`
+            : 'The agreement is published, but its Solana account is not recorded yet.', [...mintEvidence, accountLink(agreement.onchain?.account)]),
         supportStage(support, activity),
         forecastStage(market),
-        decisionStage(proposal, activity),
+        decisionStage(agreement, activity),
         evidenceStage(oracleEvents),
         resolutionStage(market, oracleEvents),
         settlementStage(market, activity)
@@ -135,20 +138,20 @@ export function buildHackathonCase({ proposal, activity = [], support = null, ma
         .map(event => [event.actor.wallet || event.actor.id, event.actor])).values());
     const complete = stages.filter(item => item.state === 'complete').length;
     return {
-        version: 1,
-        id: proposal.proposalId,
+        version: 2,
+        id: agreement.cid,
         generatedAt: generatedAt || new Date().toISOString(),
         state: complete === stages.length ? 'complete' : complete > 1 ? 'in_progress' : 'early',
-        proposal: {
-            id: proposal.proposalId,
-            databaseId: proposal.id ?? null,
-            name: proposal.name || proposal.title || proposal.proposalId,
-            city: proposal.city || null,
-            author: proposal.author || null,
-            lifecycleStatus: proposal.lifecycleStatus || null,
-            createdAt: proposal.createdAt || null,
-            account: proposalAccount,
-            agent: proposal.agent || null
+        agreement: {
+            cid: agreement.cid,
+            name: agreement.title || agreement.cid,
+            city: agreement.city || null,
+            author: agreement.author || null,
+            sponsor: agreement.sponsor || null,
+            status: agreement.status || null,
+            createdAt: agreement.createdAt || null,
+            deadline: agreement.deadline || null,
+            account: agreement.account || null
         },
         parcelSet,
         branches: {
@@ -158,9 +161,9 @@ export function buildHackathonCase({ proposal, activity = [], support = null, ma
         },
         stages,
         relationships: [
-            { from: 'proposal', to: 'support', kind: 'can_progress_in_parallel' },
-            { from: 'proposal', to: 'forecast', kind: 'can_progress_in_parallel' },
-            { from: 'proposal', to: 'decision', kind: 'can_progress_in_parallel' },
+            { from: 'agreement', to: 'support', kind: 'can_progress_in_parallel' },
+            { from: 'agreement', to: 'forecast', kind: 'can_progress_in_parallel' },
+            { from: 'agreement', to: 'decision', kind: 'can_progress_in_parallel' },
             { from: 'decision', to: 'evidence', kind: 'materializes' },
             { from: 'forecast', to: 'resolution', kind: 'awaits' },
             { from: 'evidence', to: 'resolution', kind: 'authorizes' },

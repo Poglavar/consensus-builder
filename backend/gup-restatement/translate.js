@@ -1,7 +1,23 @@
 // Translate cached GUP massing into existing CB proposal primitives, retaining every refusal.
 import { createHash } from 'node:crypto';
 import * as turf from '@turf/turf';
-import { canonicalSeedRecord } from '../scripts/lib/canonical-seed-record.mjs';
+import { stripLocalProposalState } from '../proposals/archive-state.js';
+import { assertCanonicalProposalRow } from '../proposals/serializer.js';
+
+// The proposal-row projection this translator's records pass (the proposal read path's own), proved
+// readable before anything uses it. The design/agreement rework removed the shared seed helper and
+// the proposal write path; the GUP export is to be ported to scripts/lib/restatement-publish.mjs
+// (README.md), and until then its records stay proposal rows.
+function canonicalSeedRecord(proposal) {
+    const record = stripLocalProposalState(proposal);
+    try {
+        assertCanonicalProposalRow({ cadastre_parcel_ids: record.cadastreParcelIds, proposal_data: record,
+            building_proposal: record.buildingProposal ?? null });
+    } catch (error) {
+        throw new Error(`GUP proposal ${record.proposalId} would be unreadable: ${error.detail || error.message}`);
+    }
+    return record;
+}
 
 export const TRANSLATOR_VERSION = 'gup-spatial-v2';
 const finite = value => typeof value === 'number' && Number.isFinite(value);

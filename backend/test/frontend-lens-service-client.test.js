@@ -1,6 +1,7 @@
 // frontend/js/lens-service-client.js against the real reference lens member (backend/lens/) served
 // on an ephemeral port: the browser owner flow (challenge -> checked message -> signature ->
-// ownership), the x402 stop with the advertised price, coverage collection and operator verdicts.
+// ownership), the x402 stop with the advertised price, coverage collection and the operator's
+// agreement decision (POST /lens/agreements/:cid/decision, decided from the member's agreement index).
 import { describe, it, expect, afterEach } from 'vitest';
 import { createRequire } from 'node:module';
 import { generateKeyPairSync, sign } from 'node:crypto';
@@ -11,15 +12,20 @@ import { createFakeIssuer } from '../lens/issuers.js';
 import { createMemoryStore } from '../lens/store.js';
 import { createLensPricing } from '../lens/pricing.js';
 import { createLensMemberApp } from '../lens/server.js';
+import { cidOfObject } from '../cid.js';
+import { serializeAgreementRow } from '../routes/agreements.js';
+import { agreementRow } from './helpers/content-fixtures.js';
+import { MEMBER, NOW as DECIDED, agreement, agreementContent, at, decision, wallets } from './helpers/approval-decisions.js';
 
 const require = createRequire(import.meta.url);
 const client = require('../../frontend/js/lens-service-client.js');
+const LensCore = require('../../frontend/js/lens-core.js');
 
 const NOW = 1790000000;
 const clock = { nowSeconds: () => NOW };
 const AUTHORITY = 'AMbsiP9F8YY2y8n9uFdqtw7yNZZHvTWFEWSQGHKtmkoQ';
 const OTHER_MEMBER = new PublicKey(Uint8Array.from({ length: 32 }, () => 5)).toBase58();
-const PROPOSAL = 'Gsvt6nMhsvfrEDgvcqZDzPKZhhqACFEi3mueMxQNQ6UT';
+const SPONSOR = 'Gsvt6nMhsvfrEDgvcqZDzPKZhhqACFEi3mueMxQNQ6UT';
 const TOKEN = 'operator-secret';
 
 function wallet() {
@@ -38,20 +44,20 @@ afterEach(async () => {
     await Promise.all(servers.splice(0).map(server => new Promise(resolve => server.close(resolve))));
 });
 
-async function serve({ pricing } = {}) {
+async function serve({ pricing, authority = AUTHORITY, agreements = null, memberClock = clock } = {}) {
     const member = createLensMember({
-        authority: AUTHORITY,
-        issuer: createFakeIssuer({ authority: AUTHORITY, clock }),
+        authority,
+        issuer: createFakeIssuer({ authority, clock: memberClock }),
         store: createMemoryStore(),
         identity: createDevnetRegistryIdentity({
             rows: [{ parcelUid: 'HR-335550-1/1', owner: alice.address, ownerCount: 1, establishedAt: '2026-06-01T00:00:00Z' }],
-            clock,
-            authority: AUTHORITY
+            clock: memberClock,
+            authority
         }),
-        clock,
+        clock: memberClock,
         dryRun: !pricing
     });
-    const app = createLensMemberApp({ member, pricing: pricing ?? createLensPricing({ dryRun: true }), operatorToken: TOKEN });
+    const app = createLensMemberApp({ member, pricing: pricing ?? createLensPricing({ dryRun: true }), operatorToken: TOKEN, agreements, clock: memberClock });
     const server = await new Promise(resolve => { const s = app.listen(0, () => resolve(s)); });
     servers.push(server);
     return `http://127.0.0.1:${server.address().port}`;
@@ -121,7 +127,7 @@ describe('coverage collection', () => {
     });
 });
 
-describe('directory and operator verdicts', () => {
+describe('directory and the operator\'s agreement decision', () => {
     it('normalises GET /lenses/members from a fake backend', async () => {
         const fetchImpl = async url => {
             expect(url).toBe('http://backend.test/lenses/members');
@@ -131,13 +137,36 @@ describe('directory and operator verdicts', () => {
         expect(result.members).toEqual([{ key: AUTHORITY, kind: null, name: 'Notary 01', description: null, coverage: { ownership: 2, parcels: 0, executed: 0 }, serviceUrl: null }]);
     });
 
-    it('posts a verdict only with the operator token', async () => {
-        const serviceUrl = await serve();
-        const body = { proposalAccount: PROPOSAL, verdict: 'expired', sourceObservedAt: NOW - 60 };
-        const refused = await client.postVerdict({ serviceUrl, token: 'wrong', body });
+    it('asks for an agreement decision only with the operator token, and reads the member\'s answer', async () => {
+        // The helper's owner deal, sponsored, with the helper's member as its lens; every owner approved it.
+        const content = agreementContent({ sponsor: SPONSOR, deadline: at(7 * 86400) });
+        const cid = cidOfObject(content);
+        const item = agreement({ agreementCid: cid });
+        const receipts = [await decision(wallets.a, 'owner-a', { item, offset: 1 }), await decision(wallets.b, 'owner-b', { item, offset: 2 }),
+            await decision(wallets.c, 'owner-c', { item, offset: 3 })];
+        const index = { receipts };
+        const row = serializeAgreementRow(agreementRow(content));
+        const serviceUrl = await serve({ authority: MEMBER, memberClock: { nowSeconds: () => DECIDED + 30 },
+            agreements: { load: async asked => (asked === cid ? row : null), decisions: async () => index.receipts } });
+
+        const refused = await client.postAgreementDecision({ serviceUrl, token: 'wrong', cid });
         expect(refused.outcome).toMatchObject({ kind: 'refused', status: 401, code: 'operator_only' });
-        const accepted = await client.postVerdict({ serviceUrl, token: TOKEN, body });
-        expect(accepted.outcome.kind).toBe('ok');
-        expect(accepted.body).toMatchObject({ kind: 'verdict', proposalAccount: PROPOSAL, reused: false });
+        // Owner D has not decided: the rule is not met, and the answer carries the tally.
+        const notMet = await client.postAgreementDecision({ serviceUrl, token: TOKEN, cid });
+        expect(notMet.outcome).toMatchObject({ kind: 'refused', status: 409, code: 'rule_not_met' });
+        expect(LensCore.describeDecisionTally(notMet.body.tally)).toMatchObject({ passed: false, acceptedOwners: 3, totalOwners: 4 });
+        // The CID travels as one path segment, so a malformed one is refused, not routed elsewhere.
+        expect((await client.postAgreementDecision({ serviceUrl, token: TOKEN, cid: 'not/a-cid' })).outcome).toMatchObject({ status: 400, code: 'bad_request' });
+        const unknown = await client.postAgreementDecision({ serviceUrl, token: TOKEN, cid: cidOfObject({ schema: 'agreement/v1', title: 'unknown' }) });
+        expect(unknown.outcome).toMatchObject({ status: 404, code: 'agreement_not_found' });
+
+        index.receipts = [...receipts, await decision(wallets.d, 'owner-d', { item, offset: 4 })];
+        const issued = await client.postAgreementDecision({ serviceUrl, token: TOKEN, cid });
+        expect(issued.outcome.kind).toBe('ok');
+        expect(LensCore.readDecisionAnswer(issued.body, cid)).toMatchObject({ ok: true, decision: 'satisfied', reused: false, counted: 4, tally: { passed: true } });
+        const listed = await client.fetchAttestations({ serviceUrl, filter: { kind: 'decision', agreementCid: cid } });
+        expect(listed.attestations.map(att => att.address)).toEqual([issued.body.address]);
+        const again = await client.postAgreementDecision({ serviceUrl, token: TOKEN, cid });
+        expect(LensCore.readDecisionAnswer(again.body, cid)).toMatchObject({ ok: true, address: issued.body.address, reused: true });
     });
 });

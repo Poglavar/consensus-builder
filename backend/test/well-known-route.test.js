@@ -1,12 +1,12 @@
 // Route tests for the root discovery documents: x402 manifest, security.txt, llms.txt, OpenAPI,
 // the /agents.json alias of /docs/agents.json, and robots.txt.
 
-import fs from 'node:fs';
 import express from 'express';
 import request from 'supertest';
 import { describe, expect, it } from 'vitest';
 import { setupWellKnownRoutes, SECURITY_CONTACT } from '../routes/well-known.js';
 import { setupDocsRoute } from '../routes/docs.js';
+import { AGREEMENT_PROGRAM_ID } from '../agreements/onchain.js';
 
 const env = {
     PUBLIC_API_BASE_URL: 'https://api.example.test/',
@@ -25,30 +25,33 @@ function appFor(options = {}) {
 }
 
 describe('GET /.well-known/x402', () => {
-    it('lists both paid resources in x402scan shape', async () => {
+    // The paid proposal route went with the server's proposal writes (plan-design-agreement.md M2):
+    // oracle facts are the one paid resource, whatever the proposal price is still set to.
+    it('lists the paid oracle-fact resource in x402scan shape', async () => {
         const res = await request(appFor()).get('/.well-known/x402');
         expect(res.status).toBe(200);
         expect(res.body).toMatchObject({
             version: 1,
             x402Version: 2,
-            resources: ['https://api.example.test/agent/proposals', 'https://api.example.test/agent/oracle/facts']
+            resources: ['https://api.example.test/agent/oracle/facts']
         });
         expect(res.body.endpoints).toEqual([
-            expect.objectContaining({ url: 'https://api.example.test/agent/proposals', method: 'POST', price: '$0.05', network: 'solana:devnet' }),
-            expect.objectContaining({ url: 'https://api.example.test/agent/oracle/facts', method: 'GET', price: '$0.01' })
+            expect.objectContaining({ url: 'https://api.example.test/agent/oracle/facts', method: 'GET', price: '$0.01', network: 'solana:devnet' })
         ]);
+        expect(JSON.stringify(res.body)).not.toContain('/agent/proposals');
     });
 
     it('omits a resource whose x402 config is incomplete', async () => {
         const partial = { ...env, X402_PRICE_ORACLE_FACT: '' };
         const res = await request(appFor({ env: partial })).get('/.well-known/x402');
-        expect(res.body.resources).toEqual(['https://api.example.test/agent/proposals']);
+        expect(res.body.resources).toEqual([]);
+        expect(res.body.endpoints).toEqual([]);
     });
 
     it('never leaks CDP credentials', async () => {
         const cdp = { ...env, X402_FACILITATOR_URL: 'https://api.cdp.coinbase.com/platform/v2/x402', CDP_API_KEY_ID: 'kid', CDP_API_KEY_SECRET: 'sekret' };
         const res = await request(appFor({ env: cdp })).get('/.well-known/x402');
-        expect(res.body.resources).toHaveLength(2);
+        expect(res.body.resources).toHaveLength(1);
         expect(JSON.stringify(res.body)).not.toContain('sekret');
     });
 });
@@ -71,39 +74,19 @@ describe('GET /llms.txt', () => {
         expect(res.headers['content-type']).toMatch(/^text\/markdown/);
         expect(res.text.startsWith('# Urban Game Theory API\n')).toBe(true);
         expect(res.text).toContain('(https://api.example.test/docs/agents)');
-        expect(res.text).toContain('POST https://api.example.test/agent/proposals');
+        expect(res.text).toContain('[GET https://api.example.test/agent/oracle/facts]');
+        expect(res.text).not.toContain('/agent/proposals');
         expect(res.text).toContain('https://api.example.test/agent/lenses/members');
+        // It describes designs and agreements, not proposals (plan-design-agreement.md M3).
+        expect(res.text).toContain('design/v1 and agreement/v1 JSON Schemas');
+        expect(res.text).toContain("pick an agreement's lens");
+        expect(res.text).toContain("fact about an agreement account's terminal state");
+        expect(res.text).not.toMatch(/proposal/i);
     });
 });
 
 describe('GET /openapi.json', () => {
-    it('is OpenAPI 3.1 with the recipe schema as the paid request body', async () => {
-        const res = await request(appFor()).get('/openapi.json');
-        expect(res.status).toBe(200);
-        expect(res.body.openapi).toBe('3.1.0');
-        expect(res.body.servers).toEqual([{ url: 'https://api.example.test' }]);
-        const post = res.body.paths['/agent/proposals'].post;
-        const schema = post.requestBody.content['application/json'].schema;
-        expect(schema.anyOf.map(branch => branch.required[0])).toEqual(['cadastreParcelIds', 'site']);
-        expect(schema.$schema).toBeUndefined();
-        expect(post['x-x402']).toEqual({ price: '$0.05', network: 'solana:devnet', payTo: env.X402_PAY_TO });
-        expect(post.responses[402]).toBeDefined();
-    });
-
-    it('documents the site binding read and the recipe site/tolerance fields', async () => {
-        const res = await request(appFor()).get('/openapi.json');
-        const binding = res.body.paths['/agent/binding'].post;
-        expect(binding.requestBody.content['application/json'].schema.required).toEqual(['site']);
-        const answer = binding.responses[200].content['application/json'].schema.properties.binding.properties;
-        expect(answer.coverage.enum).toEqual(['complete', 'partial', 'none', 'unknown']);
-        expect(answer.parcels.items.properties).toHaveProperty('intrusionM');
-        expect(binding['x-x402']).toBeUndefined();
-        const recipe = res.body.paths['/agent/proposals'].post.requestBody.content['application/json'].schema.properties;
-        expect(recipe).toHaveProperty('site');
-        expect(recipe.toleranceM.maximum).toBe(1);
-    });
-
-    it('lists the lens directory and schema endpoints and the recipe lens field', async () => {
+    it('lists the lens directory and schema endpoints, and none of the removed publication routes', async () => {
         const res = await request(appFor()).get('/openapi.json');
         for (const path of ['/lenses/members', '/agent/lenses/members', '/lenses/schemas']) {
             expect(res.body.paths[path]?.get, path).toBeDefined();
@@ -114,9 +97,34 @@ describe('GET /openapi.json', () => {
         expect(item.required).toContain('serviceUrl');
         expect(item.properties.serviceUrl.type).toEqual(['string', 'null']);
         expect(item.properties.kind.enum).toEqual(['owner-consent', 'court', 'permit', 'imagery', 'osm', 'lifecycle', null]);
-        const lens = res.body.paths['/agent/proposals'].post.requestBody.content['application/json'].schema.properties.lens;
-        expect(lens).toMatchObject({ type: 'array', minItems: 1 });
-        expect(lens.description).toMatch(/immutable/);
+        expect(res.body.paths['/agent/oracle/facts']?.get).toBeDefined();
+        for (const path of ['/agent/proposals', '/agent/binding', '/proposals/{id}/binding-drift', '/proposals/{id}']) {
+            expect(res.body.paths[path], path).toBeUndefined();
+        }
+    });
+
+    it('lists the design and agreement publish routes, the onchain record and the market recipe', async () => {
+        const { body } = await request(appFor()).get('/openapi.json');
+        for (const [path, method] of [
+            ['/designs/binding', 'post'], ['/pins', 'post'], ['/designs', 'get'], ['/designs', 'post'], ['/designs/{cid}', 'get'],
+            ['/agreements', 'get'], ['/agreements', 'post'], ['/agreements/{cid}', 'get'], ['/agreements/{cid}/decisions', 'post'],
+            ['/agreements/{cid}/onchain', 'post'], ['/oracle/recipes/agreement-execution-v1', 'get']
+        ]) {
+            expect(body.paths[path]?.[method], `${method} ${path}`).toBeDefined();
+        }
+        const onchain = body.paths['/agreements/{cid}/onchain'].post;
+        expect(onchain.requestBody.content['application/json'].schema).toMatchObject({
+            required: ['chain', 'cluster', 'account'],
+            properties: { chain: { enum: ['solana'] }, cluster: { enum: ['devnet'] } }
+        });
+        expect(Object.keys(onchain.responses).sort()).toEqual(['200', '201', '400', '404', '409', '422']);
+        expect(onchain.responses[422].description).toMatch(/not-binding/);
+        expect(onchain.responses[422].description).toMatch(/no-sponsor/);
+        const recipe = body.paths['/oracle/recipes/agreement-execution-v1'].get;
+        expect(recipe.parameters.map(parameter => [parameter.name, parameter.required])).toEqual([['agreement', true], ['market', false]]);
+        expect(body.paths['/oracle/events'].get.parameters.find(parameter => parameter.name === 'type').schema.enum)
+            .toEqual(['agreement_lifecycle', 'agreement_executed']);
+        expect(body.paths['/agent/discovery'].get.parameters[0].schema.enum).toEqual(['oracle-facts']);
     });
 });
 
@@ -126,19 +134,20 @@ describe('GET /agents.json', () => {
         const alias = await request(app).get('/agents.json');
         const canonical = await request(app).get('/docs/agents.json');
         expect(alias.status).toBe(200);
-        expect(alias.body.schema.properties).toHaveProperty('site');
+        expect(alias.body.schema.$defs.design.properties).toHaveProperty('site');
         expect(alias.body).toEqual(canonical.body);
     });
 
-    it('names the program an agent mints its proposal with, and the body field that links to it', async () => {
-        const programs = JSON.parse(fs.readFileSync(new URL('../../frontend/contracts/addresses.json', import.meta.url), 'utf8'))['solana-devnet'];
+    it('names the program an agent mints its agreement with, and the route that records the account', async () => {
         const res = await request(appFor()).get('/agents.json');
-        expect(res.body.proposalAccount).toMatchObject({
-            programId: programs.ProposalNFT,
-            mint: { instruction: 'mint_and_fund' },
-            recordLink: { field: 'onchain', contractAddress: programs.ProposalNFT, chainId: 'solana-devnet' }
+        expect(res.body.agreementProgram).toMatchObject({
+            programId: AGREEMENT_PROGRAM_ID,
+            cluster: 'devnet',
+            instructions: { create: { args: expect.arrayContaining(['cid: string', 'lens: pubkey']) } }
         });
-        expect(res.body.parcelAccount.programId).toBe(programs.ParcelNFT);
+        expect(res.body.endpoints.agreementOnchain).toBe('https://api.example.test/agreements/{cid}/onchain');
+        expect(res.body).not.toHaveProperty('proposalAccount');
+        expect(res.body).not.toHaveProperty('parcelAccount');
     });
 });
 

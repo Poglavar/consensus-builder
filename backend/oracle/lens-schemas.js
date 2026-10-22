@@ -1,9 +1,12 @@
-// The two lens-model SAS schemas (ParcelOwnership-v1, ProposalVerdict-v1) and the milestone markets' MarketEvidence-v1 (lmsr-market.md) as data, with their borsh payload codec, a generic SAS attestation account parser, payload
-// validators and the sas-lib credential/schema PDA derivations. Pure: no network, no database.
-// Layout strings are frozen by lens-model.md and lmsr-market.md; programs, parsers and the frontend must agree on bytes.
+// The lens SAS schemas as data: ParcelOwnership-v1 (lens-model.md), AgreementDecision-v1 (the agreement
+// program's settlement fact, blockchain/solana/programs/agreement/README.md) and the milestone markets'
+// MarketEvidence-v1 (lmsr-market.md), with their borsh payload codec, a generic SAS attestation account
+// parser, payload validators and the sas-lib credential/schema PDA derivations. Pure: no network, no
+// database. Layout strings are frozen by those documents; programs, parsers and the frontend must agree on bytes.
 
 import { createHash } from 'node:crypto';
 import { PublicKey } from '@solana/web3.js';
+import { isCid } from '../cid.js';
 import { SAS_PROGRAM_ID } from './court-parcel-operation.js';
 
 export { SAS_PROGRAM_ID };
@@ -36,11 +39,13 @@ export const LENS_SCHEMAS = Object.freeze({
         'A lens member attests that a wallet owns a cadastral parcel as of a source time.',
         'string parcelUid, string owner, uint8 ownerCount, string evidenceRef, int64 sourceObservedAt'
     ),
-    verdict: schemaDefinition(
-        'verdict',
-        'ProposalVerdict',
-        'A lens member attests that a proposal was executed or has expired.',
-        'string proposalAccount, string verdict, string evidenceRef, int64 sourceObservedAt'
+    // The agreement program's `attest` accepts it from the account's lens only, for that account's CID
+    // and sponsor, before the deadline; the first accepted one settles it (programs/agreement/README.md).
+    decision: schemaDefinition(
+        'decision',
+        'AgreementDecision',
+        'A lens member attests that the decision rule of an agreement is satisfied as of a source time.',
+        'string agreementCid, string sponsor, string decision, string evidenceRef, int64 sourceObservedAt'
     ),
     // One schema for every milestone market source: the member's adapter reads the source (a permits
     // dataset, legislation records, a gazette) and states which outcome text it supports and when.
@@ -207,12 +212,17 @@ export function validateOwnership(fields, { nowSeconds } = {}) {
     return fields;
 }
 
-export const LENS_VERDICTS = Object.freeze(['executed', 'expired']);
+// The one decision a lens issues. An agreement whose rule is not met by its deadline expires on chain
+// (`expire`), which says everything a refusal would, so there is no refusal (coordinator, 2026-10-22).
+export const LENS_DECISIONS = Object.freeze(['satisfied']);
 
-export function validateVerdict(fields, { nowSeconds } = {}) {
-    if (!isBase58Pubkey(fields?.proposalAccount)) throw new Error('proposalAccount must be a base58 public key');
-    if (!LENS_VERDICTS.includes(fields.verdict)) throw new Error('verdict must be "executed" or "expired"');
-    if (typeof fields.evidenceRef !== 'string') throw new Error('evidenceRef must be a string');
+// The program compares agreementCid byte for byte with the account's CID and sponsor with its
+// authority, so both are checked in their one canonical spelling here.
+export function validateDecision(fields, { nowSeconds } = {}) {
+    if (!isCid(fields?.agreementCid)) throw new Error('agreementCid must be an agreement CID (CIDv1 raw sha2-256, bafkrei…)');
+    if (!isBase58Pubkey(fields.sponsor)) throw new Error('sponsor must be a base58 public key');
+    if (!LENS_DECISIONS.includes(fields.decision)) throw new Error('decision must be "satisfied"');
+    requireText(fields.evidenceRef, 'evidenceRef');
     requireTime(fields.sourceObservedAt, 'sourceObservedAt', nowSeconds);
     return fields;
 }
@@ -257,7 +267,7 @@ export function validateMarketEvidence(fields, { nowSeconds } = {}) {
 
 export const LENS_VALIDATORS = Object.freeze({
     ownership: validateOwnership,
-    verdict: validateVerdict,
+    decision: validateDecision,
     evidence: validateMarketEvidence
 });
 
@@ -297,7 +307,7 @@ export function deriveSchemaPda({ credential, name, version }) {
 }
 
 // Every lens member issues under its own credential, so the schema PDAs are per authority. An
-// owner's yes is its signature on the accept transaction, not a SAS attestation.
+// owner's yes is its signed decision on the agreement, not a SAS attestation.
 export function deriveLensSchemaPdas({ authority, credentialName }) {
     const credential = deriveCredentialPda({ authority, name: credentialName });
     const schemas = Object.fromEntries(LENS_SCHEMA_KINDS.map(kind => {

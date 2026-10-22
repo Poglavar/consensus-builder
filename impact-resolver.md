@@ -6,12 +6,18 @@ action to each. This doc records the decisions so far.
 
 ## Mutability: what we may and may not rewrite
 
-`isProposalImmutable(p) = isProposalMinted(p) || !!p.serverProposalId` (frontend/js/proposals/chain.js).
+`ProposalLineage.isPublished(p)` (frontend/js/proposals/lineage.js): a design published under its CID
+(`p.published.cid`, proposals/design-sync.js) is immutable. Since M3 (plan-design-agreement.md) designs
+are not minted and there is no server-row upload: publication is the CID, and the agreement, not the
+design, is what goes on chain.
 
-- **Immutable** = minted on-chain **or** uploaded to the server. The server upload is a
-  publication/commitment act — it stands in for the blockchain for people who don't mint, and once
-  uploaded the record is shared and referenced, so we can **never** resync or rewrite its geometry.
-- **Local-only** = never uploaded. Ours to change.
+- **Immutable** = published under its CID. The CID names exactly this content and agreements and forks
+  reference it, so we can **never** resync or rewrite its geometry; an edit forks a new design that
+  links it (`origin.cid`).
+- **Local-only** = never published. Ours to change.
+
+(Until M3 the rule was `isProposalImmutable(p) = isProposalMinted(p) || !!p.serverProposalId` in
+frontend/js/proposals/chain.js: minted on-chain or uploaded to the server.)
 
 ## DECISION (2026-07-15): proposals are only ever set aside / tunnelled / destroyed — never cut or split
 
@@ -43,7 +49,7 @@ mutability classes.
 ### Pros of this decision
 
 - One uniform, easy-to-reason path; no non-contiguous proposals; no awkward half-buildings ever.
-- Immutable (minted/server) proposals are never rewritten — correctness by construction.
+- Immutable (published) designs are never rewritten — correctness by construction.
 - Nothing is lost: a set-aside proposal stays in the parcel list and can be re-applied.
 
 ### Cons (accepted for now)
@@ -77,5 +83,5 @@ The current corridor implementation enforces this contract in `collectObstaclePr
 ## Deferred (Phase 2, not built)
 
 Cut-in-place for a **local, contiguous (notch)** case, and split-into-two for a **bisect** — both
-gated on `!isProposalImmutable` and on settling the building-bisect question. The cut/reshape option
+gated on `!ProposalLineage.isPublished` and on settling the building-bisect question. The cut/reshape option
 stays disabled until then.

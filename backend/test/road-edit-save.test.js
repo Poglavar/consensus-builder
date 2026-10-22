@@ -15,6 +15,7 @@ import { loadRoadDrawing, at } from './helpers/road-drawing-env.js';
 
 const require = createRequire(import.meta.url);
 const lineage = require('../../frontend/js/proposals/lineage.js');
+const Cid = require('../../frontend/js/cid.js');
 const read = path => readFileSync(new URL(path, import.meta.url), 'utf8');
 const editorSource = read('../../frontend/js/corridor-editor.js');
 const clone = value => JSON.parse(JSON.stringify(value));
@@ -45,6 +46,10 @@ describe('runLocalCorridorGeometryUpdate: in place for a local road, a counterpr
     const extend = definition => { definition.points[0][1] = at(150, 0); };
     const endOf = record => record.roadProposal.definition.points[0][1];
 
+    // Where a road was published (DesignSync): its CID at one index, which ProposalLineage.isPublished
+    // takes as immutable.
+    const PUBLISHED = { cid: Cid.cidOfObject({ schema: 'design/v1', title: 'Main street' }), publishedAt: '2026-10-21T12:00:00.000Z', apiBase: 'https://api.example.test' };
+
     // The loaded tool over a store holding `source`, and the parcel mutation it runs inside.
     function harness(source) {
         env = loadRoadDrawing({ proposals: [source], globals: { ProposalLineage: lineage } });
@@ -69,7 +74,7 @@ describe('runLocalCorridorGeometryUpdate: in place for a local road, a counterpr
     });
 
     it('saves an edit of a published road as a counterproposal and leaves the published road as it was', async () => {
-        const source = road('published-road', { serverProposalId: '741', publicationApiBase: 'https://api.example.test' });
+        const source = road('published-road', { published: PUBLISHED });
         const h = harness(source);
         globalThis.ProposalSelection.is = key => key === 'published-road';
         const before = clone(source);
@@ -80,8 +85,11 @@ describe('runLocalCorridorGeometryUpdate: in place for a local road, a counterpr
         expect(source).toEqual(before);
         expect(h.ProposalManager.createCorridorProposalAtomically.calls).toHaveLength(1);
         const [fork, options] = h.ProposalManager.createCorridorProposalAtomically.calls[0];
-        expect(fork.proposalOrigin).toEqual({ relation: 'revision', source: { kind: 'publication', apiBase: 'https://api.example.test', proposalRowId: '741' }, title: 'Main street' });
-        expect(fork.serverProposalId).toBeUndefined();
+        // The fork links the published design by its CID, in the typed relation too, and is not
+        // itself published.
+        expect(fork.origin).toEqual({ cid: PUBLISHED.cid });
+        expect(fork.published).toBeUndefined();
+        expect(fork.proposalOrigin).toEqual({ relation: 'revision', source: { kind: 'design', cid: PUBLISHED.cid }, title: 'Main street' });
         expect(endOf(fork).lng).toBeCloseTo(at(150, 0).lng, 12);
         expect(options).toEqual({ _parcelMutation: h.mutation });
         // The counterproposal is selected, so the next edit lands on it.

@@ -256,9 +256,6 @@
                 });
             });
 
-            // Also include parcels from "ownership-transfer-from-me" proposals
-            await fetchFromMeProposalParcels(features);
-
             if (!state.showAdParcels) {
                 return;
             }
@@ -271,33 +268,6 @@
             setStatus('sidebar.parcels.adsError', 'Unable to load ad parcels.');
         } finally {
             state.isLoading = false;
-        }
-    }
-
-    async function fetchFromMeProposalParcels(features) {
-        // Get proposals with "ownership-transfer-from-me" goal and add their parcels
-        try {
-            const proposalManager = global.ProposalManager;
-            if (!proposalManager || typeof proposalManager.getProposals !== 'function') {
-                return;
-            }
-            const proposals = proposalManager.getProposals() || [];
-            const fromMeProposals = proposals.filter(p => {
-                const isOwnerSale = global.ProposalKind?.isOwnerSaleOffer?.(p) === true;
-                return isOwnerSale && getLifecycleStatus(p) !== 'Executed' && getLifecycleStatus(p) !== 'Expired';
-            });
-
-            fromMeProposals.forEach(proposal => {
-                const parcelIds = proposal.parcelIds || proposal.parcel_ids || [];
-                parcelIds.forEach(parcelId => {
-                    if (parcelId !== undefined && parcelId !== null) {
-                        const idStr = parcelId.toString();
-                        adParcelIdSet.add(idStr);
-                    }
-                });
-            });
-        } catch (error) {
-            console.warn('Failed to fetch from-me proposal parcels:', error);
         }
     }
 

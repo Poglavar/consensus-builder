@@ -1,3 +1,5 @@
+// The proposal details panel's authoring contract (frontend/js/proposals/details-panel.js): Fork
+// design and the contextual geometry actions, wired through inlineJsArg, in every language.
 import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
@@ -6,9 +8,9 @@ const read = relative => readFileSync(fileURLToPath(new URL(relative, import.met
 const detailsSource = read('../../frontend/js/proposals/details-panel.js');
 
 describe('proposal details authoring contract', () => {
-    it('labels cloning as Counterpropose / Fork instead of presenting it as Details', () => {
-        expect(detailsSource).toContain("panel.proposal.actions.counterpropose");
-        expect(detailsSource).toContain("panel.proposal.actions.counterproposeHint");
+    it('labels cloning as Fork design instead of presenting it as Details', () => {
+        expect(detailsSource).toContain("panel.proposal.actions.forkDesign'");
+        expect(detailsSource).toContain("panel.proposal.actions.forkDesignHint'");
         expect(detailsSource).toContain('onclick="proposeExistingProposal(${inlineJsArg(proposalKey)})"');
         // No proposal id may be pasted raw into an inline handler; see inlineJsArg in shared-utils.js.
         expect(detailsSource).not.toMatch(/on(click|change|input)="[^"]*'\$\{/);
@@ -34,20 +36,11 @@ describe('proposal details authoring contract', () => {
         expect(detailsSource).toContain("onclick=\"RoadActions.runAction('crossSection', RoadActions.factsFor(${inlineJsArg(proposalKey)}))\"");
     });
 
-    it('shows one evidence-backed possible-future timeline in read-only Details', () => {
-        const index = read('../../frontend/index.html');
-        expect(detailsSource).toContain('From possible future to public fact');
-        expect(detailsSource).toContain('hydrateProposalPossibilityTimeline');
-        expect(detailsSource).toContain('/agent/activity?limit=200');
-        expect(detailsSource).toContain('/oracle/events?subject=');
-        expect(index.indexOf('js/proposals/possibility-timeline.js'))
-            .toBeLessThan(index.indexOf('js/proposals/details-panel.js'));
-    });
-
     it.each(['en', 'hr', 'sr', 'es'])('%s explains that the fork leaves its source unchanged', locale => {
         const dictionary = JSON.parse(read(`../../frontend/i18n/${locale}.json`));
-        expect(dictionary.panel.proposal.actions.counterpropose).toEqual(expect.any(String));
-        expect(dictionary.panel.proposal.actions.counterproposeHint).toEqual(expect.any(String));
-        expect(dictionary.panel.proposal.actions.counterproposeHint.length).toBeGreaterThan(20);
+        expect(dictionary.panel.proposal.actions.forkDesign).toEqual(expect.any(String));
+        expect(dictionary.panel.proposal.actions.forkDesign.trim().length).toBeGreaterThan(3);
+        expect(dictionary.panel.proposal.actions.forkDesignHint).toEqual(expect.any(String));
+        expect(dictionary.panel.proposal.actions.forkDesignHint.length).toBeGreaterThan(20);
     });
 });

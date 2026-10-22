@@ -8,7 +8,7 @@ import path from 'path';
 import { formatAtomicAmount } from '../utils/x402-payment.js';
 import { shortAddress } from './address-book.js';
 
-const IDL_FILES = ['parcel_nft.json', 'proposal_nft.json', 'proposal_market.json', 'proposal_pledge.json'];
+const IDL_FILES = ['parcel_nft.json', 'agreement.json', 'proposal_market.json', 'proposal_pledge.json'];
 
 const LAMPORTS_DECIMALS = 9;
 
@@ -534,8 +534,9 @@ function buildSummary(primary, ctx) {
         }
         if (action === 'create_market') {
             const vault = accountAddress(primary, 'vault');
-            const proposalAddress = accountAddress(primary, 'proposal');
-            const on = proposalAddress ? ` on proposal ${label(proposalAddress)}` : '';
+            // The IDL still names the market's subject `proposal`; it is the agreement account.
+            const agreementAddress = accountAddress(primary, 'proposal');
+            const on = agreementAddress ? ` on agreement ${label(agreementAddress)}` : '';
             return `${label(actorAddress(primary, 'creator'))} opened a market${on}${vault ? ` (vault ${label(vault)})` : ''}`;
         }
         if (action === 'resolve') return market ? `market ${market} resolved` : 'market resolved';
@@ -548,83 +549,39 @@ function buildSummary(primary, ctx) {
     }
 
     if (name === 'proposal_pledge') {
-        const proposalAddress = accountAddress(primary, 'proposal');
-        const onProposal = proposalAddress ? ` for proposal ${label(proposalAddress)}` : '';
+        // The IDL still names the subject `proposal`; it is the agreement account.
+        const agreementAddress = accountAddress(primary, 'proposal');
+        const onAgreement = agreementAddress ? ` for agreement ${label(agreementAddress)}` : '';
         if (action === 'create_donation_escrow') {
-            return `${label(actorAddress(primary, 'creator'))} opened a refundable USDC donation escrow${onProposal}`;
+            return `${label(actorAddress(primary, 'creator'))} opened a refundable USDC donation escrow${onAgreement}`;
         }
         if (action === 'donate') {
             const inner = innerTokenAmount(primary, rawInner, ctx);
             const amount = inner?.amount ?? (args.amount != null ? formatAtomicAmount(String(args.amount), 6) : '?');
-            return `${label(actorAddress(primary, 'donor'))} donated ${amount} ${inner?.symbol ?? 'USDC'}${onProposal}`;
+            return `${label(actorAddress(primary, 'donor'))} donated ${amount} ${inner?.symbol ?? 'USDC'}${onAgreement}`;
         }
         if (action === 'release_donations') {
             const inner = innerTokenAmount(primary, rawInner, ctx);
             const amount = inner ? ` ${inner.amount ?? inner.amountAtomic} ${inner.symbol ?? 'tokens'}` : '';
-            return `${label(actorAddress(primary, 'releaser'))} released donations${amount}${onProposal} to ${label(accountAddress(primary, 'beneficiary'))}`;
+            return `${label(actorAddress(primary, 'releaser'))} released donations${amount}${onAgreement} to ${label(accountAddress(primary, 'beneficiary'))}`;
         }
         if (action === 'refund_donation') {
             const inner = innerTokenAmount(primary, rawInner, ctx);
             const amount = inner ? ` ${inner.amount ?? inner.amountAtomic} ${inner.symbol ?? 'tokens'}` : '';
-            return `${label(actorAddress(primary, 'donor'))} refunded a donation${amount}${onProposal}`;
+            return `${label(actorAddress(primary, 'donor'))} refunded a donation${amount}${onAgreement}`;
         }
-        if (action === 'create_pledge_book') return `${label(actorAddress(primary, 'creator'))} opened a soft-pledge ledger${onProposal}`;
+        if (action === 'create_pledge_book') return `${label(actorAddress(primary, 'creator'))} opened a soft-pledge ledger${onAgreement}`;
         if (action === 'set_pledge') {
             const amount = args.amount != null ? formatAtomicAmount(String(args.amount), 6) : '?';
-            return `${label(actorAddress(primary, 'pledger'))} pledged ${amount} USDC${onProposal} without locking funds`;
+            return `${label(actorAddress(primary, 'pledger'))} pledged ${amount} USDC${onAgreement} without locking funds`;
         }
-        if (action === 'revoke_pledge') return `${label(actorAddress(primary, 'pledger'))} revoked a pledge${onProposal}`;
+        if (action === 'revoke_pledge') return `${label(actorAddress(primary, 'pledger'))} revoked a pledge${onAgreement}`;
         if (action === 'fulfill_pledge') {
             const inner = innerTokenAmount(primary, rawInner, ctx);
             const amount = inner ? ` ${inner.amount ?? inner.amountAtomic} ${inner.symbol ?? 'USDC'}` : '';
-            return `${label(actorAddress(primary, 'pledger'))} fulfilled a pledge${amount}${onProposal}`;
+            return `${label(actorAddress(primary, 'pledger'))} fulfilled a pledge${amount}${onAgreement}`;
         }
-        if (action === 'void_pledge') return `a pledge was voided${onProposal}`;
-    }
-
-    if (name === 'proposal_nft') {
-        const proposalAddress = accountAddress(primary, 'proposal');
-        const onProposal = proposalAddress ? ` on proposal ${label(proposalAddress)}` : '';
-        if (action === 'mint_and_fund') {
-            const parcels = Array.isArray(args.parcel_ids) && args.parcel_ids.length ? args.parcel_ids.join(',') : 'no parcels';
-            const sol = args.sol_amount != null ? formatAtomicAmount(String(args.sol_amount), LAMPORTS_DECIMALS) : '?';
-            // v3 appends site_hash (hex here) and open_ground; an all-zero hash is "no site".
-            const site = typeof args.site_hash === 'string' && /[1-9a-f]/.test(args.site_hash)
-                ? ` on site ${args.site_hash.slice(0, 12)}…${args.open_ground ? ' with open ground' : ''}`
-                : '';
-            const subject = Array.isArray(args.parcel_ids) && args.parcel_ids.length ? `for parcels ${parcels}` : 'with no parcels';
-            return `${label(actorAddress(primary, 'owner'))} minted proposal ${subject}${site} funded with ${sol} SOL`;
-        }
-        if (action === 'accept_with_attestations') {
-            const member = accountAddress(primary, 'ownership');
-            const attested = member ? ` (ownership attestation ${label(member)})` : '';
-            return `${label(actorAddress(primary, 'owner'))} accepted parcel ${args.parcel_id ?? '?'}${onProposal}${attested}`;
-        }
-        if (action === 'settle_with_verdict') {
-            const verdict = accountAddress(primary, 'verdict');
-            // v2 writes a VerdictRecord PDA ["verdict", proposal, verdict]; v1-era calls have none.
-            const record = accountAddress(primary, 'verdict_record');
-            const recorded = record ? `, recorded at ${label(record)}` : '';
-            return `${label(actorAddress(primary, 'submitter'))} settled${onProposal} with verdict attestation ${verdict ? label(verdict) : '?'}${recorded}`;
-        }
-        if (action === 'accept_proposal') {
-            return `${label(actorAddress(primary, 'accepter'))} accepted parcel ${args.parcel_id ?? '?'}${onProposal}`;
-        }
-        if (action === 'withdraw_acceptance') {
-            return `${label(actorAddress(primary, 'withdrawer'))} withdrew acceptance of parcel ${args.parcel_id ?? '?'}${onProposal}`;
-        }
-        if (action === 'cancel_and_refund') {
-            const target = proposalAddress ? `proposal ${label(proposalAddress)}` : 'a proposal';
-            return `${label(actorAddress(primary, 'owner'))} cancelled ${target} and was refunded`;
-        }
-        if (action === 'contribute_funds') {
-            const sol = args.amount != null ? formatAtomicAmount(String(args.amount), LAMPORTS_DECIMALS) : '?';
-            return `${label(actorAddress(primary, 'contributor'))} contributed ${sol} SOL${onProposal ? ` to proposal ${label(proposalAddress)}` : ''}`;
-        }
-        if (action === 'distribute_funds') {
-            return proposalAddress ? `proposal ${label(proposalAddress)} distributed its funds` : 'proposal funds distributed';
-        }
-        if (action === 'initialize') return `${label(actorAddress(primary, 'authority'))} initialized the proposal counter`;
+        if (action === 'void_pledge') return `a pledge was voided${onAgreement}`;
     }
 
     if (name === 'parcel_nft') {

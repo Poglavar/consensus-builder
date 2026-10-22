@@ -4,7 +4,6 @@
 
 import { createHash } from 'node:crypto';
 import { PublicKey } from '@solana/web3.js';
-import { canonicalJson, sha256 } from './proposal-lifecycle.js';
 
 export const COURT_RECIPE_ID = 'court-parcel-operation-v1';
 export const COURT_RECIPE_V2_ID = 'court-parcel-operation-v2';
@@ -36,6 +35,20 @@ export const MARKET_PROGRAM_ID = 'GDYnzduynKhKgxDhvvKVarn2s23DtzA26s6hycuUYDRB';
 
 function hashText(value) {
     return createHash('sha256').update(value, 'utf8').digest('hex');
+}
+
+// The recipe hash's canonical form: keys sorted at every depth, no whitespace. Precommitted recipe
+// hashes depend on these exact bytes, so it never changes.
+function canonicalJson(value) {
+    if (Array.isArray(value)) return `[${value.map(canonicalJson).join(',')}]`;
+    if (value && typeof value === 'object') {
+        return `{${Object.keys(value).sort().map(key => `${JSON.stringify(key)}:${canonicalJson(value[key])}`).join(',')}}`;
+    }
+    return JSON.stringify(value);
+}
+
+function sha256(value) {
+    return createHash('sha256').update(value).digest('hex');
 }
 
 function requiredText(value, label, maxLength = 200) {

@@ -1,26 +1,18 @@
-// Unit tests for the frontend's share helpers (pure byte/string work — no DOM).
+// Unit tests for the frontend's share helpers (pure string work — no DOM).
 // These used to live in e2e/tests/share-roundtrip.spec.ts and e2e/tests/proposals-sharing.spec.ts,
-// which booted Chromium to base64-encode five bytes.
+// which booted Chromium to test string helpers.
 //
-// Which copy is under test: there is now exactly one of each. The share codec lives in
-// proposals/sharing.js, and the generic escape/clone helpers in shared-utils.js. Both files used to
-// have duplicate twins (in proposals/sharing-routes.js and proposals/core.js respectively) that the
-// browser silently resolved by load order, so the copy under test was not always the copy that ran.
-//
-// decodeSharedPayload itself is not unit-tested: it reads SHARE_ENCODING_PREFIX_* and
-// decodeBytesToJson as cross-file globals that only resolve because the browser loads these as
-// classic scripts sharing one global scope. It is a legacy reader on its way out; shimming those
-// globals in to test it would be busywork.
+// Which copy is under test: there is exactly one of each. The generic escape/clone helpers live in
+// shared-utils.js (proposals/core.js used to carry a duplicate twin that the browser silently
+// resolved by load order, so the copy under test was not always the copy that ran), and the share
+// link's city parameter in proposals/design-sync.js. The payload share codec went with the
+// ?shared= links: a design is shared by its CID (/designs/<cid>).
 
 import { describe, it, expect } from 'vitest';
 import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
-const {
-    base64UrlEncodeBytes,
-    base64UrlDecodeToBytes
-} = require('../../frontend/js/proposals/sharing.js');
-const { buildCityQueryParam } = require('../../frontend/js/proposals/server-sync.js');
+const DesignSync = require('../../frontend/js/proposals/design-sync.js');
 const {
     deepClone,
     deepCloneArray,
@@ -61,38 +53,6 @@ describe('stableStringify (proposal hash seed)', () => {
         expect(stableStringify(null)).toBe('null');
     });
 });
-
-describe('base64url encoding', () => {
-    it('round-trips arbitrary bytes, including 0x00 and 0xFF', () => {
-        const input = new Uint8Array([0, 1, 127, 128, 255, 72, 101, 108, 108, 111]);
-        const decoded = base64UrlDecodeToBytes(base64UrlEncodeBytes(input));
-        expect(Array.from(decoded)).toEqual(Array.from(input));
-    });
-
-    it('emits url-safe output: no +, no / and no = padding', () => {
-        // 0xFB 0xFF 0xFE encodes to "+//+" style characters in standard base64.
-        const encoded = base64UrlEncodeBytes(new Uint8Array([251, 255, 254, 0, 1]));
-        expect(encoded).not.toContain('+');
-        expect(encoded).not.toContain('/');
-        expect(encoded).not.toContain('=');
-        expect(encoded).toMatch(/^[A-Za-z0-9_-]+$/);
-    });
-
-    it('decodes correctly regardless of how much padding was stripped', () => {
-        for (let length = 1; length <= 8; length++) {
-            const input = new Uint8Array(Array.from({ length }, (_, i) => (i * 37) % 256));
-            const decoded = base64UrlDecodeToBytes(base64UrlEncodeBytes(input));
-            expect(Array.from(decoded), `length ${length}`).toEqual(Array.from(input));
-        }
-    });
-
-    it('returns an empty string for an empty or non-Uint8Array input', () => {
-        expect(base64UrlEncodeBytes(new Uint8Array([]))).toBe('');
-        expect(base64UrlEncodeBytes(null)).toBe('');
-        expect(base64UrlEncodeBytes([1, 2, 3])).toBe('');
-    });
-});
-
 
 describe('escapeHtml', () => {
     it('neutralises an injected script tag', () => {
@@ -159,19 +119,14 @@ describe('ensureArrayOfStrings', () => {
 });
 
 describe('buildCityQueryParam', () => {
-    // The function reads window.CityConfigManager; a stub is enough to pin the contract, which is
-    // "?city=<code or id>" or an empty string — never a bare "?city=". cadastre-key.test.js checks
-    // the real configs: every city's link opens that city.
+    // The function reads the window's CityConfigManager; a stub is enough to pin the contract, which
+    // is "?city=<code or id>" or an empty string — never a bare "?city=". cadastre-key.test.js checks
+    // the real configs: every city's link opens that city. design-sync.js installs it on the window
+    // its browser part is given.
     const withCityManager = (manager, fn) => {
-        const hadWindow = 'window' in globalThis;
-        const previous = globalThis.window;
-        globalThis.window = { CityConfigManager: manager };
-        try {
-            return fn();
-        } finally {
-            if (hadWindow) globalThis.window = previous;
-            else delete globalThis.window;
-        }
+        const win = { CityConfigManager: manager };
+        DesignSync.browser(win);
+        return fn(win.buildCityQueryParam);
     };
     const manager = (overrides = {}) => ({
         resolveCityId: id => ({ zagreb: 'zagreb', zg: 'zagreb', paris: 'paris' })[String(id).toLowerCase()] || null,
@@ -181,23 +136,23 @@ describe('buildCityQueryParam', () => {
     });
 
     it('names the proposal\'s own city, by its code where it has one, else by its id', () => {
-        expect(withCityManager(manager(), () => buildCityQueryParam('zagreb'))).toBe('?city=zg');
+        expect(withCityManager(manager(), buildCityQueryParam => buildCityQueryParam('zagreb'))).toBe('?city=zg');
         // most cities have no short code: the link used to carry no city at all for them
-        expect(withCityManager(manager(), () => buildCityQueryParam('paris'))).toBe('?city=paris');
+        expect(withCityManager(manager(), buildCityQueryParam => buildCityQueryParam('paris'))).toBe('?city=paris');
     });
 
     it('falls back to the current city when the proposal names none the app knows', () => {
-        expect(withCityManager(manager(), () => buildCityQueryParam())).toBe('?city=zg');
-        expect(withCityManager(manager(), () => buildCityQueryParam('atlantis'))).toBe('?city=zg');
+        expect(withCityManager(manager(), buildCityQueryParam => buildCityQueryParam())).toBe('?city=zg');
+        expect(withCityManager(manager(), buildCityQueryParam => buildCityQueryParam('atlantis'))).toBe('?city=zg');
     });
 
     it('url-encodes the code', () => {
-        expect(withCityManager(manager({ getCityCodeForCityId: () => 'n y' }), () => buildCityQueryParam())).toBe('?city=n%20y');
+        expect(withCityManager(manager({ getCityCodeForCityId: () => 'n y' }), buildCityQueryParam => buildCityQueryParam())).toBe('?city=n%20y');
     });
 
     it('returns an empty string when there is no city at all', () => {
-        expect(withCityManager(manager({ getCurrentCityId: () => null }), () => buildCityQueryParam())).toBe('');
-        expect(withCityManager(null, () => buildCityQueryParam('zagreb'))).toBe('');
+        expect(withCityManager(manager({ getCurrentCityId: () => null }), buildCityQueryParam => buildCityQueryParam())).toBe('');
+        expect(withCityManager(null, buildCityQueryParam => buildCityQueryParam('zagreb'))).toBe('');
     });
 });
 

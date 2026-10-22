@@ -2,6 +2,7 @@
 // intentionally contain no private state, credentials, parcel identifiers or privileged actions.
 
 import fs from 'node:fs';
+import { isCid } from '../cid.js';
 import { readProspectiveMarketStatus } from '../oracle/prospective-market-public.js';
 
 const ADDRESSES = JSON.parse(fs.readFileSync(
@@ -12,14 +13,19 @@ function baseUrl(req, env) {
     return (env.PUBLIC_API_BASE_URL || `${req.protocol}://${req.get('host')}`).replace(/\/$/, '');
 }
 
+// A judge case is an agreement (GET /hackathon/cases/:cid): its link only when the env names its CID.
+function caseLink(base, cid) {
+    return isCid(cid) ? `${base}/hackathon/cases/${cid}` : null;
+}
+
 export function buildHackathonProofManifest({ apiBase, env = process.env } = {}) {
     const base = String(apiBase || '').replace(/\/$/, '');
     const repository = 'https://github.com/Poglavar/consensus-builder';
-    const canonicalCaseId = env.HACKATHON_CASE_ID || 'hackathon-golden-borovje-2026';
-    // The executed case is the YES counterpart of the cancelled golden case; the public audit requires it.
-    const executedCaseId = env.HACKATHON_EXECUTED_CASE_ID || 'hackathon-executed-borovje-2026';
-    // Canonical case v3: executed through lens-member attestations and owner signatures (lens model v2).
-    const attestedCaseId = env.HACKATHON_ATTESTED_CASE_ID || 'hackathon-attested-borovje-2026';
+    // The canonical case: a minted multi-parcel agreement with support, both forecast sides and its
+    // settlement. The executed case is its YES counterpart: executed on its lens's attestation. Each is
+    // an agreement CID; a case the env does not name is left out (the public audit checks the ones listed).
+    const canonicalCase = caseLink(base, env.HACKATHON_CASE_ID);
+    const executedCase = caseLink(base, env.HACKATHON_EXECUTED_CASE_ID);
     return {
         version: 1,
         title: 'Hyperstition: Markets for Possible Cities',
@@ -52,10 +58,13 @@ export function buildHackathonProofManifest({ apiBase, env = process.env } = {})
                 programDataAddress: 'EtV7ufG6U5SSPsdhQe1TByPJR8mqPpFgV15KQNbNSyZQ',
                 lastDeployedSlot: 503098918,
                 binarySha256: '649c6fda6c9cc2bd5e224772ca562dfb6576a2f46ca46498ad271f5bf39d053c',
-                // On-chain Anchor IDL account; its decoded JSON equals blockchain/solana/idl/proposal_pledge.json.
+                // On-chain Anchor IDL account. Since 2026-10-22 the checked-in idl/proposal_pledge.json is the
+                // agreement-reading source (plan-design-agreement.md M3), not yet deployed, so no checked-in
+                // file equals the deployed IDL and no hash is pinned to one; the note keeps the deployed one.
                 idlAddress: '4PJBp5KWgY1S55dCLAHqzD2jSmFwZFWUTZBj9JYVZb7X',
-                idlSha256: '5a76b112e55762a3dc7e555ea69caf880c7569e7c09b36deade36d72d0a891e9',
-                upgradeAuthority: 'AMbsiP9F8YY2y8n9uFdqtw7yNZZHvTWFEWSQGHKtmkoQ'
+                idlSha256: null,
+                upgradeAuthority: 'AMbsiP9F8YY2y8n9uFdqtw7yNZZHvTWFEWSQGHKtmkoQ',
+                note: 'The on-chain IDL (sha256 5a76b112e55762a3dc7e555ea69caf880c7569e7c09b36deade36d72d0a891e9) is the deployed proposal-reading interface; the checked-in idl/proposal_pledge.json is the agreement-reading source, not deployed yet.'
             }, {
                 name: 'ProposalMarket',
                 network: 'solana:devnet',
@@ -63,10 +72,13 @@ export function buildHackathonProofManifest({ apiBase, env = process.env } = {})
                 programDataAddress: 'AGmZusPm3FuiPkgMBY5dG1ZMfXKptqDjG3aMrgTpqhx7',
                 lastDeployedSlot: 506423834,
                 binarySha256: '3b797f63e285bdd4df953e55b4a9217c65d0d7fe1c1aeaf34ce3ceaa37fee62c',
-                // On-chain Anchor IDL account; its decoded JSON equals blockchain/solana/idl/proposal_market.json.
+                // On-chain Anchor IDL account. Since 2026-10-22 the checked-in idl/proposal_market.json is the
+                // agreement-reading source with the LMSR instructions (plan-design-agreement.md M3), not yet
+                // deployed, so no checked-in file equals the deployed IDL; the note keeps the deployed hash.
                 idlAddress: '66R6QbYprREJcxd2saTTEWmMUPpyx6ixx2KtBCDYGMJZ',
-                idlSha256: '952bc83dab15ecf55135be9eea87fda258ed440ca3a0aae873ce9739903145a5',
-                upgradeAuthority: 'AMbsiP9F8YY2y8n9uFdqtw7yNZZHvTWFEWSQGHKtmkoQ'
+                idlSha256: null,
+                upgradeAuthority: 'AMbsiP9F8YY2y8n9uFdqtw7yNZZHvTWFEWSQGHKtmkoQ',
+                note: 'The on-chain IDL (sha256 952bc83dab15ecf55135be9eea87fda258ed440ca3a0aae873ce9739903145a5) is the deployed proposal-reading interface; the checked-in idl/proposal_market.json is the agreement-reading source, not deployed yet.'
             }, {
                 // Programs pinned from the 2026-10-01 devnet upgrade (`solana program show`, then
                 // `solana program dump` + SHA-256; the two above re-read unchanged that day).
@@ -105,7 +117,6 @@ export function buildHackathonProofManifest({ apiBase, env = process.env } = {})
             manifest: `${base}/hackathon/proof.json`,
             auditCommand: 'cd backend && npm run demo:judge',
             agentCapabilities: `${base}/docs/agents.json`,
-            proposalDiscovery: `${base}/agent/discovery`,
             oracleFactDiscovery: `${base}/agent/discovery?resource=oracle-facts`,
             independentX402: {
                 kind: 'clean_room_verified_fact_purchase',
@@ -119,9 +130,8 @@ export function buildHackathonProofManifest({ apiBase, env = process.env } = {})
             },
             courtOracle: `${base}/oracle/public-records/summary`,
             prospectiveMarket: `${base}/oracle/markets/prospective/status`,
-            canonicalCase: `${base}/hackathon/cases/${encodeURIComponent(canonicalCaseId)}`,
-            executedCase: `${base}/hackathon/cases/${encodeURIComponent(executedCaseId)}`,
-            attestedCase: `${base}/hackathon/cases/${encodeURIComponent(attestedCaseId)}`,
+            ...(canonicalCase ? { canonicalCase } : {}),
+            ...(executedCase ? { executedCase } : {}),
             lensMembers: `${base}/lenses/members`,
             operations: `${base}/hackathon/operations.json`,
             activity: `${base}/agent/activity?limit=200`,
@@ -132,7 +142,7 @@ export function buildHackathonProofManifest({ apiBase, env = process.env } = {})
             { name: 'ProposalPledge', address: ADDRESSES.ProposalPledge, role: 'wallet donations and revocable pledges' }
         ],
         builtForHackathon: [
-            'x402-paid proposal and verified-fact endpoints with hosted facilitator discovery',
+            'an x402-paid verified-fact endpoint with hosted facilitator discovery',
             'one actor/action model for humans, deterministic agents and future LLM agents',
             'wallet donation, pledge and forecast flows over two new Solana programs',
             'source-hashed land-event recipes and a reusable Lens evaluator',

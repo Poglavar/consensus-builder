@@ -30,5 +30,7 @@ Refresh the official source snapshots and rebuild locally with:
 ```sh
 cd backend
 node scripts/fetch-pionir-edozvola-sources.mjs --project spansko-sjever-a-f
-node scripts/seed-spansko-sjever-proposal.mjs --apply --export
+node scripts/seed-spansko-sjever-proposal.mjs --export
 ```
+
+Publish it as designs plus the project's agreement with `backend/scripts/publish-restatement-archives.mjs` ([collection README](../README.md#publishing-designs-and-agreements)).

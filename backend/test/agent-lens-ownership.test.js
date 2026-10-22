@@ -1,6 +1,7 @@
 // Agent side of the owner-consent flow: the challenge signature verifies exactly as the lens member
 // verifies it, the full challenge → sign → POST /lens/ownership round trip works against a dry-run
-// reference member over real HTTP, and a priced member is paid only through a live, confirmed call.
+// reference member over real HTTP, a priced member is paid only through a live, confirmed call, and the
+// member's issued attestations (ownership, agreement decisions) are found on its own service.
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
@@ -9,9 +10,10 @@ import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 import { Keypair, PublicKey } from '@solana/web3.js';
 import { encodePaymentRequiredHeader } from '@x402/core/http';
 import {
-    fetchLensStatus, findOwnershipAttestation, paymentIdForOwnership, requestOwnershipAttestation, requestVerdictAttestation,
-    signChallengeMessage
+    fetchLensStatus, findOwnershipAttestation, listMemberAttestations, paymentIdForOwnership, requestOwnershipAttestation,
+    signChallengeMessage, signMessageBytes
 } from '../agents/lens-ownership-client.js';
+import { cidOfObject } from '../cid.js';
 import { createUrbanGameTheoryTools } from '../agents/ugt-agent-tools.js';
 import { verifyWalletSignature } from '../lens/identity/devnet-registry.js';
 import { createLensMember } from '../lens/member.js';
@@ -63,6 +65,12 @@ describe('challenge signing', () => {
         expect(verifyWalletSignature({ owner, message, signature })).toBe(true);
         expect(verifyWalletSignature({ owner, message: `${message}!`, signature })).toBe(false);
         expect(verifyWalletSignature({ owner: Keypair.generate().publicKey.toBase58(), message, signature })).toBe(false);
+        // The raw bytes a wallet's signMessage gives (the owner's approval receipt signs base58 of these).
+        const raw = signMessageBytes({ secretKey: agent.secretKey, message });
+        expect(raw).toHaveLength(64);
+        expect(Buffer.from(raw).toString('base64')).toBe(signature);
+        expect(() => signMessageBytes({ secretKey: agent.secretKey.subarray(0, 32), message })).toThrow(/64-byte/);
+        expect(() => signMessageBytes({ secretKey: agent.secretKey, message: '' })).toThrow(/message is required/);
     });
 });
 
@@ -94,7 +102,7 @@ function pricedMemberFetch(amount = '10000') {
     });
 }
 
-describe('ugt tools: attesters, ownership and mint', () => {
+describe('ugt tools: attesters and ownership', () => {
     it('lists attesters from the directory, optionally by kind', async () => {
         const members = [{ key: AUTHORITY, kind: 'owner-consent' }, { key: agent.publicKey.toBase58(), kind: 'court' }];
         const fetchImpl = vi.fn(async () => new Response(JSON.stringify({ members }), { status: 200 }));
@@ -131,53 +139,24 @@ describe('ugt tools: attesters, ownership and mint', () => {
             paymentId: paymentIdForOwnership({ serviceUrl: 'http://member', parcelUid: PARCEL, owner: agent.publicKey.toBase58() })
         }));
     });
-
-    it('mints with the chosen lens behind the live gate and refuses a self-only lens', async () => {
-        const mintProposal = vi.fn(async args => ({ signature: 'mint-tx', proposalPda: 'pda', lens: args.lens }));
-        const env = { UGT_AGENT_KEYPAIR: keyFile, UGT_MCP_LIVE: '1' };
-        const tools = createUrbanGameTheoryTools({ env, fetchImpl: vi.fn(), createConnection: () => ({}), dependencies: { mintProposal, sendAndConfirmPolling: vi.fn() } });
-        await expect(createUrbanGameTheoryTools({ env: { UGT_AGENT_KEYPAIR: keyFile }, fetchImpl: vi.fn(), dependencies: { mintProposal } })
-            .mintProposal({ parcelIds: [PARCEL], lens: [AUTHORITY], confirm: true })).rejects.toThrow(/UGT_MCP_LIVE/);
-        await expect(tools.mintProposal({ parcelIds: [PARCEL], lens: [agent.publicKey.toBase58()], confirm: true })).rejects.toThrow(/self-lens/);
-        await expect(tools.mintProposal({ parcelIds: [PARCEL], lens: [], confirm: true })).rejects.toThrow(/at least one lens member/);
-        expect(mintProposal).not.toHaveBeenCalled();
-        const result = await tools.mintProposal({ parcelIds: [PARCEL], lens: [AUTHORITY], imageUri: 'https://x/img', isConditional: false, confirm: true });
-        expect(result.lens).toEqual([AUTHORITY]);
-        expect(mintProposal).toHaveBeenCalledWith(expect.objectContaining({
-            parcelIds: [PARCEL], lens: [AUTHORITY], imageUri: 'https://x/img', isConditional: false, lamports: 0n
-        }));
-    });
-
-    it('v3: mints an empty binding only with a site and its server binding', async () => {
-        const mintProposal = vi.fn(async () => ({ signature: 'mint-tx', proposalPda: 'pda' }));
-        const env = { UGT_AGENT_KEYPAIR: keyFile, UGT_MCP_LIVE: '1' };
-        const tools = createUrbanGameTheoryTools({ env, fetchImpl: vi.fn(), createConnection: () => ({}), dependencies: { mintProposal, sendAndConfirmPolling: vi.fn() } });
-        const site = { type: 'Polygon', coordinates: [[[15.97, 45.8], [15.9701, 45.8], [15.9701, 45.8001], [15.97, 45.8]]] };
-        await expect(tools.mintProposal({ parcelIds: [], lens: [AUTHORITY], confirm: true })).rejects.toThrow(/or pass the proposal site/);
-        await expect(tools.mintProposal({ parcelIds: [], site, lens: [AUTHORITY], confirm: true })).rejects.toThrow(/binding/);
-        expect(mintProposal).not.toHaveBeenCalled();
-        const binding = { parcels: [], coverage: 'none' };
-        await tools.mintProposal({ parcelIds: [], site, binding, lens: [AUTHORITY], confirm: true });
-        expect(mintProposal).toHaveBeenCalledWith(expect.objectContaining({ parcelIds: [], site, binding, lens: [AUTHORITY] }));
-    });
 });
 
-describe('member lookups and operator verdicts against a dry-run reference member', () => {
+describe('member lookups against a dry-run reference member', () => {
     let operatorServer;
     let url;
+    let lensMember;
     const OPERATOR = 'operator-secret';
-    const proposal = Keypair.generate().publicKey.toBase58();
 
     beforeAll(async () => {
         const identity = createDevnetRegistryIdentity({
             rows: [{ parcelUid: PARCEL, owner: agent.publicKey.toBase58(), ownerCount: 1, establishedAt: '2026-06-01T00:00:00Z' }],
             clock, authority: AUTHORITY
         });
-        const member = createLensMember({
+        lensMember = createLensMember({
             authority: AUTHORITY, issuer: createFakeIssuer({ authority: AUTHORITY, clock }), store: createMemoryStore(),
             identity, clock, dryRun: true
         });
-        const app = createLensMemberApp({ member, pricing: createLensPricing({ dryRun: true }), operatorToken: OPERATOR });
+        const app = createLensMemberApp({ member: lensMember, pricing: createLensPricing({ dryRun: true }), operatorToken: OPERATOR });
         await new Promise(resolve => { operatorServer = app.listen(0, resolve); });
         url = `http://127.0.0.1:${operatorServer.address().port}`;
     });
@@ -200,14 +179,14 @@ describe('member lookups and operator verdicts against a dry-run reference membe
             .rejects.toThrow(/no ownership attestation/);
     });
 
-    it('asks for an expired verdict with the operator token; a retry at the same source time returns the same attestation', async () => {
-        await expect(requestVerdictAttestation({ serviceUrl: url, operatorToken: 'wrong', proposalAccount: proposal, verdict: 'expired', sourceObservedAt: NOW - 10 }))
-            .rejects.toThrow(/HTTP 401/);
-        const first = await requestVerdictAttestation({ serviceUrl: url, operatorToken: OPERATOR, proposalAccount: proposal, verdict: 'expired', evidenceRef: 'agent-retire', sourceObservedAt: NOW - 10 });
-        expect(first).toMatchObject({ kind: 'verdict', authority: AUTHORITY, proposalAccount: proposal, reused: false });
-        const again = await requestVerdictAttestation({ serviceUrl: url, operatorToken: OPERATOR, proposalAccount: proposal, verdict: 'expired', evidenceRef: 'agent-retire', sourceObservedAt: NOW - 10 });
-        expect(again).toMatchObject({ address: first.address, reused: true });
-        await expect(requestVerdictAttestation({ serviceUrl: url, operatorToken: OPERATOR, proposalAccount: proposal, verdict: 'expired', sourceObservedAt: 0 }))
-            .rejects.toThrow(/positive Unix timestamp/);
+    it('lists the AgreementDecision the member issued for an agreement, and nothing for another', async () => {
+        const agreementCid = cidOfObject({ schema: 'agreement/v1', title: 'agent lookup' });
+        const sponsor = agent.publicKey.toBase58();
+        const issued = await lensMember.attestDecision({ agreementCid, sponsor, decision: 'satisfied', evidenceRef: `sha256:${'e'.repeat(64)}`, sourceObservedAt: NOW - 10 });
+        const listed = await listMemberAttestations({ serviceUrl: `${url}/`, agreementCid, kind: 'decision' });
+        expect(listed).toEqual([expect.objectContaining({ address: issued.address, kind: 'decision', authority: AUTHORITY,
+            payload: expect.objectContaining({ agreementCid, sponsor, decision: 'satisfied' }) })]);
+        expect(await listMemberAttestations({ serviceUrl: url, agreementCid: cidOfObject({ schema: 'agreement/v1', title: 'other' }), kind: 'decision' })).toEqual([]);
+        await expect(listMemberAttestations({ serviceUrl: url, kind: 'verdict' })).rejects.toThrow(/HTTP 400/);
     });
 });

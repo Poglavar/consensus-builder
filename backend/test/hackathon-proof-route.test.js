@@ -8,6 +8,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { setupHackathonProofRoute } from '../routes/hackathon-proof.js';
 import { buildProspectiveMarketStatus, PROSPECTIVE_MARKET } from '../oracle/prospective-market-public.js';
 import { createRouteApp } from './helpers/create-route-app.js';
+import { cidOfObject } from '../cid.js';
 
 describe('hackathon public proof routes', () => {
     it('publishes scope, programs and stable public evidence links', async () => {
@@ -45,9 +46,6 @@ describe('hackathon public proof routes', () => {
                 manifest: 'https://api.example.test/hackathon/proof.json',
                 prospectiveMarket: 'https://api.example.test/oracle/markets/prospective/status',
                 operations: 'https://api.example.test/hackathon/operations.json',
-                canonicalCase: 'https://api.example.test/hackathon/cases/hackathon-golden-borovje-2026',
-                executedCase: 'https://api.example.test/hackathon/cases/hackathon-executed-borovje-2026',
-                attestedCase: 'https://api.example.test/hackathon/cases/hackathon-attested-borovje-2026',
                 lensMembers: 'https://api.example.test/lenses/members',
                 independentX402: {
                     kind: 'clean_room_verified_fact_purchase', amountAtomic: '10000',
@@ -59,6 +57,31 @@ describe('hackathon public proof routes', () => {
         expect(res.body.builtForHackathon).toEqual(expect.arrayContaining([
             expect.stringContaining('x402'), expect.stringContaining('prospective market')
         ]));
+        // No case is linked unless the environment names one (cases are agreements by CID since M3).
+        for (const key of ['canonicalCase', 'executedCase', 'attestedCase', 'proposalDiscovery']) expect(res.body.publicProof).not.toHaveProperty(key);
+    });
+
+    it('links the judge cases the environment names by agreement CID, and leaves out anything else', async () => {
+        const canonical = cidOfObject({ schema: 'agreement/v1', title: 'Canonical case' });
+        const executed = cidOfObject({ schema: 'agreement/v1', title: 'Executed case' });
+        const linked = createRouteApp(setupHackathonProofRoute, {
+            env: { PUBLIC_API_BASE_URL: 'https://api.example.test', HACKATHON_CASE_ID: canonical, HACKATHON_EXECUTED_CASE_ID: executed, HACKATHON_ATTESTED_CASE_ID: canonical },
+            statusReader: () => buildProspectiveMarketStatus({ now: Date.parse('2026-09-22T20:00:00Z') })
+        });
+        const { body } = await request(linked).get('/hackathon/proof.json');
+        expect(body.publicProof).toMatchObject({
+            canonicalCase: `https://api.example.test/hackathon/cases/${canonical}`,
+            executedCase: `https://api.example.test/hackathon/cases/${executed}`
+        });
+        expect(body.publicProof).not.toHaveProperty('attestedCase');
+        // A proposal-era case id is not an agreement CID: no link to a case that cannot exist.
+        const legacy = createRouteApp(setupHackathonProofRoute, {
+            env: { PUBLIC_API_BASE_URL: 'https://api.example.test', HACKATHON_CASE_ID: 'hackathon-golden-borovje-2026', HACKATHON_EXECUTED_CASE_ID: `${executed} ` },
+            statusReader: () => buildProspectiveMarketStatus({ now: Date.parse('2026-09-22T20:00:00Z') })
+        });
+        const legacyBody = (await request(legacy).get('/hackathon/proof.json')).body;
+        expect(legacyBody.publicProof).not.toHaveProperty('canonicalCase');
+        expect(legacyBody.publicProof).not.toHaveProperty('executedCase');
     });
 
     it('pins each program IDL checksum to the checked-in IDL file', async () => {
@@ -79,6 +102,10 @@ describe('hackathon public proof routes', () => {
             if (program.idlSha256 === null) {
                 // An on-chain IDL that equals no checked-in file must say why rather than pin a hash.
                 expect(program.note, program.name).toMatch(/on-chain IDL/);
+                // The deployed hash the note keeps is not the checked-in file's.
+                const kept = program.note.match(/sha256 ([0-9a-f]{64})/)?.[1];
+                expect(kept, program.name).toMatch(/^[0-9a-f]{64}$/);
+                expect(kept, program.name).not.toBe(crypto.createHash('sha256').update(bytes).digest('hex'));
                 continue;
             }
             expect(program.idlSha256, program.name).toBe(crypto.createHash('sha256').update(bytes).digest('hex'));

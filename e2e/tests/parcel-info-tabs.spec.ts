@@ -1,5 +1,5 @@
 import { test, expect } from '../helpers/fixtures';
-import { openCity, openParcel, createSpace, publishOn, PARCEL_ID } from '../helpers/runtime';
+import { openCity, openParcel, createSpace, publishOn, clickMapPoint, stackSection, parcelTab, PARCEL_ID } from '../helpers/runtime';
 
 async function openDetails(page: any) {
   await openCity(page);
@@ -24,7 +24,8 @@ test.describe('Parcel info panel tabs @core', () => {
     await openDetails(page);
     await tab(page, 'propose-tab').click();
     await expect(page.locator('#propose-tab')).toBeVisible();
-    await expect(page.locator('#propose-content .parcel-build-btn')).toHaveCount(15);
+    // 14 tools: the Ownership group's Offer went with owner offers (M2).
+    await expect(page.locator('#propose-content .parcel-build-btn')).toHaveCount(14);
     await tab(page, 'proposals-tab').click();
     await expect(page.locator('#proposals-tab')).toBeVisible();
     await expect(page.locator('#proposals-content .parcel-build-btn')).toHaveCount(0);
@@ -56,11 +57,11 @@ test.describe('Parcel info panel tabs @core', () => {
   });
 
   test('proposals published on the parcel are counted and listed without being in this browser', async ({ mockApi: page }) => {
-    await publishOn(page, PARCEL_ID);
+    const publishedCid = await publishOn(page, PARCEL_ID);
     await openDetails(page);
     await expect(tab(page, 'proposals-tab').locator('.parcel-tab-count')).toHaveText('1');
     await tab(page, 'proposals-tab').click();
-    await expect(page.locator('#proposals-content [data-server-id="41"]')).toContainText('Published park');
+    await expect(page.locator(`#proposals-content [data-server-id="${publishedCid}"]`)).toContainText('Published park');
     await expect(page.locator('#proposals-content .parcel-proposals-empty')).toBeHidden();
   });
 
@@ -84,5 +85,28 @@ test.describe('Parcel info panel tabs @core', () => {
   test('multi-select checkbox is available in Info content', async ({ mockApi: page }) => {
     await openDetails(page);
     await expect(page.locator('#multiSelectCheckboxInfo')).toHaveAttribute('type', 'checkbox');
+  });
+});
+
+// The click stack's parcel section carries the Proposals action: it counts what stands on the
+// parcel, the designs index's published ones included, and opens the panel's Proposals tab on them.
+test.describe('Parcel section proposals @features', () => {
+  test('the parcel section counts the proposals here, published ones included, and opens the Proposals tab', async ({ mockApi: page }) => {
+    const cid = await publishOn(page, PARCEL_ID);
+    await openCity(page);
+    const center = await page.evaluate((id: string) => {
+      const w = window as any;
+      const c = w.ParcelPresenter.getLayer(id).getBounds().getCenter();
+      w.map.panTo(c, { animate: false });
+      return { lng: c.lng, lat: c.lat };
+    }, PARCEL_ID);
+    await clickMapPoint(page, center.lng, center.lat);
+    await expect(stackSection(page, 'parcels').locator('#parcel-info-panel')).toBeVisible();
+    const item = parcelTab(page, 'proposals-tab');
+    await expect(item.locator('.parcel-tab-count')).toHaveText('1');
+    await item.click();
+    await expect(page.locator('#proposals-tab')).toBeVisible();
+    await expect(page.locator('#proposals-content .parcel-set-proposal')).toHaveCount(1);
+    await expect(page.locator(`#proposals-content [data-server-id="${cid}"]`)).toContainText('Published park');
   });
 });

@@ -1,116 +1,271 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://api.urbangametheory.xyz/docs/agents.json",
-  "title": "Urban Game Theory — minimal agent proposal recipe",
-  "description": "Body of POST /agent/proposals (x402-paid). Declare land with cadastreParcelIds, or give a site (or geometry of its own) for a material proposal on ground with no cadastral parcel. cadastreParcelIds must equal the server binding of the site (POST /agent/binding). agent.wallet and agent.paid are set by the server from the settled payment; author, if sent, must equal the paying wallet.",
-  "type": "object",
-  "anyOf": [
-    { "required": ["cadastreParcelIds"], "properties": { "cadastreParcelIds": { "minItems": 1 } } },
-    { "required": ["site"] }
+  "title": "Urban Game Theory — what an agent publishes: design/v1 and agreement/v1",
+  "description": "Two content-addressed objects, checked as the server checks them (frontend/js/design-record.js validate with routes/designs.js validateDesignContent; routes/agreements.js validateAgreementContent). A CID is CIDv1, raw codec, sha2-256, base32 lower case (bafkrei…) over the object's canonical bytes: JSON with keys sorted at every depth, no whitespace, UTF-8. Publish steps: (1) POST /designs/binding { site, toleranceM? } (free, nothing stored) shows the parcels a site takes. (2) Build a design/v1 object, POST /pins { kind: 'design', cid, bytes (base64 canonical bytes) }, then POST /designs { cid, content, parcelSourceId? }: the row carries its binding. A parcel layout is not indexed alone: it travels in the designs of its agreement. (3) Build an agreement/v1 object over the design CIDs, its inputs exactly the union of the designs' bindings, POST /pins { kind: 'agreement', … }, then POST /agreements { cid, content, designs?: [{ cid, content }] }. Writes need an Origin header of the app (https://urbangametheory.xyz); pins are limited to 30 per 15 minutes per client. (4) The sponsor creates the agreement's account (PDA [\"agreement\", sponsor, sha256(cid)]) on the agreement program and reports it at POST /agreements/{cid}/onchain { chain: 'solana', cluster: 'devnet', account, signature }. The app publishes both objects with every field below present (null when empty); the MCP tools refuse anything else.",
+  "oneOf": [
+    { "$ref": "#/$defs/design" },
+    { "$ref": "#/$defs/agreement" }
   ],
-  "properties": {
-    "city": { "type": "string", "description": "City id, e.g. zagreb, split, belgrade, new_york.", "maxLength": 100 },
-    "cadastreParcelIds": {
-      "type": "array",
-      "items": { "type": "string", "maxLength": 255 },
-      "description": "The parcels the proposal is bound to: exactly the parcels its site reaches into (POST /agent/binding answers binding.parcels). Empty is allowed for a material proposal (building, structure, road, readjustment) whose site lies on no cadastral parcel; never for a parcel act (offer, ownership transfer, vote, road designation)."
+  "$defs": {
+    "cid": {
+      "type": "string",
+      "pattern": "^bafkrei[a-z2-7]{52}$",
+      "description": "CIDv1, raw codec (0x55), sha2-256, base32 lower case."
+    },
+    "instant": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$",
+      "description": "An ISO instant exactly as Date.prototype.toISOString writes it."
+    },
+    "text": {
+      "type": "string",
+      "pattern": "\\S",
+      "maxLength": 256
     },
     "site": {
       "type": "object",
-      "description": "The ground the proposal occupies: GeoJSON Polygon or MultiPolygon, EPSG:4326 (at most 100000 vertices, 500 km² bounding box). Optional: without it the site is the proposal's own geometry (or, for a parcel act, its declared parcels). The proposal's geometry must lie inside it.",
+      "required": ["type", "coordinates"],
       "properties": {
-        "type": { "type": "string", "enum": ["Polygon", "MultiPolygon"] },
-        "coordinates": { "type": "array" }
+        "type": { "enum": ["Polygon", "MultiPolygon"] },
+        "coordinates": { "type": "array", "minItems": 1 }
       },
-      "required": ["type", "coordinates"]
+      "description": "GeoJSON Polygon or MultiPolygon in WGS84 (EPSG:4326): rings of at least 4 positions, at most 100000 vertices, a bounding box of at most 500 km². The ground the design occupies; the server binds the parcels it reaches into by more than toleranceM."
     },
-    "toleranceM": {
-      "type": "number",
-      "minimum": 0,
-      "maximum": 1,
-      "default": 0,
-      "description": "Linear intrusion tolerance in metres: a parcel is bound when the site reaches into it by more than this width (the diameter of the largest circle inside site ∩ parcel). Default 0: any reach binds. Measurement error only, never a design allowance."
-    },
-    "proposalId": { "type": "string", "minLength": 1, "maxLength": 255, "pattern": "[^0-9]", "description": "Authored operation/content identifier; strings consisting only of digits are reserved for database row IDs. This is not a chain token/account ID. Omit it to have the server generate an authored ID. Reuse it, together with the same x402 payment identifier and body, for safe retries." },
-    "id": false,
-    "proposal_id": false,
-    "type": { "type": "string", "maxLength": 50, "description": "parcel | building | structure | road (free text, 50 chars)." },
-    "goal": {
-      "type": "string",
-      "description": "Semantic land-use goal. Formation goals include park, square, lake, station, road-track, single, buildings, and reparcellization. A park/square/lake/station/road-track forms public ground."
-    },
-    "name": { "type": "string", "maxLength": 500 },
-    "title": { "type": "string", "maxLength": 500 },
-    "description": { "type": "string" },
-    "author": { "type": "string", "maxLength": 255, "description": "Omit, or your paying wallet's base58 address." },
-    "lens": {
-      "type": "array",
-      "minItems": 1,
-      "uniqueItems": true,
-      "items": { "type": "string", "pattern": "^[1-9A-HJ-NP-Za-km-z]{32,44}$", "description": "Base58 Solana public key of a lens member (an attester)." },
-      "description": "The lens: public keys of the attesters whose SAS attestations (ParcelOwnership-v1, ProposalVerdict-v1) this proposal accepts. Pass the same list as the lens argument of mint_and_fund; it is immutable once minted (fork the proposal to change it). Pick members from GET /lenses/members; schemas at GET /lenses/schemas."
-    },
-    "proposalRole": {
-      "type": "string",
-      "enum": ["owner-offer"],
-      "description": "Omit for an ordinary proposal. owner-offer: the author is a lens-attested owner of the declared parcels offering its own land. Bids arrive as proposal_pledge pledges and donations (GET /agent/pledges/<proposal-account>), and the owner executes by signing accept_with_attestations for its parcels. Any other value is refused with 400."
-    },
-    "offer": { "type": "number", "description": "Amount offered to the parcel owners." },
-    "offerCurrency": { "type": "string", "maxLength": 10 },
-    "buildingProposal": { "type": "object", "description": "A building massing in the app's stored shape; copy from GET /proposals?city=…&limit=5." },
-    "geometry": { "type": "object", "description": "Top-level GeoJSON geometry for the proposal footprint." },
-    "structureProposal": {
+    "design": {
       "type": "object",
-      "description": "A park/square/lake/station. Set kind and its GeoJSON Polygon or MultiPolygon geometry.",
+      "description": "design/v1: one authored change. Every field is present (null when the design has none) and exactly one payload names what it draws. A design names no parcels, terms, kind or owners: the server derives the parcels its site takes (its binding), and applying a design never moves ownership: it carries over (whoever held the ground still holds the pieces). Who receives what is an agreement's allocations. Copy payload shapes from GET /designs?city=zagreb&limit=5.",
+      "required": ["schema", "goal", "title", "description", "author", "city", "site", "toleranceM", "geometry", "origin", "authoredAt"],
+      "additionalProperties": false,
       "properties": {
-        "kind": { "type": "string", "enum": ["park", "square", "lake", "station"] },
-        "geometry": { "type": "object" },
-        "applied": { "type": "boolean" }
-      },
-      "required": ["kind", "geometry"],
-      "additionalProperties": true
-    },
-    "roadProposal": { "type": "object", "description": "A road corridor in the app's stored shape." },
-    "facets": {
-      "type": "object",
-      "description": "Authored terms. For public formations use ownership: to-city.",
-      "properties": {
-        "ownership": { "type": "string", "enum": ["no-change", "to-me", "to-city", "third-party", "per-slice"] }
-      },
-      "additionalProperties": true
-    },
-    "ownershipFlow": {
-      "type": "array",
-      "description": "Publish-time effect stamp: area taken from each cadastral parcel and its destination. Public formations use destination: public.",
-      "items": {
-        "type": "object",
-        "required": ["parcelId", "cededM2", "destination"],
-        "properties": {
-          "parcelId": { "type": "string" },
-          "cededM2": { "type": "number", "minimum": 0 },
-          "destination": { "type": "string", "enum": ["public", "proposer", "mapping", "undecided"] }
+        "schema": { "const": "design/v1" },
+        "goal": {
+          "type": "string",
+          "pattern": "\\S",
+          "description": "The design type: road-track (a road; roadProposal); single, buildings, row or parcelBased (a building or building rule; buildingProposal); park, square, lake or station (a structure; structureProposal); urban-rule (an urban rule); parcel-layout (a parcel layout; parcelLayout, published only inside its agreement)."
         },
-        "additionalProperties": false
-      }
+        "title": { "type": ["string", "null"] },
+        "description": { "type": ["string", "null"] },
+        "author": { "type": ["string", "null"] },
+        "city": { "type": ["string", "null"], "description": "City id, e.g. zagreb. The index files the design under the city its site lies in." },
+        "site": {
+          "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/site" }]
+        },
+        "toleranceM": {
+          "oneOf": [{ "type": "null" }, { "type": "number", "exclusiveMinimum": 0, "maximum": 1 }],
+          "description": "Linear intrusion tolerance in metres: a parcel is bound when the site reaches into it by more than this width (the diameter of the largest circle inside site ∩ parcel). null means 0: any reach binds. Measurement error only, never a design allowance."
+        },
+        "geometry": {
+          "type": ["object", "null"],
+          "description": "The drawing's own GeoJSON, for example a building massing as { buildings: [Feature with Polygon geometry] }. With no site, the design must carry polygon ground of its own here or in its payload."
+        },
+        "origin": {
+          "oneOf": [
+            { "type": "null" },
+            { "type": "object", "required": ["cid"], "additionalProperties": false, "properties": { "cid": { "$ref": "#/$defs/cid" } } }
+          ],
+          "description": "The design this one was forked from, by CID."
+        },
+        "authoredAt": {
+          "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/instant" }]
+        },
+        "roadProposal": {
+          "type": "object",
+          "description": "A road: its corridor as the app stores it, carrying the corridor polygon (roadProposal.definition.polygon); a centre line alone is refused."
+        },
+        "buildingProposal": {
+          "type": "object",
+          "description": "A building or building rule as the app stores it, e.g. { blockName, typologyType: 'single', parameters: { height, floors, rotation, typology } } with the massing in geometry.buildings."
+        },
+        "structureProposal": {
+          "type": "object",
+          "description": "A park, square, lake or station: { kind, geometry (GeoJSON Polygon or MultiPolygon) }."
+        },
+        "parcelLayout": {
+          "type": "object",
+          "description": "A parcel layout: the pool outline and the output plots, geometry only ({ algorithm, generatedAt, pool, plots: [{ geometry, area, source }], … }). Published only in the designs of POST /agreements."
+        }
+      },
+      "oneOf": [
+        { "required": ["roadProposal"] },
+        { "required": ["buildingProposal"] },
+        { "required": ["structureProposal"] },
+        { "required": ["parcelLayout"] }
+      ],
+      "anyOf": [
+        { "properties": { "site": { "type": "object" } } },
+        { "properties": { "geometry": { "type": "object" } } }
+      ]
     },
-    "cadastreFrame": {
+    "holder": {
       "type": "object",
-      "description": "When the ownership flow was measured.",
-      "properties": { "capturedAt": { "type": "string", "description": "ISO 8601 capture timestamp." } },
-      "required": ["capturedAt"],
-      "additionalProperties": true
-    },
-    "effectHash": { "type": "string", "description": "Fingerprint of goal + footprint + ownershipFlow. Acceptances bind to this effect." },
-    "agent": {
-      "type": "object",
-      "description": "Free-form provenance kept on the record; wallet and paid are overwritten by the server.",
+      "required": ["ownerKey", "share"],
       "properties": {
-        "persona": { "type": ["string", "null"] },
-        "controller": { "type": ["string", "null"], "enum": ["algorithm", "llm", null] },
-        "rationale": { "type": ["string", "null"] },
-        "run_id": { "type": ["string", "null"] }
+        "ownerKey": { "$ref": "#/$defs/text" },
+        "displayName": { "type": "string", "description": "The published form carries it: the owner key when there is no name." },
+        "share": { "type": "number", "exclusiveMinimum": 0, "maximum": 1 }
+      },
+      "description": "One holder of an input parcel; each key at most once per parcel."
+    },
+    "agreement": {
+      "type": "object",
+      "description": "agreement/v1: designs linked by CID, the land they take (inputs) and leave (outputs), who receives which piece (allocations), money, the decision rule, a deadline and the sponsor wallet that mints it. It is what is minted, bet on, pledged to, decided and executed. The index refuses it unless every linked design is indexed or sent along, and its input parcels are exactly the union of its designs' server bindings.",
+      "required": ["schema", "designs", "inputs", "outputs", "allocations", "money", "rule"],
+      "properties": {
+        "schema": { "const": "agreement/v1" },
+        "title": { "type": ["string", "null"], "maxLength": 500 },
+        "author": { "type": ["string", "null"], "maxLength": 255 },
+        "sponsor": {
+          "type": ["string", "null"],
+          "description": "The base58 wallet that will mint and fund it. Its account is PDA [\"agreement\", sponsor, sha256(cid)] under the agreement program, so only this wallet can create it; null when proposed without one (it then has no chain account)."
+        },
+        "city": { "type": ["string", "null"], "maxLength": 100 },
+        "createdAt": { "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/instant" }] },
+        "designs": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 200,
+          "items": {
+            "type": "object",
+            "required": ["cid"],
+            "properties": {
+              "cid": { "$ref": "#/$defs/cid" },
+              "goal": { "type": ["string", "null"] },
+              "title": { "type": ["string", "null"] }
+            }
+          },
+          "description": "The linked designs in authored order, each CID once; the published form is { cid, goal, title }."
+        },
+        "inputs": {
+          "type": "object",
+          "required": ["parcels"],
+          "properties": {
+            "parcels": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["parcelId", "holders"],
+                "properties": {
+                  "parcelId": { "$ref": "#/$defs/text" },
+                  "parcelSourceId": { "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/text" }], "description": "The parcel source the id belongs to; one source per agreement." },
+                  "areaM2": { "type": ["number", "null"], "minimum": 0 },
+                  "holders": { "type": "array", "items": { "$ref": "#/$defs/holder" } }
+                }
+              },
+              "description": "Exactly the parcels the designs' sites take (binding.parcels[].parcelId of each design, united), each once, with a snapshot of their holders ([] when unknown)."
+            },
+            "openGroundM2": { "type": ["number", "null"], "minimum": 0, "description": "Land the designs take on no parcel. The account records open_ground = openGroundM2 > 0." }
+          },
+          "anyOf": [
+            { "properties": { "parcels": { "minItems": 1 } } },
+            { "required": ["openGroundM2"], "properties": { "openGroundM2": { "type": "number", "exclusiveMinimum": 0 } } }
+          ]
+        },
+        "outputs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["hash", "areaM2", "fromParcelIds", "role"],
+            "properties": {
+              "hash": {
+                "type": "string",
+                "pattern": "^piece1-sha256:[0-9a-f]{64}$",
+                "description": "'piece1-sha256:' + the sha256 hex of the piece's canonical geometry: { type, coordinates } of its Polygon or MultiPolygon with every coordinate rounded to 7 decimals, serialised with sorted keys and no whitespace (AgreementRecord.outputHash)."
+              },
+              "areaM2": { "type": "number", "minimum": 0 },
+              "fromParcelIds": { "type": "array", "items": { "$ref": "#/$defs/text" } },
+              "role": { "enum": ["plot", "remainder", "corridor", "part", "parcel"] },
+              "producedBy": {
+                "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/cid" }],
+                "description": "The linked design that formed the piece; null for land no design re-formed."
+              }
+            }
+          },
+          "description": "Every piece standing on the input land after the designs are applied in authored order, each hash once, without geometry (the hash commits to it). Designs that form no pieces (a building on its parcel, a rule) leave each input parcel as its own output: role parcel, its hash over the parcel geometry."
+        },
+        "allocations": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["output", "to"],
+            "properties": {
+              "output": { "type": "string", "description": "The hash of one of the outputs; one line per output at most." },
+              "to": {
+                "oneOf": [
+                  { "type": "object", "required": ["kind"], "properties": { "kind": { "const": "holders" } } },
+                  { "type": "object", "required": ["kind", "ownerKey"], "properties": { "kind": { "const": "party" }, "ownerKey": { "$ref": "#/$defs/text" } } },
+                  { "type": "object", "required": ["kind"], "properties": { "kind": { "const": "public" } } },
+                  {
+                    "type": "object",
+                    "required": ["kind", "shares"],
+                    "properties": {
+                      "kind": { "const": "joint" },
+                      "shares": {
+                        "type": "array",
+                        "minItems": 1,
+                        "items": {
+                          "type": "object",
+                          "required": ["ownerKey", "share"],
+                          "properties": { "ownerKey": { "$ref": "#/$defs/text" }, "share": { "type": "number", "exclusiveMinimum": 0, "maximum": 1 } }
+                        },
+                        "description": "Distinct holders whose shares sum to 1."
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "description": "Who receives which output: one holder of the input land (party), the public, or joint shares. An output without a line stays with the holders it carried over to (the published form leaves out holders lines, which mean the same)."
+        },
+        "money": {
+          "type": "object",
+          "required": ["currency", "lines"],
+          "properties": {
+            "currency": { "const": "EUR" },
+            "lines": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["ownerKey", "amountCents"],
+                "properties": {
+                  "ownerKey": { "$ref": "#/$defs/text" },
+                  "amountCents": { "type": "integer", "minimum": -9007199254740991, "maximum": 9007199254740991, "description": "Whole cents: + receives, − pays." }
+                }
+              },
+              "description": "One line per party at most; the published form leaves out zero lines."
+            }
+          }
+        },
+        "rule": {
+          "type": "object",
+          "required": ["electorate", "binding", "lens"],
+          "properties": {
+            "electorate": { "enum": ["owners", "community"], "description": "Who decides: the holders of the input land, or the community." },
+            "binding": { "type": "boolean", "description": "Whether the decision binds the owners (an owner deal); a community vote never does." },
+            "approvalConfig": {
+              "type": ["object", "null"],
+              "description": "Owners only: the proposal-approval/v1 configuration (rights snapshot, policy, regime) the approval engine counts owner decisions with. null for a community vote."
+            },
+            "lens": {
+              "type": "array",
+              "items": { "type": "string", "pattern": "^[1-9A-HJ-NP-Za-km-z]{32,44}$" },
+              "description": "Lens member keys (GET /lenses/members). The agreement program names exactly one, whose AgreementDecision-v1 attestation records the decision; it must not be the sponsor."
+            }
+          },
+          "allOf": [
+            {
+              "if": { "properties": { "electorate": { "const": "community" } } },
+              "then": { "properties": { "binding": { "const": false }, "approvalConfig": { "type": "null" } } }
+            }
+          ]
+        },
+        "deadline": {
+          "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/instant" }],
+          "description": "Must lie ahead when the agreement is indexed. The decision must be recorded before it; after it, anyone may expire the account. null: no deadline."
+        }
       }
     }
-  },
-  "additionalProperties": true
+  }
 }

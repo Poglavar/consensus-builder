@@ -135,8 +135,8 @@ function proposalDraftGeometryFeatures(descriptor, draft) {
         }
     } else if (descriptor?.kind === 'buildings') {
         (descriptor.features || []).forEach(feature => pushGeometry(feature));
-    } else if (descriptor?.kind === 'reparcellization') {
-        (descriptor.polygons || []).forEach(polygon => pushGeometry(polygon.geometry || polygon));
+    } else if (descriptor?.kind === 'parcel-layout') {
+        (descriptor.plots || []).forEach(plot => pushGeometry(plot && plot.geometry));
     } else {
         pushGeometry(descriptor?.geometry || null);
     }
@@ -552,7 +552,7 @@ function renderAppliedProposalHighlight(proposal, { blink = false } = {}) {
         });
     } else {
         // Anything not standing on the map — a parked road, an unapplied building/park/square/lake,
-        // a reparcellization taken off — is drawn as a proposal: dashed lines and no fill. Only a
+        // a parcel layout taken off — is drawn as a proposal: dashed lines and no fill. Only a
         // proposal that IS on the map gets the solid, filled primary outline.
         const primaryStyle = (isRoadProposal || !standsOnMap) ? {
             color: '#2563EB',
@@ -582,7 +582,7 @@ function renderAppliedProposalHighlight(proposal, { blink = false } = {}) {
                 onClick: standsOnMap ? null : event => {
                     // A selected preview is an interaction surface, not a change to the fabric.
                     // Editing tools retain the click through normal Leaflet map bubbling.
-                    if (window.sharePlanMode || window.measureMode || window.__mapEditLock?.isHeld()
+                    if (window.MapPick?.active() || window.measureMode || window.__mapEditLock?.isHeld()
                         || window.isParcelDrawingModeActive?.() || window.pinpointToolIsActive?.()) return;
                     L.DomEvent.stopPropagation(event);
                     const panel = document.getElementById('proposal-details-panel');
@@ -691,13 +691,12 @@ function clearProposalOwnParcelInfo(expectedParcelIds = null) {
         window.currentParcelCoordinates = null;
     }
     document.getElementById('parcel-info-panel')?.classList.remove('visible');
-    try { window.__drillUi?.hideIfNothingSelected?.(); } catch (_) { }
     return true;
 }
 
 // A proposal that produces exactly one live parcel shows that parcel's info alongside the proposal
 // card, collapsed to its header so the proposal stays the primary surface. Proposals that currently
-// produce no parcel and those that create many (reparcellization) open nothing here.
+// produce no parcel and those that create many (a parcel layout) open nothing here.
 function showOwnParcelInfoForProposal(proposal) {
     if (window.PlanningViews?.isInspecting()) return;
     // 3D is a viewing mode: the details card does not open there (showProposalInfo bails out), so
@@ -756,9 +755,9 @@ function selectAndHighlightProposal(proposalIdOrHash, parcelId, shouldCenter = f
         });
         return;
     }
-    // Share-plan mode: no surface may select a proposal or open its details — the panel's own
-    // row hover/click highlight is the only proposal interaction while the plan is being composed.
-    if (window.sharePlanMode) return;
+    // A surface picks designs on the map (js/map-pick.js): nothing may select a proposal or open its
+    // details — the picking surface's own rows and the map pick are the only design interactions.
+    if (window.MapPick?.active()) return;
 
     const resolvedId = resolveProposalIdKey(proposalIdOrHash);
     // 3D is a viewing mode: the 2D card cannot open there, and the scene is the visible UI of the
@@ -1180,59 +1179,6 @@ function findParcelLayerById(parcelId) {
     if (!normalized) return null;
     if (!window.LiveParcelFabric?.get?.(normalized)) return null;
     return window.ParcelPresenter?.getLayer?.(normalized) || null;
-}
-
-async function focusMapThenMaybeEnter3D(focusFn) {
-    const params = (() => {
-        try { return new URLSearchParams(window.location.search || ''); } catch (_) { return null; }
-    })();
-
-    // Always perform the focus action (unless caller passes a non-function).
-    const doFocus = () => {
-        try { typeof focusFn === 'function' && focusFn(); } catch (_) { }
-    };
-
-    const wants3D = is3DModeRequestedFromUrl(params);
-    if (!wants3D || url3DModeHandled) {
-        doFocus();
-        return false;
-    }
-
-    // A proposal-link load owns its own 3D entry (passing the link's proposalIds as camera
-    // focus). Entering here — mid-apply, with no focus ids — won the race, marked the URL as
-    // handled, and the route's focused entry was skipped: the camera framed EVERY applied
-    // proposal instead of the link's. Same rule handleStandalone3DModeFromUrl already applies.
-    const hasProposalParams = params && (params.has('proposalShare') || params.has('shared')
-        || window.location.pathname.startsWith('/proposals/')
-        || window.location.pathname.startsWith('/plans/'));
-    if (hasProposalParams) {
-        doFocus();
-        return false;
-    }
-
-    let beforeCenter = null;
-    let beforeZoom = null;
-    try {
-        if (typeof map !== 'undefined' && map && typeof map.getCenter === 'function') {
-            beforeCenter = map.getCenter();
-        }
-        if (typeof map !== 'undefined' && map && typeof map.getZoom === 'function') {
-            beforeZoom = map.getZoom();
-        }
-    } catch (_) { }
-
-    const settlePromise = (beforeCenter && Number.isFinite(beforeZoom))
-        ? createLeafletViewSettlePromise(beforeCenter, beforeZoom)
-        : Promise.resolve();
-
-    doFocus();
-    await settlePromise;
-
-    const entered = tryEnterThreeMode({ fromUrl: true });
-    if (entered) {
-        url3DModeHandled = true;
-    }
-    return entered;
 }
 
 async function waitForParcelLayersReady(parcelIds, options = {}) {

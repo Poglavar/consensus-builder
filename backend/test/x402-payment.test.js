@@ -1,12 +1,10 @@
-// Unit tests for utils/x402-payment.js — the pure half of the pay-to-post gate: config reading,
-// exact atomic→decimal formatting, agent-path detection and the agent stamp.
+// Unit tests for utils/x402-payment.js — the pure half of the paid agent routes: config reading,
+// exact atomic→decimal formatting and agent-path detection.
 import { describe, it, expect } from 'vitest';
 import {
-    buildAgentStamp,
     CDP_CREDENTIAL_ENV_NAMES,
     CDP_FACILITATOR_URL,
     formatAtomicAmount,
-    hashAgentProposalRequest,
     isAgentPath,
     isCdpFacilitatorUrl,
     readX402Config,
@@ -115,52 +113,5 @@ describe('formatAtomicAmount', () => {
         expect(formatAtomicAmount('-5', 6)).toBeNull();
         expect(formatAtomicAmount('50000', -1)).toBeNull();
         expect(formatAtomicAmount(null, 6)).toBeNull();
-    });
-});
-
-describe('hashAgentProposalRequest', () => {
-    it('is independent of object key order but preserves array order', () => {
-        const first = hashAgentProposalRequest({ city: 'zagreb', nested: { b: 2, a: 1 }, parcels: ['A', 'B'] });
-        const reordered = hashAgentProposalRequest({ parcels: ['A', 'B'], nested: { a: 1, b: 2 }, city: 'zagreb' });
-        const changed = hashAgentProposalRequest({ city: 'zagreb', nested: { a: 1, b: 2 }, parcels: ['B', 'A'] });
-
-        expect(first).toMatch(/^[a-f0-9]{64}$/);
-        expect(reordered).toBe(first);
-        expect(changed).not.toBe(first);
-    });
-});
-
-describe('buildAgentStamp', () => {
-    const payment = {
-        id: 'proposal_1234567890abcdef',
-        payer: 'PAYER111',
-        transaction: 'SIG111',
-        network: 'solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1',
-        asset: '4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU',
-        amount: '0.05',
-        amountAtomic: '50000'
-    };
-
-    it('keeps what the agent sent and stamps wallet and receipt from the settlement', () => {
-        const stamp = buildAgentStamp({ persona: 'densifier-01', rationale: 'infill', run_id: 'r1' }, payment);
-        expect(stamp).toEqual({
-            persona: 'densifier-01',
-            rationale: 'infill',
-            run_id: 'r1',
-            wallet: 'PAYER111',
-            paid: { id: payment.id, network: payment.network, asset: payment.asset, amount: '0.05', amountAtomic: '50000', tx: 'SIG111' }
-        });
-    });
-
-    it('overwrites a wallet or receipt the client tried to claim', () => {
-        const stamp = buildAgentStamp({ wallet: 'FORGED', paid: { tx: 'FORGED' } }, payment);
-        expect(stamp.wallet).toBe('PAYER111');
-        expect(stamp.paid.tx).toBe('SIG111');
-    });
-
-    it('tolerates a missing or non-object agent field', () => {
-        expect(buildAgentStamp(undefined, payment).wallet).toBe('PAYER111');
-        expect(buildAgentStamp('nonsense', payment).wallet).toBe('PAYER111');
-        expect(buildAgentStamp(['x'], payment).wallet).toBe('PAYER111');
     });
 });

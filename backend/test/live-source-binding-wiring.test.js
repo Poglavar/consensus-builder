@@ -1,9 +1,6 @@
 // Checks that proposal binding selects live sources and their metric CRS without another cadastre.
-import express from 'express';
-import request from 'supertest';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { computeBinding, parcelActBinding, bindingFrame, FOOTPRINT_SITE_SQL } from '../proposals/binding.js';
-import { setupProposalBindingRoute } from '../routes/proposal-binding.js';
 import { clearParcelSourceRuntimeCache } from '../parcels/sources.js';
 
 const SOURCE_ID = 'ca-on-toronto-property-boundary';
@@ -105,18 +102,5 @@ describe('live source proposal binding wiring', () => {
         expect(fetch).toHaveBeenCalledTimes(1);
         expect(site.type).toBe('MultiPolygon');
         expect(binding).toMatchObject({ source: `server:${SOURCE_ID}`, toleranceM: 0.1, coverage: 'complete' });
-    });
-
-    it('returns a source-unavailable gateway response from the proposal binding route', async () => {
-        vi.stubGlobal('fetch', vi.fn(async () => ({ ok: false, status: 503, json: async () => ({}) })));
-        const app = express();
-        app.use(express.json());
-        setupProposalBindingRoute(app, { query: vi.fn(async () => { throw new Error('unexpected HR SQL fallback'); }) });
-
-        const response = await request(app).post('/proposals/binding').send({ site: SITE, city: 'toronto' });
-
-        expect(response.status).toBe(502);
-        expect(response.body.code).toBe('parcel-source-unavailable');
-        expect(response.body.binding).toBeUndefined();
     });
 });

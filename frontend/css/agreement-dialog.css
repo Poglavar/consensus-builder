@@ -1,0 +1,371 @@
+/* The agreement editor (js/agreement-dialog.js): Create / Edit agreement docked on the right of the
+   map in place of the agreement panel (css/agreement.css) while it is open, at the dock's width
+   (--right-dock-width, css/panels.css); on a phone the shared bottom sheet (css/panels.css,
+   css/utilities.css) with the map above it. A header, one scrolling column of sections — designs,
+   land, allocation, money, decision rule, details — with the issues at its top, and a footer with
+   Cancel and Save that stays at the bottom. At the dock's width every row stacks: a parcel or a piece
+   is a two-line row, and each piece sits above the select that names its recipient. Layout only, on
+   the tokens; the controls are the shared ones (base form controls, cb-badge, .btn), and the approval
+   form inside keeps its own rules (css/proposal-editor.css). */
+
+/* ---- The panel: under the top-right buttons, as tall as the dock runs ---- */
+#agreement-editor {
+    position: absolute;
+    top: calc(var(--map-shell-edge) + var(--map-shell-button-size) + var(--map-shell-gap));
+    right: var(--right-dock-gap);
+    bottom: var(--right-dock-bottom);
+    padding: 0;
+    overflow: hidden;
+    z-index: var(--cb-z-panel);
+}
+
+#agreement-editor.visible {
+    display: flex;
+    flex-direction: column;
+}
+
+.agreement-editor .panel-header {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    gap: var(--cb-space-2);
+    padding: var(--cb-space-2) var(--cb-space-3);
+    border-bottom: 1px solid var(--cb-line);
+}
+
+.agreement-editor .panel-header h3 {
+    flex: 1;
+    min-width: 0;
+    margin: 0;
+    font-size: var(--cb-text-xl);
+    line-height: 1.3;
+    overflow-wrap: anywhere;
+}
+
+/* The form is the column under the header: its body scrolls, its footer stays at the bottom. */
+.agreement-editor__form {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-height: 0;
+    margin: 0;
+}
+
+.agreement-editor .panel-body {
+    display: grid;
+    flex: 1 1 auto;
+    align-content: start;
+    gap: var(--cb-space-4);
+    min-height: 0;
+    padding: var(--cb-space-3) var(--cb-space-4);
+    overflow-y: auto;
+}
+
+.agreement-editor .panel-footer {
+    display: flex;
+    flex-shrink: 0;
+    justify-content: flex-end;
+    gap: var(--cb-space-2);
+    padding: var(--cb-space-2) var(--cb-space-4);
+    border-top: 1px solid var(--cb-line);
+}
+
+/* While the editor picks designs on the map (js/map-pick.js), the rest of the map dims less than it
+   does for a shared plan (css/proposals.css): the other applied designs are what the next click
+   adds, so they stay readable. */
+body[data-map-pick="agreement"] {
+    --map-pick-dim: 0.5;
+}
+
+.agreement-intro {
+    margin: 0;
+    color: var(--cb-text-muted);
+    font-size: var(--cb-text-md);
+    line-height: var(--cb-leading);
+}
+
+/* Errors and warnings at the top of the body; an empty list takes no room. */
+.agreement-issues {
+    margin: 0;
+    padding: var(--cb-space-2) var(--cb-space-3) var(--cb-space-2) var(--cb-space-6);
+    border-radius: var(--cb-radius-md);
+    font-size: var(--cb-text-md);
+    line-height: var(--cb-leading);
+}
+
+.agreement-issues:empty {
+    display: none;
+}
+
+.agreement-issues--error {
+    background: var(--cb-danger-soft);
+    color: var(--cb-danger-soft-ink);
+}
+
+.agreement-issues--warning {
+    background: var(--cb-warning-soft);
+    color: var(--cb-warning-soft-ink);
+}
+
+.agreement-section {
+    display: grid;
+    gap: var(--cb-space-2);
+    min-width: 0;
+    padding-top: var(--cb-space-3);
+    border-top: 1px solid var(--cb-line);
+}
+
+.agreement-section__title {
+    margin: 0;
+    font-size: var(--cb-text-lg);
+    font-weight: var(--cb-weight-semibold);
+    color: var(--cb-text-strong);
+}
+
+.agreement-hint {
+    margin: 0;
+    color: var(--cb-text-muted);
+    font-size: var(--cb-text-sm);
+    line-height: var(--cb-leading);
+}
+
+/* What the last click on the map did: added or removed a design. */
+.agreement-pick-status {
+    color: var(--cb-text);
+}
+
+.agreement-notice,
+.agreement-alert {
+    margin: 0;
+    padding: var(--cb-space-2) var(--cb-space-3);
+    border-radius: var(--cb-radius-md);
+    font-size: var(--cb-text-sm);
+    line-height: var(--cb-leading);
+    overflow-wrap: anywhere;
+}
+
+.agreement-notice {
+    background: var(--cb-warning-soft);
+    color: var(--cb-warning-soft-ink);
+}
+
+.agreement-alert {
+    background: var(--cb-danger-soft);
+    color: var(--cb-danger-soft-ink);
+}
+
+/* ---- Designs: one checkbox row per applied design ---- */
+.agreement-design-list,
+.agreement-allocation-list {
+    display: grid;
+    gap: var(--cb-space-2);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.agreement-design-row {
+    display: flex;
+    align-items: center;
+    gap: var(--cb-space-2);
+    min-height: var(--cb-control-height);
+    padding: var(--cb-space-1) var(--cb-space-3);
+    box-sizing: border-box;
+    border: 1px solid var(--cb-line);
+    border-radius: var(--cb-radius-md);
+    cursor: pointer;
+}
+
+.agreement-design-row:has(input:checked) {
+    border-color: var(--cb-primary);
+    background: var(--cb-primary-soft);
+}
+
+.agreement-design-row input {
+    flex: 0 0 auto;
+    margin: 0;
+}
+
+.agreement-design-row__title {
+    flex: 1 1 auto;
+    min-width: 0;
+    font-weight: var(--cb-weight-medium);
+    overflow-wrap: anywhere;
+}
+
+.agreement-design-row__type {
+    flex: 0 0 auto;
+}
+
+/* ---- Land: the input parcels and the resulting pieces, one two-line row each ---- */
+.agreement-land {
+    display: grid;
+    gap: var(--cb-space-3);
+    min-width: 0;
+}
+
+.agreement-table-scroll {
+    max-width: 100%;
+}
+
+.agreement-table {
+    display: block;
+    width: 100%;
+    font-size: var(--cb-text-sm);
+    line-height: var(--cb-leading);
+}
+
+.agreement-table caption {
+    display: block;
+    padding-bottom: var(--cb-space-1);
+    text-align: left;
+    font-size: var(--cb-text-md);
+    font-weight: var(--cb-weight-semibold);
+    color: var(--cb-text);
+}
+
+/* The column heads stay for screen readers only: every row names its own values. */
+.agreement-table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
+
+.agreement-table tbody {
+    display: grid;
+}
+
+/* A parcel: its id and its area, then its holders. A piece: its name and its area, the parcels it
+   stands on, then its holders. */
+.agreement-table tr {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+        "name area"
+        "holders holders";
+    column-gap: var(--cb-space-2);
+    padding: var(--cb-space-1) 0;
+    border-bottom: 1px solid var(--cb-line);
+}
+
+.agreement-table tr[data-agreement-output] {
+    grid-template-areas:
+        "name area"
+        "from from"
+        "holders holders";
+}
+
+.agreement-table th,
+.agreement-table td {
+    display: block;
+    min-width: 0;
+    padding: 0;
+    text-align: left;
+    overflow-wrap: anywhere;
+}
+
+.agreement-table tbody th {
+    grid-area: name;
+    font-weight: var(--cb-weight-medium);
+    color: var(--cb-text-strong);
+}
+
+.agreement-table .agreement-table__number {
+    grid-area: area;
+    text-align: right;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+}
+
+.agreement-table .agreement-table__from {
+    grid-area: from;
+    color: var(--cb-text-muted);
+}
+
+.agreement-table .agreement-table__from::before {
+    content: attr(data-label) " ";
+}
+
+.agreement-table .agreement-table__holders {
+    grid-area: holders;
+}
+
+/* ---- Allocation: each piece above its select. Money: a party beside its amount ---- */
+.agreement-allocations,
+.agreement-money {
+    display: grid;
+    gap: var(--cb-space-2);
+    min-width: 0;
+}
+
+.agreement-allocation-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--cb-space-1);
+}
+
+.agreement-column-head,
+.agreement-money-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: center;
+    gap: var(--cb-space-2);
+}
+
+.agreement-column-head {
+    color: var(--cb-text-muted);
+    font-size: var(--cb-text-sm);
+    font-weight: var(--cb-weight-semibold);
+}
+
+.agreement-allocation-row__piece,
+.agreement-money-row__name {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.agreement-allocation-row select,
+.agreement-money-row input {
+    width: 100%;
+    min-width: 0;
+}
+
+.agreement-money-row input {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+}
+
+.agreement-sponsor {
+    margin: 0;
+    font-weight: var(--cb-weight-semibold);
+    color: var(--cb-text-strong);
+}
+
+.agreement-sponsor:empty {
+    display: none;
+}
+
+/* ---- Decision rule ---- */
+.agreement-fieldset {
+    display: grid;
+    gap: var(--cb-space-2);
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+.agreement-fieldset legend {
+    margin-bottom: var(--cb-space-1);
+    padding: 0;
+    font-size: var(--cb-text-sm);
+    font-weight: var(--cb-weight-semibold);
+    color: var(--cb-text);
+}
+
+.agreement-rule-form {
+    min-width: 0;
+}

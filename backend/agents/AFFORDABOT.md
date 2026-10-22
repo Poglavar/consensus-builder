@@ -1,10 +1,13 @@
 <!-- Server Affordabot operations and evidence limits. -->
 # Affordabot
 
-One scheduled research proposal a day (07:20 UTC), using the existing algorithmic proposer,
-immutable chain publication, canonical parcel binding, devnet funding, lifecycle and run checkpoints.
-The bot costs $0 in model calls; its market stake is 0.01 devnet USDC, capped at 0.02 per run.
-Repeated invocations on the same UTC day resume the same run and cannot create a second daily pick.
+One scheduled research design a day (07:20 UTC), using the existing algorithmic proposer
+(`agents/run.mjs`): the design is published by its CID under a binding owners' agreement over its
+parcel (Affordabot is registered as the parcel's sole owner in the lens member's devnet owner registry),
+minted on devnet and, on a later run, approved, attested and executed, with the server's parcel binding,
+devnet funding, the agreement deadline and run checkpoints. The bot costs $0 in model calls; its market stake is 0.01 devnet USDC, capped at
+0.02 per run. Repeated invocations on the same UTC day resume the same run and cannot create a second
+daily pick.
 
 Six enabled study areas: Hong Kong, Sydney, Los Angeles, Honolulu, Melbourne, San Francisco.
 Cities rotate, with extra turns for the two highest price/income ratios. Values are from
@@ -23,11 +26,14 @@ Exact amendments remain unknown until sourced local planning controls exist.
 Each run tries at most three bounded windows. Each window uses complete Overpass replies for mapped roads/rail, buildings, transit and public/
 sensitive uses. Mapped buildings/public uses exclude the parcel; transport corridors exclude the setback envelope. Parking aisles/driveways may be redeveloped, subject to ownership/access review; a stop must be within 800 m straight line.
 OSM completeness is not inventory completeness, vacancy, walking access or planning permission.
-Source timestamps and evidence gaps persist inside `agent.housing` in immutable metadata.
-Missing/partial screening fails the run. No candidate is an explicit no-picks result, not a fabricated proposal.
+The published design's description carries the research summary (sources, assumptions, gaps); the
+structured screening evidence, source timestamps and evidence gaps persist with each candidate in the
+run checkpoint (`consensus.agent_run.summary.candidates[].housing`).
+Missing/partial screening fails the run. No candidate is an explicit no-picks result, not a fabricated design.
 
-Planning-authority official contact links appear in every proposal. Published mirrors generate a
-durable `summary.outreach` review queue, keyed by proposal ID. Read with:
+Planning-authority official contact links appear in every design description. Published agreements
+generate a durable `summary.outreach` review queue, keyed by agreement CID and linking
+`/agreements/<cid>`. Read with:
 
 ```sh
 cd backend

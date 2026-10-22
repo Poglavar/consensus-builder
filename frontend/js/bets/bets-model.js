@@ -1,6 +1,6 @@
-// Pure view model for the Bets sheet: turns a GET /markets contest into rows with a chance, a pool
-// and a payout multiple, plus the state words the sheet shows. No DOM, no network, exact integer
-// math on atomic USDC (the market program stores u64 atomic units).
+// Pure view model for the Bets sheet: turns a GET /markets contest of agreements into rows with a
+// chance, a pool and a payout multiple, plus the state words the sheet shows. No DOM, no network,
+// exact integer math on atomic USDC (the market program stores u64 atomic units).
 (function attachBetsModel(root, factory) {
     const api = factory();
     if (typeof module === 'object' && module.exports) module.exports = api;
@@ -72,54 +72,66 @@
         return null;
     }
 
-    // One word for where a proposal's bet stands. The server says whether a bet is open (from the
-    // proposal account's own status when it could read it). Only a known terminal chain state
-    // permits settlement; an unavailable status or an app deadline supplies no such evidence.
+    // What a terminal chain status settles a pool to: the agreement-execution-v1 recipe
+    // (backend/oracle/market-recipe.js). Active, and a status nobody observed, settle nothing.
+    const SETTLEMENT = Object.freeze({ executed: 'yes', cancelled: 'no', expired: 'no' });
+    const settlementOf = status => (Object.prototype.hasOwnProperty.call(SETTLEMENT, status) ? SETTLEMENT[status] : null);
+
+    // One word for where an agreement's bet stands. The server says whether a bet is open (the
+    // agreement account Active on-chain, as the lifecycle oracle observed it, and its deadline still
+    // ahead). Only a known terminal chain status permits settlement; an unobserved status or a passed
+    // deadline supplies no such evidence.
     function rowState(entry) {
         if (!entry) return 'not-minted';
         if (entry.market && entry.market.resolved) return entry.market.outcome === 'yes' ? 'resolved-yes' : 'resolved-no';
         if (entry.bettable) return 'open';
         if (entry.canOpenMarket) return 'needs-market';
-        if (!entry.proposalAccount) return 'not-minted';
-        const status = entry.chainStatus;
-        // Still Active on-chain but not bettable: the server saw a reason (unreadable market); treat it
-        // as closed rather than inviting a transaction that would fail.
-        if (!['Executed', 'Cancelled', 'Expired'].includes(status)) return 'closed';
-        // The proposal left Active on-chain: the market only needs someone to resolve it from the
-        // proposal's terminal status.
+        if (!entry.account) return 'not-minted';
+        // Not bettable and not terminal (its deadline passed while the account is still Active, or its
+        // status is unobserved): closed, rather than inviting a bet that cannot win or would fail.
+        if (!settlementOf(entry.chainStatus)) return 'closed';
+        // The agreement left Active on-chain: the pool only needs someone to settle it.
         return entry.market ? 'settling' : 'closed';
     }
 
-    // Every word rowState can say. An older plan version arrives with its own (GET /markets clears its
-    // bettable, since a newer version replaced it, but says where its pool stands).
+    // Every word rowState can say.
     const ROW_STATES = ['open', 'needs-market', 'settling', 'resolved-yes', 'resolved-no', 'closed', 'not-minted'];
-    // Rows still in play: a bet can go in, a pool can open, or a decided proposal awaits settlement.
+    // Rows still in play: a bet can go in, a pool can open, or a decided agreement awaits settlement.
     const LIVE_STATES = ['open', 'needs-market', 'settling'];
     const stateOf = item => (ROW_STATES.includes(item.state) ? item.state : rowState(item));
 
+    // What a row is called: the agreement's own title, else its designs' titles in authored order (a
+    // title is optional); empty when it has neither.
+    function labelOf(entry) {
+        const title = entry && typeof entry.title === 'string' ? entry.title.trim() : '';
+        if (title) return title;
+        const designs = (entry && Array.isArray(entry.designTitles) ? entry.designTitles : [])
+            .map(item => String(item ?? '').trim()).filter(Boolean);
+        return designs.length > 3 ? `${designs.slice(0, 3).join(' + ')} + …` : designs.join(' + ');
+    }
+
+    // One agreement's row. `contest` is the id of the contest it stands in.
     function row(entry, options = {}) {
         const market = entry && entry.market ? entry.market : null;
         const odds = market ? chance(market.yesPool, market.noPool) : { yes: null, no: null };
         return {
-            id: entry.id,
-            // 'plan' for a named plan (plans.md): its own pool over a set of member proposals.
-            kind: entry.kind === 'plan' ? 'plan' : 'proposal',
-            planSlug: entry.planSlug || null,
-            memberCount: Number.isFinite(entry.memberCount) ? entry.memberCount : 0,
-            members: Array.isArray(entry.members) ? entry.members : [],
-            proposalId: entry.proposalId,
-            proposalAccount: entry.proposalAccount || null,
+            kind: 'agreement',
+            cid: entry.cid || null,
+            account: entry.account || null,
+            contest: entry.contest || options.contest || null,
             title: entry.title || '',
-            goal: entry.goal || null,
+            label: labelOf(entry),
+            designTitles: Array.isArray(entry.designTitles) ? entry.designTitles : [],
             author: entry.author || null,
-            agent: Boolean(entry.agent),
             createdAt: entry.createdAt || null,
+            // The agreement's own deadline: after it the agreement can no longer execute.
+            deadline: entry.deadline || null,
+            status: entry.status || null,
+            chainStatus: entry.chainStatus || null,
             screenshotUrl: entry.screenshotUrl || null,
-            // The same ground without the proposal, when rendered (dividers.md, M3).
+            // The same ground without the agreement's designs, when rendered (dividers.md, M3).
             screenshotBeforeUrl: entry.screenshotBeforeUrl || null,
             parcelIds: Array.isArray(entry.parcelIds) ? entry.parcelIds : [],
-            lifecycleStatus: entry.lifecycleStatus || 'Unknown',
-            chainStatus: entry.chainStatus || null,
             state: stateOf(entry),
             chanceYes: odds.yes,
             chanceNo: odds.no,
@@ -131,16 +143,35 @@
             outcome: market && market.resolved ? (market.outcome === 'yes' ? 'yes' : 'no') : null,
             paysYes: market ? payoutMultiple('yes', market.yesPool, market.noPool) : null,
             paysNo: market ? payoutMultiple('no', market.yesPool, market.noPool) : null,
-            // The market's own deadline, what rows sort by: a dated market has one, a legacy pool none.
-            // expiresAt is the proposal's app-level expiry, the date shown when the market has no deadline.
-            closesAt: entry.closesAt || null,
-            expiresAt: entry.expiresAt || null,
-            marketAddress: market ? market.address : null,
-            // An older version of a named plan (plans.md): reachable for the bets already in its pool,
-            // never offered for a new one.
-            supersededBy: entry.supersededBy || null,
-            superseded: Boolean(entry.supersededBy),
-            olderVersions: Array.isArray(entry.olderVersions) ? entry.olderVersions.map(item => row(item, options)) : []
+            marketAddress: market ? market.address : null
+        };
+    }
+
+    // A GET /markets-shaped entry for an agreement read straight from the chain (js/solana/
+    // market-bridge.js readSummary: the account's status and deadline, its pool), for the bet dialog's
+    // row when the city list does not carry the agreement yet, such as one just minted. It takes bets
+    // by the rule GET /markets applies (backend/markets/contests.js agreementEntry): the account Active
+    // and its deadline, after which the agreement can no longer execute, not reached (or not set).
+    function chainEntry(account, summary, nowMs = Date.now()) {
+        const market = summary && summary.market ? summary.market : null;
+        const chainStatus = summary && typeof summary.chainStatus === 'string' ? summary.chainStatus.toLowerCase() : null;
+        const deadline = summary && summary.deadline ? summary.deadline : null;
+        const deadlineMs = deadline ? Date.parse(deadline) : NaN;
+        const live = chainStatus === 'active' && !(Number.isFinite(deadlineMs) && deadlineMs <= nowMs);
+        return {
+            account,
+            chainStatus,
+            deadline,
+            bettable: Boolean(market && !market.resolved && live),
+            canOpenMarket: Boolean(account && !market && live),
+            market: market ? {
+                address: summary.marketAddress || null,
+                yesPool: market.yesPool,
+                noPool: market.noPool,
+                poolAtomic: atomic(market.yesPool) + atomic(market.noPool),
+                resolved: Boolean(market.resolved),
+                outcome: market.resolved ? (Number(market.outcome) === 1 ? 'yes' : 'no') : null
+            } : null
         };
     }
 
@@ -160,33 +191,31 @@
         return state === 'resolved-yes' || state === 'resolved-no' ? 1 : 2;
     }
 
-    // Rows in a contest: rows in play first, the soonest deadline leading (a legacy pool has none and
-    // follows the dated ones), then the bigger pool; settled rows after them, the bigger pool first.
-    // Ties: a whole plan before its loose pieces, then the newest.
+    // Rows in a contest: rows in play first, the soonest agreement deadline leading (one without a
+    // deadline follows the dated ones), then the bigger pool; settled rows after them, the bigger
+    // pool first. Ties: the newest.
     function compareRows(a, b) {
         const rank = standing(a) - standing(b);
         if (rank) return rank;
         if (standing(a) === 0) {
-            const closesA = timeOf(a.closesAt);
-            const closesB = timeOf(b.closesAt);
-            if (closesA !== closesB) {
-                if (closesA === null) return 1;
-                if (closesB === null) return -1;
-                return closesA - closesB;
+            const deadlineA = timeOf(a.deadline);
+            const deadlineB = timeOf(b.deadline);
+            if (deadlineA !== deadlineB) {
+                if (deadlineA === null) return 1;
+                if (deadlineB === null) return -1;
+                return deadlineA - deadlineB;
             }
         }
         const pool = poolOf(b) - poolOf(a);
         if (pool !== 0n) return pool > 0n ? 1 : -1;
-        // A whole plan is what people argue about; its loose pieces come after it.
-        if ((a.kind === 'plan') !== (b.kind === 'plan')) return a.kind === 'plan' ? -1 : 1;
         return (timeOf(b.createdAt) || 0) - (timeOf(a.createdAt) || 0);
     }
 
-    const contestRows = item => (Array.isArray(item.rows) ? item.rows : Array.isArray(item.proposals) ? item.proposals : []);
+    const contestRows = item => (Array.isArray(item.rows) ? item.rows : Array.isArray(item.agreements) ? item.agreements : []);
 
     // Contests: the ones where a bet can go in now first, then by their leading row under the same
     // rule (rows are already in order, so the page opens on the city's best row), then the bigger
-    // pool, more entries and the newest.
+    // pool, more agreements and the newest.
     function compareContests(a, b) {
         const rowsA = contestRows(a);
         const rowsB = contestRows(b);
@@ -201,7 +230,7 @@
         }
         const pool = atomic(b.poolAtomic) - atomic(a.poolAtomic);
         if (pool !== 0n) return pool > 0n ? 1 : -1;
-        const count = (b.proposalCount || 0) - (a.proposalCount || 0);
+        const count = (b.agreementCount || 0) - (a.agreementCount || 0);
         if (count) return count;
         return (timeOf(b.latestCreatedAt) || 0) - (timeOf(a.latestCreatedAt) || 0);
     }
@@ -219,7 +248,7 @@
     }
 
     // Rows nothing can be done with yet (no mint, or decided before a pool existed) fold away under
-    // a count, so a contest of 26 proposals with 2 pools reads as 2 pools.
+    // a count, so a contest of 26 agreements with 2 pools reads as 2 pools.
     const HIDDEN_STATES = ['not-minted', 'closed'];
     function splitRows(rows) {
         const list = Array.isArray(rows) ? rows : [];
@@ -238,12 +267,10 @@
     }
     function filterRows(rows, filter, positionsByAccount = {}) {
         const list = Array.isArray(rows) ? rows : [];
-        const mine = item => Boolean(item.proposalAccount && hasPosition(positionsByAccount[item.proposalAccount]));
         switch (filter) {
             case 'open': return list.filter(item => LIVE_STATES.includes(item.state));
             case 'settled': return list.filter(item => item.state === 'resolved-yes' || item.state === 'resolved-no');
-            // A bet in an older version's pool keeps its plan in "Mine", so it can still be collected.
-            case 'mine': return list.filter(item => mine(item) || (item.olderVersions || []).some(mine));
+            case 'mine': return list.filter(item => Boolean(item.account && hasPosition(positionsByAccount[item.account])));
             default: return list;
         }
     }
@@ -274,18 +301,16 @@
         return { first: String(ids[0]), more: ids.length - 1 };
     }
 
-    // The counts are of current versions: a plan's older versions fold under its row (olderVersions)
-    // and are neither entries nor plans of the contest. Rows keep GET /markets' order, re-applied here
+    // One GET /markets contest as the sheet shows it. Rows keep GET /markets' order, re-applied here
     // (compareRows) so the sheet never disagrees with the API.
     function contest(entry, options = {}) {
-        const rows = (entry && Array.isArray(entry.proposals) ? entry.proposals : []).map(item => row(item, options)).sort(compareRows);
+        const rows = (entry && Array.isArray(entry.agreements) ? entry.agreements : [])
+            .map(item => row(item, { ...options, contest: entry.id })).sort(compareRows);
         return {
             id: entry.id,
             parcelIds: entry.parcelIds || [],
-            siteName: entry.siteName || null,
             land: landLabel(entry.parcelIds),
-            proposalCount: rows.length,
-            planCount: rows.filter(item => item.kind === 'plan').length,
+            agreementCount: rows.length,
             openCount: rows.filter(item => item.state === 'open').length,
             pool: formatAtomic(entry.poolAtomic, options.decimals),
             poolAtomic: atomic(entry.poolAtomic),
@@ -303,8 +328,8 @@
     }
 
     return {
-        USDC_DECIMALS, REFERENCE_STAKE, QUICK_STAKES, FILTERS, HIDDEN_STATES, ROW_STATES, LIVE_STATES, formatAtomic, chance, payoutMultiple,
-        toWin, oneSided, rowState, row, contest, compareRows, compareContests, orderContests, splitRows, filterRows, claimSides, hasPosition,
-        landLabel, parcelLabel, authorLabel
+        USDC_DECIMALS, REFERENCE_STAKE, QUICK_STAKES, FILTERS, HIDDEN_STATES, ROW_STATES, LIVE_STATES, SETTLEMENT, formatAtomic, chance,
+        payoutMultiple, toWin, oneSided, settlementOf, rowState, labelOf, row, chainEntry, contest, compareRows, compareContests, orderContests, splitRows,
+        filterRows, claimSides, hasPosition, landLabel, parcelLabel, authorLabel
     };
 });

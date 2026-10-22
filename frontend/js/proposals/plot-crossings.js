@@ -1,4 +1,4 @@
-// Which applied subdivision/readjustment plots a road or track edge would cut, and which standing
+// Which applied subdivision/parcel-layout plots a road or track edge would cut, and which standing
 // proposal buildings it would run through (PARCEL-OPTIONAL.md phase 7b). A later corridor takes
 // its ribbon out of the plots it crosses (apply/road.js _groundAfterLaterCorridors), so the road tool
 // asks "Build through?" naming them. A corridor through ANY standing proposal building is refused at
@@ -53,11 +53,11 @@
     }
 
     function isPlotRecord(record) {
-        return !!(record && record.reparcellization && typeof record.reparcellization === 'object');
+        return !!(record && record.parcelLayout && typeof record.parcelLayout === 'object');
     }
 
     function plotKind(record) {
-        return record && record.reparcellization && record.reparcellization.poolSource === 'site' ? 'subdivision' : 'readjustment';
+        return record && record.parcelLayout && record.parcelLayout.poolSource === 'site' ? 'subdivision' : 'parcel-layout';
     }
 
     function titleOf(record, fallback) {
@@ -74,9 +74,9 @@
     function plotGroundParts(record) {
         const site = asFeature(record && record.site);
         if (site) return [site];
-        const polygons = record && record.reparcellization && Array.isArray(record.reparcellization.polygons)
-            ? record.reparcellization.polygons : [];
-        return polygons.map(asFeature).filter(Boolean);
+        const plots = record && record.parcelLayout && Array.isArray(record.parcelLayout.plots)
+            ? record.parcelLayout.plots : [];
+        return plots.map(asFeature).filter(Boolean);
     }
 
     /**
@@ -85,7 +85,7 @@
      *   plotRecords: object[], approvedIds?: Iterable<string>, minAreaM2?: number, turf?: object }} options
      *   pieces: live fabric pieces near the edge (properties.producedByProposalId);
      *   buildings: applied proposal building footprints (properties.proposalId);
-     *   plotRecords: applied subdivision/readjustment records (for "is this house on a plot").
+     *   plotRecords: applied subdivision/parcel-layout records (for "is this house on a plot").
      * @returns {{ plots: {proposalId, title, kind, count, areaM2}[], blocked: {proposalId, title, plotProposalId, plotTitle, areaM2}[] }}
      *   blocked: every applied proposal building the edge runs through; plotProposalId/plotTitle
      *   name the plot it stands on, or are null for a building on cadastral parcels.

@@ -1,19 +1,29 @@
-// Verify secondary wallet, profile, activity, Canton, and supporting controls through real UI paths.
+// Verify secondary wallet, profile, activity and supporting controls through real UI paths.
 import { test, expect } from '../helpers/fixtures';
-import { openCity, openParcel, PARCEL_ID } from '../helpers/runtime';
-import { getWalletStates, injectMockEvmWallet, injectMockSolanaWallet, openWalletModal } from '../helpers/blockchain';
+import { openCity, stubBasemapTiles } from '../helpers/runtime';
+import { waitForMapReady } from '../helpers/app';
+import { getWalletStates, injectMockEvmWallet, injectMockSolanaWallet, openWalletModal, waitForBlockchainRuntime } from '../helpers/blockchain';
+import { cidOfObject } from '../helpers/mocks/shared-server';
 import { selectors } from '../helpers/selectors';
 
 const json = (route: any, body: unknown) => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(body) });
 
-function routeCantonApi(page: import('@playwright/test').Page, handler: (route: any) => any) {
-  return page.route('**/canton/**', route => {
-    const pathname = new URL(route.request().url()).pathname;
-    // Canton frontend modules live under /js/canton/. Only stub API endpoints.
-    if (pathname.includes('/js/canton/')) return route.continue();
-    return handler(route);
-  });
-}
+// Two agreements in the live feed (plan-design-agreement.md, M3: activity is about agreements, by CID).
+const SCOPED_AGREEMENT = cidOfObject({ schema: 'agreement/v1', title: 'Scoped park agreement' });
+const OTHER_AGREEMENT = cidOfObject({ schema: 'agreement/v1', title: 'Unrelated block agreement' });
+const shortCid = (cid: string) => `${cid.slice(0, 12)}…${cid.slice(-6)}`;
+const SCOPED_EVENT = {
+  id: 'scoped-event', occurredAt: '2026-10-01T12:00:00Z', recordedAt: '2026-10-01T12:00:00Z',
+  actor: { id: 'scope-actor', name: 'Map Steward', kind: 'agent', controller: 'algorithm' },
+  action: { type: 'propose', agreementCid: SCOPED_AGREEMENT }, entity: { type: 'agreement', id: SCOPED_AGREEMENT },
+  source: 'live', message: 'Proposed the scoped park agreement', ok: true, runId: 'scope-run-42',
+};
+const OTHER_EVENT = {
+  id: 'other-event', occurredAt: '2026-10-02T12:00:00Z', recordedAt: '2026-10-02T12:00:00Z',
+  actor: { id: 'other-actor', name: 'Other Planner', kind: 'agent', controller: 'algorithm' },
+  action: { type: 'propose', agreementCid: OTHER_AGREEMENT }, entity: { type: 'agreement', id: OTHER_AGREEMENT },
+  source: 'live', message: 'Proposed an unrelated block agreement', ok: true, runId: 'other-run-99',
+};
 
 async function openProfile(page: import('@playwright/test').Page, username: string) {
   await page.locator('#username-display').click();
@@ -90,6 +100,9 @@ test.describe('Supporting secondary controls @core', () => {
     await openWalletModal(page);
     await page.locator(`${selectors.walletConnectorButton}[data-wallet-connector="metamask"]`).click();
     const profile = await openProfile(page, 'City token actor');
+    // ethers loads on demand (the EVM connection starts it, the city token awaits it); the token
+    // contract is replaced only once it is there.
+    await waitForBlockchainRuntime(page, ['ethers']);
     await page.evaluate(() => {
       const w = window as any;
       let registered = false;
@@ -194,109 +207,90 @@ test.describe('Supporting secondary controls @core', () => {
     await expect.poll(async () => (await getWalletStates(page)).solana?.cluster).toBe('mainnet-beta');
   });
 
-  test('activity row scope buttons filter the explorer and Clear scope resets it', async ({ mockApi: page }) => {
+  test('activity row scope buttons filter the explorer, Clear scope resets it, and a row opens its agreement', async ({ mockApi: page }) => {
+    const queries: URLSearchParams[] = [];
+    await page.route('**/agent/activity**', route => {
+      queries.push(new URL(route.request().url()).searchParams);
+      return json(route, { events: [SCOPED_EVENT, OTHER_EVENT] });
+    });
     await openCity(page);
-    await page.evaluate(() => (window as any).proposalStorage.addProposal({
-      proposalId: 'scope-proposal', title: 'Scoped park plan', goal: 'park', city: 'zagreb',
-      cadastreParcelIds: ['HR-335754-1234'],
-      parcelSet: {
-        setHash: 'scope-land-hash', parcelIds: ['HR-335754-1234'],
-        parcelSource: { sourceId: 'hr-cadastre', snapshotId: null },
-      },
-    }));
-    const scopedEvent = {
-      id: 'scoped-event', occurredAt: '2026-10-01T12:00:00Z', recordedAt: '2026-10-01T12:00:00Z',
-      actor: { id: 'scope-actor', name: 'Map Steward', kind: 'agent', controller: 'algorithm' },
-      action: { type: 'publish' }, entity: { type: 'proposal', id: 'scope-proposal' },
-      source: 'agent', message: 'Published the scoped park plan', ok: true,
-      runId: 'scope-run-42',
-    };
-    await page.route('**/agent/activity**', route => json(route, { events: [scopedEvent, {
-      id: 'other-event', occurredAt: '2026-10-02T12:00:00Z', recordedAt: '2026-10-02T12:00:00Z',
-      actor: { id: 'other-actor', name: 'Other Planner', kind: 'agent', controller: 'algorithm' },
-      action: { type: 'publish' }, entity: { type: 'proposal', id: 'other-proposal' },
-      source: 'agent', message: 'Published an unrelated block plan', ok: true, runId: 'other-run-99',
-    }] }));
+    // This device proposed the scoped agreement, so its row opens the local copy's panel.
+    const localId = await page.evaluate(cid => {
+      const w = window as any;
+      return String(w.AgreementStore.save({
+        schema: 'agreement/v1', id: w.AgreementRecord.newId(), title: 'Scoped park agreement', city: 'zagreb',
+        createdAt: '2026-10-01T11:00:00.000Z', designs: [{ proposalId: 'scoped-park', title: 'Scoped park', goal: 'park', cid: null }],
+        inputs: { parcels: [], openGroundM2: 0 }, outputs: [], rule: { electorate: 'community', binding: false },
+        published: { cid, publishedAt: '2026-10-01T11:00:00.000Z', apiBase: w.DesignSync.apiBase(), sponsor: null },
+      }).id);
+    }, SCOPED_AGREEMENT);
     await page.locator('#activity-button').click();
     await page.locator('#activity-explorer-button').click();
     const modal = page.locator('.game-log-modal');
     const content = modal.locator('#game-log-content');
     await expect(content.locator('.log-entry')).toHaveCount(2);
-    const row = content.locator('.log-entry').filter({ hasText: 'scoped park plan' });
-    await row.locator('details > summary').click();
-    await row.locator('[data-activity-scope="actorId"]').click();
+    const scopedRow = content.locator('.log-entry').filter({ hasText: 'scoped park agreement' });
     const scope = modal.locator('[data-activity-scope-chip]');
+
+    await scopedRow.locator('details > summary').click();
+    await scopedRow.locator('[data-activity-scope="actorId"]').click();
     await expect(scope).toBeVisible();
     await expect(scope).toContainText('Actor: scope-actor');
     await expect(content.locator('.log-entry')).toHaveCount(1);
-    await expect(content).toContainText('Published the scoped park plan');
-    await expect(content).not.toContainText('unrelated block plan');
-
+    await expect(content).toContainText('Proposed the scoped park agreement');
+    await expect(content).not.toContainText('unrelated block agreement');
     await modal.locator('[aria-label="Clear scope"]').click();
     await expect(scope).toBeHidden();
     await expect(content.locator('.log-entry')).toHaveCount(2);
-    const scopedRow = content.locator('.log-entry').filter({ hasText: 'scoped park plan' });
+
+    // The agreement scope asks the server for that agreement's activity (?agreement=<cid>).
     await scopedRow.locator('details > summary').click();
-    await scopedRow.locator('[data-activity-scope="proposalId"]').click();
+    await scopedRow.locator('[data-activity-scope="agreementCid"]').click();
     await expect(scope).toBeVisible();
-    await expect(scope).toContainText('Proposal: scope-proposal');
+    await expect(scope).toContainText(`Agreement: ${shortCid(SCOPED_AGREEMENT)}`);
     await expect(content.locator('.log-entry')).toHaveCount(1);
+    await expect(content).toContainText('Proposed the scoped park agreement');
+    await expect(content).not.toContainText('unrelated block agreement');
+    expect(queries.some(query => query.get('agreement') === SCOPED_AGREEMENT)).toBe(true);
     await modal.locator('[aria-label="Clear scope"]').click();
     await expect(scope).toBeHidden();
     await expect(content.locator('.log-entry')).toHaveCount(2);
 
-    const landRow = content.locator('.log-entry').filter({ hasText: 'scoped park plan' });
-    await landRow.locator('details > summary').click();
-    await landRow.locator('[data-activity-scope="parcelSetOf"]').click();
-    await expect(scope).toBeVisible();
-    // The UI intentionally truncates long parcel-set hashes in the visible chip.
-    await expect(scope.locator('span')).toHaveText('Land: scope-land-ha…');
-    await expect(content.locator('.log-entry')).toHaveCount(1);
-    await expect(content).toContainText('Published the scoped park plan');
-    await expect(content).not.toContainText('unrelated block plan');
-    await modal.locator('[aria-label="Clear scope"]').click();
-    await expect(content.locator('.log-entry')).toHaveCount(2);
-
-    const runRow = content.locator('.log-entry').filter({ hasText: 'scoped park plan' });
-    await runRow.locator('details > summary').click();
-    await runRow.locator('[data-activity-scope="runId"]').click();
+    await scopedRow.locator('details > summary').click();
+    await scopedRow.locator('[data-activity-scope="runId"]').click();
     await expect(scope).toBeVisible();
     await expect(scope).toContainText('Run: scope-run-42');
     await expect(content.locator('.log-entry')).toHaveCount(1);
-    await expect(content).toContainText('Published the scoped park plan');
-    await expect(content).not.toContainText('unrelated block plan');
+    await expect(content).toContainText('Proposed the scoped park agreement');
+    await expect(content).not.toContainText('unrelated block agreement');
     await modal.locator('[aria-label="Clear scope"]').click();
     await expect(scope).toBeHidden();
     await expect(content.locator('.log-entry')).toHaveCount(2);
+
+    // Open agreement: the explorer closes and the agreement's panel takes the right dock.
+    await scopedRow.locator(`.activity-entity-link[data-entity-type="agreement"][data-entity-id="${SCOPED_AGREEMENT}"]`).click();
+    await expect(modal).toHaveCount(0);
+    await expect(page.locator('section#agreement-panel')).toBeVisible({ timeout: 30_000 });
+    await expect(page.locator('#agreement-panel-title')).toHaveText('Scoped park agreement');
+    expect(await page.evaluate(() => (window as any).AgreementPanel.current())).toBe(localId);
   });
 
-  test('Canton identity Clear, switch-network, and Close actions keep their dialogs in sync', async ({ mockApi: page }) => {
-    await page.addInitScript(() => {
-      (window as any).CANTON_ENABLED = true;
-      localStorage.setItem('canton.parties', JSON.stringify([{ party: 'Owner::fingerprint', role: 'owner', parcelId: '', ts: 1 }]));
-    });
-    await routeCantonApi(page, route => json(route, { counts: {}, proposals: [], sales: [] }));
-    await openCity(page);
-    const profile = await openProfile(page, 'Canton identity dialogs');
-    const network = profile.locator('.wallet-chain-info');
-    await network.click();
-    const chainModal = page.locator('.chain-modal-overlay');
-    await expect(chainModal).toBeVisible();
-    await chainModal.locator('[data-chain-id="canton"]').click();
-    const picker = page.locator('.canton-id-overlay');
-    await expect(picker).toBeVisible();
-    await picker.locator('[data-clear]').click();
-    await expect(picker.locator('[data-list]')).toContainText('No parties yet');
-    await picker.locator('[data-switch]').click();
-    await expect(picker).toHaveCount(0);
-    await expect(chainModal).toBeVisible();
-    await chainModal.locator('[data-chain-modal-close]').click();
-    await expect(chainModal).toHaveCount(0);
-
-    await network.click();
-    await expect(picker).toBeVisible();
-    await picker.locator('[data-close]').click();
-    await expect(picker).toHaveCount(0);
+  test('an ?activity=agreement:<cid> link opens the explorer scoped to that agreement, once', async ({ mockApi: page }) => {
+    await stubBasemapTiles(page);
+    await page.route('**/agent/activity**', route => json(route, { events: [SCOPED_EVENT, OTHER_EVENT] }));
+    await page.goto(`/?city=zg&reduceMotion=1&activity=${encodeURIComponent(`agreement:${SCOPED_AGREEMENT}`)}`, { waitUntil: 'domcontentloaded' });
+    await waitForMapReady(page);
+    const modal = page.locator('.game-log-modal');
+    await expect(modal).toBeVisible({ timeout: 30_000 });
+    await expect(modal.locator('[data-activity-scope-chip]')).toContainText(`Agreement: ${shortCid(SCOPED_AGREEMENT)}`);
+    const content = modal.locator('#game-log-content');
+    await expect(content.locator('.log-entry')).toHaveCount(1);
+    await expect(content).toContainText('Proposed the scoped park agreement');
+    await expect(content).not.toContainText('unrelated block agreement');
+    // Closing the explorer drops the link from the address, so a reload does not open it again.
+    await modal.locator('.game-log-modal-close').click();
+    await expect(modal).toHaveCount(0);
+    await expect.poll(() => page.evaluate(() => new URLSearchParams(location.search).has('activity'))).toBe(false);
   });
 
   test('country name buttons take the report to the matching city inventory', async ({ mockApi: page }) => {
@@ -386,7 +380,7 @@ test.describe('Supporting secondary controls @core', () => {
         (window as any).agentStorage.addAgent({
           id: 'ui-takeover-target', name: 'Takeover Target', avatarIndex: 15,
           isGuest: false, userControlled: false, aiControlled: true, controller: 'algorithm',
-          ethBalance: 100, walletAddresses: [], ownedParcels: [], proposalsCreated: [], proposalsAccepted: [], proposalsExecuted: [],
+          ethBalance: 100, walletAddresses: [], ownedParcels: [], proposalsCreated: [], proposalsExecuted: [],
         });
       });
       const target = await page.evaluate(() => {
@@ -420,125 +414,6 @@ test.describe('Supporting secondary controls @core', () => {
       await expect(page.locator('#username-text')).toHaveText(target!.name);
       expect(await page.evaluate(() => (window as any).getCurrentUserAgent?.()?.id || null)).toBe(target!.id);
       expect(await page.evaluate(id => (window as any).agentStorage.getAgent(id).userControlled, target!.id)).toBe(true);
-    });
-
-    test('Canton explorer party chips, Load, Accept, and Close perform their visible actions', async ({ mockApi: page }) => {
-      await page.addInitScript(() => {
-        (window as any).CANTON_ENABLED = true;
-        localStorage.setItem('canton.active', '1');
-        localStorage.setItem('canton.party', 'Owner::fingerprint');
-        localStorage.setItem('canton.parties', JSON.stringify([
-          { party: 'Owner::fingerprint', role: 'owner', parcelId: '', ts: 1 },
-          { party: 'Buyer::fingerprint', role: 'buyer', parcelId: '', ts: 2 },
-        ]));
-      });
-      let accepted = false;
-      let acceptRequest: { path: string; owner?: string } | null = null;
-      await routeCantonApi(page, async route => {
-        const request = route.request();
-        const url = new URL(request.url());
-        if (url.pathname.endsWith('/canton/parcel-counts')) return json(route, { counts: {} });
-        if (url.pathname.endsWith('/canton/proposals') && request.method() === 'GET') {
-          const party = url.searchParams.get('party');
-          return json(route, { proposals: party === 'Owner::fingerprint' && !accepted ? [
-            { parcelId: 'PARCEL-1', buyer: 'Buyer::fingerprint', owner: 'Owner::fingerprint', lens: 'Lens::fingerprint', price: '125000', contractId: 'explorer-contract' },
-          ] : [] });
-        }
-        if (url.pathname.endsWith('/canton/sales')) {
-          const party = url.searchParams.get('party');
-          return json(route, { sales: accepted && party === 'Owner::fingerprint' ? [
-            { parcelId: 'PARCEL-1', buyer: 'Buyer::fingerprint', owner: 'Owner::fingerprint', lens: 'Lens::fingerprint', price: '125000', contractId: 'explorer-contract' },
-          ] : [] });
-        }
-        if (url.pathname.endsWith('/canton/proposals/explorer-contract/accept') && request.method() === 'POST') {
-          accepted = true;
-          acceptRequest = { path: url.pathname, owner: request.postDataJSON()?.owner };
-          return json(route, { accepted: true });
-        }
-        return json(route, {});
-      });
-
-      await openCity(page);
-      await page.locator('#username-display').click();
-      await expect(page.locator('#welcome-modal')).toBeVisible();
-      await page.locator('#username-input').fill('Canton explorer actor');
-      await page.locator('#welcome-submit-btn').click();
-      await page.locator('#username-display').click();
-      const profile = page.locator('.agent-dialog-modal');
-      await expect(profile).toBeVisible();
-      await profile.locator('.wallet-chain-info').click();
-      const picker = page.locator('.canton-id-overlay');
-      await expect(picker).toBeVisible();
-      await picker.locator('[data-explorer]').click();
-
-      const explorer = page.locator('.canton-explorer-overlay');
-      await expect(explorer).toBeVisible();
-      const status = explorer.locator('[data-status]');
-      await expect(status).toContainText('1 proposal(s), 0 sale(s) — as Owner');
-      await explorer.locator('[data-party="Buyer::fingerprint"]').click();
-      await expect(status).toContainText('0 proposal(s), 0 sale(s) — as Buyer');
-      await explorer.locator('[data-party="Owner::fingerprint"]').click();
-      await expect(status).toContainText('1 proposal(s), 0 sale(s) — as Owner');
-      await explorer.locator('#canton-explorer-party').fill('Owner::fingerprint');
-      await explorer.locator('[data-load]').click();
-      await expect(explorer.locator('.canton-explorer-accept')).toBeVisible();
-      await explorer.locator('.canton-explorer-accept').click();
-      await expect(status).toContainText('0 proposal(s), 1 sale(s) — as Owner');
-      expect(accepted).toBe(true);
-      expect(acceptRequest).toEqual({ path: '/canton/proposals/explorer-contract/accept', owner: 'Owner::fingerprint' });
-      await explorer.locator('[data-close]').click();
-      await expect(explorer).toHaveCount(0);
-    });
-
-    test('Canton parcel Accept updates the private proposal to a sale', async ({ mockApi: page }) => {
-      await page.addInitScript(() => {
-        (window as any).CANTON_ENABLED = true;
-        localStorage.setItem('canton.parties', JSON.stringify([{ party: 'Owner::fingerprint', role: 'owner', parcelId: '', ts: 1 }]));
-      });
-      let accepted = false;
-      const calls: string[] = [];
-      let acceptRequest: { path: string; owner?: string } | null = null;
-      await routeCantonApi(page, async route => {
-        const request = route.request();
-        const url = new URL(request.url());
-        calls.push(`${request.method()} ${url.pathname}${url.search}`);
-        if (url.pathname.endsWith('/canton/parcel-counts')) return json(route, { counts: { [PARCEL_ID]: 1 } });
-        if (url.pathname.endsWith('/canton/proposals') && request.method() === 'GET') {
-          return json(route, { proposals: accepted ? [] : [{ parcelId: PARCEL_ID, buyer: 'Buyer::fingerprint', owner: 'Owner::fingerprint', lens: 'Lens::fingerprint', price: '125000', contractId: 'panel-contract' }] });
-        }
-        if (url.pathname.endsWith('/canton/sales')) {
-          return json(route, { sales: accepted ? [{ parcelId: PARCEL_ID, buyer: 'Buyer::fingerprint', owner: 'Owner::fingerprint', lens: 'Lens::fingerprint', price: '125000', contractId: 'panel-contract' }] : [] });
-        }
-        if (url.pathname.endsWith('/canton/proposals/panel-contract/accept') && request.method() === 'POST') {
-          accepted = true;
-          acceptRequest = { path: url.pathname, owner: request.postDataJSON()?.owner };
-          return json(route, { accepted: true });
-        }
-        return json(route, {});
-      });
-
-      await openCity(page);
-      const profile = await openProfile(page, 'Canton parcel actor');
-      const network = profile.locator('.wallet-chain-info');
-      await network.click();
-      const chainModal = page.locator('.chain-modal-overlay');
-      await expect(chainModal).toBeVisible();
-      await chainModal.locator('[data-chain-id="canton"]').click();
-      const picker = page.locator('.canton-id-overlay');
-      await expect(picker).toBeVisible();
-      await picker.locator('[data-party-select="Owner::fingerprint"]').click();
-      await expect(network).toContainText('Canton · Owner');
-      await profile.getByRole('button', { name: 'Close agent dialog' }).click();
-      await openParcel(page, 'info', PARCEL_ID);
-      await page.locator('#parcel-info-panel [data-parcel-tab-id="proposals-tab"]').click();
-      await expect(page.locator('#proposals-tab')).toBeVisible();
-      const canton = page.locator('#canton-proposals-content');
-      await expect(canton.locator('.canton-panel-accept')).toBeVisible();
-      await canton.locator('.canton-panel-accept').click();
-      await expect(canton).toContainText('Accepted');
-      await expect(canton.locator('.canton-panel-accept')).toHaveCount(0);
-      expect(calls.some(call => call === 'POST /canton/proposals/panel-contract/accept')).toBe(true);
-      expect(acceptRequest).toEqual({ path: '/canton/proposals/panel-contract/accept', owner: 'Owner::fingerprint' });
     });
   });
 

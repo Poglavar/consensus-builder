@@ -74,10 +74,14 @@ let buttons;
 let localToggle;
 let dispatched;
 
+// The CIDs a server-tab card carries for its design (list-ui.js data-cid).
+const CID_ONE = 'bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku';
+const CID_TWO = 'bafkreibm6jg3ux5qumhcn2b3flc3tyu6dmlb4xa7u5bf44yegnrjhc4yeq';
+
 beforeEach(() => {
     buttons = [
-        button({ 'data-proposal-id': 'p-one', 'data-server-id': '101' }),
-        button({ 'data-proposal-id': 'HR-330337-*879/2#plan-1', 'data-server-id': '102' })
+        button({ 'data-proposal-id': 'p-one', 'data-cid': CID_ONE }),
+        button({ 'data-proposal-id': 'HR-330337-*879/2#plan-1', 'data-cid': CID_TWO })
     ];
     localToggle = { textContent: 'Local (7)' };
     dispatched = [];
@@ -106,9 +110,10 @@ describe('the card stops offering a download', () => {
         expect(buttons[1].disabled).toBe(false);
     });
 
-    it('matches on the server id too, since that is what one caller holds', () => {
-        loadMarker(env)('102', { proposalId: 'x' });
+    it('matches on the design\'s CID too, since that is what one caller holds', () => {
+        loadMarker(env)(CID_TWO, { proposalId: 'x' });
         expect(buttons[1].textContent).toBe('Downloaded');
+        expect(buttons[0].textContent).toBe('Download');
     });
 
     it('matches an id carrying characters a CSS selector would choke on', () => {
@@ -206,11 +211,10 @@ describe('the renderer shows it in both tabs', () => {
         expect(ladderSource).toMatch(/const \{ applied \} = window\.__proposalDisplayState\.of\(proposal,/);
         const render = new Function('window', 'getProposalI18nHelper', 'getProposalLifecycleLabel', 'escapeHtml',
             `${ladderSource}; return proposalLadderBadgesHtml;`)(
-            { __proposalDisplayState: require('../../frontend/js/proposals/display-state.js'),
-                ProposalKind: require('../../frontend/js/proposals/proposal-kind.js') },
+            { __proposalDisplayState: require('../../frontend/js/proposals/display-state.js') },
             () => (_key, fallback) => fallback, key => key, require('../../frontend/js/shared-utils.js').escapeHtml);
         const recorded = {
-            lifecycleStatus: 'Executed', kind: 'owner-deal',
+            lifecycleStatus: 'Executed',
             lifecycleEvidence: { protocol: 'proposal-lifecycle-evidence/1', state: 'observed', status: 'Executed', observedAt: '2026-10-01T00:00:00.000Z' }
         };
         expect(render(recorded)).toContain('Execution recorded</span>');

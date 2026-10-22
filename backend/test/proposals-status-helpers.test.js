@@ -103,6 +103,7 @@ describe('proposal status-axis normalisation', () => {
     it('parks an import with unavailable lifecycle as Unknown', () => {
         const proposal = { applied: true };
         parkProposalForImport(proposal);
-        expect(proposal).toEqual({ lifecycleStatus: 'Unknown', applied: false, acceptedParcelIds: [], ownerAcceptances: {} });
+        // A design carries no acceptance tally: owners decide on agreements (M2).
+        expect(proposal).toEqual({ lifecycleStatus: 'Unknown', applied: false });
     });
 });

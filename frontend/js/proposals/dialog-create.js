@@ -439,195 +439,9 @@ function setProposalModalInteractivity(enabled) {
     modal.classList.toggle('proposal-modal-disabled', !enabled);
 }
 
-// The "Who decides?" row (proposal-kinds.md), first in both create dialogs. The overlay's
-// data-proposal-kind (create.js applyProposalKindToDialog) shows the terms that belong to the kind:
-// rows marked .proposal-deal-term for an owner deal, .proposal-vote-term for a vote.
-function proposalKindRowHtml(t) {
-    const kinds = window.ProposalKind;
-    const labels = {
-        'owner-deal': t('modal.createProposal.kind.ownerDeal', 'Owner deal'),
-        'owner-vote': t('modal.createProposal.kind.ownerVote', 'Owner vote'),
-        'community-vote': t('modal.createProposal.kind.communityVote', 'Community vote')
-    };
-    const options = kinds.KINDS.map(kind => `<label class="cb-segmented__option proposal-radio"><input type="radio" name="proposalKind" value="${kind}"${kind === kinds.DEFAULT_PUBLISH_KIND ? ' checked' : ''} onchange="applyProposalKindToDialog(); updateCreateProposalSubmitState()"><span>${labels[kind]}</span></label>`).join('');
-    return `<div class="proposal-choices" id="proposalKindGroup">
-                    <div class="cb-kicker" id="proposalKindHeading">${t('modal.createProposal.kind.heading', 'Who decides?')}</div>
-                    <div class="cb-segmented" role="radiogroup" aria-labelledby="proposalKindHeading">${options}</div>
-                    <p class="proposal-kind-explain" id="proposalKindExplain" aria-live="polite"></p>
-                </div>`;
-}
-
-function proposalVoteTermRowHtml(t) {
-    return `<div class="proposal-option-row proposal-option-row--split proposal-vote-term" id="proposalVoteExpiryWrap">
-                                <div class="proposal-option-toggle">
-                                    <label for="proposalVoteExpiryDays">${t('modal.createProposal.options.voteExpiry', 'Voting period')}</label>
-                                </div>
-                                <div class="proposal-option-value proposal-option-value--end">
-                                    <input type="number" id="proposalVoteExpiryDays" class="proposal-option-number" min="1" max="365" value="365">
-                                    <span class="proposal-option-suffix">${t('modal.createProposal.options.voteExpiryDaysSuffix', 'days (max 365)')}</span>
-                                </div>
-                            </div>`;
-}
-
-// Cash is authored per owner in the LR ledger; the generic offer input cannot change that total.
-function refreshReparcellizationCashTerms(modal) {
-    const plan = window.pendingReparcellizationPlan;
-    if (!modal || !plan || !Array.isArray(plan.ownerShares)) return;
-    const input = modal.querySelector('#proposalOffer');
-    const currency = modal.querySelector('#proposalCurrency');
-    if (!input) return;
-    const total = window.ReparcellizationAgreements.cashOfferTotal(plan);
-    input.value = CbFormat.formatNumber(total, { minFractionDigits: 2, maxFractionDigits: 2 });
-    input.readOnly = true;
-    if (currency) { currency.value = window.CityMoney.currentCurrency(); currency.disabled = true; }
-    if (!modal.querySelector('[data-reparcel-cash-terms]')) {
-        const hint = document.createElement('p');
-        hint.className = 'reparcel-agreement-hint';
-        hint.dataset.reparcelCashTerms = '';
-        hint.id = 'reparcel-cash-terms';
-        hint.textContent = getProposalI18nHelper()('reparcellization.modal.cashTermsHint',
-            'Total compensation from the owner ledger. Edit individual cash offers in the land readjustment editor.');
-        input.closest('.form-group')?.appendChild(hint);
-    }
-    input.setAttribute('aria-describedby', 'reparcel-cash-terms');
-    // The readjustment's plan has just arrived or changed: its approval row follows it.
-    mountReparcellizationApprovalRow(modal);
-}
-
-// Agreements are a proposal decision, after the geometry editor has finished its layout.
-function mountReparcellizationAgreementOptions(modal) {
-    const plan = window.pendingReparcellizationPlan;
-    if (plan?.algorithm !== 'amend' || !(plan.inputParcels?.length > 1)) return;
-    const offerGroup = modal.querySelector('#proposalOffer')?.closest('.form-group');
-    if (!offerGroup) return;
-    const t = getProposalI18nHelper();
-    let parts = [];
-    let reason = '';
-    try { parts = window.ReparcellizationPlanUtils.splitPlanPerParcel(plan, turf); }
-    catch (error) {
-        reason = error.code === 'courtyard-required'
-            ? t('reparcellization.modal.agreementRequiresCourtyard', 'Draw a shared courtyard before creating separate parcel agreements.')
-            : t('reparcellization.modal.agreementPrivateTransfers', 'Separate agreements must keep private land with its original owners. Use one agreement for this layout.');
-    }
-    const fieldset = document.createElement('fieldset');
-    fieldset.className = 'reparcel-agreement-options';
-    const legend = document.createElement('legend');
-    legend.textContent = t('reparcellization.modal.agreementTitle', 'Agreements');
-    fieldset.appendChild(legend);
-    const selected = plan.agreementMode === 'individual' && !reason ? 'individual' : 'single';
-    plan.agreementMode = selected;
-    for (const [value, label] of [
-        ['single', t('reparcellization.modal.agreementSingle', 'One agreement')],
-        ['individual', t('reparcellization.modal.agreementIndividual', 'Separate parcel agreements') + (parts.length ? ` (${parts.length})` : '')]
-    ]) {
-        const row = document.createElement('label');
-        const input = document.createElement('input');
-        input.type = 'radio';
-        input.name = 'reparcel-agreement';
-        input.value = value;
-        input.checked = value === selected;
-        input.disabled = value === 'individual' && !!reason;
-        const text = document.createElement('span');
-        text.textContent = label;
-        row.append(input, text);
-        fieldset.appendChild(row);
-        input.addEventListener('change', () => {
-            plan.agreementMode = value;
-            const draftId = window.pendingProposalDraftId;
-            if (draftId && window.proposalDraftStore?.getDraft(draftId)) {
-                window.proposalDraftStore.updateDraft(draftId, { editorPayload: { plan } }, { coalesceKey: 'reparcellization-agreements' });
-            }
-            hint.textContent = reason || t('reparcellization.modal.agreementHint',
-                'Each parcel keeps its remainder with its current owners and contributes its part of the shared courtyard.');
-            details.hidden = value !== 'individual';
-            updateCreateProposalSubmitState();
-        });
-    }
-    const hint = document.createElement('p');
-    hint.className = 'reparcel-agreement-hint';
-    hint.textContent = reason || t('reparcellization.modal.agreementHint',
-        'Each parcel keeps its remainder with its current owners and contributes its part of the shared courtyard.');
-    const details = document.createElement('p');
-    details.className = 'reparcel-agreement-hint';
-    details.hidden = selected !== 'individual';
-    details.textContent = t('reparcellization.modal.agreementOfferHint',
-        'Cash follows each owner’s compensation in the land readjustment ledger. Review each agreement separately before publishing it.');
-    fieldset.append(hint, details);
-    modal.querySelector('#proposalOptionsSection').before(fieldset);
-}
-
-// The cadastral parcels a readjustment in this dialog declares: the site's, or the selection's
-// live pieces projected to the cadastre (the same rule createProposal stamps).
-function pendingReadjustmentCadastreIds() {
-    const site = window.pendingProposalSiteContext;
-    if (site?.site && Array.isArray(site.cadastreParcelIds)) return site.cadastreParcelIds.map(String);
-    const plan = window.pendingReparcellizationPlan;
-    const ids = Array.isArray(plan?.parcelIds) && plan.parcelIds.length ? plan.parcelIds
-        : (typeof getCurrentParcelSelectionContext === 'function' ? getCurrentParcelSelectionContext().ids || [] : []);
-    try { return window.LiveParcelFabric.cadastreIdsForParcelIds(ids.map(String)); } catch (_) { return ids.map(String); }
-}
-
-// What the dialog will create the readjustment with: the row's own edit, else the editor draft's.
-function pendingReadjustmentApproval() {
-    if (window.pendingProposalApprovalSetup) return window.pendingProposalApprovalSetup;
-    const draft = window.pendingProposalDraftId && window.proposalDraftStore?.getDraft?.(window.pendingProposalDraftId);
-    return { approvalConfig: draft?.fields?.approvalConfig || null, lens: Array.isArray(draft?.fields?.lens) ? draft.fields.lens : [] };
-}
-
-// "Ownership and approval" for a readjustment being created: who owns which parcel, the rule that
-// passes it and the lens that attests owners, set here rather than through a replacement proposal
-// afterwards. The form is the editor's Approval tab (proposals/approval-setup.js).
-function mountReparcellizationApprovalRow(modal) {
-    if (!modal || !window.pendingReparcellizationPlan || !window.ProposalApprovalSetup) return;
-    const t = getProposalI18nHelper();
-    let row = modal.querySelector('[data-reparcel-approval-row]');
-    if (!row) {
-        row = document.createElement('div');
-        row.className = 'form-group reparcel-approval-row';
-        row.dataset.reparcelApprovalRow = '';
-        const title = document.createElement('span');
-        title.className = 'reparcel-approval-row__title';
-        title.textContent = t('proposalDrafts.approval.title', 'Ownership and approval');
-        const summary = document.createElement('p');
-        summary.className = 'reparcel-agreement-hint';
-        summary.dataset.reparcelApprovalSummary = '';
-        const button = document.createElement('button');
-        button.type = 'button';
-        button.className = 'btn btn-sm';
-        button.dataset.reparcelApprovalSetup = '';
-        button.addEventListener('click', () => openReparcellizationApprovalSetup(modal));
-        row.append(title, summary, button);
-        const anchor = modal.querySelector('.reparcel-agreement-options') || modal.querySelector('#proposalOptionsSection');
-        if (!anchor) return;
-        anchor.before(row);
-    }
-    const { approvalConfig, lens } = pendingReadjustmentApproval();
-    row.querySelector('[data-reparcel-approval-summary]').textContent = window.ProposalApprovalSetup.summaryText(approvalConfig, lens);
-    row.querySelector('[data-reparcel-approval-setup]').textContent = approvalConfig?.rights
-        ? t('proposalDrafts.approval.change', 'Change…')
-        : t('proposalDrafts.approval.setUp', 'Set up…');
-}
-
-function openReparcellizationApprovalSetup(modal) {
-    const { approvalConfig, lens } = pendingReadjustmentApproval();
-    window.ProposalApprovalSetup.openDialog({
-        approvalConfig, lens,
-        cadastreParcelIds: pendingReadjustmentCadastreIds(),
-        onApply: setup => {
-            window.pendingProposalApprovalSetup = setup;
-            // An editor draft behind this dialog keeps the same setup, so reopening it agrees.
-            const draftId = window.pendingProposalDraftId;
-            if (draftId && window.proposalDraftStore?.getDraft?.(draftId)) {
-                window.proposalDraftStore.updateDraft(draftId, { fields: { approvalConfig: setup.approvalConfig, lens: setup.lens } }, { coalesceKey: 'create-dialog-approval' });
-            }
-            mountReparcellizationApprovalRow(modal);
-        }
-    });
-}
-
 function showProposalDialog(overrides = null) {
     // No guest gate here: creating stays on this device (guest-policy.js). Minting, publishing and
-    // sharing ask for a profile name; "Offer my land" asks for proof of ownership.
+    // sharing ask for a profile name.
 
     // Stash overrides for this session
     proposalDialogOverrides = overrides || null;
@@ -656,12 +470,7 @@ function showProposalDialog(overrides = null) {
     // Editing a proposal already on the map (opened via its "Details" button) reuses this same
     // full-property dialog, only reframed: the source id is staged in pendingProposalReplacementSource.
     const isEditingExisting = !!(typeof window !== 'undefined' && window.pendingProposalReplacementSource && window.pendingProposalReplacementSource.proposalId);
-    // Terms for a record that already exists (create.js openPublishTermsDialog): its design is
-    // done, so the design sections hide and no parcel selection is needed.
-    const publishInPlace = proposalDialogOverrides?.publishInPlace || null;
-    const modalTitle = publishInPlace
-        ? t('modal.createProposal.publishTitle', 'Before publishing')
-        : isEditingExisting
+    const modalTitle = isEditingExisting
         ? t('modal.createProposal.editTitle', 'Proposal')
         : t('modal.createProposal.title', 'Create Proposal');
     const closeAriaLabel = t('modal.createProposal.closeAria', 'Close proposal dialog');
@@ -692,7 +501,6 @@ function showProposalDialog(overrides = null) {
     const proposalTypeLabels = {
         Purchase: t('modal.createProposal.proposalTypeOptions.purchase', 'Purchase'),
         'Urban Rule': t('modal.createProposal.proposalTypeOptions.urbanRule', 'Urban Rule'),
-        Reparcellization: t('modal.createProposal.proposalTypeOptions.reparcellization', 'Reparcellization'),
         'Joint Investment': t('modal.createProposal.proposalTypeOptions.jointInvestment', 'Joint Investment')
     };
     const goalLabels = {
@@ -703,7 +511,6 @@ function showProposalDialog(overrides = null) {
         lake: t('modal.createProposal.goalOptions.lake', 'Lake'),
         roadTrack: t('modal.createProposal.goalOptions.roadTrack', 'Road/Track'),
         urbanRule: t('modal.createProposal.goalOptions.urbanRule', 'Urban Rule'),
-        reparcellization: t('modal.createProposal.goalOptions.reparcellization', 'Reparcellization'),
         ownershipTransfer: t('modal.createProposal.goalOptions.ownershipTransfer', 'Ownership transfer')
     };
     const goalSectionLabels = {
@@ -713,15 +520,13 @@ function showProposalDialog(overrides = null) {
     };
     const asIsLandUseLabel = t('modal.createProposal.goalOptions.asIs', 'As is');
     const parcelsOptions = {
-        asIs: t('modal.createProposal.parcelsOptions.asIs', 'As is'),
-        readjust: t('modal.createProposal.parcelsOptions.readjust', 'Readjust')
+        asIs: t('modal.createProposal.parcelsOptions.asIs', 'As is')
     };
     const ownershipRecipients = {
         noChange: t('modal.createProposal.ownershipRecipients.noChange', 'No change'),
         toMe: t('modal.createProposal.ownershipRecipients.toMe', 'To me'),
         toCity: t('modal.createProposal.ownershipRecipients.toCity', 'To city'),
-        thirdParty: t('modal.createProposal.ownershipRecipients.thirdParty', 'Third party'),
-        perSlice: t('modal.createProposal.ownershipRecipients.perSlice', 'Per slice')
+        thirdParty: t('modal.createProposal.ownershipRecipients.thirdParty', 'Third party')
     };
     const recipientPlaceholder = t('modal.createProposal.recipientPlaceholder', 'Recipient name or 0x address');
     const recipientScopeLabels = {
@@ -744,23 +549,8 @@ function showProposalDialog(overrides = null) {
     };
     const descriptionLabel = t('modal.createProposal.descriptionLabel', 'Description');
     const descriptionPlaceholder = t('modal.createProposal.descriptionPlaceholder', 'Describe your proposal…');
-    const offerLabel = t('modal.createProposal.offerLabel', 'Offer');
-    const offerPlaceholder = t('modal.createProposal.offerPlaceholder', '0');
-    const optionsLabel = t('modal.createProposal.optionsLabel', 'Options');
-    // Title for the collapsible "Options" section that hides Offer + advanced settings by default.
+    // Title for the collapsible "Options" section: the site tolerance, the summary and similar proposals.
     const optionsSectionTitle = t('modal.createProposal.optionsSectionTitle', 'Options');
-    const conditionalLabel = t('modal.createProposal.options.conditional', 'Conditional');
-    const conditionalHelperOnText = t('modal.createProposal.options.conditionalHelperOn', 'Pay reward only if/when all owners accept');
-    const conditionalHelperOffText = t('modal.createProposal.options.conditionalHelperOff', 'Payout only when all parcels accept');
-    const expireAfterLabel = t('modal.createProposal.options.expireAfter', 'Expire after');
-    const expiryPlaceholder = t('modal.createProposal.options.expiryPlaceholder', '00h:05m:00s');
-    const decayLabel = t('modal.createProposal.options.decay', 'Offer Decay');
-    const decayHelperText = t('modal.createProposal.options.decayHelper', 'Offer amount will decrease with time to entice acceptance.');
-    const decayPercentSuffix = t('modal.createProposal.options.decayPercentSuffix', '% over');
-    const decayTimePlaceholder = t('modal.createProposal.options.decayTimePlaceholder', '00h:05m:00s');
-    const depositLabel = t('modal.createProposal.options.deposit', 'Deposit');
-    const depositHelperText = t('modal.createProposal.options.depositHelper', '% of offer');
-    const areaProportionalText = t('modal.createProposal.options.areaProportional', 'Payouts are proportional to parcel area');
     const summaryTitle = t('modal.createProposal.summary.title', 'Proposal Summary');
     const summaryParcelsLabel = t('modal.createProposal.summary.parcels', 'Parcels Selected:');
     const summaryAreaLabel = t('modal.createProposal.summary.area', 'Total Area:');
@@ -770,14 +560,7 @@ function showProposalDialog(overrides = null) {
     const similarUnknownTitle = t('modal.createProposal.similar.unknownTitle', 'Untitled proposal');
     const similarUnknownAuthor = t('modal.createProposal.similar.unknownAuthor', 'Unknown');
     const lensTooltip = t('modal.createProposal.lensTooltip', 'Open lens modal');
-    const ownerOfferLabels = {
-        label: t('modal.createProposal.ownerOffer.label', 'Offer my land'),
-        explain: t('modal.createProposal.ownerOffer.explain', 'You offer your own parcels and invite bids. Bids arrive as pledges and donations on this proposal; nobody else can accept it. When a bid suits you, you execute the offer by saying yes on your parcels. The offer amount is your asking price.'),
-        recheck: t('modal.createProposal.ownerOffer.recheck', 'Check again')
-    };
-    const submitLabel = publishInPlace
-        ? t('modal.createProposal.publishSubmit', 'Save terms')
-        : isEditingExisting
+    const submitLabel = isEditingExisting
         ? window.ProposalLineage.forkSubmitLabel(window.pendingProposalReplacementSource.proposalId,
             { fork: window.pendingProposalReplacementSource.fork === true })
         : t('modal.createProposal.submit', 'Create Proposal');
@@ -789,21 +572,12 @@ function showProposalDialog(overrides = null) {
     const overrideSummaryStats = proposalDialogOverrides?.summaryStats || null;
     const overrideGeometryPreset = proposalDialogOverrides?.geometryPreset || null;
     const goalLocked = !!(proposalDialogOverrides && proposalDialogOverrides.lockGoal);
-    const ownershipOnly = !!(proposalDialogOverrides && proposalDialogOverrides.ownershipOnly);
     const acquisitionLocked = !!(proposalDialogOverrides && proposalDialogOverrides.lockAcquisition);
 
-    const agreementBatch = pendingReparcellizationAgreementBatch();
-    const selection = agreementBatch ? { ids: [], layers: [] } : getCurrentParcelSelectionContext();
+    const selection = getCurrentParcelSelectionContext();
     const parcelIds = selection.ids;
-    // A retry reviews saved terms even when the batch has already replaced its original pieces.
-    const selectedFeatures = agreementBatch ? agreementBatch.items.map(item => {
-        const input = item.record.reparcellization.inputParcels[0];
-        return { type: 'Feature', geometry: input.geometry, properties: {
-            BROJ_CESTICE: input.label, calculatedArea: item.record.reparcellization.totalArea
-        } };
-    }) : parcelIds.map(id => window.LiveParcelFabric?.get?.(String(id))).filter(Boolean);
-    const selectedParcels = agreementBatch ? selectedFeatures.map(feature => ({ feature })) : selection.layers;
-    const isSingleParcelSelection = selectedParcels.length === 1;
+    const selectedFeatures = parcelIds.map(id => window.LiveParcelFabric?.get?.(String(id))).filter(Boolean);
+    const selectedParcels = selection.layers;
     const roadScreenshotContext = ((typeof window !== 'undefined' && window.pendingRoadDrawingProposal)
         ? window.pendingRoadDrawingProposal
         : pendingRoadDrawingProposal) || null;
@@ -811,32 +585,16 @@ function showProposalDialog(overrides = null) {
     // it is only needed to draw a thumbnail. Building it here would hold the dialog closed while the
     // user waits, so it is deferred until after the modal has painted; the container is reserved now and
     // removed later if there turns out to be nothing to preview.
-    const hasScreenshotCandidate = !agreementBatch && (selectedParcels.length > 0 || !!roadScreenshotContext);
-
-    // Which chain this proposal will be minted on, if any. Minting is implicit — it follows whichever
-    // wallet is connected or whether Canton mode is on — so the dialog has to say so out loud.
-    const offchainLabel = t('modal.createProposal.mintTarget.offchain', 'Off-chain (this browser only)');
-    const mintTarget = (typeof getActiveMintTarget === 'function')
-        ? getActiveMintTarget()
-        : { chain: null, label: offchainLabel, onchain: false };
-    const mintsOnLabel = t('modal.createProposal.mintTarget.mintsOn', 'Mints on');
-    const noWalletTooltip = t('modal.createProposal.mintTarget.noWalletTooltip', 'No wallet connected; the proposal stays in this browser.');
-    const mintChainHtml = `
-        <div class="proposal-mint-target proposal-design-only ${mintTarget.onchain ? 'proposal-mint-target--onchain' : 'proposal-mint-target--offchain'}"
-             title="${mintTarget.identity ? String(mintTarget.identity) : noWalletTooltip}">
-            <i class="fas ${mintTarget.onchain ? 'fa-link' : 'fa-link-slash'}" aria-hidden="true"></i>
-            <span>${mintTarget.onchain ? mintsOnLabel : ''} <b>${mintTarget.label}</b></span>
-        </div>`;
+    const hasScreenshotCandidate = selectedParcels.length > 0 || !!roadScreenshotContext;
 
     currentProposalTool = null;
 
     // A site-first proposal (js/site-drawing.js) carries its ground as a site and its declaration
-    // as the binding, possibly empty on bare ground: no live selection is needed. The owner offer
-    // stays an act on parcels and keeps requiring them.
-    const siteContext = (!ownershipOnly && proposalDialogOverrides && proposalDialogOverrides.siteContext
+    // as the binding, possibly empty on bare ground: no live selection is needed.
+    const siteContext = (proposalDialogOverrides && proposalDialogOverrides.siteContext
         && proposalDialogOverrides.siteContext.site) ? proposalDialogOverrides.siteContext : null;
     window.pendingProposalSiteContext = siteContext;
-    if (!publishInPlace && !siteContext && !agreementBatch && (!selectedParcels.length || selectedFeatures.length !== parcelIds.length)) {
+    if (!siteContext && (!selectedParcels.length || selectedFeatures.length !== parcelIds.length)) {
         updateStatus(noParcelsMessage);
         return;
     }
@@ -848,13 +606,9 @@ function showProposalDialog(overrides = null) {
         return sum + area;
     }, 0);
 
-    const ownershipStats = agreementBatch ? {
-        ownerCount: new Set(agreementBatch.items.flatMap(item =>
-            item.record.reparcellization.inputParcels.flatMap(input => input.owners.map(owner => owner.ownerKey)))).size,
-        mode: 'multiple'
-    } : computeOwnershipStatsFromSelection(selection);
+    const ownershipStats = computeOwnershipStatsFromSelection(selection);
     const totalOwners = siteContext ? siteParcelIds.length : (ownershipStats.ownerCount || selectedParcels.length);
-    const siteSummaryHtml = siteContext ? `<p class="proposal-site-summary proposal-design-only">${siteParcelIds.length
+    const siteSummaryHtml = siteContext ? `<p class="proposal-site-summary">${siteParcelIds.length
         ? t('modal.createProposal.site.bound', 'Site of {{area}} m², bound parcels: {{count}}. Publishing checks the binding against the full cadastre.', { area: CbFormat.formatNumber(siteArea, { maxFractionDigits: 0 }), count: siteParcelIds.length })
         : t('modal.createProposal.site.unbound', 'Site of {{area}} m² without bound parcel records. Ownership is unknown. On-chain execution requires an authority verdict.', { area: CbFormat.formatNumber(siteArea, { maxFractionDigits: 0 }) })}</p>` : '';
     const toleranceLabel = t('modal.createProposal.tolerance.label', 'Parcel intrusion tolerance (m)');
@@ -897,21 +651,18 @@ function showProposalDialog(overrides = null) {
     // reads a choice's label from), the typology a cb-tiles grid; the hidden main-type and
     // transfer-direction rows are cb-segmented buttons. Selected is :checked or aria-pressed.
     const bodyHtml = `
-                ${mintChainHtml}
                 ${siteSummaryHtml}
                 ${hasScreenshotCandidate ? '<div class="form-group proposal-screenshot-loading" id="proposalScreenshotContainer"><div class="proposal-screenshot-spinner" aria-label="Preparing preview"></div></div>' : ''}
                 <div class="form-group proposal-author-row">
                     <img id="proposalAuthorAvatar" class="proposal-author-avatar" alt="${authorAvatarAlt}" />
                     <input type="text" id="proposalAuthor" class="proposal-author-name" placeholder="${authorPlaceholder}" disabled>
                 </div>
-                ${proposalKindRowHtml(t)}
-                <div class="proposal-design-fields proposal-design-only">
+                <div class="proposal-design-fields">
                     <div class="proposal-choices" id="proposalMainTypeGroup" hidden>
                         <div class="cb-kicker" id="proposalMainTypeHeading">${proposalTypeLabel}</div>
                         <div class="cb-segmented" role="group" aria-labelledby="proposalMainTypeHeading">
                             <button type="button" class="cb-segmented__option" aria-pressed="true" data-proposal-main-type="Purchase" onclick="setProposalMainType('Purchase')">${proposalTypeLabels.Purchase}</button>
                             <button type="button" class="cb-segmented__option" aria-pressed="false" data-proposal-main-type="Urban Rule" onclick="handleUrbanRuleMainTypeClick()">${proposalTypeLabels['Urban Rule']}</button>
-                            <button type="button" class="cb-segmented__option" aria-pressed="false" data-proposal-main-type="Reparcellization" onclick="setProposalMainType('Reparcellization')">${proposalTypeLabels.Reparcellization}</button>
                             <button type="button" class="cb-segmented__option" aria-pressed="false" data-proposal-main-type="Joint Investment" disabled>${proposalTypeLabels['Joint Investment']}</button>
                         </div>
                     </div>
@@ -933,7 +684,6 @@ function showProposalDialog(overrides = null) {
                             <div class="cb-kicker" id="proposalParcelsHeading">${goalSectionLabels.parcels}</div>
                             <div class="cb-segmented" role="radiogroup" aria-labelledby="proposalParcelsHeading" id="proposalParcelsGroup">
                                 <label class="cb-segmented__option proposal-radio"><input type="radio" name="proposalParcelsMode" value="as-is" checked onchange="onProposalParcelsChange()"><span>${parcelsOptions.asIs}</span></label>
-                                <label class="cb-segmented__option proposal-radio"><input type="radio" name="proposalParcelsMode" value="readjust" onchange="onProposalParcelsChange()"><i class="fa-solid fa-vector-square" aria-hidden="true"></i><span>${parcelsOptions.readjust}</span></label>
                             </div>
                             <div class="proposal-facet-static" id="proposalParcelsStatic" style="display:none;"></div>
                         </div>
@@ -944,7 +694,6 @@ function showProposalDialog(overrides = null) {
                                 <label class="cb-segmented__option proposal-radio"><input type="radio" name="proposalOwnership" value="to-me" onchange="onProposalOwnershipChange()"><span>${ownershipRecipients.toMe}</span></label>
                                 <label class="cb-segmented__option proposal-radio"><input type="radio" name="proposalOwnership" value="to-city" onchange="onProposalOwnershipChange()"><span>${ownershipRecipients.toCity}</span></label>
                                 <label class="cb-segmented__option proposal-radio"><input type="radio" name="proposalOwnership" value="third-party" onchange="onProposalOwnershipChange()"><span>${ownershipRecipients.thirdParty}</span></label>
-                                <label class="cb-segmented__option proposal-radio proposal-ownership-perslice" style="display:none;"><input type="radio" name="proposalOwnership" value="per-slice" onchange="onProposalOwnershipChange()"><span>${ownershipRecipients.perSlice}</span></label>
                             </div>
                             <div class="proposal-facet-static" id="proposalOwnershipStatic" style="display:none;"></div>
                             <div class="proposal-inset" id="proposalRecipientOptions" style="display:none;">
@@ -955,14 +704,6 @@ function showProposalDialog(overrides = null) {
                                 <input type="text" id="proposalRecipientAddress" class="proposal-recipient-input" placeholder="${recipientPlaceholder}" oninput="onProposalOwnershipChange()">
                             </div>
                         </div>
-                    </div>
-                    <div class="form-group proposal-owner-offer" id="proposalOwnerOfferGroup" hidden>
-                        <div class="proposal-owner-offer-row">
-                            <label class="proposal-owner-offer-toggle"><input type="checkbox" id="proposalOwnerOfferCheckbox" disabled onchange="onProposalOwnerOfferChange()"><span>${ownerOfferLabels.label}</span></label>
-                            <button type="button" class="btn btn-sm" onclick="refreshOwnerOfferMode()">${ownerOfferLabels.recheck}</button>
-                        </div>
-                        <p class="proposal-owner-offer-status" id="proposalOwnerOfferStatus" aria-live="polite"></p>
-                        <p class="proposal-owner-offer-explain" id="proposalOwnerOfferExplain" hidden>${ownerOfferLabels.explain}</p>
                     </div>
                     <div class="proposal-choices" id="proposalOwnershipTransferGroup" style="display:none;">
                         <div class="cb-kicker" id="proposalTransferHeading">${t('modal.createProposal.ownershipTransfer.label', 'Transfer direction')}</div>
@@ -1011,6 +752,10 @@ function showProposalDialog(overrides = null) {
                         <select id="proposalEpochYear"></select>
                     </label>
                 </div>
+                <div class="proposal-similar-section" id="proposalSimilarSection" style="display:none;">
+                    <h4>${similarTitle}</h4>
+                    <div id="proposalSimilarList" class="proposal-similar-list"></div>
+                </div>
                 <div class="proposal-options-collapsible collapsible collapsed" id="proposalOptionsSection">
                     <div class="collapsible-header proposal-collapsible-header" tabindex="0" role="button" aria-expanded="false" aria-controls="proposalOptionsContent" onclick="(function(){
                         var section = document.getElementById('proposalOptionsSection');
@@ -1033,74 +778,14 @@ function showProposalDialog(overrides = null) {
                         <i id="proposalOptionsChevron" class="fas fa-chevron-down proposal-collapsible-chevron" aria-hidden="true"></i>
                     </div>
                     <div id="proposalOptionsContent" style="display:none;">
-                        <div class="form-group proposal-deal-term">
-                            <label for="proposalOffer">${offerLabel}</label>
-                            <div class="proposal-offer-row">
-                                <input type="text" id="proposalOffer" placeholder="${offerPlaceholder}" inputmode="decimal" oninput="handleProposalOfferInput(this)" onchange="formatProposalOfferInput(this)">
-                                <select id="proposalCurrency">
-                                    ${window.CityMoney.currentOfferCurrencies().map(code => `<option value="${code}"${code === 'USDT' ? ' selected' : ''}>${code}</option>`).join('')}
-                                </select>
-                            </div>
-                        </div>
                         <div class="form-group proposal-options-section">
-                            <div class="proposal-option-row proposal-deal-term" id="proposalOptionConditional">
-                                <div class="proposal-option-toggle">
-                                    <input type="checkbox" id="proposalConditionalCheckbox" checked>
-                                    <label for="proposalConditionalCheckbox">${conditionalLabel}</label>
-                                </div>
-                                <div class="proposal-option-helper" id="proposalConditionalHelperText">
-                                    ${conditionalHelperOnText}
-                                </div>
-                            </div>
-                            <div class="proposal-option-row proposal-option-row--split proposal-deal-term" id="proposalOptionExpire">
-                                <div class="proposal-option-toggle">
-                                    <input type="checkbox" id="proposalExpireCheckbox" onchange="toggleExpiryInput()">
-                                    <label for="proposalExpireCheckbox">${expireAfterLabel}</label>
-                                </div>
-                                <div>
-                                    <input type="text" id="proposalExpiryTime" class="proposal-option-time" value="${expiryPlaceholder}" placeholder="${expiryPlaceholder}" disabled>
-                                </div>
-                            </div>
-                            ${proposalVoteTermRowHtml(t)}
-                            <div class="proposal-option-row proposal-deal-term" id="proposalOptionDecay">
-                                <div class="proposal-option-toggle">
-                                    <input type="checkbox" id="proposalDecayCheckbox" onchange="toggleDecayInput()">
-                                    <label for="proposalDecayCheckbox">${decayLabel}</label>
-                                </div>
-                                <div class="proposal-option-helper">${decayHelperText}</div>
-                            </div>
-                            <div class="proposal-option-row proposal-option-row--split proposal-decay-inputs proposal-deal-term" id="proposalOptionDecayInputs">
-                                <div class="proposal-option-value proposal-option-value--indent">
-                                    <input type="text" id="proposalDecayPercent" class="proposal-option-number" value="50" pattern="[0-9]*" inputmode="numeric" disabled>
-                                    <span class="proposal-option-suffix">${decayPercentSuffix}</span>
-                                </div>
-                                <div>
-                                    <input type="text" id="proposalDecayTime" class="proposal-option-time" value="${decayTimePlaceholder}" placeholder="${decayTimePlaceholder}" disabled>
-                                </div>
-                            </div>
-                            <div class="proposal-option-row proposal-deal-term" id="proposalOptionDeposit">
-                                <div class="proposal-option-toggle">
-                                    <input type="checkbox" id="proposalDepositCheckbox" onchange="toggleDepositInput()">
-                                    <label for="proposalDepositCheckbox">${depositLabel}</label>
-                                </div>
-                                <div class="proposal-option-value">
-                                    <input type="text" id="proposalDepositPercent" class="proposal-option-number" value="100" pattern="[0-9]*" inputmode="numeric" disabled>
-                                    <span class="proposal-option-suffix">${depositHelperText}</span>
-                                </div>
-                            </div>
-                            <div class="proposal-tolerance-row proposal-design-only" id="proposalToleranceRow">
+                            <div class="proposal-tolerance-row" id="proposalToleranceRow">
                                 <label for="proposalToleranceM">${toleranceLabel}</label>
                                 <input type="number" id="proposalToleranceM" min="0" max="1" step="0.01" value="${toleranceValue}" inputmode="decimal">
                                 <p class="proposal-tolerance-help">${toleranceHelp}</p>
                             </div>
-                            <div class="proposal-option-row proposal-deal-term" id="proposalOptionAreaProportional">
-                                <div class="proposal-option-toggle">
-                                    <input type="checkbox" id="proposalAreaProportionalCheckbox" checked disabled>
-                                    <label for="proposalAreaProportionalCheckbox">${areaProportionalText}</label>
-                                </div>
-                            </div>
                         </div>
-                        <div class="proposal-summary proposal-design-only collapsible collapsed" id="proposalSummarySection">
+                        <div class="proposal-summary collapsible collapsed" id="proposalSummarySection">
                             <div class="collapsible-header proposal-collapsible-header" tabindex="0" role="button" aria-expanded="false" aria-controls="proposalSummaryContent" onclick="(function(e){
                                 var section = document.getElementById('proposalSummarySection');
                                 var content = document.getElementById('proposalSummaryContent');
@@ -1133,10 +818,6 @@ function showProposalDialog(overrides = null) {
                                 </div>
                             </div>
                         </div>
-                        <div class="proposal-similar-section" id="proposalSimilarSection" style="display:none;">
-                            <h4>${similarTitle}</h4>
-                            <div id="proposalSimilarList" class="proposal-similar-list"></div>
-                        </div>
                     </div>
                 </div>
     `;
@@ -1163,7 +844,6 @@ function showProposalDialog(overrides = null) {
     if (!dialogApi) return;
     const modal = dialogApi.overlay;
     modal.__proposalDialog = dialogApi;
-    if (publishInPlace) modal.dataset.publishInPlace = '';
     decorateProposalDialogChrome(dialogApi, {
         submitId: 'createProposalSubmitButton',
         lensTooltip,
@@ -1355,9 +1035,6 @@ function showProposalDialog(overrides = null) {
     // As is / As is / No change unless a goal was preset (e.g. from a road drawing).
     // This drives the legacy goal-key machinery via syncProposalFacets().
     initProposalFacets(overrideGoal);
-    // "Offer my land" starts off on every open; the gate is re-read from the lens members' services.
-    window.proposalOwnerOfferMode = false;
-    if (typeof refreshOwnerOfferMode === 'function') refreshOwnerOfferMode();
     setProposalAcquisitionMode(overrideAcquisition || 'full', { force: true });
     setProposalBoundaryMode(ownershipMode || 'multiple', { lock: true });
 
@@ -1367,19 +1044,6 @@ function showProposalDialog(overrides = null) {
             r.disabled = true;
             r.setAttribute('aria-disabled', 'true');
         });
-    }
-
-    if (ownershipOnly) {
-        // The Offer palette entry: building/land-use and parcel changes have their own palette
-        // tools, so this dialog only negotiates ownership. Land use and parcels lock to
-        // "no change" (greyed); the ownership radios stay live.
-        modal.querySelectorAll('[data-goal-section="land-use"] input[type="radio"], [data-goal-section="parcels"] input[type="radio"]').forEach(radio => {
-            radio.checked = radio.value === 'as-is';
-            radio.disabled = true;
-            radio.setAttribute('aria-disabled', 'true');
-        });
-        modal.querySelectorAll('[data-goal-section="land-use"], [data-goal-section="parcels"]')
-            .forEach(section => section.classList.add('proposal-goal-section--locked'));
     }
 
     if (acquisitionLocked) {
@@ -1399,11 +1063,11 @@ function showProposalDialog(overrides = null) {
         }
     }
 
-    if (isEditingExisting && !goalLocked && !ownershipOnly) {
+    if (isEditingExisting && !goalLocked) {
         // Editing a proposal already on the map reuses this dialog, but its land use, parcels mode
         // and type are what MAKE it that proposal — changing them would not edit it, it would destroy
         // it into a completely different proposal. So they lock (greyed) to the current preset, which
-        // initProposalFacets() already selected above. Ownership, acquisition and every term stay live.
+        // initProposalFacets() already selected above. Ownership and acquisition stay live.
         modal.querySelectorAll('[data-goal-section="land-use"] input[type="radio"], [data-goal-section="parcels"] input[type="radio"]').forEach(radio => {
             radio.disabled = true;
             radio.setAttribute('aria-disabled', 'true');
@@ -1417,24 +1081,6 @@ function showProposalDialog(overrides = null) {
 
     // Check contiguity and disable buttons that require contiguous parcels
     applyContiguityConstraints();
-
-    const conditionalCheckbox = document.getElementById('proposalConditionalCheckbox');
-    const conditionalHelper = document.getElementById('proposalConditionalHelperText');
-    const conditionalRow = conditionalCheckbox ? conditionalCheckbox.closest('.proposal-option-row') : null;
-    const updateConditionalHelper = () => {
-        if (!conditionalHelper || !conditionalCheckbox) return;
-        conditionalHelper.textContent = conditionalCheckbox.checked
-            ? conditionalHelperOnText
-            : conditionalHelperOffText;
-    };
-    if (conditionalCheckbox) {
-        const disableConditional = isSingleParcelSelection;
-        conditionalCheckbox.checked = !disableConditional;
-        conditionalCheckbox.disabled = disableConditional;
-        if (conditionalRow) conditionalRow.toggleAttribute('data-disabled', disableConditional);
-        conditionalCheckbox.addEventListener('change', updateConditionalHelper);
-    }
-    updateConditionalHelper();
 
     if (overrideGeometryPreset) {
         const geometryStatusText = overrideGeometryPreset.statusText
@@ -1532,13 +1178,7 @@ function showProposalDialog(overrides = null) {
 
     // Pre-fill name and description with default text (facets already set it for a chosen goal;
     // this only fills the empty do-nothing default).
-    // The ownership-only entry is labelled Offer, so its untouched name and description must
-    // describe an offer too. Using the generic dialog default here used to open this flow as a
-    // "Square" until the user picked a recipient.
-    updateProposalNameAndDescription(
-        ownershipOnly ? 'Offer' : DEFAULT_PROPOSAL_TYPE,
-        ownershipOnly
-    );
+    updateProposalNameAndDescription(DEFAULT_PROPOSAL_TYPE);
 
     // Epoha: ponudi zadnju korištenu, da niz prijedloga za isto desetljeće ne
     // traži isti odabir svaki put.
@@ -1557,80 +1197,6 @@ function showProposalDialog(overrides = null) {
     if (descriptionInputEl && overridePrefill.description) {
         descriptionInputEl.value = overridePrefill.description;
     }
-    const offerInput = document.getElementById('proposalOffer');
-    // No offer stays an empty field: a prefilled 0 reads as a chosen price.
-    if (offerInput && Number.isFinite(overridePrefill.offer) && overridePrefill.offer > 0) {
-        offerInput.value = window.formatProposalOfferValue ? window.formatProposalOfferValue(overridePrefill.offer) : overridePrefill.offer;
-    }
-    // A land readjustment is a deal its owners accept (land in, land and cash out): it opens on
-    // owner deal unless its source chose otherwise.
-    const prefillKind = overridePrefill.kind || (window.pendingReparcellizationPlan ? window.ProposalKind.OWNER_DEAL : null);
-    const kindInput = prefillKind
-        ? document.querySelector(`.create-proposal-modal input[name="proposalKind"][value="${CSS.escape(prefillKind)}"]`) : null;
-    if (kindInput) {
-        kindInput.checked = true;
-        applyProposalKindToDialog();
-    }
-    const voteDaysInput = document.getElementById('proposalVoteExpiryDays');
-    if (voteDaysInput && Number.isFinite(overridePrefill.voteExpiryDays)) voteDaysInput.value = String(overridePrefill.voteExpiryDays);
-
-    // Restore the currency + the advanced Options toggles. Used by "Copy into new proposal" so a
-    // fork starts from the source's terms, not the defaults. Each toggle drives its own enable
-    // handler, so flip the checkbox first and then let that handler unlock the inputs.
-    const currencySelectEl = document.getElementById('proposalCurrency');
-    if (currencySelectEl && overridePrefill.offerCurrency) {
-        currencySelectEl.value = overridePrefill.offerCurrency;
-    }
-    if (typeof overridePrefill.isConditional === 'boolean') {
-        const conditionalCb = document.getElementById('proposalConditionalCheckbox');
-        if (conditionalCb) {
-            conditionalCb.checked = overridePrefill.isConditional;
-            updateConditionalHelper();
-        }
-    }
-    if (overridePrefill.expiryTime) {
-        const expireCb = document.getElementById('proposalExpireCheckbox');
-        const expiryInput = document.getElementById('proposalExpiryTime');
-        if (expireCb && expiryInput) {
-            expireCb.checked = true;
-            if (typeof toggleExpiryInput === 'function') toggleExpiryInput();
-            expiryInput.value = overridePrefill.expiryTime;
-        }
-    }
-    if (overridePrefill.decayEnabled) {
-        const decayCb = document.getElementById('proposalDecayCheckbox');
-        if (decayCb) {
-            decayCb.checked = true;
-            if (typeof toggleDecayInput === 'function') toggleDecayInput();
-            const decayPercentInput = document.getElementById('proposalDecayPercent');
-            const decayTimeInput = document.getElementById('proposalDecayTime');
-            if (decayPercentInput && Number.isFinite(overridePrefill.decayPercent)) decayPercentInput.value = overridePrefill.decayPercent;
-            if (decayTimeInput && overridePrefill.decayTime) decayTimeInput.value = overridePrefill.decayTime;
-        }
-    }
-    if (overridePrefill.depositEnabled) {
-        const depositCb = document.getElementById('proposalDepositCheckbox');
-        if (depositCb) {
-            depositCb.checked = true;
-            if (typeof toggleDepositInput === 'function') toggleDepositInput();
-            const depositPercentInput = document.getElementById('proposalDepositPercent');
-            if (depositPercentInput && Number.isFinite(overridePrefill.depositPercent)) depositPercentInput.value = overridePrefill.depositPercent;
-        }
-    }
-
-    // If the prefill restored anything the user wouldn't otherwise see, open the collapsed
-    // Options section — silently carrying non-default terms would be a nasty surprise.
-    const restoredNonDefaultOptions = !!overridePrefill.expiryTime
-        || !!overridePrefill.decayEnabled
-        || !!overridePrefill.depositEnabled
-        || overridePrefill.isConditional === false;
-    if (restoredNonDefaultOptions) {
-        const optionsHeader = document.querySelector('#proposalOptionsSection .collapsible-header');
-        const optionsSection = document.getElementById('proposalOptionsSection');
-        if (optionsHeader && optionsSection && optionsSection.classList.contains('collapsed')) {
-            optionsHeader.click();
-        }
-    }
 
     // Update description when name changes
     const nameInputField = document.getElementById('proposalName');
@@ -1642,12 +1208,6 @@ function showProposalDialog(overrides = null) {
             descriptionInputField.value = generateDefaultProposalDescription(proposalType, proposalName);
         });
     }
-
-    attachProposalCurrencyHandlers();
-
-    refreshReparcellizationCashTerms(modal);
-    mountReparcellizationAgreementOptions(modal);
-    mountReparcellizationApprovalRow(modal);
 
     // Focus the default Land use radio (not a text input) to avoid triggering mobile keyboards
     const defaultLandUseRadio = modal.querySelector('input[name="proposalLandUse"]:checked')
@@ -1711,8 +1271,6 @@ function showProposalDialog(overrides = null) {
 function decorateProposalDialogChrome(dialogApi, { submitId, lensTooltip, hintId = null }) {
     const submit = dialogApi.getActionButton('create');
     if (submit) submit.id = submitId;
-    // The kind row starts on its default; its terms follow before the dialog is first seen.
-    applyProposalKindToDialog();
     const close = dialogApi.header ? dialogApi.header.querySelector('.close-circle-btn') : null;
     if (close) close.classList.add('proposal-modal-close');
     if (!dialogApi.footer) return;
@@ -1763,7 +1321,6 @@ function finishProposalDialogClose() {
     const closingDraftId = (typeof window !== 'undefined' && window.pendingProposalDraftId)
         ? String(window.pendingProposalDraftId)
         : null;
-    clearProposalBalanceWatcher();
     // The site this dialog was opened on belongs to it alone.
     if (typeof window !== 'undefined') window.pendingProposalSiteContext = null;
     // If this dialog seeded multi-select for its parcel context, disarm it — a cancelled
@@ -1784,7 +1341,6 @@ function finishProposalDialogClose() {
         }
         window.pendingProposalDraftId = null;
         window.pendingProposalReplacementSource = null;
-        window.pendingProposalApprovalSetup = null;
     }
 
     // If this was a road/track proposal, the multi-parcel selection was seeded just for the modal;
@@ -1817,9 +1373,6 @@ function finishProposalDialogClose() {
         window.pendingBuildingProposalContext = null;
         window.pendingBuildingFromBlockify = null;
     }
-    if (typeof window !== 'undefined') {
-        window.pendingReparcellizationPlan = null;
-    }
     if (typeof clearSingleBuildingPendingState === 'function') {
         clearSingleBuildingPendingState();
     } else if (typeof window !== 'undefined') {
@@ -1828,37 +1381,39 @@ function finishProposalDialogClose() {
     }
 }
 
+// The walk view (three-mode.js) loads published designs by their CID, so every applied design is
+// published first: one row per unpublished design, "Publish all" the dialog's primary action. A parcel
+// layout is published only with its agreement (ProposalPublishTerms.publishRefusal): its row says so
+// and the walk goes on without it. onComplete runs once nothing publishable is left.
 function showWalkUploadGateModal(options = {}) {
     try {
         if (typeof proposalStorage === 'undefined' || typeof showSimpleShareModal !== 'function') return null;
         const onComplete = typeof options.onComplete === 'function' ? options.onComplete : null;
+        const t = getProposalI18nHelper();
 
-        const isUploaded = (proposal) => {
-            try { return !!getSerialProposalId(proposal); } catch (_) { return false; }
-        };
+        const isPublished = proposal => !!window.DesignSync.publishedCid(proposal);
+        const refusalOf = proposal => window.ProposalPublishTerms.publishRefusal(proposal);
 
-        const allApplied = proposalStorage.getAllProposals().filter(isProposalCurrentlyApplied);
-        const initialNonUploaded = allApplied.filter(p => !isUploaded(p));
-        if (initialNonUploaded.length === 0) {
+        const unpublished = proposalStorage.getAllProposals().filter(isProposalCurrentlyApplied).filter(p => !isPublished(p));
+        if (!unpublished.some(p => !refusalOf(p))) {
             if (onComplete) { try { onComplete(); } catch (_) { } }
             return null;
         }
 
         const proposalsByKey = new Map();
-        initialNonUploaded.forEach(p => {
+        unpublished.forEach(p => {
             const key = (p && p.proposalId) ? String(p.proposalId) : getProposalKey(p);
             if (!key) return;
             proposalsByKey.set(String(key), p);
         });
 
-        // The body: why, the last upload error, and one row per proposal still to upload. "Upload
-        // all" is the dialog's primary action.
+        // The body: why, the last publish error, and one row per design still to publish.
         const container = document.createElement('div');
         container.className = 'walk-upload-gate';
 
         const intro = document.createElement('p');
         intro.className = 'walk-upload-gate__intro';
-        intro.textContent = 'These applied proposals are not yet on the server. The walk view loads proposals by their server ID, so they need to be uploaded first. The dialog will close and the walk will start as soon as they all have a server ID.';
+        intro.textContent = t('threeMode.walkGate.intro', 'These applied designs are not published yet. The walk view loads published designs only, so they are published first. The dialog closes and the walk starts as soon as all of them are published.');
         container.appendChild(intro);
 
         const statusLine = document.createElement('p');
@@ -1872,16 +1427,16 @@ function showWalkUploadGateModal(options = {}) {
         container.appendChild(listWrap);
 
         const modalApi = showSimpleShareModal({
-            title: 'Upload before walking',
+            title: t('threeMode.walkGate.title', 'Publish before walking'),
             body: container,
-            actions: [{ id: 'upload-all', label: 'Upload all', primary: true, keepOpen: true, onClick: () => uploadAll() }]
+            actions: [{ id: 'upload-all', label: t('threeMode.walkGate.publishAll', 'Publish all'), primary: true, keepOpen: true, onClick: () => uploadAll() }]
         });
         const uploadAllBtn = modalApi && typeof modalApi.getActionButton === 'function'
             ? modalApi.getActionButton('upload-all')
             : null;
 
         const rowControls = new Map(); // key -> { row, uploadBtn }
-        const rowState = new Map();    // key -> { uploading, uploaded }
+        const rowState = new Map();    // key -> { uploading, uploaded } for the rows that can be published
 
         const checkAllUploaded = () => {
             const remaining = Array.from(rowState.values()).filter(s => !s.uploaded);
@@ -1900,36 +1455,38 @@ function showWalkUploadGateModal(options = {}) {
             if (state.uploaded) {
                 ctrl.row.dataset.uploaded = 'true';
                 ctrl.uploadBtn.disabled = true;
-                ctrl.uploadBtn.textContent = 'Uploaded';
+                ctrl.uploadBtn.textContent = t('proposals.share.panel.published', 'Published');
                 return;
             }
             ctrl.uploadBtn.disabled = !!state.uploading;
-            ctrl.uploadBtn.textContent = state.uploading ? 'Uploading…' : 'Upload';
+            ctrl.uploadBtn.textContent = state.uploading
+                ? t('proposals.share.panel.publishing', 'Publishing…')
+                : t('proposals.share.panel.publish', 'Publish');
         };
 
+        // Resolves 'published', 'failed', or 'name-needed' when a guest is asked for a profile name
+        // first (GuestPolicy 'publish'): "Publish all" then stops instead of asking again per row.
         const uploadOne = async (key) => {
             const proposal = proposalsByKey.get(key);
-            if (!proposal) return false;
-            const state = rowState.get(key) || {};
-            if (state.uploading || state.uploaded) return !!state.uploaded;
+            const state = rowState.get(key);
+            if (!proposal || !state) return 'failed';
+            if (state.uploaded) return 'published';
+            if (state.uploading) return 'failed';
 
             rowState.set(key, { uploading: true, uploaded: false });
             updateRowVisual(key);
             try {
-                const result = await uploadProposalToServer(proposal);
-                if (!result || !result.ok) throw new Error((result && result.message) || 'Upload failed');
-                const serverId = result.id ? String(result.id) : (result.proposalId ? String(result.proposalId) : null);
-                if (!serverId || !/^\d+$/.test(serverId)) throw new Error('Server did not return a numeric id');
+                await window.DesignSync.publishDesign(proposal);
                 rowState.set(key, { uploading: false, uploaded: true });
                 updateRowVisual(key);
                 setStatus('');
-                return true;
+                return 'published';
             } catch (error) {
-                console.error('walk gate upload failed', error);
+                if (!error || !error.cancelled) console.error('walk gate publish failed', error);
                 rowState.set(key, { uploading: false, uploaded: false });
                 updateRowVisual(key);
-                setStatus(error.message || 'Upload failed');
-                return false;
+                setStatus((error && error.message) || t('proposals.share.errors.failed', 'The design could not be published.'));
+                return error && error.cancelled ? 'name-needed' : 'failed';
             }
         };
 
@@ -1949,17 +1506,27 @@ function showWalkUploadGateModal(options = {}) {
             const displayId = proposal.proposalId || getProposalKey(proposal) || 'local';
             meta.textContent = `${displayId} · ${(resolveProposalGoalKey(proposal) || 'proposal')}`;
             left.appendChild(meta);
+            row.appendChild(left);
+
+            // A parcel layout is not published alone: the row says why and has nothing to press.
+            if (refusalOf(proposal)) {
+                row.dataset.skipped = 'true';
+                const note = document.createElement('div');
+                note.className = 'walk-upload-gate__meta';
+                note.textContent = t('threeMode.walkGate.layoutSkipped', 'A parcel layout is published with its agreement, so the walk goes on without it.');
+                left.appendChild(note);
+                listWrap.appendChild(row);
+                return;
+            }
 
             const uploadBtn = document.createElement('button');
             uploadBtn.type = 'button';
             uploadBtn.className = 'btn btn-sm';
-            uploadBtn.textContent = 'Upload';
+            uploadBtn.textContent = t('proposals.share.panel.publish', 'Publish');
             uploadBtn.addEventListener('click', async () => {
-                const ok = await uploadOne(key);
-                if (ok) checkAllUploaded();
+                if (await uploadOne(key) === 'published') checkAllUploaded();
             });
 
-            row.appendChild(left);
             row.appendChild(uploadBtn);
             listWrap.appendChild(row);
 
@@ -1976,7 +1543,8 @@ function showWalkUploadGateModal(options = {}) {
                     .filter(([, s]) => !s.uploaded && !s.uploading)
                     .map(([k]) => k);
                 for (const key of pending) {
-                    if (!rowState.get(key).uploaded) await uploadOne(key);
+                    if (rowState.get(key).uploaded) continue;
+                    if (await uploadOne(key) === 'name-needed') break;
                 }
             } finally {
                 if (uploadAllBtn) uploadAllBtn.disabled = false;
@@ -1988,7 +1556,7 @@ function showWalkUploadGateModal(options = {}) {
     } catch (error) {
         console.error('showWalkUploadGateModal failed', error);
         if (typeof showEphemeralMessage === 'function') {
-            showEphemeralMessage('Failed to open upload dialog.', 5000, 'error');
+            showEphemeralMessage(getProposalI18nHelper()('threeMode.walkGate.openFailed', 'The publish dialog could not open.'), 5000, 'error');
         }
         return null;
     }

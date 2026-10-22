@@ -1,11 +1,11 @@
 // Purpose: verify runtime Leaflet controls by their user-visible map effect, including controls whose DOM is created by Leaflet rather than authored with source IDs.
 import { test, expect } from '../helpers/fixtures';
-import { openCity, openParcel, clickMapPoint, createSpace, showProposal, drawCorridor } from '../helpers/runtime';
+import { openCity, openParcel, clickMapPoint, createSpace, showProposal, drawCorridor, openParcelTabAt } from '../helpers/runtime';
 import type { Page } from '@playwright/test';
 
 async function clickEditorMapPoint(page: Page, xRatio: number, yRatio: number) {
   const box = await page.locator('#map-container').boundingBox();
-  if (!box) throw new Error('The reparcellization map has no visible bounds');
+  if (!box) throw new Error('The editor map has no visible bounds');
   await page.mouse.click(box.x + box.width * xRatio, box.y + box.height * yRatio);
 }
 
@@ -59,9 +59,7 @@ test.describe('Leaflet runtime control effects @features', () => {
   test('clicking an applied transit station marker selects and opens its proposal', async ({ mockApi: page }) => {
     await openCity(page);
     await drawCorridor(page, 'road');
-    await clickMapPoint(page, 15.9822, 45.80045);
-    await expect(page.locator('#parcel-menu')).toBeVisible();
-    await page.locator('#parcel-menu').getByRole('menuitem', { name: 'Propose here', exact: true }).click();
+    await openParcelTabAt(page, 15.9822, 45.80045, 'propose-tab');
     await page.locator('#parcel-info-panel .parcel-transport-btn--bus').click();
     await clickMapPoint(page, 15.9822, 45.80025);
     const station = await page.evaluate(() => {
@@ -82,10 +80,10 @@ test.describe('Leaflet runtime control effects @features', () => {
     if (station?.title) await expect(inspector).toContainText(station.title);
   });
 
-  test('Leaflet Close popup dismisses the node detail popup in the editable real plan', async ({ mockApi: page }) => {
+  test('Leaflet Close popup dismisses the node detail popup in the editable parcel layout', async ({ mockApi: page }) => {
     await openCity(page);
     await openParcel(page, 'proposals');
-    await page.locator('.parcel-build-btn--reparcellization').click();
+    await page.locator('.parcel-build-btn--parcel-layout').click();
     const modal = page.locator('.on-map-reparcellization');
     await expect(modal.locator('.on-map-editor__panel')).toBeVisible();
     await expect(modal.locator('[data-reparcel-commit]')).toBeEnabled({ timeout: 15_000 });
@@ -98,7 +96,7 @@ test.describe('Leaflet runtime control effects @features', () => {
     await expect(modal.locator('[data-reparcel-draw-toolbar]')).toBeVisible();
     const map = page.locator('#map-container');
     const box = await map.boundingBox();
-    if (!box) throw new Error('Readjustment map has no visible bounds');
+    if (!box) throw new Error('Parcel-layout map has no visible bounds');
     await clickMapPoint(page, 15.98185, 45.80025);
     await clickMapPoint(page, 15.98255, 45.80025);
     await expect(modal.locator('[data-reparcel-finish]')).toBeEnabled();

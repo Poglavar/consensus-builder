@@ -1,5 +1,9 @@
-// Pure codec shared by browser wallets and server agents for funded proposal donations and soft
-// proposal pledges. It owns every PDA, Anchor instruction byte and account decoder.
+// Pure codec for funded donations and soft pledges on agreements, used by the server agents, routes
+// and scripts (the browser no longer loads it: the bets dialog does not pledge). It owns every PDA,
+// Anchor instruction byte and account decoder. The `proposal` option
+// and argument, and the decoded `proposal` field, are the agreement account (an Agreement of the
+// agreement program); the beneficiary is the agreement's authority (the sponsor), captured on chain.
+// The program keeps its proposal_pledge name and id until a deploy renames it.
 (function attachSolanaPledgeClient(root, factory) {
     const api = factory();
     if (typeof module === 'object' && module.exports) module.exports = api;
@@ -118,26 +122,26 @@
     function supportKeys(options) {
         const o = options || {};
         return {
-            proposal: key(o.proposal, 'proposal'),
+            subject: key(o.proposal, 'proposal'),
             mint: key(o.mint || constants.USDC_DEVNET_MINT, 'mint'),
             owner: key(o.owner || o.donor || o.pledger || o.creator || o.releaser, 'owner')
         };
     }
 
     function buildCreateDonationEscrowIx(options) {
-        const o = options || {}; const { proposal, mint, owner } = supportKeys(o);
-        const [escrow] = getDonationEscrowPda(proposal, o.programId);
-        return ix(o.programId, [meta(escrow, false, true), meta(proposal, false, false), meta(mint, false, false),
+        const o = options || {}; const { subject, mint, owner } = supportKeys(o);
+        const [escrow] = getDonationEscrowPda(subject, o.programId);
+        return ix(o.programId, [meta(escrow, false, true), meta(subject, false, false), meta(mint, false, false),
             meta(associatedTokenAddress(escrow, mint), false, true), meta(owner, true, true),
             meta(key(constants.TOKEN_PROGRAM_ID), false, false), meta(key(constants.ASSOCIATED_TOKEN_PROGRAM_ID), false, false),
             meta(web3().SystemProgram.programId, false, false)], disc('create_donation_escrow'));
     }
     function buildDonateIx(options) {
-        const o = options || {}; const { proposal, mint, owner } = supportKeys(o);
+        const o = options || {}; const { subject, mint, owner } = supportKeys(o);
         const donationId = idBytes(o.donationId); const amount = u64(o.amount, 'amount');
         if (amount === 0n) throw new Error('amount must be positive');
-        const [escrow] = getDonationEscrowPda(proposal, o.programId);
-        return ix(o.programId, [meta(escrow, false, true), meta(proposal, false, false),
+        const [escrow] = getDonationEscrowPda(subject, o.programId);
+        return ix(o.programId, [meta(escrow, false, true), meta(subject, false, false),
             meta(getDonationPositionPda(escrow, owner, donationId, o.programId)[0], false, true),
             meta(getDonorPda(escrow, owner, o.programId)[0], false, true), meta(associatedTokenAddress(escrow, mint), false, true),
             meta(associatedTokenAddress(owner, mint), false, true), meta(owner, true, true),
@@ -145,43 +149,43 @@
         concat([disc('donate'), donationId, encodeU64(amount)]));
     }
     function buildReleaseDonationsIx(options) {
-        const o = options || {}; const { proposal, mint, owner } = supportKeys(o); const beneficiary = key(o.beneficiary, 'beneficiary');
-        const [escrow] = getDonationEscrowPda(proposal, o.programId);
-        return ix(o.programId, [meta(escrow, false, true), meta(proposal, false, false), meta(mint, false, false),
+        const o = options || {}; const { subject, mint, owner } = supportKeys(o); const beneficiary = key(o.beneficiary, 'beneficiary');
+        const [escrow] = getDonationEscrowPda(subject, o.programId);
+        return ix(o.programId, [meta(escrow, false, true), meta(subject, false, false), meta(mint, false, false),
             meta(associatedTokenAddress(escrow, mint), false, true), meta(beneficiary, false, false),
             meta(associatedTokenAddress(beneficiary, mint), false, true), meta(owner, true, true),
             meta(key(constants.TOKEN_PROGRAM_ID), false, false), meta(key(constants.ASSOCIATED_TOKEN_PROGRAM_ID), false, false),
             meta(web3().SystemProgram.programId, false, false)], disc('release_donations'));
     }
     function buildRefundDonationIx(options) {
-        const o = options || {}; const { proposal, mint, owner } = supportKeys(o); const [escrow] = getDonationEscrowPda(proposal, o.programId);
-        return ix(o.programId, [meta(escrow, false, true), meta(proposal, false, false),
+        const o = options || {}; const { subject, mint, owner } = supportKeys(o); const [escrow] = getDonationEscrowPda(subject, o.programId);
+        return ix(o.programId, [meta(escrow, false, true), meta(subject, false, false),
             meta(getDonationPositionPda(escrow, owner, o.donationId, o.programId)[0], false, true),
             meta(associatedTokenAddress(escrow, mint), false, true), meta(associatedTokenAddress(owner, mint), false, true),
             meta(owner, true, true), meta(key(constants.TOKEN_PROGRAM_ID), false, false)], disc('refund_donation'));
     }
     function buildCreatePledgeBookIx(options) {
-        const o = options || {}; const { proposal, mint, owner } = supportKeys(o); const [book] = getPledgeBookPda(proposal, o.programId);
-        return ix(o.programId, [meta(book, false, true), meta(proposal, false, false), meta(mint, false, false),
+        const o = options || {}; const { subject, mint, owner } = supportKeys(o); const [book] = getPledgeBookPda(subject, o.programId);
+        return ix(o.programId, [meta(book, false, true), meta(subject, false, false), meta(mint, false, false),
             meta(owner, true, true), meta(web3().SystemProgram.programId, false, false)], disc('create_pledge_book'));
     }
     function buildSetPledgeIx(options) {
-        const o = options || {}; const { proposal, owner } = supportKeys(o); const amount = u64(o.amount, 'amount');
+        const o = options || {}; const { subject, owner } = supportKeys(o); const amount = u64(o.amount, 'amount');
         if (amount === 0n) throw new Error('amount must be positive');
-        const [book] = getPledgeBookPda(proposal, o.programId);
-        return ix(o.programId, [meta(book, false, true), meta(proposal, false, false),
+        const [book] = getPledgeBookPda(subject, o.programId);
+        return ix(o.programId, [meta(book, false, true), meta(subject, false, false),
             meta(getPledgeCommitmentPda(book, owner, o.programId)[0], false, true), meta(owner, true, true),
             meta(web3().SystemProgram.programId, false, false)], concat([disc('set_pledge'), encodeU64(amount)]));
     }
     function buildRevokePledgeIx(options) {
-        const o = options || {}; const { proposal, owner } = supportKeys(o); const [book] = getPledgeBookPda(proposal, o.programId);
-        return ix(o.programId, [meta(book, false, true), meta(proposal, false, false),
+        const o = options || {}; const { subject, owner } = supportKeys(o); const [book] = getPledgeBookPda(subject, o.programId);
+        return ix(o.programId, [meta(book, false, true), meta(subject, false, false),
             meta(getPledgeCommitmentPda(book, owner, o.programId)[0], false, true), meta(owner, true, false)], disc('revoke_pledge'));
     }
     function buildFulfillPledgeIx(options) {
-        const o = options || {}; const { proposal, mint, owner } = supportKeys(o); const beneficiary = key(o.beneficiary, 'beneficiary');
-        const [book] = getPledgeBookPda(proposal, o.programId);
-        return ix(o.programId, [meta(book, false, true), meta(proposal, false, false),
+        const o = options || {}; const { subject, mint, owner } = supportKeys(o); const beneficiary = key(o.beneficiary, 'beneficiary');
+        const [book] = getPledgeBookPda(subject, o.programId);
+        return ix(o.programId, [meta(book, false, true), meta(subject, false, false),
             meta(getPledgeCommitmentPda(book, owner, o.programId)[0], false, true), meta(mint, false, false),
             meta(associatedTokenAddress(owner, mint), false, true), meta(beneficiary, false, false),
             meta(associatedTokenAddress(beneficiary, mint), false, true), meta(owner, true, true),
@@ -189,9 +193,9 @@
             meta(web3().SystemProgram.programId, false, false)], disc('fulfill_pledge'));
     }
     function buildVoidPledgeIx(options) {
-        const o = options || {}; const proposal = key(o.proposal, 'proposal'); const owner = key(o.pledger || o.owner, 'pledger');
-        const [book] = getPledgeBookPda(proposal, o.programId);
-        return ix(o.programId, [meta(book, false, true), meta(proposal, false, false),
+        const o = options || {}; const subject = key(o.proposal, 'proposal'); const owner = key(o.pledger || o.owner, 'pledger');
+        const [book] = getPledgeBookPda(subject, o.programId);
+        return ix(o.programId, [meta(book, false, true), meta(subject, false, false),
             meta(getPledgeCommitmentPda(book, owner, o.programId)[0], false, true)], disc('void_pledge'));
     }
 

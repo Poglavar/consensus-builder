@@ -1,5 +1,5 @@
 import { test, expect } from '../helpers/fixtures';
-import { openCity, openParcel, createSpace, proposalState, showProposal, clickMapPoint, drawCorridor, PARCEL_ID } from '../helpers/runtime';
+import { openCity, openParcel, createSpace, proposalState, showProposal, clickMapPoint, drawCorridor, PARCEL_ID, openParcelTabAt } from '../helpers/runtime';
 
 test.describe('Proposal creation and map lifecycle @features', () => {
   for (const kind of ['park', 'square', 'lake'] as const) {
@@ -31,9 +31,7 @@ test.describe('Proposal creation and map lifecycle @features', () => {
       await drawCorridor(page, type === 'bus' ? 'road' : 'track');
       // Stops are transport tools in the parcel palette since the Tools sheet went (fbe3758d). The
       // corridor split parcel 1234, so open the palette from its northern remainder.
-      await clickMapPoint(page, 15.9822, 45.80045);
-      await expect(page.locator('#parcel-menu')).toBeVisible();
-      await page.locator('#parcel-menu').getByRole('menuitem', { name: 'Propose here', exact: true }).click();
+      await openParcelTabAt(page, 15.9822, 45.80045, 'propose-tab');
       await page.locator(`#parcel-info-panel .parcel-transport-btn--${type}`).click();
       await clickMapPoint(page, 15.9822, 45.80025);
       await expect.poll(() => page.evaluate(type => (window as any).proposalStorage.getAllProposals().filter((p: any) => p.structureProposal?.stationType === type).length, type)).toBe(1);
@@ -67,22 +65,27 @@ test.describe('Proposal creation and map lifecycle @features', () => {
     });
   }
 
-  test('reparcellization: plots and ownership reach an applied plan', async ({ mockApi: page }) => {
+  test('parcel layout: its plots reach an applied layout that replaces the parcel on the map', async ({ mockApi: page }) => {
     await openCity(page);
     await page.evaluate(() => (window as any).i18n.setLanguage('en'));
     await openParcel(page, 'proposals');
-    await page.locator('.parcel-build-btn--reparcellization').click();
+    await page.locator('.parcel-build-btn--parcel-layout').click();
     const modal = page.locator('.on-map-reparcellization');
     await expect(modal.locator('.on-map-editor__panel')).toBeVisible();
-    await expect(modal.locator('[data-reparcel-newplots-table]')).not.toBeEmpty();
+    await expect(modal.locator('[data-reparcel-newplots-table] .reparcel-newplot-row')).toHaveCount(2);
     await modal.locator('[data-reparcel-plots-tab="old"]').click();
     await expect(modal.locator('[data-reparcel-oldplots-table]')).toContainText('1234');
     await modal.locator('[data-reparcel-plots-tab="new"]').click();
-    await expect(modal.locator('[data-reparcel-owners-table]')).toContainText('Owner A');
-    await expect(modal.locator('[data-reparcel-owners-table]')).not.toContainText('Privatni vlasnik');
     await expect(modal.locator('[data-reparcel-commit]')).toBeEnabled();
     await modal.locator('[data-reparcel-commit]').click();
     await expect(modal).toHaveCount(0);
-    await expect.poll(() => page.evaluate(() => (window as any).proposalStorage.getAllProposals().some((p: any) => p.applied && p.reparcellization?.polygons?.length))).toBe(true);
+    await expect.poll(() => page.evaluate(() => (window as any).proposalStorage.getAllProposals()
+      .some((p: any) => p.applied && p.goal === 'parcel-layout' && p.parcelLayout?.plots?.length === 2))).toBe(true);
+    const layout = await page.evaluate(() => JSON.parse(JSON.stringify((window as any).proposalStorage.getAllProposals()
+      .find((p: any) => p.applied && p.goal === 'parcel-layout'))));
+    expect(layout.cadastreParcelIds).toContain(PARCEL_ID);
+    expect(layout.parcelLayout.plots.every((plot: any) => /Polygon/.test(plot.geometry.type))).toBe(true);
+    await expect.poll(() => page.evaluate(id => (window as any).LiveParcelFabric.producedBy(id)
+      .filter((piece: any) => piece.properties.readjustmentPiece?.role === 'plot').length, layout.proposalId)).toBe(2);
   });
 });

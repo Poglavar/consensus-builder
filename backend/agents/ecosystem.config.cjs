@@ -5,8 +5,9 @@
 // their keys exist) and the opt-in notary-01 and lifecycle-01 lens member services. Secrets stay in backend/.env
 // or protected key files; deploy-backend.sh deliberately restarts only the API app, so operators
 // activate these jobs separately.
-// The proposer now renders its immutable thumbnail before minting. Use the same
-// public basemap configuration as the API that rendered its old server-side post.
+// A live proposer run operates the lifecycle-01 lens member (its approval facts and its
+// AgreementDecision-v1) and refuses to start without AGENT_LIFECYCLE_LENS_OPERATOR_TOKEN, which it reads
+// from backend/.env on the host (agents/README.md, "Lens").
 const path = require('node:path');
 const HOME_DIR = require('node:os').homedir();
 const REPO_ROOT = path.join(HOME_DIR, 'code', 'consensus-builder');
@@ -34,13 +35,16 @@ const LOGS = {
   time: true
 };
 
-// A proposer persona on the same runner and caps as densifier-01 (one proposal a run: mint,
-// market, stake; up to 3 retirements of its own stale proposals).
+// A proposer persona on the same runner and caps as densifier-01. Each run first settles up to
+// AGENT_SETTLE_MAX_PER_RUN of its own earlier agreements (decide, lens decision, attest, execute or
+// expire, resolve, claim), then proposes: with --seed-owners each picked parcel nobody owns is registered
+// to the persona in the devnet owner registry, so its binding owners' agreement is one it can decide
+// itself (agents/README.md, "Settlement phase" and "Owner registry").
 function proposerJob(name, persona, cron) {
   return {
     name,
     script: 'agents/run.mjs',
-    args: `--live --controller algorithm --persona ${persona} --candidates 4 --slot auto --api https://api.urbangametheory.xyz`,
+    args: `--live --controller algorithm --persona ${persona} --candidates 4 --slot auto --seed-owners --api https://api.urbangametheory.xyz`,
     cwd: BACKEND_ROOT,
     exec_mode: 'fork',
     instances: 1,
@@ -50,12 +54,11 @@ function proposerJob(name, persona, cron) {
     env: {
       NODE_ENV: 'production',
       ...botEnv,
-      MAPTILER_API_KEY: apiEnv.MAPTILER_API_KEY,
-      IPFS_READ_GATEWAY: apiEnv.IPFS_READ_GATEWAY,
-      AGENT_DAILY_ACTION_CAP: '13',
+      // A pick takes at most 3 signed actions (create+fund, market, stake), each settled agreement at
+      // most 4 (attest, execute or expire, resolve, claim): 3 + 3 × 4.
+      AGENT_DAILY_ACTION_CAP: '15',
+      AGENT_SETTLE_MAX_PER_RUN: '3',
       AGENT_DAILY_USDC_CAP: '0.35',
-      AGENT_RETIRE_AFTER_DAYS: '3',
-      AGENT_LIFECYCLE_LENS_SERVICE_URL: 'http://127.0.0.1:3096',
       AGENT_API_BASE: 'https://api.urbangametheory.xyz'
     },
     ...LOGS
@@ -86,13 +89,12 @@ function societyJob(name, persona, cron, caps) {
 }
 
 module.exports = {
-  apps: [{...proposerJob('consensus-builder-affordabot', 'affordabot', '20 7 * * *'), args:'--live --controller algorithm --persona affordabot --candidates 4 --api https://api.urbangametheory.xyz', env:{...proposerJob('', '', '').env, AGENT_DAILY_USDC_CAP:'0.02'}}, {
+  apps: [{...proposerJob('consensus-builder-affordabot', 'affordabot', '20 7 * * *'), args:'--live --controller algorithm --persona affordabot --candidates 4 --seed-owners --api https://api.urbangametheory.xyz', env:{...proposerJob('', '', '').env, AGENT_DAILY_USDC_CAP:'0.02'}}, {
     name: 'consensus-builder-agents',
     script: 'agents/run.mjs',
-    // The lens comes from the attester directory (GET /agent/lenses/members), which the two lens
-    // member services below fill when they start; an empty directory refuses to mint, so if they are
-    // down the daily run fails at the lens step rather than minting with the proposer as its own lens.
-    args: '--live --controller algorithm --persona densifier-01 --candidates 4 --slot auto --api https://api.urbangametheory.xyz',
+    // Every agreement names one lens: the lifecycle-01 member this runner operates, reached at its
+    // persona's service.url. If that member is down, the run fails at its approval or decision step.
+    args: '--live --controller algorithm --persona densifier-01 --candidates 4 --slot auto --seed-owners --api https://api.urbangametheory.xyz',
     cwd: BACKEND_ROOT,
     exec_mode: 'fork',
     instances: 1,
@@ -102,17 +104,14 @@ module.exports = {
     env: {
       NODE_ENV: 'production',
       ...botEnv,
-      MAPTILER_API_KEY: apiEnv.MAPTILER_API_KEY,
-      IPFS_READ_GATEWAY: apiEnv.IPFS_READ_GATEWAY,
-      // 3 for the day's proposal (mint, market, stake) + 3 retirements × (cancel, resolve, claim).
-      // Retirements spend no USDC; the USDC cap below still bounds the proposal.
-      AGENT_DAILY_ACTION_CAP: '13',
+      // 3 for the day's pick (create+fund, market, stake) + up to 3 settled agreements × 4 (attest,
+      // execute or expire, resolve, claim). Settlements spend no USDC; the USDC cap bounds the stake.
+      AGENT_DAILY_ACTION_CAP: '15',
+      AGENT_SETTLE_MAX_PER_RUN: '3',
       AGENT_DAILY_USDC_CAP: '0.35',
-      AGENT_RETIRE_AFTER_DAYS: '3',
-      // The lifecycle member (consensus-builder-lifecycle-member) issues the retire phase's expiry
-      // verdicts; AGENT_LIFECYCLE_LENS_OPERATOR_TOKEN must be in backend/.env on the host, since a
-      // URL without the token makes the run refuse before it reads anything.
-      AGENT_LIFECYCLE_LENS_SERVICE_URL: 'http://127.0.0.1:3096',
+      // The settlement's decision steps go through the operated lifecycle-01 member (consensus-builder-
+      // lifecycle-member): AGENT_LIFECYCLE_LENS_OPERATOR_TOKEN must be in backend/.env on the host, or
+      // the live run refuses to start.
       AGENT_API_BASE: 'https://api.urbangametheory.xyz'
     },
     error_file: path.join(BACKEND_ROOT, 'logs', 'agents-error.log'),
@@ -219,23 +218,27 @@ module.exports = {
     merge_logs: true,
     time: true
   }, {
+    // The land-event oracle on the agreement program (plan-design-agreement.md M3): every 15 minutes one
+    // applied pass of oracle/agreement-lifecycle-job.mjs refreshes consensus.agreement.onchain from each
+    // minted agreement's account and writes the land events of terminal ones (agreement_lifecycle, and
+    // agreement_executed per input parcel: parcel history). Idempotent, so an overlapping or repeated
+    // run writes nothing twice. It replaced the daily proposal lifecycle run (scripts/sync-land-events.mjs).
     name: 'consensus-builder-land-oracle',
-    script: 'scripts/sync-land-events.mjs',
-    args: '--live',
+    script: 'oracle/agreement-lifecycle-job.mjs',
+    args: '--once --apply',
     cwd: BACKEND_ROOT,
     exec_mode: 'fork',
     instances: 1,
     autorestart: false,
-    cron_restart: '30 2 * * *',
-    kill_timeout: 900000,
+    cron_restart: '*/15 * * * *',
+    kill_timeout: 600000,
     env: {
       NODE_ENV: 'production',
+      // The run-stats artifact the operations page and the monitor read, written by every applied pass.
       LAND_ORACLE_RUN_STATS: path.join(BACKEND_ROOT, 'logs', 'land-oracle-stats.json')
-      // General traffic uses SOLANA_RPC_URL from backend/.env. The RPC helper routes only
-      // getProgramAccounts to the separately configured SOLANA_PROGRAM_ACCOUNTS_RPC_URL.
+      // Chain reads use SOLANA_RPC_URL (devnet) and SOLANA_RPC_MAX_ACCOUNTS from backend/.env.
     },
-    // Own log files, not the shared agents.log: the oracle prints its full JSON result (20+ KB),
-    // which buried the persona runner's success sentinel past the monitor's tail window.
+    // Own log files, not the shared agents.log.
     error_file: path.join(BACKEND_ROOT, 'logs', 'land-oracle-error.log'),
     out_file: path.join(BACKEND_ROOT, 'logs', 'land-oracle.log'),
     merge_logs: true,
@@ -266,7 +269,7 @@ module.exports = {
     // HTTP service (running on prod), so PM2 brings it back after a crash, backing off between
     // tries. Start it with `pm2 start agents/ecosystem.config.cjs --only
     // consensus-builder-lens-member` only after the notary-01 key exists, its SAS credential and the
-    // ParcelOwnership-v1/ProposalVerdict-v1 schemas are registered (scripts/register-lens-schemas.mjs),
+    // ParcelOwnership-v1/AgreementDecision-v1 schemas are registered (scripts/register-lens-schemas.mjs),
     // sas-lib is installed and X402_* is set; until then a live member cannot issue anything.
     name: 'consensus-builder-lens-member',
     script: 'agents/lens-member-run.mjs',
@@ -285,13 +288,14 @@ module.exports = {
     merge_logs: true,
     time: true
   }, {
-    // Opt-in: the lifecycle-01 lens member (kind lifecycle) whose expiry verdicts the proposer's
-    // retire phase requests; a long-running service like the one above and restarted the same way.
-    // Start it with `--only
-    // consensus-builder-lifecycle-member` only after the lifecycle-01 key exists, its SAS credential
-    // and the ProposalVerdict-v1 schema are registered (scripts/register-lens-schemas.mjs) and
-    // AGENT_LIFECYCLE_LENS_OPERATOR_TOKEN is set in backend/.env; then set
-    // AGENT_LIFECYCLE_LENS_SERVICE_URL=http://127.0.0.1:3096 for the proposer as well.
+    // Opt-in: the lifecycle-01 lens member (kind lifecycle), the lens the proposers operate: it signs the
+    // approval facts of their agreements, checked against the devnet owner registry
+    // (consensus.lens_devnet_owner, read per request; no rights file), and issues AgreementDecision-v1
+    // when its operator asks (POST /lens/agreements/:cid/decision). A long-running service like the one
+    // above and restarted the same way. Start it with `--only consensus-builder-lifecycle-member` only
+    // after the lifecycle-01 key exists, its SAS credential and the AgreementDecision-v1 schema are
+    // registered (scripts/register-lens-schemas.mjs) and AGENT_LIFECYCLE_LENS_OPERATOR_TOKEN is set in
+    // backend/.env; the proposers reach it at the persona's service.url (agents/personas.json).
     name: 'consensus-builder-lifecycle-member',
     script: 'agents/lens-member-run.mjs',
     args: '--persona lifecycle-01 --live',

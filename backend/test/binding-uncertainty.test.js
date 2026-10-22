@@ -1,6 +1,6 @@
 // A binding decision within measurement error of its threshold is `unresolved` (projections.md §4):
-// the browser/provider rule reports it, the server refuses to publish it, and the browser stops the
-// publish early with a readable message. The real-SQL case lives in proposal-binding-db.test.js.
+// the browser/provider rule reports it and the server refuses it. The real-SQL case lives in
+// proposal-binding-db.test.js.
 import { describe, it, expect } from 'vitest';
 import { createRequire } from 'node:module';
 import { checkProposalBinding, BINDING_SQL, BINDING_COUNT_SQL, BINDING_CODES, bindingUncertaintyM } from '../proposals/binding.js';
@@ -8,7 +8,6 @@ import { checkProposalBinding, BINDING_SQL, BINDING_COUNT_SQL, BINDING_CODES, bi
 const require = createRequire(import.meta.url);
 const turf = require('@turf/turf');
 const { bindingFromParcels, SPHERE_BAND } = require('../../frontend/js/proposals/site-binding.js');
-const { prepareForPublish, createFetchPrepare, refusalMessage } = require('../../frontend/js/proposals/publish-binding.js');
 const { frameFor } = require('../../frontend/js/metric-frame.js');
 
 const ANCHOR = [15.97, 45.81];
@@ -66,21 +65,5 @@ describe('the server refuses to publish an unresolved binding', () => {
             expect(result.code).toBe(BINDING_CODES.unresolved);
             expect(result.unresolved).toEqual([{ id: 'HR-1-2', intrusionM: 0.3 }]);
         }
-    });
-});
-
-describe('the browser stops a publish early on an unresolved binding', () => {
-    it('throws binding-unresolved with a sentence naming the parcel', async () => {
-        const site = polygon(0, 0, 20, 20);
-        // POST /proposals/prepare refuses an undecidable binding (409, proposals/binding.js) before
-        // anything is stored, minted or published.
-        const fetchImpl = async () => ({ ok: false, status: 409, json: async () => ({
-            code: 'binding-unresolved', error: 'undecidable', unresolved: [{ id: 'HR-1-2', intrusionM: 0.3 }] }) });
-        const proposal = { type: 'building', goal: 'buildings', site, toleranceM: 0.3, cadastreParcelIds: ['HR-1-1'] };
-        await expect(prepareForPublish(proposal, { fetchPrepare: createFetchPrepare(fetchImpl, '') }))
-            .rejects.toMatchObject({ code: 'binding-unresolved', status: 409, unresolved: [{ id: 'HR-1-2', intrusionM: 0.3 }], message: expect.stringMatching(/HR-1-2/) });
-        const message = refusalMessage({ code: 'binding-unresolved', unresolved: [{ id: 'HR-1-2', intrusionM: 0.3 }] });
-        expect(message).toMatch(/HR-1-2/);
-        expect(message).toMatch(/cannot be decided/);
     });
 });

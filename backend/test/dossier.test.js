@@ -73,10 +73,17 @@ beforeAll(() => {
 });
 
 describe('channelFor', () => {
-    it('rules and votes are political whatever ground they touch', () => {
+    it('urban rules are political whatever ground they touch', () => {
         expect(dossier.channelFor({ goal: 'urban-rule' }, ROOT, {})).toBe('vote');
-        expect(dossier.channelFor({ goal: 'as-is', kind: 'owner-vote' }, ROOT, {})).toBe('vote');
-        expect(dossier.channelFor({ goal: 'as-is', kind: 'community-vote' }, ROOT, {})).toBe('vote');
+        const ctx = { flow: [{ parcelId: ROOT, cededM2: 500, destination: 'public' }] };
+        expect(dossier.channelFor({ goal: 'urban-rule' }, ROOT, ctx)).toBe('vote');
+    });
+
+    it('a design is triaged by what it draws: a decision kind no longer makes it a vote (M2)', () => {
+        // Who decides is the agreement's rule (plan-design-agreement.md); a kind left on a record is inert.
+        expect(dossier.channelFor({ goal: 'as-is', kind: 'owner-vote' }, ROOT, {})).toBe('offer');
+        expect(dossier.channelFor({ goal: 'as-is', kind: 'community-vote' }, ROOT, {})).toBe('offer');
+        expect(dossier.channelFor({ goal: 'as-is' }, ROOT, { isVote: () => true })).toBe('offer');
     });
 
     it('a formation taking this ground with no geometry to check ASKS the owner', () => {

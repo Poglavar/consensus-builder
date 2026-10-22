@@ -42,10 +42,9 @@
         if (!proposal || !key) return null;
         const id = `proposed:${key}`;
         const status = root.getLifecycleStatus || require('../proposals/status.js').getLifecycleStatus;
-        const origin = root.ProposalOrigin || require('../proposals/origin.js');
-        const apiBase = origin.apiBase(proposal.publicationApiBase);
-        const rowId = origin.rowId(proposal.serverProposalId);
-        const publication = apiBase && rowId ? { apiBase, proposalRowId: rowId } : null;
+        // A published design is named by its CID (`published.cid`, proposals/design-sync.js).
+        const cidApi = root.Cid || require('../cid.js');
+        const publication = proposal.published && cidApi.isCid(proposal.published.cid) ? { cid: proposal.published.cid } : null;
         const volumes = (proposal.geometry?.buildings || []).map((feature, index) => volume(feature, `${id}:${index}`)).filter(Boolean);
         return { id, role: 'proposed', proposalId: String(key),
             title: proposal.name || proposal.title || String(key), site: proposal.site || null, volumes, spatialReference,

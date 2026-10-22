@@ -2,13 +2,10 @@
   "schema": "consensus-builder.reconstruction-plan.v1",
   "project": "vrbani-iii",
   "title": "Vrbani III – rekonstrukcija naselja",
-  "planTitle": "Vrbani III – izvedene zgrade, parkovi i prometnice",
   "sourcePlan": "UPU Vrbani III",
   "planYears": "UPU 2005.; izmjene 2006.",
   "implementationStatus": "većim dijelom izvedeno prema službenoj ocjeni realizacije plana",
   "generatedAt": "2026-08-14T00:00:00.000Z",
-  "planSlug": "vrbani-iii",
-  "localPath": "/proposals/vrbani-iii?city=zagreb",
   "sources": [
     "https://www.zagreb.hr/UserDocsImages/arhiva/SlGlasnik.nsf/10288f1421388ff8c1256f2d0049015b/d4c62cbed2fe586ec1256fba003490f1-OpenDocument.htm",
     "https://zagreb.hr/vrbani-iii-krajobrazno-uredjenje-naselja/12202",

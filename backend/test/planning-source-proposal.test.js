@@ -2,11 +2,9 @@
 import { describe, expect, it } from 'vitest';
 import { createRequire } from 'node:module';
 import { gupRecord } from '../planning/providers/zagreb-gup.js';
-import { stripLocalProposalState } from '../proposals/serializer.js';
-import { precheckProposalCreate } from '../routes/proposals.js';
+import { stripLocalProposalState } from '../proposals/archive-state.js';
 const require = createRequire(import.meta.url);
 const contract = require('../../frontend/js/planning/source-proposal.js');
-const chain = require('../../frontend/js/proposals/chain-record.js');
 const row = { gup_id: 2025, parcel_id: 'HR-1-17', gbp_m2: 123, current: true,
     result_status: 'evidence_missing', reason: 'exception_unresolved', computed_at: '2026-10-09T00:00:00Z', floors: [] };
 
@@ -42,20 +40,7 @@ describe('source-backed obligatory proposal', () => {
         expect(result.sourceReferences).toEqual(sourceReferences); expect(result).not.toHaveProperty('applied');
         expect(result.sourceReferences).not.toBe(sourceReferences);
     });
-    it('keeps the same references through portable chain metadata', () => {
-        const geometry = { type: 'Polygon', coordinates: [[[10,40],[10.001,40],[10.001,40.001],[10,40]]] };
-        const authored = { proposalId: 'design', type: 'structure', cadastreParcelIds: ['HR-1-17'],
-            site: geometry, binding: { parcels: [] }, cadastreSnapshot: { parcels: [] },
-            sourceReferences: [contract.reference(gupRecord(row).proposal)] };
-        const metadata = { properties: chain.metadataProperties(authored) };
-        expect(chain.fromMetadata(metadata).sourceReferences).toEqual(authored.sourceReferences);
-    });
-    it('refuses malformed references before a publication could charge or store them', () => {
-        const body = { type: 'parcel', cadastreParcelIds: ['HR-1-17'], sourceReferences: [{ revision: 'latest' }] };
-        expect(precheckProposalCreate({ body, validatedBody: body })).toMatchObject({ ok: false, status: 422, code: 'invalid-source-reference' });
-    });
-    it('reserves provider identities from the authored publication route', () => {
-        const body = { proposalId: 'source:pretend', type: 'parcel', cadastreParcelIds: ['HR-1-17'] };
-        expect(precheckProposalCreate({ body, validatedBody: body })).toMatchObject({ ok: false, code: 'source-proposal-read-only' });
+    it('refuses a malformed pinned reference instead of dropping it', () => {
+        expect(() => stripLocalProposalState({ proposalId: 'design', sourceReferences: [{ revision: 'latest' }] })).toThrow(/source reference/);
     });
 });

@@ -156,7 +156,7 @@
         return mapped && ids.includes(mapped) ? mapped : null;
     }
 
-    // Proposals in the current city first, otherwise the server's order (it ranks the ILIKE hits).
+    // Designs in the current city first, otherwise the index's order (newest first).
     function rankProposals(proposals, currentCityId) {
         const list = Array.isArray(proposals) ? proposals.slice() : [];
         return list
@@ -165,9 +165,9 @@
             .map(item => item.proposal);
     }
 
-    // Browser-local work has not necessarily been uploaded, so it cannot appear in the server
-    // summary search. Match the fields a person can recognise (title, author and durable id) and
-    // retain the usual exact/prefix/word/substring ordering.
+    // Browser-local work has not necessarily been published, so it cannot appear in the index
+    // search. Match the fields a person can recognise (title, author, local id and published CID)
+    // and retain the usual exact/prefix/word/substring ordering.
     function rankLocalProposals(proposals, query) {
         const text = String(query || '').trim();
         if (!text || !Array.isArray(proposals)) return [];
@@ -175,7 +175,7 @@
             .map((proposal, index) => {
                 const fields = [proposal && proposal.title, proposal && proposal.name,
                     proposal && proposal.proposalName, proposal && proposal.author,
-                    proposal && proposal.proposalId, proposal && proposal.serverProposalId];
+                    proposal && proposal.proposalId, proposal && proposal.published && proposal.published.cid];
                 const ranks = fields.map(field => matchRank(field, text)).filter(rank => rank !== null);
                 return { proposal, index, rank: ranks.length ? Math.min(...ranks) : null };
             })
@@ -185,15 +185,14 @@
             .map(entry => Object.assign({}, entry.proposal, { searchRank: entry.rank, localOnly: true }));
     }
 
-    // A published record may also live in this browser. Keep that local copy (it has the complete
-    // authored geometry and opens without a download prompt) and suppress its server summary.
+    // A published design may also live in this browser. Keep that local copy (it opens without a
+    // download prompt) and suppress its index row. Local items carry `cid` when they are published
+    // (DesignSync.publishedCid); index rows always do.
     function mergeProposalSearchResults(local, remote, currentCityId) {
         const localItems = Array.isArray(local) ? local : [];
-        const localServerIds = new Set(localItems
-            .map(proposal => String(proposal && proposal.serverProposalId || ''))
-            .filter(Boolean));
+        const localCids = new Set(localItems.map(proposal => String(proposal && proposal.cid || '')).filter(Boolean));
         const remoteItems = (Array.isArray(remote) ? remote : [])
-            .filter(proposal => !localServerIds.has(String(proposal && (proposal.id ?? proposal.proposalId) || '')));
+            .filter(proposal => !localCids.has(String(proposal && proposal.cid || '')));
         return localItems.concat(rankProposals(remoteItems, currentCityId));
     }
 

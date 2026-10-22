@@ -57,7 +57,7 @@
 
     function meterLabel(test, t) {
         if (test.of === 'owners' && test.scope === 'all') {
-            return test.measure === 'headcount' ? t('proposalApproval.meterOwners', 'Owners') : t('reparcellization.modal.colArea', 'Area');
+            return test.measure === 'headcount' ? t('proposalApproval.meterOwners', 'Owners') : t('proposalApproval.meterArea', 'Area');
         }
         return t(`proposalApproval.rules.meter.${slug(test)}`, METERS[keyOf(test)]);
     }
@@ -160,27 +160,5 @@
         ];
     }
 
-    // A consent tally names its evidence source; a local record is not a verified signature.
-    function consentLabels(basis, t, counts = {}) {
-        const signed = basis === 'signed-receipts';
-        const labels = signed ? {
-            parcelTitle: 'Parcel consent from verified receipts:',
-            ownerTitle: 'Owner approvals from verified receipts:',
-            accepted: 'Verified approval for current terms',
-            pending: 'No current verified approval',
-            hint: 'Signed receipts verified against the current terms and declared approval context. They do not establish legal title or payment.',
-            parcelSummary: '{{accepted}}/{{total}} parcels with verified receipts'
-        } : {
-            parcelTitle: 'Locally recorded parcel consent:',
-            ownerTitle: 'Local owner-entry consent:',
-            accepted: 'Consent recorded in this browser',
-            pending: 'No current local consent record',
-            hint: 'Unsigned records in this browser, matched to the current terms and owner roster. They do not verify signing authority or legal ownership.',
-            parcelSummary: '{{accepted}}/{{total}} parcels with local consent'
-        };
-        return Object.fromEntries(Object.entries(labels).map(([key, fallback]) => [key,
-            t(`panel.proposal.acceptance.${signed ? 'signed' : 'local'}.${key}`, fallback, counts)]));
-    }
-
-    return { orderTests, meterName, meterLabel, thresholdText, testText, rulesText, authorityText, regimeName, regimeOf, stageText, familyText, allocationLines, checkLines, reviewBasisLines, consentLabels };
+    return { orderTests, meterName, meterLabel, thresholdText, testText, rulesText, authorityText, regimeName, regimeOf, stageText, familyText, allocationLines, checkLines, reviewBasisLines };
 });

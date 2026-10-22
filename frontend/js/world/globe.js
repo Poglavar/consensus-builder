@@ -268,7 +268,7 @@
             gl_PointSize = size * pixelRatio * grow;
             gl_Position = projectionMatrix * mv;
         }`;
-    // A city with proposals is a painted dot: a bright core inside a ring, at every scale,
+    // A city with agreements is a painted dot: a bright core inside a ring, at every scale,
     // whether or not its label fits; the pulse and halo stay with the labelled/selected ones.
     // (`active` is a reserved word in GLSL; the attribute is `painted`.)
     const POINTS_FRAG = `
@@ -722,14 +722,14 @@
         }
 
         // The label reads "<city> <count>": the name, and a small count badge when the city has
-        // published proposals. The accessible name says the same in words.
+        // proposed agreements. The accessible name says the same in words.
         function fillCityLabel(item, entry) {
             const count = entry.count > 0 ? entry.count : 0;
             item.name.textContent = entry.city.name;
             item.count.textContent = count ? global.CbFormat.formatInteger(count) : '';
             item.count.hidden = !count;
             item.node.setAttribute('aria-label', count
-                ? entry.city.name + ', ' + t('agentDialog.proposalCount', '{{count}} proposals', { count })
+                ? entry.city.name + ', ' + t('world.agreementCount', count === 1 ? '{{count}} agreement' : '{{count}} agreements', { count })
                 : entry.city.name);
         }
 
@@ -765,7 +765,7 @@
             cityLayoutDirty = true;
         }
 
-        // Proposal counts arrive after the first frame. They re-rank the catalog in place (the
+        // Agreement counts arrive after the first frame. They re-rank the catalog in place (the
         // label pool keeps pointing at the same entries), widen the labels that gain a badge, and
         // mark the dots to paint. A failed read leaves the globe as it was: every count zero.
         let countsRequest = null;

@@ -967,97 +967,6 @@ body:has(#selection-tray) .map-feedback-stack {
     margin-top: 15px;
 }
 
-.proposal-acceptance-status {
-    margin-top: 15px;
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 8px;
-}
-
-.acceptance-label {
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--cb-text);
-    margin-bottom: 0;
-    white-space: nowrap;
-}
-
-.acceptance-circles {
-    display: flex;
-    gap: 6px;
-    margin-bottom: 0;
-    flex-wrap: wrap;
-    align-items: center;
-}
-
-.acceptance-circles.compact {
-    gap: 4px;
-    margin-bottom: 0;
-}
-
-.acceptance-circle {
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
-    border: 2px solid #333;
-    transition: all 0.2s ease;
-    cursor: help;
-}
-
-.acceptance-circle.compact {
-    width: 10px;
-    height: 10px;
-    border-width: 1px;
-}
-
-.acceptance-circle.accepted {
-    background-color: var(--cb-success);
-    border-color: #1e7e34;
-}
-
-.acceptance-circle.pending {
-    background-color: #6c757d;
-    border-color: #495057;
-}
-
-.acceptance-circle:hover {
-    transform: scale(1.2);
-}
-
-.acceptance-summary {
-    font-size: 12px;
-    color: var(--cb-text-muted);
-    font-style: italic;
-}
-
-.compact-acceptance-row {
-    display: flex;
-    align-items: flex-start;
-    justify-content: flex-start;
-    gap: 8px;
-    margin-top: 4px;
-}
-
-.compact-acceptance-label {
-    font-size: 11px;
-    font-weight: 600;
-    color: #444;
-    display: flex;
-    align-items: center;
-    gap: 4px;
-}
-
-.compact-acceptance-summary {
-    font-weight: 500;
-    font-size: 11px;
-    color: #777;
-}
-
-.proposal-item-indicators {
-    margin-top: 6px;
-}
-
 .form-group {
     margin-bottom: 15px;
 }
@@ -1081,36 +990,6 @@ body:has(#selection-tray) .map-feedback-stack {
     margin-bottom: 10px;
     font-size: 0.95em;
     color: var(--cb-text);
-}
-
-.proposal-option-row {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.proposal-option-row input[type="checkbox"] {
-    width: 16px;
-    height: 16px;
-    cursor: pointer;
-}
-
-.proposal-option-row input[type="text"] {
-    padding: 6px 10px;
-    border: 1px solid var(--cb-line-strong);
-    border-radius: 4px;
-    font-size: 14px;
-    font-family: monospace;
-}
-
-.proposal-option-row input[type="text"]:disabled {
-    background-color: var(--cb-surface-3);
-    color: var(--cb-text-muted);
-}
-
-.proposal-option-row input[type="text"]:not(:disabled) {
-    background-color: var(--cb-surface);
-    color: var(--cb-text-strong);
 }
 
 .proposal-author-row {
@@ -1677,13 +1556,6 @@ input:checked+.slider:before {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-}
-/* In the centered proposal-details panel, center the line as a group while
-   keeping the value's ellipsis truncation. */
-.proposal-ens-row .ens-name-line {
-    display: inline-flex;
-    max-width: 100%;
-    vertical-align: middle;
 }
 
 /* Pinpoint's live coordinate readout. Its own chip rather than the status bar: the status bar

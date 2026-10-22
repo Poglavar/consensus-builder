@@ -1,8 +1,8 @@
-// Links to one proposal's bet. The shareable form is /bets/<proposalAccount>?city=<id>: the server
-// answers it with a link preview (backend/routes/bets-share.js) and sends the browser on to the app
-// form, /?city=<id>&bets=<proposalAccount>, which opens the Bets sheet on that row. Without the
-// server in front, the app reads the path form itself. Pure: parsing and building only, shared by
-// the sheet, the bet receipt and the server route.
+// Links to one agreement's bet, named by the agreement's chain account (the market's subject). The
+// shareable form is /bets/<account>?city=<id>: the server answers it with a link preview
+// (backend/routes/bets-share.js) and sends the browser on to the app form, /?city=<id>&bets=<account>,
+// which opens the bet's dialog. Without the server in front, the app reads the path form itself.
+// Pure: parsing and building only, shared by the sheet, the bet receipt and the server route.
 (function attachBetsLink(root, factory) {
     const api = factory();
     if (typeof module === 'object' && module.exports) module.exports = api;
@@ -35,7 +35,7 @@
         try { return new URLSearchParams(String(search || '')); } catch (_) { return new URLSearchParams(); }
     }
 
-    // What a location names: the proposal account from /bets/<account> or ?bets=<account>, with the
+    // What a location names: the agreement account from /bets/<account> or ?bets=<account>, with the
     // city and language the link carried. null when the location is not a bet link.
     function parse(loc) {
         const pathname = String((loc && loc.pathname) || '');
@@ -45,9 +45,9 @@
         if (fromPath) {
             try { raw = decodeURIComponent(fromPath[1]); } catch (_) { raw = fromPath[1]; }
         }
-        const proposalAccount = accountOf(raw);
-        if (!proposalAccount) return null;
-        return { proposalAccount, city: cityOf(params.get('city')), lang: langOf(params.get('lang')) };
+        const account = accountOf(raw);
+        if (!account) return null;
+        return { account, city: cityOf(params.get('city')), lang: langOf(params.get('lang')) };
     }
 
     function query(entries) {
@@ -58,16 +58,16 @@
     }
 
     // The shareable link: /bets/<account>?city=<id>[&lang=<xx>] on the given origin.
-    function build({ origin = '', city, proposalAccount, lang } = {}) {
-        const account = accountOf(proposalAccount);
-        if (!account) throw new Error('A bet link needs a Solana proposal account');
-        return `${String(origin).replace(/\/+$/, '')}/bets/${account}${query([['city', cityOf(city)], ['lang', langOf(lang)]])}`;
+    function build({ origin = '', city, account, lang } = {}) {
+        const subject = accountOf(account);
+        if (!subject) throw new Error('A bet link needs the Solana account of a minted agreement');
+        return `${String(origin).replace(/\/+$/, '')}/bets/${subject}${query([['city', cityOf(city)], ['lang', langOf(lang)]])}`;
     }
 
     // The app form the server sends a browser to: /?city=<id>&bets=<account>[&lang=<xx>]. Without an
     // account it is the plain city link, for an account nobody has minted.
-    function appHref({ city, proposalAccount, lang } = {}) {
-        return `/${query([['city', cityOf(city)], [PARAM, accountOf(proposalAccount)], ['lang', langOf(lang)]])}`;
+    function appHref({ city, account, lang } = {}) {
+        return `/${query([['city', cityOf(city)], [PARAM, accountOf(account)], ['lang', langOf(lang)]])}`;
     }
 
     return { PARAM, accountOf, cityOf, parse, build, appHref };

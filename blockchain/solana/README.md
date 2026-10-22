@@ -7,17 +7,35 @@ Solana equivalents of the EVM ParcelNFT and ProposalNFT contracts.
 - **parcel_nft**: ownerless parcel anchors, the on-chain identity of a cadastral parcel (PDA-based)
 - **proposal_nft**: proposals for parcel development with SOL funding, a lens of trusted SAS
   attesters, attested owner acceptance and verdict settlement
-- **proposal_market**: parimutuel markets on a proposal's terminal state, and external markets
-  resolved from SAS court evidence
-- **proposal_pledge**: USDC donations and soft pledges on a proposal
-- **crates/sas_attestation**: byte-level SAS account readers shared by proposal_nft and
-  proposal_market (not a program)
+- **proposal_market**: parimutuel and LMSR markets on an agreement's terminal state (Executed YES;
+  Cancelled or Expired NO, LMSR kind 0 Cancelled VOID), and external markets resolved from SAS
+  evidence, optionally bound to an agreement's lens
+- **proposal_pledge**: USDC donations and soft pledges on an agreement; its authority (the sponsor)
+  is the beneficiary
+- Since 2026-10-22 (source only, not deployed) `proposal_market` and `proposal_pledge` read
+  `agreement` accounts, never `proposal_nft`: owner the agreement program, the Agreement
+  discriminator, status at byte 136, through `agreement::read_agreement_view`. They keep their names,
+  ids and the `proposal` account and field names (the IDL interfaces are unchanged); that word now
+  names the agreement account. Renaming them is a deploy-time matter. The devnet binaries at these
+  ids still read `proposal_nft` until they are redeployed.
+- **agreement** (M3 of `../../plan-design-agreement.md`; placeholder id, not deployed): one account
+  per agreement (PDA of its sponsor and CID) with a SOL escrow, settled by its lens's
+  AgreementDecision-v1 attestation;
+  replaces the per-proposal consent machinery. See [`programs/agreement/README.md`](programs/agreement/README.md)
+  and the codec [`frontend/js/solana/agreement-client.js`](../../frontend/js/solana/agreement-client.js)
+  (UMD, beside the other program clients, so the browser and node load the same file)
+- **crates/sas_attestation**: byte-level SAS account readers shared by proposal_nft,
+  proposal_market and agreement (not a program)
 
 ## Lens model v2 — deployed to devnet; verified 2026-10-02
 
 Design of record: [`lens-model.md`](../../lens-model.md). The checked-in IDLs describe the deployed
 source: ParcelNFT v2, ProposalMarket v2 and ProposalNFT v3 (v3 includes the v2 lens acceptance and
-verdict behavior). Their current executable bytes were fetched from devnet and matched the builds;
+verdict behavior), except `idl/proposal_market.json` and `idl/proposal_pledge.json`, which since
+2026-10-22 come from the agreement-reading source: their existing instructions, accounts, arguments
+and error codes are unchanged (only docs and error messages differ), and `proposal_market.json` now
+also lists the LMSR instructions, account, event and errors its source already carried
+(`../../lmsr-market.md`). Their current executable bytes were fetched from devnet and matched the builds;
 transaction signatures and hashes are in [`docs/protocol.md`](../../docs/protocol.md). This verifies
 program deployment, not registration of the lens SAS schemas or a complete human-owner journey.
 
@@ -119,6 +137,13 @@ as SAS does. Rebuild it with `cargo build-sbf --manifest-path tests/mock_sas/Car
 `tests/mock_sas/target/deploy/mock_sas.so` to `tests/fixtures/`. Never deploy it. Tests read the
 validator's clock (`chainNow`), never `Date.now()`, because the localnet clock drifts from the host.
 
+`tests/agreement.ts` covers the `agreement` program. `tests/agreement-helpers.ts` creates, funds,
+attests (an AgreementDecision-v1 attestation written through the mock SAS), executes, cancels and
+expires agreements, for that suite and for the market and pledge suites, whose subject has been an
+agreement since M3. Their Expired agreements are expired live by `expire` once a short deadline has
+passed on the validator clock, so the pledge suite's only genesis fixture is the devnet USDC mint
+(`tests/fixtures/generate-pledge-fixtures.mjs`).
+
 ## proposal_nft v3, parcel-optional proposals — deployed to devnet; verified 2026-10-02
 
 Design: [`PARCEL-OPTIONAL.md`](../../PARCEL-OPTIONAL.md) (Chain, phase 5) and
@@ -169,6 +194,11 @@ avm use latest
 anchor build
 ```
 
+Build with `anchor build`, which builds one program per cargo invocation. `proposal_market` and
+`proposal_pledge` depend on the `agreement` crate with its `no-entrypoint` feature (they read its id
+and Agreement layout), so a single `cargo build-sbf` over the whole workspace would unify that
+feature into the `agreement` build itself and produce an `agreement.so` without an entrypoint.
+
 ## Deploy
 
 ```bash
@@ -206,9 +236,9 @@ happened on 2026-09-16 and was caught by `backend/test/proposal-market-layout.te
 the ids. Set a new program's id by hand from `anchor keys list` instead, and deploy one program at a
 time: `anchor deploy --program-name proposal_market --provider.cluster devnet`.
 
-`proposal_market` (`GDYnzduynKhKgxDhvvKVarn2s23DtzA26s6hycuUYDRB`) reads `proposal_nft` accounts by a
-mirrored prefix struct; `idl/proposal_market.json` is the checked-in copy of `target/idl/` after a
-build, like the other two. The same program source now also defines `ExternalMarket`, which leaves
+`proposal_market` (`GDYnzduynKhKgxDhvvKVarn2s23DtzA26s6hycuUYDRB`) read `proposal_nft` accounts by a
+mirrored prefix struct until 2026-10-22; its source now reads `agreement` accounts (see Programs);
+`idl/proposal_market.json` is the checked-in copy of `target/idl/` after a build, like the others. The same program source now also defines `ExternalMarket`, which leaves
 the legacy account layout untouched and verifies court-oracle SAS accounts owned by
 `22zoJMtdu4tQc2PzL74ZUT7FrwgB1Udec8DdW4yw4BdG`. That compatible upgrade went live on 2026-09-21;
 the first two-sided court-resolved market and its transaction proof are linked from

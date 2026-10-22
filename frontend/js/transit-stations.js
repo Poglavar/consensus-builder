@@ -1402,8 +1402,7 @@
         }
         cancelTransitStationPlacement();
         global.MapShell?.closeSheets();
-        global.ParcelMenu?.close();
-        global.GroundMenu?.close();
+        global.ClickStack?.close();
         global.hideParcelInfoPanel?.();
         global.hideProposalDetailsPanel?.();
         global.document?.body?.classList.add('station-placement-active');

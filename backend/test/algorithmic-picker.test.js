@@ -19,7 +19,7 @@ function candidate(id, score, overrides = {}) {
 
 const persona = { name: 'densifier-01', dailyProposals: 1 };
 
-describe('algorithmic proposal picker', () => {
+describe('algorithmic design picker', () => {
     it('is stable for the same day and varies only among near-best candidates', () => {
         const candidates = [candidate('a', 1), candidate('b', 0.95), candidate('c', 0.91), candidate('d', 0.5)];
         const first = selectAlgorithmicPicks({ day: '2026-09-20', persona, candidates });
@@ -55,14 +55,16 @@ describe('algorithmic proposal picker', () => {
         expect(result.picks[0].rationale).toContain('Existing buildings are not measured');
     });
 
-    it('writes its name and rationale only from candidate facts', () => {
+    it('writes its name and rationale only from candidate facts, and promises no owner offer', () => {
         const result = selectAlgorithmicPicks({ day: '2026-09-20', persona, candidates: [candidate('2178', 1)] });
         expect(result.picks[0]).toMatchObject({
             name: '4-storey infill on parcel 2178, Rudeš',
             rationale: expect.stringContaining('from 200 m² to 500 m²')
         });
-        expect(result.picks[0].rationale).toContain('€30,000');
         expect(result.picks[0].rationale).toContain('The mapped urban rule allows 4 floors on parcel 2178.');
+        // A design carries no terms: the planner's offer is not written into its text.
+        expect(result.picks[0].rationale).not.toContain('€');
+        expect(result.picks[0].rationale).not.toMatch(/offer/i);
     });
 
     it('uses the short geometry display label even when a parcel number is accidentally present', () => {
@@ -93,12 +95,12 @@ describe('algorithmic proposal picker', () => {
         expect(result.picks[0].name).not.toContain('G1-unknown');
     });
 
-    it('names a rival build-out as an alternative that answers the proposal on the same land', () => {
+    it('names a rival build-out as an alternative that answers the agreement on the same land', () => {
         const result = selectAlgorithmicPicks({ day: '2026-09-20', persona, candidates: [candidate('HR-335614-1754/1', 1, {
-            plannedFloors: 2, rival: { proposalId: 'agent-densifier-01-2026-10-11-h02-1', persona: 'densifier-01', name: '4-storey infill on parcel 1754/1, Rudeš' }
+            plannedFloors: 2, rival: { agreementCid: `bafkrei${'a'.repeat(52)}`, persona: 'densifier-01', name: '4-storey infill on parcel 1754/1, Rudeš' }
         })] });
         expect(result.picks[0].name).toBe('2-storey alternative on parcel 1754/1, Rudeš');
-        expect(result.picks[0].rationale).toContain('allows 4 floors on parcel HR-335614-1754/1; this proposal builds 2.');
+        expect(result.picks[0].rationale).toContain('allows 4 floors on parcel HR-335614-1754/1; this design builds 2.');
         expect(result.picks[0].rationale).toContain('answers "4-storey infill on parcel 1754/1, Rudeš" by densifier-01 on the same land');
     });
 

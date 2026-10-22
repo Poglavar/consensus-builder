@@ -13,8 +13,8 @@ describe('normalizeGoalKey', () => {
         }
     });
     it('canonicalises the remaining known goals', () => {
-        expect(normalizeGoalKey('decide')).toBe('decide-later');
-        expect(normalizeGoalKey('reparcellization')).toBe('reparcellization');
+        expect(normalizeGoalKey('parcel-layout')).toBe('parcel-layout');
+        expect(normalizeGoalKey('Parcel Layout')).toBe('parcel-layout');
         expect(normalizeGoalKey('Park')).toBe('park');
         expect(normalizeGoalKey('Transit Station')).toBe('station');
         expect(normalizeGoalKey('residences')).toBe('buildings');
@@ -32,7 +32,7 @@ describe('normalizeGoalKey', () => {
 describe('isBuildingGoal', () => {
     it('is true only for the building typologies', () => {
         ['buildings', 'single', 'row', 'parcelBased'].forEach(k => expect(isBuildingGoal(k)).toBe(true));
-        ['road-track', 'park', 'reparcellization', 'decide-later', ''].forEach(k => expect(isBuildingGoal(k)).toBe(false));
+        ['road-track', 'park', 'parcel-layout', ''].forEach(k => expect(isBuildingGoal(k)).toBe(false));
     });
 });
 
@@ -41,8 +41,7 @@ describe('classifyApplyRoute', () => {
 
     it('routes each spatial type to its apply path', () => {
         expect(route('road-track')).toBe('road-track');
-        expect(route('reparcellization')).toBe('reparcellization');
-        expect(route('decide-later')).toBe('decide-later');
+        expect(route('parcel-layout')).toBe('parcel-layout');
         expect(route('buildings')).toBe('building');
         expect(route('single')).toBe('building');
         expect(route('park')).toBe('structure');
@@ -60,6 +59,8 @@ describe('classifyApplyRoute', () => {
 
     it('is unsupported for an unknown or missing goal', () => {
         expect(route('mystery')).toBe('unsupported');
+        // The land-readjustment record is gone (plan-design-agreement.md, M1 (a)): no legacy route.
+        expect(route('reparcellization')).toBe('unsupported');
         expect(route(undefined)).toBe('unsupported');
         expect(classifyApplyRoute({}).route).toBe('unsupported');
     });

@@ -3,9 +3,19 @@ import fs from 'node:fs';
 import path from 'node:path';
 import vm from 'node:vm';
 import { fileURLToPath } from 'node:url';
+import { parse } from '@babel/parser';
 
 const FRONTEND = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../frontend');
 const listUiSource = fs.readFileSync(path.join(FRONTEND, 'js/proposals/list-ui.js'), 'utf8');
+const coreSource = fs.readFileSync(path.join(FRONTEND, 'js/proposals/core.js'), 'utf8');
+
+// One top-level function of proposals/core.js (a classic script), on its own.
+function coreFunction(name) {
+    const node = parse(coreSource, { sourceType: 'script' }).program.body
+        .find(item => item.type === 'FunctionDeclaration' && item.id.name === name);
+    if (!node) throw new Error(`${name} not found in proposals/core.js`);
+    return new Function(`${coreSource.slice(node.start, node.end)}\nreturn ${name};`)();
+}
 
 function loadListUi(overrides = {}) {
     const calls = [];
@@ -49,36 +59,42 @@ function clickEvent(currentTarget, target = currentTarget) {
 }
 
 describe('proposal list navigation', () => {
-    it('qualifies local-copy lookups from server list clicks with the current publication API', async () => {
-        const apiBase = 'https://api.example.test';
-        const local = { proposalId: 'local-copy' };
+    it('looks up the local copy of a server row by the design CID the row lists', async () => {
+        const cid = 'bafkreibm6jg3ux5qumhcn2b3flc3tyu6dmlb4xa7u5bf44yegnrjhc4yeq';
+        const local = { proposalId: `design-${cid}` };
         const findLocal = vi.fn(() => local);
+        const DesignSync = { fetchDesign: vi.fn(), importDesign: vi.fn() };
         const row = {
-            getAttribute: name => ({ 'data-proposal-id': 'server-proposal', 'data-server-id': '42' })[name] || null,
+            getAttribute: name => ({ 'data-proposal-id': cid, 'data-cid': cid })[name] || null,
             classList: { add: vi.fn() },
             querySelectorAll: () => []
         };
         const { context } = loadListUi({
             modal: { querySelectorAll: () => [] },
+            window: { DesignSync },
             context: {
                 proposalListState: { source: 'server' },
-                resolveBackendBaseUrl: () => apiBase,
                 findLocalCopyOfServerProposal: findLocal,
                 getProposalKey: () => local.proposalId
             }
         });
 
         await context.handleProposalListItemClick(clickEvent(row));
-        expect(findLocal).toHaveBeenCalledWith({ serverProposalId: '42', publicationApiBase: apiBase });
+        expect(findLocal).toHaveBeenCalledWith({ cid });
+        expect(context.previewProposalOnMap).toHaveBeenCalledWith(local.proposalId, { center: true, blink: true });
 
         findLocal.mockClear();
         context.openListedProposal = vi.fn();
         const details = {
-            getAttribute: name => name === 'data-proposal-details' ? 'server-proposal' : null,
+            getAttribute: name => name === 'data-proposal-details' ? cid : null,
             closest: selector => selector === '.proposal-list-item' ? row : null
         };
         await context.handleProposalListDetailsClick(clickEvent(details));
-        expect(findLocal).toHaveBeenCalledWith({ serverProposalId: '42', publicationApiBase: apiBase });
+        expect(findLocal).toHaveBeenCalledWith({ cid });
+        expect(context.openListedProposal).toHaveBeenCalledWith(local, cid, 'details');
+        // A copy held here opens as it is; nothing is fetched.
+        expect(DesignSync.fetchDesign).not.toHaveBeenCalled();
+        expect(DesignSync.importDesign).not.toHaveBeenCalled();
     });
 
     it('replaces the temporary loading shell when mounting the proposal list', () => {
@@ -242,5 +258,37 @@ describe('proposal panel fit padding', () => {
 
     it('pads nothing for a sheet covering the whole map: the framing is for when it closes', () => {
         expect(pad(box(0, 0, 390, 784), phone)).toEqual({ paddingTopLeft: [40, 40], paddingBottomRight: [40, 40] });
+    });
+});
+
+describe('proposal list titles and descriptions', () => {
+    const CID = 'bafkreibm6jg3ux5qumhcn2b3flc3tyu6dmlb4xa7u5bf44yegnrjhc4yeq';
+    const { context } = loadListUi({ context: {
+        resolveStructureProposal: () => null,
+        resolveProposalGoalKey: () => '',
+        getProposalGoalLabel: () => '',
+        isGenericProposalDisplayText: coreFunction('isGenericProposalDisplayText')
+    } });
+    // Fields a minted proposal used to carry; designs are not minted (M3) and nothing writes them.
+    const chainLeftovers = {
+        tokenId: '7',
+        metadata: { name: 'NFT name', properties: { title: 'NFT title' }, description: 'NFT text' },
+        onchain: { proposalId: 'Acc', metadata: { name: 'Minted name', title: 'Minted title', description: 'Minted text' } }
+    };
+
+    it('names a record by its own text, else by its CID or local key, never by a chain token or its metadata', () => {
+        expect(context.getProposalDisplayTitle({ title: 'Pocket park', ...chainLeftovers })).toBe('Pocket park');
+        expect(context.getProposalDisplayTitle({ proposalId: 'p-1gtz1npm44n', ...chainLeftovers })).toBe('Proposal p-1gtz1npm44n');
+        expect(context.getProposalDisplayTitle({ proposalId: `design-${CID}`, published: { cid: CID }, ...chainLeftovers })).toBe(`Proposal ${CID}`);
+        expect(context.getProposalDisplayTitle({ cid: CID, ...chainLeftovers })).toBe(`Proposal ${CID}`);
+        // "Minted proposal from …" was the generic title of a chain import; nothing imports one any more,
+        // so such a title is an ordinary one.
+        expect(context.getProposalDisplayTitle({ title: 'Minted proposal from Solana' })).toBe('Minted proposal from Solana');
+        expect(context.getProposalDisplayTitle({ title: 'Proposal #12', proposalId: 'p-1' })).toBe('Proposal p-1');
+    });
+
+    it('describes a record by its own description only', () => {
+        expect(context.getProposalDisplayDescription({ proposalId: 'p-1', ...chainLeftovers })).toBe('');
+        expect(context.getProposalDisplayDescription({ description: 'Two rows of trees', ...chainLeftovers })).toBe('Two rows of trees');
     });
 });

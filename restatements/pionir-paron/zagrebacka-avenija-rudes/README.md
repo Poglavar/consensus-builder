@@ -18,11 +18,13 @@ The last published polygon is about 4,031 m² and materially overlaps parts of m
 
 The seven published above-ground footprints total 6,043.10 m², or 33.61% of the 17,980.05 m² permit area. The shared 11,051.05 m² underground polygon is recorded in metadata but is not rendered as an eighth building. The WFS does not publish official phase labels, storeys, apartments or GBP, so the proposal uses neutral local labels V1–V7 and a 27 m **display proxy**. Its 54,388 m² height-equivalent GBP and `kin` 3.02 are diagnostics for 3D editing, not permit values.
 
-The local proposal row is `1090`, proposal id `paron-zagrebacka-avenija-rudes-location-permit-2025`, and remains unapplied. Rebuild it with:
+Rebuild the canonical archive with:
 
 ```sh
-node backend/scripts/seed-rudes-zagrebacka-avenija-proposal.mjs --apply --export
+node backend/scripts/seed-rudes-zagrebacka-avenija-proposal.mjs --export
 ```
+
+Publish it as designs plus the project's agreement with `backend/scripts/publish-restatement-archives.mjs` ([collection README](../README.md#publishing-designs-and-agreements)).
 
 [`existing-context.geojson`](existing-context.geojson) contains the current parcel and 21 DGU objects slated as demolition context. The source GeoJSON files can be refreshed with:
 

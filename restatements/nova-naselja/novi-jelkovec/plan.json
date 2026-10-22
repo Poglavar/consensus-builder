@@ -2,13 +2,10 @@
   "schema": "consensus-builder.reconstruction-plan.v1",
   "project": "novi-jelkovec",
   "title": "Novi Jelkovec – rekonstrukcija naselja",
-  "planTitle": "Novi Jelkovec – zgrade, parkovi, trgovi i prometnice",
   "sourcePlan": "DPU stambenog naselja na lokaciji Sopnica - Jelkovec",
   "planYears": "DPU 2003.; izmjene 2007., 2016. i 2020.",
   "implementationStatus": "izvedeno u cijelosti prema službenoj ocjeni realizacije plana",
   "generatedAt": "2026-08-14T00:00:00.000Z",
-  "planSlug": "novi-jelkovec",
-  "localPath": "/proposals/novi-jelkovec?city=zagreb",
   "sources": [
     "https://zagreb.hr/izmjene-i-dopune-detaljnog-plana-uredjenja-stamben/168074",
     "https://www.zagreb.hr/userdocsimages/arhiva/prostorni_planovi/dpu%20sopnica%20jelkovec/s-j_graficki%20dio_I%20%2820210120%29.pdf",

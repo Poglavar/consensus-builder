@@ -165,11 +165,13 @@ export function breakpointViolations(cssText) {
     return out;
 }
 
-/** The stylesheets index.html loads, in order (the only co-loaded set that can conflict). */
+/** The stylesheets index.html loads, in order (the only co-loaded set that can conflict). A `?v=` cache
+ *  token is part of the URL, not the file: matching only bare `.css'` entries once hid six stylesheets
+ *  (panels, modals, proposals, …) from the conflict and control-vocabulary audits. */
 export function coLoadedCssFiles(indexHtml) {
     const m = indexHtml.match(/var cssFiles = \[([\s\S]*?)\];/);
     if (!m) throw new Error('index.html: cssFiles list not found');
-    return [...m[1].matchAll(/'([^']+\.css)'/g)].map(x => x[1]);
+    return [...m[1].matchAll(/'([^'?]+\.css)(?:\?[^']*)?'/g)].map(x => x[1]);
 }
 
 /**

@@ -1,6 +1,6 @@
 // Phone layout rules from the 2026-09-24 mobile review. Each one fixed an overlap that hid a
 // control on a ~370px screen: the 3D parcel panel under the mode buttons, a collapsed proposal
-// card jumping over the menu button, the drill stack over the Guest pill, and so on. The rules
+// card jumping over the menu button, the stack panel over the Guest pill, and so on. The rules
 // live in CSS and wiring, so they are asserted at the source — each assertion fails if its fix
 // is reverted.
 import { describe, expect, it } from 'vitest';
@@ -19,11 +19,11 @@ const mapCreditsCss = read('css/map-credits.css');
 const selectionTrayCss = read('css/selection-tray.css');
 const proposalsCss = read('css/proposals.css');
 const proposalDetailsCss = read('css/proposal-details.css');
-const drillUi = read('js/proposals/drill-ui.js');
+const clickStackPanel = read('js/click-stack/click-stack-panel.js');
+const dockSheet = read('js/mobile-dock-sheet.js');
 const threeMode = read('js/three-mode.js');
 const parcelBlocks = read('js/parcel-blocks.js');
 const listUi = read('js/proposals/list-ui.js');
-const sharingRoutes = read('js/proposals/sharing-routes.js');
 const cityPrompt = read('js/city-switch-prompt.js');
 
 // Body of the first `selector { … }` block whose selector text matches, searched from `from`.
@@ -189,23 +189,23 @@ describe('proposal details and compact card on phones', () => {
         expect(ruleBody(block, '#three-container \\.three-mode-isolation-banner')).toMatch(/top:\s*62px/);
     });
 
-    it('starts the drill stack below the top row, full width, and hides a single-row stack', () => {
-        expect(drillUi).toMatch(/const PHONE_TOP_CLEARANCE = 62;/);
-        expect(drillUi).toMatch(/let top = phone \? PHONE_TOP_CLEARANCE : DESKTOP_TOP_CLEARANCE;/);
-        // A bare parcel with nothing on it never opens the drill (the parcel menu already names it).
-        expect(drillUi).toMatch(/function isBareParcelOnly\(stack\)/);
-        expect(drillUi).toMatch(/if \(isBareParcelOnly\(stack\)\) hidePanel\(\);\s*else renderPanel\(stack, selectedRef\);/);
-        const [block] = mediaBlocksContaining(mapCss, '(max-width: 767.98px)', '#drill-stack-panel');
-        expect(ruleBody(block, '#drill-stack-panel')).toMatch(/left:\s*10px/);
-        expect(block).toMatch(/#drill-stack-panel\.is-single\s*\{\s*display:\s*none;/);
+    // The drill stack's own phone geometry (a full-width top-row card) went with it. The click stack
+    // is an ordinary right-dock info panel, so on phones it is the bottom sheet; a panel it hosts is
+    // part of its card and must not become a second sheet with a second handle.
+    it('makes the click stack the phone bottom sheet, never the panels it hosts', () => {
+        expect(clickStackPanel).toContain("el.className = 'click-stack info-panel right-dock-panel';");
+        expect(dockSheet).toContain("const PANEL_SELECTOR = '.info-panel.right-dock-panel:not(#proposal-details-panel):not(.is-hosted)';");
+        expect(ruleBody(mapCss, '#click-stack \\.is-hosted \\.mobile-dock-sheet-handle')).toMatch(/display:\s*none/);
+        expect(mapCss).not.toContain('#drill-stack-panel');
     });
 
-    it('closes the drill stack when neither panel it describes is still open', () => {
-        const handler = drillUi.slice(drillUi.indexOf('function onNeighbourChanged()'), drillUi.indexOf('function isPhoneLayout()'));
-        expect(handler).toContain("shown('proposal-details-panel')");
-        expect(handler).toContain("shown('parcel-info-panel')");
-        expect(handler).toContain('hidePanel();');
-        expect(drillUi).toMatch(/new MutationObserver\(onNeighbourChanged\)/);
+    it('takes a hosted panel out of the dock: no position, size or frame of its own', () => {
+        // Whatever the selector spelling (the panels' own id rules have to be outweighed).
+        const hosted = [...mapCss.matchAll(/#click-stack[^{}]*\.is-hosted[^{}]*\{([^{}]*)\}/g)]
+            .map(match => match[1]).find(body => /position:\s*static/.test(body)) || '';
+        expect(hosted).toMatch(/position:\s*static/);
+        expect(hosted).toMatch(/max-height:\s*none/);
+        expect(hosted).toMatch(/box-shadow:\s*none/);
     });
 });
 
@@ -305,17 +305,6 @@ describe('smaller fixes', () => {
         expect(listUi).toMatch(/isProposalApplied\(appliedSubject\)/);
     });
 
-    it('shows the shared-plan dialog only when there is something to read', () => {
-        expect(sharingRoutes).toMatch(/const summaryHasIssues = failed\.length > 0 \|\| rebasedCount > 0;/);
-        expect(sharingRoutes).not.toMatch(/&& \(summaryHasIssues \|\| !wants3DFromUrl\)/);
-        expect(sharingRoutes).not.toContain("tShare('plan.alreadyAppliedTitle'");
-    });
-
-    it('warns when an already-applied link points at proposals deleted from the server', () => {
-        expect(sharingRoutes).toContain("tShare('plan.goneFromServer'");
-        expect(sharingRoutes).toContain('batchRecords.missing.has(id)');
-    });
-
     it('takes down the loading card before asking which city to open', () => {
         const prompt = cityPrompt.slice(cityPrompt.indexOf('async function promptCityMismatchForProposal'));
         expect(prompt.indexOf('hideProposalLoadOverlay()')).toBeGreaterThan(0);
@@ -341,20 +330,13 @@ describe('smaller fixes', () => {
     });
 });
 
-describe('the land readjustment tables hold their columns still', () => {
+describe('the parcel-layout plot table holds its columns still', () => {
     const reparcelCss = read('css/on-map-reparcellization.css');
-    const modalsCss = read('css/modals.css');
 
     it('takes column widths from the headers, not the figures', () => {
-        expect(ruleBody(reparcelCss, '\\.reparcel-owners-table,\\s*\\.reparcel-newplots-table')).toMatch(/table-layout:\s*fixed/);
+        expect(ruleBody(reparcelCss, '\\.reparcel-newplots-table')).toMatch(/table-layout:\s*fixed/);
         expect(ruleBody(reparcelCss, '\\.reparcel-col--figure')).toMatch(/width:/);
-        const designer = read('js/reparcellization.js');
-        expect(designer.match(/<th class="reparcel-col--figure">/g)?.length).toBeGreaterThanOrEqual(4);
-    });
-
-    it('turns the owners ledger into cards in a narrow panel: the container it queries exists', () => {
-        expect(modalsCss).toMatch(/@container reparcel-legend \(max-width: 420px\)/);
-        expect(ruleBody(reparcelCss, '(?:^|\\n)\\.reparcel-legend-panel')).toBeTruthy();
-        expect(reparcelCss).toMatch(/container:\s*reparcel-legend \/ inline-size/);
+        const designer = read('js/parcel-layout.js');
+        expect(designer.match(/<th class="reparcel-col--figure">/g)?.length).toBeGreaterThanOrEqual(2);
     });
 });

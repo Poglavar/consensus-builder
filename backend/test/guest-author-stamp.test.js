@@ -1,8 +1,10 @@
 // The author an outgoing record carries (GuestPolicy.claimAuthorAgentId / outgoingAuthor): a record
 // this profile created as a guest leaves the device under the name chosen since, while published
 // records, other agents' records and unclaimed records keep theirs. Also drives the real store
-// (proposals/data.js addProposal claims, setProposalAuthor) and storage.js stampCurrentAuthor.
-import { afterEach, describe, expect, it } from 'vitest';
+// (proposals/data.js addProposal claims, setProposalAuthor), storage.js stampCurrentAuthor with the
+// real immutability rule (proposals/lineage.js isPublished: published under a CID), and the
+// one outgoing path that pins a design (proposals/design-sync.js publishDesign and pinDesign).
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 
@@ -11,6 +13,10 @@ const proposalOrigin = require('../../frontend/js/proposals/origin.js');
 const policy = require('../../frontend/js/guest-policy.js');
 const formationDepth = require('../../frontend/js/proposals/formation-depth.js');
 const planOrder = require('../../frontend/js/proposals/plan-order.js');
+const Cid = require('../../frontend/js/cid.js');
+const ProposalLineage = require('../../frontend/js/proposals/lineage.js');
+const DesignSync = require('../../frontend/js/proposals/design-sync.js');
+const PublishTerms = require('../../frontend/js/proposals/publish-terms.js');
 const dataSource = readFileSync(new URL('../../frontend/js/proposals/data.js', import.meta.url), 'utf8');
 const storageSource = readFileSync(new URL('../../frontend/js/proposals/storage.js', import.meta.url), 'utf8');
 const read = rel => readFileSync(new URL(`../../frontend/js/${rel}`, import.meta.url), 'utf8');
@@ -41,7 +47,7 @@ describe('GuestPolicy.outgoingAuthor', () => {
     it('is a no-op when the name has not changed', () => {
         expect(policy.outgoingAuthor({ ...draft, author: 'Mara' }, NAMED)).toEqual({ author: 'Mara', restamped: false, reason: null });
     });
-    it('never renames a published or minted record', () => {
+    it('never renames a published record', () => {
         expect(policy.outgoingAuthor(draft, NAMED, { immutable: true })).toMatchObject({ author: 'Guest 4232', restamped: false, reason: 'immutable' });
     });
     it('keeps the author of another profile\'s record, an unclaimed record, or with no profile', () => {
@@ -79,16 +85,16 @@ function fakeStorage() {
     };
 }
 
-function boot(profile, { omitImmutabilityHelper = false } = {}) {
+function boot(profile) {
     const state = { agent: profile };
     install('window', globalThis);
+    install('Cid', Cid);
     install('__cbSecondaryTab', false);
     install('__formationDepth', formationDepth);
     install('__planOrder', planOrder);
     install('GuestPolicy', policy);
     install('getCurrentUserAgent', () => state.agent);
     install('normalizeParcelIdList', values => Array.from(new Set((values || []).map(String))));
-    install('normalizeOwnerAcceptances', value => value || {});
     install('normalizeLensEntries', value => value || []);
     install('normalizeProposalStatusAxes', proposal => proposal);
     install('normalizeProposalGoalKey', value => String(value || '').trim().toLowerCase());
@@ -97,17 +103,20 @@ function boot(profile, { omitImmutabilityHelper = false } = {}) {
     const store = (0, eval)(dataSource + '\n;proposalStorage');
     install('proposalStorage', store);
     install('ProposalOrigin', proposalOrigin);
-    if (omitImmutabilityHelper) install('isProposalImmutable', undefined);
-    else install('isProposalImmutable', proposal => !!(proposal && (
-        proposal.isMinted === true
-        || (proposalOrigin.rowId(proposal.serverProposalId) && proposalOrigin.apiBase(proposal.publicationApiBase))
-    )));
+    // The stamp asks the production immutability rule (ProposalLineage.isPublished).
+    install('ProposalLineage', ProposalLineage);
     const stampCurrentAuthor = (0, eval)(storageSource + '\n;stampCurrentAuthor');
     return { store, state, stampCurrentAuthor };
 }
 
+const API = 'https://api.example.test';
+const PUBLISHED_CID = Cid.cidOfObject({ schema: 'design/v1', title: 'published elsewhere' });
+const SITE = { type: 'Polygon', coordinates: [[[15.97, 45.8], [15.971, 45.8], [15.971, 45.801], [15.97, 45.801], [15.97, 45.8]]] };
+// Each park has its own local key, so the store does not derive one from its geometry.
+let parkSeq = 0;
 const park = (author, extra = {}) => ({
-    goal: 'park', title: 'Park', author, cadastreParcelIds: ['HR-339164-2972'], applied: false, ...extra
+    proposalId: `park-${++parkSeq}`, goal: 'park', title: 'Park', author, cadastreParcelIds: ['HR-339164-2972'], applied: false,
+    site: SITE, structureProposal: { kind: 'park', geometry: SITE }, ...extra
 });
 
 describe('publishing a record made as a guest (the store and stampCurrentAuthor)', () => {
@@ -122,20 +131,12 @@ describe('publishing a record made as a guest (the store and stampCurrentAuthor)
         expect(store.getProposal(id).author).toBe('Mara');
     });
 
-    it('a published record keeps its guest author', () => {
+    it('a published design keeps its guest author', () => {
         const { store, state, stampCurrentAuthor } = boot({ ...GUEST });
-        const id = store.addProposal(park('Guest 4232', { serverProposalId: '1355', publicationApiBase: 'https://api.example.test' }));
+        const id = store.addProposal(park('Guest 4232', { published: { cid: PUBLISHED_CID, publishedAt: '2026-10-20T10:00:00.000Z', apiBase: API } }));
         state.agent = { ...NAMED };
         expect(stampCurrentAuthor(store.getProposal(id)).author).toBe('Guest 4232');
         expect(store.getProposal(id).author).toBe('Guest 4232');
-    });
-
-    it('does not treat an unqualified row number as immutable in the storage fallback', () => {
-        const { store, state, stampCurrentAuthor } = boot({ ...GUEST }, { omitImmutabilityHelper: true });
-        const id = store.addProposal(park('Guest 4232', { serverProposalId: '1355' }));
-        state.agent = { ...NAMED };
-
-        expect(stampCurrentAuthor(store.getProposal(id)).author).toBe('Mara');
     });
 
     it('an AI agent\'s record keeps its own author', () => {
@@ -148,7 +149,7 @@ describe('publishing a record made as a guest (the store and stampCurrentAuthor)
 
     it('a fork made before the name is chosen is the profile\'s own record too', () => {
         const { store, state, stampCurrentAuthor } = boot({ ...GUEST });
-        const source = store.addProposal(park('Someone else', { serverProposalId: '900' }));
+        const source = store.addProposal(park('Someone else', { published: { cid: PUBLISHED_CID, publishedAt: null, apiBase: API } }));
         const fork = store.addProposal(park('Guest 4232', { sourceProposalId: source }));
         state.agent = { ...NAMED };
         expect(stampCurrentAuthor(store.getProposal(fork)).author).toBe('Mara');
@@ -157,24 +158,65 @@ describe('publishing a record made as a guest (the store and stampCurrentAuthor)
 });
 
 describe('every outgoing path stamps the current author', () => {
-    it('publish, share link and the share dialog mint call stampCurrentAuthor; the agent id stays on the device', () => {
-        const upload = read('proposals/server-sync.js');
-        const gate = upload.indexOf("guestPolicyBlocks('publish')");
-        const stamp = upload.indexOf('stampCurrentAuthor(proposal)');
-        expect(gate).toBeGreaterThan(-1);
-        expect(stamp).toBeGreaterThan(gate);
-        expect(stamp).toBeLessThan(upload.indexOf('prepareForPublish'));
-        expect(read('proposals/sharing-routes.js')).toMatch(/deepClone\(stampCurrentAuthor\(proposal\)\)/);
-        // Every mint (create dialog and share dialog) goes through the one mint, which stamps.
-        expect(read('proposals/dialog-upload.js')).toMatch(/window\.ProposalPublishMint\.mint\(proposal/);
-        expect(read('proposals/create.js')).toMatch(/window\.ProposalPublishMint\.mint\(proposal/);
-        expect(read('proposals/publish-mint.js')).toMatch(/root\.stampCurrentAuthor\(proposal\)\.author/);
-        const create = read('proposals/create.js');
-        const build = create.slice(create.indexOf('function buildUploadReadyProposal('));
-        // The share dialog projects first and uploads the projection: the stamp must happen in
-        // the projection, before the agent id that proves ownership is dropped.
-        expect(build.indexOf('stampCurrentAuthor(proposal)')).toBeGreaterThan(-1);
-        expect(build.indexOf('stampCurrentAuthor(proposal)')).toBeLessThan(build.indexOf('delete uploadProposal.authorAgentId'));
+    // The browser part of proposals/design-sync.js over the real store and stamp, with a fake index:
+    // POST /pins echoes the CID it is sent, POST /designs answers the indexed row.
+    function publisher(store, stampCurrentAuthor) {
+        const pinned = [];
+        const fetch = vi.fn(async (url, init = {}) => {
+            const body = JSON.parse(init.body);
+            if (url.endsWith('/pins')) {
+                pinned.push(JSON.parse(Buffer.from(body.bytes, 'base64').toString('utf8')));
+                return { ok: true, status: 201, json: async () => ({ cid: body.cid, pinnedAt: '2026-10-21T10:00:00.000Z' }) };
+            }
+            return { ok: true, status: 201, json: async () => ({ cid: body.cid, createdAt: '2026-10-21T10:00:01.000Z' }) };
+        });
+        const win = {
+            fetch, btoa: text => Buffer.from(text, 'binary').toString('base64'), resolveBackendBaseUrl: () => API,
+            ProposalPublishTerms: PublishTerms, guestPolicyBlocks: () => null, stampCurrentAuthor, proposalStorage: store
+        };
+        return { api: DesignSync.browser(win).api, pinned, fetch };
+    }
+
+    it('publishing a guest-made design pins it under the current name, without the agent id that proves ownership', async () => {
+        const { store, state, stampCurrentAuthor } = boot({ ...GUEST });
+        const id = store.addProposal(park('Guest 4232'));
+        state.agent = { ...NAMED };
+        const { api, pinned } = publisher(store, stampCurrentAuthor);
+        const { cid } = await api.publishDesign(store.getProposal(id));
+        expect(pinned).toHaveLength(1);
+        expect(pinned[0].author).toBe('Mara');
+        expect(pinned[0]).not.toHaveProperty('authorAgentId');
+        expect(Cid.cidOfObject(pinned[0])).toBe(cid);
+        // The local draft carries the name it left the device with, and is now that published design.
+        expect(store.getProposal(id)).toMatchObject({ author: 'Mara', authorAgentId: 'user_agent_1', published: { cid, apiBase: API } });
+    });
+
+    it('a design pinned for an agreement carries the current name too', async () => {
+        const { store, state, stampCurrentAuthor } = boot({ ...GUEST });
+        const id = store.addProposal(park('Guest 4232'));
+        state.agent = { ...NAMED };
+        const { api, pinned, fetch } = publisher(store, stampCurrentAuthor);
+        const { content } = await api.pinDesign(store.getProposal(id));
+        expect(content.author).toBe('Mara');
+        expect(pinned[0].author).toBe('Mara');
+        // Pinned only: a parcel layout is indexed with its agreement.
+        expect(fetch.mock.calls.map(([url]) => url)).toEqual([`${API}/pins`]);
+    });
+
+    it('a published design is not sent again under a new name', async () => {
+        const { store, state, stampCurrentAuthor } = boot({ ...GUEST });
+        const id = store.addProposal(park('Guest 4232'));
+        state.agent = { ...NAMED };
+        const { api, fetch } = publisher(store, stampCurrentAuthor);
+        const first = await api.publishDesign(store.getProposal(id));
+        state.agent = { ...NAMED, name: 'Mara Horvat' };
+        const again = await api.publishDesign(store.getProposal(id));
+        expect(again).toEqual({ cid: first.cid, row: null, alreadyPublished: true });
+        expect(store.getProposal(id).author).toBe('Mara');
+        expect(fetch).toHaveBeenCalledTimes(2);
+    });
+
+    it('the stamp is the window global the publisher calls', () => {
         expect(read('proposals/bootstrap.js')).toMatch(/window\.stampCurrentAuthor = stampCurrentAuthor/);
     });
 });

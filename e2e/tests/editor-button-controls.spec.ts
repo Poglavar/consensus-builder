@@ -2,7 +2,7 @@ import { selectNativeOption } from '../helpers/controls';
 // Purpose: cover real editor buttons whose effects are not asserted by the broad workflow specs.
 import { test, expect } from '../helpers/fixtures';
 import { waitForMapReady } from '../helpers/app';
-import { openCity, openParcel, drawCorridor, showProposal, proposalState, clickMapPoint, createSpace } from '../helpers/runtime';
+import { openCity, openParcel, drawCorridor, showProposal, proposalState, clickMapPoint, createSpace, runParcelCommand, openParcelTabAt } from '../helpers/runtime';
 import { installLayerDatasets } from '../helpers/mocks/layer-datasets';
 import { surveyResponse } from '../helpers/mocks/survey-data';
 
@@ -170,7 +170,16 @@ test.describe('Editor button effects @features', () => {
     await expect.poll(() => footprint.getAttribute('d')).not.toBe(counterclockwisePath);
     await page.locator('#single-building-confirm').click();
     await expect(modal).toHaveCount(0);
-    await expect.poll(() => page.evaluate(() => (window as any).pendingSingleBuildingFeatures?.[0]?.geometry?.coordinates?.[0]?.length)).toBe(5);
+    // Done saved the uploaded footprint, turned both ways, as an applied freeform design: a four-corner
+    // ring of the uploaded area.
+    await expect.poll(() => page.evaluate(upload => {
+      const w = window as any;
+      return w.proposalStorage.getAllProposals()
+        .filter((p: any) => p.applied && p.buildingProposal?.typologyType === 'single')
+        .flatMap((p: any) => p.geometry?.buildings || [])
+        .some((building: any) => building.geometry?.coordinates?.[0]?.length === 5
+          && Math.abs(w.turf.area(building.geometry) - w.turf.area(upload)) < 1);
+    }, uploaded.geometry), { timeout: 30_000 }).toBe(true);
   });
 
   test('row-house Close dismisses the editor without saving', async ({ mockApi: page }) => {
@@ -340,8 +349,7 @@ test.describe('Editor button effects @features', () => {
 
   test('site plot Back returns to editing and Continue opens the parcel tool on those plots', async ({ mockApi: page }) => {
     await openCity(page);
-    await clickMapPoint(page, 15.9822, 45.80025);
-    await page.locator('#parcel-menu [data-command="parcel.useAsSite"]').click();
+    await runParcelCommand(page, 15.9822, 45.80025, 'parcel.useAsSite');
     await expect(page.locator('#site-panel')).toBeVisible();
     await page.locator('#site-panel [data-site-action="propose"]').click();
     await page.locator('#site-info-panel .parcel-build-btn--parcelBased').click();
@@ -362,12 +370,11 @@ test.describe('Editor button effects @features', () => {
     const drawPartialSite = async () => {
       // A deliberate parcel click loads its live geometry into the site preview's cadastral fabric.
       await clickMapPoint(page, 15.9828, 45.80025);
-      await expect(page.locator('#parcel-menu')).toBeVisible();
+      await expect(page.locator('#click-stack')).toBeVisible();
       await page.keyboard.press('Escape');
+      await expect(page.locator('#click-stack')).toBeHidden();
       await expect.poll(() => page.evaluate(() => !!(window as any).LiveParcelFabric.get('HR-335754-1235'))).toBe(true);
-      await clickMapPoint(page, 15.9822, 45.80025);
-      await expect(page.locator('#parcel-menu')).toBeVisible();
-      await page.locator('#parcel-menu [data-command="parcel.useAsSite"]').click();
+      await runParcelCommand(page, 15.9822, 45.80025, 'parcel.useAsSite');
       await page.locator('#site-panel [data-site-action="redraw"]').click();
       await clickMapPoint(page, 15.9820, 45.80010);
       // Hold Alt to suppress the normal parcel-edge snap. Intrude 10 cm into 1235: above
@@ -397,9 +404,7 @@ test.describe('Editor button effects @features', () => {
 
   test('site polygon editor floating Undo removes the corner inserted from the map', async ({ mockApi: page }) => {
     await openCity(page);
-    await clickMapPoint(page, 15.9822, 45.80025);
-    await expect(page.locator('#parcel-menu')).toBeVisible();
-    await page.locator('#parcel-menu [data-command="parcel.useAsSite"]').click();
+    await runParcelCommand(page, 15.9822, 45.80025, 'parcel.useAsSite');
     const ring = () => page.evaluate(() => (window as any).SiteTool.current().ring.length);
     const before = await ring();
     const undo = page.locator('.geom-undo-button');
@@ -454,9 +459,7 @@ test.describe('Editor button effects @features', () => {
   test('transit station editor Close, Cancel, and Done close the editor with the expected draft result', async ({ mockApi: page }) => {
     await openCity(page);
     await drawCorridor(page, 'road');
-    await clickMapPoint(page, 15.9822, 45.80045);
-    await expect(page.locator('#parcel-menu')).toBeVisible();
-    await page.locator('#parcel-menu').getByRole('menuitem', { name: 'Propose here', exact: true }).click();
+    await openParcelTabAt(page, 15.9822, 45.80045, 'propose-tab');
     await page.locator('#parcel-info-panel .parcel-transport-btn--bus').click();
     await clickMapPoint(page, 15.9822, 45.80025);
     const stationId = await page.evaluate(() => (window as any).proposalStorage.getAllProposals().find((p: any) => p.structureProposal?.stationType === 'bus')?.proposalId);

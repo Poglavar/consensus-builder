@@ -1,0 +1,388 @@
+/* ========== Agreements ==========
+   The agreement panel docked on the right of the map (js/agreement-panel.js) with its "On chain"
+   section and Mint dialog (M3), the Agreements and Minted agreements list dialogs
+   (js/agreement-list.js) and the Proposals sheet's Agreements button. The panel follows the
+   right-dock rules of css/panels.css; on phones the shared bottom-sheet rules (css/panels.css,
+   css/utilities.css) place it. Tokens only (css/tokens.css); the buttons keep the .btn look and are
+   only laid out here. The Agreements button (.agreements-button) is a sheet row like its
+   neighbours: css/map-shell.css lays it out, so it needs no rule of its own. */
+
+/* ---- The panel: under the top-right buttons, as tall as the dock runs ---- */
+#agreement-panel {
+    position: absolute;
+    top: calc(var(--map-shell-edge) + var(--map-shell-button-size) + var(--map-shell-gap));
+    right: var(--right-dock-gap);
+    bottom: var(--right-dock-bottom);
+    padding: 0;
+    overflow: hidden;
+    z-index: var(--cb-z-panel);
+}
+
+#agreement-panel.visible {
+    display: flex;
+    flex-direction: column;
+}
+
+#agreement-panel .panel-header {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    gap: var(--cb-space-2);
+    padding: var(--cb-space-2) var(--cb-space-3);
+    border-bottom: 1px solid var(--cb-line);
+}
+
+#agreement-panel .panel-header h3 {
+    flex: 1;
+    min-width: 0;
+    margin: 0;
+    font-size: var(--cb-text-xl);
+    line-height: 1.3;
+    overflow-wrap: anywhere;
+}
+
+.agreement-panel .panel-body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--cb-space-3);
+    min-height: 0;
+    padding: var(--cb-space-3) var(--cb-space-4);
+    overflow-y: auto;
+}
+
+.agreement-panel-hint,
+.agreement-panel-meta,
+.agreement-panel-reasons {
+    margin: 0;
+    color: var(--cb-text-muted);
+    font-size: var(--cb-text-sm);
+    line-height: var(--cb-leading);
+}
+
+.agreement-panel-status {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--cb-space-1);
+}
+
+.agreement-panel-note {
+    margin: 0;
+    padding: var(--cb-space-2);
+    border-radius: var(--cb-radius-sm);
+    font-size: var(--cb-text-sm);
+    overflow-wrap: anywhere;
+}
+
+.agreement-panel-note--danger {
+    background: var(--cb-danger-soft);
+    color: var(--cb-danger-soft-ink);
+}
+
+/* A proposed agreement (M2): its CID, Copy link and the index's status on one wrapping row, then
+   where its parties decide (the owners' card, proposals/approval-panel.js, or the community note). */
+.agreement-panel-published {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--cb-space-2);
+}
+
+.agreement-panel-cid {
+    font-family: var(--cb-font-mono);
+    font-size: var(--cb-text-sm);
+    color: var(--cb-text-strong);
+    overflow-wrap: anywhere;
+}
+
+/* The index's status is a sentence when the server cannot be read ("Server status unavailable:
+   <reason>"), so here the badge wraps inside the panel instead of running off its edge on a phone.
+   A one-line status keeps the pill: the radius is clamped to half the badge's height. */
+.agreement-panel-published .cb-badge {
+    height: auto;
+    max-width: 100%;
+    padding-block: calc(var(--cb-space-1) / 2);
+    border-radius: var(--cb-radius-lg);
+    line-height: var(--cb-leading);
+    white-space: normal;
+    overflow-wrap: anywhere;
+}
+
+.agreement-panel-section .approval-card-slot {
+    margin-top: var(--cb-space-2);
+}
+
+/* ---- On chain (M3): the account link and its cluster on one wrapping row, then the facts
+   (.agreement-panel-facts), the chain actions (.agreement-panel-actions) and the hints ---- */
+.agreement-chain {
+    display: flex;
+    flex-direction: column;
+    gap: var(--cb-space-2);
+    min-width: 0;
+}
+
+.agreement-chain-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--cb-space-1) var(--cb-space-2);
+}
+
+.agreement-chain-account {
+    font-family: var(--cb-font-mono);
+    font-size: var(--cb-text-sm);
+}
+
+.agreement-chain .agreement-panel-facts code,
+.agreement-mint .agreement-panel-facts code {
+    font-family: var(--cb-font-mono);
+    font-size: var(--cb-text-sm);
+    color: var(--cb-text-strong);
+}
+
+/* ---- The Mint dialog (a CbDialog): the facts it fixes, then one labelled input per term ---- */
+.agreement-mint {
+    display: flex;
+    flex-direction: column;
+    gap: var(--cb-space-2);
+}
+
+.agreement-mint__field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--cb-space-1);
+    font-size: var(--cb-text-sm);
+    font-weight: var(--cb-weight-semibold);
+}
+
+.agreement-mint__field input {
+    width: 100%;
+    font-weight: var(--cb-weight-normal);
+}
+
+.agreement-mint__field input[data-agreement-mint-payout] {
+    font-family: var(--cb-font-mono);
+    font-size: var(--cb-text-sm);
+}
+
+.agreement-panel-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--cb-space-2);
+}
+
+.agreement-panel-section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--cb-space-2);
+    min-width: 0;
+}
+
+.agreement-panel-heading {
+    margin: 0;
+    font-size: var(--cb-text-base);
+}
+
+.agreement-panel-rule {
+    margin: 0;
+    font-size: var(--cb-text-md);
+    line-height: var(--cb-leading);
+}
+
+/* ---- Designs: each a quiet button row (css/primitives.css), laid out as a list row ---- */
+.agreement-panel-designs,
+.agreement-panel-allocations {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: var(--cb-space-1);
+}
+
+.agreement-panel-design {
+    justify-content: flex-start;
+    gap: var(--cb-space-2);
+    width: 100%;
+    padding: var(--cb-space-1) var(--cb-space-2);
+    text-align: left;
+}
+
+.agreement-panel-design__text {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.agreement-panel-design__title {
+    overflow-wrap: anywhere;
+}
+
+.agreement-panel-design__type {
+    color: var(--cb-text-muted);
+    font-size: var(--cb-text-sm);
+}
+
+/* ---- Land: label and value side by side ---- */
+.agreement-panel-facts {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    gap: var(--cb-space-1) var(--cb-space-3);
+    margin: 0;
+    font-size: var(--cb-text-sm);
+}
+
+.agreement-panel-facts > div {
+    display: contents;
+}
+
+.agreement-panel-facts dt {
+    color: var(--cb-text-muted);
+}
+
+.agreement-panel-facts dd {
+    margin: 0;
+    min-width: 0;
+    font-variant-numeric: tabular-nums;
+}
+
+/* ---- Allocation: piece and area on one line, who receives it under them on a narrow panel ---- */
+.agreement-panel-allocation {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0 var(--cb-space-2);
+    padding-bottom: var(--cb-space-1);
+    border-bottom: 1px solid var(--cb-line);
+    font-size: var(--cb-text-sm);
+}
+
+.agreement-panel-allocation__piece {
+    font-weight: var(--cb-weight-semibold);
+}
+
+.agreement-panel-allocation__area {
+    color: var(--cb-text-muted);
+    font-variant-numeric: tabular-nums;
+}
+
+.agreement-panel-allocation__to {
+    flex: 1 1 12em;
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+/* ---- Ledger: a table that scrolls sideways inside the panel when the panel is narrow ---- */
+.agreement-panel-ledger-scroll {
+    max-width: 100%;
+    overflow-x: auto;
+}
+
+.agreement-panel-ledger {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--cb-text-sm);
+    line-height: var(--cb-leading);
+    font-variant-numeric: tabular-nums;
+}
+
+.agreement-panel-ledger th,
+.agreement-panel-ledger td {
+    padding: var(--cb-space-1);
+    border-bottom: 1px solid var(--cb-line);
+    text-align: right;
+    vertical-align: top;
+    white-space: nowrap;
+}
+
+/* Headings and names wrap between words; the amounts never do. */
+.agreement-panel-ledger thead th {
+    white-space: normal;
+    color: var(--cb-text-muted);
+    font-weight: var(--cb-weight-semibold);
+}
+
+.agreement-panel-ledger tbody th {
+    min-width: 5em;
+    text-align: left;
+    white-space: normal;
+    overflow-wrap: break-word;
+    font-weight: var(--cb-weight-medium);
+    color: var(--cb-text-strong);
+}
+
+.agreement-panel-ledger thead th:first-child {
+    text-align: left;
+}
+
+/* On a phone the five columns fit a 360px sheet at the small size; narrower, the table scrolls. */
+@media (max-width: 767.98px) {
+    .agreement-panel-ledger {
+        font-size: var(--cb-text-xs);
+    }
+}
+
+/* ---- The Agreements list (a CbDialog) ---- */
+.agreement-list-body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--cb-space-3);
+}
+
+.agreement-list-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--cb-space-2);
+}
+
+.agreement-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: var(--cb-space-1);
+}
+
+/* The row is a quiet button (css/primitives.css); this only lays it out as a list row. */
+.agreement-item {
+    justify-content: flex-start;
+    width: 100%;
+    padding: var(--cb-space-2) var(--cb-space-3);
+    text-align: left;
+}
+
+.agreement-item__text {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--cb-space-1);
+}
+
+.agreement-item__title {
+    overflow-wrap: anywhere;
+}
+
+.agreement-item__meta {
+    color: var(--cb-text-muted);
+    font-size: var(--cb-text-sm);
+}
+
+.agreement-list-empty,
+.agreement-list-status {
+    margin: 0;
+    color: var(--cb-text-muted);
+    font-size: var(--cb-text-sm);
+}
+
+.agreement-list-error {
+    margin: 0;
+    padding: var(--cb-space-2);
+    border-radius: var(--cb-radius-sm);
+    background: var(--cb-danger-soft);
+    color: var(--cb-danger-soft-ink);
+    font-size: var(--cb-text-sm);
+    overflow-wrap: anywhere;
+}

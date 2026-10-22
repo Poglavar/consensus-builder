@@ -25,7 +25,7 @@
     function selectionAvailable() {
         const selection = root.ParcelsUISelection;
         if (!root.multiParcelSelection || !selection || selection.parcelClicksOwnedElsewhere()) return false;
-        if (root.sharePlanMode || root.proposalListBrowseMode) return false;
+        if (root.MapPick?.active() || root.proposalListBrowseMode) return false;
         if (root.SiteTool && typeof root.SiteTool.isActive === 'function' && root.SiteTool.isActive()) return false;
         return !(root.document.body.classList.contains('three-mode-active'));
     }

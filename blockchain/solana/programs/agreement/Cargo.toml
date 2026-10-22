@@ -1,0 +1,31 @@
+# The agreement program: one Solana account per agreement CID, funded escrow, settled by its lens's
+# AgreementDecision-v1 attestation (plan-design-agreement.md, M3). Replaces the per-proposal consent
+# machinery of proposal_nft.
+[package]
+name = "agreement"
+version = "0.1.0"
+description = "Urban Game Theory Agreement - escrow settled by a lens attestation (Solana)"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib", "lib"]
+name = "agreement"
+
+[features]
+no-entrypoint = []
+no-idl = []
+no-log-ix-name = []
+cpi = ["no-entrypoint"]
+default = []
+idl-build = ["anchor-lang/idl-build"]
+
+[dependencies]
+# Same anchor-lang line as the other programs so the workspace resolves ONE anchor version.
+anchor-lang = "0.30.1"
+# SAS account parsers shared with proposal_nft and proposal_market.
+sas_attestation = { path = "../../crates/sas_attestation" }
+
+# Anchor's #[program] expands cfgs that belong to the SBF toolchain and anchor-lang, not this crate;
+# declare them so rustc's check-cfg stops flagging every expansion (Anchor's recommended config).
+[lints.rust]
+unexpected_cfgs = { level = "warn", check-cfg = ['cfg(target_os, values("solana"))', 'cfg(feature, values("custom-heap", "custom-panic", "anchor-debug"))'] }

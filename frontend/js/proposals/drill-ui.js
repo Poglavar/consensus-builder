@@ -1,22 +1,9 @@
-// The drill panel: on any map click the vertical stack at that point (content proposals →
-// slices → the formation that minted them → base parcels) is computed via __drillStack and
-// shown as a button column docked under the proposal card, top of the stack first, with
-// derivation arrows between rows. The topmost object is what the click selects; the rows let
-// the user hop to any other level without hunting. Hover highlights the topmost object.
+// What stands at one map point (proposals and parcels, via __drillStack) and the map hover
+// outline that follows it. Map clicks are not handled here any more: every layer hands its
+// click to the click stack (click-stack.md), which shows everything under the point in one
+// panel. stackAt is the stack's source for designs and parcels.
 (function (global) {
     'use strict';
-
-    const PANEL_ID = 'drill-stack-panel';
-
-    function t(key, fallback, params = {}) {
-        try {
-            const helper = (typeof getProposalI18nHelper === 'function') ? getProposalI18nHelper() : null;
-            if (helper) return helper(key, fallback, params);
-        } catch (_) { }
-        return Object.keys(params).reduce(
-            (out, name) => out.replace(new RegExp(`{{${name}}}`, 'g'), String(params[name])),
-            String(fallback || ''));
-    }
 
     // ── candidate collection ─────────────────────────────────────────────────────────────────
 
@@ -107,408 +94,6 @@
         });
     }
 
-    // ── selection dispatch ───────────────────────────────────────────────────────────────────
-
-    function selectProposalEntry(entry, contextParcelId) {
-        if (typeof global.selectAndHighlightProposal !== 'function') return;
-        global.selectAndHighlightProposal(entry.key, contextParcelId || null, false, true);
-    }
-
-    function selectParcelEntry(entry) {
-        // openBaseParcel handles both live parcels (normal selection) and consumed ones
-        // (panel straight from the registry) — exactly the two states a drill row can hold.
-        if (global.__claimsUi && typeof global.__claimsUi.openBaseParcel === 'function') {
-            global.__claimsUi.openBaseParcel(entry.id);
-        } else if (typeof global.selectParcel === 'function') {
-            global.selectParcel(entry.id, true);
-        }
-    }
-
-    function boundsOfEntry(entry) {
-        try {
-            let feature = null;
-            if (entry.kind === 'proposal') {
-                const cached = footprintFor(entry.proposal, entry.key);
-                feature = cached ? cached.footprint : null;
-            } else {
-                feature = entry.feature;
-            }
-            if (!feature || typeof L === 'undefined') return null;
-            const bounds = L.geoJSON(feature).getBounds();
-            return bounds && bounds.isValid && bounds.isValid() ? bounds : null;
-        } catch (_) { return null; }
-    }
-
-    // Bring the chosen level into view — but only when it is not already fully visible; a
-    // visible-but-off-centre object stays where it is instead of yanking the map around.
-    function ensureEntryVisible(entry) {
-        const leafletMap = global.map;
-        if (!leafletMap || typeof leafletMap.getBounds !== 'function') return;
-        const bounds = boundsOfEntry(entry);
-        if (!bounds) return;
-        try {
-            if (leafletMap.getBounds().contains(bounds)) return;
-            leafletMap.fitBounds(bounds, { padding: [80, 80], maxZoom: 18 });
-        } catch (_) { }
-    }
-
-    function selectEntry(entry, contextParcelId) {
-        if (!entry) return;
-        ensureEntryVisible(entry);
-        if (entry.kind === 'proposal') selectProposalEntry(entry, contextParcelId);
-        else selectParcelEntry(entry);
-        markSelected(entry);
-    }
-
-    // ── the panel ────────────────────────────────────────────────────────────────────────────
-
-    let panelEl = null;
-    let currentStack = [];
-    let currentSelectedRef = null;
-    let repositionWired = false;
-    // Bottom of the phone top row (search box, user bubble, Layers/Settings: 10px + 44px) plus a gap.
-    const PHONE_TOP_CLEARANCE = 62;
-    // Desktop: the rows the floating chrome occupies (--map-shell-top/bottom-clearance in
-    // css/map-shell.css: edge 10 + button 40 + gap 8, and bottom 24 + 40 + 8).
-    const DESKTOP_TOP_CLEARANCE = 58;
-    const DESKTOP_BOTTOM_CLEARANCE = 72;
-
-    // A bare cadastral parcel with nothing on it: the parcel menu already names it, so the drill
-    // has nothing to add. The card appears only when the spot has a stack worth walking.
-    function isBareParcelOnly(stack) {
-        return stack.length === 1 && stack[0].kind !== 'proposal';
-    }
-
-    function ensurePanel() {
-        if (panelEl && document.body.contains(panelEl)) return panelEl;
-        panelEl = document.createElement('div');
-        panelEl.id = PANEL_ID;
-        panelEl.className = 'right-dock-panel';
-        panelEl.setAttribute('role', 'group');
-        document.body.appendChild(panelEl);
-        if (!repositionWired) {
-            repositionWired = true;
-            window.addEventListener('resize', positionPanel);
-            // The drill sits between its neighbouring panels — any size or visibility change
-            // moves and re-caps it. The planning inspector uses [hidden], not .visible.
-            // The parcel menu (ui/parcel-menu.js) stands in for the parcel panel after a click.
-            ['proposal-details-panel', 'parcel-info-panel', 'parcel-menu', 'planning-inspector'].forEach(id => {
-                const neighbour = document.getElementById(id);
-                if (!neighbour) return;
-                if (typeof ResizeObserver === 'function') new ResizeObserver(positionPanel).observe(neighbour);
-                if (typeof MutationObserver === 'function') {
-                    const attributeFilter = id === 'planning-inspector' ? ['class', 'hidden'] : ['class'];
-                    new MutationObserver(onNeighbourChanged).observe(neighbour, { attributes: true, attributeFilter });
-                }
-            });
-        }
-        return panelEl;
-    }
-
-    // The stack describes what one of its neighbours is showing, so it cannot outlive both of them.
-    // Many flows hide the parcel panel by pulling its class directly (the editors do, on open)
-    // instead of going through hideIfNothingSelected — watching the panels themselves covers every
-    // one of them. Runs from the observer, i.e. after the flow that changed the class has finished,
-    // so a panel that is hidden and re-shown in the same task never takes the stack down with it.
-    function onNeighbourChanged() {
-        if (panelEl && panelEl.classList.contains('visible')) {
-            const shown = id => {
-                const el = document.getElementById(id);
-                if (!el) return false;
-                return id === 'planning-inspector' ? !el.hidden : el.classList.contains('visible');
-            };
-            if (!shown('proposal-details-panel') && !shown('parcel-info-panel') && !shown('parcel-menu') && !shown('planning-inspector')) {
-                hidePanel();
-                return;
-            }
-        }
-        positionPanel();
-    }
-
-    function isPhoneLayout() {
-        try { return !!(global.matchMedia && global.matchMedia('(max-width: 767.98px)').matches); } catch (_) { return false; }
-    }
-
-    function isPlanningInspectorBottomDock() {
-        try { return !!(global.matchMedia && global.matchMedia('(max-width: 899.98px)').matches); } catch (_) { return false; }
-    }
-
-    // Keep the drill between visible neighbours. The planning inspector is above the stack on
-    // desktop and below it on phones; use its measured rectangle so neither panel overlaps.
-    function positionPanel() {
-        if (!panelEl) return;
-        const gap = 10;
-        // On a phone the top edge is the menu button + Guest pill row; the stack starts below it.
-        const phone = isPhoneLayout();
-        const inspectorBottomDock = isPlanningInspectorBottomDock();
-        let top = phone ? PHONE_TOP_CLEARANCE : DESKTOP_TOP_CLEARANCE;
-        let bottomLimit = window.innerHeight - (phone ? gap : DESKTOP_BOTTOM_CLEARANCE);
-        try {
-            const details = document.getElementById('proposal-details-panel');
-            if (details && details.classList.contains('visible')) {
-                const rect = details.getBoundingClientRect();
-                if (rect.height > 0 && rect.top < window.innerHeight / 2) top = rect.bottom + gap;
-            }
-            const parcelPanel = document.getElementById('parcel-info-panel');
-            if (parcelPanel && parcelPanel.classList.contains('visible')) {
-                const rect = parcelPanel.getBoundingClientRect();
-                if (rect.height > 0 && rect.top > top) bottomLimit = rect.top - gap;
-            }
-            const inspector = document.getElementById('planning-inspector');
-            if (inspector && !inspector.hidden) {
-                const rect = inspector.getBoundingClientRect();
-                if (rect.height > 0) {
-                    if (inspectorBottomDock && rect.top < bottomLimit) bottomLimit = rect.top - gap;
-                    else if (!inspectorBottomDock && rect.bottom + gap > top) top = rect.bottom + gap;
-                }
-            }
-        } catch (_) { }
-        const room = bottomLimit - top;
-        panelEl.classList.toggle('no-room', room < 64);
-        panelEl.style.top = `${top}px`;
-        panelEl.style.maxHeight = `${Math.max(room, 0)}px`;
-    }
-
-    function entryRef(entry) {
-        return entry.kind === 'proposal' ? `p:${entry.key}` : `c:${entry.id}`;
-    }
-
-    // A row's kind as a cb-badge: an applied proposal's goal in the applied tone, a formed or a
-    // cadastral parcel in the neutral one.
-    function chipFor(entry) {
-        if (entry.kind === 'proposal') {
-            const goal = String(entry.proposal.goal || '').trim() || 'other';
-            return { text: t(`modal.roadWidth.proposalList.goalLabels.${goal}`, goal), cls: 'cb-badge--applied' };
-        }
-        if (entry.depth > 0) return { text: t('panel.drill.slice', 'Formed parcel'), cls: '' };
-        return { text: t('panel.drill.baseParcel', 'Cadastral parcel'), cls: '' };
-    }
-
-    function labelFor(entry) {
-        if (entry.kind === 'proposal') {
-            return String(entry.proposal.title || entry.proposal.name || entry.key);
-        }
-        const props = (entry.feature && entry.feature.properties) || {};
-        // A slice's raw id embeds the minting token — show its root number and ordinal instead.
-        if (entry.depth > 0 && props.rootParcelNumber) {
-            const ordinal = props.syntheticIndex !== undefined && props.syntheticIndex !== null
-                ? ` #${props.syntheticIndex}` : '';
-            return `${props.rootParcelNumber}${ordinal}`;
-        }
-        try {
-            if (typeof global.getParcelDisplayNumberFromFeature === 'function') {
-                const broj = global.getParcelDisplayNumberFromFeature(entry.feature, '');
-                if (broj) return String(broj);
-            }
-        } catch (_) { }
-        return String(entry.id);
-    }
-
-    // ── multi-parcel base row ────────────────────────────────────────────────────────────────
-
-    // A formed parcel minted from SEVERAL base parcels (a merged park, a corridor) anchors them
-    // all in properties.cadastreParcelIds (§15a). The base row then shows the whole set — count first,
-    // every id clickable, horizontally scrollable — instead of only the one under the click.
-    // A proposal above still knows the same set through its single authored cadastral declaration.
-    function parcelSetOfProposal(proposal) {
-        const ids = Array.isArray(proposal?.cadastreParcelIds)
-            ? Array.from(new Set(proposal.cadastreParcelIds.map(String).filter(Boolean)))
-            : [];
-        return ids.length > 1 ? ids : null;
-    }
-
-    function baseGroupIdsFor(stack, index, entry) {
-        if (!entry || entry.kind !== 'parcel' || entry.depth > 0) return null;
-        let groupIds = null;
-        for (let i = index - 1; i >= 0 && !groupIds; i -= 1) {
-            const above = stack[i];
-            if (!above) continue;
-            if (above.kind === 'parcel' && above.depth > 0) {
-                const baseIds = above.feature && above.feature.properties && Array.isArray(above.feature.properties.cadastreParcelIds)
-                    ? above.feature.properties.cadastreParcelIds.map(String).filter(Boolean)
-                    : [];
-                if (baseIds.length > 1) groupIds = baseIds;
-            } else if (above.kind === 'proposal') {
-                groupIds = parcelSetOfProposal(above.proposal);
-            }
-        }
-        if (!groupIds || groupIds.length < 2) return null;
-        // These IDs came from explicit cadastral provenance; their strings remain opaque.
-        groupIds = groupIds.map(String).filter(Boolean);
-        if (groupIds.length < 2) return null;
-        // The clicked base parcel leads the list so it is never scrolled out of sight.
-        const currentBase = String(entry.id || '');
-        const ordered = [currentBase, ...groupIds.filter(id => id !== currentBase)].filter(Boolean);
-        return Array.from(new Set(ordered));
-    }
-
-    function baseFeatureById(id) {
-        try {
-            return global.CadastralParcelRepository?.get?.(String(id)) || null;
-        } catch (_) { return null; }
-    }
-
-    function baseParcelButtonLabel(id, feature) {
-        try {
-            if (feature && typeof global.getParcelDisplayNumberFromFeature === 'function') {
-                const broj = global.getParcelDisplayNumberFromFeature(feature, '');
-                if (broj) return String(broj);
-            }
-        } catch (_) { }
-        return String(id).replace(/^HR-\d+-/, '');
-    }
-
-    // The base row of a multi-parcel formation: not itself a choice (a framed row, not a cb-option),
-    // holding a strip of small parcel buttons that are; the chosen one is aria-pressed.
-    function renderBaseGroupRow(groupIds, currentEntry, selectedRef) {
-        const row = document.createElement('div');
-        row.className = 'drill-stack-row--multi';
-        const chipEl = document.createElement('span');
-        chipEl.className = 'cb-badge';
-        chipEl.textContent = t('panel.drill.baseParcelCount', 'Cadastral parcel ({{count}})', { count: groupIds.length });
-        row.appendChild(chipEl);
-        const strip = document.createElement('div');
-        strip.className = 'drill-stack-parcel-strip';
-        groupIds.forEach(id => {
-            const feature = String(id) === String(currentEntry.id) ? (currentEntry.feature || baseFeatureById(id)) : baseFeatureById(id);
-            const parcelEntry = { kind: 'parcel', id: String(id), feature, depth: 0 };
-            const btn = document.createElement('button');
-            btn.type = 'button';
-            btn.className = 'btn btn-sm drill-stack-parcel-btn';
-            btn.dataset.ref = entryRef(parcelEntry);
-            btn.textContent = baseParcelButtonLabel(id, feature);
-            btn.setAttribute('aria-pressed', selectedRef && entryRef(parcelEntry) === selectedRef ? 'true' : 'false');
-            btn.addEventListener('click', () => selectEntry(parcelEntry));
-            if (feature) {
-                btn.addEventListener('mouseenter', () => hoverEntry(parcelEntry));
-                btn.addEventListener('mouseleave', clearHoverOutline);
-            }
-            strip.appendChild(btn);
-        });
-        row.appendChild(strip);
-        return row;
-    }
-
-    function renderPanel(stack, selectedRef) {
-        const el = ensurePanel();
-        el.innerHTML = '';
-
-        const header = document.createElement('div');
-        header.className = 'drill-stack-header';
-        const title = document.createElement('span');
-        title.textContent = t('panel.drill.title', 'At this spot');
-        const close = document.createElement('button');
-        close.type = 'button';
-        close.className = 'close-circle-btn close-circle-btn--lg';
-        close.setAttribute('aria-label', t('panel.drill.close', 'Close'));
-        close.title = t('panel.drill.close', 'Close');
-        close.textContent = '×';
-        close.addEventListener('click', hidePanel);
-        header.appendChild(title);
-        header.appendChild(close);
-        el.appendChild(header);
-
-        stack.forEach((entry, i) => {
-            if (i > 0) {
-                // The derivation connector between rows: the lower row is the ground the upper one
-                // stands on.
-                const connector = document.createElement('div');
-                connector.className = 'drill-stack-connector';
-                connector.setAttribute('aria-hidden', 'true');
-                connector.innerHTML = '<i class="fas fa-arrow-up"></i>';
-                el.appendChild(connector);
-            }
-            const groupIds = baseGroupIdsFor(stack, i, entry);
-            if (groupIds && groupIds.length > 1) {
-                el.appendChild(renderBaseGroupRow(groupIds, entry, selectedRef));
-                return;
-            }
-            // One row per level: a cb-option whose badge says the kind and whose title names it; the
-            // selected level is aria-pressed. drill-stack-row stays as the hook the specs use.
-            const row = document.createElement('button');
-            row.type = 'button';
-            row.className = 'cb-option drill-stack-row';
-            row.dataset.ref = entryRef(entry);
-            row.setAttribute('aria-pressed', selectedRef && entryRef(entry) === selectedRef ? 'true' : 'false');
-            const chip = chipFor(entry);
-            const chipEl = document.createElement('span');
-            chipEl.className = chip.cls ? `cb-badge ${chip.cls}` : 'cb-badge';
-            chipEl.textContent = chip.text;
-            const labelEl = document.createElement('span');
-            labelEl.className = 'cb-option__title drill-stack-label';
-            labelEl.textContent = labelFor(entry);
-            row.appendChild(chipEl);
-            row.appendChild(labelEl);
-            row.addEventListener('click', () => selectEntry(entry));
-            row.addEventListener('mouseenter', () => hoverEntry(entry));
-            row.addEventListener('mouseleave', clearHoverOutline);
-            el.appendChild(row);
-        });
-
-        // Two or more proposals stacked on one parcel: compare them for that parcel.
-        const proposalEntries = stack.filter(entry => entry.kind === 'proposal');
-        const baseParcel = stack.find(entry => entry.kind === 'parcel' && entry.depth === 0)
-            || stack.find(entry => entry.kind === 'parcel');
-        if (proposalEntries.length >= 2 && baseParcel && global.ParcelCompare) {
-            const compare = document.createElement('button');
-            compare.type = 'button';
-            compare.className = 'btn btn-sm btn-block drill-stack-compare';
-            compare.textContent = t('parcelMenu.actions.compare', 'Compare proposals here');
-            compare.addEventListener('click', () => global.ParcelCompare.open(baseParcel.id,
-                proposalEntries.slice(0, 2).map(entry => entry.proposal.proposalId)));
-            el.appendChild(compare);
-        }
-
-        // One row says nothing the parcel/proposal panel's own header does not; phones hide it.
-        el.classList.toggle('is-single', stack.length === 1 && !el.querySelector('.drill-stack-parcel-btn'));
-        el.classList.add('visible');
-        currentStack = stack;
-        currentSelectedRef = selectedRef;
-        positionPanel();
-    }
-
-    // Labels are baked in at render time, so a language switch re-renders the open panel.
-    function rerenderForLanguage() {
-        if (panelEl && panelEl.classList.contains('visible') && currentStack.length) {
-            renderPanel(currentStack, currentSelectedRef);
-        }
-    }
-    if (typeof window !== 'undefined') {
-        if (window.i18n && typeof window.i18n.onChange === 'function') window.i18n.onChange(rerenderForLanguage);
-        if (typeof window.addEventListener === 'function') window.addEventListener('i18n:translationsLoaded', rerenderForLanguage);
-    }
-
-    function markSelected(entry) {
-        if (!panelEl) return;
-        const ref = entryRef(entry);
-        panelEl.querySelectorAll('.drill-stack-row, .drill-stack-parcel-btn').forEach(row => {
-            row.setAttribute('aria-pressed', row.dataset.ref === ref ? 'true' : 'false');
-        });
-    }
-
-    function hidePanel() {
-        if (panelEl) panelEl.classList.remove('visible');
-        currentStack = [];
-    }
-
-    // The panel describes what is selected at a spot, so it has no business outliving the
-    // selection: closing the parcel or proposal card used to leave the stack standing over an
-    // empty map, offering rows for a thing nothing was pointing at any more.
-    //
-    // A proposal counts as selected only while its card is on screen. ProposalSelection is NOT the
-    // test: closing that panel deliberately leaves the selection object behind (see
-    // hideProposalDetailsPanel), so asking it would keep the stack alive for a proposal the user
-    // just dismissed.
-    function hideIfNothingSelected() {
-        try {
-            if (global.selectedParcelId) return;
-            const proposalPanel = global.document && global.document.getElementById('proposal-details-panel');
-            if (proposalPanel && proposalPanel.classList.contains('visible')) return;
-            const planningInspector = global.document && global.document.getElementById('planning-inspector');
-            if (planningInspector && !planningInspector.hidden) return;
-        } catch (_) { /* cannot tell — closing is the safe answer */ }
-        hidePanel();
-    }
 
     // ── hover ────────────────────────────────────────────────────────────────────────────────
 
@@ -540,12 +125,6 @@
         if (typeof global.highlightFeaturesForHover === 'function') global.highlightFeaturesForHover([]);
     }
 
-    // Hovering a row previews that level on the map, same outline as map hover.
-    function hoverEntry(entry) {
-        if (interactionBlocked()) return;
-        showHoverOutline(entry);
-    }
-
     // The full list — an editor holding the map, plus every mode that already meant "do not select
     // anything" — lives in map-edit-lock.js so the several places that ask this question cannot
     // drift apart. The local list stays only as the fallback if that script failed to load.
@@ -556,7 +135,7 @@
             if (global.roadDrawingMode === true) return true;
             if (global.cadastreViewActive === true) return true;
             if (global.proposalListBrowseMode) return true;
-            if (global.sharePlanMode) return true;
+            if (global.MapPick?.active()) return true;
             if (typeof global.isParcelDrawingModeActive === 'function' && global.isParcelDrawingModeActive()) return true;
             if (typeof global.isStructureGeometryEditorActive === 'function' && global.isStructureGeometryEditorActive()) return true;
             if (global.AreaMonitorPaint && global.AreaMonitorPaint.isActive()) return true;
@@ -577,6 +156,7 @@
         if (hoverPending) return;
         hoverPending = requestAnimationFrame(() => {
             hoverPending = null;
+            if (global.ClickStack?.holdsHighlight?.()) return;
             const stack = stackAt(e.latlng);
             const top = stack.length ? stack[0] : null;
             // The drill is the single hover authority (the parcels' own mouseover styling defers
@@ -593,64 +173,24 @@
 
     // ── click entry points ───────────────────────────────────────────────────────────────────
 
-    // From onParcelClick: decide the topmost object before the parcel click commits a parcel
-    // selection. Returning the selected kind lets the parcel surface stop immediately when a
-    // proposal won, so the cadastral layer underneath never flashes or remains selected too.
-    function handleParcelClick(latlng, parcelId) {
-        const stack = stackAt(latlng);
-        if (!stack.length) { hidePanel(); return null; }
-        const top = stack[0];
-        let selectedRef = null;
-        if (top.kind === 'proposal') {
-            selectProposalEntry(top, parcelId);
-            selectedRef = entryRef(top);
-        } else {
-            selectedRef = `c:${parcelId}`;
-        }
-        if (isBareParcelOnly(stack)) hidePanel();
-        else renderPanel(stack, selectedRef);
-        return {
-            handled: true,
-            selectedKind: top.kind,
-            selectedRef
-        };
+    // Parcel, structure and corridor surfaces, and the map background, all hand their click to
+    // the click stack; the returned shape keeps the old callers' contract.
+    function handleParcelClick(latlng) {
+        const handled = !!(latlng && global.ClickStack && global.ClickStack.handleClick(latlng));
+        return { handled, selectedKind: null, selectedRef: null };
     }
 
-    // From structure fills and corridor hit targets: nothing is selected yet; the drill both
-    // selects the topmost object and shows the chain.
     function handleSurfaceClick(latlng) {
-        // Share-plan panel open: surface clicks (structures forward here directly) must not
-        // open the drill panel — the map is pan/zoom only.
-        if (global.sharePlanMode) return false;
-        const stack = stackAt(latlng);
-        if (!stack.length) { hidePanel(); return false; }
-        const top = stack[0];
-        if (top.kind === 'proposal') selectProposalEntry(top, null);
-        else selectParcelEntry(top);
-        if (isBareParcelOnly(stack)) hidePanel();
-        else renderPanel(stack, entryRef(top));
-        return true;
+        return !!(latlng && global.ClickStack && global.ClickStack.handleClick(latlng));
     }
 
-    // Background map clicks (no interactive layer took it): a consumed parcel or a proposal
-    // over unloaded ground can still be under the cursor — drill anyway; empty just closes.
     function onMapClick(e) {
         if (!e || !e.latlng || interactionBlocked()) return;
-        const stack = stackAt(e.latlng);
-        if (!stack.length) {
-            hidePanel();
-            // Nothing here at all: the ground menu decides whether this is bare ground (it opens)
-            // or cadastre that has not loaded yet (it does not) — ui/ground-menu.js.
-            if (global.GroundMenu && typeof global.GroundMenu.openForEmptyClick === 'function') {
-                global.GroundMenu.openForEmptyClick(e.latlng);
-            }
-            return;
-        }
-        const top = stack[0];
-        if (top.kind === 'proposal') selectProposalEntry(top, null);
-        else selectParcelEntry(top);
-        if (isBareParcelOnly(stack)) hidePanel();
-        else renderPanel(stack, entryRef(top));
+        global.ClickStack.handleClick(e.latlng);
+    }
+
+    function entryRef(entry) {
+        return entry.kind === 'proposal' ? `p:${entry.key}` : `c:${entry.id}`;
     }
 
     // ── wiring ───────────────────────────────────────────────────────────────────────────────
@@ -683,7 +223,7 @@
 
     // notifyHover: for layers that keep bubblingMouseEvents off (corridor hit targets) and so
     // starve the map of mousemove — they forward their own moves here instead.
-    const api = { stackAt, handleParcelClick, handleSurfaceClick, hidePanel, hideIfNothingSelected, selectEntry, notifyHover: onMapMouseMove, ownsHover };
+    const api = { stackAt, handleParcelClick, handleSurfaceClick, notifyHover: onMapMouseMove, ownsHover };
 
     // Namespaced only — a bare global here could shadow a top-level function in the classic
     // scripts that load alongside this file.

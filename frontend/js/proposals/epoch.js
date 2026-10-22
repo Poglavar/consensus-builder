@@ -207,36 +207,12 @@
         return select.value === '' || select.value === 'custom' ? null : parseEpochYear(select.value);
     }
 
-    function serverIdOf(proposal) {
-        return getSerialProposalId(proposal);
-    }
-
-    // The edit token POST /proposals gave THIS browser for that upload (server-sync.js). A server
-    // proposal without one is someone else's (a shared plan, a download) or predates tokens: its
-    // server epoch is not ours to change, so the epoch stays a local view setting — no request, no
-    // error. Before tokens, any viewer's card menu re-bucketed the shared record for everyone.
-    function editTokenFor(serverId) {
-        if (serverId === null || serverId === undefined) return null;
-        return typeof getProposalEditToken === 'function' ? getProposalEditToken(serverId) : null;
-    }
-
-    /** PATCH na server (ako je prijedlog uploadan S OVOG preglednika) + lokalna pohrana. */
+    // An epoch is a local view setting (M2): a published design is immutable and the index holds
+    // no mutable metadata, so nothing is sent to a server.
     // `render: false` lets a batch write many epochs and redraw the list once at the end; the card
     // menu leaves it alone and keeps redrawing after its single change.
     async function setEpoch(proposal, year, options = {}) {
         const g = parseEpochYear(year);
-        const serverId = serverIdOf(proposal);
-        const editToken = editTokenFor(serverId);
-        // skipServer: the caller already sent this epoch, in a batch. Without it a bulk run writes
-        // every epoch twice — once in the batch and once here — which is what the batch was for.
-        if (serverId !== null && editToken && !options.skipServer && typeof resolveBackendBaseUrl === 'function') {
-            const resp = await fetch(`${resolveBackendBaseUrl()}/proposals/${encodeURIComponent(serverId)}/epoch`, {
-                method: 'PATCH',
-                headers: { 'Content-Type': 'application/json', 'X-Proposal-Edit-Token': editToken },
-                body: JSON.stringify({ epochYear: g })
-            });
-            if (!resp.ok) throw new Error(`PATCH epoch: HTTP ${resp.status}`);
-        }
         proposal.epochYear = g;
         try {
             if (typeof proposalStorage !== 'undefined' && typeof proposalStorage.setProposalEpochYear === 'function') {
@@ -254,8 +230,8 @@
      * Svakom prijedlogu dodijeli jednu od četiri epohe, nasumično i ravnomjerno.
      *
      * Piše kroz setEpoch — isti put kojim piše izbornik na kartici — pa raspodjela
-     * ne može odlutati od onoga što radi klik: i server PATCH i lokalna pohrana i
-     * pamćenje zadnje epohe idu istim redom.
+     * ne može odlutati od onoga što radi klik: lokalna pohrana i pamćenje zadnje
+     * epohe idu istim redom.
      *
      * Lista se precrtava JEDNOM na kraju, ne 621 puta; a između zapisa se prepušta
      * red pregledniku, jer bi inače cijela raspodjela bila jedan zamrznuti frame.
@@ -266,45 +242,6 @@
      * @param {boolean} [options.dryRun] samo prebroji, ne piši ništa
      * @param {boolean} [options.onlyUnset] preskoči prijedloge koji već imaju epohu
      */
-    /**
-     * Send every server-backed epoch in one PATCH /proposals/epochs.
-     * Returns null on success, or a message describing what went wrong. Ids that matched no row on
-     * the server are pushed onto `failed` by name — a shortfall nobody names is a shortfall nobody
-     * finds.
-     */
-    async function writeEpochsToServer(plan, failed) {
-        if (typeof resolveBackendBaseUrl !== 'function' || typeof fetch !== 'function') return null;
-        const epochs = [];
-        plan.forEach(entry => {
-            const serverId = serverIdOf(entry.proposal);
-            // Only our own uploads go to the server; the rest are bucketed locally (see editTokenFor).
-            const editToken = editTokenFor(serverId);
-            if (serverId !== null && serverId !== undefined && editToken) {
-                epochs.push({ id: String(serverId), epochYear: entry.year, editToken });
-            }
-        });
-        if (!epochs.length) return null;
-
-        try {
-            const response = await fetch(`${resolveBackendBaseUrl()}/proposals/epochs`, {
-                method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ epochs })
-            });
-            if (!response.ok) return `HTTP ${response.status}`;
-            const payload = await response.json();
-            (payload.missing || []).forEach(id => failed.push({
-                proposal: id, year: null, reason: 'no such proposal on the server'
-            }));
-            (payload.forbidden || []).forEach(id => failed.push({
-                proposal: id, year: null, reason: 'the server refused this browser\'s edit token'
-            }));
-            return null;
-        } catch (error) {
-            return String((error && error.message) || error);
-        }
-    }
-
     async function distributeEpochs(options = {}) {
         if (typeof proposalStorage === 'undefined' || typeof proposalStorage.getAllProposals !== 'function') {
             console.error('[epoch] proposalStorage nije dostupan');
@@ -331,18 +268,11 @@
             return { attempted: plan.length, counts, written: 0, failed: [], dryRun: true };
         }
 
-        // The server side goes in ONE request. A write per proposal is a write per proposal to the
-        // rate limiter too: a distribution over 300 proposals died on 429 after the first hundred,
-        // and left the plan half-assigned — which looks assigned.
         const failed = [];
         let written = 0;
-        const serverFailure = await writeEpochsToServer(plan, failed);
-
-        // The local records are written whatever the server said, so the map and the list agree with
-        // what you asked for. A server that refused is reported, not hidden.
         for (const entry of plan) {
             try {
-                await setEpoch(entry.proposal, entry.year, { render: false, skipServer: true });
+                await setEpoch(entry.proposal, entry.year, { render: false });
                 written += 1;
             } catch (error) {
                 failed.push({
@@ -358,8 +288,6 @@
                 await window.yieldToBrowser();
             }
         }
-        if (serverFailure) console.warn('[epoch] server side did not take the plan:', serverFailure);
-
         renderList();
         const summary = { attempted: plan.length, written, counts, failed };
         console.log(`[epoch] ${written}/${plan.length} prijedloga dobilo epohu`, summary);

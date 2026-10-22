@@ -1,8 +1,9 @@
-// The Bets sheet: the city's contests (proposals on the same land) with each proposal's yes/no
-// pool, from GET /markets. A thin DOM layer over js/bets/bets-model.js: it fetches when the sheet
-// opens, renders the filter and the rows, and hands a bet to the bet's own dialog
+// The Bets sheet: the city's contests (published agreements over the same land) with each minted
+// agreement's yes/no pool, from GET /markets. A thin DOM layer over js/bets/bets-model.js: it fetches
+// when the sheet opens, renders the filter and the rows, and hands a bet to the bet's own dialog
 // (js/bets/bets-dialog.js) and a pool opening, settlement or collection to the market bridge
-// (js/solana/market-bridge.js). The dialog reads its row from here (rowFor, positionsFor).
+// (js/solana/market-bridge.js). The dialog reads its row from here (rowFor, positionsFor), and the
+// agreement panel's Bet action goes through window.AgreementBets, defined at the end.
 (function (root) {
     'use strict';
     if (!root || !root.document) return;
@@ -13,9 +14,9 @@
     const FILTER_ID = 'bets-sheet-filter';
     const SEEN_KEY = 'cb.bets.seen';           // per-viewer: the "New" word goes once the sheet was opened
     const FRESH_MS = 20_000;                    // matches the backend's per-city cache
-    // positions: the connected wallet's bets per proposal account (solana/market-bridge.js
-    // readPositions); changed: the proposal account a confirmed transaction just touched, marked on
-    // its row after the next render; scrollTo: the contest a dialog sent the person back to;
+    // positions: the connected wallet's bets per agreement account (solana/market-bridge.js
+    // readPositions); changed: the account a confirmed transaction just touched, marked on its row
+    // after the next render; scrollTo: the contest a dialog sent the person back to;
     // filter: all | open | settled | mine (js/bets/bets-model.js filterRows).
     const state = { city: null, loadedAt: 0, payload: null, loading: null, positions: {}, changed: null, scrollTo: null, filter: 'all' };
 
@@ -37,6 +38,7 @@
         : 'https://api.urbangametheory.xyz');
     const cityCode = () => (typeof root.resolveCurrentCityCode === 'function' ? root.resolveCurrentCityCode() : null);
     const format = () => root.CbFormat || null;
+    const question = () => root.MarketQuestion || null;
 
     function el(tag, className, text) {
         const node = doc.createElement(tag);
@@ -70,6 +72,17 @@
         return root.BetsModel && typeof root.BetsModel.parcelLabel === 'function' ? root.BetsModel.parcelLabel(parcelId) : String(parcelId);
     }
 
+    // What a row is called: its title, else its designs' titles (bets-model.js labelOf).
+    function labelText(row) {
+        return (row && row.label) || t('bets.row.untitledAgreement', 'Untitled agreement');
+    }
+
+    // The question one agreement's pool answers, in the page's language (js/bets/market-question.js).
+    function agreementQuestionText(row) {
+        const template = question() ? question().TEMPLATES['question.agreement'] : 'Will {{title}} execute on-chain?';
+        return t('bets.question.agreement', template, { title: labelText(row) });
+    }
+
     function walletConnected() {
         const walletState = root.solanaWalletManager && typeof root.solanaWalletManager.getState === 'function'
             ? root.solanaWalletManager.getState() : null;
@@ -86,15 +99,16 @@
         note.classList.toggle('bets-status--error', tone === 'error');
     }
 
-    function announceChange(proposalAccount) {
-        try { doc.dispatchEvent(new root.CustomEvent('proposal-market:changed', { detail: { proposalAccount } })); } catch (_) { }
+    // A confirmed pool transaction: the sheet re-reads past the server's cache and the dialog redraws.
+    function announceChange(account) {
+        try { doc.dispatchEvent(new root.CustomEvent('bets:changed', { detail: { account } })); } catch (_) { }
     }
 
     const sideWord = side => (side === 'yes' ? t('bets.row.yes', 'Yes') : t('bets.row.no', 'No')).toLowerCase();
 
     // "Your bets: yes 0.05 USDC" for a row, from the wallet's decoded positions; empty without any.
     function mineText(row) {
-        const positions = state.positions[row.proposalAccount];
+        const positions = state.positions[row.account];
         if (!positions || !root.BetsModel) return '';
         const lines = ['yes', 'no']
             .filter(side => positions[side] && root.BetsModel.formatAtomic(positions[side].amount) !== '0')
@@ -119,13 +133,13 @@
     }
 
     // A settled pool the wallet can still collect from gets its Collect button on the row, so a
-    // winner does not have to find the proposal's details to be paid.
+    // winner does not have to open the bet to be paid.
     function renderCollect(li, row) {
         const existing = li.querySelector('.bets-row__collect');
         if (existing) existing.remove();
-        if (!root.BetsModel || !row.proposalAccount) return;
-        const full = rowFor(row.proposalAccount);
-        const sides = full ? root.BetsModel.claimSides(full.row, state.positions[row.proposalAccount]) : [];
+        if (!root.BetsModel || !row.account) return;
+        const full = rowFor(row.account);
+        const sides = full ? root.BetsModel.claimSides(full.row, state.positions[row.account]) : [];
         if (!sides.length) return;
         const collect = el('div', 'bets-row__collect');
         sides.forEach(side => {
@@ -143,12 +157,10 @@
     async function loadPositions(payload) {
         const bridge = root.SolanaMarketBridge;
         if (!bridge || typeof bridge.readPositions !== 'function') return;
-        // A plan's older versions count too: a bet in one of their pools is still the wallet's to collect.
         const accounts = (payload && payload.contests ? payload.contests : [])
-            .flatMap(contest => contest.proposals || [])
-            .flatMap(entry => [entry, ...(entry.olderVersions || [])])
-            .filter(entry => entry.proposalAccount && entry.market)
-            .map(entry => entry.proposalAccount);
+            .flatMap(contest => contest.agreements || [])
+            .filter(entry => entry.account && entry.market)
+            .map(entry => entry.account);
         if (!walletConnected() || !accounts.length) { state.positions = {}; }
         else {
             try {
@@ -162,24 +174,24 @@
         const container = doc.getElementById(CONTENT_ID);
         if (!container) return;
         if (state.filter === 'mine') { render(container, payload); return; }
-        container.querySelectorAll('.bets-row[data-proposal-account]').forEach(li => renderMine(li, { proposalAccount: li.dataset.proposalAccount }));
+        container.querySelectorAll('.bets-row[data-account]').forEach(li => renderMine(li, { account: li.dataset.account }));
     }
 
     // The shareable link to one row's bet (js/bets/bets-link.js): this origin, the current city and
     // the language the page was opened in.
-    function linkFor(proposalAccount) {
+    function linkFor(account) {
         const link = root.BetsLink;
-        if (!link || !proposalAccount) return null;
+        if (!link || !account) return null;
         const manager = root.CityConfigManager;
         const city = manager && typeof manager.getCurrentCityId === 'function' ? manager.getCurrentCityId() : null;
         let lang = null;
         try { lang = new URL(root.location.href).searchParams.get('lang'); } catch (_) { lang = null; }
-        try { return link.build({ origin: root.location.origin, city, proposalAccount, lang }); } catch (_) { return null; }
+        try { return link.build({ origin: root.location.origin, city, account, lang }); } catch (_) { return null; }
     }
 
     // Put the row's link on the clipboard; the shared helper shows "Copied".
-    async function copyLink(proposalAccount) {
-        const href = linkFor(proposalAccount);
+    async function copyLink(account) {
+        const href = linkFor(account);
         if (!href) return false;
         if (typeof root.copyTextWithFeedback === 'function') return root.copyTextWithFeedback(href);
         try {
@@ -201,10 +213,10 @@
             if (contest && typeof contest.scrollIntoView === 'function') { try { contest.scrollIntoView({ block: 'start' }); } catch (_) { } }
         }
         if (!state.changed) return;
-        const li = container.querySelector(`.bets-row[data-proposal-account="${state.changed}"]`);
+        const li = container.querySelector(`.bets-row[data-account="${state.changed}"]`);
         state.changed = null;
         if (!li) return;
-        // A row inside a fold (an older plan version) is opened up, or the mark would not be seen.
+        // A row inside the fold of rows without a pool is opened up, or the mark would not be seen.
         const fold = li.closest('details');
         if (fold) fold.open = true;
         li.classList.add('is-updated');
@@ -218,18 +230,27 @@
         return (payload.contests || []).map(contest => root.BetsModel.contest(contest, { decimals: payload.stakeDecimals }));
     }
 
-    // The contest and row of one proposal account in the loaded city, as the model shapes them; an
-    // older plan version is found under the row of its current version.
-    function rowFor(proposalAccount) {
-        if (!proposalAccount) return null;
+    // The contest and row of one agreement account in the loaded city, as the model shapes them.
+    function rowFor(account) {
+        if (!account) return null;
         for (const contest of contests()) {
-            const row = contest.rows.flatMap(item => [item, ...item.olderVersions]).find(item => item.proposalAccount === proposalAccount);
+            const row = contest.rows.find(item => item.account === account);
             if (row) return { contest, row };
         }
         return null;
     }
 
-    const positionsFor = proposalAccount => (proposalAccount && state.positions[proposalAccount]) || null;
+    // The same by the agreement's CID: how a local agreement finds its row.
+    function rowForCid(cid) {
+        if (!cid) return null;
+        for (const contest of contests()) {
+            const row = contest.rows.find(item => item.cid === cid);
+            if (row) return { contest, row };
+        }
+        return null;
+    }
+
+    const positionsFor = account => (account && state.positions[account]) || null;
     // Settles once the positions read that a load started has finished (or at once when none is running).
     const whenPositions = () => Promise.resolve(state.positionsLoading || null);
 
@@ -237,16 +258,16 @@
 
     function placeBet(row, side) {
         if (!walletConnected()) { askForWallet(); return; }
-        if (typeof root.openBetDialog === 'function') root.openBetDialog({ proposalAccount: row.proposalAccount, side });
+        if (typeof root.openBetDialog === 'function') root.openBetDialog({ account: row.account, side });
     }
 
     function openBet(row) {
-        if (typeof root.openBetDialog === 'function') root.openBetDialog({ proposalAccount: row.proposalAccount });
+        if (typeof root.openBetDialog === 'function') root.openBetDialog({ account: row.account });
     }
 
     // Opening, settling or collecting from a pool is a single wallet transaction through the shared
-    // bridge; the row shows the lifecycle words and the result, and the human action lands in the
-    // activity feed.
+    // bridge, whose `proposal` option is the market's subject account (here the agreement's); the row
+    // shows the lifecycle words and the result, and the human action lands in the activity feed.
     async function marketTransaction(li, row, action, button, side = null) {
         if (!walletConnected()) { askForWallet(); return; }
         const bridge = root.SolanaMarketBridge;
@@ -255,7 +276,7 @@
         button.disabled = true;
         try {
             const result = await bridge[action]({
-                proposal: row.proposalAccount,
+                proposal: row.account,
                 ...(side === null ? {} : { side }),
                 onStatus: item => setNote(li, view && typeof view.statusText === 'function' ? view.statusText(item) : '')
             });
@@ -265,9 +286,9 @@
             setNote(li, done);
             if (typeof root.recordHumanProposalSupport === 'function') {
                 const wallet = root.solanaWalletManager.getState().accounts[0];
-                await root.recordHumanProposalSupport({ wallet, action, proposalId: row.proposalAccount, result, message: `${wallet.slice(0, 4)}…${wallet.slice(-4)}: ${done}` });
+                await root.recordHumanProposalSupport({ wallet, action, proposalId: row.account, result, message: `${wallet.slice(0, 4)}…${wallet.slice(-4)}: ${done}` });
             }
-            announceChange(row.proposalAccount);
+            announceChange(row.account);
         } catch (error) {
             console.error(`[${new Date().toISOString()}] [bets] ${action} failed`, error);
             setNote(li, view && typeof view.errorText === 'function' ? view.errorText(error) : t('bets.error.transaction', 'The transaction failed.'), 'error');
@@ -276,37 +297,23 @@
         }
     }
 
-    // A named plan opens the way its link does: the address becomes /proposals/<slug> and the app's
-    // own route handler applies the plan's members (proposals/core.js handleProposalRouteFromUrl).
-    async function openPlan(row) {
+    // The agreement itself: its panel from the local copy when this device has one (the record
+    // published as this CID), else read from the index, its designs applied and its panel opened.
+    async function openAgreement(row) {
         try {
-            if (!row.planSlug || typeof root.handleProposalRouteFromUrl !== 'function') throw new Error(`plan ${row.planSlug} cannot be opened here`);
+            if (!row || !row.cid) throw new Error('the row names no agreement');
             if (root.MapShell && typeof root.MapShell.closeSheets === 'function') root.MapShell.closeSheets();
-            const url = new URL(root.location.href);
-            url.pathname = `/proposals/${encodeURIComponent(row.planSlug)}`;
-            url.searchParams.delete('bets');
-            root.history.pushState({}, '', `${url.pathname}${url.search}`);
-            await root.handleProposalRouteFromUrl();
+            const store = root.AgreementStore;
+            const local = store && typeof store.list === 'function'
+                ? store.list().find(agreement => agreement && agreement.published && agreement.published.cid === row.cid) || null
+                : null;
+            if (local) await root.AgreementPanel.open(local.id);
+            else await root.AgreementSync.handleAgreementRoute(row.cid);
         } catch (error) {
-            console.error(`[${new Date().toISOString()}] [bets] open plan failed`, error);
-            renderStatus(doc.getElementById(CONTENT_ID), t('bets.error.openPlan', 'The plan could not be opened.'), 'error');
-        }
-    }
-
-    async function openProposal(row) {
-        if (row && row.kind === 'plan') return openPlan(row);
-        try {
-            let proposal = typeof root.getProposalByIdOrHash === 'function' ? root.getProposalByIdOrHash(row.proposalId) : null;
-            if (!proposal && row.id && typeof root.importServerProposal === 'function') proposal = await root.importServerProposal(row.id);
-            if (!proposal) throw new Error(`proposal ${row.proposalId} is not available`);
-            if (typeof root.openProposalFromList === 'function') root.openProposalFromList(proposal.proposalId || row.proposalId, { proposal, closeSheets: true });
-        } catch (error) {
-            if (error?.code === 'proposal-in-other-city' && typeof root.openProposalInItsCity === 'function') {
-                await root.openProposalInItsCity(row.id || row.proposalId, error.cityId);
-                return;
+            console.error(`[${new Date().toISOString()}] [bets] open agreement failed`, error);
+            if (typeof root.showEphemeralMessage === 'function') {
+                root.showEphemeralMessage(t('bets.error.openAgreement', 'The agreement could not be opened.'), 6000, 'error');
             }
-            console.error(`[${new Date().toISOString()}] [bets] open proposal failed`, error);
-            renderStatus(doc.getElementById(CONTENT_ID), t('bets.error.open', 'The proposal could not be opened.'), 'error');
         }
     }
 
@@ -339,8 +346,8 @@
             ? ' ' + t('bets.row.paysTitle', '1 USDC on this side pays {{multiple}} USDC if it wins.', { multiple: multiple.toFixed(2) })
             : '';
         button.title = (yes
-            ? t('bets.row.yesTitle', 'Bet that the proposal reaches Executed on-chain.')
-            : t('bets.row.noTitle', 'Bet that the proposal reaches Cancelled or Expired on-chain.')) + paysTitle;
+            ? t('bets.row.yesExecutes', 'Bet that the agreement executes on-chain.')
+            : t('bets.row.noExecutes', 'Bet that the agreement is cancelled or expires on-chain.')) + paysTitle;
         button.addEventListener('click', () => placeBet(row, side));
         return button;
     }
@@ -357,15 +364,15 @@
 
     function renderRow(row) {
         const li = el('li', `bets-row is-${row.state}`);
-        li.dataset.proposalId = row.proposalId;
-        if (row.proposalAccount) li.dataset.proposalAccount = row.proposalAccount;
+        li.dataset.cid = row.cid || '';
+        if (row.account) li.dataset.account = row.account;
 
-        // The title is the way into the bet's own dialog; an unminted proposal has no bet, so its
-        // title opens the proposal itself.
+        // The title is the way into the bet's own dialog; an unminted agreement has no bet, so its
+        // title opens the agreement itself.
         const head = el('div', 'bets-row__head');
-        const title = el('button', 'btn btn-quiet bets-row__title', row.title || t('bets.row.untitled', 'Untitled proposal'));
+        const title = el('button', 'btn btn-quiet bets-row__title', labelText(row));
         title.type = 'button';
-        title.addEventListener('click', () => (row.proposalAccount ? openBet(row) : openProposal(row)));
+        title.addEventListener('click', () => (row.account ? openBet(row) : openAgreement(row)));
         head.append(title, el('span', 'bets-row__chance', chanceLabel(row)));
         li.append(head);
 
@@ -382,18 +389,15 @@
         if (who) li.append(el('p', 'bets-row__who', who));
 
         const meta = el('div', 'bets-row__meta');
-        if (row.kind === 'plan') meta.append(el('span', 'cb-badge bets-row__plan', t('bets.row.plan', 'Plan of {{count}} proposals', { count: row.memberCount })));
         if (row.pool !== null && row.pool !== undefined) meta.append(el('span', null, t('bets.row.pool', 'Pool {{amount}}', { amount: moneyText(row.pool) })));
-        // An application deadline does not establish when the on-chain pool closes.
-        if (row.closesAt) meta.append(el('span', null, t('bets.row.closes', 'Closes {{date}}', { date: dateText(row.closesAt) })));
-        else if (row.expiresAt) meta.append(el('span', null, `${t('bets.dialog.proposalDeadline', 'Proposal deadline')}: ${dateText(row.expiresAt)}`));
-        if (row.agent) meta.append(el('span', null, t('panel.proposal.agent.badge', 'Agent proposal')));
-        if (row.proposalAccount) {
+        // The agreement's own deadline: after it, it can no longer execute.
+        if (row.deadline) meta.append(el('span', null, t('bets.row.deadline', 'Deadline {{date}}', { date: dateText(row.deadline) })));
+        if (row.account) {
             // Every bet has a link worth passing on, whatever state its pool is in: a quiet script
             // link in the meta line.
             const share = el('button', 'cb-link cb-link--quiet bets-row__link', t('bets.copyLink', 'Copy link'));
             share.type = 'button';
-            share.addEventListener('click', () => copyLink(row.proposalAccount));
+            share.addEventListener('click', () => copyLink(row.account));
             meta.append(share);
         }
         if (meta.childElementCount) li.append(meta);
@@ -419,67 +423,31 @@
             li.append(el('p', 'bets-row__note', t('bets.row.closed', 'Not open for bets')));
         }
         if (actions.childElementCount) li.append(actions);
-        if (row.olderVersions && row.olderVersions.length) li.append(renderVersions(row.olderVersions));
         return li;
     }
 
-    // Where an older version's pool stands, in the words its row would use; a version without a pool
-    // says so instead of "No bets yet".
-    function versionStateLabel(row) {
-        if (row.state === 'closed') return t('panel.proposal.market.state.closed', 'Not open for bets');
-        if (row.state === 'not-minted') return t('bets.row.notMinted', 'Not minted yet, so no pool');
-        return chanceLabel(row);
-    }
-
-    // One older version: its title (into its own bet dialog, where a bet still in its pool can be
-    // settled or collected), when it was named, and where its pool stands. Never a bet button: a newer
-    // version replaced it.
-    function renderVersion(row) {
-        const li = el('li', `bets-row bets-version is-${row.state}`);
-        li.dataset.proposalId = row.proposalId;
-        if (row.proposalAccount) li.dataset.proposalAccount = row.proposalAccount;
-        const head = el('div', 'bets-row__head');
-        const title = el('button', 'btn btn-quiet bets-row__title', row.title || t('bets.row.untitled', 'Untitled proposal'));
-        title.type = 'button';
-        title.addEventListener('click', () => (row.proposalAccount ? openBet(row) : openProposal(row)));
-        head.append(title, el('span', 'bets-row__chance', versionStateLabel(row)));
-        li.append(head);
-        if (row.createdAt) li.append(el('p', 'bets-row__who', dateText(row.createdAt, true)));
-        if (row.state === 'settling') li.append(el('p', 'bets-row__note', t('bets.row.settling', 'Decided on-chain; anyone can settle the pool')));
-        renderMine(li, row);
-        return li;
-    }
-
-    // A plan's older versions (plans.md: a revision supersedes them) fold under its row the way rows
-    // without a pool fold under their contest: collapsed, under a count, unless the wallet's positions
-    // are known and one of its bets sits in an older pool.
-    function renderVersions(versions) {
-        const more = el('details', 'bets-versions');
-        more.open = versions.some(version => version.proposalAccount && root.BetsModel.hasPosition(state.positions[version.proposalAccount]));
-        more.append(el('summary', null, t('bets.contest.olderVersions', 'Older versions: {{count}}', { count: versions.length })));
-        const list = el('ul', 'bets-rows');
-        versions.forEach(version => list.append(renderVersion(version)));
-        more.append(list);
-        return more;
-    }
-
+    // Where the contest's land is: the first input parcel and how many more, or open ground.
     function landText(contest) {
-        if (contest.siteName) return contest.siteName;
-        if (!contest.land.first) return t('bets.contest.site', 'Drawn site');
+        if (!contest.land.first) return t('bets.contest.openGround', 'Open ground');
         const parcel = parcelText(contest.land.first);
         return contest.land.more
             ? t('bets.contest.landMore', 'Parcel {{parcel}} and {{count}} more', { parcel, count: contest.land.more })
             : t('bets.contest.land', 'Parcel {{parcel}}', { parcel });
     }
 
-    // How many entries a contest holds, plans and loose proposals counted apart ("2 plans · 1 proposal").
+    // How many agreements a contest holds ("3 agreements"); the key is a one/other plural object, and the
+    // English fallback picks its form the same way until the translations carry it.
     function entriesText(contest) {
-        const plans = contest.planCount || 0;
-        const proposals = contest.proposalCount - plans;
-        return [
-            plans ? t('bets.contest.planCount', '{{count}} plans', { count: plans }) : null,
-            proposals || !plans ? t('agentDialog.proposalCount', '{{count}} proposals', { count: proposals }) : null
-        ].filter(Boolean);
+        const count = contest.agreementCount;
+        return [t('bets.contest.agreementCount', count === 1 ? '{{count}} agreement' : '{{count}} agreements', { count })];
+    }
+
+    // The question a contest answers: one agreement's pool, or which of several over the same land
+    // executes (js/bets/market-question.js).
+    function contestQuestionText(contest) {
+        if (contest.agreementCount === 1 && contest.rows.length) return agreementQuestionText(contest.rows[0]);
+        const template = question() ? question().TEMPLATES['question.contest'] : 'Which agreement over {{place}} will execute?';
+        return t('bets.question.contest', template, { place: landText(contest) });
     }
 
     // A contest under the current filter: the rows with a pool, and the rest folded under a count.
@@ -492,11 +460,7 @@
         const article = el('article', 'bets-contest');
         article.dataset.contestId = contest.id;
         const head = el('header', 'bets-contest__head');
-        // Plans are what a contest is about when it has them; the loose proposals are the also-rans.
-        const plans = contest.planCount > 0;
-        head.append(el('h3', 'bets-contest__title', contest.proposalCount > 1
-            ? (plans ? t('bets.contest.titlePlans', 'Which plans will execute on-chain?') : t('bets.contest.title', 'Which proposals will execute on-chain?'))
-            : (plans ? t('bets.contest.titleSinglePlan', 'Will this plan execute on-chain?') : t('bets.contest.titleSingle', 'Will this proposal execute on-chain?'))));
+        head.append(el('h3', 'bets-contest__title', contestQuestionText(contest)));
         const land = el('p', 'bets-contest__land');
         land.title = contest.parcelIds.join(', ');
         land.textContent = [
@@ -560,7 +524,7 @@
         renderFilter(container);
         container.replaceChildren();
         if (!ordered.length) {
-            renderStatus(container, t('bets.empty', 'No pools in this city yet. Mint a proposal to open the first one.'));
+            renderStatus(container, t('bets.emptyAgreements', 'No pools in this city yet. Mint an agreement to open the first one.'));
             return;
         }
         const articles = ordered.map(renderContest).filter(Boolean);
@@ -585,6 +549,7 @@
         if (state.fresh) { options = { ...options, fresh: true }; state.fresh = false; }
         if (state.loading) return state.loading;
         if (!state.payload || state.city !== city) renderStatus(container, t('bets.loading', 'Loading bets…'));
+        state.attemptedAt = Date.now();
         state.loading = (async () => {
             try {
                 const response = await fetch(`${backendBase()}/markets?city=${encodeURIComponent(city || '')}${options.fresh ? '&fresh=1' : ''}`);
@@ -630,10 +595,10 @@
         const isOpen = () => !!(root.MapShell && typeof root.MapShell.isOpen === 'function' && root.MapShell.isOpen(SHEET_ID));
         // A confirmed pool transaction: re-read past the server's short cache, so the pool that was
         // just opened or bet on shows up at once.
-        doc.addEventListener('proposal-market:changed', event => {
+        doc.addEventListener('bets:changed', event => {
             state.loadedAt = 0;
             state.fresh = true;
-            state.changed = event.detail && event.detail.proposalAccount ? event.detail.proposalAccount : null;
+            state.changed = event.detail && event.detail.account ? event.detail.account : null;
             if (isOpen()) load({ force: true, fresh: true });
         });
         // A wallet connecting or leaving changes whose bets the rows show.
@@ -651,15 +616,15 @@
     if (doc.readyState === 'loading') doc.addEventListener('DOMContentLoaded', init);
     else init();
 
-    // Open the sheet; with a proposal account, on that row (marked and brought into view once the
+    // Open the sheet; with an agreement account, on that row (marked and brought into view once the
     // contests render, the same way a row a transaction just changed is); with a contest id, at
     // that contest (the dialog's way back to the rivals).
     root.openBetsSheet = function openBetsSheet(options = {}) {
-        const proposalAccount = options && options.proposalAccount ? String(options.proposalAccount) : null;
-        if (proposalAccount) state.changed = proposalAccount;
+        const account = options && options.account ? String(options.account) : null;
+        if (account) state.changed = account;
         if (options && options.contestId) state.scrollTo = String(options.contestId);
         if (root.MapShell && typeof root.MapShell.openSheet === 'function') root.MapShell.openSheet(SHEET_ID);
-        if (state.payload && (proposalAccount || state.scrollTo)) markChanged(doc.getElementById(CONTENT_ID));
+        if (state.payload && (account || state.scrollTo)) markChanged(doc.getElementById(CONTENT_ID));
     };
 
     // A shared bet link (/bets/<account>?city=… or ?bets=<account>): the bet's own dialog opens
@@ -673,8 +638,8 @@
         if (!link) return;
         try {
             if (typeof root.whenAppBooted === 'function') await root.whenAppBooted();
-            if (typeof root.openBetDialog === 'function') root.openBetDialog({ proposalAccount: link.proposalAccount });
-            else root.openBetsSheet({ proposalAccount: link.proposalAccount });
+            if (typeof root.openBetDialog === 'function') root.openBetDialog({ account: link.account });
+            else root.openBetsSheet({ account: link.account });
         } catch (error) {
             console.warn(`[${new Date().toISOString()}] [bets] the bet link could not open`, error);
         }
@@ -682,5 +647,57 @@
     if (doc.readyState === 'complete') openFromUrl();
     else root.addEventListener('load', openFromUrl, { once: true });
 
-    root.BetsSheet = { load, ensureLoaded, render, rowFor, positionsFor, whenPositions, landText, entriesText, openProposal, linkFor, copyLink, SHEET_ID };
+    root.BetsSheet = {
+        load, ensureLoaded, render, rowFor, rowForCid, positionsFor, whenPositions, landText, entriesText, labelText,
+        agreementQuestionText, openAgreement, linkFor, copyLink, SHEET_ID
+    };
+
+    // ---- the agreement panel's Bet action ---------------------------------------------------
+
+    // The chain account of a local agreement (js/agreement-record.js): the mint's pointer it keeps,
+    // else the city's markets list by its CID (an agreement minted elsewhere and opened from a link).
+    function agreementAccount(agreement) {
+        const onchain = agreement && agreement.onchain;
+        if (onchain && onchain.chain === 'solana' && onchain.cluster === 'devnet' && typeof onchain.account === 'string') return onchain.account;
+        const found = agreement && agreement.published ? rowForCid(agreement.published.cid) : null;
+        return found ? found.row.account : null;
+    }
+
+    /**
+     * Whether an agreement's Bet action applies: it is minted, and its pool exists or can be opened.
+     * Synchronous, for the panel's render: without the city's markets list (read here in the
+     * background the first time) a minted agreement counts, since its bet's dialog reads the pool
+     * from the chain; with it, an agreement decided before anyone opened a pool does not.
+     */
+    function available(agreement) {
+        const city = cityCode();
+        const missing = !state.payload || state.city !== city;
+        // One background read at a time, and a failed one is not retried on every render.
+        if (missing && !state.loading && Date.now() - (state.attemptedAt || 0) > FRESH_MS) load();
+        const account = agreementAccount(agreement);
+        if (!account) return false;
+        const found = rowFor(account);
+        return !found || found.row.state !== 'closed' || Boolean(found.row.marketAddress);
+    }
+
+    // Opens the bet's dialog of a local agreement (by its local id) on its chain account.
+    async function openAgreementBet(agreementId) {
+        const store = root.AgreementStore;
+        const agreement = store && typeof store.get === 'function' ? store.get(agreementId) : null;
+        if (!agreement) return null;
+        let account = agreementAccount(agreement);
+        if (!account && agreement.published) {
+            await ensureLoaded();
+            account = agreementAccount(agreement);
+        }
+        if (!account) {
+            if (typeof root.showEphemeralMessage === 'function') root.showEphemeralMessage(t('bets.row.notMinted', 'Not minted yet, so no pool'), 6000, 'info');
+            return null;
+        }
+        // Named as its row would be (bets-model.js labelOf) while the dialog reads the row.
+        const title = root.BetsModel ? root.BetsModel.labelOf({ title: agreement.title, designTitles: (agreement.designs || []).map(design => design.title) }) : agreement.title;
+        return typeof root.openBetDialog === 'function' ? root.openBetDialog({ account, title: title || '' }) : null;
+    }
+
+    root.AgreementBets = { available, open: openAgreementBet };
 })(typeof window !== 'undefined' ? window : null);

@@ -1,7 +1,8 @@
 // Localnet helpers for the lens model: lay out Solana Attestation Service credential, schema and
 // attestation accounts byte-identical to sas-lib 1.0.10's codecs, write them through the mock SAS
 // program (tests/mock_sas, loaded at the real SAS id by Anchor.toml), and drive proposal_nft's
-// accept_with_attestations / settle_with_verdict with them.
+// accept_with_attestations / settle_with_verdict and the agreement program's attest
+// (AgreementDecision-v1, tests/agreement-helpers.ts) with them.
 
 import * as anchor from "@coral-xyz/anchor";
 import { Connection, Keypair, PublicKey, SYSVAR_CLOCK_PUBKEY, SystemProgram, Transaction, TransactionInstruction } from "@solana/web3.js";
@@ -12,6 +13,8 @@ export const PARCEL_NFT_PROGRAM_ID = new PublicKey("4zadC1FgWPQLv6qv66mjEBthBqTv
 
 export const OWNERSHIP_SCHEMA = "ParcelOwnership";
 export const VERDICT_SCHEMA = "ProposalVerdict";
+/** The lens decision the agreement program's `attest` consumes (programs/agreement/README.md). */
+export const DECISION_SCHEMA = "AgreementDecision";
 /** The one schema every LMSR recipe-bound market settles from (lmsr-market.md). */
 export const MARKET_EVIDENCE_SCHEMA = "MarketEvidence";
 
@@ -100,6 +103,14 @@ export function verdictPayload(p: { proposalAccount: PublicKey | string; verdict
     ]);
 }
 
+/** AgreementDecision-v1: string agreementCid, string sponsor, string decision, string evidenceRef, int64 sourceObservedAt. */
+export function decisionPayload(p: { agreementCid: string; sponsor: PublicKey | string; decision?: string; evidenceRef?: string; sourceObservedAt: number }): Buffer {
+    return Buffer.concat([
+        borshBytes(p.agreementCid), borshBytes(p.sponsor.toString()), borshBytes(p.decision ?? "satisfied"),
+        borshBytes(p.evidenceRef ?? `sha256:${"ab".repeat(32)}`), i64(p.sourceObservedAt),
+    ]);
+}
+
 /** MarketEvidence-v1: string recipeHash, string subject, string value, int64 eventTime, int64 sourceObservedAt, string sourceRef. */
 export function marketEvidencePayload(p: { recipeHash: string; subject: string; value: string; eventTime: number; sourceObservedAt: number; sourceRef?: string }): Buffer {
     return Buffer.concat([
@@ -174,6 +185,31 @@ export async function attestVerdict(
         authority: member.publicKey,
         expiry: p.expiry,
     }));
+}
+
+/**
+ * An AgreementDecision-v1 attestation by `member` under its credential's AgreementDecision v1 schema,
+ * as the lens member issues it (backend/lens/member.js). Every field can be overridden to forge the
+ * attestations `attest` must refuse; `trailing` appends bytes after the payload's last field.
+ */
+export async function attestDecision(
+    provider: anchor.AnchorProvider,
+    member: LensMember,
+    p: Omit<Parameters<typeof decisionPayload>[0], "sourceObservedAt"> & {
+        sourceObservedAt?: number; expiry?: number; schema?: PublicKey; credential?: PublicKey; authority?: PublicKey; trailing?: Buffer;
+    }
+): Promise<{ address: PublicKey; bytes: Buffer }> {
+    const credential = p.credential ?? member.credential;
+    const sourceObservedAt = p.sourceObservedAt ?? (await chainNow(provider.connection)) - 60;
+    const payload = Buffer.concat([decisionPayload({ ...p, sourceObservedAt }), p.trailing ?? Buffer.alloc(0)]);
+    const bytes = attestationBytes({
+        credential,
+        schema: p.schema ?? schemaPda(credential, DECISION_SCHEMA),
+        payload,
+        authority: p.authority ?? member.publicKey,
+        expiry: p.expiry,
+    });
+    return { address: await writeSasAccount(provider, bytes), bytes };
 }
 
 export function findParcelAnchor(parcelId: string): PublicKey {

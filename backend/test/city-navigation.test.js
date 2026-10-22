@@ -5,11 +5,16 @@
 // city-switch-prompt.js, with a fake location and history.
 import { describe, it, expect, vi, beforeAll } from 'vitest';
 import { readFileSync } from 'node:fs';
+import { createRequire } from 'node:module';
 import vm from 'node:vm';
 
 const read = path => readFileSync(new URL(path, import.meta.url), 'utf8');
 const cityConfigSource = read('../../frontend/js/city-config.js');
 const promptSource = read('../../frontend/js/city-switch-prompt.js');
+const Cid = createRequire(import.meta.url)('../../frontend/js/cid.js');
+// Design and agreement links name published objects by CID (plan-design-agreement.md, M2).
+const DESIGN = Cid.cidOf(new TextEncoder().encode('design-a'));
+const AGREEMENT = Cid.cidOf(new TextEncoder().encode('agreement-a'));
 
 // A window whose address assignments are recorded instead of followed.
 function fakeWindow(href) {
@@ -57,6 +62,15 @@ describe('a city switch', () => {
         for (const param of ['focusProposal', 'arrive', 'activity', 'scene', 'bets']) expect(next.searchParams.has(param), param).toBe(false);
     });
 
+    it.each([`/designs/${DESIGN}`, `/agreements/${AGREEMENT}`])('clears the record link %s too, so it does not reopen in the next city', async pathname => {
+        const { manager, visits } = boot(`http://localhost:8080${pathname}?city=zagreb&lang=hr`);
+        await expect(manager.switchCity('split', { clearRoute: true })).resolves.toBe(true);
+        const next = new URL(visits.at(-1));
+        expect(next.pathname).toBe('/');
+        expect(next.searchParams.get('city')).toBe('split');
+        expect(next.searchParams.get('lang')).toBe('hr');
+    });
+
     it('goes to the address it is given, leaving the current entry for Back', async () => {
         const { manager, visits, history } = boot('http://localhost:8080/?city=zagreb&lang=hr');
         await manager.switchCity('new_york', { url: 'http://localhost:8080/?focusProposal=9&city=zagreb&lang=hr' });
@@ -84,7 +98,7 @@ describe('unfinished work on a switch', () => {
 
 describe('a proposal of another city', () => {
     it('asks about no city the app does not configure, and stays', async () => {
-        const { context, visits } = boot('http://localhost:8080/proposals/5?city=zagreb');
+        const { context, visits } = boot(`http://localhost:8080/designs/${DESIGN}?city=zagreb`);
         await expect(context.promptCityMismatchForProposal('city')).resolves.toBe(false);
         await expect(context.promptCityMismatchForProposal('ZG')).resolves.toBe(false); // Zagreb's own code
         expect(visits).toEqual([]);
@@ -101,7 +115,7 @@ describe('a proposal of another city', () => {
     });
 
     it('when it cannot open there, drops the route and keeps the city stayed in — explore too', async () => {
-        const { context, visits, history } = boot('http://localhost:8080/proposals/5?city=explore&focusProposal=5');
+        const { context, visits, history } = boot(`http://localhost:8080/agreements/${AGREEMENT}?city=explore&focusProposal=5`);
         expect(context.CityConfigManager.getCurrentCityId()).toBe('explore');
         // a city the switch refuses (the current one): nothing to open there
         await expect(context.openProposalInItsCity('5', 'explore')).resolves.toBe(true);

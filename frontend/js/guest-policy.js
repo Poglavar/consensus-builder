@@ -1,12 +1,9 @@
-// Guest rules: what a visitor without a profile name, a wallet or an ownership attestation may do.
-// One table, consulted by every gate (publish, share link, mint, Offer my land); see next-steps.md.
+// Guest rules: what a visitor without a profile name may do. One table, consulted by every gate
+// (publish, share link); see next-steps.md.
 //
 //   none            Stays on this device: create, edit, fork, apply, compare.
-//   name            Leaves the device and carries an author: publish/upload, share link, mint,
-//                   joining a public list. A guest is asked to choose a profile name.
-//   ownership-proof Asserts ownership (Offer my land / owner offer): a connected wallet that a lens
-//                   member attested as owner of the parcels. A name alone is not enough; the offer is
-//                   also published, so the name is required as well.
+//   name            Leaves the device and carries an author: publish/upload, share link. A guest
+//                   is asked to choose a profile name.
 //
 // Also decides which author an outgoing record carries (claimAuthorAgentId / outgoingAuthor below).
 //
@@ -25,10 +22,7 @@
         apply: 'none',
         compare: 'none',
         publish: 'name',
-        share: 'name',
-        mint: 'name',
-        joinList: 'name',
-        ownerOffer: 'ownership-proof'
+        share: 'name'
     });
 
     function requires(action) {
@@ -38,18 +32,13 @@
         return RULES[action];
     }
 
-    // state: { isGuest, walletConnected, ownershipAttested }. A missing fact counts as unmet (an
-    // unknown profile is a guest), never as a guess that it holds.
-    // -> what is missing, in the order the user should fix it: 'wallet', 'attestation', 'name'.
+    // state: { isGuest }. A missing fact counts as unmet (an unknown profile is a guest), never as a
+    // guess that it holds. -> what is missing: [] or ['name'].
     function missing(action, state) {
         const requirement = requires(action);
         const s = state || {};
         const out = [];
         if (requirement === 'none') return out;
-        if (requirement === 'ownership-proof') {
-            if (s.walletConnected !== true) out.push('wallet');
-            if (s.ownershipAttested !== true) out.push('attestation');
-        }
         if (s.isGuest !== false) out.push('name');
         return out;
     }
@@ -70,10 +59,10 @@
     //   - claimAuthorAgentId: a new record whose author is the current profile's name belongs to
     //     that profile. Records by other agents (AI agents, imports of other people's records) carry
     //     another name and stay unclaimed.
-    //   - outgoingAuthor: a record that has never left the device (not published, not minted) and
-    //     belongs to the current profile carries the profile's current name. A published or minted
-    //     record is immutable and keeps its author; so does a record of another agent, or one made
-    //     before authorAgentId existed (it has no proof whose it is).
+    //   - outgoingAuthor: a record that has never left the device (not published) and belongs to the
+    //     current profile carries the profile's current name. A published record is immutable and
+    //     keeps its author; so does a record of another agent, or one made before authorAgentId
+    //     existed (it has no proof whose it is).
     // Lineage: a fork or an edit is a new record created by whoever forks it, so it is claimed by the
     // current profile and carries its name; the source keeps its own author, reached through
     // proposalOrigin. Author names are never inherited along a fork.
@@ -96,7 +85,7 @@
         return author === identity.name ? identity.id : null;
     }
 
-    // options.immutable: the record has left the device (published or minted).
+    // options.immutable: the record has left the device (published).
     // -> { author, restamped, reason } where reason is why the author was kept:
     //    'immutable' | 'no-profile' | 'unclaimed' | 'other-profile' | null when it is the profile's.
     function outgoingAuthor(record, agent, options) {

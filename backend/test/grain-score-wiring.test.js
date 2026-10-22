@@ -1,5 +1,5 @@
-// Cheap integration guardrails for a feature spread across the static shell, route bootstrap,
-// translations and binary cues. The browser test exercises the motion; these catch missing wires.
+// Cheap integration guardrails for a feature spread across the static shell, translations and
+// binary cues. The browser test exercises the motion; these catch missing wires.
 import { describe, it, expect } from 'vitest';
 import { readFileSync, statSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
@@ -7,9 +7,7 @@ import { fileURLToPath } from 'node:url';
 const here = relative => fileURLToPath(new URL(relative, import.meta.url));
 const read = relative => readFileSync(here(relative), 'utf8');
 const index = read('../../frontend/index.html');
-const core = read('../../frontend/js/proposals/core.js');
 const scoreSource = read('../../frontend/js/proposals/grain-score.js');
-const serveConfig = JSON.parse(read('../../frontend/serve.json'));
 const locales = ['en', 'hr', 'es', 'sr'];
 
 function lookup(object, path) {
@@ -26,27 +24,6 @@ describe('grain score wiring', () => {
         expect(index).toContain("'js/proposals/grain-score.js'");
     });
 
-    it('hands /plans/<slug>/score to the score experience', () => {
-        expect(core).toContain('parsePlanScorePath(pathname)');
-        expect(core).toContain('openPlanGrainScoreRoute(planScoreRoute.slug)');
-        expect(serveConfig.rewrites).toContainEqual({ source: '/plans/**', destination: '/index.html' });
-    });
-
-    it('uses verified exact membership for both the named route and the score button', () => {
-        expect(scoreSource).toContain('rules.namedPlanScoreScope(plan, applied)');
-        expect(scoreSource).toContain('rules.verifiedNamedPlanMembers(plan)');
-        expect(scoreSource).toContain('await openPlanGrainScoreRoute(plan.slug)');
-    });
-
-    it('refuses to score a named plan that only partly applied', () => {
-        expect(scoreSource).toContain('loadResult.blocked');
-        expect(scoreSource).toContain('loadResult.failed.length');
-        locales.forEach(locale => {
-            const dictionary = JSON.parse(read(`../../frontend/i18n/${locale}.json`));
-            expect(lookup(dictionary, 'sidebar.proposals.grainScore.incompletePlan')).toBeTruthy();
-        });
-    });
-
     it('ships only the two approved parcel cues, with no completion effect', () => {
         expect(scoreSource).toContain('rooster-check-fail.wav');
         expect(scoreSource).toContain('rooster-check-success.wav');
@@ -55,13 +32,21 @@ describe('grain score wiring', () => {
         expect(statSync(here('../../frontend/audio/grain-rooster/rooster-check-success.wav')).size).toBeGreaterThan(20000);
     });
 
+    // Every string the score card asks for (grain-score.js), plus the sidebar button's (index.html).
+    // The card scores the applied composition only: named plans and their scope strings are gone (M2).
+    const cardKeys = [...new Set([...scoreSource.matchAll(/'sidebar\.proposals\.grainScore\.([A-Za-z]+)'/g)].map(match => match[1]))];
+
+    it('reads its strings from one key family, and none of the retired named-plan ones', () => {
+        expect(cardKeys.length).toBeGreaterThan(20);
+        expect(cardKeys).toEqual(expect.arrayContaining(['title', 'appliedComposition', 'localScope', 'countTitle', 'fineTitle', 'methodologyBody',
+            'missingGeometry', 'soundOn', 'soundOff', 'progress', 'complete']));
+        for (const retired of ['namedScope', 'exactMembersRequired', 'otherApplied', 'fabricChanged']) expect(cardKeys).not.toContain(retired);
+    });
+
     it.each(locales)('%s carries every score-card string family', locale => {
         const dictionary = JSON.parse(read(`../../frontend/i18n/${locale}.json`));
         const block = lookup(dictionary, 'sidebar.proposals.grainScore');
         expect(block).toBeTruthy();
-        [
-            'buttonLabel', 'buttonHint', 'buttonEmpty', 'title', 'appliedComposition', 'localScope', 'namedScope', 'ready', 'start', 'countTitle',
-            'fineTitle', 'methodologyBody', 'missingGeometry', 'soundOn', 'soundOff', 'progress', 'complete', 'exactMembersRequired', 'otherApplied', 'fabricChanged'
-        ].forEach(key => expect(block[key], `${locale}.${key}`).toBeTruthy());
+        ['buttonLabel', 'buttonHint', 'buttonEmpty', ...cardKeys].forEach(key => expect(block[key], `${locale}.${key}`).toBeTruthy());
     });
 });

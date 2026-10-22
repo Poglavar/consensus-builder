@@ -1,3 +1,5 @@
+// The court-evidence market recipes (court-parcel-operation-v1/v2): what they commit, their hash over
+// the canonical body (keys sorted at every depth, no whitespace) and the ExternalMarket address it keys.
 import { createHash } from 'node:crypto';
 import { describe, expect, it } from 'vitest';
 import {
@@ -11,7 +13,12 @@ import {
     MARKET_PROGRAM_ID,
     SAS_PROGRAM_ID
 } from '../oracle/court-parcel-operation.js';
-import { canonicalJson } from '../oracle/proposal-lifecycle.js';
+
+// The recipe hash's canonical form, written out independently of the module.
+const canonicalJson = value => (Array.isArray(value) ? `[${value.map(canonicalJson).join(',')}]`
+    : value && typeof value === 'object'
+        ? `{${Object.keys(value).sort().map(key => `${JSON.stringify(key)}:${canonicalJson(value[key])}`).join(',')}}`
+        : JSON.stringify(value));
 
 const input = {
     parcelUid: 'HR-335347-1208/3',
@@ -46,6 +53,16 @@ describe('court parcel operation recipe', () => {
         const { hash, ...body } = recipe;
         expect(hash).toBe(`sha256:${createHash('sha256').update(canonicalJson(body)).digest('hex')}`);
         expect(externalMarketAddress(hash)).toMatch(/^[1-9A-HJ-NP-Za-km-z]{32,44}$/);
+    });
+
+    it('keeps the hashes of precommitted recipes, and so their market addresses, byte for byte', () => {
+        // Recorded before M3 moved the canonical form into this module; a market keyed on them must still resolve.
+        const v1 = buildCourtParcelOperationRecipe(input);
+        const v2 = buildCourtParcelOperationRecipeV2(input);
+        expect(v1.hash).toBe('sha256:9c0b0b69a684bb36886368e1b8ff77d9e497b782033d45c28f366c6b8501c8fd');
+        expect(externalMarketAddress(v1.hash)).toBe('7byny1RizhDGyY1EcfsmdcaSYr67yc1rRNnTrr1csBD4');
+        expect(v2.hash).toBe('sha256:b877cf3e9031d71326ff635879d9506850fd971f9f3b6869cb548beabe1f0050');
+        expect(externalMarketAddress(v2.hash)).toBe('GfT6Wj11mh8WeAoUt7fWFBzrbhpey4F4jtzFbC7p9Twu');
     });
 
     it('changes both the recipe hash and market when a committed rule changes', () => {

@@ -108,12 +108,13 @@ test.describe('Shared on-map editor shell @features', () => {
     });
   }
 
-  test('parcel menu clears the parcel outline on desktop, omits View in 3D, and stays in the 320px viewport', async ({ mockApi: page }) => {
+  test('the click stack clears the clicked parcel on desktop, omits View in 3D, and stays in the 320px viewport', async ({ mockApi: page }) => {
     await page.setViewportSize({ width: 1280, height: 900 });
     await openCity(page);
     await clickMapPoint(page, 15.9822, 45.80025);
-    const menu = page.locator('#parcel-menu');
+    const menu = page.locator('#click-stack');
     await expect(menu).toBeVisible();
+    await expect(menu.locator('.click-stack__section[data-kind="parcels"] #parcel-info-panel')).toBeVisible();
     await expect(menu.locator('[data-command="parcel.view3d"]')).toHaveCount(0);
     const desktop = await page.evaluate(geometry => {
       const map = (window as any).map;
@@ -126,20 +127,20 @@ test.describe('Shared on-map editor shell @features', () => {
         left: Math.min(...points.map((point: any) => point.x)), right: Math.max(...points.map((point: any) => point.x)),
         top: Math.min(...points.map((point: any) => point.y)), bottom: Math.max(...points.map((point: any) => point.y))
       };
-      const rect = document.getElementById('parcel-menu')!.getBoundingClientRect();
+      const rect = document.getElementById('click-stack')!.getBoundingClientRect();
       const menu = { left: rect.left, right: rect.right, top: rect.top, bottom: rect.bottom };
       return { parcel, menu };
     }, PARCEL_GEOMETRY);
     const overlaps = desktop.menu.left < desktop.parcel.right && desktop.menu.right > desktop.parcel.left
       && desktop.menu.top < desktop.parcel.bottom && desktop.menu.bottom > desktop.parcel.top;
-    expect(overlaps, 'desktop parcel menu should leave the parcel outline clear when room is available').toBe(false);
+    expect(overlaps, 'the desktop click stack should leave the clicked parcel clear when room is available').toBe(false);
 
     await page.setViewportSize({ width: 320, height: 780 });
     await openCity(page);
     await clickMapPoint(page, 15.9822, 45.80025);
     await expect(menu).toBeVisible();
     const box = await menu.boundingBox();
-    if (!box) throw new Error('Mobile parcel menu has no visible bounds');
+    if (!box) throw new Error('Mobile click stack has no visible bounds');
     expect(box.x).toBeGreaterThanOrEqual(0);
     expect(box.y).toBeGreaterThanOrEqual(0);
     expect(box.x + box.width).toBeLessThanOrEqual(320);

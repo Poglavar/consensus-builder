@@ -13,7 +13,7 @@
 // coexist, so the shell and the panels disagreed at exactly 768px).
 
 import { describe, it, expect } from 'vitest';
-import { readFileSync } from 'node:fs';
+import { readFileSync, existsSync } from 'node:fs';
 import path from 'node:path';
 import {
     FRONTEND, auditNow, readBaseline, idsInsideIsLists, breakpointViolations, coLoadedCssFiles, listFiles,
@@ -28,6 +28,14 @@ describe('design tokens load first', () => {
     it('index.html loads tokens.css and primitives.css before every other stylesheet', () => {
         const list = coLoadedCssFiles(readFileSync(path.join(FRONTEND, 'index.html'), 'utf8'));
         expect(list.slice(0, 2)).toEqual(['css/tokens.css', 'css/primitives.css']);
+    });
+
+    it('audits every stylesheet index.html loads, with or without a ?v= cache token', () => {
+        const html = readFileSync(path.join(FRONTEND, 'index.html'), 'utf8');
+        const entries = html.match(/var cssFiles = \[([\s\S]*?)\];/)[1].match(/'[^']+'/g);
+        const list = coLoadedCssFiles(html);
+        expect(list).toHaveLength(entries.length);
+        expect(list.filter(file => !existsSync(path.join(FRONTEND, file)))).toEqual([]);
     });
 
     it('every --cb-* token used anywhere is defined in tokens.css', () => {

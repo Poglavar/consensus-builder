@@ -9,7 +9,6 @@ import database from '../db/connection.cjs';
 const enabled = process.env.RUN_PUBLICATION_POSTGRES_TESTS === '1';
 const suite = enabled ? describe : describe.skip;
 const proposalDdl = readFileSync(fileURLToPath(new URL('../routes/proposals-ddl.sql', import.meta.url)), 'utf8');
-const planDdl = readFileSync(fileURLToPath(new URL('../ens/ens-plan-ddl.sql', import.meta.url)), 'utf8');
 const publicationDdl = readFileSync(fileURLToPath(new URL('../db/publication-immutability.sql', import.meta.url)), 'utf8');
 
 let client;
@@ -17,10 +16,6 @@ let schema;
 let serial = 0;
 let savepoint = 0;
 let testSavepoint;
-
-function commitment(ids = ['1']) {
-    return Object.fromEntries(ids.map((id, index) => [id, String(index + 1).padStart(64, '0')]));
-}
 
 function proposalData(id, fields = {}) {
     return {
@@ -49,21 +44,6 @@ async function insertProposal(id = ++serial, extra = {}) {
     const placeholders = values.map((_, index) => `$${index + 1}`).join(', ');
     await client.query(
         `INSERT INTO proposal (${columns.join(', ')}) VALUES (${placeholders})`, values,
-    );
-    return row;
-}
-
-async function insertPlan(slug = `plan-${++serial}`, overrides = {}) {
-    const row = {
-        slug, proposal_ids: ['1'], member_hashes: commitment(['1']), plan_hash: 'f'.repeat(64),
-        title: 'Original title', supersedes: null, onchain_data: null,
-        ...overrides,
-    };
-    await client.query(
-        `INSERT INTO ens_plan (slug, proposal_ids, member_hashes, plan_hash, title, supersedes, onchain_data)
-         VALUES ($1, $2::jsonb, $3::jsonb, $4, $5, $6, $7::jsonb)`,
-        [row.slug, JSON.stringify(row.proposal_ids), JSON.stringify(row.member_hashes), row.plan_hash,
-            row.title, row.supersedes, row.onchain_data === null ? null : JSON.stringify(row.onchain_data)],
     );
     return row;
 }
@@ -97,7 +77,6 @@ suite('publication immutability PostgreSQL triggers', () => {
         await client.query(`CREATE SCHEMA ${schema}`);
         await client.query(`SET LOCAL search_path TO ${schema}, public`);
         await client.query(proposalDdl);
-        await client.query(planDdl);
         await client.query(publicationDdl);
         await client.query(publicationDdl);
     }, 30000);
@@ -183,62 +162,6 @@ suite('publication immutability PostgreSQL triggers', () => {
              FROM proposal WHERE id = $1
              ON CONFLICT (proposal_id) DO UPDATE SET structure_proposal = EXCLUDED.structure_proposal`,
             [row.id], 'proposal_published_content_immutable',
-        );
-    });
-
-    it.each([
-        ['null member list', null, commitment(['1']), 'f'.repeat(64)],
-        ['empty member list', [], {}, 'f'.repeat(64)],
-        ['partial hashes', ['1', '2'], commitment(['1']), 'f'.repeat(64)],
-        ['malformed member hash', ['1'], { '1': 'G'.repeat(64) }, 'f'.repeat(64)],
-        ['extra member hash', ['1'], { ...commitment(['1']), '2': 'e'.repeat(64) }, 'f'.repeat(64)],
-        ['missing plan hash', ['1'], commitment(['1']), null],
-        ['malformed plan hash', ['1'], commitment(['1']), 'F'.repeat(64)],
-    ])('rejects a plan with %s', async (_label, ids, hashes, planHash) => {
-        await expectConstraintFailure(
-            `INSERT INTO ens_plan (slug, proposal_ids, member_hashes, plan_hash) VALUES ('invalid-plan', $1::jsonb, $2::jsonb, $3)`,
-            [ids === null ? 'null' : JSON.stringify(ids), JSON.stringify(hashes), planHash],
-            'named_plan_complete_commitment',
-        );
-    });
-
-    it('rejects non-string, nondigit and duplicate membership IDs', async () => {
-        for (const ids of [['1', '1'], ['one'], [1]]) {
-            await expectConstraintFailure(
-                `INSERT INTO ens_plan (slug, proposal_ids, member_hashes, plan_hash) VALUES ('invalid-members', $1::jsonb, $2::jsonb, $3)`,
-                [JSON.stringify(ids), JSON.stringify(commitment(ids.map(String))), 'f'.repeat(64)],
-                'named_plan_complete_commitment',
-            );
-        }
-    });
-
-    it.each([
-        ['membership', "proposal_ids = '[\"2\"]'::jsonb"],
-        ['member commitment', "member_hashes = '{\"1\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"}'::jsonb"],
-        ['plan commitment', `plan_hash = '${'e'.repeat(64)}'`],
-        ['title', "title = 'Rewritten'"],
-        ['supersedes', "supersedes = 'another-plan'"],
-    ])('rejects rewriting a named plan %s', async (_label, assignment) => {
-        const plan = await insertPlan();
-        await expectConstraintFailure(`UPDATE ens_plan SET ${assignment} WHERE slug = $1`, [plan.slug], 'named_plan_identity_immutable');
-    });
-
-    it('allows chain data to attach once and rejects a second overwrite', async () => {
-        await insertPlan('chain-plan');
-        await client.query(`UPDATE ens_plan SET onchain_data = '{"mint":"first"}'::jsonb WHERE slug = 'chain-plan'`);
-        await expectConstraintFailure(
-            `UPDATE ens_plan SET onchain_data = '{"mint":"second"}'::jsonb WHERE slug = 'chain-plan'`,
-            [], 'named_plan_chain_reference_immutable',
-        );
-    });
-
-    it('rejects rewriting a named plan through an operator UPSERT', async () => {
-        const plan = await insertPlan();
-        await expectConstraintFailure(
-            `INSERT INTO ens_plan (slug, proposal_ids, member_hashes, plan_hash, title)
-             SELECT slug, proposal_ids, member_hashes, plan_hash, 'Rewritten' FROM ens_plan WHERE slug = $1
-             ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title`,
-            [plan.slug], 'named_plan_identity_immutable',
         );
     });
 });

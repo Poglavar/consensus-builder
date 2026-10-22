@@ -8,7 +8,7 @@
 import { describe, it, expect } from 'vitest';
 import { createRequire } from 'node:module';
 import { planCandidates, DEFAULT_MAX_FLOORS, DEFAULT_MIN_DISTANCE_M } from '../agents/planner.js';
-import { buildProposalRecord } from '../agents/record-builder.js';
+import { buildDesignRecord } from '../agents/record-builder.js';
 
 const require = createRequire(import.meta.url);
 const turf = require('@turf/turf');
@@ -173,18 +173,20 @@ describe('rule ceilings apply to the published geometry', () => {
         }
     });
 
-    it('publishes the measured design area and derives the offer from that same area', () => {
+    it('publishes the measured design area and derives the gain and offer from that same area', () => {
         const [reference] = planCandidates([parcel()], PERSONA, OPTS);
         const [candidate] = planCandidates([parcel({ rule: {
             maxFloors: 4, minSetbackM: 3, maxCoveragePct: 100, maxGfaM2: reference.proposedGfaM2
         } })], PERSONA, OPTS);
-        const record = buildProposalRecord({ candidate, pick: { proposalId: 'measured-design', name: 'Sample' }, persona: PERSONA, city: 'test-city', runId: 'test-run', turf });
+        const record = buildDesignRecord({ candidate, pick: { name: 'Sample' }, persona: PERSONA, city: 'test-city', authoredAt: '2026-10-22T00:00:00.000Z' });
         const measured = measureBuilding(record.geometry.buildings[0], {}, { floorHeightM: 3 });
         expect(candidate.proposedGfaM2).toBe(measured.gfaM2);
         expect(measured.gfaM2).toBe(reference.proposedGfaM2);
         expect(measured.footprintM2).toBeLessThanOrEqual(candidate.areaM2);
         expect(candidate.gainEur).toBeCloseTo(measured.gfaM2 * 4000, 3);
-        expect(record.offer).toBe(Math.round(measured.gfaM2 * 4000 * 0.3));
+        // The planner's offer stays a share of that gain; the design itself carries no money.
+        expect(candidate.offerEur).toBe(Math.round(measured.gfaM2 * 4000 * 0.3));
+        expect(JSON.stringify(record)).not.toMatch(/offer/i);
     });
 
     it('leaves an uncapped proposal unmarked', () => {

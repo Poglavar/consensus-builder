@@ -99,7 +99,6 @@
             const kind = claimKindForGoal(p.goal);
             entries.push({
                 proposalId: p.proposalId ? String(p.proposalId) : null,
-                serverProposalId: p.serverProposalId ? String(p.serverProposalId) : null,
                 title: p.title || p.name || '',
                 goal: p.goal || '',
                 kind,
@@ -127,7 +126,7 @@
         ? options.isApplied
         : (p => p && p.applied === true);
     const recordIdOf = record => {
-        const value = record && (record.proposalId || record.id || record.hash);
+        const value = record && (record.proposalId || record.id);
         return value === undefined || value === null ? '' : String(value);
     };
 
@@ -141,7 +140,7 @@
     }
 
     // These are the apply paths that clear proposed buildings under their authored footprint.
-    // Reparcellization is intentionally absent: reshaping parcel fabric is not, by itself, choosing
+    // A parcel layout is intentionally absent: reshaping parcel fabric is not, by itself, choosing
     // a different building design.
     function displacesBuildingContent(proposal) {
         return !!(proposal && (

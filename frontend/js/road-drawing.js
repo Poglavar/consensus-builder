@@ -592,18 +592,22 @@ function stripRoadDerivedFields(record) {
 
 function makeFreshRoadSnapshot(sourceProposal, definition, options = {}) {
     const clone = cloneRoadValue(sourceProposal);
+    // The source's identity stays with the source: its local key, its publication mark (a design's
+    // only published identity; designs are not minted, M3), its times and its lineage.
     [
-        'proposalId', 'proposal_id', 'id', 'hash', 'serverProposalId',
-        'chainProposalId', 'tokenId', 'onchain', 'nft', 'isMinted',
-        'createdAt', 'updatedAt', 'proposalDraftId', 'lens',
-        'proposalOrigin', 'publicationApiBase', 'supersedesProposalIds'
+        'proposalId', 'id', 'published',
+        'createdAt', 'updatedAt', 'proposalDraftId', 'lens', 'proposalOrigin'
     ].forEach(key => delete clone[key]);
 
     if (options.sourceLocalProposalId) {
         clone.proposalOrigin = window.ProposalOrigin.fromRecord(sourceProposal, {
-            relation: 'revision', localProposalId: String(options.sourceLocalProposalId), backendBase: getBackendBase()
+            relation: 'revision', localProposalId: String(options.sourceLocalProposalId)
         });
     }
+    // A fork of a published design links the design it came from by its CID (plan-design-agreement.md,
+    // M2: "Fork design" records origin.cid); the publication mark itself stays with the source.
+    const sourcePublication = sourceProposal && sourceProposal.published;
+    if (sourcePublication && window.Cid.isCid(sourcePublication.cid)) clone.origin = { cid: sourcePublication.cid };
 
     const cleanDefinition = cloneRoadValue(definition);
     delete cleanDefinition.demolishedBuildings;
@@ -2019,7 +2023,7 @@ function clearMapSelectionsForDrawing() {
     try { if (typeof hideProposalDetailsPanel === 'function') hideProposalDetailsPanel(true); } catch (_) { }
     try { if (typeof clearProposalHighlights === 'function') clearProposalHighlights(); } catch (_) { }
     try { window.ProposalSelection?.clear?.(); } catch (_) { }
-    try { window.__drillUi?.hidePanel?.(); } catch (_) { }
+    try { window.ClickStack?.close(); } catch (_) { }
 
     // The single-parcel selection: its style, the state the rest of the app reads, its panel.
     try {
@@ -2498,7 +2502,6 @@ function isAnyModalOpen() {
         '.welcome-modal',
         '.parcel-coverage-modal',
         '.proposal-info-modal',
-        '.proposal-boost-modal',
         '.parcel-list-modal',
         '.parcel-selection-modal',
         '.agent-dialog-modal',

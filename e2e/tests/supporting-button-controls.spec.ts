@@ -1,6 +1,12 @@
 // Exercise supporting page and wallet buttons through their actual dialogs and persisted state.
 import { test, expect } from '../helpers/fixtures';
 import { openCity } from '../helpers/runtime';
+import { cidOfObject } from '../helpers/mocks/shared-server';
+
+// Activity is about agreements and designs, named by their CIDs (plan-design-agreement.md, M3).
+const PARK_AGREEMENT = cidOfObject({ schema: 'agreement/v1', title: 'Park agreement' });
+const BLOCK_AGREEMENT = cidOfObject({ schema: 'agreement/v1', title: 'Block agreement' });
+const BLOCK_DESIGN = cidOfObject({ schema: 'design/v1', title: 'Block design' });
 
 const json = (route: any, body: unknown) => route.fulfill({
   status: 200,
@@ -9,70 +15,6 @@ const json = (route: any, body: unknown) => route.fulfill({
 });
 
 test.describe('Supporting page button controls @core', () => {
-  test('Canton chain selection opens the identity picker and its identity actions update the active party', async ({ mockApi: page }) => {
-    await page.addInitScript(() => {
-      (window as any).CANTON_ENABLED = true;
-      localStorage.setItem('canton.parties', JSON.stringify([
-        { party: 'Owner::fingerprint', role: 'owner', parcelId: '', ts: 1 },
-        { party: 'Buyer::fingerprint', role: 'buyer', parcelId: '', ts: 2 },
-      ]));
-    });
-    await page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
-    await page.route('**/canton/**', async route => {
-      const request = route.request();
-      const pathname = new URL(request.url()).pathname;
-      // The frontend modules also live under /js/canton/. Only fixture API calls here;
-      // returning JSON for those script requests makes the Canton modules fail to parse.
-      if (!pathname.startsWith('/canton/')) return route.continue();
-      if (pathname.endsWith('/canton/parties') && request.method() === 'POST') {
-        return json(route, { party: 'Generated::fingerprint' });
-      }
-      if (pathname.includes('/canton/ccview/')) {
-        return json(route, { indexed: false, explorerUrl: 'https://ccview.example/party/owner' });
-      }
-      return json(route, { proposals: [], sales: [], counts: {} });
-    });
-
-    await openCity(page);
-    await page.locator('#username-display').click();
-    const welcome = page.locator('#welcome-modal');
-    await expect(welcome).toBeVisible();
-    await page.locator('#username-input').fill('Canton UI actor');
-    await page.locator('#welcome-submit-btn').click();
-    await page.locator('#username-display').click();
-    const profile = page.locator('.agent-dialog-modal');
-    await expect(profile).toBeVisible();
-
-    const network = profile.locator('.wallet-chain-info');
-    await network.click();
-    const chainModal = page.locator('.chain-modal-overlay');
-    await expect(chainModal).toBeVisible();
-    await chainModal.locator('[data-chain-id="canton"]').click();
-    const picker = page.locator('.canton-id-overlay');
-    await expect(picker).toBeVisible();
-    const owner = picker.locator('.canton-id-row2').filter({ has: page.locator('[data-party-select="Owner::fingerprint"]') });
-    await owner.locator('[data-copy]').click();
-    await expect(picker.locator('[data-err]')).toContainText('Copied party id');
-    await owner.locator('[data-ccview]').click();
-    await expect(owner.locator('.canton-ccview-out')).toContainText('Not yet indexed');
-    await picker.locator('[data-forget="Buyer::fingerprint"]').click();
-    await expect(picker.locator('.canton-id-row2')).toHaveCount(1);
-    await picker.locator('#canton-id-paste').fill('Buyer::fingerprint');
-    await picker.locator('[data-use-paste]').click();
-    await expect(picker).toHaveCount(0);
-    await expect(network).toContainText('Canton · Buyer');
-
-    await network.click();
-    const activePicker = page.locator('.canton-id-overlay');
-    await activePicker.locator('[data-gen]').click();
-    await expect(activePicker).toHaveCount(0);
-    await expect(network).toContainText('Canton · Generated');
-    await network.click();
-    await page.locator('.canton-id-overlay [data-leave]').click();
-    await expect(page.locator('.canton-id-overlay')).toHaveCount(0);
-    await expect(network).toContainText('Select network');
-  });
-
   test('Activity feed filter and Refresh buttons change the feed and reload its source', async ({ mockApi: page }) => {
     let requests = 0;
     await page.route('**/agent/activity**', route => {
@@ -81,14 +23,14 @@ test.describe('Supporting page button controls @core', () => {
         {
           id: 'feed-human', occurredAt: '2026-10-01T12:00:00Z', recordedAt: '2026-10-01T12:00:00Z',
           actor: { id: 'human-1', name: 'Ari', kind: 'human', controller: 'human' },
-          action: { type: 'publish' }, entity: { type: 'proposal', id: 'park-1' },
-          source: 'proposal', message: 'Published a park plan', ok: true,
+          action: { type: 'propose', agreementCid: PARK_AGREEMENT }, entity: { type: 'agreement', id: PARK_AGREEMENT },
+          source: 'live', message: 'Proposed a park agreement', ok: true,
         },
         {
           id: 'feed-agent', occurredAt: '2026-10-01T11:00:00Z', recordedAt: '2026-10-01T11:00:00Z',
           actor: { id: 'agent-1', name: 'Block planner', kind: 'agent', controller: 'algorithm' },
-          action: { type: 'create' }, entity: { type: 'proposal', id: 'block-1' },
-          source: 'agent', message: 'Created a block plan', ok: true,
+          action: { type: 'design', designCid: BLOCK_DESIGN }, entity: { type: 'design', id: BLOCK_DESIGN },
+          source: 'live', message: 'Published a block design', ok: true,
         },
       ] });
     });
@@ -97,24 +39,29 @@ test.describe('Supporting page button controls @core', () => {
     await page.locator('#activity-button').click();
     const feed = page.locator('#activity-feed');
     await expect(feed.locator('.activity-entry')).toHaveCount(2);
+    // Each row opens what it is about: the agreement, or the design.
+    await expect(feed.locator('.activity-entry').filter({ hasText: 'Proposed a park agreement' })
+      .locator(`.activity-entity-link[data-entity-type="agreement"][data-entity-id="${PARK_AGREEMENT}"]`)).toHaveText('Open agreement');
+    await expect(feed.locator('.activity-entry').filter({ hasText: 'Published a block design' })
+      .locator(`.activity-entity-link[data-entity-type="design"][data-entity-id="${BLOCK_DESIGN}"]`)).toHaveText('Open design');
     const filters = feed.locator('.activity-feed__filters');
     const agents = filters.getByRole('button', { name: 'Agents' });
     await agents.click();
     await expect(agents).toHaveAttribute('aria-pressed', 'true');
     await expect(feed.locator('.activity-entry')).toHaveCount(1);
-    await expect(feed).toContainText('Created a block plan');
-    await expect(feed).not.toContainText('Published a park plan');
+    await expect(feed).toContainText('Published a block design');
+    await expect(feed).not.toContainText('Proposed a park agreement');
 
     const beforeRefresh = requests;
     await filters.getByRole('button', { name: 'Refresh' }).click();
     await expect.poll(() => requests).toBeGreaterThan(beforeRefresh);
     await filters.getByRole('button', { name: 'People' }).click();
     await expect(feed.locator('.activity-entry')).toHaveCount(1);
-    await expect(feed).toContainText('Published a park plan');
+    await expect(feed).toContainText('Proposed a park agreement');
     await filters.getByRole('button', { name: 'All', exact: true }).click();
     await expect(feed.locator('.activity-entry')).toHaveCount(2);
-    await expect(feed).toContainText('Published a park plan');
-    await expect(feed).toContainText('Created a block plan');
+    await expect(feed).toContainText('Proposed a park agreement');
+    await expect(feed).toContainText('Published a block design');
   });
 
   test('actor profile buttons filter the activity list and can restore all actors', async ({ mockApi: page }) => {
@@ -122,14 +69,14 @@ test.describe('Supporting page button controls @core', () => {
       {
         id: 'event-human', occurredAt: '2026-10-01T12:00:00Z', recordedAt: '2026-10-01T12:00:00Z',
         actor: { id: 'human-1', name: 'Ari', kind: 'human', controller: 'human' },
-        action: { type: 'publish' }, entity: { type: 'proposal', id: 'park-1' },
-        source: 'proposal', message: 'Published a park plan', ok: true,
+        action: { type: 'propose', agreementCid: PARK_AGREEMENT }, entity: { type: 'agreement', id: PARK_AGREEMENT },
+        source: 'live', message: 'Proposed a park agreement', ok: true,
       },
       {
         id: 'event-agent', occurredAt: '2026-10-01T11:00:00Z', recordedAt: '2026-10-01T11:00:00Z',
         actor: { id: 'agent-1', name: 'Block planner', kind: 'agent', controller: 'algorithm' },
-        action: { type: 'create' }, entity: { type: 'proposal', id: 'block-1' },
-        source: 'agent', message: 'Created a block plan', ok: true,
+        action: { type: 'execute', agreementCid: BLOCK_AGREEMENT }, entity: { type: 'agreement', id: BLOCK_AGREEMENT },
+        source: 'live', message: 'Executed the block agreement', ok: true, transaction: 'execute-signature-fixture',
       },
     ] }));
 
@@ -137,11 +84,13 @@ test.describe('Supporting page button controls @core', () => {
     const profiles = page.locator('.ae-profile-grid .cb-option');
     await expect(profiles).toHaveCount(2);
     const planner = profiles.filter({ hasText: 'Block planner' });
+    // A card counts the agreements its actor acted on and the transactions it signed.
+    await expect(planner).toContainText('1 activity · 1 agreement · 1 transaction');
     await planner.click();
     await expect(planner).toHaveAttribute('aria-pressed', 'true');
     await expect(page.locator('.ae-activity')).toContainText('Activity (1)');
-    await expect(page.locator('.ae-event')).toContainText('Created a block plan');
-    await expect(page.locator('.ae-event')).not.toContainText('Published a park plan');
+    await expect(page.locator('.ae-event')).toContainText('Executed the block agreement');
+    await expect(page.locator('.ae-event')).not.toContainText('Proposed a park agreement');
 
     await planner.click();
     await expect(planner).toHaveAttribute('aria-pressed', 'false');

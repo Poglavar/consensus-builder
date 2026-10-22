@@ -1,5 +1,6 @@
 // Reconstructs Lovinčićeva's 12 approved above-ground volumes as one editable local proposal.
-// The script is local-only, validates every footprint against k.č. 4090/1, and upserts only with --apply.
+// The script is local-only, validates every footprint against k.č. 4090/1, and writes the canonical archive
+// only with --export (publish-restatement-archives.mjs publishes it).
 
 import { attachBuildingFloorPlans } from '../proposals/building-floor-plans.js';
 import dotenv from 'dotenv';
@@ -9,7 +10,6 @@ import { dirname, resolve } from 'node:path';
 import { createPool, describeDatabase, isLocalDatabase } from '../db/connection.cjs';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { assertReconstructionGeoJSONRoundTrip } from '../proposals/reconstruction-geojson.js';
-import { canonicalSeedRecord } from './lib/canonical-seed-record.mjs';
 
 dotenv.config({ path: fileURLToPath(new URL('../.env', import.meta.url)), quiet: true });
 await import('../../frontend/js/building-density-stats.js');
@@ -86,16 +86,16 @@ export const VOLUMES = Object.freeze([
 ]);
 
 function usage() {
-    console.log(`Usage: node backend/scripts/seed-lovinciceva-proposal.mjs --dry-run|--apply [--export]
+    console.log(`Usage: node backend/scripts/seed-lovinciceva-proposal.mjs --dry-run|--export
 
-  --dry-run  Validate the local parcel, geometry and reconstructed totals without writing.
-  --apply    Upsert proposal ${PROPOSAL_ID} in the local Consensus Builder database.
-  --export   Write the canonical proposal FeatureCollection to ${GEOJSON_PATH}.`);
+  --dry-run  Validate the local parcel, geometry and reconstructed totals without writing a file.
+  --export   Write the canonical proposal FeatureCollection to ${GEOJSON_PATH}.
+Both read the local database. Publish the archives with backend/scripts/publish-restatement-archives.mjs.`);
 }
 
 function assertLocalDatabase() {
     if (!isLocalDatabase()) {
-        throw new Error(`Refusing to seed non-local database host ${describeDatabase().host || '(empty)'}.`);
+        throw new Error(`Refusing to read the reconstruction sources from non-local database host ${describeDatabase().host || '(empty)'}.`);
     }
 }
 
@@ -243,61 +243,6 @@ export function buildProposal({ parcelFeature, buildings, stats }) {
     };
 }
 
-async function upsertProposal(pool, authored) {
-    // Same projection as the API write path; throws before writing if the row would be unreadable.
-    const proposal = canonicalSeedRecord(authored);
-    const parentIds = null; // ancestor_parcel_ids is retired; cadastre_parcel_ids is the declaration
-    const cadastreIds = JSON.stringify(proposal.cadastreParcelIds);
-    const buildingProposal = JSON.stringify(proposal.buildingProposal);
-    const bounds = JSON.stringify(proposal.bounds);
-    const proposalData = JSON.stringify(proposal);
-    const result = await pool.query(`
-        INSERT INTO public.proposal (
-            proposal_id, city, name, title, description, author, type,
-            lifecycle_status, created_at, updated_at,
-            ancestor_parcel_ids, cadastre_parcel_ids,
-            building_proposal, bounds, proposal_data, applied
-        ) VALUES (
-            $1, $2, $3, $4, $5, $6, $7,
-            $8, $9, $9,
-            $10::jsonb, $11::jsonb,
-            $12::jsonb, $13::jsonb, $14::jsonb, false
-        )
-        ON CONFLICT (proposal_id) DO UPDATE SET
-            city = EXCLUDED.city,
-            name = EXCLUDED.name,
-            title = EXCLUDED.title,
-            description = EXCLUDED.description,
-            author = EXCLUDED.author,
-            type = EXCLUDED.type,
-            lifecycle_status = EXCLUDED.lifecycle_status,
-            updated_at = NOW(),
-            ancestor_parcel_ids = EXCLUDED.ancestor_parcel_ids,
-            cadastre_parcel_ids = EXCLUDED.cadastre_parcel_ids,
-            building_proposal = EXCLUDED.building_proposal,
-            bounds = EXCLUDED.bounds,
-            proposal_data = EXCLUDED.proposal_data,
-            applied = false
-        RETURNING id, proposal_id
-    `, [
-        proposal.proposalId,
-        proposal.city,
-        proposal.name,
-        proposal.title,
-        proposal.description,
-        proposal.author,
-        proposal.type,
-        proposal.lifecycleStatus,
-        proposal.createdAt,
-        parentIds,
-        cadastreIds,
-        buildingProposal,
-        bounds,
-        proposalData
-    ]);
-    return result.rows[0];
-}
-
 export async function constructLovincicevaProposal(pool) {
     const parcelFeature = await readParcel(pool);
     const buildings = [];
@@ -340,11 +285,11 @@ async function main() {
         usage();
         return;
     }
-    const allowed = new Set(['--dry-run', '--apply', '--export']);
+    const allowed = new Set(['--dry-run', '--export']);
     const unknown = args.filter(arg => !allowed.has(arg));
-    if (unknown.length || (args.includes('--dry-run') === args.includes('--apply'))) {
+    if (unknown.length || (args.includes('--dry-run') === args.includes('--export'))) {
         usage();
-        throw new Error('Choose exactly one of --dry-run or --apply.');
+        throw new Error('Choose exactly one of --dry-run or --export.');
     }
 
     assertLocalDatabase();
@@ -363,12 +308,7 @@ async function main() {
             permitStated: OFFICIAL_TOTALS
         }, null, 2));
 
-        if (args.includes('--apply')) {
-            const stored = await upsertProposal(pool, proposal);
-            console.log(`Stored local proposal row ${stored.id} (${stored.proposal_id}).`);
-        } else {
-            console.log('Dry run only; no database row was written.');
-        }
+        if (args.includes('--dry-run')) console.log('Dry run complete; no archive was written.');
         if (args.includes('--export')) await exportProposal(proposal);
     } finally {
         await pool.end();
