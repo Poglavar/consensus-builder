@@ -56,6 +56,7 @@ const rowOf = ({ cid, content }) => ({ cid, city: 'zagreb', title: content.title
 // The public API over a fake fetch: the index's pins, designs and agreements, and plain JSON reads.
 function fakeApi({ agreements = [] } = {}) {
     const rows = new Map(agreements.map(item => [item.cid, rowOf(item)]));
+    const designRows = new Map();
     const calls = [];
     const fetchImpl = vi.fn(async (url, init = {}) => {
         const target = new URL(String(url));
@@ -64,7 +65,11 @@ function fakeApi({ agreements = [] } = {}) {
         calls.push({ method, path: `${target.pathname}${target.search}`, body, origin: init.headers?.origin ?? null });
         const onchain = target.pathname.match(/^\/agreements\/([^/]+)\/onchain$/);
         if (method === 'POST' && target.pathname === '/pins') return json({ cid: body.cid, pinnedAt: '2026-10-22T09:06:00.000Z' }, 201);
-        if (method === 'POST' && target.pathname === '/designs') return json({ cid: body.cid, content: body.content, binding: { parcels: [{ parcelId: PARCEL }] } }, 201);
+        if (method === 'POST' && target.pathname === '/designs') {
+            designRows.set(body.cid, { cid: body.cid, content: body.content, binding: { parcels: [{ parcelId: PARCEL }] } });
+            return json(designRows.get(body.cid), 201);
+        }
+        if (method === 'GET' && target.pathname.startsWith('/designs/')) return json(designRows.get(target.pathname.slice('/designs/'.length)));
         if (method === 'POST' && target.pathname === '/agreements') {
             rows.set(body.cid, rowOf(body));
             return json(rows.get(body.cid), 201);
@@ -130,8 +135,6 @@ describe('reads', () => {
 
 describe('the live gate', () => {
     const calls = tools => [
-        () => tools.publishDesign({ design: design.content, confirm: true }),
-        () => tools.proposeAgreement({ agreement: agreementOf().content, confirm: true }),
         () => tools.mintAgreement({ agreementCid: agreementOf().cid, lamports: '0', confirm: true }),
         () => tools.fundAgreement({ agreementCid: agreementOf().cid, targetLamports: '1', confirm: true }),
         () => tools.betOnAgreement({ agreementCid: agreementOf().cid, side: 'yes', amountUsdc: '0.01', confirm: true }),

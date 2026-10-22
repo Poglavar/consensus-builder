@@ -59,9 +59,9 @@ describe('Urban Game Theory MCP server', () => {
             'ugt_propose_agreement', 'ugt_mint_agreement', 'ugt_fund_agreement', 'ugt_bet_on_agreement',
             'ugt_buy_verified_fact', 'ugt_request_ownership', 'ugt_pledge', 'ugt_donate', 'ugt_refund_donation',
             'ugt_void_pledge', 'ugt_revoke_pledge', 'ugt_release_donations', 'ugt_fulfill_pledge',
-            'ugt_resolve_market', 'ugt_claim_market', 'ugt_resolve_external_market', 'ugt_claim_external_market'
+            'ugt_resolve_market', 'ugt_claim_market', 'ugt_resolve_external_market', 'ugt_claim_external_market', 'ugt_approval_link', 'ugt_find_place', 'ugt_parcel_context', 'ugt_list_designs', 'ugt_get_design', 'ugt_markets', 'ugt_explain'
         ]);
-        expect(names).toHaveLength(26);
+        expect(names).toHaveLength(33);
         expect(names.some(name => /proposal|forecast|verdict|accept/.test(name))).toBe(false);
     });
 
@@ -132,7 +132,7 @@ describe('Urban Game Theory MCP server', () => {
         tools.fundAgreement.mockResolvedValueOnce({ escrowLamports: 9000n, nested: { amount: 5n } });
         await connect(tools);
         const refused = await client.callTool({ name: 'ugt_bet_on_agreement', arguments: { agreementCid: CID, side: 'yes', amountUsdc: '0.01', confirm: true } });
-        expect(refused).toMatchObject({ isError: true, content: [{ type: 'text', text: 'agreement X is Executed; its market takes no more stakes' }] });
+        expect(refused).toMatchObject({ isError: true, structuredContent: { code: 'tool-failed', message: 'agreement X is Executed; its market takes no more stakes', next: { action: expect.any(String) } } });
         const funded = await client.callTool({ name: 'ugt_fund_agreement', arguments: { agreementCid: CID, targetLamports: '9000', confirm: true } });
         expect(funded.structuredContent).toEqual({ escrowLamports: '9000', nested: { amount: '5' } });
     });

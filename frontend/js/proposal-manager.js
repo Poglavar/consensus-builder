@@ -4069,7 +4069,8 @@ function startBootReplayWhenReady(root) {
 }
 
 (function registerProposalReapplyHooks() {
-    if (typeof window === 'undefined') return;
+    // The headless formation host has a window namespace but no document or boot lifecycle.
+    if (typeof window === 'undefined' || !window.document) return;
     startBootReplayWhenReady(window);
 })();
 

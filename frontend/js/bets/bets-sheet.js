@@ -638,7 +638,7 @@
         if (!link) return;
         try {
             if (typeof root.whenAppBooted === 'function') await root.whenAppBooted();
-            if (typeof root.openBetDialog === 'function') root.openBetDialog({ account: link.account });
+            if (typeof root.openBetDialog === 'function') root.openBetDialog({ account: link.account, ...(link.approval ? { side: link.approval.params.side, amount: link.approval.params.amount, approval: true } : {}) });
             else root.openBetsSheet({ account: link.account });
         } catch (error) {
             console.warn(`[${new Date().toISOString()}] [bets] the bet link could not open`, error);

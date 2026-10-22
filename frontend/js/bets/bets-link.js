@@ -47,7 +47,8 @@
         }
         const account = accountOf(raw);
         if (!account) return null;
-        return { account, city: cityOf(params.get('city')), lang: langOf(params.get('lang')) };
+        const intent = typeof globalThis.ApprovalLink !== 'undefined' ? globalThis.ApprovalLink.parse(loc) : null;
+        return { account, city: cityOf(params.get('city')), lang: langOf(params.get('lang')), ...(intent ? { approval: intent } : {}) };
     }
 
     function query(entries) {

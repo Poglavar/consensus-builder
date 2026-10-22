@@ -62,8 +62,56 @@
         return true;
     }
 
+    // While a design is being edited (an on-map editor holds the map, a road or track is being drawn,
+    // a site is being drawn), the controls that would start another task are greyed out, never
+    // hidden: the dock keeps its shape and the tooltip says how to get them back. The views the
+    // editor cannot run in are locked the same way by map-mode-loader.js (paintModeLocks). Layers,
+    // Buildings and massing and Measure stay: they help with the drawing.
+    const EDIT_LOCKED_CONTROLS = Object.freeze(['proposals-button', 'bets-button', 'activity-button', 'settings-button', 'username-display']);
+    const EDIT_LOCKED_SELECTORS = '.map-search__chip, .map-search__icon-button, .map-search__input';
+    const EDIT_LOCKED_SHEETS = Object.freeze(['proposals-sheet', 'bets-sheet', 'activity-sheet', 'settings-sheet']);
+
+    function isEditingDesign(global) {
+        if (!global) return false;
+        if (global.roadDrawingMode === true) return true;
+        if (global.__mapEditLock && typeof global.__mapEditLock.isHeld === 'function' && global.__mapEditLock.isHeld()) return true;
+        const body = global.document && global.document.body;
+        return !!(body && body.classList && body.classList.contains('site-tool-drawing'));
+    }
+
+    // Lock or unlock one control, keeping what the page had set so the unlock puts it back. A real
+    // control is disabled; the profile bubble (a div with role=button) leaves the tab order instead,
+    // and the shell's capture-phase click guard stops its clicks.
+    function setEditLocked(el, locked, title) {
+        const wasLocked = el.hasAttribute('data-edit-locked');
+        if (locked) {
+            if (!wasLocked) {
+                el.setAttribute('data-edit-locked', JSON.stringify({
+                    title: el.getAttribute('title'),
+                    disabled: 'disabled' in el ? !!el.disabled : null,
+                    tabindex: el.getAttribute('tabindex')
+                }));
+            }
+            el.classList.add('is-edit-locked');
+            el.setAttribute('aria-disabled', 'true');
+            el.setAttribute('title', title);
+            if ('disabled' in el) el.disabled = true;
+            else el.setAttribute('tabindex', '-1');
+        } else if (wasLocked) {
+            const saved = JSON.parse(el.getAttribute('data-edit-locked'));
+            el.removeAttribute('data-edit-locked');
+            el.classList.remove('is-edit-locked');
+            el.removeAttribute('aria-disabled');
+            if (saved.title === null) el.removeAttribute('title');
+            else el.setAttribute('title', saved.title);
+            if (saved.disabled !== null) el.disabled = saved.disabled;
+            if (saved.tabindex === null) el.removeAttribute('tabindex');
+            else el.setAttribute('tabindex', saved.tabindex);
+        }
+    }
+
     if (!win || !win.document) {
-        return { placePopover, pointerDownClosesSheet };
+        return { placePopover, pointerDownClosesSheet, isEditingDesign, setEditLocked, EDIT_LOCKED_CONTROLS, EDIT_LOCKED_SHEETS };
     }
 
     const doc = win.document;
@@ -267,8 +315,31 @@
             imagery.checked = win.PhotorealMode.isBuiltVisible();
         }
         if (mode === '2d' && win.roadDrawingMode) doc.getElementById('road-info-panel')?.classList.add('visible');
+        paintEditLocks();
         observeEditors();
         updateMapViewportInsets();
+    }
+
+    const isEditing = () => isEditingDesign(win);
+
+    function paintEditLocks() {
+        const locked = isEditing();
+        const controls = EDIT_LOCKED_CONTROLS.map(id => doc.getElementById(id)).filter(Boolean)
+            .concat(Array.from(doc.querySelectorAll(EDIT_LOCKED_SELECTORS)));
+        const title = t('mapShell.modeLocked', 'Not available while you are editing — finish or cancel first');
+        if (locked && controls.some(el => !el.hasAttribute('data-edit-locked'))) {
+            // Starting to edit folds away what those controls had open.
+            if (state.openSheet && EDIT_LOCKED_SHEETS.includes(state.openSheet.id)) closeSheet({ restoreFocus: false });
+            win.MapSearch?.close?.();
+        }
+        controls.forEach(el => setEditLocked(el, locked, title));
+    }
+
+    // The profile bubble is a div: being disabled does not stop its clicks, so the shell does.
+    function onLockedClickCapture(event) {
+        if (!event.target?.closest?.('[data-edit-locked]')) return;
+        event.preventDefault();
+        event.stopPropagation();
     }
 
     // Whether the open sheet hides the whole map: a dock sheet on a phone fills the screen above the
@@ -433,6 +504,7 @@
             button.addEventListener('click', () => closeSheet({ restoreFocus: true }));
         });
         doc.addEventListener('pointerdown', onDocumentPointerDown, true);
+        doc.addEventListener('click', onLockedClickCapture, true);
         // On window, not document: window listeners run after every document listener, so a tool
         // or dialog that handles Escape first (Measure, Pinpoint, area drawing, the status log)
         // marks it with preventDefault and the sheet stays open — one Escape, one step. On
@@ -481,6 +553,11 @@
         syncProposalsBadge,
         isBlockingDialogOpen,
         pointerDownClosesSheet,
+        isEditing,
+        isEditingDesign,
+        setEditLocked,
+        EDIT_LOCKED_CONTROLS,
+        EDIT_LOCKED_SHEETS,
         // The world view (globe); js/ui/world-entry.js owns it. opts: {} | { focus: place }.
         openWorldView: opts => {
             if (!win || !win.WorldEntry) throw new Error('MapShell.openWorldView: js/ui/world-entry.js is not loaded');

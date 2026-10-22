@@ -28,7 +28,8 @@
         "@anthropic-ai/sdk": "^0.126.0",
         "@coinbase/cdp-sdk": "^1.56.0",
         "@mapbox/vector-tile": "^3.0.0",
-        "@modelcontextprotocol/server": "^2.0.0",
+        "@modelcontextprotocol/node": "^2.1.1",
+        "@modelcontextprotocol/server": "^2.3.1",
         "@noble/hashes": "1.8.0",
         "@solana/kit": "^5.5.1",
         "@solana/spl-token": "^0.4.14",
@@ -61,7 +62,7 @@
     },
     "devDependencies": {
         "@babel/parser": "^7.29.9",
-        "@modelcontextprotocol/client": "^2.0.0",
+        "@modelcontextprotocol/client": "^2.3.1",
         "@vitest/coverage-v8": "^4.1.11",
         "esbuild": "0.28.2",
         "jsonld": "9.0.0",

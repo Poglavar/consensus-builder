@@ -5,6 +5,9 @@
 // subject (bettor.js, pledger.js, donor.js, lifecycle-actions.js): the adapters the deterministic
 // runners use, never a second execution path.
 import fs from 'node:fs';
+import { createMcpAgreementTools } from './mcp-ground.js';
+import { createMcpDraftTools } from './mcp-drafts.js';
+import { createMcpReadTools } from './mcp-read-tools.js';
 import os from 'node:os';
 import path from 'node:path';
 import { Keypair, PublicKey } from '@solana/web3.js';
@@ -190,6 +193,7 @@ function publishedAgreement(content) {
  * the stdio MCP server is one caller, and tests or another controller can call the same surface.
  */
 export function createUrbanGameTheoryTools({
+    mode = 'local',
     env = process.env,
     fetchImpl = globalThis.fetch,
     createConnection = (rpcUrl) => createRpcConnection(rpcUrl, 'confirmed'),
@@ -243,6 +247,7 @@ export function createUrbanGameTheoryTools({
     }
 
     function signer() {
+        if (mode !== 'local') throw new Error('Hosted MCP cannot sign or pay');
         if (!signing) {
             const secretKey = loadSecretKey(env.UGT_AGENT_KEYPAIR);
             signing = { secretKey, keypair: Keypair.fromSecretKey(secretKey), connection: chain() };
@@ -261,7 +266,16 @@ export function createUrbanGameTheoryTools({
         return agreement;
     }
 
+    const companion = createMcpReadTools({ apiBase, appOrigin, fetchImpl });
+    const drafts = createMcpDraftTools({ read: companion, appOrigin });
+    function requirePublish(confirm) {
+        if (confirm !== true) throw new Error('confirm must be true: publishing is public and permanent');
+    }
+
     return {
+        ...companion,
+        ...drafts,
+        ...createMcpAgreementTools({ read: companion, drafts, appOrigin }),
         config: {
             apiBase,
             appOrigin,
@@ -326,20 +340,22 @@ export function createUrbanGameTheoryTools({
         // Pin and index one design/v1 object. The index derives its binding (the parcels its site takes)
         // and answers the row. A parcel layout is indexed only with its agreement.
         async publishDesign({ design, parcelSourceId = null, confirm } = {}) {
-            requireLive(confirm);
+            requirePublish(confirm);
             const { content, cid } = publishedDesign(design);
             if (isParcelLayout(content)) {
                 throw new Error(`design ${cid} is a parcel layout: a layout is published only with the agreement that settles its land; pass it to ugt_propose_agreement in designs: [{ content }]`);
             }
             const published = await index().publishDesign(content, { parcelSourceId });
             if (published.cid !== cid) throw new Error(`the index filed design ${published.cid}, not ${cid}`);
-            return { cid, created: published.created, row: published.row };
+            const row = await index().getDesign(cid);
+            if (!row || row.cid !== cid) throw new Error('Published design could not be read back');
+            return { cid, created: published.created, row, previewUrl: `${appOrigin}/designs/${cid}` };
         },
 
         // Pin the carried designs and the agreement/v1 object, then index the agreement with them. The
         // index requires its inputs to be exactly the union of its designs' bindings.
         async proposeAgreement({ agreement, designs = [], confirm } = {}) {
-            requireLive(confirm);
+            requirePublish(confirm);
             const { content, cid } = publishedAgreement(agreement);
             const linked = new Set(content.designs.map(entry => entry.cid));
             const carried = (Array.isArray(designs) ? designs : []).map((entry, at) => publishedDesign(entry?.content, `designs[${at}].content`));
@@ -357,7 +373,9 @@ export function createUrbanGameTheoryTools({
                 carried: carried.map(entry => entry.cid),
                 sponsor,
                 account: sponsor ? agreementAccountOf(cid, sponsor) : null,
-                row: published.row
+                row: await client.getAgreement(cid),
+                previewUrl: `${appOrigin}/agreements/${cid}`,
+                approvalUrl: `${appOrigin}/agreements/${cid}?act=mint`
             };
         },
 

@@ -509,3 +509,85 @@ describe('the sidebar is gone', () => {
         expect(offenders).toEqual([]);
     });
 });
+
+describe('editing a design locks the controls that start another task', () => {
+    const LOCKED_TITLE = 'Not available while you are editing — finish or cancel first';
+
+    it('counts an on-map editor, road or track drawing and site drawing as editing', () => {
+        const body = classes => ({ classList: { contains: name => classes.includes(name) } });
+        expect(MapShell.isEditingDesign({ document: { body: body([]) } })).toBe(false);
+        expect(MapShell.isEditingDesign({ roadDrawingMode: true, document: { body: body([]) } })).toBe(true);
+        expect(MapShell.isEditingDesign({ __mapEditLock: { isHeld: () => true }, document: { body: body([]) } })).toBe(true);
+        expect(MapShell.isEditingDesign({ __mapEditLock: { isHeld: () => false }, document: { body: body(['site-tool-drawing']) } })).toBe(true);
+        // Drawing a watch area is not a design.
+        expect(MapShell.isEditingDesign({ document: { body: body(['area-monitor-drawing-active']) } })).toBe(false);
+    });
+
+    // A fake element: attributes, a class list, and `disabled` only when it is a real control.
+    function control({ control: isControl, title = null, tabindex = null, disabled = false }) {
+        const attributes = new Map();
+        if (title !== null) attributes.set('title', title);
+        if (tabindex !== null) attributes.set('tabindex', tabindex);
+        const classes = new Set();
+        const el = {
+            attributes,
+            classList: { add: name => classes.add(name), remove: name => classes.delete(name), contains: name => classes.has(name) },
+            hasAttribute: name => attributes.has(name),
+            getAttribute: name => (attributes.has(name) ? attributes.get(name) : null),
+            setAttribute: (name, value) => attributes.set(name, String(value)),
+            removeAttribute: name => attributes.delete(name)
+        };
+        if (isControl) el.disabled = disabled;
+        return el;
+    }
+
+    it('greys a button out (disabled, never hidden) and gives back what it had', () => {
+        const button = control({ control: true, title: 'Proposals' });
+        MapShell.setEditLocked(button, true, LOCKED_TITLE);
+        expect(button.disabled).toBe(true);
+        expect(button.classList.contains('is-edit-locked')).toBe(true);
+        expect(button.getAttribute('aria-disabled')).toBe('true');
+        expect(button.getAttribute('title')).toBe(LOCKED_TITLE);
+        expect('hidden' in button).toBe(false);
+        // A repaint while locked keeps the original state, not the locked one.
+        MapShell.setEditLocked(button, true, LOCKED_TITLE);
+        MapShell.setEditLocked(button, false, LOCKED_TITLE);
+        expect(button.disabled).toBe(false);
+        expect(button.classList.contains('is-edit-locked')).toBe(false);
+        expect(button.hasAttribute('aria-disabled')).toBe(false);
+        expect(button.getAttribute('title')).toBe('Proposals');
+        expect(button.hasAttribute('data-edit-locked')).toBe(false);
+    });
+
+    it('takes the profile bubble (a div) out of the tab order and restores it', () => {
+        const profile = control({ control: false, tabindex: '0' });
+        MapShell.setEditLocked(profile, true, LOCKED_TITLE);
+        expect(profile.getAttribute('tabindex')).toBe('-1');
+        expect(profile.getAttribute('title')).toBe(LOCKED_TITLE);
+        MapShell.setEditLocked(profile, false, LOCKED_TITLE);
+        expect(profile.getAttribute('tabindex')).toBe('0');
+        expect(profile.hasAttribute('title')).toBe(false);
+    });
+
+    it('locks the shell controls agreed for editing and leaves Layers, Buildings and massing and Measure', () => {
+        expect([...MapShell.EDIT_LOCKED_CONTROLS].sort()).toEqual(
+            ['activity-button', 'bets-button', 'proposals-button', 'settings-button', 'username-display']);
+        for (const id of ['layers-button', 'planning-views-button', 'measurement-button']) {
+            expect(MapShell.EDIT_LOCKED_CONTROLS).not.toContain(id);
+        }
+        for (const id of MapShell.EDIT_LOCKED_CONTROLS) expect(indexHtml).toContain(`id="${id}"`);
+    });
+
+    it('makes the commands behind the locked controls unavailable in the palette, and only while editing', () => {
+        const editing = { mode: '2d', isEditing: () => true };
+        const idle = { mode: '2d', isEditing: () => false };
+        for (const id of ['proposals.list', 'bets.open', 'activity.explorer', 'settings.city', 'parcels.locate', 'world.open']) {
+            expect(UiCommands.isAvailable(id, editing), id).toBe(false);
+        }
+        expect(UiCommands.isAvailable('bets.open', idle)).toBe(true);
+        expect(UiCommands.isAvailable('settings.city', idle)).toBe(true);
+        for (const id of ['tools.measure', 'settings.baseMap']) {
+            expect(UiCommands.isAvailable(id, editing), id).toBe(true);
+        }
+    });
+});

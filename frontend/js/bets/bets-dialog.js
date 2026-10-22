@@ -706,7 +706,7 @@
         const account = options && options.account ? String(options.account) : null;
         if (!account) return null;
         const side = options.side === undefined || options.side === null ? null : sideValue(options.side);
-        if (side !== null && !walletConnected()) { askForWallet(); return null; }
+        if (side !== null && !walletConnected() && !options.approval) { askForWallet(); return null; }
         const overlay = mount(options.title || t('panel.proposal.market.historyBet', 'Bet'));
         state.account = account;
         state.row = null; state.contest = null; state.positions = null;
@@ -722,7 +722,11 @@
         if (state.overlay !== overlay) return overlay;
         // Only an open pool takes a new bet: a link with a side to a pool that is settling or settled
         // lands on its overview.
-        if (side !== null && state.row.state === 'open') renderStake(side); else renderOverview();
+        if (side !== null && state.row.state === 'open') {
+            renderStake(side);
+            const input = parts().body.querySelector('[data-market-amount]');
+            if (input && options.amount) { input.value = options.amount; input.dispatchEvent(new Event('input', { bubbles: true })); }
+        } else renderOverview();
         return overlay;
     }
 

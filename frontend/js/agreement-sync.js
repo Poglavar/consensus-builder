@@ -431,6 +431,8 @@
                 const saved = store().save(!record.onchain && existing && existing.onchain ? { ...record, onchain: existing.onchain } : record);
                 log(`stored ${cid} as ${saved.id}${saved.outputs.every(output => output.geometry) ? '' : ' (its pieces differ here)'}`);
                 await win.AgreementPanel.open(saved.id);
+                const intent = win.ApprovalLink?.parse(win.location);
+                if (intent?.target === cid) win.ApprovalLink.preselect(win.document, intent);
             } catch (error) {
                 console.error(`[${new Date().toISOString()}] [AgreementSync] the agreement ${cid} could not be opened`, error);
                 win.showEphemeralMessage((error && error.message) || t('agreement.publish.route.failed', 'The agreement could not be opened.'), 8000, 'error');

@@ -552,10 +552,27 @@
         }
     }
 
+    // While a design is being edited the shell greys out Proposals, Bets, Activity, Settings, the
+    // profile and the city search (js/ui/map-shell.js). The commands behind those controls are
+    // unavailable too, so the palette is not a way around the lock. Layers and Measure stay.
+    const EDIT_LOCKED_SURFACES = Object.freeze(['proposals', 'activity', 'settings']);
+    const EDIT_LOCKED_GROUPS = Object.freeze(['proposals', 'activity', 'bets', 'game']);
+    const EDIT_LOCKED_COMMANDS = Object.freeze(['parcels.locate', 'settings.city', 'settings.detectCity']);
+    function lockedWhileEditing(entry, ctx) {
+        if (!ctx || typeof ctx.isEditing !== 'function') return false;
+        let editing = false;
+        try { editing = !!ctx.isEditing(); } catch (_) { return false; }
+        if (!editing) return false;
+        return EDIT_LOCKED_COMMANDS.includes(entry.id)
+            || EDIT_LOCKED_GROUPS.includes(entry.group)
+            || entry.surfaces.some(surface => EDIT_LOCKED_SURFACES.includes(surface));
+    }
+
     function isAvailable(entry, ctx) {
         if (typeof entry === 'string') entry = findCommand(entry);
         if (!entry) return false;
         if (!supportsMode(entry, ctx)) return false;
+        if (lockedWhileEditing(entry, ctx)) return false;
         if (sectionHiddenForCity(entry, ctx)) return false;
         if (hiddenOutsideDebug(entry, ctx)) return false;
         try {
@@ -705,6 +722,7 @@
                 if (el.hasAttribute('data-busy-prev-disabled')) return 'busy';
                 return 'disabled';
             },
+            isEditing: () => !!(shell() && typeof shell().isEditing === 'function' && shell().isEditing()),
             clickControl(id) {
                 const el = element(id);
                 if (!el) throw new Error(`UiCommands: control #${id} is missing`);

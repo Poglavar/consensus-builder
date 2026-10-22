@@ -345,8 +345,7 @@
                     <div class="on-map-editor__heading">
                         <h2 id="schelling-panel-title" tabindex="-1" data-i18n-key="schellingPlan.title">Schelling plan</h2>
                     </div>
-                    <button type="button" id="schelling-panel-collapse" class="btn btn-sm on-map-editor__toggle" aria-controls="schelling-panel-body" aria-expanded="true">
-                        <span data-i18n-key="onMapEditor.controls">Controls</span>
+                    <button type="button" id="schelling-panel-collapse" class="btn btn-sm on-map-editor__toggle" aria-controls="schelling-panel-body" aria-expanded="true" data-i18n-key="onMapEditor.hideControls" data-i18n-attr="title,aria-label" title="Hide controls" aria-label="Hide controls">
                         <i class="fas fa-chevron-up" aria-hidden="true"></i>
                     </button>
                     <button type="button" id="schelling-panel-close" class="close-circle-btn" data-i18n-key="schellingPlan.closePanel" data-i18n-attr="title,aria-label" title="Close and hide the plan" aria-label="Close and hide the plan">×</button>
@@ -1975,6 +1974,7 @@
             'js/planning/parcel-assessment.js?v=20261021-permitted-envelopes',
             'js/planning/parcel-study.js?v=20261021-configurations',
             'js/planning/views.js?v=20261021-envelopes',
+            'js/approval-link.js',
             'js/bets/bets-link.js',
             'js/bets/lmsr.js',
             'js/bets/sha256.js',

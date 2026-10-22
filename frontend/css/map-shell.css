@@ -289,6 +289,17 @@ body.three-mode-active .leaflet-control-attribution { visibility: hidden; }
     cursor: default;
 }
 
+/* Locked while a design is being edited (js/ui/map-shell.js paintEditLocks): the same grey as the
+   locked view tiles. Greyed rather than hidden so the dock keeps its shape, and NOT
+   `pointer-events: none`, which would suppress the tooltip saying how to get the control back.
+   The attribute lifts it over `.map-shell-button:disabled` and map-search.css, which load first/later
+   with the same or lower specificity and set their own cursor. */
+.is-edit-locked[data-edit-locked] {
+    opacity: 0.4;
+    filter: grayscale(1);
+    cursor: not-allowed;
+}
+
 .map-shell-button:focus-visible,
 #map-container .username-display:focus-visible,
 .map-sheet:focus-visible {
